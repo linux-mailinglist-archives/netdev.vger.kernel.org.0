@@ -2,86 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 896E031F550
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 08:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4C1331F55E
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 08:32:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbhBSHNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 02:13:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
+        id S229641AbhBSHbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 02:31:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbhBSHNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 02:13:21 -0500
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C41DC061574
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:12:41 -0800 (PST)
-Received: by mail-vk1-xa35.google.com with SMTP id f145so1011491vka.8
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:12:41 -0800 (PST)
+        with ESMTP id S229623AbhBSHbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 02:31:23 -0500
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D338CC061574
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:30:42 -0800 (PST)
+Received: by mail-vk1-xa31.google.com with SMTP id k1so1017103vkb.11
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:30:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=h8b8kj6NxJte4jtxipAMcQxsgEPMdcte/jGDhlUCEVQ=;
-        b=KQfvP0r/Ul+rxpVEUWjrgHegfLb1FWjUL7qNfJeEFeGo4PqQUozggRkurFpThTofDI
-         JEw5lKf+6ddJt8eJXL+7R4bBcDxiDxycmKXPuRRAM4GvL2yM1pVM9G+4i2BQZY3Ep7qi
-         NEUiOwt7TfBXSjtdtRn2i+Irlnz/IH8TJz0AI=
+        bh=mgaPKM7X6IZ4BZS633QUkOiLClmxn3Aw7snlzzOE+HE=;
+        b=JwKtmAxJcFebMuMbt+tCFAuG3Pq8MGMy3wIx/jt/nBWsOUcExfiXwEPZKfgIG3kuOh
+         gedJVXR0MB/oxP9xZuFkBKkr/dhMj32jT3JTFqVuOCmmgtb7YV8nz3lHBIA7qSK7JGKR
+         EOoOMjCe7TPWiV4NlTiSwvsIe5MmOqLcJOMVg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=h8b8kj6NxJte4jtxipAMcQxsgEPMdcte/jGDhlUCEVQ=;
-        b=qmwCcUmQoV+UxE+q825Q7dMh9yoSvOozpI2gFfyfSWTqKwp4VlCa6Od7hifaPAQPgi
-         EbMB3PURPyFc1uuR9Cio3m0gvbkHs5/7mhwKIoPf3vyNBpBoflhYBPAHc3oXM/XPnJgx
-         5P+m+7Ejt6Ob+55wMDL9uZxgErsGR4vPx5EtMUF80+b2EDMvyv+QRHgRzPa6eAA741fn
-         TJqEvXsWPvCuaPZy9pXWCs5uDznKzL77FBy0qEcjnRPBaXaeBVp3jLa62QveMzEhlesD
-         44bkwwNnsn9oozyMtjYAHlt3xhp6mCZ5Ln85YnMLKlW2J1GF2p++pDf3OhLNtGgYyC2U
-         7YSA==
-X-Gm-Message-State: AOAM533kY/sbmrfERn30KlGvQso6eOs0J9N9K7ZTe0/TdpmpXTzbN6xB
-        E8KyeuigLvuWtTCoWG5mlZiIjbwfeX5OKNiMiipzXQ==
-X-Google-Smtp-Source: ABdhPJy0h89Ff+Jn7fL82RJ+IOVsPOdU6jhz7YxZBssOkYXvV2Uil1FxzzQ9/kt6j5J58tyjIEteXbq6RdI2GQQolTY=
-X-Received: by 2002:a1f:dc86:: with SMTP id t128mr202639vkg.7.1613718760054;
- Thu, 18 Feb 2021 23:12:40 -0800 (PST)
+        bh=mgaPKM7X6IZ4BZS633QUkOiLClmxn3Aw7snlzzOE+HE=;
+        b=LvxM9s+DSVEGDKwOZqsvGiIqo5QFoAG2pGCCbzbQzDqsbefDS8Q9sx4uD9NTiw2wH1
+         eI0Ly14jh4XKWPaCHs1B4SDDSseDFfEpQwoCKZvvjNjxaP/Jjq1Bkyur/v803JZyfpln
+         mO8r6fa/HiHAjbm2qF3pIdprbybzXf/lGTgsvZA/oQBabNUyLCzMIvKa1YAfBUo8n5yi
+         v9m4UZbOoMicUZ6cfmcixC8xpJ3vwT+/vKqtFTYVvuNHYyS+HInYg2IkcaWtbf0c8QJ3
+         ukk5xHRyAMDa0Ode37iBInzaJo2Rsd9AUh39Pt5L7wYoLPcLrsAuHbkq2eo9EYhU4Stf
+         QHzg==
+X-Gm-Message-State: AOAM531gWm0ZUlo0fbmUcpBda1ZA13DmplFkUzJvGTf3Cztbodus1+cy
+        spO9cthpxOBuJIJRplIHkN5fKowYlko3KUQ3GrIFdeAKv01mUtlT
+X-Google-Smtp-Source: ABdhPJxlGSimiYFp4RRQBFnj52NbJgeElwaejcUiyg7f+Dsea+kl/6Vj5023sbURyCb64vfbj6AZ9CQA/cCs0s6v9VA=
+X-Received: by 2002:a1f:1c4c:: with SMTP id c73mr6190764vkc.22.1613719840839;
+ Thu, 18 Feb 2021 23:30:40 -0800 (PST)
 MIME-Version: 1.0
-References: <20210218102038.2996-1-oneukum@suse.com> <20210218102038.2996-2-oneukum@suse.com>
- <CANEJEGu+fqkgu6whO_1BXFpnf5K6BG8Z7nUmHcJaYU9_tc7svg@mail.gmail.com> <YC7E/LvO8+k83lIL@lunn.ch>
-In-Reply-To: <YC7E/LvO8+k83lIL@lunn.ch>
+References: <20210218102038.2996-1-oneukum@suse.com> <20210218102038.2996-4-oneukum@suse.com>
+In-Reply-To: <20210218102038.2996-4-oneukum@suse.com>
 From:   Grant Grundler <grundler@chromium.org>
-Date:   Fri, 19 Feb 2021 07:12:28 +0000
-Message-ID: <CANEJEGtnPJgHT9mGY6_zQNe2Lye2N2XtzygZOyXJ2a9rE=eo9w@mail.gmail.com>
-Subject: Re: [PATCHv3 1/3] usbnet: specify naming of usbnet_set/get_link_ksettings
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        netdev <netdev@vger.kernel.org>, davem@devemloft.org,
+Date:   Fri, 19 Feb 2021 07:30:29 +0000
+Message-ID: <CANEJEGvsYPmnxx2sV89aLPJzK_SgWEW8FPhgo2zNk2d5zijK2Q@mail.gmail.com>
+Subject: Re: [PATCHv3 3/3] CDC-NCM: record speed in status method
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Grant Grundler <grundler@chromium.org>,
+        Andrew Lunn <andrew@lunn.ch>, davem@davemloft.org,
         Hayes Wang <hayeswang@realtek.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Roland Dreier <roland@kernel.org>
+        Roland Dreier <roland@kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 7:50 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Thu, Feb 18, 2021 at 10:21 AM Oliver Neukum <oneukum@suse.com> wrote:
 >
-> On Thu, Feb 18, 2021 at 07:31:41PM +0000, Grant Grundler wrote:
-> > Oliver, Jakub,
-> > Can I post v4 and deal with the issues below?
->
-> You should probably wait for two weeks. We are far enough into the
-> merge window that i doubt it will get picked up. So please wait,
-> rebase, and then post.
+> The driver has a status method for receiving speed updates.
+> The framework, however, had support functions only for devices
+> that reported their speed upon an explicit query over a MDIO
+> interface.
+> CDC_NCM however gets direct notifications from the device.
+> As new support functions have become available, we shall now
+> record such notifications and tell the usbnet framework
+> to make direct use of them without going through the PHY layer.
 
-ACK - thank you.
+Since this patch is missing the hunks that landed in the previous
+patch and needs a v4, I'll offer my version of the commit message in
+case you like it better:
+    net: cdc_ncm: record speed in status method
 
-> > Nit: The v2/v3 lines should be included BELOW the '---' line since
-> > they don't belong in the commit message.
->
-> netdev actually prefers them above, so we see the history of how a
-> patched changed during review.
+    Until very recently, the usbnet framework only had support functions
+    for devices which reported the link speed by explicitly querying the
+    PHY over a MDIO interface. However, the cdc_ncm devices send
+    notifications when the link state or link speeds change and do not
+    expose the PHY (or modem) directly.
 
-Ok. Thanks for clarifying. :)
+    Support functions (e.g. usbnet_get_link_ksettings_internal()) to directly
+    query state recorded by the cdc_ncm driver were added in a previous patch.
+
+    So instead of cdc_ncm spewing the link speed into the dmesg buffer,
+    record the link speed encoded in these notifications and tell the
+    usbnet framework to use the new functions to get link speed.
+
+    This is especially useful given all existing RTL8156 devices emit
+    a connection/speed status notification every 32ms and this would
+    fill the dmesg buffer. This implementation replaces the one
+    recently submitted in de658a195ee23ca6aaffe197d1d2ea040beea0a2 :
+       "net: usb: cdc_ncm: don't spew notifications"
 
 cheers,
 grant
 
+> v2: rebased on upstream
+> v3: changed variable names
 >
->         Andrew
+> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+> Tested-by: Roland Dreier <roland@kernel.org>
+> ---
+>  drivers/net/usb/cdc_ncm.c | 23 +----------------------
+>  1 file changed, 1 insertion(+), 22 deletions(-)
+>
+> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+> index 0d26cbeb6e04..74c1a86b1a71 100644
+> --- a/drivers/net/usb/cdc_ncm.c
+> +++ b/drivers/net/usb/cdc_ncm.c
+> @@ -1829,30 +1829,9 @@ cdc_ncm_speed_change(struct usbnet *dev,
+>         uint32_t rx_speed = le32_to_cpu(data->DLBitRRate);
+>         uint32_t tx_speed = le32_to_cpu(data->ULBitRate);
+>
+> -       /* if the speed hasn't changed, don't report it.
+> -        * RTL8156 shipped before 2021 sends notification about every 32ms.
+> -        */
+> -       if (dev->rx_speed == rx_speed && dev->tx_speed == tx_speed)
+> -               return;
+> -
+> +        /* RTL8156 shipped before 2021 sends notification about every 32ms. */
+>         dev->rx_speed = rx_speed;
+>         dev->tx_speed = tx_speed;
+> -
+> -       /*
+> -        * Currently the USB-NET API does not support reporting the actual
+> -        * device speed. Do print it instead.
+> -        */
+> -       if ((tx_speed > 1000000) && (rx_speed > 1000000)) {
+> -               netif_info(dev, link, dev->net,
+> -                          "%u mbit/s downlink %u mbit/s uplink\n",
+> -                          (unsigned int)(rx_speed / 1000000U),
+> -                          (unsigned int)(tx_speed / 1000000U));
+> -       } else {
+> -               netif_info(dev, link, dev->net,
+> -                          "%u kbit/s downlink %u kbit/s uplink\n",
+> -                          (unsigned int)(rx_speed / 1000U),
+> -                          (unsigned int)(tx_speed / 1000U));
+> -       }
+>  }
+>
+>  static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
+> --
+> 2.26.2
+>
