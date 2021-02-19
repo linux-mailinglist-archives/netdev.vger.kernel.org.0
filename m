@@ -2,86 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9207D31FC3A
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 16:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3947931FC33
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 16:41:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbhBSPlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 10:41:37 -0500
-Received: from mx2.suse.de ([195.135.220.15]:47414 "EHLO mx2.suse.de"
+        id S229862AbhBSPl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 10:41:29 -0500
+Received: from mx2.suse.de ([195.135.220.15]:47492 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229681AbhBSPl0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229811AbhBSPl0 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Feb 2021 10:41:26 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
         t=1613749238; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=MHxag6mUxa0dootKy2U+lJVR2k8UiaKbpKfVyKM/EZ4=;
-        b=jjsdawg1KZYf+nItuzbxyqaXeDKHiLv6YoeaErBu4tJer4zXSytLV7xk92MixdQUnvPRED
-        iXUz6DrGfs47sGkqcF453+W0zBJW6WReMsknyI3WKg9iAusmhGukYAazPdCEFJ6k8mopm3
-        ZGwTClr2lapCAwa2bLNQ99xzaXwou3k=
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QmVbRiyGhWjgyRhmW9maPS5XeYQ8D0P7LNo1+euH3hI=;
+        b=kUPpmw0yKQA70gsRODhJFsj/8eUsG8GG0hrbpqX7y81r0C26/2h9EUbs0xUKId7cwep9Am
+        gireTmt9iiSmUipV/+ZpaGWiJ2siBWquCtwD2sAbj6VLLHfWhdZl4VbbcwKpZAGnf74FYh
+        QpyLJ4Yxuslqb5hRXglPLi6uk8bEdGY=
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 17FFFAED2;
+        by mx2.suse.de (Postfix) with ESMTP id C5B9AB10B;
         Fri, 19 Feb 2021 15:40:38 +0000 (UTC)
 From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        stable@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH v3 0/8] xen/events: bug fixes and some diagnostic aids
-Date:   Fri, 19 Feb 2021 16:40:22 +0100
-Message-Id: <20210219154030.10892-1-jgross@suse.com>
+        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org,
+        Jan Beulich <jbeulich@suse.com>, Wei Liu <wl@xen.org>
+Subject: [PATCH v3 4/8] xen/netback: fix spurious event detection for common event case
+Date:   Fri, 19 Feb 2021 16:40:26 +0100
+Message-Id: <20210219154030.10892-5-jgross@suse.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210219154030.10892-1-jgross@suse.com>
+References: <20210219154030.10892-1-jgross@suse.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The first four patches are fixes for XSA-332. The avoid WARN splats
-and a performance issue with interdomain events.
+In case of a common event for rx and tx queue the event should be
+regarded to be spurious if no rx and no tx requests are pending.
 
-Patches 5 and 6 are some additions to event handling in order to add
-some per pv-device statistics to sysfs and the ability to have a per
-backend device spurious event delay control.
+Unfortunately the condition for testing that is wrong causing to
+decide a event being spurious if no rx OR no tx requests are
+pending.
 
-Patches 7 and 8 are minor fixes I had lying around.
+Fix that plus using local variables for rx/tx pending indicators in
+order to split function calls and if condition.
 
-Juergen Gross (8):
-  xen/events: reset affinity of 2-level event when tearing it down
-  xen/events: don't unmask an event channel when an eoi is pending
-  xen/events: avoid handling the same event on two cpus at the same time
-  xen/netback: fix spurious event detection for common event case
-  xen/events: link interdomain events to associated xenbus device
-  xen/events: add per-xenbus device event statistics and settings
-  xen/evtchn: use smp barriers for user event ring
-  xen/evtchn: use READ/WRITE_ONCE() for accessing ring indices
+Cc: stable@vger.kernel.org
+Fixes: 23025393dbeb3b ("xen/netback: use lateeoi irq binding")
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
+Reviewed-by: Wei Liu <wl@xen.org>
+---
+V2:
+- new patch, fixing FreeBSD performance issue
+---
+ drivers/net/xen-netback/interface.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
- .../ABI/testing/sysfs-devices-xenbus          |  41 ++++
- drivers/block/xen-blkback/xenbus.c            |   2 +-
- drivers/net/xen-netback/interface.c           |  24 ++-
- drivers/xen/events/events_2l.c                |  22 +-
- drivers/xen/events/events_base.c              | 199 +++++++++++++-----
- drivers/xen/events/events_fifo.c              |   7 -
- drivers/xen/events/events_internal.h          |  14 +-
- drivers/xen/evtchn.c                          |  29 ++-
- drivers/xen/pvcalls-back.c                    |   4 +-
- drivers/xen/xen-pciback/xenbus.c              |   2 +-
- drivers/xen/xen-scsiback.c                    |   2 +-
- drivers/xen/xenbus/xenbus_probe.c             |  66 ++++++
- include/xen/events.h                          |   7 +-
- include/xen/xenbus.h                          |   7 +
- 14 files changed, 327 insertions(+), 99 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-devices-xenbus
-
+diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
+index acb786d8b1d8..e02a4fbb74de 100644
+--- a/drivers/net/xen-netback/interface.c
++++ b/drivers/net/xen-netback/interface.c
+@@ -162,13 +162,15 @@ irqreturn_t xenvif_interrupt(int irq, void *dev_id)
+ {
+ 	struct xenvif_queue *queue = dev_id;
+ 	int old;
++	bool has_rx, has_tx;
+ 
+ 	old = atomic_fetch_or(NETBK_COMMON_EOI, &queue->eoi_pending);
+ 	WARN(old, "Interrupt while EOI pending\n");
+ 
+-	/* Use bitwise or as we need to call both functions. */
+-	if ((!xenvif_handle_tx_interrupt(queue) |
+-	     !xenvif_handle_rx_interrupt(queue))) {
++	has_tx = xenvif_handle_tx_interrupt(queue);
++	has_rx = xenvif_handle_rx_interrupt(queue);
++
++	if (!has_rx && !has_tx) {
+ 		atomic_andnot(NETBK_COMMON_EOI, &queue->eoi_pending);
+ 		xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
+ 	}
 -- 
 2.26.2
 
