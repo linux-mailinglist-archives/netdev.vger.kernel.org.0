@@ -2,145 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DF631F30D
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 00:26:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFDC231F3CB
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 03:05:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbhBRX01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 18:26:27 -0500
-Received: from mga12.intel.com ([192.55.52.136]:20144 "EHLO mga12.intel.com"
+        id S229598AbhBSCE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 21:04:28 -0500
+Received: from mail.zx2c4.com ([104.131.123.232]:45828 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230019AbhBRX0E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 18:26:04 -0500
-IronPort-SDR: yvCnCYHLobOAD34bxNDfWh5FFfXyzxNcuPCDWwH4iNjQZ9HopGWUHw8HiGeYGNzV2O2I4LSMIH
- OMkdXuNYZxVw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9899"; a="162823075"
-X-IronPort-AV: E=Sophos;i="5.81,187,1610438400"; 
-   d="scan'208";a="162823075"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2021 15:24:08 -0800
-IronPort-SDR: S1szGVqAeVCQ39EOje2YHsZb6I+bAxx+oiG6VjECZXDgQSPXxfpLTxxiNPcKx+GXosPgQ3cAFl
- 1QLDqbn2++fw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,187,1610438400"; 
-   d="scan'208";a="581457651"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga005.jf.intel.com with ESMTP; 18 Feb 2021 15:24:08 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Norbert Ciosek <norbertx.ciosek@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net 8/8] i40e: Fix endianness conversions
-Date:   Thu, 18 Feb 2021 15:25:04 -0800
-Message-Id: <20210218232504.2422834-9-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210218232504.2422834-1-anthony.l.nguyen@intel.com>
-References: <20210218232504.2422834-1-anthony.l.nguyen@intel.com>
+        id S229468AbhBSCE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 21:04:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1613700221;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lqC+ymbE1tWNnzxMhR6ovKmuDLm0GugnZMbOy3UPaZI=;
+        b=Z6WUxOzUIXu6jxtSfTimoKlSP51CD4Z/ELCVaO/5xpmpl1xkmGyM4+yX+ezqBhYhZjTlWA
+        542//xv73I3+6y9wbbRyuMm9d5epf9xVb06XFP4anigE6VM/fkJeJ1kJDOp3WtFyWjDZ6N
+        D+o8R/A2MAqwb3F8byB8AJqnZycEHD8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 61f82f38 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Fri, 19 Feb 2021 02:03:41 +0000 (UTC)
+Received: by mail-yb1-f175.google.com with SMTP id b10so4154979ybn.3
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 18:03:41 -0800 (PST)
+X-Gm-Message-State: AOAM531F9zUavfEacwKM1nslrZ5EdP+nsUxXioAsJEpP1sNaT0rqsFtp
+        dUwbVXtt2ExXHjQB8A4dTUOFcxSB+BDLbE23avg=
+X-Google-Smtp-Source: ABdhPJwSJwojHcR2RNUPvITmYGu9JW1rhKyjI9+4JZaQCTk+RSFPgwW+rf3AtAegA6n1lfyvr9BHM/L5KDpwfOFJozw=
+X-Received: by 2002:a25:7693:: with SMTP id r141mr10101827ybc.49.1613700220907;
+ Thu, 18 Feb 2021 18:03:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHmME9oyv+nWk2r3mcVrfdXW_aiex67nSvGiiqLmPOv=RHnhfQ@mail.gmail.com>
+ <20210218203404.2429186-1-Jason@zx2c4.com> <CAF=yD-K-8Gacsnch-1nTh11QFaXkfCj4TTj=Or6PF+6PyhbKiQ@mail.gmail.com>
+In-Reply-To: <CAF=yD-K-8Gacsnch-1nTh11QFaXkfCj4TTj=Or6PF+6PyhbKiQ@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 19 Feb 2021 03:03:30 +0100
+X-Gmail-Original-Message-ID: <CAHmME9r11eViwmghiuQsBf9k04gnWvNg8k8UPG2W4OJU3-TMnA@mail.gmail.com>
+Message-ID: <CAHmME9r11eViwmghiuQsBf9k04gnWvNg8k8UPG2W4OJU3-TMnA@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: icmp: pass zeroed opts from
+ icmp{,v6}_ndo_send before sending
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        SinYu <liuxyon@gmail.com>, Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Norbert Ciosek <norbertx.ciosek@intel.com>
+On Thu, Feb 18, 2021 at 11:06 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Thu, Feb 18, 2021 at 3:39 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> >
+> > The icmp{,v6}_send functions make all sorts of use of skb->cb, casting
+>
+> Again, if respinning, please briefly describe the specific buggy code
+> path. I think it's informative and cannot be gleaned from the fix.
 
-Fixes the following sparse warnings:
-i40e_main.c:5953:32: warning: cast from restricted __le16
-i40e_main.c:8008:29: warning: incorrect type in assignment (different base types)
-i40e_main.c:8008:29:    expected unsigned int [assigned] [usertype] ipa
-i40e_main.c:8008:29:    got restricted __le32 [usertype]
-i40e_main.c:8008:29: warning: incorrect type in assignment (different base types)
-i40e_main.c:8008:29:    expected unsigned int [assigned] [usertype] ipa
-i40e_main.c:8008:29:    got restricted __le32 [usertype]
-i40e_txrx.c:1950:59: warning: incorrect type in initializer (different base types)
-i40e_txrx.c:1950:59:    expected unsigned short [usertype] vlan_tag
-i40e_txrx.c:1950:59:    got restricted __le16 [usertype] l2tag1
-i40e_txrx.c:1953:40: warning: cast to restricted __le16
-i40e_xsk.c:448:38: warning: invalid assignment: |=
-i40e_xsk.c:448:38:    left side has type restricted __le64
-i40e_xsk.c:448:38:    right side has type int
+Ack.
 
-Fixes: 2f4b411a3d67 ("i40e: Enable cloud filters via tc-flower")
-Fixes: 2a508c64ad27 ("i40e: fix VLAN.TCI == 0 RX HW offload")
-Fixes: 3106c580fb7c ("i40e: Use batched xsk Tx interfaces to increase performance")
-Fixes: 8f88b3034db3 ("i40e: Add infrastructure for queue channel support")
-Signed-off-by: Norbert Ciosek <norbertx.ciosek@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 12 ++++++------
- drivers/net/ethernet/intel/i40e/i40e_txrx.c |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_xsk.c  |  2 +-
- 3 files changed, 8 insertions(+), 8 deletions(-)
+> > -               send(skb, type, code, info, NULL);
+> > +               send(skb, type, code, info, NULL, IP6CB(skb));
+>
+> This should be parm.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 3e4a4d6f0419..4a2d03cada01 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -5920,7 +5920,7 @@ static int i40e_add_channel(struct i40e_pf *pf, u16 uplink_seid,
- 	ch->enabled_tc = !i40e_is_channel_macvlan(ch) && enabled_tc;
- 	ch->seid = ctxt.seid;
- 	ch->vsi_number = ctxt.vsi_number;
--	ch->stat_counter_idx = cpu_to_le16(ctxt.info.stat_counter_idx);
-+	ch->stat_counter_idx = le16_to_cpu(ctxt.info.stat_counter_idx);
- 
- 	/* copy just the sections touched not the entire info
- 	 * since not all sections are valid as returned by
-@@ -7599,8 +7599,8 @@ static inline void
- i40e_set_cld_element(struct i40e_cloud_filter *filter,
- 		     struct i40e_aqc_cloud_filters_element_data *cld)
- {
--	int i, j;
- 	u32 ipa;
-+	int i;
- 
- 	memset(cld, 0, sizeof(*cld));
- 	ether_addr_copy(cld->outer_mac, filter->dst_mac);
-@@ -7611,14 +7611,14 @@ i40e_set_cld_element(struct i40e_cloud_filter *filter,
- 
- 	if (filter->n_proto == ETH_P_IPV6) {
- #define IPV6_MAX_INDEX	(ARRAY_SIZE(filter->dst_ipv6) - 1)
--		for (i = 0, j = 0; i < ARRAY_SIZE(filter->dst_ipv6);
--		     i++, j += 2) {
-+		for (i = 0; i < ARRAY_SIZE(filter->dst_ipv6); i++) {
- 			ipa = be32_to_cpu(filter->dst_ipv6[IPV6_MAX_INDEX - i]);
--			ipa = cpu_to_le32(ipa);
--			memcpy(&cld->ipaddr.raw_v6.data[j], &ipa, sizeof(ipa));
-+
-+			*(__le32 *)&cld->ipaddr.raw_v6.data[i * 2] = cpu_to_le32(ipa);
- 		}
- 	} else {
- 		ipa = be32_to_cpu(filter->dst_ipv4);
-+
- 		memcpy(&cld->ipaddr.v4.data, &ipa, sizeof(ipa));
- 	}
- 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index 32d97315f3f5..903d4e8cb0a1 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -1793,7 +1793,7 @@ void i40e_process_skb_fields(struct i40e_ring *rx_ring,
- 	skb_record_rx_queue(skb, rx_ring->queue_index);
- 
- 	if (qword & BIT(I40E_RX_DESC_STATUS_L2TAG1P_SHIFT)) {
--		u16 vlan_tag = rx_desc->wb.qword0.lo_dword.l2tag1;
-+		__le16 vlan_tag = rx_desc->wb.qword0.lo_dword.l2tag1;
- 
- 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
- 				       le16_to_cpu(vlan_tag));
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 492ce213208d..37a21fb99922 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -444,7 +444,7 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
- 	struct i40e_tx_desc *tx_desc;
- 
- 	tx_desc = I40E_TX_DESC(xdp_ring, ntu);
--	tx_desc->cmd_type_offset_bsz |= (I40E_TX_DESC_CMD_RS << I40E_TXD_QW1_CMD_SHIFT);
-+	tx_desc->cmd_type_offset_bsz |= cpu_to_le64(I40E_TX_DESC_CMD_RS << I40E_TXD_QW1_CMD_SHIFT);
- }
- 
- /**
--- 
-2.26.2
+Nice catch, thanks.
 
+v4 coming up.
