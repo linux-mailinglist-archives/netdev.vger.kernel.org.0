@@ -2,101 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF88731FC02
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 16:33:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9207D31FC3A
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 16:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbhBSPdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 10:33:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbhBSPdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 10:33:16 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B62EC061574;
-        Fri, 19 Feb 2021 07:32:36 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id a4so6882083wro.8;
-        Fri, 19 Feb 2021 07:32:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xhZ86LSvSFpB1ncs9HLMCOJV7EvF9ulw0bvkQn5EhBM=;
-        b=CCh3tvBRJoUGPyVwF/Ly82OpDcjX13g6K5+UuBlUSdYytKByL/6n0G1+lueiddtmZS
-         N8wojjBtEv622Vi3P06Bn/rf8LtiZD/gTGtc6+haiHSxzRTJgbQGrJ5gmq/S0gtHw6DI
-         GxBnI4bniIIiZJb5pYbGWFRDr643RBjcwUzkIBNI/iTGNfaeIhOf0puHx7ifxhGstLro
-         oPT84czE8gpfpV2PRmjF4laWXr64ETxKtnvblfqZuNWvcGK19ItoZLnQtLnQtN9HZ480
-         hHPTLPaLjXOiaC8Jmp2PxGmqGWPrRmgonN5pES7x89/nmWE7Fn2mEQtdcjB29veoiUIy
-         pxEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xhZ86LSvSFpB1ncs9HLMCOJV7EvF9ulw0bvkQn5EhBM=;
-        b=Q/2Hfs60T7u490JRGv9ia/yTnRezV+plGwbvZXYKanIe4fVCvKR/XbzePLVNoD/6yA
-         C0444pXnJ5KiPVZbW0UGO0QejGpNl4Q3zL+s8OpT91bE+JyUsafZI0qnO+xleNeUbuti
-         GeIw7dmIJMFTaq7kqKFgQQSjPvB/fYUuEOVj/DR4iOiqALF0NpTyvllUraCAQ8qd99M4
-         /RbrZnpSroLb34ak9U3hk6x/bmxMPtxcfLl7HkJIBcVlpFU8jMQn2bupGTxs57h1H6tf
-         LXhIgFa9BGiRDBHgf/1C6oJd2VmfQniNTeZi74MFcSMqJG5aARTzF9dIZ+I3Xo0u2Qey
-         7klA==
-X-Gm-Message-State: AOAM5328jTDHr9gMuZ/TFZ0FSBn1ooJqd8YqadOYllREDyDetW1UprD+
-        gBvmrAHuhAo5vT/4TT/uCYs=
-X-Google-Smtp-Source: ABdhPJzm8O7Nz8oDzwv0a8GKdXXz7l2NlrEci+QKRvLxA2Iu1yPselt2Xwm4E9ARItxez8CbGmc6fw==
-X-Received: by 2002:adf:fa91:: with SMTP id h17mr9586162wrr.257.1613748754826;
-        Fri, 19 Feb 2021 07:32:34 -0800 (PST)
-Received: from [192.168.1.101] ([37.170.232.180])
-        by smtp.gmail.com with ESMTPSA id t11sm1945644wmb.32.2021.02.19.07.32.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Feb 2021 07:32:34 -0800 (PST)
-Subject: Re: [PATCH bpf-next v2 1/4] net: add SO_NETNS_COOKIE socket option
-To:     Lorenz Bauer <lmb@cloudflare.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-References: <20210219095149.50346-1-lmb@cloudflare.com>
- <20210219095149.50346-2-lmb@cloudflare.com>
- <00f63863-34ae-aa25-6a36-376db62de510@gmail.com>
- <CACAyw9_kY9fPdC5DLz4GKiBR8B4mCCnknB2xY1DSKYwkridgFQ@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <f4ac5b02-3821-787c-6da9-50aa44d2847b@gmail.com>
-Date:   Fri, 19 Feb 2021 16:32:32 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S229903AbhBSPlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 10:41:37 -0500
+Received: from mx2.suse.de ([195.135.220.15]:47414 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229681AbhBSPl0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Feb 2021 10:41:26 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1613749238; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=MHxag6mUxa0dootKy2U+lJVR2k8UiaKbpKfVyKM/EZ4=;
+        b=jjsdawg1KZYf+nItuzbxyqaXeDKHiLv6YoeaErBu4tJer4zXSytLV7xk92MixdQUnvPRED
+        iXUz6DrGfs47sGkqcF453+W0zBJW6WReMsknyI3WKg9iAusmhGukYAazPdCEFJ6k8mopm3
+        ZGwTClr2lapCAwa2bLNQ99xzaXwou3k=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 17FFFAED2;
+        Fri, 19 Feb 2021 15:40:38 +0000 (UTC)
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        stable@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH v3 0/8] xen/events: bug fixes and some diagnostic aids
+Date:   Fri, 19 Feb 2021 16:40:22 +0100
+Message-Id: <20210219154030.10892-1-jgross@suse.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <CACAyw9_kY9fPdC5DLz4GKiBR8B4mCCnknB2xY1DSKYwkridgFQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The first four patches are fixes for XSA-332. The avoid WARN splats
+and a performance issue with interdomain events.
 
+Patches 5 and 6 are some additions to event handling in order to add
+some per pv-device statistics to sysfs and the ability to have a per
+backend device spurious event delay control.
 
-On 2/19/21 1:23 PM, Lorenz Bauer wrote:
-> On Fri, 19 Feb 2021 at 11:49, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>> +     case SO_NETNS_COOKIE:
->>> +             lv = sizeof(u64);
->>> +             if (len < lv)
->>> +                     return -EINVAL;
->>
->>         if (len != lv)
->>                 return -EINVAL;
->>
->> (There is no reason to support bigger value before at least hundred years)
-> 
-> Sorry that was copy pasta from SO_COOKIE which uses the same check. I'll
-> change it to your suggestion. Want me to fix SO_COOKIE as well?
+Patches 7 and 8 are minor fixes I had lying around.
 
-Unfortunately it is too late for SO_COOKIE
+Juergen Gross (8):
+  xen/events: reset affinity of 2-level event when tearing it down
+  xen/events: don't unmask an event channel when an eoi is pending
+  xen/events: avoid handling the same event on two cpus at the same time
+  xen/netback: fix spurious event detection for common event case
+  xen/events: link interdomain events to associated xenbus device
+  xen/events: add per-xenbus device event statistics and settings
+  xen/evtchn: use smp barriers for user event ring
+  xen/evtchn: use READ/WRITE_ONCE() for accessing ring indices
 
-Some applications might use len = 256, and just look at what the kernel
-gives back.
+ .../ABI/testing/sysfs-devices-xenbus          |  41 ++++
+ drivers/block/xen-blkback/xenbus.c            |   2 +-
+ drivers/net/xen-netback/interface.c           |  24 ++-
+ drivers/xen/events/events_2l.c                |  22 +-
+ drivers/xen/events/events_base.c              | 199 +++++++++++++-----
+ drivers/xen/events/events_fifo.c              |   7 -
+ drivers/xen/events/events_internal.h          |  14 +-
+ drivers/xen/evtchn.c                          |  29 ++-
+ drivers/xen/pvcalls-back.c                    |   4 +-
+ drivers/xen/xen-pciback/xenbus.c              |   2 +-
+ drivers/xen/xen-scsiback.c                    |   2 +-
+ drivers/xen/xenbus/xenbus_probe.c             |  66 ++++++
+ include/xen/events.h                          |   7 +-
+ include/xen/xenbus.h                          |   7 +
+ 14 files changed, 327 insertions(+), 99 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-devices-xenbus
 
-Better be strict at the time a feature is added, instead of having
-to maintain legacy stuff.
+-- 
+2.26.2
 
