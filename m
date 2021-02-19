@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7276F31FED9
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 19:37:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 030F931FEE4
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 19:40:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbhBSSg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 13:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbhBSSgz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 13:36:55 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E20C061574;
-        Fri, 19 Feb 2021 10:36:15 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id v22so11448699edx.13;
-        Fri, 19 Feb 2021 10:36:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GFIKisuNYIZcd2THlE/+uNrOu3IJ01P8tkbxwPNZpwc=;
-        b=hlwAhiya/QLH4uEfZx9AXp/fj8kKoZbDGwSFPLi7dZc7WoT8PwSPUiv26G5JnLkFfn
-         CJr751m3SmVXRpFxFNwa/tK8XxHPRGV1Yjlcdv4eFpWRv529CnUG2syKJkheQg/RLfk1
-         ByGWLmF2XW1vkkXJwfqy8Ib+8+Q9C9K2wDlQ0A28jy1xsgzCfqa/J+lE1AAwHqGZS+Nt
-         JT8Z1GJgk/LshASt2wHlPco/Fh0WhV6h6cOlsG3fKutW5jAFu52RYreNHMLMNU3S3ckY
-         sgMpJHrIG08AlO3Y6TkMCHJCkz7Bc9uSlPXG33sJ5lpcOC3uK1A2PIsnLRPGQlc4Jd8Q
-         EKug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GFIKisuNYIZcd2THlE/+uNrOu3IJ01P8tkbxwPNZpwc=;
-        b=MNOlNfjsCb3i2Ff5LDpKEulN+9mHCBpePOvr3BUx58DOv7oliCb7NqSzbVVziNLMtq
-         69WZnmAUAGOP+sRNjaItLL7Xrp8VRdKGdRSRZlyh7D67O0G3M3cSz/+fCbt+3g3mEC4U
-         6bu804lILejmUl+L2bRYESCIaPwtUxO6pNLVLyPR32X+BEeyQuCRTq+uOVR5DTCkOoZ8
-         tlnrE94Dn5iST0vU6+FM+bpBnj+pO8QwU9Lb5IRWyZSRsOv5NdCcauRdHid2mkjlm7EI
-         AEysSZs7UZFWSM1kG64kFfeEZs28evUHvPN88Doir3XmhV/mkgAk0o/+1MAFTFvHsTdV
-         O12g==
-X-Gm-Message-State: AOAM530gqHmftqABdsQrUjhvmcodmX4P05n/SY1WaUg+bQx5KbFR/gS7
-        laAhlsas58rpCcUWIlga9IC/OQqbxfY7sx/qFYM=
-X-Google-Smtp-Source: ABdhPJxHDZf4WqfSFsWqPMGCnkXrO9XmU2eTsYqR/1Bs7VZ+j8g7OiIzt74ubsUQabShs5utmdu7L9+3cjBgGQmATEQ=
-X-Received: by 2002:a05:6402:293:: with SMTP id l19mr10715421edv.4.1613759773834;
- Fri, 19 Feb 2021 10:36:13 -0800 (PST)
-MIME-Version: 1.0
-References: <YC+LUJ0YhF1Yutaw@mwanda>
-In-Reply-To: <YC+LUJ0YhF1Yutaw@mwanda>
-From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Sat, 20 Feb 2021 00:06:01 +0530
-Message-ID: <CA+sq2CdeKDq6=jDk=mZeSaOVa9N25WvQU8V-k61bYp6ZyN8q-w@mail.gmail.com>
-Subject: Re: [PATCH net] octeontx2-af: Fix an off by one in rvu_dbg_qsize_write()
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Christina Jacob <cjacob@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
+        id S230004AbhBSSkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 13:40:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48278 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229524AbhBSSka (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Feb 2021 13:40:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 27AF964E4B;
+        Fri, 19 Feb 2021 18:39:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613759989;
+        bh=S4xflVDdqs14NUYJblRv311L9/zeoAUjGFAeSE+5qz4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sRvq4du1RfoBvJgImESRmT4onzhEzDVKmXZxbrYi1+EooL7DdVMeQH9I0Hbga8Gw5
+         6gKLyH5lfnHd8PGM/VgG1uiOKANfBQuplHWDL5kpERgm20Zm/Roq/VZn0I9XcxDW9T
+         qT/SvTfhnTCgAvHcR71mOQ1gpm+AehndfYmpi9foXl4QJTcaK1CNl6N/By+9bTctx1
+         nNo09Zmfq1h1jlrWFIenrHrRBZJEalXvGjStHrtfq6iLffj0oOcswRNlIMHzV37+hA
+         rxSiFp2Wd+eDWfFVKb9dc3KE9aZ634ruMBpXWOnhWuF1mX8MtBBpndWC0Ter/ghZWc
+         pzFNiVVfLSXBw==
+Date:   Fri, 19 Feb 2021 10:39:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Prakash Brahmajyosyula <bprakash@marvell.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB
+ frames
+Message-ID: <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
+References: <20210216201813.60394-1-xie.he.0141@gmail.com>
+        <YC4sB9OCl5mm3JAw@unreal>
+        <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
+        <YC5DVTHHd6OOs459@unreal>
+        <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
+        <YC7GHgYfGmL2wVRR@unreal>
+        <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
+        <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 19, 2021 at 3:31 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> This code does not allocate enough memory for the NUL terminator so it
-> ends up putting it one character beyond the end of the buffer.
->
-> Fixes: 8756828a8148 ("octeontx2-af: Add NPA aura and pool contexts to debugfs")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-> index 48a84c65804c..d5f3ad660588 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-> @@ -385,7 +385,7 @@ static ssize_t rvu_dbg_qsize_write(struct file *filp,
->         u16 pcifunc;
->         int ret, lf;
->
-> -       cmd_buf = memdup_user(buffer, count);
-> +       cmd_buf = memdup_user(buffer, count + 1);
->         if (IS_ERR(cmd_buf))
->                 return -ENOMEM;
->
-> --
-> 2.30.0
->
+On Thu, 18 Feb 2021 12:23:28 -0800 Xie He wrote:
+> On Thu, Feb 18, 2021 at 12:06 PM Xie He <xie.he.0141@gmail.com> wrote:
+> >
+> > On Thu, Feb 18, 2021 at 11:55 AM Leon Romanovsky <leon@kernel.org> wrote:  
+> > >
+> > > This is how we write code, we use defines instead of constant numbers,
+> > > comments to describe tricky parts and assign already preprocessed result.
+> > >
+> > > There is nothing I can do If you don't like or don't want to use Linux kernel
+> > > style.  
+> >
+> > So what is your suggestion exactly? Use defines or write comments?
+> >
+> > As I understand, you want to replace the "3 - 1" with "2", and then
+> > write comments to explain that this "2" is the result of "3 - 1".
+> >
+> > Why do you want to do this? You are doing useless things and you force
+> > readers of this code to think about useless things.
+> >
+> > You said this was "Linux kernel style"? Why? Which sentence of the
+> > Linux kernel style guide suggests your way is better than my way?  
+> 
+> Nevermind, if you *really* want me to replace this "3 - 1" with "2"
+> and explain in the comment that the "2" is a result of "3 - 1". I'll
+> do this. I admit this is a style issue. So it is hard to argue and
+> reach an agreement. Just reply with a request and I'll make the
+> change. However I'm not able to agree with you in my heart.
 
-Thanks for the fix.
+Not entirely sure what the argument is about but adding constants would
+certainly help.
+
+More fundamentally IDK if we can make such a fundamental change here.
+When users upgrade from older kernel are all their scripts going to
+work the same? Won't they have to bring the new netdev up?
