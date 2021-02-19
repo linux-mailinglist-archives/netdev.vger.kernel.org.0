@@ -2,104 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6290431FFD2
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 21:29:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B836131FFFA
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 21:46:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbhBSU3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 15:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbhBSU3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 15:29:03 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D394C061786;
-        Fri, 19 Feb 2021 12:28:23 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id o63so5635630pgo.6;
-        Fri, 19 Feb 2021 12:28:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s4EqFO0bHbbTwpYb76+dNzJNfpMa1CvcusLleWdgGeU=;
-        b=FjbQtzavC+F6wFZFWqI/3sC7jEEjVbmpIItbY6mJdmalBiaERgiiTrttCFz6vibxqB
-         ACzjaHvFiyT4LhlkZXHDFX41AvRRqzGRm3kyo1oP9dnjhEUCN9+yTn0tk0KmGQfRFPxi
-         jSZ37aKyRXYnmrKrgVTxKRxeH/Y9G0gUepagvWzflo/A5CDWZcUaWf0+VE43qvrFfTtj
-         LoMrthb51/s29XZifhv+MklYAlO4isQtEC3eDKR8ACfPCkLi9en75RqU3qVDUlMA+Tcg
-         tXP5A6V7wIiqhECOAnBYymtn7F5J6yo/veej9rXon1y7MbY6zXYRTDvoSS7WRVJxGnrY
-         +EzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s4EqFO0bHbbTwpYb76+dNzJNfpMa1CvcusLleWdgGeU=;
-        b=rV6dcjRepkmEwbQvXgLzs2px9KvUSSyL8fspuQtK/+/1XL4Miy3S1Cs6dFZRdqmdyu
-         r3sZLoT1Zbz0uV/TViooxn4SPRJcBZdgH+59tCSv1d7eQgIu2xEN6dxLw21fc48LvLUF
-         oipwqgdIPU/WvqbS8qWfkw7eu/MWroY3hP3YBGXIB9FqVrt8nSUmSw8WuBmVSNMVPpS0
-         MQDPN3nHTdJQsyfJGe48Kriz0fiEGm936T9/43zhI+RoiKmP/NaAxAjf20F+H9oInJjX
-         gC6ZUqwP/x+Vw6tVEt5IBVEN5M1v+oRGH4w4lXyhR1S1rkhyROPi5HD6DS6jIRtgZ2nl
-         7irQ==
-X-Gm-Message-State: AOAM532+azrM5zw3Aj//9kOBSeXAIJP56L5hNJ82Hs5qd9bz32trgR9M
-        AKsYkDQ0AO4pPOnFeveliDVx7eFNPppjWbaJqXUyLsXpEWQ=
-X-Google-Smtp-Source: ABdhPJzJPzoRjCcfakTT18WRUTXj85l7X9izRxh5eUWA6sishY22bISBIHuRsK9jJeYlc21Ds0rZjaijFpndyVVH3jk=
-X-Received: by 2002:a65:56c6:: with SMTP id w6mr10005007pgs.368.1613766503127;
- Fri, 19 Feb 2021 12:28:23 -0800 (PST)
+        id S229763AbhBSUpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 15:45:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59041 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229553AbhBSUpY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 15:45:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613767438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=pT+Jfgtemjj7VdsDpxppXMVhS7H2+K2fU+9FiBgqSE0=;
+        b=XcCsJTeMu4B/cJZ/0lwQAkw6azr/jTUZzdj6jKnS74RWnoRrsFT7h3UYtiir/cNHTWbtlp
+        66nDhIHFMb8WMyqr8usfval5Ofkj8CY/l3Axe5Lh0j32qZxJqXfg8tETvkw6AJeT+urFvJ
+        CaepTa7d5fCcvDHodTRGYFr6TXkFJlI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-62-yW8Ih4G1PbaaXPRtOy816Q-1; Fri, 19 Feb 2021 15:43:56 -0500
+X-MC-Unique: yW8Ih4G1PbaaXPRtOy816Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3591B801975;
+        Fri, 19 Feb 2021 20:43:54 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-112-79.ams2.redhat.com [10.36.112.79])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 878345C1BB;
+        Fri, 19 Feb 2021 20:43:52 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>, mptcp@lists.01.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2-next] mptcp: add support for port based endpoint
+Date:   Fri, 19 Feb 2021 21:42:55 +0100
+Message-Id: <868cfad6ab2fbd7f4b2ac6522b3ec62fce858fed.1613767061.git.pabeni@redhat.com>
 MIME-Version: 1.0
-References: <20210216201813.60394-1-xie.he.0141@gmail.com> <YC4sB9OCl5mm3JAw@unreal>
- <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
- <YC5DVTHHd6OOs459@unreal> <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
- <YC7GHgYfGmL2wVRR@unreal> <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
- <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com> <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Fri, 19 Feb 2021 12:28:12 -0800
-Message-ID: <CAJht_EOru3pW6AHN4QVjiaERpLSfg-0G0ZEaqU_hkhX1acv0HQ@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 19, 2021 at 10:39 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Not entirely sure what the argument is about but adding constants would
-> certainly help.
+The feature is supported by the kernel since 5.11-net-next,
+let's allow user-space to use it.
 
-Leon wants me to replace this:
+Just parse and dump an additional, per endpoint, u16 attribute
 
-dev->needed_headroom = 3 - 1;
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ ip/ipmptcp.c        | 16 ++++++++++++++--
+ man/man8/ip-mptcp.8 |  8 ++++++++
+ 2 files changed, 22 insertions(+), 2 deletions(-)
 
-with this:
+diff --git a/ip/ipmptcp.c b/ip/ipmptcp.c
+index e1ffafb3..5f659b59 100644
+--- a/ip/ipmptcp.c
++++ b/ip/ipmptcp.c
+@@ -17,7 +17,7 @@ static void usage(void)
+ {
+ 	fprintf(stderr,
+ 		"Usage:	ip mptcp endpoint add ADDRESS [ dev NAME ] [ id ID ]\n"
+-		"				      [ FLAG-LIST ]\n"
++		"				      [ port NR ] [ FLAG-LIST ]\n"
+ 		"	ip mptcp endpoint delete id ID\n"
+ 		"	ip mptcp endpoint show [ id ID ]\n"
+ 		"	ip mptcp endpoint flush\n"
+@@ -97,6 +97,7 @@ static int mptcp_parse_opt(int argc, char **argv, struct nlmsghdr *n,
+ 	bool id_set = false;
+ 	__u32 index = 0;
+ 	__u32 flags = 0;
++	__u16 port = 0;
+ 	__u8 id = 0;
+ 
+ 	ll_init_map(&rth);
+@@ -123,6 +124,10 @@ static int mptcp_parse_opt(int argc, char **argv, struct nlmsghdr *n,
+ 			if (!index)
+ 				invarg("device does not exist\n", ifname);
+ 
++		} else if (matches(*argv, "port") == 0) {
++			NEXT_ARG();
++			if (get_u16(&port, *argv, 0))
++				invarg("expected port", *argv);
+ 		} else if (get_addr(&address, *argv, AF_UNSPEC) == 0) {
+ 			addr_set = true;
+ 		} else {
+@@ -145,6 +150,8 @@ static int mptcp_parse_opt(int argc, char **argv, struct nlmsghdr *n,
+ 		addattr32(n, MPTCP_BUFLEN, MPTCP_PM_ADDR_ATTR_FLAGS, flags);
+ 	if (index)
+ 		addattr32(n, MPTCP_BUFLEN, MPTCP_PM_ADDR_ATTR_IF_IDX, index);
++	if (port)
++		addattr16(n, MPTCP_BUFLEN, MPTCP_PM_ADDR_ATTR_PORT, port);
+ 	if (addr_set) {
+ 		int type;
+ 
+@@ -181,8 +188,8 @@ static int print_mptcp_addrinfo(struct rtattr *addrinfo)
+ 	__u8 family = AF_UNSPEC, addr_attr_type;
+ 	const char *ifname;
+ 	unsigned int flags;
++	__u16 id, port;
+ 	int index;
+-	__u16 id;
+ 
+ 	parse_rtattr_nested(tb, MPTCP_PM_ADDR_ATTR_MAX, addrinfo);
+ 
+@@ -196,6 +203,11 @@ static int print_mptcp_addrinfo(struct rtattr *addrinfo)
+ 		print_string(PRINT_ANY, "address", "%s ",
+ 			     format_host_rta(family, tb[addr_attr_type]));
+ 	}
++	if (tb[MPTCP_PM_ADDR_ATTR_PORT]) {
++		port = rta_getattr_u16(tb[MPTCP_PM_ADDR_ATTR_PORT]);
++		if (port)
++			print_uint(PRINT_ANY, "port", "port %u ", port);
++	}
+ 	if (tb[MPTCP_PM_ADDR_ATTR_ID]) {
+ 		id = rta_getattr_u8(tb[MPTCP_PM_ADDR_ATTR_ID]);
+ 		print_uint(PRINT_ANY, "id", "id %u ", id);
+diff --git a/man/man8/ip-mptcp.8 b/man/man8/ip-mptcp.8
+index ef8409ea..98cb93b9 100644
+--- a/man/man8/ip-mptcp.8
++++ b/man/man8/ip-mptcp.8
+@@ -20,6 +20,8 @@ ip-mptcp \- MPTCP path manager configuration
+ .ti -8
+ .BR "ip mptcp endpoint add "
+ .IR IFADDR
++.RB "[ " port
++.IR PORT " ]"
+ .RB "[ " dev
+ .IR IFNAME " ]"
+ .RB "[ " id
+@@ -87,6 +89,12 @@ ip mptcp endpoint flush	flush all existing MPTCP endpoints
+ .TE
+ 
+ .TP
++.IR PORT
++When a port number is specified, incoming MPTCP subflows for already
++established MPTCP sockets will be accepted on the specified port, regardless
++the original listener port accepting the first MPTCP subflow and/or
++this peer being actually on the client side.
++
+ .IR ID
+ is a unique numeric identifier for the given endpoint
+ 
+-- 
+2.26.2
 
-/* 2 is the result of 3 - 1 */
-dev->needed_headroom = 2;
-
-But I don't feel his way is better than my way.
-
-> More fundamentally IDK if we can make such a fundamental change here.
-> When users upgrade from older kernel are all their scripts going to
-> work the same? Won't they have to bring the new netdev up?
-
-Yes, this patch will break backward compatibility. Users with old
-scripts will find them no longer working.
-
-However, it's hard for me to find a better way to solve the problem
-described in the commit message.
-
-So I sent this as an RFC to see what people think about this. (Martin
-Schiller seems to be OK with this.)
-
-I think users who don't use scripts can adapt quickly and users who
-use scripts can also trivally fix their scripts.
-
-Actually many existing commits in the kernel also (more or less) cause
-some user-visible changes. But I admit this patch is a really big
-change.
