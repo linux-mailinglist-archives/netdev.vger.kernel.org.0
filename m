@@ -2,101 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 191EF31FB7F
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 15:58:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C137431FB87
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 16:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbhBSO6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 09:58:30 -0500
-Received: from m42-2.mailgun.net ([69.72.42.2]:15309 "EHLO m42-2.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229553AbhBSO61 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Feb 2021 09:58:27 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1613746682; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=xF5d0AE+xCt+zGgDt1pFO1QgGtL9JnfLXGOvSzH34zc=; b=YRQNkqt0Lp2ze77HcZIhq8eQ/NTz7GLjtdvtzng1Eo5H7FsUGBc6mhscopRRZ8kYnJmB06So
- f7c/WljS0/H1t52fZHp60VHSa/NcFXwA2NIE2cZY7KBzj3zWuBKVaBcz5PgyeRs+/aarPtGv
- cGi38ucxyO/4kgPZ+cDseUGfrEA=
-X-Mailgun-Sending-Ip: 69.72.42.2
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 602fd1efe87943df30d1ad91 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 19 Feb 2021 14:57:51
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 25331C43464; Fri, 19 Feb 2021 14:57:51 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 51166C433CA;
-        Fri, 19 Feb 2021 14:57:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 51166C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Brendan Jackman <jackmanb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warnings after merge of the net-next tree
-References: <20210219075256.7af60fb0@canb.auug.org.au>
-        <20210219194416.3376050f@canb.auug.org.au>
-Date:   Fri, 19 Feb 2021 16:57:44 +0200
-In-Reply-To: <20210219194416.3376050f@canb.auug.org.au> (Stephen Rothwell's
-        message of "Fri, 19 Feb 2021 19:44:16 +1100")
-Message-ID: <87czwwf6l3.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S229842AbhBSPAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 10:00:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229799AbhBSPAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 10:00:16 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C778EC061756;
+        Fri, 19 Feb 2021 06:59:33 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id c8so21954239ljd.12;
+        Fri, 19 Feb 2021 06:59:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nC9kwGOyo2cb6wG6XNQD/v+S5EsZ+WWCpphEOR6VRGw=;
+        b=a7qUEiGSLjPMFupolbfYkgOu5RIuBx4gbLDdiE0jsXGHnCCQ2bFKa8PKAYJrj0lH5V
+         gRjVeXo04t+XXQi5+GCecAfU+E2UeMK6GjeiQ77qaNk7Eo7Lob9ajlBzNlXDFOiSQLjn
+         0oeV+Fv3wiFS9B1irgiMwGC2VP5/OLgItP8EwAOH2MvkXWgRY/ECQXj93K+3e8p3pyJm
+         fd+8WmNnMZKsC6NaIc5dGlLsIXPaowxnR9FlYZUAXswoVLg1J5o2SsxITv0RcixG74ll
+         v4ICAb5WA9u1WcVoiEfDuGks3SHIkoDlBOZ3YSuPSEjiFxY5L8Uj0++zcJuHMmN2zXcs
+         A3nA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nC9kwGOyo2cb6wG6XNQD/v+S5EsZ+WWCpphEOR6VRGw=;
+        b=WAD/ghLkaPK2037zw+P2QalmbQlxDhj2Eo1Znmv+0qIxQJhh4nJfBZhCbbjcwB88vO
+         L0Mt7iJpydISC+RUvlEfl45bs8Phgv0MToU8b8bbN3R1auYnRiFD8Sd3F9Jm3Smmicw3
+         mBFc2iWseed/thuqU5VaTIPcLeRajgobjMTIn4VxACWoYHvWXaJO0SLBjV5+yCO80RIt
+         lZv2qTDX3Xoilc7Kl8dCIzDL2cPEGnW/TXLZBgWWH7viVuPf1REuckvTteoTymM5kssh
+         ehcxRU9XMfMZRwkcS7DWe9shgL3Vr+irfwyfzNYbmokdfYq4M0+MLE5oxP8IMjgnjfDJ
+         J2qg==
+X-Gm-Message-State: AOAM533in0uzovH0zdrtfmui8YzfpjGlDSK51DMYZq/hzVRnEokLGtAl
+        d9GbtDNZ6g1Nw/IuzRRdK/o=
+X-Google-Smtp-Source: ABdhPJxO+mKy7KF8QDDdb5QJWxtMyi42Ub7zmbL2k9fsiSDkpzW0v5kqlMCRzGR6vgY8ojlGWwe7Uw==
+X-Received: by 2002:a19:2d52:: with SMTP id t18mr6025805lft.554.1613746772364;
+        Fri, 19 Feb 2021 06:59:32 -0800 (PST)
+Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
+        by smtp.gmail.com with ESMTPSA id d9sm974092lfl.290.2021.02.19.06.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Feb 2021 06:59:31 -0800 (PST)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        bjorn.topel@intel.com, maciej.fijalkowski@intel.com,
+        hawk@kernel.org, toke@redhat.com, magnus.karlsson@intel.com,
+        john.fastabend@gmail.com, kuba@kernel.org, davem@davemloft.net
+Subject: [PATCH bpf-next 0/2] Optimize bpf_redirect_map()/xdp_do_redirect()
+Date:   Fri, 19 Feb 2021 15:59:20 +0100
+Message-Id: <20210219145922.63655-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen Rothwell <sfr@canb.auug.org.au> writes:
+Hi XDP-folks,
 
-> Hi all,
->
-> On Fri, 19 Feb 2021 07:52:56 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->>
->> After merging the net-next tree, today's linux-next build (htmldocs)
->> produced these warnings:
->> 
->> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
->> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
->> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
->> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
->> 
->> Introduced by commit
->> 
->>   91c960b00566 ("bpf: Rename BPF_XADD and prepare to encode other atomics in .imm")
->> 
->> Sorry that I missed these earlier.
->
-> These have been fixed in the net-next tree, actually.  I was fooled
-> because an earlier part of the net-next tree has been included in the
-> wireless-drivers (not -next) tree today so these warnings popped up
-> earlier, but are gone one the rest of the net-next tree is merged.
->
-> Sorry for the noise.
+This two patch series contain two optimizations for the
+bpf_redirect_map() helper and the xdp_do_redirect() function.
 
-Argh, sorry about that Stephen. I was preparing wireless-drivers for
-followup fixes sent during the merge window, but didn't realise that it
-will mess up your tree building. I need to avoid this in the future and
-wireless-drivers should only follow the net tree.
+The bpf_redirect_map() optimization is about avoiding the map lookup
+dispatching. Instead of having a switch-statement and selecting the
+correct lookup function, we let the verifier patch the
+bpf_redirect_map() call to a specific lookup function. This way the
+run-time lookup is avoided.
 
+The xdp_do_redirect() patch restructures the code, so that the map
+pointer indirection can be avoided.
+
+Performance-wise I got 3% improvement for XSKMAP
+(sample:xdpsock/rx-drop), and 4% (sample:xdp_redirect_map) on my
+machine.
+
+More details in each commit. Changes since the RFC is outlined in each
+commit.
+
+
+Cheers,
+Björn
+
+
+Björn Töpel (2):
+  bpf, xdp: per-map bpf_redirect_map functions for XDP
+  bpf, xdp: restructure redirect actions
+
+ include/linux/bpf.h        |  20 ++--
+ include/linux/filter.h     |  13 ++-
+ include/net/xdp_sock.h     |   6 +-
+ include/trace/events/xdp.h |  66 ++++++-----
+ kernel/bpf/cpumap.c        |   3 +-
+ kernel/bpf/devmap.c        |   5 +-
+ kernel/bpf/verifier.c      |  28 +++--
+ net/core/filter.c          | 219 ++++++++++++++++++-------------------
+ net/xdp/xskmap.c           |   1 -
+ 9 files changed, 192 insertions(+), 169 deletions(-)
+
+
+base-commit: 7b1e385c9a488de9291eaaa412146d3972e9dec5
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.27.0
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
