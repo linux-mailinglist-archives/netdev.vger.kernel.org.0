@@ -2,88 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 030F931FEE4
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 19:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 898EC31FEF1
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 19:48:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230004AbhBSSkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 13:40:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48278 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229524AbhBSSka (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Feb 2021 13:40:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 27AF964E4B;
-        Fri, 19 Feb 2021 18:39:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613759989;
-        bh=S4xflVDdqs14NUYJblRv311L9/zeoAUjGFAeSE+5qz4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sRvq4du1RfoBvJgImESRmT4onzhEzDVKmXZxbrYi1+EooL7DdVMeQH9I0Hbga8Gw5
-         6gKLyH5lfnHd8PGM/VgG1uiOKANfBQuplHWDL5kpERgm20Zm/Roq/VZn0I9XcxDW9T
-         qT/SvTfhnTCgAvHcR71mOQ1gpm+AehndfYmpi9foXl4QJTcaK1CNl6N/By+9bTctx1
-         nNo09Zmfq1h1jlrWFIenrHrRBZJEalXvGjStHrtfq6iLffj0oOcswRNlIMHzV37+hA
-         rxSiFp2Wd+eDWfFVKb9dc3KE9aZ634ruMBpXWOnhWuF1mX8MtBBpndWC0Ter/ghZWc
-         pzFNiVVfLSXBw==
-Date:   Fri, 19 Feb 2021 10:39:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB
- frames
-Message-ID: <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
-References: <20210216201813.60394-1-xie.he.0141@gmail.com>
-        <YC4sB9OCl5mm3JAw@unreal>
-        <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
-        <YC5DVTHHd6OOs459@unreal>
-        <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
-        <YC7GHgYfGmL2wVRR@unreal>
-        <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
-        <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
+        id S229862AbhBSSrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 13:47:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229683AbhBSSrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 13:47:08 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66B2C061574;
+        Fri, 19 Feb 2021 10:46:28 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id p21so5286304pgl.12;
+        Fri, 19 Feb 2021 10:46:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nWHPCx1HlElPMRx1oDR1l9790mNvIV2DGAOqGYGOIyo=;
+        b=IOjUxI4WVWPy0sK9Ybj0Mw1L/HjF9gUV7E/74b1/Z134izzZALq2rBmvqYTbk5U4Kt
+         2okrr0wyGguH5+1CCzhmOOLv29c+nLK8sl3ecCC/aETLEXtcAERCxrfv5LLUoiuC6m6h
+         jOLaSOJYFoozoEOcUjAiRtAmUif/rODORzRaO2axF6SWMU3TdtwQhPFe2TRSeR1hyzOn
+         HaV8EZNJCKgKJpv1A65oARmY9zzsp6baId1ZxDKonpon/Mbo5Chy6DEs9ax2clAME0Te
+         Xr6CumGJMgbLP0lR8fkv5Go05ks4p1YSGDa73xmiKqu2sNqjtjziGmEUV2n1xO7hcmF/
+         ZZqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nWHPCx1HlElPMRx1oDR1l9790mNvIV2DGAOqGYGOIyo=;
+        b=kpwe4lxiaMwQl581BvzebP1POdycPDF5o4rYb/ReFbDFRAt5fMf4E0tf+uOYfINw8o
+         JYfPCBuXoRunb1uOpvlKmuC5IUkIaliw10JYdV3fb3nL7mG4GeXRJN5/gr3lfcoLLCZn
+         X8sArou4EPbh6sVzlsAsMmgJu8HWM9ox+HOVHC4deWSHyiar4fmNIy3v8NIwIu05t0hm
+         ewelJ2sHdeWWKGpnmZzzcn8na9dzQxF2P0PT9hcIl4Bq5b7KPMjLnq8F00vBhYn5JcRk
+         CmTizmA0iKDfKDAfuRHluLcgKWLX4hFZOQ+2T2EaGbasv00sWdd6a6+xVr7M32Kv1mS4
+         jDqg==
+X-Gm-Message-State: AOAM532OE0Avxi46MqzPk+aZjVw0jo0mus1bOLqPA/RRzsloL2xS0N3r
+        e3yMHeyN49wiYgRp9WbFKEeThvVc9WdDQckU1JU=
+X-Google-Smtp-Source: ABdhPJwB5tsJ6DQMLRTOAlnz5KC5Y9i+zXogiSgf5pKZ/g1Z/hN01oQ+MxFwbKTk+q4dsfRlvsbsX0ch9vHbW3PIqBI=
+X-Received: by 2002:a63:3c4e:: with SMTP id i14mr9471710pgn.266.1613760388247;
+ Fri, 19 Feb 2021 10:46:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210216064250.38331-1-xiyou.wangcong@gmail.com>
+ <20210216064250.38331-2-xiyou.wangcong@gmail.com> <87im6n52zx.fsf@cloudflare.com>
+In-Reply-To: <87im6n52zx.fsf@cloudflare.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 19 Feb 2021 10:46:17 -0800
+Message-ID: <CAM_iQpVou5Ea5APSzpcQU9oyb0n39Wmo1zTqJfMjWSt-NvGO5A@mail.gmail.com>
+Subject: Re: [Patch bpf-next v4 1/5] bpf: clean up sockmap related Kconfigs
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Feb 2021 12:23:28 -0800 Xie He wrote:
-> On Thu, Feb 18, 2021 at 12:06 PM Xie He <xie.he.0141@gmail.com> wrote:
+On Fri, Feb 19, 2021 at 10:25 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Tue, Feb 16, 2021 at 07:42 AM CET, Cong Wang wrote:
+> > From: Cong Wang <cong.wang@bytedance.com>
 > >
-> > On Thu, Feb 18, 2021 at 11:55 AM Leon Romanovsky <leon@kernel.org> wrote:  
-> > >
-> > > This is how we write code, we use defines instead of constant numbers,
-> > > comments to describe tricky parts and assign already preprocessed result.
-> > >
-> > > There is nothing I can do If you don't like or don't want to use Linux kernel
-> > > style.  
+> > As suggested by John, clean up sockmap related Kconfigs:
 > >
-> > So what is your suggestion exactly? Use defines or write comments?
+> > Reduce the scope of CONFIG_BPF_STREAM_PARSER down to TCP stream
+> > parser, to reflect its name.
 > >
-> > As I understand, you want to replace the "3 - 1" with "2", and then
-> > write comments to explain that this "2" is the result of "3 - 1".
+> > Make the rest sockmap code simply depend on CONFIG_BPF_SYSCALL.
+> > And leave CONFIG_NET_SOCK_MSG untouched, as it is used by
+> > non-sockmap cases.
 > >
-> > Why do you want to do this? You are doing useless things and you force
-> > readers of this code to think about useless things.
-> >
-> > You said this was "Linux kernel style"? Why? Which sentence of the
-> > Linux kernel style guide suggests your way is better than my way?  
-> 
-> Nevermind, if you *really* want me to replace this "3 - 1" with "2"
-> and explain in the comment that the "2" is a result of "3 - 1". I'll
-> do this. I admit this is a style issue. So it is hard to argue and
-> reach an agreement. Just reply with a request and I'll make the
-> change. However I'm not able to agree with you in my heart.
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
+> > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > ---
+>
+> Sorry for the delay. There's a lot happening here. Took me a while to
+> dig through it.
+>
+> I have a couple of nit-picks, which easily can be addressed as
+> follow-ups, and one comment.
 
-Not entirely sure what the argument is about but adding constants would
-certainly help.
+No problem, it is not merged, so V5 is definitely not a problem.
 
-More fundamentally IDK if we can make such a fundamental change here.
-When users upgrade from older kernel are all their scripts going to
-work the same? Won't they have to bring the new netdev up?
+>
+> sock_map_prog_update and sk_psock_done_strp are only used in
+> net/core/sock_map.c and can be static.
+
+1. This seems to be unrelated to this patch? But I am still happy to
+address it.
+
+2. sk_psock_done_strp() is in skmsg.c, hence why it is non-static.
+And I believe it fits in skmsg.c better than in sock_map.c, because
+it operates on psock rather than sock_map itself.
+
+So, I can make sock_map_prog_update() static in a separate patch
+and carry it in V5.
+
+>
+> [...]
+>
+> > diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> > index bc7d2a586e18..b2c4865eb39b 100644
+> > --- a/net/ipv4/tcp_bpf.c
+> > +++ b/net/ipv4/tcp_bpf.c
+> > @@ -229,7 +229,6 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+> >  }
+> >  EXPORT_SYMBOL_GPL(tcp_bpf_sendmsg_redir);
+> >
+> > -#ifdef CONFIG_BPF_STREAM_PARSER
+> >  static bool tcp_bpf_stream_read(const struct sock *sk)
+> >  {
+> >       struct sk_psock *psock;
+> > @@ -561,8 +560,10 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
+> >                                  struct proto *base)
+> >  {
+> >       prot[TCP_BPF_BASE]                      = *base;
+> > +#if defined(CONFIG_BPF_SYSCALL)
+> >       prot[TCP_BPF_BASE].unhash               = sock_map_unhash;
+> >       prot[TCP_BPF_BASE].close                = sock_map_close;
+> > +#endif
+> >       prot[TCP_BPF_BASE].recvmsg              = tcp_bpf_recvmsg;
+> >       prot[TCP_BPF_BASE].stream_memory_read   = tcp_bpf_stream_read;
+> >
+> > @@ -629,4 +630,3 @@ void tcp_bpf_clone(const struct sock *sk, struct sock *newsk)
+> >       if (prot == &tcp_bpf_prots[family][TCP_BPF_BASE])
+> >               newsk->sk_prot = sk->sk_prot_creator;
+> >  }
+> > -#endif /* CONFIG_BPF_STREAM_PARSER */
+>
+> net/core/sock_map.o now is built only when CONFIG_BPF_SYSCALL is set.
+> While tcp_bpf_get_proto is only called from net/core/sock_map.o.
+>
+> Seems there is no sense in compiling tcp_bpf_get_proto, and everything
+> it depends on which was enclosed by CONFIG_BPF_STREAM_PARSER check, when
+> CONFIG_BPF_SYSCALL is unset.
+
+I can try but I am definitely not sure whether kTLS is happy about
+it, clearly kTLS at least uses __tcp_bpf_recvmsg() and
+tcp_bpf_sendmsg_redir().
+
+>
+> > diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
+> > index 7a94791efc1a..e635ccc175ca 100644
+> > --- a/net/ipv4/udp_bpf.c
+> > +++ b/net/ipv4/udp_bpf.c
+> > @@ -18,8 +18,10 @@ static struct proto udp_bpf_prots[UDP_BPF_NUM_PROTS];
+> >  static void udp_bpf_rebuild_protos(struct proto *prot, const struct proto *base)
+> >  {
+> >       *prot        = *base;
+> > +#if defined(CONFIG_BPF_SYSCALL)
+> >       prot->unhash = sock_map_unhash;
+> >       prot->close  = sock_map_close;
+> > +#endif
+> >  }
+> >
+> >  static void udp_bpf_check_v6_needs_rebuild(struct proto *ops)
+>
+> Same situation here but for udp_bpf_get_proto.
+
+UDP is different, as kTLS certainly doesn't and won't use it. I think
+udp_bpf.c can be just put under CONFIG_BPF_SYSCALL.
+
+Thanks.
