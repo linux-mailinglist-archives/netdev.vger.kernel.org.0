@@ -2,650 +2,623 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D277831FD95
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 18:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3F0231FDB1
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 18:13:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbhBSRJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 12:09:30 -0500
-Received: from mga12.intel.com ([192.55.52.136]:41296 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229515AbhBSRJ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Feb 2021 12:09:28 -0500
-IronPort-SDR: Q8cbHkxCG5gQ+tvBJtoswKdIPHAl+FUns4YcfKPQp9y/huRWjKrmBce8KbMggOzQXNEkHUtq5F
- UvCIeDO50e5A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9900"; a="163049124"
-X-IronPort-AV: E=Sophos;i="5.81,189,1610438400"; 
-   d="gz'50?scan'50,208,50";a="163049124"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2021 09:08:46 -0800
-IronPort-SDR: fC4+l7WIk2arN53GRQ+oSyFpihQGLK3MQnMLpHL5IQUHYQKD3KJ+h5chTRpeQqTwtTsArpm3OL
- eaN0B/MBooBg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,189,1610438400"; 
-   d="gz'50?scan'50,208,50";a="594742611"
-Received: from lkp-server02.sh.intel.com (HELO cd560a204411) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 19 Feb 2021 09:08:42 -0800
-Received: from kbuild by cd560a204411 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lD9Gj-000AVx-Oy; Fri, 19 Feb 2021 17:08:41 +0000
-Date:   Sat, 20 Feb 2021 01:08:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        id S229930AbhBSRMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 12:12:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:39889 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229890AbhBSRMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 12:12:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613754646;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SvXKceW4R9UV/dlGYlPCNRXpekPlXxrzZ6deL78WIL4=;
+        b=VRCTZj/iR0uRQF96YWzipfIrBklB2IeuuaAKGmkSQhGHn2/mMTHzQiHaUsOm+ozEcfUFMb
+        CMkdGcLN6Vx8+0kg8eIavBFqhX19Cc5q+de0NOkxVQ1YuPVYwqGJI++JicRO/sRgnIPQ2K
+        dfLkoElZfs3Nvg3QwOz7aPRJpMn9Ypo=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-240-at1i8y3sMgiFhYWze_-lGg-1; Fri, 19 Feb 2021 12:10:44 -0500
+X-MC-Unique: at1i8y3sMgiFhYWze_-lGg-1
+Received: by mail-ed1-f72.google.com with SMTP id w14so3014457edv.6
+        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 09:10:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=SvXKceW4R9UV/dlGYlPCNRXpekPlXxrzZ6deL78WIL4=;
+        b=mLkiq0ZSfSRjZKsaowTQd52LtryO7JeaMWYVns8Bdt3LsJ3gJ+MSan+xBtcrTkGV8U
+         3pkTTVJseYignRRWZebKlwx2fo0ww8w0WAPJpw1GKOtvvuAqhKVqq/rbwzcxM28LU7/w
+         SHj7WTPMZ408ZYXscA2ryCQKLnDUVD3ygC2yB05X7LAabtbUuQmoTC4/e1Gt1MK332jf
+         J8qRUX8shy+q3PD/NPjFNuknDhp+Wlir6OAPJ+lh4ugSVqDSwIw8uKlh+fMuzQITdQPS
+         +5CtbNcK5XCf4Iz75yfVH89ZUroNN7htqm+zTddP/rlxj63ye0yIm18/vH85QuIJCXYh
+         51NA==
+X-Gm-Message-State: AOAM530rnmRjAnl0qW2LgooZk9dUb6KgU3z/LqRy0++LtAgPb/YUGmSe
+        84hZj/6xalB4rSyK9Z2AhcLEIb0fSpAr19QDjkWmCq1FoVLu11OteG86me6csammB5Nw0+Rqy8R
+        lu8STTqz1X2iqprbs
+X-Received: by 2002:a05:6402:22ce:: with SMTP id dm14mr10241182edb.256.1613754642780;
+        Fri, 19 Feb 2021 09:10:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzqfHA/Qui6iVgCx4aZZ1LnhCVzj/QjCaQmrOd7dM6Ds2bjS13xLohc8Dl2o4tHi0cvrOFV+w==
+X-Received: by 2002:a05:6402:22ce:: with SMTP id dm14mr10241140edb.256.1613754642359;
+        Fri, 19 Feb 2021 09:10:42 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id b4sm6235511edh.40.2021.02.19.09.10.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Feb 2021 09:10:41 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id F2E9E180676; Fri, 19 Feb 2021 18:10:40 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
         ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        maciej.fijalkowski@intel.com, hawk@kernel.org, toke@redhat.com,
-        magnus.karlsson@intel.com, john.fastabend@gmail.com
-Subject: Re: [PATCH bpf-next 1/2] bpf, xdp: per-map bpf_redirect_map
- functions for XDP
-Message-ID: <202102200132.MPUOSVqN-lkp@intel.com>
-References: <20210219145922.63655-2-bjorn.topel@gmail.com>
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        maciej.fijalkowski@intel.com, hawk@kernel.org,
+        magnus.karlsson@intel.com, john.fastabend@gmail.com,
+        kuba@kernel.org, davem@davemloft.net
+Subject: Re: [PATCH bpf-next 2/2] bpf, xdp: restructure redirect actions
+In-Reply-To: <20210219145922.63655-3-bjorn.topel@gmail.com>
+References: <20210219145922.63655-1-bjorn.topel@gmail.com>
+ <20210219145922.63655-3-bjorn.topel@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 19 Feb 2021 18:10:40 +0100
+Message-ID: <87r1lchtkf.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="fUYQa+Pmc3FrFX/N"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210219145922.63655-2-bjorn.topel@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> The XDP_REDIRECT implementations for maps and non-maps are fairly
+> similar, but obviously need to take different code paths depending on
+> if the target is using a map or not. Today, the redirect targets for
+> XDP either uses a map, or is based on ifindex.
+>
+> Here, an explicit redirect type is added to bpf_redirect_info, instead
+> of the actual map. Redirect type, map item/ifindex, and the map_id (if
+> any) is passed to xdp_do_redirect().
+>
+> In addition to making the code easier to follow, using an explicit
+> type in bpf_redirect_info has a slight positive performance impact by
+> avoiding a pointer indirection for the map type lookup, and instead
+> use the cacheline for bpf_redirect_info.
+>
+> Since the actual map is not passed via bpf_redirect_info anymore, the
+> map lookup is only done in the BPF helper. This means that the
+> bpf_clear_redirect_map() function can be removed. The actual map item
+> is RCU protected.
+>
+> The bpf_redirect_info flags member is not used by XDP, and not
+> read/written any more. The map member is only written to when
+> required/used, and not unconditionally.
+>
+> rfc->v1: Use map_id, and remove bpf_clear_redirect_map(). (Toke)
+>
+> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 
-Hi "Björn,
+Very cool! Also a small nit below, but otherwise:
 
-I love your patch! Perhaps something to improve:
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-[auto build test WARNING on 7b1e385c9a488de9291eaaa412146d3972e9dec5]
+> ---
+>  include/linux/filter.h     |  11 ++-
+>  include/trace/events/xdp.h |  66 +++++++++------
+>  kernel/bpf/cpumap.c        |   1 -
+>  kernel/bpf/devmap.c        |   1 -
+>  net/core/filter.c          | 162 ++++++++++++++++---------------------
+>  net/xdp/xskmap.c           |   1 -
+>  6 files changed, 121 insertions(+), 121 deletions(-)
+>
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 1dedcf66b694..1f3cf2a1e116 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -646,11 +646,20 @@ struct bpf_redirect_info {
+>  	u32 flags;
+>  	u32 tgt_index;
+>  	void *tgt_value;
+> -	struct bpf_map *map;
+> +	u32 map_id;
+> +	u32 tgt_type;
+>  	u32 kern_flags;
+>  	struct bpf_nh_params nh;
+>  };
+>=20=20
+> +enum xdp_redirect_type {
+> +	XDP_REDIR_UNSET,
+> +	XDP_REDIR_DEV_IFINDEX,
+> +	XDP_REDIR_DEV_MAP,
+> +	XDP_REDIR_CPU_MAP,
+> +	XDP_REDIR_XSK_MAP,
+> +};
+> +
+>  DECLARE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
+>=20=20
+>  /* flags for bpf_redirect_info kern_flags */
+> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+> index 76a97176ab81..538321735447 100644
+> --- a/include/trace/events/xdp.h
+> +++ b/include/trace/events/xdp.h
+> @@ -86,19 +86,15 @@ struct _bpf_dtab_netdev {
+>  };
+>  #endif /* __DEVMAP_OBJ_TYPE */
+>=20=20
+> -#define devmap_ifindex(tgt, map)				\
+> -	(((map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP ||	\
+> -		  map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP_HASH)) ? \
+> -	  ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex : 0)
+> -
+>  DECLARE_EVENT_CLASS(xdp_redirect_template,
+>=20=20
+>  	TP_PROTO(const struct net_device *dev,
+>  		 const struct bpf_prog *xdp,
+>  		 const void *tgt, int err,
+> -		 const struct bpf_map *map, u32 index),
+> +		 enum xdp_redirect_type type,
+> +		 const struct bpf_redirect_info *ri),
+>=20=20
+> -	TP_ARGS(dev, xdp, tgt, err, map, index),
+> +	TP_ARGS(dev, xdp, tgt, err, type, ri),
+>=20=20
+>  	TP_STRUCT__entry(
+>  		__field(int, prog_id)
+> @@ -111,14 +107,30 @@ DECLARE_EVENT_CLASS(xdp_redirect_template,
+>  	),
+>=20=20
+>  	TP_fast_assign(
+> +		u32 ifindex =3D 0, map_id =3D 0, index =3D ri->tgt_index;
+> +
+> +		switch (type) {
+> +		case XDP_REDIR_DEV_MAP:
+> +			ifindex =3D ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex;
+> +			fallthrough;
+> +		case XDP_REDIR_CPU_MAP:
+> +		case XDP_REDIR_XSK_MAP:
+> +			map_id =3D ri->map_id;
+> +			break;
+> +		case XDP_REDIR_DEV_IFINDEX:
+> +			ifindex =3D (u32)(long)tgt;
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +
+>  		__entry->prog_id	=3D xdp->aux->id;
+>  		__entry->act		=3D XDP_REDIRECT;
+>  		__entry->ifindex	=3D dev->ifindex;
+>  		__entry->err		=3D err;
+> -		__entry->to_ifindex	=3D map ? devmap_ifindex(tgt, map) :
+> -						index;
+> -		__entry->map_id		=3D map ? map->id : 0;
+> -		__entry->map_index	=3D map ? index : 0;
+> +		__entry->to_ifindex	=3D ifindex;
+> +		__entry->map_id		=3D map_id;
+> +		__entry->map_index	=3D index;
+>  	),
+>=20=20
+>  	TP_printk("prog_id=3D%d action=3D%s ifindex=3D%d to_ifindex=3D%d err=3D=
+%d"
+> @@ -133,45 +145,49 @@ DEFINE_EVENT(xdp_redirect_template, xdp_redirect,
+>  	TP_PROTO(const struct net_device *dev,
+>  		 const struct bpf_prog *xdp,
+>  		 const void *tgt, int err,
+> -		 const struct bpf_map *map, u32 index),
+> -	TP_ARGS(dev, xdp, tgt, err, map, index)
+> +		 enum xdp_redirect_type type,
+> +		 const struct bpf_redirect_info *ri),
+> +	TP_ARGS(dev, xdp, tgt, err, type, ri)
+>  );
+>=20=20
+>  DEFINE_EVENT(xdp_redirect_template, xdp_redirect_err,
+>  	TP_PROTO(const struct net_device *dev,
+>  		 const struct bpf_prog *xdp,
+>  		 const void *tgt, int err,
+> -		 const struct bpf_map *map, u32 index),
+> -	TP_ARGS(dev, xdp, tgt, err, map, index)
+> +		 enum xdp_redirect_type type,
+> +		 const struct bpf_redirect_info *ri),
+> +	TP_ARGS(dev, xdp, tgt, err, type, ri)
+>  );
+>=20=20
+>  #define _trace_xdp_redirect(dev, xdp, to)				\
+> -	 trace_xdp_redirect(dev, xdp, NULL, 0, NULL, to)
+> +	trace_xdp_redirect(dev, xdp, NULL, 0, XDP_REDIR_DEV_IFINDEX, NULL)
+>=20=20
+>  #define _trace_xdp_redirect_err(dev, xdp, to, err)			\
+> -	 trace_xdp_redirect_err(dev, xdp, NULL, err, NULL, to)
+> +	trace_xdp_redirect_err(dev, xdp, NULL, err, XDP_REDIR_DEV_IFINDEX, NULL)
+>=20=20
+> -#define _trace_xdp_redirect_map(dev, xdp, to, map, index)		\
+> -	 trace_xdp_redirect(dev, xdp, to, 0, map, index)
+> +#define _trace_xdp_redirect_map(dev, xdp, to, type, ri)		\
+> +	trace_xdp_redirect(dev, xdp, to, 0, type, ri)
+>=20=20
+> -#define _trace_xdp_redirect_map_err(dev, xdp, to, map, index, err)	\
+> -	 trace_xdp_redirect_err(dev, xdp, to, err, map, index)
+> +#define _trace_xdp_redirect_map_err(dev, xdp, to, type, ri, err)	\
+> +	trace_xdp_redirect_err(dev, xdp, to, err, type, ri)
+>=20=20
+>  /* not used anymore, but kept around so as not to break old programs */
+>  DEFINE_EVENT(xdp_redirect_template, xdp_redirect_map,
+>  	TP_PROTO(const struct net_device *dev,
+>  		 const struct bpf_prog *xdp,
+>  		 const void *tgt, int err,
+> -		 const struct bpf_map *map, u32 index),
+> -	TP_ARGS(dev, xdp, tgt, err, map, index)
+> +		 enum xdp_redirect_type type,
+> +		 const struct bpf_redirect_info *ri),
+> +	TP_ARGS(dev, xdp, tgt, err, type, ri)
+>  );
+>=20=20
+>  DEFINE_EVENT(xdp_redirect_template, xdp_redirect_map_err,
+>  	TP_PROTO(const struct net_device *dev,
+>  		 const struct bpf_prog *xdp,
+>  		 const void *tgt, int err,
+> -		 const struct bpf_map *map, u32 index),
+> -	TP_ARGS(dev, xdp, tgt, err, map, index)
+> +		 enum xdp_redirect_type type,
+> +		 const struct bpf_redirect_info *ri),
+> +	TP_ARGS(dev, xdp, tgt, err, type, ri)
+>  );
+>=20=20
+>  TRACE_EVENT(xdp_cpumap_kthread,
+> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+> index a4d2cb93cd69..b7f4d22f5c8d 100644
+> --- a/kernel/bpf/cpumap.c
+> +++ b/kernel/bpf/cpumap.c
+> @@ -543,7 +543,6 @@ static void cpu_map_free(struct bpf_map *map)
+>  	 * complete.
+>  	 */
+>=20=20
+> -	bpf_clear_redirect_map(map);
+>  	synchronize_rcu();
+>=20=20
+>  	/* For cpu_map the remote CPUs can still be using the entries
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index 37ac4cde9713..b5681a98020d 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -197,7 +197,6 @@ static void dev_map_free(struct bpf_map *map)
+>  	list_del_rcu(&dtab->list);
+>  	spin_unlock(&dev_map_lock);
+>=20=20
+> -	bpf_clear_redirect_map(map);
+>  	synchronize_rcu();
+>=20=20
+>  	/* Make sure prior __dev_map_entry_free() have completed. */
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index fd64d768e16a..56074b88d7e2 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3919,23 +3919,6 @@ static const struct bpf_func_proto bpf_xdp_adjust_=
+meta_proto =3D {
+>  	.arg2_type	=3D ARG_ANYTHING,
+>  };
+>=20=20
+> -static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
+> -			    struct bpf_map *map, struct xdp_buff *xdp)
+> -{
+> -	switch (map->map_type) {
+> -	case BPF_MAP_TYPE_DEVMAP:
+> -	case BPF_MAP_TYPE_DEVMAP_HASH:
+> -		return dev_map_enqueue(fwd, xdp, dev_rx);
+> -	case BPF_MAP_TYPE_CPUMAP:
+> -		return cpu_map_enqueue(fwd, xdp, dev_rx);
+> -	case BPF_MAP_TYPE_XSKMAP:
+> -		return __xsk_map_redirect(fwd, xdp);
+> -	default:
+> -		return -EBADRQC;
+> -	}
+> -	return 0;
+> -}
+> -
+>  void xdp_do_flush(void)
+>  {
+>  	__dev_flush();
+> @@ -3944,55 +3927,45 @@ void xdp_do_flush(void)
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_do_flush);
+>=20=20
+> -void bpf_clear_redirect_map(struct bpf_map *map)
+> -{
+> -	struct bpf_redirect_info *ri;
+> -	int cpu;
+> -
+> -	for_each_possible_cpu(cpu) {
+> -		ri =3D per_cpu_ptr(&bpf_redirect_info, cpu);
+> -		/* Avoid polluting remote cacheline due to writes if
+> -		 * not needed. Once we pass this test, we need the
+> -		 * cmpxchg() to make sure it hasn't been changed in
+> -		 * the meantime by remote CPU.
+> -		 */
+> -		if (unlikely(READ_ONCE(ri->map) =3D=3D map))
+> -			cmpxchg(&ri->map, map, NULL);
+> -	}
+> -}
+> -
+>  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  		    struct bpf_prog *xdp_prog)
+>  {
+>  	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
+> -	struct bpf_map *map =3D READ_ONCE(ri->map);
+> -	u32 index =3D ri->tgt_index;
+> +	enum xdp_redirect_type type =3D ri->tgt_type;
+>  	void *fwd =3D ri->tgt_value;
+>  	int err;
+>=20=20
+> -	ri->tgt_index =3D 0;
+> -	ri->tgt_value =3D NULL;
+> -	WRITE_ONCE(ri->map, NULL);
+> +	ri->tgt_type =3D XDP_REDIR_UNSET;
+>=20=20
+> -	if (unlikely(!map)) {
+> -		fwd =3D dev_get_by_index_rcu(dev_net(dev), index);
+> +	switch (type) {
+> +	case XDP_REDIR_DEV_IFINDEX:
+> +		fwd =3D dev_get_by_index_rcu(dev_net(dev), (u32)(long)fwd);
+>  		if (unlikely(!fwd)) {
+>  			err =3D -EINVAL;
+> -			goto err;
+> +			break;
+>  		}
+> -
+>  		err =3D dev_xdp_enqueue(fwd, xdp, dev);
+> -	} else {
+> -		err =3D __bpf_tx_xdp_map(dev, fwd, map, xdp);
+> +		break;
+> +	case XDP_REDIR_DEV_MAP:
+> +		err =3D dev_map_enqueue(fwd, xdp, dev);
+> +		break;
+> +	case XDP_REDIR_CPU_MAP:
+> +		err =3D cpu_map_enqueue(fwd, xdp, dev);
+> +		break;
+> +	case XDP_REDIR_XSK_MAP:
+> +		err =3D __xsk_map_redirect(fwd, xdp);
+> +		break;
+> +	default:
+> +		err =3D -EBADRQC;
+>  	}
+>=20=20
+>  	if (unlikely(err))
+>  		goto err;
+>=20=20
+> -	_trace_xdp_redirect_map(dev, xdp_prog, fwd, map, index);
+> +	_trace_xdp_redirect_map(dev, xdp_prog, fwd, type, ri);
+>  	return 0;
+>  err:
+> -	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, map, index, err);
+> +	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, type, ri, err);
+>  	return err;
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_do_redirect);
+> @@ -4001,41 +3974,40 @@ static int xdp_do_generic_redirect_map(struct net=
+_device *dev,
+>  				       struct sk_buff *skb,
+>  				       struct xdp_buff *xdp,
+>  				       struct bpf_prog *xdp_prog,
+> -				       struct bpf_map *map)
+> +				       void *fwd,
+> +				       enum xdp_redirect_type type)
+>  {
+>  	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
+> -	u32 index =3D ri->tgt_index;
+> -	void *fwd =3D ri->tgt_value;
+> -	int err =3D 0;
+> -
+> -	ri->tgt_index =3D 0;
+> -	ri->tgt_value =3D NULL;
+> -	WRITE_ONCE(ri->map, NULL);
+> +	int err;
+>=20=20
+> -	if (map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP ||
+> -	    map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP_HASH) {
+> +	switch (type) {
+> +	case XDP_REDIR_DEV_MAP: {
+>  		struct bpf_dtab_netdev *dst =3D fwd;
 
-url:    https://github.com/0day-ci/linux/commits/Bj-rn-T-pel/Optimize-bpf_redirect_map-xdp_do_redirect/20210219-230349
-base:   7b1e385c9a488de9291eaaa412146d3972e9dec5
-config: nds32-randconfig-r006-20210219 (attached as .config)
-compiler: nds32le-linux-gcc (GCC) 9.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/e784328ffb3b588155aeee02ff6a96b4a6b7cf20
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Bj-rn-T-pel/Optimize-bpf_redirect_map-xdp_do_redirect/20210219-230349
-        git checkout e784328ffb3b588155aeee02ff6a96b4a6b7cf20
-        # save the attached .config to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=nds32 
+I thought the braces around the case body looked a bit odd. I guess
+that's to get a local scope for the dst var (and xs var below), right?
+This is basically a cast, though, so I wonder if you couldn't just as
+well use the fwd pointer directly (with a cast) in the function call
+below? WDYT?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+(Strictly speaking I don't think the compiler will even complain if you
+omit the cast as well, but having it in there is nice fore readability I
+think, and guards against someone forgetting to update the call if the
+function prototype changes).
 
-All warnings (new ones prefixed by >>):
+>  		err =3D dev_map_generic_redirect(dst, skb, xdp_prog);
+>  		if (unlikely(err))
+>  			goto err;
+> -	} else if (map->map_type =3D=3D BPF_MAP_TYPE_XSKMAP) {
+> +		break;
+> +	}
+> +	case XDP_REDIR_XSK_MAP: {
+>  		struct xdp_sock *xs =3D fwd;
+>=20=20
+>  		err =3D xsk_generic_rcv(xs, xdp);
+>  		if (err)
+>  			goto err;
+>  		consume_skb(skb);
+> -	} else {
+> +		break;
+> +	}
+> +	default:
+>  		/* TODO: Handle BPF_MAP_TYPE_CPUMAP */
+>  		err =3D -EBADRQC;
+>  		goto err;
+>  	}
+>=20=20
+> -	_trace_xdp_redirect_map(dev, xdp_prog, fwd, map, index);
+> +	_trace_xdp_redirect_map(dev, xdp_prog, fwd, type, ri);
+>  	return 0;
+>  err:
+> -	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, map, index, err);
+> +	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, type, ri, err);
+>  	return err;
+>  }
+>=20=20
+> @@ -4043,29 +4015,31 @@ int xdp_do_generic_redirect(struct net_device *de=
+v, struct sk_buff *skb,
+>  			    struct xdp_buff *xdp, struct bpf_prog *xdp_prog)
+>  {
+>  	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
+> -	struct bpf_map *map =3D READ_ONCE(ri->map);
+> -	u32 index =3D ri->tgt_index;
+> -	struct net_device *fwd;
+> +	enum xdp_redirect_type type =3D ri->tgt_type;
+> +	void *fwd =3D ri->tgt_value;
+>  	int err =3D 0;
+>=20=20
+> -	if (map)
+> -		return xdp_do_generic_redirect_map(dev, skb, xdp, xdp_prog,
+> -						   map);
+> -	ri->tgt_index =3D 0;
+> -	fwd =3D dev_get_by_index_rcu(dev_net(dev), index);
+> -	if (unlikely(!fwd)) {
+> -		err =3D -EINVAL;
+> -		goto err;
+> -	}
+> +	ri->tgt_type =3D XDP_REDIR_UNSET;
+> +	ri->tgt_value =3D NULL;
+>=20=20
+> -	err =3D xdp_ok_fwd_dev(fwd, skb->len);
+> -	if (unlikely(err))
+> -		goto err;
+> +	if (type =3D=3D XDP_REDIR_DEV_IFINDEX) {
+> +		fwd =3D dev_get_by_index_rcu(dev_net(dev), (u32)(long)fwd);
+> +		if (unlikely(!fwd)) {
+> +			err =3D -EINVAL;
+> +			goto err;
+> +		}
+>=20=20
+> -	skb->dev =3D fwd;
+> -	_trace_xdp_redirect(dev, xdp_prog, index);
+> -	generic_xdp_tx(skb, xdp_prog);
+> -	return 0;
+> +		err =3D xdp_ok_fwd_dev(fwd, skb->len);
+> +		if (unlikely(err))
+> +			goto err;
+> +
+> +		skb->dev =3D fwd;
+> +		_trace_xdp_redirect(dev, xdp_prog, index);
+> +		generic_xdp_tx(skb, xdp_prog);
+> +		return 0;
+> +	}
+> +
+> +	return xdp_do_generic_redirect_map(dev, skb, xdp, xdp_prog, fwd, type);
+>  err:
+>  	_trace_xdp_redirect_err(dev, xdp_prog, index, err);
+>  	return err;
+> @@ -4078,10 +4052,9 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, fl=
+ags)
+>  	if (unlikely(flags))
+>  		return XDP_ABORTED;
+>=20=20
+> -	ri->flags =3D flags;
+> -	ri->tgt_index =3D ifindex;
+> -	ri->tgt_value =3D NULL;
+> -	WRITE_ONCE(ri->map, NULL);
+> +	ri->tgt_type =3D XDP_REDIR_DEV_IFINDEX;
+> +	ri->tgt_index =3D 0;
+> +	ri->tgt_value =3D (void *)(long)ifindex;
+>=20=20
+>  	return XDP_REDIRECT;
+>  }
+> @@ -4096,7 +4069,8 @@ static const struct bpf_func_proto bpf_xdp_redirect=
+_proto =3D {
+>=20=20
+>  static __always_inline s64 __bpf_xdp_redirect_map(struct bpf_map *map, u=
+32 ifindex, u64 flags,
+>  						  void *lookup_elem(struct bpf_map *map,
+> -								    u32 key))
+> +								    u32 key),
+> +						  enum xdp_redirect_type type)
+>  {
+>  	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
+>=20=20
+> @@ -4105,35 +4079,39 @@ static __always_inline s64 __bpf_xdp_redirect_map=
+(struct bpf_map *map, u32 ifind
+>=20=20
+>  	ri->tgt_value =3D lookup_elem(map, ifindex);
+>  	if (unlikely(!ri->tgt_value)) {
+> -		WRITE_ONCE(ri->map, NULL);
+> +		ri->tgt_type =3D XDP_REDIR_UNSET;
+>  		return flags;
+>  	}
+>=20=20
+> -	ri->flags =3D flags;
+>  	ri->tgt_index =3D ifindex;
+> -	WRITE_ONCE(ri->map, map);
+> +	ri->tgt_type =3D type;
+> +	ri->map_id =3D map->id;
+>=20=20
+>  	return XDP_REDIRECT;
+>  }
+>=20=20
+>  BPF_CALL_3(bpf_xdp_redirect_devmap, struct bpf_map *, map, u32, ifindex,=
+ u64, flags)
+>  {
+> -	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_lookup_ele=
+m);
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_lookup_ele=
+m,
+> +				      XDP_REDIR_DEV_MAP);
+>  }
+>=20=20
+>  BPF_CALL_3(bpf_xdp_redirect_devmap_hash, struct bpf_map *, map, u32, ifi=
+ndex, u64, flags)
+>  {
+> -	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_hash_looku=
+p_elem);
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_hash_looku=
+p_elem,
+> +				      XDP_REDIR_DEV_MAP);
+>  }
+>=20=20
+>  BPF_CALL_3(bpf_xdp_redirect_cpumap, struct bpf_map *, map, u32, ifindex,=
+ u64, flags)
+>  {
+> -	return __bpf_xdp_redirect_map(map, ifindex, flags, __cpu_map_lookup_ele=
+m);
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __cpu_map_lookup_ele=
+m,
+> +				      XDP_REDIR_CPU_MAP);
+>  }
+>=20=20
+>  BPF_CALL_3(bpf_xdp_redirect_xskmap, struct bpf_map *, map, u32, ifindex,=
+ u64, flags)
+>  {
+> -	return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_ele=
+m);
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_ele=
+m,
+> +				      XDP_REDIR_XSK_MAP);
+>  }
+>=20=20
+>  bpf_func_proto_func get_xdp_redirect_func(enum bpf_map_type map_type)
+> diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+> index 113fd9017203..c285d3dd04ad 100644
+> --- a/net/xdp/xskmap.c
+> +++ b/net/xdp/xskmap.c
+> @@ -87,7 +87,6 @@ static void xsk_map_free(struct bpf_map *map)
+>  {
+>  	struct xsk_map *m =3D container_of(map, struct xsk_map, map);
+>=20=20
+> -	bpf_clear_redirect_map(map);
+>  	synchronize_net();
+>  	bpf_map_area_free(m);
+>  }
+> --=20
+> 2.27.0
 
-   In file included from include/linux/bpf-cgroup.h:5,
-                    from include/linux/cgroup-defs.h:22,
-                    from include/linux/cgroup.h:28,
-                    from include/linux/hugetlb.h:9,
-                    from kernel/events/core.c:31:
->> include/linux/bpf.h:1629:42: warning: 'struct bpf_cpu_map_entry' declared inside parameter list will not be visible outside of this definition or declaration
-    1629 | static inline int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu,
-         |                                          ^~~~~~~~~~~~~~~~~
-   kernel/events/core.c:6539:6: warning: no previous prototype for 'perf_pmu_snapshot_aux' [-Wmissing-prototypes]
-    6539 | long perf_pmu_snapshot_aux(struct perf_buffer *rb,
-         |      ^~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/bpf-cgroup.h:5,
-                    from include/linux/cgroup-defs.h:22,
-                    from include/linux/cgroup.h:28,
-                    from include/linux/perf_event.h:57,
-                    from kernel/events/ring_buffer.c:11:
->> include/linux/bpf.h:1629:42: warning: 'struct bpf_cpu_map_entry' declared inside parameter list will not be visible outside of this definition or declaration
-    1629 | static inline int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu,
-         |                                          ^~~~~~~~~~~~~~~~~
-
-
-vim +1629 include/linux/bpf.h
-
-9c270af37bb62e Jesper Dangaard Brouer 2017-10-16  1628  
-9c270af37bb62e Jesper Dangaard Brouer 2017-10-16 @1629  static inline int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu,
-9c270af37bb62e Jesper Dangaard Brouer 2017-10-16  1630  				  struct xdp_buff *xdp,
-9c270af37bb62e Jesper Dangaard Brouer 2017-10-16  1631  				  struct net_device *dev_rx)
-9c270af37bb62e Jesper Dangaard Brouer 2017-10-16  1632  {
-9c270af37bb62e Jesper Dangaard Brouer 2017-10-16  1633  	return 0;
-9c270af37bb62e Jesper Dangaard Brouer 2017-10-16  1634  }
-040ee69226f8a9 Al Viro                2017-12-02  1635  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
---fUYQa+Pmc3FrFX/N
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
-
-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
-0bqZce7o/z8h6K4UJbgBAA==
-
---fUYQa+Pmc3FrFX/N--
