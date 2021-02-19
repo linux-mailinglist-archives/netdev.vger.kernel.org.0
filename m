@@ -2,122 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C9EC31F89F
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 12:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DA9F31F8B1
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 12:57:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbhBSLuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 06:50:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbhBSLuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 06:50:15 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C856EC061756;
-        Fri, 19 Feb 2021 03:49:34 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id n4so8012745wrx.1;
-        Fri, 19 Feb 2021 03:49:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lxdNTkl+ucRRLsCAbxjBx99ffC/6HQIfXfLaqbYqRWY=;
-        b=GSb36TUJAd/yO69uWc/Ff8phxLQcJnVIPE4h7/ZysT8FVKEuPy0T4kVu8JX0/x8UKM
-         tq47OgTWpOpaDcpQ6NCCyn7p8TCzgaTXPx4Na6RUl3fOFMo5O/cG/5qRRDc1oJ6lqpdR
-         3bvy/z5QBO/epGX1ZieMj60e80dj5XbnIInmjfOy6Iig5DUj1RWrBTkXAF4cYVNb4LXp
-         O5crEILhvqVmbhs3Hb3wgpLPmVMzckdenBRnAlxDKnxN5NMjktbbKloMucfYkRQCpI2H
-         J7o4dTMxGMaE13Yg2NNFBue1wSxlyOps63NIUZp6L443h8KoFYH5MLjuUMTh8Z7G0Wel
-         FO8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lxdNTkl+ucRRLsCAbxjBx99ffC/6HQIfXfLaqbYqRWY=;
-        b=Cjyn3cA1+HDQb7jjBA+Oe1XCr9YOKJbBNjgchK5I7H1haPeBD0UAvKSJSOBdFYRWvF
-         sH1YZhbKqYOsaw32fRpqO3nFxwiLqrGhjbaFtqMH/seaBkIXZtzxncSIzdsScU/L/X3P
-         vZtYqImp7c4Nxjb1B3zhX/qhiiU8bjP84P4D36jYmvSJCjFX0fWrJiwUs4YsV7ozjUHy
-         S+5QUjb0tzWIz65Fr4cXrpUX9L6UmvlzHGP7adbnvvlJsyxkkFv6v4CrfAyQYr8xT4KD
-         MtRTWOzevEu67qgwUjxEVfheotOnu8tDELcvnD28d4g1AOiziTIcmwt8nsdUge6B34ZW
-         UAUg==
-X-Gm-Message-State: AOAM531o6jbKyWk/kgYWZef1YtAkDuIsmF6iW3qw8N/DnF4hc4yfp+Zn
-        33UoYDPf6dHgCrRz8hhuL5Y=
-X-Google-Smtp-Source: ABdhPJw514fqMDT7N//a1S6OcenC4CqhU8PFxOOpzHh7xoeKQ+Dzbr6eEBDI1Tc2q9KH3LJ32306aA==
-X-Received: by 2002:adf:e4c3:: with SMTP id v3mr9061999wrm.210.1613735373566;
-        Fri, 19 Feb 2021 03:49:33 -0800 (PST)
-Received: from [192.168.1.101] ([37.170.232.180])
-        by smtp.gmail.com with ESMTPSA id n16sm7472682wrm.23.2021.02.19.03.49.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Feb 2021 03:49:32 -0800 (PST)
-Subject: Re: [PATCH bpf-next v2 1/4] net: add SO_NETNS_COOKIE socket option
-To:     Lorenz Bauer <lmb@cloudflare.com>, daniel@iogearbox.net,
-        ast@kernel.org, andrii@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com
-References: <20210219095149.50346-1-lmb@cloudflare.com>
- <20210219095149.50346-2-lmb@cloudflare.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <00f63863-34ae-aa25-6a36-376db62de510@gmail.com>
-Date:   Fri, 19 Feb 2021 12:49:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
-MIME-Version: 1.0
-In-Reply-To: <20210219095149.50346-2-lmb@cloudflare.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S230417AbhBSL4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 06:56:43 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:49026 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229524AbhBSL4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 06:56:40 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11JBt3fg150949;
+        Fri, 19 Feb 2021 11:55:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=Y7tWXDWYYFR8Goj5RqfddTZC74cyNyev2Htnfv1H/PY=;
+ b=0g8IYVYtvGxxgN78prXyP73bNWJvWYX+eBmIu3AWwVTSu3PAbifwMdrNc7CyQV15tIUu
+ dEVpeAFPY3Uc6Hy1cJIvZSPnbpGpCMO4mGbVVRR3nlxYZAlcUnkjqBEGiAjoilc2stsM
+ /m325wYL9CPMggAEtMBHgWok/FFoQC++dGDRL4JB1oO1N4mDlErM6OsUVei3T1wG/xMa
+ s6PnqOl5hGUTdHRMRzUopNtBncbRP/hPcwMv8I4MHen0LmBYwkNUm3AXAiwlOTjfPnPQ
+ X4U6tYarFrsbLik0w4UdyU8pGt1akwuCXmnokCqHR5ySBbKkVAMvJRVDb+kxlKR0owOM 0g== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 36p66r98vh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 19 Feb 2021 11:55:53 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11JBoL47016403;
+        Fri, 19 Feb 2021 11:55:51 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 36prp2ttd4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 19 Feb 2021 11:55:51 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 11JBtndr011179;
+        Fri, 19 Feb 2021 11:55:49 GMT
+Received: from ban25x6uut24.us.oracle.com (/10.153.73.24)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 19 Feb 2021 03:55:49 -0800
+From:   Si-Wei Liu <si-wei.liu@oracle.com>
+To:     mst@redhat.com, jasowang@redhat.com, elic@nvidia.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        si-wei.liu@oracle.com
+Subject: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Date:   Fri, 19 Feb 2021 06:54:58 -0500
+Message-Id: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9899 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
+ bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102190096
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9899 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 suspectscore=0
+ impostorscore=0 priorityscore=1501 clxscore=1015 spamscore=0 mlxscore=0
+ phishscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102190097
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+for legacy") made an exception for legacy guests to reset
+features to 0, when config space is accessed before features
+are set. We should relieve the verify_min_features() check
+and allow features reset to 0 for this case.
 
+It's worth noting that not just legacy guests could access
+config space before features are set. For instance, when
+feature VIRTIO_NET_F_MTU is advertised some modern driver
+will try to access and validate the MTU present in the config
+space before virtio features are set. Rejecting reset to 0
+prematurely causes correct MTU and link status unable to load
+for the very first config space access, rendering issues like
+guest showing inaccurate MTU value, or failure to reject
+out-of-range MTU.
 
-On 2/19/21 10:51 AM, Lorenz Bauer wrote:
-> We need to distinguish which network namespace a socket belongs to.
-> BPF has the useful bpf_get_netns_cookie helper for this, but accessing
-> it from user space isn't possible. Add a read-only socket option that
-> returns the netns cookie, similar to SO_COOKIE. If network namespaces
-> are disabled, SO_NETNS_COOKIE returns the cookie of init_net.
-> 
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
+Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 7c1f789..540dd67 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+ 	return mvdev->mlx_features;
+ }
+ 
+-static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+-{
+-	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+-		return -EOPNOTSUPP;
+-
+-	return 0;
+-}
+-
+ static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+ {
+ 	int err;
+@@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+ {
+ 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+ 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+-	int err;
+ 
+ 	print_features(mvdev, features, true);
+ 
+-	err = verify_min_features(mvdev, features);
+-	if (err)
+-		return err;
+-
+ 	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
+ 	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+ 	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
+-	return err;
++	return 0;
+ }
+ 
+ static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
+-- 
+1.8.3.1
 
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 0ed98f20448a..de4644aeb58d 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1614,6 +1614,17 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
->  		v.val = sk->sk_bound_dev_if;
->  		break;
->  
-> +	case SO_NETNS_COOKIE:
-> +		lv = sizeof(u64);
-> +		if (len < lv)
-> +			return -EINVAL;
-
-	if (len != lv)
-		return -EINVAL;
-
-(There is no reason to support bigger value before at least hundred years)
-
-> +#ifdef CONFIG_NET_NS
-> +		v.val64 = sock_net(sk)->net_cookie;
-> +#else
-> +		v.val64 = init_net.net_cookie;
-> +#endif
-> +		break;
-> +
-
-Why using this ugly #ifdef ?
-
-The following should work just fine, even if CONFIG_NET_NS is not set.
-
-v.val64 = sock_net(sk)->net_cookie;
-
-
-	
-
->  	default:
->  		/* We implement the SO_SNDLOWAT etc to not be settable
->  		 * (1003.1g 7).
-> 
