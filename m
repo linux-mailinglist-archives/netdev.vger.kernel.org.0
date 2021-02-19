@@ -2,150 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D24231FBD7
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 16:19:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF88731FC02
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 16:33:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229802AbhBSPSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 10:18:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
+        id S229683AbhBSPdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 10:33:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbhBSPSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 10:18:01 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735E7C061756
-        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 07:17:19 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id c6so10653994ede.0
-        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 07:17:19 -0800 (PST)
+        with ESMTP id S229571AbhBSPdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 10:33:16 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B62EC061574;
+        Fri, 19 Feb 2021 07:32:36 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id a4so6882083wro.8;
+        Fri, 19 Feb 2021 07:32:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jHd0rN1FLnz/czIrhd9IMfnvOfHCdPxO8YyeONdFEKU=;
-        b=BVU1Ta3V3j6Gwqc+t+z9cxFHtwHU844ZAW4u0yoY3w6uiMMUVg+xPq4gbyOaw0lsG/
-         7yEU9LT7ppmKnzW8MC93hUsOtxt3vEfYLe/2mepmiFZEG25qnC+xKzsw7+NcbiSNerfN
-         xAfNAvRQeuaTRVf4glw5IgJruZxaEAZmlbnE/HoDtRpvZ0qOa4gIFszf5lQsmTTVRzmq
-         ibdMGuFGpRG2rxMEtGIjA925njO1TlN6Z8sm3gvjOSv+xiEeC+3C6iBRmlw6OF1ukE59
-         nBYK7vyyg9nzE1bMDA6rgkRw59RiURzqsmJMGjyBR4ou9hqi6SY5277rgWp6FcRJuPZ5
-         LVEw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xhZ86LSvSFpB1ncs9HLMCOJV7EvF9ulw0bvkQn5EhBM=;
+        b=CCh3tvBRJoUGPyVwF/Ly82OpDcjX13g6K5+UuBlUSdYytKByL/6n0G1+lueiddtmZS
+         N8wojjBtEv622Vi3P06Bn/rf8LtiZD/gTGtc6+haiHSxzRTJgbQGrJ5gmq/S0gtHw6DI
+         GxBnI4bniIIiZJb5pYbGWFRDr643RBjcwUzkIBNI/iTGNfaeIhOf0puHx7ifxhGstLro
+         oPT84czE8gpfpV2PRmjF4laWXr64ETxKtnvblfqZuNWvcGK19ItoZLnQtLnQtN9HZ480
+         hHPTLPaLjXOiaC8Jmp2PxGmqGWPrRmgonN5pES7x89/nmWE7Fn2mEQtdcjB29veoiUIy
+         pxEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jHd0rN1FLnz/czIrhd9IMfnvOfHCdPxO8YyeONdFEKU=;
-        b=DRUWng74UnqZ4Gd8v8AxJ6yhaRkh9aypit1Q7U5RY/l/AwWhp7rf0RQhfI6MzsruM9
-         Qe84a1jbiCYHzNzdJ9yE+sHq0t5OxpLRke6B/HsUZoXx/ozAD2JRX+nBrdsh4+hylWGI
-         bzPVDavOm+hjwU9umiGlixudcVbLbWywbubWm+uAcIXpW/saw38tuqrfoa7cQdq3dDOe
-         134IXpLIQpCf+mypu4KE+zuKnQrZNsZKiYN3KtLKcb/yMZMMU/V0wQWNqiWNtHjIlePY
-         4z3bITiNHDJWJ2nx/zL6757O5lCCYqJ7ZBWcRpifR/eUAKy+FO97rH22OY06MdvJm5PP
-         WytA==
-X-Gm-Message-State: AOAM531T9nhVFkoyVj+F3UqtOZ1DccVgz8P6S/fTlAziC7bFVpR1GofZ
-        Ttvngf/TOuJ95jRQRaD649SXzRFKIlU=
-X-Google-Smtp-Source: ABdhPJzY9WpGH9BPf/811al2lBf1unKwIiC8uw3a9mE9xjTYsgsZr30mAKHMJ1RAxK6zmRbmUgnXPQ==
-X-Received: by 2002:a05:6402:229a:: with SMTP id cw26mr9539367edb.224.1613747837479;
-        Fri, 19 Feb 2021 07:17:17 -0800 (PST)
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
-        by smtp.gmail.com with ESMTPSA id z16sm4631210ejd.102.2021.02.19.07.17.16
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xhZ86LSvSFpB1ncs9HLMCOJV7EvF9ulw0bvkQn5EhBM=;
+        b=Q/2Hfs60T7u490JRGv9ia/yTnRezV+plGwbvZXYKanIe4fVCvKR/XbzePLVNoD/6yA
+         C0444pXnJ5KiPVZbW0UGO0QejGpNl4Q3zL+s8OpT91bE+JyUsafZI0qnO+xleNeUbuti
+         GeIw7dmIJMFTaq7kqKFgQQSjPvB/fYUuEOVj/DR4iOiqALF0NpTyvllUraCAQ8qd99M4
+         /RbrZnpSroLb34ak9U3hk6x/bmxMPtxcfLl7HkJIBcVlpFU8jMQn2bupGTxs57h1H6tf
+         LXhIgFa9BGiRDBHgf/1C6oJd2VmfQniNTeZi74MFcSMqJG5aARTzF9dIZ+I3Xo0u2Qey
+         7klA==
+X-Gm-Message-State: AOAM5328jTDHr9gMuZ/TFZ0FSBn1ooJqd8YqadOYllREDyDetW1UprD+
+        gBvmrAHuhAo5vT/4TT/uCYs=
+X-Google-Smtp-Source: ABdhPJzm8O7Nz8oDzwv0a8GKdXXz7l2NlrEci+QKRvLxA2Iu1yPselt2Xwm4E9ARItxez8CbGmc6fw==
+X-Received: by 2002:adf:fa91:: with SMTP id h17mr9586162wrr.257.1613748754826;
+        Fri, 19 Feb 2021 07:32:34 -0800 (PST)
+Received: from [192.168.1.101] ([37.170.232.180])
+        by smtp.gmail.com with ESMTPSA id t11sm1945644wmb.32.2021.02.19.07.32.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Feb 2021 07:17:16 -0800 (PST)
-Received: by mail-wr1-f46.google.com with SMTP id l12so9059586wry.2
-        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 07:17:16 -0800 (PST)
-X-Received: by 2002:a5d:4488:: with SMTP id j8mr8417824wrq.12.1613747835864;
- Fri, 19 Feb 2021 07:17:15 -0800 (PST)
+        Fri, 19 Feb 2021 07:32:34 -0800 (PST)
+Subject: Re: [PATCH bpf-next v2 1/4] net: add SO_NETNS_COOKIE socket option
+To:     Lorenz Bauer <lmb@cloudflare.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+References: <20210219095149.50346-1-lmb@cloudflare.com>
+ <20210219095149.50346-2-lmb@cloudflare.com>
+ <00f63863-34ae-aa25-6a36-376db62de510@gmail.com>
+ <CACAyw9_kY9fPdC5DLz4GKiBR8B4mCCnknB2xY1DSKYwkridgFQ@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <f4ac5b02-3821-787c-6da9-50aa44d2847b@gmail.com>
+Date:   Fri, 19 Feb 2021 16:32:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-References: <20210219022532.2446968-1-Jason@zx2c4.com>
-In-Reply-To: <20210219022532.2446968-1-Jason@zx2c4.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 19 Feb 2021 10:16:38 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfGNLQXfbXcmfXgei3cxWUANk7ooQjJEnDrpdubpzwWPg@mail.gmail.com>
-Message-ID: <CA+FuTSfGNLQXfbXcmfXgei3cxWUANk7ooQjJEnDrpdubpzwWPg@mail.gmail.com>
-Subject: Re: [PATCH net v4] net: icmp: pass zeroed opts from
- icmp{,v6}_ndo_send before sending
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        SinYu <liuxyon@gmail.com>,
-        David L Stevens <david.stevens@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CACAyw9_kY9fPdC5DLz4GKiBR8B4mCCnknB2xY1DSKYwkridgFQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 9:25 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> The icmp{,v6}_send functions make all sorts of use of skb->cb, casting
-> it with IPCB or IP6CB, assuming the skb to have come directly from the
-> inet layer. But when the packet comes from the ndo layer, especially
-> when forwarded, there's no telling what might be in skb->cb at that
-> point. As a result, the icmp sending code risks reading bogus memory
-> contents, which can result in nasty stack overflows such as this one
-> reported by a user:
->
->     panic+0x108/0x2ea
->     __stack_chk_fail+0x14/0x20
->     __icmp_send+0x5bd/0x5c0
->     icmp_ndo_send+0x148/0x160
->
-> In icmp_send, skb->cb is cast with IPCB and an ip_options struct is read
-> from it. The optlen parameter there is of particular note, as it can
-> induce writes beyond bounds. There are quite a few ways that can happen
-> in __ip_options_echo. For example:
->
->     // sptr/skb are attacker-controlled skb bytes
->     sptr = skb_network_header(skb);
->     // dptr/dopt points to stack memory allocated by __icmp_send
->     dptr = dopt->__data;
->     // sopt is the corrupt skb->cb in question
->     if (sopt->rr) {
->         optlen  = sptr[sopt->rr+1]; // corrupt skb->cb + skb->data
->         soffset = sptr[sopt->rr+2]; // corrupt skb->cb + skb->data
->         // this now writes potentially attacker-controlled data, over
->         // flowing the stack:
->         memcpy(dptr, sptr+sopt->rr, optlen);
->     }
->
-> In the icmpv6_send case, the story is similar, but not as dire, as only
-> IP6CB(skb)->iif and IP6CB(skb)->dsthao are used. The dsthao case is
-> worse than the iif case, but it is passed to ipv6_find_tlv, which does
-> a bit of bounds checking on the value.
->
-> This is easy to simulate by doing a `memset(skb->cb, 0x41,
-> sizeof(skb->cb));` before calling icmp{,v6}_ndo_send, and it's only by
-> good fortune and the rarity of icmp sending from that context that we've
-> avoided reports like this until now. For example, in KASAN:
->
->     BUG: KASAN: stack-out-of-bounds in __ip_options_echo+0xa0e/0x12b0
->     Write of size 38 at addr ffff888006f1f80e by task ping/89
->     CPU: 2 PID: 89 Comm: ping Not tainted 5.10.0-rc7-debug+ #5
->     Call Trace:
->      dump_stack+0x9a/0xcc
->      print_address_description.constprop.0+0x1a/0x160
->      __kasan_report.cold+0x20/0x38
->      kasan_report+0x32/0x40
->      check_memory_region+0x145/0x1a0
->      memcpy+0x39/0x60
->      __ip_options_echo+0xa0e/0x12b0
->      __icmp_send+0x744/0x1700
->
-> Actually, out of the 4 drivers that do this, only gtp zeroed the cb for
-> the v4 case, while the rest did not. So this commit actually removes the
-> gtp-specific zeroing, while putting the code where it belongs in the
-> shared infrastructure of icmp{,v6}_ndo_send.
->
-> This commit fixes the issue by passing an empty IPCB or IP6CB along to
-> the functions that actually do the work. For the icmp_send, this was
-> already trivial, thanks to __icmp_send providing the plumbing function.
-> For icmpv6_send, this required a tiny bit of refactoring to make it
-> behave like the v4 case, after which it was straight forward.
->
-> Fixes: a2b78e9b2cac ("sunvnet: generate ICMP PTMUD messages for smaller port MTUs")
-> Reported-by: SinYu <liuxyon@gmail.com>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: David L Stevens <david.stevens@oracle.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Link: https://lore.kernel.org/netdev/CAF=yD-LOF116aHub6RMe8vB8ZpnrrnoTdqhobEx+bvoA8AsP0w@mail.gmail.com/T/
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Reviewed-by: Willem de Bruijn <willemb@google.com>
 
-Thanks adding more context, Jason.
+On 2/19/21 1:23 PM, Lorenz Bauer wrote:
+> On Fri, 19 Feb 2021 at 11:49, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>> +     case SO_NETNS_COOKIE:
+>>> +             lv = sizeof(u64);
+>>> +             if (len < lv)
+>>> +                     return -EINVAL;
+>>
+>>         if (len != lv)
+>>                 return -EINVAL;
+>>
+>> (There is no reason to support bigger value before at least hundred years)
+> 
+> Sorry that was copy pasta from SO_COOKIE which uses the same check. I'll
+> change it to your suggestion. Want me to fix SO_COOKIE as well?
+
+Unfortunately it is too late for SO_COOKIE
+
+Some applications might use len = 256, and just look at what the kernel
+gives back.
+
+Better be strict at the time a feature is added, instead of having
+to maintain legacy stuff.
+
