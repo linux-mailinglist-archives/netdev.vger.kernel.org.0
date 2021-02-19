@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B1BC32005C
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 22:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE592320056
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 22:36:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbhBSVgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 16:36:33 -0500
-Received: from mga07.intel.com ([134.134.136.100]:25186 "EHLO mga07.intel.com"
+        id S229725AbhBSVfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 16:35:51 -0500
+Received: from mga03.intel.com ([134.134.136.65]:59577 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229649AbhBSVg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Feb 2021 16:36:27 -0500
-IronPort-SDR: /jOO6iyj5lzeqvZBC1BndD9UVPoriFnTp3FKEJUmYaggqFd33Duxs//bE8Mx/4s3flx1NJZUNu
- i5Vmb8W27KAA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9900"; a="248034137"
+        id S229652AbhBSVfs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Feb 2021 16:35:48 -0500
+IronPort-SDR: S3qVdV4czJlunmouRuzKheNtdkqbig2T0T1Jc3/NXSbrhZHJ0z2a/8HOcQtB3OdqZOg0TUcjS2
+ o/ng0O2lgwSQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9900"; a="184028684"
 X-IronPort-AV: E=Sophos;i="5.81,191,1610438400"; 
-   d="scan'208";a="248034137"
+   d="scan'208";a="184028684"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2021 13:35:07 -0800
-IronPort-SDR: GhyXLqyFZGVxyrC6cmIoHvToqHQ1AV0P+1jFaVd81eUB7rMunVYIpldfY2j9xd/Jd0Q3kZs/Tx
- eQy1DuxfD8eQ==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2021 13:35:07 -0800
+IronPort-SDR: knytwoxVax7ZnCUqqzp76jDRje4oIyMXE0qjfidCcVQ8ESrgFGeu4Ct7/YypcHAjdwF+zLf9cG
+ Emc4rKSlIZEQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,191,1610438400"; 
-   d="scan'208";a="428012036"
+   d="scan'208";a="428012042"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by FMSMGA003.fm.intel.com with ESMTP; 19 Feb 2021 13:35:06 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
+Cc:     Mateusz Palczewski <mateusz.palczewski@intel.com>,
         netdev@vger.kernel.org, sassmann@redhat.com,
         anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net v2 6/8] i40e: Fix VFs not created
-Date:   Fri, 19 Feb 2021 13:36:04 -0800
-Message-Id: <20210219213606.2567536-7-anthony.l.nguyen@intel.com>
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+        Jaroslaw Gawin <jaroslawx.gawin@intel.com>,
+        Tony Brelinski <tonyx.brelinski@intel.com>
+Subject: [PATCH net v2 7/8] i40e: Fix add TC filter for IPv6
+Date:   Fri, 19 Feb 2021 13:36:05 -0800
+Message-Id: <20210219213606.2567536-8-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210219213606.2567536-1-anthony.l.nguyen@intel.com>
 References: <20210219213606.2567536-1-anthony.l.nguyen@intel.com>
@@ -43,47 +45,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+From: Mateusz Palczewski <mateusz.palczewski@intel.com>
 
-When creating VFs they were sometimes not getting resources.
-It was caused by not executing i40e_reset_all_vfs due to
-flag __I40E_VF_DISABLE being set on PF. Because of this
-IAVF was never able to finish setup sequence never
-getting reset indication from PF.
-Changed test_and_set_bit __I40E_VF_DISABLE in
-i40e_sync_filters_subtask to test_bit and removed clear_bit.
-This function should not set this bit it should only check
-if it hasn't been already set.
+Fix insufficient distinction between IPv4 and IPv6 addresses
+when creating a filter.
+IPv4 and IPv6 are kept in the same memory area. If IPv6 is added,
+then it's caught by IPv4 check, which leads to err -95.
 
-Fixes: a7542b876075 ("i40e: check __I40E_VF_DISABLE bit in i40e_sync_filters_subtask")
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Fixes: 2f4b411a3d67 ("i40e: Enable cloud filters via tc-flower")
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Reviewed-by: Jaroslaw Gawin <jaroslawx.gawin@intel.com>
+Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 3505d641660b..2e22ab5a0f9a 100644
+index 2e22ab5a0f9a..3e4a4d6f0419 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -2616,7 +2616,7 @@ static void i40e_sync_filters_subtask(struct i40e_pf *pf)
- 		return;
- 	if (!test_and_clear_bit(__I40E_MACVLAN_SYNC_PENDING, pf->state))
- 		return;
--	if (test_and_set_bit(__I40E_VF_DISABLE, pf->state)) {
-+	if (test_bit(__I40E_VF_DISABLE, pf->state)) {
- 		set_bit(__I40E_MACVLAN_SYNC_PENDING, pf->state);
- 		return;
- 	}
-@@ -2634,7 +2634,6 @@ static void i40e_sync_filters_subtask(struct i40e_pf *pf)
- 			}
- 		}
- 	}
--	clear_bit(__I40E_VF_DISABLE, pf->state);
- }
+@@ -7731,7 +7731,8 @@ int i40e_add_del_cloud_filter_big_buf(struct i40e_vsi *vsi,
+ 		return -EOPNOTSUPP;
  
- /**
+ 	/* adding filter using src_port/src_ip is not supported at this stage */
+-	if (filter->src_port || filter->src_ipv4 ||
++	if (filter->src_port ||
++	    (filter->src_ipv4 && filter->n_proto != ETH_P_IPV6) ||
+ 	    !ipv6_addr_any(&filter->ip.v6.src_ip6))
+ 		return -EOPNOTSUPP;
+ 
+@@ -7760,7 +7761,7 @@ int i40e_add_del_cloud_filter_big_buf(struct i40e_vsi *vsi,
+ 			cpu_to_le16(I40E_AQC_ADD_CLOUD_FILTER_MAC_VLAN_PORT);
+ 		}
+ 
+-	} else if (filter->dst_ipv4 ||
++	} else if ((filter->dst_ipv4 && filter->n_proto != ETH_P_IPV6) ||
+ 		   !ipv6_addr_any(&filter->ip.v6.dst_ip6)) {
+ 		cld_filter.element.flags =
+ 				cpu_to_le16(I40E_AQC_ADD_CLOUD_FILTER_IP_PORT);
 -- 
 2.26.2
 
