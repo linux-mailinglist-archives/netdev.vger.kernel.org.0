@@ -2,61 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E39F631FDEA
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 18:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FF731FDF0
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 18:38:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbhBSRcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 12:32:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36128 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229810AbhBSRcl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Feb 2021 12:32:41 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2624B64E67;
-        Fri, 19 Feb 2021 17:32:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613755920;
-        bh=WWA01gKLavXvx07cxmJW1uoeLQuBksjLA4f/DZLGVz8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=X8pVwdifz26BqzsUThsmPuu5uW8kg2qiQXn3NJ4fNPLTlibguOdxuEAfs+d4Jw4Et
-         WGKK81DR6j2WknGAk7cE64RYdK5wGD0ZipruyF6ftLgcRrZyr0ZAr3dYFBV+AwrfzI
-         hTAWS9TeM1M02ytHApFrSo3eQ/2Jc+Sw6YkhjP7fKrwbsozd8tsTu35aWrM12ZwC1K
-         CgfQgb7i0E4bRXR0tDFffz1m/xP/pL2WcH3Txlp4yvJSLTiADfUKBMScJ1nDI5SiIc
-         +e+P3dMXKOISL7dyJNi1rLRsfNjS0y/6hZZJXp8MrEoZ45GQz2JWwAPLXytWIGjUlG
-         rEx5QxFFafmwA==
-Date:   Fri, 19 Feb 2021 09:31:59 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        Jaroslaw Gawin <jaroslawx.gawin@intel.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: Re: [PATCH net 7/8] i40e: Fix add TC filter for IPv6
-Message-ID: <20210219093159.4a6fc853@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210218232504.2422834-8-anthony.l.nguyen@intel.com>
-References: <20210218232504.2422834-1-anthony.l.nguyen@intel.com>
-        <20210218232504.2422834-8-anthony.l.nguyen@intel.com>
+        id S229587AbhBSRhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 12:37:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:41394 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229515AbhBSRhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 12:37:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613756156;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ekWX7q27FPROIY9UEIDTTpbW4pRkKxPu/jRqn+X5HBA=;
+        b=XGfff6IIqel5MtEBDEEyU2mE8v1WqIeS0WtGSracke39VAAzHGI1kUvgFO+gJCVOtP7L3D
+        FGOk4rd8gi3LGYTskqygW5RlyXXLorBsQfp96LGrl/R0w1c/8CRko+iFGGpGNttmkIBCZW
+        HMKdKq7g27p0LlXKuGNVGw3Kt0omyZw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-116-QCyqBq3CNumNAgCcgfplGw-1; Fri, 19 Feb 2021 12:35:52 -0500
+X-MC-Unique: QCyqBq3CNumNAgCcgfplGw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1A8031005501;
+        Fri, 19 Feb 2021 17:35:51 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-115-85.ams2.redhat.com [10.36.115.85])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9583D1A353;
+        Fri, 19 Feb 2021 17:35:49 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH net 0/4] mptcp: a bunch of fixes
+Date:   Fri, 19 Feb 2021 18:35:36 +0100
+Message-Id: <cover.1613755058.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Feb 2021 15:25:03 -0800 Tony Nguyen wrote:
-> From: Mateusz Palczewski <mateusz.palczewski@intel.com>
-> 
-> Fix insufficient distinction between IPv4 and IPv6 addresses
-> when creating a filter.
-> IPv4 and IPv6 are kept in the same memory area. If IPv6 is added,
-> then it's caught by IPv4 check, which leads to err -95.
-> 
-> Fixes: 2f4b411a3d67("i40e: Enable cloud filters via tc-flower")
+This series bundle a few MPTCP fixes for the current net tree.
+They have been detected via syzkaller and packetdrill
 
-Small issue with the fixes tag here - missing space after hash.
+Patch 1 fixes a slow close for orphaned sockets
 
-Dave said he can't take any patches until Linus gets power back and
-pulls so since we're waiting perhaps you could fix and repost?
+Patch 2 fixes another hangup at close time, when no
+data was actually transmitted before close
 
-The patches look good to me.
+Patch 3 fixes a memory leak with unusual sockopts
+
+Patch 4 fixes stray wake-ups on listener sockets
+
+Florian Westphal (1):
+  mptcp: provide subflow aware release function
+
+Paolo Abeni (3):
+  mptcp: fix DATA_FIN processing for orphaned sockets
+  mptcp: fix DATA_FIN generation on early shutdown
+  mptcp: do not wakeup listener for MPJ subflows
+
+ net/mptcp/options.c  | 23 +++++++++-------
+ net/mptcp/protocol.c | 64 +++++++++++++++++++++++++++++++++++++++-----
+ net/mptcp/subflow.c  |  6 +++++
+ 3 files changed, 77 insertions(+), 16 deletions(-)
+
+-- 
+2.26.2
+
