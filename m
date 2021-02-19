@@ -2,389 +2,634 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E3231F3FE
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 03:28:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA4D31F420
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 04:13:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbhBSC0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 21:26:32 -0500
-Received: from mail.zx2c4.com ([104.131.123.232]:46464 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229474AbhBSC0a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 21:26:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1613701546;
+        id S229656AbhBSDMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 22:12:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57167 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229474AbhBSDMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 22:12:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613704263;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/OckHxmsc28+h06YDMyXqUWhKATMIQExJoICDdDFTiA=;
-        b=oOAAmuHtw/bBiFmWBFQuTCRGNRHo11j+dCT8skvGLd+oBgsG7PwZ6rhq/DPQIovPV/rT9x
-        RKZyYHWX49tgQ7QWKqtC1p90TaPft1+adqMVA/8e2uS23co45M9gnsQezbB+L6K5dXGc+o
-        LT+aAYM+kStvCMLmjjhElGiEr6VtLlQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ae796534 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 19 Feb 2021 02:25:45 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, SinYu <liuxyon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        David L Stevens <david.stevens@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH net v4] net: icmp: pass zeroed opts from icmp{,v6}_ndo_send before sending
-Date:   Fri, 19 Feb 2021 03:25:32 +0100
-Message-Id: <20210219022532.2446968-1-Jason@zx2c4.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eP2axzNlhzKcGsgpxzxoIxCrLLwqvlbRtVBmxSLwQiQ=;
+        b=Noj54tVLyR/79WNZXrRrrCPobGSY0m2jsDH1YOMa9CxZbfnyhjA7A9/8EA/nkECfJRNEVR
+        9gPf/0Y8fyZOec0GoBlx3dOKah8ePmuZ+FegWPhjH1PAA38pr0hMATRtb/ZUMGSENyC0Yk
+        s8EUzSCv2EmHLlkpGV5dbWi1eEQVpxU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-336-K9zKQWvTMqeeATTCwGPmEw-1; Thu, 18 Feb 2021 22:11:00 -0500
+X-MC-Unique: K9zKQWvTMqeeATTCwGPmEw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AE66F80196C;
+        Fri, 19 Feb 2021 03:10:59 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-12-188.pek2.redhat.com [10.72.12.188])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D8B485D9C2;
+        Fri, 19 Feb 2021 03:10:52 +0000 (UTC)
+Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
+ change map
+To:     Si-Wei Liu <si-wei.liu@oracle.com>, Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lulu@redhat.com
+References: <20210204073618.36336-1-elic@nvidia.com>
+ <81f5ce4f-cdb0-26cd-0dce-7ada824b1b86@oracle.com>
+ <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
+ <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
+ <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
+ <20210208100445.GA173340@mtl-vdi-166.wap.labs.mlnx>
+ <379d79ff-c8b4-9acb-1ee4-16573b601973@redhat.com>
+ <20210209061232.GC210455@mtl-vdi-166.wap.labs.mlnx>
+ <411ff244-a698-a312-333a-4fdbeb3271d1@redhat.com>
+ <a90dd931-43cc-e080-5886-064deb972b11@oracle.com>
+ <b749313c-3a44-f6b2-f9b8-3aefa2c2d72c@redhat.com>
+ <24d383db-e65c-82ff-9948-58ead3fc502b@oracle.com>
+ <740b4f73-c668-5e0e-5af2-ebea7528d7a2@redhat.com>
+ <9243c03b-8490-523c-2b78-928d1bcb0ddd@oracle.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b2d18964-8cd6-6bb1-1995-5b966207046d@redhat.com>
+Date:   Fri, 19 Feb 2021 11:10:51 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
+In-Reply-To: <9243c03b-8490-523c-2b78-928d1bcb0ddd@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The icmp{,v6}_send functions make all sorts of use of skb->cb, casting
-it with IPCB or IP6CB, assuming the skb to have come directly from the
-inet layer. But when the packet comes from the ndo layer, especially
-when forwarded, there's no telling what might be in skb->cb at that
-point. As a result, the icmp sending code risks reading bogus memory
-contents, which can result in nasty stack overflows such as this one
-reported by a user:
 
-    panic+0x108/0x2ea
-    __stack_chk_fail+0x14/0x20
-    __icmp_send+0x5bd/0x5c0
-    icmp_ndo_send+0x148/0x160
+On 2021/2/18 8:43 下午, Si-Wei Liu wrote:
+>
+>
+> On 2/17/2021 8:44 PM, Jason Wang wrote:
+>>
+>> On 2021/2/10 下午4:59, Si-Wei Liu wrote:
+>>>
+>>>
+>>> On 2/9/2021 7:53 PM, Jason Wang wrote:
+>>>>
+>>>> On 2021/2/10 上午10:30, Si-Wei Liu wrote:
+>>>>>
+>>>>>
+>>>>> On 2/8/2021 10:37 PM, Jason Wang wrote:
+>>>>>>
+>>>>>> On 2021/2/9 下午2:12, Eli Cohen wrote:
+>>>>>>> On Tue, Feb 09, 2021 at 11:20:14AM +0800, Jason Wang wrote:
+>>>>>>>> On 2021/2/8 下午6:04, Eli Cohen wrote:
+>>>>>>>>> On Mon, Feb 08, 2021 at 05:04:27PM +0800, Jason Wang wrote:
+>>>>>>>>>> On 2021/2/8 下午2:37, Eli Cohen wrote:
+>>>>>>>>>>> On Mon, Feb 08, 2021 at 12:27:18PM +0800, Jason Wang wrote:
+>>>>>>>>>>>> On 2021/2/6 上午7:07, Si-Wei Liu wrote:
+>>>>>>>>>>>>> On 2/3/2021 11:36 PM, Eli Cohen wrote:
+>>>>>>>>>>>>>> When a change of memory map occurs, the hardware 
+>>>>>>>>>>>>>> resources are destroyed
+>>>>>>>>>>>>>> and then re-created again with the new memory map. In 
+>>>>>>>>>>>>>> such case, we need
+>>>>>>>>>>>>>> to restore the hardware available and used indices. The 
+>>>>>>>>>>>>>> driver failed to
+>>>>>>>>>>>>>> restore the used index which is added here.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Also, since the driver also fails to reset the available 
+>>>>>>>>>>>>>> and used
+>>>>>>>>>>>>>> indices upon device reset, fix this here to avoid 
+>>>>>>>>>>>>>> regression caused by
+>>>>>>>>>>>>>> the fact that used index may not be zero upon device reset.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for 
+>>>>>>>>>>>>>> supported mlx5
+>>>>>>>>>>>>>> devices")
+>>>>>>>>>>>>>> Signed-off-by: Eli Cohen<elic@nvidia.com>
+>>>>>>>>>>>>>> ---
+>>>>>>>>>>>>>> v0 -> v1:
+>>>>>>>>>>>>>> Clear indices upon device reset
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>      drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 
+>>>>>>>>>>>>>> ++++++++++++++++++
+>>>>>>>>>>>>>>      1 file changed, 18 insertions(+)
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>>>>>> b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>>>>>> index 88dde3455bfd..b5fe6d2ad22f 100644
+>>>>>>>>>>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>>>>>> @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+>>>>>>>>>>>>>>          u64 device_addr;
+>>>>>>>>>>>>>>          u64 driver_addr;
+>>>>>>>>>>>>>>          u16 avail_index;
+>>>>>>>>>>>>>> +    u16 used_index;
+>>>>>>>>>>>>>>          bool ready;
+>>>>>>>>>>>>>>          struct vdpa_callback cb;
+>>>>>>>>>>>>>>          bool restore;
+>>>>>>>>>>>>>> @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+>>>>>>>>>>>>>>          u32 virtq_id;
+>>>>>>>>>>>>>>          struct mlx5_vdpa_net *ndev;
+>>>>>>>>>>>>>>          u16 avail_idx;
+>>>>>>>>>>>>>> +    u16 used_idx;
+>>>>>>>>>>>>>>          int fw_state;
+>>>>>>>>>>>>>>            /* keep last in the struct */
+>>>>>>>>>>>>>> @@ -804,6 +806,7 @@ static int create_virtqueue(struct 
+>>>>>>>>>>>>>> mlx5_vdpa_net
+>>>>>>>>>>>>>> *ndev, struct mlx5_vdpa_virtque
+>>>>>>>>>>>>>>            obj_context = 
+>>>>>>>>>>>>>> MLX5_ADDR_OF(create_virtio_net_q_in, in,
+>>>>>>>>>>>>>> obj_context);
+>>>>>>>>>>>>>>          MLX5_SET(virtio_net_q_object, obj_context, 
+>>>>>>>>>>>>>> hw_available_index,
+>>>>>>>>>>>>>> mvq->avail_idx);
+>>>>>>>>>>>>>> +    MLX5_SET(virtio_net_q_object, obj_context, 
+>>>>>>>>>>>>>> hw_used_index,
+>>>>>>>>>>>>>> mvq->used_idx);
+>>>>>>>>>>>>>>          MLX5_SET(virtio_net_q_object, obj_context,
+>>>>>>>>>>>>>> queue_feature_bit_mask_12_3,
+>>>>>>>>>>>>>> get_features_12_3(ndev->mvdev.actual_features));
+>>>>>>>>>>>>>>          vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, 
+>>>>>>>>>>>>>> obj_context,
+>>>>>>>>>>>>>> virtio_q_context);
+>>>>>>>>>>>>>> @@ -1022,6 +1025,7 @@ static int connect_qps(struct 
+>>>>>>>>>>>>>> mlx5_vdpa_net
+>>>>>>>>>>>>>> *ndev, struct mlx5_vdpa_virtqueue *m
+>>>>>>>>>>>>>>      struct mlx5_virtq_attr {
+>>>>>>>>>>>>>>          u8 state;
+>>>>>>>>>>>>>>          u16 available_index;
+>>>>>>>>>>>>>> +    u16 used_index;
+>>>>>>>>>>>>>>      };
+>>>>>>>>>>>>>>        static int query_virtqueue(struct mlx5_vdpa_net 
+>>>>>>>>>>>>>> *ndev, struct
+>>>>>>>>>>>>>> mlx5_vdpa_virtqueue *mvq,
+>>>>>>>>>>>>>> @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct
+>>>>>>>>>>>>>> mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+>>>>>>>>>>>>>>          memset(attr, 0, sizeof(*attr));
+>>>>>>>>>>>>>>          attr->state = MLX5_GET(virtio_net_q_object, 
+>>>>>>>>>>>>>> obj_context, state);
+>>>>>>>>>>>>>>          attr->available_index = 
+>>>>>>>>>>>>>> MLX5_GET(virtio_net_q_object,
+>>>>>>>>>>>>>> obj_context, hw_available_index);
+>>>>>>>>>>>>>> +    attr->used_index = MLX5_GET(virtio_net_q_object, 
+>>>>>>>>>>>>>> obj_context,
+>>>>>>>>>>>>>> hw_used_index);
+>>>>>>>>>>>>>>          kfree(out);
+>>>>>>>>>>>>>>          return 0;
+>>>>>>>>>>>>>>      @@ -1535,6 +1540,16 @@ static void 
+>>>>>>>>>>>>>> teardown_virtqueues(struct
+>>>>>>>>>>>>>> mlx5_vdpa_net *ndev)
+>>>>>>>>>>>>>>          }
+>>>>>>>>>>>>>>      }
+>>>>>>>>>>>>>>      +static void clear_virtqueues(struct mlx5_vdpa_net 
+>>>>>>>>>>>>>> *ndev)
+>>>>>>>>>>>>>> +{
+>>>>>>>>>>>>>> +    int i;
+>>>>>>>>>>>>>> +
+>>>>>>>>>>>>>> +    for (i = ndev->mvdev.max_vqs - 1; i >= 0; i--) {
+>>>>>>>>>>>>>> +        ndev->vqs[i].avail_idx = 0;
+>>>>>>>>>>>>>> +        ndev->vqs[i].used_idx = 0;
+>>>>>>>>>>>>>> +    }
+>>>>>>>>>>>>>> +}
+>>>>>>>>>>>>>> +
+>>>>>>>>>>>>>>      /* TODO: cross-endian support */
+>>>>>>>>>>>>>>      static inline bool mlx5_vdpa_is_little_endian(struct 
+>>>>>>>>>>>>>> mlx5_vdpa_dev
+>>>>>>>>>>>>>> *mvdev)
+>>>>>>>>>>>>>>      {
+>>>>>>>>>>>>>> @@ -1610,6 +1625,7 @@ static int save_channel_info(struct
+>>>>>>>>>>>>>> mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+>>>>>>>>>>>>>>              return err;
+>>>>>>>>>>>>>>            ri->avail_index = attr.available_index;
+>>>>>>>>>>>>>> +    ri->used_index = attr.used_index;
+>>>>>>>>>>>>>>          ri->ready = mvq->ready;
+>>>>>>>>>>>>>>          ri->num_ent = mvq->num_ent;
+>>>>>>>>>>>>>>          ri->desc_addr = mvq->desc_addr;
+>>>>>>>>>>>>>> @@ -1654,6 +1670,7 @@ static void 
+>>>>>>>>>>>>>> restore_channels_info(struct
+>>>>>>>>>>>>>> mlx5_vdpa_net *ndev)
+>>>>>>>>>>>>>>                  continue;
+>>>>>>>>>>>>>>                mvq->avail_idx = ri->avail_index;
+>>>>>>>>>>>>>> +        mvq->used_idx = ri->used_index;
+>>>>>>>>>>>>>>              mvq->ready = ri->ready;
+>>>>>>>>>>>>>>              mvq->num_ent = ri->num_ent;
+>>>>>>>>>>>>>>              mvq->desc_addr = ri->desc_addr;
+>>>>>>>>>>>>>> @@ -1768,6 +1785,7 @@ static void 
+>>>>>>>>>>>>>> mlx5_vdpa_set_status(struct
+>>>>>>>>>>>>>> vdpa_device *vdev, u8 status)
+>>>>>>>>>>>>>>          if (!status) {
+>>>>>>>>>>>>>>              mlx5_vdpa_info(mvdev, "performing device 
+>>>>>>>>>>>>>> reset\n");
+>>>>>>>>>>>>>>              teardown_driver(ndev);
+>>>>>>>>>>>>>> +        clear_virtqueues(ndev);
+>>>>>>>>>>>>> The clearing looks fine at the first glance, as it aligns 
+>>>>>>>>>>>>> with the other
+>>>>>>>>>>>>> state cleanups floating around at the same place. However, 
+>>>>>>>>>>>>> the thing is
+>>>>>>>>>>>>> get_vq_state() is supposed to be called right after to get 
+>>>>>>>>>>>>> sync'ed with
+>>>>>>>>>>>>> the latest internal avail_index from device while vq is 
+>>>>>>>>>>>>> stopped. The
+>>>>>>>>>>>>> index was saved in the driver software at vq suspension, 
+>>>>>>>>>>>>> but before the
+>>>>>>>>>>>>> virtq object is destroyed. We shouldn't clear the 
+>>>>>>>>>>>>> avail_index too early.
+>>>>>>>>>>>> Good point.
+>>>>>>>>>>>>
+>>>>>>>>>>>> There's a limitation on the virtio spec and vDPA framework 
+>>>>>>>>>>>> that we can not
+>>>>>>>>>>>> simply differ device suspending from device reset.
+>>>>>>>>>>>>
+>>>>>>>>>>> Are you talking about live migration where you reset the 
+>>>>>>>>>>> device but
+>>>>>>>>>>> still want to know how far it progressed in order to 
+>>>>>>>>>>> continue from the
+>>>>>>>>>>> same place in the new VM?
+>>>>>>>>>> Yes. So if we want to support live migration at we need:
+>>>>>>>>>>
+>>>>>>>>>> in src node:
+>>>>>>>>>> 1) suspend the device
+>>>>>>>>>> 2) get last_avail_idx via get_vq_state()
+>>>>>>>>>>
+>>>>>>>>>> in the dst node:
+>>>>>>>>>> 3) set last_avail_idx via set_vq_state()
+>>>>>>>>>> 4) resume the device
+>>>>>>>>>>
+>>>>>>>>>> So you can see, step 2 requires the device/driver not to 
+>>>>>>>>>> forget the
+>>>>>>>>>> last_avail_idx.
+>>>>>>>>>>
+>>>>>>>>> Just to be sure, what really matters here is the used index. 
+>>>>>>>>> Becuase the
+>>>>>>>>> vriqtueue itself is copied from the src VM to the dest VM. The 
+>>>>>>>>> available
+>>>>>>>>> index is alreay there and we know the hardware reads it from 
+>>>>>>>>> there.
+>>>>>>>>
+>>>>>>>> So for "last_avail_idx" I meant the hardware internal avail 
+>>>>>>>> index. It's not
+>>>>>>>> stored in the virtqueue so we must migrate it from src to dest 
+>>>>>>>> and set them
+>>>>>>>> through set_vq_state(). Then in the destination, the virtqueue 
+>>>>>>>> can be
+>>>>>>>> restarted from that index.
+>>>>>>>>
+>>>>>>> Consider this case: driver posted buffers till avail index 
+>>>>>>> becomes the
+>>>>>>> value 50. Hardware is executing but made it till 20 when 
+>>>>>>> virtqueue was
+>>>>>>> suspended due to live migration - this is indicated by hardware 
+>>>>>>> used
+>>>>>>> index equal 20.
+>>>>>>
+>>>>>>
+>>>>>> So in this case the used index in the virtqueue should be 20? 
+>>>>>> Otherwise we need not sync used index itself but all the used 
+>>>>>> entries that is not committed to the used ring.
+>>>>>
+>>>>> In other word, for mlx5 vdpa there's no such internal 
+>>>>> last_avail_idx stuff maintained by the hardware, right? 
+>>>>
+>>>>
+>>>> For each device it should have one otherwise it won't work 
+>>>> correctly during stop/resume. See the codes 
+>>>> mlx5_vdpa_get_vq_state() which calls query_virtqueue() that build 
+>>>> commands to query "last_avail_idx" from the hardware:
+>>>>
+>>>>     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, opcode, 
+>>>> MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
+>>>>     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_type, 
+>>>> MLX5_OBJ_TYPE_VIRTIO_NET_Q);
+>>>>     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_id, mvq->virtq_id);
+>>>>     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, uid, 
+>>>> ndev->mvdev.res.uid);
+>>>>     err = mlx5_cmd_exec(ndev->mvdev.mdev, in, sizeof(in), out, 
+>>>> outlen);
+>>>>     if (err)
+>>>>         goto err_cmd;
+>>>>
+>>>>     obj_context = MLX5_ADDR_OF(query_virtio_net_q_out, out, 
+>>>> obj_context);
+>>>>     memset(attr, 0, sizeof(*attr));
+>>>>     attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
+>>>>     attr->available_index = MLX5_GET(virtio_net_q_object, 
+>>>> obj_context, hw_available_index);
+>>>>
+>>> Eli should be able to correct me, but this hw_available_index might 
+>>> just be a cached value of virtqueue avail_index in the memory from 
+>>> the most recent sync. 
+>>
+>>
+>> It should not, otherwise it will be a bug.
+> The hw_available_index not showing the correct last_avail_index value 
+> is technically a firmware bug, as Eli alluded to. That's why I had the 
+> original question for how this entire synchronization scheme could 
+> work if just saving and restoring this cached value. In my 
+> observation, the hw_available_index was seen far off from the 
+> hw_used_index post vq suspension, I just pointed out the fact that 
+> this hardware value is neither last_avail_idx nor last_used_idx that 
+> is useful to represent vq state.
+>
+> However, the core question I'm having is should we care about fixing 
+> this in the firmware interface level (actually, the hardware 
+> implementation), or rather, just as said, some devices e.g. network 
+> device could live with the simplified form of assumption (used_idx ==  
+> last_used_idx  == last_avail_idx) where pending requests can be 
+> drained and completed before device is stopped or suspended. Despite 
+> of what device behavior would be expected or defined in the virtio 
+> spec, the get/set_vq_state() API should have very clear semantics: 
+> whether both forms (i.e. restore either one of used_idx or 
+> last_avail_idx is fine) are acceptable, or it needs to be religious to 
+> restore vq state via last_avail_idx only. In the latter case, both the 
+> mlx5 vdpa net driver and the firmware interface needs to be fixed to 
+> accommodate the stricter API requirement.
+>
+> FWIW I don't think network (Ethernet) device should always assume 
+> (used_idx ==  last_used_idx  == last_avail_idx) while being stopped 
+> (were there virtio RDMA device in reality this assumption would break): 
 
-In icmp_send, skb->cb is cast with IPCB and an ip_options struct is read
-from it. The optlen parameter there is of particular note, as it can
-induce writes beyond bounds. There are quite a few ways that can happen
-in __ip_options_echo. For example:
 
-    // sptr/skb are attacker-controlled skb bytes
-    sptr = skb_network_header(skb);
-    // dptr/dopt points to stack memory allocated by __icmp_send
-    dptr = dopt->__data;
-    // sopt is the corrupt skb->cb in question
-    if (sopt->rr) {
-        optlen  = sptr[sopt->rr+1]; // corrupt skb->cb + skb->data
-        soffset = sptr[sopt->rr+2]; // corrupt skb->cb + skb->data
-	// this now writes potentially attacker-controlled data, over
-	// flowing the stack:
-        memcpy(dptr, sptr+sopt->rr, optlen);
-    }
+Right, it's the choice of device and it would be more complicated if we 
+had devices without this assumption. The main issue is whther or not we 
+need to wait for the drain of the request and if such darining can only 
+take reasonable time to finish.
 
-In the icmpv6_send case, the story is similar, but not as dire, as only
-IP6CB(skb)->iif and IP6CB(skb)->dsthao are used. The dsthao case is
-worse than the iif case, but it is passed to ipv6_find_tlv, which does
-a bit of bounds checking on the value.
 
-This is easy to simulate by doing a `memset(skb->cb, 0x41,
-sizeof(skb->cb));` before calling icmp{,v6}_ndo_send, and it's only by
-good fortune and the rarity of icmp sending from that context that we've
-avoided reports like this until now. For example, in KASAN:
+> it could well follow the golden rules in virtio S/W implementation to 
+> have separate last_used_idx and last_avail_idx in the hardware, then 
+> it'll be 100% API compliant.. But we know that such implementation is 
+> unnecessarily complicated for Ethernet device. Hence I thought there 
+> could be sort of reliefs for some driver/device and it's totally up to 
+> the device/driver to choose the implementation.
 
-    BUG: KASAN: stack-out-of-bounds in __ip_options_echo+0xa0e/0x12b0
-    Write of size 38 at addr ffff888006f1f80e by task ping/89
-    CPU: 2 PID: 89 Comm: ping Not tainted 5.10.0-rc7-debug+ #5
-    Call Trace:
-     dump_stack+0x9a/0xcc
-     print_address_description.constprop.0+0x1a/0x160
-     __kasan_report.cold+0x20/0x38
-     kasan_report+0x32/0x40
-     check_memory_region+0x145/0x1a0
-     memcpy+0x39/0x60
-     __ip_options_echo+0xa0e/0x12b0
-     __icmp_send+0x744/0x1700
 
-Actually, out of the 4 drivers that do this, only gtp zeroed the cb for
-the v4 case, while the rest did not. So this commit actually removes the
-gtp-specific zeroing, while putting the code where it belongs in the
-shared infrastructure of icmp{,v6}_ndo_send.
+Yes, the current API leaves the room for last_used_idx but we may still 
+need to migrate the indices (as I mentioned below).
 
-This commit fixes the issue by passing an empty IPCB or IP6CB along to
-the functions that actually do the work. For the icmp_send, this was
-already trivial, thanks to __icmp_send providing the plumbing function.
-For icmpv6_send, this required a tiny bit of refactoring to make it
-behave like the v4 case, after which it was straight forward.
 
-Fixes: a2b78e9b2cac ("sunvnet: generate ICMP PTMUD messages for smaller port MTUs")
-Reported-by: SinYu <liuxyon@gmail.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: David L Stevens <david.stevens@oracle.com>
-Cc: David S. Miller <davem@davemloft.net>
-Link: https://lore.kernel.org/netdev/CAF=yD-LOF116aHub6RMe8vB8ZpnrrnoTdqhobEx+bvoA8AsP0w@mail.gmail.com/T/
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v3->v4:
-- More explanation in commit message
-- Pass the right parm parameter to send()
-Changes v2->v3:
-- Fix build errors with CONFIG_IPV6=m
+>
+>>
+>>
+>>> I doubt it's the one you talked about in software implementation.
+>>
+>>
+>> Actually not, it's a virtio general issue:
+>>
+>> Consider there's not indices wrap. And:
+>> - used_idx is the used index in the virtqueue
+>> - last_used_idx is the used index maintained by the device, it points 
+>> to the location where to put the next done requests to the used_ring
+>> - avail_idx is the available index in the virtqueue
+>> - last_avail_idx is the index maintained by the device, it points to 
+>> the location where device need to read from the available.
+>>
+>> So bascially, from device POV, it only cares the buffer that belong 
+>> to itself which are [used_idx, avail_idx). So we have:
+>>
+>> [used_idx, last_used_idx) The requests that have been completed by 
+>> the device but not completed to the used ring (or at least used_idx 
+>> is not updated).
+>> [last_used_idx, last_avail_idx) The requests that are being processed 
+>> by the device.
+>> [last_avail_idx, avail_idx) The requests that are made available by 
+>> the driver but not processed by the device.
+>>
+>> During device stop/suspend, the device should:
+>>
+>> - stop reading new request from available ring (or read until the end 
+>> of descriptor chain)
+>> - sync used_idx with last_used_idx. Otherwise we need a complicated 
+>> but not necessary API to sync last_used_idx and the indices that are 
+>> not committed to used ring (since device may complete the request out 
+>> of order)
+>>
+>> So we know used_idx == last_used_idx in this case, so we have:
+>>
+>> [used_idx/last_used_idx, last_avail_idx) The requests that are being 
+>> processed.
+>> [last_avail_idx, avail_idx) The requests that are available for the 
+>> driver but not yet processed.
+>>
+>> For networking device, it's sufficient to think the requests are 
+>> completed when TX/RX DMA are finished. So there's no requests that 
+>> are being processed after the stop. In this case we had: used_idx == 
+>> last_used_idx == last_avail_idx. Then we only had:
+>>
+>> [used_idx/last_used_idx/last_avail_idx, avail_idx] The requests that 
+>> are made available by the driver but not processed by the device. 
+>> That's why you may think only used_idx matters here.
+>>
+>> For block device, the completion of the request might require the 
+>> communication with the remote backend, so we can't assume 
+>> last_used_idx is equal to the last_avail_idx. Whether or not to wait 
+>> for the drain the request is still being discussed[1].
+> I guess this requirement is very subject to the specific storage setup 
+> (networked v.s. local) including the guest app/configuration (retry 
+> v.s. time out). IMHO there shouldn't be a definite yes-or-no answer 
+> here. But in general, for req-ack type of request if the completion 
+> (ack) cannot simply replicate across live migration, it should wait 
+> until the pending requests are completely drained.
 
- drivers/net/gtp.c      |  1 -
- include/linux/icmpv6.h | 26 ++++++++++++++++++++------
- include/linux/ipv6.h   |  1 -
- include/net/icmp.h     |  6 +++++-
- net/ipv4/icmp.c        |  5 +++--
- net/ipv6/icmp.c        | 18 +++++++++---------
- net/ipv6/ip6_icmp.c    | 12 +++++++-----
- 7 files changed, 44 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 4c04e271f184..fd3c2d86e48b 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -539,7 +539,6 @@ static int gtp_build_skb_ip4(struct sk_buff *skb, struct net_device *dev,
- 	if (!skb_is_gso(skb) && (iph->frag_off & htons(IP_DF)) &&
- 	    mtu < ntohs(iph->tot_len)) {
- 		netdev_dbg(dev, "packet too big, fragmentation needed\n");
--		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
- 		icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
- 			      htonl(mtu));
- 		goto err_rt;
-diff --git a/include/linux/icmpv6.h b/include/linux/icmpv6.h
-index 1b3371ae8193..0a383202dd5e 100644
---- a/include/linux/icmpv6.h
-+++ b/include/linux/icmpv6.h
-@@ -3,6 +3,7 @@
- #define _LINUX_ICMPV6_H
- 
- #include <linux/skbuff.h>
-+#include <linux/ipv6.h>
- #include <uapi/linux/icmpv6.h>
- 
- static inline struct icmp6hdr *icmp6_hdr(const struct sk_buff *skb)
-@@ -15,13 +16,16 @@ static inline struct icmp6hdr *icmp6_hdr(const struct sk_buff *skb)
- #if IS_ENABLED(CONFIG_IPV6)
- 
- typedef void ip6_icmp_send_t(struct sk_buff *skb, u8 type, u8 code, __u32 info,
--			     const struct in6_addr *force_saddr);
-+			     const struct in6_addr *force_saddr,
-+			     const struct inet6_skb_parm *parm);
- #if IS_BUILTIN(CONFIG_IPV6)
- void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
--		const struct in6_addr *force_saddr);
--static inline void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-+		const struct in6_addr *force_saddr,
-+		const struct inet6_skb_parm *parm);
-+static inline void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
-+				 const struct inet6_skb_parm *parm)
- {
--	icmp6_send(skb, type, code, info, NULL);
-+	icmp6_send(skb, type, code, info, NULL, parm);
- }
- static inline int inet6_register_icmp_sender(ip6_icmp_send_t *fn)
- {
-@@ -34,18 +38,28 @@ static inline int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn)
- 	return 0;
- }
- #else
--extern void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info);
-+extern void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
-+			  const struct inet6_skb_parm *parm);
- extern int inet6_register_icmp_sender(ip6_icmp_send_t *fn);
- extern int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn);
- #endif
- 
-+static inline void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-+{
-+	__icmpv6_send(skb, type, code, info, IP6CB(skb));
-+}
-+
- int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
- 			       unsigned int data_len);
- 
- #if IS_ENABLED(CONFIG_NF_NAT)
- void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info);
- #else
--#define icmpv6_ndo_send icmpv6_send
-+static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
-+{
-+	struct inet6_skb_parm parm = { 0 };
-+	__icmpv6_send(skb_in, type, code, info, &parm);
-+}
- #endif
- 
- #else
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index dda61d150a13..f514a7dd8c9c 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -84,7 +84,6 @@ struct ipv6_params {
- 	__s32 autoconf;
- };
- extern struct ipv6_params ipv6_defaults;
--#include <linux/icmpv6.h>
- #include <linux/tcp.h>
- #include <linux/udp.h>
- 
-diff --git a/include/net/icmp.h b/include/net/icmp.h
-index 9ac2d2672a93..fd84adc47963 100644
---- a/include/net/icmp.h
-+++ b/include/net/icmp.h
-@@ -46,7 +46,11 @@ static inline void icmp_send(struct sk_buff *skb_in, int type, int code, __be32
- #if IS_ENABLED(CONFIG_NF_NAT)
- void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info);
- #else
--#define icmp_ndo_send icmp_send
-+static inline void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
-+{
-+	struct ip_options opts = { 0 };
-+	__icmp_send(skb_in, type, code, info, &opts);
-+}
- #endif
- 
- int icmp_rcv(struct sk_buff *skb);
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 396b492c804f..616e2dc1c8fa 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -775,13 +775,14 @@ EXPORT_SYMBOL(__icmp_send);
- void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
- {
- 	struct sk_buff *cloned_skb = NULL;
-+	struct ip_options opts = { 0 };
- 	enum ip_conntrack_info ctinfo;
- 	struct nf_conn *ct;
- 	__be32 orig_ip;
- 
- 	ct = nf_ct_get(skb_in, &ctinfo);
- 	if (!ct || !(ct->status & IPS_SRC_NAT)) {
--		icmp_send(skb_in, type, code, info);
-+		__icmp_send(skb_in, type, code, info, &opts);
- 		return;
- 	}
- 
-@@ -796,7 +797,7 @@ void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
- 
- 	orig_ip = ip_hdr(skb_in)->saddr;
- 	ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
--	icmp_send(skb_in, type, code, info);
-+	__icmp_send(skb_in, type, code, info, &opts);
- 	ip_hdr(skb_in)->saddr = orig_ip;
- out:
- 	consume_skb(cloned_skb);
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index f3d05866692e..fd1f896115c1 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -331,10 +331,9 @@ static int icmpv6_getfrag(void *from, char *to, int offset, int len, int odd, st
- }
- 
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
--static void mip6_addr_swap(struct sk_buff *skb)
-+static void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt)
- {
- 	struct ipv6hdr *iph = ipv6_hdr(skb);
--	struct inet6_skb_parm *opt = IP6CB(skb);
- 	struct ipv6_destopt_hao *hao;
- 	struct in6_addr tmp;
- 	int off;
-@@ -351,7 +350,7 @@ static void mip6_addr_swap(struct sk_buff *skb)
- 	}
- }
- #else
--static inline void mip6_addr_swap(struct sk_buff *skb) {}
-+static inline void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt) {}
- #endif
- 
- static struct dst_entry *icmpv6_route_lookup(struct net *net,
-@@ -446,7 +445,8 @@ static int icmp6_iif(const struct sk_buff *skb)
-  *	Send an ICMP message in response to a packet in error
-  */
- void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
--		const struct in6_addr *force_saddr)
-+		const struct in6_addr *force_saddr,
-+		const struct inet6_skb_parm *parm)
- {
- 	struct inet6_dev *idev = NULL;
- 	struct ipv6hdr *hdr = ipv6_hdr(skb);
-@@ -542,7 +542,7 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
- 	if (!(skb->dev->flags & IFF_LOOPBACK) && !icmpv6_global_allow(net, type))
- 		goto out_bh_enable;
- 
--	mip6_addr_swap(skb);
-+	mip6_addr_swap(skb, parm);
- 
- 	sk = icmpv6_xmit_lock(net);
- 	if (!sk)
-@@ -559,7 +559,7 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
- 		/* select a more meaningful saddr from input if */
- 		struct net_device *in_netdev;
- 
--		in_netdev = dev_get_by_index(net, IP6CB(skb)->iif);
-+		in_netdev = dev_get_by_index(net, parm->iif);
- 		if (in_netdev) {
- 			ipv6_dev_get_saddr(net, in_netdev, &fl6.daddr,
- 					   inet6_sk(sk)->srcprefs,
-@@ -640,7 +640,7 @@ EXPORT_SYMBOL(icmp6_send);
-  */
- void icmpv6_param_prob(struct sk_buff *skb, u8 code, int pos)
- {
--	icmp6_send(skb, ICMPV6_PARAMPROB, code, pos, NULL);
-+	icmp6_send(skb, ICMPV6_PARAMPROB, code, pos, NULL, IP6CB(skb));
- 	kfree_skb(skb);
- }
- 
-@@ -697,10 +697,10 @@ int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
- 	}
- 	if (type == ICMP_TIME_EXCEEDED)
- 		icmp6_send(skb2, ICMPV6_TIME_EXCEED, ICMPV6_EXC_HOPLIMIT,
--			   info, &temp_saddr);
-+			   info, &temp_saddr, IP6CB(skb2));
- 	else
- 		icmp6_send(skb2, ICMPV6_DEST_UNREACH, ICMPV6_ADDR_UNREACH,
--			   info, &temp_saddr);
-+			   info, &temp_saddr, IP6CB(skb2));
- 	if (rt)
- 		ip6_rt_put(rt);
- 
-diff --git a/net/ipv6/ip6_icmp.c b/net/ipv6/ip6_icmp.c
-index 70c8c2f36c98..9e3574880cb0 100644
---- a/net/ipv6/ip6_icmp.c
-+++ b/net/ipv6/ip6_icmp.c
-@@ -33,23 +33,25 @@ int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn)
- }
- EXPORT_SYMBOL(inet6_unregister_icmp_sender);
- 
--void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-+void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
-+		   const struct inet6_skb_parm *parm)
- {
- 	ip6_icmp_send_t *send;
- 
- 	rcu_read_lock();
- 	send = rcu_dereference(ip6_icmp_send);
- 	if (send)
--		send(skb, type, code, info, NULL);
-+		send(skb, type, code, info, NULL, parm);
- 	rcu_read_unlock();
- }
--EXPORT_SYMBOL(icmpv6_send);
-+EXPORT_SYMBOL(__icmpv6_send);
- #endif
- 
- #if IS_ENABLED(CONFIG_NF_NAT)
- #include <net/netfilter/nf_conntrack.h>
- void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
- {
-+	struct inet6_skb_parm parm = { 0 };
- 	struct sk_buff *cloned_skb = NULL;
- 	enum ip_conntrack_info ctinfo;
- 	struct in6_addr orig_ip;
-@@ -57,7 +59,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
- 
- 	ct = nf_ct_get(skb_in, &ctinfo);
- 	if (!ct || !(ct->status & IPS_SRC_NAT)) {
--		icmpv6_send(skb_in, type, code, info);
-+		__icmpv6_send(skb_in, type, code, info, &parm);
- 		return;
- 	}
- 
-@@ -72,7 +74,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
- 
- 	orig_ip = ipv6_hdr(skb_in)->saddr;
- 	ipv6_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
--	icmpv6_send(skb_in, type, code, info);
-+	__icmpv6_send(skb_in, type, code, info, &parm);
- 	ipv6_hdr(skb_in)->saddr = orig_ip;
- out:
- 	consume_skb(cloned_skb);
--- 
-2.30.1
+Yes, and qemu may fail the migartion if the pending requets takes too 
+long to be drained, that's why an asynchornous API is introduced in [1].
+
+
+>
+>>
+>> So you can see, for all the cases, what really matters is the 
+>> last_avail_idx. The device should know where it need to start reading 
+>> for the next request, and it is not necessarily equal to 
+>> last_used_idx or used_idx. What makes things a little bit easier is 
+>> the networking device whose last_used_idx is equal to last_avail_idx.
+>>
+>>
+>>> If I understand Eli correctly, hardware will always reload the 
+>>> latest avail_index from memory whenever it's being sync'ed again.
+>>>
+>>> <quote>
+>>> The hardware always goes to read the available index from memory. 
+>>> The requirement to configure it when creating a new object is still 
+>>> a requirement defined by the interface so I must not violate 
+>>> interface requirments.
+>>> </quote>
+>>>
+>>> If the hardware does everything perfectly that is able to flush 
+>>> pending requests, update descriptors, rings plus used indices all at 
+>>> once before the suspension, there's no need for hardware to maintain 
+>>> a separate internal index than the h/w used_index. The hardware can 
+>>> get started from the saved used_index upon resuming. I view this is 
+>>> of (hardware) implementation choices and thought it does not violate 
+>>> the virtio spec?
+>>
+>>
+>> Yes, but as you said, it has a lot of assumptions which may not work 
+>> for other type of devices. So what I refer "last_avail_idx" is 
+>> probably the "used_idx" in your description here. It might be the 
+>> same in this case for networking device.
+>>
+>>
+>>>
+>>>
+>>>>
+>>>>
+>>>>
+>>>>> And the used_idx in the virtqueue is always in sync with the 
+>>>>> hardware used_index, and hardware is supposed to commit pending 
+>>>>> used buffers to the ring while bumping up the hardware used_index 
+>>>>> (and also committed to memory) altogether prior to suspension, is 
+>>>>> my understanding correct here? Double checking if this is the 
+>>>>> expected semantics of what 
+>>>>> modify_virtqueue(MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND) should 
+>>>>> achieve.
+>>>>>
+>>>>> If the above is true, then it looks to me for mlx5 vdpa we should 
+>>>>> really return h/w used_idx rather than the last_avail_idx through 
+>>>>> get_vq_state(), in order to reconstruct the virt queue state post 
+>>>>> live migration. For the set_map case, the internal last_avail_idx 
+>>>>> really doesn't matter, although both indices are saved and 
+>>>>> restored transparently as-is.
+>>>>
+>>>>
+>>>> Right, a subtle thing here is that: for the device that might have 
+>>>> can't not complete all virtqueue requests during vq suspending, the 
+>>>> "last_avail_idx" might not be equal to the hardware used_idx. Thing 
+>>>> might be true for the storage devices that needs to connect to a 
+>>>> remote backend. But this is not the case of networking device, so 
+>>>> last_avail_idx should be equal to hardware used_idx here. 
+>>> Eli, since it's your hardware, does it work this way? i.e. does the 
+>>> firmware interface see a case where virtqueue requests can't be 
+>>> completed before suspending vq?
+>>
+>>
+>> For storage device, I think it can happen.
+>>
+>>
+>>>
+>>>> But using the "last_avail_idx" or hardware avail_idx should always 
+>>>> be better in this case since it's guaranteed to correct and will 
+>>>> have less confusion. We use this convention in other types of vhost 
+>>>> backends (vhost-kernel, vhost-user).
+>>>>
+>>>> So looking at mlx5_set_vq_state(), it probably won't work since it 
+>>>> doesn't not set either hardware avail_idx or hardware used_idx:
+>>> The saved mvq->avail_idx will be used to recreate hardware virtq 
+>>> object and the used index in create_virtqueue(), once status 
+>>> DRIVER_OK is set. I suspect we should pass the index to 
+>>> mvq->used_idx in mlx5_vdpa_set_vq_state() below instead.
+>>>
+>>
+>> It depends on what did mvq->used_idx meant? If it's last_used_idx, it 
+>> should be the same with mvq->avail_idx for networking device.
+> It's the last_used_idx. Note, Eli already posted a patch ("vdpa/mlx5: 
+> Fix suspend/resume index restoration") to repurpose set_vq_state() to 
+> restore both used_idx and avail_idx (both indices should be 
+> conceptually equal in that device model) across reset. 
+
+
+Will check, burried by mails :(
+
+
+> Which implies the simplified assumption I mentioned earlier. The 
+> requirement of set_vq_state() API should make it clear if this kind of 
+> assumption is acceptable.
+
+
+Right now the value is exposed to userspace via GET_VRING_BASE, so only 
+last_avail_idx is synced. If we need sync last_used_idx, we should also 
+sync pending indices which requires more thoughts.
+
+Thanks
+
+
+>
+>
+> Thanks,
+> -Siwei
+>
+>
+>>
+>> Thanks
+>>
+>>
+>>>
+>>> Thanks,
+>>> -Siwei
+>>>>
+>>>> static int mlx5_vdpa_set_vq_state(struct vdpa_device *vdev, u16 idx,
+>>>>                   const struct vdpa_vq_state *state)
+>>>> {
+>>>>     struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+>>>>     struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+>>>>     struct mlx5_vdpa_virtqueue *mvq = &ndev->vqs[idx];
+>>>>
+>>>>     if (mvq->fw_state == MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY) {
+>>>>         mlx5_vdpa_warn(mvdev, "can't modify available index\n");
+>>>>         return -EINVAL;
+>>>>     }
+>>>>
+>>>>     mvq->avail_idx = state->avail_index;
+>>>>     return 0;
+>>>> }
+>>>>
+>>>> Depends on the hardware, we should either set hardware used_idx or 
+>>>> hardware avail_idx here.
+>>>>
+>>>> I think we need to clarify how device is supposed to work in the 
+>>>> virtio spec.
+>>>>
+>>>> Thanks
+>>>>
+>>>>
+>>>>>
+>>>>> -Siwei
+>>>>>
+>>>>>>
+>>>>>>
+>>>>>>> Now the vritqueue is copied to the new VM and the
+>>>>>>> hardware now has to continue execution from index 20. We need to 
+>>>>>>> tell
+>>>>>>> the hardware via configuring the last used_index.
+>>>>>>
+>>>>>>
+>>>>>> If the hardware can not sync the index from the virtqueue, the 
+>>>>>> driver can do the synchronization by make the last_used_idx 
+>>>>>> equals to used index in the virtqueue.
+>>>>>>
+>>>>>> Thanks
+>>>>>>
+>>>>>>
+>>>>>>>   So why don't we
+>>>>>>> restore the used index?
+>>>>>>>
+>>>>>>>>> So it puzzles me why is set_vq_state() we do not communicate 
+>>>>>>>>> the saved
+>>>>>>>>> used index.
+>>>>>>>>
+>>>>>>>> We don't do that since:
+>>>>>>>>
+>>>>>>>> 1) if the hardware can sync its internal used index from the 
+>>>>>>>> virtqueue
+>>>>>>>> during device, then we don't need it
+>>>>>>>> 2) if the hardware can not sync its internal used index, the 
+>>>>>>>> driver (e.g as
+>>>>>>>> you did here) can do that.
+>>>>>>>>
+>>>>>>>> But there's no way for the hardware to deduce the internal 
+>>>>>>>> avail index from
+>>>>>>>> the virtqueue, that's why avail index is sycned.
+>>>>>>>>
+>>>>>>>> Thanks
+>>>>>>>>
+>>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+>
 
