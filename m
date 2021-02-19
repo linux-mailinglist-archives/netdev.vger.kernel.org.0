@@ -2,129 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA9F31F8B1
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 12:57:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8646B31F964
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 13:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbhBSL4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 06:56:43 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:49026 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbhBSL4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 06:56:40 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11JBt3fg150949;
-        Fri, 19 Feb 2021 11:55:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2020-01-29;
- bh=Y7tWXDWYYFR8Goj5RqfddTZC74cyNyev2Htnfv1H/PY=;
- b=0g8IYVYtvGxxgN78prXyP73bNWJvWYX+eBmIu3AWwVTSu3PAbifwMdrNc7CyQV15tIUu
- dEVpeAFPY3Uc6Hy1cJIvZSPnbpGpCMO4mGbVVRR3nlxYZAlcUnkjqBEGiAjoilc2stsM
- /m325wYL9CPMggAEtMBHgWok/FFoQC++dGDRL4JB1oO1N4mDlErM6OsUVei3T1wG/xMa
- s6PnqOl5hGUTdHRMRzUopNtBncbRP/hPcwMv8I4MHen0LmBYwkNUm3AXAiwlOTjfPnPQ
- X4U6tYarFrsbLik0w4UdyU8pGt1akwuCXmnokCqHR5ySBbKkVAMvJRVDb+kxlKR0owOM 0g== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 36p66r98vh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 19 Feb 2021 11:55:53 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11JBoL47016403;
-        Fri, 19 Feb 2021 11:55:51 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 36prp2ttd4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 19 Feb 2021 11:55:51 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 11JBtndr011179;
-        Fri, 19 Feb 2021 11:55:49 GMT
-Received: from ban25x6uut24.us.oracle.com (/10.153.73.24)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 19 Feb 2021 03:55:49 -0800
-From:   Si-Wei Liu <si-wei.liu@oracle.com>
-To:     mst@redhat.com, jasowang@redhat.com, elic@nvidia.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        si-wei.liu@oracle.com
-Subject: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-Date:   Fri, 19 Feb 2021 06:54:58 -0500
-Message-Id: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9899 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
- bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102190096
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9899 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 suspectscore=0
- impostorscore=0 priorityscore=1501 clxscore=1015 spamscore=0 mlxscore=0
- phishscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102190097
+        id S230315AbhBSMZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 07:25:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44744 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230170AbhBSMZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 07:25:07 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F68AC061788
+        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 04:24:12 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id c8so19195658ljd.12
+        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 04:24:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wHrYkCK1zLRD6wByIwlBLFI5CiL9tLM6cLoCKLmdSfI=;
+        b=f5UVscClc1+dxFKiSTb8GrmugqWtOiZ6ciLfydsqvbi99dBTBjorDFqJxkYoWViwZD
+         P6ASCmD4/Vpg1ph9hfJuG7LUAkj76GXyJbONNkZrCxxCcDh5UOc/gfCQHeWSUatEBUKT
+         VU0rheK34iG4itgCQE1tCMbDk819CRQol7y0Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wHrYkCK1zLRD6wByIwlBLFI5CiL9tLM6cLoCKLmdSfI=;
+        b=QbE+pOIHYm9arAh/d7ZRvdESnY6KaMz4t6r3uwpc9amiTXMuFiymb6jLc1VzDqp8+W
+         UxcsgGsT8Whmn5pmy1wEkhBhP27TK7ca4Lidlf+7gnH29YLq2l5W1m/8IoOvAhkgUeyu
+         ePGgCTwS44DJz5W41DnqbpF4siYDDbhpSf+IQMwd7k7dc5B7e7QC0UkWIKRmQ+EM84f3
+         lnTBeONVVx6wn18oAcZzsE6WDoC1yztCQx7uUp9D3ZgPF54tf9vECjess0gvtK+4GPUq
+         5qwoiMMl2eyu0gfa3yv9alXa0K5nbZmWL+5ShtXVJ1zP0hOW6qEeYQ/DAj3CpYRstW6L
+         F43A==
+X-Gm-Message-State: AOAM532SmCdmYS9X/Ktb6bJTQeYB/apEPdhCymn+v6e/FQced74nDqxB
+        816XQq5GJB4fkzG08hMFvAHVd2IfL9Lz9+UcCjnP6Q==
+X-Google-Smtp-Source: ABdhPJwwyMd6Srv1DZ/UHrUroAn7W8bc+ka6yIQG/53X01Z8QDbMzTzc7XlBvAdwOD6l4D+anWou6oFsLd5xyaNpb3c=
+X-Received: by 2002:a2e:8846:: with SMTP id z6mr210646ljj.376.1613737450639;
+ Fri, 19 Feb 2021 04:24:10 -0800 (PST)
+MIME-Version: 1.0
+References: <20210219095149.50346-1-lmb@cloudflare.com> <20210219095149.50346-2-lmb@cloudflare.com>
+ <00f63863-34ae-aa25-6a36-376db62de510@gmail.com>
+In-Reply-To: <00f63863-34ae-aa25-6a36-376db62de510@gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Fri, 19 Feb 2021 12:23:59 +0000
+Message-ID: <CACAyw9_kY9fPdC5DLz4GKiBR8B4mCCnknB2xY1DSKYwkridgFQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/4] net: add SO_NETNS_COOKIE socket option
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
-for legacy") made an exception for legacy guests to reset
-features to 0, when config space is accessed before features
-are set. We should relieve the verify_min_features() check
-and allow features reset to 0 for this case.
+On Fri, 19 Feb 2021 at 11:49, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> > +     case SO_NETNS_COOKIE:
+> > +             lv = sizeof(u64);
+> > +             if (len < lv)
+> > +                     return -EINVAL;
+>
+>         if (len != lv)
+>                 return -EINVAL;
+>
+> (There is no reason to support bigger value before at least hundred years)
 
-It's worth noting that not just legacy guests could access
-config space before features are set. For instance, when
-feature VIRTIO_NET_F_MTU is advertised some modern driver
-will try to access and validate the MTU present in the config
-space before virtio features are set. Rejecting reset to 0
-prematurely causes correct MTU and link status unable to load
-for the very first config space access, rendering issues like
-guest showing inaccurate MTU value, or failure to reject
-out-of-range MTU.
+Sorry that was copy pasta from SO_COOKIE which uses the same check. I'll
+change it to your suggestion. Want me to fix SO_COOKIE as well?
 
-Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+>
+> > +#ifdef CONFIG_NET_NS
+> > +             v.val64 = sock_net(sk)->net_cookie;
+> > +#else
+> > +             v.val64 = init_net.net_cookie;
+> > +#endif
+> > +             break;
+> > +
+>
+> Why using this ugly #ifdef ?
+>
+> The following should work just fine, even if CONFIG_NET_NS is not set.
+>
+> v.val64 = sock_net(sk)->net_cookie;
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index 7c1f789..540dd67 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
- 	return mvdev->mlx_features;
- }
- 
--static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
--{
--	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
--		return -EOPNOTSUPP;
--
--	return 0;
--}
--
- static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
- {
- 	int err;
-@@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
- {
- 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
- 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
--	int err;
- 
- 	print_features(mvdev, features, true);
- 
--	err = verify_min_features(mvdev, features);
--	if (err)
--		return err;
--
- 	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
- 	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
- 	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
--	return err;
-+	return 0;
- }
- 
- static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
+I looked at sock_net and didn't understand how it avoids a compile error
+so I didn't use it, thanks for pointing this out.
+
 -- 
-1.8.3.1
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
+www.cloudflare.com
