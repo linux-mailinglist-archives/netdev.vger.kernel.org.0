@@ -2,63 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4C1331F55E
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 08:32:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AD0B31F56A
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 08:45:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbhBSHbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 02:31:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38430 "EHLO
+        id S229684AbhBSHoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 02:44:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbhBSHbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 02:31:23 -0500
-Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D338CC061574
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:30:42 -0800 (PST)
-Received: by mail-vk1-xa31.google.com with SMTP id k1so1017103vkb.11
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:30:42 -0800 (PST)
+        with ESMTP id S229498AbhBSHoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 02:44:22 -0500
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D683AC061574
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:43:41 -0800 (PST)
+Received: by mail-vs1-xe35.google.com with SMTP id l19so2260351vso.8
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 23:43:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mgaPKM7X6IZ4BZS633QUkOiLClmxn3Aw7snlzzOE+HE=;
-        b=JwKtmAxJcFebMuMbt+tCFAuG3Pq8MGMy3wIx/jt/nBWsOUcExfiXwEPZKfgIG3kuOh
-         gedJVXR0MB/oxP9xZuFkBKkr/dhMj32jT3JTFqVuOCmmgtb7YV8nz3lHBIA7qSK7JGKR
-         EOoOMjCe7TPWiV4NlTiSwvsIe5MmOqLcJOMVg=
+        bh=LWo3QV11qLYhaCtzZBxTNU7NoOHSmOxb1tC+NLefoOc=;
+        b=eXXwMLg9EVbN8lac9XRACJv1VTSeYya6MqK5Tr7B0yj0bwpK3RN1CfcRpTLWP4R7KR
+         43P7giSVNj0n0BV6sLvQ0dwxjuCbncyzvTiyekZLtNCvvp6npnU+2QQX3CdEYVtfA1j8
+         VyvsUQnnJnBIJaLmE653aD1iZDV+sh21IFq+c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mgaPKM7X6IZ4BZS633QUkOiLClmxn3Aw7snlzzOE+HE=;
-        b=LvxM9s+DSVEGDKwOZqsvGiIqo5QFoAG2pGCCbzbQzDqsbefDS8Q9sx4uD9NTiw2wH1
-         eI0Ly14jh4XKWPaCHs1B4SDDSseDFfEpQwoCKZvvjNjxaP/Jjq1Bkyur/v803JZyfpln
-         mO8r6fa/HiHAjbm2qF3pIdprbybzXf/lGTgsvZA/oQBabNUyLCzMIvKa1YAfBUo8n5yi
-         v9m4UZbOoMicUZ6cfmcixC8xpJ3vwT+/vKqtFTYVvuNHYyS+HInYg2IkcaWtbf0c8QJ3
-         ukk5xHRyAMDa0Ode37iBInzaJo2Rsd9AUh39Pt5L7wYoLPcLrsAuHbkq2eo9EYhU4Stf
-         QHzg==
-X-Gm-Message-State: AOAM531gWm0ZUlo0fbmUcpBda1ZA13DmplFkUzJvGTf3Cztbodus1+cy
-        spO9cthpxOBuJIJRplIHkN5fKowYlko3KUQ3GrIFdeAKv01mUtlT
-X-Google-Smtp-Source: ABdhPJxlGSimiYFp4RRQBFnj52NbJgeElwaejcUiyg7f+Dsea+kl/6Vj5023sbURyCb64vfbj6AZ9CQA/cCs0s6v9VA=
-X-Received: by 2002:a1f:1c4c:: with SMTP id c73mr6190764vkc.22.1613719840839;
- Thu, 18 Feb 2021 23:30:40 -0800 (PST)
+        bh=LWo3QV11qLYhaCtzZBxTNU7NoOHSmOxb1tC+NLefoOc=;
+        b=apKUofwrLUCT68a0Bq5X3sjqg/Kt5HyHr6oxUgZokBnSigmAYYR9GiZtis3cw4QPb9
+         kpylXDv1lHbLpyk80wmYFgebF/9mbeh5rh3KnAV3FFWlB2JfJSAHc9lb7kWZiVrrszbZ
+         iDtKah3SzIEXwNmFammvre9KQW+5FWf44R6lTsYgvhkYj0qoXl5DpJCTW9HEkA3QIbzd
+         aVtpoQqpZ67xcRXwZGh5SwSljv0UuLECY+n6aFGNzfZaKSQDzXqQ14ggtOYRAkkWWeyv
+         TCshG1CKi3l6Jg2ircMoWE1+36LNdGgS/ChWtpZUleg58r5H6mcnHWOwJ3+l6bE1msAl
+         m+zA==
+X-Gm-Message-State: AOAM533u+GCtXia86wt5os7eHproS++oHaS2WNA+v1oYUf8O1rgFXs7w
+        aEpp52kOLvu1QaHx/WrD9VC67CvWAF3O+8qGBGF5qHMcTbImtA==
+X-Google-Smtp-Source: ABdhPJzqXFftekmdITP8wGxYBH9WQ+tTE0D5iC/guaK1owyzd578BQRZoGHwLszTr53DVeKivlbkbIALqAAY+xUj4wE=
+X-Received: by 2002:a67:6e83:: with SMTP id j125mr4356083vsc.2.1613720620674;
+ Thu, 18 Feb 2021 23:43:40 -0800 (PST)
 MIME-Version: 1.0
 References: <20210218102038.2996-1-oneukum@suse.com> <20210218102038.2996-4-oneukum@suse.com>
 In-Reply-To: <20210218102038.2996-4-oneukum@suse.com>
 From:   Grant Grundler <grundler@chromium.org>
-Date:   Fri, 19 Feb 2021 07:30:29 +0000
-Message-ID: <CANEJEGvsYPmnxx2sV89aLPJzK_SgWEW8FPhgo2zNk2d5zijK2Q@mail.gmail.com>
+Date:   Fri, 19 Feb 2021 07:43:28 +0000
+Message-ID: <CANEJEGu6q+JNbeX9=h1NQHYQCm4xevua=84oVnKgR8jmUMQnTQ@mail.gmail.com>
 Subject: Re: [PATCHv3 3/3] CDC-NCM: record speed in status method
 To:     Oliver Neukum <oneukum@suse.com>
 Cc:     netdev <netdev@vger.kernel.org>,
         Grant Grundler <grundler@chromium.org>,
-        Andrew Lunn <andrew@lunn.ch>, davem@davemloft.org,
+        Andrew Lunn <andrew@lunn.ch>,
         Hayes Wang <hayeswang@realtek.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Roland Dreier <roland@kernel.org>,
+        Roland Dreier <roland@kernel.org>, davem@davemloft.org,
         nic_swsd <nic_swsd@realtek.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="0000000000005daa7705bbab9c63"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
+
+--0000000000005daa7705bbab9c63
+Content-Type: text/plain; charset="UTF-8"
+
+Oliver,
+Can you include a 4th patch in the series to bring cdc_ether driver in
+line with the cdc_ncm behavior?
+
+I apologize for not including the patch inline - but it's late and I
+don't want to fight with gmail at this point. Patch is attached. Not
+tested.
+
+cheers,
+grant
 
 On Thu, Feb 18, 2021 at 10:21 AM Oliver Neukum <oneukum@suse.com> wrote:
 >
@@ -70,34 +84,7 @@ On Thu, Feb 18, 2021 at 10:21 AM Oliver Neukum <oneukum@suse.com> wrote:
 > As new support functions have become available, we shall now
 > record such notifications and tell the usbnet framework
 > to make direct use of them without going through the PHY layer.
-
-Since this patch is missing the hunks that landed in the previous
-patch and needs a v4, I'll offer my version of the commit message in
-case you like it better:
-    net: cdc_ncm: record speed in status method
-
-    Until very recently, the usbnet framework only had support functions
-    for devices which reported the link speed by explicitly querying the
-    PHY over a MDIO interface. However, the cdc_ncm devices send
-    notifications when the link state or link speeds change and do not
-    expose the PHY (or modem) directly.
-
-    Support functions (e.g. usbnet_get_link_ksettings_internal()) to directly
-    query state recorded by the cdc_ncm driver were added in a previous patch.
-
-    So instead of cdc_ncm spewing the link speed into the dmesg buffer,
-    record the link speed encoded in these notifications and tell the
-    usbnet framework to use the new functions to get link speed.
-
-    This is especially useful given all existing RTL8156 devices emit
-    a connection/speed status notification every 32ms and this would
-    fill the dmesg buffer. This implementation replaces the one
-    recently submitted in de658a195ee23ca6aaffe197d1d2ea040beea0a2 :
-       "net: usb: cdc_ncm: don't spew notifications"
-
-cheers,
-grant
-
+>
 > v2: rebased on upstream
 > v3: changed variable names
 >
@@ -146,3 +133,77 @@ grant
 > --
 > 2.26.2
 >
+
+--0000000000005daa7705bbab9c63
+Content-Type: text/x-patch; charset="US-ASCII"; 
+	name="0001-net-cdc_ether-record-speed-in-status-method.patch"
+Content-Disposition: attachment; 
+	filename="0001-net-cdc_ether-record-speed-in-status-method.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_klbzisv00>
+X-Attachment-Id: f_klbzisv00
+
+RnJvbSBlNWFjNTI4YzA4YmIzNWIyNWNiYmY5YTVlOTFkMjQ5MTEwMGU2NzYzIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBHcmFudCBHcnVuZGxlciA8R3JhbnQgR3J1bmRsZXIgZ3J1bmRs
+ZXJAY2hyb21pdW0ub3JnPgpEYXRlOiBXZWQsIDE3IEZlYiAyMDIxIDIwOjU1OjU3IC0wODAwClN1
+YmplY3Q6IFtQQVRDSF0gbmV0OiBjZGNfZXRoZXI6IHJlY29yZCBzcGVlZCBpbiBzdGF0dXMgbWV0
+aG9kCgpVbnRpbCB2ZXJ5IHJlY2VudGx5LCB0aGUgdXNibmV0IGZyYW1ld29yayBvbmx5IGhhZCBz
+dXBwb3J0IGZ1bmN0aW9ucwpmb3IgZGV2aWNlcyB3aGljaCByZXBvcnRlZCB0aGUgbGluayBzcGVl
+ZCBieSBleHBsaWNpdGx5IHF1ZXJ5aW5nIHRoZQpQSFkgb3ZlciBhIE1ESU8gaW50ZXJmYWNlLiBI
+b3dldmVyLCB0aGUgY2RjX2V0aGVyIGRldmljZXMgc2VuZApub3RpZmljYXRpb25zIHdoZW4gdGhl
+IGxpbmsgc3RhdGUgb3IgbGluayBzcGVlZHMgY2hhbmdlIGFuZCBkbyBub3QKZXhwb3NlIHRoZSBQ
+SFkgKG9yIG1vZGVtKSBkaXJlY3RseS4KClN1cHBvcnQgZnVudGlvbnMgKGUuZy4gdXNibmV0X2dl
+dF9saW5rX2tzZXR0aW5nc19pbnRlcm5hbCgpKSB0byBkaXJlY3RseQpxdWVyeSBzdGF0ZSByZWNv
+cmRlZCBieSB0aGUgY2RjX2V0aGVyIGRyaXZlciB3ZXJlIGFkZGVkIGluIGEgcHJldmlvdXMgcGF0
+Y2guCgpTbyBpbnN0ZWFkIG9mIGNkY19ldGhlciBzcGV3aW5nIHRoZSBsaW5rIHNwZWVkIGludG8g
+dGhlIGRtZXNnIGJ1ZmZlciwKcmVjb3JkIHRoZSBsaW5rIHNwZWVkIGVuY29kZWQgaW4gdGhlc2Ug
+bm90aWZpY2F0aW9ucyBhbmQgdGVsbCB0aGUKdXNibmV0IGZyYW1ld29yayB0byB1c2UgdGhlIG5l
+dyBmdW5jdGlvbnMgdG8gZ2V0IGxpbmsgc3BlZWQvc3RhdGUuCgpTaWduZWQtb2ZmLWJ5OiBHcmFu
+dCBHcnVuZGxlciA8Z3J1bmRsZXJAY2hyb21pdW0ub3JnPgotLS0KIGRyaXZlcnMvbmV0L3VzYi9j
+ZGNfZXRoZXIuYyB8IDI3ICsrKysrKysrKysrKysrKysrKysrLS0tLS0tLQogMSBmaWxlIGNoYW5n
+ZWQsIDIwIGluc2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9uZXQvdXNiL2NkY19ldGhlci5jIGIvZHJpdmVycy9uZXQvdXNiL2NkY19ldGhlci5jCmluZGV4
+IGE5YjU1MTAyODY1OS4uZTEzZTliNzk5NDMyIDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC91c2Iv
+Y2RjX2V0aGVyLmMKKysrIGIvZHJpdmVycy9uZXQvdXNiL2NkY19ldGhlci5jCkBAIC05Miw2ICs5
+MiwxOCBAQCB2b2lkIHVzYm5ldF9jZGNfdXBkYXRlX2ZpbHRlcihzdHJ1Y3QgdXNibmV0ICpkZXYp
+CiB9CiBFWFBPUlRfU1lNQk9MX0dQTCh1c2JuZXRfY2RjX3VwZGF0ZV9maWx0ZXIpOwogCisvKiBX
+ZSBuZWVkIHRvIG92ZXJyaWRlIHVzYm5ldF8qX2xpbmtfa3NldHRpbmdzIGluIGJpbmQoKSAqLwor
+c3RhdGljIGNvbnN0IHN0cnVjdCBldGh0b29sX29wcyBjZGNfZXRoZXJfZXRodG9vbF9vcHMgPSB7
+CisJLmdldF9saW5rCQk9IHVzYm5ldF9nZXRfbGluaywKKwkubndheV9yZXNldAkJPSB1c2JuZXRf
+bndheV9yZXNldCwKKwkuZ2V0X2RydmluZm8JCT0gdXNibmV0X2dldF9kcnZpbmZvLAorCS5nZXRf
+bXNnbGV2ZWwJCT0gdXNibmV0X2dldF9tc2dsZXZlbCwKKwkuc2V0X21zZ2xldmVsCQk9IHVzYm5l
+dF9zZXRfbXNnbGV2ZWwsCisJLmdldF90c19pbmZvCQk9IGV0aHRvb2xfb3BfZ2V0X3RzX2luZm8s
+CisJLmdldF9saW5rX2tzZXR0aW5ncwk9IHVzYm5ldF9nZXRfbGlua19rc2V0dGluZ3NfaW50ZXJu
+YWwsCisJLnNldF9saW5rX2tzZXR0aW5ncwk9IE5VTEwsCit9OworCiAvKiBwcm9iZXMgY29udHJv
+bCBpbnRlcmZhY2UsIGNsYWltcyBkYXRhIGludGVyZmFjZSwgY29sbGVjdHMgdGhlIGJ1bGsKICAq
+IGVuZHBvaW50cywgYWN0aXZhdGVzIGRhdGEgaW50ZXJmYWNlIChpZiBuZWVkZWQpLCBtYXliZSBz
+ZXRzIE1UVS4KICAqIGFsbCBwdXJlIGNkYywgZXhjZXB0IGZvciBjZXJ0YWluIGZpcm13YXJlIHdv
+cmthcm91bmRzLCBhbmQga25vd2luZwpAQCAtMzEwLDYgKzMyMiw5IEBAIGludCB1c2JuZXRfZ2Vu
+ZXJpY19jZGNfYmluZChzdHJ1Y3QgdXNibmV0ICpkZXYsIHN0cnVjdCB1c2JfaW50ZXJmYWNlICpp
+bnRmKQogCQlyZXR1cm4gLUVOT0RFVjsKIAl9CiAKKwkvKiBvdmVycmlkZSBldGh0b29sX29wcyAq
+LworCWRldi0+bmV0LT5ldGh0b29sX29wcyA9ICZjZGNfZXRoZXJfZXRodG9vbF9vcHM7CisKIAly
+ZXR1cm4gMDsKIAogYmFkX2Rlc2M6CkBAIC0zNzksMTIgKzM5NCwxMCBAQCBFWFBPUlRfU1lNQk9M
+X0dQTCh1c2JuZXRfY2RjX3VuYmluZCk7CiAgKiAoYnkgQnJhZCBIYXJkcykgdGFsa2VkIHdpdGgs
+IHdpdGggbW9yZSBmdW5jdGlvbmFsaXR5LgogICovCiAKLXN0YXRpYyB2b2lkIGR1bXBzcGVlZChz
+dHJ1Y3QgdXNibmV0ICpkZXYsIF9fbGUzMiAqc3BlZWRzKQorc3RhdGljIHZvaWQgc3BlZWRfY2hh
+bmdlKHN0cnVjdCB1c2JuZXQgKmRldiwgX19sZTMyICpzcGVlZHMpCiB7Ci0JbmV0aWZfaW5mbyhk
+ZXYsIHRpbWVyLCBkZXYtPm5ldCwKLQkJICAgImxpbmsgc3BlZWRzOiAldSBrYnBzIHVwLCAldSBr
+YnBzIGRvd25cbiIsCi0JCSAgIF9fbGUzMl90b19jcHUoc3BlZWRzWzBdKSAvIDEwMDAsCi0JCSAg
+IF9fbGUzMl90b19jcHUoc3BlZWRzWzFdKSAvIDEwMDApOworCWRldi0+dHhfc3BlZWQgPSBfX2xl
+MzJfdG9fY3B1KHNwZWVkc1swXSk7CisJZGV2LT5yeF9zcGVlZCA9IF9fbGUzMl90b19jcHUoc3Bl
+ZWRzWzFdKTsKIH0KIAogdm9pZCB1c2JuZXRfY2RjX3N0YXR1cyhzdHJ1Y3QgdXNibmV0ICpkZXYs
+IHN0cnVjdCB1cmIgKnVyYikKQEAgLTM5Niw3ICs0MDksNyBAQCB2b2lkIHVzYm5ldF9jZGNfc3Rh
+dHVzKHN0cnVjdCB1c2JuZXQgKmRldiwgc3RydWN0IHVyYiAqdXJiKQogCiAJLyogU1BFRURfQ0hB
+TkdFIGNhbiBnZXQgc3BsaXQgaW50byB0d28gOC1ieXRlIHBhY2tldHMgKi8KIAlpZiAodGVzdF9h
+bmRfY2xlYXJfYml0KEVWRU5UX1NUU19TUExJVCwgJmRldi0+ZmxhZ3MpKSB7Ci0JCWR1bXBzcGVl
+ZChkZXYsIChfX2xlMzIgKikgdXJiLT50cmFuc2Zlcl9idWZmZXIpOworCQlzcGVlZF9jaGFuZ2Uo
+ZGV2LCAoX19sZTMyICopIHVyYi0+dHJhbnNmZXJfYnVmZmVyKTsKIAkJcmV0dXJuOwogCX0KIApA
+QCAtNDEzLDcgKzQyNiw3IEBAIHZvaWQgdXNibmV0X2NkY19zdGF0dXMoc3RydWN0IHVzYm5ldCAq
+ZGV2LCBzdHJ1Y3QgdXJiICp1cmIpCiAJCWlmICh1cmItPmFjdHVhbF9sZW5ndGggIT0gKHNpemVv
+ZigqZXZlbnQpICsgOCkpCiAJCQlzZXRfYml0KEVWRU5UX1NUU19TUExJVCwgJmRldi0+ZmxhZ3Mp
+OwogCQllbHNlCi0JCQlkdW1wc3BlZWQoZGV2LCAoX19sZTMyICopICZldmVudFsxXSk7CisJCQlz
+cGVlZF9jaGFuZ2UoZGV2LCAoX19sZTMyICopICZldmVudFsxXSk7CiAJCWJyZWFrOwogCS8qIFVT
+Ql9DRENfTk9USUZZX1JFU1BPTlNFX0FWQUlMQUJMRSBjYW4gaGFwcGVuIHRvbyAoZS5nLiBSTkRJ
+UyksCiAJICogYnV0IHRoZXJlIGFyZSBubyBzdGFuZGFyZCBmb3JtYXRzIGZvciB0aGUgcmVzcG9u
+c2UgZGF0YS4KLS0gCjIuMzAuMAoK
+--0000000000005daa7705bbab9c63--
