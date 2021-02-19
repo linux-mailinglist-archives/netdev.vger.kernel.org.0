@@ -2,242 +2,430 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 725ED31FD87
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 17:59:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF1231FD90
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 18:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbhBSQ7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 11:59:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58140 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229555AbhBSQ7H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Feb 2021 11:59:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DF136024A;
-        Fri, 19 Feb 2021 16:58:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613753905;
-        bh=NMo5yhyTlIxLySt+nSwX0SRCkEKanmzR/cCYJOgr3iI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bNOPbzHSaM4/vVw3+4RymgErrpNZfj8y/7buzxo2BkSuoUfn1cxTW1zvwW6Jr5J8N
-         NdYj5KxrzgbVy53zttyqJDHLjUxkzTKya+unKCcFG70MVf35cjEqXyFuV9lgNUSRf8
-         d1xEEXqhTARJIYpzLMQlS6kKlhzVcBZ3CktHc/DqE3YrZCxMRlrc6ozfR/zg26W70Y
-         iX4UOo2let49EMToU1mHhFqkSTAPSRArVTUoCjQW1vKrkxB7UHOw2ZORTS2PfTUutZ
-         AdyNYjkjJxfVd6My+aSZiXhCAzjFtW8bAdnU4B139cO9iF2cppDQgUszMRPfdT04xq
-         L7VbwLFauDCaQ==
-Date:   Fri, 19 Feb 2021 18:58:20 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
- table size change of SR-IOV VFs
-Message-ID: <YC/uLNk2YMPMVL5c@unreal>
-References: <YC4+V6W7s7ytwiC6@unreal>
- <20210218223950.GA1004646@bjorn-Precision-5520>
- <YC9uLDAQJK9KgxbB@unreal>
- <YC90wkwk/CdgcYY6@kroah.com>
+        id S229868AbhBSRGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 12:06:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42373 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229587AbhBSRGr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 12:06:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613754319;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G9YmUjSdB0aEqx5Q3NW+k6kL+oQpdgPeOrPsN461J+c=;
+        b=fWNN7F9NfA2bFhKSJQn6E4SWSXHgDZYd/ddgXUmWK+91WY0WOm1qffCw/KH4lhu9GyDSgP
+        hV+RpNssBW7v79bqBH4XN9WST4/ToW0EJHDe6mx+mnjuEK8vU9SxlV85a3prq8uD+WLcN/
+        jh91P94FTvPUD264ybAfgluQfnWLyRg=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-231-iw7_a9diP-2noHkGE3iWxQ-1; Fri, 19 Feb 2021 12:05:18 -0500
+X-MC-Unique: iw7_a9diP-2noHkGE3iWxQ-1
+Received: by mail-ej1-f69.google.com with SMTP id gx1so2257893ejc.21
+        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 09:05:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=G9YmUjSdB0aEqx5Q3NW+k6kL+oQpdgPeOrPsN461J+c=;
+        b=qZsL8iItkFKlAvORk8CnDIMEXQzMiBNjTEsVhCtDcdiMMn7HPnsUNX8MTQiovNPKa9
+         4ZPgJyoarcFkr/RTwcjuxa/GqHAMnT72dOPXZYkG6xlT5rVcNTxDUPA89sQh1TqR9DKF
+         SU5YA9E/gkJShnA8KP8uPHVv1Vngnoxms4FxfxdK5jLuvpZe+SoD9KR2XP0hijtobOL2
+         eqOl4DB152gvdR41zkcM8pnPmqIGcNMqJT3ApI5Caw6AGd1fRJiiV71/FHOuO4VynTHg
+         USrTB4eRGHf2G24yFON/MNlWfn9313eYhaObw2C18a95w77FeLzjof2f/ie0+2aWkflJ
+         jHAw==
+X-Gm-Message-State: AOAM530rIda5W1LxKQ3Fr9btjWIxGUu32DH//E33O58SkZZpteQoy4uf
+        ySpiFkOC80yCGZYONd+7R/y3FnSscGgQ3pdL/0JKsI34AVYpLygMhcAJt66cmufWP8gn0QMWdEa
+        iq8/4fQpk63xMWQ+X
+X-Received: by 2002:a05:6402:1398:: with SMTP id b24mr9750009edv.108.1613754316641;
+        Fri, 19 Feb 2021 09:05:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxIHu3B8wM1v/cjRw3TPaBUyADr4lzU23ih6RDVLwhWbfe1BLysUjjlnsQN71PV6UBEGEE8VQ==
+X-Received: by 2002:a05:6402:1398:: with SMTP id b24mr9749954edv.108.1613754316244;
+        Fri, 19 Feb 2021 09:05:16 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id x17sm4906093eju.36.2021.02.19.09.05.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Feb 2021 09:05:15 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 48D36180676; Fri, 19 Feb 2021 18:05:15 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        maciej.fijalkowski@intel.com, hawk@kernel.org,
+        magnus.karlsson@intel.com, john.fastabend@gmail.com,
+        kuba@kernel.org, davem@davemloft.net
+Subject: Re: [PATCH bpf-next 1/2] bpf, xdp: per-map bpf_redirect_map
+ functions for XDP
+In-Reply-To: <20210219145922.63655-2-bjorn.topel@gmail.com>
+References: <20210219145922.63655-1-bjorn.topel@gmail.com>
+ <20210219145922.63655-2-bjorn.topel@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 19 Feb 2021 18:05:15 +0100
+Message-ID: <87tuq8httg.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YC90wkwk/CdgcYY6@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 19, 2021 at 09:20:18AM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Feb 19, 2021 at 09:52:12AM +0200, Leon Romanovsky wrote:
-> > On Thu, Feb 18, 2021 at 04:39:50PM -0600, Bjorn Helgaas wrote:
-> > > On Thu, Feb 18, 2021 at 12:15:51PM +0200, Leon Romanovsky wrote:
-> > > > On Wed, Feb 17, 2021 at 12:02:39PM -0600, Bjorn Helgaas wrote:
-> > > > > [+cc Greg in case he wants to chime in on the sysfs discussion.
-> > > > > TL;DR: we're trying to add/remove sysfs files when a PCI driver that
-> > > > > supports certain callbacks binds or unbinds; series at
-> > > > > https://lore.kernel.org/r/20210209133445.700225-1-leon@kernel.org]
-> > > > >
-> > > > > On Tue, Feb 16, 2021 at 09:58:25PM +0200, Leon Romanovsky wrote:
-> > > > > > On Tue, Feb 16, 2021 at 10:12:12AM -0600, Bjorn Helgaas wrote:
-> > > > > > > On Tue, Feb 16, 2021 at 09:33:44AM +0200, Leon Romanovsky wrote:
-> > > > > > > > On Mon, Feb 15, 2021 at 03:01:06PM -0600, Bjorn Helgaas wrote:
-> > > > > > > > > On Tue, Feb 09, 2021 at 03:34:42PM +0200, Leon Romanovsky wrote:
-> > > > > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > >
-> > > > > > > > > > +int pci_enable_vf_overlay(struct pci_dev *dev)
-> > > > > > > > > > +{
-> > > > > > > > > > +	struct pci_dev *virtfn;
-> > > > > > > > > > +	int id, ret;
-> > > > > > > > > > +
-> > > > > > > > > > +	if (!dev->is_physfn || !dev->sriov->num_VFs)
-> > > > > > > > > > +		return 0;
-> > > > > > > > > > +
-> > > > > > > > > > +	ret = sysfs_create_files(&dev->dev.kobj, sriov_pf_dev_attrs);
-> > > > > > > > >
-> > > > > > > > > But I still don't like the fact that we're calling
-> > > > > > > > > sysfs_create_files() and sysfs_remove_files() directly.  It makes
-> > > > > > > > > complication and opportunities for errors.
-> > > > > > > >
-> > > > > > > > It is not different from any other code that we have in the kernel.
-> > > > > > >
-> > > > > > > It *is* different.  There is a general rule that drivers should not
-> > > > > > > call sysfs_* [1].  The PCI core is arguably not a "driver," but it is
-> > > > > > > still true that callers of sysfs_create_files() are very special, and
-> > > > > > > I'd prefer not to add another one.
-> > > > > >
-> > > > > > PCI for me is a bus, and bus is the right place to manage sysfs.
-> > > > > > But it doesn't matter, we understand each other positions.
-> > > > > >
-> > > > > > > > Let's be concrete, can you point to the errors in this code that I
-> > > > > > > > should fix?
-> > > > > > >
-> > > > > > > I'm not saying there are current errors; I'm saying the additional
-> > > > > > > code makes errors possible in future code.  For example, we hope that
-> > > > > > > other drivers can use these sysfs interfaces, and it's possible they
-> > > > > > > may not call pci_enable_vf_overlay() or pci_disable_vfs_overlay()
-> > > > > > > correctly.
-> > > > > >
-> > > > > > If not, we will fix, we just need is to ensure that sysfs name won't
-> > > > > > change, everything else is easy to change.
-> > > > > >
-> > > > > > > Or there may be races in device addition/removal.  We have current
-> > > > > > > issues in this area, e.g., [2], and they're fairly subtle.  I'm not
-> > > > > > > saying your patches have these issues; only that extra code makes more
-> > > > > > > chances for mistakes and it's more work to validate it.
-> > > > > > >
-> > > > > > > > > I don't see the advantage of creating these files only when
-> > > > > > > > > the PF driver supports this.  The management tools have to
-> > > > > > > > > deal with sriov_vf_total_msix == 0 and sriov_vf_msix_count ==
-> > > > > > > > > 0 anyway.  Having the sysfs files not be present at all might
-> > > > > > > > > be slightly prettier to the person running "ls", but I'm not
-> > > > > > > > > sure the code complication is worth that.
-> > > > > > > >
-> > > > > > > > It is more than "ls", right now sriov_numvfs is visible without
-> > > > > > > > relation to the driver, even if driver doesn't implement
-> > > > > > > > ".sriov_configure", which IMHO bad. We didn't want to repeat.
-> > > > > > > >
-> > > > > > > > Right now, we have many devices that supports SR-IOV, but small
-> > > > > > > > amount of them are capable to rewrite their VF MSI-X table siz.
-> > > > > > > > We don't want "to punish" and clatter their sysfs.
-> > > > > > >
-> > > > > > > I agree, it's clutter, but at least it's just cosmetic clutter
-> > > > > > > (but I'm willing to hear discussion about why it's more than
-> > > > > > > cosmetic; see below).
-> > > > > >
-> > > > > > It is more than cosmetic and IMHO it is related to the driver role.
-> > > > > > This feature is advertised, managed and configured by PF. It is very
-> > > > > > natural request that the PF will view/hide those sysfs files.
-> > > > >
-> > > > > Agreed, it's natural if the PF driver adds/removes those files.  But I
-> > > > > don't think it's *essential*, and they *could* be static because of
-> > > > > this:
-> > > > >
-> > > > > > > From the management software point of view, I don't think it matters.
-> > > > > > > That software already needs to deal with files that don't exist (on
-> > > > > > > old kernels) and files that contain zero (feature not supported or no
-> > > > > > > vectors are available).
-> > > > >
-> > > > > I wonder if sysfs_update_group() would let us have our cake and eat
-> > > > > it, too?  Maybe we could define these files as static attributes and
-> > > > > call sysfs_update_group() when the PF driver binds or unbinds?
-> > > > >
-> > > > > Makes me wonder if the device core could call sysfs_update_group()
-> > > > > when binding/unbinding drivers.  But there are only a few existing
-> > > > > callers, and it looks like none of them are for the bind/unbind
-> > > > > situation, so maybe that would be pointless.
-> > > >
-> > > > Also it will be not an easy task to do it in driver/core. Our
-> > > > attributes need to be visible if driver is bound -> we will call to
-> > > > sysfs_update_group() after ->bind() callback. It means that in
-> > > > uwind, we will call to sysfs_update_group() before ->unbind() and
-> > > > the driver will be still bound. So the check is is_supported() for
-> > > > driver exists/or not won't be possible.
-> > >
-> > > Poking around some more, I found .dev_groups, which might be
-> > > applicable?  The test patch below applies to v5.11 and makes the "bh"
-> > > file visible in devices bound to the uhci_hcd driver if the function
-> > > number is odd.
-> >
-> > This solution can be applicable for generic drivers where we can afford
-> > to have custom sysfs files for this driver. In our case, we are talking
-> > about hardware device driver. Both RDMA and netdev are against allowing
-> > for such drivers to create their own sysfs. It will be real nightmare to
-> > have different names/layout/output for the same functionality.
-> >
-> > This .dev_groups moves responsibility over sysfs to the drivers and it
-> > is no-go for us.
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 >
-> But it _is_ the driver's responsibility for sysfs files, right?
-
-It depends on how you declare "responsibility". Direct creating/deletion of
-sysfs files is prohibited in netdev and RDMA subsystems. We want to provide
-to our users and stack uniformed way of interacting with the system.
-
-It is super painful to manage large fleet of NICs and/or HCAs if every device
-driver provides something different for the same feature.
-
+> Currently the bpf_redirect_map() implementation dispatches to the
+> correct map-lookup function via a switch-statement. To avoid the
+> dispatching, this change adds one bpf_redirect_map() implementation per
+> map. Correct function is automatically selected by the BPF verifier.
 >
-> If not, what exactly are you trying to do here, as I am very confused.
-
-https://lore.kernel.org/linux-rdma/20210216203726.GH4247@nvidia.com/T/#m899d883c8a10d95959ac0cd2833762f93729b8ef
-Please see more details below.
-
+> rfc->v1: Get rid of the macro and use __always_inline. (Jesper)
 >
-> > Another problem with this approach is addition of VFs, not only every
-> > driver will start to manage its own sysfs, but it will need to iterate
-> > over PCI bus or internal lists to find VFs, because we want to create
-> > .set_msix_vec on VFs after PF is bound.
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+
+Nice! Way better with the __always_inline. One small nit below, but
+otherwise:
+
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+
+> ---
+>  include/linux/bpf.h    | 20 +++++++------
+>  include/linux/filter.h |  2 ++
+>  include/net/xdp_sock.h |  6 ++--
+>  kernel/bpf/cpumap.c    |  2 +-
+>  kernel/bpf/devmap.c    |  4 +--
+>  kernel/bpf/verifier.c  | 28 +++++++++++-------
+>  net/core/filter.c      | 67 ++++++++++++++++++++++++++----------------
+>  7 files changed, 76 insertions(+), 53 deletions(-)
 >
-> What?  I don't understand at all.
->
-> > So instead of one, controlled place, we will find ourselves with many
-> > genius implementations of the same thing in the drivers.
->
-> Same _what_ thing?
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index cccaef1088ea..3dd186eeaf98 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -314,12 +314,14 @@ enum bpf_return_type {
+>  	RET_PTR_TO_BTF_ID,		/* returns a pointer to a btf_id */
+>  };
+>=20=20
+> +typedef u64 (*bpf_func_proto_func)(u64 r1, u64 r2, u64 r3, u64 r4, u64 r=
+5);
+> +
+>  /* eBPF function prototype used by verifier to allow BPF_CALLs from eBPF=
+ programs
+>   * to in-kernel helper functions and for adjusting imm32 field in BPF_CA=
+LL
+>   * instructions after verifying
+>   */
+>  struct bpf_func_proto {
+> -	u64 (*func)(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
+> +	bpf_func_proto_func func;
+>  	bool gpl_only;
+>  	bool pkt_access;
+>  	enum bpf_return_type ret_type;
+> @@ -1429,9 +1431,11 @@ struct btf *bpf_get_btf_vmlinux(void);
+>  /* Map specifics */
+>  struct xdp_buff;
+>  struct sk_buff;
+> +struct bpf_dtab_netdev;
+> +struct bpf_cpu_map_entry;
+>=20=20
+> -struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 k=
+ey);
+> -struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, =
+u32 key);
+> +void *__dev_map_lookup_elem(struct bpf_map *map, u32 key);
+> +void *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key);
+>  void __dev_flush(void);
+>  int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+>  		    struct net_device *dev_rx);
+> @@ -1441,7 +1445,7 @@ int dev_map_generic_redirect(struct bpf_dtab_netdev=
+ *dst, struct sk_buff *skb,
+>  			     struct bpf_prog *xdp_prog);
+>  bool dev_map_can_have_prog(struct bpf_map *map);
+>=20=20
+> -struct bpf_cpu_map_entry *__cpu_map_lookup_elem(struct bpf_map *map, u32=
+ key);
+> +void *__cpu_map_lookup_elem(struct bpf_map *map, u32 key);
+>  void __cpu_map_flush(void);
+>  int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
+>  		    struct net_device *dev_rx);
+> @@ -1568,14 +1572,12 @@ static inline int bpf_obj_get_user(const char __u=
+ser *pathname, int flags)
+>  	return -EOPNOTSUPP;
+>  }
+>=20=20
+> -static inline struct net_device  *__dev_map_lookup_elem(struct bpf_map *=
+map,
+> -						       u32 key)
+> +static inline void  *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
+>  {
+>  	return NULL;
+>  }
+>=20=20
+> -static inline struct net_device  *__dev_map_hash_lookup_elem(struct bpf_=
+map *map,
+> -							     u32 key)
+> +static inline void  *__dev_map_hash_lookup_elem(struct bpf_map *map, u32=
+ key)
+>  {
+>  	return NULL;
+>  }
+> @@ -1615,7 +1617,7 @@ static inline int dev_map_generic_redirect(struct b=
+pf_dtab_netdev *dst,
+>  }
+>=20=20
+>  static inline
+> -struct bpf_cpu_map_entry *__cpu_map_lookup_elem(struct bpf_map *map, u32=
+ key)
+> +void *__cpu_map_lookup_elem(struct bpf_map *map, u32 key)
+>  {
+>  	return NULL;
+>  }
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 3b00fc906ccd..1dedcf66b694 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -1472,4 +1472,6 @@ static inline bool bpf_sk_lookup_run_v6(struct net =
+*net, int protocol,
+>  }
+>  #endif /* IS_ENABLED(CONFIG_IPV6) */
+>=20=20
+> +bpf_func_proto_func get_xdp_redirect_func(enum bpf_map_type map_type);
+> +
+>  #endif /* __LINUX_FILTER_H__ */
+> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> index cc17bc957548..da4139a58630 100644
+> --- a/include/net/xdp_sock.h
+> +++ b/include/net/xdp_sock.h
+> @@ -80,8 +80,7 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buf=
+f *xdp);
+>  int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp);
+>  void __xsk_map_flush(void);
+>=20=20
+> -static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
+> -						     u32 key)
+> +static inline void *__xsk_map_lookup_elem(struct bpf_map *map, u32 key)
+>  {
+>  	struct xsk_map *m =3D container_of(map, struct xsk_map, map);
+>  	struct xdp_sock *xs;
+> @@ -109,8 +108,7 @@ static inline void __xsk_map_flush(void)
+>  {
+>  }
+>=20=20
+> -static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
+> -						     u32 key)
+> +static inline void *__xsk_map_lookup_elem(struct bpf_map *map, u32 key)
+>  {
+>  	return NULL;
+>  }
+> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+> index 5d1469de6921..a4d2cb93cd69 100644
+> --- a/kernel/bpf/cpumap.c
+> +++ b/kernel/bpf/cpumap.c
+> @@ -563,7 +563,7 @@ static void cpu_map_free(struct bpf_map *map)
+>  	kfree(cmap);
+>  }
+>=20=20
+> -struct bpf_cpu_map_entry *__cpu_map_lookup_elem(struct bpf_map *map, u32=
+ key)
+> +void *__cpu_map_lookup_elem(struct bpf_map *map, u32 key)
+>  {
+>  	struct bpf_cpu_map *cmap =3D container_of(map, struct bpf_cpu_map, map);
+>  	struct bpf_cpu_map_entry *rcpu;
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index 85d9d1b72a33..37ac4cde9713 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -258,7 +258,7 @@ static int dev_map_get_next_key(struct bpf_map *map, =
+void *key, void *next_key)
+>  	return 0;
+>  }
+>=20=20
+> -struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, =
+u32 key)
+> +void *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key)
+>  {
+>  	struct bpf_dtab *dtab =3D container_of(map, struct bpf_dtab, map);
+>  	struct hlist_head *head =3D dev_map_index_hash(dtab, key);
+> @@ -392,7 +392,7 @@ void __dev_flush(void)
+>   * update happens in parallel here a dev_put wont happen until after rea=
+ding the
+>   * ifindex.
+>   */
+> -struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 k=
+ey)
+> +void *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
+>  {
+>  	struct bpf_dtab *dtab =3D container_of(map, struct bpf_dtab, map);
+>  	struct bpf_dtab_netdev *obj;
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 3d34ba492d46..b5fb0c4e911a 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -5409,7 +5409,8 @@ record_func_map(struct bpf_verifier_env *env, struc=
+t bpf_call_arg_meta *meta,
+>  	    func_id !=3D BPF_FUNC_map_delete_elem &&
+>  	    func_id !=3D BPF_FUNC_map_push_elem &&
+>  	    func_id !=3D BPF_FUNC_map_pop_elem &&
+> -	    func_id !=3D BPF_FUNC_map_peek_elem)
+> +	    func_id !=3D BPF_FUNC_map_peek_elem &&
+> +	    func_id !=3D BPF_FUNC_redirect_map)
+>  		return 0;
+>=20=20
+>  	if (map =3D=3D NULL) {
+> @@ -11860,17 +11861,22 @@ static int fixup_bpf_calls(struct bpf_verifier_=
+env *env)
+>  		}
+>=20=20
+>  patch_call_imm:
+> -		fn =3D env->ops->get_func_proto(insn->imm, env->prog);
+> -		/* all functions that have prototype and verifier allowed
+> -		 * programs to call them, must be real in-kernel functions
+> -		 */
+> -		if (!fn->func) {
+> -			verbose(env,
+> -				"kernel subsystem misconfigured func %s#%d\n",
+> -				func_id_name(insn->imm), insn->imm);
+> -			return -EFAULT;
+> +		if (insn->imm =3D=3D BPF_FUNC_redirect_map) {
+> +			aux =3D &env->insn_aux_data[i];
+> +			map_ptr =3D BPF_MAP_PTR(aux->map_ptr_state);
+> +			insn->imm =3D get_xdp_redirect_func(map_ptr->map_type) - __bpf_call_b=
+ase;
+> +		} else {
+> +			fn =3D env->ops->get_func_proto(insn->imm, env->prog);
+> +			/* all functions that have prototype and verifier allowed
+> +			 * programs to call them, must be real in-kernel functions
+> +			 */
+> +			if (!fn->func) {
+> +				verbose(env, "kernel subsystem misconfigured func %s#%d\n",
+> +					func_id_name(insn->imm), insn->imm);
+> +				return -EFAULT;
+> +			}
+> +			insn->imm =3D fn->func - __bpf_call_base;
+>  		}
+> -		insn->imm =3D fn->func - __bpf_call_base;
+>  	}
+>=20=20
+>  	/* Since poke tab is now finalized, publish aux to tracker. */
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index adfdad234674..fd64d768e16a 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3944,22 +3944,6 @@ void xdp_do_flush(void)
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_do_flush);
+>=20=20
+> -static inline void *__xdp_map_lookup_elem(struct bpf_map *map, u32 index)
+> -{
+> -	switch (map->map_type) {
+> -	case BPF_MAP_TYPE_DEVMAP:
+> -		return __dev_map_lookup_elem(map, index);
+> -	case BPF_MAP_TYPE_DEVMAP_HASH:
+> -		return __dev_map_hash_lookup_elem(map, index);
+> -	case BPF_MAP_TYPE_CPUMAP:
+> -		return __cpu_map_lookup_elem(map, index);
+> -	case BPF_MAP_TYPE_XSKMAP:
+> -		return __xsk_map_lookup_elem(map, index);
+> -	default:
+> -		return NULL;
+> -	}
+> -}
+> -
+>  void bpf_clear_redirect_map(struct bpf_map *map)
+>  {
+>  	struct bpf_redirect_info *ri;
+> @@ -4110,22 +4094,17 @@ static const struct bpf_func_proto bpf_xdp_redire=
+ct_proto =3D {
+>  	.arg2_type      =3D ARG_ANYTHING,
+>  };
+>=20=20
+> -BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
+> -	   u64, flags)
+> +static __always_inline s64 __bpf_xdp_redirect_map(struct bpf_map *map, u=
+32 ifindex, u64 flags,
+> +						  void *lookup_elem(struct bpf_map *map,
+> +								    u32 key))
+>  {
+>  	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
+>=20=20
+> -	/* Lower bits of the flags are used as return code on lookup failure */
+>  	if (unlikely(flags > XDP_TX))
+>  		return XDP_ABORTED;
+>=20=20
+> -	ri->tgt_value =3D __xdp_map_lookup_elem(map, ifindex);
+> +	ri->tgt_value =3D lookup_elem(map, ifindex);
+>  	if (unlikely(!ri->tgt_value)) {
+> -		/* If the lookup fails we want to clear out the state in the
+> -		 * redirect_info struct completely, so that if an eBPF program
+> -		 * performs multiple lookups, the last one always takes
+> -		 * precedence.
+> -		 */
 
-This thread is part of conversation with Bjorn where he is looking for a
-way to avoid creation of sysfs files in the PCI/core.
-https://lore.kernel.org/linux-rdma/20210216203726.GH4247@nvidia.com/T/#madc000cf04b5246b450f7183a1d80abdf408a949
+Why remove the comments?
 
-https://lore.kernel.org/linux-rdma/20210216203726.GH4247@nvidia.com/T/#Z2e.:..:20210209133445.700225-2-leon::40kernel.org:0drivers:pci:iov.c
+>  		WRITE_ONCE(ri->map, NULL);
+>  		return flags;
+>  	}
+> @@ -4137,8 +4116,44 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *,=
+ map, u32, ifindex,
+>  	return XDP_REDIRECT;
+>  }
+>=20=20
+> +BPF_CALL_3(bpf_xdp_redirect_devmap, struct bpf_map *, map, u32, ifindex,=
+ u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_lookup_ele=
+m);
+> +}
+> +
+> +BPF_CALL_3(bpf_xdp_redirect_devmap_hash, struct bpf_map *, map, u32, ifi=
+ndex, u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_hash_looku=
+p_elem);
+> +}
+> +
+> +BPF_CALL_3(bpf_xdp_redirect_cpumap, struct bpf_map *, map, u32, ifindex,=
+ u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __cpu_map_lookup_ele=
+m);
+> +}
+> +
+> +BPF_CALL_3(bpf_xdp_redirect_xskmap, struct bpf_map *, map, u32, ifindex,=
+ u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_ele=
+m);
+> +}
+> +
+> +bpf_func_proto_func get_xdp_redirect_func(enum bpf_map_type map_type)
+> +{
+> +	switch (map_type) {
+> +	case BPF_MAP_TYPE_DEVMAP:
+> +		return bpf_xdp_redirect_devmap;
+> +	case BPF_MAP_TYPE_DEVMAP_HASH:
+> +		return bpf_xdp_redirect_devmap_hash;
+> +	case BPF_MAP_TYPE_CPUMAP:
+> +		return bpf_xdp_redirect_cpumap;
+> +	case BPF_MAP_TYPE_XSKMAP:
+> +		return bpf_xdp_redirect_xskmap;
+> +	default:
+> +		return NULL;
+> +	}
+> +}
+> +
+> +/* NB! .func is NULL! get_xdp_redirect_func() is used instead! */
+>  static const struct bpf_func_proto bpf_xdp_redirect_map_proto =3D {
+> -	.func           =3D bpf_xdp_redirect_map,
+>  	.gpl_only       =3D false,
+>  	.ret_type       =3D RET_INTEGER,
+>  	.arg1_type      =3D ARG_CONST_MAP_PTR,
+> --=20
+> 2.27.0
 
->
-> > Bjorn, we really do standard enable/disable flow with out overlay thing.
->
-> Ok, can you step back and try to explain what problem you are trying to
-> solve first, before getting bogged down in odd details?  I find it
-> highly unlikely that this is something "unique", but I could be wrong as
-> I do not understand what you are wanting to do here at all.
-
-I don't know if you are familiar with SR-IOV concepts, if yes, just skip
-the following paragraph.
-
-SR-IOV capable devices have two types of their hardware functions which visible
-as PCI devices: physical functions (PF) and virtual functions (VF). Both types
-have PCI BDF and driver which probes them during initialization. The PF has extra
-properties and it is the one who creates (spawns) new VFs (everything according to
-he PCI-SIG).
-
-This series adds new sysfs files to the VFs which are not bound yet (without driver attached)
-while the PF driver is loaded. The change to VFs is needed to be done before their driver is
-loaded because MSI-X table vector size (the property which we are changing) is used very early
-in the initialization sequence.
-https://lore.kernel.org/linux-rdma/20210216203726.GH4247@nvidia.com/T/#m899d883c8a10d95959ac0cd2833762f93729b8ef
-
-We have two different flows for supported devices:
-1. PF starts and initiates VFs.
-2. PF starts and connects to already existing VFs.
-
-So there is nothing "unique" here, as long as this logic is handled by the PCI/core.
-
-Thanks
-
->
-> thanks,
->
-> greg k-h
