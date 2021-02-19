@@ -2,135 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C44D131FB76
-	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 15:57:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 191EF31FB7F
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 15:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbhBSO4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 09:56:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbhBSO4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 09:56:52 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E12BC061756
-        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 06:56:10 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id e13so10679736ejl.8
-        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 06:56:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9KW+1lIwPV9FPrnZg5vNSqypATsMZae7KiNb0eudmHM=;
-        b=fWlizlEuP6fQFXcSfr57FExVLI3CPIV2N2m+q43FPhwTzlg8qFqVtR2ot7crvh/QW2
-         Qs8fcmRxZoRaSthNGmlfJA5Rv1YBC4S9VvZN9TBF+pu585Yd1tSv+dganVhM4259iily
-         Wk8X2dC0CiMSntdm2q50kxGpwkPvEF2mKeZbx3Rd9w0aV1hEjvzOeSYK91djuqD/9uRz
-         IybFBgnlTsOuU0j8UxqZHZhzAmejyXt6wOt88B/zjfNk8g3b8pKf0IPPwq3gTBJNFb6m
-         sZQFyr10ifWODIk6m67nbAeupaz3rX9483lUva4ErH/Z1+sVoqOuBKu+W0aPvF0RE7bF
-         LqFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9KW+1lIwPV9FPrnZg5vNSqypATsMZae7KiNb0eudmHM=;
-        b=TDOBCLFK4pW68FKoYtmj+XLa10T8b+cg81BeGLUlElXsvLWR2bXyWMZodMsPtgQ5Fe
-         v+tVKazWW5UJ4OJlSkryAkWHgINQ1EgDCND1Fu4LkpR+1Rh69g+pV7M13EJnRAn4Dqqx
-         WcvYVfjw842H8zfg80l/mK1nTYSPtznBHM13pHKibsxRcp+aiBqhwTqQEaJi+QLsH2Mf
-         652Cz6/m+DFmK/bwDhc29l070l6e1YOnjbtnqiFzG29KdneMKlCRPWUkHUBcGFIkRGXd
-         9HzqXqz3tFKwhTIrJ7Nu+FvkxBocDnDxNdJTQuvBDyQlECViFu4vfdRTKKFruGhocw5D
-         tRKA==
-X-Gm-Message-State: AOAM533OhhY2KjFSh/Et3zOW9oYIUo5ccBYSCLGVs9Z98iFDAPHpF9iP
-        dSnXR9EMJBwMjaLwBQhhhsJ99xAcWCI=
-X-Google-Smtp-Source: ABdhPJwMYsj/9mVd0g8NP2LYwJ8orMYR1kg+jSFq0FlnLjJrNdWhKfl5xRJpz6ORJCVE0kUeZKQ5JQ==
-X-Received: by 2002:a17:906:cf84:: with SMTP id um4mr9121601ejb.61.1613746568297;
-        Fri, 19 Feb 2021 06:56:08 -0800 (PST)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id d23sm2950491ejw.109.2021.02.19.06.56.06
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Feb 2021 06:56:06 -0800 (PST)
-Received: by mail-wr1-f47.google.com with SMTP id 7so8969336wrz.0
-        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 06:56:06 -0800 (PST)
-X-Received: by 2002:a5d:4488:: with SMTP id j8mr8312106wrq.12.1613746565793;
- Fri, 19 Feb 2021 06:56:05 -0800 (PST)
+        id S229598AbhBSO6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 09:58:30 -0500
+Received: from m42-2.mailgun.net ([69.72.42.2]:15309 "EHLO m42-2.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229553AbhBSO61 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Feb 2021 09:58:27 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613746682; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=xF5d0AE+xCt+zGgDt1pFO1QgGtL9JnfLXGOvSzH34zc=; b=YRQNkqt0Lp2ze77HcZIhq8eQ/NTz7GLjtdvtzng1Eo5H7FsUGBc6mhscopRRZ8kYnJmB06So
+ f7c/WljS0/H1t52fZHp60VHSa/NcFXwA2NIE2cZY7KBzj3zWuBKVaBcz5PgyeRs+/aarPtGv
+ cGi38ucxyO/4kgPZ+cDseUGfrEA=
+X-Mailgun-Sending-Ip: 69.72.42.2
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 602fd1efe87943df30d1ad91 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 19 Feb 2021 14:57:51
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 25331C43464; Fri, 19 Feb 2021 14:57:51 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 51166C433CA;
+        Fri, 19 Feb 2021 14:57:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 51166C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Jackman <jackmanb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the net-next tree
+References: <20210219075256.7af60fb0@canb.auug.org.au>
+        <20210219194416.3376050f@canb.auug.org.au>
+Date:   Fri, 19 Feb 2021 16:57:44 +0200
+In-Reply-To: <20210219194416.3376050f@canb.auug.org.au> (Stephen Rothwell's
+        message of "Fri, 19 Feb 2021 19:44:16 +1100")
+Message-ID: <87czwwf6l3.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <5e910d11a14da17c41317417fc41d3a9d472c6e7.1613659844.git.bnemeth@redhat.com>
- <CA+FuTSe7srSBnAmFNFBFkDrLmPL5XtxhbXEs1mBytUBuuym2fg@mail.gmail.com> <2cc06597-8005-7be8-4094-b20f525afde8@redhat.com>
-In-Reply-To: <2cc06597-8005-7be8-4094-b20f525afde8@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 19 Feb 2021 09:55:28 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSf2GCi+RzpkFeBgtSOyhjsBFfApjekzupHLfyeYDn-JYQ@mail.gmail.com>
-Message-ID: <CA+FuTSf2GCi+RzpkFeBgtSOyhjsBFfApjekzupHLfyeYDn-JYQ@mail.gmail.com>
-Subject: Re: [PATCH] net: check if protocol extracted by virtio_net_hdr_set_proto
- is correct
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Balazs Nemeth <bnemeth@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 19, 2021 at 3:53 AM Jason Wang <jasowang@redhat.com> wrote:
+Stephen Rothwell <sfr@canb.auug.org.au> writes:
+
+> Hi all,
 >
+> On Fri, 19 Feb 2021 07:52:56 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>>
+>> After merging the net-next tree, today's linux-next build (htmldocs)
+>> produced these warnings:
+>> 
+>> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
+>> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
+>> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
+>> Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-string without end-string.
+>> 
+>> Introduced by commit
+>> 
+>>   91c960b00566 ("bpf: Rename BPF_XADD and prepare to encode other atomics in .imm")
+>> 
+>> Sorry that I missed these earlier.
 >
-> On 2021/2/18 11:50 =E4=B8=8B=E5=8D=88, Willem de Bruijn wrote:
-> > On Thu, Feb 18, 2021 at 10:01 AM Balazs Nemeth <bnemeth@redhat.com> wro=
-te:
-> >> For gso packets, virtio_net_hdr_set_proto sets the protocol (if it isn=
-'t
-> >> set) based on the type in the virtio net hdr, but the skb could contai=
-n
-> >> anything since it could come from packet_snd through a raw socket. If
-> >> there is a mismatch between what virtio_net_hdr_set_proto sets and
-> >> the actual protocol, then the skb could be handled incorrectly later
-> >> on by gso.
-> >>
-> >> The network header of gso packets starts at 14 bytes, but a specially
-> >> crafted packet could fool the call to skb_flow_dissect_flow_keys_basic
-> >> as the network header offset in the skb could be incorrect.
-> >> Consequently, EINVAL is not returned.
-> >>
-> >> There are even packets that can cause an infinite loop. For example, a
-> >> packet with ethernet type ETH_P_MPLS_UC (which is unnoticed by
-> >> virtio_net_hdr_to_skb) that is sent to a geneve interface will be
-> >> handled by geneve_build_skb. In turn, it calls
-> >> udp_tunnel_handle_offloads which then calls skb_reset_inner_headers.
-> >> After that, the packet gets passed to mpls_gso_segment. That function
-> >> calculates the mpls header length by taking the difference between
-> >> network_header and inner_network_header. Since the two are equal
-> >> (due to the earlier call to skb_reset_inner_headers), it will calculat=
-e
-> >> a header of length 0, and it will not pull any headers. Then, it will
-> >> call skb_mac_gso_segment which will again call mpls_gso_segment, etc..=
-.
-> >> This leads to the infinite loop.
+> These have been fixed in the net-next tree, actually.  I was fooled
+> because an earlier part of the net-next tree has been included in the
+> wireless-drivers (not -next) tree today so these warnings popped up
+> earlier, but are gone one the rest of the net-next tree is merged.
 >
->
-> I remember kernel will validate dodgy gso packets in gso ops. I wonder
-> why not do the check there? The reason is that virtio/TUN is not the
-> only source for those packets.
+> Sorry for the noise.
 
-It is? All other GSO packets are generated by the stack itself, either
-locally or through GRO.
+Argh, sorry about that Stephen. I was preparing wireless-drivers for
+followup fixes sent during the merge window, but didn't realise that it
+will mess up your tree building. I need to avoid this in the future and
+wireless-drivers should only follow the net tree.
 
-But indeed some checks are better performed in the GSO layer. Such as
-likely the 0-byte mpls header length.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-If we cannot trust virtio_net_hdr.gso_type passed from userspace, then
-we can also not trust the eth.h_proto coming from the same source. But
-it makes sense to require them to be consistent. There is a
-dev_parse_header_protocol that may return the link layer type in a
-more generic fashion than casting to skb_eth_hdr.
-
-Question remains what to do for the link layer types that do not implement
-header_ops->parse_protocol, and so we cannot validate the packet's
-network protocol. Drop will cause false positives, accepts will leave a
-potential path, just closes it for Ethernet.
-
-This might call for multiple fixes, both on first ingest and inside the sta=
-ck?
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
