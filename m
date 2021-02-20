@@ -2,93 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78946320490
-	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 10:06:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B18320495
+	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 10:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbhBTJFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Feb 2021 04:05:09 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:56342 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbhBTJDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 04:03:54 -0500
-Date:   Sat, 20 Feb 2021 12:02:48 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        <linux-kernel@vger.kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
- LPI mode
-Message-ID: <20210220090248.oiyonlfucvmgzw6d@mobilestation>
-References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
- <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
- <20210209101528.3lf47ouaedfgq74n@mobilestation>
- <a652c69b-94d3-9dc6-c529-1ebc0ed407ac@gmail.com>
- <20210209105646.GP1463@shell.armlinux.org.uk>
- <20210210164720.migzigazyqsuxwc6@mobilestation>
- <20210211103941.GW1463@shell.armlinux.org.uk>
+        id S229927AbhBTJIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Feb 2021 04:08:45 -0500
+Received: from z11.mailgun.us ([104.130.96.11]:32068 "EHLO z11.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229614AbhBTJIb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Feb 2021 04:08:31 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613812085; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=K1oeCEHtgyAcQeVkUAX9y//DnPQ0qwPlMtqyd51eMEM=; b=hRD17bKWKfF4QbMDyYOAxR60Yb0rt1XwPag2S6D2CvpzWwpcE1sj9ORUYpIojXvqZBRAl+K2
+ mXWLV4ki6olKQCYsekzJjEiQ3fc42kqyCH77qjagHl5LF4AMBjuyskokzytiXuWqDtWERQ5W
+ +yBnqc3Fs4M4vm1u3/S/9e+oqZ4=
+X-Mailgun-Sending-Ip: 104.130.96.11
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 6030d15b7237f827dc2d8748 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 20 Feb 2021 09:07:39
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D487EC43461; Sat, 20 Feb 2021 09:07:39 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B5C3BC433CA;
+        Sat, 20 Feb 2021 09:07:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B5C3BC433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Hao Chen <chenhaoa@uniontech.com>
+Cc:     tony0620emma@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rtw88: 8822ce: fix wifi disconnect after S3/S4 on HONOR laptop
+References: <20210220084602.22386-1-chenhaoa@uniontech.com>
+Date:   Sat, 20 Feb 2021 11:07:34 +0200
+In-Reply-To: <20210220084602.22386-1-chenhaoa@uniontech.com> (Hao Chen's
+        message of "Sat, 20 Feb 2021 16:46:02 +0800")
+Message-ID: <878s7jjeeh.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210211103941.GW1463@shell.armlinux.org.uk>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 10:39:41AM +0000, Russell King - ARM Linux admin wrote:
-> On Wed, Feb 10, 2021 at 07:47:20PM +0300, Serge Semin wrote:
-> > On Tue, Feb 09, 2021 at 10:56:46AM +0000, Russell King - ARM Linux admin wrote:
-> > > On Tue, Feb 09, 2021 at 11:37:29AM +0100, Heiner Kallweit wrote:
-> > > > Right, adding something like a genphy_{read,write}_mmd() doesn't make
-> > > > too much sense for now. What I meant is just exporting mmd_phy_indirect().
-> > > > Then you don't have to open-code the first three steps of a mmd read/write.
-> > > > And it requires no additional code in phylib.
-> > > 
-> > > ... but at the cost that the compiler can no longer inline that code,
-> > > as I mentioned in my previous reply. (However, the cost of the accesses
-> > > will be higher.) On the plus side, less I-cache footprint, and smaller
-> > > kernel code.
-> > 
-> > Just to note mmd_phy_indirect() isn't defined with inline specifier,
-> > but just as static and it's used twice in the
-> > drivers/net/phy/phy-core.c unit. So most likely the compiler won't
-> > inline the function code in there.
-> 
-> You can't always tell whether the compiler will inline a static function
-> or not.
+Hao Chen <chenhaoa@uniontech.com> writes:
 
-Andrew, Heiner, Russell, what is your final decision about this? Shall
-we export the mmd_phy_indirect() method, implement new
-genphy_{read,write}_mmd() or just leave the patch as is manually
-accessing the MMD register in the driver?
+> When the laptop HONOR MagicBook 14 sleep to S3/S4, the laptop can't
+> resume.
+> The dmesg of kernel report:
+> "[   99.990168] pcieport 0000:00:01.2: can't change power state
+> from D3hot to D0 (config space inaccessible)
+> [   99.993334] rtw_pci 0000:01:00.0: can't change power state
+> from D3hot to D0 (config space inaccessible)
+> [  104.435004] rtw_pci 0000:01:00.0: mac power on failed
+> [  104.435010] rtw_pci 0000:01:00.0: failed to power on mac"
+> When try to pointer the driver.pm to NULL, the problem is fixed.
+> This driver hasn't implemented pm ops yet.It makes the sleep and
+> wake procedure expected when pm's ops not NULL.
 
--Sergey
+But why rtw_pci_suspend() and rtw_pci_resume() are empty? Should we just
+remove them if they cause issues for the users? And if they are really
+needed there should be a comment in the functions explaining the
+situation.
 
-> 
-> > Anyway it's up to the PHY
-> > library maintainers to decide. Please settle the issue with Heiner and
-> > Andrew then. I am ok with both solutions and will do as you decide.
-> 
-> FYI, *I* am one of the phylib maintainers.
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> Fixed: commit e3037485c68e ("rtw88: new Realtek 802.11ac driver")
+
+This should be:
+
+Fixes: e3037485c68e ("rtw88: new Realtek 802.11ac driver")
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
