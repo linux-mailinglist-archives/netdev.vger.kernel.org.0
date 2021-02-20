@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D22A5320404
-	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 06:33:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E00320408
+	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 06:33:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbhBTFbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Feb 2021 00:31:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
+        id S230088AbhBTFbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Feb 2021 00:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230017AbhBTFax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 00:30:53 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60406C061797;
-        Fri, 19 Feb 2021 21:29:38 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id r75so8241092oie.11;
-        Fri, 19 Feb 2021 21:29:38 -0800 (PST)
+        with ESMTP id S230019AbhBTFay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 00:30:54 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C56C0617A7;
+        Fri, 19 Feb 2021 21:29:39 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id 105so734158otd.3;
+        Fri, 19 Feb 2021 21:29:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=RcbluTouVB6/rFLYgmpItY/JPds73C5Ori6pD1ifdmo=;
-        b=lVncbfGbUBfUQrrG9HksMtUt9mnGr5O66FjLav9ZXz6/Uj/NynPR2kyAlBEiyxTJwz
-         R6XhVJliXx0dpI5mXFwgvSCTeW699Z8OnXGGVAtVQ9S8WnrFQtFLXr+VkKJJoiYeHvKF
-         dx0zK0mzpWhXMX0WQJZZOfqviVYubbzBf68PoazTrX0HAdWQwyo9TPUSOeWGRG6xVdpi
-         VupibcUaP5Oyu2g18bbLo537Jhq1OwWEMMcrxB6xgW9pyX7aboqIQ/HLlJdzdovfjVfq
-         aQEZR+RegJafNnKSURWQPQBq0MAsbCSS5EVae4aRcJzKuvxHuKXBpZVYNHFstB5OJeju
-         euJA==
+        bh=6qLL1pD8eAIF22astLsGTIt6XsSRTHADcChvDI82gwA=;
+        b=gIYzanohDRE8gMwXQrZE14ePq0SQeXVPvj5vB+XO9a2sIR7nfZ2qjXT6ph6KHgwf+N
+         eeExVLsFQgaKYcomBfTcLh7qz3rtPKSZe7nln/3HaK8bllvKCpqBAPhzNQ1UnkmxN4cd
+         CqCoUwAxuRXb5HIwGFy5PCkYqk2zMSEXbUBgezZNDRIDmUd0qtzjY/dnBXD8yuZLJ1vi
+         OTZ4deVS5LJBRIVj57o05ZcqE1TqAr4h7kIfbobTQnI8ATo3lNyaFSIAfXpC2MoJqO3P
+         7C4JwNwDJnjV5UDWM8ce188tcx35vge6vON2sdfzSeUrU2Jcr5WSXlkLDie7IThmp3yu
+         pelA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RcbluTouVB6/rFLYgmpItY/JPds73C5Ori6pD1ifdmo=;
-        b=FrtbfYGo/XB2A+UYkSXWv9FQh1iu+11lWa1U3QH79MF9XcrkPORBABD4+LjxqH9Va6
-         Yhm15zLl+tnlrpGohvt+hvyiB19gBy4MbyyA/F3dk/0JPLc3PKlE3jpgh0psVJSjSx6K
-         28dFV5hhZ0ekTFX7Vn7f8y6U6Mkq3dM0+cBXsSz6zaie07msshUxgvU6vxzf832Mk1ow
-         hrYVRo+Ep4q2UjkqBrN+UM0u2TStHsi0jGMSqeZWeLIQQhUhImAWGW7pZHqy2nphtrQ5
-         OueKJqHsCArVMp00dr47KnQRJ4Q88tDA5/Lhz/ke/4/+syzUx23RSlaZMXpk3PrdkgVk
-         EDxA==
-X-Gm-Message-State: AOAM532Y5VQcbrB+7yNh0WHm2izseD2XeJ07IRfl8cEVcZmP/s0vm7GL
-        gWMvLC9yu7gS4sANEXtfNjVxx/GPriL3Vw==
-X-Google-Smtp-Source: ABdhPJyyepoWGtxQqr5rocZOzFx35j1nUFwBRyaXkCeGX7OZtGH6vra/tGFZbW7jFpii0nibBTVX/Q==
-X-Received: by 2002:aca:307:: with SMTP id 7mr9030393oid.174.1613798977753;
-        Fri, 19 Feb 2021 21:29:37 -0800 (PST)
+        bh=6qLL1pD8eAIF22astLsGTIt6XsSRTHADcChvDI82gwA=;
+        b=EP6cKorEgnuUAzhYUeKag7ecbH058Fv0QR3pU9GheEZHahXglSRgCEeYPJ5rlRp6jS
+         jGjxAX9WbZ+nJPXZkgCWWdADlRBIry3Q4kMzGzSqe0De0sg9Lmc2dSdhP12A9Aq9Ds6m
+         0RZYWwoFJo+TC4Lb1rDs9WyR5Yz6Q7UWq95382/WrEmhR/MPg5hExrgpTDBBHxTKTPXb
+         lYlvRrB42FhKYNmx8zX+IDYYTDmdxKxEL53vY2vuzDMgRtUxpUzU2SZD1gh8Wl9oKlcW
+         PK1hLlGsPTa04sqNZtp6FglWHzRWZbJzUKJVr56vEEW87xWAbFMKbwAUSdCy4URGOmIM
+         QlVw==
+X-Gm-Message-State: AOAM533tp2uU6YiOvcjJf6ztleXCJ+C2DX0frA0gFGvp+zz2g3yImjaT
+        xCm6enM1sjK7uo2WR6Uifi6QVrc5zRbB1A==
+X-Google-Smtp-Source: ABdhPJxPYAJoJQxRcl87iM2fg/uvkuCQyruZ4RUORQY3muV3Wr7+pCURehEG5SjmYDfuUcIHvhIOsg==
+X-Received: by 2002:a9d:7699:: with SMTP id j25mr9554279otl.202.1613798978884;
+        Fri, 19 Feb 2021 21:29:38 -0800 (PST)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:1d72:18:7c76:92e4])
-        by smtp.gmail.com with ESMTPSA id v20sm945955oie.2.2021.02.19.21.29.36
+        by smtp.gmail.com with ESMTPSA id v20sm945955oie.2.2021.02.19.21.29.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Feb 2021 21:29:37 -0800 (PST)
+        Fri, 19 Feb 2021 21:29:38 -0800 (PST)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
@@ -56,9 +56,9 @@ Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
         Daniel Borkmann <daniel@iogearbox.net>,
         Lorenz Bauer <lmb@cloudflare.com>,
         John Fastabend <john.fastabend@gmail.com>
-Subject: [Patch bpf-next v6 7/8] skmsg: make __sk_psock_purge_ingress_msg() static
-Date:   Fri, 19 Feb 2021 21:29:23 -0800
-Message-Id: <20210220052924.106599-8-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next v6 8/8] skmsg: get rid of sk_psock_bpf_run()
+Date:   Fri, 19 Feb 2021 21:29:24 -0800
+Message-Id: <20210220052924.106599-9-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210220052924.106599-1-xiyou.wangcong@gmail.com>
 References: <20210220052924.106599-1-xiyou.wangcong@gmail.com>
@@ -70,7 +70,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-It is only used within skmsg.c so can become static.
+It is now nearly identical to bpf_prog_run_pin_on_cpu() and
+it has an unused parameter 'psock', so we can just get rid
+of it and call bpf_prog_run_pin_on_cpu() directly.
 
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
@@ -78,36 +80,62 @@ Cc: Lorenz Bauer <lmb@cloudflare.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/linux/skmsg.h | 2 --
- net/core/skmsg.c      | 2 +-
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ net/core/skmsg.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index ab3f3f2c426f..9f838bdf2db3 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -344,8 +344,6 @@ static inline void sk_psock_free_link(struct sk_psock_link *link)
- 
- struct sk_psock_link *sk_psock_link_pop(struct sk_psock *psock);
- 
--void __sk_psock_purge_ingress_msg(struct sk_psock *psock);
--
- static inline void sk_psock_cork_free(struct sk_psock *psock)
- {
- 	if (psock->cork) {
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index dbb176427c14..286a95304e03 100644
+index 286a95304e03..b240be71f21f 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -620,7 +620,7 @@ struct sk_psock_link *sk_psock_link_pop(struct sk_psock *psock)
- 	return link;
+@@ -748,12 +748,6 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
  }
+ EXPORT_SYMBOL_GPL(sk_psock_msg_verdict);
  
--void __sk_psock_purge_ingress_msg(struct sk_psock *psock)
-+static void __sk_psock_purge_ingress_msg(struct sk_psock *psock)
+-static int sk_psock_bpf_run(struct sk_psock *psock, struct bpf_prog *prog,
+-			    struct sk_buff *skb)
+-{
+-	return bpf_prog_run_pin_on_cpu(prog, skb);
+-}
+-
+ static void sk_psock_skb_redirect(struct sk_buff *skb)
  {
- 	struct sk_msg *msg, *tmp;
- 
+ 	struct sk_psock *psock_other;
+@@ -811,7 +805,7 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
+ 		skb->sk = psock->sk;
+ 		skb_dst_drop(skb);
+ 		skb_bpf_redirect_clear(skb);
+-		ret = sk_psock_bpf_run(psock, prog, skb);
++		ret = bpf_prog_run_pin_on_cpu(prog, skb);
+ 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+ 		skb->sk = NULL;
+ 	}
+@@ -898,7 +892,7 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
+ 	if (likely(prog)) {
+ 		skb_dst_drop(skb);
+ 		skb_bpf_redirect_clear(skb);
+-		ret = sk_psock_bpf_run(psock, prog, skb);
++		ret = bpf_prog_run_pin_on_cpu(prog, skb);
+ 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+ 	}
+ 	sk_psock_verdict_apply(psock, skb, ret);
+@@ -921,7 +915,7 @@ static int sk_psock_strp_parse(struct strparser *strp, struct sk_buff *skb)
+ 	prog = READ_ONCE(psock->progs.stream_parser);
+ 	if (likely(prog)) {
+ 		skb->sk = psock->sk;
+-		ret = sk_psock_bpf_run(psock, prog, skb);
++		ret = bpf_prog_run_pin_on_cpu(prog, skb);
+ 		skb->sk = NULL;
+ 	}
+ 	rcu_read_unlock();
+@@ -1014,7 +1008,7 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
+ 	if (likely(prog)) {
+ 		skb_dst_drop(skb);
+ 		skb_bpf_redirect_clear(skb);
+-		ret = sk_psock_bpf_run(psock, prog, skb);
++		ret = bpf_prog_run_pin_on_cpu(prog, skb);
+ 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+ 	}
+ 	sk_psock_verdict_apply(psock, skb, ret);
 -- 
 2.25.1
 
