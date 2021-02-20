@@ -2,272 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AA2A320334
-	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 03:44:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6610132035A
+	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 04:01:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbhBTCnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 21:43:00 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:44246 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbhBTCm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 21:42:58 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11K2eWt7025564;
-        Sat, 20 Feb 2021 02:42:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : from : to :
- references : cc : message-id : date : in-reply-to : content-type :
+        id S229844AbhBTDA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 22:00:58 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:33478 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229725AbhBTDAz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 22:00:55 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11K2sH8D150714;
+        Sat, 20 Feb 2021 03:00:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=ULm+jw7W/Hk7YAdPpTLglb+aLz8d193SGPpVmK6pluA=;
- b=Sxmi0CmZS2RawTU0Cl5qPZMg3UAGzVxQqsV2v1LmFMGGaoljzvhguBmz6GyHiuS3iB9F
- ODrvzLstJP0fe6r5RaxVbk90NFDmHj4ur+sb+tEaMCnSp8NoMqsP/dXnLCcWpBQaSPrM
- JoJfvb8+ksqpFjFD6S8euIzobo2tlO8m9/ISU9Clj6hYQdT9CF9Bz+lT0y/7VSO9jzE6
- uyYvHsbp9LlKcK1BOQugVg+G/ZGrhXz033onZJVvFyuM8RAdEu/PVctdWdQmYYkue8uu
- DZ9Zq3htM0O2S9QNRdscLqakAPhPrRSPXGnnVUF3jTuFjUhDHroejl1iusE3j/WHsBsa Uw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2130.oracle.com with ESMTP id 36tqxb83a4-1
+ bh=A5u266oI/uUdkzBxXIyf4XBc/xf9ru9+6iIowUB+yic=;
+ b=uyXK08GW2PogoTmJFa1cAzN+VR7Xv1vVcBvC24jTYSsuVICB8krTEHxX4x0W5Hz7ccum
+ Bz4fNIOD2MrbBE3K1Jr1XbVOK3lMoXeLn2isVXM5/3+lZwjNabmGdiPhgPn0OjvoFXnS
+ z2x0KiQ9/ReF7Hk6h3LhC9OxIAVpO8VRGflN4GGLuSBUC9EXckMBF3Jh728URvD4a0VY
+ oBAcAKgoUTo2jx/wKg5Oozv0w64bNMIUGp74skMUhScRx0q//G+knRLX7T37gAKRRtGn
+ ingePfp348i48jmHd4FouJvcDBGU4ZFcjucwQ2xoh/p+nkcDdyM3reXLv9F1VR0lYc5u Ug== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 36p7dnu5n8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 20 Feb 2021 02:42:10 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11K2eMKU122282;
-        Sat, 20 Feb 2021 02:42:10 GMT
-Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2040.outbound.protection.outlook.com [104.47.73.40])
-        by aserp3020.oracle.com with ESMTP id 36prp3ke67-1
+        Sat, 20 Feb 2021 03:00:06 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11K2uXtn083040;
+        Sat, 20 Feb 2021 03:00:05 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
+        by aserp3030.oracle.com with ESMTP id 36trf99t9r-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 20 Feb 2021 02:42:10 +0000
+        Sat, 20 Feb 2021 03:00:05 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YTh28cGZcFf8XjhgzYCqHAQjDyz5xYmpTO72d/mDK1p9oti+aXmV9aGfmrGnkWTjJbdGA0iQI0qa2PLsw0kHS4gNE2g1FCJAc7SVzP6sos4y4Y0Yt+5PmfNuMT2EVdGr12TdIBWawdrg04NjOs8v+ETA82p3bpkc+MPdQTMkzDesIjUgeT6IpJrekkG1MM3BdquLrI16mvQDFNi63Bj0+3zHF7i9z22MWTy7asqgCNbItn4k2Bk80vaqAc4r0/lbQOWRMvAM0gyPz06Aa6b69re9lvjZRekHG8nxy5lA2ouzmhjiVJa4G6bgs2NXrrp6cIlvpfhe5HMdVDbrUDfLkw==
+ b=ZutfACWzevJOxiaG7gsEIGmsck384lluByKMVsHh8O6Mfy0MZ+Ye6ffNEw1ru6xy5m8o18LtTj2el5wtGg06OF7PffCCgYgxLXDm5iG1AN63tKqRtXpAYt/iUd3sobcyRks6u4j1QMMMnsDyQvtLqHP/6NZ96Nbb8lzojzwLXs6dIJkHEA2j9dqL/OMevFvCfSGamfq9bFiKM8yyceYn4qjmm1Gc37Nx6TtsLA915a3D6N4rua70alQQIxqosUzwirtXdbTEL7k9a1raPju7jwGh66J0dz4upmnugJt4OKPZ3L/QvXLHynmRAUM4G3LiaK5DyGgiSW0CVu0pEjl2WQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ULm+jw7W/Hk7YAdPpTLglb+aLz8d193SGPpVmK6pluA=;
- b=BrmREe5M37CWFRA86/rL7vBQ6I2/Xq3nJAS0btOUMzt8pNI/kBxPtbUL5M3+u+5zRzcN9xWp8Bo+2OLU/sDwLFgJEP2+YLkaNdZyFfLLUO0JeNRUrjK9xj3llH79tMCExe8KeWSZqbFD+4KTpMikq2Y4sGD75gAZdgBEYO+YScVWJh4v3ebWDr3FGvYlDR1cZltkn9Vd0ASo65PpYKQMPGl93Oe5s1nL4BY3Xq/UOzsijI3ct+CZx8uKh8eelStRN81F7t2ECpzKfAc1e3jNbCeddv/rtaTRl0FNC0U2RG96HcsONpzS/M58ZhWzepvor34mQpNi2+iXu+T+IiH+mg==
+ bh=A5u266oI/uUdkzBxXIyf4XBc/xf9ru9+6iIowUB+yic=;
+ b=UwQmZYSSxHwZPA0VyTDSmJlRcnw8N7yqo3+QLNX3Qy5O2hoFxP6Ke/T41QqG6TwLc8DbHdM673gP3T5uAO0sL5S3DkhovH4sFBBHwRselcP5a0y+0KMRb0sAv+9iGvf5XNa1FqiQmFB2iYrCaqmSddM2c3w+WhcAFGy9OXjN1gwZ2yiGnPv8icYoxGKEYqmLbkOedHvCi9Q3ZWXp/W1as6mBD1zOyIeu3v7mKsLodap9fm3zDE8Juqoqa7nVrXW55wFVP5dP9fr8GlWec8qzuQ0wUf9dVCfoYaz7/j7TkBckbHt++z9DanCQZ8DYaxml0sr3Se0JKkyRHvvv2lLSSA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ULm+jw7W/Hk7YAdPpTLglb+aLz8d193SGPpVmK6pluA=;
- b=TfZoWXL45Esii8qBCij3lrm9Cukf8cU+erKnVUdhr6NUjhJ05+6RNzy3xXjvWhgCbWBVqCw4ZH7GPX2Pe4rhncFMf7ldEjnA6MbNV/xLxwvt2/2VpmDBLvu8cyuwJIEHNLGZZ5vFLaOyvOseMS7Vsz8dJlZWMOqJ06P2hzbuX6Q=
-Authentication-Results: lists.linux-foundation.org; dkim=none (message not
- signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
- header.from=oracle.com;
+ bh=A5u266oI/uUdkzBxXIyf4XBc/xf9ru9+6iIowUB+yic=;
+ b=gXVqHIapiEic4fTQIh5BKHcR7LDoqXfjgRT/aS5yw3qMu3V54+Yp7kS4bCeKisZNAu1nSGy7tM+WL7ED2GsqusJW6iRdZQAgVL/RyDVRZIo7JIWtMTH6BU4mxWAw93z1DvnX4IATxyEPGzPYlmpj/OCwJWlIqkeVpqqBNLh6Xc8=
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=oracle.com;
 Received: from BYAPR10MB3287.namprd10.prod.outlook.com (2603:10b6:a03:15c::11)
- by BYAPR10MB3288.namprd10.prod.outlook.com (2603:10b6:a03:156::21) with
+ by BY5PR10MB3843.namprd10.prod.outlook.com (2603:10b6:a03:1fa::32) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.29; Sat, 20 Feb
- 2021 02:42:08 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.29; Sat, 20 Feb
+ 2021 03:00:02 +0000
 Received: from BYAPR10MB3287.namprd10.prod.outlook.com
  ([fe80::45b5:49d:d171:5359]) by BYAPR10MB3287.namprd10.prod.outlook.com
  ([fe80::45b5:49d:d171:5359%5]) with mapi id 15.20.3868.029; Sat, 20 Feb 2021
- 02:42:07 +0000
-Subject: Re: [PATCH 1/2] vdpa/mlx5: Fix suspend/resume index restoration
+ 03:00:02 +0000
+Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
+ change map
+To:     Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lulu@redhat.com
+References: <20210204073618.36336-1-elic@nvidia.com>
+ <81f5ce4f-cdb0-26cd-0dce-7ada824b1b86@oracle.com>
+ <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
+ <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
+ <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
+ <20210208100445.GA173340@mtl-vdi-166.wap.labs.mlnx>
+ <379d79ff-c8b4-9acb-1ee4-16573b601973@redhat.com>
+ <20210209061232.GC210455@mtl-vdi-166.wap.labs.mlnx>
+ <411ff244-a698-a312-333a-4fdbeb3271d1@redhat.com>
+ <a90dd931-43cc-e080-5886-064deb972b11@oracle.com>
+ <b749313c-3a44-f6b2-f9b8-3aefa2c2d72c@redhat.com>
+ <24d383db-e65c-82ff-9948-58ead3fc502b@oracle.com>
+ <740b4f73-c668-5e0e-5af2-ebea7528d7a2@redhat.com>
+ <9243c03b-8490-523c-2b78-928d1bcb0ddd@oracle.com>
+ <b2d18964-8cd6-6bb1-1995-5b966207046d@redhat.com>
+ <5cf5e0ad-efbb-dc37-8054-5c46722b87df@oracle.com>
+ <2330af63-02e2-77fe-255b-c55f01292e80@redhat.com>
 From:   Si-Wei Liu <si-wei.liu@oracle.com>
-To:     Eli Cohen <elic@nvidia.com>, jasowang@redhat.com
-References: <20210216162001.83541-1-elic@nvidia.com>
- <4ecc1c7f-4f5a-68be-6734-e18dfeb91437@oracle.com>
-Cc:     mst@redhat.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org
 Organization: Oracle Corporation
-Message-ID: <033b0806-4037-5755-a1fa-91dbb58bab2e@oracle.com>
-Date:   Fri, 19 Feb 2021 18:42:04 -0800
+Message-ID: <c3760a4c-5047-8a03-2935-0b9b5a682dbb@oracle.com>
+Date:   Fri, 19 Feb 2021 19:00:00 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.1
-In-Reply-To: <4ecc1c7f-4f5a-68be-6734-e18dfeb91437@oracle.com>
+In-Reply-To: <2330af63-02e2-77fe-255b-c55f01292e80@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 X-Originating-IP: [73.189.186.83]
-X-ClientProxiedBy: CY4PR02CA0013.namprd02.prod.outlook.com
- (2603:10b6:903:18::23) To BYAPR10MB3287.namprd10.prod.outlook.com
- (2603:10b6:a03:15c::11)
+X-ClientProxiedBy: BYAPR01CA0021.prod.exchangelabs.com (2603:10b6:a02:80::34)
+ To BYAPR10MB3287.namprd10.prod.outlook.com (2603:10b6:a03:15c::11)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.19] (73.189.186.83) by CY4PR02CA0013.namprd02.prod.outlook.com (2603:10b6:903:18::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Sat, 20 Feb 2021 02:42:06 +0000
+Received: from [192.168.0.19] (73.189.186.83) by BYAPR01CA0021.prod.exchangelabs.com (2603:10b6:a02:80::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Sat, 20 Feb 2021 03:00:02 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5c8190a6-2660-473a-0d95-08d8d5491d6c
-X-MS-TrafficTypeDiagnostic: BYAPR10MB3288:
-X-Microsoft-Antispam-PRVS: <BYAPR10MB328857EC93A84835C5B6A65BB1839@BYAPR10MB3288.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
+X-MS-Office365-Filtering-Correlation-Id: 13351751-d9ae-42bd-da13-08d8d54b9e1d
+X-MS-TrafficTypeDiagnostic: BY5PR10MB3843:
+X-Microsoft-Antispam-PRVS: <BY5PR10MB3843FA5A813B2B2F76422C13B1839@BY5PR10MB3843.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sKfIjVjeZNbUujIsMq5YHULcGtwXjJ58N5dl10vN6M0BM33m3QC29lQKmqmUJDq9cfZhLzjX/4ANujb03Aku49tLRJTb1b6Ek5IpXO0dEtHwJ5hapdGleA1FUdZi/hPyknjf1rWsjmOd3n+DRgyNPSX9lWrYspkSfjrXxc5gJNpe+J/9js8B4yax5Ld3UCVlBaOcW+QlN1cSBVqjudwOwOb/LMT2J1R+IOIdsSac5s2PSkROWhovvbmaOsmoRrO9faE+zaVhIhs1HXy5H+Fa4TvvN7DlXRB+4CT2OJMu+Wz2U+mSlLXw5bjA2/FNPP/0/eH3P9LvTMwXsbLYfruqkD+sZrQnNaSdKShwyvpp8Og44kR9xLOsEN02Orx8pK6lUYE2r/0x2GKnVQpnxrELtXk5qAAKz6YbFLqq31qFkAghuNrm9NAfi1c6BiZa2WKawT9zPQV7284f6vzWwuDIB1T6Sx9hqXbxEAkm+AqyqSwRJQpoz109la1nL20XbOH12sYOX5CETKrEwp9fSAdy0TtWbotHBzjy5wiUXqro5U4gisHYREwebEUaY8fqyyncpaMyFBmEs1BUJrOp1o2mGYPhNNfl7IoDcUG3Wc2ckS4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3287.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(39860400002)(346002)(396003)(366004)(16526019)(31696002)(186003)(66946007)(4326008)(8676002)(8936002)(66556008)(66476007)(36756003)(83380400001)(2906002)(53546011)(36916002)(86362001)(6486002)(15650500001)(26005)(478600001)(5660300002)(956004)(2616005)(31686004)(16576012)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?OWF2ajNBWmhBRFkvT256U04rRVJSRTU5YVMvVmlieW1NT2drbXZXR3MxMnlt?=
- =?utf-8?B?Z2poVnpJNExqa3FCbnFkTnZlcGZiTmgzVW45NENIRWdBekRSK3E5TzJrU2lx?=
- =?utf-8?B?eDVicVp4L3JBbk9wTHQvQmpKTENmOEpXVXhhN1RSL21ndlkwUWJVamFGMVVY?=
- =?utf-8?B?eDZ5cmNDM2FWaWlWUnllK3VCZkdMUHBWMFNKS3k4QjVjVTZGcDJkUzBLeSsy?=
- =?utf-8?B?SXlUcFpBZnYvMnJuZ3dPdzJDbkFlMEloMDdlRXhTZU00SmVUNWQxS2gwdFFl?=
- =?utf-8?B?U1AwZW4wd3M3MkkzckpXL2doR2Z3NTNPOXJhbjFYTkViWmlMSDlFenROaXJ6?=
- =?utf-8?B?OHlDbjN2MXJqS3VBNjBRdjZHQmZaTHV2SktmbWF4VS9MYXNVTCtpbFc0T1F1?=
- =?utf-8?B?cUxDQnlDWDdmaVVCSUl4d0NFaXprTzZVVnZNbml4bWJ3QnVLMThnU2ZRbWEw?=
- =?utf-8?B?RlBVT1dwemV2cXlDZ2hoWDlMS0Y2NzFTc3JobHVaREZERjdlK0c1RkFMQi95?=
- =?utf-8?B?dEk4aDNkSHBjZ1E4WmcvMWpGdGJiWVdUUDJBVkFTdWhXSHhpU0wxcCtJNytx?=
- =?utf-8?B?R3hZM3hNZW80ZkVqUnlnS3c1QW0vUmUwQm02eUoxaXdvYzZISlRNaFY0emd5?=
- =?utf-8?B?bmxTY3VObEtFMGM1UVQ4RE0wRURhVC9aK3JGY3pCMTk0S1dwZTFmTXNrSyta?=
- =?utf-8?B?M1dBeXlTZG9GWnFKRGgrNWxiSkc1VzlCRGhnaDhDU1M5dlJpb05pWWM5K05W?=
- =?utf-8?B?Q1I0aFZiUXNFT3VVS21KREdaS0lXMjBueGhWd0R2aTQzR09weVBZa0czTjJn?=
- =?utf-8?B?emxtZUd5Q0ZOTklmSDBiaE0zVDZoczV3MzhWaUZYQVBpczlOTkNsRkhad2hU?=
- =?utf-8?B?cXQzREYvRUVzb3hzTllRK0RyeFlpVktPQW94QkVrWEF6Q0RCUkZxUVdUbWZP?=
- =?utf-8?B?YkNEaFRJMnNiTTF6cWtwOUJ0TGI0VFBUOUwyL2h1Mnd0YWozMC8vV3RiaHJI?=
- =?utf-8?B?ZXRVRnJGTHVHRTJ1V21ZU0RjZEpub0FmVkdSK1g0WFJEVjlRSEJyKy9QQ0d0?=
- =?utf-8?B?aFJRNG1YcXordFdXd2t3Z2krTTNPV1J3QWplcUZwUFBURFlCZmFQMElrUFJs?=
- =?utf-8?B?ZjRxNFBNdmJnWDJxYzQ4WmsyUkJJSGRzYkVub0xyNnRPWFdOalhOak8raVh5?=
- =?utf-8?B?YXlxY09jeTdsZkc3NktwYzkwTS9OZlQrdk0xNDdvMmZjc3JpcUxsWlhaK05Q?=
- =?utf-8?B?alB0eW5ZWGFNaUIyWnBRTjFGMUZrSEQ4L3NmdEtIbjlxQ0J5K1ZESXU3VzZk?=
- =?utf-8?B?RnJmVC90MDZlVG9PaHEwaVJHTE9hdXJ3Y0s4WC92dTdQSGtTWk1URktsTjhr?=
- =?utf-8?B?TXRVTytFMVVibFliQWRJZ0ZGTkJuS2k0K01nWDlzdHJxdlZrS2lKMHpTZmVY?=
- =?utf-8?B?WE0wZkMwamUrUXA5L09SME12VjY4NlFvcWQzbXV0SWFRb0RRbHZwMDBiS1Fy?=
- =?utf-8?B?RlhjZWVWWXVzVGFMeDBmd0xmUXlCbTlDZ2FKaXo4TlJLa1dqZUxtSTAwaUlZ?=
- =?utf-8?B?OWdPd2JZWGpYV2ZMMGtIWUdIQittS0JyZ1JhcFB2NzRwL1d6QUF1cjJRSFgz?=
- =?utf-8?B?cjc4MFYwVEI2OSsxMEpmWUhNUmFvZDRtbVR5dWFhTGhKV2R3R2JZTFUzdHRC?=
- =?utf-8?B?MHVuRjBuaVFoSWE0K2QyN0psUHJRb1VWNXdVMFBlZVczVHorY3Z3c0hLVlJB?=
- =?utf-8?Q?F+a399V4l0cNNwcvzc4wB+OnpQCGrTMZ98LHK5w?=
+X-Microsoft-Antispam-Message-Info: ebeotKO/Yn1ZyP1Uw9s1mC/9pCylSIswpyJf4KwSPQBGq2e0WAl6JzSeP+F550Uomsmn72Aec11SuiSF5ykUqg+51uIKWTE6PymZS8gWhg3l0+xt6DkuAkGe9flYUbB6Uc0W6tPOAS0LlcIfloTi9w8APEhFygSHmY90A51RBU+maw8bqJ76oSopTrqv1ybzzm3Jg4qh9z7/FoTzLe5r+t+LVFTUCW8jro+89aPiQtJELwVD4uEidtPDRDBtN+TN3a40ugsfsgzswodIuoyfgYsK1c62f9lvY9kaJk3KHIrEropaQzCAQOFYT6WAZgNJeDTesbGtlybF92gIqyIrJtX+a1OCoqJdR3BYpJ1MyLq54QNWTxYf890BlgzUmobaTohLyI73LYCJ195Opld1oPBzhXCtIoJ+SNvU2rwZ5FJlLuEscqen8Gmxb6g6bUWLGjTSTOtR2wLIR1E3D4zW1e0c2NxmKkyYDbDPoAfz4b7c0yPJijWTzZSyWZa9L9PcNuqmR4e/0vkBykax51vUIZxabO7OxxEqFgceOZztt5aI9Uv1rkbhBm7lsI1Co6nU3lMEk+vkcFfccM+c5O0Vo7Bio9oMflOB5u++KCtVY3uI1nGU1fME/oPPDnZm33m9Cuabco2udn+TkIHUvVYPgdB/cI7y7EcaCZAuvC4tvg0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3287.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(376002)(366004)(346002)(396003)(136003)(36756003)(4744005)(8676002)(66476007)(2616005)(31686004)(186003)(966005)(4326008)(956004)(86362001)(66946007)(5660300002)(26005)(16526019)(8936002)(2906002)(478600001)(66556008)(316002)(36916002)(110136005)(6486002)(31696002)(53546011)(16576012)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?N3JhYWloa2lPUXQzL1gybnRuSmpnSHMybmw3b1RiZ2h6TFVlK3dPeDQrZlNO?=
+ =?utf-8?B?RFRrek5vbWRTQS9Cb0hKR1VzYUNybFlzS2I2RjNUZlJ4Wkl6QlZYT0llNDcr?=
+ =?utf-8?B?WmFqUmZNdmwyc0FweklpNmVVRis1ZDk4c2ZGYmhPWW83L2hvVG5tSm42Nnl0?=
+ =?utf-8?B?VjBIaFp3NFZpTVU4UkVaWC9lSyszekZiZVk1UnlIM3pqRTBDZUgvS0s1WWtr?=
+ =?utf-8?B?c0hkcEJMMEx6TVltQkJ0OVdpVWJ1Rktibm0rckhiVkhUOW1PZFR5TCtJelA5?=
+ =?utf-8?B?ZUI3QTRyTzlFOEwrRTAyWHdTRXI0ZC9pb3hDOWc0SW1GdVV1aFl0SnBNSzlO?=
+ =?utf-8?B?QnBpSGgrTDFNeXo2NFlMeWZCNHZUbURoeUVYbjJFTTc4QjVCcVlIbXRiTFoz?=
+ =?utf-8?B?MUN3RDVxYXY5NTFFdnZhYTdacVM4bDJoWWs0K0NVN2pvUDhpSzJ0bjgySE1M?=
+ =?utf-8?B?ZFZkaHNWaldIblVGWVFUR3Qwc3hmWEVFa05XODV5SnJNek9OS3J5dHdyNnNL?=
+ =?utf-8?B?VEJCZHhkM3hhQjBaSHBhSTZlTktlandHTzBUcjE1LzB0R1V1UThjU0lwNUpj?=
+ =?utf-8?B?cVNjcVlpblFlUzB2eHkxQkdtdTh6SFozSTVhb1JNbS9saDY1YUFUQkZrZFUw?=
+ =?utf-8?B?VENFZG9hdEprOFM2ckVnQ3ozNXNCZWNib0ZSellIdmttTXpydmV0VDZaRE52?=
+ =?utf-8?B?VmJXa2cwWGM0eldBOFc0R0ttNWt1T3ZuWk95NUovNG9aK3JQOFI2SlZRTVkv?=
+ =?utf-8?B?TUFINzhnMFdEQ0t2RVpiNXhBaUFadlBLOUoyNGg4RkNuMWNzZlR2dkE5M2pI?=
+ =?utf-8?B?TkhCUUI2OXg3TFRwT3lZZktnaGRxMTMyZWs1SXdsN3BLNHpuTEJ6d1JvaGYx?=
+ =?utf-8?B?TFdYN0Y4Zy9mdjBXNm1LWGNzY294a1psU0FIU2I2eCtpYzdFNkZsWDVUZVNa?=
+ =?utf-8?B?ZnIwMVAzY0FvRFBqRUxBaUxwdjUyaDF4UFB5NHFWWmpUaE03MUJBeU1WMS9G?=
+ =?utf-8?B?WThSK2NOdU9VU3MvZkVDNWdHTE1OWW15ZlVoMWduNDUyQjRLVGF6VjBNMkZR?=
+ =?utf-8?B?QmhNK0NET0lYd29sc2liTW9Zb1FSR09QWVplOEZTcXA3R0NIT0JtSHkxa1F5?=
+ =?utf-8?B?dm1vZGpmSXk3L24wUUhQTjJSNGRzMVlSWjlYQVZYMFExenNwR09kd2xvT3Jr?=
+ =?utf-8?B?c0hjcTBoeVBNVXl1MlNZY1h6ZXFBUlhid2xkZ29takZXVEx0YW1xU0QrdTRi?=
+ =?utf-8?B?eHBaQ01HbTNGRW44RjY0QmJHQlU1VlVNRHExSUgyeENmd2ZCSG9OM2lERnQ4?=
+ =?utf-8?B?ZWNZOEFQRm5YVk01VHBVOWc4YktnVncvSzl2SXZaai92RmZlYVZBNWFQaE9K?=
+ =?utf-8?B?amJRQjIvZG40TmVhbzZYUUhtN3VUQkpJZmpQWmkvV2VrTTVBR0kxWUpSWmhJ?=
+ =?utf-8?B?ZG1jOCtzMEFrWjN2Z3JKVjJPeFhGL0JkOXc5L0V0SGMydHBpS0JkU1I2Y2Uw?=
+ =?utf-8?B?eFgvUEJhSkJXS2g2cVVlTUhBMjFWTkVNNWtISkloVWNrRzd1ZG5EYzJoaU9q?=
+ =?utf-8?B?MmRuVHk1Zmw3TkZSQjBhM2VJdlAyMUZ6SXl0Q094ZkhNMzFUZGdPdVpQTG0y?=
+ =?utf-8?B?SjNGcjJYOEpkcnNpeksxVC9QVUpQd2lKSTdWdUlRbEhyckFDcVB1MXJmVEdZ?=
+ =?utf-8?B?cnhncE4veEllQnAyQjVqT1FmdzI0WHhZOThRN1pMYXlGVmphOFI1OXRsMU5M?=
+ =?utf-8?Q?HToiTnCMKEFBQ4QALyqLkXHEr4tY1NfsV1PqJEP?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c8190a6-2660-473a-0d95-08d8d5491d6c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13351751-d9ae-42bd-da13-08d8d54b9e1d
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3287.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2021 02:42:07.7433
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2021 03:00:02.6634
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b776r3UTQOqvFNInjNjkauQ/jFG5U7mJuJx/gt7YifxrHDik7OvOHxWel4RJ75YfD/aijNNPVztqA9E2FzieSg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3288
+X-MS-Exchange-CrossTenant-UserPrincipalName: z1X2NJuG2gnl6+WcxFPPapLqV+SeOGgIysifQAJLNRTZocTPMtXO3JeE3o6DqSMo7tait/JpeDgzxJGsQdil+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB3843
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9900 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
- bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102200021
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 phishscore=0
+ mlxlogscore=999 adultscore=0 suspectscore=0 spamscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102200024
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9900 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 phishscore=0
- mlxlogscore=999 malwarescore=0 clxscore=1015 suspectscore=0
- lowpriorityscore=0 bulkscore=0 adultscore=0 priorityscore=1501 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102200021
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
+ phishscore=0 spamscore=0 adultscore=0 clxscore=1015 impostorscore=0
+ priorityscore=1501 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102200024
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/17/2021 11:42 AM, Si-Wei Liu wrote:
+On 2/19/2021 6:38 PM, Jason Wang wrote:
+>>>
+>>>
+>>> Right now the value is exposed to userspace via GET_VRING_BASE, so 
+>>> only last_avail_idx is synced. If we need sync last_used_idx, we 
+>>> should also sync pending indices which requires more thoughts.
+>> Technically it doesn't sound right - crossing the boundary a bit even 
+>> with simplified form of assumption. But depending on how userspace 
+>> could make use of this API, it doesn't seem it breaks existing 
+>> functionality for the moment.
 >
 >
-> On 2/16/2021 8:20 AM, Eli Cohen wrote:
->> When we suspend the VM, the VDPA interface will be reset. When the VM is
->> resumed again, clear_virtqueues() will clear the available and used
->> indices resulting in hardware virqtqueue objects becoming out of sync.
->> We can avoid this function alltogether since qemu will clear them if
->> required, e.g. when the VM went through a reboot.
->>
->> Moreover, since the hw available and used indices should always be
->> identical on query and should be restored to the same value same value
->> for virtqueues that complete in order, we set the single value provided
->> by set_vq_state(). In get_vq_state() we return the value of hardware
->> used index.
->>
->> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 
->> devices")
->> Signed-off-by: Eli Cohen <elic@nvidia.com>
-> Acked-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> I don't get here, maybe you can explain a little bit more? 
+Please refer to the email I just sent.
 
-I'd take it back for the moment, according to Jason's latest comment. 
-Discussion still going.
-
->
->> ---
->>   drivers/vdpa/mlx5/net/mlx5_vnet.c | 17 ++++-------------
->>   1 file changed, 4 insertions(+), 13 deletions(-)
->>
->> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c 
->> b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->> index b8e9d525d66c..a51b0f86afe2 100644
->> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->> @@ -1169,6 +1169,7 @@ static void suspend_vq(struct mlx5_vdpa_net 
->> *ndev, struct mlx5_vdpa_virtqueue *m
->>           return;
->>       }
->>       mvq->avail_idx = attr.available_index;
->> +    mvq->used_idx = attr.used_index;
->>   }
->>     static void suspend_vqs(struct mlx5_vdpa_net *ndev)
->> @@ -1426,6 +1427,7 @@ static int mlx5_vdpa_set_vq_state(struct 
->> vdpa_device *vdev, u16 idx,
->>           return -EINVAL;
->>       }
->>   +    mvq->used_idx = state->avail_index;
->>       mvq->avail_idx = state->avail_index;
-This is where things starts getting interesting. According to Jason, the 
-original expectation of this API would be to restore the internal 
-last_avail_index in the hardware. With Mellanox network vDPA hardware 
-implementation, there's no such last_avail_index thing in the hardware 
-but only a single last_used_index representing both indices, which 
-should always be the same and in sync with each other. So from migration 
-point of view, it appears logical to restore the saved last_avail_index 
-to the last_used_index in the hardware, right? But what is the point to 
-restore mvq->avail_idx?
-
-Actually, this code path is being repurposed to address the index reset 
-problem in the device reset scenario. Where the mvq->avail_idx and 
-mvq->used_idx are both reset to 0 once device is reset. This is a bit 
-crossing the boundary to me.
-
-
->>       return 0;
->>   }
->> @@ -1443,7 +1445,7 @@ static int mlx5_vdpa_get_vq_state(struct 
->> vdpa_device *vdev, u16 idx, struct vdpa
->>        * that cares about emulating the index after vq is stopped.
->>        */
->>       if (!mvq->initialized) {
->> -        state->avail_index = mvq->avail_idx;
->> +        state->avail_index = mvq->used_idx;
-This is where the last_used_index gets loaded from the hardware (when 
-device is stopped).
-
->>           return 0;
->>       }
->>   @@ -1452,7 +1454,7 @@ static int mlx5_vdpa_get_vq_state(struct 
->> vdpa_device *vdev, u16 idx, struct vdpa
->>           mlx5_vdpa_warn(mvdev, "failed to query virtqueue\n");
->>           return err;
->>       }
->> -    state->avail_index = attr.available_index;
->> +    state->avail_index = attr.used_index;
-This code path never gets called from userspace (when device is running).
+https://lore.kernel.org/lkml/033b0806-4037-5755-a1fa-91dbb58bab2e@oracle.com/
 
 -Siwei
-
->>       return 0;
->>   }
->>   @@ -1532,16 +1534,6 @@ static void teardown_virtqueues(struct 
->> mlx5_vdpa_net *ndev)
->>       }
->>   }
->>   -static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
->> -{
->> -    int i;
->> -
->> -    for (i = ndev->mvdev.max_vqs - 1; i >= 0; i--) {
->> -        ndev->vqs[i].avail_idx = 0;
->> -        ndev->vqs[i].used_idx = 0;
->> -    }
->> -}
->> -
->>   /* TODO: cross-endian support */
->>   static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev 
->> *mvdev)
->>   {
->> @@ -1777,7 +1769,6 @@ static void mlx5_vdpa_set_status(struct 
->> vdpa_device *vdev, u8 status)
->>       if (!status) {
->>           mlx5_vdpa_info(mvdev, "performing device reset\n");
->>           teardown_driver(ndev);
->> -        clear_virtqueues(ndev);
->>           mlx5_vdpa_destroy_mr(&ndev->mvdev);
->>           ndev->mvdev.status = 0;
->>           ++mvdev->generation;
->
-
