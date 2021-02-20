@@ -2,97 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A635B320443
-	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 08:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E015F32044C
+	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 08:06:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbhBTG7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Feb 2021 01:59:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbhBTG7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 01:59:09 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57535C061574;
-        Fri, 19 Feb 2021 22:58:29 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id a207so9631105wmd.1;
-        Fri, 19 Feb 2021 22:58:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vwrkpEL71NpFTJHy3ngrO6p4FfCqPpFxaFL4h0AeKK8=;
-        b=m/ldRO6Yf+qs9nBx2UOJdwnjRZB7jcR2ovjoyvVsWglu9tSjX/yixDqEFxC5kDldJ/
-         t/Ssp+x96nxFa4teXICU4G5pmetJKoEZtUOsiOor5EwAd4IhjY57cmqw54z7hYy7kdNv
-         ZmPAF+Jyw+7HoOPfnGoO4nNkEDCVc4yUZPADjfzL3AvsP0kxJspYdR4ZbaYT10HbyKeG
-         572DCiKS5qTShkcbSTKRIdHaEnKCCPvqfhX7D8xAUZ2QRrksEMagZLmPLDWVrwYzx6EY
-         I4AmKzl3rtQ1wT6KZNmLQFUZyYS5QcrDzcHV2r//FemdMiGDIX2JoMzLOgx3OxfY8Zvs
-         pxrg==
+        id S229657AbhBTHGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Feb 2021 02:06:06 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:46715 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229557AbhBTHGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 02:06:02 -0500
+Received: by mail-io1-f71.google.com with SMTP id s26so4773846ioe.13
+        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 23:05:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vwrkpEL71NpFTJHy3ngrO6p4FfCqPpFxaFL4h0AeKK8=;
-        b=b6ladaI4QQP0gPcTdj9x3R3HjHumjoaTiFg72OUTStGUgiUZIa48pkhFwDer9rlt3w
-         2pgt4zfGa9ZCNeFqWAL4E/ViONwj57AxgcHIJjnrtL1QwjRhtBW1S4ymRF6O22mIZc+a
-         quzvfdvtxcaBCkVERewtPh/tP0BU2Sv78h2OeWBDa17/LIVLrQfUrWtIrBB2U/Dz5Ywc
-         KZkPKQCkfMWIYxpbIDpo6DtDrMvdiqANQBVJAsSfoJ3XxO4tsLwoM7s+7rqHBQnc3j7o
-         sv6kFnIBvqc+n7Ow8dg9ENKpeSQom7bB/WHIpHUGRpWa5DZNhj9+uzWvCWNOVr4OAqPX
-         eV3w==
-X-Gm-Message-State: AOAM532K4O06zSoB6R2SNdn2PsxFaRxExXvS0/Td4scOsbG33ZrODeVL
-        /907uvDBF/6qy26WGyRxsfbrDGX4/FxQZA==
-X-Google-Smtp-Source: ABdhPJxNLSmehVwEyUwnGmYvR51HktCsKm5MnQWCbZMFPz2Rc6BMSBaFTlcdMNtJddPLXCTO0Md2Iw==
-X-Received: by 2002:a1c:1d16:: with SMTP id d22mr11306530wmd.110.1613804307731;
-        Fri, 19 Feb 2021 22:58:27 -0800 (PST)
-Received: from hthiery.fritz.box (ip1f1322f8.dynamic.kabel-deutschland.de. [31.19.34.248])
-        by smtp.gmail.com with ESMTPSA id y4sm10732857wrs.66.2021.02.19.22.58.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Feb 2021 22:58:27 -0800 (PST)
-From:   Heiko Thiery <heiko.thiery@gmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>
-Subject: [PATCH 1/1] net: fec: ptp: avoid register access when ipg clock is disabled
-Date:   Sat, 20 Feb 2021 07:56:55 +0100
-Message-Id: <20210220065654.25598-1-heiko.thiery@gmail.com>
-X-Mailer: git-send-email 2.30.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=yBvR6QhWGmgWa6u0J4gSpumL12+o1rDkset8CbmpFLE=;
+        b=ejbDZhw75Vh+C9hGij2KaqIJgJ6KFWBSe9oFZHvVI+p1OVJHPXiKs5+zZi5fX/Kp4q
+         CUzHZkLrjDZSE5Gsl+A3P7bcVh0bLdieo8N7FITq4z8ogHKHnvfBvjyn2pd3D+mv8kzv
+         dFMcSeIcnK6R8i2NxFChJw9yFGhDQPm1kcF1DuUn/K0E6P9csLt6nD2gm0lzHlzG8q1a
+         iiekh6vdFHE9ht/esL3A2s3Q+GQnpPQYpWpDIY9qxijLYYAU3FrTsODxQLkX5u/fzWh+
+         h9aOnPWtrJyCEV9G8MzcBt/MGdCt9lZ20nJCIvr7eicV15K1Y07/ZEkgxO+U6x+TivQD
+         jyRw==
+X-Gm-Message-State: AOAM533Uhi6mGJSfE9vqZ2N08VqOy02+RKuAsdJxJxk3kBU0LaX3g4sc
+        U6NRXGxySfoR8iGd1tFDHtnwH66RgRJ84SM1hBz9YlVVgvZq
+X-Google-Smtp-Source: ABdhPJybJnMZCn/LeCBjhTJlQbnaaEUk+y67n2RpMTcuWILBwRAH3DvYSKAqvmE49rSvTP7t+sIDwIGKokSoWbAzoHVZ9ucs5z73
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:f317:: with SMTP id m23mr7548478ioh.67.1613804721960;
+ Fri, 19 Feb 2021 23:05:21 -0800 (PST)
+Date:   Fri, 19 Feb 2021 23:05:21 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000307cc205bbbf31d3@google.com>
+Subject: WARNING in netlbl_cipsov4_add
+From:   syzbot <syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When accessing the timecounter register on an i.MX8MQ the kernel hangs.
-This is only the case when the interface is down. This can be reproduced
-by reading with 'phc_ctrl eth0 get'.
+Hello,
 
-Like described in the change in 91c0d987a9788dcc5fe26baafd73bf9242b68900
-the igp clock is disabled when the interface is down and leads to a
-system hang.
+syzbot found the following issue on:
 
-So we check if the ptp clock status before reading the timecounter
-register.
+HEAD commit:    4773acf3 b43: N-PHY: Fix the update of coef for the PHY re..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=13290cb0d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8cb23303ddb9411f
+dashboard link: https://syzkaller.appspot.com/bug?extid=cdd51ee2e6b0b2e18c0d
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1267953cd00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10d98524d00000
 
-Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+Bisection is inconclusive: the issue happens on the oldest tested release.
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1127cc82d00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1327cc82d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1527cc82d00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 8425 at mm/page_alloc.c:4979 __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5014
+Modules linked in:
+CPU: 0 PID: 8425 Comm: syz-executor629 Not tainted 5.11.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:4979
+Code: 00 00 0c 00 0f 85 a7 00 00 00 8b 3c 24 4c 89 f2 44 89 e6 c6 44 24 70 00 48 89 6c 24 58 e8 d0 d7 ff ff 49 89 c5 e9 ea fc ff ff <0f> 0b e9 b5 fd ff ff 89 74 24 14 4c 89 4c 24 08 4c 89 74 24 18 e8
+RSP: 0018:ffffc900017ef3e0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff920002fde80 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: dffffc0000000000 RDI: 0000000000040dc0
+RBP: 0000000000040dc0 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff81b29ac1 R11: 0000000000000000 R12: 0000000000000015
+R13: 0000000000000015 R14: 0000000000000000 R15: ffff88801209c980
+FS:  0000000001c35300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fbf6f3656c0 CR3: 000000001db9e000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ alloc_pages_current+0x18c/0x2a0 mm/mempolicy.c:2267
+ alloc_pages include/linux/gfp.h:547 [inline]
+ kmalloc_order+0x32/0xd0 mm/slab_common.c:837
+ kmalloc_order_trace+0x14/0x130 mm/slab_common.c:853
+ kmalloc_array include/linux/slab.h:592 [inline]
+ kcalloc include/linux/slab.h:621 [inline]
+ netlbl_cipsov4_add_std net/netlabel/netlabel_cipso_v4.c:188 [inline]
+ netlbl_cipsov4_add+0x5a9/0x23e0 net/netlabel/netlabel_cipso_v4.c:416
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x43fcc9
+Code: 28 c3 e8 5a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffdcdd33c48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004004a0 RCX: 000000000043fcc9
+RDX: 0000000000004904 RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 0000000000403730 R08: 0000000000000005 R09: 00000000004004a0
+R10: 0000000000000003 R11: 0000000000000246 R12: 00000000004037c0
+R13: 0000000000000000 R14: 00000000004ad018 R15: 00000000004004a0
+
+
 ---
- drivers/net/ethernet/freescale/fec_ptp.c | 3 +++
- 1 file changed, 3 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index 2e344aada4c6..c9882083da02 100644
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -377,6 +377,9 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- 	u64 ns;
- 	unsigned long flags;
- 
-+	/* Check the ptp clock */
-+	if (!adapter->ptp_clk_on)
-+		return -EINVAL;
- 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
- 	ns = timecounter_read(&adapter->tc);
- 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
--- 
-2.30.0
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
