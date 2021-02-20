@@ -2,120 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB45D320551
-	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 13:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F22AA320573
+	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 13:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbhBTM2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Feb 2021 07:28:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
+        id S229725AbhBTMww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Feb 2021 07:52:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbhBTM2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 07:28:43 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22ADBC061574
-        for <netdev@vger.kernel.org>; Sat, 20 Feb 2021 04:28:03 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id 133so8267104ybd.5
-        for <netdev@vger.kernel.org>; Sat, 20 Feb 2021 04:28:03 -0800 (PST)
+        with ESMTP id S229645AbhBTMwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 07:52:50 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20F8C061574;
+        Sat, 20 Feb 2021 04:52:09 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id h98so8851223wrh.11;
+        Sat, 20 Feb 2021 04:52:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=2mjYo9YLcWMY3skKtPU3JjlT7vKGUiT/hZ7wVyLm5UE=;
-        b=hlJZtQ6SMOTSlIgFHn64uUPNMFvBAjrKJf1kfYthO9ySnzzOwMskVk9uaeaaK12PLO
-         VnRzluSCeI78uDo4ln1eugcc3eekeA8Wz6ZzA8FkgmCKkZS6xXENe0b6KNWC2edbhHVA
-         be4/pOQlrMcrcjiVZj7eKgGdoTH32NSChtPU/V4oLzaiHI/L9n42ISzjI55JdZ7FyUmS
-         afMdpjldmaL7AAIO2AuBHM9zhNddJ3Qkwitptpdb7Hyp4wBMaK15CNfbelKh53tkr3Ae
-         JsJaYKJPgNqgK30PQxvaBClf5CuK4i8JDDYuzYD3i7mDm/e8XqFvrK06dnHWPYYi8F4t
-         6mpQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0tR0TOAYEuGHdERPvVTexth/QYZWyi3r7lB02iejQNk=;
+        b=lzhCiUZVCi3QTfbc3QFiIjhwKk4T/co+c+jwFiIiXzTnymLGBB85aERwRD49l9w7Gj
+         Punvjyw1ts3kD0Vw8BvZeiHKg6j8yS3jYE+g7DUtglA11RAo8tNgCFJQZceo96QCq1F6
+         T4vA6ob7Z9OV8Ua4nvnlrwYKywGxERaV+7yphQ6XcAP7+DWzM2ce1PKhelvBYRK0pGf4
+         muPr5zlo+9PXnpK/5Nx80zm2IbCcljWDL1AY4uscqVH6pgo/L7j9AqgVYWbXj1OXT5y7
+         npP/URca50nHTK/C7/fZ8nWKe9f83Ms0M0BaXOey85aJ/XP+f+Z+yj6m7kG1Tq+PaCoM
+         Oxzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=2mjYo9YLcWMY3skKtPU3JjlT7vKGUiT/hZ7wVyLm5UE=;
-        b=siquh/BT/Y0oor0zZpsVenA/C4TbkJvpU8JzdTLdbMS0vCJ6BIthQtTq5RtJp0524F
-         7c5354ZfbpHByoPMk4XArJIMNXQYPHdORkv8XHKzrsotPFUT5BpmkzaLkgdWOORdkZWg
-         XGsjIcgKPonP0Gtf+cD/7ufSSo7zuGDjZZTS4yuGm2YDE8MBJTenHa9VtADSW9Tjm0Sv
-         bXUlNr6Xg3vwos3igtJ1XLy+sdNKulf/SxC7y5Gt9MBwy/5NfZgKPu55z+R3rEjdUEdQ
-         /AZS712lfADVEMi3MAunbLvl3o94jPrCrONSnglrTsg8taCBlhBQVUZTYvowwJM7kDKQ
-         6jtw==
-X-Gm-Message-State: AOAM531YVOLo89w6qQ0YDrx1fllntSVKQQfIWOeHvyfF9Jv4OI2/3omH
-        MGIzO/fkHtEanuN0e7jao+QqApCqjFnqC5cWFOY=
-X-Google-Smtp-Source: ABdhPJxCOCqGXZtax8Z0QA9L2qR/VYsGP00C8p4/TbTubiXyofUDw6Glh+YWirVtib4Ht3rElfr6EjFs8txGJO1XYBQ=
-X-Received: by 2002:a05:6902:1d2:: with SMTP id u18mr20289270ybh.103.1613824081380;
- Sat, 20 Feb 2021 04:28:01 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0tR0TOAYEuGHdERPvVTexth/QYZWyi3r7lB02iejQNk=;
+        b=enaSX6eVbUSKNYXJ7oMTgTFvEmwpqr14RWxTdf8hcOfz3+vbJvw5jHOo8N8kQml13p
+         TNEmkP2CV40k+Ni3QWMruITIth6hUpOPUep1CgwZyQLoPfFTSXV6VfVHJqJquXrq3HFI
+         m8PqxobNmrXQfcK96yFV+D36AlzA5fuC1lo5x7ApJ3XGXF9b/osHqD8CstUIjXxyi6hj
+         LK3O7ll71kODR6lRW1bLmoEvTlIKQMmW/iB/4LeBpF1gWf2CpX+gDZtAvqM1VCPzD1+A
+         WcliDuP3DbDoKaQZnINhtTS4Gh59JnsOCgevaxyxSLbCAL71BDGpZHxBoByEzqTZz/4f
+         4zZA==
+X-Gm-Message-State: AOAM533Fkakc/TIAUczLYPOs10YdP77CWYJdS0SMafHpSHaCZSATcPLG
+        fSyrXUVRHNS/PQZoJQ1qGjQ=
+X-Google-Smtp-Source: ABdhPJzq6Ke+5kkkAVoEyehvoIf2H/w1SB7G4ZOR9T7OOUTUv8qz6yR+jz1Bd3QM1pP8xzEBPq+KGA==
+X-Received: by 2002:adf:e807:: with SMTP id o7mr5889907wrm.372.1613825527582;
+        Sat, 20 Feb 2021 04:52:07 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f39:5b00:dd09:3fe2:bc2d:e480? (p200300ea8f395b00dd093fe2bc2de480.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:dd09:3fe2:bc2d:e480])
+        by smtp.googlemail.com with ESMTPSA id u198sm30192885wmu.1.2021.02.20.04.52.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Feb 2021 04:52:06 -0800 (PST)
+Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
+ LPI mode
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org
+References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
+ <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
+ <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
+ <20210209101528.3lf47ouaedfgq74n@mobilestation>
+ <a652c69b-94d3-9dc6-c529-1ebc0ed407ac@gmail.com>
+ <20210209105646.GP1463@shell.armlinux.org.uk>
+ <20210210164720.migzigazyqsuxwc6@mobilestation>
+ <20210211103941.GW1463@shell.armlinux.org.uk>
+ <20210220090248.oiyonlfucvmgzw6d@mobilestation>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <4dcecf82-f222-4957-f5fc-e8f9d073599c@gmail.com>
+Date:   Sat, 20 Feb 2021 13:51:56 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Sender: mrs.kimhongyeoh56@gmail.com
-Received: by 2002:a05:7108:2549:0:0:0:0 with HTTP; Sat, 20 Feb 2021 04:28:01
- -0800 (PST)
-From:   Mrs Nadia Emaan <mrsnadiaemaan50@gmail.com>
-Date:   Sat, 20 Feb 2021 12:28:01 +0000
-X-Google-Sender-Auth: czoE5uZAr44drk4P2PK8-dBCa5Y
-Message-ID: <CADCBRF9bOmEWaOhMqXxkDEqDPNCsrGTxtwT+HcxRL0FncyU7Sw@mail.gmail.com>
-Subject: May the peace of Almighty God be with You!,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210220090248.oiyonlfucvmgzw6d@mobilestation>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings My Dear Friend,
+On 20.02.2021 10:02, Serge Semin wrote:
+> On Thu, Feb 11, 2021 at 10:39:41AM +0000, Russell King - ARM Linux admin wrote:
+>> On Wed, Feb 10, 2021 at 07:47:20PM +0300, Serge Semin wrote:
+>>> On Tue, Feb 09, 2021 at 10:56:46AM +0000, Russell King - ARM Linux admin wrote:
+>>>> On Tue, Feb 09, 2021 at 11:37:29AM +0100, Heiner Kallweit wrote:
+>>>>> Right, adding something like a genphy_{read,write}_mmd() doesn't make
+>>>>> too much sense for now. What I meant is just exporting mmd_phy_indirect().
+>>>>> Then you don't have to open-code the first three steps of a mmd read/write.
+>>>>> And it requires no additional code in phylib.
+>>>>
+>>>> ... but at the cost that the compiler can no longer inline that code,
+>>>> as I mentioned in my previous reply. (However, the cost of the accesses
+>>>> will be higher.) On the plus side, less I-cache footprint, and smaller
+>>>> kernel code.
+>>>
+>>> Just to note mmd_phy_indirect() isn't defined with inline specifier,
+>>> but just as static and it's used twice in the
+>>> drivers/net/phy/phy-core.c unit. So most likely the compiler won't
+>>> inline the function code in there.
+>>
+>> You can't always tell whether the compiler will inline a static function
+>> or not.
+> 
+> Andrew, Heiner, Russell, what is your final decision about this? Shall
+> we export the mmd_phy_indirect() method, implement new
+> genphy_{read,write}_mmd() or just leave the patch as is manually
+> accessing the MMD register in the driver?
+> 
 
-I am contacting you through this means because I need your urgent
-assistance and also help me to carry a charity project in your
-country. I found your email address as a true child of God for past
-few days now that I have been praying to know if you are really the
-chosen one for this great charity project, according to God's
-direction, after all prayers I am convinced, and I have decided to
-contact you. Please, i want you use the funds for the Lord's work,
-with confidence, read and respond now.
+If in doubt, leaving the patch as is would be fine with me.
 
+> -Sergey
+> 
+>>
+>>> Anyway it's up to the PHY
+>>> library maintainers to decide. Please settle the issue with Heiner and
+>>> Andrew then. I am ok with both solutions and will do as you decide.
+>>
+>> FYI, *I* am one of the phylib maintainers.
+>>
+>> -- 
+>> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+>> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
-My name is Mrs Emaan Nadia, a widow, but currently based in West
-Africa since my life with my late husband, who was a businessman in
-this country before dying some years ago. We were married to many
-years without a child. He died after a brief illness that lasted only
-six days and I myself have been suffering from an ovarian cancer
-disease. At this moment I am about to finish the race in this way
-because the disease has reached a very bad stage, without any family
-member and without children. I hope you do not expose or betray this
-trust and I am sure that I am about to trust you for the mutual
-benefit of orphans and the less privileged. I have some funds that I
-inherited from my late husband, the total sum of ($ 12,500,000.00)
-deposited at a bank here in Burkina Faso. After knowing my current
-state of health, I decided to trust you with this fund, believing that
-you will use it in the way I will instruct here.
-
-
-you will use this $12.5 Million for public benefit as follows;
-
-1. Establish An Orphanage Home To Help The Orphanages Children.
-2. Build A Hospital To Help The Poor.
-3. Build A Nursing Home For Elderly People Need Care & Meal.
-
-You will named them after my late husband.Therefore, I need you to
-help me and claim this money and use it for charities, for orphanages
-and provide justice and help to the poor, needy and to promote the
-words of God and the effort to maintain the house of God, according to
-the bible in the book of. Jeremiah 22: 15-16, without minding our
-different religions.
-
-It will be a pleasure to compensate with 40% percent of the total
-money for your effort in handling the transaction, while 60% of the
-money will go to charity project.
-
-All I need from you is sincerity and ability to complete the task of
-God without any failure. It will be my pleasure to see that the bank
-has finally released and transferred the fund to your bank account in
-the country, even before I die here in the hospital, due to my current
-state of health, everything must be processed as soon as possible.
-
-I am waiting for your immediate response, if you are only interested
-in obtaining more details about the transaction and execution of this
-humanitarian project for the glory and honor of God.
-
-Sorry if you received this letter in your spam, is due to recent
-connection/network error here in the country.
-
-Please I am waiting for your urgent reply now.
-
-May God Bless you,
-Mrs Emaan Nadia.
