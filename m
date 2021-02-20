@@ -2,159 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82211320250
-	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 01:55:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 337003202AC
+	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 02:46:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbhBTAzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Feb 2021 19:55:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
+        id S229824AbhBTBpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Feb 2021 20:45:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbhBTAza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 19:55:30 -0500
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A61AC061574;
-        Fri, 19 Feb 2021 16:54:50 -0800 (PST)
-Received: by mail-ot1-x32e.google.com with SMTP id o10so6753951ote.13;
-        Fri, 19 Feb 2021 16:54:50 -0800 (PST)
+        with ESMTP id S229766AbhBTBpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Feb 2021 20:45:19 -0500
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC92C061574
+        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 17:44:38 -0800 (PST)
+Received: by mail-qt1-x849.google.com with SMTP id o20so4405754qtx.22
+        for <netdev@vger.kernel.org>; Fri, 19 Feb 2021 17:44:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Sl18xJK0FBSUcbbYuyh+oreHTjQxjE1dyshoc+jjlUI=;
-        b=K7XCW1WWWeAL73AOb5FLLcLtM9+VV2lCYoajJA7RPceu3wu6hrJf+Gtj+D/j11sQI6
-         iZBucvwZ5S6JSA3T4TmFnM8zFrc95/bujHMA6ObGe2N9kw/ioi/x2PCB2K6LCuy9jG6n
-         WA3Sxja+fyHbA8nStBSJTtC+bAt4oZwCP2zgts4yK0QhpnBZlNiaoOebbb5mhQiOJvPB
-         035EXtKGWpPUqcvxhqyyyMd5/MhYfVe2E3AheXdqOyyvCo8YEwTQ9Nx3NqrHEH3U42OZ
-         ZMiPsSRKp089gIBox6Ecn6vf/6/NU/o2Hll47SmLgzcLHhOjdwIWXb+seieSxgIWCRQS
-         SWTw==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=hn2CQD6BUgAQQsSLf9FEJTtiGN4Malv7b602IHtNzvo=;
+        b=GP2db0HAhm3r06Y0ZmkztEmoSNcB4k5YlqaE5Km8IpzhA7igdmkHdb9Eq7mudIsK/s
+         oil9XfacL6IPJK8fgpvDG7u4VQLSJuCCi/97jPaer+49YQMz4Fs5CiHug+ZHqzvvbOue
+         cz++Sqyodue8qRPF34YtY5E1Qml/kpy5DekrLN/ft1l1GOhmcdsWscH8UduaQhMeVLDn
+         PC8awaH7T/uOouQa4cAqOluhAe9raye/43xQ7yDkHckXjG1ffKXMjfIn0B93+YqubSrD
+         FRczaMZ9M/fmsHf3erpr50Qs9l74rvRNtidN+10FIuLh3Vy5E7ETfHDYMY91DDRsdjPN
+         Cpbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Sl18xJK0FBSUcbbYuyh+oreHTjQxjE1dyshoc+jjlUI=;
-        b=T2oyh4o8rfAc3VH0cAH9WC2MihbEVHgrYXsAiZo/5qFQRseRjkiJp9GmNlAlkoJ97I
-         bv9/0iJ1oKyh2jps9/wYSYlisSBeSByOtveaoMKByWmVPMIwCcrBUoYiTOCckyOQzSXr
-         ssecb8b8D3sNAg+08LqtmJ2uyq7y0zjyCI+f5Uf6ZM9+KaBARl3E/k50X07RW6mwSF/z
-         0vnDxwL7SpIQbL3+8fFnC6iZGMYoHDprmL2P+WYo1oluynseeyFlil/qLDvxlh6+zeCU
-         brSsaIlXR7GavMSMrjJB8rflv0hmVnO2o4IdCEqZF66a/1y0y15IqI2gYubMBC0ME4ex
-         tOtg==
-X-Gm-Message-State: AOAM53379TOQ3wbSxEiS3zxh3vYE9KCD5XK9RqKqgHvzOL+ZfUmhfR/C
-        qGgZ4Y8ptjDEOW/tZFpvaCg=
-X-Google-Smtp-Source: ABdhPJwPRmY9a0WjZK0JIk246VwicuAgC8AShTzOXy0zbGunJ7038NI7+oHlKVZ3tF1Mcgc2qSppHg==
-X-Received: by 2002:a05:6830:1d68:: with SMTP id l8mr8939616oti.238.1613782489766;
-        Fri, 19 Feb 2021 16:54:49 -0800 (PST)
-Received: from localhost.localdomain (99-6-134-177.lightspeed.snmtca.sbcglobal.net. [99.6.134.177])
-        by smtp.gmail.com with ESMTPSA id u126sm2224426oig.55.2021.02.19.16.54.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Feb 2021 16:54:49 -0800 (PST)
-Date:   Fri, 19 Feb 2021 16:54:47 -0800
-From:   Enke Chen <enkechen2020@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>, enkechen2020@gmai.com
-Subject: [PATCH net] tcp: fix keepalive when data remain undelivered
-Message-ID: <20210220005447.GA93678@localhost.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=hn2CQD6BUgAQQsSLf9FEJTtiGN4Malv7b602IHtNzvo=;
+        b=TuRCAUA8RovIYnazrwjdwnIVHWLOE7/LTZ4siYKOHpwL/BRvjSN83V6/sbgYpggldk
+         FjvOF3gVvQrSEY4vrYoM0/K9KnVWV4wnnLfoylKHa564xUhPMpSDtyqZBb8BGimZJCFy
+         bWu6OZZUV4GHZTJlSg6bq7cJJG3BUz6srdFs8oZtW0Mwr5CLrVxFPb3BN9Dtqr3G4Y1t
+         V6cXOH/JwsotYF0RbYlt3CBgkF1tKOkZYze3YgadkpTcqLl92qXJU2ESn7F9ZanjLYhG
+         z0vEeMKXicv0SuTLR4tbZ37yMN7w0sr3mFUnEH9+E6flGKJnNhTzl0xOsv4KtfTVn5pr
+         0H8Q==
+X-Gm-Message-State: AOAM533WZmBTAOQIsAwS/qFUhM93/FzM5vUD0lgwzR9aKFlkz1YrdP+W
+        hKiQNzndixJ9ci+uR2y7nANFM5M/wDg=
+X-Google-Smtp-Source: ABdhPJxHo7Leagucq0TVXeJRD7o7Q0n2wljTsKhd+QypmYkruA6XMEDVIhy3NFU+4itYCrh/62jB/5cd0eQ=
+Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:9433:f9ff:6bb7:ac32])
+ (user=weiwan job=sendgmr) by 2002:ad4:4d83:: with SMTP id cv3mr11793768qvb.16.1613785478131;
+ Fri, 19 Feb 2021 17:44:38 -0800 (PST)
+Date:   Fri, 19 Feb 2021 17:44:34 -0800
+Message-Id: <20210220014436.3556492-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.617.g56c4b15f3c-goog
+Subject: [PATCH net v2 0/2] virtio-net: suppress bad irq warning for tx napi
+From:   Wei Wang <weiwan@google.com>
+To:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Willem de Bruijn <willemb@google.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Enke Chen <enchen@paloaltonetworks.com>
+With the implementation of napi-tx in virtio driver, we clean tx
+descriptors from rx napi handler, for the purpose of reducing tx
+complete interrupts. But this could introduce a race where tx complete
+interrupt has been raised, but the handler found there is no work to do
+because we have done the work in the previous rx interrupt handler.
+This could lead to the following warning msg:
+[ 3588.010778] irq 38: nobody cared (try booting with the
+"irqpoll" option)
+[ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
+5.3.0-19-generic #20~18.04.2-Ubuntu
+[ 3588.017940] Call Trace:
+[ 3588.017942]  <IRQ>
+[ 3588.017951]  dump_stack+0x63/0x85
+[ 3588.017953]  __report_bad_irq+0x35/0xc0
+[ 3588.017955]  note_interrupt+0x24b/0x2a0
+[ 3588.017956]  handle_irq_event_percpu+0x54/0x80
+[ 3588.017957]  handle_irq_event+0x3b/0x60
+[ 3588.017958]  handle_edge_irq+0x83/0x1a0
+[ 3588.017961]  handle_irq+0x20/0x30
+[ 3588.017964]  do_IRQ+0x50/0xe0
+[ 3588.017966]  common_interrupt+0xf/0xf
+[ 3588.017966]  </IRQ>
+[ 3588.017989] handlers:
+[ 3588.020374] [<000000001b9f1da8>] vring_interrupt
+[ 3588.025099] Disabling IRQ #38
 
-TCP keepalive does not timeout under the condition that network connection
-is lost and data remain undelivered (incl. retransmit). A very simple
-scenarios of the failure is to write data to a tcp socket after the network
-connection is lost.
+This patch series contains 2 patches. The first one adds a new param to
+struct vring_virtqueue to control if we want to suppress the bad irq
+warning. And the second patch in virtio-net sets it for tx virtqueues if
+napi-tx is enabled.
 
-Under the specified condition the keepalive timeout is not evaluated in
-the keepalive timer. That is the primary cause of the failure. In addition,
-the keepalive probe is not sent out in the keepalive timer. Although packet
-retransmit or 0-window probe can serve a similar purpose, they have their
-own timers and backoffs that are generally not aligned with the keepalive
-parameters for probes and timeout.
+Wei Wang (2):
+  virtio: add a new parameter in struct virtqueue
+  virtio-net: suppress bad irq warning for tx napi
 
-As the timing and conditions of the events involved are random, the tcp
-keepalive can fail randomly. Given the randomness of the failures, fixing
-the issue would not cause any backward compatibility issues. As was well
-said, "Determinism is a special case of randomness".
+ drivers/net/virtio_net.c     | 19 ++++++++++++++-----
+ drivers/virtio/virtio_ring.c | 16 ++++++++++++++++
+ include/linux/virtio.h       |  2 ++
+ 3 files changed, 32 insertions(+), 5 deletions(-)
 
-The fix in this patch consists of the following:
-
-  a. Always evaluate the keepalive timeout in the keepalive timer.
-
-  b. Always send out the keepalive probe in the keepalive timer (post the
-     keepalive idle time). Given that the keepalive intervals are usually
-     in the range of 30 - 60 seconds, there is no need for an optimization
-     to further reduce the number of keepalive probes in the presence of
-     packet retransmit.
-
-  c. Use the elapsed time (instead of the 0-window probe counter) in
-     evaluating tcp keepalive timeout.
-
-Thanks to Eric Dumazet, Neal Cardwell, and Yuchung Cheng for helpful
-discussions about the issue and options for fixing it.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2 Initial git repository build")
-Signed-off-by: Enke Chen <enchen@paloaltonetworks.com>
----
- net/ipv4/tcp_timer.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
-
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 4ef08079ccfa..16a044da20db 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -708,29 +708,23 @@ static void tcp_keepalive_timer (struct timer_list *t)
- 	    ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_SYN_SENT)))
- 		goto out;
- 
--	elapsed = keepalive_time_when(tp);
--
--	/* It is alive without keepalive 8) */
--	if (tp->packets_out || !tcp_write_queue_empty(sk))
--		goto resched;
--
- 	elapsed = keepalive_time_elapsed(tp);
- 
- 	if (elapsed >= keepalive_time_when(tp)) {
- 		/* If the TCP_USER_TIMEOUT option is enabled, use that
- 		 * to determine when to timeout instead.
- 		 */
--		if ((icsk->icsk_user_timeout != 0 &&
--		    elapsed >= msecs_to_jiffies(icsk->icsk_user_timeout) &&
--		    icsk->icsk_probes_out > 0) ||
--		    (icsk->icsk_user_timeout == 0 &&
--		    icsk->icsk_probes_out >= keepalive_probes(tp))) {
-+		u32 timeout = icsk->icsk_user_timeout ?
-+		  msecs_to_jiffies(icsk->icsk_user_timeout) :
-+		  keepalive_intvl_when(tp) * keepalive_probes(tp) +
-+		  keepalive_time_when(tp);
-+
-+		if (elapsed >= timeout) {
- 			tcp_send_active_reset(sk, GFP_ATOMIC);
- 			tcp_write_err(sk);
- 			goto out;
- 		}
- 		if (tcp_write_wakeup(sk, LINUX_MIB_TCPKEEPALIVE) <= 0) {
--			icsk->icsk_probes_out++;
- 			elapsed = keepalive_intvl_when(tp);
- 		} else {
- 			/* If keepalive was lost due to local congestion,
-@@ -744,8 +738,6 @@ static void tcp_keepalive_timer (struct timer_list *t)
- 	}
- 
- 	sk_mem_reclaim(sk);
--
--resched:
- 	inet_csk_reset_keepalive_timer (sk, elapsed);
- 	goto out;
- 
 -- 
-2.29.2
+2.30.0.617.g56c4b15f3c-goog
 
