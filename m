@@ -2,184 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E973207F7
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 02:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0995B32080A
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 02:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbhBUB3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Feb 2021 20:29:08 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:53440 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbhBUB3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 20:29:01 -0500
-Received: by mail-il1-f199.google.com with SMTP id s12so5543349ilh.20
-        for <netdev@vger.kernel.org>; Sat, 20 Feb 2021 17:28:45 -0800 (PST)
+        id S229905AbhBUByx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Feb 2021 20:54:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229811AbhBUByv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 20:54:51 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F0AC061574;
+        Sat, 20 Feb 2021 17:54:11 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id o3so673381oic.8;
+        Sat, 20 Feb 2021 17:54:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2YeG2HTU6ffO0nhsXtBfvb2LSJCOeXJuMNGMXF/3az4=;
+        b=LyqUox4giymneLKtYSf9GSOLBlfSZAqrA47Y54NRxAJDnqQKWi+TEZlKclVIaodEsC
+         +i1OierxMLQDRH4YfySHAz4FCz2dQksO/uEsgk8kq7n/Ot5+63l2rHUWkXTmMIKa51rm
+         3v2f4QIKJScvULohfCGv36QmGsIO9BidKPmXyZDOQgFN9BZiUu1ywDR1J/zZm2ZggRHF
+         pwGW5mjE4+wmV7ZQgy4x6oglMG2MG3Oa+/T5nGRyv6FjuQ231wUPzpxMlx9OkN6GbgcH
+         THFs/low3d0mK+1iWXLkqkKbbHyYYUDZpqBLvHwkLD4bee+R5o5nVGr28gaUeNKl9Ewr
+         apvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=ldGbwdnoWRyU8djcYy/N9OqGQb/IL1w1x4/+F3IbWx8=;
-        b=pSLkGZjNldan/mXCWUZb3tPjj2ImspzXhFmVd6pyxLkLMga5JkDXwuxSoKpGtkRDJf
-         tTq6KRJqBQXr5NhoMPGmU9IIr1N8p3h8exp1cYfq1hb7+L/kyBoGVx/62kghYVlS1esv
-         YUiYzQgmVI8DA1aHdOqGxC9rzAN0x7LQX+zJgYF1CA1wJNTG+7+v9Oc76IbdleJUimHi
-         SIGv3EWgciJxDSufG7WzCXo9hY3mvdsxyaWUe/opW8JfIwvGQ0bMT4xdJ9j2hO4I9ZeP
-         +WbqkLbhcJxjhyMvcyV1DUlFmDjWDSQUFIsR24fuhdPNYjkZLxccf4TeUbPgt4Ijhun8
-         wLlw==
-X-Gm-Message-State: AOAM530Svf4oQ5HKweJUFeO6Qae9tjfGjOFfMqrkP/sXIvTaHmR5tvmp
-        UGYqQlprxHXXHeZVmZnJER6PKrPifwfWH1xAQwWC5J41+M6t
-X-Google-Smtp-Source: ABdhPJxsTxKRhsAovjmY87uaBHL7dIAaW/yMqjoiphV8RllEhcZ9AGm7d3UHee5WqMV1jJWoD2gNa2WUXw1giwM2LFMzqV3o9Fmc
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2YeG2HTU6ffO0nhsXtBfvb2LSJCOeXJuMNGMXF/3az4=;
+        b=N8oMo/vzEZdHTlMhW6uBp8o20xhLMqc+XEj7iZlw4FawWhxNSDafX+Apk0Rl9QdmTg
+         R5gsJLNW19WakJ2wCQNsWcYzM9T5HNCFgDAfHf2htPcjRGB97kOdBC4E5otCqLjsLi4N
+         YCMnH4UH7hLr0QVQzU1wiXGRH8qiQJr/fWGao50lWJW99X4ApCzU0uc/u4pu7heNBWqS
+         RKLLPxrp1bUioz70OkfomtfNZNIEvpxzsYlMVlv3DLJbkf/5WWw+1DxUNOkDMjUumRJE
+         EUqjWacupionuGLMYqdDt0ZtimKLDksXO7Wgn+Prfp3ocRjgx5ks2LgryuHpAjUoFJHf
+         wkpA==
+X-Gm-Message-State: AOAM531O0rkYhDMR1VhnUKI37emynjtYZJDtrqvqKwmDlKDnpnLc3HRo
+        6hp/A4Z0z+dgnsOanfVEh8nFMT6fp8k=
+X-Google-Smtp-Source: ABdhPJwSZ27T8bbKpU/QWqVD1FJUkG4mOApvpKQtffWBuj4z5BRnc6InlACNoR4nieRmVJaphWgegw==
+X-Received: by 2002:aca:f5d4:: with SMTP id t203mr150123oih.132.1613872450283;
+        Sat, 20 Feb 2021 17:54:10 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.40])
+        by smtp.googlemail.com with ESMTPSA id g6sm2656423ooh.29.2021.02.20.17.54.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Feb 2021 17:54:09 -0800 (PST)
+Subject: Re: [PATCH] arp: Remove the arp_hh_ops structure
+To:     Yejune Deng <yejune.deng@gmail.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210220043203.11754-1-yejune.deng@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3b69191b-9bd5-9050-9126-17b4905a67e9@gmail.com>
+Date:   Sat, 20 Feb 2021 18:54:08 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:b24e:: with SMTP id b75mr10066746iof.108.1613870900093;
- Sat, 20 Feb 2021 17:28:20 -0800 (PST)
-Date:   Sat, 20 Feb 2021 17:28:20 -0800
-In-Reply-To: <00000000000058dc4205b40f4dbf@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b6a82c05bbce99d1@google.com>
-Subject: Re: KASAN: use-after-free Read in blk_update_request
-From:   syzbot <syzbot+a3f809f70c0f239cda46@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
-        bpf@vger.kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        kpsingh@kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210220043203.11754-1-yejune.deng@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On 2/19/21 9:32 PM, Yejune Deng wrote:
+>  static const struct neigh_ops arp_direct_ops = {
+>  	.family =		AF_INET,
+>  	.output =		neigh_direct_output,
+> @@ -277,15 +269,10 @@ static int arp_constructor(struct neighbour *neigh)
+>  			memcpy(neigh->ha, dev->broadcast, dev->addr_len);
+>  		}
+>  
+> -		if (dev->header_ops->cache)
+> -			neigh->ops = &arp_hh_ops;
+> -		else
+> -			neigh->ops = &arp_generic_ops;
 
-HEAD commit:    f40ddce8 Linux 5.11
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1156374ad00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4b919ebed7b4902
-dashboard link: https://syzkaller.appspot.com/bug?extid=a3f809f70c0f239cda46
-compiler:       Debian clang version 11.0.1-2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143ee67ad00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1585d40cd00000
+How did you test this?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a3f809f70c0f239cda46@syzkaller.appspotmail.com
+you took out the neigh->ops assignment, so all of the neigh->ops in
+net/core/neighbour.c are going to cause a NULL dereference.
 
-==================================================================
-BUG: KASAN: use-after-free in debug_spin_unlock kernel/locking/spinlock_debug.c:97 [inline]
-BUG: KASAN: use-after-free in do_raw_spin_unlock+0x481/0x8a0 kernel/locking/spinlock_debug.c:138
-Read of size 4 at addr ffff888020c03154 by task ksoftirqd/0/12
 
-CPU: 0 PID: 12 Comm: ksoftirqd/0 Not tainted 5.11.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x137/0x1be lib/dump_stack.c:120
- print_address_description+0x5f/0x3a0 mm/kasan/report.c:230
- __kasan_report mm/kasan/report.c:396 [inline]
- kasan_report+0x15e/0x200 mm/kasan/report.c:413
- debug_spin_unlock kernel/locking/spinlock_debug.c:97 [inline]
- do_raw_spin_unlock+0x481/0x8a0 kernel/locking/spinlock_debug.c:138
- __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:159 [inline]
- _raw_spin_unlock_irqrestore+0x20/0x60 kernel/locking/spinlock.c:191
- spin_unlock_irqrestore include/linux/spinlock.h:409 [inline]
- __wake_up_common_lock kernel/sched/wait.c:140 [inline]
- __wake_up+0xe2/0x140 kernel/sched/wait.c:157
- req_bio_endio block/blk-core.c:264 [inline]
- blk_update_request+0x7f7/0x14f0 block/blk-core.c:1462
- blk_mq_end_request+0x39/0x70 block/blk-mq.c:564
- blk_done_softirq+0x2fd/0x380 block/blk-mq.c:588
- __do_softirq+0x318/0x714 kernel/softirq.c:343
- run_ksoftirqd+0x63/0xa0 kernel/softirq.c:650
- smpboot_thread_fn+0x572/0x970 kernel/smpboot.c:165
- kthread+0x39a/0x3c0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Allocated by task 8906:
- kasan_save_stack mm/kasan/common.c:38 [inline]
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:401 [inline]
- ____kasan_kmalloc+0xbd/0xf0 mm/kasan/common.c:429
- kasan_kmalloc include/linux/kasan.h:219 [inline]
- kmem_cache_alloc_trace+0x200/0x300 mm/slub.c:2919
- kmalloc include/linux/slab.h:552 [inline]
- lbmLogInit fs/jfs/jfs_logmgr.c:1829 [inline]
- lmLogInit+0x26e/0x1530 fs/jfs/jfs_logmgr.c:1278
- open_inline_log fs/jfs/jfs_logmgr.c:1183 [inline]
- lmLogOpen+0x4c6/0xeb0 fs/jfs/jfs_logmgr.c:1077
- jfs_mount_rw+0x91/0x4a0 fs/jfs/jfs_mount.c:259
- jfs_fill_super+0x57e/0x960 fs/jfs/super.c:571
- mount_bdev+0x26c/0x3a0 fs/super.c:1366
- legacy_get_tree+0xea/0x180 fs/fs_context.c:592
- vfs_get_tree+0x86/0x270 fs/super.c:1496
- do_new_mount fs/namespace.c:2881 [inline]
- path_mount+0x17ad/0x2a00 fs/namespace.c:3211
- do_mount fs/namespace.c:3224 [inline]
- __do_sys_mount fs/namespace.c:3432 [inline]
- __se_sys_mount+0x28c/0x320 fs/namespace.c:3409
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 8906:
- kasan_save_stack mm/kasan/common.c:38 [inline]
- kasan_set_track+0x3d/0x70 mm/kasan/common.c:46
- kasan_set_free_info+0x1f/0x40 mm/kasan/generic.c:356
- ____kasan_slab_free+0xe2/0x110 mm/kasan/common.c:362
- kasan_slab_free include/linux/kasan.h:192 [inline]
- slab_free_hook mm/slub.c:1547 [inline]
- slab_free_freelist_hook+0xd6/0x1a0 mm/slub.c:1580
- slab_free mm/slub.c:3143 [inline]
- kfree+0xd1/0x2a0 mm/slub.c:4139
- lbmLogShutdown fs/jfs/jfs_logmgr.c:1872 [inline]
- lmLogInit+0xfb5/0x1530 fs/jfs/jfs_logmgr.c:1423
- open_inline_log fs/jfs/jfs_logmgr.c:1183 [inline]
- lmLogOpen+0x4c6/0xeb0 fs/jfs/jfs_logmgr.c:1077
- jfs_mount_rw+0x91/0x4a0 fs/jfs/jfs_mount.c:259
- jfs_fill_super+0x57e/0x960 fs/jfs/super.c:571
- mount_bdev+0x26c/0x3a0 fs/super.c:1366
- legacy_get_tree+0xea/0x180 fs/fs_context.c:592
- vfs_get_tree+0x86/0x270 fs/super.c:1496
- do_new_mount fs/namespace.c:2881 [inline]
- path_mount+0x17ad/0x2a00 fs/namespace.c:3211
- do_mount fs/namespace.c:3224 [inline]
- __do_sys_mount fs/namespace.c:3432 [inline]
- __se_sys_mount+0x28c/0x320 fs/namespace.c:3409
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Last potentially related work creation:
- kasan_save_stack+0x27/0x50 mm/kasan/common.c:38
- kasan_record_aux_stack+0xcc/0x100 mm/kasan/generic.c:344
- insert_work+0x54/0x400 kernel/workqueue.c:1331
- __queue_work+0x97f/0xcc0 kernel/workqueue.c:1497
- queue_work_on+0xc1/0x120 kernel/workqueue.c:1524
- queue_work include/linux/workqueue.h:507 [inline]
- call_usermodehelper_exec+0x206/0x3d0 kernel/umh.c:433
- kobject_uevent_env+0x1349/0x1730 lib/kobject_uevent.c:617
- kobject_synth_uevent+0x368/0x8a0 lib/kobject_uevent.c:208
- uevent_store+0x47/0x70 drivers/base/bus.c:585
- kernfs_fop_write_iter+0x3b6/0x510 fs/kernfs/file.c:296
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x896/0xab0 fs/read_write.c:605
- ksys_write+0x11b/0x220 fs/read_write.c:658
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff888020c03100
- which belongs to the cache kmalloc-192 of size 192
-The buggy address is located 84 bytes inside of
- 192-byte region [ffff888020c03100, ffff888020c031c0)
-The buggy address belongs to the page:
-page:000000004af063c2 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x20c03
-flags: 0xfff00000000200(slab)
-raw: 00fff00000000200 ffffea000083b4c0 0000000300000003 ffff888011041500
-raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888020c03000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888020c03080: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
->ffff888020c03100: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                 ^
- ffff888020c03180: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
- ffff888020c03200: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+> -
+> -		if (neigh->nud_state & NUD_VALID)
+> -			neigh->output = neigh->ops->connected_output;
+> +		if (!dev->header_ops->cache && (neigh->nud_state & NUD_VALID))
+> +			neigh->output = arp_generic_ops.connected_output;
+>  		else
+> -			neigh->output = neigh->ops->output;
+> +			neigh->output = arp_generic_ops.output;
+>  	}
+>  	return 0;
+>  }
+> 
 
