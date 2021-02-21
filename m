@@ -2,77 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E62D320906
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 08:00:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4548E320940
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 09:54:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbhBUHAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 02:00:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229661AbhBUHAC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Feb 2021 02:00:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 52AD064E5C;
-        Sun, 21 Feb 2021 06:59:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613890762;
-        bh=DdlbG/BSpVZo5h0GvsNU+dYWOsmflWmL/oFizWNBOc4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YdvC4nd3lOK03Gk2RW6xLtLcy1Ub6w3Y0zsjc6ROPLCyZeqoO9tNS+HH5TSubL7r9
-         EzLXIFMavxF8ywhvgH15zG6MyhsKxgL8hkwxRcL+FhWRcYzsvaUS7KyMLH1MbB/gkq
-         JHF+GVhYnHPqM7HZP4jhqabx6GTTF8CSHEJBknPRU7MWQS69p1AxP1ywPwifibx576
-         I3Ddpsm+58hVxoRwTmy+rrJK9eqG1+lSrCQHIJbzX3GiPQC+7VwxD5Z/Zh2Lshek0o
-         v+pCmdrnE9K2l5m/C/7H0UJA3sxldUfoI/BaCZwBW8nf2CN9NeiGBfUOp18iTOySIh
-         2Zs2bODpDRJAg==
-Date:   Sun, 21 Feb 2021 08:59:18 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
- table size change of SR-IOV VFs
-Message-ID: <YDIExpismOnU3c4k@unreal>
-References: <YC90wkwk/CdgcYY6@kroah.com>
- <20210220190600.GA1260870@bjorn-Precision-5520>
+        id S229889AbhBUIw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 03:52:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229502AbhBUIw5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 03:52:57 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AA0C061786
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 00:52:16 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id u3so9955599ybk.6
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 00:52:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RJ6XRSj8Hw/drU0HiY0a4+qfk/t22NlQuyruL9Qv2Pg=;
+        b=d8cVhGPGGtSbjlDBGWjoq5nPiYmi5R8C+W3xFIlzz9b4F1UBRk8V5IT22a3Wb+wSB/
+         Cc4dUCIHvBJpWHWFMYYVBz7uZqDIeStw0kWO1exqxtiHQno9iduSGtyDeW9pIO86Q/hF
+         NOY5FHe/mYGEhaAD1FQ3tGxg5K0F9ZWOZixyyYmGub1p/nBnYhJD/4FZEUxramNxmL5n
+         WgPzqKPnKno412aejBg2AFG2XVig+FY1xIY+mf2aAAB7BaQRRWWJQrZqTGZYwCG12PbS
+         oUou5rEA17GTwCJhx1TX4pla+L5rA8MnRS1QrkKDmxRV4U8VaHc7fKw4VQK1IgqHJgwY
+         5wzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RJ6XRSj8Hw/drU0HiY0a4+qfk/t22NlQuyruL9Qv2Pg=;
+        b=A0RmS5F2GOJpvfB95ghcWOt4EyTvLpFWWjWe5DVAxjaqsH+o4wTJIqZL/WPmM+exLb
+         urQOLzAOm7BB5BgszaOC5HUDC/3drvGh7QXVSaQARJ5TIbtS2FDZ7JVthFaeo+3AR2EG
+         oPSAIfrSU5IpXiHiuvq2GuZQHHqLx2KcVsOyzcmQOcXDP3Da8McbfVEGlcsGL56iDDBH
+         64pjAKINWiF5raMShC900U+yVzFnDllMcgnEddMpmbQdppYyyBgWbuSn7NbQLUwiekaX
+         LVIwgMR6Hes2heIzFTN5RC5tHzd/rVB1IQBTb+igYp17oE0+PFhRnOa4Oofvyf7imLex
+         7FRA==
+X-Gm-Message-State: AOAM533+iED5TR57XBk5dSiVGw2vDmg3mLq0jASNj/7O5mdpqEBylJdB
+        34Ld5MyXvtBLV7TjYRAUGx48joGn76n4EQViXDE=
+X-Google-Smtp-Source: ABdhPJwkQMy4evXLyTJkB9//pt/zv7UiKRUl5OGXx+PNsbEhzUVPdfxqAhNXR7ik/W0rKswgJrl6q+eFfexlAp6kW3k=
+X-Received: by 2002:a25:50d8:: with SMTP id e207mr24663829ybb.56.1613897535704;
+ Sun, 21 Feb 2021 00:52:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210220190600.GA1260870@bjorn-Precision-5520>
+References: <20210211211044.32701-1-borisp@mellanox.com>
+In-Reply-To: <20210211211044.32701-1-borisp@mellanox.com>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Sun, 21 Feb 2021 10:52:04 +0200
+Message-ID: <CAJ3xEMgazUM053U-nGycNPPT7bennXVcdFoPvMWRU3uZGdpXFg@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next 00/21] nvme-tcp receive offloads
+To:     Sagi Grimberg <sagi@grimberg.me>, Christoph Hellwig <hch@lst.de>
+Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>, axboe@fb.com,
+        Keith Busch <kbusch@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Eric Dumazet <edumazet@google.com>, smalin@marvell.com,
+        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        benishay@nvidia.com, Or Gerlitz <ogerlitz@nvidia.com>,
+        yorayz@nvidia.com, Boris Pismenny <borisp@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 20, 2021 at 01:06:00PM -0600, Bjorn Helgaas wrote:
-> On Fri, Feb 19, 2021 at 09:20:18AM +0100, Greg Kroah-Hartman wrote:
->
-> > Ok, can you step back and try to explain what problem you are trying to
-> > solve first, before getting bogged down in odd details?  I find it
-> > highly unlikely that this is something "unique", but I could be wrong as
-> > I do not understand what you are wanting to do here at all.
->
-> We want to add two new sysfs files:
->
->   sriov_vf_total_msix, for PF devices
->   sriov_vf_msix_count, for VF devices associated with the PF
->
-> AFAICT it is *acceptable* if they are both present always.  But it
-> would be *ideal* if they were only present when a driver that
-> implements the ->sriov_get_vf_total_msix() callback is bound to the
-> PF.
+On Thu, Feb 11, 2021 at 11:15 PM Boris Pismenny <borisp@mellanox.com> wrote:
+> Changes since v3:
+> =========================================
+> * Use DDP_TCP ifdefs in iov_iter and skb iterators to minimize impact
+> when compiled out (Christoph)
+> * Simplify netdev references and reduce the use of
+> get_netdev_for_sock (Sagi)
+> * Avoid "static" in it's own line, move it one line down (Christoph)
+> * Pass (queue, skb, *offset) and retrieve the pdu_seq in
+> nvme_tcp_resync_response (Sagi)
+> * Add missing assignment of offloading_netdev to null in offload_limits
+> error case (Sagi)
+> * Set req->offloaded = false once -- the lifetime rules are:
+> set to false on cmd_setup / set to true when ddp setup succeeds (Sagi)
+> * Replace pr_info_ratelimited with dev_info_ratelimited (Sagi)
+> * Add nvme_tcp_complete_request and invoke it from two similar call
+> sites (Sagi)
+> * Introduce nvme_tcp_req_map_sg earlier in the series (Sagi)
+> * Add nvme_tcp_consume_skb and put into it a hunk from
+> nvme_tcp_recv_data to handle copy with and without offload
 
-BTW, we already have all possible combinations: static, static with
-folder, with and without "sriov_" prefix, dynamic with and without
-folders on VFs.
+Sagi, Christoph,
 
-I need to know on which version I'll get Acked-by and that version I
-will resubmit.
+Any further comments?
 
-Thanks
+Or.
+
+
+
+
+
+> Changes since v2:
+> =========================================
+> * Use skb->ddp_crc for copy offload to avoid skb_condense
+> * Default mellanox driver support to no (experimental feature)
+> * In iov_iter use non-ddp functions for kvec and iovec
+> * Remove typecasting in nvme-tcp
+>
+> Changes since v1:
+> =========================================
+> * Rework iov_iter copy skip if src==dst to be less intrusive (David Ahern)
+> * Add tcp-ddp documentation (David Ahern)
+> * Refactor mellanox driver patches into more patches (Saeed Mahameed)
+> * Avoid pointer casting (David Ahern)
+> * Rename nvme-tcp offload flags (Shai Malin)
+> * Update cover-letter according to the above
+>
+> Changes since RFC v1:
+> =========================================
+> * Split mlx5 driver patches to several commits
+> * Fix nvme-tcp handling of recovery flows. In particular, move queue offlaod
+>   init/teardown to the start/stop functions.
