@@ -2,75 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8568B320C1E
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 18:45:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AAB5320C96
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 19:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbhBURpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 12:45:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26891 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229844AbhBURpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 12:45:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613929418;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8VgaRV7Fd9A+gYNGoaLn/LCYYkPGKOfSnguHXEuxcJE=;
-        b=KpocSHh/4zDNnLouqT/ZBQS99kA9T4sDbQl58ANwKDK81zeBAE0DqOU7MelipuQVibNtdR
-        4nPoZEUpzPFnP4ERMe6kr7vuPit613WyIr24svsjII1J1vPS6DnHJmGusg4DGoy4T2momn
-        2vaQHh2HdUj4Ac1faGFHWRTKhKMLxIs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-598-Muv1seoRPkWbg_Lhd79lcw-1; Sun, 21 Feb 2021 12:43:36 -0500
-X-MC-Unique: Muv1seoRPkWbg_Lhd79lcw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED48A801979;
-        Sun, 21 Feb 2021 17:43:34 +0000 (UTC)
-Received: from carbon.redhat.com (ovpn-112-235.rdu2.redhat.com [10.10.112.235])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 842482BFE1;
-        Sun, 21 Feb 2021 17:43:34 +0000 (UTC)
-From:   Alexander Aring <aahringo@redhat.com>
-To:     stefan@datenfreihafen.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH wpan 4/4] net: ieee802154: fix nl802154 del llsec devkey
-Date:   Sun, 21 Feb 2021 12:43:21 -0500
-Message-Id: <20210221174321.14210-4-aahringo@redhat.com>
-In-Reply-To: <20210221174321.14210-1-aahringo@redhat.com>
-References: <20210221174321.14210-1-aahringo@redhat.com>
+        id S230160AbhBUS2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 13:28:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230026AbhBUS2k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 13:28:40 -0500
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0789CC061786
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 10:27:59 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:2934:574d:d80c:39f5])
+        by laurent.telenet-ops.be with bizsmtp
+        id XuTw240073eQ4Ry01uTwbv; Sun, 21 Feb 2021 19:27:56 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lDtSV-000YhP-P7; Sun, 21 Feb 2021 19:27:55 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lDtSV-008gzw-3G; Sun, 21 Feb 2021 19:27:55 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] ath11k: qmi: use %pad to format dma_addr_t
+Date:   Sun, 21 Feb 2021 19:27:54 +0100
+Message-Id: <20210221182754.2071863-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a nullpointer dereference if NL802154_ATTR_SEC_DEVKEY is
-not set by the user. If this is the case nl802154 will return -EINVAL.
+If CONFIG_ARCH_DMA_ADDR_T_64BIT=n:
 
-Reported-by: syzbot+368672e0da240db53b5f@syzkaller.appspotmail.com
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
+    drivers/net/wireless/ath/ath11k/qmi.c: In function ‘ath11k_qmi_respond_fw_mem_request’:
+    drivers/net/wireless/ath/ath11k/qmi.c:1690:8: warning: format ‘%llx’ expects argument of type ‘long long unsigned int’, but argument 5 has type ‘dma_addr_t’ {aka ‘unsigned int’} [-Wformat=]
+     1690 |        "qmi req mem_seg[%d] 0x%llx %u %u\n", i,
+	  |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     1691 |         ab->qmi.target_mem[i].paddr,
+	  |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	  |                              |
+	  |                              dma_addr_t {aka unsigned int}
+    drivers/net/wireless/ath/ath11k/debug.h:64:30: note: in definition of macro ‘ath11k_dbg’
+       64 |   __ath11k_dbg(ar, dbg_mask, fmt, ##__VA_ARGS__); \
+	  |                              ^~~
+    drivers/net/wireless/ath/ath11k/qmi.c:1690:34: note: format string is defined here
+     1690 |        "qmi req mem_seg[%d] 0x%llx %u %u\n", i,
+	  |                               ~~~^
+	  |                                  |
+	  |                                  long long unsigned int
+	  |                               %x
+
+Fixes: d5395a5486596308 ("ath11k: qmi: add debug message for allocated memory segment addresses and sizes")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- net/ieee802154/nl802154.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/qmi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 3f6d86d63923..e9e4652cd592 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1916,7 +1916,8 @@ static int nl802154_del_llsec_devkey(struct sk_buff *skb, struct genl_info *info
- 	struct ieee802154_llsec_device_key key;
- 	__le64 extended_addr;
- 
--	if (nla_parse_nested_deprecated(attrs, NL802154_DEVKEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_DEVKEY], nl802154_devkey_policy, info->extack))
-+	if (!info->attrs[NL802154_ATTR_SEC_DEVKEY] ||
-+	    nla_parse_nested_deprecated(attrs, NL802154_DEVKEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_DEVKEY], nl802154_devkey_policy, info->extack))
- 		return -EINVAL;
- 
- 	if (!attrs[NL802154_DEVKEY_ATTR_EXTENDED_ADDR])
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index 1aca841cd147cfee..7968fe4eda22a839 100644
+--- a/drivers/net/wireless/ath/ath11k/qmi.c
++++ b/drivers/net/wireless/ath/ath11k/qmi.c
+@@ -1687,8 +1687,8 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
+ 			req->mem_seg[i].size = ab->qmi.target_mem[i].size;
+ 			req->mem_seg[i].type = ab->qmi.target_mem[i].type;
+ 			ath11k_dbg(ab, ATH11K_DBG_QMI,
+-				   "qmi req mem_seg[%d] 0x%llx %u %u\n", i,
+-				    ab->qmi.target_mem[i].paddr,
++				   "qmi req mem_seg[%d] %pad %u %u\n", i,
++				    &ab->qmi.target_mem[i].paddr,
+ 				    ab->qmi.target_mem[i].size,
+ 				    ab->qmi.target_mem[i].type);
+ 		}
 -- 
-2.26.2
+2.25.1
 
