@@ -2,87 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5B7320D17
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 20:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54164320D6B
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 21:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbhBUTO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 14:14:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38368 "EHLO
+        id S230231AbhBUUKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 15:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbhBUTOZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 14:14:25 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA21C061574;
-        Sun, 21 Feb 2021 11:13:45 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id m6so5233145pfk.1;
-        Sun, 21 Feb 2021 11:13:45 -0800 (PST)
+        with ESMTP id S229761AbhBUUKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 15:10:43 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9ABFC061574;
+        Sun, 21 Feb 2021 12:10:01 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id r11so7544003ljk.9;
+        Sun, 21 Feb 2021 12:10:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9okeHahnxkQIyczL5QktCGq4Y0Vq91gH7S23ae5Xnxo=;
-        b=ZVyvhv+PO5zERn53QqLCYhRDu/Jd831HCK2eVChketfdSpEZbSeL1z/aaPFo2vnvR+
-         25NrSf2RBYEw/2jgb4TzsEuXAuu0CgdBWBjN6/FZbldIgnVbOryelwcts9SMGC2vXrcK
-         nrEVbWyHLo6uUnSK8iUnIZ0qBiEKU7OkcysTCPwkxe4FZjdTyHw7514agzy/ZflykECN
-         /K4zIxWGiNMo0ShlxNA1tnKhp+hJjjwVUsbfV3ozj3/iZ7l3MZBbTutwzg0dCEAjjXnL
-         zixXdaV7BfjAZPNbYxmY9kiBshChyxJ0Vbn6VARZHR5TLWr8ZfVX6OTTMePxbFhNOnSr
-         VzFg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YFe5UFssYILqX7KV4LRHLlpTG2gIquz/MxeYOoRxNfA=;
+        b=DaavEhsONevRxSOq+SnH1vIyqBB6YwkUooJbTPlb+vGeuVjOrQM5D8mz0zq6sNM3vk
+         fyxlS1tJgfjHFUYHFT+zh+mmDWbsXldbVbkcxYgODB53p0/vBm/ktMNjHKN5lEbEkKsk
+         RBbxPh0GrrEvFYtpHuuF8qf9MihTk3hIt+Nmids+G3eZH5p5f/GLs1va4ISX+OLPCfE9
+         XxXc3SzRtMV4fpJNfGQBxOoVSGdU1zB6dhF03/ap8lUW7JUJnRR7Hoz6DbC5bbKjGuPm
+         FlXIoE7qtpCrP9S9LODaPanL0OMAoFuio8FC4tBCaU7533b2FEzFWVrnidoFK4EHKMSQ
+         Xy9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9okeHahnxkQIyczL5QktCGq4Y0Vq91gH7S23ae5Xnxo=;
-        b=GwU45pWVDHxpBJQbTXEafiXMvWbcB6mXWDor05nKrRKBiNIPSxEqUVPeq52HQYOoC2
-         2TtvhX3Bm11LO0KXXxK76l9eORFASCC0dbQBE6/1udaUfaELtrTaU0xA1FUEyT9a+x0T
-         ujiK7dmc2LRHP5Jee7hYRdwsiO/sA1TArO8vCQQTISTz9t4tsrAm8u5mD0bvZ4aKZsY6
-         bgn5kzuPED79iZgxAX7w6YIoeV7kp4ViuIIznZdonY+sVy1dLdvCZGbttsDKnwQpo548
-         eUeMm5Koefrhe993GZUkQ+AlC5hUBtk4NJ6nw/m4YlOkfKBLlQHCq+yuWXZjfkmS6PSu
-         rxeA==
-X-Gm-Message-State: AOAM530+eqV5ZTK6WbZikV7y3OTHbVKeioQWYQbal55pdkuI+p7hkpKI
-        iYzP5QpYmgFFQvmXx56ufxZRaehT125JDQ+J5ZA=
-X-Google-Smtp-Source: ABdhPJwlEj7b5dtHO9WJKEVfnpgQJ3refQ75n3pGOhZHvQB6zRYMTGIwDLxZYVibZjwv3uNwrpLW2Bu5QHmXRaifhQI=
-X-Received: by 2002:a65:56c6:: with SMTP id w6mr17014227pgs.368.1613934824969;
- Sun, 21 Feb 2021 11:13:44 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YFe5UFssYILqX7KV4LRHLlpTG2gIquz/MxeYOoRxNfA=;
+        b=hUzb33oqtmIMXpw0h1mlGpx4SgX+Lve1opFogYaOCqRQVhPwhnAm5Spb0Bt6iYPP23
+         ZZ4nxkEuhqhSndk+arNnPWGTetQZxRTIxT4YQrfvaOyXRrs3GLhoCXUuYiankGsvQYOa
+         /FHhTtP5+8a1bXb1GxUrRJJFX4krfaRSNj5M/5aVWsFoPsUakaSqjF8eZmAZ3VOVPgWF
+         yVsP56YeKRyyicxVdeS5mRXUn0HqB6iEQ1gMiuhCPs+f57mgURwh9mj/LtsOPlooa3pz
+         evji7thK7EmKGSZOvFQn7BiRZwupN3s8c442ViUw9GzqIT4BdieT4TxGwTkCaHGVAO5P
+         GeJA==
+X-Gm-Message-State: AOAM5309l6ZvCiWkFe+Z0zFmLgz8djLCyupHweudPoyjDLzy9O/WFdUM
+        d4Kth5Vswhjv1giqpX6iNak=
+X-Google-Smtp-Source: ABdhPJyNQx65fSRsexrywPAAeOYLUhIEfIugMyqNiE9uCOZSJ9Yu89ZxrTqEgUPiI09zqDJ9RBfKaQ==
+X-Received: by 2002:a2e:858f:: with SMTP id b15mr12701464lji.316.1613938200174;
+        Sun, 21 Feb 2021 12:10:00 -0800 (PST)
+Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
+        by smtp.gmail.com with ESMTPSA id q26sm1657823lfb.86.2021.02.21.12.09.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Feb 2021 12:09:59 -0800 (PST)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        bjorn.topel@intel.com, maciej.fijalkowski@intel.com,
+        hawk@kernel.org, toke@redhat.com, magnus.karlsson@intel.com,
+        john.fastabend@gmail.com, kuba@kernel.org, davem@davemloft.net
+Subject: [PATCH bpf-next v3 0/2] Optimize bpf_redirect_map()/xdp_do_redirect()
+Date:   Sun, 21 Feb 2021 21:09:52 +0100
+Message-Id: <20210221200954.164125-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20210216201813.60394-1-xie.he.0141@gmail.com> <YC4sB9OCl5mm3JAw@unreal>
- <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
- <YC5DVTHHd6OOs459@unreal> <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
- <YC7GHgYfGmL2wVRR@unreal> <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
- <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
- <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EOru3pW6AHN4QVjiaERpLSfg-0G0ZEaqU_hkhX1acv0HQ@mail.gmail.com> <YDIAIwLVQK0P4EQW@unreal>
-In-Reply-To: <YDIAIwLVQK0P4EQW@unreal>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sun, 21 Feb 2021 11:13:34 -0800
-Message-ID: <CAJht_ENK=X1hXhM2qkwZW6xoFwMB5R+iS0GSnsXR3EERd+S35g@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 20, 2021 at 10:39 PM Leon Romanovsky <leon@kernel.org> wrote:
->
-> > Yes, this patch will break backward compatibility. Users with old
-> > scripts will find them no longer working.
->
-> Did you search in debian/fedora code repositories to see if such scripts exist
-> as part of any distro package?
+Hi XDP-folks,
 
-I just tried to search in Debian and Fedora packages but didn't seem
-to find anything related.
+This two patch series contain two optimizations for the
+bpf_redirect_map() helper and the xdp_do_redirect() function.
 
-I searched "hdlc" and "x25". The only things I can find are "AX.25"
-related things. But "AX.25" is not related to "X.25".
+The bpf_redirect_map() optimization is about avoiding the map lookup
+dispatching. Instead of having a switch-statement and selecting the
+correct lookup function, we let the verifier patch the
+bpf_redirect_map() call to a specific lookup function. This way the
+run-time lookup is avoided.
 
-I guess a script that brings a network interface up might not be very
-useful? So we might not be able to find it in public repositories.
+The xdp_do_redirect() patch restructures the code, so that the map
+pointer indirection can be avoided.
+
+Performance-wise I got 3% improvement for XSKMAP
+(sample:xdpsock/rx-drop), and 4% (sample:xdp_redirect_map) on my
+machine.
+
+More details in each commit. Changes since the RFC is outlined in each
+commit.
+
+
+Cheers,
+Björn
+
+
+Björn Töpel (2):
+  bpf, xdp: per-map bpf_redirect_map functions for XDP
+  bpf, xdp: restructure redirect actions
+
+ include/linux/bpf.h        |  21 ++--
+ include/linux/filter.h     |  20 +++-
+ include/net/xdp_sock.h     |   6 +-
+ include/trace/events/xdp.h |  66 +++++++-----
+ kernel/bpf/cpumap.c        |   3 +-
+ kernel/bpf/devmap.c        |   5 +-
+ kernel/bpf/verifier.c      |  17 ++-
+ net/core/filter.c          | 216 ++++++++++++++++++-------------------
+ net/xdp/xskmap.c           |   1 -
+ 9 files changed, 195 insertions(+), 160 deletions(-)
+
+
+base-commit: 7b1e385c9a488de9291eaaa412146d3972e9dec5
+-- 
+2.27.0
+
