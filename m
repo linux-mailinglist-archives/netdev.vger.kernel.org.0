@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ACF3320DFA
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 22:36:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49A2F320DFC
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 22:36:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbhBUVfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 16:35:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
+        id S231173AbhBUVfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 16:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbhBUVeu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 16:34:50 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1FCC06178C
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:09 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id n20so130847ejb.5
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:09 -0800 (PST)
+        with ESMTP id S230445AbhBUVfI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 16:35:08 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9210C061793
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:10 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id t11so26067660ejx.6
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fxTIFR4EqLLuVSHPMzl4uGYJ6EYKN6vyQGKYjXcR7i4=;
-        b=oGTyVL2FWBU0nBlBXL+OCfoflf7tb32Ue6y7C+d+FBxg+Yr1xqJeHzzzXdQcNVSURY
-         F3ElPH4srlWT/Tm1lgwaauRJBzyPu1m3xppNml6jeJGgAonQVWYtAq2puItfchofh7i5
-         H6mYOYOJrpmWnqZkWmI4JYi10bVJL8K/dvM1opo5cC68O9mkNDh8qwWNuZVpEa0YIWUn
-         cAKq4bwn3dentY21DzHYC4+IL+zbx4Q456Sw74B5RBHaZnxRLn9Yxx1KpEritAmZq4Xf
-         xiD47lv98UdQzCKzwkJkq1OUlwGgJugUtHIVuwOSVvy44VLjGSsqEVwvzouuIZyb2xIw
-         zdmA==
+        bh=kXuZvLLvx0TuGzlM0GmcZEDK9pas+V35vr/sayO3ytE=;
+        b=fmyMjyqZGiB3ByBNLHA+c5u7w3imcfzP07C45EKaVJxIY3gNtNgNIDNMjAm0543nhM
+         dr7sAFn4EiWcJfYR9hQ0yoZr+6DQWSBBY9ucmosQIpJT9qc9qpqoMQhHD9gYsH8u9Wvb
+         uBPiY0nXzpONJ7TOaFUFgb0GlKpmUhez2ULG6IYqGxfZ8oJlTdB5qqAt9MwwXMlF8Q5I
+         nNZPKajjBG70GVYZpLCBp52jo5Wscbhf4ytez5nFnjHPWv8r2STXUpKFTX2hRkjwU8JJ
+         Tr2VSfFtZQysqAanFGcRPjsepAGKq9jMyMpyOUKdRpwXyrkQAs7Xtp12SXI0oZGYpMtD
+         TiMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fxTIFR4EqLLuVSHPMzl4uGYJ6EYKN6vyQGKYjXcR7i4=;
-        b=liLzZFxzXMjI6MYzI4L9yNdhdLcpyBmTxjHUyOAsVUaQuLFpEihyM8P2wVH5z6TaUu
-         pL6Oi6XTpy1sPDVQr7emboq/TsJcZygN0BDszhkwS2QVXIB3O9wyu/nteWaB+QVp/jpR
-         RwlFQcuUGHb5uG4VrMXNf1NRFF3G1jGSQyx+LSYZA2Dhy+zvakqmtNn0pEe4nUm+eany
-         RWACy7IfD5LNAP88Yw+BSAEqFEN5fkUa7iZWuiMuDbaTz8EVhUxleceDpatiLdVbEgio
-         VR5P2re0DWSTWMQW1FseH5YXfidyDJyFrmdhrkBwlyvAt0rDwvk7o/PnnhAWSgB1qRq2
-         4WIA==
-X-Gm-Message-State: AOAM533rS/OBI2ihfbERcfB6Sijy1EdHXzpJqxcyxDsnRYoz2SHhVOtz
-        7bf13CGwTAxp38U5Kley/MHyKj07Fmk=
-X-Google-Smtp-Source: ABdhPJwfD6WilmmeugRSmsPAjdDxU1F0rYRrGwEc1rzHICC0rHaGtl9KxhGx9S7rcImTLE7Q4INZhA==
-X-Received: by 2002:a17:906:f102:: with SMTP id gv2mr18014365ejb.47.1613943248469;
-        Sun, 21 Feb 2021 13:34:08 -0800 (PST)
+        bh=kXuZvLLvx0TuGzlM0GmcZEDK9pas+V35vr/sayO3ytE=;
+        b=hPem9E0cVKQ1MNZ0Y3gx43KLhSxzUOW2U3jkKxoEz4n28Hn9s6V3K1eOMalNi3zJ7w
+         NaYlXCK1dgnQdA+aNKPnwdRbBN1aQBk4yadWXizrqo0bjTexFeg09WEtxnJhW7zN2GFe
+         bd3+cXLsJcosxYY0RTnAwvyFe2m5OOOskAoPWvJt4/iAuw+PleG+I8Diu9CU4U4Xpboq
+         yMXssv3pJzwj/VeACnV5hYrdexuuMLY7rGsxjyQLDVocIh70qRSIxoYW4C9s+LtGdwQn
+         W6So3r2d8nNSe7OS5ax9MqeZ8DuLNNuWIlxOzrsbhPi3fvT5iaSsqSwddk94M5AzzaWa
+         Cu0w==
+X-Gm-Message-State: AOAM532x6xnYMum3fs0hZ2v7rSNGnmt9mP0988M8tduJyzLe03L8xN1I
+        EMrkRkR5+b+8o/Rw8EGaBfcsqqHaNew=
+X-Google-Smtp-Source: ABdhPJzvj1NNhVQyW52au1lYhRxjgP/EsUdtQ0+1bg5HWyKWijLgTlLA31Te1IGE7l2U98DqCHTKyA==
+X-Received: by 2002:a17:906:3801:: with SMTP id v1mr18467064ejc.353.1613943249423;
+        Sun, 21 Feb 2021 13:34:09 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id rh22sm8948779ejb.105.2021.02.21.13.34.07
+        by smtp.gmail.com with ESMTPSA id rh22sm8948779ejb.105.2021.02.21.13.34.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 13:34:08 -0800 (PST)
+        Sun, 21 Feb 2021 13:34:09 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         George McCollister <george.mccollister@gmail.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [RFC PATCH net-next 03/12] Documentation: networking: dsa: remove static port count from limitations
-Date:   Sun, 21 Feb 2021 23:33:46 +0200
-Message-Id: <20210221213355.1241450-4-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 04/12] Documentation: networking: dsa: remove references to switchdev prepare/commit
+Date:   Sun, 21 Feb 2021 23:33:47 +0200
+Message-Id: <20210221213355.1241450-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210221213355.1241450-1-olteanv@gmail.com>
 References: <20210221213355.1241450-1-olteanv@gmail.com>
@@ -73,43 +73,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-After Vivien's series from 2019 containing commits 27d4d19d7c82 ("net:
-dsa: remove limitation of switch index value") and ab8ccae122a4 ("net:
-dsa: add ports list in the switch fabric"), this is basically no longer
-true.
+After the recent series containing commit bae33f2b5afe ("net: switchdev:
+remove the transaction structure from port attributes"), there aren't
+prepare/commit transactional phases anymore in most of the switchdev
+objects/attributes, and as a result, there aren't any in the DSA driver
+API either. So remove this piece.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- Documentation/networking/dsa/dsa.rst | 9 ---------
- 1 file changed, 9 deletions(-)
+ Documentation/networking/dsa/dsa.rst | 30 ++++++++--------------------
+ 1 file changed, 8 insertions(+), 22 deletions(-)
 
 diff --git a/Documentation/networking/dsa/dsa.rst b/Documentation/networking/dsa/dsa.rst
-index fc98b5774fb6..cb59df6e80f4 100644
+index cb59df6e80f4..8fb0ceff3418 100644
 --- a/Documentation/networking/dsa/dsa.rst
 +++ b/Documentation/networking/dsa/dsa.rst
-@@ -360,14 +360,6 @@ DSA data structures are defined in ``include/net/dsa.h`` as well as
- Design limitations
- ==================
+@@ -430,14 +430,8 @@ SWITCHDEV
  
--Limits on the number of devices and ports
-------------------------------------------
+ DSA directly utilizes SWITCHDEV when interfacing with the bridge layer, and
+ more specifically with its VLAN filtering portion when configuring VLANs on top
+-of per-port slave network devices. Since DSA primarily deals with
+-MDIO-connected switches, although not exclusively, SWITCHDEV's
+-prepare/abort/commit phases are often simplified into a prepare phase which
+-checks whether the operation is supported by the DSA switch driver, and a commit
+-phase which applies the changes.
 -
--DSA currently limits the number of maximum switches within a tree to 4
--(``DSA_MAX_SWITCHES``), and the number of ports per switch to 12 (``DSA_MAX_PORTS``).
--These limits could be extended to support larger configurations would this need
--arise.
+-As of today, the only SWITCHDEV objects supported by DSA are the FDB and VLAN
+-objects.
++of per-port slave network devices. As of today, the only SWITCHDEV objects
++supported by DSA are the FDB and VLAN objects.
+ 
+ Device Tree
+ -----------
+@@ -616,14 +610,10 @@ Bridge VLAN filtering
+   accept any 802.1Q frames irrespective of their VLAN ID, and untagged frames are
+   allowed.
+ 
+-- ``port_vlan_prepare``: bridge layer function invoked when the bridge prepares the
+-  configuration of a VLAN on the given port. If the operation is not supported
+-  by the hardware, this function should return ``-EOPNOTSUPP`` to inform the bridge
+-  code to fallback to a software implementation. No hardware setup must be done
+-  in this function. See port_vlan_add for this and details.
 -
- Lack of CPU/DSA network devices
- -------------------------------
+ - ``port_vlan_add``: bridge layer function invoked when a VLAN is configured
+-  (tagged or untagged) for the given switch port
++  (tagged or untagged) for the given switch port. If the operation is not
++  supported by the hardware, this function should return ``-EOPNOTSUPP`` to
++  inform the bridge code to fallback to a software implementation.
  
-@@ -697,7 +689,6 @@ two subsystems and get the best of both worlds.
- Other hanging fruits
- --------------------
+ - ``port_vlan_del``: bridge layer function invoked when a VLAN is removed from the
+   given switch port
+@@ -651,14 +641,10 @@ Bridge VLAN filtering
+   function that the driver has to call for each MAC address known to be behind
+   the given port. A switchdev object is used to carry the VID and FDB info.
  
--- making the number of ports fully dynamic and not dependent on ``DSA_MAX_PORTS``
- - allowing more than one CPU/management interface:
-   http://comments.gmane.org/gmane.linux.network/365657
- - porting more drivers from other vendors:
+-- ``port_mdb_prepare``: bridge layer function invoked when the bridge prepares the
+-  installation of a multicast database entry. If the operation is not supported,
+-  this function should return ``-EOPNOTSUPP`` to inform the bridge code to fallback
+-  to a software implementation. No hardware setup must be done in this function.
+-  See ``port_fdb_add`` for this and details.
+-
+ - ``port_mdb_add``: bridge layer function invoked when the bridge wants to install
+-  a multicast database entry, the switch hardware should be programmed with the
++  a multicast database entry. If the operation is not supported, this function
++  should return ``-EOPNOTSUPP`` to inform the bridge code to fallback to a
++  software implementation. The switch hardware should be programmed with the
+   specified address in the specified VLAN ID in the forwarding database
+   associated with this VLAN ID.
+ 
 -- 
 2.25.1
 
