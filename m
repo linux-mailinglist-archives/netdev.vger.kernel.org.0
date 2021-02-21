@@ -2,95 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4086320A44
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 13:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F04320A58
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 14:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbhBUMj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 07:39:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbhBUMj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 07:39:58 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C18AC061574;
-        Sun, 21 Feb 2021 04:39:18 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id e17so47639223ljl.8;
-        Sun, 21 Feb 2021 04:39:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7ooJNNgyLxSgtXrlAqytg6PlPTL1gBhKSaEdENZ44wU=;
-        b=B9acX6iN9eqTg0mLidcuyzgxYnKymlJcyVcHlXprYUxUdun9xANNEUVJzWCo6Gw2TT
-         UgFi8r6TfNB0mAy/nc5xs18oEocRa4sCUrdafDQ02jlCl6ey1zdTVhE/VeCn+OSlZbhh
-         JhyylCgudNf2/NhRWgAV6p/8fvwt+xGhUMtAfmXCsI0iRoXF19g4iZhY49vagUnpHqx6
-         aqe9AZMTQq6fuU8qDp3ST1G0ERcVuZ/2yZ7rV0c8t8ddkO/Jg1OYE3VxlBtrSq1lE3NR
-         XmickdD8eEndQ2FRontRHjExiDWPTxxLpcCaggaVu/nqPY9t1rIvushie5hEzPj0KX9L
-         s1Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7ooJNNgyLxSgtXrlAqytg6PlPTL1gBhKSaEdENZ44wU=;
-        b=EytUB+0DnpXQpw5saWtHU4vbBE+vaHILnNpSl8TWv6mNItOdJXmUWnA+wY39VEVWsR
-         BX4gP4wLvfGHqerTrlaucxtuSejRQnGLnioTyOMCbcO3YKPoy5ywpS6e8TQurWN1eIAb
-         itm5XLStr58uE3p2iIArwmTkoedHG22vSpTFiecFhvIqrKPgyqntQbKXsKK1saoq0Pv5
-         xmkAhmVBQsnK0WNYQmjlcfh9i4r4/liwWJwJz+Y+viGUifny9WbxrKzVrG2UH79s+tyY
-         2+u3SH6L0aBNZ6Fb/O+Vgrr3W7Bz624HovHejY+SMOKhAct9eYFmpaRm5+DfsqNhEczC
-         aRxQ==
-X-Gm-Message-State: AOAM530A5kxH4T7LBrPdi4p1Tf1nKfQuqHS9PBpQsNVF4gVFbfDnV6qH
-        mhTOR+gzGtbs4iiCfJI3zHg=
-X-Google-Smtp-Source: ABdhPJwKhyoWxWMqQrvDAxezIvfKgkgDz8xjxAZSo7ShaWjCfzZqXVvk1ISVEoLcC84Tm23Gd9hQBA==
-X-Received: by 2002:a2e:a404:: with SMTP id p4mr5629250ljn.286.1613911156434;
-        Sun, 21 Feb 2021 04:39:16 -0800 (PST)
-Received: from localhost.localdomain ([37.150.90.70])
-        by smtp.googlemail.com with ESMTPSA id b14sm1677559lji.120.2021.02.21.04.39.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 04:39:15 -0800 (PST)
-From:   Sabyrzhan Tasbolatov <snovitoll@gmail.com>
-To:     eric.dumazet@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, snovitoll@gmail.com,
-        syzbot+c2a7e5c5211605a90865@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net/qrtr: restrict length in qrtr_tun_write_iter()
-Date:   Sun, 21 Feb 2021 18:39:12 +0600
-Message-Id: <20210221123912.3185059-1-snovitoll@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <3b27dac1-45b9-15ad-c25e-2f5f3050907e@gmail.com>
-References: <3b27dac1-45b9-15ad-c25e-2f5f3050907e@gmail.com>
+        id S229871AbhBUNB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 08:01:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46534 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229717AbhBUNBZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Feb 2021 08:01:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 77D8E64EEC;
+        Sun, 21 Feb 2021 13:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1613912444;
+        bh=SvCSMNwWOjD1RuFrrE7KudoLB/8aoqxbB8zypDJjoCM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bi9ddrkqP48OS4okEi3xYoWSm2RFfvovUOX9ntPK+Neer2x3Oy1skfCCqZgnJ3UFt
+         GvI7TQdNBuGSb8nC6sOmqpuP8KWcf42bdCPCJsEc+/QODqDWJSukxvG4a9XDjGaolq
+         Yew1KGyShZA361oAW1HK4NnCpSqav+oXN36aFNhw=
+Date:   Sun, 21 Feb 2021 14:00:41 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <YDJZeWoLna8kQk5L@kroah.com>
+References: <YC90wkwk/CdgcYY6@kroah.com>
+ <20210220190600.GA1260870@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210220190600.GA1260870@bjorn-Precision-5520>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Do we really expect to accept huge lengths here ?
+On Sat, Feb 20, 2021 at 01:06:00PM -0600, Bjorn Helgaas wrote:
+> On Fri, Feb 19, 2021 at 09:20:18AM +0100, Greg Kroah-Hartman wrote:
+> 
+> > Ok, can you step back and try to explain what problem you are trying to
+> > solve first, before getting bogged down in odd details?  I find it
+> > highly unlikely that this is something "unique", but I could be wrong as
+> > I do not understand what you are wanting to do here at all.
+> 
+> We want to add two new sysfs files:
+> 
+>   sriov_vf_total_msix, for PF devices
+>   sriov_vf_msix_count, for VF devices associated with the PF
+> 
+> AFAICT it is *acceptable* if they are both present always.  But it
+> would be *ideal* if they were only present when a driver that
+> implements the ->sriov_get_vf_total_msix() callback is bound to the
+> PF.
 
-Sorry for late response but I couldnt find any reference to the max
-length of incoming data for qrtr TUN interface.
+Ok, so in the pci bus probe function, if the driver that successfully
+binds to the device is of this type, then create the sysfs files.
 
-> qrtr_endpoint_post() will later attempt a netdev_alloc_skb() which will need
-> some extra space (for struct skb_shared_info)
+The driver core will properly emit a KOBJ_BIND message when the driver
+is bound to the device, so userspace knows it is now safe to rescan the
+device to see any new attributes.
 
-Thanks, you're right, qrtr_endpoint_post() will alloc another slab buffer.
-We can check the length of skb allocation but we need to do following:
-
-int qrtr_endpoint_post(.., const void *data, size_t len) 
-{
-	..
-	when QRTR_PROTO_VER_1:
-		hdrlen = sizeof(*data);
-	when QRTR_PROTO_VER_2:
-		hdrlen = sizeof(*data) + data->optlen;
-	
-	len = (KMALLOC_MAX_SIZE - hdrlen) % data->size;
-	skb = netdev_alloc_skb(NULL, len);
-	..
-	skb_put_data(skb, data + hdrlen, size);
+Here's some horrible pseudo-patch for where this probably should be
+done:
 
 
-So it requires refactoring as in qrtr_tun_write_iter() we just allocate and
-pass it to qrtr_endpoint_post() and there
-we need to do len calculation as above *before* netdev_alloc_skb(NULL, len).
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index ec44a79e951a..5a854a5e3977 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -307,8 +307,14 @@ static long local_pci_probe(void *_ddi)
+ 	pm_runtime_get_sync(dev);
+ 	pci_dev->driver = pci_drv;
+ 	rc = pci_drv->probe(pci_dev, ddi->id);
+-	if (!rc)
++	if (!rc) {
++		/* If PF or FV driver was bound, let's add some more sysfs files */
++		if (pci_drv->is_pf)
++			device_add_groups(pci_dev->dev, pf_groups);
++		if (pci_drv->is_fv)
++			device_add_groups(pci_dev->dev, fv_groups);
+ 		return rc;
++	}
+ 	if (rc < 0) {
+ 		pci_dev->driver = NULL;
+ 		pm_runtime_put_sync(dev);
 
-Perhaps there is a nicer solution though.
+
+
+
+Add some proper error handling if device_add_groups() fails, and then do
+the same thing to remove the sysfs files when the device is unbound from
+the driver, and you should be good to go.
+
+Or is this what you all are talking about already and I'm just totally
+confused?
+
+thanks,
+
+greg k-h
