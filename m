@@ -2,86 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B50A73208F8
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 07:40:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F2B83208FD
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 07:53:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbhBUGk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 01:40:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49266 "EHLO mail.kernel.org"
+        id S229934AbhBUGwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 01:52:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229479AbhBUGkP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Feb 2021 01:40:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8B0B864EE9;
-        Sun, 21 Feb 2021 06:39:34 +0000 (UTC)
+        id S229661AbhBUGwK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Feb 2021 01:52:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A5D0F64F02;
+        Sun, 21 Feb 2021 06:51:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613889575;
-        bh=30oNEZb8PQcT0GiuTwiFEqcUx3BwhXK5+Nl0tiOURWg=;
+        s=k20201202; t=1613890289;
+        bh=6tU+OEyIZ9Q0azKSBcpf+eNh2D54XEvVY+pvHyOOAHw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oAlkzfZihU/RdvMLXzOyLJdhdWp+JpZgwTybDlrln5hMaOQb8qDbUYkx3v4JoeMBG
-         /xrcOAXgSvPC38SeDYqxmDATOwj7RZwzlOqx6vo9vmGW32QXQWmA+G08DwXcYhAtlP
-         iFP8muSdFRVcozozut90ergekY2iY/Ef6KLDKTbImM/zio+fvWIQks9zHdf2x4GDZ0
-         FhxzSVl1ZMklsOB+RYFJBEZR41ueWbeaVHNYQgtlmR15JzFi8/kXnaM2Lv5Aj1rln+
-         9erTXW1vTxvOICl2fkkqDZhUK8O4qOqAZDP3/uIDMvbYFQ6L/HA0JM3wtGq/BG/tGm
-         sjkiJNbMRYKvg==
-Date:   Sun, 21 Feb 2021 08:39:31 +0200
+        b=ouT1MBHATkEFsCXgb4IX0Df802ldGF4zkZSF3ogUZKPLcOZEIwMODccmEX2pWfMcL
+         Aq8EQozhq7ku6niXNMVwoH8x2OEtIgvijsaEp/EvMMrMN4blFUJbVZ5ySnczEtauiK
+         56REhO/2b8Y8j00dVUziABZV2QudvUw8cGuj+NCXYVT1c7Nla/iJ9Jb4eJbJ1e7Uvt
+         AKG2KxcR1ltY02gkXSmmOdin7fF46t+sOuDpVRTqXFxcqpILUCeXa3t+G27+B84/BQ
+         Ewr4hjU8ZKu4J9ytlPNs9mt1HEKylZSViRZg0OU9TrmkCqwwlDW3EDsZiZOJ632YKR
+         2w0vs2BWfVxDw==
+Date:   Sun, 21 Feb 2021 08:51:25 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
-Message-ID: <YDIAIwLVQK0P4EQW@unreal>
-References: <20210216201813.60394-1-xie.he.0141@gmail.com>
- <YC4sB9OCl5mm3JAw@unreal>
- <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
- <YC5DVTHHd6OOs459@unreal>
- <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
- <YC7GHgYfGmL2wVRR@unreal>
- <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
- <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
- <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EOru3pW6AHN4QVjiaERpLSfg-0G0ZEaqU_hkhX1acv0HQ@mail.gmail.com>
+To:     Hao Chen <chenhaoa@uniontech.com>
+Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rtw88: 8822ce: fix wifi disconnect after S3/S4 on HONOR
+ laptop
+Message-ID: <YDIC7RGqq5sFA0pG@unreal>
+References: <20210220084602.22386-1-chenhaoa@uniontech.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJht_EOru3pW6AHN4QVjiaERpLSfg-0G0ZEaqU_hkhX1acv0HQ@mail.gmail.com>
+In-Reply-To: <20210220084602.22386-1-chenhaoa@uniontech.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 19, 2021 at 12:28:12PM -0800, Xie He wrote:
-> On Fri, Feb 19, 2021 at 10:39 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Not entirely sure what the argument is about but adding constants would
-> > certainly help.
+On Sat, Feb 20, 2021 at 04:46:02PM +0800, Hao Chen wrote:
+> When the laptop HONOR MagicBook 14 sleep to S3/S4, the laptop can't
+> resume.
+> The dmesg of kernel report:
+> "[   99.990168] pcieport 0000:00:01.2: can't change power state
+> from D3hot to D0 (config space inaccessible)
+> [   99.993334] rtw_pci 0000:01:00.0: can't change power state
+> from D3hot to D0 (config space inaccessible)
+> [  104.435004] rtw_pci 0000:01:00.0: mac power on failed
+> [  104.435010] rtw_pci 0000:01:00.0: failed to power on mac"
+> When try to pointer the driver.pm to NULL, the problem is fixed.
+> This driver hasn't implemented pm ops yet.It makes the sleep and
+> wake procedure expected when pm's ops not NULL.
 >
-> Leon wants me to replace this:
+> Fixed: commit e3037485c68e ("rtw88: new Realtek 802.11ac driver")
 >
-> dev->needed_headroom = 3 - 1;
+> Signed-off-by: Hao Chen <chenhaoa@uniontech.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/rtw8822ce.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> with this:
->
+> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822ce.c b/drivers/net/wireless/realtek/rtw88/rtw8822ce.c
+> index 3845b1333dc3..b4c6762ba7ac 100644
+> --- a/drivers/net/wireless/realtek/rtw88/rtw8822ce.c
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8822ce.c
+> @@ -25,7 +25,7 @@ static struct pci_driver rtw_8822ce_driver = {
+>  	.id_table = rtw_8822ce_id_table,
+>  	.probe = rtw_pci_probe,
+>  	.remove = rtw_pci_remove,
+> -	.driver.pm = &rtw_pm_ops,
+> +	.driver.pm = NULL,
 
-Leon wants this line to be written good enough:
-
-> /* 2 is the result of 3 - 1 */
-
-And this line like you wrote here:
-
-> dev->needed_headroom = 2;
-
-
-<...>
-
-> Yes, this patch will break backward compatibility. Users with old
-> scripts will find them no longer working.
-
-Did you search in debian/fedora code repositories to see if such scripts exist
-as part of any distro package?
+The NULL is the default, it is enough to delete ".driver.pm = &rtw_pm_ops," line.
 
 Thanks
+
+>  	.shutdown = rtw_pci_shutdown,
+>  };
+>  module_pci_driver(rtw_8822ce_driver);
+> --
+> 2.20.1
+>
+>
+>
