@@ -2,94 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED889320AF5
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 15:37:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A344320B0C
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 15:47:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbhBUOgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 09:36:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbhBUOgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 09:36:50 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C22C061574;
-        Sun, 21 Feb 2021 06:36:10 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id e9so6014552plh.3;
-        Sun, 21 Feb 2021 06:36:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0NKlohU11NhDaMLzPFWNpnCD3UlsUYj1N/lz0ikZqEU=;
-        b=unte5hEVeIHbWIlnmFSIky6LLV07dwUI9HCak7zYa6fyGvPNNKaCoM0RYeToLptvNz
-         uiOpXFxkFPEj53cmXnQRg2GbmHWGmxAN0kJSuZ4fgS7OVLsUWzPRq1tu9Y49DDDAa7jJ
-         OqA++CAkcigfdc0vp6o9fRs6YAmiLH3GiH+9QfFcFUjRrL2gBNl31UqDuLWnxyS/Lb7c
-         rNkWE2Ei3xaQh5TdWWyinKkTiZu5E+Z/YFSIliBwjPW+AHOuttKjvwryP2s0GCzCC80a
-         qFaMSy4szmUCE/mJ4bUqpjoAywITS6MSST35bVbaah6hDvVMSKL7xtI4EyLPd9tS+n9p
-         1rUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0NKlohU11NhDaMLzPFWNpnCD3UlsUYj1N/lz0ikZqEU=;
-        b=lzYyLRb2MCzL29IOWCZnEdcVvIFktTcTQ8JPtvomD40HytvouG+Ojx9y56Mbl1SDnr
-         vCybXy7Mwa/Rs2gGVowbTIDxkgI5ocw6KYCd/VFGncWItIQV3nbRZXFIsrGP5RlJRHk5
-         otCNsSVwUYBdavfG7ZXDva71g467SCNPa7cGAvgYQO6nCZz6LoYi2oX7Mvcg5z2D+3MF
-         xu2QAx8K19pV6ui5r3g9dWhBQXDxgl9VyWZrNA5PGWkhcgMbg8d85sNDvwXFd5mU9k3C
-         6KMvJpgot24kXVYkiPi1aHRQgVqEvmRWjAF0s6qYtl9X9GOkz0IVr+rQwRE+SBQnDLuy
-         ekZg==
-X-Gm-Message-State: AOAM531yNLWHDbXPdSQ2AbnZLoR6a6Xm47ula5kbF4lVCO2zPTOBkONs
-        1kuXWuDzJb1+xqbPLCbC0aw=
-X-Google-Smtp-Source: ABdhPJx/3JBAbs1QqHYNQuzH/72GS4CrMvmYREX2IaZalk4T+qmnBdKr18y3/UzCAnPzfq4QS34oVw==
-X-Received: by 2002:a17:90a:1904:: with SMTP id 4mr18658104pjg.212.1613918169730;
-        Sun, 21 Feb 2021 06:36:09 -0800 (PST)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.gmail.com with ESMTPSA id m16sm16142189pfd.203.2021.02.21.06.36.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 06:36:09 -0800 (PST)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Jack Morgenstein <jackm@dev.mellanox.co.il>,
-        Moni Shoua <monis@mellanox.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] net/mlx4_core: Add missed mlx4_free_cmd_mailbox()
-Date:   Sun, 21 Feb 2021 22:35:59 +0800
-Message-Id: <20210221143559.390277-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S229995AbhBUOp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 09:45:26 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:12146 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229958AbhBUOpY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 09:45:24 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B603271db0000>; Sun, 21 Feb 2021 06:44:43 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sun, 21 Feb 2021 14:44:41 +0000
+Date:   Sun, 21 Feb 2021 16:44:37 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+CC:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Message-ID: <20210221144437.GA82010@mtl-vdi-166.wap.labs.mlnx>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613918683; bh=KFhK9bCtV7ddilpo8Ewwd3hq/9ml35nO7e2soESeI3s=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=TnqYFNB08pr15LIniy+uJB2D/nPxR92cSRdLo8udUTaQO9ydV3/CLNp90cyl++M31
+         m2ZVZHhWn+9hnBchyn9l1HvrEICrskWLA9n1vmC+KtzOYUOb4oTrVhSPuLQgbBiUTR
+         ADaA9oPVMBeuJj5g20s2muHYH2lMy1c1ec2t0coNWTXfNDmgRh8Ra6kWwWATLEqhdw
+         okZI2Ey7ncMT51i+SqAFy4aapGVEy16RBfBEMhDynCaK/FpiEMyy87UDtUT8zmvzQB
+         gNnxDG44lyRt0hmM/VIfNFvd/QvcTSfeFh0XAKoypX7xIMtidTp6Wo2TGfogkrhLb0
+         Pj7C8LaLrDJEg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mlx4_do_mirror_rule() forgets to call mlx4_free_cmd_mailbox() to
-free the memory region allocated by mlx4_alloc_cmd_mailbox() before
-an exit.
-Add the missed call to fix it.
+On Fri, Feb 19, 2021 at 06:54:58AM -0500, Si-Wei Liu wrote:
+> Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> for legacy") made an exception for legacy guests to reset
+> features to 0, when config space is accessed before features
+> are set. We should relieve the verify_min_features() check
+> and allow features reset to 0 for this case.
+> 
+> It's worth noting that not just legacy guests could access
+> config space before features are set. For instance, when
+> feature VIRTIO_NET_F_MTU is advertised some modern driver
+> will try to access and validate the MTU present in the config
+> space before virtio features are set. Rejecting reset to 0
+> prematurely causes correct MTU and link status unable to load
+> for the very first config space access, rendering issues like
+> guest showing inaccurate MTU value, or failure to reject
+> out-of-range MTU.
+> 
+> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> ---
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+>  1 file changed, 1 insertion(+), 14 deletions(-)
+> 
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 7c1f789..540dd67 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+>  	return mvdev->mlx_features;
+>  }
+>  
+> -static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+> -{
+> -	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> -		return -EOPNOTSUPP;
+> -
+> -	return 0;
+> -}
+> -
 
-Fixes: 78efed275117 ("net/mlx4_core: Support mirroring VF DMFS rules on both ports")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx4/resource_tracker.c | 1 +
- 1 file changed, 1 insertion(+)
+But what if VIRTIO_F_ACCESS_PLATFORM is not offerred? This does not
+support such cases.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-index 394f43add85c..a99e71bc7b3c 100644
---- a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-@@ -4986,6 +4986,7 @@ static int mlx4_do_mirror_rule(struct mlx4_dev *dev, struct res_fs_rule *fs_rule
- 
- 	if (!fs_rule->mirr_mbox) {
- 		mlx4_err(dev, "rule mirroring mailbox is null\n");
-+		mlx4_free_cmd_mailbox(dev, mailbox);
- 		return -EINVAL;
- 	}
- 	memcpy(mailbox->buf, fs_rule->mirr_mbox, fs_rule->mirr_mbox_size);
--- 
-2.27.0
+Maybe we should call verify_min_features() from mlx5_vdpa_set_status()
+just before attempting to call setup_driver().
 
+>  static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+>  {
+>  	int err;
+> @@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+>  {
+>  	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+>  	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> -	int err;
+>  
+>  	print_features(mvdev, features, true);
+>  
+> -	err = verify_min_features(mvdev, features);
+> -	if (err)
+> -		return err;
+> -
+>  	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
+>  	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+>  	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
+> -	return err;
+> +	return 0;
+>  }
+>  
+>  static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
+> -- 
+> 1.8.3.1
+> 
