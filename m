@@ -2,142 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE648320789
-	for <lists+netdev@lfdr.de>; Sat, 20 Feb 2021 23:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34E973207F7
+	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 02:30:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbhBTWvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Feb 2021 17:51:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbhBTWvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 17:51:04 -0500
-X-Greylist: delayed 2648 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 20 Feb 2021 14:50:21 PST
-Received: from kadath.azazel.net (kadath.azazel.net [IPv6:2001:8b0:135f:bcd1:e0cb:4eff:fedf:e608])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D65EC061574
-        for <netdev@vger.kernel.org>; Sat, 20 Feb 2021 14:50:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
-         s=20190108; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=K/HF3U+OLve6l1W68rd5VH1GOHjztmXZWlAk24m4ztg=; b=DL8NhJxl1Rw8NNF0q2qpil4k7/
-        qgAHJjRFH31TY1br1QxwDwmJPXOrbC23WAimcXBMmJuilRv0hHMfr3CB+I+elbxiD+6GVAPNqlXCK
-        sO5JptCXXKOzdIf5mA+0BZMxbSelNPfCb1ZDkjlzhWY4Q1YdzdWIN9Rd4kw3G+/taOT8zJcRTvXWO
-        YS/MMWhIGTr8TaA9tE6qqMuoRVhwzARGmOvJm9o8FWSFF5AhqzyRVsjwfruOwbgmq/Bez55kVYwON
-        o228d7rYWsdgFxLXFlK0BoXXLBmOwr+bYI2WECmVC89tT05IncNC0Y8pQc0j8yJxLTr8roRARyMeh
-        1q8KO/3Q==;
-Received: from celephais.dreamlands.azazel.net ([2001:8b0:fb7d:d6d7:7c7a:91ff:fe7e:d268] helo=azazel.net)
-        by kadath.azazel.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <jeremy@azazel.net>)
-        id 1lDaO5-0006Zs-5R; Sat, 20 Feb 2021 22:06:05 +0000
-Date:   Sat, 20 Feb 2021 22:06:03 +0000
-From:   Jeremy Sowden <jeremy@azazel.net>
-To:     David Miller <davem@davemloft.net>
-Cc:     redsky110@gmail.com, edumazet@google.com, netdev@vger.kernel.org
-Subject: Re: [PATCH] tcp: avoid unnecessary loop if even ports are used up
-Message-ID: <YDGHyxkTUGcuQbNZ@azazel.net>
-References: <20210220110356.84399-1-redsky110@gmail.com>
- <20210220.134402.2070871604757928182.davem@davemloft.net>
+        id S229930AbhBUB3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Feb 2021 20:29:08 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:53440 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229889AbhBUB3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Feb 2021 20:29:01 -0500
+Received: by mail-il1-f199.google.com with SMTP id s12so5543349ilh.20
+        for <netdev@vger.kernel.org>; Sat, 20 Feb 2021 17:28:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ldGbwdnoWRyU8djcYy/N9OqGQb/IL1w1x4/+F3IbWx8=;
+        b=pSLkGZjNldan/mXCWUZb3tPjj2ImspzXhFmVd6pyxLkLMga5JkDXwuxSoKpGtkRDJf
+         tTq6KRJqBQXr5NhoMPGmU9IIr1N8p3h8exp1cYfq1hb7+L/kyBoGVx/62kghYVlS1esv
+         YUiYzQgmVI8DA1aHdOqGxC9rzAN0x7LQX+zJgYF1CA1wJNTG+7+v9Oc76IbdleJUimHi
+         SIGv3EWgciJxDSufG7WzCXo9hY3mvdsxyaWUe/opW8JfIwvGQ0bMT4xdJ9j2hO4I9ZeP
+         +WbqkLbhcJxjhyMvcyV1DUlFmDjWDSQUFIsR24fuhdPNYjkZLxccf4TeUbPgt4Ijhun8
+         wLlw==
+X-Gm-Message-State: AOAM530Svf4oQ5HKweJUFeO6Qae9tjfGjOFfMqrkP/sXIvTaHmR5tvmp
+        UGYqQlprxHXXHeZVmZnJER6PKrPifwfWH1xAQwWC5J41+M6t
+X-Google-Smtp-Source: ABdhPJxsTxKRhsAovjmY87uaBHL7dIAaW/yMqjoiphV8RllEhcZ9AGm7d3UHee5WqMV1jJWoD2gNa2WUXw1giwM2LFMzqV3o9Fmc
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5qv8PKDBC35jhi28"
-Content-Disposition: inline
-In-Reply-To: <20210220.134402.2070871604757928182.davem@davemloft.net>
-X-SA-Exim-Connect-IP: 2001:8b0:fb7d:d6d7:7c7a:91ff:fe7e:d268
-X-SA-Exim-Mail-From: jeremy@azazel.net
-X-SA-Exim-Scanned: No (on kadath.azazel.net); SAEximRunCond expanded to false
+X-Received: by 2002:a6b:b24e:: with SMTP id b75mr10066746iof.108.1613870900093;
+ Sat, 20 Feb 2021 17:28:20 -0800 (PST)
+Date:   Sat, 20 Feb 2021 17:28:20 -0800
+In-Reply-To: <00000000000058dc4205b40f4dbf@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b6a82c05bbce99d1@google.com>
+Subject: Re: KASAN: use-after-free Read in blk_update_request
+From:   syzbot <syzbot+a3f809f70c0f239cda46@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
+        bpf@vger.kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
+        kpsingh@kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot has found a reproducer for the following issue on:
 
---5qv8PKDBC35jhi28
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+HEAD commit:    f40ddce8 Linux 5.11
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1156374ad00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4b919ebed7b4902
+dashboard link: https://syzkaller.appspot.com/bug?extid=a3f809f70c0f239cda46
+compiler:       Debian clang version 11.0.1-2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143ee67ad00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1585d40cd00000
 
-On 2021-02-20, at 13:44:02 -0800, David Miller wrote:
-> From: Honglei Wang <redsky110@gmail.com>
-> Date: Sat, 20 Feb 2021 19:03:56 +0800
->
-> > We are getting port for connect() from even ports firstly now. This
-> > makes bind() users have more available slots at odd part. But there is a
-> > problem here when the even ports are used up. This happens when there
-> > is a flood of short life cycle connections. In this scenario, it starts
-> > getting ports from the odd part, but each requirement has to walk all of
-> > the even port and the related hash buckets (it probably gets nothing
-> > before the workload pressure's gone) before go to the odd part. This
-> > makes the code path __inet_hash_connect()->__inet_check_established()
-> > and the locks there hot.
-> >
-> > This patch tries to improve the strategy so we can go faster when the
-> > even part is used up. It'll record the last gotten port was odd or even,
-> > if it's an odd one, it means there is no available even port for us and
-> > we probably can't get an even port this time, neither. So we just walk
-> > 1/16 of the whole even ports. If we can get one in this way, it probably
-> > means there are more available even part, we'll go back to the old
-> > strategy and walk all of them when next connect() comes. If still can't
-> > get even port in the 1/16 part, we just go to the odd part directly and
-> > avoid doing unnecessary loop.
-> >
-> > Signed-off-by: Honglei Wang <redsky110@gmail.com>
-> > ---
-> >  net/ipv4/inet_hashtables.c | 21 +++++++++++++++++++--
-> >  1 file changed, 19 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> > index 45fb450b4522..c95bf5cf9323 100644
-> > --- a/net/ipv4/inet_hashtables.c
-> > +++ b/net/ipv4/inet_hashtables.c
-> > @@ -721,9 +721,10 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> >  	struct net *net = sock_net(sk);
-> >  	struct inet_bind_bucket *tb;
-> >  	u32 remaining, offset;
-> > -	int ret, i, low, high;
-> > +	int ret, i, low, high, span;
-> >  	static u32 hint;
-> >  	int l3mdev;
-> > +	static bool last_port_is_odd;
-> >
-> >  	if (port) {
-> >  		head = &hinfo->bhash[inet_bhashfn(net, port,
-> > @@ -756,8 +757,19 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> >  	 */
-> >  	offset &= ~1U;
-> >  other_parity_scan:
-> > +	/* If the last available port is odd, it means
-> > +	 * we walked all of the even ports, but got
-> > +	 * nothing last time. It's telling us the even
-> > +	 * part is busy to get available port. In this
-> > +	 * case, we can go a bit faster.
-> > +	 */
-> > +	if (last_port_is_odd && !(offset & 1) && remaining > 32)
->
-> The first time this executes, won't last_port_is_odd be uninitialized?
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a3f809f70c0f239cda46@syzkaller.appspotmail.com
 
-It's declared static, so it will be zero-initialized.
+==================================================================
+BUG: KASAN: use-after-free in debug_spin_unlock kernel/locking/spinlock_debug.c:97 [inline]
+BUG: KASAN: use-after-free in do_raw_spin_unlock+0x481/0x8a0 kernel/locking/spinlock_debug.c:138
+Read of size 4 at addr ffff888020c03154 by task ksoftirqd/0/12
 
-J.
+CPU: 0 PID: 12 Comm: ksoftirqd/0 Not tainted 5.11.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x137/0x1be lib/dump_stack.c:120
+ print_address_description+0x5f/0x3a0 mm/kasan/report.c:230
+ __kasan_report mm/kasan/report.c:396 [inline]
+ kasan_report+0x15e/0x200 mm/kasan/report.c:413
+ debug_spin_unlock kernel/locking/spinlock_debug.c:97 [inline]
+ do_raw_spin_unlock+0x481/0x8a0 kernel/locking/spinlock_debug.c:138
+ __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:159 [inline]
+ _raw_spin_unlock_irqrestore+0x20/0x60 kernel/locking/spinlock.c:191
+ spin_unlock_irqrestore include/linux/spinlock.h:409 [inline]
+ __wake_up_common_lock kernel/sched/wait.c:140 [inline]
+ __wake_up+0xe2/0x140 kernel/sched/wait.c:157
+ req_bio_endio block/blk-core.c:264 [inline]
+ blk_update_request+0x7f7/0x14f0 block/blk-core.c:1462
+ blk_mq_end_request+0x39/0x70 block/blk-mq.c:564
+ blk_done_softirq+0x2fd/0x380 block/blk-mq.c:588
+ __do_softirq+0x318/0x714 kernel/softirq.c:343
+ run_ksoftirqd+0x63/0xa0 kernel/softirq.c:650
+ smpboot_thread_fn+0x572/0x970 kernel/smpboot.c:165
+ kthread+0x39a/0x3c0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
 
---5qv8PKDBC35jhi28
-Content-Type: application/pgp-signature; name="signature.asc"
+Allocated by task 8906:
+ kasan_save_stack mm/kasan/common.c:38 [inline]
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:401 [inline]
+ ____kasan_kmalloc+0xbd/0xf0 mm/kasan/common.c:429
+ kasan_kmalloc include/linux/kasan.h:219 [inline]
+ kmem_cache_alloc_trace+0x200/0x300 mm/slub.c:2919
+ kmalloc include/linux/slab.h:552 [inline]
+ lbmLogInit fs/jfs/jfs_logmgr.c:1829 [inline]
+ lmLogInit+0x26e/0x1530 fs/jfs/jfs_logmgr.c:1278
+ open_inline_log fs/jfs/jfs_logmgr.c:1183 [inline]
+ lmLogOpen+0x4c6/0xeb0 fs/jfs/jfs_logmgr.c:1077
+ jfs_mount_rw+0x91/0x4a0 fs/jfs/jfs_mount.c:259
+ jfs_fill_super+0x57e/0x960 fs/jfs/super.c:571
+ mount_bdev+0x26c/0x3a0 fs/super.c:1366
+ legacy_get_tree+0xea/0x180 fs/fs_context.c:592
+ vfs_get_tree+0x86/0x270 fs/super.c:1496
+ do_new_mount fs/namespace.c:2881 [inline]
+ path_mount+0x17ad/0x2a00 fs/namespace.c:3211
+ do_mount fs/namespace.c:3224 [inline]
+ __do_sys_mount fs/namespace.c:3432 [inline]
+ __se_sys_mount+0x28c/0x320 fs/namespace.c:3409
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
------BEGIN PGP SIGNATURE-----
+Freed by task 8906:
+ kasan_save_stack mm/kasan/common.c:38 [inline]
+ kasan_set_track+0x3d/0x70 mm/kasan/common.c:46
+ kasan_set_free_info+0x1f/0x40 mm/kasan/generic.c:356
+ ____kasan_slab_free+0xe2/0x110 mm/kasan/common.c:362
+ kasan_slab_free include/linux/kasan.h:192 [inline]
+ slab_free_hook mm/slub.c:1547 [inline]
+ slab_free_freelist_hook+0xd6/0x1a0 mm/slub.c:1580
+ slab_free mm/slub.c:3143 [inline]
+ kfree+0xd1/0x2a0 mm/slub.c:4139
+ lbmLogShutdown fs/jfs/jfs_logmgr.c:1872 [inline]
+ lmLogInit+0xfb5/0x1530 fs/jfs/jfs_logmgr.c:1423
+ open_inline_log fs/jfs/jfs_logmgr.c:1183 [inline]
+ lmLogOpen+0x4c6/0xeb0 fs/jfs/jfs_logmgr.c:1077
+ jfs_mount_rw+0x91/0x4a0 fs/jfs/jfs_mount.c:259
+ jfs_fill_super+0x57e/0x960 fs/jfs/super.c:571
+ mount_bdev+0x26c/0x3a0 fs/super.c:1366
+ legacy_get_tree+0xea/0x180 fs/fs_context.c:592
+ vfs_get_tree+0x86/0x270 fs/super.c:1496
+ do_new_mount fs/namespace.c:2881 [inline]
+ path_mount+0x17ad/0x2a00 fs/namespace.c:3211
+ do_mount fs/namespace.c:3224 [inline]
+ __do_sys_mount fs/namespace.c:3432 [inline]
+ __se_sys_mount+0x28c/0x320 fs/namespace.c:3409
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-iQIzBAABCgAdFiEEbB20U2PvQDe9VtUXKYasCr3xBA0FAmAxh8QACgkQKYasCr3x
-BA12xBAAoV5hZTbTZbnwJmZC1t9EtDZWZetLMLcclYW31YGp9ZSo7gvCOgHuTEJ1
-wFiuuSQsFMgotnDD1qtklXuydK04rIGri2kTX3swFMwCz1cFad/VvFmXRk1I0MM/
-KBLN+/JATAVjHNeMd0IdFHDe1GO78/1s9amsfZj7cLM2j7kJqR3wM/J5+yhEe8LD
-s/AG07Up1hLTIY8ublE8hZ12jrqtGgT+Xm8Yv+y5bP7bgrRzkMHNIq4K1+sJ+QHV
-UraypJjYrJcvfIMVNQTR3H4fc/f9yhzHoPn1lmrbGkVgTZ9czixE06zG2DlPfnhp
-axk1AL63FNbv31jqaPjYQkIEMetNvhnV2Jwk2xrgZmiW+e4jfTHSS9DcyGsd62/5
-KbTvTrJ37fHFv6Vth4wCimQ43nDgw4Fn+pKXJW6GsR+IWCBOjZnrR7+bYSHa0rcU
-Pmk24eZ+1/yzEGjn4Oihg/BQ3YVymreY8u+iUMZrWbV8A9qnwyTjH1OM88iY11zx
-uXdy0mrN0a2FP2aDueioVcTJu2VjphtMMk6boU4/7LTZzLln54c/86EwkfOw1s7C
-Hlu2yosn9LnEVvjfBMhif9wJXevbhEcxysU6VDQK4q+/LzP1CTg8Hz7n8JGO5etM
-L5P5uzmas7xCo+gHv7VZ/K3HaBEHDLOXfAsGwM1h7aq8VdytLao=
-=GTCL
------END PGP SIGNATURE-----
+Last potentially related work creation:
+ kasan_save_stack+0x27/0x50 mm/kasan/common.c:38
+ kasan_record_aux_stack+0xcc/0x100 mm/kasan/generic.c:344
+ insert_work+0x54/0x400 kernel/workqueue.c:1331
+ __queue_work+0x97f/0xcc0 kernel/workqueue.c:1497
+ queue_work_on+0xc1/0x120 kernel/workqueue.c:1524
+ queue_work include/linux/workqueue.h:507 [inline]
+ call_usermodehelper_exec+0x206/0x3d0 kernel/umh.c:433
+ kobject_uevent_env+0x1349/0x1730 lib/kobject_uevent.c:617
+ kobject_synth_uevent+0x368/0x8a0 lib/kobject_uevent.c:208
+ uevent_store+0x47/0x70 drivers/base/bus.c:585
+ kernfs_fop_write_iter+0x3b6/0x510 fs/kernfs/file.c:296
+ call_write_iter include/linux/fs.h:1901 [inline]
+ new_sync_write fs/read_write.c:518 [inline]
+ vfs_write+0x896/0xab0 fs/read_write.c:605
+ ksys_write+0x11b/0x220 fs/read_write.c:658
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
---5qv8PKDBC35jhi28--
+The buggy address belongs to the object at ffff888020c03100
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 84 bytes inside of
+ 192-byte region [ffff888020c03100, ffff888020c031c0)
+The buggy address belongs to the page:
+page:000000004af063c2 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x20c03
+flags: 0xfff00000000200(slab)
+raw: 00fff00000000200 ffffea000083b4c0 0000000300000003 ffff888011041500
+raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff888020c03000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888020c03080: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>ffff888020c03100: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                 ^
+ ffff888020c03180: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff888020c03200: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
