@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC390320DFB
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACF3320DFA
 	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 22:36:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231164AbhBUVfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 16:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
+        id S230511AbhBUVfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 16:35:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbhBUVet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 16:34:49 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D458C06178B
+        with ESMTP id S230462AbhBUVeu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 16:34:50 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1FCC06178C
         for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:09 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id hs11so26150323ejc.1
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:08 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id n20so130847ejb.5
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PmIoEWlbqv9fihHtJWIhH0WsoDVT4PPZxzWZdAVFsiY=;
-        b=kYtdEnqfJkkf7/K8SRxtaM1VIScw8kSHmtn4oKFPsJ7XIzJastMNRTFoz6A8jzADVd
-         cz2XEaHOFoHkFiMgkWmklXx/neg84TdRDiHyo2hzhN4eok9yjqJh0Qzpa3MrPN0B1zlf
-         R5z98v3/6CWb0pHOgQFBtQfPEuthoxvnlmdfWT9eIMy8RZfrOj9+0LIJUnGyS6kIjaqR
-         AFh+IyU6y59cwAL6K93YVD4oFYXgl9HRhU98WBHmc8xWeIWIs+XP2n7eTIxFZYwCrph3
-         opMcCbVa+cvKlIeX5inV82oey2G2e3fOztR7Y0Z58U6e7i66jtl/HyB2Oe5tXKGoonk4
-         fTqQ==
+        bh=fxTIFR4EqLLuVSHPMzl4uGYJ6EYKN6vyQGKYjXcR7i4=;
+        b=oGTyVL2FWBU0nBlBXL+OCfoflf7tb32Ue6y7C+d+FBxg+Yr1xqJeHzzzXdQcNVSURY
+         F3ElPH4srlWT/Tm1lgwaauRJBzyPu1m3xppNml6jeJGgAonQVWYtAq2puItfchofh7i5
+         H6mYOYOJrpmWnqZkWmI4JYi10bVJL8K/dvM1opo5cC68O9mkNDh8qwWNuZVpEa0YIWUn
+         cAKq4bwn3dentY21DzHYC4+IL+zbx4Q456Sw74B5RBHaZnxRLn9Yxx1KpEritAmZq4Xf
+         xiD47lv98UdQzCKzwkJkq1OUlwGgJugUtHIVuwOSVvy44VLjGSsqEVwvzouuIZyb2xIw
+         zdmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PmIoEWlbqv9fihHtJWIhH0WsoDVT4PPZxzWZdAVFsiY=;
-        b=b89Ld7A3dcBnTGpCQ46CEktIzBrnHlLBcnKi4KyfskQOWQA8UQ4sFACbEoK5V0ARJl
-         FeVBoqg4nslehF4sh1aB01Zj8ap9XqEUerMuAjSpa1qQPtkIJ3COek8fqEb4KpHm3OM6
-         yQxKldbjqIU363WOdjc41dqiSfzNCHysNDd4aCVbiIquNStBaXaxFZcaaibvpj5C16gz
-         hYYPoPzqmMlh26clRgRBhVFU6nD6iOhIbXgw/Bzrdf81xkiDmRsxuy0wOLLNCQ5eE42V
-         Rl5Yxa9KfDYi2AhITSROwQiHOM/LTM238LDjCLnNtJc+Y7OqzV1zMj+UOAZsyrHQs4l1
-         liUg==
-X-Gm-Message-State: AOAM53101ZPL7IEFKgmYvcIuz3BLFGQH/YDW4qm2o3j6XkSZZGIGQEZ/
-        QvRsO1Fr264n0Rm1/DZXAnEAWFsZrCs=
-X-Google-Smtp-Source: ABdhPJzGZxPuvO0Ky0VBw4Pv/gJDwJ8euLipbKgBsNb5vhW974mMN88UnOVswn82X1QbFewUBFo75A==
-X-Received: by 2002:a17:906:d147:: with SMTP id br7mr6386705ejb.66.1613943247405;
-        Sun, 21 Feb 2021 13:34:07 -0800 (PST)
+        bh=fxTIFR4EqLLuVSHPMzl4uGYJ6EYKN6vyQGKYjXcR7i4=;
+        b=liLzZFxzXMjI6MYzI4L9yNdhdLcpyBmTxjHUyOAsVUaQuLFpEihyM8P2wVH5z6TaUu
+         pL6Oi6XTpy1sPDVQr7emboq/TsJcZygN0BDszhkwS2QVXIB3O9wyu/nteWaB+QVp/jpR
+         RwlFQcuUGHb5uG4VrMXNf1NRFF3G1jGSQyx+LSYZA2Dhy+zvakqmtNn0pEe4nUm+eany
+         RWACy7IfD5LNAP88Yw+BSAEqFEN5fkUa7iZWuiMuDbaTz8EVhUxleceDpatiLdVbEgio
+         VR5P2re0DWSTWMQW1FseH5YXfidyDJyFrmdhrkBwlyvAt0rDwvk7o/PnnhAWSgB1qRq2
+         4WIA==
+X-Gm-Message-State: AOAM533rS/OBI2ihfbERcfB6Sijy1EdHXzpJqxcyxDsnRYoz2SHhVOtz
+        7bf13CGwTAxp38U5Kley/MHyKj07Fmk=
+X-Google-Smtp-Source: ABdhPJwfD6WilmmeugRSmsPAjdDxU1F0rYRrGwEc1rzHICC0rHaGtl9KxhGx9S7rcImTLE7Q4INZhA==
+X-Received: by 2002:a17:906:f102:: with SMTP id gv2mr18014365ejb.47.1613943248469;
+        Sun, 21 Feb 2021 13:34:08 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id rh22sm8948779ejb.105.2021.02.21.13.34.06
+        by smtp.gmail.com with ESMTPSA id rh22sm8948779ejb.105.2021.02.21.13.34.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 13:34:07 -0800 (PST)
+        Sun, 21 Feb 2021 13:34:08 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         George McCollister <george.mccollister@gmail.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [RFC PATCH net-next 02/12] Documentation: networking: dsa: rewrite chapter about tagging protocol
-Date:   Sun, 21 Feb 2021 23:33:45 +0200
-Message-Id: <20210221213355.1241450-3-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 03/12] Documentation: networking: dsa: remove static port count from limitations
+Date:   Sun, 21 Feb 2021 23:33:46 +0200
+Message-Id: <20210221213355.1241450-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210221213355.1241450-1-olteanv@gmail.com>
 References: <20210221213355.1241450-1-olteanv@gmail.com>
@@ -73,162 +73,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The chapter about tagging protocols is out of date because it doesn't
-mention all taggers that have been added since last documentation
-update. But judging based on that, it will always tend to lag behind,
-and there's no good reason why we would enumerate the supported
-hardware. Instead we could do something more useful and explain what
-there is to know about tagging protocols instead.
+After Vivien's series from 2019 containing commits 27d4d19d7c82 ("net:
+dsa: remove limitation of switch index value") and ab8ccae122a4 ("net:
+dsa: add ports list in the switch fabric"), this is basically no longer
+true.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- Documentation/networking/dsa/dsa.rst | 126 +++++++++++++++++++++++++--
- 1 file changed, 118 insertions(+), 8 deletions(-)
+ Documentation/networking/dsa/dsa.rst | 9 ---------
+ 1 file changed, 9 deletions(-)
 
 diff --git a/Documentation/networking/dsa/dsa.rst b/Documentation/networking/dsa/dsa.rst
-index e20fbad2241a..fc98b5774fb6 100644
+index fc98b5774fb6..cb59df6e80f4 100644
 --- a/Documentation/networking/dsa/dsa.rst
 +++ b/Documentation/networking/dsa/dsa.rst
-@@ -65,14 +65,8 @@ Note that DSA does not currently create network interfaces for the "cpu" and
- Switch tagging protocols
- ------------------------
+@@ -360,14 +360,6 @@ DSA data structures are defined in ``include/net/dsa.h`` as well as
+ Design limitations
+ ==================
  
--DSA currently supports 5 different tagging protocols, and a tag-less mode as
--well. The different protocols are implemented in:
+-Limits on the number of devices and ports
+------------------------------------------
 -
--- ``net/dsa/tag_trailer.c``: Marvell's 4 trailer tag mode (legacy)
--- ``net/dsa/tag_dsa.c``: Marvell's original DSA tag
--- ``net/dsa/tag_edsa.c``: Marvell's enhanced DSA tag
--- ``net/dsa/tag_brcm.c``: Broadcom's 4 bytes tag
--- ``net/dsa/tag_qca.c``: Qualcomm's 2 bytes tag
-+DSA supports many vendor-specific tagging protocols, one software-defined
-+tagging protocol, and a tag-less mode as well (``DSA_TAG_PROTO_NONE``).
+-DSA currently limits the number of maximum switches within a tree to 4
+-(``DSA_MAX_SWITCHES``), and the number of ports per switch to 12 (``DSA_MAX_PORTS``).
+-These limits could be extended to support larger configurations would this need
+-arise.
+-
+ Lack of CPU/DSA network devices
+ -------------------------------
  
- The exact format of the tag protocol is vendor specific, but in general, they
- all contain something which:
-@@ -80,6 +74,122 @@ all contain something which:
- - identifies which port the Ethernet frame came from/should be sent to
- - provides a reason why this frame was forwarded to the management interface
+@@ -697,7 +689,6 @@ two subsystems and get the best of both worlds.
+ Other hanging fruits
+ --------------------
  
-+All tagging protocols are in ``net/dsa/tag_*.c`` files and implement the
-+methods of the ``struct dsa_device_ops`` structure, which are detailed below.
-+
-+Tagging protocols generally fall in one of three categories:
-+
-+- The switch-specific frame header is located before the Ethernet header,
-+  shifting to the right (from the perspective of the DSA master's frame
-+  parser) the MAC DA, MAC SA, EtherType and the entire L2 payload.
-+- The switch-specific frame header is located before the EtherType, keeping the
-+  MAC DA and MAC SA in place from the DSA master's perspective, but shifting
-+  the 'real' EtherType and L2 payload to the right.
-+- The switch-specific frame header is located at the tail of the packet,
-+  keeping all frame headers in place and not altering the view of the packet
-+  that the DSA master's frame parser has.
-+
-+A tagging protocol may tag all packets with switch tags of the same length, or
-+the tag length might vary (for example packets with PTP timestamps might
-+require an extended switch tag, or there might be one tag length on TX and a
-+different one on RX). Either way, the tagging protocol driver must populate the
-+``struct dsa_device_ops::overhead`` with the length in octets of the longest
-+switch frame header. The DSA framework will automatically adjust the MTU of the
-+master interface to accomodate for this extra size in order for DSA user ports
-+to support the standard MTU (L2 payload length) of 1500 octets. The ``overhead``
-+is also used to request from the network stack, on a best-effort basis, the
-+allocation of packets with a ``needed_headroom`` or ``needed_tailroom``
-+sufficient such that the act of pushing the switch tag on transmission of a
-+packet does not cause it to reallocate due to lack of memory.
-+
-+Even though applications are not expected to parse DSA-specific frame headers,
-+the format on the wire of the tagging protocol represents an Application Binary
-+Interface exposed by the kernel towards user space, for decoders such as
-+``libpcap``. The tagging protocol driver must populate the ``proto`` member of
-+``struct dsa_device_ops`` with a value that uniquely describes the
-+characteristics of the interaction required between the switch hardware and the
-+data path driver: the offset of each bit field within the frame header and any
-+stateful processing required to deal with the frames (as may be required for
-+PTP timestamping).
-+
-+By definition, all switches within the same DSA switch tree use the same
-+tagging protocol. In case of a packet transiting a fabric with more than one
-+switch, the switch-specific frame header is inserted by the first switch in the
-+fabric that the packet was received on. This header typically contains
-+information regarding its type (whether it is a control frame that must be
-+trapped to the CPU, or a data frame to be forwarded). Control frames should be
-+decapsulated only by the software data path, whereas data frames might also be
-+autonomously forwarded towards other user ports of other switches from the same
-+fabric, and in this case, the outermost switch ports must decapsulate the packet.
-+
-+It is possible to construct cascaded setups of DSA switches even if their
-+tagging protocols are not compatible with one another. In this case, there are
-+no DSA links in this fabric, and each switch constitutes a disjoint DSA switch
-+tree. The DSA links are viewed as simply a pair of a DSA master (the out-facing
-+port of the upstream DSA switch) and a CPU port (the in-facing port of the
-+downstream DSA switch).
-+
-+The tagging protocol of the attached DSA switch tree can be viewed through the
-+``dsa/tagging`` sysfs attribute of the DSA master::
-+
-+    cat /sys/class/net/eth0/dsa/tagging
-+
-+If the hardware and driver are capable, the tagging protocol of the DSA switch
-+tree can be changed at runtime. This is done by writing the new tagging
-+protocol name to the same sysfs device attribute as above (the DSA master and
-+all attached switch ports must be down while doing this).
-+
-+It is desirable that all tagging protocols are testable with the ``dsa_loop``
-+mockup driver, which can be attached to any network interface. The goal is that
-+any network interface should be able of transmitting the same packet in the
-+same way, and the tagger should decode the same received packet in the same way
-+regardless of the driver used for the switch control path, and the driver used
-+for the DSA master.
-+
-+The transmission of a packet goes through the tagger's ``xmit`` function.
-+The passed ``struct sk_buff *skb`` has ``skb->data`` pointing at
-+``skb_mac_header(skb)``, i.e. at the destination MAC address, and the passed
-+``struct net_device *dev`` represents the virtual DSA user network interface
-+whose hardware counterpart the packet must be steered to (i.e. ``swp0``).
-+The job of this method is to prepare the skb in a way that the switch will
-+understand what egress port the packet is for (and not deliver it towards other
-+ports). Typically this is fulfilled by pushing a frame header. Checking for
-+insufficient size in the skb headroom or tailroom is unnecessary provided that
-+the ``overhead`` and ``tail_tag`` properties were filled out properly, because
-+DSA ensures there is enough space before calling this method.
-+
-+The reception of a packet goes through the tagger's ``rcv`` function. The
-+passed ``struct sk_buff *skb`` has ``skb->data`` pointing at
-+``skb_mac_header(skb) + ETH_ALEN`` octets, i.e. to where the first octet after
-+the EtherType would have been, were this frame not tagged. The role of this
-+method is to consume the frame header, adjust ``skb->data`` to really point at
-+the first octet after the EtherType, and to change ``skb->dev`` to point to the
-+virtual DSA user network interface corresponding to the physical front-facing
-+switch port that the packet was received on.
-+
-+Some tagging protocols, such as those in category 1 (shifting the MAC DA as
-+seen by the DSA master), require the DSA master to operate in promiscuous mode,
-+to receive all frames regardless of the value of the MAC DA. This can be done
-+by setting the ``promisc_on_master`` property of the ``struct dsa_device_ops``.
-+
-+Since tagging protocols in category 1 and 2 break software (and most often also
-+hardware) packet dissection on the DSA master, features such as RPS (Receive
-+Packet Steering) on the DSA master would be broken. The DSA framework deals
-+with this by hooking into the flow dissector and shifting the offset at which
-+the IP header is to be found in the tagged frame as seen by the DSA master.
-+This behavior is automatic based on the ``overhead`` value of the tagging
-+protocol. If not all packets are of equal size, the tagger can implement the
-+``flow_dissect`` method of the ``struct dsa_device_ops`` and override this
-+default behavior by specifying the correct offset incurred by each individual
-+RX packet. Tail taggers do not cause issues to the flow dissector.
-+
-+Hardware manufacturers are strongly discouraged to do this, but some tagging
-+protocols might not provide source port information on RX for all packets, but
-+e.g. only for control traffic (link-local PDUs). In this case, by implementing
-+the ``filter`` method of ``struct dsa_device_ops``, the tagger might select
-+which packets are to be redirected on RX towards the virtual DSA user network
-+interfaces, and which are to be left in the DSA master's RX data path.
-+
- Master network devices
- ----------------------
- 
+-- making the number of ports fully dynamic and not dependent on ``DSA_MAX_PORTS``
+ - allowing more than one CPU/management interface:
+   http://comments.gmane.org/gmane.linux.network/365657
+ - porting more drivers from other vendors:
 -- 
 2.25.1
 
