@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FDB0320E03
+	by mail.lfdr.de (Postfix) with ESMTP id E6792320E04
 	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 22:38:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbhBUVh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 16:37:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        id S230347AbhBUVhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 16:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231200AbhBUVfk (ORCPT
+        with ESMTP id S231195AbhBUVfk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 16:35:40 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE08C061356
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:17 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id lu16so26020980ejb.9
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:17 -0800 (PST)
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EAEC06121C
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:18 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id g5so26132943ejt.2
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:34:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VWyBnLjrxcoYNbEyrrXUmFWK/GjiLBF50AfbKv+uTK0=;
-        b=fHb52hYFaOIc83RrPndwuf/AcWh31gNxbOqrWbsx7cYI1VnF+2hXSQmfyT92Cb69lx
-         5GwJU847cJPvPCKksN3Y0iPbJPB0HpRQYqvnG875G2ViXZMSnGZxAOKzeWuXxOVev0Ur
-         ZBPYHa5XzHlJHjb9WEMiQYs5zYDtPsIV680XG/r9YZZCQf5+6oL647Kpqm7SuA+IQVNS
-         63fquyN2qm4xy0a0hQ0nMUp2DX1aZpWvzgmxbndAt3pZKdQsdGFjZpDvGduMDfCpW97P
-         JzR5+SjydXVqUjD3KOLj+zx14oUJ4zDHF5+1x0TVGM0WdVkQON8XBf/x5GsBZn2NoJUm
-         +KSA==
+        bh=VDtq21AQylYrGBFcER9Qx6Te7qXrewv3zQjWDKbFUHA=;
+        b=X6E7hr4cXNDfPVSCtrat1GpPG79NPTIy777v8y56NKc/Cfl6D9u6KrNaKZgKtHzs/P
+         xz49bHTSPJf6oXCXKPZo4QrkCCaY4sBvnrdrVOoX/89U/qafw6ksC1G4SC/B35YtDvhC
+         QV/AyqsUDRIuIsQb+X9+cYVZ70Raj5NuluI4cfHBRbpfIJ33lzhutnVyrzpS3vWwkpgF
+         tSZ3T4jlwNifkI6Wsywmu2BFCL8Rdae3Pakg8M8WiO2GS6Ap7hXF0JQdc76hL1Gs5yD4
+         1q0dwwFcjmrqoPMq+TemGaZVrubnwY4WN5phuJsW1lm187gpJjUhb01TnmWLD7k4hxae
+         CIUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VWyBnLjrxcoYNbEyrrXUmFWK/GjiLBF50AfbKv+uTK0=;
-        b=gFxW8vsr9vN3llX0GQauL02qZ+mbw9b+bMqZQp9vHExXhRGg3G89h2XZh8cPe2C+C6
-         TL8xP10LMfcCIzW/gX1uOEnk7po8MnsD1wyydIG6hBDAN2NGY5EvZFNX2+elIyDOzoj0
-         rKyOLblPgvRZPGbGEn1N9+UVdrDBJWOsTRis28IRfc9866NpJ71gOzBNKfrvwi15ZnU0
-         lFzg+Xm2lMsciW6JH+8QqlQjrFO4hOc5WbD9L0IEUOGElT9RFTz8yIpCsqyVZmCN31gw
-         YZE0OUiY5Usk74DLTZrKf7Sk6NPVpHsqnFPwLq7OjJtvHM4vY/1jzVihLMakIoD3+bdX
-         STtg==
-X-Gm-Message-State: AOAM5320+dbYbYtbg1Au62nTtpzTXhB/awVYbq/nA+u72ak0DB+cO7Vn
-        cFLnHGo03CHQ5DyFGqi5BrR7sGoDJXo=
-X-Google-Smtp-Source: ABdhPJzbGOzi0g1g+TcnTgwBNz9BLfTO9Vkh06o29KtMXFT2gBUWbLB//o3S/nB/3VJr2YUpN6d2+w==
-X-Received: by 2002:a17:907:925:: with SMTP id au5mr6204465ejc.467.1613943256130;
-        Sun, 21 Feb 2021 13:34:16 -0800 (PST)
+        bh=VDtq21AQylYrGBFcER9Qx6Te7qXrewv3zQjWDKbFUHA=;
+        b=g/qjkqJF0L3Q1e9i7lzdjvu1nwoR98yalVs8l0Yk/SNTg9A7uTfD007Vd/OX/A5TG7
+         y4pf0u2RdgLWDvo3iP9j+lMyGF5uQcddyMNkT8KByZuS1kABKsK++2xHE9ggROSCbdZL
+         uLmfA5YkEcbIkbwkeHIb4MKQEXWlqeANL8211OFgo1jnQqiPBszXjFXnSbVG2DyeGBls
+         ZFP6+bywsvWOrEJGcp27NNwhFX29YPylrtNHROxSQ6ZqbP5bhP4NmM7UBJ2okzu/6fEZ
+         xpbjx2s3+kmWkkerodOnVxfFL3xcztOuMmMSr564Gfp30+DKd9JCHu96FIT9mgkXBrXq
+         MSJg==
+X-Gm-Message-State: AOAM531yaW29x0ldAwsEW20n0D5JNl1l6v/Mi9Tuck/0uf/Ufcp1rFHS
+        XyZV6RSOt6saVMVz7CRm8uu5ic8wYeQ=
+X-Google-Smtp-Source: ABdhPJwC7B/58QW2vQQQMwGm/+CRPvb4F5v4Xxx+umLZGWkSyEXrjn28gNgjQpiLSpvLWzXaN+C3PA==
+X-Received: by 2002:a17:906:2652:: with SMTP id i18mr18148817ejc.213.1613943257147;
+        Sun, 21 Feb 2021 13:34:17 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id rh22sm8948779ejb.105.2021.02.21.13.34.15
+        by smtp.gmail.com with ESMTPSA id rh22sm8948779ejb.105.2021.02.21.13.34.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 13:34:15 -0800 (PST)
+        Sun, 21 Feb 2021 13:34:16 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         George McCollister <george.mccollister@gmail.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [RFC PATCH net-next 11/12] Documentation: networking: switchdev: clarify device driver behavior
-Date:   Sun, 21 Feb 2021 23:33:54 +0200
-Message-Id: <20210221213355.1241450-12-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 12/12] Documentation: networking: switchdev: fix command for static FDB entries
+Date:   Sun, 21 Feb 2021 23:33:55 +0200
+Message-Id: <20210221213355.1241450-13-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210221213355.1241450-1-olteanv@gmail.com>
 References: <20210221213355.1241450-1-olteanv@gmail.com>
@@ -71,148 +71,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This patch provides details on the expected behavior of switchdev
-enabled network devices when operating in a "stand alone" mode, as well
-as when being bridge members. This clarifies a number of things that
-recently came up during a bug fixing session on the b53 DSA switch
-driver.
+The "bridge fdb add" command provided in the switchdev documentation is
+junk now, not only because it is syntactically incorrect and rejected by
+the iproute2 bridge program, but also because it was not updated in
+light of Arkadi Sharshevsky's radical switchdev refactoring in commit
+29ab586c3d83 ("net: switchdev: Remove bridge bypass support from
+switchdev"). Try to explain what the intended usage pattern is with the
+new kernel implementation.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- Documentation/networking/switchdev.rst | 120 +++++++++++++++++++++++++
- 1 file changed, 120 insertions(+)
+ Documentation/networking/switchdev.rst | 47 +++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 12 deletions(-)
 
 diff --git a/Documentation/networking/switchdev.rst b/Documentation/networking/switchdev.rst
-index ddc3f35775dc..9fb3e0fd39dc 100644
+index 9fb3e0fd39dc..d5afd2caaf91 100644
 --- a/Documentation/networking/switchdev.rst
 +++ b/Documentation/networking/switchdev.rst
-@@ -385,3 +385,123 @@ The driver can monitor for updates to arp_tbl using the netevent notifier
- NETEVENT_NEIGH_UPDATE.  The device can be programmed with resolved nexthops
- for the routes as arp_tbl updates.  The driver implements ndo_neigh_destroy
- to know when arp_tbl neighbor entries are purged from the port.
+@@ -181,18 +181,41 @@ To offloading L2 bridging, the switchdev driver/device should support:
+ Static FDB Entries
+ ^^^^^^^^^^^^^^^^^^
+ 
+-The switchdev driver should implement ndo_fdb_add, ndo_fdb_del and ndo_fdb_dump
+-to support static FDB entries installed to the device.  Static bridge FDB
+-entries are installed, for example, using iproute2 bridge cmd::
+-
+-	bridge fdb add ADDR dev DEV [vlan VID] [self]
+-
+-The driver should use the helper switchdev_port_fdb_xxx ops for ndo_fdb_xxx
+-ops, and handle add/delete/dump of SWITCHDEV_OBJ_ID_PORT_FDB object using
+-switchdev_port_obj_xxx ops.
+-
+-XXX: what should be done if offloading this rule to hardware fails (for
+-example, due to full capacity in hardware tables) ?
++A driver which implements the ``ndo_fdb_add``, ``ndo_fdb_del`` and
++``ndo_fdb_dump`` operations is able to support the command below, which adds a
++static bridge FDB entry::
 +
-+Device driver expected behavior
-+-------------------------------
++        bridge fdb add dev DEV ADDRESS [vlan VID] [self] static
 +
-+Below is a set of defined behavior that switchdev enabled network devices must
-+adhere to.
++(the "static" keyword is non-optional: if not specified, the entry defaults to
++being "local", which means that it should not be forwarded)
 +
-+Configuration-less state
-+^^^^^^^^^^^^^^^^^^^^^^^^
++The "self" keyword (optional because it is implicit) has the role of
++instructing the kernel to fulfill the operation through the ``ndo_fdb_add``
++implementation of the ``DEV`` device itself. If ``DEV`` is a bridge port, this
++will bypass the bridge and therefore leave the software database out of sync
++with the hardware one.
 +
-+Upon driver bring up, the network devices must be fully operational, and the
-+backing driver must configure the network device such that it is possible to
-+send and receive traffic to this network device and it is properly separated
-+from other network devices/ports (e.g.: as is frequent with a switch ASIC). How
-+this is achieved is heavily hardware dependent, but a simple solution can be to
-+use per-port VLAN identifiers unless a better mechanism is available
-+(proprietary metadata for each network port for instance).
++To avoid this, the "master" keyword can be used::
 +
-+The network device must be capable of running a full IP protocol stack
-+including multicast, DHCP, IPv4/6, etc. If necessary, it should program the
-+appropriate filters for VLAN, multicast, unicast etc. The underlying device
-+driver must effectively be configured in a similar fashion to what it would do
-+when IGMP snooping is enabled for IP multicast over these switchdev network
-+devices and unsolicited multicast must be filtered as early as possible into
-+the hardware.
++        bridge fdb add dev DEV ADDRESS [vlan VID] master static
 +
-+When configuring VLANs on top of the network device, all VLANs must be working,
-+irrespective of the state of other network devices (e.g.: other ports being part
-+of a VLAN-aware bridge doing ingress VID checking). See below for details.
++The above command instructs the kernel to search for a master interface of
++``DEV`` and fulfill the operation through the ``ndo_fdb_add`` method of that.
++This time, the bridge generates a ``SWITCHDEV_FDB_ADD_TO_DEVICE`` notification
++which the port driver can handle and use it to program its hardware table. This
++way, the software and the hardware database will both contain this static FDB
++entry.
 +
-+If the device implements e.g.: VLAN filtering, putting the interface in
-+promiscuous mode should allow the reception of all VLAN tags (including those
-+not present in the filter(s)).
-+
-+Bridged switch ports
-+^^^^^^^^^^^^^^^^^^^^
-+
-+When a switchdev enabled network device is added as a bridge member, it should
-+not disrupt any functionality of non-bridged network devices and they
-+should continue to behave as normal network devices. Depending on the bridge
-+configuration knobs below, the expected behavior is documented.
-+
-+Bridge VLAN filtering
-+^^^^^^^^^^^^^^^^^^^^^
-+
-+The Linux bridge allows the configuration of a VLAN filtering mode (statically,
-+at device creation time, and dynamically, during run time) which must be
-+observed by the underlying switchdev network device/hardware:
-+
-+- with VLAN filtering turned off: the bridge is strictly VLAN unaware and its
-+  data path will only process untagged Ethernet frames. Frames ingressing the
-+  device with a VID that is not programmed into the bridge/switch's VLAN table
-+  must be forwarded and may be processed using a VLAN device (see below).
-+
-+- with VLAN filtering turned on: the bridge is VLAN-aware and frames ingressing
-+  the device with a VID that is not programmed into the bridges/switch's VLAN
-+  table must be dropped (strict VID checking).
-+
-+Non-bridged network ports of the same switch fabric must not be disturbed in any
-+way by the enabling of VLAN filtering on the bridge device(s).
-+
-+VLAN devices configured on top of a switchdev network device (e.g: sw0p1.100)
-+which is a bridge port member must also observe the following behavior:
-+
-+- with VLAN filtering turned off, enslaving VLAN devices into the bridge might
-+  be allowed provided that there is sufficient separation using e.g.: a
-+  reserved VLAN ID (4095 for instance) for untagged traffic. The VLAN data path
-+  is used to pop/push the VLAN tag such that the bridge's data path only
-+  processes untagged traffic.
-+
-+- with VLAN filtering turned on, these VLAN devices can be created as long as
-+  there is not an existing VLAN entry into the bridge with an identical VID and
-+  port membership. These VLAN devices cannot be enslaved into the bridge since
-+  they duplicate functionality/use case with the bridge's VLAN data path
-+  processing.
-+
-+Because VLAN filtering can be turned on/off at runtime, the switchdev driver
-+must be able to reconfigure the underlying hardware on the fly to honor the
-+toggling of that option and behave appropriately.
-+
-+A switchdev driver can also refuse to support dynamic toggling of the VLAN
-+filtering knob at runtime and require a destruction of the bridge device(s) and
-+creation of new bridge device(s) with a different VLAN filtering value to
-+ensure VLAN awareness is pushed down to the hardware.
-+
-+Finally, even when VLAN filtering in the bridge is turned off, the underlying
-+switch hardware and driver may still configured itself in a VLAN-aware mode
-+provided that the behavior described above is observed.
-+
-+Bridge IGMP snooping
-+^^^^^^^^^^^^^^^^^^^^
-+
-+The Linux bridge allows the configuration of IGMP snooping (statically, at
-+interface creation time, or dynamically, during runtime) which must be observed
-+by the underlying switchdev network device/hardware in the following way:
-+
-+- when IGMP snooping is turned off, multicast traffic must be flooded to all
-+  ports within the same bridge that have mcast_flood=true. The CPU/management
-+  port should ideally not be flooded (unless the ingress interface has
-+  IFF_ALLMULTI or IFF_PROMISC) and continue to learn multicast traffic through
-+  the network stack notifications. If the hardware is not capable of doing that
-+  then the CPU/management port must also be flooded and multicast filtering
-+  happens in software.
-+
-+- when IGMP snooping is turned on, multicast traffic must selectively flow
-+  to the appropriate network ports (including CPU/management port). Flooding of
-+  unknown multicast should be only towards the ports connected to a multicast
-+  router (the local device may also act as a multicast router).
-+
-+The switch must adhere to RFC 4541 and flood multicast traffic accordingly
-+since that is what the Linux bridge implementation does.
-+
-+Because IGMP snooping can be turned on/off at runtime, the switchdev driver
-+must be able to reconfigure the underlying hardware on the fly to honor the
-+toggling of that option and behave appropriately.
-+
-+A switchdev driver can also refuse to support dynamic toggling of the multicast
-+snooping knob at runtime and require the destruction of the bridge device(s)
-+and creation of a new bridge device(s) with a different multicast snooping
-+value.
++Note: for new switchdev drivers that offload the Linux bridge, implementing the
++``ndo_fdb_add`` and ``ndo_fdb_del`` bridge bypass methods is strongly
++discouraged: all static FDB entries should be added on a bridge port using the
++"master" flag. The ``ndo_fdb_dump`` is an exception and can be implemented to
++visualize the hardware tables, if the device does not have an interrupt for
++notifying the operating system of newly learned/forgotten dynamic FDB
++addresses. In that case, the hardware FDB might end up having entries that the
++software FDB does not, and implementing ``ndo_fdb_dump`` is the only way to see
++them.
+ 
+ Note: by default, the bridge does not filter on VLAN and only bridges untagged
+ traffic.  To enable VLAN support, turn on VLAN filtering::
 -- 
 2.25.1
 
