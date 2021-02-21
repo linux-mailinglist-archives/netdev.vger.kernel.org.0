@@ -2,145 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D19E320E13
-	for <lists+netdev@lfdr.de>; Sun, 21 Feb 2021 22:59:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 638A9320E93
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 00:46:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbhBUVxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 16:53:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30212 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230117AbhBUVxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 16:53:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613944331;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U4JsN97Zzk+H8tb+mmssPj3kHXJxDnBczVQV8wHqk+k=;
-        b=awBSl4/lEAHkkGzWBIozLn3f6bD4vHUvn19yTKxJ/ZT9vdkMVXwvhmVx8IaipOGc0g2K1l
-        CLvXqL3IBydw9W1G9JK1Cz1JhVDBLudhlv33JgwPXcUiOfn93K5dD1gM93II2XqscMH/21
-        9ePV4NUUbQEdEgfYYNMPM66+MbH1r7c=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-9-yNULV_2lPYuiqUTPJUkrVg-1; Sun, 21 Feb 2021 16:52:09 -0500
-X-MC-Unique: yNULV_2lPYuiqUTPJUkrVg-1
-Received: by mail-ej1-f72.google.com with SMTP id p15so3327370ejq.22
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 13:52:09 -0800 (PST)
+        id S234181AbhBUXpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 18:45:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233506AbhBUXpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 18:45:10 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1352C061786
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 15:44:30 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id o7so9142339pgl.1
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 15:44:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=4y5ahYpWQ+mJo0lx9mXLeA6gZ8fH/D4QLJvMkUa/Y/U=;
+        b=Jng4yS5SLPtMPxYkGO3H3Qi0/QoxlTc5hPuPJ3Ew0xeOzWqZJb0WSGn46U/HGbvy2+
+         vu1gmekIK24Nz2o8UMfVQi1MgCS3MDSBbAoShmRKOhbwHws2XiIMdA0SZZO2AtYaHxFk
+         BoQqXUs4irjgFFPToVdTL3pX/bG4w2UV4+cDiW6beDdztBcXC4cuyOp9xroakC/GHEUx
+         Pk+YD4/p4/EMJhqjP/3zjsqQ7GLQaPQBpCfp7AO8zR/5xLuVTKssk6qZ57VOXpJ8K/1P
+         /nHlI7zmy0pIuELnc7VVUaki+YIcfNEOTkwv76wt0NkCfAB0ztduSu4rfNblVg2cTrfC
+         LJOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U4JsN97Zzk+H8tb+mmssPj3kHXJxDnBczVQV8wHqk+k=;
-        b=AojwVE/MjngB0TVC2f/vNy/kQXxWPL5XSYe7a9VLGtxSZeNJ5vNBZG00pR8a49KMu0
-         pkD+yzZryQJPo6nwdZuVBjHgi/fmefi078rneC1U4W7B9eU6iGihZycXWCwAsoL1ZrMu
-         57RgGB7lBSBlqxC7ISmS+GY0JmZT6fKsItd7i3RLCSnP0yiCK5JVBnNrIEF3xkL4jS2J
-         11PB42p+zQYoCzaC3n2RJH8gquLYPuqAZIWL43CpQTZUZ2iVf9PcKqSni1A5/yFWxmgx
-         4t08gPK1urGccEJVMjbWqP9THIuFTwM7NihiERkoVISdi2EXwZouJsf5zmiQKufTHlOG
-         3Ehw==
-X-Gm-Message-State: AOAM532cW7Htkf5PCpt8xgtOTx/sHz01dnyNUTyjQn5JXrlFT1pvKroq
-        k8/Jytg5Y0GIJfeyF9t8eBe1a9AKGnlqlpRrov4empAmOz6stnPJU7wZjZ+qugsX6B1nEoldUuS
-        VC5S/8jWnUuykbVFi
-X-Received: by 2002:a50:d302:: with SMTP id g2mr19664804edh.75.1613944328566;
-        Sun, 21 Feb 2021 13:52:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzgYIXSiqbazhwzI8TFh//3IRP1DzyO5yog4TY97wdwAVbNltx2njk4e91QiFVuiQ2EuP71Eg==
-X-Received: by 2002:a50:d302:: with SMTP id g2mr19664791edh.75.1613944328428;
-        Sun, 21 Feb 2021 13:52:08 -0800 (PST)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id by8sm6554697edb.95.2021.02.21.13.52.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=4y5ahYpWQ+mJo0lx9mXLeA6gZ8fH/D4QLJvMkUa/Y/U=;
+        b=q40LxXYa+U1Junw6T2V/DpveCwX3lh+qC9tAPMCS/dCD605iGxvPqKjKbQIIEzWU4Y
+         AqmjJu85N/jB6knsAKOZfOzA51HiYEuKWST5gejplqwhyKuZVh+heJNXMLSj7/AZ0uEw
+         Bw+W5Lpgoq3kDJHRqb8va8L56tPuGZU8MUl2pwVbDI/+Ixf8u5QO4TbOy8potlHmFtJx
+         fi39c9C5t9UEm4BLd3uLmVInjHDLmya5ILIbc5o0QVqMVWsTDtc3fr0c6KRbVSvaXqJb
+         3vOjvcluGtSYuf22AatsWxcQiGuGXG/cf+ZdBvnDvApD6B+YGXBfaS7WmfWPd1w2NQbS
+         GpIQ==
+X-Gm-Message-State: AOAM533SzH3sTcj0ogy86BKgkr6sVc++88mXmyrw123fDWYRMI0LcUMN
+        9xcbT+HctI4xS5o6efMAWg==
+X-Google-Smtp-Source: ABdhPJxAo4vfZV5GNbQ3ZOfBf7+YdjTEAFNvFUnz/SaPbfs3bc31068F1V8q2OvUVa8lrHhU52Farg==
+X-Received: by 2002:a63:1c1d:: with SMTP id c29mr18153145pgc.94.1613951070430;
+        Sun, 21 Feb 2021 15:44:30 -0800 (PST)
+Received: from DESKTOP (softbank126011114100.bbtec.net. [126.11.114.100])
+        by smtp.gmail.com with ESMTPSA id x13sm16255931pfq.34.2021.02.21.15.44.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 13:52:07 -0800 (PST)
-Date:   Sun, 21 Feb 2021 16:52:05 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-Message-ID: <20210221165047-mutt-send-email-mst@kernel.org>
-References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
- <20210221144437.GA82010@mtl-vdi-166.wap.labs.mlnx>
+        Sun, 21 Feb 2021 15:44:30 -0800 (PST)
+Date:   Mon, 22 Feb 2021 08:44:27 +0900
+From:   Takeshi Misawa <jeliantsurux@gmail.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH net] net: qrtr: Fix memory leak in qrtr_tun_open
+Message-ID: <20210221234427.GA2140@DESKTOP>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210221144437.GA82010@mtl-vdi-166.wap.labs.mlnx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 21, 2021 at 04:44:37PM +0200, Eli Cohen wrote:
-> On Fri, Feb 19, 2021 at 06:54:58AM -0500, Si-Wei Liu wrote:
-> > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
-> > for legacy") made an exception for legacy guests to reset
-> > features to 0, when config space is accessed before features
-> > are set. We should relieve the verify_min_features() check
-> > and allow features reset to 0 for this case.
-> > 
-> > It's worth noting that not just legacy guests could access
-> > config space before features are set. For instance, when
-> > feature VIRTIO_NET_F_MTU is advertised some modern driver
-> > will try to access and validate the MTU present in the config
-> > space before virtio features are set. Rejecting reset to 0
-> > prematurely causes correct MTU and link status unable to load
-> > for the very first config space access, rendering issues like
-> > guest showing inaccurate MTU value, or failure to reject
-> > out-of-range MTU.
-> > 
-> > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> > ---
-> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
-> >  1 file changed, 1 insertion(+), 14 deletions(-)
-> > 
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 7c1f789..540dd67 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
-> >  	return mvdev->mlx_features;
-> >  }
-> >  
-> > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
-> > -{
-> > -	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
-> > -		return -EOPNOTSUPP;
-> > -
-> > -	return 0;
-> > -}
-> > -
-> 
-> But what if VIRTIO_F_ACCESS_PLATFORM is not offerred? This does not
-> support such cases.
+If qrtr_endpoint_register() failed, tun is leaked.
+Fix this, by freeing tun in error path.
 
-Did you mean "catch such cases" rather than "support"?
+syzbot report:
+BUG: memory leak
+unreferenced object 0xffff88811848d680 (size 64):
+  comm "syz-executor684", pid 10171, jiffies 4294951561 (age 26.070s)
+  hex dump (first 32 bytes):
+    80 dd 0a 84 ff ff ff ff 00 00 00 00 00 00 00 00  ................
+    90 d6 48 18 81 88 ff ff 90 d6 48 18 81 88 ff ff  ..H.......H.....
+  backtrace:
+    [<0000000018992a50>] kmalloc include/linux/slab.h:552 [inline]
+    [<0000000018992a50>] kzalloc include/linux/slab.h:682 [inline]
+    [<0000000018992a50>] qrtr_tun_open+0x22/0x90 net/qrtr/tun.c:35
+    [<0000000003a453ef>] misc_open+0x19c/0x1e0 drivers/char/misc.c:141
+    [<00000000dec38ac8>] chrdev_open+0x10d/0x340 fs/char_dev.c:414
+    [<0000000079094996>] do_dentry_open+0x1e6/0x620 fs/open.c:817
+    [<000000004096d290>] do_open fs/namei.c:3252 [inline]
+    [<000000004096d290>] path_openat+0x74a/0x1b00 fs/namei.c:3369
+    [<00000000b8e64241>] do_filp_open+0xa0/0x190 fs/namei.c:3396
+    [<00000000a3299422>] do_sys_openat2+0xed/0x230 fs/open.c:1172
+    [<000000002c1bdcef>] do_sys_open fs/open.c:1188 [inline]
+    [<000000002c1bdcef>] __do_sys_openat fs/open.c:1204 [inline]
+    [<000000002c1bdcef>] __se_sys_openat fs/open.c:1199 [inline]
+    [<000000002c1bdcef>] __x64_sys_openat+0x7f/0xe0 fs/open.c:1199
+    [<00000000f3a5728f>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<000000004b38b7ec>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
+Fixes: 28fb4e59a47d ("net: qrtr: Expose tunneling endpoint to user space")
+Reported-by: syzbot+5d6e4af21385f5cfc56a@syzkaller.appspotmail.com
+Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
+---
+Dear David Howells
 
-> Maybe we should call verify_min_features() from mlx5_vdpa_set_status()
-> just before attempting to call setup_driver().
-> 
-> >  static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
-> >  {
-> >  	int err;
-> > @@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
-> >  {
-> >  	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
-> >  	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
-> > -	int err;
-> >  
-> >  	print_features(mvdev, features, true);
-> >  
-> > -	err = verify_min_features(mvdev, features);
-> > -	if (err)
-> > -		return err;
-> > -
-> >  	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
-> >  	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
-> >  	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
-> > -	return err;
-> > +	return 0;
-> >  }
-> >  
-> >  static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
-> > -- 
-> > 1.8.3.1
-> > 
+syzbot reported memory leak in qrtr_tun_open.
+
+I send a patch that passed syzbot reproducer test.
+Please consider this memory leak and patch.
+
+syzbot link:
+https://syzkaller.appspot.com/bug?id=e2f0676dd0bb3d0e83184bfcaa2bcba46b1410b5
+
+Regards.
+---
+ net/qrtr/tun.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
+index 15ce9b642b25..20d60a78590a 100644
+--- a/net/qrtr/tun.c
++++ b/net/qrtr/tun.c
+@@ -31,6 +31,7 @@ static int qrtr_tun_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
+ static int qrtr_tun_open(struct inode *inode, struct file *filp)
+ {
+ 	struct qrtr_tun *tun;
++	int ret;
+ 
+ 	tun = kzalloc(sizeof(*tun), GFP_KERNEL);
+ 	if (!tun)
+@@ -43,7 +44,17 @@ static int qrtr_tun_open(struct inode *inode, struct file *filp)
+ 
+ 	filp->private_data = tun;
+ 
+-	return qrtr_endpoint_register(&tun->ep, QRTR_EP_NID_AUTO);
++	ret = qrtr_endpoint_register(&tun->ep, QRTR_EP_NID_AUTO);
++	if (ret) {
++		goto out;
++	}
++
++	return ret;
++
++out:
++	filp->private_data = NULL;
++	kfree(tun);
++	return ret;
+ }
+ 
+ static ssize_t qrtr_tun_read_iter(struct kiocb *iocb, struct iov_iter *to)
+-- 
+2.25.1
 
