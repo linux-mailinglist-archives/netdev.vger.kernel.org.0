@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B803213AE
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 11:04:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B073213C9
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 11:09:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbhBVKEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 05:04:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
+        id S230400AbhBVKIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 05:08:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbhBVKCv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 05:02:51 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC9BC061574;
-        Mon, 22 Feb 2021 02:02:07 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id z5so3077395pfe.3;
-        Mon, 22 Feb 2021 02:02:07 -0800 (PST)
+        with ESMTP id S231127AbhBVKIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 05:08:12 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB668C061786;
+        Mon, 22 Feb 2021 02:07:31 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id gm18so3365253pjb.1;
+        Mon, 22 Feb 2021 02:07:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=W8DgW6oECOiwuHvyIv6eHEM1u1Xu5AIuzuKgMGxRQOc=;
-        b=MiEZXuXs6i/aKscHT4ECjnJa3i/ukmy5gJSH2dC5aL/hj2Q1xiVdd8QOaW8xYoClRK
-         Kya1/nCvRVaKylUcDSGRidbNOBTKh+uY9HdOgpjLGtq7EthmgyxczTVhopoV8RyODVt1
-         kX0Bv2ZcK5vVJ3NIJFSkqUDaAe75ZS+mM51BH824LG/BKjJwDM8ENAPqbd9exuGnvl9R
-         jOcbMRGkVjvBGzoiGKXOBcfYHp89IOzJdPhKfpiWWg4q7OZkP5jpWIpNCfZ9fNnM9mTR
-         WGevu1vdZvvjaMS9WOPQqED01LvfPCI0UqP+c5J9FH6sK11sCQ+WUTLSzL7usZkAEoU3
-         LEQQ==
+        bh=Udsk+z6S+lmul3ghhLaA1MmOuPDaJpmhE/2DZlIxpH4=;
+        b=TEF49KVVMWNsLlswBqRlelynbivwsoSQOJvdti1iBz7y6wQSK+YDDUw6N4qTsngxyt
+         aFvJY+ZF5jdgwGyL+J3+jbU02AS2rhGBMNhh7gqN4bKz+Ich0CxQfhA1FzTueW4I5SdH
+         pVxLvRZL6iXiYSXhIWmJ2VdvZ7dAPACvaCK8TvhgwM8aeScdsFZSJ/ij9e1nF6k/y6X/
+         YguC69OdU9rEMwAzGU17PaiiJCODVTzNu5HJ7SkbZpP1DrKil3WaH4Y62fK29Hvg2iGV
+         kBNAm4xvTucYXOClAerpJg4T4ah3fuMktt8PlS0uv+0hhCKaYgDUmlMfHUkf6mguLsUr
+         MR3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=W8DgW6oECOiwuHvyIv6eHEM1u1Xu5AIuzuKgMGxRQOc=;
-        b=qORDj2I1k3icx4A7XuZ4mmBvKdn0kDnx/qRwZ0f2H8jW/ws9J5wyfl2Co54Z+NwkGl
-         XjKuX/xgnVtnzL6UmwX5oUqdK/zwZv2dDt2Y0877Y/nLjUKc8+kWJa39MhlZ5pKqPz1J
-         POuTIYQWWtisodXtymOIPByDTin+aM7rVP94pNR+5mATS/zU8oXwtshFTYjc9GWka9IM
-         0vxb5iMreI+qCiw3VWxMyjn1cDtA46c00NzbvqvouC0bic2qssjgUOpGArAr2OX5ZScK
-         THuE8Pd3RFIzhCelbZPkS61YwfzBiWDfBfg4Nyx74nWFnHW9DyQaBb9y7C6LuKwQ/Dox
-         htVQ==
-X-Gm-Message-State: AOAM533KBHNGzzXnadQGu0lQZqce4XdaLOQzpFo9U4Ie7Rb1ZNspyw6z
-        P2KVbbSP3LV4v0iLfiaaURs=
-X-Google-Smtp-Source: ABdhPJxPbX8kcc0YRwDKsYkpBpFhUH5DXAs4YwwcgTB6ayWfqqx01TcOv3b+jjft8RhXAPa8KJOYjg==
-X-Received: by 2002:a63:4602:: with SMTP id t2mr19186801pga.214.1613988126938;
-        Mon, 22 Feb 2021 02:02:06 -0800 (PST)
+        bh=Udsk+z6S+lmul3ghhLaA1MmOuPDaJpmhE/2DZlIxpH4=;
+        b=mdWCl25kfVQUkU1gTW22RicmVUxCegf6XqIXpt3sjofC4TIo6cYZQg1GahUqjHxadm
+         ErHIUtSAorVuL1mWjkart0n7uUkL2qHSzdwPlS1FkQxuTYzd26EoxOm8XLpn0zBtKG+b
+         3gMXPd0LLu87DpuZEQv+KmQcqoZNaXgyF8zXmO6pFOlxopeoO4ndh0UtYhJyvok4pa2d
+         cS1L3rtE+LPuHX3EV0u0eivYTqmkTREwlBdx/gLO/4uZyOAFXVADFqJjzoW15QwoX++U
+         Vg8OIyIy8p2izL/8UO7+XmjEP6LPrrgIZ19P6CbFea/zHH3hwhKyZVBwtX3BBnkJzXtM
+         Dtcg==
+X-Gm-Message-State: AOAM53147eWtZM3wmpy2ReYKdLgzGTlmfq0jFS6b6zw7gHt63UETO7Ag
+        5kSO8diWdcyVCQzFArZzeHU=
+X-Google-Smtp-Source: ABdhPJyrTvPPv2k+hYwKfxlUJ73L09piHJhfK1M3zTlfpoK9V1u1YJefTgwbbsb+YFs9kfD1kV94qQ==
+X-Received: by 2002:a17:902:ba91:b029:e3:fe6d:505c with SMTP id k17-20020a170902ba91b02900e3fe6d505cmr2630491pls.7.1613988451310;
+        Mon, 22 Feb 2021 02:07:31 -0800 (PST)
 Received: from container-ubuntu.lan ([171.211.28.185])
-        by smtp.gmail.com with ESMTPSA id t16sm3605213pfe.165.2021.02.22.02.01.59
+        by smtp.gmail.com with ESMTPSA id ch14sm9317902pjb.22.2021.02.22.02.07.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Feb 2021 02:02:06 -0800 (PST)
+        Mon, 22 Feb 2021 02:07:30 -0800 (PST)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
@@ -63,9 +63,9 @@ To:     Sean Wang <sean.wang@mediatek.com>,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Frank Wunderlich <frank-w@public-files.de>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH net-next] net: dsa: mt7530: support MDB operations
-Date:   Mon, 22 Feb 2021 18:01:56 +0800
-Message-Id: <20210222100156.32652-1-dqfext@gmail.com>
+Subject: [PATCH net-next v2] net: dsa: mt7530: support MDB operations
+Date:   Mon, 22 Feb 2021 18:07:17 +0800
+Message-Id: <20210222100717.451-1-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,11 +73,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Support port MDB add to/delete from MT7530 ARL.
+
 As the hardware can manage multicast forwarding itself, trapping
 multicast traffic to the CPU is no longer required.
 
 Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
+v1 -> v2: fix commit message
+
  drivers/net/dsa/mt7530.c | 58 +++++++++++++++++++++++++++++++++++++---
  net/dsa/tag_mtk.c        | 14 +---------
  2 files changed, 56 insertions(+), 16 deletions(-)
