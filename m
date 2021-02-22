@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4610B32102F
+	by mail.lfdr.de (Postfix) with ESMTP id B6A6F321030
 	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 06:15:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbhBVFOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 00:14:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
+        id S230183AbhBVFOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 00:14:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhBVFOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 00:14:32 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701B7C061574
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 21:13:52 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id r19so3616715otk.2
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 21:13:52 -0800 (PST)
+        with ESMTP id S229518AbhBVFOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 00:14:44 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E60C061786
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 21:14:04 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id j1so845264oiw.3
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 21:14:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VVNhv6u95Oxqj4wGXwUXEsmlopWwB0aRgDd2GLtzd0M=;
-        b=N4dmFN/PxU6sS1fijpLrnwMHVnN6esr7IB3/m66wlBaoogCz9tFBrQUwqtBxSc63r/
-         OtMsH/lt1kca9F0gGgsPN07cPYm6vO8PsFzxvYGojskiWYWwCI3jgwOQh2vmKM5Iq18l
-         QaLwLB0vW4Slxt1DhWJv1n4vsElyfzFwl/L3quTWPiROmNM8jQi09oy/C7f8JeHtwrRO
-         8n2LDKhgGqNL08c2mN7fkfhXA+/4aQ7XGKctEniCB8Wt6gd4JdvW7itmHj04HZa2xl2c
-         GvhPjMbe25Zfa1PaJfGmmH6QPl/ovpF/ZIfR9bPoxUxB4tECrnSzm0qp+UWxemw4nQBB
-         ymKQ==
+        bh=02zjX9FpuV4hI2zLEwrcmmEfkuluACihNzCYVtFR5DM=;
+        b=VD3+i82cKpqfFUcVgs1XlXucOt8pcITqi+8cscD+pVnKCf2deClGbH7OoaRBgeKYSG
+         sMf8tUfivnRdfvvRN20Xm98EVaWYyrA+axa0mIVAwMKsvhN7uGy6ADk74v8bihBNfkl4
+         qxQAbfsDNsQYrZ25fzT9EfcZUL8vs3ztPYvoBpSprgHx3N4iDbr7alna6ejXNXBfCegJ
+         rrUCDyolxjdSHXzRtbiRiR5dXekay0fnoXLl9d5no3tzou2SBE+cRE17Z5o9MsOp+XQM
+         LDDsPbliRD+4yNlfXVoBNhatr2lxjaNKOwmdyI3sVWwYzjPr/OM04uFlDRIUaf/c3KDa
+         PbYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=VVNhv6u95Oxqj4wGXwUXEsmlopWwB0aRgDd2GLtzd0M=;
-        b=M+8zsU+ngiLGRBqptDGXEAs+l8JwSEHf1Nsa6JrCAclSvjVtkhbMTBxYBSGmbDZJtP
-         Fbg36+qgQW2SMvvIHddrXMwkLK7/bGVrEfoaShqBeHPNSIL8GnPk61SGo9eZSym2KkTN
-         n/Pc6n9VL0RQtyRmL0vpgt7KBLA7vwTFNmsoAZvUR+4gKGUgtppBcWh29F0KJmocUqdF
-         Pd9/ADOFuqqqoj4IS4baTjazBxBuYKifLw5Awm9V9/2Npgn/FD0VAhJl+HfPKGVv63Xm
-         YIM0p0LQaM/5SJRCUqiZn+vhUk5f0YiTpL6BE/OHHeEGyFU23lcFhC74PBEsuBECJD9L
-         lxpg==
-X-Gm-Message-State: AOAM533x1YdmS+aNtluItkYwJeVUeCrkzcLt7wJec3LbkVscSVheOF4y
-        yBRG0IcuTC2SDja8SUy0b/k=
-X-Google-Smtp-Source: ABdhPJz5KSd8sc8xlTBAtvVTKLi23B3yBLF+FYmFf2l2mob5Qxs1F014D4VVRSTiHDdSbSg/s0k8+w==
-X-Received: by 2002:a05:6830:1f3c:: with SMTP id e28mr15743315oth.93.1613970831885;
-        Sun, 21 Feb 2021 21:13:51 -0800 (PST)
+        bh=02zjX9FpuV4hI2zLEwrcmmEfkuluACihNzCYVtFR5DM=;
+        b=Dm/SJyJ9md/HrfMHXy2fwSbZ6KxvPponvOaedpWZy9jkG5gYEn0gEZVD2Wg1bWzT7e
+         LerScitXB5z7eQSFEtmGmaKubKoTwE4HQ1cvfnpEv94TSuJ/j8AEY2g4b4w5qFd0T5aA
+         JrVnc4BAHVuEADPm/Di1ddN3LsxbR/ak7fZ8MZ3uAXA2qU9jUC8/m4mspGcMTFmaUFv9
+         JklxfjF/lhDn3Q0rc+Q+FnYOhRyCQXm5UCZ5mlmm7u5860LtUekMVByDQYBdEgdgIykx
+         mTLBZ93AnG1ZKKKLXoeJZ1tTJZhMf4VMnZ7FkPhru9N28tdVbuKJW95XpVEsY2WERb5/
+         HsvQ==
+X-Gm-Message-State: AOAM532kySnIGpTCIvWSV7HXzapKRWo5smkmOUeuN8ZtXT4bYUF5f5L+
+        eOklSOQI5L7hXulCKIqeNv0=
+X-Google-Smtp-Source: ABdhPJzL34DOkEbPc4yc7DcJhpXLQSVIPwcJv7vNfMQ55RqKuOK8ovReSea6+lbGVdccaA6u/GbwDw==
+X-Received: by 2002:a05:6808:bc3:: with SMTP id o3mr14645491oik.134.1613970843650;
+        Sun, 21 Feb 2021 21:14:03 -0800 (PST)
 Received: from ?IPv6:2600:1700:dfe0:49f0:f028:e4b6:7941:9a45? ([2600:1700:dfe0:49f0:f028:e4b6:7941:9a45])
-        by smtp.gmail.com with ESMTPSA id x207sm1129337oia.30.2021.02.21.21.13.50
+        by smtp.gmail.com with ESMTPSA id v16sm3530301oia.26.2021.02.21.21.14.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Feb 2021 21:13:51 -0800 (PST)
-Subject: Re: [RFC PATCH net-next 03/12] Documentation: networking: dsa: remove
- static port count from limitations
+        Sun, 21 Feb 2021 21:14:03 -0800 (PST)
+Subject: Re: [RFC PATCH net-next 04/12] Documentation: networking: dsa: remove
+ references to switchdev prepare/commit
 To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,14 +61,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
 References: <20210221213355.1241450-1-olteanv@gmail.com>
- <20210221213355.1241450-4-olteanv@gmail.com>
+ <20210221213355.1241450-5-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0d58d186-5c9f-3b46-e1e8-c15935a2fd7b@gmail.com>
-Date:   Sun, 21 Feb 2021 21:13:50 -0800
+Message-ID: <ba479081-cd23-07aa-d2dd-61cca341a025@gmail.com>
+Date:   Sun, 21 Feb 2021 21:13:59 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210221213355.1241450-4-olteanv@gmail.com>
+In-Reply-To: <20210221213355.1241450-5-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -81,10 +81,11 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/21/2021 13:33, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> After Vivien's series from 2019 containing commits 27d4d19d7c82 ("net:
-> dsa: remove limitation of switch index value") and ab8ccae122a4 ("net:
-> dsa: add ports list in the switch fabric"), this is basically no longer
-> true.
+> After the recent series containing commit bae33f2b5afe ("net: switchdev:
+> remove the transaction structure from port attributes"), there aren't
+> prepare/commit transactional phases anymore in most of the switchdev
+> objects/attributes, and as a result, there aren't any in the DSA driver
+> API either. So remove this piece.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
