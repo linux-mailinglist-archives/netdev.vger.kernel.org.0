@@ -2,80 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 716FC3215DC
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 13:12:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D53313215E7
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 13:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230302AbhBVMMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 07:12:22 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14181 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230198AbhBVMMN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 07:12:13 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60339f670000>; Mon, 22 Feb 2021 04:11:19 -0800
-Received: from [172.27.13.143] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Feb
- 2021 12:11:18 +0000
-Subject: Re: [PATCH iproute2] dcb: Fix compilation warning about reallocarray
-To:     <netdev@vger.kernel.org>
-CC:     Petr Machata <petrm@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20210222120943.2035-1-roid@nvidia.com>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <9eafec1d-1b24-657a-b3d4-fc28972a9946@nvidia.com>
-Date:   Mon, 22 Feb 2021 14:11:16 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S230147AbhBVMOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 07:14:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60537 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230104AbhBVMOM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 07:14:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613995965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AhDS7E5Sv0xDYBYjviNIqwY+arwhTl2iWtkaDmSPDJU=;
+        b=fOPhqz2A+XkuObJEP4ed0bm/M6SYgRTNhdE8yUjCDd0CgBxeIci1T697SkZ0bMbrdcIFiw
+        ZvOqAI2k9csDZM+DS9GVxKluApsCXsl8YVU4EyWR+757y8Wu76ISHN7INn3rwXd3tvxRVD
+        ipZs1O/LQULePbd/WM5GLZou5wqCHZQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-75-5zd8Js_yOqCTO8wFXPiJjg-1; Mon, 22 Feb 2021 07:12:43 -0500
+X-MC-Unique: 5zd8Js_yOqCTO8wFXPiJjg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CAAE8107ACE3;
+        Mon, 22 Feb 2021 12:12:41 +0000 (UTC)
+Received: from horizon.localdomain (ovpn-113-140.rdu2.redhat.com [10.10.113.140])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8563919C79;
+        Mon, 22 Feb 2021 12:12:41 +0000 (UTC)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id B2C60C008A; Mon, 22 Feb 2021 09:12:39 -0300 (-03)
+Date:   Mon, 22 Feb 2021 09:12:39 -0300
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+To:     wenxu@ucloud.cn
+Cc:     kuba@kernel.org, mleitner@redhat.com, netdev@vger.kernel.org,
+        jhs@mojatatu.com, Oz Shlomo <ozsh@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>
+Subject: Re: [PATCH net-next] net/sched: cls_flower: validate ct_state for
+ invalid and reply flags
+Message-ID: <20210222121239.GA2960@horizon.localdomain>
+References: <1613974190-12108-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-In-Reply-To: <20210222120943.2035-1-roid@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613995880; bh=li5nCXlQeOdo3X2/K80AwzDTzcFisFpnQYqxADAwX64=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=dhMi8Iu5JsyxiAwMdF/kzJriwtl+i2bzBZfeSsNg6u4msSBB5yhmDop20JchZFC/+
-         fUrRRGo4A3hV5DJ6jbRMrWRULa4D8W8SSKhU5mSusOQ5n02kNadHcB6WuAg/nasZvw
-         4hMLuE1Xyrqp6k2fDtV/w2vyH86HHXjiFByk0lo7tR7d3qEXz2ChsXoxNIcgu724UI
-         w6x3RXzS+Vj4UHKlmQxcpXZ3sspMrKkb7w6PyGqnLue7lIK2WazzDz15nvlm8o2CIG
-         VNyLUb5yYb5gFVuGG/L3fxMY9MqEObqSN3HaSLT+giQccf6jA0ke74XcmJPxQs9+Bq
-         lKK01rYwm131Q==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1613974190-12108-1-git-send-email-wenxu@ucloud.cn>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 22, 2021 at 02:09:50PM +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> Add invalid and reply flags validate in the fl_validate_ct_state.
 
+This makes the checking complete if compared to ovs'
+validate_ct_state().
 
-On 2021-02-22 2:09 PM, Roi Dayan wrote:
-> To use reallocarray we need to add bsd/stdlib.h.
->=20
-> dcb_app.c: In function =E2=80=98dcb_app_table_push=E2=80=99:
-> dcb_app.c:68:25: warning: implicit declaration of function =E2=80=98reall=
-ocarray=E2=80=99; did you mean =E2=80=98realloc=E2=80=99?
->=20
-> Fixes: 8e9bed1493f5 ("dcb: Add a subtool for the DCB APP object")
-> Signed-off-by: Roi Dayan <roid@nvidia.com>
-> ---
->   dcb/dcb.c | 1 +
->   1 file changed, 1 insertion(+)
->=20
-> diff --git a/dcb/dcb.c b/dcb/dcb.c
-> index 6640deef5688..32896c4d5732 100644
-> --- a/dcb/dcb.c
-> +++ b/dcb/dcb.c
-> @@ -5,6 +5,7 @@
->   #include <linux/dcbnl.h>
->   #include <libmnl/libmnl.h>
->   #include <getopt.h>
-> +#include <bsd/stdlib.h>
->  =20
->   #include "dcb.h"
->   #include "mnl_utils.h"
->=20
+...
+> +	if (state & TCA_FLOWER_KEY_CT_FLAGS_INVALID &&
+> +	    state & ~(TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
+> +		      TCA_FLOWER_KEY_CT_FLAGS_INVALID)) {
+> +		NL_SET_ERR_MSG_ATTR(extack, tb,
+> +				    "when inv is set, only trk also be set");
 
-sorry for the resend. please ignore. sent v2 of the patch.
+The message is missing the verb:
++				    "when inv is set, only trk may also be set");
+
+Other than this, LGTM.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
+> +	    state & TCA_FLOWER_KEY_CT_FLAGS_REPLY) {
+> +		NL_SET_ERR_MSG_ATTR(extack, tb,
+> +				    "new and rpl are mutually exclusive");
+> +		return -EINVAL;
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> -- 
+> 1.8.3.1
+> 
+
