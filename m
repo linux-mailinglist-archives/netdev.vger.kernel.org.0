@@ -2,155 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 257EA320FCD
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 04:42:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23370320FEB
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 05:01:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbhBVDku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 22:40:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:41758 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229907AbhBVDko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 22:40:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613965156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3e0EU0Vhv5kCwoJTIMI/Uu5QjWnIGqt95U3pli1A3P4=;
-        b=JbI7lAy8x1ApBHZnWi4GylqtKOiGcOJargwUD7rIRpn7ERbkmb1aOgik81yL3ki7qTjtNq
-        LEaxTvbu63Svx3AmU8ZmLhREnyHLgLejxIW/J8jUZcegAEmJDPtuxzuulWDMuYn0TEUOFe
-        HCj2VzFDTqVwh7OZZA9mk1x2f5KZ7+I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-600-VQdukF9iOeGY9_iNTSqGbw-1; Sun, 21 Feb 2021 22:39:13 -0500
-X-MC-Unique: VQdukF9iOeGY9_iNTSqGbw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C40E01005501;
-        Mon, 22 Feb 2021 03:39:11 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-112.pek2.redhat.com [10.72.13.112])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C85F262954;
-        Mon, 22 Feb 2021 03:39:05 +0000 (UTC)
-Subject: Re: [PATCH] net: check if protocol extracted by
- virtio_net_hdr_set_proto is correct
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Balazs Nemeth <bnemeth@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org
-References: <5e910d11a14da17c41317417fc41d3a9d472c6e7.1613659844.git.bnemeth@redhat.com>
- <CA+FuTSe7srSBnAmFNFBFkDrLmPL5XtxhbXEs1mBytUBuuym2fg@mail.gmail.com>
- <2cc06597-8005-7be8-4094-b20f525afde8@redhat.com>
- <CA+FuTSf2GCi+RzpkFeBgtSOyhjsBFfApjekzupHLfyeYDn-JYQ@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <8168e98e-d608-750a-9b49-b1e60a23714c@redhat.com>
-Date:   Mon, 22 Feb 2021 11:39:03 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        id S230018AbhBVEA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 23:00:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229996AbhBVEA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 23:00:56 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D562C061574
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 20:00:16 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id r19so3515043otk.2
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 20:00:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZXGajvIMM0wquwcf46YTi+rJ0g3JMeDQVGsO6rxPwpE=;
+        b=EgJjrq79hanZPNMKHktSzIbh4PCFK77yLaed4Gf0MtWhZbmC73B/SPlh8YbpsMUqbX
+         cA0aOYKtJZRjwzo5nyCTN4ucFs/mhKrHtF+uSduzW7xF4b+HK55+ySrV+grYEDEYP/WY
+         X6/R8M29/J5QCV26+/dMnfbETlrgwnsyEG1Z3KxMF6PU76Bzip4qsA/EJRJHL92JSf+I
+         NjwkaBCPVQMwDscqMwGgIiyxj0SNI2A6gEOgcirp3O26r3TxRA9zIOVJkRokpF3IMqmw
+         SFWtMONSQB6tDv8cm0YzQ6Zb7a3oIluGkMKTv986FCmFYGaPyrgYSIIzX4CzcpCHsKAW
+         VL2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZXGajvIMM0wquwcf46YTi+rJ0g3JMeDQVGsO6rxPwpE=;
+        b=odc4TsxOhZrA0POLx25cBIzl9vV/ecq9gtkUHcFzf6RjM915bTlItT+Mcwt7aflUZg
+         uRm5E6TOjC+TDwXLYem14vePuZvPNB/QD/3406/cZXVyf95nNoFwC3ExQENywalvikLN
+         C51h2yz6PCs937bH2o9yrWre8qOPyfUtJqos9fLH14Ug7R3WLSSc+PdMDlViuZ1SmBY+
+         3Ac5Xbdk7sF1qhaM8aXKdfBoPtHqm6TpDvqCSXXYt8KWUeFH2TfIGJ25d9LbTJr8ZhHo
+         VwUwbsToDx7Gud4hbHzySdHZdCUsmhCguawFBkqQOABPy+q27rn3/whPrSr2sM4sRfia
+         O/BA==
+X-Gm-Message-State: AOAM533iX28GqwX4hm3GRkGIRDkshlTBuyCpAc/roO3q18zuM1HPfCWB
+        ikSf1TnqfVmB0cCUqv21mSJbYNGHv87fyqJf
+X-Google-Smtp-Source: ABdhPJx95UN0Q+v/0sphu/IshsnJJ4lPWQfHcWZtvCrBYNASuKkmN2Zn97qRU81FifcUxt5tyVERAg==
+X-Received: by 2002:a05:6830:150c:: with SMTP id k12mr416529otp.104.1613966414811;
+        Sun, 21 Feb 2021 20:00:14 -0800 (PST)
+Received: from proxmox.local.lan (2603-80a0-0e01-cc2f-0226-b9ff-fe41-ba6b.res6.spectrum.com. [2603:80a0:e01:cc2f:226:b9ff:fe41:ba6b])
+        by smtp.googlemail.com with ESMTPSA id t2sm3518066otj.47.2021.02.21.20.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Feb 2021 20:00:14 -0800 (PST)
+From:   Tom Seewald <tseewald@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     tseewald@gmail.com, intel-wired-lan@lists.osuosl.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Auke Kok <auke-jan.h.kok@intel.com>,
+        Jeff Garzik <jeff@garzik.org>
+Subject: [PATCH net 1/2] e1000e: Fix duplicate include guard
+Date:   Sun, 21 Feb 2021 22:00:04 -0600
+Message-Id: <20210222040005.20126-1-tseewald@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSf2GCi+RzpkFeBgtSOyhjsBFfApjekzupHLfyeYDn-JYQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The include guard "_E1000_HW_H_" is used by header files in three
+different drivers (e1000/e1000_hw.h, e1000e/hw.h, and igb/e1000_hw.h).
+Using the same include guard macro in more than one header file may
+cause unexpected behavior from the compiler. Fix the duplicate include
+guard in the e1000e driver by renaming it.
 
-On 2021/2/19 10:55 下午, Willem de Bruijn wrote:
-> On Fri, Feb 19, 2021 at 3:53 AM Jason Wang <jasowang@redhat.com> wrote:
->>
->> On 2021/2/18 11:50 下午, Willem de Bruijn wrote:
->>> On Thu, Feb 18, 2021 at 10:01 AM Balazs Nemeth <bnemeth@redhat.com> wrote:
->>>> For gso packets, virtio_net_hdr_set_proto sets the protocol (if it isn't
->>>> set) based on the type in the virtio net hdr, but the skb could contain
->>>> anything since it could come from packet_snd through a raw socket. If
->>>> there is a mismatch between what virtio_net_hdr_set_proto sets and
->>>> the actual protocol, then the skb could be handled incorrectly later
->>>> on by gso.
->>>>
->>>> The network header of gso packets starts at 14 bytes, but a specially
->>>> crafted packet could fool the call to skb_flow_dissect_flow_keys_basic
->>>> as the network header offset in the skb could be incorrect.
->>>> Consequently, EINVAL is not returned.
->>>>
->>>> There are even packets that can cause an infinite loop. For example, a
->>>> packet with ethernet type ETH_P_MPLS_UC (which is unnoticed by
->>>> virtio_net_hdr_to_skb) that is sent to a geneve interface will be
->>>> handled by geneve_build_skb. In turn, it calls
->>>> udp_tunnel_handle_offloads which then calls skb_reset_inner_headers.
->>>> After that, the packet gets passed to mpls_gso_segment. That function
->>>> calculates the mpls header length by taking the difference between
->>>> network_header and inner_network_header. Since the two are equal
->>>> (due to the earlier call to skb_reset_inner_headers), it will calculate
->>>> a header of length 0, and it will not pull any headers. Then, it will
->>>> call skb_mac_gso_segment which will again call mpls_gso_segment, etc...
->>>> This leads to the infinite loop.
->>
->> I remember kernel will validate dodgy gso packets in gso ops. I wonder
->> why not do the check there? The reason is that virtio/TUN is not the
->> only source for those packets.
-> It is? All other GSO packets are generated by the stack itself, either
-> locally or through GRO.
+Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)")
+Signed-off-by: Tom Seewald <tseewald@gmail.com>
+---
+ drivers/net/ethernet/intel/e1000e/hw.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-
-Something like what has been done in tcp_tso_segment()?
-
-     if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
-                 /* Packet is from an untrusted source, reset gso_segs. */
-
-         skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(skb->len, mss);
-
-         segs = NULL;
-                 goto out;
-         }
-
-My understanding of the header check logic is that it tries to dealy the 
-check as much as possible, so for device that has GRO_ROBUST, there's 
-even no need to do that.
-
-
->
-> But indeed some checks are better performed in the GSO layer. Such as
-> likely the 0-byte mpls header length.
->
-> If we cannot trust virtio_net_hdr.gso_type passed from userspace, then
-> we can also not trust the eth.h_proto coming from the same source.
-
-
-I agree.
-
-
-> But
-> it makes sense to require them to be consistent. There is a
-> dev_parse_header_protocol that may return the link layer type in a
-> more generic fashion than casting to skb_eth_hdr.
->
-> Question remains what to do for the link layer types that do not implement
-> header_ops->parse_protocol, and so we cannot validate the packet's
-> network protocol. Drop will cause false positives, accepts will leave a
-> potential path, just closes it for Ethernet.
->
-> This might call for multiple fixes, both on first ingest and inside the stack?
-
-
-It's a balance between performance and security. Ideally, it looks to me 
-the GSO codes should not assume the header of dodgy packet is correct 
-which means it must validate them before using them. I'm not sure if it 
-needs a lot of changes or not.
-
-For security reason, it's better to do a strict check during first 
-ingest. But it bascially suppress the meaning of NETIF_F_GSO_ROBUST 
-somehow. And it needs some benchmark to see if it can cause obvious 
-performance regression.
-
-Thanks
-
-
->
+diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
+index 69a2329ea463..db79c4e6413e 100644
+--- a/drivers/net/ethernet/intel/e1000e/hw.h
++++ b/drivers/net/ethernet/intel/e1000e/hw.h
+@@ -1,8 +1,8 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ /* Copyright(c) 1999 - 2018 Intel Corporation. */
+ 
+-#ifndef _E1000_HW_H_
+-#define _E1000_HW_H_
++#ifndef _E1000E_HW_H_
++#define _E1000E_HW_H_
+ 
+ #include "regs.h"
+ #include "defines.h"
+@@ -714,4 +714,4 @@ struct e1000_hw {
+ #include "80003es2lan.h"
+ #include "ich8lan.h"
+ 
+-#endif
++#endif /* _E1000E_HW_H_ */
+-- 
+2.20.1
 
