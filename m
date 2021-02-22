@@ -2,93 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4398E32115B
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3228B321161
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:29:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbhBVHYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 02:24:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43901 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229886AbhBVHYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 02:24:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613978600;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YIiIUfu4WH7DzTKvI2fH+0QfvRuPcc6ESx6PnhBmeAc=;
-        b=PL/jHiwELsOQcDsNJ9ezZXnt0JSa/Qa0mJ2NBVxmqqJQSdD6Fe8j6DA72EyVVVX+/EJCQk
-        K8DN3BKW9Bt0P2IfBrM5pEd8b7ZrHuQA4BRoZGfI9cSW9HbDlnj1ZffEcCxUiitlrfglyq
-        Pe2C/lakbJKVqalhvXjb/wmnRiAjieA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-585-swFLTXLHMhm9RhJs-3EYEQ-1; Mon, 22 Feb 2021 02:23:17 -0500
-X-MC-Unique: swFLTXLHMhm9RhJs-3EYEQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S230036AbhBVH2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 02:28:36 -0500
+Received: from z11.mailgun.us ([104.130.96.11]:50799 "EHLO z11.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229967AbhBVH2d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Feb 2021 02:28:33 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613978894; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=7L59uR8RHoAqyZuTKOtlusC+oyCg2QZVfVkamlNDW08=; b=THq3HtthNAhYTpe0szmsNQho/gdz/xk1egkiRvcl85Ji0QV+wsLwo6grgHSN3XJPoWRFvTxS
+ p0lpSpUALoQwM3ZJyXUy0JqXV0RPd2ecemZZWwAq83ti+Zs4biA+m+ViyNGfeUHn+yY+2BZf
+ oMvFt3rx4O3BYXuuL2msolbG9VA=
+X-Mailgun-Sending-Ip: 104.130.96.11
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 60335cf2e87943df3082589e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 22 Feb 2021 07:27:46
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 3BD7DC43462; Mon, 22 Feb 2021 07:27:46 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 71881803F48;
-        Mon, 22 Feb 2021 07:23:15 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F1A7A1002382;
-        Mon, 22 Feb 2021 07:23:02 +0000 (UTC)
-Date:   Mon, 22 Feb 2021 08:23:01 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     brouer@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        =?UTF-8?B?QmrDtnJuIFTDtnBl?= =?UTF-8?B?bA==?= 
-        <bjorn.topel@intel.com>, maciej.fijalkowski@intel.com,
-        hawk@kernel.org, toke@redhat.com, magnus.karlsson@intel.com,
-        john.fastabend@gmail.com, kuba@kernel.org, davem@davemloft.net
-Subject: Re: [PATCH bpf-next v3 1/2] bpf, xdp: per-map bpf_redirect_map
- functions for XDP
-Message-ID: <20210222082301.753ec8f0@carbon>
-In-Reply-To: <20210221200954.164125-2-bjorn.topel@gmail.com>
-References: <20210221200954.164125-1-bjorn.topel@gmail.com>
-        <20210221200954.164125-2-bjorn.topel@gmail.com>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E4D1FC433CA;
+        Mon, 22 Feb 2021 07:27:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E4D1FC433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     =?utf-8?B?6ZmI5rWp?= <chenhaoa@uniontech.com>
+Cc:     tony0620emma <tony0620emma@gmail.com>, davem <davem@davemloft.net>,
+        kuba <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        timlee <timlee@realtek.com>, arnd <arnd@arndb.de>
+Subject: Re: [PATCH] rtw88: 8822ce: fix wifi disconnect after S3/S4 on HONOR laptop
+References: <20210220084602.22386-1-chenhaoa@uniontech.com>
+        <878s7jjeeh.fsf@codeaurora.org>
+        <1323517535.1654941.1613976259730.JavaMail.xmail@bj-wm-cp-15>
+Date:   Mon, 22 Feb 2021 09:27:32 +0200
+In-Reply-To: <1323517535.1654941.1613976259730.JavaMail.xmail@bj-wm-cp-15>
+ ("
+        \=\?utf-8\?B\?6ZmI5rWpIidz\?\= message of "Mon, 22 Feb 2021 14:44:19 +0800
+ (CST)")
+Message-ID: <874ki4k1ej.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 21 Feb 2021 21:09:53 +0100
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+=E9=99=88=E6=B5=A9 <chenhaoa@uniontech.com> writes:
 
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->=20
-> Currently the bpf_redirect_map() implementation dispatches to the
-> correct map-lookup function via a switch-statement. To avoid the
-> dispatching, this change adds one bpf_redirect_map() implementation per
-> map. Correct function is automatically selected by the BPF verifier.
->=20
-> v2->v3 : Fix build when CONFIG_NET is not set. (lkp)
-> v1->v2 : Re-added comment. (Toke)
-> rfc->v1: Get rid of the macro and use __always_inline. (Jesper)
->=20
-> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> ---
->  include/linux/bpf.h    | 20 +++++++-------
->  include/linux/filter.h |  9 +++++++
->  include/net/xdp_sock.h |  6 ++---
->  kernel/bpf/cpumap.c    |  2 +-
->  kernel/bpf/devmap.c    |  4 +--
->  kernel/bpf/verifier.c  | 17 ++++++++----
->  net/core/filter.c      | 61 ++++++++++++++++++++++++++++--------------
->  7 files changed, 78 insertions(+), 41 deletions(-)
+> By git blame command, I know that the assignment of .driver.pm =3D
+> RTW_PM_OPS
+>
+> was in commit 44bc17f7f5b3b("rtw88: support wowlan feature for
+> 8822c"),
+>
+> and another commit 7dc7c41607d19("avoid unused function warnings")
+>
+> pointed out rtw_pci_resume() and rtw_pci_suspend() are not used at
+> all.
+>
+> So I think it's safe to remove them.
+>
+> Currently, I find that the rtl8822ce wifi chip and the pci bridge of
+> it are not linked by pci
+>
+> after wake up by `lspci` command.
+>
+> when I set `pcie_aspm.policy=3Dperformance ` in the GRUB. The machine
+> sleep and
+>
+> wake up normal.So I think when this ops is assignmented,the sleep and
+> wake up procedure
+>
+> may cause pci device not linked.
 
-Love it! :-)
-
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Please don't use HTML, our lists automatically drop all HTML email.
 
 --=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
