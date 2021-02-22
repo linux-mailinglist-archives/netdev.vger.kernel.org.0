@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C42432112D
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F3B321131
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:11:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230088AbhBVHJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 02:09:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35943 "EHLO
+        id S230110AbhBVHJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 02:09:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58641 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230057AbhBVHJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 02:09:18 -0500
+        by vger.kernel.org with ESMTP id S230087AbhBVHJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 02:09:27 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613977671;
+        s=mimecast20190719; t=1613977681;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SfjcSkeuCzE9/+CoYCFIFTm1Ke7Qr71yxOHQpPA/W1c=;
-        b=MmLC1XCeQFJyCYx5S/0CMYJYnn4w4Jr2EWn7ig1tSiIb5fHd3oPpLVd10SNyjzdmDMQpDG
-        N4tIGitGpQB7axz75TnckNYqxhLhJlMblcJcq8ptll8gh6Pb6AYSnqWiT8Bg/obCiQJIJF
-        6IkdzC+Qq0h8PEN23LFWCvMb9CKBP34=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-401-UO7QqnbFPxqlaoLTKZXXdQ-1; Mon, 22 Feb 2021 02:07:49 -0500
-X-MC-Unique: UO7QqnbFPxqlaoLTKZXXdQ-1
-Received: by mail-pf1-f198.google.com with SMTP id o2so6646888pfd.1
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 23:07:49 -0800 (PST)
+        bh=8cGC74PMCnaWbBAWCVUBDXRxKgEXEKkWJtgVHkIGS/0=;
+        b=Hu8BhsvQqaMrksO9Xgnac+qPEsN4nEaIiKgIEN3UEUwTTJjoiNkBJ+3MLc0L5dNAz0nJT1
+        ImFyLOPO2o67FRnu8RuZ0CeNp4J8/WT/mpdi0rO90h96P98Bk5/v0gET+ImT/uijVPKtaa
+        YL1vjxsupzWImN2GAvQ/PXVHRhHZsKY=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-585-qn0aWhBVP_KzOCfSzopfAw-1; Mon, 22 Feb 2021 02:07:59 -0500
+X-MC-Unique: qn0aWhBVP_KzOCfSzopfAw-1
+Received: by mail-pf1-f199.google.com with SMTP id 137so6656290pfw.4
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 23:07:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=SfjcSkeuCzE9/+CoYCFIFTm1Ke7Qr71yxOHQpPA/W1c=;
-        b=LhV+Xr9Akz8QK6iyF+1tZy6eP6bG3l9O4XFoEtmDXKOWzxmrMNjzbXIhUVavYZTLpy
-         9d5cP75c/0g2LnCU4d7D6s4GRNFEQih7F35fpaZJBCWax4JoXGcAQxcSAdnxVoW+lEaw
-         aiyNDa8QyUAkYoSHJMncUk/Fe0/9FcTmk8PpSpZQqG/w6l2bI1iE0LFKO7KMDlK7HwnX
-         5AArNUQn5+cgWjYnS4qPlST8i5EaRoIv8ka3ITYk0nd4uSJFeHtyIc2jfKuX/C8wZfeQ
-         UyVnyBsUIcmLVYEyuts4a+utoHjIBXPvLFrgy9BX7ppv80fpPI0zAqeK2VWILQZf5oel
-         e88w==
-X-Gm-Message-State: AOAM531twuJ0cXiFS86R5zqQ6utvZSKpUTwIYjhFe9OXcAFyPWsj4wpp
-        5oWb4xEIiCHD9sYUllKpU23Osyf9a94bw/RADuJbAJqDwzYQOgDP/nvsm9xU45WBEsx7ZZiuxaJ
-        dWnyBFV2lj4eVLco07qD6LXUyjQ5xAGxn3LM7s6wRNHe3SPlgrtnulUuNgIoqbJU=
-X-Received: by 2002:a63:90c9:: with SMTP id a192mr19124722pge.8.1613977668304;
-        Sun, 21 Feb 2021 23:07:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwP+/I77AvpPaCYZWkNUEmz3EntQVTfgkKGYRyDaFQPkLb+Affv8SxoduV3LDfkj7rLRdqY7Q==
-X-Received: by 2002:a63:90c9:: with SMTP id a192mr19124701pge.8.1613977668054;
-        Sun, 21 Feb 2021 23:07:48 -0800 (PST)
+        bh=8cGC74PMCnaWbBAWCVUBDXRxKgEXEKkWJtgVHkIGS/0=;
+        b=aVLKUcNN10+QHhe5qPpezXFC+DMsTq0KmpHrbCD279D2YK39Ci6M1Bji5JEGIIKi4y
+         IOs2ov6ct6fQtbEpma6mtSwxvFvrabW8p36/1YnB+bHSPQ4LWACA+1sl2rFw8KKhtO43
+         VJW5QVuQKfPsPs9EeG15LZJNRiZdZl254tTAarHWPKi4Ll/Z5mjAGPa3yzC8e2PXqEEB
+         +kwHoBMyQ6TysgCUYnI0rIVxuxo2MNX3bnm1b+U6fAhbGT6i1lZCR813oLOunqSHnDjS
+         BP3Fb6TtLze+LjQRhEEYc2JUks0WepEHoZaNOUa12xe6Md/pPwuMzZNOEjUtZ9+U953e
+         ce5A==
+X-Gm-Message-State: AOAM531qUCKccrEb0r2Fp102tCXZqRWHSqtWF/n8BvJcYQMwm0mViG6p
+        Xp6mn7m9JkETvsmk+ZmlHgujzMFh/W/8hLx78CsHdem2U/nbD1U94j9QiMBPFPjmYVjnujwwfLD
+        a5D0HkPv2DwGhXfEi/aCTh7pzxbbPMsvKq1NSzTStAWgZCF2viG/+iBFMjsixpLY=
+X-Received: by 2002:a63:3602:: with SMTP id d2mr18862407pga.81.1613977677979;
+        Sun, 21 Feb 2021 23:07:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzG0zRT+B2eqBSHJCG+woLse614WOgfmD0XJ5e3O9heRqpM5jj6GbtUXuwOa2JP1tEgm2+OsA==
+X-Received: by 2002:a63:3602:: with SMTP id d2mr18862385pga.81.1613977677597;
+        Sun, 21 Feb 2021 23:07:57 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a24sm18029132pff.18.2021.02.21.23.07.46
+        by smtp.gmail.com with ESMTPSA id ig12sm8527195pjb.36.2021.02.21.23.07.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 23:07:47 -0800 (PST)
+        Sun, 21 Feb 2021 23:07:57 -0800 (PST)
 From:   Coiby Xu <coxu@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     kexec@lists.infradead.org, intel-wired-lan@lists.osuosl.org,
@@ -58,9 +58,9 @@ Cc:     kexec@lists.infradead.org, intel-wired-lan@lists.osuosl.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [RFC PATCH 3/4] i40e: use minimal admin queue for kdump
-Date:   Mon, 22 Feb 2021 15:07:00 +0800
-Message-Id: <20210222070701.16416-4-coxu@redhat.com>
+Subject: [RFC PATCH 4/4] i40e: don't open i40iw client for kdump
+Date:   Mon, 22 Feb 2021 15:07:01 +0800
+Message-Id: <20210222070701.16416-5-coxu@redhat.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210222070701.16416-1-coxu@redhat.com>
 References: <20210222070701.16416-1-coxu@redhat.com>
@@ -70,49 +70,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The minimum size of admin send/receive queue is 1 and 2 respectively.
-The admin send queue can't be set to 1 because in that case, the
-firmware would fail to init.
+i40iw consumes huge amounts of memory. For example, on a x86_64 machine,
+i40iw consumed 1.5GB for Intel Corporation Ethernet Connection X722 for
+for 1GbE while "craskernel=auto" only reserved 160M. With the module
+parameter "resource_profile=2", we can reduce the memory usage of i40iw
+to ~300M which is still too much for kdump.
+
+Disabling the client registration would spare us the client interface
+operation open , i.e., i40iw_open for iwarp/uda device. Thus memory is
+saved for kdump.
 
 Signed-off-by: Coiby Xu <coxu@redhat.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h      | 2 ++
- drivers/net/ethernet/intel/i40e/i40e_main.c | 9 +++++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_client.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 118473dfdcbd..e106c33ff958 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -66,6 +66,8 @@
- #define I40E_FDIR_RING_COUNT		32
- #define I40E_MAX_AQ_BUF_SIZE		4096
- #define I40E_AQ_LEN			256
-+#define I40E_MIN_ARQ_LEN		1
-+#define I40E_MIN_ASQ_LEN		2
- #define I40E_AQ_WORK_LIMIT		66 /* max number of VFs + a little */
- #define I40E_MAX_USER_PRIORITY		8
- #define I40E_DEFAULT_TRAFFIC_CLASS	BIT(0)
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 5307f1744766..2fd8db80b585 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -14847,8 +14847,13 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
+index a2dba32383f6..aafc2587f389 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_client.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
+@@ -4,6 +4,7 @@
+ #include <linux/list.h>
+ #include <linux/errno.h>
+ #include <linux/net/intel/i40e_client.h>
++#include <linux/crash_dump.h>
  
- 	i40e_check_recovery_mode(pf);
+ #include "i40e.h"
+ #include "i40e_prototype.h"
+@@ -741,6 +742,12 @@ int i40e_register_client(struct i40e_client *client)
+ {
+ 	int ret = 0;
  
--	hw->aq.num_arq_entries = I40E_AQ_LEN;
--	hw->aq.num_asq_entries = I40E_AQ_LEN;
-+	if (is_kdump_kernel()) {
-+		hw->aq.num_arq_entries = I40E_MIN_ARQ_LEN;
-+		hw->aq.num_asq_entries = I40E_MIN_ASQ_LEN;
-+	} else {
-+		hw->aq.num_arq_entries = I40E_AQ_LEN;
-+		hw->aq.num_asq_entries = I40E_AQ_LEN;
-+	}
- 	hw->aq.arq_buf_size = I40E_MAX_AQ_BUF_SIZE;
- 	hw->aq.asq_buf_size = I40E_MAX_AQ_BUF_SIZE;
- 	pf->adminq_work_limit = I40E_AQ_WORK_LIMIT;
++	/* Don't open i40iw client for kdump because i40iw will consume huge
++	 * amounts of memory.
++	 */
++	if (is_kdump_kernel())
++		return ret;
++
+ 	if (!client) {
+ 		ret = -EIO;
+ 		goto out;
 -- 
-2.30.0
+2.30.1
 
