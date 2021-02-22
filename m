@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16FAF32173D
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 13:46:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B86E83217F6
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 14:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231663AbhBVMop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 07:44:45 -0500
-Received: from regular1.263xmail.com ([211.150.70.202]:46326 "EHLO
+        id S230220AbhBVNFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 08:05:04 -0500
+Received: from regular1.263xmail.com ([211.150.70.199]:52172 "EHLO
         regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231586AbhBVMnf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 07:43:35 -0500
-Received: from localhost (unknown [192.168.167.224])
-        by regular1.263xmail.com (Postfix) with ESMTP id 8FFEC6DF;
-        Mon, 22 Feb 2021 20:37:11 +0800 (CST)
+        with ESMTP id S231864AbhBVNDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 08:03:11 -0500
+Received: from localhost (unknown [192.168.167.16])
+        by regular1.263xmail.com (Postfix) with ESMTP id 78C60125B;
+        Mon, 22 Feb 2021 20:57:26 +0800 (CST)
 X-MAIL-GRAY: 0
 X-MAIL-DELIVERY: 1
 X-ADDR-CHECKED4: 1
 X-ANTISPAM-LEVEL: 2
 X-SKE-CHECKED: 1
 X-ABS-CHECKED: 1
-Received: from [10.20.32.136] (unknown [61.183.83.60])
-        by smtp.263.net (postfix) whith ESMTP id P17592T140304516622080S1613997418087359_;
-        Mon, 22 Feb 2021 20:37:11 +0800 (CST)
+Received: from [10.20.32.136] (unknown [113.57.152.160])
+        by smtp.263.net (postfix) whith ESMTP id P32471T140678937954048S1613998646619075_;
+        Mon, 22 Feb 2021 20:57:27 +0800 (CST)
 X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <7279b217e2a45cb39a118c7eabfb8cd2>
+X-UNIQUE-TAG: <7ab80288a791c98ae489bd27ea30762a>
 X-RL-SENDER: chenhaoa@uniontech.com
 X-SENDER: chenhaoa@uniontech.com
 X-LOGIN-NAME: chenhaoa@uniontech.com
-X-FST-TO: zhanjun@uniontech.com
-X-SENDER-IP: 61.183.83.60
+X-FST-TO: linux-wireless@vger.kernel.org
+X-SENDER-IP: 113.57.152.160
 X-ATTACHMENT-NUM: 0
 X-System-Flag: 0
-Subject: Re: [PATCH] rtw88: 8822ce: fix wifi disconnect after S3/S4 on HONOR
- laptop
+Subject: Re: [PATCH v2] rtw88: 8822ce: fix wifi disconnect after S3/S4 on
+ HONOR laptop
 To:     Pkshih <pkshih@realtek.com>,
         "kvalo@codeaurora.org" <kvalo@codeaurora.org>
 Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        Timlee <timlee@realtek.com>, "kuba@kernel.org" <kuba@kernel.org>,
+        Timlee <timlee@realtek.com>,
+        "zhanjun@uniontech.com" <zhanjun@uniontech.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        zhanjun@uniontech.com
-References: <20210220084602.22386-1-chenhaoa@uniontech.com>
- <878s7jjeeh.fsf@codeaurora.org>
- <1323517535.1654941.1613976259730.JavaMail.xmail@bj-wm-cp-15>
- <874ki4k1ej.fsf@codeaurora.org> <1613992840.2331.8.camel@realtek.com>
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+References: <20210222094638.18392-1-chenhaoa@uniontech.com>
+ <87h7m4iefe.fsf@codeaurora.org> <1613993809.2331.12.camel@realtek.com>
 From:   Hao Chen <chenhaoa@uniontech.com>
-Message-ID: <4ab0ff2e-4f56-6f16-4e67-26f19de92a14@uniontech.com>
-Date:   Mon, 22 Feb 2021 20:36:58 +0800
+Message-ID: <e3cc6cd6-8f98-2fca-dfa6-b1b3835adf6c@uniontech.com>
+Date:   Mon, 22 Feb 2021 20:57:25 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <1613992840.2331.8.camel@realtek.com>
+In-Reply-To: <1613993809.2331.12.camel@realtek.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -62,180 +61,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi:
+Because I only have the `HONOR magic 14` laptop with rtl8822ce wifi chip 
+:-(
 
-I have tried setting module parameter disable_aspm=1, but it's not useful.
+I will try to find out why the target platform can't properly resume with
+this declaration.Thanks.
 
- >The cpu info is follow:
-
-uos@uos-PC:~$ lscpu
-Architecture:        x86_64
-CPU op-mode(s):      32-bit, 64-bit
-Byte Order:          Little Endian
-Address sizes:       48 bits physical, 48 bits virtual
-CPU(s):              6
-On-line CPU(s) list: 0-5
-Thread(s) per core:  1
-Core(s) per socket:  6
-Socket(s):           1
-NUMA node(s):        1
-Vendor ID:           AuthenticAMD
-CPU family:          23
-Model:               96
-Model name:          AMD Ryzen 5 4500U with Radeon Graphics
-Stepping:            1
-CPU MHz:             2375.000
-CPU max MHz:         2375.0000
-CPU min MHz:         1400.0000
-BogoMIPS:            4740.81
-Virtualization:      AMD-V
-L1d cache:           32K
-L1i cache:           32K
-L2 cache:            512K
-L3 cache:            4096K
-NUMA node0 CPU(s):   0-5
-Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr 
-pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext 
-fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid 
-extd_apicid aperfmperf pni pclmulqdq monitor ssse3 fma cx16 sse4_1 
-sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm 
-extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit 
-wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb 
-cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 
-avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt 
-xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local 
-clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save 
-tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold 
-avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
-
-
- >The pci bridge info is follow:
-
-uos@uos-PC:~$ sudo lspci -vvv -s 00:01.0
-00:01.0 PCI bridge: Intel Corporation 6th-9th Gen Core Processor PCIe 
-Controller (x16) (rev 05) (prog-if 00 [Normal decode])
-         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- 
-ParErr- Stepping- SERR- FastB2B- DisINTx+
-         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- 
-<TAbort- <MAbort- >SERR- <PERR- INTx-
-         Latency: 0, Cache Line Size: 64 bytes
-         Interrupt: pin A routed to IRQ 121
-         Bus: primary=00, secondary=01, subordinate=01, sec-latency=0
-         I/O behind bridge: 00003000-00003fff
-         Memory behind bridge: a0200000-a02fffff
-         Prefetchable memory behind bridge: 
-00000000b0000000-00000000bfffffff
-         Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=fast >TAbort- 
-<TAbort- <MAbort- <SERR- <PERR-
-         BridgeCtl: Parity- SERR+ NoISA- VGA+ MAbort- >Reset- FastB2B-
-                 PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
-         Capabilities: [88] Subsystem: ASRock Incorporation Xeon E3-1200 
-v5/E3-1500 v5/6th Gen Core Processor PCIe Controller (x16)
-         Capabilities: [80] Power Management version 3
-                 Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA 
-PME(D0+,D1-,D2-,D3hot+,D3cold+)
-                 Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
-         Capabilities: [90] MSI: Enable+ Count=1/1 Maskable- 64bit-
-                 Address: fee00258  Data: 0000
-         Capabilities: [a0] Express (v2) Root Port (Slot+), MSI 00
-                 DevCap: MaxPayload 256 bytes, PhantFunc 0
-                         ExtTag- RBE+
-                 DevCtl: Report errors: Correctable- Non-Fatal- Fatal- 
-Unsupported-
-                         RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
-                         MaxPayload 256 bytes, MaxReadReq 128 bytes
-                 DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- 
-AuxPwr- TransPend-
-                 LnkCap: Port #2, Speed 8GT/s, Width x16, ASPM L0s L1, 
-Exit Latency L0s <256ns, L1 <8us
-                         ClockPM- Surprise- LLActRep- BwNot+ ASPMOptComp+
-                 LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- CommClk+
-                         ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
-                 LnkSta: Speed 8GT/s, Width x8, TrErr- Train- SlotClk+ 
-DLActive- BWMgmt+ ABWMgmt+
-                 SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- 
-HotPlug- Surprise-
-                         Slot #1, PowerLimit 75.000W; Interlock- NoCompl+
-                 SltCtl: Enable: AttnBtn- PwrFlt- MRL- PresDet- CmdCplt- 
-HPIrq- LinkChg-
-                         Control: AttnInd Unknown, PwrInd Unknown, 
-Power- Interlock-
-                 SltSta: Status: AttnBtn- PowerFlt- MRL- CmdCplt- 
-PresDet+ Interlock-
-                         Changed: MRL- PresDet+ LinkState-
-                 RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- 
-PMEIntEna- CRSVisible-
-                 RootCap: CRSVisible-
-                 RootSta: PME ReqID 0000, PMEStatus- PMEPending-
-                 DevCap2: Completion Timeout: Not Supported, 
-TimeoutDis-, LTR+, OBFF Via WAKE# ARIFwd-
-                 DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, 
-LTR+, OBFF Via WAKE# ARIFwd-
-                 LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- 
-SpeedDis-
-                          Transmit Margin: Normal Operating Range, 
-EnterModifiedCompliance- ComplianceSOS-
-                          Compliance De-emphasis: -6dB
-                 LnkSta2: Current De-emphasis Level: -6dB, 
-EqualizationComplete+, EqualizationPhase1+
-                          EqualizationPhase2+, EqualizationPhase3+, 
-LinkEqualizationRequest-
-         Capabilities: [100 v1] Virtual Channel
-                 Caps:   LPEVC=0 RefClk=100ns PATEntryBits=1
-                 Arb:    Fixed- WRR32- WRR64- WRR128-
-                 Ctrl:   ArbSelect=Fixed
-                 Status: InProgress-
-                 VC0:    Caps:   PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
-                         Arb:    Fixed+ WRR32- WRR64- WRR128- TWRR128- 
-WRR256-
-                         Ctrl:   Enable+ ID=0 ArbSelect=Fixed TC/VC=ff
-                         Status: NegoPending- InProgress-
-         Capabilities: [140 v1] Root Complex Link
-                 Desc:   PortNumber=02 ComponentID=01 EltType=Config
-                 Link0:  Desc:   TargetPort=00 TargetComponent=01 
-AssocRCRB- LinkType=MemMapped LinkValid+
-                         Addr:   00000000fed19000
-         Capabilities: [d94 v1] #19
-         Kernel driver in use: pcieport
-
-
-在 2021/2/22 下午7:20, Pkshih 写道:
-> On Mon, 2021-02-22 at 09:27 +0200, Kalle Valo wrote:
->> 陈浩 <chenhaoa@uniontech.com> writes:
+在 2021/2/22 下午7:36, Pkshih 写道:
+> On Mon, 2021-02-22 at 12:29 +0200, Kalle Valo wrote:
+>> Hao Chen <chenhaoa@uniontech.com> writes:
 >>
->>> By git blame command, I know that the assignment of .driver.pm =
->>> RTW_PM_OPS
+>>> The laptop's wifi disconnect after the laptop HONOR MagicBook 14
+>>> sleep to S3/S4 and wake up.
 >>>
->>> was in commit 44bc17f7f5b3b("rtw88: support wowlan feature for
->>> 8822c"),
+>>> The dmesg of kernel report:
+>>> "[   99.990168] pcieport 0000:00:01.2: can't change power state from D3hot
+>>> to D0 (config space inaccessible)
+>>> [   99.990176] ACPI: EC: interrupt unblocked
+>>> [   99.993334] rtw_pci 0000:01:00.0: can't change power state from D3hot
+>>> to D0 (config space inaccessible)
+>>> ......
+>>> [  102.133500] rtw_pci 0000:01:00.0: mac power on failed
+>>> [  102.133503] rtw_pci 0000:01:00.0: failed to power on mac
+>>> [  102.133505] ------------[ cut here ]------------
+>>> [  102.133506] Hardware became unavailable upon resume. This could be a
+>>> software issue prior to suspend or a hardware issue.
+>>> [  102.133569] WARNING: CPU: 4 PID: 5612 at net/mac80211/util.c:2232
+>>> ieee80211_reconfig+0x9b/0x1490 [mac80211]
+>>> [  102.133570] Modules linked in: ccm rfcomm uvcvideo videobuf2_vmalloc
+>>> videobuf2_memops videobuf2_v4l2 videobuf2_common videodev mc cmac bnep
+>>> btusb btrtl btbcm btintel edac_mce_amd bluetooth kvm_amd ecdh_generic
+>>> ecc kvm nls_iso8859_1 rtwpci rtw88 crct10dif_pclmul crc32_pclmul mac80211
+>>> ghash_clmulni_intel aesni_intel snd_hda_codec_realtek crypto_simd huawei_wmi
+>>> snd_hda_codec_generic cryptd cfg80211 wmi_bmof serio_raw sparse_keymap
+>>> ledtrig_audio sp5100_tco glue_helper joydev snd_hda_codec_hdmi snd_hda_intel
+>>> snd_intel_dspcfg wdat_wdt snd_hda_codec snd_hda_core pcspkr snd_hwdep snd_pcm
+>>> efi_pstore snd_timer libarc4 k10temp snd soundcore snd_pci_acp3x ccp mac_hid
+>>> binfmt_misc ip_tables x_tables autofs4 amdgpu amd_iommu_v2 gpu_sched
+>>> i2c_algo_bit ttm drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops
+>>> usbmouse cec nvme hid_generic i2c_piix4 usbhid nvme_core drm wmi video
+>>> [  102.133617] CPU: 4 PID: 5612 Comm: kworker/u32:16 Not tainted 5.7.7-amd64-desktop-8822 #3
+>>> [  102.133618] Hardware name: HUAWEI NBLL-WXX9/NBLL-WXX9-PCB, BIOS 1.06 09/29/2020
+>>> [  102.133623] Workqueue: events_unbound async_run_entry_fn
+>>> [  102.133651] RIP: 0010:ieee80211_reconfig+0x9b/0x1490 [mac80211]
+>>> [  102.133654] Code: 31 db e8 e8 fb 27 c2 41 c6 85 34 05 00 00 00 4c 89 ef e8 38
+>>> 56 fc ff 89 45 b8 85 c0 74 4c 48 c7 c7 d0 0c 09 c1 e8 01 e0 25 c2 <0f> 0b 4c
+>>> 89 ef e8 2b d1 ff ff e9 02 03 00 00 80 7d 9f 00 0f 85 1d
+>>> [  102.133655] RSP: 0018:ffffbe52c059fd08 EFLAGS: 00010286
+>>> [  102.133657] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000007
+>>> [  102.133658] RDX: 0000000000000007 RSI: 0000000000000096 RDI: ffff9d573f519cc0
+>>> [  102.133659] RBP: ffffbe52c059fd80 R08: ffffffffffd96245 R09: 000000000002cb80
+>>> [  102.133660] R10: 000000016989e54c R11: 000000000002a360 R12: ffff9d5731f50300
+>>> [  102.133661] R13: ffff9d5731f50800 R14: ffff9d5731f504c8 R15: ffffffff8463fbef
+>>> [  102.133664] FS:  0000000000000000(0000) GS:ffff9d573f500000(0000) knlGS:0000000000000000
+>>> [  102.133665] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> [  102.133666] CR2: 0000000000000000 CR3: 000000033320a000 CR4: 0000000000340ee0
+>>> [  102.133667] Call Trace:
+>>> [  102.133673]  ? enqueue_entity+0xe3/0x680
+>>> [  102.133705]  ieee80211_resume+0x55/0x70 [mac80211]
+>>> [  102.133729]  wiphy_resume+0x84/0x130 [cfg80211]
+>>> [  102.133752]  ? addresses_show+0xa0/0xa0 [cfg80211]
+>>> [  102.133757]  dpm_run_callback+0x5b/0x150
+>>> [  102.133760]  device_resume+0xad/0x1f0
+>>> [  102.133762]  async_resume+0x1d/0x30
+>>> [  102.133764]  async_run_entry_fn+0x3e/0x170
+>>> [  102.133768]  process_one_work+0x1ab/0x380
+>>> [  102.133771]  worker_thread+0x37/0x3b0
+>>> [  102.133774]  kthread+0x120/0x140
+>>> [  102.133776]  ? create_worker+0x1b0/0x1b0
+>>> [  102.133778]  ? kthread_park+0x90/0x90
+>>> [  102.133782]  ret_from_fork+0x22/0x40
+>>> [  102.133785] ---[ end trace 46229bfd3a4273be ]---
+>>> [  102.134137] ------------[ cut here ]------------
+>>> [  102.134141] wlp1s0:  Failed check-sdata-in-driver check, flags: 0x0
+>>> [  102.134195] WARNING: CPU: 0 PID: 5612 at net/mac80211/driver-ops.h:19
+>>> drv_remove_interface+0xfe/0x110 [mac80211]"
 >>>
->>> and another commit 7dc7c41607d19("avoid unused function warnings")
+>>> When try to pointer the driver.pm to NULL, the problem is fixed.
+>>> It makes the sleep and wake procedure expected when pm's ops not NULL.
 >>>
+>>> By `git blame` command, I know that the assignment of .driver.pm =
+>>> RTW_PM_OPS was in commit 44bc17f7f5b3 ("rtw88: support wowlan feature for
+>>> 8822c"), and another
+>>> commit 7dc7c41607d1 ("rtw88: avoid unused function warnings")
 >>> pointed out rtw_pci_resume() and rtw_pci_suspend() are not used at
 >>> all.
 >>>
 >>> So I think it's safe to remove them.
 >>>
-> I think ".driver.pm = &rtw_pm_ops" is a switch to enable wowlan feature.
-> That means that wowlan doesn't work without this declaration.
->
->>> Currently, I find that the rtl8822ce wifi chip and the pci bridge of
->>> it are not linked by pci
+>>> Fixes: 7dc7c41607d1 ("rtw88: avoid unused function warnings")
+>>> Fixes: 44bc17f7f5b3 ("rtw88: support wowlan feature for 8822c")
 >>>
->>> after wake up by `lspci` command.
+>>> Signed-off-by: Hao Chen <chenhaoa@uniontech.com>
+>>> ---
+>>>    drivers/net/wireless/realtek/rtw88/rtw8822ce.c | 1 -
+>>>    1 file changed, 1 deletion(-)
 >>>
->>> when I set `pcie_aspm.policy=performance ` in the GRUB. The machine
->>> sleep and
->>>
->>> wake up normal.So I think when this ops is assignmented,the sleep and
->>> wake up procedure
->>>
->>> may cause pci device not linked.
-> Please try setting module parameter disable_aspm=1 with pci.ko.
->
-> Could I know what the CPU and pci bridge chipset are used by HONOR laptop?
->
->> Please don't use HTML, our lists automatically drop all HTML email.
+>>> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822ce.c b/drivers/net/wireless/realtek/rtw88/rtw8822ce.c
+>>> index 3845b1333dc3..4c063192f801 100644
+>>> --- a/drivers/net/wireless/realtek/rtw88/rtw8822ce.c
+>>> +++ b/drivers/net/wireless/realtek/rtw88/rtw8822ce.c
+>>> @@ -25,7 +25,6 @@ static struct pci_driver rtw_8822ce_driver = {
+>>>    	.id_table = rtw_8822ce_id_table,
+>>>    	.probe = rtw_pci_probe,
+>>>    	.remove = rtw_pci_remove,
+>>> -	.driver.pm = &rtw_pm_ops,
+>> Why just 8822ce? Why not remove rtw_pm_ops entirely if it just creates
+>> problems?
 >>
+> I think we can't remove rtw_pm_ops, because wowlan will not work.
+> We need to find out why the target platform can't properly resume with
+> this declaration.
+>
+> --
+> Ping-Ke
+>
 
 
