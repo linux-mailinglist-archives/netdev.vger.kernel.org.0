@@ -2,106 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C30322011
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:25:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BBF2322023
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:30:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233039AbhBVTX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 14:23:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37780 "EHLO
+        id S233417AbhBVT26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 14:28:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233279AbhBVTXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 14:23:03 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62660C061574;
-        Mon, 22 Feb 2021 11:22:23 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id p193so14057232yba.4;
-        Mon, 22 Feb 2021 11:22:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WsM98fcGIZKjwnVCaL+ViAH8zE26oXr+w7xGr+VdcXE=;
-        b=dteqb54ZVR5E5vjSoMReussOrnHLJHLHFmF6j+Jf8AWCUADCjdUHhNIp+3FYh/LLou
-         n1fqaDFlMTIO2lpertgvrto77dx7/7cgRTfGhkViYOI4PNfDU0VD9tUVHyeaz4M0/TF/
-         rbJ0jFbnpmRoGYslofXaoDu5Ftw0v8NO/lFFGWZS52lKuyI4lF3PM7QrJRvNDGKe8s/9
-         2EUACnKbFxPnlRZpuKIzjfHrqD+7JB29LUcsdSZUT4ACamc0GEjNIfLD102jCusYSbkv
-         AL2p+XvZWQ5W0enYq4T0QMB3/WpGRiqUMfU/GTyud5XFM9ahDMZBz2jkdL3npNR8vC4c
-         W3Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WsM98fcGIZKjwnVCaL+ViAH8zE26oXr+w7xGr+VdcXE=;
-        b=aCS/6+AbegfI/RaNXcQumluui0r3PU/DPa6bSJGiei1bundbLnhtfGGqnSRauQe03S
-         P1pKa+vE7OdBN6tZjfvXyEVu00S3HhNrc6wx/iGnn2DJS+VjBnW9m6Yd4/h8MOcWaZYK
-         xAAlAwKFs+kkYAheT686GLAF//pWIkbXOYuL7IkDC3bxfq+w1sTkddSi5OT3j5qCLSGr
-         VbrR2pIIbvIBp36barRH7EcLIDIj6uUEUrsUJ3va3wIWTeCnWSuZCoaaP3+mWsFSewpm
-         IaIyf3WCkxIXPkW/z50ov5kK4AT2YWfNbGK9LAfKmN+lzAsDN4FA4Sow1T+LUnsXOJXd
-         g8Jg==
-X-Gm-Message-State: AOAM533m91noVzCFVyNqUeP0nIGeQKTggb7Aotb9ftqTtKuxDpXKXZoR
-        ngee3dJ6C63Bru3xQp5leTeY3H6GJs6OtF7RlKs=
-X-Google-Smtp-Source: ABdhPJwm6M72w2Qk/LpbuhCFYL7dK/aCNFKcdkVTCBZNZnxFmUPslyliJ7HJWXHrtjpqIQYXbIGj1vNd+ZDEnIVZ5Js=
-X-Received: by 2002:a25:1e89:: with SMTP id e131mr35479292ybe.459.1614021742742;
- Mon, 22 Feb 2021 11:22:22 -0800 (PST)
+        with ESMTP id S230297AbhBVTZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 14:25:43 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DDEC061574;
+        Mon, 22 Feb 2021 11:24:59 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lEGpC-00HBPx-PP; Mon, 22 Feb 2021 19:24:54 +0000
+Date:   Mon, 22 Feb 2021 19:24:54 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     netdev@vger.kernel.org
+Cc:     Denis Kirjanov <kda@linux-powerpc.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: [PATCHSET] making unix_bind() undo mknod on failure
+Message-ID: <YDQFBp0+pcxF/3xP@zeniv-ca.linux.org.uk>
+References: <CAOJe8K00srtuD+VAJOFcFepOqgNUm0mC8C=hLq2=qhUFSfhpuw@mail.gmail.com>
+ <YCwIQmsxWxuw+dnt@zeniv-ca.linux.org.uk>
+ <YC86WeSTkYZqRlJY@zeniv-ca.linux.org.uk>
+ <YC88acS6dN6cU1y0@zeniv-ca.linux.org.uk>
+ <CAM_iQpVpJwRNKjKo3p1jFvCjYAXAY83ux09rd2Mt0hKmvx=RgQ@mail.gmail.com>
+ <YDFj3OZ4DMQSqylH@zeniv-ca.linux.org.uk>
+ <CAM_iQpXX7SBGgUkBUY6BEjCqJYbHAUW5Z3VtV2U=yhiw1YJr=w@mail.gmail.com>
+ <YDF6Z8QHh3yw7es9@zeniv-ca.linux.org.uk>
+ <YDQAmH9zSsaqf+Dg@zeniv-ca.linux.org.uk>
+ <YDQCHd37zoByJqz3@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-References: <20210220171307.128382-1-grantseltzer@gmail.com>
-In-Reply-To: <20210220171307.128382-1-grantseltzer@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 22 Feb 2021 11:22:11 -0800
-Message-ID: <CAEf4BzYMvLg=B=ppjJpyr9VrjCFZepqyBKqgeaG8CakvpWq-Tw@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next] Add CONFIG_DEBUG_INFO_BTF check to bpftool
- feature command
-To:     grantseltzer <grantseltzer@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Ian Rogers <irogers@google.com>,
-        Yonghong Song <yhs@fb.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Networking <netdev@vger.kernel.org>,
-        Michal Rostecki <mrostecki@opensuse.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YDQCHd37zoByJqz3@zeniv-ca.linux.org.uk>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 22, 2021 at 7:34 AM grantseltzer <grantseltzer@gmail.com> wrote:
->
-> This adds the CONFIG_DEBUG_INFO_BTF kernel compile option to output of
-> the bpftool feature command. This is relevant for developers that want
-> to use libbpf to account for data structure definition differences
-> between kernels.
->
-> Signed-off-by: grantseltzer <grantseltzer@gmail.com>
+On Mon, Feb 22, 2021 at 07:12:29PM +0000, Al Viro wrote:
+> On Mon, Feb 22, 2021 at 07:06:00PM +0000, Al Viro wrote:
+> > On Sat, Feb 20, 2021 at 09:08:56PM +0000, Al Viro wrote:
+> > 
+> > > *shrug*
+> > > 
+> > > If anything, __unix_complete_bind() might make a better name for that,
+> > > with dropping ->bindlock also pulled in, but TBH I don't have sufficiently
+> > > strong preferences - might as well leave dropping the lock to caller.
+> > > 
+> > > I'll post that series to netdev tonight.
+> > 
+> > 	Took longer than I hoped...  Anyway, here's the current variant;
+> > it's 5.11-based, lives in
+> > git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git misc.af_unix
+> > 
+> > Shortlog:
+> > Al Viro (8):
+> >       af_unix: take address assignment/hash insertion into a new helper
+> >       unix_bind(): allocate addr earlier
+> >       unix_bind(): separate BSD and abstract cases
+> >       unix_bind(): take BSD and abstract address cases into new helpers
+> >       fold unix_mknod() into unix_bind_bsd()
+> >       unix_bind_bsd(): move done_path_create() call after dealing with ->bindlock
+> >       unix_bind_bsd(): unlink if we fail after successful mknod
+> >       __unix_find_socket_byname(): don't pass hash and type separately
+> > 
+> > Diffstat:
+> >  net/unix/af_unix.c | 186 +++++++++++++++++++++++++++--------------------------
+> >  1 file changed, 94 insertions(+), 92 deletions(-)
+> > 
+> > The actual fix is in #7/8, the first 6 are massage in preparation to that
+> > and #8/8 is a minor followup cleanup.  Individual patches in followups.
+> > Please, review.
+> 
+> Argh...  git send-email is playing silly buggers again ;-/
 
-Signed-off-by should have a properly capitalized (where it makes
-sense) real name of the author. Is it Grant Seltzer then?
-
-> ---
->  tools/bpf/bpftool/feature.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-> index 359960a8f..b90cc6832 100644
-> --- a/tools/bpf/bpftool/feature.c
-> +++ b/tools/bpf/bpftool/feature.c
-> @@ -336,6 +336,8 @@ static void probe_kernel_image_config(const char *define_prefix)
->                 { "CONFIG_BPF_JIT", },
->                 /* Avoid compiling eBPF interpreter (use JIT only) */
->                 { "CONFIG_BPF_JIT_ALWAYS_ON", },
-> +               /* Kernel BTF debug information available */
-> +               { "CONFIG_DEBUG_INFO_BTF", },
-
-How about checking CONFIG_DEBUG_INFO_BTF_MODULES as well (i.e.,
-"Kernel module BTF information is available")?
-
->
->                 /* cgroups */
->                 { "CONFIG_CGROUPS", },
-> --
-> 2.29.2
->
+Cute - looks like having EMAIL in environment confuses the living hell out
+git-send-email.  Oh, well...
