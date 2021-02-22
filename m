@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9040322038
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A356322070
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:47:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233299AbhBVTey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 14:34:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233386AbhBVTdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 14:33:00 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75641C06178B;
-        Mon, 22 Feb 2021 11:32:20 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id e9so251274pjj.0;
-        Mon, 22 Feb 2021 11:32:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MZysaavM6RaxfqjWf6Ljab3pTPx34P66aCtFaiiiW/Y=;
-        b=WDlDUxF4DqR66L5hTrjxbIcNdkyuFlaMDFbQg+dZQOZNiL9rli5n6aBLu8x8ORpZye
-         S+KBJIuuh6Nl5I/hnrLHr2fprO9HiONShNHshdnjhA6ANXZIMcx88I86cmiMROKgajVZ
-         4h4eKJqXgl+HRIu6LZsr5GvQAa+pkiY+NbvlYaWV2KJs9VeIO3sUEED+LueV37y4P/Mv
-         lbfpDNmLDStz8eUCaeOkgqxwFjwUuI+grteW1sNpaNtPdMUuUYIC6XB4Qg0LdLmqw7/n
-         jOqIVxPNJnkVtUQTH6+IcunSP3yx0EpLogWTxb98tT4jsDJf5YNvo5+I+Ys1ojmB/eCa
-         8KTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MZysaavM6RaxfqjWf6Ljab3pTPx34P66aCtFaiiiW/Y=;
-        b=GHAw3viYLgtySwZzZbNqW65HqTgTYmDaZgEdpIjVoOxhpPNTS3Dw6y30TIxuBdYujh
-         bzHSQp6MdevCsQ+LPl6TznhyzIwvDK0WFEndXKJSvIMCBzZDsXfwkDwICFB2Pcj3JVGZ
-         DHEm2CF/k/yF7ZN/oaNHb+rsMCRfZAImkReFSMz6x7hbM/Hq01g10ie2siA/GFyfC7Bh
-         2a3vlc848/h7Z6xq7TykXUR24MINGrjIAdYMm3PmilnX0TaejNGBbM/Jz006Ym6lUEFD
-         dbvtH0xcukPAVHxccJSdLZjgDHmB9f0SQRS2aOUnpHUtLex4E1dfMpjdV11+wKP+B+iJ
-         J0vw==
-X-Gm-Message-State: AOAM532yfD2OiBGiJAjufYcoh3uffPqMQXv691SCGoi35yw2Bq1lHi3U
-        rCa9VU4h7qod2hjXiZ2FgT2K0naIEljlnMgPKFEfBMaZf+0=
-X-Google-Smtp-Source: ABdhPJzqU5OTgpS0uOI3nms7/6HfolBtBUjzooFH82UffTEDoM5+T2FDnkqdXGL1kjah6lsFjkUQp78kPgIomnhh2sU=
-X-Received: by 2002:a17:90a:8594:: with SMTP id m20mr24882365pjn.215.1614022340104;
- Mon, 22 Feb 2021 11:32:20 -0800 (PST)
+        id S233365AbhBVTrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 14:47:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233170AbhBVTrC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Feb 2021 14:47:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2882264E32;
+        Mon, 22 Feb 2021 19:46:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614023180;
+        bh=Ri6EYiuUvNYJEE/KKfHGb0Ek9sW1G6VurBQhUkhrAKM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qWDue/h774WdOmqKtOTNRHhdfACMCse0fNPE7EzY0SPZ4tLwNMDskTLdCVR5IIZWk
+         KPIHIn+aIMmSeI+U07mTcRh4jyfOrKH3/1IxnS7Ss9YjdDcZ9FJTLz8DcPGecWZz0H
+         yz6AFP3OHnmCMX2kls69gzfh7dOXd73lHUp57139zijMm6kTWrsFXjHC4geBWFVqOU
+         74BKloc2L7ikBEpGCnH2WfpvVzzShg/iRTD3T0gOrCAU5mtl+wrAuG8IRkU0w9v06T
+         CRBbMhTNScDtXBTEWVA3zUKfm5qxN4sjzDxYzdKBnrP0Cw5gSjh8s8UIwOgyTf6s30
+         iDvgInU5Jt8Cw==
+Date:   Mon, 22 Feb 2021 11:46:16 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH V4 net 3/5] net: stmmac: fix dma physical address of
+ descriptor when display ring
+Message-ID: <20210222114616.4eaac47c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <DB8PR04MB67956B6D0E9BCEC015E57A81E6839@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210204112144.24163-1-qiangqing.zhang@nxp.com>
+        <20210204112144.24163-4-qiangqing.zhang@nxp.com>
+        <20210206122911.5037db4c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <DB8PR04MB67956B6D0E9BCEC015E57A81E6839@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-References: <20210220052924.106599-1-xiyou.wangcong@gmail.com>
- <20210220052924.106599-6-xiyou.wangcong@gmail.com> <87czws477x.fsf@cloudflare.com>
-In-Reply-To: <87czws477x.fsf@cloudflare.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 22 Feb 2021 11:32:09 -0800
-Message-ID: <CAM_iQpWMa61VhVk00cAwKFZ3KNUv6o8kvniNYT3EKWkNQxnExQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v6 5/8] sock_map: rename skb_parser and skb_verdict
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 22, 2021 at 4:28 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> skb_parser also appears in:
->
-> tools/testing/selftests/bpf/test_sockmap.c:int txmsg_omit_skb_parser;
-> tools/testing/selftests/bpf/test_sockmap.c:     {"txmsg_omit_skb_parser", no_argument,      &txmsg_omit_skb_parser, 1},
-> tools/testing/selftests/bpf/test_sockmap.c:     txmsg_omit_skb_parser = 0;
-> tools/testing/selftests/bpf/test_sockmap.c:     if (!txmsg_omit_skb_parser) {
-> tools/testing/selftests/bpf/test_sockmap.c:             if (!txmsg_omit_skb_parser) {
-> tools/testing/selftests/bpf/test_sockmap.c:     /* Tests that omit skb_parser */
-> tools/testing/selftests/bpf/test_sockmap.c:     txmsg_omit_skb_parser = 1;
-> tools/testing/selftests/bpf/test_sockmap.c:     txmsg_omit_skb_parser = 0;
+On Sat, 20 Feb 2021 07:43:33 +0000 Joakim Zhang wrote:
+> > >  	pr_info("%s descriptor ring:\n", rx ? "RX" : "TX");
+> > >
+> > >  	for (i = 0; i < size; i++) {
+> > > -		pr_info("%03d [0x%x]: 0x%x 0x%x 0x%x 0x%x\n",
+> > > -			i, (unsigned int)virt_to_phys(p),
+> > > +		pr_info("%03d [0x%llx]: 0x%x 0x%x 0x%x 0x%x\n",
+> > > +			i, (unsigned long long)(dma_rx_phy + i * desc_size),
+> > >  			le32_to_cpu(p->des0), le32_to_cpu(p->des1),
+> > >  			le32_to_cpu(p->des2), le32_to_cpu(p->des3));
+> > >  		p++;  
+> > 
+> > Why do you pass the desc_size in? The virt memory pointer is incremented by
+> > sizeof(*p) surely
+> > 
+> > 	dma_addr + i * sizeof(*p)  
+> 
+> I think we can't use sizeof(*p), as when display descriptor, only do
+> " struct dma_desc *p = (struct dma_desc *)head;", but driver can pass
+> "struct dma_desc", " struct dma_edesc" or " struct
+> dma_extended_desc",
 
-These are harmless, because they are internal variables of a self test.
-So, I prefer to just leave them as they are.
+Looks like some of the functions you change already try to pick the
+right type. Which one is problematic?
 
-Thanks.
+> so it's necessary to pass desc_size to compatible all cases.
+
+But you still increment the the VMA pointer ('p' in the quote above)
+but it's size, so how is that correct if the DMA addr needs a special
+size increment?
+
