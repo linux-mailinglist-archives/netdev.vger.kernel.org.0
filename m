@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99BCB321FF9
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DAD321FE3
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:17:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbhBVTUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 14:20:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        id S233056AbhBVTQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 14:16:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232499AbhBVTNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 14:13:05 -0500
+        with ESMTP id S232983AbhBVTNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 14:13:06 -0500
 Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA617C06178A;
-        Mon, 22 Feb 2021 11:12:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8376CC061794;
+        Mon, 22 Feb 2021 11:12:26 -0800 (PST)
 Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lEGd4-00HAzr-Ex; Mon, 22 Feb 2021 19:12:22 +0000
+        id 1lEGd4-00HAzt-HJ; Mon, 22 Feb 2021 19:12:22 +0000
 From:   Al Viro <viro@zeniv.linux.org.uk>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -24,9 +24,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Denis Kirjanov <kda@linux-powerpc.org>,
         linux-fsdevel <linux-fsdevel@vger.kernel.org>,
         Cong Wang <xiyou.wangcong@gmail.com>
-Subject: [PATCH 5/8] fold unix_mknod() into unix_bind_bsd()
-Date:   Mon, 22 Feb 2021 19:12:19 +0000
-Message-Id: <20210222191222.4093800-5-viro@zeniv.linux.org.uk>
+Subject: [PATCH 6/8] unix_bind_bsd(): move done_path_create() call after dealing with ->bindlock
+Date:   Mon, 22 Feb 2021 19:12:20 +0000
+Message-Id: <20210222191222.4093800-6-viro@zeniv.linux.org.uk>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210222191222.4093800-1-viro@zeniv.linux.org.uk>
 References: <YDQAmH9zSsaqf+Dg@zeniv-ca.linux.org.uk>
@@ -38,75 +38,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Final preparations for doing unlink on failure past the successful
+mknod.  We can't hold ->bindlock over ->mknod() or ->unlink(), since
+either might do sb_start_write() (e.g. on overlayfs).  However, we
+can do it while holding filesystem and VFS locks - doing
+	kern_path_create()
+	vfs_mknod()
+	grab ->bindlock
+	if u->addr had been set
+		drop ->bindlock
+		done_path_create
+		return -EINVAL
+	else
+		assign the address to socket
+		drop ->bindlock
+		done_path_create
+		return 0
+would be deadlock-free.  Here we massage unix_bind_bsd() to that
+form.  We are still doing equivalent transformations.
+
+Next commit will *not* be an equivalent transformation - it will
+add a call of vfs_unlink() before done_path_create() in "alread bound"
+case.
+
 Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 ---
- net/unix/af_unix.c | 39 +++++++++++++++------------------------
- 1 file changed, 15 insertions(+), 24 deletions(-)
+ net/unix/af_unix.c | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
 diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 56443f05ed9d..5e04e16e6b88 100644
+index 5e04e16e6b88..368376621111 100644
 --- a/net/unix/af_unix.c
 +++ b/net/unix/af_unix.c
-@@ -983,45 +983,36 @@ static struct sock *unix_find_other(struct net *net,
- 	return NULL;
- }
- 
--static int unix_mknod(const char *sun_path, umode_t mode, struct path *res)
-+static int unix_bind_bsd(struct sock *sk, struct unix_address *addr)
- {
-+	struct unix_sock *u = unix_sk(sk);
-+	umode_t mode = S_IFSOCK |
-+	       (SOCK_INODE(sk->sk_socket)->i_mode & ~current_umask());
-+	struct path parent, path;
+@@ -988,7 +988,7 @@ static int unix_bind_bsd(struct sock *sk, struct unix_address *addr)
+ 	struct unix_sock *u = unix_sk(sk);
+ 	umode_t mode = S_IFSOCK |
+ 	       (SOCK_INODE(sk->sk_socket)->i_mode & ~current_umask());
+-	struct path parent, path;
++	struct path parent;
  	struct dentry *dentry;
--	struct path path;
--	int err = 0;
-+	unsigned int hash;
-+	int err;
-+
- 	/*
- 	 * Get the parent directory, calculate the hash for last
- 	 * component.
- 	 */
--	dentry = kern_path_create(AT_FDCWD, sun_path, &path, 0);
--	err = PTR_ERR(dentry);
-+	dentry = kern_path_create(AT_FDCWD, addr->name->sun_path, &parent, 0);
- 	if (IS_ERR(dentry))
--		return err;
-+		return PTR_ERR(dentry);
- 
- 	/*
+ 	unsigned int hash;
+ 	int err;
+@@ -1005,36 +1005,32 @@ static int unix_bind_bsd(struct sock *sk, struct unix_address *addr)
  	 * All right, let's create it.
  	 */
--	err = security_path_mknod(&path, dentry, mode, 0);
-+	err = security_path_mknod(&parent, dentry, mode, 0);
- 	if (!err) {
--		err = vfs_mknod(d_inode(path.dentry), dentry, mode, 0);
-+		err = vfs_mknod(d_inode(parent.dentry), dentry, mode, 0);
- 		if (!err) {
--			res->mnt = mntget(path.mnt);
--			res->dentry = dget(dentry);
-+			path.mnt = mntget(parent.mnt);
-+			path.dentry = dget(dentry);
- 		}
- 	}
--	done_path_create(&path, dentry);
--	return err;
--}
--
--static int unix_bind_bsd(struct sock *sk, struct unix_address *addr)
--{
--	struct unix_sock *u = unix_sk(sk);
--	struct path path = { };
--	umode_t mode = S_IFSOCK |
--	       (SOCK_INODE(sk->sk_socket)->i_mode & ~current_umask());
--	unsigned int hash;
--	int err;
--
--	err = unix_mknod(addr->name->sun_path, mode, &path);
-+	done_path_create(&parent, dentry);
- 	if (err)
+ 	err = security_path_mknod(&parent, dentry, mode, 0);
+-	if (!err) {
++	if (!err)
+ 		err = vfs_mknod(d_inode(parent.dentry), dentry, mode, 0);
+-		if (!err) {
+-			path.mnt = mntget(parent.mnt);
+-			path.dentry = dget(dentry);
+-		}
+-	}
+-	done_path_create(&parent, dentry);
+-	if (err)
++	if (err) {
++		done_path_create(&parent, dentry);
  		return err;
+-
++	}
+ 	err = mutex_lock_interruptible(&u->bindlock);
+ 	if (err) {
+-		path_put(&path);
++		done_path_create(&parent, dentry);
+ 		return err;
+ 	}
+-
+ 	if (u->addr) {
+ 		mutex_unlock(&u->bindlock);
+-		path_put(&path);
++		done_path_create(&parent, dentry);
+ 		return -EINVAL;
+ 	}
+ 
+ 	addr->hash = UNIX_HASH_SIZE;
+-	hash = d_backing_inode(path.dentry)->i_ino & (UNIX_HASH_SIZE - 1);
++	hash = d_backing_inode(dentry)->i_ino & (UNIX_HASH_SIZE - 1);
+ 	spin_lock(&unix_table_lock);
+-	u->path = path;
++	u->path.mnt = mntget(parent.mnt);
++	u->path.dentry = dget(dentry);
+ 	__unix_set_addr(sk, addr, hash);
+ 	spin_unlock(&unix_table_lock);
+ 	mutex_unlock(&u->bindlock);
++	done_path_create(&parent, dentry);
+ 	return 0;
+ }
  
 -- 
 2.11.0
