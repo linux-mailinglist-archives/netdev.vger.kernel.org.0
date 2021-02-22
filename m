@@ -2,79 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1528321FAA
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63C4A321FE9
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 20:21:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232743AbhBVTIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 14:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34266 "EHLO
+        id S233083AbhBVTR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 14:17:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232748AbhBVTGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 14:06:49 -0500
+        with ESMTP id S232806AbhBVTNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 14:13:06 -0500
 Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DBAC06178C;
-        Mon, 22 Feb 2021 11:06:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F7AC06178C;
+        Mon, 22 Feb 2021 11:12:25 -0800 (PST)
 Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lEGWu-00HAo8-GG; Mon, 22 Feb 2021 19:06:01 +0000
-Date:   Mon, 22 Feb 2021 19:06:00 +0000
+        id 1lEGd4-00HAzj-3X; Mon, 22 Feb 2021 19:12:22 +0000
 From:   Al Viro <viro@zeniv.linux.org.uk>
 To:     netdev@vger.kernel.org
-Cc:     Denis Kirjanov <kda@linux-powerpc.org>,
+Cc:     linux-kernel@vger.kernel.org,
         Christoph Hellwig <hch@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Denis Kirjanov <kda@linux-powerpc.org>,
         linux-fsdevel <linux-fsdevel@vger.kernel.org>,
         Cong Wang <xiyou.wangcong@gmail.com>
-Subject: [PATCHSET] making unix_bind() undo mknod on failure
-Message-ID: <YDQAmH9zSsaqf+Dg@zeniv-ca.linux.org.uk>
-References: <20210129131855.GA2346744@infradead.org>
- <YClpVIfHYyzd6EWu@zeniv-ca.linux.org.uk>
- <CAOJe8K00srtuD+VAJOFcFepOqgNUm0mC8C=hLq2=qhUFSfhpuw@mail.gmail.com>
- <YCwIQmsxWxuw+dnt@zeniv-ca.linux.org.uk>
- <YC86WeSTkYZqRlJY@zeniv-ca.linux.org.uk>
- <YC88acS6dN6cU1y0@zeniv-ca.linux.org.uk>
- <CAM_iQpVpJwRNKjKo3p1jFvCjYAXAY83ux09rd2Mt0hKmvx=RgQ@mail.gmail.com>
- <YDFj3OZ4DMQSqylH@zeniv-ca.linux.org.uk>
- <CAM_iQpXX7SBGgUkBUY6BEjCqJYbHAUW5Z3VtV2U=yhiw1YJr=w@mail.gmail.com>
- <YDF6Z8QHh3yw7es9@zeniv-ca.linux.org.uk>
+Subject: [PATCH 1/8] af_unix: take address assignment/hash insertion into a new helper
+Date:   Mon, 22 Feb 2021 19:12:15 +0000
+Message-Id: <20210222191222.4093800-1-viro@zeniv.linux.org.uk>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <YDQAmH9zSsaqf+Dg@zeniv-ca.linux.org.uk>
+References: <YDQAmH9zSsaqf+Dg@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YDF6Z8QHh3yw7es9@zeniv-ca.linux.org.uk>
+Content-Transfer-Encoding: 8bit
 Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 20, 2021 at 09:08:56PM +0000, Al Viro wrote:
+Duplicated logics in all bind variants (autobind, bind-to-path,
+bind-to-abstract) gets taken into a common helper.
 
-> *shrug*
-> 
-> If anything, __unix_complete_bind() might make a better name for that,
-> with dropping ->bindlock also pulled in, but TBH I don't have sufficiently
-> strong preferences - might as well leave dropping the lock to caller.
-> 
-> I'll post that series to netdev tonight.
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+---
+ net/unix/af_unix.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-	Took longer than I hoped...  Anyway, here's the current variant;
-it's 5.11-based, lives in
-git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git misc.af_unix
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 41c3303c3357..45a40cf7b6af 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -262,6 +262,14 @@ static void __unix_insert_socket(struct hlist_head *list, struct sock *sk)
+ 	sk_add_node(sk, list);
+ }
+ 
++static void __unix_set_addr(struct sock *sk, struct unix_address *addr,
++			    unsigned hash)
++{
++	__unix_remove_socket(sk);
++	smp_store_release(&unix_sk(sk)->addr, addr);
++	__unix_insert_socket(&unix_socket_table[hash], sk);
++}
++
+ static inline void unix_remove_socket(struct sock *sk)
+ {
+ 	spin_lock(&unix_table_lock);
+@@ -912,9 +920,7 @@ static int unix_autobind(struct socket *sock)
+ 	}
+ 	addr->hash ^= sk->sk_type;
+ 
+-	__unix_remove_socket(sk);
+-	smp_store_release(&u->addr, addr);
+-	__unix_insert_socket(&unix_socket_table[addr->hash], sk);
++	__unix_set_addr(sk, addr, addr->hash);
+ 	spin_unlock(&unix_table_lock);
+ 	err = 0;
+ 
+@@ -1016,7 +1022,6 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 	int err;
+ 	unsigned int hash;
+ 	struct unix_address *addr;
+-	struct hlist_head *list;
+ 	struct path path = { };
+ 
+ 	err = -EINVAL;
+@@ -1068,25 +1073,20 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 		hash = d_backing_inode(path.dentry)->i_ino & (UNIX_HASH_SIZE - 1);
+ 		spin_lock(&unix_table_lock);
+ 		u->path = path;
+-		list = &unix_socket_table[hash];
+ 	} else {
+ 		spin_lock(&unix_table_lock);
+ 		err = -EADDRINUSE;
+ 		if (__unix_find_socket_byname(net, sunaddr, addr_len,
+ 					      sk->sk_type, hash)) {
++			spin_unlock(&unix_table_lock);
+ 			unix_release_addr(addr);
+-			goto out_unlock;
++			goto out_up;
+ 		}
+-
+-		list = &unix_socket_table[addr->hash];
++		hash = addr->hash;
+ 	}
+ 
+ 	err = 0;
+-	__unix_remove_socket(sk);
+-	smp_store_release(&u->addr, addr);
+-	__unix_insert_socket(list, sk);
+-
+-out_unlock:
++	__unix_set_addr(sk, addr, hash);
+ 	spin_unlock(&unix_table_lock);
+ out_up:
+ 	mutex_unlock(&u->bindlock);
+-- 
+2.11.0
 
-Shortlog:
-Al Viro (8):
-      af_unix: take address assignment/hash insertion into a new helper
-      unix_bind(): allocate addr earlier
-      unix_bind(): separate BSD and abstract cases
-      unix_bind(): take BSD and abstract address cases into new helpers
-      fold unix_mknod() into unix_bind_bsd()
-      unix_bind_bsd(): move done_path_create() call after dealing with ->bindlock
-      unix_bind_bsd(): unlink if we fail after successful mknod
-      __unix_find_socket_byname(): don't pass hash and type separately
-
-Diffstat:
- net/unix/af_unix.c | 186 +++++++++++++++++++++++++++--------------------------
- 1 file changed, 94 insertions(+), 92 deletions(-)
-
-The actual fix is in #7/8, the first 6 are massage in preparation to that
-and #8/8 is a minor followup cleanup.  Individual patches in followups.
-Please, review.
