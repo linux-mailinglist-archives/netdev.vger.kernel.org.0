@@ -2,97 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 402DF321E32
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 18:36:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D606321E82
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 18:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230498AbhBVRgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 12:36:04 -0500
-Received: from m42-2.mailgun.net ([69.72.42.2]:63416 "EHLO m42-2.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230447AbhBVRf4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Feb 2021 12:35:56 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1614015330; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=CUo7EnfzV6YKWuuKEeJZrB9rPqt97SlwJjOh49D6+Hs=;
- b=hvFUpQSBKwXAHqKpYYnL/P+ZCJ7RTE8hZmZ+weqnX+lTCVk0qmRW91IrZDCSKrgQMHDbizNx
- aVpdUBWyoGEG9aMGdQV+pwTS64EqSmHIWG4JxofoNI3v24FUwCNaXNwG/uZDcAiUyEtnL+64
- aXYhMGC2KyoERydkCY1amIeL+Is=
-X-Mailgun-Sending-Ip: 69.72.42.2
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 6033eb474511108a813cf873 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 22 Feb 2021 17:35:03
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 62A17C43461; Mon, 22 Feb 2021 17:35:02 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        id S231621AbhBVRtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 12:49:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60068 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230177AbhBVRth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 12:49:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614016090;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=t1qEQctFvdeOdv7yfoXAbpMkhqeL9UTNI+v0C9mM7jA=;
+        b=KohKZevnz8GOEMADRtGSWvY+MnmpOr5rM5TlVw2QtRC5mHHAkJTtK2h40Qy8PgmNQaehGG
+        ZQ2STGj1xWSs2Od1Onrmzc8REpW55cQUkABRKtZE9eU83bgYgMQDXRt2ZOkzJPgg7pj5ku
+        P3wuz/ph7HHzqxX1zssvd7+NrEEh+j0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-484---Sk-t-iOYqm7IbsHgRrig-1; Mon, 22 Feb 2021 12:48:06 -0500
+X-MC-Unique: --Sk-t-iOYqm7IbsHgRrig-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B00A8C433C6;
-        Mon, 22 Feb 2021 17:35:01 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CFAFE8030BB;
+        Mon, 22 Feb 2021 17:48:05 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-115-141.ams2.redhat.com [10.36.115.141])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EFE6860C04;
+        Mon, 22 Feb 2021 17:48:04 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2] lib/bpf: Fix and simplify bpf_mnt_check_target()
+Date:   Mon, 22 Feb 2021 18:43:10 +0100
+Message-Id: <0ecd47fcb87e5d02b020dbf578272607468dc625.1613995541.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 22 Feb 2021 10:35:01 -0700
-From:   subashab@codeaurora.org
-To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        cpratapa@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/3] net: qualcomm: rmnet: Enable Mapv5
-In-Reply-To: <1614012946-23506-1-git-send-email-sharathv@codeaurora.org>
-References: <1614012946-23506-1-git-send-email-sharathv@codeaurora.org>
-Message-ID: <1a93bc111339e4d3c4e4b765945ab150@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-02-22 09:55, Sharath Chandra Vurukala wrote:
-> This series introduces the MAPv5 packet format.
-> 
-> Patch 0 documents the MAPv5.
-> Patch 1 introduces the Mapv5 and the Inline checksum offload for RX.
-> Patch 2 introduces the Mapv5 and the Inline checksum offload for TX.
-> 
-> A new checksum header format is used as part of MAPv5.
-> For RX checksum offload, the checksum is verified by the HW and the
-> validity is marked in the checksum header of MAPv5.
-> for TX, the required metadata is filled up so hardware can compute the
-> checksum.
-> 
-> v1->v2:
-> - Fixed the compilation errors, warnings reported by kernel test robot.
-> - Checksum header definition is expanded to support big, little endian
-> formats as mentioned by Jakub.
-> 
-> Sharath Chandra Vurukala (3):
->   docs: networking: Add documentation for MAPv5
->   net: ethernet: rmnet: Support for downlink MAPv5 checksum offload
->   net: ethernet: rmnet: Add support for Mapv5 uplink packet
-> 
->  .../device_drivers/cellular/qualcomm/rmnet.rst     |  53 ++++++-
->  drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |   4 +-
->  .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   |  34 +++--
->  drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  22 ++-
->  .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 153
-> ++++++++++++++++++++-
->  include/linux/if_rmnet.h                           |  24 +++-
->  include/uapi/linux/if_link.h                       |   2 +
->  7 files changed, 263 insertions(+), 29 deletions(-)
+As stated in commit ac3415f5c1b1 ("lib/fs: Fix and simplify make_path()"),
+calling stat() before mkdir() is racey, because the entry might change in
+between.
 
-For the series-
+As the call to stat() seems to only check for target existence, we can
+simply call mkdir() unconditionally and catch all errors but EEXIST.
 
-Reviewed-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Fixes: 95ae9a4870e7 ("bpf: fix mnt path when from env")
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+---
+ lib/bpf_legacy.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
+
+diff --git a/lib/bpf_legacy.c b/lib/bpf_legacy.c
+index bc869c3f..8a03b9c2 100644
+--- a/lib/bpf_legacy.c
++++ b/lib/bpf_legacy.c
+@@ -510,20 +510,14 @@ static int bpf_mnt_fs(const char *target)
+ 
+ static int bpf_mnt_check_target(const char *target)
+ {
+-	struct stat sb = {};
+ 	int ret;
+ 
+-	ret = stat(target, &sb);
+-	if (ret) {
+-		ret = mkdir(target, S_IRWXU);
+-		if (ret) {
+-			fprintf(stderr, "mkdir %s failed: %s\n", target,
+-				strerror(errno));
+-			return ret;
+-		}
+-	}
++	ret = mkdir(target, S_IRWXU);
++	if (ret && errno != EEXIST)
++		fprintf(stderr, "mkdir %s failed: %s\n", target,
++			strerror(errno));
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int bpf_valid_mntpt(const char *mnt, unsigned long magic)
+-- 
+2.29.2
+
