@@ -2,105 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E3632116C
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:35:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57047321172
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:36:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbhBVHd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 02:33:57 -0500
-Received: from z11.mailgun.us ([104.130.96.11]:60631 "EHLO z11.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230040AbhBVHdy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Feb 2021 02:33:54 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1613979215; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=Z6NPu4HTwd6RoX5QLHaiXavsPcZ8QsNgXjRqKbtMV3c=;
- b=ItDxT3cBTNaFXhZkNjXSB8OgMMEmb+pex05u4M3hlOeQMWbt1BXQ6iurd8M3U/nnTN0r6tF7
- buNnnfwdst++byYLaWOB3p3ZgLud6o48MdqrZunQmDPlanYIw5EAqwxwCC0m54Nzut2CF5zP
- qc+O1UcXSICKkphQf+Z7Vvm8ZkQ=
-X-Mailgun-Sending-Ip: 104.130.96.11
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 60335e2a0ccf3cf226bdb177 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 22 Feb 2021 07:32:58
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E5B9AC43461; Mon, 22 Feb 2021 07:32:57 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3D530C433C6;
-        Mon, 22 Feb 2021 07:32:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3D530C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S230117AbhBVHgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 02:36:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33769 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230022AbhBVHgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 02:36:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613979283;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6FVHK+rXFWPhvTdgY3ca3NMaeJHpQu46VbcX/NLNp1o=;
+        b=YOJc6VhrxPq6zMYAvv7o9fZW68kSUf9wwDwuFwqF9ID8/oscYz0fD/iCxw9X2o4lKzhsyw
+        InM3CLsZd+1tdgns/8r6VHpFohtb8LuUxzvLUxI80OhNg5p6aBzLJZPVglgAqBTBYSzKob
+        1pgiyuidy2zrLH6yTSAj5mt5N5XoNk4=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-511-JUNA_8iWOZ6Gyq0omCebTw-1; Mon, 22 Feb 2021 02:34:42 -0500
+X-MC-Unique: JUNA_8iWOZ6Gyq0omCebTw-1
+Received: by mail-ed1-f69.google.com with SMTP id g20so3951966edy.7
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 23:34:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=6FVHK+rXFWPhvTdgY3ca3NMaeJHpQu46VbcX/NLNp1o=;
+        b=LPo+jsPoVd78h8+MO7m+0EVqQOTYSJUvkdrL3+xaGcgCZ6QW4Wht/x4TuRkmebsIbV
+         tIsoNUaPaV84Pmyshq9GTl/wHDiELmhIy+pISeYx3UpICXoyo7ubjcbJh1K6hZe6ct2x
+         VNrfPX0+zXHWubGpOMzy4emg1b0jeeqWqlZmWmsdaxHF1aikzL3UKLL2YXB2pUvdjdwW
+         LjB7YlQkhjAHYuXAYkg2WoeGBTxiOsWCdgMIGhlDFQMQtv/70VYsilEPWQHkxGwrNfpt
+         3TjRFzfv8anDQrmrEq+IoH99vKmlIi0Q77Szl88ccYzRLKi7wXDk+fgcuS/dQBY8vKAP
+         1Ajg==
+X-Gm-Message-State: AOAM533sa2fDeZlYXDatUfqu5OrwH369GbHb4h0HHyHPI1Un08Q1+aP+
+        9+30zFxfUeZKYeoqCE5EjhDsv7P7fvwDzq8qE8Usk0eNF+mCx+RoR+QzXtzczdKEf+5EeDCE0jQ
+        2oBRlXWYRXgABYAsE
+X-Received: by 2002:a05:6402:3d8:: with SMTP id t24mr21009501edw.298.1613979280875;
+        Sun, 21 Feb 2021 23:34:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxEzpKE3VGwXPIdtln/AiroN8FBRqHsg0v8D6hpM8GMEsbhJmhd1UQeVTsGMSLWYiL91843Cw==
+X-Received: by 2002:a05:6402:3d8:: with SMTP id t24mr21009478edw.298.1613979280624;
+        Sun, 21 Feb 2021 23:34:40 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id m26sm4603396eja.6.2021.02.21.23.34.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Feb 2021 23:34:40 -0800 (PST)
+Date:   Mon, 22 Feb 2021 02:34:37 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Message-ID: <20210222023040-mutt-send-email-mst@kernel.org>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+ <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] Revert "ath9k: fix ath_tx_process_buffer() potential null
- ptr
- dereference"
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210217211801.22540-1-skhan@linuxfoundation.org>
-References: <20210217211801.22540-1-skhan@linuxfoundation.org>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, nbd@nbd.name,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210222073257.E5B9AC43461@smtp.codeaurora.org>
-Date:   Mon, 22 Feb 2021 07:32:57 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shuah Khan <skhan@linuxfoundation.org> wrote:
+On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
+> 
+> On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
+> > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> > for legacy") made an exception for legacy guests to reset
+> > features to 0, when config space is accessed before features
+> > are set. We should relieve the verify_min_features() check
+> > and allow features reset to 0 for this case.
+> > 
+> > It's worth noting that not just legacy guests could access
+> > config space before features are set. For instance, when
+> > feature VIRTIO_NET_F_MTU is advertised some modern driver
+> > will try to access and validate the MTU present in the config
+> > space before virtio features are set.
+> 
+> 
+> This looks like a spec violation:
+> 
+> "
+> 
+> The following driver-read-only field, mtu only exists if VIRTIO_NET_F_MTU is
+> set.
+> This field specifies the maximum MTU for the driver to use.
+> "
+> 
+> Do we really want to workaround this?
+> 
+> Thanks
 
-> This reverts commit a56c14bb21b296fb6d395164ab62ef2e419e5069.
-> 
-> ath_tx_process_buffer() doesn't dereference or check sta and passes it
-> to ath_tx_complete_aggr() and ath_tx_complete_buf().
-> 
-> ath_tx_complete_aggr() checks the pointer before use. No problem here.
-> 
-> ath_tx_complete_buf() doesn't check or dereference sta and passes it on
-> to ath_tx_complete(). ath_tx_complete() doesn't check or dereference sta,
-> but assigns it to tx_info->status.status_driver_data[0]
-> 
-> ath_tx_complete_buf() is called from ath_tx_complete_aggr() passing
-> null ieee80211_sta pointer.
-> 
-> There is a potential for dereference later on, if and when the
-> tx_info->status.status_driver_data[0]is referenced. In addition, the
-> rcu read lock might be released before referencing the contents.
-> 
-> ath_tx_complete_buf() should be fixed to check sta perhaps? Worth
-> looking into.
-> 
-> Reverting this patch because it doesn't solve the problem and introduces
-> memory leak by skipping buffer completion if the pointer (sta) is NULL.
-> 
-> Fixes: a56c14bb21b2 ("ath9k: fix ath_tx_process_buffer() potential null ptr dereference")
-> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+And also:
 
-Patch applied to ath-next branch of ath.git, thanks.
+The driver MUST follow this sequence to initialize a device:
+1. Reset the device.
+2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
+3. Set the DRIVER status bit: the guest OS knows how to drive the device.
+4. Read device feature bits, and write the subset of feature bits understood by the OS and driver to the
+device. During this step the driver MAY read (but MUST NOT write) the device-specific configuration
+fields to check that it can support the device before accepting it.
+5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature bits after this step.
+6. Re-read device status to ensure the FEATURES_OK bit is still set: otherwise, the device does not
+support our subset of features and the device is unusable.
+7. Perform device-specific setup, including discovery of virtqueues for the device, optional per-bus setup,
+reading and possibly writing the device’s virtio configuration space, and population of virtqueues.
+8. Set the DRIVER_OK status bit. At this point the device is “live”.
 
-14ebaeeff8d0 Revert "ath9k: fix ath_tx_process_buffer() potential null ptr dereference"
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210217211801.22540-1-skhan@linuxfoundation.org/
+so accessing config space before FEATURES_OK is a spec violation, right?
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+> 
+> > Rejecting reset to 0
+> > prematurely causes correct MTU and link status unable to load
+> > for the very first config space access, rendering issues like
+> > guest showing inaccurate MTU value, or failure to reject
+> > out-of-range MTU.
+> > 
+> > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+> > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > ---
+> >   drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+> >   1 file changed, 1 insertion(+), 14 deletions(-)
+> > 
+> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > index 7c1f789..540dd67 100644
+> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > @@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+> >   	return mvdev->mlx_features;
+> >   }
+> > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+> > -{
+> > -	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> > -		return -EOPNOTSUPP;
+> > -
+> > -	return 0;
+> > -}
+> > -
+> >   static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+> >   {
+> >   	int err;
+> > @@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+> >   {
+> >   	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> >   	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > -	int err;
+> >   	print_features(mvdev, features, true);
+> > -	err = verify_min_features(mvdev, features);
+> > -	if (err)
+> > -		return err;
+> > -
+> >   	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
+> >   	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+> >   	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
+> > -	return err;
+> > +	return 0;
+> >   }
+> >   static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
 
