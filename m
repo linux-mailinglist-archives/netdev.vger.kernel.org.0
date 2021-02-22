@@ -2,279 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82146321528
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 12:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA6A4321534
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 12:39:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbhBVLbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 06:31:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34412 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230189AbhBVLbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 06:31:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613993371;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y8uZhtxPnMc3VJgJ7/XsbDI2s/GkB4V6o+tAFFKwv/8=;
-        b=KQM7PgCAWhte1gbgsCw6g+PdEfTanAxPUwWPdC/28GdEVK3bSc4aE3fcZCpMMhlCxDO/al
-        HhbK0kSdHsJ3nJkgZ74CkduX8cz4xt+Valu3wmXhM1w/M72xTLVWYQPRgnyUlc09dw9iwC
-        /CyV5qNIBRnwZkaXi+wM4xVJMFyg7Xs=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-572-iteTRuqTO9yXko-jMPMuKg-1; Mon, 22 Feb 2021 06:29:29 -0500
-X-MC-Unique: iteTRuqTO9yXko-jMPMuKg-1
-Received: by mail-wr1-f72.google.com with SMTP id s18so5989094wrf.0
-        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 03:29:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y8uZhtxPnMc3VJgJ7/XsbDI2s/GkB4V6o+tAFFKwv/8=;
-        b=O5k1L515BXaJO3RMjM+tnVkzaylZ+EjycdkLouYCit9Ybfb/8ZpTehce1vHMpDiZDp
-         Vn0EvIkGHP6ILIyyLAVLr5lVWKdXcjjldEP2YU5KlbyVHIzthdVHxXj9dgwVH8uKU0kD
-         KAywnInS/br5XlFboKPSkUs5fKyG1ptfBODd2QwmvZhDM8agjULsWI85nvOKem1D1Rg1
-         cPrDPZ6tFBdPPBW1nsrekPdFmidyqQH3z+4MDE9cWeRTSQ3p2lQbz406Np39yfv60zVe
-         u5aH+qgQ7weHrWmV3S8eJ9TWX3sQFgVKmqRt5tUrd71lIfSm3iWt4TwCMu8sg+yokNmH
-         8XYw==
-X-Gm-Message-State: AOAM531aJSlN1aM71G6ZTmXUQ81yd3YkbvRGkniLDjkOnUIG5CP90rlb
-        jurk7WbdNr0QE0vapMO++4bLc4CEf0Mliow9T80tiJ1YStzF63F/S8vRMzMmMx8GXL+m/St0pAE
-        TJYxgTpdSPExZa+Ai
-X-Received: by 2002:a5d:63ce:: with SMTP id c14mr7733611wrw.15.1613993368179;
-        Mon, 22 Feb 2021 03:29:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxiJBgeZ62WLQXH1tkB63Xoc8oL1rWkIkvwkAGO6rqCCSIdNxSHGL/0LhoyC56LLS/oG3hmig==
-X-Received: by 2002:a5d:63ce:: with SMTP id c14mr7733598wrw.15.1613993367956;
-        Mon, 22 Feb 2021 03:29:27 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id m24sm7861270wmc.18.2021.02.22.03.29.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Feb 2021 03:29:27 -0800 (PST)
-Date:   Mon, 22 Feb 2021 12:29:24 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v5 02/19] af_vsock: separate wait data loop
-Message-ID: <20210222112924.hu2sfoiwni5kt5wm@steredhat>
-References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
- <20210218053637.1066959-1-arseny.krasnov@kaspersky.com>
+        id S230442AbhBVLiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 06:38:06 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:33648 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230399AbhBVLhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 06:37:54 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 11MBaqhH7002021, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmbs01.realtek.com.tw[172.21.6.94])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 11MBaqhH7002021
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 22 Feb 2021 19:36:52 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 22 Feb 2021 19:36:52 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 22 Feb 2021 19:36:51 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::a98b:ac3a:714:c542]) by
+ RTEXMBS04.realtek.com.tw ([fe80::a98b:ac3a:714:c542%6]) with mapi id
+ 15.01.2106.006; Mon, 22 Feb 2021 19:36:51 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "chenhaoa@uniontech.com" <chenhaoa@uniontech.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        Timlee <timlee@realtek.com>,
+        "zhanjun@uniontech.com" <zhanjun@uniontech.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: Re: [PATCH v2] rtw88: 8822ce: fix wifi disconnect after S3/S4 on HONOR laptop
+Thread-Topic: [PATCH v2] rtw88: 8822ce: fix wifi disconnect after S3/S4 on
+ HONOR laptop
+Thread-Index: AQHXCQAH7RfNyn4HvEexqF5ErvwOdKpj+arv//+MPYA=
+Date:   Mon, 22 Feb 2021 11:36:51 +0000
+Message-ID: <1613993809.2331.12.camel@realtek.com>
+References: <20210222094638.18392-1-chenhaoa@uniontech.com>
+         <87h7m4iefe.fsf@codeaurora.org>
+In-Reply-To: <87h7m4iefe.fsf@codeaurora.org>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [125.224.90.247]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D8FFCD5F8872CA4F8CC42ED3E7B9798E@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210218053637.1066959-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 08:36:33AM +0300, Arseny Krasnov wrote:
->This moves wait loop for data to dedicated function, because later
->it will be used by SEQPACKET data receive loop.
-
-The patch LGTM, maybe just add a line in the commit message with 
-something like this:
-
-     While moving the code around, let's update an old comment.
-
-Whit that fixed:
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> net/vmw_vsock/af_vsock.c | 155 +++++++++++++++++++++------------------
-> 1 file changed, 83 insertions(+), 72 deletions(-)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 656370e11707..6cf7bb977aa1 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1832,6 +1832,68 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
-> 	return err;
-> }
->
->+static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
->+			   long timeout,
->+			   struct vsock_transport_recv_notify_data *recv_data,
->+			   size_t target)
->+{
->+	const struct vsock_transport *transport;
->+	struct vsock_sock *vsk;
->+	s64 data;
->+	int err;
->+
->+	vsk = vsock_sk(sk);
->+	err = 0;
->+	transport = vsk->transport;
->+	prepare_to_wait(sk_sleep(sk), wait, TASK_INTERRUPTIBLE);
->+
->+	while ((data = vsock_stream_has_data(vsk)) == 0) {
->+		if (sk->sk_err != 0 ||
->+		    (sk->sk_shutdown & RCV_SHUTDOWN) ||
->+		    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
->+			break;
->+		}
->+
->+		/* Don't wait for non-blocking sockets. */
->+		if (timeout == 0) {
->+			err = -EAGAIN;
->+			break;
->+		}
->+
->+		if (recv_data) {
->+			err = transport->notify_recv_pre_block(vsk, target, recv_data);
->+			if (err < 0)
->+				break;
->+		}
->+
->+		release_sock(sk);
->+		timeout = schedule_timeout(timeout);
->+		lock_sock(sk);
->+
->+		if (signal_pending(current)) {
->+			err = sock_intr_errno(timeout);
->+			break;
->+		} else if (timeout == 0) {
->+			err = -EAGAIN;
->+			break;
->+		}
->+	}
->+
->+	finish_wait(sk_sleep(sk), wait);
->+
->+	if (err)
->+		return err;
->+
->+	/* Internal transport error when checking for available
->+	 * data. XXX This should be changed to a connection
->+	 * reset in a later change.
->+	 */
->+	if (data < 0)
->+		return -ENOMEM;
->+
->+	return data;
->+}
->+
-> static int
-> vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
-> 			  int flags)
->@@ -1911,85 +1973,34 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->
->
-> 	while (1) {
->-		s64 ready;
->-
->-		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
->-		ready = vsock_stream_has_data(vsk);
->-
->-		if (ready == 0) {
->-			if (sk->sk_err != 0 ||
->-			    (sk->sk_shutdown & RCV_SHUTDOWN) ||
->-			    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
->-				finish_wait(sk_sleep(sk), &wait);
->-				break;
->-			}
->-			/* Don't wait for non-blocking sockets. */
->-			if (timeout == 0) {
->-				err = -EAGAIN;
->-				finish_wait(sk_sleep(sk), &wait);
->-				break;
->-			}
->+		ssize_t read;
->
->-			err = transport->notify_recv_pre_block(
->-					vsk, target, &recv_data);
->-			if (err < 0) {
->-				finish_wait(sk_sleep(sk), &wait);
->-				break;
->-			}
->-			release_sock(sk);
->-			timeout = schedule_timeout(timeout);
->-			lock_sock(sk);
->+		err = vsock_wait_data(sk, &wait, timeout, &recv_data, target);
->+		if (err <= 0)
->+			break;
->
->-			if (signal_pending(current)) {
->-				err = sock_intr_errno(timeout);
->-				finish_wait(sk_sleep(sk), &wait);
->-				break;
->-			} else if (timeout == 0) {
->-				err = -EAGAIN;
->-				finish_wait(sk_sleep(sk), &wait);
->-				break;
->-			}
->-		} else {
->-			ssize_t read;
->-
->-			finish_wait(sk_sleep(sk), &wait);
->-
->-			if (ready < 0) {
->-				/* Invalid queue pair content. XXX This should
->-				* be changed to a connection reset in a later
->-				* change.
->-				*/
->-
->-				err = -ENOMEM;
->-				goto out;
->-			}
->-
->-			err = transport->notify_recv_pre_dequeue(
->-					vsk, target, &recv_data);
->-			if (err < 0)
->-				break;
->+		err = transport->notify_recv_pre_dequeue(vsk, target,
->+							 &recv_data);
->+		if (err < 0)
->+			break;
->
->-			read = transport->stream_dequeue(
->-					vsk, msg,
->-					len - copied, flags);
->-			if (read < 0) {
->-				err = -ENOMEM;
->-				break;
->-			}
->+		read = transport->stream_dequeue(vsk, msg, len - copied, flags);
->+		if (read < 0) {
->+			err = -ENOMEM;
->+			break;
->+		}
->
->-			copied += read;
->+		copied += read;
->
->-			err = transport->notify_recv_post_dequeue(
->-					vsk, target, read,
->-					!(flags & MSG_PEEK), &recv_data);
->-			if (err < 0)
->-				goto out;
->+		err = transport->notify_recv_post_dequeue(vsk, target, read,
->+						!(flags & MSG_PEEK), &recv_data);
->+		if (err < 0)
->+			goto out;
->
->-			if (read >= target || flags & MSG_PEEK)
->-				break;
->+		if (read >= target || flags & MSG_PEEK)
->+			break;
->
->-			target -= read;
->-		}
->+		target -= read;
-> 	}
->
-> 	if (sk->sk_err)
->-- 
->2.25.1
->
-
+T24gTW9uLCAyMDIxLTAyLTIyIGF0IDEyOjI5ICswMjAwLCBLYWxsZSBWYWxvIHdyb3RlOg0KPiBI
+YW8gQ2hlbiA8Y2hlbmhhb2FAdW5pb250ZWNoLmNvbT4gd3JpdGVzOg0KPiANCj4gPiBUaGUgbGFw
+dG9wJ3Mgd2lmaSBkaXNjb25uZWN0IGFmdGVyIHRoZSBsYXB0b3AgSE9OT1IgTWFnaWNCb29rIDE0
+DQo+ID4gc2xlZXAgdG8gUzMvUzQgYW5kIHdha2UgdXAuDQo+ID4NCj4gPiBUaGUgZG1lc2cgb2Yg
+a2VybmVsIHJlcG9ydDoNCj4gPiAiW8KgwqDCoDk5Ljk5MDE2OF0gcGNpZXBvcnQgMDAwMDowMDow
+MS4yOiBjYW4ndCBjaGFuZ2UgcG93ZXIgc3RhdGUgZnJvbSBEM2hvdA0KPiA+IHRvIEQwIChjb25m
+aWcgc3BhY2UgaW5hY2Nlc3NpYmxlKQ0KPiA+IFvCoMKgwqA5OS45OTAxNzZdIEFDUEk6IEVDOiBp
+bnRlcnJ1cHQgdW5ibG9ja2VkDQo+ID4gW8KgwqDCoDk5Ljk5MzMzNF0gcnR3X3BjaSAwMDAwOjAx
+OjAwLjA6IGNhbid0IGNoYW5nZSBwb3dlciBzdGF0ZSBmcm9tIEQzaG90DQo+ID4gdG8gRDAgKGNv
+bmZpZyBzcGFjZSBpbmFjY2Vzc2libGUpDQo+ID4gLi4uLi4uDQo+ID4gW8KgwqAxMDIuMTMzNTAw
+XSBydHdfcGNpIDAwMDA6MDE6MDAuMDogbWFjIHBvd2VyIG9uIGZhaWxlZA0KPiA+IFvCoMKgMTAy
+LjEzMzUwM10gcnR3X3BjaSAwMDAwOjAxOjAwLjA6IGZhaWxlZCB0byBwb3dlciBvbiBtYWMNCj4g
+PiBbwqDCoDEwMi4xMzM1MDVdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQ0K
+PiA+IFvCoMKgMTAyLjEzMzUwNl0gSGFyZHdhcmUgYmVjYW1lIHVuYXZhaWxhYmxlIHVwb24gcmVz
+dW1lLiBUaGlzIGNvdWxkIGJlIGENCj4gPiBzb2Z0d2FyZSBpc3N1ZSBwcmlvciB0byBzdXNwZW5k
+IG9yIGEgaGFyZHdhcmUgaXNzdWUuDQo+ID4gW8KgwqAxMDIuMTMzNTY5XSBXQVJOSU5HOiBDUFU6
+IDQgUElEOiA1NjEyIGF0IG5ldC9tYWM4MDIxMS91dGlsLmM6MjIzMg0KPiA+IGllZWU4MDIxMV9y
+ZWNvbmZpZysweDliLzB4MTQ5MCBbbWFjODAyMTFdDQo+ID4gW8KgwqAxMDIuMTMzNTcwXSBNb2R1
+bGVzIGxpbmtlZCBpbjogY2NtIHJmY29tbSB1dmN2aWRlbyB2aWRlb2J1ZjJfdm1hbGxvYw0KPiA+
+IHZpZGVvYnVmMl9tZW1vcHMgdmlkZW9idWYyX3Y0bDIgdmlkZW9idWYyX2NvbW1vbiB2aWRlb2Rl
+diBtYyBjbWFjIGJuZXDCoA0KPiA+IGJ0dXNiIGJ0cnRsIGJ0YmNtIGJ0aW50ZWwgZWRhY19tY2Vf
+YW1kIGJsdWV0b290aCBrdm1fYW1kIGVjZGhfZ2VuZXJpY8KgDQo+ID4gZWNjIGt2bSBubHNfaXNv
+ODg1OV8xIHJ0d3BjaSBydHc4OCBjcmN0MTBkaWZfcGNsbXVsIGNyYzMyX3BjbG11bCBtYWM4MDIx
+McKgDQo+ID4gZ2hhc2hfY2xtdWxuaV9pbnRlbCBhZXNuaV9pbnRlbCBzbmRfaGRhX2NvZGVjX3Jl
+YWx0ZWsgY3J5cHRvX3NpbWQgaHVhd2VpX3dtaQ0KPiA+IHNuZF9oZGFfY29kZWNfZ2VuZXJpYyBj
+cnlwdGQgY2ZnODAyMTEgd21pX2Jtb2Ygc2VyaW9fcmF3IHNwYXJzZV9rZXltYXANCj4gPiBsZWR0
+cmlnX2F1ZGlvIHNwNTEwMF90Y28gZ2x1ZV9oZWxwZXIgam95ZGV2IHNuZF9oZGFfY29kZWNfaGRt
+aSBzbmRfaGRhX2ludGVsDQo+ID4gc25kX2ludGVsX2RzcGNmZyB3ZGF0X3dkdCBzbmRfaGRhX2Nv
+ZGVjIHNuZF9oZGFfY29yZSBwY3Nwa3Igc25kX2h3ZGVwIHNuZF9wY20NCj4gPiBlZmlfcHN0b3Jl
+IHNuZF90aW1lciBsaWJhcmM0IGsxMHRlbXAgc25kIHNvdW5kY29yZSBzbmRfcGNpX2FjcDN4IGNj
+cCBtYWNfaGlkDQo+ID4gYmluZm10X21pc2MgaXBfdGFibGVzIHhfdGFibGVzIGF1dG9mczQgYW1k
+Z3B1IGFtZF9pb21tdV92MiBncHVfc2NoZWTCoA0KPiA+IGkyY19hbGdvX2JpdCB0dG0gZHJtX2tt
+c19oZWxwZXIgc3lzY29weWFyZWEgc3lzZmlsbHJlY3Qgc3lzaW1nYmx0IGZiX3N5c19mb3BzDQo+
+ID4gdXNibW91c2UgY2VjIG52bWUgaGlkX2dlbmVyaWMgaTJjX3BpaXg0IHVzYmhpZCBudm1lX2Nv
+cmUgZHJtIHdtaSB2aWRlbw0KPiA+IFvCoMKgMTAyLjEzMzYxN10gQ1BVOiA0IFBJRDogNTYxMiBD
+b21tOiBrd29ya2VyL3UzMjoxNiBOb3QgdGFpbnRlZCA1LjcuNy1hbWQ2NC1kZXNrdG9wLTg4MjIg
+IzMNCj4gPiBbwqDCoDEwMi4xMzM2MThdIEhhcmR3YXJlIG5hbWU6IEhVQVdFSSBOQkxMLVdYWDkv
+TkJMTC1XWFg5LVBDQiwgQklPUyAxLjA2IDA5LzI5LzIwMjANCj4gPiBbwqDCoDEwMi4xMzM2MjNd
+IFdvcmtxdWV1ZTogZXZlbnRzX3VuYm91bmQgYXN5bmNfcnVuX2VudHJ5X2ZuDQo+ID4gW8KgwqAx
+MDIuMTMzNjUxXSBSSVA6IDAwMTA6aWVlZTgwMjExX3JlY29uZmlnKzB4OWIvMHgxNDkwIFttYWM4
+MDIxMV0NCj4gPiBbwqDCoDEwMi4xMzM2NTRdIENvZGU6IDMxIGRiIGU4IGU4IGZiIDI3IGMyIDQx
+IGM2IDg1IDM0IDA1IDAwIDAwIDAwIDRjIDg5IGVmIGU4IDM4DQo+ID4gNTYgZmMgZmYgODkgNDUg
+YjggODUgYzAgNzQgNGMgNDggYzcgYzcgZDAgMGMgMDkgYzEgZTggMDEgZTAgMjUgYzIgPDBmPiAw
+YiA0Yw0KPiA+IDg5IGVmIGU4IDJiIGQxIGZmIGZmIGU5IDAyIDAzIDAwIDAwIDgwIDdkIDlmIDAw
+IDBmIDg1IDFkDQo+ID4gW8KgwqAxMDIuMTMzNjU1XSBSU1A6IDAwMTg6ZmZmZmJlNTJjMDU5ZmQw
+OCBFRkxBR1M6IDAwMDEwMjg2DQo+ID4gW8KgwqAxMDIuMTMzNjU3XSBSQVg6IDAwMDAwMDAwMDAw
+MDAwMDAgUkJYOiAwMDAwMDAwMDAwMDAwMDAwIFJDWDogMDAwMDAwMDAwMDAwMDAwNw0KPiA+IFvC
+oMKgMTAyLjEzMzY1OF0gUkRYOiAwMDAwMDAwMDAwMDAwMDA3IFJTSTogMDAwMDAwMDAwMDAwMDA5
+NiBSREk6IGZmZmY5ZDU3M2Y1MTljYzANCj4gPiBbwqDCoDEwMi4xMzM2NTldIFJCUDogZmZmZmJl
+NTJjMDU5ZmQ4MCBSMDg6IGZmZmZmZmZmZmZkOTYyNDUgUjA5OiAwMDAwMDAwMDAwMDJjYjgwDQo+
+ID4gW8KgwqAxMDIuMTMzNjYwXSBSMTA6IDAwMDAwMDAxNjk4OWU1NGMgUjExOiAwMDAwMDAwMDAw
+MDJhMzYwIFIxMjogZmZmZjlkNTczMWY1MDMwMA0KPiA+IFvCoMKgMTAyLjEzMzY2MV0gUjEzOiBm
+ZmZmOWQ1NzMxZjUwODAwIFIxNDogZmZmZjlkNTczMWY1MDRjOCBSMTU6IGZmZmZmZmZmODQ2M2Zi
+ZWYNCj4gPiBbwqDCoDEwMi4xMzM2NjRdIEZTOsKgwqAwMDAwMDAwMDAwMDAwMDAwKDAwMDApIEdT
+OmZmZmY5ZDU3M2Y1MDAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0KPiA+IFvCoMKg
+MTAyLjEzMzY2NV0gQ1M6wqDCoDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgw
+MDUwMDMzDQo+ID4gW8KgwqAxMDIuMTMzNjY2XSBDUjI6IDAwMDAwMDAwMDAwMDAwMDAgQ1IzOiAw
+MDAwMDAwMzMzMjBhMDAwIENSNDogMDAwMDAwMDAwMDM0MGVlMA0KPiA+IFvCoMKgMTAyLjEzMzY2
+N10gQ2FsbCBUcmFjZToNCj4gPiBbwqDCoDEwMi4xMzM2NzNdwqDCoD8gZW5xdWV1ZV9lbnRpdHkr
+MHhlMy8weDY4MA0KPiA+IFvCoMKgMTAyLjEzMzcwNV3CoMKgaWVlZTgwMjExX3Jlc3VtZSsweDU1
+LzB4NzAgW21hYzgwMjExXQ0KPiA+IFvCoMKgMTAyLjEzMzcyOV3CoMKgd2lwaHlfcmVzdW1lKzB4
+ODQvMHgxMzAgW2NmZzgwMjExXQ0KPiA+IFvCoMKgMTAyLjEzMzc1Ml3CoMKgPyBhZGRyZXNzZXNf
+c2hvdysweGEwLzB4YTAgW2NmZzgwMjExXQ0KPiA+IFvCoMKgMTAyLjEzMzc1N13CoMKgZHBtX3J1
+bl9jYWxsYmFjaysweDViLzB4MTUwDQo+ID4gW8KgwqAxMDIuMTMzNzYwXcKgwqBkZXZpY2VfcmVz
+dW1lKzB4YWQvMHgxZjANCj4gPiBbwqDCoDEwMi4xMzM3NjJdwqDCoGFzeW5jX3Jlc3VtZSsweDFk
+LzB4MzANCj4gPiBbwqDCoDEwMi4xMzM3NjRdwqDCoGFzeW5jX3J1bl9lbnRyeV9mbisweDNlLzB4
+MTcwDQo+ID4gW8KgwqAxMDIuMTMzNzY4XcKgwqBwcm9jZXNzX29uZV93b3JrKzB4MWFiLzB4Mzgw
+DQo+ID4gW8KgwqAxMDIuMTMzNzcxXcKgwqB3b3JrZXJfdGhyZWFkKzB4MzcvMHgzYjANCj4gPiBb
+wqDCoDEwMi4xMzM3NzRdwqDCoGt0aHJlYWQrMHgxMjAvMHgxNDANCj4gPiBbwqDCoDEwMi4xMzM3
+NzZdwqDCoD8gY3JlYXRlX3dvcmtlcisweDFiMC8weDFiMA0KPiA+IFvCoMKgMTAyLjEzMzc3OF3C
+oMKgPyBrdGhyZWFkX3BhcmsrMHg5MC8weDkwDQo+ID4gW8KgwqAxMDIuMTMzNzgyXcKgwqByZXRf
+ZnJvbV9mb3JrKzB4MjIvMHg0MA0KPiA+IFvCoMKgMTAyLjEzMzc4NV0gLS0tWyBlbmQgdHJhY2Ug
+NDYyMjliZmQzYTQyNzNiZSBdLS0tDQo+ID4gW8KgwqAxMDIuMTM0MTM3XSAtLS0tLS0tLS0tLS1b
+IGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0NCj4gPiBbwqDCoDEwMi4xMzQxNDFdIHdscDFzMDrCoMKg
+RmFpbGVkIGNoZWNrLXNkYXRhLWluLWRyaXZlciBjaGVjaywgZmxhZ3M6IDB4MA0KPiA+IFvCoMKg
+MTAyLjEzNDE5NV0gV0FSTklORzogQ1BVOiAwIFBJRDogNTYxMiBhdCBuZXQvbWFjODAyMTEvZHJp
+dmVyLW9wcy5oOjE5DQo+ID4gZHJ2X3JlbW92ZV9pbnRlcmZhY2UrMHhmZS8weDExMCBbbWFjODAy
+MTFdIg0KPiA+DQo+ID4gV2hlbiB0cnkgdG8gcG9pbnRlciB0aGUgZHJpdmVyLnBtIHRvIE5VTEws
+IHRoZSBwcm9ibGVtIGlzIGZpeGVkLg0KPiA+IEl0IG1ha2VzIHRoZSBzbGVlcCBhbmQgd2FrZSBw
+cm9jZWR1cmUgZXhwZWN0ZWQgd2hlbiBwbSdzIG9wcyBub3QgTlVMTC4NCj4gPg0KPiA+IEJ5IGBn
+aXQgYmxhbWVgIGNvbW1hbmQsIEkga25vdyB0aGF0IHRoZSBhc3NpZ25tZW50IG9mIC5kcml2ZXIu
+cG0gPQ0KPiA+IFJUV19QTV9PUFMgd2FzIGluIGNvbW1pdCA0NGJjMTdmN2Y1YjMgKCJydHc4ODog
+c3VwcG9ydCB3b3dsYW4gZmVhdHVyZSBmb3INCj4gPiA4ODIyYyIpLCBhbmQgYW5vdGhlcg0KPiA+
+IGNvbW1pdCA3ZGM3YzQxNjA3ZDEgKCJydHc4ODogYXZvaWQgdW51c2VkIGZ1bmN0aW9uIHdhcm5p
+bmdzIikNCj4gPiBwb2ludGVkIG91dCBydHdfcGNpX3Jlc3VtZSgpIGFuZCBydHdfcGNpX3N1c3Bl
+bmQoKSBhcmUgbm90IHVzZWQgYXQNCj4gPiBhbGwuDQo+ID4NCj4gPiBTbyBJIHRoaW5rIGl0J3Mg
+c2FmZSB0byByZW1vdmUgdGhlbS4NCj4gPg0KPiA+IEZpeGVzOiA3ZGM3YzQxNjA3ZDEgKCJydHc4
+ODogYXZvaWQgdW51c2VkIGZ1bmN0aW9uIHdhcm5pbmdzIikNCj4gPiBGaXhlczogNDRiYzE3Zjdm
+NWIzICgicnR3ODg6IHN1cHBvcnQgd293bGFuIGZlYXR1cmUgZm9yIDg4MjJjIikNCj4gPg0KPiA+
+IFNpZ25lZC1vZmYtYnk6IEhhbyBDaGVuIDxjaGVuaGFvYUB1bmlvbnRlY2guY29tPg0KPiA+IC0t
+LQ0KPiA+wqDCoGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmNlLmMg
+fCAxIC0NCj4gPsKgwqAxIGZpbGUgY2hhbmdlZCwgMSBkZWxldGlvbigtKQ0KPiA+DQo+ID4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmNlLmMg
+Yi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJjZS5jDQo+ID4gaW5k
+ZXggMzg0NWIxMzMzZGMzLi40YzA2MzE5MmY4MDEgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9u
+ZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyY2UuYw0KPiA+ICsrKyBiL2RyaXZlcnMv
+bmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmNlLmMNCj4gPiBAQCAtMjUsNyArMjUs
+NiBAQCBzdGF0aWMgc3RydWN0IHBjaV9kcml2ZXIgcnR3Xzg4MjJjZV9kcml2ZXIgPSB7DQo+ID7C
+oMKgCS5pZF90YWJsZSA9IHJ0d184ODIyY2VfaWRfdGFibGUsDQo+ID7CoMKgCS5wcm9iZSA9IHJ0
+d19wY2lfcHJvYmUsDQo+ID7CoMKgCS5yZW1vdmUgPSBydHdfcGNpX3JlbW92ZSwNCj4gPiAtCS5k
+cml2ZXIucG0gPSAmcnR3X3BtX29wcywNCj4gDQo+IFdoeSBqdXN0IDg4MjJjZT8gV2h5IG5vdCBy
+ZW1vdmUgcnR3X3BtX29wcyBlbnRpcmVseSBpZiBpdCBqdXN0IGNyZWF0ZXMNCj4gcHJvYmxlbXM/
+DQo+IA0KDQpJIHRoaW5rIHdlIGNhbid0IHJlbW92ZSBydHdfcG1fb3BzLCBiZWNhdXNlIHdvd2xh
+biB3aWxsIG5vdCB3b3JrLg0KV2UgbmVlZCB0byBmaW5kIG91dCB3aHkgdGhlIHRhcmdldCBwbGF0
+Zm9ybSBjYW4ndCBwcm9wZXJseSByZXN1bWUgd2l0aA0KdGhpcyBkZWNsYXJhdGlvbi4NCg0KLS0N
+ClBpbmctS2UNCg0K
