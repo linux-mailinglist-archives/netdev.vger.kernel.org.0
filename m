@@ -2,135 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B8D321554
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 12:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A0A321557
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 12:46:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbhBVLok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 06:44:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:32371 "EHLO
+        id S230081AbhBVLpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 06:45:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48688 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229947AbhBVLoj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 06:44:39 -0500
+        by vger.kernel.org with ESMTP id S229907AbhBVLp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 06:45:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613994193;
+        s=mimecast20190719; t=1613994240;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MmzZCjQQYbObSyV51XAvsCh6DM7Wnhv+Pu08wvezplw=;
-        b=gs+RIboGBq/6c/tg3zFc+i4YclOG22Sh0ziSEo/Wb4WNMsxdvdIxjXq3hucdgfaAlXkd38
-        g78jm+sve6uEbYonBYj44v7cTSXz+kmKR5pj/GReIE6zVhui3PevNHl/03zkHGPLASVPy+
-        CkpRNxAMLoY2sxn+OOGaFtpyHRmIIlg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-486-41D8J8JmPjKTNYMKtidFaQ-1; Mon, 22 Feb 2021 06:43:09 -0500
-X-MC-Unique: 41D8J8JmPjKTNYMKtidFaQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 45731102C7F4;
-        Mon, 22 Feb 2021 11:43:07 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.50])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 04C861F0;
-        Mon, 22 Feb 2021 11:42:57 +0000 (UTC)
-Date:   Mon, 22 Feb 2021 12:42:46 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Chuck Lever <chuck.lever@oracle.com>, Mel Gorman <mgorman@suse.de>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Jakub Kicinski <kuba@kernel.org>, brouer@redhat.com,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: alloc_pages_bulk()
-Message-ID: <20210222124246.690414a2@carbon>
-In-Reply-To: <20210222094256.GH3697@techsingularity.net>
-References: <EEB0B974-6E63-41A0-9C01-F0DEA39FC4BF@oracle.com>
-        <20210209113108.1ca16cfa@carbon>
-        <20210210084155.GA3697@techsingularity.net>
-        <20210210124103.56ed1e95@carbon>
-        <20210210130705.GC3629@suse.de>
-        <B123FB11-661F-45A6-8235-2982BF3C4B83@oracle.com>
-        <20210211091235.GC3697@techsingularity.net>
-        <20210211132628.1fe4f10b@carbon>
-        <20210215120056.GD3697@techsingularity.net>
-        <20210215171038.42f62438@carbon>
-        <20210222094256.GH3697@techsingularity.net>
+        bh=jMggRyrmt7rUz3sFUZulBpW7f6YfWViL3qR4aD0gP18=;
+        b=PQ9B2HqnT0wuiU/2uNnn7qsCYuKNX/hIltE5Qf+GmMdH8kAMOoIPP5Ccvh/tVsBqdU7gMw
+        4mLCfkr9lCyIEXcnDh6K3hWQ94EPUwT/8PJP1X/VZ4GYd/Fo1VrHp7zWF06hg0YIPnuPep
+        BHLYmqhEX8tamAhK1AG/Frjj9xkTxOE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-490-eOC5pSFIMp23OfeICsSUKQ-1; Mon, 22 Feb 2021 06:43:57 -0500
+X-MC-Unique: eOC5pSFIMp23OfeICsSUKQ-1
+Received: by mail-wm1-f69.google.com with SMTP id r21so2512336wmq.7
+        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 03:43:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jMggRyrmt7rUz3sFUZulBpW7f6YfWViL3qR4aD0gP18=;
+        b=D2n/JT2TX0PQIESSUZpkZwzKKyoYqR7pqYijhVs3cye5qVItJ9HO08SR84K2Xa1w0P
+         vENlQ3JrOPMFMyQftW0kWNRFoAkPessNYfW3Lk8uOUxdCL0O37vnOfyjuVEnClqtGlRj
+         Tf5ieLhX2cFtfsIL9CuuSZUIPA0HKBOrjYZXOqvFbiXKKIjA6IGhp/8gbq0Gy71H2BT6
+         n5gnJKrNsHE2oMCT9nxBnNYAf8pMSgjq+NO7xhYhi3C5m/9FmY5MdYM/v4jw6SUTe5pU
+         O6FSS/D7xjrmOKtadYmysn3noK/nFTb3mOetYYxuG8yodzcNJGb9guB9NDkU+4ZM1N9u
+         NVhA==
+X-Gm-Message-State: AOAM532TAdZdub0/yy/KrsqeeYHJpqmtvRzJd5qyoIEzNTngQubBiFIM
+        lW/Cnc2WKs5NlwXgdmhAaOQhqqhjJxpGBAFFUDA24fsY0fnPLC9/KYCc9cY5/DKTbJTzNgDwiyX
+        4nuDi6kHQQ53Tdisu
+X-Received: by 2002:adf:a2c7:: with SMTP id t7mr21223393wra.42.1613994235724;
+        Mon, 22 Feb 2021 03:43:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxh4bkeSBk/Aof8/0ud063mP9B8es8pjQc7OR5fltHgLTpr3ahl7wR4tuzSs4XfoCBOiy7e3A==
+X-Received: by 2002:adf:a2c7:: with SMTP id t7mr21223379wra.42.1613994235557;
+        Mon, 22 Feb 2021 03:43:55 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id h17sm20352349wrw.74.2021.02.22.03.43.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Feb 2021 03:43:55 -0800 (PST)
+Date:   Mon, 22 Feb 2021 12:43:52 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v5 03/19] af_vsock: separate receive data loop
+Message-ID: <20210222114352.u5byc3lbndwtorjo@steredhat>
+References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
+ <20210218053653.1067086-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210218053653.1067086-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Feb 2021 09:42:56 +0000
-Mel Gorman <mgorman@techsingularity.net> wrote:
+On Thu, Feb 18, 2021 at 08:36:50AM +0300, Arseny Krasnov wrote:
+>This moves STREAM specific data receive logic to dedicated function:
+>'__vsock_stream_recvmsg()', while checks that will be same for both
+>types of socket are in shared function: 'vsock_connectible_recvmsg()'.
 
-> On Mon, Feb 15, 2021 at 05:10:38PM +0100, Jesper Dangaard Brouer wrote:
-> > 
-> > On Mon, 15 Feb 2021 12:00:56 +0000
-> > Mel Gorman <mgorman@techsingularity.net> wrote:
-> >   
-> > > On Thu, Feb 11, 2021 at 01:26:28PM +0100, Jesper Dangaard Brouer wrote:  
-> > [...]  
-> > >   
-> > > > I also suggest the API can return less pages than requested. Because I
-> > > > want to to "exit"/return if it need to go into an expensive code path
-> > > > (like buddy allocator or compaction).  I'm assuming we have a flags to
-> > > > give us this behavior (via gfp_flags or alloc_flags)?
-> > > >     
-> > > 
-> > > The API returns the number of pages returned on a list so policies
-> > > around how aggressive it should be allocating the requested number of
-> > > pages could be adjusted without changing the API. Passing in policy
-> > > requests via gfp_flags may be problematic as most (all?) bits are
-> > > already used.  
-> > 
-> > Well, I was just thinking that I would use GFP_ATOMIC instead of
-> > GFP_KERNEL to "communicate" that I don't want this call to take too
-> > long (like sleeping).  I'm not requesting any fancy policy :-)
-> >   
-> 
-> The NFS use case requires opposite semantics
-> -- it really needs those allocations to succeed
-> https://lore.kernel.org/r/161340498400.7780.962495219428962117.stgit@klimt.1015granger.net.
+I'm not a native speaker, but I would rewrite this message like this:
 
-Sorry, but that is not how I understand the code.
+Move STREAM specific data receive logic to '__vsock_stream_recvmsg()'
+dedicated function, while checks, that will be same for both STREAM
+and SEQPACKET sockets, stays in 'vsock_connectible_recvmsg()' shared
+functions.
 
-The code is doing exactly what I'm requesting. If the alloc_pages_bulk()
-doesn't return expected number of pages, then check if others need to
-run.  The old code did schedule_timeout(msecs_to_jiffies(500)), while
-Chuck's patch change this to ask for cond_resched().  Thus, it tries to
-avoid blocking the CPU for too long (when allocating many pages).
+Anyway the patch LGTM:
 
-And the nfsd code seems to handle that the code can be interrupted (via
-return -EINTR) via signal_pending(current).  Thus, the nfsd code seems
-to be able to handle if the page allocations failed.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-
-> I've asked what code it's based on as it's not 5.11 and I'll iron that
-> out first.
 >
-> Then it might be clearer what the "can fail" semantics should look like.
-> I think it would be best to have pairs of patches where the first patch
-> adjusts the semantics of the bulk allocator and the second adds a user.
-> That will limit the amount of code code carried in the implementation.
-> When the initial users are in place then the implementation can be
-> optimised as the optimisations will require significant refactoring and
-> I not want to refactor multiple times.
-
-I guess, I should try to code-up the usage in page_pool.
-
-What is the latest patch for adding alloc_pages_bulk() ?
-
-The nfsd code (svc_alloc_arg) is called in a context where it can
-sleep, and thus use GFP_KERNEL.  In most cases the page_pool will be
-called with GFP_ATOMIC.  I don't think I/page_pool will retry the call
-like Chuck did, as I cannot (re)schedule others to run.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> net/vmw_vsock/af_vsock.c | 116 ++++++++++++++++++++++-----------------
+> 1 file changed, 67 insertions(+), 49 deletions(-)
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 6cf7bb977aa1..d277dc1cdbdf 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1894,65 +1894,22 @@ static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
+> 	return data;
+> }
+>
+>-static int
+>-vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>-			  int flags)
+>+static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
+>+				  size_t len, int flags)
+> {
+>-	struct sock *sk;
+>-	struct vsock_sock *vsk;
+>+	struct vsock_transport_recv_notify_data recv_data;
+> 	const struct vsock_transport *transport;
+>-	int err;
+>-	size_t target;
+>+	struct vsock_sock *vsk;
+> 	ssize_t copied;
+>+	size_t target;
+> 	long timeout;
+>-	struct vsock_transport_recv_notify_data recv_data;
+>+	int err;
+>
+> 	DEFINE_WAIT(wait);
+>
+>-	sk = sock->sk;
+> 	vsk = vsock_sk(sk);
+>-	err = 0;
+>-
+>-	lock_sock(sk);
+>-
+> 	transport = vsk->transport;
+>
+>-	if (!transport || sk->sk_state != TCP_ESTABLISHED) {
+>-		/* Recvmsg is supposed to return 0 if a peer performs an
+>-		 * orderly shutdown. Differentiate between that case and when a
+>-		 * peer has not connected or a local shutdown occured 
+>with the
+>-		 * SOCK_DONE flag.
+>-		 */
+>-		if (sock_flag(sk, SOCK_DONE))
+>-			err = 0;
+>-		else
+>-			err = -ENOTCONN;
+>-
+>-		goto out;
+>-	}
+>-
+>-	if (flags & MSG_OOB) {
+>-		err = -EOPNOTSUPP;
+>-		goto out;
+>-	}
+>-
+>-	/* We don't check peer_shutdown flag here since peer may actually shut
+>-	 * down, but there can be data in the queue that a local socket can
+>-	 * receive.
+>-	 */
+>-	if (sk->sk_shutdown & RCV_SHUTDOWN) {
+>-		err = 0;
+>-		goto out;
+>-	}
+>-
+>-	/* It is valid on Linux to pass in a zero-length receive buffer.  This
+>-	 * is not an error.  We may as well bail out now.
+>-	 */
+>-	if (!len) {
+>-		err = 0;
+>-		goto out;
+>-	}
+>-
+> 	/* We must not copy less than target bytes into the user's buffer
+> 	 * before returning successfully, so we wait for the consume queue to
+> 	 * have that much data to consume before dequeueing.  Note that this
+>@@ -2011,6 +1968,67 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+> 	if (copied > 0)
+> 		err = copied;
+>
+>+out:
+>+	return err;
+>+}
+>+
+>+static int
+>+vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>+			  int flags)
+>+{
+>+	struct sock *sk;
+>+	struct vsock_sock *vsk;
+>+	const struct vsock_transport *transport;
+>+	int err;
+>+
+>+	DEFINE_WAIT(wait);
+>+
+>+	sk = sock->sk;
+>+	vsk = vsock_sk(sk);
+>+	err = 0;
+>+
+>+	lock_sock(sk);
+>+
+>+	transport = vsk->transport;
+>+
+>+	if (!transport || sk->sk_state != TCP_ESTABLISHED) {
+>+		/* Recvmsg is supposed to return 0 if a peer performs an
+>+		 * orderly shutdown. Differentiate between that case and 
+>when a
+>+		 * peer has not connected or a local shutdown occurred with the
+>+		 * SOCK_DONE flag.
+>+		 */
+>+		if (sock_flag(sk, SOCK_DONE))
+>+			err = 0;
+>+		else
+>+			err = -ENOTCONN;
+>+
+>+		goto out;
+>+	}
+>+
+>+	if (flags & MSG_OOB) {
+>+		err = -EOPNOTSUPP;
+>+		goto out;
+>+	}
+>+
+>+	/* We don't check peer_shutdown flag here since peer may actually shut
+>+	 * down, but there can be data in the queue that a local socket can
+>+	 * receive.
+>+	 */
+>+	if (sk->sk_shutdown & RCV_SHUTDOWN) {
+>+		err = 0;
+>+		goto out;
+>+	}
+>+
+>+	/* It is valid on Linux to pass in a zero-length receive buffer.  This
+>+	 * is not an error.  We may as well bail out now.
+>+	 */
+>+	if (!len) {
+>+		err = 0;
+>+		goto out;
+>+	}
+>+
+>+	err = __vsock_stream_recvmsg(sk, msg, len, flags);
+>+
+> out:
+> 	release_sock(sk);
+> 	return err;
+>-- 
+>2.25.1
+>
 
