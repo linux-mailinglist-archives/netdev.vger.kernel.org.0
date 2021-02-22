@@ -2,494 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 297AB321ABA
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 16:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5921B321AF9
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 16:14:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbhBVPDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 10:03:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37892 "EHLO
+        id S231213AbhBVPNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 10:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbhBVPDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 10:03:49 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDB7C061786
-        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 07:03:06 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lECjg-0006Iy-Cu; Mon, 22 Feb 2021 16:02:56 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lECje-00048n-BA; Mon, 22 Feb 2021 16:02:54 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Robin van der Gracht <robin@protonic.nl>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v3] net: introduce CAN specific pointer in the struct net_device
-Date:   Mon, 22 Feb 2021 16:02:51 +0100
-Message-Id: <20210222150251.12911-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        with ESMTP id S230202AbhBVPNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 10:13:25 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A172C061786;
+        Mon, 22 Feb 2021 07:12:43 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id i9so3926085wml.5;
+        Mon, 22 Feb 2021 07:12:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W0TOeWb9HGAVOiFV96tO3iwrSfpr1HUMq4Lyw23rID8=;
+        b=FXji/u2iaXY+XOLURddZgd2B9Komiw4Zs+cHylXgLODWE9GujYAMZXOAJt49ncgKkj
+         KXasUXoXmvp4d8wnMqKd80kcI7te+i8Ssj5jDkgEWFuHlI+B6a2sASXp0MxfAR6JnXe8
+         PMBmzH05uvtN8ixL0Xf+EQKCWEzHPeryma2B8WEKKwAVtI0pXqr1NlCyNenHmBJpSL8S
+         /+oAK7AHbhG8Bp1qrmvN2UnpdRZab4b+NfCGuGFlZhbfGdnHHN2BEQP/z7fvhdeo8a9n
+         SKJFfnaPm0+G5TFN4ZPUDwZLEAxSLZT3kXUZZdZbgYAQSBq86aQw+eD/RGBp29tx1xWa
+         GH7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W0TOeWb9HGAVOiFV96tO3iwrSfpr1HUMq4Lyw23rID8=;
+        b=AiJa2u4ZYYG4cGGbUvDlKsPNrYsvn5sC3tbefZHBa1Fet7VYgmMduMZdM6UvoN1GPC
+         S5Z3ig8x9Qa5yh2+itwSGbSgnFMSj3sQQcJlLBHyTGB/o/sGGyxj0hyg1cJxe9jN3KTa
+         yWoiDNiT2DU/alDTIBxJBKNYfcHPbSlcUp4VBZ4obMKn1JzDiTCcKD2dp4bP6384QFVU
+         4UODJjq/Ebe8gqeo6wqkcKzxqh2Lvav9qQyC77kHNvop/ZnlBo6llZhXb7vaNPT2x+87
+         HclkeuZrk5h/tBIIsOGCOOugYCCWMjjxLP2/lbKyUO+v7iAEQMwjZb6LMpL4CZVyjw48
+         irbA==
+X-Gm-Message-State: AOAM531Y+q21hjEBnQGvbOWuWFArByIiEuZ4QoCeH6wPNcMuUr4lHDu1
+        xf9Si1zm2rbgoTrQSCoOO2eztQ63JJXBOhEpv9I=
+X-Google-Smtp-Source: ABdhPJwJjaqNTMZMEqWfwHu3GKPnp7PUpKeoIN2SSKme4SlDCBTSRJD1aRWbEX4S9qfmjT5mjltYPQ==
+X-Received: by 2002:a05:600c:26c4:: with SMTP id 4mr9157865wmv.126.1614006761746;
+        Mon, 22 Feb 2021 07:12:41 -0800 (PST)
+Received: from debby (176-141-241-253.abo.bbox.fr. [176.141.241.253])
+        by smtp.gmail.com with ESMTPSA id q25sm20952001wmq.15.2021.02.22.07.12.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Feb 2021 07:12:41 -0800 (PST)
+From:   Romain Perier <romain.perier@gmail.com>
+To:     Kees Cook <keescook@chromium.org>,
+        kernel-hardening@lists.openwall.com, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jessica Yu <jeyu@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc:     Romain Perier <romain.perier@gmail.com>, cgroups@vger.kernel.org,
+        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-integrity@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-hwmon@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 00/20] Manual replacement of all strlcpy in favor of strscpy
+Date:   Mon, 22 Feb 2021 16:12:11 +0100
+Message-Id: <20210222151231.22572-1-romain.perier@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since 20dd3850bcf8 ("can: Speed up CAN frame receiption by using
-ml_priv") the CAN framework uses per device specific data in the AF_CAN
-protocol. For this purpose the struct net_device->ml_priv is used. Later
-the ml_priv usage in CAN was extended for other users, one of them being
-CAN_J1939.
+strlcpy() copy a C-String into a sized buffer, the result is always a
+valid NULL-terminated that fits in the buffer, howerver it has severals
+issues. It reads the source buffer first, which is dangerous if it is non
+NULL-terminated or if the corresponding buffer is unbounded. Its safe
+replacement is strscpy(), as suggested in the deprecated interface [1].
 
-Later in the kernel ml_priv was converted to an union, used by other
-drivers. E.g. the tun driver started storing it's stats pointer.
+We plan to make this contribution in two steps:
+- Firsly all cases of strlcpy's return value are manually replaced by the
+  corresponding calls of strscpy() with the new handling of the return
+  value (as the return code is different in case of error).
+- Then all other cases are automatically replaced by using coccinelle.
 
-Since tun devices can claim to be a CAN device, CAN specific protocols
-will wrongly interpret this pointer, which will cause system crashes.
-Mostly this issue is visible in the CAN_J1939 stack.
+This series covers manual replacements.
 
-To fix this issue, we request a dedicated CAN pointer within the
-net_device struct.
+[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strlcpy
 
-Reported-by: syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com
-Fixes: 20dd3850bcf8 ("can: Speed up CAN frame receiption by using ml_priv")
-Fixes: ffd956eef69b ("can: introduce CAN midlayer private and allocate it automatically")
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Fixes: 497a5757ce4e ("tun: switch to net core provided statistics counters")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/can/dev/dev.c  |  4 +++-
- drivers/net/can/slcan.c    |  4 +++-
- drivers/net/can/vcan.c     |  2 +-
- drivers/net/can/vxcan.c    |  6 +++++-
- include/linux/can/can-ml.h | 12 ++++++++++++
- include/linux/netdevice.h  | 38 +++++++++++++++++++++++++++++++++++++-
- net/can/af_can.c           | 34 ++--------------------------------
- net/can/j1939/main.c       | 22 ++++++++--------------
- net/can/j1939/socket.c     | 13 ++++---------
- net/can/proc.c             | 19 +++++++++++++------
- 10 files changed, 88 insertions(+), 66 deletions(-)
+Romain Perier (20):
+  cgroup: Manual replacement of the deprecated strlcpy() with return
+    values
+  crypto: Manual replacement of the deprecated strlcpy() with return
+    values
+  devlink: Manual replacement of the deprecated strlcpy() with return
+    values
+  dma-buf: Manual replacement of the deprecated strlcpy() with return
+    values
+  kobject: Manual replacement of the deprecated strlcpy() with return
+    values
+  ima: Manual replacement of the deprecated strlcpy() with return values
+  SUNRPC: Manual replacement of the deprecated strlcpy() with return
+    values
+  kernfs: Manual replacement of the deprecated strlcpy() with return
+    values
+  m68k/atari: Manual replacement of the deprecated strlcpy() with return
+    values
+  module: Manual replacement of the deprecated strlcpy() with return
+    values
+  hwmon: Manual replacement of the deprecated strlcpy() with return
+    values
+  s390/hmcdrv: Manual replacement of the deprecated strlcpy() with
+    return values
+  scsi: zfcp: Manual replacement of the deprecated strlcpy() with return
+    values
+  target: Manual replacement of the deprecated strlcpy() with return
+    values
+  ALSA: usb-audio: Manual replacement of the deprecated strlcpy() with
+    return values
+  tracing/probe: Manual replacement of the deprecated strlcpy() with
+    return values
+  vt: Manual replacement of the deprecated strlcpy() with return values
+  usb: gadget: f_midi: Manual replacement of the deprecated strlcpy()
+    with return values
+  usbip: usbip_host: Manual replacement of the deprecated strlcpy() with
+    return values
+  s390/watchdog: Manual replacement of the deprecated strlcpy() with
+    return values
 
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index d9281ae853f8..311d8564d611 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -239,6 +239,7 @@ void can_setup(struct net_device *dev)
- struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
- 				    unsigned int txqs, unsigned int rxqs)
- {
-+	struct can_ml_priv *can_ml;
- 	struct net_device *dev;
- 	struct can_priv *priv;
- 	int size;
-@@ -270,7 +271,8 @@ struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
- 	priv = netdev_priv(dev);
- 	priv->dev = dev;
- 
--	dev->ml_priv = (void *)priv + ALIGN(sizeof_priv, NETDEV_ALIGN);
-+	can_ml = (void *)priv + ALIGN(sizeof_priv, NETDEV_ALIGN);
-+	can_set_ml_priv(dev, can_ml);
- 
- 	if (echo_skb_max) {
- 		priv->echo_skb_max = echo_skb_max;
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index a1bd1be09548..30c8d53c9745 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -516,6 +516,7 @@ static struct slcan *slc_alloc(void)
- 	int i;
- 	char name[IFNAMSIZ];
- 	struct net_device *dev = NULL;
-+	struct can_ml_priv *can_ml;
- 	struct slcan       *sl;
- 	int size;
- 
-@@ -538,7 +539,8 @@ static struct slcan *slc_alloc(void)
- 
- 	dev->base_addr  = i;
- 	sl = netdev_priv(dev);
--	dev->ml_priv = (void *)sl + ALIGN(sizeof(*sl), NETDEV_ALIGN);
-+	can_ml = (void *)sl + ALIGN(sizeof(*sl), NETDEV_ALIGN);
-+	can_set_ml_priv(dev, can_ml);
- 
- 	/* Initialize channel control data */
- 	sl->magic = SLCAN_MAGIC;
-diff --git a/drivers/net/can/vcan.c b/drivers/net/can/vcan.c
-index 39ca14b0585d..067705e2850b 100644
---- a/drivers/net/can/vcan.c
-+++ b/drivers/net/can/vcan.c
-@@ -153,7 +153,7 @@ static void vcan_setup(struct net_device *dev)
- 	dev->addr_len		= 0;
- 	dev->tx_queue_len	= 0;
- 	dev->flags		= IFF_NOARP;
--	dev->ml_priv		= netdev_priv(dev);
-+	can_set_ml_priv(dev, netdev_priv(dev));
- 
- 	/* set flags according to driver capabilities */
- 	if (echo)
-diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index f9a524c5f6d6..8861a7d875e7 100644
---- a/drivers/net/can/vxcan.c
-+++ b/drivers/net/can/vxcan.c
-@@ -141,6 +141,8 @@ static const struct net_device_ops vxcan_netdev_ops = {
- 
- static void vxcan_setup(struct net_device *dev)
- {
-+	struct can_ml_priv *can_ml;
-+
- 	dev->type		= ARPHRD_CAN;
- 	dev->mtu		= CANFD_MTU;
- 	dev->hard_header_len	= 0;
-@@ -149,7 +151,9 @@ static void vxcan_setup(struct net_device *dev)
- 	dev->flags		= (IFF_NOARP|IFF_ECHO);
- 	dev->netdev_ops		= &vxcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
--	dev->ml_priv		= netdev_priv(dev) + ALIGN(sizeof(struct vxcan_priv), NETDEV_ALIGN);
-+
-+	can_ml = netdev_priv(dev) + ALIGN(sizeof(struct vxcan_priv), NETDEV_ALIGN);
-+	can_set_ml_priv(dev, can_ml);
- }
- 
- /* forward declaration for rtnl_create_link() */
-diff --git a/include/linux/can/can-ml.h b/include/linux/can/can-ml.h
-index 2f5d731ae251..8afa92d15a66 100644
---- a/include/linux/can/can-ml.h
-+++ b/include/linux/can/can-ml.h
-@@ -44,6 +44,7 @@
- 
- #include <linux/can.h>
- #include <linux/list.h>
-+#include <linux/netdevice.h>
- 
- #define CAN_SFF_RCV_ARRAY_SZ (1 << CAN_SFF_ID_BITS)
- #define CAN_EFF_RCV_HASH_BITS 10
-@@ -65,4 +66,15 @@ struct can_ml_priv {
- #endif
- };
- 
-+static inline struct can_ml_priv *can_get_ml_priv(struct net_device *dev)
-+{
-+	return netdev_get_ml_priv(dev, ML_PRIV_CAN);
-+}
-+
-+static inline void can_set_ml_priv(struct net_device *dev,
-+				   struct can_ml_priv *ml_priv)
-+{
-+	netdev_set_ml_priv(dev, ml_priv, ML_PRIV_CAN);
-+}
-+
- #endif /* CAN_ML_H */
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ddf4cfc12615..6e25c6f0f190 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1584,6 +1584,16 @@ enum netdev_priv_flags {
- #define IFF_L3MDEV_RX_HANDLER		IFF_L3MDEV_RX_HANDLER
- #define IFF_LIVE_RENAME_OK		IFF_LIVE_RENAME_OK
- 
-+/**
-+ * enum netdev_ml_priv_type - &struct net_device ml_priv_type
-+ *
-+ * This enum specifies the type of the struct net_device::ml_priv pointer.
-+ */
-+enum netdev_ml_priv_type {
-+	ML_PRIV_NONE,
-+	ML_PRIV_CAN,
-+};
-+
- /**
-  *	struct net_device - The DEVICE structure.
-  *
-@@ -1779,6 +1789,7 @@ enum netdev_priv_flags {
-  * 	@nd_net:		Network namespace this network device is inside
-  *
-  * 	@ml_priv:	Mid-layer private
-+	@ml_priv_type:  Mid-layer private type
-  * 	@lstats:	Loopback statistics
-  * 	@tstats:	Tunnel statistics
-  * 	@dstats:	Dummy statistics
-@@ -2094,8 +2105,10 @@ struct net_device {
- 	possible_net_t			nd_net;
- 
- 	/* mid-layer private */
-+	void				*ml_priv;
-+	enum netdev_ml_priv_type	ml_priv_type;
-+
- 	union {
--		void					*ml_priv;
- 		struct pcpu_lstats __percpu		*lstats;
- 		struct pcpu_sw_netstats __percpu	*tstats;
- 		struct pcpu_dstats __percpu		*dstats;
-@@ -2286,6 +2299,29 @@ static inline void netdev_reset_rx_headroom(struct net_device *dev)
- 	netdev_set_rx_headroom(dev, -1);
- }
- 
-+static inline void *netdev_get_ml_priv(struct net_device *dev,
-+				       enum netdev_ml_priv_type type)
-+{
-+	if (dev->ml_priv_type != type)
-+		return NULL;
-+
-+	return dev->ml_priv;
-+}
-+
-+static inline void netdev_set_ml_priv(struct net_device *dev,
-+				      void *ml_priv,
-+				      enum netdev_ml_priv_type type)
-+{
-+	WARN_ONCE(dev->ml_priv_type && dev->ml_priv_type != type,
-+		  "Overwriting already set ml_priv_type (%u) with different ml_priv_type (%u)!\n",
-+		  dev->ml_priv_type, type);
-+	WARN_ONCE(!dev->ml_priv_type && dev->ml_priv,
-+		  "Overwriting already set ml_priv and ml_priv_type is ML_PRIV_NONE!\n");
-+
-+	dev->ml_priv = ml_priv;
-+	dev->ml_priv_type = type;
-+}
-+
- /*
-  * Net namespace inlines
-  */
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index 837bb8af0ec3..cce2af10eb3e 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -304,8 +304,8 @@ static struct can_dev_rcv_lists *can_dev_rcv_lists_find(struct net *net,
- 							struct net_device *dev)
- {
- 	if (dev) {
--		struct can_ml_priv *ml_priv = dev->ml_priv;
--		return &ml_priv->dev_rcv_lists;
-+		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
-+		return &can_ml->dev_rcv_lists;
- 	} else {
- 		return net->can.rx_alldev_list;
- 	}
-@@ -790,25 +790,6 @@ void can_proto_unregister(const struct can_proto *cp)
- }
- EXPORT_SYMBOL(can_proto_unregister);
- 
--/* af_can notifier to create/remove CAN netdevice specific structs */
--static int can_notifier(struct notifier_block *nb, unsigned long msg,
--			void *ptr)
--{
--	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
--
--	if (dev->type != ARPHRD_CAN)
--		return NOTIFY_DONE;
--
--	switch (msg) {
--	case NETDEV_REGISTER:
--		WARN(!dev->ml_priv,
--		     "No CAN mid layer private allocated, please fix your driver and use alloc_candev()!\n");
--		break;
--	}
--
--	return NOTIFY_DONE;
--}
--
- static int can_pernet_init(struct net *net)
- {
- 	spin_lock_init(&net->can.rcvlists_lock);
-@@ -876,11 +857,6 @@ static const struct net_proto_family can_family_ops = {
- 	.owner  = THIS_MODULE,
- };
- 
--/* notifier block for netdevice event */
--static struct notifier_block can_netdev_notifier __read_mostly = {
--	.notifier_call = can_notifier,
--};
--
- static struct pernet_operations can_pernet_ops __read_mostly = {
- 	.init = can_pernet_init,
- 	.exit = can_pernet_exit,
-@@ -911,17 +887,12 @@ static __init int can_init(void)
- 	err = sock_register(&can_family_ops);
- 	if (err)
- 		goto out_sock;
--	err = register_netdevice_notifier(&can_netdev_notifier);
--	if (err)
--		goto out_notifier;
- 
- 	dev_add_pack(&can_packet);
- 	dev_add_pack(&canfd_packet);
- 
- 	return 0;
- 
--out_notifier:
--	sock_unregister(PF_CAN);
- out_sock:
- 	unregister_pernet_subsys(&can_pernet_ops);
- out_pernet:
-@@ -935,7 +906,6 @@ static __exit void can_exit(void)
- 	/* protocol unregister */
- 	dev_remove_pack(&canfd_packet);
- 	dev_remove_pack(&can_packet);
--	unregister_netdevice_notifier(&can_netdev_notifier);
- 	sock_unregister(PF_CAN);
- 
- 	unregister_pernet_subsys(&can_pernet_ops);
-diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
-index bb914d8b4216..da3a7a7bcff2 100644
---- a/net/can/j1939/main.c
-+++ b/net/can/j1939/main.c
-@@ -140,9 +140,9 @@ static struct j1939_priv *j1939_priv_create(struct net_device *ndev)
- static inline void j1939_priv_set(struct net_device *ndev,
- 				  struct j1939_priv *priv)
- {
--	struct can_ml_priv *can_ml_priv = ndev->ml_priv;
-+	struct can_ml_priv *can_ml = can_get_ml_priv(ndev);
- 
--	can_ml_priv->j1939_priv = priv;
-+	can_ml->j1939_priv = priv;
- }
- 
- static void __j1939_priv_release(struct kref *kref)
-@@ -211,12 +211,9 @@ static void __j1939_rx_release(struct kref *kref)
- /* get pointer to priv without increasing ref counter */
- static inline struct j1939_priv *j1939_ndev_to_priv(struct net_device *ndev)
- {
--	struct can_ml_priv *can_ml_priv = ndev->ml_priv;
-+	struct can_ml_priv *can_ml = can_get_ml_priv(ndev);
- 
--	if (!can_ml_priv)
--		return NULL;
--
--	return can_ml_priv->j1939_priv;
-+	return can_ml->j1939_priv;
- }
- 
- static struct j1939_priv *j1939_priv_get_by_ndev_locked(struct net_device *ndev)
-@@ -225,9 +222,6 @@ static struct j1939_priv *j1939_priv_get_by_ndev_locked(struct net_device *ndev)
- 
- 	lockdep_assert_held(&j1939_netdev_lock);
- 
--	if (ndev->type != ARPHRD_CAN)
--		return NULL;
--
- 	priv = j1939_ndev_to_priv(ndev);
- 	if (priv)
- 		j1939_priv_get(priv);
-@@ -348,15 +342,16 @@ static int j1939_netdev_notify(struct notifier_block *nb,
- 			       unsigned long msg, void *data)
- {
- 	struct net_device *ndev = netdev_notifier_info_to_dev(data);
-+	struct can_ml_priv *can_ml = can_get_ml_priv(ndev);
- 	struct j1939_priv *priv;
- 
-+	if (!can_ml)
-+		goto notify_done;
-+
- 	priv = j1939_priv_get_by_ndev(ndev);
- 	if (!priv)
- 		goto notify_done;
- 
--	if (ndev->type != ARPHRD_CAN)
--		goto notify_put;
--
- 	switch (msg) {
- 	case NETDEV_DOWN:
- 		j1939_cancel_active_session(priv, NULL);
-@@ -365,7 +360,6 @@ static int j1939_netdev_notify(struct notifier_block *nb,
- 		break;
- 	}
- 
--notify_put:
- 	j1939_priv_put(priv);
- 
- notify_done:
-diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-index f23966526a88..4e4a510d82f9 100644
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -12,6 +12,7 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/can/can-ml.h>
- #include <linux/can/core.h>
- #include <linux/can/skb.h>
- #include <linux/errqueue.h>
-@@ -454,6 +455,7 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
- 		j1939_local_ecu_put(priv, jsk->addr.src_name, jsk->addr.sa);
- 	} else {
- 		struct net_device *ndev;
-+		struct can_ml_priv *can_ml;
- 
- 		ndev = dev_get_by_index(net, addr->can_ifindex);
- 		if (!ndev) {
-@@ -461,15 +463,8 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
- 			goto out_release_sock;
- 		}
- 
--		if (ndev->type != ARPHRD_CAN) {
--			dev_put(ndev);
--			ret = -ENODEV;
--			goto out_release_sock;
--		}
--
--		if (!ndev->ml_priv) {
--			netdev_warn_once(ndev,
--					 "No CAN mid layer private allocated, please fix your driver and use alloc_candev()!\n");
-+		can_ml = can_get_ml_priv(ndev);
-+		if (!can_ml) {
- 			dev_put(ndev);
- 			ret = -ENODEV;
- 			goto out_release_sock;
-diff --git a/net/can/proc.c b/net/can/proc.c
-index 5ea8695f507e..b15760b5c1cc 100644
---- a/net/can/proc.c
-+++ b/net/can/proc.c
-@@ -322,8 +322,11 @@ static int can_rcvlist_proc_show(struct seq_file *m, void *v)
- 
- 	/* receive list for registered CAN devices */
- 	for_each_netdev_rcu(net, dev) {
--		if (dev->type == ARPHRD_CAN && dev->ml_priv)
--			can_rcvlist_proc_show_one(m, idx, dev, dev->ml_priv);
-+		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
-+
-+		if (can_ml)
-+			can_rcvlist_proc_show_one(m, idx, dev,
-+						  &can_ml->dev_rcv_lists);
- 	}
- 
- 	rcu_read_unlock();
-@@ -375,8 +378,10 @@ static int can_rcvlist_sff_proc_show(struct seq_file *m, void *v)
- 
- 	/* sff receive list for registered CAN devices */
- 	for_each_netdev_rcu(net, dev) {
--		if (dev->type == ARPHRD_CAN && dev->ml_priv) {
--			dev_rcv_lists = dev->ml_priv;
-+		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
-+
-+		if (can_ml) {
-+			dev_rcv_lists = &can_ml->dev_rcv_lists;
- 			can_rcvlist_proc_show_array(m, dev, dev_rcv_lists->rx_sff,
- 						    ARRAY_SIZE(dev_rcv_lists->rx_sff));
- 		}
-@@ -406,8 +411,10 @@ static int can_rcvlist_eff_proc_show(struct seq_file *m, void *v)
- 
- 	/* eff receive list for registered CAN devices */
- 	for_each_netdev_rcu(net, dev) {
--		if (dev->type == ARPHRD_CAN && dev->ml_priv) {
--			dev_rcv_lists = dev->ml_priv;
-+		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
-+
-+		if (can_ml) {
-+			dev_rcv_lists = &can_ml->dev_rcv_lists;
- 			can_rcvlist_proc_show_array(m, dev, dev_rcv_lists->rx_eff,
- 						    ARRAY_SIZE(dev_rcv_lists->rx_eff));
- 		}
+ arch/m68k/emu/natfeat.c                 |  6 +--
+ crypto/lrw.c                            |  6 +--
+ crypto/xts.c                            |  6 +--
+ drivers/dma-buf/dma-buf.c               |  4 +-
+ drivers/hwmon/pmbus/max20730.c          | 66 +++++++++++++------------
+ drivers/s390/char/diag_ftp.c            |  4 +-
+ drivers/s390/char/sclp_ftp.c            |  6 +--
+ drivers/s390/scsi/zfcp_fc.c             |  8 +--
+ drivers/target/target_core_configfs.c   | 33 ++++---------
+ drivers/tty/vt/keyboard.c               |  5 +-
+ drivers/usb/gadget/function/f_midi.c    |  4 +-
+ drivers/usb/gadget/function/f_printer.c |  8 +--
+ drivers/usb/usbip/stub_main.c           |  6 +--
+ drivers/watchdog/diag288_wdt.c          | 12 +++--
+ fs/kernfs/dir.c                         | 27 +++++-----
+ kernel/cgroup/cgroup.c                  |  2 +-
+ kernel/module.c                         |  4 +-
+ kernel/trace/trace_uprobe.c             | 11 ++---
+ lib/kobject_uevent.c                    |  6 +--
+ net/core/devlink.c                      |  6 +--
+ net/sunrpc/clnt.c                       |  6 ++-
+ security/integrity/ima/ima_policy.c     |  8 ++-
+ sound/usb/card.c                        |  4 +-
+ 23 files changed, 129 insertions(+), 119 deletions(-)
+
 -- 
-2.29.2
+2.20.1
 
