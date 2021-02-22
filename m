@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 285CD32121F
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 09:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5233F321232
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 09:46:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbhBVIik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 03:38:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40088 "EHLO
+        id S229987AbhBVIpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 03:45:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbhBVIid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 03:38:33 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD775C061574;
-        Mon, 22 Feb 2021 00:37:51 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id p3so2524380wmc.2;
-        Mon, 22 Feb 2021 00:37:51 -0800 (PST)
+        with ESMTP id S229907AbhBVIpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 03:45:53 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA841C061574;
+        Mon, 22 Feb 2021 00:45:12 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id l13so4006002wmg.5;
+        Mon, 22 Feb 2021 00:45:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CeWBZt+hcCxVqYJNaniFHpV0E/tU4rgmknD4HdcGoA8=;
-        b=B7RaBO+aD3Tzj0ptbjRBs/L0Tl8BhA1vYGHLzgZGwDCq0Wf9LNAP4q91TXQIXqcrJD
-         6UwWdNJgd+CIoAEOII3zYFqGA7VH3HaVaqbWbFV+T/L653qvNuDr7h1HY5w5AUzZXi5Z
-         dSv37h529bzRmG4aNSY0+KyY59cdMaQo1HmBoR7qeOEYSs6j9VMwk0e/KuJg3uY+6qXI
-         k8fIqAKGWTG4XTYVQ+5M9HqYqlQPIgyW+J0ZQOtpVwDdNeMUILMudW5+mXgUjhI+Oga7
-         fJCb8tlsYSLuqxYyGcflHCx+aEo3pPgZyFENysWtucVVbp8fNuzdZPdHes8gM13k3o3Y
-         OLiQ==
+        bh=WZ1TpVqC8jbOAE905d14DzJdnCbYipexqF0Xfhf38q0=;
+        b=tRSBVpZfp7BN7eaY63r2/hmgFVZF4cG8NGhti13kMdgoomZW4zLYoV5D62aF/vstam
+         GWjjxEnH6buLbtZ2WWbuelFrtuhNPxuQSnI+AWHDfwmHhrA83l40r1R79745tvpE5eNT
+         Nl974nU1mfVIu7tYt2CWTdJD6KIwEbarHC4rV9Q4LUZz49yB0qVTGeSOfwzkdoNq40th
+         fwEq0Vb0fhQIEzFGBL46f0yIqzWVNbPdXQI9h1f2FZkZS/HrJLtJLPo7tQBiefYLmEj8
+         Ulx9PPCUTpUReU9MjedAp9ZHmRW8SeyRazbDoEYKUZhO6eHWvI1gJIT9c4dhhTAbsR35
+         Ih/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=CeWBZt+hcCxVqYJNaniFHpV0E/tU4rgmknD4HdcGoA8=;
-        b=gvh4Z8TnoVEZWifQREkLgpkj7L1JD+xmvUWzC/nnNfjbgMU1OG708U/Q4XW7mbFQqZ
-         am9enpuK80svXkXDFbe6gd2xvPD0c89pEnUUCKXDHmTe+6LTj3TdIjJjFdlYk69I8ASM
-         quFqbBDWg/jgiSk/6lSo1AKeOAUqXOh1U5MahzmVj1VH+976OrzYNS4qJw23LrCUhNOx
-         HP+4rlgbTs5u/UMMJJVrFOq+CoX3haUbWvaHIM3j3igew/Q6nh0+390Vs1ig81asdgKY
-         SWvdXGatMGfu6aEkoIube89udWX4vP9ecaEKHjWBlUFhQUFEOaZdjDG+d0f/lRnssBDY
-         /QkA==
-X-Gm-Message-State: AOAM531NM6LHZSs/L+PH2gSjWFPoQXcR+JcJwNPVNSP0LQlvab8L4eMm
-        8vjFVo6dFduwF4cvnaY5y2Hi2uc3QB8=
-X-Google-Smtp-Source: ABdhPJymMOf4TNIDxX2pW6azZ2nmgM8INoCSdxZy+6QriYxawL7PnXosUCFFkkYekcAEUTqztF3u0A==
-X-Received: by 2002:a05:600c:4f46:: with SMTP id m6mr19430978wmq.154.1613983070546;
-        Mon, 22 Feb 2021 00:37:50 -0800 (PST)
+        bh=WZ1TpVqC8jbOAE905d14DzJdnCbYipexqF0Xfhf38q0=;
+        b=MgRC7NXIHFhRFG7e4BNBj56wDiQDAt8tmXU5CPYYZgZZ4FhKL8ym+IPRHiMpLwbnTT
+         JNvjvMeqP72I/HmEBcgGkd6mcEmwH8uxQ6rWOW1ktRIyVFRk24iditMcFr5QmqByb43M
+         U+31GNol93CNopwUYXWlRWVzaIXyP3pvf6LbqToAUwoLzrGNcRAztry+bLKG347A5xU4
+         uvlsyGPFPI4NP7n01Rse2p5aGrbvOKNCCc2/v/j4HnJHw+GQmkuhDBAIDuKGSnMo9WpR
+         JHTH+gwOxb/9wP9DDtJN3O05Iulpzf3UFo0vHW1bUu0u7nCc5dUHPH/dyn312ymrwflg
+         WSZg==
+X-Gm-Message-State: AOAM533omJEmN0DD13bHkgqVNjpEQ37/amm5W7Ld0co37dwo9y6v37A9
+        P2jMBsRnkXM7tkCxB57qXCA=
+X-Google-Smtp-Source: ABdhPJzkjqc9ets0DSyy3uS4J8QgFPty0lmgdctexH3xsijP6wBd7K7ZXB8PaAqYmSe8K3mqTgFCsQ==
+X-Received: by 2002:a1c:cc14:: with SMTP id h20mr19309612wmb.180.1613983511700;
+        Mon, 22 Feb 2021 00:45:11 -0800 (PST)
 Received: from [192.168.1.101] ([37.171.239.209])
-        by smtp.gmail.com with ESMTPSA id f7sm28234732wrm.92.2021.02.22.00.37.49
+        by smtp.gmail.com with ESMTPSA id t15sm25202663wmi.48.2021.02.22.00.45.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Feb 2021 00:37:49 -0800 (PST)
-Subject: Re: [PATCH] arp: Remove the arp_hh_ops structure
-To:     Yejune Deng <yejune.deng@gmail.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <oliver.sang@intel.com>
-References: <20210222031526.3834-1-yejune.deng@gmail.com>
+        Mon, 22 Feb 2021 00:45:10 -0800 (PST)
+Subject: Re: [PATCH] net/qrtr: restrict length in qrtr_tun_write_iter()
+To:     Sabyrzhan Tasbolatov <snovitoll@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        syzbot+c2a7e5c5211605a90865@syzkaller.appspotmail.com
+References: <3b27dac1-45b9-15ad-c25e-2f5f3050907e@gmail.com>
+ <20210221123912.3185059-1-snovitoll@gmail.com>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <0143f961-7530-3ae9-27f2-f076ea951975@gmail.com>
-Date:   Mon, 22 Feb 2021 09:37:48 +0100
+Message-ID: <573bd57c-5ef8-3d4c-1fe9-eaa0337e7bfd@gmail.com>
+Date:   Mon, 22 Feb 2021 09:45:09 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <20210222031526.3834-1-yejune.deng@gmail.com>
+In-Reply-To: <20210221123912.3185059-1-snovitoll@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,80 +71,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/22/21 4:15 AM, Yejune Deng wrote:
-> The arp_hh_ops structure is similar to the arp_generic_ops structure.
-> but the latter is more general,so remove the arp_hh_ops structure.
+On 2/21/21 1:39 PM, Sabyrzhan Tasbolatov wrote:
+>> Do we really expect to accept huge lengths here ?
 > 
-> Fix when took out the neigh->ops assignment:
-> 8.973653] #PF: supervisor read access in kernel mode
-> [    8.975027] #PF: error_code(0x0000) - not-present page
-> [    8.976310] PGD 0 P4D 0
-> [    8.977036] Oops: 0000 [#1] SMP PTI
-> [    8.977973] CPU: 1 PID: 210 Comm: sd-resolve Not tainted 5.11.0-rc7-02046-g4591591ab715 #1
-> [    8.979998] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-> [    8.981996] RIP: 0010:neigh_probe (kbuild/src/consumer/net/core/neighbour.c:1009)
+> Sorry for late response but I couldnt find any reference to the max
+> length of incoming data for qrtr TUN interface.
+> 
+>> qrtr_endpoint_post() will later attempt a netdev_alloc_skb() which will need
+>> some extra space (for struct skb_shared_info)
+> 
+> Thanks, you're right, qrtr_endpoint_post() will alloc another slab buffer.
+> We can check the length of skb allocation but we need to do following:
+> 
+> int qrtr_endpoint_post(.., const void *data, size_t len) 
+> {
+> 	..
+> 	when QRTR_PROTO_VER_1:
+> 		hdrlen = sizeof(*data);
+> 	when QRTR_PROTO_VER_2:
+> 		hdrlen = sizeof(*data) + data->optlen;
+> 	
+> 	len = (KMALLOC_MAX_SIZE - hdrlen) % data->size;
+> 	skb = netdev_alloc_skb(NULL, len);
+> 	..
+> 	skb_put_data(skb, data + hdrlen, size);
+> 
+> 
+> So it requires refactoring as in qrtr_tun_write_iter() we just allocate and
+> pass it to qrtr_endpoint_post() and there
+> we need to do len calculation as above *before* netdev_alloc_skb(NULL, len).
+> 
+> Perhaps there is a nicer solution though.
 > 
 
-I have a hard time understanding this patch submission.
+A protocol requiring contiguous physical memory allocations of up to KMALLOC_MAX_SIZE
+bytes would be really unreliable.
 
-This seems a mix of a net-next and net material ?
-
-
-
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-
-If this is a bug fix, we want a Fixes: tag
-
-This will really help us. Please don't let us guess what is going on.
+I suggest we simply limit the allocations to 64KB, unless qrtr maintainers shout,
+or start implementing scatter gather.
 
 
-Also, if this is not a bug fix, this should target net-next tree,
-please take a look at Documentation/networking/netdev-FAQ.rst
 
-In short, the stack trace in this changelog seems to be not
-related to this patch, maybe a prior version ? We do not want
-to keep artifacts of some buggy version that was never merged
-into official tree.
 
-Thanks.
 
-> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
-> ---
->  net/ipv4/arp.c | 15 ++-------------
->  1 file changed, 2 insertions(+), 13 deletions(-)
-> 
-> diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-> index 922dd73e5740..9ee59c2e419a 100644
-> --- a/net/ipv4/arp.c
-> +++ b/net/ipv4/arp.c
-> @@ -135,14 +135,6 @@ static const struct neigh_ops arp_generic_ops = {
->  	.connected_output =	neigh_connected_output,
->  };
->  
-> -static const struct neigh_ops arp_hh_ops = {
-> -	.family =		AF_INET,
-> -	.solicit =		arp_solicit,
-> -	.error_report =		arp_error_report,
-> -	.output =		neigh_resolve_output,
-> -	.connected_output =	neigh_resolve_output,
-> -};
-> -
->  static const struct neigh_ops arp_direct_ops = {
->  	.family =		AF_INET,
->  	.output =		neigh_direct_output,
-> @@ -277,12 +269,9 @@ static int arp_constructor(struct neighbour *neigh)
->  			memcpy(neigh->ha, dev->broadcast, dev->addr_len);
->  		}
->  
-> -		if (dev->header_ops->cache)
-> -			neigh->ops = &arp_hh_ops;
-> -		else
-> -			neigh->ops = &arp_generic_ops;
-> +		neigh->ops = &arp_generic_ops;
->  
-> -		if (neigh->nud_state & NUD_VALID)
-> +		if (!dev->header_ops->cache && (neigh->nud_state & NUD_VALID))
->  			neigh->output = neigh->ops->connected_output;
->  		else
->  			neigh->output = neigh->ops->output;
-> 
