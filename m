@@ -2,131 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16FC1320EF3
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 02:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8219E320F2F
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 02:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbhBVBMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Feb 2021 20:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58078 "EHLO
+        id S231764AbhBVBg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Feb 2021 20:36:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbhBVBMQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 20:12:16 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C564C061574
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 17:11:36 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id w6so771081qti.6
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 17:11:36 -0800 (PST)
+        with ESMTP id S229866AbhBVBg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Feb 2021 20:36:26 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020E0C061786;
+        Sun, 21 Feb 2021 17:35:46 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id kr16so7434158pjb.2;
+        Sun, 21 Feb 2021 17:35:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lK8Mx+c5zZgdOHePxCDJj4TbNSdiPp5ut0xpUlWpTP4=;
-        b=rcMCVDBPeo3ywQPLQp4MLR8zL13+yAP/nOJx434ceO+XNxpEPbwifgMv0gGiy4S1LF
-         qIPAXddodfvt9TwFWufgNWZTMx6ggRM04UijSrb0fU6vSfm9yVGWMiKeBXRXRqsePFcE
-         VYNunsgPf3Mh6YwoEQhe2lU0fp2npnKIACKTvUBbXknQcV8/6R+g99QpTWa40JbSdS27
-         Xz9ztbvbeYtnVfx67cgN9NcM3BAHamw/MafjuVn8R+d4RbFwDYivHRaMp9x0gYav6plR
-         a2+bTb+Wc3jYVgftXR1SRFnb6bXCh24i1Bis0uEOS7M/ZGcpe0bQ7q4AIa6eHcZLcjA7
-         Rayw==
+        h=from:to:cc:subject:date:message-id;
+        bh=qybJx7OQtUA+va9ad1ujiUGkl1rkwozY3pUZwjr/v7Y=;
+        b=Sjqj6nTqms7lXnfx6l3En4TOUffwRiRoSrJCdch/tvaxIP7e3yGlx8TMuBamWNor+E
+         yDzC4VvCMGOMe6m9aBvfSQJVUwRiA9PF57e0LpQrSJ1jnvasDv7iFb2JMqWEP15aqHdN
+         6fXyqXzkcWTPaL4z99jB2DHhAs+d0DwPuj93XDW2y8gPNyKg6LbA8ahpe0wF3B0MS+IE
+         nkqkd4yVLFjhyyNfw+KzugjgsqYPMzj8nX8fUECz0DLSTNtY9riTEYxYmT6rQIMzKi7C
+         LDTJBTE6hU2Clnmbze3jPCeVJEsJeojTIIBGAIm0xFqDMu7F1RCMMJ12lUvO6x4FzKif
+         wSdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lK8Mx+c5zZgdOHePxCDJj4TbNSdiPp5ut0xpUlWpTP4=;
-        b=OLdj4lMKFKUtWyUe1jklqcxtaVg8832cbA6ufE3ZXO62nRBh/d3fNblpbwcls/rg4S
-         8M0VKhMgLeYsgy9RkrwaO708F7Uf0sikc6VD9ioL45Oi11w28jGdq+1mDKk2hHoMgyJM
-         oBajTYCjmdD1uOQX7g6NqR2mMiRXdRXk+RIqD9ydK7lVcgJQzpyvhfu+ViKo+SEmsIEK
-         poJ4L/9L/TqJLw6wIB6J5rEZDRBE9j4J9xdd9nVgqbA6aH/JvKsWYfM8unP3rCflvcrV
-         +Q+yMU+m6PU+aqDMan3JepjKvZCcCjAiUqJQEe6nO25urPLPTppypUzud498NEV4H6qS
-         20JA==
-X-Gm-Message-State: AOAM53370IMP0p2NYAiGjFMm3W5E1UW1rvU+QbhwmLXspyCnlEH33qha
-        sltizLdXmT0qMHWio6MBeQWZ/o+beauAw1gQKVk=
-X-Google-Smtp-Source: ABdhPJy8daQq+hIo3HPMJX5ByHMxxCCzUxSVQ9iGoxxJcESoG5yTTIgw7mRZNzNbKEz/jIOp4ydajuze4Ke/Zb42WkA=
-X-Received: by 2002:ac8:dc5:: with SMTP id t5mr18840782qti.246.1613956295101;
- Sun, 21 Feb 2021 17:11:35 -0800 (PST)
-MIME-Version: 1.0
-References: <20210220110356.84399-1-redsky110@gmail.com> <20210220.134402.2070871604757928182.davem@davemloft.net>
- <YDGHyxkTUGcuQbNZ@azazel.net>
-In-Reply-To: <YDGHyxkTUGcuQbNZ@azazel.net>
-From:   Honglei Wang <redsky110@gmail.com>
-Date:   Mon, 22 Feb 2021 09:11:26 +0800
-Message-ID: <CA+kCZ7_hUzitt9rjdUkJxWa+pMXU+3321Yw59n=8+NNpT5YDUg@mail.gmail.com>
-Subject: Re: [PATCH] tcp: avoid unnecessary loop if even ports are used up
-To:     Jeremy Sowden <jeremy@azazel.net>
-Cc:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=qybJx7OQtUA+va9ad1ujiUGkl1rkwozY3pUZwjr/v7Y=;
+        b=KsAds7TO6GqquqfvJfTo8uKeC0u7FY9+7CcGkfuLTyi1OUm7siMJtFALMLuHShSZrR
+         57A3fsyaBNTDmOWDx0yqyXSkwPL7qV1CM2k8t9cXXsYBjbhrzlghjzap9nfhd+eOcrgb
+         DjW6DZ2br3qXgb60Znk4ZPt086yZT6zOcO3VviXH1CPVuq8oVHnhotJdV6FgitlBz/zo
+         IYudfhKzj341R8Wc0tovqyqDoc++N6sYWeiBrOQVfMRYS2RhQoIaFBmZ4yf4C/67e0xF
+         +MBtM0a8Kf8gwprlmK9YUb2hRjfXoOiec4PARPFdNHAO51IwSQoiS6K2cwLWWXrSgZkv
+         PQ3g==
+X-Gm-Message-State: AOAM531FyUcaPS6jEhSTu0aee5YjoqeADsaxAQWSJ2ynJHMULpja1LzF
+        JzxtqRpuoU19X7AjfFS+1QrWL4e1az8=
+X-Google-Smtp-Source: ABdhPJy6X3PZ66NbVzloW52Kh4EuWjMyI5A8xpDX593ZdKEf5YhMZw9+9oEvGpdC+fTzV+4s0WgmEg==
+X-Received: by 2002:a17:90a:9484:: with SMTP id s4mr13999097pjo.170.1613957745546;
+        Sun, 21 Feb 2021 17:35:45 -0800 (PST)
+Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
+        by smtp.gmail.com with ESMTPSA id t189sm13570196pgt.39.2021.02.21.17.35.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Feb 2021 17:35:45 -0800 (PST)
+From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sieng Piaw Liew <liew.s.piaw@gmail.com>
+Subject: [PATCH net] bcm63xx_enet: fix sporadic kernel panic
+Date:   Mon, 22 Feb 2021 09:35:30 +0800
+Message-Id: <20210222013530.1356-1-liew.s.piaw@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 21, 2021 at 6:06 AM Jeremy Sowden <jeremy@azazel.net> wrote:
->
-> On 2021-02-20, at 13:44:02 -0800, David Miller wrote:
-> > From: Honglei Wang <redsky110@gmail.com>
-> > Date: Sat, 20 Feb 2021 19:03:56 +0800
-> >
-> > > We are getting port for connect() from even ports firstly now. This
-> > > makes bind() users have more available slots at odd part. But there is a
-> > > problem here when the even ports are used up. This happens when there
-> > > is a flood of short life cycle connections. In this scenario, it starts
-> > > getting ports from the odd part, but each requirement has to walk all of
-> > > the even port and the related hash buckets (it probably gets nothing
-> > > before the workload pressure's gone) before go to the odd part. This
-> > > makes the code path __inet_hash_connect()->__inet_check_established()
-> > > and the locks there hot.
-> > >
-> > > This patch tries to improve the strategy so we can go faster when the
-> > > even part is used up. It'll record the last gotten port was odd or even,
-> > > if it's an odd one, it means there is no available even port for us and
-> > > we probably can't get an even port this time, neither. So we just walk
-> > > 1/16 of the whole even ports. If we can get one in this way, it probably
-> > > means there are more available even part, we'll go back to the old
-> > > strategy and walk all of them when next connect() comes. If still can't
-> > > get even port in the 1/16 part, we just go to the odd part directly and
-> > > avoid doing unnecessary loop.
-> > >
-> > > Signed-off-by: Honglei Wang <redsky110@gmail.com>
-> > > ---
-> > >  net/ipv4/inet_hashtables.c | 21 +++++++++++++++++++--
-> > >  1 file changed, 19 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> > > index 45fb450b4522..c95bf5cf9323 100644
-> > > --- a/net/ipv4/inet_hashtables.c
-> > > +++ b/net/ipv4/inet_hashtables.c
-> > > @@ -721,9 +721,10 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> > >     struct net *net = sock_net(sk);
-> > >     struct inet_bind_bucket *tb;
-> > >     u32 remaining, offset;
-> > > -   int ret, i, low, high;
-> > > +   int ret, i, low, high, span;
-> > >     static u32 hint;
-> > >     int l3mdev;
-> > > +   static bool last_port_is_odd;
-> > >
-> > >     if (port) {
-> > >             head = &hinfo->bhash[inet_bhashfn(net, port,
-> > > @@ -756,8 +757,19 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> > >      */
-> > >     offset &= ~1U;
-> > >  other_parity_scan:
-> > > +   /* If the last available port is odd, it means
-> > > +    * we walked all of the even ports, but got
-> > > +    * nothing last time. It's telling us the even
-> > > +    * part is busy to get available port. In this
-> > > +    * case, we can go a bit faster.
-> > > +    */
-> > > +   if (last_port_is_odd && !(offset & 1) && remaining > 32)
-> >
-> > The first time this executes, won't last_port_is_odd be uninitialized?
->
-> It's declared static, so it will be zero-initialized.
->
-Yep, it'll be initialized as zero by default. I tried to initialize it
-explicitly to false for the code logic, but the checkpatch.pl yielded
-that it's incorrect to initialize static bool to false.
-(Sorry for the last response which I forgot send with plain text mode..)
+In ndo_stop functions, netdev_completed_queue() is called during forced
+tx reclaim, after netdev_reset_queue(). This may trigger kernel panic if
+there is any tx skb left.
 
-Thanks,
-Honglei
-> J.
+This patch moves netdev_reset_queue() to after tx reclaim, so BQL can
+complete successfully then reset.
+
+Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+index fd8767213165..977f097fc7bf 100644
+--- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+@@ -1192,7 +1192,6 @@ static int bcm_enet_stop(struct net_device *dev)
+ 	kdev = &priv->pdev->dev;
+ 
+ 	netif_stop_queue(dev);
+-	netdev_reset_queue(dev);
+ 	napi_disable(&priv->napi);
+ 	if (priv->has_phy)
+ 		phy_stop(dev->phydev);
+@@ -1231,6 +1230,9 @@ static int bcm_enet_stop(struct net_device *dev)
+ 	if (priv->has_phy)
+ 		phy_disconnect(dev->phydev);
+ 
++	/* reset BQL after forced tx reclaim to prevent kernel panic */
++	netdev_reset_queue(dev);
++
+ 	return 0;
+ }
+ 
+@@ -2343,7 +2345,6 @@ static int bcm_enetsw_stop(struct net_device *dev)
+ 
+ 	del_timer_sync(&priv->swphy_poll);
+ 	netif_stop_queue(dev);
+-	netdev_reset_queue(dev);
+ 	napi_disable(&priv->napi);
+ 	del_timer_sync(&priv->rx_timeout);
+ 
+@@ -2371,6 +2372,9 @@ static int bcm_enetsw_stop(struct net_device *dev)
+ 		free_irq(priv->irq_tx, dev);
+ 	free_irq(priv->irq_rx, dev);
+ 
++	/* reset BQL after forced tx reclaim to prevent kernel panic */
++	netdev_reset_queue(dev);
++
+ 	return 0;
+ }
+ 
+-- 
+2.17.1
+
