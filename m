@@ -2,63 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8722C321D04
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 17:33:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE750321D11
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 17:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbhBVQa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 11:30:28 -0500
-Received: from mail.zx2c4.com ([104.131.123.232]:60986 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231623AbhBVQ22 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Feb 2021 11:28:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1614011166;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8r6qIde3sFs9t093eU9Rh2Ii/O2i5YprmtUZTFEX6Y0=;
-        b=FuAlNWrOVbAuxVSoW/J3PYzAqhJXVVDTrwdVLoEByc+3KEbYLcJFgM5DuFxXC7wkPw4ChR
-        uEbFd3tq8osPLt1I5s8fxKXRmhTNYcL5qz6Q3SRVX38maAuA8Iz5d1fEGqliQrDaUNjYgH
-        joQWkgZzgeSIr/LkQCpb+Pg9eE4TNJs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 08ff0b9b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 22 Feb 2021 16:26:06 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: [PATCH net 7/7] wireguard: kconfig: use arm chacha even with no neon
-Date:   Mon, 22 Feb 2021 17:25:49 +0100
-Message-Id: <20210222162549.3252778-8-Jason@zx2c4.com>
-In-Reply-To: <20210222162549.3252778-1-Jason@zx2c4.com>
-References: <20210222162549.3252778-1-Jason@zx2c4.com>
+        id S230484AbhBVQda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 11:33:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231577AbhBVQcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 11:32:48 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AFBC061794;
+        Mon, 22 Feb 2021 08:31:29 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1lEE7A-006xZ6-IT; Mon, 22 Feb 2021 17:31:16 +0100
+Message-ID: <3823be537c3c138de90154835573113c6577188e.camel@sipsolutions.net>
+Subject: Re: [PATCH net v1 3/3] [RFC] mac80211: ieee80211_store_ack_skb():
+ make use of skb_clone_sk_optional()
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>, mkl@pengutronix.de,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Robin van der Gracht <robin@protonic.nl>
+Cc:     kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        linux-wireless@vger.kernel.org
+Date:   Mon, 22 Feb 2021 17:30:59 +0100
+In-Reply-To: <20210222151247.24534-4-o.rempel@pengutronix.de>
+References: <20210222151247.24534-1-o.rempel@pengutronix.de>
+         <20210222151247.24534-4-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The condition here was incorrect: a non-neon fallback implementation is
-available on arm32 when NEON is not supported.
+On Mon, 2021-02-22 at 16:12 +0100, Oleksij Rempel wrote:
+> This code is trying to clone the skb with optional skb->sk. But this
+> will fail to clone the skb if socket was closed just after the skb was
+> pushed into the networking stack.
 
-Reported-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/net/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Which IMHO is completely fine. If we then still clone the SKB we can't
+do anything with it, since the point would be to ... send it back to the
+socket, but it's gone.
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 260f9f46668b..63339d29be90 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -87,7 +87,7 @@ config WIREGUARD
- 	select CRYPTO_CURVE25519_X86 if X86 && 64BIT
- 	select ARM_CRYPTO if ARM
- 	select ARM64_CRYPTO if ARM64
--	select CRYPTO_CHACHA20_NEON if (ARM || ARM64) && KERNEL_MODE_NEON
-+	select CRYPTO_CHACHA20_NEON if ARM || (ARM64 && KERNEL_MODE_NEON)
- 	select CRYPTO_POLY1305_NEON if ARM64 && KERNEL_MODE_NEON
- 	select CRYPTO_POLY1305_ARM if ARM
- 	select CRYPTO_CURVE25519_NEON if ARM && KERNEL_MODE_NEON
--- 
-2.30.1
+Nothing to fix here, I'd think. If you wanted to get a copy back that
+gives you the status of the SKB, it should not come as a huge surprise
+that you have to keep the socket open for that :)
+
+Having the ACK skb will just make us do more work by handing it back
+to skb_complete_wifi_ack() at TX status time, which is supposed to put
+it into the socket's error queue, but if the socket is closed ... no
+point in that.
+
+johannes
+
 
