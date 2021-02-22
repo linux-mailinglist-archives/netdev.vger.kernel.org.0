@@ -2,169 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57047321172
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:36:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 868F9321199
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 08:50:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbhBVHgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 02:36:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33769 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230022AbhBVHgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 02:36:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613979283;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6FVHK+rXFWPhvTdgY3ca3NMaeJHpQu46VbcX/NLNp1o=;
-        b=YOJc6VhrxPq6zMYAvv7o9fZW68kSUf9wwDwuFwqF9ID8/oscYz0fD/iCxw9X2o4lKzhsyw
-        InM3CLsZd+1tdgns/8r6VHpFohtb8LuUxzvLUxI80OhNg5p6aBzLJZPVglgAqBTBYSzKob
-        1pgiyuidy2zrLH6yTSAj5mt5N5XoNk4=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-511-JUNA_8iWOZ6Gyq0omCebTw-1; Mon, 22 Feb 2021 02:34:42 -0500
-X-MC-Unique: JUNA_8iWOZ6Gyq0omCebTw-1
-Received: by mail-ed1-f69.google.com with SMTP id g20so3951966edy.7
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 23:34:41 -0800 (PST)
+        id S230291AbhBVHsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 02:48:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230132AbhBVHs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 02:48:29 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1E0C061574
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 23:47:48 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id p186so12035583ybg.2
+        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 23:47:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nLmHZHLnRgwDEEObE94Nv0Fsz35Ofv0+MLLREOl9EKo=;
+        b=rrBdirC+RJBT90GZlIyIX4UdWjk0XyBHsRx7Snz3fBoAqUYRUbujpSAP8oOT6keGMX
+         z2/YVH7ZgQzIGJjyzrAwFrAyqavCMWutoFdMKI6i19CFxwPj1EErgZS4UD42Ufcpv6gx
+         ca8y3fbjWLFt/IXTUwMSR/l2SDfcCYf+bDM7tdN3aPTrrkHApsKf9jOfzJcdFkogoVMY
+         v0bu13qtxPOd1UDgFSNt9WgUXlxZWhw4cKTlrPkLHsmlg7lIObAA4fqUg7p3OzDOKNAP
+         WY/bM40bu6+PrM/b5aboFYF+gHvFobM882PosueNsGVJ/fV7ofTHFMmVY84m0Clzpelz
+         qoeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=6FVHK+rXFWPhvTdgY3ca3NMaeJHpQu46VbcX/NLNp1o=;
-        b=LPo+jsPoVd78h8+MO7m+0EVqQOTYSJUvkdrL3+xaGcgCZ6QW4Wht/x4TuRkmebsIbV
-         tIsoNUaPaV84Pmyshq9GTl/wHDiELmhIy+pISeYx3UpICXoyo7ubjcbJh1K6hZe6ct2x
-         VNrfPX0+zXHWubGpOMzy4emg1b0jeeqWqlZmWmsdaxHF1aikzL3UKLL2YXB2pUvdjdwW
-         LjB7YlQkhjAHYuXAYkg2WoeGBTxiOsWCdgMIGhlDFQMQtv/70VYsilEPWQHkxGwrNfpt
-         3TjRFzfv8anDQrmrEq+IoH99vKmlIi0Q77Szl88ccYzRLKi7wXDk+fgcuS/dQBY8vKAP
-         1Ajg==
-X-Gm-Message-State: AOAM533sa2fDeZlYXDatUfqu5OrwH369GbHb4h0HHyHPI1Un08Q1+aP+
-        9+30zFxfUeZKYeoqCE5EjhDsv7P7fvwDzq8qE8Usk0eNF+mCx+RoR+QzXtzczdKEf+5EeDCE0jQ
-        2oBRlXWYRXgABYAsE
-X-Received: by 2002:a05:6402:3d8:: with SMTP id t24mr21009501edw.298.1613979280875;
-        Sun, 21 Feb 2021 23:34:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxEzpKE3VGwXPIdtln/AiroN8FBRqHsg0v8D6hpM8GMEsbhJmhd1UQeVTsGMSLWYiL91843Cw==
-X-Received: by 2002:a05:6402:3d8:: with SMTP id t24mr21009478edw.298.1613979280624;
-        Sun, 21 Feb 2021 23:34:40 -0800 (PST)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id m26sm4603396eja.6.2021.02.21.23.34.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Feb 2021 23:34:40 -0800 (PST)
-Date:   Mon, 22 Feb 2021 02:34:37 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-Message-ID: <20210222023040-mutt-send-email-mst@kernel.org>
-References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
- <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nLmHZHLnRgwDEEObE94Nv0Fsz35Ofv0+MLLREOl9EKo=;
+        b=gB102MEchVyVKkFGOEFgmC+RlRvYVOfhGm2qtLAZ6Ko714G3TcBJTWve8tgqRQFqwY
+         O7zu8dssSqPdHt6MwoVwBF9/4R6KJf15qcJAe7YNvllZFptax6nmi8L3J0a8hFD5WhJR
+         J3pRDW2mStsdHl0ofgCLrNTqoMPoNL9Vc3vz7RzXbMWD4T82tLgvndNhFpYUUDFCHRmD
+         geYKk+HoWfPr82o5EEbhl/TpGM8JmpDsg7ihIcwj23YlB+kcTvFvi+ItNiGZro5ioZEP
+         AzF247D/qye4tCq44Qv8aqSFPAU0hJB8RqRMKk1zb9+rReseRjL5z9Z1IBskppA654ge
+         6kgA==
+X-Gm-Message-State: AOAM532jlGip8nHy9RU1xNVyegY89lh7Z4DKwZSFtYVKGtLp47GYSvw1
+        lW9p6dOTITh/m7mpcB1v2rWuABS3b9C4tLFB8xKaOX5FoHw=
+X-Google-Smtp-Source: ABdhPJzBCUglu9dk+dHnqAzCSN5FK6zpJMPMOWaQmxWodYX1NnJ/oUNlaNqrU5r8gLKb/o9gS7ufrNe4P9F6WrxKc64=
+X-Received: by 2002:a25:2307:: with SMTP id j7mr6910028ybj.518.1613980067690;
+ Sun, 21 Feb 2021 23:47:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
+References: <20210220110356.84399-1-redsky110@gmail.com>
+In-Reply-To: <20210220110356.84399-1-redsky110@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 22 Feb 2021 08:47:35 +0100
+Message-ID: <CANn89iKw_GCU6QeDHx31zcjFzqhzjaR2KrSNRON=KbohswHhmg@mail.gmail.com>
+Subject: Re: [PATCH] tcp: avoid unnecessary loop if even ports are used up
+To:     Honglei Wang <redsky110@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
-> 
-> On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
-> > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
-> > for legacy") made an exception for legacy guests to reset
-> > features to 0, when config space is accessed before features
-> > are set. We should relieve the verify_min_features() check
-> > and allow features reset to 0 for this case.
-> > 
-> > It's worth noting that not just legacy guests could access
-> > config space before features are set. For instance, when
-> > feature VIRTIO_NET_F_MTU is advertised some modern driver
-> > will try to access and validate the MTU present in the config
-> > space before virtio features are set.
-> 
-> 
-> This looks like a spec violation:
-> 
-> "
-> 
-> The following driver-read-only field, mtu only exists if VIRTIO_NET_F_MTU is
-> set.
-> This field specifies the maximum MTU for the driver to use.
-> "
-> 
-> Do we really want to workaround this?
-> 
-> Thanks
-
-And also:
-
-The driver MUST follow this sequence to initialize a device:
-1. Reset the device.
-2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
-3. Set the DRIVER status bit: the guest OS knows how to drive the device.
-4. Read device feature bits, and write the subset of feature bits understood by the OS and driver to the
-device. During this step the driver MAY read (but MUST NOT write) the device-specific configuration
-fields to check that it can support the device before accepting it.
-5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature bits after this step.
-6. Re-read device status to ensure the FEATURES_OK bit is still set: otherwise, the device does not
-support our subset of features and the device is unusable.
-7. Perform device-specific setup, including discovery of virtqueues for the device, optional per-bus setup,
-reading and possibly writing the device’s virtio configuration space, and population of virtqueues.
-8. Set the DRIVER_OK status bit. At this point the device is “live”.
+On Sat, Feb 20, 2021 at 12:04 PM Honglei Wang <redsky110@gmail.com> wrote:
+>
+> We are getting port for connect() from even ports firstly now. This
+> makes bind() users have more available slots at odd part. But there is a
+> problem here when the even ports are used up. This happens when there
+> is a flood of short life cycle connections. In this scenario, it starts
+> getting ports from the odd part, but each requirement has to walk all of
+> the even port and the related hash buckets (it probably gets nothing
+> before the workload pressure's gone) before go to the odd part. This
+> makes the code path __inet_hash_connect()->__inet_check_established()
+> and the locks there hot.
+>
+> This patch tries to improve the strategy so we can go faster when the
+> even part is used up. It'll record the last gotten port was odd or even,
+> if it's an odd one, it means there is no available even port for us and
+> we probably can't get an even port this time, neither. So we just walk
+> 1/16 of the whole even ports. If we can get one in this way, it probably
+> means there are more available even part, we'll go back to the old
+> strategy and walk all of them when next connect() comes. If still can't
+> get even port in the 1/16 part, we just go to the odd part directly and
+> avoid doing unnecessary loop.
 
 
-so accessing config space before FEATURES_OK is a spec violation, right?
+Your patch trades correctness for speed.
+
+Sorry, but adding yet another static (and thus shared) variable
+assuming only one process
+on the physical host attempts a series of connect() is a non starter for me.
+
+Just scanning 1/8 of even ports to decide if none of them is available
+is potentially going to
+not see 7/16 of potential free 4-tuple, and an application needing
+28,000 4-tuple with SRCIP,DSTIP,DSTPORT being fixed
+might not be able to run anymore.
+
+If you do not care about bind() being able to find a free port, I
+would suggest you add
+a sysctl to simply relax the even/odd strategy that Google has been using
+to avoid all these port exhaustion bugs we had in the past.
+(Although now we use one netns per job, jobs are now isolated and only
+can hurt themselves)
 
 
-> 
-> > Rejecting reset to 0
-> > prematurely causes correct MTU and link status unable to load
-> > for the very first config space access, rendering issues like
-> > guest showing inaccurate MTU value, or failure to reject
-> > out-of-range MTU.
-> > 
-> > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> > ---
-> >   drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
-> >   1 file changed, 1 insertion(+), 14 deletions(-)
-> > 
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 7c1f789..540dd67 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
-> >   	return mvdev->mlx_features;
-> >   }
-> > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
-> > -{
-> > -	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
-> > -		return -EOPNOTSUPP;
-> > -
-> > -	return 0;
-> > -}
-> > -
-> >   static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
-> >   {
-> >   	int err;
-> > @@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
-> >   {
-> >   	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
-> >   	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
-> > -	int err;
-> >   	print_features(mvdev, features, true);
-> > -	err = verify_min_features(mvdev, features);
-> > -	if (err)
-> > -		return err;
-> > -
-> >   	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
-> >   	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
-> >   	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
-> > -	return err;
-> > +	return 0;
-> >   }
-> >   static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
 
+>
+>
+> Signed-off-by: Honglei Wang <redsky110@gmail.com>
+> ---
+>  net/ipv4/inet_hashtables.c | 21 +++++++++++++++++++--
+>  1 file changed, 19 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index 45fb450b4522..c95bf5cf9323 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -721,9 +721,10 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+>         struct net *net = sock_net(sk);
+>         struct inet_bind_bucket *tb;
+>         u32 remaining, offset;
+> -       int ret, i, low, high;
+> +       int ret, i, low, high, span;
+>         static u32 hint;
+
+
+This is an old tree, current kernels do not have this 'static u32 hint' anymore.
+
+
+>
+>         int l3mdev;
+> +       static bool last_port_is_odd;
+>
+>         if (port) {
+>                 head = &hinfo->bhash[inet_bhashfn(net, port,
+> @@ -756,8 +757,19 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+>          */
+>         offset &= ~1U;
+>  other_parity_scan:
+> +       /* If the last available port is odd, it means
+> +        * we walked all of the even ports, but got
+> +        * nothing last time. It's telling us the even
+> +        * part is busy to get available port. In this
+> +        * case, we can go a bit faster.
+> +        */
+> +       if (last_port_is_odd && !(offset & 1) && remaining > 32)
+> +               span = 32;
+> +       else
+> +               span = 2;
+> +
+>         port = low + offset;
+> -       for (i = 0; i < remaining; i += 2, port += 2) {
+> +       for (i = 0; i < remaining; i += span, port += span) {
+>                 if (unlikely(port >= high))
+>                         port -= remaining;
+>                 if (inet_is_local_reserved_port(net, port))
+> @@ -806,6 +818,11 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+>  ok:
+>         hint += i + 2;
+>
+> +       if (offset & 1)
+> +               last_port_is_odd = true;
+> +       else
+> +               last_port_is_odd = false;
+> +
+>         /* Head lock still held and bh's disabled */
+>         inet_bind_hash(sk, tb, port);
+>         if (sk_unhashed(sk)) {
+> --
+> 2.14.1
+>
