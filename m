@@ -2,133 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FBCC3211B6
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 09:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 933593211BA
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 09:04:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230377AbhBVIBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 03:01:42 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:46414 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbhBVIBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 03:01:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1613980900; x=1645516900;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=P0o5DN0lY6yEsmT8esXd7RX4Q3WcQqTQdIg9plIuWPk=;
-  b=JkrkWbu5dF8GdKBCoh3JV27JehMP0lJMuHByytdEkoEWUlShykE1Z4AI
-   3FjYbeaKKt8fJfKT+yRpcj+yGqN/fUl34NuD0tkSHpN5oWtgqECLT+UcJ
-   h10vO4E4ji80UL5CquHhNskXwaLxITtkInB5TZ3bm78A73mFyl/J/GKrU
-   0b85LzCjKJ+Q79JPqQF0eEp5XREcYMwaQqOpX/npzVejNxq3ex2Nd2RVT
-   5IRK8Lwqz6tPcuSU7RPDKU0tDJFwh47UBWZ9X4BxuXRVxbsl4WY26oCrR
-   x8gAOT/GM3/TOE7eR65x1NJpgWWoga5lG6MRkapYcI84D9t+It5HNU1wB
-   w==;
-IronPort-SDR: gsGFcwC09d2OowkY2hkdMoSh/rnZbzj232smMpDS0c05TvdDoajmeNV2jdUAcQC+sN7Ao2ZZev
- vvynz0CaKUbAGkPODzu/JVDabQrj31SfPBj6M2sdXlVFaQS8LH+jOk/vz3r2nn3jGhNnQkpP3i
- ZqtrvfnaqcehO9cfTwbDer3FeJIrEaMeQWLtfPxyDLnmp6lxXEjFqAnPNiOAyxcyA2ok3jIjrI
- i6+8uMmFewCGMBh8W9/ionhfFRrKcaHzCZJZVzvP6mV2R7KSBPD0feOeoLfF1piTqwabvkHPsY
- arE=
-X-IronPort-AV: E=Sophos;i="5.81,196,1610434800"; 
-   d="scan'208";a="44973098"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Feb 2021 01:00:23 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 22 Feb 2021 01:00:23 -0700
-Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Mon, 22 Feb 2021 01:00:20 -0700
-Message-ID: <94dad8f439dd870b3488130e82f50e28b81fccf1.camel@microchip.com>
-Subject: Re: [PATCH v15 2/4] phy: Add media type and speed serdes
- configuration interfaces
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Date:   Mon, 22 Feb 2021 09:00:20 +0100
-In-Reply-To: <YDH20a2hP+HtBqHz@unreal>
-References: <20210218161451.3489955-1-steen.hegelund@microchip.com>
-         <20210218161451.3489955-3-steen.hegelund@microchip.com>
-         <YDH20a2hP+HtBqHz@unreal>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S230399AbhBVIDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 03:03:11 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:59455 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230390AbhBVIDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 03:03:07 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0UPCfV1._1613980943;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0UPCfV1._1613980943)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 22 Feb 2021 16:02:23 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     mpe@ellerman.id.au
+Cc:     benh@kernel.crashing.org, paulus@samba.org, cforno12@linux.ibm.com,
+        davem@davemloft.net, kuba@kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH] ibmveth: Switch to using the new API kobj_to_dev()
+Date:   Mon, 22 Feb 2021 16:02:21 +0800
+Message-Id: <1613980941-45992-1-git-send-email-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Leon,
+fixed the following coccicheck:
+./drivers/net/ethernet/ibm/ibmveth.c:1805:51-52: WARNING opportunity for
+kobj_to_dev()
 
-On Sun, 2021-02-21 at 07:59 +0200, Leon Romanovsky wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you
-> know the content is safe
-> 
-> On Thu, Feb 18, 2021 at 05:14:49PM +0100, Steen Hegelund wrote:
-> > Provide new phy configuration interfaces for media type and speed
-> > that
-> > allows e.g. PHYs used for ethernet to be configured with this
-> > information.
-> > 
-> > Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > ---
-> > 
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/net/ethernet/ibm/ibmveth.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-...
-
-> >  int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
-> >                union phy_configure_opts *opts);
-> > @@ -344,6 +356,20 @@ static inline int phy_set_mode_ext(struct phy
-> > *phy, enum phy_mode mode,
-> >  #define phy_set_mode(phy, mode) \
-> >       phy_set_mode_ext(phy, mode, 0)
-> > 
-> > +static inline int phy_set_media(struct phy *phy, enum phy_media
-> > media)
-> > +{
-> > +     if (!phy)
-> > +             return 0;
-> 
-> I'm curious, why do you check for the NULL in all newly introduced
-> functions?
-> How is it possible that calls to phy_*() supply NULL as the main
-> struct?
-> 
-> Thanks
-
-I do not know the history of that, but all the functions in the
-interface that takes a phy as input and returns a status follow that
-pattern.  Maybe Kishon and Vinod knows the origin?
-
-> 
-> > +     return -ENODEV;
-> > +}
-> > +
-> > +static inline int phy_set_speed(struct phy *phy, int speed)
-> > +{
-> > +     if (!phy)
-> > +             return 0;
-> > +     return -ENODEV;
-> > +}
-> > +
-> >  static inline enum phy_mode phy_get_mode(struct phy *phy)
-> >  {
-> >       return PHY_MODE_INVALID;
-> > --
-> > 2.30.0
-> > 
-
-Best Regards
-Steen
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index c3ec9ce..6e9572c 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1801,8 +1801,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
+ 	struct ibmveth_buff_pool *pool = container_of(kobj,
+ 						      struct ibmveth_buff_pool,
+ 						      kobj);
+-	struct net_device *netdev = dev_get_drvdata(
+-	    container_of(kobj->parent, struct device, kobj));
++	struct net_device *netdev = dev_get_drvdata(kobj_to_dev(kobj->parent));
+ 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
+ 	long value = simple_strtol(buf, NULL, 10);
+ 	long rc;
+-- 
+1.8.3.1
 
