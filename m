@@ -2,127 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C18C03211F5
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 09:25:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 285CD32121F
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 09:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbhBVIZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 03:25:28 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:54779 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229947AbhBVIZY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Feb 2021 03:25:24 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DkZwm6N81z9sCD;
-        Mon, 22 Feb 2021 19:24:40 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1613982282;
-        bh=yZq9IVi4sJ8JZMajzERvb4K12caMOUxVcC7d+cAK+6g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ggJBaVQ5VHtgUUuUZJdQ+HW0f5Mc7H5t2ZdH4wpGIw8q2sTMF2KtqM98JHKk4ILuH
-         k9W6zaVTz/qs+12U+z5s/tZIHokP5Ll7+unt42Ph/QHy6G9cX+sNRz8N6im8DcJIh0
-         Xprrbu8yXwg8f09i4GRj8H0Hm7V5wekaGAtb9fjbTqRuikp3ZBKiyLDT7V7nTydclF
-         6MccQZZ0SC6Rb886k+NoVGTDXFmO75iJTTVr6di+jWPYoG8Dw4sZWcey2ViR33qMn+
-         bt0quNzy+p7ZLWK/RtbUYSJJ++QzDuyKXeyz9FzJqbB0u+WRcloCy1NDg7qyWw68My
-         72ZK4JAJKCDRA==
-Date:   Mon, 22 Feb 2021 19:24:39 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: Re: linux-next: manual merge of the gpio-brgl tree with the
- net-next tree
-Message-ID: <20210222192439.0365f800@canb.auug.org.au>
-In-Reply-To: <20210216181938.7c35ac22@canb.auug.org.au>
-References: <20210216181938.7c35ac22@canb.auug.org.au>
+        id S230040AbhBVIik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 03:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40088 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229989AbhBVIid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 03:38:33 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD775C061574;
+        Mon, 22 Feb 2021 00:37:51 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id p3so2524380wmc.2;
+        Mon, 22 Feb 2021 00:37:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CeWBZt+hcCxVqYJNaniFHpV0E/tU4rgmknD4HdcGoA8=;
+        b=B7RaBO+aD3Tzj0ptbjRBs/L0Tl8BhA1vYGHLzgZGwDCq0Wf9LNAP4q91TXQIXqcrJD
+         6UwWdNJgd+CIoAEOII3zYFqGA7VH3HaVaqbWbFV+T/L653qvNuDr7h1HY5w5AUzZXi5Z
+         dSv37h529bzRmG4aNSY0+KyY59cdMaQo1HmBoR7qeOEYSs6j9VMwk0e/KuJg3uY+6qXI
+         k8fIqAKGWTG4XTYVQ+5M9HqYqlQPIgyW+J0ZQOtpVwDdNeMUILMudW5+mXgUjhI+Oga7
+         fJCb8tlsYSLuqxYyGcflHCx+aEo3pPgZyFENysWtucVVbp8fNuzdZPdHes8gM13k3o3Y
+         OLiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CeWBZt+hcCxVqYJNaniFHpV0E/tU4rgmknD4HdcGoA8=;
+        b=gvh4Z8TnoVEZWifQREkLgpkj7L1JD+xmvUWzC/nnNfjbgMU1OG708U/Q4XW7mbFQqZ
+         am9enpuK80svXkXDFbe6gd2xvPD0c89pEnUUCKXDHmTe+6LTj3TdIjJjFdlYk69I8ASM
+         quFqbBDWg/jgiSk/6lSo1AKeOAUqXOh1U5MahzmVj1VH+976OrzYNS4qJw23LrCUhNOx
+         HP+4rlgbTs5u/UMMJJVrFOq+CoX3haUbWvaHIM3j3igew/Q6nh0+390Vs1ig81asdgKY
+         SWvdXGatMGfu6aEkoIube89udWX4vP9ecaEKHjWBlUFhQUFEOaZdjDG+d0f/lRnssBDY
+         /QkA==
+X-Gm-Message-State: AOAM531NM6LHZSs/L+PH2gSjWFPoQXcR+JcJwNPVNSP0LQlvab8L4eMm
+        8vjFVo6dFduwF4cvnaY5y2Hi2uc3QB8=
+X-Google-Smtp-Source: ABdhPJymMOf4TNIDxX2pW6azZ2nmgM8INoCSdxZy+6QriYxawL7PnXosUCFFkkYekcAEUTqztF3u0A==
+X-Received: by 2002:a05:600c:4f46:: with SMTP id m6mr19430978wmq.154.1613983070546;
+        Mon, 22 Feb 2021 00:37:50 -0800 (PST)
+Received: from [192.168.1.101] ([37.171.239.209])
+        by smtp.gmail.com with ESMTPSA id f7sm28234732wrm.92.2021.02.22.00.37.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Feb 2021 00:37:49 -0800 (PST)
+Subject: Re: [PATCH] arp: Remove the arp_hh_ops structure
+To:     Yejune Deng <yejune.deng@gmail.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <oliver.sang@intel.com>
+References: <20210222031526.3834-1-yejune.deng@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <0143f961-7530-3ae9-27f2-f076ea951975@gmail.com>
+Date:   Mon, 22 Feb 2021 09:37:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/2rqMnUArb4awWk8DIog3VXs";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20210222031526.3834-1-yejune.deng@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/2rqMnUArb4awWk8DIog3VXs
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-On Tue, 16 Feb 2021 18:19:38 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->=20
-> Today's linux-next merge of the gpio-brgl tree got a conflict in:
->=20
->   MAINTAINERS
->=20
-> between commit:
->=20
->   df53e4f48e8d ("MAINTAINERS: Add entries for Toshiba Visconti ethernet c=
-ontroller")
->=20
-> from the net-next tree and commit:
->=20
->   5103c90d133c ("MAINTAINERS: Add entries for Toshiba Visconti GPIO contr=
-oller")
->=20
-> from the gpio-brgl tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> diff --cc MAINTAINERS
-> index 9a8285485f0d,656ae6685430..000000000000
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@@ -2615,13 -2641,11 +2615,15 @@@ L:	linux-arm-kernel@lists.infradead.or
->   S:	Supported
->   T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iwamatsu/linux-vis=
-conti.git
->   F:	Documentation/devicetree/bindings/arm/toshiba.yaml
-> + F:	Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
->  +F:	Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
->   F:	Documentation/devicetree/bindings/pinctrl/toshiba,tmpv7700-pinctrl.y=
-aml
->  +F:	Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml
->   F:	arch/arm64/boot/dts/toshiba/
-> + F:	drivers/gpio/gpio-visconti.c
->  +F:	drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
->   F:	drivers/pinctrl/visconti/
->  +F:	drivers/watchdog/visconti_wdt.c
->   N:	visconti
->  =20
->   ARM/UNIPHIER ARCHITECTURE
+On 2/22/21 4:15 AM, Yejune Deng wrote:
+> The arp_hh_ops structure is similar to the arp_generic_ops structure.
+> but the latter is more general,so remove the arp_hh_ops structure.
+> 
+> Fix when took out the neigh->ops assignment:
+> 8.973653] #PF: supervisor read access in kernel mode
+> [    8.975027] #PF: error_code(0x0000) - not-present page
+> [    8.976310] PGD 0 P4D 0
+> [    8.977036] Oops: 0000 [#1] SMP PTI
+> [    8.977973] CPU: 1 PID: 210 Comm: sd-resolve Not tainted 5.11.0-rc7-02046-g4591591ab715 #1
+> [    8.979998] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+> [    8.981996] RIP: 0010:neigh_probe (kbuild/src/consumer/net/core/neighbour.c:1009)
+> 
 
-This is now a comflict between the gpio-brgl tree and Linus' tree.
+I have a hard time understanding this patch submission.
 
---=20
-Cheers,
-Stephen Rothwell
+This seems a mix of a net-next and net material ?
 
---Sig_/2rqMnUArb4awWk8DIog3VXs
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmAzakgACgkQAVBC80lX
-0GxSrQf+OrChGU0BTbZIjsTbQciFyLsRxTpPPHXCp602Hacj0Xn0ax5oTs3ZIL1N
-AnZxjqZGaoA1ob9+toWEpjqztqwa5u4jQM4cdigC93+uqyiUaYNa8bgFJzdkWdwS
-nDq35FtzwGWBfyOTebIXS1X5PtL2A4J8pNfYgHJGKNCyC+by+p6j20xBbbAUa+Ry
-n/WIvXfSEgeQOgFbLKxtrvLJyxUjcvg5FErx/9uMIRlgHGMaWjnzQ0YDqmeoEFvM
-27dekyCL2M0DSJLX5GpNcercqm611Gqj2PUCwc1J91pqh2t6IJvMBHDyO+IKpLkY
-4aWfPgr/JiUi7WzlTpKmFGpeH5VTuA==
-=IEzn
------END PGP SIGNATURE-----
+> Reported-by: kernel test robot <oliver.sang@intel.com>
 
---Sig_/2rqMnUArb4awWk8DIog3VXs--
+If this is a bug fix, we want a Fixes: tag
+
+This will really help us. Please don't let us guess what is going on.
+
+
+Also, if this is not a bug fix, this should target net-next tree,
+please take a look at Documentation/networking/netdev-FAQ.rst
+
+In short, the stack trace in this changelog seems to be not
+related to this patch, maybe a prior version ? We do not want
+to keep artifacts of some buggy version that was never merged
+into official tree.
+
+Thanks.
+
+> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+> ---
+>  net/ipv4/arp.c | 15 ++-------------
+>  1 file changed, 2 insertions(+), 13 deletions(-)
+> 
+> diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+> index 922dd73e5740..9ee59c2e419a 100644
+> --- a/net/ipv4/arp.c
+> +++ b/net/ipv4/arp.c
+> @@ -135,14 +135,6 @@ static const struct neigh_ops arp_generic_ops = {
+>  	.connected_output =	neigh_connected_output,
+>  };
+>  
+> -static const struct neigh_ops arp_hh_ops = {
+> -	.family =		AF_INET,
+> -	.solicit =		arp_solicit,
+> -	.error_report =		arp_error_report,
+> -	.output =		neigh_resolve_output,
+> -	.connected_output =	neigh_resolve_output,
+> -};
+> -
+>  static const struct neigh_ops arp_direct_ops = {
+>  	.family =		AF_INET,
+>  	.output =		neigh_direct_output,
+> @@ -277,12 +269,9 @@ static int arp_constructor(struct neighbour *neigh)
+>  			memcpy(neigh->ha, dev->broadcast, dev->addr_len);
+>  		}
+>  
+> -		if (dev->header_ops->cache)
+> -			neigh->ops = &arp_hh_ops;
+> -		else
+> -			neigh->ops = &arp_generic_ops;
+> +		neigh->ops = &arp_generic_ops;
+>  
+> -		if (neigh->nud_state & NUD_VALID)
+> +		if (!dev->header_ops->cache && (neigh->nud_state & NUD_VALID))
+>  			neigh->output = neigh->ops->connected_output;
+>  		else
+>  			neigh->output = neigh->ops->output;
+> 
