@@ -2,95 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6FEA32106A
-	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 06:25:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 581AF3210B2
+	for <lists+netdev@lfdr.de>; Mon, 22 Feb 2021 07:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbhBVFZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 00:25:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhBVFZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 00:25:47 -0500
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE1DC061786
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 21:25:07 -0800 (PST)
-Received: by mail-oo1-xc32.google.com with SMTP id k1so425070oop.0
-        for <netdev@vger.kernel.org>; Sun, 21 Feb 2021 21:25:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=r/HtVIHAQfytbp52XL64b8xtv78rRZf2vo32q/8i/E0=;
-        b=VrHSzb/j/ajUUcyobfqvAUAoiquh6i3asyMfe3sela5aNEu1W9JBC1b3Frg2U7zrc7
-         2IQuBMkFE3uotMEQ8KkBOLcsUdBwnIXRRF2V6rFu+q+dyA40sC1ReKfLJCRBz3R+ik1j
-         Ek2lppxuyxXo3D1NSu7efGsT+CmZzE+0jIbijin6VZZMYNkkrXk2rm2LbYSV/zTe68GJ
-         ROfJMScUsUPxyzMqrMCok7hIIhjae6QRrZ/5aCKA+LzbbRNu5WPiJ6k+D5UioVqAwWML
-         p098wLAimm31/BGmxylBQ0kf745gmsoXk0o9TM6qQev3aLQb4h48SgAYWRHdKwWJyeTf
-         5IcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=r/HtVIHAQfytbp52XL64b8xtv78rRZf2vo32q/8i/E0=;
-        b=oaW/cKhVljAg4lmYiyW0YlzIX0rLIx03fg+wemRmRD+ahcx7aNMgmekWmtGYe2ba+c
-         rEop+WNGaCNZQfM8YdB40oh0LRQ4s/9+FYPZ6qYAfPmyv/pqNcg3LmBAhe2yjqCvvTAr
-         wie35vPX2X3iUGxriv+NBWTTu9MXYd2AofjblIsKie1W4Yoe/v58AjerHufLKrTQhOGd
-         ImJAK+W4yVt8dqQzBE9ARwn/VYcBWP+RTScBUaJXSJl43K7nUBq+MJvpoXjByfsg9Xd5
-         soCKYYEqoTLf/2oc3wq+nUbwBnb5vpqXH7kLRfeMQ7RXjsNy8RKBX7JeMfFMPEGI6hBt
-         QksQ==
-X-Gm-Message-State: AOAM531NjU1sRHFdt8MxvmXK0map44AFGz1s9pMilbpJiFDyB2b8jJeh
-        T4zniKFecFNmJf32+V4UO6c=
-X-Google-Smtp-Source: ABdhPJyict2Sl3G1B1W56krGa2VhGFM2UPEU47S+2YT0dBiusUKx9TJXM6vlYK3Xwv+ruTG35+U5KA==
-X-Received: by 2002:a4a:be01:: with SMTP id l1mr10369655oop.89.1613971507070;
-        Sun, 21 Feb 2021 21:25:07 -0800 (PST)
-Received: from ?IPv6:2600:1700:dfe0:49f0:f028:e4b6:7941:9a45? ([2600:1700:dfe0:49f0:f028:e4b6:7941:9a45])
-        by smtp.gmail.com with ESMTPSA id 7sm3450028oth.38.2021.02.21.21.25.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Feb 2021 21:25:06 -0800 (PST)
-Subject: Re: [RFC PATCH net-next 12/12] Documentation: networking: switchdev:
- fix command for static FDB entries
-To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-References: <20210221213355.1241450-1-olteanv@gmail.com>
- <20210221213355.1241450-13-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <c618cb02-9ae8-06ac-8883-0397bdb035c4@gmail.com>
-Date:   Sun, 21 Feb 2021 21:24:57 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S230010AbhBVGGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 01:06:22 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8461 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229532AbhBVGGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 01:06:17 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B603349ac0000>; Sun, 21 Feb 2021 22:05:32 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 22 Feb 2021 06:05:30 +0000
+Date:   Mon, 22 Feb 2021 08:05:26 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Si-Wei Liu <si-wei.liu@oracle.com>, <jasowang@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Message-ID: <20210222060526.GA110862@mtl-vdi-166.wap.labs.mlnx>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+ <20210221144437.GA82010@mtl-vdi-166.wap.labs.mlnx>
+ <20210221165047-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210221213355.1241450-13-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210221165047-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613973932; bh=wtiBJo2dRLfJIIqt6wpLMyAaUBsSb2VCf4Pvw6R8saw=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=nJKcuKSBsnWQK5RLQOSDOFfHKKTzeXp1SAW9Bqr/zVjaT7ZlQr+e1HhVj52J5dTLt
+         cWMt2LhDFMBNNxHoPYqOj/amvmWoW8OUf9nudrC26zxLMC8TN7L5UOrjqywOVqwYRK
+         MQmh1UU/mz2r0HM0MDb2j+DkpC/x3ns5YyOI/WxB2sBlQvmg9JBAWkPqzPN09H5XQH
+         7hdq7CucxipnsWHyyWPDMZwBCVVyu/aWTJVcBgVLbsqyVR4Of4Yj+ZC4/tXiD6ZFnE
+         kOjwDam1Zoad33MeQWzQtqTfwIO3SzEMOUyHPqy0TghSIlVKEg8nAlstBGIf7PL7O1
+         HYmkg/3HM8yTQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/21/2021 13:33, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sun, Feb 21, 2021 at 04:52:05PM -0500, Michael S. Tsirkin wrote:
+> On Sun, Feb 21, 2021 at 04:44:37PM +0200, Eli Cohen wrote:
+> > On Fri, Feb 19, 2021 at 06:54:58AM -0500, Si-Wei Liu wrote:
+> > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> > > for legacy") made an exception for legacy guests to reset
+> > > features to 0, when config space is accessed before features
+> > > are set. We should relieve the verify_min_features() check
+> > > and allow features reset to 0 for this case.
+> > > 
+> > > It's worth noting that not just legacy guests could access
+> > > config space before features are set. For instance, when
+> > > feature VIRTIO_NET_F_MTU is advertised some modern driver
+> > > will try to access and validate the MTU present in the config
+> > > space before virtio features are set. Rejecting reset to 0
+> > > prematurely causes correct MTU and link status unable to load
+> > > for the very first config space access, rendering issues like
+> > > guest showing inaccurate MTU value, or failure to reject
+> > > out-of-range MTU.
+> > > 
+> > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+> > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > > ---
+> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+> > >  1 file changed, 1 insertion(+), 14 deletions(-)
+> > > 
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index 7c1f789..540dd67 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+> > >  	return mvdev->mlx_features;
+> > >  }
+> > >  
+> > > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+> > > -{
+> > > -	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> > > -		return -EOPNOTSUPP;
+> > > -
+> > > -	return 0;
+> > > -}
+> > > -
+> > 
+> > But what if VIRTIO_F_ACCESS_PLATFORM is not offerred? This does not
+> > support such cases.
 > 
-> The "bridge fdb add" command provided in the switchdev documentation is
-> junk now, not only because it is syntactically incorrect and rejected by
-> the iproute2 bridge program, but also because it was not updated in
-> light of Arkadi Sharshevsky's radical switchdev refactoring in commit
-> 29ab586c3d83 ("net: switchdev: Remove bridge bypass support from
-> switchdev"). Try to explain what the intended usage pattern is with the
-> new kernel implementation.
+> Did you mean "catch such cases" rather than "support"?
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Actually I meant this driver/device does not support such cases.
+
+> 
+> > Maybe we should call verify_min_features() from mlx5_vdpa_set_status()
+> > just before attempting to call setup_driver().
+> > 
+> > >  static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+> > >  {
+> > >  	int err;
+> > > @@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+> > >  {
+> > >  	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> > >  	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > > -	int err;
+> > >  
+> > >  	print_features(mvdev, features, true);
+> > >  
+> > > -	err = verify_min_features(mvdev, features);
+> > > -	if (err)
+> > > -		return err;
+> > > -
+> > >  	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
+> > >  	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+> > >  	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
+> > > -	return err;
+> > > +	return 0;
+> > >  }
+> > >  
+> > >  static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
+> > > -- 
+> > > 1.8.3.1
+> > > 
+> 
