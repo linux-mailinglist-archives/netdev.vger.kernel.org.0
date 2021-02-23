@@ -2,257 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C211322365
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:14:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DAF7322369
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:16:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbhBWBNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 20:13:20 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:54944 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231489AbhBWBNG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 20:13:06 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11N19CTl172732;
-        Tue, 23 Feb 2021 01:12:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=GkRh8iv09tX2YyX0Bisf8UWO6+RG6ZbBSXklIykkIls=;
- b=wulqWBy9FTPvANiu2S99Xaw9euBWe+WHbF0MdHvO5KWHklDxnBDfMc8pbn8PRF6yyH+v
- eMfUCYsUMCDQN/P4PmZKX7YOC0a/LGid0AtDxc8a5gtBUEG8CH7Uy5r88Oi3TR1fkQL3
- 5qfu54pYHkN/1U5qlAcD3L9cBVDXPHOO7TDGcyFx/dndwDJGs7temGM665B7EaSHTicy
- WWr330OFOwl99Rk6XDULOvM/kOX8ZFKYloP3dCLNyB9SMX5E4C6puPrmBjOVqv4kTmTG
- EXP//SDEy6jRYVeBybBPDzlNJuoB5aKqyBtMVcMAd2PCTvDTGXIAoyyzXPycJ3LYXa2z BQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 36tsuqwmer-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 23 Feb 2021 01:12:18 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11N16RLb130384;
-        Tue, 23 Feb 2021 01:12:18 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2105.outbound.protection.outlook.com [104.47.55.105])
-        by userp3030.oracle.com with ESMTP id 36ucbwtc3r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 23 Feb 2021 01:12:18 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M68gHJFkqj7qlXKfdY3/qoXCLocUT10MOE/HKy6rU85wWmqsrt3Kx7LGp0Hxatj5y3qWZQ1q4PzH2zncZeUpczFlt9wk8BnmdwGIzfX8ys4/0lfyDRXQ1z2SsCxe/bJECqXShchY80Tjkigf/EKW4Mcsnodize4hpNnKddbdZnwXQvK6Sx1T8ZGx6VKC3WloKJr38MnygRh/DBBA14EcL7gDQSm4OFuyZSYfnepNw4XO36Io9jjlHVS8oODrQwNOiIgHZDtYUJeZge1yd63bfZ1TedEuU/SPXoWnBpMFIvWagFlIZtdQ5ZdfuRQ2nrnaeggKTYzo40FpD1WzMLZQzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GkRh8iv09tX2YyX0Bisf8UWO6+RG6ZbBSXklIykkIls=;
- b=g6PBqLbuADn7NrgWstZUNlw/Ypy9KHMN6d0jgY+t8YarzbQGUFH5FNrgN1AOUbscJgrVsfkDCBpmiC776Wzs+a8nZYRExXR2Rd2Eda9buTYgC3f90unv3HVu8z8+SWAax0gtUj8ZKWSoBPJpVmlu0s4lk/km3khhc4tjdDEmDpVAsSQ0bfxHPtSEJzqbdcPpY3p1K2gpU/TH79dBDjLe22tPiZYEzd2u8AUrRpXogdX5khbeLstPU80iSwIG33GWRA2CrK4nU4OUvAqkdN789cNBUoQXzcRZbYNmN6EhYnhs/OD1O26hk+wRdSj5mH5e3D1sNEst7eVoClFFJCvq/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S230334AbhBWBQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 20:16:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229863AbhBWBPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 20:15:55 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AD7C061574;
+        Mon, 22 Feb 2021 17:15:15 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id m9so14850552ybk.8;
+        Mon, 22 Feb 2021 17:15:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GkRh8iv09tX2YyX0Bisf8UWO6+RG6ZbBSXklIykkIls=;
- b=I4BFLq2KxmO1xJxPBcIFWyIwzjGouLw2ClvtVnUShG8Wx7W92afBEVKMFIfGIl+7s+D4u70V+NC4qiGkxhmgMCtXJpgYMUIq1fBI2utY1TRI9VNzVe8+sda14ieN5yXLgKRae2l3ZB7tlkXIqkjHmyHldFQbk3wqcaBJti3s3r4=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=oracle.com;
-Received: from BYAPR10MB3287.namprd10.prod.outlook.com (2603:10b6:a03:15c::11)
- by SJ0PR10MB4511.namprd10.prod.outlook.com (2603:10b6:a03:2de::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.41; Tue, 23 Feb
- 2021 01:12:16 +0000
-Received: from BYAPR10MB3287.namprd10.prod.outlook.com
- ([fe80::45b5:49d:d171:5359]) by BYAPR10MB3287.namprd10.prod.outlook.com
- ([fe80::45b5:49d:d171:5359%5]) with mapi id 15.20.3868.031; Tue, 23 Feb 2021
- 01:12:16 +0000
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     elic@nvidia.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
- <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
- <20210222023040-mutt-send-email-mst@kernel.org>
-From:   Si-Wei Liu <si-wei.liu@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
-Date:   Mon, 22 Feb 2021 17:12:12 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-In-Reply-To: <20210222023040-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [24.6.170.153]
-X-ClientProxiedBy: SN4PR0501CA0144.namprd05.prod.outlook.com
- (2603:10b6:803:2c::22) To BYAPR10MB3287.namprd10.prod.outlook.com
- (2603:10b6:a03:15c::11)
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Zm/OrNc3ivuCSoHbJLxz/xKZKnnzjvqT3PEqqQIt8oE=;
+        b=YHp8pMa1OCN09Z5XVL0dtUIU3mnPJ8hGpAKz7omPANuQ14tJ6NC8LM0yiEI4QcGU8c
+         SE5k8UM9VAlU4Mgqs3bE4bNoZA00ChCKL7sieGTHGzn9qUQwpZA1uakLdFKMdG8wOI5P
+         yXg10gLxdmpgaA2wwxpKkzb5UpULOrnxsp3zcQiBkG324wPuSCygCsCgzZROGlkMy0uu
+         0UUWcQTdvnjBiQHV0Tn+1208rHeLC4Xi/VlyWo5uWBRMsh4l1gzS0bBfioHlZpZ0NgEn
+         27hfpp3TBrdxUBCzEXMSwJ+M6Ly+UrKrhVBejGsWDwNK3F2vv/zUJN/yZ3AQLNgSKPES
+         Pf4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Zm/OrNc3ivuCSoHbJLxz/xKZKnnzjvqT3PEqqQIt8oE=;
+        b=RyCXeT9y/yIbthzJXgqt+Nn3g3TYu6uYZAa04LVACoqM9kDjOEuHHRNYQ64+e3b0kT
+         nATCojPsdaMKpojcrry+2NSjr6dNKO6qaGRkbOBYnUJUfaZJwuquK/HN/DZKmYtMNnMP
+         8mpul5QMs0RhtVaO2Q/hmIWtv+VTYNkcCRTCsQAE0FYjJEjzA2Vzd4bmDjVLIpsjkbMU
+         hdff8yZr/Qha0AwFJJ+ebg1Dr59pl5TD6zSssgUvXhOw6AVhH9ppcobBwp+CL0txF3tF
+         yWPMeP/e4mCQy/+M3uRTEXQayAJulNnDF9obd8n2D73zvmfyZ6qWEgp8vAZebSwfDLRn
+         3j/Q==
+X-Gm-Message-State: AOAM532l/mSSnM+BWFXIOywL3ss5Sbz9DCZdmPYmhU/toP5mj3VlNqOi
+        c3r3wWaDnRTB2jX4hl1uFp7NDIgx8jq1l6CF5oQ=
+X-Google-Smtp-Source: ABdhPJwj+U+f+cwUg9MgLcmJ2vaZcyByJw1ZHCFA+XmcdzIVvmYG2KdVwONx4jb3h1grMwsprHRR6ny2nHD7Txl1/mU=
+X-Received: by 2002:a25:3d46:: with SMTP id k67mr5338403yba.510.1614042914758;
+ Mon, 22 Feb 2021 17:15:14 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.19] (24.6.170.153) by SN4PR0501CA0144.namprd05.prod.outlook.com (2603:10b6:803:2c::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.10 via Frontend Transport; Tue, 23 Feb 2021 01:12:15 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e913a42e-10e9-495b-4159-08d8d7980f08
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB4511:
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB4511314D056DF4916105855BB1809@SJ0PR10MB4511.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x+22IUYNuuk8BlIfUs6chcJlSaAhvL4TDnUh6d74JkUwic7Ipj0yFvAg0Uphqy2OqOCn3GzmTXi0W+O0y1vpQPiUueD6SGHO2JngcH+0AxBz9EGDUzP413+OH/oKbw9O+K3d4+Pagk7/YCgxIk/QZ/7ItNoVhFzDeMttUAycXZo1aIPH9LLarMede1Wo59QcxT0aJtm2HC13fm81uTYBTvaNHWkkdZdRfl6lATauuPvyHseuEaRDVvGDtOkA6aevkTPiFi9ah/Q1eeUidrpBtQTnhQLlu73HMlpx9TdCWHNhuxhcZStXi+qfVUtgAPcpD6xjD8Ag+g/lf4/oEBDi+AOBkBOsBGfKitRhpxKHqW3Oaii9XecvwDgR/m1PRZPV0vIG/p82JpjitfSLcJiCcUeeI0NarfSzpp4+u+XPPXUcq8NxDkXPPTBd741VWZqYWn4lykYeY5Y9hJu4gRCVesWi5zlSpAoUOZdyTRMaT4EfJnDeCj+5E6sZSnSUyxfKNjn8ShRDSvN2ddTwh40HathyLnwjaT6GQrJ9CjAVWbBhVhh+rnndZrZQxb8m/447IZugzrfQsIQTZKZXf6GbCtuDRhE4KkeEeIE9TWttZV4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3287.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39860400002)(136003)(376002)(396003)(366004)(4326008)(83380400001)(36916002)(316002)(6486002)(478600001)(8676002)(2616005)(5660300002)(6666004)(31686004)(956004)(36756003)(16576012)(66476007)(8936002)(110136005)(26005)(2906002)(31696002)(16526019)(86362001)(186003)(66946007)(66556008)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?Y2VhTWIvM3NkR056NVlYcStLTWVoL3FkS3VwVW1GVTMvOUxGZEthL2ZrY290?=
- =?utf-8?B?WU16bUQyS3VFODBWalB4QWc1S2JzMGs2K3l6T0YyaHFlTCtpQ3BkU09qRFZY?=
- =?utf-8?B?MktUT2lvaDYvV2xzQXJ0a3dzdkJ5ZVJtVjJwR0pleEFPWU5EQWRCdURSRjdp?=
- =?utf-8?B?UDZpUTZWSGVnMkJTbUNpSGFWckt6VVJ3ZGt6UGpyOWRicGNWbnUybUJ6c0Ux?=
- =?utf-8?B?dFJqZWgyVXVra0Mxcy9MSW5GQ3VPRXpWYXJaaEtZaFVZVHFzWEVvN0oxcGFP?=
- =?utf-8?B?a3JUSjh3TzFadk90bnZCTGN5RmRmbG10WjZJc1gzMnVtTUx5Nkw1NTFIUndh?=
- =?utf-8?B?bncrTEdRWnlxS2FPMEY4TUxneW9PeHZrZmo5NDZ0ZGxiUGxNVFBpOUVZRk9T?=
- =?utf-8?B?WmZrMlF6WFZCa09SV2hmdHpvSzQ2dmlVdDRHNk01S2ZkbW1OZ3QycjZYVXRQ?=
- =?utf-8?B?R0FsdGhFZEJqS0ZGdG9tK1JCeEwzdkVVdWF4N0ZyYzdESmFBWE5BZjF1TWRw?=
- =?utf-8?B?eGVielpPYVZaMHVjT1NOalh0Z01xTm0zRjNpWUp4eGRkR2wxT3c3bmdPMHhF?=
- =?utf-8?B?K1J6cjJTQUFGNlhscEZYSnNzckJTa1d6T25kSmhmVXAvdW9EV1NKSFNraWpk?=
- =?utf-8?B?UnB1WGJpV2FNMGtsdWtLNWFUa0Z6b043VFhndE5vK3lWd21JZitIQWJtU0tl?=
- =?utf-8?B?cXdzLzNnRStWOHlyTkhyRW5tdWk0L1ppd3NRU2J5Qkl6K3Zwa1ZHNWdEeDNB?=
- =?utf-8?B?MFM1bzJWQUJuL0dKdk4wQnZacG5TZ2cvRGoxWkJWYTRGSitlU3JFcjgwYU5L?=
- =?utf-8?B?RUo0RXJUb3FHYmNOMXVIbU1CVFpuVURtL0ZIZ1FqeUtwSm5wYWViUVZHdlRQ?=
- =?utf-8?B?WFBOM1REZU1hcTh4ZURlT01KNVpWbWpMUExWbHl0RVhrdGtCcVIyODlnVFhp?=
- =?utf-8?B?S1JKR3JvTHBsN2lka3V5b2IvaTd6Wkt4U2lZdm5qb3R6ZEFhdk8yVUQvckt5?=
- =?utf-8?B?dUVVWTAxR3llWFRFNGZtNTlOanhDYnZzUkN1MDVqMGlYNkFKb2dFbUl4Q1pI?=
- =?utf-8?B?SkQ1VVdxdFBkQW1xbTJuNHUzYjd0TGpsVXdXeVpQQ1I1S3JraGxWYS9HcjN4?=
- =?utf-8?B?ZUpxL1RiYktwTzZhSTlKY2t3RURRcFI5VEpnOEpqcGkwVVRNcUFBUEdZdTB5?=
- =?utf-8?B?b2MxaDcxTFVzVmt5UHZnWWZBbEtSTWRLOE9uMCtZNWk0MStPSi9Wb3V4aDE2?=
- =?utf-8?B?TlJYYzRGVnBsU3U2cnJuUUpXRXlRcWNnMm9QMWV2NThQMTc1bDdINUJxVlhF?=
- =?utf-8?B?N0ZKenlGZmw2YVRMeVUyeVhKZDF5TXo0TlNGMm03Z25JSUJETjlZTFpUdzJX?=
- =?utf-8?B?WXBXazlIbmw2QXZsckdXMHhmTWRJT1drQXBuWkVudlg0aG1yN015OTRZUWVL?=
- =?utf-8?B?aFVWWS9JV1lpYnVSZGZKUEdJcG9RVUNXMERjZ3BxSmxLd216dzk5UHVKWmo0?=
- =?utf-8?B?bHFlTGNPRHh1T3JXdVdkenNmVmlyb2pLWVdHRWlleWNrVC9FdHdLb1VpbjJV?=
- =?utf-8?B?eFRleExub0trSDJkY1lrY3J0VGpkZm03bFJ2Y2dtLzh3V2hVVks0aGJHZkcv?=
- =?utf-8?B?UG1PbVdmNFJFYzViYXA0VGZ4NjlQYWdGbEhBeW93N0h3V1VrU3IyNCtCN2xV?=
- =?utf-8?B?cDJ5MUY2M01ONkRoWkwyWTVWbUEreGpXNWRlZ3p3TjQzd1ZBdzJHYXhLWFB6?=
- =?utf-8?Q?zVdZNQ/MV4gNmgKPuV8px3OX3R9DRS19L/MaoPi?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e913a42e-10e9-495b-4159-08d8d7980f08
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3287.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2021 01:12:16.4152
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h9nChHu7oNCAwlPe92MRymibkPUOhuk+/0VABU8oB502ybBrAxElC6ZSucuizOLGMY4Sinsciq6/txYVgDu2UQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4511
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9903 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
- phishscore=0 spamscore=0 suspectscore=0 bulkscore=0 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102230006
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9903 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0
- priorityscore=1501 impostorscore=0 bulkscore=0 mlxscore=0 malwarescore=0
- clxscore=1015 phishscore=0 mlxlogscore=999 lowpriorityscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102230006
+References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
+ <20210215154638.4627-2-maciej.fijalkowski@intel.com> <87eehhcl9x.fsf@toke.dk>
+ <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com> <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
+ <8735xxc8pf.fsf@toke.dk> <602b0f54c05a6_3ed41208dc@john-XPS-13-9370.notmuch> <87pn10b8om.fsf@toke.dk>
+In-Reply-To: <87pn10b8om.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 22 Feb 2021 17:15:03 -0800
+Message-ID: <CAEf4BzZEfzPNYcD5ZK=ipzbE4G7Obz31_t-jK-NdVbDwpgq4AA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        ciara.loftus@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
-> On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
->> On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
->>> Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
->>> for legacy") made an exception for legacy guests to reset
->>> features to 0, when config space is accessed before features
->>> are set. We should relieve the verify_min_features() check
->>> and allow features reset to 0 for this case.
->>>
->>> It's worth noting that not just legacy guests could access
->>> config space before features are set. For instance, when
->>> feature VIRTIO_NET_F_MTU is advertised some modern driver
->>> will try to access and validate the MTU present in the config
->>> space before virtio features are set.
->>
->> This looks like a spec violation:
->>
->> "
->>
->> The following driver-read-only field, mtu only exists if VIRTIO_NET_F_MTU is
->> set.
->> This field specifies the maximum MTU for the driver to use.
->> "
->>
->> Do we really want to workaround this?
->>
->> Thanks
-> And also:
+On Tue, Feb 16, 2021 at 2:37 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> The driver MUST follow this sequence to initialize a device:
-> 1. Reset the device.
-> 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
-> 3. Set the DRIVER status bit: the guest OS knows how to drive the device.
-> 4. Read device feature bits, and write the subset of feature bits understood by the OS and driver to the
-> device. During this step the driver MAY read (but MUST NOT write) the device-specific configuration
-> fields to check that it can support the device before accepting it.
-> 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature bits after this step.
-> 6. Re-read device status to ensure the FEATURES_OK bit is still set: otherwise, the device does not
-> support our subset of features and the device is unusable.
-> 7. Perform device-specific setup, including discovery of virtqueues for the device, optional per-bus setup,
-> reading and possibly writing the device’s virtio configuration space, and population of virtqueues.
-> 8. Set the DRIVER_OK status bit. At this point the device is “live”.
+> John Fastabend <john.fastabend@gmail.com> writes:
 >
+> > Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> >> John Fastabend <john.fastabend@gmail.com> writes:
+> >>
+> >> >> > However, in libxdp we can solve the original problem in a differe=
+nt way,
+> >> >> > and in fact I already suggested to Magnus that we should do this =
+(see
+> >> >> > [1]); so one way forward could be to address it during the merge =
+in
+> >> >> > libxdp? It should be possible to address the original issue (two
+> >> >> > instances of xdpsock breaking each other when they exit), but
+> >> >> > applications will still need to do an explicit unload operation b=
+efore
+> >> >> > exiting (i.e., the automatic detach on bpf_link fd closure will t=
+ake
+> >> >> > more work, and likely require extending the bpf_link kernel suppo=
+rt)...
+> >> >> >
+> >> >>
+> >> >> I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
+> >> >> we're months ahead, then I'd really like to see this in libbpf unti=
+l the
+> >> >> merge. However, I'll leave that for Magnus/you to decide!
+> >> >
+> >> > Did I miss some thread? What does this mean libbpf 1.0/libxdp merge?
+> >>
+> >> The idea is to keep libbpf focused on bpf, and move the AF_XDP stuff t=
+o
+> >> libxdp (so the socket stuff in xsk.h). We're adding the existing code
+> >> wholesale, and keeping API compatibility during the move, so all that'=
+s
+> >> needed is adding -lxdp when compiling. And obviously the existing libb=
+pf
+> >> code isn't going anywhere until such a time as there's a general
+> >> backwards compatibility-breaking deprecation in libbpf (which I believ=
+e
+> >> Andrii is planning to do in an upcoming and as-of-yet unannounced v1.0
+> >> release).
+> >
+> > OK, I would like to keep the basic XDP pieces in libbpf though. For exa=
+mple
+> > bpf_program__attach_xdp(). This way we don't have one lib to attach
+> > everything, but XDP.
 >
-> so accessing config space before FEATURES_OK is a spec violation, right?
-It is, but it's not relevant to what this commit tries to address. I 
-thought the legacy guest still needs to be supported.
+> The details are still TDB; for now, we're just merging in the XSK code
+> to the libxdp repo. I expect Andrii to announce his plans for the rest
+> soonish. I wouldn't expect basic things like that to go away, though :)
 
-Having said, a separate patch has to be posted to fix the guest driver 
-issue where this discrepancy is introduced to virtnet_validate() (since 
-commit fe36cbe067). But it's not technically related to this patch.
+Yeah, I'll probably post more details this week. Just catching up on
+stuff after vacation.
 
--Siwei
+As mentioned already, all the basic APIs (i.e., APIs like
+bpf_program__attach_xdp and bpf_set_link_xdp_fd, though I hope we can
+give the latter a better name) will stay intact. Stay tuned!
 
 >
+> >>
+> >> While integrating the XSK code into libxdp we're trying to make it
+> >> compatible with the rest of the library (i.e., multi-prog). Hence my
+> >> preference to avoid introducing something that makes this harder :)
+> >>
+> >> -Toke
+> >>
+> >
+> > OK that makes sense to me thanks. But, I'm missing something (maybe its
+> > obvious to everyone else?).
+> >
+> > When you load an XDP program you should get a reference to it. And then
+> > XDP program should never be unloaded until that id is removed right? It
+> > may or may not have an xsk map. Why does adding/removing programs from
+> > an associated map have any impact on the XDP program? That seems like
+> > the buggy part to me. No other map behaves this way as far as I can
+> > tell. Now if the program with the XDP reference closes without pinning
+> > the map or otherwise doing something with it, sure the map gets destroy=
+ed
+> > and any xsk sockets are lost.
 >
->>> Rejecting reset to 0
->>> prematurely causes correct MTU and link status unable to load
->>> for the very first config space access, rendering issues like
->>> guest showing inaccurate MTU value, or failure to reject
->>> out-of-range MTU.
->>>
->>> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
->>> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
->>> ---
->>>    drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
->>>    1 file changed, 1 insertion(+), 14 deletions(-)
->>>
->>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> index 7c1f789..540dd67 100644
->>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> @@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
->>>    	return mvdev->mlx_features;
->>>    }
->>> -static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
->>> -{
->>> -	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
->>> -		return -EOPNOTSUPP;
->>> -
->>> -	return 0;
->>> -}
->>> -
->>>    static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
->>>    {
->>>    	int err;
->>> @@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
->>>    {
->>>    	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
->>>    	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
->>> -	int err;
->>>    	print_features(mvdev, features, true);
->>> -	err = verify_min_features(mvdev, features);
->>> -	if (err)
->>> -		return err;
->>> -
->>>    	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
->>>    	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
->>>    	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
->>> -	return err;
->>> +	return 0;
->>>    }
->>>    static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
-
+> The original bug comes from the XSK code abstracting away the fact that
+> an AF_XDP socket needs an XDP program on the interface to work; so if
+> none exists, the library will just load a program that redirects into
+> the socket. Which breaks since the xdpsock example application is trying
+> to be nice and clean up after itself, by removing the XDP program when
+> it's done with the socket, thus breaking any other programs using that
+> XDP program. So this patch introduces proper synchronisation on both add
+> and remove of the XDP program...
+>
+> -Toke
+>
