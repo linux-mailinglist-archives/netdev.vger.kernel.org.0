@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2CE33228A7
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:14:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8488B3228AD
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:14:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbhBWKLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 05:11:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
+        id S232091AbhBWKNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 05:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232167AbhBWKLn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 05:11:43 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC14C061786
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 02:10:57 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id u4so10429212lfs.0
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 02:10:57 -0800 (PST)
+        with ESMTP id S231863AbhBWKNr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 05:13:47 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0143BC061574
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 02:13:01 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id h125so10323406lfd.7
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 02:13:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zSiaCFu+244vSDwMi2SVRQIE07m+0ajrljfb0U+L/MI=;
-        b=iBe8/+rbC8fuwkD84ucf1LPejX+eTzW8LnVHnl1Sp8npjz3bzThOJ2j05NqA+3JAwI
-         dmmV/jAt6jkIDUURDz8WlhEVWZGRRhHLOkPMqq7AArvsWVehA6GiZUSgUbxI1zjEnvy/
-         fvYqIp92c8Spk5opogYW88TcbXVIxsYrfU7K0=
+        bh=J/LuwTXoQO6jvKbzdrCDlo4TVXiV1s6U/zT2nfH4wUo=;
+        b=FPv96nKrO3ZcNri+Ayz2U12l2pEPI/lw0/tV7tLSR3XfC/LRI7gNshjvChWIVBHTCe
+         BI5/1feI2Ws1J5Dn/U7X5l55dsH0HirpU7aDqLPE5WPdY6KMzyeLjdPTqcyLrgF4FFyS
+         VwbhoW4938AyHp0cRXnyeanZcov/zDW+aDsFY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zSiaCFu+244vSDwMi2SVRQIE07m+0ajrljfb0U+L/MI=;
-        b=Po9qQBOi5fYRF5QB/YRzEv20ofsOdzekIkwZ3NYZ5V6kjvej0AIqYFMqLIu7cRWeC2
-         7QLOnMDfX9elF1iSXISOqexsnVk9zAKfm4CsGFb4uWsSfSWwMNfWyrzgd7nQ5pUyhgxe
-         R/F6gfvo9qzb3XurtPT4eJXDwLT1AaYv2HPIZx5Wvmab+lawgGtmaqA8HFVYX+XKt+t/
-         1DnM8QEWngm7aoFJ04Y5vPWj7jT5/LpZApOs0goRJ1tug0wtzmt/Wy462c3QPZyxtcch
-         XpchYfwc2ZD+U8OvhFYNbDjdo761skRYTbWX6e/vaRH+ljTdmM5Uc6bhMBQNq+IW5ghO
-         BSuA==
-X-Gm-Message-State: AOAM5311DiUKnnoKatOhVluaOTLhnXTqGz9OPCgxgXcJ1oiDmlOqtN8N
-        j4PqAIpNQhcNQ/HA3mjZ33d8kwAFjQU/HJOJOFDtEg==
-X-Google-Smtp-Source: ABdhPJxEcF4RIT0ItB5V6OCMLoGA77oJGjKcGT0aK88oPFCUS8oPkE7g8gZWVNqqJO4hye7wrWmL/wI7m25hozhWvJY=
-X-Received: by 2002:a19:711e:: with SMTP id m30mr15206441lfc.97.1614075055606;
- Tue, 23 Feb 2021 02:10:55 -0800 (PST)
+        bh=J/LuwTXoQO6jvKbzdrCDlo4TVXiV1s6U/zT2nfH4wUo=;
+        b=rX3NaVHAeUvjC38ixiWWejyJW2r5vO93eQc1QnkJxQ0A48QU9B3/MgmqtVec9p0K4N
+         StcpSjyAkUJqeal9h/JCW/OMYvOh0jYFrJo0RmEVKL1V4tHeBNLI8ggw42DEknI9gV44
+         YG0CnJ4DFeHCiBV6rkglVagDMmcbnGoia5a8FQ28cqCcXshy0igCiJyf5CAlEdN1MZFC
+         X172HeOUJWETwIkU3s3MpGDop55fVmZ/czxgStJcrn+R/RzftvgOphLhdIAuQkAXfRWM
+         XuVRTaZQXMczvWLkxDmW4H0hxgfVG7A3it5QWWeTch+Jbaf2h2lEquEhk0gJCsdZc7Q+
+         VTqQ==
+X-Gm-Message-State: AOAM533+8lDYIhO1z+BvKSDImZgSiODfIwPzJ3CbYN5ktdmmyWHkiuKl
+        ow2umTahaf9siPbnXko3327fA8WQnc47vx7PPsKGzw==
+X-Google-Smtp-Source: ABdhPJwp2c34zaYgmMqQNop0GDw3Dz3h2Gyz1Ym94wDGqDMGBmWfcLJvfeUOyxvf7JEqLJKTDEHFuUKJvUW0XK6MpDc=
+X-Received: by 2002:a05:6512:22c9:: with SMTP id g9mr16966939lfu.325.1614075180451;
+ Tue, 23 Feb 2021 02:13:00 -0800 (PST)
 MIME-Version: 1.0
-References: <20210216105713.45052-1-lmb@cloudflare.com> <20210216105713.45052-5-lmb@cloudflare.com>
- <20210223011153.4cvzpvxqn7arbcej@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210223011153.4cvzpvxqn7arbcej@ast-mbp.dhcp.thefacebook.com>
+References: <20210216105713.45052-1-lmb@cloudflare.com> <CAEf4BzYuvE-RsT5Ee+FstZ=vuy3AMd+1j7DazFSb56+hfPKPig@mail.gmail.com>
+In-Reply-To: <CAEf4BzYuvE-RsT5Ee+FstZ=vuy3AMd+1j7DazFSb56+hfPKPig@mail.gmail.com>
 From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 23 Feb 2021 10:10:44 +0000
-Message-ID: <CACAyw99hQgG+=WvUVmDU-E6nGsPvosSuSOWgw9uWDDZ-vFfsqw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/8] bpf: add PROG_TEST_RUN support for sk_lookup programs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 23 Feb 2021 10:12:49 +0000
+Message-ID: <CACAyw98gTrzf8+cPnBEC5A3_rg70UUrJxtV9a_w-dMpKn0Wicg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/8] PROG_TEST_RUN support for sk_lookup programs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -60,62 +59,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Feb 2021 at 01:11, Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Tue, 23 Feb 2021 at 07:29, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 >
-> I'm struggling to come up with the case where running N sk_lookup progs
-> like this cannot be done with running them one by one.
-> It looks to me that this N prog_fds api is not really about running and
-> testing the progs, but about testing BPF_PROG_SK_LOOKUP_RUN_ARRAY()
-> SK_PASS vs SK_DROP logic.
+> Curious, is there any supported architecture where this is not the
+> case? I think it's fine to be consistent, tbh, and use int. Worst
+> case, in some obscure architecture we'd need to create a copy of an
+> array. Doesn't seem like a big deal (and highly unlikely anyways).
 
-In a way that is true, yes. TBH I figured that my patch set would be
-rejected if I just
-implemented single program test run, since it doesn't allow exercising the full
-sk_lookup test run semantics.
-
-> So it's more of the kernel infra testing than program testing.
-> Are you suggesting that the sequence of sk_lookup progs are so delicate
-> that they are aware of each other and _has_ to be tested together
-> with gluing logic that the macro provides?
-
-We currently don't have a case like that.
-
-> But if it is so then testing the progs one by one would be better,
-> because test_run will be able to check each individual prog return code
-> instead of implicit BPF_PROG_SK_LOOKUP_RUN_ARRAY logic.
-
-That means emulating the kind of subtle BPF_PROG_SK_LOOKUP_RUN_ARRAY
-in user space, which isn't trivial and a source of bugs.
-
-For example we rely on having multiple programs attached when
-"upgrading" from old to new BPF. Here we care mostly that we don't drop
-lookups on the floor, and the behaviour is tightly coupled to the in-kernel
-implementation. It's not much use to cobble up my own implementation of
-SK_LOOKUP_RUN_ARRAY here, I would rather use multi progs to test this.
-Of course we can also already spawn a netns and test it that way, so not
-much is lost if there is no multi prog test run.
-
-> It feels less of the unit test and more as a full stack test,
-> but if so then lack of cookie on input is questionable.
-
-I'm not sure what you mean with "the lack of cookie on input is
-questionable", can you rephrase?
-
-> In other words I'm struggling with in-between state of the api.
-> test_run with N fds is not really a full test, but not a unit test either.
-
-If I understand you correctly, a "full" API would expose the
-intermediate results from
-individual programs as well as the final selection? Sounds quite
-complicated, and as
-you point out most of the benefits can be had from running single programs.
-
-I'm happy to drop the multiple programs bit, like I mentioned I did it
-for completeness sake.
-I care about being able to test or benchmark a single sk_lookup program.
-
-Lorenz
+Ok, thanks! I'm not super familiar with C platform differences, so I wanted
+to be on the safe side. I'll take this up depending on the outcome of the
+conversation with Alexey, maybe I don't need to add this after all.
 
 -- 
 Lorenz Bauer  |  Systems Engineer
