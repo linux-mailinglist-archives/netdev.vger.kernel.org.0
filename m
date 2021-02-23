@@ -2,119 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE054322B8E
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:37:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05FA8322B99
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:43:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232951AbhBWNgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 08:36:12 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:56186 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232853AbhBWNgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:36:05 -0500
-Received: by mail-il1-f197.google.com with SMTP id f2so5415382ils.22
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:35:49 -0800 (PST)
+        id S232714AbhBWNnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 08:43:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21531 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232628AbhBWNng (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:43:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614087729;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=T755Caf6XtrQLBTeIFHgN6zyFn1ttppOwK8TU+o0JY4=;
+        b=egiM21JAgBMEvb94EDBCSfTXqm6la5oIvCFi13h3ZGdZEHpYWON26ok5WIy2Vj0MIiwVYX
+        au9Yjtt9kRI74ALpVrgbXEZc64BJ9KfxB15IwxsYPtY3O+qNUmouypFjxBPC5N+MPBI8X+
+        8wsjmh9jLulsmX45GDc8xo3jxGi2dPY=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-441-AIyCoWPEMyyNQshpZoN8Pw-1; Tue, 23 Feb 2021 08:42:07 -0500
+X-MC-Unique: AIyCoWPEMyyNQshpZoN8Pw-1
+Received: by mail-wm1-f71.google.com with SMTP id p8so1208473wmq.7
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:42:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=9b4tdGcjeYO+dcjhUmgTVdKPzbsa8NdN3vEboNTOw+k=;
-        b=DLON3L/nYaBGtutfG5njByXnzr5Z1oSF365TZl/8ID6MrJC2tF+Q7HuB64t4NzmZUE
-         jbeYPHiWT9mQq0Uw8opGwgwWtsk4zOHBtOkxo35JWhivXo9b2qtzYr3LaG8ann2rwqC5
-         tI1pMg59jvEqCdEkipDCd8djYTIOeMS6u1vEE1LyG48mv7sg2yR64u3rKJSkQeEcxvuY
-         qMyqFUI8H6uRfAhWPgOT4L+v96VkhIGh3G13ktIKYM7A0JHz0KSSjvAES8x+j1EYbgSK
-         svQJgP/GNuHUFhFugTr+hLC5iMEqc7KmSlxO90gs0xaPLv4eS8OuK17IOrNfZ3kv9AyJ
-         0AGg==
-X-Gm-Message-State: AOAM532tI3uz30gd/nLPGT5/93mxXkUpDld+4apjGR+QToYl5YANdM5b
-        7gmjo4RgIl7v+uyJWHw3Pssptm+QC1CDlgSeKVBwlQRaNG61
-X-Google-Smtp-Source: ABdhPJzcZ42NDAXIQAbJiG8EO1nZuAkPTd+FJOhS07mjmWHDhOM1UnVV/Tp7nhuMNrdfqt7S5M2CwttqKSCqk8yXDeyVfO+YcwK4
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T755Caf6XtrQLBTeIFHgN6zyFn1ttppOwK8TU+o0JY4=;
+        b=C1R/vC8G9IfOvz1E7gC/fnDGkEj5A8MB5sXkbxnW7lDc1wytRrv4l/WUtnOEtTm01m
+         LAttLFoZPWaCosnCo0VeggSbML3yDmJ9E3SXG55A7lG31XnhrZpVZhaaBHaWybBqwE2t
+         EWzhyLTmi+sMlxQMxx5ZUZSq4d0Q5Rc0+x8k4hdV3C0JXiwbPQFZJqtpWOrvo2/WEeX1
+         LugFtP0BA5Ugn1A1TktC3clcMwBJh02g6Hyzy6NT5cj2CVAJHk01gbuoV8srIJwMndtr
+         NXvWlt2vC+JeRkCetBJr9JRYShTHrGqxokSaqsOQmbgn9nXOk+yk0r5dB3UV8W5N/JmT
+         rzkg==
+X-Gm-Message-State: AOAM531gkr7NGhE2JbedWlFMQOt6lZEY1I5bJZ4WHxC5eBN58HWbGwIs
+        1gUzsY2gRrIMr3wtE+Kt+c39jEJVtmGLhkqljglgKg9ZlM+B6uYqH9kKJtO++kZonoqOuNbRID2
+        /XIDKqBsvdYf9f7Tl
+X-Received: by 2002:adf:ee84:: with SMTP id b4mr26135699wro.339.1614087726316;
+        Tue, 23 Feb 2021 05:42:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxZVU1NvopjmxfatT6LCxEP+oMjLr10zL2agkulUPEA937Vn2kT6c6DL5dAaA4iEyqUcHv2ig==
+X-Received: by 2002:adf:ee84:: with SMTP id b4mr26135672wro.339.1614087726037;
+        Tue, 23 Feb 2021 05:42:06 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id 6sm40195921wra.63.2021.02.23.05.42.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 05:42:05 -0800 (PST)
+Date:   Tue, 23 Feb 2021 14:42:02 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v5 09/19] virtio/vsock: set packet's type in send
+Message-ID: <20210223134202.qepkmphp34onaesw@steredhat>
+References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
+ <20210218053906.1067920-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:4109:: with SMTP id n9mr445500ioa.43.1614087324381;
- Tue, 23 Feb 2021 05:35:24 -0800 (PST)
-Date:   Tue, 23 Feb 2021 05:35:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009b387305bc00fda6@google.com>
-Subject: WARNING in ieee802154_get_llsec_params
-From:   syzbot <syzbot+cde43a581a8e5f317bc2@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, stefan@datenfreihafen.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210218053906.1067920-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The title is a little cryptic, maybe a something like:
 
-syzbot found the following issue on:
+virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
 
-HEAD commit:    a99163e9 Merge tag 'devicetree-for-5.12' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=144bedf2d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7a875029a795d230
-dashboard link: https://syzkaller.appspot.com/bug?extid=cde43a581a8e5f317bc2
+On Thu, Feb 18, 2021 at 08:39:02AM +0300, Arseny Krasnov wrote:
+>This moves passing type of packet from 'info' srtucture to send
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Also here replace send with the function name.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cde43a581a8e5f317bc2@syzkaller.appspotmail.com
+>function. There is no sense to set type of packet which differs
+>from type of socket, and since at current time only stream type
+>is supported, so force to use this type.
 
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-WARNING: CPU: 1 PID: 11257 at kernel/locking/mutex.c:928 __mutex_lock_common kernel/locking/mutex.c:928 [inline]
-WARNING: CPU: 1 PID: 11257 at kernel/locking/mutex.c:928 __mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
-Modules linked in:
-CPU: 1 PID: 11257 Comm: syz-executor.1 Not tainted 5.11.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:928 [inline]
-RIP: 0010:__mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
-Code: 08 84 d2 0f 85 a3 04 00 00 8b 05 b8 7c c2 04 85 c0 0f 85 12 f5 ff ff 48 c7 c6 00 8c 6b 89 48 c7 c7 c0 89 6b 89 e8 96 eb bc ff <0f> 0b e9 f8 f4 ff ff 65 48 8b 1c 25 00 f0 01 00 be 08 00 00 00 48
-RSP: 0018:ffffc90002697068 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000040000 RSI: ffffffff815be2a5 RDI: fffff520004d2dff
-RBP: ffff8880125b8c50 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815b74be R11: 0000000000000000 R12: 0000000000000000
-R13: dffffc0000000000 R14: ffffffff8a898fa0 R15: 0000000000000000
-FS:  00007f12c496b700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000053e038 CR3: 000000002947b000 CR4: 0000000000350ee0
-Call Trace:
- ieee802154_get_llsec_params+0x3f/0x70 net/mac802154/cfg.c:321
- rdev_get_llsec_params net/ieee802154/rdev-ops.h:241 [inline]
- nl802154_get_llsec_params+0xce/0x390 net/ieee802154/nl802154.c:745
- nl802154_send_iface+0x7cf/0xa70 net/ieee802154/nl802154.c:823
- nl802154_dump_interface+0x294/0x490 net/ieee802154/nl802154.c:860
- genl_lock_dumpit+0x60/0x90 net/netlink/genetlink.c:623
- netlink_dump+0x4b9/0xb70 net/netlink/af_netlink.c:2276
- __netlink_dump_start+0x642/0x900 net/netlink/af_netlink.c:2381
- genl_family_rcv_msg_dumpit+0x2af/0x310 net/netlink/genetlink.c:686
- genl_family_rcv_msg net/netlink/genetlink.c:780 [inline]
- genl_rcv_msg+0x434/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2348
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2402
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2435
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x465ef9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f12c496b188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000465ef9
-RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000004
-RBP: 00000000004bcd1c R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
-R13: 00007ffffb9a9dcf R14: 00007f12c496b300 R15: 0000000000022000
+I'm not a native speaker, but I would rephrase a bit the commit message:
+
+     There is no need to set type of packet which differs from type of 
+     socket. Since at current time only stream type is supported, set
+     it directly in virtio_transport_send_pkt_info(), so callers don't 
+     need to set it.
+
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> net/vmw_vsock/virtio_transport_common.c | 7 ++-----
+> 1 file changed, 2 insertions(+), 5 deletions(-)
+
+If I haven't missed something, we can remove 'type' parameter also from 
+virtio_transport_send_credit_update(), right?
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index e4370b1b7494..1c9d71ca5e8e 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -179,6 +179,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+> 	struct virtio_vsock_pkt *pkt;
+> 	u32 pkt_len = info->pkt_len;
+>
+>+	info->type = VIRTIO_VSOCK_TYPE_STREAM;
+>+
+> 	t_ops = virtio_transport_get_ops(vsk);
+> 	if (unlikely(!t_ops))
+> 		return -EFAULT;
+>@@ -624,7 +626,6 @@ int virtio_transport_connect(struct vsock_sock *vsk)
+> {
+> 	struct virtio_vsock_pkt_info info = {
+> 		.op = VIRTIO_VSOCK_OP_REQUEST,
+>-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+> 		.vsk = vsk,
+> 	};
+>
+>@@ -636,7 +637,6 @@ int virtio_transport_shutdown(struct vsock_sock *vsk, int mode)
+> {
+> 	struct virtio_vsock_pkt_info info = {
+> 		.op = VIRTIO_VSOCK_OP_SHUTDOWN,
+>-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+> 		.flags = (mode & RCV_SHUTDOWN ?
+> 			  VIRTIO_VSOCK_SHUTDOWN_RCV : 0) |
+> 			 (mode & SEND_SHUTDOWN ?
+>@@ -665,7 +665,6 @@ virtio_transport_stream_enqueue(struct vsock_sock *vsk,
+> {
+> 	struct virtio_vsock_pkt_info info = {
+> 		.op = VIRTIO_VSOCK_OP_RW,
+>-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+> 		.msg = msg,
+> 		.pkt_len = len,
+> 		.vsk = vsk,
+>@@ -688,7 +687,6 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
+> {
+> 	struct virtio_vsock_pkt_info info = {
+> 		.op = VIRTIO_VSOCK_OP_RST,
+>-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+> 		.reply = !!pkt,
+> 		.vsk = vsk,
+> 	};
+>@@ -990,7 +988,6 @@ virtio_transport_send_response(struct vsock_sock *vsk,
+> {
+> 	struct virtio_vsock_pkt_info info = {
+> 		.op = VIRTIO_VSOCK_OP_RESPONSE,
+>-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+> 		.remote_cid = le64_to_cpu(pkt->hdr.src_cid),
+> 		.remote_port = le32_to_cpu(pkt->hdr.src_port),
+> 		.reply = true,
+>-- 
+>2.25.1
+>
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
