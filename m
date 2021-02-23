@@ -2,117 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D16B32238A
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:22:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB0232237F
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:22:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230362AbhBWBWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 20:22:03 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:37746 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230296AbhBWBV5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 20:21:57 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11N14hph007839
-        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 17:21:13 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=pEbi9RE7Rh3I3wGDeQBFrv7VjBYIcCKe7RkNvOrCedE=;
- b=fAPLx0LhGcoLaRz0PeLG734VzQTYTmQtR0NoGW4WcxqeEyFhfk1BZatXAJglqNuIfJo3
- NeyhrIxxSked+u473LdTUQDW42y9k5YhR42NtCU+RvpoYeiGXRsFBM1x64YtlwVKqNyf
- 1nyfI1QHU20PSI2bokBTMKGWAd4fWQg3VeI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 36v9gn4nhk-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 17:21:13 -0800
-Received: from intmgw001.05.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 22 Feb 2021 17:21:11 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id C050762E0887; Mon, 22 Feb 2021 17:21:07 -0800 (PST)
-From:   Song Liu <songliubraving@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <peterz@infradead.org>, Song Liu <songliubraving@fb.com>
-Subject: [PATCH v4 bpf-next 0/6] bpf: enable task local storage for tracing programs
-Date:   Mon, 22 Feb 2021 17:20:08 -0800
-Message-ID: <20210223012014.2087583-1-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S230001AbhBWBUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 20:20:52 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:39936 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230100AbhBWBUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 20:20:49 -0500
+Received: by mail-il1-f200.google.com with SMTP id j7so9231182ilu.7
+        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 17:20:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ACL/TW56hmM3icGPdSa0X3n3g07ekXH6PTx0W+ED+Os=;
+        b=QxXH4YNxovwXtCCaKIgLsaAk34zJxwTspqS0Ev7vHCOMkZRfYGOFuCwdNOuM/EYr3g
+         Qg4MYEx8A1wMe+snbPA6YCN7Lc6yMfj98qV5Zp2FSEWEtasMCRp3flGQblUq4BONpg70
+         /nM4L7jOK0HcQ7kXAbToafHlgLsc5Yjw2wRluIX6FxQiDQmN4FI6yxnP9dDhz/2Nvh8V
+         xfM6gc4wDnU3IVT/pFsWa+KsqQGpmNOG7fQxYoWeac9M8CE2jxbAaEx14JBN349Y9eyE
+         uqNUqcwxST9vJiVVG6L98oW85qvk6nIeaBJTtCiFQW0tMtR4bk3mK+ik9VJZxsN/EWO/
+         zF4A==
+X-Gm-Message-State: AOAM531mF91bMARCWwmMwEaJmhRn4yEkVuzY9bzSSzz1Xe/oP/uJF1Zg
+        R/tQBcPa17U8lhaHv2nAHi2Q8axx9HG9+wegUGZM12efP+tG
+X-Google-Smtp-Source: ABdhPJx9ZFVHGhyVAJurNdjMzu3Qfr+RlQdpRk1YumGN7EUKjFQqc3Ah/e+LPTa1FrJaCYq/dtjAB9VwGPIQe5m3XHIN7YtRNaeU
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-22_08:2021-02-22,2021-02-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- phishscore=0 spamscore=0 clxscore=1015 adultscore=0 priorityscore=1501
- impostorscore=0 bulkscore=0 malwarescore=0 mlxscore=0 mlxlogscore=862
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102230006
-X-FB-Internal: deliver
+X-Received: by 2002:a02:a888:: with SMTP id l8mr6116516jam.50.1614043208198;
+ Mon, 22 Feb 2021 17:20:08 -0800 (PST)
+Date:   Mon, 22 Feb 2021 17:20:08 -0800
+In-Reply-To: <0000000000007f199405baa1ffc4@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000013b2eb05bbf6b8ce@google.com>
+Subject: Re: WARNING in init_timer_key
+From:   syzbot <syzbot+105896fac213f26056f9@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, gerrit@erg.abdn.ac.uk, hkallweit1@gmail.com,
+        johannes.berg@intel.com, johannes@sipsolutions.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set enables task local storage for non-BPF_LSM programs.
+syzbot has bisected this issue to:
 
-It is common for tracing BPF program to access per-task data. Currently,
-these data are stored in hash tables with pid as the key. In
-bcc/libbpftools [1], 9 out of 23 tools use such hash tables. However,
-hash table is not ideal for many use case. Task local storage provides
-better usability and performance for BPF programs. Please refer to 4/4 fo=
-r
-some performance comparison of task local storage vs. hash table.
+commit b9df4fd7e99cb8bfd80c4143f3045d63b1754ad0
+Author: Heiner Kallweit <hkallweit1@gmail.com>
+Date:   Sun Oct 6 16:19:54 2019 +0000
 
-Changes v3 =3D> v4:
-1. Prevent deadlock from recursive calls of bpf_task_storage_[get|delete]=
-.
-   (2/6 checks potential deadlock and fails over, 4/6 adds a selftest).
+    net: core: change return type of pskb_may_pull to bool
 
-Changes v2 =3D> v3:
-1. Make the selftest more robust. (Andrii)
-2. Small changes with runqslower. (Andrii)
-3. Shortern CC list to make it easy for vger.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11b4545cd00000
+start commit:   1048ba83 Linux 5.11-rc6
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13b4545cd00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15b4545cd00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3ae5569643a9955f
+dashboard link: https://syzkaller.appspot.com/bug?extid=105896fac213f26056f9
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16f0e564d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147075e8d00000
 
-Changes v1 =3D> v2:
-1. Do not allocate task local storage when the task is being freed.
-2. Revise the selftest and added a new test for a task being freed.
-3. Minor changes in runqslower.
+Reported-by: syzbot+105896fac213f26056f9@syzkaller.appspotmail.com
+Fixes: b9df4fd7e99c ("net: core: change return type of pskb_may_pull to bool")
 
-Song Liu (6):
-  bpf: enable task local storage for tracing programs
-  bpf: prevent deadlock from recursive bpf_task_storage_[get|delete]
-  selftests/bpf: add non-BPF_LSM test for task local storage
-  selftests/bpf: test deadlock from recursive
-    bpf_task_storage_[get|delete]
-  bpf: runqslower: prefer using local vmlimux to generate vmlinux.h
-  bpf: runqslower: use task local storage
-
- include/linux/bpf.h                           |  7 ++
- include/linux/bpf_lsm.h                       | 22 -----
- include/linux/bpf_types.h                     |  2 +-
- include/linux/sched.h                         |  5 +
- kernel/bpf/Makefile                           |  3 +-
- kernel/bpf/bpf_local_storage.c                | 28 +++---
- kernel/bpf/bpf_lsm.c                          |  4 -
- kernel/bpf/bpf_task_storage.c                 | 89 +++++++++++-------
- kernel/fork.c                                 |  5 +
- kernel/trace/bpf_trace.c                      |  4 +
- tools/bpf/runqslower/Makefile                 |  5 +-
- tools/bpf/runqslower/runqslower.bpf.c         | 33 ++++---
- .../bpf/prog_tests/task_local_storage.c       | 92 +++++++++++++++++++
- .../selftests/bpf/progs/task_local_storage.c  | 64 +++++++++++++
- .../bpf/progs/task_local_storage_exit_creds.c | 32 +++++++
- .../selftests/bpf/progs/task_ls_recursion.c   | 70 ++++++++++++++
- 16 files changed, 381 insertions(+), 84 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/task_local_sto=
-rage.c
- create mode 100644 tools/testing/selftests/bpf/progs/task_local_storage.=
-c
- create mode 100644 tools/testing/selftests/bpf/progs/task_local_storage_=
-exit_creds.c
- create mode 100644 tools/testing/selftests/bpf/progs/task_ls_recursion.c
-
---
-2.24.1
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
