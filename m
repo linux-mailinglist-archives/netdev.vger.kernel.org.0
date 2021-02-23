@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63F5E3228BE
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:21:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58FF03228E7
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:37:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbhBWKTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 05:19:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43875 "EHLO
+        id S231791AbhBWKdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 05:33:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:40038 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230142AbhBWKT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 05:19:29 -0500
+        by vger.kernel.org with ESMTP id S231723AbhBWKcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 05:32:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614075482;
+        s=mimecast20190719; t=1614076281;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mZGrk/KRVSJf4lDW/M6cnASmoATrbPhldVhOPwuWamk=;
-        b=VW8XJcmINZWmLzZF2L4A/0WuMMIobwz5QkjO6OVFit4djzV0Zj1xqBglHgixjZ/iZIE8AV
-        hS5T2A9fgpxoiS9GhhAIQP+CpCSFHkWU5mDZyp8t6nEBO146bqPkfIbtXuuIfy+8IqhTSF
-        JLTAtursbaCN7eMPi9IJ3IHA3JrkqcI=
+        bh=PpwoTgqko7g1LEx2DA3+/sWA4mTXGiRDjc3guaPEp8c=;
+        b=XtJYodLC2NxTQ+oAXMEyoYFi7dNVU81uK/KucqXR8DT4DYZUDrO4Z9SGiFGXf3va8hl8eq
+        KC5leVuaFiAis9duG4z79NaooKu+UzEg6ZBbR+rWu8t45Zwt2vJ4jQTit1ykm33DmEMJDR
+        0QfMctOEANV6NQLOGr14x8+U2YqBszo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-436-BOWJBQAyOaygi4vJp1gqeA-1; Tue, 23 Feb 2021 05:17:58 -0500
-X-MC-Unique: BOWJBQAyOaygi4vJp1gqeA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-244-uUe_krADPIuVgxNK0dxpsA-1; Tue, 23 Feb 2021 05:31:16 -0500
+X-MC-Unique: uUe_krADPIuVgxNK0dxpsA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1C16BCC621;
-        Tue, 23 Feb 2021 10:17:57 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 58A301936B61;
+        Tue, 23 Feb 2021 10:31:15 +0000 (UTC)
 Received: from wangxiaodeMacBook-Air.local (ovpn-12-193.pek2.redhat.com [10.72.12.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 736D162A23;
-        Tue, 23 Feb 2021 10:17:51 +0000 (UTC)
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C8B619C45;
+        Tue, 23 Feb 2021 10:31:09 +0000 (UTC)
+Subject: Re: [virtio-dev] Re: [PATCH] vdpa/mlx5: set_features should allow
+ reset to zero
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         virtio-dev@lists.oasis-open.org
@@ -44,25 +46,27 @@ References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
  <ee31e93b-5fbb-1999-0e82-983d3e49ad1e@oracle.com>
  <20210223041740-mutt-send-email-mst@kernel.org>
  <788a0880-0a68-20b7-5bdf-f8150b08276a@redhat.com>
- <20210223045600-mutt-send-email-mst@kernel.org>
+ <20210223110430.2f098bc0.cohuck@redhat.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c188353e-9aca-a94c-e8f5-4bad5942481c@redhat.com>
-Date:   Tue, 23 Feb 2021 18:17:49 +0800
+Message-ID: <bbb0a09e-17e1-a397-1b64-6ce9afe18e44@redhat.com>
+Date:   Tue, 23 Feb 2021 18:31:07 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
  Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210223045600-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210223110430.2f098bc0.cohuck@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2021/2/23 6:01 下午, Michael S. Tsirkin wrote:
-> On Tue, Feb 23, 2021 at 05:46:20PM +0800, Jason Wang wrote:
+On 2021/2/23 6:04 下午, Cornelia Huck wrote:
+> On Tue, 23 Feb 2021 17:46:20 +0800
+> Jason Wang <jasowang@redhat.com> wrote:
+>
 >> On 2021/2/23 下午5:25, Michael S. Tsirkin wrote:
 >>> On Mon, Feb 22, 2021 at 09:09:28AM -0800, Si-Wei Liu wrote:
 >>>> On 2/21/2021 8:14 PM, Jason Wang wrote:
@@ -116,39 +120,12 @@ On 2021/2/23 6:01 下午, Michael S. Tsirkin wrote:
 >>>                           __virtio_clear_bit(vdev, VIRTIO_NET_F_MTU);
 >>
 >> I wonder why not simply fail here?
-> Back in 2016 it went like this:
+> I think both failing or not accepting the feature can be argued to make
+> sense: "the device presented us with a mtu size that does not make
+> sense" would point to failing, "we cannot work with the mtu size that
+> the device presented us" would point to not negotiating the feature.
 >
-> 	On Thu, Jun 02, 2016 at 05:10:59PM -0400, Aaron Conole wrote:
-> 	> +     if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
-> 	> +             dev->mtu = virtio_cread16(vdev,
-> 	> +                                       offsetof(struct virtio_net_config,
-> 	> +                                                mtu));
-> 	> +     }
-> 	> +
-> 	>       if (vi->any_header_sg)
-> 	>               dev->needed_headroom = vi->hdr_len;
-> 	>
->
-> 	One comment though: I think we should validate the mtu.
-> 	If it's invalid, clear VIRTIO_NET_F_MTU and ignore.
->
->
-> Too late at this point :)
->
-> I guess it's a way to tell device "I can not live with this MTU",
-> device can fail FEATURES_OK if it wants to. MIN_MTU
-> is an internal linux thing and at the time I felt it's better to
-> try to make progress.
-
-
-What if e.g the device advertise a large MTU. E.g 64K here? In that 
-case, the driver can not live either. Clearing MTU won't help here.
-
-Thanks
-
-
->
->
+>>
 >>>           }
 >>>
 >>>           return 0;
@@ -177,14 +154,46 @@ Thanks
 >>>
 >>> I conclude that VIRTIO_NET_F_MTU is set means "set in device features".
 >>
->> So this probably need some clarification. "is set" is used many times in the
->> spec that has different implications.
->>
->> Thanks
->>
->>
->>> Generally it is worth going over feature dependent config fields
->>> and checking whether they should be present when device feature is set
->>> or when feature bit has been negotiated, and making this clear.
->>>
+>> So this probably need some clarification. "is set" is used many times in
+>> the spec that has different implications.
+> Before FEATURES_OK is set by the driver, I guess it means "the device
+> has offered the feature";
+
+
+For me this part is ok since it clarify that it's the driver that set 
+the bit.
+
+
+
+> during normal usage, it means "the feature
+> has been negotiated".
+
+/?
+
+It looks to me the feature negotiation is done only after device set 
+FEATURES_OK, or FEATURES_OK could be read from device status?
+
+
+>   (This is a bit fuzzy for legacy mode.)
+
+
+The problem is the MTU description for example:
+
+"The following driver-read-only field, mtu only exists if 
+VIRTIO_NET_F_MTU is set."
+
+It looks to me need to use "if VIRTIO_NET_F_MTU is set by device". 
+Otherwise readers (at least for me), may think the MTU is only valid if 
+driver set the bit.
+
+
+>
+> Should we add a wording clarification to the spec?
+
+
+I think so.
+
+Thanks
+
+>
 
