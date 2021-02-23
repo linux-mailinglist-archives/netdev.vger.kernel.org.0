@@ -2,119 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04AC7322918
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:56:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FC90322938
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 12:06:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231939AbhBWKyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 05:54:04 -0500
-Received: from mail-ot1-f46.google.com ([209.85.210.46]:44357 "EHLO
-        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230178AbhBWKxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 05:53:17 -0500
-Received: by mail-ot1-f46.google.com with SMTP id f33so1831291otf.11;
-        Tue, 23 Feb 2021 02:53:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p921Adf2pfxJ4CIGcX2NJ7Shi4YJTy9/PyaI82TeK30=;
-        b=a/VXrDkexY/eTcfOncH2GpzEl1WIxL5RxvJgLDH3kaT29dzfkSssnOQHmMD5XhFoGJ
-         zfhhIM0vhiCJrihbHkvzXRsR8zHzG7XymjIB31TuXSiqiJHcLno8vJyPOJ8PS3pRXUkt
-         CEoGNY3NNUKIXbdGM0mbEXzmw2mqfctQ2u/fgsl9pWyGbEcQ9eiPvYyH+Zpz0+a2Tk2x
-         ewaWrAzvl5DA5/iGGaBQooruAr0KrXNePbCOIcv0ggq/nf+U7y9N9P5s6jO+bp13wOrF
-         vQyRkHpMGfqdutQEGLkXB44pwsO8ZUczZonv2sytPjK/z3x4HST/5l9N8oCFc0hAd+ZE
-         x7+g==
-X-Gm-Message-State: AOAM531umUww8ELZRsfDV47CpeAQHROsG7SeU5w0FScNZom9tn2Xe76H
-        Q1uocjG5jG2XflTj+BoSatvmkwdqIzI++ffikVo=
-X-Google-Smtp-Source: ABdhPJxU6D1gioqnTsFkXieuOJkzEKf3pB6me3Sv4iD1CvDI5JK99ZkQTh9GaKwYtfiKO1loGNvRjzdw7QaKOWbjb/A=
-X-Received: by 2002:a05:6830:148d:: with SMTP id s13mr19810419otq.250.1614077556046;
- Tue, 23 Feb 2021 02:52:36 -0800 (PST)
+        id S232181AbhBWLGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 06:06:32 -0500
+Received: from mga07.intel.com ([134.134.136.100]:63299 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231826AbhBWLG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 06:06:28 -0500
+IronPort-SDR: Ll1VMecprIu6TL9/qAjzWy6oklBM3FWayPBOgo4etTQM+5V7QiFENymRu8Itui1XH5fnE+fjI6
+ qnPkoYfzqt0w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9903"; a="248818637"
+X-IronPort-AV: E=Sophos;i="5.81,199,1610438400"; 
+   d="scan'208";a="248818637"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2021 03:05:47 -0800
+IronPort-SDR: Qi2cCw1khEjvatgi7zbpGGtkkks+H4LOrX2Q9/7Nc8y4BNEozGCk9bIz+JSdRIRORsz5fHr72M
+ DLK3MezS3AXg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,199,1610438400"; 
+   d="scan'208";a="441703434"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
+  by orsmga001.jf.intel.com with ESMTP; 23 Feb 2021 03:05:14 -0800
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, bjorn@kernel.org,
+        weqaar.a.janjua@intel.com, maciej.fijalkowski@intel.com
+Cc:     Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH bpf-next v2 0/4] selftests/bpf: xsk improvements and new stats tests
+Date:   Tue, 23 Feb 2021 10:35:03 +0000
+Message-Id: <20210223103507.10465-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <1614012946-23506-3-git-send-email-sharathv@codeaurora.org> <202102230358.bmAq2nwP-lkp@intel.com>
-In-Reply-To: <202102230358.bmAq2nwP-lkp@intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 23 Feb 2021 11:52:24 +0100
-Message-ID: <CAMuHMdUTVaRSEt2a_sJSEYX0TCH73xspSXkd--=913dpeSzv0Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/3] net: ethernet: rmnet: Support for
- downlink MAPv5 checksum offload
-To:     kernel test robot <lkp@intel.com>
-Cc:     Sharath Chandra Vurukala <sharathv@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, elder@kernel.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kbuild-all@lists.01.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kernel Test Robot,
+This series attempts to improve the xsk selftest framework by:
+1. making the default output less verbose
+2. adding an optional verbose flag to both the test_xsk.sh script and xdpxceiver app.
+3. renaming the debug option in the app to to 'dump-pkts' and add a flag to the test_xsk.sh
+script which enables the flag in the app.
+4. changing how tests are launched - now they are launched from the xdpxceiver app
+instead of the script.
 
-On Mon, Feb 22, 2021 at 10:02 PM kernel test robot <lkp@intel.com> wrote:
-> Thank you for the patch! Yet something to improve:
->
-> [auto build test ERROR on net-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Sharath-Chandra-Vurukala/net-qualcomm-rmnet-Enable-Mapv5/20210223-010109
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git d310ec03a34e92a77302edb804f7d68ee4f01ba0
-> config: m68k-allmodconfig (attached as .config)
-> compiler: m68k-linux-gcc (GCC) 9.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/a96da20e1028049cc3824b52bb5293376c0868ce
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Sharath-Chandra-Vurukala/net-qualcomm-rmnet-Enable-Mapv5/20210223-010109
->         git checkout a96da20e1028049cc3824b52bb5293376c0868ce
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=m68k
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    In file included from include/linux/kernel.h:10,
->                     from include/linux/list.h:9,
->                     from include/linux/timer.h:5,
->                     from include/linux/netdevice.h:24,
->                     from drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c:7:
->    include/linux/scatterlist.h: In function 'sg_set_buf':
->    arch/m68k/include/asm/page_mm.h:174:49: warning: ordered comparison of pointer with null pointer [-Wextra]
->      174 | #define virt_addr_valid(kaddr) ((void *)(kaddr) >= (void *)PAGE_OFFSET && (void *)(kaddr) < high_memory)
->          |                                                 ^~
->    include/linux/compiler.h:78:42: note: in definition of macro 'unlikely'
->       78 | # define unlikely(x) __builtin_expect(!!(x), 0)
->          |                                          ^
->    include/linux/scatterlist.h:137:2: note: in expansion of macro 'BUG_ON'
->      137 |  BUG_ON(!virt_addr_valid(buf));
->          |  ^~~~~~
->    include/linux/scatterlist.h:137:10: note: in expansion of macro 'virt_addr_valid'
->      137 |  BUG_ON(!virt_addr_valid(buf));
->          |          ^~~~~~~~~~~~~~~
+Once the improvements are made, a new set of tests are added which test the xsk
+statistics.
 
-Note that the warning is unrelated. I've sent a patch to quiten it.
-[PATCH] m68k: Fix virt_addr_valid() W=1 compiler warnings
-https://lore.kernel.org/linux-m68k/20210223104957.2209219-1-geert@linux-m68k.org/
+The output of the test script now looks like:
 
->    In file included from drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h:7,
->                     from drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c:14:
->    include/linux/if_rmnet.h: At top level:
-> >> include/linux/if_rmnet.h:66:2: error: expected ',', ';' or '}' before 'u8'
->       66 |  u8  hw_reserved:7;
->          |  ^~
+./test_xsk.sh
+PREREQUISITES: [ PASS ]
+1..10
+ok 1 PASS: SKB NOPOLL 
+ok 2 PASS: SKB POLL 
+ok 3 PASS: SKB NOPOLL Socket Teardown
+ok 4 PASS: SKB NOPOLL Bi-directional Sockets
+ok 5 PASS: SKB NOPOLL Stats
+ok 6 PASS: DRV NOPOLL 
+ok 7 PASS: DRV POLL 
+ok 8 PASS: DRV NOPOLL Socket Teardown
+ok 9 PASS: DRV NOPOLL Bi-directional Sockets
+ok 10 PASS: DRV NOPOLL Stats
+# Totals: pass:10 fail:0 xfail:0 xpass:0 skip:0 error:0
+XSK KSELFTESTS: [ PASS ]
 
-That's a real one, though.
+v1->v2:
+* Changed '-d' flag in the shell script to '-D' to be consistent with the xdpxceiver app.
+* Renamed debug mode to 'dump-pkts' which better reflects the behaviour.
+* Use libpf APIs instead of calls to ss for configuring xdp on the links
+* Remove mutex init & destroy for each stats test
+* Added a description for each of the new statistics tests
+* Distinguish between exiting due to initialisation failure vs test failure
 
-Gr{oetje,eeting}s,
+This series applies on commit d310ec03a34e92a77302edb804f7d68ee4f01ba0
 
-                        Geert
+Ciara Loftus (3):
+  selftests/bpf: expose and rename debug argument
+  selftests/bpf: restructure xsk selftests
+  selftests/bpf: introduce xsk statistics tests
+
+Magnus Karlsson (1):
+  selftest/bpf: make xsk tests less verbose
+
+ tools/testing/selftests/bpf/test_xsk.sh    | 129 ++-----
+ tools/testing/selftests/bpf/xdpxceiver.c   | 380 +++++++++++++++------
+ tools/testing/selftests/bpf/xdpxceiver.h   |  57 +++-
+ tools/testing/selftests/bpf/xsk_prereqs.sh |  30 +-
+ 4 files changed, 336 insertions(+), 260 deletions(-)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.17.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
