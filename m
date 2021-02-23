@@ -2,91 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7FC322C37
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 15:28:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31AE0322C4C
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 15:31:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232545AbhBWO2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 09:28:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232377AbhBWO2J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 09:28:09 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F25C06174A;
-        Tue, 23 Feb 2021 06:27:29 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id o6so2012142pjf.5;
-        Tue, 23 Feb 2021 06:27:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3iZSwnKzPYQQG7Iy7lq52a5tBvSjAgaxWW6X97nL+Dc=;
-        b=SMWfomH1bBU1+vvLVEYUgw4rc91OCFMZPGgQmNdrvjX/s4aVemTKD0a75pbe3zoIxV
-         kphe991YlBaT98O35BZdJdRwKdLa/NkzpemciiAgcUqj6EYKMDIE8i8BPZw32Z/bgQA5
-         WXXODhTp/fSchyMlarTk3q0aP/+/yrFvtKf0CkSiiBU4LAAGsUujPCmiTpahX4volinz
-         X4YzKwNFDikcsLWG/qAwnyraECVK8fIi6tFxJM212aFHmuuN3SVUA6gzER0VNgbA/B9c
-         5MORmJsoE0Yd2ntLhjxSCUrD5oKE0w3YaoTFLxJzO7uTGBKTsjtnlHcw6sUTeMee/Lj6
-         /19w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3iZSwnKzPYQQG7Iy7lq52a5tBvSjAgaxWW6X97nL+Dc=;
-        b=TrmMoSQp2hMYKk7aZsVUkrLGAmL8a2BAEUbNBwtdDE/k0VijfXdL0lSECsvemjTSh8
-         1yUkPRn4n/SN6ZZjRKhfDJDBIYC8x2BwVQBQR9iDHmIizZ9ycFu/BjMbyC3uMOVioWD7
-         cQjuYecasBwOuZprRhvKSX3zadBH77N0yKv4A3mGwQJHLVA+0bNvVsmGDx9KfshiVeq9
-         rcODmeHzxtg7H/kCgukBrs3XUsMB24T6iqF2nh/7S46aWDOvvkvBVfixRFXFr9om/LbO
-         qvKo2mk4+2WTVnARGY00hZm7uKrjWMBLxn+POGlyt6o8Oi6AYgGVOMOsVujhBgYX35BU
-         PFzA==
-X-Gm-Message-State: AOAM530mSRz+9yP/hWgZSXsiTipymBEZdAVAapb9j5AwlNXZbgnWYnOu
-        OZqBEHBtHz9gErBKD6drzeys5ijK6ME=
-X-Google-Smtp-Source: ABdhPJy+YrzZKwd5+F/mUlLKc1buAG2GYo3psN+zgLKKgZCaQodKOmaaXPOfQkTbTyqMVe6xmSm/bg==
-X-Received: by 2002:a17:902:6ac7:b029:e4:28f8:b463 with SMTP id i7-20020a1709026ac7b02900e428f8b463mr546771plt.62.1614090448923;
-        Tue, 23 Feb 2021 06:27:28 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id h3sm21489224pgm.67.2021.02.23.06.27.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 06:27:28 -0800 (PST)
-Date:   Tue, 23 Feb 2021 06:27:26 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Heiko Thiery <heiko.thiery@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Fugang Duan <fugang.duan@nxp.com>
-Subject: Re: [PATCH 1/1] net: fec: ptp: avoid register access when ipg clock
- is disabled
-Message-ID: <20210223142726.GA4711@hoboy.vegasvil.org>
-References: <20210220065654.25598-1-heiko.thiery@gmail.com>
- <20210222190051.40fdc3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEyMn7ZM7_pPor0S=dMGbmnp0hmZMrpquGqq4VNu-ixSPp+0UQ@mail.gmail.com>
+        id S232695AbhBWOaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 09:30:39 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:52087 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233056AbhBWOaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 09:30:25 -0500
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 23 Feb 2021 06:29:44 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 23 Feb 2021 06:29:42 -0800
+Cc:     ath10k-review.external@qti.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuabhs@chromium.org,
+        dianders@chromium.org, briannorris@chromium.org,
+        Youghandhar Chintala <youghand@codeaurora.org>
+X-QCInternal: smtphost
+Received: from youghand-linux.qualcomm.com ([10.206.66.115])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 23 Feb 2021 19:59:10 +0530
+Received: by youghand-linux.qualcomm.com (Postfix, from userid 2370257)
+        id E27EB215EC; Tue, 23 Feb 2021 19:59:10 +0530 (IST)
+From:   Youghandhar Chintala <youghand@codeaurora.org>
+To:     ath10k@lists.infradead.org
+Subject: [PATCH v3] ath10k: skip the wait for completion to recovery in shutdown path
+Date:   Tue, 23 Feb 2021 19:59:08 +0530
+Message-Id: <20210223142908.23374-1-youghand@codeaurora.org>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEyMn7ZM7_pPor0S=dMGbmnp0hmZMrpquGqq4VNu-ixSPp+0UQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 09:00:32AM +0100, Heiko Thiery wrote:
-> HI Jakub,
-> 
-> Am Di., 23. Feb. 2021 um 04:00 Uhr schrieb Jakub Kicinski <kuba@kernel.org>:
-> > Why is the PTP interface registered when it can't be accessed?
-> >
-> > Perhaps the driver should unregister the PTP clock when it's brought
-> > down?
+Currently in the shutdown callback we wait for recovery to complete
+before freeing up the resources. This results in additional two seconds
+delay during the shutdown and thereby increase the shutdown time.
 
-I don't see any reason why a clock should stop ticking just because
-the interface is down.  This is a poor driver design, but sadly it
-gets copied and even defended.
+As an attempt to take less time during shutdown, remove the wait for
+recovery completion in the shutdown callback and added an API to freeing
+the reosurces in which they were common for shutdown and removing
+the module.
 
-> Good question, but I do not know what happens e.g. with linuxptp when
-> the device that was opened before will be gone.
+Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1-01040-QCAHLSWMTPLZ-1
 
-If a network interface goes down, ptp4l will notice via rtnl and close
-the interface.  Then it re-opens the sockets on rtnl up.  However, the
-file descriptor representing the dynamic posix clock stays opened.
+Signed-off-by: Youghandhar Chintala <youghand@codeaurora.org>
+Change-Id: I65bc27b5adae1fedc7f7b367ef13aafbd01f8c0c
+---
+Changes from v2:
+-Corrected commit text and added common API for freeing the
+ resources for shutdown and unloading the module
+---
+ drivers/net/wireless/ath/ath10k/snoc.c | 29 ++++++++++++++++++--------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
 
-Thanks,
-Richard
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index 84666f72bdfa..70b3f2bd1c81 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -1781,17 +1781,11 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
+-static int ath10k_snoc_remove(struct platform_device *pdev)
++static int ath10k_snoc_free_resources(struct ath10k *ar)
+ {
+-	struct ath10k *ar = platform_get_drvdata(pdev);
+ 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
+ 
+-	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc remove\n");
+-
+-	reinit_completion(&ar->driver_recovery);
+-
+-	if (test_bit(ATH10K_SNOC_FLAG_RECOVERY, &ar_snoc->flags))
+-		wait_for_completion_timeout(&ar->driver_recovery, 3 * HZ);
++	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc free resources\n");
+ 
+ 	set_bit(ATH10K_SNOC_FLAG_UNREGISTERING, &ar_snoc->flags);
+ 
+@@ -1805,12 +1799,29 @@ static int ath10k_snoc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static int ath10k_snoc_remove(struct platform_device *pdev)
++{
++	struct ath10k *ar = platform_get_drvdata(pdev);
++	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
++
++	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc remove\n");
++
++	reinit_completion(&ar->driver_recovery);
++
++	if (test_bit(ATH10K_SNOC_FLAG_RECOVERY, &ar_snoc->flags))
++		wait_for_completion_timeout(&ar->driver_recovery, 3 * HZ);
++
++	ath10k_snoc_free_resources(ar);
++
++	return 0;
++}
++
+ static void ath10k_snoc_shutdown(struct platform_device *pdev)
+ {
+ 	struct ath10k *ar = platform_get_drvdata(pdev);
+ 
+ 	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc shutdown\n");
+-	ath10k_snoc_remove(pdev);
++	ath10k_snoc_free_resources(ar);
+ }
+ 
+ static struct platform_driver ath10k_snoc_driver = {
+-- 
+2.29.0
+
