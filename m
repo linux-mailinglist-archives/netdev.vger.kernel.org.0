@@ -2,151 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74F21322C14
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 15:21:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26715322C28
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 15:25:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232973AbhBWOTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 09:19:30 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:48632 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232066AbhBWOT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 09:19:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1614089966; x=1645625966;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=o0zp8AWBquesTWNviQRf/nnMybuq136QmcMVBlvkuew=;
-  b=LCZcaYdGZtWidp34CxvGwU7wCoxUKa5ywZJtCpTIszPVx/QXmo8TMkXK
-   jwzMUJKlQcLWoP7xDkBuVbASJve9Z4KmlkBzUevEEjUbm4HviaqnTAFfe
-   jElNZSkQCrrWuk0EBJzjy9Of49tjQHvowL91/ujQWzZdxM2nSukvizi4t
-   IdBA3aaU1Xc9Ut8VkCsvUxpGO4ma/gk3GRU15g292nS5SC3Iv2mVOOyCi
-   1f/+ROdWsZvEQcE8++HzoJ2AhpeUl0Ot0w/O+w7FSfU3Vs+gEHqJd2DkV
-   PGLGhgzmcEC/D4MslolvVoytxEC2h+GiTav6T9qBt3gj+WHKoSIWjB6aq
-   w==;
-IronPort-SDR: 6H91QKyiCvAxOO8HmxAKsjGxDKx0gf/xYaY4/nrQW+cG7CpWj+v0EoyhDixhdtITv/PMKtn7xu
- K2JjsmECHVtaP4XJTlH4OL6hczW5WxvpAQj5F3Yj+YubbnjyPPQtnexI22ewy3Rg1eW2HQiA+q
- AdGvTCrLdTZodS8XLRo+V8K8emuBHk2d1ChEY0kK3M2kDZzegfZEqBfIbVGpq+Hnn5BIDqHgck
- IuQ+5pybzQkEppvCiGvPiKCcVcTTASVyvtaCyw5JiiLoYxubkJnP3YgtpapnDupZgfNi88SmuP
- ev4=
-X-IronPort-AV: E=Sophos;i="5.81,200,1610434800"; 
-   d="scan'208";a="110305471"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Feb 2021 07:18:08 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Feb 2021 07:18:07 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 23 Feb 2021 07:18:06 -0700
-Date:   Tue, 23 Feb 2021 15:18:07 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [RFC PATCH net-next 09/12] Documentation: networking: dsa: add
- paragraph for the MRP offload
-Message-ID: <20210223141807.mt4ihjvosmstf2i4@soft-dev3-1.localhost>
-References: <20210221213355.1241450-1-olteanv@gmail.com>
- <20210221213355.1241450-10-olteanv@gmail.com>
- <20210222194626.srj7wwafyzfc355t@soft-dev3.localdomain>
- <20210222202506.27qp2ltdkgmqgmec@skbuf>
- <20210223133028.sem3hykvm5ld2unq@soft-dev3-1.localhost>
- <20210223135015.ssqm3t7fajplceyx@skbuf>
+        id S232575AbhBWOYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 09:24:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232350AbhBWOX7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 09:23:59 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027C5C06174A
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 06:23:18 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id hs11so34875770ejc.1
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 06:23:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=H8vtkyNEqRRd14jBt5G4psDBq4qKhtCm/tBgnQUuw9g=;
+        b=oAm+pHr8pWu0D3JchPjOuzr7uAQ2Bmv+Ra/5Lxx7zHox9Rs9tfInDEkRM6xpTWz+KZ
+         yJ/SRL0VKYvCSK2Ng9TAP8PJSiIdrGP0aAZ5YAYA0hproABdyl1MYeD29VFK9syRJ+hI
+         hHG/vTLhT5wM/7Dhfq14Ck2y+QlKAquiKnVcPKLkodBi7JCCTZrFhVn/PCh0Cl0SSAid
+         0iWe4pTQnVz0poMJGHeVAwOFJQnE98JepJgJlIdDw/4yZI3uG99RHmbHJEbmZzCb5W7I
+         AD3gmHHbBDG8vQiMoKCs5+Zy8dOV7AvCI3kolnTbnidkR8CatWvsBzJAc+ai8daJdAGS
+         X9XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=H8vtkyNEqRRd14jBt5G4psDBq4qKhtCm/tBgnQUuw9g=;
+        b=V8yc3tol1LPpjtbQXYqxQnAiknl8opSvY/xSHthjlN7NL4g1KGyBodqAP6yaETreWY
+         9bjoa8DJc4CoBWqJcv6o2uW1IFNkcyhQYblINcDGOol5UILUOCTq1Q3vlZKZMPTRip4E
+         KT+pYQoHgiTwXqjH2uIIdwOLg4nc8lobp0/oiBcPh+2BJmegLuztu4gBC2ovN8eDnEIE
+         yeipzqbqKcQ/xKuRcQhFb4zSse2A2oEJVUQJljogy10rKurF91mNP3j735p1okBVZk7C
+         xxFaO5Fak0zLhmFD3LXd6NH5Jxi5w2sauqYxK/aG5fAVmbgYogQ6Hc01ydyo9rBLUT+1
+         G24w==
+X-Gm-Message-State: AOAM530kQgYzt8YOFJ8cUj5tsjDCuobU2rZzQzOnIQ9uSI6PApA/III/
+        byXJaDcEAt16DdkxffuJre4/th2cyos=
+X-Google-Smtp-Source: ABdhPJyRy000ueabj+LvrYGmXniEIDMRHzTqHsECuIBcAFr41CXA0UjOs+caCCaDqb1dRbZdLzti1g==
+X-Received: by 2002:a17:906:869a:: with SMTP id g26mr22817143ejx.441.1614090196443;
+        Tue, 23 Feb 2021 06:23:16 -0800 (PST)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id e19sm14174614eds.10.2021.02.23.06.23.14
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Feb 2021 06:23:14 -0800 (PST)
+Received: by mail-wm1-f45.google.com with SMTP id p3so2581682wmc.2
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 06:23:14 -0800 (PST)
+X-Received: by 2002:a05:600c:2291:: with SMTP id 17mr17708818wmf.169.1614090193610;
+ Tue, 23 Feb 2021 06:23:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20210223135015.ssqm3t7fajplceyx@skbuf>
+References: <5e910d11a14da17c41317417fc41d3a9d472c6e7.1613659844.git.bnemeth@redhat.com>
+ <CA+FuTSe7srSBnAmFNFBFkDrLmPL5XtxhbXEs1mBytUBuuym2fg@mail.gmail.com>
+ <2cc06597-8005-7be8-4094-b20f525afde8@redhat.com> <CA+FuTSf2GCi+RzpkFeBgtSOyhjsBFfApjekzupHLfyeYDn-JYQ@mail.gmail.com>
+ <8168e98e-d608-750a-9b49-b1e60a23714c@redhat.com> <1bcc8d88b4cb7ad5610a045fc013127d3055b0d8.camel@redhat.com>
+In-Reply-To: <1bcc8d88b4cb7ad5610a045fc013127d3055b0d8.camel@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 23 Feb 2021 09:22:36 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSdftho0g7ZmUwf=xH5UY6qYyPrNaV7LGmBTuwt=kZfGug@mail.gmail.com>
+Message-ID: <CA+FuTSdftho0g7ZmUwf=xH5UY6qYyPrNaV7LGmBTuwt=kZfGug@mail.gmail.com>
+Subject: Re: [PATCH] net: check if protocol extracted by virtio_net_hdr_set_proto
+ is correct
+To:     Balazs Nemeth <bnemeth@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/23/2021 15:50, Vladimir Oltean wrote:
-> On Tue, Feb 23, 2021 at 02:30:28PM +0100, Horatiu Vultur wrote:
-> > The 02/22/2021 22:25, Vladimir Oltean wrote:
-> > >
-> > Hi Vladimir,
-> > > Hi Horatiu,
-> > >
-> > > On Mon, Feb 22, 2021 at 08:46:26PM +0100, Horatiu Vultur wrote:
-> > > > > - Why does ocelot support a single MRP ring if all it does is trap the
-> > > > >   MRP PDUs to the CPU? What is stopping it from supporting more than
-> > > > >   one ring?
-> > > >
-> > > > So the HW can support to run multiple rings. But to have an initial
-> > > > basic implementation I have decided to support only one ring. So
-> > > > basically is just a limitation in the driver.
-> > >
-> > > What should change in the current sw_backup implementation such that
-> > > multiple rings are supported?
+On Tue, Feb 23, 2021 at 8:48 AM Balazs Nemeth <bnemeth@redhat.com> wrote:
+>
+> On Mon, 2021-02-22 at 11:39 +0800, Jason Wang wrote:
 > >
-> > Instead of single mrp_ring_id, mrp_p_port and mrp_s_port is to have a
-> > list of these. And then when a new MRP instance is added/removed this
-> > list should be updated. When the role is changed then find the MRP ports
-> > from this list and put the rules to these ports.
-> 
-> A physical port can't offload more than one ring id under any
-> circumstance, no? So why keep a list and not just keep the MRP ring id
-> in the ocelot_port structure, then when the ring role changes, just
-> iterate through all ports and update the trapping rule on those having
-> the same ring id?
-
-Yes, a port can be part of only one ring. Yes, you should be able to do
-it also like that, I don't see any issues with that approach.
-
-> 
-> Also, why is it important to know which port is primary and which is
-> secondary?
-
-In this context is not important. It is important when MRM role is
-offloaded to HW.
-
-> 
-> > > > > - Why does ocelot not look at the MRM/MRC ring role at all, and it traps
-> > > > >   all MRP PDUs to the CPU, even those which it could forward as an MRC?
-> > > > >   I understood from your commit d8ea7ff3995e ("net: mscc: ocelot: Add
-> > > > >   support for MRP") description that the hardware should be able of
-> > > > >   forwarding the Test PDUs as a client, however it is obviously not
-> > > > >   doing that.
+> > On 2021/2/19 10:55 =E4=B8=8B=E5=8D=88, Willem de Bruijn wrote:
+> > > On Fri, Feb 19, 2021 at 3:53 AM Jason Wang <jasowang@redhat.com>
+> > > wrote:
 > > > >
-> > > > It doesn't look at the role because it doesn't care. Because in both
-> > > > cases is looking at the sw_backup because it doesn't support any role
-> > > > completely. Maybe comment was misleading but I have put it under
-> > > > 'current limitations' meaning that the HW can do that but the driver
-> > > > doesn't take advantage of that yet. The same applies to multiple rings
-> > > > support.
+> > > > On 2021/2/18 11:50 =E4=B8=8B=E5=8D=88, Willem de Bruijn wrote:
+> > > > > On Thu, Feb 18, 2021 at 10:01 AM Balazs Nemeth <
+> > > > > bnemeth@redhat.com> wrote:
+> > > > > > For gso packets, virtio_net_hdr_set_proto sets the protocol
+> > > > > > (if it isn't
+> > > > > > set) based on the type in the virtio net hdr, but the skb
+> > > > > > could contain
+> > > > > > anything since it could come from packet_snd through a raw
+> > > > > > socket. If
+> > > > > > there is a mismatch between what virtio_net_hdr_set_proto
+> > > > > > sets and
+> > > > > > the actual protocol, then the skb could be handled
+> > > > > > incorrectly later
+> > > > > > on by gso.
+> > > > > >
+> > > > > > The network header of gso packets starts at 14 bytes, but a
+> > > > > > specially
+> > > > > > crafted packet could fool the call to
+> > > > > > skb_flow_dissect_flow_keys_basic
+> > > > > > as the network header offset in the skb could be incorrect.
+> > > > > > Consequently, EINVAL is not returned.
+> > > > > >
+> > > > > > There are even packets that can cause an infinite loop. For
+> > > > > > example, a
+> > > > > > packet with ethernet type ETH_P_MPLS_UC (which is unnoticed
+> > > > > > by
+> > > > > > virtio_net_hdr_to_skb) that is sent to a geneve interface
+> > > > > > will be
+> > > > > > handled by geneve_build_skb. In turn, it calls
+> > > > > > udp_tunnel_handle_offloads which then calls
+> > > > > > skb_reset_inner_headers.
+> > > > > > After that, the packet gets passed to mpls_gso_segment. That
+> > > > > > function
+> > > > > > calculates the mpls header length by taking the difference
+> > > > > > between
+> > > > > > network_header and inner_network_header. Since the two are
+> > > > > > equal
+> > > > > > (due to the earlier call to skb_reset_inner_headers), it will
+> > > > > > calculate
+> > > > > > a header of length 0, and it will not pull any headers. Then,
+> > > > > > it will
+> > > > > > call skb_mac_gso_segment which will again call
+> > > > > > mpls_gso_segment, etc...
+> > > > > > This leads to the infinite loop.
 > > > >
-> > > > The idea is to remove these limitations in the next patches and
-> > > > to be able to remove these limitations then the driver will look also
-> > > > at the role.
-> > > >
-> > > > [1] https://github.com/microchip-ung/mrp
-> > >
-> > > By the way, how can Ocelot trap some PDUs to the CPU but forward others?
-> > > Doesn't it need to parse the MRP TLVs in order to determine whether they
-> > > are Test packets or something else?
+> > > > I remember kernel will validate dodgy gso packets in gso ops. I
+> > > > wonder
+> > > > why not do the check there? The reason is that virtio/TUN is not
+> > > > the
+> > > > only source for those packets.
+> > > It is? All other GSO packets are generated by the stack itself,
+> > > either
+> > > locally or through GRO.
 > >
-> > No it doesn't need to do that. Because Test packets are send to dmac
-> > 01:15:4e:00:00:01 while the other ring MRP frames are send to
-> > 01:15:4e:00:00:02. And Ocelot can trap frames based on the dmac.
-> 
-> Interesting, so I think with a little bit more forethought, the
-> intentions with this MRP hardware assist would have been much clearer.
-> From what you explained, the better implementation wouldn't have been
-> more complicated than the current one is, just cleaner.
+> >
+> > Something like what has been done in tcp_tso_segment()?
+> >
+> >      if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
+> >                  /* Packet is from an untrusted source, reset
+> > gso_segs. */
+> >
+> >          skb_shinfo(skb)->gso_segs =3D DIV_ROUND_UP(skb->len, mss);
+> >
+> >          segs =3D NULL;
+> >                  goto out;
+> >          }
+> >
+> > My understanding of the header check logic is that it tries to dealy
+> > the
+> > check as much as possible, so for device that has GRO_ROBUST, there's
+> > even no need to do that.
+> >
+> >
+> > >
+> > > But indeed some checks are better performed in the GSO layer. Such
+> > > as
+> > > likely the 0-byte mpls header length.
+> > >
+> > > If we cannot trust virtio_net_hdr.gso_type passed from userspace,
+> > > then
+> > > we can also not trust the eth.h_proto coming from the same source.
+> >
+> >
+> > I agree.
+> >
+> I'll add a check in the GSO layer as well.
+> >
+> > > But
+> > > it makes sense to require them to be consistent. There is a
+> > > dev_parse_header_protocol that may return the link layer type in a
+> > > more generic fashion than casting to skb_eth_hdr.
+> > >
+> > > Question remains what to do for the link layer types that do not
+> > > implement
+> > > header_ops->parse_protocol, and so we cannot validate the packet's
+> > > network protocol. Drop will cause false positives, accepts will
+> > > leave a
+> > > potential path, just closes it for Ethernet.
+> > >
+> > > This might call for multiple fixes, both on first ingest and inside
+> > > the stack?
+> >
+> Given that this is related to dodgy packets and that we can't trust
+> eth.h_proto, wouldn't it make sense to always drop packets (with
+> potential false positives), erring on the side of caution, if
+> header_ops->parse_protocol isn't implemented for the dev in question?
 
-A better implementation will be to have also interconnect support. Again
-the idea of the patch was to add minimum support for Ocelot and from
-there to build on.
-
-
--- 
-/Horatiu
+Unfortunately, that might break applications somewhere out there.
