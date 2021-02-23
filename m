@@ -2,61 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70FC0322EBC
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:30:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F6D1322F1B
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233313AbhBWQaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 11:30:13 -0500
-Received: from mx2.suse.de ([195.135.220.15]:36540 "EHLO mx2.suse.de"
+        id S233443AbhBWQyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 11:54:32 -0500
+Received: from mga04.intel.com ([192.55.52.120]:46446 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232473AbhBWQaM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 11:30:12 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1614097765; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1fcBBVi2VQJZ1nf/JdbxVgiBTyHyQF9V+0dM+Pib8sw=;
-        b=AIsb4Pg1kS6LzyrZ1kIU6GCBQu5bS5bkoOedIG3Nw+T9eBFfq99Ao4VwWMueQmuco2vIjY
-        Ic3soYYBWVMq3BTbOblmODIv+41R+gt4ZwjNpzlcBwXmp+D2rTGKlpOAF3SBvncPRo5TlM
-        gdvQxneUDFJeKhdpBdnIo3AHxIoYMyc=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id E6070ACBF;
-        Tue, 23 Feb 2021 16:29:24 +0000 (UTC)
-To:     Wei Liu <wl@xen.org>, Paul Durrant <paul@xen.org>
-Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH] xen-netback: correct success/error reporting for the
- SKB-with-fraglist case
-Message-ID: <4dd5b8ec-a255-7ab1-6dbf-52705acd6d62@suse.com>
-Date:   Tue, 23 Feb 2021 17:29:25 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S232252AbhBWQyb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 11:54:31 -0500
+IronPort-SDR: fbZi/mknG8LjoKjZlN1MfensgkqEZTAEdH4GhXVU7K3u9o+P4yTLWTXYfzvsMT0VRb+gALTqUP
+ Fi1DTiMngyzA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9904"; a="182390358"
+X-IronPort-AV: E=Sophos;i="5.81,200,1610438400"; 
+   d="scan'208";a="182390358"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2021 08:53:50 -0800
+IronPort-SDR: GAYxKm6NFPUDsb2XEr/M1hUVAIb8oq/oCjDb8s9xSHwtm2b42Z1Iu3Nf88r3aa8GRqibuawSDa
+ vteMZNDFqhMA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,200,1610438400"; 
+   d="scan'208";a="441792086"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
+  by orsmga001.jf.intel.com with ESMTP; 23 Feb 2021 08:53:10 -0800
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, bjorn@kernel.org,
+        weqaar.a.janjua@intel.com, maciej.fijalkowski@intel.com
+Cc:     Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH bpf-next v3 0/4] selftests/bpf: xsk improvements and new stats tests
+Date:   Tue, 23 Feb 2021 16:23:00 +0000
+Message-Id: <20210223162304.7450-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
-special considerations for the head of the SKB no longer apply. Don't
-mistakenly report ERROR to the frontend for the first entry in the list,
-even if - from all I can tell - this shouldn't matter much as the overall
-transmit will need to be considered failed anyway.
+This series attempts to improve the xsk selftest framework by:
+1. making the default output less verbose
+2. adding an optional verbose flag to both the test_xsk.sh script and xdpxceiver app.
+3. renaming the debug option in the app to to 'dump-pkts' and add a flag to the test_xsk.sh
+script which enables the flag in the app.
+4. changing how tests are launched - now they are launched from the xdpxceiver app
+instead of the script.
 
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
+Once the improvements are made, a new set of tests are added which test the xsk
+statistics.
 
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -499,7 +499,7 @@ check_frags:
- 				 * the header's copy failed, and they are
- 				 * sharing a slot, send an error
- 				 */
--				if (i == 0 && sharedslot)
-+				if (i == 0 && !first_shinfo && sharedslot)
- 					xenvif_idx_release(queue, pending_idx,
- 							   XEN_NETIF_RSP_ERROR);
- 				else
+The output of the test script now looks like:
+
+./test_xsk.sh
+PREREQUISITES: [ PASS ]
+1..10
+ok 1 PASS: SKB NOPOLL 
+ok 2 PASS: SKB POLL 
+ok 3 PASS: SKB NOPOLL Socket Teardown
+ok 4 PASS: SKB NOPOLL Bi-directional Sockets
+ok 5 PASS: SKB NOPOLL Stats
+ok 6 PASS: DRV NOPOLL 
+ok 7 PASS: DRV POLL 
+ok 8 PASS: DRV NOPOLL Socket Teardown
+ok 9 PASS: DRV NOPOLL Bi-directional Sockets
+ok 10 PASS: DRV NOPOLL Stats
+# Totals: pass:10 fail:0 xfail:0 xpass:0 skip:0 error:0
+XSK KSELFTESTS: [ PASS ]
+
+v2->v3:
+* Rename dump-pkts to dump_pkts in test_xsk.sh
+* Add examples of flag usage to test_xsk.sh 
+
+v1->v2:
+* Changed '-d' flag in the shell script to '-D' to be consistent with the xdpxceiver app.
+* Renamed debug mode to 'dump-pkts' which better reflects the behaviour.
+* Use libpf APIs instead of calls to ss for configuring xdp on the links
+* Remove mutex init & destroy for each stats test
+* Added a description for each of the new statistics tests
+* Distinguish between exiting due to initialisation failure vs test failure
+
+This series applies on commit d310ec03a34e92a77302edb804f7d68ee4f01ba0
+
+
+Ciara Loftus (3):
+  selftests/bpf: expose and rename debug argument
+  selftests/bpf: restructure xsk selftests
+  selftests/bpf: introduce xsk statistics tests
+
+Magnus Karlsson (1):
+  selftest/bpf: make xsk tests less verbose
+
+ tools/testing/selftests/bpf/test_xsk.sh    | 135 ++------
+ tools/testing/selftests/bpf/xdpxceiver.c   | 380 +++++++++++++++------
+ tools/testing/selftests/bpf/xdpxceiver.h   |  57 +++-
+ tools/testing/selftests/bpf/xsk_prereqs.sh |  30 +-
+ 4 files changed, 342 insertions(+), 260 deletions(-)
+
+-- 
+2.17.1
+
