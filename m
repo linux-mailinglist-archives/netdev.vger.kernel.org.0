@@ -2,144 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B282322BB7
+	by mail.lfdr.de (Postfix) with ESMTP id B6CB0322BB8
 	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:52:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbhBWNu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 08:50:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30539 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232585AbhBWNuz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:50:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614088168;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GOvexyYc/ObMQAaHFdie5/nomXHMwOs8rdABZEM/9Ps=;
-        b=K0ItB7EQyxic1DYoMmmsyQTV9a0z1KHzipxJc1w24WSzqQ3M30NkXl9hLs/EVxyukVuTtQ
-        9KGDAClM5/NvaXM6vtVK4HB8eLTF8L8V3xg+KuypfiiWntJJy+T/PL0zn0mHJQXwxtUFJv
-        aIJX/iJXv+N0MCQszS0XKbBvn3dDuv0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-268-CiD_f7IWO8aWRLBBI70_bQ-1; Tue, 23 Feb 2021 08:49:24 -0500
-X-MC-Unique: CiD_f7IWO8aWRLBBI70_bQ-1
-Received: by mail-wm1-f72.google.com with SMTP id h16so1207979wmq.8
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:49:24 -0800 (PST)
+        id S232786AbhBWNvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 08:51:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232781AbhBWNu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:50:59 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F68C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:50:19 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id hs11so34713713ejc.1
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:50:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yJUBfLn/TUTX8OgjEPkwRcOeZgkLWm0elheJGriMu2U=;
+        b=dLVtQHokpEWDU3bl7PLAtbwXjPPMoY+gXzuwNgl3vDmm/+AE/Xl0zitKKbDsWmUVGn
+         YFVYbnYfLYy8HC1AtyyfktgBMJPp6TdAZkAdvq0te3rdv9lKSeSOpHXxynQZJ8kzzxay
+         nZ/dMdNR/rQe6SAOhbskFIFgfUBwtV0A225Qo94hqXH7KRHfzACt8NfG7arNUCt2L1dQ
+         ihXhjqhWJ41VdG4IGt0HA6mbDbQVLvD5jcmEQrJ0UZUFRF1Fwm9sWFR5Tgrd/7IZqsJE
+         jhBOTZlNBETX9I6fnLrXov+syJwIB3XqLlBN/VWbRI5N6BpeCOWxacd+w0wySBr0VNFL
+         m+Rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=GOvexyYc/ObMQAaHFdie5/nomXHMwOs8rdABZEM/9Ps=;
-        b=H5Z4igvIN68asgFD4VnhkNOg1m6jizeFQfj3vlnYz6ZqdiLbgNFxVDYkjXN5wdDgYD
-         EP+Ut+zErdxNjEMa20AfX/ZWXlMqWduZdZqD2Y35imhGgu4nMbK3jUXVYstOs1ZS4CF/
-         75//A8p/0zXTnfane68kTWcALOWDwMSyOFrClgtKpWhTnDgzdO5CCBo+Mzdsq9MEFHvt
-         u5Hw6UvYW4BYeMVLFkqw85zLumgvPwYVmAAaXl5Q6tJIA7rE1QYRLLWKtMx2+//6cjl0
-         FgP+8igJOqJyOkxB+GxWMedsnmFYR3PsaLZViHK4ilccfwR/4a0ssKJp/cYs6F/nJ4LP
-         XXjg==
-X-Gm-Message-State: AOAM530p72f4WvGcc85Topv5iwAVwmKf6DOwyvoiKIC7tpgXMLmGxqnK
-        0RjgTG0a5se2RXCp1yZ7IYh4r8/mNZbn95DmByAPdL9w7Kk6Kh/aRfjg/dc2P2E2YCBRvmU4HRn
-        hidwt7CiOdlE284ua
-X-Received: by 2002:a1c:b741:: with SMTP id h62mr17331298wmf.85.1614088163363;
-        Tue, 23 Feb 2021 05:49:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzWyIcShiLHe07mw9HE/r5BInLl+NukEK8C2wh6/ekL9Dgw0dtDjxRuJKOsywf6vYjLteh5cg==
-X-Received: by 2002:a1c:b741:: with SMTP id h62mr17331273wmf.85.1614088163149;
-        Tue, 23 Feb 2021 05:49:23 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id s84sm198526wme.11.2021.02.23.05.49.21
+        bh=yJUBfLn/TUTX8OgjEPkwRcOeZgkLWm0elheJGriMu2U=;
+        b=ZGXr4HZLUa8Tq0bSLPUFvCqRBHzLJ26i8ZXeh0c7r1JUe1KXSSdCLoJ6yj4cDpXhCm
+         W8ChNx/Oeiwiergsjcsr0KEkE5uXrFNGFM1nesko/lwEK4BwI/btQ1529LK33foNvdy7
+         j3gflpYxPXnQP3KHYmFYhcQhmtsBafcSz1p/pCfVMk3icMAYKs7nukeUsd5sqCr5aVeD
+         NHZDWxwfvSDbJl3Iv/zdTfe9SV4c3e1Xay0dX9jXEkQp7NQWgjQQvq+HrTEWMQH7i7ON
+         7rtxKnrcjDhWXgk8xl5kWfnG0QAmVuij0WnMoC6nSLD6kaD3dmrBH1eEFEW7wKlqFo7z
+         nSdQ==
+X-Gm-Message-State: AOAM532Sh7KtQW5WR279hEQ7sVS3+1caExoanbgNxVwVRCJ7SAgqVcxp
+        1ZnR1xZtxvlNs76zi4HBkKVSO+k4yxo=
+X-Google-Smtp-Source: ABdhPJw/DmoAh+1tp8VovFVmnSIQd75rslQkUdauuWjtW33ILklPcCmVN1VIlv5O8WjXHg8RNd2Sug==
+X-Received: by 2002:a17:906:d10d:: with SMTP id b13mr25451804ejz.204.1614088217781;
+        Tue, 23 Feb 2021 05:50:17 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id fi5sm4705481ejc.43.2021.02.23.05.50.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 05:49:22 -0800 (PST)
-Date:   Tue, 23 Feb 2021 14:49:20 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v5 10/19] virtio/vsock: simplify credit update
- function API
-Message-ID: <20210223134920.nvecqujytdfcqnbt@steredhat>
-References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
- <20210218053926.1068053-1-arseny.krasnov@kaspersky.com>
+        Tue, 23 Feb 2021 05:50:17 -0800 (PST)
+Date:   Tue, 23 Feb 2021 15:50:15 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [RFC PATCH net-next 09/12] Documentation: networking: dsa: add
+ paragraph for the MRP offload
+Message-ID: <20210223135015.ssqm3t7fajplceyx@skbuf>
+References: <20210221213355.1241450-1-olteanv@gmail.com>
+ <20210221213355.1241450-10-olteanv@gmail.com>
+ <20210222194626.srj7wwafyzfc355t@soft-dev3.localdomain>
+ <20210222202506.27qp2ltdkgmqgmec@skbuf>
+ <20210223133028.sem3hykvm5ld2unq@soft-dev3-1.localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210218053926.1068053-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <20210223133028.sem3hykvm5ld2unq@soft-dev3-1.localhost>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 08:39:23AM +0300, Arseny Krasnov wrote:
->'virtio_transport_send_credit_update()' has some extra args:
->1) 'type' may be set in 'virtio_transport_send_pkt_info()' using type
->   of socket.
->2) This function is static and 'hdr' arg was always NULL.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> net/vmw_vsock/virtio_transport_common.c | 15 ++++-----------
-> 1 file changed, 4 insertions(+), 11 deletions(-)
->
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index 1c9d71ca5e8e..833104b71a1c 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -271,13 +271,10 @@ void virtio_transport_put_credit(struct virtio_vsock_sock *vvs, u32 credit)
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_put_credit);
->
->-static int virtio_transport_send_credit_update(struct vsock_sock *vsk,
->-					       int type,
->-					       struct virtio_vsock_hdr *hdr)
->+static int virtio_transport_send_credit_update(struct vsock_sock *vsk)
-> {
-> 	struct virtio_vsock_pkt_info info = {
-> 		.op = VIRTIO_VSOCK_OP_CREDIT_UPDATE,
->-		.type = type,
-> 		.vsk = vsk,
-> 	};
+On Tue, Feb 23, 2021 at 02:30:28PM +0100, Horatiu Vultur wrote:
+> The 02/22/2021 22:25, Vladimir Oltean wrote:
+> > 
+> Hi Vladimir,
+> > Hi Horatiu,
+> > 
+> > On Mon, Feb 22, 2021 at 08:46:26PM +0100, Horatiu Vultur wrote:
+> > > > - Why does ocelot support a single MRP ring if all it does is trap the
+> > > >   MRP PDUs to the CPU? What is stopping it from supporting more than
+> > > >   one ring?
+> > >
+> > > So the HW can support to run multiple rings. But to have an initial
+> > > basic implementation I have decided to support only one ring. So
+> > > basically is just a limitation in the driver.
+> > 
+> > What should change in the current sw_backup implementation such that
+> > multiple rings are supported?
+> 
+> Instead of single mrp_ring_id, mrp_p_port and mrp_s_port is to have a
+> list of these. And then when a new MRP instance is added/removed this
+> list should be updated. When the role is changed then find the MRP ports
+> from this list and put the rules to these ports.
 
-I don't know if it's better to remove type with the others changes in 
-the previous patch, maybe it's more consistent.
+A physical port can't offload more than one ring id under any
+circumstance, no? So why keep a list and not just keep the MRP ring id
+in the ocelot_port structure, then when the ring role changes, just
+iterate through all ports and update the trapping rule on those having
+the same ring id?
 
-I mean only the removal of 'type' parameter, the 'hdr' parameter should 
-be removed with this patch.
+Also, why is it important to know which port is primary and which is
+secondary?
 
->
->@@ -385,11 +382,8 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
-> 	 * messages, we set the limit to a high value. TODO: experiment
-> 	 * with different values.
-> 	 */
->-	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) {
->-		virtio_transport_send_credit_update(vsk,
->-						    
->VIRTIO_VSOCK_TYPE_STREAM,
->-						    NULL);
->-	}
->+	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
->+		virtio_transport_send_credit_update(vsk);
->
-> 	return total;
->
->@@ -498,8 +492,7 @@ void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
->
-> 	vvs->buf_alloc = *val;
->
->-	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_STREAM,
->-					    NULL);
->+	virtio_transport_send_credit_update(vsk);
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_notify_buffer_size);
->
->-- 
->2.25.1
->
+> > > > - Why does ocelot not look at the MRM/MRC ring role at all, and it traps
+> > > >   all MRP PDUs to the CPU, even those which it could forward as an MRC?
+> > > >   I understood from your commit d8ea7ff3995e ("net: mscc: ocelot: Add
+> > > >   support for MRP") description that the hardware should be able of
+> > > >   forwarding the Test PDUs as a client, however it is obviously not
+> > > >   doing that.
+> > >
+> > > It doesn't look at the role because it doesn't care. Because in both
+> > > cases is looking at the sw_backup because it doesn't support any role
+> > > completely. Maybe comment was misleading but I have put it under
+> > > 'current limitations' meaning that the HW can do that but the driver
+> > > doesn't take advantage of that yet. The same applies to multiple rings
+> > > support.
+> > >
+> > > The idea is to remove these limitations in the next patches and
+> > > to be able to remove these limitations then the driver will look also
+> > > at the role.
+> > >
+> > > [1] https://github.com/microchip-ung/mrp
+> > 
+> > By the way, how can Ocelot trap some PDUs to the CPU but forward others?
+> > Doesn't it need to parse the MRP TLVs in order to determine whether they
+> > are Test packets or something else?
+> 
+> No it doesn't need to do that. Because Test packets are send to dmac
+> 01:15:4e:00:00:01 while the other ring MRP frames are send to
+> 01:15:4e:00:00:02. And Ocelot can trap frames based on the dmac.
 
+Interesting, so I think with a little bit more forethought, the
+intentions with this MRP hardware assist would have been much clearer.
+From what you explained, the better implementation wouldn't have been
+more complicated than the current one is, just cleaner.
