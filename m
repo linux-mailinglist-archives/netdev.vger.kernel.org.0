@@ -2,106 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDF63223DA
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:51:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD033223DD
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbhBWBuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 20:50:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbhBWBtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 20:49:45 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6C8C06178B;
-        Mon, 22 Feb 2021 17:49:30 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id m188so14873100yba.13;
-        Mon, 22 Feb 2021 17:49:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=19ACJ1fic9mV42uUnpDAFR0NZ9Dw4Na6mJs9CQ+BSWg=;
-        b=LypvH1qwGsVnZ8ZohpQWT3wOTzQUY3BqElmAqgaZr4BPNIaeI1kBcCx6SfsJqXnwoh
-         TcCi0mVLgVq1rgNmk4lgqzuJYTQkr4wmzjOeFxq6RWgkRV6KEpqtdeBaj+txAaILT6D4
-         7x5BAnF5r0HwLXrIjiELyGzGBhRvCtBx5Dtlt5vOzhtuNzbmixXdhjQohFtBqSnx/iFz
-         BNsloVWAXfPcFfrC1JwPuSpjNyqZ84h+7rRDmB7uqj+eai2L+KKhUGN10myNtx8U02qz
-         OBxifP1GBB50yLN84rVh/+GKeBsex07iI4Sn4tdTSyR/Eea2hcCq5B9KKnZkC7XLqIA4
-         8m0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=19ACJ1fic9mV42uUnpDAFR0NZ9Dw4Na6mJs9CQ+BSWg=;
-        b=R8N7IZJC8+KLEBsK2kLcySZlQaP9vGnh5ctiPTuXkRMErVcGvTiTqP0raWryhtPa5x
-         HsFCWP3TZnz5fPu/g/WJUnjbu44U0PVF6lGKyfT9YuqhodxgeAQyCxfRPg73BI+mN2C2
-         kQtG97N2RESuaW1hFn6qvmLIdkx/nQ/E35LcGF84R8D/DmMnyiUxCu0JjkoeiaSTOUfi
-         R2u/M1sChJz4BjUML+6+405SwP0LTwYFAR+4MAMMmz2/B2d0Hdo7rfAlG9VmjpEkFUGp
-         AoNMifc7qtMHnvn+0SRKyG0VfxoJhuxpE42TgslhdUMulVYom1h73TvrL6NUlwZr92d5
-         JIHA==
-X-Gm-Message-State: AOAM532Ybr1IpLmtudkwL/BPmGXwS87eujbl7IM7YtigNn7TWcwOQS0T
-        MHi/1a6+c2uy+hcfkV4Fm8QMbvnhSPSgMiVJ4QY=
-X-Google-Smtp-Source: ABdhPJxHTS4veMmCO+YwBwO5wCQlc7azPHJKmPse8N4xGOxspLGx1U3QlklOpHhoaiKCDPOmRgncCd9mQlj9wCCsuA0=
-X-Received: by 2002:a25:abb2:: with SMTP id v47mr36212197ybi.425.1614044969515;
- Mon, 22 Feb 2021 17:49:29 -0800 (PST)
+        id S231168AbhBWBvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 20:51:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40844 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230306AbhBWBu7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Feb 2021 20:50:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id AF8E06148E;
+        Tue, 23 Feb 2021 01:50:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614045018;
+        bh=k5cw67OB1Dh43kPNXbmJnFCSZPXw0rvMJUvwXkrETWo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JX/efaIW7CBGRyHZqdJmxIl3ZdxCqP1VkKJpExgCAEhw2uUnMaB+43dnfMV13MVCQ
+         9iiMcFERMavNIwM1zlvn4+rjSPwxW/2vewJhH7vpsDt5ue7Dx31HEWBi3ZFUiaVLJa
+         tMCkgQKNz/BzbG2iHxT1EWCrQDZtFa1x1MQhhKDofeAJWEVpuoRbhOK6vAtHF+1CVT
+         UVnFCEm1Vh9NfSG40CWR54dWcAHR5N/nYFOJoR54flPWt55UTdwQ8afAQnPxqQPjoF
+         aYcl2kifosvrqR/7BTdp5iGfmc11YbIFlFhSS6LbZBCK4HgliFL4wxU3HvYbuk6rXJ
+         y60GnEqvY532Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A3FAD609F4;
+        Tue, 23 Feb 2021 01:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1613812247-17924-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <1613812247-17924-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 22 Feb 2021 17:49:18 -0800
-Message-ID: <CAEf4BzYgLf5g3oztbA-CJR4gQ7AVKQAGrsHWCOgTtUMUM-Mxfg@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: Remove unnecessary conversion to bool
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: ag71xx: remove unnecessary MTU reservation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161404501866.32555.16906265914403348947.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Feb 2021 01:50:18 +0000
+References: <20210218034514.3421-1-dqfext@gmail.com>
+In-Reply-To: <20210218034514.3421-1-dqfext@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     linux@rempel-privat.de, chris.snook@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, p.zabel@pengutronix.de, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rosenp@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 20, 2021 at 1:11 AM Jiapeng Chong
-<jiapeng.chong@linux.alibaba.com> wrote:
->
-> Fix the following coccicheck warnings:
->
-> ./tools/lib/bpf/libbpf.c:1487:43-48: WARNING: conversion to bool not
-> needed here.
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
+Hello:
 
-I think this came up before already. I did this on purpose and I'd
-like to keep it that way in the code.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Thu, 18 Feb 2021 11:45:14 +0800 you wrote:
+> 2 bytes of the MTU are reserved for Atheros DSA tag, but DSA core
+> has already handled that since commit dc0fe7d47f9f.
+> Remove the unnecessary reservation.
+> 
+> Fixes: d51b6ce441d3 ("net: ethernet: add ag71xx driver")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: ag71xx: remove unnecessary MTU reservation
+    https://git.kernel.org/netdev/net/c/04b385f32508
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
->  tools/lib/bpf/libbpf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 6ae748f..5dfdbf3 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -1484,7 +1484,7 @@ static int set_kcfg_value_tri(struct extern_desc *ext, void *ext_val,
->                                 ext->name, value);
->                         return -EINVAL;
->                 }
-> -               *(bool *)ext_val = value == 'y' ? true : false;
-> +               *(bool *)ext_val = value == 'y';
->                 break;
->         case KCFG_TRISTATE:
->                 if (value == 'y')
-> --
-> 1.8.3.1
->
