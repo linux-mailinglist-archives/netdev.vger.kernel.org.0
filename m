@@ -2,68 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2493323168
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 20:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7270323170
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 20:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232403AbhBWTZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 14:25:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35868 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231827AbhBWTYq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 14:24:46 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A567264DF3;
-        Tue, 23 Feb 2021 19:24:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614108245;
-        bh=l4t8uWb8DAsf7kJCaLUF0TLZ7FQgm2OzB/Hxw9fmfLQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JCw2wmIimQr7ruU1D3wdesSy6Feri72V3pXPNI/ZbZxvUYA2CO6y33qnNeaFkQ6Mw
-         sHoBaLAnxP50xQRHRQVtEGDi/veTG2m6IxSmgEKAJ8XBGcwfTMe7fSAi/BzNsFxg7E
-         s1jY1H00v6ZKBJfy6VdrsIXJHRBCdILwYd5E+tlb3z8jqwSq8gT14EX+Cq+qGpvwlh
-         VgWbE/Azmr3lKnadq/0u1Ib6ylldhVMgRgwoyttPjdEUygw9NYwXE69SIL45o6gO7M
-         dSGgMzzUWufNEBG3F7RYAAC7Jdwgib0tJf19L5A9NNllqXy+yc80OY2YDnSzqfPuGF
-         gSxAmx2NLOhrQ==
-Date:   Tue, 23 Feb 2021 11:24:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christian Melki <christian.melki@t2data.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH v2 net] net: phy: micrel: set soft_reset callback to
- genphy_soft_reset for KSZ8081
-Message-ID: <20210223112402.7ed1fe93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <c1adb83f-57dc-9a97-f10a-c0853cdd8f09@t2data.com>
-References: <c1adb83f-57dc-9a97-f10a-c0853cdd8f09@t2data.com>
+        id S234029AbhBWTaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 14:30:22 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:36533 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232600AbhBWTaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 14:30:21 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id AE8665C008F;
+        Tue, 23 Feb 2021 14:29:13 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Tue, 23 Feb 2021 14:29:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=0J2CVX
+        zpL4ThVxW9XxVCX/Gpf9Mc09uxwh9+LKeYk4I=; b=iwmqhFhgeVhk2dwUOsrG3c
+        LHzjz5Zj6vAMEaqkgQg9zPR5G15BLbv0E9BOJ5iagEr8oGyQssJGizYihNbsXQh+
+        WUeSDWpxYEH5As48tb6sPc6iL+klTDUMLMBUvoWHJasqtn6pg77pGEVq7jkRrST5
+        F6a/OJaOmMJpjZt9PvZcdfFxhy3GE9rM5SH+Ow4zMw2Aam3EuWFdPUdhfpsP22K1
+        5fi4m6pJj/+aZNXmIzVSqcNztIXz3S46d7k14efLKyMjcgjsmnPJbMGdvpoqSQhc
+        BANfdqzGOO/++tFKUFEp5PewqSQyOWZJVOeUYojFOm+1ZqNloDjHRGAQ3qhvXnhA
+        ==
+X-ME-Sender: <xms:iFc1YLOM3d0KIUtD6apXRx-yJANMv2DRfrImkxmyJHbfmvmRPve-kQ>
+    <xme:iFc1YF47N9sorKGxYRLhnixKd4_xfW8hfzJVoMf0AtkJR5mLWcIhh54-eP9KA6A5x
+    AOQRLkMTnPqLtE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeehgdduvdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:iVc1YHKwp9UpqFwsuF8S8KI7gmN5c7awzgyuQ4MTS1wSBgKaJrY8aA>
+    <xmx:iVc1YHd5r-cW0U7KgQ8WS5cDMnaWo_1Uoboi4Xb0W83fp7Y8J-w6wg>
+    <xmx:iVc1YCeriodCJhjuJFVGc82pPZJQyJijIVX-998Z3szJdwNyHJ6D_g>
+    <xmx:iVc1YAZDTezJmVhwFxXwyX-6Dkr4TpauYngO-qk8qh-nHt14LV4VTQ>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 823A424005A;
+        Tue, 23 Feb 2021 14:29:12 -0500 (EST)
+Date:   Tue, 23 Feb 2021 21:29:09 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: Timing of host-joined bridge multicast groups with switchdev
+Message-ID: <YDVXhZdy510mFtG/@shredder.lan>
+References: <20210223173753.vrlxhnj5rtvd6i6g@skbuf>
+ <YDVBxrkYOtlmO1bn@shredder.lan>
+ <20210223180236.e2ggiuxhr5aaayx5@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210223180236.e2ggiuxhr5aaayx5@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Feb 2021 09:30:30 +0100 Christian Melki wrote:
-> Following a similar reinstate for the KSZ9031.
+On Tue, Feb 23, 2021 at 08:02:36PM +0200, Vladimir Oltean wrote:
+> On Tue, Feb 23, 2021 at 07:56:22PM +0200, Ido Schimmel wrote:
+> > For route offload you get a dump of all the existing routes when you
+> > register your notifier. It's a bit different with bridge because you
+> > don't care about existing bridges when you just initialize your driver.
+> >
+> > We had a similar issue with VXLAN because its FDB can be populated and
+> > only then attached to a bridge that you offload. Check
+> > vxlan_fdb_replay(). Probably need to introduce something similar for
+> > FDB/MDB entries.
 > 
-> Older kernels would use the genphy_soft_reset if the PHY did not 
-> implement a .soft_reset.
+> So you would be in favor of a driver-voluntary 'pull' type of approach
+> at bridge join, instead of the bridge 'pushing' the addresses?
 > 
-> Bluntly removing that default may expose a lot of situations where 
-> various PHYs/board implementations won't recover on various changes.
-> Like with tgus implementation during a 4.9.x to 5.4.x LTS transition.
-> I think it's a good thing to remove unwanted soft resets but wonder if 
-> it did open a can of worms?
-> 
-> Atleast this fixes one iMX6 FEC/RMII/8081 combo.
-> 
-> Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-> Signed-off-by: Christian Melki <christian.melki@t2data.com>
+> That's all fine, except when we'll have more than 3 switchdev drivers,
+> how do we expect to manage all this complexity duplicated in many places
+> in the kernel, instead of having it in a central place? Are there corner
+> cases I'm missing which make the 'push' approach impractical?
 
-Still does not apply to net/master:
+Not sure. It needs to be scheduled when the driver is ready to handle
+it. In br_add_if() after netdev_master_upper_dev_link() is probably a
+good place.
 
-Applying: net: phy: micrel: set soft_reset callback to genphy_soft_reset for KSZ8081
-error: patch failed: drivers/net/phy/micrel.c:1303
-error: drivers/net/phy/micrel.c: patch does not apply
-Patch failed at 0001 net: phy: micrel: set soft_reset callback to genphy_soft_reset for KSZ8081
-hint: Use 'git am --show-current-patch=diff' to see the failed patch
-When you have resolved this problem, run "git am --continue".
-If you prefer to skip this patch, run "git am --skip" instead.
-To restore the original branch and stop patching, run "git am --abort".
+It also needs to be done once and not every time another port joins the
+bridge. This can be done using the port's parent ID, similar to what we
+are already doing with the offload forward mark in
+nbp_switchdev_mark_set().
+
+But I'm not sure how we replay it only for a single notifier block. I'm
+not familiar with setups where you have more than one listener let alone
+more than one that is interested in notifications from a specific
+bridge, so maybe it is OK to just replay it for all the listeners. But I
+would prefer to avoid it if we can.
