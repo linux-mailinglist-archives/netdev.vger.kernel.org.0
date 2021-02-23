@@ -2,65 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F303228F1
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:40:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1808E322902
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:49:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231523AbhBWKjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 05:39:43 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:13369 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbhBWKjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 05:39:41 -0500
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DlFqS0PZwz7mtt;
-        Tue, 23 Feb 2021 18:37:24 +0800 (CST)
-Received: from localhost.localdomain (10.175.102.38) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 23 Feb 2021 18:38:51 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     Hulk Robot <hulkci@huawei.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "Jose Abreu" <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Nobuhiro Iwamatsu" <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH] net: stmmac: Fix missing spin_lock_init in visconti_eth_dwmac_probe()
-Date:   Tue, 23 Feb 2021 10:48:03 +0000
-Message-ID: <20210223104803.4047281-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S232056AbhBWKs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 05:48:57 -0500
+Received: from mail-eopbgr60077.outbound.protection.outlook.com ([40.107.6.77]:46106
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231410AbhBWKsy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 05:48:54 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JKP7KpXZ6z3jnhDm/vMXvEB4AyJjaCvg4XvvhUeMeoQUFuLpL1vhUUJFAwDR5zzOlF/U2/EadRPVuBA2j8oShJDk/rhjHPmRWyyyeH8F4Uv8ZtT3XUG5ZRmTwpwICl9VJfRwoN7UTpzxWSuv6a09HSZk4BU3IxnGkZCgpcjDedogQD97Ogwk/XvaF50dXiwC6F+ZvFukggZq/EeyHkVpe4gVIdaLvLmIlAQCG8BELrWQgNmWIt+wxQMPhCYosNLUKc6AlIeAGU5nxI9NOe7YtU7d64p2iw8XBHID/GF7CX5y8QUauknGMDzpNCBYIXjGQJlF1WQp4eEVw8023Z3jhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dEojPiR+UPx2pT6Odzndp6liK7AAALlRgQSON0vhL/4=;
+ b=EqhGr+M4OTllFtN8a7GvhgJ4JraFHCcu0UeKRGvlo7N/xW8niVrGl/8sQzm+xpYZuViCc9Ff7Ow/GRe2pEb2CVZfxiVHXPtCsCx6il8APRGxmHYa4K4YJqQOv9V+Kh0Q/D4Q5qdAjoGiNlULABPZvkONpde4FdyeiJkQxn1KbMb8wz19hz+qq9vovq+DN2rOeU1zvG8lcxq9oA9h90EDV2nmjKN1I7lwcIGfBUtrrRbb741k9BlbMcot0Ifjq9c8UVfvvR16AKPGp3xVXYG+zu9nghQgLkBX+oUppF2VsbYOGjimM2nyfr14bDVdmDC1GIrwMLvwCTZHziKIiEITNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dEojPiR+UPx2pT6Odzndp6liK7AAALlRgQSON0vhL/4=;
+ b=cN9pWVc5wPIb0cJ+ZxLw1G49K2uTxK24sNEbmgFzi5uGqkrkPGvAYG9KY2SO7TROuRS0k5h6txURP+V3MRGqmjsDx6y5PKV/oBATnppYpUnh0KTQ7LT6cqGuuBIRUWRyddHRbuePXjbBqstiW916n0nrnigNoFPVBg6nx5p4p7I=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR0402MB2728.eurprd04.prod.outlook.com (2603:10a6:4:97::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.33; Tue, 23 Feb
+ 2021 10:48:07 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::7d13:2d65:d6f7:b978]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::7d13:2d65:d6f7:b978%4]) with mapi id 15.20.3846.045; Tue, 23 Feb 2021
+ 10:48:06 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
+Subject: [PATCH V1 net-next 0/3] net: stmmac: implement clocks
+Date:   Tue, 23 Feb 2021 18:48:15 +0800
+Message-Id: <20210223104818.1933-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: MA1PR01CA0162.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a00:71::32) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.102.38]
-X-CFilter-Loop: Reflected
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by MA1PR01CA0162.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:71::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Tue, 23 Feb 2021 10:48:04 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 84802dc6-4c69-4526-8319-08d8d7e880bb
+X-MS-TrafficTypeDiagnostic: DB6PR0402MB2728:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB6PR0402MB2728D788DE4EC7C602761689E6809@DB6PR0402MB2728.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1751;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: G6QeCBqHQNA0qLTGBl/siFGMzF9pqIUtYz3MN59qKJ+NY6SL35/ovHTVMAOFFDHkP54TJTort1F9Gs2WwaI/M9zjbJMZgmnqv7tGoAgnI3B34Z8qEo+7tFRTyW7DsxB6+e4YZTqLrmCRcNGS2wZWHV8oHa/qDCoR/zSNuE8LMi066xn4ewo7VJ/54xBfoLq8/HjZGq2APiazgx7iGQ5BP3S8GzMbKppXcpS8v2+RaQ03e7pULHDckLH4RrWodyFeR2GfJPiGOVW12F23FfqttFmP+3FR54waYwneqPCSxycpa6nsu6ARzY/98bnYsutu6ffq6ccb/hpphblmDJBFlMnNyhMJbbaNFZvFr+hl71Ba/rUGIGbPONBGPHwtiYX+Hovr8Usdj8YJ6tXF325iIAA7alSpDfP49HJWTQdK9itytYBBHIRXWuRf95VNmn5+BZJvroTj99KrnRy4ujY15l7VcKTXFWCZodr/Pk4iJ+kl9IBgstZB3l4oowvM62NHUdJIoblH4EvCQCWvR3rWTtO0E+mruyVqqUPfc8LmY58Ka6n4IcP0bXbgYkGQk1iKv9Hj55xBSq6vkeV1+MwCmQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(396003)(376002)(136003)(39860400002)(83380400001)(2906002)(52116002)(478600001)(186003)(16526019)(956004)(6506007)(26005)(66476007)(1076003)(66556008)(69590400012)(4744005)(4326008)(66946007)(8676002)(6666004)(6512007)(2616005)(8936002)(5660300002)(6486002)(36756003)(316002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 2d4RWv8xo9aq0MyjbgZcwOyOju18S669r+Yn8p1rHnH3FDH+cXAPyydcBWXKJUQag5+CKv36En6D5VBYxEvAhOsos296dgguZZgDBx5F9DZkDq/Osav+lA3X+492jRn+enmJNjRsVoFWBct4N2HbO2NWshQQDnc4MNbBr72raBTnAkzu4TJKjXVbg+D66g6yxY1aUD0Arnep219ty8iwiSsnhQIdh3pyQSyQAeikbGeJJNyKyB3YpJ14qs3U1KgSpMPyhTfiMvqqXZ6WO0cR+Z5PbKXC0ZDrAZSez3S6IJ9d4VkAhzhystXjdKAgsdzceSw/++jq7z3WvzSfj8JKrYHIqj8IonualJQ791yRPSrLm4FZE5+oH9lqqbrXx2cUIIYMS3fzRjx1VP6KFCb1WJPgUjG+37qeZUAXGLe3k0/4cQJ9MmkRWiE4yC3VxSELEPuYR6giQBBXirR62WzJj1LT038Sf8BjDQvAfa98LEeYFmBbfm9TbYqDrCeMN6iCggqx1A+YlCzyzvzOXK8K+briYNVdxLB9rB7BZcEXWKdrMAr4phSPwrt/oupFY3sR71FYFFIu9tpoOUYuZamHkvlFyTsMyodJIo7tvro5y50aN+KCYJBkputKuUAYu2sTIF0KEDnw47eweRPAp//uGZOPQGnvKSUta22e3puPpPMvPbTIdW5gPHKHJO8luggd6cq8YwLH7E4nwMFuD56ZPGXu4fTzYcsheA0RHpMyR+NuUd8jWL/2x0GeE7z9t+fx
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84802dc6-4c69-4526-8319-08d8d7e880bb
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2021 10:48:06.8178
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: COTCHwiqhQIsrcsjl9V2J5760JsvahCtiZGZVRhpo1BjLaQGVG8qa32eCduin/2+xif6kGnKuOWPee9pbXts9Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2728
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver allocates the spinlock but not initialize it.
-Use spin_lock_init() on it to initialize it correctly.
+In stmmac driver, clocks are all enabled after device probed, this leads
+to more power consumption. This patch set tries to implement clocks
+management, and takes i.MX platform as a example.
 
-Fixes: b38dd98ff8d0 ("net: stmmac: Add Toshiba Visconti SoCs glue driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 1 +
- 1 file changed, 1 insertion(+)
+Joakim Zhang (3):
+  net: stmmac: add clocks management for gmac driver
+  net: stmmac: add platform level clocks management
+  net: stmmac: add platform level clocks management for i.MX
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-index b7a0c57dfbfb..d23be45a64e5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-@@ -218,6 +218,7 @@ static int visconti_eth_dwmac_probe(struct platform_device *pdev)
- 		goto remove_config;
- 	}
- 
-+	spin_lock_init(&dwmac->lock);
- 	dwmac->reg = stmmac_res.addr;
- 	plat_dat->bsp_priv = dwmac;
- 	plat_dat->fix_mac_speed = visconti_eth_fix_mac_speed;
+ .../net/ethernet/stmicro/stmmac/dwmac-imx.c   | 60 +++++++++-------
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 70 ++++++++++++++++---
+ include/linux/stmmac.h                        |  1 +
+ 3 files changed, 98 insertions(+), 33 deletions(-)
+
+-- 
+2.17.1
 
