@@ -2,65 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 367AD322940
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 12:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 954EE322948
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 12:09:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232244AbhBWLHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 06:07:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232217AbhBWLH0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 06:07:26 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1819C061786;
-        Tue, 23 Feb 2021 03:06:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=K2ylQVZRhghwU1ruzT40Z4+JszR4ATXnAjr+EMA5yu4=; b=NBP9tV4JPO5/VnfruO4LFjeYaJ
-        3GZA7ssSASYSXNeuC1blqtsH9J0+PR5QVfvEtsfuMt3bcKFwa6TM/ZdJeff7fa1TqlCeJ240L3Vv6
-        PPadV4Ub0Nl4PbeEZ9nt2Pkqx35oZm+7UGB3xzHj2naf991/OeM9JjNDGjvPaK0f4sMVmP9dAYqui
-        pURY68O3Lr7IQZSASDNT2rK5GgHSiOEB+dpSSqEI0jP8xQyPRmwAKD2EdIOQHU1zUtu0KkkqVw1Br
-        3ZljwcflvZ+eRCnSiVP5ZiXt13PU6gLS5qUDGQ6FmssCSKh9F45Os3+FrXg5i0iC4HVZXZq0ZqI1R
-        PVdJKD9A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lEVWJ-007rop-4d; Tue, 23 Feb 2021 11:06:30 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A7112300DB4;
-        Tue, 23 Feb 2021 12:06:22 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8759F2013B7C2; Tue, 23 Feb 2021 12:06:22 +0100 (CET)
-Date:   Tue, 23 Feb 2021 12:06:22 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kernel-team@fb.com
-Subject: Re: [PATCH v4 bpf-next 2/6] bpf: prevent deadlock from recursive
- bpf_task_storage_[get|delete]
-Message-ID: <YDThrlixVqfHP7I9@hirez.programming.kicks-ass.net>
-References: <20210223012014.2087583-1-songliubraving@fb.com>
- <20210223012014.2087583-3-songliubraving@fb.com>
+        id S232372AbhBWLJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 06:09:23 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:36405 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232351AbhBWLI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 06:08:56 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id E284F5C0219;
+        Tue, 23 Feb 2021 06:08:02 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 23 Feb 2021 06:08:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=U2I4e7
+        bo/e7cpkkwZVTL9XRDCAR7LL7Oi+fIECKIm3Y=; b=Gqv/rqXZ/jmbnn7bIE2bk/
+        mJjV77zkcbMwDXps+l78qmV0K3Ijxnd1O/SrsyekHnhDITSwlqeZGiJlG2tfm7c/
+        U1p0QKo3zWyGvtULcLLgxkfnIqmbbeXMLjVuZSulKMyG6yU4oZt3qX5qTULcaEtc
+        2edfHoN0dz2eiQfh7N13B6PF2FWDAcvcVce3+XkKzBmyq4YAx0faay/U+dAZz6wI
+        fRsShZBG++OgyzzpTIfGIqtq0oJROet1iNTer246APWD8PJi9BeZy1GWpKBONLqQ
+        F0HFQeDd62upVDbb7lLPH6kudPOqF6KyxhbaMAIp8IndTr8er5rMQf+ejtHc34oA
+        ==
+X-ME-Sender: <xms:EeI0YCQ6vH6BDER0E9H9M3fykyQHASYN7ckTOZ4s5U4XWYx72oCHvQ>
+    <xme:EeI0YFtiawuLx2_s3-1yD4F8ksq8Km5Nz3_0zNHIIho4_rZY4BiDkyBLSpF5B2uzs
+    Y08tQUhiKknQGU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeehgddvgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:EeI0YHYgwdaSmfxn7eiV2lhhj4V5NPERIekF9IPddwdpJc0pTahkxg>
+    <xmx:EeI0YKvBxNG9XWcghHictaqW7drYJ6YuhVZxB-IjNy2OnJFMA_AmIA>
+    <xmx:EeI0YJHK_sURjGq6oUdDa2Nabuq5qGeeUDnY30kJiV9Xum7fdU49Rw>
+    <xmx:EuI0YEqWA9OgQdELllh9zGzMH3XwyjTBLnkNEEwqqxRbNeZE_mXCrQ>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5B440240065;
+        Tue, 23 Feb 2021 06:08:01 -0500 (EST)
+Date:   Tue, 23 Feb 2021 13:07:57 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] netdevsim: fib: remove unneeded semicolon
+Message-ID: <YDTiDezR7JmWIzq7@shredder.lan>
+References: <1614047326-16478-1-git-send-email-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210223012014.2087583-3-songliubraving@fb.com>
+In-Reply-To: <1614047326-16478-1-git-send-email-jiapeng.chong@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 22, 2021 at 05:20:10PM -0800, Song Liu wrote:
-> BPF helpers bpf_task_storage_[get|delete] could hold two locks:
-> bpf_local_storage_map_bucket->lock and bpf_local_storage->lock. Calling
-> these helpers from fentry/fexit programs on functions in bpf_*_storage.c
-> may cause deadlock on either locks.
+On Tue, Feb 23, 2021 at 10:28:46AM +0800, Jiapeng Chong wrote:
+> Fix the following coccicheck warnings:
 > 
-> Prevent such deadlock with a per cpu counter, bpf_task_storage_busy, which
-> is similar to bpf_prog_active. We need this counter to be global, because
+> ./drivers/net/netdevsim/fib.c:564:2-3: Unneeded semicolon.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-So bpf_prog_active is one of the biggest turds around, and now you're
-making it worse ?!
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
