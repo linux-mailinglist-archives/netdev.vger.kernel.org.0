@@ -2,177 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8221832239D
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:23:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BF073223B8
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 02:31:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbhBWBXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 20:23:22 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12184 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230423AbhBWBWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 20:22:20 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11N17gJR003549
-        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 17:21:39 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=9MXKxqv+SncBnz5OqxIZYK7jmff9BGIDVI3Ly/9d+n0=;
- b=hGSAyFGwK6LRlm6od2lR/8KUbvApOfe1hX05YbDsYwyx1vbFKkFxq0/gK9bKOXP5qInU
- uBEbvqlUkx/B4PVeTyLw3xdALihdNTjUJw1cumhAVH40wNpuvaslUeuUTmv4ZkD8GA4G
- 6l8rJsqC7naSr+ApHM5Umt5oi3XliWnZcWE= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 36uk0n0m00-16
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 17:21:39 -0800
-Received: from intmgw001.05.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 22 Feb 2021 17:21:23 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id DB65562E0887; Mon, 22 Feb 2021 17:21:21 -0800 (PST)
-From:   Song Liu <songliubraving@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <peterz@infradead.org>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: [PATCH v4 bpf-next 6/6] bpf: runqslower: use task local storage
-Date:   Mon, 22 Feb 2021 17:20:14 -0800
-Message-ID: <20210223012014.2087583-7-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20210223012014.2087583-1-songliubraving@fb.com>
-References: <20210223012014.2087583-1-songliubraving@fb.com>
+        id S229961AbhBWBa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 20:30:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39246 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230042AbhBWBa5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Feb 2021 20:30:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7DFFF64E57;
+        Tue, 23 Feb 2021 01:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614043816;
+        bh=ncie3eGoP1Lo7pENaLRqCW2fkUMl2yR3qc5u8v9f/Cs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MyaOfdQ9yb+Jt1rs6BqyaFO5YLrlUhDHHOh2P6qeIQvBeKoXJV6f/o5WInaM0gWds
+         567BIW+sx8ibyf8SpHpSMFPxwhfG9tUAFIwAJC0omA/3h+qtASKo4guFtMrr5QOG2O
+         wTqnSPJ5TiwOfiTRz2a9quZsIasxGTyXiNfjzMyTpeGemqWvZAH26YoHbgp7wnnG81
+         FPqUI5oZUQKmcRF/2NqkbGNjb1WybkM8DtHTk7d6fReE0HIiGIpHULqejofiDpqn6f
+         BJU1QTcKUCM5RKK5csIN8uc0xTYwrYy6zeS+lgNRFioqoePS5mLm143FDaZ/2FRMUs
+         WyDxYAHySz5YA==
+Date:   Mon, 22 Feb 2021 17:30:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Robin van der Gracht <robin@protonic.nl>,
+        syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3] net: introduce CAN specific pointer in the
+ struct net_device
+Message-ID: <20210222173012.39e82e8d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210222150251.12911-1-o.rempel@pengutronix.de>
+References: <20210222150251.12911-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-22_08:2021-02-22,2021-02-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 suspectscore=0
- spamscore=0 priorityscore=1501 malwarescore=0 bulkscore=0 phishscore=0
- adultscore=0 clxscore=1015 mlxlogscore=999 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102230006
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace hashtab with task local storage in runqslower. This improves the
-performance of these BPF programs. The following table summarizes average
-runtime of these programs, in nanoseconds:
+On Mon, 22 Feb 2021 16:02:51 +0100 Oleksij Rempel wrote:
+> Since 20dd3850bcf8 ("can: Speed up CAN frame receiption by using
+> ml_priv") the CAN framework uses per device specific data in the AF_CAN
+> protocol. For this purpose the struct net_device->ml_priv is used. Later
+> the ml_priv usage in CAN was extended for other users, one of them being
+> CAN_J1939.
+> 
+> Later in the kernel ml_priv was converted to an union, used by other
+> drivers. E.g. the tun driver started storing it's stats pointer.
+> 
+> Since tun devices can claim to be a CAN device, CAN specific protocols
+> will wrongly interpret this pointer, which will cause system crashes.
+> Mostly this issue is visible in the CAN_J1939 stack.
+> 
+> To fix this issue, we request a dedicated CAN pointer within the
+> net_device struct.
+> 
+> Reported-by: syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com
+> Fixes: 20dd3850bcf8 ("can: Speed up CAN frame receiption by using ml_priv")
+> Fixes: ffd956eef69b ("can: introduce CAN midlayer private and allocate it automatically")
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Fixes: 497a5757ce4e ("tun: switch to net core provided statistics counters")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-                          task-local   hash-prealloc   hash-no-prealloc
-handle__sched_wakeup             125             340               3124
-handle__sched_wakeup_new        2812            1510               2998
-handle__sched_switch             151             208                991
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index ddf4cfc12615..6e25c6f0f190 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1584,6 +1584,16 @@ enum netdev_priv_flags {
+>  #define IFF_L3MDEV_RX_HANDLER		IFF_L3MDEV_RX_HANDLER
+>  #define IFF_LIVE_RENAME_OK		IFF_LIVE_RENAME_OK
+>  
+> +/**
+> + * enum netdev_ml_priv_type - &struct net_device ml_priv_type
+> + *
+> + * This enum specifies the type of the struct net_device::ml_priv pointer.
+> + */
 
-Note that, task local storage gives better performance than hashtab for
-handle__sched_wakeup and handle__sched_switch. On the other hand, for
-handle__sched_wakeup_new, task local storage is slower than hashtab with
-prealloc. This is because handle__sched_wakeup_new accesses the data for
-the first time, so it has to allocate the data for task local storage.
-Once the initial allocation is done, subsequent accesses, as those in
-handle__sched_wakeup, are much faster with task local storage. If we
-disable hashtab prealloc, task local storage is much faster for all 3
-functions.
+kdoc (scripts/kernel-doc -none include/linux/netdevice.h) is not happy
+about the fact enum values are not defined. Perhaps they will be
+sufficiently self-explanatory to not bother documenting?
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- tools/bpf/runqslower/runqslower.bpf.c | 33 +++++++++++++++++----------
- 1 file changed, 21 insertions(+), 12 deletions(-)
+Maybe just:
 
-diff --git a/tools/bpf/runqslower/runqslower.bpf.c b/tools/bpf/runqslower=
-/runqslower.bpf.c
-index 1f18a409f0443..645530ca7e985 100644
---- a/tools/bpf/runqslower/runqslower.bpf.c
-+++ b/tools/bpf/runqslower/runqslower.bpf.c
-@@ -11,9 +11,9 @@ const volatile __u64 min_us =3D 0;
- const volatile pid_t targ_pid =3D 0;
-=20
- struct {
--	__uint(type, BPF_MAP_TYPE_HASH);
--	__uint(max_entries, 10240);
--	__type(key, u32);
-+	__uint(type, BPF_MAP_TYPE_TASK_STORAGE);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__type(key, int);
- 	__type(value, u64);
- } start SEC(".maps");
-=20
-@@ -25,15 +25,20 @@ struct {
-=20
- /* record enqueue timestamp */
- __always_inline
--static int trace_enqueue(u32 tgid, u32 pid)
-+static int trace_enqueue(struct task_struct *t)
- {
--	u64 ts;
-+	u32 pid =3D t->pid;
-+	u64 *ptr;
-=20
- 	if (!pid || (targ_pid && targ_pid !=3D pid))
- 		return 0;
-=20
--	ts =3D bpf_ktime_get_ns();
--	bpf_map_update_elem(&start, &pid, &ts, 0);
-+	ptr =3D bpf_task_storage_get(&start, t, 0,
-+				   BPF_LOCAL_STORAGE_GET_F_CREATE);
-+	if (!ptr)
-+		return 0;
-+
-+	*ptr =3D bpf_ktime_get_ns();
- 	return 0;
- }
-=20
-@@ -43,7 +48,7 @@ int handle__sched_wakeup(u64 *ctx)
- 	/* TP_PROTO(struct task_struct *p) */
- 	struct task_struct *p =3D (void *)ctx[0];
-=20
--	return trace_enqueue(p->tgid, p->pid);
-+	return trace_enqueue(p);
- }
-=20
- SEC("tp_btf/sched_wakeup_new")
-@@ -52,7 +57,7 @@ int handle__sched_wakeup_new(u64 *ctx)
- 	/* TP_PROTO(struct task_struct *p) */
- 	struct task_struct *p =3D (void *)ctx[0];
-=20
--	return trace_enqueue(p->tgid, p->pid);
-+	return trace_enqueue(p);
- }
-=20
- SEC("tp_btf/sched_switch")
-@@ -70,12 +75,16 @@ int handle__sched_switch(u64 *ctx)
-=20
- 	/* ivcsw: treat like an enqueue event and store timestamp */
- 	if (prev->state =3D=3D TASK_RUNNING)
--		trace_enqueue(prev->tgid, prev->pid);
-+		trace_enqueue(prev);
-=20
- 	pid =3D next->pid;
-=20
-+	/* For pid mismatch, save a bpf_task_storage_get */
-+	if (!pid || (targ_pid && targ_pid !=3D pid))
-+		return 0;
-+
- 	/* fetch timestamp and calculate delta */
--	tsp =3D bpf_map_lookup_elem(&start, &pid);
-+	tsp =3D bpf_task_storage_get(&start, next, 0, 0);
- 	if (!tsp)
- 		return 0;   /* missed enqueue */
-=20
-@@ -91,7 +100,7 @@ int handle__sched_switch(u64 *ctx)
- 	bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU,
- 			      &event, sizeof(event));
-=20
--	bpf_map_delete_elem(&start, &pid);
-+	bpf_task_storage_delete(&start, next);
- 	return 0;
- }
-=20
---=20
-2.24.1
+/* Specifies the type of the struct net_device::ml_priv pointer */
 
+?
+
+> +enum netdev_ml_priv_type {
+> +	ML_PRIV_NONE,
+> +	ML_PRIV_CAN,
+> +};
+> +
+>  /**
+>   *	struct net_device - The DEVICE structure.
+>   *
+> @@ -1779,6 +1789,7 @@ enum netdev_priv_flags {
+>   * 	@nd_net:		Network namespace this network device is inside
+>   *
+>   * 	@ml_priv:	Mid-layer private
+> +	@ml_priv_type:  Mid-layer private type
+
+missing '*' at the start of the line
+
+>   * 	@lstats:	Loopback statistics
+>   * 	@tstats:	Tunnel statistics
+>   * 	@dstats:	Dummy statistics
+> @@ -2094,8 +2105,10 @@ struct net_device {
+>  	possible_net_t			nd_net;
+>  
+>  	/* mid-layer private */
+> +	void				*ml_priv;
+> +	enum netdev_ml_priv_type	ml_priv_type;
+> +
+>  	union {
+> -		void					*ml_priv;
+>  		struct pcpu_lstats __percpu		*lstats;
+>  		struct pcpu_sw_netstats __percpu	*tstats;
+>  		struct pcpu_dstats __percpu		*dstats;
+> @@ -2286,6 +2299,29 @@ static inline void netdev_reset_rx_headroom(struct net_device *dev)
+>  	netdev_set_rx_headroom(dev, -1);
+>  }
+>  
+> +static inline void *netdev_get_ml_priv(struct net_device *dev,
+> +				       enum netdev_ml_priv_type type)
+> +{
+> +	if (dev->ml_priv_type != type)
+> +		return NULL;
+> +
+> +	return dev->ml_priv;
+> +}
+> +
+> +static inline void netdev_set_ml_priv(struct net_device *dev,
+> +				      void *ml_priv,
+> +				      enum netdev_ml_priv_type type)
+> +{
+> +	WARN_ONCE(dev->ml_priv_type && dev->ml_priv_type != type,
+> +		  "Overwriting already set ml_priv_type (%u) with different ml_priv_type (%u)!\n",
+> +		  dev->ml_priv_type, type);
+> +	WARN_ONCE(!dev->ml_priv_type && dev->ml_priv,
+> +		  "Overwriting already set ml_priv and ml_priv_type is ML_PRIV_NONE!\n");
+
+nit: do we need the _ONCE() this helper should be used on control path
+     and relatively rarely, no?
+
+> +	dev->ml_priv = ml_priv;
+> +	dev->ml_priv_type = type;
+> +}
+> +
+>  /*
+>   * Net namespace inlines
+>   */
+
+> @@ -454,6 +455,7 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+>  		j1939_local_ecu_put(priv, jsk->addr.src_name, jsk->addr.sa);
+>  	} else {
+>  		struct net_device *ndev;
+> +		struct can_ml_priv *can_ml;
+
+nit: rev xmas tree
+
+>  
+>  		ndev = dev_get_by_index(net, addr->can_ifindex);
+>  		if (!ndev) {
