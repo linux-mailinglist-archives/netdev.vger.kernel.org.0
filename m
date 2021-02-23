@@ -2,177 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 965913233D6
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 23:46:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D313233F4
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 23:54:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233083AbhBWWiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 17:38:51 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39288 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232383AbhBWWaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 17:30:06 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11NMJeFf020010
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 14:29:23 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=9MXKxqv+SncBnz5OqxIZYK7jmff9BGIDVI3Ly/9d+n0=;
- b=YAf1/UwhhkYVTLaabyMoOyVAOteljXxr6GLPokZffR52vmsKy7aAN4yGnLUfWDTqUDyj
- 9TtPHs3lNq9Thse/tAn/9UFs8jwQwEVdw0afuFFtbjGZKO44osoxB2lkFL+jepilo6b0
- HEH/CG2VwI/qCwKHy1mjTRTgATqijBBj9QE= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 36u14q8y1t-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 14:29:21 -0800
-Received: from intmgw001.38.frc1.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Feb 2021 14:29:14 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 7ABA062E093E; Tue, 23 Feb 2021 14:29:10 -0800 (PST)
-From:   Song Liu <songliubraving@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <peterz@infradead.org>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: [PATCH v5 bpf-next 6/6] bpf: runqslower: use task local storage
-Date:   Tue, 23 Feb 2021 14:28:45 -0800
-Message-ID: <20210223222845.2866124-7-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20210223222845.2866124-1-songliubraving@fb.com>
-References: <20210223222845.2866124-1-songliubraving@fb.com>
+        id S233007AbhBWWv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 17:51:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232557AbhBWWpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 17:45:43 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D46C061574;
+        Tue, 23 Feb 2021 14:45:02 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id x129so5055011pfx.7;
+        Tue, 23 Feb 2021 14:45:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MyScsstJI7ORQOgqP6jBg1h7EBbGtNB6RuazO9OfwkU=;
+        b=OEXb/WGjobugc309Or9PdWZVhp5uGvGlbm2ED5T+DjGR6re/DwMbaWD4DDfQh7OouY
+         33KIbGfPZVUvEubuc+DGSmhEhYjaEQW4uvWjcZ8dISEOlFGQiP3GtlnQPfhBJK6U6A14
+         HR55xrJeV/6FN4SDetad5Knpf1fp6XGUihWBu3gbKyL5HIYziLbsvlk1DKhgTe6c1WAr
+         1BDTRjId02eDRj6qeeqes+nUQRPQE2w4nDqPy6YIiJJMqKRgIzBxig/1Bi3fCpQ6Pua5
+         gfWFWvqa74PCl2iBvkHf/xW8o9XonekEakttMtWnvTOzrbJANVvdu/lzZAyemC1LRnKy
+         wHcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MyScsstJI7ORQOgqP6jBg1h7EBbGtNB6RuazO9OfwkU=;
+        b=GhePjPhl7IWtB0drcT0hJb7SssGySjEAmVsgbR6femSJske6QhoVruxompmocRlCam
+         cWT6aWZBC7e9LzFN/L0Gx1JG0KVjAZjsAvtkfNUpm8+J/cnHI/5EOwfGNLHuT4vzMClK
+         IW25w2b0A2P9ZTCyKdL1MDBMeBDW/5mtekPHq9E3YWsW1mXSFbhGVdt+sOQPjSaRp/Re
+         e0gwxZNT/WgKuiGr5GgfWfHPYfELC3ygZ/R4MCL/lEAl/CiZBLN4NLTWvWIIhACP3cRI
+         r7MHOF0/+6GJtU6N3vGa4q/Jbcxz4bWfQkh8DHi1yden6uOsaAY4KrqW0konBFZtTJaE
+         ylwA==
+X-Gm-Message-State: AOAM532G/pQdNPPZn1BjgDwxj4Dtez5EZcvlEEJggH8dnGZUQZ5Q/5PK
+        5iU39GTWNHljbEffRfotlzWwoiIxutvPXhuezGY=
+X-Google-Smtp-Source: ABdhPJwkiV0/WkoW/7VZvUXBrMpMorE095G2RrRzoqHNL1SBzSSoYk+J7z6PYenGvCrfvCuWkTTLKTNaBoWIyTsdQjE=
+X-Received: by 2002:a63:c74b:: with SMTP id v11mr10090081pgg.336.1614120301268;
+ Tue, 23 Feb 2021 14:45:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-23_11:2021-02-23,2021-02-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
- malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0 priorityscore=1501
- phishscore=0 impostorscore=0 clxscore=1015 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102230188
-X-FB-Internal: deliver
+References: <00000000000056c3e005b82689d1@google.com> <000000000000d8369805bc01fe68@google.com>
+In-Reply-To: <000000000000d8369805bc01fe68@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 23 Feb 2021 14:44:50 -0800
+Message-ID: <CAM_iQpVOyYGoWdEkZ62yYRoK0G+xEPqYBod2=8QOu9d8X3-c1w@mail.gmail.com>
+Subject: Re: general protection fault in xfrm_user_rcv_msg_compat
+To:     syzbot <syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace hashtab with task local storage in runqslower. This improves the
-performance of these BPF programs. The following table summarizes average
-runtime of these programs, in nanoseconds:
+On Tue, Feb 23, 2021 at 6:55 AM syzbot
+<syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com> wrote:
+>
+> syzbot has found a reproducer for the following issue on:
+>
+> HEAD commit:    a99163e9 Merge tag 'devicetree-for-5.12' of git://git.kern..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11a6fccad00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=7a875029a795d230
+> dashboard link: https://syzkaller.appspot.com/bug?extid=5078fc2d7cf37d71de1c
+> userspace arch: i386
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167c1832d00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10214f12d00000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com
+>
+> general protection fault, probably for non-canonical address 0xe51af2c1f2c7bd20: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: maybe wild-memory-access in range [0x28d7b60f963de900-0x28d7b60f963de907]
+> CPU: 1 PID: 8357 Comm: syz-executor113 Not tainted 5.11.0-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:nla_type include/net/netlink.h:1130 [inline]
+> RIP: 0010:xfrm_xlate32_attr net/xfrm/xfrm_compat.c:404 [inline]
+> RIP: 0010:xfrm_xlate32 net/xfrm/xfrm_compat.c:526 [inline]
+> RIP: 0010:xfrm_user_rcv_msg_compat+0x5e5/0x1070 net/xfrm/xfrm_compat.c:571
 
-                          task-local   hash-prealloc   hash-no-prealloc
-handle__sched_wakeup             125             340               3124
-handle__sched_wakeup_new        2812            1510               2998
-handle__sched_switch             151             208                991
+Looks like we have to initialize the pointer array to NULL's.
 
-Note that, task local storage gives better performance than hashtab for
-handle__sched_wakeup and handle__sched_switch. On the other hand, for
-handle__sched_wakeup_new, task local storage is slower than hashtab with
-prealloc. This is because handle__sched_wakeup_new accesses the data for
-the first time, so it has to allocate the data for task local storage.
-Once the initial allocation is done, subsequent accesses, as those in
-handle__sched_wakeup, are much faster with task local storage. If we
-disable hashtab prealloc, task local storage is much faster for all 3
-functions.
-
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- tools/bpf/runqslower/runqslower.bpf.c | 33 +++++++++++++++++----------
- 1 file changed, 21 insertions(+), 12 deletions(-)
-
-diff --git a/tools/bpf/runqslower/runqslower.bpf.c b/tools/bpf/runqslower=
-/runqslower.bpf.c
-index 1f18a409f0443..645530ca7e985 100644
---- a/tools/bpf/runqslower/runqslower.bpf.c
-+++ b/tools/bpf/runqslower/runqslower.bpf.c
-@@ -11,9 +11,9 @@ const volatile __u64 min_us =3D 0;
- const volatile pid_t targ_pid =3D 0;
-=20
- struct {
--	__uint(type, BPF_MAP_TYPE_HASH);
--	__uint(max_entries, 10240);
--	__type(key, u32);
-+	__uint(type, BPF_MAP_TYPE_TASK_STORAGE);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__type(key, int);
- 	__type(value, u64);
- } start SEC(".maps");
-=20
-@@ -25,15 +25,20 @@ struct {
-=20
- /* record enqueue timestamp */
- __always_inline
--static int trace_enqueue(u32 tgid, u32 pid)
-+static int trace_enqueue(struct task_struct *t)
+diff --git a/net/xfrm/xfrm_compat.c b/net/xfrm/xfrm_compat.c
+index d8e8a11ca845..56fb32f90799 100644
+--- a/net/xfrm/xfrm_compat.c
++++ b/net/xfrm/xfrm_compat.c
+@@ -537,7 +537,7 @@ static struct nlmsghdr
+*xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
  {
--	u64 ts;
-+	u32 pid =3D t->pid;
-+	u64 *ptr;
-=20
- 	if (!pid || (targ_pid && targ_pid !=3D pid))
- 		return 0;
-=20
--	ts =3D bpf_ktime_get_ns();
--	bpf_map_update_elem(&start, &pid, &ts, 0);
-+	ptr =3D bpf_task_storage_get(&start, t, 0,
-+				   BPF_LOCAL_STORAGE_GET_F_CREATE);
-+	if (!ptr)
-+		return 0;
-+
-+	*ptr =3D bpf_ktime_get_ns();
- 	return 0;
- }
-=20
-@@ -43,7 +48,7 @@ int handle__sched_wakeup(u64 *ctx)
- 	/* TP_PROTO(struct task_struct *p) */
- 	struct task_struct *p =3D (void *)ctx[0];
-=20
--	return trace_enqueue(p->tgid, p->pid);
-+	return trace_enqueue(p);
- }
-=20
- SEC("tp_btf/sched_wakeup_new")
-@@ -52,7 +57,7 @@ int handle__sched_wakeup_new(u64 *ctx)
- 	/* TP_PROTO(struct task_struct *p) */
- 	struct task_struct *p =3D (void *)ctx[0];
-=20
--	return trace_enqueue(p->tgid, p->pid);
-+	return trace_enqueue(p);
- }
-=20
- SEC("tp_btf/sched_switch")
-@@ -70,12 +75,16 @@ int handle__sched_switch(u64 *ctx)
-=20
- 	/* ivcsw: treat like an enqueue event and store timestamp */
- 	if (prev->state =3D=3D TASK_RUNNING)
--		trace_enqueue(prev->tgid, prev->pid);
-+		trace_enqueue(prev);
-=20
- 	pid =3D next->pid;
-=20
-+	/* For pid mismatch, save a bpf_task_storage_get */
-+	if (!pid || (targ_pid && targ_pid !=3D pid))
-+		return 0;
-+
- 	/* fetch timestamp and calculate delta */
--	tsp =3D bpf_map_lookup_elem(&start, &pid);
-+	tsp =3D bpf_task_storage_get(&start, next, 0, 0);
- 	if (!tsp)
- 		return 0;   /* missed enqueue */
-=20
-@@ -91,7 +100,7 @@ int handle__sched_switch(u64 *ctx)
- 	bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU,
- 			      &event, sizeof(event));
-=20
--	bpf_map_delete_elem(&start, &pid);
-+	bpf_task_storage_delete(&start, next);
- 	return 0;
- }
-=20
---=20
-2.24.1
-
+        /* netlink_rcv_skb() checks if a message has full (struct nlmsghdr) */
+        u16 type = h32->nlmsg_type - XFRM_MSG_BASE;
+-       struct nlattr *attrs[XFRMA_MAX+1];
++       struct nlattr *attrs[XFRMA_MAX+1] = {0};
+        struct nlmsghdr *h64;
+        size_t len;
+        int err;
