@@ -2,112 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C61C532301A
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 18:59:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A586E323032
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 19:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbhBWR5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 12:57:51 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:48369 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233828AbhBWR5e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 12:57:34 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3620A5C0115;
-        Tue, 23 Feb 2021 12:56:27 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 23 Feb 2021 12:56:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=ax9hpp
-        KHjHdmi9MiYiJ7cg/G+rXmjeVb/WQqdM+aU8Y=; b=Zu45cc4Xaal03f4gVnaUXa
-        r5b9aLaeUMaAKvb+HOZWKqY6fD2zSV9y7o7LTwu0UquApmHgNEFOlHSqpwJhbZnD
-        jjgTRB7s2JffvoI19flm71d2bvNoH7wv/fYW9RrxwirxObhiDWMYobkM3qrICiNs
-        81akIJDX/kA50yjFMCLsEsXKLW2mPtar3w99++hTgVy3hi5QyyCdpHgRmTN8t+uA
-        llp8Ee1VMR6/zDcOlI3XxgGqjtm4s3RjSQkKadPEpIWZev41njD90ZwOq0zkaS8M
-        uRoiH+vlvvu8pW/YJ+7UvqTXU8BUmKRMToUdHjVcOdkeg5iKShsrDCVak/oDsTCw
-        ==
-X-ME-Sender: <xms:ykE1YG-hr7yZBC1BRp7ehwTjvQ6uyzSJljYavGvCKq2rizMfFqG4GQ>
-    <xme:ykE1YGuSG35LeJd4D85sN9IvN2UjIIx9gVfg3bAr-o766B0SIKivYKeddFGukda8w
-    AwQhiGBv1UrdlA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeehgddutdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:ykE1YMDRTTNexsVTni5cKzXU7hwfQuc1lZOxuQJuYl6RNCDczT0u0Q>
-    <xmx:ykE1YOc6eOQ_VMeh0wWggWsNnbeBogVvFGamnZ6fw6fHWO7vm9YBNA>
-    <xmx:ykE1YLNiVCeCJQjLfgaX86V_WzlT13Vmgobd3k-Td1New2YVQuxRXw>
-    <xmx:y0E1YEbz16gseXgG_TAAq8qixUmaNjh2dF8wN0WUDzSoMVsEZirEYQ>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2F5401080068;
-        Tue, 23 Feb 2021 12:56:25 -0500 (EST)
-Date:   Tue, 23 Feb 2021 19:56:22 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
+        id S232634AbhBWSDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 13:03:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231591AbhBWSDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 13:03:20 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA35C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 10:02:39 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id v22so26806477edx.13
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 10:02:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ihUqmwv5OUTw6FUqci8+zxRKSb2yydjUEvfAwAIVMD8=;
+        b=gaIilBJixyJej3tmSFQvuHapLjMwWpwwlXO2OABS+rj4OZj15H4nsw+KD2KEwxoNqM
+         lbsHwUHk5UP0dCUskjNrwEoyz/7lS5GEVn4an6JHwAWjGmMYysoCzNXG2ybS9NZvaCIK
+         Nj5SaHsFB5RFatNn7sKXxVSTHrQ6S0toEHNOO/3htmBQDkNpqKnRsgDNxgLJissiFpty
+         sy3I9wLz+Sp8ba2NkoHc5rW8VWW9enf+n92W60KyojIu6tpQsE3loZoAhUedYA5QGbuw
+         Bb2GRcNdbR99C5y/3m3+jHe7Jd9UrMLxiKHsr1hUPcHLV4pb+rII/6iZJ2N91jYSlkft
+         Trng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ihUqmwv5OUTw6FUqci8+zxRKSb2yydjUEvfAwAIVMD8=;
+        b=Q91qgqfvZz4xLwuY7abyKgBnNWTRE1uCkDk1OuqdC16F8uk1ETQdKS60GOlyHA1NYH
+         76ASQokCzY9BIACqW+gb0dZrIPqUddVNBSWE5zmdKkY3zrfbCt9Uk95c21VgEtdZdfPh
+         SwbntvgLXPCZ47KkuJAnu2qDD4scU/MLgBDPM7U9Yync/wWqa3AzasHfFqQ7h6zQI0NW
+         Z3gK7WgxSe2KIYOQcGSsU0LucZiO7jJsq6k2ACrV48C+NOzUGiKQl4XFNqDfdMB2KdQp
+         NCW2y6P0/sCjQFyZqBnKp2yTXBr96E6wS1YEouZ07/8F0SuK2jPDD9gEYmQ/cHnHcsBG
+         S2eA==
+X-Gm-Message-State: AOAM53155Ono4nlLw+Y5cJEBCfkWXsfmH1OjGs3P0ZMYzXScO68S45sv
+        PjweHSRTFwKnVdjbf3iHAvc=
+X-Google-Smtp-Source: ABdhPJwhdY/HzhzPlQQywU4W5MDBrMJm1RzRty7TCzUMB1e/MD1dPEp4y+BhCPdP+/km2VPj+m6y+w==
+X-Received: by 2002:aa7:d817:: with SMTP id v23mr15287682edq.257.1614103358534;
+        Tue, 23 Feb 2021 10:02:38 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id k27sm13710774eje.67.2021.02.23.10.02.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 10:02:37 -0800 (PST)
+Date:   Tue, 23 Feb 2021 20:02:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
 Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
         Roopa Prabhu <roopa@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
 Subject: Re: Timing of host-joined bridge multicast groups with switchdev
-Message-ID: <YDVBxrkYOtlmO1bn@shredder.lan>
+Message-ID: <20210223180236.e2ggiuxhr5aaayx5@skbuf>
 References: <20210223173753.vrlxhnj5rtvd6i6g@skbuf>
+ <YDVBxrkYOtlmO1bn@shredder.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210223173753.vrlxhnj5rtvd6i6g@skbuf>
+In-Reply-To: <YDVBxrkYOtlmO1bn@shredder.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 07:37:53PM +0200, Vladimir Oltean wrote:
-> Hi,
-> 
-> I have udhcpcd in my system and this is configured to bring interfaces
-> up as soon as they are created.
-> 
-> I create a bridge as follows:
-> 
-> ip link add br0 type bridge
-> 
-> As soon as I create the bridge and udhcpcd brings it up, I have some
-> other crap (avahi) that starts sending some random IPv6 packets to
-> advertise some local services, and from there, the br0 bridge joins the
-> following IPv6 groups:
-> 
-> 33:33:ff:6d:c1:9c vid 0
-> 33:33:00:00:00:6a vid 0
-> 33:33:00:00:00:fb vid 0
-> 
-> br_dev_xmit
-> -> br_multicast_rcv
->    -> br_ip6_multicast_add_group
->       -> __br_multicast_add_group
->          -> br_multicast_host_join
->             -> br_mdb_notify
-> 
-> This is all fine, but inside br_mdb_notify we have br_mdb_switchdev_host
-> hooked up, and switchdev will attempt to offload the host joined groups
-> to an empty list of ports. Of course nobody offloads them.
-> 
-> Then when we add a port to br0:
-> 
-> ip link set swp0 master br0
-> 
-> the bridge doesn't replay the host-joined MDB entries from br_add_if ->
-> new_nbp -> br_multicast_add_port (should it?), and eventually the host
-> joined addresses expire, and a switchdev notification for deleting it is
-> emitted, but surprise, the original addition was already completely missed.
-> 
-> What to do?
+On Tue, Feb 23, 2021 at 07:56:22PM +0200, Ido Schimmel wrote:
+> For route offload you get a dump of all the existing routes when you
+> register your notifier. It's a bit different with bridge because you
+> don't care about existing bridges when you just initialize your driver.
+>
+> We had a similar issue with VXLAN because its FDB can be populated and
+> only then attached to a bridge that you offload. Check
+> vxlan_fdb_replay(). Probably need to introduce something similar for
+> FDB/MDB entries.
 
-For route offload you get a dump of all the existing routes when you
-register your notifier. It's a bit different with bridge because you
-don't care about existing bridges when you just initialize your driver.
+So you would be in favor of a driver-voluntary 'pull' type of approach
+at bridge join, instead of the bridge 'pushing' the addresses?
 
-We had a similar issue with VXLAN because its FDB can be populated and
-only then attached to a bridge that you offload. Check
-vxlan_fdb_replay(). Probably need to introduce something similar for
-FDB/MDB entries.
+That's all fine, except when we'll have more than 3 switchdev drivers,
+how do we expect to manage all this complexity duplicated in many places
+in the kernel, instead of having it in a central place? Are there corner
+cases I'm missing which make the 'push' approach impractical?
