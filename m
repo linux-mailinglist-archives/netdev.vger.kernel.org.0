@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 401D33234C5
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 02:19:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA3F03234CA
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 02:20:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232196AbhBXAxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 19:53:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56800 "EHLO mail.kernel.org"
+        id S231143AbhBXA4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 19:56:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234614AbhBXABP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 19:01:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E76C764E77;
-        Tue, 23 Feb 2021 23:39:53 +0000 (UTC)
+        id S234982AbhBXAbM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 19:31:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E24D764DAF;
+        Tue, 23 Feb 2021 23:46:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614123594;
-        bh=tTZ/bZfZ1LiZRUVLp/EMgjoQcRk0sLlrhgGCi5XrP+o=;
+        s=k20201202; t=1614123969;
+        bh=YpnspKf25v9kzFrBwfaJ6e6sH4o+qxbqGQg+T9/x7J0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CpegEcMdn06FembUEVmFaX4D3fZKNfA3GYNRLM046DpOnwmUJR+m/jD0/DqpDYCVP
-         FK6JDrV2968UJTGAgNBY28Z3LWG6Z3wFYZQqVy8A388YbmD+ziez30CH+fs3fHvkh+
-         V3D4TWwmk73hzeaSMR62lPhDzAdsWpd7ufFiiRgL6rHhn9paMUaT4Vm7fb9VUu8Hlr
-         6/V3CL5a9/LzADuMmX558yImAIrToSyLZ65WVXeKPl86dji7LKCeTbWFM4zhmea0Qo
-         IOAaj8YOZiQmmx/j82eQUjlAaVEIj3MZHKPCE6WDbe4ZXiSI/9gup459lKUfYCXAJd
-         QjizBAxCY7wuQ==
-Date:   Tue, 23 Feb 2021 15:39:51 -0800
+        b=saEOfLk6BF5SgtZzQzfxddA2ZW4SVPmT0VuNs3Iy8EVEEvMj0A2S0wKfKMXtNT0IG
+         0jTvBSndMVZfLJcrPfSE93UETOLfdSsnxT7qR2F7BvHpHPSqhnmzO2pmlMDKR5LLKH
+         9LN5qswjsPGWpuVrRl0a3ayoHtW3GnA/UngUFzFbrbqI8uw1gN6ACXN7ecQyQNl/zX
+         Tt66phBbx0L85+fqLm3uQAzK72IcEBPKTJHzHTliQGdYAoLR72a+sPiImD6lSDktjg
+         Ko+SaKyWu0fNSleXOkWTzhwlkF8EmBYsOLuICfxwrKk65WWUzZQg7+M9LxK27s/YUX
+         LaiR3eQU45lTg==
+Date:   Tue, 23 Feb 2021 15:46:05 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Takeshi Misawa <jeliantsurux@gmail.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: qrtr: Fix memory leak in qrtr_tun_open
-Message-ID: <20210223153944.72558409@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210221234427.GA2140@DESKTOP>
-References: <20210221234427.GA2140@DESKTOP>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        cforno12@linux.ibm.com, davem@davemloft.net,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ibmveth: Switch to using the new API kobj_to_dev()
+Message-ID: <20210223154605.3a658f4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1613980941-45992-1-git-send-email-yang.lee@linux.alibaba.com>
+References: <1613980941-45992-1-git-send-email-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -40,37 +41,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Feb 2021 08:44:27 +0900 Takeshi Misawa wrote:
-> If qrtr_endpoint_register() failed, tun is leaked.
-> Fix this, by freeing tun in error path.
+On Mon, 22 Feb 2021 16:02:21 +0800 Yang Li wrote:
+> fixed the following coccicheck:
+> ./drivers/net/ethernet/ibm/ibmveth.c:1805:51-52: WARNING opportunity for
+> kobj_to_dev()
 > 
-> syzbot report:
-> BUG: memory leak
-> unreferenced object 0xffff88811848d680 (size 64):
->   comm "syz-executor684", pid 10171, jiffies 4294951561 (age 26.070s)
->   hex dump (first 32 bytes):
->     80 dd 0a 84 ff ff ff ff 00 00 00 00 00 00 00 00  ................
->     90 d6 48 18 81 88 ff ff 90 d6 48 18 81 88 ff ff  ..H.......H.....
->   backtrace:
->     [<0000000018992a50>] kmalloc include/linux/slab.h:552 [inline]
->     [<0000000018992a50>] kzalloc include/linux/slab.h:682 [inline]
->     [<0000000018992a50>] qrtr_tun_open+0x22/0x90 net/qrtr/tun.c:35
->     [<0000000003a453ef>] misc_open+0x19c/0x1e0 drivers/char/misc.c:141
->     [<00000000dec38ac8>] chrdev_open+0x10d/0x340 fs/char_dev.c:414
->     [<0000000079094996>] do_dentry_open+0x1e6/0x620 fs/open.c:817
->     [<000000004096d290>] do_open fs/namei.c:3252 [inline]
->     [<000000004096d290>] path_openat+0x74a/0x1b00 fs/namei.c:3369
->     [<00000000b8e64241>] do_filp_open+0xa0/0x190 fs/namei.c:3396
->     [<00000000a3299422>] do_sys_openat2+0xed/0x230 fs/open.c:1172
->     [<000000002c1bdcef>] do_sys_open fs/open.c:1188 [inline]
->     [<000000002c1bdcef>] __do_sys_openat fs/open.c:1204 [inline]
->     [<000000002c1bdcef>] __se_sys_openat fs/open.c:1199 [inline]
->     [<000000002c1bdcef>] __x64_sys_openat+0x7f/0xe0 fs/open.c:1199
->     [<00000000f3a5728f>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->     [<000000004b38b7ec>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Fixes: 28fb4e59a47d ("net: qrtr: Expose tunneling endpoint to user space")
-> Reported-by: syzbot+5d6e4af21385f5cfc56a@syzkaller.appspotmail.com
-> Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Applied, thanks!
+# Form letter - net-next is closed
+
+We have already sent the networking pull request for 5.12 and therefore
+net-next is closed for new drivers, features, code refactoring and
+optimizations. We are currently accepting bug fixes only.
+
+Please repost when net-next reopens after 5.12-rc1 is cut.
+
+Look out for the announcement on the mailing list or check:
+http://vger.kernel.org/~davem/net-next.html
+
+RFC patches sent for review only are obviously welcome at any time.
