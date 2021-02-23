@@ -2,154 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C95FF322CDD
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 15:52:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F158E322D0E
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 16:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232698AbhBWOwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 09:52:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25615 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232457AbhBWOvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 09:51:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614091827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M2OsuZx3r6NZflw0QWxaOyg4KYFKBmW4S9BSyB7K63o=;
-        b=JwguBFUTcrY0aVN5hCIZFKnIkTfMN4G8zKVhl9iilXvn9dREjywr8vbiBAvpzztPJpyQUa
-        RXCSIMZOV/pAlA/JV2TISxC0ckOA+LXRhQpi/iqRT13JTfGR7xh1MvEdmQmuvEXLRLmWSs
-        duE6gHh+nAGFt9mE9JwQBv2wrOtQaSM=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-430-ey1vSwHfPJ-UDIJwUPdLPA-1; Tue, 23 Feb 2021 09:50:21 -0500
-X-MC-Unique: ey1vSwHfPJ-UDIJwUPdLPA-1
-Received: by mail-wr1-f72.google.com with SMTP id d10so7391373wrq.17
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 06:50:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M2OsuZx3r6NZflw0QWxaOyg4KYFKBmW4S9BSyB7K63o=;
-        b=VsFtX4tWyh2bTe8Vu941MEba/u1+ZkEW0+EY6rPaT8ECUHxPGfvs6tc07gWDy4JdnH
-         pocup0qb5BVl9Q9OIJHylGXXp5ANDBAD43qzd5Hn0si799eE//3DnPu2WPAFwrBgpimm
-         ewSMLm6J+vhpsuL7s9slgr7hprBlEzNe9tNYVtyKQvO86+uVzriNiMCX/mtHDlcUb77l
-         mn64h9yvTZfFCVAv8PKwTnd70HGYY6BkEuHZ+UuNrncsAdcJIidRbO5n+omFcVGgsL8p
-         liYiGjfwerA/DRW7BJ4dAhrLV3daGhu5lOIK/inXV694h+JXAaefP3rDrK1NGMPECgbl
-         FTNA==
-X-Gm-Message-State: AOAM533sNx9JPNsWrs4tc52ZJHlbLKH9qq0Rp4o/8A40a+fsXfnizsWO
-        Mb9t6lCZNYpvAepFqkXDCOh5z2ToDdUiT2lKaaA1gXJIkG3LPc2Ju1+WIQ5Z8UrMhhIWg60UMxh
-        w7kZvX4B5XuBC9kU1
-X-Received: by 2002:a1c:98c2:: with SMTP id a185mr9344418wme.72.1614091819959;
-        Tue, 23 Feb 2021 06:50:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz9tKk0w/iRNRhb7cnm0SfH7twj8rmJO83bREpU9MxKNF6QINjG5A2hMiz9ZZMxEqXDfAr0og==
-X-Received: by 2002:a1c:98c2:: with SMTP id a185mr9344394wme.72.1614091819741;
-        Tue, 23 Feb 2021 06:50:19 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id o15sm2891607wmh.39.2021.02.23.06.50.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 06:50:19 -0800 (PST)
-Date:   Tue, 23 Feb 2021 15:50:16 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v5 00/19] virtio/vsock: introduce SOCK_SEQPACKET
- support
-Message-ID: <20210223145016.ddavx6fihq4akdim@steredhat>
-References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
- <20210222142311.gekdd7gsm33wglos@steredhat>
+        id S232542AbhBWPB7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 23 Feb 2021 10:01:59 -0500
+Received: from mga09.intel.com ([134.134.136.24]:14743 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229886AbhBWPB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 10:01:57 -0500
+IronPort-SDR: Y5BPblMfp7qeqVsbJp7nBR2SXs+fx8uAM9lNACv8WwXHb+TL6zvlc2O9wWgEZ/5lGiPJ4IsUa3
+ b9dSjfrCLotg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9903"; a="184942248"
+X-IronPort-AV: E=Sophos;i="5.81,200,1610438400"; 
+   d="scan'208";a="184942248"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2021 07:01:16 -0800
+IronPort-SDR: cLSPmfNHa3iCizbtV7UOseFOoudYwdiCxvO85reXnvsywvIYGA+JUrBUTt0rVh1EXVVt1T47b2
+ k44ICC7O9TeQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,200,1610438400"; 
+   d="scan'208";a="390920095"
+Received: from irsmsx602.ger.corp.intel.com ([163.33.146.8])
+  by fmsmga008.fm.intel.com with ESMTP; 23 Feb 2021 07:01:15 -0800
+Received: from irsmsx604.ger.corp.intel.com (163.33.146.137) by
+ irsmsx602.ger.corp.intel.com (163.33.146.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 23 Feb 2021 15:01:15 +0000
+Received: from irsmsx604.ger.corp.intel.com ([163.33.146.137]) by
+ IRSMSX604.ger.corp.intel.com ([163.33.146.137]) with mapi id 15.01.2106.002;
+ Tue, 23 Feb 2021 15:01:15 +0000
+From:   "Loftus, Ciara" <ciara.loftus@intel.com>
+To:     "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "bjorn@kernel.org" <bjorn@kernel.org>,
+        "Janjua, Weqaar A" <weqaar.a.janjua@intel.com>
+Subject: RE: [PATCH bpf-next v2 2/4] selftests/bpf: expose and rename debug
+ argument
+Thread-Topic: [PATCH bpf-next v2 2/4] selftests/bpf: expose and rename debug
+ argument
+Thread-Index: AQHXCdQCvMz9NzUmjUC1UzIZ5SACraplz8WAgAAFUHA=
+Date:   Tue, 23 Feb 2021 15:01:14 +0000
+Message-ID: <8d52ed42f94346889fb0b5534d123a39@intel.com>
+References: <20210223103507.10465-1-ciara.loftus@intel.com>
+ <20210223103507.10465-3-ciara.loftus@intel.com>
+ <20210223143939.GA51139@ranger.igk.intel.com>
+In-Reply-To: <20210223143939.GA51139@ranger.igk.intel.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [163.33.253.164]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210222142311.gekdd7gsm33wglos@steredhat>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 22, 2021 at 03:23:11PM +0100, Stefano Garzarella wrote:
->Hi Arseny,
->
->On Thu, Feb 18, 2021 at 08:33:44AM +0300, Arseny Krasnov wrote:
->>	This patchset impelements support of SOCK_SEQPACKET for virtio
->>transport.
->>	As SOCK_SEQPACKET guarantees to save record boundaries, so to
->>do it, two new packet operations were added: first for start of record
->>and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
->>both operations carries metadata - to maintain boundaries and payload
->>integrity. Metadata is introduced by adding special header with two
->>fields - message count and message length:
->>
->>	struct virtio_vsock_seq_hdr {
->>		__le32  msg_cnt;
->>		__le32  msg_len;
->>	} __attribute__((packed));
->>
->>	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
->>packets(buffer of second virtio descriptor in chain) in the same way as
->>data transmitted in RW packets. Payload was chosen as buffer for this
->>header to avoid touching first virtio buffer which carries header of
->>packet, because someone could check that size of this buffer is equal
->>to size of packet header. To send record, packet with start marker is
->>sent first(it's header contains length of record and counter), then
->>counter is incremented and all data is sent as usual 'RW' packets and
->>finally SEQ_END is sent(it also carries counter of message, which is
->>counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
->>incremented again. On receiver's side, length of record is known from
->>packet with start record marker. To check that no packets were dropped
->>by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
->>checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
->>1) and length of data between two markers is compared to length in
->>SEQ_BEGIN header.
->>	Now as  packets of one socket are not reordered neither on
->>vsock nor on vhost transport layers, such markers allows to restore
->>original record on receiver's side. If user's buffer is smaller that
->>record length, when all out of size data is dropped.
->>	Maximum length of datagram is not limited as in stream socket,
->>because same credit logic is used. Difference with stream socket is
->>that user is not woken up until whole record is received or error
->>occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
->>	Tests also implemented.
->
->I reviewed the first part (af_vsock.c changes), tomorrow I'll review 
->the rest. That part looks great to me, only found a few minor issues.
+> 
+> On Tue, Feb 23, 2021 at 10:35:05AM +0000, Ciara Loftus wrote:
+> > Launching xdpxceiver with -D enables what was formerly know as 'debug'
+> > mode. Rename this mode to 'dump-pkts' as it better describes the
+> > behavior enabled by the option. New usage:
+> >
+> > ./xdpxceiver .. -D
+> > or
+> > ./xdpxceiver .. --dump-pkts
+> >
+> > Also make it possible to pass this flag to the app via the test_xsk.sh
+> > shell script like so:
+> >
+> > ./test_xsk.sh -D
+> 
+> This doesn't work for me. Not a shell programming expert, but seems like
+> my shell doesn't understand that dump-pkts is a variable.
+> 
+> $ sudo ./test_xsk.sh -D
+> ./test_xsk.sh: line 82: dump-pkts=1: command not found
+> 
+> If I do:
+> 
+> diff --git a/tools/testing/selftests/bpf/test_xsk.sh
+> b/tools/testing/selftests/bpf/test_xsk.sh
+> index cb8a9e5c34ff..378720e22877 100755
+> --- a/tools/testing/selftests/bpf/test_xsk.sh
+> +++ b/tools/testing/selftests/bpf/test_xsk.sh
+> @@ -79,7 +79,7 @@ do
+>         case "${flag}" in
+>                 c) colorconsole=1;;
+>                 v) verbose=1;;
+> -               D) dump-pkts=1;;
+> +               D) dump_pkts=1;;
+>         esac
+>  done
+> 
+> @@ -136,7 +136,7 @@ if [[ $verbose -eq 1 ]]; then
+>         VERBOSE_ARG="-v"
+>  fi
+> 
+> -if [[ $dump-pkts -eq 1 ]]; then
+> +if [[ $dump_pkts -eq 1 ]]; then
+>         DUMP_PKTS_ARG="-D"
+>  fi
+> 
+> Then it's fine.
 
-I revieiwed the rest of it as well, left a few minor comments, but I 
-think we're well on track.
+Thanks for catching this Maciej. My shell didn't complain like yours, however with this naming the flag wasn't propagating to the app for me.
+Switching to 'dump_pkts' as you suggested solves both problems, so I'll update that in the v3.
 
-I'll take a better look at the specification patch tomorrow.
-
-Thanks,
-Stefano
-
->
->In the meantime, however, I'm getting a doubt, especially with regard 
->to other transports besides virtio.
->
->Should we hide the begin/end marker sending in the transport?
->
->I mean, should the transport just provide a seqpacket_enqueue() 
->callbacl?
->Inside it then the transport will send the markers. This is because 
->some transports might not need to send markers.
->
->But thinking about it more, they could actually implement stubs for 
->that calls, if they don't need to send markers.
->
->So I think for now it's fine since it allows us to reuse a lot of 
->code, unless someone has some objection.
->
->Thanks,
->Stefano
->
-
+> 
+> >
+> > Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+> > ---
+> >  tools/testing/selftests/bpf/test_xsk.sh    | 7 ++++++-
+> >  tools/testing/selftests/bpf/xdpxceiver.c   | 6 +++---
+> >  tools/testing/selftests/bpf/xsk_prereqs.sh | 3 ++-
+> >  3 files changed, 11 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/test_xsk.sh
+> b/tools/testing/selftests/bpf/test_xsk.sh
+> > index 91127a5be90d..870ae3f38818 100755
+> > --- a/tools/testing/selftests/bpf/test_xsk.sh
+> > +++ b/tools/testing/selftests/bpf/test_xsk.sh
+> > @@ -74,11 +74,12 @@
+> >
+> >  . xsk_prereqs.sh
+> >
+> > -while getopts "cv" flag
+> > +while getopts "cvD" flag
+> >  do
+> >  	case "${flag}" in
+> >  		c) colorconsole=1;;
+> >  		v) verbose=1;;
+> > +		D) dump-pkts=1;;
+> >  	esac
+> >  done
+> >
+> > @@ -135,6 +136,10 @@ if [[ $verbose -eq 1 ]]; then
+> >  	VERBOSE_ARG="-v"
+> >  fi
+> >
+> > +if [[ $dump-pkts -eq 1 ]]; then
+> > +	DUMP_PKTS_ARG="-D"
+> > +fi
+> > +
+> >  test_status $retval "${TEST_NAME}"
+> >
+> >  ## START TESTS
+> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c
+> b/tools/testing/selftests/bpf/xdpxceiver.c
+> > index 8af746c9a6b6..506423201197 100644
+> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
+> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
+> > @@ -58,7 +58,7 @@
+> >   * - Rx thread verifies if all 10k packets were received and delivered in-
+> order,
+> >   *   and have the right content
+> >   *
+> > - * Enable/disable debug mode:
+> > + * Enable/disable packet dump mode:
+> >   * --------------------------
+> >   * To enable L2 - L4 headers and payload dump of each packet on STDOUT,
+> add
+> >   * parameter -D to params array in test_xsk.sh, i.e. params=("-S" "-D")
+> > @@ -340,7 +340,7 @@ static struct option long_options[] = {
+> >  	{"copy", no_argument, 0, 'c'},
+> >  	{"tear-down", no_argument, 0, 'T'},
+> >  	{"bidi", optional_argument, 0, 'B'},
+> > -	{"debug", optional_argument, 0, 'D'},
+> > +	{"dump-pkts", optional_argument, 0, 'D'},
+> >  	{"verbose", no_argument, 0, 'v'},
+> >  	{"tx-pkt-count", optional_argument, 0, 'C'},
+> >  	{0, 0, 0, 0}
+> > @@ -359,7 +359,7 @@ static void usage(const char *prog)
+> >  	    "  -c, --copy           Force copy mode\n"
+> >  	    "  -T, --tear-down      Tear down sockets by repeatedly recreating
+> them\n"
+> >  	    "  -B, --bidi           Bi-directional sockets test\n"
+> > -	    "  -D, --debug          Debug mode - dump packets L2 - L5\n"
+> > +	    "  -D, --dump-pkts      Dump packets L2 - L5\n"
+> >  	    "  -v, --verbose        Verbose output\n"
+> >  	    "  -C, --tx-pkt-count=n Number of packets to send\n";
+> >  	ksft_print_msg(str, prog);
+> > diff --git a/tools/testing/selftests/bpf/xsk_prereqs.sh
+> b/tools/testing/selftests/bpf/xsk_prereqs.sh
+> > index ef8c5b31f4b6..da93575d757a 100755
+> > --- a/tools/testing/selftests/bpf/xsk_prereqs.sh
+> > +++ b/tools/testing/selftests/bpf/xsk_prereqs.sh
+> > @@ -128,5 +128,6 @@ execxdpxceiver()
+> >  			copy[$index]=${!current}
+> >  		done
+> >
+> > -	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]} -C
+> ${NUMPKTS} ${VERBOSE_ARG}
+> > +	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]} -C
+> ${NUMPKTS} ${VERBOSE_ARG} \
+> > +		${DUMP_PKTS_ARG}
+> >  }
+> > --
+> > 2.17.1
+> >
