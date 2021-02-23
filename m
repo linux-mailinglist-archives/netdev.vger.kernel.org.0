@@ -2,106 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D313233F4
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 23:54:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7938F323428
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 00:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233007AbhBWWv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 17:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232557AbhBWWpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 17:45:43 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D46C061574;
-        Tue, 23 Feb 2021 14:45:02 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id x129so5055011pfx.7;
-        Tue, 23 Feb 2021 14:45:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MyScsstJI7ORQOgqP6jBg1h7EBbGtNB6RuazO9OfwkU=;
-        b=OEXb/WGjobugc309Or9PdWZVhp5uGvGlbm2ED5T+DjGR6re/DwMbaWD4DDfQh7OouY
-         33KIbGfPZVUvEubuc+DGSmhEhYjaEQW4uvWjcZ8dISEOlFGQiP3GtlnQPfhBJK6U6A14
-         HR55xrJeV/6FN4SDetad5Knpf1fp6XGUihWBu3gbKyL5HIYziLbsvlk1DKhgTe6c1WAr
-         1BDTRjId02eDRj6qeeqes+nUQRPQE2w4nDqPy6YIiJJMqKRgIzBxig/1Bi3fCpQ6Pua5
-         gfWFWvqa74PCl2iBvkHf/xW8o9XonekEakttMtWnvTOzrbJANVvdu/lzZAyemC1LRnKy
-         wHcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MyScsstJI7ORQOgqP6jBg1h7EBbGtNB6RuazO9OfwkU=;
-        b=GhePjPhl7IWtB0drcT0hJb7SssGySjEAmVsgbR6femSJske6QhoVruxompmocRlCam
-         cWT6aWZBC7e9LzFN/L0Gx1JG0KVjAZjsAvtkfNUpm8+J/cnHI/5EOwfGNLHuT4vzMClK
-         IW25w2b0A2P9ZTCyKdL1MDBMeBDW/5mtekPHq9E3YWsW1mXSFbhGVdt+sOQPjSaRp/Re
-         e0gwxZNT/WgKuiGr5GgfWfHPYfELC3ygZ/R4MCL/lEAl/CiZBLN4NLTWvWIIhACP3cRI
-         r7MHOF0/+6GJtU6N3vGa4q/Jbcxz4bWfQkh8DHi1yden6uOsaAY4KrqW0konBFZtTJaE
-         ylwA==
-X-Gm-Message-State: AOAM532G/pQdNPPZn1BjgDwxj4Dtez5EZcvlEEJggH8dnGZUQZ5Q/5PK
-        5iU39GTWNHljbEffRfotlzWwoiIxutvPXhuezGY=
-X-Google-Smtp-Source: ABdhPJwkiV0/WkoW/7VZvUXBrMpMorE095G2RrRzoqHNL1SBzSSoYk+J7z6PYenGvCrfvCuWkTTLKTNaBoWIyTsdQjE=
-X-Received: by 2002:a63:c74b:: with SMTP id v11mr10090081pgg.336.1614120301268;
- Tue, 23 Feb 2021 14:45:01 -0800 (PST)
-MIME-Version: 1.0
-References: <00000000000056c3e005b82689d1@google.com> <000000000000d8369805bc01fe68@google.com>
-In-Reply-To: <000000000000d8369805bc01fe68@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 23 Feb 2021 14:44:50 -0800
-Message-ID: <CAM_iQpVOyYGoWdEkZ62yYRoK0G+xEPqYBod2=8QOu9d8X3-c1w@mail.gmail.com>
-Subject: Re: general protection fault in xfrm_user_rcv_msg_compat
-To:     syzbot <syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        id S233657AbhBWXSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 18:18:20 -0500
+Received: from mo-csw1115.securemx.jp ([210.130.202.157]:51864 "EHLO
+        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233789AbhBWXOX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 18:14:23 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1115) id 11NNBZvb015639; Wed, 24 Feb 2021 08:11:35 +0900
+X-Iguazu-Qid: 2wGqzdZmdWlkl6DMhf
+X-Iguazu-QSIG: v=2; s=0; t=1614121895; q=2wGqzdZmdWlkl6DMhf; m=UNlr817M4TvvIjBZ8CwXvC0NvBivXhmHbbpNKdPAmwU=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1111) id 11NNBXDv000778
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 24 Feb 2021 08:11:34 +0900
+Received: from enc01.toshiba.co.jp (enc01.toshiba.co.jp [106.186.93.100])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by imx2-a.toshiba.co.jp (Postfix) with ESMTPS id BA2AC100096;
+        Wed, 24 Feb 2021 08:11:33 +0900 (JST)
+Received: from hop001.toshiba.co.jp ([133.199.164.63])
+        by enc01.toshiba.co.jp  with ESMTP id 11NNBXDC009419;
+        Wed, 24 Feb 2021 08:11:33 +0900
+Date:   Wed, 24 Feb 2021 08:11:20 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Hulk Robot <hulkci@huawei.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] net: stmmac: Fix missing spin_lock_init in
+ visconti_eth_dwmac_probe()
+X-TSB-HOP: ON
+Message-ID: <20210223231120.cwjwihml4zu2qnau@toshiba.co.jp>
+References: <20210223104803.4047281-1-weiyongjun1@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210223104803.4047281-1-weiyongjun1@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 6:55 AM syzbot
-<syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com> wrote:
->
-> syzbot has found a reproducer for the following issue on:
->
-> HEAD commit:    a99163e9 Merge tag 'devicetree-for-5.12' of git://git.kern..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=11a6fccad00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=7a875029a795d230
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5078fc2d7cf37d71de1c
-> userspace arch: i386
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167c1832d00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10214f12d00000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+5078fc2d7cf37d71de1c@syzkaller.appspotmail.com
->
-> general protection fault, probably for non-canonical address 0xe51af2c1f2c7bd20: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: maybe wild-memory-access in range [0x28d7b60f963de900-0x28d7b60f963de907]
-> CPU: 1 PID: 8357 Comm: syz-executor113 Not tainted 5.11.0-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:nla_type include/net/netlink.h:1130 [inline]
-> RIP: 0010:xfrm_xlate32_attr net/xfrm/xfrm_compat.c:404 [inline]
-> RIP: 0010:xfrm_xlate32 net/xfrm/xfrm_compat.c:526 [inline]
-> RIP: 0010:xfrm_user_rcv_msg_compat+0x5e5/0x1070 net/xfrm/xfrm_compat.c:571
+Hi,
 
-Looks like we have to initialize the pointer array to NULL's.
+On Tue, Feb 23, 2021 at 10:48:03AM +0000, Wei Yongjun wrote:
+> The driver allocates the spinlock but not initialize it.
+> Use spin_lock_init() on it to initialize it correctly.
+> 
+> Fixes: b38dd98ff8d0 ("net: stmmac: Add Toshiba Visconti SoCs glue driver")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-diff --git a/net/xfrm/xfrm_compat.c b/net/xfrm/xfrm_compat.c
-index d8e8a11ca845..56fb32f90799 100644
---- a/net/xfrm/xfrm_compat.c
-+++ b/net/xfrm/xfrm_compat.c
-@@ -537,7 +537,7 @@ static struct nlmsghdr
-*xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
- {
-        /* netlink_rcv_skb() checks if a message has full (struct nlmsghdr) */
-        u16 type = h32->nlmsg_type - XFRM_MSG_BASE;
--       struct nlattr *attrs[XFRMA_MAX+1];
-+       struct nlattr *attrs[XFRMA_MAX+1] = {0};
-        struct nlmsghdr *h64;
-        size_t len;
-        int err;
+Thanks for your fix.
+
+Acked-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+> index b7a0c57dfbfb..d23be45a64e5 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+> @@ -218,6 +218,7 @@ static int visconti_eth_dwmac_probe(struct platform_device *pdev)
+>  		goto remove_config;
+>  	}
+>  
+> +	spin_lock_init(&dwmac->lock);
+>  	dwmac->reg = stmmac_res.addr;
+>  	plat_dat->bsp_priv = dwmac;
+>  	plat_dat->fix_mac_speed = visconti_eth_fix_mac_speed;
+> 
+>
+
+Best regards,
+  Nobuhiro
