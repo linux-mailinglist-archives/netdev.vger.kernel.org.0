@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD31A3234B2
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 01:52:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 401D33234C5
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 02:19:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbhBXArY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 19:47:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56786 "EHLO mail.kernel.org"
+        id S232196AbhBXAxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 19:53:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56800 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234615AbhBXABP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234614AbhBXABP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 23 Feb 2021 19:01:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B005A64ED0;
-        Tue, 23 Feb 2021 23:43:51 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E76C764E77;
+        Tue, 23 Feb 2021 23:39:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614123832;
-        bh=SNsZKNr4Bb2ht6/RUX3DxZzTI304h9E/HR1F5juGLTI=;
+        s=k20201202; t=1614123594;
+        bh=tTZ/bZfZ1LiZRUVLp/EMgjoQcRk0sLlrhgGCi5XrP+o=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QciuLl3hVAAgTWm+9Xljpc8gPJ4GL2sFx/1qgWSiJf7J1/5VqAp7z1lGAZg/fy3sy
-         3p+0UJWLeOIxpVcXMNvvGYKMsNQee/sWRMQBLUWkYCMufi3yKwRKz88UMreOZfB1K5
-         A/tP/GTdqNFP8OuEceinz40olToppQc7VpjusSopviz4JTFQJaWsLJpuv627eW240T
-         l+92GACl6F0sgWcGKJKzd2IMk/x8qgawexhEtv1IfYNhSOaEu2x9yjfNy6LeuGS6vU
-         OQY2m+ldWaR+Y6wkC7Hod5SKlLGRxyzSlqbMVwStyyXlEVCzCD3/LjTt3vURgnSbjl
-         UZKz3YLPLClYA==
-Date:   Tue, 23 Feb 2021 15:43:49 -0800
+        b=CpegEcMdn06FembUEVmFaX4D3fZKNfA3GYNRLM046DpOnwmUJR+m/jD0/DqpDYCVP
+         FK6JDrV2968UJTGAgNBY28Z3LWG6Z3wFYZQqVy8A388YbmD+ziez30CH+fs3fHvkh+
+         V3D4TWwmk73hzeaSMR62lPhDzAdsWpd7ufFiiRgL6rHhn9paMUaT4Vm7fb9VUu8Hlr
+         6/V3CL5a9/LzADuMmX558yImAIrToSyLZ65WVXeKPl86dji7LKCeTbWFM4zhmea0Qo
+         IOAaj8YOZiQmmx/j82eQUjlAaVEIj3MZHKPCE6WDbe4ZXiSI/9gup459lKUfYCXAJd
+         QjizBAxCY7wuQ==
+Date:   Tue, 23 Feb 2021 15:39:51 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Cc:     chris.snook@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] atl1c: switch to napi_gro_receive
-Message-ID: <20210223154349.103c34cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210222014045.1425-1-liew.s.piaw@gmail.com>
-References: <20210222014045.1425-1-liew.s.piaw@gmail.com>
+To:     Takeshi Misawa <jeliantsurux@gmail.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: qrtr: Fix memory leak in qrtr_tun_open
+Message-ID: <20210223153944.72558409@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210221234427.GA2140@DESKTOP>
+References: <20210221234427.GA2140@DESKTOP>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,25 +40,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Feb 2021 09:40:45 +0800 Sieng Piaw Liew wrote:
-> Changing to napi_gro_receive() improves efficiency significantly. Tested
-> on Intel Core2-based motherboards and iperf3.
+On Mon, 22 Feb 2021 08:44:27 +0900 Takeshi Misawa wrote:
+> If qrtr_endpoint_register() failed, tun is leaked.
+> Fix this, by freeing tun in error path.
 > 
-> Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+> syzbot report:
+> BUG: memory leak
+> unreferenced object 0xffff88811848d680 (size 64):
+>   comm "syz-executor684", pid 10171, jiffies 4294951561 (age 26.070s)
+>   hex dump (first 32 bytes):
+>     80 dd 0a 84 ff ff ff ff 00 00 00 00 00 00 00 00  ................
+>     90 d6 48 18 81 88 ff ff 90 d6 48 18 81 88 ff ff  ..H.......H.....
+>   backtrace:
+>     [<0000000018992a50>] kmalloc include/linux/slab.h:552 [inline]
+>     [<0000000018992a50>] kzalloc include/linux/slab.h:682 [inline]
+>     [<0000000018992a50>] qrtr_tun_open+0x22/0x90 net/qrtr/tun.c:35
+>     [<0000000003a453ef>] misc_open+0x19c/0x1e0 drivers/char/misc.c:141
+>     [<00000000dec38ac8>] chrdev_open+0x10d/0x340 fs/char_dev.c:414
+>     [<0000000079094996>] do_dentry_open+0x1e6/0x620 fs/open.c:817
+>     [<000000004096d290>] do_open fs/namei.c:3252 [inline]
+>     [<000000004096d290>] path_openat+0x74a/0x1b00 fs/namei.c:3369
+>     [<00000000b8e64241>] do_filp_open+0xa0/0x190 fs/namei.c:3396
+>     [<00000000a3299422>] do_sys_openat2+0xed/0x230 fs/open.c:1172
+>     [<000000002c1bdcef>] do_sys_open fs/open.c:1188 [inline]
+>     [<000000002c1bdcef>] __do_sys_openat fs/open.c:1204 [inline]
+>     [<000000002c1bdcef>] __se_sys_openat fs/open.c:1199 [inline]
+>     [<000000002c1bdcef>] __x64_sys_openat+0x7f/0xe0 fs/open.c:1199
+>     [<00000000f3a5728f>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>     [<000000004b38b7ec>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> Fixes: 28fb4e59a47d ("net: qrtr: Expose tunneling endpoint to user space")
+> Reported-by: syzbot+5d6e4af21385f5cfc56a@syzkaller.appspotmail.com
+> Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
 
-net-next is currently closed (see the note below). Would you mind
-resending this change in a week or two?
-
-
-# Form letter - net-next is closed
-
-We have already sent the networking pull request for 5.12 and therefore
-net-next is closed for new drivers, features, code refactoring and
-optimizations. We are currently accepting bug fixes only.
-
-Please repost when net-next reopens after 5.12-rc1 is cut.
-
-Look out for the announcement on the mailing list or check:
-http://vger.kernel.org/~davem/net-next.html
-
-RFC patches sent for review only are obviously welcome at any time.
+Applied, thanks!
