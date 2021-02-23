@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA0E322465
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 04:03:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1493322471
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 04:05:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231289AbhBWDBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 22:01:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47618 "EHLO mail.kernel.org"
+        id S230088AbhBWDFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 22:05:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48164 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231269AbhBWDBk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Feb 2021 22:01:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 51DC964E02;
-        Tue, 23 Feb 2021 03:00:54 +0000 (UTC)
+        id S229996AbhBWDFO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Feb 2021 22:05:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D368B64E02;
+        Tue, 23 Feb 2021 03:04:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614049255;
-        bh=BM/BvExdZ320QdnWiPWhfUx9Hg67oT8NMu4OlXcckE4=;
+        s=k20201202; t=1614049473;
+        bh=34LaJk3vKn36fNu7mqiE8/9uAxt0QPP06tXPED4djAs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rH8uD2MFNp90oPzOuaCzuyHDv9shc2sXfYAkDUWQMWfDEJ5rHUDt5mdkwFfnIwHqz
-         gZcAjeWgk0H+lf0Dj2VgfJxrTJ+htkPknjBWT6b6pIznAm4z62kghxL9Bdgu4Ug8LR
-         NXGe5PQR3i4aodt6g+ArlS1WYVkIMBGwc5gHth20UwqrV7+QkoSk0Q+WNQfPwWFWC+
-         8PbZdpn75VRaR/h0uMSX76sPcObmTMYe3sqbRU8gnPYsftgKbMZXp4aGDIK+r1yT+H
-         KEctsc8krqeAbIwHS+uWFlQEHVE758iW1/tWaEdK2k/aBj1HJoaA/69m5mHX1IZZ8t
-         rTXrKGQuex3mw==
-Date:   Mon, 22 Feb 2021 19:00:51 -0800
+        b=AnyieTNjG86nuIJ6BfAJQ7ht5i4iCrp5Z6L42eLzJaAzEwvrgpiiRtQ2FpsPaZX5U
+         bA91IW7uCSaVPoCdhPpoTQ2ZZ+dbUKbGf48LCRDFpPKfL7/7n0EZF0bvg/CMuBSQjI
+         PJkxuyAwflSu+37YjbljBjcRc/QnsWIPhLRtyenqmnBN3P+TupQKTX+TDxgJ7+cDcG
+         5QmIglOhbzAqN+eUSF2O0sF+oKk75Sq9bMWj4gtavzWMGXu+sL5FU7vnD5k/KeoRm9
+         bUpmX11tR5pSa4dF8zjRtNHfH5suPVpC0fIua1Awq12kTc/filk9B4dePp0hvMvMH4
+         7PYYO57WIE3OQ==
+Date:   Mon, 22 Feb 2021 19:04:30 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiko Thiery <heiko.thiery@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH 1/1] net: fec: ptp: avoid register access when ipg clock
- is disabled
-Message-ID: <20210222190051.40fdc3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210220065654.25598-1-heiko.thiery@gmail.com>
-References: <20210220065654.25598-1-heiko.thiery@gmail.com>
+To:     Christian Melki <christian.melki@t2data.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: micrel: set soft_reset callback to
+ genphy_soft_reset for KSZ8081
+Message-ID: <20210222190430.12ec4eda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <5eb8b25e-f646-ed3d-8572-9b6ef318ae9e@t2data.com>
+References: <5eb8b25e-f646-ed3d-8572-9b6ef318ae9e@t2data.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,43 +39,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 20 Feb 2021 07:56:55 +0100 Heiko Thiery wrote:
-> When accessing the timecounter register on an i.MX8MQ the kernel hangs.
-> This is only the case when the interface is down. This can be reproduced
-> by reading with 'phc_ctrl eth0 get'.
+On Thu, 18 Feb 2021 22:09:32 +0100 Christian Melki wrote:
+> Following a similar reinstate for the KSZ9031.
 > 
-> Like described in the change in 91c0d987a9788dcc5fe26baafd73bf9242b68900
-> the igp clock is disabled when the interface is down and leads to a
-> system hang.
+> Older kernels would use the genphy_soft_reset if the PHY did not 
+> implement a .soft_reset.
 > 
-> So we check if the ptp clock status before reading the timecounter
-> register.
+> Bluntly removing that default may expose a lot of situations where 
+> various PHYs/board implementations won't recover on various changes.
+> Like with implementation during a 4.9.x to 5.4.x LTS transition.
+> I think it's a good thing to remove unwanted soft resets but wonder if 
+> it did open a can of worms?
 > 
-> Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+> Atleast this fixes one iMX6 FEC/RMII/8081 combo.
+> 
+> Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+> Signed-off-by: Christian Melki <christian.melki@t2data.com>
 
-Please widen the CC list, you should CC Richard on PTP patches.
+Does not apply to net/master:
 
-> diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-> index 2e344aada4c6..c9882083da02 100644
-> --- a/drivers/net/ethernet/freescale/fec_ptp.c
-> +++ b/drivers/net/ethernet/freescale/fec_ptp.c
-> @@ -377,6 +377,9 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
->  	u64 ns;
->  	unsigned long flags;
->  
-> +	/* Check the ptp clock */
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
 
-Comment is rather redundant. Drop it or say _when_ ptp_clk_on may not
-be true.
+Please rebase and resend.
 
-> +	if (!adapter->ptp_clk_on)
-> +		return -EINVAL;
-
-Why is the PTP interface registered when it can't be accessed?
-
-Perhaps the driver should unregister the PTP clock when it's brought
-down?
-
->  	spin_lock_irqsave(&adapter->tmreg_lock, flags);
->  	ns = timecounter_read(&adapter->tc);
->  	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+Please make sure you CC maintainers and other relevant developers 
+(you can use ./scripts/get_maintainers.pl $path_to_patch to find them).
