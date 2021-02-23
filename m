@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E061632248A
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 04:12:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21540322498
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 04:21:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231196AbhBWDKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 22:10:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48894 "EHLO mail.kernel.org"
+        id S230511AbhBWDUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 22:20:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230401AbhBWDKs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Feb 2021 22:10:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4DA7264DEC;
-        Tue, 23 Feb 2021 03:10:08 +0000 (UTC)
+        id S229967AbhBWDUt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Feb 2021 22:20:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 28F7860C3D;
+        Tue, 23 Feb 2021 03:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614049808;
-        bh=GFDduUrTsx2ACIryUkHXjcHfMdUF1sIEE4mEtuc2PDg=;
+        s=k20201202; t=1614050409;
+        bh=3mco/nmxZhGO4nSlNaHUVKL9/laVDET5oCK8N9DMqTU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JLc6argJjPKHcZtC/POEOwgWozk3mq5UZZsk7QyvdxTQNvdGBcISLaMRvk71+gt2M
-         BLIAQbkWZIfBDYsD/y1lHcmNuGar8oFRQvTXk7qEDhj4ke3oKE9rxkl5u3wqgreIOk
-         ucogCMHmoX15rY6os9kN4GydCma43KbxjV0xa7BuXZ7TWN7wYl8/YiLefDJkH9VsHk
-         8zoxp3M2sJjJ+PIQJk1qUN1h885Q+oVPB9UgmM4Ert/u6vMUN5iQ1bs92q8P11Vt97
-         nk91SojAki4Sk3GoHS3sz1OuXFij+xWErCYenMUVS3TEaX4qX9msbOC2hUy6clRcVP
-         aFITffXUBWP5g==
+        b=TisfqqKQtu0iSXtgjxsL42Xr/UcI5vhK7SmqGJqdV0bZq7XVV88OWi7Mwovew7G9Y
+         E6UCIF0yLT1ydR1Jge8lO3VoMHuLz43yWW6J7u3umirgjnG+doeAluwqy3UMfG2HUN
+         7CGYCoOutY+g3phkiQNu7z78V0NnAa9cDTFxqABBOMifzpZmWlPmLVH7CG06G2Ck6m
+         HG+WysnfIykjMGJhVOIj8XUwqFYRLP2T/FqODqatqjHK8T7b+Ea9/Pwoq2hUY1ZzyA
+         YEC7W0OWtb4PYrXIx9HoANBd8mBvhlHCREZ1qjScKimjST7OTSZc3DpgLfh6BpDiv5
+         4EUWOcrNJCzKA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3B102609F4;
-        Tue, 23 Feb 2021 03:10:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1997E60A16;
+        Tue, 23 Feb 2021 03:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] mptcp: a bunch of fixes
+Subject: Re: [PATCH] net/mlx4_core: Add missed mlx4_free_cmd_mailbox()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161404980823.7081.9095170388881116560.git-patchwork-notify@kernel.org>
-Date:   Tue, 23 Feb 2021 03:10:08 +0000
-References: <cover.1613755058.git.pabeni@redhat.com>
-In-Reply-To: <cover.1613755058.git.pabeni@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mptcp@lists.01.org, fw@strlen.de
+Message-Id: <161405040910.12674.6208700420414007006.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Feb 2021 03:20:09 +0000
+References: <20210221143559.390277-1-hslester96@gmail.com>
+In-Reply-To: <20210221143559.390277-1-hslester96@gmail.com>
+To:     Chuhong Yuan <hslester96@gmail.com>
+Cc:     tariqt@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        ogerlitz@mellanox.com, jackm@dev.mellanox.co.il,
+        monis@mellanox.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 19 Feb 2021 18:35:36 +0100 you wrote:
-> This series bundle a few MPTCP fixes for the current net tree.
-> They have been detected via syzkaller and packetdrill
+On Sun, 21 Feb 2021 22:35:59 +0800 you wrote:
+> mlx4_do_mirror_rule() forgets to call mlx4_free_cmd_mailbox() to
+> free the memory region allocated by mlx4_alloc_cmd_mailbox() before
+> an exit.
+> Add the missed call to fix it.
 > 
-> Patch 1 fixes a slow close for orphaned sockets
-> 
-> Patch 2 fixes another hangup at close time, when no
-> data was actually transmitted before close
+> Fixes: 78efed275117 ("net/mlx4_core: Support mirroring VF DMFS rules on both ports")
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/4] mptcp: fix DATA_FIN processing for orphaned sockets
-    https://git.kernel.org/netdev/net/c/341c65242fe1
-  - [net,2/4] mptcp: fix DATA_FIN generation on early shutdown
-    https://git.kernel.org/netdev/net/c/d87903b63e3c
-  - [net,3/4] mptcp: provide subflow aware release function
-    https://git.kernel.org/netdev/net/c/ad98dd37051e
-  - [net,4/4] mptcp: do not wakeup listener for MPJ subflows
-    https://git.kernel.org/netdev/net/c/52557dbc7538
+  - net/mlx4_core: Add missed mlx4_free_cmd_mailbox()
+    https://git.kernel.org/netdev/net/c/8eb65fda4a6d
 
 You are awesome, thank you!
 --
