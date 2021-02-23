@@ -2,160 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F371322B7F
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:32:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74BFA322BB2
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:50:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232917AbhBWNbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 08:31:47 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:55368 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232655AbhBWNbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:31:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1614087105; x=1645623105;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OGj+tzeCAGyt894YZiouuBAdi7Lv7A6Y0JqBHcmsakc=;
-  b=A51rhoizRuT7e4QOih+oj3vtCIx1307gmvvUOTx54fdGW5XI42GGfY7a
-   abcWU3uR2iIqNngfphUD3PP/+3/OKzwDMyfRbCa+i2BA4EwrtrpfsJjzH
-   fmpm+oDWbjRjY07K2/uIpMtv6LWTjRhJFgjNbrxHSEJ/e0HxjdyxA44qV
-   Hf/wnCeCtbFlS/qoOV1Mk43wcOFA3bMUFYXeLo4SHgkmiXTUIBUqmG06X
-   SBf9dzdlEXlp12daBSU3KV2v3A4R8yDvjSHAbQEDIpKPowOluW4TvUGAo
-   wBe21+3MRnYg0xWeA/YjDJJCTH41ZNtNLTiFxs0xh+1zGnH0wgy200NVW
-   g==;
-IronPort-SDR: wvU6xwjI6zz4sV4p+iVwLkelMr5+Bc1X+LDY9qBzzLgSH7C5QSPapPiK2MJ+unLZArsIdwxZ+H
- n49F0sODqeV4XxruirsU0WU7aPzXqfJTdvk4ZIBK+J9gLgM0C8YTAcyKHPaicNPT2RADo/+8pu
- eASR/hDAoM/L5BH2QCdHKRLUgIXKZCPoMn/fVnU9fzVVCheYq6DSc3hysCT60BY8RODrSxxGlN
- +EGaGF/OVsI8qqrCuK7meLCnpFA4JFzHSv+63OfvRnjkRN/ivJbufASwMjkxzVogFsIF+/aHts
- 7b4=
-X-IronPort-AV: E=Sophos;i="5.81,200,1610434800"; 
-   d="scan'208";a="45143412"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Feb 2021 06:30:28 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Feb 2021 06:30:28 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 23 Feb 2021 06:30:28 -0700
-Date:   Tue, 23 Feb 2021 14:30:28 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [RFC PATCH net-next 09/12] Documentation: networking: dsa: add
- paragraph for the MRP offload
-Message-ID: <20210223133028.sem3hykvm5ld2unq@soft-dev3-1.localhost>
-References: <20210221213355.1241450-1-olteanv@gmail.com>
- <20210221213355.1241450-10-olteanv@gmail.com>
- <20210222194626.srj7wwafyzfc355t@soft-dev3.localdomain>
- <20210222202506.27qp2ltdkgmqgmec@skbuf>
+        id S232214AbhBWNuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 08:50:11 -0500
+Received: from smtp12.skoda.cz ([185.50.127.89]:56805 "EHLO smtp12.skoda.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231691AbhBWNuG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 08:50:06 -0500
+X-Greylist: delayed 941 seconds by postgrey-1.27 at vger.kernel.org; Tue, 23 Feb 2021 08:50:04 EST
+DKIM-Signature: v=1; a=rsa-sha256; d=skoda.cz; s=plzenjune2020; c=relaxed/simple;
+        q=dns/txt; i=@skoda.cz; t=1614087219; x=1614692019;
+        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=7ZQDfKGGCiBiEL/pEL2HvZlD/dKwZryjoGshAiR5XAs=;
+        b=e1YNaysN3NTB7yd/jqq0DoqZVevQaa4Em9k1H6WBaz4GSElzLGD848H+HQyziu7u
+        KRuktMpwHq1aJlHGdrL3f2FUC2QzWBtqlNlw85dAand59yryn7JFRVF3Lo2nbEXI
+        zcHFytRQZKfhBCIeRq+jqTJ327sVuwBS8VTDYLkye8Q=;
+X-AuditID: 0a2aa12f-ba1d87000000c140-eb-603504334fbd
+Received: from srv-exch-01.skoda.cz (srv-exch-01.skoda.cz [10.42.11.91])
+        (using TLS with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by smtp12.skoda.cz (Mail Gateway) with SMTP id 11.F0.49472.33405306; Tue, 23 Feb 2021 14:33:39 +0100 (CET)
+Received: from srv-exch-02.skoda.cz (10.42.11.92) by srv-exch-01.skoda.cz
+ (10.42.11.91) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 23 Feb
+ 2021 14:33:39 +0100
+Received: from srv-exch-02.skoda.cz ([fe80::a9b8:e60e:44d3:758d]) by
+ srv-exch-02.skoda.cz ([fe80::a9b8:e60e:44d3:758d%3]) with mapi id
+ 15.01.2176.002; Tue, 23 Feb 2021 14:33:39 +0100
+From:   =?iso-8859-2?Q?Vin=B9_Karel?= <karel.vins@skoda.cz>
+To:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: High (200+) XFRM interface count performance problem (throughput)
+Thread-Topic: High (200+) XFRM interface count performance problem
+ (throughput)
+Thread-Index: AdcJ50F1lPQSKBMETcCSnfXvuoqLXg==
+Date:   Tue, 23 Feb 2021 13:33:39 +0000
+Message-ID: <63259d1978cb4a80889ccec40528ee80@skoda.cz>
+Accept-Language: cs-CZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.42.12.26]
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20210222202506.27qp2ltdkgmqgmec@skbuf>
+X-Brightmail-Tracker: H4sIAAAAAAAAA3VUe0xTZxTnawtcC9+4XF6HjupoNjfR4SgQdTNuMWFxLFvYJlnQOVrgjnb0
+        td6WiSwLoBmOTKJEHW1hFFwlkJiQsrAHPmYFeaiQZTKVZc5ljCJOndTsFZF9ty8uJPvvfL/f
+        +Z3vd84936XEjCdGRmkNFtZsUOsUUVKJNCNm59PZklzVM/1DT24870x+AW3zuVcWoB3SzWWs
+        TlvJmtdvUUk1d1qaok1XondfO2KuQXujGtAKCugc8Dj6ohuQlGLoYyKoOXAUBQ5eBJfnLkYG
+        Dt8gaG0+QdIoKoreBM46Ha9OpDfA+Z7BSD5OoPPBea5Bwqck0q+B63BlICUTbvR3+C+T0E/A
+        gfkaER9jIm264BDzMaLlcPJjH+JjMZ0Ck1NtooA5Gj4/OS4OxElw89eHkYF4Fcz19IgD+Zkw
+        PWqXBOK1cLz9ljhQPx5GbFOSgyjBLihrF0jsAoldIHEiSTeK4/QWU5Yyk6swlqkzS/e4kX/Q
+        7eu/Qqdd5R4kopAH1SNKpEjCl6pyVMwjJcayKo2a0xSbrTqWUyTikYhcFYPDcIlVV6GQYTMi
+        aEIYNbDvczrWQj6mYiX+912likkJc5yVM2lLtUYrV2w164i245i+WKDlrCV6LcdpjQYPAkpM
+        roz6iRTAZeqqPazZGDDiQY9SEkUKPuMlJulytYWtYFkTaw6xR8n3UgD28bbizWw5u/sdrc4S
+        4okwv4sXChl/J3KcfSlLxSQLCUEz6VhpJjqZkF7WjxyjiIiIpRWELYmoFR5Uh6hY0ljBPCmG
+        OZNaz2nLg9YSsHaBoLEh1G8rFa8WkU6YECiwJMcqPRlPcohaZic1YIdZpENWRlE7og7ebO0Q
+        U2cHP+sQMxKD0cDKUvAMfxXNCzRWQ3hmsmRc3Z2tYuIEBO9Nlobt08RwkgBftCd7DHPPEVWq
+        gF3qkOi9Z5VL9YsmZ5GL7CQZips3FUv+D4uTYvAMv4sxQdA/KMAb+cT4ICaYUxrO0fHXBJll
+        YwLsSh17O6xbNKB0IfKSbZFw1emNggbftWj4e2IUQ0v9j3EEq4+HXqcXYLjHlQb/tI3LoXnC
+        sQqGnQ/TYWTg/hqYnP1zHeyzjSnBNty5Fab6b2yFtvFvX4LrF+dfgZnrX7wKbscvBfBz395C
+        aLl7qhDcf/1eCA8m/ygEX9ftN+FIi6MIrp44VwQLdftVMOaYVcNHtWOlMNDXaoTGOo8R7nR9
+        Ypnld0pEdkqh4R8LZ1FbhDs1pFXyOxVEgzu1mX+YTAhcslO3tP6dClL/t1NhOjQtWQ1yFbTm
+        zkR2rr1nOz3lGr2yH73R6/7yw2rlvcv6XvrrvAHfWztf/4CS7sj3JmVsGTwzfarze1XVhXWl
+        d3+rLN6VlQ7H440zsk56vLbx8cbm5/PbmIldedq27vfyXlz4bu529VDnfdOmbuezDz415TdZ
+        M9ZsO7Sh6PAP22sqVj/1cq1t+z65QsJp1FkZYjOn/g8z5pH6VQYAAA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/22/2021 22:25, Vladimir Oltean wrote:
-> 
-Hi Vladimir,
-> Hi Horatiu,
-> 
-> On Mon, Feb 22, 2021 at 08:46:26PM +0100, Horatiu Vultur wrote:
-> > > - Why does ocelot support a single MRP ring if all it does is trap the
-> > >   MRP PDUs to the CPU? What is stopping it from supporting more than
-> > >   one ring?
-> >
-> > So the HW can support to run multiple rings. But to have an initial
-> > basic implementation I have decided to support only one ring. So
-> > basically is just a limitation in the driver.
-> 
-> What should change in the current sw_backup implementation such that
-> multiple rings are supported?
+Hello,
 
-Instead of single mrp_ring_id, mrp_p_port and mrp_s_port is to have a
-list of these. And then when a new MRP instance is added/removed this
-list should be updated. When the role is changed then find the MRP ports
-from this list and put the rules to these ports.
+I would like to ask you for help or advise.
 
-> 
-> > > - Why is listening for SWITCHDEV_OBJ_ID_MRP necessary at all, since it
-> > >   does nothing related to hardware configuration?
-> >
-> > It is listening because it needs to know which ports are part of the
-> > ring. In case you have multiple rings and do forwarding in HW you need
-> > to know which ports are part of which ring. Also in case a MRP frame
-> > will come on a port which is not part of the ring then that frame should
-> > be flooded.
-> 
-> If I understand correctly, you just said below that this is not
-> applicable to the current implementation because it is simplistic enough
-> that it doesn't care what ring role does the application use, because it
-> doesn't attempt to do any forwarding of MRP PDUs at all. If all that
-> there is to do for a port with sw_backup is to add a trapping rule per
-> port (rule which is already added per port), then what extra logic is
-> there to add for the second MRP instance on a different set of 2 ports?
+I'm testing setup with higher number of XFRM interfaces and I'm facing thro=
+ughput degradation with a growing number of created XFRM interfaces - not c=
+oncurrent tunnels established but only XFRM interfaces created - even in DO=
+WN state.
+Issue is only unidirectional - from "client" to "vpn hub". Throughput for t=
+raffic from hub to client is not affected.
 
-Regarding rules nothing should be changed. You just need to know which
-is this new MRP instance so to put the same rules on these 2 ports. And
-you can use the ring_id to determin which MRP instance it is and from
-there you can find the ports.
+XFRM interface created with:
+for i in {1..500}; do link add ipsec$i type xfrm dev ens224 if_id $i  ; don=
+e
 
-> 
-> > > - Why is ocelot_mrp_del_vcap called from both ocelot_mrp_del and from
-> > >   ocelot_mrp_del_ring_role?
-> >
-> > To clean after itself. Lets say a user creates a node and sets it up.
-> > Then when she decides to delete the node, what should happen? Should it
-> > first disable the node and then do the cleaning or just do the cleaning?
-> > This userspace application[1] does the second option but I didn't want
-> > to implement the driver to be specific to this application so I have put
-> > the call in both places.
-> 
-> I was actually thinking that the bridge could clean up after itself and
-> delete the SWITCHDEV_OBJ_ID_RING_ROLE_MRP object.
-> 
-> > > - Why does ocelot not look at the MRM/MRC ring role at all, and it traps
-> > >   all MRP PDUs to the CPU, even those which it could forward as an MRC?
-> > >   I understood from your commit d8ea7ff3995e ("net: mscc: ocelot: Add
-> > >   support for MRP") description that the hardware should be able of
-> > >   forwarding the Test PDUs as a client, however it is obviously not
-> > >   doing that.
-> >
-> > It doesn't look at the role because it doesn't care. Because in both
-> > cases is looking at the sw_backup because it doesn't support any role
-> > completely. Maybe comment was misleading but I have put it under
-> > 'current limitations' meaning that the HW can do that but the driver
-> > doesn't take advantage of that yet. The same applies to multiple rings
-> > support.
-> >
-> > The idea is to remove these limitations in the next patches and
-> > to be able to remove these limitations then the driver will look also
-> > at the role.
-> >
-> > [1] https://github.com/microchip-ung/mrp
-> 
-> By the way, how can Ocelot trap some PDUs to the CPU but forward others?
-> Doesn't it need to parse the MRP TLVs in order to determine whether they
-> are Test packets or something else?
+I'm testing with iperf3 with 1 client connected - from client to hub:
+2 interfaces - 1.36 Gbps
+100 interfaces - 1.35 Gbps
+200 interfaces - 1.19 Gbps
+300 interfaces - 0.98 Gbps
+500 interfaces - 0.71 Gbps
 
-No it doesn't need to do that. Because Test packets are send to dmac
-01:15:4e:00:00:01 while the other ring MRP frames are send to
-01:15:4e:00:00:02. And Ocelot can trap frames based on the dmac.
+Throughput from hub to client is around 1.4 Gbps in all cases.
 
-I will create a patch with these changes when the net-next tree will
-open.
+1 CPU core is 100%
 
--- 
-/Horatiu
+Linux v-hub 5.4.0-65-generic #73-Ubuntu SMP Mon Jan 18 17:25:17 UTC 2021 x8=
+6_64 x86_64 x86_64 GNU/Linux
+
+Thank you.
+
+Regards
+Karel Vins
