@@ -2,390 +2,568 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44F10322B54
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:20:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8364B322B5D
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232611AbhBWNT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 08:19:58 -0500
-Received: from mail.zx2c4.com ([104.131.123.232]:41572 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232538AbhBWNT5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 08:19:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1614086352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ou9kAc/QhWLsV0s8DpM6B9SsiAsQwnou9zz61hwKGn0=;
-        b=ZjpaiJ0PYJRACZCcYN3if/qEnvno4wjn5gjBJq28i9xMuQPPL0Z+ILuKsEjuIJQPlVAgyc
-        wH5XNzoahnB/WtvEJyo+3A9F+FBXWiYo5Pr6DAU8uuZpFDjpIasnPxhaCrnhHL7dxi+xXM
-        /JxKE3nR9en2nrQdk6MiYOEMrQkQK7w=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e0bd8398 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 23 Feb 2021 13:19:12 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, kuba@kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, SinYu <liuxyon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net v5] net: icmp: pass zeroed opts from icmp{,v6}_ndo_send before sending
-Date:   Tue, 23 Feb 2021 14:18:58 +0100
-Message-Id: <20210223131858.72082-1-Jason@zx2c4.com>
-In-Reply-To: <20210222184432.5888c1e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210222184432.5888c1e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S232690AbhBWNY1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 23 Feb 2021 08:24:27 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:46029 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232599AbhBWNY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:24:26 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-109-k6zqsN5wMZe5328MA6hBVg-1; Tue, 23 Feb 2021 08:23:28 -0500
+X-MC-Unique: k6zqsN5wMZe5328MA6hBVg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BEF67107ACF2;
+        Tue, 23 Feb 2021 13:23:25 +0000 (UTC)
+Received: from krava.cust.in.nbox.cz (unknown [10.40.193.171])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A7AF95D9D3;
+        Tue, 23 Feb 2021 13:23:22 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     dwarves@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [RFC] dwarves/pahole: Add test scripts
+Date:   Tue, 23 Feb 2021 14:23:21 +0100
+Message-Id: <20210223132321.220570-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The icmp{,v6}_send functions make all sorts of use of skb->cb, casting
-it with IPCB or IP6CB, assuming the skb to have come directly from the
-inet layer. But when the packet comes from the ndo layer, especially
-when forwarded, there's no telling what might be in skb->cb at that
-point. As a result, the icmp sending code risks reading bogus memory
-contents, which can result in nasty stack overflows such as this one
-reported by a user:
+hi,
+I cleaned up a bit my testing scripts, that I'm using for testing
+btf encoding changes. It's far from ideal and convoluted, but let's
+have discussion if this could be kicked into something useful for
+everybody.
 
-    panic+0x108/0x2ea
-    __stack_chk_fail+0x14/0x20
-    __icmp_send+0x5bd/0x5c0
-    icmp_ndo_send+0x148/0x160
+There are 2 scripts:
+  kernel-objects-build.sh - compiles kernel for several archs and
+                            stores vmlinux and kernel modules
 
-In icmp_send, skb->cb is cast with IPCB and an ip_options struct is read
-from it. The optlen parameter there is of particular note, as it can
-induce writes beyond bounds. There are quite a few ways that can happen
-in __ip_options_echo. For example:
+  kernel-objects-test.sh  - goes through objects stored by ^^^
+                            and runs tests on each of them
 
-    // sptr/skb are attacker-controlled skb bytes
-    sptr = skb_network_header(skb);
-    // dptr/dopt points to stack memory allocated by __icmp_send
-    dptr = dopt->__data;
-    // sopt is the corrupt skb->cb in question
-    if (sopt->rr) {
-        optlen  = sptr[sopt->rr+1]; // corrupt skb->cb + skb->data
-        soffset = sptr[sopt->rr+2]; // corrupt skb->cb + skb->data
-	// this now writes potentially attacker-controlled data, over
-	// flowing the stack:
-        memcpy(dptr, sptr+sopt->rr, optlen);
-    }
+The general idea is that all objects are compiled already with
+BTF debuginfo with available pahole. The test script then:
+  - takes each objects and dumps its current BTF data
+  - then create new BTF data with given pahole binary
+  - dumps the new BTF data and makes the comparison
 
-In the icmpv6_send case, the story is similar, but not as dire, as only
-IP6CB(skb)->iif and IP6CB(skb)->dsthao are used. The dsthao case is
-worse than the iif case, but it is passed to ipv6_find_tlv, which does
-a bit of bounds checking on the value.
+I was thinking about support for comparing 2 pahole binaries,
+but so far that did not fit into my workflow. Normally I have
+latest globally available pahole, which is used to build the
+kernel binaries and then I'm playing with new pahole binary,
+which I'm putting to the test.
 
-This is easy to simulate by doing a `memset(skb->cb, 0x41,
-sizeof(skb->cb));` before calling icmp{,v6}_ndo_send, and it's only by
-good fortune and the rarity of icmp sending from that context that we've
-avoided reports like this until now. For example, in KASAN:
+Example.. prepare vmlinux and modules for all archs:
 
-    BUG: KASAN: stack-out-of-bounds in __ip_options_echo+0xa0e/0x12b0
-    Write of size 38 at addr ffff888006f1f80e by task ping/89
-    CPU: 2 PID: 89 Comm: ping Not tainted 5.10.0-rc7-debug+ #5
-    Call Trace:
-     dump_stack+0x9a/0xcc
-     print_address_description.constprop.0+0x1a/0x160
-     __kasan_report.cold+0x20/0x38
-     kasan_report+0x32/0x40
-     check_memory_region+0x145/0x1a0
-     memcpy+0x39/0x60
-     __ip_options_echo+0xa0e/0x12b0
-     __icmp_send+0x744/0x1700
+        $ ./kernel-objects-build.sh
+        output:  /tmp/pahole.test.nsQ
+        kdir:    /home/jolsa/linux
+        pahole:  /opt/dwarves/bin/pahole
+        objects: /home/jolsa/.pahole_test_objects
 
-Actually, out of the 4 drivers that do this, only gtp zeroed the cb for
-the v4 case, while the rest did not. So this commit actually removes the
-gtp-specific zeroing, while putting the code where it belongs in the
-shared infrastructure of icmp{,v6}_ndo_send.
+        cleanup /home/jolsa/linux
+        ...
 
-This commit fixes the issue by passing an empty IPCB or IP6CB along to
-the functions that actually do the work. For the icmp_send, this was
-already trivial, thanks to __icmp_send providing the plumbing function.
-For icmpv6_send, this required a tiny bit of refactoring to make it
-behave like the v4 case, after which it was straight forward.
+All objects are stored under ~/pahole_test_objects/ directories:
 
-Fixes: a2b78e9b2cac ("sunvnet: generate ICMP PTMUD messages for smaller port MTUs")
-Reported-by: SinYu <liuxyon@gmail.com>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/netdev/CAF=yD-LOF116aHub6RMe8vB8ZpnrrnoTdqhobEx+bvoA8AsP0w@mail.gmail.com/T/
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+        $ ls ~/.pahole_test_objects/
+        aarch64-clang
+        aarch64-gcc
+        powerpc-gcc
+        powerpcle-gcc
+        s390x-gcc
+        x86-clang
+        x86-gcc
+
+Each containing vmlinux and modules:
+
+	$ ls ~/.pahole_test_objects/x86-gcc/
+	efivarfs.ko  iptable_nat.ko  nf_log_arp.ko  nf_log_common.ko  nf_log_ipv4.ko  nf_log_ipv6.ko
+	vmlinux  x86_pkg_temp_thermal.ko  xt_addrtype.ko  xt_LOG.ko  xt_mark.ko  xt_MASQUERADE.ko  xt_nat.ko
+
+Run test on all of them with new './pahole' binary:
+
+        $ ./kernel-objects-test.sh -B ~/linux/tools/bpf/bpftool/bpftool -P ./pahole
+        pahole:  /home/jolsa/pahole/build/pahole
+        bpftool: /home/jolsa/linux/tools/bpf/bpftool/bpftool
+        base:    /tmp/pahole.test.oxv
+        objects: /home/jolsa/.pahole_test_objects
+        fail:    no
+        cleanup: yes
+
+        test_funcs      on /home/jolsa/.pahole_test_objects/aarch64-clang/vmlinux ... OK
+        test_format_c   on /home/jolsa/.pahole_test_objects/aarch64-clang/vmlinux ... OK
+        test_btfdiff    on /home/jolsa/.pahole_test_objects/aarch64-clang/vmlinux ... FAIL
+        test_funcs      on /home/jolsa/.pahole_test_objects/aarch64-clang/8021q.ko ... OK
+        test_format_c   on /home/jolsa/.pahole_test_objects/aarch64-clang/8021q.ko ... OK
+        test_funcs      on /home/jolsa/.pahole_test_objects/aarch64-clang/act_gact.ko ... OK
+        test_format_c   on /home/jolsa/.pahole_test_objects/aarch64-clang/act_gact.ko ... OK
+        ...
+
+There are several options that helps to set other binaries/dirs
+or stop and debug issues.
+
+thoughts?
+
+thanks,
+jirka
+
+
 ---
-Changes v4->v5:
-- Rebased after net-next->net merge.
-Changes v3->v4:
-- More explanation in commit message
-- Pass the right parm parameter to send()
-Changes v2->v3:
-- Fix build errors with CONFIG_IPV6=m
+ kernel-objects-build.sh | 132 +++++++++++++++++++
+ kernel-objects-test.sh  | 282 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 414 insertions(+)
+ create mode 100755 kernel-objects-build.sh
+ create mode 100755 kernel-objects-test.sh
 
- drivers/net/gtp.c      |  1 -
- include/linux/icmpv6.h | 26 ++++++++++++++++++++------
- include/linux/ipv6.h   |  1 -
- include/net/icmp.h     |  6 +++++-
- net/ipv4/icmp.c        |  5 +++--
- net/ipv6/icmp.c        | 18 +++++++++---------
- net/ipv6/ip6_icmp.c    | 12 +++++++-----
- 7 files changed, 44 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 9a70f05baf6e..39c00f050fbd 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -543,7 +543,6 @@ static int gtp_build_skb_ip4(struct sk_buff *skb, struct net_device *dev,
- 	if (!skb_is_gso(skb) && (iph->frag_off & htons(IP_DF)) &&
- 	    mtu < ntohs(iph->tot_len)) {
- 		netdev_dbg(dev, "packet too big, fragmentation needed\n");
--		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
- 		icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
- 			      htonl(mtu));
- 		goto err_rt;
-diff --git a/include/linux/icmpv6.h b/include/linux/icmpv6.h
-index 452d8978ffc7..9055cb380ee2 100644
---- a/include/linux/icmpv6.h
-+++ b/include/linux/icmpv6.h
-@@ -3,6 +3,7 @@
- #define _LINUX_ICMPV6_H
- 
- #include <linux/skbuff.h>
-+#include <linux/ipv6.h>
- #include <uapi/linux/icmpv6.h>
- 
- static inline struct icmp6hdr *icmp6_hdr(const struct sk_buff *skb)
-@@ -15,13 +16,16 @@ static inline struct icmp6hdr *icmp6_hdr(const struct sk_buff *skb)
- #if IS_ENABLED(CONFIG_IPV6)
- 
- typedef void ip6_icmp_send_t(struct sk_buff *skb, u8 type, u8 code, __u32 info,
--			     const struct in6_addr *force_saddr);
-+			     const struct in6_addr *force_saddr,
-+			     const struct inet6_skb_parm *parm);
- void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
--		const struct in6_addr *force_saddr);
-+		const struct in6_addr *force_saddr,
-+		const struct inet6_skb_parm *parm);
- #if IS_BUILTIN(CONFIG_IPV6)
--static inline void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-+static inline void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
-+				 const struct inet6_skb_parm *parm)
- {
--	icmp6_send(skb, type, code, info, NULL);
-+	icmp6_send(skb, type, code, info, NULL, parm);
- }
- static inline int inet6_register_icmp_sender(ip6_icmp_send_t *fn)
- {
-@@ -34,18 +38,28 @@ static inline int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn)
- 	return 0;
- }
- #else
--extern void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info);
-+extern void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
-+			  const struct inet6_skb_parm *parm);
- extern int inet6_register_icmp_sender(ip6_icmp_send_t *fn);
- extern int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn);
- #endif
- 
-+static inline void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
+diff --git a/kernel-objects-build.sh b/kernel-objects-build.sh
+new file mode 100755
+index 000000000000..b92729994ded
+--- /dev/null
++++ b/kernel-objects-build.sh
+@@ -0,0 +1,132 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++set -u
++set -e
++
++exec 2>&1
++
++OBJECTS="${HOME}/.pahole_test_objects"
++KDIR=${HOME}/linux
++PAHOLE=$(which pahole)
++OUTPUT=
++
++usage()
 +{
-+	__icmpv6_send(skb, type, code, info, IP6CB(skb));
++	cat <<EOF
++Usage: $0 [-k KERNEL] [-O OUTPUT] [-o OBJECTS]
++
++The script prepares vmlinux and kernel modules for different archs/C:
++
++  - x86 gcc/clang
++  - arm64 gcc/clang
++  - powerpc gcc
++  - s390x gcc
++
++Options:
++  -k) Update kernel tree directory (default HOME/linux)
++  -O) Update temp output directory (default mktemp /tmp/pahole.test.XXX)
++  -o) Update final objects directory (default HOME/.pahole.test.XXX)
++
++Make images under '/tmp/build', and place it under 'objects':
++
++  $ $0 -o objects -O /tmp/build/
++
++EOF
 +}
 +
- int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
- 			       unsigned int data_len);
- 
- #if IS_ENABLED(CONFIG_NF_NAT)
- void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info);
- #else
--#define icmpv6_ndo_send icmpv6_send
-+static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
++build()
 +{
-+	struct inet6_skb_parm parm = { 0 };
-+	__icmpv6_send(skb_in, type, code, info, &parm);
++	local name=$1
++	local opts=$2
++
++	echo "build ${name} (${OUTPUT}/output)"
++
++	mkdir -p ${OBJECTS}/${name}
++	mkdir -p ${OUTPUT}
++
++	pushd ${KDIR}
++	make ${opts} -j"$(nproc)" O=${OUTPUT} olddefconfig > ${OUTPUT}/output 2>&1
++	scripts/config \
++		--file ${OUTPUT}/.config \
++		-e BPF_SYSCALL \
++		-e DEBUG_INFO \
++		-e DEBUG_INFO_BTF \
++		-e FTRACE \
++		-e FUNCTION_TRACER \
++		>> ${OUTPUT}/output 2>&1
++	make ${opts} -j"$(nproc)" O=${OUTPUT} PAHOLE=${PAHOLE} olddefconfig all >> ${OUTPUT}/output 2>&1
++
++	cp ${OUTPUT}/vmlinux ${OBJECTS}/${name}
++	find ${OUTPUT} -name '*.ko' | xargs cp -t ${OBJECTS}/${name}
++
++	rm -rf ${OUTPUT}
++	popd
 +}
- #endif
- 
- #else
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index 9d1f29f0c512..70b2ad3b9884 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -85,7 +85,6 @@ struct ipv6_params {
- 	__s32 autoconf;
- };
- extern struct ipv6_params ipv6_defaults;
--#include <linux/icmpv6.h>
- #include <linux/tcp.h>
- #include <linux/udp.h>
- 
-diff --git a/include/net/icmp.h b/include/net/icmp.h
-index 9ac2d2672a93..fd84adc47963 100644
---- a/include/net/icmp.h
-+++ b/include/net/icmp.h
-@@ -46,7 +46,11 @@ static inline void icmp_send(struct sk_buff *skb_in, int type, int code, __be32
- #if IS_ENABLED(CONFIG_NF_NAT)
- void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info);
- #else
--#define icmp_ndo_send icmp_send
-+static inline void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
++
++main()
 +{
-+	struct ip_options opts = { 0 };
-+	__icmp_send(skb_in, type, code, info, &opts);
++	while getopts 'k:o:O:' opt; do
++		case ${opt} in
++		k)
++			KDIR="$OPTARG"
++			;;
++		O)
++			OUTPUT="$OPTARG"
++			;;
++		o)
++			OBJECTS="$OPTARG"
++			;;
++		esac
++	done
++	shift $((OPTIND -1))
++
++	if [[ $# -ne 0 ]]; then
++		usage
++		exit 1
++	fi
++
++        if [[ "${OUTPUT}" == "" ]]; then
++                OUTPUT=$(mktemp -d /tmp/pahole.test.XXX)
++        fi
++
++	PAHOLE=$(realpath ${PAHOLE})
++	OBJECTS=$(realpath ${OBJECTS})
++
++	echo "output:  ${OUTPUT}"
++	echo "kdir:    ${KDIR}"
++	echo "pahole:  ${PAHOLE}"
++	echo "objects: ${OBJECTS}"
++	echo
++
++	mkdir -p ${OBJECTS}
++
++	echo "cleanup ${KDIR}"
++	make -C ${KDIR} mrproper
++
++
++	build x86-clang     "LLVM=1"
++	build x86-gcc       ""
++
++	build aarch64-clang "ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LLVM=1"
++	build aarch64-gcc   "ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-"
++
++#	build powerpc-clang "ARCH=powerpc CROSS_COMPILE=powerpc64-linux-gnu- LLVM=1"
++	build powerpc-gcc   "ARCH=powerpc CROSS_COMPILE=powerpc64-linux-gnu-"
++
++#	build powerpcle-clang "ARCH=powerpc CROSS_COMPILE=powerpc64le-linux-gnu- LLVM=1"
++	build powerpcle-gcc   "ARCH=powerpc CROSS_COMPILE=powerpc64le-linux-gnu-"
++
++#	build s390x-clang   "ARCH=s390 CROSS_COMPILE=s390x-linux-gnu- LLVM=1"
++	build s390x-gcc     "ARCH=s390 CROSS_COMPILE=s390x-linux-gnu-"
 +}
- #endif
- 
- int icmp_rcv(struct sk_buff *skb);
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 396b492c804f..616e2dc1c8fa 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -775,13 +775,14 @@ EXPORT_SYMBOL(__icmp_send);
- void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
- {
- 	struct sk_buff *cloned_skb = NULL;
-+	struct ip_options opts = { 0 };
- 	enum ip_conntrack_info ctinfo;
- 	struct nf_conn *ct;
- 	__be32 orig_ip;
- 
- 	ct = nf_ct_get(skb_in, &ctinfo);
- 	if (!ct || !(ct->status & IPS_SRC_NAT)) {
--		icmp_send(skb_in, type, code, info);
-+		__icmp_send(skb_in, type, code, info, &opts);
- 		return;
- 	}
- 
-@@ -796,7 +797,7 @@ void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
- 
- 	orig_ip = ip_hdr(skb_in)->saddr;
- 	ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
--	icmp_send(skb_in, type, code, info);
-+	__icmp_send(skb_in, type, code, info, &opts);
- 	ip_hdr(skb_in)->saddr = orig_ip;
- out:
- 	consume_skb(cloned_skb);
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index f3d05866692e..fd1f896115c1 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -331,10 +331,9 @@ static int icmpv6_getfrag(void *from, char *to, int offset, int len, int odd, st
- }
- 
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
--static void mip6_addr_swap(struct sk_buff *skb)
-+static void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt)
- {
- 	struct ipv6hdr *iph = ipv6_hdr(skb);
--	struct inet6_skb_parm *opt = IP6CB(skb);
- 	struct ipv6_destopt_hao *hao;
- 	struct in6_addr tmp;
- 	int off;
-@@ -351,7 +350,7 @@ static void mip6_addr_swap(struct sk_buff *skb)
- 	}
- }
- #else
--static inline void mip6_addr_swap(struct sk_buff *skb) {}
-+static inline void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt) {}
- #endif
- 
- static struct dst_entry *icmpv6_route_lookup(struct net *net,
-@@ -446,7 +445,8 @@ static int icmp6_iif(const struct sk_buff *skb)
-  *	Send an ICMP message in response to a packet in error
-  */
- void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
--		const struct in6_addr *force_saddr)
-+		const struct in6_addr *force_saddr,
-+		const struct inet6_skb_parm *parm)
- {
- 	struct inet6_dev *idev = NULL;
- 	struct ipv6hdr *hdr = ipv6_hdr(skb);
-@@ -542,7 +542,7 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
- 	if (!(skb->dev->flags & IFF_LOOPBACK) && !icmpv6_global_allow(net, type))
- 		goto out_bh_enable;
- 
--	mip6_addr_swap(skb);
-+	mip6_addr_swap(skb, parm);
- 
- 	sk = icmpv6_xmit_lock(net);
- 	if (!sk)
-@@ -559,7 +559,7 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
- 		/* select a more meaningful saddr from input if */
- 		struct net_device *in_netdev;
- 
--		in_netdev = dev_get_by_index(net, IP6CB(skb)->iif);
-+		in_netdev = dev_get_by_index(net, parm->iif);
- 		if (in_netdev) {
- 			ipv6_dev_get_saddr(net, in_netdev, &fl6.daddr,
- 					   inet6_sk(sk)->srcprefs,
-@@ -640,7 +640,7 @@ EXPORT_SYMBOL(icmp6_send);
-  */
- void icmpv6_param_prob(struct sk_buff *skb, u8 code, int pos)
- {
--	icmp6_send(skb, ICMPV6_PARAMPROB, code, pos, NULL);
-+	icmp6_send(skb, ICMPV6_PARAMPROB, code, pos, NULL, IP6CB(skb));
- 	kfree_skb(skb);
- }
- 
-@@ -697,10 +697,10 @@ int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
- 	}
- 	if (type == ICMP_TIME_EXCEEDED)
- 		icmp6_send(skb2, ICMPV6_TIME_EXCEED, ICMPV6_EXC_HOPLIMIT,
--			   info, &temp_saddr);
-+			   info, &temp_saddr, IP6CB(skb2));
- 	else
- 		icmp6_send(skb2, ICMPV6_DEST_UNREACH, ICMPV6_ADDR_UNREACH,
--			   info, &temp_saddr);
-+			   info, &temp_saddr, IP6CB(skb2));
- 	if (rt)
- 		ip6_rt_put(rt);
- 
-diff --git a/net/ipv6/ip6_icmp.c b/net/ipv6/ip6_icmp.c
-index 70c8c2f36c98..9e3574880cb0 100644
---- a/net/ipv6/ip6_icmp.c
-+++ b/net/ipv6/ip6_icmp.c
-@@ -33,23 +33,25 @@ int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn)
- }
- EXPORT_SYMBOL(inet6_unregister_icmp_sender);
- 
--void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-+void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
-+		   const struct inet6_skb_parm *parm)
- {
- 	ip6_icmp_send_t *send;
- 
- 	rcu_read_lock();
- 	send = rcu_dereference(ip6_icmp_send);
- 	if (send)
--		send(skb, type, code, info, NULL);
-+		send(skb, type, code, info, NULL, parm);
- 	rcu_read_unlock();
- }
--EXPORT_SYMBOL(icmpv6_send);
-+EXPORT_SYMBOL(__icmpv6_send);
- #endif
- 
- #if IS_ENABLED(CONFIG_NF_NAT)
- #include <net/netfilter/nf_conntrack.h>
- void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
- {
-+	struct inet6_skb_parm parm = { 0 };
- 	struct sk_buff *cloned_skb = NULL;
- 	enum ip_conntrack_info ctinfo;
- 	struct in6_addr orig_ip;
-@@ -57,7 +59,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
- 
- 	ct = nf_ct_get(skb_in, &ctinfo);
- 	if (!ct || !(ct->status & IPS_SRC_NAT)) {
--		icmpv6_send(skb_in, type, code, info);
-+		__icmpv6_send(skb_in, type, code, info, &parm);
- 		return;
- 	}
- 
-@@ -72,7 +74,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
- 
- 	orig_ip = ipv6_hdr(skb_in)->saddr;
- 	ipv6_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
--	icmpv6_send(skb_in, type, code, info);
-+	__icmpv6_send(skb_in, type, code, info, &parm);
- 	ipv6_hdr(skb_in)->saddr = orig_ip;
- out:
- 	consume_skb(cloned_skb);
++
++catch()
++{
++	local exit_code=$1
++	exit ${exit_code}
++}
++
++trap 'catch "$?"' EXIT
++
++main "$@"
+diff --git a/kernel-objects-test.sh b/kernel-objects-test.sh
+new file mode 100755
+index 000000000000..a34c22c2eb09
+--- /dev/null
++++ b/kernel-objects-test.sh
+@@ -0,0 +1,282 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++set -u
++
++exec 2>&1
++
++PAHOLE=$(which pahole)
++BPFTOOL=$(which bpftool)
++BTFDIFF=$(which btfdiff)
++
++OBJECTS="$HOME/.pahole_test_objects"
++CLEANUP="yes"
++BASE=
++FAIL="no"
++
++function test_funcs()
++{
++	local vmlinux=$1
++	local obj=$2
++	local err=0
++
++	cp ${obj} ${BASE}/object
++
++	if [[ ${obj} == *.ko ]]; then
++		${BPFTOOL} --base ${vmlinux} btf dump file ${BASE}/object > ${BASE}/btf.old
++		${PAHOLE} -V -J --btf_base ${vmlinux} ${BASE}/object > ${BASE}/output
++		${BPFTOOL} --base ${vmlinux} btf dump file ${BASE}/object > ${BASE}/btf.new
++	else
++		${BPFTOOL} btf dump file ${BASE}/object > ${BASE}/btf.old
++		${PAHOLE} -V -J ${BASE}/object > ${BASE}/output
++		${BPFTOOL} btf dump file ${BASE}/object > ${BASE}/btf.new
++	fi
++
++	diff -puw ${BASE}/btf.old ${BASE}/btf.new > ${BASE}/diff.all
++	if [ $? -ne 0 ]; then
++		funcs_old=${BASE}/funcs.old
++		funcs_new=${BASE}/funcs.new
++
++		cat ${BASE}/btf.old | grep 'FUNC ' | awk '{ print $3 }' | sort | uniq > ${funcs_old}
++		cat ${BASE}/btf.new | grep 'FUNC ' | awk '{ print $3 }' | sort | uniq > ${funcs_new}
++
++		diff -puw ${funcs_old} ${funcs_new} > ${BASE}/diff.funcs
++	fi
++
++	if [[ $? -ne 0 ]]; then
++		err=1
++	fi
++
++	return ${err};
++}
++
++function test_format_c()
++{
++	local vmlinux=$1
++	local obj=$2
++	local err=0
++
++	cp ${obj} ${BASE}/object
++
++	if [[ ${obj} == *.ko ]]; then
++		${BPFTOOL} --base ${vmlinux} btf dump file ${BASE}/object format c > ${BASE}/c.old
++		${PAHOLE} -V -J --btf_base ${vmlinux} ${BASE}/object > ${BASE}/output
++		${BPFTOOL} --base ${vmlinux} btf dump file ${BASE}/object format c > ${BASE}/c.new
++	else
++		${BPFTOOL} btf dump file ${BASE}/object format c > ${BASE}/c.old
++		${PAHOLE} -V -J ${BASE}/object > ${BASE}/output
++		${BPFTOOL} btf dump file ${BASE}/object format c > ${BASE}/c.new
++	fi
++
++	diff -puw ${BASE}/c.old ${BASE}/c.new > ${BASE}/diff.all
++	if [[ $? -ne 0 ]]; then
++		err=1
++	fi
++
++	return ${err};
++}
++
++function test_btfdiff()
++{
++	local vmlinux=$1
++	local obj=$2
++	local err=0
++
++	if [[ -x ${BTFDIFF} ]]; then
++		${BTFDIFF} ${obj} > ${BASE}/output
++		if [[ -s "${BASE}/output" ]]; then
++			err=1
++		fi
++	else
++		err=2
++	fi
++
++	return ${err}
++}
++
++usage()
++{
++	cat <<EOF
++Usage: $0 [-f] [-o object] [-O objects] [-b BASE] [-P PAHOLE] [-B BPFTOOL] -- [test]
++
++The script runs tests on objects with BTF data.
++
++Options:
++  -f) Stop on failure
++  -o) Run tests on specific objects
++  -O) Update the root objects directory (default HOME/.pahole_test_objects)
++  -b) Update work base/temporary directory (default mktemp -d /tmp/pahole.test.XXX)
++  -P) Update pahole path (default which pahole)
++  -B) Update bpftool path (default which bpftool)
++
++Test image under 'objects':
++
++  $ $0 -O objects/
++
++Test specific image (objects/aarch64-clang) and stop on failure:
++
++  $ $0 -o o objects/aarch64-clang -f
++
++Run specific test (test_format_c):
++
++  $ $0 -o o objects/aarch64-clang -f test_format_c
++EOF
++}
++
++do_test()
++{
++	local test_name=$1
++	local vmlinux=$2
++	local obj=$3
++
++	printf "%-15s on %s ... " "${test_name}"  "${obj}"
++
++	eval ${test_name} ${vmlinux} ${obj}
++	local err=$?
++
++	case ${err} in
++	0)
++		echo "OK"
++		;;
++	1)
++		echo "FAIL"
++		;;
++	2)
++		echo "SKIP"
++		;;
++	esac
++
++	if [[ ${err} -eq 1 && "${FAIL}" == "yes" ]]; then
++		exit 1
++	fi
++
++	return ${err}
++}
++
++run_tests()
++{
++	local vmlinux=$1
++	local obj=$2
++	local test_name=$3
++
++	if [[ "${test_name}" != "all" ]]; then
++		do_test ${test_name} ${vmlinux} ${obj}
++	else
++		do_test test_funcs ${vmlinux} ${obj}
++		do_test test_format_c ${vmlinux} ${obj}
++
++		# btfdiff is only for vmlinux
++		if [[ ${obj} != *.ko ]]; then
++			do_test test_btfdiff ${vmlinux} ${obj}
++		fi
++	fi
++}
++
++do_obj()
++{
++	local obj=$1
++	local test_name=$2
++	local vmlinux=${obj}/vmlinux
++
++	run_tests ${vmlinux} ${vmlinux} ${test_name}
++
++	for kmod in $(ls ${obj}/*.ko); do
++		run_tests ${vmlinux} ${kmod} ${test_name}
++	done
++}
++
++main()
++{
++	local test_name="all"
++
++	while getopts 'b:o:dhP:B:fO:' opt; do
++		case ${opt} in
++		f)
++			FAIL="yes"
++			CLEANUP="no"
++			;;
++		o)
++			obj="$OPTARG"
++			;;
++		O)
++			OBJECTS="$OPTARG"
++			;;
++		b)
++			BASE="$OPTARG"
++			;;
++		P)
++			PAHOLE="$OPTARG"
++			;;
++		B)
++			BPFTOOL="$OPTARG"
++			;;
++		h)
++			usage
++			exit 0
++			;;
++		\? )
++			echo "Invalid Option: -$OPTARG"
++			usage
++			exit 1
++			;;
++		: )
++			echo "Invalid Option: -$OPTARG requires an argument"
++			usage
++			exit 1
++			;;
++		esac
++	done
++	shift $((OPTIND -1))
++
++	if [[ $# -gt 1 ]]; then
++		echo "Invalid test: $@"
++		usage
++		exit 1
++	fi
++
++	if [[ $# -eq 1 ]]; then
++		test_name="$@"
++	fi
++
++	if [[ "${BASE}" == "" ]]; then
++		BASE=$(mktemp -d /tmp/pahole.test.XXX)
++	else
++		mkdir -p ${BASE}
++	fi
++
++	PAHOLE=$(realpath ${PAHOLE})
++	BPFTOOL=$(realpath ${BPFTOOL})
++	OBJECTS=$(realpath ${OBJECTS})
++
++	echo "pahole:  ${PAHOLE}"
++	echo "bpftool: ${BPFTOOL}"
++	echo "base:    ${BASE}"
++	echo "objects: ${obj:-${OBJECTS}}"
++	echo "fail:    ${FAIL}"
++	echo "cleanup: ${CLEANUP}"
++	echo
++
++	if [[ "${obj:=""}" != "" ]]; then
++		do_obj ${obj} ${test_name}
++	else
++		for obj in $(ls ${OBJECTS}); do
++			do_obj ${OBJECTS}/${obj} ${test_name}
++		done
++	fi
++}
++
++catch()
++{
++	local exit_code=$1
++	if [[ "${BASE:=""}" != "" && "${CLEANUP}" == "yes" ]]; then
++		rm -rf ${BASE}
++	else
++		echo
++		echo "Keeping test data in: ${BASE}"
++	fi
++	exit ${exit_code}
++}
++
++trap 'catch "$?"' EXIT
++
++main "$@"
 -- 
-2.30.1
+2.29.2
 
