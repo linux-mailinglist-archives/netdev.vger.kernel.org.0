@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69A863225DA
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 07:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C833225E7
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 07:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbhBWGXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 01:23:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
+        id S231284AbhBWG2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 01:28:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231740AbhBWGWY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 01:22:24 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1002C061574;
-        Mon, 22 Feb 2021 22:21:43 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id x19so15424762ybe.0;
-        Mon, 22 Feb 2021 22:21:43 -0800 (PST)
+        with ESMTP id S231438AbhBWG15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 01:27:57 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C8DC061574;
+        Mon, 22 Feb 2021 22:27:10 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id 133so15409408ybd.5;
+        Mon, 22 Feb 2021 22:27:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aN0nEKFhckdZG5EVeID2xP188+9jE1AxS3UZDyML5Vk=;
-        b=LVe9/bYYFRbcktdhUrB8khXJiLQbsmf5LBj8OoRu5fC1dhe+whay/vuW8QYBR3iXTR
-         uWcTeEw8W2gogkvgIMDwTOoSahyrlZLv/LBada2TWdIOve3Qz/8YjiWzEm3g4cTeQH9N
-         BXXl/g2yCd9CJXRcfcsfcxhAAvZhxHq8ARABaxZpBglxj1c65nE4IxFTune2GDh+6Lm8
-         vyEoSQPcdgV1ETSYsO75hBX4iMRXv5UicQKdVhduwoxPhNTwBtb4logKvbJcfpMGIo7U
-         UmltnNBEr9G93vd4Xd28UW0u5P1F3c/jK722TZ3b+b4JyQ42Uh6L7Gs36UMgnWODh4So
-         NadA==
+        bh=vQxt3vjl8hhFxj2yTwj5NJNMGpqNwFzQ1v6m9IqJp0s=;
+        b=YI0KiehGH12KlkWqZ8mey70HYtMLjQqybYI4U1ocAdJ0v4LkFSNCNQVCQ/INfj8/tA
+         WD5pX+9XAmFjtZpaASJi9dXKF0STcnUEq/Kbrp8jIbyzwGZf9SAB8SF0HpcN/GNsf64q
+         Wwf0EGN3Xisgmj/s0XrtHrDX1zMvykX8sgl1yxO4E0MwmR3MIuBpeCeb3A9qfEIZoUk1
+         ZZhEvDtQm7DPexeRrxkjq1MybIXLpsvnK8sxqNXU85JA3d9wm9MgW0o2qoxYZ8BYt4W9
+         pSYuHhmj4ol7E1zjTuLslEWkwMkQxqawnJE2JWO5uXtjBvJacqCyZeasgM+dFg8rsiy2
+         kscQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aN0nEKFhckdZG5EVeID2xP188+9jE1AxS3UZDyML5Vk=;
-        b=NjorKyXiA/NJX7Ttx7x4txUb1T4avfnmh4gJ5lEX1CL9ZrqL2WmlSAGKJSdqnElqYk
-         L5rP1bKBXx8eMnCGNa+bKelOTt3WTl/Y06xPBjk7weAKzLGnzpjZcwA4O13TGLnC6eeZ
-         nB6Ta/hTaA+BnMY67OyGywM437YWHgCnRwCrxLLUGUy5c3vi/ZYU8F6QXF2Jy+9suuHu
-         hDZ0irT8GEhPP34euIyPLdeArV51Q5oLW1t1CqN7C8CjN8xT9tOP3kP1RNpyyjzDIQiz
-         vhoMOnUkSUZD2nNmzrXy9qRe4VEijTUqxg1rTs1Gm9tVoFuWS7DCCmgPznEqd81NqAtB
-         oQoQ==
-X-Gm-Message-State: AOAM531BWqElWk8GWAIZ0BT4gt9B+3bz5S9dH4VjQ8aa6hMDtz2vKOgl
-        0Q2PABwZHtFlZV1bb1ROGtUXw2heHZdLp44sJorEOMP2
-X-Google-Smtp-Source: ABdhPJz0kpIjm45OSQ2/0vvSkcwb3mBWyaza/m2EZ+d3b9y1k/nkI0s35d5XQkexXqt6Aqvch5Yg2blbBm8C+uS0nh4=
-X-Received: by 2002:a25:bd12:: with SMTP id f18mr14582916ybk.403.1614061303271;
- Mon, 22 Feb 2021 22:21:43 -0800 (PST)
+        bh=vQxt3vjl8hhFxj2yTwj5NJNMGpqNwFzQ1v6m9IqJp0s=;
+        b=mqf6sg19G56dVzn/FeMnnx+3djrVQcUzVmBAxLqwdDT8c5Ivc/aatOiaxCpibD/vDH
+         NDwdf9rXGgAWm52fDoYej3K6e1WT9bamrUnIPelCvfO5n5FtEFpS4SuyL38+sKSIlmHj
+         PhN4ysiO2eTVKRDXdjmi1EoW/mkzEhJ3NC6t6jqo1kgI+pI4LIjSbfBQSZpdeZ0QFbFq
+         /XkfAPckMFiHGxpyDUhCHfJ0+GFA/N52ohOBAV/ASWs2C8PvKK1/6WTg90Ble7SkUc/i
+         V5gkBb+3IE9u01+7p5gZnQDe/eBNq3hieMm4X7IskBQsvPvIvOrYM5YTB9jHYHgGzRuf
+         Yltg==
+X-Gm-Message-State: AOAM531U3Qn7TTGRkbJ7uEfgdQnhof7OC/KW2W/wWsFP5WGfWTq4Njf5
+        m4Jsv9BTNncRca/sh6joH4d9hZ/COeP+95BSb8k=
+X-Google-Smtp-Source: ABdhPJzHfwyP5Xcy1Qd8kqDfOkpURPnavcDhNokcrTRaADoWVGgJGpB7bfHoIhdQ+PfWwu1lM03T6IRld2n4aF57rwo=
+X-Received: by 2002:a25:abb2:: with SMTP id v47mr37383050ybi.425.1614061629789;
+ Mon, 22 Feb 2021 22:27:09 -0800 (PST)
 MIME-Version: 1.0
-References: <20210223012014.2087583-1-songliubraving@fb.com> <20210223012014.2087583-3-songliubraving@fb.com>
-In-Reply-To: <20210223012014.2087583-3-songliubraving@fb.com>
+References: <20210223012014.2087583-1-songliubraving@fb.com> <20210223012014.2087583-6-songliubraving@fb.com>
+In-Reply-To: <20210223012014.2087583-6-songliubraving@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 22 Feb 2021 22:21:32 -0800
-Message-ID: <CAEf4BzaZ0ATbJsLoQu_SRUYgzkak9zv61N+T=gijOQ+X=57ErA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/6] bpf: prevent deadlock from recursive bpf_task_storage_[get|delete]
+Date:   Mon, 22 Feb 2021 22:26:58 -0800
+Message-ID: <CAEf4BzZ5r7OJyhzoOY=UZyf29GCfLodauNxZzfN+2OkOSxgBzw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 5/6] bpf: runqslower: prefer using local
+ vmlimux to generate vmlinux.h
 To:     Song Liu <songliubraving@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
@@ -62,62 +63,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 22, 2021 at 5:23 PM Song Liu <songliubraving@fb.com> wrote:
+On Mon, Feb 22, 2021 at 5:24 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> BPF helpers bpf_task_storage_[get|delete] could hold two locks:
-> bpf_local_storage_map_bucket->lock and bpf_local_storage->lock. Calling
-> these helpers from fentry/fexit programs on functions in bpf_*_storage.c
-> may cause deadlock on either locks.
->
-> Prevent such deadlock with a per cpu counter, bpf_task_storage_busy, which
-> is similar to bpf_prog_active. We need this counter to be global, because
-> the two locks here belong to two different objects: bpf_local_storage_map
-> and bpf_local_storage. If we pick one of them as the owner of the counter,
-> it is still possible to trigger deadlock on the other lock. For example,
-> if bpf_local_storage_map owns the counters, it cannot prevent deadlock
-> on bpf_local_storage->lock when two maps are used.
+> Update the Makefile to prefer using $(O)/mvlinux, $(KBUILD_OUTPUT)/vmlinux
+> (for selftests) or ../../../vmlinux. These two files should have latest
+> definitions for vmlinux.h.
 >
 > Signed-off-by: Song Liu <songliubraving@fb.com>
 > ---
->  kernel/bpf/bpf_task_storage.c | 57 ++++++++++++++++++++++++++++++-----
->  1 file changed, 50 insertions(+), 7 deletions(-)
->
 
-[...]
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-> @@ -109,7 +136,9 @@ static void *bpf_pid_task_storage_lookup_elem(struct bpf_map *map, void *key)
->                 goto out;
->         }
+>  tools/bpf/runqslower/Makefile | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 >
-> +       bpf_task_storage_lock();
->         sdata = task_storage_lookup(task, map, true);
-> +       bpf_task_storage_unlock();
->         put_pid(pid);
->         return sdata ? sdata->data : NULL;
->  out:
-> @@ -141,8 +170,10 @@ static int bpf_pid_task_storage_update_elem(struct bpf_map *map, void *key,
->                 goto out;
->         }
+> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
+> index 9d9fb6209be1b..c96ba90c6f018 100644
+> --- a/tools/bpf/runqslower/Makefile
+> +++ b/tools/bpf/runqslower/Makefile
+> @@ -16,7 +16,10 @@ CFLAGS := -g -Wall
 >
-> +       bpf_task_storage_lock();
->         sdata = bpf_local_storage_update(
->                 task, (struct bpf_local_storage_map *)map, value, map_flags);
-
-this should probably be container_of() instead of casting
-
-> +       bpf_task_storage_unlock();
+>  # Try to detect best kernel BTF source
+>  KERNEL_REL := $(shell uname -r)
+> -VMLINUX_BTF_PATHS := /sys/kernel/btf/vmlinux /boot/vmlinux-$(KERNEL_REL)
+> +VMLINUX_BTF_PATHS := $(if $(O),$(O)/vmlinux)           \
+> +       $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux) \
+> +       ../../../vmlinux /sys/kernel/btf/vmlinux        \
+> +       /boot/vmlinux-$(KERNEL_REL)
+>  VMLINUX_BTF_PATH := $(or $(VMLINUX_BTF),$(firstword                           \
+>                                           $(wildcard $(VMLINUX_BTF_PATHS))))
 >
->         err = PTR_ERR_OR_ZERO(sdata);
->  out:
-> @@ -185,7 +216,9 @@ static int bpf_pid_task_storage_delete_elem(struct bpf_map *map, void *key)
->                 goto out;
->         }
+> --
+> 2.24.1
 >
-> +       bpf_task_storage_lock();
->         err = task_storage_delete(task, map);
-> +       bpf_task_storage_unlock();
->  out:
->         put_pid(pid);
->         return err;
-
-[...]
