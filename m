@@ -2,109 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74BFA322BB2
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE054322B8E
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232214AbhBWNuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 08:50:11 -0500
-Received: from smtp12.skoda.cz ([185.50.127.89]:56805 "EHLO smtp12.skoda.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231691AbhBWNuG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 08:50:06 -0500
-X-Greylist: delayed 941 seconds by postgrey-1.27 at vger.kernel.org; Tue, 23 Feb 2021 08:50:04 EST
-DKIM-Signature: v=1; a=rsa-sha256; d=skoda.cz; s=plzenjune2020; c=relaxed/simple;
-        q=dns/txt; i=@skoda.cz; t=1614087219; x=1614692019;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7ZQDfKGGCiBiEL/pEL2HvZlD/dKwZryjoGshAiR5XAs=;
-        b=e1YNaysN3NTB7yd/jqq0DoqZVevQaa4Em9k1H6WBaz4GSElzLGD848H+HQyziu7u
-        KRuktMpwHq1aJlHGdrL3f2FUC2QzWBtqlNlw85dAand59yryn7JFRVF3Lo2nbEXI
-        zcHFytRQZKfhBCIeRq+jqTJ327sVuwBS8VTDYLkye8Q=;
-X-AuditID: 0a2aa12f-ba1d87000000c140-eb-603504334fbd
-Received: from srv-exch-01.skoda.cz (srv-exch-01.skoda.cz [10.42.11.91])
-        (using TLS with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by smtp12.skoda.cz (Mail Gateway) with SMTP id 11.F0.49472.33405306; Tue, 23 Feb 2021 14:33:39 +0100 (CET)
-Received: from srv-exch-02.skoda.cz (10.42.11.92) by srv-exch-01.skoda.cz
- (10.42.11.91) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 23 Feb
- 2021 14:33:39 +0100
-Received: from srv-exch-02.skoda.cz ([fe80::a9b8:e60e:44d3:758d]) by
- srv-exch-02.skoda.cz ([fe80::a9b8:e60e:44d3:758d%3]) with mapi id
- 15.01.2176.002; Tue, 23 Feb 2021 14:33:39 +0100
-From:   =?iso-8859-2?Q?Vin=B9_Karel?= <karel.vins@skoda.cz>
-To:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
-Subject: High (200+) XFRM interface count performance problem (throughput)
-Thread-Topic: High (200+) XFRM interface count performance problem
- (throughput)
-Thread-Index: AdcJ50F1lPQSKBMETcCSnfXvuoqLXg==
-Date:   Tue, 23 Feb 2021 13:33:39 +0000
-Message-ID: <63259d1978cb4a80889ccec40528ee80@skoda.cz>
-Accept-Language: cs-CZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.42.12.26]
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+        id S232951AbhBWNgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 08:36:12 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:56186 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232853AbhBWNgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:36:05 -0500
+Received: by mail-il1-f197.google.com with SMTP id f2so5415382ils.22
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:35:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=9b4tdGcjeYO+dcjhUmgTVdKPzbsa8NdN3vEboNTOw+k=;
+        b=DLON3L/nYaBGtutfG5njByXnzr5Z1oSF365TZl/8ID6MrJC2tF+Q7HuB64t4NzmZUE
+         jbeYPHiWT9mQq0Uw8opGwgwWtsk4zOHBtOkxo35JWhivXo9b2qtzYr3LaG8ann2rwqC5
+         tI1pMg59jvEqCdEkipDCd8djYTIOeMS6u1vEE1LyG48mv7sg2yR64u3rKJSkQeEcxvuY
+         qMyqFUI8H6uRfAhWPgOT4L+v96VkhIGh3G13ktIKYM7A0JHz0KSSjvAES8x+j1EYbgSK
+         svQJgP/GNuHUFhFugTr+hLC5iMEqc7KmSlxO90gs0xaPLv4eS8OuK17IOrNfZ3kv9AyJ
+         0AGg==
+X-Gm-Message-State: AOAM532tI3uz30gd/nLPGT5/93mxXkUpDld+4apjGR+QToYl5YANdM5b
+        7gmjo4RgIl7v+uyJWHw3Pssptm+QC1CDlgSeKVBwlQRaNG61
+X-Google-Smtp-Source: ABdhPJzcZ42NDAXIQAbJiG8EO1nZuAkPTd+FJOhS07mjmWHDhOM1UnVV/Tp7nhuMNrdfqt7S5M2CwttqKSCqk8yXDeyVfO+YcwK4
 MIME-Version: 1.0
-X-Brightmail-Tracker: H4sIAAAAAAAAA3VUe0xTZxTnawtcC9+4XF6HjupoNjfR4SgQdTNuMWFxLFvYJlnQOVrgjnb0
-        td6WiSwLoBmOTKJEHW1hFFwlkJiQsrAHPmYFeaiQZTKVZc5ljCJOndTsFZF9ty8uJPvvfL/f
-        +Z3vd84936XEjCdGRmkNFtZsUOsUUVKJNCNm59PZklzVM/1DT24870x+AW3zuVcWoB3SzWWs
-        TlvJmtdvUUk1d1qaok1XondfO2KuQXujGtAKCugc8Dj6ohuQlGLoYyKoOXAUBQ5eBJfnLkYG
-        Dt8gaG0+QdIoKoreBM46Ha9OpDfA+Z7BSD5OoPPBea5Bwqck0q+B63BlICUTbvR3+C+T0E/A
-        gfkaER9jIm264BDzMaLlcPJjH+JjMZ0Ck1NtooA5Gj4/OS4OxElw89eHkYF4Fcz19IgD+Zkw
-        PWqXBOK1cLz9ljhQPx5GbFOSgyjBLihrF0jsAoldIHEiSTeK4/QWU5Yyk6swlqkzS/e4kX/Q
-        7eu/Qqdd5R4kopAH1SNKpEjCl6pyVMwjJcayKo2a0xSbrTqWUyTikYhcFYPDcIlVV6GQYTMi
-        aEIYNbDvczrWQj6mYiX+912likkJc5yVM2lLtUYrV2w164i245i+WKDlrCV6LcdpjQYPAkpM
-        roz6iRTAZeqqPazZGDDiQY9SEkUKPuMlJulytYWtYFkTaw6xR8n3UgD28bbizWw5u/sdrc4S
-        4okwv4sXChl/J3KcfSlLxSQLCUEz6VhpJjqZkF7WjxyjiIiIpRWELYmoFR5Uh6hY0ljBPCmG
-        OZNaz2nLg9YSsHaBoLEh1G8rFa8WkU6YECiwJMcqPRlPcohaZic1YIdZpENWRlE7og7ebO0Q
-        U2cHP+sQMxKD0cDKUvAMfxXNCzRWQ3hmsmRc3Z2tYuIEBO9Nlobt08RwkgBftCd7DHPPEVWq
-        gF3qkOi9Z5VL9YsmZ5GL7CQZips3FUv+D4uTYvAMv4sxQdA/KMAb+cT4ICaYUxrO0fHXBJll
-        YwLsSh17O6xbNKB0IfKSbZFw1emNggbftWj4e2IUQ0v9j3EEq4+HXqcXYLjHlQb/tI3LoXnC
-        sQqGnQ/TYWTg/hqYnP1zHeyzjSnBNty5Fab6b2yFtvFvX4LrF+dfgZnrX7wKbscvBfBz395C
-        aLl7qhDcf/1eCA8m/ygEX9ftN+FIi6MIrp44VwQLdftVMOaYVcNHtWOlMNDXaoTGOo8R7nR9
-        Ypnld0pEdkqh4R8LZ1FbhDs1pFXyOxVEgzu1mX+YTAhcslO3tP6dClL/t1NhOjQtWQ1yFbTm
-        zkR2rr1nOz3lGr2yH73R6/7yw2rlvcv6XvrrvAHfWztf/4CS7sj3JmVsGTwzfarze1XVhXWl
-        d3+rLN6VlQ7H440zsk56vLbx8cbm5/PbmIldedq27vfyXlz4bu529VDnfdOmbuezDz415TdZ
-        M9ZsO7Sh6PAP22sqVj/1cq1t+z65QsJp1FkZYjOn/g8z5pH6VQYAAA==
+X-Received: by 2002:a6b:4109:: with SMTP id n9mr445500ioa.43.1614087324381;
+ Tue, 23 Feb 2021 05:35:24 -0800 (PST)
+Date:   Tue, 23 Feb 2021 05:35:24 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009b387305bc00fda6@google.com>
+Subject: WARNING in ieee802154_get_llsec_params
+From:   syzbot <syzbot+cde43a581a8e5f317bc2@syzkaller.appspotmail.com>
+To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, stefan@datenfreihafen.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello,
 
-I would like to ask you for help or advise.
+syzbot found the following issue on:
 
-I'm testing setup with higher number of XFRM interfaces and I'm facing thro=
-ughput degradation with a growing number of created XFRM interfaces - not c=
-oncurrent tunnels established but only XFRM interfaces created - even in DO=
-WN state.
-Issue is only unidirectional - from "client" to "vpn hub". Throughput for t=
-raffic from hub to client is not affected.
+HEAD commit:    a99163e9 Merge tag 'devicetree-for-5.12' of git://git.kern..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=144bedf2d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7a875029a795d230
+dashboard link: https://syzkaller.appspot.com/bug?extid=cde43a581a8e5f317bc2
 
-XFRM interface created with:
-for i in {1..500}; do link add ipsec$i type xfrm dev ens224 if_id $i  ; don=
-e
+Unfortunately, I don't have any reproducer for this issue yet.
 
-I'm testing with iperf3 with 1 client connected - from client to hub:
-2 interfaces - 1.36 Gbps
-100 interfaces - 1.35 Gbps
-200 interfaces - 1.19 Gbps
-300 interfaces - 0.98 Gbps
-500 interfaces - 0.71 Gbps
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+cde43a581a8e5f317bc2@syzkaller.appspotmail.com
 
-Throughput from hub to client is around 1.4 Gbps in all cases.
+DEBUG_LOCKS_WARN_ON(lock->magic != lock)
+WARNING: CPU: 1 PID: 11257 at kernel/locking/mutex.c:928 __mutex_lock_common kernel/locking/mutex.c:928 [inline]
+WARNING: CPU: 1 PID: 11257 at kernel/locking/mutex.c:928 __mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
+Modules linked in:
+CPU: 1 PID: 11257 Comm: syz-executor.1 Not tainted 5.11.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:928 [inline]
+RIP: 0010:__mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
+Code: 08 84 d2 0f 85 a3 04 00 00 8b 05 b8 7c c2 04 85 c0 0f 85 12 f5 ff ff 48 c7 c6 00 8c 6b 89 48 c7 c7 c0 89 6b 89 e8 96 eb bc ff <0f> 0b e9 f8 f4 ff ff 65 48 8b 1c 25 00 f0 01 00 be 08 00 00 00 48
+RSP: 0018:ffffc90002697068 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000040000 RSI: ffffffff815be2a5 RDI: fffff520004d2dff
+RBP: ffff8880125b8c50 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815b74be R11: 0000000000000000 R12: 0000000000000000
+R13: dffffc0000000000 R14: ffffffff8a898fa0 R15: 0000000000000000
+FS:  00007f12c496b700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000053e038 CR3: 000000002947b000 CR4: 0000000000350ee0
+Call Trace:
+ ieee802154_get_llsec_params+0x3f/0x70 net/mac802154/cfg.c:321
+ rdev_get_llsec_params net/ieee802154/rdev-ops.h:241 [inline]
+ nl802154_get_llsec_params+0xce/0x390 net/ieee802154/nl802154.c:745
+ nl802154_send_iface+0x7cf/0xa70 net/ieee802154/nl802154.c:823
+ nl802154_dump_interface+0x294/0x490 net/ieee802154/nl802154.c:860
+ genl_lock_dumpit+0x60/0x90 net/netlink/genetlink.c:623
+ netlink_dump+0x4b9/0xb70 net/netlink/af_netlink.c:2276
+ __netlink_dump_start+0x642/0x900 net/netlink/af_netlink.c:2381
+ genl_family_rcv_msg_dumpit+0x2af/0x310 net/netlink/genetlink.c:686
+ genl_family_rcv_msg net/netlink/genetlink.c:780 [inline]
+ genl_rcv_msg+0x434/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2348
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2402
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2435
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x465ef9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f12c496b188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000465ef9
+RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000004
+RBP: 00000000004bcd1c R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
+R13: 00007ffffb9a9dcf R14: 00007f12c496b300 R15: 0000000000022000
 
-1 CPU core is 100%
 
-Linux v-hub 5.4.0-65-generic #73-Ubuntu SMP Mon Jan 18 17:25:17 UTC 2021 x8=
-6_64 x86_64 x86_64 GNU/Linux
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Thank you.
-
-Regards
-Karel Vins
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
