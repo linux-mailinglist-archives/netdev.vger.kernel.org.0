@@ -2,130 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D53322FDF
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 18:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F63322FFC
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 18:54:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232672AbhBWRqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 12:46:05 -0500
-Received: from mail-eopbgr80110.outbound.protection.outlook.com ([40.107.8.110]:56199
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233777AbhBWRpq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 12:45:46 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aZTP/dLrl+ju4rnaSUi9XxQ2eQVxqZ6VfgNrT0iM3cjEq6DQmBKhA9+ay+SUJmuJ8o2y0MH/0QcK3TnavNd+SXIpEVq7uFWVZBfOMgmpy6XiWUHcC6rQO1ef4uf/VBV8EEd1FU3YP0bCiDk+sWmNydkp4yobFeB6003eounxfzTEZKIz6qKjX6u6EV2PAesD8HFu4s9MvNNAPK0TVXJ0G0g8NNzMl7Xtlf3+DUcW4YyB6HCZG5f/cIX/JX/jGaQEM/kJG5uvZAPfADVXso0Z/UrSixpb/0s+Jbr33Il//hc5/wjTUIwvWcZ3mLI1MhPtZD+/thfatg36JoLqWhQmhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HTbcntiPINoYPQEQ8DkhUp/08KR0ArPb1tS+Q+X2m3c=;
- b=jkCxTPGwUE+2FdXh3APDl5Kg+KuJI1xJPAj+n4bUa6QQYskljvazU9pD0uGaiqoTlGxwTextmXNZclnHCkhfXU4dJbwcjvXXkQW6Y/3P33VPemZdWOc1GuMtXh0+Nbmg8t4Tn48bq+k4fqjn57ntYSRgR7lyl4oxKoRTnfT4iCQp+4mmvhtfVMY1yB/Sq1NKHNLA+J1BUivsFtvofVff7YYTV4OtVztTjC1jotz2FHdxK0L34+WxQXj8/Th0ughSaLtSQ+jdOGzWn1O2okJd93/MmRAnWBI1JDTgSlMsP0HRO34rh+sXOLBJAT9ECELshk3U3nrOVB4kk0AMZU71AA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=schleissheimer.de; dmarc=pass action=none
- header.from=schleissheimer.de; dkim=pass header.d=schleissheimer.de; arc=none
+        id S233753AbhBWRxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 12:53:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231591AbhBWRxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 12:53:48 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2545BC06174A
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 09:53:02 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id z11so12514240lfb.9
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 09:53:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=schleissheimer.onmicrosoft.com; s=selector1-schleissheimer-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HTbcntiPINoYPQEQ8DkhUp/08KR0ArPb1tS+Q+X2m3c=;
- b=jxD97fGgtyyxXpaEaqUzRBco82PsKnFxbMVq/MKMLL1lbQ5MCHs2YdDt8sUQbRLhYVzYgoxeOLy8bY+mrcbd6U6UpcYJdPUt7XvHsPi1VWOlSDu1IlXVpgyuGC/MmqTzwxNM3D5ZPDD3Ky0flnmJZ7FMxbSC11Y0CNoAWSuHyJg=
-Received: from DB8P190MB0634.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:12d::21)
- by DB9P190MB1257.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:22c::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.29; Tue, 23 Feb
- 2021 17:44:57 +0000
-Received: from DB8P190MB0634.EURP190.PROD.OUTLOOK.COM
- ([fe80::64eb:97b0:de3c:4c5d]) by DB8P190MB0634.EURP190.PROD.OUTLOOK.COM
- ([fe80::64eb:97b0:de3c:4c5d%6]) with mapi id 15.20.3868.033; Tue, 23 Feb 2021
- 17:44:57 +0000
-From:   Sven Schuchmann <schuchmann@schleissheimer.de>
-To:     Dan Murphy <dmurphy@ti.com>,
-        "ioana.ciornei@nxp.com" <ioana.ciornei@nxp.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: RE: net: phy: ti: implement generic .handle_interrupt() callback
-Thread-Topic: RE: net: phy: ti: implement generic .handle_interrupt() callback
-Thread-Index: AdcKC41VqgAALwodStOMhfH0LIc3Fg==
-Date:   Tue, 23 Feb 2021 17:44:57 +0000
-Message-ID: <DB8P190MB0634C73B4363753F62FCE4B6D9809@DB8P190MB0634.EURP190.PROD.OUTLOOK.COM>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: ti.com; dkim=none (message not signed)
- header.d=none;ti.com; dmarc=none action=none header.from=schleissheimer.de;
-x-originating-ip: [62.153.209.162]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f46609c9-0ffc-4933-2dc4-08d8d822bca2
-x-ms-traffictypediagnostic: DB9P190MB1257:
-x-microsoft-antispam-prvs: <DB9P190MB125712C2E32C90B3A488B61BD9809@DB9P190MB1257.EURP190.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NOi6ZXiFnY5nzadDGLvpqNDSZMLSEWeTpi4z6ukNyk91uWz9iGDERQBmGjMzy8/JB7iNqArH91zQySomWfwDbQHVW9YRBplH1xHbjsXQym+hEHcmK834Z/TVyqMRSxecqVx4lR4SyQ/uR/u8L//LPGUtvpqGRMQbofT9ak5pEnKturRg9qjoHL0dUJTIHpjypxFkjPsRk+LDRS0tXAwNHCKHyUUSwcNMqO/psnxeYf6OtXbHV9zWEyBS5xpUpz/n6wbThZ4wWtSUAYNokZsh4LdrQE1ZOP90v9NXWGjaQj2+sHKm12+lRHzp28k97tqhMxwfhvzzdrcllP4MJdHKcz2CD1fjmcTf41UkR9yjSXiHNT4t9TZZGNDF3U+SsYMIDIFHs9LafVrSN6TZ4B+vxnGyoemFgotTcs6J84S4q5zpwxrYS4Iacl83S6g/fTB0f2tRrR12wl6hMyrh9gl0S6ndXqAq9GqN4DpBhpu66LgRHJznJsr35X2nwFFSROEHBXBbyNWN4K8KSXPEyE8bP3Adk6NrU3RQtZVl694jvrwBSmLiJHvjJwyV9d0oimXIk+e30XV+OKgqy7vFWMrEElUl/jDG0HblnoMDBOYeRVuNpfhfx3C3y2YoR9VJ/DnMrp/9j0BdsOzgJs1x4qW77oB4gpH1N1/OiwDyg7QjtPg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8P190MB0634.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(136003)(376002)(346002)(39830400003)(396003)(5660300002)(66556008)(478600001)(71200400001)(54906003)(76116006)(52536014)(2906002)(4744005)(7696005)(966005)(8676002)(55016002)(316002)(64756008)(6506007)(66946007)(66446008)(9686003)(26005)(110136005)(186003)(8936002)(4326008)(66476007)(33656002)(86362001)(41533002)(142923001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?N/YL445XeQ60g3KBZrF9IMp1pJsfwqmJ+9pt4cAMgjrwPUKMV/5+X7MUJqUX?=
- =?us-ascii?Q?m25jjXxLVIJNRoXD0r1UJJNa/ch6MTVTxmXDxXzyLsLU1+q9Gi5dd1ECiPX0?=
- =?us-ascii?Q?1ILmTclw3KFpQkyYG/XsqBI+Zxd+nZeYKg8vRpWC+GfuQovjRkgZoArwRk1d?=
- =?us-ascii?Q?XaJYeBk2WhlvYZji9swY6+AOik670R7954YawEb+3xmBVu7SgJ1EdOhW395s?=
- =?us-ascii?Q?hacnKpETq3ZUownYsqYi8ees1hed4zZ9oCAF0IlDnndTSkcpInOUnvD2dkdT?=
- =?us-ascii?Q?46Rlwvh0UyXZQA6tCvbQjAINJx51sVVmxcOA+x0UPFPMIEcbAA6arteSfPPV?=
- =?us-ascii?Q?q4xQNteF39VSctR+HbxfawvR5cho3Id2OAZ0H2D90qBPKIcqe7+UgGJRNVKe?=
- =?us-ascii?Q?xQPe3RRRKyY6bX7k4IGt0Mn9NZjpW5/5G1LwKwKNdm5SMPykYPxDn6jpzTtc?=
- =?us-ascii?Q?s0pzMK73kjVJlYo1JPxJi1ANHSJ97TfPoYbX1ave/PEndBPeXkTXXFTWBsxb?=
- =?us-ascii?Q?l3esPt6oNYuOXM6T0sVAUe1wMGeQeB8ciEtjbnAzIFfCh/fh6HeWlIx8Ji9T?=
- =?us-ascii?Q?MKTXnhF1cMoNfbgSqzHjhxFEj1rlSE3Hqx2pMx7xhN6UTdGs/XjY3qiA0mNJ?=
- =?us-ascii?Q?9at/vzem7zWbFbbwTFq5ViX2iI4hIhLegBnDeUvmp2lF+Son/U31AWEYb+gQ?=
- =?us-ascii?Q?brwNJtOs429aIkFh7hG+YcYZ1oOHSk3DDoPbsdkSztXjWSmuvm69F6N/blUY?=
- =?us-ascii?Q?VOqyGXlByS3NOMARTIJipSE1FepTAGKGxSTxaOgZr5YW2RXJGb3akfN3+R9i?=
- =?us-ascii?Q?X7/wiXgKs7nuVpHUESOw8N+BGw9Wj7lVhU4oA0T3C/v/VnDUY7nnYut+buO2?=
- =?us-ascii?Q?y5GrpPF9UiUkYZykoZV8jKtM4EEiRgeCVbL7J4wzeiGOFtI81BMdu9yHxgOo?=
- =?us-ascii?Q?R/ySvrTR2tiMLRN5xK9MslULevlqMNlJ4KWanAIRbWQb1s+AVhdxCLBAoX+v?=
- =?us-ascii?Q?lbY12paQJdpmMTuhdlOH/+5rhBmBfs5ipPvYdpNHf6/mCIAgfWXwPt7INqla?=
- =?us-ascii?Q?eC7/W/BibJQaBYV9/GweoWFx+vkMvibbaJ1GQvWYCLlw1cgZgSOx/1qah4ab?=
- =?us-ascii?Q?2K6vsPE4s7U58WuBJOT6mhyUGgw3LkPm0ii0KZwOgzYKC9jt6aomA4SoewS+?=
- =?us-ascii?Q?3KwJF08LOeqGfhKDJ6NobWIYnUwLT94LVX+nLXh387qwYWi4Q8mftph9FNHw?=
- =?us-ascii?Q?5utYHPjTy6VydUW9APIuYuCY6jg6OSkeI+9xS9RXE3uRp2DT2RMg6Me148k3?=
- =?us-ascii?Q?UL5J7/rJiesH4YbdcWiOfyTd?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=J4wfkiTCU9z+cbGjEQ9m1c62jLLCIsWv7dNr7SAopXQ=;
+        b=iytJTb5YwJknErrveeut69mU97HtnVOkdcByFnbPK2GDP3uzgJSVxe9oji+OQYiEyB
+         p1c1mM29KQ5lyZnXkmxen3+UED1l6aRXyhrZhgXMJopg/VxTsasDvb6R9SrQn/4sE1TX
+         zlHZzXcoxJ4gu1BT9rFfmEMEceUATpKuHAKdk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=J4wfkiTCU9z+cbGjEQ9m1c62jLLCIsWv7dNr7SAopXQ=;
+        b=ICc/oI6OYXRox0ygFNaY91cepTRmcK0KVoXD0haOOtLaOJrPuTluFf6t8KmLqHzuZX
+         Y3zprkw2S3aVNnVvdL60ZyqwBsX101KB0xg2jnGf87tbRpZjc9VRfQDV4jalTgzE23LK
+         IbXjINUpcntDgRTtDlfofWJ/Gg00guLLFwPPxxdYIuvLH+soSGuRRhHdditIE3cM8oeK
+         pBJEuu23TzkvVzUqhNTtpLe9eZ+HXaZ8qPaE9pUHZmdvRYpsswJ8jcsoIjGZ6u4qTKbJ
+         jGgCrQx2mTZ2H5yHXby2evtRIua++Gdxkrjk2JLgzak5XNvzvSysrNNbbmFWnllFxloV
+         +/FQ==
+X-Gm-Message-State: AOAM530isU3rHjri2Wv3D6kaUdaaeiYe+/wYsX2tld6v8WCfEBeZb7Xp
+        UfjDcs5Yrr4AVwGvY2tm1HC9NQ==
+X-Google-Smtp-Source: ABdhPJzXIvg020Gr3TzE8b6oaIIxO/6mykDgtheWw7/jrnQe4ySzKZaYgquJFyH8IxoeD+fPsuXVeA==
+X-Received: by 2002:a19:c1cf:: with SMTP id r198mr1608567lff.11.1614102780457;
+        Tue, 23 Feb 2021 09:53:00 -0800 (PST)
+Received: from cloudflare.com (79.184.34.53.ipv4.supernova.orange.pl. [79.184.34.53])
+        by smtp.gmail.com with ESMTPSA id j20sm228732lfb.18.2021.02.23.09.52.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 09:52:59 -0800 (PST)
+References: <20210220052924.106599-1-xiyou.wangcong@gmail.com>
+ <20210220052924.106599-5-xiyou.wangcong@gmail.com>
+ <87eeh847ko.fsf@cloudflare.com>
+ <CAM_iQpVS_sJy=sM31pHZVi6njZEAa7Hv_Bkt2sB7JcAjFw3guw@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [Patch bpf-next v6 4/8] skmsg: move sk_redir from TCP_SKB_CB to
+ skb
+In-reply-to: <CAM_iQpVS_sJy=sM31pHZVi6njZEAa7Hv_Bkt2sB7JcAjFw3guw@mail.gmail.com>
+Date:   Tue, 23 Feb 2021 18:52:58 +0100
+Message-ID: <875z2i4qo5.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-OriginatorOrg: schleissheimer.de
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8P190MB0634.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: f46609c9-0ffc-4933-2dc4-08d8d822bca2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Feb 2021 17:44:57.7167
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: ba05321a-a007-44df-8805-c7e62d5887b5
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7+wp8wemplUSBSm2SkM9etP2fJFqBToUtaKwvr7nP9EOcnMSaAcS/DAFNU2pOiBuuKzZ7nS2dTQrvk99mFJVp9ej6keAip1zRClg4eaorCM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9P190MB1257
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+On Mon, Feb 22, 2021 at 08:27 PM CET, Cong Wang wrote:
+> On Mon, Feb 22, 2021 at 4:20 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> On Sat, Feb 20, 2021 at 06:29 AM CET, Cong Wang wrote:
+>> > From: Cong Wang <cong.wang@bytedance.com>
+>> >
+>> > Currently TCP_SKB_CB() is hard-coded in skmsg code, it certainly
+>> > does not work for any other non-TCP protocols. We can move them to
+>> > skb ext, but it introduces a memory allocation on fast path.
+>> >
+>> > Fortunately, we only need to a word-size to store all the information,
+>> > because the flags actually only contains 1 bit so can be just packed
+>> > into the lowest bit of the "pointer", which is stored as unsigned
+>> > long.
+>> >
+>> > Inside struct sk_buff, '_skb_refdst' can be reused because skb dst is
+>> > no longer needed after ->sk_data_ready() so we can just drop it.
+>> >
+>> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+>> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+>> > Cc: Lorenz Bauer <lmb@cloudflare.com>
+>> > Acked-by: John Fastabend <john.fastabend@gmail.com>
+>> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+>> > ---
+>>
+>> LGTM. I have some questions (below) that would help me confirm if I
+>> understand the changes, and what could be improved, if anything.
+>>
+>> Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+>>
+>> >  include/linux/skbuff.h |  3 +++
+>> >  include/linux/skmsg.h  | 35 +++++++++++++++++++++++++++++++++++
+>> >  include/net/tcp.h      | 19 -------------------
+>> >  net/core/skmsg.c       | 32 ++++++++++++++++++++------------
+>> >  net/core/sock_map.c    |  8 ++------
+>> >  5 files changed, 60 insertions(+), 37 deletions(-)
+>> >
+>> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+>> > index 6d0a33d1c0db..bd84f799c952 100644
+>> > --- a/include/linux/skbuff.h
+>> > +++ b/include/linux/skbuff.h
+>> > @@ -755,6 +755,9 @@ struct sk_buff {
+>> >                       void            (*destructor)(struct sk_buff *skb);
+>> >               };
+>> >               struct list_head        tcp_tsorted_anchor;
+>> > +#ifdef CONFIG_NET_SOCK_MSG
+>> > +             unsigned long           _sk_redir;
+>> > +#endif
+>> >       };
+>> >
+>> >  #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
+>> > diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+>> > index e3bb712af257..fc234d507fd7 100644
+>> > --- a/include/linux/skmsg.h
+>> > +++ b/include/linux/skmsg.h
+>> > @@ -459,4 +459,39 @@ static inline bool sk_psock_strp_enabled(struct sk_psock *psock)
+>> >               return false;
+>> >       return !!psock->saved_data_ready;
+>> >  }
+>> > +
+>> > +#if IS_ENABLED(CONFIG_NET_SOCK_MSG)
+>> > +static inline bool skb_bpf_ingress(const struct sk_buff *skb)
+>> > +{
+>> > +     unsigned long sk_redir = skb->_sk_redir;
+>> > +
+>> > +     return sk_redir & BPF_F_INGRESS;
+>> > +}
+>> > +
+>> > +static inline void skb_bpf_set_ingress(struct sk_buff *skb)
+>> > +{
+>> > +     skb->_sk_redir |= BPF_F_INGRESS;
+>> > +}
+>> > +
+>> > +static inline void skb_bpf_set_redir(struct sk_buff *skb, struct sock *sk_redir,
+>> > +                                  bool ingress)
+>> > +{
+>> > +     skb->_sk_redir = (unsigned long)sk_redir;
+>> > +     if (ingress)
+>> > +             skb->_sk_redir |= BPF_F_INGRESS;
+>> > +}
+>> > +
+>> > +static inline struct sock *skb_bpf_redirect_fetch(const struct sk_buff *skb)
+>> > +{
+>> > +     unsigned long sk_redir = skb->_sk_redir;
+>> > +
+>> > +     sk_redir &= ~0x1UL;
+>>
+>> We're using the enum when setting the bit flag, but a hardcoded constant
+>> when masking it. ~BPF_F_INGRESS would be more consistent here.
+>
+> Well, here we need a mask, not a bit, but we don't have a mask yet,
+> hence I just use hard-coded 0x1. Does #define BPF_F_MASK 0x1UL
+> look any better?
 
-I am working with the DP83TC811R but for now on the 5.10 kernel.
-I have seen this patch on the latest dev
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/d=
-rivers/net/phy/dp83tc811.c?h=3Dv5.11&id=3D1d1ae3c6ca3ff49843d73852bb2a8153c=
-e16f432
+Based on what I've seen around, mask for sanitizing tagged pointers is
+usually derived from the flag(s). For instance:
 
-I did not test it yet, but I wonder about one thing:
-What happens when there are 2 Flags set e.g.
-in INT_STAT1 and one in INT_STAT2?
-What I see from the code is that it would
-only read (and acknowledge) the first one and
-then quit out to trigger_machine.
+#define SKB_DST_NOREF	1UL
+#define SKB_DST_PTRMASK	~(SKB_DST_NOREF)
 
-Any thoughts about this?
+#define SK_USER_DATA_NOCOPY	1UL
+#define SK_USER_DATA_BPF	2UL	/* Managed by BPF */
+#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF)
 
+Using ~(BPF_F_INGRESS) expression would be like substituting mask
+definition.
 
-Best Regards,
+[..]
 
-   Sven
+>> > diff --git a/include/net/tcp.h b/include/net/tcp.h
+>> > index 947ef5da6867..075de26f449d 100644
+>> > --- a/include/net/tcp.h
+>> > +++ b/include/net/tcp.h
+>> > @@ -883,30 +883,11 @@ struct tcp_skb_cb {
+>> >                       struct inet6_skb_parm   h6;
+>> >  #endif
+>> >               } header;       /* For incoming skbs */
+>> > -             struct {
+>> > -                     __u32 flags;
+>> > -                     struct sock *sk_redir;
+>> > -             } bpf;
+>> >       };
+>> >  };
+>> >
+>> >  #define TCP_SKB_CB(__skb)    ((struct tcp_skb_cb *)&((__skb)->cb[0]))
+>> >
+>> > -static inline bool tcp_skb_bpf_ingress(const struct sk_buff *skb)
+>> > -{
+>> > -     return TCP_SKB_CB(skb)->bpf.flags & BPF_F_INGRESS;
+>> > -}
+>> > -
+>> > -static inline struct sock *tcp_skb_bpf_redirect_fetch(struct sk_buff *skb)
+>> > -{
+>> > -     return TCP_SKB_CB(skb)->bpf.sk_redir;
+>> > -}
+>> > -
+>> > -static inline void tcp_skb_bpf_redirect_clear(struct sk_buff *skb)
+>> > -{
+>> > -     TCP_SKB_CB(skb)->bpf.sk_redir = NULL;
+>> > -}
+>> > -
+>> >  extern const struct inet_connection_sock_af_ops ipv4_specific;
+>> >
+>> >  #if IS_ENABLED(CONFIG_IPV6)
+>> > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+>> > index 2d8bbb3fd87c..05b5af09ff42 100644
+>> > --- a/net/core/skmsg.c
+>> > +++ b/net/core/skmsg.c
+>> > @@ -494,6 +494,8 @@ static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb
+>> >  static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+>> >                              u32 off, u32 len, bool ingress)
+>> >  {
+>> > +     skb_bpf_redirect_clear(skb);
+>>
+>> This is called to avoid leaking state in skb->_skb_refdst. Correct?
+>
+> This is to teach kfree_skb() not to consider it as a valid _skb_refdst.
+
+OK
+
+>
+>>
+>> I'm wondering why we're doing it every time sk_psock_handle_skb() gets
+>> invoked from the do/while loop in sk_psock_backlog(), instead of doing
+>> it once after reading ingress flag with skb_bpf_ingress()?
+>
+> It should also work, I don't see much difference here, as we almost
+> always process a full skb, that is, ret == skb->len.
+
+OK
+
+>
+>
+>>
+>> > +
+>> >       if (!ingress) {
+>> >               if (!sock_writeable(psock->sk))
+>> >                       return -EAGAIN;
+>> > @@ -525,7 +527,7 @@ static void sk_psock_backlog(struct work_struct *work)
+>> >               len = skb->len;
+>> >               off = 0;
+>> >  start:
+>> > -             ingress = tcp_skb_bpf_ingress(skb);
+>> > +             ingress = skb_bpf_ingress(skb);
+>> >               do {
+>> >                       ret = -EIO;
+>> >                       if (likely(psock->sk->sk_socket))
+>> > @@ -631,7 +633,12 @@ void __sk_psock_purge_ingress_msg(struct sk_psock *psock)
+>> >
+>> >  static void sk_psock_zap_ingress(struct sk_psock *psock)
+>> >  {
+>> > -     __skb_queue_purge(&psock->ingress_skb);
+>> > +     struct sk_buff *skb;
+>> > +
+>> > +     while ((skb = __skb_dequeue(&psock->ingress_skb)) != NULL) {
+>> > +             skb_bpf_redirect_clear(skb);
+>>
+>> I believe we clone the skb before enqueuing it psock->ingress_skb.
+>> Clone happens either in sk_psock_verdict_recv() or in __strp_recv().
+>> There are not other users holding a ref, so clearing the redirect seems
+>> unneeded. Unless I'm missing something?
+>
+> Yes, skb dst is also cloned:
+>
+>  980 static void __copy_skb_header(struct sk_buff *new, const struct
+> sk_buff *old)
+>  981 {
+>  982         new->tstamp             = old->tstamp;
+>  983         /* We do not copy old->sk */
+>  984         new->dev                = old->dev;
+>  985         memcpy(new->cb, old->cb, sizeof(old->cb));
+>  986         skb_dst_copy(new, old);
+>
+> Also, if without this, dst_release() would complain again. I was not smart
+> enough to add it in the beginning, dst_release() taught me this lesson. ;)
+
+OK, I think I follow you now.
+
+Alternatively we could clear _skb_refdest after clone, but before
+enqueuing the skb in ingress_skb. And only for when we're redirecting.
+
+I believe that would be in sk_psock_skb_redirect, right before skb_queue_tail.
+
+>
+>>
+>> > +             kfree_skb(skb);
+>> > +     }
+>> >       __sk_psock_purge_ingress_msg(psock);
+>> >  }
+>> >
+>> > @@ -752,7 +759,7 @@ static void sk_psock_skb_redirect(struct sk_buff *skb)
+>> >       struct sk_psock *psock_other;
+>> >       struct sock *sk_other;
+>> >
+>> > -     sk_other = tcp_skb_bpf_redirect_fetch(skb);
+>> > +     sk_other = skb_bpf_redirect_fetch(skb);
+>> >       /* This error is a buggy BPF program, it returned a redirect
+>> >        * return code, but then didn't set a redirect interface.
+>> >        */
+>> > @@ -802,9 +809,10 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
+>> >                * TLS context.
+>> >                */
+>> >               skb->sk = psock->sk;
+>> > -             tcp_skb_bpf_redirect_clear(skb);
+>> > +             skb_dst_drop(skb);
+>> > +             skb_bpf_redirect_clear(skb);
+>>
+>> After skb_dst_drop(), skb->_skb_refdst is clear. So it seems the
+>> redirect_clear() is not needed. But I'm guessing it is being invoked
+>> to communicate the intention?
+>
+> Technically true, but I prefer to call them explicitly, not to rely on the
+> fact skb->_skb_refdst shares the same storage with skb->_sk_redir,
+> which would also require some comments to explain.
+>
+
+OK
+
