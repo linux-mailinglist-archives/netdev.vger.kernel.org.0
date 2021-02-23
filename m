@@ -2,118 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F6C93222E1
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 00:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9E903222F9
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 01:11:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231905AbhBVX7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Feb 2021 18:59:02 -0500
-Received: from mga09.intel.com ([134.134.136.24]:21005 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231932AbhBVX6v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Feb 2021 18:58:51 -0500
-IronPort-SDR: zRYsTtGSy08ingmYcee4o2k/NVHvPDgTPc8mhPg0QK3HDCRAsea0Xny7qi/P0EzChvy79gqDG+
- T/vdigmbPrrQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9903"; a="184751845"
-X-IronPort-AV: E=Sophos;i="5.81,198,1610438400"; 
-   d="scan'208";a="184751845"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2021 15:57:14 -0800
-IronPort-SDR: G950Mx/AfhyCt2paBh4JX8nIAo1mrOHuz/khDpfWHDNjRVJk88UKX/92ybAfsjs8+BrP3oLYMO
- B/qj+mn0wXKg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,198,1610438400"; 
-   d="scan'208";a="592882914"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Feb 2021 15:57:13 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Henry Tieman <henry.w.tieman@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net 5/5] ice: update the number of available RSS queues
-Date:   Mon, 22 Feb 2021 15:58:14 -0800
-Message-Id: <20210222235814.834282-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210222235814.834282-1-anthony.l.nguyen@intel.com>
-References: <20210222235814.834282-1-anthony.l.nguyen@intel.com>
+        id S231735AbhBWALM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Feb 2021 19:11:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231387AbhBWALK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Feb 2021 19:11:10 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E27C061574;
+        Mon, 22 Feb 2021 16:10:28 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id w1so31879277ejf.11;
+        Mon, 22 Feb 2021 16:10:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iqfcQJ00tw5XY2AhO9cKJWatdog4qJNF1NEavBWhI90=;
+        b=NZuoMCOV6mjS9+pu5d+7KXYZ/kFQlOH6el9i7QwvS4IippNIuFTBXAZ+pvsHJBPVko
+         29g1yRCQl+EV6E8g7dS9GKetWZJ6mkq+7DdDCvekOFgUrgROePMpfX6WzZnq9q7VKvfX
+         /Nkf4wFfLiUcromguFCiLKAg1FSHk2WDC63kB0x8wU1o+2AAPNVPro6XX1qYcvc0DvKw
+         /AhAShF0+CSKYWDqcj8Ow7rVdPewtblxxm5xu5FqiYNJUQ9wWlFAw3ujtTw41lk6H9Ye
+         /eZ8M2yqFquBjCnw0dq+oaGl1NWxdlbMcfGfUlIegUoJRzohx1/MvGT5bJizAZh9wzY6
+         CbVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iqfcQJ00tw5XY2AhO9cKJWatdog4qJNF1NEavBWhI90=;
+        b=Gy4lJ/WY9Mv4wr552BKjV9eClpjbUscw+C74Uj920L269G7IY65H7HbZ30Z300AXlq
+         1Fn75G2LydgbbxhwoUu4ZVgy8rWIN+gdl3oGH6m66NMHbjmMicgcxygdeqlUKFt/ZzdE
+         gRV0JVLQ0ThNIITJWcaWX4dGbsc28KHgQ1K1yZvlZ6V0Y25Qe1dlFTapZpWOZwWRbmwI
+         tKpAjU0ttGg98cTYRSlBSRAoN5lwB1C5TqJbXZTFj9x+ZSBoT24ADn/1+lAWjEOjiylZ
+         WxfeKJgq8DG/lObuC+j1UU3Fz9s7mCyYdUzGFt6eu++eJvLjaQcBkfJQvwt+YUDAz8CO
+         fhoQ==
+X-Gm-Message-State: AOAM532xDywoNZTnS0jp5xVLzPaklULV/khhKj6I4rYEo9bASfLqVZt0
+        F9gwaijC+868nh3gM1iq4og=
+X-Google-Smtp-Source: ABdhPJxjearfnUMvSmS+H0zjKX7Hc0Bh6XGbAiHYfUaCROCgzwwdJJ7qHYCMcEavARyPYjnv1DrRmg==
+X-Received: by 2002:a17:906:1992:: with SMTP id g18mr16220600ejd.44.1614039026936;
+        Mon, 22 Feb 2021 16:10:26 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id y5sm10995954ejr.61.2021.02.22.16.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Feb 2021 16:10:26 -0800 (PST)
+Date:   Tue, 23 Feb 2021 02:10:24 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2 2/2] net: dsa: b53: Support setting learning on
+ port
+Message-ID: <20210223001024.t4nthmcniikisfnp@skbuf>
+References: <20210222223010.2907234-1-f.fainelli@gmail.com>
+ <20210222223010.2907234-3-f.fainelli@gmail.com>
+ <20210222231832.fzrq3y3vbok5byd3@skbuf>
+ <3ba2c390-5318-999b-d1bb-097a89486ce1@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3ba2c390-5318-999b-d1bb-097a89486ce1@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Henry Tieman <henry.w.tieman@intel.com>
+On Mon, Feb 22, 2021 at 03:44:21PM -0800, Florian Fainelli wrote:
+> > In sf2, CORE_DIS_LEARN is at address 0xf0, while in b53, B53_DIS_LEARN
+> > is at 0x3c. Are they even configuring the same thing?
+> 
+> They are the SF2 switch was integrated with a bridge that would flatten
+> its address space such that there would be no need to access the
+> registers indirectly like what b53_srab does.
+> 
+> This is the reason why we have the SF2_PAGE_REG_MKADDR() macro to
+> convert from a {page, offset} tuple to a memory mapped address and here
+> 0x3c << 2 = 0xf0.
 
-It was possible to have Rx queues that were not available for use
-by RSS. This would happen when increasing the number of Rx queues
-while there was a user defined RSS LUT.
+Thanks, now I have more context to understand why sf2 uses one kind of
+I/O and b53 another, and also how the paged address map managed by the
+b53 driver gets linearized before accessing the sf2 registers.
 
-Always update the number of available RSS queues when changing the
-number of Rx queues.
-
-Fixes: 87324e747fde ("ice: Implement ethtool ops for channels")
-Signed-off-by: Henry Tieman <henry.w.tieman@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 27 ++++++++++++++------
- 1 file changed, 19 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 4001857788f8..2dcfa685b763 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -3328,6 +3328,18 @@ ice_get_channels(struct net_device *dev, struct ethtool_channels *ch)
- 	ch->max_other = ch->other_count;
- }
- 
-+/**
-+ * ice_get_valid_rss_size - return valid number of RSS queues
-+ * @hw: pointer to the HW structure
-+ * @new_size: requested RSS queues
-+ */
-+static int ice_get_valid_rss_size(struct ice_hw *hw, int new_size)
-+{
-+	struct ice_hw_common_caps *caps = &hw->func_caps.common_cap;
-+
-+	return min_t(int, new_size, BIT(caps->rss_table_entry_width));
-+}
-+
- /**
-  * ice_vsi_set_dflt_rss_lut - set default RSS LUT with requested RSS size
-  * @vsi: VSI to reconfigure RSS LUT on
-@@ -3355,14 +3367,10 @@ static int ice_vsi_set_dflt_rss_lut(struct ice_vsi *vsi, int req_rss_size)
- 		return -ENOMEM;
- 
- 	/* set RSS LUT parameters */
--	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
-+	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags))
- 		vsi->rss_size = 1;
--	} else {
--		struct ice_hw_common_caps *caps = &hw->func_caps.common_cap;
--
--		vsi->rss_size = min_t(int, req_rss_size,
--				      BIT(caps->rss_table_entry_width));
--	}
-+	else
-+		vsi->rss_size = ice_get_valid_rss_size(hw, req_rss_size);
- 
- 	/* create/set RSS LUT */
- 	ice_fill_rss_lut(lut, vsi->rss_table_size, vsi->rss_size);
-@@ -3441,9 +3449,12 @@ static int ice_set_channels(struct net_device *dev, struct ethtool_channels *ch)
- 
- 	ice_vsi_recfg_qs(vsi, new_rx, new_tx);
- 
--	if (new_rx && !netif_is_rxfh_configured(dev))
-+	if (!netif_is_rxfh_configured(dev))
- 		return ice_vsi_set_dflt_rss_lut(vsi, new_rx);
- 
-+	/* Update rss_size due to change in Rx queues */
-+	vsi->rss_size = ice_get_valid_rss_size(&pf->hw, new_rx);
-+
- 	return 0;
- }
- 
--- 
-2.26.2
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
