@@ -2,144 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AC92322656
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 08:20:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7D5322666
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 08:30:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231955AbhBWHUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 02:20:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
+        id S231638AbhBWHac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 02:30:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231840AbhBWHUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 02:20:12 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B49CC061574;
-        Mon, 22 Feb 2021 23:19:32 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id f4so15497814ybk.11;
-        Mon, 22 Feb 2021 23:19:32 -0800 (PST)
+        with ESMTP id S231527AbhBWHa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 02:30:26 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68489C06174A;
+        Mon, 22 Feb 2021 23:29:46 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id b10so15553713ybn.3;
+        Mon, 22 Feb 2021 23:29:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZbrJy9F31IyOyKc6QRCuclFArja7riXdxECoDwKq/m4=;
-        b=kAS+penUa37P4RUd7+QrbldH1BOQ9P2ymVbT5d7WvMt8LPaXToK7YR09KpEL96x5iH
-         Aa6YQDtzdpxS24rH4c30RL6CF0chlrE72YML+61YkdyiG2UOXDbZX57M6p+bi+QVYO0Z
-         55dTjsGmSRiMfi/CzyLzG05XfvMEUz+aV89SPozdzSCaL+mKKV//V+ST8AjwdoCFOLix
-         cr/IBF6xSaIMe8IPhMX6lboCp4b55+PerW0B5B1tCFRQ4OmjM2esDrgKkwXq6GNNOWcu
-         zvxnFYylwFWHtlk6CmlCWC86+30ptXQuCFS+vG1BCpxReP6MXb9MpOD7PmqAJTGCK/Mh
-         p0kQ==
+        bh=dzIqg+5mpCIY9E1ryqQh4KcWKABRhnP2MawesTKXueQ=;
+        b=S7St8X67aOOiNfYFxneTnhIT+Ab8k0+26AJF5BmC8gcgfwsptS5jlTdT488F1fQFRx
+         cMnlgv9xuPPCLsT6jETaIgiEWGq7Dpy8NG7fd14XERJ3FzdIHHru5sD4TFebef9oC5j/
+         yJxW6H+VpoNlJdcoeyFgiI7MYxidc1KcOj+hERRIdCzEGdM7kS/gfi2KDhWUdyMHK8eq
+         h4U5dcEf8AxGSnIPlvUWFHdACMYQ6K3R4fgB6u+EulG1pqf4mCfWe7NyrRN32+hf1ILK
+         XJRJndmo0OaZnoZKadPM8g/XGZoTGfKBFFMSu7VyXis7xr9M+mqEj+nd0dfJ7oiRnmKb
+         2lZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZbrJy9F31IyOyKc6QRCuclFArja7riXdxECoDwKq/m4=;
-        b=il1Mas5x2s6JEIJfd75LCEaQUoAdZhmUB6NwH7ZtJ57YlhIY+2NDGbo8uGH0yc0up5
-         p/Wvdxz/urxByoC1HdG52rI/uwgxxnJE9v4rBNcZJohlt929xLqrtTpwxfw9lICRigkL
-         kH1m9JwNMRIU6SQCiLsDrmnrTYnB6+a/K+FiSfuXFJDAFH6Rwsc0c5p4I29csxLuM2l/
-         gcusYeHMyW/yVtd3gpMaLdODqdr6Jj+HpGOLioq9zIP2w9VH9Jd39X01eHySUAqJ6U2T
-         mcUFPoHnV6Zb8VUGvU1o2iW1PAdxCu4QxpZ1KwUIF6no0epbhUbiq0qriZSWRURZP8Km
-         kbnQ==
-X-Gm-Message-State: AOAM533EwxwGAqdrcFaEUd0OaSo80p1B9oFzTzvhT9y9SJ5qu3tlt4PA
-        irzED00aJJOkee5QoP8+SUsYJ6YT1f5+eOapfqk=
-X-Google-Smtp-Source: ABdhPJwK5/Sqw5Ltw3LgeC8rYm9LOWViuZu5pvWXekhZe2huE+WnBU0kkgQP1FGzNNtiImHeIMHc8N8GSaxyM0i5PmY=
-X-Received: by 2002:a25:37c4:: with SMTP id e187mr39545653yba.347.1614064772003;
- Mon, 22 Feb 2021 23:19:32 -0800 (PST)
+        bh=dzIqg+5mpCIY9E1ryqQh4KcWKABRhnP2MawesTKXueQ=;
+        b=RssZgfE6yAQMHdsrJ9E3/E53+g5IdYGS6sJUmOiaY1piQxxzqKbRTl63wq4sMFOeFq
+         uLxAggll8usAugc4EdQt4fCmEdcD1SpQEdNQulLneQr2dc1UWIR9B2blXxrAUR6QrUiY
+         +Dnr2dxtK4sEtf0u+Po2rKPyoJrT9/+JEJC9MiMvWkr02PgQl+ZfBRQ1tgCGsmlWNbDQ
+         t4fzAqsgD5ok/X3TMq7JtqNfz8sfdydd8rLbbJ/Py92KfQWatC+7gemcQiJsQS6MzXDi
+         61QyG/BBMl6F38ukZX71FBv9bxBssfql02IpesxfB4c46FlY9hyQ8sktJyoLL/njgZ2B
+         hubg==
+X-Gm-Message-State: AOAM5309DgP2WqqPpMUBVFOh61d/YJVsTvYh/rDIcPDPPy61VX6J5uwr
+        jAR8/MfsF2w2z2FINIxaJ/2PgoXfllueVh77Lfk=
+X-Google-Smtp-Source: ABdhPJyg6KDJxS9hfvt93Ofk2h+sDRelQynJm+ay7bjzUWIJ8H0esq8YGaE0pi9gOfwI9wwu8lHH5zI8V5Ab59A5NWE=
+X-Received: by 2002:a25:abb2:: with SMTP id v47mr37654491ybi.425.1614065385794;
+ Mon, 22 Feb 2021 23:29:45 -0800 (PST)
 MIME-Version: 1.0
-References: <20210223012014.2087583-1-songliubraving@fb.com>
- <20210223012014.2087583-3-songliubraving@fb.com> <CAEf4BzaZ0ATbJsLoQu_SRUYgzkak9zv61N+T=gijOQ+X=57ErA@mail.gmail.com>
- <6A4F1927-AF73-4AC8-AE44-5878ACEDF944@fb.com>
-In-Reply-To: <6A4F1927-AF73-4AC8-AE44-5878ACEDF944@fb.com>
+References: <20210216105713.45052-1-lmb@cloudflare.com>
+In-Reply-To: <20210216105713.45052-1-lmb@cloudflare.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 22 Feb 2021 23:19:21 -0800
-Message-ID: <CAEf4Bzak3Ye4xoAAva2WLc=-e+xEQFbSyk9gs50ASoSn-Gn5_A@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/6] bpf: prevent deadlock from recursive bpf_task_storage_[get|delete]
-To:     Song Liu <songliubraving@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Mon, 22 Feb 2021 23:29:34 -0800
+Message-ID: <CAEf4BzYuvE-RsT5Ee+FstZ=vuy3AMd+1j7DazFSb56+hfPKPig@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/8] PROG_TEST_RUN support for sk_lookup programs
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Peter Ziljstra <peterz@infradead.org>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 22, 2021 at 11:16 PM Song Liu <songliubraving@fb.com> wrote:
+On Tue, Feb 16, 2021 at 2:58 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
+> We don't have PROG_TEST_RUN support for sk_lookup programs at the
+> moment. So far this hasn't been a problem, since we can run our
+> tests in a separate network namespace. For benchmarking it's nice
+> to have PROG_TEST_RUN, so I've gone and implemented it.
 >
+> Multiple sk_lookup programs can be attached at once to the same
+> netns. This can't be expressed with the current PROG_TEST_RUN
+> API, so I'm proposing to extend it with an array of prog_fd.
 >
-> > On Feb 22, 2021, at 10:21 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Mon, Feb 22, 2021 at 5:23 PM Song Liu <songliubraving@fb.com> wrote:
-> >>
-> >> BPF helpers bpf_task_storage_[get|delete] could hold two locks:
-> >> bpf_local_storage_map_bucket->lock and bpf_local_storage->lock. Calling
-> >> these helpers from fentry/fexit programs on functions in bpf_*_storage.c
-> >> may cause deadlock on either locks.
-> >>
-> >> Prevent such deadlock with a per cpu counter, bpf_task_storage_busy, which
-> >> is similar to bpf_prog_active. We need this counter to be global, because
-> >> the two locks here belong to two different objects: bpf_local_storage_map
-> >> and bpf_local_storage. If we pick one of them as the owner of the counter,
-> >> it is still possible to trigger deadlock on the other lock. For example,
-> >> if bpf_local_storage_map owns the counters, it cannot prevent deadlock
-> >> on bpf_local_storage->lock when two maps are used.
-> >>
-> >> Signed-off-by: Song Liu <songliubraving@fb.com>
-> >> ---
-> >> kernel/bpf/bpf_task_storage.c | 57 ++++++++++++++++++++++++++++++-----
-> >> 1 file changed, 50 insertions(+), 7 deletions(-)
-> >>
-> >
-> > [...]
-> >
-> >> @@ -109,7 +136,9 @@ static void *bpf_pid_task_storage_lookup_elem(struct bpf_map *map, void *key)
-> >>                goto out;
-> >>        }
-> >>
-> >> +       bpf_task_storage_lock();
-> >>        sdata = task_storage_lookup(task, map, true);
-> >> +       bpf_task_storage_unlock();
-> >>        put_pid(pid);
-> >>        return sdata ? sdata->data : NULL;
-> >> out:
-> >> @@ -141,8 +170,10 @@ static int bpf_pid_task_storage_update_elem(struct bpf_map *map, void *key,
-> >>                goto out;
-> >>        }
-> >>
-> >> +       bpf_task_storage_lock();
-> >>        sdata = bpf_local_storage_update(
-> >>                task, (struct bpf_local_storage_map *)map, value, map_flags);
-> >
-> > this should probably be container_of() instead of casting
+> Patches 1-2 are clean ups. Patches 3-4 add the new UAPI and
+> implement PROG_TEST_RUN for sk_lookup. Patch 5 adds a new
+> function to libbpf to access multi prog tests. Patches 6-8 add
+> tests.
 >
-> bpf_task_storage.c uses casting in multiple places. How about we fix it in a
-> separate patch?
+> Andrii, for patch 4 I decided on the following API:
 >
+>     int bpf_prog_test_run_array(__u32 *prog_fds, __u32 prog_fds_cnt,
+>                                 struct bpf_test_run_opts *opts)
+>
+> To be consistent with the rest of libbpf it would be better
+> to take int *prog_fds, but I think then the function would have to
+> convert the array to account for platforms where
+>
+>     sizeof(int) != sizeof(__u32)
 
-Sure, let's fix all uses in a separate patch. My point is that this
-makes an assumption (that struct bpf_map map field is always the very
-first one) which is not enforced and not documented in struct
-bpf_local_storage_map.
+Curious, is there any supported architecture where this is not the
+case? I think it's fine to be consistent, tbh, and use int. Worst
+case, in some obscure architecture we'd need to create a copy of an
+array. Doesn't seem like a big deal (and highly unlikely anyways).
 
-> Thanks,
-> Song
 >
-> >
-> >> +       bpf_task_storage_unlock();
-> >>
-> >>        err = PTR_ERR_OR_ZERO(sdata);
-> >> out:
-> >> @@ -185,7 +216,9 @@ static int bpf_pid_task_storage_delete_elem(struct bpf_map *map, void *key)
-> >>                goto out;
-> >>        }
-> >>
-> >> +       bpf_task_storage_lock();
-> >>        err = task_storage_delete(task, map);
-> >> +       bpf_task_storage_unlock();
-> >> out:
-> >>        put_pid(pid);
-> >>        return err;
-> >
-> > [...]
+> Please let me know what your preference is.
+>
+> Lorenz Bauer (8):
+>   bpf: consolidate shared test timing code
+>   bpf: add for_each_bpf_prog helper
+>   bpf: allow multiple programs in BPF_PROG_TEST_RUN
+>   bpf: add PROG_TEST_RUN support for sk_lookup programs
+>   tools: libbpf: allow testing program types with multi-prog semantics
+>   selftests: bpf: convert sk_lookup multi prog tests to PROG_TEST_RUN
+>   selftests: bpf: convert sk_lookup ctx access tests to PROG_TEST_RUN
+>   selftests: bpf: check that PROG_TEST_RUN repeats as requested
+>
+>  include/linux/bpf-netns.h                     |   2 +
+>  include/linux/bpf.h                           |  24 +-
+>  include/linux/filter.h                        |   4 +-
+>  include/uapi/linux/bpf.h                      |  11 +-
+>  kernel/bpf/net_namespace.c                    |   2 +-
+>  kernel/bpf/syscall.c                          |  73 +++++-
+>  net/bpf/test_run.c                            | 230 +++++++++++++-----
+>  net/core/filter.c                             |   1 +
+>  tools/include/uapi/linux/bpf.h                |  11 +-
+>  tools/lib/bpf/bpf.c                           |  16 +-
+>  tools/lib/bpf/bpf.h                           |   3 +
+>  tools/lib/bpf/libbpf.map                      |   1 +
+>  .../selftests/bpf/prog_tests/prog_run_xattr.c |  51 +++-
+>  .../selftests/bpf/prog_tests/sk_lookup.c      | 172 +++++++++----
+>  .../selftests/bpf/progs/test_sk_lookup.c      |  62 +++--
+>  15 files changed, 499 insertions(+), 164 deletions(-)
+>
+> --
+> 2.27.0
 >
