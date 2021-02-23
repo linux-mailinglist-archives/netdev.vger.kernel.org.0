@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF21322903
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:49:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8513A322906
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 11:50:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232081AbhBWKtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 05:49:06 -0500
-Received: from mail-eopbgr50084.outbound.protection.outlook.com ([40.107.5.84]:28228
+        id S232139AbhBWKto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 05:49:44 -0500
+Received: from mail-eopbgr50040.outbound.protection.outlook.com ([40.107.5.40]:30189
         "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232064AbhBWKs7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 05:48:59 -0500
+        id S232107AbhBWKtf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 05:49:35 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OVCD44Or7Xm6a0687zn2Lf7pPPp+lm1vKyR6ETyanf87ZLpQ5uo21k2HxZ4l/vJlxxRCWFDCEkcxZWk2dsqNmw0d1nKnlN6ATgHOpUWOgM29umXcmm9xmjAo/v12vLPc/cO+OYU4Og5P/noF5IvxVOBNMdzOdu/Rxzz5a/LI+0zZZ0s1U4VfENVEAJLtUAaRAsi33/xyh04AKhkoyrk/fwZiyXSyU31+fG7PnrlDkCMHpZagCjC5vRq2DCJvKH+gI3zAXIvBU+U3R6U4PEoXMGoseMdomlCbQldw/0o6o5dxgYymVji4Tb/ZrzQuP4SFgDtSZRlIk0e8wy7wuzsULg==
+ b=HgEjU7+UJHF1TtLAdmn4wwNwBtVzt23iur8dHN9fKBLiatGEj5f5j1Qx4TfOBzJxCD2DvZ3QGFB4apTteYgWbEAdlCVk7KRyEg3zqpT4lMcgcC9K7FFCvgSwyDZJ+lZarblRFlNtLubS7d6kndzIwx0qzFHbZaVjU9WlfMP0a5uXByTKTQVjI1/U3jSYfj6FFm+Nihes9oyNJu2infBa0XQJAmlhmO1uGvV5+Sg+gt9HgzaHKo8uJOXirmj8cYvenNxV8f9H6TvfciUN8913lhzbHdpV1nqG/mTGP+4rxQbqrSB6yu07N0VUui4cHZ/1qBZ3mwuAZ4joqevLFy0NJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o+xbNsSvoRwtwzNpeZ4PvGs6Fqx46Pg6tgIzmIOA9gk=;
- b=bS+Q7LVFebnJHf9ryLmZG3+nlfBbcMHOMjEm4pDIhnuaWzVE/KKNB6Czaw3kR60HWid0KDVWfiY57WB9KKF9PryYcPc6JFfYnAfuiVroX0TmKfV5xFTr+IQTevmDPRpMQ8XaAfVJFiHJy+LqSkCz33A3gDBhkcPLmxVM643Argfu+qgcYyMur/Gl10VMmFVZ41ARNLocmY65Ll7iwYCeLd+bmC60rvVDmNLtTr+N6K3TKn7hZfWiszRJhU4cI170FZvrniaGAroQuRlgFJDKD+8nLCI6mFv1a7RKjwNrSIk7ozudBYUjLek5s0mkWjSeT1YKOzDvv/5pNwEcWBK5xA==
+ bh=VoZFlDG5nKuJsnBfl+skVl23IuL9N2te2B4ZAeyGJno=;
+ b=NZAOzpMtyzPlD5oLCG1MLei2SH/U0e9KgsR9ulL97sfhAOrYNIBZ0JCRz34sQbBBOtJCuvhrif3CqUEPv/yE9JAlWLa81t2QQkVwKre8T7y8sCqZH1D95loVpnFBcu2YVaH4p4SLfS7BVri/sPCJN1YlMm97sUXcKAkYsW6fAVj6/mETvgk62mfPwiaTBjAizSz1TujcVKAH2x0CRazTvtB+B37IQJEBz3rmYXw0JrsapJfyAY2UfMbviRtM0Mw+XjFtxTwUqjHVXXMIVpKT4t6c3lZEoLxJOZo0HBHF1XfbO6M6A1rUkpwoWk+ht+vsd724G2nPAwQymP/mLomvBA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o+xbNsSvoRwtwzNpeZ4PvGs6Fqx46Pg6tgIzmIOA9gk=;
- b=nM0tXtJNYNaC4eg3pP1/gMyPVFgH/ixtRY5XqqoHmnHuLxBIrRjNE6mqLNicHp28t+OsXQYZhotgOz4t4/mxhppFg9RVE0+/TAzYF311CTi6SZpNTuaTPkb6Sp9IOeaydAKfNcYPuO2qiEnzYBdAuFyHVaeXM9I6DtPrCuWscbY=
+ bh=VoZFlDG5nKuJsnBfl+skVl23IuL9N2te2B4ZAeyGJno=;
+ b=mGDJyV6xHaJVbCMbNJX1hB3vMwujrfeINSs8EB7NT/E+Q7Us5F6Brv7X81kinfUmMyzrS1fbF4WynmfGf9jDvZ7kSwbgX7pojWOP8nSSHOwUIHhnlQVcflrUHO7VpEed68db7BSRq3iUNl4u5KgBYcaEdh5fx3ckkAdOLp5L1aI=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DBBPR04MB7705.eurprd04.prod.outlook.com (2603:10a6:10:209::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27; Tue, 23 Feb
- 2021 10:48:10 +0000
+ 2021 10:48:12 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978%4]) with mapi id 15.20.3846.045; Tue, 23 Feb 2021
- 10:48:09 +0000
+ 10:48:12 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH V1 net-next 1/3] net: stmmac: add clocks management for gmac driver
-Date:   Tue, 23 Feb 2021 18:48:16 +0800
-Message-Id: <20210223104818.1933-2-qiangqing.zhang@nxp.com>
+Subject: [PATCH V1 net-next 2/3] net: stmmac: add platform level clocks management
+Date:   Tue, 23 Feb 2021 18:48:17 +0800
+Message-Id: <20210223104818.1933-3-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210223104818.1933-1-qiangqing.zhang@nxp.com>
 References: <20210223104818.1933-1-qiangqing.zhang@nxp.com>
@@ -54,203 +54,81 @@ X-ClientProxiedBy: MA1PR01CA0162.INDPRD01.PROD.OUTLOOK.COM
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by MA1PR01CA0162.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:71::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Tue, 23 Feb 2021 10:48:07 +0000
+Received: from localhost.localdomain (119.31.174.71) by MA1PR01CA0162.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:71::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Tue, 23 Feb 2021 10:48:10 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 77a432a9-fa52-4f44-2958-08d8d7e8829e
+X-MS-Office365-Filtering-Correlation-Id: 7958386a-8e17-43b4-8acf-08d8d7e8846b
 X-MS-TrafficTypeDiagnostic: DBBPR04MB7705:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBBPR04MB770571FA97DD9F115169F4E3E6809@DBBPR04MB7705.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:221;
+X-Microsoft-Antispam-PRVS: <DBBPR04MB7705BE955087A838846D393BE6809@DBBPR04MB7705.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1265;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lqqjqXWNsVlvH+5aGgmPvtUQy3mlw/XGnVLwLYP4HePnEtzYkSOhBqws1hAZ2xD6DHV0ACnm5+Ufj7RBft22J00OiaKkweqMMlZE3yT8paLgpajEPlSnTTp/w0ewqZaaBfP1FAueV9lDBSNaxD35LOX5gLvJXXNn0wIa06OKnMX9pWk0HT9lFs6bjgjwVWE6zHjxGILTmYxuYs0m9EKKRryUdDA2jZYA90lnKogrx8v2zVEP3ERMJr6yfd/AaYpruqXr7q/n4aStk5I5rgPZuzVR+mOi7AITopQHPpKqSUDdNTu09/z+2fwltmxQaPoIna/0LGQlu6sWJHOx/044yCIRdBIGZ2g995gT7oTnNx8O+yQ/2DU+jO4cdsv12NcVzPJLUpkiSoTNjMee1QwITr6adYnU/u/q95ShFH+cVFwKTFX+gRfIjcjytUDnyJqB0i8ZlGzmpzWK5LN2uGcTvVO1SR7s5ND+nzTePgIj46/WqRx38F7+9+ex/ugFsG+5g6uzwups5+nvIHzxMDPnY6HWn/O0MXuKpT1gxrsuYEGlDfdq3bA5EWg3ESaVraD+46iSMcrL/GTTK7JqjW7tfg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(136003)(366004)(396003)(346002)(186003)(956004)(66556008)(1076003)(2616005)(5660300002)(83380400001)(6666004)(36756003)(6506007)(26005)(16526019)(8676002)(478600001)(66476007)(4326008)(6512007)(69590400012)(2906002)(6486002)(8936002)(316002)(52116002)(66946007)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: p3xBjswNAKVl+823VJwg9Z3krTYuXY5tsvlFYR3zVNDzCgTIP1PAamZhfBExhCTs8whbL3ZRosrMCC3Nr9wbiyZFDa1BrVgidHVgXF95H49ypqEROuDJTyDN2urKhyjTPUW3gje19KIZXcJouNUZmjjRivrZZY+oeOXmpjbSkpuRaIVpCpKTWgRkwwGm4bYalC5zgRaaAr+XZqesu4PaQbMMX5SYBYxCxGvwZPtt312G/knPCc6DNS87Ercr4RBwHEJh0MGwgI4tn/TlSKc2mFaK8x3C+kqBcPswykQCz+1eEBLYMqNus154DXYoYywTN2hmpdlZLbrC3Q/Do5AnFnfeA7nF6TCQ5WhLsgGspBcs5xapwfEkTHryNh643KXAQIzob/KRMUJRN3010ZPyZM/iVKFHQef0o26uAAD/VmFBqApLyIZdOfxEB8G/ug833iwxNirOOfafC6PUKQRE5OtdJxRC/GEQ162m1bP/GT/hsur3CbI8hbRSI4Epyij7FkS8HuBTX1tXuSwNcOwlfGqhZrq6FURgSGmAOLklSaDZ0F4wVOKnOLj9+Ewg4AOyS71nIFK8D+wn9mF1V3iymrkl6sVI+k3+66tYZGC82g0FjKXlS9M8LING8/C9xFxJy66aqJ2eMbQuRuadGwfHSJDd0XdOQP8Xu/YXWTda3zvrqd7FPSFZLap4Bq3G0FncsL1T2Nhu4iO5CdhGVEMa8Zj4uVvMk6YvMMijpcgGwbkAvz57Ctyctav+6jevywYB
+X-Microsoft-Antispam-Message-Info: uEZb+Dw7avz8c70+ZquoFzfrha7DXwOA7CGC7s8JlMoCEQp2ILAt2EZJqI5PVNKpF7SqZtmDvLm9mD2zY0ctQo5yr8FsIfHwwFvR4jLlPKg7rqMOo94+imIaFOYctOB34a0/p1ZCTANARPSS3AbOsFAraAhAz5RCtKvMEUC/RppsreKwviyzlSUhKzSOd1AXDAQAJEdNIqcQmvpl8B75ka/l+nZyhaXfEO4r/jKHw7TFyQw4MllTiQ/Vdx0+Nts6fqaqQGRxzKaLeJT0xoMdEayj5PS2zw06yPE3yTrF02urVYhjbH6WhcdXfZa/u3s1lBTKCYt0XQaJh7xwcx/aKmxxKJftPwZI9ZzpQtXqR3bvzFVkjOq3lWVUWHBKtMl93ubiMY1M7qqk/7ehKHaI+IDSTY9/22oQr3sXAT1Wpxu92DoEENopNLvn5o2orFW4fMw6vt2esV7piFuuHZqYPWmwe4mdVUAeT8o6ellqjvjUuB/d8CE8gN8cqMfq9WoOvD4D7PbOG5dPuwPtFAXrxQknuo6E6Y3XbJdtBv2dxJyRldq7/zHCM6/e82iRt3SR95Bwv2+ujx8BIEOk2p3Z8w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(136003)(366004)(396003)(346002)(186003)(956004)(66556008)(1076003)(2616005)(5660300002)(83380400001)(36756003)(6506007)(26005)(16526019)(8676002)(478600001)(66476007)(4326008)(6512007)(69590400012)(2906002)(6486002)(8936002)(316002)(52116002)(66946007)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: VYyUHvo26r30HMLCjBQQQiL3vR18CzbrlRYdI47uN89mMr1POFn3DQPFSDip9T4C9zsNWkpRDf5KxI/1ruwdLXpj5ArWTaUvXePxvCZTnNd8PMQWq0tlJPrce5N1Jz+44eANYfYBAfIlRmlA5BTjABc/Pq0JECOmAFYBP5nfjOySGWcTRZSMyLKSaNOSF0CN3IhTkgz5+nKp5UGKz1NzcmW4ZMyw5Lnh2S+rUigaHQpC3d77X24OiTxOxs4Z7SsxONRoWtrrrQH/fN4+pfHcpQbrtP4q+wR6arRuvLsw+cP7Kb1q2ziPjAnZpkLVquXgysIKHzX0DT05B8xmpjNMsVIy8ca0zNyA0Kyrr1BOmYU54B5sB9CBonlz1naksV3zwx58Rthn01jJEWwLyFSA6bYz9thDazxsn4q+GVeMM7dcj/REOxfNlO9IjLmVFXHVvpc5xCLpEja4d+OPx/jS7JgQv0DRqXk4HCVlheNKYUv/FP4xSelazOesh0tKVLnvGeZPPJ0uDQiShRmCYuHdG9Y+6cW6+i6FdzuaMVt5c4v7XftnXmKEG6E4LXiqGWGjJNa3ZxJt274+go2inpT40iF5h0H0K7XB+18UBfveSk1VlhG6HSX+6NLp3EqDmx2UHsEgTWXV1ikxbZ5I/EDuaDPa+QhorjT3hTm/Ti/u0mXGw7Px/6hN4O7XEc8mpc/E0vgdJsfInwdfAIrr5fuj7LAiQNXOrQYNwQn06tDgGNnQHjQvYxYxup0UHmEGIimb
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77a432a9-fa52-4f44-2958-08d8d7e8829e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7958386a-8e17-43b4-8acf-08d8d7e8846b
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2021 10:48:09.8634
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2021 10:48:12.9060
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YYzkewKlQpf7Q8J2ReEzLx8eD5VB7KyzJxuXgJW7qxtXBRrilkBPeJJaUJ1f9I4OB02U/XJ0sT53mUBbgVOb4A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: sXG6q2gWjN/+gKyRci1wsQpVnDk7TsbIqXhi8vMNFrTOLkb41ToFTn2k8rTEyW8Scaj1P+nRnlquRJlRLLAQlQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7705
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch intends to add clocks management for stmmac driver:
-1. Keep clocks disabled after probe stage.
-2. Enable clocks when up the net device, and disable clocks when down
-   the net device.
-3. If the driver is built as module, it also keeps clocks disabled when
-   the module is removed.
+This patch intends to add platform level clocks management. Some
+platforms may have their own special clocks, they also need to be
+managed dynamically. If you want to manage such clocks, please implement
+clks_enable callback.
 
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 60 ++++++++++++++++---
- 1 file changed, 51 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++++++++
+ include/linux/stmmac.h                            |  1 +
+ 2 files changed, 11 insertions(+)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 26b971cd4da5..35a79c00a477 100644
+index 35a79c00a477..3f12faa224aa 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -113,6 +113,27 @@ static void stmmac_exit_fs(struct net_device *dev);
- 
- #define STMMAC_COAL_TIMER(x) (ns_to_ktime((x) * NSEC_PER_USEC))
- 
-+static int stmmac_bus_clks_enable(struct stmmac_priv *priv, bool enabled)
-+{
-+	int ret = 0;
-+
-+	if (enabled) {
-+		ret = clk_prepare_enable(priv->plat->stmmac_clk);
-+		if (ret)
-+			return ret;
-+		ret = clk_prepare_enable(priv->plat->pclk);
-+		if (ret) {
-+			clk_disable_unprepare(priv->plat->stmmac_clk);
-+			return ret;
-+		}
-+	} else {
-+		clk_disable_unprepare(priv->plat->stmmac_clk);
-+		clk_disable_unprepare(priv->plat->pclk);
-+	}
-+
-+	return ret;
-+}
-+
- /**
-  * stmmac_verify_args - verify the driver parameters.
-  * Description: it checks the driver parameters and set a default in case of
-@@ -2800,6 +2821,10 @@ static int stmmac_open(struct net_device *dev)
- 	u32 chan;
- 	int ret;
- 
-+	ret = stmmac_bus_clks_enable(priv, true);
-+	if (ret)
-+		return ret;
-+
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI &&
- 	    priv->hw->xpcs == NULL) {
-@@ -2808,7 +2833,7 @@ static int stmmac_open(struct net_device *dev)
- 			netdev_err(priv->dev,
- 				   "%s: Cannot attach to PHY (error: %d)\n",
- 				   __func__, ret);
--			return ret;
-+			goto clk_enable_error;
+@@ -126,9 +126,19 @@ static int stmmac_bus_clks_enable(struct stmmac_priv *priv, bool enabled)
+ 			clk_disable_unprepare(priv->plat->stmmac_clk);
+ 			return ret;
  		}
- 	}
- 
-@@ -2924,6 +2949,8 @@ static int stmmac_open(struct net_device *dev)
- 	free_dma_desc_resources(priv);
- dma_desc_error:
- 	phylink_disconnect_phy(priv->phylink);
-+clk_enable_error:
-+	stmmac_bus_clks_enable(priv, false);
- 	return ret;
- }
- 
-@@ -2974,6 +3001,8 @@ static int stmmac_release(struct net_device *dev)
- 
- 	stmmac_release_ptp(priv);
- 
-+	stmmac_bus_clks_enable(priv, false);
-+
- 	return 0;
- }
- 
-@@ -4624,6 +4653,10 @@ static int stmmac_vlan_rx_kill_vid(struct net_device *ndev, __be16 proto, u16 vi
- 	bool is_double = false;
- 	int ret;
- 
-+	ret = stmmac_bus_clks_enable(priv, true);
-+	if (ret)
-+		return ret;
-+
- 	if (be16_to_cpu(proto) == ETH_P_8021AD)
- 		is_double = true;
- 
-@@ -4632,10 +4665,15 @@ static int stmmac_vlan_rx_kill_vid(struct net_device *ndev, __be16 proto, u16 vi
- 	if (priv->hw->num_vlan) {
- 		ret = stmmac_del_hw_vlan_rx_fltr(priv, ndev, priv->hw, proto, vid);
- 		if (ret)
--			return ret;
-+			goto clk_enable_error;
- 	}
- 
--	return stmmac_vlan_update(priv, is_double);
-+	ret = stmmac_vlan_update(priv, is_double);
-+
-+clk_enable_error:
-+	stmmac_bus_clks_enable(priv, false);
-+
-+	return ret;
- }
- 
- static const struct net_device_ops stmmac_netdev_ops = {
-@@ -5111,6 +5149,8 @@ int stmmac_dvr_probe(struct device *device,
- 	stmmac_init_fs(ndev);
- #endif
- 
-+	stmmac_bus_clks_enable(priv, false);
-+
- 	return ret;
- 
- error_serdes_powerup:
-@@ -5125,6 +5165,7 @@ int stmmac_dvr_probe(struct device *device,
- 	stmmac_napi_del(ndev);
- error_hw_init:
- 	destroy_workqueue(priv->wq);
-+	stmmac_bus_clks_enable(priv, false);
- 
- 	return ret;
- }
-@@ -5140,6 +5181,7 @@ int stmmac_dvr_remove(struct device *dev)
- {
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct stmmac_priv *priv = netdev_priv(ndev);
-+	bool netif_status = netif_running(ndev);
- 
- 	netdev_info(priv->dev, "%s: removing driver", __func__);
- 
-@@ -5157,8 +5199,8 @@ int stmmac_dvr_remove(struct device *dev)
- 	phylink_destroy(priv->phylink);
- 	if (priv->plat->stmmac_rst)
- 		reset_control_assert(priv->plat->stmmac_rst);
--	clk_disable_unprepare(priv->plat->pclk);
--	clk_disable_unprepare(priv->plat->stmmac_clk);
-+	if (netif_status)
-+		stmmac_bus_clks_enable(priv, false);
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
- 		stmmac_mdio_unregister(ndev);
-@@ -5224,8 +5266,7 @@ int stmmac_suspend(struct device *dev)
- 		pinctrl_pm_select_sleep_state(priv->device);
- 		/* Disable clock in case of PWM is off */
- 		clk_disable_unprepare(priv->plat->clk_ptp_ref);
--		clk_disable_unprepare(priv->plat->pclk);
--		clk_disable_unprepare(priv->plat->stmmac_clk);
-+		stmmac_bus_clks_enable(priv, false);
- 	}
- 	mutex_unlock(&priv->lock);
- 
-@@ -5289,8 +5330,9 @@ int stmmac_resume(struct device *dev)
++		if (priv->plat->clks_enable) {
++			ret = priv->plat->clks_enable(priv->plat->bsp_priv, enabled);
++			if (ret) {
++				clk_disable_unprepare(priv->plat->stmmac_clk);
++				clk_disable_unprepare(priv->plat->pclk);
++				return ret;
++			}
++		}
  	} else {
- 		pinctrl_pm_select_default_state(priv->device);
- 		/* enable the clk previously disabled */
--		clk_prepare_enable(priv->plat->stmmac_clk);
--		clk_prepare_enable(priv->plat->pclk);
-+		ret = stmmac_bus_clks_enable(priv, true);
-+		if (ret)
-+			return ret;
- 		if (priv->plat->clk_ptp_ref)
- 			clk_prepare_enable(priv->plat->clk_ptp_ref);
- 		/* reset the phy so that it's ready */
+ 		clk_disable_unprepare(priv->plat->stmmac_clk);
+ 		clk_disable_unprepare(priv->plat->pclk);
++		if (priv->plat->clks_enable)
++			priv->plat->clks_enable(priv->plat->bsp_priv, enabled);
+ 	}
+ 
+ 	return ret;
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index a302982de2d7..f2486a0ab5f1 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -183,6 +183,7 @@ struct plat_stmmacenet_data {
+ 	int (*init)(struct platform_device *pdev, void *priv);
+ 	void (*exit)(struct platform_device *pdev, void *priv);
+ 	struct mac_device_info *(*setup)(void *priv);
++	int (*clks_enable)(void *priv, bool enabled);
+ 	void *bsp_priv;
+ 	struct clk *stmmac_clk;
+ 	struct clk *pclk;
 -- 
 2.17.1
 
