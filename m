@@ -2,45 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4AF9322EB5
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:29:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70FC0322EBC
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233381AbhBWQ2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 11:28:49 -0500
-Received: from mail.jvpinto.com ([65.49.11.60]:24127 "EHLO mail.JVPinto.com"
+        id S233313AbhBWQaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 11:30:13 -0500
+Received: from mx2.suse.de ([195.135.220.15]:36540 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233345AbhBWQ2r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 11:28:47 -0500
-Received: from RW-EXC1.JVPinto.com (2002:ac20:10d::ac20:10d) by
- RW-EXC1.JVPinto.com (2002:ac20:10d::ac20:10d) with Microsoft SMTP Server
- (TLS) id 15.0.1497.2; Tue, 23 Feb 2021 08:28:01 -0800
-Received: from User (40.74.76.79) by RW-EXC1.JVPinto.com (172.32.1.13) with
- Microsoft SMTP Server id 15.0.1497.2 via Frontend Transport; Tue, 23 Feb 2021
- 08:27:49 -0800
-Reply-To: <marlowguttridge@gmail.com>
-From:   "Ms. Reem" <johnpinto@jvpinto.com>
-Subject: Re:reply
-Date:   Tue, 23 Feb 2021 16:28:01 +0000
+        id S232473AbhBWQaM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 11:30:12 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1614097765; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1fcBBVi2VQJZ1nf/JdbxVgiBTyHyQF9V+0dM+Pib8sw=;
+        b=AIsb4Pg1kS6LzyrZ1kIU6GCBQu5bS5bkoOedIG3Nw+T9eBFfq99Ao4VwWMueQmuco2vIjY
+        Ic3soYYBWVMq3BTbOblmODIv+41R+gt4ZwjNpzlcBwXmp+D2rTGKlpOAF3SBvncPRo5TlM
+        gdvQxneUDFJeKhdpBdnIo3AHxIoYMyc=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id E6070ACBF;
+        Tue, 23 Feb 2021 16:29:24 +0000 (UTC)
+To:     Wei Liu <wl@xen.org>, Paul Durrant <paul@xen.org>
+Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH] xen-netback: correct success/error reporting for the
+ SKB-with-fraglist case
+Message-ID: <4dd5b8ec-a255-7ab1-6dbf-52705acd6d62@suse.com>
+Date:   Tue, 23 Feb 2021 17:29:25 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="Windows-1251"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
-Message-ID: <e764d51d6b64437e86bb852bb9b3be98@RW-EXC1.JVPinto.com>
-To:     Undisclosed recipients:;
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, 
+When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
+special considerations for the head of the SKB no longer apply. Don't
+mistakenly report ERROR to the frontend for the first entry in the list,
+even if - from all I can tell - this shouldn't matter much as the overall
+transmit will need to be considered failed anyway.
 
-My name is Ms. Reem Ebrahim Al-Hashimi, I am the "Minister of state and Petroleum" also "Minister of State for International Cooperation" in UAE. 
+Signed-off-by: Jan Beulich <jbeulich@suse.com>
 
-I write to you on behalf of my other "three (3) colleagues" who has approved me to solicit for your "partnership in claiming of {us$47=Million}" from a Financial Home in Cambodia on their behalf and for our "Mutual Benefits". The Fund {us$47=Million} is our share from the (over-invoiced) Oil/Gas deal with Cambodian/Vietnam Government within 2013/2014, however, we don't want our government to know about the fund. 
-
-If this proposal interests you, let me know, by sending me an email and I will send to you detailed information on how this business would be successfully transacted. Be informed that nobody knows about the secret of this fund except us, and we know how to carry out the entire transaction. So I am compelled to ask, that you will stand on our behalf and receive this fund into any account that is solely controlled by you. We will compensate you with 15% of the total amount involved as gratification for being our partner in this transaction. Reply to: marlowguttridge@gmail.com
-
-Regards,
-Ms. Reem
+--- a/drivers/net/xen-netback/netback.c
++++ b/drivers/net/xen-netback/netback.c
+@@ -499,7 +499,7 @@ check_frags:
+ 				 * the header's copy failed, and they are
+ 				 * sharing a slot, send an error
+ 				 */
+-				if (i == 0 && sharedslot)
++				if (i == 0 && !first_shinfo && sharedslot)
+ 					xenvif_idx_release(queue, pending_idx,
+ 							   XEN_NETIF_RSP_ERROR);
+ 				else
