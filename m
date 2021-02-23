@@ -2,108 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C3F322B62
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:26:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC16322B73
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 14:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232809AbhBWNZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 08:25:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232789AbhBWNZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:25:39 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8FCC06178A
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:24:59 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id v64so257095qtd.5
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:24:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=krsypgdXcaHIQO9PXuO2j91G39uHw7y/0Ra9DAqv6IY=;
-        b=m3TFHB8+wFXD80Byzvp5V3RG2+CNkkTybWBxyQceK2L2wOgxiULn4ryngJnaABMIHd
-         txHRrrtr2+Afdo5+b1QQXJF+Gok0UAzITqvKdg+QyqrrwHQhijZBaQsF3EXTjbjOKKo+
-         e/arutSq8Y41T14k9R3/gAUd3QC88UQ/O17THPGHWDo4k4Rb0Ip/uyBjQB+dl62C+6Ku
-         gIP1HpdSHBfqQsJUTCol0xsQCefw5cnFWFeLg03ULyqpDao+EGu5Z7sps5qydZQxdWOb
-         JIQqtIu6pW+kn5oZ9bgdHQmlTIbm3IPjSg5GjLLGgNmwVVzMaIworv4B5Wes91kQC3kI
-         OL8Q==
+        id S232895AbhBWN2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 08:28:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58940 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232714AbhBWN2J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 08:28:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614086802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kAPqwhWPv/wIAMtOEQhvM/iB0b3ykohvYAlF1w+adM8=;
+        b=GrxvW3Y0BBczhr9oe2VOkn+aZEioLRUe+dPuP2BONalxwoh0pmaYovPiRpOYJ0JPWPncm4
+        EXtH8c1Jf1ECO7PaONG+GiGaoiTQpsfsOAt+pYZjgabxaDIPUV3jMA4/9N74H2V0TnBjTa
+        feRQR+355fXcU+ND+GdX4ZGEyJHlA1Y=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-496-d8uSfKsCPsSXs1T6fAsNsw-1; Tue, 23 Feb 2021 08:26:40 -0500
+X-MC-Unique: d8uSfKsCPsSXs1T6fAsNsw-1
+Received: by mail-wr1-f69.google.com with SMTP id v3so863402wro.21
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 05:26:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=krsypgdXcaHIQO9PXuO2j91G39uHw7y/0Ra9DAqv6IY=;
-        b=o74MfGJu1AzZF9lpKBFcQZTSvg+r77iagHbPclW7So//EzQVq8FQ6Db1BrYGZDkfx+
-         1clJ6NAzsM+IzCZ/WY2oEvuz3rrsBZYZd5LdtcPFMr6M72vxfhfRLwUbbYb6B/r54rBG
-         +K1EdfT2sQAIeNsBVUr52+mN9A4+f6gCObTx31dOoGI2efr0kc5EiuBnLndpC5SQ9npa
-         j3TEr876DsI/7r/mFrAlYI45VK9lRH1tSB43ZQehd4iUHmwfKTGj9OMCNHPRttVsmkgt
-         0Sjj/SbnTK4+WjHsWQhx8SEQfEUe9z4EVu+lPe9GSUKGtbA5bGPY/rIq7Fk+GWqjXHWD
-         7T9Q==
-X-Gm-Message-State: AOAM531z5FARtDEEt4JKO52W9eUZXoR4anuAK6ZHrqgSdLaDyVIbbRv5
-        YknMmA5CJ/ANiWp6Yk9JLSNBOjcePh6+RQ==
-X-Google-Smtp-Source: ABdhPJyVBUtBUgubNerbTvzWAUgDZUPN7KqqHXzFvGExuSjq/U9gMf7cUHlD5I/rYFU9mazNso7c/Q==
-X-Received: by 2002:a05:622a:514:: with SMTP id l20mr25375278qtx.62.1614086698421;
-        Tue, 23 Feb 2021 05:24:58 -0800 (PST)
-Received: from madeliefje.horms.nl.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id d27sm538998qkk.34.2021.02.23.05.24.56
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=kAPqwhWPv/wIAMtOEQhvM/iB0b3ykohvYAlF1w+adM8=;
+        b=nr4/ZXaDj8R8Y5W+xUld1ozlMntzvlSFpkGD4wkahtktTWkKtpQBzv+OeRp6S/wiDV
+         TZ4Q4NsY6fbOvh9Dry3fXZOjLjMXyrgq/mkiFBy8q5uOpBTF4/d2XNKNcWAo4im4dSEA
+         iX7kKwOHDWt9eoOymUm10ibcOHxrbPomLp210ihnZu4f5ezFaG9v/DUWfAzd6Teic3hB
+         IVB94LxQsKoo9WmtJxkc7/D84LXqw+/jisGpTSuWx+tfJ4sFRnRKNc3DpT4UFEuHitZf
+         THusIHmyhGCyrTN/S6CRY6GCOcYroLJWcDQctar7es/c5PV852nt/WVUw2Dq63AGyOTS
+         /38A==
+X-Gm-Message-State: AOAM5326bJFHcd2VgcslsqKBTUloZVsyUbK6bsVxzqzRD7C3oE70nLyX
+        JM0cyT7I7yUoZN+qwFHC+RLiSTwXpzUtbpx9QlO+ffwYITaVFA0xC5Lm6eIRml3LyWQ4C9EhvtA
+        YCdeLWO19l6iNlBNk
+X-Received: by 2002:a5d:4c49:: with SMTP id n9mr13476657wrt.168.1614086798484;
+        Tue, 23 Feb 2021 05:26:38 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyEoRMPyhl21+u/rP1TpH6f40/IsRAK8QU2SB/vc4CL7FMPeR3jC4GZnQVZTfu4Ru6OwogGFA==
+X-Received: by 2002:a5d:4c49:: with SMTP id n9mr13476642wrt.168.1614086798340;
+        Tue, 23 Feb 2021 05:26:38 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id a6sm2831755wmj.23.2021.02.23.05.26.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 05:24:57 -0800 (PST)
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Louis Peens <louis.peens@netronome.com>
-Subject: [PATCH net] ethtool: fix the check logic of at least one channel for RX/TX
-Date:   Tue, 23 Feb 2021 14:24:40 +0100
-Message-Id: <20210223132440.810-1-simon.horman@netronome.com>
-X-Mailer: git-send-email 2.20.1
+        Tue, 23 Feb 2021 05:26:37 -0800 (PST)
+Date:   Tue, 23 Feb 2021 08:26:34 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Message-ID: <20210223082536-mutt-send-email-mst@kernel.org>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+ <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
+ <20210222023040-mutt-send-email-mst@kernel.org>
+ <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
+ <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yinjun Zhang <yinjun.zhang@corigine.com>
+On Tue, Feb 23, 2021 at 10:03:57AM +0800, Jason Wang wrote:
+> 
+> On 2021/2/23 9:12 上午, Si-Wei Liu wrote:
+> > 
+> > 
+> > On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
+> > > On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
+> > > > On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
+> > > > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> > > > > for legacy") made an exception for legacy guests to reset
+> > > > > features to 0, when config space is accessed before features
+> > > > > are set. We should relieve the verify_min_features() check
+> > > > > and allow features reset to 0 for this case.
+> > > > > 
+> > > > > It's worth noting that not just legacy guests could access
+> > > > > config space before features are set. For instance, when
+> > > > > feature VIRTIO_NET_F_MTU is advertised some modern driver
+> > > > > will try to access and validate the MTU present in the config
+> > > > > space before virtio features are set.
+> > > > 
+> > > > This looks like a spec violation:
+> > > > 
+> > > > "
+> > > > 
+> > > > The following driver-read-only field, mtu only exists if
+> > > > VIRTIO_NET_F_MTU is
+> > > > set.
+> > > > This field specifies the maximum MTU for the driver to use.
+> > > > "
+> > > > 
+> > > > Do we really want to workaround this?
+> > > > 
+> > > > Thanks
+> > > And also:
+> > > 
+> > > The driver MUST follow this sequence to initialize a device:
+> > > 1. Reset the device.
+> > > 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
+> > > 3. Set the DRIVER status bit: the guest OS knows how to drive the
+> > > device.
+> > > 4. Read device feature bits, and write the subset of feature bits
+> > > understood by the OS and driver to the
+> > > device. During this step the driver MAY read (but MUST NOT write)
+> > > the device-specific configuration
+> > > fields to check that it can support the device before accepting it.
+> > > 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new
+> > > feature bits after this step.
+> > > 6. Re-read device status to ensure the FEATURES_OK bit is still set:
+> > > otherwise, the device does not
+> > > support our subset of features and the device is unusable.
+> > > 7. Perform device-specific setup, including discovery of virtqueues
+> > > for the device, optional per-bus setup,
+> > > reading and possibly writing the device’s virtio configuration
+> > > space, and population of virtqueues.
+> > > 8. Set the DRIVER_OK status bit. At this point the device is “live”.
+> > > 
+> > > 
+> > > so accessing config space before FEATURES_OK is a spec violation, right?
+> > It is, but it's not relevant to what this commit tries to address. I
+> > thought the legacy guest still needs to be supported.
+> > 
+> > Having said, a separate patch has to be posted to fix the guest driver
+> > issue where this discrepancy is introduced to virtnet_validate() (since
+> > commit fe36cbe067). But it's not technically related to this patch.
+> > 
+> > -Siwei
+> 
+> 
+> I think it's a bug to read config space in validate, we should move it to
+> virtnet_probe().
+> 
+> Thanks
 
-The command "ethtool -L <intf> combined 0" may clean the RX/TX channel
-count and skip the error path, since the attrs
-tb[ETHTOOL_A_CHANNELS_RX_COUNT] and tb[ETHTOOL_A_CHANNELS_TX_COUNT]
-are NULL in this case when recent ethtool is used.
+I take it back, reading but not writing seems to be explicitly allowed by spec.
+So our way to detect a legacy guest is bogus, need to think what is
+the best way to handle this.
 
-Tested using ethtool v5.10.
-
-Fixes: 7be92514b99c ("ethtool: check if there is at least one channel for TX/RX in the core")
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@netronome.com>
-Signed-off-by: Louis Peens <louis.peens@netronome.com>
----
- net/ethtool/channels.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/net/ethtool/channels.c b/net/ethtool/channels.c
-index 25a9e566ef5c..e35ef627f61f 100644
---- a/net/ethtool/channels.c
-+++ b/net/ethtool/channels.c
-@@ -175,14 +175,14 @@ int ethnl_set_channels(struct sk_buff *skb, struct genl_info *info)
- 
- 	/* ensure there is at least one RX and one TX channel */
- 	if (!channels.combined_count && !channels.rx_count)
--		err_attr = tb[ETHTOOL_A_CHANNELS_RX_COUNT];
-+		err_attr = mod_combined ? tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT] :
-+					  tb[ETHTOOL_A_CHANNELS_RX_COUNT];
- 	else if (!channels.combined_count && !channels.tx_count)
--		err_attr = tb[ETHTOOL_A_CHANNELS_TX_COUNT];
-+		err_attr = mod_combined ? tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT] :
-+					  tb[ETHTOOL_A_CHANNELS_TX_COUNT];
- 	else
- 		err_attr = NULL;
- 	if (err_attr) {
--		if (mod_combined)
--			err_attr = tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT];
- 		ret = -EINVAL;
- 		NL_SET_ERR_MSG_ATTR(info->extack, err_attr, "requested channel counts would result in no RX or TX channel being configured");
- 		goto out_ops;
--- 
-2.20.1
+> 
+> > 
+> > > 
+> > > 
+> > > > > Rejecting reset to 0
+> > > > > prematurely causes correct MTU and link status unable to load
+> > > > > for the very first config space access, rendering issues like
+> > > > > guest showing inaccurate MTU value, or failure to reject
+> > > > > out-of-range MTU.
+> > > > > 
+> > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for
+> > > > > supported mlx5 devices")
+> > > > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > > > > ---
+> > > > >    drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+> > > > >    1 file changed, 1 insertion(+), 14 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > index 7c1f789..540dd67 100644
+> > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > @@ -1490,14 +1490,6 @@ static u64
+> > > > > mlx5_vdpa_get_features(struct vdpa_device *vdev)
+> > > > >        return mvdev->mlx_features;
+> > > > >    }
+> > > > > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev,
+> > > > > u64 features)
+> > > > > -{
+> > > > > -    if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> > > > > -        return -EOPNOTSUPP;
+> > > > > -
+> > > > > -    return 0;
+> > > > > -}
+> > > > > -
+> > > > >    static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+> > > > >    {
+> > > > >        int err;
+> > > > > @@ -1558,18 +1550,13 @@ static int
+> > > > > mlx5_vdpa_set_features(struct vdpa_device *vdev, u64
+> > > > > features)
+> > > > >    {
+> > > > >        struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> > > > >        struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > > > > -    int err;
+> > > > >        print_features(mvdev, features, true);
+> > > > > -    err = verify_min_features(mvdev, features);
+> > > > > -    if (err)
+> > > > > -        return err;
+> > > > > -
+> > > > >        ndev->mvdev.actual_features = features &
+> > > > > ndev->mvdev.mlx_features;
+> > > > >        ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+> > > > >        ndev->config.status |= cpu_to_mlx5vdpa16(mvdev,
+> > > > > VIRTIO_NET_S_LINK_UP);
+> > > > > -    return err;
+> > > > > +    return 0;
+> > > > >    }
+> > > > >    static void mlx5_vdpa_set_config_cb(struct vdpa_device
+> > > > > *vdev, struct vdpa_callback *cb)
+> > 
 
