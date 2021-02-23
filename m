@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7A1322A1B
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 13:01:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D99B1322A1E
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 13:01:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232828AbhBWL6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 06:58:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
+        id S232782AbhBWL6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 06:58:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232556AbhBWLyw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 06:54:52 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1F4C061223
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 03:52:06 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id kr16so1652049pjb.2
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 03:52:06 -0800 (PST)
+        with ESMTP id S232560AbhBWLzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 06:55:01 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43620C061225
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 03:52:10 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id k22so9673368pll.6
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 03:52:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aHtCMWLr7gM7N5rZoKJpLG0orFpcTbj04X+cpqBxZtc=;
-        b=yUxnYsEU/c2KgIg4VBArPR9TSgRc4M3x6lPMb3dy/FYrrwxRaHZOlo6Svi7IdApYUd
-         VC5orLeYCVsrjttuNZGshhiPtQbxudbLpOYzCkJx1Z1ukjKvExIVlrWRes4x69hJACs9
-         KUVnNEQSoEGMt7FCO+nAZTqfb/GEnJAGrpCfXuqg0tZH4Nm8eLGteRhVkqm+Hiyt3Bxa
-         Srv8w4eJCKm+iwprkUrDB+cE2HHkhkmdyZOrr9ehuYJHDuP3syuhFhzAy2s/ZmnLRmPy
-         gDQEMnNth2gtIRhDjNQ1IXF4zVARSqv1ddnvZkIw6AqepPp8RvelBugachUO5+VZx/lo
-         bpgA==
+        bh=u8tsVc5FyVaQgZg5g/M8rE8c8cwbgWiDY1w8qoktag8=;
+        b=dyIoNDifP9nsYe2VUg2YOtAMQu1uKR81lWGeJXGG+3HfK+320fF6gGcDkv7p44qxSc
+         ouRhAZPm7Wob6KMuzTWWQCAfhn3J40sapMJ/YaXwrnmu4K6vzVYI75jkEQbl743sZW63
+         yGybFgLBnpyxHYyRmXlfUlHsFY8rEZ2zYBR8Oe03i96dY7uTNEp5+y37gzQrWksUeaqk
+         va2Jr5epZ4RfPl21rPGweYNXD7L1ygX98mNxEMCMdSqQpnUmOvhxCYc02cIIFwPxLRxa
+         RN0ZpMlf/AJ3BZ/1LWYA7o8MYuU0Vy2KOT6NuLD4x7R3DfDeE361sqGYQdIABx+oiu17
+         syAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aHtCMWLr7gM7N5rZoKJpLG0orFpcTbj04X+cpqBxZtc=;
-        b=AKVoAV/M7SxS1/OEUJZdLNiTPZjWZy8Cd5F+IV8/0m/z3SVQ+wciaq+2xTx4P7FpL+
-         wbcSAROx4kt0+bez1wZoREscFSabWi69JvDwRznkT/lPEFK8rTzBfbxppxw7BWleKHVk
-         /JeztlguXe78LZoe/uA62AgJhs/PmrLCiG3nPjwAzSa0IcuLpkYs8cRqNvHBTkOCsa1/
-         9eBsgHDtlcshcpSPku9A0HJ3CKM1yHyVwb09HII1X1QSiZHeLTxdhbC+Xo7QSL3V8RJl
-         6BPk19ruKj6bMQH9zva5MPnFSBvzmxpx7luPXtYrw7RrJyGYpSnkRjbrm2a6HEqvlc50
-         by9g==
-X-Gm-Message-State: AOAM530iEhEc1L4Kbxf5sjSnv7jC3G4f2Ru4jnEVhHerNZ1RAqTkPO59
-        lOskR8VuD4Z9YaTrF99YwpcN
-X-Google-Smtp-Source: ABdhPJx/Bcu4ehgjlNX+oub9EPIPF0vPiCH+WLCStrWwcNtnh/MUbjyQUdkKxShmjPgvXtZ3pjnTmA==
-X-Received: by 2002:a17:902:c407:b029:e3:cfa7:e300 with SMTP id k7-20020a170902c407b02900e3cfa7e300mr18063207plk.49.1614081126161;
-        Tue, 23 Feb 2021 03:52:06 -0800 (PST)
+        bh=u8tsVc5FyVaQgZg5g/M8rE8c8cwbgWiDY1w8qoktag8=;
+        b=WJh0xstr645CuSMnxWiQS0G9TLUG0Ci6CMX6V8fLvBPPNsqzmSASVqtOTb6UWL6+Zx
+         W2tzaHmYnO/ctU5t+7GpZdSRiF5JemFRObuBT6YKGLI5PE53sAnPvAlOWCB++tFb2NNr
+         nXKWlU4SXBJsUHICw0FFTOZuHK2qwEWOEAFZ4fi3WyKr0eBvMU17+NC2UDCNgdRvlqRh
+         ZYzGCcNn7wvB13sxcRnrHxIcTU7ZjmKb7fkb1KfLuwEVVW/tTUgARtd1keV7s1jEI1Nb
+         Ei84jdoywF69VCP0X7VEh47J4jnhLjsj64L4IxyvmpoE1WLmqLfqQFiSf4GGCXf4eEZ4
+         lywA==
+X-Gm-Message-State: AOAM533R/nJjVBwnut46Ly1fZcP18tMd40sjW7H2GznPbn5eetbLEVvX
+        HvQDWgU8Dqg57onY/WNHuDeZ
+X-Google-Smtp-Source: ABdhPJw+fz9OuFDagHgY5gzuMtmNY5jvfahZn2FXgnlLMwAdXFsxK8PTvitSMqRNAQ632IrGMqrGJA==
+X-Received: by 2002:a17:90a:eac4:: with SMTP id ev4mr15403856pjb.146.1614081129634;
+        Tue, 23 Feb 2021 03:52:09 -0800 (PST)
 Received: from localhost ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id e1sm3221500pjm.12.2021.02.23.03.52.05
+        by smtp.gmail.com with ESMTPSA id b17sm21940036pfb.75.2021.02.23.03.52.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 03:52:05 -0800 (PST)
+        Tue, 23 Feb 2021 03:52:09 -0800 (PST)
 From:   Xie Yongji <xieyongji@bytedance.com>
 To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
         sgarzare@redhat.com, parav@nvidia.com, bob.liu@oracle.com,
@@ -56,9 +56,9 @@ To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-aio@kvack.org,
         linux-fsdevel@vger.kernel.org
-Subject: [RFC v4 06/11] vduse: Implement an MMU-based IOMMU driver
-Date:   Tue, 23 Feb 2021 19:50:43 +0800
-Message-Id: <20210223115048.435-7-xieyongji@bytedance.com>
+Subject: [RFC v4 07/11] vduse: Introduce VDUSE - vDPA Device in Userspace
+Date:   Tue, 23 Feb 2021 19:50:44 +0800
+Message-Id: <20210223115048.435-8-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210223115048.435-1-xieyongji@bytedance.com>
 References: <20210223115048.435-1-xieyongji@bytedance.com>
@@ -68,34 +68,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implements a MMU-based IOMMU driver to support mapping
-kernel dma buffer into userspace. The basic idea behind it is
-treating MMU (VA->PA) as IOMMU (IOVA->PA). The driver will set
-up MMU mapping instead of IOMMU mapping for the DMA transfer so
-that the userspace process is able to use its virtual address to
-access the dma buffer in kernel.
+This VDUSE driver enables implementing vDPA devices in userspace.
+Both control path and data path of vDPA devices will be able to
+be handled in userspace.
 
-And to avoid security issue, a bounce-buffering mechanism is
-introduced to prevent userspace accessing the original buffer
-directly.
+In the control path, the VDUSE driver will make use of message
+mechnism to forward the config operation from vdpa bus driver
+to userspace. Userspace can use read()/write() to receive/reply
+those control messages.
+
+In the data path, VDUSE_IOTLB_GET_FD ioctl will be used to get
+the file descriptors referring to vDPA device's iova regions. Then
+userspace can use mmap() to access those iova regions. Besides,
+userspace can use ioctl() to inject interrupt and use the eventfd
+mechanism to receive virtqueue kicks.
 
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 ---
- drivers/vdpa/vdpa_user/iova_domain.c | 486 +++++++++++++++++++++++++++++++++++
- drivers/vdpa/vdpa_user/iova_domain.h |  61 +++++
- 2 files changed, 547 insertions(+)
- create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
- create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
+ Documentation/userspace-api/ioctl/ioctl-number.rst |    1 +
+ drivers/vdpa/Kconfig                               |   10 +
+ drivers/vdpa/Makefile                              |    1 +
+ drivers/vdpa/vdpa_user/Makefile                    |    5 +
+ drivers/vdpa/vdpa_user/vduse_dev.c                 | 1348 ++++++++++++++++++++
+ include/uapi/linux/vduse.h                         |  136 ++
+ 6 files changed, 1501 insertions(+)
+ create mode 100644 drivers/vdpa/vdpa_user/Makefile
+ create mode 100644 drivers/vdpa/vdpa_user/vduse_dev.c
+ create mode 100644 include/uapi/linux/vduse.h
 
-diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
+index a4c75a28c839..71722e6f8f23 100644
+--- a/Documentation/userspace-api/ioctl/ioctl-number.rst
++++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
+@@ -300,6 +300,7 @@ Code  Seq#    Include File                                           Comments
+ 'z'   10-4F  drivers/s390/crypto/zcrypt_api.h                        conflict!
+ '|'   00-7F  linux/media.h
+ 0x80  00-1F  linux/fb.h
++0x81  00-1F  linux/vduse.h
+ 0x89  00-06  arch/x86/include/asm/sockios.h
+ 0x89  0B-DF  linux/sockios.h
+ 0x89  E0-EF  linux/sockios.h                                         SIOCPROTOPRIVATE range
+diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
+index ffd1e098bfd2..92f07715e3b6 100644
+--- a/drivers/vdpa/Kconfig
++++ b/drivers/vdpa/Kconfig
+@@ -25,6 +25,16 @@ config VDPA_SIM_NET
+ 	help
+ 	  vDPA networking device simulator which loops TX traffic back to RX.
+ 
++config VDPA_USER
++	tristate "VDUSE (vDPA Device in Userspace) support"
++	depends on EVENTFD && MMU && HAS_DMA
++	select DMA_OPS
++	select VHOST_IOTLB
++	select IOMMU_IOVA
++	help
++	  With VDUSE it is possible to emulate a vDPA Device
++	  in a userspace program.
++
+ config IFCVF
+ 	tristate "Intel IFC VF vDPA driver"
+ 	depends on PCI_MSI
+diff --git a/drivers/vdpa/Makefile b/drivers/vdpa/Makefile
+index d160e9b63a66..66e97778ad03 100644
+--- a/drivers/vdpa/Makefile
++++ b/drivers/vdpa/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_VDPA) += vdpa.o
+ obj-$(CONFIG_VDPA_SIM) += vdpa_sim/
++obj-$(CONFIG_VDPA_USER) += vdpa_user/
+ obj-$(CONFIG_IFCVF)    += ifcvf/
+ obj-$(CONFIG_MLX5_VDPA) += mlx5/
+diff --git a/drivers/vdpa/vdpa_user/Makefile b/drivers/vdpa/vdpa_user/Makefile
 new file mode 100644
-index 000000000000..9285d430d486
+index 000000000000..260e0b26af99
 --- /dev/null
-+++ b/drivers/vdpa/vdpa_user/iova_domain.c
-@@ -0,0 +1,486 @@
++++ b/drivers/vdpa/vdpa_user/Makefile
+@@ -0,0 +1,5 @@
++# SPDX-License-Identifier: GPL-2.0
++
++vduse-y := vduse_dev.o iova_domain.o
++
++obj-$(CONFIG_VDPA_USER) += vduse.o
+diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+new file mode 100644
+index 000000000000..393bf99c48be
+--- /dev/null
++++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+@@ -0,0 +1,1348 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * MMU-based IOMMU implementation
++ * VDUSE: vDPA Device in Userspace
 + *
 + * Copyright (C) 2020 Bytedance Inc. and/or its affiliates. All rights reserved.
 + *
@@ -103,549 +167,1486 @@ index 000000000000..9285d430d486
 + *
 + */
 +
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/miscdevice.h>
++#include <linux/cdev.h>
++#include <linux/device.h>
++#include <linux/eventfd.h>
 +#include <linux/slab.h>
++#include <linux/wait.h>
++#include <linux/dma-map-ops.h>
++#include <linux/poll.h>
 +#include <linux/file.h>
-+#include <linux/anon_inodes.h>
-+#include <linux/highmem.h>
++#include <linux/uio.h>
++#include <linux/vdpa.h>
++#include <uapi/linux/vduse.h>
++#include <uapi/linux/vdpa.h>
++#include <uapi/linux/virtio_config.h>
++#include <linux/mod_devicetable.h>
 +
 +#include "iova_domain.h"
 +
-+#define IOVA_START_PFN 1
-+#define IOVA_ALLOC_ORDER 12
-+#define IOVA_ALLOC_SIZE (1 << IOVA_ALLOC_ORDER)
++#define DRV_VERSION  "1.0"
++#define DRV_AUTHOR   "Yongji Xie <xieyongji@bytedance.com>"
++#define DRV_DESC     "vDPA Device in Userspace"
++#define DRV_LICENSE  "GPL v2"
 +
-+static inline struct page *
-+vduse_domain_get_bounce_page(struct vduse_iova_domain *domain, u64 iova)
++#define VDUSE_DEV_MAX (1U << MINORBITS)
++
++struct vduse_virtqueue {
++	u16 index;
++	bool ready;
++	spinlock_t kick_lock;
++	spinlock_t irq_lock;
++	struct eventfd_ctx *kickfd;
++	struct vdpa_callback cb;
++};
++
++struct vduse_dev;
++
++struct vduse_vdpa {
++	struct vdpa_device vdpa;
++	struct vduse_dev *dev;
++};
++
++struct vduse_dev {
++	struct vduse_vdpa *vdev;
++	struct device dev;
++	struct cdev cdev;
++	struct vduse_virtqueue *vqs;
++	struct vduse_iova_domain *domain;
++	struct vhost_iotlb *iommu;
++	spinlock_t iommu_lock;
++	atomic_t bounce_map;
++	struct mutex msg_lock;
++	atomic64_t msg_unique;
++	wait_queue_head_t waitq;
++	struct list_head send_list;
++	struct list_head recv_list;
++	struct list_head list;
++	bool connected;
++	int minor;
++	u16 vq_size_max;
++	u16 vq_num;
++	u32 vq_align;
++	u32 device_id;
++	u32 vendor_id;
++};
++
++struct vduse_dev_msg {
++	struct vduse_dev_request req;
++	struct vduse_dev_response resp;
++	struct list_head list;
++	wait_queue_head_t waitq;
++	bool completed;
++};
++
++static unsigned long max_bounce_size = (64 * 1024 * 1024);
++module_param(max_bounce_size, ulong, 0444);
++MODULE_PARM_DESC(max_bounce_size, "Maximum bounce buffer size. (default: 64M)");
++
++static unsigned long max_iova_size = (128 * 1024 * 1024);
++module_param(max_iova_size, ulong, 0444);
++MODULE_PARM_DESC(max_iova_size, "Maximum iova space size (default: 128M)");
++
++static DEFINE_MUTEX(vduse_lock);
++static LIST_HEAD(vduse_devs);
++static DEFINE_IDA(vduse_ida);
++
++static dev_t vduse_major;
++static struct class *vduse_class;
++
++static inline struct vduse_dev *vdpa_to_vduse(struct vdpa_device *vdpa)
 +{
-+	u64 index = iova >> PAGE_SHIFT;
++	struct vduse_vdpa *vdev = container_of(vdpa, struct vduse_vdpa, vdpa);
 +
-+	return domain->bounce_pages[index];
++	return vdev->dev;
 +}
 +
-+static inline void
-+vduse_domain_set_bounce_page(struct vduse_iova_domain *domain,
-+				u64 iova, struct page *page)
++static inline struct vduse_dev *dev_to_vduse(struct device *dev)
 +{
-+	u64 index = iova >> PAGE_SHIFT;
++	struct vdpa_device *vdpa = dev_to_vdpa(dev);
 +
-+	domain->bounce_pages[index] = page;
++	return vdpa_to_vduse(vdpa);
 +}
 +
-+static enum dma_data_direction perm_to_dir(int perm)
++static struct vduse_dev_msg *vduse_find_msg(struct list_head *head,
++					    uint32_t unique)
 +{
-+	enum dma_data_direction dir;
++	struct vduse_dev_msg *tmp, *msg = NULL;
 +
-+	switch (perm) {
-+	case VHOST_MAP_WO:
-+		dir = DMA_FROM_DEVICE;
-+		break;
-+	case VHOST_MAP_RO:
-+		dir = DMA_TO_DEVICE;
-+		break;
-+	case VHOST_MAP_RW:
-+		dir = DMA_BIDIRECTIONAL;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return dir;
-+}
-+
-+static int dir_to_perm(enum dma_data_direction dir)
-+{
-+	int perm = -EFAULT;
-+
-+	switch (dir) {
-+	case DMA_FROM_DEVICE:
-+		perm = VHOST_MAP_WO;
-+		break;
-+	case DMA_TO_DEVICE:
-+		perm = VHOST_MAP_RO;
-+		break;
-+	case DMA_BIDIRECTIONAL:
-+		perm = VHOST_MAP_RW;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return perm;
-+}
-+
-+static void do_bounce(phys_addr_t orig, void *addr, size_t size,
-+			enum dma_data_direction dir)
-+{
-+	unsigned long pfn = PFN_DOWN(orig);
-+
-+	if (PageHighMem(pfn_to_page(pfn))) {
-+		unsigned int offset = offset_in_page(orig);
-+		char *buffer;
-+		unsigned int sz = 0;
-+		unsigned long flags;
-+
-+		while (size) {
-+			sz = min_t(size_t, PAGE_SIZE - offset, size);
-+
-+			local_irq_save(flags);
-+			buffer = kmap_atomic(pfn_to_page(pfn));
-+			if (dir == DMA_TO_DEVICE)
-+				memcpy(addr, buffer + offset, sz);
-+			else
-+				memcpy(buffer + offset, addr, sz);
-+			kunmap_atomic(buffer);
-+			local_irq_restore(flags);
-+
-+			size -= sz;
-+			pfn++;
-+			addr += sz;
-+			offset = 0;
++	list_for_each_entry(tmp, head, list) {
++		if (tmp->req.unique == unique) {
++			msg = tmp;
++			list_del(&tmp->list);
++			break;
 +		}
-+	} else if (dir == DMA_TO_DEVICE) {
-+		memcpy(addr, phys_to_virt(orig), size);
-+	} else {
-+		memcpy(phys_to_virt(orig), addr, size);
++	}
++
++	return msg;
++}
++
++static struct vduse_dev_msg *vduse_dequeue_msg(struct list_head *head)
++{
++	struct vduse_dev_msg *msg = NULL;
++
++	if (!list_empty(head)) {
++		msg = list_first_entry(head, struct vduse_dev_msg, list);
++		list_del(&msg->list);
++	}
++
++	return msg;
++}
++
++static void vduse_enqueue_msg(struct list_head *head,
++			      struct vduse_dev_msg *msg)
++{
++	list_add_tail(&msg->list, head);
++}
++
++static int vduse_dev_msg_sync(struct vduse_dev *dev, struct vduse_dev_msg *msg)
++{
++	int ret;
++
++	init_waitqueue_head(&msg->waitq);
++	mutex_lock(&dev->msg_lock);
++	vduse_enqueue_msg(&dev->send_list, msg);
++	wake_up(&dev->waitq);
++	mutex_unlock(&dev->msg_lock);
++	ret = wait_event_interruptible(msg->waitq, msg->completed);
++	mutex_lock(&dev->msg_lock);
++	if (!msg->completed)
++		list_del(&msg->list);
++	else
++		ret = msg->resp.result;
++	mutex_unlock(&dev->msg_lock);
++
++	return ret;
++}
++
++static u64 vduse_dev_get_features(struct vduse_dev *dev)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_GET_FEATURES;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++
++	return vduse_dev_msg_sync(dev, &msg) ? 0 : msg.resp.features;
++}
++
++static int vduse_dev_set_features(struct vduse_dev *dev, u64 features)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_SET_FEATURES;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.features = features;
++
++	return vduse_dev_msg_sync(dev, &msg);
++}
++
++static u8 vduse_dev_get_status(struct vduse_dev *dev)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_GET_STATUS;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++
++	return vduse_dev_msg_sync(dev, &msg) ? 0 : msg.resp.status;
++}
++
++static void vduse_dev_set_status(struct vduse_dev *dev, u8 status)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_SET_STATUS;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.status = status;
++
++	vduse_dev_msg_sync(dev, &msg);
++}
++
++static void vduse_dev_get_config(struct vduse_dev *dev, unsigned int offset,
++					void *buf, unsigned int len)
++{
++	struct vduse_dev_msg msg = { 0 };
++	unsigned int sz;
++
++	while (len) {
++		sz = min_t(unsigned int, len, sizeof(msg.req.config.data));
++		msg.req.type = VDUSE_GET_CONFIG;
++		msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++		msg.req.config.offset = offset;
++		msg.req.config.len = sz;
++		vduse_dev_msg_sync(dev, &msg);
++		memcpy(buf, msg.resp.config.data, sz);
++		buf += sz;
++		offset += sz;
++		len -= sz;
 +	}
 +}
 +
-+static struct page *
-+vduse_domain_get_mapping_page(struct vduse_iova_domain *domain, u64 iova)
++static void vduse_dev_set_config(struct vduse_dev *dev, unsigned int offset,
++					const void *buf, unsigned int len)
 +{
-+	u64 start = iova & PAGE_MASK;
-+	u64 last = start + PAGE_SIZE - 1;
-+	struct vhost_iotlb_map *map;
-+	struct page *page = NULL;
++	struct vduse_dev_msg msg = { 0 };
++	unsigned int sz;
 +
-+	spin_lock(&domain->iotlb_lock);
-+	map = vhost_iotlb_itree_first(domain->iotlb, start, last);
-+	if (!map)
-+		goto out;
-+
-+	page = pfn_to_page((map->addr + iova - map->start) >> PAGE_SHIFT);
-+	get_page(page);
-+out:
-+	spin_unlock(&domain->iotlb_lock);
-+
-+	return page;
++	while (len) {
++		sz = min_t(unsigned int, len, sizeof(msg.req.config.data));
++		msg.req.type = VDUSE_SET_CONFIG;
++		msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++		msg.req.config.offset = offset;
++		msg.req.config.len = sz;
++		memcpy(msg.req.config.data, buf, sz);
++		vduse_dev_msg_sync(dev, &msg);
++		buf += sz;
++		offset += sz;
++		len -= sz;
++	}
 +}
 +
-+static struct page *
-+vduse_domain_alloc_bounce_page(struct vduse_iova_domain *domain, u64 iova)
++static void vduse_dev_set_vq_num(struct vduse_dev *dev,
++				struct vduse_virtqueue *vq, u32 num)
 +{
-+	u64 start = iova & PAGE_MASK;
-+	u64 last = start + PAGE_SIZE - 1;
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_SET_VQ_NUM;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.vq_num.index = vq->index;
++	msg.req.vq_num.num = num;
++
++	vduse_dev_msg_sync(dev, &msg);
++}
++
++static int vduse_dev_set_vq_addr(struct vduse_dev *dev,
++				struct vduse_virtqueue *vq, u64 desc_addr,
++				u64 driver_addr, u64 device_addr)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_SET_VQ_ADDR;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.vq_addr.index = vq->index;
++	msg.req.vq_addr.desc_addr = desc_addr;
++	msg.req.vq_addr.driver_addr = driver_addr;
++	msg.req.vq_addr.device_addr = device_addr;
++
++	return vduse_dev_msg_sync(dev, &msg);
++}
++
++static void vduse_dev_set_vq_ready(struct vduse_dev *dev,
++				struct vduse_virtqueue *vq, bool ready)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_SET_VQ_READY;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.vq_ready.index = vq->index;
++	msg.req.vq_ready.ready = ready;
++
++	vduse_dev_msg_sync(dev, &msg);
++}
++
++static bool vduse_dev_get_vq_ready(struct vduse_dev *dev,
++				   struct vduse_virtqueue *vq)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_GET_VQ_READY;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.vq_ready.index = vq->index;
++
++	return vduse_dev_msg_sync(dev, &msg) ? false : msg.resp.vq_ready.ready;
++}
++
++static int vduse_dev_get_vq_state(struct vduse_dev *dev,
++				struct vduse_virtqueue *vq,
++				struct vdpa_vq_state *state)
++{
++	struct vduse_dev_msg msg = { 0 };
++	int ret;
++
++	msg.req.type = VDUSE_GET_VQ_STATE;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.vq_state.index = vq->index;
++
++	ret = vduse_dev_msg_sync(dev, &msg);
++	if (!ret)
++		state->avail_index = msg.resp.vq_state.avail_idx;
++
++	return ret;
++}
++
++static int vduse_dev_set_vq_state(struct vduse_dev *dev,
++				struct vduse_virtqueue *vq,
++				const struct vdpa_vq_state *state)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	msg.req.type = VDUSE_SET_VQ_STATE;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.vq_state.index = vq->index;
++	msg.req.vq_state.avail_idx = state->avail_index;
++
++	return vduse_dev_msg_sync(dev, &msg);
++}
++
++static int vduse_dev_update_iotlb(struct vduse_dev *dev,
++				u64 start, u64 last)
++{
++	struct vduse_dev_msg msg = { 0 };
++
++	if (last < start)
++		return -EINVAL;
++
++	msg.req.type = VDUSE_UPDATE_IOTLB;
++	msg.req.unique = atomic64_fetch_inc(&dev->msg_unique);
++	msg.req.iova.start = start;
++	msg.req.iova.last = last;
++
++	return vduse_dev_msg_sync(dev, &msg);
++}
++
++static ssize_t vduse_dev_read_iter(struct kiocb *iocb, struct iov_iter *to)
++{
++	struct file *file = iocb->ki_filp;
++	struct vduse_dev *dev = file->private_data;
++	struct vduse_dev_msg *msg;
++	int size = sizeof(struct vduse_dev_request);
++	ssize_t ret = 0;
++
++	if (iov_iter_count(to) < size)
++		return 0;
++
++	mutex_lock(&dev->msg_lock);
++	while (1) {
++		msg = vduse_dequeue_msg(&dev->send_list);
++		if (msg)
++			break;
++
++		ret = -EAGAIN;
++		if (file->f_flags & O_NONBLOCK)
++			goto unlock;
++
++		mutex_unlock(&dev->msg_lock);
++		ret = wait_event_interruptible_exclusive(dev->waitq,
++					!list_empty(&dev->send_list));
++		if (ret)
++			return ret;
++
++		mutex_lock(&dev->msg_lock);
++	}
++	ret = copy_to_iter(&msg->req, size, to);
++	if (ret != size) {
++		ret = -EFAULT;
++		vduse_enqueue_msg(&dev->send_list, msg);
++		goto unlock;
++	}
++	vduse_enqueue_msg(&dev->recv_list, msg);
++unlock:
++	mutex_unlock(&dev->msg_lock);
++
++	return ret;
++}
++
++static ssize_t vduse_dev_write_iter(struct kiocb *iocb, struct iov_iter *from)
++{
++	struct file *file = iocb->ki_filp;
++	struct vduse_dev *dev = file->private_data;
++	struct vduse_dev_response resp;
++	struct vduse_dev_msg *msg;
++	size_t ret;
++
++	ret = copy_from_iter(&resp, sizeof(resp), from);
++	if (ret != sizeof(resp))
++		return -EINVAL;
++
++	mutex_lock(&dev->msg_lock);
++	msg = vduse_find_msg(&dev->recv_list, resp.request_id);
++	if (!msg) {
++		ret = -EINVAL;
++		goto unlock;
++	}
++
++	memcpy(&msg->resp, &resp, sizeof(resp));
++	msg->completed = 1;
++	wake_up(&msg->waitq);
++unlock:
++	mutex_unlock(&dev->msg_lock);
++
++	return ret;
++}
++
++static __poll_t vduse_dev_poll(struct file *file, poll_table *wait)
++{
++	struct vduse_dev *dev = file->private_data;
++	__poll_t mask = 0;
++
++	poll_wait(file, &dev->waitq, wait);
++
++	if (!list_empty(&dev->send_list))
++		mask |= EPOLLIN | EPOLLRDNORM;
++
++	return mask;
++}
++
++static int vduse_iotlb_add_range(struct vduse_dev *dev,
++				 u64 start, u64 last,
++				 u64 addr, unsigned int perm,
++				 struct file *file, u64 offset)
++{
++	struct vdpa_map_file *map_file;
++	int ret;
++
++	map_file = kmalloc(sizeof(*map_file), GFP_ATOMIC);
++	if (!map_file)
++		return -ENOMEM;
++
++	map_file->file = get_file(file);
++	map_file->offset = offset;
++
++	spin_lock(&dev->iommu_lock);
++	ret = vhost_iotlb_add_range_ctx(dev->iommu, start, last,
++					addr, perm, map_file);
++	spin_unlock(&dev->iommu_lock);
++	if (ret) {
++		fput(map_file->file);
++		kfree(map_file);
++		return ret;
++	}
++	return 0;
++}
++
++static void vduse_iotlb_del_range(struct vduse_dev *dev, u64 start, u64 last)
++{
++	struct vdpa_map_file *map_file;
 +	struct vhost_iotlb_map *map;
-+	struct page *page = NULL, *new_page = alloc_page(GFP_KERNEL);
 +
-+	if (!new_page)
-+		return NULL;
-+
-+	spin_lock(&domain->iotlb_lock);
-+	if (!vhost_iotlb_itree_first(domain->iotlb, start, last)) {
-+		__free_page(new_page);
-+		goto out;
++	spin_lock(&dev->iommu_lock);
++	while ((map = vhost_iotlb_itree_first(dev->iommu, start, last))) {
++		map_file = (struct vdpa_map_file *)map->opaque;
++		fput(map_file->file);
++		kfree(map_file);
++		vhost_iotlb_map_free(dev->iommu, map);
 +	}
-+	page = vduse_domain_get_bounce_page(domain, iova);
-+	if (page) {
-+		get_page(page);
-+		__free_page(new_page);
-+		goto out;
++	spin_unlock(&dev->iommu_lock);
++}
++
++static void vduse_dev_reset(struct vduse_dev *dev)
++{
++	int i;
++
++	atomic_set(&dev->bounce_map, 0);
++	vduse_iotlb_del_range(dev, 0ULL, ULLONG_MAX);
++	vduse_dev_update_iotlb(dev, 0ULL, ULLONG_MAX);
++
++	for (i = 0; i < dev->vq_num; i++) {
++		struct vduse_virtqueue *vq = &dev->vqs[i];
++
++		spin_lock(&vq->irq_lock);
++		vq->ready = false;
++		vq->cb.callback = NULL;
++		vq->cb.private = NULL;
++		spin_unlock(&vq->irq_lock);
 +	}
-+	vduse_domain_set_bounce_page(domain, iova, new_page);
-+	get_page(new_page);
-+	page = new_page;
++}
 +
-+	for (map = vhost_iotlb_itree_first(domain->iotlb, start, last); map;
-+	     map = vhost_iotlb_itree_next(map, start, last)) {
-+		unsigned int src_offset = 0, dst_offset = 0;
-+		phys_addr_t src;
-+		void *dst;
-+		size_t sz;
++static int vduse_vdpa_set_vq_address(struct vdpa_device *vdpa, u16 idx,
++				u64 desc_area, u64 driver_area,
++				u64 device_area)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
 +
-+		if (perm_to_dir(map->perm) == DMA_FROM_DEVICE)
++	return vduse_dev_set_vq_addr(dev, vq, desc_area,
++					driver_area, device_area);
++}
++
++static void vduse_vdpa_kick_vq(struct vdpa_device *vdpa, u16 idx)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
++
++	spin_lock(&vq->kick_lock);
++	if (vq->ready && vq->kickfd)
++		eventfd_signal(vq->kickfd, 1);
++	spin_unlock(&vq->kick_lock);
++}
++
++static void vduse_vdpa_set_vq_cb(struct vdpa_device *vdpa, u16 idx,
++			      struct vdpa_callback *cb)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
++
++	spin_lock(&vq->irq_lock);
++	vq->cb.callback = cb->callback;
++	vq->cb.private = cb->private;
++	spin_unlock(&vq->irq_lock);
++}
++
++static void vduse_vdpa_set_vq_num(struct vdpa_device *vdpa, u16 idx, u32 num)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
++
++	vduse_dev_set_vq_num(dev, vq, num);
++}
++
++static void vduse_vdpa_set_vq_ready(struct vdpa_device *vdpa,
++					u16 idx, bool ready)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
++
++	vduse_dev_set_vq_ready(dev, vq, ready);
++	vq->ready = ready;
++}
++
++static bool vduse_vdpa_get_vq_ready(struct vdpa_device *vdpa, u16 idx)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
++
++	vq->ready = vduse_dev_get_vq_ready(dev, vq);
++
++	return vq->ready;
++}
++
++static int vduse_vdpa_set_vq_state(struct vdpa_device *vdpa, u16 idx,
++				const struct vdpa_vq_state *state)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
++
++	return vduse_dev_set_vq_state(dev, vq, state);
++}
++
++static int vduse_vdpa_get_vq_state(struct vdpa_device *vdpa, u16 idx,
++				struct vdpa_vq_state *state)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vduse_virtqueue *vq = &dev->vqs[idx];
++
++	return vduse_dev_get_vq_state(dev, vq, state);
++}
++
++static u32 vduse_vdpa_get_vq_align(struct vdpa_device *vdpa)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	return dev->vq_align;
++}
++
++static u64 vduse_vdpa_get_features(struct vdpa_device *vdpa)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	u64 fixed = (1ULL << VIRTIO_F_ACCESS_PLATFORM);
++
++	return (vduse_dev_get_features(dev) | fixed);
++}
++
++static int vduse_vdpa_set_features(struct vdpa_device *vdpa, u64 features)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	return vduse_dev_set_features(dev, features);
++}
++
++static void vduse_vdpa_set_config_cb(struct vdpa_device *vdpa,
++				  struct vdpa_callback *cb)
++{
++	/* We don't support config interrupt */
++}
++
++static u16 vduse_vdpa_get_vq_num_max(struct vdpa_device *vdpa)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	return dev->vq_size_max;
++}
++
++static u32 vduse_vdpa_get_device_id(struct vdpa_device *vdpa)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	return dev->device_id;
++}
++
++static u32 vduse_vdpa_get_vendor_id(struct vdpa_device *vdpa)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	return dev->vendor_id;
++}
++
++static u8 vduse_vdpa_get_status(struct vdpa_device *vdpa)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	return vduse_dev_get_status(dev);
++}
++
++static void vduse_vdpa_set_status(struct vdpa_device *vdpa, u8 status)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	if (status == 0)
++		vduse_dev_reset(dev);
++
++	vduse_dev_set_status(dev, status);
++}
++
++static void vduse_vdpa_get_config(struct vdpa_device *vdpa, unsigned int offset,
++			     void *buf, unsigned int len)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	vduse_dev_get_config(dev, offset, buf, len);
++}
++
++static void vduse_vdpa_set_config(struct vdpa_device *vdpa, unsigned int offset,
++			const void *buf, unsigned int len)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++
++	vduse_dev_set_config(dev, offset, buf, len);
++}
++
++static int vduse_vdpa_set_map(struct vdpa_device *vdpa,
++				struct vhost_iotlb *iotlb)
++{
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
++	struct vhost_iotlb_map *map;
++	struct vdpa_map_file *map_file;
++	u64 start = 0ULL, last = ULLONG_MAX;
++	int ret = 0;
++
++	vduse_iotlb_del_range(dev, start, last);
++
++	for (map = vhost_iotlb_itree_first(iotlb, start, last); map;
++		map = vhost_iotlb_itree_next(map, start, last)) {
++		map_file = (struct vdpa_map_file *)map->opaque;
++		if (!map_file->file)
 +			continue;
 +
-+		if (start > map->start)
-+			src_offset = start - map->start;
-+		else
-+			dst_offset = map->start - start;
-+
-+		src = map->addr + src_offset;
-+		dst = page_address(page) + dst_offset;
-+		sz = min_t(size_t, map->size - src_offset,
-+				PAGE_SIZE - dst_offset);
-+		do_bounce(src, dst, sz, DMA_TO_DEVICE);
++		ret = vduse_iotlb_add_range(dev, map->start, map->last,
++					    map->addr, map->perm,
++					    map_file->file,
++					    map_file->offset);
++		if (ret)
++			break;
 +	}
-+out:
-+	spin_unlock(&domain->iotlb_lock);
++	vduse_dev_update_iotlb(dev, start, last);
 +
-+	return page;
++	return ret;
 +}
 +
-+static void
-+vduse_domain_free_bounce_pages(struct vduse_iova_domain *domain,
-+				u64 iova, size_t size)
++static void vduse_vdpa_free(struct vdpa_device *vdpa)
 +{
-+	struct page *page;
++	struct vduse_dev *dev = vdpa_to_vduse(vdpa);
 +
-+	spin_lock(&domain->iotlb_lock);
-+	if (WARN_ON(vhost_iotlb_itree_first(domain->iotlb, iova,
-+						iova + size - 1)))
-+		goto out;
++	WARN_ON(!list_empty(&dev->send_list));
++	WARN_ON(!list_empty(&dev->recv_list));
++	dev->vdev = NULL;
++}
 +
-+	while (size > 0) {
-+		page = vduse_domain_get_bounce_page(domain, iova);
-+		if (page) {
-+			vduse_domain_set_bounce_page(domain, iova, NULL);
-+			__free_page(page);
-+		}
-+		size -= PAGE_SIZE;
-+		iova += PAGE_SIZE;
++static const struct vdpa_config_ops vduse_vdpa_config_ops = {
++	.set_vq_address		= vduse_vdpa_set_vq_address,
++	.kick_vq		= vduse_vdpa_kick_vq,
++	.set_vq_cb		= vduse_vdpa_set_vq_cb,
++	.set_vq_num             = vduse_vdpa_set_vq_num,
++	.set_vq_ready		= vduse_vdpa_set_vq_ready,
++	.get_vq_ready		= vduse_vdpa_get_vq_ready,
++	.set_vq_state		= vduse_vdpa_set_vq_state,
++	.get_vq_state		= vduse_vdpa_get_vq_state,
++	.get_vq_align		= vduse_vdpa_get_vq_align,
++	.get_features		= vduse_vdpa_get_features,
++	.set_features		= vduse_vdpa_set_features,
++	.set_config_cb		= vduse_vdpa_set_config_cb,
++	.get_vq_num_max		= vduse_vdpa_get_vq_num_max,
++	.get_device_id		= vduse_vdpa_get_device_id,
++	.get_vendor_id		= vduse_vdpa_get_vendor_id,
++	.get_status		= vduse_vdpa_get_status,
++	.set_status		= vduse_vdpa_set_status,
++	.get_config		= vduse_vdpa_get_config,
++	.set_config		= vduse_vdpa_set_config,
++	.set_map		= vduse_vdpa_set_map,
++	.free			= vduse_vdpa_free,
++};
++
++static dma_addr_t vduse_dev_map_page(struct device *dev, struct page *page,
++					unsigned long offset, size_t size,
++					enum dma_data_direction dir,
++					unsigned long attrs)
++{
++	struct vduse_dev *vdev = dev_to_vduse(dev);
++	struct vduse_iova_domain *domain = vdev->domain;
++
++	if (atomic_xchg(&vdev->bounce_map, 1) == 0 &&
++		vduse_iotlb_add_range(vdev, 0, domain->bounce_size - 1,
++				      0, VDUSE_ACCESS_RW,
++				      vduse_domain_file(domain), 0)) {
++		atomic_set(&vdev->bounce_map, 0);
++		return DMA_MAPPING_ERROR;
 +	}
-+out:
-+	spin_unlock(&domain->iotlb_lock);
++
++	return vduse_domain_map_page(domain, page, offset, size, dir, attrs);
 +}
 +
-+static void vduse_domain_bounce(struct vduse_iova_domain *domain,
-+				dma_addr_t iova, phys_addr_t orig,
-+				size_t size, enum dma_data_direction dir)
-+{
-+	unsigned int offset = offset_in_page(iova);
-+
-+	while (size) {
-+		struct page *p = vduse_domain_get_bounce_page(domain, iova);
-+		size_t sz = min_t(size_t, PAGE_SIZE - offset, size);
-+
-+		WARN_ON(!p && dir == DMA_FROM_DEVICE);
-+
-+		if (p)
-+			do_bounce(orig, page_address(p) + offset, sz, dir);
-+
-+		size -= sz;
-+		orig += sz;
-+		iova += sz;
-+		offset = 0;
-+	}
-+}
-+
-+static dma_addr_t vduse_domain_alloc_iova(struct iova_domain *iovad,
-+				unsigned long size, unsigned long limit)
-+{
-+	unsigned long shift = iova_shift(iovad);
-+	unsigned long iova_len = iova_align(iovad, size) >> shift;
-+	unsigned long iova_pfn;
-+
-+	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-+		iova_len = roundup_pow_of_two(iova_len);
-+	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
-+
-+	return iova_pfn << shift;
-+}
-+
-+static void vduse_domain_free_iova(struct iova_domain *iovad,
-+				dma_addr_t iova, size_t size)
-+{
-+	unsigned long shift = iova_shift(iovad);
-+	unsigned long iova_len = iova_align(iovad, size) >> shift;
-+
-+	free_iova_fast(iovad, iova >> shift, iova_len);
-+}
-+
-+dma_addr_t vduse_domain_map_page(struct vduse_iova_domain *domain,
-+				struct page *page, unsigned long offset,
++static void vduse_dev_unmap_page(struct device *dev, dma_addr_t dma_addr,
 +				size_t size, enum dma_data_direction dir,
 +				unsigned long attrs)
 +{
-+	struct iova_domain *iovad = &domain->stream_iovad;
-+	unsigned long limit = domain->bounce_size - 1;
-+	phys_addr_t pa = page_to_phys(page) + offset;
-+	dma_addr_t iova = vduse_domain_alloc_iova(iovad, size, limit);
++	struct vduse_dev *vdev = dev_to_vduse(dev);
++	struct vduse_iova_domain *domain = vdev->domain;
++
++	return vduse_domain_unmap_page(domain, dma_addr, size, dir, attrs);
++}
++
++static void *vduse_dev_alloc_coherent(struct device *dev, size_t size,
++					dma_addr_t *dma_addr, gfp_t flag,
++					unsigned long attrs)
++{
++	struct vduse_dev *vdev = dev_to_vduse(dev);
++	struct vduse_iova_domain *domain = vdev->domain;
++	unsigned long iova;
++	void *addr;
++
++	*dma_addr = DMA_MAPPING_ERROR;
++	addr = vduse_domain_alloc_coherent(domain, size,
++				(dma_addr_t *)&iova, flag, attrs);
++	if (!addr)
++		return NULL;
++
++	if (vduse_iotlb_add_range(vdev, iova, iova + size - 1,
++				  iova, VDUSE_ACCESS_RW,
++				  vduse_domain_file(domain), iova)) {
++		vduse_domain_free_coherent(domain, size, addr, iova, attrs);
++		return NULL;
++	}
++	*dma_addr = (dma_addr_t)iova;
++
++	return addr;
++}
++
++static void vduse_dev_free_coherent(struct device *dev, size_t size,
++					void *vaddr, dma_addr_t dma_addr,
++					unsigned long attrs)
++{
++	struct vduse_dev *vdev = dev_to_vduse(dev);
++	struct vduse_iova_domain *domain = vdev->domain;
++	unsigned long start = (unsigned long)dma_addr;
++	unsigned long last = start + size - 1;
++
++	vduse_iotlb_del_range(vdev, start, last);
++	vduse_dev_update_iotlb(vdev, start, last);
++	vduse_domain_free_coherent(domain, size, vaddr, dma_addr, attrs);
++}
++
++static const struct dma_map_ops vduse_dev_dma_ops = {
++	.map_page = vduse_dev_map_page,
++	.unmap_page = vduse_dev_unmap_page,
++	.alloc = vduse_dev_alloc_coherent,
++	.free = vduse_dev_free_coherent,
++};
++
++static unsigned int perm_to_file_flags(u8 perm)
++{
++	unsigned int flags = 0;
++
++	switch (perm) {
++	case VDUSE_ACCESS_WO:
++		flags |= O_WRONLY;
++		break;
++	case VDUSE_ACCESS_RO:
++		flags |= O_RDONLY;
++		break;
++	case VDUSE_ACCESS_RW:
++		flags |= O_RDWR;
++		break;
++	default:
++		WARN(1, "invalidate vhost IOTLB permission\n");
++		break;
++	}
++
++	return flags;
++}
++
++static int vduse_kickfd_setup(struct vduse_dev *dev,
++			struct vduse_vq_eventfd *eventfd)
++{
++	struct eventfd_ctx *ctx = NULL;
++	struct vduse_virtqueue *vq;
++
++	if (eventfd->index >= dev->vq_num)
++		return -EINVAL;
++
++	vq = &dev->vqs[eventfd->index];
++	if (eventfd->fd > 0) {
++		ctx = eventfd_ctx_fdget(eventfd->fd);
++		if (IS_ERR(ctx))
++			return PTR_ERR(ctx);
++	}
++	spin_lock(&vq->kick_lock);
++	if (vq->kickfd)
++		eventfd_ctx_put(vq->kickfd);
++	vq->kickfd = ctx;
++	spin_unlock(&vq->kick_lock);
++
++	return 0;
++}
++
++static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
++			unsigned long arg)
++{
++	struct vduse_dev *dev = file->private_data;
++	void __user *argp = (void __user *)arg;
 +	int ret;
 +
-+	if (!iova)
-+		return DMA_MAPPING_ERROR;
++	switch (cmd) {
++	case VDUSE_IOTLB_GET_FD: {
++		struct vduse_iotlb_entry entry;
++		struct vhost_iotlb_map *map;
++		struct vdpa_map_file *map_file;
++		struct file *f = NULL;
 +
-+	spin_lock(&domain->iotlb_lock);
-+	ret = vhost_iotlb_add_range(domain->iotlb, (u64)iova,
-+				    (u64)iova + size - 1,
-+				    pa, dir_to_perm(dir));
-+	spin_unlock(&domain->iotlb_lock);
++		ret = -EFAULT;
++		if (copy_from_user(&entry, argp, sizeof(entry)))
++			break;
++
++		spin_lock(&dev->iommu_lock);
++		map = vhost_iotlb_itree_first(dev->iommu, entry.start,
++					      entry.last);
++		if (map) {
++			map_file = (struct vdpa_map_file *)map->opaque;
++			f = get_file(map_file->file);
++			entry.offset = map_file->offset;
++			entry.start = map->start;
++			entry.last = map->last;
++			entry.perm = map->perm;
++		}
++		spin_unlock(&dev->iommu_lock);
++		if (!f) {
++			ret = -EINVAL;
++			break;
++		}
++		if (copy_to_user(argp, &entry, sizeof(entry))) {
++			fput(f);
++			ret = -EFAULT;
++			break;
++		}
++		ret = get_unused_fd_flags(perm_to_file_flags(entry.perm));
++		if (ret < 0) {
++			fput(f);
++			break;
++		}
++		fd_install(ret, f);
++		break;
++	}
++	case VDUSE_VQ_SETUP_KICKFD: {
++		struct vduse_vq_eventfd eventfd;
++
++		ret = -EFAULT;
++		if (copy_from_user(&eventfd, argp, sizeof(eventfd)))
++			break;
++
++		ret = vduse_kickfd_setup(dev, &eventfd);
++		break;
++	}
++	case VDUSE_INJECT_VQ_IRQ: {
++		struct vduse_virtqueue *vq;
++
++		ret = -EINVAL;
++		if (arg >= dev->vq_num)
++			break;
++
++		vq = &dev->vqs[arg];
++		spin_lock_irq(&vq->irq_lock);
++		if (vq->ready && vq->cb.callback) {
++			vq->cb.callback(vq->cb.private);
++			ret = 0;
++		}
++		spin_unlock_irq(&vq->irq_lock);
++		break;
++	}
++	default:
++		ret = -ENOIOCTLCMD;
++		break;
++	}
++
++	return ret;
++}
++
++static int vduse_dev_release(struct inode *inode, struct file *file)
++{
++	struct vduse_dev *dev = file->private_data;
++	struct vduse_dev_msg *msg;
++	int i;
++
++	for (i = 0; i < dev->vq_num; i++) {
++		struct vduse_virtqueue *vq = &dev->vqs[i];
++
++		spin_lock(&vq->kick_lock);
++		if (vq->kickfd)
++			eventfd_ctx_put(vq->kickfd);
++		vq->kickfd = NULL;
++		spin_unlock(&vq->kick_lock);
++	}
++
++	mutex_lock(&dev->msg_lock);
++	while ((msg = vduse_dequeue_msg(&dev->recv_list)))
++		vduse_enqueue_msg(&dev->send_list, msg);
++	mutex_unlock(&dev->msg_lock);
++
++	dev->connected = false;
++
++	return 0;
++}
++
++static int vduse_dev_open(struct inode *inode, struct file *file)
++{
++	struct vduse_dev *dev = container_of(inode->i_cdev,
++					struct vduse_dev, cdev);
++	int ret = -EBUSY;
++
++	mutex_lock(&vduse_lock);
++	if (dev->connected)
++		goto unlock;
++
++	ret = 0;
++	dev->connected = true;
++	file->private_data = dev;
++unlock:
++	mutex_unlock(&vduse_lock);
++
++	return ret;
++}
++
++static const struct file_operations vduse_dev_fops = {
++	.owner		= THIS_MODULE,
++	.open		= vduse_dev_open,
++	.release	= vduse_dev_release,
++	.read_iter	= vduse_dev_read_iter,
++	.write_iter	= vduse_dev_write_iter,
++	.poll		= vduse_dev_poll,
++	.unlocked_ioctl	= vduse_dev_ioctl,
++	.compat_ioctl	= compat_ptr_ioctl,
++	.llseek		= noop_llseek,
++};
++
++static struct vduse_dev *vduse_dev_create(void)
++{
++	struct vduse_dev *dev = kzalloc(sizeof(*dev), GFP_KERNEL);
++
++	if (!dev)
++		return NULL;
++
++	dev->iommu = vhost_iotlb_alloc(0, 0);
++	if (!dev->iommu) {
++		kfree(dev);
++		return NULL;
++	}
++
++	mutex_init(&dev->msg_lock);
++	INIT_LIST_HEAD(&dev->send_list);
++	INIT_LIST_HEAD(&dev->recv_list);
++	atomic64_set(&dev->msg_unique, 0);
++	spin_lock_init(&dev->iommu_lock);
++	atomic_set(&dev->bounce_map, 0);
++
++	init_waitqueue_head(&dev->waitq);
++
++	return dev;
++}
++
++static void vduse_dev_destroy(struct vduse_dev *dev)
++{
++	vhost_iotlb_free(dev->iommu);
++	mutex_destroy(&dev->msg_lock);
++	kfree(dev);
++}
++
++static struct vduse_dev *vduse_find_dev(const char *name)
++{
++	struct vduse_dev *tmp, *dev = NULL;
++
++	list_for_each_entry(tmp, &vduse_devs, list) {
++		if (!strcmp(dev_name(&tmp->dev), name)) {
++			dev = tmp;
++			break;
++		}
++	}
++	return dev;
++}
++
++static int vduse_destroy_dev(char *name)
++{
++	struct vduse_dev *dev = vduse_find_dev(name);
++
++	if (!dev)
++		return -EINVAL;
++
++	if (dev->vdev || dev->connected)
++		return -EBUSY;
++
++	dev->connected = true;
++	list_del(&dev->list);
++	cdev_device_del(&dev->cdev, &dev->dev);
++	put_device(&dev->dev);
++
++	return 0;
++}
++
++static void vduse_release_dev(struct device *device)
++{
++	struct vduse_dev *dev =
++		container_of(device, struct vduse_dev, dev);
++
++	ida_simple_remove(&vduse_ida, dev->minor);
++	kfree(dev->vqs);
++	vduse_domain_destroy(dev->domain);
++	vduse_dev_destroy(dev);
++	module_put(THIS_MODULE);
++}
++
++static int vduse_create_dev(struct vduse_dev_config *config)
++{
++	int i, ret = -ENOMEM;
++	struct vduse_dev *dev;
++
++	if (config->bounce_size > max_bounce_size)
++		return -EINVAL;
++
++	if (config->bounce_size > max_iova_size)
++		return -EINVAL;
++
++	if (vduse_find_dev(config->name))
++		return -EEXIST;
++
++	dev = vduse_dev_create();
++	if (!dev)
++		return -ENOMEM;
++
++	dev->device_id = config->device_id;
++	dev->vendor_id = config->vendor_id;
++	dev->domain = vduse_domain_create(max_iova_size - 1,
++					config->bounce_size);
++	if (!dev->domain)
++		goto err_domain;
++
++	dev->vq_align = config->vq_align;
++	dev->vq_size_max = config->vq_size_max;
++	dev->vq_num = config->vq_num;
++	dev->vqs = kcalloc(dev->vq_num, sizeof(*dev->vqs), GFP_KERNEL);
++	if (!dev->vqs)
++		goto err_vqs;
++
++	for (i = 0; i < dev->vq_num; i++) {
++		dev->vqs[i].index = i;
++		spin_lock_init(&dev->vqs[i].kick_lock);
++		spin_lock_init(&dev->vqs[i].irq_lock);
++	}
++
++	ret = ida_simple_get(&vduse_ida, 0, VDUSE_DEV_MAX, GFP_KERNEL);
++	if (ret < 0)
++		goto err_ida;
++
++	dev->minor = ret;
++	device_initialize(&dev->dev);
++	dev->dev.release = vduse_release_dev;
++	dev->dev.class = vduse_class;
++	dev->dev.devt = MKDEV(MAJOR(vduse_major), dev->minor);
++	ret = dev_set_name(&dev->dev, "%s", config->name);
++	if (ret)
++		goto err_name;
++
++	cdev_init(&dev->cdev, &vduse_dev_fops);
++	dev->cdev.owner = THIS_MODULE;
++
++	ret = cdev_device_add(&dev->cdev, &dev->dev);
 +	if (ret) {
-+		vduse_domain_free_iova(iovad, iova, size);
-+		return DMA_MAPPING_ERROR;
++		put_device(&dev->dev);
++		return ret;
 +	}
-+	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
-+		vduse_domain_bounce(domain, iova, pa, size, DMA_TO_DEVICE);
++	list_add(&dev->list, &vduse_devs);
++	__module_get(THIS_MODULE);
 +
-+	return iova;
++	return 0;
++err_name:
++	ida_simple_remove(&vduse_ida, dev->minor);
++err_ida:
++	kfree(dev->vqs);
++err_vqs:
++	vduse_domain_destroy(dev->domain);
++err_domain:
++	vduse_dev_destroy(dev);
++	return ret;
 +}
 +
-+void vduse_domain_unmap_page(struct vduse_iova_domain *domain,
-+			dma_addr_t dma_addr, size_t size,
-+			enum dma_data_direction dir, unsigned long attrs)
++static long vduse_ioctl(struct file *file, unsigned int cmd,
++			unsigned long arg)
 +{
-+	struct iova_domain *iovad = &domain->stream_iovad;
-+	struct vhost_iotlb_map *map;
-+	phys_addr_t pa;
++	int ret;
++	void __user *argp = (void __user *)arg;
 +
-+	spin_lock(&domain->iotlb_lock);
-+	map = vhost_iotlb_itree_first(domain->iotlb, (u64)dma_addr,
-+				      (u64)dma_addr + size - 1);
-+	if (WARN_ON(!map)) {
-+		spin_unlock(&domain->iotlb_lock);
-+		return;
++	mutex_lock(&vduse_lock);
++	switch (cmd) {
++	case VDUSE_CREATE_DEV: {
++		struct vduse_dev_config config;
++
++		ret = -EFAULT;
++		if (copy_from_user(&config, argp, sizeof(config)))
++			break;
++
++		ret = vduse_create_dev(&config);
++		break;
 +	}
-+	pa = map->addr;
-+	vhost_iotlb_map_free(domain->iotlb, map);
-+	spin_unlock(&domain->iotlb_lock);
++	case VDUSE_DESTROY_DEV: {
++		char name[VDUSE_NAME_MAX];
 +
-+	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
-+		vduse_domain_bounce(domain, dma_addr, pa,
-+					size, DMA_FROM_DEVICE);
++		ret = -EFAULT;
++		if (copy_from_user(name, argp, VDUSE_NAME_MAX))
++			break;
 +
-+	vduse_domain_free_iova(iovad, dma_addr, size);
++		ret = vduse_destroy_dev(name);
++		break;
++	}
++	default:
++		ret = -EINVAL;
++		break;
++	}
++	mutex_unlock(&vduse_lock);
++
++	return ret;
 +}
 +
-+void *vduse_domain_alloc_coherent(struct vduse_iova_domain *domain,
-+				size_t size, dma_addr_t *dma_addr,
-+				gfp_t flag, unsigned long attrs)
++static const struct file_operations vduse_fops = {
++	.owner		= THIS_MODULE,
++	.unlocked_ioctl	= vduse_ioctl,
++	.compat_ioctl	= compat_ptr_ioctl,
++	.llseek		= noop_llseek,
++};
++
++static char *vduse_devnode(struct device *dev, umode_t *mode)
 +{
-+	struct iova_domain *iovad = &domain->consistent_iovad;
-+	unsigned long limit = domain->iova_limit;
-+	dma_addr_t iova = vduse_domain_alloc_iova(iovad, size, limit);
-+	void *orig = alloc_pages_exact(size, flag);
++	return kasprintf(GFP_KERNEL, "vduse/%s", dev_name(dev));
++}
++
++static struct miscdevice vduse_misc = {
++	.fops = &vduse_fops,
++	.minor = MISC_DYNAMIC_MINOR,
++	.name = "vduse",
++	.nodename = "vduse/control",
++};
++
++static void vduse_mgmtdev_release(struct device *dev)
++{
++}
++
++static struct device vduse_mgmtdev = {
++	.init_name = "vduse",
++	.release = vduse_mgmtdev_release,
++};
++
++static struct vdpa_mgmt_dev mgmt_dev;
++
++static int vduse_dev_add_vdpa(struct vduse_dev *dev, const char *name)
++{
++	struct vduse_vdpa *vdev = dev->vdev;
 +	int ret;
 +
-+	if (!iova || !orig)
-+		goto err;
++	if (vdev)
++		return -EEXIST;
 +
-+	spin_lock(&domain->iotlb_lock);
-+	ret = vhost_iotlb_add_range(domain->iotlb, (u64)iova,
-+				    (u64)iova + size - 1,
-+				    virt_to_phys(orig), VHOST_MAP_RW);
-+	spin_unlock(&domain->iotlb_lock);
++	vdev = vdpa_alloc_device(struct vduse_vdpa, vdpa, NULL,
++				 &vduse_vdpa_config_ops,
++				 dev->vq_num, name, true);
++	if (!vdev)
++		return -ENOMEM;
++
++	vdev->dev = dev;
++	vdev->vdpa.dev.dma_mask = &vdev->vdpa.dev.coherent_dma_mask;
++	ret = dma_set_mask_and_coherent(&vdev->vdpa.dev, DMA_BIT_MASK(64));
 +	if (ret)
 +		goto err;
 +
-+	*dma_addr = iova;
++	set_dma_ops(&vdev->vdpa.dev, &vduse_dev_dma_ops);
++	vdev->vdpa.dma_dev = &vdev->vdpa.dev;
++	vdev->vdpa.mdev = &mgmt_dev;
 +
-+	return orig;
++	ret = _vdpa_register_device(&vdev->vdpa);
++	if (ret)
++		goto err;
++
++	dev->vdev = vdev;
++
++	return 0;
 +err:
-+	*dma_addr = DMA_MAPPING_ERROR;
-+	if (orig)
-+		free_pages_exact(orig, size);
-+	if (iova)
-+		vduse_domain_free_iova(iovad, iova, size);
-+
-+	return NULL;
++	put_device(&vdev->vdpa.dev);
++	return ret;
 +}
 +
-+void vduse_domain_free_coherent(struct vduse_iova_domain *domain, size_t size,
-+				void *vaddr, dma_addr_t dma_addr,
-+				unsigned long attrs)
++static int vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name)
 +{
-+	struct iova_domain *iovad = &domain->consistent_iovad;
-+	struct vhost_iotlb_map *map;
-+	phys_addr_t pa;
++	struct vduse_dev *dev;
++	int ret = -EINVAL;
 +
-+	spin_lock(&domain->iotlb_lock);
-+	map = vhost_iotlb_itree_first(domain->iotlb, (u64)dma_addr,
-+				      (u64)dma_addr + size - 1);
-+	if (WARN_ON(!map)) {
-+		spin_unlock(&domain->iotlb_lock);
-+		return;
++	mutex_lock(&vduse_lock);
++	dev = vduse_find_dev(name);
++	if (!dev)
++		goto unlock;
++
++	ret = vduse_dev_add_vdpa(dev, name);
++unlock:
++	mutex_unlock(&vduse_lock);
++
++	return ret;
++}
++
++static void vdpa_dev_del(struct vdpa_mgmt_dev *mdev, struct vdpa_device *dev)
++{
++	_vdpa_unregister_device(dev);
++}
++
++static const struct vdpa_mgmtdev_ops vdpa_dev_mgmtdev_ops = {
++	.dev_add = vdpa_dev_add,
++	.dev_del = vdpa_dev_del,
++};
++
++static struct virtio_device_id id_table[] = {
++	{ VIRTIO_DEV_ANY_ID, VIRTIO_DEV_ANY_ID },
++	{ 0 },
++};
++
++static struct vdpa_mgmt_dev mgmt_dev = {
++	.device = &vduse_mgmtdev,
++	.id_table = id_table,
++	.ops = &vdpa_dev_mgmtdev_ops,
++};
++
++static int vduse_mgmtdev_init(void)
++{
++	int ret;
++
++	ret = device_register(&vduse_mgmtdev);
++	if (ret)
++		return ret;
++
++	ret = vdpa_mgmtdev_register(&mgmt_dev);
++	if (ret)
++		goto err;
++
++	return 0;
++err:
++	device_unregister(&vduse_mgmtdev);
++	return ret;
++}
++
++static void vduse_mgmtdev_exit(void)
++{
++	vdpa_mgmtdev_unregister(&mgmt_dev);
++	device_unregister(&vduse_mgmtdev);
++}
++
++static int vduse_init(void)
++{
++	int ret;
++
++	ret = misc_register(&vduse_misc);
++	if (ret)
++		return ret;
++
++	vduse_class = class_create(THIS_MODULE, "vduse");
++	if (IS_ERR(vduse_class)) {
++		ret = PTR_ERR(vduse_class);
++		goto err_class;
 +	}
-+	pa = map->addr;
-+	vhost_iotlb_map_free(domain->iotlb, map);
-+	spin_unlock(&domain->iotlb_lock);
++	vduse_class->devnode = vduse_devnode;
 +
-+	vduse_domain_free_iova(iovad, dma_addr, size);
-+	free_pages_exact(phys_to_virt(pa), size);
-+}
++	ret = alloc_chrdev_region(&vduse_major, 0, VDUSE_DEV_MAX, "vduse");
++	if (ret)
++		goto err_chardev;
 +
-+static vm_fault_t vduse_domain_mmap_fault(struct vm_fault *vmf)
-+{
-+	struct vduse_iova_domain *domain = vmf->vma->vm_private_data;
-+	unsigned long iova = vmf->pgoff << PAGE_SHIFT;
-+	struct page *page;
++	ret = vduse_domain_init();
++	if (ret)
++		goto err_domain;
 +
-+	if (!domain)
-+		return VM_FAULT_SIGBUS;
-+
-+	if (iova < domain->bounce_size)
-+		page = vduse_domain_alloc_bounce_page(domain, iova);
-+	else
-+		page = vduse_domain_get_mapping_page(domain, iova);
-+
-+	if (!page)
-+		return VM_FAULT_SIGBUS;
-+
-+	vmf->page = page;
++	ret = vduse_mgmtdev_init();
++	if (ret)
++		goto err_mgmtdev;
 +
 +	return 0;
++err_mgmtdev:
++	vduse_domain_exit();
++err_domain:
++	unregister_chrdev_region(vduse_major, VDUSE_DEV_MAX);
++err_chardev:
++	class_destroy(vduse_class);
++err_class:
++	misc_deregister(&vduse_misc);
++	return ret;
 +}
++module_init(vduse_init);
 +
-+static const struct vm_operations_struct vduse_domain_mmap_ops = {
-+	.fault = vduse_domain_mmap_fault,
-+};
-+
-+static int vduse_domain_mmap(struct file *file, struct vm_area_struct *vma)
++static void vduse_exit(void)
 +{
-+	struct vduse_iova_domain *domain = file->private_data;
-+
-+	vma->vm_flags |= VM_DONTDUMP | VM_DONTEXPAND;
-+	vma->vm_private_data = domain;
-+	vma->vm_ops = &vduse_domain_mmap_ops;
-+
-+	return 0;
++	misc_deregister(&vduse_misc);
++	class_destroy(vduse_class);
++	unregister_chrdev_region(vduse_major, VDUSE_DEV_MAX);
++	vduse_domain_exit();
++	vduse_mgmtdev_exit();
 +}
++module_exit(vduse_exit);
 +
-+static int vduse_domain_release(struct inode *inode, struct file *file)
-+{
-+	struct vduse_iova_domain *domain = file->private_data;
-+
-+	vduse_domain_free_bounce_pages(domain, 0, domain->bounce_size);
-+	put_iova_domain(&domain->stream_iovad);
-+	put_iova_domain(&domain->consistent_iovad);
-+	vhost_iotlb_free(domain->iotlb);
-+	vfree(domain->bounce_pages);
-+	kfree(domain);
-+
-+	return 0;
-+}
-+
-+static const struct file_operations vduse_domain_fops = {
-+	.mmap = vduse_domain_mmap,
-+	.release = vduse_domain_release,
-+};
-+
-+void vduse_domain_destroy(struct vduse_iova_domain *domain)
-+{
-+	fput(domain->file);
-+}
-+
-+struct vduse_iova_domain *
-+vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
-+{
-+	struct vduse_iova_domain *domain;
-+	struct file *file;
-+	unsigned long bounce_pfns = PAGE_ALIGN(bounce_size) >> PAGE_SHIFT;
-+
-+	if (iova_limit <= bounce_size)
-+		return NULL;
-+
-+	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-+	if (!domain)
-+		return NULL;
-+
-+	domain->iotlb = vhost_iotlb_alloc(0, 0);
-+	if (!domain->iotlb)
-+		goto err_iotlb;
-+
-+	domain->iova_limit = iova_limit;
-+	domain->bounce_size = PAGE_ALIGN(bounce_size);
-+	domain->bounce_pages = vzalloc(bounce_pfns * sizeof(struct page *));
-+	if (!domain->bounce_pages)
-+		goto err_page;
-+
-+	file = anon_inode_getfile("[vduse-domain]", &vduse_domain_fops,
-+				domain, O_RDWR);
-+	if (IS_ERR(file))
-+		goto err_file;
-+
-+	domain->file = file;
-+	spin_lock_init(&domain->iotlb_lock);
-+	init_iova_domain(&domain->stream_iovad,
-+			IOVA_ALLOC_SIZE, IOVA_START_PFN);
-+	init_iova_domain(&domain->consistent_iovad,
-+			PAGE_SIZE, bounce_pfns);
-+
-+	return domain;
-+err_file:
-+	vfree(domain->bounce_pages);
-+err_page:
-+	vhost_iotlb_free(domain->iotlb);
-+err_iotlb:
-+	kfree(domain);
-+	return NULL;
-+}
-+
-+int vduse_domain_init(void)
-+{
-+	return iova_cache_get();
-+}
-+
-+void vduse_domain_exit(void)
-+{
-+	iova_cache_put();
-+}
-diff --git a/drivers/vdpa/vdpa_user/iova_domain.h b/drivers/vdpa/vdpa_user/iova_domain.h
++MODULE_VERSION(DRV_VERSION);
++MODULE_LICENSE(DRV_LICENSE);
++MODULE_AUTHOR(DRV_AUTHOR);
++MODULE_DESCRIPTION(DRV_DESC);
+diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
 new file mode 100644
-index 000000000000..9c85d8346626
+index 000000000000..9391c4acfa53
 --- /dev/null
-+++ b/drivers/vdpa/vdpa_user/iova_domain.h
-@@ -0,0 +1,61 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * MMU-based IOMMU implementation
-+ *
-+ * Copyright (C) 2020 Bytedance Inc. and/or its affiliates. All rights reserved.
-+ *
-+ * Author: Xie Yongji <xieyongji@bytedance.com>
-+ *
-+ */
++++ b/include/uapi/linux/vduse.h
+@@ -0,0 +1,136 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _UAPI_VDUSE_H_
++#define _UAPI_VDUSE_H_
 +
-+#ifndef _VDUSE_IOVA_DOMAIN_H
-+#define _VDUSE_IOVA_DOMAIN_H
++#include <linux/types.h>
 +
-+#include <linux/iova.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/vhost_iotlb.h>
++#define VDUSE_CONFIG_DATA_LEN	256
++#define VDUSE_NAME_MAX	256
 +
-+struct vduse_iova_domain {
-+	struct iova_domain stream_iovad;
-+	struct iova_domain consistent_iovad;
-+	struct page **bounce_pages;
-+	size_t bounce_size;
-+	unsigned long iova_limit;
-+	struct vhost_iotlb *iotlb;
-+	spinlock_t iotlb_lock;
-+	struct file *file;
++/* the control messages definition for read/write */
++
++enum vduse_req_type {
++	VDUSE_SET_VQ_NUM,
++	VDUSE_SET_VQ_ADDR,
++	VDUSE_SET_VQ_READY,
++	VDUSE_GET_VQ_READY,
++	VDUSE_SET_VQ_STATE,
++	VDUSE_GET_VQ_STATE,
++	VDUSE_SET_FEATURES,
++	VDUSE_GET_FEATURES,
++	VDUSE_SET_STATUS,
++	VDUSE_GET_STATUS,
++	VDUSE_SET_CONFIG,
++	VDUSE_GET_CONFIG,
++	VDUSE_UPDATE_IOTLB,
 +};
 +
-+static inline struct file *
-+vduse_domain_file(struct vduse_iova_domain *domain)
-+{
-+	return domain->file;
-+}
++struct vduse_vq_num {
++	__u32 index;
++	__u32 num;
++};
 +
-+dma_addr_t vduse_domain_map_page(struct vduse_iova_domain *domain,
-+				struct page *page, unsigned long offset,
-+				size_t size, enum dma_data_direction dir,
-+				unsigned long attrs);
++struct vduse_vq_addr {
++	__u32 index;
++	__u64 desc_addr;
++	__u64 driver_addr;
++	__u64 device_addr;
++};
 +
-+void vduse_domain_unmap_page(struct vduse_iova_domain *domain,
-+			dma_addr_t dma_addr, size_t size,
-+			enum dma_data_direction dir, unsigned long attrs);
++struct vduse_vq_ready {
++	__u32 index;
++	__u8 ready;
++};
 +
-+void *vduse_domain_alloc_coherent(struct vduse_iova_domain *domain,
-+				size_t size, dma_addr_t *dma_addr,
-+				gfp_t flag, unsigned long attrs);
++struct vduse_vq_state {
++	__u32 index;
++	__u16 avail_idx;
++};
 +
-+void vduse_domain_free_coherent(struct vduse_iova_domain *domain, size_t size,
-+				void *vaddr, dma_addr_t dma_addr,
-+				unsigned long attrs);
++struct vduse_dev_config_data {
++	__u32 offset;
++	__u32 len;
++	__u8 data[VDUSE_CONFIG_DATA_LEN];
++};
 +
-+void vduse_domain_destroy(struct vduse_iova_domain *domain);
++struct vduse_iova_range {
++	__u64 start;
++	__u64 last;
++};
 +
-+struct vduse_iova_domain *vduse_domain_create(unsigned long iova_limit,
-+						size_t bounce_size);
++struct vduse_dev_request {
++	__u32 type; /* request type */
++	__u32 unique; /* request id */
++	__u32 reserved[2]; /* for feature use */
++	union {
++		struct vduse_vq_num vq_num; /* virtqueue num */
++		struct vduse_vq_addr vq_addr; /* virtqueue address */
++		struct vduse_vq_ready vq_ready; /* virtqueue ready status */
++		struct vduse_vq_state vq_state; /* virtqueue state */
++		struct vduse_dev_config_data config; /* virtio device config space */
++		struct vduse_iova_range iova; /* iova range for updating */
++		__u64 features; /* virtio features */
++		__u8 status; /* device status */
++	};
++};
 +
-+int vduse_domain_init(void);
++struct vduse_dev_response {
++	__u32 request_id; /* corresponding request id */
++#define VDUSE_REQUEST_OK	0x00
++#define VDUSE_REQUEST_FAILED	0x01
++	__u8 result; /* the result of request */
++	__u8 reserved[11]; /* for feature use */
++	union {
++		struct vduse_vq_ready vq_ready; /* virtqueue ready status */
++		struct vduse_vq_state vq_state; /* virtqueue state */
++		struct vduse_dev_config_data config; /* virtio device config space */
++		__u64 features; /* virtio features */
++		__u8 status; /* device status */
++	};
++};
 +
-+void vduse_domain_exit(void);
++/* ioctls */
 +
-+#endif /* _VDUSE_IOVA_DOMAIN_H */
++struct vduse_dev_config {
++	char name[VDUSE_NAME_MAX]; /* vduse device name */
++	__u32 vendor_id; /* virtio vendor id */
++	__u32 device_id; /* virtio device id */
++	__u64 bounce_size; /* bounce buffer size for iommu */
++	__u16 vq_num; /* the number of virtqueues */
++	__u16 vq_size_max; /* the max size of virtqueue */
++	__u32 vq_align; /* the allocation alignment of virtqueue's metadata */
++};
++
++struct vduse_iotlb_entry {
++	__u64 offset; /* the mmap offset on fd */
++	__u64 start; /* start of the IOVA range */
++	__u64 last; /* last of the IOVA range */
++#define VDUSE_ACCESS_RO 0x1
++#define VDUSE_ACCESS_WO 0x2
++#define VDUSE_ACCESS_RW 0x3
++	__u8 perm; /* access permission of this range */
++};
++
++struct vduse_vq_eventfd {
++	__u32 index; /* virtqueue index */
++	int fd; /* eventfd, -1 means de-assigning the eventfd */
++};
++
++#define VDUSE_BASE	0x81
++
++/* Create a vduse device which is represented by a char device (/dev/vduse/<name>) */
++#define VDUSE_CREATE_DEV	_IOW(VDUSE_BASE, 0x01, struct vduse_dev_config)
++
++/* Destroy a vduse device. Make sure there are no references to the char device */
++#define VDUSE_DESTROY_DEV	_IOW(VDUSE_BASE, 0x02, char[VDUSE_NAME_MAX])
++
++/* Get a file descriptor for the mmap'able iova region */
++#define VDUSE_IOTLB_GET_FD	_IOWR(VDUSE_BASE, 0x03, struct vduse_iotlb_entry)
++
++/* Setup an eventfd to receive kick for virtqueue */
++#define VDUSE_VQ_SETUP_KICKFD	_IOW(VDUSE_BASE, 0x04, struct vduse_vq_eventfd)
++
++/* Inject an interrupt for specific virtqueue */
++#define VDUSE_INJECT_VQ_IRQ	_IO(VDUSE_BASE, 0x05)
++
++#endif /* _UAPI_VDUSE_H_ */
 -- 
 2.11.0
 
