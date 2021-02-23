@@ -2,253 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C15BE32270E
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 09:25:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87EA8322718
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 09:29:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbhBWIYq convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 23 Feb 2021 03:24:46 -0500
-Received: from mga11.intel.com ([192.55.52.93]:9903 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231942AbhBWIYp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 03:24:45 -0500
-IronPort-SDR: magf6VNMUr9MdE7HjiXV6D6RaZXQ6daitRpzMaWRuCV27ZINu6MiF1WaFFg9AekmFKHlbeLoqa
- yEdk43w2a4Dg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9903"; a="181292694"
-X-IronPort-AV: E=Sophos;i="5.81,199,1610438400"; 
-   d="scan'208";a="181292694"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2021 00:24:29 -0800
-IronPort-SDR: xXkId/ti6d+ZOqfLs7jHXYcK+u5oJJrjCUNxkUq4M1Zw/Z1URiy3wclm5UxsnnIH3xF69JUCm/
- 4TGEvsa4ntrA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,199,1610438400"; 
-   d="scan'208";a="403062956"
-Received: from irsmsx603.ger.corp.intel.com ([163.33.146.9])
-  by orsmga008.jf.intel.com with ESMTP; 23 Feb 2021 00:24:26 -0800
-Received: from irsmsx604.ger.corp.intel.com (163.33.146.137) by
- irsmsx603.ger.corp.intel.com (163.33.146.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 23 Feb 2021 08:24:25 +0000
-Received: from irsmsx604.ger.corp.intel.com ([163.33.146.137]) by
- IRSMSX604.ger.corp.intel.com ([163.33.146.137]) with mapi id 15.01.2106.002;
- Tue, 23 Feb 2021 08:24:25 +0000
-From:   "Loftus, Ciara" <ciara.loftus@intel.com>
-To:     "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "Janjua, Weqaar A" <weqaar.a.janjua@intel.com>
-Subject: RE: [PATCH bpf-next 3/4] selftests/bpf: restructure xsk selftests
-Thread-Topic: [PATCH bpf-next 3/4] selftests/bpf: restructure xsk selftests
-Thread-Index: AQHXBUqTVaeEgTuG802qQ/bkObXD8KpkD7oAgAFfo7A=
-Date:   Tue, 23 Feb 2021 08:24:25 +0000
-Message-ID: <746b426fd5bf408084d86c5a9a18b021@intel.com>
-References: <20210217160214.7869-1-ciara.loftus@intel.com>
- <20210217160214.7869-4-ciara.loftus@intel.com>
- <20210222112334.GA29106@ranger.igk.intel.com>
-In-Reply-To: <20210222112334.GA29106@ranger.igk.intel.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [163.33.253.164]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        id S232190AbhBWI3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 03:29:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232182AbhBWI3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 03:29:20 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23270C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 00:28:40 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id n1so24932668edv.2
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 00:28:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=3Li9C7SDrwk5rNm7kTQovNBC2vU5jZhQZLg2eIYo6jM=;
+        b=ZNnU6QLgunWOxdE81J4XYmT2qrAFVUvYjsZk0TLrupPbGFM0Ag/cNvZe8W/O5+kZ+N
+         49Xs7u0A3i6BHsAzdBku/sDGMJx6RgolJJ6fntXvQuCSubEdqvohdRJWA5OPLwkVFF1i
+         EQxz4sgXZMYr7FZ1d9i4OVTSM4NOf6CZXbBp47UqcLRP2Da/YvjfoeFLbb0YTQEjlg3n
+         khSyEhFb87bQ659lv5w76Apc3DtfIjBLZC2O6HHg3UL3lDC24+MedGfYSJzbZLkIuhp0
+         lfxwNnBduPSDH5/ABQ6jnLXWirTuqseILFb65Mar24jVJ+4usvChvQ4Mt/FV1TMu1A9m
+         oB2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3Li9C7SDrwk5rNm7kTQovNBC2vU5jZhQZLg2eIYo6jM=;
+        b=Zn1R4MYigZojBzsnrUQDjXLwOjQ/s7L82fZF7KWnH92Evlzs7iEbnBwZLKhEm+lcI5
+         R/rKAZJkPL2c+EiUwLZK9gXZEHUNUUrebYEyessp1Uk8rCuWeESUF86W+sGcyp/ZYK6k
+         QfNF1dXYvfJYGSFttYX9jnkklpIbn5YLLCzDu/HcwSqvfTC6/BOBGfLVEityWVinn7L+
+         qd9e/bzYAK8HwfZRkEGgn2UTvfoi04KwN0HUA9HndqTvg4mYBkZacVuj6OT32Yy3spL+
+         UG8HSa2qlbPK3Er4A3sZhvhrFfs0Iays1pbc/w7ofPXvflHdejQJGcYAVjczX2qQt9aa
+         /NGQ==
+X-Gm-Message-State: AOAM5319eXKFYwTkNqSDSH8B2+awdVdP5KGtUUassSRh5phsi7vm3Pvk
+        dt7y+BkCVueKgO1/eF+SWLU=
+X-Google-Smtp-Source: ABdhPJxXemTnDp6OByZ3KaE63XFS4ruEO3iOAWU6/Tfo3g05RIz7EAUoVRh31PsCQvAkpUwNZOOuZg==
+X-Received: by 2002:aa7:c95a:: with SMTP id h26mr26864259edt.166.1614068918827;
+        Tue, 23 Feb 2021 00:28:38 -0800 (PST)
+Received: from [192.168.1.110] ([77.124.67.117])
+        by smtp.gmail.com with ESMTPSA id m19sm13187206eds.8.2021.02.23.00.28.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Feb 2021 00:28:38 -0800 (PST)
+Subject: Re: [PATCH RFC net-next] mlx5: fix for crash on net-next
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, saeedm@nvidia.com,
+        Tariq Toukan <tariqt@mellanox.com>, eranbe@nvidia.com,
+        maximmi@mellanox.com, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <161402344429.1980160.4798557236979159924.stgit@firesoul>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <b0967766-623a-90fa-3875-db9e1ad6a57f@gmail.com>
+Date:   Tue, 23 Feb 2021 10:28:35 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
+In-Reply-To: <161402344429.1980160.4798557236979159924.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> On Wed, Feb 17, 2021 at 04:02:13PM +0000, Ciara Loftus wrote:
-> > Prior to this commit individual xsk tests were launched from the
-> > shell script 'test_xsk.sh'. When adding a new test type, two new test
-> > configurations had to be added to this file - one for each of the
-> > supported XDP 'modes' (skb or drv). Should zero copy support be added to
-> > the xsk selftest framework in the future, three new test configurations
-> > would need to be added for each new test type. Each new test type also
-> > typically requires new CLI arguments for the xdpxceiver program.
-> >
-> > This commit aims to reduce the overhead of adding new tests, by launching
-> > the test configurations from within the xdpxceiver program itself, using
-> > simple loops. Every test is run every time the C program is executed. Many
-> > of the CLI arguments can be removed as a result.
-> >
-> > Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_xsk.sh    | 112 +-----------
-> >  tools/testing/selftests/bpf/xdpxceiver.c   | 199 ++++++++++++---------
-> >  tools/testing/selftests/bpf/xdpxceiver.h   |  27 ++-
-> >  tools/testing/selftests/bpf/xsk_prereqs.sh |  24 +--
-> >  4 files changed, 139 insertions(+), 223 deletions(-)
-> >
-> 
-> Good cleanup! I have a series of fixes/cleanups as well and I need to
-> introduce a new test over here, so your work makes it easier for me.
-> 
-> One nit below and once you address Bjorn's request, then feel free to add
-> my:
 
-Thanks Björn and Maciej for the feedback. Will include your suggestions in the v2.
-I discovered some extra things to tweak for the v2 but hope to have it up shortly.
 
-Thanks,
-Ciara
+On 2/22/2021 9:50 PM, Jesper Dangaard Brouer wrote:
+> Net-next at commit d310ec03a34e ("Merge tag 'perf-core-2021-02-17')
+> 
+> There is a divide error in drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+> where it seems that num_tc_x_num_ch can become zero in a modulo operation:
+> 
+> 	if (unlikely(txq_ix >= num_tc_x_num_ch))
+> 		txq_ix %= num_tc_x_num_ch;
+> 
+> I think error were introduced in:
+>   - 214baf22870c ("net/mlx5e: Support HTB offload")
+> 
+> The modulo operation was introduced in:
+>   - 145e5637d941 ("net/mlx5e: Add TX PTP port object support")
+> 
+> The crash looks like this:
+> 
+> [   12.112849] divide error: 0000 [#1] PREEMPT SMP PTI
+> [   12.117727] CPU: 4 PID: 0 Comm: swapper/4 Not tainted 5.11.0-net-next+ #575
+> [   12.124677] Hardware name: Supermicro Super Server/X10SRi-F, BIOS 2.0a 08/01/2016
+> [   12.132149] RIP: 0010:mlx5e_select_queue+0xd5/0x1e0 [mlx5_core]
+> [   12.138110] Code: 85 c0 75 2e 48 83 bb 08 57 00 00 00 75 5b 31 d2 48 89 ee 48 89 df e8 ba 3e 54 e1 0f b7 d0 41 39 d4 0f 8f 6b ff ff ff 89 d0 99 <41> f7 fc e9 60 ff ff ff 8b 96 8c 00 00 00 89 d1 c1 e9 10 39 c1 0f
+> [   12.156849] RSP: 0018:ffffc900001c0c10 EFLAGS: 00010297
+> [   12.162065] RAX: 0000000000000004 RBX: ffff88810ff00000 RCX: 0000000000000007
+> [   12.169188] RDX: 0000000000000000 RSI: ffff888107016400 RDI: ffff8881008dc740
+> [   12.176313] RBP: ffff888107016400 R08: 0000000000000000 R09: 000000ncing: Fatal exception in interrupt ]---
+> 
+> This is an RFC, because I don't think this is a proper fix, but
+> at least it allows me to boot with mlx5 driver enabled.
+> 
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
 
-> 
-> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> 
-> [...]
-> 
-> > +static int configure_skb(void)
-> > +{
-> > +
-> > +	char cmd[80];
-> > +
-> > +	snprintf(cmd, sizeof(cmd), "ip link set dev %s xdpdrv off", ifdict[0]-
-> >ifname);
-> > +	if (system(cmd)) {
-> > +		ksft_test_result_fail("Failed to configure native mode on
-> iface %s\n",
-> > +						ifdict[0]->ifname);
-> > +		return -1;
-> > +	}
-> > +	snprintf(cmd, sizeof(cmd), "ip netns exec %s ip link set dev %s
-> xdpdrv off",
-> > +					ifdict[1]->nsname, ifdict[1]->ifname);
-> > +	if (system(cmd)) {
-> > +		ksft_test_result_fail("Failed to configure native mode on
-> iface/ns %s\n",
-> > +						ifdict[1]->ifname, ifdict[1]-
-> >nsname);
-> > +		return -1;
-> > +	}
-> > +
-> > +	cur_mode = TEST_MODE_SKB;
-> > +
-> > +	return 0;
-> > +
-> > +}
-> > +
-> > +static int configure_drv(void)
-> > +{
-> > +	char cmd[80];
-> > +
-> > +	snprintf(cmd, sizeof(cmd), "ip link set dev %s xdpgeneric off",
-> ifdict[0]->ifname);
-> > +	if (system(cmd)) {
-> > +		ksft_test_result_fail("Failed to configure native mode on
-> iface %s\n",
-> > +						ifdict[0]->ifname);
-> > +		return -1;
-> > +	}
-> > +	snprintf(cmd, sizeof(cmd), "ip netns exec %s ip link set dev %s
-> xdpgeneric off",
-> > +					ifdict[1]->nsname, ifdict[1]->ifname);
-> > +	if (system(cmd)) {
-> > +		ksft_test_result_fail("Failed to configure native mode on
-> iface/ns %s\n",
-> > +						ifdict[1]->ifname, ifdict[1]-
-> >nsname);
-> > +		return -1;
-> > +	}
-> > +
-> > +	cur_mode = TEST_MODE_DRV;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void run_pkt_test(int mode, int type)
-> > +{
-> > +	test_type = type;
-> > +
-> > +	/* reset defaults after potential previous test */
-> > +	xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-> > +	pkt_counter = 0;
-> > +	switching_notify = 0;
-> > +	bidi_pass = 0;
-> > +	prev_pkt = -1;
-> > +	ifdict[0]->fv.vector = tx;
-> > +	ifdict[1]->fv.vector = rx;
-> > +
-> > +	switch (mode) {
-> > +	case (TEST_MODE_SKB):
-> > +		if (cur_mode != TEST_MODE_SKB)
-> > +			configure_skb();
-> 
-> Should you check a return value over here?
-> 
-> > +		xdp_flags |= XDP_FLAGS_SKB_MODE;
-> > +		uut = TEST_MODE_SKB;
-> > +		break;
-> > +	case (TEST_MODE_DRV):
-> > +		if (cur_mode != TEST_MODE_DRV)
-> > +			configure_drv();
-> 
-> ditto
-> 
-> > +		xdp_flags |= XDP_FLAGS_DRV_MODE;
-> > +		uut = TEST_MODE_DRV;
-> > +		break;
-> > +	default:
-> > +		break;
-> > +	}
-> > +
-> > +	pthread_init_mutex();
-> > +
-> > +	if ((test_type != TEST_TYPE_TEARDOWN) && (test_type !=
-> TEST_TYPE_BIDI))
-> > +		testapp_validate();
-> > +	else
-> > +		testapp_sockets();
-> > +
-> > +	pthread_destroy_mutex();
-> > +}
-> > +
-> >  int main(int argc, char **argv)
-> >  {
-> >  	struct rlimit _rlim = { RLIM_INFINITY, RLIM_INFINITY };
-> > @@ -1021,6 +1062,7 @@ int main(int argc, char **argv)
-> >  	const char *IP2 = "192.168.100.161";
-> >  	u16 UDP_DST_PORT = 2020;
-> >  	u16 UDP_SRC_PORT = 2121;
-> > +	int i, j;
-> >
-> >  	ifaceconfig = malloc(sizeof(struct ifaceconfigobj));
-> >  	memcpy(ifaceconfig->dst_mac, MAC1, ETH_ALEN);
-> > @@ -1046,24 +1088,19 @@ int main(int argc, char **argv)
-> >
-> >  	init_iface_config(ifaceconfig);
-> >
-> > -	pthread_init_mutex();
-> > +	ksft_set_plan(TEST_MODE_MAX * TEST_TYPE_MAX);
-> >
-> > -	ksft_set_plan(1);
-> > +	configure_skb();
-> > +	cur_mode = TEST_MODE_SKB;
-> >
-> > -	if (!opt_teardown && !opt_bidi) {
-> > -		testapp_validate();
-> > -	} else if (opt_teardown && opt_bidi) {
-> > -		ksft_test_result_fail("ERROR: parameters -T and -B cannot
-> be used together\n");
-> > -		ksft_exit_xfail();
-> > -	} else {
-> > -		testapp_sockets();
-> > +	for (i = 0; i < TEST_MODE_MAX; i++) {
-> > +		for (j = 0; j < TEST_TYPE_MAX; j++)
-> > +			run_pkt_test(i, j);
-> >  	}
-> >
-> >  	for (int i = 0; i < MAX_INTERFACES; i++)
-> >  		free(ifdict[i]);
-> >
-> > -	pthread_destroy_mutex();
-> > -
-> >  	ksft_exit_pass();
-> >
-> >  	return 0;
+Hi Jesper,
+
+Thanks for your report and patch.
+
+We'll check it and post the proper fix.
+I wonder what's special in your configuration / use case, as I'm not 
+aware of such failure.
+Can you please share more info about the reproduction?
+
+Regards,
+Tariq
