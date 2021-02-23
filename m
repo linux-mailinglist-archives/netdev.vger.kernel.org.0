@@ -2,151 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D337F322A25
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 13:01:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B23322A4E
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 13:13:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232710AbhBWL7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 06:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232623AbhBWLz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 06:55:59 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438E8C061A29
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 03:52:24 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id f8so9671846plg.5
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 03:52:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kx223F6I1hgIgXiIIDDOAsjioq86iWLsXACPrPS1HVA=;
-        b=OFtGQpWO+Ir3PPk881mk0o6vjPCtTLRoAY9YCPtCzHzPxYm6IB1YUZjgQT9z6+E/QI
-         IaBQIWiMv+r0McIu60scEAKEcdu8iwRQT81n6DUoMPYWWU08HXKnUAhhiVK61x+NCRPO
-         U//hQ7GB3QxU+gJEAwfhogNVQmGxyjJef5wfd0A34jTOLkNnxNSuC/IE6xBmw9/mUoW+
-         J9GKcsOGDYWdIYcqrqQGlzm+s0VikurzM64kmzpTkSruhKrVsGNeVPXVnezDCnhMh/Xe
-         uLgy5fUWCctul2mjq0okYPD9noMzO+5/tv1wstLqxTK/OFKd9xw6EJOGxM1VIwzhrcgK
-         nIcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kx223F6I1hgIgXiIIDDOAsjioq86iWLsXACPrPS1HVA=;
-        b=AsV7lqQBcXiE1kAA5plEqhAMdinm2Ua2StMduoUqzCnkGXLLhNQO5EU3pttzeyaDIa
-         QwU+KvcnD+8bvIaQ2izjnRGEC9dqpPSj+sbjf93/fQjyapTUOMYy87ePDbl7B5hkHUsj
-         jJA78GFmlDB+4l5Ss7OGD/0kOLgJNJJPffX9Dc5DGOt4MG3ySjk82bfShdPob4+64cNj
-         l+Me4j2ETg1CjTHG1J7xOdZqfL7fm904/ymXzkbUmzE8OtP6SKvHj1I77wTlbotfKD6X
-         e4EfYq1HYsDFnpwdQJrg6BmGgXIdbLmMSLGqgo5hMtXIzR8nrkBKRLy+cyvP0OWpCUBY
-         eedQ==
-X-Gm-Message-State: AOAM531PYAWsLyqjeisIPgkYR1n0Mt2OkBZpdS3zE2hQHljhroqIqhgq
-        pYPjO7HQsr4daSpaBAp2LUzo
-X-Google-Smtp-Source: ABdhPJxCiZTw6J3O+SU1cFtjM3nZVrWxHdWG5XNpfJsIliABcgypEMAFrFZB+4ShrIxtU+FhvocD7w==
-X-Received: by 2002:a17:90a:f87:: with SMTP id 7mr20859866pjz.98.1614081143880;
-        Tue, 23 Feb 2021 03:52:23 -0800 (PST)
-Received: from localhost ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id m6sm3872111pfc.56.2021.02.23.03.52.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 03:52:23 -0800 (PST)
-From:   Xie Yongji <xieyongji@bytedance.com>
-To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
-        sgarzare@redhat.com, parav@nvidia.com, bob.liu@oracle.com,
-        hch@infradead.org, rdunlap@infradead.org, willy@infradead.org,
-        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
-        corbet@lwn.net
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Subject: [RFC v4 11/11] vduse: Support binding irq to the specified cpu
-Date:   Tue, 23 Feb 2021 19:50:48 +0800
-Message-Id: <20210223115048.435-12-xieyongji@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210223115048.435-1-xieyongji@bytedance.com>
-References: <20210223115048.435-1-xieyongji@bytedance.com>
+        id S232443AbhBWMJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 07:09:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51874 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232814AbhBWMHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 07:07:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614081978;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AXmk2+mTUg4QIqeN+TN2EsC2ZXa179Ma6dlqRN8DCGA=;
+        b=FPBXxIBzdxk/0eE1dlNpQWcimlMXRuQBjlBa+iibs5gz8Mh49r/KucpSg+6mLT+wf/yc+2
+        nC5bq+ARb2DJ64nDvAnf5hWGRZyMs2MmZ6Szk/jfF7M/W9a04e2CcQuW0+fnI5/CDOS4aH
+        YM2SwyKEfzDVKOSOVh92OvPXiOi8O9M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-316-pBLCEu-kNfG8BaaxpK_dNA-1; Tue, 23 Feb 2021 07:05:50 -0500
+X-MC-Unique: pBLCEu-kNfG8BaaxpK_dNA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7423480196C;
+        Tue, 23 Feb 2021 12:05:49 +0000 (UTC)
+Received: from horizon.localdomain (ovpn-113-140.rdu2.redhat.com [10.10.113.140])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E876360CDE;
+        Tue, 23 Feb 2021 12:05:48 +0000 (UTC)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id 1BF38C008C; Tue, 23 Feb 2021 09:05:47 -0300 (-03)
+Date:   Tue, 23 Feb 2021 09:05:47 -0300
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+To:     wenxu@ucloud.cn
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, jhs@mojatatu.com,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>
+Subject: Re: [PATCH net-next v2] net/sched: cls_flower: validate ct_state for
+ invalid and reply flags
+Message-ID: <20210223120547.GT2953@horizon.localdomain>
+References: <1614064315-364-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1614064315-364-1-git-send-email-wenxu@ucloud.cn>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a parameter for the ioctl VDUSE_INJECT_VQ_IRQ to support
-injecting virtqueue's interrupt to the specified cpu.
+On Tue, Feb 23, 2021 at 03:11:55PM +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> Add invalid and reply flags validate in the fl_validate_ct_state.
+> This makes the checking complete if compared to ovs'
+> validate_ct_state().
+> 
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
 
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
----
- drivers/vdpa/vdpa_user/vduse_dev.c | 22 +++++++++++++++++-----
- include/uapi/linux/vduse.h         |  7 ++++++-
- 2 files changed, 23 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
-index f5adeb9ee027..df3d467fff40 100644
---- a/drivers/vdpa/vdpa_user/vduse_dev.c
-+++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-@@ -923,14 +923,27 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
- 		break;
- 	}
- 	case VDUSE_INJECT_VQ_IRQ: {
-+		struct vduse_vq_irq irq;
- 		struct vduse_virtqueue *vq;
- 
-+		ret = -EFAULT;
-+		if (copy_from_user(&irq, argp, sizeof(irq)))
-+			break;
-+
- 		ret = -EINVAL;
--		if (arg >= dev->vq_num)
-+		if (irq.index >= dev->vq_num)
-+			break;
-+
-+		if (irq.cpu != -1 && (irq.cpu >= nr_cpu_ids ||
-+		    !cpu_online(irq.cpu)))
- 			break;
- 
--		vq = &dev->vqs[arg];
--		queue_work(vduse_irq_wq, &vq->inject);
-+		ret = 0;
-+		vq = &dev->vqs[irq.index];
-+		if (irq.cpu == -1)
-+			queue_work(vduse_irq_wq, &vq->inject);
-+		else
-+			queue_work_on(irq.cpu, vduse_irq_wq, &vq->inject);
- 		break;
- 	}
- 	case VDUSE_INJECT_CONFIG_IRQ:
-@@ -1342,8 +1355,7 @@ static int vduse_init(void)
- 	if (ret)
- 		goto err_chardev;
- 
--	vduse_irq_wq = alloc_workqueue("vduse-irq",
--				WQ_HIGHPRI | WQ_SYSFS | WQ_UNBOUND, 0);
-+	vduse_irq_wq = alloc_workqueue("vduse-irq", WQ_HIGHPRI, 0);
- 	if (!vduse_irq_wq)
- 		goto err_wq;
- 
-diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
-index 9070cd512cb4..9c70fd842ce5 100644
---- a/include/uapi/linux/vduse.h
-+++ b/include/uapi/linux/vduse.h
-@@ -116,6 +116,11 @@ struct vduse_vq_eventfd {
- 	int fd; /* eventfd, -1 means de-assigning the eventfd */
- };
- 
-+struct vduse_vq_irq {
-+	__u32 index; /* virtqueue index */
-+	int cpu; /* bind irq to the specified cpu, -1 means running on the current cpu */
-+};
-+
- #define VDUSE_BASE	0x81
- 
- /* Create a vduse device which is represented by a char device (/dev/vduse/<name>) */
-@@ -131,7 +136,7 @@ struct vduse_vq_eventfd {
- #define VDUSE_VQ_SETUP_KICKFD	_IOW(VDUSE_BASE, 0x04, struct vduse_vq_eventfd)
- 
- /* Inject an interrupt for specific virtqueue */
--#define VDUSE_INJECT_VQ_IRQ	_IO(VDUSE_BASE, 0x05)
-+#define VDUSE_INJECT_VQ_IRQ	_IOW(VDUSE_BASE, 0x05, struct vduse_vq_irq)
- 
- /* Inject a config interrupt */
- #define VDUSE_INJECT_CONFIG_IRQ	_IO(VDUSE_BASE, 0x06)
--- 
-2.11.0
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
