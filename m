@@ -2,71 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 954EE322948
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 12:09:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F26B532296C
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 12:21:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbhBWLJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 06:09:23 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:36405 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232351AbhBWLI4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 06:08:56 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id E284F5C0219;
-        Tue, 23 Feb 2021 06:08:02 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 23 Feb 2021 06:08:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=U2I4e7
-        bo/e7cpkkwZVTL9XRDCAR7LL7Oi+fIECKIm3Y=; b=Gqv/rqXZ/jmbnn7bIE2bk/
-        mJjV77zkcbMwDXps+l78qmV0K3Ijxnd1O/SrsyekHnhDITSwlqeZGiJlG2tfm7c/
-        U1p0QKo3zWyGvtULcLLgxkfnIqmbbeXMLjVuZSulKMyG6yU4oZt3qX5qTULcaEtc
-        2edfHoN0dz2eiQfh7N13B6PF2FWDAcvcVce3+XkKzBmyq4YAx0faay/U+dAZz6wI
-        fRsShZBG++OgyzzpTIfGIqtq0oJROet1iNTer246APWD8PJi9BeZy1GWpKBONLqQ
-        F0HFQeDd62upVDbb7lLPH6kudPOqF6KyxhbaMAIp8IndTr8er5rMQf+ejtHc34oA
-        ==
-X-ME-Sender: <xms:EeI0YCQ6vH6BDER0E9H9M3fykyQHASYN7ckTOZ4s5U4XWYx72oCHvQ>
-    <xme:EeI0YFtiawuLx2_s3-1yD4F8ksq8Km5Nz3_0zNHIIho4_rZY4BiDkyBLSpF5B2uzs
-    Y08tQUhiKknQGU>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeehgddvgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:EeI0YHYgwdaSmfxn7eiV2lhhj4V5NPERIekF9IPddwdpJc0pTahkxg>
-    <xmx:EeI0YKvBxNG9XWcghHictaqW7drYJ6YuhVZxB-IjNy2OnJFMA_AmIA>
-    <xmx:EeI0YJHK_sURjGq6oUdDa2Nabuq5qGeeUDnY30kJiV9Xum7fdU49Rw>
-    <xmx:EuI0YEqWA9OgQdELllh9zGzMH3XwyjTBLnkNEEwqqxRbNeZE_mXCrQ>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5B440240065;
-        Tue, 23 Feb 2021 06:08:01 -0500 (EST)
-Date:   Tue, 23 Feb 2021 13:07:57 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] netdevsim: fib: remove unneeded semicolon
-Message-ID: <YDTiDezR7JmWIzq7@shredder.lan>
-References: <1614047326-16478-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+        id S231910AbhBWLUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 06:20:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231429AbhBWLUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 06:20:52 -0500
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9482CC06174A
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 03:20:07 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:254f:253d:debc:790b])
+        by xavier.telenet-ops.be with bizsmtp
+        id YbL52400V1v7dkx01bL55Y; Tue, 23 Feb 2021 12:20:06 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lEVjZ-0011vc-9r; Tue, 23 Feb 2021 12:20:05 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lEVjY-009KOx-Sv; Tue, 23 Feb 2021 12:20:04 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] net: dsa: sja1105: Remove unneeded cast in sja1105_crc32()
+Date:   Tue, 23 Feb 2021 12:20:03 +0100
+Message-Id: <20210223112003.2223332-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1614047326-16478-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 10:28:46AM +0800, Jiapeng Chong wrote:
-> Fix the following coccicheck warnings:
-> 
-> ./drivers/net/netdevsim/fib.c:564:2-3: Unneeded semicolon.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+sja1105_unpack() takes a "const void *buf" as its first parameter, so
+there is no need to cast away the "const" of the "buf" variable before
+calling it.
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Drop the cast, as it prevents the compiler performing some checks.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+Compile-tested only.
+
+BTW, sja1105_packing() and packing() are really bad APIs, as the input
+pointer parameters cannot be const due to the direction depending on
+"op".  This means the compiler cannot do const checks.  Worse, callers
+are required to cast away constness to prevent the compiler from
+issueing warnings.  Please don't do this!
+---
+ drivers/net/dsa/sja1105/sja1105_static_config.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.c b/drivers/net/dsa/sja1105/sja1105_static_config.c
+index 139b7b4fbd0d5252..a8efb7fac3955307 100644
+--- a/drivers/net/dsa/sja1105/sja1105_static_config.c
++++ b/drivers/net/dsa/sja1105/sja1105_static_config.c
+@@ -85,7 +85,7 @@ u32 sja1105_crc32(const void *buf, size_t len)
+ 	/* seed */
+ 	crc = ~0;
+ 	for (i = 0; i < len; i += 4) {
+-		sja1105_unpack((void *)buf + i, &word, 31, 0, 4);
++		sja1105_unpack(buf + i, &word, 31, 0, 4);
+ 		crc = crc32_le(crc, (u8 *)&word, 4);
+ 	}
+ 	return ~crc;
+-- 
+2.25.1
+
