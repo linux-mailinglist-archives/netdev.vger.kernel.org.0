@@ -2,142 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67BA6322A6D
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 13:24:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6FD322A7E
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 13:29:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232527AbhBWMXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 07:23:18 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:36002 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232316AbhBWMXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 07:23:15 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 11NCMKs4017792;
-        Tue, 23 Feb 2021 06:22:20 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1614082940;
-        bh=EhWZj3kxi2xbFc+sNH7zq/wCO8MCdICSnmIsalBeMas=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=KXTsdsCpdMNOqaK4YajpxkOrPNWFiKgjSmKhjk5oJvRxuZF3oolSD6rzzjltQjfZz
-         6L+uAeF3bqB4u0EXwQRkjB645Q5ye+EsYEuJydSQ94BN33z8mm4T3USrPPHzLLqnFi
-         6MA/g7o7fm/L83mlgwYJO9YYrNwib3nG+27ymyOw=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 11NCMK50031926
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 23 Feb 2021 06:22:20 -0600
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 23
- Feb 2021 06:22:19 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 23 Feb 2021 06:22:19 -0600
-Received: from [10.250.232.74] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 11NCMFBc073064;
-        Tue, 23 Feb 2021 06:22:16 -0600
-Subject: Re: [PATCH v15 2/4] phy: Add media type and speed serdes
- configuration interfaces
-To:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Leon Romanovsky <leon@kernel.org>
-CC:     Vinod Koul <vkoul@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20210218161451.3489955-1-steen.hegelund@microchip.com>
- <20210218161451.3489955-3-steen.hegelund@microchip.com>
- <YDH20a2hP+HtBqHz@unreal>
- <94dad8f439dd870b3488130e82f50e28b81fccf1.camel@microchip.com>
-From:   Kishon Vijay Abraham I <kishon@ti.com>
-Message-ID: <c1b78a32-de24-c036-5a7a-7ef297cc5e3a@ti.com>
-Date:   Tue, 23 Feb 2021 17:52:14 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S232587AbhBWM2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 07:28:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60572 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232387AbhBWM2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 07:28:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614083194;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dlRBImIxcwNi4rHuXYdMygYUREHsouYdgn7QLrLfVHk=;
+        b=Cm7JP0N6Y4V+fPR2CAzm1X8u0BXkQzkxF11gHD6NxQFTiND4oFH3ezFalWAhasPnjnk2ew
+        UedT9/DZncHRxoMJeLUFsVym6MecefjjFKyl1qKxF0JC2nf+v9BPbQ9ZJ6hrxhT4WKd5mi
+        Mat82PjKEPI5pDo/o3tSDC8UtO35jkc=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-73-NAsRuezNMhO3VPfRyCzlLw-1; Tue, 23 Feb 2021 07:26:33 -0500
+X-MC-Unique: NAsRuezNMhO3VPfRyCzlLw-1
+Received: by mail-wr1-f72.google.com with SMTP id k5so2230178wrw.14
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 04:26:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dlRBImIxcwNi4rHuXYdMygYUREHsouYdgn7QLrLfVHk=;
+        b=rA0XRbkm66YHZQz7luNLF6XoQP2BtNpMd70pY9oN7hDDk/cs2i4JpxPiN4ZdLHzJR2
+         2Mq5ce99CCNjGoHKq2wCO/0zdBNHhF7xFihovTUBCOZSlVceycq1ZfPwFp79aFJTE9DI
+         OuvCUen9yIGUyK2LtQ09TqznorJ9JucmHk1UU3lTdFmRQPCy1twFGxkuN0PqK+OM3yPY
+         VJVmd3dV/Hkz1pJkY0a5S5FYYcXouTXsAfhgA3rvTP57BUZkcb7E0mmTqAFtc4fc+ccK
+         Ha9oi0BzOJ50OZB8exoOqnMQOBtJ3OqWzD300O8CLX5dSnM3WYYRgKYDOW8k+05fqav2
+         eeuA==
+X-Gm-Message-State: AOAM531+iJR8txkJklgxzLCU0dJHQ3sPiJ3sSUpvyt0bAZTWnI0kvQDz
+        BFKcw6zpV8Z2bP6yaaABp5zn/9sVKsyMOx/xDUpHXO3bT6/5SE1KwJLIPl2DKE1FnteajIOKUsv
+        n4DqiYcZ+b8E6axxi
+X-Received: by 2002:a5d:5109:: with SMTP id s9mr25259278wrt.325.1614083192188;
+        Tue, 23 Feb 2021 04:26:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxocWMZ+yxHbiie9t5x9KGG8c7GcIkLf9fWyaLKqgKNZ40RLp7+9DospqS4cosjlYPsyzL2NQ==
+X-Received: by 2002:a5d:5109:: with SMTP id s9mr25259260wrt.325.1614083191996;
+        Tue, 23 Feb 2021 04:26:31 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id e17sm9660537wro.36.2021.02.23.04.26.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 04:26:31 -0800 (PST)
+Date:   Tue, 23 Feb 2021 07:26:28 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+Cc:     jasowang@redhat.com, elic@nvidia.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Message-ID: <20210223072047-mutt-send-email-mst@kernel.org>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <94dad8f439dd870b3488130e82f50e28b81fccf1.camel@microchip.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Leon,
+On Fri, Feb 19, 2021 at 06:54:58AM -0500, Si-Wei Liu wrote:
+> Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> for legacy") made an exception for legacy guests to reset
+> features to 0, when config space is accessed before features
+> are set. We should relieve the verify_min_features() check
+> and allow features reset to 0 for this case.
+> 
+> It's worth noting that not just legacy guests could access
+> config space before features are set. For instance, when
+> feature VIRTIO_NET_F_MTU is advertised some modern driver
+> will try to access and validate the MTU present in the config
+> space before virtio features are set. Rejecting reset to 0
+> prematurely causes correct MTU and link status unable to load
+> for the very first config space access, rendering issues like
+> guest showing inaccurate MTU value, or failure to reject
+> out-of-range MTU.
+> 
+> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
 
-On 22/02/21 1:30 pm, Steen Hegelund wrote:
-> Hi Leon,
-> 
-> On Sun, 2021-02-21 at 07:59 +0200, Leon Romanovsky wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you
->> know the content is safe
->>
->> On Thu, Feb 18, 2021 at 05:14:49PM +0100, Steen Hegelund wrote:
->>> Provide new phy configuration interfaces for media type and speed
->>> that
->>> allows e.g. PHYs used for ethernet to be configured with this
->>> information.
->>>
->>> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
->>> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
->>> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->>> Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
->>> ---
->>>
-> 
-> ...
-> 
->>>  int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
->>>                union phy_configure_opts *opts);
->>> @@ -344,6 +356,20 @@ static inline int phy_set_mode_ext(struct phy
->>> *phy, enum phy_mode mode,
->>>  #define phy_set_mode(phy, mode) \
->>>       phy_set_mode_ext(phy, mode, 0)
->>>
->>> +static inline int phy_set_media(struct phy *phy, enum phy_media
->>> media)
->>> +{
->>> +     if (!phy)
->>> +             return 0;
->>
->> I'm curious, why do you check for the NULL in all newly introduced
->> functions?
->> How is it possible that calls to phy_*() supply NULL as the main
->> struct?
->>
->> Thanks
-> 
-> I do not know the history of that, but all the functions in the
-> interface that takes a phy as input and returns a status follow that
-> pattern.  Maybe Kishon and Vinod knows the origin?
+isn't this more
 
-It is to make handling optional PHYs simpler. See here for the origin :-)
-http://lore.kernel.org/r/1391264157-2112-1-git-send-email-andrew@lunn.ch
+    vdpa: make sure set_features is invoked for legacy
 
-Thanks
-Kishon
+
+> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+
+I think we at least need to correct the comment in
+include/linux/vdpa.h then
+
+Instead of "we assume a legacy guest" we'd say something like
+"call set features in case it's a legacy guest".
+
+Generally it's unfortunate. Need to think about what to do here.
+Any idea how else we can cleanly detect a legacy guest?
+
+> ---
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+>  1 file changed, 1 insertion(+), 14 deletions(-)
 > 
->>
->>> +     return -ENODEV;
->>> +}
->>> +
->>> +static inline int phy_set_speed(struct phy *phy, int speed)
->>> +{
->>> +     if (!phy)
->>> +             return 0;
->>> +     return -ENODEV;
->>> +}
->>> +
->>>  static inline enum phy_mode phy_get_mode(struct phy *phy)
->>>  {
->>>       return PHY_MODE_INVALID;
->>> --
->>> 2.30.0
->>>
-> 
-> Best Regards
-> Steen
-> 
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 7c1f789..540dd67 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1490,14 +1490,6 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+>  	return mvdev->mlx_features;
+>  }
+>  
+> -static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+> -{
+> -	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> -		return -EOPNOTSUPP;
+> -
+> -	return 0;
+> -}
+> -
+>  static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+>  {
+>  	int err;
+
+Let's just set VIRTIO_F_ACCESS_PLATFORM in core?
+Then we don't need to hack mlx5 ...
+
+
+> @@ -1558,18 +1550,13 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+>  {
+>  	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+>  	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> -	int err;
+>  
+>  	print_features(mvdev, features, true);
+>  
+> -	err = verify_min_features(mvdev, features);
+> -	if (err)
+> -		return err;
+> -
+>  	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
+>  	ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+>  	ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
+> -	return err;
+> +	return 0;
+>  }
+>  
+>  static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
+> -- 
+> 1.8.3.1
+
