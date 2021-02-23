@@ -2,312 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A18373231C3
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 21:05:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A81593231DC
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 21:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233117AbhBWUFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 15:05:07 -0500
-Received: from m42-2.mailgun.net ([69.72.42.2]:37398 "EHLO m42-2.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232898AbhBWUEM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 15:04:12 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1614110631; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=ZNI3knrHf978IyYZ3O96GMFOjaoLuge8N2yof/hPhCI=; b=ngfk1s66vITI3b1rS2BdqRjy/xMRm6kPsIaSPYjBUIaxpYT34j3NzNRWgI0xtvsNppukxcvo
- e+jlTqYmuwfKZGEyq9cNbORIJQ4ilGpxv9JjmgyU1LU/+ft/OzEIh7i93wdksWFdU2npdIq4
- 3GW6hxt0c98G+uGLmJv0p0KL1A4=
-X-Mailgun-Sending-Ip: 69.72.42.2
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 60355f8d4511108a81c8aea2 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 23 Feb 2021 20:03:25
- GMT
-Sender: sharathv=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C7647C433ED; Tue, 23 Feb 2021 20:03:24 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from svurukal-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: sharathv)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9A83BC433C6;
-        Tue, 23 Feb 2021 20:03:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9A83BC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=sharathv@codeaurora.org
-From:   Sharath Chandra Vurukala <sharathv@codeaurora.org>
-To:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Subject: [PATCH net-next v3 3/3] net: ethernet: rmnet: Add support for Mapv5 uplink packet
-Date:   Wed, 24 Feb 2021 01:32:51 +0530
-Message-Id: <1614110571-11604-4-git-send-email-sharathv@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1614110571-11604-1-git-send-email-sharathv@codeaurora.org>
-References: <1614110571-11604-1-git-send-email-sharathv@codeaurora.org>
+        id S232774AbhBWUIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 15:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234195AbhBWUHu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 15:07:50 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF337C06174A
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 12:07:09 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id jt13so36499751ejb.0
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 12:07:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RBGCQP3sS45lWfuY4fvQFlAIxRom/+cG1QpxcL52oqU=;
+        b=Vk1hNO0uUOHo8BBgph9fhMJ1NNRFSUEgKLDNgcLnLQhAMPJhLyEKiWca+PO8F+BXeX
+         piCR7BXlb57d0VE+tR8aLaKIln7wARrUuUnw+TqwDeTVQgqVWt1dTdpd+h3ruMRgOsDq
+         CHV2NDnGKntuHsmX69ZZFLxPtvNfaaojQ0bKzZ3aevMh162QOST4lUaB4KX8CZfpeEc2
+         2rRNF8yLFQn4BoNjYbp6imCYjeDL7h8s9MiK4EHH93/lfi+JSLqi0euZ/WCjGnpYW6ET
+         h5rb+dgmpXXTCA+HY1kMxA5yqFZhLBxfT1G8vRPpY+V1sa4JFEejWUddT0aGPx0q6BAs
+         jdOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RBGCQP3sS45lWfuY4fvQFlAIxRom/+cG1QpxcL52oqU=;
+        b=Oc/ZAvUXWdy0LHiFImTLWm4JOHRW0WzF9/CkUgDKpS+lRMQ4R1rEDd/YEXYhrHC0fN
+         CwLlL8s6H7LzacujXETYWi8qT9DAnIUhArqWr7HtjkfdOI3esXuMM2o6zVAEH60zwrTK
+         z1p9mcjW6wT0anecbdrhTpqAcYr9QZMKkrcMvFVPPom35+q0eFhPxAFGh98m+VHR0GvF
+         QKOdrjpQg3qF32nxHB1uwT8KrwxlP46wHrn4+roJYoB78/JsX8KeKE21PY7G8Nlp/Lf3
+         3BA0Drz8C53d4PI1fceULaErbVObln+GGJdJqwlZXnF8bDnPjVORuZYc6fIB/y/kDhVQ
+         nimQ==
+X-Gm-Message-State: AOAM531Pbo2WD0UFi4YYIQqIbSjimqWdWfkvQXXtMs4UEb32nkAZtHRN
+        w7WD7KseeYqgk1rRCxIkTuo=
+X-Google-Smtp-Source: ABdhPJwLO1hkzUzIneI2KCgdscXpFppOh0AFSqiFyK0cEy4SgrEQjMcBgHWXFYqGWMR4VMHN1HdTTg==
+X-Received: by 2002:a17:907:94d4:: with SMTP id dn20mr28004939ejc.397.1614110828772;
+        Tue, 23 Feb 2021 12:07:08 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id j24sm1487989edy.3.2021.02.23.12.07.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 12:07:08 -0800 (PST)
+Date:   Tue, 23 Feb 2021 22:07:06 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: Timing of host-joined bridge multicast groups with switchdev
+Message-ID: <20210223200706.wubjodat6dyn2bmi@skbuf>
+References: <20210223173753.vrlxhnj5rtvd6i6g@skbuf>
+ <YDVBxrkYOtlmO1bn@shredder.lan>
+ <20210223180236.e2ggiuxhr5aaayx5@skbuf>
+ <YDVXhZdy510mFtG/@shredder.lan>
+ <20210223194908.ne4a7abulirqfbs6@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210223194908.ne4a7abulirqfbs6@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding Support for Mapv5 uplink packet.
-Based on the configuration, request HW for csum offload,
-by setting the csum_valid_required of Mapv5 packet.
+On Tue, Feb 23, 2021 at 09:49:08PM +0200, Vladimir Oltean wrote:
+> > But I'm not sure how we replay it only for a single notifier block. I'm
+> > not familiar with setups where you have more than one listener let alone
+> > more than one that is interested in notifications from a specific
+> > bridge, so maybe it is OK to just replay it for all the listeners. But I
+> > would prefer to avoid it if we can.
+> 
+> At least with a driver-initiated pull, this seems to work:
+...
+> I am just not sure why I need to emit the notification only once per
+> ASIC. Currently, SWITCHDEV_OBJ_ID_HOST_MDB is emitted for all bridge
+> ports, so the callers need to reference-count it anyway. As for the port
+> mdb entries, I am filtering the entries towards just a single port when
+> that joins. So I think this is okay.
 
-Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
----
- drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |  4 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   | 15 +++-
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  8 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 93 ++++++++++++++++++++--
- include/uapi/linux/if_link.h                       |  1 +
- 5 files changed, 108 insertions(+), 13 deletions(-)
+Sorry, I'm a bit more slow today.
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-index 8d8d469..8e64ca9 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-@@ -1,5 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/* Copyright (c) 2013-2014, 2016-2018 The Linux Foundation. All rights reserved.
-+/* Copyright (c) 2013-2014, 2016-2018, 2021 The Linux Foundation.
-+ * All rights reserved.
-  *
-  * RMNET Data configuration engine
-  */
-@@ -56,6 +57,7 @@ struct rmnet_priv_stats {
- 	u64 csum_fragmented_pkt;
- 	u64 csum_skipped;
- 	u64 csum_sw;
-+	u64 csum_hw;
- };
- 
- struct rmnet_priv {
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-index 70ad6a7..e6a44cd 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-@@ -131,26 +131,33 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
- 				    struct rmnet_port *port, u8 mux_id,
- 				    struct net_device *orig_dev)
- {
--	int required_headroom, additional_header_len;
-+	int required_headroom, additional_header_len, csum_type;
- 	struct rmnet_map_header *map_header;
- 
-+	csum_type = 0;
- 	additional_header_len = 0;
- 	required_headroom = sizeof(struct rmnet_map_header);
- 
- 	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV4) {
- 		additional_header_len = sizeof(struct rmnet_map_ul_csum_header);
- 		required_headroom += additional_header_len;
-+		csum_type = RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
-+	} else if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5) {
-+		additional_header_len = sizeof(struct rmnet_map_v5_csum_header);
-+		csum_type = RMNET_FLAGS_EGRESS_MAP_CKSUMV5;
- 	}
- 
-+	required_headroom += additional_header_len;
-+
- 	if (skb_headroom(skb) < required_headroom) {
- 		if (pskb_expand_head(skb, required_headroom, 0, GFP_ATOMIC))
- 			return -ENOMEM;
- 	}
- 
--	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
--		rmnet_map_checksum_uplink_packet(skb, orig_dev);
-+	if (csum_type)
-+		rmnet_map_checksum_uplink_packet(skb, port, orig_dev, csum_type);
- 
--	map_header = rmnet_map_add_map_header(skb, additional_header_len, 0);
-+	map_header = rmnet_map_add_map_header(skb, additional_header_len, port, 0);
- 	if (!map_header)
- 		return -ENOMEM;
- 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-index 2ee1ce2..84d108e 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-@@ -64,11 +64,15 @@ enum rmnet_map_commands {
- struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
- 				      struct rmnet_port *port);
- struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
--						  int hdrlen, int pad);
-+						  int hdrlen,
-+						  struct rmnet_port *port,
-+						  int pad);
- void rmnet_map_command(struct sk_buff *skb, struct rmnet_port *port);
- int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len);
- void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
--				      struct net_device *orig_dev);
-+				      struct rmnet_port *port,
-+				      struct net_device *orig_dev,
-+				      int csum_type);
- int rmnet_map_process_next_hdr_packet(struct sk_buff *skb, u16 len);
- u8 rmnet_map_get_next_hdr_type(struct sk_buff *skb);
- bool rmnet_map_get_csum_valid(struct sk_buff *skb);
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index a3dc220..f65bdd4 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -263,12 +263,69 @@ rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
- }
- #endif
- 
-+static void rmnet_map_v5_checksum_uplink_packet(struct sk_buff *skb,
-+						struct rmnet_port *port,
-+						struct net_device *orig_dev)
-+{
-+	struct rmnet_priv *priv = netdev_priv(orig_dev);
-+	struct rmnet_map_v5_csum_header *ul_header;
-+
-+	if (!(port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5))
-+		return;
-+
-+	ul_header = (struct rmnet_map_v5_csum_header *)
-+		    skb_push(skb, sizeof(*ul_header));
-+	memset(ul_header, 0, sizeof(*ul_header));
-+	ul_header->header_type = RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD;
-+
-+	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-+		void *iph = (char *)ul_header + sizeof(*ul_header);
-+		__sum16 *check;
-+		void *trans;
-+		u8 proto;
-+
-+		if (skb->protocol == htons(ETH_P_IP)) {
-+			u16 ip_len = ((struct iphdr *)iph)->ihl * 4;
-+
-+			proto = ((struct iphdr *)iph)->protocol;
-+			trans = iph + ip_len;
-+		} else if (skb->protocol == htons(ETH_P_IPV6)) {
-+#if IS_ENABLED(CONFIG_IPV6)
-+			u16 ip_len = sizeof(struct ipv6hdr);
-+
-+			proto = ((struct ipv6hdr *)iph)->nexthdr;
-+			trans = iph + ip_len;
-+#else
-+			priv->stats.csum_err_invalid_ip_version++;
-+			goto sw_csum;
-+#endif /* CONFIG_IPV6 */
-+		} else {
-+			priv->stats.csum_err_invalid_ip_version++;
-+			goto sw_csum;
-+		}
-+
-+		check = rmnet_map_get_csum_field(proto, trans);
-+		if (check) {
-+			skb->ip_summed = CHECKSUM_NONE;
-+			/* Ask for checksum offloading */
-+			ul_header->csum_valid_required = 1;
-+			priv->stats.csum_hw++;
-+			return;
-+		}
-+	}
-+
-+sw_csum:
-+	priv->stats.csum_sw++;
-+}
-+
- /* Adds MAP header to front of skb->data
-  * Padding is calculated and set appropriately in MAP header. Mux ID is
-  * initialized to 0.
-  */
- struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
--						  int hdrlen, int pad)
-+						  int hdrlen,
-+						  struct rmnet_port *port,
-+						  int pad)
- {
- 	struct rmnet_map_header *map_header;
- 	u32 padding, map_datalen;
-@@ -279,6 +336,11 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
- 			skb_push(skb, sizeof(struct rmnet_map_header));
- 	memset(map_header, 0, sizeof(struct rmnet_map_header));
- 
-+	/* Set next_hdr bit for csum offload packets */
-+	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5) {
-+		map_header->next_hdr = 1;
-+	}
-+
- 	if (pad == RMNET_MAP_NO_PAD_BYTES) {
- 		map_header->pkt_len = htons(map_datalen);
- 		return map_header;
-@@ -395,11 +457,8 @@ int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len)
- 	return 0;
- }
- 
--/* Generates UL checksum meta info header for IPv4 and IPv6 over TCP and UDP
-- * packets that are supported for UL checksum offload.
-- */
--void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
--				      struct net_device *orig_dev)
-+static void rmnet_map_v4_checksum_uplink_packet(struct sk_buff *skb,
-+						struct net_device *orig_dev)
- {
- 	struct rmnet_priv *priv = netdev_priv(orig_dev);
- 	struct rmnet_map_ul_csum_header *ul_header;
-@@ -418,10 +477,12 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
- 
- 		if (skb->protocol == htons(ETH_P_IP)) {
- 			rmnet_map_ipv4_ul_csum_header(iphdr, ul_header, skb);
-+			priv->stats.csum_hw++;
- 			return;
- 		} else if (skb->protocol == htons(ETH_P_IPV6)) {
- #if IS_ENABLED(CONFIG_IPV6)
- 			rmnet_map_ipv6_ul_csum_header(iphdr, ul_header, skb);
-+			priv->stats.csum_hw++;
- 			return;
- #else
- 			priv->stats.csum_err_invalid_ip_version++;
-@@ -457,6 +518,26 @@ bool rmnet_map_get_csum_valid(struct sk_buff *skb)
- 	return ((struct rmnet_map_v5_csum_header *)data)->csum_valid_required;
- }
- 
-+/* Generates UL checksum meta info header for IPv4 and IPv6 over TCP and UDP
-+ * packets that are supported for UL checksum offload.
-+ */
-+void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
-+				      struct rmnet_port *port,
-+				      struct net_device *orig_dev,
-+				      int csum_type)
-+{
-+	switch (csum_type) {
-+	case RMNET_FLAGS_EGRESS_MAP_CKSUMV4:
-+		rmnet_map_v4_checksum_uplink_packet(skb, orig_dev);
-+		break;
-+	case RMNET_FLAGS_EGRESS_MAP_CKSUMV5:
-+		rmnet_map_v5_checksum_uplink_packet(skb, port, orig_dev);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- /* Process a MAPv5 packet header */
- int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
- 				      u16 len)
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 838bd29..319865f 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -1234,6 +1234,7 @@ enum {
- #define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
- #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
- #define RMNET_FLAGS_INGRESS_MAP_CKSUMV5           (1U << 4)
-+#define RMNET_FLAGS_EGRESS_MAP_CKSUMV5            (1U << 5)
- 
- enum {
- 	IFLA_RMNET_UNSPEC,
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+So there seems to be no easy way to get access to the notifier block
+that the new port uses, instead we can only call the entire notifier
+chain from the bridge layer. I guess I'll have to defer that problem
+until enough drivers make use of the pull mechanism that it becomes
+unbearable then.
