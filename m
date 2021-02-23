@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 394B4322F2F
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:57:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4ED4322F31
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:58:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233661AbhBWQ4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 11:56:45 -0500
-Received: from mga02.intel.com ([134.134.136.20]:25526 "EHLO mga02.intel.com"
+        id S233655AbhBWQ5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 11:57:30 -0500
+Received: from mga03.intel.com ([134.134.136.65]:62263 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233654AbhBWQ4l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 11:56:41 -0500
-IronPort-SDR: 7P7xcSWQj72IgW9EcL31C1Svuc7PS9m2fXXjzY0HJsOAgF5tw+nggr49MvwDt8joYuYV6hKUGo
- Accm5TbzBiHw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9904"; a="172010043"
+        id S233652AbhBWQ5Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 11:57:25 -0500
+IronPort-SDR: /7epWHz9s1teRqlGz5KkmQIIqWD4V0beqsq/WnEX/xI6+I3SGlepfj/nbhWPTq1TgsY6nQC7zz
+ TqbiemhFuCLg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9904"; a="184924339"
 X-IronPort-AV: E=Sophos;i="5.81,200,1610438400"; 
-   d="scan'208";a="172010043"
+   d="scan'208";a="184924339"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2021 08:56:00 -0800
-IronPort-SDR: X7Hn6JrtZ3sqeDXbQeRQBGqHc7dd79g39dH2ivDzxwSvxpjVWaDqw6Sp8FtzJLJyi/8vAI4asW
- JceGkRpUpldw==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2021 08:56:43 -0800
+IronPort-SDR: ybH+PKlQuAdUi04e1RwRn5H3iG2lY4qejtY1zJQOlhU1lwvsuw4JChD23MddqfbWyyj/xbOA3b
+ 8PzeHFw0/s6Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,200,1610438400"; 
-   d="scan'208";a="441792693"
+   d="scan'208";a="441792894"
 Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by orsmga001.jf.intel.com with ESMTP; 23 Feb 2021 08:55:23 -0800
+  by orsmga001.jf.intel.com with ESMTP; 23 Feb 2021 08:56:05 -0800
 From:   Ciara Loftus <ciara.loftus@intel.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         magnus.karlsson@intel.com, bjorn@kernel.org,
         weqaar.a.janjua@intel.com, maciej.fijalkowski@intel.com
 Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf-next v3 3/4] selftests/bpf: restructure xsk selftests
-Date:   Tue, 23 Feb 2021 16:23:03 +0000
-Message-Id: <20210223162304.7450-4-ciara.loftus@intel.com>
+Subject: [PATCH bpf-next v3 4/4] selftests/bpf: introduce xsk statistics tests
+Date:   Tue, 23 Feb 2021 16:23:04 +0000
+Message-Id: <20210223162304.7450-5-ciara.loftus@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210223162304.7450-1-ciara.loftus@intel.com>
 References: <20210223162304.7450-1-ciara.loftus@intel.com>
@@ -43,647 +43,323 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prior to this commit individual xsk tests were launched from the
-shell script 'test_xsk.sh'. When adding a new test type, two new test
-configurations had to be added to this file - one for each of the
-supported XDP 'modes' (skb or drv). Should zero copy support be added to
-the xsk selftest framework in the future, three new test configurations
-would need to be added for each new test type. Each new test type also
-typically requires new CLI arguments for the xdpxceiver program.
+This commit introduces a range of tests to the xsk testsuite
+for validating xsk statistics.
 
-This commit aims to reduce the overhead of adding new tests, by launching
-the test configurations from within the xdpxceiver program itself, using
-simple loops. Every test is run every time the C program is executed. Many
-of the CLI arguments can be removed as a result.
+A new test type called 'stats' is added. Within it there are
+four sub-tests. Each test configures a scenario which should
+trigger the given error statistic. The test passes if the statistic
+is successfully incremented.
+
+The four statistics for which tests have been created are:
+1. rx dropped
+Increase the UMEM frame headroom to a value which results in
+insufficient space in the rx buffer for both the packet and the headroom.
+2. tx invalid
+Set the 'len' field of tx descriptors to an invalid value (umem frame
+size + 1).
+3. rx ring full
+Reduce the size of the RX ring to a fraction of the fill ring size.
+4. fill queue empty
+Do not populate the fill queue and then try to receive pkts.
 
 Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- tools/testing/selftests/bpf/test_xsk.sh    | 112 +----------
- tools/testing/selftests/bpf/xdpxceiver.c   | 218 +++++++++++++--------
- tools/testing/selftests/bpf/xdpxceiver.h   |  33 ++--
- tools/testing/selftests/bpf/xsk_prereqs.sh |  24 +--
- 4 files changed, 159 insertions(+), 228 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 137 ++++++++++++++++++++---
+ tools/testing/selftests/bpf/xdpxceiver.h |  13 +++
+ 2 files changed, 136 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index dbb129a36606..56d4474e2c83 100755
---- a/tools/testing/selftests/bpf/test_xsk.sh
-+++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -152,117 +152,9 @@ test_status $retval "${TEST_NAME}"
- 
- statusList=()
- 
--### TEST 1
--TEST_NAME="XSK KSELFTEST FRAMEWORK"
-+TEST_NAME="XSK KSELFTESTS"
- 
--if [[ $verbose -eq 1 ]]; then
--        echo "Switching interfaces [${VETH0}, ${VETH1}] to XDP Generic mode"
--fi
--vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
--
--retval=$?
--if [ $retval -eq 0 ]; then
--        if [[ $verbose -eq 1 ]]; then
--	        echo "Switching interfaces [${VETH0}, ${VETH1}] to XDP Native mode"
--	fi
--	vethXDPnative ${VETH0} ${VETH1} ${NS1}
--fi
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 2
--TEST_NAME="SKB NOPOLL"
--
--vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
--
--params=("-S")
--execxdpxceiver params
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 3
--TEST_NAME="SKB POLL"
--
--vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
--
--params=("-S" "-p")
--execxdpxceiver params
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 4
--TEST_NAME="DRV NOPOLL"
--
--vethXDPnative ${VETH0} ${VETH1} ${NS1}
--
--params=("-N")
--execxdpxceiver params
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 5
--TEST_NAME="DRV POLL"
--
--vethXDPnative ${VETH0} ${VETH1} ${NS1}
--
--params=("-N" "-p")
--execxdpxceiver params
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 6
--TEST_NAME="SKB SOCKET TEARDOWN"
--
--vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
--
--params=("-S" "-T")
--execxdpxceiver params
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 7
--TEST_NAME="DRV SOCKET TEARDOWN"
--
--vethXDPnative ${VETH0} ${VETH1} ${NS1}
--
--params=("-N" "-T")
--execxdpxceiver params
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 8
--TEST_NAME="SKB BIDIRECTIONAL SOCKETS"
--
--vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
--
--params=("-S" "-B")
--execxdpxceiver params
--
--retval=$?
--test_status $retval "${TEST_NAME}"
--statusList+=($retval)
--
--### TEST 9
--TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
--
--vethXDPnative ${VETH0} ${VETH1} ${NS1}
--
--params=("-N" "-B")
--execxdpxceiver params
-+execxdpxceiver
- 
- retval=$?
- test_status $retval "${TEST_NAME}"
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 506423201197..e7913444518d 100644
+index e7913444518d..8b0f7fdd9003 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -18,12 +18,7 @@
-  * These selftests test AF_XDP SKB and Native/DRV modes using veth
-  * Virtual Ethernet interfaces.
-  *
-- * The following tests are run:
-- *
-- * 1. AF_XDP SKB mode
-- *    Generic mode XDP is driver independent, used when the driver does
-- *    not have support for XDP. Works on any netdevice using sockets and
-- *    generic XDP path. XDP hook from netif_receive_skb().
-+ * For each mode, the following tests are run:
-  *    a. nopoll - soft-irq processing
-  *    b. poll - using poll() syscall
-  *    c. Socket Teardown
-@@ -34,17 +29,6 @@
+@@ -28,8 +28,21 @@
+  *       Configure sockets as bi-directional tx/rx sockets, sets up fill and
   *       completion rings on each socket, tx/rx in both directions. Only nopoll
   *       mode is used
++ *    e. Statistics
++ *       Trigger some error conditions and ensure that the appropriate statistics
++ *       are incremented. Within this test, the following statistics are tested:
++ *       i.   rx dropped
++ *            Increase the UMEM frame headroom to a value which results in
++ *            insufficient space in the rx buffer for both the packet and the headroom.
++ *       ii.  tx invalid
++ *            Set the 'len' field of tx descriptors to an invalid value (umem frame
++ *            size + 1).
++ *       iii. rx ring full
++ *            Reduce the size of the RX ring to a fraction of the fill ring size.
++ *       iv.  fill queue empty
++ *            Do not populate the fill queue and then try to receive pkts.
   *
-- * 2. AF_XDP DRV/Native mode
-- *    Works on any netdevice with XDP_REDIRECT support, driver dependent. Processes
-- *    packets before SKB allocation. Provides better performance than SKB. Driver
-- *    hook available just after DMA of buffer descriptor.
-- *    a. nopoll
-- *    b. poll
-- *    c. Socket Teardown
-- *    d. Bi-directional sockets
-- *    - Only copy mode is supported because veth does not currently support
-- *      zero-copy mode
-- *
-  * Total tests: 8
+- * Total tests: 8
++ * Total tests: 10
   *
   * Flow:
-@@ -98,17 +82,23 @@ typedef __u16 __sum16;
- 
- static void __exit_with_error(int error, const char *file, const char *func, int line)
- {
--	ksft_test_result_fail
--	    ("[%s:%s:%i]: ERROR: %d/\"%s\"\n", file, func, line, error, strerror(error));
--	ksft_exit_xfail();
-+	if (configured_mode == TEST_MODE_UNCONFIGURED) {
-+		ksft_exit_fail_msg
-+		("[%s:%s:%i]: ERROR: %d/\"%s\"\n", file, func, line, error, strerror(error));
-+	} else {
-+		ksft_test_result_fail
-+		("[%s:%s:%i]: ERROR: %d/\"%s\"\n", file, func, line, error, strerror(error));
-+		ksft_exit_xfail();
-+	}
- }
- 
+  * -----
+@@ -95,10 +108,11 @@ static void __exit_with_error(int error, const char *file, const char *func, int
  #define exit_with_error(error) __exit_with_error(error, __FILE__, __func__, __LINE__)
  
  #define print_ksft_result(void)\
--	(ksft_test_result_pass("PASS: %s %s %s%s\n", uut ? "DRV" : "SKB", opt_poll ? "POLL" :\
--			       "NOPOLL", opt_teardown ? "Socket Teardown" : "",\
--			       opt_bidi ? "Bi-directional Sockets" : ""))
-+	(ksft_test_result_pass("PASS: %s %s %s%s\n", configured_mode ? "DRV" : "SKB",\
-+			       test_type == TEST_TYPE_POLL ? "POLL" : "NOPOLL",\
-+			       test_type == TEST_TYPE_TEARDOWN ? "Socket Teardown" : "",\
-+			       test_type == TEST_TYPE_BIDI ? "Bi-directional Sockets" : ""))
+-	(ksft_test_result_pass("PASS: %s %s %s%s\n", configured_mode ? "DRV" : "SKB",\
++	(ksft_test_result_pass("PASS: %s %s %s%s%s\n", configured_mode ? "DRV" : "SKB",\
+ 			       test_type == TEST_TYPE_POLL ? "POLL" : "NOPOLL",\
+ 			       test_type == TEST_TYPE_TEARDOWN ? "Socket Teardown" : "",\
+-			       test_type == TEST_TYPE_BIDI ? "Bi-directional Sockets" : ""))
++			       test_type == TEST_TYPE_BIDI ? "Bi-directional Sockets" : "",\
++			       test_type == TEST_TYPE_STATS ? "Stats" : ""))
  
  static void pthread_init_mutex(void)
  {
-@@ -311,10 +301,10 @@ static int xsk_configure_socket(struct ifobject *ifobject)
- 	cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+@@ -260,13 +274,20 @@ static void gen_eth_frame(struct xsk_umem_info *umem, u64 addr)
+ static void xsk_configure_umem(struct ifobject *data, void *buffer, u64 size)
+ {
+ 	int ret;
++	struct xsk_umem_config cfg = {
++		.fill_size = XSK_RING_PROD__DEFAULT_NUM_DESCS,
++		.comp_size = XSK_RING_CONS__DEFAULT_NUM_DESCS,
++		.frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE,
++		.frame_headroom = frame_headroom,
++		.flags = XSK_UMEM__DEFAULT_FLAGS
++	};
+ 
+ 	data->umem = calloc(1, sizeof(struct xsk_umem_info));
+ 	if (!data->umem)
+ 		exit_with_error(errno);
+ 
+ 	ret = xsk_umem__create(&data->umem->umem, buffer, size,
+-			       &data->umem->fq, &data->umem->cq, NULL);
++			       &data->umem->fq, &data->umem->cq, &cfg);
+ 	if (ret)
+ 		exit_with_error(ret);
+ 
+@@ -298,7 +319,7 @@ static int xsk_configure_socket(struct ifobject *ifobject)
+ 		exit_with_error(errno);
+ 
+ 	ifobject->xsk->umem = ifobject->umem;
+-	cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
++	cfg.rx_size = rxqsize;
  	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
  	cfg.libbpf_flags = 0;
--	cfg.xdp_flags = opt_xdp_flags;
--	cfg.bind_flags = opt_xdp_bind_flags;
-+	cfg.xdp_flags = xdp_flags;
-+	cfg.bind_flags = xdp_bind_flags;
+ 	cfg.xdp_flags = xdp_flags;
+@@ -565,6 +586,8 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frameptr, int batch_size)
+ {
+ 	u32 idx;
+ 	unsigned int i;
++	bool tx_invalid_test = stat_test_type == STAT_TEST_TX_INVALID;
++	u32 len = tx_invalid_test ? XSK_UMEM__DEFAULT_FRAME_SIZE + 1 : PKT_SIZE;
  
--	if (!opt_bidi) {
-+	if (test_type != TEST_TYPE_BIDI) {
- 		rxr = (ifobject->fv.vector == rx) ? &ifobject->xsk->rx : NULL;
- 		txr = (ifobject->fv.vector == tx) ? &ifobject->xsk->tx : NULL;
- 	} else {
-@@ -334,12 +324,6 @@ static int xsk_configure_socket(struct ifobject *ifobject)
- static struct option long_options[] = {
- 	{"interface", required_argument, 0, 'i'},
- 	{"queue", optional_argument, 0, 'q'},
--	{"poll", no_argument, 0, 'p'},
--	{"xdp-skb", no_argument, 0, 'S'},
--	{"xdp-native", no_argument, 0, 'N'},
--	{"copy", no_argument, 0, 'c'},
--	{"tear-down", no_argument, 0, 'T'},
--	{"bidi", optional_argument, 0, 'B'},
- 	{"dump-pkts", optional_argument, 0, 'D'},
- 	{"verbose", no_argument, 0, 'v'},
- 	{"tx-pkt-count", optional_argument, 0, 'C'},
-@@ -353,12 +337,6 @@ static void usage(const char *prog)
- 	    "  Options:\n"
- 	    "  -i, --interface      Use interface\n"
- 	    "  -q, --queue=n        Use queue n (default 0)\n"
--	    "  -p, --poll           Use poll syscall\n"
--	    "  -S, --xdp-skb=n      Use XDP SKB mode\n"
--	    "  -N, --xdp-native=n   Enforce XDP DRV (native) mode\n"
--	    "  -c, --copy           Force copy mode\n"
--	    "  -T, --tear-down      Tear down sockets by repeatedly recreating them\n"
--	    "  -B, --bidi           Bi-directional sockets test\n"
- 	    "  -D, --dump-pkts      Dump packets L2 - L5\n"
- 	    "  -v, --verbose        Verbose output\n"
- 	    "  -C, --tx-pkt-count=n Number of packets to send\n";
-@@ -448,7 +426,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
+ 	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) < batch_size)
+ 		complete_tx_only(xsk, batch_size);
+@@ -573,11 +596,16 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frameptr, int batch_size)
+ 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
  
- 	for (;;) {
--		c = getopt_long(argc, argv, "i:q:pSNcTBDC:v", long_options, &option_index);
-+		c = getopt_long(argc, argv, "i:q:DC:v", long_options, &option_index);
- 
- 		if (c == -1)
- 			break;
-@@ -471,28 +449,6 @@ static void parse_command_line(int argc, char **argv)
- 		case 'q':
- 			opt_queue = atoi(optarg);
- 			break;
--		case 'p':
--			opt_poll = 1;
--			break;
--		case 'S':
--			opt_xdp_flags |= XDP_FLAGS_SKB_MODE;
--			opt_xdp_bind_flags |= XDP_COPY;
--			uut = ORDER_CONTENT_VALIDATE_XDP_SKB;
--			break;
--		case 'N':
--			opt_xdp_flags |= XDP_FLAGS_DRV_MODE;
--			opt_xdp_bind_flags |= XDP_COPY;
--			uut = ORDER_CONTENT_VALIDATE_XDP_DRV;
--			break;
--		case 'c':
--			opt_xdp_bind_flags |= XDP_COPY;
--			break;
--		case 'T':
--			opt_teardown = 1;
--			break;
--		case 'B':
--			opt_bidi = 1;
--			break;
- 		case 'D':
- 			debug_pkt_dump = 1;
- 			break;
-@@ -508,6 +464,11 @@ static void parse_command_line(int argc, char **argv)
- 		}
+ 		tx_desc->addr = (*frameptr + i) << XSK_UMEM__DEFAULT_FRAME_SHIFT;
+-		tx_desc->len = PKT_SIZE;
++		tx_desc->len = len;
  	}
  
-+	if (!opt_pkt_count) {
-+		print_verbose("No tx-pkt-count specified, using default %u\n", DEFAULT_PKT_CNT);
-+		opt_pkt_count = DEFAULT_PKT_CNT;
+ 	xsk_ring_prod__submit(&xsk->tx, batch_size);
+-	xsk->outstanding_tx += batch_size;
++	if (!tx_invalid_test) {
++		xsk->outstanding_tx += batch_size;
++	} else {
++		if (!NEED_WAKEUP || xsk_ring_prod__needs_wakeup(&xsk->tx))
++			kick_tx(xsk);
 +	}
+ 	*frameptr += batch_size;
+ 	*frameptr %= num_frames;
+ 	complete_tx_only(xsk, batch_size);
+@@ -689,6 +717,48 @@ static void worker_pkt_dump(void)
+ 	}
+ }
+ 
++static void worker_stats_validate(struct ifobject *ifobject)
++{
++	struct xdp_statistics stats;
++	socklen_t optlen;
++	int err;
++	struct xsk_socket *xsk = stat_test_type == STAT_TEST_TX_INVALID ?
++							ifdict[!ifobject->ifdict_index]->xsk->xsk :
++							ifobject->xsk->xsk;
++	int fd = xsk_socket__fd(xsk);
++	unsigned long xsk_stat = 0, expected_stat = opt_pkt_count;
 +
- 	if (!validate_interfaces()) {
- 		usage(basename(argv[0]));
- 		ksft_exit_xfail();
-@@ -659,7 +620,7 @@ static void tx_only_all(struct ifobject *ifobject)
- 	while ((opt_pkt_count && pkt_cnt < opt_pkt_count) || !opt_pkt_count) {
- 		int batch_size = get_batch_size(pkt_cnt);
++	sigvar = 0;
++
++	optlen = sizeof(stats);
++	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
++	if (err)
++		return;
++
++	if (optlen == sizeof(struct xdp_statistics)) {
++		switch (stat_test_type) {
++		case STAT_TEST_RX_DROPPED:
++			xsk_stat = stats.rx_dropped;
++			break;
++		case STAT_TEST_TX_INVALID:
++			xsk_stat = stats.tx_invalid_descs;
++			break;
++		case STAT_TEST_RX_FULL:
++			xsk_stat = stats.rx_ring_full;
++			expected_stat -= RX_FULL_RXQSIZE;
++			break;
++		case STAT_TEST_RX_FILL_EMPTY:
++			xsk_stat = stats.rx_fill_ring_empty_descs;
++			break;
++		default:
++			break;
++		}
++
++		if (xsk_stat == expected_stat)
++			sigvar = 1;
++	}
++}
++
+ static void worker_pkt_validate(void)
+ {
+ 	u32 payloadseqnum = -2;
+@@ -827,7 +897,8 @@ static void *worker_testapp_validate(void *arg)
+ 			thread_common_ops(ifobject, bufs, &sync_mutex_tx, &spinning_rx);
  
--		if (opt_poll) {
-+		if (test_type == TEST_TYPE_POLL) {
- 			ret = poll(fds, 1, POLL_TMOUT);
- 			if (ret <= 0)
- 				continue;
-@@ -883,7 +844,7 @@ static void *worker_testapp_validate(void *arg)
- 		pthread_mutex_unlock(&sync_mutex);
+ 		print_verbose("Interface [%s] vector [Rx]\n", ifobject->ifname);
+-		xsk_populate_fill_ring(ifobject->umem);
++		if (stat_test_type != STAT_TEST_RX_FILL_EMPTY)
++			xsk_populate_fill_ring(ifobject->umem);
  
- 		while (1) {
--			if (opt_poll) {
-+			if (test_type == TEST_TYPE_POLL) {
- 				ret = poll(fds, 1, POLL_TMOUT);
+ 		TAILQ_INIT(&head);
+ 		if (debug_pkt_dump) {
+@@ -849,15 +920,21 @@ static void *worker_testapp_validate(void *arg)
  				if (ret <= 0)
  					continue;
-@@ -898,11 +859,11 @@ static void *worker_testapp_validate(void *arg)
- 		print_verbose("Received %d packets on interface %s\n",
- 			       pkt_counter, ifobject->ifname);
+ 			}
+-			rx_pkt(ifobject->xsk, fds);
+-			worker_pkt_validate();
++
++			if (test_type != TEST_TYPE_STATS) {
++				rx_pkt(ifobject->xsk, fds);
++				worker_pkt_validate();
++			} else {
++				worker_stats_validate(ifobject);
++			}
  
--		if (opt_teardown)
-+		if (test_type == TEST_TYPE_TEARDOWN)
+ 			if (sigvar)
+ 				break;
+ 		}
+ 
+-		print_verbose("Received %d packets on interface %s\n",
+-			       pkt_counter, ifobject->ifname);
++		if (test_type != TEST_TYPE_STATS)
++			print_verbose("Received %d packets on interface %s\n",
++				pkt_counter, ifobject->ifname);
+ 
+ 		if (test_type == TEST_TYPE_TEARDOWN)
  			print_verbose("Destroying socket\n");
- 	}
- 
--	if (!opt_bidi || bidi_pass) {
-+	if ((test_type != TEST_TYPE_BIDI) || bidi_pass) {
- 		xsk_socket__delete(ifobject->xsk->xsk);
- 		(void)xsk_umem__delete(ifobject->umem->umem);
- 	}
-@@ -912,11 +873,12 @@ static void *worker_testapp_validate(void *arg)
- static void testapp_validate(void)
- {
- 	struct timespec max_wait = { 0, 0 };
-+	bool bidi = test_type == TEST_TYPE_BIDI;
- 
- 	pthread_attr_init(&attr);
- 	pthread_attr_setstacksize(&attr, THREAD_STACK);
- 
--	if (opt_bidi && bidi_pass) {
-+	if ((test_type == TEST_TYPE_BIDI) && bidi_pass) {
- 		pthread_init_mutex();
- 		if (!switching_notify) {
- 			print_verbose("Switching Tx/Rx vectors\n");
-@@ -927,10 +889,10 @@ static void testapp_validate(void)
- 	pthread_mutex_lock(&sync_mutex);
- 
- 	/*Spawn RX thread */
--	if (!opt_bidi || !bidi_pass) {
-+	if (!bidi || !bidi_pass) {
- 		if (pthread_create(&t0, &attr, worker_testapp_validate, ifdict[1]))
- 			exit_with_error(errno);
--	} else if (opt_bidi && bidi_pass) {
-+	} else if (bidi && bidi_pass) {
- 		/*switch Tx/Rx vectors */
- 		ifdict[0]->fv.vector = rx;
- 		if (pthread_create(&t0, &attr, worker_testapp_validate, ifdict[0]))
-@@ -947,10 +909,10 @@ static void testapp_validate(void)
- 	pthread_mutex_unlock(&sync_mutex);
- 
- 	/*Spawn TX thread */
--	if (!opt_bidi || !bidi_pass) {
-+	if (!bidi || !bidi_pass) {
- 		if (pthread_create(&t1, &attr, worker_testapp_validate, ifdict[0]))
- 			exit_with_error(errno);
--	} else if (opt_bidi && bidi_pass) {
-+	} else if (bidi && bidi_pass) {
- 		/*switch Tx/Rx vectors */
- 		ifdict[1]->fv.vector = tx;
- 		if (pthread_create(&t1, &attr, worker_testapp_validate, ifdict[1]))
-@@ -969,19 +931,20 @@ static void testapp_validate(void)
+@@ -931,7 +1008,7 @@ static void testapp_validate(void)
  		free(pkt_buf);
  	}
  
--	if (!opt_teardown && !opt_bidi)
-+	if (!(test_type == TEST_TYPE_TEARDOWN) && !bidi)
+-	if (!(test_type == TEST_TYPE_TEARDOWN) && !bidi)
++	if (!(test_type == TEST_TYPE_TEARDOWN) && !bidi && !(test_type == TEST_TYPE_STATS))
  		print_ksft_result();
  }
  
- static void testapp_sockets(void)
- {
--	for (int i = 0; i < (opt_teardown ? MAX_TEARDOWN_ITER : MAX_BIDI_ITER); i++) {
-+	for (int i = 0; i < ((test_type == TEST_TYPE_TEARDOWN) ? MAX_TEARDOWN_ITER : MAX_BIDI_ITER);
-+	     i++) {
- 		pkt_counter = 0;
- 		prev_pkt = -1;
- 		sigvar = 0;
- 		print_verbose("Creating socket\n");
- 		testapp_validate();
--		opt_bidi ? bidi_pass++ : bidi_pass;
-+		test_type == TEST_TYPE_BIDI ? bidi_pass++ : bidi_pass;
- 	}
- 
+@@ -950,6 +1027,32 @@ static void testapp_sockets(void)
  	print_ksft_result();
-@@ -1008,6 +971,98 @@ static void init_iface_config(struct ifaceconfigobj *ifaceconfig)
- 	ifdict[1]->src_port = ifaceconfig->dst_port;
  }
  
-+static void *nsdisablemodethread(void *args)
++static void testapp_stats(void)
 +{
-+	struct targs *targs = args;
++	for (int i = 0; i < STAT_TEST_TYPE_MAX; i++) {
++		stat_test_type = i;
 +
-+	targs->retptr = false;
++		/* reset defaults */
++		rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
++		frame_headroom = XSK_UMEM__DEFAULT_FRAME_HEADROOM;
 +
-+	if (switch_namespace(targs->idx)) {
-+		targs->retptr = bpf_set_link_xdp_fd(ifdict[targs->idx]->ifindex, -1, targs->flags);
-+	} else {
-+		targs->retptr = errno;
-+		print_verbose("Failed to switch namespace to %s\n", ifdict[targs->idx]->nsname);
-+	}
-+
-+	pthread_exit(NULL);
-+}
-+
-+static void disable_xdp_mode(int mode)
-+{
-+	int err = 0;
-+	__u32 flags = XDP_FLAGS_UPDATE_IF_NOEXIST | mode;
-+	char *mode_str = mode & XDP_FLAGS_SKB_MODE ? "skb" : "drv";
-+
-+	for (int i = 0; i < MAX_INTERFACES; i++) {
-+		if (strcmp(ifdict[i]->nsname, "")) {
-+			struct targs *targs;
-+
-+			targs = malloc(sizeof(*targs));
-+			memset(targs, 0, sizeof(*targs));
-+			if (!targs)
-+				exit_with_error(errno);
-+
-+			targs->idx = i;
-+			targs->flags = flags;
-+			if (pthread_create(&ns_thread, NULL, nsdisablemodethread, targs))
-+				exit_with_error(errno);
-+
-+			pthread_join(ns_thread, NULL);
-+			err = targs->retptr;
-+			free(targs);
-+		} else {
-+			err = bpf_set_link_xdp_fd(ifdict[i]->ifindex, -1, flags);
++		switch (stat_test_type) {
++		case STAT_TEST_RX_DROPPED:
++			frame_headroom = XSK_UMEM__DEFAULT_FRAME_SIZE -
++						XDP_PACKET_HEADROOM - 1;
++			break;
++		case STAT_TEST_RX_FULL:
++			rxqsize = RX_FULL_RXQSIZE;
++			break;
++		default:
++			break;
 +		}
-+
-+		if (err) {
-+			print_verbose("Failed to disable %s mode on interface %s\n",
-+						mode_str, ifdict[i]->ifname);
-+			exit_with_error(err);
-+		}
-+
-+		print_verbose("Disabled %s mode for interface: %s\n", mode_str, ifdict[i]->ifname);
-+		configured_mode = mode & XDP_FLAGS_SKB_MODE ? TEST_MODE_DRV : TEST_MODE_SKB;
-+	}
-+}
-+
-+static void run_pkt_test(int mode, int type)
-+{
-+	test_type = type;
-+
-+	/* reset defaults after potential previous test */
-+	xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+	pkt_counter = 0;
-+	switching_notify = 0;
-+	bidi_pass = 0;
-+	prev_pkt = -1;
-+	ifdict[0]->fv.vector = tx;
-+	ifdict[1]->fv.vector = rx;
-+
-+	switch (mode) {
-+	case (TEST_MODE_SKB):
-+		if (configured_mode == TEST_MODE_DRV)
-+			disable_xdp_mode(XDP_FLAGS_DRV_MODE);
-+		xdp_flags |= XDP_FLAGS_SKB_MODE;
-+		break;
-+	case (TEST_MODE_DRV):
-+		if (configured_mode == TEST_MODE_SKB)
-+			disable_xdp_mode(XDP_FLAGS_SKB_MODE);
-+		xdp_flags |= XDP_FLAGS_DRV_MODE;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	pthread_init_mutex();
-+
-+	if ((test_type != TEST_TYPE_TEARDOWN) && (test_type != TEST_TYPE_BIDI))
 +		testapp_validate();
-+	else
-+		testapp_sockets();
++	}
 +
-+	pthread_destroy_mutex();
++	print_ksft_result();
 +}
 +
- int main(int argc, char **argv)
+ static void init_iface_config(struct ifaceconfigobj *ifaceconfig)
  {
- 	struct rlimit _rlim = { RLIM_INFINITY, RLIM_INFINITY };
-@@ -1021,6 +1076,7 @@ int main(int argc, char **argv)
- 	const char *IP2 = "192.168.100.161";
- 	u16 UDP_DST_PORT = 2020;
- 	u16 UDP_SRC_PORT = 2121;
-+	int i, j;
+ 	/*Init interface0 */
+@@ -1037,6 +1140,10 @@ static void run_pkt_test(int mode, int type)
+ 	prev_pkt = -1;
+ 	ifdict[0]->fv.vector = tx;
+ 	ifdict[1]->fv.vector = rx;
++	sigvar = 0;
++	stat_test_type = -1;
++	rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
++	frame_headroom = XSK_UMEM__DEFAULT_FRAME_HEADROOM;
  
- 	ifaceconfig = malloc(sizeof(struct ifaceconfigobj));
- 	memcpy(ifaceconfig->dst_mac, MAC1, ETH_ALEN);
-@@ -1046,24 +1102,18 @@ int main(int argc, char **argv)
+ 	switch (mode) {
+ 	case (TEST_MODE_SKB):
+@@ -1055,7 +1162,9 @@ static void run_pkt_test(int mode, int type)
  
- 	init_iface_config(ifaceconfig);
+ 	pthread_init_mutex();
  
--	pthread_init_mutex();
-+	disable_xdp_mode(XDP_FLAGS_DRV_MODE);
- 
--	ksft_set_plan(1);
-+	ksft_set_plan(TEST_MODE_MAX * TEST_TYPE_MAX);
- 
--	if (!opt_teardown && !opt_bidi) {
--		testapp_validate();
--	} else if (opt_teardown && opt_bidi) {
--		ksft_test_result_fail("ERROR: parameters -T and -B cannot be used together\n");
--		ksft_exit_xfail();
--	} else {
--		testapp_sockets();
-+	for (i = 0; i < TEST_MODE_MAX; i++) {
-+		for (j = 0; j < TEST_TYPE_MAX; j++)
-+			run_pkt_test(i, j);
- 	}
- 
- 	for (int i = 0; i < MAX_INTERFACES; i++)
- 		free(ifdict[i]);
- 
--	pthread_destroy_mutex();
--
- 	ksft_exit_pass();
- 
- 	return 0;
+-	if ((test_type != TEST_TYPE_TEARDOWN) && (test_type != TEST_TYPE_BIDI))
++	if (test_type == TEST_TYPE_STATS)
++		testapp_stats();
++	else if ((test_type != TEST_TYPE_TEARDOWN) && (test_type != TEST_TYPE_BIDI))
+ 		testapp_validate();
+ 	else
+ 		testapp_sockets();
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index f66f399dfb2d..e05703f661f8 100644
+index e05703f661f8..30314ef305c2 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.h
 +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -41,6 +41,7 @@
- #define BATCH_SIZE 64
+@@ -42,6 +42,7 @@
  #define POLL_TMOUT 1000
  #define NEED_WAKEUP true
-+#define DEFAULT_PKT_CNT 10000
+ #define DEFAULT_PKT_CNT 10000
++#define RX_FULL_RXQSIZE 32
  
  #define print_verbose(x...) do { if (opt_verbose) ksft_print_msg(x); } while (0)
  
-@@ -48,28 +49,37 @@ typedef __u32 u32;
- typedef __u16 u16;
- typedef __u8 u8;
- 
--enum TESTS {
--	ORDER_CONTENT_VALIDATE_XDP_SKB = 0,
--	ORDER_CONTENT_VALIDATE_XDP_DRV = 1,
-+enum TEST_MODES {
-+	TEST_MODE_UNCONFIGURED = -1,
-+	TEST_MODE_SKB,
-+	TEST_MODE_DRV,
-+	TEST_MODE_MAX
+@@ -61,9 +62,18 @@ enum TEST_TYPES {
+ 	TEST_TYPE_POLL,
+ 	TEST_TYPE_TEARDOWN,
+ 	TEST_TYPE_BIDI,
++	TEST_TYPE_STATS,
+ 	TEST_TYPE_MAX
  };
  
--static u8 uut;
-+enum TEST_TYPES {
-+	TEST_TYPE_NOPOLL,
-+	TEST_TYPE_POLL,
-+	TEST_TYPE_TEARDOWN,
-+	TEST_TYPE_BIDI,
-+	TEST_TYPE_MAX
++enum STAT_TEST_TYPES {
++	STAT_TEST_RX_DROPPED,
++	STAT_TEST_TX_INVALID,
++	STAT_TEST_RX_FULL,
++	STAT_TEST_RX_FILL_EMPTY,
++	STAT_TEST_TYPE_MAX
 +};
 +
-+static int configured_mode = TEST_MODE_UNCONFIGURED;
+ static int configured_mode = TEST_MODE_UNCONFIGURED;
  static u8 debug_pkt_dump;
  static u32 num_frames;
- static u8 switching_notify;
- static u8 bidi_pass;
-+static int test_type;
- 
--static u32 opt_xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
- static int opt_queue;
- static int opt_pkt_count;
--static int opt_poll;
--static int opt_teardown;
--static int opt_bidi;
--static u32 opt_xdp_bind_flags = XDP_USE_NEED_WAKEUP;
- static u8 opt_verbose;
-+
-+static u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+static u32 xdp_bind_flags = XDP_USE_NEED_WAKEUP | XDP_COPY;
- static u8 pkt_data[XSK_UMEM__DEFAULT_FRAME_SIZE];
+@@ -81,6 +91,9 @@ static u8 pkt_data[XSK_UMEM__DEFAULT_FRAME_SIZE];
  static u32 pkt_counter;
--static u32 prev_pkt = -1;
-+static long prev_pkt = -1;
+ static long prev_pkt = -1;
  static int sigvar;
++static int stat_test_type;
++static u32 rxqsize;
++static u32 frame_headroom;
  
  struct xsk_umem_info {
-@@ -140,8 +150,9 @@ pthread_t t0, t1, ns_thread;
- pthread_attr_t attr;
- 
- struct targs {
--	bool retptr;
-+	u8 retptr;
- 	int idx;
-+	u32 flags;
- };
- 
- TAILQ_HEAD(head_s, pkt) head = TAILQ_HEAD_INITIALIZER(head);
-diff --git a/tools/testing/selftests/bpf/xsk_prereqs.sh b/tools/testing/selftests/bpf/xsk_prereqs.sh
-index da93575d757a..dac1c5f78752 100755
---- a/tools/testing/selftests/bpf/xsk_prereqs.sh
-+++ b/tools/testing/selftests/bpf/xsk_prereqs.sh
-@@ -105,29 +105,7 @@ validate_ip_utility()
- 	[ ! $(type -P ip) ] && { echo "'ip' not found. Skipping tests."; test_exit $ksft_skip 1; }
- }
- 
--vethXDPgeneric()
--{
--	ip link set dev $1 xdpdrv off
--	ip netns exec $3 ip link set dev $2 xdpdrv off
--}
--
--vethXDPnative()
--{
--	ip link set dev $1 xdpgeneric off
--	ip netns exec $3 ip link set dev $2 xdpgeneric off
--}
--
- execxdpxceiver()
- {
--	local -a 'paramkeys=("${!'"$1"'[@]}")' copy
--	paramkeysstr=${paramkeys[*]}
--
--	for index in $paramkeysstr;
--		do
--			current=$1"[$index]"
--			copy[$index]=${!current}
--		done
--
--	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]} -C ${NUMPKTS} ${VERBOSE_ARG} \
--		${DUMP_PKTS_ARG}
-+	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} -C ${NUMPKTS} ${VERBOSE_ARG} ${DUMP_PKTS_ARG}
- }
+ 	struct xsk_ring_prod fq;
 -- 
 2.17.1
 
