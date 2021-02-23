@@ -2,113 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5731D322E56
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:07:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85D0F322E73
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 17:13:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233526AbhBWQGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 11:06:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
+        id S233491AbhBWQMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 11:12:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233484AbhBWQGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 11:06:19 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C925C06178A
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 08:05:38 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id 74so2144044iob.0
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 08:05:38 -0800 (PST)
+        with ESMTP id S232465AbhBWQMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 11:12:22 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3761DC06174A;
+        Tue, 23 Feb 2021 08:11:40 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id x129so4337567pfx.7;
+        Tue, 23 Feb 2021 08:11:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qp39F608telK2g5bl2vnH3DV36nCXGkIBvfuxBxCEpY=;
-        b=Fc5JL2D74YRtPChhudq6t+o1f9MaKKi0XlmCIBRl9Nb9+83049FLi9RX5ILEingifB
-         iDeeO2qENKsoDyvLmOpm/9LEKPg4VlXj69JSymwOTlw2m07mmiFkYNvWRosyNfxhNNi1
-         VBiaQp9WMVqPK/Om3Ue+HMFISRBNBYltEArzs=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LupjWLkRUOq+CiPsIGPEup0J7yFrkHdOXthev84cAN8=;
+        b=msrwyp8/10qWFaWV+seEtedLa6l55XeaIG7sHc3PceJpDJQ3ujkK+1g2IrJ3ttipSq
+         SbjNQpm1naE41eNLkJZ62Rvb8PyJeS1n92eiqSLVOTvLynGkqUlXV0YsI8VBJqTPV6Kk
+         aTT14B+00rLsZC0dOZCA2KBp1TuVnCVz9pPAvu0ot8qr25mLzAr67u4f7XJxVFLPILCD
+         8QyWcFJVU59oSiyi7zlfiBz+3N7gCxvyaQLZVP5IIBsn+cVgQkJT0u9MwHLU0p/ctP/E
+         ssrHQwat8k6JAT0AT4FIoU3HINErHBR7e3en2AlzQ6iyayAFGLpIVmE8UjAAZVOcrDl3
+         BiFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qp39F608telK2g5bl2vnH3DV36nCXGkIBvfuxBxCEpY=;
-        b=Dc+lwcDelxiE3ZrQOseh8/7TKFSQYA0WVj8ap9xoekBRCGGyT3mrlFMT/8Bkv1ZfPN
-         mffNicXRRzyeYttTaLF/Sp5c8JKv4WJNYhrWPy620kVjHx3KJBzT+yc9tsAf7KX9gjQc
-         gZE8yfwjXwM3pcEzbvoWp4PB0t1FQhYp6PBwgZKZ0g9peWy//jCSj5neJncNcMUxMAR4
-         +iYrKESekPDDS2Jda+bVBSUKNC9NrU+Q4nKGbz8+4t4hGQ2roCp7bJNdXaGIOcjdYrgz
-         ni90t111kDBkJqs63/HBs0spxXJa15xSIH6dGtuu5Ko8aSkX4sYpszTKkx7v17ekqxqL
-         E2wQ==
-X-Gm-Message-State: AOAM533yKy/6vSSK8pE3p9WbtZuxQ21TAB6O9398JwrO0mwcOfcRjwgb
-        j3JtnaPdThYeDr/25BFpzzkiXbRAtqrjcQ==
-X-Google-Smtp-Source: ABdhPJyCtLBbrhnuCswxsSSKtEbIVZs8PMT6HfXbak31SxSBn5MDXpSC4e9rcFyuUuZVPvBGFxcGiQ==
-X-Received: by 2002:a5d:8ac5:: with SMTP id e5mr19743306iot.33.1614096337331;
-        Tue, 23 Feb 2021 08:05:37 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id s14sm3978152ilj.83.2021.02.23.08.05.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Feb 2021 08:05:36 -0800 (PST)
-Subject: Re: [PATCH] drivers: ipa: Add missing IRQF_ONESHOT
-To:     Yang Li <yang.lee@linux.alibaba.com>, elder@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1614071362-123210-1-git-send-email-yang.lee@linux.alibaba.com>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <d57e0a43-4d87-93cf-471c-c8185ea85ced@ieee.org>
-Date:   Tue, 23 Feb 2021 10:05:35 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LupjWLkRUOq+CiPsIGPEup0J7yFrkHdOXthev84cAN8=;
+        b=rxjaZzwdNIzMlDeMBW7x4sKZcM2faYB8Fo/ojdVY6axyRtAs4T0xuO4uDjyQKpr0e2
+         2Cdbx/8QeBb9oD+VnrSebTt61C2iME3ngk98Fgk5wCqdbNNh9C7zfjLSFv7uc+WFKJxV
+         RmTx+J4Yw/e9qklkXA72HNrASidcfXcOA6Nfi0giv1FcLhPyFGoJ959UbWmTUk85C6XB
+         JgBM7D9uK92dCYddTSXRrOZsQkpBekKKOjrNysfA66GkkxMj69yT4pDWmSx6PXxHLKNm
+         YgunUD0x/AvJuJ1Eu2gLlzM3bRyHQgdJlqrytEzak5/ggBPY+kOtuV1Kl4YeODNSLBba
+         /VDA==
+X-Gm-Message-State: AOAM532mdGSoYH8u3p3w4Ggg/oV7DVnSZh1SwSP0GPVqdGtCzRqhJj/a
+        B1ibiiEzGoRzlvE8k9d3yOE=
+X-Google-Smtp-Source: ABdhPJx1KhBoDX46FEgvuyi7wjsYLghYVyibp9XH5t2NCEv6aStSgIjIwLeNjhZ8aDjzeIlG6eHQIg==
+X-Received: by 2002:a62:ae18:0:b029:1ed:ac95:d8cb with SMTP id q24-20020a62ae180000b02901edac95d8cbmr9539294pff.69.1614096699775;
+        Tue, 23 Feb 2021 08:11:39 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id u9sm3755812pje.20.2021.02.23.08.11.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 08:11:39 -0800 (PST)
+Date:   Tue, 23 Feb 2021 08:11:36 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Heiko Thiery <heiko.thiery@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Fugang Duan <fugang.duan@nxp.com>
+Subject: Re: [PATCH 1/1] net: fec: ptp: avoid register access when ipg clock
+ is disabled
+Message-ID: <20210223161136.GA5894@hoboy.vegasvil.org>
+References: <20210220065654.25598-1-heiko.thiery@gmail.com>
+ <20210222190051.40fdc3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEyMn7ZM7_pPor0S=dMGbmnp0hmZMrpquGqq4VNu-ixSPp+0UQ@mail.gmail.com>
+ <20210223142726.GA4711@hoboy.vegasvil.org>
+ <CAEyMn7Za9z9TUdhb8egf8mOFJyA3hgqX5fwLED8HDKw8Smyocg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1614071362-123210-1-git-send-email-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEyMn7Za9z9TUdhb8egf8mOFJyA3hgqX5fwLED8HDKw8Smyocg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/23/21 3:09 AM, Yang Li wrote:
-> fixed the following coccicheck:
-> ./drivers/net/ipa/ipa_smp2p.c:186:7-27: ERROR: Threaded IRQ with no
-> primary handler requested without IRQF_ONESHOT
-> 
-> Make sure threaded IRQs without a primary handler are always request
-> with IRQF_ONESHOT
+On Tue, Feb 23, 2021 at 04:04:16PM +0100, Heiko Thiery wrote:
+> It is not only the PHC clock that stops. Rather, it is the entire
+> ethernet building block in the SOC that is disabled, including the
+> PHC.
 
-SMP2P interrupts are handled as nested interrupts.  The hard
-handler for a registered SMP2P interrupt is never called, and
-is in fact ignored (it should really be NULL when registering).
+Sure, but why does the driver do that?
 
-The "main" SMP2P interrupt handler is a ONESHOT threaded
-interrupt handler, and all registered SMP2P interrupts are
-handled within (called by) that main handler thread function.
-
-It is not *necessary* to provide the IRQF_ONESHOT flag when
-registering an SMP2P interrupt handler.  I don't think it
-does real harm to add it, but unless I'm mistaken, the
-interrupt handling is actually simpler if ONESHOT is *not*
-set in this case.
-
-I could be convinced otherwise, but until I would rather
-not accept this patch.
-
-					-Alex
-
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
->   drivers/net/ipa/ipa_smp2p.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ipa/ipa_smp2p.c b/drivers/net/ipa/ipa_smp2p.c
-> index a5f7a79..1149ed8 100644
-> --- a/drivers/net/ipa/ipa_smp2p.c
-> +++ b/drivers/net/ipa/ipa_smp2p.c
-> @@ -183,7 +183,7 @@ static int ipa_smp2p_irq_init(struct ipa_smp2p *smp2p, const char *name,
->   	}
->   	irq = ret;
->   
-> -	ret = request_threaded_irq(irq, NULL, handler, 0, name, smp2p);
-> +	ret = request_threaded_irq(irq, NULL, handler, IRQF_ONESHOT, name, smp2p);
->   	if (ret) {
->   		dev_err(dev, "error %d requesting \"%s\" IRQ\n", ret, name);
->   		return ret;
-> 
-
+Thanks,
+Richard
