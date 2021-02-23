@@ -2,203 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32708322611
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 07:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F374F322615
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 07:56:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231569AbhBWGwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 01:52:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231484AbhBWGwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 01:52:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3E7C06174A
-        for <netdev@vger.kernel.org>; Mon, 22 Feb 2021 22:51:58 -0800 (PST)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lERXx-0002JM-FV; Tue, 23 Feb 2021 07:51:49 +0100
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lERXw-00045Y-Ga; Tue, 23 Feb 2021 07:51:48 +0100
-Date:   Tue, 23 Feb 2021 07:51:48 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Robin van der Gracht <robin@protonic.nl>,
-        syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3] net: introduce CAN specific pointer in the struct
- net_device
-Message-ID: <20210223065148.kof3e4ktxawrgykn@pengutronix.de>
-References: <20210222150251.12911-1-o.rempel@pengutronix.de>
- <20210222173012.39e82e8d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S231222AbhBWGzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 01:55:53 -0500
+Received: from mail-eopbgr10112.outbound.protection.outlook.com ([40.107.1.112]:56116
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230198AbhBWGzr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 01:55:47 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CimJ9zrHZh1kNCGK07B1gGAgLJjy/ChKHtWNJxA06LWxZmDY8MropihasI3eZf4DhIdYHcG2/K+L50NS8zL/Je7bjA39EXFwtWHSpEkTKeOgEAbpkaM4asMoFIYpqXdYLb604YVbLgrDTiQi66u4j3sMK6PdEvxBZweQObHl/3BE6jg+wOzy+SjP46lnJctXvVFDzy6VZEjYko7+uBQrl+TvmyoaM6GmHXyBpL9e6wCT4EMdg8Xl7dOWwFoVuy0o8u1AsEvNwhkRMmG1W8UpWgGVZfZbzO8O5nVUvaMTB/znNk1ZQJ5moii6nsH2ffqxo7JgCT1fWHvx+NsERPW8gA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PJcrqkB6+TMss7RptIMOny/WtYUUo5EUn+Uqz36ql3s=;
+ b=gKpzXGPU4tse1BhWSAQFvtXVq8enb8itXj77pDD5T8IeVRocBHLaM3PO9qCzL3jXCVWDOKk0KB1Tjf/hjQihN1an9Mjzn8J8YhDPBDuptGZ6MY6KHrAtoU75pJCatz3b6UAPaXd/HNs1C3hS/4u6sFw4gLBbWhTazf6Z9e3o4im0stfRdiFTiaHaHwpOgQAu7sG7SvVW1F6xWs9AWqfVxn/kIMGKMYpspPXq2AmOo5rjC299zafJj2Lrn4EnkkEN1fY+n0IwLnk3oYXnJ5PFTl/pgvNxAkJ9z/l+omzzq48Lgyyst4QhftGAySK0qiGBecsZPzlGvvksL9sl94WZqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=schleissheimer.de; dmarc=pass action=none
+ header.from=schleissheimer.de; dkim=pass header.d=schleissheimer.de; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=schleissheimer.onmicrosoft.com; s=selector1-schleissheimer-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PJcrqkB6+TMss7RptIMOny/WtYUUo5EUn+Uqz36ql3s=;
+ b=Dqb5Yhjjt5QBalPItXmpCu2Y2TiBCaq1QXwuF0n3gx3osib7PAeZabF2AKyKqm5XR1l+5kcIx5PI7ZgoVPCqBieRtmYjMo2g49NubLbZRv01hRXNjToSLAnq2BtHk+ounmvv3w3n3i5WPSY+VSWmAzkyo/LS8I5k1kdA/0Mxgec=
+Received: from DB8P190MB0634.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:12d::21)
+ by DBAP190MB0902.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:1ab::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.29; Tue, 23 Feb
+ 2021 06:54:57 +0000
+Received: from DB8P190MB0634.EURP190.PROD.OUTLOOK.COM
+ ([fe80::64eb:97b0:de3c:4c5d]) by DB8P190MB0634.EURP190.PROD.OUTLOOK.COM
+ ([fe80::64eb:97b0:de3c:4c5d%6]) with mapi id 15.20.3868.033; Tue, 23 Feb 2021
+ 06:54:57 +0000
+From:   Sven Schuchmann <schuchmann@schleissheimer.de>
+To:     "Woojung.Huh@microchip.com" <Woojung.Huh@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: usb: lan78xx: Problem with ERR_STS
+Thread-Topic: usb: lan78xx: Problem with ERR_STS
+Thread-Index: AdcJrhKONSKkWKe5RJ+Y9nQA4FSDGA==
+Date:   Tue, 23 Feb 2021 06:54:57 +0000
+Message-ID: <DB8P190MB0634AA6DFAEAD1D235F6AD7FD9809@DB8P190MB0634.EURP190.PROD.OUTLOOK.COM>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=none action=none
+ header.from=schleissheimer.de;
+x-originating-ip: [62.153.209.162]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5212d38f-5bbf-413e-4687-08d8d7c7ee88
+x-ms-traffictypediagnostic: DBAP190MB0902:
+x-microsoft-antispam-prvs: <DBAP190MB09028D99F4ECCBAE60E37FAAD9809@DBAP190MB0902.EURP190.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BZCt3Wh3TjX8LxeTtm427ATvEE7XQBCcLFuGgzOF0Y8LcpQritde7Esq8z8RYIaDpelo2vFYZChMLf64ma1ywQ1hbzEVusWOrGsYH+DYtQ/g+fSuxL0P9bSWek2JRdXPylRwcULtGvhfbd6kkxLXKM2+xnCbOhLYPSadmSbg8B/26Gp2C0gJ6C8mEhUG/ANgRohIKg4DwBtIfgDmBGdQUqnGSe6VIcWyUMwwPrVMrR/WHZQAXzTnfws/LEb/3LQ6cP433Pu9LBZyGgCsv1OFXvGE6CkiADRR3qOMZoeDpzzaH2YT3qGbkO5ablo7N6J7K4v1bV0sM8VAJdoah8zUEpMojkyvVaTSF8eT36EC5xSkQ8f/tBwIA6pHPlyACgrHXcguSXzwJzjT9dzRHZPlhzHb/MV5G1SDCfPiSnHzA0owCisjG3+FO4wzSaln+XTpaK7gzdWIn95crrMJ1dRi1YmhUWfUN35Ne07tnj4UU7FosD9uxjHxsbLjJcjecuv5rDnoynxRsZQTFrrDgTZrOAyIk+zV3XZef2QujM1rP6SeqE98WCLlUzC58MnCtU+s3mbzU57LUzW+CMTX+UzqIQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8P190MB0634.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(136003)(346002)(39830400003)(376002)(366004)(26005)(66574015)(316002)(7696005)(33656002)(5660300002)(66946007)(186003)(66556008)(64756008)(66476007)(66446008)(9686003)(478600001)(86362001)(76116006)(55016002)(110136005)(8936002)(83380400001)(6506007)(8676002)(71200400001)(966005)(2906002)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?+W1UJEcRIAG6PYjOd5yAS0S7INrZVm8ACajMKrGuA1B5oqR6uEEbGchwFT?=
+ =?iso-8859-1?Q?sNZBqkmuKiGwJt28YZmkRwY5ZZTzUmI4Age3Hd54W3qyWBKc9s53SIQqfM?=
+ =?iso-8859-1?Q?sBLLyX8Cby6HwLvuCx6Kh98I+UyXqPFZobqf4hoL/IcSBBuABeu+0dKssL?=
+ =?iso-8859-1?Q?CePXfzJ4sJT7kEEqH3ePKGCi3TOQesahLBMs/KVhMigd1bAgj7x4P3rMzz?=
+ =?iso-8859-1?Q?EaSZJBzA/qj0vhGUwh+V5S+GJewlBsU5eLWtrNJKLH4sg01owzBwWYQP4x?=
+ =?iso-8859-1?Q?rFmY98bdF5x2VSAm+qVTOuchLorS/5G7/LR03Bo6COurNzaK0dTZK1sT7j?=
+ =?iso-8859-1?Q?gs9mTd1iWW2kLr5mQv3GOumEPphZn+j1rvWRmcv7HVHEhIblPL3pi7nTYj?=
+ =?iso-8859-1?Q?ai1Wpj2pujCaYV6S1FIMQY/qpGeANy2rL1FBbwedQtzHP4680BbQY7vgcg?=
+ =?iso-8859-1?Q?2sPXXB+u9pTURb5lLJW6HZ0CTvvitKEK4TnxBCEgFfXiNbCcmbvFeZoNjY?=
+ =?iso-8859-1?Q?xmxoqoq+O8JD9JKDMtIi/cZksohNLzdPWtw8ORUqi0mp9H4CQhp68Drgdu?=
+ =?iso-8859-1?Q?Td/OtWuJadu7HrPO6IaoSxAjJdj7wBY0NbTMSA97PRwUWQolMwAeTv2AX0?=
+ =?iso-8859-1?Q?NnoKugMDMid6ysKGYdS4ajgyGQ8vQJaxzuLS55jNrfWDCVbG+rAtausfL0?=
+ =?iso-8859-1?Q?qkbCemNr0+fEmaAUo76BojHKvUoH/aJAAuOb2E5b2WMELXTwti8JzBUW8b?=
+ =?iso-8859-1?Q?eedr0r9kUFLuKSyfhu495D/yEfNHR/4CRwTmpjfs7fL95HTl2H0Qgl5OGE?=
+ =?iso-8859-1?Q?uH/naSb6v5FKjO7V+jLnXFBUmKvGG8aXFVL5FU75IKisDvf9qGLBZYOWJ3?=
+ =?iso-8859-1?Q?4J+2qVzgjF1yTGI3WQKLqH7S+/ai9ESnN/iexn3yQSkhXoy7wDD9jBxGJf?=
+ =?iso-8859-1?Q?cdObSEcIEDm4R9hxSVDEOVG6f/IlodbCGBAMmU7ime3YMQaW8M12KA7o+F?=
+ =?iso-8859-1?Q?qUxXGfCGk1R1pkLEclCjRfMDdlWoPoWPmz2V2yOGk4OiBnC0nExbCB3+xY?=
+ =?iso-8859-1?Q?311p4liSvBAPax9x/fRCF564tQMwPlG7NAgkc5G1GARgkLnDfStZZsptP3?=
+ =?iso-8859-1?Q?5qZM0e7AZj2PRujO57PdyXIb5muohx/TcOW9VESTyfVhebyAhZEezXSTMO?=
+ =?iso-8859-1?Q?EBYz9p8d4+uvJryTqLqC8Rtt7OEtVl+Kw1Rbm1DrebS41xSCIOWoImVlTU?=
+ =?iso-8859-1?Q?8yFJZ/DQpMcd4nHIG32gumt4vPXhtSEMXmAghuoZPeVWS9bAG5nvsnUyyN?=
+ =?iso-8859-1?Q?ME4ky8jEFLOWZS7h1UUyUXBpbpQfmQ9v11kZMr1EAfP5b0gxJjxSh54doy?=
+ =?iso-8859-1?Q?agvtOWJjTq?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210222173012.39e82e8d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:57:04 up 82 days, 20:03, 38 users,  load average: 0.01, 0.04,
- 0.04
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-OriginatorOrg: schleissheimer.de
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8P190MB0634.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5212d38f-5bbf-413e-4687-08d8d7c7ee88
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Feb 2021 06:54:57.2610
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: ba05321a-a007-44df-8805-c7e62d5887b5
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5ku7sYeqypoBIsvginkThROdjzPYs6OD2QBsmtkwg0VclQLXW32MFg94adSj0+z6vtJAwf1xyTXNnVkbmgcfwp59hUfxRP8L6JOAxM2P/oQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAP190MB0902
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Hello,
 
-On Mon, Feb 22, 2021 at 05:30:12PM -0800, Jakub Kicinski wrote:
-> On Mon, 22 Feb 2021 16:02:51 +0100 Oleksij Rempel wrote:
-> > Since 20dd3850bcf8 ("can: Speed up CAN frame receiption by using
-> > ml_priv") the CAN framework uses per device specific data in the AF_CAN
-> > protocol. For this purpose the struct net_device->ml_priv is used. Later
-> > the ml_priv usage in CAN was extended for other users, one of them being
-> > CAN_J1939.
-> > 
-> > Later in the kernel ml_priv was converted to an union, used by other
-> > drivers. E.g. the tun driver started storing it's stats pointer.
-> > 
-> > Since tun devices can claim to be a CAN device, CAN specific protocols
-> > will wrongly interpret this pointer, which will cause system crashes.
-> > Mostly this issue is visible in the CAN_J1939 stack.
-> > 
-> > To fix this issue, we request a dedicated CAN pointer within the
-> > net_device struct.
-> > 
-> > Reported-by: syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com
-> > Fixes: 20dd3850bcf8 ("can: Speed up CAN frame receiption by using ml_priv")
-> > Fixes: ffd956eef69b ("can: introduce CAN midlayer private and allocate it automatically")
-> > Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> > Fixes: 497a5757ce4e ("tun: switch to net core provided statistics counters")
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> 
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index ddf4cfc12615..6e25c6f0f190 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -1584,6 +1584,16 @@ enum netdev_priv_flags {
-> >  #define IFF_L3MDEV_RX_HANDLER		IFF_L3MDEV_RX_HANDLER
-> >  #define IFF_LIVE_RENAME_OK		IFF_LIVE_RENAME_OK
-> >  
-> > +/**
-> > + * enum netdev_ml_priv_type - &struct net_device ml_priv_type
-> > + *
-> > + * This enum specifies the type of the struct net_device::ml_priv pointer.
-> > + */
-> 
-> kdoc (scripts/kernel-doc -none include/linux/netdevice.h) is not happy
-> about the fact enum values are not defined. Perhaps they will be
-> sufficiently self-explanatory to not bother documenting?
-> 
-> Maybe just:
-> 
-> /* Specifies the type of the struct net_device::ml_priv pointer */
-> 
-> ?
+I am currently working on a project where we use a LAN7801
+together with a DP83TC811R phy. The Problem is that if we change
+link state of the phy to down and up again the LAN7801 is
+not receiving anything anymore, while sending still works.
 
-sounds good, done.
+I already discussed this on the TI Forums
+https://e2e.ti.com/support/interface/f/138/t/977492
+but I still have no solution.
 
-> > +enum netdev_ml_priv_type {
-> > +	ML_PRIV_NONE,
-> > +	ML_PRIV_CAN,
-> > +};
-> > +
-> >  /**
-> >   *	struct net_device - The DEVICE structure.
-> >   *
-> > @@ -1779,6 +1789,7 @@ enum netdev_priv_flags {
-> >   * 	@nd_net:		Network namespace this network device is inside
-> >   *
-> >   * 	@ml_priv:	Mid-layer private
-> > +	@ml_priv_type:  Mid-layer private type
-> 
-> missing '*' at the start of the line
+I placed the following code into lan78xx_link_status_change():
 
-done
+	ret =3D lan78xx_read_reg(dev, INT_STS, &buf);
+	if (unlikely(ret < 0))
+		return;
 
-> >   * 	@lstats:	Loopback statistics
-> >   * 	@tstats:	Tunnel statistics
-> >   * 	@dstats:	Dummy statistics
-> > @@ -2094,8 +2105,10 @@ struct net_device {
-> >  	possible_net_t			nd_net;
-> >  
-> >  	/* mid-layer private */
-> > +	void				*ml_priv;
-> > +	enum netdev_ml_priv_type	ml_priv_type;
-> > +
-> >  	union {
-> > -		void					*ml_priv;
-> >  		struct pcpu_lstats __percpu		*lstats;
-> >  		struct pcpu_sw_netstats __percpu	*tstats;
-> >  		struct pcpu_dstats __percpu		*dstats;
-> > @@ -2286,6 +2299,29 @@ static inline void netdev_reset_rx_headroom(struct net_device *dev)
-> >  	netdev_set_rx_headroom(dev, -1);
-> >  }
-> >  
-> > +static inline void *netdev_get_ml_priv(struct net_device *dev,
-> > +				       enum netdev_ml_priv_type type)
-> > +{
-> > +	if (dev->ml_priv_type != type)
-> > +		return NULL;
-> > +
-> > +	return dev->ml_priv;
-> > +}
-> > +
-> > +static inline void netdev_set_ml_priv(struct net_device *dev,
-> > +				      void *ml_priv,
-> > +				      enum netdev_ml_priv_type type)
-> > +{
-> > +	WARN_ONCE(dev->ml_priv_type && dev->ml_priv_type != type,
-> > +		  "Overwriting already set ml_priv_type (%u) with different ml_priv_type (%u)!\n",
-> > +		  dev->ml_priv_type, type);
-> > +	WARN_ONCE(!dev->ml_priv_type && dev->ml_priv,
-> > +		  "Overwriting already set ml_priv and ml_priv_type is ML_PRIV_NONE!\n");
-> 
-> nit: do we need the _ONCE() this helper should be used on control path
->      and relatively rarely, no?
+	if (buf & INT_STS_MAC_ERR_) {
+		ret =3D lan78xx_read_reg(dev, ERR_STS, &buf);
+		if (unlikely(ret < 0))
+			return;
 
-I have no strong opinion right now. Changed to WARN()
+                netdev_err(dev->net, "MAC Error Interrupt, ERR_STS: 0x%08x\=
+n", buf);
 
-> > +	dev->ml_priv = ml_priv;
-> > +	dev->ml_priv_type = type;
-> > +}
-> > +
-> >  /*
-> >   * Net namespace inlines
-> >   */
-> 
-> > @@ -454,6 +455,7 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
-> >  		j1939_local_ecu_put(priv, jsk->addr.src_name, jsk->addr.sa);
-> >  	} else {
-> >  		struct net_device *ndev;
-> > +		struct can_ml_priv *can_ml;
-> 
-> nit: rev xmas treei
+                ret =3D lan78xx_write_reg(dev, ERR_STS, 0x3FC);
+                if (unlikely(ret < 0))
+                        return;
 
-done
+                ret =3D lan78xx_write_reg(dev, INT_STS, INT_STS_MAC_ERR_);
+                if (unlikely(ret < 0))
+                        return;
+	}
 
-> 
-> >  
-> >  		ndev = dev_get_by_index(net, addr->can_ifindex);
-> >  		if (!ndev) {
-> 
 
-Thank you,
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+If the Link of the phy is going down I see the following output:
+
+[  151.374983] lan78xx 1-1.4:1.0 broadr0: MAC Error Interrupt, ERR_STS: 0x0=
+0000308
+
+So the lan7801 seems to detect an INT_STS_MAC_ERR error (where the contents=
+ of=20
+ERR_STS are not always the same). The Problem is now that the lan7801 does =
+not=20
+receive anything from the phy anymore, whereas the phy sends valid data on =
+RGMII=20
+if it goes up again. Strangely it is still possible to send data from lan78=
+01,=20
+e.g. echo requests are still on the line, but response is not received.
+The only way I can recover this state is unload/load the lan78xx driver.
+
+Does anyone know how to recover the lan7801 to receive data again?
+Any ideas in which registers/functions to look why rx is not working anymor=
+e?
+
+Best Regards,
+
+
+   Sven
+
+
+Sven Schuchmann
+Schlei=DFheimer Soft- und
+Hardwareentwicklung GmbH
+Am Kalkofen 10
+61206 Nieder-W=F6llstadt
+GERMANY
+Phone: +49 6034 9148 711
+Fax: +49 6034 9148 91
+Email: schuchmann@schleissheimer.de
+
+Court of Registration: Amtsgericht Friedberg
+Registration Number: HRB 1581
+Management Board:
+Hans-Joachim Schlei=DFheimer
+Christine Schlei=DFheimer
+
