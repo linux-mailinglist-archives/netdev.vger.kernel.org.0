@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C91F03230FE
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 19:51:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34F66323107
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 19:52:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbhBWSu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 13:50:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57040 "EHLO
+        id S234014AbhBWSvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 13:51:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233899AbhBWSub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 13:50:31 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4076C06178B;
-        Tue, 23 Feb 2021 10:49:50 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id w69so8966873oif.1;
-        Tue, 23 Feb 2021 10:49:50 -0800 (PST)
+        with ESMTP id S233980AbhBWSvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 13:51:12 -0500
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6750DC06178C;
+        Tue, 23 Feb 2021 10:49:52 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id d9so2501021ote.12;
+        Tue, 23 Feb 2021 10:49:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XpL2WS4PVoIvSFIggqiz+U9aBMv9AGLu5gn8rcXb8mk=;
-        b=GgpXDFvA6T2uhBpHFY977D5lez03bufJNJOKvkxfMoq51goUgx9yw/v/ssdAjf7upw
-         ITvHhmf8fE6/oxeLjY6yiSG9MQ7D3HoURO11CRGLyrpVF4+fIQrNTGjD96LnQ/W2G8hj
-         0FgWQYlqmYH3kZrgW/ENSCFNXxTTFdLscrp/Ao263fzgfonwK1nOuwsMoqwOZw3uw57Q
-         qYZrHL5OaSSXkrfZQK10ab5aWSdLp6O3X8m1UkjzaMaHBU4ps0BKxGHseR6RNpIWYl/u
-         Cw9p5KkgvH037J3+qXUJHPaDlsp1jX/+cYt146kKZGJk8I2s7lRRxcQFWt0Qqu46uNBg
-         Ilkg==
+        bh=vDJQunl3EgmcxcvrcBTAPuv2d4GafxasWupUajGp95M=;
+        b=eZs53ID4kVek9p5TifTPzaHu/lw6B4Nd3rBpnBKpVF94thSvenDP3JCyGuPc0raBhU
+         bxtLWMiXLQnQdlzRkOR1CyXrZQRQAfSYseJL1GHkDItVnkmcOuVpjV31smNlSE2j41vW
+         KyKG/oaSv1YdzdaqYo+IVd2bQqvD7yurAyqE7vXPOfhGJb/spCKZL6QVfQ2XmOQ0QlWU
+         lDdpV+hIEmZaJ/m7nkhgjiVHLaQX+wLprhPGwJhve2vR0lrXrd7+mEbHw9kiRWrPdGI9
+         UTZ63Ll7d+uUTp6ol+scsY08bnjO1z3dbl9xCSp3wzk9Jyf+otcVK0yyEMLGDIQjJ1gk
+         hTSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XpL2WS4PVoIvSFIggqiz+U9aBMv9AGLu5gn8rcXb8mk=;
-        b=mcU5Mw8rOlSv3GsB4VczxfNVDcHH+eR8+l0o++hPTFGukS8xkoc4/LopucIMsbWFFN
-         eeIXp6q9Aa5jpcCXZAHXAauVtTodTdATKfdSgXvaQSVFfELAsdhbwdwO5HFpnaKOLhLN
-         y9ytUcayXS3gJiZMzlNXYmMBQhT6MMq6tc0+ECxE+qp7U9zZpTXDNXS8xsMTkRMI4e3R
-         klTKiG760Jx+seGZBbYmNLBYFt/ajVzd/YqkztoYMvjpLuAJLikKfB3+6mdEVmDsimpw
-         yMfNZG1D3AM13+BCEhSjkkI8XihIO+9ZTFn7YnjplVF0t4RDENQXsHiEBWEx1to8MDRU
-         poxw==
-X-Gm-Message-State: AOAM533PRf3akkrF36Pu8LQLLa8HR6ifSWoyVNaO/FeKf0obM94JMaA9
-        Cs7KVV1sx5w1beF5eqURLTcHt2kOqeyQBA==
-X-Google-Smtp-Source: ABdhPJzkJaJnc5yPtRB9vgk8J4FuF1qLcKAFhFtLzYqIC2QJA8WWy+aPdr6rig/kEtwJSkt5brwyFA==
-X-Received: by 2002:aca:484a:: with SMTP id v71mr136905oia.84.1614106190029;
-        Tue, 23 Feb 2021 10:49:50 -0800 (PST)
+        bh=vDJQunl3EgmcxcvrcBTAPuv2d4GafxasWupUajGp95M=;
+        b=CZ7TyeEU320TlEz6Vbe99MIyK+9+WwYGvHrIqnQa5esmjvhFFXydRRP8b/T/VhTmOm
+         MsYJh8zdC4LX3YYiXlh+bj7lDTvo5KbsdjmCESno8M5S0ZEywGl8Ka88v1HEltrKqfHE
+         HU7E1r6p9Kwc9jZEyEw4JBduyRvZvK/IH5MrsZjfqbBcHO0WeQcd4QZDX9XJBwyPYKLr
+         mkEyxJHSb3lmwclAvqpUv7pNY4NTzAHwE3TIMUDc5zxLAsGro/5IF6BrxarFkTdpph5Q
+         dyEBtjldDEiWL89wl6IPLL8sPQh5zE+U8ICv/tL9IYXsMt4B0kfOmyBgnGKqJsqvwBe/
+         hG+w==
+X-Gm-Message-State: AOAM533BJjGwy0X0/d1OIkQiV8/jwEZeggTkg09QH8fcGW1Wl3iX4Emv
+        MhSiyanehWDSTVGxFoXLFm3bkbCIUKiEPA==
+X-Google-Smtp-Source: ABdhPJxMTPPVewTRQUrwWCf903lG3k/UfHVONkld2KY6ESVHumlqe01Cbmz/p8ZGk1q4K1bywMgxPw==
+X-Received: by 2002:a9d:7a88:: with SMTP id l8mr8541151otn.289.1614106191526;
+        Tue, 23 Feb 2021 10:49:51 -0800 (PST)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:4543:ab2:3bf6:ce41])
-        by smtp.gmail.com with ESMTPSA id p12sm4387094oon.12.2021.02.23.10.49.48
+        by smtp.gmail.com with ESMTPSA id p12sm4387094oon.12.2021.02.23.10.49.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 10:49:49 -0800 (PST)
+        Tue, 23 Feb 2021 10:49:51 -0800 (PST)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
@@ -56,9 +56,9 @@ Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
         Lorenz Bauer <lmb@cloudflare.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [Patch bpf-next v7 4/9] skmsg: move sk_redir from TCP_SKB_CB to skb
-Date:   Tue, 23 Feb 2021 10:49:29 -0800
-Message-Id: <20210223184934.6054-5-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next v7 5/9] sock_map: rename skb_parser and skb_verdict
+Date:   Tue, 23 Feb 2021 10:49:30 -0800
+Message-Id: <20210223184934.6054-6-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
 References: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
@@ -70,261 +70,283 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-Currently TCP_SKB_CB() is hard-coded in skmsg code, it certainly
-does not work for any other non-TCP protocols. We can move them to
-skb ext, but it introduces a memory allocation on fast path.
-
-Fortunately, we only need to a word-size to store all the information,
-because the flags actually only contains 1 bit so can be just packed
-into the lowest bit of the "pointer", which is stored as unsigned
-long.
-
-Inside struct sk_buff, '_skb_refdst' can be reused because skb dst is
-no longer needed after ->sk_data_ready() so we can just drop it.
+These two eBPF programs are tied to BPF_SK_SKB_STREAM_PARSER
+and BPF_SK_SKB_STREAM_VERDICT, rename them to reflect the fact
+they are only used for TCP. And save the name 'skb_verdict' for
+general use later.
 
 Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
+Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
 Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/linux/skbuff.h |  3 +++
- include/linux/skmsg.h  | 38 ++++++++++++++++++++++++++++++++++++++
- include/net/tcp.h      | 19 -------------------
- net/core/skmsg.c       | 31 +++++++++++++++++++------------
- net/core/sock_map.c    |  8 ++------
- 5 files changed, 62 insertions(+), 37 deletions(-)
+ include/linux/skmsg.h                         |  8 +--
+ net/core/skmsg.c                              | 14 ++---
+ net/core/sock_map.c                           | 60 +++++++++----------
+ .../selftests/bpf/prog_tests/sockmap_listen.c |  8 +--
+ .../selftests/bpf/progs/test_sockmap_listen.c |  4 +-
+ 5 files changed, 47 insertions(+), 47 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 6d0a33d1c0db..bd84f799c952 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -755,6 +755,9 @@ struct sk_buff {
- 			void		(*destructor)(struct sk_buff *skb);
- 		};
- 		struct list_head	tcp_tsorted_anchor;
-+#ifdef CONFIG_NET_SOCK_MSG
-+		unsigned long		_sk_redir;
-+#endif
- 	};
- 
- #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
 diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 22e26f82de33..e0de45527bb6 100644
+index e0de45527bb6..d9f6ec4a9cf2 100644
 --- a/include/linux/skmsg.h
 +++ b/include/linux/skmsg.h
-@@ -455,4 +455,42 @@ static inline bool sk_psock_strp_enabled(struct sk_psock *psock)
- 		return false;
- 	return !!psock->saved_data_ready;
- }
-+
-+#if IS_ENABLED(CONFIG_NET_SOCK_MSG)
-+
-+/* We only have one bit so far. */
-+#define BPF_F_PTR_MASK ~(BPF_F_INGRESS)
-+
-+static inline bool skb_bpf_ingress(const struct sk_buff *skb)
-+{
-+	unsigned long sk_redir = skb->_sk_redir;
-+
-+	return sk_redir & BPF_F_INGRESS;
-+}
-+
-+static inline void skb_bpf_set_ingress(struct sk_buff *skb)
-+{
-+	skb->_sk_redir |= BPF_F_INGRESS;
-+}
-+
-+static inline void skb_bpf_set_redir(struct sk_buff *skb, struct sock *sk_redir,
-+				     bool ingress)
-+{
-+	skb->_sk_redir = (unsigned long)sk_redir;
-+	if (ingress)
-+		skb->_sk_redir |= BPF_F_INGRESS;
-+}
-+
-+static inline struct sock *skb_bpf_redirect_fetch(const struct sk_buff *skb)
-+{
-+	unsigned long sk_redir = skb->_sk_redir;
-+
-+	return (struct sock *)(sk_redir & BPF_F_PTR_MASK);
-+}
-+
-+static inline void skb_bpf_redirect_clear(struct sk_buff *skb)
-+{
-+	skb->_sk_redir = 0;
-+}
-+#endif /* CONFIG_NET_SOCK_MSG */
- #endif /* _LINUX_SKMSG_H */
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 947ef5da6867..075de26f449d 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -883,30 +883,11 @@ struct tcp_skb_cb {
- 			struct inet6_skb_parm	h6;
- #endif
- 		} header;	/* For incoming skbs */
--		struct {
--			__u32 flags;
--			struct sock *sk_redir;
--		} bpf;
- 	};
+@@ -56,8 +56,8 @@ struct sk_msg {
+ 
+ struct sk_psock_progs {
+ 	struct bpf_prog			*msg_parser;
+-	struct bpf_prog			*skb_parser;
+-	struct bpf_prog			*skb_verdict;
++	struct bpf_prog			*stream_parser;
++	struct bpf_prog			*stream_verdict;
  };
  
- #define TCP_SKB_CB(__skb)	((struct tcp_skb_cb *)&((__skb)->cb[0]))
+ enum sk_psock_state_bits {
+@@ -443,8 +443,8 @@ static inline int psock_replace_prog(struct bpf_prog **pprog,
+ static inline void psock_progs_drop(struct sk_psock_progs *progs)
+ {
+ 	psock_set_prog(&progs->msg_parser, NULL);
+-	psock_set_prog(&progs->skb_parser, NULL);
+-	psock_set_prog(&progs->skb_verdict, NULL);
++	psock_set_prog(&progs->stream_parser, NULL);
++	psock_set_prog(&progs->stream_verdict, NULL);
+ }
  
--static inline bool tcp_skb_bpf_ingress(const struct sk_buff *skb)
--{
--	return TCP_SKB_CB(skb)->bpf.flags & BPF_F_INGRESS;
--}
--
--static inline struct sock *tcp_skb_bpf_redirect_fetch(struct sk_buff *skb)
--{
--	return TCP_SKB_CB(skb)->bpf.sk_redir;
--}
--
--static inline void tcp_skb_bpf_redirect_clear(struct sk_buff *skb)
--{
--	TCP_SKB_CB(skb)->bpf.sk_redir = NULL;
--}
--
- extern const struct inet_connection_sock_af_ops ipv4_specific;
- 
- #if IS_ENABLED(CONFIG_IPV6)
+ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb);
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 8822001ab3dc..409258367bea 100644
+index 409258367bea..35f9caa3b125 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -525,7 +525,8 @@ static void sk_psock_backlog(struct work_struct *work)
- 		len = skb->len;
- 		off = 0;
- start:
--		ingress = tcp_skb_bpf_ingress(skb);
-+		ingress = skb_bpf_ingress(skb);
-+		skb_bpf_redirect_clear(skb);
- 		do {
- 			ret = -EIO;
- 			if (likely(psock->sk->sk_socket))
-@@ -631,7 +632,12 @@ void __sk_psock_purge_ingress_msg(struct sk_psock *psock)
+@@ -691,9 +691,9 @@ void sk_psock_drop(struct sock *sk, struct sk_psock *psock)
+ 	write_lock_bh(&sk->sk_callback_lock);
+ 	sk_psock_restore_proto(sk, psock);
+ 	rcu_assign_sk_user_data(sk, NULL);
+-	if (psock->progs.skb_parser)
++	if (psock->progs.stream_parser)
+ 		sk_psock_stop_strp(sk, psock);
+-	else if (psock->progs.skb_verdict)
++	else if (psock->progs.stream_verdict)
+ 		sk_psock_stop_verdict(sk, psock);
+ 	write_unlock_bh(&sk->sk_callback_lock);
+ 	sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
+@@ -803,7 +803,7 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
+ 	int ret = __SK_PASS;
  
- static void sk_psock_zap_ingress(struct sk_psock *psock)
- {
--	__skb_queue_purge(&psock->ingress_skb);
-+	struct sk_buff *skb;
-+
-+	while ((skb = __skb_dequeue(&psock->ingress_skb)) != NULL) {
-+		skb_bpf_redirect_clear(skb);
-+		kfree_skb(skb);
-+	}
- 	__sk_psock_purge_ingress_msg(psock);
- }
+ 	rcu_read_lock();
+-	prog = READ_ONCE(psock->progs.skb_verdict);
++	prog = READ_ONCE(psock->progs.stream_verdict);
+ 	if (likely(prog)) {
+ 		/* We skip full set_owner_r here because if we do a SK_PASS
+ 		 * or SK_DROP we can skip skb memory accounting and use the
+@@ -895,7 +895,7 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
+ 		goto out;
+ 	}
+ 	skb_set_owner_r(skb, sk);
+-	prog = READ_ONCE(psock->progs.skb_verdict);
++	prog = READ_ONCE(psock->progs.stream_verdict);
+ 	if (likely(prog)) {
+ 		skb_dst_drop(skb);
+ 		skb_bpf_redirect_clear(skb);
+@@ -919,7 +919,7 @@ static int sk_psock_strp_parse(struct strparser *strp, struct sk_buff *skb)
+ 	int ret = skb->len;
  
-@@ -754,7 +760,7 @@ static void sk_psock_skb_redirect(struct sk_buff *skb)
- 	struct sk_psock *psock_other;
- 	struct sock *sk_other;
- 
--	sk_other = tcp_skb_bpf_redirect_fetch(skb);
-+	sk_other = skb_bpf_redirect_fetch(skb);
- 	/* This error is a buggy BPF program, it returned a redirect
- 	 * return code, but then didn't set a redirect interface.
- 	 */
-@@ -804,9 +810,10 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
- 		 * TLS context.
- 		 */
+ 	rcu_read_lock();
+-	prog = READ_ONCE(psock->progs.skb_parser);
++	prog = READ_ONCE(psock->progs.stream_parser);
+ 	if (likely(prog)) {
  		skb->sk = psock->sk;
--		tcp_skb_bpf_redirect_clear(skb);
-+		skb_dst_drop(skb);
-+		skb_bpf_redirect_clear(skb);
  		ret = sk_psock_bpf_run(psock, prog, skb);
--		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
-+		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
- 		skb->sk = NULL;
- 	}
- 	sk_psock_tls_verdict_apply(skb, psock->sk, ret);
-@@ -818,7 +825,6 @@ EXPORT_SYMBOL_GPL(sk_psock_tls_strp_read);
- static void sk_psock_verdict_apply(struct sk_psock *psock,
- 				   struct sk_buff *skb, int verdict)
+@@ -982,7 +982,7 @@ void sk_psock_stop_strp(struct sock *sk, struct sk_psock *psock)
+ static void sk_psock_done_strp(struct sk_psock *psock)
  {
--	struct tcp_skb_cb *tcp;
- 	struct sock *sk_other;
- 	int err = -EIO;
- 
-@@ -830,8 +836,7 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
- 			goto out_free;
- 		}
- 
--		tcp = TCP_SKB_CB(skb);
--		tcp->bpf.flags |= BPF_F_INGRESS;
-+		skb_bpf_set_ingress(skb);
- 
- 		/* If the queue is empty then we can submit directly
- 		 * into the msg queue. If its not empty we have to
-@@ -892,9 +897,10 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
- 	skb_set_owner_r(skb, sk);
- 	prog = READ_ONCE(psock->progs.skb_verdict);
- 	if (likely(prog)) {
--		tcp_skb_bpf_redirect_clear(skb);
-+		skb_dst_drop(skb);
-+		skb_bpf_redirect_clear(skb);
- 		ret = sk_psock_bpf_run(psock, prog, skb);
--		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
-+		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+ 	/* Parser has been stopped */
+-	if (psock->progs.skb_parser)
++	if (psock->progs.stream_parser)
+ 		strp_done(&psock->strp);
+ }
+ #else
+@@ -1015,7 +1015,7 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
+ 		goto out;
  	}
- 	sk_psock_verdict_apply(psock, skb, ret);
- out:
-@@ -1011,9 +1017,10 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
  	skb_set_owner_r(skb, sk);
- 	prog = READ_ONCE(psock->progs.skb_verdict);
+-	prog = READ_ONCE(psock->progs.skb_verdict);
++	prog = READ_ONCE(psock->progs.stream_verdict);
  	if (likely(prog)) {
--		tcp_skb_bpf_redirect_clear(skb);
-+		skb_dst_drop(skb);
-+		skb_bpf_redirect_clear(skb);
- 		ret = sk_psock_bpf_run(psock, prog, skb);
--		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
-+		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
- 	}
- 	sk_psock_verdict_apply(psock, skb, ret);
- out:
+ 		skb_dst_drop(skb);
+ 		skb_bpf_redirect_clear(skb);
 diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 1a28a5c2c61e..dbfcd7006338 100644
+index dbfcd7006338..69785070f02d 100644
 --- a/net/core/sock_map.c
 +++ b/net/core/sock_map.c
-@@ -657,7 +657,6 @@ const struct bpf_func_proto bpf_sock_map_update_proto = {
- BPF_CALL_4(bpf_sk_redirect_map, struct sk_buff *, skb,
- 	   struct bpf_map *, map, u32, key, u64, flags)
+@@ -148,9 +148,9 @@ static void sock_map_del_link(struct sock *sk,
+ 			struct bpf_map *map = link->map;
+ 			struct bpf_stab *stab = container_of(map, struct bpf_stab,
+ 							     map);
+-			if (psock->saved_data_ready && stab->progs.skb_parser)
++			if (psock->saved_data_ready && stab->progs.stream_parser)
+ 				strp_stop = true;
+-			if (psock->saved_data_ready && stab->progs.skb_verdict)
++			if (psock->saved_data_ready && stab->progs.stream_verdict)
+ 				verdict_stop = true;
+ 			list_del(&link->list);
+ 			sk_psock_free_link(link);
+@@ -224,23 +224,23 @@ static struct sk_psock *sock_map_psock_get_checked(struct sock *sk)
+ static int sock_map_link(struct bpf_map *map, struct sk_psock_progs *progs,
+ 			 struct sock *sk)
  {
--	struct tcp_skb_cb *tcb = TCP_SKB_CB(skb);
- 	struct sock *sk;
+-	struct bpf_prog *msg_parser, *skb_parser, *skb_verdict;
++	struct bpf_prog *msg_parser, *stream_parser, *stream_verdict;
+ 	struct sk_psock *psock;
+ 	int ret;
  
- 	if (unlikely(flags & ~(BPF_F_INGRESS)))
-@@ -667,8 +666,7 @@ BPF_CALL_4(bpf_sk_redirect_map, struct sk_buff *, skb,
- 	if (unlikely(!sk || !sock_map_redirect_allowed(sk)))
- 		return SK_DROP;
+-	skb_verdict = READ_ONCE(progs->skb_verdict);
+-	if (skb_verdict) {
+-		skb_verdict = bpf_prog_inc_not_zero(skb_verdict);
+-		if (IS_ERR(skb_verdict))
+-			return PTR_ERR(skb_verdict);
++	stream_verdict = READ_ONCE(progs->stream_verdict);
++	if (stream_verdict) {
++		stream_verdict = bpf_prog_inc_not_zero(stream_verdict);
++		if (IS_ERR(stream_verdict))
++			return PTR_ERR(stream_verdict);
+ 	}
  
--	tcb->bpf.flags = flags;
--	tcb->bpf.sk_redir = sk;
-+	skb_bpf_set_redir(skb, sk, flags & BPF_F_INGRESS);
- 	return SK_PASS;
+-	skb_parser = READ_ONCE(progs->skb_parser);
+-	if (skb_parser) {
+-		skb_parser = bpf_prog_inc_not_zero(skb_parser);
+-		if (IS_ERR(skb_parser)) {
+-			ret = PTR_ERR(skb_parser);
+-			goto out_put_skb_verdict;
++	stream_parser = READ_ONCE(progs->stream_parser);
++	if (stream_parser) {
++		stream_parser = bpf_prog_inc_not_zero(stream_parser);
++		if (IS_ERR(stream_parser)) {
++			ret = PTR_ERR(stream_parser);
++			goto out_put_stream_verdict;
+ 		}
+ 	}
+ 
+@@ -249,7 +249,7 @@ static int sock_map_link(struct bpf_map *map, struct sk_psock_progs *progs,
+ 		msg_parser = bpf_prog_inc_not_zero(msg_parser);
+ 		if (IS_ERR(msg_parser)) {
+ 			ret = PTR_ERR(msg_parser);
+-			goto out_put_skb_parser;
++			goto out_put_stream_parser;
+ 		}
+ 	}
+ 
+@@ -261,8 +261,8 @@ static int sock_map_link(struct bpf_map *map, struct sk_psock_progs *progs,
+ 
+ 	if (psock) {
+ 		if ((msg_parser && READ_ONCE(psock->progs.msg_parser)) ||
+-		    (skb_parser  && READ_ONCE(psock->progs.skb_parser)) ||
+-		    (skb_verdict && READ_ONCE(psock->progs.skb_verdict))) {
++		    (stream_parser  && READ_ONCE(psock->progs.stream_parser)) ||
++		    (stream_verdict && READ_ONCE(psock->progs.stream_verdict))) {
+ 			sk_psock_put(sk, psock);
+ 			ret = -EBUSY;
+ 			goto out_progs;
+@@ -283,15 +283,15 @@ static int sock_map_link(struct bpf_map *map, struct sk_psock_progs *progs,
+ 		goto out_drop;
+ 
+ 	write_lock_bh(&sk->sk_callback_lock);
+-	if (skb_parser && skb_verdict && !psock->saved_data_ready) {
++	if (stream_parser && stream_verdict && !psock->saved_data_ready) {
+ 		ret = sk_psock_init_strp(sk, psock);
+ 		if (ret)
+ 			goto out_unlock_drop;
+-		psock_set_prog(&psock->progs.skb_verdict, skb_verdict);
+-		psock_set_prog(&psock->progs.skb_parser, skb_parser);
++		psock_set_prog(&psock->progs.stream_verdict, stream_verdict);
++		psock_set_prog(&psock->progs.stream_parser, stream_parser);
+ 		sk_psock_start_strp(sk, psock);
+-	} else if (!skb_parser && skb_verdict && !psock->saved_data_ready) {
+-		psock_set_prog(&psock->progs.skb_verdict, skb_verdict);
++	} else if (!stream_parser && stream_verdict && !psock->saved_data_ready) {
++		psock_set_prog(&psock->progs.stream_verdict, stream_verdict);
+ 		sk_psock_start_verdict(sk,psock);
+ 	}
+ 	write_unlock_bh(&sk->sk_callback_lock);
+@@ -303,12 +303,12 @@ static int sock_map_link(struct bpf_map *map, struct sk_psock_progs *progs,
+ out_progs:
+ 	if (msg_parser)
+ 		bpf_prog_put(msg_parser);
+-out_put_skb_parser:
+-	if (skb_parser)
+-		bpf_prog_put(skb_parser);
+-out_put_skb_verdict:
+-	if (skb_verdict)
+-		bpf_prog_put(skb_verdict);
++out_put_stream_parser:
++	if (stream_parser)
++		bpf_prog_put(stream_parser);
++out_put_stream_verdict:
++	if (stream_verdict)
++		bpf_prog_put(stream_verdict);
+ 	return ret;
  }
  
-@@ -1250,7 +1248,6 @@ const struct bpf_func_proto bpf_sock_hash_update_proto = {
- BPF_CALL_4(bpf_sk_redirect_hash, struct sk_buff *, skb,
- 	   struct bpf_map *, map, void *, key, u64, flags)
+@@ -1459,11 +1459,11 @@ int sock_map_prog_update(struct bpf_map *map, struct bpf_prog *prog,
+ 		break;
+ #if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
+ 	case BPF_SK_SKB_STREAM_PARSER:
+-		pprog = &progs->skb_parser;
++		pprog = &progs->stream_parser;
+ 		break;
+ #endif
+ 	case BPF_SK_SKB_STREAM_VERDICT:
+-		pprog = &progs->skb_verdict;
++		pprog = &progs->stream_verdict;
+ 		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+index d7d65a700799..c26e6bf05e49 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
++++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+@@ -1014,8 +1014,8 @@ static void test_skb_redir_to_connected(struct test_sockmap_listen *skel,
+ 					struct bpf_map *inner_map, int family,
+ 					int sotype)
  {
--	struct tcp_skb_cb *tcb = TCP_SKB_CB(skb);
- 	struct sock *sk;
+-	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
+-	int parser = bpf_program__fd(skel->progs.prog_skb_parser);
++	int verdict = bpf_program__fd(skel->progs.prog_stream_verdict);
++	int parser = bpf_program__fd(skel->progs.prog_stream_parser);
+ 	int verdict_map = bpf_map__fd(skel->maps.verdict_map);
+ 	int sock_map = bpf_map__fd(inner_map);
+ 	int err;
+@@ -1125,8 +1125,8 @@ static void test_skb_redir_to_listening(struct test_sockmap_listen *skel,
+ 					struct bpf_map *inner_map, int family,
+ 					int sotype)
+ {
+-	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
+-	int parser = bpf_program__fd(skel->progs.prog_skb_parser);
++	int verdict = bpf_program__fd(skel->progs.prog_stream_verdict);
++	int parser = bpf_program__fd(skel->progs.prog_stream_parser);
+ 	int verdict_map = bpf_map__fd(skel->maps.verdict_map);
+ 	int sock_map = bpf_map__fd(inner_map);
+ 	int err;
+diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_listen.c b/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
+index a3a366c57ce1..fa221141e9c1 100644
+--- a/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
++++ b/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
+@@ -31,13 +31,13 @@ struct {
+ static volatile bool test_sockmap; /* toggled by user-space */
  
- 	if (unlikely(flags & ~(BPF_F_INGRESS)))
-@@ -1260,8 +1257,7 @@ BPF_CALL_4(bpf_sk_redirect_hash, struct sk_buff *, skb,
- 	if (unlikely(!sk || !sock_map_redirect_allowed(sk)))
- 		return SK_DROP;
- 
--	tcb->bpf.flags = flags;
--	tcb->bpf.sk_redir = sk;
-+	skb_bpf_set_redir(skb, sk, flags & BPF_F_INGRESS);
- 	return SK_PASS;
+ SEC("sk_skb/stream_parser")
+-int prog_skb_parser(struct __sk_buff *skb)
++int prog_stream_parser(struct __sk_buff *skb)
+ {
+ 	return skb->len;
  }
  
+ SEC("sk_skb/stream_verdict")
+-int prog_skb_verdict(struct __sk_buff *skb)
++int prog_stream_verdict(struct __sk_buff *skb)
+ {
+ 	unsigned int *count;
+ 	__u32 zero = 0;
 -- 
 2.25.1
 
