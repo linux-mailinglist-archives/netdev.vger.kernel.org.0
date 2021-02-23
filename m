@@ -2,77 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 265473226B7
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 08:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3C3D3226BB
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 09:02:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231942AbhBWH7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 02:59:37 -0500
-Received: from m12-11.163.com ([220.181.12.11]:43084 "EHLO m12-11.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229961AbhBWH7g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 02:59:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=Cqg2tfDAyG9gUkQICL
-        2EEDUEWWRv38aK2GdMgtbwE7c=; b=guJnL843fWgen70r8LUxLWQrXwvEiMavaC
-        CerXCrmnExhi7Qfeu983DxdG9Z3a17IDpAZ41w9z/R03SZ+nPY0nDh4b1D7r74KY
-        cWelbotCIPccsuX2iCNQVJ161HSHckX98L3vjg/H4pxTaR7XSG7odR8NFxsCd5Vh
-        q6RDCaV6o=
-Received: from wengjianfeng.ccdomain.com (unknown [119.137.54.165])
-        by smtp7 (Coremail) with SMTP id C8CowAB3bJTDtDRglzn_Ow--.63394S2;
-        Tue, 23 Feb 2021 15:54:44 +0800 (CST)
-From:   samirweng1979 <samirweng1979@163.com>
-To:     tony0620emma@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        inux-kernel@vger.kernel.org, wengjianfeng <wengjianfeng@yulong.com>
-Subject: [PATCH] rtw88: remove unnecessary variable
-Date:   Tue, 23 Feb 2021 15:54:38 +0800
-Message-Id: <20210223075438.13676-1-samirweng1979@163.com>
-X-Mailer: git-send-email 2.15.0.windows.1
-X-CM-TRANSID: C8CowAB3bJTDtDRglzn_Ow--.63394S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWrtrWxAFyDurW7CrWrtry7Jrb_yoW8Jr1Dpa
-        yYg345Aay3Kr4UWa15Jan7AFy3Way7JrW2krZYy3y5Z3yxXa4fJFZ0gFyjvrn0gryUCF9I
-        qrs0q3ZrGas8WFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jjD73UUUUU=
-X-Originating-IP: [119.137.54.165]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiEQM2sV7+2yasZQADsC
+        id S232072AbhBWIB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 03:01:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229961AbhBWIBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 03:01:24 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1AAC061574;
+        Tue, 23 Feb 2021 00:00:43 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id q77so16185360iod.2;
+        Tue, 23 Feb 2021 00:00:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oWGK+QA8n+yGZW2cAZQWBqhmuGInIOLJzVk3WD0N+uI=;
+        b=WIbqzVKCTYEysN56w9VCUffa46GIWLUP7OZffCQmp3D364ArfCsbmSVZmsRl3OM5zE
+         zo+h9X/N3DId8bo7ckUnemkeA/498/Ha9030FJqyzMsFtgl26zD5wBILglfVUimboKUo
+         c/wEVqa+skGtYkxoQlUGcynoIGfLUlQwEx19mIWKcKvsL27Xy++PKUOp8cWsT3YPFN1y
+         ZmUU3ya0/MYS5mFgMCFeiBgpukq+Cd3g2OEQ0tjQsF85+H3vRzHfjAoj7ZhLWIs9DvSN
+         kS7xU58FbzB9TJN+YTF8N1GTBvZN3Krr8mSU3EYKTd4YPgRZb7E3Na3abXawzBUoYilh
+         qviA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oWGK+QA8n+yGZW2cAZQWBqhmuGInIOLJzVk3WD0N+uI=;
+        b=nunbAsJtoNpE2r+SzCFLkODlytj6mC5VuD86X87MXoZ3b64oIaNuWybqv3lQ7gjJcW
+         acDeYuHCFj5JFHYZVJ/5Be7mNVkPslbKGixRn3J3TR3z7Wsq7i7R5BoUvpRdV0EIn9cg
+         qVW1RUSZRNaeuCvA29EP5tpB67BvafR0a9euuUItlhu5nY7VL15m4sYMpUqP8A3OnK5g
+         u/pcsIcKBHsn0AZAPu7boySMNSTriCmyOHLWGKYPJUBGmEODYWaGjgpWlWqt8K6DHMxh
+         mOgXwm7mKFGEEouBzOsjDjUQxmHHAWnXxn4v/MMQKief4fE7CFV1fZHArxIdzg8LrvRP
+         +C/A==
+X-Gm-Message-State: AOAM531BcGGlqyN8UxqCZI71nzTD9WqNYxX5fRh6+FM6YkG/rfgqfy9s
+        NyIAOtoadCAIpGDkaEkHL528ivRWsAJDRjpXLLc=
+X-Google-Smtp-Source: ABdhPJzpnFJ0tx8KgcRDykb0IMj2bzFS2YxgdY17WcPDp8zBNDXIY2NkfzdwXmgW2RPoxPGfAk8TPE+nykcp+VvHEHA=
+X-Received: by 2002:a02:5d03:: with SMTP id w3mr4332911jaa.67.1614067243444;
+ Tue, 23 Feb 2021 00:00:43 -0800 (PST)
+MIME-Version: 1.0
+References: <20210220065654.25598-1-heiko.thiery@gmail.com> <20210222190051.40fdc3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210222190051.40fdc3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Heiko Thiery <heiko.thiery@gmail.com>
+Date:   Tue, 23 Feb 2021 09:00:32 +0100
+Message-ID: <CAEyMn7ZM7_pPor0S=dMGbmnp0hmZMrpquGqq4VNu-ixSPp+0UQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] net: fec: ptp: avoid register access when ipg clock
+ is disabled
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wengjianfeng <wengjianfeng@yulong.com>
+HI Jakub,
 
-The variable ret is defined at the beginning and initialized
-to 0 until the function returns ret, and the variable ret is
-not reassigned.Therefore, we do not need to define the variable
-ret, just return 0 directly at the end of the function.
+Am Di., 23. Feb. 2021 um 04:00 Uhr schrieb Jakub Kicinski <kuba@kernel.org>:
+>
+> On Sat, 20 Feb 2021 07:56:55 +0100 Heiko Thiery wrote:
+> > When accessing the timecounter register on an i.MX8MQ the kernel hangs.
+> > This is only the case when the interface is down. This can be reproduced
+> > by reading with 'phc_ctrl eth0 get'.
+> >
+> > Like described in the change in 91c0d987a9788dcc5fe26baafd73bf9242b68900
+> > the igp clock is disabled when the interface is down and leads to a
+> > system hang.
+> >
+> > So we check if the ptp clock status before reading the timecounter
+> > register.
+> >
+> > Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+>
+> Please widen the CC list, you should CC Richard on PTP patches.
+>
+> > diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+> > index 2e344aada4c6..c9882083da02 100644
+> > --- a/drivers/net/ethernet/freescale/fec_ptp.c
+> > +++ b/drivers/net/ethernet/freescale/fec_ptp.c
+> > @@ -377,6 +377,9 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+> >       u64 ns;
+> >       unsigned long flags;
+> >
+> > +     /* Check the ptp clock */
+>
+> Comment is rather redundant. Drop it or say _when_ ptp_clk_on may not
+> be true.
 
-Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
----
- drivers/net/wireless/realtek/rtw88/main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I just used the same comment as the one in the fec_ptp_settime() function.
 
-diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index e6989c0..4c7e3e4 100644
---- a/drivers/net/wireless/realtek/rtw88/main.c
-+++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1393,7 +1393,6 @@ static int rtw_chip_parameter_setup(struct rtw_dev *rtwdev)
- 	struct rtw_chip_info *chip = rtwdev->chip;
- 	struct rtw_hal *hal = &rtwdev->hal;
- 	struct rtw_efuse *efuse = &rtwdev->efuse;
--	int ret = 0;
- 
- 	switch (rtw_hci_type(rtwdev)) {
- 	case RTW_HCI_TYPE_PCIE:
-@@ -1431,7 +1430,7 @@ static int rtw_chip_parameter_setup(struct rtw_dev *rtwdev)
- 
- 	hal->bfee_sts_cap = 3;
- 
--	return ret;
-+	return 0;
- }
- 
- static int rtw_chip_efuse_enable(struct rtw_dev *rtwdev)
+>
+> > +     if (!adapter->ptp_clk_on)
+> > +             return -EINVAL;
+>
+> Why is the PTP interface registered when it can't be accessed?
+>
+> Perhaps the driver should unregister the PTP clock when it's brought
+> down?
+
+Good question, but I do not know what happens e.g. with linuxptp when
+the device that was opened before will be gone.
+
+Maybe Richard can give a hint.
+
+>
+> >       spin_lock_irqsave(&adapter->tmreg_lock, flags);
+> >       ns = timecounter_read(&adapter->tc);
+> >       spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+
 -- 
-1.9.1
-
+Heiko
