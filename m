@@ -2,97 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7508323106
-	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 19:52:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BEC8323131
+	for <lists+netdev@lfdr.de>; Tue, 23 Feb 2021 20:15:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbhBWSvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 13:51:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
+        id S233341AbhBWTOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 14:14:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233983AbhBWSvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 13:51:12 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8B6C0617A7;
-        Tue, 23 Feb 2021 10:49:58 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id r19so9374045otk.2;
-        Tue, 23 Feb 2021 10:49:58 -0800 (PST)
+        with ESMTP id S230114AbhBWTOp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 14:14:45 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39961C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 11:14:05 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id d2so27045840edq.10
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 11:14:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZuxsaAAdjPyMNiwNHSVTcTYJyJqi7kExwKRM2p9ugF4=;
-        b=rgg8RZkTEWc7Y10zKBUzkvBdEWuqQw8XhA+cxbqtaKmu5e2/A9LmR1a2cO8hZ5mzjc
-         vRSVDpJ3dn2/MWGFTIaFROlZF6NlK6UatC0cRSbZWwPRLSlQqJmSbf0B1BsOtw6BHCwG
-         +xKlX7roO8qr97z3Nhky3dniMoSWGuC2ZMqg1gQ/DMTLhYMuZAPtUG4ik4kg5TJpkO2b
-         pBqA0ZrszlUz3q0bm6p5A0yiIP/5yInpWQKEuViqpSte7r05tMbEL1WvkDKqtcAAfGUp
-         VP7p9s79zLoTRZU4tTJeGh1vAHd8BzD3WDlcb7X3O2v2lokMF9GAKzOFtftC5uIxSUNA
-         499w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LRyWoeuvYI6b9kccGVyJGial42rq2A+y7eUcdElFOUc=;
+        b=QSMsMQr7lTL6E+gmYRiiNLixKP9rJV1636JbjSak1OZC5ogxu4FBe+QaGgn1LhHRAi
+         +UeqwH2pPUz2M2BBft4nuhnzaAnujfxvWU+YhbFqw0GsmtSzj4gMb9GEpD+0fHhI2Q2s
+         MnE39qX7ju2e/so3TgVe9KiqRxUsnhfykx+sNoJrkEk4fIQFwq0lhQxvY3VoN1fzbyZL
+         LZvt7TXoCz3VLivwxjHXy1AmQ38Q/LXC2AhXKZxuqGevdlr3YjAT07e+mFo1PqDAGRxd
+         YF8/fixLn1Z27/hfxde1bHDtP+XUQ9d+Xs7RCrA0nG9iL3XmrKjcYX4srQotg6VAPYyk
+         bqzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZuxsaAAdjPyMNiwNHSVTcTYJyJqi7kExwKRM2p9ugF4=;
-        b=Giu3wt5YmbxY0L03NIRfSK2aBsTUMZ/c61lQiCEdrMDwM/dofRSnsbSKVdDAV4vwM2
-         f26k7CSaAtMSlWzBDtAV6yncRvH9XiIF4F1duKUcMIYkmD2YH98vZvcoPR/T/+uTsk+d
-         5Y5GwYfUArw2XPfxwG+Yeyhk6cNd3VBaRul4f2M8uFbaR2PwpZJ77sgb0S1B0rb3nrBK
-         +MnGhZRJPRWNbJsnllVGqzudeNPHDVVzZFr+oONC5+g1OhdWUJUKybSrep1zrmsh+QkE
-         BPhjC1UjLXMBSIG1eTSzlXIEgyWBMWx81J6Bp0VIlG79pp3hsInSVEZ0ty0fqhODvnWB
-         f/Dg==
-X-Gm-Message-State: AOAM530xDDrp83r9uc2mWbRcL8uV+2kO4P5vyjPJSy8UMg8N1agTPah5
-        FkWHiZBAfaF0nhnqvgVsLosRKZAp4WaynQ==
-X-Google-Smtp-Source: ABdhPJwfCCcMmcMR2FMh9uF9FOBrZ4QjbXUt6tOHO0BXY2QL4ortwjLbneUXbJ87m6sVIdenLE9mcg==
-X-Received: by 2002:a05:6830:1557:: with SMTP id l23mr21838268otp.181.1614106197743;
-        Tue, 23 Feb 2021 10:49:57 -0800 (PST)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:4543:ab2:3bf6:ce41])
-        by smtp.gmail.com with ESMTPSA id p12sm4387094oon.12.2021.02.23.10.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 10:49:56 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [Patch bpf-next v7 9/9] skmsg: remove unused sk_psock_stop() declaration
-Date:   Tue, 23 Feb 2021 10:49:34 -0800
-Message-Id: <20210223184934.6054-10-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
-References: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LRyWoeuvYI6b9kccGVyJGial42rq2A+y7eUcdElFOUc=;
+        b=nKJEpSaxUqkjqmLv+61TDrid+rT+C92Q1eqArR32B8vZy7Bo1UZGqKvhkEhd/Z592y
+         fed1AjeRykG7FYhS8UAjFD16gUT5zGAbFmLfHCZGzl9Bs3HsgrELKv/141fI2374w/HS
+         KSGWhDctzuwh8o3YW13vv3X5gjHzplhs3LrUTQEYcoaALoopYeCDHV9VFMO3RD6blxBY
+         dQXwohMZDWKq9/3H92PBknZAT5Zp0yvEweJf0oNNqBwQWTUe8pBRSfuy5T4k3cW5MoZj
+         fMAnD5tM1lau30c5Gxb9iF4tLZWMP/G0h4nKAFsihpziTjSonshJTD9PVG+otbtovmpS
+         DWjQ==
+X-Gm-Message-State: AOAM531elafQRpw1H43YSJH2Lx7g3VZpRc36LmatiB7XYktDwQSy6AO8
+        ZThn/SuqTjhr4rm4f3CDTjy7TxXDjaM=
+X-Google-Smtp-Source: ABdhPJyCSiOHk885CiIP4h8MR/6tPTkZZ6teUzVfG5NWlxZ3S1LDSIg93VAzohCFnNz/PQfyWfojVg==
+X-Received: by 2002:a05:6402:4252:: with SMTP id g18mr30366462edb.231.1614107643611;
+        Tue, 23 Feb 2021 11:14:03 -0800 (PST)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id bs3sm13585165edb.46.2021.02.23.11.14.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Feb 2021 11:14:03 -0800 (PST)
+Received: by mail-wr1-f41.google.com with SMTP id u14so23721988wri.3
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 11:14:02 -0800 (PST)
+X-Received: by 2002:a5d:6cab:: with SMTP id a11mr318545wra.419.1614107642214;
+ Tue, 23 Feb 2021 11:14:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210220014436.3556492-1-weiwan@google.com> <20210223092434-mutt-send-email-mst@kernel.org>
+ <CAEA6p_DDTnbhP2TXsScthnHuaHDW4gSOETwVPRz4uqcmbuDeUg@mail.gmail.com>
+In-Reply-To: <CAEA6p_DDTnbhP2TXsScthnHuaHDW4gSOETwVPRz4uqcmbuDeUg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 23 Feb 2021 14:13:24 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfTEoba-M43MkoQbqC09aa+TFGVWKvVRJqUifEkpDrFSw@mail.gmail.com>
+Message-ID: <CA+FuTSfTEoba-M43MkoQbqC09aa+TFGVWKvVRJqUifEkpDrFSw@mail.gmail.com>
+Subject: Re: [PATCH net v2 0/2] virtio-net: suppress bad irq warning for tx napi
+To:     Wei Wang <weiwan@google.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On Tue, Feb 23, 2021 at 12:37 PM Wei Wang <weiwan@google.com> wrote:
+>
+> On Tue, Feb 23, 2021 at 6:26 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Fri, Feb 19, 2021 at 05:44:34PM -0800, Wei Wang wrote:
+> > > With the implementation of napi-tx in virtio driver, we clean tx
+> > > descriptors from rx napi handler, for the purpose of reducing tx
+> > > complete interrupts. But this could introduce a race where tx complete
+> > > interrupt has been raised, but the handler found there is no work to do
+> > > because we have done the work in the previous rx interrupt handler.
+> > > This could lead to the following warning msg:
+> > > [ 3588.010778] irq 38: nobody cared (try booting with the
+> > > "irqpoll" option)
+> > > [ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
+> > > 5.3.0-19-generic #20~18.04.2-Ubuntu
+> > > [ 3588.017940] Call Trace:
+> > > [ 3588.017942]  <IRQ>
+> > > [ 3588.017951]  dump_stack+0x63/0x85
+> > > [ 3588.017953]  __report_bad_irq+0x35/0xc0
+> > > [ 3588.017955]  note_interrupt+0x24b/0x2a0
+> > > [ 3588.017956]  handle_irq_event_percpu+0x54/0x80
+> > > [ 3588.017957]  handle_irq_event+0x3b/0x60
+> > > [ 3588.017958]  handle_edge_irq+0x83/0x1a0
+> > > [ 3588.017961]  handle_irq+0x20/0x30
+> > > [ 3588.017964]  do_IRQ+0x50/0xe0
+> > > [ 3588.017966]  common_interrupt+0xf/0xf
+> > > [ 3588.017966]  </IRQ>
+> > > [ 3588.017989] handlers:
+> > > [ 3588.020374] [<000000001b9f1da8>] vring_interrupt
+> > > [ 3588.025099] Disabling IRQ #38
+> > >
+> > > This patch series contains 2 patches. The first one adds a new param to
+> > > struct vring_virtqueue to control if we want to suppress the bad irq
+> > > warning. And the second patch in virtio-net sets it for tx virtqueues if
+> > > napi-tx is enabled.
+> >
+> > I'm going to be busy until March, I think there should be a better
+> > way to fix this though. Will think about it and respond in about a week.
+> >
+> OK. Thanks.
 
-It is not defined or used anywhere.
+Yes, thanks for helping to think about a solution.
 
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- include/linux/skmsg.h | 1 -
- 1 file changed, 1 deletion(-)
+The warning went unreported for years. I'm a bit hesitant to make
+actual datapath changes to suppress it, if those may actually have a
+higher risk of regressions for some workloads.
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 676d48e08159..6c09d94be2e9 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -400,7 +400,6 @@ static inline struct sk_psock *sk_psock_get(struct sock *sk)
- 	return psock;
- }
- 
--void sk_psock_stop(struct sock *sk, struct sk_psock *psock);
- void sk_psock_drop(struct sock *sk, struct sk_psock *psock);
- 
- static inline void sk_psock_put(struct sock *sk, struct sk_psock *psock)
--- 
-2.25.1
+Unless they actually might show a clear progression. Which may very
+well be possible given the high spurious interrupt rate.
 
+But the odd thing is that by virtue of the interrupt getting masked
+once the warning hits, it may actually be difficult to improve on the
+efficiency today.
+
+As you pointed out, just probabilistically throttling how often to
+steal work from the rx interrupt handler would be another low risk
+approach to reduce the incidence rate.
+
+Anyway, definitely no rush. This went unreported for a long time.
