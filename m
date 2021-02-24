@@ -2,119 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BDE3323B4A
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D09323B64
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbhBXL3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 06:29:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56714 "EHLO
+        id S234915AbhBXLnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 06:43:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57828 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234871AbhBXL3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 06:29:23 -0500
+        by vger.kernel.org with ESMTP id S231627AbhBXLni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 06:43:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614166076;
+        s=mimecast20190719; t=1614166931;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uKVLad2iARoW1c2dRwOltL8pSbyE/6ChbP13Q5obmTg=;
-        b=Uk+hyuXL80v+e6HMYGbrkgdreT+94O2PhxTXPv8nhPlemS07TKOeN9X+Wq9PInS0TY3pnD
-        nOEGSDST8yn459n2ALP1ba0uh5rr4cFDHcS8ZMJXiKAEK+8nmzU6ty8/goNxHIFh6tuNtA
-        +wSpyUxTKgvvP1egvWIYH9NVbQBkLCA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-595-VNUKl0siP7qMYyLUDwGloA-1; Wed, 24 Feb 2021 06:27:31 -0500
-X-MC-Unique: VNUKl0siP7qMYyLUDwGloA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 349E6104ED67;
-        Wed, 24 Feb 2021 11:27:30 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7922360C5F;
-        Wed, 24 Feb 2021 11:27:24 +0000 (UTC)
-Date:   Wed, 24 Feb 2021 12:27:23 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>, brouer@redhat.com
-Subject: Re: [RFC PATCH 0/3] Introduce a bulk order-0 page allocator for
- sunrpc
-Message-ID: <20210224122723.15943e95@carbon>
-In-Reply-To: <20210224102603.19524-1-mgorman@techsingularity.net>
-References: <20210224102603.19524-1-mgorman@techsingularity.net>
+        bh=R6pjX4SLHgTz0NJkBF1xScFLT/BBC4Z4bjLRPd8FdtM=;
+        b=BjY2vZ+dT8aD1IhF/l8Pj4ApKZcP6jCY98hJ2qv+a0dEzAGrSUG0zj7ZXjl0qy852gQOiJ
+        jukbn2fg5lLiXKlnVJ5G6y/qlse552xAsrGiv9TJ03sTuGa7+uCps863QbCETQ3Wg+1Wqw
+        D0vjlmEqAS14n00SzCsXNWtO07AHESk=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-406-hfIS5cAZNHu3jBzVfKkHEw-1; Wed, 24 Feb 2021 06:42:09 -0500
+X-MC-Unique: hfIS5cAZNHu3jBzVfKkHEw-1
+Received: by mail-pl1-f197.google.com with SMTP id p19so1375773plr.22
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 03:42:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R6pjX4SLHgTz0NJkBF1xScFLT/BBC4Z4bjLRPd8FdtM=;
+        b=ZjSED6kM3oNVC8cDugYlO1coSmJg8MDiiBAjje2URma5cWvOGAkQvnLIFAu6ZtLJp2
+         KdMTsYZWRcQ0mIHvzpUTPbIdjioTnu4UPRrGk5SpHLC40gGNxNZk2AZWjPhZzR9xAcRJ
+         3xJ+OOi8eAIesv29vJ9E4S+DcmNWMGSfZidixzcGm6DfZVEELYsU/Z9m+guDaPLOurrh
+         qBU49VTSclCpcFlFzZ5r0VPPusOy147BsX6zidca9k3KLqBcA8pCb83fKshIV3CBXF2o
+         yhcKHzlLqow2IhH9afPg/5VomgkSsqOrR8cgcxxMCrnfKTwUbqSTnUgsJZhT46GMexKr
+         /u7A==
+X-Gm-Message-State: AOAM531Y036b7r60ccx3kJlT37zqLCUxrXH4z/ZCw7KJeJGnKBWtKjUj
+        mqGdfnxXXwg+qTBQzGpcnzPVaKFa3ORqGP9ssW1HFXhcMHmh7xoWbjLhLr6RJv4SmStWJZZKjcI
+        vHxkBFqvOHlK44EIV
+X-Received: by 2002:a17:902:b089:b029:e3:28:b8ee with SMTP id p9-20020a170902b089b02900e30028b8eemr32658033plr.84.1614166928540;
+        Wed, 24 Feb 2021 03:42:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxqpnHDahCWOdYmYR1vBlv9n4xutt88MFzERot9njK4Fmx0jTWJnpgdpd507/I2r/HCRGxxCg==
+X-Received: by 2002:a17:902:b089:b029:e3:28:b8ee with SMTP id p9-20020a170902b089b02900e30028b8eemr32658021plr.84.1614166928325;
+        Wed, 24 Feb 2021 03:42:08 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l190sm2602018pfl.205.2021.02.24.03.42.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Feb 2021 03:42:07 -0800 (PST)
+Date:   Wed, 24 Feb 2021 19:41:41 +0800
+From:   Coiby Xu <coxu@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, kexec@lists.infradead.org,
+        intel-wired-lan@lists.osuosl.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 4/4] i40e: don't open i40iw client for kdump
+Message-ID: <20210224114141.ziywca4dvn5fs6js@Rk>
+References: <20210222070701.16416-1-coxu@redhat.com>
+ <20210222070701.16416-5-coxu@redhat.com>
+ <20210223122207.08835e0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210223122207.08835e0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Feb 2021 10:26:00 +0000
-Mel Gorman <mgorman@techsingularity.net> wrote:
+Hi Jakub,
 
-> This is a prototype series that introduces a bulk order-0 page allocator
-> with sunrpc being the first user. The implementation is not particularly
-> efficient and the intention is to iron out what the semantics of the API
-> should be. That said, sunrpc was reported to have reduced allocation
-> latency when refilling a pool.
+Thank you for reviewing the patch!
 
-I also have a use-case in page_pool, and I've been testing with the
-earlier patches, results are here[1]
+On Tue, Feb 23, 2021 at 12:22:07PM -0800, Jakub Kicinski wrote:
+>On Mon, 22 Feb 2021 15:07:01 +0800 Coiby Xu wrote:
+>> i40iw consumes huge amounts of memory. For example, on a x86_64 machine,
+>> i40iw consumed 1.5GB for Intel Corporation Ethernet Connection X722 for
+>> for 1GbE while "craskernel=auto" only reserved 160M. With the module
+>> parameter "resource_profile=2", we can reduce the memory usage of i40iw
+>> to ~300M which is still too much for kdump.
+>>
+>> Disabling the client registration would spare us the client interface
+>> operation open , i.e., i40iw_open for iwarp/uda device. Thus memory is
+>> saved for kdump.
+>>
+>> Signed-off-by: Coiby Xu <coxu@redhat.com>
+>
+>Is i40iw or whatever the client is not itself under a CONFIG which
+>kdump() kernels could be reasonably expected to disable?
+>
 
-[1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org
-
-Awesome to see this newer patchset! thanks a lot for working on this!
-I'll run some new tests based on this.
-
-> As a side-note, while the implementation could be more efficient, it
-> would require fairly deep surgery in numerous places. The lock scope would
-> need to be significantly reduced, particularly as vmstat, per-cpu and the
-> buddy allocator have different locking protocol that overal -- e.g. all
-> partially depend on irqs being disabled at various points. Secondly,
-> the core of the allocator deals with single pages where as both the bulk
-> allocator and per-cpu allocator operate in batches. All of that has to
-> be reconciled with all the existing users and their constraints (memory
-> offline, CMA and cpusets being the trickiest).
-
-As you can see in[1], I'm getting a significant speedup from this.  I
-guess that the cost of finding the "zone" is higher than I expected, as
-this basically what we/you amortize for the bulk.
-
- 
-> In terms of semantics required by new users, my preference is that a pair
-> of patches be applied -- the first which adds the required semantic to
-> the bulk allocator and the second which adds the new user.
-> 
-> Patch 1 of this series is a cleanup to sunrpc, it could be merged
-> 	separately but is included here for convenience.
-> 
-> Patch 2 is the prototype bulk allocator
-> 
-> Patch 3 is the sunrpc user. Chuck also has a patch which further caches
-> 	pages but is not included in this series. It's not directly
-> 	related to the bulk allocator and as it caches pages, it might
-> 	have other concerns (e.g. does it need a shrinker?)
-> 
-> This has only been lightly tested on a low-end NFS server. It did not break
-> but would benefit from an evaluation to see how much, if any, the headline
-> performance changes. The biggest concern is that a light test case showed
-> that there are a *lot* of bulk requests for 1 page which gets delegated to
-> the normal allocator.  The same criteria should apply to any other users.
-
-If you change local_irq_save(flags) to local_irq_disable() then you can
-likely get better performance for 1 page requests via this API.  This
-limits the API to be used in cases where IRQs are enabled (which is
-most cases).  (For my use-case I will not do 1 page requests).
-
+I'm not sure if I understand you correctly. Do you mean we shouldn't
+disable i40iw for kdump?
 
 -- 
 Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Coiby
 
