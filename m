@@ -2,38 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8163C323CBC
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:05:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5C00323CC8
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:05:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235231AbhBXMyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 07:54:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50301 "EHLO mail.kernel.org"
+        id S235405AbhBXMz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 07:55:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235145AbhBXMwD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:52:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C712E64F03;
-        Wed, 24 Feb 2021 12:50:43 +0000 (UTC)
+        id S235152AbhBXMwH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:52:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 063C864F06;
+        Wed, 24 Feb 2021 12:50:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171044;
-        bh=kW+2guIyAd4i+5LWKZhu1Zwc2nEf/44kxxyzgK3cVjg=;
+        s=k20201202; t=1614171046;
+        bh=eTYfnCxSmQMZPxjA9DkQiqxmEm/ZElvyZd5jBES6lSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Le1Fq+z6B0Ziobl0Se9D4rJDK8loEgkkwRCILrubDD64mBEEpnJYlTHDb8+ksdaar
-         WWk5m7DmQE9lIBGs4kyg949Df5/cZxpMzwTGeJWr1gb5yJaIpDPPbROi5maw1pSMtP
-         IyNE9UNMTv8kcqFVw5wtuFFYTnuqMp0uguIqgX7fmJE6S7/oQEngBX1Q43mhbrFOjA
-         wmU7EdjQQmDeWv1BikXmok/ObNpZwwYnw+h7vXNfhJgdFk2w9KHRd3IJd9qqkWUV3/
-         jxxKpGtR4yv3BCL+ZcNNmG4QxH6Wc0aj/0qkyQlBkQMIvfNVKaHW5BeZovRA/H1IeH
-         /aiNAzX0smM6w==
+        b=cOwic9UN4f120pdAtwr9IY21CYzIQSpcYRN7SNwjFkP1N5WKRqcNYb6HeEeMpctub
+         7qxJWZrfjPJCyN/yV4fWI5sg2ALIUbtkzP48gnAFHG4YEEoaXVh3C/N+ku6ysAzaIP
+         RHzamOZ+nx9wDjXU/VH8iW0udeIm6WgpxF/U1KIANU5Rvy4Pl/jibTEoMQ4I6A/EK/
+         qoiEw0GOT6YmOnoi4A0Sh1W73ae7YksOLouQO+ouIG2jaM79RIPeh+FxWlwjWUPTwG
+         LYrntQhqDsg0zu/egSI39YACYasOSVMOtt7natUkmbvW1hBUtcQlnO784Km0b6VeEo
+         jN2XjwCa9iWGg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Di Zhu <zhudi21@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 13/67] pktgen: fix misuse of BUG_ON() in pktgen_thread_worker()
-Date:   Wed, 24 Feb 2021 07:49:31 -0500
-Message-Id: <20210224125026.481804-13-sashal@kernel.org>
+Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 14/67] ath10k: fix wmi mgmt tx queue full due to race condition
+Date:   Wed, 24 Feb 2021 07:49:32 -0500
+Message-Id: <20210224125026.481804-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210224125026.481804-1-sashal@kernel.org>
 References: <20210224125026.481804-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -41,41 +45,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Di Zhu <zhudi21@huawei.com>
+From: Miaoqing Pan <miaoqing@codeaurora.org>
 
-[ Upstream commit 275b1e88cabb34dbcbe99756b67e9939d34a99b6 ]
+[ Upstream commit b55379e343a3472c35f4a1245906db5158cab453 ]
 
-pktgen create threads for all online cpus and bond these threads to
-relevant cpu repecivtily. when this thread firstly be woken up, it
-will compare cpu currently running with the cpu specified at the time
-of creation and if the two cpus are not equal, BUG_ON() will take effect
-causing panic on the system.
-Notice that these threads could be migrated to other cpus before start
-running because of the cpu hotplug after these threads have created. so the
-BUG_ON() used here seems unreasonable and we can replace it with WARN_ON()
-to just printf a warning other than panic the system.
+Failed to transmit wmi management frames:
 
-Signed-off-by: Di Zhu <zhudi21@huawei.com>
-Link: https://lore.kernel.org/r/20210125124229.19334-1-zhudi21@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[84977.840894] ath10k_snoc a000000.wifi: wmi mgmt tx queue is full
+[84977.840913] ath10k_snoc a000000.wifi: failed to transmit packet, dropping: -28
+[84977.840924] ath10k_snoc a000000.wifi: failed to submit frame: -28
+[84977.840932] ath10k_snoc a000000.wifi: failed to transmit frame: -28
+
+This issue is caused by race condition between skb_dequeue and
+__skb_queue_tail. The queue of ‘wmi_mgmt_tx_queue’ is protected by a
+different lock: ar->data_lock vs list->lock, the result is no protection.
+So when ath10k_mgmt_over_wmi_tx_work() and ath10k_mac_tx_wmi_mgmt()
+running concurrently on different CPUs, there appear to be a rare corner
+cases when the queue length is 1,
+
+  CPUx (skb_deuque)			CPUy (__skb_queue_tail)
+					next=list
+					prev=list
+  struct sk_buff *skb = skb_peek(list);	WRITE_ONCE(newsk->next, next);
+  WRITE_ONCE(list->qlen, list->qlen - 1);WRITE_ONCE(newsk->prev, prev);
+  next       = skb->next;		WRITE_ONCE(next->prev, newsk);
+  prev       = skb->prev;		WRITE_ONCE(prev->next, newsk);
+  skb->next  = skb->prev = NULL;	list->qlen++;
+  WRITE_ONCE(next->prev, prev);
+  WRITE_ONCE(prev->next, next);
+
+If the instruction ‘next = skb->next’ is executed before
+‘WRITE_ONCE(prev->next, newsk)’, newsk will be lost, as CPUx get the
+old ‘next’ pointer, but the length is still added by one. The final
+result is the length of the queue will reach the maximum value but
+the queue is empty.
+
+So remove ar->data_lock, and use 'skb_queue_tail' instead of
+'__skb_queue_tail' to prevent the potential race condition. Also switch
+to use skb_queue_len_lockless, in case we queue a few SKBs simultaneously.
+
+Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1.c2-00033-QCAHLSWMTPLZ-1
+
+Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1608618887-8857-1-git-send-email-miaoqing@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/pktgen.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/mac.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-index 105978604ffdb..3fba429f1f57b 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -3464,7 +3464,7 @@ static int pktgen_thread_worker(void *arg)
- 	struct pktgen_dev *pkt_dev = NULL;
- 	int cpu = t->cpu;
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 7d98250380ec5..91b1006ef2a27 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -3763,23 +3763,16 @@ bool ath10k_mac_tx_frm_has_freq(struct ath10k *ar)
+ static int ath10k_mac_tx_wmi_mgmt(struct ath10k *ar, struct sk_buff *skb)
+ {
+ 	struct sk_buff_head *q = &ar->wmi_mgmt_tx_queue;
+-	int ret = 0;
+-
+-	spin_lock_bh(&ar->data_lock);
  
--	BUG_ON(smp_processor_id() != cpu);
-+	WARN_ON(smp_processor_id() != cpu);
+-	if (skb_queue_len(q) == ATH10K_MAX_NUM_MGMT_PENDING) {
++	if (skb_queue_len_lockless(q) >= ATH10K_MAX_NUM_MGMT_PENDING) {
+ 		ath10k_warn(ar, "wmi mgmt tx queue is full\n");
+-		ret = -ENOSPC;
+-		goto unlock;
++		return -ENOSPC;
+ 	}
  
- 	init_waitqueue_head(&t->queue);
- 	complete(&t->start_done);
+-	__skb_queue_tail(q, skb);
++	skb_queue_tail(q, skb);
+ 	ieee80211_queue_work(ar->hw, &ar->wmi_mgmt_tx_work);
+ 
+-unlock:
+-	spin_unlock_bh(&ar->data_lock);
+-
+-	return ret;
++	return 0;
+ }
+ 
+ static enum ath10k_mac_tx_path
 -- 
 2.27.0
 
