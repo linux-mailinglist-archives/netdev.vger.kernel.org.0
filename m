@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 566B6323D35
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:08:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8190A323D2C
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233912AbhBXNFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 08:05:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55372 "EHLO mail.kernel.org"
+        id S231262AbhBXNFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 08:05:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55392 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235522AbhBXM62 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:58:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0278364F3D;
-        Wed, 24 Feb 2021 12:52:27 +0000 (UTC)
+        id S235525AbhBXM63 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:58:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3074764EFA;
+        Wed, 24 Feb 2021 12:52:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171148;
-        bh=AEA0TivEeWIBQ/CGxrcAKSVYGt3GdJdT+AactO/OM5w=;
+        s=k20201202; t=1614171150;
+        bh=tKBofiDtxn2HpZhFBDa1gf7NKEt9xht1Qo7VvokpgYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g+KY27z/ADgsMgf41gV9soXNqprH+lxeykDh9nv6NSjxTDH333jDH3WwHNTSIuH7S
-         X++K3W58cTQuvuVSpyKEm/EjAbYf8V13zhWccywVqd2iovGXOWnSNiqq0XMqCUvp+y
-         JbZV2j5Bjxjbu9jiO99BFpUsyIRYl7MorcJHaVdVB5nsQQETh9QGZOw4nAZV4WlyM7
-         SMBfB7qXr2bAJ6p+LhjzMs/xlKeNr9lWB9PgxVG059QE/kLk8ZTjzx5Cl/p57i5bGc
-         L6krSF6PoNOEfR8wyEBxZCRr++V2He7x6td8JJTFJIKfPVZ9Dtj8INOtQGePqjinBO
-         /EdazObpEoxuQ==
+        b=AK02RyIJ6aOX77ikosK7w+d6WzF5FrDKp+O1/WlZEif0XGEAJr0FpYunW7WFkjO0g
+         uyFDCiTZX0ym8mMoBWe2x4+lRsL5qdkca3nK86FB8DndA+UOCw+pFmwD59Oeg0fFwl
+         AMQSivQBy9JnTpZ1SG5J61EwOqPOmm2qGtu4k9ZluVSNOAbW3dzt3d4PrLYXa2CmYW
+         BStb8arKea73b3CygbI6zlD7ZWuoDFqb8hTPsL2I1GD5TNTZBguRBK1PY6mCXYv+5O
+         k3l3RAgwXSmTkQoGAAfnTt75kdCXRF/Y1Uc4U/CfKS7akNk1am/wl6RUJh+XxUnU79
+         viYa6yksnMGzA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 12/56] net: sfp: add mode quirk for GPON module Ubiquiti U-Fiber Instant
-Date:   Wed, 24 Feb 2021 07:51:28 -0500
-Message-Id: <20210224125212.482485-12-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 13/56] Bluetooth: Add new HCI_QUIRK_NO_SUSPEND_NOTIFIER quirk
+Date:   Wed, 24 Feb 2021 07:51:29 -0500
+Message-Id: <20210224125212.482485-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210224125212.482485-1-sashal@kernel.org>
 References: <20210224125212.482485-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,100 +44,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit f0b4f847673299577c29b71d3f3acd3c313d81b7 ]
+[ Upstream commit 219991e6be7f4a31d471611e265b72f75b2d0538 ]
 
-The Ubiquiti U-Fiber Instant SFP GPON module has nonsensical information
-stored in its EEPROM. It claims to support all transceiver types including
-10G Ethernet. Clear all claimed modes and set only 1000baseX_Full, which is
-the only one supported.
+Some devices, e.g. the RTL8723BS bluetooth part, some USB attached devices,
+completely drop from the bus on a system-suspend. These devices will
+have their driver unbound and rebound on resume (when the dropping of
+the bus gets detected) and will show up as a new HCI after resume.
 
-This module has also phys_id set to SFF, and the SFP subsystem currently
-does not allow to use SFP modules detected as SFFs. Add exception for this
-module so it can be detected as supported.
+These devices do not benefit from the suspend / resume handling work done
+by the hci_suspend_notifier. At best this unnecessarily adds some time to
+the suspend/resume time. But this may also actually cause problems, if the
+code doing the driver unbinding runs after the pm-notifier then the
+hci_suspend_notifier code will try to talk to a device which is now in
+an uninitialized state.
 
-This change finally allows to detect and use SFP GPON module Ubiquiti
-U-Fiber Instant on Linux system.
+This commit adds a new HCI_QUIRK_NO_SUSPEND_NOTIFIER quirk which allows
+drivers to opt-out of the hci_suspend_notifier when they know beforehand
+that their device will be fully re-initialized / reprobed on resume.
 
-EEPROM content of this SFP module is (where XX is serial number):
-
-00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
-10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
-20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
-30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
-40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
-50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
- drivers/net/phy/sfp.c     | 17 +++++++++++++++--
- 2 files changed, 30 insertions(+), 2 deletions(-)
+ include/net/bluetooth/hci.h |  8 ++++++++
+ net/bluetooth/hci_core.c    | 18 +++++++++++-------
+ 2 files changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 58014feedf6c8..fb954e8141802 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
- 	phylink_set(modes, 2500baseX_Full);
- }
- 
-+static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
-+				      unsigned long *modes)
-+{
-+	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
-+	 * types including 10G Ethernet which is not truth. So clear all claimed
-+	 * modes and set only one mode which module supports: 1000baseX_Full.
-+	 */
-+	phylink_zero(modes);
-+	phylink_set(modes, 1000baseX_Full);
-+}
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index c8e67042a3b14..6da4b3c5dd55d 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -238,6 +238,14 @@ enum {
+ 	 * during the hdev->setup vendor callback.
+ 	 */
+ 	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
 +
- static const struct sfp_quirk sfp_quirks[] = {
- 	{
- 		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
-@@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		.vendor = "UBNT",
-+		.part = "UF-INSTANT",
-+		.modes = sfp_quirk_ubnt_uf_instant,
- 	},
++	/*
++	 * When this quirk is set, then the hci_suspend_notifier is not
++	 * registered. This is intended for devices which drop completely
++	 * from the bus on system-suspend and which will show up as a new
++	 * HCI after resume.
++	 */
++	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
  };
  
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 34aa196b7465c..d8a809cf20c15 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -272,8 +272,21 @@ static const struct sff_data sff_data = {
+ /* HCI device flags */
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index a8679cc468abc..211062a86a3a8 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3783,10 +3783,12 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	hci_sock_dev_event(hdev, HCI_DEV_REG);
+ 	hci_dev_hold(hdev);
  
- static bool sfp_module_supported(const struct sfp_eeprom_id *id)
- {
--	return id->base.phys_id == SFF8024_ID_SFP &&
--	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
-+	if (id->base.phys_id == SFF8024_ID_SFP &&
-+	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
-+		return true;
-+
-+	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
-+	 * phys id SFF instead of SFP. Therefore mark this module explicitly
-+	 * as supported based on vendor name and pn match.
-+	 */
-+	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
-+	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
-+	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
-+	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
-+		return true;
-+
-+	return false;
- }
+-	hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
+-	error = register_pm_notifier(&hdev->suspend_notifier);
+-	if (error)
+-		goto err_wqueue;
++	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks)) {
++		hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
++		error = register_pm_notifier(&hdev->suspend_notifier);
++		if (error)
++			goto err_wqueue;
++	}
  
- static const struct sff_data sfp_data = {
+ 	queue_work(hdev->req_workqueue, &hdev->power_on);
+ 
+@@ -3821,9 +3823,11 @@ void hci_unregister_dev(struct hci_dev *hdev)
+ 
+ 	cancel_work_sync(&hdev->power_on);
+ 
+-	hci_suspend_clear_tasks(hdev);
+-	unregister_pm_notifier(&hdev->suspend_notifier);
+-	cancel_work_sync(&hdev->suspend_prepare);
++	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks)) {
++		hci_suspend_clear_tasks(hdev);
++		unregister_pm_notifier(&hdev->suspend_notifier);
++		cancel_work_sync(&hdev->suspend_prepare);
++	}
+ 
+ 	hci_dev_do_close(hdev);
+ 
 -- 
 2.27.0
 
