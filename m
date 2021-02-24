@@ -2,96 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE37323B9B
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:54:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEF6323BB2
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:57:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232545AbhBXLx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 06:53:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235187AbhBXLxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 06:53:22 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B3DC06178C;
-        Wed, 24 Feb 2021 03:52:12 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id u20so1669209iot.9;
-        Wed, 24 Feb 2021 03:52:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Vv8e+Q64O0YOnZPfFWuAU+JcY2c3un2uq0nf6BdI8TQ=;
-        b=WUHmJpGd4JhuzwHrZklF4hnBIt30FW+aVavOfZzmRidKN66gbK85O+iCO9OGeZCn5J
-         YHV0isOxRHoayg74DqGLs/GWDcKgbK6t2J6G5Nt29E91ILFf0HqMSmEUYhmpWAxB+puA
-         zbv2uShMy5NN/a4zorI2zEjDf+FThgiEOAw40qrmnFo47KWHNdzeWHHUMCXkH0VOjjQ2
-         NHAlPGKLkXcEoS1S+voO5lt2aVqaqQGh1rjgYZv4AgichI4jlJZhZKpa8b4RJpBtF8Kx
-         JirQu+CWF+s1lTvXW6+W3tUv5ZZQcGjFP0efAkDVZwCBlT7zkD8M1LdDQa1Li7UuZVQ7
-         sekg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Vv8e+Q64O0YOnZPfFWuAU+JcY2c3un2uq0nf6BdI8TQ=;
-        b=d3ZRd+b16KbI3/FCm6kQiKDZVefs+Pgla/dlTLT/cII73ufqQAdfn/JSKO7OE2yyU7
-         e0/yxpmtZCu+sgXCN0BgO2ldXEfjnQsoyTG7aHM/AvGaCAz6NIM3eIEk44rA9y+ko+HA
-         qVvuM9lOKB3hrDZLOHp5u6w2RY+p78ceUwKx8sOXgqGPt7aRoUMg2A61QcAs0hyrIlZE
-         Wu9hh0XEMHX5GEOG+5wJvQEPjRgmyXuVw0jVwjeBIFpeexe9j0qJ0Od3giWEkgjFS0aQ
-         MCBa2BOdF248YPwbh42k6/dGCAGPadMShaB/zNihwIeRrPDIiXG8CjJsXl1Vj96ujb9m
-         +2/w==
-X-Gm-Message-State: AOAM532aat3Yzk7966ZD8wmpNCwMaCELXuKh1/IJoyJ17Td2woXZx3eQ
-        sN571YccM5f4/ptLcGvWtCn2jVxKLUa+Fw==
-X-Google-Smtp-Source: ABdhPJzqMuYbUTFoFmYyOX4XzjuCRsBxFbouWEUNy31yHTK43kr8jwYdhgn296WX4/ec6XTGuNPzEA==
-X-Received: by 2002:a6b:b415:: with SMTP id d21mr1377811iof.149.1614167531229;
-        Wed, 24 Feb 2021 03:52:11 -0800 (PST)
-Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:de9c:d296:189b:385a])
-        by smtp.gmail.com with ESMTPSA id l16sm1500001ils.11.2021.02.24.03.52.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 03:52:10 -0800 (PST)
-From:   Adam Ford <aford173@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     aford@beaconembedded.com, Adam Ford <aford173@gmail.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 5/5] arm64: dts: renesas: beacon kits: Setup AVB refclk
-Date:   Wed, 24 Feb 2021 05:51:45 -0600
-Message-Id: <20210224115146.9131-5-aford173@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210224115146.9131-1-aford173@gmail.com>
-References: <20210224115146.9131-1-aford173@gmail.com>
+        id S235228AbhBXL52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 06:57:28 -0500
+Received: from outbound-smtp22.blacknight.com ([81.17.249.190]:39739 "EHLO
+        outbound-smtp22.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235207AbhBXL4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 06:56:11 -0500
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp22.blacknight.com (Postfix) with ESMTPS id 40909BAA78
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 11:55:11 +0000 (GMT)
+Received: (qmail 8759 invoked from network); 24 Feb 2021 11:55:11 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 24 Feb 2021 11:55:11 -0000
+Date:   Wed, 24 Feb 2021 11:55:08 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [RFC PATCH 0/3] Introduce a bulk order-0 page allocator for
+ sunrpc
+Message-ID: <20210224115508.GL3697@techsingularity.net>
+References: <20210224102603.19524-1-mgorman@techsingularity.net>
+ <20210224122723.15943e95@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20210224122723.15943e95@carbon>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The AVB refererence clock assumes an external clock that runs
-automatically.  Because the Versaclock is wired to provide the
-AVB refclock, the device tree needs to reference it in order for the
-driver to start the clock.
+On Wed, Feb 24, 2021 at 12:27:23PM +0100, Jesper Dangaard Brouer wrote:
+> On Wed, 24 Feb 2021 10:26:00 +0000
+> Mel Gorman <mgorman@techsingularity.net> wrote:
+> 
+> > This is a prototype series that introduces a bulk order-0 page allocator
+> > with sunrpc being the first user. The implementation is not particularly
+> > efficient and the intention is to iron out what the semantics of the API
+> > should be. That said, sunrpc was reported to have reduced allocation
+> > latency when refilling a pool.
+> 
+> I also have a use-case in page_pool, and I've been testing with the
+> earlier patches, results are here[1]
+> 
+> [1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org
+> 
+> Awesome to see this newer patchset! thanks a lot for working on this!
+> I'll run some new tests based on this.
+> 
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
----
-V3:  New to series
+Thanks and if they get finalised, a patch on top for review would be
+nice with the results included in the changelog. Obviously any change
+that would need to be made to the allocator would happen first.
 
-diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
-index 8d3a4d6ee885..75355c354c38 100644
---- a/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
-+++ b/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
-@@ -53,6 +53,8 @@ &avb {
- 	phy-handle = <&phy0>;
- 	rx-internal-delay-ps = <1800>;
- 	tx-internal-delay-ps = <2000>;
-+	clocks = <&cpg CPG_MOD 812>, <&versaclock5 4>;
-+	clock-names = "fck", "refclk";
- 	status = "okay";
- 
- 	phy0: ethernet-phy@0 {
+> > As a side-note, while the implementation could be more efficient, it
+> > would require fairly deep surgery in numerous places. The lock scope would
+> > need to be significantly reduced, particularly as vmstat, per-cpu and the
+> > buddy allocator have different locking protocol that overal -- e.g. all
+> > partially depend on irqs being disabled at various points. Secondly,
+> > the core of the allocator deals with single pages where as both the bulk
+> > allocator and per-cpu allocator operate in batches. All of that has to
+> > be reconciled with all the existing users and their constraints (memory
+> > offline, CMA and cpusets being the trickiest).
+> 
+> As you can see in[1], I'm getting a significant speedup from this.  I
+> guess that the cost of finding the "zone" is higher than I expected, as
+> this basically what we/you amortize for the bulk.
+> 
+
+The obvious goal would be that if a refactoring did happen that the
+performance would be at least neutral but hopefully improved.
+
+> > In terms of semantics required by new users, my preference is that a pair
+> > of patches be applied -- the first which adds the required semantic to
+> > the bulk allocator and the second which adds the new user.
+> > 
+> > Patch 1 of this series is a cleanup to sunrpc, it could be merged
+> > 	separately but is included here for convenience.
+> > 
+> > Patch 2 is the prototype bulk allocator
+> > 
+> > Patch 3 is the sunrpc user. Chuck also has a patch which further caches
+> > 	pages but is not included in this series. It's not directly
+> > 	related to the bulk allocator and as it caches pages, it might
+> > 	have other concerns (e.g. does it need a shrinker?)
+> > 
+> > This has only been lightly tested on a low-end NFS server. It did not break
+> > but would benefit from an evaluation to see how much, if any, the headline
+> > performance changes. The biggest concern is that a light test case showed
+> > that there are a *lot* of bulk requests for 1 page which gets delegated to
+> > the normal allocator.  The same criteria should apply to any other users.
+> 
+> If you change local_irq_save(flags) to local_irq_disable() then you can
+> likely get better performance for 1 page requests via this API.  This
+> limits the API to be used in cases where IRQs are enabled (which is
+> most cases).  (For my use-case I will not do 1 page requests).
+> 
+
+I do not want to constrain the API to being IRQ-only prematurely. An
+obvious alternative use case is the SLUB allocation path when a high-order
+allocation fails. It's known that if the SLUB order is reduced that it has
+an impact on hackbench communicating over sockets.  It would be interesting
+to see what happens if order-0 pages are bulk allocated when s->min == 0
+and that can be called from a blocking context. Tricky to test but could
+be fudged by forcing all high-order allocations to fail when s->min ==
+0 to evaluate the worst case scenario.  In addition, it would constrain
+any potential refactoring if the lower levels have to choose between
+local_irq_disable() vs local_irq_save() depending on the caller context.
+
 -- 
-2.25.1
-
+Mel Gorman
+SUSE Labs
