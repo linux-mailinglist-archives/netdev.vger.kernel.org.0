@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E62C323D22
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:07:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD544323D42
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:08:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235695AbhBXNEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 08:04:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55444 "EHLO mail.kernel.org"
+        id S235309AbhBXNG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 08:06:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235531AbhBXM6d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:58:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 83E4A64F3F;
-        Wed, 24 Feb 2021 12:52:30 +0000 (UTC)
+        id S235539AbhBXM6l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:58:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A881364F07;
+        Wed, 24 Feb 2021 12:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171151;
-        bh=wwMo0pdUmecDKwcm6c57J39Oepyme73T+Tc5wPhpHE4=;
+        s=k20201202; t=1614171155;
+        bh=wSLg7UG1E0Bc3+E/7Mg/ToevwJcWlTFMn4NDpoHxxEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y9/C/bhh5t0du/jk47gkpYcBe8sBbNzwcIsMLmY82O0zGbYejShLn1djcFkJU4i1G
-         EtHxD7BgutCbwJRqunfw541sLb3IeZ47SHNn83iFb7RA8m3bsOOayoy480e2uogIBz
-         wlB+91ENFlyRKau+oWmZQ78g+4Fp+la+H1/WFHdBD7+wMsEf56pzfEC3DxkwWuirmS
-         nWNzTJLbIx/S2RIIHBPqfcZgNZ3xwDZnnUxbMxnLDdIQdOtr5SOq6cqxPRCGpgot3P
-         H/+aiqddZsK6u5c6p1q3Y04jx2BX+XOGQRIPEADuYDy11Ft09z9HYuVpk7HVVVFSVp
-         Otfx15XogsHPQ==
+        b=ONxmHmtsN9ATilgrX9mhjCiQo3eMI0nrBPDCwto5CvIiOw8tN5c2DAuAFoAuwS/DZ
+         2fPbmZZi0vjQkKdZJrNAyIN4IZaqk2JXrrTe24h+/k0cif3V/+HcHk/KxbfZWp9hh8
+         fCv5wTEo+1adHmT8b3m26l+SGqBR46OWkqsFuZmwCU/ROwTbYNrQBVGvPXNV2OIo17
+         piDFrhc89YMP2CwN6Ecyrfu6TZdx7I4NTfRJT9AcjaNibJTA03e4hh7fxjnKa4hlV2
+         lv+OZFE3NiWALgAkPBYxRqa3+pN0WmrmaoHEI7JnzUx+Gu40782bI2nUoprPbk+Rbt
+         pPP3ZT10ZjA6g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gopal Tiwari <gtiwari@redhat.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 14/56] Bluetooth: Fix null pointer dereference in amp_read_loc_assoc_final_data
-Date:   Wed, 24 Feb 2021 07:51:30 -0500
-Message-Id: <20210224125212.482485-14-sashal@kernel.org>
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 17/56] brcmfmac: Add DMI nvram filename quirk for Predia Basic tablet
+Date:   Wed, 24 Feb 2021 07:51:33 -0500
+Message-Id: <20210224125212.482485-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210224125212.482485-1-sashal@kernel.org>
 References: <20210224125212.482485-1-sashal@kernel.org>
@@ -43,54 +45,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gopal Tiwari <gtiwari@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit e8bd76ede155fd54d8c41d045dda43cd3174d506 ]
+[ Upstream commit af4b3a6f36d6c2fc5fca026bccf45e0fdcabddd9 ]
 
-kernel panic trace looks like:
+The Predia Basic tablet contains quite generic names in the sys_vendor and
+product_name DMI strings, without this patch brcmfmac will try to load:
+brcmfmac43340-sdio.Insyde-CherryTrail.txt as nvram file which is a bit
+too generic.
 
- #5 [ffffb9e08698fc80] do_page_fault at ffffffffb666e0d7
- #6 [ffffb9e08698fcb0] page_fault at ffffffffb70010fe
-    [exception RIP: amp_read_loc_assoc_final_data+63]
-    RIP: ffffffffc06ab54f  RSP: ffffb9e08698fd68  RFLAGS: 00010246
-    RAX: 0000000000000000  RBX: ffff8c8845a5a000  RCX: 0000000000000004
-    RDX: 0000000000000000  RSI: ffff8c8b9153d000  RDI: ffff8c8845a5a000
-    RBP: ffffb9e08698fe40   R8: 00000000000330e0   R9: ffffffffc0675c94
-    R10: ffffb9e08698fe58  R11: 0000000000000001  R12: ffff8c8b9cbf6200
-    R13: 0000000000000000  R14: 0000000000000000  R15: ffff8c8b2026da0b
-    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- #7 [ffffb9e08698fda8] hci_event_packet at ffffffffc0676904 [bluetooth]
- #8 [ffffb9e08698fe50] hci_rx_work at ffffffffc06629ac [bluetooth]
- #9 [ffffb9e08698fe98] process_one_work at ffffffffb66f95e7
+Add a DMI quirk so that a unique and clearly identifiable nvram file name
+is used on the Predia Basic tablet.
 
-hcon->amp_mgr seems NULL triggered kernel panic in following line inside
-function amp_read_loc_assoc_final_data
-
-        set_bit(READ_LOC_AMP_ASSOC_FINAL, &mgr->state);
-
-Fixed by checking NULL for mgr.
-
-Signed-off-by: Gopal Tiwari <gtiwari@redhat.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210129171413.139880-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/amp.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/dmi.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/net/bluetooth/amp.c b/net/bluetooth/amp.c
-index 9c711f0dfae35..be2d469d6369d 100644
---- a/net/bluetooth/amp.c
-+++ b/net/bluetooth/amp.c
-@@ -297,6 +297,9 @@ void amp_read_loc_assoc_final_data(struct hci_dev *hdev,
- 	struct hci_request req;
- 	int err;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c
+index 4aa2561934d77..824a79f243830 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c
+@@ -40,6 +40,10 @@ static const struct brcmf_dmi_data pov_tab_p1006w_data = {
+ 	BRCM_CC_43340_CHIP_ID, 2, "pov-tab-p1006w-data"
+ };
  
-+	if (!mgr)
-+		return;
++static const struct brcmf_dmi_data predia_basic_data = {
++	BRCM_CC_43341_CHIP_ID, 2, "predia-basic"
++};
 +
- 	cp.phy_handle = hcon->handle;
- 	cp.len_so_far = cpu_to_le16(0);
- 	cp.max_len = cpu_to_le16(hdev->amp_assoc_size);
+ static const struct dmi_system_id dmi_platform_data[] = {
+ 	{
+ 		/* ACEPC T8 Cherry Trail Z8350 mini PC */
+@@ -111,6 +115,16 @@ static const struct dmi_system_id dmi_platform_data[] = {
+ 		},
+ 		.driver_data = (void *)&pov_tab_p1006w_data,
+ 	},
++	{
++		/* Predia Basic tablet (+ with keyboard dock) */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "CherryTrail"),
++			/* Mx.WT107.KUBNGEA02 with the version-nr dropped */
++			DMI_MATCH(DMI_BIOS_VERSION, "Mx.WT107.KUBNGEA"),
++		},
++		.driver_data = (void *)&predia_basic_data,
++	},
+ 	{}
+ };
+ 
 -- 
 2.27.0
 
