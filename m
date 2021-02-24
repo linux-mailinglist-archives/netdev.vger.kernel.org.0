@@ -2,112 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 951A23234D6
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 02:20:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 218E33234D0
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 02:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234356AbhBXBFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 20:05:07 -0500
-Received: from mx2.suse.de ([195.135.220.15]:55340 "EHLO mx2.suse.de"
+        id S233496AbhBXBA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 20:00:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32782 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232242AbhBXAzJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Feb 2021 19:55:09 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id BC823AE05;
-        Wed, 24 Feb 2021 00:32:51 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 49E6760795; Wed, 24 Feb 2021 01:32:51 +0100 (CET)
-Date:   Wed, 24 Feb 2021 01:32:51 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Louis Peens <louis.peens@netronome.com>
-Subject: Re: [PATCH net] ethtool: fix the check logic of at least one channel
- for RX/TX
-Message-ID: <20210224003251.6lwgj2k73jt3edk5@lion.mk-sys.cz>
-References: <20210223132440.810-1-simon.horman@netronome.com>
+        id S234383AbhBXAoN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Feb 2021 19:44:13 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B9ED060C3E;
+        Wed, 24 Feb 2021 00:40:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614127230;
+        bh=B9KRZo0voEyKZK+SLYtkKhTZe66u0VoBC9SE8Szq7Sk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pYy+nzg2Ig72u2lWGdkgoJFChLv5LnVuqvRPOpvFCMUARd9XFO3m7dozQyoQVWI3w
+         9YLAXGshyTqkW2ltj6ckNGZtbjgpcxPlmOM0Rwrz2bNKQjgmog/ELHbAYSZCH0e+OV
+         jlx1NH6of293Pn7BIphj+CX+TaP6iaawBBND//VGrHHEGCICuRI59ZPKqFNVXiLy/m
+         +qxNYjWzgeMfUXXQImQ/yj48uZ/TfCIvDzBVPd1hgJtbGdkIhFqIK/KGo4p2NvTPZH
+         e9PaOpSxwPUaSGWveXe9Zf+ZCRFBPSPdkxmp1nyJw9tBvMg9MHUHCb0Mknza3rDbYs
+         syh6RRvuE8Jng==
+Date:   Tue, 23 Feb 2021 16:40:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     netdev@vger.kernel.org, Denis Kirjanov <kda@linux-powerpc.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: [PATCHSET] making unix_bind() undo mknod on failure
+Message-ID: <20210223164026.01b56449@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YDQAmH9zSsaqf+Dg@zeniv-ca.linux.org.uk>
+References: <20210129131855.GA2346744@infradead.org>
+        <YClpVIfHYyzd6EWu@zeniv-ca.linux.org.uk>
+        <CAOJe8K00srtuD+VAJOFcFepOqgNUm0mC8C=hLq2=qhUFSfhpuw@mail.gmail.com>
+        <YCwIQmsxWxuw+dnt@zeniv-ca.linux.org.uk>
+        <YC86WeSTkYZqRlJY@zeniv-ca.linux.org.uk>
+        <YC88acS6dN6cU1y0@zeniv-ca.linux.org.uk>
+        <CAM_iQpVpJwRNKjKo3p1jFvCjYAXAY83ux09rd2Mt0hKmvx=RgQ@mail.gmail.com>
+        <YDFj3OZ4DMQSqylH@zeniv-ca.linux.org.uk>
+        <CAM_iQpXX7SBGgUkBUY6BEjCqJYbHAUW5Z3VtV2U=yhiw1YJr=w@mail.gmail.com>
+        <YDF6Z8QHh3yw7es9@zeniv-ca.linux.org.uk>
+        <YDQAmH9zSsaqf+Dg@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="r7d7rchzanybcpds"
-Content-Disposition: inline
-In-Reply-To: <20210223132440.810-1-simon.horman@netronome.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 22 Feb 2021 19:06:00 +0000 Al Viro wrote:
+> On Sat, Feb 20, 2021 at 09:08:56PM +0000, Al Viro wrote:
+> 
+> > *shrug*
+> > 
+> > If anything, __unix_complete_bind() might make a better name for that,
+> > with dropping ->bindlock also pulled in, but TBH I don't have sufficiently
+> > strong preferences - might as well leave dropping the lock to caller.
+> > 
+> > I'll post that series to netdev tonight.  
+> 
+> 	Took longer than I hoped...  Anyway, here's the current variant;
+> it's 5.11-based, lives in
+> git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git misc.af_unix
+> 
+> Shortlog:
+> Al Viro (8):
+>       af_unix: take address assignment/hash insertion into a new helper
+>       unix_bind(): allocate addr earlier
+>       unix_bind(): separate BSD and abstract cases
+>       unix_bind(): take BSD and abstract address cases into new helpers
+>       fold unix_mknod() into unix_bind_bsd()
+>       unix_bind_bsd(): move done_path_create() call after dealing with ->bindlock
+>       unix_bind_bsd(): unlink if we fail after successful mknod
+>       __unix_find_socket_byname(): don't pass hash and type separately
+> 
+> Diffstat:
+>  net/unix/af_unix.c | 186 +++++++++++++++++++++++++++--------------------------
+>  1 file changed, 94 insertions(+), 92 deletions(-)
+> 
+> The actual fix is in #7/8, the first 6 are massage in preparation to that
+> and #8/8 is a minor followup cleanup.  Individual patches in followups.
 
---r7d7rchzanybcpds
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Dave is out this week, but this looks good to me. You said "please
+review" - I'm assuming you'll send these to Linus yourself, so:
 
-On Tue, Feb 23, 2021 at 02:24:40PM +0100, Simon Horman wrote:
-> From: Yinjun Zhang <yinjun.zhang@corigine.com>
->=20
-> The command "ethtool -L <intf> combined 0" may clean the RX/TX channel
-> count and skip the error path, since the attrs
-> tb[ETHTOOL_A_CHANNELS_RX_COUNT] and tb[ETHTOOL_A_CHANNELS_TX_COUNT]
-> are NULL in this case when recent ethtool is used.
->=20
-> Tested using ethtool v5.10.
->=20
-> Fixes: 7be92514b99c ("ethtool: check if there is at least one channel for=
- TX/RX in the core")
-> Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@netronome.com>
-> Signed-off-by: Louis Peens <louis.peens@netronome.com>
-
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
-
-> ---
->  net/ethtool/channels.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/net/ethtool/channels.c b/net/ethtool/channels.c
-> index 25a9e566ef5c..e35ef627f61f 100644
-> --- a/net/ethtool/channels.c
-> +++ b/net/ethtool/channels.c
-> @@ -175,14 +175,14 @@ int ethnl_set_channels(struct sk_buff *skb, struct =
-genl_info *info)
-> =20
->  	/* ensure there is at least one RX and one TX channel */
->  	if (!channels.combined_count && !channels.rx_count)
-> -		err_attr =3D tb[ETHTOOL_A_CHANNELS_RX_COUNT];
-> +		err_attr =3D mod_combined ? tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT] :
-> +					  tb[ETHTOOL_A_CHANNELS_RX_COUNT];
->  	else if (!channels.combined_count && !channels.tx_count)
-> -		err_attr =3D tb[ETHTOOL_A_CHANNELS_TX_COUNT];
-> +		err_attr =3D mod_combined ? tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT] :
-> +					  tb[ETHTOOL_A_CHANNELS_TX_COUNT];
->  	else
->  		err_attr =3D NULL;
->  	if (err_attr) {
-> -		if (mod_combined)
-> -			err_attr =3D tb[ETHTOOL_A_CHANNELS_COMBINED_COUNT];
->  		ret =3D -EINVAL;
->  		NL_SET_ERR_MSG_ATTR(info->extack, err_attr, "requested channel counts =
-would result in no RX or TX channel being configured");
->  		goto out_ops;
-> --=20
-> 2.20.1
->=20
-
---r7d7rchzanybcpds
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmA1nqwACgkQ538sG/LR
-dpXYfwf+NCJA19mRbKY6IJHk7xX1I0mDj3Fa/OZpX1UEVonYAJ6BBEPxCQx7vQbL
-M8gtle2U6LCNQInxEX3NGccGaJ3h8C3h0Kn3OtQ/q0Xh3aRkNsM1WEWr4TW1ZZj2
-KBadVB3A/mWPw4unvwXKxbR1QFtKqIwBrZhhxfDGfoaIP+v88k26f1G+50wa6fUs
-GgyZ2ka2bc7zMdJ1kyQ2eONA4eFgt8oA3R2bV1SL4ApbSASoGm4fAb0EIOY0mbG2
-GVsAdfQG+P+8sGOgSZ706g/h0Bep+RXtZLJtHATOhi/RAsKu20tE3moEUn0XdG7U
-y/MH50COmixa/8bbhUS1hgx3X81Weg==
-=qET7
------END PGP SIGNATURE-----
-
---r7d7rchzanybcpds--
+Acked-by: Jakub Kicinski <kuba@kernel.org>
