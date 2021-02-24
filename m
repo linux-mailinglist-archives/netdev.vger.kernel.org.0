@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5CF23245C1
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 22:26:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63C8F3245B9
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 22:23:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235958AbhBXV0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 16:26:46 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:53825 "EHLO
+        id S235996AbhBXVXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 16:23:39 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:53347 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234354AbhBXV0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 16:26:41 -0500
+        by vger.kernel.org with ESMTP id S233922AbhBXVXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 16:23:33 -0500
 Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9365A5C0183;
-        Wed, 24 Feb 2021 16:25:35 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Wed, 24 Feb 2021 16:25:35 -0500
+        by mailout.nyi.internal (Postfix) with ESMTP id C2C815C015C;
+        Wed, 24 Feb 2021 16:22:47 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Wed, 24 Feb 2021 16:22:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zenhack.net; h=
         message-id:in-reply-to:references:from:date:subject:to; s=fm2;
-         bh=jTVg3G4cu/UsP/usEY8GDOyu2foXdL73CsN7V9uXu7U=; b=g3eGJxbZGB5k
-        PAC9HmqtMDv2zy0QseRDpt2ZXY9UpeDyPIGFiTyhSsInnRiO/+cPP9NSVNDCK8E7
-        1jXsLYdz4505S5+cQh8DHvm+mOLUCRJrI9PNV2882JvJv/YBWUnFcaIVkzDl6e+j
-        MX1nMTTkC27bdoVyx/DAgfFV+Su6ugZsKzKz6eVHBIki0MlTZKgsbRhMYRdbV8lJ
-        BcQTUgRKQxETQMOkg7tbMmhP7BWCvPF+9AlaNKBbk1Ul09SW8nzdK5EYzfeApiMA
-        BwS4WNfiQRQzPmtt8Trk8ylrP1QmOlEbm0PAy7LzzAh05IGa7VbMflkukGOdjDnb
-        20nz8FO7Vw==
+         bh=jTVg3G4cu/UsP/usEY8GDOyu2foXdL73CsN7V9uXu7U=; b=OGrSWRqlu/x5
+        Kv/ki+/9g+a6eKKLGVfsEu8P1DPC6OS/BVmAav/rWVgf0vrxhXTDZ5q2r25gCgZ7
+        k0C+0UzKVFbh8qZjyxRInIISTdzPT436QLJS+cW5YNkj+yTzmF96+5G8mNBn7dvH
+        Gbmm1G+GCdaUwGM/V8/HMsilw1BERaTnMGLFWTKs/RDAelyHCf1myS418993YeAf
+        6pChlIE2T5nHXI4QqCT1IFKCgN4DqXwb3g1JPepsMWhiCF6AG5nFe/+ypEMFf9Ff
+        813pST9ZUp1J147zGuvGtbT+iS2xXHYcE6zma3Ijl7no+C1hrm7cWweGX/vyg4/j
+        hK2gPjsDYw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=date:from:in-reply-to:message-id
         :references:subject:to:x-me-proxy:x-me-proxy:x-me-sender
         :x-me-sender:x-sasl-enc; s=fm2; bh=jTVg3G4cu/UsP/usEY8GDOyu2foXd
-        L73CsN7V9uXu7U=; b=P0wY4hrNNUxLhORlzpolsDeU4C3pkb/1mCt35lTmCnL9v
-        wt74huLdaOj/WuGB7AtaI1jHeozLU7pe6oYg3+m1bv8aSusehTv33X0yuJVlaHgv
-        20qipK9Br1yV+w2Pie0BhkBVBXWQSG4SPZxUHcM1wV9PznoA0/fMND/5gwtPV925
-        5h7MqxurYoCFxouR8OyCpgN6D3ZzHVjmSzYH/F++5WfJHfar0EXhhAD/7MuwB5xY
-        d2wX06UyV14ShXopYyt+QjUWl6phM52zgSQYLYxw1xucMUzBtyTQhASmzO8fROMw
-        qbNUIfKPqIApDsgtqRq+4/TwMCjTrCCoE5ZkZQAbg==
-X-ME-Sender: <xms:T8Q2YBcCdHUBhY3S587MzkxgZN__4DSRVRK1JGGoxbWFYQGW_JS67Q>
-    <xme:T8Q2YPOpb2OgEvB9W8Yp3KREoY8WG7diWhtWQt3fWiDewemDD4oUw6bYMzR36cYWO
-    TXJnUIgSGmTXZr5qeo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeejgddugeejucetufdoteggodetrfdotf
+        L73CsN7V9uXu7U=; b=sWbBltcpW+9fC6wUpXK6eE/Di9RaB50Mz3Us0P2iFoZgf
+        /udmeHv/6eT/LDZcR8nbZlsFLz3Ip0NmU+0/pyKavPODENwt4KgXcYvSt9tpeT+h
+        uXVSDkcJLLP42rYrSSMkMjIkojsO/6y9dkyelQ5bRwo2jq4axMlnu0jxCDE1YWoW
+        UqAU74f0cNy5jQ8SBlEpcEgFh2ewAivQ/ZyjXYb2ERdEGc6tRhfSp8uC6+NwpwMI
+        rq6QxmnpWniEw3wixn2wjljU9m3DmbG0EPSSzHf0fThH+u9EB2YyjeDebvZACZhs
+        9KnWBV38vmf7QBOiHKZpJkqIDB5m5SwxVd1apIPwA==
+X-ME-Sender: <xms:p8M2YKeQ1qnEkAyd9Kt1hd7XF_hfbAyhzcIeLsLn-YUVKhmrBqtgZw>
+    <xme:p8M2YEO9O4oRD6wYrVNxyxTQlnv4RKizZLWSqKe16wstVBPjCCjJR28u5xrAn0Dqp
+    9QH4H1G5WhHwNy2jds>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeejgddugeeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefkjghfhfffuffvsedttdertddttd
     dtnecuhfhrohhmpefkrghnucffvghnhhgrrhguthcuoehirghnseiivghnhhgrtghkrdhn
@@ -46,17 +46,17 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeejgddugeejucetufdoteggod
     dvkeegfeefieffuddvjeejffenucfkphepuddttddrtddrfeejrddvvddunecuvehluhhs
     thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihgrnhesiigvnhhhrg
     gtkhdrnhgvth
-X-ME-Proxy: <xmx:T8Q2YKgGoAa1htxFCAB8uyiGamo-8bJcFqr0S3QBbisJBRGFhuNR_A>
-    <xmx:T8Q2YK8x4a81vRuEUkMVuZ1QnfLUMeuK-8ZA-hSklq3-hGYLD3ydMQ>
-    <xmx:T8Q2YNslHQGL9Jui-AuI5BzrUG8LkI9WWxLDnMtOVne6lFV4zXIlOw>
-    <xmx:T8Q2YOUjhYTQbHW0PqE-4hsU8n75kHWlA-AYWbg8mleT39Sb8wh4JA>
+X-ME-Proxy: <xmx:p8M2YLgfnhLkNaDY-U7DbkjQzdIR8w3zrGf41uLd6CjPX-jw6EEcjw>
+    <xmx:p8M2YH89VhAUPL40Fq6PbwppIflrkarE0s92MnxmQ7WJ7yMc1oqBXw>
+    <xmx:p8M2YGsNUH8qrstzj9iejw911SFAze73P9fSM46GekbHktgwe2ZC0w>
+    <xmx:p8M2YLXZAYtJ_N1LwXwmDgiyx7uS64pNMySAMRVzuGqyJFfsIN51NQ>
 Received: from localhost (pool-100-0-37-221.bstnma.fios.verizon.net [100.0.37.221])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4D69124005B;
-        Wed, 24 Feb 2021 16:25:35 -0500 (EST)
-X-Mailbox-Line: From b0bea780bc292f29e7b389dd062f20adc2a2d634 Mon Sep 17 00:00:00 2001
-Message-Id: <b0bea780bc292f29e7b389dd062f20adc2a2d634.1614201868.git.ian@zenhack.net>
-In-Reply-To: <cover.1614201868.git.ian@zenhack.net>
-References: <cover.1614201868.git.ian@zenhack.net>
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7CA361080057;
+        Wed, 24 Feb 2021 16:22:47 -0500 (EST)
+X-Mailbox-Line: From b36c61004609b6499992ec08c8b69a255ab9a55d Mon Sep 17 00:00:00 2001
+Message-Id: <b36c61004609b6499992ec08c8b69a255ab9a55d.1614201304.git.ian@zenhack.net>
+In-Reply-To: <cover.1614201303.git.ian@zenhack.net>
+References: <cover.1614201303.git.ian@zenhack.net>
 From:   Ian Denhardt <ian@zenhack.net>
 Date:   Tue, 23 Feb 2021 21:24:00 -0500
 Subject: [PATCH 2/2] tools, bpf_asm: exit non-zero on errors.
