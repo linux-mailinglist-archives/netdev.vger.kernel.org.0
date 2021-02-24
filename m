@@ -2,212 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B445C323722
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 07:07:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4C032372A
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 07:12:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234081AbhBXGGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 01:06:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22718 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233152AbhBXGGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 01:06:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614146688;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eNYC7vN6C0EshP6R28AJQdQwT0Q3lWhFKQkx/3ebEME=;
-        b=bVEl4gImTHuHrCuGAHyv/3Px9gjq3wShOpOULQt1p0Dl5tuNDigVmsag+TLojfex1bcjYg
-        i6uZbUVdZjOpNA3wqOLvNgBpQnU6emQ/JhIs12TLhZVsS5ksMfqEfcmVN1bMuAtuIsF03h
-        vlJF4ZX6TblnFBgYWW+Izt/kYSda8Fc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-62-vgQ0V9W0P026MMgrofv6Cw-1; Wed, 24 Feb 2021 01:04:46 -0500
-X-MC-Unique: vgQ0V9W0P026MMgrofv6Cw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4D1DE91270;
-        Wed, 24 Feb 2021 06:04:45 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-96.pek2.redhat.com [10.72.13.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D07046064B;
-        Wed, 24 Feb 2021 06:04:37 +0000 (UTC)
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     elic@nvidia.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
- <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
- <20210222023040-mutt-send-email-mst@kernel.org>
- <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
- <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
- <20210223082536-mutt-send-email-mst@kernel.org>
- <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <20210224000057-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <0559fd8c-ff44-cb7a-8a74-71976dd2ee33@redhat.com>
-Date:   Wed, 24 Feb 2021 14:04:36 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        id S233166AbhBXGMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 01:12:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229539AbhBXGMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 01:12:17 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86902C061574;
+        Tue, 23 Feb 2021 22:11:37 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id q20so650045pfu.8;
+        Tue, 23 Feb 2021 22:11:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Zj6+s1mx4qT4hXPh+NVhs6pnLcrPSvpQ67tRttpHvuE=;
+        b=YVXAxRJHtvuM3L+8WKDEVsUFCtWHPk4D8PH0fZ8I0jm/nVJDg9m7sNTKMiclG+1l/d
+         rTwMefnFpSb8tXzbsB9FP2YdiTyyorEYnwGWkjI5iVlfn4nHSxmUstfbXC5YOFTrYqNy
+         6KI5fdpfStniAtWa4KGwEsubmbGiPsUNJfbI9R/4QE4PvS+G5EIAh6xfM1hIMNPCyJ/Q
+         J0vKoJEX56mp/9Lds+B+P3aNTpcddqwuc4+AanL/T1gcQSvu1U0AY/H55lJRf4tCe7kI
+         KSUlUj6cmJxHMY9oXRe+xuKNve13f4mZ1OysKLfG8MOMWQIoEru38uwutmJmXZ8/ziZi
+         GRnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Zj6+s1mx4qT4hXPh+NVhs6pnLcrPSvpQ67tRttpHvuE=;
+        b=tE/T+lK7Ddcjnw1G3SmXvn184/nPMCxrZudRS6BjznXHSpwzdXeueCzTK5p93VUdpJ
+         /Ic+8ykf0WvYnsjDq79+ljWLzxNK3AR+6Zcd+tUZhcrl+XfEZEbHXpb6p0YCtC2/2Ylp
+         eBKo2juOZwtcSJSCOKuNLBO8zw7btmcj3TjU/sU+YsK1s+xze4YWzxjWfwT7qEaFX37y
+         T7KnLM7lw6uswsc370hxYlVmHWpAbSR0UPdI+KIUv4xJ+FmKObGnftAteo017m1oPhem
+         Wnzwm/VuG78vhxiBFdKTkhwuvsASd7P6liTiZxma6acRUbtd7uvDUG6kDtS5Dij+cp19
+         TKXg==
+X-Gm-Message-State: AOAM53345kPsFsRF2Q2NUU5hofbsezOwrZhnqhH6TeA/0IsCfJIHHqHT
+        jWtoufbyGIvG3YYQOOyz/co=
+X-Google-Smtp-Source: ABdhPJy2uhG4S1YTka5Y9czANAmaTrDuIei2RSe07gQaRQOPfyi4T3I+X55oMWDMJQQW5pSq/knFEg==
+X-Received: by 2002:a62:5a45:0:b029:1e5:4c81:c59 with SMTP id o66-20020a625a450000b02901e54c810c59mr30553661pfb.51.1614147096964;
+        Tue, 23 Feb 2021 22:11:36 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:69bf])
+        by smtp.gmail.com with ESMTPSA id p8sm1180634pff.79.2021.02.23.22.11.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 22:11:36 -0800 (PST)
+Date:   Tue, 23 Feb 2021 22:11:33 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 4/8] bpf: add PROG_TEST_RUN support for
+ sk_lookup programs
+Message-ID: <20210224061133.t4aewwgpzlbhchux@ast-mbp.dhcp.thefacebook.com>
+References: <20210216105713.45052-1-lmb@cloudflare.com>
+ <20210216105713.45052-5-lmb@cloudflare.com>
+ <20210223011153.4cvzpvxqn7arbcej@ast-mbp.dhcp.thefacebook.com>
+ <CACAyw99hQgG+=WvUVmDU-E6nGsPvosSuSOWgw9uWDDZ-vFfsqw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210224000057-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACAyw99hQgG+=WvUVmDU-E6nGsPvosSuSOWgw9uWDDZ-vFfsqw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Feb 23, 2021 at 10:10:44AM +0000, Lorenz Bauer wrote:
+> On Tue, 23 Feb 2021 at 01:11, Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > I'm struggling to come up with the case where running N sk_lookup progs
+> > like this cannot be done with running them one by one.
+> > It looks to me that this N prog_fds api is not really about running and
+> > testing the progs, but about testing BPF_PROG_SK_LOOKUP_RUN_ARRAY()
+> > SK_PASS vs SK_DROP logic.
+> 
+> In a way that is true, yes. TBH I figured that my patch set would be
+> rejected if I just
+> implemented single program test run, since it doesn't allow exercising the full
+> sk_lookup test run semantics.
+> 
+> > So it's more of the kernel infra testing than program testing.
+> > Are you suggesting that the sequence of sk_lookup progs are so delicate
+> > that they are aware of each other and _has_ to be tested together
+> > with gluing logic that the macro provides?
+> 
+> We currently don't have a case like that.
+> 
+> > But if it is so then testing the progs one by one would be better,
+> > because test_run will be able to check each individual prog return code
+> > instead of implicit BPF_PROG_SK_LOOKUP_RUN_ARRAY logic.
+> 
+> That means emulating the kind of subtle BPF_PROG_SK_LOOKUP_RUN_ARRAY
+> in user space, which isn't trivial and a source of bugs.
 
-On 2021/2/24 1:04 下午, Michael S. Tsirkin wrote:
-> On Tue, Feb 23, 2021 at 11:35:57AM -0800, Si-Wei Liu wrote:
->>
->> On 2/23/2021 5:26 AM, Michael S. Tsirkin wrote:
->>> On Tue, Feb 23, 2021 at 10:03:57AM +0800, Jason Wang wrote:
->>>> On 2021/2/23 9:12 上午, Si-Wei Liu wrote:
->>>>> On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
->>>>>> On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
->>>>>>> On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
->>>>>>>> Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
->>>>>>>> for legacy") made an exception for legacy guests to reset
->>>>>>>> features to 0, when config space is accessed before features
->>>>>>>> are set. We should relieve the verify_min_features() check
->>>>>>>> and allow features reset to 0 for this case.
->>>>>>>>
->>>>>>>> It's worth noting that not just legacy guests could access
->>>>>>>> config space before features are set. For instance, when
->>>>>>>> feature VIRTIO_NET_F_MTU is advertised some modern driver
->>>>>>>> will try to access and validate the MTU present in the config
->>>>>>>> space before virtio features are set.
->>>>>>> This looks like a spec violation:
->>>>>>>
->>>>>>> "
->>>>>>>
->>>>>>> The following driver-read-only field, mtu only exists if
->>>>>>> VIRTIO_NET_F_MTU is
->>>>>>> set.
->>>>>>> This field specifies the maximum MTU for the driver to use.
->>>>>>> "
->>>>>>>
->>>>>>> Do we really want to workaround this?
->>>>>>>
->>>>>>> Thanks
->>>>>> And also:
->>>>>>
->>>>>> The driver MUST follow this sequence to initialize a device:
->>>>>> 1. Reset the device.
->>>>>> 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
->>>>>> 3. Set the DRIVER status bit: the guest OS knows how to drive the
->>>>>> device.
->>>>>> 4. Read device feature bits, and write the subset of feature bits
->>>>>> understood by the OS and driver to the
->>>>>> device. During this step the driver MAY read (but MUST NOT write)
->>>>>> the device-specific configuration
->>>>>> fields to check that it can support the device before accepting it.
->>>>>> 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new
->>>>>> feature bits after this step.
->>>>>> 6. Re-read device status to ensure the FEATURES_OK bit is still set:
->>>>>> otherwise, the device does not
->>>>>> support our subset of features and the device is unusable.
->>>>>> 7. Perform device-specific setup, including discovery of virtqueues
->>>>>> for the device, optional per-bus setup,
->>>>>> reading and possibly writing the device’s virtio configuration
->>>>>> space, and population of virtqueues.
->>>>>> 8. Set the DRIVER_OK status bit. At this point the device is “live”.
->>>>>>
->>>>>>
->>>>>> so accessing config space before FEATURES_OK is a spec violation, right?
->>>>> It is, but it's not relevant to what this commit tries to address. I
->>>>> thought the legacy guest still needs to be supported.
->>>>>
->>>>> Having said, a separate patch has to be posted to fix the guest driver
->>>>> issue where this discrepancy is introduced to virtnet_validate() (since
->>>>> commit fe36cbe067). But it's not technically related to this patch.
->>>>>
->>>>> -Siwei
->>>> I think it's a bug to read config space in validate, we should move it to
->>>> virtnet_probe().
->>>>
->>>> Thanks
->>> I take it back, reading but not writing seems to be explicitly allowed by spec.
->>> So our way to detect a legacy guest is bogus, need to think what is
->>> the best way to handle this.
->> Then maybe revert commit fe36cbe067 and friends, and have QEMU detect legacy
->> guest? Supposedly only config space write access needs to be guarded before
->> setting FEATURES_OK.
->>
->> -Siwie
-> Detecting it isn't enough though, we will need a new ioctl to notify
-> the kernel that it's a legacy guest. Ugh :(
+I'm not at all suggesting to emulate it in user space.
 
+> For example we rely on having multiple programs attached when
+> "upgrading" from old to new BPF. Here we care mostly that we don't drop
+> lookups on the floor, and the behaviour is tightly coupled to the in-kernel
+> implementation. It's not much use to cobble up my own implementation of
+> SK_LOOKUP_RUN_ARRAY here, I would rather use multi progs to test this.
+> Of course we can also already spawn a netns and test it that way, so not
+> much is lost if there is no multi prog test run.
 
-I'm not sure I get this, how can we know if there's a legacy driver 
-before set_features()?
+I mean that to test the whole setup close to production the netns is
+probably needed because sockets would mess with init_netns.
+But to test each individual bpf prog there is no need for RUN_ARRAY.
+Each prog can be more accurately tested in isolation.
+RUN_ARRAY adds, as you said, subtle details of RUN_ARRAY macro.
 
-And I wonder what will hapeen if we just revert the set_features(0)?
+> > It feels less of the unit test and more as a full stack test,
+> > but if so then lack of cookie on input is questionable.
+> 
+> I'm not sure what you mean with "the lack of cookie on input is
+> questionable", can you rephrase?
+> 
+> > In other words I'm struggling with in-between state of the api.
+> > test_run with N fds is not really a full test, but not a unit test either.
+> 
+> If I understand you correctly, a "full" API would expose the
+> intermediate results from
+> individual programs as well as the final selection? Sounds quite
+> complicated, and as
+> you point out most of the benefits can be had from running single programs.
 
-Thanks
-
-
->
->
->>>>>>>> Rejecting reset to 0
->>>>>>>> prematurely causes correct MTU and link status unable to load
->>>>>>>> for the very first config space access, rendering issues like
->>>>>>>> guest showing inaccurate MTU value, or failure to reject
->>>>>>>> out-of-range MTU.
->>>>>>>>
->>>>>>>> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for
->>>>>>>> supported mlx5 devices")
->>>>>>>> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
->>>>>>>> ---
->>>>>>>>      drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
->>>>>>>>      1 file changed, 1 insertion(+), 14 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>>>>> b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>>>>> index 7c1f789..540dd67 100644
->>>>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>>>>> @@ -1490,14 +1490,6 @@ static u64
->>>>>>>> mlx5_vdpa_get_features(struct vdpa_device *vdev)
->>>>>>>>          return mvdev->mlx_features;
->>>>>>>>      }
->>>>>>>> -static int verify_min_features(struct mlx5_vdpa_dev *mvdev,
->>>>>>>> u64 features)
->>>>>>>> -{
->>>>>>>> -    if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
->>>>>>>> -        return -EOPNOTSUPP;
->>>>>>>> -
->>>>>>>> -    return 0;
->>>>>>>> -}
->>>>>>>> -
->>>>>>>>      static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
->>>>>>>>      {
->>>>>>>>          int err;
->>>>>>>> @@ -1558,18 +1550,13 @@ static int
->>>>>>>> mlx5_vdpa_set_features(struct vdpa_device *vdev, u64
->>>>>>>> features)
->>>>>>>>      {
->>>>>>>>          struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
->>>>>>>>          struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
->>>>>>>> -    int err;
->>>>>>>>          print_features(mvdev, features, true);
->>>>>>>> -    err = verify_min_features(mvdev, features);
->>>>>>>> -    if (err)
->>>>>>>> -        return err;
->>>>>>>> -
->>>>>>>>          ndev->mvdev.actual_features = features &
->>>>>>>> ndev->mvdev.mlx_features;
->>>>>>>>          ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
->>>>>>>>          ndev->config.status |= cpu_to_mlx5vdpa16(mvdev,
->>>>>>>> VIRTIO_NET_S_LINK_UP);
->>>>>>>> -    return err;
->>>>>>>> +    return 0;
->>>>>>>>      }
->>>>>>>>      static void mlx5_vdpa_set_config_cb(struct vdpa_device
->>>>>>>> *vdev, struct vdpa_callback *cb)
-
+I'm not suggesting to return intermediate results either.
+I'm looking at test_run as a facility to test one individual program
+at a time. Like in tc, cgroups, tracing we can have multiple progs
+attached to one place and the final verdict will depend on what
+each prog is returning. But there is no need to test them all together
+through BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY.
+Each prog is more accurately validated independently.
+Hence I'm puzzled why sk_lookup's RUN_ARRAY is special.
+Its drop/pass/selected sk is more or less the same complexity
+as CGROUP_INET_EGRESS_RUN_ARRAY.
