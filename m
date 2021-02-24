@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90C85323C25
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 13:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63EB5323C91
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:05:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233490AbhBXMvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 07:51:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49446 "EHLO mail.kernel.org"
+        id S233919AbhBXMv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 07:51:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49514 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229507AbhBXMvK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:51:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DEDD364DAF;
-        Wed, 24 Feb 2021 12:50:27 +0000 (UTC)
+        id S232408AbhBXMvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:51:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C2ADE64EEA;
+        Wed, 24 Feb 2021 12:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171028;
-        bh=TSUkDEg3idbCvGR1Il326oKHNcQCPo7tDTvdJZbZUeY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Zg9p1o4r8WxWMc8WrM2qcVMRtkKdFEHakKMRBxoHHM58msBSjKgdKugccqMyioOax
-         JLVp8Jmnck3rcoae9mewdeFVre6DPOkOeaj+oYpTE1fjTaNPb0kPl0DZCgv4v8byWJ
-         YrQZtZYJcdnNtubNk1Y68Nc+0vkMg6ostoFbY51lHdDKxgXOGNm3EL8JlQU4WXv+Cd
-         U/WYc08/SSonYiSSqcYKzYMcgKlCuwL/OKv/HQ/R4yuxkCDRLUhf2wv/UyX5JbRYif
-         sNpTWL+kk7GHBGXXX2rBsod9Y/1e0yzcq/4KgWgqZrmotYjMxdp6O170czg41AwnZn
-         XAr4sGmHIhU0g==
+        s=k20201202; t=1614171033;
+        bh=wWRzA55ZZ0wfuWAkDVKRy/jzGb5TYicPsND7SZ8CG04=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SMkL+CgAVwlbeoPk4s6gppMEzDkB6F1w2l55l50dnZ9FS8AmMZBsz0jX9vunb0zuT
+         0VOlGu0/vFhfSr6UsN0h5Edxz9qNx6KfcYFi6+tFK/DvdBq6suJCKnyBqy438MHIid
+         XJ3gHkWZe8Q3plPE09lbUKv0Y8ytoxOpWTBzl7CBP/r7zu20B0S4ARCG/U2Y/bQmBD
+         70kCXJqV+6qHqBADU2mjchdFhCtZYzxLEshT9MpoNwZF7ba1ckd2P1mHsfQyp9SgoK
+         /qXgaGV8Yh64xIriR9UpwBoMzbfF2vAXYobPE29uaT9LRtDR0xWuahFxToyAwUMCbK
+         4hzq5njIFHl5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 01/67] ath10k: prevent deinitializing NAPI twice
-Date:   Wed, 24 Feb 2021 07:49:19 -0500
-Message-Id: <20210224125026.481804-1-sashal@kernel.org>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 05/67] can: flexcan: add CAN wakeup function for i.MX8QM
+Date:   Wed, 24 Feb 2021 07:49:23 -0500
+Message-Id: <20210224125026.481804-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210224125026.481804-1-sashal@kernel.org>
+References: <20210224125026.481804-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -40,377 +43,256 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <wgong@codeaurora.org>
+From: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-[ Upstream commit e2f8b74e58cb1560c1399ba94a470b770e858259 ]
+[ Upstream commit 812f0116c66a3ebaf0b6062226aa85574dd79f67 ]
 
-It happened "Kernel panic - not syncing: hung_task: blocked tasks" when
-test simulate crash and ifconfig down/rmmod meanwhile.
+The System Controller Firmware (SCFW) is a low-level system function
+which runs on a dedicated Cortex-M core to provide power, clock, and
+resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
+(QM, QP), and i.MX8QX (QXP, DX). SCU driver manages the IPC interface
+between host CPU and the SCU firmware running on M4.
 
-Test steps:
+For i.MX8QM, stop mode request is controlled by System Controller Unit(SCU)
+firmware, this patch introduces FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW quirk
+for this function.
 
-1.Test commands, either can reproduce the hang for PCIe, SDIO and SNOC.
-echo soft > /sys/kernel/debug/ieee80211/phy0/ath10k/simulate_fw_crash;sleep 0.05;ifconfig wlan0 down
-echo soft > /sys/kernel/debug/ieee80211/phy0/ath10k/simulate_fw_crash;rmmod ath10k_sdio
-echo hw-restart > /sys/kernel/debug/ieee80211/phy0/ath10k/simulate_fw_crash;rmmod ath10k_pci
-
-2. dmesg:
-[ 5622.548630] ath10k_sdio mmc1:0001:1: simulating soft firmware crash
-[ 5622.655995] ieee80211 phy0: Hardware restart was requested
-[ 5776.355164] INFO: task shill:1572 blocked for more than 122 seconds.
-[ 5776.355687] INFO: task kworker/1:2:24437 blocked for more than 122 seconds.
-[ 5776.359812] Kernel panic - not syncing: hung_task: blocked tasks
-[ 5776.359836] CPU: 1 PID: 55 Comm: khungtaskd Tainted: G        W         4.19.86 #137
-[ 5776.359846] Hardware name: MediaTek krane sku176 board (DT)
-[ 5776.359855] Call trace:
-[ 5776.359868]  dump_backtrace+0x0/0x170
-[ 5776.359881]  show_stack+0x20/0x2c
-[ 5776.359896]  dump_stack+0xd4/0x10c
-[ 5776.359916]  panic+0x12c/0x29c
-[ 5776.359937]  hung_task_panic+0x0/0x50
-[ 5776.359953]  kthread+0x120/0x130
-[ 5776.359965]  ret_from_fork+0x10/0x18
-[ 5776.359986] SMP: stopping secondary CPUs
-[ 5776.360012] Kernel Offset: 0x141ea00000 from 0xffffff8008000000
-[ 5776.360026] CPU features: 0x0,2188200c
-[ 5776.360035] Memory Limit: none
-
-command "ifconfig wlan0 down" or "rmmod ath10k_sdio" will be blocked
-callstack of ifconfig:
-[<0>] __switch_to+0x120/0x13c
-[<0>] msleep+0x28/0x38
-[<0>] ath10k_sdio_hif_stop+0x24c/0x294 [ath10k_sdio]
-[<0>] ath10k_core_stop+0x50/0x78 [ath10k_core]
-[<0>] ath10k_halt+0x120/0x178 [ath10k_core]
-[<0>] ath10k_stop+0x4c/0x8c [ath10k_core]
-[<0>] drv_stop+0xe0/0x1e4 [mac80211]
-[<0>] ieee80211_stop_device+0x48/0x54 [mac80211]
-[<0>] ieee80211_do_stop+0x678/0x6f8 [mac80211]
-[<0>] ieee80211_stop+0x20/0x30 [mac80211]
-[<0>] __dev_close_many+0xb8/0x11c
-[<0>] __dev_change_flags+0xe0/0x1d0
-[<0>] dev_change_flags+0x30/0x6c
-[<0>] devinet_ioctl+0x370/0x564
-[<0>] inet_ioctl+0xdc/0x304
-[<0>] sock_do_ioctl+0x50/0x288
-[<0>] compat_sock_ioctl+0x1b4/0x1aac
-[<0>] __se_compat_sys_ioctl+0x100/0x26fc
-[<0>] __arm64_compat_sys_ioctl+0x20/0x2c
-[<0>] el0_svc_common+0xa4/0x154
-[<0>] el0_svc_compat_handler+0x2c/0x38
-[<0>] el0_svc_compat+0x8/0x18
-[<0>] 0xffffffffffffffff
-
-callstack of rmmod:
-[<0>] __switch_to+0x120/0x13c
-[<0>] msleep+0x28/0x38
-[<0>] ath10k_sdio_hif_stop+0x294/0x31c [ath10k_sdio]
-[<0>] ath10k_core_stop+0x50/0x78 [ath10k_core]
-[<0>] ath10k_halt+0x120/0x178 [ath10k_core]
-[<0>] ath10k_stop+0x4c/0x8c [ath10k_core]
-[<0>] drv_stop+0xe0/0x1e4 [mac80211]
-[<0>] ieee80211_stop_device+0x48/0x54 [mac80211]
-[<0>] ieee80211_do_stop+0x678/0x6f8 [mac80211]
-[<0>] ieee80211_stop+0x20/0x30 [mac80211]
-[<0>] __dev_close_many+0xb8/0x11c
-[<0>] dev_close_many+0x70/0x100
-[<0>] dev_close+0x4c/0x80
-[<0>] cfg80211_shutdown_all_interfaces+0x50/0xcc [cfg80211]
-[<0>] ieee80211_remove_interfaces+0x58/0x1a0 [mac80211]
-[<0>] ieee80211_unregister_hw+0x40/0x100 [mac80211]
-[<0>] ath10k_mac_unregister+0x1c/0x44 [ath10k_core]
-[<0>] ath10k_core_unregister+0x38/0x7c [ath10k_core]
-[<0>] ath10k_sdio_remove+0x8c/0xd0 [ath10k_sdio]
-[<0>] sdio_bus_remove+0x48/0x108
-[<0>] device_release_driver_internal+0x138/0x1ec
-[<0>] driver_detach+0x6c/0xa8
-[<0>] bus_remove_driver+0x78/0xa8
-[<0>] driver_unregister+0x30/0x50
-[<0>] sdio_unregister_driver+0x28/0x34
-[<0>] cleanup_module+0x14/0x6bc [ath10k_sdio]
-[<0>] __arm64_sys_delete_module+0x1e0/0x22c
-[<0>] el0_svc_common+0xa4/0x154
-[<0>] el0_svc_compat_handler+0x2c/0x38
-[<0>] el0_svc_compat+0x8/0x18
-[<0>] 0xffffffffffffffff
-
-SNOC:
-[  647.156863] Call trace:
-[  647.162166] [<ffffff80080855a4>] __switch_to+0x120/0x13c
-[  647.164512] [<ffffff800899d8b8>] __schedule+0x5ec/0x798
-[  647.170062] [<ffffff800899dad8>] schedule+0x74/0x94
-[  647.175050] [<ffffff80089a0848>] schedule_timeout+0x314/0x42c
-[  647.179874] [<ffffff80089a0a14>] schedule_timeout_uninterruptible+0x34/0x40
-[  647.185780] [<ffffff80082a494>] msleep+0x28/0x38
-[  647.192546] [<ffffff800117ec4c>] ath10k_snoc_hif_stop+0x4c/0x1e0 [ath10k_snoc]
-[  647.197439] [<ffffff80010dfbd8>] ath10k_core_stop+0x50/0x7c [ath10k_core]
-[  647.204652] [<ffffff80010c8f48>] ath10k_halt+0x114/0x16c [ath10k_core]
-[  647.211420] [<ffffff80010cad68>] ath10k_stop+0x4c/0x88 [ath10k_core]
-[  647.217865] [<ffffff8000fdbf54>] drv_stop+0x110/0x244 [mac80211]
-[  647.224367] [<ffffff80010147ac>] ieee80211_stop_device+0x48/0x54 [mac80211]
-[  647.230359] [<ffffff8000ff3eec>] ieee80211_do_stop+0x6a4/0x73c [mac80211]
-[  647.237033] [<ffffff8000ff4500>] ieee80211_stop+0x20/0x30 [mac80211]
-[  647.243942] [<ffffff80087e39b8>] __dev_close_many+0xa0/0xfc
-[  647.250435] [<ffffff80087e3888>] dev_close_many+0x70/0x100
-[  647.255651] [<ffffff80087e3a60>] dev_close+0x4c/0x80
-[  647.261244] [<ffffff8000f1ba54>] cfg80211_shutdown_all_interfaces+0x44/0xcc [cfg80211]
-[  647.266383] [<ffffff8000ff3fdc>] ieee80211_remove_interfaces+0x58/0x1b4 [mac80211]
-[  647.274128] [<ffffff8000fda540>] ieee80211_unregister_hw+0x50/0x120 [mac80211]
-[  647.281659] [<ffffff80010ca314>] ath10k_mac_unregister+0x1c/0x44 [ath10k_core]
-[  647.288839] [<ffffff80010dfc94>] ath10k_core_unregister+0x48/0x90 [ath10k_core]
-[  647.296027] [<ffffff800117e598>] ath10k_snoc_remove+0x5c/0x150 [ath10k_snoc]
-[  647.303229] [<ffffff80085625fc>] platform_drv_remove+0x28/0x50
-[  647.310517] [<ffffff80085601a4>] device_release_driver_internal+0x114/0x1b8
-[  647.316257] [<ffffff80085602e4>] driver_detach+0x6c/0xa8
-[  647.323021] [<ffffff800855e5b8>] bus_remove_driver+0x78/0xa8
-[  647.328571] [<ffffff800856107c>] driver_unregister+0x30/0x50
-[  647.334213] [<ffffff8008562674>] platform_driver_unregister+0x1c/0x28
-[  647.339876] [<ffffff800117fefc>] cleanup_module+0x1c/0x120 [ath10k_snoc]
-[  647.346196] [<ffffff8008143ab8>] SyS_delete_module+0x1dc/0x22c
-
-PCIe:
-[  615.392770] rmmod           D    0  3523   3458 0x00000080
-[  615.392777] Call Trace:
-[  615.392784]  __schedule+0x617/0x7d3
-[  615.392791]  ? __mod_timer+0x263/0x35c
-[  615.392797]  schedule+0x62/0x72
-[  615.392803]  schedule_timeout+0x8d/0xf3
-[  615.392809]  ? run_local_timers+0x6b/0x6b
-[  615.392814]  msleep+0x1b/0x22
-[  615.392824]  ath10k_pci_hif_stop+0x68/0xd6 [ath10k_pci]
-[  615.392844]  ath10k_core_stop+0x44/0x67 [ath10k_core]
-[  615.392859]  ath10k_halt+0x102/0x153 [ath10k_core]
-[  615.392873]  ath10k_stop+0x38/0x75 [ath10k_core]
-[  615.392893]  drv_stop+0x9a/0x13c [mac80211]
-[  615.392915]  ieee80211_do_stop+0x772/0x7cd [mac80211]
-[  615.392937]  ieee80211_stop+0x1a/0x1e [mac80211]
-[  615.392945]  __dev_close_many+0x9e/0xf0
-[  615.392952]  dev_close_many+0x62/0xe8
-[  615.392958]  dev_close+0x54/0x7d
-[  615.392975]  cfg80211_shutdown_all_interfaces+0x6e/0xa5 [cfg80211]
-[  615.393021]  ieee80211_remove_interfaces+0x52/0x1aa [mac80211]
-[  615.393049]  ieee80211_unregister_hw+0x54/0x136 [mac80211]
-[  615.393068]  ath10k_mac_unregister+0x19/0x4a [ath10k_core]
-[  615.393091]  ath10k_core_unregister+0x39/0x7e [ath10k_core]
-[  615.393104]  ath10k_pci_remove+0x3d/0x7f [ath10k_pci]
-[  615.393117]  pci_device_remove+0x41/0xa6
-[  615.393129]  device_release_driver_internal+0x123/0x1ec
-[  615.393140]  driver_detach+0x60/0x90
-[  615.393152]  bus_remove_driver+0x72/0x9f
-[  615.393164]  pci_unregister_driver+0x1e/0x87
-[  615.393177]  SyS_delete_module+0x1d7/0x277
-[  615.393188]  do_syscall_64+0x6b/0xf7
-[  615.393199]  entry_SYSCALL_64_after_hwframe+0x41/0xa6
-
-The test command run simulate_fw_crash firstly and it call into
-ath10k_sdio_hif_stop from ath10k_core_restart, then napi_disable
-is called and bit NAPI_STATE_SCHED is set. After that, function
-ath10k_sdio_hif_stop is called again from ath10k_stop by command
-"ifconfig wlan0 down" or "rmmod ath10k_sdio", then command blocked.
-
-It is blocked by napi_synchronize, napi_disable will set bit with
-NAPI_STATE_SCHED, and then napi_synchronize will enter dead loop
-becuase bit NAPI_STATE_SCHED is set by napi_disable.
-
-function of napi_synchronize
-static inline void napi_synchronize(const struct napi_struct *n)
-{
-	if (IS_ENABLED(CONFIG_SMP))
-		while (test_bit(NAPI_STATE_SCHED, &n->state))
-			msleep(1);
-	else
-		barrier();
-}
-
-function of napi_disable
-void napi_disable(struct napi_struct *n)
-{
-	might_sleep();
-	set_bit(NAPI_STATE_DISABLE, &n->state);
-
-	while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
-		msleep(1);
-	while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
-		msleep(1);
-
-	hrtimer_cancel(&n->timer);
-
-	clear_bit(NAPI_STATE_DISABLE, &n->state);
-}
-
-Add flag for it avoid the hang and crash.
-
-Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00110-QCARMSWP-1
-Tested-on: WCN3990 hw1.0 SNOC hw1.0 WLAN.HL.3.1-01307.1-QCAHLSWMTPL-2
-
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1598617348-2325-1-git-send-email-wgong@codeaurora.org
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Link: https://lore.kernel.org/r/20201106105627.31061-6-qiangqing.zhang@nxp.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/ahb.c  |  5 ++---
- drivers/net/wireless/ath/ath10k/core.c | 25 +++++++++++++++++++++++++
- drivers/net/wireless/ath/ath10k/core.h |  5 +++++
- drivers/net/wireless/ath/ath10k/pci.c  |  7 ++++---
- drivers/net/wireless/ath/ath10k/sdio.c |  5 ++---
- drivers/net/wireless/ath/ath10k/snoc.c |  6 +++---
- 6 files changed, 41 insertions(+), 12 deletions(-)
+ drivers/net/can/flexcan.c | 123 ++++++++++++++++++++++++++++++++------
+ 1 file changed, 106 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/ahb.c b/drivers/net/wireless/ath/ath10k/ahb.c
-index 05a61975c83f4..869524852fbaa 100644
---- a/drivers/net/wireless/ath/ath10k/ahb.c
-+++ b/drivers/net/wireless/ath/ath10k/ahb.c
-@@ -626,7 +626,7 @@ static int ath10k_ahb_hif_start(struct ath10k *ar)
- {
- 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot ahb hif start\n");
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 038fe1036df23..7ab20a6b0d1db 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -9,6 +9,7 @@
+ //
+ // Based on code originally by Andrey Volkov <avolkov@varma-el.com>
  
--	napi_enable(&ar->napi);
-+	ath10k_core_napi_enable(ar);
- 	ath10k_ce_enable_interrupts(ar);
- 	ath10k_pci_enable_legacy_irq(ar);
++#include <dt-bindings/firmware/imx/rsrc.h>
+ #include <linux/bitfield.h>
+ #include <linux/can.h>
+ #include <linux/can/dev.h>
+@@ -17,6 +18,7 @@
+ #include <linux/can/rx-offload.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
++#include <linux/firmware/imx/sci.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/mfd/syscon.h>
+@@ -242,6 +244,8 @@
+ #define FLEXCAN_QUIRK_SUPPORT_FD BIT(9)
+ /* support memory detection and correction */
+ #define FLEXCAN_QUIRK_SUPPORT_ECC BIT(10)
++/* Setup stop mode with SCU firmware to support wakeup */
++#define FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW BIT(11)
  
-@@ -644,8 +644,7 @@ static void ath10k_ahb_hif_stop(struct ath10k *ar)
- 	ath10k_ahb_irq_disable(ar);
- 	synchronize_irq(ar_ahb->irq);
+ /* Structure of the message buffer */
+ struct flexcan_mb {
+@@ -347,6 +351,7 @@ struct flexcan_priv {
+ 	u8 mb_count;
+ 	u8 mb_size;
+ 	u8 clk_src;	/* clock source of CAN Protocol Engine */
++	u8 scu_idx;
  
--	napi_synchronize(&ar->napi);
--	napi_disable(&ar->napi);
-+	ath10k_core_napi_sync_disable(ar);
+ 	u64 rx_mask;
+ 	u64 tx_mask;
+@@ -358,6 +363,9 @@ struct flexcan_priv {
+ 	struct regulator *reg_xceiver;
+ 	struct flexcan_stop_mode stm;
  
- 	ath10k_pci_flush(ar);
- }
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index eeb6ff6aa2e1e..a419ec7130f97 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -2305,6 +2305,31 @@ void ath10k_core_start_recovery(struct ath10k *ar)
- }
- EXPORT_SYMBOL(ath10k_core_start_recovery);
- 
-+void ath10k_core_napi_enable(struct ath10k *ar)
-+{
-+	lockdep_assert_held(&ar->conf_mutex);
++	/* IPC handle when setup stop mode by System Controller firmware(scfw) */
++	struct imx_sc_ipc *sc_ipc_handle;
 +
-+	if (test_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags))
-+		return;
-+
-+	napi_enable(&ar->napi);
-+	set_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags);
-+}
-+EXPORT_SYMBOL(ath10k_core_napi_enable);
-+
-+void ath10k_core_napi_sync_disable(struct ath10k *ar)
-+{
-+	lockdep_assert_held(&ar->conf_mutex);
-+
-+	if (!test_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags))
-+		return;
-+
-+	napi_synchronize(&ar->napi);
-+	napi_disable(&ar->napi);
-+	clear_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags);
-+}
-+EXPORT_SYMBOL(ath10k_core_napi_sync_disable);
-+
- static void ath10k_core_restart(struct work_struct *work)
- {
- 	struct ath10k *ar = container_of(work, struct ath10k, restart_work);
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index 51f7e960e2977..f4be6bfb25392 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -868,6 +868,9 @@ enum ath10k_dev_flags {
- 
- 	/* Indicates that ath10k device is during recovery process and not complete */
- 	ATH10K_FLAG_RESTARTING,
-+
-+	/* protected by conf_mutex */
-+	ATH10K_FLAG_NAPI_ENABLED,
+ 	/* Read and Write APIs */
+ 	u32 (*read)(void __iomem *addr);
+ 	void (*write)(u32 val, void __iomem *addr);
+@@ -387,7 +395,7 @@ static const struct flexcan_devtype_data fsl_imx6q_devtype_data = {
+ static const struct flexcan_devtype_data fsl_imx8qm_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+ 		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+-		FLEXCAN_QUIRK_SUPPORT_FD,
++		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW,
  };
  
- enum ath10k_cal_mode {
-@@ -1308,6 +1311,8 @@ static inline bool ath10k_peer_stats_enabled(struct ath10k *ar)
- 
- extern unsigned long ath10k_coredump_mask;
- 
-+void ath10k_core_napi_sync_disable(struct ath10k *ar);
-+void ath10k_core_napi_enable(struct ath10k *ar);
- struct ath10k *ath10k_core_create(size_t priv_size, struct device *dev,
- 				  enum ath10k_bus bus,
- 				  enum ath10k_hw_rev hw_rev,
-diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
-index 2328df09875ce..e7fde635e0eef 100644
---- a/drivers/net/wireless/ath/ath10k/pci.c
-+++ b/drivers/net/wireless/ath/ath10k/pci.c
-@@ -1958,7 +1958,7 @@ static int ath10k_pci_hif_start(struct ath10k *ar)
- 
- 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot hif start\n");
- 
--	napi_enable(&ar->napi);
-+	ath10k_core_napi_enable(ar);
- 
- 	ath10k_pci_irq_enable(ar);
- 	ath10k_pci_rx_post(ar);
-@@ -2075,8 +2075,9 @@ static void ath10k_pci_hif_stop(struct ath10k *ar)
- 
- 	ath10k_pci_irq_disable(ar);
- 	ath10k_pci_irq_sync(ar);
--	napi_synchronize(&ar->napi);
--	napi_disable(&ar->napi);
-+
-+	ath10k_core_napi_sync_disable(ar);
-+
- 	cancel_work_sync(&ar_pci->dump_work);
- 
- 	/* Most likely the device has HTT Rx ring configured. The only way to
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
-index c415090d1f37c..b746052737e0b 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.c
-+++ b/drivers/net/wireless/ath/ath10k/sdio.c
-@@ -1859,7 +1859,7 @@ static int ath10k_sdio_hif_start(struct ath10k *ar)
- 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
- 	int ret;
- 
--	napi_enable(&ar->napi);
-+	ath10k_core_napi_enable(ar);
- 
- 	/* Sleep 20 ms before HIF interrupts are disabled.
- 	 * This will give target plenty of time to process the BMI done
-@@ -1992,8 +1992,7 @@ static void ath10k_sdio_hif_stop(struct ath10k *ar)
- 
- 	spin_unlock_bh(&ar_sdio->wr_async_lock);
- 
--	napi_synchronize(&ar->napi);
--	napi_disable(&ar->napi);
-+	ath10k_core_napi_sync_disable(ar);
+ static struct flexcan_devtype_data fsl_imx8mp_devtype_data = {
+@@ -546,18 +554,42 @@ static void flexcan_enable_wakeup_irq(struct flexcan_priv *priv, bool enable)
+ 	priv->write(reg_mcr, &regs->mcr);
  }
  
- #ifdef CONFIG_PM
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index bf9a8cb713dc0..2c2df0b8b3fd9 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -915,8 +915,7 @@ static void ath10k_snoc_hif_stop(struct ath10k *ar)
- 	if (!test_bit(ATH10K_FLAG_CRASH_FLUSH, &ar->dev_flags))
- 		ath10k_snoc_irq_disable(ar);
- 
--	napi_synchronize(&ar->napi);
--	napi_disable(&ar->napi);
-+	ath10k_core_napi_sync_disable(ar);
- 	ath10k_snoc_buffer_cleanup(ar);
- 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot hif stop\n");
- }
-@@ -926,7 +925,8 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
- 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
- 
- 	bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
--	napi_enable(&ar->napi);
++static int flexcan_stop_mode_enable_scfw(struct flexcan_priv *priv, bool enabled)
++{
++	u8 idx = priv->scu_idx;
++	u32 rsrc_id, val;
 +
-+	ath10k_core_napi_enable(ar);
- 	ath10k_snoc_irq_enable(ar);
- 	ath10k_snoc_rx_post(ar);
++	rsrc_id = IMX_SC_R_CAN(idx);
++
++	if (enabled)
++		val = 1;
++	else
++		val = 0;
++
++	/* stop mode request via scu firmware */
++	return imx_sc_misc_set_control(priv->sc_ipc_handle, rsrc_id,
++				       IMX_SC_C_IPG_STOP, val);
++}
++
+ static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
+ {
+ 	struct flexcan_regs __iomem *regs = priv->regs;
+ 	u32 reg_mcr;
++	int ret;
  
+ 	reg_mcr = priv->read(&regs->mcr);
+ 	reg_mcr |= FLEXCAN_MCR_SLF_WAK;
+ 	priv->write(reg_mcr, &regs->mcr);
+ 
+ 	/* enable stop request */
+-	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+-			   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
++	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) {
++		ret = flexcan_stop_mode_enable_scfw(priv, true);
++		if (ret < 0)
++			return ret;
++	} else {
++		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
++				   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
++	}
+ 
+ 	return flexcan_low_power_enter_ack(priv);
+ }
+@@ -566,10 +598,17 @@ static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
+ {
+ 	struct flexcan_regs __iomem *regs = priv->regs;
+ 	u32 reg_mcr;
++	int ret;
+ 
+ 	/* remove stop request */
+-	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+-			   1 << priv->stm.req_bit, 0);
++	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) {
++		ret = flexcan_stop_mode_enable_scfw(priv, false);
++		if (ret < 0)
++			return ret;
++	} else {
++		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
++				   1 << priv->stm.req_bit, 0);
++	}
+ 
+ 	reg_mcr = priv->read(&regs->mcr);
+ 	reg_mcr &= ~FLEXCAN_MCR_SLF_WAK;
+@@ -1867,7 +1906,7 @@ static void unregister_flexcandev(struct net_device *dev)
+ 	unregister_candev(dev);
+ }
+ 
+-static int flexcan_setup_stop_mode(struct platform_device *pdev)
++static int flexcan_setup_stop_mode_gpr(struct platform_device *pdev)
+ {
+ 	struct net_device *dev = platform_get_drvdata(pdev);
+ 	struct device_node *np = pdev->dev.of_node;
+@@ -1912,11 +1951,6 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
+ 		"gpr %s req_gpr=0x02%x req_bit=%u\n",
+ 		gpr_np->full_name, priv->stm.req_gpr, priv->stm.req_bit);
+ 
+-	device_set_wakeup_capable(&pdev->dev, true);
+-
+-	if (of_property_read_bool(np, "wakeup-source"))
+-		device_set_wakeup_enable(&pdev->dev, true);
+-
+ 	return 0;
+ 
+ out_put_node:
+@@ -1924,6 +1958,58 @@ static int flexcan_setup_stop_mode(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++static int flexcan_setup_stop_mode_scfw(struct platform_device *pdev)
++{
++	struct net_device *dev = platform_get_drvdata(pdev);
++	struct flexcan_priv *priv;
++	u8 scu_idx;
++	int ret;
++
++	ret = of_property_read_u8(pdev->dev.of_node, "fsl,scu-index", &scu_idx);
++	if (ret < 0) {
++		dev_dbg(&pdev->dev, "failed to get scu index\n");
++		return ret;
++	}
++
++	priv = netdev_priv(dev);
++	priv->scu_idx = scu_idx;
++
++	/* this function could be defered probe, return -EPROBE_DEFER */
++	return imx_scu_get_handle(&priv->sc_ipc_handle);
++}
++
++/* flexcan_setup_stop_mode - Setup stop mode for wakeup
++ *
++ * Return: = 0 setup stop mode successfully or doesn't support this feature
++ *         < 0 fail to setup stop mode (could be defered probe)
++ */
++static int flexcan_setup_stop_mode(struct platform_device *pdev)
++{
++	struct net_device *dev = platform_get_drvdata(pdev);
++	struct flexcan_priv *priv;
++	int ret;
++
++	priv = netdev_priv(dev);
++
++	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW)
++		ret = flexcan_setup_stop_mode_scfw(pdev);
++	else if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR)
++		ret = flexcan_setup_stop_mode_gpr(pdev);
++	else
++		/* return 0 directly if doesn't support stop mode feature */
++		return 0;
++
++	if (ret)
++		return ret;
++
++	device_set_wakeup_capable(&pdev->dev, true);
++
++	if (of_property_read_bool(pdev->dev.of_node, "wakeup-source"))
++		device_set_wakeup_enable(&pdev->dev, true);
++
++	return 0;
++}
++
+ static const struct of_device_id flexcan_of_match[] = {
+ 	{ .compatible = "fsl,imx8qm-flexcan", .data = &fsl_imx8qm_devtype_data, },
+ 	{ .compatible = "fsl,imx8mp-flexcan", .data = &fsl_imx8mp_devtype_data, },
+@@ -2054,17 +2140,20 @@ static int flexcan_probe(struct platform_device *pdev)
+ 		goto failed_register;
+ 	}
+ 
++	err = flexcan_setup_stop_mode(pdev);
++	if (err < 0) {
++		if (err != -EPROBE_DEFER)
++			dev_err(&pdev->dev, "setup stop mode failed\n");
++		goto failed_setup_stop_mode;
++	}
++
+ 	of_can_transceiver(dev);
+ 	devm_can_led_init(dev);
+ 
+-	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR) {
+-		err = flexcan_setup_stop_mode(pdev);
+-		if (err)
+-			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
+-	}
+-
+ 	return 0;
+ 
++ failed_setup_stop_mode:
++	unregister_flexcandev(dev);
+  failed_register:
+ 	pm_runtime_put_noidle(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
 -- 
 2.27.0
 
