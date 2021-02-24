@@ -2,208 +2,397 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E761C324754
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 00:04:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F05324771
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 00:21:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236279AbhBXXDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 18:03:54 -0500
-Received: from smtp-17-i2.italiaonline.it ([213.209.12.17]:45600 "EHLO
-        libero.it" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236272AbhBXXDw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 18:03:52 -0500
-Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
- ([87.20.116.197])
-        by smtp-17.iol.local with ESMTPA
-        id F32VlxCf1lChfF32clf7Xj; Wed, 24 Feb 2021 23:53:59 +0100
-x-libjamoibt: 1601
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1614207239; bh=du/r059EGbu4TPhvkxNS/d6olzOblvZ4VEQuwxQdY+Y=;
-        h=From;
-        b=RbOBMX4JZ2BfUT6o3fOBK3A5/5xjwSTKHnVUGx+Da7w4DfgB3L9xQcJBmfIoVG0Ko
-         pa6jhOyxtkFeeZ48grdqXWUNMpX211R2nvRDfT0NB+A6lEiSLc/ZAugfMchFeqtdb8
-         xhPJYwbixx1uK7AR2l5sS2yJpXIB/5qU8ksMBtYoIXz0ZqGXTlyIaSrcvtj75QyzPn
-         7jlv/Ber75iVjr3212iKXmXMdaN4oz8ijQ1+ziGz2MkR/sgi3K2EokJ3rLdpGyWZQb
-         1FatfF+LvdTV8DNpO2bQcK0ifMAELGVZwzzcOLJoU06rDIQ+XjwplN6Zi/ArXLcmrW
-         OnHpYppy2dZjQ==
-X-CNFS-Analysis: v=2.4 cv=S6McfKgP c=1 sm=1 tr=0 ts=6036d907 cx=a_exe
- a=AVqmXbCQpuNSdJmApS5GbQ==:117 a=AVqmXbCQpuNSdJmApS5GbQ==:17
- a=Et75ynYvZpBubEpffocA:9 a=guPwXWNZSXGlnza0:21 a=TNOWAEZzmosXMk2n:21
-From:   Dario Binacchi <dariobin@libero.it>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dario Binacchi <dariobin@libero.it>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 6/6] can: c_can: add support to 64 messages objects
-Date:   Wed, 24 Feb 2021 23:52:46 +0100
-Message-Id: <20210224225246.11346-7-dariobin@libero.it>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210224225246.11346-1-dariobin@libero.it>
-References: <20210224225246.11346-1-dariobin@libero.it>
-X-CMAE-Envelope: MS4xfLvwxBQLCQPQhDNkT/ybW8k2/InpKU2rjXB1xggz9UHl+xJ4nzvqUNdWRbHwVJGqXr1oeh2iddosJSnI7A2RlEJwSIMvyBw7qLfCIgnlzsjMUHn0sSyu
- di9n1EoQdiMe0E1ByYKafEuus0383cJ1eWhSzHlpkOWMJXA71Mq3gOwOSyDy/29MUfHcYL1Fd+mG+iZ5PmCKtjtK6p1pNpgXLINEXeDjo4d+YbzeEUyOfv4B
- MpFqkOSaroL7ajDgG/XzwTn3E+7FihmzrklNrMvbgdaYMp/ZYKzJx5MER9AFw6l8GJm1s44ISPfQAKA19uc52NvhJg1E85EdeF8fBRgdfV7S4++q7/g3NiAq
- qIldyhtLoyWvQNdOZPIQdY/MZQzkOJQYPQGw+Tkab1HMdLDiieCM89sYzwJtFpnDYqk4qtEohhsizQMPTh4kLOqnzzKhlC4I7ptxq3UxUuwqNG4hkhjacdYC
- YQ4IhEvB+LJPFSFx6N2OqQz/etU8MHxYygZQ8nipTmQgE4zWTifoZSoNv22I8QjXiktV4V33ztx3BJFVI00YfE7anWbPow8v4QE0/dq5sbihe6mlneZLnvIQ
- +ioTR/+hJQmSnSYKhjI+NipO
+        id S236212AbhBXXVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 18:21:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234728AbhBXXVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 18:21:02 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39849C06174A
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 15:20:22 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id h4so2507887pgf.13
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 15:20:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=8muKIW23K/dddVeaZw1IXM0ikdaJSNj4LJzIYBJWj+w=;
+        b=FLJm0k/9JlmdbqwP84pLNzTqgA6388OVrN2ZXeKkNECXTxVzyahRzhfp1lQJJgpHY/
+         uI8fGO95KCUhpzrOcagkRad7x9pt6H2FRJ0SHrZcbojZOYM0dQLjNRPRBGWlBIq6gKgz
+         /Wc8idXEj+kLpa+Xh84Duw4x29iS4cD8eC2d50ju/Fhi93F3iz3iejHg2gcezdmRhFug
+         6aqVVQZh+I9lzipYhX/ZFzDCXQPN05rT7xCTr8/o6dpVDVvk2DoG1fD7OqbT3vtYzNy0
+         d0Kk6tg7ZJrfarWBry0rKJ84NJ07sguOdNCWoTEez2vEp+XxfZu3vLLwo3WusXnJ0eWu
+         jsiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=8muKIW23K/dddVeaZw1IXM0ikdaJSNj4LJzIYBJWj+w=;
+        b=mSL5uy01y8DAma/NMWAdcdt77JGLIRPT/dGkgXSWhMFUgFEDIe/u5gZii92NXn3YzN
+         ns88zYDd07a0lGWpMPvEzKeRgKWmtJfQn038y2Xvw/ApTE9qiW3Ho1bMebIDtKPCYk/p
+         L9z5FvKizo3zbFNz2u50T27OU99yObif3ZCk1hKvJR17/r37lvuq4cWWa3PB0QAVWxJz
+         7XCW+mvELi0ug4WXYgx8Z1J9SroKnRTRWMf1VVpkzIUQ4AdUCjUo2eLzjofEVjvW4jqq
+         SDqQTGTyDFGM5OkE0BILwyBc87wohOo3ZUB6nBwSC3l8Vbq+mIIptzj3xsu8VlnyHKaR
+         fpVA==
+X-Gm-Message-State: AOAM531D84zQy9hOkZd/ySgyJ4ldBCYgshqujo+oGECvG+H1kDPKOT6I
+        mxmIj9bEj7DcPpCick/m8IE=
+X-Google-Smtp-Source: ABdhPJxpSnaKS/ncZ1C3czK1Ms/wTrVOzHb/t8+MTneJM/Q6baMYD9CztWzgf1/y0P2AYhOi+oFK9A==
+X-Received: by 2002:a65:5bc5:: with SMTP id o5mr263139pgr.17.1614208821691;
+        Wed, 24 Feb 2021 15:20:21 -0800 (PST)
+Received: from aroeseler-ly545.local (h134-215-166-75.lapior.broadband.dynamic.tds.net. [134.215.166.75])
+        by smtp.gmail.com with ESMTPSA id v26sm3758546pff.195.2021.02.24.15.20.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Feb 2021 15:20:21 -0800 (PST)
+Message-ID: <ba994c253956420744cbbf06f77af09b580a98d3.camel@gmail.com>
+Subject: Re: [PATCH V3 net-next 5/5] icmp: add response to RFC 8335 PROBE
+ messages
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Wed, 24 Feb 2021 17:20:20 -0600
+In-Reply-To: <CA+FuTSeo5uqtU0b0AP5hm9C72qN8PdT4C-fV2YTun33YbX9Ssg@mail.gmail.com>
+References: <cover.1613583620.git.andreas.a.roeseler@gmail.com>
+         <7bff18c2cffe77b2ea66fd8774a5d0374ff6dd97.1613583620.git.andreas.a.roeseler@gmail.com>
+         <CA+FuTSeo5uqtU0b0AP5hm9C72qN8PdT4C-fV2YTun33YbX9Ssg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-D_CAN controller supports 16, 32, 64 or 128 messages objects, comparing
-to 32 on C_CAN.
-AM335x/AM437x Sitara processors and DRA7 SOC all instantiate a D_CAN
-controller with 64 message objects, as described in the "DCAN features"
-subsection of the CAN chapter of their technical reference manuals.
+On Sun, 2021-02-21 at 23:49 -0500, Willem de Bruijn wrote:
+On Wed, Feb 17, 2021 at 1:14 PM Andreas Roeseler
+<andreas.a.roeseler@gmail.com> wrote:
+> 
+> Modify the icmp_rcv function to check for PROBE messages and call
+> icmp_echo if a PROBE request is detected.
+> 
+> Modify the existing icmp_echo function to respond to both ping and
+> PROBE
+> requests.
+> 
+> This was tested using a custom modification of the iputils package
+> and
+> wireshark. It supports IPV4 probing by name, ifindex, and probing by
+> both IPV4 and IPV6
+> addresses. It currently does not support responding to probes off the
+> proxy node
+> (See RFC 8335 Section 2).
+> 
+> Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+> ---
+> Changes since v1:
+>  - Reorder variable declarations to follow coding style
+>  - Switch to functions such as dev_get_by_name and ip_dev_find to
+> lookup
+>    net devices
+> 
+> Changes since v2:
+> Suggested by Willem de Brujin <willemdebrujin.kernel@gmail.com>
+>  - Add verification of incoming messages before looking up netdev
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>  - Include net/addrconf.h library for ipv6_dev_find
+> ---
+>  net/ipv4/icmp.c | 133 ++++++++++++++++++++++++++++++++++++++++++++--
+> --
+>  1 file changed, 122 insertions(+), 11 deletions(-)
+> 
+> diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+> index 396b492c804f..3caca9f2aa07 100644
+> --- a/net/ipv4/icmp.c
+> +++ b/net/ipv4/icmp.c
+> @@ -92,6 +92,7 @@
+>  #include <net/inet_common.h>
+>  #include <net/ip_fib.h>
+>  #include <net/l3mdev.h>
+> +#include <net/addrconf.h>
+> 
+>  /*
+>   *     Build xmit assembly blocks
+> @@ -970,7 +971,7 @@ static bool icmp_redirect(struct sk_buff *skb)
+>  }
+> 
+>  /*
+> - *     Handle ICMP_ECHO ("ping") requests.
+> + *     Handle ICMP_ECHO ("ping") and ICMP_EXT_ECHO ("PROBE")
+> requests.
+>   *
+>   *     RFC 1122: 3.2.2.6 MUST have an echo server that answers ICMP
+> echo
+>   *               requests.
+> @@ -978,26 +979,122 @@ static bool icmp_redirect(struct sk_buff *skb)
+>   *               included in the reply.
+>   *     RFC 1812: 4.3.3.6 SHOULD have a config option for silently
+> ignoring
+>   *               echo requests, MUST have default=NOT.
+> + *     RFC 8335: 8 MUST have a config option to enable/disable ICMP
+> + *               Extended Echo functionality, MUST be disabled by
+> default
+>   *     See also WRT handling of options once they are done and
+> working.
+>   */
+> 
+>  static bool icmp_echo(struct sk_buff *skb)
+>  {
+> +       struct icmp_ext_echo_iio *iio;
+> +       struct icmp_ext_hdr *ext_hdr;
+> +       struct icmp_bxm icmp_param;
+> +       struct net_device *dev;
+>         struct net *net;
+> +       __u16 ident_len;
+> +       __u8 status;
 
-The driver policy has been kept unchanged, and as in the previous
-version, the first half of the message objects is used for reception and
-the second for transmission.
+no need for underscore variants.
 
-The I/O load is increased only in the case of 64 message objects,
-keeping it unchanged in the case of 32. Two 32-bit read accesses are in
-fact required, which however remained at 16-bit for configurations with
-32 message objects.
+> +       char *buff;
+> 
+>         net = dev_net(skb_dst(skb)->dev);
+> -       if (!net->ipv4.sysctl_icmp_echo_ignore_all) {
+> -               struct icmp_bxm icmp_param;
+> +       /* should there be an ICMP stat for ignored echos? */
+> +       if (net->ipv4.sysctl_icmp_echo_ignore_all)
+> +               return true;
+> 
+> -               icmp_param.data.icmph      = *icmp_hdr(skb);
+> +       icmp_param.data.icmph           = *icmp_hdr(skb);
+> +       icmp_param.skb                  = skb;
+> +       icmp_param.offset               = 0;
+> +       icmp_param.data_len             = skb->len;
+> +       icmp_param.head_len             = sizeof(struct icmphdr);
+> +       if (icmp_param.data.icmph.type == ICMP_ECHO) {
+>                 icmp_param.data.icmph.type = ICMP_ECHOREPLY;
+> -               icmp_param.skb             = skb;
+> -               icmp_param.offset          = 0;
+> -               icmp_param.data_len        = skb->len;
+> -               icmp_param.head_len        = sizeof(struct icmphdr);
+> -               icmp_reply(&icmp_param, skb);
+> +               goto send_reply;
+>         }
+> -       /* should there be an ICMP stat for ignored echos? */
+> +       if (!net->ipv4.sysctl_icmp_echo_enable_probe)
+> +               return true;
+> +       /* We currently only support probing interfaces on the proxy
+> node
+> +        * Check to ensure L-bit is set
+> +        */
+> +       if (!(ntohs(icmp_param.data.icmph.un.echo.sequence) & 1))
+> +               return true;
+> +
+> +       /* Clear status bits in reply message */
+> +       icmp_param.data.icmph.un.echo.sequence &= htons(0xFF00);
+> +       icmp_param.data.icmph.type = ICMP_EXT_ECHOREPLY;
+> +       ext_hdr = (struct icmp_ext_hdr *)(icmp_hdr(skb) + 1);
+> +       iio = (struct icmp_ext_echo_iio *)(ext_hdr + 1);
 
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
+Check that these fields exist (skb is not truncated).
+skb_header_pointer is the safest approach.
 
----
+For this and following point, see also ip_icmp_error_rfc4884_validate.
 
- drivers/net/can/c_can/c_can.c          | 19 +++++++++++--------
- drivers/net/can/c_can/c_can.h          |  5 +++--
- drivers/net/can/c_can/c_can_platform.c |  6 +++++-
- 3 files changed, 19 insertions(+), 11 deletions(-)
+> +       ident_len = ntohs(iio->extobj_hdr.length) - sizeof(iio-
+> >extobj_hdr);
 
-diff --git a/drivers/net/can/c_can/c_can.c b/drivers/net/can/c_can/c_can.c
-index 772b26685fea..3429eab5ac7d 100644
---- a/drivers/net/can/c_can/c_can.c
-+++ b/drivers/net/can/c_can/c_can.c
-@@ -723,8 +723,12 @@ static void c_can_do_tx(struct net_device *dev)
- 	struct net_device_stats *stats = &dev->stats;
- 	u32 idx, obj, pkts = 0, bytes = 0, pend, clr;
- 
--	clr = pend = priv->read_reg(priv, C_CAN_INTPND2_REG);
-+	if (priv->msg_obj_tx_last > 32)
-+		pend = priv->read_reg32(priv, C_CAN_INTPND3_REG);
-+	else
-+		pend = priv->read_reg(priv, C_CAN_INTPND2_REG);
- 
-+	clr = pend;
- 	while ((idx = ffs(pend))) {
- 		idx--;
- 		pend &= ~(1 << idx);
-@@ -834,7 +838,12 @@ static int c_can_read_objects(struct net_device *dev, struct c_can_priv *priv,
- 
- static inline u32 c_can_get_pending(struct c_can_priv *priv)
- {
--	u32 pend = priv->read_reg(priv, C_CAN_NEWDAT1_REG);
-+	u32 pend;
-+
-+	if (priv->msg_obj_rx_last > 16)
-+		pend = priv->read_reg32(priv, C_CAN_NEWDAT1_REG);
-+	else
-+		pend = priv->read_reg(priv, C_CAN_NEWDAT1_REG);
- 
- 	return pend;
- }
-@@ -856,12 +865,6 @@ static int c_can_do_rx_poll(struct net_device *dev, int quota)
- 	struct c_can_priv *priv = netdev_priv(dev);
- 	u32 pkts = 0, pend = 0, toread, n;
- 
--	/*
--	 * It is faster to read only one 16bit register. This is only possible
--	 * for a maximum number of 16 objects.
--	 */
--	WARN_ON(priv->msg_obj_rx_last > 16);
--
- 	while (quota > 0) {
- 		if (!pend) {
- 			pend = c_can_get_pending(priv);
-diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
-index 1dbe777320f5..7cf92a576d4a 100644
---- a/drivers/net/can/c_can/c_can.h
-+++ b/drivers/net/can/c_can/c_can.h
-@@ -22,8 +22,6 @@
- #ifndef C_CAN_H
- #define C_CAN_H
- 
--#define C_CAN_NO_OF_OBJECTS	32
--
- enum reg {
- 	C_CAN_CTRL_REG = 0,
- 	C_CAN_CTRL_EX_REG,
-@@ -61,6 +59,7 @@ enum reg {
- 	C_CAN_NEWDAT2_REG,
- 	C_CAN_INTPND1_REG,
- 	C_CAN_INTPND2_REG,
-+	C_CAN_INTPND3_REG,
- 	C_CAN_MSGVAL1_REG,
- 	C_CAN_MSGVAL2_REG,
- 	C_CAN_FUNCTION_REG,
-@@ -122,6 +121,7 @@ static const u16 __maybe_unused reg_map_d_can[] = {
- 	[C_CAN_NEWDAT2_REG]	= 0x9E,
- 	[C_CAN_INTPND1_REG]	= 0xB0,
- 	[C_CAN_INTPND2_REG]	= 0xB2,
-+	[C_CAN_INTPND3_REG]	= 0xB4,
- 	[C_CAN_MSGVAL1_REG]	= 0xC4,
- 	[C_CAN_MSGVAL2_REG]	= 0xC6,
- 	[C_CAN_IF1_COMREQ_REG]	= 0x100,
-@@ -161,6 +161,7 @@ struct raminit_bits {
- 
- struct c_can_driver_data {
- 	enum c_can_dev_id id;
-+	int msg_obj_num;
- 
- 	/* RAMINIT register description. Optional. */
- 	const struct raminit_bits *raminit_bits; /* Array of START/DONE bit positions */
-diff --git a/drivers/net/can/c_can/c_can_platform.c b/drivers/net/can/c_can/c_can_platform.c
-index a5b9b1a93702..87a145b67a2f 100644
---- a/drivers/net/can/c_can/c_can_platform.c
-+++ b/drivers/net/can/c_can/c_can_platform.c
-@@ -192,10 +192,12 @@ static void c_can_hw_raminit(const struct c_can_priv *priv, bool enable)
- 
- static const struct c_can_driver_data c_can_drvdata = {
- 	.id = BOSCH_C_CAN,
-+	.msg_obj_num = 32,
- };
- 
- static const struct c_can_driver_data d_can_drvdata = {
- 	.id = BOSCH_D_CAN,
-+	.msg_obj_num = 32,
- };
- 
- static const struct raminit_bits dra7_raminit_bits[] = {
-@@ -205,6 +207,7 @@ static const struct raminit_bits dra7_raminit_bits[] = {
- 
- static const struct c_can_driver_data dra7_dcan_drvdata = {
- 	.id = BOSCH_D_CAN,
-+	.msg_obj_num = 64,
- 	.raminit_num = ARRAY_SIZE(dra7_raminit_bits),
- 	.raminit_bits = dra7_raminit_bits,
- 	.raminit_pulse = true,
-@@ -217,6 +220,7 @@ static const struct raminit_bits am3352_raminit_bits[] = {
- 
- static const struct c_can_driver_data am3352_dcan_drvdata = {
- 	.id = BOSCH_D_CAN,
-+	.msg_obj_num = 64,
- 	.raminit_num = ARRAY_SIZE(am3352_raminit_bits),
- 	.raminit_bits = am3352_raminit_bits,
- };
-@@ -293,7 +297,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
- 	}
- 
- 	/* allocate the c_can device */
--	dev = alloc_c_can_dev(C_CAN_NO_OF_OBJECTS);
-+	dev = alloc_c_can_dev(drvdata->msg_obj_num);
- 	if (!dev) {
- 		ret = -ENOMEM;
- 		goto exit;
--- 
-2.17.1
+Negative overflow: cannot trust that extobj_hdr.length >=
+sizeof(iio->extobj_hdr)
+
+> +       status = 0;
+> +       dev = NULL;
+> +       switch (iio->extobj_hdr.class_type) {
+> +       case EXT_ECHO_CTYPE_NAME:
+> +               if (ident_len >= skb->len - sizeof(struct icmphdr) -
+> sizeof(iio->extobj_hdr)) {
+
+Also should check "If the Object Payload would not otherwise terminate
+on a 32-bit boundary, it MUST be padded with ASCII NULL characters."
+
+> +                       icmp_param.data.icmph.code =
+> ICMP_EXT_MAL_QUERY;
+> +                       goto send_reply;
+> +               }
+> +               buff = kcalloc(ident_len + 1, sizeof(char),
+> GFP_KERNEL);
+
+Can statically allocate on stack using IFNAMSIZ. Any ident_len > that
+is wrong, anyway.
+
+> +               if (!buff)
+> +                       return -ENOMEM;
+> +               memcpy(buff, &iio->ident.name, ident_len);
+> +               dev = dev_get_by_name(net, buff);
+> +               kfree(buff);
+> +               break;
+> +       case EXT_ECHO_CTYPE_INDEX:
+> +               if (ident_len != sizeof(iio->ident.ifIndex)) {
+
+this checks that length is 4B, but RFC says "If the Interface
+Identification Object identifies the probed interface by index, the
+length is equal to 8 and the payload contains the if-index"
+
+ident_len stores the value of the identifier of the interface only,
+i.e. it stores the length of the iio minus the length of the iio
+header. Therefore, we can check its size against the expected size of
+an if_Index (4 octets)
+
+> +                       icmp_param.data.icmph.code =
+> ICMP_EXT_MAL_QUERY;
+> +                       goto send_reply;
+> +               }
+> +               dev = dev_get_by_index(net, ntohl(iio-
+> >ident.ifIndex));
+> +               break;
+> +       case EXT_ECHO_CTYPE_ADDR:
+> +               switch (ntohs(iio->ident.addr.ctype3_hdr.afi)) {
+> +               case EXT_ECHO_AFI_IP:
+> +                       if (ident_len != sizeof(iio-
+> >ident.addr.ctype3_hdr) + sizeof(__be32) ||
+> +                           ident_len != sizeof(iio-
+> >ident.addr.ctype3_hdr) + iio->ident.addr.ctype3_hdr.addrlen) {
+> +                               icmp_param.data.icmph.code =
+> ICMP_EXT_MAL_QUERY;
+> +                               goto send_reply;
+> +                       }
+> +                       dev = ip_dev_find(net, iio-
+> >ident.addr.ip_addr.ipv4_addr);
+> +                       break;
+> +               case EXT_ECHO_AFI_IP6:
+> +                       if (ident_len != sizeof(iio-
+> >ident.addr.ctype3_hdr) + sizeof(struct in6_addr) ||
+> +                           ident_len != sizeof(iio-
+> >ident.addr.ctype3_hdr) + iio->ident.addr.ctype3_hdr.addrlen) {
+> +                               icmp_param.data.icmph.code =
+> ICMP_EXT_MAL_QUERY;
+> +                               goto send_reply;
+> +                       }
+> +                       dev = ipv6_dev_find(net, &iio-
+> >ident.addr.ip_addr.ipv6_addr, dev);
+
+From function comment: "The caller should be protected by RCU, or
+RTNL.". Is that the case here?
+
+Also dependent on CONFIG_IPV6
+
+> +                       if (dev)
+> +                               dev_hold(dev);
+> +                       break;
+> +               default:
+> +                       icmp_param.data.icmph.code =
+> ICMP_EXT_MAL_QUERY;
+> +                       goto send_reply;
+> +               }
+> +               break;
+> +       default:
+> +               icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
+> +               goto send_reply;
+> +       }
+> +       if (!dev) {
+> +               icmp_param.data.icmph.code = ICMP_EXT_NO_IF;
+> +               goto send_reply;
+> +       }
+> +       /* RFC 8335: 3 the last 8 bits of the Extended Echo Reply
+> Message
+> +        *  are laid out as follows:
+> +        *      +-+-+-+-+-+-+-+-+
+> +        *      |State|Res|A|4|6|
+> +        *      +-+-+-+-+-+-+-+-+
+> +        */
+> +       if (dev->flags & IFF_UP)
+> +               status |= EXT_ECHOREPLY_ACTIVE;
+> +       if (dev->ip_ptr->ifa_list)
+
+This is an __rcu pointer, requires rcu_dereference, e.g., via
+__in_dev_get_rcu
+
+
+
+
+
+
+> +               status |= EXT_ECHOREPLY_IPV4;
+> +       if (!list_empty(&dev->ip6_ptr->addr_list))
+> +               status |= EXT_ECHOREPLY_IPV6;
+> +       dev_put(dev);
+> +       icmp_param.data.icmph.un.echo.sequence |= htons(status);
+> +
+> +send_reply:
+> +       icmp_reply(&icmp_param, skb);
+>         return true;
+>  }
+> 
+> @@ -1087,6 +1184,13 @@ int icmp_rcv(struct sk_buff *skb)
+>         icmph = icmp_hdr(skb);
+> 
+>         ICMPMSGIN_INC_STATS(net, icmph->type);
+> +
+> +       /*
+> +        *      Check for ICMP Extended Echo (PROBE) messages
+> +        */
+> +       if (icmph->type == ICMP_EXT_ECHO || icmph->type ==
+> ICMPV6_EXT_ECHO_REQUEST)
+> +               goto probe;
+> +
+>         /*
+>          *      18 is the highest 'known' ICMP type. Anything else is
+> a mystery
+>          *
+> @@ -1096,7 +1200,6 @@ int icmp_rcv(struct sk_buff *skb)
+>         if (icmph->type > NR_ICMP_TYPES)
+>                 goto error;
+> 
+> -
+>         /*
+>          *      Parse the ICMP message
+>          */
+> @@ -1123,6 +1226,7 @@ int icmp_rcv(struct sk_buff *skb)
+> 
+>         success = icmp_pointers[icmph->type].handler(skb);
+> 
+> +success_check:
+>         if (success)  {
+>                 consume_skb(skb);
+>                 return NET_RX_SUCCESS;
+> @@ -1136,6 +1240,13 @@ int icmp_rcv(struct sk_buff *skb)
+>  error:
+>         __ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
+>         goto drop;
+> +probe:
+> +       /*
+> +        * We can't use icmp_pointers[].handler() because the codes
+> for PROBE
+> +        *   messages are 42 or 160
+> +        */
+
+ICMPv6 message 160 (ICMPV6_EXT_ECHO_REQUEST) must be handled in
+icmpv6_rcv, not icmp_rcv. Then the ICMPv4 message 42 can be handled in
+the usual way.
+
+
+You are correct that we should handle ICMPV6_EXT_ECHO_REQUEST in the
+icmpv6.c file, but shouldn't we still have a special handler for the
+ICMPv4 message? The current icmp_pointers[].handler is an array of size
+NR_ICMP_TYPES + 1 (or 19 elements), so I don't think it would be a good
+idea to extend it to 42.
+
+
+> +       success = icmp_echo(skb);
+> +       goto success_check;
+>  }
+> 
+>  static bool ip_icmp_error_rfc4884_validate(const struct sk_buff
+> *skb, int off)
+> --
+> 2.25.1
+> 
+
 
