@@ -2,223 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2C16323655
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 05:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E79532366F
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 05:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbhBXD7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 22:59:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbhBXD7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 22:59:41 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A04C061574
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 19:59:01 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id o38so605055pgm.9
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 19:59:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ev4Ew4D4rqUBZBk3kpHXOiH4NVllFUjoq6unX1l+lcI=;
-        b=yXnOs3/4dsq4IQAEcxTXHK4imCsOj39y2KmCiyQVxUK+NuPJ7qMn12M1QrAYPMApoZ
-         GdBwtAa4lRtSyyTTZ4guzW7ghvVja4qenagq1iz1E5KYFHMwf22CNbCzxOErJZ8CbZJS
-         +LseSNyS40fj5pTa05FTIf2wOt30M7eBH4y+iKAzyoBsZ3MmvuyqW5q/ASnZW5rqHIGL
-         rNtK+ezQWZpDxfLyO70A5tkcs9MGN8eRhqPSPo3zE5k0tNJbgfbziZ0xqBaOUT5lQGFb
-         9om0+jtuy/5AmGWamIN2vk859Qx3QFT96cK4AyjLBdgOCrb+FZQqONSM9EHOYtwVop5+
-         RvtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ev4Ew4D4rqUBZBk3kpHXOiH4NVllFUjoq6unX1l+lcI=;
-        b=FJHufkG3yYvbA0TrunYuT4DODgOmmw8jW0+H6x7K2mCEr8Emw4onQVY6L1d+MzjRiw
-         thqNOwvMny/ihfSh+677KIBcfVi66mO/axW9CFajnv7vql6OOtS8cgUMUp4a0xTPGBMg
-         nKod7q1jpSdXGAfbcOSTXmoWIe0gLzytl+L+YwkbZBvQkBGuHt910PaeEl390VH7nck/
-         P8GwG/zlhb3w0l7Pr6ZFwTsvOA6HTwKwhO26nNPRMzVLoWgKKfXyPA+6R7q2q1yWiQPo
-         J2bCPa8U224w7mEnhD2ckWPKbGONJCWSHTWAFFYOHQaBNNyr2Wc1rbqLIy2RUzp2q/+3
-         ltQg==
-X-Gm-Message-State: AOAM531EjJv6Ks2ITiD/N0nPyQCs5G0FL+LTthSsTSQlFwMtjy/rwT5z
-        R+5Ug3UpoEoUDlDmt1cUIat1NYx/vFkbTw==
-X-Google-Smtp-Source: ABdhPJwIgluKrZ+PH5+2ttDwhCR07WBa9j/ZtXFxcGlavPWBDu85cgoZoTIHjf2ZEy6HoA8W26Brpg==
-X-Received: by 2002:a62:768e:0:b029:1ed:e31a:f71b with SMTP id r136-20020a62768e0000b02901ede31af71bmr3453329pfc.66.1614139140180;
-        Tue, 23 Feb 2021 19:59:00 -0800 (PST)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id w187sm655942pfb.208.2021.02.23.19.58.59
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 19:58:59 -0800 (PST)
-Date:   Tue, 23 Feb 2021 19:58:57 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: [ANNOUNCE] iproute2 5.11 release
-Message-ID: <20210223195857.3de03c2a@hermes.local>
+        id S233025AbhBXEa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Feb 2021 23:30:28 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:63930 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232132AbhBXEaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 23:30:22 -0500
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id BFEB876060;
+        Wed, 24 Feb 2021 07:29:32 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1614140972;
+        bh=381bGtaFmhS3qOT60PG6QEE1cltmmQOxmj6C16TLhcE=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=y8fxogFRj3Gjv7CdI8xp28LeWm+W3Ic2OtzhE3ARE2//NvN2iObn0r0RZwLXQJrB5
+         UsZeg9VKhqUTz61Bz27Gzuj6lB67lR+yciFX0vMc16JbrX/wtSvpE/QscVs5u4/dUN
+         2bqQLAkvTx3WH9LQfvJQwuOvtE9s7I4hrPyIEHdqo8JSfndDWxHRf53I5TwggaD9jC
+         Gr5sDAgQM+Z5I4ojwRA5EWhJIvs5UlTroUS0tfXEn7uhhCBrGs58K7YOGyYvAcBZFJ
+         3iPCmKIug21nXONTLyM7ceXF2zh7IPHCT9lgl61Rdnke7vrwOCDPFWyWMiowvmySGW
+         61N9vBvV3qjAQ==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id AED3375C0C;
+        Wed, 24 Feb 2021 07:29:31 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Wed, 24
+ Feb 2021 07:29:31 +0300
+Subject: Re: [RFC PATCH v5 00/19] virtio/vsock: introduce SOCK_SEQPACKET
+ support
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
+ <20210222142311.gekdd7gsm33wglos@steredhat>
+ <20210223145016.ddavx6fihq4akdim@steredhat>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <7a280168-cb54-ae26-4697-c797f6b04708@kaspersky.com>
+Date:   Wed, 24 Feb 2021 07:29:25 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210223145016.ddavx6fihq4akdim@steredhat>
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 02/06/2021 23:52:08
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 161679 [Feb 06 2021]
+X-KSE-AntiSpam-Info: LuaCore: 422 422 763e61bea9fcfcd94e075081cb96e065bc0509b4
+X-KSE-AntiSpam-Info: Version: 5.9.16.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
+X-KSE-AntiSpam-Info: {Tracking_date, moscow}
+X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 02/06/2021 23:55:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 06.02.2021 21:17:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/02/24 03:43:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/24 02:14:00 #16328803
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After weather delays, here is the new version of iproute2 to go
-with the 5.11 kernel. Most of the changes in this release are updates
-for new functionality for Data Center Bridging (dcb) utility.
-Also several updates for bridge, and devlink.
 
-Note: iproute2 is now maintained on the "main" branch.
-There are parallel copies (both updated) on kernel.org and github.
+On 23.02.2021 17:50, Stefano Garzarella wrote:
+> On Mon, Feb 22, 2021 at 03:23:11PM +0100, Stefano Garzarella wrote:
+>> Hi Arseny,
+>>
+>> On Thu, Feb 18, 2021 at 08:33:44AM +0300, Arseny Krasnov wrote:
+>>> 	This patchset impelements support of SOCK_SEQPACKET for virtio
+>>> transport.
+>>> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+>>> do it, two new packet operations were added: first for start of record
+>>> and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
+>>> both operations carries metadata - to maintain boundaries and payload
+>>> integrity. Metadata is introduced by adding special header with two
+>>> fields - message count and message length:
+>>>
+>>> 	struct virtio_vsock_seq_hdr {
+>>> 		__le32  msg_cnt;
+>>> 		__le32  msg_len;
+>>> 	} __attribute__((packed));
+>>>
+>>> 	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
+>>> packets(buffer of second virtio descriptor in chain) in the same way as
+>>> data transmitted in RW packets. Payload was chosen as buffer for this
+>>> header to avoid touching first virtio buffer which carries header of
+>>> packet, because someone could check that size of this buffer is equal
+>>> to size of packet header. To send record, packet with start marker is
+>>> sent first(it's header contains length of record and counter), then
+>>> counter is incremented and all data is sent as usual 'RW' packets and
+>>> finally SEQ_END is sent(it also carries counter of message, which is
+>>> counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
+>>> incremented again. On receiver's side, length of record is known from
+>>> packet with start record marker. To check that no packets were dropped
+>>> by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
+>>> checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
+>>> 1) and length of data between two markers is compared to length in
+>>> SEQ_BEGIN header.
+>>> 	Now as  packets of one socket are not reordered neither on
+>>> vsock nor on vhost transport layers, such markers allows to restore
+>>> original record on receiver's side. If user's buffer is smaller that
+>>> record length, when all out of size data is dropped.
+>>> 	Maximum length of datagram is not limited as in stream socket,
+>>> because same credit logic is used. Difference with stream socket is
+>>> that user is not woken up until whole record is received or error
+>>> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+>>> 	Tests also implemented.
+>> I reviewed the first part (af_vsock.c changes), tomorrow I'll review 
+>> the rest. That part looks great to me, only found a few minor issues.
+> I revieiwed the rest of it as well, left a few minor comments, but I 
+> think we're well on track.
+>
+> I'll take a better look at the specification patch tomorrow.
+Great, Thank You
+>
+> Thanks,
+> Stefano
+>
+>> In the meantime, however, I'm getting a doubt, especially with regard 
+>> to other transports besides virtio.
+>>
+>> Should we hide the begin/end marker sending in the transport?
+>>
+>> I mean, should the transport just provide a seqpacket_enqueue() 
+>> callbacl?
+>> Inside it then the transport will send the markers. This is because 
+>> some transports might not need to send markers.
+>>
+>> But thinking about it more, they could actually implement stubs for 
+>> that calls, if they don't need to send markers.
+>>
+>> So I think for now it's fine since it allows us to reuse a lot of 
+>> code, unless someone has some objection.
 
-As always, it is recommended to always use the latest iproute2.
-Do not treat iproute2 like perf and require matching packages.
-The latest code will always run on older kernels (and vice versa);
-this is possible because of the kernel API/ABI guarantees.
-Except for rare cases, iproute2 does not do maintenance releases
-and there is no long term stable version.
+I thought about that, I'll try to implement it in next version. Let's see...
 
-Download:
-    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.11.0.tar.gz
-
-Repository for current release
-    https://github.com/shemminger/iproute2.git
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
-
-And future release (net-next):
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-
-Thanks for all the contributions.
-
-Report problems (or enhancements) to the netdev@vger.kernel.org mailing list.
-
-Andrea Claudi (6):
-      tc: m_gate: use SPRINT_BUF when needed
-      ip: lwtunnel: seg6: bail out if table ids are invalid
-      lib/namespace: fix ip -all netns return code
-      lib/bpf: Fix and simplify bpf_mnt_check_target()
-      lib/fs: avoid double call to mkdir on make_path()
-      lib/fs: Fix single return points for get_cgroup2_*
-
-David Ahern (4):
-      Update kernel headers
-      Update kernel headers
-      Only compile mnl_utils when HAVE_MNL is defined
-      Update kernel headers
-
-Edwin Peer (1):
-      iplink: print warning for missing VF data
-
-Guillaume Nault (3):
-      testsuite: Add mpls packet matching tests for tc flower
-      tc: flower: fix json output with mpls lse
-      iplink_bareudp: cleanup help message and man page
-
-Hangbin Liu (5):
-      iproute2: add check_libbpf() and get_libbpf_version()
-      lib: make ipvrf able to use libbpf and fix function name conflicts
-      lib: add libbpf support
-      examples/bpf: move struct bpf_elf_map defined maps to legacy folder
-      examples/bpf: add bpf examples with BTF defined maps
-
-Ido Kalir (1):
-      rdma: Fix statistics bind/unbing argument handling
-
-Ido Schimmel (2):
-      ip route: Print "trap" nexthop indication
-      nexthop: Always print nexthop flags
-
-Luca Boccassi (4):
-      Add dcb/.gitignore
-      vrf: print BPF log buffer if bpf_program_load fails
-      vrf: fix ip vrf exec with libbpf
-      iproute: force rtm_dst_len to 32/128
-
-Moshe Shemesh (3):
-      devlink: Add devlink reload action and limit options
-      devlink: Add pr_out_dev() helper function
-      devlink: Add reload stats to dev show
-
-Paolo Abeni (1):
-      ss: do not emit warn while dumping MPTCP on old kernels
-
-Paolo Lungaroni (1):
-      seg6: add support for vrftable attribute in SRv6 End.DT4/DT6 behaviors
-
-Petr Machata (39):
-      Unify batch processing across tools
-      lib: Add parse_one_of(), parse_on_off()
-      lib: json_print: Add print_on_off()
-      lib: Extract from devlink/mnlg a helper, mnlu_socket_open()
-      lib: Extract from devlink/mnlg a helper, mnlu_msg_prepare()
-      lib: Extract from devlink/mnlg a helper, mnlu_socket_recv_run()
-      lib: Extract from iplink_vlan a helper to parse key:value arrays
-      lib: parse_mapping: Update argc, argv on error
-      lib: parse_mapping: Recognize a keyword "all"
-      Add skeleton of a new tool, dcb
-      dcb: Add a subtool for the DCB ETS object
-      bridge: link: Port over to parse_on_off()
-      bridge: link: Convert to use print_on_off()
-      ip: iplink: Convert to use parse_on_off()
-      ip: iplink_bridge_slave: Port over to parse_on_off()
-      ip: iplink_bridge_slave: Convert to use print_on_off()
-      ip: ipnetconf: Convert to use print_on_off()
-      ip: iptuntap: Convert to use print_on_off()
-      Move the use_iec declaration to the tools
-      lib: Move print_rate() from tc here; modernize
-      lib: Move sprint_size() from tc here, add print_size()
-      lib: sprint_size(): Uncrustify the code a bit
-      lib: print_color_rate(): Fix formatting small rates in IEC mode
-      lib: Move get_rate(), get_rate64() from tc here
-      lib: Move get_size() from tc here
-      dcb: Remove unsupported command line arguments from getopt_long()
-      dcb: ets: Fix help display for "show" subcommand
-      dcb: ets: Change the way show parameters are given in synopsis
-      man: dcb-ets: Remove an unnecessary empty line
-      dcb: Add dcb_set_u32(), dcb_set_u64()
-      dcb: Add -s to enable statistics
-      dcb: Add -i to enable IEC mode
-      dcb: Add a subtool for the DCB PFC object
-      dcb: Add a subtool for the DCB buffer object
-      dcb: Add a subtool for the DCB maxrate object
-      include: uapi: Carry dcbnl.h
-      dcb: Set values with RTM_SETDCB type
-      dcb: Plug a leaking DCB socket buffer
-      dcb: Change --Netns/-N to --netns/-n
-
-Roi Dayan (2):
-      tc flower: fix parsing vlan_id and vlan_prio
-      build: Fix link errors on some systems
-
-Sergey Ryazanov (1):
-      ip: add IP_LIB_DIR environment variable
-
-Stephen Hemminger (4):
-      uapi: update kernel headers to 5.11 pre rc1
-      uapi: update if_link.h from upstream
-      uapi: pick up rpl.h fix
-      v5.11.0
-
-Thayne McCombs (2):
-      Add documentation of ss filter to man page
-      ss: Add clarification about host conditions with multiple familes to man
-
-Thomas Karlsson (1):
-      iplink:macvlan: Added bcqueuelen parameter
-
-Vlad Buslov (4):
-      tc: skip actions that don't have options attribute when printing
-      tc: implement support for terse dump
-      tc: use TCA_ACT_ prefix for action flags
-      tc: implement support for action terse dump
-
-Vladimir Oltean (8):
-      bridge: add support for L2 multicast groups
-      man: tc-taprio.8: document the full offload feature
-      man8/bridge.8: document the "permanent" flag for "bridge fdb add"
-      man8/bridge.8: document that "local" is default for "bridge fdb add"
-      man8/bridge.8: explain what a local FDB entry is
-      man8/bridge.8: fix which one of self/master is default for "bridge fdb"
-      man8/bridge.8: explain self vs master for "bridge fdb add"
-      man8/bridge.8: be explicit that "flood" is an egress setting
-
-Zahari Doychev (1):
-      tc flower: use right ethertype in icmp/arp parsing
-
+>>
+>> Thanks,
+>> Stefano
+>>
+>
