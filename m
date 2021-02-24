@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD544323D42
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:08:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6028323D3C
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:08:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235309AbhBXNG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 08:06:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55588 "EHLO mail.kernel.org"
+        id S235745AbhBXNGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 08:06:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55808 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235539AbhBXM6l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:58:41 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A881364F07;
-        Wed, 24 Feb 2021 12:52:34 +0000 (UTC)
+        id S235617AbhBXM7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:59:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2A5E764F06;
+        Wed, 24 Feb 2021 12:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171155;
-        bh=wSLg7UG1E0Bc3+E/7Mg/ToevwJcWlTFMn4NDpoHxxEA=;
+        s=k20201202; t=1614171157;
+        bh=C55yUIEY+idJC3u7aYC0wzE6M5fLtSGNPtLbMb/VWI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ONxmHmtsN9ATilgrX9mhjCiQo3eMI0nrBPDCwto5CvIiOw8tN5c2DAuAFoAuwS/DZ
-         2fPbmZZi0vjQkKdZJrNAyIN4IZaqk2JXrrTe24h+/k0cif3V/+HcHk/KxbfZWp9hh8
-         fCv5wTEo+1adHmT8b3m26l+SGqBR46OWkqsFuZmwCU/ROwTbYNrQBVGvPXNV2OIo17
-         piDFrhc89YMP2CwN6Ecyrfu6TZdx7I4NTfRJT9AcjaNibJTA03e4hh7fxjnKa4hlV2
-         lv+OZFE3NiWALgAkPBYxRqa3+pN0WmrmaoHEI7JnzUx+Gu40782bI2nUoprPbk+Rbt
-         pPP3ZT10ZjA6g==
+        b=XWUdzvZLBypuwsfmJAY2Uou9VwBw5HnqQylBUUEqulkITJ4qTkGC1d2cj2OBKfBMz
+         DItNi00fTuexpgWfL6IOHfRGn4tvzfQLuTinY1V5WCvkBRoj4MPagvHtJzIk+lDbd2
+         pqu6PJkrpLnBtOhX9TGTzcIMQAJf2Z5E42nV41DjgV1HxFBlFQcd5ToKXwA4lNhiaQ
+         ptATpAh4qsSb0JM5a3WIxPk9sg2rJoCEUMGsXjaWv23IpRkt/vU3kwWexJ/2IiOM3M
+         jU9vZwmVGVB9ZJ08miDNLQRFLuclhSrxRYavJFR3NpWE51gFzvfc997YSWCV9kBYf7
+         cocKQ313XU8BA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Hans de Goede <hdegoede@redhat.com>,
@@ -31,9 +31,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/56] brcmfmac: Add DMI nvram filename quirk for Predia Basic tablet
-Date:   Wed, 24 Feb 2021 07:51:33 -0500
-Message-Id: <20210224125212.482485-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 18/56] brcmfmac: Add DMI nvram filename quirk for Voyo winpad A15 tablet
+Date:   Wed, 24 Feb 2021 07:51:34 -0500
+Message-Id: <20210224125212.482485-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210224125212.482485-1-sashal@kernel.org>
 References: <20210224125212.482485-1-sashal@kernel.org>
@@ -47,52 +47,60 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit af4b3a6f36d6c2fc5fca026bccf45e0fdcabddd9 ]
+[ Upstream commit a338c874d3d9d2463f031e89ae14942929b93db6 ]
 
-The Predia Basic tablet contains quite generic names in the sys_vendor and
-product_name DMI strings, without this patch brcmfmac will try to load:
-brcmfmac43340-sdio.Insyde-CherryTrail.txt as nvram file which is a bit
-too generic.
+The Voyo winpad A15 tablet contains quite generic names in the sys_vendor
+and product_name DMI strings, without this patch brcmfmac will try to load:
+rcmfmac4330-sdio.To be filled by O.E.M.-To be filled by O.E.M..txt
+as nvram file which is a bit too generic.
 
 Add a DMI quirk so that a unique and clearly identifiable nvram file name
-is used on the Predia Basic tablet.
+is used on the Voyo winpad A15 tablet.
+
+While preparing a matching linux-firmware update I noticed that the nvram
+is identical to the nvram used on the Prowise-PT301 tablet, so the new DMI
+quirk entry simply points to the already existing Prowise-PT301 nvram file.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210129171413.139880-1-hdegoede@redhat.com
+Link: https://lore.kernel.org/r/20210129171413.139880-2-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/broadcom/brcm80211/brcmfmac/dmi.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ .../wireless/broadcom/brcm80211/brcmfmac/dmi.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c
-index 4aa2561934d77..824a79f243830 100644
+index 824a79f243830..6d5188b78f2de 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/dmi.c
-@@ -40,6 +40,10 @@ static const struct brcmf_dmi_data pov_tab_p1006w_data = {
- 	BRCM_CC_43340_CHIP_ID, 2, "pov-tab-p1006w-data"
+@@ -44,6 +44,14 @@ static const struct brcmf_dmi_data predia_basic_data = {
+ 	BRCM_CC_43341_CHIP_ID, 2, "predia-basic"
  };
  
-+static const struct brcmf_dmi_data predia_basic_data = {
-+	BRCM_CC_43341_CHIP_ID, 2, "predia-basic"
++/* Note the Voyo winpad A15 tablet uses the same Ampak AP6330 module, with the
++ * exact same nvram file as the Prowise-PT301 tablet. Since the nvram for the
++ * Prowise-PT301 is already in linux-firmware we just point to that here.
++ */
++static const struct brcmf_dmi_data voyo_winpad_a15_data = {
++	BRCM_CC_4330_CHIP_ID, 4, "Prowise-PT301"
 +};
 +
  static const struct dmi_system_id dmi_platform_data[] = {
  	{
  		/* ACEPC T8 Cherry Trail Z8350 mini PC */
-@@ -111,6 +115,16 @@ static const struct dmi_system_id dmi_platform_data[] = {
+@@ -125,6 +133,16 @@ static const struct dmi_system_id dmi_platform_data[] = {
  		},
- 		.driver_data = (void *)&pov_tab_p1006w_data,
+ 		.driver_data = (void *)&predia_basic_data,
  	},
 +	{
-+		/* Predia Basic tablet (+ with keyboard dock) */
++		/* Voyo winpad A15 tablet */
 +		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "CherryTrail"),
-+			/* Mx.WT107.KUBNGEA02 with the version-nr dropped */
-+			DMI_MATCH(DMI_BIOS_VERSION, "Mx.WT107.KUBNGEA"),
++			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
++			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
++			/* Above strings are too generic, also match on BIOS date */
++			DMI_MATCH(DMI_BIOS_DATE, "11/20/2014"),
 +		},
-+		.driver_data = (void *)&predia_basic_data,
++		.driver_data = (void *)&voyo_winpad_a15_data,
 +	},
  	{}
  };
