@@ -2,105 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45906323839
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 09:02:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB4D1323852
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 09:10:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbhBXIAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 03:00:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56676 "EHLO
+        id S233674AbhBXIKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 03:10:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233988AbhBXIAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 03:00:25 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995EBC06174A
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 23:59:44 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lEp54-0001vy-D9; Wed, 24 Feb 2021 08:59:34 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lEp53-0005HD-4q; Wed, 24 Feb 2021 08:59:33 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Robin van der Gracht <robin@protonic.nl>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andre Naujoks <nautsch2@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v3 1/1] can: can_skb_set_owner(): fix ref counting if socket was closed before setting skb ownership
-Date:   Wed, 24 Feb 2021 08:59:32 +0100
-Message-Id: <20210224075932.20234-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        with ESMTP id S232144AbhBXIKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 03:10:12 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6F4C06174A
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:09:22 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id lr13so1472575ejb.8
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:09:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4hXopz/XWSSH0QBUDbuWuPX2XcafKxOnD39fxX8+oe0=;
+        b=DwsOIjDOmi8nKDZFszozTfmjsY50FEYCU8ib9Lt3Kx7M48MYhKEI1sJmq9DNvT60U0
+         /dEXOQkfiAuoVLmHUNp6VeEzx62rXRMrGyN1ostqhKjGKYL/8z2KcmedKN9w/s1Sxn/3
+         Qj8lBzq4tdl8nsX1/PjeULpHrqvrQ3HRyqIcU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4hXopz/XWSSH0QBUDbuWuPX2XcafKxOnD39fxX8+oe0=;
+        b=s/suGuSvU6mcm3e3x4WZ8lCNo/CRTrv+zjElK65iDptbIAl6t9zgKgyyRoTMZyaAVT
+         cDc3mng3qdYX0FukDPoUSgWzNjO2+XivG32CZyJH7drutE12Nu+9lu0mfQ52hMCC9q83
+         +rB7Mfk1groRk0Eh4wAt4swR6ccMGGGnraTFvnRq1sZNf2sQQttLezX8HXHLWk6kN0Zd
+         bYwIAG4OQ7UgCXZYw9nQ3uyrn5hx0F7ucL5wic9vDHIwMGc9eSn15sHYHpcbe/prh013
+         JpnuxAWV63d9XKBoUDfHsHz303nZ9Q0DqDAsnGw5VyO9H6rpaw5zbnAC7eW6pNXqPjMQ
+         wVhQ==
+X-Gm-Message-State: AOAM531zGViBNCR70IFKQ4FA+N+fFrMuCipFuLtm8+fmlbV2ySwNL8lD
+        p1+XHPSp7LZGIiW9upGShmtW1A==
+X-Google-Smtp-Source: ABdhPJxZEY7qzmfMH7xYdxlxTvQdmAU3JLHzK0xyoshe55PvYKLy1v7HK27rwqWOh/OLELd1hoP47A==
+X-Received: by 2002:a17:906:934f:: with SMTP id p15mr25483543ejw.473.1614154160886;
+        Wed, 24 Feb 2021 00:09:20 -0800 (PST)
+Received: from toad (79.184.34.53.ipv4.supernova.orange.pl. [79.184.34.53])
+        by smtp.gmail.com with ESMTPSA id y20sm859782edc.84.2021.02.24.00.09.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Feb 2021 00:09:20 -0800 (PST)
+Date:   Wed, 24 Feb 2021 09:08:55 +0100
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [Patch bpf-next v7 9/9] skmsg: remove unused sk_psock_stop()
+ declaration
+Message-ID: <20210224090855.718e8ad6@toad>
+In-Reply-To: <20210223184934.6054-10-xiyou.wangcong@gmail.com>
+References: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
+        <20210223184934.6054-10-xiyou.wangcong@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two ref count variables controlling the free()ing of a socket:
-- struct sock::sk_refcnt - which is changed by sock_hold()/sock_put()
-- struct sock::sk_wmem_alloc - which accounts the memory allocated by
-  the skbs in the send path.
+On Tue, 23 Feb 2021 10:49:34 -0800
+Cong Wang <xiyou.wangcong@gmail.com> wrote:
 
-In case there are still TX skbs on the fly and the socket() is closed,
-the struct sock::sk_refcnt reaches 0. In the TX-path the CAN stack
-clones an "echo" skb, calls sock_hold() on the original socket and
-references it. This produces the following back trace:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> It is not defined or used anywhere.
+> 
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-| WARNING: CPU: 0 PID: 280 at lib/refcount.c:25 refcount_warn_saturate+0x114/0x134
-| refcount_t: addition on 0; use-after-free.
-| Modules linked in: coda_vpu(E) v4l2_jpeg(E) videobuf2_vmalloc(E) imx_vdoa(E)
-| CPU: 0 PID: 280 Comm: test_can.sh Tainted: G            E     5.11.0-04577-gf8ff6603c617 #203
-| Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-| Backtrace:
-| [<80bafea4>] (dump_backtrace) from [<80bb0280>] (show_stack+0x20/0x24) r7:00000000 r6:600f0113 r5:00000000 r4:81441220
-| [<80bb0260>] (show_stack) from [<80bb593c>] (dump_stack+0xa0/0xc8)
-| [<80bb589c>] (dump_stack) from [<8012b268>] (__warn+0xd4/0x114) r9:00000019 r8:80f4a8c2 r7:83e4150c r6:00000000 r5:00000009 r4:80528f90
-| [<8012b194>] (__warn) from [<80bb09c4>] (warn_slowpath_fmt+0x88/0xc8) r9:83f26400 r8:80f4a8d1 r7:00000009 r6:80528f90 r5:00000019 r4:80f4a8c2
-| [<80bb0940>] (warn_slowpath_fmt) from [<80528f90>] (refcount_warn_saturate+0x114/0x134) r8:00000000 r7:00000000 r6:82b44000 r5:834e5600 r4:83f4d540
-| [<80528e7c>] (refcount_warn_saturate) from [<8079a4c8>] (__refcount_add.constprop.0+0x4c/0x50)
-| [<8079a47c>] (__refcount_add.constprop.0) from [<8079a57c>] (can_put_echo_skb+0xb0/0x13c)
-| [<8079a4cc>] (can_put_echo_skb) from [<8079ba98>] (flexcan_start_xmit+0x1c4/0x230) r9:00000010 r8:83f48610 r7:0fdc0000 r6:0c080000 r5:82b44000 r4:834e5600
-| [<8079b8d4>] (flexcan_start_xmit) from [<80969078>] (netdev_start_xmit+0x44/0x70) r9:814c0ba0 r8:80c8790c r7:00000000 r6:834e5600 r5:82b44000 r4:82ab1f00
-| [<80969034>] (netdev_start_xmit) from [<809725a4>] (dev_hard_start_xmit+0x19c/0x318) r9:814c0ba0 r8:00000000 r7:82ab1f00 r6:82b44000 r5:00000000 r4:834e5600
-| [<80972408>] (dev_hard_start_xmit) from [<809c6584>] (sch_direct_xmit+0xcc/0x264) r10:834e5600 r9:00000000 r8:00000000 r7:82b44000 r6:82ab1f00 r5:834e5600 r4:83f27400
-| [<809c64b8>] (sch_direct_xmit) from [<809c6c0c>] (__qdisc_run+0x4f0/0x534)
-
-To fix this problem, only set skb ownership to sockets which have still
-a ref count > 0.
-
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>
-Cc: Andre Naujoks <nautsch2@gmail.com>
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Fixes: 0ae89beb283a ("can: add destructor for self generated skbs")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- include/linux/can/skb.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
-index 685f34cfba20..655f33aa99e3 100644
---- a/include/linux/can/skb.h
-+++ b/include/linux/can/skb.h
-@@ -65,8 +65,7 @@ static inline void can_skb_reserve(struct sk_buff *skb)
- 
- static inline void can_skb_set_owner(struct sk_buff *skb, struct sock *sk)
- {
--	if (sk) {
--		sock_hold(sk);
-+	if (sk && refcount_inc_not_zero(&sk->sk_refcnt)) {
- 		skb->destructor = sock_efree;
- 		skb->sk = sk;
- 	}
--- 
-2.29.2
-
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
