@@ -2,142 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D4C032372A
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 07:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EEF032372C
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 07:14:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233166AbhBXGMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 01:12:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
+        id S234063AbhBXGNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 01:13:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhBXGMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 01:12:17 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86902C061574;
-        Tue, 23 Feb 2021 22:11:37 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id q20so650045pfu.8;
-        Tue, 23 Feb 2021 22:11:37 -0800 (PST)
+        with ESMTP id S229539AbhBXGM4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 01:12:56 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225EBC06174A;
+        Tue, 23 Feb 2021 22:12:16 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id c11so643898pfp.10;
+        Tue, 23 Feb 2021 22:12:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zj6+s1mx4qT4hXPh+NVhs6pnLcrPSvpQ67tRttpHvuE=;
-        b=YVXAxRJHtvuM3L+8WKDEVsUFCtWHPk4D8PH0fZ8I0jm/nVJDg9m7sNTKMiclG+1l/d
-         rTwMefnFpSb8tXzbsB9FP2YdiTyyorEYnwGWkjI5iVlfn4nHSxmUstfbXC5YOFTrYqNy
-         6KI5fdpfStniAtWa4KGwEsubmbGiPsUNJfbI9R/4QE4PvS+G5EIAh6xfM1hIMNPCyJ/Q
-         J0vKoJEX56mp/9Lds+B+P3aNTpcddqwuc4+AanL/T1gcQSvu1U0AY/H55lJRf4tCe7kI
-         KSUlUj6cmJxHMY9oXRe+xuKNve13f4mZ1OysKLfG8MOMWQIoEru38uwutmJmXZ8/ziZi
-         GRnQ==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C87YIkKVKFI0DF8+vH+AndEGXxxyw3xKzlEeNU6y0vc=;
+        b=bHHw2gywDdAUFeCpeLk3CTX99bSYtvvc1DJJ5Bi24nTF7MMaJWKz9LlCbKa1mwX4hy
+         LKBfSOWvTfkAFlEjtYXgX3EEL3io0zWv5KIs5QvBJuW1dP81PGLl33uHjS2yhWVcnG1M
+         3EZSHd36QgNx6zvrmMuwhb6Z1yaZOdmrBlzSqmqxcvQtIMG4uM4URbQq/eGAFUXvOLJg
+         eZ1AhvkPd8Zapm2WQNdz2QdSVNB6zqOPaqYGma3NAF7io5mktQpsroil3waXPpqHnpsO
+         A7KRVveZwN5/mJgghOHLFSmnswyyW9amP4DoZ7ZyctTgKT7Z8uO5F9H4DVxq2L215cQD
+         znVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zj6+s1mx4qT4hXPh+NVhs6pnLcrPSvpQ67tRttpHvuE=;
-        b=tE/T+lK7Ddcjnw1G3SmXvn184/nPMCxrZudRS6BjznXHSpwzdXeueCzTK5p93VUdpJ
-         /Ic+8ykf0WvYnsjDq79+ljWLzxNK3AR+6Zcd+tUZhcrl+XfEZEbHXpb6p0YCtC2/2Ylp
-         eBKo2juOZwtcSJSCOKuNLBO8zw7btmcj3TjU/sU+YsK1s+xze4YWzxjWfwT7qEaFX37y
-         T7KnLM7lw6uswsc370hxYlVmHWpAbSR0UPdI+KIUv4xJ+FmKObGnftAteo017m1oPhem
-         Wnzwm/VuG78vhxiBFdKTkhwuvsASd7P6liTiZxma6acRUbtd7uvDUG6kDtS5Dij+cp19
-         TKXg==
-X-Gm-Message-State: AOAM53345kPsFsRF2Q2NUU5hofbsezOwrZhnqhH6TeA/0IsCfJIHHqHT
-        jWtoufbyGIvG3YYQOOyz/co=
-X-Google-Smtp-Source: ABdhPJy2uhG4S1YTka5Y9czANAmaTrDuIei2RSe07gQaRQOPfyi4T3I+X55oMWDMJQQW5pSq/knFEg==
-X-Received: by 2002:a62:5a45:0:b029:1e5:4c81:c59 with SMTP id o66-20020a625a450000b02901e54c810c59mr30553661pfb.51.1614147096964;
-        Tue, 23 Feb 2021 22:11:36 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:69bf])
-        by smtp.gmail.com with ESMTPSA id p8sm1180634pff.79.2021.02.23.22.11.34
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C87YIkKVKFI0DF8+vH+AndEGXxxyw3xKzlEeNU6y0vc=;
+        b=aHm55P/6iZjIe7KvcuXiKVDk+AxynynyEfa+3vfovN73YL9pK256tUCPSdV1NE1/cn
+         6pDP/Q7Rnf6c6E7WcPMyoHDis2FLXvxPMvw1h7bA7I1AK9dfbqwPS7cbV5CTQ3ivSdi6
+         YZa8JKLf1Itk4coS8W419ZiiPmUHXA9JLy2m9IbfEC791ByoZpnd349WrJcqi5CW3bb2
+         q0iC3fFKEif3NTN53dd4k0kIoFa+kEYkwONqDJ+lgmZ/lwLk+m8XGVdAcYQrYcKOsOl9
+         NKavAMWLI1C4ChBaH4XcOdki7LZmGEhAanuxcek3Hor7PSiiOV50WpDWsCXOEqVP+swq
+         CiOQ==
+X-Gm-Message-State: AOAM531auVFmnaF/KPf8AxggipzY20LFEz6MkFZKCgv7LLcdLP0eai5j
+        3yWu+lBvN9drTDoFxvZbDhw=
+X-Google-Smtp-Source: ABdhPJxx27iwZoozg4I5N8jqrNc8CIXT2Bc99UOsVWNYodi7D6RHOPk9MvTW8VFYnf1BHuvUaF40sQ==
+X-Received: by 2002:a63:da57:: with SMTP id l23mr11770660pgj.11.1614147135716;
+        Tue, 23 Feb 2021 22:12:15 -0800 (PST)
+Received: from container-ubuntu.lan ([171.211.28.221])
+        by smtp.gmail.com with ESMTPSA id g6sm1226533pfi.15.2021.02.23.22.12.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 22:11:36 -0800 (PST)
-Date:   Tue, 23 Feb 2021 22:11:33 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        kernel-team <kernel-team@cloudflare.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 4/8] bpf: add PROG_TEST_RUN support for
- sk_lookup programs
-Message-ID: <20210224061133.t4aewwgpzlbhchux@ast-mbp.dhcp.thefacebook.com>
-References: <20210216105713.45052-1-lmb@cloudflare.com>
- <20210216105713.45052-5-lmb@cloudflare.com>
- <20210223011153.4cvzpvxqn7arbcej@ast-mbp.dhcp.thefacebook.com>
- <CACAyw99hQgG+=WvUVmDU-E6nGsPvosSuSOWgw9uWDDZ-vFfsqw@mail.gmail.com>
+        Tue, 23 Feb 2021 22:12:14 -0800 (PST)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC net-next] net: dsa: rtl8366rb: support bridge offloading
+Date:   Wed, 24 Feb 2021 14:12:05 +0800
+Message-Id: <20210224061205.23270-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACAyw99hQgG+=WvUVmDU-E6nGsPvosSuSOWgw9uWDDZ-vFfsqw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 10:10:44AM +0000, Lorenz Bauer wrote:
-> On Tue, 23 Feb 2021 at 01:11, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > I'm struggling to come up with the case where running N sk_lookup progs
-> > like this cannot be done with running them one by one.
-> > It looks to me that this N prog_fds api is not really about running and
-> > testing the progs, but about testing BPF_PROG_SK_LOOKUP_RUN_ARRAY()
-> > SK_PASS vs SK_DROP logic.
-> 
-> In a way that is true, yes. TBH I figured that my patch set would be
-> rejected if I just
-> implemented single program test run, since it doesn't allow exercising the full
-> sk_lookup test run semantics.
-> 
-> > So it's more of the kernel infra testing than program testing.
-> > Are you suggesting that the sequence of sk_lookup progs are so delicate
-> > that they are aware of each other and _has_ to be tested together
-> > with gluing logic that the macro provides?
-> 
-> We currently don't have a case like that.
-> 
-> > But if it is so then testing the progs one by one would be better,
-> > because test_run will be able to check each individual prog return code
-> > instead of implicit BPF_PROG_SK_LOOKUP_RUN_ARRAY logic.
-> 
-> That means emulating the kind of subtle BPF_PROG_SK_LOOKUP_RUN_ARRAY
-> in user space, which isn't trivial and a source of bugs.
+Use port isolation registers to configure bridge offloading.
+Remove the VLAN init, as we have proper CPU tag and bridge offloading
+support now.
 
-I'm not at all suggesting to emulate it in user space.
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+---
+This is not tested, as I don't have a RTL8366RB board. And I think there
+is potential race condition in port_bridge_{join,leave}.
 
-> For example we rely on having multiple programs attached when
-> "upgrading" from old to new BPF. Here we care mostly that we don't drop
-> lookups on the floor, and the behaviour is tightly coupled to the in-kernel
-> implementation. It's not much use to cobble up my own implementation of
-> SK_LOOKUP_RUN_ARRAY here, I would rather use multi progs to test this.
-> Of course we can also already spawn a netns and test it that way, so not
-> much is lost if there is no multi prog test run.
+ drivers/net/dsa/rtl8366rb.c | 73 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 67 insertions(+), 6 deletions(-)
 
-I mean that to test the whole setup close to production the netns is
-probably needed because sockets would mess with init_netns.
-But to test each individual bpf prog there is no need for RUN_ARRAY.
-Each prog can be more accurately tested in isolation.
-RUN_ARRAY adds, as you said, subtle details of RUN_ARRAY macro.
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index a89093bc6c6a..9f6e2b361216 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -300,6 +300,12 @@
+ #define RTL8366RB_INTERRUPT_STATUS_REG	0x0442
+ #define RTL8366RB_NUM_INTERRUPT		14 /* 0..13 */
+ 
++/* Port isolation registers */
++#define RTL8366RB_PORT_ISO_BASE		0x0F08
++#define RTL8366RB_PORT_ISO(pnum)	(RTL8366RB_PORT_ISO_BASE + (pnum))
++#define RTL8366RB_PORT_ISO_EN		BIT(0)
++#define RTL8366RB_PORT_ISO_PORTS_MASK	GENMASK(7, 1)
++
+ /* bits 0..5 enable force when cleared */
+ #define RTL8366RB_MAC_FORCE_CTRL_REG	0x0F11
+ 
+@@ -835,6 +841,15 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Isolate user ports */
++	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
++		ret = regmap_write(smi->map, RTL8366RB_PORT_ISO(i),
++				   RTL8366RB_PORT_ISO_EN |
++				   BIT(RTL8366RB_PORT_NUM_CPU + 1));
++		if (ret)
++			return ret;
++	}
++
+ 	/* Set up the "green ethernet" feature */
+ 	ret = rtl8366rb_jam_table(rtl8366rb_green_jam,
+ 				  ARRAY_SIZE(rtl8366rb_green_jam), smi, false);
+@@ -963,10 +978,6 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 			return ret;
+ 	}
+ 
+-	ret = rtl8366_init_vlan(smi);
+-	if (ret)
+-		return ret;
+-
+ 	ret = rtl8366rb_setup_cascaded_irq(smi);
+ 	if (ret)
+ 		dev_info(smi->dev, "no interrupt support\n");
+@@ -977,8 +988,6 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 		return -ENODEV;
+ 	}
+ 
+-	ds->configure_vlan_while_not_filtering = false;
+-
+ 	return 0;
+ }
+ 
+@@ -1127,6 +1136,56 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
+ 	rb8366rb_set_port_led(smi, port, false);
+ }
+ 
++static int
++rtl8366rb_port_bridge_join(struct dsa_switch *ds, int port,
++			   struct net_device *bridge)
++{
++	struct realtek_smi *smi = ds->priv;
++	unsigned int port_bitmap = 0;
++	int ret, i;
++
++	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
++		if (i == port)
++			continue;
++		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++			continue;
++		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
++					 0, BIT(port + 1));
++		if (ret)
++			return ret;
++
++		port_bitmap |= BIT(i);
++	}
++
++	return regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
++				  0, port_bitmap << 1);
++}
++
++static int
++rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
++			    struct net_device *bridge)
++{
++	struct realtek_smi *smi = ds->priv;
++	unsigned int port_bitmap = 0;
++	int ret, i;
++
++	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
++		if (i == port)
++			continue;
++		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++			continue;
++		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
++					 BIT(port + 1), 0);
++		if (ret)
++			return ret;
++
++		port_bitmap |= BIT(i);
++	}
++
++	return regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
++				  port_bitmap << 1, 0);
++}
++
+ static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ {
+ 	struct realtek_smi *smi = ds->priv;
+@@ -1510,6 +1569,8 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+ 	.get_strings = rtl8366_get_strings,
+ 	.get_ethtool_stats = rtl8366_get_ethtool_stats,
+ 	.get_sset_count = rtl8366_get_sset_count,
++	.port_bridge_join = rtl8366rb_port_bridge_join,
++	.port_bridge_leave = rtl8366rb_port_bridge_leave,
+ 	.port_vlan_filtering = rtl8366_vlan_filtering,
+ 	.port_vlan_add = rtl8366_vlan_add,
+ 	.port_vlan_del = rtl8366_vlan_del,
+-- 
+2.25.1
 
-> > It feels less of the unit test and more as a full stack test,
-> > but if so then lack of cookie on input is questionable.
-> 
-> I'm not sure what you mean with "the lack of cookie on input is
-> questionable", can you rephrase?
-> 
-> > In other words I'm struggling with in-between state of the api.
-> > test_run with N fds is not really a full test, but not a unit test either.
-> 
-> If I understand you correctly, a "full" API would expose the
-> intermediate results from
-> individual programs as well as the final selection? Sounds quite
-> complicated, and as
-> you point out most of the benefits can be had from running single programs.
-
-I'm not suggesting to return intermediate results either.
-I'm looking at test_run as a facility to test one individual program
-at a time. Like in tc, cgroups, tracing we can have multiple progs
-attached to one place and the final verdict will depend on what
-each prog is returning. But there is no need to test them all together
-through BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY.
-Each prog is more accurately validated independently.
-Hence I'm puzzled why sk_lookup's RUN_ARRAY is special.
-Its drop/pass/selected sk is more or less the same complexity
-as CGROUP_INET_EGRESS_RUN_ARRAY.
