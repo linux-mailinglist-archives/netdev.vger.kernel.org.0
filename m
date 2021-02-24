@@ -2,123 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2470F324517
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 21:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A0C324532
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 21:29:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235437AbhBXUSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 15:18:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        id S235475AbhBXU3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 15:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235686AbhBXUQH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 15:16:07 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9ECEC061786
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 12:15:26 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id o10so3858919wmc.1
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 12:15:26 -0800 (PST)
+        with ESMTP id S235439AbhBXU3e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 15:29:34 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC21CC061574;
+        Wed, 24 Feb 2021 12:28:53 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id k13so3438353otn.13;
+        Wed, 24 Feb 2021 12:28:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=J1gJV1o9Sl1Wnh9xWJQFa/KkawfMsaygfgB8RdQE8os=;
-        b=PcA0tffJHzRc0QDxWkZcmb6WbGBYLYs9WEMRBSGCgpFlPrgGJCTauBZS1e0nR+TIuo
-         P7bS/cIRp3mXEScNS+sPOjB/weotyBiu2bFS8B4AIMQmUHok6E0B6AqYR3HHAytYr24i
-         uN8Z4aDXQlcyRdC8w9kyOasCEF5+QrJ0cMzcCNw7vE4fgPegZEsEMmV9qVhb+IEOTzYA
-         Kng0odzvZpmNLSNsAfEgTkIEpPQYeei+X7ma2gcmv4yxuiRcwOtHljf2UzuxtGwIGhVd
-         M8mDL6Ir4geuuDKHscHvoJ6c5rfKglpo4UMtOUmkY3h9yFYWzfiF7Cz65NRfB9RHhRnT
-         vkKQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=g8yzyix+IBCeN/i+RiSu4Jq3q/QFYRj0Nua9JyTjFK4=;
+        b=hqDvrFDsQ5MvQSbJVnlL/9wEf+SAx47eVa3PVW0GqFk7CflZ4iulDIBXQVzWD/AdQb
+         z8CdTdSUggVtoa8YgDRhKtV0YjEDogFXBZL3f0BsUodiJzM+g3R+1DkP1gvwRmkXjpx7
+         lkoARERQplIs8XTTwfWSZt6eb5S39YqdWyt1ZlBuULD9OGNFHwPBzZsxF8ftlFqhFYRb
+         ZxoUrR4Szn/5gAYB2ygEUAl/TOSouQjh7feR5eG5rZ/LNoUi6riHzh8Sb0+mXNDUW4X9
+         6DOT19PHUayPbBm4uGZQA0OM6qFPtAC/EQnpsX+QVQRmTiqcOoYYgIPVxk/6yg/Di0VV
+         JyIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J1gJV1o9Sl1Wnh9xWJQFa/KkawfMsaygfgB8RdQE8os=;
-        b=l/jDC7jo6LElVBk/b4vDkUC0b9nVOeIQzYQTryh9+GDSYBlk80wjkBuPDy/4hExfjK
-         gJ0BCt2anLcPIL0016Fo4DHuGo642hNqLlIjhfNw4FObtYzLFFhP6lffoc7HnrftRrNJ
-         0nj2ChB1rGFCxR+XwRWJ7YSWHhVRHdWmyOxzosrPml59gDAc/X3jAi6f83aFZ6gq09OU
-         IfXqAkBtB7v50KUHV1x+YxKCnQQPN7dFqeUPwSQIHEmppqWwh4wNxdcUrrUlvN9XaNQr
-         HwVPzM6OFjMczutNZr+RzBqGWBj2WE61oripAAdeDxd+lxC/OWseszMW4kuRDfxXH5sX
-         2A5g==
-X-Gm-Message-State: AOAM5324GV2LUyHdppR1Pvepgz9fVPa4/4lDALEvtRoCH1+YTNwUzaSy
-        ufxn+k9jPe1GKaAgQQiZo6cmBw==
-X-Google-Smtp-Source: ABdhPJxf2wBacwv+7nH21lGN1XxSnXmyTznri5GC7Ka7XM0MNYSpX5qm+NtljVGMt7wCrErHGVhWNQ==
-X-Received: by 2002:a1c:f60b:: with SMTP id w11mr5227838wmc.3.1614197725456;
-        Wed, 24 Feb 2021 12:15:25 -0800 (PST)
-Received: from apalos.home (ppp-94-64-113-158.home.otenet.gr. [94.64.113.158])
-        by smtp.gmail.com with ESMTPSA id y9sm1850442wrm.88.2021.02.24.12.15.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 12:15:25 -0800 (PST)
-Date:   Wed, 24 Feb 2021 22:15:22 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Mel Gorman <mgorman@techsingularity.net>, linux-mm@kvack.org,
-        chuck.lever@oracle.com, netdev@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 2/3] net: page_pool: use alloc_pages_bulk in
- refill code path
-Message-ID: <YDaz2tXXxEkcBfRR@apalos.home>
-References: <161419296941.2718959.12575257358107256094.stgit@firesoul>
- <161419300618.2718959.11165518489200268845.stgit@firesoul>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=g8yzyix+IBCeN/i+RiSu4Jq3q/QFYRj0Nua9JyTjFK4=;
+        b=tA7iPbEuXqsmVQlSZFaCC3Rw6GyxqUQFf1545xTI0eut2b0yB49DA3HyhyGVtk9rX4
+         v/o4AoIOdNcmdIxpciSKgKJz7X8gyUQlb7SCY7ABtbtXaDrYHSp5LsSbHlLFV/lXjS/y
+         UUxAq608S3gJDUQh8Rm/P5Ui9JVQ0PQ4r5eMYz5ww2iDaLdlhhKArEV7l54dKcovZNOh
+         t62i/cwtzICcO5dBwakXeFHvBqm/IdRqCAkLvwtR28CWEn9Uw19WXlboVAkFbcdh+eox
+         4jC0qK3+e8/3t5G0gkk5/4cPAJvqdSZA15vj0d1dwQtThz/r6zJRn4PMM8KTpA1/q55P
+         GVeA==
+X-Gm-Message-State: AOAM531uCTH+3xJgfqIiwi6XpDqf7ceJmJ56JfKqlAJr2rM+pxD24sIf
+        KGwB8Ks/KfLa8qx6O5IqjU4=
+X-Google-Smtp-Source: ABdhPJyyb/Tctv0HAuz3MFor4ImuhjdoiT5AWIvz+WIQw7tqI/ZQkeGs/rqa/9iNH8KMUN2e4Lak7Q==
+X-Received: by 2002:a9d:7103:: with SMTP id n3mr25109608otj.223.1614198533309;
+        Wed, 24 Feb 2021 12:28:53 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.40])
+        by smtp.googlemail.com with ESMTPSA id h15sm598731otq.13.2021.02.24.12.28.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Feb 2021 12:28:52 -0800 (PST)
+Subject: Re: [PATCH] ipv6: Honor route mtu if it is within limit of dev mtu
+To:     Kaustubh Pandey <kapandey@codeaurora.org>,
+        Stefano Brivio <sbrivio@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sharathv@codeaurora.org,
+        chinagar@codeaurora.org
+References: <1614011555-21951-1-git-send-email-kapandey@codeaurora.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ef380be3-0a87-9599-f3ea-ec7779ad5db1@gmail.com>
+Date:   Wed, 24 Feb 2021 13:28:49 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <161419300618.2718959.11165518489200268845.stgit@firesoul>
+In-Reply-To: <1614011555-21951-1-git-send-email-kapandey@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jesper, 
-
-On Wed, Feb 24, 2021 at 07:56:46PM +0100, Jesper Dangaard Brouer wrote:
-> There are cases where the page_pool need to refill with pages from the
-> page allocator. Some workloads cause the page_pool to release pages
-> instead of recycling these pages.
+On 2/22/21 9:32 AM, Kaustubh Pandey wrote:
+> When netdevice MTU is increased via sysfs, NETDEV_CHANGEMTU is raised.
 > 
-> For these workload it can improve performance to bulk alloc pages from
-> the page-allocator to refill the alloc cache.
+> addrconf_notify -> rt6_mtu_change -> rt6_mtu_change_route ->
+> fib6_nh_mtu_change
 > 
-> For XDP-redirect workload with 100G mlx5 driver (that use page_pool)
-> redirecting xdp_frame packets into a veth, that does XDP_PASS to create
-> an SKB from the xdp_frame, which then cannot return the page to the
-> page_pool. In this case, we saw[1] an improvement of 18.8% from using
-> the alloc_pages_bulk API (3,677,958 pps -> 4,368,926 pps).
+> As part of handling NETDEV_CHANGEMTU notification we land up on a
+> condition where if route mtu is less than dev mtu and route mtu equals
+> ipv6_devconf mtu, route mtu gets updated.
 > 
-> [1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org
+> Due to this v6 traffic end up using wrong MTU then configured earlier.
+> This commit fixes this by removing comparison with ipv6_devconf
+> and updating route mtu only when it is greater than incoming dev mtu.
 > 
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-[...]
-
-> +	/* Remaining pages store in alloc.cache */
-> +	list_for_each_entry_safe(page, next, &page_list, lru) {
-> +		list_del(&page->lru);
-> +		if (pp_flags & PP_FLAG_DMA_MAP) {
-> +			page = page_pool_dma_map(pool, page);
-> +			if (!page)
-
-As I commented on the previous patch, i'd prefer the put_page() here to be
-explicitly called, instead of hiding in the page_pool_dma_map()
-
-> +				continue;
-> +		}
-> +		if (likely(pool->alloc.count < PP_ALLOC_CACHE_SIZE)) {
-> +			pool->alloc.cache[pool->alloc.count++] = page;
-> +			pool->pages_state_hold_cnt++;
-> +			trace_page_pool_state_hold(pool, page,
-> +						   pool->pages_state_hold_cnt);
-> +		} else {
-> +			put_page(page);
-> +		}
-> +	}
-> +out:
->  	if (pool->p.flags & PP_FLAG_DMA_MAP) {
-> -		page = page_pool_dma_map(pool, page);
-> -		if (!page)
-> +		first_page = page_pool_dma_map(pool, first_page);
-> +		if (!first_page)
->  			return NULL;
->  	}
+> This can be easily reproduced with below script:
+> pre-condition:
+> device up(mtu = 1500) and route mtu for both v4 and v6 is 1500
+> 
+> test-script:
+> ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1400
+> ip -6 route change 2001::/64 dev eth0 metric 256 mtu 1400
+> echo 1400 > /sys/class/net/eth0/mtu
+> ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1500
+> echo 1500 > /sys/class/net/eth0/mtu
+> 
+> Signed-off-by: Kaustubh Pandey <kapandey@codeaurora.org>
+> ---
+>  net/ipv6/route.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index 1536f49..653b6c7 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -4813,8 +4813,7 @@ static int fib6_nh_mtu_change(struct fib6_nh *nh, void *_arg)
+>  		struct inet6_dev *idev = __in6_dev_get(arg->dev);
+>  		u32 mtu = f6i->fib6_pmtu;
 >  
-[...]
+> -		if (mtu >= arg->mtu ||
+> -		    (mtu < arg->mtu && mtu == idev->cnf.mtu6))
+> +		if (mtu >= arg->mtu)
+>  			fib6_metric_set(f6i, RTAX_MTU, arg->mtu);
+>  
+>  		spin_lock_bh(&rt6_exception_lock);
+> 
 
-Cheers
-/Ilias
+The existing logic mirrors what is done for exceptions, see
+rt6_mtu_change_route_allowed and commit e9fa1495d738.
+
+It seems right to me to drop the mtu == idev->cnf.mtu6 comparison in
+which case the exceptions should do the same.
+
+Added author of e9fa1495d738 in case I am overlooking something.
+
+Test case should be added to tools/testing/selftests/net/pmtu.sh, and
+did you run that script with the proposed change?
