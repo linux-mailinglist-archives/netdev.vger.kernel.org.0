@@ -2,30 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3CD32377E
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 07:46:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 576F0323781
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 07:49:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234205AbhBXGqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 01:46:11 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:12682 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231517AbhBXGqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 01:46:07 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6035f6060001>; Tue, 23 Feb 2021 22:45:26 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 24 Feb 2021 06:45:24 +0000
-Date:   Wed, 24 Feb 2021 08:45:20 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     Jason Wang <jasowang@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
+        id S234236AbhBXGsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 01:48:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55548 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234220AbhBXGsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 01:48:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614149199;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SrFMsb94vi7hpDJMqK4fNRwcw8r8Q/1jRcohhOym2YA=;
+        b=UASjuIYZ63oiW4K/YXv1ECivn5p/8xyHVX1+LWVfz0y8TySV8/fngjbM1tZGttcBtqthT/
+        cqqXKr3Xz5DyuJ7Jb89c38NlPmhE4aPSUAXSdYX7mYWJaXUgbfzlA1eq9VdPm2fzJBF4xM
+        zXD2ygfXxzArjdNJ4YDhmBAMt+dHrzQ=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-161-s2pAuPDoNamvlxVyCfeVlg-1; Wed, 24 Feb 2021 01:46:38 -0500
+X-MC-Unique: s2pAuPDoNamvlxVyCfeVlg-1
+Received: by mail-wr1-f69.google.com with SMTP id p15so590970wre.13
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 22:46:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=SrFMsb94vi7hpDJMqK4fNRwcw8r8Q/1jRcohhOym2YA=;
+        b=YNfMA+7vjJNY/3Jrg+V2zfeqVv3kMw0C4g118TwFlkH5Oo2EH4O+3fFQU1Ln1skgJG
+         Yk68Tb4bOjke5dR763GFzvl+aCkETgb13fE0tDSmgjBc9Tcel9KS9MDxkaGS31ukUsn2
+         wJKhkTnhhJQ0zP1go95LRn5GmC7nXV7LFEfmpcTUSWGdGd5A0RPvTxjBl9MU9FwbxfE4
+         N2QCIQPHQNBAvQsCK75poyY4Mn/3ygS72XRhfqHDSDicwFy2UYi0jqY+VVGkM/uS4kd5
+         KqSAltc5MMBNbhrDwJx4GT4ONdJKY7/JNuYpbKLUxUsC/MTqWbB8wUvSQiF+4PCgtiqZ
+         M+RQ==
+X-Gm-Message-State: AOAM5324x8xdMbXD7cCvuOMopMqHJIWuG1an0OoGrOpn96x5tjIzgYcC
+        EUE43oE9a4lAvCvBvvTzdQfxz7BfZfUlrLk1GLF5+HUAbCyq+EHTpljXhMXwK12GCbOcPBRV+iw
+        wOyCBQqc7JZ6v6+7H
+X-Received: by 2002:adf:d0c5:: with SMTP id z5mr8150869wrh.289.1614149196913;
+        Tue, 23 Feb 2021 22:46:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzH56ZjY0BPRYg8d2IZLXaOZCvuJY0zLzqJIHo7nsxt7nkhq54ic8vvmJMjM6bClgLygBvSBA==
+X-Received: by 2002:adf:d0c5:: with SMTP id z5mr8150856wrh.289.1614149196761;
+        Tue, 23 Feb 2021 22:46:36 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id i1sm1141060wmq.12.2021.02.23.22.46.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 22:46:36 -0800 (PST)
+Date:   Wed, 24 Feb 2021 01:46:33 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-Message-ID: <20210224064520.GA204317@mtl-vdi-166.wap.labs.mlnx>
+Message-ID: <20210224014232-mutt-send-email-mst@kernel.org>
 References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
  <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
  <20210222023040-mutt-send-email-mst@kernel.org>
@@ -33,172 +66,127 @@ References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
  <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
  <20210223082536-mutt-send-email-mst@kernel.org>
  <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <7e6291a4-30b1-6b59-a2bf-713e7b56826d@redhat.com>
- <20210224000528-mutt-send-email-mst@kernel.org>
+ <20210224000057-mutt-send-email-mst@kernel.org>
+ <0559fd8c-ff44-cb7a-8a74-71976dd2ee33@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20210224000528-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614149126; bh=s2r48334Ejcwu9RFL4dtdY7OXJJFkr9ocmkzw7NkgFw=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:Content-Transfer-Encoding:
-         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=ZDMP9uViUqNa0GXqr19gOOJlVWkmf8byWl2nRGkRRWeSDKB6I7QUvXTODkg/YJ4Ct
-         7zXzet1bWU1ZWTd742MM5o7llK1BgP9i7pgnRW6JnK4Ku/90UnuJLgdWI6/63OuOsQ
-         gjshtJdCskCuGf8tDy0ZpVpVzJGNH/ysf/OoDvNVCFkFn0Dwss1TRJf+R+oYe/+NmV
-         SOl2jjBGgM8v6exuIpOs+lmj8dqTnoMV/TMUbUXj4vbbdScOxtwMUNTaoSX50wVbrj
-         rcbNEqR6ald2ashMIZ+1W5BOtVLIdfpmm/XOhtBFm8ZVrT/lWw7HOa582AprbipBph
-         i5vW/JJihlPWQ==
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0559fd8c-ff44-cb7a-8a74-71976dd2ee33@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 12:17:58AM -0500, Michael S. Tsirkin wrote:
-> On Wed, Feb 24, 2021 at 11:20:01AM +0800, Jason Wang wrote:
-> >=20
-> > On 2021/2/24 3:35 =E4=B8=8A=E5=8D=88, Si-Wei Liu wrote:
-> > >=20
-> > >=20
+On Wed, Feb 24, 2021 at 02:04:36PM +0800, Jason Wang wrote:
+> 
+> On 2021/2/24 1:04 下午, Michael S. Tsirkin wrote:
+> > On Tue, Feb 23, 2021 at 11:35:57AM -0800, Si-Wei Liu wrote:
+> > > 
 > > > On 2/23/2021 5:26 AM, Michael S. Tsirkin wrote:
 > > > > On Tue, Feb 23, 2021 at 10:03:57AM +0800, Jason Wang wrote:
-> > > > > On 2021/2/23 9:12 =E4=B8=8A=E5=8D=88, Si-Wei Liu wrote:
-> > > > > >=20
+> > > > > On 2021/2/23 9:12 上午, Si-Wei Liu wrote:
 > > > > > > On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
 > > > > > > > On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
-> > > > > > > > On 2021/2/19 7:54 =E4=B8=8B=E5=8D=88, Si-Wei Liu wrote:
-> > > > > > > > > Commit 452639a64ad8 ("vdpa: make sure set_features is inv=
-oked
+> > > > > > > > On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
+> > > > > > > > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
 > > > > > > > > > for legacy") made an exception for legacy guests to reset
-> > > > > > > > > features to 0, when config space is accessed before featu=
-res
-> > > > > > > > > are set. We should relieve the verify_min_features() chec=
-k
+> > > > > > > > > features to 0, when config space is accessed before features
+> > > > > > > > > are set. We should relieve the verify_min_features() check
 > > > > > > > > > and allow features reset to 0 for this case.
-> > > > > > > > >=20
-> > > > > > > > > It's worth noting that not just legacy guests could acces=
-s
+> > > > > > > > > 
+> > > > > > > > > It's worth noting that not just legacy guests could access
 > > > > > > > > > config space before features are set. For instance, when
 > > > > > > > > > feature VIRTIO_NET_F_MTU is advertised some modern driver
-> > > > > > > > > will try to access and validate the MTU present in the co=
-nfig
+> > > > > > > > > will try to access and validate the MTU present in the config
 > > > > > > > > > space before virtio features are set.
 > > > > > > > > This looks like a spec violation:
-> > > > > > > >=20
+> > > > > > > > 
 > > > > > > > > "
-> > > > > > > >=20
+> > > > > > > > 
 > > > > > > > > The following driver-read-only field, mtu only exists if
 > > > > > > > > VIRTIO_NET_F_MTU is
 > > > > > > > > set.
 > > > > > > > > This field specifies the maximum MTU for the driver to use.
 > > > > > > > > "
-> > > > > > > >=20
+> > > > > > > > 
 > > > > > > > > Do we really want to workaround this?
-> > > > > > > >=20
+> > > > > > > > 
 > > > > > > > > Thanks
 > > > > > > > And also:
-> > > > > > >=20
+> > > > > > > 
 > > > > > > > The driver MUST follow this sequence to initialize a device:
 > > > > > > > 1. Reset the device.
-> > > > > > > 2. Set the ACKNOWLEDGE status bit: the guest OS has
-> > > > > > > noticed the device.
-> > > > > > > 3. Set the DRIVER status bit: the guest OS knows how to drive=
- the
+> > > > > > > 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
+> > > > > > > 3. Set the DRIVER status bit: the guest OS knows how to drive the
 > > > > > > > device.
-> > > > > > > 4. Read device feature bits, and write the subset of feature =
-bits
+> > > > > > > 4. Read device feature bits, and write the subset of feature bits
 > > > > > > > understood by the OS and driver to the
-> > > > > > > device. During this step the driver MAY read (but MUST NOT wr=
-ite)
+> > > > > > > device. During this step the driver MAY read (but MUST NOT write)
 > > > > > > > the device-specific configuration
-> > > > > > > fields to check that it can support the device before accepti=
-ng it.
-> > > > > > > 5. Set the FEATURES_OK status bit. The driver MUST NOT accept=
- new
+> > > > > > > fields to check that it can support the device before accepting it.
+> > > > > > > 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new
 > > > > > > > feature bits after this step.
-> > > > > > > 6. Re-read device status to ensure the FEATURES_OK bit is sti=
-ll set:
+> > > > > > > 6. Re-read device status to ensure the FEATURES_OK bit is still set:
 > > > > > > > otherwise, the device does not
 > > > > > > > support our subset of features and the device is unusable.
-> > > > > > > 7. Perform device-specific setup, including discovery of virt=
-queues
+> > > > > > > 7. Perform device-specific setup, including discovery of virtqueues
 > > > > > > > for the device, optional per-bus setup,
-> > > > > > > reading and possibly writing the device=E2=80=99s virtio conf=
-iguration
+> > > > > > > reading and possibly writing the device’s virtio configuration
 > > > > > > > space, and population of virtqueues.
-> > > > > > > 8. Set the DRIVER_OK status bit. At this point the device is =
-=E2=80=9Clive=E2=80=9D.
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > so accessing config space before FEATURES_OK is a spec
-> > > > > > > violation, right?
-> > > > > > It is, but it's not relevant to what this commit tries to addre=
-ss. I
+> > > > > > > 8. Set the DRIVER_OK status bit. At this point the device is “live”.
+> > > > > > > 
+> > > > > > > 
+> > > > > > > so accessing config space before FEATURES_OK is a spec violation, right?
+> > > > > > It is, but it's not relevant to what this commit tries to address. I
 > > > > > > thought the legacy guest still needs to be supported.
-> > > > > >=20
-> > > > > > Having said, a separate patch has to be posted to fix the guest=
- driver
-> > > > > > issue where this discrepancy is introduced to
-> > > > > > virtnet_validate() (since
-> > > > > > commit fe36cbe067). But it's not technically related to this pa=
-tch.
-> > > > > >=20
+> > > > > > 
+> > > > > > Having said, a separate patch has to be posted to fix the guest driver
+> > > > > > issue where this discrepancy is introduced to virtnet_validate() (since
+> > > > > > commit fe36cbe067). But it's not technically related to this patch.
+> > > > > > 
 > > > > > > -Siwei
-> > > > >=20
-> > > > > I think it's a bug to read config space in validate, we should
-> > > > > move it to
+> > > > > I think it's a bug to read config space in validate, we should move it to
 > > > > > virtnet_probe().
-> > > > >=20
+> > > > > 
 > > > > > Thanks
-> > > > I take it back, reading but not writing seems to be explicitly
-> > > > allowed by spec.
+> > > > I take it back, reading but not writing seems to be explicitly allowed by spec.
 > > > > So our way to detect a legacy guest is bogus, need to think what is
 > > > > the best way to handle this.
-> > > Then maybe revert commit fe36cbe067 and friends, and have QEMU detect
-> > > legacy guest? Supposedly only config space write access needs to be
-> > > guarded before setting FEATURES_OK.
-> >=20
-> >=20
-> > I agree. My understanding is that all vDPA must be modern device (since
-> > VIRITO_F_ACCESS_PLATFORM is mandated) instead of transitional device.
-> >=20
-> > Thanks
->=20
-> Well mlx5 has some code to handle legacy guests ...
-> Eli, could you comment? Is that support unused right now?
->=20
-
-If you mean support for version 1.0, well the knob is there but it's not
-set in the firmware I use. Note sure if we will support this.
-
->=20
-> >=20
-> > >=20
+> > > Then maybe revert commit fe36cbe067 and friends, and have QEMU detect legacy
+> > > guest? Supposedly only config space write access needs to be guarded before
+> > > setting FEATURES_OK.
+> > > 
 > > > -Siwie
-> > >=20
-> > > > > > >=20
+> > Detecting it isn't enough though, we will need a new ioctl to notify
+> > the kernel that it's a legacy guest. Ugh :(
+> 
+> 
+> I'm not sure I get this, how can we know if there's a legacy driver before
+> set_features()?
+
+qemu knows for sure. It does not communicate this information to the
+kernel right now unfortunately.
+
+> And I wonder what will hapeen if we just revert the set_features(0)?
+> 
+> Thanks
+> 
+> 
+> > 
+> > 
 > > > > > > > > > Rejecting reset to 0
-> > > > > > > > > prematurely causes correct MTU and link status unable to =
-load
-> > > > > > > > > for the very first config space access, rendering issues =
-like
+> > > > > > > > > prematurely causes correct MTU and link status unable to load
+> > > > > > > > > for the very first config space access, rendering issues like
 > > > > > > > > > guest showing inaccurate MTU value, or failure to reject
 > > > > > > > > > out-of-range MTU.
-> > > > > > > > >=20
+> > > > > > > > > 
 > > > > > > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for
 > > > > > > > > > supported mlx5 devices")
 > > > > > > > > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
 > > > > > > > > > ---
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 drivers/vdpa/mlx5/net/mlx5_vnet.c | 15=
- +--------------
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 1 file changed, 1 insertion(+), 14 del=
-etions(-)
-> > > > > > > > >=20
+> > > > > > > > >      drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+> > > > > > > > >      1 file changed, 1 insertion(+), 14 deletions(-)
+> > > > > > > > > 
 > > > > > > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
 > > > > > > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
 > > > > > > > > > index 7c1f789..540dd67 100644
@@ -206,54 +194,40 @@ etions(-)
 > > > > > > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
 > > > > > > > > > @@ -1490,14 +1490,6 @@ static u64
 > > > > > > > > > mlx5_vdpa_get_features(struct vdpa_device *vdev)
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return mvdev->=
-mlx_features;
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 }
-> > > > > > > > > -static int verify_min_features(struct mlx5_vdpa_dev *mvd=
-ev,
+> > > > > > > > >          return mvdev->mlx_features;
+> > > > > > > > >      }
+> > > > > > > > > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev,
 > > > > > > > > > u64 features)
 > > > > > > > > > -{
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0 if (!(features & BIT_ULL(VIRTIO_F_ACC=
-ESS_PLATFORM)))
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EOPNO=
-TSUPP;
+> > > > > > > > > -    if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> > > > > > > > > -        return -EOPNOTSUPP;
 > > > > > > > > > -
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0 return 0;
+> > > > > > > > > -    return 0;
 > > > > > > > > > -}
 > > > > > > > > > -
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 static int setup_virtqueues(struct mlx=
-5_vdpa_net *ndev)
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 {
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int err;
+> > > > > > > > >      static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+> > > > > > > > >      {
+> > > > > > > > >          int err;
 > > > > > > > > > @@ -1558,18 +1550,13 @@ static int
 > > > > > > > > > mlx5_vdpa_set_features(struct vdpa_device *vdev, u64
 > > > > > > > > > features)
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 {
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct mlx5_vd=
-pa_dev *mvdev =3D to_mvdev(vdev);
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct mlx5_vd=
-pa_net *ndev =3D to_mlx5_vdpa_ndev(mvdev);
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0 int err;
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 print_features=
-(mvdev, features, true);
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0 err =3D verify_min_features(mvdev, fe=
-atures);
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0 if (err)
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return err;
+> > > > > > > > >      {
+> > > > > > > > >          struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> > > > > > > > >          struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > > > > > > > > -    int err;
+> > > > > > > > >          print_features(mvdev, features, true);
+> > > > > > > > > -    err = verify_min_features(mvdev, features);
+> > > > > > > > > -    if (err)
+> > > > > > > > > -        return err;
 > > > > > > > > > -
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->mvdev.ac=
-tual_features =3D features &
+> > > > > > > > >          ndev->mvdev.actual_features = features &
 > > > > > > > > > ndev->mvdev.mlx_features;
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->config.m=
-tu =3D cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
-> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->config.s=
-tatus |=3D cpu_to_mlx5vdpa16(mvdev,
+> > > > > > > > >          ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+> > > > > > > > >          ndev->config.status |= cpu_to_mlx5vdpa16(mvdev,
 > > > > > > > > > VIRTIO_NET_S_LINK_UP);
-> > > > > > > > > -=C2=A0=C2=A0=C2=A0 return err;
-> > > > > > > > > +=C2=A0=C2=A0=C2=A0 return 0;
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 }
-> > > > > > > > > =C2=A0=C2=A0=C2=A0 static void mlx5_vdpa_set_config_cb(st=
-ruct vdpa_device
+> > > > > > > > > -    return err;
+> > > > > > > > > +    return 0;
+> > > > > > > > >      }
+> > > > > > > > >      static void mlx5_vdpa_set_config_cb(struct vdpa_device
 > > > > > > > > > *vdev, struct vdpa_callback *cb)
-> > >=20
->=20
+
