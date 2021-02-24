@@ -2,122 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E075324197
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 17:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B97FB32419A
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 17:07:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234536AbhBXQCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 11:02:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236000AbhBXPpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 10:45:12 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01E9C061793
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 07:44:28 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id 7so2345270wrz.0
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 07:44:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rGsiWH1BdrantaUO7fftm0n1XKcEAK+j/IdSsSV+6XI=;
-        b=ucm+uA3rdofBu5dmHS8gWUBpi+lRoamf0XSiaSOQ+ttmwkzv2fSifHdqj4ce1cgPVO
-         Jza2fYg8Y3yyD0X6F0Klu80F93Fo8NH7XTMj6up2BrjrzSMLLYB2TAfbtbS80EKqt8Cm
-         C6/G5y8OuQZOnfY4H5dgUQAaignvjt8SKToTG0vlsYbqDQqR4WPgvRaOf4tcaZb8cT48
-         JOKkHl5bDzgA4oeaLTIdzVPw1mmO9n9xhezZbCN/M1gaXHVJXAkWKserS5FpQZFyEH8T
-         Pu6qJazM66b94CkleTuHCXsoB2gByWtenP3zVCdKDQpeke3v+zxqudp6MwYTR1sTJbiz
-         PJsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rGsiWH1BdrantaUO7fftm0n1XKcEAK+j/IdSsSV+6XI=;
-        b=CACmVcXLKOQjNF1Nbfs1Rm5Kc1vUPMBqk7W9LTZ0cGnrssJ0q0X6r59KNTlSQ57VAs
-         GbLGL9FA2D4y3IXupIYutRwdCZ1fyP66ereOCTamckX4LSB7fsV5UOVPNG87AqO+eSoM
-         YJxjAqrJMYcbYnBXfmu8efyRHvfNK+vqgzW0xL47foK0GmMLzxmO4U1FsBDaOsUxqZIW
-         OzAW7vckm+yEu+yth7kIWUbmeSg48EXKV3L2YxiK/EUzLv7GIMVX1Gaz56URHsQWqmHz
-         0Qa1pENYf3np+1YbpLGIzfnu7m6wOxScf8pc1uMKxEP/CgGSW2z7iR0Fen9rC+YHpcMi
-         uSQQ==
-X-Gm-Message-State: AOAM53084AG3KQyXxzivzBzkQ7nMtTvoLedPe1ct3W2RYhWcSXC1dxT5
-        Vo4qQgR9FER0cl120QCH4hA=
-X-Google-Smtp-Source: ABdhPJyeJfhVzN562hGd/HC/j+roU7wxr08qRnpeMVafBxgfGmGBSroWmIZaLfon+VKOS+aDoJuAow==
-X-Received: by 2002:adf:f14d:: with SMTP id y13mr23781922wro.75.1614181467604;
-        Wed, 24 Feb 2021 07:44:27 -0800 (PST)
-Received: from tool.localnet ([213.177.198.100])
-        by smtp.gmail.com with ESMTPSA id 4sm6004929wrr.27.2021.02.24.07.44.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 07:44:27 -0800 (PST)
-From:   Daniel =?ISO-8859-1?Q?Gonz=E1lez?= Cabanelas <dgcbueu@gmail.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, f.fainelli@gmail.com, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, noltari@gmail.com
-Subject: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
-Date:   Wed, 24 Feb 2021 16:44:18 +0100
-Message-ID: <2323124.5UR7tLNZLG@tool>
+        id S234704AbhBXQCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 11:02:50 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60988 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234947AbhBXP4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 10:56:14 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lEwVD-0003kV-91; Wed, 24 Feb 2021 16:55:03 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lEwVD-0001V7-2g; Wed, 24 Feb 2021 16:55:03 +0100
+Subject: Re: [PATCH bpf-next] bpf: fix missing * in bpf.h
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        andrii.nakryiko@gmail.com
+References: <20210223124554.1375051-1-liuhangbin@gmail.com>
+ <20210223154327.6011b5ee@carbon>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <2b917326-3a63-035e-39e9-f63fe3315432@iogearbox.net>
+Date:   Wed, 24 Feb 2021 16:55:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210223154327.6011b5ee@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26090/Wed Feb 24 13:09:42 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current bcm63xx_enet driver doesn't asign the internal phy IRQ. As a
-result of this it works in polling mode.
+On 2/23/21 3:43 PM, Jesper Dangaard Brouer wrote:
+> On Tue, 23 Feb 2021 20:45:54 +0800
+> Hangbin Liu <liuhangbin@gmail.com> wrote:
+> 
+>> Commit 34b2021cc616 ("bpf: Add BPF-helper for MTU checking") lost a *
+>> in bpf.h. This will make bpf_helpers_doc.py stop building
+>> bpf_helper_defs.h immediately after bpf_check_mtu, which will affect
+>> future add functions.
+>>
+>> Fixes: 34b2021cc616 ("bpf: Add BPF-helper for MTU checking")
+>> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+>> ---
+>>   include/uapi/linux/bpf.h       | 2 +-
+>>   tools/include/uapi/linux/bpf.h | 2 +-
+>>   2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> Thanks for fixing that!
+> 
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-=46ix it using the phy_device structure to assign the platform IRQ.
+Thanks guys, applied!
 
-Tested under a BCM6348 board. Kernel dmesg before the patch:
-   Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
-              BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01, irq=3DPOL=
-L)
+> I though I had already fix that, but I must have missed or reintroduced
+> this, when I rolling back broken ideas in V13.
+> 
+> I usually run this command to check the man-page (before submitting):
+> 
+>   ./scripts/bpf_helpers_doc.py | rst2man | man -l -
 
-After the patch:
-   Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
-              BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01, irq=3D17)
+[+ Andrii] maybe this could be included to run as part of CI to catch such
+things in advance?
 
-Pluging and uplugging the ethernet cable now generates interrupts and the
-PHY goes up and down as expected.
-
-Signed-off-by: Daniel Gonz=C3=A1lez Cabanelas <dgcbueu@gmail.com>
-=2D--
-changes in V2:=20
-  - snippet moved after the mdiobus registration
-  - added missing brackets
-
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/eth=
-ernet/broadcom/bcm63xx_enet.c
-index fd876721316..dd218722560 100644
-=2D-- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -1818,10 +1818,19 @@ static int bcm_enet_probe(struct platform_device *p=
-dev)
- 		 * if a slave is not present on hw */
- 		bus->phy_mask =3D ~(1 << priv->phy_id);
-=20
-=2D		if (priv->has_phy_interrupt)
-+		ret =3D mdiobus_register(bus);
-+
-+		if (priv->has_phy_interrupt) {
-+			phydev =3D mdiobus_get_phy(bus, priv->phy_id);
-+			if (!phydev) {
-+				dev_err(&dev->dev, "no PHY found\n");
-+				goto out_unregister_mdio;
-+			}
-+
- 			bus->irq[priv->phy_id] =3D priv->phy_interrupt;
-+			phydev->irq =3D priv->phy_interrupt;
-+		}
-=20
-=2D		ret =3D mdiobus_register(bus);
- 		if (ret) {
- 			dev_err(&pdev->dev, "unable to register mdio bus\n");
- 			goto out_free_mdio;
-=2D-=20
-2.30.1
-
-
-
+>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> index 4c24daa43bac..46248f8e024b 100644
+>> --- a/include/uapi/linux/bpf.h
+>> +++ b/include/uapi/linux/bpf.h
+>> @@ -3850,7 +3850,7 @@ union bpf_attr {
+>>    *
+>>    * long bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)
+>>    *	Description
+>> -
+>> + *
+>>    *		Check ctx packet size against exceeding MTU of net device (based
+>>    *		on *ifindex*).  This helper will likely be used in combination
+>>    *		with helpers that adjust/change the packet size.
+>> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+>> index 4c24daa43bac..46248f8e024b 100644
+>> --- a/tools/include/uapi/linux/bpf.h
+>> +++ b/tools/include/uapi/linux/bpf.h
+>> @@ -3850,7 +3850,7 @@ union bpf_attr {
+>>    *
+>>    * long bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)
+>>    *	Description
+>> -
+>> + *
+>>    *		Check ctx packet size against exceeding MTU of net device (based
+>>    *		on *ifindex*).  This helper will likely be used in combination
+>>    *		with helpers that adjust/change the packet size.
+> 
+> 
+> 
 
