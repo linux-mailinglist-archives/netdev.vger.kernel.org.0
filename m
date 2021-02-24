@@ -2,224 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E71332368E
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 06:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88E39323692
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 06:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229622AbhBXFDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 00:03:21 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:3684 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229466AbhBXFDT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 00:03:19 -0500
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11O4c7OT067128
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:02:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=DAczBQWgkTfIocCsaJt3yjgaECodF+R5q8u8NzzS3dg=;
- b=CmKUWPzdVsRcTkEGrdtXKBmL9o51VQE1lO/EZ6sbiDap9QEyRJvuCFUNTZkEP6HnhRxv
- 0Dojre7k3jdbslCfu5R4EfvylQDsNb3wfMjghrF7SNyjuyMJxGpHU/+Isu4LWjWCYOrJ
- izhW4z5z3IpyY8+wN8H6e2cNNCSrLzHP5PQ9VvbZwpI0kACy6fS8xHDs6d9BXHzjZoz8
- dovEvlrYy9xrpxXlp/Z/IftR3NIQQs2Ntl8blr72DBdCXfOZokzLguXtzCU6nA5o34TH
- G8g8LvGy4H0nQgnXolRQ+0jpfyROt6Fhe5qptuWpxBbrNj9Ge4OGtfSn6RcRgZhQ6Mzt Uw== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36vkfm9rvd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:02:37 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11O4x3NF015613
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 05:02:32 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma01wdc.us.ibm.com with ESMTP id 36tt2940dh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 05:02:32 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11O52VS527459926
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 24 Feb 2021 05:02:31 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1F983112066;
-        Wed, 24 Feb 2021 05:02:31 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7A932112062;
-        Wed, 24 Feb 2021 05:02:30 +0000 (GMT)
-Received: from suka-w540.ibmuc.com (unknown [9.85.164.120])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 24 Feb 2021 05:02:30 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>, sukadev@linux.ibm.com
-Subject: [PATCH net v4 1/1] ibmvnic: fix a race between open and reset
-Date:   Tue, 23 Feb 2021 21:02:29 -0800
-Message-Id: <20210224050229.1155468-1-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.26.2
+        id S233653AbhBXFFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 00:05:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:46500 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233487AbhBXFFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 00:05:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614143063;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qg7BvJGVrkmLzWoca1uwqa7WR08fGmAwdwMQIZ6814o=;
+        b=h8pAYYFBo8rc3ANpe+rnoY7ooO8kxSY2BcLsAmkilczzvqRCsbuyWmVnCIBwAYkPSkHm6T
+        OlmYUuXjXmy4fzcxJUwQpuHZic4D+YtYPMIV7uV8lv1XRDgA5Lx/tV+Uao3FAlLcGqGY5Q
+        KPDxWmVysbclvHqXXOXlcIgu/weYnsY=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-542-4t8bjaBePkyRueP8kYYL9A-1; Wed, 24 Feb 2021 00:04:22 -0500
+X-MC-Unique: 4t8bjaBePkyRueP8kYYL9A-1
+Received: by mail-wr1-f69.google.com with SMTP id u15so486360wrn.3
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 21:04:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qg7BvJGVrkmLzWoca1uwqa7WR08fGmAwdwMQIZ6814o=;
+        b=EM1nEpAbZif+A6gFjj2y+JklDhJ4h8CEMBxONyZiaPR++2q+tfaSO9CC93OZeOElky
+         7zjmw5nABsSpOq6vJa/CZjuzYybQ949DJp1q3R8GohYVeT03Z72fgpe3qpa0LNBajSer
+         y4BH8ZJ/5FnsUH1igScxRFMR6+pwg01AA6n97QKsX8WE7YnSK8e+V9lx/8www+l9psXh
+         SJUYbQeWWPcpiDlpB31iBmdYEEftanJfiFbv5K33o6GBtavCkK/kFunG+RNANzkJIrJj
+         onx+wvMcjBHzg2THOc9DAmtfohiAZPRWSGVYY/ZUQh1xeyIaZYY3EKjMKNkMS5d0RvUG
+         Gu8A==
+X-Gm-Message-State: AOAM531E42E8LTbq78lEvnFZIMShiYaQsbH0WFYcc23lGgbckDXTO8h6
+        t2Wc9OnhCFSk3NRanTith3NmvQIyuTMbI1PqFUGw0J/ad62sEBN8NcDrGeNgEkqXS0x7ey+22qQ
+        GndRGKcHQDzMku+7U
+X-Received: by 2002:a1c:a7d3:: with SMTP id q202mr1810769wme.93.1614143060716;
+        Tue, 23 Feb 2021 21:04:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwunTZi4C12uuXwV71LG4B0VWOYbn2ATYH4hZ4doxg/op9ieMqFayUgQTdJX1JbFuvjFcJIRg==
+X-Received: by 2002:a1c:a7d3:: with SMTP id q202mr1810757wme.93.1614143060543;
+        Tue, 23 Feb 2021 21:04:20 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id g11sm920528wmk.32.2021.02.23.21.04.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 21:04:19 -0800 (PST)
+Date:   Wed, 24 Feb 2021 00:04:16 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+Cc:     Jason Wang <jasowang@redhat.com>, elic@nvidia.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Message-ID: <20210224000057-mutt-send-email-mst@kernel.org>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+ <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
+ <20210222023040-mutt-send-email-mst@kernel.org>
+ <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
+ <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
+ <20210223082536-mutt-send-email-mst@kernel.org>
+ <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-24_01:2021-02-23,2021-02-24 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- priorityscore=1501 mlxlogscore=999 bulkscore=0 suspectscore=0 phishscore=0
- clxscore=1015 malwarescore=0 adultscore=0 spamscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102240035
+In-Reply-To: <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__ibmvnic_reset() currently reads the adapter->state before getting the
-rtnl and saves that state as the "target state" for the reset. If this
-read occurs when adapter is in PROBED state, the target state would be
-PROBED.
+On Tue, Feb 23, 2021 at 11:35:57AM -0800, Si-Wei Liu wrote:
+> 
+> 
+> On 2/23/2021 5:26 AM, Michael S. Tsirkin wrote:
+> > On Tue, Feb 23, 2021 at 10:03:57AM +0800, Jason Wang wrote:
+> > > On 2021/2/23 9:12 上午, Si-Wei Liu wrote:
+> > > > 
+> > > > On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
+> > > > > On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
+> > > > > > On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
+> > > > > > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> > > > > > > for legacy") made an exception for legacy guests to reset
+> > > > > > > features to 0, when config space is accessed before features
+> > > > > > > are set. We should relieve the verify_min_features() check
+> > > > > > > and allow features reset to 0 for this case.
+> > > > > > > 
+> > > > > > > It's worth noting that not just legacy guests could access
+> > > > > > > config space before features are set. For instance, when
+> > > > > > > feature VIRTIO_NET_F_MTU is advertised some modern driver
+> > > > > > > will try to access and validate the MTU present in the config
+> > > > > > > space before virtio features are set.
+> > > > > > This looks like a spec violation:
+> > > > > > 
+> > > > > > "
+> > > > > > 
+> > > > > > The following driver-read-only field, mtu only exists if
+> > > > > > VIRTIO_NET_F_MTU is
+> > > > > > set.
+> > > > > > This field specifies the maximum MTU for the driver to use.
+> > > > > > "
+> > > > > > 
+> > > > > > Do we really want to workaround this?
+> > > > > > 
+> > > > > > Thanks
+> > > > > And also:
+> > > > > 
+> > > > > The driver MUST follow this sequence to initialize a device:
+> > > > > 1. Reset the device.
+> > > > > 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
+> > > > > 3. Set the DRIVER status bit: the guest OS knows how to drive the
+> > > > > device.
+> > > > > 4. Read device feature bits, and write the subset of feature bits
+> > > > > understood by the OS and driver to the
+> > > > > device. During this step the driver MAY read (but MUST NOT write)
+> > > > > the device-specific configuration
+> > > > > fields to check that it can support the device before accepting it.
+> > > > > 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new
+> > > > > feature bits after this step.
+> > > > > 6. Re-read device status to ensure the FEATURES_OK bit is still set:
+> > > > > otherwise, the device does not
+> > > > > support our subset of features and the device is unusable.
+> > > > > 7. Perform device-specific setup, including discovery of virtqueues
+> > > > > for the device, optional per-bus setup,
+> > > > > reading and possibly writing the device’s virtio configuration
+> > > > > space, and population of virtqueues.
+> > > > > 8. Set the DRIVER_OK status bit. At this point the device is “live”.
+> > > > > 
+> > > > > 
+> > > > > so accessing config space before FEATURES_OK is a spec violation, right?
+> > > > It is, but it's not relevant to what this commit tries to address. I
+> > > > thought the legacy guest still needs to be supported.
+> > > > 
+> > > > Having said, a separate patch has to be posted to fix the guest driver
+> > > > issue where this discrepancy is introduced to virtnet_validate() (since
+> > > > commit fe36cbe067). But it's not technically related to this patch.
+> > > > 
+> > > > -Siwei
+> > > 
+> > > I think it's a bug to read config space in validate, we should move it to
+> > > virtnet_probe().
+> > > 
+> > > Thanks
+> > I take it back, reading but not writing seems to be explicitly allowed by spec.
+> > So our way to detect a legacy guest is bogus, need to think what is
+> > the best way to handle this.
+> Then maybe revert commit fe36cbe067 and friends, and have QEMU detect legacy
+> guest? Supposedly only config space write access needs to be guarded before
+> setting FEATURES_OK.
+> 
+> -Siwie
 
-Just after the target state is saved, and before the actual reset process
-is started (i.e before rtnl is acquired) if we get an ibmvnic_open() call
-we would move the adapter to OPEN state.
+Detecting it isn't enough though, we will need a new ioctl to notify
+the kernel that it's a legacy guest. Ugh :(
 
-But when the reset is processed (after ibmvnic_open()) drops the rtnl),
-it will leave the adapter in PROBED state even though we already moved
-it to OPEN.
 
-To fix this, use the RTNL to improve serialization when reading/updating
-the adapter state. i.e determine the target state of a reset only after
-getting the RTNL. And if a reset is in progress during an open, simply
-set the target state of the adapter and let the reset code finish the
-open (like we currently do if failover is pending).
-
-One twist to this serialization is if the adapter state changes when we
-drop the RTNL to update the link state. Account for this by checking if
-there was an intervening open and update the target state for the reset
-accordingly (see new comments in the code). Note that only the reset
-functions and ibmvnic_open() can set the adapter to OPEN state and this
-must happen under rtnl.
-
-Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during device reset")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
----
-Changelog[v4]
-        [Jakub Kicinski] Rebase to current net.
-
-Changelog[v3]
-        [Jakub Kicinski] Rebase to current net and fix comment style.
-
-Changelog[v2]
-        [Jakub Kicinski] Use ASSERT_RTNL() instead of WARN_ON_ONCE()
-        and rtnl_is_locked());
-
- drivers/net/ethernet/ibm/ibmvnic.c | 63 ++++++++++++++++++++++++++----
- 1 file changed, 55 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 1c0e4beb56e7..118a4bd3f877 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1172,12 +1172,25 @@ static int ibmvnic_open(struct net_device *netdev)
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	int rc;
- 
--	/* If device failover is pending, just set device state and return.
--	 * Device operation will be handled by reset routine.
-+	ASSERT_RTNL();
-+
-+	/* If device failover is pending or we are about to reset, just set
-+	 * device state and return. Device operation will be handled by reset
-+	 * routine.
-+	 *
-+	 * It should be safe to overwrite the adapter->state here. Since
-+	 * we hold the rtnl, either the reset has not actually started or
-+	 * the rtnl got dropped during the set_link_state() in do_reset().
-+	 * In the former case, no one else is changing the state (again we
-+	 * have the rtnl) and in the latter case, do_reset() will detect and
-+	 * honor our setting below.
- 	 */
--	if (adapter->failover_pending) {
-+	if (adapter->failover_pending || (test_bit(0, &adapter->resetting))) {
-+		netdev_dbg(netdev, "[S:%d FOP:%d] Resetting, deferring open\n",
-+			   adapter->state, adapter->failover_pending);
- 		adapter->state = VNIC_OPEN;
--		return 0;
-+		rc = 0;
-+		goto out;
- 	}
- 
- 	if (adapter->state != VNIC_CLOSED) {
-@@ -1196,10 +1209,12 @@ static int ibmvnic_open(struct net_device *netdev)
- 	rc = __ibmvnic_open(netdev);
- 
- out:
--	/* If open fails due to a pending failover, set device state and
--	 * return. Device operation will be handled by reset routine.
-+	/* If open failed and there is a pending failover or in-progress reset,
-+	 * set device state and return. Device operation will be handled by
-+	 * reset routine. See also comments above regarding rtnl.
- 	 */
--	if (rc && adapter->failover_pending) {
-+	if (rc &&
-+	    (adapter->failover_pending || (test_bit(0, &adapter->resetting)))) {
- 		adapter->state = VNIC_OPEN;
- 		rc = 0;
- 	}
-@@ -1928,6 +1943,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 	if (rwi->reset_reason == VNIC_RESET_FAILOVER)
- 		adapter->failover_pending = false;
- 
-+	/* read the state and check (again) after getting rtnl */
-+	reset_state = adapter->state;
-+
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		rc = -EBUSY;
-+		goto out;
-+	}
-+
- 	netif_carrier_off(netdev);
- 
- 	old_num_rx_queues = adapter->req_rx_queues;
-@@ -1958,11 +1981,27 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 			if (rc)
- 				goto out;
- 
-+			if (adapter->state == VNIC_OPEN) {
-+				/* When we dropped rtnl, ibmvnic_open() got
-+				 * it and noticed that we are resetting and
-+				 * set the adapter state to OPEN. Update our
-+				 * new "target" state, and resume the reset
-+				 * from VNIC_CLOSING state.
-+				 */
-+				netdev_dbg(netdev,
-+					   "Open changed state from %d, updating.\n",
-+					   reset_state);
-+				reset_state = VNIC_OPEN;
-+				adapter->state = VNIC_CLOSING;
-+			}
-+
- 			if (adapter->state != VNIC_CLOSING) {
-+				/* If someone else changed the adapter state
-+				 * when we dropped the rtnl, fail the reset
-+				 */
- 				rc = -1;
- 				goto out;
- 			}
--
- 			adapter->state = VNIC_CLOSED;
- 		}
- 	}
-@@ -2106,6 +2145,14 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
- 	netdev_dbg(adapter->netdev, "Hard resetting driver (%d)\n",
- 		   rwi->reset_reason);
- 
-+	/* read the state and check (again) after getting rtnl */
-+	reset_state = adapter->state;
-+
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		rc = -EBUSY;
-+		goto out;
-+	}
-+
- 	netif_carrier_off(netdev);
- 	adapter->reset_reason = rwi->reset_reason;
- 
--- 
-2.26.2
+> > > > > 
+> > > > > > > Rejecting reset to 0
+> > > > > > > prematurely causes correct MTU and link status unable to load
+> > > > > > > for the very first config space access, rendering issues like
+> > > > > > > guest showing inaccurate MTU value, or failure to reject
+> > > > > > > out-of-range MTU.
+> > > > > > > 
+> > > > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for
+> > > > > > > supported mlx5 devices")
+> > > > > > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > > > > > > ---
+> > > > > > >     drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+> > > > > > >     1 file changed, 1 insertion(+), 14 deletions(-)
+> > > > > > > 
+> > > > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > index 7c1f789..540dd67 100644
+> > > > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > @@ -1490,14 +1490,6 @@ static u64
+> > > > > > > mlx5_vdpa_get_features(struct vdpa_device *vdev)
+> > > > > > >         return mvdev->mlx_features;
+> > > > > > >     }
+> > > > > > > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev,
+> > > > > > > u64 features)
+> > > > > > > -{
+> > > > > > > -    if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> > > > > > > -        return -EOPNOTSUPP;
+> > > > > > > -
+> > > > > > > -    return 0;
+> > > > > > > -}
+> > > > > > > -
+> > > > > > >     static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+> > > > > > >     {
+> > > > > > >         int err;
+> > > > > > > @@ -1558,18 +1550,13 @@ static int
+> > > > > > > mlx5_vdpa_set_features(struct vdpa_device *vdev, u64
+> > > > > > > features)
+> > > > > > >     {
+> > > > > > >         struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> > > > > > >         struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > > > > > > -    int err;
+> > > > > > >         print_features(mvdev, features, true);
+> > > > > > > -    err = verify_min_features(mvdev, features);
+> > > > > > > -    if (err)
+> > > > > > > -        return err;
+> > > > > > > -
+> > > > > > >         ndev->mvdev.actual_features = features &
+> > > > > > > ndev->mvdev.mlx_features;
+> > > > > > >         ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+> > > > > > >         ndev->config.status |= cpu_to_mlx5vdpa16(mvdev,
+> > > > > > > VIRTIO_NET_S_LINK_UP);
+> > > > > > > -    return err;
+> > > > > > > +    return 0;
+> > > > > > >     }
+> > > > > > >     static void mlx5_vdpa_set_config_cb(struct vdpa_device
+> > > > > > > *vdev, struct vdpa_callback *cb)
 
