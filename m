@@ -2,244 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB44324788
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 00:30:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 313B8324792
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 00:39:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232014AbhBXXaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 18:30:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35116 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229967AbhBXXaD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 18:30:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4754064F03;
-        Wed, 24 Feb 2021 23:29:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614209362;
-        bh=OHpNCI2gtmusfmXCfYveBI5iZ4/bC4MgWISwY+pIx6o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bIFQwK/wC8dN0Pjzsk05/6Swkk14A2DlfnQMG5VvB2soILl4ruRWK3NKzTUUp6TV3
-         D1TCR5IvmrdMsfekdwdrmpRncOoiCnABiaZGxf1xufz9Wk0SDnemetyue6Twz87Ci5
-         6QMJxKV0bhB6nf1DJYmrWvUxGA/vBhPownyOsdCxIDKHWeD6AlgK7LnYdXACZtKEqA
-         yDwJAZt+0ngJm/CKu8kM3k5RSzjMm1823tQMGLF7xYDIonXg86wcDZjcrFX69gGA8G
-         nTJhWk3zKBgXlgKso8IP1FthrkxTpWhcUzp4S3yidnR2JF/4mtzPOkTZFUDo0ngE1I
-         F8WXQOFmhE4hg==
-Date:   Wed, 24 Feb 2021 15:29:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wei Wang <weiwan@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Martin Zaharinov <micron10@gmail.com>
-Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy
- poll
-Message-ID: <20210224152918.783eaae2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAEA6p_Crfx8_izk+GCE30a-DAwiKbNmxNKJ0=7be1Wtm8AbX8Q@mail.gmail.com>
-References: <20210223234130.437831-1-weiwan@google.com>
-        <20210224114851.436d0065@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89i+jO-ym4kpLD3NaeCKZL_sUiub=2VP574YgC-aVvVyTMw@mail.gmail.com>
-        <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAEA6p_Crfx8_izk+GCE30a-DAwiKbNmxNKJ0=7be1Wtm8AbX8Q@mail.gmail.com>
+        id S232929AbhBXXjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 18:39:35 -0500
+Received: from www62.your-server.de ([213.133.104.62]:58942 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229967AbhBXXjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 18:39:32 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lF3jx-000CJg-8q; Thu, 25 Feb 2021 00:38:45 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lF3jw-000B81-W6; Thu, 25 Feb 2021 00:38:45 +0100
+Subject: Re: [PATCH bpf-next v3 1/2] bpf, xdp: per-map bpf_redirect_map
+ functions for XDP
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        maciej.fijalkowski@intel.com, hawk@kernel.org, toke@redhat.com,
+        magnus.karlsson@intel.com, john.fastabend@gmail.com,
+        kuba@kernel.org, davem@davemloft.net
+References: <20210221200954.164125-1-bjorn.topel@gmail.com>
+ <20210221200954.164125-2-bjorn.topel@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <755205ef-819d-15f7-3fcd-30d964b6668d@iogearbox.net>
+Date:   Thu, 25 Feb 2021 00:38:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210221200954.164125-2-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26090/Wed Feb 24 13:09:42 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Feb 2021 14:29:21 -0800 Wei Wang wrote:
-> On Wed, Feb 24, 2021 at 1:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Wed, 24 Feb 2021 21:37:36 +0100 Eric Dumazet wrote:  
-> > > On Wed, Feb 24, 2021 at 8:48 PM Jakub Kicinski <kuba@kernel.org> wrote:  
-> > > > On Tue, 23 Feb 2021 15:41:30 -0800 Wei Wang wrote:  
-> > > > > Currently, napi_thread_wait() checks for NAPI_STATE_SCHED bit to
-> > > > > determine if the kthread owns this napi and could call napi->poll() on
-> > > > > it. However, if socket busy poll is enabled, it is possible that the
-> > > > > busy poll thread grabs this SCHED bit (after the previous napi->poll()
-> > > > > invokes napi_complete_done() and clears SCHED bit) and tries to poll
-> > > > > on the same napi.
-> > > > > This patch tries to fix this race by adding a new bit
-> > > > > NAPI_STATE_SCHED_BUSY_POLL in napi->state. This bit gets set in
-> > > > > napi_busy_loop() togther with NAPI_STATE_SCHED, and gets cleared in
-> > > > > napi_complete_done() together with NAPI_STATE_SCHED. This helps
-> > > > > distinguish the ownership of the napi between kthread and the busy poll
-> > > > > thread, and prevents the kthread from polling on the napi when this napi
-> > > > > is still owned by the busy poll thread.
-> > > > >
-> > > > > Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop support")
-> > > > > Reported-by: Martin Zaharinov <micron10@gmail.com>
-> > > > > Suggested-by: Alexander Duyck <alexanderduyck@fb.com>
-> > > > > Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-> > > > > Reviewed-by: Eric Dumazet <edumazet@google.come>  
-> > > >
-> > > > AFAIU sched bit controls the ownership of the poll_list  
-> > >
-> > > I disagree. BUSY POLL never inserted the napi into a list,
-> > > because the user thread was polling one napi.
-> > >
-> > > Same for the kthread.  
-> >
-> > There is no delayed execution in busy_poll. It either got the sched bit
-> > and it knows it, or it didn't.
-> >  
-> > > wake_up_process() should be good enough.  
-> >
-> > Well, if that's the direction maybe we should depend on the thread
-> > state more?  IOW pay less attention to SCHED and have
-> > napi_complete_done() set_current_state() if thread is running?
-> >
-> > I didn't think that through fully but you can't say "wake_up_process()
-> > should be good enough" and at the same time add another bit proving
-> > it's not enough.
-> >  
-> > > > Can we pleaseadd a poll_list for the thread and make sure the
-> > > > thread polls based on the list?  
-> > >
-> > > A list ? That would require a spinlock or something ?  
-> >
-> > Does the softnet list require a spinlock?
-> >
-> > Obviously with current code the list would only ever have one napi
-> > instance per thread but I think it's worth the code simplicity.
-> > napi_complete_done() dels from the list / releases that ownership
-> > already.
+On 2/21/21 9:09 PM, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
 > 
-> I think what Jakub proposed here should work. But I have a similar
-> concern as Eric. I think the kthread belongs to the NAPI instance, and
-> the kthread only polls on that specific NAPI if threaded mode is
-> enabled. Adding the NAPI to a list that the kthread polls seems to be
-> a reverse of logic. And it is unlike the sd->poll_list, where multiple
-> NAPI instances could be added to that list and get polled. But
-> functionality-wise, it does seem it will work.
-
-My perspective is that the SCHED bit says "this NAPI has been scheduled
-by someone to be processed". It doesn't say processed by who, so if the
-ownership needs to be preserved the way to do that is napi->poll_list.
-
-If NAPI is scheduled for sirq processing it goes on the sd list, if
-it's threaded it goes on the thread's list.
-
-Sure - today threads can only poll one NAPI so we could add a state bit
-that says "this NAPI has been claimed by its thread". If you prefer
-that strongly we can discuss, but IMO poll_list is a good abstraction
-of linking the owner to the NAPI, no need for per-poller bits.
-
-My mental model is that NAPI is always claimed or delegated to a poller
-each time SCHED gets set. IIUC you're saying that it appears backwards
-to give the NAPI to its dedicated thread, since the thread is expected
-to own the NAPI. In my experience assuming the thread has the ownership
-of the NAPI by the virtue that it was started causes issues around the
-hand offs. It's much easier to establish that ownership on each SCHED.
-
-> > > > IMO that's far clearer than defining a forest of ownership state
-> > > > bits.  
-> > >
-> > > Adding a bit seems simpler than adding a list.  
-> >
-> > In terms of what? LoC?
-> >
-> > Just to find out what the LoC is I sketched this out:
-> >
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index ddf4cfc12615..77f09ced9ee4 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -348,6 +348,7 @@ struct napi_struct {
-> >         struct hlist_node       napi_hash_node;
-> >         unsigned int            napi_id;
-> >         struct task_struct      *thread;
-> > +       struct list_head        thread_poll_list;
-> >  };
-> >
-> >  enum {
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 6c5967e80132..99ff083232e9 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -4294,6 +4294,8 @@ static inline void ____napi_schedule(struct softnet_data *sd,
-> >                  */
-> >                 thread = READ_ONCE(napi->thread);
-> >                 if (thread) {
-> > +                       list_add_tail(&napi->poll_list,
-> > +                                     &napi->thread_poll_list);
-> >                         wake_up_process(thread);
-> >                         return;
-> >                 }
-> > @@ -6777,6 +6779,7 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
-> >                 return;
-> >
-> >         INIT_LIST_HEAD(&napi->poll_list);
-> > +       INIT_LIST_HEAD(&napi->thread_poll_list);
-> >         INIT_HLIST_NODE(&napi->napi_hash_node);
-> >         hrtimer_init(&napi->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-> >         napi->timer.function = napi_watchdog;
-> > @@ -6971,8 +6974,7 @@ static int napi_thread_wait(struct napi_struct *napi)
-> >         set_current_state(TASK_INTERRUPTIBLE);
-> >
-> >         while (!kthread_should_stop() && !napi_disable_pending(napi)) {
-> > -               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-> > -                       WARN_ON(!list_empty(&napi->poll_list));
-> > +               if (!list_emtpy(&napi->thread_poll_list)) {
-> >                         __set_current_state(TASK_RUNNING);
-> >                         return 0;
-> >                 }
-> >
-> > $ git diff --stat
-> >  include/linux/netdevice.h | 1 +
-> >  net/core/dev.c            | 6 ++++--
-> >  2 files changed, 5 insertions(+), 2 deletions(-)
-> >  
-> > > > I think with just the right (wrong?) timing this patch will still
-> > > > not protect against disabling the NAPI.  
-> > >
-> > > Maybe, but this patch is solving one issue that was easy to trigger.
-> > >
-> > > disabling the NAPI is handled already.  
-> >
-> > The thread checks if NAPI is getting disabled, then time passes, then
-> > it checks if it's scheduled. If napi gets disabled in the "time passes"
-> > period thread will think that it got scheduled again.
+> Currently the bpf_redirect_map() implementation dispatches to the
+> correct map-lookup function via a switch-statement. To avoid the
+> dispatching, this change adds one bpf_redirect_map() implementation per
+> map. Correct function is automatically selected by the BPF verifier.
 > 
-> Not sure if I understand it correctly, when you say "then it checks if
-> it's scheduled", do you mean the schedule() call in napi_thread_wait()
-> that re-enters this function? If so, it still checks to make sure
-> !napi_disable_pending(napi) before it goes to poll on the napi
-> instance. I think that is sufficient to make sure we don't poll on a
-> NAPI that is in DISABLE state?
+> v2->v3 : Fix build when CONFIG_NET is not set. (lkp)
+> v1->v2 : Re-added comment. (Toke)
+> rfc->v1: Get rid of the macro and use __always_inline. (Jesper)
+> 
+> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 
-Let me do a mash up of the code - this is what I'm thinking:
-(prefix AA for CPU A, prefix BB for CPU B)
+[...]
 
-AA	while (!kthread_should_stop() && !napi_disable_pending(napi)) {
-AA	// condition true, enter the loop... but that's that? An IRQ comes..
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 3d34ba492d46..89ccc10c6348 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -5409,7 +5409,8 @@ record_func_map(struct bpf_verifier_env *env, struct bpf_call_arg_meta *meta,
+>   	    func_id != BPF_FUNC_map_delete_elem &&
+>   	    func_id != BPF_FUNC_map_push_elem &&
+>   	    func_id != BPF_FUNC_map_pop_elem &&
+> -	    func_id != BPF_FUNC_map_peek_elem)
+> +	    func_id != BPF_FUNC_map_peek_elem &&
+> +	    func_id != BPF_FUNC_redirect_map)
+>   		return 0;
+>   
+>   	if (map == NULL) {
+> @@ -11545,12 +11546,12 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>   	struct bpf_prog *prog = env->prog;
+>   	bool expect_blinding = bpf_jit_blinding_enabled(prog);
+>   	struct bpf_insn *insn = prog->insnsi;
+> -	const struct bpf_func_proto *fn;
+>   	const int insn_cnt = prog->len;
+>   	const struct bpf_map_ops *ops;
+>   	struct bpf_insn_aux_data *aux;
+>   	struct bpf_insn insn_buf[16];
+>   	struct bpf_prog *new_prog;
+> +	bpf_func_proto_func func;
+>   	struct bpf_map *map_ptr;
+>   	int i, ret, cnt, delta = 0;
+>   
+> @@ -11860,17 +11861,23 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>   		}
+>   
+>   patch_call_imm:
+> -		fn = env->ops->get_func_proto(insn->imm, env->prog);
+> +		if (insn->imm == BPF_FUNC_redirect_map) {
+> +			aux = &env->insn_aux_data[i];
+> +			map_ptr = BPF_MAP_PTR(aux->map_ptr_state);
+> +			func = get_xdp_redirect_func(map_ptr->map_type);
 
-BB	// napi_disable()
-BB	set_bit(NAPI_STATE_DISABLE, &n->state);
-BB	while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
-BB	// and CPU B continues on it's marry way..
+Nope, this is broken. :/ The map_ptr could be poisoned, so unconditionally fetching
+map_ptr->map_type can crash the box for specially crafted BPF progs.
 
-AA	if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-AA		__set_current_state(TASK_RUNNING);
-AA		return 0;
+Also, given you add the related BPF_CALL_3() functions below, what is the reason
+to not properly integrate this like the map ops near patch_map_ops_generic?
 
-AA	// return to napi_threaded_poll()
-AA	local_bh_disable();
-AA	have = netpoll_poll_lock(napi);
-AA	__napi_poll(napi, &repoll);
+> +		} else {
+> +			func = env->ops->get_func_proto(insn->imm, env->prog)->func;
+> +		}
+>   		/* all functions that have prototype and verifier allowed
+>   		 * programs to call them, must be real in-kernel functions
+>   		 */
+> -		if (!fn->func) {
+> +		if (!func) {
+>   			verbose(env,
+>   				"kernel subsystem misconfigured func %s#%d\n",
+>   				func_id_name(insn->imm), insn->imm);
+>   			return -EFAULT;
+>   		}
+> -		insn->imm = fn->func - __bpf_call_base;
+> +		insn->imm = func - __bpf_call_base;
+>   	}
+>   
+>   	/* Since poke tab is now finalized, publish aux to tracker. */
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index adfdad234674..502e7856f107 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3944,22 +3944,6 @@ void xdp_do_flush(void)
+>   }
+>   EXPORT_SYMBOL_GPL(xdp_do_flush);
+>   
+> -static inline void *__xdp_map_lookup_elem(struct bpf_map *map, u32 index)
+> -{
+> -	switch (map->map_type) {
+> -	case BPF_MAP_TYPE_DEVMAP:
+> -		return __dev_map_lookup_elem(map, index);
+> -	case BPF_MAP_TYPE_DEVMAP_HASH:
+> -		return __dev_map_hash_lookup_elem(map, index);
+> -	case BPF_MAP_TYPE_CPUMAP:
+> -		return __cpu_map_lookup_elem(map, index);
+> -	case BPF_MAP_TYPE_XSKMAP:
+> -		return __xsk_map_lookup_elem(map, index);
+> -	default:
+> -		return NULL;
+> -	}
+> -}
+> -
+>   void bpf_clear_redirect_map(struct bpf_map *map)
+>   {
+>   	struct bpf_redirect_info *ri;
+> @@ -4110,8 +4094,9 @@ static const struct bpf_func_proto bpf_xdp_redirect_proto = {
+>   	.arg2_type      = ARG_ANYTHING,
+>   };
+>   
+> -BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
+> -	   u64, flags)
+> +static __always_inline s64 __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags,
+> +						  void *lookup_elem(struct bpf_map *map,
+> +								    u32 key))
+>   {
+>   	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+>   
+> @@ -4119,7 +4104,7 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
+>   	if (unlikely(flags > XDP_TX))
+>   		return XDP_ABORTED;
+>   
+> -	ri->tgt_value = __xdp_map_lookup_elem(map, ifindex);
+> +	ri->tgt_value = lookup_elem(map, ifindex);
+>   	if (unlikely(!ri->tgt_value)) {
+>   		/* If the lookup fails we want to clear out the state in the
+>   		 * redirect_info struct completely, so that if an eBPF program
+> @@ -4137,8 +4122,44 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
+>   	return XDP_REDIRECT;
+>   }
+>   
+> +BPF_CALL_3(bpf_xdp_redirect_devmap, struct bpf_map *, map, u32, ifindex, u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_lookup_elem);
+> +}
+> +
+> +BPF_CALL_3(bpf_xdp_redirect_devmap_hash, struct bpf_map *, map, u32, ifindex, u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_hash_lookup_elem);
+> +}
+> +
+> +BPF_CALL_3(bpf_xdp_redirect_cpumap, struct bpf_map *, map, u32, ifindex, u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __cpu_map_lookup_elem);
+> +}
+> +
+> +BPF_CALL_3(bpf_xdp_redirect_xskmap, struct bpf_map *, map, u32, ifindex, u64, flags)
+> +{
+> +	return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_elem);
+> +}
+> +
+> +bpf_func_proto_func get_xdp_redirect_func(enum bpf_map_type map_type)
+> +{
+> +	switch (map_type) {
+> +	case BPF_MAP_TYPE_DEVMAP:
+> +		return bpf_xdp_redirect_devmap;
+> +	case BPF_MAP_TYPE_DEVMAP_HASH:
+> +		return bpf_xdp_redirect_devmap_hash;
+> +	case BPF_MAP_TYPE_CPUMAP:
+> +		return bpf_xdp_redirect_cpumap;
+> +	case BPF_MAP_TYPE_XSKMAP:
+> +		return bpf_xdp_redirect_xskmap;
+> +	default:
+> +		return NULL;
+> +	}
+> +}
+> +
+> +/* NB! .func is NULL! get_xdp_redirect_func() is used instead! */
+>   static const struct bpf_func_proto bpf_xdp_redirect_map_proto = {
+> -	.func           = bpf_xdp_redirect_map,
+>   	.gpl_only       = false,
+>   	.ret_type       = RET_INTEGER,
+>   	.arg1_type      = ARG_CONST_MAP_PTR,
+> 
 
-AA	// __napi_poll()
-AA	weight = n->weight;
-AA	work = 0;
-AA	if (test_bit(NAPI_STATE_SCHED, &n->state)) {
-AA		work = n->poll(n, weight);
-
-> > Sure, we can go and make special annotations in all other parts of NAPI
-> > infra, but isn't that an obvious sign of a bad design?
-> >
-> >
-> > I wanted to add that I have spent quite a bit of time hacking around
-> > the threaded NAPI thing before I had to maintain, and (admittedly my
-> > brain is not very capable but) I had a hard time getting things working
-> > reliably with netpoll, busy polling, disabling etc. IOW I'm not just
-> > claiming that "more bits" is not a good solution on a whim.  
