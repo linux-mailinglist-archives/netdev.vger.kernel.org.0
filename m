@@ -2,129 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A0C324532
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 21:29:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6BFC32454C
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 21:36:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235475AbhBXU3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 15:29:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235439AbhBXU3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 15:29:34 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC21CC061574;
-        Wed, 24 Feb 2021 12:28:53 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id k13so3438353otn.13;
-        Wed, 24 Feb 2021 12:28:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=g8yzyix+IBCeN/i+RiSu4Jq3q/QFYRj0Nua9JyTjFK4=;
-        b=hqDvrFDsQ5MvQSbJVnlL/9wEf+SAx47eVa3PVW0GqFk7CflZ4iulDIBXQVzWD/AdQb
-         z8CdTdSUggVtoa8YgDRhKtV0YjEDogFXBZL3f0BsUodiJzM+g3R+1DkP1gvwRmkXjpx7
-         lkoARERQplIs8XTTwfWSZt6eb5S39YqdWyt1ZlBuULD9OGNFHwPBzZsxF8ftlFqhFYRb
-         ZxoUrR4Szn/5gAYB2ygEUAl/TOSouQjh7feR5eG5rZ/LNoUi6riHzh8Sb0+mXNDUW4X9
-         6DOT19PHUayPbBm4uGZQA0OM6qFPtAC/EQnpsX+QVQRmTiqcOoYYgIPVxk/6yg/Di0VV
-         JyIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=g8yzyix+IBCeN/i+RiSu4Jq3q/QFYRj0Nua9JyTjFK4=;
-        b=tA7iPbEuXqsmVQlSZFaCC3Rw6GyxqUQFf1545xTI0eut2b0yB49DA3HyhyGVtk9rX4
-         v/o4AoIOdNcmdIxpciSKgKJz7X8gyUQlb7SCY7ABtbtXaDrYHSp5LsSbHlLFV/lXjS/y
-         UUxAq608S3gJDUQh8Rm/P5Ui9JVQ0PQ4r5eMYz5ww2iDaLdlhhKArEV7l54dKcovZNOh
-         t62i/cwtzICcO5dBwakXeFHvBqm/IdRqCAkLvwtR28CWEn9Uw19WXlboVAkFbcdh+eox
-         4jC0qK3+e8/3t5G0gkk5/4cPAJvqdSZA15vj0d1dwQtThz/r6zJRn4PMM8KTpA1/q55P
-         GVeA==
-X-Gm-Message-State: AOAM531uCTH+3xJgfqIiwi6XpDqf7ceJmJ56JfKqlAJr2rM+pxD24sIf
-        KGwB8Ks/KfLa8qx6O5IqjU4=
-X-Google-Smtp-Source: ABdhPJyyb/Tctv0HAuz3MFor4ImuhjdoiT5AWIvz+WIQw7tqI/ZQkeGs/rqa/9iNH8KMUN2e4Lak7Q==
-X-Received: by 2002:a9d:7103:: with SMTP id n3mr25109608otj.223.1614198533309;
-        Wed, 24 Feb 2021 12:28:53 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.40])
-        by smtp.googlemail.com with ESMTPSA id h15sm598731otq.13.2021.02.24.12.28.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Feb 2021 12:28:52 -0800 (PST)
-Subject: Re: [PATCH] ipv6: Honor route mtu if it is within limit of dev mtu
-To:     Kaustubh Pandey <kapandey@codeaurora.org>,
-        Stefano Brivio <sbrivio@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sharathv@codeaurora.org,
-        chinagar@codeaurora.org
-References: <1614011555-21951-1-git-send-email-kapandey@codeaurora.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ef380be3-0a87-9599-f3ea-ec7779ad5db1@gmail.com>
-Date:   Wed, 24 Feb 2021 13:28:49 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        id S235655AbhBXUfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 15:35:47 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:19003 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229598AbhBXUfn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 15:35:43 -0500
+ARC-Seal: i=1; a=rsa-sha256; t=1614198755; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=odsDwFjEYdfA5fcy5cR9tiEdNvmFHn+pKzHvMW98ODONhFDpUotNR6Le55l0gSR1Sk
+    Gl+5W98tasj8PKmzjnFSnn/QvwBqlO6RafDrglVp4ph2MdUafo7N5aKOcYAuIwWIvF7l
+    jBFzD2i3pFgvGCjLCuvcnp8tibzejBEicEkQMgGJUwp/ayvcKN20vmMvLiyWhz8YsuDA
+    oXBx/BOg5/4eZNtotxS26EL2ns9su3Hfoowigk/PVw53dl+Vt9RSXFhchxxM/rQc9f1k
+    XputsSH4ZIHrdxzlXLndgmuy3Eqk5ZcRoVph6t7i1LVc3t2Wb3Q3Sn/tLp7Zvhb7TIMG
+    FbOA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1614198755;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=aC1Oqi0gTCBRh71ZBeFShz0zjWZcHdK+/jHi3+gDnLs=;
+    b=M/VC1z8GJSlqaSH5c0eWBfyFGVAnGx1h58r3RgNWxlII9QC4uFnlMnH/cYTN2epdFj
+    vGjpML7OxbT1S2Fch68z7CltfsvINHWaxUWKRbLyBD9mo5+/gxANf2PpZy0AVqb/BzrA
+    2mtwE/PXCzx7rI9j7yVF06jqmXtUweBDAaTJXftx8ZgUZZvbyAh36WWdlaCmP98lv3Fo
+    wkXXp5Xb/fzPIJ7OKiIEvhmF1E+IEx5lSOgHRqGi9DEBy5g9bazXioRglyIjlHUJBMau
+    RM4k9dk1+2f/wagua7UMZoORYXTAYPH5ZNu4b4olbYTZ+KUXp+1rGTlNLW6vBR8Ogw8w
+    nHRA==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1614198755;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=aC1Oqi0gTCBRh71ZBeFShz0zjWZcHdK+/jHi3+gDnLs=;
+    b=TKTl2BmArHFa/WMPOGV1JrDkfmRL6iTYUuliFEffB1vkfxhULsa2R52PM5LS2B2X41
+    fvxMiwGTVatwTWYSDSDbW/XYO4lYjkutw8iJw/sGgB2Gib8XEWq1H6JCuBJnoLtxlZHX
+    N7prqFjJ+JA3mw6NEkgORVTmwyqO6EjhV4xr1rU16ekrGxecrJcMjFLmH7IKTfaKNTHY
+    AoxK2akC3T8mr2PcxLtI6Ca1o5hKdwj3t8Xavukjq/qt9+HNvXTom/lUiH10DAUH/Dc0
+    NWBqtD5N1p+8aS6/sbc1sLosPLuu5MLiakzC8TiZID+soHHHQaKNJGXgVhJ/I+PuigWl
+    e1qA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJV8h5kkV6"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+    by smtp.strato.de (RZmta 47.19.0 DYNA|AUTH)
+    with ESMTPSA id V003bex1OKWYD2m
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 24 Feb 2021 21:32:34 +0100 (CET)
+Subject: Re: [PATCH net v3 1/1] can: can_skb_set_owner(): fix ref counting if
+ socket was closed before setting skb ownership
+To:     Eric Dumazet <edumazet@google.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Andre Naujoks <nautsch2@gmail.com>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20210224075932.20234-1-o.rempel@pengutronix.de>
+ <CANn89iLEHpCphH8vKd=0BS7pgdP1YZDGqQfQPeGBkD09RoHtzg@mail.gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <76ec5c10-c051-7a52-9ae7-04af79a0e9e5@hartkopp.net>
+Date:   Wed, 24 Feb 2021 21:32:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <1614011555-21951-1-git-send-email-kapandey@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CANn89iLEHpCphH8vKd=0BS7pgdP1YZDGqQfQPeGBkD09RoHtzg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/22/21 9:32 AM, Kaustubh Pandey wrote:
-> When netdevice MTU is increased via sysfs, NETDEV_CHANGEMTU is raised.
-> 
-> addrconf_notify -> rt6_mtu_change -> rt6_mtu_change_route ->
-> fib6_nh_mtu_change
-> 
-> As part of handling NETDEV_CHANGEMTU notification we land up on a
-> condition where if route mtu is less than dev mtu and route mtu equals
-> ipv6_devconf mtu, route mtu gets updated.
-> 
-> Due to this v6 traffic end up using wrong MTU then configured earlier.
-> This commit fixes this by removing comparison with ipv6_devconf
-> and updating route mtu only when it is greater than incoming dev mtu.
-> 
-> This can be easily reproduced with below script:
-> pre-condition:
-> device up(mtu = 1500) and route mtu for both v4 and v6 is 1500
-> 
-> test-script:
-> ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1400
-> ip -6 route change 2001::/64 dev eth0 metric 256 mtu 1400
-> echo 1400 > /sys/class/net/eth0/mtu
-> ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1500
-> echo 1500 > /sys/class/net/eth0/mtu
-> 
-> Signed-off-by: Kaustubh Pandey <kapandey@codeaurora.org>
-> ---
->  net/ipv6/route.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index 1536f49..653b6c7 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -4813,8 +4813,7 @@ static int fib6_nh_mtu_change(struct fib6_nh *nh, void *_arg)
->  		struct inet6_dev *idev = __in6_dev_get(arg->dev);
->  		u32 mtu = f6i->fib6_pmtu;
->  
-> -		if (mtu >= arg->mtu ||
-> -		    (mtu < arg->mtu && mtu == idev->cnf.mtu6))
-> +		if (mtu >= arg->mtu)
->  			fib6_metric_set(f6i, RTAX_MTU, arg->mtu);
->  
->  		spin_lock_bh(&rt6_exception_lock);
-> 
 
-The existing logic mirrors what is done for exceptions, see
-rt6_mtu_change_route_allowed and commit e9fa1495d738.
 
-It seems right to me to drop the mtu == idev->cnf.mtu6 comparison in
-which case the exceptions should do the same.
+On 24.02.21 09:53, Eric Dumazet wrote:
+> On Wed, Feb 24, 2021 at 8:59 AM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+>>
+>> There are two ref count variables controlling the free()ing of a socket:
+>> - struct sock::sk_refcnt - which is changed by sock_hold()/sock_put()
+>> - struct sock::sk_wmem_alloc - which accounts the memory allocated by
+>>    the skbs in the send path.
+>>
+>> In case there are still TX skbs on the fly and the socket() is closed,
+>> the struct sock::sk_refcnt reaches 0. In the TX-path the CAN stack
+>> clones an "echo" skb, calls sock_hold() on the original socket and
+>> references it. This produces the following back trace:
+>>
+>> | WARNING: CPU: 0 PID: 280 at lib/refcount.c:25 refcount_warn_saturate+0x114/0x134
+>> | refcount_t: addition on 0; use-after-free.
+>> | Modules linked in: coda_vpu(E) v4l2_jpeg(E) videobuf2_vmalloc(E) imx_vdoa(E)
+>> | CPU: 0 PID: 280 Comm: test_can.sh Tainted: G            E     5.11.0-04577-gf8ff6603c617 #203
+>> | Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+>> | Backtrace:
+>> | [<80bafea4>] (dump_backtrace) from [<80bb0280>] (show_stack+0x20/0x24) r7:00000000 r6:600f0113 r5:00000000 r4:81441220
+>> | [<80bb0260>] (show_stack) from [<80bb593c>] (dump_stack+0xa0/0xc8)
+>> | [<80bb589c>] (dump_stack) from [<8012b268>] (__warn+0xd4/0x114) r9:00000019 r8:80f4a8c2 r7:83e4150c r6:00000000 r5:00000009 r4:80528f90
+>> | [<8012b194>] (__warn) from [<80bb09c4>] (warn_slowpath_fmt+0x88/0xc8) r9:83f26400 r8:80f4a8d1 r7:00000009 r6:80528f90 r5:00000019 r4:80f4a8c2
+>> | [<80bb0940>] (warn_slowpath_fmt) from [<80528f90>] (refcount_warn_saturate+0x114/0x134) r8:00000000 r7:00000000 r6:82b44000 r5:834e5600 r4:83f4d540
+>> | [<80528e7c>] (refcount_warn_saturate) from [<8079a4c8>] (__refcount_add.constprop.0+0x4c/0x50)
+>> | [<8079a47c>] (__refcount_add.constprop.0) from [<8079a57c>] (can_put_echo_skb+0xb0/0x13c)
+>> | [<8079a4cc>] (can_put_echo_skb) from [<8079ba98>] (flexcan_start_xmit+0x1c4/0x230) r9:00000010 r8:83f48610 r7:0fdc0000 r6:0c080000 r5:82b44000 r4:834e5600
+>> | [<8079b8d4>] (flexcan_start_xmit) from [<80969078>] (netdev_start_xmit+0x44/0x70) r9:814c0ba0 r8:80c8790c r7:00000000 r6:834e5600 r5:82b44000 r4:82ab1f00
+>> | [<80969034>] (netdev_start_xmit) from [<809725a4>] (dev_hard_start_xmit+0x19c/0x318) r9:814c0ba0 r8:00000000 r7:82ab1f00 r6:82b44000 r5:00000000 r4:834e5600
+>> | [<80972408>] (dev_hard_start_xmit) from [<809c6584>] (sch_direct_xmit+0xcc/0x264) r10:834e5600 r9:00000000 r8:00000000 r7:82b44000 r6:82ab1f00 r5:834e5600 r4:83f27400
+>> | [<809c64b8>] (sch_direct_xmit) from [<809c6c0c>] (__qdisc_run+0x4f0/0x534)
+>>
+>> To fix this problem, only set skb ownership to sockets which have still
+>> a ref count > 0.
+>>
+>> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+>> Cc: Andre Naujoks <nautsch2@gmail.com>
+>> Suggested-by: Eric Dumazet <edumazet@google.com>
+>> Fixes: 0ae89beb283a ("can: add destructor for self generated skbs")
+>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> 
+> SGTM
+> 
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
+> 
+>> ---
+>>   include/linux/can/skb.h | 3 +--
+>>   1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
+>> index 685f34cfba20..655f33aa99e3 100644
+>> --- a/include/linux/can/skb.h
+>> +++ b/include/linux/can/skb.h
+>> @@ -65,8 +65,7 @@ static inline void can_skb_reserve(struct sk_buff *skb)
+>>
+>>   static inline void can_skb_set_owner(struct sk_buff *skb, struct sock *sk)
+>>   {
+>> -       if (sk) {
+>> -               sock_hold(sk);
 
-Added author of e9fa1495d738 in case I am overlooking something.
+Although the commit message gives a comprehensive reason for this patch: 
+Can you please add some comment here as I do not think the use of 
+refcount_inc_not_zero() makes clear what is checked here.
 
-Test case should be added to tools/testing/selftests/net/pmtu.sh, and
-did you run that script with the proposed change?
+Many thanks,
+Oliver
+
+
+>> +       if (sk && refcount_inc_not_zero(&sk->sk_refcnt)) {
+>>                  skb->destructor = sock_efree;
+>>                  skb->sk = sk;
+>>          }
+>> --
+>> 2.29.2
+>>
