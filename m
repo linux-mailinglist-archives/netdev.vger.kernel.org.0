@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE02324396
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 19:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1783F3243B4
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 19:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234371AbhBXSKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 13:10:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57254 "EHLO mail.kernel.org"
+        id S234706AbhBXSX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 13:23:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59020 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233640AbhBXSKr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 13:10:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id A912464EDD;
-        Wed, 24 Feb 2021 18:10:06 +0000 (UTC)
+        id S234087AbhBXSXw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 13:23:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2C78764E6B;
+        Wed, 24 Feb 2021 18:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614190206;
-        bh=b+WIdwoBXt51nyx55PsJVStpyMc267xQ6NDo88idvqA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a8RCZnBBuh9YCVpxetAsJcDIaV3wzsV1WqFBvFC304HmkxpxDz3ctVrBT/WNJOcaz
-         YS585g2GsIfwfvykiMgql7vyWY0enypLVBaE7jUrBN7CI6wYsVrTPEwTK5HBdg8yQf
-         2UVfdRhGAxnn2VuS3BJB4qlhYM+EmCA43Mo6FyqSTeNJunPyseZ1I+8WDKBeaSwH0X
-         XJat3u2C28seDRfN1Y/XhRWHUqj6FYxFihHiH3H15KFawIaWMKp8fwHcr18pAPoINx
-         hOMpsRdGZeKn17AFmduZGZl6U7kRPS7ocRix1Ywn+nEUV/1XxwGKgYmA/8RVrA5wKL
-         kOplinPFG4+ug==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9725160176;
-        Wed, 24 Feb 2021 18:10:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1614190991;
+        bh=EnFi/55V+CILhwHbo/1gt2B6Xv8s9abVKwt5UUP5A54=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uoaxeHW6HWj4QzqRaMoBepvIjnzkjspTZD8xVUBl/q3bbU9B47PhInSCjXHBbzJqr
+         Ls6Khsf0oJ1QjWBFQGLoSHZVGgAUc9t6L7OYv5taiaTNnJOjcnSDgSG8peIYGeoXS2
+         3PBY12KYETNZG0v6UjXiGBIR6Tn6hELqar9Re2XiOGeRHqK5dDwDmRon6aK4VVMDWK
+         H5HCXnjyIj5J8zwI7NT2sLjZJhgH1LKVpPyOHSeQ1Gw1zqo8aNUwSAKwdUHOh735Zs
+         rhjPUbjevTtfdP9Qq3QTO6/nc0AaziLQO9PSmx8FqD/SQtPZZ01h+fTSUnC4+TCQPA
+         ZyNhFNxSjibcQ==
+Date:   Wed, 24 Feb 2021 10:23:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
+Cc:     davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/3] net: ethernet: rmnet: Support for
+ downlink MAPv5 checksum offload
+Message-ID: <20210224102307.4a484568@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1614110571-11604-3-git-send-email-sharathv@codeaurora.org>
+References: <1614110571-11604-1-git-send-email-sharathv@codeaurora.org>
+        <1614110571-11604-3-git-send-email-sharathv@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net: usb: qmi_wwan: support ZTE P685M modem
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161419020661.3818.15606819052802011752.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Feb 2021 18:10:06 +0000
-References: <20210223183456.6377-1-lech.perczak@gmail.com>
-In-Reply-To: <20210223183456.6377-1-lech.perczak@gmail.com>
-To:     Lech Perczak <lech.perczak@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org, kuba@kernel.org,
-        bjorn@mork.no
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, 24 Feb 2021 01:32:50 +0530 Sharath Chandra Vurukala wrote:
+> +/* MAP CSUM headers */
+> +struct rmnet_map_v5_csum_header {
+> +#if defined(__LITTLE_ENDIAN_BITFIELD)
+> +	u8  next_hdr:1;
+> +	u8  header_type:7;
+> +	u8  hw_reserved:7;
+> +	u8  csum_valid_required:1;
+> +#elif defined(__BIG_ENDIAN_BITFIELD)
+> +	u8  header_type:7;
+> +	u8  next_hdr:1;
+> +	u8  csum_valid_required:1;
+> +	u8  hw_reserved:7;
+> +#else
+> +#error	"Please fix <asm/byteorder.h>"
+> +#endif
+> +	__be16 reserved;
+> +} __aligned(1);
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This seems to be your first contribution so let me spell it out.
 
-On Tue, 23 Feb 2021 19:34:56 +0100 you wrote:
-> Now that interface 3 in "option" driver is no longer mapped, add device
-> ID matching it to qmi_wwan.
-> 
-> The modem is used inside ZTE MF283+ router and carriers identify it as
-> such.
-> Interface mapping is:
-> 0: QCDM, 1: AT (PCUI), 2: AT (Modem), 3: QMI, 4: ADB
-> 
-> [...]
+In Linux when maintainers ask you to do something you are expected 
+to do it.
 
-Here is the summary with links:
-  - [v3] net: usb: qmi_wwan: support ZTE P685M modem
-    https://git.kernel.org/netdev/net/c/88eee9b7b42e
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+You can leave the existing bitfields for later, but don't add another.
