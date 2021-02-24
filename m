@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8190A323D2C
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:08:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E62C323D22
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231262AbhBXNFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 08:05:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55392 "EHLO mail.kernel.org"
+        id S235695AbhBXNEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 08:04:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55444 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235525AbhBXM63 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:58:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3074764EFA;
-        Wed, 24 Feb 2021 12:52:29 +0000 (UTC)
+        id S235531AbhBXM6d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:58:33 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 83E4A64F3F;
+        Wed, 24 Feb 2021 12:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171150;
-        bh=tKBofiDtxn2HpZhFBDa1gf7NKEt9xht1Qo7VvokpgYw=;
+        s=k20201202; t=1614171151;
+        bh=wwMo0pdUmecDKwcm6c57J39Oepyme73T+Tc5wPhpHE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AK02RyIJ6aOX77ikosK7w+d6WzF5FrDKp+O1/WlZEif0XGEAJr0FpYunW7WFkjO0g
-         uyFDCiTZX0ym8mMoBWe2x4+lRsL5qdkca3nK86FB8DndA+UOCw+pFmwD59Oeg0fFwl
-         AMQSivQBy9JnTpZ1SG5J61EwOqPOmm2qGtu4k9ZluVSNOAbW3dzt3d4PrLYXa2CmYW
-         BStb8arKea73b3CygbI6zlD7ZWuoDFqb8hTPsL2I1GD5TNTZBguRBK1PY6mCXYv+5O
-         k3l3RAgwXSmTkQoGAAfnTt75kdCXRF/Y1Uc4U/CfKS7akNk1am/wl6RUJh+XxUnU79
-         viYa6yksnMGzA==
+        b=Y9/C/bhh5t0du/jk47gkpYcBe8sBbNzwcIsMLmY82O0zGbYejShLn1djcFkJU4i1G
+         EtHxD7BgutCbwJRqunfw541sLb3IeZ47SHNn83iFb7RA8m3bsOOayoy480e2uogIBz
+         wlB+91ENFlyRKau+oWmZQ78g+4Fp+la+H1/WFHdBD7+wMsEf56pzfEC3DxkwWuirmS
+         nWNzTJLbIx/S2RIIHBPqfcZgNZ3xwDZnnUxbMxnLDdIQdOtr5SOq6cqxPRCGpgot3P
+         H/+aiqddZsK6u5c6p1q3Y04jx2BX+XOGQRIPEADuYDy11Ft09z9HYuVpk7HVVVFSVp
+         Otfx15XogsHPQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+Cc:     Gopal Tiwari <gtiwari@redhat.com>,
         Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 13/56] Bluetooth: Add new HCI_QUIRK_NO_SUSPEND_NOTIFIER quirk
-Date:   Wed, 24 Feb 2021 07:51:29 -0500
-Message-Id: <20210224125212.482485-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 14/56] Bluetooth: Fix null pointer dereference in amp_read_loc_assoc_final_data
+Date:   Wed, 24 Feb 2021 07:51:30 -0500
+Message-Id: <20210224125212.482485-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210224125212.482485-1-sashal@kernel.org>
 References: <20210224125212.482485-1-sashal@kernel.org>
@@ -44,90 +43,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Gopal Tiwari <gtiwari@redhat.com>
 
-[ Upstream commit 219991e6be7f4a31d471611e265b72f75b2d0538 ]
+[ Upstream commit e8bd76ede155fd54d8c41d045dda43cd3174d506 ]
 
-Some devices, e.g. the RTL8723BS bluetooth part, some USB attached devices,
-completely drop from the bus on a system-suspend. These devices will
-have their driver unbound and rebound on resume (when the dropping of
-the bus gets detected) and will show up as a new HCI after resume.
+kernel panic trace looks like:
 
-These devices do not benefit from the suspend / resume handling work done
-by the hci_suspend_notifier. At best this unnecessarily adds some time to
-the suspend/resume time. But this may also actually cause problems, if the
-code doing the driver unbinding runs after the pm-notifier then the
-hci_suspend_notifier code will try to talk to a device which is now in
-an uninitialized state.
+ #5 [ffffb9e08698fc80] do_page_fault at ffffffffb666e0d7
+ #6 [ffffb9e08698fcb0] page_fault at ffffffffb70010fe
+    [exception RIP: amp_read_loc_assoc_final_data+63]
+    RIP: ffffffffc06ab54f  RSP: ffffb9e08698fd68  RFLAGS: 00010246
+    RAX: 0000000000000000  RBX: ffff8c8845a5a000  RCX: 0000000000000004
+    RDX: 0000000000000000  RSI: ffff8c8b9153d000  RDI: ffff8c8845a5a000
+    RBP: ffffb9e08698fe40   R8: 00000000000330e0   R9: ffffffffc0675c94
+    R10: ffffb9e08698fe58  R11: 0000000000000001  R12: ffff8c8b9cbf6200
+    R13: 0000000000000000  R14: 0000000000000000  R15: ffff8c8b2026da0b
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #7 [ffffb9e08698fda8] hci_event_packet at ffffffffc0676904 [bluetooth]
+ #8 [ffffb9e08698fe50] hci_rx_work at ffffffffc06629ac [bluetooth]
+ #9 [ffffb9e08698fe98] process_one_work at ffffffffb66f95e7
 
-This commit adds a new HCI_QUIRK_NO_SUSPEND_NOTIFIER quirk which allows
-drivers to opt-out of the hci_suspend_notifier when they know beforehand
-that their device will be fully re-initialized / reprobed on resume.
+hcon->amp_mgr seems NULL triggered kernel panic in following line inside
+function amp_read_loc_assoc_final_data
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+        set_bit(READ_LOC_AMP_ASSOC_FINAL, &mgr->state);
+
+Fixed by checking NULL for mgr.
+
+Signed-off-by: Gopal Tiwari <gtiwari@redhat.com>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci.h |  8 ++++++++
- net/bluetooth/hci_core.c    | 18 +++++++++++-------
- 2 files changed, 19 insertions(+), 7 deletions(-)
+ net/bluetooth/amp.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index c8e67042a3b14..6da4b3c5dd55d 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -238,6 +238,14 @@ enum {
- 	 * during the hdev->setup vendor callback.
- 	 */
- 	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
+diff --git a/net/bluetooth/amp.c b/net/bluetooth/amp.c
+index 9c711f0dfae35..be2d469d6369d 100644
+--- a/net/bluetooth/amp.c
++++ b/net/bluetooth/amp.c
+@@ -297,6 +297,9 @@ void amp_read_loc_assoc_final_data(struct hci_dev *hdev,
+ 	struct hci_request req;
+ 	int err;
+ 
++	if (!mgr)
++		return;
 +
-+	/*
-+	 * When this quirk is set, then the hci_suspend_notifier is not
-+	 * registered. This is intended for devices which drop completely
-+	 * from the bus on system-suspend and which will show up as a new
-+	 * HCI after resume.
-+	 */
-+	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
- };
- 
- /* HCI device flags */
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index a8679cc468abc..211062a86a3a8 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3783,10 +3783,12 @@ int hci_register_dev(struct hci_dev *hdev)
- 	hci_sock_dev_event(hdev, HCI_DEV_REG);
- 	hci_dev_hold(hdev);
- 
--	hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
--	error = register_pm_notifier(&hdev->suspend_notifier);
--	if (error)
--		goto err_wqueue;
-+	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks)) {
-+		hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
-+		error = register_pm_notifier(&hdev->suspend_notifier);
-+		if (error)
-+			goto err_wqueue;
-+	}
- 
- 	queue_work(hdev->req_workqueue, &hdev->power_on);
- 
-@@ -3821,9 +3823,11 @@ void hci_unregister_dev(struct hci_dev *hdev)
- 
- 	cancel_work_sync(&hdev->power_on);
- 
--	hci_suspend_clear_tasks(hdev);
--	unregister_pm_notifier(&hdev->suspend_notifier);
--	cancel_work_sync(&hdev->suspend_prepare);
-+	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks)) {
-+		hci_suspend_clear_tasks(hdev);
-+		unregister_pm_notifier(&hdev->suspend_notifier);
-+		cancel_work_sync(&hdev->suspend_prepare);
-+	}
- 
- 	hci_dev_do_close(hdev);
- 
+ 	cp.phy_handle = hcon->handle;
+ 	cp.len_so_far = cpu_to_le16(0);
+ 	cp.max_len = cpu_to_le16(hdev->amp_assoc_size);
 -- 
 2.27.0
 
