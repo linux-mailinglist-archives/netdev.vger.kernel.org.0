@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75C3932427C
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 17:50:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3768B32428A
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 17:54:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235726AbhBXQtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 11:49:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38114 "EHLO mail.kernel.org"
+        id S235664AbhBXQvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 11:51:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231274AbhBXQt1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 11:49:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B8AC64F04;
-        Wed, 24 Feb 2021 16:48:44 +0000 (UTC)
+        id S235631AbhBXQuu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 11:50:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id E198564F09;
+        Wed, 24 Feb 2021 16:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614185325;
-        bh=bkI+7jdAkAKPzrBha5mtz/S+U24xvZbTS+QNnlrcp/Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lESkDNtgLdaUKCI1sXJmDOGuVp2xbhwwB/d7p4bdpkvP5uERgvycaRqgkTCwlotqH
-         w2yfc0m+U+oOCfKy4pYo0jP7V/HmR0F8+LI0rNvjxtlspJmS8LCh6f75l7CtXJDyZ2
-         ZDVfJmhEKGE321/Og9QfA+TRaFwcqB+tTc/LVIMp6DHaeReNHK3KQyuC4smx9tpbvg
-         f56F73rDhI9D5AEPC8DlrzThsG4TVlXP2gNT2X7ysQFmxaTiP7XJvp1m+/tduKSe0D
-         YXR9Y16Yv83MjDRBwTPfc5sd/EQ1mroaNFU4S2s/4DhEM4iMrsdBRvdxUe4bOnUhxD
-         9rq8E/6U830tQ==
-Date:   Wed, 24 Feb 2021 08:48:41 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Coiby Xu <coxu@redhat.com>
-Cc:     netdev@vger.kernel.org, kexec@lists.infradead.org,
-        intel-wired-lan@lists.osuosl.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 4/4] i40e: don't open i40iw client for kdump
-Message-ID: <20210224084841.50620776@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210224114141.ziywca4dvn5fs6js@Rk>
-References: <20210222070701.16416-1-coxu@redhat.com>
-        <20210222070701.16416-5-coxu@redhat.com>
-        <20210223122207.08835e0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210224114141.ziywca4dvn5fs6js@Rk>
+        s=k20201202; t=1614185407;
+        bh=HsHJM7K8fSiLeVj/nfKx5Y2qZT9DZ7EwVlOWanoKW58=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EUG7zQs8H4Rn2N/OSKJmui/ZhoOPa9FMbmG6viFc4s/qXzJs/IAxCkEnS803z7mTm
+         upIaYzU+JiFRChyZOCRbgTTnl2JBTE2vFZIV3THjFuaNUL/i62Ul81qrUNaVvDPHbk
+         OuWtHOKR65on0UyuUNu+scuJO+ztQnD09IYDUQ+HyJzllCTCRd4ovp/yoR0kJ09QPC
+         xkVZB70JGR5i1gH70hCUQyYkrn3PY0w5F2Ofl2rWyHv/eedcVcCfsm83CNTOGsxhxf
+         p7wwMrLC7CjrB5EZQ76OP+2TG0+gdBGOo4etEfzskNzxEKMaDcYjLt9O401w5g5e2Y
+         3NqXJCVrih+5A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CD6CF60176;
+        Wed, 24 Feb 2021 16:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
+ 2021-02-22
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161418540783.30992.10091755167748733506.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Feb 2021 16:50:07 +0000
+References: <20210222235814.834282-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210222235814.834282-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Feb 2021 19:41:41 +0800 Coiby Xu wrote:
-> On Tue, Feb 23, 2021 at 12:22:07PM -0800, Jakub Kicinski wrote:
-> >On Mon, 22 Feb 2021 15:07:01 +0800 Coiby Xu wrote:  
-> >> i40iw consumes huge amounts of memory. For example, on a x86_64 machine,
-> >> i40iw consumed 1.5GB for Intel Corporation Ethernet Connection X722 for
-> >> for 1GbE while "craskernel=auto" only reserved 160M. With the module
-> >> parameter "resource_profile=2", we can reduce the memory usage of i40iw
-> >> to ~300M which is still too much for kdump.
-> >>
-> >> Disabling the client registration would spare us the client interface
-> >> operation open , i.e., i40iw_open for iwarp/uda device. Thus memory is
-> >> saved for kdump.
-> >>
-> >> Signed-off-by: Coiby Xu <coxu@redhat.com>  
-> >
-> >Is i40iw or whatever the client is not itself under a CONFIG which
-> >kdump() kernels could be reasonably expected to disable?
-> >  
+Hello:
+
+This series was applied to netdev/net.git (refs/heads/master):
+
+On Mon, 22 Feb 2021 15:58:09 -0800 you wrote:
+> This series contains updates to ice driver only.
 > 
-> I'm not sure if I understand you correctly. Do you mean we shouldn't
-> disable i40iw for kdump?
+> Dave corrects reporting of max TCs to use the value from hardware
+> capabilities and setting of DCBx capability bits when changing between
+> SW and FW LLDP.
+> 
+> Brett fixes trusted VF multicast promiscuous not receiving expected
+> packets and corrects VF max packet size when a port VLAN is configured.
+> 
+> [...]
 
-Forgive my ignorance - are the kdump kernels separate builds?
+Here is the summary with links:
+  - [net,1/5] ice: report correct max number of TCs
+    https://git.kernel.org/netdev/net/c/7dcf7aa01c7b
+  - [net,2/5] ice: Set trusted VF as default VSI when setting allmulti on
+    https://git.kernel.org/netdev/net/c/37b52be26002
+  - [net,3/5] ice: Account for port VLAN in VF max packet size calculation
+    https://git.kernel.org/netdev/net/c/a6aa7c8f998f
+  - [net,4/5] ice: Fix state bits on LLDP mode switch
+    https://git.kernel.org/netdev/net/c/0d4907f65dc8
+  - [net,5/5] ice: update the number of available RSS queues
+    https://git.kernel.org/netdev/net/c/0393e46ac48a
 
-If they are it'd be better to leave the choice of enabling RDMA 
-to the user - through appropriate Kconfig options.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
