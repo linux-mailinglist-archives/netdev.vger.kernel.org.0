@@ -2,33 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A1FA32473F
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 00:00:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E761C324754
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 00:04:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236101AbhBXXAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 18:00:07 -0500
-Received: from smtp-17-i2.italiaonline.it ([213.209.12.17]:46390 "EHLO
+        id S236279AbhBXXDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 18:03:54 -0500
+Received: from smtp-17-i2.italiaonline.it ([213.209.12.17]:45600 "EHLO
         libero.it" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235610AbhBXXAA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 18:00:00 -0500
-X-Greylist: delayed 317 seconds by postgrey-1.27 at vger.kernel.org; Wed, 24 Feb 2021 17:59:58 EST
+        id S236272AbhBXXDw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 18:03:52 -0500
 Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
  ([87.20.116.197])
         by smtp-17.iol.local with ESMTPA
-        id F32VlxCf1lChfF32clf7XU; Wed, 24 Feb 2021 23:53:58 +0100
+        id F32VlxCf1lChfF32clf7Xj; Wed, 24 Feb 2021 23:53:59 +0100
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1614207238; bh=BeCdNoYLzzsSi1xXt/5ym8W0XRYmG2SHNHbV3+iZ/L4=;
+        t=1614207239; bh=du/r059EGbu4TPhvkxNS/d6olzOblvZ4VEQuwxQdY+Y=;
         h=From;
-        b=B1MMcCGMdfQFRSyojCkxaYPaXa0kU1Y0vqmgFORx9VlTPcYcgtR28hU6jKHqs0lLq
-         X8Rgz+NBhX7zLn/SUtu4WQchwQS4/hbt3h0rQWdpGyMzCM/c5fakKn2pxW2F1B7/9F
-         wV2eWuU2snv9lO6i6qWpERp5Icoa/bjob3fy0mII3tZLI51688b35vT/KQyvEOuGD3
-         JKmx60uGZ37w4q12npuwT9CJ2LvRzLrOvPeTSqCNlTQnPaVWbgIbBtQ9OyjFZLBvbb
-         ZtMV8fuAfqogP+x5cnYN7fvFjDzd4R8OUzOt9cgs3zi7m/Jr2OGMpuyHZDU3gK35+T
-         rH3WhHJ5tLc6w==
-X-CNFS-Analysis: v=2.4 cv=S6McfKgP c=1 sm=1 tr=0 ts=6036d906 cx=a_exe
+        b=RbOBMX4JZ2BfUT6o3fOBK3A5/5xjwSTKHnVUGx+Da7w4DfgB3L9xQcJBmfIoVG0Ko
+         pa6jhOyxtkFeeZ48grdqXWUNMpX211R2nvRDfT0NB+A6lEiSLc/ZAugfMchFeqtdb8
+         xhPJYwbixx1uK7AR2l5sS2yJpXIB/5qU8ksMBtYoIXz0ZqGXTlyIaSrcvtj75QyzPn
+         7jlv/Ber75iVjr3212iKXmXMdaN4oz8ijQ1+ziGz2MkR/sgi3K2EokJ3rLdpGyWZQb
+         1FatfF+LvdTV8DNpO2bQcK0ifMAELGVZwzzcOLJoU06rDIQ+XjwplN6Zi/ArXLcmrW
+         OnHpYppy2dZjQ==
+X-CNFS-Analysis: v=2.4 cv=S6McfKgP c=1 sm=1 tr=0 ts=6036d907 cx=a_exe
  a=AVqmXbCQpuNSdJmApS5GbQ==:117 a=AVqmXbCQpuNSdJmApS5GbQ==:17
- a=c_Wuppn-HkOMBcmLVEEA:9 a=ojz-B-aG2JS-tDbb:21 a=Khdy9WjuBuf2oBM2:21
+ a=Et75ynYvZpBubEpffocA:9 a=guPwXWNZSXGlnza0:21 a=TNOWAEZzmosXMk2n:21
 From:   Dario Binacchi <dariobin@libero.it>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dario Binacchi <dariobin@libero.it>,
@@ -41,258 +40,167 @@ Cc:     Dario Binacchi <dariobin@libero.it>,
         YueHaibing <yuehaibing@huawei.com>,
         Zhang Qilong <zhangqilong3@huawei.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 5/6] can: c_can: prepare to up the message objects number
-Date:   Wed, 24 Feb 2021 23:52:45 +0100
-Message-Id: <20210224225246.11346-6-dariobin@libero.it>
+Subject: [PATCH 6/6] can: c_can: add support to 64 messages objects
+Date:   Wed, 24 Feb 2021 23:52:46 +0100
+Message-Id: <20210224225246.11346-7-dariobin@libero.it>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210224225246.11346-1-dariobin@libero.it>
 References: <20210224225246.11346-1-dariobin@libero.it>
-X-CMAE-Envelope: MS4xfGsvJbAciFCjUGaugcCt8RndDS2Bmh1pSI6dw003dyaO0QJ+ba08ESK+hqXJyh0a33nywnbFAsMVxdOEewUalIRz6zKQaj6KJ0K6bT6vfjkHlCgloQjS
- KFxCvUcyQOicpsspdysJuLRtDVRswdsT6bfPKHUrhj1cfHtnRYWUzpcop0l8WMtIF/TMuwvQrRBJa7LuKkWGRYMN0yp9eqf6d9fHksRPlMY8COPgHSEH+s8U
- V9bzbogo3A4+Dm14qrpw7WpM/Fg7iyaFX97Q0z7Z9C30HxdWBgMmqkaFBh96QbcXcMhzTG+4qGt7DuvZorrJiYpRLRI17P2uo9qkt5H5r9zg+CRdJi4YTLav
- ATZ2ni/SYq9S9dSejN0hp+zpiDYXWjzMR2NIp2QjReNLu+8ZjUxiAv77oHI6zfSMBl66PEHrDZwucjZG27hqhS086i+ArCJH4s0z+ADL3E2gMt010fRjfB9r
- yTzuxpoIwWlsZFsAOp4SCtDWprft+WSm36AYjuTxkH9xJrnPa0L6umYZSyh3YSdD3yYvl/aTJby6iRdXWKYAuQpWmtR9XAJn0UJmjTy1b1JvKQru1vocAgn0
- U3wSuj9wSvoJqBmvaNyLuuIi
+X-CMAE-Envelope: MS4xfLvwxBQLCQPQhDNkT/ybW8k2/InpKU2rjXB1xggz9UHl+xJ4nzvqUNdWRbHwVJGqXr1oeh2iddosJSnI7A2RlEJwSIMvyBw7qLfCIgnlzsjMUHn0sSyu
+ di9n1EoQdiMe0E1ByYKafEuus0383cJ1eWhSzHlpkOWMJXA71Mq3gOwOSyDy/29MUfHcYL1Fd+mG+iZ5PmCKtjtK6p1pNpgXLINEXeDjo4d+YbzeEUyOfv4B
+ MpFqkOSaroL7ajDgG/XzwTn3E+7FihmzrklNrMvbgdaYMp/ZYKzJx5MER9AFw6l8GJm1s44ISPfQAKA19uc52NvhJg1E85EdeF8fBRgdfV7S4++q7/g3NiAq
+ qIldyhtLoyWvQNdOZPIQdY/MZQzkOJQYPQGw+Tkab1HMdLDiieCM89sYzwJtFpnDYqk4qtEohhsizQMPTh4kLOqnzzKhlC4I7ptxq3UxUuwqNG4hkhjacdYC
+ YQ4IhEvB+LJPFSFx6N2OqQz/etU8MHxYygZQ8nipTmQgE4zWTifoZSoNv22I8QjXiktV4V33ztx3BJFVI00YfE7anWbPow8v4QE0/dq5sbihe6mlneZLnvIQ
+ +ioTR/+hJQmSnSYKhjI+NipO
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As pointed by commit c0a9f4d396c9 ("can: c_can: Reduce register access")
-the "driver casts the 16 message objects in stone, which is completely
-braindead as contemporary hardware has up to 128 message objects".
+D_CAN controller supports 16, 32, 64 or 128 messages objects, comparing
+to 32 on C_CAN.
+AM335x/AM437x Sitara processors and DRA7 SOC all instantiate a D_CAN
+controller with 64 message objects, as described in the "DCAN features"
+subsection of the CAN chapter of their technical reference manuals.
 
-The patch prepares the module to extend the number of message objects
-beyond the 32 currently managed. This was achieved by transforming the
-constants used to manage RX/TX messages into variables without changing
-the driver policy.
+The driver policy has been kept unchanged, and as in the previous
+version, the first half of the message objects is used for reception and
+the second for transmission.
+
+The I/O load is increased only in the case of 64 message objects,
+keeping it unchanged in the case of 32. Two 32-bit read accesses are in
+fact required, which however remained at 16-bit for configurations with
+32 message objects.
 
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
+
 ---
 
- drivers/net/can/c_can/c_can.c          | 56 +++++++++++++++++---------
- drivers/net/can/c_can/c_can.h          | 23 +++++------
- drivers/net/can/c_can/c_can_platform.c |  2 +-
- 3 files changed, 48 insertions(+), 33 deletions(-)
+ drivers/net/can/c_can/c_can.c          | 19 +++++++++++--------
+ drivers/net/can/c_can/c_can.h          |  5 +++--
+ drivers/net/can/c_can/c_can_platform.c |  6 +++++-
+ 3 files changed, 19 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/can/c_can/c_can.c b/drivers/net/can/c_can/c_can.c
-index 7081cfaf62e2..772b26685fea 100644
+index 772b26685fea..3429eab5ac7d 100644
 --- a/drivers/net/can/c_can/c_can.c
 +++ b/drivers/net/can/c_can/c_can.c
-@@ -173,9 +173,6 @@
- /* Wait for ~1 sec for INIT bit */
- #define INIT_WAIT_MS		1000
+@@ -723,8 +723,12 @@ static void c_can_do_tx(struct net_device *dev)
+ 	struct net_device_stats *stats = &dev->stats;
+ 	u32 idx, obj, pkts = 0, bytes = 0, pend, clr;
  
--/* napi related */
--#define C_CAN_NAPI_WEIGHT	C_CAN_MSG_OBJ_RX_NUM
--
- /* c_can lec values */
- enum c_can_lec_type {
- 	LEC_NO_ERROR = 0,
-@@ -325,7 +322,7 @@ static void c_can_setup_tx_object(struct net_device *dev, int iface,
- 	 * first, i.e. clear the MSGVAL flag in the arbiter.
- 	 */
- 	if (rtr != (bool)test_bit(idx, &priv->tx_dir)) {
--		u32 obj = idx + C_CAN_MSG_OBJ_TX_FIRST;
-+		u32 obj = idx + priv->msg_obj_tx_first;
+-	clr = pend = priv->read_reg(priv, C_CAN_INTPND2_REG);
++	if (priv->msg_obj_tx_last > 32)
++		pend = priv->read_reg32(priv, C_CAN_INTPND3_REG);
++	else
++		pend = priv->read_reg(priv, C_CAN_INTPND2_REG);
  
- 		c_can_inval_msg_object(dev, iface, obj);
- 		change_bit(idx, &priv->tx_dir);
-@@ -463,10 +460,10 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
- 	 * prioritized. The lowest buffer number wins.
- 	 */
- 	idx = fls(atomic_read(&priv->tx_active));
--	obj = idx + C_CAN_MSG_OBJ_TX_FIRST;
-+	obj = idx + priv->msg_obj_tx_first;
- 
- 	/* If this is the last buffer, stop the xmit queue */
--	if (idx == C_CAN_MSG_OBJ_TX_NUM - 1)
-+	if (idx == priv->msg_obj_tx_num - 1)
- 		netif_stop_queue(dev);
- 	/*
- 	 * Store the message in the interface so we can call
-@@ -549,17 +546,18 @@ static int c_can_set_bittiming(struct net_device *dev)
-  */
- static void c_can_configure_msg_objects(struct net_device *dev)
- {
-+	struct c_can_priv *priv = netdev_priv(dev);
- 	int i;
- 
- 	/* first invalidate all message objects */
--	for (i = C_CAN_MSG_OBJ_RX_FIRST; i <= C_CAN_NO_OF_OBJECTS; i++)
-+	for (i = priv->msg_obj_rx_first; i <= priv->msg_obj_num; i++)
- 		c_can_inval_msg_object(dev, IF_RX, i);
- 
- 	/* setup receive message objects */
--	for (i = C_CAN_MSG_OBJ_RX_FIRST; i < C_CAN_MSG_OBJ_RX_LAST; i++)
-+	for (i = priv->msg_obj_rx_first; i < priv->msg_obj_rx_last; i++)
- 		c_can_setup_receive_object(dev, IF_RX, i, 0, 0, IF_MCONT_RCV);
- 
--	c_can_setup_receive_object(dev, IF_RX, C_CAN_MSG_OBJ_RX_LAST, 0, 0,
-+	c_can_setup_receive_object(dev, IF_RX, priv->msg_obj_rx_last, 0, 0,
- 				   IF_MCONT_RCV_EOB);
- }
- 
-@@ -730,7 +728,7 @@ static void c_can_do_tx(struct net_device *dev)
++	clr = pend;
  	while ((idx = ffs(pend))) {
  		idx--;
  		pend &= ~(1 << idx);
--		obj = idx + C_CAN_MSG_OBJ_TX_FIRST;
-+		obj = idx + priv->msg_obj_tx_first;
- 		c_can_inval_tx_object(dev, IF_TX, obj);
- 		can_get_echo_skb(dev, idx, NULL);
- 		bytes += priv->dlc[idx];
-@@ -740,7 +738,7 @@ static void c_can_do_tx(struct net_device *dev)
- 	/* Clear the bits in the tx_active mask */
- 	atomic_sub(clr, &priv->tx_active);
+@@ -834,7 +838,12 @@ static int c_can_read_objects(struct net_device *dev, struct c_can_priv *priv,
  
--	if (clr & (1 << (C_CAN_MSG_OBJ_TX_NUM - 1)))
-+	if (clr & (1 << (priv->msg_obj_tx_num - 1)))
- 		netif_wake_queue(dev);
- 
- 	if (pkts) {
-@@ -755,11 +753,11 @@ static void c_can_do_tx(struct net_device *dev)
-  * raced with the hardware or failed to readout all upper
-  * objects in the last run due to quota limit.
-  */
--static u32 c_can_adjust_pending(u32 pend)
-+static u32 c_can_adjust_pending(u32 pend, u32 rx_mask)
+ static inline u32 c_can_get_pending(struct c_can_priv *priv)
  {
- 	u32 weight, lasts;
+-	u32 pend = priv->read_reg(priv, C_CAN_NEWDAT1_REG);
++	u32 pend;
++
++	if (priv->msg_obj_rx_last > 16)
++		pend = priv->read_reg32(priv, C_CAN_NEWDAT1_REG);
++	else
++		pend = priv->read_reg(priv, C_CAN_NEWDAT1_REG);
  
--	if (pend == RECEIVE_OBJECT_BITS)
-+	if (pend == rx_mask)
- 		return pend;
+ 	return pend;
+ }
+@@ -856,12 +865,6 @@ static int c_can_do_rx_poll(struct net_device *dev, int quota)
+ 	struct c_can_priv *priv = netdev_priv(dev);
+ 	u32 pkts = 0, pend = 0, toread, n;
  
- 	/*
-@@ -862,8 +860,7 @@ static int c_can_do_rx_poll(struct net_device *dev, int quota)
- 	 * It is faster to read only one 16bit register. This is only possible
- 	 * for a maximum number of 16 objects.
- 	 */
--	BUILD_BUG_ON_MSG(C_CAN_MSG_OBJ_RX_LAST > 16,
--			"Implementation does not support more message objects than 16");
-+	WARN_ON(priv->msg_obj_rx_last > 16);
- 
+-	/*
+-	 * It is faster to read only one 16bit register. This is only possible
+-	 * for a maximum number of 16 objects.
+-	 */
+-	WARN_ON(priv->msg_obj_rx_last > 16);
+-
  	while (quota > 0) {
  		if (!pend) {
-@@ -874,7 +871,8 @@ static int c_can_do_rx_poll(struct net_device *dev, int quota)
- 			 * If the pending field has a gap, handle the
- 			 * bits above the gap first.
- 			 */
--			toread = c_can_adjust_pending(pend);
-+			toread = c_can_adjust_pending(pend,
-+						      priv->msg_obj_rx_mask);
- 		} else {
- 			toread = pend;
- 		}
-@@ -1205,17 +1203,36 @@ static int c_can_close(struct net_device *dev)
- 	return 0;
- }
- 
--struct net_device *alloc_c_can_dev(void)
-+struct net_device *alloc_c_can_dev(int msg_obj_num)
- {
- 	struct net_device *dev;
- 	struct c_can_priv *priv;
-+	int msg_obj_tx_num = msg_obj_num / 2;
- 
--	dev = alloc_candev(sizeof(struct c_can_priv), C_CAN_MSG_OBJ_TX_NUM);
-+	dev = alloc_candev(sizeof(struct c_can_priv), msg_obj_tx_num);
- 	if (!dev)
- 		return NULL;
- 
- 	priv = netdev_priv(dev);
--	netif_napi_add(dev, &priv->napi, c_can_poll, C_CAN_NAPI_WEIGHT);
-+	priv->msg_obj_num = msg_obj_num;
-+	priv->msg_obj_rx_num = msg_obj_num - msg_obj_tx_num;
-+	priv->msg_obj_rx_first = 1;
-+	priv->msg_obj_rx_last =
-+		priv->msg_obj_rx_first + priv->msg_obj_rx_num - 1;
-+	priv->msg_obj_rx_mask = ((u64)1 << priv->msg_obj_rx_num) - 1;
-+
-+	priv->msg_obj_tx_num = msg_obj_tx_num;
-+	priv->msg_obj_tx_first = priv->msg_obj_rx_last + 1;
-+	priv->msg_obj_tx_last =
-+		priv->msg_obj_tx_first + priv->msg_obj_tx_num - 1;
-+
-+	priv->dlc = kcalloc(msg_obj_tx_num, sizeof(*priv->dlc), GFP_KERNEL);
-+	if (!priv->dlc) {
-+		free_candev(dev);
-+		return NULL;
-+	}
-+
-+	netif_napi_add(dev, &priv->napi, c_can_poll, priv->msg_obj_rx_num);
- 
- 	priv->dev = dev;
- 	priv->can.bittiming_const = &c_can_bittiming_const;
-@@ -1320,6 +1337,7 @@ void free_c_can_dev(struct net_device *dev)
- 	struct c_can_priv *priv = netdev_priv(dev);
- 
- 	netif_napi_del(&priv->napi);
-+	kfree(priv->dlc);
- 	free_candev(dev);
- }
- EXPORT_SYMBOL_GPL(free_c_can_dev);
+ 			pend = c_can_get_pending(priv);
 diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
-index 90d3d2e7a086..1dbe777320f5 100644
+index 1dbe777320f5..7cf92a576d4a 100644
 --- a/drivers/net/can/c_can/c_can.h
 +++ b/drivers/net/can/c_can/c_can.h
-@@ -22,18 +22,7 @@
+@@ -22,8 +22,6 @@
  #ifndef C_CAN_H
  #define C_CAN_H
  
--/* message object split */
- #define C_CAN_NO_OF_OBJECTS	32
--#define C_CAN_MSG_OBJ_RX_NUM	16
--#define C_CAN_MSG_OBJ_TX_NUM	16
+-#define C_CAN_NO_OF_OBJECTS	32
 -
--#define C_CAN_MSG_OBJ_RX_FIRST	1
--#define C_CAN_MSG_OBJ_RX_LAST	(C_CAN_MSG_OBJ_RX_FIRST + \
--				C_CAN_MSG_OBJ_RX_NUM - 1)
--
--#define C_CAN_MSG_OBJ_TX_FIRST	(C_CAN_MSG_OBJ_RX_LAST + 1)
--
--#define RECEIVE_OBJECT_BITS	0x0000ffff
- 
  enum reg {
  	C_CAN_CTRL_REG = 0,
-@@ -193,6 +182,14 @@ struct c_can_priv {
- 	struct napi_struct napi;
- 	struct net_device *dev;
- 	struct device *device;
-+	int msg_obj_num;
-+	int msg_obj_rx_num;
-+	int msg_obj_tx_num;
-+	int msg_obj_rx_first;
-+	int msg_obj_rx_last;
-+	int msg_obj_tx_first;
-+	int msg_obj_tx_last;
-+	u32 msg_obj_rx_mask;
- 	atomic_t tx_active;
- 	atomic_t sie_pending;
- 	unsigned long tx_dir;
-@@ -209,10 +206,10 @@ struct c_can_priv {
- 	void (*raminit) (const struct c_can_priv *priv, bool enable);
- 	u32 comm_rcv_high;
- 	u32 rxmasked;
--	u32 dlc[C_CAN_MSG_OBJ_TX_NUM];
-+	u32 *dlc;
- };
+ 	C_CAN_CTRL_EX_REG,
+@@ -61,6 +59,7 @@ enum reg {
+ 	C_CAN_NEWDAT2_REG,
+ 	C_CAN_INTPND1_REG,
+ 	C_CAN_INTPND2_REG,
++	C_CAN_INTPND3_REG,
+ 	C_CAN_MSGVAL1_REG,
+ 	C_CAN_MSGVAL2_REG,
+ 	C_CAN_FUNCTION_REG,
+@@ -122,6 +121,7 @@ static const u16 __maybe_unused reg_map_d_can[] = {
+ 	[C_CAN_NEWDAT2_REG]	= 0x9E,
+ 	[C_CAN_INTPND1_REG]	= 0xB0,
+ 	[C_CAN_INTPND2_REG]	= 0xB2,
++	[C_CAN_INTPND3_REG]	= 0xB4,
+ 	[C_CAN_MSGVAL1_REG]	= 0xC4,
+ 	[C_CAN_MSGVAL2_REG]	= 0xC6,
+ 	[C_CAN_IF1_COMREQ_REG]	= 0x100,
+@@ -161,6 +161,7 @@ struct raminit_bits {
  
--struct net_device *alloc_c_can_dev(void);
-+struct net_device *alloc_c_can_dev(int msg_obj_num);
- void free_c_can_dev(struct net_device *dev);
- int register_c_can_dev(struct net_device *dev);
- void unregister_c_can_dev(struct net_device *dev);
+ struct c_can_driver_data {
+ 	enum c_can_dev_id id;
++	int msg_obj_num;
+ 
+ 	/* RAMINIT register description. Optional. */
+ 	const struct raminit_bits *raminit_bits; /* Array of START/DONE bit positions */
 diff --git a/drivers/net/can/c_can/c_can_platform.c b/drivers/net/can/c_can/c_can_platform.c
-index 05f425ceb53a..a5b9b1a93702 100644
+index a5b9b1a93702..87a145b67a2f 100644
 --- a/drivers/net/can/c_can/c_can_platform.c
 +++ b/drivers/net/can/c_can/c_can_platform.c
-@@ -293,7 +293,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
+@@ -192,10 +192,12 @@ static void c_can_hw_raminit(const struct c_can_priv *priv, bool enable)
+ 
+ static const struct c_can_driver_data c_can_drvdata = {
+ 	.id = BOSCH_C_CAN,
++	.msg_obj_num = 32,
+ };
+ 
+ static const struct c_can_driver_data d_can_drvdata = {
+ 	.id = BOSCH_D_CAN,
++	.msg_obj_num = 32,
+ };
+ 
+ static const struct raminit_bits dra7_raminit_bits[] = {
+@@ -205,6 +207,7 @@ static const struct raminit_bits dra7_raminit_bits[] = {
+ 
+ static const struct c_can_driver_data dra7_dcan_drvdata = {
+ 	.id = BOSCH_D_CAN,
++	.msg_obj_num = 64,
+ 	.raminit_num = ARRAY_SIZE(dra7_raminit_bits),
+ 	.raminit_bits = dra7_raminit_bits,
+ 	.raminit_pulse = true,
+@@ -217,6 +220,7 @@ static const struct raminit_bits am3352_raminit_bits[] = {
+ 
+ static const struct c_can_driver_data am3352_dcan_drvdata = {
+ 	.id = BOSCH_D_CAN,
++	.msg_obj_num = 64,
+ 	.raminit_num = ARRAY_SIZE(am3352_raminit_bits),
+ 	.raminit_bits = am3352_raminit_bits,
+ };
+@@ -293,7 +297,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
  	}
  
  	/* allocate the c_can device */
--	dev = alloc_c_can_dev();
-+	dev = alloc_c_can_dev(C_CAN_NO_OF_OBJECTS);
+-	dev = alloc_c_can_dev(C_CAN_NO_OF_OBJECTS);
++	dev = alloc_c_can_dev(drvdata->msg_obj_num);
  	if (!dev) {
  		ret = -ENOMEM;
  		goto exit;
