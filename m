@@ -2,249 +2,539 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 723153237D4
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 08:20:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 332343237DC
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 08:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234409AbhBXHTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 02:19:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57989 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233186AbhBXHTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 02:19:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614151085;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cUD9i8imHS99V2QE+X6CmyOUFv11LLo8e+TKwIxsJK4=;
-        b=i2rwDlDPw6K2p8QESH1SKzVNcPC6v6u4EeH/BR44/lBNYHSe6JIru7cKeDwNTtNTj1j2H3
-        URm/NWvKg7LzY93IDe3ghI6iUVt9VLqPza1pypqecfjSEuqusqk7E2XYi9hlyNg7/6Dvr1
-        ei3ypqFUgitLwqtfSxzJnk60SoxQFho=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-549-8Ff3q1e5N5SVqFN5VRmLZw-1; Wed, 24 Feb 2021 02:18:04 -0500
-X-MC-Unique: 8Ff3q1e5N5SVqFN5VRmLZw-1
-Received: by mail-wr1-f72.google.com with SMTP id v18so637087wrr.8
-        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 23:18:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=cUD9i8imHS99V2QE+X6CmyOUFv11LLo8e+TKwIxsJK4=;
-        b=fs3Kqxx839hir/jJYR5xhuCBfhz4l76M3GEOEmoMzpCEnw8zLf0kkDbFot4lOaz1fO
-         IEoM4JfcpI4wWURNs4lezOKd+w54ngXw2XWPDEOD4Vly/60/1vy6H/gPTwB/B4PLGoA3
-         FjJimpHQHITKBgBLX546SJXrEwGcgmgIHE5P4RqhGH8AJiCR6hRottEZ/rjPs5wEtXpr
-         CbFht0ZcEdpQUroIHjlzytNelUqrZS1Te8Zq2nvrf5xp0cwh7fX6hrPtKsflN8CTWQr+
-         1NEu5mBxD1qOiFYlqHycLXU+6PYsUAx2TK6LtQ+EoQztib6uXgd4GgKMhppfrzoTyLXq
-         z40A==
-X-Gm-Message-State: AOAM533e/ovFv+pJlP4velNNXJwLqNgwzQ+5W725Qsi2qGuqx/HD3sGm
-        h9JAgR7ijA8tSwKSCLgYPIcL0+KcVneI+VdhSDs9O3erAPrbchkE/MLujTwiYsPQwwJACH+QZSK
-        5rHy9cpmbu6unvcXq
-X-Received: by 2002:adf:a2c2:: with SMTP id t2mr29717907wra.47.1614151083002;
-        Tue, 23 Feb 2021 23:18:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx36dvoVgsKzOY2Q0IHxAEQncvNYFTe0HuoFP02ym271+rmQupV6f2qRhf/njQ/cCS+a70DPA==
-X-Received: by 2002:adf:a2c2:: with SMTP id t2mr29717890wra.47.1614151082811;
-        Tue, 23 Feb 2021 23:18:02 -0800 (PST)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id w11sm1800313wru.3.2021.02.23.23.18.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Feb 2021 23:18:02 -0800 (PST)
-Date:   Wed, 24 Feb 2021 02:17:59 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-Message-ID: <20210224021222-mutt-send-email-mst@kernel.org>
-References: <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
- <20210222023040-mutt-send-email-mst@kernel.org>
- <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
- <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
- <20210223082536-mutt-send-email-mst@kernel.org>
- <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <20210224000057-mutt-send-email-mst@kernel.org>
- <0559fd8c-ff44-cb7a-8a74-71976dd2ee33@redhat.com>
- <20210224014232-mutt-send-email-mst@kernel.org>
- <ce6b0380-bc4c-bcb8-db82-2605e819702c@redhat.com>
+        id S233387AbhBXH0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 02:26:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232823AbhBXH0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 02:26:02 -0500
+Received: from antares.kleine-koenig.org (antares.kleine-koenig.org [IPv6:2a01:4f8:c0c:3a97::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A810CC06174A;
+        Tue, 23 Feb 2021 23:25:21 -0800 (PST)
+Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
+        id 1079FB1059E; Wed, 24 Feb 2021 08:25:19 +0100 (CET)
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jens Axboe <axboe@kernel.dk>, Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Haren Myneni <haren@us.ibm.com>,
+        =?UTF-8?q?Breno=20Leit=C3=A3o?= <leitao@debian.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        Steven Royer <seroyer@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Cristobal Forno <cforno12@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Michael Cyr <mikecyr@linux.ibm.com>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH v2] vio: make remove callback return void
+Date:   Wed, 24 Feb 2021 08:25:16 +0100
+Message-Id: <20210224072516.74696-1-uwe@kleine-koenig.org>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ce6b0380-bc4c-bcb8-db82-2605e819702c@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 02:53:08PM +0800, Jason Wang wrote:
-> 
-> On 2021/2/24 2:46 下午, Michael S. Tsirkin wrote:
-> > On Wed, Feb 24, 2021 at 02:04:36PM +0800, Jason Wang wrote:
-> > > On 2021/2/24 1:04 下午, Michael S. Tsirkin wrote:
-> > > > On Tue, Feb 23, 2021 at 11:35:57AM -0800, Si-Wei Liu wrote:
-> > > > > On 2/23/2021 5:26 AM, Michael S. Tsirkin wrote:
-> > > > > > On Tue, Feb 23, 2021 at 10:03:57AM +0800, Jason Wang wrote:
-> > > > > > > On 2021/2/23 9:12 上午, Si-Wei Liu wrote:
-> > > > > > > > On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
-> > > > > > > > > On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
-> > > > > > > > > > On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
-> > > > > > > > > > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
-> > > > > > > > > > > for legacy") made an exception for legacy guests to reset
-> > > > > > > > > > > features to 0, when config space is accessed before features
-> > > > > > > > > > > are set. We should relieve the verify_min_features() check
-> > > > > > > > > > > and allow features reset to 0 for this case.
-> > > > > > > > > > > 
-> > > > > > > > > > > It's worth noting that not just legacy guests could access
-> > > > > > > > > > > config space before features are set. For instance, when
-> > > > > > > > > > > feature VIRTIO_NET_F_MTU is advertised some modern driver
-> > > > > > > > > > > will try to access and validate the MTU present in the config
-> > > > > > > > > > > space before virtio features are set.
-> > > > > > > > > > This looks like a spec violation:
-> > > > > > > > > > 
-> > > > > > > > > > "
-> > > > > > > > > > 
-> > > > > > > > > > The following driver-read-only field, mtu only exists if
-> > > > > > > > > > VIRTIO_NET_F_MTU is
-> > > > > > > > > > set.
-> > > > > > > > > > This field specifies the maximum MTU for the driver to use.
-> > > > > > > > > > "
-> > > > > > > > > > 
-> > > > > > > > > > Do we really want to workaround this?
-> > > > > > > > > > 
-> > > > > > > > > > Thanks
-> > > > > > > > > And also:
-> > > > > > > > > 
-> > > > > > > > > The driver MUST follow this sequence to initialize a device:
-> > > > > > > > > 1. Reset the device.
-> > > > > > > > > 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
-> > > > > > > > > 3. Set the DRIVER status bit: the guest OS knows how to drive the
-> > > > > > > > > device.
-> > > > > > > > > 4. Read device feature bits, and write the subset of feature bits
-> > > > > > > > > understood by the OS and driver to the
-> > > > > > > > > device. During this step the driver MAY read (but MUST NOT write)
-> > > > > > > > > the device-specific configuration
-> > > > > > > > > fields to check that it can support the device before accepting it.
-> > > > > > > > > 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new
-> > > > > > > > > feature bits after this step.
-> > > > > > > > > 6. Re-read device status to ensure the FEATURES_OK bit is still set:
-> > > > > > > > > otherwise, the device does not
-> > > > > > > > > support our subset of features and the device is unusable.
-> > > > > > > > > 7. Perform device-specific setup, including discovery of virtqueues
-> > > > > > > > > for the device, optional per-bus setup,
-> > > > > > > > > reading and possibly writing the device’s virtio configuration
-> > > > > > > > > space, and population of virtqueues.
-> > > > > > > > > 8. Set the DRIVER_OK status bit. At this point the device is “live”.
-> > > > > > > > > 
-> > > > > > > > > 
-> > > > > > > > > so accessing config space before FEATURES_OK is a spec violation, right?
-> > > > > > > > It is, but it's not relevant to what this commit tries to address. I
-> > > > > > > > thought the legacy guest still needs to be supported.
-> > > > > > > > 
-> > > > > > > > Having said, a separate patch has to be posted to fix the guest driver
-> > > > > > > > issue where this discrepancy is introduced to virtnet_validate() (since
-> > > > > > > > commit fe36cbe067). But it's not technically related to this patch.
-> > > > > > > > 
-> > > > > > > > -Siwei
-> > > > > > > I think it's a bug to read config space in validate, we should move it to
-> > > > > > > virtnet_probe().
-> > > > > > > 
-> > > > > > > Thanks
-> > > > > > I take it back, reading but not writing seems to be explicitly allowed by spec.
-> > > > > > So our way to detect a legacy guest is bogus, need to think what is
-> > > > > > the best way to handle this.
-> > > > > Then maybe revert commit fe36cbe067 and friends, and have QEMU detect legacy
-> > > > > guest? Supposedly only config space write access needs to be guarded before
-> > > > > setting FEATURES_OK.
-> > > > > 
-> > > > > -Siwie
-> > > > Detecting it isn't enough though, we will need a new ioctl to notify
-> > > > the kernel that it's a legacy guest. Ugh :(
-> > > 
-> > > I'm not sure I get this, how can we know if there's a legacy driver before
-> > > set_features()?
-> > qemu knows for sure. It does not communicate this information to the
-> > kernel right now unfortunately.
-> 
-> 
-> I may miss something, but I still don't get how the new ioctl is supposed to
-> work.
-> 
-> Thanks
+The driver core ignores the return value of struct bus_type::remove()
+because there is only little that can be done. To simplify the quest to
+make this function return void, let struct vio_driver::remove() return
+void, too. All users already unconditionally return 0, this commit makes
+it obvious that returning an error code is a bad idea and makes it
+obvious for future driver authors that returning an error code isn't
+intended.
 
+Note there are two nominally different implementations for a vio bus:
+one in arch/sparc/kernel/vio.c and the other in
+arch/powerpc/platforms/pseries/vio.c. I didn't care to check which
+driver is using which of these busses (or if even some of them can be
+used with both) and simply adapt all drivers and the two bus codes in
+one go.
 
+Note that for the powerpc implementation there is a semantical change:
+Before this patch for a device that was bound to a driver without a
+remove callback vio_cmo_bus_remove(viodev) wasn't called. As the device
+core still considers the device unbound after vio_bus_remove() returns
+calling this unconditionally is the consistent behaviour which is
+implemented here.
 
-Basically on first guest access QEMU would tell kernel whether
-guest is using the legacy or the modern interface.
-E.g. virtio_pci_config_read/virtio_pci_config_write will call ioctl(ENABLE_LEGACY, 1)
-while virtio_pci_common_read will call ioctl(ENABLE_LEGACY, 0)
+Reviewed-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Acked-by: Lijun Pan <ljp@linux.ibm.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+---
+Hello,
 
-Or maybe we just add GET_CONFIG_MODERN and GET_CONFIG_LEGACY and
-call the correct ioctl ... there are many ways to build this API.
+v1 (sent with Message-Id: 20210127215010.99954-1-uwe@kleine-koenig.org>
+had an back then unfulfilled precondition for a patch to
+drivers/net/ethernet/ibm/ibmvnic.c. That patch already got into v5.11 as
+5e9eff5dfa46 "ibmvnic: device remove has higher precedence over reset".
+So the way is free for this patch.
 
-> 
-> > 
-> > > And I wonder what will hapeen if we just revert the set_features(0)?
-> > > 
-> > > Thanks
-> > > 
-> > > 
-> > > > 
-> > > > > > > > > > > Rejecting reset to 0
-> > > > > > > > > > > prematurely causes correct MTU and link status unable to load
-> > > > > > > > > > > for the very first config space access, rendering issues like
-> > > > > > > > > > > guest showing inaccurate MTU value, or failure to reject
-> > > > > > > > > > > out-of-range MTU.
-> > > > > > > > > > > 
-> > > > > > > > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for
-> > > > > > > > > > > supported mlx5 devices")
-> > > > > > > > > > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> > > > > > > > > > > ---
-> > > > > > > > > > >       drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
-> > > > > > > > > > >       1 file changed, 1 insertion(+), 14 deletions(-)
-> > > > > > > > > > > 
-> > > > > > > > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > index 7c1f789..540dd67 100644
-> > > > > > > > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > @@ -1490,14 +1490,6 @@ static u64
-> > > > > > > > > > > mlx5_vdpa_get_features(struct vdpa_device *vdev)
-> > > > > > > > > > >           return mvdev->mlx_features;
-> > > > > > > > > > >       }
-> > > > > > > > > > > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev,
-> > > > > > > > > > > u64 features)
-> > > > > > > > > > > -{
-> > > > > > > > > > > -    if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
-> > > > > > > > > > > -        return -EOPNOTSUPP;
-> > > > > > > > > > > -
-> > > > > > > > > > > -    return 0;
-> > > > > > > > > > > -}
-> > > > > > > > > > > -
-> > > > > > > > > > >       static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
-> > > > > > > > > > >       {
-> > > > > > > > > > >           int err;
-> > > > > > > > > > > @@ -1558,18 +1550,13 @@ static int
-> > > > > > > > > > > mlx5_vdpa_set_features(struct vdpa_device *vdev, u64
-> > > > > > > > > > > features)
-> > > > > > > > > > >       {
-> > > > > > > > > > >           struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
-> > > > > > > > > > >           struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
-> > > > > > > > > > > -    int err;
-> > > > > > > > > > >           print_features(mvdev, features, true);
-> > > > > > > > > > > -    err = verify_min_features(mvdev, features);
-> > > > > > > > > > > -    if (err)
-> > > > > > > > > > > -        return err;
-> > > > > > > > > > > -
-> > > > > > > > > > >           ndev->mvdev.actual_features = features &
-> > > > > > > > > > > ndev->mvdev.mlx_features;
-> > > > > > > > > > >           ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
-> > > > > > > > > > >           ndev->config.status |= cpu_to_mlx5vdpa16(mvdev,
-> > > > > > > > > > > VIRTIO_NET_S_LINK_UP);
-> > > > > > > > > > > -    return err;
-> > > > > > > > > > > +    return 0;
-> > > > > > > > > > >       }
-> > > > > > > > > > >       static void mlx5_vdpa_set_config_cb(struct vdpa_device
-> > > > > > > > > > > *vdev, struct vdpa_callback *cb)
+Compared to v1 I rebased on a later linus/master and added acks.
+
+Best regards
+Uwe
+
+ arch/powerpc/include/asm/vio.h           | 2 +-
+ arch/powerpc/platforms/pseries/vio.c     | 7 +++----
+ arch/sparc/include/asm/vio.h             | 2 +-
+ arch/sparc/kernel/ds.c                   | 6 ------
+ arch/sparc/kernel/vio.c                  | 4 ++--
+ drivers/block/sunvdc.c                   | 3 +--
+ drivers/char/hw_random/pseries-rng.c     | 3 +--
+ drivers/char/tpm/tpm_ibmvtpm.c           | 4 +---
+ drivers/crypto/nx/nx-842-pseries.c       | 4 +---
+ drivers/crypto/nx/nx.c                   | 4 +---
+ drivers/misc/ibmvmc.c                    | 4 +---
+ drivers/net/ethernet/ibm/ibmveth.c       | 4 +---
+ drivers/net/ethernet/ibm/ibmvnic.c       | 4 +---
+ drivers/net/ethernet/sun/ldmvsw.c        | 4 +---
+ drivers/net/ethernet/sun/sunvnet.c       | 3 +--
+ drivers/scsi/ibmvscsi/ibmvfc.c           | 3 +--
+ drivers/scsi/ibmvscsi/ibmvscsi.c         | 4 +---
+ drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 4 +---
+ drivers/tty/hvc/hvcs.c                   | 3 +--
+ drivers/tty/vcc.c                        | 4 +---
+ 20 files changed, 22 insertions(+), 54 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/vio.h b/arch/powerpc/include/asm/vio.h
+index 0cf52746531b..721c0d6715ac 100644
+--- a/arch/powerpc/include/asm/vio.h
++++ b/arch/powerpc/include/asm/vio.h
+@@ -113,7 +113,7 @@ struct vio_driver {
+ 	const char *name;
+ 	const struct vio_device_id *id_table;
+ 	int (*probe)(struct vio_dev *dev, const struct vio_device_id *id);
+-	int (*remove)(struct vio_dev *dev);
++	void (*remove)(struct vio_dev *dev);
+ 	/* A driver must have a get_desired_dma() function to
+ 	 * be loaded in a CMO environment if it uses DMA.
+ 	 */
+diff --git a/arch/powerpc/platforms/pseries/vio.c b/arch/powerpc/platforms/pseries/vio.c
+index b2797cfe4e2b..9cb4fc839fd5 100644
+--- a/arch/powerpc/platforms/pseries/vio.c
++++ b/arch/powerpc/platforms/pseries/vio.c
+@@ -1261,7 +1261,6 @@ static int vio_bus_remove(struct device *dev)
+ 	struct vio_dev *viodev = to_vio_dev(dev);
+ 	struct vio_driver *viodrv = to_vio_driver(dev->driver);
+ 	struct device *devptr;
+-	int ret = 1;
+ 
+ 	/*
+ 	 * Hold a reference to the device after the remove function is called
+@@ -1270,13 +1269,13 @@ static int vio_bus_remove(struct device *dev)
+ 	devptr = get_device(dev);
+ 
+ 	if (viodrv->remove)
+-		ret = viodrv->remove(viodev);
++		viodrv->remove(viodev);
+ 
+-	if (!ret && firmware_has_feature(FW_FEATURE_CMO))
++	if (firmware_has_feature(FW_FEATURE_CMO))
+ 		vio_cmo_bus_remove(viodev);
+ 
+ 	put_device(devptr);
+-	return ret;
++	return 0;
+ }
+ 
+ /**
+diff --git a/arch/sparc/include/asm/vio.h b/arch/sparc/include/asm/vio.h
+index 059f0eb678e0..8a1a83bbb6d5 100644
+--- a/arch/sparc/include/asm/vio.h
++++ b/arch/sparc/include/asm/vio.h
+@@ -362,7 +362,7 @@ struct vio_driver {
+ 	struct list_head		node;
+ 	const struct vio_device_id	*id_table;
+ 	int (*probe)(struct vio_dev *dev, const struct vio_device_id *id);
+-	int (*remove)(struct vio_dev *dev);
++	void (*remove)(struct vio_dev *dev);
+ 	void (*shutdown)(struct vio_dev *dev);
+ 	unsigned long			driver_data;
+ 	struct device_driver		driver;
+diff --git a/arch/sparc/kernel/ds.c b/arch/sparc/kernel/ds.c
+index 522e5b51050c..4a5bdb0df779 100644
+--- a/arch/sparc/kernel/ds.c
++++ b/arch/sparc/kernel/ds.c
+@@ -1236,11 +1236,6 @@ static int ds_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	return err;
+ }
+ 
+-static int ds_remove(struct vio_dev *vdev)
+-{
+-	return 0;
+-}
+-
+ static const struct vio_device_id ds_match[] = {
+ 	{
+ 		.type = "domain-services-port",
+@@ -1251,7 +1246,6 @@ static const struct vio_device_id ds_match[] = {
+ static struct vio_driver ds_driver = {
+ 	.id_table	= ds_match,
+ 	.probe		= ds_probe,
+-	.remove		= ds_remove,
+ 	.name		= "ds",
+ };
+ 
+diff --git a/arch/sparc/kernel/vio.c b/arch/sparc/kernel/vio.c
+index 4f57056ed463..348a88691219 100644
+--- a/arch/sparc/kernel/vio.c
++++ b/arch/sparc/kernel/vio.c
+@@ -105,10 +105,10 @@ static int vio_device_remove(struct device *dev)
+ 		 * routines to do so at the moment. TBD
+ 		 */
+ 
+-		return drv->remove(vdev);
++		drv->remove(vdev);
+ 	}
+ 
+-	return 1;
++	return 0;
+ }
+ 
+ static ssize_t devspec_show(struct device *dev,
+diff --git a/drivers/block/sunvdc.c b/drivers/block/sunvdc.c
+index 39aeebc6837d..1547d4345ad8 100644
+--- a/drivers/block/sunvdc.c
++++ b/drivers/block/sunvdc.c
+@@ -1071,7 +1071,7 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	return err;
+ }
+ 
+-static int vdc_port_remove(struct vio_dev *vdev)
++static void vdc_port_remove(struct vio_dev *vdev)
+ {
+ 	struct vdc_port *port = dev_get_drvdata(&vdev->dev);
+ 
+@@ -1094,7 +1094,6 @@ static int vdc_port_remove(struct vio_dev *vdev)
+ 
+ 		kfree(port);
+ 	}
+-	return 0;
+ }
+ 
+ static void vdc_requeue_inflight(struct vdc_port *port)
+diff --git a/drivers/char/hw_random/pseries-rng.c b/drivers/char/hw_random/pseries-rng.c
+index 8038a8a9fb58..f4949b689bd5 100644
+--- a/drivers/char/hw_random/pseries-rng.c
++++ b/drivers/char/hw_random/pseries-rng.c
+@@ -54,10 +54,9 @@ static int pseries_rng_probe(struct vio_dev *dev,
+ 	return hwrng_register(&pseries_rng);
+ }
+ 
+-static int pseries_rng_remove(struct vio_dev *dev)
++static void pseries_rng_remove(struct vio_dev *dev)
+ {
+ 	hwrng_unregister(&pseries_rng);
+-	return 0;
+ }
+ 
+ static const struct vio_device_id pseries_rng_driver_ids[] = {
+diff --git a/drivers/char/tpm/tpm_ibmvtpm.c b/drivers/char/tpm/tpm_ibmvtpm.c
+index 994385bf37c0..903604769de9 100644
+--- a/drivers/char/tpm/tpm_ibmvtpm.c
++++ b/drivers/char/tpm/tpm_ibmvtpm.c
+@@ -343,7 +343,7 @@ static int ibmvtpm_crq_send_init_complete(struct ibmvtpm_dev *ibmvtpm)
+  *
+  * Return: Always 0.
+  */
+-static int tpm_ibmvtpm_remove(struct vio_dev *vdev)
++static void tpm_ibmvtpm_remove(struct vio_dev *vdev)
+ {
+ 	struct tpm_chip *chip = dev_get_drvdata(&vdev->dev);
+ 	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
+@@ -372,8 +372,6 @@ static int tpm_ibmvtpm_remove(struct vio_dev *vdev)
+ 	kfree(ibmvtpm);
+ 	/* For tpm_ibmvtpm_get_desired_dma */
+ 	dev_set_drvdata(&vdev->dev, NULL);
+-
+-	return 0;
+ }
+ 
+ /**
+diff --git a/drivers/crypto/nx/nx-842-pseries.c b/drivers/crypto/nx/nx-842-pseries.c
+index 2de5e3672e42..cc8dd3072b8b 100644
+--- a/drivers/crypto/nx/nx-842-pseries.c
++++ b/drivers/crypto/nx/nx-842-pseries.c
+@@ -1042,7 +1042,7 @@ static int nx842_probe(struct vio_dev *viodev,
+ 	return ret;
+ }
+ 
+-static int nx842_remove(struct vio_dev *viodev)
++static void nx842_remove(struct vio_dev *viodev)
+ {
+ 	struct nx842_devdata *old_devdata;
+ 	unsigned long flags;
+@@ -1063,8 +1063,6 @@ static int nx842_remove(struct vio_dev *viodev)
+ 	if (old_devdata)
+ 		kfree(old_devdata->counters);
+ 	kfree(old_devdata);
+-
+-	return 0;
+ }
+ 
+ static const struct vio_device_id nx842_vio_driver_ids[] = {
+diff --git a/drivers/crypto/nx/nx.c b/drivers/crypto/nx/nx.c
+index 0d2dc5be7f19..1d0e8a1ba160 100644
+--- a/drivers/crypto/nx/nx.c
++++ b/drivers/crypto/nx/nx.c
+@@ -783,7 +783,7 @@ static int nx_probe(struct vio_dev *viodev, const struct vio_device_id *id)
+ 	return nx_register_algs();
+ }
+ 
+-static int nx_remove(struct vio_dev *viodev)
++static void nx_remove(struct vio_dev *viodev)
+ {
+ 	dev_dbg(&viodev->dev, "entering nx_remove for UA 0x%x\n",
+ 		viodev->unit_address);
+@@ -811,8 +811,6 @@ static int nx_remove(struct vio_dev *viodev)
+ 		nx_unregister_skcipher(&nx_ecb_aes_alg, NX_FC_AES,
+ 				       NX_MODE_AES_ECB);
+ 	}
+-
+-	return 0;
+ }
+ 
+ 
+diff --git a/drivers/misc/ibmvmc.c b/drivers/misc/ibmvmc.c
+index 2d778d0f011e..c0fe3295c330 100644
+--- a/drivers/misc/ibmvmc.c
++++ b/drivers/misc/ibmvmc.c
+@@ -2288,15 +2288,13 @@ static int ibmvmc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	return -EPERM;
+ }
+ 
+-static int ibmvmc_remove(struct vio_dev *vdev)
++static void ibmvmc_remove(struct vio_dev *vdev)
+ {
+ 	struct crq_server_adapter *adapter = dev_get_drvdata(&vdev->dev);
+ 
+ 	dev_info(adapter->dev, "Entering remove for UA 0x%x\n",
+ 		 vdev->unit_address);
+ 	ibmvmc_release_crq_queue(adapter);
+-
+-	return 0;
+ }
+ 
+ static struct vio_device_id ibmvmc_device_table[] = {
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index c3ec9ceed833..7fea9ae60f13 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1758,7 +1758,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	return 0;
+ }
+ 
+-static int ibmveth_remove(struct vio_dev *dev)
++static void ibmveth_remove(struct vio_dev *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(&dev->dev);
+ 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
+@@ -1771,8 +1771,6 @@ static int ibmveth_remove(struct vio_dev *dev)
+ 
+ 	free_netdev(netdev);
+ 	dev_set_drvdata(&dev->dev, NULL);
+-
+-	return 0;
+ }
+ 
+ static struct attribute veth_active_attr;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 1c0e4beb56e7..53124b06145d 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -5349,7 +5349,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	return rc;
+ }
+ 
+-static int ibmvnic_remove(struct vio_dev *dev)
++static void ibmvnic_remove(struct vio_dev *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(&dev->dev);
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+@@ -5390,8 +5390,6 @@ static int ibmvnic_remove(struct vio_dev *dev)
+ 	device_remove_file(&dev->dev, &dev_attr_failover);
+ 	free_netdev(netdev);
+ 	dev_set_drvdata(&dev->dev, NULL);
+-
+-	return 0;
+ }
+ 
+ static ssize_t failover_store(struct device *dev, struct device_attribute *attr,
+diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/ldmvsw.c
+index 01ea0d6f8819..50bd4e3b0af9 100644
+--- a/drivers/net/ethernet/sun/ldmvsw.c
++++ b/drivers/net/ethernet/sun/ldmvsw.c
+@@ -404,7 +404,7 @@ static int vsw_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	return err;
+ }
+ 
+-static int vsw_port_remove(struct vio_dev *vdev)
++static void vsw_port_remove(struct vio_dev *vdev)
+ {
+ 	struct vnet_port *port = dev_get_drvdata(&vdev->dev);
+ 	unsigned long flags;
+@@ -430,8 +430,6 @@ static int vsw_port_remove(struct vio_dev *vdev)
+ 
+ 		free_netdev(port->dev);
+ 	}
+-
+-	return 0;
+ }
+ 
+ static void vsw_cleanup(void)
+diff --git a/drivers/net/ethernet/sun/sunvnet.c b/drivers/net/ethernet/sun/sunvnet.c
+index 96b883f965f6..58ee89223951 100644
+--- a/drivers/net/ethernet/sun/sunvnet.c
++++ b/drivers/net/ethernet/sun/sunvnet.c
+@@ -510,7 +510,7 @@ static int vnet_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	return err;
+ }
+ 
+-static int vnet_port_remove(struct vio_dev *vdev)
++static void vnet_port_remove(struct vio_dev *vdev)
+ {
+ 	struct vnet_port *port = dev_get_drvdata(&vdev->dev);
+ 
+@@ -533,7 +533,6 @@ static int vnet_port_remove(struct vio_dev *vdev)
+ 
+ 		kfree(port);
+ 	}
+-	return 0;
+ }
+ 
+ static const struct vio_device_id vnet_port_match[] = {
+diff --git a/drivers/scsi/ibmvscsi/ibmvfc.c b/drivers/scsi/ibmvscsi/ibmvfc.c
+index 755313b766b9..e663085a8944 100644
+--- a/drivers/scsi/ibmvscsi/ibmvfc.c
++++ b/drivers/scsi/ibmvscsi/ibmvfc.c
+@@ -6038,7 +6038,7 @@ static int ibmvfc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+  * Return value:
+  * 	0
+  **/
+-static int ibmvfc_remove(struct vio_dev *vdev)
++static void ibmvfc_remove(struct vio_dev *vdev)
+ {
+ 	struct ibmvfc_host *vhost = dev_get_drvdata(&vdev->dev);
+ 	LIST_HEAD(purge);
+@@ -6070,7 +6070,6 @@ static int ibmvfc_remove(struct vio_dev *vdev)
+ 	spin_unlock(&ibmvfc_driver_lock);
+ 	scsi_host_put(vhost->host);
+ 	LEAVE;
+-	return 0;
+ }
+ 
+ /**
+diff --git a/drivers/scsi/ibmvscsi/ibmvscsi.c b/drivers/scsi/ibmvscsi/ibmvscsi.c
+index 29fcc44be2d5..77fafb1bc173 100644
+--- a/drivers/scsi/ibmvscsi/ibmvscsi.c
++++ b/drivers/scsi/ibmvscsi/ibmvscsi.c
+@@ -2335,7 +2335,7 @@ static int ibmvscsi_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	return -1;
+ }
+ 
+-static int ibmvscsi_remove(struct vio_dev *vdev)
++static void ibmvscsi_remove(struct vio_dev *vdev)
+ {
+ 	struct ibmvscsi_host_data *hostdata = dev_get_drvdata(&vdev->dev);
+ 
+@@ -2356,8 +2356,6 @@ static int ibmvscsi_remove(struct vio_dev *vdev)
+ 	spin_unlock(&ibmvscsi_driver_lock);
+ 
+ 	scsi_host_put(hostdata->host);
+-
+-	return 0;
+ }
+ 
+ /**
+diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+index cc3908c2d2f9..9abd9e253af6 100644
+--- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
++++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+@@ -3595,7 +3595,7 @@ static int ibmvscsis_probe(struct vio_dev *vdev,
+ 	return rc;
+ }
+ 
+-static int ibmvscsis_remove(struct vio_dev *vdev)
++static void ibmvscsis_remove(struct vio_dev *vdev)
+ {
+ 	struct scsi_info *vscsi = dev_get_drvdata(&vdev->dev);
+ 
+@@ -3622,8 +3622,6 @@ static int ibmvscsis_remove(struct vio_dev *vdev)
+ 	list_del(&vscsi->list);
+ 	spin_unlock_bh(&ibmvscsis_dev_lock);
+ 	kfree(vscsi);
+-
+-	return 0;
+ }
+ 
+ static ssize_t system_id_show(struct device *dev,
+diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
+index c90848919644..01fc97e3c5c8 100644
+--- a/drivers/tty/hvc/hvcs.c
++++ b/drivers/tty/hvc/hvcs.c
+@@ -819,7 +819,7 @@ static int hvcs_probe(
+ 	return 0;
+ }
+ 
+-static int hvcs_remove(struct vio_dev *dev)
++static void hvcs_remove(struct vio_dev *dev)
+ {
+ 	struct hvcs_struct *hvcsd = dev_get_drvdata(&dev->dev);
+ 	unsigned long flags;
+@@ -849,7 +849,6 @@ static int hvcs_remove(struct vio_dev *dev)
+ 
+ 	printk(KERN_INFO "HVCS: vty-server@%X removed from the"
+ 			" vio bus.\n", dev->unit_address);
+-	return 0;
+ };
+ 
+ static struct vio_driver hvcs_vio_driver = {
+diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+index e2d6205f83ce..5f72ebf93821 100644
+--- a/drivers/tty/vcc.c
++++ b/drivers/tty/vcc.c
+@@ -677,7 +677,7 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+  *
+  * Return: status of removal
+  */
+-static int vcc_remove(struct vio_dev *vdev)
++static void vcc_remove(struct vio_dev *vdev)
+ {
+ 	struct vcc_port *port = dev_get_drvdata(&vdev->dev);
+ 
+@@ -712,8 +712,6 @@ static int vcc_remove(struct vio_dev *vdev)
+ 		kfree(port->domain);
+ 		kfree(port);
+ 	}
+-
+-	return 0;
+ }
+ 
+ static const struct vio_device_id vcc_match[] = {
+-- 
+2.30.0
 
