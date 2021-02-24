@@ -2,232 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDF98323695
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 06:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A36C3236A8
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 06:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233811AbhBXFIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 00:08:40 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:24929 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229466AbhBXFIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 00:08:37 -0500
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 2DDF476246;
-        Wed, 24 Feb 2021 08:07:50 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1614143270;
-        bh=ffiR2tRKE4jqGeI3iVzfId3D3oVlMxLBBvNJx+JLL9k=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=KmpWw2SYyXJDjq82IlPubVQgGQRJkRGD07aQCqhHABWc7NeMUGim8ef7vdSpHMzfD
-         sruy9H8Zbex4lV3e5auZm4lZO2in2SD5/cOw7LQGBu6ym3DrtPAMG81gG25xVVUW2I
-         yUsWZSESTVfNzTNsDrykfxEXo9dXzRy+FMh0DtDau/UfbppBarOPLwt1z3WyATL9yD
-         Ksh7EkLnoNS92d7eclcCk+0jSsxSGlo7N/Myg5bf/HamQPNVs5QV6QzoNE24rKg4h/
-         +/u5qM/H9EbUXZBVPjQ0Rsj1+pwgY7jDn6UUz7TId7nXXh+SOr/KnT58dNoHa9s+nO
-         ZdC1LZXkpZ7EQ==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id AB98D76279;
-        Wed, 24 Feb 2021 08:07:48 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Wed, 24
- Feb 2021 08:07:48 +0300
-Subject: Re: [RFC PATCH v5 11/19] virtio/vsock: dequeue callback for
- SOCK_SEQPACKET
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stsp2@yandex.ru" <stsp2@yandex.ru>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
- <20210218053940.1068164-1-arseny.krasnov@kaspersky.com>
- <20210223091536-mutt-send-email-mst@kernel.org>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <661fd81f-daf5-a3eb-6946-8f4e83d1ee54@kaspersky.com>
-Date:   Wed, 24 Feb 2021 08:07:48 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S233858AbhBXFUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 00:20:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42315 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232164AbhBXFT6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 00:19:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614143911;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=v+FQbzfl8xPTmpVnSjFrXH2vFi0y7Xcyj00X2gFWzBM=;
+        b=H/O6yn3RSMXYwqrK8A3SjWMqCdmrigQVC8QHlst1FM0TOM1970+AZlwf/m2G/PwVbdD5AF
+        wZFibSWZ62LmLVA7+yRYXlVwzPleeS1ALNCoeQnogHRr+xcpornpEhe4lIjIQMCxDGcsOE
+        2ww4AoXLtlkgbjfn1gzjVfQZCLUdE64=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-583-Yc76eWZ_NRmDBbBm0jyxwg-1; Wed, 24 Feb 2021 00:18:03 -0500
+X-MC-Unique: Yc76eWZ_NRmDBbBm0jyxwg-1
+Received: by mail-wm1-f70.google.com with SMTP id n6so53803wmd.4
+        for <netdev@vger.kernel.org>; Tue, 23 Feb 2021 21:18:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=v+FQbzfl8xPTmpVnSjFrXH2vFi0y7Xcyj00X2gFWzBM=;
+        b=Y/I/6G8SEFQOUuI17r9JHa5IeIle7pCd21uXQzzPnO5Ew2fj2wmYhkEKlgVJC0IbDq
+         WmYDvVS5Pr+J3nN8PoErlox6Gxqgpe9eWy1v6kTXaKESlXYDXOTvVyIFt9dBwFaMZZ9Y
+         yAZVRPAzcLzlqpSxjQd56+4Bb6qJmVFFyCGvQF+VFVFtafwlgYWP/uyF+h1Ysaot/3ek
+         GsHqfJ4pKf9E2c5rZT2xp8dtPLWxYVHvWNlnu1nWM/imiTIMPYBxn0O4WdxMBeA/k3K4
+         OkZ/1/gHU7ccAetpQUEvQvjC2lF4K+RDxGHsJkBLvPOrr44GeX/gZu7G3ZSjGDcHEp/o
+         QtJQ==
+X-Gm-Message-State: AOAM533hIRoiVBNckbBK1wNrQtlE9E2/iMOcvoAkuo2RmzAAnSwYBU/n
+        MLAM3oKCABG7Dl2zdocQsuHw5DzeCxYdJPXzOkixz80e2oATIiIGsT4zmRkh8KUX85J0RACT2jz
+        LTd8bPpEK6+uFvc3Z
+X-Received: by 2002:a05:6000:108f:: with SMTP id y15mr29792497wrw.195.1614143882150;
+        Tue, 23 Feb 2021 21:18:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzZj5iXghX2KMaamnnLepYpAma4TuhSeDZ/aKLhkf/u9BKoEKXshIrFgkMUlDiGNv+eKdEvMQ==
+X-Received: by 2002:a05:6000:108f:: with SMTP id y15mr29792474wrw.195.1614143881889;
+        Tue, 23 Feb 2021 21:18:01 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id z13sm935723wmi.45.2021.02.23.21.18.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Feb 2021 21:18:01 -0800 (PST)
+Date:   Wed, 24 Feb 2021 00:17:58 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
+Message-ID: <20210224000528-mutt-send-email-mst@kernel.org>
+References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
+ <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
+ <20210222023040-mutt-send-email-mst@kernel.org>
+ <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
+ <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
+ <20210223082536-mutt-send-email-mst@kernel.org>
+ <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
+ <7e6291a4-30b1-6b59-a2bf-713e7b56826d@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210223091536-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 02/06/2021 23:52:08
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 161679 [Feb 06 2021]
-X-KSE-AntiSpam-Info: LuaCore: 422 422 763e61bea9fcfcd94e075081cb96e065bc0509b4
-X-KSE-AntiSpam-Info: Version: 5.9.16.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
-X-KSE-AntiSpam-Info: {Tracking_date, moscow}
-X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 02/06/2021 23:55:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 06.02.2021 21:17:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/02/24 03:43:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/24 02:14:00 #16328803
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7e6291a4-30b1-6b59-a2bf-713e7b56826d@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 24, 2021 at 11:20:01AM +0800, Jason Wang wrote:
+> 
+> On 2021/2/24 3:35 上午, Si-Wei Liu wrote:
+> > 
+> > 
+> > On 2/23/2021 5:26 AM, Michael S. Tsirkin wrote:
+> > > On Tue, Feb 23, 2021 at 10:03:57AM +0800, Jason Wang wrote:
+> > > > On 2021/2/23 9:12 上午, Si-Wei Liu wrote:
+> > > > > 
+> > > > > On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
+> > > > > > On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang wrote:
+> > > > > > > On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
+> > > > > > > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
+> > > > > > > > for legacy") made an exception for legacy guests to reset
+> > > > > > > > features to 0, when config space is accessed before features
+> > > > > > > > are set. We should relieve the verify_min_features() check
+> > > > > > > > and allow features reset to 0 for this case.
+> > > > > > > > 
+> > > > > > > > It's worth noting that not just legacy guests could access
+> > > > > > > > config space before features are set. For instance, when
+> > > > > > > > feature VIRTIO_NET_F_MTU is advertised some modern driver
+> > > > > > > > will try to access and validate the MTU present in the config
+> > > > > > > > space before virtio features are set.
+> > > > > > > This looks like a spec violation:
+> > > > > > > 
+> > > > > > > "
+> > > > > > > 
+> > > > > > > The following driver-read-only field, mtu only exists if
+> > > > > > > VIRTIO_NET_F_MTU is
+> > > > > > > set.
+> > > > > > > This field specifies the maximum MTU for the driver to use.
+> > > > > > > "
+> > > > > > > 
+> > > > > > > Do we really want to workaround this?
+> > > > > > > 
+> > > > > > > Thanks
+> > > > > > And also:
+> > > > > > 
+> > > > > > The driver MUST follow this sequence to initialize a device:
+> > > > > > 1. Reset the device.
+> > > > > > 2. Set the ACKNOWLEDGE status bit: the guest OS has
+> > > > > > noticed the device.
+> > > > > > 3. Set the DRIVER status bit: the guest OS knows how to drive the
+> > > > > > device.
+> > > > > > 4. Read device feature bits, and write the subset of feature bits
+> > > > > > understood by the OS and driver to the
+> > > > > > device. During this step the driver MAY read (but MUST NOT write)
+> > > > > > the device-specific configuration
+> > > > > > fields to check that it can support the device before accepting it.
+> > > > > > 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new
+> > > > > > feature bits after this step.
+> > > > > > 6. Re-read device status to ensure the FEATURES_OK bit is still set:
+> > > > > > otherwise, the device does not
+> > > > > > support our subset of features and the device is unusable.
+> > > > > > 7. Perform device-specific setup, including discovery of virtqueues
+> > > > > > for the device, optional per-bus setup,
+> > > > > > reading and possibly writing the device’s virtio configuration
+> > > > > > space, and population of virtqueues.
+> > > > > > 8. Set the DRIVER_OK status bit. At this point the device is “live”.
+> > > > > > 
+> > > > > > 
+> > > > > > so accessing config space before FEATURES_OK is a spec
+> > > > > > violation, right?
+> > > > > It is, but it's not relevant to what this commit tries to address. I
+> > > > > thought the legacy guest still needs to be supported.
+> > > > > 
+> > > > > Having said, a separate patch has to be posted to fix the guest driver
+> > > > > issue where this discrepancy is introduced to
+> > > > > virtnet_validate() (since
+> > > > > commit fe36cbe067). But it's not technically related to this patch.
+> > > > > 
+> > > > > -Siwei
+> > > > 
+> > > > I think it's a bug to read config space in validate, we should
+> > > > move it to
+> > > > virtnet_probe().
+> > > > 
+> > > > Thanks
+> > > I take it back, reading but not writing seems to be explicitly
+> > > allowed by spec.
+> > > So our way to detect a legacy guest is bogus, need to think what is
+> > > the best way to handle this.
+> > Then maybe revert commit fe36cbe067 and friends, and have QEMU detect
+> > legacy guest? Supposedly only config space write access needs to be
+> > guarded before setting FEATURES_OK.
+> 
+> 
+> I agree. My understanding is that all vDPA must be modern device (since
+> VIRITO_F_ACCESS_PLATFORM is mandated) instead of transitional device.
+> 
+> Thanks
 
-On 23.02.2021 17:17, Michael S. Tsirkin wrote:
-> On Thu, Feb 18, 2021 at 08:39:37AM +0300, Arseny Krasnov wrote:
->> This adds transport callback and it's logic for SEQPACKET dequeue.
->> Callback fetches RW packets from rx queue of socket until whole record
->> is copied(if user's buffer is full, user is not woken up). This is done
->> to not stall sender, because if we wake up user and it leaves syscall,
->> nobody will send credit update for rest of record, and sender will wait
->> for next enter of read syscall at receiver's side. So if user buffer is
->> full, we just send credit update and drop data. If during copy SEQ_BEGIN
->> was found(and not all data was copied), copying is restarted by reset
->> user's iov iterator(previous unfinished data is dropped).
->>
->> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->> ---
->>  include/linux/virtio_vsock.h            |  10 +++
->>  include/uapi/linux/virtio_vsock.h       |  16 ++++
->>  net/vmw_vsock/virtio_transport_common.c | 114 ++++++++++++++++++++++++
->>  3 files changed, 140 insertions(+)
->>
->> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->> index dc636b727179..003d06ae4a85 100644
->> --- a/include/linux/virtio_vsock.h
->> +++ b/include/linux/virtio_vsock.h
->> @@ -36,6 +36,11 @@ struct virtio_vsock_sock {
->>  	u32 rx_bytes;
->>  	u32 buf_alloc;
->>  	struct list_head rx_queue;
->> +
->> +	/* For SOCK_SEQPACKET */
->> +	u32 user_read_seq_len;
->> +	u32 user_read_copied;
->> +	u32 curr_rx_msg_cnt;
->
-> wrap these in a struct to make it's clearer they
-> are related?
-Ack
->
->>  };
->>  
->>  struct virtio_vsock_pkt {
->> @@ -80,6 +85,11 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
->>  			       struct msghdr *msg,
->>  			       size_t len, int flags);
->>  
->> +int
->> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
->> +				   struct msghdr *msg,
->> +				   int flags,
->> +				   bool *msg_ready);
->>  s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
->>  s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
->>  
->> diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
->> index 1d57ed3d84d2..cf9c165e5cca 100644
->> --- a/include/uapi/linux/virtio_vsock.h
->> +++ b/include/uapi/linux/virtio_vsock.h
->> @@ -63,8 +63,14 @@ struct virtio_vsock_hdr {
->>  	__le32	fwd_cnt;
->>  } __attribute__((packed));
->>  
->> +struct virtio_vsock_seq_hdr {
->> +	__le32  msg_cnt;
->> +	__le32  msg_len;
->> +} __attribute__((packed));
->> +
->>  enum virtio_vsock_type {
->>  	VIRTIO_VSOCK_TYPE_STREAM = 1,
->> +	VIRTIO_VSOCK_TYPE_SEQPACKET = 2,
->>  };
->>  
->>  enum virtio_vsock_op {
->> @@ -83,6 +89,11 @@ enum virtio_vsock_op {
->>  	VIRTIO_VSOCK_OP_CREDIT_UPDATE = 6,
->>  	/* Request the peer to send the credit info to us */
->>  	VIRTIO_VSOCK_OP_CREDIT_REQUEST = 7,
->> +
->> +	/* Record begin for SOCK_SEQPACKET */
->> +	VIRTIO_VSOCK_OP_SEQ_BEGIN = 8,
->> +	/* Record end for SOCK_SEQPACKET */
->> +	VIRTIO_VSOCK_OP_SEQ_END = 9,
->>  };
->>  
->>  /* VIRTIO_VSOCK_OP_SHUTDOWN flags values */
->> @@ -91,4 +102,9 @@ enum virtio_vsock_shutdown {
->>  	VIRTIO_VSOCK_SHUTDOWN_SEND = 2,
->>  };
->>  
->> +/* VIRTIO_VSOCK_OP_RW flags values */
->> +enum virtio_vsock_rw {
->> +	VIRTIO_VSOCK_RW_EOR = 1,
->> +};
->> +
->>  #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
-> Probably a good idea to also have a feature bit gating
-> this functionality.
-
-IIUC this also requires some qemu patch, because in current
-
-implementation of vsock device in qemu, there is no 'set_features'
-
-callback for such device. This callback will handle guest's write
-
-to feature register, by calling vhost kernel backend, where this
-
-bit will be processed by host.
+Well mlx5 has some code to handle legacy guests ...
+Eli, could you comment? Is that support unused right now?
 
 
-IMHO I'm not sure that SEQPACKET support needs feature
+> 
+> > 
+> > -Siwie
+> > 
+> > > > > > 
+> > > > > > > > Rejecting reset to 0
+> > > > > > > > prematurely causes correct MTU and link status unable to load
+> > > > > > > > for the very first config space access, rendering issues like
+> > > > > > > > guest showing inaccurate MTU value, or failure to reject
+> > > > > > > > out-of-range MTU.
+> > > > > > > > 
+> > > > > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for
+> > > > > > > > supported mlx5 devices")
+> > > > > > > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > > > > > > > ---
+> > > > > > > >     drivers/vdpa/mlx5/net/mlx5_vnet.c | 15 +--------------
+> > > > > > > >     1 file changed, 1 insertion(+), 14 deletions(-)
+> > > > > > > > 
+> > > > > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > > index 7c1f789..540dd67 100644
+> > > > > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > > > > @@ -1490,14 +1490,6 @@ static u64
+> > > > > > > > mlx5_vdpa_get_features(struct vdpa_device *vdev)
+> > > > > > > >         return mvdev->mlx_features;
+> > > > > > > >     }
+> > > > > > > > -static int verify_min_features(struct mlx5_vdpa_dev *mvdev,
+> > > > > > > > u64 features)
+> > > > > > > > -{
+> > > > > > > > -    if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+> > > > > > > > -        return -EOPNOTSUPP;
+> > > > > > > > -
+> > > > > > > > -    return 0;
+> > > > > > > > -}
+> > > > > > > > -
+> > > > > > > >     static int setup_virtqueues(struct mlx5_vdpa_net *ndev)
+> > > > > > > >     {
+> > > > > > > >         int err;
+> > > > > > > > @@ -1558,18 +1550,13 @@ static int
+> > > > > > > > mlx5_vdpa_set_features(struct vdpa_device *vdev, u64
+> > > > > > > > features)
+> > > > > > > >     {
+> > > > > > > >         struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> > > > > > > >         struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > > > > > > > -    int err;
+> > > > > > > >         print_features(mvdev, features, true);
+> > > > > > > > -    err = verify_min_features(mvdev, features);
+> > > > > > > > -    if (err)
+> > > > > > > > -        return err;
+> > > > > > > > -
+> > > > > > > >         ndev->mvdev.actual_features = features &
+> > > > > > > > ndev->mvdev.mlx_features;
+> > > > > > > >         ndev->config.mtu = cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
+> > > > > > > >         ndev->config.status |= cpu_to_mlx5vdpa16(mvdev,
+> > > > > > > > VIRTIO_NET_S_LINK_UP);
+> > > > > > > > -    return err;
+> > > > > > > > +    return 0;
+> > > > > > > >     }
+> > > > > > > >     static void mlx5_vdpa_set_config_cb(struct vdpa_device
+> > > > > > > > *vdev, struct vdpa_callback *cb)
+> > 
 
-bit - it is just two new ops for virtio vsock protocol, and from point
-
-of view of virtio device it is same as STREAM. May be it is needed
-
-for cases when client tries to connect to server which doesn't support
-
-SEQPACKET, so without bit result will be "Connection reset by peer",
-
-and with such bit client will know that server doesn't support it and
-
-'socket(SOCK_SEQPACKET)' will return error?
-
->
