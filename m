@@ -2,37 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBEA7323CC3
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8163C323CBC
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235355AbhBXMyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 07:54:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50300 "EHLO mail.kernel.org"
+        id S235231AbhBXMyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 07:54:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50301 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235141AbhBXMwE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:52:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E5E064EFA;
-        Wed, 24 Feb 2021 12:50:42 +0000 (UTC)
+        id S235145AbhBXMwD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:52:03 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C712E64F03;
+        Wed, 24 Feb 2021 12:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171043;
-        bh=lG4dW/Kb16R2gTyTICsfrJS0bX4rk3qCMqTnpSbk0yQ=;
+        s=k20201202; t=1614171044;
+        bh=kW+2guIyAd4i+5LWKZhu1Zwc2nEf/44kxxyzgK3cVjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ExjdMgrDt83aU8V1+ggq5LJw8Dpm09qcZ1CdyqMeTpuLVVAmotnqR02tIYMLrLRyp
-         o7fIDxLPns8UAncRiE2f4MFkRtfWIjnjeBpPYZt9bWoqe5/Y2BLKX/jdBTtAgwFzmv
-         eOxsqiuVqrYEEAMi26InaK7KIYVN/zBufN0dO1t7NHkVSsR1LGjYffmp30tlSWuk/4
-         56aZdETQmkKyVIbwszUJQc2gku/watJ6GaqNexFGQzYkTm2PvWTiGJZOx0Cw6elsT9
-         5ZmETNB0/NxzjDJfGaPkop0rMFjFbt3RhV0NRGWfBAKnYwt0arCafeFSLpGAyimi0j
-         73DCZgvgkI47Q==
+        b=Le1Fq+z6B0Ziobl0Se9D4rJDK8loEgkkwRCILrubDD64mBEEpnJYlTHDb8+ksdaar
+         WWk5m7DmQE9lIBGs4kyg949Df5/cZxpMzwTGeJWr1gb5yJaIpDPPbROi5maw1pSMtP
+         IyNE9UNMTv8kcqFVw5wtuFFYTnuqMp0uguIqgX7fmJE6S7/oQEngBX1Q43mhbrFOjA
+         wmU7EdjQQmDeWv1BikXmok/ObNpZwwYnw+h7vXNfhJgdFk2w9KHRd3IJd9qqkWUV3/
+         jxxKpGtR4yv3BCL+ZcNNmG4QxH6Wc0aj/0qkyQlBkQMIvfNVKaHW5BeZovRA/H1IeH
+         /aiNAzX0smM6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ryder Lee <ryder.lee@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.11 12/67] mt76: mt7615: reset token when mac_reset happens
-Date:   Wed, 24 Feb 2021 07:49:30 -0500
-Message-Id: <20210224125026.481804-12-sashal@kernel.org>
+Cc:     Di Zhu <zhudi21@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 13/67] pktgen: fix misuse of BUG_ON() in pktgen_thread_worker()
+Date:   Wed, 24 Feb 2021 07:49:31 -0500
+Message-Id: <20210224125026.481804-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210224125026.481804-1-sashal@kernel.org>
 References: <20210224125026.481804-1-sashal@kernel.org>
@@ -44,103 +41,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ryder Lee <ryder.lee@mediatek.com>
+From: Di Zhu <zhudi21@huawei.com>
 
-[ Upstream commit a6275e934605646ef81b02d8d1164f21343149c9 ]
+[ Upstream commit 275b1e88cabb34dbcbe99756b67e9939d34a99b6 ]
 
-Reset token in mt7615_mac_reset_work() to avoid possible leakege.
+pktgen create threads for all online cpus and bond these threads to
+relevant cpu repecivtily. when this thread firstly be woken up, it
+will compare cpu currently running with the cpu specified at the time
+of creation and if the two cpus are not equal, BUG_ON() will take effect
+causing panic on the system.
+Notice that these threads could be migrated to other cpus before start
+running because of the cpu hotplug after these threads have created. so the
+BUG_ON() used here seems unreasonable and we can replace it with WARN_ON()
+to just printf a warning other than panic the system.
 
-Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Di Zhu <zhudi21@huawei.com>
+Link: https://lore.kernel.org/r/20210125124229.19334-1-zhudi21@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/mediatek/mt76/mt7615/mac.c   | 20 +++++++++++++++++++
- .../wireless/mediatek/mt76/mt7615/mt7615.h    |  2 +-
- .../wireless/mediatek/mt76/mt7615/pci_init.c  | 12 +----------
- 3 files changed, 22 insertions(+), 12 deletions(-)
+ net/core/pktgen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-index 0f360be0b8851..fb10a6497ed05 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-@@ -2058,6 +2058,23 @@ void mt7615_dma_reset(struct mt7615_dev *dev)
- }
- EXPORT_SYMBOL_GPL(mt7615_dma_reset);
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 105978604ffdb..3fba429f1f57b 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -3464,7 +3464,7 @@ static int pktgen_thread_worker(void *arg)
+ 	struct pktgen_dev *pkt_dev = NULL;
+ 	int cpu = t->cpu;
  
-+void mt7615_tx_token_put(struct mt7615_dev *dev)
-+{
-+	struct mt76_txwi_cache *txwi;
-+	int id;
-+
-+	spin_lock_bh(&dev->token_lock);
-+	idr_for_each_entry(&dev->token, txwi, id) {
-+		mt7615_txp_skb_unmap(&dev->mt76, txwi);
-+		if (txwi->skb)
-+			dev_kfree_skb_any(txwi->skb);
-+		mt76_put_txwi(&dev->mt76, txwi);
-+	}
-+	spin_unlock_bh(&dev->token_lock);
-+	idr_destroy(&dev->token);
-+}
-+EXPORT_SYMBOL_GPL(mt7615_tx_token_put);
-+
- void mt7615_mac_reset_work(struct work_struct *work)
- {
- 	struct mt7615_phy *phy2;
-@@ -2101,6 +2118,9 @@ void mt7615_mac_reset_work(struct work_struct *work)
+-	BUG_ON(smp_processor_id() != cpu);
++	WARN_ON(smp_processor_id() != cpu);
  
- 	mt76_wr(dev, MT_MCU_INT_EVENT, MT_MCU_INT_EVENT_PDMA_STOPPED);
- 
-+	mt7615_tx_token_put(dev);
-+	idr_init(&dev->token);
-+
- 	if (mt7615_wait_reset_state(dev, MT_MCU_CMD_RESET_DONE)) {
- 		mt7615_dma_reset(dev);
- 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h b/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
-index 99b8abdbb08f7..d697ff2ea56e8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
-@@ -583,7 +583,7 @@ int mt7615_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
- 			  struct mt76_tx_info *tx_info);
- 
- void mt7615_tx_complete_skb(struct mt76_dev *mdev, struct mt76_queue_entry *e);
--
-+void mt7615_tx_token_put(struct mt7615_dev *dev);
- void mt7615_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
- 			 struct sk_buff *skb);
- void mt7615_sta_ps(struct mt76_dev *mdev, struct ieee80211_sta *sta, bool ps);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-index 27fcb1374685b..58a0ec1bf8d7b 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-@@ -160,9 +160,7 @@ int mt7615_register_device(struct mt7615_dev *dev)
- 
- void mt7615_unregister_device(struct mt7615_dev *dev)
- {
--	struct mt76_txwi_cache *txwi;
- 	bool mcu_running;
--	int id;
- 
- 	mcu_running = mt7615_wait_for_mcu_init(dev);
- 
-@@ -172,15 +170,7 @@ void mt7615_unregister_device(struct mt7615_dev *dev)
- 		mt7615_mcu_exit(dev);
- 	mt7615_dma_cleanup(dev);
- 
--	spin_lock_bh(&dev->token_lock);
--	idr_for_each_entry(&dev->token, txwi, id) {
--		mt7615_txp_skb_unmap(&dev->mt76, txwi);
--		if (txwi->skb)
--			dev_kfree_skb_any(txwi->skb);
--		mt76_put_txwi(&dev->mt76, txwi);
--	}
--	spin_unlock_bh(&dev->token_lock);
--	idr_destroy(&dev->token);
-+	mt7615_tx_token_put(dev);
- 
- 	tasklet_disable(&dev->irq_tasklet);
- 
+ 	init_waitqueue_head(&t->queue);
+ 	complete(&t->start_done);
 -- 
 2.27.0
 
