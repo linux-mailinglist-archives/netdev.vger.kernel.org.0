@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C00323CC8
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:05:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6EA323CDD
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235405AbhBXMz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 07:55:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50354 "EHLO mail.kernel.org"
+        id S234164AbhBXM52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 07:57:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235152AbhBXMwH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:52:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 063C864F06;
-        Wed, 24 Feb 2021 12:50:44 +0000 (UTC)
+        id S235211AbhBXMwi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:52:38 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 201AC64F09;
+        Wed, 24 Feb 2021 12:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171046;
-        bh=eTYfnCxSmQMZPxjA9DkQiqxmEm/ZElvyZd5jBES6lSQ=;
+        s=k20201202; t=1614171048;
+        bh=WL76Ski11IRMzVaWfs5tB8az0AbilFvikcrLkzH939A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cOwic9UN4f120pdAtwr9IY21CYzIQSpcYRN7SNwjFkP1N5WKRqcNYb6HeEeMpctub
-         7qxJWZrfjPJCyN/yV4fWI5sg2ALIUbtkzP48gnAFHG4YEEoaXVh3C/N+ku6ysAzaIP
-         RHzamOZ+nx9wDjXU/VH8iW0udeIm6WgpxF/U1KIANU5Rvy4Pl/jibTEoMQ4I6A/EK/
-         qoiEw0GOT6YmOnoi4A0Sh1W73ae7YksOLouQO+ouIG2jaM79RIPeh+FxWlwjWUPTwG
-         LYrntQhqDsg0zu/egSI39YACYasOSVMOtt7natUkmbvW1hBUtcQlnO784Km0b6VeEo
-         jN2XjwCa9iWGg==
+        b=qn+C85ahpdBk4yHVkimaozABriWprVMqGp1lo9DSNl58ikn4KAfB3vXERyT3Acv3H
+         R7fzN7Gk+pEfeG9Xt0AL/F1iZQV2ZsIXcRqncPfCUdRbAZLoZpVAKxJ9ZCDmUpw5IR
+         D8X22gMHCdA+pSGV1uy6g769TQKGSE/B5ruuz56Jg1x8QZHKQcDNhiox0PHAZ8aRzb
+         WhR8E0nLoweyW28mLpSyznQumx+xfIXO/rvbPmhq1v2taEVFr8RoeETZR3iCFGaSA7
+         bG3AEexNLow33ef6WX0NKE0IBgBiES7QTSjK27+R1m7IjCyK0BGYfBBLZdNJwUzD+b
+         VlAVFrNoG1rkg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 14/67] ath10k: fix wmi mgmt tx queue full due to race condition
-Date:   Wed, 24 Feb 2021 07:49:32 -0500
-Message-Id: <20210224125026.481804-14-sashal@kernel.org>
+Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 16/67] net: sfp: add mode quirk for GPON module Ubiquiti U-Fiber Instant
+Date:   Wed, 24 Feb 2021 07:49:34 -0500
+Message-Id: <20210224125026.481804-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210224125026.481804-1-sashal@kernel.org>
 References: <20210224125026.481804-1-sashal@kernel.org>
@@ -45,88 +43,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaoqing Pan <miaoqing@codeaurora.org>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit b55379e343a3472c35f4a1245906db5158cab453 ]
+[ Upstream commit f0b4f847673299577c29b71d3f3acd3c313d81b7 ]
 
-Failed to transmit wmi management frames:
+The Ubiquiti U-Fiber Instant SFP GPON module has nonsensical information
+stored in its EEPROM. It claims to support all transceiver types including
+10G Ethernet. Clear all claimed modes and set only 1000baseX_Full, which is
+the only one supported.
 
-[84977.840894] ath10k_snoc a000000.wifi: wmi mgmt tx queue is full
-[84977.840913] ath10k_snoc a000000.wifi: failed to transmit packet, dropping: -28
-[84977.840924] ath10k_snoc a000000.wifi: failed to submit frame: -28
-[84977.840932] ath10k_snoc a000000.wifi: failed to transmit frame: -28
+This module has also phys_id set to SFF, and the SFP subsystem currently
+does not allow to use SFP modules detected as SFFs. Add exception for this
+module so it can be detected as supported.
 
-This issue is caused by race condition between skb_dequeue and
-__skb_queue_tail. The queue of ‘wmi_mgmt_tx_queue’ is protected by a
-different lock: ar->data_lock vs list->lock, the result is no protection.
-So when ath10k_mgmt_over_wmi_tx_work() and ath10k_mac_tx_wmi_mgmt()
-running concurrently on different CPUs, there appear to be a rare corner
-cases when the queue length is 1,
+This change finally allows to detect and use SFP GPON module Ubiquiti
+U-Fiber Instant on Linux system.
 
-  CPUx (skb_deuque)			CPUy (__skb_queue_tail)
-					next=list
-					prev=list
-  struct sk_buff *skb = skb_peek(list);	WRITE_ONCE(newsk->next, next);
-  WRITE_ONCE(list->qlen, list->qlen - 1);WRITE_ONCE(newsk->prev, prev);
-  next       = skb->next;		WRITE_ONCE(next->prev, newsk);
-  prev       = skb->prev;		WRITE_ONCE(prev->next, newsk);
-  skb->next  = skb->prev = NULL;	list->qlen++;
-  WRITE_ONCE(next->prev, prev);
-  WRITE_ONCE(prev->next, next);
+EEPROM content of this SFP module is (where XX is serial number):
 
-If the instruction ‘next = skb->next’ is executed before
-‘WRITE_ONCE(prev->next, newsk)’, newsk will be lost, as CPUx get the
-old ‘next’ pointer, but the length is still added by one. The final
-result is the length of the queue will reach the maximum value but
-the queue is empty.
+00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
+10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
+20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
+30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
+40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
+50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
 
-So remove ar->data_lock, and use 'skb_queue_tail' instead of
-'__skb_queue_tail' to prevent the potential race condition. Also switch
-to use skb_queue_len_lockless, in case we queue a few SKBs simultaneously.
-
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1.c2-00033-QCAHLSWMTPLZ-1
-
-Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1608618887-8857-1-git-send-email-miaoqing@codeaurora.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
+ drivers/net/phy/sfp.c     | 17 +++++++++++++++--
+ 2 files changed, 30 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 7d98250380ec5..91b1006ef2a27 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -3763,23 +3763,16 @@ bool ath10k_mac_tx_frm_has_freq(struct ath10k *ar)
- static int ath10k_mac_tx_wmi_mgmt(struct ath10k *ar, struct sk_buff *skb)
- {
- 	struct sk_buff_head *q = &ar->wmi_mgmt_tx_queue;
--	int ret = 0;
--
--	spin_lock_bh(&ar->data_lock);
- 
--	if (skb_queue_len(q) == ATH10K_MAX_NUM_MGMT_PENDING) {
-+	if (skb_queue_len_lockless(q) >= ATH10K_MAX_NUM_MGMT_PENDING) {
- 		ath10k_warn(ar, "wmi mgmt tx queue is full\n");
--		ret = -ENOSPC;
--		goto unlock;
-+		return -ENOSPC;
- 	}
- 
--	__skb_queue_tail(q, skb);
-+	skb_queue_tail(q, skb);
- 	ieee80211_queue_work(ar->hw, &ar->wmi_mgmt_tx_work);
- 
--unlock:
--	spin_unlock_bh(&ar->data_lock);
--
--	return ret;
-+	return 0;
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 20b91f5dfc6ed..4cf874fb5c5b4 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+ 	phylink_set(modes, 2500baseX_Full);
  }
  
- static enum ath10k_mac_tx_path
++static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
++				      unsigned long *modes)
++{
++	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
++	 * types including 10G Ethernet which is not truth. So clear all claimed
++	 * modes and set only one mode which module supports: 1000baseX_Full.
++	 */
++	phylink_zero(modes);
++	phylink_set(modes, 1000baseX_Full);
++}
++
+ static const struct sfp_quirk sfp_quirks[] = {
+ 	{
+ 		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
+@@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
+ 		.vendor = "HUAWEI",
+ 		.part = "MA5671A",
+ 		.modes = sfp_quirk_2500basex,
++	}, {
++		.vendor = "UBNT",
++		.part = "UF-INSTANT",
++		.modes = sfp_quirk_ubnt_uf_instant,
+ 	},
+ };
+ 
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 91d74c1a920ab..804295ad8a044 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -273,8 +273,21 @@ static const struct sff_data sff_data = {
+ 
+ static bool sfp_module_supported(const struct sfp_eeprom_id *id)
+ {
+-	return id->base.phys_id == SFF8024_ID_SFP &&
+-	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
++	if (id->base.phys_id == SFF8024_ID_SFP &&
++	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
++		return true;
++
++	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
++	 * phys id SFF instead of SFP. Therefore mark this module explicitly
++	 * as supported based on vendor name and pn match.
++	 */
++	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
++	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
++	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
++	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
++		return true;
++
++	return false;
+ }
+ 
+ static const struct sff_data sfp_data = {
 -- 
 2.27.0
 
