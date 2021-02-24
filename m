@@ -2,92 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A480E324212
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 17:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC3732421D
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 17:34:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233732AbhBXQ3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 11:29:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232861AbhBXQ16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 11:27:58 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B852AC061574;
-        Wed, 24 Feb 2021 08:27:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=oAPR85te3dRyKOTRlbHy17l5x3IzK2Fd4bEuFT+f54M=; b=mRzsInAJ+KnoCbdwoY6jAmutJ+
-        Yp9V7hrJHkvk0gC0cjonBKykXmZWJuyXs4ITsJD++W6544IIPMHGOyFko1U3PFLiDAoV21/BmBZoi
-        B3WA1nsunYjcr+5Xww+G5VNTEaB8v2jEyAKLAGCwL1mZYdivopOmfvGi18ZG2/q/qYak1UMLShBlY
-        yL8IDsuCrMeLHAjNqlAioxlQqTASExnJI6uxMu5e43dcuFV6XASgnAZGpaVNbTSAIPzHYc8YEwC1A
-        hS48Ha0EDUN+QCv4LwQ5ko2mfunB3pOWgC4NNaM06DojK8o/iRUegXQSbbgyOlocaHL7OZ/h4Y2wI
-        Re9thVkA==;
-Received: from [2601:1c0:6280:3f0::d05b]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1lEx0J-0003Gu-JA; Wed, 24 Feb 2021 16:27:11 +0000
-Subject: Re: [PATCH] init: Kconfig: Fix a spelling compier to compiler in the
- file init/Kconfig
-To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, natechancellor@gmail.com,
-        ndesaulniers@google.com, masahiroy@kernel.org,
-        akpm@linux-foundation.org, valentin.schneider@arm.com,
-        terrelln@fb.com, qperret@google.com, hannes@cmpxchg.org,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-References: <20210224081409.824278-1-unixbhaskar@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <64923623-633f-12cc-41bb-fd705f2c8aa3@infradead.org>
-Date:   Wed, 24 Feb 2021 08:27:03 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S234439AbhBXQcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 11:32:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34000 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234550AbhBXQa5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 11:30:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 97F2D64EF5;
+        Wed, 24 Feb 2021 16:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614184207;
+        bh=OMhXm5ZVyPVie1aLAhvh4d2VYevjXQzY2G8Smlm23GU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EyHPM90NueT4KwbJipUNDgDCH52VqIDo1do7Za+OZpezopDkptXNMFkneVbotuAEY
+         7LoVvY4IOUJcohMv32ofoijbLwZEQwdG8ho0AGBqE6giF+almblhXHz+1B3chVeQTr
+         F7LZaZw+m+B0TfYrreSwMs37+XtCZdRDucuxvUnAYzg0lqT67XjRarBUGKtzX3wfXm
+         VqsuESZTMYoN5a0vc91xUeMRScoKQMMDk3qHV/NNpEnbWbJfKKi976Flite6daFfGg
+         51RuOGwrjHcpE34VG5KoUQFFMralAXXjzobQyURSZ/MzEANf+X2e3TgKu2eXZkDtiy
+         TPAlqo/tnfjFQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8511A609F2;
+        Wed, 24 Feb 2021 16:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210224081409.824278-1-unixbhaskar@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv2 bpf-next] bpf: remove blank line in bpf helper description
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161418420754.20888.13845403637156552812.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Feb 2021 16:30:07 +0000
+References: <20210223131457.1378978-1-liuhangbin@gmail.com>
+In-Reply-To: <20210223131457.1378978-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        brouer@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/24/21 12:14 AM, Bhaskar Chowdhury wrote:
+Hello:
+
+This patch was applied to bpf/bpf.git (refs/heads/master):
+
+On Tue, 23 Feb 2021 21:14:57 +0800 you wrote:
+> Commit 34b2021cc616 ("bpf: Add BPF-helper for MTU checking") added an
+> extra blank line in bpf helper description. This will make
+> bpf_helpers_doc.py stop building bpf_helper_defs.h immediately after
+> bpf_check_mtu, which will affect future add functions.
 > 
-> s/compier/compiler/
+> Fixes: 34b2021cc616 ("bpf: Add BPF-helper for MTU checking")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 > 
-> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> [...]
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Here is the summary with links:
+  - [PATCHv2,bpf-next] bpf: remove blank line in bpf helper description
+    https://git.kernel.org/bpf/bpf/c/a7c9c25a99bb
 
-in Subject:, "Fix a spelling" is whacked. Maybe "Fix a spello" or
-"Fix typo".
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-
-> ---
->  init/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/init/Kconfig b/init/Kconfig
-> index b77c60f8b963..739c3425777b 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -19,7 +19,7 @@ config CC_VERSION_TEXT
->  	    CC_VERSION_TEXT so it is recorded in include/config/auto.conf.cmd.
->  	    When the compiler is updated, Kconfig will be invoked.
-> 
-> -	  - Ensure full rebuild when the compier is updated
-> +	  - Ensure full rebuild when the compiler is updated
->  	    include/linux/kconfig.h contains this option in the comment line so
->  	    fixdep adds include/config/cc/version/text.h into the auto-generated
->  	    dependency. When the compiler is updated, syncconfig will touch it
-> --
-> 2.30.1
-> 
-
-
--- 
-~Randy
 
