@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE17F323B75
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:50:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4AC323B76
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:50:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235068AbhBXLsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 06:48:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
+        id S232545AbhBXLsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 06:48:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235062AbhBXLqX (ORCPT
+        with ESMTP id S235063AbhBXLqX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 06:46:23 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63A6C061356
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 03:44:15 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id d8so2531348ejc.4
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 03:44:15 -0800 (PST)
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF892C06121C
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 03:44:16 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id do6so2541540ejc.3
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 03:44:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nu59qIPS2kqMtAot2Qj7Ys6cl5ZPPoFdF2Sho0eLISM=;
-        b=Q8ZLhkK1/nGDy61hKoaVp0XrOuKPuybvza0HWYGFuELg8lkPOZFghSLkDCDX3S0pek
-         LJZehVEFN3TEvWWfzgN1X9FnygQFDRx/DFvF2XYKTRpsi2wQpQnGlmqv7I4/vqmPDqgT
-         HdJe56tAwCA9EiFE0ygWraWmK3VCYhCe89APQ4+sqhIE+hR/TJrw2eLyPLHdmDT8RSyN
-         5giNKS1t6Qj9CPBSqjYnXyXBwUEbvA+49MXWMO2HbTsZShlUEDJ00+orbH0DM/o5L3Np
-         ahgvom2AnBmd8GkKLCEZ0LZOVbTGN7XtA/ViFGx9gCRV3re43pMo7Im1rkdt+gqouiJO
-         AXlw==
+        bh=RFOX600Q/Cv3HMjqdBygz+3o5JVjShH9AZxw2X5WKRw=;
+        b=URQTkSxdTb/EYkTMzw+WRm6jFboadm5OLgpBewr/gfseIFX9xK2bDhHr/5Y+uKpOqL
+         qCmolMDNxm0SGeSSDcEdnFoVUlpzC1c3YjbhZBGvKRItYjzw/7wdaNHPYupH5GrL1BYr
+         btpC87faiug6F95F0WScGsCQyc83yUiro3Htw+Hc6td0G6XK9gVR0jeIyfuCui9aq8PV
+         T0ytJiSv4KgEj0Wysy5oj3JIOh7kty6PzRzJQNA3RG2jT2/X9dK9Rgo9vMsR3+OWNePX
+         /2s41fCTe9xk0zW6qAixm70T9pJJuP4Fcbol7gbwQmra/0TNetZemyBOWRTOSSFyF5Ap
+         3J0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nu59qIPS2kqMtAot2Qj7Ys6cl5ZPPoFdF2Sho0eLISM=;
-        b=nmvTgmbTDo67qCru4+9zww01ngqpT31GNfXlkWeHvzUW9hCPDXkf9GL9DJ+kWhgYQf
-         3UirCloHMa1mtARW1k2i2kuQVRpYhzm082N5vSpE7DeAqIsVvcsMqnVtcKl8DlulS90q
-         /9YbaMJfclqQO0tqpzGJP2ybOaspET56IQt3kwZA9P+YZCN4pApInFsyEU7RX21LEPGK
-         EpGpQEG7oY0l/81KdXOPRDkFolZrip2ywHZw+hx0bdvHHXKLFMqYLSm/9aYt7gabyoOe
-         vWXhKdv6mxVSlhZIE6Ml9IPY4u5MLv9a0/AAmJp98eN1NAa+RZt5CLQgO6LSkmXaKOw2
-         fvuQ==
-X-Gm-Message-State: AOAM533gOlGZCnOiFS1OUVRkvnxSiDm8vicH3vXP4uHCd+Oy6QURz16z
-        wF8wJIyxrzRqoJnWopTPwwNfFE8B9no=
-X-Google-Smtp-Source: ABdhPJxAtViWOh8RrNs2tJ0PghNzT+TtxcGwTiCAeks/GyS9UmxB2i99gCNBq8k3f3iyZa7GWPzKTw==
-X-Received: by 2002:a17:906:25c4:: with SMTP id n4mr30795367ejb.359.1614167054379;
-        Wed, 24 Feb 2021 03:44:14 -0800 (PST)
+        bh=RFOX600Q/Cv3HMjqdBygz+3o5JVjShH9AZxw2X5WKRw=;
+        b=VROkbDy2zoUExu2vD1x2dW91aCeTrtBqy242GuAsZCqpFFDXqSSVuX6ga99KKaNHSk
+         sDxkYDo7nZMzCXjttLtS5dO1PIRo6tiEqTdshfBmGkEcdCNYadGNnJPgaZJda2b71c+U
+         2PBx5vc+HRF4+N5OM00ln32WwLs/9A7nbblrPTtDqmU7fXx3JbkoyMtO0jqeF9paeQDq
+         2XUEhRLrgcWJvqffheD1XTcPL/Pk/7yg6SKK4ElHDnkOSsqoVsJ7MlexA06CnHQEKyXW
+         se55VXq2Gje/kZCyOZT4oDEhDewPWMwPoESlaKdBMtCyPeJxKGI9zMgOtWbt6V7OxGfk
+         0WAw==
+X-Gm-Message-State: AOAM530iu29Fvb8gHD5pwj2cpZZEGJuVNwsxmpvxm9uY+t5eJdtY3Mif
+        8vwSpsb3kqYWU97mXaFoGwu9gdyAiLE=
+X-Google-Smtp-Source: ABdhPJxFGplH7866kCEzcIob9wviSgA/CL3xFSxVcmMwq08QniYZgFZ2B6IqlkWThWI4kznuGuL7fQ==
+X-Received: by 2002:a17:906:4e8f:: with SMTP id v15mr20853013eju.357.1614167055479;
+        Wed, 24 Feb 2021 03:44:15 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id r5sm1203921ejx.96.2021.02.24.03.44.13
+        by smtp.gmail.com with ESMTPSA id r5sm1203921ejx.96.2021.02.24.03.44.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 03:44:14 -0800 (PST)
+        Wed, 24 Feb 2021 03:44:15 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -60,9 +60,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vlad Yasevich <vyasevich@gmail.com>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [RFC PATCH v2 net-next 12/17] net: dsa: sync static FDB entries on foreign interfaces to hardware
-Date:   Wed, 24 Feb 2021 13:43:45 +0200
-Message-Id: <20210224114350.2791260-13-olteanv@gmail.com>
+Subject: [RFC PATCH v2 net-next 13/17] net: dsa: mv88e6xxx: Request assisted learning on CPU port
+Date:   Wed, 24 Feb 2021 13:43:46 +0200
+Message-Id: <20210224114350.2791260-14-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210224114350.2791260-1-olteanv@gmail.com>
 References: <20210224114350.2791260-1-olteanv@gmail.com>
@@ -74,59 +74,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tobias Waldekranz <tobias@waldekranz.com>
 
-Reuse the "assisted_learning_on_cpu_port" functionality to always add
-entries for user-configured entries on foreign interfaces, even if
-assisted_learning_on_cpu_port is not enabled. E.g. in this situation:
+While the hardware is capable of performing learning on the CPU port,
+it requires alot of additions to the bridge's forwarding path in order
+to handle multi-destination traffic correctly.
 
-   br0
-   / \
-swp0 dummy0
-
-$ bridge fdb add 02:00:de:ad:00:01 dev dummy0 vlan 1 master static
-
-Results in DSA adding an entry in the hardware FDB, pointing this
-address towards the CPU port.
-
-The same is true for entries added to the bridge itself, e.g:
-
-$ bridge fdb add 02:00:de:ad:00:01 dev br0 vlan 1 self local
+Until that is in place, opt for the next best thing and let DSA sync
+the relevant addresses down to the hardware FDB.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/slave.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 425b3223b7d1..a32875d3dc5f 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2556,9 +2556,12 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
- 			else if (!fdb_info->added_by_user)
- 				return NOTIFY_OK;
- 		} else {
--			/* Snoop addresses learnt on foreign interfaces
--			 * bridged with us, for switches that don't
--			 * automatically learn SA from CPU-injected traffic
-+			/* Snoop addresses added to foreign interfaces
-+			 * bridged with us, or the bridge
-+			 * itself. Dynamically learned addresses can
-+			 * also be added for switches that don't
-+			 * automatically learn SA from CPU-injected
-+			 * traffic.
- 			 */
- 			struct net_device *br_dev;
- 			struct dsa_slave_priv *p;
-@@ -2581,7 +2584,8 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
- 			dp = p->dp;
- 			host_addr = true;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 903d619e08ed..e25bfcde8324 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -5818,6 +5818,7 @@ static int mv88e6xxx_register_switch(struct mv88e6xxx_chip *chip)
+ 	ds->ops = &mv88e6xxx_switch_ops;
+ 	ds->ageing_time_min = chip->info->age_time_coeff;
+ 	ds->ageing_time_max = chip->info->age_time_coeff * U8_MAX;
++	ds->assisted_learning_on_cpu_port = true;
  
--			if (!dp->ds->assisted_learning_on_cpu_port)
-+			if (!fdb_info->added_by_user &&
-+			    !dp->ds->assisted_learning_on_cpu_port)
- 				return NOTIFY_DONE;
- 
- 			/* When the bridge learns an address on an offloaded
+ 	/* Some chips support up to 32, but that requires enabling the
+ 	 * 5-bit port mode, which we do not support. 640k^W16 ought to
 -- 
 2.25.1
 
