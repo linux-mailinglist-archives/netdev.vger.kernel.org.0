@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C4D8323CD9
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:06:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C11D7323D06
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:06:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234165AbhBXM4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 07:56:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50150 "EHLO mail.kernel.org"
+        id S235334AbhBXNBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 08:01:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54882 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235195AbhBXMw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 07:52:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C09C64F0F;
-        Wed, 24 Feb 2021 12:50:59 +0000 (UTC)
+        id S235252AbhBXM55 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:57:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6FABB64EF5;
+        Wed, 24 Feb 2021 12:52:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614171060;
-        bh=IGfOMlUG53o63vW+euXyrD0sQKcMORJ1+ERPMlIBnAs=;
+        s=k20201202; t=1614171139;
+        bh=Agm5hJ+b07cFBx0KwJBSDzNwjcfKPOaJQm5RF0xouSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DeXft+YRLe2ZQhbrZ3qdb+nlHav9qseKLDKqRKdFyjjtSQBcYm8EHtuSiWJ4Gcg9F
-         iwMgE/38u3Kpz2TOi9TULxPxLdGQMPpv9tl3hNDYWRx5DaHe61zXJyGA0i0QT2agfJ
-         E5iiYyDjPiVVfSLSoh4adjuc9ACgkIFCNUP/mGV2nWb/lpSkZnZIF7xyxCnSLHC/q2
-         0W4ZFXclGyALbSDTxsM7q5KA2vlvNNUwA0jHrS6OFPOHQ1HSC+nqR0J9GOjM8tVni6
-         2X/yqOrx6JzXUN8gzkhfK8ofPIX/kt0MuSvV83cuF7ijMWTldux2amtty4x1RJqnUi
-         Ww7msh51eKCLw==
+        b=f+EJbXx6y6qWMQAMDvjktjB0UeIAb5a4iLyK/P5NsqGt0+rsDAWcmYmbp77SEx06c
+         X0UmB/k3JJrvaWci1aeSdtpUAmrRwTCjp/YyW3D1lwywxcAkHOObW5bFCe3gec2ssY
+         eqxemdC7X2KuGpprzxLAJn1nv9Jt8e6lMlkz+Cp7s+ilD4F3mhbVuzHu/YICHJuzG5
+         tEzk3kP1rlzwK7i1e5wR+UDoG+R7a7mBKgHEeacgswBnRfS6rfUDhkcYBreplH3Sve
+         TG6N2aEdq2bBNlzcoF7XgDh/Ab4Gj1E7ARGlCp1I4/MXrNZBifYVVjP/a5gq4DOUuL
+         jyFTCdgCH0+qw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vsevolod Kozlov <zaba@mm.st>, Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Tony Lindgren <tony@atomide.com>, Raz Bouganim <r-bouganim@ti.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 24/67] wilc1000: Fix use of void pointer as a wrong struct type
-Date:   Wed, 24 Feb 2021 07:49:42 -0500
-Message-Id: <20210224125026.481804-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 05/56] wlcore: Fix command execute failure 19 for wl12xx
+Date:   Wed, 24 Feb 2021 07:51:21 -0500
+Message-Id: <20210224125212.482485-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210224125026.481804-1-sashal@kernel.org>
-References: <20210224125026.481804-1-sashal@kernel.org>
+In-Reply-To: <20210224125212.482485-1-sashal@kernel.org>
+References: <20210224125212.482485-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,113 +43,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vsevolod Kozlov <zaba@mm.st>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit 6fe91b69ceceea832a73d35185df04b3e877f399 ]
+[ Upstream commit cb88d01b67383a095e3f7caeb4cdade5a6cf0417 ]
 
-ac_classify() expects a struct sk_buff* as its second argument, which is
-a member of struct tx_complete_data. priv happens to be a pointer to
-struct tx_complete_data, so passing it directly to ac_classify() leads
-to wrong behaviour and occasional panics.
+We can currently get a "command execute failure 19" error on beacon loss
+if the signal is weak:
 
-Since there is only one caller of wilc_wlan_txq_add_net_pkt and it
-already knows the type behind this pointer, and the structure is already
-in the header file, change the function signature to use the real type
-instead of void* in order to prevent confusion.
+wlcore: Beacon loss detected. roles:0xff
+wlcore: Connection loss work (role_id: 0).
+...
+wlcore: ERROR command execute failure 19
+...
+WARNING: CPU: 0 PID: 1552 at drivers/net/wireless/ti/wlcore/main.c:803
+...
+(wl12xx_queue_recovery_work.part.0 [wlcore])
+(wl12xx_cmd_role_start_sta [wlcore])
+(wl1271_op_bss_info_changed [wlcore])
+(ieee80211_prep_connection [mac80211])
 
-Signed-off-by: Vsevolod Kozlov <zaba@mm.st>
+Error 19 is defined as CMD_STATUS_WRONG_NESTING from the wlcore firmware,
+and seems to mean that the firmware no longer wants to see the quirk
+handling for WLCORE_QUIRK_START_STA_FAILS done.
+
+This quirk got added with commit 18eab430700d ("wlcore: workaround
+start_sta problem in wl12xx fw"), and it seems that this already got fixed
+in the firmware long time ago back in 2012 as wl18xx never had this quirk
+in place to start with.
+
+As we no longer even support firmware that early, to me it seems that it's
+safe to just drop WLCORE_QUIRK_START_STA_FAILS to fix the error. Looks
+like earlier firmware got disabled back in 2013 with commit 0e284c074ef9
+("wl12xx: increase minimum singlerole firmware version required").
+
+If it turns out we still need WLCORE_QUIRK_START_STA_FAILS with any
+firmware that the driver works with, we can simply revert this patch and
+add extra checks for firmware version used.
+
+With this fix wlcore reconnects properly after a beacon loss.
+
+Cc: Raz Bouganim <r-bouganim@ti.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YCQomJ1mO5BLxYOT@Vsevolods-Mini.lan
+Link: https://lore.kernel.org/r/20210115065613.7731-1-tony@atomide.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/microchip/wilc1000/netdev.c |  2 +-
- drivers/net/wireless/microchip/wilc1000/wlan.c   | 15 ++++++++-------
- drivers/net/wireless/microchip/wilc1000/wlan.h   |  3 ++-
- 3 files changed, 11 insertions(+), 9 deletions(-)
+ drivers/net/wireless/ti/wl12xx/main.c   |  3 ---
+ drivers/net/wireless/ti/wlcore/main.c   | 15 +--------------
+ drivers/net/wireless/ti/wlcore/wlcore.h |  3 ---
+ 3 files changed, 1 insertion(+), 20 deletions(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-index 2a1fbbdd6a4bd..0c188310919e1 100644
---- a/drivers/net/wireless/microchip/wilc1000/netdev.c
-+++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
-@@ -737,7 +737,7 @@ netdev_tx_t wilc_mac_xmit(struct sk_buff *skb, struct net_device *ndev)
+diff --git a/drivers/net/wireless/ti/wl12xx/main.c b/drivers/net/wireless/ti/wl12xx/main.c
+index 3c9c623bb4283..9d7dbfe7fe0c3 100644
+--- a/drivers/net/wireless/ti/wl12xx/main.c
++++ b/drivers/net/wireless/ti/wl12xx/main.c
+@@ -635,7 +635,6 @@ static int wl12xx_identify_chip(struct wl1271 *wl)
+ 		wl->quirks |= WLCORE_QUIRK_LEGACY_NVS |
+ 			      WLCORE_QUIRK_DUAL_PROBE_TMPL |
+ 			      WLCORE_QUIRK_TKIP_HEADER_SPACE |
+-			      WLCORE_QUIRK_START_STA_FAILS |
+ 			      WLCORE_QUIRK_AP_ZERO_SESSION_ID;
+ 		wl->sr_fw_name = WL127X_FW_NAME_SINGLE;
+ 		wl->mr_fw_name = WL127X_FW_NAME_MULTI;
+@@ -659,7 +658,6 @@ static int wl12xx_identify_chip(struct wl1271 *wl)
+ 		wl->quirks |= WLCORE_QUIRK_LEGACY_NVS |
+ 			      WLCORE_QUIRK_DUAL_PROBE_TMPL |
+ 			      WLCORE_QUIRK_TKIP_HEADER_SPACE |
+-			      WLCORE_QUIRK_START_STA_FAILS |
+ 			      WLCORE_QUIRK_AP_ZERO_SESSION_ID;
+ 		wl->plt_fw_name = WL127X_PLT_FW_NAME;
+ 		wl->sr_fw_name = WL127X_FW_NAME_SINGLE;
+@@ -688,7 +686,6 @@ static int wl12xx_identify_chip(struct wl1271 *wl)
+ 		wl->quirks |= WLCORE_QUIRK_TX_BLOCKSIZE_ALIGN |
+ 			      WLCORE_QUIRK_DUAL_PROBE_TMPL |
+ 			      WLCORE_QUIRK_TKIP_HEADER_SPACE |
+-			      WLCORE_QUIRK_START_STA_FAILS |
+ 			      WLCORE_QUIRK_AP_ZERO_SESSION_ID;
  
- 	vif->netstats.tx_packets++;
- 	vif->netstats.tx_bytes += tx_data->size;
--	queue_count = wilc_wlan_txq_add_net_pkt(ndev, (void *)tx_data,
-+	queue_count = wilc_wlan_txq_add_net_pkt(ndev, tx_data,
- 						tx_data->buff, tx_data->size,
- 						wilc_tx_complete);
+ 		wlcore_set_min_fw_ver(wl, WL128X_CHIP_VER,
+diff --git a/drivers/net/wireless/ti/wlcore/main.c b/drivers/net/wireless/ti/wlcore/main.c
+index 6863fd552d5e7..6e402d62dbe4a 100644
+--- a/drivers/net/wireless/ti/wlcore/main.c
++++ b/drivers/net/wireless/ti/wlcore/main.c
+@@ -2872,21 +2872,8 @@ static int wlcore_join(struct wl1271 *wl, struct wl12xx_vif *wlvif)
  
-diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index c12f27be9f790..31d51385ba934 100644
---- a/drivers/net/wireless/microchip/wilc1000/wlan.c
-+++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -408,7 +408,8 @@ static inline u8 ac_change(struct wilc *wilc, u8 *ac)
- 	return 1;
+ 	if (is_ibss)
+ 		ret = wl12xx_cmd_role_start_ibss(wl, wlvif);
+-	else {
+-		if (wl->quirks & WLCORE_QUIRK_START_STA_FAILS) {
+-			/*
+-			 * TODO: this is an ugly workaround for wl12xx fw
+-			 * bug - we are not able to tx/rx after the first
+-			 * start_sta, so make dummy start+stop calls,
+-			 * and then call start_sta again.
+-			 * this should be fixed in the fw.
+-			 */
+-			wl12xx_cmd_role_start_sta(wl, wlvif);
+-			wl12xx_cmd_role_stop_sta(wl, wlvif);
+-		}
+-
++	else
+ 		ret = wl12xx_cmd_role_start_sta(wl, wlvif);
+-	}
+ 
+ 	return ret;
  }
+diff --git a/drivers/net/wireless/ti/wlcore/wlcore.h b/drivers/net/wireless/ti/wlcore/wlcore.h
+index b7821311ac75b..81c94d390623b 100644
+--- a/drivers/net/wireless/ti/wlcore/wlcore.h
++++ b/drivers/net/wireless/ti/wlcore/wlcore.h
+@@ -547,9 +547,6 @@ wlcore_set_min_fw_ver(struct wl1271 *wl, unsigned int chip,
+ /* Each RX/TX transaction requires an end-of-transaction transfer */
+ #define WLCORE_QUIRK_END_OF_TRANSACTION		BIT(0)
  
--int wilc_wlan_txq_add_net_pkt(struct net_device *dev, void *priv, u8 *buffer,
-+int wilc_wlan_txq_add_net_pkt(struct net_device *dev,
-+			      struct tx_complete_data *tx_data, u8 *buffer,
- 			      u32 buffer_size,
- 			      void (*tx_complete_fn)(void *, int))
- {
-@@ -420,27 +421,27 @@ int wilc_wlan_txq_add_net_pkt(struct net_device *dev, void *priv, u8 *buffer,
- 	wilc = vif->wilc;
+-/* the first start_role(sta) sometimes doesn't work on wl12xx */
+-#define WLCORE_QUIRK_START_STA_FAILS		BIT(1)
+-
+ /* wl127x and SPI don't support SDIO block size alignment */
+ #define WLCORE_QUIRK_TX_BLOCKSIZE_ALIGN		BIT(2)
  
- 	if (wilc->quit) {
--		tx_complete_fn(priv, 0);
-+		tx_complete_fn(tx_data, 0);
- 		return 0;
- 	}
- 
- 	tqe = kmalloc(sizeof(*tqe), GFP_ATOMIC);
- 
- 	if (!tqe) {
--		tx_complete_fn(priv, 0);
-+		tx_complete_fn(tx_data, 0);
- 		return 0;
- 	}
- 	tqe->type = WILC_NET_PKT;
- 	tqe->buffer = buffer;
- 	tqe->buffer_size = buffer_size;
- 	tqe->tx_complete_func = tx_complete_fn;
--	tqe->priv = priv;
-+	tqe->priv = tx_data;
- 	tqe->vif = vif;
- 
--	q_num = ac_classify(wilc, priv);
-+	q_num = ac_classify(wilc, tx_data->skb);
- 	tqe->q_num = q_num;
- 	if (ac_change(wilc, &q_num)) {
--		tx_complete_fn(priv, 0);
-+		tx_complete_fn(tx_data, 0);
- 		kfree(tqe);
- 		return 0;
- 	}
-@@ -451,7 +452,7 @@ int wilc_wlan_txq_add_net_pkt(struct net_device *dev, void *priv, u8 *buffer,
- 			tcp_process(dev, tqe);
- 		wilc_wlan_txq_add_to_tail(dev, q_num, tqe);
- 	} else {
--		tx_complete_fn(priv, 0);
-+		tx_complete_fn(tx_data, 0);
- 		kfree(tqe);
- 	}
- 
-diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.h b/drivers/net/wireless/microchip/wilc1000/wlan.h
-index 3d2104f198192..d55eb6b3a12a9 100644
---- a/drivers/net/wireless/microchip/wilc1000/wlan.h
-+++ b/drivers/net/wireless/microchip/wilc1000/wlan.h
-@@ -399,7 +399,8 @@ int wilc_wlan_firmware_download(struct wilc *wilc, const u8 *buffer,
- 				u32 buffer_size);
- int wilc_wlan_start(struct wilc *wilc);
- int wilc_wlan_stop(struct wilc *wilc, struct wilc_vif *vif);
--int wilc_wlan_txq_add_net_pkt(struct net_device *dev, void *priv, u8 *buffer,
-+int wilc_wlan_txq_add_net_pkt(struct net_device *dev,
-+			      struct tx_complete_data *tx_data, u8 *buffer,
- 			      u32 buffer_size,
- 			      void (*tx_complete_fn)(void *, int));
- int wilc_wlan_handle_txq(struct wilc *wl, u32 *txq_count);
 -- 
 2.27.0
 
