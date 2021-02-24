@@ -2,294 +2,415 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E0EE323C02
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 13:43:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90C85323C25
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 13:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235019AbhBXMlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 07:41:51 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9228 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234537AbhBXMls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 07:41:48 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B603649600005>; Wed, 24 Feb 2021 04:41:04 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 24 Feb 2021 12:41:02 +0000
-Date:   Wed, 24 Feb 2021 14:40:59 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     Jason Wang <jasowang@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-Message-ID: <20210224124059.GA207518@mtl-vdi-166.wap.labs.mlnx>
-References: <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
- <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
- <20210223082536-mutt-send-email-mst@kernel.org>
- <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <7e6291a4-30b1-6b59-a2bf-713e7b56826d@redhat.com>
- <20210224000528-mutt-send-email-mst@kernel.org>
- <20210224064520.GA204317@mtl-vdi-166.wap.labs.mlnx>
- <20210224014700-mutt-send-email-mst@kernel.org>
- <ef775724-b5fb-ca70-ed2f-f23d8fbf4cd8@redhat.com>
- <20210224021054-mutt-send-email-mst@kernel.org>
+        id S233490AbhBXMvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 07:51:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49446 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229507AbhBXMvK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 07:51:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DEDD364DAF;
+        Wed, 24 Feb 2021 12:50:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614171028;
+        bh=TSUkDEg3idbCvGR1Il326oKHNcQCPo7tDTvdJZbZUeY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Zg9p1o4r8WxWMc8WrM2qcVMRtkKdFEHakKMRBxoHHM58msBSjKgdKugccqMyioOax
+         JLVp8Jmnck3rcoae9mewdeFVre6DPOkOeaj+oYpTE1fjTaNPb0kPl0DZCgv4v8byWJ
+         YrQZtZYJcdnNtubNk1Y68Nc+0vkMg6ostoFbY51lHdDKxgXOGNm3EL8JlQU4WXv+Cd
+         U/WYc08/SSonYiSSqcYKzYMcgKlCuwL/OKv/HQ/R4yuxkCDRLUhf2wv/UyX5JbRYif
+         sNpTWL+kk7GHBGXXX2rBsod9Y/1e0yzcq/4KgWgqZrmotYjMxdp6O170czg41AwnZn
+         XAr4sGmHIhU0g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 01/67] ath10k: prevent deinitializing NAPI twice
+Date:   Wed, 24 Feb 2021 07:49:19 -0500
+Message-Id: <20210224125026.481804-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20210224021054-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614170465; bh=CY4QNtNiD72euCLRiTKbC8UGQytTfwDI3C4JbViLSJ0=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:Content-Transfer-Encoding:
-         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=laDVWG15B6FMt40L16Yql1VJ9s2BdL/d72vcHHE7rvBeZ+KCJ6DA5iOrwvGbkHrJ6
-         J1kcOm8J4GBbmT5eaaJ9D992t0uQc2r6SdKvKO+4RkiiqZsQtGhzpu3tLJ8vShdFTF
-         GxQzb4gq9pumoXDpi9HK7AT54cVOHVbf0jWXxkdJBDyhO/j+toAHYehqAw2bECOoqV
-         rn/3r3oa6wMG7huZTIaeQWHDAku7Ncvug9gIcP3tw66wy63DfD9zpS2LyTh1DKH94U
-         qQbnPQwAkHAhXE1ZlJ48AfXrlwsFW/NXRQMGP9yebQvHCzW1w4kFyXYGSO1HNyOgtB
-         yO4Q+35gXZGfg==
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 02:12:01AM -0500, Michael S. Tsirkin wrote:
-> On Wed, Feb 24, 2021 at 02:55:13PM +0800, Jason Wang wrote:
-> >=20
-> > On 2021/2/24 2:47 =E4=B8=8B=E5=8D=88, Michael S. Tsirkin wrote:
-> > > On Wed, Feb 24, 2021 at 08:45:20AM +0200, Eli Cohen wrote:
-> > > > On Wed, Feb 24, 2021 at 12:17:58AM -0500, Michael S. Tsirkin wrote:
-> > > > > On Wed, Feb 24, 2021 at 11:20:01AM +0800, Jason Wang wrote:
-> > > > > > On 2021/2/24 3:35 =E4=B8=8A=E5=8D=88, Si-Wei Liu wrote:
-> > > > > > >=20
-> > > > > > > On 2/23/2021 5:26 AM, Michael S. Tsirkin wrote:
-> > > > > > > > On Tue, Feb 23, 2021 at 10:03:57AM +0800, Jason Wang wrote:
-> > > > > > > > > On 2021/2/23 9:12 =E4=B8=8A=E5=8D=88, Si-Wei Liu wrote:
-> > > > > > > > > > On 2/21/2021 11:34 PM, Michael S. Tsirkin wrote:
-> > > > > > > > > > > On Mon, Feb 22, 2021 at 12:14:17PM +0800, Jason Wang =
-wrote:
-> > > > > > > > > > > > On 2021/2/19 7:54 =E4=B8=8B=E5=8D=88, Si-Wei Liu wr=
-ote:
-> > > > > > > > > > > > > Commit 452639a64ad8 ("vdpa: make sure set_feature=
-s is invoked
-> > > > > > > > > > > > > for legacy") made an exception for legacy guests =
-to reset
-> > > > > > > > > > > > > features to 0, when config space is accessed befo=
-re features
-> > > > > > > > > > > > > are set. We should relieve the verify_min_feature=
-s() check
-> > > > > > > > > > > > > and allow features reset to 0 for this case.
-> > > > > > > > > > > > >=20
-> > > > > > > > > > > > > It's worth noting that not just legacy guests cou=
-ld access
-> > > > > > > > > > > > > config space before features are set. For instanc=
-e, when
-> > > > > > > > > > > > > feature VIRTIO_NET_F_MTU is advertised some moder=
-n driver
-> > > > > > > > > > > > > will try to access and validate the MTU present i=
-n the config
-> > > > > > > > > > > > > space before virtio features are set.
-> > > > > > > > > > > > This looks like a spec violation:
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > "
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > The following driver-read-only field, mtu only exis=
-ts if
-> > > > > > > > > > > > VIRTIO_NET_F_MTU is
-> > > > > > > > > > > > set.
-> > > > > > > > > > > > This field specifies the maximum MTU for the driver=
- to use.
-> > > > > > > > > > > > "
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > Do we really want to workaround this?
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > Thanks
-> > > > > > > > > > > And also:
-> > > > > > > > > > >=20
-> > > > > > > > > > > The driver MUST follow this sequence to initialize a =
-device:
-> > > > > > > > > > > 1. Reset the device.
-> > > > > > > > > > > 2. Set the ACKNOWLEDGE status bit: the guest OS has
-> > > > > > > > > > > noticed the device.
-> > > > > > > > > > > 3. Set the DRIVER status bit: the guest OS knows how =
-to drive the
-> > > > > > > > > > > device.
-> > > > > > > > > > > 4. Read device feature bits, and write the subset of =
-feature bits
-> > > > > > > > > > > understood by the OS and driver to the
-> > > > > > > > > > > device. During this step the driver MAY read (but MUS=
-T NOT write)
-> > > > > > > > > > > the device-specific configuration
-> > > > > > > > > > > fields to check that it can support the device before=
- accepting it.
-> > > > > > > > > > > 5. Set the FEATURES_OK status bit. The driver MUST NO=
-T accept new
-> > > > > > > > > > > feature bits after this step.
-> > > > > > > > > > > 6. Re-read device status to ensure the FEATURES_OK bi=
-t is still set:
-> > > > > > > > > > > otherwise, the device does not
-> > > > > > > > > > > support our subset of features and the device is unus=
-able.
-> > > > > > > > > > > 7. Perform device-specific setup, including discovery=
- of virtqueues
-> > > > > > > > > > > for the device, optional per-bus setup,
-> > > > > > > > > > > reading and possibly writing the device=E2=80=99s vir=
-tio configuration
-> > > > > > > > > > > space, and population of virtqueues.
-> > > > > > > > > > > 8. Set the DRIVER_OK status bit. At this point the de=
-vice is =E2=80=9Clive=E2=80=9D.
-> > > > > > > > > > >=20
-> > > > > > > > > > >=20
-> > > > > > > > > > > so accessing config space before FEATURES_OK is a spe=
-c
-> > > > > > > > > > > violation, right?
-> > > > > > > > > > It is, but it's not relevant to what this commit tries =
-to address. I
-> > > > > > > > > > thought the legacy guest still needs to be supported.
-> > > > > > > > > >=20
-> > > > > > > > > > Having said, a separate patch has to be posted to fix t=
-he guest driver
-> > > > > > > > > > issue where this discrepancy is introduced to
-> > > > > > > > > > virtnet_validate() (since
-> > > > > > > > > > commit fe36cbe067). But it's not technically related to=
- this patch.
-> > > > > > > > > >=20
-> > > > > > > > > > -Siwei
-> > > > > > > > > I think it's a bug to read config space in validate, we s=
-hould
-> > > > > > > > > move it to
-> > > > > > > > > virtnet_probe().
-> > > > > > > > >=20
-> > > > > > > > > Thanks
-> > > > > > > > I take it back, reading but not writing seems to be explici=
-tly
-> > > > > > > > allowed by spec.
-> > > > > > > > So our way to detect a legacy guest is bogus, need to think=
- what is
-> > > > > > > > the best way to handle this.
-> > > > > > > Then maybe revert commit fe36cbe067 and friends, and have QEM=
-U detect
-> > > > > > > legacy guest? Supposedly only config space write access needs=
- to be
-> > > > > > > guarded before setting FEATURES_OK.
-> > > > > >=20
-> > > > > > I agree. My understanding is that all vDPA must be modern devic=
-e (since
-> > > > > > VIRITO_F_ACCESS_PLATFORM is mandated) instead of transitional d=
-evice.
-> > > > > >=20
-> > > > > > Thanks
-> > > > > Well mlx5 has some code to handle legacy guests ...
-> > > > > Eli, could you comment? Is that support unused right now?
-> > > > >=20
-> > > > If you mean support for version 1.0, well the knob is there but it'=
-s not
-> > > > set in the firmware I use. Note sure if we will support this.
-> > > Hmm you mean it's legacy only right now?
-> > > Well at some point you will want advanced goodies like RSS
-> > > and all that is gated on 1.0 ;)
-> >=20
+From: Wen Gong <wgong@codeaurora.org>
 
-Guys sorry, I checked again, the firmware capability is set and so is
-VIRTIO_F_VERSION_1.
+[ Upstream commit e2f8b74e58cb1560c1399ba94a470b770e858259 ]
 
-> >=20
-> > So if my understanding is correct the device/firmware is legacy but req=
-uire
-> > VIRTIO_F_ACCESS_PLATFORM semanic? Looks like a spec violation?
-> >=20
-> > Thanks
->=20
-> Legacy mode description is the spec is non-normative. As such as long as
-> guests work, they work ;)
->=20
-> >=20
-> > >=20
-> > > > > > > -Siwie
-> > > > > > >=20
-> > > > > > > > > > > > > Rejecting reset to 0
-> > > > > > > > > > > > > prematurely causes correct MTU and link status un=
-able to load
-> > > > > > > > > > > > > for the very first config space access, rendering=
- issues like
-> > > > > > > > > > > > > guest showing inaccurate MTU value, or failure to=
- reject
-> > > > > > > > > > > > > out-of-range MTU.
-> > > > > > > > > > > > >=20
-> > > > > > > > > > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver =
-for
-> > > > > > > > > > > > > supported mlx5 devices")
-> > > > > > > > > > > > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> > > > > > > > > > > > > ---
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 drivers/vdpa/mlx5/net/mlx5_vn=
-et.c | 15 +--------------
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 1 file changed, 1 insertion(+=
-), 14 deletions(-)
-> > > > > > > > > > > > >=20
-> > > > > > > > > > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > > index 7c1f789..540dd67 100644
-> > > > > > > > > > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > > @@ -1490,14 +1490,6 @@ static u64
-> > > > > > > > > > > > > mlx5_vdpa_get_features(struct vdpa_device *vdev)
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 retur=
-n mvdev->mlx_features;
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 }
-> > > > > > > > > > > > > -static int verify_min_features(struct mlx5_vdpa_=
-dev *mvdev,
-> > > > > > > > > > > > > u64 features)
-> > > > > > > > > > > > > -{
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0 if (!(features & BIT_ULL(VIRT=
-IO_F_ACCESS_PLATFORM)))
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 retur=
-n -EOPNOTSUPP;
-> > > > > > > > > > > > > -
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0 return 0;
-> > > > > > > > > > > > > -}
-> > > > > > > > > > > > > -
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 static int setup_virtqueues(s=
-truct mlx5_vdpa_net *ndev)
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 {
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int e=
-rr;
-> > > > > > > > > > > > > @@ -1558,18 +1550,13 @@ static int
-> > > > > > > > > > > > > mlx5_vdpa_set_features(struct vdpa_device *vdev, =
-u64
-> > > > > > > > > > > > > features)
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 {
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struc=
-t mlx5_vdpa_dev *mvdev =3D to_mvdev(vdev);
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struc=
-t mlx5_vdpa_net *ndev =3D to_mlx5_vdpa_ndev(mvdev);
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0 int err;
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 print=
-_features(mvdev, features, true);
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0 err =3D verify_min_features(m=
-vdev, features);
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0 if (err)
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 retur=
-n err;
-> > > > > > > > > > > > > -
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev-=
->mvdev.actual_features =3D features &
-> > > > > > > > > > > > > ndev->mvdev.mlx_features;
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev-=
->config.mtu =3D cpu_to_mlx5vdpa16(mvdev, ndev->mtu);
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev-=
->config.status |=3D cpu_to_mlx5vdpa16(mvdev,
-> > > > > > > > > > > > > VIRTIO_NET_S_LINK_UP);
-> > > > > > > > > > > > > -=C2=A0=C2=A0=C2=A0 return err;
-> > > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 return 0;
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 }
-> > > > > > > > > > > > >  =C2=A0=C2=A0=C2=A0 static void mlx5_vdpa_set_con=
-fig_cb(struct vdpa_device
-> > > > > > > > > > > > > *vdev, struct vdpa_callback *cb)
->=20
+It happened "Kernel panic - not syncing: hung_task: blocked tasks" when
+test simulate crash and ifconfig down/rmmod meanwhile.
+
+Test steps:
+
+1.Test commands, either can reproduce the hang for PCIe, SDIO and SNOC.
+echo soft > /sys/kernel/debug/ieee80211/phy0/ath10k/simulate_fw_crash;sleep 0.05;ifconfig wlan0 down
+echo soft > /sys/kernel/debug/ieee80211/phy0/ath10k/simulate_fw_crash;rmmod ath10k_sdio
+echo hw-restart > /sys/kernel/debug/ieee80211/phy0/ath10k/simulate_fw_crash;rmmod ath10k_pci
+
+2. dmesg:
+[ 5622.548630] ath10k_sdio mmc1:0001:1: simulating soft firmware crash
+[ 5622.655995] ieee80211 phy0: Hardware restart was requested
+[ 5776.355164] INFO: task shill:1572 blocked for more than 122 seconds.
+[ 5776.355687] INFO: task kworker/1:2:24437 blocked for more than 122 seconds.
+[ 5776.359812] Kernel panic - not syncing: hung_task: blocked tasks
+[ 5776.359836] CPU: 1 PID: 55 Comm: khungtaskd Tainted: G        W         4.19.86 #137
+[ 5776.359846] Hardware name: MediaTek krane sku176 board (DT)
+[ 5776.359855] Call trace:
+[ 5776.359868]  dump_backtrace+0x0/0x170
+[ 5776.359881]  show_stack+0x20/0x2c
+[ 5776.359896]  dump_stack+0xd4/0x10c
+[ 5776.359916]  panic+0x12c/0x29c
+[ 5776.359937]  hung_task_panic+0x0/0x50
+[ 5776.359953]  kthread+0x120/0x130
+[ 5776.359965]  ret_from_fork+0x10/0x18
+[ 5776.359986] SMP: stopping secondary CPUs
+[ 5776.360012] Kernel Offset: 0x141ea00000 from 0xffffff8008000000
+[ 5776.360026] CPU features: 0x0,2188200c
+[ 5776.360035] Memory Limit: none
+
+command "ifconfig wlan0 down" or "rmmod ath10k_sdio" will be blocked
+callstack of ifconfig:
+[<0>] __switch_to+0x120/0x13c
+[<0>] msleep+0x28/0x38
+[<0>] ath10k_sdio_hif_stop+0x24c/0x294 [ath10k_sdio]
+[<0>] ath10k_core_stop+0x50/0x78 [ath10k_core]
+[<0>] ath10k_halt+0x120/0x178 [ath10k_core]
+[<0>] ath10k_stop+0x4c/0x8c [ath10k_core]
+[<0>] drv_stop+0xe0/0x1e4 [mac80211]
+[<0>] ieee80211_stop_device+0x48/0x54 [mac80211]
+[<0>] ieee80211_do_stop+0x678/0x6f8 [mac80211]
+[<0>] ieee80211_stop+0x20/0x30 [mac80211]
+[<0>] __dev_close_many+0xb8/0x11c
+[<0>] __dev_change_flags+0xe0/0x1d0
+[<0>] dev_change_flags+0x30/0x6c
+[<0>] devinet_ioctl+0x370/0x564
+[<0>] inet_ioctl+0xdc/0x304
+[<0>] sock_do_ioctl+0x50/0x288
+[<0>] compat_sock_ioctl+0x1b4/0x1aac
+[<0>] __se_compat_sys_ioctl+0x100/0x26fc
+[<0>] __arm64_compat_sys_ioctl+0x20/0x2c
+[<0>] el0_svc_common+0xa4/0x154
+[<0>] el0_svc_compat_handler+0x2c/0x38
+[<0>] el0_svc_compat+0x8/0x18
+[<0>] 0xffffffffffffffff
+
+callstack of rmmod:
+[<0>] __switch_to+0x120/0x13c
+[<0>] msleep+0x28/0x38
+[<0>] ath10k_sdio_hif_stop+0x294/0x31c [ath10k_sdio]
+[<0>] ath10k_core_stop+0x50/0x78 [ath10k_core]
+[<0>] ath10k_halt+0x120/0x178 [ath10k_core]
+[<0>] ath10k_stop+0x4c/0x8c [ath10k_core]
+[<0>] drv_stop+0xe0/0x1e4 [mac80211]
+[<0>] ieee80211_stop_device+0x48/0x54 [mac80211]
+[<0>] ieee80211_do_stop+0x678/0x6f8 [mac80211]
+[<0>] ieee80211_stop+0x20/0x30 [mac80211]
+[<0>] __dev_close_many+0xb8/0x11c
+[<0>] dev_close_many+0x70/0x100
+[<0>] dev_close+0x4c/0x80
+[<0>] cfg80211_shutdown_all_interfaces+0x50/0xcc [cfg80211]
+[<0>] ieee80211_remove_interfaces+0x58/0x1a0 [mac80211]
+[<0>] ieee80211_unregister_hw+0x40/0x100 [mac80211]
+[<0>] ath10k_mac_unregister+0x1c/0x44 [ath10k_core]
+[<0>] ath10k_core_unregister+0x38/0x7c [ath10k_core]
+[<0>] ath10k_sdio_remove+0x8c/0xd0 [ath10k_sdio]
+[<0>] sdio_bus_remove+0x48/0x108
+[<0>] device_release_driver_internal+0x138/0x1ec
+[<0>] driver_detach+0x6c/0xa8
+[<0>] bus_remove_driver+0x78/0xa8
+[<0>] driver_unregister+0x30/0x50
+[<0>] sdio_unregister_driver+0x28/0x34
+[<0>] cleanup_module+0x14/0x6bc [ath10k_sdio]
+[<0>] __arm64_sys_delete_module+0x1e0/0x22c
+[<0>] el0_svc_common+0xa4/0x154
+[<0>] el0_svc_compat_handler+0x2c/0x38
+[<0>] el0_svc_compat+0x8/0x18
+[<0>] 0xffffffffffffffff
+
+SNOC:
+[  647.156863] Call trace:
+[  647.162166] [<ffffff80080855a4>] __switch_to+0x120/0x13c
+[  647.164512] [<ffffff800899d8b8>] __schedule+0x5ec/0x798
+[  647.170062] [<ffffff800899dad8>] schedule+0x74/0x94
+[  647.175050] [<ffffff80089a0848>] schedule_timeout+0x314/0x42c
+[  647.179874] [<ffffff80089a0a14>] schedule_timeout_uninterruptible+0x34/0x40
+[  647.185780] [<ffffff80082a494>] msleep+0x28/0x38
+[  647.192546] [<ffffff800117ec4c>] ath10k_snoc_hif_stop+0x4c/0x1e0 [ath10k_snoc]
+[  647.197439] [<ffffff80010dfbd8>] ath10k_core_stop+0x50/0x7c [ath10k_core]
+[  647.204652] [<ffffff80010c8f48>] ath10k_halt+0x114/0x16c [ath10k_core]
+[  647.211420] [<ffffff80010cad68>] ath10k_stop+0x4c/0x88 [ath10k_core]
+[  647.217865] [<ffffff8000fdbf54>] drv_stop+0x110/0x244 [mac80211]
+[  647.224367] [<ffffff80010147ac>] ieee80211_stop_device+0x48/0x54 [mac80211]
+[  647.230359] [<ffffff8000ff3eec>] ieee80211_do_stop+0x6a4/0x73c [mac80211]
+[  647.237033] [<ffffff8000ff4500>] ieee80211_stop+0x20/0x30 [mac80211]
+[  647.243942] [<ffffff80087e39b8>] __dev_close_many+0xa0/0xfc
+[  647.250435] [<ffffff80087e3888>] dev_close_many+0x70/0x100
+[  647.255651] [<ffffff80087e3a60>] dev_close+0x4c/0x80
+[  647.261244] [<ffffff8000f1ba54>] cfg80211_shutdown_all_interfaces+0x44/0xcc [cfg80211]
+[  647.266383] [<ffffff8000ff3fdc>] ieee80211_remove_interfaces+0x58/0x1b4 [mac80211]
+[  647.274128] [<ffffff8000fda540>] ieee80211_unregister_hw+0x50/0x120 [mac80211]
+[  647.281659] [<ffffff80010ca314>] ath10k_mac_unregister+0x1c/0x44 [ath10k_core]
+[  647.288839] [<ffffff80010dfc94>] ath10k_core_unregister+0x48/0x90 [ath10k_core]
+[  647.296027] [<ffffff800117e598>] ath10k_snoc_remove+0x5c/0x150 [ath10k_snoc]
+[  647.303229] [<ffffff80085625fc>] platform_drv_remove+0x28/0x50
+[  647.310517] [<ffffff80085601a4>] device_release_driver_internal+0x114/0x1b8
+[  647.316257] [<ffffff80085602e4>] driver_detach+0x6c/0xa8
+[  647.323021] [<ffffff800855e5b8>] bus_remove_driver+0x78/0xa8
+[  647.328571] [<ffffff800856107c>] driver_unregister+0x30/0x50
+[  647.334213] [<ffffff8008562674>] platform_driver_unregister+0x1c/0x28
+[  647.339876] [<ffffff800117fefc>] cleanup_module+0x1c/0x120 [ath10k_snoc]
+[  647.346196] [<ffffff8008143ab8>] SyS_delete_module+0x1dc/0x22c
+
+PCIe:
+[  615.392770] rmmod           D    0  3523   3458 0x00000080
+[  615.392777] Call Trace:
+[  615.392784]  __schedule+0x617/0x7d3
+[  615.392791]  ? __mod_timer+0x263/0x35c
+[  615.392797]  schedule+0x62/0x72
+[  615.392803]  schedule_timeout+0x8d/0xf3
+[  615.392809]  ? run_local_timers+0x6b/0x6b
+[  615.392814]  msleep+0x1b/0x22
+[  615.392824]  ath10k_pci_hif_stop+0x68/0xd6 [ath10k_pci]
+[  615.392844]  ath10k_core_stop+0x44/0x67 [ath10k_core]
+[  615.392859]  ath10k_halt+0x102/0x153 [ath10k_core]
+[  615.392873]  ath10k_stop+0x38/0x75 [ath10k_core]
+[  615.392893]  drv_stop+0x9a/0x13c [mac80211]
+[  615.392915]  ieee80211_do_stop+0x772/0x7cd [mac80211]
+[  615.392937]  ieee80211_stop+0x1a/0x1e [mac80211]
+[  615.392945]  __dev_close_many+0x9e/0xf0
+[  615.392952]  dev_close_many+0x62/0xe8
+[  615.392958]  dev_close+0x54/0x7d
+[  615.392975]  cfg80211_shutdown_all_interfaces+0x6e/0xa5 [cfg80211]
+[  615.393021]  ieee80211_remove_interfaces+0x52/0x1aa [mac80211]
+[  615.393049]  ieee80211_unregister_hw+0x54/0x136 [mac80211]
+[  615.393068]  ath10k_mac_unregister+0x19/0x4a [ath10k_core]
+[  615.393091]  ath10k_core_unregister+0x39/0x7e [ath10k_core]
+[  615.393104]  ath10k_pci_remove+0x3d/0x7f [ath10k_pci]
+[  615.393117]  pci_device_remove+0x41/0xa6
+[  615.393129]  device_release_driver_internal+0x123/0x1ec
+[  615.393140]  driver_detach+0x60/0x90
+[  615.393152]  bus_remove_driver+0x72/0x9f
+[  615.393164]  pci_unregister_driver+0x1e/0x87
+[  615.393177]  SyS_delete_module+0x1d7/0x277
+[  615.393188]  do_syscall_64+0x6b/0xf7
+[  615.393199]  entry_SYSCALL_64_after_hwframe+0x41/0xa6
+
+The test command run simulate_fw_crash firstly and it call into
+ath10k_sdio_hif_stop from ath10k_core_restart, then napi_disable
+is called and bit NAPI_STATE_SCHED is set. After that, function
+ath10k_sdio_hif_stop is called again from ath10k_stop by command
+"ifconfig wlan0 down" or "rmmod ath10k_sdio", then command blocked.
+
+It is blocked by napi_synchronize, napi_disable will set bit with
+NAPI_STATE_SCHED, and then napi_synchronize will enter dead loop
+becuase bit NAPI_STATE_SCHED is set by napi_disable.
+
+function of napi_synchronize
+static inline void napi_synchronize(const struct napi_struct *n)
+{
+	if (IS_ENABLED(CONFIG_SMP))
+		while (test_bit(NAPI_STATE_SCHED, &n->state))
+			msleep(1);
+	else
+		barrier();
+}
+
+function of napi_disable
+void napi_disable(struct napi_struct *n)
+{
+	might_sleep();
+	set_bit(NAPI_STATE_DISABLE, &n->state);
+
+	while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
+		msleep(1);
+	while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
+		msleep(1);
+
+	hrtimer_cancel(&n->timer);
+
+	clear_bit(NAPI_STATE_DISABLE, &n->state);
+}
+
+Add flag for it avoid the hang and crash.
+
+Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
+Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00110-QCARMSWP-1
+Tested-on: WCN3990 hw1.0 SNOC hw1.0 WLAN.HL.3.1-01307.1-QCAHLSWMTPL-2
+
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1598617348-2325-1-git-send-email-wgong@codeaurora.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/ahb.c  |  5 ++---
+ drivers/net/wireless/ath/ath10k/core.c | 25 +++++++++++++++++++++++++
+ drivers/net/wireless/ath/ath10k/core.h |  5 +++++
+ drivers/net/wireless/ath/ath10k/pci.c  |  7 ++++---
+ drivers/net/wireless/ath/ath10k/sdio.c |  5 ++---
+ drivers/net/wireless/ath/ath10k/snoc.c |  6 +++---
+ 6 files changed, 41 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/ahb.c b/drivers/net/wireless/ath/ath10k/ahb.c
+index 05a61975c83f4..869524852fbaa 100644
+--- a/drivers/net/wireless/ath/ath10k/ahb.c
++++ b/drivers/net/wireless/ath/ath10k/ahb.c
+@@ -626,7 +626,7 @@ static int ath10k_ahb_hif_start(struct ath10k *ar)
+ {
+ 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot ahb hif start\n");
+ 
+-	napi_enable(&ar->napi);
++	ath10k_core_napi_enable(ar);
+ 	ath10k_ce_enable_interrupts(ar);
+ 	ath10k_pci_enable_legacy_irq(ar);
+ 
+@@ -644,8 +644,7 @@ static void ath10k_ahb_hif_stop(struct ath10k *ar)
+ 	ath10k_ahb_irq_disable(ar);
+ 	synchronize_irq(ar_ahb->irq);
+ 
+-	napi_synchronize(&ar->napi);
+-	napi_disable(&ar->napi);
++	ath10k_core_napi_sync_disable(ar);
+ 
+ 	ath10k_pci_flush(ar);
+ }
+diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+index eeb6ff6aa2e1e..a419ec7130f97 100644
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -2305,6 +2305,31 @@ void ath10k_core_start_recovery(struct ath10k *ar)
+ }
+ EXPORT_SYMBOL(ath10k_core_start_recovery);
+ 
++void ath10k_core_napi_enable(struct ath10k *ar)
++{
++	lockdep_assert_held(&ar->conf_mutex);
++
++	if (test_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags))
++		return;
++
++	napi_enable(&ar->napi);
++	set_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags);
++}
++EXPORT_SYMBOL(ath10k_core_napi_enable);
++
++void ath10k_core_napi_sync_disable(struct ath10k *ar)
++{
++	lockdep_assert_held(&ar->conf_mutex);
++
++	if (!test_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags))
++		return;
++
++	napi_synchronize(&ar->napi);
++	napi_disable(&ar->napi);
++	clear_bit(ATH10K_FLAG_NAPI_ENABLED, &ar->dev_flags);
++}
++EXPORT_SYMBOL(ath10k_core_napi_sync_disable);
++
+ static void ath10k_core_restart(struct work_struct *work)
+ {
+ 	struct ath10k *ar = container_of(work, struct ath10k, restart_work);
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index 51f7e960e2977..f4be6bfb25392 100644
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -868,6 +868,9 @@ enum ath10k_dev_flags {
+ 
+ 	/* Indicates that ath10k device is during recovery process and not complete */
+ 	ATH10K_FLAG_RESTARTING,
++
++	/* protected by conf_mutex */
++	ATH10K_FLAG_NAPI_ENABLED,
+ };
+ 
+ enum ath10k_cal_mode {
+@@ -1308,6 +1311,8 @@ static inline bool ath10k_peer_stats_enabled(struct ath10k *ar)
+ 
+ extern unsigned long ath10k_coredump_mask;
+ 
++void ath10k_core_napi_sync_disable(struct ath10k *ar);
++void ath10k_core_napi_enable(struct ath10k *ar);
+ struct ath10k *ath10k_core_create(size_t priv_size, struct device *dev,
+ 				  enum ath10k_bus bus,
+ 				  enum ath10k_hw_rev hw_rev,
+diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+index 2328df09875ce..e7fde635e0eef 100644
+--- a/drivers/net/wireless/ath/ath10k/pci.c
++++ b/drivers/net/wireless/ath/ath10k/pci.c
+@@ -1958,7 +1958,7 @@ static int ath10k_pci_hif_start(struct ath10k *ar)
+ 
+ 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot hif start\n");
+ 
+-	napi_enable(&ar->napi);
++	ath10k_core_napi_enable(ar);
+ 
+ 	ath10k_pci_irq_enable(ar);
+ 	ath10k_pci_rx_post(ar);
+@@ -2075,8 +2075,9 @@ static void ath10k_pci_hif_stop(struct ath10k *ar)
+ 
+ 	ath10k_pci_irq_disable(ar);
+ 	ath10k_pci_irq_sync(ar);
+-	napi_synchronize(&ar->napi);
+-	napi_disable(&ar->napi);
++
++	ath10k_core_napi_sync_disable(ar);
++
+ 	cancel_work_sync(&ar_pci->dump_work);
+ 
+ 	/* Most likely the device has HTT Rx ring configured. The only way to
+diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+index c415090d1f37c..b746052737e0b 100644
+--- a/drivers/net/wireless/ath/ath10k/sdio.c
++++ b/drivers/net/wireless/ath/ath10k/sdio.c
+@@ -1859,7 +1859,7 @@ static int ath10k_sdio_hif_start(struct ath10k *ar)
+ 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
+ 	int ret;
+ 
+-	napi_enable(&ar->napi);
++	ath10k_core_napi_enable(ar);
+ 
+ 	/* Sleep 20 ms before HIF interrupts are disabled.
+ 	 * This will give target plenty of time to process the BMI done
+@@ -1992,8 +1992,7 @@ static void ath10k_sdio_hif_stop(struct ath10k *ar)
+ 
+ 	spin_unlock_bh(&ar_sdio->wr_async_lock);
+ 
+-	napi_synchronize(&ar->napi);
+-	napi_disable(&ar->napi);
++	ath10k_core_napi_sync_disable(ar);
+ }
+ 
+ #ifdef CONFIG_PM
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index bf9a8cb713dc0..2c2df0b8b3fd9 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -915,8 +915,7 @@ static void ath10k_snoc_hif_stop(struct ath10k *ar)
+ 	if (!test_bit(ATH10K_FLAG_CRASH_FLUSH, &ar->dev_flags))
+ 		ath10k_snoc_irq_disable(ar);
+ 
+-	napi_synchronize(&ar->napi);
+-	napi_disable(&ar->napi);
++	ath10k_core_napi_sync_disable(ar);
+ 	ath10k_snoc_buffer_cleanup(ar);
+ 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot hif stop\n");
+ }
+@@ -926,7 +925,8 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
+ 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
+ 
+ 	bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
+-	napi_enable(&ar->napi);
++
++	ath10k_core_napi_enable(ar);
+ 	ath10k_snoc_irq_enable(ar);
+ 	ath10k_snoc_rx_post(ar);
+ 
+-- 
+2.27.0
+
