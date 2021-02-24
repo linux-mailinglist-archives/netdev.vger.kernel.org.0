@@ -2,114 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24AFD323B7F
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 892EE323B8A
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 12:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235077AbhBXLuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 06:50:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        id S235101AbhBXLwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 06:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234493AbhBXLt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 06:49:56 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28717C061574;
-        Wed, 24 Feb 2021 03:49:16 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id o38so1269733pgm.9;
-        Wed, 24 Feb 2021 03:49:16 -0800 (PST)
+        with ESMTP id S235098AbhBXLwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 06:52:41 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5AAC061574;
+        Wed, 24 Feb 2021 03:52:01 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id e7so1447127ile.7;
+        Wed, 24 Feb 2021 03:52:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=iKXu5MTD/qNOkcWSg8bnOE00gDFp+RLdj201NypZGkc=;
-        b=KKBBnpxYRiqICn8VUoFHfqlpocIoktHL4QfBR1OT8Xvc1+/veBc+D5nj8QMdgbjEwK
-         1yes/Xz/5+dBGfZfK5rBMgrvkm8wyTUv9ozrjZqeorOJwYfVaXIgvVOeaTxScEgm6uxe
-         ShSM1T4kGf/HKJ7o92OvMPKvMd2MtMwNXJfpv4zWmtN4vZFk68JK9AeETv6DaSkPTaX2
-         Q0eNTMfrQyKvVO3cB9nEzDjn+uugTxpR1NA/SAkxX9dttovsdlENoepSTauut08ZtS6D
-         RIhc0TTMYYczzbwHhAkg659qMxVfsalOutdE5pYFZ7KFyMTQEQL71StaqkENpqS+OQ3X
-         YjkQ==
+        bh=OtHK69XqkhA/jaimkYAZVFJcI+Rth0y3HJjsnP3488w=;
+        b=p6YouBi4v9Djk6ErV7x33qioAlZ0X7OYOH3AJ3PPrA6oQGmvhEBBrObEb9705BQ9px
+         7ShymZDY9xabTp49q6bXX6LCczJrgV0mRtq0+XxGTduYe0RlkLwSd+rKnY8HCINjyUSp
+         wDff1dVd0l1QAVdvZm88OZulH88XcSFrvX88f+X//taO88PZpzgC9FUWxnMlNjSxG64s
+         KDC/YETZF32ny7cRuh4TpjaYgU/lH6UUwGDL/pYh7mSVxJzkNQX1tI4EQMuAS9q19glN
+         oL6bI4PQTpGqu59HaPv0jPjX/OKkmodHoEv2zzttur8UtzLpjZLz7e8QMrUU0235ULTa
+         U56Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=iKXu5MTD/qNOkcWSg8bnOE00gDFp+RLdj201NypZGkc=;
-        b=jBR5EKN+RAZu9+d/+Mw8Ko/X5j/u7FZMe3lAG+5267MG1+J8SstH2PfBCdx+DmsXEi
-         MQX+BjkaVsYiQtZEZ+AfxokNds97PIRUl18lYrc9oO9DqYFbSCdmbp5uHsyP1Ozy68q6
-         XKN/RS10fwtPwjZclaqtXpLGmx5IE/iVf+qPbth+lJpdIMwzt/ypqkshgvwdsjpVqbLU
-         gdXQDjVXUu/3ERS1T8fz/1nyBbx9h/YPBDPhIehqWEJs6hyfWAHrImqDGkfVlf0EMaHN
-         E1134jmcY16kbhgQEJgXG/6bKml5lBehFHbOyxkY5QIYynEOi3bpti5ZbzJjRBaVvY3D
-         72hQ==
-X-Gm-Message-State: AOAM531QAYrBKid6nlhvoyluTFIFc7oziyMzvxg1SeLJYpfHywzeKUqs
-        mqUaaVtbVH8CEv6FDoGXr9Xg0JBc1MplMLzv
-X-Google-Smtp-Source: ABdhPJy6zT+ozN8jYuxk5CjeXkIK3JoA1vELHsGjU/enp38Jl4Qv64XF+ot1sMiM9QL4epMFQG0Dlw==
-X-Received: by 2002:a05:6a00:16c7:b029:1bc:6eb9:ee47 with SMTP id l7-20020a056a0016c7b02901bc6eb9ee47mr32285893pfc.0.1614167355611;
-        Wed, 24 Feb 2021 03:49:15 -0800 (PST)
-Received: from ndr730u.nd.solarflarecom.com ([182.71.24.30])
-        by smtp.googlemail.com with ESMTPSA id q23sm2533479pfl.123.2021.02.24.03.49.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Feb 2021 03:49:15 -0800 (PST)
-From:   Gautam Dawar <gdawar.xilinx@gmail.com>
-To:     mst@redhat.com
-Cc:     martinh@xilinx.com, hanand@xilinx.com, gdawar@xilinx.com,
-        Gautam Dawar <gdawar.xilinx@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bh=OtHK69XqkhA/jaimkYAZVFJcI+Rth0y3HJjsnP3488w=;
+        b=IusHhjrq4kNyqX5mwPejYalB3Dm6uX7hF8rlaXhkhMiUQoO2ZSZ8ozPTgr0+bRNXeS
+         o6iZuxlpI3Okxl0CLhPjK/i6c+wbts7ifZE99k8+cxiB0ExeFwaa4KgEOTyMzMTLszKq
+         K4lWaQqLI84d1SnIHW5Kw5pbiFd+eIbQhqdFYzlVVv07Lbi571h2d4Ftt2IRkEZg5xGk
+         1GLGoavVGazD0j0dLfzgB7vs4c1EU8VdsESLNznqR3lfihkOpUMK5kt1YFANmyeZuQkF
+         LpkYWYE6fPUrqMOwdkAP/OfN9Ii07yBkhCCHMZXssivdW6L9Afl6Kn7fjgy56zDpy2II
+         oiJQ==
+X-Gm-Message-State: AOAM530ujieGiJG5aIOpH0fP2k8gQ4CC5mgsaIKYTk2YPCyKP16VCojh
+        kuw0F1ymepwHMslK9lHfTMc+rwnxLMbiWA==
+X-Google-Smtp-Source: ABdhPJzjsLFyNlnOmCTyp4PANPyxSx8kr/XE/dEokyVc0yA4BsshfRoDgHmm5Sm+oq0EW2fZySWWuw==
+X-Received: by 2002:a05:6e02:20e8:: with SMTP id q8mr23219551ilv.205.1614167520501;
+        Wed, 24 Feb 2021 03:52:00 -0800 (PST)
+Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:de9c:d296:189b:385a])
+        by smtp.gmail.com with ESMTPSA id l16sm1500001ils.11.2021.02.24.03.51.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Feb 2021 03:52:00 -0800 (PST)
+From:   Adam Ford <aford173@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     aford@beaconembedded.com, Adam Ford <aford173@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] vhost_vdpa: fix the missing irq_bypass_unregister_producer() invocation
-Date:   Wed, 24 Feb 2021 17:18:45 +0530
-Message-Id: <20210224114845.104173-1-gdawar.xilinx@gmail.com>
-X-Mailer: git-send-email 2.30.1
+Subject: [PATCH V3 1/5] dt-bindings: net: renesas,etheravb: Add additional clocks
+Date:   Wed, 24 Feb 2021 05:51:41 -0600
+Message-Id: <20210224115146.9131-1-aford173@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When qemu with vhost-vdpa netdevice is run for the first time,
-it works well. But after the VM is powered off, the next qemu run
-causes kernel panic due to a NULL pointer dereference in
-irq_bypass_register_producer().
+The AVB driver assumes there is an external crystal, but it could
+be clocked by other means.  In order to enable a programmable
+clock, it needs to be added to the clocks list and enabled in the
+driver.  Since there currently only one clock, there is no
+clock-names list either.
 
-When the VM is powered off, vhost_vdpa_clean_irq() misses on calling
-irq_bypass_unregister_producer() for irq 0 because of the existing check.
+Update bindings to add the additional optional clock, and explicitly
+name both of them.
 
-This leaves stale producer nodes, which are reset in
-vhost_vring_call_reset() when vhost_dev_init() is invoked during the
-second qemu run.
-
-As the node member of struct irq_bypass_producer is also initialized
-to zero, traversal on the producers list causes crash due to NULL
-pointer dereference.
-
-Fixes: 2cf1ba9a4d15c ("vhost_vdpa: implement IRQ offloading in vhost_vdpa")
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=211711
-Signed-off-by: Gautam Dawar <gdawar.xilinx@gmail.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- drivers/vhost/vdpa.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+V3:  No Change
+V2:  No Change
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 62a9bb0efc55..e00573b87aba 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -844,14 +844,10 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+index de9dd574a2f9..7b32363ad8b4 100644
+--- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
++++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+@@ -49,7 +49,16 @@ properties:
+   interrupt-names: true
  
- static void vhost_vdpa_clean_irq(struct vhost_vdpa *v)
- {
--	struct vhost_virtqueue *vq;
- 	int i;
+   clocks:
+-    maxItems: 1
++    minItems: 1
++    maxItems: 2
++    items:
++      - description: AVB functional clock
++      - description: Optional TXC reference clock
++
++  clock-names:
++    items:
++      - const: fck
++      - const: refclk
  
--	for (i = 0; i < v->nvqs; i++) {
--		vq = &v->vqs[i];
--		if (vq->call_ctx.producer.irq)
--			irq_bypass_unregister_producer(&vq->call_ctx.producer);
--	}
-+	for (i = 0; i < v->nvqs; i++)
-+		vhost_vdpa_unsetup_vq_irq(v, i);
- }
- 
- static int vhost_vdpa_release(struct inode *inode, struct file *filep)
+   iommus:
+     maxItems: 1
 -- 
-2.30.1
+2.25.1
 
