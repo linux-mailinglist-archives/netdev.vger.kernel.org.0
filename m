@@ -2,78 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3768B32428A
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 17:54:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0BB83242E8
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 18:08:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235664AbhBXQvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 11:51:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39462 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235631AbhBXQuu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 11:50:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id E198564F09;
-        Wed, 24 Feb 2021 16:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614185407;
-        bh=HsHJM7K8fSiLeVj/nfKx5Y2qZT9DZ7EwVlOWanoKW58=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EUG7zQs8H4Rn2N/OSKJmui/ZhoOPa9FMbmG6viFc4s/qXzJs/IAxCkEnS803z7mTm
-         upIaYzU+JiFRChyZOCRbgTTnl2JBTE2vFZIV3THjFuaNUL/i62Ul81qrUNaVvDPHbk
-         OuWtHOKR65on0UyuUNu+scuJO+ztQnD09IYDUQ+HyJzllCTCRd4ovp/yoR0kJ09QPC
-         xkVZB70JGR5i1gH70hCUQyYkrn3PY0w5F2Ofl2rWyHv/eedcVcCfsm83CNTOGsxhxf
-         p7wwMrLC7CjrB5EZQ76OP+2TG0+gdBGOo4etEfzskNzxEKMaDcYjLt9O401w5g5e2Y
-         3NqXJCVrih+5A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CD6CF60176;
-        Wed, 24 Feb 2021 16:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236044AbhBXRGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 12:06:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236006AbhBXRFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 12:05:55 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D06FC06174A
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 09:05:14 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id l18so1738212pji.3
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 09:05:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jXe4eoOUt1Iw+Kyc8T6LgYJD4gfmsOg9wn2gGSl3w/A=;
+        b=eQOK0X8jkjVqbrioivA4cUZM2YfBD80jBxhlGmH8JSvNcZg0j/AqJxizEkoI0Db94J
+         QqBsDFTKbYADD3sc0TxlzT1qAWGDMtup2x3c9GsoIfTocYsmQ+5xTwj58YrpuLg9o9QK
+         DTc8M89smNuwr6Wqv6bPcE1tSMgPao35oxSR/bJczznDk6O8OUrXJETk+Fp0WoR1iOQ/
+         VOhaHPTV/uTujA/5x7RoCjPYvp4KTH7XQVX5G1tccaOX9jUxXjPOAXN3pT1tlxBD2jpE
+         AXHxeXo/IrCn03L4FIfUApzMgzsBDsPasQcK2oLcQ7lVlgq0GJ02fJ2TEgLBgzuTKTQn
+         1/JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jXe4eoOUt1Iw+Kyc8T6LgYJD4gfmsOg9wn2gGSl3w/A=;
+        b=B5bk8tKJTmoWJftPSEek92NoIBak4WUTl99cBcItGT7LT9hz6/L5227Z/aop7PxeoK
+         YMKhs7kKm0gw5kuK2629IIZEHgaW+uaLsX7lyqg56ySqfCU3Po+qcAOlvSySfbeWl47D
+         EyO8hvcR6Yc4jXFoNrD4T+/ufGqdJB1iKht4Zn3faEQlgNK/PPzMjl37sXxZfk+/5KXO
+         iKivOdGOJ/92dBBGwUT4TL3ewgTJfuEGJuyzr5hXO7B0Tu3FIio+TQoUBDjCDm/5GFOQ
+         quTkiXt3sEWVBbH1yo01t6+IvDC10AQC9+rw6tEioIRPhOhDmj38SjqHiMKmHwbl2MdT
+         arLQ==
+X-Gm-Message-State: AOAM533KaTiNyJptVb6bllFTY2Hqm2e6iV/UI7EfUiPQ8o5f4NHWV29Q
+        ejOpde8PwKbZj7grzs40tiA=
+X-Google-Smtp-Source: ABdhPJz3QDwz5brGzV3dHN4/FRpeRpNk5dv46JsxqDpJPhqTfBDFSIy8+TISsvEH8VGtUQ7o2OOmoA==
+X-Received: by 2002:a17:90a:1f86:: with SMTP id x6mr5297955pja.135.1614186313997;
+        Wed, 24 Feb 2021 09:05:13 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y20sm3343414pfo.210.2021.02.24.09.05.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Feb 2021 09:05:13 -0800 (PST)
+Subject: Re: [PATCH net] net: broadcom: bcm4908_enet: fix RX path possible mem
+ leak
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20210224151842.2419-1-zajec5@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <1bc6b65e-fa63-8dee-426e-c4cdbaab697c@gmail.com>
+Date:   Wed, 24 Feb 2021 09:05:10 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.1
 MIME-Version: 1.0
+In-Reply-To: <20210224151842.2419-1-zajec5@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
- 2021-02-22
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161418540783.30992.10091755167748733506.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Feb 2021 16:50:07 +0000
-References: <20210222235814.834282-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210222235814.834282-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 22 Feb 2021 15:58:09 -0800 you wrote:
-> This series contains updates to ice driver only.
+On 2/24/2021 7:18 AM, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> Dave corrects reporting of max TCs to use the value from hardware
-> capabilities and setting of DCBx capability bits when changing between
-> SW and FW LLDP.
+> After filling RX ring slot with new skb it's required to free old skb.
+> Immediately on error or later in the net subsystem.
 > 
-> Brett fixes trusted VF multicast promiscuous not receiving expected
-> packets and corrects VF max packet size when a port VLAN is configured.
-> 
-> [...]
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 
-Here is the summary with links:
-  - [net,1/5] ice: report correct max number of TCs
-    https://git.kernel.org/netdev/net/c/7dcf7aa01c7b
-  - [net,2/5] ice: Set trusted VF as default VSI when setting allmulti on
-    https://git.kernel.org/netdev/net/c/37b52be26002
-  - [net,3/5] ice: Account for port VLAN in VF max packet size calculation
-    https://git.kernel.org/netdev/net/c/a6aa7c8f998f
-  - [net,4/5] ice: Fix state bits on LLDP mode switch
-    https://git.kernel.org/netdev/net/c/0d4907f65dc8
-  - [net,5/5] ice: update the number of available RSS queues
-    https://git.kernel.org/netdev/net/c/0393e46ac48a
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 4feffeadbcb2 ("net: broadcom: bcm4908enet: add BCM4908 controller
+driver")
+-- 
+Florian
