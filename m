@@ -2,107 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DAAC324440
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 20:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8590832444B
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 20:04:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235513AbhBXTAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 14:00:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:32374 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235031AbhBXS60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 13:58:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614193019;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=v9LQLzVj/XgMadw/p7LX8ICKSHncxAimW+HcgNIftlg=;
-        b=KAOMUjeO/6HhWsVOAnhg8x2UkBgUf4ZIU8juOZtmoilMVEysSpfMOgJiZEQh6REhCTeh7O
-        7nLgohNLoW+oYL1GjC6JdajA4vcFiWjyYiHpMCJdMD9jd4EG+Gey9ANlQ5mUq8nU9H2NnO
-        zArWIdYZt6yfi6WKqC4Rx+lA1ZzWAGI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-464-kM7Hat76MumCvQC04j4t3Q-1; Wed, 24 Feb 2021 13:56:57 -0500
-X-MC-Unique: kM7Hat76MumCvQC04j4t3Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7C6431868405;
-        Wed, 24 Feb 2021 18:56:55 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 696C39CA0;
-        Wed, 24 Feb 2021 18:56:52 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 5ACFA30736C73;
-        Wed, 24 Feb 2021 19:56:51 +0100 (CET)
-Subject: [PATCH RFC net-next 3/3] mm: make zone->free_area[order] access
- faster
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>, linux-mm@kvack.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, chuck.lever@oracle.com,
-        netdev@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 24 Feb 2021 19:56:51 +0100
-Message-ID: <161419301128.2718959.4838557038019199822.stgit@firesoul>
-In-Reply-To: <161419296941.2718959.12575257358107256094.stgit@firesoul>
-References: <161419296941.2718959.12575257358107256094.stgit@firesoul>
-User-Agent: StGit/0.19
+        id S235332AbhBXTC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 14:02:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233311AbhBXTAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 14:00:15 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BE2C061786;
+        Wed, 24 Feb 2021 10:59:35 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id x19so2914681ybe.0;
+        Wed, 24 Feb 2021 10:59:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cSsEu65tiotuZe5j8t7xXW3lMRKzi2n9t67tFDg9g/4=;
+        b=pPF2Vulep//BS0Ydo5gRPEdPvK1cRlHNXnFh8xJyHqvLYGZ56xVnnbDj8E6XPqsJMg
+         XO6OzaplvHeXxkI1U/jpCgm71jkZlaL70R3BqVOQNikjC2yTeyAvtt/tuKa1HdFft773
+         qzLxvR8Qa0VoRIH6Uo/iwafmtcTdo63CkXV/6h38atSDc2AKSYkdW2U7jbVUtCy9kaqw
+         XGZKiwk3BLNq4L4BHdrPfc5H6TnX3j5o2BXaWSOAupifpRONOfgFEpBkBy0cJ//ryvA1
+         WIX1R0cE4dTgT9rY/4b152ZfxVKYfFG5GbdnWIdKqfxmNpONnCgUEBwVahRNbAGZjheu
+         ExQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cSsEu65tiotuZe5j8t7xXW3lMRKzi2n9t67tFDg9g/4=;
+        b=kUFRnC0JLvm/n5TFQPBslbmzx1esAg4UASl3j4zcMgZzYRNZ0MLLlfX9K9IIluISVo
+         zhdFYTi7nwGAehMI5pgjC8lyXfmPVSCvQl0HNDAi+lxUuD91hghtI/kDmcG+iuBH0mzI
+         fsZ4k1tOHbcdNQh/8hymTKS4vunRHgH73FMoLeSq8mWVFN9I4lQoHRiE/gQHSqmtP5rH
+         sVW5849SNZYwgXuH1Xg7tM+h5VW1K/B8ooDSLs4dhtgr+H5/TxTAommviMOGlUhB3QeE
+         bjLYjOXyK1DRn4FTwojCqQWK2nGPV3Wi7YPdWyaizmxv+dnaiWeao1VpRmYImUnSCHW4
+         y5Sw==
+X-Gm-Message-State: AOAM531t/9fz/U5qn0CAayz7GPYyADvf1syKyEj6SnNoyLsTI8ZiXC5n
+        wggaIrNeAyDlE/38+TEWnAiURAm6IOtIaptIU9X6nuDm
+X-Google-Smtp-Source: ABdhPJw1N4YCgJ33/I2CNJsZyZ8feAlXSVcd4SPajHaK6HM6DcGMoAGiZPpj7KVlDE/a6y83SSEVBPPWznB2uDp/cfY=
+X-Received: by 2002:a25:1e89:: with SMTP id e131mr50076796ybe.459.1614193174807;
+ Wed, 24 Feb 2021 10:59:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20210223124554.1375051-1-liuhangbin@gmail.com>
+ <20210223154327.6011b5ee@carbon> <2b917326-3a63-035e-39e9-f63fe3315432@iogearbox.net>
+In-Reply-To: <2b917326-3a63-035e-39e9-f63fe3315432@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 24 Feb 2021 10:59:24 -0800
+Message-ID: <CAEf4BzaqsyhJvav-GsJkxP7zHvxZQWvEbrcjc0FH2eXXmidKDw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: fix missing * in bpf.h
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid multiplication (imul) operations when accessing:
- zone->free_area[order].nr_free
+On Wed, Feb 24, 2021 at 7:55 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 2/23/21 3:43 PM, Jesper Dangaard Brouer wrote:
+> > On Tue, 23 Feb 2021 20:45:54 +0800
+> > Hangbin Liu <liuhangbin@gmail.com> wrote:
+> >
+> >> Commit 34b2021cc616 ("bpf: Add BPF-helper for MTU checking") lost a *
+> >> in bpf.h. This will make bpf_helpers_doc.py stop building
+> >> bpf_helper_defs.h immediately after bpf_check_mtu, which will affect
+> >> future add functions.
+> >>
+> >> Fixes: 34b2021cc616 ("bpf: Add BPF-helper for MTU checking")
+> >> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> >> ---
+> >>   include/uapi/linux/bpf.h       | 2 +-
+> >>   tools/include/uapi/linux/bpf.h | 2 +-
+> >>   2 files changed, 2 insertions(+), 2 deletions(-)
+> >
+> > Thanks for fixing that!
+> >
+> > Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>
+> Thanks guys, applied!
+>
+> > I though I had already fix that, but I must have missed or reintroduced
+> > this, when I rolling back broken ideas in V13.
+> >
+> > I usually run this command to check the man-page (before submitting):
+> >
+> >   ./scripts/bpf_helpers_doc.py | rst2man | man -l -
+>
+> [+ Andrii] maybe this could be included to run as part of CI to catch such
+> things in advance?
 
-This was really tricky to find. I was puzzled why perf reported that
-rmqueue_bulk was using 44% of the time in an imul operation:
+We do something like that as part of bpftool build, so there is no
+reason we can't add this to selftests/bpf/Makefile as well.
 
-       │     del_page_from_free_list():
- 44,54 │ e2:   imul   $0x58,%rax,%rax
-
-This operation was generated (by compiler) because the struct free_area have
-size 88 bytes or 0x58 hex. The compiler cannot find a shift operation to use
-and instead choose to use a more expensive imul, to find the offset into the
-array free_area[].
-
-The patch align struct free_area to a cache-line, which cause the
-compiler avoid the imul operation. The imul operation is very fast on
-modern Intel CPUs. To help fast-path that decrement 'nr_free' move the
-member 'nr_free' to be first element, which saves one 'add' operation.
-
-Looking up instruction latency this exchange a 3-cycle imul with a
-1-cycle shl, saving 2-cycles. It does trade some space to do this.
-
-Used: gcc (GCC) 9.3.1 20200408 (Red Hat 9.3.1-2)
-
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- include/linux/mmzone.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index b593316bff3d..4d83201717e1 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -93,10 +93,12 @@ extern int page_group_by_mobility_disabled;
- #define get_pageblock_migratetype(page)					\
- 	get_pfnblock_flags_mask(page, page_to_pfn(page), MIGRATETYPE_MASK)
- 
-+/* Aligned struct to make zone->free_area[order] access faster */
- struct free_area {
--	struct list_head	free_list[MIGRATE_TYPES];
- 	unsigned long		nr_free;
--};
-+	unsigned long		__pad_to_align_free_list;
-+	struct list_head	free_list[MIGRATE_TYPES];
-+}  ____cacheline_aligned_in_smp;
- 
- static inline struct page *get_page_from_free_area(struct free_area *area,
- 					    int migratetype)
-
-
+>
+> >> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> >> index 4c24daa43bac..46248f8e024b 100644
+> >> --- a/include/uapi/linux/bpf.h
+> >> +++ b/include/uapi/linux/bpf.h
+> >> @@ -3850,7 +3850,7 @@ union bpf_attr {
+> >>    *
+> >>    * long bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)
+> >>    * Description
+> >> -
+> >> + *
+> >>    *         Check ctx packet size against exceeding MTU of net device (based
+> >>    *         on *ifindex*).  This helper will likely be used in combination
+> >>    *         with helpers that adjust/change the packet size.
+> >> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> >> index 4c24daa43bac..46248f8e024b 100644
+> >> --- a/tools/include/uapi/linux/bpf.h
+> >> +++ b/tools/include/uapi/linux/bpf.h
+> >> @@ -3850,7 +3850,7 @@ union bpf_attr {
+> >>    *
+> >>    * long bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)
+> >>    * Description
+> >> -
+> >> + *
+> >>    *         Check ctx packet size against exceeding MTU of net device (based
+> >>    *         on *ifindex*).  This helper will likely be used in combination
+> >>    *         with helpers that adjust/change the packet size.
+> >
+> >
+> >
+>
