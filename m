@@ -2,52 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E42E323D64
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 14:11:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A6CD3243EA
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 19:43:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234030AbhBXNJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 08:09:10 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55778 "EHLO vps0.lunn.ch"
+        id S234927AbhBXSnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 13:43:19 -0500
+Received: from m12-17.163.com ([220.181.12.17]:33467 "EHLO m12-17.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235428AbhBXNCk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 08:02:40 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lEtnO-008E6E-IC; Wed, 24 Feb 2021 14:01:38 +0100
-Date:   Wed, 24 Feb 2021 14:01:38 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V1 net-next 0/3] net: stmmac: implement clocks
-Message-ID: <YDZOMpUYZrijdFli@lunn.ch>
-References: <20210223104818.1933-1-qiangqing.zhang@nxp.com>
- <20210223084503.34ae93f7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DB8PR04MB6795925488C63791C2BD588EE69F9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210223175441.2a1b86f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210223175441.2a1b86f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S234713AbhBXSnE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 13:43:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=M7lgOilBE4+RiTqnQt
+        8/YITeMu7EbnvDl36J3i8eanY=; b=AdAOgUGqwUoV5CxA3Wagy6iRPS4vt8QIg3
+        GIRpW/ZxCs7yQkT9je21MUA1OUQWrderqfTuM36qJY5JJ/u0ITxsaVXoaTO2I/uL
+        v95lXOWb1lBr+eCujMR/DA5SFRL0lPpkKpNu6M+0ePpnJBNQO5x0ncMC2QU4D+QD
+        L38k89smg=
+Received: from localhost.localdomain (unknown [36.170.35.29])
+        by smtp13 (Coremail) with SMTP id EcCowABnDXrRTjZg3uC1mg--.22722S2;
+        Wed, 24 Feb 2021 21:04:18 +0800 (CST)
+From:   zhangkun4jr@163.com
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath9k-devel@qca.qualcomm.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zhang Kun <zhangkun@cdjrlc.com>
+Subject: [PATCH] ath9k:remove unneeded variable in ath9k_dump_legacy_btcoex
+Date:   Wed, 24 Feb 2021 21:03:56 +0800
+Message-Id: <20210224130356.51444-1-zhangkun4jr@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: EcCowABnDXrRTjZg3uC1mg--.22722S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKF4fGFWrJw4kJFWUXr1UWrg_yoWkGwb_CF
+        y8Kr97Jr1UJw1F9F47Ja1avryqkws0qF1xX3ZFvF95Jw47JrnrZ3y5Zr95Xr929r4FyF9I
+        kF1DGF12ya4qgjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5RwZ7UUUUU==
+X-Originating-IP: [36.170.35.29]
+X-CM-SenderInfo: x2kd0whnxqkyru6rljoofrz/1tbirApDtVr7sVyZcwAAs2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Understood. Please double check ethtool callbacks work fine. People
-> often forget about those when disabling clocks in .close.
+From: Zhang Kun <zhangkun@cdjrlc.com>
 
-The MDIO bus can also be used at any time, not just when the interface
-is open. For example the MAC could be connected to an Ethernet switch,
-which is managed by the MDIO bus. Or some PHYs have a temperature
-sensor which is registered with HWMON when the PHY is probed.
+Remove unneeded variable 'len' in ath9k_dump_legacy_btcoex.
 
-You said you copied the FEC driver. Take a look at that, it was
-initially broken in this way, and i needed to extend it when i got a
-board with an Ethernet switch attached to the FEC.
+Signed-off-by: Zhang Kun <zhangkun@cdjrlc.com>
+---
+ drivers/net/wireless/ath/ath9k/gpio.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-      Andrew
+diff --git a/drivers/net/wireless/ath/ath9k/gpio.c b/drivers/net/wireless/ath/ath9k/gpio.c
+index b457e52dd365..09ec937024c0 100644
+--- a/drivers/net/wireless/ath/ath9k/gpio.c
++++ b/drivers/net/wireless/ath/ath9k/gpio.c
+@@ -496,16 +496,14 @@ static int ath9k_dump_mci_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
+ 
+ static int ath9k_dump_legacy_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
+ {
+-
+ 	struct ath_btcoex *btcoex = &sc->btcoex;
+-	u32 len = 0;
+ 
+ 	ATH_DUMP_BTCOEX("Stomp Type", btcoex->bt_stomp_type);
+ 	ATH_DUMP_BTCOEX("BTCoex Period (msec)", btcoex->btcoex_period);
+ 	ATH_DUMP_BTCOEX("Duty Cycle", btcoex->duty_cycle);
+ 	ATH_DUMP_BTCOEX("BT Wait time", btcoex->bt_wait_time);
+ 
+-	return len;
++	return 0;
+ }
+ 
+ int ath9k_dump_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
+-- 
+2.17.1
+
+
