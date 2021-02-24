@@ -2,180 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A84DB3245D3
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 22:33:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB803245DB
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 22:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235980AbhBXVbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 16:31:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49388 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235969AbhBXVbR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 16:31:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5457264F0A;
-        Wed, 24 Feb 2021 21:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614202236;
-        bh=86x+A4Vdg4ztN1XzZEle6cwmbV23d3f+OFe0GH7xAHY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kkN6qP0XXMHkBuEPJtFbEPAaO/wDWlaT8MPRnc0eJB4woGM0lvDMWwfxeo8fxmCTv
-         7he+7+hoqKY2QgUzKWO14qEY6m6DnJzcxS3/IFfWsKjGWKptti0VzPf22wt/J6Nj+l
-         oEg9H7yb3gZRzMg7d+u99bbGpW9Fam9Zm6YJMzBbc3R7281yrGLDLtLXtrSTBG4IEy
-         VdUKtEgKsSAVsQlHJaqxlw3aWk6GjNMDiIuo4Wy5Z1nqEu7fnHlts0wDZOHjA5CGwl
-         72/uy/akqSulJTfC05psSy3SAIaQw9j5TX8nC98nV4wmncONj3MFODStpyG+zz2AXY
-         R0Ht8KVe77S3w==
-Date:   Wed, 24 Feb 2021 13:30:32 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Wei Wang <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Martin Zaharinov <micron10@gmail.com>
-Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy
- poll
-Message-ID: <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89i+jO-ym4kpLD3NaeCKZL_sUiub=2VP574YgC-aVvVyTMw@mail.gmail.com>
-References: <20210223234130.437831-1-weiwan@google.com>
-        <20210224114851.436d0065@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89i+jO-ym4kpLD3NaeCKZL_sUiub=2VP574YgC-aVvVyTMw@mail.gmail.com>
+        id S234738AbhBXViB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 16:38:01 -0500
+Received: from www62.your-server.de ([213.133.104.62]:35486 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231717AbhBXViA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 16:38:00 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lF1qP-000Gov-VM; Wed, 24 Feb 2021 22:37:18 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lF1qP-000VTc-O9; Wed, 24 Feb 2021 22:37:17 +0100
+Subject: Re: [PATCH bpf-next 0/8] PROG_TEST_RUN support for sk_lookup programs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
+References: <20210216105713.45052-1-lmb@cloudflare.com>
+ <CAEf4BzYuvE-RsT5Ee+FstZ=vuy3AMd+1j7DazFSb56+hfPKPig@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <76aa7c94-939f-b370-0ff0-03af3865c5f9@iogearbox.net>
+Date:   Wed, 24 Feb 2021 22:37:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAEf4BzYuvE-RsT5Ee+FstZ=vuy3AMd+1j7DazFSb56+hfPKPig@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26090/Wed Feb 24 13:09:42 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Feb 2021 21:37:36 +0100 Eric Dumazet wrote:
-> On Wed, Feb 24, 2021 at 8:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Tue, 23 Feb 2021 15:41:30 -0800 Wei Wang wrote:  
-> > > Currently, napi_thread_wait() checks for NAPI_STATE_SCHED bit to
-> > > determine if the kthread owns this napi and could call napi->poll() on
-> > > it. However, if socket busy poll is enabled, it is possible that the
-> > > busy poll thread grabs this SCHED bit (after the previous napi->poll()
-> > > invokes napi_complete_done() and clears SCHED bit) and tries to poll
-> > > on the same napi.
-> > > This patch tries to fix this race by adding a new bit
-> > > NAPI_STATE_SCHED_BUSY_POLL in napi->state. This bit gets set in
-> > > napi_busy_loop() togther with NAPI_STATE_SCHED, and gets cleared in
-> > > napi_complete_done() together with NAPI_STATE_SCHED. This helps
-> > > distinguish the ownership of the napi between kthread and the busy poll
-> > > thread, and prevents the kthread from polling on the napi when this napi
-> > > is still owned by the busy poll thread.
-> > >
-> > > Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop support")
-> > > Reported-by: Martin Zaharinov <micron10@gmail.com>
-> > > Suggested-by: Alexander Duyck <alexanderduyck@fb.com>
-> > > Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-> > > Reviewed-by: Eric Dumazet <edumazet@google.come>  
-> >
-> > AFAIU sched bit controls the ownership of the poll_list  
+On 2/23/21 8:29 AM, Andrii Nakryiko wrote:
+> On Tue, Feb 16, 2021 at 2:58 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>>
+>> We don't have PROG_TEST_RUN support for sk_lookup programs at the
+>> moment. So far this hasn't been a problem, since we can run our
+>> tests in a separate network namespace. For benchmarking it's nice
+>> to have PROG_TEST_RUN, so I've gone and implemented it.
+>>
+>> Multiple sk_lookup programs can be attached at once to the same
+>> netns. This can't be expressed with the current PROG_TEST_RUN
+>> API, so I'm proposing to extend it with an array of prog_fd.
+>>
+>> Patches 1-2 are clean ups. Patches 3-4 add the new UAPI and
+>> implement PROG_TEST_RUN for sk_lookup. Patch 5 adds a new
+>> function to libbpf to access multi prog tests. Patches 6-8 add
+>> tests.
+>>
+>> Andrii, for patch 4 I decided on the following API:
+>>
+>>      int bpf_prog_test_run_array(__u32 *prog_fds, __u32 prog_fds_cnt,
+>>                                  struct bpf_test_run_opts *opts)
+>>
+>> To be consistent with the rest of libbpf it would be better
+>> to take int *prog_fds, but I think then the function would have to
+>> convert the array to account for platforms where
+>>
+>>      sizeof(int) != sizeof(__u32)
 > 
-> I disagree. BUSY POLL never inserted the napi into a list,
-> because the user thread was polling one napi.
-> 
-> Same for the kthread.
+> Curious, is there any supported architecture where this is not the
+> case? I think it's fine to be consistent, tbh, and use int. Worst
+> case, in some obscure architecture we'd need to create a copy of an
+> array. Doesn't seem like a big deal (and highly unlikely anyways).
 
-There is no delayed execution in busy_poll. It either got the sched bit
-and it knows it, or it didn't.
+Given __u32 are kernel UAPI exported types for user space (e.g. used in
+syscall APIs), you can check where / how they are defined. Mainly here:
 
-> wake_up_process() should be good enough.
+   include/uapi/asm-generic/int-l64.h:27:typedef unsigned int __u32;
+   include/uapi/asm-generic/int-ll64.h:27:typedef unsigned int __u32;
 
-Well, if that's the direction maybe we should depend on the thread
-state more?  IOW pay less attention to SCHED and have
-napi_complete_done() set_current_state() if thread is running?
-
-I didn't think that through fully but you can't say "wake_up_process()
-should be good enough" and at the same time add another bit proving
-it's not enough.
-
-> > Can we pleaseadd a poll_list for the thread and make sure the
-> > thread polls based on the list?  
-> 
-> A list ? That would require a spinlock or something ?
-
-Does the softnet list require a spinlock?
-
-Obviously with current code the list would only ever have one napi
-instance per thread but I think it's worth the code simplicity.
-napi_complete_done() dels from the list / releases that ownership 
-already.
-
-> > IMO that's far clearer than defining a forest of ownership state
-> > bits.  
-> 
-> Adding a bit seems simpler than adding a list.
-
-In terms of what? LoC? 
-
-Just to find out what the LoC is I sketched this out:
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ddf4cfc12615..77f09ced9ee4 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -348,6 +348,7 @@ struct napi_struct {
-        struct hlist_node       napi_hash_node;
-        unsigned int            napi_id;
-        struct task_struct      *thread;
-+       struct list_head        thread_poll_list;
- };
- 
- enum {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6c5967e80132..99ff083232e9 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4294,6 +4294,8 @@ static inline void ____napi_schedule(struct softnet_data *sd,
-                 */
-                thread = READ_ONCE(napi->thread);
-                if (thread) {
-+                       list_add_tail(&napi->poll_list,
-+                                     &napi->thread_poll_list);
-                        wake_up_process(thread);
-                        return;
-                }
-@@ -6777,6 +6779,7 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
-                return;
- 
-        INIT_LIST_HEAD(&napi->poll_list);
-+       INIT_LIST_HEAD(&napi->thread_poll_list);
-        INIT_HLIST_NODE(&napi->napi_hash_node);
-        hrtimer_init(&napi->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-        napi->timer.function = napi_watchdog;
-@@ -6971,8 +6974,7 @@ static int napi_thread_wait(struct napi_struct *napi)
-        set_current_state(TASK_INTERRUPTIBLE);
- 
-        while (!kthread_should_stop() && !napi_disable_pending(napi)) {
--               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
--                       WARN_ON(!list_empty(&napi->poll_list));
-+               if (!list_emtpy(&napi->thread_poll_list)) {
-                        __set_current_state(TASK_RUNNING);
-                        return 0;
-                }
-
-$ git diff --stat 
- include/linux/netdevice.h | 1 +
- net/core/dev.c            | 6 ++++--
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-> > I think with just the right (wrong?) timing this patch will still
-> > not protect against disabling the NAPI.  
-> 
-> Maybe, but this patch is solving one issue that was easy to trigger.
-> 
-> disabling the NAPI is handled already.
-
-The thread checks if NAPI is getting disabled, then time passes, then
-it checks if it's scheduled. If napi gets disabled in the "time passes"
-period thread will think that it got scheduled again.
-
-Sure, we can go and make special annotations in all other parts of NAPI
-infra, but isn't that an obvious sign of a bad design?
-
-
-I wanted to add that I have spent quite a bit of time hacking around
-the threaded NAPI thing before I had to maintain, and (admittedly my
-brain is not very capable but) I had a hard time getting things working
-reliably with netpoll, busy polling, disabling etc. IOW I'm not just
-claiming that "more bits" is not a good solution on a whim.
+Thanks,
+Daniel
