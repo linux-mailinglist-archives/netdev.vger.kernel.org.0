@@ -2,83 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB4D1323852
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 09:10:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD0EB323850
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 09:09:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233674AbhBXIKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 03:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232144AbhBXIKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 03:10:12 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6F4C06174A
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:09:22 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id lr13so1472575ejb.8
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:09:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4hXopz/XWSSH0QBUDbuWuPX2XcafKxOnD39fxX8+oe0=;
-        b=DwsOIjDOmi8nKDZFszozTfmjsY50FEYCU8ib9Lt3Kx7M48MYhKEI1sJmq9DNvT60U0
-         /dEXOQkfiAuoVLmHUNp6VeEzx62rXRMrGyN1ostqhKjGKYL/8z2KcmedKN9w/s1Sxn/3
-         Qj8lBzq4tdl8nsX1/PjeULpHrqvrQ3HRyqIcU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4hXopz/XWSSH0QBUDbuWuPX2XcafKxOnD39fxX8+oe0=;
-        b=s/suGuSvU6mcm3e3x4WZ8lCNo/CRTrv+zjElK65iDptbIAl6t9zgKgyyRoTMZyaAVT
-         cDc3mng3qdYX0FukDPoUSgWzNjO2+XivG32CZyJH7drutE12Nu+9lu0mfQ52hMCC9q83
-         +rB7Mfk1groRk0Eh4wAt4swR6ccMGGGnraTFvnRq1sZNf2sQQttLezX8HXHLWk6kN0Zd
-         bYwIAG4OQ7UgCXZYw9nQ3uyrn5hx0F7ucL5wic9vDHIwMGc9eSn15sHYHpcbe/prh013
-         JpnuxAWV63d9XKBoUDfHsHz303nZ9Q0DqDAsnGw5VyO9H6rpaw5zbnAC7eW6pNXqPjMQ
-         wVhQ==
-X-Gm-Message-State: AOAM531zGViBNCR70IFKQ4FA+N+fFrMuCipFuLtm8+fmlbV2ySwNL8lD
-        p1+XHPSp7LZGIiW9upGShmtW1A==
-X-Google-Smtp-Source: ABdhPJxZEY7qzmfMH7xYdxlxTvQdmAU3JLHzK0xyoshe55PvYKLy1v7HK27rwqWOh/OLELd1hoP47A==
-X-Received: by 2002:a17:906:934f:: with SMTP id p15mr25483543ejw.473.1614154160886;
-        Wed, 24 Feb 2021 00:09:20 -0800 (PST)
-Received: from toad (79.184.34.53.ipv4.supernova.orange.pl. [79.184.34.53])
-        by smtp.gmail.com with ESMTPSA id y20sm859782edc.84.2021.02.24.00.09.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 00:09:20 -0800 (PST)
-Date:   Wed, 24 Feb 2021 09:08:55 +0100
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [Patch bpf-next v7 9/9] skmsg: remove unused sk_psock_stop()
- declaration
-Message-ID: <20210224090855.718e8ad6@toad>
-In-Reply-To: <20210223184934.6054-10-xiyou.wangcong@gmail.com>
-References: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
-        <20210223184934.6054-10-xiyou.wangcong@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S232661AbhBXIJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 03:09:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231439AbhBXIJx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 03:09:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5092864EC9;
+        Wed, 24 Feb 2021 08:09:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1614154152;
+        bh=RETsMJK2CkuQGmJyX4ZtY1lIevb1XJyyBhbQe9+7WBM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MlPeznh1EgFmavD9KZTNj1a/dQRwLCMXrbTpGNcgqHyatMTTzttIMjKpASUSN8o5w
+         TZVmYg7rvAVQ2eX+/QH316884GM/vhfr9lyPr+r1m5FxR8Cj8VOUoUy/qyjZcr4wMS
+         Z8360HGPCLnuHoSYU74FF26nH0TLnw2/SyU60MyU=
+Date:   Wed, 24 Feb 2021 09:09:09 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <YDYJpTaxXL4ESwZS@kroah.com>
+References: <YDIExpismOnU3c4k@unreal>
+ <20210223210743.GA1475710@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210223210743.GA1475710@bjorn-Precision-5520>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Feb 2021 10:49:34 -0800
-Cong Wang <xiyou.wangcong@gmail.com> wrote:
-
-> From: Cong Wang <cong.wang@bytedance.com>
+On Tue, Feb 23, 2021 at 03:07:43PM -0600, Bjorn Helgaas wrote:
+> On Sun, Feb 21, 2021 at 08:59:18AM +0200, Leon Romanovsky wrote:
+> > On Sat, Feb 20, 2021 at 01:06:00PM -0600, Bjorn Helgaas wrote:
+> > > On Fri, Feb 19, 2021 at 09:20:18AM +0100, Greg Kroah-Hartman wrote:
+> > >
+> > > > Ok, can you step back and try to explain what problem you are trying to
+> > > > solve first, before getting bogged down in odd details?  I find it
+> > > > highly unlikely that this is something "unique", but I could be wrong as
+> > > > I do not understand what you are wanting to do here at all.
+> > >
+> > > We want to add two new sysfs files:
+> > >
+> > >   sriov_vf_total_msix, for PF devices
+> > >   sriov_vf_msix_count, for VF devices associated with the PF
+> > >
+> > > AFAICT it is *acceptable* if they are both present always.  But it
+> > > would be *ideal* if they were only present when a driver that
+> > > implements the ->sriov_get_vf_total_msix() callback is bound to the
+> > > PF.
+> > 
+> > BTW, we already have all possible combinations: static, static with
+> > folder, with and without "sriov_" prefix, dynamic with and without
+> > folders on VFs.
+> > 
+> > I need to know on which version I'll get Acked-by and that version I
+> > will resubmit.
 > 
-> It is not defined or used anywhere.
+> I propose that you make static attributes for both files, so
+> "sriov_vf_total_msix" is visible for *every* PF in the system and
+> "sriov_vf_msix_count" is visible for *every* VF in the system.
 > 
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
+> The PF "sriov_vf_total_msix" show function can return zero if there's
+> no PF driver or it doesn't support ->sriov_get_vf_total_msix().
+> (Incidentally, I think the documentation should mention that when it
+> *is* supported, the contents of this file are *constant*, i.e., it
+> does not decrease as vectors are assigned to VFs.)
+> 
+> The "sriov_vf_msix_count" set function can ignore writes if there's no
+> PF driver or it doesn't support ->sriov_get_vf_total_msix(), or if a
+> VF driver is bound.
+> 
+> Any userspace software must be able to deal with those scenarios
+> anyway, so I don't think the mere presence or absence of the files is
+> a meaningful signal to that software.
 
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Hopefully, good luck with that!
+
+> If we figure out a way to make the files visible only when the
+> appropriate driver is bound, that might be nice and could always be
+> done later.  But I don't think it's essential.
+
+That seems reasonable, feel free to cc: me on the next patch series and
+I'll try to review it, which should make more sense to me than this
+email thread :)
+
+thanks,
+
+greg k-h
