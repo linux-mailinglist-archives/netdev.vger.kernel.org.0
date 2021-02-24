@@ -2,188 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E79532366F
-	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 05:30:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E71332368E
+	for <lists+netdev@lfdr.de>; Wed, 24 Feb 2021 06:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233025AbhBXEa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Feb 2021 23:30:28 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:63930 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232132AbhBXEaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Feb 2021 23:30:22 -0500
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id BFEB876060;
-        Wed, 24 Feb 2021 07:29:32 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1614140972;
-        bh=381bGtaFmhS3qOT60PG6QEE1cltmmQOxmj6C16TLhcE=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=y8fxogFRj3Gjv7CdI8xp28LeWm+W3Ic2OtzhE3ARE2//NvN2iObn0r0RZwLXQJrB5
-         UsZeg9VKhqUTz61Bz27Gzuj6lB67lR+yciFX0vMc16JbrX/wtSvpE/QscVs5u4/dUN
-         2bqQLAkvTx3WH9LQfvJQwuOvtE9s7I4hrPyIEHdqo8JSfndDWxHRf53I5TwggaD9jC
-         Gr5sDAgQM+Z5I4ojwRA5EWhJIvs5UlTroUS0tfXEn7uhhCBrGs58K7YOGyYvAcBZFJ
-         3iPCmKIug21nXONTLyM7ceXF2zh7IPHCT9lgl61Rdnke7vrwOCDPFWyWMiowvmySGW
-         61N9vBvV3qjAQ==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id AED3375C0C;
-        Wed, 24 Feb 2021 07:29:31 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Wed, 24
- Feb 2021 07:29:31 +0300
-Subject: Re: [RFC PATCH v5 00/19] virtio/vsock: introduce SOCK_SEQPACKET
- support
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stsp2@yandex.ru" <stsp2@yandex.ru>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
- <20210222142311.gekdd7gsm33wglos@steredhat>
- <20210223145016.ddavx6fihq4akdim@steredhat>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <7a280168-cb54-ae26-4697-c797f6b04708@kaspersky.com>
-Date:   Wed, 24 Feb 2021 07:29:25 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229622AbhBXFDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 00:03:21 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:3684 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229466AbhBXFDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 00:03:19 -0500
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11O4c7OT067128
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:02:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=DAczBQWgkTfIocCsaJt3yjgaECodF+R5q8u8NzzS3dg=;
+ b=CmKUWPzdVsRcTkEGrdtXKBmL9o51VQE1lO/EZ6sbiDap9QEyRJvuCFUNTZkEP6HnhRxv
+ 0Dojre7k3jdbslCfu5R4EfvylQDsNb3wfMjghrF7SNyjuyMJxGpHU/+Isu4LWjWCYOrJ
+ izhW4z5z3IpyY8+wN8H6e2cNNCSrLzHP5PQ9VvbZwpI0kACy6fS8xHDs6d9BXHzjZoz8
+ dovEvlrYy9xrpxXlp/Z/IftR3NIQQs2Ntl8blr72DBdCXfOZokzLguXtzCU6nA5o34TH
+ G8g8LvGy4H0nQgnXolRQ+0jpfyROt6Fhe5qptuWpxBbrNj9Ge4OGtfSn6RcRgZhQ6Mzt Uw== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36vkfm9rvd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 00:02:37 -0500
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11O4x3NF015613
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 05:02:32 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma01wdc.us.ibm.com with ESMTP id 36tt2940dh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 05:02:32 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11O52VS527459926
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 24 Feb 2021 05:02:31 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1F983112066;
+        Wed, 24 Feb 2021 05:02:31 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7A932112062;
+        Wed, 24 Feb 2021 05:02:30 +0000 (GMT)
+Received: from suka-w540.ibmuc.com (unknown [9.85.164.120])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 24 Feb 2021 05:02:30 +0000 (GMT)
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>, sukadev@linux.ibm.com
+Subject: [PATCH net v4 1/1] ibmvnic: fix a race between open and reset
+Date:   Tue, 23 Feb 2021 21:02:29 -0800
+Message-Id: <20210224050229.1155468-1-sukadev@linux.ibm.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20210223145016.ddavx6fihq4akdim@steredhat>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 02/06/2021 23:52:08
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 161679 [Feb 06 2021]
-X-KSE-AntiSpam-Info: LuaCore: 422 422 763e61bea9fcfcd94e075081cb96e065bc0509b4
-X-KSE-AntiSpam-Info: Version: 5.9.16.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
-X-KSE-AntiSpam-Info: {Tracking_date, moscow}
-X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 02/06/2021 23:55:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 06.02.2021 21:17:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/02/24 03:43:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/24 02:14:00 #16328803
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-02-24_01:2021-02-23,2021-02-24 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ priorityscore=1501 mlxlogscore=999 bulkscore=0 suspectscore=0 phishscore=0
+ clxscore=1015 malwarescore=0 adultscore=0 spamscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102240035
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+__ibmvnic_reset() currently reads the adapter->state before getting the
+rtnl and saves that state as the "target state" for the reset. If this
+read occurs when adapter is in PROBED state, the target state would be
+PROBED.
 
-On 23.02.2021 17:50, Stefano Garzarella wrote:
-> On Mon, Feb 22, 2021 at 03:23:11PM +0100, Stefano Garzarella wrote:
->> Hi Arseny,
->>
->> On Thu, Feb 18, 2021 at 08:33:44AM +0300, Arseny Krasnov wrote:
->>> 	This patchset impelements support of SOCK_SEQPACKET for virtio
->>> transport.
->>> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
->>> do it, two new packet operations were added: first for start of record
->>> and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
->>> both operations carries metadata - to maintain boundaries and payload
->>> integrity. Metadata is introduced by adding special header with two
->>> fields - message count and message length:
->>>
->>> 	struct virtio_vsock_seq_hdr {
->>> 		__le32  msg_cnt;
->>> 		__le32  msg_len;
->>> 	} __attribute__((packed));
->>>
->>> 	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
->>> packets(buffer of second virtio descriptor in chain) in the same way as
->>> data transmitted in RW packets. Payload was chosen as buffer for this
->>> header to avoid touching first virtio buffer which carries header of
->>> packet, because someone could check that size of this buffer is equal
->>> to size of packet header. To send record, packet with start marker is
->>> sent first(it's header contains length of record and counter), then
->>> counter is incremented and all data is sent as usual 'RW' packets and
->>> finally SEQ_END is sent(it also carries counter of message, which is
->>> counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
->>> incremented again. On receiver's side, length of record is known from
->>> packet with start record marker. To check that no packets were dropped
->>> by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
->>> checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
->>> 1) and length of data between two markers is compared to length in
->>> SEQ_BEGIN header.
->>> 	Now as  packets of one socket are not reordered neither on
->>> vsock nor on vhost transport layers, such markers allows to restore
->>> original record on receiver's side. If user's buffer is smaller that
->>> record length, when all out of size data is dropped.
->>> 	Maximum length of datagram is not limited as in stream socket,
->>> because same credit logic is used. Difference with stream socket is
->>> that user is not woken up until whole record is received or error
->>> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
->>> 	Tests also implemented.
->> I reviewed the first part (af_vsock.c changes), tomorrow I'll review 
->> the rest. That part looks great to me, only found a few minor issues.
-> I revieiwed the rest of it as well, left a few minor comments, but I 
-> think we're well on track.
->
-> I'll take a better look at the specification patch tomorrow.
-Great, Thank You
->
-> Thanks,
-> Stefano
->
->> In the meantime, however, I'm getting a doubt, especially with regard 
->> to other transports besides virtio.
->>
->> Should we hide the begin/end marker sending in the transport?
->>
->> I mean, should the transport just provide a seqpacket_enqueue() 
->> callbacl?
->> Inside it then the transport will send the markers. This is because 
->> some transports might not need to send markers.
->>
->> But thinking about it more, they could actually implement stubs for 
->> that calls, if they don't need to send markers.
->>
->> So I think for now it's fine since it allows us to reuse a lot of 
->> code, unless someone has some objection.
+Just after the target state is saved, and before the actual reset process
+is started (i.e before rtnl is acquired) if we get an ibmvnic_open() call
+we would move the adapter to OPEN state.
 
-I thought about that, I'll try to implement it in next version. Let's see...
+But when the reset is processed (after ibmvnic_open()) drops the rtnl),
+it will leave the adapter in PROBED state even though we already moved
+it to OPEN.
 
->>
->> Thanks,
->> Stefano
->>
->
+To fix this, use the RTNL to improve serialization when reading/updating
+the adapter state. i.e determine the target state of a reset only after
+getting the RTNL. And if a reset is in progress during an open, simply
+set the target state of the adapter and let the reset code finish the
+open (like we currently do if failover is pending).
+
+One twist to this serialization is if the adapter state changes when we
+drop the RTNL to update the link state. Account for this by checking if
+there was an intervening open and update the target state for the reset
+accordingly (see new comments in the code). Note that only the reset
+functions and ibmvnic_open() can set the adapter to OPEN state and this
+must happen under rtnl.
+
+Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during device reset")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
+---
+Changelog[v4]
+        [Jakub Kicinski] Rebase to current net.
+
+Changelog[v3]
+        [Jakub Kicinski] Rebase to current net and fix comment style.
+
+Changelog[v2]
+        [Jakub Kicinski] Use ASSERT_RTNL() instead of WARN_ON_ONCE()
+        and rtnl_is_locked());
+
+ drivers/net/ethernet/ibm/ibmvnic.c | 63 ++++++++++++++++++++++++++----
+ 1 file changed, 55 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 1c0e4beb56e7..118a4bd3f877 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1172,12 +1172,25 @@ static int ibmvnic_open(struct net_device *netdev)
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+ 	int rc;
+ 
+-	/* If device failover is pending, just set device state and return.
+-	 * Device operation will be handled by reset routine.
++	ASSERT_RTNL();
++
++	/* If device failover is pending or we are about to reset, just set
++	 * device state and return. Device operation will be handled by reset
++	 * routine.
++	 *
++	 * It should be safe to overwrite the adapter->state here. Since
++	 * we hold the rtnl, either the reset has not actually started or
++	 * the rtnl got dropped during the set_link_state() in do_reset().
++	 * In the former case, no one else is changing the state (again we
++	 * have the rtnl) and in the latter case, do_reset() will detect and
++	 * honor our setting below.
+ 	 */
+-	if (adapter->failover_pending) {
++	if (adapter->failover_pending || (test_bit(0, &adapter->resetting))) {
++		netdev_dbg(netdev, "[S:%d FOP:%d] Resetting, deferring open\n",
++			   adapter->state, adapter->failover_pending);
+ 		adapter->state = VNIC_OPEN;
+-		return 0;
++		rc = 0;
++		goto out;
+ 	}
+ 
+ 	if (adapter->state != VNIC_CLOSED) {
+@@ -1196,10 +1209,12 @@ static int ibmvnic_open(struct net_device *netdev)
+ 	rc = __ibmvnic_open(netdev);
+ 
+ out:
+-	/* If open fails due to a pending failover, set device state and
+-	 * return. Device operation will be handled by reset routine.
++	/* If open failed and there is a pending failover or in-progress reset,
++	 * set device state and return. Device operation will be handled by
++	 * reset routine. See also comments above regarding rtnl.
+ 	 */
+-	if (rc && adapter->failover_pending) {
++	if (rc &&
++	    (adapter->failover_pending || (test_bit(0, &adapter->resetting)))) {
+ 		adapter->state = VNIC_OPEN;
+ 		rc = 0;
+ 	}
+@@ -1928,6 +1943,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	if (rwi->reset_reason == VNIC_RESET_FAILOVER)
+ 		adapter->failover_pending = false;
+ 
++	/* read the state and check (again) after getting rtnl */
++	reset_state = adapter->state;
++
++	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
++		rc = -EBUSY;
++		goto out;
++	}
++
+ 	netif_carrier_off(netdev);
+ 
+ 	old_num_rx_queues = adapter->req_rx_queues;
+@@ -1958,11 +1981,27 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 			if (rc)
+ 				goto out;
+ 
++			if (adapter->state == VNIC_OPEN) {
++				/* When we dropped rtnl, ibmvnic_open() got
++				 * it and noticed that we are resetting and
++				 * set the adapter state to OPEN. Update our
++				 * new "target" state, and resume the reset
++				 * from VNIC_CLOSING state.
++				 */
++				netdev_dbg(netdev,
++					   "Open changed state from %d, updating.\n",
++					   reset_state);
++				reset_state = VNIC_OPEN;
++				adapter->state = VNIC_CLOSING;
++			}
++
+ 			if (adapter->state != VNIC_CLOSING) {
++				/* If someone else changed the adapter state
++				 * when we dropped the rtnl, fail the reset
++				 */
+ 				rc = -1;
+ 				goto out;
+ 			}
+-
+ 			adapter->state = VNIC_CLOSED;
+ 		}
+ 	}
+@@ -2106,6 +2145,14 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
+ 	netdev_dbg(adapter->netdev, "Hard resetting driver (%d)\n",
+ 		   rwi->reset_reason);
+ 
++	/* read the state and check (again) after getting rtnl */
++	reset_state = adapter->state;
++
++	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
++		rc = -EBUSY;
++		goto out;
++	}
++
+ 	netif_carrier_off(netdev);
+ 	adapter->reset_reason = rwi->reset_reason;
+ 
+-- 
+2.26.2
+
