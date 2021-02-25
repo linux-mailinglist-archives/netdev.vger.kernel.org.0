@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A81325A03
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 00:03:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5192D325A05
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 00:03:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbhBYXBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 18:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbhBYXBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 18:01:09 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFF4C061786
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:00:29 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id r17so11560291ejy.13
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:00:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9zey+LJfi/2FRo+ImE/FeTGyZYUKqRghbB3AG3wek6g=;
-        b=gwubIks0rvk18cAQ/JcHFU8XbPEo6v2SN8Ud2XFb9vOY1cyQ/gT/wMKIA6MymYP6V7
-         VOtaMmAa5BgSccN7xmJA9Z03R5wntlJbvec7SD6RmLEAEKcsDj1xFcGrz+YlmVWFZq8l
-         dErznVyFypmNr0W5HYLl/3lQs/mE7SMlYek6wBTh5E7+OvcSzCWWGh2PjdfZZPSkqd3a
-         pNvSBqwqW86aCf1RSZij/lZs7LJpZI9EpeQQ174inxELFQHcIY4atFpUQP5baUjIInYI
-         Ic+DTd9QaJbOzRrYgJqF7JBAh0zBj7JqqM0dcLqO6rRHwXAFqi213zna76idPcEZXJE/
-         hWaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9zey+LJfi/2FRo+ImE/FeTGyZYUKqRghbB3AG3wek6g=;
-        b=CS/jFQxQqfY3Oj+skm2XMFq6j335Iip42jXUI3mFq+4bo2L+NBQIAHS894BJVkqxKP
-         6BXe6oghMWNokQSKgSkj9iJhtDHYufhN+nhf2ayneJukj9zwrDUCaFg86NLDMB4bdcFd
-         1azoGKLpyHFTbaY0Pd+YL45nPzj7Kv/OCcfiHVA6OwK8mNbf6P9OUPlXYx9RJ/Q2WZYm
-         Q833at3+vS7xM8FvrMxuPTpnlQK4QbHQo/wtsOLDAeid/sPQIxNNi5KsdJHcwzNBs03G
-         jT2uDKWTxtcvUZjtHTp/BDV7SI3KZH4bZYadM95woQlOHSMmV5x3TrT1dN48Cb8eUiOE
-         ckEQ==
-X-Gm-Message-State: AOAM532HY8sFAKfVkL19L5H/zyWJ4NVr5naO5JYhjuJK+9sOeym/M4xB
-        diAVNLeVNuMeZIMzS6OUQE8=
-X-Google-Smtp-Source: ABdhPJyINgODOFm08ncqCTxjY/i5QMwIKy5r/aUW4pkagMpN2uJF1kHoae0+EszR0704AQFeWmWkmA==
-X-Received: by 2002:a17:906:3e42:: with SMTP id t2mr4970862eji.554.1614294027836;
-        Thu, 25 Feb 2021 15:00:27 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id s15sm3882165ejy.68.2021.02.25.15.00.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 15:00:27 -0800 (PST)
-Date:   Fri, 26 Feb 2021 01:00:26 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v2 net 3/6] net: enetc: take the MDIO lock only once per
- NAPI poll cycle
-Message-ID: <20210225230026.gvtm3esbmrfb5dk5@skbuf>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
- <20210225121835.3864036-4-olteanv@gmail.com>
- <YDgqI8eGDpJKxiLY@lunn.ch>
+        id S231309AbhBYXBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 18:01:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43140 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229548AbhBYXBa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 18:01:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0AAB964DFF;
+        Thu, 25 Feb 2021 23:00:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614294049;
+        bh=mk4DiEsR8Th8rb/vY+JjWOH6kWDwS+qN1qotOpAcomQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aFD8TTtJNzpcvYUqD27eEinout0L11CCUXK34a3XrzfYmWl2EujkFi1sWkZMDt7RV
+         Q0wkwWKmwzl1cy8C8AurIrPWTcbufbXFC/F4LFM32x/imyfD6baSts+CXjCyBFchJ7
+         qN3wvvjIUdLvFFS1HP7xs9wavx6HWMgtVFMzJjZ09N1dDeEeoCfpZoA2asOrUgmAST
+         HsMEDie5sxkw2hbLsn3VzGKzShkHBZc906L03TnzmG70SK0xsUBvVavLe8j8NTIXW+
+         WYaSTcNcRpJ/kQt6hM1C7m9x8jkvJWLyZuP4jaZYgJT4bMd3AlJ30c7PJF1nAYVmea
+         7+ahLdrFUPXHA==
+Date:   Thu, 25 Feb 2021 15:00:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Wei Wang <weiwan@google.com>
+Cc:     Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Martin Zaharinov <micron10@gmail.com>
+Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy
+ poll
+Message-ID: <20210225150048.23ed87c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAEA6p_DdccvmymRWEtggHgqb9dQ6NjK8rsrA03HH+r7mzt=5uw@mail.gmail.com>
+References: <20210223234130.437831-1-weiwan@google.com>
+        <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89i+xGsMpRfPwZK281jyfum_1fhTNFXq7Z8HOww9H1BHmiw@mail.gmail.com>
+        <20210224155237.221dd0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
+        <20210224160723.4786a256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BN8PR15MB2787694425A1369CA563FCFFBD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
+        <20210224162059.7949b4e1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BN8PR15MB27873FF52B109480173366B8BD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
+        <20210224180329.306b2207@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAEA6p_CEz-CaK_rCyGzRA8=WNspu2Uia5UasJ266f=p5uiqYkw@mail.gmail.com>
+        <20210225002115.5f6215d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAEA6p_DdccvmymRWEtggHgqb9dQ6NjK8rsrA03HH+r7mzt=5uw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YDgqI8eGDpJKxiLY@lunn.ch>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 11:52:19PM +0100, Andrew Lunn wrote:
-> On Thu, Feb 25, 2021 at 02:18:32PM +0200, Vladimir Oltean wrote:
-> > @@ -327,8 +329,8 @@ static void enetc_get_tx_tstamp(struct enetc_hw *hw, union enetc_tx_bd *txbd,
-> >  {
-> >  	u32 lo, hi, tstamp_lo;
-> >  
-> > -	lo = enetc_rd(hw, ENETC_SICTR0);
-> > -	hi = enetc_rd(hw, ENETC_SICTR1);
-> > +	lo = enetc_rd_hot(hw, ENETC_SICTR0);
-> > +	hi = enetc_rd_hot(hw, ENETC_SICTR1);
-> >  	tstamp_lo = le32_to_cpu(txbd->wb.tstamp);
-> >  	if (lo <= tstamp_lo)
-> >  		hi -= 1;
-> 
-> Hi Vladimir
-> 
-> This change is not obvious, and there is no mention of it in the
-> commit message. Please could you explain it. I guess it is to do with
-> enetc_get_tx_tstamp() being called with the MDIO lock held now, when
-> it was not before?
+On Thu, 25 Feb 2021 10:29:47 -0800 Wei Wang wrote:
+> Hmm... I don't think the above patch would work. Consider a situation that:
+> 1. At first, the kthread is in sleep mode.
+> 2. Then someone calls napi_schedule() to schedule work on this napi.
+> So ____napi_schedule() is called. But at this moment, the kthread is
+> not yet in RUNNING state. So this function does not set SCHED_THREAD
+> bit.
+> 3. Then wake_up_process() is called to wake up the thread.
+> 4. Then napi_threaded_poll() calls napi_thread_wait().
 
-I realize this is an uncharacteristically short commit message and I'm
-sorry for that, if needed I can resend.
+But how is the task not in running state outside of napi_thread_wait()?
 
-Your assumption is correct, the new call path is:
+My scheduler knowledge is rudimentary, but AFAIU off CPU tasks which
+were not put to sleep are still in RUNNING state, so unless we set
+INTERRUPTIBLE the task will be running, even if it's stuck in cond_resched().
 
-enetc_msix
--> napi_schedule
-   -> enetc_poll
-      -> enetc_lock_mdio
-      -> enetc_clean_tx_ring
-         -> enetc_get_tx_tstamp
-      -> enetc_clean_rx_ring
-      -> enetc_unlock_mdio
+> woken is false
+> and SCHED_THREAD bit is not set. So the kthread will go to sleep again
+> (in INTERRUPTIBLE mode) when schedule() is called, and waits to be
+> woken up by the next napi_schedule().
+> That will introduce arbitrary delay for the napi->poll() to be called.
+> Isn't it? Please enlighten me if I did not understand it correctly.
 
-The 'hot' accessors are for normal, 'unlocked' register reads and
-writes, while enetc_rd contains enetc_lock_mdio, followed by the actual
-read, followed by enetc_unlock_mdio.
+Probably just me not understanding the scheduler :)
 
-The goal is to eventually get rid of all the _hot stuff and always take
-the lock from the top level, this would allow us to do more register
-read/write batching and that would amortize the cost of the locking
-overall.
+> I personally prefer to directly set SCHED_THREAD bit in ____napi_schedule().
+> Or stick with SCHED_BUSY_POLL solution and replace kthread_run() with
+> kthread_create().
+
+Well, I'm fine with that too, no point arguing further if I'm not
+convincing anyone. But we need a fix which fixes the issue completely,
+not just one of three incarnations.
