@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64F243251B9
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 15:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 512F93251BB
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 15:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231320AbhBYOso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 09:48:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60764 "EHLO mail.kernel.org"
+        id S229890AbhBYOuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 09:50:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32952 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229954AbhBYOsk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 09:48:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 536B364EDC;
-        Thu, 25 Feb 2021 14:47:59 +0000 (UTC)
+        id S229498AbhBYOuF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 09:50:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E19C064EF5;
+        Thu, 25 Feb 2021 14:49:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614264479;
-        bh=/2vcARxK+F+PKwT0mAKkIgjxoroFvRxTYhSagJDwMD4=;
+        s=k20201202; t=1614264565;
+        bh=DsYhGdHyM92p9LWSYyztwOh0Qzau7xU7O/Y4MtM9Z2c=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jGJNtsAabsUKxgu4HOfIB64tFy96XZWP4VmzlKG6r3k50qzcj2uUX6jG2YN++UQqb
-         6TtqGGkzK4BKMfEYCHeZXkPfbVUgiyFtIPchBLWXNmZUdaeweX4zphO30E8DVnR7+Y
-         DKq2KMlNRlOcdzFGD1lrn2TQp4/hIqkNjxIbmhNEpNqBHK8CXp8KpU9gH3hozQm4K+
-         OZExJxXI7Q8Xatk+uUfxTzrqmNaNllBL1cLp/fJYZi/kma4FKWPxSDzDrTYoQnzSv8
-         YzYoB1psmxfqslH6T5cR6xg1Ng0fRuBam6/PnaQxH/pKJc/iHHoQt7Il6Lh5ZBo9xG
-         HL4MBh3VoSo0A==
-Received: by mail-oi1-f181.google.com with SMTP id l64so6268439oig.9;
-        Thu, 25 Feb 2021 06:47:59 -0800 (PST)
-X-Gm-Message-State: AOAM533lqhEnjx8nhFZlLpRJq8mm2PFRmGcnuh2k3spOp1gdtU6UbXcu
-        k22shFliZlG9sE9EtQOpxRDg3IQQl1Qc7C+/C6k=
-X-Google-Smtp-Source: ABdhPJy8p6fbkfpm/hZb4keZJmYpXCtCtsowEZBAP4ucsdt62IJuNs1LF4TEYAJj8+Q+DCBtuuUn1q3F6m+N7BfkBlQ=
-X-Received: by 2002:aca:4fd3:: with SMTP id d202mr2045568oib.11.1614264478399;
- Thu, 25 Feb 2021 06:47:58 -0800 (PST)
+        b=jD8RiWwYnXCyoHV9JldmO3BuGr0m6pqDs7MW2XTHjoPIQUyRtlZO6R8zplDBDc7U4
+         +TcjVB6xt98qpp2VhZRanrD5dfNEzhbF8ktzThZ787xaSfqYQTVJibqO11letezFAJ
+         TSY/9qXj1RQQhP901d2oJQ3jRYOyaXgpfTJ+EuR1z7EDH291/Gze57aj2SN0V1FXuA
+         2GA677Vvi7O1nNS+u1zck6fu2ktv3tPVdQe0RPUPK0VOiaYkVIdRuNYgO5ttLnlN9e
+         WAk8mfN/6WDquUHFzOt7SIq5qMHq4+bEN26P1/NdqAXXevXCez7PRBZciqmNV3Bqs+
+         /AH3pmdPdzC4A==
+Received: by mail-oi1-f178.google.com with SMTP id l133so6297044oib.4;
+        Thu, 25 Feb 2021 06:49:24 -0800 (PST)
+X-Gm-Message-State: AOAM533lhTrYcTkEFCq3pNvN3rD+RSDOcZgEyUW2up+lAUlIxl3+ia06
+        Xd/hnEjmYhnzhdvspRlPM709QYMxxvysrf1Eh10=
+X-Google-Smtp-Source: ABdhPJyymIARUbozE05A6gacutZ/7Q0QJ6V9TzRvlCsOckh9k57YV+WSWWx9lo40HrNHiXAddgG3x9+L7g8zNTDzzkE=
+X-Received: by 2002:aca:b457:: with SMTP id d84mr2183926oif.4.1614264564065;
+ Thu, 25 Feb 2021 06:49:24 -0800 (PST)
 MIME-Version: 1.0
 References: <20210225143910.3964364-1-arnd@kernel.org> <20210225143910.3964364-2-arnd@kernel.org>
- <20210225144341.xgm65mqxuijoxplv@skbuf>
-In-Reply-To: <20210225144341.xgm65mqxuijoxplv@skbuf>
+ <20210225144341.xgm65mqxuijoxplv@skbuf> <CAK8P3a0W3_SvWyvWZnMU=QoqCDe5btL3O7PHUX8EnZVbifA4Fg@mail.gmail.com>
+In-Reply-To: <CAK8P3a0W3_SvWyvWZnMU=QoqCDe5btL3O7PHUX8EnZVbifA4Fg@mail.gmail.com>
 From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 25 Feb 2021 15:47:41 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0W3_SvWyvWZnMU=QoqCDe5btL3O7PHUX8EnZVbifA4Fg@mail.gmail.com>
-Message-ID: <CAK8P3a0W3_SvWyvWZnMU=QoqCDe5btL3O7PHUX8EnZVbifA4Fg@mail.gmail.com>
+Date:   Thu, 25 Feb 2021 15:49:08 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1gQgtWznnqKDdJJK2Vxf25Yb_Q09tX0UvcfopKN+x0jw@mail.gmail.com>
+Message-ID: <CAK8P3a1gQgtWznnqKDdJJK2Vxf25Yb_Q09tX0UvcfopKN+x0jw@mail.gmail.com>
 Subject: Re: [PATCH 2/3] net: dsa: tag_ocelot_8021q: fix driver dependency
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -53,70 +53,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 3:43 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Thu, Feb 25, 2021 at 03:38:32PM +0100, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > When the ocelot driver code is in a library, the dsa tag
-> > code cannot be built-in:
-> >
-> > ld.lld: error: undefined symbol: ocelot_can_inject
-> > >>> referenced by tag_ocelot_8021q.c
-> > >>>               dsa/tag_ocelot_8021q.o:(ocelot_xmit) in archive net/built-in.a
-> >
-> > ld.lld: error: undefined symbol: ocelot_port_inject_frame
-> > >>> referenced by tag_ocelot_8021q.c
-> > >>>               dsa/tag_ocelot_8021q.o:(ocelot_xmit) in archive net/built-in.a
-> >
-> > Building the tag support only really makes sense for compile-testing
-> > when the driver is available, so add a Kconfig dependency that prevents
-> > the broken configuration while allowing COMPILE_TEST alternative when
-> > MSCC_OCELOT_SWITCH_LIB is disabled entirely.  This case is handled
-> > through the #ifdef check in include/soc/mscc/ocelot.h.
-> >
-> > Fixes: 0a6f17c6ae21 ("net: dsa: tag_ocelot_8021q: add support for PTP timestamping")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > ---
-> >  net/dsa/Kconfig | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-> > index 3589224c8da9..58b8fc82cd3c 100644
-> > --- a/net/dsa/Kconfig
-> > +++ b/net/dsa/Kconfig
-> > @@ -118,6 +118,8 @@ config NET_DSA_TAG_OCELOT
-> >
-> >  config NET_DSA_TAG_OCELOT_8021Q
-> >       tristate "Tag driver for Ocelot family of switches, using VLAN"
-> > +     depends on MSCC_OCELOT_SWITCH_LIB || \
-> > +               (MSCC_OCELOT_SWITCH_LIB=n && COMPILE_TEST)
-> >       select NET_DSA_TAG_8021Q
-> >       help
-> >         Say Y or M if you want to enable support for tagging frames with a
-> > --
-> > 2.29.2
-> >
->
-> Why isn't this code in include/soc/mscc/ocelot.h enough?
->
-> #if IS_ENABLED(CONFIG_MSCC_OCELOT_SWITCH_LIB)
->
-> bool ocelot_can_inject(struct ocelot *ocelot, int grp);
-> void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
->                               u32 rew_op, struct sk_buff *skb);
-> int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp, struct sk_buff **skb);
-> void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp);
->
-> #else
->
-> static inline bool ocelot_can_inject(struct ocelot *ocelot, int grp)
-> {
->         return false;
-> }
+On Thu, Feb 25, 2021 at 3:47 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> On Thu, Feb 25, 2021 at 3:43 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > On Thu, Feb 25, 2021 at 03:38:32PM +0100, Arnd Bergmann wrote:
+> > > From: Arnd Bergmann <arnd@arndb.de>
+> > >
+> > > When the ocelot driver code is in a library, the dsa tag
 
-That code is in include/soc/mscc/ocelot.h, it is what causes the
-problem with CONFIG_MSCC_OCELOT_SWITCH_LIB=m
-and NET_DSA_TAG_OCELOT_8021Q=y, as I tried to explain.
+I see the problem now, I should have written 'loadable module', not 'library'.
+Let me know if I should resend with a fixed changelog text.
 
-         Arnd
+       Arnd
