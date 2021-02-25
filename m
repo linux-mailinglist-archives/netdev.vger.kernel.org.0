@@ -2,121 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22ECC325387
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:30:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 070D13253A8
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:38:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232723AbhBYQ3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 11:29:21 -0500
-Received: from smtp11.skoda.cz ([185.50.127.88]:13803 "EHLO smtp11.skoda.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229561AbhBYQ3M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 11:29:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; d=skoda.cz; s=plzenjune2020; c=relaxed/simple;
-        q=dns/txt; i=@skoda.cz; t=1614270509; x=1614875309;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=TAcd2USECeqWYk5BuiLJ9zQpBgX7lQ+ZNDN+oBShUcQ=;
-        b=VIlKfJOks6rOfwvKoKN6KXw3N4lH3yLvGDDxjUUgo5/pFqnnzILXAn/LH++KC0PJ
-        nDxkPoHEjE+jKGXWeiKyTtGoTdYHpqJqArhcgt/ORbc4T1E14efFwGhCYVvn6qCc
-        vBAz6vDwtJtB5uluZQ9rMWuINYzTcpRyfdt8J4jUkAo=;
-X-AuditID: 0a2aa12e-543c270000016b84-e9-6037d02dd034
-Received: from srv-exch-03.skoda.cz (srv-exch-03.skoda.cz [10.42.11.93])
-        (using TLS with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by smtp11.skoda.cz (Mail Gateway) with SMTP id 53.AA.27524.D20D7306; Thu, 25 Feb 2021 17:28:29 +0100 (CET)
-Received: from srv-exch-02.skoda.cz (10.42.11.92) by srv-exch-03.skoda.cz
- (10.42.11.93) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 25 Feb
- 2021 17:28:28 +0100
-Received: from srv-exch-02.skoda.cz ([fe80::a9b8:e60e:44d3:758d]) by
- srv-exch-02.skoda.cz ([fe80::a9b8:e60e:44d3:758d%3]) with mapi id
- 15.01.2176.002; Thu, 25 Feb 2021 17:28:28 +0100
-From:   =?utf-8?B?VmluxaEgS2FyZWw=?= <karel.vins@skoda.cz>
-To:     'Eyal Birger' <eyal.birger@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [External] Re: High (200+) XFRM interface count performance
- problem (throughput)
-Thread-Topic: [External] Re: High (200+) XFRM interface count performance
- problem (throughput)
-Thread-Index: AdcJ50F1lPQSKBMETcCSnfXvuoqLXgAlXe+AAAexynAAPaX5oA==
-Date:   Thu, 25 Feb 2021 16:28:28 +0000
-Message-ID: <978dc613e5374ae19e13a5d920079c07@skoda.cz>
-References: <63259d1978cb4a80889ccec40528ee80@skoda.cz>
- <CAHsH6GtF_HwevJ8gMRtkGbo+mtTb7a_1DdSODv5Ek5K=CUftKg@mail.gmail.com>
- <8bb5f16f9ec9451d929c0cf6d52d9cb2@skoda.cz>
-In-Reply-To: <8bb5f16f9ec9451d929c0cf6d52d9cb2@skoda.cz>
-Accept-Language: cs-CZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.42.12.26]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S233020AbhBYQiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 11:38:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230201AbhBYQh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 11:37:29 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727FEC061574
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 08:36:49 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id x19so6028452ybe.0
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 08:36:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=R0j+y0InnDVxpqdZ4QQKZJfvIS1oDwBnK/nAzy0xUXc=;
+        b=tiPetMhw46l8lfKjRNQa7dP60FxShVewRpo8nQNjS9NbV8QEGdHeC72MxlY6pYAiOx
+         7M+E8orfS0/qp2lvx/KuJD016xYg4bKM8BtWiKefollVsm41W7yCh3CjIS3JhhOuw7jR
+         R2wnUVAUkcFCRmkxzKfU5hK1jMsDCZ34b/PZvEBeQBRLOaZwGDcTHbD0sljR4MB80RS3
+         BtFh7MURl5A7ia1ilyXHS/UQTIJMYxTLRr83zAGvlCE+4L6dm1z8WchRJXkpP8osP+9w
+         ZfXzOeHp4N3Ql1WrorX/UfZHbomZVhs0DjGhJgKmXEFEFk4UJyOjQEKXu5+QZ+GaqK01
+         2q+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=R0j+y0InnDVxpqdZ4QQKZJfvIS1oDwBnK/nAzy0xUXc=;
+        b=tTQo+PWstozXJA3YyQUzRcvQWRiq8Y34q0tq8qf/0+YH7jqftAtpCF1CTc5hoo5VEv
+         3WkXf8I1y+Q/AktGjVl1TQWdPg53Q29QfjXJa9o9DdFIVcEpPubxPUaKCiOismnfXeWz
+         0OHvlXvsefyIveX3ORg7Vd2SNe4wWGtHNXWkzl0mbQBwShRl7z5+ZLMq+FlPwgNNofXW
+         u6mPZfIeQDx8hLfhISHLfE0yRQYl81ZKhCmSc8uXP1M8BZZ8gerx+7GHSe22ebFRQpSX
+         wrSOyEnevtB5253dMW0JP59YZz1udiJKJp0BH2Ms9KxqofTHaRX4HwtJWBKwBZOMJVEg
+         1thw==
+X-Gm-Message-State: AOAM533n5WVCfodldinI+I8vCfL1XTcCw9LuXPzVLtrXoEGLdEWm+rBw
+        NKsBi3KnMtc4bibTNMevcpJrGMWHCd32lRqqTZM=
+X-Google-Smtp-Source: ABdhPJyswl3qsVJBPQv1GRUBY0eGrI6aR0tvox6hX3EkFw9ulMh4Gpnr5hio4vmM1zlINz3XnPW3uG9bkyp8ppjNyyw=
+X-Received: by 2002:a25:4054:: with SMTP id n81mr4937802yba.39.1614271008613;
+ Thu, 25 Feb 2021 08:36:48 -0800 (PST)
 MIME-Version: 1.0
-X-Brightmail-Tracker: H4sIAAAAAAAAA3VUbUxbVRjm3Ba4fJxxKaO8VMpGk/2gcQxwfMTosqAzW0wU/YEfmbZlXGlH
-        aUlvqxs/FOcQBzKX6RQKSMeHIqICwzgQozQMCp0wCBgFF8fWSYaiY7gFRmw897aFC4l/bt4+
-        z3nO+5znvKe0RLYWoaANJitrMemMqpBwabg64qXdu69kaVMHlkOyRx/PHnLI91MHe+1XQw8u
-        dyfmUi+GP1LAGg2vspY9+7Th+oZqDyrpizu2dvG2tAz9Ka9EYTQwe6HxrTsUX8uYZgrausyV
-        KJzU8wjarkwj348+BI2TX0v4VSFMNrh73g/l6+1MMnzn9gi4hMmA392LUr6OYTTQ3NbjX6OF
-        YXc35atzoN29KuBSZhcMtHwZzNeYyYKTnmrK16wDwU/1bwtEGGnWv3RfECBGCf2nlpGvWRzM
-        eBop3xEYaOkfl/jqWLh1wxvsq3fAnc5OgtNkfTJ81bfHJ02CD6rmQn19o2Gk1iM9g+R20a72
-        DYVdpLCLFA4kbUdRXLG1JC0thSsyF+hSjpR2I+FWzqdcRN+XFzoRRSMnqkA0pYrFS09mamXb
-        8s0Fx/U6Tq+x2Iwsp9qOl8aytDK8DufbjEUqBQ7m0Zh11MS+xhlZK7l5VSJ+Q0M2ilvnOBtX
-        YjhiMNs4jc1iJNqm5mKNSMvZ8osNHGcwm5wIaAlpecGbQVoW6I6Xshazz4gTPUBLVXF4iiV7
-        M4U6K1vEsiWsJcB+SAJRAV7kbUVb2EL22CsGozXAE+HfXYRhxIxwEiW+XEcIuZgQHSYJp1v2
-        amUKMb3lPEqMgoKCNu8gPhJFhznRCURHkoOt/chnyZXoijlDod9aDJbypiMDqGArHifxoCwA
-        iiwp8Yl8koE8QG2xE++zI9ugA1ZG0ReIPnOroUlCD1z6mHyHhO9gQ2uTRCY1mU2sIg4/z7dl
-        eLHeZlrPTyHHiQ5CRIkI3qciAf9GETxWhG9YVezE21IJGy9iN7sl+snezM36DcMLqJXMJwno
-        rBAQ+WPZSE3mCyjCDwqhAZ4Trt+PiTJLwM/p+DZ+ZktkgFvjx15e120YSG9F5E2X09D1bpUE
-        TntXguFnx3wIVC7/Egor06MYFhonMNRXzEYRoiIa/hq5FA01Q+WxcMExD9Bx+5wCXJ2tCbDa
-        OK6EjvqqRKiZrtsBLoc3CeyeN3fBoH0kGUYG/0mGml9b1OCtuauGmYV7D8LkbF0qnKwdS4e2
-        zz7KgJbhoYeh1vVpDnSfGswBz7fXcqB25ewBaBz/4dACP18Uma+pw5n8fFl1VvF8mfn3GBlA
-        /fMlPFJZANw0X0c1wnz5qf+br3U6kJaiDO3TcszhnpLWYZflPf07s8vVrPv63P3Ez2v/uI7O
-        U3n7NXTFY9Le1x2uTw6Y2eJnVVe9lv5ufWneRPrSIbp9xvBUeplqRfWo2mV7oUuZ9fTR3Ic4
-        442YmGXDzW9upj/j3Jmr1k8ZnXji7uI9zzm3feT0VNvqE4NtDZevzfw7mYcyVVJOr0tTSyyc
-        7j99mn+vjgYAAA==
+References: <2323124.5UR7tLNZLG@tool> <9d9f3077-9c5c-e7bc-0c77-8e8353be7732@gmail.com>
+ <cf8ea0b6-11ac-3dbd-29a1-337c06d9a991@gmail.com> <CABwr4_vwTiFzSdxu-GoON2HHS1pjyiv0PFS-pTbCEMT4Uc4OvA@mail.gmail.com>
+ <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
+In-Reply-To: <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
+From:   =?UTF-8?Q?Daniel_Gonz=C3=A1lez_Cabanelas?= <dgcbueu@gmail.com>
+Date:   Thu, 25 Feb 2021 17:36:37 +0100
+Message-ID: <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
+Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org,
+        =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgRXlhbCwNCndpdGgga2VybmVsIDUuMTAgaXQgd29yayB2ZXJ5IHdlbGwuIFRlc3RlZCB3aXRo
-IDEwIDAwMCBpbnRlcmZhY2VzLiBUaGFuayB5b3Ugb25jZSBtb3JlLg0KDQpSZWdhcmRzLCBLYXJl
-bA0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogVmluxaEgS2FyZWwgPGthcmVs
-LnZpbnNAc2tvZGEuY3o+IA0KU2VudDogV2VkbmVzZGF5LCBGZWJydWFyeSAyNCwgMjAyMSAxMjow
-MiBQTQ0KVG86ICdFeWFsIEJpcmdlcicgPGV5YWwuYmlyZ2VyQGdtYWlsLmNvbT4NCkNjOiBuZXRk
-ZXZAdmdlci5rZXJuZWwub3JnDQpTdWJqZWN0OiBbRXh0ZXJuYWxdIFJFOiBbRXh0ZXJuYWxdIFJl
-OiBIaWdoICgyMDArKSBYRlJNIGludGVyZmFjZSBjb3VudCBwZXJmb3JtYW5jZSBwcm9ibGVtICh0
-aHJvdWdocHV0KQ0KDQouDQoNCkhpIEV5YWwsIHRoYW5rIHlvdSBmb3IgcmVzcG9uc2UuIEkgZm91
-bmQgdGhhdCBjb21taXQgd2l0aCB5b3VyIGNvbW1lbnQgZHVyaW5nIHRoZSBuaWdodC4gSSB3aWxs
-IHRlc3QgaXQuDQpEbyB5b3UgdGhpbmsgdGhhdCB0aGVyZSBpcyBhIGNoYW5jZSB0byBiYWNrcG9y
-dCB0aGlzIHRvIDUuNCBhcyBpdCBpcyBMVFMga2VybmVsPw0KDQpSZWdhcmRzLA0KDQpLYXJlbA0K
-DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogRXlhbCBCaXJnZXIgPGV5YWwuYmly
-Z2VyQGdtYWlsLmNvbT4NClNlbnQ6IFdlZG5lc2RheSwgRmVicnVhcnkgMjQsIDIwMjEgOToxNSBB
-TQ0KVG86IFZpbsWhIEthcmVsIDxrYXJlbC52aW5zQHNrb2RhLmN6Pg0KQ2M6IG5ldGRldkB2Z2Vy
-Lmtlcm5lbC5vcmcNClN1YmplY3Q6IFtFeHRlcm5hbF0gUmU6IEhpZ2ggKDIwMCspIFhGUk0gaW50
-ZXJmYWNlIGNvdW50IHBlcmZvcm1hbmNlIHByb2JsZW0gKHRocm91Z2hwdXQpDQoNCi4NCg0KSGkg
-VmluxaEsDQoNCk9uIFR1ZSwgRmViIDIzLCAyMDIxIGF0IDk6NTIgUE0gVmluxaEgS2FyZWwgPGth
-cmVsLnZpbnNAc2tvZGEuY3o+IHdyb3RlOg0KPg0KPiBIZWxsbywNCj4NCj4gSSB3b3VsZCBsaWtl
-IHRvIGFzayB5b3UgZm9yIGhlbHAgb3IgYWR2aXNlLg0KPg0KPiBJJ20gdGVzdGluZyBzZXR1cCB3
-aXRoIGhpZ2hlciBudW1iZXIgb2YgWEZSTSBpbnRlcmZhY2VzIGFuZCBJJ20gZmFjaW5nIHRocm91
-Z2hwdXQgZGVncmFkYXRpb24gd2l0aCBhIGdyb3dpbmcgbnVtYmVyIG9mIGNyZWF0ZWQgWEZSTSBp
-bnRlcmZhY2VzIC0gbm90IGNvbmN1cnJlbnQgdHVubmVscyBlc3RhYmxpc2hlZCBidXQgb25seSBY
-RlJNIGludGVyZmFjZXMgY3JlYXRlZCAtIGV2ZW4gaW4gRE9XTiBzdGF0ZS4NCj4gSXNzdWUgaXMg
-b25seSB1bmlkaXJlY3Rpb25hbCAtIGZyb20gImNsaWVudCIgdG8gInZwbiBodWIiLiBUaHJvdWdo
-cHV0IGZvciB0cmFmZmljIGZyb20gaHViIHRvIGNsaWVudCBpcyBub3QgYWZmZWN0ZWQuDQo+DQo+
-IFhGUk0gaW50ZXJmYWNlIGNyZWF0ZWQgd2l0aDoNCj4gZm9yIGkgaW4gezEuLjUwMH07IGRvIGxp
-bmsgYWRkIGlwc2VjJGkgdHlwZSB4ZnJtIGRldiBlbnMyMjQgaWZfaWQgJGkgOyANCj4gZG9uZQ0K
-Pg0KPiBJJ20gdGVzdGluZyB3aXRoIGlwZXJmMyB3aXRoIDEgY2xpZW50IGNvbm5lY3RlZCAtIGZy
-b20gY2xpZW50IHRvIGh1YjoNCj4gMiBpbnRlcmZhY2VzIC0gMS4zNiBHYnBzDQo+IDEwMCBpbnRl
-cmZhY2VzIC0gMS4zNSBHYnBzDQo+IDIwMCBpbnRlcmZhY2VzIC0gMS4xOSBHYnBzDQo+IDMwMCBp
-bnRlcmZhY2VzIC0gMC45OCBHYnBzDQo+IDUwMCBpbnRlcmZhY2VzIC0gMC43MSBHYnBzDQo+DQo+
-IFRocm91Z2hwdXQgZnJvbSBodWIgdG8gY2xpZW50IGlzIGFyb3VuZCAxLjQgR2JwcyBpbiBhbGwg
-Y2FzZXMuDQo+DQo+IDEgQ1BVIGNvcmUgaXMgMTAwJQ0KPg0KPiBMaW51eCB2LWh1YiA1LjQuMC02
-NS1nZW5lcmljICM3My1VYnVudHUgU01QIE1vbiBKYW4gMTggMTc6MjU6MTcgVVRDDQo+IDIwMjEg
-eDg2XzY0IHg4Nl82NCB4ODZfNjQgR05VL0xpbnV4DQoNCkNhbiB5b3UgcGxlYXNlIHRyeSB3aXRo
-IGEgaGlnaGVyIGtlcm5lbCB2ZXJzaW9uICg+PSA1LjkpPw0KV2UndmUgZG9uZSBzb21lIHdvcmsg
-dG8gaW1wcm92ZSB4ZnJtIGludGVyZmFjZSBzY2FsaW5nIHNwZWNpZmljYWxseSBlOThlNDQ1NjJi
-YTIgKCJ4ZnJtIGludGVyZmFjZTogc3RvcmUgeGZybWkgY29udGV4dHMgaW4gYSBoYXNoIGJ5IGlm
-X2lkIikuDQoNClRoYW5rcywNCkV5YWwuDQo=
+El jue, 25 feb 2021 a las 8:22, Heiner Kallweit
+(<hkallweit1@gmail.com>) escribi=C3=B3:
+>
+> On 25.02.2021 00:54, Daniel Gonz=C3=A1lez Cabanelas wrote:
+> > El mi=C3=A9, 24 feb 2021 a las 23:01, Florian Fainelli
+> > (<f.fainelli@gmail.com>) escribi=C3=B3:
+> >>
+> >>
+> >>
+> >> On 2/24/2021 1:44 PM, Heiner Kallweit wrote:
+> >>> On 24.02.2021 16:44, Daniel Gonz=C3=A1lez Cabanelas wrote:
+> >>>> The current bcm63xx_enet driver doesn't asign the internal phy IRQ. =
+As a
+> >>>> result of this it works in polling mode.
+> >>>>
+> >>>> Fix it using the phy_device structure to assign the platform IRQ.
+> >>>>
+> >>>> Tested under a BCM6348 board. Kernel dmesg before the patch:
+> >>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broa=
+dcom
+> >>>>               BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01, ir=
+q=3DPOLL)
+> >>>>
+> >>>> After the patch:
+> >>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broa=
+dcom
+> >>>>               BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01, ir=
+q=3D17)
+> >>>>
+> >>>> Pluging and uplugging the ethernet cable now generates interrupts an=
+d the
+> >>>> PHY goes up and down as expected.
+> >>>>
+> >>>> Signed-off-by: Daniel Gonz=C3=A1lez Cabanelas <dgcbueu@gmail.com>
+> >>>> ---
+> >>>> changes in V2:
+> >>>>   - snippet moved after the mdiobus registration
+> >>>>   - added missing brackets
+> >>>>
+> >>>>  drivers/net/ethernet/broadcom/bcm63xx_enet.c | 13 +++++++++++--
+> >>>>  1 file changed, 11 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/=
+net/ethernet/broadcom/bcm63xx_enet.c
+> >>>> index fd876721316..dd218722560 100644
+> >>>> --- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+> >>>> +++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+> >>>> @@ -1818,10 +1818,19 @@ static int bcm_enet_probe(struct platform_de=
+vice *pdev)
+> >>>>               * if a slave is not present on hw */
+> >>>>              bus->phy_mask =3D ~(1 << priv->phy_id);
+> >>>>
+> >>>> -            if (priv->has_phy_interrupt)
+> >>>> +            ret =3D mdiobus_register(bus);
+> >>>> +
+> >>>> +            if (priv->has_phy_interrupt) {
+> >>>> +                    phydev =3D mdiobus_get_phy(bus, priv->phy_id);
+> >>>> +                    if (!phydev) {
+> >>>> +                            dev_err(&dev->dev, "no PHY found\n");
+> >>>> +                            goto out_unregister_mdio;
+> >>>> +                    }
+> >>>> +
+> >>>>                      bus->irq[priv->phy_id] =3D priv->phy_interrupt;
+> >>>> +                    phydev->irq =3D priv->phy_interrupt;
+> >>>> +            }
+> >>>>
+> >>>> -            ret =3D mdiobus_register(bus);
+> >>>
+> >>> You shouldn't have to set phydev->irq, this is done by phy_device_cre=
+ate().
+> >>> For this to work bus->irq[] needs to be set before calling mdiobus_re=
+gister().
+> >>
+> >> Yes good point, and that is what the unchanged code does actually.
+> >> Daniel, any idea why that is not working?
+> >
+> > Hi Florian, I don't know. bus->irq[] has no effect, only assigning the
+> > IRQ through phydev->irq works.
+> >
+> > I can resend the patch  without the bus->irq[] line since it's
+> > pointless in this scenario.
+> >
+>
+> It's still an ugly workaround and a proper root cause analysis should be =
+done
+> first. I can only imagine that phydev->irq is overwritten in phy_probe()
+> because phy_drv_supports_irq() is false. Can you please check whether
+> phydev->irq is properly set in phy_device_create(), and if yes, whether
+> it's reset to PHY_POLL in phy_probe()?.
+>
+
+Hi Heiner, I added some kernel prints:
+
+[    2.712519] libphy: Fixed MDIO Bus: probed
+[    2.721969] =3D=3D=3D=3D=3D=3D=3Dphy_device_create=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+[    2.726841] phy_device_create: dev->irq =3D 17
+[    2.726841]
+[    2.832620] =3D=3D=3D=3D=3D=3D=3Dphy_probe=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+[    2.836846] phy_probe: phydev->irq =3D 17
+[    2.840950] phy_probe: phy_drv_supports_irq =3D 0, phy_interrupt_is_vali=
+d =3D 1
+[    2.848267] phy_probe: phydev->irq =3D -1
+[    2.848267]
+[    2.854059] =3D=3D=3D=3D=3D=3D=3Dphy_probe=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+[    2.858174] phy_probe: phydev->irq =3D -1
+[    2.862253] phy_probe: phydev->irq =3D -1
+[    2.862253]
+[    2.868121] libphy: bcm63xx_enet MII bus: probed
+[    2.873320] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
+driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01,
+irq=3DPOLL)
+
+Currently using kernel 5.4.99. I still have no idea what's going on.
+
+> On which kernel version do you face this problem?
+>
+The kernel version 4.4 works ok. The minimum version where I found the
+problem were the kernel 4.9.111, now using 5.4. And 5.10 also tested.
+
+Regards
+Daniel
+
+> > Regards
+> >> --
+> >> Florian
+>
