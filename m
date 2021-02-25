@@ -2,86 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EB33325470
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:15:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24B2632549E
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233242AbhBYRPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 12:15:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
+        id S231439AbhBYRkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 12:40:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232679AbhBYRPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 12:15:38 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA02AC06174A;
-        Thu, 25 Feb 2021 09:14:57 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id n10so4199194pgl.10;
-        Thu, 25 Feb 2021 09:14:57 -0800 (PST)
+        with ESMTP id S230459AbhBYRkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 12:40:08 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08114C06174A
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 09:39:28 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id mm21so9962829ejb.12
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 09:39:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ptZSGNduCqA0B2NGqlCeIXaHGJ3fPPC3dn9cLh0I7ik=;
-        b=G4fJAsJeWfC0GWoeHmYOrWgnNJgBFX4n2XNIpHlFU+vDhdvcG2r9MnKWm0Zo+J9YHP
-         8Eiq1mCHQM6BnGYZkyO7DMW5sqyDb0uFXGn1epmUwM0xj9pmjtAlCqR87C0aqKdn8Bzj
-         /4UFnNZcwCzVQrHd1YmRD3Ci+/YqTs83yQ4+TjV/OMWwgmIrECsp18sxLFBVT/2j2eKo
-         bvhPI/GsFSEyTQ2dMYR2I3ZAc8tJXvVNgKjkmQT0/12BrVhHB240xfRk7yNEHLcMGi+l
-         9ugdfZhdGmtMrfxhgA1HSTnu+MMdi3WCJvSTP9ArYfR06o83+DvBv8INo+G6EFCHaUJv
-         QL+w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mihD8r81aCYQW13FsvC3Ji1BeGcMeoivotLwR8x6ZWI=;
+        b=p+dXu5ojrh4X8L7W4eq2pO5a/G+E6/oqOHV3KgBSrNdujACS+JbmAtD3MQ+rla+tJ+
+         8gZz3nCtcuVSM908lwLWQC7E3M2CWB6uDALbiZTwdv66YiVXYdvJ9i5K/LTxYAdsKGFj
+         xCcIuBUM8cRxzuudi/LUG/adjzfFZqoECLkoxSHk9iVm14FRpGMtE0M5EaYgL+rWDMVq
+         wHAyzaU/TERQ2lt03aqzdcVf5HMTZ5ngccATbWRvHAsTQmhoh9/VG1TuoGBCMXsYg8aD
+         j69B7/OF/qib7qiUloPSazHNdgf30F09BAzRWO/moKaAHHInoXgWIaHlK/pHjBD4aAXH
+         kZgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ptZSGNduCqA0B2NGqlCeIXaHGJ3fPPC3dn9cLh0I7ik=;
-        b=umiS5IgoZmQ3SxkSCYFPE8AtGhdljfv3T27K7d/huLvgUS7uPqnqqGD5EW/WoEw8PH
-         Dzta25tpZsTAKCwGedv56/fIIHG3xQvTItonC7LCZvlc0ygXpnrWaxhoQwb7IlEajuES
-         6fN2eVLhr6PrpNNVOa56U9ZJtG7lEDGzxRxseUOymtbRd3Xz+H+GXRt7AThLctf6azab
-         2f3cT6WAl4bTfuzRkPjfpYMf3v6TTnBydqXdVyFKcYe462xbubjp9/TnRW6fW89lQu9y
-         MKbzGKE5YEFmqtEDi+6TtC7vjjeE8EqBkUTP2IBZfG4h3Opt328FsLo65vTX95mAtVVa
-         9b7g==
-X-Gm-Message-State: AOAM5326ipWivQsIW0g7+7CS1ZiMzTmQjTVrU0JGsMDlSyJZZAkIRhn7
-        u2+Gm7OdUqAnp5W4Xg2WEVc=
-X-Google-Smtp-Source: ABdhPJyqsHOcMi4gNm4EvkknlyZr1OERkUkLw7+t0OXfCo2O7JbPogfykEWOwhV/S4DvJNyqbRb7Dg==
-X-Received: by 2002:a63:a401:: with SMTP id c1mr3921545pgf.60.1614273297497;
-        Thu, 25 Feb 2021 09:14:57 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id h123sm4755228pfe.115.2021.02.25.09.14.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 09:14:56 -0800 (PST)
-Date:   Thu, 25 Feb 2021 09:14:54 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Heiko Thiery <heiko.thiery@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Fugang Duan <fugang.duan@nxp.com>
-Subject: Re: [PATCH 1/1] net: fec: ptp: avoid register access when ipg clock
- is disabled
-Message-ID: <20210225171454.GD17490@hoboy.vegasvil.org>
-References: <20210220065654.25598-1-heiko.thiery@gmail.com>
- <20210222190051.40fdc3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEyMn7ZM7_pPor0S=dMGbmnp0hmZMrpquGqq4VNu-ixSPp+0UQ@mail.gmail.com>
- <20210223142726.GA4711@hoboy.vegasvil.org>
- <CAEyMn7Za9z9TUdhb8egf8mOFJyA3hgqX5fwLED8HDKw8Smyocg@mail.gmail.com>
- <20210223161136.GA5894@hoboy.vegasvil.org>
- <CAEyMn7YwvZD6T=oHp2AcmsA+R6Ho2SCYYkt2NcK8hZNUT7_TSQ@mail.gmail.com>
- <CAEyMn7Yjug3S=2mRC8uA=_+Tdxe=m6G-ga1YuupLSx3mPqUoug@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mihD8r81aCYQW13FsvC3Ji1BeGcMeoivotLwR8x6ZWI=;
+        b=hmgNV1fBjYJAlal0Rk6p+clAtVIg7EQiPVw13jI1fMfxGhn9N5lPZmhdTJ36Z8NGB+
+         cquwAsUOx/Cth7zSzJecnJyV86EGAar4g0N2NzLXIPapT33oFw7uykw3oVMO0VwPRMEt
+         dxaeVKtO/FPAqX1KBuafGnCIZfJNZP3pwJN3UqPGcgHBCDjujTrDQbe9moV1W9gx41D0
+         gNZhAZhPJdIMiz4FSU/E/XYiOXVzrs1LGKBbcKRkeVB/uHDkiO5FqC5tMuosDV2iThG2
+         IxjvnQY1aEete+X+UyfuAs6B6jSfTsCXpxTV2KuAdcnmlrH8Z9TfaAT5bDLApMBM4E65
+         R9cw==
+X-Gm-Message-State: AOAM5335zjKd43H/+/uxCUsNIMubJdP19S6+x5l5RKdFQSNkF2AvSvOv
+        VJVlktzrG7yrm5hzaCxEn8eEz/fh5Q8=
+X-Google-Smtp-Source: ABdhPJy8aLaSlVsr0GPahlkGP1Omdbeko5CU+43TimkS+qCRc3u54mJfCfuUWQcNEQ7S02ggjG5/wg==
+X-Received: by 2002:a17:906:2312:: with SMTP id l18mr1477664eja.468.1614274766419;
+        Thu, 25 Feb 2021 09:39:26 -0800 (PST)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id bx2sm1262797edb.80.2021.02.25.09.39.25
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Feb 2021 09:39:25 -0800 (PST)
+Received: by mail-wr1-f53.google.com with SMTP id t15so6054393wrx.13
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 09:39:25 -0800 (PST)
+X-Received: by 2002:a5d:6cab:: with SMTP id a11mr4609140wra.419.1614274764724;
+ Thu, 25 Feb 2021 09:39:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEyMn7Yjug3S=2mRC8uA=_+Tdxe=m6G-ga1YuupLSx3mPqUoug@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1613583620.git.andreas.a.roeseler@gmail.com>
+ <7bff18c2cffe77b2ea66fd8774a5d0374ff6dd97.1613583620.git.andreas.a.roeseler@gmail.com>
+ <CA+FuTSeo5uqtU0b0AP5hm9C72qN8PdT4C-fV2YTun33YbX9Ssg@mail.gmail.com> <ba994c253956420744cbbf06f77af09b580a98d3.camel@gmail.com>
+In-Reply-To: <ba994c253956420744cbbf06f77af09b580a98d3.camel@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 25 Feb 2021 12:38:45 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSe1KsAywsiW2+mib=C7e+AQi0cnynxEPeXzt7w79=msOg@mail.gmail.com>
+Message-ID: <CA+FuTSe1KsAywsiW2+mib=C7e+AQi0cnynxEPeXzt7w79=msOg@mail.gmail.com>
+Subject: Re: [PATCH V3 net-next 5/5] icmp: add response to RFC 8335 PROBE messages
+To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 03:05:32PM +0100, Heiko Thiery wrote:
+On Wed, Feb 24, 2021 at 6:21 PM Andreas Roeseler
+<andreas.a.roeseler@gmail.com> wrote:
+>
+> On Sun, 2021-02-21 at 23:49 -0500, Willem de Bruijn wrote:
+> On Wed, Feb 17, 2021 at 1:14 PM Andreas Roeseler
+> <andreas.a.roeseler@gmail.com> wrote:
+> >
+> > Modify the icmp_rcv function to check for PROBE messages and call
+> > icmp_echo if a PROBE request is detected.
+> >
+> > Modify the existing icmp_echo function to respond to both ping and
+> > PROBE
+> > requests.
+> >
+> > This was tested using a custom modification of the iputils package
+> > and
+> > wireshark. It supports IPV4 probing by name, ifindex, and probing by
+> > both IPV4 and IPV6
+> > addresses. It currently does not support responding to probes off the
+> > proxy node
+> > (See RFC 8335 Section 2).
+> >
+> > Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+> > ---
+> > Changes since v1:
+> >  - Reorder variable declarations to follow coding style
+> >  - Switch to functions such as dev_get_by_name and ip_dev_find to
+> > lookup
+> >    net devices
+> >
+> > Changes since v2:
+> > Suggested by Willem de Brujin <willemdebrujin.kernel@gmail.com>
+> >  - Add verification of incoming messages before looking up netdev
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> >  - Include net/addrconf.h library for ipv6_dev_find
 
-> But the explanation why it is currently disabled that way can be found
-> in the commit 91c0d987a9788dcc5fe26baafd73bf9242b68900.
 
-Okay, without re-factoring the entire driver, I agree that the gettime
-lock up aught to be fixed in a similar way.  I missed the original
-patch, but the diff fragment in this thread doesn't appear to take the
-mutex as it should.
+> > +               if (!buff)
+> > +                       return -ENOMEM;
+> > +               memcpy(buff, &iio->ident.name, ident_len);
+> > +               dev = dev_get_by_name(net, buff);
+> > +               kfree(buff);
+> > +               break;
+> > +       case EXT_ECHO_CTYPE_INDEX:
+> > +               if (ident_len != sizeof(iio->ident.ifIndex)) {
+>
+> this checks that length is 4B, but RFC says "If the Interface
+> Identification Object identifies the probed interface by index, the
+> length is equal to 8 and the payload contains the if-index"
+>
+> ident_len stores the value of the identifier of the interface only,
+> i.e. it stores the length of the iio minus the length of the iio
+> header. Therefore, we can check its size against the expected size of
+> an if_Index (4 octets)
 
-Thanks,
-Richard
+Great. Thanks for clarifying.
+
+> > @@ -1096,7 +1200,6 @@ int icmp_rcv(struct sk_buff *skb)
+> >         if (icmph->type > NR_ICMP_TYPES)
+> >                 goto error;
+> >
+> > -
+> >         /*
+> >          *      Parse the ICMP message
+> >          */
+> > @@ -1123,6 +1226,7 @@ int icmp_rcv(struct sk_buff *skb)
+> >
+> >         success = icmp_pointers[icmph->type].handler(skb);
+> >
+> > +success_check:
+> >         if (success)  {
+> >                 consume_skb(skb);
+> >                 return NET_RX_SUCCESS;
+> > @@ -1136,6 +1240,13 @@ int icmp_rcv(struct sk_buff *skb)
+> >  error:
+> >         __ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
+> >         goto drop;
+> > +probe:
+> > +       /*
+> > +        * We can't use icmp_pointers[].handler() because the codes
+> > for PROBE
+> > +        *   messages are 42 or 160
+> > +        */
+>
+> ICMPv6 message 160 (ICMPV6_EXT_ECHO_REQUEST) must be handled in
+> icmpv6_rcv, not icmp_rcv. Then the ICMPv4 message 42 can be handled in
+> the usual way.
+>
+>
+> You are correct that we should handle ICMPV6_EXT_ECHO_REQUEST in the
+> icmpv6.c file, but shouldn't we still have a special handler for the
+> ICMPv4 message? The current icmp_pointers[].handler is an array of size
+> NR_ICMP_TYPES + 1 (or 19 elements), so I don't think it would be a good
+> idea to extend it to 42.
+
+Interesting. So almost all numbers between NR_ICMP_TYPES (18) and 42
+are deprecated:
+
+  https://www.iana.org/assignments/icmp-parameters/icmp-parameters.xhtml
+
+Eventually we might get more extensions after 42. So you can go either way.
+The table is the clean approach. But I see the practical point of extending it
+for one case, too. The current branch approach looks fine to me.
