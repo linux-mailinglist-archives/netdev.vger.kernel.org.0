@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D50D32569C
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 20:27:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F2732569E
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 20:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233251AbhBYT0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 14:26:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
+        id S234349AbhBYT1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 14:27:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233454AbhBYTYy (ORCPT
+        with ESMTP id S233745AbhBYTYy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 14:24:54 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A628CC061574
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 11:23:42 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id c8so7765031ljd.12
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 11:23:42 -0800 (PST)
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36272C061788
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 11:24:10 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id q23so7787948lji.8
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 11:24:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:in-reply-to:references:date:message-id
          :mime-version;
-        bh=qW/sjy0hfjGwjWHXQMhBp+DwJ6ynKlUh1N8h3YdUK/s=;
-        b=KjMGjMDEsJ/kibWL7bwDzIz2lQXaRgTZlQdsurbP+d0KDd84LKVj+IkHIVD3kDgFAh
-         qj0Q1LP7CIUDWzwmI7Gye5hUZNf8lR4RpOpNbY8luAp2Js0s1KbhztktuWe70P3JKl/u
-         jRabHro89JqPkdueiCqi6nj64VfG5Y7bDdxVF+KRuTzOSXJXXGgH4man04CCdmCyHDjb
-         pwyUfTVW09EqzVVhuYFqvG2vU8GrSACxBo/fI+dyb9yLV8C3954QUtT/rZv//rgr67MN
-         LfOAfeTeT5Ex9Ow5cOv4llzr5P18P/rGk8SnHRWWcEuIhXVNkQRy6vq4pKkmLydpx3tj
-         GmwA==
+        bh=qIMSZYz4O+UEzeljds81Cq69Bau93xPzFNuWkM+0bO0=;
+        b=PFVsvb8NGo8Y0reAQq0DPD/DREy55044LOuIH1NUxfpjNkEbIC47Rptz9CmNZgVLFl
+         XNdyOQhsFNGNMO+ZgteGmPxF9PLrfBEetHV4PEpevaPDKHMeziUNywYAIf02Xry3NhzR
+         GnINfpwRwDDvF+VHo8AVi8uRF4FPv2JI4xY9kb5w92w9AsO9nTr6PTXgpHLJaJfGPnGm
+         ymPYjHgfp8e6w3GrXDV3t7SFCJ/9mY+aZv7EgdCBj4NwNYTy/WyelnN06qM85uSVf9fZ
+         hHo1RFaNuk5Hq5iNqkMwL+DWL+mJD3LMp7BfORn+81f2LYDyY+W6JbrmSzMnJwVgeXar
+         vOUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=qW/sjy0hfjGwjWHXQMhBp+DwJ6ynKlUh1N8h3YdUK/s=;
-        b=c5vNPjb6nTrbN4n/MpR9lz3yeNIUq2UIVyoUryenpHcRUeUirGPXzEMdKlNkZi1agC
-         po1JQsEPkbYbZg4DqgKY9NdrczAuQjPYXfzHPww9I4vGpbvCd7QeUv7uhSl+bGjkG0iJ
-         3/MZkxpS0cgJFGnGJSUkRcrMskG6iKLnB/x+ICL9FKQCGbuuYLMOH7YpjjckkS4leDad
-         RINoZaqQ9fsPRCB0MK3OSXO55dTUq7KedZqTjgSe9EjMDOP4r9JOcD2raazY847jzfCD
-         khd4zlbPsHmCqjV3XwmK8XgXq6Dfb57L6zaY3StOcDm9EfV+EGGwvmj+pLdfCF/7xSW/
-         ib9A==
-X-Gm-Message-State: AOAM532RIpdYnu3QoohiItfhor4qQ7Np9hpudnaLe7/xojPgATqUFLVA
-        EY2nICkGiNcMOPpnM3bmluPiOg==
-X-Google-Smtp-Source: ABdhPJyXCGE1v1PM1e9BFgO+b8rdui7jNnJrJZjjD8u9UFM/ZsoBp1eBglAfEPryfE21lbN7FJ6YFg==
-X-Received: by 2002:a05:651c:22f:: with SMTP id z15mr890657ljn.38.1614281020967;
-        Thu, 25 Feb 2021 11:23:40 -0800 (PST)
+        bh=qIMSZYz4O+UEzeljds81Cq69Bau93xPzFNuWkM+0bO0=;
+        b=k8/Q6nuzqaoRz37Uy+OJIxJaS8YRm+fBwJUfGQPfOdjU7xQs24bzB8VcKll6X0kPIj
+         UfUzOwVv2HCHpuLzOBndFdX9F18pPIA6FMXB+mXXPhrxDA3eQ7HH8KYpmoXjZ0Sdg7le
+         YIqxl4rd0VKD/NKBS9mMwFk/mfAkzSqpZ2k+/ipvNAIqXyePp68in/quty4PNi1dzApw
+         z92DDcapK1BouqhrzOwiU+siF5I6d83hhQ7PxdJWdRUksrct2RUdVwc8hpbLyb03pDF7
+         07d4IVubcpOj0YDqvU6gYO3ROqzw8Tdk1LV0nXs3JHalgFevjnI/dCYO3+44P6L5DPDv
+         Wu+g==
+X-Gm-Message-State: AOAM531ImJcotD0mOIea6+6G85+9f2YXH3pjBSs3SrfRZch0GSCnhOL+
+        YCluDahPNA2Td5A7v0b8lGSa6Q==
+X-Google-Smtp-Source: ABdhPJx2XN9lj9E1qpCWMGCLU4iMLrE9Upd8RRY/Otxya1noQuQEqGUewoUjrUWaZBCvbEKm73bexw==
+X-Received: by 2002:a2e:5c02:: with SMTP id q2mr2383707ljb.81.1614281048731;
+        Thu, 25 Feb 2021 11:24:08 -0800 (PST)
 Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id l21sm1179814ljc.78.2021.02.25.11.23.39
+        by smtp.gmail.com with ESMTPSA id w10sm1172425lji.46.2021.02.25.11.24.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 11:23:40 -0800 (PST)
+        Thu, 25 Feb 2021 11:24:08 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -66,11 +66,11 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Hauke Mehrtens <hauke@hauke-m.de>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [PATCH net-next 1/4] net: dsa: don't offload switchdev objects on ports that don't offload the bridge
-In-Reply-To: <20210214155326.1783266-2-olteanv@gmail.com>
-References: <20210214155326.1783266-1-olteanv@gmail.com> <20210214155326.1783266-2-olteanv@gmail.com>
-Date:   Thu, 25 Feb 2021 20:23:38 +0100
-Message-ID: <87eeh4rlxh.fsf@waldekranz.com>
+Subject: Re: [PATCH net-next 2/4] net: dsa: reject switchdev objects centrally from dsa_slave_port_obj_{add,del}
+In-Reply-To: <20210214155326.1783266-3-olteanv@gmail.com>
+References: <20210214155326.1783266-1-olteanv@gmail.com> <20210214155326.1783266-3-olteanv@gmail.com>
+Date:   Thu, 25 Feb 2021 20:24:06 +0100
+Message-ID: <87blc8rlwp.fsf@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
@@ -80,24 +80,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On Sun, Feb 14, 2021 at 17:53, Vladimir Oltean <olteanv@gmail.com> wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >
-> Starting with commit 058102a6e9eb ("net: dsa: Link aggregation support"),
-> DSA warns that certain configurations of upper interfaces are not offloaded
-> to hardware. When a DSA port does not offload a LAG interface, the
-> dp->lag_dev pointer is always NULL. However the same cannot be said about
-> offloading a bridge: dp->bridge_dev will get populated regardless of
-> whether the driver can put the port into the bridge's forwarding domain
-> or not.
->
-> Instead of silently returning 0 if the driver doesn't implement
-> .port_bridge_join, return -EOPNOTSUPP instead, and print a message via
-> netlink extack that the configuration was not offloaded to hardware.
->
-> Now we can use the check whether dp->bridge_dev is NULL in order to
-> avoid offloading at all switchdev attributes and objects for ports that
-> don't even offload the basic operation of switching. Those can still do
-> the required L2 forwarding using the bridge software datapath, but
-> enabling any hardware features specific to the bridge such as address
-> learning would just ask for problems.
+> The dsa_port_offloads_netdev check is inside dsa_slave_vlan_{add,del},
+> but outside dsa_port_mdb_{add,del}. We can reduce the number of
+> occurrences of dsa_port_offloads_netdev by checking only once, at the
+> beginning of dsa_slave_port_obj_add and dsa_slave_port_obj_del.
 >
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
