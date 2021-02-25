@@ -2,118 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F38D32542D
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 885AB325442
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:02:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234017AbhBYQ7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 11:59:31 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:47558 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233578AbhBYQ64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 11:58:56 -0500
-Received: by mail-io1-f70.google.com with SMTP id o4so4819484ioh.14
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 08:58:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=BPbe88GcXlpz0yaOYhUzPhZwlga1V2ICU1dgMJbmTmU=;
-        b=dGWqp14dYImG1qpV/WmLN3CjVkhHKq7UwEiLPpvSBxng5I4qoMcOQQrkdwqUKzrdmw
-         1H3fWrylsDVqjNxLgSRgjEalRhIRUp8l5nH6F4gyb7o7ztP4Xg3WFOyJ81JA8F/6cK7F
-         O60Da5Qd3qT1Bd7wAJeUR6B/Y7cAbe3nqbhVRoLjBfKddVlkaH2e0Gacbr/mtn7hJJbs
-         ZPe9ecBLZJhdYEZd95nHakGfNseaIOTQLgEVzWt8LTrWzUSkDzVPpVqOgVkcvXksp80Z
-         pc5rnWHgd+gx8uwiLIw6mNOsOtK5+drFrrvN4TKr8mUe1IGzAtTQB1s9bcdVQ0+Gtxjg
-         BB6A==
-X-Gm-Message-State: AOAM5320YQhHATHpE/ot8aZPxjkdwMCEaVWfwfcIH1+zgEBzXxI5rs9S
-        n5AXvXadW263DgU6GgIWqNHx1/IZZ31VQhDbUM5pCsfHV++8
-X-Google-Smtp-Source: ABdhPJzkzeO1lwwnQ83blFrR5MbrVv+jbYw+MK2hJLd1ji7p8ObeUOTGMooaD1yc484Cp4eSSteTvUFgSZtx4bBXyv0U+BSRxMEI
+        id S233463AbhBYRBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 12:01:51 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:29924 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229561AbhBYRBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 12:01:31 -0500
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 29EFE7807C;
+        Thu, 25 Feb 2021 20:00:41 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1614272441;
+        bh=/aucgc2DX9LFwaXqoZnOT5lfaPvZGZ8Tlz/h3Ffm0VE=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=2gFk2LRDxXqLQWLKSmmkiIE23AqJBf/vQ5PCHFqnKARjnvpaFjVJudVhstY/SaftM
+         hk8qat394sBm090YSJagErX62b8plqplXGEsx/RLtiw5tC6Iaw8Qqy+d4BtF6Qf9Qu
+         KKkVsUeHCHEOFuqbQLcERGb7HzXMkqJF12ktZEh8QRePCyyDBbeKsRVZcSQKdYtdot
+         wE0F9VnRcpsf7iN/UxTlyQ4WtR+1YgElRmrK1XFChPf5A5ai7dKF/OheDhI3IEZ4Lp
+         L0yumn2eeLK3xVpFqSUQhRwsyvyruUMfm2nPvPLCQcaWaD/6ATDZoLTwMTWCKx+g8o
+         dAKBsc4D13QMg==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 1682B7807E;
+        Thu, 25 Feb 2021 20:00:40 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Thu, 25
+ Feb 2021 20:00:39 +0300
+Subject: Re: [RFC PATCH v5 04/19] af_vsock: implement SEQPACKET receive loop
+To:     Jorgen Hansen <jhansen@vmware.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
+ <20210218053719.1067237-1-arseny.krasnov@kaspersky.com>
+ <125822F8-C6D5-4892-BD32-A7189578B3DE@vmware.com>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <3763ad62-8a03-8dba-25f3-82c1a83e0182@kaspersky.com>
+Date:   Thu, 25 Feb 2021 20:00:32 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Received: by 2002:a02:3ec7:: with SMTP id s190mr4084646jas.11.1614272293550;
- Thu, 25 Feb 2021 08:58:13 -0800 (PST)
-Date:   Thu, 25 Feb 2021 08:58:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a0c3fe05bc2c0eeb@google.com>
-Subject: WARNING in __alloc_skb
-From:   syzbot <syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com>
-To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, loic.poulain@linaro.org,
-        mani@kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <125822F8-C6D5-4892-BD32-A7189578B3DE@vmware.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 02/25/2021 16:43:49
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 162085 [Feb 25 2021]
+X-KSE-AntiSpam-Info: LuaCore: 429 429 b8387e624a66feb695608edbad2d54079eb31df3
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
+X-KSE-AntiSpam-Info: {Tracking_date, moscow}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_PLAIN}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_TEXT_PLAIN_OR_HTML}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_CHARSET_UTF_8}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_ENCODING_NOT_JAPANESE}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_ENCODING_NOT_RUS}
+X-KSE-AntiSpam-Info: {Macro_DATE_MOSCOW}
+X-KSE-AntiSpam-Info: {Macro_FROM_DOUBLE_ENG_NAME}
+X-KSE-AntiSpam-Info: {Macro_FROM_LOWCAPS_DOUBLE_ENG_NAME_IN_EMAIL}
+X-KSE-AntiSpam-Info: {Macro_FROM_NOT_RU}
+X-KSE-AntiSpam-Info: {Macro_FROM_NOT_RUS_CHARSET}
+X-KSE-AntiSpam-Info: {Macro_FROM_REAL_NAME_MATCHES_ALL_USERNAME_PROB}
+X-KSE-AntiSpam-Info: {Macro_HEADERS_NOT_LIST}
+X-KSE-AntiSpam-Info: {Macro_MAILER_THUNDERBIRD}
+X-KSE-AntiSpam-Info: {Macro_MISC_X_PRIORITY_MISSED}
+X-KSE-AntiSpam-Info: {Macro_MSGID_LOWHEX_8_4_4_4_12}
+X-KSE-AntiSpam-Info: {Macro_NO_DKIM}
+X-KSE-AntiSpam-Info: {Macro_REPLY_TO_MISSED}
+X-KSE-AntiSpam-Info: {Macro_SUBJECT_AT_LEAST_2_WORDS}
+X-KSE-AntiSpam-Info: {Macro_SUBJECT_ENG_UPPERCASE_BEGINNING}
+X-KSE-AntiSpam-Info: {Macro_SUBJECT_LONG_TEXT}
+X-KSE-AntiSpam-Info: {Macro_SUBJECT_WITH_FWD_OR_RE}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 02/25/2021 16:47:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 25.02.2021 13:47:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/02/25 15:26:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/25 15:16:00 #16299632
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+On 25.02.2021 19:27, Jorgen Hansen wrote:
+> On 18 Feb 2021, at 06:37, Arseny Krasnov <arseny.krasnov@kaspersky.com> wrote:
+>> This adds receive loop for SEQPACKET. It looks like receive loop for
+>> STREAM, but there is a little bit difference:
+>> 1) It doesn't call notify callbacks.
+>> 2) It doesn't care about 'SO_SNDLOWAT' and 'SO_RCVLOWAT' values, because
+>>   there is no sense for these values in SEQPACKET case.
+>> 3) It waits until whole record is received or error is found during
+>>   receiving.
+>> 4) It processes and sets 'MSG_TRUNC' flag.
+>>
+>> So to avoid extra conditions for two types of socket inside one loop, two
+>> independent functions were created.
+>>
+>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>> ---
+>> include/net/af_vsock.h   |  5 +++
+>> net/vmw_vsock/af_vsock.c | 97 +++++++++++++++++++++++++++++++++++++++-
+>> 2 files changed, 101 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+>> index b1c717286993..01563338cc03 100644
+>> --- a/include/net/af_vsock.h
+>> +++ b/include/net/af_vsock.h
+>> @@ -135,6 +135,11 @@ struct vsock_transport {
+>> 	bool (*stream_is_active)(struct vsock_sock *);
+>> 	bool (*stream_allow)(u32 cid, u32 port);
+>>
+>> +	/* SEQ_PACKET. */
+>> +	size_t (*seqpacket_seq_get_len)(struct vsock_sock *vsk);
+>> +	int (*seqpacket_dequeue)(struct vsock_sock *vsk, struct msghdr *msg,
+>> +				     int flags, bool *msg_ready);
+>> +
+>> 	/* Notification. */
+>> 	int (*notify_poll_in)(struct vsock_sock *, size_t, bool *);
+>> 	int (*notify_poll_out)(struct vsock_sock *, size_t, bool *);
+>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>> index d277dc1cdbdf..b754927a556a 100644
+>> --- a/net/vmw_vsock/af_vsock.c
+>> +++ b/net/vmw_vsock/af_vsock.c
+>> @@ -1972,6 +1972,98 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
+>> 	return err;
+>> }
+>>
+>> +static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+>> +				     size_t len, int flags)
+>> +{
+>> +	const struct vsock_transport *transport;
+>> +	const struct iovec *orig_iov;
+>> +	unsigned long orig_nr_segs;
+>> +	bool msg_ready;
+>> +	struct vsock_sock *vsk;
+>> +	size_t record_len;
+>> +	long timeout;
+>> +	int err = 0;
+>> +	DEFINE_WAIT(wait);
+>> +
+>> +	vsk = vsock_sk(sk);
+>> +	transport = vsk->transport;
+>> +
+>> +	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+>> +	orig_nr_segs = msg->msg_iter.nr_segs;
+>> +	orig_iov = msg->msg_iter.iov;
+>> +	msg_ready = false;
+>> +	record_len = 0;
+>> +
+>> +	while (1) {
+>> +		err = vsock_wait_data(sk, &wait, timeout, NULL, 0);
+>> +
+>> +		if (err <= 0) {
+>> +			/* In case of any loop break(timeout, signal
+>> +			 * interrupt or shutdown), we report user that
+>> +			 * nothing was copied.
+>> +			 */
+>> +			err = 0;
+>> +			break;
+>> +		}
+>> +
+>> +		if (record_len == 0) {
+>> +			record_len =
+>> +				transport->seqpacket_seq_get_len(vsk);
+>> +
+>> +			if (record_len == 0)
+>> +				continue;
+>> +		}
+>> +
+>> +		err = transport->seqpacket_dequeue(vsk, msg,
+>> +					flags, &msg_ready);
+>> +
+>> +		if (err < 0) {
+>> +			if (err == -EAGAIN) {
+>> +				iov_iter_init(&msg->msg_iter, READ,
+>> +					      orig_iov, orig_nr_segs,
+>> +					      len);
+>> +				/* Clear 'MSG_EOR' here, because dequeue
+>> +				 * callback above set it again if it was
+>> +				 * set by sender. This 'MSG_EOR' is from
+>> +				 * dropped record.
+>> +				 */
+>> +				msg->msg_flags &= ~MSG_EOR;
+>> +				record_len = 0;
+>> +				continue;
+>> +			}
+> So a question for my understanding of the flow here. SOCK_SEQPACKET is reliable, so
+> what does it mean to drop the record? Is the transport supposed to roll back to the
+> beginning of the current record? If the incoming data in the transport doesn’t follow
+> the protocol, and packets need to be dropped, shouldn’t the socket be reset or similar?
+> Maybe there is potential for simplifying the flow if that is the case.
 
-HEAD commit:    291009f6 Merge tag 'pm-5.11-rc8' of git://git.kernel.org/p..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1481fbacd00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1106b4b91e8dfab8
-dashboard link: https://syzkaller.appspot.com/bug?extid=80dccaee7c6630fa9dcf
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1358ba02d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12dfb1e2d00000
+As vhost transport could drop some packets(for example when kmalloc failed),
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
+in this case user will see part of record(when RW packet was dropped), or it will
 
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 8482 at mm/page_alloc.c:4979 __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5014
-Modules linked in:
-CPU: 0 PID: 8482 Comm: syz-executor948 Not tainted 5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:4979
-Code: 00 00 0c 00 0f 85 a7 00 00 00 8b 3c 24 4c 89 f2 44 89 e6 c6 44 24 70 00 48 89 6c 24 58 e8 d0 d7 ff ff 49 89 c5 e9 ea fc ff ff <0f> 0b e9 b5 fd ff ff 89 74 24 14 4c 89 4c 24 08 4c 89 74 24 18 e8
-RSP: 0018:ffffc90001777aa0 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff920002eef58 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: dffffc0000000000 RDI: 0000000000060a20
-RBP: 0000000000020a20 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff86f1b13e R11: 0000000000000000 R12: 000000000000000b
-R13: 0000000000400180 R14: 0000000000060a20 R15: ffff888018932dc0
-FS:  000000000192b300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020400000 CR3: 0000000025ae7000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __alloc_pages include/linux/gfp.h:511 [inline]
- __alloc_pages_node include/linux/gfp.h:524 [inline]
- alloc_pages_node include/linux/gfp.h:538 [inline]
- kmalloc_large_node+0x60/0x110 mm/slub.c:3999
- __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4496
- __kmalloc_reserve net/core/skbuff.c:150 [inline]
- __alloc_skb+0x4e4/0x5a0 net/core/skbuff.c:210
- __netdev_alloc_skb+0x70/0x400 net/core/skbuff.c:446
- netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
- qrtr_endpoint_post+0x84/0x11b0 net/qrtr/qrtr.c:442
- qrtr_tun_write_iter+0x11f/0x1a0 net/qrtr/tun.c:98
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write+0x426/0x650 fs/read_write.c:518
- vfs_write+0x791/0xa30 fs/read_write.c:605
- ksys_write+0x12d/0x250 fs/read_write.c:658
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x442fe9
-Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc007c27a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007ffc007c27b8 RCX: 0000000000442fe9
-RDX: 0000000000400000 RSI: 0000000020000040 RDI: 0000000000000003
-RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc007c27c0
-R13: 00007ffc007c27e0 R14: 00000000004b8018 R15: 00000000004004b8
+be impossible to distinguish two records(when END of first and BEGIN of second
+
+were missed). So in this case user continues to sleep and such orphaned packets
+
+will be dropped.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Yes, it will simplify logic a lot, if i'll just send connection reset when invalid
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+sequence of packets were detected.
+
+>
+>> +
+>> +			err = -ENOMEM;
+>> +			break;
+>> +		}
+>> +
+>> +		if (msg_ready)
+>> +			break;
+>> +	}
+>> +
+>> +	if (sk->sk_err)
+>> +		err = -sk->sk_err;
+>> +	else if (sk->sk_shutdown & RCV_SHUTDOWN)
+>> +		err = 0;
+>> +
+>> +	if (msg_ready) {
+>> +		/* User sets MSG_TRUNC, so return real length of
+>> +		 * packet.
+>> +		 */
+>> +		if (flags & MSG_TRUNC)
+>> +			err = record_len;
+>> +		else
+>> +			err = len - msg->msg_iter.count;
+>> +
+>> +		/* Always set MSG_TRUNC if real length of packet is
+>> +		 * bigger than user's buffer.
+>> +		 */
+>> +		if (record_len > len)
+>> +			msg->msg_flags |= MSG_TRUNC;
+>> +	}
+>> +
+>> +	return err;
+>> +}
+>> +
+>> static int
+>> vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>> 			  int flags)
+>> @@ -2027,7 +2119,10 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>> 		goto out;
+>> 	}
+>>
+>> -	err = __vsock_stream_recvmsg(sk, msg, len, flags);
+>> +	if (sk->sk_type == SOCK_STREAM)
+>> +		err = __vsock_stream_recvmsg(sk, msg, len, flags);
+>> +	else
+>> +		err = __vsock_seqpacket_recvmsg(sk, msg, len, flags);
+>>
+>> out:
+>> 	release_sock(sk);
+>> -- 
+>> 2.25.1
+>>
