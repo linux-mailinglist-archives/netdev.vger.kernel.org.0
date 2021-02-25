@@ -2,71 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A07324BE3
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 09:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAA5324BE7
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 09:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235703AbhBYIR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 03:17:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235686AbhBYIRP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 03:17:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B492A64EC8;
-        Thu, 25 Feb 2021 08:16:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1614240995;
-        bh=Me+eOGwQpSJjEdPdPym5v1pyap07D7Pxx1ypb60NhXs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wTVbhkDGe6+qtOXmdxYrdNRK+FOPUhSENsXDIsFLygdfckk8237n+83p428FBILnr
-         O5HOAXggYNNHjPRc68OMmlLuIUuFqQHlSkzSK91ktQaUpmHEFv0OTgOluMHw/ysmOA
-         TJzRCHVpmiFkBUzdMDB+vsOQMZF+kDdkAWvpnEVA=
-Date:   Thu, 25 Feb 2021 09:16:32 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org, olteanv@gmail.com, sashal@kernel.org
-Subject: Re: [PATCH stable-5.9.y] net: dsa: b53: Correct learning for
- standalone ports
-Message-ID: <YDdc4PlMJjPhivLv@kroah.com>
-References: <20210225010853.946338-1-f.fainelli@gmail.com>
- <20210225010956.946545-1-f.fainelli@gmail.com>
- <20210225010956.946545-6-f.fainelli@gmail.com>
+        id S235821AbhBYIS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 03:18:58 -0500
+Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:53193 "EHLO
+        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235637AbhBYISr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 03:18:47 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 8EF312C0;
+        Thu, 25 Feb 2021 03:17:58 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 25 Feb 2021 03:17:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=qt+vntldzwyeMOu10ICDLcV+PMh
+        3Jo+VnYJ5MArvW1E=; b=lTaK1RxOWJbr5v3GpRGfbr/SrPHeKDaC5vimhKvYF8V
+        R91yQvxODJV4JxzEmaQWZLrAocvxkW8TmU7C2CE4wAFRZMOd05dYH4ieJ1Yte5T/
+        cDI1l8QpTtTtLdbqka2eq8/6Fr6yk6ycih2N6dUnUp7MbqEdCVP2pmTqg9Km0Nby
+        BvpxkqWRcx0U4Po3Vb3VXy65nvZ2t1gJ/dfPbiXlbgP3phyyWFTMO+bcXFzZ1/do
+        D5sJQxshBH3bRXQFnSSExvHukAH7ORRQ8N5C5dGdzgmx6WxDTwejE3Mbyf+6wo4i
+        GDtASt6lJFmHWxDWHkWEB3RGK9oQrBSbSvmyv6nm7hA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=qt+vnt
+        ldzwyeMOu10ICDLcV+PMh3Jo+VnYJ5MArvW1E=; b=YBU2keiRAyYXEnTMs6zhLH
+        YHSsrKLrT26eyIxG3+JlxBbvo3yRQQbcRKeLKiOPyZky/2I4GZaa1GaXAXY5zyol
+        KYqq6a6eN/SJKMgOtYPPBtRptvWaC0Wa975ge2LMRgaZRTo+uSe8/QgF+kOxXVmH
+        UTIOK/XeFuHQRUjINs6ukU6CaBKFb0PJeW3NGyuH0lNszcimLTIvpczPDb4QmKDI
+        gAX08VWMGV8xvOXTyzCMByTHfOfIDVpoNA3U6aedUfZlqg3lv78aRgJAZFXeIebz
+        6gMtuFVy6SCsY8ICWphA8/VLNXdl2ukAeIX1pw+7407Ywn5ONgcjbbmtzbRtIfZQ
+        ==
+X-ME-Sender: <xms:NV03YPAVkSS0Z6MOKCi0sjsOAhLw-D95-QF8HCQjiD4K1EhYIUwTwQ>
+    <xme:NV03YFgTsoxD4NNrVTMwAczVPdz1fdRTf26YsvDDqR5QdSo0eGZWIKb-rfiZWcEWf
+    4iAJoC36VBIGQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeekgdduudeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeef
+    rdekiedrjeegrdeigeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:NV03YKmkswGwJOiEjKDD7YPCStd2qSg5ZPX0IYFZ77dgAsGW7bEYwQ>
+    <xmx:NV03YBxeHL7stO0u5a-bI5Gm4uuCRpAZywAvr1pqskQR3Hba-lFsbA>
+    <xmx:NV03YET-tLSVGzKZPvvANJTb1x5f8I6__A7YQ8zeL_OzmVV2bGSP6g>
+    <xmx:Nl03YJQjp9P5TCrZ2UZj-UWGFUPAAOZWZ7muSGT-S8OI6_s6d5KvOw>
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0648924005E;
+        Thu, 25 Feb 2021 03:17:56 -0500 (EST)
+Date:   Thu, 25 Feb 2021 09:17:54 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Punit Agrawal <punit1.agrawal@toshiba.co.jp>
+Cc:     stable@vger.kernel.org, netdev@vger.kernel.org,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        daichi1.fukui@toshiba.co.jp, nobuhiro1.iwamatsu@toshiba.co.jp,
+        Corinna Vinschen <vinschen@redhat.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>
+Subject: Re: [PATCH v4.4.y, v4.9.y] igb: Remove incorrect "unexpected SYS
+ WRAP" log message
+Message-ID: <YDddMnkytDS76mYN@kroah.com>
+References: <20210225005406.530767-1-punit1.agrawal@toshiba.co.jp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210225010956.946545-6-f.fainelli@gmail.com>
+In-Reply-To: <20210225005406.530767-1-punit1.agrawal@toshiba.co.jp>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 05:09:54PM -0800, Florian Fainelli wrote:
-> Standalone ports should not have learning enabled since all the frames
-> are always copied to the CPU port. This is particularly important in
-> case an user-facing port intentionally spoofs the CPU port's MAC
-> address. With learning enabled we would end up with the switch having
-> incorrectly learned the address of the CPU port which typically results
-> in a complete break down of network connectivity until the address
-> learned ages out and gets re-learned, from the correct port this time.
+On Thu, Feb 25, 2021 at 09:54:06AM +0900, Punit Agrawal wrote:
+> From: Corinna Vinschen <vinschen@redhat.com>
 > 
-> There was no control of the BR_LEARNING flag until upstream commit
-> 4098ced4680a485c5953f60ac63dff19f3fb3d42 ("Merge branch 'brport-flags'")
-> which is why we default to enabling learning when the ports gets added
-> as a bridge member.
+> commit 2643e6e90210e16c978919617170089b7c2164f7 upstream
 > 
-> Fixes: 967dd82ffc52 ("net: dsa: b53: Add support for Broadcom RoboSwitch")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> TSAUXC.DisableSystime is never set, so SYSTIM runs into a SYS WRAP
+> every 1100 secs on 80580/i350/i354 (40 bit SYSTIM) and every 35000
+> secs on 80576 (45 bit SYSTIM).
+> 
+> This wrap event sets the TSICR.SysWrap bit unconditionally.
+> 
+> However, checking TSIM at interrupt time shows that this event does not
+> actually cause the interrupt.  Rather, it's just bycatch while the
+> actual interrupt is caused by, for instance, TSICR.TXTS.
+> 
+> The conclusion is that the SYS WRAP is actually expected, so the
+> "unexpected SYS WRAP" message is entirely bogus and just helps to
+> confuse users.  Drop it.
+> 
+> Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+> Acked-by: Jacob Keller <jacob.e.keller@intel.com>
+> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 > ---
->  drivers/net/dsa/b53/b53_common.c | 18 ++++++++++++++++++
->  drivers/net/dsa/b53/b53_regs.h   |  1 +
->  drivers/net/dsa/bcm_sf2.c        | 15 +--------------
->  3 files changed, 20 insertions(+), 14 deletions(-)
+> [ Due to confusion about stable rules for networking the request was
+> mistakenly sent to netdev only[0]. Apologies if you're seeing this
+> again. ]
 
-Note, 5.9.y and 5.8.y are long end-of-life.  You can see that at the
-front page of www.kernel.org if you ever are curious about it.
+No signed-off-by: from you?  :(
 
-thanks,
-
-greg k-h
