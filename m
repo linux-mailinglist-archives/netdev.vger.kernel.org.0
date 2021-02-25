@@ -2,119 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CCFF325126
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 15:03:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93D0332513A
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 15:07:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231822AbhBYOC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 09:02:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44314 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230467AbhBYOCY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 09:02:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 33D3764F1B;
-        Thu, 25 Feb 2021 14:01:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614261702;
-        bh=gB6SQ75V2Rk37+UKLUfmsXNjtKCUUEXnmz4FEJPQVQY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=iGKh9gRLvR8o04SWuKsCmipjtlzTrYuO47BWoJKHisDTteOpg/JDJDJJNnt+rGTTb
-         0rw4Z/+2u64PifagBhihDsPlyJ67Y3oQmsZn/oOul3KOK4yi2rGalMnkTSGw0hDAQu
-         5UCXh/aLF+AKNOXFFYPj9pbvUcZ+cJQXjOePkvmGZX37GfJUD/b8DZYdke/mmAKvZT
-         fAGvXP4lcs8maCpu0ckyrKPIoHkrpGb6cRtLNo09qQE/bWR08AfpprntjG9xmxGdei
-         eNSETbirr5t3ogcQ9xtRSswYiW1kh8gzy8rrgKIT9HRwylXF4qapcoQRRth0EghGpX
-         ctCpWU8hVtI2A==
-Received: by mail-oo1-f51.google.com with SMTP id x10so1389976oor.3;
-        Thu, 25 Feb 2021 06:01:42 -0800 (PST)
-X-Gm-Message-State: AOAM530YQNSUY6DI1p/w+oMByG+xrschcT2x6xk2C68fFUBMnyNwDQQJ
-        HRKQc6KM13zEsopqRnEASZN4oYZnOLKbfAR4rYM=
-X-Google-Smtp-Source: ABdhPJy0Z8oAC8F3qvd9r/HrjNWv0zSRZwzOF/sqWqHtbHpdIOPcLKBh4nK6FxEKGL+hdddWAENt07LK/yhwcmvgmrE=
-X-Received: by 2002:a4a:870c:: with SMTP id z12mr2391944ooh.15.1614261701193;
- Thu, 25 Feb 2021 06:01:41 -0800 (PST)
+        id S232403AbhBYOGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 09:06:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231284AbhBYOG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 09:06:28 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92ECFC061574;
+        Thu, 25 Feb 2021 06:05:46 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id q9so5022839ilo.1;
+        Thu, 25 Feb 2021 06:05:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HNl+j7XzE9le/Y31giKwsRpFTGZ7bjJThJ0wX9igwH8=;
+        b=baHr+Xh3tv9Bdb+XoKmQUT9GL9l7XRNx9hYgZ7qLwYG1/GEO48svlhtydDF/9BcBGo
+         GgzM9davIc4/iApPPohit9eW5KwggmmrksyqK7+TXOkIq+6p2vaa3RCOcZ5nKhWkmF6g
+         T67x5PN2ySCLhGivJOxiRifenWB3VQ8NkpYWvfWtDrlwFCEdTNzc8rknvA4bCOY75oIQ
+         8p0u/rlwmEZXpwmgO30KJtuJXWIzp49kn2+LtR4a4ko+u12GDVPvD2Tfmyx3+5Wi/X5b
+         2b1ZAkLFS3KLXgMCYKBEHAnQB+QoS2bx0LKfAatFMsrltWZFnTGHBDwCjF3QB5SiYcdG
+         Uajg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HNl+j7XzE9le/Y31giKwsRpFTGZ7bjJThJ0wX9igwH8=;
+        b=lJJEbbAC+asTjN9wjXviqQbNsF3XR5MTUGr9PLeung15XzwADViURNsvICci2MYcRn
+         PkgfkytPGtpj4IPXGCCALXhxiDOYdRUuU3YaPP1rvTmQk9xmZDyqpOHo7HpjjTWg/+4b
+         NXpI8X+L5fxFEzUGkjNPfrsHAMqacouPF+pmV+H6IYn/kpHU1RLeksAlfVhvd2SlcyAJ
+         dJ4mkUioO/WZhznaNUAhZATvMHoyOZE+CgRwIPmJrhbk1hWOhkjWGmI85vjfHjkj27+c
+         lcQdoKb9e3xeTtUZfrJbNZtU5AVYTLNOML3HU7XIYwNLPyikQe9YVHwUd/GAi4Se/O+8
+         ZpdA==
+X-Gm-Message-State: AOAM532awyppG4sAUByG0vKXvwmxZuMBRGIWkG0Dy/gnyEua0FJd8bWm
+        wHbDALXrbRJ0ColVH031ZBjxmYaikET92lfRv57+2jQHfzYys4nM
+X-Google-Smtp-Source: ABdhPJz0P18YYZxzzf7UIrdHDGO788LiCP1JN3bOCD2fP/I5ywm2cOAKId/FNlzRb02eOEioa7cSvTKeVlT1Sio3m+k=
+X-Received: by 2002:a92:d201:: with SMTP id y1mr2733142ily.129.1614261945979;
+ Thu, 25 Feb 2021 06:05:45 -0800 (PST)
 MIME-Version: 1.0
-References: <20210224072516.74696-1-uwe@kleine-koenig.org> <87sg5ks6xp.fsf@mpe.ellerman.id.au>
-In-Reply-To: <87sg5ks6xp.fsf@mpe.ellerman.id.au>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 25 Feb 2021 15:01:25 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1q=zqyOxBgV-nprpN3jBczZWexupkA1Wy6g+AEW6rQqw@mail.gmail.com>
-Message-ID: <CAK8P3a1q=zqyOxBgV-nprpN3jBczZWexupkA1Wy6g+AEW6rQqw@mail.gmail.com>
-Subject: Re: [PATCH v2] vio: make remove callback return void
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jens Axboe <axboe@kernel.dk>, Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Haren Myneni <haren@us.ibm.com>,
-        =?UTF-8?Q?Breno_Leit=C3=A3o?= <leitao@debian.org>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        Steven Royer <seroyer@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cristobal Forno <cforno12@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Michael Cyr <mikecyr@linux.ibm.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>, linux-integrity@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        target-devel@vger.kernel.org
+References: <20210220065654.25598-1-heiko.thiery@gmail.com>
+ <20210222190051.40fdc3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEyMn7ZM7_pPor0S=dMGbmnp0hmZMrpquGqq4VNu-ixSPp+0UQ@mail.gmail.com>
+ <20210223142726.GA4711@hoboy.vegasvil.org> <CAEyMn7Za9z9TUdhb8egf8mOFJyA3hgqX5fwLED8HDKw8Smyocg@mail.gmail.com>
+ <20210223161136.GA5894@hoboy.vegasvil.org> <CAEyMn7YwvZD6T=oHp2AcmsA+R6Ho2SCYYkt2NcK8hZNUT7_TSQ@mail.gmail.com>
+In-Reply-To: <CAEyMn7YwvZD6T=oHp2AcmsA+R6Ho2SCYYkt2NcK8hZNUT7_TSQ@mail.gmail.com>
+From:   Heiko Thiery <heiko.thiery@gmail.com>
+Date:   Thu, 25 Feb 2021 15:05:32 +0100
+Message-ID: <CAEyMn7Yjug3S=2mRC8uA=_+Tdxe=m6G-ga1YuupLSx3mPqUoug@mail.gmail.com>
+Subject: Re: [PATCH 1/1] net: fec: ptp: avoid register access when ipg clock
+ is disabled
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Fugang Duan <fugang.duan@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 12:52 PM Michael Ellerman <mpe@ellerman.id.au> wrot=
-e:
+Hi Richard,
+
+Am Do., 25. Feb. 2021 um 14:49 Uhr schrieb Heiko Thiery
+<heiko.thiery@gmail.com>:
 >
-> Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org> writes:
-> > The driver core ignores the return value of struct bus_type::remove()
-> > because there is only little that can be done. To simplify the quest to
-> > make this function return void, let struct vio_driver::remove() return
-> > void, too. All users already unconditionally return 0, this commit make=
-s
-> > it obvious that returning an error code is a bad idea and makes it
-> > obvious for future driver authors that returning an error code isn't
-> > intended.
+> Hi Richard,
+>
+> Am Di., 23. Feb. 2021 um 17:11 Uhr schrieb Richard Cochran
+> <richardcochran@gmail.com>:
 > >
-> > Note there are two nominally different implementations for a vio bus:
-> > one in arch/sparc/kernel/vio.c and the other in
-> > arch/powerpc/platforms/pseries/vio.c. I didn't care to check which
-> > driver is using which of these busses (or if even some of them can be
-> > used with both) and simply adapt all drivers and the two bus codes in
-> > one go.
+> > On Tue, Feb 23, 2021 at 04:04:16PM +0100, Heiko Thiery wrote:
+> > > It is not only the PHC clock that stops. Rather, it is the entire
+> > > ethernet building block in the SOC that is disabled, including the
+> > > PHC.
+> >
+> > Sure, but why does the driver do that?
 >
-> I'm 99% sure there's no connection between the two implementations,
-> other than the name.
->
-> So splitting the patch by arch would make it easier to merge. I'm
-> reluctant to merge changes to sparc code.
+> That is a good question. I tried to understand the clock
+> infrastructure of the imx8 but it looks quite complicated. I cannot
+> find the point where all the stuff is disabled.
 
-The sparc subsystem clearly started out as a copy of the powerpc
-version, and serves roughly the same purpose, but the communication
-with the hypervisor is quite different.
+But the explanation why it is currently disabled that way can be found
+in the commit 91c0d987a9788dcc5fe26baafd73bf9242b68900.
 
-As there are only four drivers for the sparc vio subsystem:
-drivers/block/sunvdc.c
-drivers/net/ethernet/sun/ldmvsw.c
-drivers/net/ethernet/sun/sunvnet.c
-drivers/tty/vcc.c
-maybe it would make sense to rename those to use distinct
-identifiers now?
-
-       Arnd
+-- 
+Heiko
