@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1079324F1A
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 12:26:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C902324F1B
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 12:26:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235556AbhBYLZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 06:25:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
+        id S235617AbhBYLZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 06:25:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235003AbhBYLY5 (ORCPT
+        with ESMTP id S235198AbhBYLY5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 06:24:57 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC453C06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 03:24:16 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id h10so6347257edl.6
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 03:24:16 -0800 (PST)
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C719C061756
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 03:24:17 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id d2so6326831edq.10
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 03:24:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EF+H6xzbnoe3VXkWquuRb96QLgZnZ7UYMlewgsGYvZo=;
-        b=isii18aqSdb8TKwrAa7m+oOhOt57CTnCTHXLqfdP7Gx3xhVk8AqbnqqQy+tKaxgjZN
-         alRGrL5AWX6Ox1zQiOSgaxyStq0oQlut5KKhoLJ8ljKVdY2HECB3jSz4tNWioV/tpLR+
-         Aynh9zNO+OFr06qfC+lEwvw/aW6A/kqrVWhGyQNFn15j29/2lnxPK/MiODBjUCUuZH3V
-         QId3Swi1D9fChz4wTSUzFNXNK0gBEgTgsMHNUwsP9wKG0qkC4R2inFpyPNClCQvzwezY
-         UtTPazk487Ih12SdRm2vHSk3dU1Ds1NsnAx9Xin4K6Y/cOf0sdvz/+/g5xP3sbCrb607
-         Frzw==
+        bh=o0mJcCbI1nxpcIrMYwTD+Gj86Sstu8DARjIz3iiX1Bo=;
+        b=D4RbuozqAYx2LCWZRcfoRhy4M5Pj1ItbFi2m07wFmn1TeHmmRgSaoagtIISUHyPVp5
+         HQaCcSrTV0ZpcYeID6AQaw5hqEgsJYzk1grMBqiGUlw/bmaNPa7LweIiE2I3JczMNsfO
+         2w3kPFHnc8MPOtPwEbh3W7Vrp4CITe2Sju9EGVKpkIvnPOltqQSKcIbWtq1vgi4rOlgS
+         TBEbr+/lzr2HEsI2F6mYrFPzQ9QPr5nkWHMfJWrEWGBBCh4wRPALu8AAhdPbmVtDIK6y
+         nLi7vaB9vkRh1elz6Vmke7J07AdHSCNp2mICJZZJi2yQhtBnMuvMjqopKc8ZA0+YF/NH
+         l63g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EF+H6xzbnoe3VXkWquuRb96QLgZnZ7UYMlewgsGYvZo=;
-        b=K7J1Ao41zFzqSPrpTIfy3JOyG3hSp6Y0pEgKguCWuIf4F3wiDge1fE4u8PDpWDj/hh
-         I6FbokazYbz2N/FCMgQiQ+xl3ogYId0i/rqGgfHTqlamTjLR8KUxdYOd+rLxqKUtzmPj
-         eCORBfVoMo7bXjcKqefTdKoBzWwNVVluOUFLb3Oxdl7ZrfgNWtpkcY+mXGZ5fUQ4jRbW
-         fkU0H270WKtpqHWTAkDWbfVQMyv8g5PnuRc43nKnCL8VIePqc+gOQQXJSUfbrVKCXEfT
-         aAFQFDUdU34AurnezsCq0j+j5dLmSDAXaqfF26BRwiqCGZKwPziIYzhPN8TaEDy4UDOJ
-         6g+A==
-X-Gm-Message-State: AOAM53270En8STc8nhGk/mTJdx8cZsVUYXpPG5dOPXUiU5KnNCvy8567
-        Gasgt3rm3cDkxwy1kXEkqlQ=
-X-Google-Smtp-Source: ABdhPJyA4mNgnLfx44X7lmJH8mM+V2gUAbKmskDPKQzVwFDRSOKJzIUzVbUdO84TYubFSL0qX2daaQ==
-X-Received: by 2002:a05:6402:84e:: with SMTP id b14mr2381232edz.186.1614252255101;
+        bh=o0mJcCbI1nxpcIrMYwTD+Gj86Sstu8DARjIz3iiX1Bo=;
+        b=X7ZFdC2wc3iorBG2IUV1pADy9Ynlw6TTZpmTQcb+E3+abT8EGWk7jiUK9MFUv2PMf+
+         RoYwSXqsGeQ6Z0D5CSmz11c52Dsxf7MbnASjPypX+erVrDau3BXRMMmzdnQSw01RRpXB
+         wG1nFkUHqeamgFsQ2HdGgR+HB4T1e1111n01VY1lgKzcNfZJLeOeSwqGhiE2a465ri0n
+         Ay5eMwveyrCJLpM0+voFG41n616hdPDcZGp1QYKmnZq/Pn/VcE4cqIloNTHRp0J1qa3v
+         y7KzWAbSkJe4YCTxVFQnwhVT6afxvq8X2T3vq0W6nfeVsifsuMjRAs4Y+trNXl5cinKw
+         8tXw==
+X-Gm-Message-State: AOAM532d9LymWH6NiD4rkBXNCEbcG0tq8A0AodJeo2HgZ+KAj3XtC0YX
+        x6MzxDRX7qUjkvsPM+qrx1Q=
+X-Google-Smtp-Source: ABdhPJyh5ESrIgNz9NxMU8jVP9q8lxC6uN+cc/jsoXqpafdmHaO5Gk/ctpdNRRrbm0v8oL8PlyzKpg==
+X-Received: by 2002:a05:6402:c96:: with SMTP id cm22mr2379395edb.128.1614252255966;
         Thu, 25 Feb 2021 03:24:15 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id v12sm2977156ejh.94.2021.02.25.03.24.14
+        by smtp.gmail.com with ESMTPSA id v12sm2977156ejh.94.2021.02.25.03.24.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 03:24:14 -0800 (PST)
+        Thu, 25 Feb 2021 03:24:15 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -55,9 +55,9 @@ Cc:     Michael Walle <michael@walle.cc>,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH net 1/6] net: enetc: don't overwrite the RSS indirection table when initializing
-Date:   Thu, 25 Feb 2021 13:23:52 +0200
-Message-Id: <20210225112357.3785911-2-olteanv@gmail.com>
+Subject: [PATCH net 2/6] net: enetc: initialize RFS/RSS memories for unused ports too
+Date:   Thu, 25 Feb 2021 13:23:53 +0200
+Message-Id: <20210225112357.3785911-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210225112357.3785911-1-olteanv@gmail.com>
 References: <20210225112357.3785911-1-olteanv@gmail.com>
@@ -69,148 +69,261 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-After the blamed patch, all RX traffic gets hashed to CPU 0 because the
-hashing indirection table set up in:
+Michael reports that since linux-next-20210211, the AER messages for ECC
+errors have started reappearing, and this time they can be reliably
+reproduced with the first ping on one of his LS1028A boards.
 
-enetc_pf_probe
--> enetc_alloc_si_resources
-   -> enetc_configure_si
-      -> enetc_setup_default_rss_table
+$ ping 1[   33.258069] pcieport 0000:00:1f.0: AER: Multiple Corrected error received: 0000:00:00.0
+72.16.0.1
+PING [   33.267050] pcieport 0000:00:1f.0: AER: can't find device of ID0000
+172.16.0.1 (172.16.0.1): 56 data bytes
+64 bytes from 172.16.0.1: seq=0 ttl=64 time=17.124 ms
+64 bytes from 172.16.0.1: seq=1 ttl=64 time=0.273 ms
 
-is overwritten later in:
+$ devmem 0x1f8010e10 32
+0xC0000006
 
-enetc_pf_probe
--> enetc_init_port_rss_memory
+It isn't clear why this is necessary, but it seems that for the errors
+to go away, we must clear the entire RFS and RSS memory, not just for
+the ports in use.
 
-which zero-initializes the entire port RSS table in order to avoid ECC errors.
+Sadly the code is structured in such a way that we can't have unified
+logic for the used and unused ports. For the minimal initialization of
+an unused port, we need just to enable and ioremap the PF memory space,
+and a control buffer descriptor ring. Unused ports must then free the
+CBDR because the driver will exit, but used ports can not pick up from
+where that code path left, since the CBDR API does not reinitialize a
+ring when setting it up, so its producer and consumer indices are out of
+sync between the software and hardware state. So a separate
+enetc_init_unused_port function was created, and it gets called right
+after the PF memory space is enabled.
 
-The trouble really is that enetc_init_port_rss_memory really neads
-enetc_alloc_si_resources to be called, because it depends upon
-enetc_alloc_cbdr and enetc_setup_cbdr. But that whole enetc_configure_si
-thing could have been better thought out, it has nothing to do in a
-function called "alloc_si_resources", especially since its counterpart,
-"free_si_resources", does nothing to unwind the configuration of the SI.
-
-The point is, we need to pull out enetc_configure_si out of
-enetc_alloc_resources, and move it after enetc_init_port_rss_memory.
-This allows us to set up the default RSS indirection table after
-initializing the memory.
+Note that we need access from enetc_pf.c to the CBDR creation and
+deletion methods, which were for some reason put in enetc.c. While
+changing their definitions to be non-static, also move them to
+enetc_cbdr.c which seems like a better place to hold these.
 
 Fixes: 07bf34a50e32 ("net: enetc: initialize the RFS and RSS memories")
+Reported-by: Michael Walle <michael@walle.cc>
 Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c    | 11 +++--------
- drivers/net/ethernet/freescale/enetc/enetc.h    |  1 +
- drivers/net/ethernet/freescale/enetc/enetc_pf.c |  7 +++++++
- drivers/net/ethernet/freescale/enetc/enetc_vf.c |  7 +++++++
- 4 files changed, 18 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 54 -------------------
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  4 ++
+ .../net/ethernet/freescale/enetc/enetc_cbdr.c | 54 +++++++++++++++++++
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 33 ++++++++++--
+ 4 files changed, 86 insertions(+), 59 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index c78d12229730..fdb6b9e8da78 100644
+index fdb6b9e8da78..43f0fae30080 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -1058,13 +1058,12 @@ static int enetc_setup_default_rss_table(struct enetc_si *si, int num_groups)
- 	return 0;
+@@ -984,60 +984,6 @@ static void enetc_free_rxtx_rings(struct enetc_ndev_priv *priv)
+ 		enetc_free_tx_ring(priv->tx_ring[i]);
  }
  
--static int enetc_configure_si(struct enetc_ndev_priv *priv)
-+int enetc_configure_si(struct enetc_ndev_priv *priv)
- {
- 	struct enetc_si *si = priv->si;
- 	struct enetc_hw *hw = &si->hw;
- 	int err;
- 
--	enetc_setup_cbdr(hw, &si->cbd_ring);
- 	/* set SI cache attributes */
- 	enetc_wr(hw, ENETC_SICAR0,
- 		 ENETC_SICAR_RD_COHERENT | ENETC_SICAR_WR_COHERENT);
-@@ -1112,6 +1111,8 @@ int enetc_alloc_si_resources(struct enetc_ndev_priv *priv)
- 	if (err)
- 		return err;
- 
-+	enetc_setup_cbdr(&si->hw, &si->cbd_ring);
-+
- 	priv->cls_rules = kcalloc(si->num_fs_entries, sizeof(*priv->cls_rules),
- 				  GFP_KERNEL);
- 	if (!priv->cls_rules) {
-@@ -1119,14 +1120,8 @@ int enetc_alloc_si_resources(struct enetc_ndev_priv *priv)
- 		goto err_alloc_cls;
- 	}
- 
--	err = enetc_configure_si(priv);
--	if (err)
--		goto err_config_si;
+-static int enetc_alloc_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
+-{
+-	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
 -
- 	return 0;
- 
--err_config_si:
--	kfree(priv->cls_rules);
- err_alloc_cls:
- 	enetc_clear_cbdr(&si->hw);
- 	enetc_free_cbdr(priv->dev, &si->cbd_ring);
+-	cbdr->bd_base = dma_alloc_coherent(dev, size, &cbdr->bd_dma_base,
+-					   GFP_KERNEL);
+-	if (!cbdr->bd_base)
+-		return -ENOMEM;
+-
+-	/* h/w requires 128B alignment */
+-	if (!IS_ALIGNED(cbdr->bd_dma_base, 128)) {
+-		dma_free_coherent(dev, size, cbdr->bd_base, cbdr->bd_dma_base);
+-		return -EINVAL;
+-	}
+-
+-	cbdr->next_to_clean = 0;
+-	cbdr->next_to_use = 0;
+-
+-	return 0;
+-}
+-
+-static void enetc_free_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
+-{
+-	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
+-
+-	dma_free_coherent(dev, size, cbdr->bd_base, cbdr->bd_dma_base);
+-	cbdr->bd_base = NULL;
+-}
+-
+-static void enetc_setup_cbdr(struct enetc_hw *hw, struct enetc_cbdr *cbdr)
+-{
+-	/* set CBDR cache attributes */
+-	enetc_wr(hw, ENETC_SICAR2,
+-		 ENETC_SICAR_RD_COHERENT | ENETC_SICAR_WR_COHERENT);
+-
+-	enetc_wr(hw, ENETC_SICBDRBAR0, lower_32_bits(cbdr->bd_dma_base));
+-	enetc_wr(hw, ENETC_SICBDRBAR1, upper_32_bits(cbdr->bd_dma_base));
+-	enetc_wr(hw, ENETC_SICBDRLENR, ENETC_RTBLENR_LEN(cbdr->bd_count));
+-
+-	enetc_wr(hw, ENETC_SICBDRPIR, 0);
+-	enetc_wr(hw, ENETC_SICBDRCIR, 0);
+-
+-	/* enable ring */
+-	enetc_wr(hw, ENETC_SICBDRMR, BIT(31));
+-
+-	cbdr->pir = hw->reg + ENETC_SICBDRPIR;
+-	cbdr->cir = hw->reg + ENETC_SICBDRCIR;
+-}
+-
+-static void enetc_clear_cbdr(struct enetc_hw *hw)
+-{
+-	enetc_wr(hw, ENETC_SICBDRMR, 0);
+-}
+-
+ static int enetc_setup_default_rss_table(struct enetc_si *si, int num_groups)
+ {
+ 	int *rss_table;
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 8532d23b54f5..f8275cef3b5c 100644
+index f8275cef3b5c..8b380fc13314 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.h
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -292,6 +292,7 @@ void enetc_get_si_caps(struct enetc_si *si);
- void enetc_init_si_rings_params(struct enetc_ndev_priv *priv);
- int enetc_alloc_si_resources(struct enetc_ndev_priv *priv);
- void enetc_free_si_resources(struct enetc_ndev_priv *priv);
-+int enetc_configure_si(struct enetc_ndev_priv *priv);
+@@ -310,6 +310,10 @@ int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+ void enetc_set_ethtool_ops(struct net_device *ndev);
  
- int enetc_open(struct net_device *ndev);
- int enetc_close(struct net_device *ndev);
+ /* control buffer descriptor ring (CBDR) */
++int enetc_alloc_cbdr(struct device *dev, struct enetc_cbdr *cbdr);
++void enetc_free_cbdr(struct device *dev, struct enetc_cbdr *cbdr);
++void enetc_setup_cbdr(struct enetc_hw *hw, struct enetc_cbdr *cbdr);
++void enetc_clear_cbdr(struct enetc_hw *hw);
+ int enetc_set_mac_flt_entry(struct enetc_si *si, int index,
+ 			    char *mac_addr, int si_map);
+ int enetc_clear_mac_flt_entry(struct enetc_si *si, int index);
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
+index 201cbc362e33..ad6aecda6b47 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
+@@ -3,6 +3,60 @@
+ 
+ #include "enetc.h"
+ 
++int enetc_alloc_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
++{
++	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
++
++	cbdr->bd_base = dma_alloc_coherent(dev, size, &cbdr->bd_dma_base,
++					   GFP_KERNEL);
++	if (!cbdr->bd_base)
++		return -ENOMEM;
++
++	/* h/w requires 128B alignment */
++	if (!IS_ALIGNED(cbdr->bd_dma_base, 128)) {
++		dma_free_coherent(dev, size, cbdr->bd_base, cbdr->bd_dma_base);
++		return -EINVAL;
++	}
++
++	cbdr->next_to_clean = 0;
++	cbdr->next_to_use = 0;
++
++	return 0;
++}
++
++void enetc_free_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
++{
++	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
++
++	dma_free_coherent(dev, size, cbdr->bd_base, cbdr->bd_dma_base);
++	cbdr->bd_base = NULL;
++}
++
++void enetc_setup_cbdr(struct enetc_hw *hw, struct enetc_cbdr *cbdr)
++{
++	/* set CBDR cache attributes */
++	enetc_wr(hw, ENETC_SICAR2,
++		 ENETC_SICAR_RD_COHERENT | ENETC_SICAR_WR_COHERENT);
++
++	enetc_wr(hw, ENETC_SICBDRBAR0, lower_32_bits(cbdr->bd_dma_base));
++	enetc_wr(hw, ENETC_SICBDRBAR1, upper_32_bits(cbdr->bd_dma_base));
++	enetc_wr(hw, ENETC_SICBDRLENR, ENETC_RTBLENR_LEN(cbdr->bd_count));
++
++	enetc_wr(hw, ENETC_SICBDRPIR, 0);
++	enetc_wr(hw, ENETC_SICBDRCIR, 0);
++
++	/* enable ring */
++	enetc_wr(hw, ENETC_SICBDRMR, BIT(31));
++
++	cbdr->pir = hw->reg + ENETC_SICBDRPIR;
++	cbdr->cir = hw->reg + ENETC_SICBDRCIR;
++}
++
++void enetc_clear_cbdr(struct enetc_hw *hw)
++{
++	enetc_wr(hw, ENETC_SICBDRMR, 0);
++}
++
+ static void enetc_clean_cbdr(struct enetc_si *si)
+ {
+ 	struct enetc_cbdr *ring = &si->cbd_ring;
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 515c5b29d7aa..d02ecb2e46ae 100644
+index d02ecb2e46ae..62ba4bf56f0d 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -1108,6 +1108,12 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 		goto err_init_port_rss;
+@@ -1041,6 +1041,26 @@ static int enetc_init_port_rss_memory(struct enetc_si *si)
+ 	return err;
+ }
+ 
++static void enetc_init_unused_port(struct enetc_si *si)
++{
++	struct device *dev = &si->pdev->dev;
++	struct enetc_hw *hw = &si->hw;
++	int err;
++
++	si->cbd_ring.bd_count = ENETC_CBDR_DEFAULT_SIZE;
++	err = enetc_alloc_cbdr(dev, &si->cbd_ring);
++	if (err)
++		return;
++
++	enetc_setup_cbdr(hw, &si->cbd_ring);
++
++	enetc_init_port_rfs_memory(si);
++	enetc_init_port_rss_memory(si);
++
++	enetc_clear_cbdr(hw);
++	enetc_free_cbdr(dev, &si->cbd_ring);
++}
++
+ static int enetc_pf_probe(struct pci_dev *pdev,
+ 			  const struct pci_device_id *ent)
+ {
+@@ -1051,11 +1071,6 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 	struct enetc_pf *pf;
+ 	int err;
+ 
+-	if (node && !of_device_is_available(node)) {
+-		dev_info(&pdev->dev, "device is disabled, skipping\n");
+-		return -ENODEV;
+-	}
+-
+ 	err = enetc_pci_probe(pdev, KBUILD_MODNAME, sizeof(*pf));
+ 	if (err) {
+ 		dev_err(&pdev->dev, "PCI probing failed\n");
+@@ -1069,6 +1084,13 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 		goto err_map_pf_space;
  	}
  
-+	err = enetc_configure_si(priv);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to configure SI\n");
-+		goto err_config_si;
++	if (node && !of_device_is_available(node)) {
++		enetc_init_unused_port(si);
++		dev_info(&pdev->dev, "device is disabled, skipping\n");
++		err = -ENODEV;
++		goto err_device_disabled;
 +	}
 +
- 	err = enetc_alloc_msix(priv);
- 	if (err) {
- 		dev_err(&pdev->dev, "MSIX alloc failed\n");
-@@ -1136,6 +1142,7 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	enetc_mdiobus_destroy(pf);
- err_mdiobus_create:
- 	enetc_free_msix(priv);
-+err_config_si:
- err_init_port_rss:
- err_init_port_rfs:
- err_alloc_msix:
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_vf.c b/drivers/net/ethernet/freescale/enetc/enetc_vf.c
-index 39c1a09e69a9..9b755a84c2d6 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_vf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_vf.c
-@@ -171,6 +171,12 @@ static int enetc_vf_probe(struct pci_dev *pdev,
- 		goto err_alloc_si_res;
- 	}
+ 	pf = enetc_si_priv(si);
+ 	pf->si = si;
+ 	pf->total_vfs = pci_sriov_get_totalvfs(pdev);
+@@ -1151,6 +1173,7 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 	si->ndev = NULL;
+ 	free_netdev(ndev);
+ err_alloc_netdev:
++err_device_disabled:
+ err_map_pf_space:
+ 	enetc_pci_remove(pdev);
  
-+	err = enetc_configure_si(priv);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to configure SI\n");
-+		goto err_config_si;
-+	}
-+
- 	err = enetc_alloc_msix(priv);
- 	if (err) {
- 		dev_err(&pdev->dev, "MSIX alloc failed\n");
-@@ -187,6 +193,7 @@ static int enetc_vf_probe(struct pci_dev *pdev,
- 
- err_reg_netdev:
- 	enetc_free_msix(priv);
-+err_config_si:
- err_alloc_msix:
- 	enetc_free_si_resources(priv);
- err_alloc_si_res:
 -- 
 2.25.1
 
