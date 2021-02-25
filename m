@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C877A324861
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 02:13:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6198324863
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 02:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236734AbhBYBLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 20:11:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
+        id S236773AbhBYBMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 20:12:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236574AbhBYBLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 20:11:13 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64E3C061788;
-        Wed, 24 Feb 2021 17:10:32 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id t26so2706678pgv.3;
-        Wed, 24 Feb 2021 17:10:32 -0800 (PST)
+        with ESMTP id S236694AbhBYBLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 20:11:38 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEA5C06178B;
+        Wed, 24 Feb 2021 17:10:38 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id j12so2484148pfj.12;
+        Wed, 24 Feb 2021 17:10:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qn8SZDJKXCoDJ6V5gGIw/cUX0UQvy0+2ld8Bo3gRLP0=;
-        b=Igj+3CU8JKTay3BIHvRxiOVu51wtUDXdMSMeItN/gDX1BCayADsPQJpnWUlbQc2Yp+
-         P+2t15L7qaLpFqI/St7K0nrP6a2qEnA1h4n4ppEmWvtHF3p20Iu7mB3nRn2PfFgDpK+t
-         tQ0n6z+0cAJLdY6ktxC/F4EOJsRkNbo2BNkaQIWwy+x5qAdiaWT5Drpi2ttXmFEhIgaN
-         WMIx//D5tOrudOL8WvaGctVSk+dHYIaCCtB51tfWj5GOSk+YxTuQZbYDx2HDTdXLIXD7
-         34+b5MulPaGZzwgem7mYNJ53z/4+zu3R3qVE7KFZdmFoIbWLmQh+RO3PwfAtA/Wl7Pff
-         pd6Q==
+        bh=BFJnFYApsYRkDFhnCEthSONcLHEe8zfPB2HrT3stUO0=;
+        b=hP8D3AM8Aqlx0lGIutSV/PWfjidV3vhn9m96wY8xpO8mvAUpklsPKJTw9gdlCxGxPx
+         /tI5wi7J29PiJb8TAcbyBSEWuixJ7lBJOr7ZG2Wr6iY+DoposaL2mOHXsnCwCJHUq3Lj
+         73mPcFVQGwmTIDH43C3B1a3JP6LCwwQQk2RVKiNXypwhz0BGpAByr0GuMpOXCWZa+vLe
+         mRksu28aQ7kHmYAxsni8nNiZofoiKYH6xsda8i/rj/lhCQxSwu1KXmnNOIhf6+ToGTqM
+         pqI0Fsht8kSAS0Kthrp8XNnBCQeFcR/quf0oZuC19k7gf8anHyv3pYX8e0gKJ9NvxTJ/
+         QL7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qn8SZDJKXCoDJ6V5gGIw/cUX0UQvy0+2ld8Bo3gRLP0=;
-        b=qisDn93m0vPmJbNj8ECI2DtUCZvA42STgMpqorNYfkAlhn9aP/GMDpwSW23wsLixbB
-         odwkyS02j+plm8oljI8Jw8moFIroFZMkgr1Y0F9tpVfo+Dz5BqrarkVBYRHjO5ZcynAg
-         F4YMuc9z4LtZB4DfntzYnhbm0UAFFY2rYFHrd72K396ilkvkaRs+sUTe9QVFAOw9FNCE
-         Xqp6rSgjdogpch+R459NYKvzIvd/sg22zJGvW2HaA976sNgGfN7KzMuNJipxXcDJA/Hz
-         ggcavHDod/BNi5m6jZbdktNOVMLEfBCf9nf0ShEv+jywHtl0+6mEiHwrKKAQvZ8mZaGy
-         MQRA==
-X-Gm-Message-State: AOAM531ul9nNiIzed6S2M9ILHQKsJw+mwbcFBiNx5PQ0mH1zdSmhkNO9
-        uL4wjo1KF79h3o+iwOJXlXFXjfix+Tg=
-X-Google-Smtp-Source: ABdhPJxy0CaISeM6CdrjriR2tHCcggBizb4CjlXhhHZhSveKdo8zbTNxIL9ffKugLohJkeQjMfUzMg==
-X-Received: by 2002:a63:2bc4:: with SMTP id r187mr588323pgr.131.1614215431851;
-        Wed, 24 Feb 2021 17:10:31 -0800 (PST)
+        bh=BFJnFYApsYRkDFhnCEthSONcLHEe8zfPB2HrT3stUO0=;
+        b=AU1SwotO4/7F1oCg9ehKRH71A8gry+JOORueQZVT9ydbo9e+jG3WytT/NgON5hH7g3
+         RBQPwRhDMDCwBrXvICFuetwawfK6kYu33kfsSOoC7i1OcUpE8+Vnc/pz9LKX0Ekpr6Lu
+         IDqBb90itp68iFkUX57MCZQsmhn9r5TeeIf1SDbOcLzByZVw38zv/gujh3zRSMvRJGfk
+         gsIPV6hNiJPPINyi5Ut+oZxwKfgyXTfuZHiy2lDthsOfOhp2rDoQzaPGNOROqHzXO3Iy
+         Qr8SOf0VruQLj4PTKUbkGZvAfAxxlrRJDPuGI43ND6czY7/AdhLQV7neq6GM6GoZmKGZ
+         3oNQ==
+X-Gm-Message-State: AOAM533d22jHeJyKM0Vti2fxJcaj3Zc6h2RnRWxXQXybd/OMLAaZ2yFt
+        CB8Qk6CDTx5kdFpmeC9+jftOGOcb3tU=
+X-Google-Smtp-Source: ABdhPJxn1cel41mrUct0ekjxXh5fIbpmhRXMMJiiHQP58K37aiUCMOVDW8dnlOgp9UtBcHvHzMrMsw==
+X-Received: by 2002:a63:e045:: with SMTP id n5mr648522pgj.220.1614215437002;
+        Wed, 24 Feb 2021 17:10:37 -0800 (PST)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z11sm3503010pgk.65.2021.02.24.17.10.27
+        by smtp.gmail.com with ESMTPSA id z11sm3503010pgk.65.2021.02.24.17.10.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 17:10:31 -0800 (PST)
+        Wed, 24 Feb 2021 17:10:36 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org (open list), stable@vger.kernel.org,
         gregkh@linuxfoundation.org, olteanv@gmail.com, sashal@kernel.org
-Subject: [PATCH stable-5.8.y] net: dsa: b53: Correct learning for standalone ports
-Date:   Wed, 24 Feb 2021 17:09:53 -0800
-Message-Id: <20210225010956.946545-5-f.fainelli@gmail.com>
+Subject: [PATCH stable-5.9.y] net: dsa: b53: Correct learning for standalone ports
+Date:   Wed, 24 Feb 2021 17:09:54 -0800
+Message-Id: <20210225010956.946545-6-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210225010956.946545-1-f.fainelli@gmail.com>
 References: <20210225010853.946338-1-f.fainelli@gmail.com>
@@ -90,7 +90,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
  3 files changed, 20 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 86869337223a..5559dec0fbca 100644
+index e731db900ee0..23dbb91946a7 100644
 --- a/drivers/net/dsa/b53/b53_common.c
 +++ b/drivers/net/dsa/b53/b53_common.c
 @@ -512,6 +512,19 @@ void b53_imp_vlan_setup(struct dsa_switch *ds, int cpu_port)
@@ -129,7 +129,7 @@ index 86869337223a..5559dec0fbca 100644
  }
  
  static void b53_enable_mib(struct b53_device *dev)
-@@ -1797,6 +1812,8 @@ int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br)
+@@ -1796,6 +1811,8 @@ int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br)
  	b53_write16(dev, B53_PVLAN_PAGE, B53_PVLAN_PORT_MASK(port), pvlan);
  	dev->ports[port].vlan_ctl_mask = pvlan;
  
@@ -138,7 +138,7 @@ index 86869337223a..5559dec0fbca 100644
  	return 0;
  }
  EXPORT_SYMBOL(b53_br_join);
-@@ -1844,6 +1861,7 @@ void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *br)
+@@ -1843,6 +1860,7 @@ void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *br)
  		vl->untag |= BIT(port) | BIT(cpu_port);
  		b53_set_vlan_entry(dev, pvid, vl);
  	}
@@ -159,7 +159,7 @@ index c90985c294a2..b2c539a42154 100644
  /*
   * Override Ports 0-7 State on devices with xMII interfaces (8 bit)
 diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 946e41f020a5..4d8f0c9c4d97 100644
+index 5ebff986a1ac..99402f769584 100644
 --- a/drivers/net/dsa/bcm_sf2.c
 +++ b/drivers/net/dsa/bcm_sf2.c
 @@ -172,23 +172,10 @@ static int bcm_sf2_port_setup(struct dsa_switch *ds, int port,
