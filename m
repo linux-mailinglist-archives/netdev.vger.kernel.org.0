@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F41D7324FCB
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 13:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BC53324FCC
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 13:20:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233232AbhBYMUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 07:20:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
+        id S232634AbhBYMUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 07:20:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232113AbhBYMTk (ORCPT
+        with ESMTP id S232582AbhBYMTk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 07:19:40 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E708BC061786
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:18:58 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id d13so1553667edp.4
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:18:58 -0800 (PST)
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77A4C061788
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:18:59 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id p1so2053106edy.2
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:18:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=32CvGTFCyhyxPOPb27peakSTgH6yE19KtOt/HWGcps8=;
-        b=rG1oqNmkhkBaRLITx/8V2aXkpL8fWBTRkTogdSoYcuGZv6swKr7GIqpiFFXSLh8XLE
-         W7WtyblkOfOxzrf251nyUtdGD169zkUxwx+vjSxGiuV9olWXyOkUsIwswb08hscxYJnA
-         GUTYs3Qi8FG9VGkz5P1FKn/6kXAX/FQLXrtjLZ+OzXY8ca7PO4ewwKv+XLK2EfexTiP4
-         db2cgiKyBpI+PJfRMWXer3nIiM71n8E9f1MtmeuNAlJIhkaRcJIWqGyQFL0OqGfh4U0G
-         1Ja0MweGX1gnXvSeF0iMVBYBseOne5PqUHH6t4dhCmq8T91acuwq2APmingfggD+FB5U
-         JrxQ==
+        bh=vX6Zg59YNlFpdKeQjTl4TDQ74EezT+nfmo/ntrby46Y=;
+        b=pJYLl2qKEosKzBeKvPMhpxDR0TjyFgG84dV+D2BNTFOz3Eozln3GRpuN7N/HXUfwZ1
+         ATH7MoWHOVFUXNk4fVnMP6GkXoCRk1YTFuuHsumJrDxYN/RLhk3VC/DzgSd3HQqKBPqy
+         0Q0PJJOz0zfav3l/D/IzoKoru8jVD0P44L/TjUZSkbPwFSeDmiSJlt/PjilWEcbJw5uP
+         ZLC0p46NKUDp11EmwoAPZU9kbaYhNtDwtBLVlqSW42qaJ91SxdbdZSR++qCwRbMRZGXn
+         Oi2aM8vX+6Kq1qGjNeg5DoQGuX+4GtbSAHVvnJm4hM1h7KkHIQ70LV8osePXTGDgbolc
+         i/FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=32CvGTFCyhyxPOPb27peakSTgH6yE19KtOt/HWGcps8=;
-        b=CSFJy7nvY0+fhMP7IOYEaWofg8du/vWOP0poPvsNT5hKQ0xyupY2Q/tIegVxoSrjB4
-         IDg6YTQerT4WCotplSdySFRtPO8oIEn/yx3eC8NIri69+pzaVYGanp0s/K2424Au6vs9
-         jUA7EUeQIts2F9TdeBMdRT7m+SUILyz74vvU4/inh60G8vy3URGoQ9b2TtY0+PD+CXbt
-         /xyEr0Se9kcIau2k8zvLaIaqNYs2JRUuZP2/j+Xy7ayrbLmPwNPRVLXia/CiFssO46Kk
-         fOJ1Q8Npvyi72Jg4X12zwQXrnsEr16crtN8MwnC8yFENwxEyBK+Iocy0c/RhKIQ+vzPz
-         w97Q==
-X-Gm-Message-State: AOAM532A6YCc9Ik81Fu3HaJ94AE+lGahRQEBSTWINdaIGDm0p0OtHeC0
-        /ZDJ4WzXcLiIkwRrcpGnQVI=
-X-Google-Smtp-Source: ABdhPJz14ReY5r5JEjFDXqyGCSWvsmiGFxQN9rwOfaVkvjpNraMGYEiaUW3tVLLad6qnnAMPApol/w==
-X-Received: by 2002:a05:6402:430c:: with SMTP id m12mr2615701edc.299.1614255537662;
-        Thu, 25 Feb 2021 04:18:57 -0800 (PST)
+        bh=vX6Zg59YNlFpdKeQjTl4TDQ74EezT+nfmo/ntrby46Y=;
+        b=LDjAdSFpcmcWulTvuk3Adrc83w4fPHjRuzOeCxncTyJiFumSt2UXl3+ALO+V63KoGQ
+         M7rZjqclUorTYoRjNxzpXPQ8t3exMvncJZFecWHw6dQiL4oA6YQ2xDsF9onJwKjwILCX
+         HF9aLKNkIDVgw4/URZHCZMYlQ/sP0btwFvgPBcyGr3Tr4o95CLaA7wDndYKJCAGa3ei8
+         ssHzGemH1XAwi75BeroFo9QfygTPc8w5JW2f88qq/de9aARLEhmwtg14LjuZZHJs2vgD
+         ZFb6QS5RUO9t1r0CMeSXPDNU1L+7sXCV1GtOwxNBB87Zq/mv8FVm/2BhVHlYYBssmaqZ
+         2fcw==
+X-Gm-Message-State: AOAM5333AU8J1K7kU3WS4AhIqIdMdraShQaLEQlabqR/USXmRByrqGNN
+        Fomb7dLlIq7gbGBIWGyQh6U=
+X-Google-Smtp-Source: ABdhPJylt7/C6ki5D0ViEGl1cLPYsr2qW1FR0xrNLL4Tj2C3vGYbwO/cBsom3ucUsy9EJkRWxbfYRg==
+X-Received: by 2002:a50:cf4e:: with SMTP id d14mr1134939edk.16.1614255538561;
+        Thu, 25 Feb 2021 04:18:58 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id x25sm3420925edv.65.2021.02.25.04.18.56
+        by smtp.gmail.com with ESMTPSA id x25sm3420925edv.65.2021.02.25.04.18.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 04:18:57 -0800 (PST)
+        Thu, 25 Feb 2021 04:18:58 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     Michael Walle <michael@walle.cc>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net 3/6] net: enetc: take the MDIO lock only once per NAPI poll cycle
-Date:   Thu, 25 Feb 2021 14:18:32 +0200
-Message-Id: <20210225121835.3864036-4-olteanv@gmail.com>
+Subject: [PATCH v2 net 4/6] net: enetc: fix incorrect TPID when receiving 802.1ad tagged packets
+Date:   Thu, 25 Feb 2021 14:18:33 +0200
+Message-Id: <20210225121835.3864036-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210225121835.3864036-1-olteanv@gmail.com>
 References: <20210225121835.3864036-1-olteanv@gmail.com>
@@ -68,162 +68,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The workaround for the ENETC MDIO erratum caused a performance
-degradation of 82 Kpps (seen with IP forwarding of two 1Gbps streams of
-64B packets). This is due to excessive locking and unlocking in the fast
-path, which can be avoided.
+When the enetc ports have rx-vlan-offload enabled, they report a TPID of
+ETH_P_8021Q regardless of what was actually in the packet. When
+rx-vlan-offload is disabled, packets have the proper TPID. Fix this
+inconsistency by finishing the TODO left in the code.
 
-By taking the MDIO read-side lock only once per NAPI poll cycle, we are
-able to regain 54 Kpps (65%) of the performance hit. The rest of the
-performance degradation comes from the TX data path, but unfortunately
-it doesn't look like we can optimize that away easily, even with
-netdev_xmit_more(), there just isn't any skb batching done, to help with
-taking the MDIO lock less often than once per packet.
-
-Fixes: fd5736bf9f23 ("enetc: Workaround for MDIO register access issue")
+Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet drivers")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
-None.
+The "priv" variable needs to be used regardless of CONFIG_FSL_ENETC_PTP_CLOCK
+now.
 
- drivers/net/ethernet/freescale/enetc/enetc.c  | 31 ++++++-------------
- .../net/ethernet/freescale/enetc/enetc_hw.h   |  2 ++
- 2 files changed, 11 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 34 ++++++++++++++-----
+ .../net/ethernet/freescale/enetc/enetc_hw.h   |  3 ++
+ 2 files changed, 29 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 43f0fae30080..eebe08a99270 100644
+index eebe08a99270..0064cfe5438e 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -281,6 +281,8 @@ static int enetc_poll(struct napi_struct *napi, int budget)
- 	int work_done;
- 	int i;
- 
-+	enetc_lock_mdio();
-+
- 	for (i = 0; i < v->count_tx_rings; i++)
- 		if (!enetc_clean_tx_ring(&v->tx_ring[i], budget))
- 			complete = false;
-@@ -291,8 +293,10 @@ static int enetc_poll(struct napi_struct *napi, int budget)
- 	if (work_done)
- 		v->rx_napi_work = true;
- 
--	if (!complete)
-+	if (!complete) {
-+		enetc_unlock_mdio();
- 		return budget;
-+	}
- 
- 	napi_complete_done(napi, work_done);
- 
-@@ -301,8 +305,6 @@ static int enetc_poll(struct napi_struct *napi, int budget)
- 
- 	v->rx_napi_work = false;
- 
--	enetc_lock_mdio();
--
- 	/* enable interrupts */
- 	enetc_wr_reg_hot(v->rbier, ENETC_RBIER_RXTIE);
- 
-@@ -327,8 +329,8 @@ static void enetc_get_tx_tstamp(struct enetc_hw *hw, union enetc_tx_bd *txbd,
+@@ -523,9 +523,8 @@ static void enetc_get_rx_tstamp(struct net_device *ndev,
+ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
+ 			       union enetc_rx_bd *rxbd, struct sk_buff *skb)
  {
- 	u32 lo, hi, tstamp_lo;
- 
--	lo = enetc_rd(hw, ENETC_SICTR0);
--	hi = enetc_rd(hw, ENETC_SICTR1);
-+	lo = enetc_rd_hot(hw, ENETC_SICTR0);
-+	hi = enetc_rd_hot(hw, ENETC_SICTR1);
- 	tstamp_lo = le32_to_cpu(txbd->wb.tstamp);
- 	if (lo <= tstamp_lo)
- 		hi -= 1;
-@@ -358,9 +360,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 	i = tx_ring->next_to_clean;
- 	tx_swbd = &tx_ring->tx_swbd[i];
- 
--	enetc_lock_mdio();
- 	bds_to_clean = enetc_bd_ready_count(tx_ring, i);
--	enetc_unlock_mdio();
- 
- 	do_tstamp = false;
- 
-@@ -403,8 +403,6 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 			tx_swbd = tx_ring->tx_swbd;
- 		}
- 
--		enetc_lock_mdio();
--
- 		/* BD iteration loop end */
- 		if (is_eof) {
- 			tx_frm_cnt++;
-@@ -415,8 +413,6 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 
- 		if (unlikely(!bds_to_clean))
- 			bds_to_clean = enetc_bd_ready_count(tx_ring, i);
--
--		enetc_unlock_mdio();
+-#ifdef CONFIG_FSL_ENETC_PTP_CLOCK
+ 	struct enetc_ndev_priv *priv = netdev_priv(rx_ring->ndev);
+-#endif
++
+ 	/* TODO: hashing */
+ 	if (rx_ring->ndev->features & NETIF_F_RXCSUM) {
+ 		u16 inet_csum = le16_to_cpu(rxbd->r.inet_csum);
+@@ -534,12 +533,31 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
+ 		skb->ip_summed = CHECKSUM_COMPLETE;
  	}
  
- 	tx_ring->next_to_clean = i;
-@@ -660,8 +656,6 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
- 		u32 bd_status;
- 		u16 size;
- 
--		enetc_lock_mdio();
--
- 		if (cleaned_cnt >= ENETC_RXBD_BUNDLE) {
- 			int count = enetc_refill_rx_ring(rx_ring, cleaned_cnt);
- 
-@@ -672,19 +666,15 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
- 
- 		rxbd = enetc_rxbd(rx_ring, i);
- 		bd_status = le32_to_cpu(rxbd->r.lstatus);
--		if (!bd_status) {
--			enetc_unlock_mdio();
-+		if (!bd_status)
- 			break;
--		}
- 
- 		enetc_wr_reg_hot(rx_ring->idr, BIT(rx_ring->index));
- 		dma_rmb(); /* for reading other rxbd fields */
- 		size = le16_to_cpu(rxbd->r.buf_len);
- 		skb = enetc_map_rx_buff_to_skb(rx_ring, i, size);
--		if (!skb) {
--			enetc_unlock_mdio();
-+		if (!skb)
- 			break;
--		}
- 
- 		enetc_get_offloads(rx_ring, rxbd, skb);
- 
-@@ -696,7 +686,6 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
- 
- 		if (unlikely(bd_status &
- 			     ENETC_RXBD_LSTATUS(ENETC_RXBD_ERR_MASK))) {
--			enetc_unlock_mdio();
- 			dev_kfree_skb(skb);
- 			while (!(bd_status & ENETC_RXBD_LSTATUS_F)) {
- 				dma_rmb();
-@@ -736,8 +725,6 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
- 
- 		enetc_process_skb(rx_ring, skb);
- 
--		enetc_unlock_mdio();
--
- 		napi_gro_receive(napi, skb);
- 
- 		rx_frm_cnt++;
+-	/* copy VLAN to skb, if one is extracted, for now we assume it's a
+-	 * standard TPID, but HW also supports custom values
+-	 */
+-	if (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_VLAN)
+-		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+-				       le16_to_cpu(rxbd->r.vlan_opt));
++	if (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_VLAN) {
++		__be16 tpid = 0;
++
++		switch (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_TPID) {
++		case 0:
++			tpid = htons(ETH_P_8021Q);
++			break;
++		case 1:
++			tpid = htons(ETH_P_8021AD);
++			break;
++		case 2:
++			tpid = htons(enetc_port_rd(&priv->si->hw,
++						   ENETC_PCVLANR1));
++			break;
++		case 3:
++			tpid = htons(enetc_port_rd(&priv->si->hw,
++						   ENETC_PCVLANR2));
++			break;
++		default:
++			break;
++		}
++
++		__vlan_hwaccel_put_tag(skb, tpid, le16_to_cpu(rxbd->r.vlan_opt));
++	}
++
+ #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
+ 	if (priv->active_offloads & ENETC_F_RX_TSTAMP)
+ 		enetc_get_rx_tstamp(rx_ring->ndev, rxbd, skb);
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-index c71fe8d751d5..8b54562f5da6 100644
+index 8b54562f5da6..a62604a1e54e 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-@@ -453,6 +453,8 @@ static inline u64 _enetc_rd_reg64_wa(void __iomem *reg)
- #define enetc_wr_reg(reg, val)		_enetc_wr_reg_wa((reg), (val))
- #define enetc_rd(hw, off)		enetc_rd_reg((hw)->reg + (off))
- #define enetc_wr(hw, off, val)		enetc_wr_reg((hw)->reg + (off), val)
-+#define enetc_rd_hot(hw, off)		enetc_rd_reg_hot((hw)->reg + (off))
-+#define enetc_wr_hot(hw, off, val)	enetc_wr_reg_hot((hw)->reg + (off), val)
- #define enetc_rd64(hw, off)		_enetc_rd_reg64_wa((hw)->reg + (off))
- /* port register accessors - PF only */
- #define enetc_port_rd(hw, off)		enetc_rd_reg((hw)->port + (off))
+@@ -172,6 +172,8 @@ enum enetc_bdr_type {TX, RX};
+ #define ENETC_PSIPMAR0(n)	(0x0100 + (n) * 0x8) /* n = SI index */
+ #define ENETC_PSIPMAR1(n)	(0x0104 + (n) * 0x8)
+ #define ENETC_PVCLCTR		0x0208
++#define ENETC_PCVLANR1		0x0210
++#define ENETC_PCVLANR2		0x0214
+ #define ENETC_VLAN_TYPE_C	BIT(0)
+ #define ENETC_VLAN_TYPE_S	BIT(1)
+ #define ENETC_PVCLCTR_OVTPIDL(bmp)	((bmp) & 0xff) /* VLAN_TYPE */
+@@ -570,6 +572,7 @@ union enetc_rx_bd {
+ #define ENETC_RXBD_LSTATUS(flags)	((flags) << 16)
+ #define ENETC_RXBD_FLAG_VLAN	BIT(9)
+ #define ENETC_RXBD_FLAG_TSTMP	BIT(10)
++#define ENETC_RXBD_FLAG_TPID	GENMASK(1, 0)
+ 
+ #define ENETC_MAC_ADDR_FILT_CNT	8 /* # of supported entries per port */
+ #define EMETC_MAC_ADDR_FILT_RES	3 /* # of reserved entries at the beginning */
 -- 
 2.25.1
 
