@@ -2,83 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A613248E5
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 03:34:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CED3248FC
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 03:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbhBYCeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 21:34:22 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:56948 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229722AbhBYCeV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 21:34:21 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lF6TC-008L2f-F5; Thu, 25 Feb 2021 03:33:38 +0100
-Date:   Thu, 25 Feb 2021 03:33:38 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH V1 net-next 0/3] net: stmmac: implement clocks
-Message-ID: <YDcMgr2rvcFvs746@lunn.ch>
-References: <20210223104818.1933-1-qiangqing.zhang@nxp.com>
- <20210223084503.34ae93f7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DB8PR04MB6795925488C63791C2BD588EE69F9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210223175441.2a1b86f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YDZOMpUYZrijdFli@lunn.ch>
- <DB8PR04MB6795FAE4C1736AABDCA75FA7E69E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S236863AbhBYCtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 21:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234143AbhBYCtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 21:49:24 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F0CC061574;
+        Wed, 24 Feb 2021 18:48:43 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id r23so4830744ljh.1;
+        Wed, 24 Feb 2021 18:48:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q4pNbsL3f3M5e+tpQcGLyhHs/pFg5rDTg3Nd6Jf64es=;
+        b=evrw97IH7xRofQ7LtVoGUGx3oc9qKGDAZvh0OnfKtgeV4fXhbOzeUwhudAuYd6Wn9e
+         jvnaV7YjqLR2C5d5EkJP1lo9Ybq0pFyUgBBB2a/hGIWAeboRxiagkKMxgmKyA2rhlOR2
+         KPqHDrPuca2toqP3fhe7ImdtjWbThbFzoNoO90efjrrX51nkd5erbMdDD09vFYtB4fpH
+         3Mmp4dYEC+DoOJGuqRwFaaOLcTr+2YVKBO+cIDtqf8cAuK37PdvV+TtzEl3s2Dz3l84G
+         Q4+f6+e7OI3L9Ng/z4aAyOh0BxEo/7qp7Up6DiD5+rdDV5IaHb/usp+v2gu/BIlwFfHH
+         Tkvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q4pNbsL3f3M5e+tpQcGLyhHs/pFg5rDTg3Nd6Jf64es=;
+        b=GueTeGXMsofpW4FqoiDT15hyBBi3kaa8x3wbisECKWxfNQDbTtMyVrNYSghswxE76V
+         01ADYYdLaBYs+uanYrhZXref+h1HdqQZJy5FXdwAAe/q9aXuPhXD4SXBYwA25BwE6YHK
+         1RcZf4IM3zn++bl/QcfjjoIiMn8gfK4TgJlOQEnP1zXF7HEfXLBhftKEZ0plJLLr0/V9
+         wShbeE4LTg23+m3eG124pBBhU8x3U/dMKuSGtoydiJqocPSxLNww2Ddal1wIzUXDRXOW
+         4NvwLUNwuIesHRjPi/SgkUneomLYhyDkxkcFtK1uiq6WQSjXkHkdH3Q6YP4sbraFcuYP
+         Aa2w==
+X-Gm-Message-State: AOAM533vUKBHoGVAA+Qq+meqpDEAHtI4Q+c7X/nryK4chFJlwT9CW1A7
+        qJ8pcsmLF0a8LyYmODGG0cjgNlPxGRAD2FPWzfxn3wLX5Qs=
+X-Google-Smtp-Source: ABdhPJxCVO5mB5/Rdjt53vaxTsyeSUgYidJU1yjvzMkTvS932v+Va9dSnxSWzTxiL8xH7IDvSOBVN7zzCSPScFuEj6A=
+X-Received: by 2002:a2e:8357:: with SMTP id l23mr428915ljh.116.1614221322316;
+ Wed, 24 Feb 2021 18:48:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6795FAE4C1736AABDCA75FA7E69E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210224125026.481804-1-sashal@kernel.org> <20210224125026.481804-5-sashal@kernel.org>
+In-Reply-To: <20210224125026.481804-5-sashal@kernel.org>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 24 Feb 2021 23:48:31 -0300
+Message-ID: <CAOMZO5Axfa0yLtfk-KAaxr40XkuMxMS8Qzf2-JyP9R5PN8PMvQ@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.11 05/67] can: flexcan: add CAN wakeup function
+ for i.MX8QM
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew,
-> 
+Hi Sasha,
 
-> I don't have experience with Ethernet switch, according to your
-> points, you mean we can connect STMMAC to an Ethernet switch, and
-> then Ethernet switch managed STMMAC by the MDIO bus but without
-> checking whether STMMAC interface is opened or not, so STMMAC needs
-> clocks for MDIO even interface is closed, right?
+On Wed, Feb 24, 2021 at 10:35 PM Sasha Levin <sashal@kernel.org> wrote:
+>
+> From: Joakim Zhang <qiangqing.zhang@nxp.com>
+>
+> [ Upstream commit 812f0116c66a3ebaf0b6062226aa85574dd79f67 ]
+>
+> The System Controller Firmware (SCFW) is a low-level system function
+> which runs on a dedicated Cortex-M core to provide power, clock, and
+> resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
+> (QM, QP), and i.MX8QX (QXP, DX). SCU driver manages the IPC interface
+> between host CPU and the SCU firmware running on M4.
+>
+> For i.MX8QM, stop mode request is controlled by System Controller Unit(SCU)
+> firmware, this patch introduces FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW quirk
+> for this function.
+>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> Link: https://lore.kernel.org/r/20201106105627.31061-6-qiangqing.zhang@nxp.com
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 
-Correct. The MDIO bus has a different life cycle to the MAC. If any of
-stmmac_xgmac2_mdio_read(), stmmac_xgmac2_mdio_write(),
-stmmac_mdio_read(), and stmmac_mdio_write() need clocks ticking, you
-need to ensure the clock is ticking, because these functions can be
-called while the interface is not opened.
+This is adding a new feature and not fixing a bug.
 
-> > You said you copied the FEC driver. Take a look at that, it was initially broken in
-> > this way, and i needed to extend it when i got a board with an Ethernet switch
-> > attached to the FEC.
-> 
-
-> Could you point me how to implement clocks management to cover above
-> Ethernet switch case? Or can we upstream this first and then fix it
-> later for such case?
-
-I actually got is wrong on the first attempt. So you need to look at:
-
-42ea4457ae net: fec: normalize return value of pm_runtime_get_sync() in MDIO write
-14d2b7c1a9 net: fec: fix initial runtime PM refcount
-8fff755e9f net: fec: Ensure clocks are enabled while using mdio bus
-
-And no, you cannot fix it later, because your patches potentially
-break existing systems using an Ethernet switch. See:
-
-ommit da29f2d84bd10234df570b7f07cbd0166e738230
-Author: Jose Abreu <Jose.Abreu@synopsys.com>
-Date:   Tue Jan 7 13:35:42 2020 +0100
-
-    net: stmmac: Fixed link does not need MDIO Bus
-    
-    When using fixed link we don't need the MDIO bus support.
-
-...
-    Tested-by: Florian Fainelli <f.fainelli@gmail> # Lamobo R1 (fixed-link + MDIO sub node for roboswitch).
-
-So there are boards which make use of a switch and MDIO. Florian might
-however be able to run tests for you, if you ask him.
-
-   Andrew
+Why does it qualify for stable inclusion?
