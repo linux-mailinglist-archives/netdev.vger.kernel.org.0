@@ -2,60 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FDFD325290
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AAB53252A1
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:45:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231950AbhBYPkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 10:40:14 -0500
-Received: from mx2.suse.de ([195.135.220.15]:38182 "EHLO mx2.suse.de"
+        id S233077AbhBYPoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 10:44:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232403AbhBYPjs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 10:39:48 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1614267541; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NFd034RDEJYXcq9r3tELC5CypWrYDcd0d0knOZGlyxM=;
-        b=XgbQ5MYSf2y5OQAreaPj8wbV/1arB81ci6OiZNQSw0iecmcn9PeJAz3pxsL+lARSo7YFil
-        FFLJYih+iUjnSrwCloncsniCXHAee0dIo8SgjzscYwdffwufiCiPBmbI5y8vuQWuYLhWUl
-        +WdMBDaNIfKT8sciziRQSdpj+YQekDk=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 20A1BB10B;
-        Thu, 25 Feb 2021 15:39:01 +0000 (UTC)
-From:   Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH] xen-netback: use local var in xenvif_tx_check_gop() instead
- of re-calculating
-To:     Wei Liu <wl@xen.org>, Paul Durrant <paul@xen.org>
-Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <6604dec2-4460-3339-f797-e5f8a7df848f@suse.com>
-Date:   Thu, 25 Feb 2021 16:39:01 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S233007AbhBYPoA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 10:44:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B97864F1A;
+        Thu, 25 Feb 2021 15:43:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614267797;
+        bh=G8l3bZzpQKWdq/8HOkPtO+eDiTgygJ119U3fIxDi1vw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Dl5qQc0/QvST8TTSm9HZGTgDNhYqVrHHvdJTfPmhpfe/m6jPoDmonkiuikGGWVTzI
+         zkObnC2tgc5J23DrWY2ILtSZJHZUi5eShfWEmvyIWw+unxffwT5Gucwg2PqCPyTYsN
+         ySMAwdMdMGzvbitfiYkp3NA0B6fkdp24+rI13+NyadkwsJF4HXgH8xBIqmG/AKGPCA
+         RKTUKECvVR2NMugWboiXrKXy23vjs8qoJB5sxz/i1XYyJUt6oJ1LAetibm2k8bnD/S
+         uemLMdSx/Oj1RJCBJCqcA6NLWrINRB0Ael9hk/Ka5IkdJQs5RAZa7bng27YLRj0Fuk
+         HEtny6NAWX14Q==
+Received: by mail-ot1-f43.google.com with SMTP id s3so6073188otg.5;
+        Thu, 25 Feb 2021 07:43:17 -0800 (PST)
+X-Gm-Message-State: AOAM531oPWnEaElnmsjjKYl8Yrr9MTSRkF7QzAsTxSTWNd41GF3xr7rB
+        LUndmBW46atltPceQRtXK6rJWYrzFQtV63aD4+8=
+X-Google-Smtp-Source: ABdhPJy+ZUxf9o96g3cbdfc3BogkVmXsEengjnTbrzhUkL0Cmrc4xjOm8EW7vW3365FI159lULO0v0SjNdvamoGZQl4=
+X-Received: by 2002:a9d:7f11:: with SMTP id j17mr2861108otq.251.1614267796208;
+ Thu, 25 Feb 2021 07:43:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210225143910.3964364-1-arnd@kernel.org> <20210225143910.3964364-2-arnd@kernel.org>
+ <20210225144341.xgm65mqxuijoxplv@skbuf> <CAK8P3a0W3_SvWyvWZnMU=QoqCDe5btL3O7PHUX8EnZVbifA4Fg@mail.gmail.com>
+ <CAK8P3a1gQgtWznnqKDdJJK2Vxf25Yb_Q09tX0UvcfopKN+x0jw@mail.gmail.com> <20210225150715.2udnpgu3rs6v72wg@skbuf>
+In-Reply-To: <20210225150715.2udnpgu3rs6v72wg@skbuf>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 25 Feb 2021 16:43:00 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1SeJNOs6G2dGZAP0FwfJRfhgv9UZZssZtLWefpOBCHPQ@mail.gmail.com>
+Message-ID: <CAK8P3a1SeJNOs6G2dGZAP0FwfJRfhgv9UZZssZtLWefpOBCHPQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] net: dsa: tag_ocelot_8021q: fix driver dependency
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-shinfo already holds the result of skb_shinfo(skb) at this point - no
-need to re-invoke the construct even twice.
+On Thu, Feb 25, 2021 at 4:07 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Thu, Feb 25, 2021 at 03:49:08PM +0100, Arnd Bergmann wrote:
+> > On Thu, Feb 25, 2021 at 3:47 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > > On Thu, Feb 25, 2021 at 3:43 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > > > On Thu, Feb 25, 2021 at 03:38:32PM +0100, Arnd Bergmann wrote:
+> > > > > From: Arnd Bergmann <arnd@arndb.de>
+> > > > >
+> > > > > When the ocelot driver code is in a library, the dsa tag
+> >
+> > I see the problem now, I should have written 'loadable module', not 'library'.
+> > Let me know if I should resend with a fixed changelog text.
+>
+> Ah, ok, things clicked into place now that you said 'module'.
+> So basically, your patch is the standard Kconfig incantation for 'if the
+> ocelot switch lib is built as module, build the tagger as module too',
+> plus some extra handling to allow NET_DSA_TAG_OCELOT_8021Q to still be y
+> or m when COMPILE_TEST is enabled, but it will be compiled in a
+> reduced-functionality mode, without MSCC_OCELOT_SWITCH_LIB, therefore
+> without PTP.
+>
+> Do I get things right? Sorry, Kconfig is a very strange language.
 
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
+Yes, that's basically correct. I tried to express it in Kconfig the way
+I would explain it in English, which means it there are two options:
 
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -557,8 +557,8 @@ check_frags:
- 	}
- 
- 	if (skb_has_frag_list(skb) && !first_shinfo) {
--		first_shinfo = skb_shinfo(skb);
--		shinfo = skb_shinfo(skb_shinfo(skb)->frag_list);
-+		first_shinfo = shinfo;
-+		shinfo = skb_shinfo(shinfo->frag_list);
- 		nr_frags = shinfo->nr_frags;
- 
- 		goto check_frags;
+a) If MSCC_OCELOT_SWITCH_LIB is enabled (y or m) there is
+    a direct dependency, so NET_DSA_TAG_OCELOT_8021Q cannot
+    be built-in if MSCC_OCELOT_SWITCH_LIB=m
+b) When compile-testing *and* MSCC_OCELOT_SWITCH_LIB is fully
+    disabled, NET_DSA_TAG_OCELOT_8021Q can be anything (y/m/n)
+
+As a side-effect, this also means that if we are not compile-testing
+and MSCC_OCELOT_SWITCH_LIB is disabled, the option is
+hdden.
+
+         Arnd.
