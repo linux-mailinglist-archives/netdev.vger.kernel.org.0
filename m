@@ -2,180 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B3853256CF
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 20:37:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C7CB325746
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 21:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234392AbhBYTg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 14:36:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41439 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234880AbhBYTfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 14:35:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614281622;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=J8XckA0wuy/u0dP7Chp3yO58HxOiKtqQRaFNCMmqR6E=;
-        b=c/7Oyf6DDTlSYqAFhYywOP3Z6B6pWb2uxPWiN474Iv88kQD0zkNb4O4j9b+MGuKwVKHRfl
-        tzjnABCtWIMRgSLJkghOBCKe9CjMiXdpwSpgazHUxlDZot+ns8VL8spNYeWCji2oaBgk3D
-        i5MiKHdhjGBZrVKGfFAtNHTZP7opjxw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-577-B3eQ4-JXPrKSOcQ-VLiBmg-1; Thu, 25 Feb 2021 14:33:40 -0500
-X-MC-Unique: B3eQ4-JXPrKSOcQ-VLiBmg-1
-Received: by mail-ed1-f69.google.com with SMTP id u1so1239474edt.4
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 11:33:40 -0800 (PST)
+        id S233866AbhBYUGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 15:06:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232403AbhBYUF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 15:05:58 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EDDC061756
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 12:05:18 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id e10so6239782wro.12
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 12:05:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=u53AKuuGPQ1MT+gg0CiavQ8xjrangqWYPqK8oHjadPQ=;
+        b=f7PV3zR5wYm1EpHIRdUM+/pQkJboq9tgPAdVsvJtnGNXEaVIy6ugWG8nV1y8KdlkN/
+         8o2yIHyoBxidsBwuiLDxCi3l++6Te+rQZ/mNDCvI9ylUi+Mj9Yn39jIVdHN2fUunWqxP
+         7HeN33XV5K5xNccNtFe9vrOS/P2S9lJtwvLNZI6dolkw7Rj+sCXD1BQ6RQxvJDyPvt54
+         /9CLsL6DGUDOMWZGFobp1xXjXDW+qK2M27Rk1ZxlpwVWNqDa+/6SHFwJ08SHZletMoRw
+         9lRmzvL5Y8B0R1ipB+3HTm2VqENmJ1jP/Lc1OaPAQrus0TMwtZdlJKVPgBCRaHx+21ye
+         5EGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=J8XckA0wuy/u0dP7Chp3yO58HxOiKtqQRaFNCMmqR6E=;
-        b=LKl3Y+Pai6nxYQa+6LA+8YgebkzwGyrOQTENn4v95pePbheGg+JiPXvDnrg+o+DzxY
-         KvUjwGDBooRpSgwF1TUenAKDfiKZt17bP+NTSGBMvj5VO4uaar1rk67FMRsfIevkJ/Fs
-         lilSOkyq+pNqsoI11W2Kc3cvR/wt5mA3LbEEnfHlDonVQhvUU/lkDKw1uieOF5WMXIdQ
-         3KhnVzjqj/6f3QKtyvW+MGx7Lp8RrU8Yaa639G2H8VPBpOMBgYJDaHqFfySmu19rrC3p
-         mMVaEOCJVDKydeM2nvPypCAp43uIu5KAOtYvHNV2/wNpjfWzowYIUgjtzkfHZ60uZAVS
-         cjHw==
-X-Gm-Message-State: AOAM5314mNmAG/SPsf7+7Lu/Ce/062VOMVljibkZ/LrUnTeN9uR/n4Oh
-        GfgP87c7iBgleZD3kBBKQedat7qP8ZOQvrmldp5lA5DE4V7B/wtzRT4IoinffECe3cdfCatJNIh
-        i1/1FB7dgTT5Le1j2
-X-Received: by 2002:a17:907:2113:: with SMTP id qn19mr4214685ejb.98.1614281619061;
-        Thu, 25 Feb 2021 11:33:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz2dN9ZzfgwQ9M65gsI//PlQJrl1Zvqctla4lD8bDjF0K4fbGkjn6jK5ahnGYupXSe2W6FPQw==
-X-Received: by 2002:a17:907:2113:: with SMTP id qn19mr4214672ejb.98.1614281618920;
-        Thu, 25 Feb 2021 11:33:38 -0800 (PST)
-Received: from redhat.com (212.116.168.114.static.012.net.il. [212.116.168.114])
-        by smtp.gmail.com with ESMTPSA id ca26sm4215205edb.4.2021.02.25.11.33.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 11:33:38 -0800 (PST)
-Date:   Thu, 25 Feb 2021 14:33:33 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        abaci-bugfix@linux.alibaba.com, abaci@linux.alibaba.com,
-        anders.roxell@linaro.org, arnd@arndb.de,
-        aruna.ramakrishna@oracle.com, colin.xu@intel.com, david@redhat.com,
-        dongli.zhang@oracle.com, edumazet@google.com, elic@nvidia.com,
-        gustavoars@kernel.org, jasowang@redhat.com, joe.jin@oracle.com,
-        joseph.qi@linux.alibaba.com, linux@roeck-us.net,
-        mathias.crombez@faurecia.com, mst@redhat.com,
-        naresh.kamboju@linaro.org, parav@nvidia.com, sgarzare@redhat.com,
-        stable@vger.kernel.org, syzkaller@googlegroups.com,
-        tiantao6@hisilicon.com, vasyl.vavrychuk@opensynergy.com,
-        xianting_tian@126.com
-Subject: [GIT PULL] virtio: features, fixes
-Message-ID: <20210225143333-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=u53AKuuGPQ1MT+gg0CiavQ8xjrangqWYPqK8oHjadPQ=;
+        b=AVr433nBmO1MJYnr0o2M1kjnXlGMavohcyd0qKzjApGFvVn724pjl6KtsOQ3IHGdK9
+         Z8n/HBuxv2HnHj/1QUKSSklwWvzldSdpRTeXyO9Y8f6zl/aLVSbl3dYl/6mtDfHJsgbs
+         jMFQBm+//drR2IpAlQMDMr00cBwBYXqlS+qVxFicyw10QLzQde4AF5DavsmlAF7t10XC
+         s14k11092fxhOy6nzwgawUu0BpWD67cqgzk6YSkYQhnYH8iK1tDQPYUEJ6/n33JRZujk
+         L1+y/ZcTwHy1yq1qGg1Wf+TGvn2b2fb6pqPSMX35olBPZm46BSx0EG/K9PuuvBWpiZhk
+         K/ug==
+X-Gm-Message-State: AOAM530aszU5SLgCdCkjDW8orfPYXtDViU8fUjm2XCJWLQYYw1tqSvUA
+        Gdp4hjkAqNOPjYFnNy3j354=
+X-Google-Smtp-Source: ABdhPJz0Isbggjzc/RPV10rh8YrDlxHiNtaXjVVyqBMh221JqelyWgiXvkCNgJTjB5jHDtR1xk2PWQ==
+X-Received: by 2002:a5d:4cd1:: with SMTP id c17mr4081978wrt.168.1614283516874;
+        Thu, 25 Feb 2021 12:05:16 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f39:5b00:3596:71e6:32b6:12b7? (p200300ea8f395b00359671e632b612b7.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:3596:71e6:32b6:12b7])
+        by smtp.googlemail.com with ESMTPSA id h17sm9339931wrt.74.2021.02.25.12.05.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Feb 2021 12:05:16 -0800 (PST)
+To:     =?UTF-8?Q?Daniel_Gonz=c3=a1lez_Cabanelas?= <dgcbueu@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org,
+        =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>
+References: <2323124.5UR7tLNZLG@tool>
+ <9d9f3077-9c5c-e7bc-0c77-8e8353be7732@gmail.com>
+ <cf8ea0b6-11ac-3dbd-29a1-337c06d9a991@gmail.com>
+ <CABwr4_vwTiFzSdxu-GoON2HHS1pjyiv0PFS-pTbCEMT4Uc4OvA@mail.gmail.com>
+ <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
+ <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
+Message-ID: <7fc4933f-36d4-99dc-f968-9ca3b8758a9b@gmail.com>
+Date:   Thu, 25 Feb 2021 21:05:07 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+In-Reply-To: <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are a couple new drivers and support for the new management
-interface for mlx under review now. I figured I'll send them separately
-if review is done in time, lots of people are waiting for the vdpa tool
-patches to I want to make sure they make this release.
+On 25.02.2021 17:36, Daniel González Cabanelas wrote:
+> El jue, 25 feb 2021 a las 8:22, Heiner Kallweit
+> (<hkallweit1@gmail.com>) escribió:
+>>
+>> On 25.02.2021 00:54, Daniel González Cabanelas wrote:
+>>> El mié, 24 feb 2021 a las 23:01, Florian Fainelli
+>>> (<f.fainelli@gmail.com>) escribió:
+>>>>
+>>>>
+>>>>
+>>>> On 2/24/2021 1:44 PM, Heiner Kallweit wrote:
+>>>>> On 24.02.2021 16:44, Daniel González Cabanelas wrote:
+>>>>>> The current bcm63xx_enet driver doesn't asign the internal phy IRQ. As a
+>>>>>> result of this it works in polling mode.
+>>>>>>
+>>>>>> Fix it using the phy_device structure to assign the platform IRQ.
+>>>>>>
+>>>>>> Tested under a BCM6348 board. Kernel dmesg before the patch:
+>>>>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
+>>>>>>               BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01, irq=POLL)
+>>>>>>
+>>>>>> After the patch:
+>>>>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
+>>>>>>               BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01, irq=17)
+>>>>>>
+>>>>>> Pluging and uplugging the ethernet cable now generates interrupts and the
+>>>>>> PHY goes up and down as expected.
+>>>>>>
+>>>>>> Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+>>>>>> ---
+>>>>>> changes in V2:
+>>>>>>   - snippet moved after the mdiobus registration
+>>>>>>   - added missing brackets
+>>>>>>
+>>>>>>  drivers/net/ethernet/broadcom/bcm63xx_enet.c | 13 +++++++++++--
+>>>>>>  1 file changed, 11 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+>>>>>> index fd876721316..dd218722560 100644
+>>>>>> --- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+>>>>>> +++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+>>>>>> @@ -1818,10 +1818,19 @@ static int bcm_enet_probe(struct platform_device *pdev)
+>>>>>>               * if a slave is not present on hw */
+>>>>>>              bus->phy_mask = ~(1 << priv->phy_id);
+>>>>>>
+>>>>>> -            if (priv->has_phy_interrupt)
+>>>>>> +            ret = mdiobus_register(bus);
+>>>>>> +
+>>>>>> +            if (priv->has_phy_interrupt) {
+>>>>>> +                    phydev = mdiobus_get_phy(bus, priv->phy_id);
+>>>>>> +                    if (!phydev) {
+>>>>>> +                            dev_err(&dev->dev, "no PHY found\n");
+>>>>>> +                            goto out_unregister_mdio;
+>>>>>> +                    }
+>>>>>> +
+>>>>>>                      bus->irq[priv->phy_id] = priv->phy_interrupt;
+>>>>>> +                    phydev->irq = priv->phy_interrupt;
+>>>>>> +            }
+>>>>>>
+>>>>>> -            ret = mdiobus_register(bus);
+>>>>>
+>>>>> You shouldn't have to set phydev->irq, this is done by phy_device_create().
+>>>>> For this to work bus->irq[] needs to be set before calling mdiobus_register().
+>>>>
+>>>> Yes good point, and that is what the unchanged code does actually.
+>>>> Daniel, any idea why that is not working?
+>>>
+>>> Hi Florian, I don't know. bus->irq[] has no effect, only assigning the
+>>> IRQ through phydev->irq works.
+>>>
+>>> I can resend the patch  without the bus->irq[] line since it's
+>>> pointless in this scenario.
+>>>
+>>
+>> It's still an ugly workaround and a proper root cause analysis should be done
+>> first. I can only imagine that phydev->irq is overwritten in phy_probe()
+>> because phy_drv_supports_irq() is false. Can you please check whether
+>> phydev->irq is properly set in phy_device_create(), and if yes, whether
+>> it's reset to PHY_POLL in phy_probe()?.
+>>
+> 
+> Hi Heiner, I added some kernel prints:
+> 
+> [    2.712519] libphy: Fixed MDIO Bus: probed
+> [    2.721969] =======phy_device_create===========
+> [    2.726841] phy_device_create: dev->irq = 17
+> [    2.726841]
+> [    2.832620] =======phy_probe===========
+> [    2.836846] phy_probe: phydev->irq = 17
+> [    2.840950] phy_probe: phy_drv_supports_irq = 0, phy_interrupt_is_valid = 1
+> [    2.848267] phy_probe: phydev->irq = -1
+> [    2.848267]
+> [    2.854059] =======phy_probe===========
+> [    2.858174] phy_probe: phydev->irq = -1
+> [    2.862253] phy_probe: phydev->irq = -1
+> [    2.862253]
+> [    2.868121] libphy: bcm63xx_enet MII bus: probed
+> [    2.873320] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
+> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
+> irq=POLL)
+> 
+> Currently using kernel 5.4.99. I still have no idea what's going on.
+> 
+Thanks for debugging. This confirms my assumption that the interrupt
+is overwritten in phy_probe(). I'm just scratching my head how
+phy_drv_supports_irq() can return 0. In 5.4.99 it's defined as:
 
-The following changes since commit f40ddce88593482919761f74910f42f4b84c004b:
+static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+{
+	return phydrv->config_intr && phydrv->ack_interrupt;
+}
 
-  Linux 5.11 (2021-02-14 14:32:24 -0800)
+And that's the PHY driver:
 
-are available in the Git repository at:
+static struct phy_driver bcm63xx_driver[] = {
+{
+	.phy_id		= 0x00406000,
+	.phy_id_mask	= 0xfffffc00,
+	.name		= "Broadcom BCM63XX (1)",
+	/* PHY_BASIC_FEATURES */
+	.flags		= PHY_IS_INTERNAL,
+	.config_init	= bcm63xx_config_init,
+	.ack_interrupt	= bcm_phy_ack_intr,
+	.config_intr	= bcm63xx_config_intr,
+}
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+So both callbacks are set. Can you extend your debugging and check
+in phy_drv_supports_irq() which of the callbacks is missing?
 
-for you to fetch changes up to 16c10bede8b3d8594279752bf53153491f3f944f:
+Last but not least: Do you use a mainline kernel, or is it maybe
+a modified downstream kernel? In the latter case, please check
+in your kernel sources whether both callbacks are set.
 
-  virtio-input: add multi-touch support (2021-02-23 07:52:59 -0500)
 
-----------------------------------------------------------------
-virtio: features, fixes
 
-new vdpa features to allow creation and deletion of new devices
-virtio-blk support per-device queue depth
-fixes, cleanups all over the place
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Colin Xu (1):
-      virtio_input: Prevent EV_MSC/MSC_TIMESTAMP loop storm for MT.
-
-Dongli Zhang (1):
-      vhost scsi: alloc vhost_scsi with kvzalloc() to avoid delay
-
-Gustavo A. R. Silva (1):
-      virtio_net: Fix fall-through warnings for Clang
-
-Jason Wang (17):
-      virtio-pci: do not access iomem via struct virtio_pci_device directly
-      virtio-pci: split out modern device
-      virtio-pci-modern: factor out modern device initialization logic
-      virtio-pci-modern: introduce vp_modern_remove()
-      virtio-pci-modern: introduce helper to set config vector
-      virtio-pci-modern: introduce helpers for setting and getting status
-      virtio-pci-modern: introduce helpers for setting and getting features
-      virtio-pci-modern: introduce vp_modern_generation()
-      virtio-pci-modern: introduce vp_modern_set_queue_vector()
-      virtio-pci-modern: introduce vp_modern_queue_address()
-      virtio-pci-modern: introduce helper to set/get queue_enable
-      virtio-pci-modern: introduce helper for setting/geting queue size
-      virtio-pci-modern: introduce helper for getting queue nums
-      virtio-pci-modern: introduce helper to get notification offset
-      virito-pci-modern: rename map_capability() to vp_modern_map_capability()
-      virtio-pci: introduce modern device module
-      virtio_vdpa: don't warn when fail to disable vq
-
-Jiapeng Zhong (1):
-      virtio-mem: Assign boolean values to a bool variable
-
-Joseph Qi (1):
-      virtio-blk: support per-device queue depth
-
-Mathias Crombez (1):
-      virtio-input: add multi-touch support
-
-Parav Pandit (6):
-      vdpa_sim_net: Make mac address array static
-      vdpa: Extend routine to accept vdpa device name
-      vdpa: Define vdpa mgmt device, ops and a netlink interface
-      vdpa: Enable a user to add and delete a vdpa device
-      vdpa: Enable user to query vdpa device info
-      vdpa_sim_net: Add support for user supported devices
-
-Stefano Garzarella (1):
-      vdpa/mlx5: fix param validation in mlx5_vdpa_get_config()
-
-Xianting Tian (1):
-      virtio_mmio: fix one typo
-
- drivers/block/virtio_blk.c             |  11 +-
- drivers/net/virtio_net.c               |   1 +
- drivers/vdpa/Kconfig                   |   1 +
- drivers/vdpa/ifcvf/ifcvf_main.c        |   2 +-
- drivers/vdpa/mlx5/net/mlx5_vnet.c      |   4 +-
- drivers/vdpa/vdpa.c                    | 503 ++++++++++++++++++++++++++-
- drivers/vdpa/vdpa_sim/vdpa_sim.c       |   3 +-
- drivers/vdpa/vdpa_sim/vdpa_sim.h       |   2 +
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c   | 100 ++++--
- drivers/vhost/scsi.c                   |   9 +-
- drivers/virtio/Kconfig                 |   9 +
- drivers/virtio/Makefile                |   1 +
- drivers/virtio/virtio_input.c          |  26 +-
- drivers/virtio/virtio_mem.c            |   2 +-
- drivers/virtio/virtio_mmio.c           |   2 +-
- drivers/virtio/virtio_pci_common.h     |  22 +-
- drivers/virtio/virtio_pci_modern.c     | 504 ++++-----------------------
- drivers/virtio/virtio_pci_modern_dev.c | 599 +++++++++++++++++++++++++++++++++
- drivers/virtio/virtio_vdpa.c           |   3 +-
- include/linux/vdpa.h                   |  44 ++-
- include/linux/virtio_pci_modern.h      | 111 ++++++
- include/uapi/linux/vdpa.h              |  40 +++
- 22 files changed, 1492 insertions(+), 507 deletions(-)
- create mode 100644 drivers/virtio/virtio_pci_modern_dev.c
- create mode 100644 include/linux/virtio_pci_modern.h
- create mode 100644 include/uapi/linux/vdpa.h
+>> On which kernel version do you face this problem?
+>>
+> The kernel version 4.4 works ok. The minimum version where I found the
+> problem were the kernel 4.9.111, now using 5.4. And 5.10 also tested.
+> 
+> Regards
+> Daniel
+> 
+>>> Regards
+>>>> --
+>>>> Florian
+>>
 
