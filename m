@@ -2,79 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0563254B0
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B34E3254B9
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232447AbhBYRmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 12:42:11 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:45801 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232103AbhBYRlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 12:41:55 -0500
-Received: from 1-171-225-221.dynamic-ip.hinet.net ([1.171.225.221] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1lFKdQ-0007iq-Oa; Thu, 25 Feb 2021 17:41:09 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     bhelgaas@google.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org (open list:REALTEK WIRELESS DRIVER
-        (rtw88)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list),
-        linux-pci@vger.kernel.org (open list:PCI SUBSYSTEM)
-Subject: [PATCH 3/3] PCI: Convert rtw88 power cycle quirk to shutdown quirk
-Date:   Fri, 26 Feb 2021 01:40:40 +0800
-Message-Id: <20210225174041.405739-3-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210225174041.405739-1-kai.heng.feng@canonical.com>
-References: <20210225174041.405739-1-kai.heng.feng@canonical.com>
+        id S231960AbhBYRsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 12:48:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46692 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229845AbhBYRsm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 12:48:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B506964F3B;
+        Thu, 25 Feb 2021 17:48:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614275282;
+        bh=0vFnIVei25vrCuzhScupdoj1nWs8I3FBSpr2w/s3tUY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JNVnyD9Vv0zWy8GLsKJhscIOsZMZKGUyZga6+QWRua2CC5jqQg8gS5YYm4/XrTGrF
+         YJL0ejKi1esxp/DDhBms/bvA8YYfR58MbwZX7yr0EGT/go7jmWf9kOvfBLiIe00Z8i
+         yXs5vjqYd+6NbI5DPSC1MOYuvpE6Sz/wVH/gsKysODm0MognBZhD7QtU2qdH8eqBYy
+         Y7R2rz75rJ28Zy31qy3c95wmgY4tG1K4tDbA1Nj/GOUXdrQR+LO4pgbgcqCNk+rOy5
+         5nIXqzsVXygdM31ZCv9kV1wF8ABXlWX3YiVZHw8uZ8SrqIRQvpPSLxLWw1XqSNSa8N
+         DyUltOXIiP/Gg==
+Date:   Thu, 25 Feb 2021 09:48:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH net] net: broadcom: bcm4908_enet: fix NAPI poll returned
+ value
+Message-ID: <20210225094800.04fdd2b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <dac1dd32-6b92-f863-7f01-c8131ddd96d2@gmail.com>
+References: <20210224151842.2419-1-zajec5@gmail.com>
+        <20210224151842.2419-2-zajec5@gmail.com>
+        <dac1dd32-6b92-f863-7f01-c8131ddd96d2@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now we have a generic D3 shutdown quirk, so convert the original
-approach to a PCI quirk.
+On Wed, 24 Feb 2021 09:06:18 -0800 Florian Fainelli wrote:
+> On 2/24/2021 7:18 AM, Rafa=C5=82 Mi=C5=82ecki wrote:
+> > From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+> >=20
+> > Missing increment was resulting in poll function always returning 0
+> > instead of amount of processed packets.
+> >=20
+> > Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl> =20
+>=20
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> Fixes: 4feffeadbcb2 ("net: broadcom: bcm4908enet: add BCM4908 controller
+> driver")
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- drivers/net/wireless/realtek/rtw88/pci.c | 2 --
- drivers/pci/quirks.c                     | 6 ++++++
- 2 files changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index 786a48649946..cddc9b09bb1f 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -1709,8 +1709,6 @@ void rtw_pci_shutdown(struct pci_dev *pdev)
- 
- 	if (chip->ops->shutdown)
- 		chip->ops->shutdown(rtwdev);
--
--	pci_set_power_state(pdev, PCI_D3hot);
- }
- EXPORT_SYMBOL(rtw_pci_shutdown);
- 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 0a848ef0b7db..dfb8746e3b72 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5627,3 +5627,9 @@ static void pci_fixup_shutdown_d3(struct pci_dev *pdev)
- 		pci_set_power_state(pdev, PCI_D3cold);
- }
- DECLARE_PCI_FIXUP_SHUTDOWN(PCI_VENDOR_ID_AMD, 0x1639, pci_fixup_shutdown_d3);
-+DECLARE_PCI_FIXUP_SHUTDOWN(PCI_VENDOR_ID_REALTEK, 0xd723, pci_fixup_shutdown_d3);
-+DECLARE_PCI_FIXUP_SHUTDOWN(PCI_VENDOR_ID_REALTEK, 0xc821, pci_fixup_shutdown_d3);
-+DECLARE_PCI_FIXUP_SHUTDOWN(PCI_VENDOR_ID_REALTEK, 0xb822, pci_fixup_shutdown_d3);
-+DECLARE_PCI_FIXUP_SHUTDOWN(PCI_VENDOR_ID_REALTEK, 0xb822, pci_fixup_shutdown_d3);
-+DECLARE_PCI_FIXUP_SHUTDOWN(PCI_VENDOR_ID_REALTEK, 0xc822, pci_fixup_shutdown_d3);
-+DECLARE_PCI_FIXUP_SHUTDOWN(PCI_VENDOR_ID_REALTEK, 0xc82f, pci_fixup_shutdown_d3);
--- 
-2.30.0
-
+Applied, thank you!
