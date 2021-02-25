@@ -2,81 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE84325A14
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 00:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE048325A27
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 00:26:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbhBYXJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 18:09:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbhBYXJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 18:09:03 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868FEC06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:08:23 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id c23so2420756edr.13
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:08:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FvmtRgyQp0Yn//lwJJlWR4Y8tuee06I1p/pnziYs/yg=;
-        b=q0uDXX9E/aPVVTqchUjJUTRr3NC3fiF8+Bm1BjiWqsx3MhjbUYKHcrM6RvHvuXZrEn
-         inCXxBYSLQ/VtxuK3GpnrcotrkVQNouRYUCJZ6jCXeMaM4lh6Djy+qTsc++IwlFg64mb
-         KyrlCC8WzTj5fzHq56fvv9z3b1DzqP/84GGP6bUAPaRHNvB17sI+UJuytIzglZTTmIkV
-         t2SA4w/8BqFMdBBQqhpE/bAW/zqkanq7aLBH7oxfy9KcEPK9lrXwFutLks+kYVrXJzUl
-         wWh3SFSmSQScfPrpWs3ESLfWvn8sJAruu7/6GbZ2zERfWjecEfOYiCpM5nJwmWfLGrMc
-         y8eA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FvmtRgyQp0Yn//lwJJlWR4Y8tuee06I1p/pnziYs/yg=;
-        b=NW6YnuPp6x7vz9tKxRKSezTV0TqN8AkE9C9Nl9tJpg161aIWOTb9/QK6LmPuOj34zN
-         3gGXVdcxtp3BuL+5WxC+QaniCHluflLLkWLlpKtMgRM1u/3loiu5zWssMU4CJ/v4dNuT
-         dMrorDb/Kv1TfKTNNhe4nfhKLyTkO8foLSgjAb3/xubvjtkA86qnUSd0iTStPjptSnwl
-         TM7uc29IT+lGMNKhgAARL/U/M1/JvYh+VGlx+flIB5Z6M8JfgYjh4cUbtAogIa4p12tz
-         DEOKqvha1zLp5kfsJe7qQ01B75sO29tmWpAeJK6lXYnsXbes0DFArLSWR2RUPuykfcs8
-         jz5A==
-X-Gm-Message-State: AOAM533feQpSI0il9JSaxffiBnMdO3sx6Bn98pEResQNAG2lQ2ehHTAb
-        oiL+usP980cHJQzTLFfIi50=
-X-Google-Smtp-Source: ABdhPJyuNRwUdhso9xpNLuyO1LI9A/rX3E10DPQFP6Svd1vdfoi8l30PbDKqWP9wl9VI9k56aRhwQw==
-X-Received: by 2002:aa7:c3c7:: with SMTP id l7mr278963edr.207.1614294502319;
-        Thu, 25 Feb 2021 15:08:22 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id bz20sm3908230ejc.28.2021.02.25.15.08.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 15:08:22 -0800 (PST)
-Date:   Fri, 26 Feb 2021 01:08:20 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v2 net 3/6] net: enetc: take the MDIO lock only once per
- NAPI poll cycle
-Message-ID: <20210225230820.m4ymxayzsm2dns2g@skbuf>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
- <20210225121835.3864036-4-olteanv@gmail.com>
- <YDgqI8eGDpJKxiLY@lunn.ch>
- <20210225230026.gvtm3esbmrfb5dk5@skbuf>
+        id S231335AbhBYXZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 18:25:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53628 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229966AbhBYXZ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 18:25:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF4B264EDB;
+        Thu, 25 Feb 2021 23:25:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614295517;
+        bh=Mx/aPQg96M77ZPfvh1/f5+vDZSOzw4U3z0tVWpCNF0k=;
+        h=Date:From:To:Cc:Subject:From;
+        b=qacuj/p9BeS6bh4UKvgEiNL5GXejC6cnvATLpAA/TMhgg5dm7EInkZSK2fYI3NfUU
+         h3Wl6UkMeUVkhDCiEmWPhn6zVjRSQqZe1nhntwDyx/1fBW7bFRayd6CMp+JxupT0kR
+         FzMgM5kU6FoGiqoJ8EZm1UCdtPYZyl25X3Ms5XoJuOyh7YcEHPuafCZt3eE/WuoDGb
+         e8oS+4kkhNL8n913QM0BgISrlFanrsVutOT4UfuAjiVLAAzT19ibPRD2z2w/mjuwz6
+         bi28oCJXRuASxgjPJ5V2grjoANs5v8eIT6kUlB2Nax6WkRecn5yBvyc/Ov0eOQoL5b
+         tZEH1KR3FZEKw==
+Date:   Thu, 25 Feb 2021 15:25:15 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Subject: Spurious TCP retransmissions on ack vs kfree_skb reordering
+Message-ID: <20210225152515.2072b5a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210225230026.gvtm3esbmrfb5dk5@skbuf>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 01:00:26AM +0200, Vladimir Oltean wrote:
-> The goal is to eventually get rid of all the _hot stuff and always take
-> the lock from the top level, this would allow us to do more register
-> read/write batching and that would amortize the cost of the locking
-> overall.
+Hi!
 
-Of course when I say 'get rid of the hot stuff', I mean get rid of the
-'hot' _naming_ and not the behavior, since the goal is for all register
-accessors to be 'hot' aka unlocked.
+We see large (4-8x) increase of what looks like TCP RTOs after rising 
+the Tx coalescing above Rx coalescing timeout.
+
+Quick tracing of the events seems to indicate that the data has already
+been acked when we enter tcp:tcp_retransmit_skb:
+
+sk_state:      1
+icsk_ca_state: 4
+
+bytes_in:      0
+bytes_out:   742
+bytes_acked: 742
+
+Is this a known condition? Is the recommendation to filter such events
+out in tracing infra?
