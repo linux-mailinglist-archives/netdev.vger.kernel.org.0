@@ -2,333 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEDE0325448
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:04:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B8F325469
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:12:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233981AbhBYRDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 12:03:43 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:54102 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233632AbhBYRCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 12:02:39 -0500
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id B3D4C5212AF;
-        Thu, 25 Feb 2021 20:01:27 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1614272487;
-        bh=wNLCnLl7TigvkUHtMRwfFUZlMnTi162r6I3dUu9xC84=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=bKJ99QjXYpro2myiW32G284F2Fe9fC+dB/gliBcHponXIqAIhyQTgdvRvc/OeDXtc
-         aQtyR2Fm08rIzyorubIsXbwQSY+YBqHTFY2QpQnTB8G3EfQJibxTHMdoVk02AkBkq2
-         tt+E87QVESUMnD14vF1gzA5cBJaStubVdvPMPlgsw34TeoWJmwlUkXj6C8e9287WGg
-         CAoA8escDAmCpYEnTopDGxQyC8hdkpoIz3rA6ej08gu+HempbeRjSFY1zMFivoJANF
-         zMgPh3DdJQoQMWnPHcfGbuUTtIHNtzynQ3yZYgt5fvN8Rafh+TTNU1l7dpHTiKPPtL
-         oYthnc8N4OIcA==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id C4B5C5210C2;
-        Thu, 25 Feb 2021 20:01:26 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Thu, 25
- Feb 2021 20:01:25 +0300
-Subject: Re: [RFC PATCH v5 02/19] af_vsock: separate wait data loop
-To:     Jorgen Hansen <jhansen@vmware.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S232970AbhBYRMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 12:12:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41972 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229491AbhBYRMa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 12:12:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0FAC364EB7;
+        Thu, 25 Feb 2021 17:11:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1614273108;
+        bh=n8uLJw43X+qDZY8YywYDV90h9+kiQjUwlZR/Y7VjDcU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ndr63J4VX7PmwVLZHzjy9JmHuuRJugC5JkcqjAmCMdiLf0AkN5dRxVraHgEbFCCPF
+         G1T6BgRiriTQyK18VlsLxKAWA8qj4AZlx8yDafDzvHdmNl2sXEhouTu552pOGGMeNL
+         9BgTtBFUZBoKVV7ebhlGA6F1ejTrDRC5d0+75iGQ=
+Date:   Thu, 25 Feb 2021 18:11:45 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stsp2@yandex.ru" <stsp2@yandex.ru>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
- <20210218053637.1066959-1-arseny.krasnov@kaspersky.com>
- <E5526501-3A87-4349-8D7F-61782AA1F513@vmware.com>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <932445e9-ba6c-9063-60dd-5c23ee1117eb@kaspersky.com>
-Date:   Thu, 25 Feb 2021 20:01:24 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        open list <linux-kernel@vger.kernel.org>,
+        stable@vger.kernel.org, olteanv@gmail.com, sashal@kernel.org
+Subject: Re: [PATCH stable 0/8] net: dsa: b53: Correct learning for
+ standalone ports
+Message-ID: <YDfaUaaoc+u3HCDC@kroah.com>
+References: <20210225010853.946338-1-f.fainelli@gmail.com>
+ <YDdcvkQQoAs2yc3C@kroah.com>
+ <7d32ff3e-eea7-90ac-a458-348b07410f85@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <E5526501-3A87-4349-8D7F-61782AA1F513@vmware.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 02/25/2021 16:43:49
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 162085 [Feb 25 2021]
-X-KSE-AntiSpam-Info: LuaCore: 429 429 b8387e624a66feb695608edbad2d54079eb31df3
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
-X-KSE-AntiSpam-Info: {Tracking_date, moscow}
-X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {Macro_CONTENT_PLAIN}
-X-KSE-AntiSpam-Info: {Macro_CONTENT_TEXT_PLAIN_OR_HTML}
-X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_8_BIT_WITH_7_BIT_C_TRANSFER_ENCODING}
-X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_ENCODING_NOT_JAPANESE}
-X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_ENCODING_NOT_RUS}
-X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_INCORRECT_BIT_FOR_C_TRANSFER_ENCODING}
-X-KSE-AntiSpam-Info: {Macro_DATE_MOSCOW}
-X-KSE-AntiSpam-Info: {Macro_FROM_DOUBLE_ENG_NAME}
-X-KSE-AntiSpam-Info: {Macro_FROM_LOWCAPS_DOUBLE_ENG_NAME_IN_EMAIL}
-X-KSE-AntiSpam-Info: {Macro_FROM_NOT_RU}
-X-KSE-AntiSpam-Info: {Macro_FROM_NOT_RUS_CHARSET}
-X-KSE-AntiSpam-Info: {Macro_FROM_REAL_NAME_MATCHES_ALL_USERNAME_PROB}
-X-KSE-AntiSpam-Info: {Macro_HEADERS_NOT_LIST}
-X-KSE-AntiSpam-Info: {Macro_MAILER_THUNDERBIRD}
-X-KSE-AntiSpam-Info: {Macro_MISC_X_PRIORITY_MISSED}
-X-KSE-AntiSpam-Info: {Macro_MSGID_LOWHEX_8_4_4_4_12}
-X-KSE-AntiSpam-Info: {Macro_NO_DKIM}
-X-KSE-AntiSpam-Info: {Macro_REPLY_TO_MISSED}
-X-KSE-AntiSpam-Info: {Macro_SUBJECT_AT_LEAST_2_WORDS}
-X-KSE-AntiSpam-Info: {Macro_SUBJECT_ENG_UPPERCASE_BEGINNING}
-X-KSE-AntiSpam-Info: {Macro_SUBJECT_LONG_TEXT}
-X-KSE-AntiSpam-Info: {Macro_SUBJECT_WITH_FWD_OR_RE}
-X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 02/25/2021 16:47:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 25.02.2021 15:16:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/02/25 15:26:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/25 15:16:00 #16299632
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7d32ff3e-eea7-90ac-a458-348b07410f85@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Feb 25, 2021 at 08:53:22AM -0800, Florian Fainelli wrote:
+> 
+> 
+> On 2/25/2021 12:15 AM, Greg KH wrote:
+> > On Wed, Feb 24, 2021 at 05:08:53PM -0800, Florian Fainelli wrote:
+> >> From: Florian Fainelli <florian.fainelli@broadcom.com>
+> >>
+> >> Hi Greg, Sasha, Jaakub and David,
+> >>
+> >> This patch series contains backports for a change that recently made it
+> >> upstream as:
+> >>
+> >> commit f3f9be9c58085d11f4448ec199bf49dc2f9b7fb9
+> >> Merge: 18755e270666 f9b3827ee66c
+> >> Author: Jakub Kicinski <kuba@kernel.org>
+> >> Date:   Tue Feb 23 12:23:06 2021 -0800
+> >>
+> >>     Merge branch 'net-dsa-learning-fixes-for-b53-bcm_sf2'
+> > 
+> > That is a merge commit, not a "real" commit.
+> > 
+> > What is the upstream git commit id for this?
+> 
+> The commit upstream is f9b3827ee66cfcf297d0acd6ecf33653a5f297ef ("net:
+> dsa: b53: Support setting learning on port") it may still only be in
+> netdev-net/master at this point, though it will likely reach Linus' tree
+> soon.
 
-On 25.02.2021 17:24, Jorgen Hansen wrote:
->> On 18 Feb 2021, at 06:36, Arseny Krasnov <arseny.krasnov@kaspersky.com> wrote:
->>
->> This moves wait loop for data to dedicated function, because later
->> it will be used by SEQPACKET data receive loop.
->>
->> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->> ---
->> net/vmw_vsock/af_vsock.c | 155 +++++++++++++++++++++------------------
->> 1 file changed, 83 insertions(+), 72 deletions(-)
->>
->> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->> index 656370e11707..6cf7bb977aa1 100644
->> --- a/net/vmw_vsock/af_vsock.c
->> +++ b/net/vmw_vsock/af_vsock.c
->> @@ -1832,6 +1832,68 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
->> 	return err;
->> }
->>
->> +static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
->> +			   long timeout,
->> +			   struct vsock_transport_recv_notify_data *recv_data,
->> +			   size_t target)
->> +{
->> +	const struct vsock_transport *transport;
->> +	struct vsock_sock *vsk;
->> +	s64 data;
->> +	int err;
->> +
->> +	vsk = vsock_sk(sk);
->> +	err = 0;
->> +	transport = vsk->transport;
->> +	prepare_to_wait(sk_sleep(sk), wait, TASK_INTERRUPTIBLE);
->> +
->> +	while ((data = vsock_stream_has_data(vsk)) == 0) {
-> In the original code, the prepare_to_wait() is called for each iteration of the while loop. In this
-> version, it is only called once. So if we do multiple iterations, the thread would be in the
-> TASK_RUNNING state, and subsequent schedule_timeout() will return immediately. So
-> looks like the prepare_to_wait() should be move here, in case we have a spurious wake_up.
-Thank you, i'll fix it
->
->> +		if (sk->sk_err != 0 ||
->> +		    (sk->sk_shutdown & RCV_SHUTDOWN) ||
->> +		    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
->> +			break;
->> +		}
->> +
->> +		/* Don't wait for non-blocking sockets. */
->> +		if (timeout == 0) {
->> +			err = -EAGAIN;
->> +			break;
->> +		}
->> +
->> +		if (recv_data) {
->> +			err = transport->notify_recv_pre_block(vsk, target, recv_data);
->> +			if (err < 0)
->> +				break;
->> +		}
->> +
->> +		release_sock(sk);
->> +		timeout = schedule_timeout(timeout);
->> +		lock_sock(sk);
->> +
->> +		if (signal_pending(current)) {
->> +			err = sock_intr_errno(timeout);
->> +			break;
->> +		} else if (timeout == 0) {
->> +			err = -EAGAIN;
->> +			break;
->> +		}
->> +	}
->> +
->> +	finish_wait(sk_sleep(sk), wait);
->> +
->> +	if (err)
->> +		return err;
->> +
->> +	/* Internal transport error when checking for available
->> +	 * data. XXX This should be changed to a connection
->> +	 * reset in a later change.
->> +	 */
->> +	if (data < 0)
->> +		return -ENOMEM;
->> +
->> +	return data;
->> +}
->> +
->> static int
->> vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->> 			  int flags)
->> @@ -1911,85 +1973,34 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->>
->>
->> 	while (1) {
->> -		s64 ready;
->> -
->> -		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
->> -		ready = vsock_stream_has_data(vsk);
->> -
->> -		if (ready == 0) {
->> -			if (sk->sk_err != 0 ||
->> -			    (sk->sk_shutdown & RCV_SHUTDOWN) ||
->> -			    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
->> -				finish_wait(sk_sleep(sk), &wait);
->> -				break;
->> -			}
->> -			/* Don't wait for non-blocking sockets. */
->> -			if (timeout == 0) {
->> -				err = -EAGAIN;
->> -				finish_wait(sk_sleep(sk), &wait);
->> -				break;
->> -			}
->> +		ssize_t read;
->>
->> -			err = transport->notify_recv_pre_block(
->> -					vsk, target, &recv_data);
->> -			if (err < 0) {
->> -				finish_wait(sk_sleep(sk), &wait);
->> -				break;
->> -			}
->> -			release_sock(sk);
->> -			timeout = schedule_timeout(timeout);
->> -			lock_sock(sk);
->> +		err = vsock_wait_data(sk, &wait, timeout, &recv_data, target);
->> +		if (err <= 0)
->> +			break;
->>
->> -			if (signal_pending(current)) {
->> -				err = sock_intr_errno(timeout);
->> -				finish_wait(sk_sleep(sk), &wait);
->> -				break;
->> -			} else if (timeout == 0) {
->> -				err = -EAGAIN;
->> -				finish_wait(sk_sleep(sk), &wait);
->> -				break;
->> -			}
->> -		} else {
->> -			ssize_t read;
->> -
->> -			finish_wait(sk_sleep(sk), &wait);
->> -
->> -			if (ready < 0) {
->> -				/* Invalid queue pair content. XXX This should
->> -				* be changed to a connection reset in a later
->> -				* change.
->> -				*/
->> -
->> -				err = -ENOMEM;
->> -				goto out;
->> -			}
->> -
->> -			err = transport->notify_recv_pre_dequeue(
->> -					vsk, target, &recv_data);
->> -			if (err < 0)
->> -				break;
->> +		err = transport->notify_recv_pre_dequeue(vsk, target,
->> +							 &recv_data);
->> +		if (err < 0)
->> +			break;
->>
->> -			read = transport->stream_dequeue(
->> -					vsk, msg,
->> -					len - copied, flags);
->> -			if (read < 0) {
->> -				err = -ENOMEM;
->> -				break;
->> -			}
->> +		read = transport->stream_dequeue(vsk, msg, len - copied, flags);
->> +		if (read < 0) {
->> +			err = -ENOMEM;
->> +			break;
->> +		}
->>
->> -			copied += read;
->> +		copied += read;
->>
->> -			err = transport->notify_recv_post_dequeue(
->> -					vsk, target, read,
->> -					!(flags & MSG_PEEK), &recv_data);
->> -			if (err < 0)
->> -				goto out;
->> +		err = transport->notify_recv_post_dequeue(vsk, target, read,
->> +						!(flags & MSG_PEEK), &recv_data);
->> +		if (err < 0)
->> +			goto out;
->>
->> -			if (read >= target || flags & MSG_PEEK)
->> -				break;
->> +		if (read >= target || flags & MSG_PEEK)
->> +			break;
->>
->> -			target -= read;
->> -		}
->> +		target -= read;
->> 	}
->>
->> 	if (sk->sk_err)
->> -- 
->> 2.25.1
->>
->
+Ah, I can't do anything with them until that hits Linus's tree, you know
+this :)
+
+> >> The way this was fixed in the netdev group's net tree is slightly
+> >> different from how it should be backported to stable trees which is why
+> >> you will find a patch for each branch in the thread started by this
+> >> cover letter.
+> >>
+> >> Let me know if this does not apply for some reason. The changes from 4.9
+> >> through 4.19 are nearly identical and then from 5.4 through 5.11 are
+> >> about the same.
+> > 
+> > Thanks for the backports, but I still need a real git id to match these
+> > up with :)
+> 
+> You should have it in the Fixes: tag of each patch which all point to
+> when the bug dates back to when the driver was introduced. Let me know
+> if you need me to tag the patches differently.
+
+The fixes: tag shows what id this patch fixes, not the git id of this
+specific patch, like all stable patches show in their changelog text.
+
+That's the id I need.  I'll just wait until this hits Linus's tree
+before worrying about it.
+
+thanks,
+
+greg k-h
