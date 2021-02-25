@@ -2,74 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89F58324804
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:47:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A874C324807
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:49:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236245AbhBYArg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 19:47:36 -0500
-Received: from www62.your-server.de ([213.133.104.62]:38714 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235647AbhBYAr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 19:47:29 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lF4nT-0000J2-K3; Thu, 25 Feb 2021 01:46:27 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lF4nT-000Mzt-72; Thu, 25 Feb 2021 01:46:27 +0100
-Subject: Re: [PATCH v8 bpf-next 0/5] xsk: build skb by page (aka generic
- zerocopy xmit)
-To:     Alexander Lobakin <alobakin@pm.me>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S236373AbhBYAsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 19:48:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44086 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236366AbhBYAsF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 19:48:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B22DA6146B;
+        Thu, 25 Feb 2021 00:47:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614214044;
+        bh=v9Cemz6+5QAlytl+WWIeYFPOPcg34dVPzVpn7Ai5Kbw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MbLCz8HFy4albGGaAxeg4DicoNj4dZI5iynJgXU/NsF8WsILKvj+eqHB9Vphr5thB
+         a+v8u35WFikt58r/new7tuteQEpeXz0BPZda2yKfwfAXywmHnlGc8GdcXjW/DHn4f8
+         9S/m2GeerM10HksfNa/H89VAgmt8HzUYiUrjVK13ZRxb+QA6lCQKqbeZPTjwdBDVlb
+         MaVHRzW29g0Q/aD6awdU3cHJniScZwcYcR1Opfy/gYImRqa4Wp+qM3NWbSaCDYrdmA
+         h4+gY6mCiZcqGJrFctn8iIDBaQStqYzHlDaLRoNhnUfadNgwTrmxX83v4Tafma2exe
+         6ZCL5ZFfEF05A==
+Date:   Wed, 24 Feb 2021 16:47:20 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Coiby Xu <coxu@redhat.com>
+Cc:     netdev@vger.kernel.org, kexec@lists.infradead.org,
+        intel-wired-lan@lists.osuosl.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-References: <20210218204908.5455-1-alobakin@pm.me>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <925e70eb-3cc6-a135-decc-22167f2ecaf0@iogearbox.net>
-Date:   Thu, 25 Feb 2021 01:46:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 4/4] i40e: don't open i40iw client for kdump
+Message-ID: <20210224164720.2228c580@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210225002101.hvbpq7f6zbvylqy4@Rk>
+References: <20210222070701.16416-1-coxu@redhat.com>
+        <20210222070701.16416-5-coxu@redhat.com>
+        <20210223122207.08835e0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210224114141.ziywca4dvn5fs6js@Rk>
+        <20210224084841.50620776@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210225002101.hvbpq7f6zbvylqy4@Rk>
 MIME-Version: 1.0
-In-Reply-To: <20210218204908.5455-1-alobakin@pm.me>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26090/Wed Feb 24 13:09:42 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/21 9:49 PM, Alexander Lobakin wrote:
-> This series introduces XSK generic zerocopy xmit by adding XSK umem
-> pages as skb frags instead of copying data to linear space.
-> The only requirement for this for drivers is to be able to xmit skbs
-> with skb_headlen(skb) == 0, i.e. all data including hard headers
-> starts from frag 0.
-> To indicate whether a particular driver supports this, a new netdev
-> priv flag, IFF_TX_SKB_NO_LINEAR, is added (and declared in virtio_net
-> as it's already capable of doing it). So consider implementing this
-> in your drivers to greatly speed-up generic XSK xmit.
-[...]
+On Thu, 25 Feb 2021 08:21:01 +0800 Coiby Xu wrote:
+> On Wed, Feb 24, 2021 at 08:48:41AM -0800, Jakub Kicinski wrote:
+> >On Wed, 24 Feb 2021 19:41:41 +0800 Coiby Xu wrote:  
+> >> I'm not sure if I understand you correctly. Do you mean we shouldn't
+> >> disable i40iw for kdump?  
+> >
+> >Forgive my ignorance - are the kdump kernels separate builds?
+> 
+> AFAIK we don't build a kernel exclusively for kdump. 
+> 
+> >If they are it'd be better to leave the choice of enabling RDMA
+> >to the user - through appropriate Kconfig options.
+> 
+> i40iw is usually built as a loadable module. So if we want to leave the
+> choce of enabling RDMA to the user, we could exclude this driver when
+> building the initramfs for kdump, for example, dracut provides the 
+> omit_drivers option for this purpose. 
+> 
+> On the other hand, the users expect "crashkernel=auto" to work out of
+> the box. So i40iw defeats this purpose. 
+> 
+> I'll discuss with my Red Hat team and the Intel team about whether RDMA
+> is needed for kdump. Thanks for bringing up this issue!
 
-Applied, thanks!
+Great, talking to experts here at FB it seems that building a cut-down
+kernel for kdump is easier than chasing all the drivers to react to
+is_kdump_kernel(). But if you guys need it and Intel is fine with 
+the change I won't complain.
