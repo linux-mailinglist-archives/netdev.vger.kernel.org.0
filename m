@@ -2,113 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F1B324B3F
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 08:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00BCF324B53
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 08:37:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbhBYH3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 02:29:17 -0500
-Received: from mail-oi1-f179.google.com ([209.85.167.179]:46404 "EHLO
-        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233780AbhBYH3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 02:29:08 -0500
-Received: by mail-oi1-f179.google.com with SMTP id f3so5171358oiw.13;
-        Wed, 24 Feb 2021 23:28:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3l1PKqMmtHsqelzh4HyKblC2FIVDbPFrPkrWcmQSfDE=;
-        b=p6WCtXuObl4PWW6GxFG7eze62pAo+3KdGMr2vEzFcxVtyY8wTiADRi1YP+mHY/D8Zg
-         e18w52BbppBRAgT+UVdoetTdqD2cCvEAUskTmaI6xFtDuDvEVgRuCKXO9wFQCaSeyQTW
-         XTSqfDSa8X40QU0RIpd5P+0wEQgns9b8UGuWuRFpQ34LN3h8VOc4wOosrW0e7aXFSDZw
-         PcCRtjGsc2eKVbxfo56BvQSszKLrTBn+6T/INNSIVx6R3eraoYGuDCH43JevnkMZAEws
-         KOKcPn2xudrjkgDPH//EuES8X97ic6UpcJWvqTG8pamhjuHDHFcXkqbc6afyU+JLU6VB
-         LD0Q==
-X-Gm-Message-State: AOAM530K+Uuewz2gTj2XHIrmKu8WgpcdBQ4EOIS6VeUiOamKB6T5qWkn
-        0CuPQKAXGpLR/psZxMjUIhkXTC1KTHpF/aeUydyv/jeHG+Q=
-X-Google-Smtp-Source: ABdhPJxNmXEWS1bOFcz7Hp1UMcI4WMpgzN51MajctlPkUB8YxsFjwSIEOnTR6vBxTHQ71FHj8pnWRSkqzF3M22QyYiY=
-X-Received: by 2002:aca:d8c6:: with SMTP id p189mr1118446oig.54.1614238107520;
- Wed, 24 Feb 2021 23:28:27 -0800 (PST)
+        id S234185AbhBYHfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 02:35:06 -0500
+Received: from mx2.suse.de ([195.135.220.15]:48102 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232014AbhBYHe1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 02:34:27 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1614238421; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=a3BRihie3lifIDroDr4++Mfc0UHcnu/N2fnqw+5haSM=;
+        b=GpU8DlBsevf+eVkPZ94CbGcv1uB6uRZI+tW6SJTwFPOhzG3UUXUI5dxuPLatvLOelAIVDc
+        XHr8Htmb6stblsr5FBv+Ne2JFlTnn3tyndhJVoHYEP9avlnkyhJmZYer9l6FnNH2mS1SX4
+        JcM6RrDa50deZWu7GY4nKXEnQVDSiqU=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 22A84AD6B;
+        Thu, 25 Feb 2021 07:33:41 +0000 (UTC)
+Subject: Re: [PATCH] xen-netback: correct success/error reporting for the
+ SKB-with-fraglist case
+To:     paul@xen.org
+Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Wei Liu <wl@xen.org>
+References: <4dd5b8ec-a255-7ab1-6dbf-52705acd6d62@suse.com>
+ <67bc0728-761b-c3dd-bdd5-1a850ff79fbb@xen.org>
+From:   Jan Beulich <jbeulich@suse.com>
+Message-ID: <76c94541-21a8-7ae5-c4c4-48552f16c3fd@suse.com>
+Date:   Thu, 25 Feb 2021 08:33:41 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210223112003.2223332-1-geert+renesas@glider.be> <20210224224358.pysql5pu23zt7mtb@skbuf>
-In-Reply-To: <20210224224358.pysql5pu23zt7mtb@skbuf>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 25 Feb 2021 08:28:15 +0100
-Message-ID: <CAMuHMdVeAoPK_iB=Y73X_7zTEJnS6bFKkzCe8QyH8oyZA9OZ5A@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: sja1105: Remove unneeded cast in sja1105_crc32()
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <67bc0728-761b-c3dd-bdd5-1a850ff79fbb@xen.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+On 24.02.2021 17:39, Paul Durrant wrote:
+> On 23/02/2021 16:29, Jan Beulich wrote:
+>> When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
+>> special considerations for the head of the SKB no longer apply. Don't
+>> mistakenly report ERROR to the frontend for the first entry in the list,
+>> even if - from all I can tell - this shouldn't matter much as the overall
+>> transmit will need to be considered failed anyway.
+>>
+>> Signed-off-by: Jan Beulich <jbeulich@suse.com>
+>>
+>> --- a/drivers/net/xen-netback/netback.c
+>> +++ b/drivers/net/xen-netback/netback.c
+>> @@ -499,7 +499,7 @@ check_frags:
+>>   				 * the header's copy failed, and they are
+>>   				 * sharing a slot, send an error
+>>   				 */
+>> -				if (i == 0 && sharedslot)
+>> +				if (i == 0 && !first_shinfo && sharedslot)
+>>   					xenvif_idx_release(queue, pending_idx,
+>>   							   XEN_NETIF_RSP_ERROR);
+>>   				else
+>>
+> 
+> I think this will DTRT, but to my mind it would make more sense to clear 
+> 'sharedslot' before the 'goto check_frags' at the bottom of the function.
 
-On Wed, Feb 24, 2021 at 11:44 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Feb 23, 2021 at 12:20:03PM +0100, Geert Uytterhoeven wrote:
-> > sja1105_unpack() takes a "const void *buf" as its first parameter, so
-> > there is no need to cast away the "const" of the "buf" variable before
-> > calling it.
-> >
-> > Drop the cast, as it prevents the compiler performing some checks.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > ---
->
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+That was my initial idea as well, but
+- I think it is for a reason that the variable is "const".
+- There is another use of it which would then instead need further
+  amending (and which I believe is at least part of the reason for
+  the variable to be "const").
 
-Thanks!
-
-> By the way, your email went straight to my spam box, I just found the
-> patch by mistake on patchwork.
->
->     Why is this message in spam?
->     It is in violation of Google's recommended email sender guidelines.
-
-Yeah, sometimes Gmail can be annoying.  I recommend adding a filter
-to never send emails with "PATCH" in the subject to spam.
-
-> > Compile-tested only.
-> >
-> > BTW, sja1105_packing() and packing() are really bad APIs, as the input
-> > pointer parameters cannot be const due to the direction depending on
-> > "op".  This means the compiler cannot do const checks.  Worse, callers
-> > are required to cast away constness to prevent the compiler from
-> > issueing warnings.  Please don't do this!
-> > ---
->
-> What const checks can the compiler not do?
-
-If you have a const and a non-const buffer, and accidentally call
-packing() with the two buffer pointers exchanged (this is a common
-mistake), you won't get a compiler warning.
-So having separate pack() and unpack() functions would be safer.
-You can rename packing() to __packing() to make it clear this function
-is not to be called directly without deep consideration, and have
-pack() and unpack() as wrappers just calling __packing().
-Of course that means callers that do need a separate "op" parameter
-still need to call __packing(), but they can provide their own safer
-wrappers, too.
-
-> Also, if you know of an existing kernel API which can replace packing(),
-> I'm all ears.
-
-No idea.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Jan
