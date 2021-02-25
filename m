@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AA3C3247FB
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D55C324802
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:46:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234294AbhBYAks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 19:40:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43388 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232139AbhBYAkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 19:40:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 56B0264F14;
-        Thu, 25 Feb 2021 00:40:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614213607;
-        bh=VL5do60VgknHejD4MstwyswG5x4hMe/Uh2VgjdJxHAA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=c4sAB9i7h8laNFXNPJAbCPKo8xZqC0Zuu5YPSpwSAVk3KTGFuHwYseiCAlumehWv4
-         uPKyCClaDYY8eWJA/uByacYgL2T2dEemrobVbHVxiV0JaDX9OQoa2NigG/FyZ5+Qb8
-         EqNUe6atbAFteutqhun1yRz1sIgRl8yZuw+UngkLhQE6IYvNAcTTA/WtrpYQYyiJKO
-         YWWOUWpFQf6Sw9gJgY6ZPkG8RjEJYHK4GSWIZJrXXvK8AB3f7IJKDtfM44NFC8lFoO
-         w46HwMniOeIt8CQWifDxlns9u5njieubUCN5b8lVewEmef6jVBskVKgBtlc8iiAkHO
-         g5YvJUyQ78Idg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 487A4609F5;
-        Thu, 25 Feb 2021 00:40:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235971AbhBYAq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 19:46:28 -0500
+Received: from mo-csw1514.securemx.jp ([210.130.202.153]:42382 "EHLO
+        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235900AbhBYAq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 19:46:27 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 11P0i5G0019657; Thu, 25 Feb 2021 09:44:05 +0900
+X-Iguazu-Qid: 34tKPbYPQdqNqkLbSv
+X-Iguazu-QSIG: v=2; s=0; t=1614213844; q=34tKPbYPQdqNqkLbSv; m=TU+Ws2vmJCuvZEf+Q1Gizk484DT4l6hyz5nTkb+Ssq8=
+Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
+        by relay.securemx.jp (mx-mr1511) id 11P0i39v001739
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 25 Feb 2021 09:44:04 +0900
+Received: from enc02.toshiba.co.jp (enc02.toshiba.co.jp [61.202.160.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by imx12-a.toshiba.co.jp (Postfix) with ESMTPS id B53D31000AE;
+        Thu, 25 Feb 2021 09:44:03 +0900 (JST)
+Received: from hop101.toshiba.co.jp ([133.199.85.107])
+        by enc02.toshiba.co.jp  with ESMTP id 11P0i3QW022839;
+        Thu, 25 Feb 2021 09:44:03 +0900
+From:   Punit Agrawal <punit1.agrawal@toshiba.co.jp>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        "Brandeburg\, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen\, Anthony L" <anthony.l.nguyen@intel.com>,
+        "daichi1.fukui\@toshiba.co.jp" <daichi1.fukui@toshiba.co.jp>,
+        "nobuhiro1.iwamatsu\@toshiba.co.jp" 
+        <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Corinna Vinschen <vinschen@redhat.com>,
+        "Brown\, Aaron.F" <aaron.f.brown@intel.com>,
+        "Keller\, Jacob.E" <jacob.e.keller@intel.com>,
+        "David.S.Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v4.4.y, v4.9.y] igb: Remove incorrect "unexpected SYS WRAP" log message
+References: <20210210013448.2116413-1-punit1.agrawal@toshiba.co.jp>
+        <c5d7ccb5804b46eea2ef9fe29c66720f@intel.com>
+        <87blcaw650.fsf@kokedama.swc.toshiba.co.jp>
+        <20210224085126.45af7b68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Thu, 25 Feb 2021 09:44:02 +0900
+In-Reply-To: <20210224085126.45af7b68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Jakub Kicinski's message of "Wed, 24 Feb 2021 08:51:26 -0800")
+X-TSB-HOP: ON
+Message-ID: <87wnuxugbx.fsf@kokedama.swc.toshiba.co.jp>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v4 1/1] ibmvnic: fix a race between open and reset
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161421360729.29181.499127452457145476.git-patchwork-notify@kernel.org>
-Date:   Thu, 25 Feb 2021 00:40:07 +0000
-References: <20210224050229.1155468-1-sukadev@linux.ibm.com>
-In-Reply-To: <20210224050229.1155468-1-sukadev@linux.ibm.com>
-To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, drt@linux.ibm.com, ljp@linux.ibm.com,
-        ricklind@linux.ibm.com
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Jakub Kicinski <kuba@kernel.org> writes:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+> On Wed, 24 Feb 2021 11:28:59 +0900 Punit Agrawal wrote:
+>> > It makes sense to me for htis to apply to those stable trees as well.  
+>> 
+>> Thanks Jake.
+>> 
+>> Networking maintainers - It's been a couple of weeks this patch is on
+>> the list. Is there anything else that needs to be done for it to be
+>> picked up for stable?
+>
+> Network maintainers only handle stable selection at the time of
+> submission (if that). So if you want to request a backport of a commit
+> which is already in Linus's tree and wasn't selected you should follow
+> the standard stable procedure and submit the request to stable@, CCing
+> netdev.
 
-On Tue, 23 Feb 2021 21:02:29 -0800 you wrote:
-> __ibmvnic_reset() currently reads the adapter->state before getting the
-> rtnl and saves that state as the "target state" for the reset. If this
-> read occurs when adapter is in PROBED state, the target state would be
-> PROBED.
-> 
-> Just after the target state is saved, and before the actual reset process
-> is started (i.e before rtnl is acquired) if we get an ibmvnic_open() call
-> we would move the adapter to OPEN state.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v4,1/1] ibmvnic: fix a race between open and reset
-    https://git.kernel.org/netdev/net/c/8f1c0fd2c84c
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Ah I missed that. Thanks for the pointer - I'll resend the request to
+stable with netdev in CC.
