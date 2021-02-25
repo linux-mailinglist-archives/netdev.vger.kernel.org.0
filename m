@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC53324FCC
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 13:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B31324FCF
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 13:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232634AbhBYMUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 07:20:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
+        id S230142AbhBYMUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 07:20:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232582AbhBYMTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 07:19:40 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77A4C061788
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:18:59 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id p1so2053106edy.2
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:18:59 -0800 (PST)
+        with ESMTP id S232582AbhBYMUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 07:20:16 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2ECC06178A
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:19:00 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id mm21so8230296ejb.12
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 04:19:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vX6Zg59YNlFpdKeQjTl4TDQ74EezT+nfmo/ntrby46Y=;
-        b=pJYLl2qKEosKzBeKvPMhpxDR0TjyFgG84dV+D2BNTFOz3Eozln3GRpuN7N/HXUfwZ1
-         ATH7MoWHOVFUXNk4fVnMP6GkXoCRk1YTFuuHsumJrDxYN/RLhk3VC/DzgSd3HQqKBPqy
-         0Q0PJJOz0zfav3l/D/IzoKoru8jVD0P44L/TjUZSkbPwFSeDmiSJlt/PjilWEcbJw5uP
-         ZLC0p46NKUDp11EmwoAPZU9kbaYhNtDwtBLVlqSW42qaJ91SxdbdZSR++qCwRbMRZGXn
-         Oi2aM8vX+6Kq1qGjNeg5DoQGuX+4GtbSAHVvnJm4hM1h7KkHIQ70LV8osePXTGDgbolc
-         i/FA==
+        bh=VwRPKCVOmxGv/SdbYtNhUZCc3KlJ7t0EavxKRIEpKzo=;
+        b=BiK57PumYK/uMTCraAh2SHlekrLEFVNAh6Awac89qyqBBuU94o8brRJBt792zoE54A
+         6RJ0VfczJ77pfsbCVyCO99VU4SygD88DEDQ1Dl/VGJVW3IBPq+OzWkd/36uKcFxk9wol
+         /dkov6FE6fndLbpywUpNCugGS0T91raDbrjjyjOV7VV5lQjlqBPs5JczgGlcJ9cBU4K1
+         9uzT4y42fVhEYb2eL8iy6DzKMT3PYbZ4LF8TpTqwQbtYDZ47BfHI2r/ymERp4rtNxMjR
+         fvDIDCPTtsg3UXD9vOrAUzkD+SC9lYsbKxRKX/PJkq1bIvziPYHUQwD8+MeMaGRnbwqQ
+         uDiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vX6Zg59YNlFpdKeQjTl4TDQ74EezT+nfmo/ntrby46Y=;
-        b=LDjAdSFpcmcWulTvuk3Adrc83w4fPHjRuzOeCxncTyJiFumSt2UXl3+ALO+V63KoGQ
-         M7rZjqclUorTYoRjNxzpXPQ8t3exMvncJZFecWHw6dQiL4oA6YQ2xDsF9onJwKjwILCX
-         HF9aLKNkIDVgw4/URZHCZMYlQ/sP0btwFvgPBcyGr3Tr4o95CLaA7wDndYKJCAGa3ei8
-         ssHzGemH1XAwi75BeroFo9QfygTPc8w5JW2f88qq/de9aARLEhmwtg14LjuZZHJs2vgD
-         ZFb6QS5RUO9t1r0CMeSXPDNU1L+7sXCV1GtOwxNBB87Zq/mv8FVm/2BhVHlYYBssmaqZ
-         2fcw==
-X-Gm-Message-State: AOAM5333AU8J1K7kU3WS4AhIqIdMdraShQaLEQlabqR/USXmRByrqGNN
-        Fomb7dLlIq7gbGBIWGyQh6U=
-X-Google-Smtp-Source: ABdhPJylt7/C6ki5D0ViEGl1cLPYsr2qW1FR0xrNLL4Tj2C3vGYbwO/cBsom3ucUsy9EJkRWxbfYRg==
-X-Received: by 2002:a50:cf4e:: with SMTP id d14mr1134939edk.16.1614255538561;
-        Thu, 25 Feb 2021 04:18:58 -0800 (PST)
+        bh=VwRPKCVOmxGv/SdbYtNhUZCc3KlJ7t0EavxKRIEpKzo=;
+        b=mI5vT/xzVNUkL2Zpq1r8W0jHIuUrRJazcNK5wE1Ja4/hbQFJZ76BogBQWsXiAruyfD
+         ZfqcANnM7eqaKBtXmaeRJtVEp4eJgY2yT3UbJZoY2jar4UTEgX1/xpJa3PZsBoNaDks5
+         VAzKKtlozlg6SanTDNnNJgRyQXWTuyyuQ/Od/nO8o+YzVDQyUqjiYcl3ZH7WqjDPgzhX
+         liwizw8odaNDvDHLEHjel8M6x0VJFq//x5KdNcizZUmeTI5fBD6G9/qjBRUzebQvDXbK
+         ohVZCJR4ed6UXwySNGTNL1DS5RMY2h8vFfmF9VfII3yXvjtK66r4KUyU9wLJyd4fZOOg
+         sM7Q==
+X-Gm-Message-State: AOAM531kG7xl0Y50MGzzqQuof7/Hzp+FvoWN7EeJDqtAiOqTW70NGN6u
+        ZU/H//qCkeHfysCwGZpmqw0=
+X-Google-Smtp-Source: ABdhPJymTwSKl8LGW3lw1snqZHsJziD+4gagwjgWJXp9CXEn/adD5YW6rfQfnmn35SKGzy7pfM9FAg==
+X-Received: by 2002:a17:906:4e91:: with SMTP id v17mr2357086eju.331.1614255539431;
+        Thu, 25 Feb 2021 04:18:59 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id x25sm3420925edv.65.2021.02.25.04.18.57
+        by smtp.gmail.com with ESMTPSA id x25sm3420925edv.65.2021.02.25.04.18.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 04:18:58 -0800 (PST)
+        Thu, 25 Feb 2021 04:18:59 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     Michael Walle <michael@walle.cc>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net 4/6] net: enetc: fix incorrect TPID when receiving 802.1ad tagged packets
-Date:   Thu, 25 Feb 2021 14:18:33 +0200
-Message-Id: <20210225121835.3864036-5-olteanv@gmail.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        =?UTF-8?q?Markus=20Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
+Subject: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in IFF_PROMISC mode
+Date:   Thu, 25 Feb 2021 14:18:34 +0200
+Message-Id: <20210225121835.3864036-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210225121835.3864036-1-olteanv@gmail.com>
 References: <20210225121835.3864036-1-olteanv@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -68,96 +70,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-When the enetc ports have rx-vlan-offload enabled, they report a TPID of
-ETH_P_8021Q regardless of what was actually in the packet. When
-rx-vlan-offload is disabled, packets have the proper TPID. Fix this
-inconsistency by finishing the TODO left in the code.
+Quoting from the blamed commit:
 
-Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet drivers")
+    In promiscuous mode, it is more intuitive that all traffic is received,
+    including VLAN tagged traffic. It appears that it is necessary to set
+    the flag in PSIPVMR for that to be the case, so VLAN promiscuous mode is
+    also temporarily enabled. On exit from promiscuous mode, the setting
+    made by ethtool is restored.
+
+Intuitive or not, there isn't any definition issued by a standards body
+which says that promiscuity has anything to do with VLAN filtering - it
+only has to do with accepting packets regardless of destination MAC address.
+
+In fact people are already trying to use this misunderstanding/bug of
+the enetc driver as a justification to transform promiscuity into
+something it never was about: accepting every packet (maybe that would
+be the "rx-all" netdev feature?):
+https://lore.kernel.org/netdev/20201110153958.ci5ekor3o2ekg3ky@ipetronik.com/
+
+So we should avoid that and delete the bogus logic in enetc.
+
+Fixes: 7070eea5e95a ("enetc: permit configuration of rx-vlan-filter with ethtool")
+Cc: Markus Blöchl <Markus.Bloechl@ipetronik.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
-The "priv" variable needs to be used regardless of CONFIG_FSL_ENETC_PTP_CLOCK
-now.
+None.
 
- drivers/net/ethernet/freescale/enetc/enetc.c  | 34 ++++++++++++++-----
- .../net/ethernet/freescale/enetc/enetc_hw.h   |  3 ++
- 2 files changed, 29 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index eebe08a99270..0064cfe5438e 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -523,9 +523,8 @@ static void enetc_get_rx_tstamp(struct net_device *ndev,
- static void enetc_get_offloads(struct enetc_bdr *rx_ring,
- 			       union enetc_rx_bd *rxbd, struct sk_buff *skb)
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 62ba4bf56f0d..49681a0566ed 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -190,7 +190,6 @@ static void enetc_pf_set_rx_mode(struct net_device *ndev)
  {
--#ifdef CONFIG_FSL_ENETC_PTP_CLOCK
- 	struct enetc_ndev_priv *priv = netdev_priv(rx_ring->ndev);
--#endif
-+
- 	/* TODO: hashing */
- 	if (rx_ring->ndev->features & NETIF_F_RXCSUM) {
- 		u16 inet_csum = le16_to_cpu(rxbd->r.inet_csum);
-@@ -534,12 +533,31 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
- 		skb->ip_summed = CHECKSUM_COMPLETE;
+ 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+ 	struct enetc_pf *pf = enetc_si_priv(priv->si);
+-	char vlan_promisc_simap = pf->vlan_promisc_simap;
+ 	struct enetc_hw *hw = &priv->si->hw;
+ 	bool uprom = false, mprom = false;
+ 	struct enetc_mac_filter *filter;
+@@ -203,16 +202,12 @@ static void enetc_pf_set_rx_mode(struct net_device *ndev)
+ 		psipmr = ENETC_PSIPMR_SET_UP(0) | ENETC_PSIPMR_SET_MP(0);
+ 		uprom = true;
+ 		mprom = true;
+-		/* Enable VLAN promiscuous mode for SI0 (PF) */
+-		vlan_promisc_simap |= BIT(0);
+ 	} else if (ndev->flags & IFF_ALLMULTI) {
+ 		/* enable multi cast promisc mode for SI0 (PF) */
+ 		psipmr = ENETC_PSIPMR_SET_MP(0);
+ 		mprom = true;
  	}
  
--	/* copy VLAN to skb, if one is extracted, for now we assume it's a
--	 * standard TPID, but HW also supports custom values
--	 */
--	if (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_VLAN)
--		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
--				       le16_to_cpu(rxbd->r.vlan_opt));
-+	if (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_VLAN) {
-+		__be16 tpid = 0;
-+
-+		switch (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_TPID) {
-+		case 0:
-+			tpid = htons(ETH_P_8021Q);
-+			break;
-+		case 1:
-+			tpid = htons(ETH_P_8021AD);
-+			break;
-+		case 2:
-+			tpid = htons(enetc_port_rd(&priv->si->hw,
-+						   ENETC_PCVLANR1));
-+			break;
-+		case 3:
-+			tpid = htons(enetc_port_rd(&priv->si->hw,
-+						   ENETC_PCVLANR2));
-+			break;
-+		default:
-+			break;
-+		}
-+
-+		__vlan_hwaccel_put_tag(skb, tpid, le16_to_cpu(rxbd->r.vlan_opt));
-+	}
-+
- #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
- 	if (priv->active_offloads & ENETC_F_RX_TSTAMP)
- 		enetc_get_rx_tstamp(rx_ring->ndev, rxbd, skb);
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-index 8b54562f5da6..a62604a1e54e 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-@@ -172,6 +172,8 @@ enum enetc_bdr_type {TX, RX};
- #define ENETC_PSIPMAR0(n)	(0x0100 + (n) * 0x8) /* n = SI index */
- #define ENETC_PSIPMAR1(n)	(0x0104 + (n) * 0x8)
- #define ENETC_PVCLCTR		0x0208
-+#define ENETC_PCVLANR1		0x0210
-+#define ENETC_PCVLANR2		0x0214
- #define ENETC_VLAN_TYPE_C	BIT(0)
- #define ENETC_VLAN_TYPE_S	BIT(1)
- #define ENETC_PVCLCTR_OVTPIDL(bmp)	((bmp) & 0xff) /* VLAN_TYPE */
-@@ -570,6 +572,7 @@ union enetc_rx_bd {
- #define ENETC_RXBD_LSTATUS(flags)	((flags) << 16)
- #define ENETC_RXBD_FLAG_VLAN	BIT(9)
- #define ENETC_RXBD_FLAG_TSTMP	BIT(10)
-+#define ENETC_RXBD_FLAG_TPID	GENMASK(1, 0)
- 
- #define ENETC_MAC_ADDR_FILT_CNT	8 /* # of supported entries per port */
- #define EMETC_MAC_ADDR_FILT_RES	3 /* # of reserved entries at the beginning */
+-	enetc_set_vlan_promisc(&pf->si->hw, vlan_promisc_simap);
+-
+ 	/* first 2 filter entries belong to PF */
+ 	if (!uprom) {
+ 		/* Update unicast filters */
 -- 
 2.25.1
 
