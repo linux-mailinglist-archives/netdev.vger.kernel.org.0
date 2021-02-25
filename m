@@ -2,195 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 070D13253A8
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:38:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E70613253FE
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:50:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233020AbhBYQiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 11:38:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbhBYQh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 11:37:29 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727FEC061574
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 08:36:49 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id x19so6028452ybe.0
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 08:36:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=R0j+y0InnDVxpqdZ4QQKZJfvIS1oDwBnK/nAzy0xUXc=;
-        b=tiPetMhw46l8lfKjRNQa7dP60FxShVewRpo8nQNjS9NbV8QEGdHeC72MxlY6pYAiOx
-         7M+E8orfS0/qp2lvx/KuJD016xYg4bKM8BtWiKefollVsm41W7yCh3CjIS3JhhOuw7jR
-         R2wnUVAUkcFCRmkxzKfU5hK1jMsDCZ34b/PZvEBeQBRLOaZwGDcTHbD0sljR4MB80RS3
-         BtFh7MURl5A7ia1ilyXHS/UQTIJMYxTLRr83zAGvlCE+4L6dm1z8WchRJXkpP8osP+9w
-         ZfXzOeHp4N3Ql1WrorX/UfZHbomZVhs0DjGhJgKmXEFEFk4UJyOjQEKXu5+QZ+GaqK01
-         2q+g==
+        id S234109AbhBYQuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 11:50:20 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:46475 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233668AbhBYQsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 11:48:05 -0500
+Received: by mail-io1-f70.google.com with SMTP id w8so4103319iox.13
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 08:47:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=R0j+y0InnDVxpqdZ4QQKZJfvIS1oDwBnK/nAzy0xUXc=;
-        b=tTQo+PWstozXJA3YyQUzRcvQWRiq8Y34q0tq8qf/0+YH7jqftAtpCF1CTc5hoo5VEv
-         3WkXf8I1y+Q/AktGjVl1TQWdPg53Q29QfjXJa9o9DdFIVcEpPubxPUaKCiOismnfXeWz
-         0OHvlXvsefyIveX3ORg7Vd2SNe4wWGtHNXWkzl0mbQBwShRl7z5+ZLMq+FlPwgNNofXW
-         u6mPZfIeQDx8hLfhISHLfE0yRQYl81ZKhCmSc8uXP1M8BZZ8gerx+7GHSe22ebFRQpSX
-         wrSOyEnevtB5253dMW0JP59YZz1udiJKJp0BH2Ms9KxqofTHaRX4HwtJWBKwBZOMJVEg
-         1thw==
-X-Gm-Message-State: AOAM533n5WVCfodldinI+I8vCfL1XTcCw9LuXPzVLtrXoEGLdEWm+rBw
-        NKsBi3KnMtc4bibTNMevcpJrGMWHCd32lRqqTZM=
-X-Google-Smtp-Source: ABdhPJyswl3qsVJBPQv1GRUBY0eGrI6aR0tvox6hX3EkFw9ulMh4Gpnr5hio4vmM1zlINz3XnPW3uG9bkyp8ppjNyyw=
-X-Received: by 2002:a25:4054:: with SMTP id n81mr4937802yba.39.1614271008613;
- Thu, 25 Feb 2021 08:36:48 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=9H/CwtcPS5njhZEy8VrcSFtOUJSZ60HSsVj51LKQW8Q=;
+        b=Cv0p1lSHWpLuSuJu/hzuluJl29E8C+2KUAc1N7DWW9ca1/zHSFFQDRFxJ4IFgpCfx7
+         CwDsWg7gCZjLEjDNXdOyTPC6xoyI3gaAdYjUCe6eY2rihrHlshMr7xbn2rxCk1sFe+5H
+         Da2Qd1rGbQ46Vp38MUKfKue2Tx/JFMQtMD6EUo0w8KMHCTIONsHkyqhHVuXni9ldj/IC
+         ACZ7p/STbKm9JUIrLJKRscAnhjrux1Cf1Xmv1jFOg756xrQyna4BlCGu/zfcazTVMp0b
+         hdNR5KWWKEax7HaJHW3gR6Ckq3ZOauOgCXEdtOjuWuDFry9/tC7vy8rQ4qP2/HrmjJQ6
+         v+rA==
+X-Gm-Message-State: AOAM531QUc0DUaDwiCvfKbT0Cg5HRNYZLbawNyt2janQUrZ9ykj+HCxX
+        AeHlQ2Sklp5WxBGYq6rPa8f+1ENjT2GvIKrqyHmPkVPYylYt
+X-Google-Smtp-Source: ABdhPJxso2JqKTX/f7Iyxq1fwMqK1qdcYRdckBeoApdPTVevpB0NGiGdk4FSjtupSp/xKb2WEDPVzx16mrT97Yb1wgQz+oVUwfcJ
 MIME-Version: 1.0
-References: <2323124.5UR7tLNZLG@tool> <9d9f3077-9c5c-e7bc-0c77-8e8353be7732@gmail.com>
- <cf8ea0b6-11ac-3dbd-29a1-337c06d9a991@gmail.com> <CABwr4_vwTiFzSdxu-GoON2HHS1pjyiv0PFS-pTbCEMT4Uc4OvA@mail.gmail.com>
- <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
-In-Reply-To: <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
-From:   =?UTF-8?Q?Daniel_Gonz=C3=A1lez_Cabanelas?= <dgcbueu@gmail.com>
-Date:   Thu, 25 Feb 2021 17:36:37 +0100
-Message-ID: <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
-Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+X-Received: by 2002:a02:3e16:: with SMTP id s22mr3666531jas.72.1614271643488;
+ Thu, 25 Feb 2021 08:47:23 -0800 (PST)
+Date:   Thu, 25 Feb 2021 08:47:23 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e195f705bc2be778@google.com>
+Subject: general protection fault in ieee802154_llsec_parse_dev_addr
+From:   syzbot <syzbot+8b6719da8a04beeafcc3@syzkaller.appspotmail.com>
+To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, stefan@datenfreihafen.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-El jue, 25 feb 2021 a las 8:22, Heiner Kallweit
-(<hkallweit1@gmail.com>) escribi=C3=B3:
->
-> On 25.02.2021 00:54, Daniel Gonz=C3=A1lez Cabanelas wrote:
-> > El mi=C3=A9, 24 feb 2021 a las 23:01, Florian Fainelli
-> > (<f.fainelli@gmail.com>) escribi=C3=B3:
-> >>
-> >>
-> >>
-> >> On 2/24/2021 1:44 PM, Heiner Kallweit wrote:
-> >>> On 24.02.2021 16:44, Daniel Gonz=C3=A1lez Cabanelas wrote:
-> >>>> The current bcm63xx_enet driver doesn't asign the internal phy IRQ. =
-As a
-> >>>> result of this it works in polling mode.
-> >>>>
-> >>>> Fix it using the phy_device structure to assign the platform IRQ.
-> >>>>
-> >>>> Tested under a BCM6348 board. Kernel dmesg before the patch:
-> >>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broa=
-dcom
-> >>>>               BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01, ir=
-q=3DPOLL)
-> >>>>
-> >>>> After the patch:
-> >>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broa=
-dcom
-> >>>>               BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01, ir=
-q=3D17)
-> >>>>
-> >>>> Pluging and uplugging the ethernet cable now generates interrupts an=
-d the
-> >>>> PHY goes up and down as expected.
-> >>>>
-> >>>> Signed-off-by: Daniel Gonz=C3=A1lez Cabanelas <dgcbueu@gmail.com>
-> >>>> ---
-> >>>> changes in V2:
-> >>>>   - snippet moved after the mdiobus registration
-> >>>>   - added missing brackets
-> >>>>
-> >>>>  drivers/net/ethernet/broadcom/bcm63xx_enet.c | 13 +++++++++++--
-> >>>>  1 file changed, 11 insertions(+), 2 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/=
-net/ethernet/broadcom/bcm63xx_enet.c
-> >>>> index fd876721316..dd218722560 100644
-> >>>> --- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-> >>>> +++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-> >>>> @@ -1818,10 +1818,19 @@ static int bcm_enet_probe(struct platform_de=
-vice *pdev)
-> >>>>               * if a slave is not present on hw */
-> >>>>              bus->phy_mask =3D ~(1 << priv->phy_id);
-> >>>>
-> >>>> -            if (priv->has_phy_interrupt)
-> >>>> +            ret =3D mdiobus_register(bus);
-> >>>> +
-> >>>> +            if (priv->has_phy_interrupt) {
-> >>>> +                    phydev =3D mdiobus_get_phy(bus, priv->phy_id);
-> >>>> +                    if (!phydev) {
-> >>>> +                            dev_err(&dev->dev, "no PHY found\n");
-> >>>> +                            goto out_unregister_mdio;
-> >>>> +                    }
-> >>>> +
-> >>>>                      bus->irq[priv->phy_id] =3D priv->phy_interrupt;
-> >>>> +                    phydev->irq =3D priv->phy_interrupt;
-> >>>> +            }
-> >>>>
-> >>>> -            ret =3D mdiobus_register(bus);
-> >>>
-> >>> You shouldn't have to set phydev->irq, this is done by phy_device_cre=
-ate().
-> >>> For this to work bus->irq[] needs to be set before calling mdiobus_re=
-gister().
-> >>
-> >> Yes good point, and that is what the unchanged code does actually.
-> >> Daniel, any idea why that is not working?
-> >
-> > Hi Florian, I don't know. bus->irq[] has no effect, only assigning the
-> > IRQ through phydev->irq works.
-> >
-> > I can resend the patch  without the bus->irq[] line since it's
-> > pointless in this scenario.
-> >
->
-> It's still an ugly workaround and a proper root cause analysis should be =
-done
-> first. I can only imagine that phydev->irq is overwritten in phy_probe()
-> because phy_drv_supports_irq() is false. Can you please check whether
-> phydev->irq is properly set in phy_device_create(), and if yes, whether
-> it's reset to PHY_POLL in phy_probe()?.
->
+Hello,
 
-Hi Heiner, I added some kernel prints:
+syzbot found the following issue on:
 
-[    2.712519] libphy: Fixed MDIO Bus: probed
-[    2.721969] =3D=3D=3D=3D=3D=3D=3Dphy_device_create=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
-[    2.726841] phy_device_create: dev->irq =3D 17
-[    2.726841]
-[    2.832620] =3D=3D=3D=3D=3D=3D=3Dphy_probe=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-[    2.836846] phy_probe: phydev->irq =3D 17
-[    2.840950] phy_probe: phy_drv_supports_irq =3D 0, phy_interrupt_is_vali=
-d =3D 1
-[    2.848267] phy_probe: phydev->irq =3D -1
-[    2.848267]
-[    2.854059] =3D=3D=3D=3D=3D=3D=3Dphy_probe=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-[    2.858174] phy_probe: phydev->irq =3D -1
-[    2.862253] phy_probe: phydev->irq =3D -1
-[    2.862253]
-[    2.868121] libphy: bcm63xx_enet MII bus: probed
-[    2.873320] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
-driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=3Dbcm63xx_enet-0:01,
-irq=3DPOLL)
+HEAD commit:    fcb30073 Merge branch 'wireguard-fixes-for-5-12-rc1'
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=148f1646d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2b8307379601586a
+dashboard link: https://syzkaller.appspot.com/bug?extid=8b6719da8a04beeafcc3
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=122a61a8d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1648d632d00000
 
-Currently using kernel 5.4.99. I still have no idea what's going on.
+Bisection is inconclusive: the issue happens on the oldest tested release.
 
-> On which kernel version do you face this problem?
->
-The kernel version 4.4 works ok. The minimum version where I found the
-problem were the kernel 4.9.111, now using 5.4. And 5.10 also tested.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10406466d00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=12406466d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14406466d00000
 
-Regards
-Daniel
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8b6719da8a04beeafcc3@syzkaller.appspotmail.com
 
-> > Regards
-> >> --
-> >> Florian
->
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 PID: 8419 Comm: syz-executor652 Not tainted 5.11.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:nla_get_le16 include/net/netlink.h:1599 [inline]
+RIP: 0010:ieee802154_llsec_parse_dev_addr+0x2b3/0x370 net/ieee802154/nl802154.c:1306
+Code: 00 0f 85 d5 00 00 00 48 89 5d 08 e9 5c ff ff ff e8 72 2e e4 f8 49 8d 7e 04 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 04 84 d2 75 7d 48
+RSP: 0018:ffffc90001797390 EFLAGS: 00010247
+RAX: dffffc0000000000 RBX: 0000000000000002 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff888eab3e RDI: 0000000000000004
+RBP: ffffc90001797590 R08: ffffffff8a8934e0 R09: ffffffff888eaa81
+R10: 0000000000000002 R11: 0000000000000002 R12: 1ffff920002f2e72
+R13: 0000000000000000 R14: 0000000000000000 R15: ffff88802171cc78
+FS:  00000000016b2300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000408 CR3: 000000001360f000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ ieee802154_llsec_parse_key_id+0x343/0x410 net/ieee802154/nl802154.c:1344
+ nl802154_set_llsec_params+0x1db/0x470 net/ieee802154/nl802154.c:1399
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2348
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2402
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2435
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43fc09
+Code: 28 c3 e8 5a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffed214c208 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004004a0 RCX: 000000000043fc09
+RDX: 0000000000000040 RSI: 0000000020000680 RDI: 0000000000000003
+RBP: 0000000000403670 R08: 0000000000000004 R09: 00000000004004a0
+R10: 000000000000000c R11: 0000000000000246 R12: 0000000000403700
+R13: 0000000000000000 R14: 00000000004ad018 R15: 00000000004004a0
+Modules linked in:
+---[ end trace 20aa2d549964b50b ]---
+RIP: 0010:nla_get_le16 include/net/netlink.h:1599 [inline]
+RIP: 0010:ieee802154_llsec_parse_dev_addr+0x2b3/0x370 net/ieee802154/nl802154.c:1306
+Code: 00 0f 85 d5 00 00 00 48 89 5d 08 e9 5c ff ff ff e8 72 2e e4 f8 49 8d 7e 04 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 04 84 d2 75 7d 48
+RSP: 0018:ffffc90001797390 EFLAGS: 00010247
+RAX: dffffc0000000000 RBX: 0000000000000002 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff888eab3e RDI: 0000000000000004
+RBP: ffffc90001797590 R08: ffffffff8a8934e0 R09: ffffffff888eaa81
+R10: 0000000000000002 R11: 0000000000000002 R12: 1ffff920002f2e72
+R13: 0000000000000000 R14: 0000000000000000 R15: ffff88802171cc78
+FS:  00000000016b2300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f3256d2dab4 CR3: 000000001360f000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
