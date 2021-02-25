@@ -2,281 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A483259FC
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 23:58:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9440325A04
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 00:03:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232938AbhBYW53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 17:57:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
+        id S230352AbhBYXBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 18:01:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233158AbhBYW5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 17:57:12 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C380CC06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 14:56:27 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id n4so6821214wrx.1
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 14:56:27 -0800 (PST)
+        with ESMTP id S229548AbhBYXBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 18:01:12 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AACC061574
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:00:31 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id z7so4051292plk.7
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:00:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=y3OvHUuNevj5gtUgvRPGqkkcrjUNYWEErQNUAN5fYME=;
-        b=ltjsJ8nd0r4qAEwW0dleDDpDX2QIpZPlCHbriVTyiLkPQ80HF5ShkMSzSNgfGyIj4D
-         jPa2x6Mgro36BQx5OReNud4J1QBs2lktVtIQwrj4X7k+kjlvt/9cIzjClwdo04alxIU0
-         Ci0H5uREqtg58Fr9WBYjSfcPEXHfEhOmJOID66XX2SuWAHW/2MqRZHJ51KjgxSFJYpir
-         D1UYHe7CCtbYSHtaQrZWQhhJoM36rn/ZgGuFYNrqGg+i6H075nlJ0miMnp7/HUQKM95T
-         crC8MO7j/T2pdzVY1shuEQsIoW9YxoKBZOW/GtOl6RH74O44+TTaPZMyypXekwS64iaB
-         IWiw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kxf9h4tqUsK+VxixyxuIKeqPvIe3ukAs7MJqIhaIljw=;
+        b=EIHIeEjtemU9tTbuafRDsaPZaBpZRpTeE9HzxYzoK0BANlVYIT7MBzE6MLcVayPJzp
+         7Qxywjf8K9Ayz4491t4Xy1lV5KTXR5X8BXblu/1D/aeQXcvTJIWPT0h+6Ozj19uPXGZ+
+         gVRksniQtWHjfyRqaxW3TmSnDulGPE4QOtqHfvwuDzebAQ7JsJ8DEoC8e+R+46lJUMDP
+         OzIkDvWlvijSvyI+Xrn4N9fzdIN9vf4h9vr6oQGUsMHFSHfM55DCwOCGriI1u7an5QMf
+         wvykasVS3QT+cRINAQL88xHj4y3g2fSsFN6avD4+GQU4X5WJxSgVtUDNps2fiqku4gtU
+         vezw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=y3OvHUuNevj5gtUgvRPGqkkcrjUNYWEErQNUAN5fYME=;
-        b=GHomHRun6Oq75wzx3aOo7N8dU/LeZQFUdUJBjBZ8wMXUyYQtbvX5LzZA6xgy1+uonc
-         QCJLBnJMmArc2cxM/NPcz+76ycU0+G5UnZOaqdpYXrGqoIQ43w5RYXdMSYIJVGgNmTtA
-         xcVe/PQBHhdAm8/a/ItoFPH09LvRaBUVJE5/GsezbkJ5Hu+UhVaIjobHcvKtWFMmD2TM
-         udU+VKDcsKXytw5oRDJ+q6659S0Qe9KQX9uGN1rJLViJQFycUaPglbFciM4Wz8EMyiXM
-         p/ghhJ3sn2/XGpkGJV0HwvPXoEJ80LxtmQBxdHnC+NuU0fdWJYPzuUHX8kTqn+egVddZ
-         ex+Q==
-X-Gm-Message-State: AOAM532h0jsB209tqtrVsS/kvivHwPJiS5IP3AIbXBJEHaB8WqRfUSbX
-        fvfOpDuUJ/yp3at8q8+ZGRMaUVVWKXSWRw==
-X-Google-Smtp-Source: ABdhPJz54MzZ4raLTa0r/CQJFKdKzOBT0tMqrqQOU54njnfZSoIE0Vbt7nIxvx6BWiLmKQK/kly/5w==
-X-Received: by 2002:a5d:5705:: with SMTP id a5mr189994wrv.333.1614293786407;
-        Thu, 25 Feb 2021 14:56:26 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f39:5b00:6075:8df8:f865:fb20? (p200300ea8f395b0060758df8f865fb20.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:6075:8df8:f865:fb20])
-        by smtp.googlemail.com with ESMTPSA id c18sm13774454wmk.0.2021.02.25.14.56.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Feb 2021 14:56:25 -0800 (PST)
-Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
-To:     =?UTF-8?Q?Daniel_Gonz=c3=a1lez_Cabanelas?= <dgcbueu@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org,
-        =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>
-References: <2323124.5UR7tLNZLG@tool>
- <9d9f3077-9c5c-e7bc-0c77-8e8353be7732@gmail.com>
- <cf8ea0b6-11ac-3dbd-29a1-337c06d9a991@gmail.com>
- <CABwr4_vwTiFzSdxu-GoON2HHS1pjyiv0PFS-pTbCEMT4Uc4OvA@mail.gmail.com>
- <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
- <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
- <7fc4933f-36d4-99dc-f968-9ca3b8758a9b@gmail.com>
- <CABwr4_siD8PcXnYuAoYCqQp8ioikJQiMgDW=JehX1c+0Zuc3rQ@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <4ee0ce3b-39b8-8645-77ce-dd9cb1b1f857@gmail.com>
-Date:   Thu, 25 Feb 2021 23:56:16 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kxf9h4tqUsK+VxixyxuIKeqPvIe3ukAs7MJqIhaIljw=;
+        b=jsh9mxDGl7wbAVgI458GeerG9187pROdjELBE6q4vePLu1o3wGjL5pKhOWUDn8Ah13
+         rQ5VWT6NGp/Sm4T8pzouj7bm7agFFrE65xVj7i8ZAKWlnvmG+jLu2bJY4S2SnfeppORS
+         DU9vcDkV1I6/zdEje7ptHE/LnVAxJY33OfQPf48ofexkjF4eEdrxHjAG21ZmkhvXCDDB
+         oHeUd8kDkKu9t4oeOtEiLlG0cjgKlAz/2eEunPx1/lhXCy8CIiFeDitgD5dDOn3Wl4Rd
+         E9eMZF3VQ/H6ZK2QqT3Rnne0TOx4Uu7VaaJa/CHwY241hYJDvMcxBEexuJ+RTjqJvJAR
+         wsEA==
+X-Gm-Message-State: AOAM530lmFoqR8/MW+Q5Mou8Im/C3SNoNlJW2PNy1ck3CyOYQBw+jum1
+        CtBoNTnQfyuOrinkVVOcZFnI/dmsSaprFwJMt2X2jg==
+X-Google-Smtp-Source: ABdhPJz6Ii9ETPujzxwPz7oiV4RzSQkzSeteTwFuaTbiAz44zQaEKPLe0wompjkm7asJ+IB06x45zotHTVhXN281NNs=
+X-Received: by 2002:a17:902:b610:b029:e3:2b1e:34ff with SMTP id
+ b16-20020a170902b610b02900e32b1e34ffmr81112pls.69.1614294031100; Thu, 25 Feb
+ 2021 15:00:31 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CABwr4_siD8PcXnYuAoYCqQp8ioikJQiMgDW=JehX1c+0Zuc3rQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210215120345.GE2087@kadam> <33d68f94-2d20-fdc4-c572-16138aa6305b@gmail.com>
+ <20210215160222.GE2222@kadam>
+In-Reply-To: <20210215160222.GE2222@kadam>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Thu, 25 Feb 2021 15:00:20 -0800
+Message-ID: <CAOFY-A250ZDuE3PgFHueLWWRP187uEXFPw78XR_O_eFzS9p-Fg@mail.gmail.com>
+Subject: Re: [net-next] tcp: Sanitize CMSG flags and reserved args in tcp_zerocopy_receive.
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     David Ahern <dsahern@gmail.com>, kbuild@lists.01.org,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, lkp@intel.com,
+        kbuild-all@lists.01.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.02.2021 23:28, Daniel González Cabanelas wrote:
-> El jue, 25 feb 2021 a las 21:05, Heiner Kallweit
-> (<hkallweit1@gmail.com>) escribió:
->>
->> On 25.02.2021 17:36, Daniel González Cabanelas wrote:
->>> El jue, 25 feb 2021 a las 8:22, Heiner Kallweit
->>> (<hkallweit1@gmail.com>) escribió:
->>>>
->>>> On 25.02.2021 00:54, Daniel González Cabanelas wrote:
->>>>> El mié, 24 feb 2021 a las 23:01, Florian Fainelli
->>>>> (<f.fainelli@gmail.com>) escribió:
->>>>>>
->>>>>>
->>>>>>
->>>>>> On 2/24/2021 1:44 PM, Heiner Kallweit wrote:
->>>>>>> On 24.02.2021 16:44, Daniel González Cabanelas wrote:
->>>>>>>> The current bcm63xx_enet driver doesn't asign the internal phy IRQ. As a
->>>>>>>> result of this it works in polling mode.
->>>>>>>>
->>>>>>>> Fix it using the phy_device structure to assign the platform IRQ.
->>>>>>>>
->>>>>>>> Tested under a BCM6348 board. Kernel dmesg before the patch:
->>>>>>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
->>>>>>>>               BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01, irq=POLL)
->>>>>>>>
->>>>>>>> After the patch:
->>>>>>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
->>>>>>>>               BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01, irq=17)
->>>>>>>>
->>>>>>>> Pluging and uplugging the ethernet cable now generates interrupts and the
->>>>>>>> PHY goes up and down as expected.
->>>>>>>>
->>>>>>>> Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
->>>>>>>> ---
->>>>>>>> changes in V2:
->>>>>>>>   - snippet moved after the mdiobus registration
->>>>>>>>   - added missing brackets
->>>>>>>>
->>>>>>>>  drivers/net/ethernet/broadcom/bcm63xx_enet.c | 13 +++++++++++--
->>>>>>>>  1 file changed, 11 insertions(+), 2 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
->>>>>>>> index fd876721316..dd218722560 100644
->>>>>>>> --- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
->>>>>>>> +++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
->>>>>>>> @@ -1818,10 +1818,19 @@ static int bcm_enet_probe(struct platform_device *pdev)
->>>>>>>>               * if a slave is not present on hw */
->>>>>>>>              bus->phy_mask = ~(1 << priv->phy_id);
->>>>>>>>
->>>>>>>> -            if (priv->has_phy_interrupt)
->>>>>>>> +            ret = mdiobus_register(bus);
->>>>>>>> +
->>>>>>>> +            if (priv->has_phy_interrupt) {
->>>>>>>> +                    phydev = mdiobus_get_phy(bus, priv->phy_id);
->>>>>>>> +                    if (!phydev) {
->>>>>>>> +                            dev_err(&dev->dev, "no PHY found\n");
->>>>>>>> +                            goto out_unregister_mdio;
->>>>>>>> +                    }
->>>>>>>> +
->>>>>>>>                      bus->irq[priv->phy_id] = priv->phy_interrupt;
->>>>>>>> +                    phydev->irq = priv->phy_interrupt;
->>>>>>>> +            }
->>>>>>>>
->>>>>>>> -            ret = mdiobus_register(bus);
->>>>>>>
->>>>>>> You shouldn't have to set phydev->irq, this is done by phy_device_create().
->>>>>>> For this to work bus->irq[] needs to be set before calling mdiobus_register().
->>>>>>
->>>>>> Yes good point, and that is what the unchanged code does actually.
->>>>>> Daniel, any idea why that is not working?
->>>>>
->>>>> Hi Florian, I don't know. bus->irq[] has no effect, only assigning the
->>>>> IRQ through phydev->irq works.
->>>>>
->>>>> I can resend the patch  without the bus->irq[] line since it's
->>>>> pointless in this scenario.
->>>>>
->>>>
->>>> It's still an ugly workaround and a proper root cause analysis should be done
->>>> first. I can only imagine that phydev->irq is overwritten in phy_probe()
->>>> because phy_drv_supports_irq() is false. Can you please check whether
->>>> phydev->irq is properly set in phy_device_create(), and if yes, whether
->>>> it's reset to PHY_POLL in phy_probe()?.
->>>>
->>>
->>> Hi Heiner, I added some kernel prints:
->>>
->>> [    2.712519] libphy: Fixed MDIO Bus: probed
->>> [    2.721969] =======phy_device_create===========
->>> [    2.726841] phy_device_create: dev->irq = 17
->>> [    2.726841]
->>> [    2.832620] =======phy_probe===========
->>> [    2.836846] phy_probe: phydev->irq = 17
->>> [    2.840950] phy_probe: phy_drv_supports_irq = 0, phy_interrupt_is_valid = 1
->>> [    2.848267] phy_probe: phydev->irq = -1
->>> [    2.848267]
->>> [    2.854059] =======phy_probe===========
->>> [    2.858174] phy_probe: phydev->irq = -1
->>> [    2.862253] phy_probe: phydev->irq = -1
->>> [    2.862253]
->>> [    2.868121] libphy: bcm63xx_enet MII bus: probed
->>> [    2.873320] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
->>> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
->>> irq=POLL)
->>>
->>> Currently using kernel 5.4.99. I still have no idea what's going on.
->>>
->> Thanks for debugging. This confirms my assumption that the interrupt
->> is overwritten in phy_probe(). I'm just scratching my head how
->> phy_drv_supports_irq() can return 0. In 5.4.99 it's defined as:
->>
->> static bool phy_drv_supports_irq(struct phy_driver *phydrv)
->> {
->>         return phydrv->config_intr && phydrv->ack_interrupt;
->> }
->>
->> And that's the PHY driver:
->>
->> static struct phy_driver bcm63xx_driver[] = {
->> {
->>         .phy_id         = 0x00406000,
->>         .phy_id_mask    = 0xfffffc00,
->>         .name           = "Broadcom BCM63XX (1)",
->>         /* PHY_BASIC_FEATURES */
->>         .flags          = PHY_IS_INTERNAL,
->>         .config_init    = bcm63xx_config_init,
->>         .ack_interrupt  = bcm_phy_ack_intr,
->>         .config_intr    = bcm63xx_config_intr,
->> }
->>
->> So both callbacks are set. Can you extend your debugging and check
->> in phy_drv_supports_irq() which of the callbacks is missing?
->>
-> 
-> Hi, both callbacks are missing on the first check. However on the next
-> calls they're there.
-> 
-> [    2.263909] libphy: Fixed MDIO Bus: probed
+On Mon, Feb 15, 2021 at 8:02 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> On Mon, Feb 15, 2021 at 08:04:11AM -0700, David Ahern wrote:
+> > On 2/15/21 5:03 AM, Dan Carpenter wrote:
+> > > Hi Arjun,
+> > >
+> > > url:    https://github.com/0day-ci/linux/commits/Arjun-Roy/tcp-Sanitize-CMSG-flags-and-reserved-args-in-tcp_zerocopy_receive/20210212-052537
+> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git  e4b62cf7559f2ef9a022de235e5a09a8d7ded520
+> > > config: x86_64-randconfig-m001-20210209 (attached as .config)
+> > > compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
+> > >
+> > > If you fix the issue, kindly add following tag as appropriate
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > >
+> > > smatch warnings:
+> > > net/ipv4/tcp.c:4158 do_tcp_getsockopt() warn: check for integer overflow 'len'
+> > >
+> > > vim +/len +4158 net/ipv4/tcp.c
+> > >
+> > > 3fdadf7d27e3fb Dmitry Mishin            2006-03-20  3896  static int do_tcp_getsockopt(struct sock *sk, int level,
+> > > 3fdadf7d27e3fb Dmitry Mishin            2006-03-20  3897            int optname, char __user *optval, int __user *optlen)
+> > > ^1da177e4c3f41 Linus Torvalds           2005-04-16  3898  {
+> > > 295f7324ff8d9e Arnaldo Carvalho de Melo 2005-08-09  3899    struct inet_connection_sock *icsk = inet_csk(sk);
+> > > ^1da177e4c3f41 Linus Torvalds           2005-04-16  3900    struct tcp_sock *tp = tcp_sk(sk);
+> > > 6fa251663069e0 Nikolay Borisov          2016-02-03  3901    struct net *net = sock_net(sk);
+> > > ^1da177e4c3f41 Linus Torvalds           2005-04-16  3902    int val, len;
+> > >
+> > > "len" is int.
+> > >
+> > > [ snip ]
+> > > 05255b823a6173 Eric Dumazet             2018-04-27  4146  #ifdef CONFIG_MMU
+> > > 05255b823a6173 Eric Dumazet             2018-04-27  4147    case TCP_ZEROCOPY_RECEIVE: {
+> > > 7eeba1706eba6d Arjun Roy                2021-01-20  4148            struct scm_timestamping_internal tss;
+> > > e0fecb289ad3fd Arjun Roy                2020-12-10  4149            struct tcp_zerocopy_receive zc = {};
+> > > 05255b823a6173 Eric Dumazet             2018-04-27  4150            int err;
+> > > 05255b823a6173 Eric Dumazet             2018-04-27  4151
+> > > 05255b823a6173 Eric Dumazet             2018-04-27  4152            if (get_user(len, optlen))
+> > > 05255b823a6173 Eric Dumazet             2018-04-27  4153                    return -EFAULT;
+> > > c8856c05145490 Arjun Roy                2020-02-14  4154            if (len < offsetofend(struct tcp_zerocopy_receive, length))
+> > > 05255b823a6173 Eric Dumazet             2018-04-27  4155                    return -EINVAL;
+> > >
+> > >
+> > > The problem is that negative values of "len" are type promoted to high
+> > > positive values.  So the fix is to write this as:
+> > >
+> > >     if (len < 0 || len < offsetofend(struct tcp_zerocopy_receive, length))
+> > >             return -EINVAL;
+> > >
+> > > 110912bdf28392 Arjun Roy                2021-02-11  4156            if (unlikely(len > sizeof(zc))) {
+> > > 110912bdf28392 Arjun Roy                2021-02-11  4157                    err = check_zeroed_user(optval + sizeof(zc),
+> > > 110912bdf28392 Arjun Roy                2021-02-11 @4158                                            len - sizeof(zc));
+> > >                                                                                                         ^^^^^^^^^^^^^^^^
+> > > Potentially "len - a negative value".
+> > >
+> > >
+> >
+> > get_user(len, optlen) is called multiple times in that function. len < 0
+> > was checked after the first one at the top.
+> >
+>
+> What you're describing is a "Double Fetch" bug, where the attack is we
+> get some data from the user, and we verify it, then we get it from the
+> user a second time and trust it.  The problem is that the user modifies
+> it between the first and second get_user() call so it ends up being a
+> security vulnerability.
+>
+> But I'm glad you pointed out the first get_user() because it has an
+> ancient, harmless pre git bug in it.
+>
+> net/ipv4/tcp.c
+>   3888  static int do_tcp_getsockopt(struct sock *sk, int level,
+>   3889                  int optname, char __user *optval, int __user *optlen)
+>   3890  {
+>   3891          struct inet_connection_sock *icsk = inet_csk(sk);
+>   3892          struct tcp_sock *tp = tcp_sk(sk);
+>   3893          struct net *net = sock_net(sk);
+>   3894          int val, len;
+>   3895
+>   3896          if (get_user(len, optlen))
+>   3897                  return -EFAULT;
+>   3898
+>   3899          len = min_t(unsigned int, len, sizeof(int));
+>   3900
+>   3901          if (len < 0)
+>                     ^^^^^^^
+> This is impossible.  "len" has to be in the 0-4 range because of the
+> min_t() assignment.  It's harmless though and the condition should just
+> be removed.
+>
+>   3902                  return -EINVAL;
+>   3903
+>   3904          switch (optname) {
+>   3905          case TCP_MAXSEG:
+>
+> Anyway, I will create a new Smatch warning for this situation.
+>
+> > Also, maybe I am missing something here, but offsetofend can not return
+> > a negative value, so this checks catches len < 0 as well:
+> >
+> >       if (len < offsetofend(struct tcp_zerocopy_receive, length))
+> >               return -EINVAL;
+> >
+>
+> offsetofend is (unsigned long)12.  If we compare a negative integer with
+> (unsigned long)12 then negative number is type promoted to a high
+> positive value.
+>
+>         if (-1 < (usigned long)12)
+>                 printf("dan is wrong\n");
+>
+> regards,
+> dan carpenter
+>
+>
+Thank you for the catch. I will send out a fix momentarily.
 
-This is weird. The phy_device seems to show up on both MDIO buses,
-the fixed one *and* the bcm63xx_enet bus.
-I assume that if you build your kernel w/o CONFIG_FIXED_PHY
-the issue should be gone. But that's not really a solution,
-we need to check further.
+Actually, now I'm curious - why does do_tcp_getsockopt get called so
+many times, per getsockopt target - rather than just using the
+originally read value?
 
-
-
-> [    2.273026] =======phy_device_create===========
-> [    2.277908] phy_device_create: dev->irq = 17
-> [    2.277908]
-> [    2.373104] =======phy_probe===========
-> [    2.377336] phy_probe: phydev->irq = 17
-> [    2.381445] phy_drv_supports_irq: phydrv->config_intr = 0,
-> phydrv->ack_interrupt = 0
-> [    2.389554] phydev->irq = PHY_POLL;
-> [    2.393186] phy_probe: phydev->irq = -1
-> [    2.393186]
-> [    2.398987] =======phy_probe===========
-> [    2.403108] phy_probe: phydev->irq = -1
-> [    2.407195] phy_drv_supports_irq: phydrv->config_intr = 1,
-> phydrv->ack_interrupt = 1
-> [    2.415314] phy_probe: phydev->irq = -1
-> [    2.415314]
-> [    2.421189] libphy: bcm63xx_enet MII bus: probed
-> [    2.426129] =======phy_connect===========
-> [    2.430410] phy_drv_supports_irq: phydrv->config_intr = 1,
-> phydrv->ack_interrupt = 1
-> [    2.438537] phy_connect: phy_drv_supports_irq = 1
-> [    2.438537]
-> [    2.445284] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
-> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
-> irq=POLL)
-> 
-> I also added the prints to phy_connect.
-> 
->> Last but not least: Do you use a mainline kernel, or is it maybe
->> a modified downstream kernel? In the latter case, please check
->> in your kernel sources whether both callbacks are set.
->>
-> 
-> It's a modified kernel, and the the callbacks are set. BTW I also
-> tested the kernel with no patches concerning to the ethernet driver.
-> 
-> Regards,
-> Daniel
-> 
->>
->>
->>>> On which kernel version do you face this problem?
->>>>
->>> The kernel version 4.4 works ok. The minimum version where I found the
->>> problem were the kernel 4.9.111, now using 5.4. And 5.10 also tested.
->>>
->>> Regards
->>> Daniel
->>>
->>>>> Regards
->>>>>> --
->>>>>> Florian
->>>>
->>
-
+-Arjun
