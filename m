@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BC723254C1
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:51:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D0B3254E0
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 18:53:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232394AbhBYRuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 12:50:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47344 "EHLO mail.kernel.org"
+        id S232918AbhBYRxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 12:53:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232237AbhBYRur (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 12:50:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7467664F2F;
-        Thu, 25 Feb 2021 17:50:07 +0000 (UTC)
+        id S229993AbhBYRw6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 12:52:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C740664F3B;
+        Thu, 25 Feb 2021 17:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614275407;
-        bh=HGZf4wD+9SOJFs9WegPWYrqiO6JXVwTAhHqsRSUtSDY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Uqj57k/TvNUKhiNBepHLh6c1SW+Uog71DDfJVO6KkV7KQREY2mx/5/IYxW4gUMv9n
-         HC1M7NP0f77X9wUT1xGM8sDXhD32Si8W0LKVU5Vrj7JG6lPHIBuuhaXw1uXWNj6E+h
-         mbsEfWu3K0IdWVO9UqibS1Kf9R9ApnQRIPIXru4yHF/JEN9Ku28bJ6lrStN/aRMwY/
-         j1Zv0G5BEvjeuuV5H/piynF9CVgH19YQnwiO6ETlumqyH0w2Y8vVOKmfgPypoBK2TN
-         dqza7Z8EtxKhw9tT/01+JrwT4ut4LwLLz4OqZlRlTZefiGpSD5lL8rZG6ZGUVezH3A
-         wWyRLm+PEO5SA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6862660A10;
-        Thu, 25 Feb 2021 17:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1614275538;
+        bh=FPTGhUGq7szHwsLCII12l77rlUJPQOEqsA5NMu+FjEU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OVDCKUh4OdtGyq0AjyuOlND+f9YqhtfHn/hXW584fVntpwnm3Mw86G6p1etJQxzPs
+         p15uoSpN29x+zS3Je9/5YdrAEBuvInwDXQ8suDl+8iWB6Ri6XiReh4RGeBu3pHhKA5
+         A7ib3vJcCXhS0Atty07CwQxqBf398P7pSHwztMpeguPvykVMgFjR2uF+JRj9LYJ13D
+         d2oDZ4HeCawb58hRyB428pTqt6/pZx6mWTiCDU1YZGVJpeSqcKKjttPJxHgvslhdIa
+         iyjI4j62aO4ufxgUAHhHwlHrw9FkZDw1UlUcA+yqJC0I9VhjqHJ+aZQXddpuJY2tCD
+         ja3sOlr6xrMzQ==
+Date:   Thu, 25 Feb 2021 09:52:16 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Christian Melki <christian.melki@t2data.com>
+Cc:     hkallweit1@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net] net: phy: micrel: set soft_reset callback to
+ genphy_soft_reset for KSZ8081
+Message-ID: <20210225095216.73a7d799@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YDcEl2vPZ5XABMsR@lunn.ch>
+References: <20210224205536.9349-1-christian.melki@t2data.com>
+        <YDcEl2vPZ5XABMsR@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: sja1105: Remove unneeded cast in sja1105_crc32()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161427540742.4743.13860069967965207667.git-patchwork-notify@kernel.org>
-Date:   Thu, 25 Feb 2021 17:50:07 +0000
-References: <20210223112003.2223332-1-geert+renesas@glider.be>
-In-Reply-To: <20210223112003.2223332-1-geert+renesas@glider.be>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     olteanv@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Tue, 23 Feb 2021 12:20:03 +0100 you wrote:
-> sja1105_unpack() takes a "const void *buf" as its first parameter, so
-> there is no need to cast away the "const" of the "buf" variable before
-> calling it.
+On Thu, 25 Feb 2021 02:59:51 +0100 Andrew Lunn wrote:
+> On Wed, Feb 24, 2021 at 09:55:36PM +0100, Christian Melki wrote:
+> > Following a similar reinstate for the KSZ9031.
+> > 
+> > Older kernels would use the genphy_soft_reset if the PHY did not implement
+> > a .soft_reset.
+> > 
+> > Bluntly removing that default may expose a lot of situations where various
+> > PHYs/board implementations won't recover on various changes.
+> > Like with this implementation during a 4.9.x to 5.4.x LTS transition.
+> > I think it's a good thing to remove unwanted soft resets but wonder if it
+> > did open a can of worms?
+> > 
+> > Atleast this fixes one iMX6 FEC/RMII/8081 combo.
+> > 
+> > Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+> > Signed-off-by: Christian Melki <christian.melki@t2data.com>  
 > 
-> Drop the cast, as it prevents the compiler performing some checks.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> 
-> [...]
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Here is the summary with links:
-  - net: dsa: sja1105: Remove unneeded cast in sja1105_crc32()
-    https://git.kernel.org/netdev/net/c/fcd4ba3bcba7
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied, thanks!
