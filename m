@@ -2,85 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E1C324B8D
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 08:53:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DCFD324BA6
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 09:03:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235278AbhBYHwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 02:52:38 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7285 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235106AbhBYHwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 02:52:36 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6037571c0000>; Wed, 24 Feb 2021 23:51:56 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 25 Feb
- 2021 07:51:55 +0000
-Received: from dev-r630-03.mtbc.labs.mlnx (172.20.145.6) by mail.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 25 Feb 2021 07:51:54 +0000
-From:   Chris Mi <cmi@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <kuba@kernel.org>, <idosch@nvidia.com>, <jiri@nvidia.com>,
-        Chris Mi <cmi@nvidia.com>, Yotam Gigi <yotam.gi@gmail.com>
-Subject: [PATCH net] net: psample: Fix netlink skb length with tunnel info
-Date:   Thu, 25 Feb 2021 15:51:45 +0800
-Message-ID: <20210225075145.184314-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S235396AbhBYIBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 03:01:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233996AbhBYIBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 03:01:30 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BD4C06174A;
+        Thu, 25 Feb 2021 00:00:49 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id u187so1927825wmg.4;
+        Thu, 25 Feb 2021 00:00:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ta3OzSEGe0pGlQa1/6wh2mwdIsBwlShcPy03EcAAeAY=;
+        b=VXXSoEL1t70kSem0mjxSbGWP2l6WCl0JVg+qcf3LKgJc8uCjkp92ZqltT/hwL8kLsP
+         53gmcOnplQ9dzznSZZr0dAHENJQkRzP4pHwsxvLOhfHNekpRVEiUWPnqtoMeMeKJ06So
+         FYBtR1gH7+ZNaiHa8A1hG8cL1knnt62JS28c828hQ+pK0OjLwu4Fw9C1K7SdjueGyYV3
+         G197nX5N4lB5g2oie7ym9TaaK3fWGmFJTPH2psNFo0qBqbepuiEq0dQmTusrkVPiIg67
+         ABQ+kxVMU1OA++tHQ3Hbx6FJFyk8tYPN6hYxQxa5z+/xcA6dSBgJgrrCUts0ziy+w+zE
+         YfBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ta3OzSEGe0pGlQa1/6wh2mwdIsBwlShcPy03EcAAeAY=;
+        b=aCdavDbZauTrffyqfQRUbJSFoqhKTPw/jSS06qH8Ir9l38rYwXol0YySPiLVb+1k5s
+         e0MN/7X7Yu/sh87t4WFjrYzIaJxpuEBZRcSsG1O/0Uux0I/bFFU/6iSZn0TFe2mGpxQG
+         x2rM8zZ9dC5E/27HIgLB696LBixULOWLtXQXGOeIXx/QmeE9KZTXEwnEQYmcjLo9rIL9
+         g3eD/+cm2SYANGYeGmvHAAyzCQHGHeo6qDrphuMOMPzfvCtghs9Edz0uVEdoaerW4hvW
+         QkDWwj9X0CZFYDC5C0vX9nhOQRLZPUMSdimrtD/gaCmb14oDoCCT8ucdYon84OLe9SsG
+         y2PA==
+X-Gm-Message-State: AOAM530SJozV90GHOx0zigwtRQJY8OibvRTIAfmw254wEVeXLlr2dJZi
+        jTU/myncXKEO/+q4t9fzaaI=
+X-Google-Smtp-Source: ABdhPJx6GyXM8A7kx8tYW9O+qz2cM9BODx6C5yY8gS1kwSuwaBZ4InciA2vUTVFHQlnGjzE0OC2WAg==
+X-Received: by 2002:a05:600c:4e8a:: with SMTP id f10mr1945621wmq.15.1614240048633;
+        Thu, 25 Feb 2021 00:00:48 -0800 (PST)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id o3sm764567wmq.46.2021.02.25.00.00.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Feb 2021 00:00:48 -0800 (PST)
+Date:   Thu, 25 Feb 2021 09:02:46 +0100
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Ajay.Kathat@microchip.com, Claudiu.Beznea@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wilc1000: write value to WILC_INTR2_ENABLE register
+Message-ID: <YDdZpjoa8rODL0px@gmail.com>
+References: <20210224163706.519658-1-marcus.folkesson@gmail.com>
+ <87pn0pfmb4.fsf@codeaurora.org>
+ <1b8270b5-047e-568e-8546-732bac6f9b0f@microchip.com>
+ <87lfbcfwt1.fsf@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614239516; bh=52u0rhslFWz2tzkaU4C8WuTazW8xn9tBt7LU9uwwvyg=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type;
-        b=ccGDUC9GmHyERNwmthTWFF5seO16L55Roz7aUrQqBAwGyeCr00bzPqvuJI66xk7qB
-         Ca4hDbJHOgIGjOs4/c8/5jSQNeCqUfOodKEv3W0kqdweWas5a2M+XDruwnVjTzjm2D
-         BOGqaLUW5LzA0BNPdfcD0FppC6fi7tgOc/NcXO+XK9n0Ksr873+GY+B7osI58SrMaO
-         /Zy43Uia5+SaNzd9Jdvu4dAF7bIUH/S+XLA4vc1/iLSNm0DNw5y7zVrv1bm6AJThkf
-         F1c4vAKgzftKtKiRxrXUp0lKoHECU9jelK1l1+ROuYKsNI4k7/ky/QQ/3RMVU5JNjr
-         sEYn5f0a5khtw==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ofArnjgXtp6/xcZ6"
+Content-Disposition: inline
+In-Reply-To: <87lfbcfwt1.fsf@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the psample netlink skb is allocated with a size that does
-not account for the nested 'PSAMPLE_ATTR_TUNNEL' attribute and the
-padding required for the 64-bit attribute 'PSAMPLE_TUNNEL_KEY_ATTR_ID'.
-This can result in failure to add attributes to the netlink skb due
-to insufficient tail room. The following error message is printed to
-the kernel log: "Could not create psample log message".
 
-Fix this by adjusting the allocation size to take into account the
-nested attribute and the padding.
+--ofArnjgXtp6/xcZ6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: d8bed686ab96 ("net: psample: Add tunnel support")
-CC: Yotam Gigi <yotam.gi@gmail.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
----
- net/psample/psample.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi,
 
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..482c07f2766b 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -309,10 +309,10 @@ static int psample_tunnel_meta_len(struct ip_tunnel_i=
-nfo *tun_info)
- 	unsigned short tun_proto =3D ip_tunnel_info_af(tun_info);
- 	const struct ip_tunnel_key *tun_key =3D &tun_info->key;
- 	int tun_opts_len =3D tun_info->options_len;
--	int sum =3D 0;
-+	int sum =3D nla_total_size(0);	/* PSAMPLE_ATTR_TUNNEL */
-=20
- 	if (tun_key->tun_flags & TUNNEL_KEY)
--		sum +=3D nla_total_size(sizeof(u64));
-+		sum +=3D nla_total_size_64bit(sizeof(u64));
-=20
- 	if (tun_info->mode & IP_TUNNEL_INFO_BRIDGE)
- 		sum +=3D nla_total_size(0);
---=20
-2.26.2
+On Thu, Feb 25, 2021 at 09:09:30AM +0200, Kalle Valo wrote:
+> <Ajay.Kathat@microchip.com> writes:
+>=20
+> > On 24/02/21 10:13 pm, Kalle Valo wrote:
+> >> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> >> know the content is safe
+> >>=20
+> >> Marcus Folkesson <marcus.folkesson@gmail.com> writes:
+> >>=20
+> >>> Write the value instead of reading it twice.
+> >>>
+> >>> Fixes: 5e63a598441a ("staging: wilc1000: added 'wilc_' prefix for fun=
+ction in wilc_sdio.c file")
+> >>>
+> >>> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> >>> ---
+> >>>  drivers/net/wireless/microchip/wilc1000/sdio.c | 2 +-
+> >>>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c b/drivers=
+/net/wireless/microchip/wilc1000/sdio.c
+> >>> index 351ff909ab1c..e14b9fc2c67a 100644
+> >>> --- a/drivers/net/wireless/microchip/wilc1000/sdio.c
+> >>> +++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
+> >>> @@ -947,7 +947,7 @@ static int wilc_sdio_sync_ext(struct wilc *wilc, =
+int nint)
+> >>>                       for (i =3D 0; (i < 3) && (nint > 0); i++, nint-=
+-)
+> >>>                               reg |=3D BIT(i);
+> >>>
+> >>> -                     ret =3D wilc_sdio_read_reg(wilc, WILC_INTR2_ENA=
+BLE, &reg);
+> >>> +                     ret =3D wilc_sdio_write_reg(wilc, WILC_INTR2_EN=
+ABLE, reg);
+> >>=20
+> >> To me it looks like the bug existed before commit 5e63a598441a:
+> >
+> >
+> > Yes, you are correct. The bug existed from commit c5c77ba18ea6:
+> >
+> > https://git.kernel.org/linus/c5c77ba18ea6
+>=20
+> So the fixes tag should be:
+>=20
+> Fixes: c5c77ba18ea6 ("staging: wilc1000: Add SDIO/SPI 802.11 driver")
 
+You are right.
+
+>=20
+> I can change that during commit, ok?
+
+Please do, thanks!
+
+>=20
+> --=20
+> https://patchwork.kernel.org/project/linux-wireless/list/
+>=20
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
+tches
+
+Best regards
+Marcus Folkesson
+
+--ofArnjgXtp6/xcZ6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmA3WaEACgkQiIBOb1ld
+UjLhEQ//UpMRDqeT7f6q2ck/6okAuqT2Jff7LrRq9oONDcxyePfKcCTa1VhWDA47
+jo+3iXMBwuyFQOKWJ7PWUp3EVtPM2A3urcZTGoijfKAXtzE+PEf2yO2eC7Yk3tSx
+vA3djsIrQT35w7OnGpnE5PFWDbDBAVS7mK/xSjngdB4f3FWsDg7kDQqO1JWyXyAB
+ZtH+HBjEuaZ+xzfCVWfXh5D+UnvIZnTcvABHtTrWpXKhhuYGbov3iIg9h1ZhYNDb
+0KW1W8MnXSUNEVbJo6HapxP+IHMoP+GOOOYG3alyR1FqfNr199sQWzKUPX26bvt7
+01j8c6+Pk5o6i4/IAkkCTcCtykoAxyGfGlWdefSuKFhXoCnLu61cE8wQLsJd73P+
+Emvb8W++oUmtYD960suSr5O9CyG8thVKpDVb/Lc+LVTZU9JMf1HPNmTsyeJFPkYh
+dcb6OWEu6YlF8P+Xi5KjGXwuvxrzYRFbmM73DKuzYAiMG163TsSwLx/kLYEfFN95
+h/gRAEA0rV3IGdUKkGz0urwl5X+jlkLciPHW4cD7bdFN523JQWRzpjsvB+taTPmR
+rlq5i+ECyERA8Daj+DF6Q8TzVllty+Z8cVFs4Rqp1WiXDqm2dnbZa8Hr4NFM1GGc
+Kh5TIIEsXmJBdT+/l4rjfq8ZlljapSn1R5SN+PK+H2Iq3TAdcjg=
+=HVvU
+-----END PGP SIGNATURE-----
+
+--ofArnjgXtp6/xcZ6--
