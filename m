@@ -2,154 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7251325239
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:20:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E3F5325266
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:28:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbhBYPSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 10:18:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60147 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231248AbhBYPSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 10:18:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614266203;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ozeQTDLaZ00GZ1fdAE68ODxlqYJtYZh4rnRKYlI0+3s=;
-        b=H9igGBapCMqZ3kKqkBKPrfosXRsBWufO2KBAX8Fhq/mEf93d8RcvX5mZRrlyOzjnZTn3dn
-        lXAFQZOwv+oxQKmp+Pk8fGTdWpjkvpL/AfTUUmb0AQm1skwamxx19RuSkFo606mwmVX/tC
-        5YNDjwYVMk/ixvVEH+wsnne6/XXawxw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-179-kD9_EiBkOqyof0Bqi5sK5Q-1; Thu, 25 Feb 2021 10:16:40 -0500
-X-MC-Unique: kD9_EiBkOqyof0Bqi5sK5Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3352E84E243;
-        Thu, 25 Feb 2021 15:16:39 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 937945D9C2;
-        Thu, 25 Feb 2021 15:16:34 +0000 (UTC)
-Date:   Thu, 25 Feb 2021 16:16:33 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     linux-mm@kvack.org, chuck.lever@oracle.com, netdev@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brouer@redhat.com
-Subject: Re: [PATCH RFC net-next 3/3] mm: make zone->free_area[order] access
- faster
-Message-ID: <20210225161633.53e5f910@carbon>
-In-Reply-To: <20210225112849.GM3697@techsingularity.net>
-References: <161419296941.2718959.12575257358107256094.stgit@firesoul>
-        <161419301128.2718959.4838557038019199822.stgit@firesoul>
-        <20210225112849.GM3697@techsingularity.net>
+        id S232372AbhBYP05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 10:26:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232033AbhBYPZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 10:25:35 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C3FC061574
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 07:24:53 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id k13so9507699ejs.10
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 07:24:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eV8ZfLDH2sADRwQYB9EeEKkzInLgx8WucRP9R0/UwCc=;
+        b=Ms9LteRaNuSL8A9am9ssEWOjj4vRGWN3X6+0PZJ+UJxI1kOgGc6xRdBWdAIWDBhG41
+         gO0wLUzbZzSLDAyb1n9oKu5vpgZrScMG65N+Ojb3AlVvvaD/kbg7ha0S2oBT6p3TACwj
+         a2qxCMNS+hTbB4QUx1NFuA7zfQ6e6mgwDlqgMx2tgwb4DJTc8ncWYnU43XTBRbJURBVU
+         R9Kg/AcNVJRMstYNnoGPCBOIgOfnjGEUGKW/GJGP9x18IciPMazQb/6gP1LRQxCVhmzD
+         1SN+xL1s0aJRVgfqqeaU6E4HtWwO6ZVtTSMREmBFsjmf4sV3xTIvdtbzYyEqCvh1v+Dh
+         aEZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eV8ZfLDH2sADRwQYB9EeEKkzInLgx8WucRP9R0/UwCc=;
+        b=Xg/sOXJ0MPCI6g/gZ4frqsyHRa8r6HqYp5jIBjI0LHxm9U+zvvpQzJgDFquG/WEeFK
+         GffsbOALPcsnypitlrYXenPQ3gwOr2k/7r+kzbllkygRQzxrUiKiH2XjqN/cExaC9nW8
+         VwuKfda0mkE3QEZimElim2fJOprH4WD43/OGxct0PitsxlqpcSVFCgJSZMR9RTNcwJdc
+         i2pGAut1s0YBUQkT6z2cvROpdp7Q+kOL0UHiBPqMAfnJAfL66HfKBV91CwbqEP5yY3CR
+         wUFTDC6//ehDx4agvgPjURMntHHA2upQ/OTI8Suq2GapAp79U98SnIICTctMT+VbeBm4
+         BA2Q==
+X-Gm-Message-State: AOAM531vXz7lmnNp9337gruGH4aA7I91dea2PDeRtP8b66DivBLqFfIY
+        Z5iP7mXNwaFTn1NVIw2y42g=
+X-Google-Smtp-Source: ABdhPJzd5Mv8NO2Rxt5rg2vAAeLles+odOOiL/YgOXFHyOZ61c8y0RkEEYKSWOmBD6Xar6B65nBywg==
+X-Received: by 2002:a17:907:1607:: with SMTP id hb7mr3069180ejc.265.1614266692452;
+        Thu, 25 Feb 2021 07:24:52 -0800 (PST)
+Received: from [192.168.0.104] ([77.126.80.25])
+        by smtp.gmail.com with ESMTPSA id s2sm3529160edt.35.2021.02.25.07.24.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Feb 2021 07:24:52 -0800 (PST)
+Subject: Re: bug report: WARNING in bonding
+To:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Itay Aveksis <itayav@nvidia.com>,
+        Ran Rozenstein <ranro@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+References: <fb299ee2-4cf0-31d8-70f4-874da43e0021@gmail.com>
+ <20201112154627.GA2138135@shredder>
+ <e864f9a3-cda7-e498-91f4-894921527eaf@gmail.com>
+ <20201112163307.GA2140537@shredder>
+ <67b689d8-419b-78ec-0286-0983337ca3c1@gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <d2979424-bb3e-3e1f-d53c-2b3580811533@gmail.com>
+Date:   Thu, 25 Feb 2021 17:24:48 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <67b689d8-419b-78ec-0286-0983337ca3c1@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Feb 2021 11:28:49 +0000
-Mel Gorman <mgorman@techsingularity.net> wrote:
 
-> As a side-node, I didn't pick up the other patches as there is review
-> feedback and I didn't have strong opinions either way. Patch 3 is curious
-> though, it probably should be split out and sent separetly but still;
+
+On 2/18/2021 7:10 PM, Tariq Toukan wrote:
 > 
-> On Wed, Feb 24, 2021 at 07:56:51PM +0100, Jesper Dangaard Brouer wrote:
-> > Avoid multiplication (imul) operations when accessing:
-> >  zone->free_area[order].nr_free
-> > 
-> > This was really tricky to find. I was puzzled why perf reported that
-> > rmqueue_bulk was using 44% of the time in an imul operation:
-> > 
-> >        ???     del_page_from_free_list():
-> >  44,54 ??? e2:   imul   $0x58,%rax,%rax
-> > 
-> > This operation was generated (by compiler) because the struct free_area have
-> > size 88 bytes or 0x58 hex. The compiler cannot find a shift operation to use
-> > and instead choose to use a more expensive imul, to find the offset into the
-> > array free_area[].
-> > 
-> > The patch align struct free_area to a cache-line, which cause the
-> > compiler avoid the imul operation. The imul operation is very fast on
-> > modern Intel CPUs. To help fast-path that decrement 'nr_free' move the
-> > member 'nr_free' to be first element, which saves one 'add' operation.
-> > 
-> > Looking up instruction latency this exchange a 3-cycle imul with a
-> > 1-cycle shl, saving 2-cycles. It does trade some space to do this.
-> > 
-> > Used: gcc (GCC) 9.3.1 20200408 (Red Hat 9.3.1-2)
-> >   
 > 
-> I'm having some trouble parsing this and matching it to the patch itself.
+> On 11/12/2020 6:33 PM, Ido Schimmel wrote:
+>> On Thu, Nov 12, 2020 at 05:54:30PM +0200, Tariq Toukan wrote:
+>>>
+>>>
+>>> On 11/12/2020 5:46 PM, Ido Schimmel wrote:
+>>>> On Thu, Nov 12, 2020 at 05:38:44PM +0200, Tariq Toukan wrote:
+>>>>> Hi all,
+>>>>>
+>>>>> In the past ~2-3 weeks, we started seeing the following WARNING and 
+>>>>> traces
+>>>>> in our regression testing systems, almost every day.
+>>>>>
+>>>>> Reproduction is not stable, and not isolated to a specific test, so 
+>>>>> it's
+>>>>> hard to bisect.
+>>>>>
+>>>>> Any idea what could this be?
+>>>>> Or what is the suspected offending patch?
+>>>>
+>>>> Do you have commit f8e48a3dca06 ("lockdep: Fix preemption WARN for 
+>>>> spurious
+>>>> IRQ-enable")? I think it fixed the issue for me
+>>>>
+>>>
+>>> We do have it. Yet issue still exists.
+>>
+>> I checked my mail and apparently we stopped seeing this warning after I
+>> fixed a lockdep issue (spin_lock() vs spin_lock_bh()) in a yet to be
+>> submitted patch. Do you see any other lockdep warnings in the log
+>> besides this one? Maybe something in mlx4/5 which is why syzbot didn't
+>> hit it?
+>>
 > 
-> First off, on my system (x86-64), the size of struct free area is 72,
-> not 88 bytes. For either size, cache-aligning the structure is a big
-> increase in the struct size.
-
-Yes, the increase in size is big. For the struct free_area 40 bytes for
-my case and 56 bytes for your case.  The real problem is that this is
-multiplied by 11 (MAX_ORDER) and multiplied by number of zone structs
-(is it 5?).  Thus, 56*11*5 = 3080 bytes.
-
-Thus, I'm not sure it is worth it!  As I'm only saving 2-cycles, for
-something that depends on the compiler generating specific code.  And
-the compiler can easily change, and "fix" this on-its-own in a later
-release, and then we are just wasting memory.
-
-I did notice this imul happens 45 times in mm/page_alloc.o, with this
-offset 0x58, but still this is likely not on hot-path.
-
-> struct free_area {
->         struct list_head           free_list[4];         /*     0    64 */
->         /* --- cacheline 1 boundary (64 bytes) --- */
->         long unsigned int          nr_free;              /*    64     8 */
+> Hi,
 > 
->         /* size: 72, cachelines: 2, members: 2 */
->         /* last cacheline: 8 bytes */
-> };
+> Issue still reproduces. Even in GA kernel.
+> It is always preceded by some other lockdep warning.
 > 
-> Are there other patches in the tree? What does pahole say?
+> So to get the reproduction:
+> - First, have any lockdep issue.
+> - Then, open bond interface.
+> 
+> Any idea what could it be?
+> 
+> We'll share any new info as soon as we have it.
+> 
+> Regards,
+> Tariq
 
-The size of size of struct free_area varies based on some CONFIG
-setting, as free_list[] array size is determined by MIGRATE_TYPES,
-which on my system is 5, and not 4 as on your system.
 
-  struct list_head	free_list[MIGRATE_TYPES];
+Bisect shows this is the offending commit:
 
-CONFIG_CMA and CONFIG_MEMORY_ISOLATION both increase MIGRATE_TYPES with one.
-Thus, the array size can vary from 4 to 6.
+commit 4d004099a668c41522242aa146a38cc4eb59cb1e
+Author: Peter Zijlstra <peterz@infradead.org>
+Date:   Fri Oct 2 11:04:21 2020 +0200
 
+     lockdep: Fix lockdep recursion
 
-> With gcc-9, I'm also not seeing the imul instruction outputted like you
-> described in rmqueue_pcplist which inlines rmqueue_bulk. At the point
-> where it calls get_page_from_free_area, it's using shl for the page list
-> operation. This might be a compiler glitch but given that free_area is a
-> different size, I'm less certain and wonder if something else is going on.
+     Steve reported that lockdep_assert*irq*(), when nested inside lockdep
+     itself, will trigger a false-positive.
 
-I think it is the size variation.
+     One example is the stack-trace code, as called from inside lockdep,
+     triggering tracing, which in turn calls RCU, which then uses
+    lockdep_assert_irqs_disabled().
 
-> Finally, moving nr_free to the end and cache aligning it will make the
-> started of each free_list cache-aligned because of its location in the
-> struct zone so what purpose does __pad_to_align_free_list serve?
-
-The purpose of purpose of __pad_to_align_free_list is because struct
-list_head is 16 bytes, thus I wanted to align free_list to 16, given we
-already have wasted the space.
-
-Notice I added some more detailed notes in[1]:
-
- [1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org#micro-optimisations
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+     Fixes: a21ee6055c30 ("lockdep: Change hardirq{s_enabled,_context} 
+to per-cpu variables")
+     Reported-by: Steven Rostedt <rostedt@goodmis.org>
+     Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+     Signed-off-by: Ingo Molnar <mingo@kernel.org>
