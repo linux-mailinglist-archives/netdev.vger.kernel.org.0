@@ -2,294 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A5E3249CB
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 05:39:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 199F63249F2
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 06:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbhBYEht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 23:37:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52576 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232177AbhBYEhq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 23:37:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614227778;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=g3Qu0W62Nsz/9XbzUBh6tNh9Gpuzlo/5AB2th8SWEnU=;
-        b=EUXG16CIPmZB4y/zMmZJhyyz3v4PnuBZlsfq8lmvazD0ezNZ0nOo3TNtMXtTv5/OZjDzxy
-        6D8JHFISmsnxkb6PDpNrGXecnqSM4aAkc5/pbvvrBcijBtoPOfNF0wGhOGrBPdsvwykbHh
-        VMiifSioXOJsFMUU9pId2LGot8iMwoU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-581-0zFEIR4jPIqZeJooYB1o6g-1; Wed, 24 Feb 2021 23:36:16 -0500
-X-MC-Unique: 0zFEIR4jPIqZeJooYB1o6g-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7208A10066F3;
-        Thu, 25 Feb 2021 04:36:15 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-239.pek2.redhat.com [10.72.13.239])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 928045F9C9;
-        Thu, 25 Feb 2021 04:36:08 +0000 (UTC)
-Subject: Re: [virtio-dev] Re: [PATCH] vdpa/mlx5: set_features should allow
- reset to zero
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        virtio-dev@lists.oasis-open.org
-References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
- <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
- <ee31e93b-5fbb-1999-0e82-983d3e49ad1e@oracle.com>
- <20210223041740-mutt-send-email-mst@kernel.org>
- <788a0880-0a68-20b7-5bdf-f8150b08276a@redhat.com>
- <20210223110430.2f098bc0.cohuck@redhat.com>
- <bbb0a09e-17e1-a397-1b64-6ce9afe18e44@redhat.com>
- <20210223115833.732d809c.cohuck@redhat.com>
- <8355f9b3-4cda-cd2e-98df-fed020193008@redhat.com>
- <20210224121234.0127ae4b.cohuck@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <be6713d3-ac98-bbbf-1dc1-a003ed06a156@redhat.com>
-Date:   Thu, 25 Feb 2021 12:36:07 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        id S234965AbhBYFIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 00:08:25 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:9410 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229445AbhBYFIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 00:08:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1614229698; x=1645765698;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=rfSrZD1RjqZpCx1q1hGd2HVLMYsNOUBqgGCbxJr8c54=;
+  b=x6cbL9F0KrIklBP3WEzCu8c7is6VkllRO/Un9CvsY/Ww2YICJ+rgMG0V
+   l4Dfen2bPp8nrUhjLfYpXDi+DsPaxYHcNqawDHhpsnD0x8g3okZf63no2
+   I5d5bRlz+Gt2sRlvypLaoUXhCV9g14Jv8QOgkEI60AciPIwzqUp0AO4SJ
+   NjZoiEsqtznwNnBkw4yBfexocG1dav6ffiQheZ45A5YjmvwEVD1o5+cOJ
+   geLH3O421fK6iun4sY7lhWoEOkwx/8dFJ6sKHx9Wq+jWHELHU8SQeQIGu
+   pu7cVDB1yNFTiu1ZhUo4PyoS1AD7Lg7vFM9+XO9TxUeKEAm2B4doQp0/H
+   g==;
+IronPort-SDR: yo2+FMjRb3vdez+RBHusuLl70V55J7XIV506fs4tAGZs5AYY+bNg8gFHqDpDbx5q/x3/rDxKQ9
+ 34Ryw8tdMQofth0axCxPelxhnBBaPPlvvQSXBeeWt1UvJzzoiRYSxbiYuqnGOJ8rHDOADPr4t9
+ lmRVhLYWJhKlfCf8xl7fYo9NUbplFG5V6K+hdLzfJLW6XlRR57nx0e6EcYZmLpbWUTRgeBLkAV
+ HpW1Mv38V0UvxViwN1KY8ecaWZaC9G6zyBrtepdh/IAwN20AYX0UNlox/sW1caqBw00a+FxdjO
+ VeY=
+X-IronPort-AV: E=Sophos;i="5.81,203,1610434800"; 
+   d="scan'208";a="45386784"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Feb 2021 22:07:02 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 24 Feb 2021 22:07:02 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
+ Transport; Wed, 24 Feb 2021 22:07:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mjRMitz6JTVvTlzV2rN3+7OnCaKSHhj2zRqgyw6tejV7h/5AJSrfQO4yPe/aTpLyITjLAFqOQW5+udGnfwB40irESsXUQb5xirFJZOjjR2AdyB0u20bYmjeUVx3ztUJj93bi8Dlq7WYIuHzwwn4pg15Z7tUzH8FYPyCVOXPTYlFGwMxIQP2BjrkZoIw4/Hsjkrh1t+dG1H7Bzw482Z200BikIqPskbBIo7PwCnqyS3QSORIHLmBGBEodSbbzYw5Hds+VCzsU7Nc8FW6sDrhN6o4blGA3vGso3ygNJ5UT3JNernGVjUrMD5n+fIhj6fsPXAdLeV3s8VeW3vkBuQQS1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rfSrZD1RjqZpCx1q1hGd2HVLMYsNOUBqgGCbxJr8c54=;
+ b=eKl3D+g/g2N185S0UeNs2g2Sf9maxEHmKgbKCJLs33RYCHfnfMjraay5VHMRL2mUnazn1846p5NTtb2PctuAbjPOuZvXA7VehtAW60z9hnI2QL9g9cd6o8pl6xyFbBX8mQlAjNVY7VmG+fF8MVrzxkFmk7wqhmxxKhEmiPkXX0sCklV1xqtEivVguo+xh877tXubEvSQxZ9g59AbjuSms29uLCbyWRou9WWFT1Nm3KR0yG8BL9dAy96DRNoqspkPJxsTge4Wog+uW/FA5wcyq4vWHVMBc30c0eekAOvxIGLsmGrCXqcCPNr+40b8jjehnnhR5wp2echJTCdlAFLPzg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rfSrZD1RjqZpCx1q1hGd2HVLMYsNOUBqgGCbxJr8c54=;
+ b=KyQR7MMqHohJ4D1r3qOTjlpplLypw5BMuAtsuoVsJukS2NUH1urqlku4D6MVuYAOXuoPubM73aNNj4hWZ56PUx+N1ArY13DV9CspJTIcnQ+n4ITFpFI2gdnmrrGZQ1/dCl/jFfYoZs8QJTouq0pmmHajcpDnVHXuDvECn5C4+qI=
+Received: from SJ0PR11MB4943.namprd11.prod.outlook.com (2603:10b6:a03:2ad::17)
+ by BY5PR11MB3992.namprd11.prod.outlook.com (2603:10b6:a03:188::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25; Thu, 25 Feb
+ 2021 05:06:59 +0000
+Received: from SJ0PR11MB4943.namprd11.prod.outlook.com
+ ([fe80::6c3c:2ae0:c40b:6082]) by SJ0PR11MB4943.namprd11.prod.outlook.com
+ ([fe80::6c3c:2ae0:c40b:6082%3]) with mapi id 15.20.3868.034; Thu, 25 Feb 2021
+ 05:06:59 +0000
+From:   <Ajay.Kathat@microchip.com>
+To:     <kvalo@codeaurora.org>, <marcus.folkesson@gmail.com>
+CC:     <Claudiu.Beznea@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <gregkh@linuxfoundation.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] wilc1000: write value to WILC_INTR2_ENABLE register
+Thread-Topic: [PATCH] wilc1000: write value to WILC_INTR2_ENABLE register
+Thread-Index: AQHXCssQF24Y+pKk20ak6ACLVCsmeqpngwDcgADPfoA=
+Date:   Thu, 25 Feb 2021 05:06:59 +0000
+Message-ID: <1b8270b5-047e-568e-8546-732bac6f9b0f@microchip.com>
+References: <20210224163706.519658-1-marcus.folkesson@gmail.com>
+ <87pn0pfmb4.fsf@codeaurora.org>
+In-Reply-To: <87pn0pfmb4.fsf@codeaurora.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+authentication-results: codeaurora.org; dkim=none (message not signed)
+ header.d=none;codeaurora.org; dmarc=none action=none
+ header.from=microchip.com;
+x-originating-ip: [106.51.110.198]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 75a0e206-77ef-4970-3557-08d8d94b2e11
+x-ms-traffictypediagnostic: BY5PR11MB3992:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR11MB39921C64F12226414E1E9D3CE39E9@BY5PR11MB3992.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:241;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2zppvzf2sJbRf41sQAA6y3Ytj5MxuyUCxySn/7RK3FBF/iYcZOZEwbtQfvXlB5en/4zNR630OW30qpVYQrLyhTQAu9MhOr1T7AK85mU/XXV7Da0AMv01HEPf9jFPAsqjuD6AzbUWvIazZQr6+brYeJy5MsucSlYCravA5XxXf+ZJ+WpfRqE2640LUkfFcoxfmR1QneV54uFsnhxqgEVBNItjgIWW+OQVxiEFHsbN/gU9pWN/dXePCj3hnYDgchKtBl5IJwlSw4ADbHOi0hEU/cCul2Imqgf7EdH8Wvd9Lb0xs3yc4/u4A1mp6KEgf0KHonz/lgOzyk/7mH5QtJmZ8YFVHUqyJVt6LpYsajfCmMK0G0XHK7JrbfglXzXrFEwg8KdVsPBWdWxbfQEC0GHBB75QWwahTwa53lT/ZhVedueUX3Q6SWJOpKMEglj5sEfC0lz9qyutpOOUbweouF8kF9j3lv4wnKucv+raNxTPTEFaI3TlhGVCn9O6D26nnWk9CA/eGU1iOcVhRs3eH2FeZLgltMYjCz90asm0iWy0aLRtPn3/EiTqUxxXUJ0knBKAsEYYB853vFI8KNM0HFjSvMEG9+y1py2RhN5EBpwQSzAD9yWGclQy2AZNvPaUak9s0XlnzsNXjeHIMQ7cN1lxYd6KENgpRfQ5qev7gi35z2Q=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB4943.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(366004)(346002)(136003)(39860400002)(53546011)(2906002)(31686004)(36756003)(55236004)(31696002)(71200400001)(26005)(6512007)(86362001)(186003)(6486002)(6506007)(316002)(91956017)(478600001)(8676002)(4326008)(2616005)(76116006)(66946007)(66556008)(110136005)(83380400001)(64756008)(966005)(8936002)(66476007)(66446008)(5660300002)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?cGxlU2NBQXgrbGhlN1RkQ3BZamlkT1A0WjVMVmc0cWpvMXpwZlh2NlUwak5G?=
+ =?utf-8?B?UTBtVEpLMEJKYkVwb2NBcXNXckhwd3FqQUw3RnM3aE1TSzBkL2FGV2grQy9t?=
+ =?utf-8?B?R0Uwc1gzbWloK0V3TG1mdFQxVjcrT2VzVEt3NmpRSDZzdk13RDFFNFdMRnI2?=
+ =?utf-8?B?MlVOV3FNR0pRSnMxak1lQmNQOTNGVHE2dVZnaDRQWXV3bmxkVFljYklOVkpk?=
+ =?utf-8?B?RHBxQndqVXBuUFJWSU16SzRTeEhCZHlBRTlCeWQ3NkxlRUZyNHNIYWQyQ0lt?=
+ =?utf-8?B?NzV5Wk5jMlNHQW4yM0pxc21neE1FSlRKd3RWU3JwWTM0WXdUaExnMnhaN0V1?=
+ =?utf-8?B?eWVwMGQxMFBBMXBYdkZwM1RITVJtMy8wd0lOMGtZaXdOZk1hd2pFQ1gyNHk0?=
+ =?utf-8?B?SUJMb00vNXduWlJlZWh4M3VTVStNZ2dydC92NG8xQ1lRL1NyZXhtdFZiSlRO?=
+ =?utf-8?B?UmJsUUt5bFgvNzlpMUtQQkRTZW9pRDlhR29EblZtL2ZvTWlERVROZC85Wkhk?=
+ =?utf-8?B?bHlHOU5hOTc2dHJGQ1VLWjcxMG9BWWdWenpyRkduR3lrdWVPUEc3ZXZ5ZTdD?=
+ =?utf-8?B?VW10eDJvVHJuOFNUb0FHQWZXTitVZ2JVYkZrWjA4c1A3OXBsbjMyN2RyeGNT?=
+ =?utf-8?B?RUF0OUVzWXVKVW51Z1VuNWxNL2FqaGZXUWRBRzJiWVIwQU5DRW9rSGZ3STR5?=
+ =?utf-8?B?RHhYMXdPZVFmQ2tTSzQ3bk9GSDdVcWdyMndUMTdTWTFFWlAra01TS01UeTZ5?=
+ =?utf-8?B?SkRNMG9SaksyWkRBNU11WTRPTDFaVlptNTBTT1VMbnFQWnozdjNENVRMek9y?=
+ =?utf-8?B?ZmFxRzFjNnZIa2xhUTRheUpKTGFuc1o1cS9hdlVWZmZDMnF1YnVHMVkwNThu?=
+ =?utf-8?B?cWtMTzNuMHA5bzhXVm1uU2VrY2xpdks0QndhSHNZYkNjOFFodXZBVTJQZGVj?=
+ =?utf-8?B?SWdnNWc3YXFVSHc1cGtqNDlqSUY4Z0hleUE4NVJGVzltcTJORHE2WDNNV0Fz?=
+ =?utf-8?B?TFArelJnbWxOMXRWc0ExQjdlZ1dlNUtzT0kyUXdUSUZYSWtoN2xIeDFRRlVh?=
+ =?utf-8?B?UVJNbHBTVEVpRG5lSE1hRTZWMURBeEdoOUs4OC9vODVXdFd6Nm0vMWcxZlpU?=
+ =?utf-8?B?NGo4NEt3RmtMWDRLZUM5ZmJTV3RFZHBZb3NhRkVndzQwNGFPc2Y4MTRQUG1h?=
+ =?utf-8?B?SU5ZaWFrYXdtS3JwdHhkVHVFbm1KN2tTNHIvb0IyTEY3YllJNEQwL2thYmhQ?=
+ =?utf-8?B?MHo1VU0rVXF5N1ptdFBSV0tCMm5xb0RsTkZQQm1QNUNpNkxRam1TNVVJUG1h?=
+ =?utf-8?B?UmY5WWNJZUthS0NRZEN1ZjM4VURkTHJlR1F6NjJSWm82SGpTTjU2RmJQRFRQ?=
+ =?utf-8?B?QllKeU9BczRFbWVWdGI5UktwdVgrWmt0TTVmbjVTaDVQUUFXRjl5UC9aRWVi?=
+ =?utf-8?B?VDlJa0E3Z21qUm1ud3dJUm8rbjlwV29OU2hOQWpNU2czcDBMbnF5dDVKSXpQ?=
+ =?utf-8?B?WHFBSVRsNkVWMUpSNWNhUkdvQ1ZuQVhNL3UxMjVyQlpnUE54cVpxak9qbEpa?=
+ =?utf-8?B?RXMwNWRvS1ZIcGZvNHVPdmVCTU9BVlpTUHVVT3lsOEVkUkxRWXNOYkJZOTZu?=
+ =?utf-8?B?OVZYSk93WWhTSkp6ajlvdVFwa2RScDJtZjZaaVViWWJBR3VBUTVkTFFQRmxQ?=
+ =?utf-8?B?QmV2V3FYVXlwV2llMk9qSURXRWdYSHFUUHpvd3d2V1FrRmxwVmkzZXkyWkIz?=
+ =?utf-8?Q?uTbtRlwa8+l373FbTEtCwjSW1vSuil8GaxE7CoR?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C7ED7A84E5E8A74697E42B30DA4EF0A9@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20210224121234.0127ae4b.cohuck@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB4943.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 75a0e206-77ef-4970-3557-08d8d94b2e11
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Feb 2021 05:06:59.0504
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rGL0dyoVEagQKXAS3mHBxurzuLQvqLeyLUJADy0C6ZPiIBR/HmvYbTdkTKq1D228VQGK0Bw6XcGyoEWooyxLdBbYJal2MShv/bMZM4HaWBA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB3992
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2021/2/24 7:12 下午, Cornelia Huck wrote:
-> On Wed, 24 Feb 2021 17:29:07 +0800
-> Jason Wang <jasowang@redhat.com> wrote:
->
->> On 2021/2/23 6:58 下午, Cornelia Huck wrote:
->>> On Tue, 23 Feb 2021 18:31:07 +0800
->>> Jason Wang <jasowang@redhat.com> wrote:
->>>   
->>>> On 2021/2/23 6:04 下午, Cornelia Huck wrote:
->>>>> On Tue, 23 Feb 2021 17:46:20 +0800
->>>>> Jason Wang <jasowang@redhat.com> wrote:
->>>>>      
->>>>>> On 2021/2/23 下午5:25, Michael S. Tsirkin wrote:
->>>>>>> On Mon, Feb 22, 2021 at 09:09:28AM -0800, Si-Wei Liu wrote:
->>>>>>>> On 2/21/2021 8:14 PM, Jason Wang wrote:
->>>>>>>>> On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
->>>>>>>>>> Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
->>>>>>>>>> for legacy") made an exception for legacy guests to reset
->>>>>>>>>> features to 0, when config space is accessed before features
->>>>>>>>>> are set. We should relieve the verify_min_features() check
->>>>>>>>>> and allow features reset to 0 for this case.
->>>>>>>>>>
->>>>>>>>>> It's worth noting that not just legacy guests could access
->>>>>>>>>> config space before features are set. For instance, when
->>>>>>>>>> feature VIRTIO_NET_F_MTU is advertised some modern driver
->>>>>>>>>> will try to access and validate the MTU present in the config
->>>>>>>>>> space before virtio features are set.
->>>>>>>>> This looks like a spec violation:
->>>>>>>>>
->>>>>>>>> "
->>>>>>>>>
->>>>>>>>> The following driver-read-only field, mtu only exists if
->>>>>>>>> VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the
->>>>>>>>> driver to use.
->>>>>>>>> "
->>>>>>>>>
->>>>>>>>> Do we really want to workaround this?
->>>>>>>> Isn't the commit 452639a64ad8 itself is a workaround for legacy guest?
->>>>>>>>
->>>>>>>> I think the point is, since there's legacy guest we'd have to support, this
->>>>>>>> host side workaround is unavoidable. Although I agree the violating driver
->>>>>>>> should be fixed (yes, it's in today's upstream kernel which exists for a
->>>>>>>> while now).
->>>>>>> Oh  you are right:
->>>>>>>
->>>>>>>
->>>>>>> static int virtnet_validate(struct virtio_device *vdev)
->>>>>>> {
->>>>>>>             if (!vdev->config->get) {
->>>>>>>                     dev_err(&vdev->dev, "%s failure: config access disabled\n",
->>>>>>>                             __func__);
->>>>>>>                     return -EINVAL;
->>>>>>>             }
->>>>>>>
->>>>>>>             if (!virtnet_validate_features(vdev))
->>>>>>>                     return -EINVAL;
->>>>>>>
->>>>>>>             if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
->>>>>>>                     int mtu = virtio_cread16(vdev,
->>>>>>>                                              offsetof(struct virtio_net_config,
->>>>>>>                                                       mtu));
->>>>>>>                     if (mtu < MIN_MTU)
->>>>>>>                             __virtio_clear_bit(vdev, VIRTIO_NET_F_MTU);
->>>>>> I wonder why not simply fail here?
->>>>> I think both failing or not accepting the feature can be argued to make
->>>>> sense: "the device presented us with a mtu size that does not make
->>>>> sense" would point to failing, "we cannot work with the mtu size that
->>>>> the device presented us" would point to not negotiating the feature.
->>>>>      
->>>>>>      
->>>>>>>             }
->>>>>>>
->>>>>>>             return 0;
->>>>>>> }
->>>>>>>
->>>>>>> And the spec says:
->>>>>>>
->>>>>>>
->>>>>>> The driver MUST follow this sequence to initialize a device:
->>>>>>> 1. Reset the device.
->>>>>>> 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
->>>>>>> 3. Set the DRIVER status bit: the guest OS knows how to drive the device.
->>>>>>> 4. Read device feature bits, and write the subset of feature bits understood by the OS and driver to the
->>>>>>> device. During this step the driver MAY read (but MUST NOT write) the device-specific configuration
->>>>>>> fields to check that it can support the device before accepting it.
->>>>>>> 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature bits after this step.
->>>>>>> 6. Re-read device status to ensure the FEATURES_OK bit is still set: otherwise, the device does not
->>>>>>> support our subset of features and the device is unusable.
->>>>>>> 7. Perform device-specific setup, including discovery of virtqueues for the device, optional per-bus setup,
->>>>>>> reading and possibly writing the device’s virtio configuration space, and population of virtqueues.
->>>>>>> 8. Set the DRIVER_OK status bit. At this point the device is “live”.
->>>>>>>
->>>>>>>
->>>>>>> Item 4 on the list explicitly allows reading config space before
->>>>>>> FEATURES_OK.
->>>>>>>
->>>>>>> I conclude that VIRTIO_NET_F_MTU is set means "set in device features".
->>>>>> So this probably need some clarification. "is set" is used many times in
->>>>>> the spec that has different implications.
->>>>> Before FEATURES_OK is set by the driver, I guess it means "the device
->>>>> has offered the feature";
->>>> For me this part is ok since it clarify that it's the driver that set
->>>> the bit.
->>>>
->>>>
->>>>   
->>>>> during normal usage, it means "the feature
->>>>> has been negotiated".
->>>> /?
->>>>
->>>> It looks to me the feature negotiation is done only after device set
->>>> FEATURES_OK, or FEATURES_OK could be read from device status?
->>> I'd consider feature negotiation done when the driver reads FEATURES_OK
->>> back from the status.
->>
->> I agree.
->>
->>
->>>   
->>>>   
->>>>>     (This is a bit fuzzy for legacy mode.)
->>> ...because legacy does not have FEATURES_OK.
->>>       
->>>> The problem is the MTU description for example:
->>>>
->>>> "The following driver-read-only field, mtu only exists if
->>>> VIRTIO_NET_F_MTU is set."
->>>>
->>>> It looks to me need to use "if VIRTIO_NET_F_MTU is set by device".
->>> "offered by the device"? I don't think it should 'disappear' from the
->>> config space if the driver won't use it. (Same for other config space
->>> fields that are tied to feature bits.)
->>
->> But what happens if e.g device doesn't offer VIRTIO_NET_F_MTU? It looks
->> to according to the spec there will be no mtu field.
-> I think so, yes.
->
->> And a more interesting case is VIRTIO_NET_F_MQ is not offered but
->> VIRTIO_NET_F_MTU offered. To me, it means we don't have
->> max_virtqueue_pairs but it's not how the driver is wrote today.
-> That would be a bug, but it seems to me that the virtio-net driver
-> reads max_virtqueue_pairs conditionally and handles absence of the
-> feature correctly?
-
-
-Yes, see the avove codes:
-
-         if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
-                 int mtu = virtio_cread16(vdev,
-                                          offsetof(struct virtio_net_config,
-                                                   mtu));
-                 if (mtu < MIN_MTU)
-                         __virtio_clear_bit(vdev, VIRTIO_NET_F_MTU);
-         }
-
-So it's probably too late to fix the driver.
-
-
->
->>
->>>      
->>>> Otherwise readers (at least for me), may think the MTU is only valid
->>>> if driver set the bit.
->>> I think it would still be 'valid' in the sense that it exists and has
->>> some value in there filled in by the device, but a driver reading it
->>> without negotiating the feature would be buggy. (Like in the kernel
->>> code above; the kernel not liking the value does not make the field
->>> invalid.)
->>
->> See Michael's reply, the spec allows read the config before setting
->> features.
-> Yes, the period prior to finishing negotiation is obviously special.
->
->>
->>> Maybe a statement covering everything would be:
->>>
->>> "The following driver-read-only field mtu only exists if the device
->>> offers VIRTIO_NET_F_MTU and may be read by the driver during feature
->>> negotiation and after VIRTIO_NET_F_MTU has been successfully
->>> negotiated."
->>>   
->>>>   
->>>>> Should we add a wording clarification to the spec?
->>>> I think so.
->>> Some clarification would be needed for each field that depends on a
->>> feature; that would be quite verbose. Maybe we can get away with a
->>> clarifying statement?
->>>
->>> "Some config space fields may depend on a certain feature. In that
->>> case, the field exits if the device has offered the corresponding
->>> feature,
->>
->> So this implies for !VIRTIO_NET_F_MQ && VIRTIO_NET_F_MTU, the config
->> will look like:
->>
->> struct virtio_net_config {
->>           u8 mac[6];
->>           le16 status;
->>           le16 mtu;
->> };
->>
-> I agree.
-
-
-So consider it's probably too late to fix the driver which assumes some 
-field are always persent, it looks to me need fix the spec do declare 
-the fields are always existing instead.
-
-
->
->>>    and may be read by the driver during feature negotiation, and
->>> accessed by the driver after the feature has been successfully
->>> negotiated. A shorthand for this is a statement that a field only
->>> exists if a certain feature bit is set."
->>
->> I'm not sure using "shorthand" is good for the spec, at least we can
->> limit the its scope only to the configuration space part.
-> Maybe "a shorthand expression"?
-
-
-So the questions is should we use this for all over the spec or it will 
-be only used in this speicifc part (device configuration).
-
-Thanks
-
-
+DQoNCk9uIDI0LzAyLzIxIDEwOjEzIHBtLCBLYWxsZSBWYWxvIHdyb3RlOg0KPiBFWFRFUk5BTCBF
+TUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBr
+bm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gDQo+IE1hcmN1cyBGb2xrZXNzb24gPG1hcmN1cy5m
+b2xrZXNzb25AZ21haWwuY29tPiB3cml0ZXM6DQo+IA0KPj4gV3JpdGUgdGhlIHZhbHVlIGluc3Rl
+YWQgb2YgcmVhZGluZyBpdCB0d2ljZS4NCj4+DQo+PiBGaXhlczogNWU2M2E1OTg0NDFhICgic3Rh
+Z2luZzogd2lsYzEwMDA6IGFkZGVkICd3aWxjXycgcHJlZml4IGZvciBmdW5jdGlvbiBpbiB3aWxj
+X3NkaW8uYyBmaWxlIikNCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBNYXJjdXMgRm9sa2Vzc29uIDxt
+YXJjdXMuZm9sa2Vzc29uQGdtYWlsLmNvbT4NCj4+IC0tLQ0KPj4gIGRyaXZlcnMvbmV0L3dpcmVs
+ZXNzL21pY3JvY2hpcC93aWxjMTAwMC9zZGlvLmMgfCAyICstDQo+PiAgMSBmaWxlIGNoYW5nZWQs
+IDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvbmV0L3dpcmVsZXNzL21pY3JvY2hpcC93aWxjMTAwMC9zZGlvLmMgYi9kcml2ZXJzL25ldC93
+aXJlbGVzcy9taWNyb2NoaXAvd2lsYzEwMDAvc2Rpby5jDQo+PiBpbmRleCAzNTFmZjkwOWFiMWMu
+LmUxNGI5ZmMyYzY3YSAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21pY3Jv
+Y2hpcC93aWxjMTAwMC9zZGlvLmMNCj4+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21pY3Jv
+Y2hpcC93aWxjMTAwMC9zZGlvLmMNCj4+IEBAIC05NDcsNyArOTQ3LDcgQEAgc3RhdGljIGludCB3
+aWxjX3NkaW9fc3luY19leHQoc3RydWN0IHdpbGMgKndpbGMsIGludCBuaW50KQ0KPj4gICAgICAg
+ICAgICAgICAgICAgICAgIGZvciAoaSA9IDA7IChpIDwgMykgJiYgKG5pbnQgPiAwKTsgaSsrLCBu
+aW50LS0pDQo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZWcgfD0gQklUKGkpOw0K
+Pj4NCj4+IC0gICAgICAgICAgICAgICAgICAgICByZXQgPSB3aWxjX3NkaW9fcmVhZF9yZWcod2ls
+YywgV0lMQ19JTlRSMl9FTkFCTEUsICZyZWcpOw0KPj4gKyAgICAgICAgICAgICAgICAgICAgIHJl
+dCA9IHdpbGNfc2Rpb193cml0ZV9yZWcod2lsYywgV0lMQ19JTlRSMl9FTkFCTEUsIHJlZyk7DQo+
+IA0KPiBUbyBtZSBpdCBsb29rcyBsaWtlIHRoZSBidWcgZXhpc3RlZCBiZWZvcmUgY29tbWl0IDVl
+NjNhNTk4NDQxYToNCg0KDQpZZXMsIHlvdSBhcmUgY29ycmVjdC4gVGhlIGJ1ZyBleGlzdGVkIGZy
+b20gY29tbWl0IGM1Yzc3YmExOGVhNjoNCg0KaHR0cHM6Ly9naXQua2VybmVsLm9yZy9saW51cy9j
+NWM3N2JhMThlYTYNCg0KUmVnYXJkcywNCkFqYXkNCg0KPiANCj4gLSAgICAgICAgICAgICAgICAg
+ICAgICAgcmV0ID0gc2Rpb19yZWFkX3JlZyh3aWxjLCBXSUxDX0lOVFIyX0VOQUJMRSwgJnJlZyk7
+DQo+ICsgICAgICAgICAgICAgICAgICAgICAgIHJldCA9IHdpbGNfc2Rpb19yZWFkX3JlZyh3aWxj
+LCBXSUxDX0lOVFIyX0VOQUJMRSwgJnJlZyk7DQo+IA0KPiBodHRwczovL2dpdC5rZXJuZWwub3Jn
+L2xpbnVzLzVlNjNhNTk4NDQxYQ0KPiANCj4gLS0NCj4gaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVs
+Lm9yZy9wcm9qZWN0L2xpbnV4LXdpcmVsZXNzL2xpc3QvDQo+IA0KPiBodHRwczovL3dpcmVsZXNz
+Lndpa2kua2VybmVsLm9yZy9lbi9kZXZlbG9wZXJzL2RvY3VtZW50YXRpb24vc3VibWl0dGluZ3Bh
+dGNoZXMNCj4gDQo=
