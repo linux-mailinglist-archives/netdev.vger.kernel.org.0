@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58CF2324C6B
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 10:07:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D31324C77
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 10:12:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235160AbhBYJGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 04:06:50 -0500
-Received: from mail-eopbgr80050.outbound.protection.outlook.com ([40.107.8.50]:43078
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S235318AbhBYJHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 04:07:30 -0500
+Received: from mail-eopbgr00064.outbound.protection.outlook.com ([40.107.0.64]:33865
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234563AbhBYJCa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 04:02:30 -0500
+        id S234567AbhBYJCb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 04:02:31 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SqoCZXnQZbesjcKhDoDsDg0hnd5n4wWEAjb5iV8E1+aPU1cKjpXAep4b0UvRsjt2johVLlFUrqkPUvtBI903ZjoI54/qby6RRjltbpr47r2eBOBESdE3ZqSUFeXccqas4chJd+DzdUZL59aZdnLiQRKJuRY9P2dbXuD3DxcLrft8QRX04zdQpnKxVeARGpW17jHUobt+R3IH5gn5xR41LYeivUBnSrdhLhhNaTyK/uIsnaIYns77ly8nC6SrBckvyujnrNHEMUUdIBcB64YeHBf3TvGmzAIDeAK6WQzvLlj32WcOot5RkEtVfyEPdhlrL2voEtB4PwrLiV9ADaPy0g==
+ b=D1BFysDNkhpR7ZDqEb446wOzVnV/D3aXsqOHEElhATNIXJPllp2rfEEPZ7AFIRREiiTDRafg1DXGtBkdmoPUhBw8Ws4jX+Lc+B6HD89EgB++bkANjUYjsGbyBGUVr7d07gU9lRk+zSDN1BX83fujpW2XYd9WDaVofPRIRh7ycHPPfq1D0DXc+pdRBjhRF42Nt7wP5NPHsTSRC9KQqb4dyoAbkxYXYcbpijhKg7vmxFFK/ho3YNG9VWHz0/kALkbIIOcchlPFAcpi/SCFvf6AW9TRglYMKgJHZCITtjRdkAymUfzqSnr/UIsNgy0QzZvdj9uSj9Ja9zRZNUOArKG9SA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/sJQW2wSH4ju9zcA7XOP3Miw6lj4B5QOUy8a8FzU9Tk=;
- b=V+tIBUTS8OTYTGP+8v7BQpBEFOWOfSiKzE+qjt7FnCSDdCw35qL46imnDEIEM/HETi0jisoR1X/S3TuZbUsK6fgYoH5rLkTzoUa408fSWwhM0+cRCAu+MpgE1/m4ZCKheRrDVkaNIU+ZTSNtHgHUlqCfesQgw3U+5NZypAXJesabdRG+MsawxOwQVyTLAw3bBSlK175liD8LB2F1+rN3Vw1cHVrq4DyfrecmtcxMnUwDgr+3XBZ8jucQTRtTzafLzmtjm8gUw+Ppr6Ysk+5rin6wT7ymOYD226oxPK4zJIp2QUG4Uu/V2Y3j+INlzC/QCvwg++oIcEQ6IzCTU4w02g==
+ bh=5ktXabzYN9lsVz8M/CG/zFmo+LcpLpHAue15OZ2gEkw=;
+ b=eAVC8f9QBT/AVlIg8W7oLLyROuwxHym72bOLL1gA4rVsE8QdyUBalIR/7r0K3wCYjlxK3HIRRZJ+nEPicMLeQeh5Pa5bdO42rdTY44djJKbM6TpX+36oSPdbB/a8njBtVxVFHDcd08mO4yB3Qi8QCp3cQoAbtAC1c9g/kgRQ8MYkpjbdIu329V6Rp+qKtNLPcVZ1Pr1PqRq2qLVc7T3rBmickyDBRr0Gx4EzbrGmfDHZS4O2gUjdOHJmBPcNUBFLGBR6rAFnDB/hYcOYKYAmRyrTKydoNL5KZBxOVnEY98oIK0jr/ettG6+aZHxlfF7Wp+LBI0biahur2gQqLy3r5g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/sJQW2wSH4ju9zcA7XOP3Miw6lj4B5QOUy8a8FzU9Tk=;
- b=E4QQbszd2NPYEwkq+gNgPcECX/2p4pkwMZdPQnoNAQg+74S51GVTgGMl/mGEx1hoaxJtr86e953XBnHMHWPPP0hVjAXWyuVmxulIP9zF8jZlSLfhUJAwjzFPNgiiPTeDzEpBcLLf//oID14veA8yRB7cDj7DwzLIVilrrPsL1vA=
+ bh=5ktXabzYN9lsVz8M/CG/zFmo+LcpLpHAue15OZ2gEkw=;
+ b=ni9lZGF4ULdJR95Utm9ViWLpZqc552Y5TWrGXyRXVcAAgr19j3GqZkEXAz02QG0L+KIPSftHXd+VE8ZUamuooiAZZdwFjnvNhyiKh2KjT7ltWtOQWmEyeydMhB6nJAs4r5Hrv35uRzW5cjuoTBwgIaJx5xy9HH1Ax/nUGKHCA5M=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB6PR0401MB2504.eurprd04.prod.outlook.com (2603:10a6:4:36::15) with
+ by DB8PR04MB6970.eurprd04.prod.outlook.com (2603:10a6:10:fa::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19; Thu, 25 Feb
- 2021 09:01:38 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27; Thu, 25 Feb
+ 2021 09:01:41 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978%4]) with mapi id 15.20.3846.045; Thu, 25 Feb 2021
- 09:01:38 +0000
+ 09:01:41 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH V5 net 3/5] net: stmmac: fix dma physical address of descriptor when display ring
-Date:   Thu, 25 Feb 2021 17:01:12 +0800
-Message-Id: <20210225090114.17562-4-qiangqing.zhang@nxp.com>
+Subject: [PATCH V5 net 4/5] net: stmmac: fix wrongly set buffer2 valid when sph unsupport
+Date:   Thu, 25 Feb 2021 17:01:13 +0800
+Message-Id: <20210225090114.17562-5-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210225090114.17562-1-qiangqing.zhang@nxp.com>
 References: <20210225090114.17562-1-qiangqing.zhang@nxp.com>
@@ -54,366 +54,146 @@ X-ClientProxiedBy: MA1PR0101CA0036.INDPRD01.PROD.OUTLOOK.COM
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by MA1PR0101CA0036.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:22::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19 via Frontend Transport; Thu, 25 Feb 2021 09:01:35 +0000
+Received: from localhost.localdomain (119.31.174.71) by MA1PR0101CA0036.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:22::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19 via Frontend Transport; Thu, 25 Feb 2021 09:01:39 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9faeac6f-0340-407d-963e-08d8d96bf5ba
-X-MS-TrafficTypeDiagnostic: DB6PR0401MB2504:
+X-MS-Office365-Filtering-Correlation-Id: 6dd8b59d-6043-4507-6b77-08d8d96bf7cb
+X-MS-TrafficTypeDiagnostic: DB8PR04MB6970:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6PR0401MB25047137288AAD14EF95184CE69E9@DB6PR0401MB2504.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:164;
+X-Microsoft-Antispam-PRVS: <DB8PR04MB697077B4DF3D03D3D7F1F6E3E69E9@DB8PR04MB6970.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2089;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RsR2VD0NNMZ1CaxtLjJbzweZGF3Ara4qiGblZbUwrXPiAyYnJHcJp93vXZm+wdoz8IhA3N5vscfPHEyNlupyMvHhrJLqyaHHsYp3lN7xT72VBSWrOhAOFK4NoUJvrIt3cn4vqX1WzltmAmVKcclggkQzHBAoRV+F7D9uL5mL7k/PEVmqEfMmK25GhEYlSSbc3oyYHTB2/CPEaVIminpnRqrHln0L1a/J1QNVeZeOYMA24lucaRSGW6ds7bpqBno4P9aS4OVRGZBylny3Nufx0Skt+9XgHNpGDsSBGKLbCv7SfTl6CVERjlwyaGl07KKiDMFmbZ/p9Ecu8O4lqdcisy+rKg92cB5Ra7gHVw7aTBmGYVuxsWFIocCadKwwtReeKHTy6nw5gkVVIZ6Bt+oFLJ/55jghNPemRbbP3MvpsnV4spBPWdKpKFPkZoZWVG2eJ96ypFHAcOeZ7HvAilgEOFD8XcCFKL67WwKkpcrUMRUi0wtJcvWIk8ojV65ZqqPnbupZ12zb2uoWoSctXppB5EMy7Q3oh3mZ2uQS9xwRkshPBAV/JeIH0i/ih/xu6Ra00FTAIQUA4tvRz/vHYKUxCA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(136003)(396003)(366004)(6512007)(186003)(69590400012)(2906002)(4326008)(2616005)(6506007)(6486002)(478600001)(36756003)(16526019)(956004)(86362001)(5660300002)(6666004)(66946007)(52116002)(316002)(83380400001)(30864003)(8676002)(66476007)(26005)(66556008)(8936002)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?RosUMLSha1MCxJ2mJqe0cbIpPS7QzZcoI3VibPfiXHhqX1PSf5d+X6kJ9G5Y?=
- =?us-ascii?Q?2XvPQ0yhDFogMwhrkXUNg4VTM55brpG4K6o0gpz0oHtKGiVYh6dhnkZmh+Wz?=
- =?us-ascii?Q?t0PIqVo/dc9InZWJxwtkQ1dPteEJYeSZh6OIvgLBY0QP/YUKyvjIWS7sb1pp?=
- =?us-ascii?Q?E9OMqj9W145mYgQnTqvK/LL+zJzABusZ3Zag0NgCcQUFgs7Ci0Y45gN+Ex0u?=
- =?us-ascii?Q?nKdTcBH1Puw43mZ0LEYuX/6d5Jv/5czVOgQDvo26lk88qVzZ7wvNqYpLfGSt?=
- =?us-ascii?Q?7T5k/CgJfveZS9gl2E7K6vjV5sOi7gDHnfkY14C6QxOQD80wXQL8lzvdXMAl?=
- =?us-ascii?Q?4YDP9CxXYiYWUXExOQ9qjB9RKJDPwrpYVOR9r/H4lFC4w13ENTMcpzd9q8pR?=
- =?us-ascii?Q?1r8ua1F2AOX8dt5qxyq7T22Y6py3praTUtcUeRFdrcInvFlj69lBe/mOQ2UC?=
- =?us-ascii?Q?oXaFLyW7JBhBDl9w0SXicAO2rx9cjanzxCcpBkUfenv/abp2UwZToDMU6Fpw?=
- =?us-ascii?Q?FLL3O82aPNCDDObSjDbLPSei2KqH3OXdTL86v1AzMHC49mLhRXT1UeoWpJnR?=
- =?us-ascii?Q?e9sGpAKFS8dajRNaPD0jXIieOTgtSvGu/B4s7A1DbU6A+Ory+HthK/+AyUMf?=
- =?us-ascii?Q?+9o8Rqzxhuv8TJycH9fyk3zmSUeVaZtebCjXOEwZVSDOpBbhtT0XO9r/ovCb?=
- =?us-ascii?Q?hlISsCkiWBFpxy5FFF82b8pZYBjMJulpmCYQ/2peoWDZqWcTtfuDLPuIFrbE?=
- =?us-ascii?Q?g4bgLbC7V9PgSKO5RWF90XkBC5iKTDAgTu54Z5quW45OnbM6RrpkRKS/Hiv4?=
- =?us-ascii?Q?EIcztF65GBYOQkbcgKSvJ62+DYRrjivKf2DdNlZgiiObUx5tF9wH6F6Py8wF?=
- =?us-ascii?Q?EjHFQEBQOg8p7O2VOin0I7vb/lYzk/3B1TOg3dI1m3Y4aw36bWou1ttV4CFs?=
- =?us-ascii?Q?19agj+uVSoocAks66vHMuUq9XanQRJS2FLliTicMAzi/9HfhBVDiDfNknm8Q?=
- =?us-ascii?Q?WXe+tAG+nkBQvoklT2SPr5UOu3nJYQfwT1Z3itAqY9XO6gVoAaX6ycf0ZUAI?=
- =?us-ascii?Q?DT8G9ruvoMKZ2ddyj8gbQ43x8ox/bxthWRenMjzekFQ9hkgMAIq+NeYB1e5m?=
- =?us-ascii?Q?qCNI7a8F8AfbSoH4kHfVlfpQK6iIO5UtFY0gRIwlqnXHkozCpNTUSQxZQdSC?=
- =?us-ascii?Q?51R+YfvTYFhOzD8yrEg+di3Y0BzE7ngwy4+u7+k5WCQwAG2+n5aZYkqEGaCY?=
- =?us-ascii?Q?74CPjS9oLrQN0QkBYx+cZwinZT9yOYWTxou44WHLBD2LokBucEJT/0G/hX29?=
- =?us-ascii?Q?LKidgDd9UrIWrVHb8JIVllS3?=
+X-Microsoft-Antispam-Message-Info: qm9gF/XrhB8Px2NuZIsXQRKpYuLnNhejyIo3hi0+1rrMHUkgGRMpPsaXTHwL5uU8dqo7/gPzu0u3Z037mDty1viB0zRs7jky9IyA/Qqof0v9f0RTkkS48Gk232h6yF6Ae3Mmg+u/l8Qs/TbPn5mp9OirOe6i6MkRzE5XFeJ7iDhJQ0yCNwTIe74PMKX5vORKBqUhKdkSaXfY2xe4bmxPy7Z/aL0gfXdoFdlx4+amWXrPeOP/Jcil7dw89mo6T1CLHjcQ838KBj8uyEAgNv5Yb8wzF5dS4fVwlxxDcFzirTzCNO6iMcnz0dwx3Qi/DovDfvuU2Q7QgZd1hD8OnKc/t+OrN108hdKEuQbWnxrytLcIMZqqwmSe8MDnCubpY6VR/V5hJ/xmw7vJO7ZbNtU+h03BQ9C1GlQzyCyOISlSQxdODeSU5jPT5H5+eSzXudWW/kz3e3LS+jRytJT9vv3OqQLT1t0TK6zj2t0j1fF4j9Yj0sLF1qVcYIUCHE7841+5Aoc8RRXt9FOvmmSxtHpMvFCQV9oCKaJgEzfUxNsYjBlRRvlIuhAcpP1f8T6kUR/vwfI+u05x8K3fwg2XrEs/rA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(396003)(39860400002)(366004)(52116002)(36756003)(5660300002)(478600001)(83380400001)(6512007)(6486002)(1076003)(26005)(8936002)(86362001)(186003)(16526019)(6666004)(2906002)(956004)(69590400012)(316002)(66946007)(66556008)(2616005)(6506007)(4326008)(8676002)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Htaj+H6yCZAK933fHbwgWMbVpZVh/Vo6RtXvIxLTUdeG9uDKTamt6W91jmVe?=
+ =?us-ascii?Q?Bz6t6aC/yGkuGovOigv+oDpy5nMqs/rIWqc8xUEswX85XwTIrtmMginzQIdr?=
+ =?us-ascii?Q?0VsHwnXVyzrt44quPYAyT/YnTz2v2KMitPf6aeGSfZ14W6vfD97Ela35MwAE?=
+ =?us-ascii?Q?aINUvgCEHFWO2pboMehCMQJF79F1Xoa38XCvADp0uhzoCoVcRreTg6Tuaqfz?=
+ =?us-ascii?Q?h0h38nb7RH/QU7v+AsUPhy6cgWlen5oVclDfmPHusj3Yn9m798wwolSYD1lJ?=
+ =?us-ascii?Q?DRmvWRdZ4OC97CmnwsS0guFQMAUT6g3xLVG0ZTG1KR+65dPXHj9YMs48u358?=
+ =?us-ascii?Q?+Z3l7YIW7TlsKxk794tplvKJa2Q9yx6s1QTzkQ1/TytlfFtfcMZjkazwUXFi?=
+ =?us-ascii?Q?W6tIdK/OldBkgCGeHnb3Ee9LuNk8tABrOzhmNU76+t2DdFw+G3HtHYlz+gr8?=
+ =?us-ascii?Q?Sz9sQRmN7dySWHwY9wMhxO6hwx9ap5px3zYdeutp94Qgtl2swvd2b4rsiSpT?=
+ =?us-ascii?Q?mc47Aoahvy2gtogJrOnPEOGdQm7+8QjOlXq2gnyMewnHBsSDbrL1z+m3TNiF?=
+ =?us-ascii?Q?jBR6LNktO3dF+YMFItaTKCAoMFH6Rph6n1PHGAOoQ3IF94kUCpZMiZ4Wxu+b?=
+ =?us-ascii?Q?nwneY/L5EDz7w2rK8NlUgMTFbfAyc/AQXxLpDw9wCmExhKzOa2paMlKHkBog?=
+ =?us-ascii?Q?WILVHjU22VNRupLgrNfw37R193HviFfiXaBMgoH8c3E3OyIOXzHy6dIJqjsq?=
+ =?us-ascii?Q?/SgqRc75G3yaTCp+dK5klEB0QeR1odpVVLX6DvJf7ulhvCDKVeMnNzwTO9aU?=
+ =?us-ascii?Q?9AB63dXNMf58rGqBcgbueyFtr6lXhhQo2vtKH2Acrta49vrfyvoD+W44NgJN?=
+ =?us-ascii?Q?QhY/LM65MPmUqke44F3kXzD3eBHn8Pm9ki2J+LQKmvPNAgFtLmlpzQoigFtv?=
+ =?us-ascii?Q?lVdZ0HCTbPyy+Gcn55TaZj4tyrcX1aGKpK046UOb/E1Ni2VQcjVnG7/0pNF/?=
+ =?us-ascii?Q?owt1H9OeK6LJ/++A3fmlvwK0ITfNHzNQeind9nHzSUtrfuX2xBKuLXoJkym1?=
+ =?us-ascii?Q?4S2nelpqxdICxHe/vySmxcCeDQRjRDUwC35DkOeN9FjzGUcvLgdDg/Dlv/EN?=
+ =?us-ascii?Q?E9UIiXMtvOYNuLVDzPDrIvELldO7d5xGMt5vtBSBzolVTsnQSNVUqkRqG0ay?=
+ =?us-ascii?Q?9IQ5yrRcuQULubNmsZrzjszalfDL06qRXUiAksQCP7u7wHxnG8RqpmiLlYqM?=
+ =?us-ascii?Q?TaNevhg2z8ZwNvH6v5sHfBE/G/byk/y0r94IoEmWOzTKWycV4p7HznMm0/3u?=
+ =?us-ascii?Q?8upr0fSrCOdTa4Qjs2Foz/ly?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9faeac6f-0340-407d-963e-08d8d96bf5ba
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6dd8b59d-6043-4507-6b77-08d8d96bf7cb
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2021 09:01:38.4988
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2021 09:01:41.7475
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i7GSV/afLBSgAMg94xneAdS9bYptrn27mhk+QopbxU4TMbYFztkxNa3eBW/YzVoLn6kFWGm8UOTe5OD7jnovkg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2504
+X-MS-Exchange-CrossTenant-UserPrincipalName: uAaTe334tNH0VkyDfM4pt21uxEsFC0qz9eA5WFjxuuO5hR3nhkXc1T7ApyQVMsuwdEFe5NTKbvuTN2f3kKPWxQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6970
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver uses dma_alloc_coherent to allocate dma memory for descriptors,
-dma_alloc_coherent will return both the virtual address and physical
-address. AFAIK, virt_to_phys could not convert virtual address to
-physical address, for which memory is allocated by dma_alloc_coherent.
+In current driver, buffer2 available only when hardware supports split
+header. Wrongly set buffer2 valid in stmmac_rx_refill when refill buffer
+address. You can see that desc3 is 0x81000000 after initialization, but
+turn out to be 0x83000000 after refill.
 
-dwmac4_display_ring() function is broken for various descriptor, it only
-support normal descriptor(struct dma_desc) now, this patch also extends to
-support all descriptor types.
-
+Fixes: 67afd6d1cfdf ("net: stmmac: Add Split Header support and enable it in XGMAC cores")
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- .../ethernet/stmicro/stmmac/dwmac4_descs.c    | 50 +++++++++++++---
- .../net/ethernet/stmicro/stmmac/enh_desc.c    |  9 ++-
- drivers/net/ethernet/stmicro/stmmac/hwif.h    |  3 +-
- .../net/ethernet/stmicro/stmmac/norm_desc.c   |  9 ++-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 57 ++++++++++++-------
- 5 files changed, 94 insertions(+), 34 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c   | 9 +++++++--
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c | 2 +-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h           | 2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c    | 8 ++++++--
+ 4 files changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-index c6540b003b43..e509b4eb95e0 100644
+index e509b4eb95e0..3d3d9038f522 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-@@ -402,19 +402,53 @@ static void dwmac4_rd_set_tx_ic(struct dma_desc *p)
- 	p->des2 |= cpu_to_le32(TDES2_INTERRUPT_ON_COMPLETION);
+@@ -533,10 +533,15 @@ static void dwmac4_get_rx_header_len(struct dma_desc *p, unsigned int *len)
+ 	*len = le32_to_cpu(p->des2) & RDES2_HL;
  }
  
--static void dwmac4_display_ring(void *head, unsigned int size, bool rx)
-+static void dwmac4_display_ring(void *head, unsigned int size, bool rx,
-+				dma_addr_t dma_rx_phy, unsigned int desc_size)
+-static void dwmac4_set_sec_addr(struct dma_desc *p, dma_addr_t addr)
++static void dwmac4_set_sec_addr(struct dma_desc *p, dma_addr_t addr, bool buf2_valid)
  {
--	struct dma_desc *p = (struct dma_desc *)head;
-+	dma_addr_t dma_addr;
- 	int i;
- 
- 	pr_info("%s descriptor ring:\n", rx ? "RX" : "TX");
- 
--	for (i = 0; i < size; i++) {
--		pr_info("%03d [0x%x]: 0x%x 0x%x 0x%x 0x%x\n",
--			i, (unsigned int)virt_to_phys(p),
--			le32_to_cpu(p->des0), le32_to_cpu(p->des1),
--			le32_to_cpu(p->des2), le32_to_cpu(p->des3));
--		p++;
-+	if (desc_size == sizeof(struct dma_desc)) {
-+		struct dma_desc *p = (struct dma_desc *)head;
+ 	p->des2 = cpu_to_le32(lower_32_bits(addr));
+-	p->des3 = cpu_to_le32(upper_32_bits(addr) | RDES3_BUFFER2_VALID_ADDR);
++	p->des3 = cpu_to_le32(upper_32_bits(addr));
 +
-+		for (i = 0; i < size; i++) {
-+			dma_addr = dma_rx_phy + i * sizeof(*p);
-+			pr_info("%03d [%pad]: 0x%x 0x%x 0x%x 0x%x\n",
-+				i, &dma_addr,
-+				le32_to_cpu(p->des0), le32_to_cpu(p->des1),
-+				le32_to_cpu(p->des2), le32_to_cpu(p->des3));
-+			p++;
-+		}
-+	} else if (desc_size == sizeof(struct dma_extended_desc)) {
-+		struct dma_extended_desc *extp = (struct dma_extended_desc *)head;
-+
-+		for (i = 0; i < size; i++) {
-+			dma_addr = dma_rx_phy + i * sizeof(*extp);
-+			pr_info("%03d [%pad]: 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
-+				i, &dma_addr,
-+				le32_to_cpu(extp->basic.des0), le32_to_cpu(extp->basic.des1),
-+				le32_to_cpu(extp->basic.des2), le32_to_cpu(extp->basic.des3),
-+				le32_to_cpu(extp->des4), le32_to_cpu(extp->des5),
-+				le32_to_cpu(extp->des6), le32_to_cpu(extp->des7));
-+			extp++;
-+		}
-+	} else if (desc_size == sizeof(struct dma_edesc)) {
-+		struct dma_edesc *ep = (struct dma_edesc *)head;
-+
-+		for (i = 0; i < size; i++) {
-+			dma_addr = dma_rx_phy + i * sizeof(*ep);
-+			pr_info("%03d [%pad]: 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
-+				i, &dma_addr,
-+				le32_to_cpu(ep->des4), le32_to_cpu(ep->des5),
-+				le32_to_cpu(ep->des6), le32_to_cpu(ep->des7),
-+				le32_to_cpu(ep->basic.des0), le32_to_cpu(ep->basic.des1),
-+				le32_to_cpu(ep->basic.des2), le32_to_cpu(ep->basic.des3));
-+			ep++;
-+		}
-+	} else {
-+		pr_err("unsupported descriptor!");
- 	}
++	if (buf2_valid)
++		p->des3 |= cpu_to_le32(RDES3_BUFFER2_VALID_ADDR);
++	else
++		p->des3 &= cpu_to_le32(~RDES3_BUFFER2_VALID_ADDR);
  }
  
-diff --git a/drivers/net/ethernet/stmicro/stmmac/enh_desc.c b/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
-index d02cec296f51..fcda214b07b7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
-@@ -417,19 +417,22 @@ static int enh_desc_get_rx_timestamp_status(void *desc, void *next_desc,
- 	}
+ static void dwmac4_set_tbs(struct dma_edesc *p, u32 sec, u32 nsec)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
+index 0aaf19ab5672..ccfb0102dde4 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
+@@ -292,7 +292,7 @@ static void dwxgmac2_get_rx_header_len(struct dma_desc *p, unsigned int *len)
+ 		*len = le32_to_cpu(p->des2) & XGMAC_RDES2_HL;
  }
  
--static void enh_desc_display_ring(void *head, unsigned int size, bool rx)
-+static void enh_desc_display_ring(void *head, unsigned int size, bool rx,
-+				  dma_addr_t dma_rx_phy, unsigned int desc_size)
+-static void dwxgmac2_set_sec_addr(struct dma_desc *p, dma_addr_t addr)
++static void dwxgmac2_set_sec_addr(struct dma_desc *p, dma_addr_t addr, bool is_valid)
  {
- 	struct dma_extended_desc *ep = (struct dma_extended_desc *)head;
-+	dma_addr_t dma_addr;
- 	int i;
- 
- 	pr_info("Extended %s descriptor ring:\n", rx ? "RX" : "TX");
- 
- 	for (i = 0; i < size; i++) {
- 		u64 x;
-+		dma_addr = dma_rx_phy + i * sizeof(*ep);
- 
- 		x = *(u64 *)ep;
--		pr_info("%03d [0x%x]: 0x%x 0x%x 0x%x 0x%x\n",
--			i, (unsigned int)virt_to_phys(ep),
-+		pr_info("%03d [%pad]: 0x%x 0x%x 0x%x 0x%x\n",
-+			i, &dma_addr,
- 			(unsigned int)x, (unsigned int)(x >> 32),
- 			ep->basic.des2, ep->basic.des3);
- 		ep++;
+ 	p->des2 = cpu_to_le32(lower_32_bits(addr));
+ 	p->des3 = cpu_to_le32(upper_32_bits(addr));
 diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index b40b2e0667bb..7417db31402f 100644
+index 7417db31402f..979ac9fca23c 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -78,7 +78,8 @@ struct stmmac_desc_ops {
- 	/* get rx timestamp status */
- 	int (*get_rx_timestamp_status)(void *desc, void *next_desc, u32 ats);
- 	/* Display ring */
--	void (*display_ring)(void *head, unsigned int size, bool rx);
-+	void (*display_ring)(void *head, unsigned int size, bool rx,
-+			     dma_addr_t dma_rx_phy, unsigned int desc_size);
- 	/* set MSS via context descriptor */
- 	void (*set_mss)(struct dma_desc *p, unsigned int mss);
- 	/* get descriptor skbuff address */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/norm_desc.c b/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
-index f083360e4ba6..0ccec4f9db48 100644
---- a/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
-@@ -269,19 +269,22 @@ static int ndesc_get_rx_timestamp_status(void *desc, void *next_desc, u32 ats)
- 		return 1;
- }
- 
--static void ndesc_display_ring(void *head, unsigned int size, bool rx)
-+static void ndesc_display_ring(void *head, unsigned int size, bool rx,
-+			       dma_addr_t dma_rx_phy, unsigned int desc_size)
- {
- 	struct dma_desc *p = (struct dma_desc *)head;
-+	dma_addr_t dma_addr;
- 	int i;
- 
- 	pr_info("%s descriptor ring:\n", rx ? "RX" : "TX");
- 
- 	for (i = 0; i < size; i++) {
- 		u64 x;
-+		dma_addr = dma_rx_phy + i * sizeof(*p);
- 
- 		x = *(u64 *)p;
--		pr_info("%03d [0x%x]: 0x%x 0x%x 0x%x 0x%x",
--			i, (unsigned int)virt_to_phys(p),
-+		pr_info("%03d [%pad]: 0x%x 0x%x 0x%x 0x%x",
-+			i, &dma_addr,
- 			(unsigned int)x, (unsigned int)(x >> 32),
- 			p->des2, p->des3);
- 		p++;
+@@ -92,7 +92,7 @@ struct stmmac_desc_ops {
+ 	int (*get_rx_hash)(struct dma_desc *p, u32 *hash,
+ 			   enum pkt_hash_types *type);
+ 	void (*get_rx_header_len)(struct dma_desc *p, unsigned int *len);
+-	void (*set_sec_addr)(struct dma_desc *p, dma_addr_t addr);
++	void (*set_sec_addr)(struct dma_desc *p, dma_addr_t addr, bool buf2_valid);
+ 	void (*set_sarc)(struct dma_desc *p, u32 sarc_type);
+ 	void (*set_vlan_tag)(struct dma_desc *p, u16 tag, u16 inner_tag,
+ 			     u32 inner_type);
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 12ed337a239b..071b6bb3b21f 100644
+index 071b6bb3b21f..6cf6ba59c07f 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1133,6 +1133,7 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
- static void stmmac_display_rx_rings(struct stmmac_priv *priv)
- {
- 	u32 rx_cnt = priv->plat->rx_queues_to_use;
-+	unsigned int desc_size;
- 	void *head_rx;
- 	u32 queue;
+@@ -1314,9 +1314,10 @@ static int stmmac_init_rx_buffers(struct stmmac_priv *priv, struct dma_desc *p,
+ 			return -ENOMEM;
  
-@@ -1142,19 +1143,24 @@ static void stmmac_display_rx_rings(struct stmmac_priv *priv)
- 
- 		pr_info("\tRX Queue %u rings\n", queue);
- 
--		if (priv->extend_desc)
-+		if (priv->extend_desc) {
- 			head_rx = (void *)rx_q->dma_erx;
--		else
-+			desc_size = sizeof(struct dma_extended_desc);
-+		} else {
- 			head_rx = (void *)rx_q->dma_rx;
-+			desc_size = sizeof(struct dma_desc);
-+		}
- 
- 		/* Display RX ring */
--		stmmac_display_ring(priv, head_rx, priv->dma_rx_size, true);
-+		stmmac_display_ring(priv, head_rx, priv->dma_rx_size, true,
-+				    rx_q->dma_rx_phy, desc_size);
- 	}
- }
- 
- static void stmmac_display_tx_rings(struct stmmac_priv *priv)
- {
- 	u32 tx_cnt = priv->plat->tx_queues_to_use;
-+	unsigned int desc_size;
- 	void *head_tx;
- 	u32 queue;
- 
-@@ -1164,14 +1170,19 @@ static void stmmac_display_tx_rings(struct stmmac_priv *priv)
- 
- 		pr_info("\tTX Queue %d rings\n", queue);
- 
--		if (priv->extend_desc)
-+		if (priv->extend_desc) {
- 			head_tx = (void *)tx_q->dma_etx;
--		else if (tx_q->tbs & STMMAC_TBS_AVAIL)
-+			desc_size = sizeof(struct dma_extended_desc);
-+		} else if (tx_q->tbs & STMMAC_TBS_AVAIL) {
- 			head_tx = (void *)tx_q->dma_entx;
--		else
-+			desc_size = sizeof(struct dma_edesc);
-+		} else {
- 			head_tx = (void *)tx_q->dma_tx;
-+			desc_size = sizeof(struct dma_desc);
-+		}
- 
--		stmmac_display_ring(priv, head_tx, priv->dma_tx_size, false);
-+		stmmac_display_ring(priv, head_tx, priv->dma_tx_size, false,
-+				    tx_q->dma_tx_phy, desc_size);
- 	}
- }
- 
-@@ -3736,18 +3747,23 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 	unsigned int count = 0, error = 0, len = 0;
- 	int status = 0, coe = priv->hw->rx_csum;
- 	unsigned int next_entry = rx_q->cur_rx;
-+	unsigned int desc_size;
- 	struct sk_buff *skb = NULL;
- 
- 	if (netif_msg_rx_status(priv)) {
- 		void *rx_head;
- 
- 		netdev_dbg(priv->dev, "%s: descriptor ring:\n", __func__);
--		if (priv->extend_desc)
-+		if (priv->extend_desc) {
- 			rx_head = (void *)rx_q->dma_erx;
--		else
-+			desc_size = sizeof(struct dma_extended_desc);
-+		} else {
- 			rx_head = (void *)rx_q->dma_rx;
-+			desc_size = sizeof(struct dma_desc);
-+		}
- 
--		stmmac_display_ring(priv, rx_head, priv->dma_rx_size, true);
-+		stmmac_display_ring(priv, rx_head, priv->dma_rx_size, true,
-+				    rx_q->dma_rx_phy, desc_size);
- 	}
- 	while (count < limit) {
- 		unsigned int buf1_len = 0, buf2_len = 0;
-@@ -4315,24 +4331,27 @@ static int stmmac_set_mac_address(struct net_device *ndev, void *addr)
- static struct dentry *stmmac_fs_dir;
- 
- static void sysfs_display_ring(void *head, int size, int extend_desc,
--			       struct seq_file *seq)
-+			       struct seq_file *seq, dma_addr_t dma_phy_addr)
- {
- 	int i;
- 	struct dma_extended_desc *ep = (struct dma_extended_desc *)head;
- 	struct dma_desc *p = (struct dma_desc *)head;
-+	dma_addr_t dma_addr;
- 
- 	for (i = 0; i < size; i++) {
- 		if (extend_desc) {
--			seq_printf(seq, "%d [0x%x]: 0x%x 0x%x 0x%x 0x%x\n",
--				   i, (unsigned int)virt_to_phys(ep),
-+			dma_addr = dma_phy_addr + i * sizeof(*ep);
-+			seq_printf(seq, "%d [%pad]: 0x%x 0x%x 0x%x 0x%x\n",
-+				   i, &dma_addr,
- 				   le32_to_cpu(ep->basic.des0),
- 				   le32_to_cpu(ep->basic.des1),
- 				   le32_to_cpu(ep->basic.des2),
- 				   le32_to_cpu(ep->basic.des3));
- 			ep++;
- 		} else {
--			seq_printf(seq, "%d [0x%x]: 0x%x 0x%x 0x%x 0x%x\n",
--				   i, (unsigned int)virt_to_phys(p),
-+			dma_addr = dma_phy_addr + i * sizeof(*p);
-+			seq_printf(seq, "%d [%pad]: 0x%x 0x%x 0x%x 0x%x\n",
-+				   i, &dma_addr,
- 				   le32_to_cpu(p->des0), le32_to_cpu(p->des1),
- 				   le32_to_cpu(p->des2), le32_to_cpu(p->des3));
- 			p++;
-@@ -4360,11 +4379,11 @@ static int stmmac_rings_status_show(struct seq_file *seq, void *v)
- 		if (priv->extend_desc) {
- 			seq_printf(seq, "Extended descriptor ring:\n");
- 			sysfs_display_ring((void *)rx_q->dma_erx,
--					   priv->dma_rx_size, 1, seq);
-+					   priv->dma_rx_size, 1, seq, rx_q->dma_rx_phy);
- 		} else {
- 			seq_printf(seq, "Descriptor ring:\n");
- 			sysfs_display_ring((void *)rx_q->dma_rx,
--					   priv->dma_rx_size, 0, seq);
-+					   priv->dma_rx_size, 0, seq, rx_q->dma_rx_phy);
- 		}
+ 		buf->sec_addr = page_pool_get_dma_addr(buf->sec_page);
+-		stmmac_set_desc_sec_addr(priv, p, buf->sec_addr);
++		stmmac_set_desc_sec_addr(priv, p, buf->sec_addr, true);
+ 	} else {
+ 		buf->sec_page = NULL;
++		stmmac_set_desc_sec_addr(priv, p, buf->sec_addr, false);
  	}
  
-@@ -4376,11 +4395,11 @@ static int stmmac_rings_status_show(struct seq_file *seq, void *v)
- 		if (priv->extend_desc) {
- 			seq_printf(seq, "Extended descriptor ring:\n");
- 			sysfs_display_ring((void *)tx_q->dma_etx,
--					   priv->dma_tx_size, 1, seq);
-+					   priv->dma_tx_size, 1, seq, tx_q->dma_tx_phy);
- 		} else if (!(tx_q->tbs & STMMAC_TBS_AVAIL)) {
- 			seq_printf(seq, "Descriptor ring:\n");
- 			sysfs_display_ring((void *)tx_q->dma_tx,
--					   priv->dma_tx_size, 0, seq);
-+					   priv->dma_tx_size, 0, seq, tx_q->dma_tx_phy);
- 		}
- 	}
+ 	buf->addr = page_pool_get_dma_addr(buf->page);
+@@ -3659,7 +3660,10 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
+ 					   DMA_FROM_DEVICE);
  
+ 		stmmac_set_desc_addr(priv, p, buf->addr);
+-		stmmac_set_desc_sec_addr(priv, p, buf->sec_addr);
++		if (priv->sph)
++			stmmac_set_desc_sec_addr(priv, p, buf->sec_addr, true);
++		else
++			stmmac_set_desc_sec_addr(priv, p, buf->sec_addr, false);
+ 		stmmac_refill_desc3(priv, rx_q, p);
+ 
+ 		rx_q->rx_count_frames++;
 -- 
 2.17.1
 
