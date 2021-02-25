@@ -2,153 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B69D4324BF0
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 09:22:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A1C8324BF6
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 09:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235729AbhBYIWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 03:22:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38314 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234951AbhBYIWA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 03:22:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1678064F06;
-        Thu, 25 Feb 2021 08:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614241279;
-        bh=eOpoNPZ+FhKGRUFN3svd9xheRPzs+eGPoax3O+dYrqo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PWlAVBM8Y2XukkbNyQtnI6FhywwKvI4OTO3VmR84OK6Spqt5Keix0qahekMJvxTn8
-         uagzd0SGkTUqyItTs8XzPxTZGVp1gvuZ9qEMkwIQEQmrC+UkU/peukzKCWYNzP++Va
-         6cK+Xj9Sri1T18ww0VWvDd2eCX+MHw+3pgVx5V2V0zw7OKtOE8NTbQ410lJdNDforb
-         VET3w/wBaBMc6eFx88pHGLa+vasa+NtWH43Ks1bwGSyrRPJO4BlR+lu12BxSD/DTmg
-         ZqLg3VBlitvZloHWYaK0mOmeBXV2JfZXW7Zt97GnkmNmIf47QhA4sNqSdq45NtACZG
-         7rvCZxBuUJMLQ==
-Date:   Thu, 25 Feb 2021 00:21:15 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wei Wang <weiwan@google.com>
-Cc:     Alexander Duyck <alexanderduyck@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Martin Zaharinov <micron10@gmail.com>
-Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy
- poll
-Message-ID: <20210225002115.5f6215d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAEA6p_CEz-CaK_rCyGzRA8=WNspu2Uia5UasJ266f=p5uiqYkw@mail.gmail.com>
-References: <20210223234130.437831-1-weiwan@google.com>
-        <20210224114851.436d0065@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89i+jO-ym4kpLD3NaeCKZL_sUiub=2VP574YgC-aVvVyTMw@mail.gmail.com>
-        <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89i+xGsMpRfPwZK281jyfum_1fhTNFXq7Z8HOww9H1BHmiw@mail.gmail.com>
-        <20210224155237.221dd0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
-        <20210224160723.4786a256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR15MB2787694425A1369CA563FCFFBD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
-        <20210224162059.7949b4e1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR15MB27873FF52B109480173366B8BD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
-        <20210224180329.306b2207@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAEA6p_CEz-CaK_rCyGzRA8=WNspu2Uia5UasJ266f=p5uiqYkw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S235777AbhBYIXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 03:23:15 -0500
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:42450 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235669AbhBYIXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 03:23:13 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0UPXAChg_1614241349;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UPXAChg_1614241349)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 25 Feb 2021 16:22:29 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: [PATCH v2 net-next] virtio-net: support XDP_TX when not more queues
+Date:   Thu, 25 Feb 2021 16:22:29 +0800
+Message-Id: <1614241349-77324-1-git-send-email-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Feb 2021 18:31:55 -0800 Wei Wang wrote:
-> On Wed, Feb 24, 2021 at 6:03 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 25 Feb 2021 01:22:08 +0000 Alexander Duyck wrote:  
-> > > Yeah, that was the patch Wei had done earlier. Eric complained about the extra set_bit atomic operation in the threaded path. That is when I came up with the idea of just adding a bit to the busy poll logic so that the only extra cost in the threaded path was having to check 2 bits instead of 1.  
-> >
-> > Maybe we can set the bit only if the thread is running? When thread
-> > comes out of schedule() it can be sure that it has an NAPI to service.
-> > But when it enters napi_thread_wait() and before it hits schedule()
-> > it must be careful to make sure the NAPI is still (or already in the
-> > very first run after creation) owned by it.  
-> 
-> Are you suggesting setting the SCHED_THREAD bit in napi_thread_wait()
-> somewhere instead of in ____napi_schedule() as you previously plotted?
-> What does it help? I think if we have to do an extra set_bit(), it
-> seems cleaner to set it in ____napi_schedule(). This would solve the
-> warning issue as well.
+The number of queues implemented by many virtio backends is limited,
+especially some machines have a large number of CPUs. In this case, it
+is often impossible to allocate a separate queue for XDP_TX.
 
-I was thinking of something roughly like this:
+This patch allows XDP_TX to run by reuse the existing SQ with
+__netif_tx_lock() hold when there are not enough queues.
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ddf4cfc12615..3bce94e8c110 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -360,6 +360,7 @@ enum {
-        NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() owns this NAPI */
-        NAPI_STATE_PREFER_BUSY_POLL,    /* prefer busy-polling over softirq processing*/
-        NAPI_STATE_THREADED,            /* The poll is performed inside its own thread*/
-+       NAPI_STATE_SCHED_THREAD,        /* Thread owns the NAPI and will poll */
- };
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+---
+ drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 36 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index ba8e637..c66ce4c 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -195,6 +195,9 @@ struct virtnet_info {
+ 	/* # of XDP queue pairs currently used by the driver */
+ 	u16 xdp_queue_pairs;
  
- enum {
-@@ -372,6 +373,7 @@ enum {
-        NAPIF_STATE_IN_BUSY_POLL        = BIT(NAPI_STATE_IN_BUSY_POLL),
-        NAPIF_STATE_PREFER_BUSY_POLL    = BIT(NAPI_STATE_PREFER_BUSY_POLL),
-        NAPIF_STATE_THREADED            = BIT(NAPI_STATE_THREADED),
-+       NAPIF_STATE_SCHED_THREAD        = BIT(NAPI_STATE_SCHED_THREAD),
- };
++	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
++	bool xdp_enabled;
++
+ 	/* I like... big packets and I cannot lie! */
+ 	bool big_packets;
  
- enum gro_result {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6c5967e80132..852b992d0ebb 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4294,6 +4294,8 @@ static inline void ____napi_schedule(struct softnet_data *sd,
-                 */
-                thread = READ_ONCE(napi->thread);
-                if (thread) {
-+                       if (thread->state == TASK_RUNNING)
-+                               set_bit(NAPIF_STATE_SCHED_THREAD, &napi->state);
-                        wake_up_process(thread);
-                        return;
-                }
-@@ -6486,7 +6488,8 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
-                WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
+@@ -481,14 +484,34 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+ 	return 0;
+ }
  
-                new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
--                             NAPIF_STATE_PREFER_BUSY_POLL);
-+                             NAPIF_STATE_PREFER_BUSY_POLL |
-+                             NAPIF_STATE_SCHED_THREAD);
- 
-                /* If STATE_MISSED was set, leave STATE_SCHED set,
-                 * because we will call napi->poll() one more time.
-@@ -6968,16 +6971,24 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
- 
- static int napi_thread_wait(struct napi_struct *napi)
+-static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
++static struct send_queue *virtnet_get_xdp_sq(struct virtnet_info *vi)
  {
-+       bool woken = false;
-+
-        set_current_state(TASK_INTERRUPTIBLE);
++	struct netdev_queue *txq;
+ 	unsigned int qp;
  
-        while (!kthread_should_stop() && !napi_disable_pending(napi)) {
--               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-+               unsigned long state = READ_ONCE(napi->state);
+-	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
++	if (vi->curr_queue_pairs > nr_cpu_ids) {
++		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
++	} else {
++		qp = smp_processor_id() % vi->curr_queue_pairs;
++		txq = netdev_get_tx_queue(vi->dev, qp);
++		__netif_tx_lock(txq, raw_smp_processor_id());
++	}
 +
-+               if ((state & NAPIF_STATE_SCHED) &&
-+                   ((state & NAPIF_STATE_SCHED_THREAD) || woken)) {
-                        WARN_ON(!list_empty(&napi->poll_list));
-                        __set_current_state(TASK_RUNNING);
-                        return 0;
-+               } else {
-+                       WARN_ON(woken);
-                }
+ 	return &vi->sq[qp];
+ }
  
-                schedule();
-+               woken = true;
-                set_current_state(TASK_INTERRUPTIBLE);
-        }
-        __set_current_state(TASK_RUNNING);
++static void virtnet_put_xdp_sq(struct virtnet_info *vi, struct send_queue *sq)
++{
++	struct netdev_queue *txq;
++	unsigned int qp;
++
++	if (vi->curr_queue_pairs <= nr_cpu_ids) {
++		qp = sq - vi->sq;
++		txq = netdev_get_tx_queue(vi->dev, qp);
++		__netif_tx_unlock(txq);
++	}
++}
++
+ static int virtnet_xdp_xmit(struct net_device *dev,
+ 			    int n, struct xdp_frame **frames, u32 flags)
+ {
+@@ -512,7 +535,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+ 	if (!xdp_prog)
+ 		return -ENXIO;
+ 
+-	sq = virtnet_xdp_sq(vi);
++	sq = virtnet_get_xdp_sq(vi);
+ 
+ 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
+ 		ret = -EINVAL;
+@@ -560,12 +583,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+ 	sq->stats.kicks += kicks;
+ 	u64_stats_update_end(&sq->stats.syncp);
+ 
++	virtnet_put_xdp_sq(vi, sq);
+ 	return ret;
+ }
+ 
+ static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+ {
+-	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
++	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
+ }
+ 
+ /* We copy the packet for XDP in the following cases:
+@@ -1457,12 +1481,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+ 		xdp_do_flush();
+ 
+ 	if (xdp_xmit & VIRTIO_XDP_TX) {
+-		sq = virtnet_xdp_sq(vi);
++		sq = virtnet_get_xdp_sq(vi);
+ 		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+ 			u64_stats_update_begin(&sq->stats.syncp);
+ 			sq->stats.kicks++;
+ 			u64_stats_update_end(&sq->stats.syncp);
+ 		}
++		virtnet_put_xdp_sq(vi, sq);
+ 	}
+ 
+ 	return received;
+@@ -2416,12 +2441,8 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 		xdp_qp = nr_cpu_ids;
+ 
+ 	/* XDP requires extra queues for XDP_TX */
+-	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+-		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+-		netdev_warn(dev, "request %i queues but max is %i\n",
+-			    curr_qp + xdp_qp, vi->max_queue_pairs);
+-		return -ENOMEM;
+-	}
++	if (curr_qp + xdp_qp > vi->max_queue_pairs)
++		xdp_qp = 0;
+ 
+ 	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+ 	if (!prog && !old_prog)
+@@ -2454,11 +2475,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	vi->xdp_queue_pairs = xdp_qp;
+ 
+ 	if (prog) {
++		vi->xdp_enabled = true;
+ 		for (i = 0; i < vi->max_queue_pairs; i++) {
+ 			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
+ 			if (i == 0 && !old_prog)
+ 				virtnet_clear_guest_offloads(vi);
+ 		}
++	} else {
++		vi->xdp_enabled = false;
+ 	}
+ 
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
+@@ -2526,7 +2550,7 @@ static int virtnet_set_features(struct net_device *dev,
+ 	int err;
+ 
+ 	if ((dev->features ^ features) & NETIF_F_LRO) {
+-		if (vi->xdp_queue_pairs)
++		if (vi->xdp_enabled)
+ 			return -EBUSY;
+ 
+ 		if (features & NETIF_F_LRO)
+-- 
+1.8.3.1
 
-
-Extra set_bit() is only done if napi_schedule() comes early enough to
-see the thread still running. When the thread is woken we continue to
-assume ownership.
-
-It's just an idea (but it may solve the first run and the disable case).
