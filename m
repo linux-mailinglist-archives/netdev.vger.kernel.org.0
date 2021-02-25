@@ -2,303 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CB243255DE
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 19:55:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD65E325604
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 20:04:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231445AbhBYSzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 13:55:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52151 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232403AbhBYSzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 13:55:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614279216;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gCb9F0alpv/C/6a5TITUVUu2eCteBI8pa1A/BxbZecM=;
-        b=ImZl3YngaEZIx0yz6JzhmFjwnTvSgxT0JMSvstJTtGcTvdZHf/yESl/4ib9B049oBZz1g/
-        gEPlqMMtilSqAucrLEk5o3EtX2o2sOPimKew9jjUsu0KJJolzMg7+Jr6EVosAkou5xyLFy
-        3hYlShtWIvd1eARPOGpfgO5pxQahWlw=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-139-NlpMN2wiMgC07xxZvNoMVg-1; Thu, 25 Feb 2021 13:53:34 -0500
-X-MC-Unique: NlpMN2wiMgC07xxZvNoMVg-1
-Received: by mail-ej1-f70.google.com with SMTP id ml13so2911410ejb.2
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 10:53:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=gCb9F0alpv/C/6a5TITUVUu2eCteBI8pa1A/BxbZecM=;
-        b=Zl6lkyRdA3RONTjMuNvT6/LB7OpjrJkW8zBxkDRwaiZdclS98MaNnSyCn9PG7MR7IK
-         +4JdUDcIbddXo2rEhCoTB0kYPwEvxq/UgzCdHa1GM2deHw4z8DSf85gaInW9+TBUTzIp
-         q4A5lrHeSCj5binLcnqbjs2x3lhEzymbCoPUiCEl+C7DyAceMJh7u4rROASNuamHMJVS
-         D3Y3Q83Yc6ZO+jD152PvxLKx0ffnOJwYWKPFPv7S6ThomhpuusMtnWFGyL177aNX5+hZ
-         32VNpQ8wbzZ3WSE48gOYECU3ENgqqW7N5fXy6AelgxaZ+HfwYWX//a9XAvcZxTrjzbf3
-         jPCw==
-X-Gm-Message-State: AOAM531iJHFu1MtYr49kIqBBzuIw94vCHBI6QqBrkD0BGZ5vB95Gnaqu
-        UpP9VF7PRHDUI3QjOUg5dKzKxGZBV2zBhp8qffBYim62C1YqV+yrCwtntevd59/xWjgefakDEii
-        FyYSy/u70sPnT3hrh
-X-Received: by 2002:a17:906:3444:: with SMTP id d4mr4048044ejb.410.1614279212515;
-        Thu, 25 Feb 2021 10:53:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJztb5cYLMbjSVzxJ4cay7R//2C0FApeQaJ9usI4r3nY/W5+f6CAAK3gOxO2d845kovrA1lyng==
-X-Received: by 2002:a17:906:3444:: with SMTP id d4mr4048020ejb.410.1614279212295;
-        Thu, 25 Feb 2021 10:53:32 -0800 (PST)
-Received: from redhat.com (212.116.168.114.static.012.net.il. [212.116.168.114])
-        by smtp.gmail.com with ESMTPSA id b2sm4247596edk.11.2021.02.25.10.53.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Feb 2021 10:53:31 -0800 (PST)
-Date:   Thu, 25 Feb 2021 13:53:28 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        virtio-dev@lists.oasis-open.org
-Subject: Re: [virtio-dev] Re: [PATCH] vdpa/mlx5: set_features should allow
- reset to zero
-Message-ID: <20210225135229-mutt-send-email-mst@kernel.org>
-References: <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
- <ee31e93b-5fbb-1999-0e82-983d3e49ad1e@oracle.com>
- <20210223041740-mutt-send-email-mst@kernel.org>
- <788a0880-0a68-20b7-5bdf-f8150b08276a@redhat.com>
- <20210223110430.2f098bc0.cohuck@redhat.com>
- <bbb0a09e-17e1-a397-1b64-6ce9afe18e44@redhat.com>
- <20210223115833.732d809c.cohuck@redhat.com>
- <8355f9b3-4cda-cd2e-98df-fed020193008@redhat.com>
- <20210224121234.0127ae4b.cohuck@redhat.com>
- <be6713d3-ac98-bbbf-1dc1-a003ed06a156@redhat.com>
+        id S233455AbhBYTDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 14:03:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49484 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233025AbhBYTDw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 14:03:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D4FD64EFA;
+        Thu, 25 Feb 2021 19:03:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614279789;
+        bh=mqRATAtny9DcsR1CdJJNpoJ/uwWCFDvyI0SopqofvyY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=u4hT3ugYzLnd8M6gdo71afj/JH5CaQWhiNmm5uCGyfAy4thc+ErElqhOp3EiRy8cx
+         aIcWAssFjmTdfbxJYzge/PDYrBzU4y8t61MqK3I8SOdenhjQAwv27RulAVpVgX5HNs
+         GBHCw7R1SfKIrX+sXy8ZPy4Q6C4EzVu4VbQBaDt77Ssj1OhGe4dM1UP13vuyGptd/y
+         cjRhJmirUsk1wwnGAXWkbcFSD5HOAwH0Ag3ztMYcYfyXoIHvoyzY4lv/aDw/TPLokm
+         ZtvSyJZ/IvTBrIe73xbwHQBM5awHnkoDRhGsOaJwHw1/h+25bt7fvN9rek2rUAOQtJ
+         wVmFQYA3KQdhQ==
+Received: by pali.im (Postfix)
+        id DC322760; Thu, 25 Feb 2021 20:03:06 +0100 (CET)
+Date:   Thu, 25 Feb 2021 20:03:06 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.11 16/67] net: sfp: add mode quirk for GPON
+ module Ubiquiti U-Fiber Instant
+Message-ID: <20210225190306.65jnl557vvs6d7o3@pali>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <be6713d3-ac98-bbbf-1dc1-a003ed06a156@redhat.com>
+In-Reply-To: <20210224125026.481804-16-sashal@kernel.org>
+ <20210224125212.482485-12-sashal@kernel.org>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 12:36:07PM +0800, Jason Wang wrote:
+On Wednesday 24 February 2021 07:49:34 Sasha Levin wrote:
+> From: Pali Rohár <pali@kernel.org>
 > 
-> On 2021/2/24 7:12 下午, Cornelia Huck wrote:
-> > On Wed, 24 Feb 2021 17:29:07 +0800
-> > Jason Wang <jasowang@redhat.com> wrote:
-> > 
-> > > On 2021/2/23 6:58 下午, Cornelia Huck wrote:
-> > > > On Tue, 23 Feb 2021 18:31:07 +0800
-> > > > Jason Wang <jasowang@redhat.com> wrote:
-> > > > > On 2021/2/23 6:04 下午, Cornelia Huck wrote:
-> > > > > > On Tue, 23 Feb 2021 17:46:20 +0800
-> > > > > > Jason Wang <jasowang@redhat.com> wrote:
-> > > > > > > On 2021/2/23 下午5:25, Michael S. Tsirkin wrote:
-> > > > > > > > On Mon, Feb 22, 2021 at 09:09:28AM -0800, Si-Wei Liu wrote:
-> > > > > > > > > On 2/21/2021 8:14 PM, Jason Wang wrote:
-> > > > > > > > > > On 2021/2/19 7:54 下午, Si-Wei Liu wrote:
-> > > > > > > > > > > Commit 452639a64ad8 ("vdpa: make sure set_features is invoked
-> > > > > > > > > > > for legacy") made an exception for legacy guests to reset
-> > > > > > > > > > > features to 0, when config space is accessed before features
-> > > > > > > > > > > are set. We should relieve the verify_min_features() check
-> > > > > > > > > > > and allow features reset to 0 for this case.
-> > > > > > > > > > > 
-> > > > > > > > > > > It's worth noting that not just legacy guests could access
-> > > > > > > > > > > config space before features are set. For instance, when
-> > > > > > > > > > > feature VIRTIO_NET_F_MTU is advertised some modern driver
-> > > > > > > > > > > will try to access and validate the MTU present in the config
-> > > > > > > > > > > space before virtio features are set.
-> > > > > > > > > > This looks like a spec violation:
-> > > > > > > > > > 
-> > > > > > > > > > "
-> > > > > > > > > > 
-> > > > > > > > > > The following driver-read-only field, mtu only exists if
-> > > > > > > > > > VIRTIO_NET_F_MTU is set. This field specifies the maximum MTU for the
-> > > > > > > > > > driver to use.
-> > > > > > > > > > "
-> > > > > > > > > > 
-> > > > > > > > > > Do we really want to workaround this?
-> > > > > > > > > Isn't the commit 452639a64ad8 itself is a workaround for legacy guest?
-> > > > > > > > > 
-> > > > > > > > > I think the point is, since there's legacy guest we'd have to support, this
-> > > > > > > > > host side workaround is unavoidable. Although I agree the violating driver
-> > > > > > > > > should be fixed (yes, it's in today's upstream kernel which exists for a
-> > > > > > > > > while now).
-> > > > > > > > Oh  you are right:
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > static int virtnet_validate(struct virtio_device *vdev)
-> > > > > > > > {
-> > > > > > > >             if (!vdev->config->get) {
-> > > > > > > >                     dev_err(&vdev->dev, "%s failure: config access disabled\n",
-> > > > > > > >                             __func__);
-> > > > > > > >                     return -EINVAL;
-> > > > > > > >             }
-> > > > > > > > 
-> > > > > > > >             if (!virtnet_validate_features(vdev))
-> > > > > > > >                     return -EINVAL;
-> > > > > > > > 
-> > > > > > > >             if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
-> > > > > > > >                     int mtu = virtio_cread16(vdev,
-> > > > > > > >                                              offsetof(struct virtio_net_config,
-> > > > > > > >                                                       mtu));
-> > > > > > > >                     if (mtu < MIN_MTU)
-> > > > > > > >                             __virtio_clear_bit(vdev, VIRTIO_NET_F_MTU);
-> > > > > > > I wonder why not simply fail here?
-> > > > > > I think both failing or not accepting the feature can be argued to make
-> > > > > > sense: "the device presented us with a mtu size that does not make
-> > > > > > sense" would point to failing, "we cannot work with the mtu size that
-> > > > > > the device presented us" would point to not negotiating the feature.
-> > > > > > > >             }
-> > > > > > > > 
-> > > > > > > >             return 0;
-> > > > > > > > }
-> > > > > > > > 
-> > > > > > > > And the spec says:
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > The driver MUST follow this sequence to initialize a device:
-> > > > > > > > 1. Reset the device.
-> > > > > > > > 2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
-> > > > > > > > 3. Set the DRIVER status bit: the guest OS knows how to drive the device.
-> > > > > > > > 4. Read device feature bits, and write the subset of feature bits understood by the OS and driver to the
-> > > > > > > > device. During this step the driver MAY read (but MUST NOT write) the device-specific configuration
-> > > > > > > > fields to check that it can support the device before accepting it.
-> > > > > > > > 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature bits after this step.
-> > > > > > > > 6. Re-read device status to ensure the FEATURES_OK bit is still set: otherwise, the device does not
-> > > > > > > > support our subset of features and the device is unusable.
-> > > > > > > > 7. Perform device-specific setup, including discovery of virtqueues for the device, optional per-bus setup,
-> > > > > > > > reading and possibly writing the device’s virtio configuration space, and population of virtqueues.
-> > > > > > > > 8. Set the DRIVER_OK status bit. At this point the device is “live”.
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > Item 4 on the list explicitly allows reading config space before
-> > > > > > > > FEATURES_OK.
-> > > > > > > > 
-> > > > > > > > I conclude that VIRTIO_NET_F_MTU is set means "set in device features".
-> > > > > > > So this probably need some clarification. "is set" is used many times in
-> > > > > > > the spec that has different implications.
-> > > > > > Before FEATURES_OK is set by the driver, I guess it means "the device
-> > > > > > has offered the feature";
-> > > > > For me this part is ok since it clarify that it's the driver that set
-> > > > > the bit.
-> > > > > 
-> > > > > 
-> > > > > > during normal usage, it means "the feature
-> > > > > > has been negotiated".
-> > > > > /?
-> > > > > 
-> > > > > It looks to me the feature negotiation is done only after device set
-> > > > > FEATURES_OK, or FEATURES_OK could be read from device status?
-> > > > I'd consider feature negotiation done when the driver reads FEATURES_OK
-> > > > back from the status.
-> > > 
-> > > I agree.
-> > > 
-> > > 
-> > > > > >     (This is a bit fuzzy for legacy mode.)
-> > > > ...because legacy does not have FEATURES_OK.
-> > > > > The problem is the MTU description for example:
-> > > > > 
-> > > > > "The following driver-read-only field, mtu only exists if
-> > > > > VIRTIO_NET_F_MTU is set."
-> > > > > 
-> > > > > It looks to me need to use "if VIRTIO_NET_F_MTU is set by device".
-> > > > "offered by the device"? I don't think it should 'disappear' from the
-> > > > config space if the driver won't use it. (Same for other config space
-> > > > fields that are tied to feature bits.)
-> > > 
-> > > But what happens if e.g device doesn't offer VIRTIO_NET_F_MTU? It looks
-> > > to according to the spec there will be no mtu field.
-> > I think so, yes.
-> > 
-> > > And a more interesting case is VIRTIO_NET_F_MQ is not offered but
-> > > VIRTIO_NET_F_MTU offered. To me, it means we don't have
-> > > max_virtqueue_pairs but it's not how the driver is wrote today.
-> > That would be a bug, but it seems to me that the virtio-net driver
-> > reads max_virtqueue_pairs conditionally and handles absence of the
-> > feature correctly?
+> [ Upstream commit f0b4f847673299577c29b71d3f3acd3c313d81b7 ]
+
+Hello! This commit requires also commit~1 from that patch series:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=426c6cbc409cbda9ab1a9dbf15d3c2ef947eb8c1
+
+Without it kernel cannot read EEPROM from Ubiquiti U-Fiber Instant
+module and therefore the hook based on EEPROM data which is below would
+not be applied.
+
+> The Ubiquiti U-Fiber Instant SFP GPON module has nonsensical information
+> stored in its EEPROM. It claims to support all transceiver types including
+> 10G Ethernet. Clear all claimed modes and set only 1000baseX_Full, which is
+> the only one supported.
 > 
+> This module has also phys_id set to SFF, and the SFP subsystem currently
+> does not allow to use SFP modules detected as SFFs. Add exception for this
+> module so it can be detected as supported.
 > 
-> Yes, see the avove codes:
+> This change finally allows to detect and use SFP GPON module Ubiquiti
+> U-Fiber Instant on Linux system.
 > 
->         if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
->                 int mtu = virtio_cread16(vdev,
->                                          offsetof(struct virtio_net_config,
->                                                   mtu));
->                 if (mtu < MIN_MTU)
->                         __virtio_clear_bit(vdev, VIRTIO_NET_F_MTU);
->         }
+> EEPROM content of this SFP module is (where XX is serial number):
 > 
-> So it's probably too late to fix the driver.
+> 00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
+> 10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
+> 20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
+> 30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
+> 40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
+> 50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
+>  drivers/net/phy/sfp.c     | 17 +++++++++++++++--
+>  2 files changed, 30 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+> index 20b91f5dfc6ed..4cf874fb5c5b4 100644
+> --- a/drivers/net/phy/sfp-bus.c
+> +++ b/drivers/net/phy/sfp-bus.c
+> @@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+>  	phylink_set(modes, 2500baseX_Full);
+>  }
+>  
+> +static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
+> +				      unsigned long *modes)
+> +{
+> +	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
+> +	 * types including 10G Ethernet which is not truth. So clear all claimed
+> +	 * modes and set only one mode which module supports: 1000baseX_Full.
+> +	 */
+> +	phylink_zero(modes);
+> +	phylink_set(modes, 1000baseX_Full);
+> +}
+> +
+>  static const struct sfp_quirk sfp_quirks[] = {
+>  	{
+>  		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
+> @@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
+>  		.vendor = "HUAWEI",
+>  		.part = "MA5671A",
+>  		.modes = sfp_quirk_2500basex,
+> +	}, {
+> +		.vendor = "UBNT",
+> +		.part = "UF-INSTANT",
+> +		.modes = sfp_quirk_ubnt_uf_instant,
+>  	},
+>  };
+>  
+> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> index 91d74c1a920ab..804295ad8a044 100644
+> --- a/drivers/net/phy/sfp.c
+> +++ b/drivers/net/phy/sfp.c
+> @@ -273,8 +273,21 @@ static const struct sff_data sff_data = {
+>  
+>  static bool sfp_module_supported(const struct sfp_eeprom_id *id)
+>  {
+> -	return id->base.phys_id == SFF8024_ID_SFP &&
+> -	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
+> +	if (id->base.phys_id == SFF8024_ID_SFP &&
+> +	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
+> +		return true;
+> +
+> +	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
+> +	 * phys id SFF instead of SFP. Therefore mark this module explicitly
+> +	 * as supported based on vendor name and pn match.
+> +	 */
+> +	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
+> +	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
+> +	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
+> +	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
+> +		return true;
+> +
+> +	return false;
+>  }
+>  
+>  static const struct sff_data sfp_data = {
+> -- 
+> 2.27.0
 > 
 
-Confused. What is wrong with the above? It never reads the
-field unless the feature has been offered by device.
-
-
-> > 
-> > > 
-> > > > > Otherwise readers (at least for me), may think the MTU is only valid
-> > > > > if driver set the bit.
-> > > > I think it would still be 'valid' in the sense that it exists and has
-> > > > some value in there filled in by the device, but a driver reading it
-> > > > without negotiating the feature would be buggy. (Like in the kernel
-> > > > code above; the kernel not liking the value does not make the field
-> > > > invalid.)
-> > > 
-> > > See Michael's reply, the spec allows read the config before setting
-> > > features.
-> > Yes, the period prior to finishing negotiation is obviously special.
-> > 
-> > > 
-> > > > Maybe a statement covering everything would be:
-> > > > 
-> > > > "The following driver-read-only field mtu only exists if the device
-> > > > offers VIRTIO_NET_F_MTU and may be read by the driver during feature
-> > > > negotiation and after VIRTIO_NET_F_MTU has been successfully
-> > > > negotiated."
-> > > > > > Should we add a wording clarification to the spec?
-> > > > > I think so.
-> > > > Some clarification would be needed for each field that depends on a
-> > > > feature; that would be quite verbose. Maybe we can get away with a
-> > > > clarifying statement?
-> > > > 
-> > > > "Some config space fields may depend on a certain feature. In that
-> > > > case, the field exits if the device has offered the corresponding
-> > > > feature,
-> > > 
-> > > So this implies for !VIRTIO_NET_F_MQ && VIRTIO_NET_F_MTU, the config
-> > > will look like:
-> > > 
-> > > struct virtio_net_config {
-> > >           u8 mac[6];
-> > >           le16 status;
-> > >           le16 mtu;
-> > > };
-> > > 
-> > I agree.
+On Wednesday 24 February 2021 07:51:28 Sasha Levin wrote:
+> From: Pali Rohár <pali@kernel.org>
 > 
+> [ Upstream commit f0b4f847673299577c29b71d3f3acd3c313d81b7 ]
 > 
-> So consider it's probably too late to fix the driver which assumes some
-> field are always persent, it looks to me need fix the spec do declare the
-> fields are always existing instead.
+> The Ubiquiti U-Fiber Instant SFP GPON module has nonsensical information
+> stored in its EEPROM. It claims to support all transceiver types including
+> 10G Ethernet. Clear all claimed modes and set only 1000baseX_Full, which is
+> the only one supported.
 > 
+> This module has also phys_id set to SFF, and the SFP subsystem currently
+> does not allow to use SFP modules detected as SFFs. Add exception for this
+> module so it can be detected as supported.
 > 
-> > 
-> > > >    and may be read by the driver during feature negotiation, and
-> > > > accessed by the driver after the feature has been successfully
-> > > > negotiated. A shorthand for this is a statement that a field only
-> > > > exists if a certain feature bit is set."
-> > > 
-> > > I'm not sure using "shorthand" is good for the spec, at least we can
-> > > limit the its scope only to the configuration space part.
-> > Maybe "a shorthand expression"?
+> This change finally allows to detect and use SFP GPON module Ubiquiti
+> U-Fiber Instant on Linux system.
 > 
+> EEPROM content of this SFP module is (where XX is serial number):
 > 
-> So the questions is should we use this for all over the spec or it will be
-> only used in this speicifc part (device configuration).
+> 00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
+> 10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
+> 20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
+> 30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
+> 40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
+> 50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
 > 
-> Thanks
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
+>  drivers/net/phy/sfp.c     | 17 +++++++++++++++--
+>  2 files changed, 30 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+> index 58014feedf6c8..fb954e8141802 100644
+> --- a/drivers/net/phy/sfp-bus.c
+> +++ b/drivers/net/phy/sfp-bus.c
+> @@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+>  	phylink_set(modes, 2500baseX_Full);
+>  }
+>  
+> +static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
+> +				      unsigned long *modes)
+> +{
+> +	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
+> +	 * types including 10G Ethernet which is not truth. So clear all claimed
+> +	 * modes and set only one mode which module supports: 1000baseX_Full.
+> +	 */
+> +	phylink_zero(modes);
+> +	phylink_set(modes, 1000baseX_Full);
+> +}
+> +
+>  static const struct sfp_quirk sfp_quirks[] = {
+>  	{
+>  		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
+> @@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
+>  		.vendor = "HUAWEI",
+>  		.part = "MA5671A",
+>  		.modes = sfp_quirk_2500basex,
+> +	}, {
+> +		.vendor = "UBNT",
+> +		.part = "UF-INSTANT",
+> +		.modes = sfp_quirk_ubnt_uf_instant,
+>  	},
+>  };
+>  
+> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> index 34aa196b7465c..d8a809cf20c15 100644
+> --- a/drivers/net/phy/sfp.c
+> +++ b/drivers/net/phy/sfp.c
+> @@ -272,8 +272,21 @@ static const struct sff_data sff_data = {
+>  
+>  static bool sfp_module_supported(const struct sfp_eeprom_id *id)
+>  {
+> -	return id->base.phys_id == SFF8024_ID_SFP &&
+> -	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
+> +	if (id->base.phys_id == SFF8024_ID_SFP &&
+> +	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
+> +		return true;
+> +
+> +	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
+> +	 * phys id SFF instead of SFP. Therefore mark this module explicitly
+> +	 * as supported based on vendor name and pn match.
+> +	 */
+> +	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
+> +	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
+> +	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
+> +	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
+> +		return true;
+> +
+> +	return false;
+>  }
+>  
+>  static const struct sff_data sfp_data = {
+> -- 
+> 2.27.0
 > 
 
