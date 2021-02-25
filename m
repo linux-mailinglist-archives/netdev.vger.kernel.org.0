@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2938324F80
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 12:53:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 646AA324F7E
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 12:53:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbhBYLwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 06:52:08 -0500
-Received: from mail-am6eur05on2081.outbound.protection.outlook.com ([40.107.22.81]:2291
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        id S234175AbhBYLvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 06:51:35 -0500
+Received: from mail-eopbgr60088.outbound.protection.outlook.com ([40.107.6.88]:24657
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234220AbhBYLvl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 06:51:41 -0500
+        id S233896AbhBYLva (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 06:51:30 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QPA0eoHjM0N9eBMtGZ9sBFYT3O2Y+tkmk0wQoxEzNyRMgT1xUFXzy7F4YdRV7KD2fLI8Kr1FimMp+jNcuBfgWqdTSRUFMtHiIoOWoQGbxognTscLpuf3IAQaQ485mPL1844x+JtgaUSCowtOtjnyxqNolREZ+JIbCUqf63/15YEx9acg9WVcd3ic1ZjRjOEc1wAZHUnHx2bOfJ+AJncB6Rkvd1/gBCv90C3Xi+/HbTa3BqVFg/IU3xJiHwsy1s+FNED7BwgLuICAsFxpukyVZz5Oildhizxfcj8PtgKeBi27pwO3cudUbcjQz/NViY24Nc0qsD0OH+als9+G8B1E3Q==
+ b=CQkkAuxnbBEkgEFreZmIWzBdMcjcW1yz4J9CteOjbPm38v1/3pk+oNY3wN6KAuwIYu2XJ2vpjc6wbAquE+VRoKF3HybMFYrt5blQ3VHkH4uFpg5POG84Atu24hW0Tr+av0i5GLRGmZfToaGzC0Ik0VIO1iySV+bFVcf6qoXvNTJJsiELTwKlJ+qKba1ipDEK+1TF5+H6jN+ldjWbdbsGnQB5MqzJMxp/2G6jakESCT85o/yFRx1hMN9PSpqRLh6CSiuY03gN9QYziyt6gKwCmzOM6e2g3kUJZFGk00oFgfKUfRTMhUYY7V8iNzLfoJqV50V8voi1zMR7i/AhBmn51Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q6yvUqb5sKoKex3qpJ2yF6douJVHof3i8VukA/lxouo=;
- b=TBsCvANWQW3s8ou2wUHRbS+jtbwh649Fd1sL721KiN1sDx5zHhFT9TtiLXe25ZYq39IFoEJp1sUhI2YKtEEkqaZd/xYI3mL1d1fzdPXbuJ5EmMq4nAzanozbO+Lxmf+H0EJjK3QTVrI8DG9B1m4UdLZ4xaTe8H7QRLYz5QRSI14v4WlZHcU/25D9IQ2p9MGWT9/rGCC/1b9quGSBxhwCihadoWCeKNxNFqeeQPs8aYKV5qpIBsLIczBm/mdg12e97Rs8zJQmHQ/6jisrFPyiFFfS/0ECNs+aO2k2zYDGHCt3CFOa03OsTLGg+XwTXNWt7Sr5HeCu/voJRdiYVV/j0w==
+ bh=YwlpXMc9HeU0HUozihgQ9MCQZSvHXQlYtz+rjy0O8LU=;
+ b=Cb9XKsg9b1H/xmyTpKrqoUeLA7d+MBbavByedHQ4Dk7qpPfgkqC8uIvoJo4T6KTpVcjvF4WFQwBG2vEd309HJNOgRB5IHI+F1NmxvONHe4f0MXcSKGhgAlMH0eytUo1J3AM9716qO+IBbZ7D1utz8yt2N+GVN60XLgzNkwfdKaxoqfcR+0YUAk4K9ebfYa/ExuRJtd9gG+rJDF7HGdO/E+J6AlNTZvscS77Z50rE5L0BB+IuuS5zEfxl7rDGtYmj5ia3OzfV0ktOzne7qfkHCEzhZn8GTuKRnAFY/fKMMdvytvHqV1g8/SzlJXBzg9SXi6rlOASjbT2Snmuyy5q+9g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q6yvUqb5sKoKex3qpJ2yF6douJVHof3i8VukA/lxouo=;
- b=NDpIpiwVsf8rEReF4ue7ZQziPKfICTUzcHRdGUFeQxqQTcko7CWtOwWDpOwNDzoX/osT9vsK4YcyI2NKmxvaOn2yEC9BfPOlVIiQNBssBW7u35ENxqnFzWUZukYXY7INYQSkQxkzonvYWwDRFHS5r8buzovx0Iv1e5uPX4GRktM=
+ bh=YwlpXMc9HeU0HUozihgQ9MCQZSvHXQlYtz+rjy0O8LU=;
+ b=SJl4mDS0B4gOrz5MG6NopGxfRiqvkxYCLTXBL8b6ksGf+/CnSRc3VIHIytrck5nqor9Lr01xzKzYlcWytxtYY0FOuOHsOMBevNOmO2a3cmFaYhXYghMgEeS1NTCNP6N0TRqu+kr20Q6eFfDdaC60VBLSKbWb+Caim+97U/MnI9g=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB7PR04MB5132.eurprd04.prod.outlook.com (2603:10a6:10:15::12) with
+ by DB6PR0401MB2503.eurprd04.prod.outlook.com (2603:10a6:4:35::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.31; Thu, 25 Feb
- 2021 11:50:33 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19; Thu, 25 Feb
+ 2021 11:50:37 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978%4]) with mapi id 15.20.3846.045; Thu, 25 Feb 2021
- 11:50:33 +0000
+ 11:50:37 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
         f.fainelli@gmail.com, andrew@lunn.ch
 Cc:     linux-imx@nxp.com, netdev@vger.kernel.org
-Subject: [RFC V2 net-next 2/3] net: stmmac: add platform level clocks management
-Date:   Thu, 25 Feb 2021 19:50:49 +0800
-Message-Id: <20210225115050.23971-3-qiangqing.zhang@nxp.com>
+Subject: [RFC V2 net-next 3/3] net: stmmac: add platform level clocks management for i.MX
+Date:   Thu, 25 Feb 2021 19:50:50 +0800
+Message-Id: <20210225115050.23971-4-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210225115050.23971-1-qiangqing.zhang@nxp.com>
 References: <20210225115050.23971-1-qiangqing.zhang@nxp.com>
@@ -55,103 +55,172 @@ X-ClientProxiedBy: SG2PR04CA0132.apcprd04.prod.outlook.com
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR04CA0132.apcprd04.prod.outlook.com (2603:1096:3:16::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.20 via Frontend Transport; Thu, 25 Feb 2021 11:50:30 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2PR04CA0132.apcprd04.prod.outlook.com (2603:1096:3:16::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.20 via Frontend Transport; Thu, 25 Feb 2021 11:50:34 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 10f399e0-fc19-4bb3-cc74-08d8d9838eed
-X-MS-TrafficTypeDiagnostic: DB7PR04MB5132:
+X-MS-Office365-Filtering-Correlation-Id: d7d303b3-8e4c-48e8-7d4b-08d8d98390eb
+X-MS-TrafficTypeDiagnostic: DB6PR0401MB2503:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB7PR04MB513233D174155A0775D91C7EE69E9@DB7PR04MB5132.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1265;
+X-Microsoft-Antispam-PRVS: <DB6PR0401MB250372F7713A5CD7D8DA1DBCE69E9@DB6PR0401MB2503.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:632;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wgaWJhrnYq71ujpf/FYlYd6Qmb/cv3RLeuH3jLHrF7ywN8YFE6HsBD8RwI+OsAegA9Dx8sSuiefrfAzK9bgTZpytHs9wOKs5lNhuG8xxrWbAAFFY/hjwwyJ58m0/7R8f/i92JUh6owSllsUKxVcvj6HqxIsXpObhI3J1/nQmmHEM3OicQXq8cO8P/u9inr6OvUKol02Vq/LCZgTcsglKdyWLE5mW+T7+WRvLmX043DxGOZx7rgUzgzs6PkKLJ7TukuB5C7ulO2qDtvjZqaOZnJh9C9xlej2SMdToaIys2d2TT2qbXGwu9TAVBBIn4y94WyEhQdVLeP7OZJHzterVh4TwlqC/vs2rPUwgynL8exa3bAbb/WGtdVokrfdh1wxOozND1DTwOX2kUNAKDnwFvk3gGgoPx4kjmh1Y9XA1kJmS89kf24ZOOeOS5yYqjmcQztRqwTfBI1O6saLUN79ngYMo6CJ/uzBBWl6JOrvZ1AWKi7UzEZUpeUb1AFG/VX+kacGBdSXtEeHxlnaWQK1XS3CNf8MRYQlVwP3qsaNQRE77n96QDP6FLO/tYSkY2Hc0HRcUVnxPWJpGqPHEmwlsDw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(396003)(366004)(39860400002)(346002)(8676002)(6486002)(6512007)(186003)(26005)(316002)(5660300002)(69590400012)(1076003)(52116002)(36756003)(16526019)(8936002)(478600001)(6666004)(83380400001)(956004)(6506007)(2906002)(86362001)(66946007)(4326008)(2616005)(66476007)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?9Zz9sErMo9Kqj3zsVt0uXtry0tH02OWjkismJ3ol0Ieb2eqpHl+QwvxERr90?=
- =?us-ascii?Q?F0yHRg2MG+TFGrUWdvhQuOjKw3a650Od+XyvqoiZZhwcMvFVV1OBxv8J7Zw1?=
- =?us-ascii?Q?d4AzWsv3ZH1Qkjl4t4tymcURfTeo1bWnhNJ7F8AsUGCI6k80PoEw2mxnfQjB?=
- =?us-ascii?Q?WcTtrj45fq+ETszp4y2VhwWbEQ4hw67DfAyRw7zfIRW9tkRSMwNJRAc7ikEa?=
- =?us-ascii?Q?tGt0ol+QADr3et2MXVErEn+tL0GN71JFkZDLDi6C1a9VC5ir60LvB1s+6tTG?=
- =?us-ascii?Q?BT1MBHqhD01XaB93pUwGROPc9UCP2EJPJkZw5O+AXSL2+OwXwdkrMwMmnJVU?=
- =?us-ascii?Q?H4XNuwEjoB3L9jIvkP2wc4Ng0XbT1h5UGHwxu+DmZP/EXOaDIP8QH1dH2Hq7?=
- =?us-ascii?Q?ceqnPev+s0kCfuhZ40sF0+sPfKnNc28xJAF/zllUbpXV6sR3fTvfrIIUXKJ3?=
- =?us-ascii?Q?+Y9JrlfvTyhKPhRl+7Bba0tcgbxXCRo9+sCe71Ba+EGiFV8AoDTGuvmTAoM4?=
- =?us-ascii?Q?TkR0gjx4OthL/2NDUiRjCegnN52rAMpT45rW88w5qC3mamvgvZ3Z4UJ4KfCf?=
- =?us-ascii?Q?UucwvNNYfjDaa0ktsF3jocxj8p0IUmSr1V6Qd01jQQouTUCaHdHM9NZOIMwm?=
- =?us-ascii?Q?SkMcqK5HyI1nF+BaA82LvBaYnIjnJcfSRSjWkaKzuXNP28nvXyQBft1f7Hhr?=
- =?us-ascii?Q?5pA81iNUZcelkEe3zq0LLsIhkqSFIOkPMemuf8h8nNyOV8beLRg0/rWIwI8i?=
- =?us-ascii?Q?davEjhVemWRxAuNdKf+L6a0iZoNxMTTvJAXgLhL6OLNGta/L4fYXP/kc2EAl?=
- =?us-ascii?Q?HnVRW1MIxbQAUpTdq+rV6Af0v6lgrifsYgKFFaf0MethF7BHGk5uD0OHCfhm?=
- =?us-ascii?Q?Ddq8R+o9YmEx5AbMaDqyqHHSxB8VmT0Ci4Pz4hnAb9kqQQoY8bTscSONlY3M?=
- =?us-ascii?Q?yHAW35VIdajbN45rKvr9tI8vcpEuyfx9hrOOuTUa9wwQex0HD3qCI/6aNhxx?=
- =?us-ascii?Q?R0Fh1gX0G/CMC4hMW7kcX+PldxAbZ4FDlIPobd9A74SeO754FZ9DYroA9RAg?=
- =?us-ascii?Q?UNejKd5YMrIN16TSX+ejm7rI1XuFC4uFjNJfOCaBa1CU9IjqZYKNZZuq7FYh?=
- =?us-ascii?Q?orFSXCA5fee8v0ndumB/oGtdgqNRk2gyTS9tF/ci0aE4FY6n+VN9YPt+0XV7?=
- =?us-ascii?Q?CAz0OUUtQC7Co4jZuRRfeMtbo+o1BiuhBMAAsX2bjkgEEkJNQYqxGoQZMmpz?=
- =?us-ascii?Q?yE/K6U5uLFHOxb4v9TCmJe3PFcKqriKMkOnGNTRwUGPsfd2EsCsd+6Vlkr96?=
- =?us-ascii?Q?2DKk6GW7kRgLN8L8Ib7T5D94?=
+X-Microsoft-Antispam-Message-Info: kCUBaOe3oZITws/j+2tJgdoF5kM9iLdzEMQ3vPlx5o57zFTHr6+CwlvzvDwql9rS7AhvmDuzf8D1ncYaASIBnW/Q/FX/0leZrCiiQgVvjkOMuEkYRbfDghJ2t1anb6diuIsqWBixo7J0y434s7NCSppyyZh/ud03tQZkX3mVS6HsHWwW6/ZUJuHBcd97gdwemDhjv1AmXJu0NRLmlfAVp0y8mQ0J2n+4BQ9jgX/6Meg8Fe8hyeeLmBn2+mIKpTnb9fnIGsO7YEECTCOs5dmbiQriVSmjvhPQGUDf4avx8Qd/I/eT8hq3YdAZBA5C2cYhiZe9n6sZAQUYjuUaaT99AowrwHgVy/lUb6MVAEXgfKSIbbuDVtASPVVejjyziSnjkFdYhw4Bd7J1n+9DIVCHRGJa5q1RyJbchCvOXWO5Wq3WQUepfoYSFkgkQM+n8fT9Gq+ZfPWcTmechnJwg8rxnAq36SBANsTFxYzOqQBfW1spGIGvY8+j2XxjyU/RuC+mspzsgr/IqddC7cI4FOGXNd+SLYdh2OpLApyMYTYo2GlVmwZwHCwRGL7EyZ/OCRIISM+++2wCD0kee2dMte6CyQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(346002)(39860400002)(136003)(8936002)(5660300002)(6666004)(8676002)(2906002)(52116002)(4326008)(316002)(6506007)(66556008)(66946007)(1076003)(69590400012)(956004)(2616005)(6486002)(16526019)(186003)(36756003)(83380400001)(26005)(478600001)(86362001)(66476007)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?v+P6EGRKi749TZQal5Om1l7EWkr3qnxOTNoXkYqie+WQ7FQFnUxAcIKPCfkz?=
+ =?us-ascii?Q?r749fy2+8IrNzjXvu0ElpMIlpRLVdMxYd+1bSoCYLigDO7hbD9Kxh//ctWuC?=
+ =?us-ascii?Q?Sc7oILB+TJ/Xz1wbb8uvwio9M9nwYwymx7PVElCYVJrhu+H/3YOU1LbcEIOp?=
+ =?us-ascii?Q?khp/OjxpQlYUbzWs1on6e3RlxlUMrYm40gGLnjNUGKD6QoSBgxSGAO7PsLPk?=
+ =?us-ascii?Q?NMVBFL9TyN7atMHi+q7qjKjk/65rUiIUHYPrN8dKlqHopY9Vpd41/4VkU2+x?=
+ =?us-ascii?Q?xMjJB36H/61Ynbh8E21cV321Iv5YwfI2xPfIuMAuSe7jANPoS6pZh3JlOvCD?=
+ =?us-ascii?Q?1LYIT0WmQW/3NzZMtSRYWzoLXAXnRGoNPkmBQPE6/hRk+AldlPPIXvibV7Ki?=
+ =?us-ascii?Q?HMBhHJ7FR2Beic0j2K33O9HXd4nv0kWBfpKU5EH7ka91+mCmfsMkdrcf6K12?=
+ =?us-ascii?Q?l9Nap/FQakJCiCzpPzp31JTr+zAnfp/qcdG2is/fhBmxTJi264nLVahOmLX8?=
+ =?us-ascii?Q?rtqUEdPQxZ2YIMIn7m7yYqDXES50PRM68mcOJo0tQ9IXi8+DFIJ9V0E5Io9m?=
+ =?us-ascii?Q?sVtb11lZqgEX9PwC8aI7T5lqvl/QP8bJUqM1EIkr9c3jtCUXbW+lScjraUQo?=
+ =?us-ascii?Q?zqJiuWBOPvyR2xlNkpqtOuRVJ0Sg7AuEo6ALYVIBYvErw74OV7dZd/gSPWtD?=
+ =?us-ascii?Q?snvV0I8xpaMiOsk4IUtHFSJDbNW1YZ8Uj7Hf/O3lusOodFkXTpA69kmK3aGT?=
+ =?us-ascii?Q?IEV1+eURecNexCrWrO4viOfBWiaMeWlLU2BjV2V91g1c3IbYKnqEOdR/zBLh?=
+ =?us-ascii?Q?oiQ05e/4o/pms1s7m8DVefIcmWSaiY+WjmRXeM2UDbrcQDI4P+byAkITZJVp?=
+ =?us-ascii?Q?NsT+jerCoSsY50QoLZfmuSm+KYxh6KZpTNBxgagh2yiTYILbMOewtz2bsfSq?=
+ =?us-ascii?Q?T7Driap6kJ7OULh+03D8uHNtgs2veMFsY75y3CR8rkbpDBbzMcnCdKYcYBpT?=
+ =?us-ascii?Q?DvkxiwOfT+JVhua1ATqIArU8zWC8OacrrUkvPDXgzzsVCC87qq3tR12gnyIx?=
+ =?us-ascii?Q?UYla5tVyMxZhej4sJtQfIVlp6LbvlHT9s7j9iH01yItHmGKepPStxROHAlfP?=
+ =?us-ascii?Q?c8FgSN4IguGNYFp+m1/wAwrofJBccSk3hO7dSTPh+dJdb3c4MSzTxr+rgTs+?=
+ =?us-ascii?Q?fSX7ZEf2KE0QV8dU3H1OsPGIztTzc8YmZYtk40lm7vME1vIa2pWhYs3R4+Hr?=
+ =?us-ascii?Q?5VxVOtu7F1seVhUzETxVUyTv20QYu23UuNgrZdve1Nji85ell6+XLaIHyihw?=
+ =?us-ascii?Q?OM3ubt3YOWH3pwPLUXCFS/9A?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10f399e0-fc19-4bb3-cc74-08d8d9838eed
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7d303b3-8e4c-48e8-7d4b-08d8d98390eb
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2021 11:50:33.8003
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2021 11:50:37.2670
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JjK2UNHdeh3pKwn/C3apYMkLlkFQbEqPzmmDBgo9TVy3ybUtiNhAuEz3gaEgTJNCnRKuFyMzP0PBkgllPrvzQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5132
+X-MS-Exchange-CrossTenant-UserPrincipalName: c6J0qQlop9lbByMkcBc1bviLB9XVX3Pqxb4yETxTWudJ1AApStgK5Rb9i7h60hiYTF0vQRzfoT4QbAaDEWlYwQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2503
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch intends to add platform level clocks management. Some
-platforms may have their own special clocks, they also need to be
-managed dynamically. If you want to manage such clocks, please implement
-clks_config callback.
+Split clocks settings from init callback into clks_config callback,
+which could support platform level clocks management.
 
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++++++++
- include/linux/stmmac.h                            |  1 +
- 2 files changed, 11 insertions(+)
+ .../net/ethernet/stmicro/stmmac/dwmac-imx.c   | 60 +++++++++++--------
+ 1 file changed, 36 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 291f530abada..fb427366a1a7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -127,9 +127,19 @@ int stmmac_bus_clks_config(struct stmmac_priv *priv, bool enabled)
- 			clk_disable_unprepare(priv->plat->stmmac_clk);
- 			return ret;
- 		}
-+		if (priv->plat->clks_config) {
-+			ret = priv->plat->clks_config(priv->plat->bsp_priv, enabled);
-+			if (ret) {
-+				clk_disable_unprepare(priv->plat->stmmac_clk);
-+				clk_disable_unprepare(priv->plat->pclk);
-+				return ret;
-+			}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
+index 223f69da7e95..c1a361305a5a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
+@@ -90,6 +90,32 @@ imx8dxl_set_intf_mode(struct plat_stmmacenet_data *plat_dat)
+ 	return ret;
+ }
+ 
++static int imx_dwmac_clks_config(void *priv, bool enabled)
++{
++	struct imx_priv_data *dwmac = priv;
++	int ret = 0;
++
++	if (enabled) {
++		ret = clk_prepare_enable(dwmac->clk_mem);
++		if (ret) {
++			dev_err(dwmac->dev, "mem clock enable failed\n");
++			return ret;
 +		}
- 	} else {
- 		clk_disable_unprepare(priv->plat->stmmac_clk);
- 		clk_disable_unprepare(priv->plat->pclk);
-+		if (priv->plat->clks_config)
-+			priv->plat->clks_config(priv->plat->bsp_priv, enabled);
++
++		ret = clk_prepare_enable(dwmac->clk_tx);
++		if (ret) {
++			dev_err(dwmac->dev, "tx clock enable failed\n");
++			clk_disable_unprepare(dwmac->clk_mem);
++			return ret;
++		}
++	} else {
++		clk_disable_unprepare(dwmac->clk_tx);
++		clk_disable_unprepare(dwmac->clk_mem);
++	}
++
++	return ret;
++}
++
+ static int imx_dwmac_init(struct platform_device *pdev, void *priv)
+ {
+ 	struct plat_stmmacenet_data *plat_dat;
+@@ -98,39 +124,18 @@ static int imx_dwmac_init(struct platform_device *pdev, void *priv)
+ 
+ 	plat_dat = dwmac->plat_dat;
+ 
+-	ret = clk_prepare_enable(dwmac->clk_mem);
+-	if (ret) {
+-		dev_err(&pdev->dev, "mem clock enable failed\n");
+-		return ret;
+-	}
+-
+-	ret = clk_prepare_enable(dwmac->clk_tx);
+-	if (ret) {
+-		dev_err(&pdev->dev, "tx clock enable failed\n");
+-		goto clk_tx_en_failed;
+-	}
+-
+ 	if (dwmac->ops->set_intf_mode) {
+ 		ret = dwmac->ops->set_intf_mode(plat_dat);
+ 		if (ret)
+-			goto intf_mode_failed;
++			return ret;
  	}
  
- 	return ret;
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index a302982de2d7..5ab2a8138149 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -183,6 +183,7 @@ struct plat_stmmacenet_data {
- 	int (*init)(struct platform_device *pdev, void *priv);
- 	void (*exit)(struct platform_device *pdev, void *priv);
- 	struct mac_device_info *(*setup)(void *priv);
-+	int (*clks_config)(void *priv, bool enabled);
- 	void *bsp_priv;
- 	struct clk *stmmac_clk;
- 	struct clk *pclk;
+ 	return 0;
+-
+-intf_mode_failed:
+-	clk_disable_unprepare(dwmac->clk_tx);
+-clk_tx_en_failed:
+-	clk_disable_unprepare(dwmac->clk_mem);
+-	return ret;
+ }
+ 
+ static void imx_dwmac_exit(struct platform_device *pdev, void *priv)
+ {
+-	struct imx_priv_data *dwmac = priv;
+-
+-	clk_disable_unprepare(dwmac->clk_tx);
+-	clk_disable_unprepare(dwmac->clk_mem);
++	/* nothing to do now */
+ }
+ 
+ static void imx_dwmac_fix_speed(void *priv, unsigned int speed)
+@@ -249,10 +254,15 @@ static int imx_dwmac_probe(struct platform_device *pdev)
+ 	plat_dat->addr64 = dwmac->ops->addr_width;
+ 	plat_dat->init = imx_dwmac_init;
+ 	plat_dat->exit = imx_dwmac_exit;
++	plat_dat->clks_config = imx_dwmac_clks_config;
+ 	plat_dat->fix_mac_speed = imx_dwmac_fix_speed;
+ 	plat_dat->bsp_priv = dwmac;
+ 	dwmac->plat_dat = plat_dat;
+ 
++	ret = imx_dwmac_clks_config(dwmac, true);
++	if (ret)
++		goto err_clks_config;
++
+ 	ret = imx_dwmac_init(pdev, dwmac);
+ 	if (ret)
+ 		goto err_dwmac_init;
+@@ -263,9 +273,11 @@ static int imx_dwmac_probe(struct platform_device *pdev)
+ 
+ 	return 0;
+ 
+-err_dwmac_init:
+ err_drv_probe:
+ 	imx_dwmac_exit(pdev, plat_dat->bsp_priv);
++err_dwmac_init:
++	imx_dwmac_clks_config(dwmac, false);
++err_clks_config:
+ err_parse_dt:
+ err_match_data:
+ 	stmmac_remove_config_dt(pdev, plat_dat);
 -- 
 2.17.1
 
