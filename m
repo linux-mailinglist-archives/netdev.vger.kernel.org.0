@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59164324C68
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 10:07:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E01324C78
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 10:13:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236068AbhBYJGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 04:06:08 -0500
-Received: from mail-vi1eur05on2054.outbound.protection.outlook.com ([40.107.21.54]:38956
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S235741AbhBYJIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 04:08:01 -0500
+Received: from mail-eopbgr130088.outbound.protection.outlook.com ([40.107.13.88]:57269
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234513AbhBYJCU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 04:02:20 -0500
+        id S234634AbhBYJDC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 04:03:02 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lzNJYcwk28hycykV53kewljbrk18j3Zzr0l4GKySpeT9RvTwhAjGR4pwFjgENSWCsYssh8Yr67l+S/WcUA35svomH5OtPpU+M8PpgzAUuceCdIrUQBAH30AkA5CSKlPHDqeMPP3ZjkhRy+Fv1KJ8KFydIeTwqhO9vERVxfcJllRRBu+RrhAo8B1zLs6zqKjvqbYn6p6iKoKCQuDGhpKBXts2/BEhTCwDouArYND/gBEFB0KfisIveiwV4RCdEIyOdnvPGxT0tcwRGrgWlRsyc4uflqGBgUt3HCSvoKmTJLGNAX2YGRVIzMn+VekEmAPUv1xHusQDqPxer+uGMf9ing==
+ b=eCMOe9mcfOgq/nU9ExCqkCYqXurlI+NHAhLEbw8gdJk7s1PYjeubi9TJUuv59SLupu6gWrcgF58DP/p+L7JZPbcAvAmqXCh4GYIVO0iMa9tFyhHewh1xGOKvz41OWBbdCuWXdL4IBNjIFi9K2NfB+phJOhds74+P6ODMey7SWqQWZA1QYwt626l8xzhz2KoG84H9eDPnT8XryqGCJn0qtpEG2VR0+9NwDV+7tWHKISgr5RhDDYY/+4MSxHFADDA5youEa8WId++9t34y0Tj9H1AFTqlC6L+hcGOOHfLDezX3urFgDD8hJxf3Rnpy81P0xJRJZosH/sHdMF+hCpOklw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HtJGaCcW5v0HrQsesDguxrkhWUbHUpnuuBm0g7E4itQ=;
- b=BdiuFC+8JiB/ZH4iDhMnyyjDKe6W1NLe0pk4jprhZJSM6XXoMgMbZle4rB41BSYK6XkS0h0yochnwlZsWZ5EnZDoPGBiCKe7cGa7oODFExRRJzq9jDeY/T6n1tMK1377I05/FT0nAr6rkODnVVFCPM0jmUF268PHIG++nXZbkaLsAyybHKl29u9v2hr+VaeDFBRuVg3F6TBF9hFh7/1Dzld89I4McCGh0uULa5kT5YaCrMdJrHpk7kpue0UBhENS2/ke1PnR5s3k00mKwG19C3QAmC+9j3JxB0sJ0Vilu8RP/XsgMVoQRh7EJ/1yPzYVzEIdFy7rTHBB9sDgGfbrCQ==
+ bh=hemv1yRn6VRH46tZ1jruZaVIT7iNVVj2zqe0lzSWxYY=;
+ b=JOUE2LZKcRtz7QGLhHei+WlP79dhUvPZvVqcn0Eprqi4fbiNFG6MfSSZKzZ6AwIYcUFCfKd9nE8oTSN9ZvYlBp8ygvw1jnEqiU4aEo5aB4VlqQguLa0XZbi5Qq/+sQ5fqydDWEgOAOJ9oJa0SJQBpcR8Lb8PfHLMNO4BgC4mqggOSXAEAY/NVmvJqhx/PRKY5x9z/HCAzqXBhSkXQkEzB1MV1hchwoELOoEqxMvvI/sq7+1Aoa5tI1X/turIHEfM8Bum599WJLIM+QAbqqzp3IrPXRK8S3wXY6HYbVI4F2XGEaZ+lEZoCvr6iSuJbTT8HbVb6iM67mivCuqjOweTtQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HtJGaCcW5v0HrQsesDguxrkhWUbHUpnuuBm0g7E4itQ=;
- b=g8Qgcq6wEtfzLgZ14CCFRfDWjSP4iNJhcwEudD5WtiffBZk3jStTE9XFJkJkdLIYxhkbusCUYPYOR8zOQHIbmZJbKTAOuEeGNqmtBEwOtz0FmmRSYzWuRBo+qjlHVPpYnLuKDoFqo0DTFCTC97cJA9bxqePVt9ggbBtrds++jBU=
+ bh=hemv1yRn6VRH46tZ1jruZaVIT7iNVVj2zqe0lzSWxYY=;
+ b=PCWnX2cwGznnid9SpzH8DXxNfH5gmI8H26UDn/eYCxG1gFyizHgrHuiwx+UkhR6xYG0CM9LVR2p+Wd/BuhGFd8LE0D8ZGyWNgCwOhfb+1IBufe2hBEHl9nlQ5EDX9ggPEwOl19oVsdZSqEEI8I7LMfqyUcsXnq2xqiSrDAkAXzY=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DBAPR04MB7430.eurprd04.prod.outlook.com (2603:10a6:10:1aa::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.29; Thu, 25 Feb
- 2021 09:01:32 +0000
+ 2021 09:01:35 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::7d13:2d65:d6f7:b978%4]) with mapi id 15.20.3846.045; Thu, 25 Feb 2021
- 09:01:32 +0000
+ 09:01:35 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH V5 net 1/5] net: stmmac: stop each tx channel independently
-Date:   Thu, 25 Feb 2021 17:01:10 +0800
-Message-Id: <20210225090114.17562-2-qiangqing.zhang@nxp.com>
+Subject: [PATCH V5 net 2/5] net: stmmac: fix watchdog timeout during suspend/resume stress test
+Date:   Thu, 25 Feb 2021 17:01:11 +0800
+Message-Id: <20210225090114.17562-3-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210225090114.17562-1-qiangqing.zhang@nxp.com>
 References: <20210225090114.17562-1-qiangqing.zhang@nxp.com>
@@ -54,80 +54,90 @@ X-ClientProxiedBy: MA1PR0101CA0036.INDPRD01.PROD.OUTLOOK.COM
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by MA1PR0101CA0036.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:22::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19 via Frontend Transport; Thu, 25 Feb 2021 09:01:28 +0000
+Received: from localhost.localdomain (119.31.174.71) by MA1PR0101CA0036.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:22::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19 via Frontend Transport; Thu, 25 Feb 2021 09:01:32 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: fc0feba1-13a6-45f3-11b2-08d8d96bf1dc
+X-MS-Office365-Filtering-Correlation-Id: f277a987-87c7-464e-e61e-08d8d96bf3d4
 X-MS-TrafficTypeDiagnostic: DBAPR04MB7430:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBAPR04MB7430F5552A3F38DD8A300495E69E9@DBAPR04MB7430.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-Microsoft-Antispam-PRVS: <DBAPR04MB74300730342685558D841816E69E9@DBAPR04MB7430.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qBOG0467/Sb+53smRF18c+W/rR9dDjBOXlu9AIagZMGD6zZhrF25VJ5mFWNi39tYITfpQ7eAdwjQEoZoFZ8Fa4Cpzwc47eYZRtKszciPjvYPzTP/S87w7mTqemCS9tpST0og4FikZVbdBtA9BQ3WlsWQXa5W+u0kktv9D4fMvsrCxwGsW4Y0t2IhzucIeS48DSaBZbZuJ5ORCS2o3e3IW0rzc1ylYQMRP8WDj3raWdjngglfjtIiQ0x/402hvr9Bh3ZAF8Sf3eTJWAkeNSNCTH3xWlFJymXOlEwliEIT0A8NTbs+1cNbCR4iwBf+yH8zycEBuEcdKHH8xIhPq52zAnxu4eMU7iNhlaitaojofoXlYxYB308jHcuIxZxjCva169ex+DujnIuYpHGVK9oMRiCEH+1H3H++nx3GqtnpW1n7fx6I38iTZsWtRZRCgudV29zQrUU6NWG7e5LqBT4BYXtLjHprAC7bYQeYD+se0yXfFJleVC1Sd8PcPetYw3lYMe+ZgKsYQBk4pj5MYk8aKZdPSCiEXU9QQ/VxrHtIp+qK0LX7oZIQnFUCRDcsAP5w8mEn6yXK58iFfFgvY8xAAQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(69590400012)(2906002)(86362001)(186003)(4744005)(8676002)(66556008)(66476007)(83380400001)(8936002)(36756003)(66946007)(478600001)(2616005)(6666004)(6486002)(1076003)(6512007)(316002)(16526019)(6506007)(52116002)(4326008)(5660300002)(956004)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?R7a3Cidol2rVXfOFlttWZFXrILUmY/f7H6JlBYbbRxLSRnuUONYI43YV/NLR?=
- =?us-ascii?Q?MjjdWR1YNTuH/ys8atui7Qc0FQflDQTB89kwVHEREBcVbzU2/h/xOOrfth8J?=
- =?us-ascii?Q?7FdgakrkCRcMNjWF+kggt5+PrmTI/kUchcEtphr1FUK4t1X8reM3fPNu9Mi0?=
- =?us-ascii?Q?xMquUggw7TvuhrBJTYyon/XR0WFwxBy2CNRYMGth+FVdEIWhAxECRWFj8Pf1?=
- =?us-ascii?Q?DihJtPtW9Nt0fliNqEePDPN4Uqw0A+s/U3fiXe3Qq1Y+BE+p/NurBTe9vDyy?=
- =?us-ascii?Q?LWkCk/GO3cnSoTpxPbeEpN7t1mxBFhvQ67PK876+8aG/Cf2iU7s4SNzxof1O?=
- =?us-ascii?Q?4MVbJTWdkWJTOoXgZ6ruFzRwTxAzN8hjOJM4IsgL8vJTczZncKjidcLeyFUj?=
- =?us-ascii?Q?ljwgrnicJ86XzEI/k+VtGGuLAqUTKmqPVAxKSpDRnrdSvMYjg9rQ8UhfFPHv?=
- =?us-ascii?Q?TK2JAcfJAo07a12MPjKfdZpZFLiZB8XpOT2UKxPmXDI1wrEkSTr49PKfI+DS?=
- =?us-ascii?Q?SL+6wvtPVvxxqjyGI9KfHqUjYn5jvPS70XgvO+F5gptL06m6i5Hi1HMOT8JV?=
- =?us-ascii?Q?TemajjzJ1KOHO7gPEiaMJsbpsZvsTDzgAX8ZtSe9gY+bdZLxr5XiXpQSZt7e?=
- =?us-ascii?Q?3yhH3VonfPkKc8bWoAHw1jJe2nD6GMuIkzrB7IV9VB8OQVLlOOMAyHgNjxxb?=
- =?us-ascii?Q?aWme0EMiA/6tpfHpknO45f+b0pl6lrzazvgFqP/jMUIMINWudfVfN7THislz?=
- =?us-ascii?Q?3+cpLvEPTb1bKH9j/PRnGQA4Hp9ueg8nqRgRXzLMLb8zVcJSPgxUEqjyim88?=
- =?us-ascii?Q?MJ7MhHIynAVEqzIv/oonYHfVL3cB7Qhug1uhhFlJKqDk4Ov7ypEaUBCdutD9?=
- =?us-ascii?Q?XjrNW0bGrk3gzZ+oM1YDZchDra9h1m9bJvWaeNDmwTE68Xx5lohc9kD1INw+?=
- =?us-ascii?Q?DYtl/4CWn5veibxezWjgCd+LN3/fVsgjT6vQUhA7GeubxGd0jKa9Qpr/HM/y?=
- =?us-ascii?Q?rqOExTtpopRVsodN9QA+9x7+Q8++WanjMGlkuzFYk+rwM+H0d1AJwjAhBPGe?=
- =?us-ascii?Q?/ss+Si6yStRxZ8JJoBH2eFew7IImBHIePvgS8/wPMhapatYSLcVSFMUtgEA7?=
- =?us-ascii?Q?4uJfEySuXoRlHqKv0ZnJke9eBH+gO9OH0A6f1IZ+/skot+DKYUGRrXYE1tRq?=
- =?us-ascii?Q?GLbIHTpxAmShRmXwu9UEVLQl+orTffzAfL7hzd5H0fhyx73lraPViGrtkD/f?=
- =?us-ascii?Q?84R/zxYgaRKGuBw+H0xv6F9GM9VFLZJbkB1pL4O9S2qb35RJ8GEdKXQ+vpQx?=
- =?us-ascii?Q?01SpgIAAbI11ywGp56sh0fjx?=
+X-Microsoft-Antispam-Message-Info: 2rgQa/AYuVCZUly8gHIDqi5KifaQ1aYr6doMfc7RakWdiwVHgSaZNA0vy3MdsIZYnwEVZkE/+c5svZf2z6KqftSh/woCmeYhciyiA9RQJrXC+0HwRhXjHRGRhEzJsBjffXllqchVLBlhDUjxMvwopq2NHftRnnox90cmc4cxy9uYnn22mSdn99Qq/6+tZJSj5hllmB5mvZbWsRlZOleseTa6jBFx92HBP0aAMfkEs6avnYUGOwGxhV2kbT7uaGZK62HeQJFXel6JHd9GjTHP/wdCzPk1wWyTXWbLMbA6pJYoBjF/U29Y5x//glXxdZ0ulik0pPJ/8EVXyTQ7J31SXnzaO5j2W8fKG0pMyh6MMVCfrY+nly3GNdET0D5IaJc2FUXbOnbtjWI1oXUQIdeYv+nKaUXK200jy1wVsFSBj1N92e6Unl7rm1z6sK4agHuwNpU/mryPpK4Nnw9R8lLG0xU/I45JbZ9pp1/3RYDJKJvvs+WUuvhrH8lNF/B7DNV/JF2g7NY+drQmdyW0vOnZQYy9S7ObQh56LNVwxNwzeg/yrcAcYYW5zpYU1MIMy3qXwEo5AOx6lvwZnyzEHzqA8Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(69590400012)(2906002)(86362001)(186003)(8676002)(66556008)(66476007)(83380400001)(15650500001)(8936002)(36756003)(66946007)(478600001)(2616005)(6666004)(6486002)(1076003)(6512007)(316002)(16526019)(6506007)(52116002)(4326008)(5660300002)(956004)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?RGdxw/LtAWtysLkQ10nvM1IGMnpnyaOXA0hOyiFS+sCEqqr/SrmVUkvT44CF?=
+ =?us-ascii?Q?2gmBX+yDCnkaf4vzzlrLZkH7GPzhwq1pKlqzRjjOFccK/HCoEDHA5Cqu2duj?=
+ =?us-ascii?Q?PPenqdsev+kjC8HcCVso4ldw9571MAT1Am7fgqF6TXIY33TonKM5MCS6lr8V?=
+ =?us-ascii?Q?BJ04Ghsf34fK0h+bpIS+o4KiHCPuJtv0WMi/tU2lPrOrn5v0Mw+blOXORqIb?=
+ =?us-ascii?Q?SZseCMHS4YLYv96tGsvJUFm4oCbJuu1hGPIEtw19XuSQiap6DTJiVa6KKv9e?=
+ =?us-ascii?Q?EwuU9P9cF270zevP+a+4sOSlAlTurnyDvTp3QmNWVrT4rF32W/fqasy9/gLC?=
+ =?us-ascii?Q?jcgIRZw+FGjmNER0DmNhbgZ0UqRiRFS1G858XCjh/YJGWNAILWkAzz72dIuw?=
+ =?us-ascii?Q?kWs5hVcUwtxGgan/3x7rEr2puAbKGRSoYNafkMrvpSlSy+7YSzLokwTTUnzR?=
+ =?us-ascii?Q?/UZPysnu4Z9cFoNRzAm1Rb0qX2po6xQcuqnh0/6Deem8Yn6f5cc6sJtsrS7h?=
+ =?us-ascii?Q?+QC1032LJpdd/062mwjhrZ7dQnK0+XQXt9PpjoAhoEJIub4eundA8Hs1x4oH?=
+ =?us-ascii?Q?jvDPtu44ztIuahbOxodALPNzl72n6JV25x363Gh5WSJdfVhIuKyWpDu8vwu6?=
+ =?us-ascii?Q?eEiNhbrVB0fQNzEUH2cVr8WKK2Ifff3QO78xjm6ciKvFDiYFRMihUCG4fA+X?=
+ =?us-ascii?Q?mhbRMgbSl8iRzzitMIGBvWYzNuBl/a43ydNw/X5dJ8pwp42+KT4kzkzYGON/?=
+ =?us-ascii?Q?r9oCRCtqpR1CeP4byuovWm40mV1gHt6TwIbBPz/XwKu1ywK1Pg4jpufKGI3T?=
+ =?us-ascii?Q?Xp/WyLty03GY7ae1YUhwwZICmhMr+0STogHAMcLq0KMKRbEVKr/xIpNe/NdX?=
+ =?us-ascii?Q?06RwdhvCbiSyTi89SNZdsHQ9YSXJlg2Vs1s1elRhmnTgZ8wc/EXoY0bWxuT+?=
+ =?us-ascii?Q?fe28XMeEYACSoZ8YQhR2tb83jz7ioCDJwCekJ+wW2pFIfyC5enAmaUKVg5UX?=
+ =?us-ascii?Q?NXlFTE4ama9toqoGSpeFNqLTohhG4ZMbOwvkuz1LmnJYugd+0NF732yV8s/C?=
+ =?us-ascii?Q?WyxMd60uYcf/yyQlQ3ZR2UKSJrv8G7mS06afUY7hPnxjA9uE1QwXlR92b0Tx?=
+ =?us-ascii?Q?NvGizeNwqhGaaDL31CWNB5cKl7QbsWIrRNvkNzee14waOSGwRcXva8ziUngw?=
+ =?us-ascii?Q?AccaWq4Qwljl19SgRMg1XTki2Aa/T3TeeoSki6vcO4asRVliVXdZ2L6yIHlf?=
+ =?us-ascii?Q?1IwxG6zczLg+CxkIPW3MZYfDlb6EAN8hln85Qn40QaCNeq+8wav8Db6xvFod?=
+ =?us-ascii?Q?B/OriyVKUnGnxK3ckio3C3In?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc0feba1-13a6-45f3-11b2-08d8d96bf1dc
+X-MS-Exchange-CrossTenant-Network-Message-Id: f277a987-87c7-464e-e61e-08d8d96bf3d4
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2021 09:01:31.9078
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2021 09:01:35.1436
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Nk9P9Anb6wTxSyFcipD6sFp6+pD7v/FUSMqRq6GPxvWoBobyEgTNPIS3aRLlwodoRBA6z5ORdDfNDm/hrDxXXw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: JuL7ilwtieBFOup52XoWA03VUjJKbo5CCL8aaF4JURuUGRGnexEW3M7R32rdnwAUxVV7RrkecyKPIBWD5Hf1sA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7430
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If clear GMAC_CONFIG_TE bit, it would stop all tx channels, but users
-may only want to stop specific tx channel.
+stmmac_xmit() call stmmac_tx_timer_arm() at the end to modify tx timer to
+do the transmission cleanup work. Imagine such a situation, stmmac enters
+suspend immediately after tx timer modified, it's expire callback
+stmmac_tx_clean() would not be invoked. This could affect BQL, since
+netdev_tx_sent_queue() has been called, but netdev_tx_completed_queue()
+have not been involved, as a result, dql_avail(&dev_queue->dql) finally
+always return a negative value.
 
-Fixes: 48863ce5940f ("stmmac: add DMA support for GMAC 4.xx")
+__dev_queue_xmit->__dev_xmit_skb->qdisc_run->__qdisc_run->qdisc_restart->dequeue_skb:
+	if ((q->flags & TCQ_F_ONETXQUEUE) &&
+		netif_xmit_frozen_or_stopped(txq)) // __QUEUE_STATE_STACK_XOFF is set
+
+Net core will stop transmitting any more. Finillay, net watchdong would timeout.
+To fix this issue, we should call netdev_tx_reset_queue() in stmmac_resume().
+
+Fixes: 54139cf3bb33 ("net: stmmac: adding multiple buffers for rx")
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-index 0b4ee2dbb691..71e50751ef2d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-@@ -53,10 +53,6 @@ void dwmac4_dma_stop_tx(void __iomem *ioaddr, u32 chan)
- 
- 	value &= ~DMA_CONTROL_ST;
- 	writel(value, ioaddr + DMA_CHAN_TX_CONTROL(chan));
--
--	value = readl(ioaddr + GMAC_CONFIG);
--	value &= ~GMAC_CONFIG_TE;
--	writel(value, ioaddr + GMAC_CONFIG);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 26b971cd4da5..12ed337a239b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5257,6 +5257,8 @@ static void stmmac_reset_queues_param(struct stmmac_priv *priv)
+ 		tx_q->cur_tx = 0;
+ 		tx_q->dirty_tx = 0;
+ 		tx_q->mss = 0;
++
++		netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, queue));
+ 	}
  }
  
- void dwmac4_dma_start_rx(void __iomem *ioaddr, u32 chan)
 -- 
 2.17.1
 
