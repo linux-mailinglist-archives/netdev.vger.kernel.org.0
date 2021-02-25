@@ -2,89 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5192D325A05
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 00:03:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE84325A14
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 00:10:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbhBYXBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 18:01:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43140 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229548AbhBYXBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 18:01:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0AAB964DFF;
-        Thu, 25 Feb 2021 23:00:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614294049;
-        bh=mk4DiEsR8Th8rb/vY+JjWOH6kWDwS+qN1qotOpAcomQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aFD8TTtJNzpcvYUqD27eEinout0L11CCUXK34a3XrzfYmWl2EujkFi1sWkZMDt7RV
-         Q0wkwWKmwzl1cy8C8AurIrPWTcbufbXFC/F4LFM32x/imyfD6baSts+CXjCyBFchJ7
-         qN3wvvjIUdLvFFS1HP7xs9wavx6HWMgtVFMzJjZ09N1dDeEeoCfpZoA2asOrUgmAST
-         HsMEDie5sxkw2hbLsn3VzGKzShkHBZc906L03TnzmG70SK0xsUBvVavLe8j8NTIXW+
-         WYaSTcNcRpJ/kQt6hM1C7m9x8jkvJWLyZuP4jaZYgJT4bMd3AlJ30c7PJF1nAYVmea
-         7+ahLdrFUPXHA==
-Date:   Thu, 25 Feb 2021 15:00:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wei Wang <weiwan@google.com>
-Cc:     Alexander Duyck <alexanderduyck@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Martin Zaharinov <micron10@gmail.com>
-Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy
- poll
-Message-ID: <20210225150048.23ed87c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAEA6p_DdccvmymRWEtggHgqb9dQ6NjK8rsrA03HH+r7mzt=5uw@mail.gmail.com>
-References: <20210223234130.437831-1-weiwan@google.com>
-        <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89i+xGsMpRfPwZK281jyfum_1fhTNFXq7Z8HOww9H1BHmiw@mail.gmail.com>
-        <20210224155237.221dd0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
-        <20210224160723.4786a256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR15MB2787694425A1369CA563FCFFBD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
-        <20210224162059.7949b4e1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR15MB27873FF52B109480173366B8BD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
-        <20210224180329.306b2207@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAEA6p_CEz-CaK_rCyGzRA8=WNspu2Uia5UasJ266f=p5uiqYkw@mail.gmail.com>
-        <20210225002115.5f6215d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAEA6p_DdccvmymRWEtggHgqb9dQ6NjK8rsrA03HH+r7mzt=5uw@mail.gmail.com>
+        id S231309AbhBYXJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 18:09:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229571AbhBYXJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 18:09:03 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868FEC06174A
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:08:23 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id c23so2420756edr.13
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:08:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FvmtRgyQp0Yn//lwJJlWR4Y8tuee06I1p/pnziYs/yg=;
+        b=q0uDXX9E/aPVVTqchUjJUTRr3NC3fiF8+Bm1BjiWqsx3MhjbUYKHcrM6RvHvuXZrEn
+         inCXxBYSLQ/VtxuK3GpnrcotrkVQNouRYUCJZ6jCXeMaM4lh6Djy+qTsc++IwlFg64mb
+         KyrlCC8WzTj5fzHq56fvv9z3b1DzqP/84GGP6bUAPaRHNvB17sI+UJuytIzglZTTmIkV
+         t2SA4w/8BqFMdBBQqhpE/bAW/zqkanq7aLBH7oxfy9KcEPK9lrXwFutLks+kYVrXJzUl
+         wWh3SFSmSQScfPrpWs3ESLfWvn8sJAruu7/6GbZ2zERfWjecEfOYiCpM5nJwmWfLGrMc
+         y8eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FvmtRgyQp0Yn//lwJJlWR4Y8tuee06I1p/pnziYs/yg=;
+        b=NW6YnuPp6x7vz9tKxRKSezTV0TqN8AkE9C9Nl9tJpg161aIWOTb9/QK6LmPuOj34zN
+         3gGXVdcxtp3BuL+5WxC+QaniCHluflLLkWLlpKtMgRM1u/3loiu5zWssMU4CJ/v4dNuT
+         dMrorDb/Kv1TfKTNNhe4nfhKLyTkO8foLSgjAb3/xubvjtkA86qnUSd0iTStPjptSnwl
+         TM7uc29IT+lGMNKhgAARL/U/M1/JvYh+VGlx+flIB5Z6M8JfgYjh4cUbtAogIa4p12tz
+         DEOKqvha1zLp5kfsJe7qQ01B75sO29tmWpAeJK6lXYnsXbes0DFArLSWR2RUPuykfcs8
+         jz5A==
+X-Gm-Message-State: AOAM533feQpSI0il9JSaxffiBnMdO3sx6Bn98pEResQNAG2lQ2ehHTAb
+        oiL+usP980cHJQzTLFfIi50=
+X-Google-Smtp-Source: ABdhPJyuNRwUdhso9xpNLuyO1LI9A/rX3E10DPQFP6Svd1vdfoi8l30PbDKqWP9wl9VI9k56aRhwQw==
+X-Received: by 2002:aa7:c3c7:: with SMTP id l7mr278963edr.207.1614294502319;
+        Thu, 25 Feb 2021 15:08:22 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id bz20sm3908230ejc.28.2021.02.25.15.08.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Feb 2021 15:08:22 -0800 (PST)
+Date:   Fri, 26 Feb 2021 01:08:20 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Michael Walle <michael@walle.cc>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v2 net 3/6] net: enetc: take the MDIO lock only once per
+ NAPI poll cycle
+Message-ID: <20210225230820.m4ymxayzsm2dns2g@skbuf>
+References: <20210225121835.3864036-1-olteanv@gmail.com>
+ <20210225121835.3864036-4-olteanv@gmail.com>
+ <YDgqI8eGDpJKxiLY@lunn.ch>
+ <20210225230026.gvtm3esbmrfb5dk5@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210225230026.gvtm3esbmrfb5dk5@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Feb 2021 10:29:47 -0800 Wei Wang wrote:
-> Hmm... I don't think the above patch would work. Consider a situation that:
-> 1. At first, the kthread is in sleep mode.
-> 2. Then someone calls napi_schedule() to schedule work on this napi.
-> So ____napi_schedule() is called. But at this moment, the kthread is
-> not yet in RUNNING state. So this function does not set SCHED_THREAD
-> bit.
-> 3. Then wake_up_process() is called to wake up the thread.
-> 4. Then napi_threaded_poll() calls napi_thread_wait().
+On Fri, Feb 26, 2021 at 01:00:26AM +0200, Vladimir Oltean wrote:
+> The goal is to eventually get rid of all the _hot stuff and always take
+> the lock from the top level, this would allow us to do more register
+> read/write batching and that would amortize the cost of the locking
+> overall.
 
-But how is the task not in running state outside of napi_thread_wait()?
-
-My scheduler knowledge is rudimentary, but AFAIU off CPU tasks which
-were not put to sleep are still in RUNNING state, so unless we set
-INTERRUPTIBLE the task will be running, even if it's stuck in cond_resched().
-
-> woken is false
-> and SCHED_THREAD bit is not set. So the kthread will go to sleep again
-> (in INTERRUPTIBLE mode) when schedule() is called, and waits to be
-> woken up by the next napi_schedule().
-> That will introduce arbitrary delay for the napi->poll() to be called.
-> Isn't it? Please enlighten me if I did not understand it correctly.
-
-Probably just me not understanding the scheduler :)
-
-> I personally prefer to directly set SCHED_THREAD bit in ____napi_schedule().
-> Or stick with SCHED_BUSY_POLL solution and replace kthread_run() with
-> kthread_create().
-
-Well, I'm fine with that too, no point arguing further if I'm not
-convincing anyone. But we need a fix which fixes the issue completely,
-not just one of three incarnations.
+Of course when I say 'get rid of the hot stuff', I mean get rid of the
+'hot' _naming_ and not the behavior, since the goal is for all register
+accessors to be 'hot' aka unlocked.
