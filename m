@@ -2,75 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D55C324802
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:46:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC36324801
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:46:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235971AbhBYAq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 19:46:28 -0500
-Received: from mo-csw1514.securemx.jp ([210.130.202.153]:42382 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235900AbhBYAq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 19:46:27 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 11P0i5G0019657; Thu, 25 Feb 2021 09:44:05 +0900
-X-Iguazu-Qid: 34tKPbYPQdqNqkLbSv
-X-Iguazu-QSIG: v=2; s=0; t=1614213844; q=34tKPbYPQdqNqkLbSv; m=TU+Ws2vmJCuvZEf+Q1Gizk484DT4l6hyz5nTkb+Ssq8=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1511) id 11P0i39v001739
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 25 Feb 2021 09:44:04 +0900
-Received: from enc02.toshiba.co.jp (enc02.toshiba.co.jp [61.202.160.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by imx12-a.toshiba.co.jp (Postfix) with ESMTPS id B53D31000AE;
-        Thu, 25 Feb 2021 09:44:03 +0900 (JST)
-Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id 11P0i3QW022839;
-        Thu, 25 Feb 2021 09:44:03 +0900
-From:   Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        "Brandeburg\, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen\, Anthony L" <anthony.l.nguyen@intel.com>,
-        "daichi1.fukui\@toshiba.co.jp" <daichi1.fukui@toshiba.co.jp>,
-        "nobuhiro1.iwamatsu\@toshiba.co.jp" 
-        <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Corinna Vinschen <vinschen@redhat.com>,
-        "Brown\, Aaron.F" <aaron.f.brown@intel.com>,
-        "Keller\, Jacob.E" <jacob.e.keller@intel.com>,
-        "David.S.Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v4.4.y, v4.9.y] igb: Remove incorrect "unexpected SYS WRAP" log message
-References: <20210210013448.2116413-1-punit1.agrawal@toshiba.co.jp>
-        <c5d7ccb5804b46eea2ef9fe29c66720f@intel.com>
-        <87blcaw650.fsf@kokedama.swc.toshiba.co.jp>
-        <20210224085126.45af7b68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Thu, 25 Feb 2021 09:44:02 +0900
-In-Reply-To: <20210224085126.45af7b68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        (Jakub Kicinski's message of "Wed, 24 Feb 2021 08:51:26 -0800")
-X-TSB-HOP: ON
-Message-ID: <87wnuxugbx.fsf@kokedama.swc.toshiba.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
+        id S235871AbhBYApt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 19:45:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234294AbhBYApr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 19:45:47 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F20FC061574
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 16:45:07 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id m9so3730610ybk.8
+        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 16:45:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GbKeEzz4lVWERO2vPbTbjokE6+q5AP/TQ05munt+HIM=;
+        b=n60Cr3rtgqXWyArVzD46+wJJu6FMwwwxHOIDpFhENqq+vQmKfWnIAQSrcNj0RtQcX1
+         FYq0Jdl1v6FUEKNZKOSlIy/y+by11L8xpuESTUHWj8YNYdy97y7xxMz1U/AewuNm/bLo
+         zzZ5Y4nDeXAcOPiG989lCQ7vhMDfMY0ILR9wxzm5f2JkxwcLHR0LmwJzVX05MxPBqmsZ
+         W6Ib99TSpT5VzbJu2b5IV3wTX2Aa1wThoWscSvU/0fW/a005quUxON3lL0sN01GPbLeP
+         Q5S0g51omLLpFRcy4bnlCMXyeV4nh44SKavNzlj8qE0dkpskS9nAkiCrc5pWnQC/gS32
+         /2fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GbKeEzz4lVWERO2vPbTbjokE6+q5AP/TQ05munt+HIM=;
+        b=CrOphG2anjCdmeEMxPXBQHolfceTxtckge9Zh62yeLUhz/8PHqbqfRe4gYCMYhkFdG
+         RL0cAcSjAEdY1LNcguRHjb5BR8LckyslKrcC7egMFbf15n6SyJZxFS1PtaghrA95DDoZ
+         9xkSb87mvMkbzJSYZ4kBDJNLV6cmArBLKKBfk1M+diyExBnS9aVwt53t61dZExyuvscj
+         OE0/SH/Qf8oUF6YbJHaCqhuSc5aXdNDTVOkgtT1FZtubRKKBEo66KebR+c89sUXH8ItD
+         APkGgc4r5huHSInz1UAwcQ46H1kieX6PUXqA6vx4+UmDhyu/zmtmFforBIjCy7KcWWT3
+         fW2g==
+X-Gm-Message-State: AOAM531wW20gDnp+jI/zWYYybsYNUi/6QY//F2FhRwDGDWHBMQvebuCT
+        iPb3MD7jnhNPMFA8q/nz2Ca1YxrTSNCT355WyaiXTw==
+X-Google-Smtp-Source: ABdhPJzUG3LgFrttofPm13/YMjZ4fkdU98e16+Wvj3JkwUPkfJMfgXpKFbv7hV6kPEuY2Wd5tHg/2G9h+uZa4401xu0=
+X-Received: by 2002:a25:d016:: with SMTP id h22mr470698ybg.278.1614213906288;
+ Wed, 24 Feb 2021 16:45:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210223234130.437831-1-weiwan@google.com> <20210224114851.436d0065@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89i+jO-ym4kpLD3NaeCKZL_sUiub=2VP574YgC-aVvVyTMw@mail.gmail.com>
+ <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89i+xGsMpRfPwZK281jyfum_1fhTNFXq7Z8HOww9H1BHmiw@mail.gmail.com>
+ <20210224155237.221dd0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
+ <20210224160723.4786a256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BN8PR15MB2787694425A1369CA563FCFFBD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
+ <CAEA6p_BGgazFPRf-wMkBukwk4nzXiXoDVEwWp+Fp7A5OtuMjQA@mail.gmail.com> <20210224163257.7c96fb74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210224163257.7c96fb74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Wed, 24 Feb 2021 16:44:55 -0800
+Message-ID: <CAEA6p_Cp-Q4BRr_Ohd7ee7NchQBB37+vgBrauZQJLtGzgcqZWw@mail.gmail.com>
+Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy poll
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Martin Zaharinov <micron10@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
-
-> On Wed, 24 Feb 2021 11:28:59 +0900 Punit Agrawal wrote:
->> > It makes sense to me for htis to apply to those stable trees as well.  
->> 
->> Thanks Jake.
->> 
->> Networking maintainers - It's been a couple of weeks this patch is on
->> the list. Is there anything else that needs to be done for it to be
->> picked up for stable?
+On Wed, Feb 24, 2021 at 4:33 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Network maintainers only handle stable selection at the time of
-> submission (if that). So if you want to request a backport of a commit
-> which is already in Linus's tree and wasn't selected you should follow
-> the standard stable procedure and submit the request to stable@, CCing
-> netdev.
+> On Wed, 24 Feb 2021 16:16:58 -0800 Wei Wang wrote:
+> > On Wed, Feb 24, 2021 at 4:11 PM Alexander Duyck <alexanderduyck@fb.com> wrote:
+> > >
+> > > The problem with adding a bit for SCHED_THREADED is that you would
+> > > have to heavily modify napi_schedule_prep so that it would add the
+> > > bit. That is the reason for going with adding the bit to the busy
+> > > poll logic because it added no additional overhead. Adding another
+> > > atomic bit setting operation or heavily modifying the existing one
+> > > would add considerable overhead as it is either adding a
+> > > complicated conditional check to all NAPI calls, or adding an
+> > > atomic operation to the path for the threaded NAPI.
+> >
+> > Please help hold on to the patch for now. I think Martin is still
+> > seeing issues on his setup even with this patch applied. I have not
+> > yet figured out why. But I think we should not merge this patch until
+> > the issue is cleared. Will update this thread with progress.
+>
+> If I'm looking right __busy_poll_stop() is only called if the last
+> napi poll used to re-enable IRQs consumed full budget. You need to
+> clear your new bit in busy_poll_stop(), not in __busy_poll_stop().
+> That will fix the case when hand off back to the normal poller (sirq,
+> or thread) happens without going thru __napi_schedule().
 
-Ah I missed that. Thanks for the pointer - I'll resend the request to
-stable with netdev in CC.
+If the budget is not fully consumed, napi_complete_done() should have
+been called by the driver which will clear SCHED_BUSY_POLL bit.
