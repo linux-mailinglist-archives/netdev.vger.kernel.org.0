@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 389E032591B
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 22:58:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E1332591D
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 22:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234637AbhBYV5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 16:57:00 -0500
-Received: from smtp-17-i2.italiaonline.it ([213.209.12.17]:41073 "EHLO
+        id S234361AbhBYV5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 16:57:44 -0500
+Received: from smtp-17-i2.italiaonline.it ([213.209.12.17]:57611 "EHLO
         libero.it" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234875AbhBYVzT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 16:55:19 -0500
+        id S234900AbhBYVzl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 16:55:41 -0500
 Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
  ([87.20.116.197])
         by smtp-17.iol.local with ESMTPA
-        id FOYQlNUJ2lChfFOYWlkbfx; Thu, 25 Feb 2021 22:52:21 +0100
+        id FOYQlNUJ2lChfFOYXlkbgJ; Thu, 25 Feb 2021 22:52:22 +0100
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1614289941; bh=ZwZwTipdZKxY6qGd4VuGRlxL2+9rpHSGnSFdq6NXms8=;
+        t=1614289942; bh=j7GRCoTejXM7B9fJVl1bTmRrEzrTT3KamKBLcuWoSdk=;
         h=From;
-        b=nPqtD7JEACtSZgRq+Y+7+amJ9UEw2g4F9Ow0l6RJbzEibTAkGaa7bF2WhTVHlxve1
-         oHLwSmqke9ZWsWeNFcZGlx7TMv4clil4jCCdM2x2yYk4PPqLqVfF2Q31n89XWG/tr6
-         CJODTsADPWI3Qj7pib1oLuWXv4TABf7i96VTYEo2z4eK+UDEFmz00wDFn/6rrvnRY+
-         Lyzb1yl/M9JnrVNmFWsMJ8wpYLTEwVZjBPVt97wEgQA7eh34VJ1j63H4uX08SbP6FB
-         wZPg1Bq2VrQk6m2qfdl/TKioRQND4v7VMJuZPB4j76gknFcgbnSrW4CjJfrX5h2J1T
-         LUv71dyyg42HA==
-X-CNFS-Analysis: v=2.4 cv=S6McfKgP c=1 sm=1 tr=0 ts=60381c15 cx=a_exe
+        b=aQXhC9sBNN93GeYw4esKYoNGJMPZMNLWgrYE83abP0Nw/CGXJoyoPv+KAzAnF5E/l
+         QvzHd+pKIbGa5AvOD3OyDMhHTCw8Rvr5nzCK+GvkJCyAxH0CfjXBJ6ePScVG/lOzRA
+         +zidJq7s9Vq/B9LusPURVs7elE+g/X3RRzCaDQB4g/Awe4Uq23D7bf64xwJs+zV2tb
+         3XsrkAN/+r1CijnWd1r4OQ9ByTRFxqaAOcAEDNN5K2hZoGVRKzuXL799Ea4wnu0CCG
+         FOBnyXHLLYjfZN8dsqk5DQJzxKDKcXJvwl7OdBFm4UEpfkp67a6+0axJRdpCSe0kTh
+         MU32eX7SV0vuQ==
+X-CNFS-Analysis: v=2.4 cv=S6McfKgP c=1 sm=1 tr=0 ts=60381c16 cx=a_exe
  a=AVqmXbCQpuNSdJmApS5GbQ==:117 a=AVqmXbCQpuNSdJmApS5GbQ==:17
- a=AkCzXzlJzD4X874_W7gA:9
+ a=6WxvSi62EpDuW4hn7DoA:9
 From:   Dario Binacchi <dariobin@libero.it>
 To:     linux-kernel@vger.kernel.org
 Cc:     Alexander Stein <alexander.stein@systec-electronic.com>,
@@ -42,24 +42,24 @@ Cc:     Alexander Stein <alexander.stein@systec-electronic.com>,
         YueHaibing <yuehaibing@huawei.com>,
         Zhang Qilong <zhangqilong3@huawei.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 2/6] can: c_can: fix indentation
-Date:   Thu, 25 Feb 2021 22:51:51 +0100
-Message-Id: <20210225215155.30509-3-dariobin@libero.it>
+Subject: [PATCH v2 3/6] can: c_can: fix control interface used by c_can_do_tx
+Date:   Thu, 25 Feb 2021 22:51:52 +0100
+Message-Id: <20210225215155.30509-4-dariobin@libero.it>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210225215155.30509-1-dariobin@libero.it>
 References: <20210225215155.30509-1-dariobin@libero.it>
-X-CMAE-Envelope: MS4xfLyEMjqPMWD6UklMARrB4DSdHDnqxkwrej79EXjWITQpcm3rEgvUMPyPzGMGZPXL/kNJ2iArJDBnhfYbLPSejaI69YZVumO8EuiQyLE4G976ejrsS8FX
- grbzC2RPpJG+jl9ysT98tvGC6yM10VDgeskEII7SoPXfswWqhs2FOsB9AtAj5B5arznhapM0MCs0k5AFr+cr9868DHBba+gY4brGgRirOzQgdNvUBBJxFqyM
- mLRgTzswhkuBukt/9pDXwM3A2qZ8IIajyFDKW9aIo1j1j2p+UUQPNBrNEypdkY/fHOamth4l2O/MmQDolGW/QoFGPfzeKIcZrKBYogn6sI44pcbOHCp6thMt
- Y5xoY8Xw7NSqyhtL/KDG4hzzOSjm4ibSUY7Qxe56qaX74l5F34V0PxC3w+gxNHCRWKY4Xxg1qptR+nnoC4pdZQeM9O5IjX/xMj8RApBZ4EiVO4R3G0tRsnko
- k9CNEsBRDql69PX45vBm9/DHYTb3pqo1g6Y/787aW0Ce7/eX3HMKkglTy4eD5qgWKy6eTBcv3Tu2xcPiRaeKi3f4qZu3fFizD/3R1bHj0Xgz/sccSSvSWjic
- UBgK5sPz7+0D8zoTZZk5UcKYj4dPF9lQroIJtwBjbvnzb0MeCr3X1NKQVZvzDtFHsdXeAJmV7NrSK65/oVfTAklmpJfDFueUkiQeDqTkAk5Cdw==
+X-CMAE-Envelope: MS4xfPTJVu/b4W/lDf0Rt18zHhRwMpHd1BkDGPYy0FpY80gMrR9Lu9WZompAs77KBBfKMdwZRlBBH0dvhFQeVLFKK3CGvAcOJ9BD+RkDPijbzbJ3Z27HSyBc
+ wOItyxSDdpNDePV3OQmXEkG8mE+tGXsQF8jRD4tyIDGWGWu38s5QBQSmCDxTGITHVYuagr0DE6ux1lOJmBJLkiKh/+KzCfJ4EasyY0JTKmaBasKwIzQW8Qbs
+ zDmkMzh4RpdZ3+LQ7eD2HvBgJaW52frQ/+d4jYvj+EAkgYOg61k/oPt65aqOjlBY2p+ZLpQ0xcu6e7OyYI/vrSHv2iElTTs5XgFDYkrqMyuKfJ0YNpnOAqKI
+ uLEv/KOtms3BQNVwz8jXT+O5EcO57ZEj1kx3URL0OnNPHZnSLJzlPy5GOVQ4cv6hdTM7qX8LeomhWpfTVUg2+F7oBIXeUkYxwsF+Gm8iOm/93z9s22z2TVGZ
+ 9ycaHOc35NAnPDFgttLcf/FWbfYOIhR15SNPqlHsaxAE+bIUd3JgDVQU156m8nM/LkduMCAvsqhPEpbuBNsWqi2kKlTKkkSYze6oiIlhwcSWmHwVnFd3/zhX
+ /8fLDv61eFQezQaSTPPE8ok9UUayGvdQIpwM8phZkaTEvGtXYtlnfY2xiM2iMSusGT3X7yelQqEURw3j1XJQXGkpU7knR/CsxnNTsKrOwQP1eQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 524369e2391f ("can: c_can: remove obsolete STRICT_FRAME_ORDERING Kconfig option")
-left behind wrong indentation, fix it.
+According to commit 640916db2bf7 ("can: c_can: Make it SMP safe") let RX use
+IF1 (i.e. IF_RX) and TX use IF2 (i.e. IF_TX).
 
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
 ---
@@ -70,18 +70,18 @@ Signed-off-by: Dario Binacchi <dariobin@libero.it>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/c_can/c_can.c b/drivers/net/can/c_can/c_can.c
-index a962ceefd44a..dbcc1c1c92d6 100644
+index dbcc1c1c92d6..69526c3a671c 100644
 --- a/drivers/net/can/c_can/c_can.c
 +++ b/drivers/net/can/c_can/c_can.c
-@@ -786,7 +786,7 @@ static u32 c_can_adjust_pending(u32 pend)
- static inline void c_can_rx_object_get(struct net_device *dev,
- 				       struct c_can_priv *priv, u32 obj)
- {
--		c_can_object_get(dev, IF_RX, obj, priv->comm_rcv_high);
-+	c_can_object_get(dev, IF_RX, obj, priv->comm_rcv_high);
- }
- 
- static inline void c_can_rx_finalize(struct net_device *dev,
+@@ -732,7 +732,7 @@ static void c_can_do_tx(struct net_device *dev)
+ 		idx--;
+ 		pend &= ~(1 << idx);
+ 		obj = idx + C_CAN_MSG_OBJ_TX_FIRST;
+-		c_can_inval_tx_object(dev, IF_RX, obj);
++		c_can_inval_tx_object(dev, IF_TX, obj);
+ 		can_get_echo_skb(dev, idx, NULL);
+ 		bytes += priv->dlc[idx];
+ 		pkts++;
 -- 
 2.17.1
 
