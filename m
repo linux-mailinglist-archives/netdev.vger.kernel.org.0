@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20AD6324866
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 02:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC87324868
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 02:13:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236730AbhBYBMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 20:12:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52162 "EHLO
+        id S236827AbhBYBMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 20:12:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236705AbhBYBLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 20:11:38 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21726C061793;
-        Wed, 24 Feb 2021 17:10:43 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id c19so2491696pjq.3;
-        Wed, 24 Feb 2021 17:10:43 -0800 (PST)
+        with ESMTP id S236717AbhBYBLo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 20:11:44 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A003BC061794;
+        Wed, 24 Feb 2021 17:10:48 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id x129so2505008pfx.7;
+        Wed, 24 Feb 2021 17:10:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
         bh=+QAzmdz2J3myHOyB8tlALQV+gjhvFNmvosUKr/OQ9fw=;
-        b=D99MJWF/QSM5mUouLSuN6lJWzDuVLhO06GVyHPklWXa0ouKV5SXSjxeX4QO7V/w8pr
-         SYeBkLV54G8tHlnLePsqeNs8ZngcV+Lwdky2QyXyCr+LU2sgBT642v7LGgLcU/cf+f0b
-         F7xWVtP5N5v1FE4hbFGAby8nDwbDsG4wdWEH3+NFEmnXRNVa3ndHk/3n3MZoRV2IxZDx
-         blb3K89v6hM7LLBwJ8k9VC+5VUAGHeHQeczcJiYEF4dIEqYt5if3d/+YIjbZoobtst+O
-         PGi7EIYDbYJIp9PTFSW8KNtTvNnLvfbavtMV6cvnK2Qz6QTWUdKoyVqNK0ce8ceWsKv4
-         9Oog==
+        b=a9Nvc3+Ure+Lcv9JHro+nYtgB+VeAwdp6JxFTLuv0FFB9cUOKbZI8YYXiBB+wxHWEM
+         er7zuUdrxUMPNPr315K2DoP4BbQNqUDjzJlT5D5syObjZ7X9yjvzdBiBPYLB4rwtwR1s
+         gE6TebOOxK8HS7nmGW9OPC0CvB0xaXTArmWgx80T3p43OM6Rx8WnbgN04mD/BNfB6+21
+         G4KvCYSsjOL6I4GnMhxX9HgLVdF14LsrJyBLP9pw7DCngA9iN8wlJk4AhKm9x2HgGjO9
+         tTo/gcgJ0FSevfKUUmcm9GFU4mAmLb+MODbR+kY04dyyy/reju9nLNESZiDWVQTcNqug
+         E8Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
         bh=+QAzmdz2J3myHOyB8tlALQV+gjhvFNmvosUKr/OQ9fw=;
-        b=tf5yEruSe827IMDRcBoQoZo30tIdEoPplz5g567ImyD+KYFBNxGRiTQEJsuHOajphu
-         FXgqU3dg8Dfc7IXvUcHj087Q4NvQIwVSDlMLwe57+TgkUFouW2cga8n7IONhzjBQqZb1
-         ZEDgzCVFh4Hyumv7pXMvpUSX/SaEw5fe/d++qLKT2+BDWx14yms43s5UjObvVbjCoJb9
-         2ZlZB2AhhlLUF7rKj8CxDAvpb09KpAV7O2r6dtnPUc328UYLbGeY2s3sAJFxBr4NA9G1
-         4NL7VMrOgfG/Oif8izCpcmotbVebu6QHYrveAEaVmmL6lGLOMGgthYil7Bd8OI7Xgvnh
-         ElRg==
-X-Gm-Message-State: AOAM530On8xWXvgaDN7Leia0Ib77UeofAjQGSv67e9M/GPTXuTgWsou3
-        xT0oUd7dOOQhQ1y/5tJWHUCkEr6eG3k=
-X-Google-Smtp-Source: ABdhPJzYEzcQZU3Aw1kWPwY6+tvSiNMyHMX6KtCtYjJQUVYiiGaZrT+zxJQyUZL9utVB1QUNTGE/Sw==
-X-Received: by 2002:a17:90b:806:: with SMTP id bk6mr672592pjb.16.1614215442244;
-        Wed, 24 Feb 2021 17:10:42 -0800 (PST)
+        b=slEXn29kJtwDDBRF5rxbwv62CGttaEh4AmPMA3XhCu6O5mYB0QdBO6n/GiW0gDJNd1
+         SgFgOpr1TZakJtG0hjSbZ35h3NiiVhA1EdXSsTHBwEcitbMrTBWjZOmxeD3+VB9j3SsQ
+         igpM+W7alLpiRptG6OBEG6O43crnd1glqSKIEydWWSXmBvYjpgUyyYoFRwYpyJQfxCfK
+         L0jAHWIXwazxMGyArElAHutSolYlzgpnG7UM3tudtvDmoOCaeoneee1/VhIJcZg3DdPB
+         ncvKTobns/DdA5hTi4Buv2AVzbwozCep5Ck+qp0/oNDe1yx041gUDmCF+8G61YkpuAE7
+         P6lQ==
+X-Gm-Message-State: AOAM531WVrlQyECzPORN286lp7kvcA92lo6CWw0njcEMwkaysaqytf4y
+        J6vB56yUiUjtgaoE3BbJmVsxQnSYLqs=
+X-Google-Smtp-Source: ABdhPJxnIm3Uzl26X0Jq+pOUUEfqCS5RfV4D/+pBox91cGs/HnPB+5r9Ks0z7uTvg+xbKu+EENTOcg==
+X-Received: by 2002:aa7:8f15:0:b029:1ed:9356:a9e with SMTP id x21-20020aa78f150000b02901ed93560a9emr689228pfr.73.1614215447719;
+        Wed, 24 Feb 2021 17:10:47 -0800 (PST)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z11sm3503010pgk.65.2021.02.24.17.10.37
+        by smtp.gmail.com with ESMTPSA id z11sm3503010pgk.65.2021.02.24.17.10.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 17:10:41 -0800 (PST)
+        Wed, 24 Feb 2021 17:10:46 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org (open list), stable@vger.kernel.org,
         gregkh@linuxfoundation.org, olteanv@gmail.com, sashal@kernel.org
-Subject: [PATCH stable-5.10.y] net: dsa: b53: Correct learning for standalone ports
-Date:   Wed, 24 Feb 2021 17:09:55 -0800
-Message-Id: <20210225010956.946545-7-f.fainelli@gmail.com>
+Subject: [PATCH stable-5.11.y] net: dsa: b53: Correct learning for standalone ports
+Date:   Wed, 24 Feb 2021 17:09:56 -0800
+Message-Id: <20210225010956.946545-8-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210225010956.946545-1-f.fainelli@gmail.com>
 References: <20210225010853.946338-1-f.fainelli@gmail.com>
