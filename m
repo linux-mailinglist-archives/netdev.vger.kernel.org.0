@@ -2,105 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01C86325275
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D21E32528F
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:40:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231326AbhBYPa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 10:30:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbhBYPaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 10:30:55 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE49C061574
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 07:29:18 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id q9so5268810ilo.1
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 07:29:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=N/p0Ouq5Gx5/1pe82Ydybk60Eu2zL8qEPa4Wa2rPVwg=;
-        b=Q6+pKjJiyFU6c9v41N/6toFCdHsI3u7cOCHS03gUhNVzG9N6YGsyp4c62iLbeRtCKc
-         jGKUGEUYKjzydBI1DTAwf96O66YgY5YigP4jGjGRYhAY1v9ef8+YueIpelUe810Y8Hdq
-         x1b0T9mi1R79EVu9LN3oKpQaKS4+SbnaZ44iM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=N/p0Ouq5Gx5/1pe82Ydybk60Eu2zL8qEPa4Wa2rPVwg=;
-        b=sSTs+poIPm7DLKmfkKbQCMFIAaSiqmRZf/zFQbaqA9QO0/L8+fO3TgvV4ajWaR5WP/
-         m6Vg9i9784qQ0L56wOoIXuXlckQkNvislC1XJQKUow8nq2q+yRFQ3fDImmDF7HIm9qf5
-         6LbKu3K0YE336GTvMAW86Na+tT/1n4SyV6xn8Y59IKmJp0v06AN3ikG9h0bbRDgB5qsQ
-         FRGBOAc1T7DsdQlrIp6H8kwIkzKJ53YA2492zy0vRChO6VCLu23AJZ4uIH5BJez8lGL9
-         srG2Aq3V1rTAtFYv+cfaRrMpEdoJXclK55uMzYC7BKVW+UQCnUcV+47TJCk/UdcV2fwq
-         /hEg==
-X-Gm-Message-State: AOAM531Qooc4NwMB/FtSU5ALSLG1G6j3DHmJZM1KZF46F54q2rY/tLcG
-        uywHYhuWzFr4ZRJlM1orlL+AvklMepVmVg==
-X-Google-Smtp-Source: ABdhPJxsToSaxizKtwqi9lsBXnLvmKOPMx+LDkUYyYK+j8fc4p4BFVmTX8eUbkovQYZ/PsaVEp9Usg==
-X-Received: by 2002:a05:6e02:c2d:: with SMTP id q13mr2834677ilg.83.1614266958252;
-        Thu, 25 Feb 2021 07:29:18 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id k11sm3288063ilo.8.2021.02.25.07.29.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Feb 2021 07:29:17 -0800 (PST)
-Subject: Re: [PATCH net-next v3 2/3] net: ethernet: rmnet: Support for
- downlink MAPv5 checksum offload
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Cc:     davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1614110571-11604-1-git-send-email-sharathv@codeaurora.org>
- <1614110571-11604-3-git-send-email-sharathv@codeaurora.org>
- <20210224102307.4a484568@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <866808f2-d6aa-f887-a11d-8d9ec741188d@ieee.org>
-Date:   Thu, 25 Feb 2021 09:29:16 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S232429AbhBYPj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 10:39:27 -0500
+Received: from outbound-smtp44.blacknight.com ([46.22.136.52]:44883 "EHLO
+        outbound-smtp44.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232823AbhBYPjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 10:39:14 -0500
+Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
+        by outbound-smtp44.blacknight.com (Postfix) with ESMTPS id 0ACC2F804B
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 15:38:16 +0000 (GMT)
+Received: (qmail 7514 invoked from network); 25 Feb 2021 15:38:16 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 25 Feb 2021 15:38:16 -0000
+Date:   Thu, 25 Feb 2021 15:38:15 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     linux-mm@kvack.org, chuck.lever@oracle.com, netdev@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 3/3] mm: make zone->free_area[order] access
+ faster
+Message-ID: <20210225153815.GN3697@techsingularity.net>
+References: <161419296941.2718959.12575257358107256094.stgit@firesoul>
+ <161419301128.2718959.4838557038019199822.stgit@firesoul>
+ <20210225112849.GM3697@techsingularity.net>
+ <20210225161633.53e5f910@carbon>
 MIME-Version: 1.0
-In-Reply-To: <20210224102307.4a484568@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20210225161633.53e5f910@carbon>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/24/21 12:23 PM, Jakub Kicinski wrote:
-> On Wed, 24 Feb 2021 01:32:50 +0530 Sharath Chandra Vurukala wrote:
->> +/* MAP CSUM headers */
->> +struct rmnet_map_v5_csum_header {
->> +#if defined(__LITTLE_ENDIAN_BITFIELD)
->> +	u8  next_hdr:1;
->> +	u8  header_type:7;
->> +	u8  hw_reserved:7;
->> +	u8  csum_valid_required:1;
->> +#elif defined(__BIG_ENDIAN_BITFIELD)
->> +	u8  header_type:7;
->> +	u8  next_hdr:1;
->> +	u8  csum_valid_required:1;
->> +	u8  hw_reserved:7;
->> +#else
->> +#error	"Please fix <asm/byteorder.h>"
->> +#endif
->> +	__be16 reserved;
->> +} __aligned(1);
+On Thu, Feb 25, 2021 at 04:16:33PM +0100, Jesper Dangaard Brouer wrote:
+> > On Wed, Feb 24, 2021 at 07:56:51PM +0100, Jesper Dangaard Brouer wrote:
+> > > Avoid multiplication (imul) operations when accessing:
+> > >  zone->free_area[order].nr_free
+> > > 
+> > > This was really tricky to find. I was puzzled why perf reported that
+> > > rmqueue_bulk was using 44% of the time in an imul operation:
+> > > 
+> > >        ???     del_page_from_free_list():
+> > >  44,54 ??? e2:   imul   $0x58,%rax,%rax
+> > > 
+> > > This operation was generated (by compiler) because the struct free_area have
+> > > size 88 bytes or 0x58 hex. The compiler cannot find a shift operation to use
+> > > and instead choose to use a more expensive imul, to find the offset into the
+> > > array free_area[].
+> > > 
+> > > The patch align struct free_area to a cache-line, which cause the
+> > > compiler avoid the imul operation. The imul operation is very fast on
+> > > modern Intel CPUs. To help fast-path that decrement 'nr_free' move the
+> > > member 'nr_free' to be first element, which saves one 'add' operation.
+> > > 
+> > > Looking up instruction latency this exchange a 3-cycle imul with a
+> > > 1-cycle shl, saving 2-cycles. It does trade some space to do this.
+> > > 
+> > > Used: gcc (GCC) 9.3.1 20200408 (Red Hat 9.3.1-2)
+> > >   
+> > 
+> > I'm having some trouble parsing this and matching it to the patch itself.
+> > 
+> > First off, on my system (x86-64), the size of struct free area is 72,
+> > not 88 bytes. For either size, cache-aligning the structure is a big
+> > increase in the struct size.
 > 
-> This seems to be your first contribution so let me spell it out.
+> Yes, the increase in size is big. For the struct free_area 40 bytes for
+> my case and 56 bytes for your case.  The real problem is that this is
+> multiplied by 11 (MAX_ORDER) and multiplied by number of zone structs
+> (is it 5?).  Thus, 56*11*5 = 3080 bytes.
 > 
-> In Linux when maintainers ask you to do something you are expected
-> to do it.
+> Thus, I'm not sure it is worth it!  As I'm only saving 2-cycles, for
+> something that depends on the compiler generating specific code.  And
+> the compiler can easily change, and "fix" this on-its-own in a later
+> release, and then we are just wasting memory.
 > 
-> You can leave the existing bitfields for later, but don't add another.
+> I did notice this imul happens 45 times in mm/page_alloc.o, with this
+> offset 0x58, but still this is likely not on hot-path.
+> 
 
-As I offered, I will implement changes to the existing
-code to use masks in place of these C bit-fields.
+Yeah, I'm not convinced it's worth it. The benefit of 2 cycles is small and
+it's config-dependant. While some configurations will benefit, others do
+not but the increased consumption is universal. I think there are better
+ways to save 2 cycles in the page allocator and this seems like a costly
+micro-optimisation.
 
-I will try complete this within the next week.  If it
-looks good it could serve as an example of how to go
-about it.
+> > <SNIP>
+> >
+> > With gcc-9, I'm also not seeing the imul instruction outputted like you
+> > described in rmqueue_pcplist which inlines rmqueue_bulk. At the point
+> > where it calls get_page_from_free_area, it's using shl for the page list
+> > operation. This might be a compiler glitch but given that free_area is a
+> > different size, I'm less certain and wonder if something else is going on.
+> 
+> I think it is the size variation.
+> 
 
-					-Alex
+Yes.
+
+> > Finally, moving nr_free to the end and cache aligning it will make the
+> > started of each free_list cache-aligned because of its location in the
+> > struct zone so what purpose does __pad_to_align_free_list serve?
+> 
+> The purpose of purpose of __pad_to_align_free_list is because struct
+> list_head is 16 bytes, thus I wanted to align free_list to 16, given we
+> already have wasted the space.
+> 
+
+Ok, that's fair enough but it's also somewhat of a micro-optimisation as
+whether it helps or not depends on the architecture.
+
+I don't think I'll pick this up, certainly in the context of the bulk
+allocator but it's worth keeping in mind. It's an interesting corner case
+at least.
+
+-- 
+Mel Gorman
+SUSE Labs
