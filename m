@@ -2,108 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4699324F09
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 12:21:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A173324F17
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 12:25:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234952AbhBYLUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 06:20:36 -0500
-Received: from m12-15.163.com ([220.181.12.15]:33128 "EHLO m12-15.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234641AbhBYLU3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Feb 2021 06:20:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=+rDCj
-        q0m6hwtvTdNVQgL34+Esctp41E0VVnWVS4CZW8=; b=YSdoLxhABbZsTLPMs+meL
-        X6jBw4idCdgl4dqLe7J8PlKUYBmZ+M+ea7xWfQSc2GjtucfGetkWOPCUDPrxct9x
-        ikWYv+ioyikSaJihmeTVxrq/EjHcYBnFR+8rDlSQLnI5FVj+2YXKdq45W0YSCNm6
-        uUJINkxydrujL3lC8LwR68=
-Received: from localhost (unknown [119.137.54.222])
-        by smtp11 (Coremail) with SMTP id D8CowAD3_BBjezdgLaOFCw--.77S2;
-        Thu, 25 Feb 2021 18:26:48 +0800 (CST)
-Date:   Thu, 25 Feb 2021 18:26:42 +0800
-From:   wengjianfeng <samirweng1979@163.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     kernel test robot <lkp@intel.com>, imitsyanko@quantenna.com,
-        geomatsi@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        colin.king@canonical.com, kbuild-all@lists.01.org,
-        clang-built-linux@googlegroups.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-Subject: Re: [PATCH] qtnfmac: remove meaningless goto statement and labels
-Message-ID: <20210225182642.00002519@163.com>
-In-Reply-To: <875z2gfnup.fsf@codeaurora.org>
-References: <20210225064842.36952-1-samirweng1979@163.com>
-        <202102251757.V6qESTrL-lkp@intel.com>
-        <875z2gfnup.fsf@codeaurora.org>
-Organization: yulong
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S235522AbhBYLZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 06:25:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234247AbhBYLYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 06:24:55 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F09C061574
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 03:24:15 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id c6so6407082ede.0
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 03:24:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f9CoI6+o7lHbdWJowEye8ec9en6enB/DY/bQIiYRvWc=;
+        b=SvPI81APbZUTYOQXhbmKgti+xvxHQjW4jrQ+Pa9ToMvcF3EAClyX4DQJQgQLQNA1wm
+         riwNPH131AMQS2ehDRiUAglvEyNAGFkjnRHHfSesZlNXEtE6tDOmSQhRzWaHhkQ+8aW6
+         9e89xJ/5KZ23+HpTeV0FryJpMy04Ia+tAUMaqspoccPmc1DtGPTcsGo9rvUBULFKS7JL
+         It7JyGObcgzRn/63QEpPmWqIbwFYOpX/BdB7R3Zz09Y9Posyob1gMou6SlZkjv5hqA1N
+         /8QqNVpYAYohkmrp/vYqdPoQQh8ub4Ai0VBQu+8xXfQV5eIWe4XhtwqoLn/yBXHhKL/V
+         dTpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f9CoI6+o7lHbdWJowEye8ec9en6enB/DY/bQIiYRvWc=;
+        b=gZeNiGVTp9dszzUe4d1Zf39ZGGC98D3aFjwAtWRHWtvi2ib7ZCOa7tMufTgKgg0eNK
+         BKpI+pS0yjOengDyGtw1oqn3OiQQMb3HovpxTurqsaBBSeexT1qRULwVzZlxVjISSwjH
+         aLf78VNJ3jAv/IDkk3Lsjhst5nupFMbtKL2ERrR2n3KX374C8zQFbwgN/OTWifnleYF5
+         aFlDXIBPKfieWMFuxI041eVPlskncqow03XG8Qm5LKspIvoIkLwKU1Q4ikRCTJSXrGib
+         e2pO+VTArzj8LDcv08Sh3Lsoja7wJp/rdZC39Wb88KOZI4fKP3sD/OhBWdAVDduxMe2a
+         PNLQ==
+X-Gm-Message-State: AOAM533UOELih4GLXD1QuYIjcB9iKqfJBBnDyAbGyfzuXGeo1kPVzv/v
+        rmKZFCTk7bhuvIv9KT9Xum4=
+X-Google-Smtp-Source: ABdhPJwfzJtJTSM2OXHQdlDGwobBNuuj2y0AH4opY7AK+yNkS6UrRzqTzXlwusb2coiptA6nes6s6A==
+X-Received: by 2002:a05:6402:95b:: with SMTP id h27mr2337535edz.77.1614252254165;
+        Thu, 25 Feb 2021 03:24:14 -0800 (PST)
+Received: from localhost.localdomain ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id v12sm2977156ejh.94.2021.02.25.03.24.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Feb 2021 03:24:13 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Michael Walle <michael@walle.cc>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net 0/6] Fixes for NXP ENETC driver
+Date:   Thu, 25 Feb 2021 13:23:51 +0200
+Message-Id: <20210225112357.3785911-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: D8CowAD3_BBjezdgLaOFCw--.77S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WrykJF1UGFWDKrWfWFW5GFg_yoW8KF47p3
-        y8Xa15Ka18X3y8AFZ7Kay8ZayFqws5Jr9rGas8Jw1rZa42vr1xtrn2grW5X3srWrs7CFW3
-        ArWUX3sYg3ZxAaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jbKsUUUUUU=
-X-Originating-IP: [119.137.54.222]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiRQlEsVl91SaGtgAAse
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Feb 2021 12:22:54 +0200
-Kalle Valo <kvalo@codeaurora.org> wrote:
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> kernel test robot <lkp@intel.com> writes:
-> 
-> > Hi samirweng1979,
-> >
-> > Thank you for the patch! Yet something to improve:
-> >
-> > [auto build test ERROR on wireless-drivers-next/master]
-> > [also build test ERROR on wireless-drivers/master sparc-next/master
-> > v5.11 next-20210225] [If your patch is applied to the wrong git
-> > tree, kindly drop us a note. And when submitting patch, we suggest
-> > to use '--base' as documented in
-> > https://git-scm.com/docs/git-format-patch]
-> >
-> > url:
-> > https://github.com/0day-ci/linux/commits/samirweng1979/qtnfmac-remove-meaningless-goto-statement-and-labels/20210225-145714
-> > base:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git
-> > master config: x86_64-randconfig-a001-20210225 (attached
-> > as .config) compiler: clang version 13.0.0
-> > (https://github.com/llvm/llvm-project
-> > a921aaf789912d981cbb2036bdc91ad7289e1523) reproduce (this is a W=1
-> > build): wget
-> > https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
-> > -O ~/bin/make.cross chmod +x ~/bin/make.cross # install x86_64
-> > cross compiling tool for clang build # apt-get install
-> > binutils-x86-64-linux-gnu #
-> > https://github.com/0day-ci/linux/commit/d18bea1fd25dee219ae56343ff9caf9cb6eb1519
-> > git remote add linux-review https://github.com/0day-ci/linux git
-> > fetch --no-tags linux-review
-> > samirweng1979/qtnfmac-remove-meaningless-goto-statement-and-labels/20210225-145714
-> > git checkout d18bea1fd25dee219ae56343ff9caf9cb6eb1519 # save the
-> > attached .config to linux build tree
-> > COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross
-> > ARCH=x86_64 
-> >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> > All errors (new ones prefixed by >>):
-> >
-> >>> drivers/net/wireless/quantenna/qtnfmac/commands.c:1901:8: error:
-> >>> use of undeclared label 'out'
-> >                    goto out;
-> 
-> Do you compile test your patches? This error implies that not.
-> Compilation test is a hard requirement for patches.
-> 
+This contains an assorted set of fixes collected over the past week on
+the enetc driver. Some are related to VLAN processing, some to physical
+link settings, some are fixups of previous hardware workarounds.
 
-Hikvalo,
-  I'm sorry for make this mistake, and I will compile success before
-  send patch later. thanks.
+Vladimir Oltean (6):
+  net: enetc: don't overwrite the RSS indirection table when
+    initializing
+  net: enetc: initialize RFS/RSS memories for unused ports too
+  net: enetc: take the MDIO lock only once per NAPI poll cycle
+  net: enetc: fix incorrect TPID when receiving 802.1ad tagged packets
+  net: enetc: don't disable VLAN filtering in IFF_PROMISC mode
+  net: enetc: force the RGMII speed and duplex instead of operating in
+    inband mode
 
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 127 +++++-------------
+ drivers/net/ethernet/freescale/enetc/enetc.h  |   5 +
+ .../net/ethernet/freescale/enetc/enetc_cbdr.c |  54 ++++++++
+ .../net/ethernet/freescale/enetc/enetc_hw.h   |  18 ++-
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 103 +++++++++++---
+ .../net/ethernet/freescale/enetc/enetc_vf.c   |   7 +
+ 6 files changed, 202 insertions(+), 112 deletions(-)
+
+-- 
+2.25.1
 
