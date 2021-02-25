@@ -2,79 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E03843247BD
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9A23247C4
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234711AbhBYACj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 19:02:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38740 "EHLO mail.kernel.org"
+        id S236250AbhBYAIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 19:08:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234222AbhBYACh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Feb 2021 19:02:37 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 545EB64F0A;
-        Thu, 25 Feb 2021 00:01:56 +0000 (UTC)
+        id S236218AbhBYAIK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 19:08:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A37C64F10;
+        Thu, 25 Feb 2021 00:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614211317;
-        bh=RZw7aXwSowOYZ/ITqJac2+QYEPCN7r6HREQezJSZFr8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=o9yj+qpJ3hActRg6sCxeY/X+EHaBUdpyapD29YzS3wrUIbE/y2V+D3vzYPeRy5Mij
-         JQuYYO9RZnFAXgEj5vsx/DDVPn4h9c5P3EBqv7zDsWxiyW46kopjYwcAiDjqkCiFpj
-         t9UYFJc9foAHbSJiQF/yKtbqVVvzzOUWraJ5fVJpG84DP3pLmULVxtohI+oF3dDi6w
-         kCTES+n8TXjWKwyU6DeMu3aDa4BNlUQluIPtCvQgVlEHaHhDXawajnXGna+8YHiyJc
-         HBLVEvaPDl+KUwps9eFKbbpmFaOAAfxQJdRuMG+pNBDNbqeCiITY6ZRHyiOtmDSgmd
-         IpF2tUq7HdU9g==
-Date:   Wed, 24 Feb 2021 17:01:54 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com,
-        masahiroy@kernel.org, akpm@linux-foundation.org,
-        valentin.schneider@arm.com, terrelln@fb.com, hannes@cmpxchg.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        rdunlap@infradead.org
-Subject: Re: [PATCH V2] init/Kconfig: Fix a typo in CC_VERSION_TEXT help text
-Message-ID: <20210225000154.GA7875@24bbad8f3778>
-References: <20210224223325.29099-1-unixbhaskar@gmail.com>
+        s=k20201202; t=1614211647;
+        bh=u6VhaDjblGQt09dHUrdXoY4QMhHnKG3zcBDdAJehWFc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lW+fAzUsDkOM1ZzJyvBsCbrv37VRY2uCWd3Kc3DjJaaSsE1LJg1EBGW1/4Qk7Bpn9
+         HseC7v/7FbCLmqrR7MHBM5x1229TnA5D7M73F4itnhqAchfRwYB2AkkB55WGfjxmZF
+         kD9UwRZ0Z8tSI4qKf9eQVLtPZrMG/uQ5gY+mcrssOR9XShNwZ0IufEksNALrlqmWk9
+         EG0bZmSukKM+EABkIrDV2+YDhgk5b1jF9sQ/XE7HjcHTmeUCIBBKFrcskm7TOiGqz0
+         2gOZlHNS+RlhdESP0mIAlnV82Cgi4AbUwTBCTRfjfFJlAK/fyZCzJKQzuxQcddR5xc
+         c3wPFgvfTG84A==
+Date:   Wed, 24 Feb 2021 16:07:23 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Wei Wang <weiwan@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Martin Zaharinov <micron10@gmail.com>
+Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy
+ poll
+Message-ID: <20210224160723.4786a256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
+References: <20210223234130.437831-1-weiwan@google.com>
+        <20210224114851.436d0065@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89i+jO-ym4kpLD3NaeCKZL_sUiub=2VP574YgC-aVvVyTMw@mail.gmail.com>
+        <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89i+xGsMpRfPwZK281jyfum_1fhTNFXq7Z8HOww9H1BHmiw@mail.gmail.com>
+        <20210224155237.221dd0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210224223325.29099-1-unixbhaskar@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 04:03:25AM +0530, Bhaskar Chowdhury wrote:
+On Thu, 25 Feb 2021 00:59:25 +0100 Eric Dumazet wrote:
+> On Thu, Feb 25, 2021 at 12:52 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > Interesting, vger seems to be CCed but it isn't appearing on the ML.
+> > Perhaps just a vger delay :S
+> >
+> > Not really upsetting. I'm just trying to share what I learned devising
+> > more advanced pollers. The bits get really messy really quickly.
+> > Especially that the proposed fix adds a bit for a poor bystander (busy
+> > poll) while it's the threaded IRQ that is incorrectly not preserving
+> > its ownership.
+> >  
+> > > Additional 16 bytes here, possibly in a shared cache line, [1]
+> > > I prefer using a bit in hot n->state, we have plenty of them available.  
+> >
+> > Right, presumably the location of the new member could be optimized.
+> > I typed this proposal up in a couple of minutes.
+> >  
+> > > We worked hours with Alexander, Wei, I am sorry you think we did a poor job.
+> > > I really thought we instead solved the issue at hand.
+> > >
+> > > May I suggest you defer your idea of redesigning the NAPI model for
+> > > net-next ?  
+> >
+> > Seems like you decided on this solution off list and now the fact that
+> > there is a discussion on the list is upsetting you. May I suggest that
+> > discussions should be conducted on list to avoid such situations?  
 > 
-> s/compier/compiler/
+> We were trying to not pollute the list (with about 40 different emails so far)
 > 
-> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> (Note this was not something I initiated, I only hit Reply all button)
+> 
+> OK, I will shut up, since you seem to take over this matter, and it is
+> 1am here in France.
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-
-> ---
->  Changes from V1:
->  Nathan and Randy, suggested  better subject line texts,so incorporated.
-> 
->  init/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/init/Kconfig b/init/Kconfig
-> index ba8bd5256980..2cfed79cc6ec 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -19,7 +19,7 @@ config CC_VERSION_TEXT
->  	    CC_VERSION_TEXT so it is recorded in include/config/auto.conf.cmd.
->  	    When the compiler is updated, Kconfig will be invoked.
-> 
-> -	  - Ensure full rebuild when the compier is updated
-> +	  - Ensure full rebuild when the compiler is updated
->  	    include/linux/kconfig.h contains this option in the comment line so
->  	    fixdep adds include/config/cc/version/text.h into the auto-generated
->  	    dependency. When the compiler is updated, syncconfig will touch it
-> --
-> 2.29.2
-> 
+Are you okay with adding a SCHED_THREADED bit for threaded NAPI to be
+set in addition to SCHED? At least that way the bit is associated with
+it's user. IIUC since the extra clear_bit() in busy poll was okay so
+should be a new set_bit()?
