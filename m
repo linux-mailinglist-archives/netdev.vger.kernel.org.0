@@ -2,121 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E97CD3247D8
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 620423247F6
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 01:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236343AbhBYAYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Feb 2021 19:24:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23924 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236329AbhBYAYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Feb 2021 19:24:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614212592;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nlfx0m5rFM5WgVSG9Q1ZGCqTh86/2WQ73ulkFBzW4yA=;
-        b=HuWyonXlMzdAbwt5iuGSaFa8lQTg7YNTB6O9FoTlACO1E9pzpEQchxB/qMCFrHYYBqWtok
-        NUDeK4AU5mCjCLlqjhK3WChnFkQ8f11kML9IBoiVTsTjKEFsugbS4/58rzFSFofoa7aO61
-        ChbynK+JX7JXb1amJ4+OJ7jp9t9brac=
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
- [209.85.214.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-429-xr52GVBaOWO2_ikqle4BPg-1; Wed, 24 Feb 2021 19:23:10 -0500
-X-MC-Unique: xr52GVBaOWO2_ikqle4BPg-1
-Received: by mail-pl1-f200.google.com with SMTP id 42so2487345plb.10
-        for <netdev@vger.kernel.org>; Wed, 24 Feb 2021 16:23:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nlfx0m5rFM5WgVSG9Q1ZGCqTh86/2WQ73ulkFBzW4yA=;
-        b=eKtj1tTpHszPhcwvJ8uohqZ6CI3byS/lP/RuRSF0QA36YcLbT7GJAAoofvQAFqMBrU
-         HxSLoiF/GMA106cd2IrtYJ+CycRErsU3btqsTKkoFL7mQOTuEJi1qHKOsRMgqNg05PTu
-         Lik6T7S+L7cexm37wNJiiWwy94lnHE0jCh9g3i1sj72O3U+lBBXMIyVBhpPRHgi11qRd
-         QF9kEsiXrg9KhvInNCs2Z54tl7R3BMcn4uNfcDPafUi0uDowCajoMwt2GfAhfSyvUQhd
-         NwG5l10rwtqRQb2WZAd8OTpv9ISIcmhqosEdvUlEQmVGQgCVOQfazfCVE4mpV4qXDiyz
-         AiwA==
-X-Gm-Message-State: AOAM533FX0/IBbMiEsnO+80GIaoGr1B046lRXeHBHWc1PJlQAgbKmeyi
-        PoYS2dzRNQ6lnQIs9Khuqld11B+D9Y7z5uEHZO8E6QzfmQ5fD/ugTIVg2JTIJ+0L5EFXrsBSc2h
-        HKgkT+qsVD01Ttxzn
-X-Received: by 2002:a63:505d:: with SMTP id q29mr491805pgl.218.1614212589260;
-        Wed, 24 Feb 2021 16:23:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz7LlUqC5xsHipm3PaWqEcn1NiBEW73IT1af1+fd2VqIOGg8iehmhU7p2EfqiZeIpVsWrH2cg==
-X-Received: by 2002:a63:505d:: with SMTP id q29mr491779pgl.218.1614212588805;
-        Wed, 24 Feb 2021 16:23:08 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w25sm4052439pfn.106.2021.02.24.16.23.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 16:23:08 -0800 (PST)
-Date:   Thu, 25 Feb 2021 08:21:01 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, kexec@lists.infradead.org,
-        intel-wired-lan@lists.osuosl.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 4/4] i40e: don't open i40iw client for kdump
-Message-ID: <20210225002101.hvbpq7f6zbvylqy4@Rk>
-References: <20210222070701.16416-1-coxu@redhat.com>
- <20210222070701.16416-5-coxu@redhat.com>
- <20210223122207.08835e0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210224114141.ziywca4dvn5fs6js@Rk>
- <20210224084841.50620776@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S234159AbhBYAdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Feb 2021 19:33:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42828 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233266AbhBYAdm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Feb 2021 19:33:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7766A64DE9;
+        Thu, 25 Feb 2021 00:33:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614213182;
+        bh=TrfaM+SX+mnu9TMf5/GNT/FWwmDYFBS6aMLJfe9agyA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MKcp923Pdywd+oeWiutmydJ9LFfIcEGE1KIVBqvi457pZhwano4D072ndbktDvuk2
+         FPy9kP+gw/mmy5biaEqJ7bDRbf5W/R5+RMwP972ugB+9lipQe6e3NRJK05R9WDGCoD
+         +LK7IkMXT8/xcCfXLLoyoVcEGQZIPWiBQrHU9vBoOryf4KuV//YghA6ci138kyltFq
+         zga4YOefAYYU/D90adTHl+UYOvAW3b8GhQYn+HWtTZPz0qyew5jxaROj6EyHLOMYkG
+         jnGGACELrzocAWQ29j7bfMe2MTKeUdZGU+lBC9OcOn/QVBKrS5MtSsJGgsB/B/LXJB
+         5ZTnK8+fl3llg==
+Date:   Wed, 24 Feb 2021 16:32:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Wei Wang <weiwan@google.com>
+Cc:     Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Martin Zaharinov <micron10@gmail.com>
+Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy
+ poll
+Message-ID: <20210224163257.7c96fb74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAEA6p_BGgazFPRf-wMkBukwk4nzXiXoDVEwWp+Fp7A5OtuMjQA@mail.gmail.com>
+References: <20210223234130.437831-1-weiwan@google.com>
+        <20210224114851.436d0065@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89i+jO-ym4kpLD3NaeCKZL_sUiub=2VP574YgC-aVvVyTMw@mail.gmail.com>
+        <20210224133032.4227a60c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89i+xGsMpRfPwZK281jyfum_1fhTNFXq7Z8HOww9H1BHmiw@mail.gmail.com>
+        <20210224155237.221dd0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
+        <20210224160723.4786a256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BN8PR15MB2787694425A1369CA563FCFFBD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
+        <CAEA6p_BGgazFPRf-wMkBukwk4nzXiXoDVEwWp+Fp7A5OtuMjQA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210224084841.50620776@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 08:48:41AM -0800, Jakub Kicinski wrote:
->On Wed, 24 Feb 2021 19:41:41 +0800 Coiby Xu wrote:
->> On Tue, Feb 23, 2021 at 12:22:07PM -0800, Jakub Kicinski wrote:
->> >On Mon, 22 Feb 2021 15:07:01 +0800 Coiby Xu wrote:
->> >> i40iw consumes huge amounts of memory. For example, on a x86_64 machine,
->> >> i40iw consumed 1.5GB for Intel Corporation Ethernet Connection X722 for
->> >> for 1GbE while "craskernel=auto" only reserved 160M. With the module
->> >> parameter "resource_profile=2", we can reduce the memory usage of i40iw
->> >> to ~300M which is still too much for kdump.
->> >>
->> >> Disabling the client registration would spare us the client interface
->> >> operation open , i.e., i40iw_open for iwarp/uda device. Thus memory is
->> >> saved for kdump.
->> >>
->> >> Signed-off-by: Coiby Xu <coxu@redhat.com>
->> >
->> >Is i40iw or whatever the client is not itself under a CONFIG which
->> >kdump() kernels could be reasonably expected to disable?
->> >
->>
->> I'm not sure if I understand you correctly. Do you mean we shouldn't
->> disable i40iw for kdump?
->
->Forgive my ignorance - are the kdump kernels separate builds?
->
+On Wed, 24 Feb 2021 16:16:58 -0800 Wei Wang wrote:
+> On Wed, Feb 24, 2021 at 4:11 PM Alexander Duyck <alexanderduyck@fb.com> wrote:
+> >
+> > The problem with adding a bit for SCHED_THREADED is that you would
+> > have to heavily modify napi_schedule_prep so that it would add the
+> > bit. That is the reason for going with adding the bit to the busy
+> > poll logic because it added no additional overhead. Adding another
+> > atomic bit setting operation or heavily modifying the existing one
+> > would add considerable overhead as it is either adding a
+> > complicated conditional check to all NAPI calls, or adding an
+> > atomic operation to the path for the threaded NAPI.  
+> 
+> Please help hold on to the patch for now. I think Martin is still
+> seeing issues on his setup even with this patch applied. I have not
+> yet figured out why. But I think we should not merge this patch until
+> the issue is cleared. Will update this thread with progress.
 
-AFAIK we don't build a kernel exclusively for kdump. 
-
->If they are it'd be better to leave the choice of enabling RDMA
->to the user - through appropriate Kconfig options.
->
-
-i40iw is usually built as a loadable module. So if we want to leave the
-choce of enabling RDMA to the user, we could exclude this driver when
-building the initramfs for kdump, for example, dracut provides the 
-omit_drivers option for this purpose. 
-
-On the other hand, the users expect "crashkernel=auto" to work out of
-the box. So i40iw defeats this purpose. 
-
-I'll discuss with my Red Hat team and the Intel team about whether RDMA
-is needed for kdump. Thanks for bringing up this issue!
-
--- 
-Best regards,
-Coiby
-
+If I'm looking right __busy_poll_stop() is only called if the last
+napi poll used to re-enable IRQs consumed full budget. You need to
+clear your new bit in busy_poll_stop(), not in __busy_poll_stop().
+That will fix the case when hand off back to the normal poller (sirq, 
+or thread) happens without going thru __napi_schedule().
