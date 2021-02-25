@@ -2,57 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA859325425
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:58:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A7F32542A
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:59:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233791AbhBYQ57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 11:57:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231771AbhBYQ5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 11:57:48 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09DAC061756;
-        Thu, 25 Feb 2021 08:57:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ISiwYeYz1ThrendcIDOxZOHXULejMX34yeK70uTiZaU=; b=HatSeii41iSCJ7/7WZYq+wGAD7
-        s6DrnSFTS4AwL0/ZE1eitTkxsSB8LpJC3MDlUoZgZrVAom5SiHoo0G7WxgTtb2M6Hwz9DPPL5vojY
-        OEKwpXJoTmx9mKIkFewQg0iCqdwobeBmFvCKGcEdqxsHcPQsJDvJ9vwbL0Y2nx/WLhJSyEjUwiZkJ
-        F3qEEafobWbbCJYF0Zq2ZOgtabPrk1USvVBCaVbUwrpAP2D3tWjAMkhMGPRzV2CIDf/3btGqoaC8V
-        I894jVW6jsNK2QI3vg3EuLyyR8Ec4maImZeiyYTt7vq4LSW2UKwcSO9OYOYPZ2eGcOI2PF6yYwPq1
-        p44nCK3w==;
-Received: from hch by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lFJvm-00Avt2-KF; Thu, 25 Feb 2021 16:56:09 +0000
-Date:   Thu, 25 Feb 2021 16:56:02 +0000
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] kallsyms: make arch_get_kallsym static
-Message-ID: <20210225165602.GA2605031@infradead.org>
-References: <1614236917-80472-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+        id S233374AbhBYQ7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 11:59:04 -0500
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:58799 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233132AbhBYQ6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 11:58:55 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id CDE63B00;
+        Thu, 25 Feb 2021 11:58:07 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 25 Feb 2021 11:58:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=LPnXkzVUwC2Wy6Is7
+        nrue9wg5FBoBVBuva/rM+jSeic=; b=KQUSZpb5ZhpBeWIWHNa0HQKXAnUiK8d5R
+        DoPhaTEJGcnvVwzoQGeavcW9bi9BSSOfZAb6mrScycE4hRYHvVLNLAORW2mPRmp4
+        5j8DW9tQpC4KmTWumU8SqZb1GQEZkleRVhXIE9gPEWBHi28vBygceoYIdVxooaeL
+        91+mkpSlgVQdPEDrSzWvxZk1T2xZUWE9oFgT+29+3MvVksVzEdbEAiwMlmiNGmBs
+        Etk41iTf1w0UterjLKRlgnuWhpL6nb4tPgpiNfKyDmOy5oJXmwTx+GUgZ8GNQiUu
+        CCTXkZVBWUosxL1Y5SenXZYg46ww66KKPSbDg2gQvAypnKwVmT7KA==
+X-ME-Sender: <xms:Htc3YI2xdiEZ1yOySjBgTQ9myx78CxnRAOnTQuhsziU7PjNbH3DeMw>
+    <xme:Htc3YDFjAB8VO3tz0O0MmNWG-i28G0n4U-YcEBrBjfgl5JdqTsiYORiMUhiljAsjj
+    44xTnOltT1jnfg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrkeelgdeljecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
+    ffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdduheefrdeggeenucev
+    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthh
+    esihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:Htc3YA6a1HLM3VVAFVvvVmvXUz0eNhBLSvsoexJG4gPq3ulkm_CTww>
+    <xmx:Htc3YB2YuVRFPxl7M_eOGOnt3jR8SmweWHPPeTtz_h0uguTkbTc9jQ>
+    <xmx:Htc3YLGWr26wREbQH0ddIkkCBidXpDM6dAXp7JLl9BUQVvPC9yk0BQ>
+    <xmx:H9c3YPhL71JXQ24uF3_tSU41icmkoqv8xde5gX6R5XF1XI_MKjxLZA>
+Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A7FF624005B;
+        Thu, 25 Feb 2021 11:58:04 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net 0/3] mlxsw: Various fixes
+Date:   Thu, 25 Feb 2021 18:57:18 +0200
+Message-Id: <20210225165721.1322424-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1614236917-80472-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 03:08:37PM +0800, Jiapeng Chong wrote:
-> Fix the following sparse warning:
-> 
-> kernel/kallsyms.c:457:12: warning: symbol 'arch_get_kallsym' was not
-> declared. Should it be static?
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-Please just remove the function entirely.
+This patchset contains various fixes for mlxsw.
+
+Patch #1 fixes a race condition in a selftest. The race and fix are
+explained in detail in the changelog.
+
+Patch #2 re-adds a link mode that was wrongly removed, resulting in a
+regression in some setups.
+
+Patch #3 fixes a race condition in route installation with nexthop
+objects.
+
+Please consider patches #2 and #3 for stable.
+
+Danielle Ratson (2):
+  selftests: forwarding: Fix race condition in mirror installation
+  mlxsw: spectrum_ethtool: Add an external speed to PTYS register
+
+Ido Schimmel (1):
+  mlxsw: spectrum_router: Ignore routes using a deleted nexthop object
+
+ drivers/net/ethernet/mellanox/mlxsw/reg.h                | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c   | 5 +++++
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c    | 7 +++++++
+ drivers/net/ethernet/mellanox/mlxsw/switchx2.c           | 3 ++-
+ .../net/forwarding/mirror_gre_bridge_1d_vlan.sh          | 9 +++++++++
+ 5 files changed, 24 insertions(+), 1 deletion(-)
+
+-- 
+2.29.2
+
