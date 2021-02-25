@@ -2,61 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44D37324BBC
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 09:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DC0324BE0
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 09:19:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235538AbhBYIHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 03:07:45 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:57631 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235515AbhBYIHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 03:07:37 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R541e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0UPWVIGD_1614240405;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UPWVIGD_1614240405)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 25 Feb 2021 16:06:53 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     peterz@infradead.org
-Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] perf/core: make perf_pmu_snapshot_aux static
-Date:   Thu, 25 Feb 2021 16:06:42 +0800
-Message-Id: <1614240402-9003-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S235661AbhBYIQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 03:16:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37728 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233001AbhBYIQl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 03:16:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 50B2A64E20;
+        Thu, 25 Feb 2021 08:16:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1614240961;
+        bh=+u3cp1lmOAXIi0NxPbTp9wmhsfShRK28whSVTGPGfqw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E30e1dYHhRYrP6Litfeah9aKiIAdm1UcSDN95zX05PjqzLViUao7onNx95OksgbkQ
+         04d/csNHQ9AnReIgMRoKIeKr/gpzrpfWWoz4+FTEg0mpYoGlAaptZeB6Dqq21igfTs
+         3csKknzQcq8nHOpvFD0o5JyE1qhpvIcJi9b2Fak8=
+Date:   Thu, 25 Feb 2021 09:15:58 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        stable@vger.kernel.org, olteanv@gmail.com, sashal@kernel.org
+Subject: Re: [PATCH stable 0/8] net: dsa: b53: Correct learning for
+ standalone ports
+Message-ID: <YDdcvkQQoAs2yc3C@kroah.com>
+References: <20210225010853.946338-1-f.fainelli@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210225010853.946338-1-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following sparse warning:
+On Wed, Feb 24, 2021 at 05:08:53PM -0800, Florian Fainelli wrote:
+> From: Florian Fainelli <florian.fainelli@broadcom.com>
+> 
+> Hi Greg, Sasha, Jaakub and David,
+> 
+> This patch series contains backports for a change that recently made it
+> upstream as:
+> 
+> commit f3f9be9c58085d11f4448ec199bf49dc2f9b7fb9
+> Merge: 18755e270666 f9b3827ee66c
+> Author: Jakub Kicinski <kuba@kernel.org>
+> Date:   Tue Feb 23 12:23:06 2021 -0800
+> 
+>     Merge branch 'net-dsa-learning-fixes-for-b53-bcm_sf2'
 
-kernel/events/core.c:6539:6: warning: symbol 'perf_pmu_snapshot_aux' was
-not declared. Should it be static?
+That is a merge commit, not a "real" commit.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- kernel/events/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+What is the upstream git commit id for this?
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 129dee5..45cb62f 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6521,7 +6521,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
- 	return data->aux_size;
- }
- 
--long perf_pmu_snapshot_aux(struct perf_buffer *rb,
-+static long perf_pmu_snapshot_aux(struct perf_buffer *rb,
- 			   struct perf_event *event,
- 			   struct perf_output_handle *handle,
- 			   unsigned long size)
--- 
-1.8.3.1
+> The way this was fixed in the netdev group's net tree is slightly
+> different from how it should be backported to stable trees which is why
+> you will find a patch for each branch in the thread started by this
+> cover letter.
+> 
+> Let me know if this does not apply for some reason. The changes from 4.9
+> through 4.19 are nearly identical and then from 5.4 through 5.11 are
+> about the same.
 
+Thanks for the backports, but I still need a real git id to match these
+up with :)
+
+greg k-h
