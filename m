@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 750A83252C5
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:53:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 696C43252F1
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 17:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232970AbhBYPxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 10:53:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbhBYPxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 10:53:30 -0500
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCF6C061574;
-        Thu, 25 Feb 2021 07:52:49 -0800 (PST)
-Received: by mail-il1-x136.google.com with SMTP id d5so5327124iln.6;
-        Thu, 25 Feb 2021 07:52:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WsCApT+0OPFoE3ROrRo+DSU87MH0YEGSL+XXuxp8A9c=;
-        b=mgv1TpTReZh9GJn/RTX5tz9dYXg0uGIIww+Mqex2jJ+dwIler9r6R0KH0Phg5kF4W1
-         1HJ3D+8NuIx8QDA9B8J7RlgErDasp+z7vrTDF22fMsWTK3ckVwNwbjeqvDFr+eEVliPv
-         oFqRAfoWWvvs/WmgjY9nXfp1A20u8bZp2jdEq+4vUgSVwUsRGqaqL7zkSoMmk6i9wyH0
-         qVSTvdaVzdgt/rrFm/ehS6b9yDWpzSkklmMywV2a1fMsd5p3PrJHGa1BJFCUjiPhtVQd
-         +wwdsycODpqATxEMd69r9yWYl6Z9V5YGZmY+1Jlg1edo47lKhl7AgT2PmJu8wlZo/un9
-         5NKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WsCApT+0OPFoE3ROrRo+DSU87MH0YEGSL+XXuxp8A9c=;
-        b=HjVvJguvLuFqYB8wuo3d855ttha0geneW64kFV5LEwfXPEbcSGFtblNinERY/rfBTA
-         sGmGgP7alzwq137jEAmGEaVtHihNbX4okcFwI215h9TdbrTvo0qkAJqP+Zxnrgyl8MHu
-         D22Y/eJOV1eqg/8gTO0ehZ5k1VbvNe33oLoIxuKERF6kXTyssTkpsIOvRjWWPygCugyh
-         W27Bkw6/kEFGa0tcqI9vOJRzIYSUbyvW7AmQFSXtB39FSXROxSjhestfzm9HygM7d954
-         B1a1f+bIM20EK3wcg8VsYktOsUxgXIWV440oBWVlq+LP6gKTlrrQvSEnNkAJx2pkUoCw
-         8GoQ==
-X-Gm-Message-State: AOAM530S0GTXmoQem3KrPYZdDIcqbXGOom7KrJS5Ktl/RuVHua3+wVAu
-        zgEwnRHyIrZxVs9pObHHx7wc5ZBKws7PouTF8Ik=
-X-Google-Smtp-Source: ABdhPJxy6DtwL2gnt3tnBfK+sTM7BA9g64tcMVZFI4TZdoUF+rGKdz4YyZc0+KdqS2ql0Vm3Fj4mO8BI4QmqtqPYQ1A=
-X-Received: by 2002:a92:cda4:: with SMTP id g4mr3049862ild.20.1614268368748;
- Thu, 25 Feb 2021 07:52:48 -0800 (PST)
-MIME-Version: 1.0
-References: <20210225143910.3964364-1-arnd@kernel.org> <20210225143910.3964364-3-arnd@kernel.org>
-In-Reply-To: <20210225143910.3964364-3-arnd@kernel.org>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Thu, 25 Feb 2021 23:52:40 +0800
-Message-ID: <CALW65jZPQm88CDa+bvkk-EJGfyV88hRV=MSOjSt1Q5UxD8xrog@mail.gmail.com>
-Subject: Re: [PATCH 3/3] net: dsa: mt7530: add GPIOLIB dependency
+        id S233204AbhBYQBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 11:01:37 -0500
+Received: from z11.mailgun.us ([104.130.96.11]:52612 "EHLO z11.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232949AbhBYQB3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Feb 2021 11:01:29 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1614268871; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=nax/2qkYZxFNNsM/IxQmHhHuh8ylQMIKgrDBwB+k6Ek=; b=aItq5QFcYgmmN6KvAKcBYqsyd03I2l1zqVwrcdl6CIWz9EdlsGE1m5ywpr5B997Mxsux7xZy
+ npds5JpHKMSgCkoUv2DMaFBaCYNNScVhK3onxN7Z8hJ2dsThKj/DKrWczylz3MCvpmWUO68q
+ m3D2m8d/Zsi4Ko064DDEuRk+iUg=
+X-Mailgun-Sending-Ip: 104.130.96.11
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 6037c98f1d6d3a470fdfe111 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 25 Feb 2021 16:00:15
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 5F3E6C433CA; Thu, 25 Feb 2021 16:00:14 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 51CAFC433CA;
+        Thu, 25 Feb 2021 16:00:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 51CAFC433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
 To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
         Arnd Bergmann <arnd@arndb.de>,
-        Landen Chao <landen.chao@mediatek.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
         Sean Wang <sean.wang@mediatek.com>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 1/2] mt76: mt7915: fix unused 'mode' variable
+References: <20210225145953.404859-1-arnd@kernel.org>
+Date:   Thu, 25 Feb 2021 18:00:07 +0200
+In-Reply-To: <20210225145953.404859-1-arnd@kernel.org> (Arnd Bergmann's
+        message of "Thu, 25 Feb 2021 15:59:14 +0100")
+Message-ID: <871rd4f88o.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
+Arnd Bergmann <arnd@kernel.org> writes:
 
-On Thu, Feb 25, 2021 at 10:40 PM Arnd Bergmann <arnd@kernel.org> wrote:
->
 > From: Arnd Bergmann <arnd@arndb.de>
 >
-> The new gpio support may be optional at runtime, but it requires
-> building against gpiolib:
+> clang points out a possible corner case in the mt7915_tm_set_tx_cont()
+> function if called with invalid arguments:
 >
-> ERROR: modpost: "gpiochip_get_data" [drivers/net/dsa/mt7530.ko] undefined!
-> ERROR: modpost: "devm_gpiochip_add_data_with_key" [drivers/net/dsa/mt7530.ko] undefined!
+> drivers/net/wireless/mediatek/mt76/mt7915/testmode.c:593:2: warning: variable 'mode' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
+>         default:
+>         ^~~~~~~
+> drivers/net/wireless/mediatek/mt76/mt7915/testmode.c:597:13: note: uninitialized use occurs here
+>         rateval =  mode << 6 | rate_idx;
+>                    ^~~~
+> drivers/net/wireless/mediatek/mt76/mt7915/testmode.c:506:37: note: initialize the variable 'mode' to silence this warning
+>         u8 rate_idx = td->tx_rate_idx, mode;
+>                                            ^
 >
-> Add a Kconfig dependency to enforce this.
-
-I think wrapping the GPIO code block with #ifdef CONFIG_GPIOLIB ...
-#endif may be a better idea.
-
+> Change it to return an error instead of continuing with invalid data
+> here.
 >
-> Fixes: 429a0edeefd8 ("net: dsa: mt7530: MT7530 optional GPIO support")
+> Fixes: 3f0caa3cbf94 ("mt76: mt7915: add support for continuous tx in testmode")
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Felix, can I take these two to wireless-drivers? An ack would be good.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
