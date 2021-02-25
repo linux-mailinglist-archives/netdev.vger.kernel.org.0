@@ -2,89 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FAB5324B8B
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 08:53:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21E1C324B8D
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 08:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235244AbhBYHwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 02:52:16 -0500
-Received: from mail-oo1-f54.google.com ([209.85.161.54]:44769 "EHLO
-        mail-oo1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235048AbhBYHwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 02:52:13 -0500
-Received: by mail-oo1-f54.google.com with SMTP id n19so1150373ooj.11;
-        Wed, 24 Feb 2021 23:51:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RNLIw+6yPNbCnrIrprnlWvk8nVCDAaT6F2Etp6AuKbo=;
-        b=tArbcnqG5WgFqsBXJblN+fM4qryy+7a5UH4M8NV9hllSdlZsaPtedmoTNDETpoOQDL
-         IrA9YNpc0k46BDQsGrxeJjbQLz5ifefOxJfm5m30y9M883SpyiYU0HQWassZ2ec0Za8c
-         /uJcibv8bsAkiCwtfw3CksWYwMUwGQ4o1L+GiZmDr4icztxIpNC39vZD9F1VLN/SyLkX
-         c5zkXfnWabcRHCwAynwPgG0vAHRZ30jKMiVjdt4a5DR+M9HA2lrwDuhVha4fDgnSnnf2
-         UcI3iwmFwsZS1ow0z+iW3YHc4S2/eBYpecIHz77poRTxJQBEgm5PG9WhZVGOszp7AzgA
-         hbkg==
-X-Gm-Message-State: AOAM533ZUg5W7xlahlLKsbCQOOTFUSXH1f9dUyjTTkeCZ79jn1316jLR
-        FQKD3sdGLvjmXkrSnrghcl9CiY3qQFaGHx1S0DI=
-X-Google-Smtp-Source: ABdhPJxhxQAEQR74fgvjCGW0q2q027/ixLOgKLwLKhZ3kkBzj8Rfq2dKWsBCVNAaiZsGgWbDQShUHxCurmowJTxRh8I=
-X-Received: by 2002:a4a:bb14:: with SMTP id f20mr1372910oop.1.1614239492696;
- Wed, 24 Feb 2021 23:51:32 -0800 (PST)
+        id S235278AbhBYHwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 02:52:38 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7285 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235106AbhBYHwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 02:52:36 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6037571c0000>; Wed, 24 Feb 2021 23:51:56 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 25 Feb
+ 2021 07:51:55 +0000
+Received: from dev-r630-03.mtbc.labs.mlnx (172.20.145.6) by mail.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 25 Feb 2021 07:51:54 +0000
+From:   Chris Mi <cmi@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     <kuba@kernel.org>, <idosch@nvidia.com>, <jiri@nvidia.com>,
+        Chris Mi <cmi@nvidia.com>, Yotam Gigi <yotam.gi@gmail.com>
+Subject: [PATCH net] net: psample: Fix netlink skb length with tunnel info
+Date:   Thu, 25 Feb 2021 15:51:45 +0800
+Message-ID: <20210225075145.184314-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210224115146.9131-1-aford173@gmail.com> <20210224115146.9131-2-aford173@gmail.com>
- <YDZYgEm+wBFFJgXW@lunn.ch>
-In-Reply-To: <YDZYgEm+wBFFJgXW@lunn.ch>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 25 Feb 2021 08:51:21 +0100
-Message-ID: <CAMuHMdWO8hA8td+636TLu7kD4zajDuW5ArWnaYZ-C_sfupF0XA@mail.gmail.com>
-Subject: Re: [PATCH V3 2/5] ARM: dts: renesas: Add fck to etheravb-rcar-gen2
- clock-names list
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Adam Ford <aford173@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1614239516; bh=52u0rhslFWz2tzkaU4C8WuTazW8xn9tBt7LU9uwwvyg=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type;
+        b=ccGDUC9GmHyERNwmthTWFF5seO16L55Roz7aUrQqBAwGyeCr00bzPqvuJI66xk7qB
+         Ca4hDbJHOgIGjOs4/c8/5jSQNeCqUfOodKEv3W0kqdweWas5a2M+XDruwnVjTzjm2D
+         BOGqaLUW5LzA0BNPdfcD0FppC6fi7tgOc/NcXO+XK9n0Ksr873+GY+B7osI58SrMaO
+         /Zy43Uia5+SaNzd9Jdvu4dAF7bIUH/S+XLA4vc1/iLSNm0DNw5y7zVrv1bm6AJThkf
+         F1c4vAKgzftKtKiRxrXUp0lKoHECU9jelK1l1+ROuYKsNI4k7/ky/QQ/3RMVU5JNjr
+         sEYn5f0a5khtw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Currently, the psample netlink skb is allocated with a size that does
+not account for the nested 'PSAMPLE_ATTR_TUNNEL' attribute and the
+padding required for the 64-bit attribute 'PSAMPLE_TUNNEL_KEY_ATTR_ID'.
+This can result in failure to add attributes to the netlink skb due
+to insufficient tail room. The following error message is printed to
+the kernel log: "Could not create psample log message".
 
-On Wed, Feb 24, 2021 at 2:45 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> On Wed, Feb 24, 2021 at 05:51:42AM -0600, Adam Ford wrote:
-> > The bindings have been updated to support two clocks, but the
-> > original clock now requires the name fck.  Add a clock-names
-> > list in the device tree with fck in it.
->
-> I think requires is too strong. As far as i can see, you don't
-> introduce a change using the name 'fck'. So the name is optional,
-> which is good, because otherwise you would break backwards
-> compatibility with DT blobs.
->
-> Is the plan to merge this whole patchset via netdev? If so, you need
-> to repost anyway, once netdev reopens. So maybe you can change the
-> wording?
+Fix this by adjusting the allocation size to take into account the
+nested attribute and the padding.
 
-The DTS patches should go in through the renesas and soc trees.
-I can apply them as soon as the DT binding patch has been accepted.
+Fixes: d8bed686ab96 ("net: psample: Add tunnel support")
+CC: Yotam Gigi <yotam.gi@gmail.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+---
+ net/psample/psample.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks!
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..482c07f2766b 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -309,10 +309,10 @@ static int psample_tunnel_meta_len(struct ip_tunnel_i=
+nfo *tun_info)
+ 	unsigned short tun_proto =3D ip_tunnel_info_af(tun_info);
+ 	const struct ip_tunnel_key *tun_key =3D &tun_info->key;
+ 	int tun_opts_len =3D tun_info->options_len;
+-	int sum =3D 0;
++	int sum =3D nla_total_size(0);	/* PSAMPLE_ATTR_TUNNEL */
+=20
+ 	if (tun_key->tun_flags & TUNNEL_KEY)
+-		sum +=3D nla_total_size(sizeof(u64));
++		sum +=3D nla_total_size_64bit(sizeof(u64));
+=20
+ 	if (tun_info->mode & IP_TUNNEL_INFO_BRIDGE)
+ 		sum +=3D nla_total_size(0);
+--=20
+2.26.2
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
