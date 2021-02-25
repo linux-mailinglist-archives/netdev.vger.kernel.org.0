@@ -2,164 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D45D73251F3
-	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:10:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C886F3251F7
+	for <lists+netdev@lfdr.de>; Thu, 25 Feb 2021 16:10:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231160AbhBYPGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 10:06:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
+        id S232398AbhBYPIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 10:08:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbhBYPGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 10:06:18 -0500
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1C7C06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 07:05:38 -0800 (PST)
-Received: by mail-vk1-xa36.google.com with SMTP id m25so1229551vkk.6
-        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 07:05:38 -0800 (PST)
+        with ESMTP id S230166AbhBYPH7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 10:07:59 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8DFC061574;
+        Thu, 25 Feb 2021 07:07:18 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id cf12so6475045edb.8;
+        Thu, 25 Feb 2021 07:07:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=++c9LR7OEVADjAkS9WlLwf8od77hhnNitoym0buouPg=;
-        b=g8QKluWQl1CFU89v25UJFd3vhtPpEGMFVfsJrFsw/+NaIL60vJVvPE9wkXd/b1AYq0
-         sEp/jDPUOxq3VcPXTTQnRqTJuPQ5uXbdwJqHV5lOCwWtzXOa7bknhI5Zee7n5W0emUJr
-         zG8e/UYD7sOj26m2XzSwCUK2eG1teOlT8DLNhlqV0h+sYxel3Ki923ayZr/TIkiXLXyj
-         3YvbJvyXorU0LmWNYxSxoSdEdQdzE0BUhcWQ6S91OHKkAOMxwmHs4g9gPV9spxGIfMLL
-         R8tzjLZigLAphk6c5NE+NtvA0h5jwpQpGxCtVWZVWz88eHaNe5Woz4/3MLOFY3BQsjl6
-         s7QA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YgxLc2VG0JMjh1Dl8fUDGfSl2t2Z+y7NC8ABSzmQifU=;
+        b=KloisOeB8GPOIWBl6G0fPjmDjFufNuhPjrnOyAcs+tMJUr6Y8KCoiCeSOfQYbMLpZm
+         /jJ8dOrFUVoFKlH3eVUX5o95a0Ms3x2CmS5DX3sb0joEK1OUhH5s+tbzNis/SBp5vmKA
+         uCDqy79/GMqDtXyhCKTzIdVbC4cSFCKFTxU1wdwDA1S1TRR2OxQo+uzS7VnLLr2Hu+nb
+         1n12FBNg60gLDk77QhNUnBMggvVY7S5CyK35lHxB+bjS7AGh1BBH2COETVk0svcKPZJr
+         HvKyjGrnoR/HmwuygotUOSLvdMGXEL0q0bZLCUqh6bWkLdO++kT9hfvpKyQBV9zTDNDl
+         HNCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=++c9LR7OEVADjAkS9WlLwf8od77hhnNitoym0buouPg=;
-        b=nWl3SGiIhFPZj5SNw4vK5/ZkvGuzmTdMTk0V9jsiFfMSyFU+Zn2v2CkAr3EBVVuBLG
-         a8IVCVpfDavh0oQ5cz4ztacnGcVVfu8/mLt9WoNC/2VL4Bxb6pJK+iFnT5qsCIeL6Hcn
-         C423uDv56hPdeQQay1byO+yZ0G5n7ttWkFFjdD55aSX7Rtz1Uo/Ec6oqoHItCjS2zAZX
-         IJItazIKlXq7CYvrA6Zl54lSvCmAkSWP43jFqHu2Rt7Oe1v/h8kGgTxzYGC95pd0ckBk
-         zyC4xUAJqIgp6hwESERENBHicKK/ugbnzKi5Yf9WN5LDE1YhKJtLPRYTiqHfn1ap8U+a
-         aCJw==
-X-Gm-Message-State: AOAM530FttSHuyo+puHbzZDbSh652P6il2HAlhtnkCxAiqJe5ur/VV4K
-        n9SMtIPYI7dRYmzOBB9muneHO0x3bBW4wRTwIXA3mg==
-X-Google-Smtp-Source: ABdhPJxR5L4JaOygDlRBYXPj0chpMgMIB7nertutBRqtwf/xrx9SpoBOQ5sB0ORvcFcdsUQlbnVc/84tOTR93Zj8P0o=
-X-Received: by 2002:a1f:df06:: with SMTP id w6mr1761226vkg.18.1614265537078;
- Thu, 25 Feb 2021 07:05:37 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YgxLc2VG0JMjh1Dl8fUDGfSl2t2Z+y7NC8ABSzmQifU=;
+        b=BSfbmEZ0CcnAQBKsD27yG9q15pnyp4EJ5UKNr2HS9veRmpZ1Kbn3Ev8+77HDaj740F
+         p24VsFH/dzENijub0rqKLXwXY/PdRAICCRD7aN6ULAQyqpOEj4dmWJxKzVISYBmzGlCj
+         FxOmjnu9Fswz1sbIR1mcTqZ9JsdZ77HQznuSCh5ANGrnEQsmQ85R2D38S8M8XPGJwxbH
+         en5CI8g8l/VzozIokLZ8CL2v+PPxXhNg6iaCiRpH7tPeXGg/UFH63mKJan/c588JVJd+
+         jV8TBemAGOJlcrWPsgwHZVTy1GU14v25Xx9aE8zIfNLcLQsln9ynDhl8QlcL3tMtYIUS
+         TqmQ==
+X-Gm-Message-State: AOAM533SVOYKLDU5ayme1RQ/uEOr/e926XsqBuNloDBK6JyghVYmtvti
+        tiIAFjkndRNIECyclqW7CAw=
+X-Google-Smtp-Source: ABdhPJz7xyEym0TYTTVCSMFIhVRmTUPLs4pJk7uPnmUm2/5lFqwPvnLbd/tU98vHwzNoBNoCLORqIQ==
+X-Received: by 2002:a05:6402:3590:: with SMTP id y16mr3397814edc.21.1614265637737;
+        Thu, 25 Feb 2021 07:07:17 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id y8sm3441663edd.97.2021.02.25.07.07.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Feb 2021 07:07:17 -0800 (PST)
+Date:   Thu, 25 Feb 2021 17:07:15 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] net: dsa: tag_ocelot_8021q: fix driver dependency
+Message-ID: <20210225150715.2udnpgu3rs6v72wg@skbuf>
+References: <20210225143910.3964364-1-arnd@kernel.org>
+ <20210225143910.3964364-2-arnd@kernel.org>
+ <20210225144341.xgm65mqxuijoxplv@skbuf>
+ <CAK8P3a0W3_SvWyvWZnMU=QoqCDe5btL3O7PHUX8EnZVbifA4Fg@mail.gmail.com>
+ <CAK8P3a1gQgtWznnqKDdJJK2Vxf25Yb_Q09tX0UvcfopKN+x0jw@mail.gmail.com>
 MIME-Version: 1.0
-References: <35A4DDAA-7E8D-43CB-A1F5-D1E46A4ED42E@gmail.com>
- <CADVnQy=G=GU1USyEcGA_faJg5L-wLO6jS4EUocrVsjqkaGbvYw@mail.gmail.com>
- <C5332AE4-DFAF-4127-91D1-A9108877507A@gmail.com> <CADVnQynP40vvvTV3VY0fvYwEcSGQ=Y=F53FU8sEc-Bc=mzij5g@mail.gmail.com>
- <93A31D2F-1CDE-4042-9D00-A7E1E49A99A9@gmail.com>
-In-Reply-To: <93A31D2F-1CDE-4042-9D00-A7E1E49A99A9@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 25 Feb 2021 10:05:20 -0500
-Message-ID: <CADVnQyn5jrkPC7HJAkMOFN-FBZjwtCw8ns-3Yx7q=-S57PdC6w@mail.gmail.com>
-Subject: Re: TCP stall issue
-To:     Gil Pedersen <kanongil@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dsahern@kernel.org, Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a1gQgtWznnqKDdJJK2Vxf25Yb_Q09tX0UvcfopKN+x0jw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 10:36 AM Gil Pedersen <kanongil@gmail.com> wrote:
->
->
-> > On 24 Feb 2021, at 15.55, Neal Cardwell <ncardwell@google.com> wrote:
-> >
-> > On Wed, Feb 24, 2021 at 5:03 AM Gil Pedersen <kanongil@gmail.com> wrote=
-:
-> >> Sure, I attached a trace from the server that should illustrate the is=
-sue.
-> >>
-> >> The trace is cut from a longer flow with the server at 188.120.85.11 a=
-nd a client window scaling factor of 256.
-> >>
-> >> Packet 78 is a TLP, followed by a delayed DUPACK with a SACK from the =
-client.
-> >> The SACK triggers a single segment fast re-transmit with an ignored?? =
-D-SACK in packet 81.
-> >> The first RTO happens at packet 82.
-> >
-> > Thanks for the trace! That is very helpful. I have attached a plot and
-> > my notes on the trace, for discussion.
-> >
-> > AFAICT the client appears to be badly misbehaving, and misrepresenting
-> > what has happened.  At each point where the client sends a DSACK,
-> > there is an apparent contradiction. Either the client has received
-> > that data before, or it hasn't. If the client *has* already received
-> > that data, then it should have already cumulatively ACKed it. If the
-> > client has *not* already received that data, then it shouldn't send a
-> > DSACK for it.
-> >
-> > Given that, from the server's perspective, the client is
-> > misbehaving/lying, it's not clear what inferences the server can
-> > safely make. Though I agree it's probably possible to do much better
-> > than the current server behavior.
-> >
-> > A few questions.
-> >
-> > (a) is there a middlebox (firewall, NAT, etc) in the path?
-> >
-> > (b) is it possible to capture a client-side trace, to help
-> > disambiguate whether there is a client-side Linux bug or a middlebox
-> > bug?
->
-> Yes, this sounds like a sound analysis, and matches my observation. The c=
-lient is confused about whether it has the data or not.
->
-> Unfortunately I only have that (un-rooted) device available, so I can't d=
-o traces on it. The connection path is Client -> Wi-Fi -> NAT -> NAT -> Int=
-ernet -> Server (which has a basic UFW firewall).
-> I will try to do a trace on the first NAT router.
->
-> My first priority is to make the server behave better in this case, but I=
- understand that you would like to investigate the client / connection issu=
-e as well? From the server POV, this is clearly an edge case, but a fast re=
--transmit does seem more appropriate.
+On Thu, Feb 25, 2021 at 03:49:08PM +0100, Arnd Bergmann wrote:
+> On Thu, Feb 25, 2021 at 3:47 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > On Thu, Feb 25, 2021 at 3:43 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > > On Thu, Feb 25, 2021 at 03:38:32PM +0100, Arnd Bergmann wrote:
+> > > > From: Arnd Bergmann <arnd@arndb.de>
+> > > >
+> > > > When the ocelot driver code is in a library, the dsa tag
+> 
+> I see the problem now, I should have written 'loadable module', not 'library'.
+> Let me know if I should resend with a fixed changelog text.
 
-Regarding improving the server's retransmit behavior and having it use
-a fast retransmit here.
+Ah, ok, things clicked into place now that you said 'module'.
+So basically, your patch is the standard Kconfig incantation for 'if the
+ocelot switch lib is built as module, build the tagger as module too',
+plus some extra handling to allow NET_DSA_TAG_OCELOT_8021Q to still be y
+or m when COMPILE_TEST is enabled, but it will be compiled in a
+reduced-functionality mode, without MSCC_OCELOT_SWITCH_LIB, therefore
+without PTP.
 
-I don't think this is a bug in RACK, because the DSACK clearly
-indicates that the retransmission was spurious, so all the packets
-already marked lost by RACK are thus unmarked.
-
-I guess the questions are:
-
-(a) How would we craft a general heuristic that would cause a fast
-retransmit here in the misbehaving receiver case, without causing lots
-of spurious retransmits for well-behaved receivers? Do you have a
-suggestion?
-
-(b) Do we want to add the new complexity for this heuristic, given
-that this is a misbehaving receiver and we don't yet have an
-indication that it's a widespread bug?
-
-> Btw. the "client SACKs TLP retransmit" note is not correct. This is an ol=
-d ACK, which can be seen from the ecr value.
-
-I believe your analysis of the ECR value here is incorrect. The TS ecr
-value in ACKs with SACK blocks will generally not match the TS val of
-the SACKed segment due to the rules of RFC 7323, specifically rule (2)
-on page 17 in section 4.3 (
-https://tools.ietf.org/html/rfc7323#section-4.3 ), which says:
-
-   (2)  If:
-
-            SEG.TSval >=3D TS.Recent and SEG.SEQ <=3D Last.ACK.sent
-
-        then SEG.TSval is copied to TS.Recent; otherwise, it is ignored.
-
-Because the sequence number on the SACKed TLP retransmit is >
-Last.ACK.sent, SEG.TSval is *not* copied to TS.Recent, and so the TS
-ecr value does not reflect the TS val of the TLP retransmit.
-
-So AFAICT this is not an old ACK, but is indeed a SACK of the TLP retransmi=
-t.
-
-best,
-neal
+Do I get things right? Sorry, Kconfig is a very strange language.
