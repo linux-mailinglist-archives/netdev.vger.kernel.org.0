@@ -2,243 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E163266E3
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 19:29:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0595326745
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 20:12:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbhBZS3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 13:29:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
+        id S230223AbhBZTMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 14:12:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbhBZS26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 13:28:58 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D145C06174A
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 10:28:12 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id p186so9826184ybg.2
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 10:28:12 -0800 (PST)
+        with ESMTP id S229967AbhBZTMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 14:12:14 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A469AC061574;
+        Fri, 26 Feb 2021 11:11:33 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id 2so7276791ljr.5;
+        Fri, 26 Feb 2021 11:11:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mHn0ATzyfjQcHe3CflA1/VB607LwtKwjbOunifyzhhI=;
-        b=S3JrjlzteKA5IRIrR+MLPMJq+MCo1zQcvD6MzUKwXqvYjd2gkYyT+0uYixJopTWOak
-         HW1OmJMecwoceiqcF1CDRXqINziVm0qZrqnl2E5haVIsMosA/6VqGyiC9fZJnO5mPmq9
-         bGSc3suwkcCe0MkDn9XTAyv/X/WGY1ZgIAAuSWoX+HYFdMCMd643as0+QE4dKzuz2vls
-         6awJJSKRJhI4DtvqjDk3fcJZ6sBjp9keM3+ISYee/efnfuA3TbviMU1AUOF1gsb/pLY6
-         IBT76Yy7BmMipGZS9TjAip3G2Ond39MnTXns/lTkif7uqj4WXmtz2CjSg0xB1GFEJLnb
-         +97Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IBtIidwVwaIktxepbeCDx/8gfJLnxmhlZEhvJa7e2JM=;
+        b=MoI9sH+xS+N7OBJbwDA0LImxeRrpl7LUczU+TJTygbMNzB22Qdr1WjaavoIxuqpExh
+         ThwGYWvP7XH/yISb2ieM1zg3qlTQItUxEVDiShJB7FQw3d/R7WHAXXHQfPzowbJhQ2eH
+         f/MsMF4UpF4lfPb/3BSVyltleh5h/W34iFaHJ4v/YZw/7tmRABEGfNBG83CwEUymXj8A
+         Wz9AWiHaRd2A0m2LUMxeQE1ertmO8ALzETCNLAyqjY/qL6yL9hDrYFy7sv7bOORmLxoA
+         hHl8RRqffc48Vp3sb+XewfvCvope5o2n0LwyjhmI8fLRkQlpNZ0b7QhVt3bJR4UcKUFG
+         aCAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mHn0ATzyfjQcHe3CflA1/VB607LwtKwjbOunifyzhhI=;
-        b=AWYVFy8INJ28jmwvLzwK9ZtFb+9xESF4gu+7ySQyQyxSejE0ScMWEDY1ehwuDblin5
-         VkqZEi7Sixme8cMRRgAP4DHzxYVJntEgSxZi8+4lHBWCpljT9LbPhleQhDwjKPEtOvoF
-         9z8pqVdsW2v7BtqhcxfpOvePQZ5AqbrA/f+Shei2CH94BYazdXAThqKKUDsvl4CDNKpV
-         kIfhE+Lg5klOt49ODC/qgiKe08ccoki9XqSgGhsvKHkDJIaqWG+0ceQo7EaOPLj94ghT
-         i1xu+MYyeUpeR+riD3WkWHCVTMg9UbN551xUetKdZ0Sxzia1pz85dw8A0lbGrcRjUHEk
-         WXMg==
-X-Gm-Message-State: AOAM530ZarRvzo4AO4RyMaEoqmFWKmzlnmp3QaezB3dCI9cKCOidx5k+
-        SnnedQmbUgT4HR9ZWTnOqklaxKphuce3YHIIuPmX0A==
-X-Google-Smtp-Source: ABdhPJxdwrYLzBJEQgkuB7VNOtHOerHPlBmjhY6acZV0oLfbp6RnjUh5TIHoX006FwFHDAdK+EYkMaPR4ukAHiQlB6Y=
-X-Received: by 2002:a25:2206:: with SMTP id i6mr5778170ybi.351.1614364091595;
- Fri, 26 Feb 2021 10:28:11 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IBtIidwVwaIktxepbeCDx/8gfJLnxmhlZEhvJa7e2JM=;
+        b=iDay+iHIZIl+uRZVsQ2tOcicB3tNUmag+lkCgb3MeowOoxcMC8Ng8DrTZcHI9kGOQX
+         xWXD8SJE7plzShgrDyHlMGu9iPY18rmTAJks0RjhEq+mhciI34s5+4rbXmVrqOoy+84z
+         l5/6s6X0i9J4KXVI46GBSuq89Cwly6otxjYBEaePXcyuQOfxc+uAvg/QNaFdJCqI1ig4
+         8LZmCA+K/ZyWOD2GoDkFJqQpwBAVp1/AYdWd2BQhU9VtBSxc5BitRww/Uc66//A7FzJ4
+         UPuGYvxlbMTi1eVgZw5N4fYxtG1ah5JnjfDl+T7KiiLsZK5AbL5OPoS0j7G3tOz6oeUH
+         kRSw==
+X-Gm-Message-State: AOAM533XmSqqpyfNc2yTcrjPmoiwRtJ6ZlvLolkoIgNZVeAsj7904gtE
+        ZLzvw86znKDBoYKZZfMNpUM=
+X-Google-Smtp-Source: ABdhPJysY0omAmg5k2/lT1pUubT7iOOiWMSX8eFbJyo1D/LcaV3cOa42Hj1XnztgLuDez6RV12a+Cw==
+X-Received: by 2002:a2e:7f1b:: with SMTP id a27mr2411804ljd.225.1614366692167;
+        Fri, 26 Feb 2021 11:11:32 -0800 (PST)
+Received: from localhost.localdomain ([94.103.235.59])
+        by smtp.gmail.com with ESMTPSA id n7sm1472506lfu.123.2021.02.26.11.11.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Feb 2021 11:11:31 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linmiaohe@huawei.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
+Subject: [PATCH] net/core/skbuff.c: __netdev_alloc_skb fix when len is greater than KMALLOC_MAX_SIZE
+Date:   Fri, 26 Feb 2021 22:11:06 +0300
+Message-Id: <20210226191106.554553-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210223234130.437831-1-weiwan@google.com> <20210224155237.221dd0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89iKYLTbQB7K8bFouaGFfeiVo00-TEqsdM10t7Tr94O_tuA@mail.gmail.com>
- <20210224160723.4786a256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BN8PR15MB2787694425A1369CA563FCFFBD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
- <20210224162059.7949b4e1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BN8PR15MB27873FF52B109480173366B8BD9E9@BN8PR15MB2787.namprd15.prod.outlook.com>
- <20210224180329.306b2207@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_CEz-CaK_rCyGzRA8=WNspu2Uia5UasJ266f=p5uiqYkw@mail.gmail.com>
- <20210225002115.5f6215d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_DdccvmymRWEtggHgqb9dQ6NjK8rsrA03HH+r7mzt=5uw@mail.gmail.com>
- <20210225150048.23ed87c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_DnoQ8OLm731burXB58d9PfSPNU7_MvbeX_Ly1Grk2XbA@mail.gmail.com>
- <20210225171857.798e6c81@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAKgT0Ucip_cDs0juYN06xoDxFOrzo83JdhSOUEtRLugresQ2fw@mail.gmail.com>
-In-Reply-To: <CAKgT0Ucip_cDs0juYN06xoDxFOrzo83JdhSOUEtRLugresQ2fw@mail.gmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Fri, 26 Feb 2021 10:28:00 -0800
-Message-ID: <CAEA6p_AJYBPMQY2DEy_vhRwrq5fnZR3z0A_-_HN0+S4yc45enQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: fix race between napi kthread mode and busy poll
-To:     Martin Zaharinov <micron10@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Martin,
-Could you help try the following new patch on your setup and let me
-know if there are still issues?
+syzbot found WARNING in __alloc_pages_nodemask()[1] when order >= MAX_ORDER.
+It was caused by __netdev_alloc_skb(), which doesn't check len value after adding NET_SKB_PAD.
+Order will be >= MAX_ORDER and passed to __alloc_pages_nodemask() if size > KMALLOC_MAX_SIZE.
 
-Thanks.
-Wei
+static void *kmalloc_large_node(size_t size, gfp_t flags, int node)
+{
+	struct page *page;
+	void *ptr = NULL;
+	unsigned int order = get_order(size);
+...
+	page = alloc_pages_node(node, flags, order);
+...
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ddf4cfc12615..9ed0f89ccdd5 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -357,9 +357,10 @@ enum {
-        NAPI_STATE_NPSVC,               /* Netpoll - don't dequeue
-from poll_list */
-        NAPI_STATE_LISTED,              /* NAPI added to system lists */
-        NAPI_STATE_NO_BUSY_POLL,        /* Do not add in napi_hash, no
-busy polling */
--       NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() owns this NAPI */
-+       NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() grabs SHED
-bit and could busy poll */
-        NAPI_STATE_PREFER_BUSY_POLL,    /* prefer busy-polling over
-softirq processing*/
-        NAPI_STATE_THREADED,            /* The poll is performed
-inside its own thread*/
-+       NAPI_STATE_SCHED_BUSY_POLL,     /* Napi is currently scheduled
-in busy poll mode */
- };
+[1] WARNING in __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5014
+Call Trace:
+ __alloc_pages include/linux/gfp.h:511 [inline]
+ __alloc_pages_node include/linux/gfp.h:524 [inline]
+ alloc_pages_node include/linux/gfp.h:538 [inline]
+ kmalloc_large_node+0x60/0x110 mm/slub.c:3999
+ __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4496
+ __kmalloc_reserve net/core/skbuff.c:150 [inline]
+ __alloc_skb+0x4e4/0x5a0 net/core/skbuff.c:210
+ __netdev_alloc_skb+0x70/0x400 net/core/skbuff.c:446
+ netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
+ qrtr_endpoint_post+0x84/0x11b0 net/qrtr/qrtr.c:442
+ qrtr_tun_write_iter+0x11f/0x1a0 net/qrtr/tun.c:98
+ call_write_iter include/linux/fs.h:1901 [inline]
+ new_sync_write+0x426/0x650 fs/read_write.c:518
+ vfs_write+0x791/0xa30 fs/read_write.c:605
+ ksys_write+0x12d/0x250 fs/read_write.c:658
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
- enum {
-@@ -372,6 +373,7 @@ enum {
-        NAPIF_STATE_IN_BUSY_POLL        = BIT(NAPI_STATE_IN_BUSY_POLL),
-        NAPIF_STATE_PREFER_BUSY_POLL    = BIT(NAPI_STATE_PREFER_BUSY_POLL),
-        NAPIF_STATE_THREADED            = BIT(NAPI_STATE_THREADED),
-+       NAPIF_STATE_SCHED_BUSY_POLL     = BIT(NAPI_STATE_SCHED_BUSY_POLL),
- };
+Reported-by: syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Change-Id: I480a6d6f818a4c0a387db0cd3f230b68a7daeb16
+---
+ net/core/skbuff.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
- enum gro_result {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6c5967e80132..c717b67ce137 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1501,15 +1501,14 @@ static int napi_kthread_create(struct napi_struct *n)
- {
-        int err = 0;
-
--       /* Create and wake up the kthread once to put it in
--        * TASK_INTERRUPTIBLE mode to avoid the blocked task
--        * warning and work with loadavg.
-+       /* Avoid using  kthread_run() here to prevent race
-+        * between softirq and kthread polling.
-         */
--       n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
--                               n->dev->name, n->napi_id);
-+       n->thread = kthread_create(napi_threaded_poll, n, "napi/%s-%d",
-+                                  n->dev->name, n->napi_id);
-        if (IS_ERR(n->thread)) {
-                err = PTR_ERR(n->thread);
--               pr_err("kthread_run failed with err %d\n", err);
-+               pr_err("kthread_create failed with err %d\n", err);
-                n->thread = NULL;
-        }
-
-@@ -6486,6 +6485,7 @@ bool napi_complete_done(struct napi_struct *n,
-int work_done)
-                WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
-
-                new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
-+                             NAPIF_STATE_SCHED_BUSY_POLL |
-                              NAPIF_STATE_PREFER_BUSY_POLL);
-
-                /* If STATE_MISSED was set, leave STATE_SCHED set,
-@@ -6525,6 +6525,7 @@ static struct napi_struct *napi_by_id(unsigned
-int napi_id)
-
- static void __busy_poll_stop(struct napi_struct *napi, bool skip_schedule)
- {
-+       clear_bit(NAPI_STATE_SCHED_BUSY_POLL, &napi->state);
-        if (!skip_schedule) {
-                gro_normal_list(napi);
-                __napi_schedule(napi);
-@@ -6624,7 +6625,8 @@ void napi_busy_loop(unsigned int napi_id,
-                        }
-                        if (cmpxchg(&napi->state, val,
-                                    val | NAPIF_STATE_IN_BUSY_POLL |
--                                         NAPIF_STATE_SCHED) != val) {
-+                                         NAPIF_STATE_SCHED |
-+                                         NAPIF_STATE_SCHED_BUSY_POLL) != val) {
-                                if (prefer_busy_poll)
-
-set_bit(NAPI_STATE_PREFER_BUSY_POLL, &napi->state);
-                                goto count;
-@@ -6971,7 +6973,10 @@ static int napi_thread_wait(struct napi_struct *napi)
-        set_current_state(TASK_INTERRUPTIBLE);
-
-        while (!kthread_should_stop() && !napi_disable_pending(napi)) {
--               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-+               unsigned long val = READ_ONCE(napi->state);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 785daff48030..dc28c8f7bf5f 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -443,6 +443,9 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
+ 	if (len <= SKB_WITH_OVERHEAD(1024) ||
+ 	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+ 	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
++		if (len > KMALLOC_MAX_SIZE)
++			return NULL;
 +
-+               if (val & NAPIF_STATE_SCHED &&
-+                   !(val & NAPIF_STATE_SCHED_BUSY_POLL)) {
-                        WARN_ON(!list_empty(&napi->poll_list));
-                        __set_current_state(TASK_RUNNING);
-                        return 0;
+ 		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
+ 		if (!skb)
+ 			goto skb_fail;
+-- 
+2.25.1
 
-On Thu, Feb 25, 2021 at 7:52 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Thu, Feb 25, 2021 at 5:20 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 25 Feb 2021 16:16:20 -0800 Wei Wang wrote:
-> > > On Thu, Feb 25, 2021 at 3:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > On Thu, 25 Feb 2021 10:29:47 -0800 Wei Wang wrote:
-> > > > > Hmm... I don't think the above patch would work. Consider a situation that:
-> > > > > 1. At first, the kthread is in sleep mode.
-> > > > > 2. Then someone calls napi_schedule() to schedule work on this napi.
-> > > > > So ____napi_schedule() is called. But at this moment, the kthread is
-> > > > > not yet in RUNNING state. So this function does not set SCHED_THREAD
-> > > > > bit.
-> > > > > 3. Then wake_up_process() is called to wake up the thread.
-> > > > > 4. Then napi_threaded_poll() calls napi_thread_wait().
-> > > >
-> > > > But how is the task not in running state outside of napi_thread_wait()?
-> > > >
-> > > > My scheduler knowledge is rudimentary, but AFAIU off CPU tasks which
-> > > > were not put to sleep are still in RUNNING state, so unless we set
-> > > > INTERRUPTIBLE the task will be running, even if it's stuck in cond_resched().
-> > >
-> > > I think the thread is only in RUNNING state after wake_up_process() is
-> > > called on the thread in ____napi_schedule(). Before that, it should be
-> > > in INTERRUPTIBLE state. napi_thread_wait() explicitly calls
-> > > set_current_state(TASK_INTERRUPTIBLE) when it finishes 1 round of
-> > > polling.
-> >
-> > Are you concerned about it not being in RUNNING state after it's
-> > spawned but before it's first parked?
-> >
-> > > > > woken is false
-> > > > > and SCHED_THREAD bit is not set. So the kthread will go to sleep again
-> > > > > (in INTERRUPTIBLE mode) when schedule() is called, and waits to be
-> > > > > woken up by the next napi_schedule().
-> > > > > That will introduce arbitrary delay for the napi->poll() to be called.
-> > > > > Isn't it? Please enlighten me if I did not understand it correctly.
-> > > >
-> > > > Probably just me not understanding the scheduler :)
-> > > >
-> > > > > I personally prefer to directly set SCHED_THREAD bit in ____napi_schedule().
-> > > > > Or stick with SCHED_BUSY_POLL solution and replace kthread_run() with
-> > > > > kthread_create().
-> > > >
-> > > > Well, I'm fine with that too, no point arguing further if I'm not
-> > > > convincing anyone. But we need a fix which fixes the issue completely,
-> > > > not just one of three incarnations.
-> > >
-> > > Alexander and Eric,
-> > > Do you guys have preference on which approach to take?
-> > > If we keep the current SCHED_BUSY_POLL patch, I think we need to
-> > > change kthread_run() to kthread_create() to address the warning Martin
-> > > reported.
-> > > Or if we choose to set SCHED_THREADED, we could keep kthread_run().
-> > > But there is 1 extra set_bit() operation.
-> >
-> > To be clear extra set_bit() only if thread is running, which if IRQ
-> > coalescing works should be rather rare.
->
-> I was good with either approach. My preference would be to probably
-> use kthread_create regardless as it doesn't make much sense to have
-> the thread running until we really need it anyway.
