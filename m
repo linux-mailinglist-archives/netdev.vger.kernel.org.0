@@ -2,177 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AD6C325C3B
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 04:59:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7510325C67
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 05:13:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbhBZD6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Feb 2021 22:58:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
+        id S229599AbhBZENK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Feb 2021 23:13:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbhBZD6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 22:58:14 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9C8C061574;
-        Thu, 25 Feb 2021 19:57:34 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id k22so4595520pll.6;
-        Thu, 25 Feb 2021 19:57:34 -0800 (PST)
+        with ESMTP id S229492AbhBZENH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Feb 2021 23:13:07 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0F8C061574
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 20:12:27 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id d20so8469726oiw.10
+        for <netdev@vger.kernel.org>; Thu, 25 Feb 2021 20:12:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E9uT3F5a+Hilx7GeVN55UELvpzXvN2z1hUQ2uEJGCFU=;
-        b=X2OrJSnrjeIUZW27A1DiaoI6Gm3ofJtmqNJrDEjVsRV++pkR4S6pcYcwxDyoy7pbz2
-         58Flgdd8a5+VgAuEQXrxPYgaJrO9wMHhl1vPCpeKJLuSjQVGgBmPOA6pQDrFKmlgIct3
-         hIe7TlIzDR8eIx22FjRGjunzbl3HMZxcG6w2B4e1ciW9rBq6DSc/m2c5GK5LBcsQHNjK
-         eAoqYL3Sw9ElIxN9WoiNJOgVupAsOTawavC6gskmD/YrA6QG8Zo88bF/4lal/wZA+iKi
-         nWdPQo9XWt0xqmBbIEUwAeKChDtRWIJsRqm2IhR28fqHDKmb9gew0hGC6iGshBeQ21Mi
-         ujNw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=B5VNpdJMoE9IgsJwDJNvQwE+UmmFKJO4tBe4Sx5SXxQ=;
+        b=ISHgbgLyE+yi13U3dbTV2DhZKbnkmEceYDk115WXITubVaoNyS+pQSzB4a5plaiFCn
+         JKnTZofjq1CJe47x5HXo1czCYdL9Rhiw9w34Lv2ZzM/09PsLNzhz14fafX8pVhxO0BsL
+         xZIzOHCAhjLUG07yjgW4iIZJrqNnFeF3FBjkVrjIcaeRzUbVgQahdZ+Jp4j31wykuESZ
+         SfuCnONKfMD57dI+KpCODtnrAH13pUqKlWNbV1344NiAOMRei0/JbXMLdYmi1R6a0ccv
+         aEA7RiN9p3jSSyT8XKyEEYDaz5odu/D3tstDEie1ngmUmsehqnmsymRvImHTRszsqB5r
+         CTvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=E9uT3F5a+Hilx7GeVN55UELvpzXvN2z1hUQ2uEJGCFU=;
-        b=Hxn7LL9YawdGBmI7axlsG7pLWmtG2qZUjkslI2A6KllUhpWjVadbRI5tmSRiVFKOZv
-         TjimxcL8r1iwWX8j4l1JgvJWPVgr5DIApTYVJtWXX3kLrmrz2PShvtnLIjzYlMM0cVN1
-         B557YHeeu/WR/hoEBVezk+qaxRWLD2+/SVoXOqU/VDfxP5cL5aQHWK5GI0sd8p5FwOoZ
-         1bxsP7cGhCbl1Up38Lv20WAsQHc/RjRnTTtk/kNSSBNJEDlTuzDGkQC3abLRGisBmUGE
-         shQaDZ8mLzM98x2pcz5vCQCOjQ5QgYIHRYKgsO48r8vuJmr8AU4dODwpCNiOsU9xuzOh
-         JxKg==
-X-Gm-Message-State: AOAM533bGuv86H/AkWs4nW3roD8guYqoI6/CdDV37GQwjJMsRDsd414Z
-        lhnhqOrqkQ3MKs8hYxv5o6A=
-X-Google-Smtp-Source: ABdhPJyCUfNoAEjO97SXjz7tTVaxyDh8nEBM7i1wbf6/BcXGz6uYkFFyEki3gTQYywmBeAe+fXZeew==
-X-Received: by 2002:a17:90b:4acc:: with SMTP id mh12mr1340433pjb.10.1614311853709;
-        Thu, 25 Feb 2021 19:57:33 -0800 (PST)
-Received: from localhost.localdomain ([154.48.252.65])
-        by smtp.gmail.com with ESMTPSA id mp17sm6992917pjb.48.2021.02.25.19.57.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 25 Feb 2021 19:57:33 -0800 (PST)
-From:   Xuesen Huang <hxseverything@gmail.com>
-To:     daniel@iogearbox.net
-Cc:     davem@davemloft.net, bpf@vger.kernel.org,
-        willemdebruijn.kernel@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Xuesen Huang <huangxuesen@kuaishou.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Zhiyong Cheng <chengzhiyong@kuaishou.com>,
-        Li Wang <wangli09@kuaishou.com>
-Subject: [PATCH/v3] bpf: add bpf_skb_adjust_room flag BPF_F_ADJ_ROOM_ENCAP_L2_ETH
-Date:   Fri, 26 Feb 2021 11:57:21 +0800
-Message-Id: <20210226035721.40054-1-hxseverything@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        bh=B5VNpdJMoE9IgsJwDJNvQwE+UmmFKJO4tBe4Sx5SXxQ=;
+        b=XwrIqyABts/hcSORc4PBP8T5zZ+Slf3/A2ik92gy9bbQbT6/PigFQSEEmXQtMpboOk
+         Tp/RK1P2B6lIp/xMUNKlukVdN6rYgyB023dhLkvBszGYcmyTZHqpHSAm2viALifFkNby
+         fR8MwryCEPthjYhP6tS5F5s9uhGxtm/+pRmrrHvk8amlOK0dM28HTQqTwNtmngiWD8kI
+         EzyhuqFAIvIL0LPaNrANFovY08+KQsMXzObQRSDzqK3lLmCxlhi6zO3gsRKirjHm4eIg
+         rzGRFR2JjTmRolUu2ZP6+dmI45PwpuYVqO8UNoo7ofu1dvTf+JB3fdqfjEihwdvNdicQ
+         yRYA==
+X-Gm-Message-State: AOAM533XzSC3kJRyTlQ7A4GwEWfVjThcODJsCQYhERI63BGlkOmSzxTP
+        SzEE6gH0DZi9zHKOwfBrJVPI9g3w+PE=
+X-Google-Smtp-Source: ABdhPJy6iCTwU9JVVO7AJebm6m53IO+rT3GhKr6i0UthjnBSF1+Q915CIxcrBiXkXbhLnhFPTlpDjg==
+X-Received: by 2002:aca:c08b:: with SMTP id q133mr795652oif.160.1614312746556;
+        Thu, 25 Feb 2021 20:12:26 -0800 (PST)
+Received: from ?IPv6:2600:1700:dfe0:49f0:252a:68f7:aed6:4dde? ([2600:1700:dfe0:49f0:252a:68f7:aed6:4dde])
+        by smtp.gmail.com with ESMTPSA id c2sm1485621ooo.17.2021.02.25.20.12.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Feb 2021 20:12:25 -0800 (PST)
+Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        =?UTF-8?Q?Daniel_Gonz=c3=a1lez_Cabanelas?= <dgcbueu@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org,
+        =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>
+References: <2323124.5UR7tLNZLG@tool>
+ <9d9f3077-9c5c-e7bc-0c77-8e8353be7732@gmail.com>
+ <cf8ea0b6-11ac-3dbd-29a1-337c06d9a991@gmail.com>
+ <CABwr4_vwTiFzSdxu-GoON2HHS1pjyiv0PFS-pTbCEMT4Uc4OvA@mail.gmail.com>
+ <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
+ <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
+ <7fc4933f-36d4-99dc-f968-9ca3b8758a9b@gmail.com>
+ <CABwr4_siD8PcXnYuAoYCqQp8ioikJQiMgDW=JehX1c+0Zuc3rQ@mail.gmail.com>
+ <4ee0ce3b-39b8-8645-77ce-dd9cb1b1f857@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <35f5f66b-fe19-8e45-7e8a-8af85d73149f@gmail.com>
+Date:   Thu, 25 Feb 2021 20:12:23 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.0
 MIME-Version: 1.0
+In-Reply-To: <4ee0ce3b-39b8-8645-77ce-dd9cb1b1f857@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuesen Huang <huangxuesen@kuaishou.com>
 
-bpf_skb_adjust_room sets the inner_protocol as skb->protocol for packets
-encapsulation. But that is not appropriate when pushing Ethernet header.
 
-Add an option to further specify encap L2 type and set the inner_protocol
-as ETH_P_TEB.
+On 2/25/2021 2:56 PM, Heiner Kallweit wrote:
+>>>>> It's still an ugly workaround and a proper root cause analysis should be done
+>>>>> first. I can only imagine that phydev->irq is overwritten in phy_probe()
+>>>>> because phy_drv_supports_irq() is false. Can you please check whether
+>>>>> phydev->irq is properly set in phy_device_create(), and if yes, whether
+>>>>> it's reset to PHY_POLL in phy_probe()?.
+>>>>>
+>>>>
+>>>> Hi Heiner, I added some kernel prints:
+>>>>
+>>>> [    2.712519] libphy: Fixed MDIO Bus: probed
+>>>> [    2.721969] =======phy_device_create===========
+>>>> [    2.726841] phy_device_create: dev->irq = 17
+>>>> [    2.726841]
+>>>> [    2.832620] =======phy_probe===========
+>>>> [    2.836846] phy_probe: phydev->irq = 17
+>>>> [    2.840950] phy_probe: phy_drv_supports_irq = 0, phy_interrupt_is_valid = 1
+>>>> [    2.848267] phy_probe: phydev->irq = -1
+>>>> [    2.848267]
+>>>> [    2.854059] =======phy_probe===========
+>>>> [    2.858174] phy_probe: phydev->irq = -1
+>>>> [    2.862253] phy_probe: phydev->irq = -1
+>>>> [    2.862253]
+>>>> [    2.868121] libphy: bcm63xx_enet MII bus: probed
+>>>> [    2.873320] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
+>>>> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
+>>>> irq=POLL)
+>>>>
+>>>> Currently using kernel 5.4.99. I still have no idea what's going on.
+>>>>
+>>> Thanks for debugging. This confirms my assumption that the interrupt
+>>> is overwritten in phy_probe(). I'm just scratching my head how
+>>> phy_drv_supports_irq() can return 0. In 5.4.99 it's defined as:
+>>>
+>>> static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+>>> {
+>>>         return phydrv->config_intr && phydrv->ack_interrupt;
+>>> }
+>>>
+>>> And that's the PHY driver:
+>>>
+>>> static struct phy_driver bcm63xx_driver[] = {
+>>> {
+>>>         .phy_id         = 0x00406000,
+>>>         .phy_id_mask    = 0xfffffc00,
+>>>         .name           = "Broadcom BCM63XX (1)",
+>>>         /* PHY_BASIC_FEATURES */
+>>>         .flags          = PHY_IS_INTERNAL,
+>>>         .config_init    = bcm63xx_config_init,
+>>>         .ack_interrupt  = bcm_phy_ack_intr,
+>>>         .config_intr    = bcm63xx_config_intr,
+>>> }
+>>>
+>>> So both callbacks are set. Can you extend your debugging and check
+>>> in phy_drv_supports_irq() which of the callbacks is missing?
+>>>
+>>
+>> Hi, both callbacks are missing on the first check. However on the next
+>> calls they're there.
+>>
+>> [    2.263909] libphy: Fixed MDIO Bus: probed
+> 
+> This is weird. The phy_device seems to show up on both MDIO buses,
+> the fixed one *and* the bcm63xx_enet bus.
 
-v3:
-- Fix the code format.
-
-v2:
-Suggested-by: Willem de Bruijn <willemb@google.com>
-- Add a new flag to specify the type of the inner packet.
-
-Suggested-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
-Signed-off-by: Zhiyong Cheng <chengzhiyong@kuaishou.com>
-Signed-off-by: Li Wang <wangli09@kuaishou.com>
----
- include/uapi/linux/bpf.h       |  5 +++++
- net/core/filter.c              | 11 ++++++++++-
- tools/include/uapi/linux/bpf.h |  5 +++++
- 3 files changed, 20 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 77d7c1b..d791596 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
-  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
-  *		  type; *len* is the length of the inner MAC header.
-  *
-+ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
-+ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
-+ *		  L2 type as Ethernet.
-+ *
-  * 		A call to this helper is susceptible to change the underlying
-  * 		packet buffer. Therefore, at load time, all checks on pointers
-  * 		previously done by the verifier are invalidated and must be
-@@ -4088,6 +4092,7 @@ enum {
- 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
- 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
- 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
-+	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
- };
- 
- enum {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 255aeee..8d1fb61 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3412,6 +3412,7 @@ static u32 bpf_skb_net_base_len(const struct sk_buff *skb)
- 					 BPF_F_ADJ_ROOM_ENCAP_L3_MASK | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L4_GRE | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L4_UDP | \
-+					 BPF_F_ADJ_ROOM_ENCAP_L2_ETH | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L2( \
- 					  BPF_ADJ_ROOM_ENCAP_L2_MASK))
- 
-@@ -3448,6 +3449,10 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
- 		    flags & BPF_F_ADJ_ROOM_ENCAP_L4_UDP)
- 			return -EINVAL;
- 
-+		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH &&
-+		    inner_mac_len < ETH_HLEN)
-+			return -EINVAL;
-+
- 		if (skb->encapsulation)
- 			return -EALREADY;
- 
-@@ -3466,7 +3471,11 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
- 		skb->inner_mac_header = inner_net - inner_mac_len;
- 		skb->inner_network_header = inner_net;
- 		skb->inner_transport_header = inner_trans;
--		skb_set_inner_protocol(skb, skb->protocol);
-+
-+		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH)
-+			skb_set_inner_protocol(skb, htons(ETH_P_TEB));
-+		else
-+			skb_set_inner_protocol(skb, skb->protocol);
- 
- 		skb->encapsulation = 1;
- 		skb_set_network_header(skb, mac_len);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 77d7c1b..d791596 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
-  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
-  *		  type; *len* is the length of the inner MAC header.
-  *
-+ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
-+ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
-+ *		  L2 type as Ethernet.
-+ *
-  * 		A call to this helper is susceptible to change the underlying
-  * 		packet buffer. Therefore, at load time, all checks on pointers
-  * 		previously done by the verifier are invalidated and must be
-@@ -4088,6 +4092,7 @@ enum {
- 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
- 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
- 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
-+	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
- };
- 
- enum {
+Yes that does not make sense to me at all, but maybe something broke at
+some point for non-Device Tree systems and we are just catching it now.
+The largest rework that occurred during v4.4 and v4.9 was the
+introduction of mdio_device.
 -- 
-1.8.3.1
-
+Florian
