@@ -2,110 +2,356 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFDC6326004
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 10:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC51D326024
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 10:38:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbhBZJ16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 04:27:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42758 "EHLO
+        id S230132AbhBZJed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 04:34:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbhBZJZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 04:25:47 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E873C06174A
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 01:25:07 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lFZMp-0005Wh-9w; Fri, 26 Feb 2021 10:24:59 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lFZMo-00074N-Vk; Fri, 26 Feb 2021 10:24:58 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Robin van der Gracht <robin@protonic.nl>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andre Naujoks <nautsch2@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v4 1/1] can: can_skb_set_owner(): fix ref counting if socket was closed before setting skb ownership
-Date:   Fri, 26 Feb 2021 10:24:56 +0100
-Message-Id: <20210226092456.27126-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        with ESMTP id S230139AbhBZJdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 04:33:40 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3670C061788
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 01:32:59 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id u125so7143232wmg.4
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 01:32:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1VEFAZNNmwublE305SEPwxKkbVnLosijDTH7DXmSeFc=;
+        b=BbNvKfidYN9Bkq7NaHaBNvBdgV/ScXRCQoQ3kEey6aXOdMiqyc515Zs4r4q/m3faXP
+         XyTQjG2MIPBvo/NKloTk85sI/mtlQdcJC88kT7p9olmpypYIO++QmyMTNVH6eT/bs/tp
+         in9nkIhYIx9/QGzmnnxiNG8hTfFsw+Ht7xFrN65/YpPb8ty3Vaw0M1c9RAjExO+CF+L6
+         iFnTCXHv/hmvHj1mPGSI9KfcmS7R8mZ31Gz2UhKHaEqY9yKvbPoXt5ObZHUKi50mON6K
+         i4tCH2uP/QqEgM3UgWxSGSK9p96isjL23C+xdtEcc/S98jggOgkrp+rhDTdGKdQBVbjV
+         VrMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1VEFAZNNmwublE305SEPwxKkbVnLosijDTH7DXmSeFc=;
+        b=qrv1ieBClFhzq8xthZGdp4eLnT/Qr0HV+oblQxwhlA4ChyE/u8xMjHL2IX20oQxtOy
+         l9gvhWYcFLTzT8p6L5G7DEb3hj0vGz+pQJeE5ZakW0jhtDjZLn7tmcMaGscWUPObpxq9
+         GX9kNw8TOCrV5pumwmysYDYbC7iBa+JKyoTV57pm9wvi/JjLUYPhIoB38W1i37x9SZq4
+         0xXkwkRp/EWoYeGrb5QapGhN5AGvgVX3fXAJbzJMq1Ns2aYiUFYoPqryRfh7jpYPi3eO
+         nt16LMF4XqhuvynC1mjpCkSZKHdYBSLt845/rqtEdSvexH1lr5WD7xC8xyO/EP1orX5b
+         GnZg==
+X-Gm-Message-State: AOAM5300hgZa+mF40NsC4XnAwcEEDTZfdefKHIyQni3JSldWWi6tVFyw
+        fDz9ldmKZqaoyVxLmdOeXSU=
+X-Google-Smtp-Source: ABdhPJwSqdP12EbjFMljHiz3gGLPom3x98KAlotBiYf+Ds+77o+IIxv8zsjO1gXJkhNiFgeGpXWgNQ==
+X-Received: by 2002:a7b:cd98:: with SMTP id y24mr1985408wmj.23.1614331971393;
+        Fri, 26 Feb 2021 01:32:51 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f39:5b00:3483:8cf6:25ff:155b? (p200300ea8f395b0034838cf625ff155b.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:3483:8cf6:25ff:155b])
+        by smtp.googlemail.com with ESMTPSA id z5sm13076337wrn.8.2021.02.26.01.32.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Feb 2021 01:32:50 -0800 (PST)
+Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
+To:     =?UTF-8?Q?Daniel_Gonz=c3=a1lez_Cabanelas?= <dgcbueu@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org,
+        =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>
+References: <2323124.5UR7tLNZLG@tool>
+ <9d9f3077-9c5c-e7bc-0c77-8e8353be7732@gmail.com>
+ <cf8ea0b6-11ac-3dbd-29a1-337c06d9a991@gmail.com>
+ <CABwr4_vwTiFzSdxu-GoON2HHS1pjyiv0PFS-pTbCEMT4Uc4OvA@mail.gmail.com>
+ <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
+ <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
+ <7fc4933f-36d4-99dc-f968-9ca3b8758a9b@gmail.com>
+ <CABwr4_siD8PcXnYuAoYCqQp8ioikJQiMgDW=JehX1c+0Zuc3rQ@mail.gmail.com>
+ <b35ae75c-d0ce-2d29-b31a-72dc999a9bcc@gmail.com>
+ <CABwr4_u5azaW8vRix-OtTUyUMRKZ3ncHwsou5MLC9w4F0WUsvg@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <c9e72b62-3b4e-6214-f807-b24ec506cb56@gmail.com>
+Date:   Fri, 26 Feb 2021 10:32:44 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
+In-Reply-To: <CABwr4_u5azaW8vRix-OtTUyUMRKZ3ncHwsou5MLC9w4F0WUsvg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two ref count variables controlling the free()ing of a socket:
-- struct sock::sk_refcnt - which is changed by sock_hold()/sock_put()
-- struct sock::sk_wmem_alloc - which accounts the memory allocated by
-  the skbs in the send path.
+On 26.02.2021 10:10, Daniel González Cabanelas wrote:
+> El vie, 26 feb 2021 a las 8:13, Heiner Kallweit
+> (<hkallweit1@gmail.com>) escribió:
+>>
+>> On 25.02.2021 23:28, Daniel González Cabanelas wrote:
+>>> El jue, 25 feb 2021 a las 21:05, Heiner Kallweit
+>>> (<hkallweit1@gmail.com>) escribió:
+>>>>
+>>>> On 25.02.2021 17:36, Daniel González Cabanelas wrote:
+>>>>> El jue, 25 feb 2021 a las 8:22, Heiner Kallweit
+>>>>> (<hkallweit1@gmail.com>) escribió:
+>>>>>>
+>>>>>> On 25.02.2021 00:54, Daniel González Cabanelas wrote:
+>>>>>>> El mié, 24 feb 2021 a las 23:01, Florian Fainelli
+>>>>>>> (<f.fainelli@gmail.com>) escribió:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> On 2/24/2021 1:44 PM, Heiner Kallweit wrote:
+>>>>>>>>> On 24.02.2021 16:44, Daniel González Cabanelas wrote:
+>>>>>>>>>> The current bcm63xx_enet driver doesn't asign the internal phy IRQ. As a
+>>>>>>>>>> result of this it works in polling mode.
+>>>>>>>>>>
+>>>>>>>>>> Fix it using the phy_device structure to assign the platform IRQ.
+>>>>>>>>>>
+>>>>>>>>>> Tested under a BCM6348 board. Kernel dmesg before the patch:
+>>>>>>>>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
+>>>>>>>>>>               BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01, irq=POLL)
+>>>>>>>>>>
+>>>>>>>>>> After the patch:
+>>>>>>>>>>    Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY driver [Broadcom
+>>>>>>>>>>               BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01, irq=17)
+>>>>>>>>>>
+>>>>>>>>>> Pluging and uplugging the ethernet cable now generates interrupts and the
+>>>>>>>>>> PHY goes up and down as expected.
+>>>>>>>>>>
+>>>>>>>>>> Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+>>>>>>>>>> ---
+>>>>>>>>>> changes in V2:
+>>>>>>>>>>   - snippet moved after the mdiobus registration
+>>>>>>>>>>   - added missing brackets
+>>>>>>>>>>
+>>>>>>>>>>  drivers/net/ethernet/broadcom/bcm63xx_enet.c | 13 +++++++++++--
+>>>>>>>>>>  1 file changed, 11 insertions(+), 2 deletions(-)
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+>>>>>>>>>> index fd876721316..dd218722560 100644
+>>>>>>>>>> --- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+>>>>>>>>>> +++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+>>>>>>>>>> @@ -1818,10 +1818,19 @@ static int bcm_enet_probe(struct platform_device *pdev)
+>>>>>>>>>>               * if a slave is not present on hw */
+>>>>>>>>>>              bus->phy_mask = ~(1 << priv->phy_id);
+>>>>>>>>>>
+>>>>>>>>>> -            if (priv->has_phy_interrupt)
+>>>>>>>>>> +            ret = mdiobus_register(bus);
+>>>>>>>>>> +
+>>>>>>>>>> +            if (priv->has_phy_interrupt) {
+>>>>>>>>>> +                    phydev = mdiobus_get_phy(bus, priv->phy_id);
+>>>>>>>>>> +                    if (!phydev) {
+>>>>>>>>>> +                            dev_err(&dev->dev, "no PHY found\n");
+>>>>>>>>>> +                            goto out_unregister_mdio;
+>>>>>>>>>> +                    }
+>>>>>>>>>> +
+>>>>>>>>>>                      bus->irq[priv->phy_id] = priv->phy_interrupt;
+>>>>>>>>>> +                    phydev->irq = priv->phy_interrupt;
+>>>>>>>>>> +            }
+>>>>>>>>>>
+>>>>>>>>>> -            ret = mdiobus_register(bus);
+>>>>>>>>>
+>>>>>>>>> You shouldn't have to set phydev->irq, this is done by phy_device_create().
+>>>>>>>>> For this to work bus->irq[] needs to be set before calling mdiobus_register().
+>>>>>>>>
+>>>>>>>> Yes good point, and that is what the unchanged code does actually.
+>>>>>>>> Daniel, any idea why that is not working?
+>>>>>>>
+>>>>>>> Hi Florian, I don't know. bus->irq[] has no effect, only assigning the
+>>>>>>> IRQ through phydev->irq works.
+>>>>>>>
+>>>>>>> I can resend the patch  without the bus->irq[] line since it's
+>>>>>>> pointless in this scenario.
+>>>>>>>
+>>>>>>
+>>>>>> It's still an ugly workaround and a proper root cause analysis should be done
+>>>>>> first. I can only imagine that phydev->irq is overwritten in phy_probe()
+>>>>>> because phy_drv_supports_irq() is false. Can you please check whether
+>>>>>> phydev->irq is properly set in phy_device_create(), and if yes, whether
+>>>>>> it's reset to PHY_POLL in phy_probe()?.
+>>>>>>
+>>>>>
+>>>>> Hi Heiner, I added some kernel prints:
+>>>>>
+>>>>> [    2.712519] libphy: Fixed MDIO Bus: probed
+>>>>> [    2.721969] =======phy_device_create===========
+>>>>> [    2.726841] phy_device_create: dev->irq = 17
+>>>>> [    2.726841]
+>>>>> [    2.832620] =======phy_probe===========
+>>>>> [    2.836846] phy_probe: phydev->irq = 17
+>>>>> [    2.840950] phy_probe: phy_drv_supports_irq = 0, phy_interrupt_is_valid = 1
+>>>>> [    2.848267] phy_probe: phydev->irq = -1
+>>>>> [    2.848267]
+>>>>> [    2.854059] =======phy_probe===========
+>>>>> [    2.858174] phy_probe: phydev->irq = -1
+>>>>> [    2.862253] phy_probe: phydev->irq = -1
+>>>>> [    2.862253]
+>>>>> [    2.868121] libphy: bcm63xx_enet MII bus: probed
+>>>>> [    2.873320] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
+>>>>> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
+>>>>> irq=POLL)
+>>>>>
+>>>>> Currently using kernel 5.4.99. I still have no idea what's going on.
+>>>>>
+>>>> Thanks for debugging. This confirms my assumption that the interrupt
+>>>> is overwritten in phy_probe(). I'm just scratching my head how
+>>>> phy_drv_supports_irq() can return 0. In 5.4.99 it's defined as:
+>>>>
+>>>> static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+>>>> {
+>>>>         return phydrv->config_intr && phydrv->ack_interrupt;
+>>>> }
+>>>>
+>>>> And that's the PHY driver:
+>>>>
+>>>> static struct phy_driver bcm63xx_driver[] = {
+>>>> {
+>>>>         .phy_id         = 0x00406000,
+>>>>         .phy_id_mask    = 0xfffffc00,
+>>>>         .name           = "Broadcom BCM63XX (1)",
+>>>>         /* PHY_BASIC_FEATURES */
+>>>>         .flags          = PHY_IS_INTERNAL,
+>>>>         .config_init    = bcm63xx_config_init,
+>>>>         .ack_interrupt  = bcm_phy_ack_intr,
+>>>>         .config_intr    = bcm63xx_config_intr,
+>>>> }
+>>>>
+>>>> So both callbacks are set. Can you extend your debugging and check
+>>>> in phy_drv_supports_irq() which of the callbacks is missing?
+>>>>
+>>>
+>>> Hi, both callbacks are missing on the first check. However on the next
+>>> calls they're there.
+>>>
+>>> [    2.263909] libphy: Fixed MDIO Bus: probed
+>>> [    2.273026] =======phy_device_create===========
+>>> [    2.277908] phy_device_create: dev->irq = 17
+>>> [    2.277908]
+>>> [    2.373104] =======phy_probe===========
+>>> [    2.377336] phy_probe: phydev->irq = 17
+>>> [    2.381445] phy_drv_supports_irq: phydrv->config_intr = 0,
+>>> phydrv->ack_interrupt = 0
+>>> [    2.389554] phydev->irq = PHY_POLL;
+>>> [    2.393186] phy_probe: phydev->irq = -1
+>>> [    2.393186]
+>>> [    2.398987] =======phy_probe===========
+>>> [    2.403108] phy_probe: phydev->irq = -1
+>>> [    2.407195] phy_drv_supports_irq: phydrv->config_intr = 1,
+>>> phydrv->ack_interrupt = 1
+>>> [    2.415314] phy_probe: phydev->irq = -1
+>>> [    2.415314]
+>>> [    2.421189] libphy: bcm63xx_enet MII bus: probed
+>>> [    2.426129] =======phy_connect===========
+>>> [    2.430410] phy_drv_supports_irq: phydrv->config_intr = 1,
+>>> phydrv->ack_interrupt = 1
+>>> [    2.438537] phy_connect: phy_drv_supports_irq = 1
+>>> [    2.438537]
+>>> [    2.445284] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
+>>> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
+>>> irq=POLL)
+>>>
+>>
+>> I'd like to understand why the phy_device is probed twice,
+>> with which drivers it's probed.
+>> Could you please add printing phydrv->name to phy_probe() ?
+>>
+> 
+> Hi Heiner, indeed there are two different probed devices. The B53
+> switch driver is causing this issue.
+> 
+> [    2.269595] libphy: Fixed MDIO Bus: probed
+> [    2.278706] =======phy_device_create===========
+> [    2.283594] phy_device_create: dev->irq = 17
+> [    2.283594]
+> [    2.379554] =======phy_probe===========
+> [    2.383780] phy_probe: phydrv->name = Broadcom B53 (3)
 
-In case there are still TX skbs on the fly and the socket() is closed,
-the struct sock::sk_refcnt reaches 0. In the TX-path the CAN stack
-clones an "echo" skb, calls sock_hold() on the original socket and
-references it. This produces the following back trace:
+Is this an out-of-tree driver? I can't find this string in any
+DSA or PHY driver.
 
-| WARNING: CPU: 0 PID: 280 at lib/refcount.c:25 refcount_warn_saturate+0x114/0x134
-| refcount_t: addition on 0; use-after-free.
-| Modules linked in: coda_vpu(E) v4l2_jpeg(E) videobuf2_vmalloc(E) imx_vdoa(E)
-| CPU: 0 PID: 280 Comm: test_can.sh Tainted: G            E     5.11.0-04577-gf8ff6603c617 #203
-| Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-| Backtrace:
-| [<80bafea4>] (dump_backtrace) from [<80bb0280>] (show_stack+0x20/0x24) r7:00000000 r6:600f0113 r5:00000000 r4:81441220
-| [<80bb0260>] (show_stack) from [<80bb593c>] (dump_stack+0xa0/0xc8)
-| [<80bb589c>] (dump_stack) from [<8012b268>] (__warn+0xd4/0x114) r9:00000019 r8:80f4a8c2 r7:83e4150c r6:00000000 r5:00000009 r4:80528f90
-| [<8012b194>] (__warn) from [<80bb09c4>] (warn_slowpath_fmt+0x88/0xc8) r9:83f26400 r8:80f4a8d1 r7:00000009 r6:80528f90 r5:00000019 r4:80f4a8c2
-| [<80bb0940>] (warn_slowpath_fmt) from [<80528f90>] (refcount_warn_saturate+0x114/0x134) r8:00000000 r7:00000000 r6:82b44000 r5:834e5600 r4:83f4d540
-| [<80528e7c>] (refcount_warn_saturate) from [<8079a4c8>] (__refcount_add.constprop.0+0x4c/0x50)
-| [<8079a47c>] (__refcount_add.constprop.0) from [<8079a57c>] (can_put_echo_skb+0xb0/0x13c)
-| [<8079a4cc>] (can_put_echo_skb) from [<8079ba98>] (flexcan_start_xmit+0x1c4/0x230) r9:00000010 r8:83f48610 r7:0fdc0000 r6:0c080000 r5:82b44000 r4:834e5600
-| [<8079b8d4>] (flexcan_start_xmit) from [<80969078>] (netdev_start_xmit+0x44/0x70) r9:814c0ba0 r8:80c8790c r7:00000000 r6:834e5600 r5:82b44000 r4:82ab1f00
-| [<80969034>] (netdev_start_xmit) from [<809725a4>] (dev_hard_start_xmit+0x19c/0x318) r9:814c0ba0 r8:00000000 r7:82ab1f00 r6:82b44000 r5:00000000 r4:834e5600
-| [<80972408>] (dev_hard_start_xmit) from [<809c6584>] (sch_direct_xmit+0xcc/0x264) r10:834e5600 r9:00000000 r8:00000000 r7:82b44000 r6:82ab1f00 r5:834e5600 r4:83f27400
-| [<809c64b8>] (sch_direct_xmit) from [<809c6c0c>] (__qdisc_run+0x4f0/0x534)
 
-To fix this problem, only set skb ownership to sockets which have still
-a ref count > 0.
-
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>
-Cc: Andre Naujoks <nautsch2@gmail.com>
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Fixes: 0ae89beb283a ("can: add destructor for self generated skbs")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- include/linux/can/skb.h | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
-index 685f34cfba20..d82018cc0d0b 100644
---- a/include/linux/can/skb.h
-+++ b/include/linux/can/skb.h
-@@ -65,8 +65,12 @@ static inline void can_skb_reserve(struct sk_buff *skb)
- 
- static inline void can_skb_set_owner(struct sk_buff *skb, struct sock *sk)
- {
--	if (sk) {
--		sock_hold(sk);
-+	/*
-+	 * If the socket has already been closed by user space, the refcount may
-+	 * already be 0 (and the socket will be freed after the last TX skb has
-+	 * been freed). So only increase socket refcount if the refcount is > 0.
-+	 */
-+	if (sk && refcount_inc_not_zero(&sk->sk_refcnt)) {
- 		skb->destructor = sock_efree;
- 		skb->sk = sk;
- 	}
--- 
-2.29.2
+> [    2.389235] phy_probe: phydev->irq = 17
+> [    2.393332] phy_drv_supports_irq: phydrv->config_intr = 0,
+> phydrv->ack_interrupt = 0
+> [    2.401445] phydev->irq = PHY_POLL
+> [    2.405080] phy_probe: phydev->irq = -1
+> [    2.405080]
+> [    2.410878] =======phy_probe===========
+> [    2.414996] phy_probe: phydrv->name = Broadcom BCM63XX (1)
+> [    2.420791] phy_probe: phydev->irq = -1
+> [    2.424876] phy_drv_supports_irq: phydrv->config_intr = 1,
+> phydrv->ack_interrupt = 1
+> [    2.432994] phy_probe: phydev->irq = -1
+> [    2.432994]
+> [    2.438862] libphy: bcm63xx_enet MII bus: probed
+> [    2.443809] =======phy_connect===========
+> [    2.448092] phy_drv_supports_irq: phydrv->config_intr = 1,
+> phydrv->ack_interrupt = 1
+> [    2.456215] phy_connect: phy_drv_supports_irq = 1
+> [    2.456215]
+> [    2.462961] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
+> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
+> irq=POLL)
+> 
+> The board has no switch, it's a driver for other boards in OpenWrt. I
+> forgot it wasn't upstreamed:
+> https://github.com/openwrt/openwrt/tree/master/target/linux/generic/files/drivers/net/phy/b53
+> 
+> I tested a kernel compiled without this driver, now the IRQ is
+> detected as it should be:
+> 
+> [    2.270707] libphy: Fixed MDIO Bus: probed
+> [    2.279715] =======phy_device_create===========
+> [    2.284600] phy_device_create: dev->irq = 17
+> [    2.284600]
+> [    2.373763] =======phy_probe===========
+> [    2.377989] phy_probe: phydrv->name = Broadcom BCM63XX (1)
+> [    2.383803] phy_probe: phydev->irq = 17
+> [    2.387888] phy_drv_supports_irq: phydrv->config_intr = 1,
+> phydrv->ack_interrupt = 1
+> [    2.396007] phy_probe: phydev->irq = 17
+> [    2.396007]
+> [    2.401877] libphy: bcm63xx_enet MII bus: probed
+> [    2.406820] =======phy_connect===========
+> [    2.411099] phy_drv_supports_irq: phydrv->config_intr = 1,
+> phydrv->ack_interrupt = 1
+> [    2.419226] phy_connect: phy_drv_supports_irq = 1
+> [    2.419226]
+> [    2.429857] Broadcom BCM63XX (1) bcm63xx_enet-0:01: attached PHY
+> driver [Broadcom BCM63XX (1)] (mii_bus:phy_addr=bcm63xx_enet-0:01,
+> irq=17)
+> 
+> Then, maybe this is an OpenWrt bug itself?
+> 
+> Regards
+> Daniel
+> 
+>>
+>>> I also added the prints to phy_connect.
+>>>
+>>>> Last but not least: Do you use a mainline kernel, or is it maybe
+>>>> a modified downstream kernel? In the latter case, please check
+>>>> in your kernel sources whether both callbacks are set.
+>>>>
+>>>
+>>> It's a modified kernel, and the the callbacks are set. BTW I also
+>>> tested the kernel with no patches concerning to the ethernet driver.
+>>>
+>>> Regards,
+>>> Daniel
+>>>
+>>>>
+>>>>
+>>>>>> On which kernel version do you face this problem?
+>>>>>>
+>>>>> The kernel version 4.4 works ok. The minimum version where I found the
+>>>>> problem were the kernel 4.9.111, now using 5.4. And 5.10 also tested.
+>>>>>
+>>>>> Regards
+>>>>> Daniel
+>>>>>
+>>>>>>> Regards
+>>>>>>>> --
+>>>>>>>> Florian
+>>>>>>
+>>>>
+>>
 
