@@ -2,81 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B94D326A77
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 00:43:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 154CF326A79
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 00:45:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbhBZXna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 18:43:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbhBZXn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 18:43:27 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9D9C061574
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 15:42:47 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id d2so12920091edq.10
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 15:42:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1vWINDWPay32nYPWg5pHsXNrFpCx7ncvtZuKrSFgly0=;
-        b=N3zpAJ/jGqLarRnQHc340/T+0SsVQe4oJTkFwPi737/TiEbyOY06airDtgBKGjcl+k
-         c1psu9q5/vghnCH8cSJ9ANku6S/FEqqsmfjklPPDMREDIOLMTy4/mOJSWrUZou/sxwLD
-         C/L35vK+NwNJzEoakqtk2kE6Kv/fMW98lXsBoga4eIRUiGWucOXHAxx4nTzWsRMf4Y17
-         IRuII8atfR5FSIuVxzp2MRv2zwkW7wqxjOIqRjXsLHhOiSBJ5zAEqP9j4O9qyZFrdXRv
-         UCP8xWxLbtNAdPbk703+t33m/9xPU0xTZHXEoYH44/HeOqq4GGhMnXfiIki6LKJZod+Y
-         J3aQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1vWINDWPay32nYPWg5pHsXNrFpCx7ncvtZuKrSFgly0=;
-        b=fMDsytEBF3i3Lpn/y6ZMJ3DMVOroT4ytj+w77PRNy+8HQh4u2gXp4G27uE7sr53O38
-         iWG3BKKkitFYlNWHUSa0p7T0Zn1yfgsMSOtkztH772v1+SrfMtZM4B+td3tgnxpSHvYe
-         y6eJL0GPMXKpJi9gtsuJyLsy+CfTZvgZC5b51/Dka4qYCMsA2owM4oo4UGJv2ThI7867
-         AidCT9c54RrzdfneWlC81ekEVZcceMqcS8iSqlP1Y9+kuM8gxpM33n7gsFPHHHUVl9Fb
-         Fa5sbx+oWZ54q2G9otqJAIV/ukjhn52SGlMSDtCiozI5U7uym4HPHYTUrTsYtmKNdHiO
-         64cQ==
-X-Gm-Message-State: AOAM532hfNydu9tIfeIFNjLcdr1vW5TqtzQxIqTZmVgWZyAqU+k4PdJr
-        XTaJ4nOhoY1CjIrEtqpsdydJoOanXq4=
-X-Google-Smtp-Source: ABdhPJyyuJMuhr32b31kNSis1QZMWaTGwSp6EB6DqNu8XuN2wO2ZCGHKOWegpyoWAETgnXMJz8H6ww==
-X-Received: by 2002:aa7:d588:: with SMTP id r8mr5966049edq.88.1614382966131;
-        Fri, 26 Feb 2021 15:42:46 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id 35sm6918194edp.85.2021.02.26.15.42.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 15:42:45 -0800 (PST)
-Date:   Sat, 27 Feb 2021 01:42:44 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Markus =?utf-8?Q?Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
-Subject: Re: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in
- IFF_PROMISC mode
-Message-ID: <20210226234244.w7xw7qnpo3skdseb@skbuf>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
- <20210225121835.3864036-6-olteanv@gmail.com>
- <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S230045AbhBZXor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 18:44:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52336 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229967AbhBZXop (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Feb 2021 18:44:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DE0164F0D;
+        Fri, 26 Feb 2021 23:44:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614383044;
+        bh=PA+ARLY/NpCug2D80GT4G+yYaBHM+KekBtHdFqKlK4k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GRPcd1ywmh5UHfCT/EMIUeztX6rfazR1I5D26XzI/wOPESmzhkSOCLQUUIEJ/vFQu
+         0pkhdk0o97cjX/ibTX5X/EvGdHT1bG5E4Aak0/2dBIXRIbGWhjk7JcuHA+BOtqB7Ef
+         G5R7l/S7J3PSTsEu05/JmXRql2i4EywvsGeKXkLErh84jMp7QhubUr2+0Rz3ALmG6l
+         mBRvQG4f0ILOXAbI0xyMfrpmDXtsGlhZ/qPaZKjDqnOYrjf83sTYrownAPWncE4n+T
+         s0r5V49hvDqFkvgVpD+f7vD6Sz2aG/aofmmkBvj2279HVTermaRLnVoaqgPXo6v4qx
+         a0N05SvD4PqRQ==
+Date:   Fri, 26 Feb 2021 15:44:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: make mdio_bus_phy_suspend/resume as
+ __maybe_unused
+Message-ID: <20210226154403.02550984@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YDgqYBmLFVWvKLX2@lunn.ch>
+References: <20210225145748.404410-1-arnd@kernel.org>
+        <YDgqYBmLFVWvKLX2@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 03:28:36PM -0800, Jakub Kicinski wrote:
-> I don't understand what you're fixing tho.
->
-> Are we trying to establish vlan-filter-on as the expected behavior?
+On Thu, 25 Feb 2021 23:53:20 +0100 Andrew Lunn wrote:
+> On Thu, Feb 25, 2021 at 03:57:27PM +0100, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> > 
+> > When CONFIG_PM_SLEEP is disabled, the compiler warns about unused
+> > functions:
+> > 
+> > drivers/net/phy/phy_device.c:273:12: error: unused function 'mdio_bus_phy_suspend' [-Werror,-Wunused-function]
+> > static int mdio_bus_phy_suspend(struct device *dev)
+> > drivers/net/phy/phy_device.c:293:12: error: unused function 'mdio_bus_phy_resume' [-Werror,-Wunused-function]
+> > static int mdio_bus_phy_resume(struct device *dev)
+> > 
+> > The logic is intentional, so just mark these two as __maybe_unused
+> > and remove the incorrect #ifdef.
+> > 
+> > Fixes: 4c0d2e96ba05 ("net: phy: consider that suspend2ram may cut off PHY power")
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>  
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-What I'm fixing is unexpected behavior, according to the applicable
-standards I could find. If I don't mark this change as a bug fix but as
-a simple patch, somebody could claim it's a regression, since promiscuity
-used to be enough to see packets with unknown VLANs, and now it no
-longer is...
+Applied, thanks!
