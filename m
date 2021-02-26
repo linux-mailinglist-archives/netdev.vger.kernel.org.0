@@ -2,78 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 776F9326925
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 22:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54ECE326929
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 22:08:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbhBZVHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 16:07:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35232 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230040AbhBZVH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Feb 2021 16:07:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 78D4564EAF;
-        Fri, 26 Feb 2021 21:06:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614373606;
-        bh=dll3zwV+2fsgaVPWZQp38anBe34JTVJ6LJ1kb1y9oCQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tTZwo7DopJ7h8hLaCuzLgarVUktQ7SYTz/lDZ52SXvmk8WL7p2SADNV0kNjadaHrS
-         GDh0y7wYCBLp0FPGJp7J7w02oOky7poG5dAzFzEHMlfV0ZTc6Rl1D0wi4pY0zirqKq
-         w2mCtrbziUpSk43BoXPrG8iVlHVntTeGuBw+rw1OtLMyCDfcHL7Y5c0L560VijWSfQ
-         ozIgUgQKFDLrMVbI6YLm57hDEHrNriXhnRwbYF1W5649UxyDUCZR5zm8plokoPcT5L
-         BVoqPFP2IuAY+twK7jn7YnDVKQNKbwGjJfmnAKm43DZDvbrfpD0WXMSW//RtnUAp89
-         5N1jAsGzUNaCA==
-Date:   Fri, 26 Feb 2021 14:06:40 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-Cc:     Hulk Robot <hulkci@huawei.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Gil Adam <gil.adam@intel.com>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] iwlwifi: mvm: add terminate entry for dmi_system_id
- tables
-Message-ID: <20210226210640.GA21320@MSI.localdomain>
-References: <20210223140039.1708534-1-weiyongjun1@huawei.com>
+        id S230163AbhBZVIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 16:08:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229990AbhBZVIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 16:08:14 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2D4C061756;
+        Fri, 26 Feb 2021 13:07:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=7pgftJoNP5KTdbInm9s0p3yXUSHbaaNN6wUdMbqk36Q=; b=iiQ3KmXmdmtEz3zoxoZjCfxwfG
+        jdd70ti+Bkd01AvEbuYEA93mZ5RxbcslWYlslLagJqUxLmTq+FY3f5Dx749FY5vIS0nlDP1hmce1V
+        etaW4F0Qal/ZfdjqmAUKMzfF8mP3WKiH8C+gUzC0iGL2xb5PQT6vwGcnobN5nsC6VYTEf8jDCw3dj
+        cCu9tOQwgTyuQf1oUE0XGJYPpyiU2taOff/CHWOi1cIuMkEOsfIVl38BoqmLKlw65QR+mYD9LrKDY
+        wuBaYI2/HVpH3vgLMnUiWS31zzPWnFQBqMLDzOwbQKSYP3MclasDj9rSUtJvyQYrg2oNaOfZ7/rxe
+        /S1kQXEQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lFkKI-00CVhR-Ph; Fri, 26 Feb 2021 21:07:08 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2D6843006D0;
+        Fri, 26 Feb 2021 22:07:04 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 1BDE720616380; Fri, 26 Feb 2021 22:07:04 +0100 (CET)
+Date:   Fri, 26 Feb 2021 22:07:04 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     mingo@redhat.com, will@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] lockdep: add lockdep_assert_not_held()
+Message-ID: <YDli+H48Ft3F6k9/@hirez.programming.kicks-ass.net>
+References: <cover.1614355914.git.skhan@linuxfoundation.org>
+ <a40d18bba5a52662ac8fc556e1fce3752ea08472.1614355914.git.skhan@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210223140039.1708534-1-weiyongjun1@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <a40d18bba5a52662ac8fc556e1fce3752ea08472.1614355914.git.skhan@linuxfoundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 02:00:39PM +0000, Wei Yongjun wrote:
-> Make sure dmi_system_id tables are NULL terminated.
-> 
-> Fixes: a2ac0f48a07c ("iwlwifi: mvm: implement approved list for the PPAG feature")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+On Fri, Feb 26, 2021 at 10:52:13AM -0700, Shuah Khan wrote:
+> +		/* avoid false negative lockdep_assert_not_held()
+> +		 * and lockdep_assert_held()
+> +		 */
 
-We received a report about a crash in iwlwifi when compiled with LTO and
-this fix resolves it.
-
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-
-> ---
->  drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-> index 15e2773ce7e7..5ee64f7f3c85 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-> @@ -1083,6 +1083,7 @@ static const struct dmi_system_id dmi_ppag_approved_list[] = {
->  			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTek COMPUTER INC."),
->  		},
->  	},
-> +	{}
->  };
->  
->  static int iwl_mvm_ppag_init(struct iwl_mvm *mvm)
-> 
+That's a coding style fail.
