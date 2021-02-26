@@ -2,43 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 154CF326A79
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 00:45:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B575326A7B
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 00:47:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbhBZXor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 18:44:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52336 "EHLO mail.kernel.org"
+        id S230122AbhBZXpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 18:45:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229967AbhBZXop (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Feb 2021 18:44:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DE0164F0D;
-        Fri, 26 Feb 2021 23:44:04 +0000 (UTC)
+        id S229989AbhBZXpi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Feb 2021 18:45:38 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E8B5064EFA;
+        Fri, 26 Feb 2021 23:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614383044;
-        bh=PA+ARLY/NpCug2D80GT4G+yYaBHM+KekBtHdFqKlK4k=;
+        s=k20201202; t=1614383098;
+        bh=dEaRhcmyFCzj248hiTK2l3Emc3/GnGJvEvLBYW/GUjU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GRPcd1ywmh5UHfCT/EMIUeztX6rfazR1I5D26XzI/wOPESmzhkSOCLQUUIEJ/vFQu
-         0pkhdk0o97cjX/ibTX5X/EvGdHT1bG5E4Aak0/2dBIXRIbGWhjk7JcuHA+BOtqB7Ef
-         G5R7l/S7J3PSTsEu05/JmXRql2i4EywvsGeKXkLErh84jMp7QhubUr2+0Rz3ALmG6l
-         mBRvQG4f0ILOXAbI0xyMfrpmDXtsGlhZ/qPaZKjDqnOYrjf83sTYrownAPWncE4n+T
-         s0r5V49hvDqFkvgVpD+f7vD6Sz2aG/aofmmkBvj2279HVTermaRLnVoaqgPXo6v4qx
-         a0N05SvD4PqRQ==
-Date:   Fri, 26 Feb 2021 15:44:03 -0800
+        b=UEIvrxSJu8q8sdY/L3E5wfYm1KSaT8N8lXXXTPgqHU3iTDpOdhh3wRDsYreia25l5
+         PfUdDIJHgcjK9ATY+VT3CQqyB3OA4j84VNMDS20OH+3cKO4rTShjx16n/iAOP5gB4I
+         W6vIcR308qmyAAT2wrKYYTHhP/fu0ks6CFyOgpXi667Vz52ZIw7utQ7NOc2QDqG+Sc
+         oGEKtrfY1wLXrmJLXhxy4+ZIYXMVLKBgAQ/UYUKjmxHPXWIFzVP3T1ROOcUNpJbk1D
+         Y3QxRF2e0yAXACjMefAJuHeNlWptG28E/q21xlzzH0qArIy7PdKkAhuHhLVwMm+yaX
+         ZcFGDE1Uy1naA==
+Date:   Fri, 26 Feb 2021 15:44:57 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: make mdio_bus_phy_suspend/resume as
- __maybe_unused
-Message-ID: <20210226154403.02550984@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YDgqYBmLFVWvKLX2@lunn.ch>
-References: <20210225145748.404410-1-arnd@kernel.org>
-        <YDgqYBmLFVWvKLX2@lunn.ch>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Heiko Thiery <heiko.thiery@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 1/1] net: fec: ptp: avoid register access when ipg
+ clock is disabled
+Message-ID: <20210226154457.71094945@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210226152331.GD26140@hoboy.vegasvil.org>
+References: <20210225211514.9115-1-heiko.thiery@gmail.com>
+        <20210226152331.GD26140@hoboy.vegasvil.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,24 +42,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Feb 2021 23:53:20 +0100 Andrew Lunn wrote:
-> On Thu, Feb 25, 2021 at 03:57:27PM +0100, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
+On Fri, 26 Feb 2021 07:23:31 -0800 Richard Cochran wrote:
+> On Thu, Feb 25, 2021 at 10:15:16PM +0100, Heiko Thiery wrote:
+> > When accessing the timecounter register on an i.MX8MQ the kernel hangs.
+> > This is only the case when the interface is down. This can be reproduced
+> > by reading with 'phc_ctrl eth0 get'.
 > > 
-> > When CONFIG_PM_SLEEP is disabled, the compiler warns about unused
-> > functions:
+> > Like described in the change in 91c0d987a9788dcc5fe26baafd73bf9242b68900
+> > the igp clock is disabled when the interface is down and leads to a
+> > system hang.
 > > 
-> > drivers/net/phy/phy_device.c:273:12: error: unused function 'mdio_bus_phy_suspend' [-Werror,-Wunused-function]
-> > static int mdio_bus_phy_suspend(struct device *dev)
-> > drivers/net/phy/phy_device.c:293:12: error: unused function 'mdio_bus_phy_resume' [-Werror,-Wunused-function]
-> > static int mdio_bus_phy_resume(struct device *dev)
+> > So we check if the ptp clock status before reading the timecounter
+> > register.
 > > 
-> > The logic is intentional, so just mark these two as __maybe_unused
-> > and remove the incorrect #ifdef.
+> > Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+> > ---
+> > v2:
+> >  - add mutex (thanks to Richard)
 > > 
-> > Fixes: 4c0d2e96ba05 ("net: phy: consider that suspend2ram may cut off PHY power")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>  
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > v3:
+> > I did a mistake and did not test properly
+> >  - add parenteses
+> >  - fix the used variable  
+
+On Fri, 26 Feb 2021 08:22:50 +0100 Heiko Thiery wrote:
+> Sorry for the noise. But just realized that I sent a v3 version of the
+> patch but forgot to update the subject line (still v2). Should I
+> resend it with the correct subject?
+
+No need, looks like patchwork caught the right version.
+
+> Acked-by: Richard Cochran <richardcochran@gmail.com>
 
 Applied, thanks!
