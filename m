@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62AFA326541
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D980C326546
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbhBZQHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 11:07:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41444 "EHLO mail.kernel.org"
+        id S229864AbhBZQKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 11:10:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229622AbhBZQHM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Feb 2021 11:07:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7119164E28;
-        Fri, 26 Feb 2021 16:06:29 +0000 (UTC)
+        id S229550AbhBZQKC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Feb 2021 11:10:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 753A364E28;
+        Fri, 26 Feb 2021 16:09:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614355589;
-        bh=+DfKThjuzi4SbHVxc1YfvrQmVQYHSZPYjQMixzL2dcQ=;
+        s=k20201202; t=1614355759;
+        bh=vIfp6DdtdUNU9LR57QYhG0oya5+OrTD7ooC+26LYiqA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cAxims/6ordAz/2wVSMffL1FRAPscXJw+z+ND93rzDd7QMEq8cNeLbXV85rn0XPEj
-         cyt9Xo8/vBUAzajy+eKVNqd+sHkTee4BGScqju2RZ7VxtRA6lToyTCCuQHBg1YggKG
-         7Z43TAaEnvh+xdL3KBoxPNT8hg68xSZv2C60PR15/rlkmubdyO6w1+d/xl41QWcWGF
-         s/sR+CGfYrn9ZX6jUL0xtyxEsYnkv9d3DyT+IMntjKYgeL/tbxB9q0VrhJlcpxosIv
-         FUun2Y//iLPzICNCGdLjJUKpSOeUnKcug7zMd36TYKTjITeoU+cOfGtwzJ73fu4VdU
-         iZryTStA17Cyg==
-Date:   Fri, 26 Feb 2021 08:06:28 -0800
+        b=YI9k4cPLOdm0dyyqRDmZAVJ47V6T63gB5wcHPmZvJ+NPwhPUUQdzJrJ3lJS57OVbT
+         rjW+/Ufdi/XpnqomOv0R6eBstfxRpPjhZhZSvwJQ9JK/7Tjzkcm8kC3U6Vz/35U9J0
+         OgGlEh5eM8ImkwICmKH/1uMzuds4NltXbi7h/756A6WLo+lmpCK2xEQbECLfPK7mFI
+         bNRCyMHBncaEbGmwBv9rLDLEPYUpWkpx1HyzZ34itnQsk5PX0Z3pq1EXEmBewvmg8J
+         AMpQlEHdcGkpp9oG1y0oimJkC61+NKDF6wVF1tsZF0llVR3vGdKY0ciOKVGD2y2Qt1
+         30mrGdscNhjKw==
+Date:   Fri, 26 Feb 2021 08:09:18 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Eric Dumazet <edumazet@google.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -31,7 +31,7 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Neal Cardwell <ncardwell@google.com>,
         Yuchung Cheng <ycheng@google.com>
 Subject: Re: Spurious TCP retransmissions on ack vs kfree_skb reordering
-Message-ID: <20210226080628.3e40e037@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <20210226080918.03617088@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 In-Reply-To: <CANn89iL7XCLBxsUnV3c_5AD8eSJ=jXs6o_KJUjmZAGo6_6sqUg@mail.gmail.com>
 References: <20210225152515.2072b5a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
         <20210225191552.19b36496@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
@@ -45,19 +45,6 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, 26 Feb 2021 11:41:22 +0100 Eric Dumazet wrote:
-> On Fri, Feb 26, 2021 at 11:05 AM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Fri, Feb 26, 2021 at 4:15 AM Jakub Kicinski <kuba@kernel.org> wrote:  
-> > >
-> > > On Thu, 25 Feb 2021 15:25:15 -0800 Jakub Kicinski wrote:  
-> > > > Hi!
-> > > >
-> > > > We see large (4-8x) increase of what looks like TCP RTOs after rising
-> > > > the Tx coalescing above Rx coalescing timeout.
-> > > >
-> > > > Quick tracing of the events seems to indicate that the data has already
-> > > > been acked when we enter tcp:tcp_retransmit_skb:  
-> > >
 > > > Seems like I'm pretty lost here and the tcp:tcp_retransmit_skb events
 > > > are less spurious than I thought. Looking at some tcpdump traces we see:
 > > >
