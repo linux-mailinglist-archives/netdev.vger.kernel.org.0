@@ -2,124 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B148832667A
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 18:51:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A2B326682
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 18:54:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbhBZRvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 12:51:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
+        id S230224AbhBZRxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 12:53:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbhBZRvd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 12:51:33 -0500
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE75BC061574
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 09:50:52 -0800 (PST)
-Received: by mail-ua1-x92d.google.com with SMTP id 62so3296966uar.13
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 09:50:52 -0800 (PST)
+        with ESMTP id S229598AbhBZRw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 12:52:58 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80C5C061574
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 09:52:18 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id q5so8712739ilc.10
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 09:52:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Fxb6yJzM1uB6Kf5JL0eSskJ1nCBPgKpwN7GXZzemYuk=;
-        b=LImAf87q/bLRtRCN/TsLrr4ZrvQ7uQJHctBakGygq7fL5HqB8UwD0AItpkIiuaZWl8
-         f1VsZ/nZ/9inWFtt6hBLQFPQJrK5VEjcqAxya91HTRr7k40lVMju1ZtPHwAV7bICZ7Pg
-         k7xd2wrz/THs+ikTyXLFd8lIqCJPO4W0qIpe5Q/pj2Qo1FN0kPZV+Wq4brdLrqTF6zDE
-         iyGM6MjeCJ7qJ5QDyKZgSzw/58v7FrBcm0j3gZ8W7pRSMVCCwAseiBPdKsSvK3aIqNjf
-         XgNezqoq3GMOZFHNigBo0fuDDUw+dagxdW1bMy7AvwXMN04wvLEewidVgnwW7/GPhJ3J
-         kOdQ==
+        d=linuxfoundation.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dY88CmhEdqi8wt/ahIMuuDlu90hzE7DFVh5FsuKso0s=;
+        b=GEozSIwSQMHght7BICfIen1ZuqO1Uu8LnD6oos4DAN9zjNzl+T9of+vQKxslcE2Bjl
+         B+55kRiyHRj05v6DxQbsCcajyLUzb5WsFfKr2roMoSzknE6EsZ/a5Yc++mYmoMWZoxEj
+         pCBOx2bG1l70JBbuNroc8ck/XWt9UWsOLppl0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Fxb6yJzM1uB6Kf5JL0eSskJ1nCBPgKpwN7GXZzemYuk=;
-        b=K5UxtJsQFA0R99wPDD/UZKOOKtLS+Nqcfn8m1uHajUssOYF3h7ZArWThFhcSRBMdow
-         kQfB5142EiXHdALkPawetRkZyHR8+W0tYyfvCD8CAvDSd1uaJxBUSshgpMq2mwSgs0s7
-         S1M7X8ZuPrdcYODYa7h+Dll9L2NZDU/WPS1V3482Eq1jjde4//4oBbjkCRs2tKFmL4b4
-         diWr1flEeeGI2kjQlOGvgT+5Dx9M90AHMBtAlJ08uBhGcrmi+/c7hulwDp/87sqcKLsT
-         51FOHZuHVjJkMiKIn1Rr5O7aNOyMGb0xk3PdATyWAY9G2wggOAr+/jG3UwCFkz+MD66X
-         NMSA==
-X-Gm-Message-State: AOAM533mH1gPR6NOvDxP2i8UUUWYt0TtgVAVQU1w7/EzTdqlD6f2qpsv
-        FnDHMtg4XZWH+UquDaG7TUM4iFzwxY+Um1dPElzcbg==
-X-Google-Smtp-Source: ABdhPJzHRvIz3Zhna5m9f30rda1rI5KMs35hZ8PKZHHCgPEVbcKj1zqXRPiMlGS9FNnunuEHbCkn19AgYBcnGtJvREE=
-X-Received: by 2002:ab0:45c9:: with SMTP id u67mr2951639uau.46.1614361851094;
- Fri, 26 Feb 2021 09:50:51 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dY88CmhEdqi8wt/ahIMuuDlu90hzE7DFVh5FsuKso0s=;
+        b=T1UPRLbaLZQ4CVRsThQwaT9M76z3HUJoFJk6HuvoukXc5vMVx1EPs/yB5+buMtCTdm
+         DthzMVIFAxivMMwy1xHAGZYPTWX8qwi7FXUKH7Nz7lH+cgIcSaZKyRlJ9ONpFmWJ2u2b
+         eNYoqZ5gtiLGzwFEiieMeiKNfd8JPG2rfb3dZ/I79C6uLzZ9Mtf6OYgMHXoTvVO6zSHA
+         5bwY/cN7fs9XOfVtPAzc00YNsGsMoSqT2LFJ+bn50kweiwxJwAgsSP+AM5MSjX7eYK7/
+         C3oCxkdbnQDGP+CUUNu6wHYPL7HXPn8U/8lmqjjcQ6AMHdtVIeodWFWgE3FjXiOrOvCD
+         +3wQ==
+X-Gm-Message-State: AOAM533uMc36yANGiK6MijXMBc42ysEn9j7BrFkmKo3La9yaZkQm5jW7
+        6HNg+dluUhgsRTQc18AFKZls6oQJnaeFVQ==
+X-Google-Smtp-Source: ABdhPJyk6Fd7CHK3TK6ZvIe6aA/9gQV5HhrgT8cwxOjO3hwk/x87J2J5g+K3jvzjCy1GS3+/u9qmFg==
+X-Received: by 2002:a05:6e02:881:: with SMTP id z1mr3371733ils.288.1614361938177;
+        Fri, 26 Feb 2021 09:52:18 -0800 (PST)
+Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id y25sm5594060ioa.5.2021.02.26.09.52.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Feb 2021 09:52:17 -0800 (PST)
+From:   Shuah Khan <skhan@linuxfoundation.org>
+To:     peterz@infradead.org, mingo@redhat.com, will@kernel.org,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/3] Add lockdep_assert_not_held()
+Date:   Fri, 26 Feb 2021 10:52:12 -0700
+Message-Id: <cover.1614355914.git.skhan@linuxfoundation.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <35A4DDAA-7E8D-43CB-A1F5-D1E46A4ED42E@gmail.com>
- <CADVnQy=G=GU1USyEcGA_faJg5L-wLO6jS4EUocrVsjqkaGbvYw@mail.gmail.com>
- <C5332AE4-DFAF-4127-91D1-A9108877507A@gmail.com> <CADVnQynP40vvvTV3VY0fvYwEcSGQ=Y=F53FU8sEc-Bc=mzij5g@mail.gmail.com>
- <93A31D2F-1CDE-4042-9D00-A7E1E49A99A9@gmail.com> <CADVnQyn5jrkPC7HJAkMOFN-FBZjwtCw8ns-3Yx7q=-S57PdC6w@mail.gmail.com>
- <d5b6a39496db4a4aa5ceb770485dd47c@AcuMS.aculab.com> <32E2B684-5D8C-41E3-B17A-938A5F784461@gmail.com>
-In-Reply-To: <32E2B684-5D8C-41E3-B17A-938A5F784461@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 26 Feb 2021 12:50:34 -0500
-Message-ID: <CADVnQyk+hZX46gVogJpqMQrpQEPdPZRd=hr2zcYxTTtMZubY+g@mail.gmail.com>
-Subject: Re: TCP stall issue
-To:     Gil Pedersen <kanongil@gmail.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 11:26 AM Gil Pedersen <kanongil@gmail.com> wrote:
->
->
-> > On 26 Feb 2021, at 15.39, David Laight <David.Laight@ACULAB.COM> wrote:
-> >
-> > Some thoughts...
-> >
-> > Does a non-android linux system behave correctly through the same NAT g=
-ateways?
-> > Particularly with a similar kernel version.
-> >
-> > If you have a USB OTG cable and USB ethernet dongle you may be able to =
-get
-> > android to use a wired ethernet connection - excluding any WiFi issues.
-> > (OTG usually works for keyboard and mouse, dunno if ethernet support is=
- there.)
-> >
-> > Does you android device work on any other networks?
->
-> I have done some further tests. I managed to find another Android device =
-(kernel 4.9.113), which thankfully does _not_ send the weird D-SACKs and qu=
-ickly recovers, so the problem appears to be on the original device.
->
-> Additionally, I have managed to do a trace on the WLAN AP, where I can co=
-nfirm that all packets seem to be transferred without unnecessary modificat=
-ions or re-ordering. Ie. all segments sent from the server make it to the d=
-evice and any loss will be device local. As such this points to a driver-le=
-vel issue?
->
-> I don't have an ethernet dongle ready. I tried to connect using cellular =
-and was unable to replicate the issue, so this further points at a driver-l=
-evel issue.
->
-> Given that it now seems relevant, the device is an Android P20 Lite, runn=
-ing a variant of Android 9.1 with an update from this year (kernel was buil=
-t jan. 05 2021).
+Some kernel functions must not be called holding a specific lock. Doing
+so could lead to locking problems. Currently these routines call
+lock_is_held() to check for lock hold followed by WARN_ON.
 
-Thanks for the details. Agreed, it does sound as if a wifi
-hardware/firmare/driver issue on that particular Android device is the
-most likely cause of those symptoms.
+Adding a common lockdep interface will help reduce the duplication of this
+logic in the rest of the kernel.
 
-The only sequence I can think of that would cause these  symptoms
-would be if the wifi hardware/firmer/driver on that device is somehow
-both:
+Add lockdep_assert_not_held() to be used in these functions to detect
+incorrect calls while holding a lock.
 
-(1) duplicating each of the retransmit packets that it passes up the
-network stack, and
-(2) dropping the first ACK packet generated by the first of the two
-copies of the retransmit
+lockdep_assert_not_held() provides the opposite functionality of
+lockdep_assert_held() which is used to assert calls that require
+holding a specific lock.
 
-Though that sounds so unlikely that perhaps there is a different explanatio=
-n...
+The need for lockdep_assert_not_held() came up in a discussion on
+ath10k patch. ath10k_drain_tx() and i915_vma_pin_ww() are examples
+of functions that can use lockdep_assert_not_held().
 
-neal
+Link: https://lore.kernel.org/lkml/37a29c383bff2fb1605241ee6c7c9be3784fb3c6.1613171185.git.skhan@linuxfoundation.org/
+Link: https://lore.kernel.org/linux-wireless/871rdmu9z9.fsf@codeaurora.org/
+
+This patch series adds lockdep_assert_not_held() and uses it in the
+second patch in ath10k_drain_tx() function.
+
+Patch 1 incorporates suggestions from Peter Zijlstra on v1 series
+to avoid misfires when lockdep_off() is employed.
+
+Patch 2 Johannes Berg's suggestions as it make it easier to read and
+maintain the lock states. These are defines and a enum to avoid changes
+to lock_is_held_type() and lockdep_is_held() return types.
+
+Patch 2 is a separate patch because it adds defines to lockdep.h and
+kernel/locking/lockdep.c now includes lockdep.h - decided make this
+a separate patch just in case issues related to header dependencies
+pop up. I can combine Patches 1&2 if that is preferred.
+
+Patch 3 uses the new interface in ath10k_drain_tx() function. Added
+Kalle Valo's Ack from v1 for this change.
+
+Tested on the mainline from yesterday.
+
+Shuah Khan (3):
+  lockdep: add lockdep_assert_not_held()
+  lockdep: add lockdep lock state defines
+  ath10k: detect conf_mutex held ath10k_drain_tx() calls
+
+ drivers/net/wireless/ath/ath10k/mac.c |  2 ++
+ include/linux/lockdep.h               | 18 +++++++++++++++---
+ kernel/locking/lockdep.c              |  6 +++++-
+ 3 files changed, 22 insertions(+), 4 deletions(-)
+
+-- 
+2.27.0
+
