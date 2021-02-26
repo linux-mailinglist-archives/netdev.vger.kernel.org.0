@@ -2,123 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 640173261AC
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 12:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D83763261F3
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 12:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbhBZLAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 06:00:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
+        id S230362AbhBZLYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 06:24:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbhBZLAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 06:00:21 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3338BC06174A
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 02:59:41 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id b1so2440516lfb.7
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 02:59:41 -0800 (PST)
+        with ESMTP id S229556AbhBZLYO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 06:24:14 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665D4C061574;
+        Fri, 26 Feb 2021 03:23:34 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id k12so1177351ljg.9;
+        Fri, 26 Feb 2021 03:23:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=PdLUe4ZL0EK5wp0NIS6/QNIlN/dp+wyWGnbig5PvoDE=;
-        b=vJz0VzgovGrKWcIF10SpNv0qonwHQ5S3FzdsKC18mf/FKM1bC3zbKVi3rfMoDd8KsC
-         UiWRbhF3DOUgakMsBXK8W0twEXzOTEG3uHa2MCNszTJcP3hixjDzTa5DrEN0U/Lr/oiB
-         3QXCZa8aobUCrI1kTUmTMLeckjoQWw5RLXA4o5bWOD3k8MC/29k9ErafYsA/la8IWRjd
-         HhH1TdtB20WKzONNFwqGbyC0LXJ6ele5t7epGCje+JYAO7SHokgxuNeU4hwF1VehnnOd
-         Y4CUOjwKlfDZMYfdAvDYL1gpIxi880MnkWH7qb3x2/W8bsT0mn3msq4TGTObThttiNLU
-         yy8Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EPJggBpeYb8eU28hV8H8bOeLw1mBPLVDdvNDQZfoxnY=;
+        b=c6IHZ+hbCajvFp0QM7BurCtS4orThxLtfhq9ptRpu2xZdNswijWUS57uYzf1Cdm0U3
+         TCxlqllRjfgX3iW9PpCkUuA3n5d53ddsNGPWxzy4zxbrZECEUGXHacl98n2oyTTE+knK
+         x9YEV/qDid4cYsb4W0UZw0JiJj+50p6PwyKqaRO+GIdKDC7hP39vN9dUckiscrXLtQOz
+         nd/o3JwQ1ioZ/xYIjcCYyc6eLjwMZQYtNbpVekV27jgQbQArA0HpMuahVK2JHUeA+OH8
+         LVKtiOZbr4JPOocBBIpU+4xKztAeQF+hMO68TjALB5P7FDYhmvjtWpoleP1V4YnjT+Yp
+         UXFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=PdLUe4ZL0EK5wp0NIS6/QNIlN/dp+wyWGnbig5PvoDE=;
-        b=nmE+1aVhSNXIuwJ09h4dFpxA5RDu4cGVSMwJrLpyt/j3OYtfR7ZOiGjZUV1GtqAqQL
-         5WshLcmsjRuinoD8U5P8bNkf60b2yz5M6owlJyLMW87/uc76VjcN0fr5hp+lISOaZNLt
-         vR4QY1K3KP0o3wIHlQo8I8k1qIFngTgILT4qa/mQCetZ8k3s5Ize3XxLwvQS9OkUb5Mh
-         dtStUGFvViADAzjaM+QYwtVSXHMlDzB0H+CirjH1tampf1n0yp/3zQrXEFQOSPlmSaD7
-         7/O9sTLGzbjwhRsiD/Yyue/QR4nm296QXbVc0/oqVzQIkjCNGaXdCEM1U++JNBAUx6GH
-         /riQ==
-X-Gm-Message-State: AOAM531HxrX6tk53CmZlNpDmAUQJAjuYPyKcw2qIyysEwftguzvUGzjg
-        89RADj1gnH0KCzqCt6juggkZEQ==
-X-Google-Smtp-Source: ABdhPJx6iaputC9agAqLtcC5MarnzmJH8lj7A2c3oz9UoklsQfS7sE/E9VEEHeDfd4P/URUXPcf5wA==
-X-Received: by 2002:ac2:41d9:: with SMTP id d25mr1434914lfi.194.1614337179590;
-        Fri, 26 Feb 2021 02:59:39 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id n3sm1394457ljg.13.2021.02.26.02.59.37
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EPJggBpeYb8eU28hV8H8bOeLw1mBPLVDdvNDQZfoxnY=;
+        b=MwMZZ8MTmp2uys4MMp5t5GvDusCUBekpDXSHv/vAaJhCOy4/D/D4PVJEfeLLn4MHna
+         oJVHcPxu6jEF/TEA5E1OfP72qzqD5pO5kYclxA8iO4yGvuwFsX7zo+VUTQFeIgAheOKv
+         scHZ39g10IMhuAvVtgkpc795BGPnF3QTO9WVeB8DWBfvcVtFUTHm5L79lW1VRzE1T4df
+         aHBq/+LPnXFA4jMf17AARf7e0OoSG2TojD07vcIAW2Zb2BAZ3J9gufIj86J0m9obS4Mv
+         Ww4IqxlSM+h85C3ym4q5Bo/LIlAI94AFQIz+u7NIfNvnseJFsNKu6fdwMqrPETANP5PS
+         9vOw==
+X-Gm-Message-State: AOAM530XRPBpEbL8oy7crcfkcPSQWpBtODUvmb+oyS5Od46VojzV0HVe
+        a2rqhJQ0YZyFWZNRojtqBWE=
+X-Google-Smtp-Source: ABdhPJzPMybU2Rz/dWr+I0OBqC4FZewyhuPI+fXfauzu5WVq29LLfS4QMs422gDDn1XEiReKw9ttfw==
+X-Received: by 2002:a2e:9244:: with SMTP id v4mr1499954ljg.196.1614338612929;
+        Fri, 26 Feb 2021 03:23:32 -0800 (PST)
+Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
+        by smtp.gmail.com with ESMTPSA id c11sm1352282lfb.104.2021.02.26.03.23.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 02:59:39 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: Re: [RFC PATCH v2 net-next 06/17] net: dsa: add addresses obtained from RX filtering to host addresses
-In-Reply-To: <20210224114350.2791260-7-olteanv@gmail.com>
-References: <20210224114350.2791260-1-olteanv@gmail.com> <20210224114350.2791260-7-olteanv@gmail.com>
-Date:   Fri, 26 Feb 2021 11:59:36 +0100
-Message-ID: <87pn0nqelj.fsf@waldekranz.com>
+        Fri, 26 Feb 2021 03:23:31 -0800 (PST)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        bjorn.topel@intel.com, maciej.fijalkowski@intel.com,
+        hawk@kernel.org, toke@redhat.com, magnus.karlsson@intel.com,
+        john.fastabend@gmail.com, kuba@kernel.org, davem@davemloft.net
+Subject: [PATCH bpf-next v4 0/2] Optimize bpf_redirect_map()/xdp_do_redirect()
+Date:   Fri, 26 Feb 2021 12:23:20 +0100
+Message-Id: <20210226112322.144927-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 13:43, Vladimir Oltean <olteanv@gmail.com> wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
-> In case we have ptp4l running on a bridged DSA switch interface, the PTP
-> traffic is classified as link-local (in the default profile, the MAC
-> addresses are 01:1b:19:00:00:00 and 01:80:c2:00:00:0e), which means it
-> isn't the responsibility of the bridge to make sure it gets trapped to
-> the CPU.
->
-> The solution is to implement the standard callbacks for dev_uc_add and
-> dev_mc_add, and behave just like any other network interface: ensure
-> that the user space program can see those packets.
+Hi XDP-folks,
 
-So presumably the application would use PACKET_ADD_MEMBERSHIP to set
-this up?
+This two patch series contain two optimizations for the
+bpf_redirect_map() helper and the xdp_do_redirect() function.
 
-This is a really elegant way of solving this problem I think!
+The bpf_redirect_map() optimization is about avoiding the map lookup
+dispatching. Instead of having a switch-statement and selecting the
+correct lookup function, we let bpf_redirect_map() be a map operation,
+where each map has its own bpf_redirect_map() implementation. This way
+the run-time lookup is avoided.
 
-One problem I see is that this will not result in packets getting
-trapped to the CPU, rather they will simply be forwarded.  I.e. with
-this patch applied, once ptp4l adds the groups it is interested in, my
-HW FDB will look like this:
+The xdp_do_redirect() patch restructures the code, so that the map
+pointer indirection can be avoided.
 
-ADDR                VID  DST   TYPE
-01:1b:19:00:00:00     0  cpu0  static
-01:80:c2:00:00:0e     0  cpu0  static
+Performance-wise I got 3% improvement for XSKMAP
+(sample:xdpsock/rx-drop), and 4% (sample:xdp_redirect_map) on my
+machine.
 
-But this will not allow these groups to ingress on (STP) blocked
-ports. AFAIK, PTP (certainly LLDP which also uses the latter group)
-should be able to do that.
+More details in each commit.
 
-For mv88e6xxx (but I think this applies to most switches), there are
-roughly three ways a given multicast group can reach the CPU:
+@Jesper/Toke I dropped your Acked-by: on the first patch, since there
+were major restucturing. Please have another look! Thanks!
 
-1. Trap: Packet is unconditionally redirected to the CPU, independent
-   of things like 802.1X or STP state on the ingressing port.
-2. Mirror: Send a copy of packets that pass all other ingress policy to
-   the CPU.
-3. Forward: Forward packets that pass all other ingress policy to the
-   CPU.
+Changelog:
+v3->v4:  Made bpf_redirect_map() a map operation. (Daniel)
 
-Entries are now added as "Forward", which means that the group will no
-longer reach the other local ports. But the command from the application
-is "I want to see these packets", it says nothing about preventing the
-group from being forwarded. So I think the default ought to be
-"Mirror". Additionally, we probably need some way of specifying "Trap"
-to those applications that need it. E.g. ptp4l could specify
-PACKET_MR_MULTICAST_TRAP in mr_action or something if it does not want
-the bridge (or the switch) to forward it.
+v2->v3:  Fix build when CONFIG_NET is not set. (lkp)
 
-If "Forward" is desired, the existing "bridge mdb" interface seems like
-the proper one, since it also affects other ports.
+v1->v2:  Removed warning when CONFIG_BPF_SYSCALL was not set. (lkp)
+         Cleaned up case-clause in xdp_do_generic_redirect_map(). (Toke)
+         Re-added comment. (Toke)
+
+rfc->v1: Use map_id, and remove bpf_clear_redirect_map(). (Toke)
+         Get rid of the macro and use __always_inline. (Jesper)
+
+rfc: https://lore.kernel.org/bpf/87im7fy9nc.fsf@toke.dk/ (Cover not on lore!)
+v1:  https://lore.kernel.org/bpf/20210219145922.63655-1-bjorn.topel@gmail.com/
+v2:  https://lore.kernel.org/bpf/20210220153056.111968-1-bjorn.topel@gmail.com/
+v3:  https://lore.kernel.org/bpf/20210221200954.164125-3-bjorn.topel@gmail.com/
+
+
+Cheers,
+Björn
+
+Björn Töpel (2):
+  bpf, xdp: make bpf_redirect_map() a map operation
+  bpf, xdp: restructure redirect actions
+
+ include/linux/bpf.h        |  26 ++----
+ include/linux/filter.h     |  39 +++++++-
+ include/net/xdp_sock.h     |  19 ----
+ include/trace/events/xdp.h |  66 ++++++++-----
+ kernel/bpf/cpumap.c        |  10 +-
+ kernel/bpf/devmap.c        |  19 +++-
+ kernel/bpf/verifier.c      |  11 ++-
+ net/core/filter.c          | 183 ++++++++++++-------------------------
+ net/xdp/xskmap.c           |  20 +++-
+ 9 files changed, 195 insertions(+), 198 deletions(-)
+
+
+base-commit: 9c8f21e6f8856a96634e542a58ef3abf27486801
+-- 
+2.27.0
+
