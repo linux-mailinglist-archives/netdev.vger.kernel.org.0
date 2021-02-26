@@ -2,121 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02B16325E41
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 08:27:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60A19325E45
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 08:27:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbhBZHXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 02:23:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbhBZHXm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 02:23:42 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CDDC06174A;
-        Thu, 25 Feb 2021 23:23:02 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id k2so7234122ili.4;
-        Thu, 25 Feb 2021 23:23:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CIXHLLcdF3NPwLoLYR00+kIyGCbIxIClS6D5W4I5jx0=;
-        b=SKXb9V2iZE/41Xxmsfy4qYz4maXOMAMdbhUTmW6Yuu+Bo64nSj1bbNzTjSv0rZFCL3
-         1pTPGiu4/k4M3ePEjwVSplTAW1KhEa2hbIuKPX72AH2QEK8yQ0SBSGXRYGIrgXYZa7DT
-         dYmcBbFYgUcZ66aMHLb3Hsr3xydLXhl6ngVlUvXkfTtuc/HtMKxEWSAfCXDJVaQAS6FR
-         7BNO65vWjgcwpczCLibrsVKoL6imCL247D+zjQ1weCmZEKp6IMnHxTYtilNLLVm8DFTw
-         QSXaedY9oZMDMvpmSaztbZViYQckR53tiLbrPx6/WVVYiIiKpLJjkCBrNghEhktqjPGX
-         Wz2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CIXHLLcdF3NPwLoLYR00+kIyGCbIxIClS6D5W4I5jx0=;
-        b=O0zNV9yw2w9BOnUIuIKCo81fMczveDp6ibC2umDpjWj2UFOEmNwPjWFuDR2ogOQ0Im
-         sZo+i6WL95CRb4ZCJEaCUr+l/VV50Q3ou7PdJRHKdrqrKur0HE1hAujmi+Jak7qn3gkr
-         Zga6s+iH/uXHuNBs82lJYleZPiaz8Bpw9+9i1/2L8ZYPSIcxS68mTRSo6QYyo6KmAfFx
-         K6l9H+fIqg4+iFq0tQxI/SzQKOkhGdN4ueKgj0YNHELlsepWpg0tqrpUjpZvd8McgkCE
-         Qh0ROgSXMQBin63imvdhcJZ7qav0QMxpIe+MmNN7e79E42WCHf71HRAuCBxA5fcwakG+
-         g5Sw==
-X-Gm-Message-State: AOAM533W/Kr4ba5kMfD+mbLjK0mRfNK6fwXYSFYbK1Nf68y0IpKqEga5
-        dv3/LadIw+AuJNNAhauEHSwMkFBcVFoUqjt1TLTqStgwjR0a4g==
-X-Google-Smtp-Source: ABdhPJwS4Z69cthjSLIia/lIbBl077kBrEYsnHRSDMkX3sQsovzELPXmUDLAd7CBAi7MjKb5yjx0KOca2MeMhBP0J3M=
-X-Received: by 2002:a92:c265:: with SMTP id h5mr1261035ild.225.1614324181404;
- Thu, 25 Feb 2021 23:23:01 -0800 (PST)
+        id S229707AbhBZHYs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 26 Feb 2021 02:24:48 -0500
+Received: from mail.a-eberle.de ([213.95.140.213]:35537 "EHLO mail.a-eberle.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230107AbhBZHY0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Feb 2021 02:24:26 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.a-eberle.de (Postfix) with ESMTP id 5AAD33802F4
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:23:39 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at aeberle-mx.softwerk.noris.de
+Received: from mail.a-eberle.de ([127.0.0.1])
+        by localhost (ebl-mx-02.a-eberle.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id aEHXfIY5q79G for <netdev@vger.kernel.org>;
+        Fri, 26 Feb 2021 08:23:38 +0100 (CET)
+Received: from gateway.a-eberle.de (unknown [178.15.155.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "sg310.eberle.local", Issuer "A. Eberle GmbH & Co. KG WebAdmin CA" (not verified))
+        (Authenticated sender: postmaster@a-eberle.de)
+        by mail.a-eberle.de (Postfix) with ESMTPSA
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:23:31 +0100 (CET)
+Received: from exch-svr2013.eberle.local ([192.168.1.9]:24206 helo=webmail.a-eberle.de)
+        by gateway.a-eberle.de with esmtps (TLSv1.2:AES256-SHA:256)
+        (Exim 4.82_1-5b7a7c0-XX)
+        (envelope-from <Marco.Wenzel@a-eberle.de>)
+        id 1lFXTB-0003Ld-1k; Fri, 26 Feb 2021 08:23:25 +0100
+Received: from EXCH-SVR2013.eberle.local (192.168.1.9) by
+ EXCH-SVR2013.eberle.local (192.168.1.9) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 26 Feb 2021 08:23:25 +0100
+Received: from EXCH-SVR2013.eberle.local ([::1]) by EXCH-SVR2013.eberle.local
+ ([::1]) with mapi id 15.00.1497.006; Fri, 26 Feb 2021 08:23:25 +0100
+From:   "Wenzel, Marco" <Marco.Wenzel@a-eberle.de>
+To:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "george.mccollister@gmail.com" <george.mccollister@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Andreas Oetken <andreas.oetken@siemens.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "Arvid Brodin" <Arvid.Brodin@xdin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: AW: [PATCH net] net: hsr: add support for EntryForgetTime
+Thread-Topic: [PATCH net] net: hsr: add support for EntryForgetTime
+Thread-Index: AQHXCrS24j34VvXTokStyTYWKTY4T6ppFtEAgADzEiA=
+Date:   Fri, 26 Feb 2021 07:23:25 +0000
+Message-ID: <6643f25719964f07bef17eee294670d3@EXCH-SVR2013.eberle.local>
+References: <CAFSKS=PnV-aLnGeNqjqrsT4nfFby18uYQpScCCurz6dZ39AynQ@mail.gmail.com>
+        <20210224094653.1440-1-marco.wenzel@a-eberle.de>        <YDZaxXkP25RjN02G@lunn.ch>
+ <20210225094900.10ba8346@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210225094900.10ba8346@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.242.2.55]
+x-kse-serverinfo: EXCH-SVR2013.eberle.local, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: Clean, bases: 26.02.2021 06:16:00
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20210225211514.9115-1-heiko.thiery@gmail.com>
-In-Reply-To: <20210225211514.9115-1-heiko.thiery@gmail.com>
-From:   Heiko Thiery <heiko.thiery@gmail.com>
-Date:   Fri, 26 Feb 2021 08:22:50 +0100
-Message-ID: <CAEyMn7aijecc6ai5YaaHFa1Y7u52v=KEga3nRKvXE3o-mCQLYA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] net: fec: ptp: avoid register access when ipg
- clock is disabled
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Thu, Feb 25, 2021 at 6:49 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> 
+> On Wed, 24 Feb 2021 14:55:17 +0100 Andrew Lunn wrote:
+> > On Wed, Feb 24, 2021 at 10:46:49AM +0100, Marco Wenzel wrote:
+> > > In IEC 62439-3 EntryForgetTime is defined with a value of 400 ms.
+> > > When a node does not send any frame within this time, the sequence
+> > > number check for can be ignored. This solves communication issues
+> > > with Cisco IE 2000 in Redbox mode.
+> > >
+> > > Fixes: f421436a591d ("net/hsr: Add support for the High-availability
+> > > Seamless Redundancy protocol (HSRv0)")
+> > > Signed-off-by: Marco Wenzel <marco.wenzel@a-eberle.de>
+> > > Reviewed-by: George McCollister <george.mccollister@gmail.com>
+> > > Tested-by: George McCollister <george.mccollister@gmail.com>
+> >
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> Applied, thanks!
 
-Am Do., 25. Feb. 2021 um 22:15 Uhr schrieb Heiko Thiery
-<heiko.thiery@gmail.com>:
->
-> When accessing the timecounter register on an i.MX8MQ the kernel hangs.
-> This is only the case when the interface is down. This can be reproduced
-> by reading with 'phc_ctrl eth0 get'.
->
-> Like described in the change in 91c0d987a9788dcc5fe26baafd73bf9242b68900
-> the igp clock is disabled when the interface is down and leads to a
-> system hang.
->
-> So we check if the ptp clock status before reading the timecounter
-> register.
->
-> Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+Thank you all for supporting me during the submission of my first kernel patch!
 
+Best regards,
+Marco
 
-Sorry for the noise. But just realized that I sent a v3 version of the
-patch but forgot to update the subject line (still v2). Should I
-resend it with the correct subject?
-
-> ---
-> v2:
->  - add mutex (thanks to Richard)
->
-> v3:
-> I did a mistake and did not test properly
->  - add parenteses
->  - fix the used variable
->
->  drivers/net/ethernet/freescale/fec_ptp.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-> index 2e344aada4c6..1753807cbf97 100644
-> --- a/drivers/net/ethernet/freescale/fec_ptp.c
-> +++ b/drivers/net/ethernet/freescale/fec_ptp.c
-> @@ -377,9 +377,16 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
->         u64 ns;
->         unsigned long flags;
->
-> +       mutex_lock(&adapter->ptp_clk_mutex);
-> +       /* Check the ptp clock */
-> +       if (!adapter->ptp_clk_on) {
-> +               mutex_unlock(&adapter->ptp_clk_mutex);
-> +               return -EINVAL;
-> +       }
->         spin_lock_irqsave(&adapter->tmreg_lock, flags);
->         ns = timecounter_read(&adapter->tc);
->         spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
-> +       mutex_unlock(&adapter->ptp_clk_mutex);
->
->         *ts = ns_to_timespec64(ns);
->
-> --
-> 2.30.0
->
