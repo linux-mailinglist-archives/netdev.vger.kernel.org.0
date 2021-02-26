@@ -2,72 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 498383269A6
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 22:38:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 917063269AF
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 22:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbhBZVi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 16:38:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbhBZViX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 16:38:23 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861D0C061574;
-        Fri, 26 Feb 2021 13:37:43 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id p21so6973203pgl.12;
-        Fri, 26 Feb 2021 13:37:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YZ8sIE0SfUCNUaFWNqwI5F5nfIUi/RZN8Zp0MikDfW4=;
-        b=i9Nyay78GChs7jbzOmoAdgqg2exELjiHMJpXn0xXQsrVmlYs2bKEpuCliUi17NxX6Y
-         RZ9KKGWZGS4/CPyBx29o+yH9ijVoATREa8oO+ggIqLYt+DVww2WhK02ehvzNMF3B+u+K
-         s8xwLRfsWBScbdPCqJXU3bfnGvixyshKKUwk/qZXo2SOAwH+Wo2pL9O8bCbsVkbxsfr7
-         cH8ip7YYTO4aQiySvtXVkXu80IkOj9lQ/de4/2Vy64szna4fJP5NkmpQAsjZKKGwn1XP
-         pW/rP5A9CfFAJFDgYlOonbUBxk1XajRjrE54A2Uyc3sBX94mnS8ucpYTvVuUyP1cHglP
-         h5XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YZ8sIE0SfUCNUaFWNqwI5F5nfIUi/RZN8Zp0MikDfW4=;
-        b=E0ea4WozcJVkk5wmlr+P2TDq7UCA6AwBZ/W/BHop0iDtfacS98+tEU1z7BDQd3lwpb
-         CjmB0ebVqg/BPKlsS/NstqXw6I9PiTQg5xlpf2Y96cnfPuipZa5XCO2484jNzlWSXgt9
-         AaS9gTr601Wspnrfl3I5pm1NKnzb/44qrGYxGbhl5N7joh3fmN5yuopObf6ADEXeZCvj
-         9A+IPI3fK/2EXHIB1azvzwsyY/fl2ldrXMSP6vi2aV8VwCq9coP+x2UMC8FuNYtQWI9y
-         pAdpVFA/CvoD/4D2r5NYIaBoWSzejjSehoaGh4US05fv3WOnfRwuuv0BIfCxr7/nMzWy
-         1ndQ==
-X-Gm-Message-State: AOAM532OpiWqUu47znYiezJmWVsjH/I869+sFzo4JO8gTdl/3hs9PEzT
-        bPc5jPiYE0syA77wm3mHLA8JU/QMEimMk4AY
-X-Google-Smtp-Source: ABdhPJwfctXVVUNuksWHVLJXgIc1k48O98MFJJ/pvbjn7X7n+H8LYq6eiUWsEquGlp7/oCbFfzJwiA==
-X-Received: by 2002:a63:f91b:: with SMTP id h27mr4719212pgi.133.1614375463113;
-        Fri, 26 Feb 2021 13:37:43 -0800 (PST)
-Received: from localhost.localdomain ([216.243.37.48])
-        by smtp.gmail.com with ESMTPSA id b187sm9277958pgc.23.2021.02.26.13.37.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 13:37:42 -0800 (PST)
-From:   vic.michel.web@gmail.com
-To:     weiyongjun1@huawei.com
-Cc:     emmanuel.grumbach@intel.com, gil.adam@intel.com, hulkci@huawei.com,
-        johannes.berg@intel.com, kuba@kernel.org, kvalo@codeaurora.org,
-        linux-wireless@vger.kernel.org, luciano.coelho@intel.com,
-        mordechay.goodstein@intel.com, netdev@vger.kernel.org,
-        Victor Michel <vic.michel.web@gmail.com>
-Subject: Re: [PATCH] iwlwifi: mvm: add terminate entry for dmi_system_id tables
-Date:   Fri, 26 Feb 2021 13:37:22 -0800
-Message-Id: <20210226213722.37192-1-vic.michel.web@gmail.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210223140039.1708534-1-weiyongjun1@huawei.com>
-References: <20210223140039.1708534-1-weiyongjun1@huawei.com>
+        id S229823AbhBZVtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 16:49:21 -0500
+Received: from www62.your-server.de ([213.133.104.62]:59304 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229550AbhBZVtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 16:49:20 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lFkyS-000AU9-Bp; Fri, 26 Feb 2021 22:48:36 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lFkyS-000B7h-38; Fri, 26 Feb 2021 22:48:36 +0100
+Subject: Re: [PATCH bpf-next v4 1/2] bpf, xdp: make bpf_redirect_map() a map
+ operation
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        maciej.fijalkowski@intel.com, hawk@kernel.org, toke@redhat.com,
+        magnus.karlsson@intel.com, john.fastabend@gmail.com,
+        kuba@kernel.org, davem@davemloft.net
+References: <20210226112322.144927-1-bjorn.topel@gmail.com>
+ <20210226112322.144927-2-bjorn.topel@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c36e681a-673d-d0d2-816a-e8f2c8ef5df7@iogearbox.net>
+Date:   Fri, 26 Feb 2021 22:48:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20210226112322.144927-2-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26092/Fri Feb 26 13:12:59 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixes a BUG triggered when loading the iwlwifi driver, which reproduces
-consistently when I compile the kernel with LTO_CLANG_THIN.
+On 2/26/21 12:23 PM, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> Currently the bpf_redirect_map() implementation dispatches to the
+> correct map-lookup function via a switch-statement. To avoid the
+> dispatching, this change adds bpf_redirect_map() as a map
+> operation. Each map provides its bpf_redirect_map() version, and
+> correct function is automatically selected by the BPF verifier.
+> 
+> A nice side-effect of the code movement is that the map lookup
+> functions are now local to the map implementation files, which removes
+> one additional function call.
+> 
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> ---
+>   include/linux/bpf.h    | 26 ++++++--------------------
+>   include/linux/filter.h | 27 +++++++++++++++++++++++++++
+>   include/net/xdp_sock.h | 19 -------------------
+>   kernel/bpf/cpumap.c    |  8 +++++++-
+>   kernel/bpf/devmap.c    | 16 ++++++++++++++--
+>   kernel/bpf/verifier.c  | 11 +++++++++--
+>   net/core/filter.c      | 39 +--------------------------------------
+>   net/xdp/xskmap.c       | 18 ++++++++++++++++++
+>   8 files changed, 82 insertions(+), 82 deletions(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index cccaef1088ea..a44ba904ca37 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -117,6 +117,9 @@ struct bpf_map_ops {
+>   					   void *owner, u32 size);
+>   	struct bpf_local_storage __rcu ** (*map_owner_storage_ptr)(void *owner);
+>   
+> +	/* XDP helpers.*/
+> +	int (*xdp_redirect_map)(struct bpf_map *map, u32 ifindex, u64 flags);
+> +
+>   	/* map_meta_equal must be implemented for maps that can be
+>   	 * used as an inner map.  It is a runtime check to ensure
+>   	 * an inner map can be inserted to an outer map.
+[...]
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 1dda9d81f12c..96705a49225e 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -5409,7 +5409,8 @@ record_func_map(struct bpf_verifier_env *env, struct bpf_call_arg_meta *meta,
+>   	    func_id != BPF_FUNC_map_delete_elem &&
+>   	    func_id != BPF_FUNC_map_push_elem &&
+>   	    func_id != BPF_FUNC_map_pop_elem &&
+> -	    func_id != BPF_FUNC_map_peek_elem)
+> +	    func_id != BPF_FUNC_map_peek_elem &&
+> +	    func_id != BPF_FUNC_redirect_map)
+>   		return 0;
+>   
+>   	if (map == NULL) {
+> @@ -11762,7 +11763,8 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>   		     insn->imm == BPF_FUNC_map_delete_elem ||
+>   		     insn->imm == BPF_FUNC_map_push_elem   ||
+>   		     insn->imm == BPF_FUNC_map_pop_elem    ||
+> -		     insn->imm == BPF_FUNC_map_peek_elem)) {
+> +		     insn->imm == BPF_FUNC_map_peek_elem   ||
+> +		     insn->imm == BPF_FUNC_redirect_map)) {
+>   			aux = &env->insn_aux_data[i + delta];
+>   			if (bpf_map_ptr_poisoned(aux))
+>   				goto patch_call_imm;
+> @@ -11804,6 +11806,8 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>   				     (int (*)(struct bpf_map *map, void *value))NULL));
+>   			BUILD_BUG_ON(!__same_type(ops->map_peek_elem,
+>   				     (int (*)(struct bpf_map *map, void *value))NULL));
+> +			BUILD_BUG_ON(!__same_type(ops->xdp_redirect_map,
+> +				     (int (*)(struct bpf_map *map, u32 ifindex, u64 flags))NULL));
+>   patch_map_ops_generic:
+>   			switch (insn->imm) {
+>   			case BPF_FUNC_map_lookup_elem:
+> @@ -11830,6 +11834,9 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>   				insn->imm = BPF_CAST_CALL(ops->map_peek_elem) -
+>   					    __bpf_call_base;
+>   				continue;
+> +			case BPF_FUNC_redirect_map:
+> +				insn->imm = BPF_CAST_CALL(ops->xdp_redirect_map) - __bpf_call_base;
 
-Tested-by: Victor Michel <vic.michel.web@gmail.com>
+Small nit: I would name the generic callback ops->map_redirect so that this is in line with
+the general naming convention for the map ops. Otherwise this looks much better, thx!
 
+> +				continue;
+>   			}
+>   
+>   			goto patch_call_imm;
