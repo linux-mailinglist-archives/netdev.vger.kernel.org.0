@@ -2,95 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F72E326994
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 22:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E279732699E
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 22:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbhBZVcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 16:32:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
+        id S229912AbhBZVgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 16:36:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbhBZVcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 16:32:11 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F54C061574;
-        Fri, 26 Feb 2021 13:31:31 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id w1so17119982ejf.11;
-        Fri, 26 Feb 2021 13:31:31 -0800 (PST)
+        with ESMTP id S229769AbhBZVgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 16:36:08 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DC4C061574
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 13:35:28 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id h98so9906222wrh.11
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 13:35:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yn3z8555ilXZ27plUdbqV/IXBk4L8y/JmZfJIgzwhQI=;
-        b=CD4DRIO4ve4xJd65Hh+FxT6Cmp/En+5bFE52vvVRltQlALKIcO0ezW3L3oKegqx+Xf
-         LDe8n1mnTdtAWriH3EFhEzHRxvSlYo6SYQxBioRfrhvl7gcltMSHLdj5BDal9y1+ixvV
-         QOJj7JpqTFrJEJgRSZsPyBe4LV7gRbDFaZ4BFVU0YoaT0OUrBho7Jmt1OUAgzpTMjhWy
-         OmE7CS2OzcM0mPuhVpQkCAcRnOsxY/aIdNx0c6h1oSzvVGktEqfrAVpDtSauv0mjYXMM
-         1RhuhbVL5ypLoAMHsJzF0ZGJ7UwUwortAoQis3QA9iCKeEvj2Dp7WBk90jZxOgKzfrin
-         h9iA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=73k62AIoA8b9v2Mg4BxS00yOjJw+j0lbzS4+SWLUw0g=;
+        b=ZpkXd7Dp9vjYc/2BW45sLKkp/EZE8lGIK+6hG/fsBS9XSFQHZzD+R57YUeY8Z12FPI
+         idB4Yr9AFgP5KCrOEhTpC3xMhaxIjH91bGiz0L3uifmDEssoEmX/MPFLy6vvuoho/tPS
+         e8sUPU+pqUZn4rzDl323weFgkZNH5q2nKSrRmZVgOCcKUQcwBeKfXf0k/KtLLo6K8juy
+         uFD5c7Ra374F5S0w/ddrc8dhrNkX8BDI8fitIYBQDvfevPy3GZnJB85ZVCkjoU+5Xnem
+         UlF/Snj6TwRq+nkn1GTr0m170x3wpNDCwqZA9LlUSurgEQfFsEfjUNW6nPALmqBVCBjV
+         TX9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yn3z8555ilXZ27plUdbqV/IXBk4L8y/JmZfJIgzwhQI=;
-        b=hrvAZQUGgG6qGl20uJwyLfI4p0So/Ft+2YqQp+E0b6Vx08DPJoqqWMJN1P8QXwK2Vw
-         OpIQA5107Z4IluumHcodNmUecqhaY5TmKjgMMhDPpSUnAWUxzP/sMdI4/HcCQpM3m07v
-         NaJtn5UukN7Z2aZeNpGb2ZZ6bluljEMLJgW5cyRJpFml1fdlxNT6bBbZ6df/hfxUcsQh
-         vqCTvPTgqQPlckb6tSndpqcyFfp2hy1OzvcRtWAUl1TpHYgjIMhOOJi65nMFTJwuscmo
-         CX0MQSn8gL0pgLoiD35CAtThg/B5XgN3FRbuooujK4C8VzJaDCb4WicUWQLe4PiJJHnW
-         ujOA==
-X-Gm-Message-State: AOAM532OCFBuMkNnUFij6sqY13YqHjCmeEAss66sFta2DpgDo6d8dRLq
-        Hzxg1LXfLYwfmhHDaf7jUzQ=
-X-Google-Smtp-Source: ABdhPJy9Tq7xvLfdxRcCTdv8XqlxoKyoyaws5wsntRvl5epXBWwQX4iYB8S9Ah+flR/agrI9QDgcyw==
-X-Received: by 2002:a17:906:758:: with SMTP id z24mr5318243ejb.406.1614375089938;
-        Fri, 26 Feb 2021 13:31:29 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id b18sm5907767ejb.77.2021.02.26.13.31.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=73k62AIoA8b9v2Mg4BxS00yOjJw+j0lbzS4+SWLUw0g=;
+        b=fa5VQt2HRqHJSY62pgOM66tDS3I7Nq/rs2hUDd1dWYoqbqBxoWkV6ifScP+uiLghaa
+         6NR0SjLJAZuq5pWvprK66qUTaTeLtrjTkDvgKUO12H75V9RzJNm0bNR+2FancaQkgFCD
+         Zsu0Br2tTeXATjf1+zMFIjM36RNZuR5O2hkcu4ot9taNoiS/1//7rHMXVXAcRgQU+dWt
+         aBMe8bYs/OPEmPCxzMWTPxfJ/YX8WrOWaq+i+G9HPWlc+5N/FOlrOwhcmFRY5bpDCd46
+         gmRO31a/cWfmC0EdYCYwf0OSwnyowOEwq+ZjGl/HrFkXwPV8M9wEnm6Ywgz3rzIEzg3U
+         5kdA==
+X-Gm-Message-State: AOAM5302rADZSsVtviJR6B1eGga7dw8bjkjdZPaOtWxpM9+l0KPDAKRE
+        0ucYDAvoz8eSkaOnMRf3jOU=
+X-Google-Smtp-Source: ABdhPJyz8BXaTie9qjhQjxnCPHk81r7bGRMR8sE3CfAtOEmWdhMl0PusPLiZ6cUN5fzGoAJCmqrIxg==
+X-Received: by 2002:a5d:68cd:: with SMTP id p13mr5368413wrw.247.1614375326986;
+        Fri, 26 Feb 2021 13:35:26 -0800 (PST)
+Received: from localhost.localdomain ([213.57.166.51])
+        by smtp.gmail.com with ESMTPSA id z11sm17587241wrm.72.2021.02.26.13.35.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 13:31:29 -0800 (PST)
-Date:   Fri, 26 Feb 2021 23:31:28 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] net: dsa: tag_ocelot_8021q: fix driver dependency
-Message-ID: <20210226213128.pvtekhkdejzulcpz@skbuf>
-References: <20210225143910.3964364-1-arnd@kernel.org>
- <20210225143910.3964364-2-arnd@kernel.org>
+        Fri, 26 Feb 2021 13:35:26 -0800 (PST)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, bram-yvahk@mail.wizbit.be,
+        sd@queasysnail.net, Eyal Birger <eyal.birger@gmail.com>
+Subject: [PATCH ipsec 0/2] vti(6): fix ipv4 pmtu check to honor ip header df
+Date:   Fri, 26 Feb 2021 23:35:04 +0200
+Message-Id: <20210226213506.506799-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210225143910.3964364-2-arnd@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 25, 2021 at 03:38:32PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> When the ocelot driver code is in a library, the dsa tag
-> code cannot be built-in:
-> 
-> ld.lld: error: undefined symbol: ocelot_can_inject
-> >>> referenced by tag_ocelot_8021q.c
-> >>>               dsa/tag_ocelot_8021q.o:(ocelot_xmit) in archive net/built-in.a
-> 
-> ld.lld: error: undefined symbol: ocelot_port_inject_frame
-> >>> referenced by tag_ocelot_8021q.c
-> >>>               dsa/tag_ocelot_8021q.o:(ocelot_xmit) in archive net/built-in.a
-> 
-> Building the tag support only really makes sense for compile-testing
-> when the driver is available, so add a Kconfig dependency that prevents
-> the broken configuration while allowing COMPILE_TEST alternative when
-> MSCC_OCELOT_SWITCH_LIB is disabled entirely.  This case is handled
-> through the #ifdef check in include/soc/mscc/ocelot.h.
-> 
-> Fixes: 0a6f17c6ae21 ("net: dsa: tag_ocelot_8021q: add support for PTP timestamping")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
+This series aligns vti(6) handling of non-df IPv4 packets exceeding
+the size of the tunnel MTU to avoid sending "Frag needed" and instead
+fragment the packets after encapsulation.
 
-Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Eyal Birger (2):
+  vti: fix ipv4 pmtu check to honor ip header df
+  vti6: fix ipv4 pmtu check to honor ip header df
+
+ net/ipv4/ip_vti.c  | 6 ++++--
+ net/ipv6/ip6_vti.c | 6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+-- 
+2.25.1
+
