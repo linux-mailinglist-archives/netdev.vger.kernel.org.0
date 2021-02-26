@@ -2,61 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60FB8326A80
+	by mail.lfdr.de (Postfix) with ESMTP id D2576326A81
 	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 00:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbhBZXuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 18:50:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52984 "EHLO mail.kernel.org"
+        id S230022AbhBZXuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 18:50:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53206 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229863AbhBZXuE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Feb 2021 18:50:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8479764EFA;
-        Fri, 26 Feb 2021 23:49:23 +0000 (UTC)
+        id S229618AbhBZXus (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Feb 2021 18:50:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6EACE64EC4;
+        Fri, 26 Feb 2021 23:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614383363;
-        bh=bGCuAne9qltV0wpM3AH8NOFz7x+4d/E3laWWipFwXzY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FvNNdy6maTEbGyYGRpcw4ir9nvNWCIn6uiq3l9VJe04rdOIaLAVl+7mw6p4Ooy7cj
-         9V1cMegUTp12i7/ujyV2lXl9M9/mMgyVEq7GpNbt9IGAjyIoiwIH0OdIdBZsX8XuZW
-         /o190V8u0zrPFR8tyXeux5PkdzGOv8KtTpk5KBTp8GJDnPgVS3jGnHoLHlJaXioQJX
-         G8FRtfhd4/r2sew90uqc1lpi/Xe8jwTJG8cKgt0ZPa1QqTeZyyu3GUcfmox2GFlJcf
-         aSJpsDwy+1LQkggcdnsVsKVOoGFSnozhKCpzudoevuGM5Z8LVyp+juj812DKGMZ7h1
-         J7Yi0LQifVYPw==
-Date:   Fri, 26 Feb 2021 15:49:22 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Markus =?UTF-8?B?QmzDtmNobA==?= <Markus.Bloechl@ipetronik.com>
-Subject: Re: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in
- IFF_PROMISC mode
-Message-ID: <20210226154922.5956512b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210226234244.w7xw7qnpo3skdseb@skbuf>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
-        <20210225121835.3864036-6-olteanv@gmail.com>
-        <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210226234244.w7xw7qnpo3skdseb@skbuf>
+        s=k20201202; t=1614383408;
+        bh=E34GnxsQRlmVYXa9wT2iqUtesr7Y1nctAUemscN2esM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=S5OP6ezekO9S/AQNpj+kP6rNcDQphe+unLgG51O0ieWPLhFfwZdvJPbpNUmXZXE2Z
+         R4T3rgIhC/kVZ55YpAo0uo8EZS+PHnaaVECn5NBn3oCP847Ptx6MDrioP0OuVB9avs
+         MM5ir63L/OHzFu2QanqOH6Re7D/ugZIbLV5VPndaLT+/v8euKGCS5pjd7ZTHEJQzDO
+         lAuFprRmK/wfXiduZiudRvPEaN12FpWllHWXyIFBBYGEv1lV4CrWAnVerZcorgiSZP
+         22oc7A1oz3a5S0tImoup08cwxV9Wy1dWHJPpfu0bi1zAZT8m6iYMJzctg8E8kIpW8E
+         uX8QeUG+T6dxg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 611C160A14;
+        Fri, 26 Feb 2021 23:50:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3] mlxsw: Various fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161438340839.31866.12281789442689763991.git-patchwork-notify@kernel.org>
+Date:   Fri, 26 Feb 2021 23:50:08 +0000
+References: <20210225165721.1322424-1-idosch@idosch.org>
+In-Reply-To: <20210225165721.1322424-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, petrm@nvidia.com, danieller@nvidia.com,
+        mlxsw@nvidia.com, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 27 Feb 2021 01:42:44 +0200 Vladimir Oltean wrote:
-> On Fri, Feb 26, 2021 at 03:28:36PM -0800, Jakub Kicinski wrote:
-> > I don't understand what you're fixing tho.
-> >
-> > Are we trying to establish vlan-filter-on as the expected behavior?  
-> 
-> What I'm fixing is unexpected behavior, according to the applicable
-> standards I could find. If I don't mark this change as a bug fix but as
-> a simple patch, somebody could claim it's a regression, since promiscuity
-> used to be enough to see packets with unknown VLANs, and now it no
-> longer is...
+Hello:
 
-Can we take it into net-next? What's your feeling on that option?
+This series was applied to netdev/net.git (refs/heads/master):
+
+On Thu, 25 Feb 2021 18:57:18 +0200 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> This patchset contains various fixes for mlxsw.
+> 
+> Patch #1 fixes a race condition in a selftest. The race and fix are
+> explained in detail in the changelog.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/3] selftests: forwarding: Fix race condition in mirror installation
+    https://git.kernel.org/netdev/net/c/edcbf5137f09
+  - [net,2/3] mlxsw: spectrum_ethtool: Add an external speed to PTYS register
+    https://git.kernel.org/netdev/net/c/ae9b24ddb69b
+  - [net,3/3] mlxsw: spectrum_router: Ignore routes using a deleted nexthop object
+    https://git.kernel.org/netdev/net/c/dc860b88ce0a
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
