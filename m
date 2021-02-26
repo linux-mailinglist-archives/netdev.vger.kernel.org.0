@@ -2,85 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 812C03268CD
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 21:42:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 835463268FF
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 22:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbhBZUgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 15:36:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
+        id S230314AbhBZUzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 15:55:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbhBZUgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 15:36:51 -0500
+        with ESMTP id S229949AbhBZUzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 15:55:54 -0500
 Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E61C061574;
-        Fri, 26 Feb 2021 12:36:11 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id p21so15704865lfu.11;
-        Fri, 26 Feb 2021 12:36:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A7FC06174A;
+        Fri, 26 Feb 2021 12:55:13 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id a17so15346482lfb.1;
+        Fri, 26 Feb 2021 12:55:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pUC6qb3vrmNiHlYSVZaGrWbey6JUDPkidxsRxXOIl5E=;
-        b=jrr+vb9/J3B89XaALlUTgPbyxd7K7VrqzsTFbGs7ccadOmcq2sOODnJ6toCEAUp5dC
-         XRTz+rN3tSHm4/hcSNjKjtK/h7eHWUzY6Sbt4anJ3c6bYnpEoMdk8xmwJUhJonYmTRa/
-         hlGq61Gy5nmc20K45D30TsGX/5AiHBx2sGiHa6aS3yJ/B3ll00CDsuSo8Bh3jClgU60F
-         6hYeW6inEUbYaymW8rY3m5z3Ve00o8QlaIp6x3yh8za3L5lRjgRo3PbCWIZXhEY+LqX6
-         e5KZ69eqSM4UsgwD5zZWvU778G40mjUouKhOzBex90NtW6p4y487I20r7MrodrkwylDX
-         pWnA==
+        bh=YBCcayDorilbuVZ5LKt+V42Rkj40O3IYrjxA5yym7pw=;
+        b=N+NqO/RiymX19xEQY7GLckgAjk37EVpnQf0k3/gfiv2ezIDm2Ah2t3V26Ftbn8mp8N
+         qyMk1Rqbnf8sRcuPAWVGe8qEkH0085wU/sm0RO5gghQ7q1eVCK6RpyCdvTRo5o26wh2b
+         MEmpbUhTqtq1Q0uPzYoyJVwC5y1uedhZ4tdqn/SAIZ76Gu3IbHR7hHwN0YZcL94grV9c
+         QT9Xk8rJxHme9LUdspFM+jAJCmiMCIrDoMiwsKPKaFn1SNraxfMNmHYcxDeDwvzvPBOU
+         wNV+r/rNhpHzfVeF9NOaONZtnIcOcjKivSjsQyIUAlYdcpTNp2XdE5qL0ElkA5CSRh6p
+         7Fnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pUC6qb3vrmNiHlYSVZaGrWbey6JUDPkidxsRxXOIl5E=;
-        b=cfYvRuwKyRlDHd3gtY3ATrG7TtJ5gb89oQGijWRFfW75dycLbz2h+RRyOC4nckBWQt
-         0Hued05/VCI9VvUxluB6cGoGITn74uYxQIowcRX/KBifKZ5p1DK1I1hVh4qQjF4SY9S1
-         jbF7k6ymkw7bpfPr25cPdIc+Stnbei7eOnrZ2mr8l8ONZL1MtzfTe3uhcn0Je0JyCsya
-         EnwSwJkKlI2FuNK+UUmZzsEN7U5wpB941NFS4t//eNoDXUgcHeMmdgHDAc//ranA2pkj
-         rcieO6tp4hQY3C3YsWAhgm1P9St8Sv/v0fsqne5srE/Y1SjJbhcVHmtNWrY0vmVd4FVG
-         c14g==
-X-Gm-Message-State: AOAM53301RyNBBl4n7gBiGoIJgjY4J8sILH/iPiiou0czWCzFK4EX5vJ
-        yYZMqgbwD0oEoOX4AYzRfzVNMphiLm8IZQDp1lU=
-X-Google-Smtp-Source: ABdhPJx0xNN1M4zDVR+EouRLdYAqBdfijJUjpfCo+zB+rkG/bAU6Z58nuG648fjYH8+DpfjHUBzleoRA15kqixAeNhM=
-X-Received: by 2002:ac2:5ec2:: with SMTP id d2mr2828590lfq.214.1614371769779;
- Fri, 26 Feb 2021 12:36:09 -0800 (PST)
+        bh=YBCcayDorilbuVZ5LKt+V42Rkj40O3IYrjxA5yym7pw=;
+        b=HRnXSU6fsy4KpN/a6MXeG3OG8tUG8Fv4MKWvvC+CJgpaLIqY36sEN3gyPoq6cQjzV1
+         o4BOrkv6xnsIyTY4qqjUIQvqG1TEpD5/wOWGjVxHjKwNrHj0OitjW6q7+1uAuem5nDRp
+         qI1Q2xL8k+5PXlQzL/VwPPXCZkuHLaO/DnpKzQJM7jpPxzqlan0aNy5uLtfpYi58ctLq
+         hBMjZZSWU9wNgakw0l8NBVT2HE2WYmT80sFxWLGl4Xv3nT1LIyByCVi2oYdga24an5Ph
+         9ZkKOJjGVbSCCjQFzW+xABXjARpoUlsWReIqCI9m6vn+eYXvQYUyzh/3zxK3PmSoedGf
+         +3/Q==
+X-Gm-Message-State: AOAM530qLVtNVBgspl7ivKn7GdAEJx0rvbsYh4GPDEgkCc7cn0OAU2dA
+        aNykYqk9XzwnhVO44vmRnNYYirsV9ll+1Mxh3ro=
+X-Google-Smtp-Source: ABdhPJy3470LdGOl0mBFJ89ovgeeAb0dhcj1z5lDy34rqbTeDyS4SRFcQ6mGWPIrCFUJbn4QjteIp3lqytpFzkW993s=
+X-Received: by 2002:ac2:5486:: with SMTP id t6mr2968225lfk.75.1614372912300;
+ Fri, 26 Feb 2021 12:55:12 -0800 (PST)
 MIME-Version: 1.0
-References: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
+References: <20210226103103.131210-1-lmb@cloudflare.com>
+In-Reply-To: <20210226103103.131210-1-lmb@cloudflare.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 26 Feb 2021 12:35:58 -0800
-Message-ID: <CAADnVQKh2QDRE4F1Ac160P=csMjFmobnS4f5DrgG=MRxpPe7mA@mail.gmail.com>
-Subject: Re: [Patch bpf-next v7 0/9] sock_map: clean up and refactor code for BPF_SK_SKB_VERDICT
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>
+Date:   Fri, 26 Feb 2021 12:55:01 -0800
+Message-ID: <CAADnVQJi_==XB8=PdqfOa24HfSAcyaasnbZCzxvbcOtCWaP7EQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/5] PROG_TEST_RUN support for sk_lookup programs
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 10:51 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Fri, Feb 26, 2021 at 2:31 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
-> From: Cong Wang <cong.wang@bytedance.com>
+> We don't have PROG_TEST_RUN support for sk_lookup programs at the
+> moment. So far this hasn't been a problem, since we can run our
+> tests in a separate network namespace. For benchmarking it's nice
+> to have PROG_TEST_RUN, so I've gone and implemented it.
 >
-> This patchset is the first series of patches separated out from
-> the original large patchset, to make reviews easier. This patchset
-> does not add any new feature or change any functionality but merely
-> cleans up the existing sockmap and skmsg code and refactors it, to
-> prepare for the patches followed up. This passed all BPF selftests.
+> Based on discussion on the v1 I've dropped support for testing multiple
+> programs at once.
 >
-> To see the big picture, the original whole patchset is available
-> on github: https://github.com/congwang/linux/tree/sockmap
->
-> and this patchset is also available on github:
-> https://github.com/congwang/linux/tree/sockmap1
->
-> ---
-> v7: add 1 trivial cleanup patch
->     define a mask for sk_redir
->     fix CONFIG_BPF_SYSCALL in include/net/udp.h
->     make sk_psock_done_strp() static
->     move skb_bpf_redirect_clear() to sk_psock_backlog()
+> Changes since v1:
+> - Add sparse annotations to the t_* functions
+> - Add appropriate type casts in bpf_prog_test_run_sk_lookup
+> - Drop running multiple programs
 
-Applied. Thanks
+Looks good.
+I applied it, but then reverted since test_verifier needs to be adjusted:
+./test_verifier 349
+#349/p valid 1,2,4,8-byte reads from bpf_sk_lookup FAIL: Unexpected
+bpf_prog_test_run error (Invalid argument) (run 1/1)
+
+That's the only test that has ACCEPT for sk_lookup prog type
+and the framework now is trying to run it.
+Pls respin.
