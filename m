@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AE883261F0
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 12:24:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A073261F2
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 12:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbhBZLY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 06:24:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
+        id S231127AbhBZLYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 06:24:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbhBZLYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 06:24:16 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A38C06174A;
-        Fri, 26 Feb 2021 03:23:36 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id u4so13337463lfs.0;
-        Fri, 26 Feb 2021 03:23:36 -0800 (PST)
+        with ESMTP id S230139AbhBZLYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 06:24:19 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA55AC061756;
+        Fri, 26 Feb 2021 03:23:37 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id h4so10003503ljl.0;
+        Fri, 26 Feb 2021 03:23:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GELYEb44FhxHUtDa8zT5ciMTP1SQuqQL4f2Z2CjnrxA=;
-        b=VHbsSC2Qq0jy9HjGbba5FvCWJVeOa5M3CNsuCRuHCEgEpWK0iNUm5M+NetuiAqi834
-         X8ITnPOr3RVdgHlWfDnfmOjRV8K8tQJBGRqcVTgv1jW8/2nmpgt0zT9HUfUa6TFBekKD
-         CTIaJ+hDjzZIT0EsIrFK0xihj6WO/dlx3GKaGlD4sLcFofOVqBpQbnymbKmjkuR/pRa+
-         I76l7eKU5Oe3/Oq5615rdZyJrwDZqwUOMmtesoqcbooPMuwa2nGz2P2n3JuuH9wJ3v8J
-         Zp49Y+6yhrvwsQUl77tAn/ev7PfyydqeVYABdFNp976XW1tUhpX6nAH68FsL8efp3j1g
-         ByJQ==
+        bh=FdemvtekDJF0Sv0HbFcATaqMVIulEKlQ9EVxF1fhdgs=;
+        b=TJVXTNBHKgDosyo6aYeaYkq4dYjUEsbvfLWSSpgfp/Mc0HSc2ZaaEDOggco/Hv6n+r
+         DhBxZop2tG/DsagS4eJJDzoKfk9XqhwV3XmdqCF7JVFtKf45fRhfSHbNj1t0ZYDPrJpv
+         LtqxTxyWm8wH2OEfTTeyUCa04qtzTnbkgck8ScFiYknckiQjjjAJHld/br9AIQ6x7bZV
+         eSkBr1jXOKVkRb8xCH0WkEqLS/Cou6zh4XSDeTor5t6X32yGEsJ9VQoo5S2cfVpiZq1y
+         NCMkS0hhlhClr6PqO03gE5oX7Y93e/BS2P38GTjU4gSEjj0si0iyKuizQrlB6lL9+3yz
+         pfRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GELYEb44FhxHUtDa8zT5ciMTP1SQuqQL4f2Z2CjnrxA=;
-        b=smrwrePcaurwmdDNav6PQU73i01DWlMfkKp9oK27sKNqINKRLl2RNlyqV/6VJZ5pgt
-         Zit8MhYCi5gmj9xdFukmpNKu+9lDo0nYkeXSJUbbfeKyxE0XfGimCyfD9OgDseVayRXp
-         N5QHV2H84JPQpcOyVesBs935oUHeSHd7Qh7vBSfNipOSZIIGfe2jHVNoP3Laz8hh4E0V
-         dDb2GruhmNetwk/Vrv2CKunlteJ25HkPCsRONvrrx980Lo5uZRAZDm0dLYpswwdAqWSZ
-         Ch4GpV3P+oEH5wIfqBw2PRgY2BZbV9rIoO10bMm57gUdIblFdj85/2lEzGcqPnVGvqiE
-         g3cg==
-X-Gm-Message-State: AOAM533PuJe3UKjSshXs/NrPHu9Bly7bxRg/sbebxGVV4nl0Gpp5rUXI
-        GPQDM98n4rDH1JqGk+psjRE=
-X-Google-Smtp-Source: ABdhPJyFav9RGEs5ktYy933LZLEXvyW90jPeQsaZuC/AHlq0NCASB0vTjt+Vv8b07oxjdFvCEu9l6g==
-X-Received: by 2002:a05:6512:1042:: with SMTP id c2mr1560930lfb.359.1614338614601;
-        Fri, 26 Feb 2021 03:23:34 -0800 (PST)
+        bh=FdemvtekDJF0Sv0HbFcATaqMVIulEKlQ9EVxF1fhdgs=;
+        b=d4sa9b5/4f+4AN1SrwM7QEU0FLs0jGIzJb6VP5djcDo/qOPU5marM7uPRVAHAKRR4I
+         YMd9jPpTzclj/LMKlrPt3zkhLwVWitKnXCKEWqft2H8rlpbZFNcDUYmES1iB0hlSH7H+
+         SSeLNh0NWhrtqOfUmsdMAeU3laZSmszGzgnoH1q6U7AJs6aUyEoD+YvejLp5SNG1Q4C3
+         03i2dDviUBZtA0xH+i2h7Gwace11pNjUM2Lye/Beew6UDUqSS9lBn82TWi8OkH62IeZz
+         YPoaHoUqhMj/rEHgIZZQNQAkjjrouEot5FEgv3mVLb5dNhdu+bLqwKGt+vMcJ/IrAnid
+         rKfQ==
+X-Gm-Message-State: AOAM531QKxeP9m+H+GXJFw12IQbRZvfZ8ako3Udtw2ZZXmyY5Hmw/2CW
+        SToPXe9Ihf31w4fWB1ln3KQ=
+X-Google-Smtp-Source: ABdhPJwCdlL5pfDPSE51wWnvvvkyHo3NiuVL7eh00JeR3shKwWKFu5BRRSfpKK7cpvyBjaMd375j4g==
+X-Received: by 2002:a05:651c:1055:: with SMTP id x21mr1388269ljm.275.1614338616433;
+        Fri, 26 Feb 2021 03:23:36 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id c11sm1352282lfb.104.2021.02.26.03.23.33
+        by smtp.gmail.com with ESMTPSA id c11sm1352282lfb.104.2021.02.26.03.23.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 03:23:33 -0800 (PST)
+        Fri, 26 Feb 2021 03:23:35 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         maciej.fijalkowski@intel.com, hawk@kernel.org, toke@redhat.com,
         magnus.karlsson@intel.com, john.fastabend@gmail.com,
-        kuba@kernel.org, davem@davemloft.net
-Subject: [PATCH bpf-next v4 1/2] bpf, xdp: make bpf_redirect_map() a map operation
-Date:   Fri, 26 Feb 2021 12:23:21 +0100
-Message-Id: <20210226112322.144927-2-bjorn.topel@gmail.com>
+        kuba@kernel.org, davem@davemloft.net,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: [PATCH bpf-next v4 2/2] bpf, xdp: restructure redirect actions
+Date:   Fri, 26 Feb 2021 12:23:22 +0100
+Message-Id: <20210226112322.144927-3-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210226112322.144927-1-bjorn.topel@gmail.com>
 References: <20210226112322.144927-1-bjorn.topel@gmail.com>
@@ -69,403 +70,518 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-Currently the bpf_redirect_map() implementation dispatches to the
-correct map-lookup function via a switch-statement. To avoid the
-dispatching, this change adds bpf_redirect_map() as a map
-operation. Each map provides its bpf_redirect_map() version, and
-correct function is automatically selected by the BPF verifier.
+The XDP_REDIRECT implementations for maps and non-maps are fairly
+similar, but obviously need to take different code paths depending on
+if the target is using a map or not. Today, the redirect targets for
+XDP either uses a map, or is based on ifindex.
 
-A nice side-effect of the code movement is that the map lookup
-functions are now local to the map implementation files, which removes
-one additional function call.
+Here, an explicit redirect type is added to bpf_redirect_info, instead
+of the actual map. Redirect type, map item/ifindex, and the map_id (if
+any) is passed to xdp_do_redirect().
 
+In addition to making the code easier to follow, using an explicit
+type in bpf_redirect_info has a slight positive performance impact by
+avoiding a pointer indirection for the map type lookup, and instead
+use the cacheline for bpf_redirect_info.
+
+Since the actual map is not passed via bpf_redirect_info anymore, the
+map lookup is only done in the BPF helper. This means that the
+bpf_clear_redirect_map() function can be removed. The actual map item
+is RCU protected.
+
+The bpf_redirect_info flags member is not used by XDP, and not
+read/written any more. The map member is only written to when
+required/used, and not unconditionally.
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- include/linux/bpf.h    | 26 ++++++--------------------
- include/linux/filter.h | 27 +++++++++++++++++++++++++++
- include/net/xdp_sock.h | 19 -------------------
- kernel/bpf/cpumap.c    |  8 +++++++-
- kernel/bpf/devmap.c    | 16 ++++++++++++++--
- kernel/bpf/verifier.c  | 11 +++++++++--
- net/core/filter.c      | 39 +--------------------------------------
- net/xdp/xskmap.c       | 18 ++++++++++++++++++
- 8 files changed, 82 insertions(+), 82 deletions(-)
+ include/linux/filter.h     |  20 ++++--
+ include/trace/events/xdp.h |  66 ++++++++++-------
+ kernel/bpf/cpumap.c        |   4 +-
+ kernel/bpf/devmap.c        |   7 +-
+ net/core/filter.c          | 144 +++++++++++++++----------------------
+ net/xdp/xskmap.c           |   4 +-
+ 6 files changed, 121 insertions(+), 124 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index cccaef1088ea..a44ba904ca37 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -117,6 +117,9 @@ struct bpf_map_ops {
- 					   void *owner, u32 size);
- 	struct bpf_local_storage __rcu ** (*map_owner_storage_ptr)(void *owner);
- 
-+	/* XDP helpers.*/
-+	int (*xdp_redirect_map)(struct bpf_map *map, u32 ifindex, u64 flags);
-+
- 	/* map_meta_equal must be implemented for maps that can be
- 	 * used as an inner map.  It is a runtime check to ensure
- 	 * an inner map can be inserted to an outer map.
-@@ -1429,9 +1432,9 @@ struct btf *bpf_get_btf_vmlinux(void);
- /* Map specifics */
- struct xdp_buff;
- struct sk_buff;
-+struct bpf_dtab_netdev;
-+struct bpf_cpu_map_entry;
- 
--struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key);
--struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key);
- void __dev_flush(void);
- int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
- 		    struct net_device *dev_rx);
-@@ -1441,7 +1444,6 @@ int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
- 			     struct bpf_prog *xdp_prog);
- bool dev_map_can_have_prog(struct bpf_map *map);
- 
--struct bpf_cpu_map_entry *__cpu_map_lookup_elem(struct bpf_map *map, u32 key);
- void __cpu_map_flush(void);
- int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
- 		    struct net_device *dev_rx);
-@@ -1568,17 +1570,6 @@ static inline int bpf_obj_get_user(const char __user *pathname, int flags)
- 	return -EOPNOTSUPP;
- }
- 
--static inline struct net_device  *__dev_map_lookup_elem(struct bpf_map *map,
--						       u32 key)
--{
--	return NULL;
--}
--
--static inline struct net_device  *__dev_map_hash_lookup_elem(struct bpf_map *map,
--							     u32 key)
--{
--	return NULL;
--}
- static inline bool dev_map_can_have_prog(struct bpf_map *map)
- {
- 	return false;
-@@ -1590,6 +1581,7 @@ static inline void __dev_flush(void)
- 
- struct xdp_buff;
- struct bpf_dtab_netdev;
-+struct bpf_cpu_map_entry;
- 
- static inline
- int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
-@@ -1614,12 +1606,6 @@ static inline int dev_map_generic_redirect(struct bpf_dtab_netdev *dst,
- 	return 0;
- }
- 
--static inline
--struct bpf_cpu_map_entry *__cpu_map_lookup_elem(struct bpf_map *map, u32 key)
--{
--	return NULL;
--}
--
- static inline void __cpu_map_flush(void)
- {
- }
 diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 3b00fc906ccd..008691fd3b58 100644
+index 008691fd3b58..a7752badc2ec 100644
 --- a/include/linux/filter.h
 +++ b/include/linux/filter.h
-@@ -1472,4 +1472,31 @@ static inline bool bpf_sk_lookup_run_v6(struct net *net, int protocol,
- }
+@@ -646,11 +646,20 @@ struct bpf_redirect_info {
+ 	u32 flags;
+ 	u32 tgt_index;
+ 	void *tgt_value;
+-	struct bpf_map *map;
++	u32 map_id;
++	u32 tgt_type;
+ 	u32 kern_flags;
+ 	struct bpf_nh_params nh;
+ };
+ 
++enum xdp_redirect_type {
++	XDP_REDIR_UNSET,
++	XDP_REDIR_DEV_IFINDEX,
++	XDP_REDIR_DEV_MAP,
++	XDP_REDIR_CPU_MAP,
++	XDP_REDIR_XSK_MAP,
++};
++
+ DECLARE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
+ 
+ /* flags for bpf_redirect_info kern_flags */
+@@ -1473,7 +1482,8 @@ static inline bool bpf_sk_lookup_run_v6(struct net *net, int protocol,
  #endif /* IS_ENABLED(CONFIG_IPV6) */
  
-+static __always_inline int __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags,
-+						  void *lookup_elem(struct bpf_map *map, u32 key))
-+{
-+	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-+
-+	/* Lower bits of the flags are used as return code on lookup failure */
-+	if (unlikely(flags > XDP_TX))
-+		return XDP_ABORTED;
-+
-+	ri->tgt_value = lookup_elem(map, ifindex);
-+	if (unlikely(!ri->tgt_value)) {
-+		/* If the lookup fails we want to clear out the state in the
-+		 * redirect_info struct completely, so that if an eBPF program
-+		 * performs multiple lookups, the last one always takes
-+		 * precedence.
-+		 */
-+		WRITE_ONCE(ri->map, NULL);
-+		return flags;
-+	}
-+
-+	ri->flags = flags;
-+	ri->tgt_index = ifindex;
-+	WRITE_ONCE(ri->map, map);
-+
-+	return XDP_REDIRECT;
-+}
-+
- #endif /* __LINUX_FILTER_H__ */
-diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-index cc17bc957548..9c0722c6d7ac 100644
---- a/include/net/xdp_sock.h
-+++ b/include/net/xdp_sock.h
-@@ -80,19 +80,6 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp);
- int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp);
- void __xsk_map_flush(void);
- 
--static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
--						     u32 key)
--{
--	struct xsk_map *m = container_of(map, struct xsk_map, map);
--	struct xdp_sock *xs;
--
--	if (key >= map->max_entries)
--		return NULL;
--
--	xs = READ_ONCE(m->xsk_map[key]);
--	return xs;
--}
--
- #else
- 
- static inline int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
-@@ -109,12 +96,6 @@ static inline void __xsk_map_flush(void)
+ static __always_inline int __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags,
+-						  void *lookup_elem(struct bpf_map *map, u32 key))
++						  void *lookup_elem(struct bpf_map *map, u32 key),
++						  enum xdp_redirect_type type)
  {
+ 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+ 
+@@ -1488,13 +1498,13 @@ static __always_inline int __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifind
+ 		 * performs multiple lookups, the last one always takes
+ 		 * precedence.
+ 		 */
+-		WRITE_ONCE(ri->map, NULL);
++		ri->tgt_type = XDP_REDIR_UNSET;
+ 		return flags;
+ 	}
+ 
+-	ri->flags = flags;
+ 	ri->tgt_index = ifindex;
+-	WRITE_ONCE(ri->map, map);
++	ri->tgt_type = type;
++	ri->map_id = map->id;
+ 
+ 	return XDP_REDIRECT;
  }
+diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+index 76a97176ab81..538321735447 100644
+--- a/include/trace/events/xdp.h
++++ b/include/trace/events/xdp.h
+@@ -86,19 +86,15 @@ struct _bpf_dtab_netdev {
+ };
+ #endif /* __DEVMAP_OBJ_TYPE */
  
--static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
--						     u32 key)
--{
--	return NULL;
--}
+-#define devmap_ifindex(tgt, map)				\
+-	(((map->map_type == BPF_MAP_TYPE_DEVMAP ||	\
+-		  map->map_type == BPF_MAP_TYPE_DEVMAP_HASH)) ? \
+-	  ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex : 0)
 -
- #endif /* CONFIG_XDP_SOCKETS */
+ DECLARE_EVENT_CLASS(xdp_redirect_template,
  
- #endif /* _LINUX_XDP_SOCK_H */
+ 	TP_PROTO(const struct net_device *dev,
+ 		 const struct bpf_prog *xdp,
+ 		 const void *tgt, int err,
+-		 const struct bpf_map *map, u32 index),
++		 enum xdp_redirect_type type,
++		 const struct bpf_redirect_info *ri),
+ 
+-	TP_ARGS(dev, xdp, tgt, err, map, index),
++	TP_ARGS(dev, xdp, tgt, err, type, ri),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(int, prog_id)
+@@ -111,14 +107,30 @@ DECLARE_EVENT_CLASS(xdp_redirect_template,
+ 	),
+ 
+ 	TP_fast_assign(
++		u32 ifindex = 0, map_id = 0, index = ri->tgt_index;
++
++		switch (type) {
++		case XDP_REDIR_DEV_MAP:
++			ifindex = ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex;
++			fallthrough;
++		case XDP_REDIR_CPU_MAP:
++		case XDP_REDIR_XSK_MAP:
++			map_id = ri->map_id;
++			break;
++		case XDP_REDIR_DEV_IFINDEX:
++			ifindex = (u32)(long)tgt;
++			break;
++		default:
++			break;
++		}
++
+ 		__entry->prog_id	= xdp->aux->id;
+ 		__entry->act		= XDP_REDIRECT;
+ 		__entry->ifindex	= dev->ifindex;
+ 		__entry->err		= err;
+-		__entry->to_ifindex	= map ? devmap_ifindex(tgt, map) :
+-						index;
+-		__entry->map_id		= map ? map->id : 0;
+-		__entry->map_index	= map ? index : 0;
++		__entry->to_ifindex	= ifindex;
++		__entry->map_id		= map_id;
++		__entry->map_index	= index;
+ 	),
+ 
+ 	TP_printk("prog_id=%d action=%s ifindex=%d to_ifindex=%d err=%d"
+@@ -133,45 +145,49 @@ DEFINE_EVENT(xdp_redirect_template, xdp_redirect,
+ 	TP_PROTO(const struct net_device *dev,
+ 		 const struct bpf_prog *xdp,
+ 		 const void *tgt, int err,
+-		 const struct bpf_map *map, u32 index),
+-	TP_ARGS(dev, xdp, tgt, err, map, index)
++		 enum xdp_redirect_type type,
++		 const struct bpf_redirect_info *ri),
++	TP_ARGS(dev, xdp, tgt, err, type, ri)
+ );
+ 
+ DEFINE_EVENT(xdp_redirect_template, xdp_redirect_err,
+ 	TP_PROTO(const struct net_device *dev,
+ 		 const struct bpf_prog *xdp,
+ 		 const void *tgt, int err,
+-		 const struct bpf_map *map, u32 index),
+-	TP_ARGS(dev, xdp, tgt, err, map, index)
++		 enum xdp_redirect_type type,
++		 const struct bpf_redirect_info *ri),
++	TP_ARGS(dev, xdp, tgt, err, type, ri)
+ );
+ 
+ #define _trace_xdp_redirect(dev, xdp, to)				\
+-	 trace_xdp_redirect(dev, xdp, NULL, 0, NULL, to)
++	trace_xdp_redirect(dev, xdp, NULL, 0, XDP_REDIR_DEV_IFINDEX, NULL)
+ 
+ #define _trace_xdp_redirect_err(dev, xdp, to, err)			\
+-	 trace_xdp_redirect_err(dev, xdp, NULL, err, NULL, to)
++	trace_xdp_redirect_err(dev, xdp, NULL, err, XDP_REDIR_DEV_IFINDEX, NULL)
+ 
+-#define _trace_xdp_redirect_map(dev, xdp, to, map, index)		\
+-	 trace_xdp_redirect(dev, xdp, to, 0, map, index)
++#define _trace_xdp_redirect_map(dev, xdp, to, type, ri)		\
++	trace_xdp_redirect(dev, xdp, to, 0, type, ri)
+ 
+-#define _trace_xdp_redirect_map_err(dev, xdp, to, map, index, err)	\
+-	 trace_xdp_redirect_err(dev, xdp, to, err, map, index)
++#define _trace_xdp_redirect_map_err(dev, xdp, to, type, ri, err)	\
++	trace_xdp_redirect_err(dev, xdp, to, err, type, ri)
+ 
+ /* not used anymore, but kept around so as not to break old programs */
+ DEFINE_EVENT(xdp_redirect_template, xdp_redirect_map,
+ 	TP_PROTO(const struct net_device *dev,
+ 		 const struct bpf_prog *xdp,
+ 		 const void *tgt, int err,
+-		 const struct bpf_map *map, u32 index),
+-	TP_ARGS(dev, xdp, tgt, err, map, index)
++		 enum xdp_redirect_type type,
++		 const struct bpf_redirect_info *ri),
++	TP_ARGS(dev, xdp, tgt, err, type, ri)
+ );
+ 
+ DEFINE_EVENT(xdp_redirect_template, xdp_redirect_map_err,
+ 	TP_PROTO(const struct net_device *dev,
+ 		 const struct bpf_prog *xdp,
+ 		 const void *tgt, int err,
+-		 const struct bpf_map *map, u32 index),
+-	TP_ARGS(dev, xdp, tgt, err, map, index)
++		 enum xdp_redirect_type type,
++		 const struct bpf_redirect_info *ri),
++	TP_ARGS(dev, xdp, tgt, err, type, ri)
+ );
+ 
+ TRACE_EVENT(xdp_cpumap_kthread,
 diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 5d1469de6921..85a2d33fd46b 100644
+index 85a2d33fd46b..5161ccb871e7 100644
 --- a/kernel/bpf/cpumap.c
 +++ b/kernel/bpf/cpumap.c
-@@ -563,7 +563,7 @@ static void cpu_map_free(struct bpf_map *map)
- 	kfree(cmap);
- }
+@@ -543,7 +543,6 @@ static void cpu_map_free(struct bpf_map *map)
+ 	 * complete.
+ 	 */
  
--struct bpf_cpu_map_entry *__cpu_map_lookup_elem(struct bpf_map *map, u32 key)
-+static void *__cpu_map_lookup_elem(struct bpf_map *map, u32 key)
+-	bpf_clear_redirect_map(map);
+ 	synchronize_rcu();
+ 
+ 	/* For cpu_map the remote CPUs can still be using the entries
+@@ -602,7 +601,8 @@ static int cpu_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+ 
+ static int cpu_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
  {
- 	struct bpf_cpu_map *cmap = container_of(map, struct bpf_cpu_map, map);
- 	struct bpf_cpu_map_entry *rcpu;
-@@ -600,6 +600,11 @@ static int cpu_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
- 	return 0;
+-	return __bpf_xdp_redirect_map(map, ifindex, flags, __cpu_map_lookup_elem);
++	return __bpf_xdp_redirect_map(map, ifindex, flags, __cpu_map_lookup_elem,
++				      XDP_REDIR_CPU_MAP);
  }
  
-+static int cpu_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
-+{
-+	return __bpf_xdp_redirect_map(map, ifindex, flags, __cpu_map_lookup_elem);
-+}
-+
  static int cpu_map_btf_id;
- const struct bpf_map_ops cpu_map_ops = {
- 	.map_meta_equal		= bpf_map_meta_equal,
-@@ -612,6 +617,7 @@ const struct bpf_map_ops cpu_map_ops = {
- 	.map_check_btf		= map_check_no_btf,
- 	.map_btf_name		= "bpf_cpu_map",
- 	.map_btf_id		= &cpu_map_btf_id,
-+	.xdp_redirect_map	= cpu_map_xdp_redirect_map,
- };
- 
- static void bq_flush_to_queue(struct xdp_bulk_queue *bq)
 diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 85d9d1b72a33..adf9a2517f80 100644
+index adf9a2517f80..5a403471065b 100644
 --- a/kernel/bpf/devmap.c
 +++ b/kernel/bpf/devmap.c
-@@ -258,7 +258,7 @@ static int dev_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
- 	return 0;
+@@ -197,7 +197,6 @@ static void dev_map_free(struct bpf_map *map)
+ 	list_del_rcu(&dtab->list);
+ 	spin_unlock(&dev_map_lock);
+ 
+-	bpf_clear_redirect_map(map);
+ 	synchronize_rcu();
+ 
+ 	/* Make sure prior __dev_map_entry_free() have completed. */
+@@ -737,12 +736,14 @@ static int dev_map_hash_update_elem(struct bpf_map *map, void *key, void *value,
+ 
+ static int dev_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
+ {
+-	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_lookup_elem);
++	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_lookup_elem,
++				      XDP_REDIR_DEV_MAP);
  }
  
--struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key)
-+static void *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key)
+ static int dev_hash_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
  {
- 	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
- 	struct hlist_head *head = dev_map_index_hash(dtab, key);
-@@ -392,7 +392,7 @@ void __dev_flush(void)
-  * update happens in parallel here a dev_put wont happen until after reading the
-  * ifindex.
-  */
--struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
-+static void *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
- {
- 	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
- 	struct bpf_dtab_netdev *obj;
-@@ -735,6 +735,16 @@ static int dev_map_hash_update_elem(struct bpf_map *map, void *key, void *value,
- 					 map, key, value, map_flags);
+-	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_hash_lookup_elem);
++	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_hash_lookup_elem,
++				      XDP_REDIR_DEV_MAP);
  }
  
-+static int dev_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
-+{
-+	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_lookup_elem);
-+}
-+
-+static int dev_hash_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
-+{
-+	return __bpf_xdp_redirect_map(map, ifindex, flags, __dev_map_hash_lookup_elem);
-+}
-+
  static int dev_map_btf_id;
- const struct bpf_map_ops dev_map_ops = {
- 	.map_meta_equal = bpf_map_meta_equal,
-@@ -747,6 +757,7 @@ const struct bpf_map_ops dev_map_ops = {
- 	.map_check_btf = map_check_no_btf,
- 	.map_btf_name = "bpf_dtab",
- 	.map_btf_id = &dev_map_btf_id,
-+	.xdp_redirect_map = dev_map_xdp_redirect_map,
- };
- 
- static int dev_map_hash_map_btf_id;
-@@ -761,6 +772,7 @@ const struct bpf_map_ops dev_map_hash_ops = {
- 	.map_check_btf = map_check_no_btf,
- 	.map_btf_name = "bpf_dtab",
- 	.map_btf_id = &dev_map_hash_map_btf_id,
-+	.xdp_redirect_map = dev_hash_map_xdp_redirect_map,
- };
- 
- static void dev_map_hash_remove_netdev(struct bpf_dtab *dtab,
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 1dda9d81f12c..96705a49225e 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -5409,7 +5409,8 @@ record_func_map(struct bpf_verifier_env *env, struct bpf_call_arg_meta *meta,
- 	    func_id != BPF_FUNC_map_delete_elem &&
- 	    func_id != BPF_FUNC_map_push_elem &&
- 	    func_id != BPF_FUNC_map_pop_elem &&
--	    func_id != BPF_FUNC_map_peek_elem)
-+	    func_id != BPF_FUNC_map_peek_elem &&
-+	    func_id != BPF_FUNC_redirect_map)
- 		return 0;
- 
- 	if (map == NULL) {
-@@ -11762,7 +11763,8 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
- 		     insn->imm == BPF_FUNC_map_delete_elem ||
- 		     insn->imm == BPF_FUNC_map_push_elem   ||
- 		     insn->imm == BPF_FUNC_map_pop_elem    ||
--		     insn->imm == BPF_FUNC_map_peek_elem)) {
-+		     insn->imm == BPF_FUNC_map_peek_elem   ||
-+		     insn->imm == BPF_FUNC_redirect_map)) {
- 			aux = &env->insn_aux_data[i + delta];
- 			if (bpf_map_ptr_poisoned(aux))
- 				goto patch_call_imm;
-@@ -11804,6 +11806,8 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
- 				     (int (*)(struct bpf_map *map, void *value))NULL));
- 			BUILD_BUG_ON(!__same_type(ops->map_peek_elem,
- 				     (int (*)(struct bpf_map *map, void *value))NULL));
-+			BUILD_BUG_ON(!__same_type(ops->xdp_redirect_map,
-+				     (int (*)(struct bpf_map *map, u32 ifindex, u64 flags))NULL));
- patch_map_ops_generic:
- 			switch (insn->imm) {
- 			case BPF_FUNC_map_lookup_elem:
-@@ -11830,6 +11834,9 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
- 				insn->imm = BPF_CAST_CALL(ops->map_peek_elem) -
- 					    __bpf_call_base;
- 				continue;
-+			case BPF_FUNC_redirect_map:
-+				insn->imm = BPF_CAST_CALL(ops->xdp_redirect_map) - __bpf_call_base;
-+				continue;
- 			}
- 
- 			goto patch_call_imm;
 diff --git a/net/core/filter.c b/net/core/filter.c
-index adfdad234674..fdf7401f43fd 100644
+index fdf7401f43fd..8ce21667b899 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -3944,22 +3944,6 @@ void xdp_do_flush(void)
- }
- EXPORT_SYMBOL_GPL(xdp_do_flush);
+@@ -3919,23 +3919,6 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
+ 	.arg2_type	= ARG_ANYTHING,
+ };
  
--static inline void *__xdp_map_lookup_elem(struct bpf_map *map, u32 index)
+-static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
+-			    struct bpf_map *map, struct xdp_buff *xdp)
 -{
 -	switch (map->map_type) {
 -	case BPF_MAP_TYPE_DEVMAP:
--		return __dev_map_lookup_elem(map, index);
 -	case BPF_MAP_TYPE_DEVMAP_HASH:
--		return __dev_map_hash_lookup_elem(map, index);
+-		return dev_map_enqueue(fwd, xdp, dev_rx);
 -	case BPF_MAP_TYPE_CPUMAP:
--		return __cpu_map_lookup_elem(map, index);
+-		return cpu_map_enqueue(fwd, xdp, dev_rx);
 -	case BPF_MAP_TYPE_XSKMAP:
--		return __xsk_map_lookup_elem(map, index);
+-		return __xsk_map_redirect(fwd, xdp);
 -	default:
--		return NULL;
+-		return -EBADRQC;
+-	}
+-	return 0;
+-}
+-
+ void xdp_do_flush(void)
+ {
+ 	__dev_flush();
+@@ -3944,55 +3927,45 @@ void xdp_do_flush(void)
+ }
+ EXPORT_SYMBOL_GPL(xdp_do_flush);
+ 
+-void bpf_clear_redirect_map(struct bpf_map *map)
+-{
+-	struct bpf_redirect_info *ri;
+-	int cpu;
+-
+-	for_each_possible_cpu(cpu) {
+-		ri = per_cpu_ptr(&bpf_redirect_info, cpu);
+-		/* Avoid polluting remote cacheline due to writes if
+-		 * not needed. Once we pass this test, we need the
+-		 * cmpxchg() to make sure it hasn't been changed in
+-		 * the meantime by remote CPU.
+-		 */
+-		if (unlikely(READ_ONCE(ri->map) == map))
+-			cmpxchg(&ri->map, map, NULL);
 -	}
 -}
 -
- void bpf_clear_redirect_map(struct bpf_map *map)
+ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+ 		    struct bpf_prog *xdp_prog)
  {
- 	struct bpf_redirect_info *ri;
-@@ -4113,28 +4097,7 @@ static const struct bpf_func_proto bpf_xdp_redirect_proto = {
- BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
- 	   u64, flags)
+ 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+-	struct bpf_map *map = READ_ONCE(ri->map);
+-	u32 index = ri->tgt_index;
++	enum xdp_redirect_type type = ri->tgt_type;
+ 	void *fwd = ri->tgt_value;
+ 	int err;
+ 
+-	ri->tgt_index = 0;
+-	ri->tgt_value = NULL;
+-	WRITE_ONCE(ri->map, NULL);
++	ri->tgt_type = XDP_REDIR_UNSET;
+ 
+-	if (unlikely(!map)) {
+-		fwd = dev_get_by_index_rcu(dev_net(dev), index);
++	switch (type) {
++	case XDP_REDIR_DEV_IFINDEX:
++		fwd = dev_get_by_index_rcu(dev_net(dev), (u32)(long)fwd);
+ 		if (unlikely(!fwd)) {
+ 			err = -EINVAL;
+-			goto err;
++			break;
+ 		}
+-
+ 		err = dev_xdp_enqueue(fwd, xdp, dev);
+-	} else {
+-		err = __bpf_tx_xdp_map(dev, fwd, map, xdp);
++		break;
++	case XDP_REDIR_DEV_MAP:
++		err = dev_map_enqueue(fwd, xdp, dev);
++		break;
++	case XDP_REDIR_CPU_MAP:
++		err = cpu_map_enqueue(fwd, xdp, dev);
++		break;
++	case XDP_REDIR_XSK_MAP:
++		err = __xsk_map_redirect(fwd, xdp);
++		break;
++	default:
++		err = -EBADRQC;
+ 	}
+ 
+ 	if (unlikely(err))
+ 		goto err;
+ 
+-	_trace_xdp_redirect_map(dev, xdp_prog, fwd, map, index);
++	_trace_xdp_redirect_map(dev, xdp_prog, fwd, type, ri);
+ 	return 0;
+ err:
+-	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, map, index, err);
++	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, type, ri, err);
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(xdp_do_redirect);
+@@ -4001,41 +3974,37 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
+ 				       struct sk_buff *skb,
+ 				       struct xdp_buff *xdp,
+ 				       struct bpf_prog *xdp_prog,
+-				       struct bpf_map *map)
++				       void *fwd,
++				       enum xdp_redirect_type type)
  {
--	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+ 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+-	u32 index = ri->tgt_index;
+-	void *fwd = ri->tgt_value;
+-	int err = 0;
 -
--	/* Lower bits of the flags are used as return code on lookup failure */
--	if (unlikely(flags > XDP_TX))
--		return XDP_ABORTED;
+-	ri->tgt_index = 0;
+-	ri->tgt_value = NULL;
+-	WRITE_ONCE(ri->map, NULL);
 -
--	ri->tgt_value = __xdp_map_lookup_elem(map, ifindex);
--	if (unlikely(!ri->tgt_value)) {
--		/* If the lookup fails we want to clear out the state in the
--		 * redirect_info struct completely, so that if an eBPF program
--		 * performs multiple lookups, the last one always takes
--		 * precedence.
--		 */
--		WRITE_ONCE(ri->map, NULL);
--		return flags;
+-	if (map->map_type == BPF_MAP_TYPE_DEVMAP ||
+-	    map->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+-		struct bpf_dtab_netdev *dst = fwd;
++	int err;
+ 
+-		err = dev_map_generic_redirect(dst, skb, xdp_prog);
++	switch (type) {
++	case XDP_REDIR_DEV_MAP:
++		err = dev_map_generic_redirect(fwd, skb, xdp_prog);
+ 		if (unlikely(err))
+ 			goto err;
+-	} else if (map->map_type == BPF_MAP_TYPE_XSKMAP) {
++		break;
++	case XDP_REDIR_XSK_MAP: {
+ 		struct xdp_sock *xs = fwd;
+ 
+ 		err = xsk_generic_rcv(xs, xdp);
+ 		if (err)
+ 			goto err;
+ 		consume_skb(skb);
+-	} else {
++		break;
++	}
++	default:
+ 		/* TODO: Handle BPF_MAP_TYPE_CPUMAP */
+ 		err = -EBADRQC;
+ 		goto err;
+ 	}
+ 
+-	_trace_xdp_redirect_map(dev, xdp_prog, fwd, map, index);
++	_trace_xdp_redirect_map(dev, xdp_prog, fwd, type, ri);
+ 	return 0;
+ err:
+-	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, map, index, err);
++	_trace_xdp_redirect_map_err(dev, xdp_prog, fwd, type, ri, err);
+ 	return err;
+ }
+ 
+@@ -4043,29 +4012,31 @@ int xdp_do_generic_redirect(struct net_device *dev, struct sk_buff *skb,
+ 			    struct xdp_buff *xdp, struct bpf_prog *xdp_prog)
+ {
+ 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+-	struct bpf_map *map = READ_ONCE(ri->map);
+-	u32 index = ri->tgt_index;
+-	struct net_device *fwd;
++	enum xdp_redirect_type type = ri->tgt_type;
++	void *fwd = ri->tgt_value;
+ 	int err = 0;
+ 
+-	if (map)
+-		return xdp_do_generic_redirect_map(dev, skb, xdp, xdp_prog,
+-						   map);
+-	ri->tgt_index = 0;
+-	fwd = dev_get_by_index_rcu(dev_net(dev), index);
+-	if (unlikely(!fwd)) {
+-		err = -EINVAL;
+-		goto err;
 -	}
--
++	ri->tgt_type = XDP_REDIR_UNSET;
++	ri->tgt_value = NULL;
+ 
+-	err = xdp_ok_fwd_dev(fwd, skb->len);
+-	if (unlikely(err))
+-		goto err;
++	if (type == XDP_REDIR_DEV_IFINDEX) {
++		fwd = dev_get_by_index_rcu(dev_net(dev), (u32)(long)fwd);
++		if (unlikely(!fwd)) {
++			err = -EINVAL;
++			goto err;
++		}
+ 
+-	skb->dev = fwd;
+-	_trace_xdp_redirect(dev, xdp_prog, index);
+-	generic_xdp_tx(skb, xdp_prog);
+-	return 0;
++		err = xdp_ok_fwd_dev(fwd, skb->len);
++		if (unlikely(err))
++			goto err;
++
++		skb->dev = fwd;
++		_trace_xdp_redirect(dev, xdp_prog, index);
++		generic_xdp_tx(skb, xdp_prog);
++		return 0;
++	}
++
++	return xdp_do_generic_redirect_map(dev, skb, xdp, xdp_prog, fwd, type);
+ err:
+ 	_trace_xdp_redirect_err(dev, xdp_prog, index, err);
+ 	return err;
+@@ -4078,10 +4049,9 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, flags)
+ 	if (unlikely(flags))
+ 		return XDP_ABORTED;
+ 
 -	ri->flags = flags;
 -	ri->tgt_index = ifindex;
--	WRITE_ONCE(ri->map, map);
--
--	return XDP_REDIRECT;
-+	return map->ops->xdp_redirect_map(map, ifindex, flags);
- }
+-	ri->tgt_value = NULL;
+-	WRITE_ONCE(ri->map, NULL);
++	ri->tgt_type = XDP_REDIR_DEV_IFINDEX;
++	ri->tgt_index = 0;
++	ri->tgt_value = (void *)(long)ifindex;
  
- static const struct bpf_func_proto bpf_xdp_redirect_map_proto = {
+ 	return XDP_REDIRECT;
+ }
 diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-index 113fd9017203..92f4023d3ae2 100644
+index 92f4023d3ae2..d3e80c9fa17c 100644
 --- a/net/xdp/xskmap.c
 +++ b/net/xdp/xskmap.c
-@@ -125,6 +125,18 @@ static int xsk_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
- 	return insn - insn_buf;
- }
- 
-+static void *__xsk_map_lookup_elem(struct bpf_map *map, u32 key)
-+{
-+	struct xsk_map *m = container_of(map, struct xsk_map, map);
-+	struct xdp_sock *xs;
-+
-+	if (key >= map->max_entries)
-+		return NULL;
-+
-+	xs = READ_ONCE(m->xsk_map[key]);
-+	return xs;
-+}
-+
- static void *xsk_map_lookup_elem(struct bpf_map *map, void *key)
+@@ -87,7 +87,6 @@ static void xsk_map_free(struct bpf_map *map)
  {
- 	WARN_ON_ONCE(!rcu_read_lock_held());
-@@ -215,6 +227,11 @@ static int xsk_map_delete_elem(struct bpf_map *map, void *key)
- 	return 0;
+ 	struct xsk_map *m = container_of(map, struct xsk_map, map);
+ 
+-	bpf_clear_redirect_map(map);
+ 	synchronize_net();
+ 	bpf_map_area_free(m);
+ }
+@@ -229,7 +228,8 @@ static int xsk_map_delete_elem(struct bpf_map *map, void *key)
+ 
+ static int xsk_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
+ {
+-	return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_elem);
++	return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_elem,
++				      XDP_REDIR_XSK_MAP);
  }
  
-+static int xsk_map_xdp_redirect_map(struct bpf_map *map, u32 ifindex, u64 flags)
-+{
-+	return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_elem);
-+}
-+
  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
- 			     struct xdp_sock **map_entry)
- {
-@@ -247,4 +264,5 @@ const struct bpf_map_ops xsk_map_ops = {
- 	.map_check_btf = map_check_no_btf,
- 	.map_btf_name = "xsk_map",
- 	.map_btf_id = &xsk_map_btf_id,
-+	.xdp_redirect_map = xsk_map_xdp_redirect_map,
- };
 -- 
 2.27.0
 
