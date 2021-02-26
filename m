@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF2C326A07
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 23:31:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C67326A0A
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 23:35:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbhBZWbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 17:31:21 -0500
-Received: from mga02.intel.com ([134.134.136.20]:32453 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229598AbhBZWbU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Feb 2021 17:31:20 -0500
-IronPort-SDR: iDM6JJ0ECG7SCx8JSvnm6ndIa9kLEIXTcxnPFUkgBXoIuCeVBX9NUxoiiawwYGuMT5RVCvQJHf
- oMb8oPYHZpXA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9907"; a="173150048"
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; 
-   d="scan'208";a="173150048"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2021 14:30:39 -0800
-IronPort-SDR: rYrTUz2gi+ZCYEP2CYrKlMXHfTAmFK8H8OcJF9uzaZLLpce6yCRYZf/upyjKPP4zgBkcBbmNoh
- xJRu8EWrXaKg==
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; 
-   d="scan'208";a="516660573"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.213.184.154])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2021 14:30:38 -0800
-Date:   Fri, 26 Feb 2021 14:30:32 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Tom Seewald <tseewald@gmail.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeff Garzik <jeff@garzik.org>,
-        Auke Kok <auke-jan.h.kok@intel.com>
-Subject: Re: [PATCH net 2/2] igb: Fix duplicate include guard
-Message-ID: <20210226143032.00005184@intel.com>
-In-Reply-To: <20210222040005.20126-2-tseewald@gmail.com>
-References: <20210222040005.20126-1-tseewald@gmail.com>
-        <20210222040005.20126-2-tseewald@gmail.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S229745AbhBZWfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 17:35:17 -0500
+Received: from www62.your-server.de ([213.133.104.62]:38136 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229586AbhBZWfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 17:35:16 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lFlgw-000Ejm-So; Fri, 26 Feb 2021 23:34:34 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lFlgw-000Q70-Nd; Fri, 26 Feb 2021 23:34:34 +0100
+Subject: Re: [PATCH bpf-next V2 0/2] bpf: Updates for BPF-helper bpf_check_mtu
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+References: <161364896576.1250213.8059418482723660876.stgit@firesoul>
+ <20210219073638.75b3d8f3@carbon>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9e620507-6e9b-16f8-5ef9-3bbf2c2b6a3c@iogearbox.net>
+Date:   Fri, 26 Feb 2021 23:34:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210219073638.75b3d8f3@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26092/Fri Feb 26 13:12:59 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tom Seewald wrote:
-
-> The include guard "_E1000_HW_H_" is used by two separate header files in
-> two different drivers (e1000/e1000_hw.h and igb/e1000_hw.h). Using the
-> same include guard macro in more than one header file may cause
-> unexpected behavior from the compiler. Fix this by renaming the
-> duplicate guard in the igb driver.
+On 2/19/21 7:36 AM, Jesper Dangaard Brouer wrote:
+> On Thu, 18 Feb 2021 12:49:53 +0100
+> Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 > 
-> Fixes: 9d5c824399de ("igb: PCI-Express 82575 Gigabit Ethernet driver")
-> Signed-off-by: Tom Seewald <tseewald@gmail.com>
+>> The FIB lookup example[1] show how the IP-header field tot_len
+>> (iph->tot_len) is used as input to perform the MTU check. The recently
+>> added MTU check helper bpf_check_mtu() should also support this type
+>> of MTU check.
+>>
+>> Lets add this feature before merge window, please. This is a followup
+>> to 34b2021cc616 ("bpf: Add BPF-helper for MTU checking").
+> 
+> Which git tree should I send this against bpf-next or bpf, to keep this
+> change together with 34b2021cc616 ("bpf: Add BPF-helper for MTU
+> checking") ?
 
-Change is simple and makes sense.
-
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Given this is an api change, we'll take this into bpf tree after the
+pending pr was merged.
