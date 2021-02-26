@@ -2,133 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F169326555
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E536E326586
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbhBZQPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 11:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
+        id S230083AbhBZQ0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 11:26:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbhBZQPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 11:15:09 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37319C061574
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:14:20 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id d9so9421856ybq.1
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:14:20 -0800 (PST)
+        with ESMTP id S229769AbhBZQ0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 11:26:49 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE43C06174A
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:26:07 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id b3so9139313wrj.5
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:26:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=xgw5jEznpL6PdmnSljjvbQXylPVcY0Ejb3uOawh3xRM=;
-        b=YqLyEDbkf30uWkklrmA5XImOoJ38ERRa/csdP2dvb1K3XMt1tNOcIptCkHYs4pAObg
-         hPp/kHaOGdc2slvIoebW6JqcypB5Q/qly7a1KlNnnrSE/7K61YuqHgH85wQ6xUjR2wBs
-         MKmWOuzNFFcNkyxEpQ+vv3r6YNTOpnn1hqarjdPY92OWQuqBbBcttlZllpkWqQbPP21H
-         LThDpNwTdCcWiChBz3RpIK/+zxo9J1rGVYhOF14SQYSC11cFjY4J0KXZ1Dp3AY10dUwN
-         varuK+3ybvkJ7i9as19hGFutGjU80/ZEjFwqC9p6SYf7JyLBajYI452bv2JFg69yMr2I
-         3SbA==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=MCHAPcJe1qcCe9PqtI4xWPb7Njdj/4OwtFhb21MfPXY=;
+        b=PMhLznuFVbZ9vLfWMfQKxKh4RpG7LzwUe2lr0hC+Rmf6WrYl6/nGOjmcT9V2PUEVb9
+         Ch4ZLQ7HazvrGoQZ2xRikcE5uAP7He71efSyea3n8SjayALBFLiDPubOm1vzamT4fC5B
+         BHZE/n/Yhq4d3ybT3ACugY+hd6ZQF6cTpEC+EMeIFOTSSp8o3yoeOvIUTd4oD82CnYKY
+         9HokrVd+Eu8dXERIewiN/kn7symHA8jQMuLc61FFSNz4Pba8Puik76ER6un/6qVwHGbS
+         RLTqq9Pv7yElvrJijU04Mrx53TbchbdwkPcSydqsnS2/qmBcSNg7UsXD2OVHsxdC2EBj
+         1Bgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xgw5jEznpL6PdmnSljjvbQXylPVcY0Ejb3uOawh3xRM=;
-        b=U3MbpVwY+C7muswL3RyiJcWCGIqNnVKimP78ecE5eWyQdp1NNusTUTgHy73s/cBtP1
-         KUTI1f6MRvXUSfhVTW6NbUhXTGpr3Q/2++3DZki7q5Pl0ZNtnQltIrbBBcgk7v/Fztww
-         0m/blK1KfjYJ5snvVTpMJ8NnYItNiKV0TK2Rae/BwK6i+KWcrk4mWQLWCSYVikfd1RbT
-         NYCy9gLJ6z/s6HbRa17hf0Qu9BjbpVZyAaV/1nGlQRYiI3GlS9GhvjPoPRUhspISx3kK
-         +kJCqXVH9NF+V9plK3rrKV+mqoN1RiZSaOcE70O4clsVi5JPq9wSQ8wqpX+mITsbkC98
-         HkzA==
-X-Gm-Message-State: AOAM532M7qAxmnb27aDp9HD3wBRrnFYmlR0MebJB+oZa32qK93JhM9oh
-        QwVPWinK6HvDfsRrqZCEAzFXsEM6cfC9bEOQWI8=
-X-Google-Smtp-Source: ABdhPJyn2NjxumQWjS/pZBd8Zy4jlkvBGBg+Rz8dKzo0EP0yQpsSml88fWw6/A6YJsewsCUSBiqjBxP2+4GazT1FEbE=
-X-Received: by 2002:a25:db07:: with SMTP id g7mr5304032ybf.304.1614356059587;
- Fri, 26 Feb 2021 08:14:19 -0800 (PST)
-MIME-Version: 1.0
-References: <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
- <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
- <7fc4933f-36d4-99dc-f968-9ca3b8758a9b@gmail.com> <CABwr4_siD8PcXnYuAoYCqQp8ioikJQiMgDW=JehX1c+0Zuc3rQ@mail.gmail.com>
- <b35ae75c-d0ce-2d29-b31a-72dc999a9bcc@gmail.com> <CABwr4_u5azaW8vRix-OtTUyUMRKZ3ncHwsou5MLC9w4F0WUsvg@mail.gmail.com>
- <c9e72b62-3b4e-6214-f807-b24ec506cb56@gmail.com> <CABwr4_vpmgxyGAGYjM_C5TvdROT+pV738YBv=KnSKEO-ibUMxQ@mail.gmail.com>
- <286fb043-b812-a5ba-c66e-eef63fe5cc98@gmail.com> <CABwr4_tJqFiS-XtFitXGn=bjYzdv=YwqSSUaAvh1U-iHsbTZXQ@mail.gmail.com>
- <YDkCrCIwtCOmOBAX@lunn.ch> <ff77ab40-57d3-72bf-8425-6f68851a01a7@gmail.com>
-In-Reply-To: <ff77ab40-57d3-72bf-8425-6f68851a01a7@gmail.com>
-From:   =?UTF-8?Q?Daniel_Gonz=C3=A1lez_Cabanelas?= <dgcbueu@gmail.com>
-Date:   Fri, 26 Feb 2021 17:14:08 +0100
-Message-ID: <CABwr4_s_w-0-rNVmjoHMy-b=vWcJSzSFOyvuJfu7TziBneOHBg@mail.gmail.com>
-Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=MCHAPcJe1qcCe9PqtI4xWPb7Njdj/4OwtFhb21MfPXY=;
+        b=Y4WwA8KegzKIfpDu2WWLPqPezjarT9tOcCGHXolirn8tKIrxuT/Gv19yJAJfNRhxKb
+         QcL9dSu/WbRBOOBfEpg/hsdRbjO+U33WGmOrRaOSgfMDUynkp/aEGOgI0w6V2Svs2FbB
+         KW4GZleWVpEMpQXk4+RilE0a8tXnaaxs1kd0DeMG/4AwFrhAPOiR0VQG1EU2LipMCm/7
+         cmonOvkbKVio/rKiD5N5hJT/sTWLbiylFWZZXkvG4vnu8vj/f2Ecam0GMY8NLNri/Yuh
+         4a4dgB5CoqJsZlNvhElZVGciPbAHiR7xtd/0+clC9mHRd3+mLravG26Rd9Bwqf4G11h7
+         38Gw==
+X-Gm-Message-State: AOAM532X7SGdfD0Gji/OaxmvoorjVzl3O3uvqr8TcGqptxXI2rTkZp2j
+        Z5UCLp01+lNsmLYVKdCz7UI=
+X-Google-Smtp-Source: ABdhPJywnW7UT3jMnUFQQGi4AOg7mByO4mWUqEcJS8spgKGaijZfjs3LY42zQCtELIEgZVQjYO0ojg==
+X-Received: by 2002:adf:fe01:: with SMTP id n1mr4043051wrr.341.1614356765950;
+        Fri, 26 Feb 2021 08:26:05 -0800 (PST)
+Received: from silmaril.home ([188.120.85.11])
+        by smtp.gmail.com with ESMTPSA id h2sm16051284wrq.81.2021.02.26.08.26.04
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Feb 2021 08:26:05 -0800 (PST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
+Subject: Re: TCP stall issue
+From:   Gil Pedersen <kanongil@gmail.com>
+In-Reply-To: <d5b6a39496db4a4aa5ceb770485dd47c@AcuMS.aculab.com>
+Date:   Fri, 26 Feb 2021 17:26:03 +0100
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Eric Dumazet <edumazet@google.com>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <32E2B684-5D8C-41E3-B17A-938A5F784461@gmail.com>
+References: <35A4DDAA-7E8D-43CB-A1F5-D1E46A4ED42E@gmail.com>
+ <CADVnQy=G=GU1USyEcGA_faJg5L-wLO6jS4EUocrVsjqkaGbvYw@mail.gmail.com>
+ <C5332AE4-DFAF-4127-91D1-A9108877507A@gmail.com>
+ <CADVnQynP40vvvTV3VY0fvYwEcSGQ=Y=F53FU8sEc-Bc=mzij5g@mail.gmail.com>
+ <93A31D2F-1CDE-4042-9D00-A7E1E49A99A9@gmail.com>
+ <CADVnQyn5jrkPC7HJAkMOFN-FBZjwtCw8ns-3Yx7q=-S57PdC6w@mail.gmail.com>
+ <d5b6a39496db4a4aa5ceb770485dd47c@AcuMS.aculab.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I could update the BCM5365 phy_id in the downstream B53 driver to fix
-it and avoid any kind of future conflicts if the driver is upstreamed.
-Accordingly to documentation the whole BCM5365 UID (not masked) is
-0x00406370.
-PHYID HIGH[15:0] =3D OUI[21:6]
-PHYID LOW[15:0] =3D OUI[5:0] + MODEL[5:0] + REV[3:0]
 
-Right now the used mask is 0x1ffffc00. But if I understood correctly
-it is only required to mask the last 3 bits. This would reflect in the
-B53 driver:
----snip---
-/* BCM5365 */
-static struct phy_driver b53_phy_driver_id3 =3D {
-.phy_id =3D 0x00406370,
-.name =3D "Broadcom B53 (3)",
-.phy_id_mask =3D 0xfffffff8,,
-----snip---
+> On 26 Feb 2021, at 15.39, David Laight <David.Laight@ACULAB.COM> =
+wrote:
+>=20
+> Some thoughts...
+>=20
+> Does a non-android linux system behave correctly through the same NAT =
+gateways?
+> Particularly with a similar kernel version.
+>=20
+> If you have a USB OTG cable and USB ethernet dongle you may be able to =
+get
+> android to use a wired ethernet connection - excluding any WiFi =
+issues.
+> (OTG usually works for keyboard and mouse, dunno if ethernet support =
+is there.)
+>=20
+> Does you android device work on any other networks?
 
-For the tested board, BCM6348, the UID is 0x00406240 (read by the
-kernel). But in this case its driver involves more SoCs/PHYs, maybe
-with different UIDs.
+I have done some further tests. I managed to find another Android device =
+(kernel 4.9.113), which thankfully does _not_ send the weird D-SACKs and =
+quickly recovers, so the problem appears to be on the original device.
 
-Regards
+Additionally, I have managed to do a trace on the WLAN AP, where I can =
+confirm that all packets seem to be transferred without unnecessary =
+modifications or re-ordering. Ie. all segments sent from the server make =
+it to the device and any loss will be device local. As such this points =
+to a driver-level issue?
 
-El vie, 26 feb 2021 a las 15:28, Heiner Kallweit
-(<hkallweit1@gmail.com>) escribi=C3=B3:
->
-> On 26.02.2021 15:16, Andrew Lunn wrote:
-> >>> OK, I see. Then there's no reason to complain upstream.
-> >>> Either use the mainline B53 DSA driver of fix interrupt mode
-> >>> downstream.
-> >>
-> >> I agree.
-> >>
-> >> This b53 driver has one PHY with the same BCM63XX phy_id, causing a
-> >> double probe. I'll send the original patch to the OpenWrt project.
-> >
-> > Hi Daniel
-> >
-> > There is a bit of a disconnect between OpenWRT and Mainline. They have
-> > a lot of fixes that don't make it upstream. So it is good to see
-> > somebody trying to fix mainline first, and then backport to
-> > OpenWRT. But please do test mainline and confirm it is actually broken
-> > before submitting patches.
-> >
-> > When you do submit to OpenWRT, please make it clear this is an OpenWRT
-> > problem so somebody does not try to push it to mainline again....
-> >
-> > And if you have an itch to scratch, try adding mainline support for
-> > this board. We can guide you.
-> >
-> Daniel has two conflicting PHY drivers for bcm63xx, the one from mainline=
-,
-> and one in the OpenWRT downstream b53 driver. Removing the mainline
-> PHY driver would resolve the conflict, but the OpenWRT PHY driver has
-> no IRQ support so Daniel would gain nothing.
-> I think best would be to remove the duplicated PHY driver from the
-> OpenWRT b53 driver. Daniel could try to remove b53_phy_driver_id3 and
-> re-test.
->
-> >       Andrew
-> >
-> Heiner
+I don't have an ethernet dongle ready. I tried to connect using cellular =
+and was unable to replicate the issue, so this further points at a =
+driver-level issue.
+
+Given that it now seems relevant, the device is an Android P20 Lite, =
+running a variant of Android 9.1 with an update from this year (kernel =
+was built jan. 05 2021).
+
+/Gil=
