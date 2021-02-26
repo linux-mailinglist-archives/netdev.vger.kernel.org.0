@@ -2,109 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82208325FEC
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 10:24:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A152D325FF3
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 10:25:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230429AbhBZJXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 04:23:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
+        id S230351AbhBZJYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 04:24:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbhBZJVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 04:21:34 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE76C06174A
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 01:20:53 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id a17so12390386lfb.1
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 01:20:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=ndqUWIvQWOF/d8LZmKzg4/WosPvKARS58S9vLjqTViI=;
-        b=JOrHQU2RMxWUoeGHtv+k60Bq07tTGARTb8fXyfMQ5DD0yvbYWyMEBCRqyI+fIDyX5u
-         p6JgALwDrJcj6lAYXW8LgsNDcXbU1ashyOyu9SWPwuencWlZttc2zL8hHiSYEekEDTA+
-         74Mdf5eXDP3TXBi/GLk8BPRAvx+YgQUtNBI/a3Blcycr3HBXpFZudzq3DwbsnkYPSSnd
-         YbBqzUqjHw/DhceXIJhH4ZUb0QHNv3OXZy2DmeAYkq/tFsyUI2h77iXGvlVpkHeHfARe
-         nsixETFb4Z/GcAYFVU3WN/BqGUtRcRvOemX7otLeQW4sdLrZTaEyVz7MdtpmrbhCnq99
-         UY2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=ndqUWIvQWOF/d8LZmKzg4/WosPvKARS58S9vLjqTViI=;
-        b=JUJgekDphwSHIHWI62nYa9csie1bOnB5dB3K8Lh7buEH79bTPNS6jPTHDl5eCy4Za1
-         eYKS4l7Vgx8FA1sm6JPPCyu+iqfhA5C5UDx6fJT5ZjcWkZJddYqCnydgABavBIdJUJOv
-         RwP494g5TGYNpgSykXrYglWaMmsQaAxbj3k7vSLtWKd8xAMMdqEMRYqTHl0Llb4UUBHQ
-         HxRRTR4ohjJsBoAq0t1sg3iXUNtbSMUtswivBAfRKHQdZcjrYqblmBYJC7tgMFLkVpNz
-         VagQL+4vUgcn5tHe6Rd+QkdVZ34O3IwakBcwJ4pZlVMhiNeAK/3OLCN6HZJFnAGEzE4R
-         TEaw==
-X-Gm-Message-State: AOAM530R3XPpiB4eLAk7xBuqawsj09TCROMvvSPHxUTLn1k31hC65N98
-        B4plvxn5Fhk05+OaXHyu9uhRrw==
-X-Google-Smtp-Source: ABdhPJxIalxzKo03yxQ99BxZA/ChkuJVOFSw3q76UO+YwLh7/oW9G45ttvhY7KiwiMJ+qUab13Em/A==
-X-Received: by 2002:a19:ec1a:: with SMTP id b26mr1196430lfa.610.1614331251973;
-        Fri, 26 Feb 2021 01:20:51 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id q13sm807505lfr.99.2021.02.26.01.20.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 01:20:51 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: Re: [RFC PATCH v2 net-next 01/17] net: dsa: reference count the host mdb addresses
-In-Reply-To: <20210224114350.2791260-2-olteanv@gmail.com>
-References: <20210224114350.2791260-1-olteanv@gmail.com> <20210224114350.2791260-2-olteanv@gmail.com>
-Date:   Fri, 26 Feb 2021 10:20:43 +0100
-Message-ID: <87sg5jqj6c.fsf@waldekranz.com>
+        with ESMTP id S230427AbhBZJW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 04:22:58 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC97C06178B
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 01:22:18 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lFZJy-0005J6-4z; Fri, 26 Feb 2021 10:22:02 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:adc1:3ee1:6274:c5d0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id DBBA05E99BB;
+        Fri, 26 Feb 2021 09:21:59 +0000 (UTC)
+Date:   Fri, 26 Feb 2021 10:21:58 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dariobin@libero.it>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Federico Vaga <federico.vaga@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 5/6] can: c_can: prepare to up the message objects
+ number
+Message-ID: <20210226092158.krmrds75hy6g3vks@pengutronix.de>
+References: <20210225215155.30509-1-dariobin@libero.it>
+ <20210225215155.30509-6-dariobin@libero.it>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hovsnqewnww35o2i"
+Content-Disposition: inline
+In-Reply-To: <20210225215155.30509-6-dariobin@libero.it>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 13:43, Vladimir Oltean <olteanv@gmail.com> wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
-> Currently any DSA switch that is strict when implementing the mdb
-> operations prints these benign errors after the addresses expire, with
-> at least 2 ports bridged:
->
-> [  286.013814] mscc_felix 0000:00:00.5 swp3: failed (err=-2) to del object (id=3)
->
-> The reason has to do with this piece of code:
->
-> 	netdev_for_each_lower_dev(dev, lower_dev, iter)
-> 		br_mdb_switchdev_host_port(dev, lower_dev, mp, type);
->
-> called from:
->
-> br_multicast_group_expired
-> -> br_multicast_host_leave
->    -> br_mdb_notify
->       -> br_mdb_switchdev_host
->
-> Basically, the bridge code is correct.
 
-How about "the bridge code is not wrong"? Is there any reason why we
-could not get rid of the duplicated messages at the source
-(br_mdb_switchdev_host)?
+--hovsnqewnww35o2i
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The forward offloading we have talked about before requires that the
-bridge-internal port OFMs are bounded to some low value
-(e.g. BITS_PER_LONG) such that they can be tracked in a small
-bitfield. I have a patch that does this, it is tiny.
+On 25.02.2021 22:51:54, Dario Binacchi wrote:
+> --- a/drivers/net/can/c_can/c_can.c
+> +++ b/drivers/net/can/c_can/c_can.c
+[...]
+> -struct net_device *alloc_c_can_dev(void)
+> +struct net_device *alloc_c_can_dev(int msg_obj_num)
+>  {
+>  	struct net_device *dev;
+>  	struct c_can_priv *priv;
+> +	int msg_obj_tx_num =3D msg_obj_num / 2;
+> =20
+> -	dev =3D alloc_candev(sizeof(struct c_can_priv), C_CAN_MSG_OBJ_TX_NUM);
+> +	dev =3D alloc_candev(sizeof(*priv) + sizeof(u32) * msg_obj_tx_num,
+> +			   msg_obj_tx_num);
+>  	if (!dev)
+>  		return NULL;
+> =20
+>  	priv =3D netdev_priv(dev);
+> -	netif_napi_add(dev, &priv->napi, c_can_poll, C_CAN_NAPI_WEIGHT);
+> +	priv->msg_obj_num =3D msg_obj_num;
+> +	priv->msg_obj_rx_num =3D msg_obj_num - msg_obj_tx_num;
+> +	priv->msg_obj_rx_first =3D 1;
+> +	priv->msg_obj_rx_last =3D
+> +		priv->msg_obj_rx_first + priv->msg_obj_rx_num - 1;
+> +	priv->msg_obj_rx_mask =3D ((u64)1 << priv->msg_obj_rx_num) - 1;
 
-With that in place, imagine a `br_switchdev_for_each_distinct_dev`
-helper that would wrap `netdev_for_each_lower_dev`, keeping track of
-OFMs it had already visited.
+Here you're casting the 1 to 64bit, but msg_obj_rx_mask is only u32. Use
+"1UL", if you are sure that rx_mask would never exceed 32 bit.
 
-For all host related switchdev calls, we should be able to use that
-instead of the full iterator to only contact each switchdev driver once.
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--hovsnqewnww35o2i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmA4vbMACgkQqclaivrt
+76lH3Af/daiXgsp1o5BDGL82GyxOG6ElrbK18/+tHyFptfaofu6jQHNYpdEawnl+
+T4vQrNUSmLWFGq5bCRq3Br58heLLauUCqg9FeJFEEMgZB4/3sja78lgyb00pWJra
+cozJH/YweiB8pqK/Vio5c2KDX1QG1fUfVaD4Q677wdtpLt8N8vqhwCYSm8+3dD3Z
+tQI37W6P9TqI+kughgahD9YZHkQbwX1S6uq7oXFEFhayhMfKtwxORnx8stu6dzdP
+sZYOnGO+FHRIlB1wpQ4Q7s6rRb5NXp4AVyIBeAWkM8oxv0lM9vWrSOhvecqOCf9U
+XmEswW396ahY0yMAtUe0kwrVi01mVQ==
+=FzS5
+-----END PGP SIGNATURE-----
+
+--hovsnqewnww35o2i--
