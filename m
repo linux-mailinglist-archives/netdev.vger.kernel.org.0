@@ -2,108 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12378326A66
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 00:30:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5D7326A6F
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 00:37:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbhBZXaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 18:30:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbhBZXaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 18:30:16 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F853C061574
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 15:29:36 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id w21so12932733edc.7
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 15:29:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gp3mscLnHbLk2WQabMblkvDctVQNsKWhn5ptCzaF+1Y=;
-        b=elWo1DZMnGks8yYN6bgTFChY/1/mOR4rD9vtrhZIjRgrhrBci4GGjZpG8RWEzRgLS2
-         v9trDhxuRS10SeHGQ8jfxN1pPMU805JKI7gTdNDFN0ZMqyNKqrxn80bjDcgJ3u5gKgag
-         D5BUQfouFcL6K2MliMzQqep58d0b0lFIEVOx9kWwXZ/Tv/sF5TOdbT0JKI2lMUtRlScu
-         d1eyAMEhEBrzQKs/bs70qk1kqpN4GNeQXIiukCfR3b2sa5+OkRjPtaUI4t6yXE7+u8wH
-         tV99qjqGI/Y79ryCtCBzDhZtiq50Fh/tQ9HBTa/bU4p+1232hnSB7Wmhw9szrb36xZ/f
-         qGag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gp3mscLnHbLk2WQabMblkvDctVQNsKWhn5ptCzaF+1Y=;
-        b=ooM7kkHPbR5GBq5gTQCJIiwRZhgYsvzYYvXL8zmL7ckWfI1QyrqlCuJBAXY0I1bAkP
-         RT4RhS4M7Hmv7dVv2+wmZw6r0vfmsBmcpRbl6j40hgpwGU9vBvob5Kq2vn/OprkljrTb
-         q+qFJjHPY2rVKv8dXv8WKdfQoM6/mkFIr4RWWkgLYbH4HfnNUhH5tSRp3rSRWVGH0Myt
-         hfwHbd+8r8iYwXQ703tED9lwWYQGmhpONU5BSf+QQBZZznfZXyZVschXe/NrWrp7OxE6
-         RXc6wnYRYuTjJUSlD0D9CIEoq+EkhJiFn8U4ab9KurRJIHLdQllRiM3zv/r4JYpkAHBW
-         drrQ==
-X-Gm-Message-State: AOAM531YLrjjLZot8P09Ir7tPAPgfqeYoTgkPICLlCz47RhALD5Yw8NS
-        s8f9tssnPEpdOBVH0PW+5QuUUgELk2k=
-X-Google-Smtp-Source: ABdhPJwprhfzngU1GNpRlYiM7pAujYkKpew4RtpcWmGvVWR77g/WyerWoXAo1t6YcIq6nB/ywC63GQ==
-X-Received: by 2002:a50:8b66:: with SMTP id l93mr5846036edl.384.1614382174886;
-        Fri, 26 Feb 2021 15:29:34 -0800 (PST)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id by8sm6536157edb.95.2021.02.26.15.29.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Feb 2021 15:29:34 -0800 (PST)
-Received: by mail-wm1-f49.google.com with SMTP id g11so4856443wmh.1
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 15:29:34 -0800 (PST)
-X-Received: by 2002:a7b:c5d6:: with SMTP id n22mr4776065wmk.70.1614382174154;
- Fri, 26 Feb 2021 15:29:34 -0800 (PST)
+        id S230008AbhBZXgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 18:36:47 -0500
+Received: from www62.your-server.de ([213.133.104.62]:45844 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229622AbhBZXgq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 18:36:46 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lFmeR-0004hp-6i; Sat, 27 Feb 2021 00:36:03 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lFmeR-0005nW-18; Sat, 27 Feb 2021 00:36:03 +0100
+Subject: Re: [PATCH bpf-next V2 1/2] bpf: BPF-helper for MTU checking add
+ length input
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        john.fastabend@gmail.com
+References: <161364896576.1250213.8059418482723660876.stgit@firesoul>
+ <161364899856.1250213.17435782167100828617.stgit@firesoul>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e339303d-1d95-e8d4-565c-920eb1a3eca8@iogearbox.net>
+Date:   Sat, 27 Feb 2021 00:36:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20210225234631.2547776-1-Jason@zx2c4.com> <CA+FuTScmM12PG96k8ZjGd1zCjAaGzjk3cOS+xam+_h6sx2_HDA@mail.gmail.com>
- <CAHmME9o2yPQ+Ai12XcCjF3jMVcMT_aooFCeKkfgFFOnqPmK_yg@mail.gmail.com>
-In-Reply-To: <CAHmME9o2yPQ+Ai12XcCjF3jMVcMT_aooFCeKkfgFFOnqPmK_yg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 26 Feb 2021 18:28:56 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSdCnCKFrpe-G55rPCq_D7uv4EaQ4z8XW2MOtTRKcWVJYQ@mail.gmail.com>
-Message-ID: <CA+FuTSdCnCKFrpe-G55rPCq_D7uv4EaQ4z8XW2MOtTRKcWVJYQ@mail.gmail.com>
-Subject: Re: [PATCH] net: always use icmp{,v6}_ndo_send from ndo_start_xmit
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <161364899856.1250213.17435782167100828617.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26092/Fri Feb 26 13:12:59 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 5:39 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> On Fri, Feb 26, 2021 at 10:25 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Thu, Feb 25, 2021 at 6:46 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > >
-> > > There were a few remaining tunnel drivers that didn't receive the prior
-> > > conversion to icmp{,v6}_ndo_send. Knowing now that this could lead to
-> > > memory corrution (see ee576c47db60 ("net: icmp: pass zeroed opts from
-> > > icmp{,v6}_ndo_send before sending") for details), there's even more
-> > > imperative to have these all converted. So this commit goes through the
-> > > remaining cases that I could find and does a boring translation to the
-> > > ndo variety.
-> > >
-> > > Cc: Willem de Bruijn <willemb@google.com>
-> > > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> >
-> > Using a stack variable over skb->cb[] is definitely the right fix for
-> > all of these. Thanks Jason.
-> >
-> > Only part that I don't fully know is the conntrack conversion. That is
-> > a behavioral change. What is the context behind that? I assume it's
-> > fine. In that if needed, that is the case for all devices, nothing
-> > specific about the couple that call icmp(v6)_ndo_send already.
->
-> That's actually a sensible change anyway. icmp_send does something
-> bogus if the packet has already passed through netfilter, which is why
-> the ndo variant was adopted. So it's good and correct for these to
-> change in that way.
->
-> Jason
+On 2/18/21 12:49 PM, Jesper Dangaard Brouer wrote:
+> The FIB lookup example[1] show how the IP-header field tot_len
+> (iph->tot_len) is used as input to perform the MTU check.
+> 
+> This patch extend the BPF-helper bpf_check_mtu() with the same ability
+> to provide the length as user parameter input, via mtu_len parameter.
+> 
+> [1] samples/bpf/xdp_fwd_kern.c
+> 
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>   include/uapi/linux/bpf.h |   17 +++++++++++------
+>   net/core/filter.c        |   12 ++++++++++--
+>   2 files changed, 21 insertions(+), 8 deletions(-)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 4c24daa43bac..4ba4ef0ff63a 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3850,8 +3850,7 @@ union bpf_attr {
+>    *
+>    * long bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)
+>    *	Description
+> -
+> - *		Check ctx packet size against exceeding MTU of net device (based
+> + *		Check packet size against exceeding MTU of net device (based
+>    *		on *ifindex*).  This helper will likely be used in combination
+>    *		with helpers that adjust/change the packet size.
+>    *
+> @@ -3868,6 +3867,14 @@ union bpf_attr {
+>    *		against the current net device.  This is practical if this isn't
+>    *		used prior to redirect.
+>    *
+> + *		On input *mtu_len* must be a valid pointer, else verifier will
+> + *		reject BPF program.  If the value *mtu_len* is initialized to
+> + *		zero then the ctx packet size is use.  When value *mtu_len* is
+> + *		provided as input this specify the L3 length that the MTU check
+> + *		is done against. Remember XDP and TC length operate at L2, but
+> + *		this value is L3 as this correlate to MTU and IP-header tot_len
+> + *		values which are L3 (similar behavior as bpf_fib_lookup).
+> + *
+>    *		The Linux kernel route table can configure MTUs on a more
+>    *		specific per route level, which is not provided by this helper.
+>    *		For route level MTU checks use the **bpf_fib_lookup**\ ()
+> @@ -3892,11 +3899,9 @@ union bpf_attr {
+>    *
+>    *		On return *mtu_len* pointer contains the MTU value of the net
+>    *		device.  Remember the net device configured MTU is the L3 size,
+> - *		which is returned here and XDP and TX length operate at L2.
+> + *		which is returned here and XDP and TC length operate at L2.
+>    *		Helper take this into account for you, but remember when using
+> - *		MTU value in your BPF-code.  On input *mtu_len* must be a valid
+> - *		pointer and be initialized (to zero), else verifier will reject
+> - *		BPF program.
+> + *		MTU value in your BPF-code.
+>    *
+>    *	Return
+>    *		* 0 on success, and populate MTU value in *mtu_len* pointer.
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 7059cf604d94..fcc3bda85960 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -5660,7 +5660,7 @@ BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
+>   	if (unlikely(flags & ~(BPF_MTU_CHK_SEGS)))
+>   		return -EINVAL;
+>   
+> -	if (unlikely(flags & BPF_MTU_CHK_SEGS && len_diff))
+> +	if (unlikely(flags & BPF_MTU_CHK_SEGS && (len_diff || *mtu_len)))
+>   		return -EINVAL;
+>   
+>   	dev = __dev_via_ifindex(dev, ifindex);
+> @@ -5670,7 +5670,11 @@ BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
+>   	mtu = READ_ONCE(dev->mtu);
+>   
+>   	dev_len = mtu + dev->hard_header_len;
+> -	skb_len = skb->len + len_diff; /* minus result pass check */
+> +
+> +	/* If set use *mtu_len as input, L3 as iph->tot_len (like fib_lookup) */
+> +	skb_len = *mtu_len ? *mtu_len + dev->hard_header_len : skb->len;
+> +
+> +	skb_len += len_diff; /* minus result pass check */
+>   	if (skb_len <= dev_len) {
+>   		ret = BPF_MTU_CHK_RET_SUCCESS;
+>   		goto out;
+> @@ -5715,6 +5719,10 @@ BPF_CALL_5(bpf_xdp_check_mtu, struct xdp_buff *, xdp,
+>   	/* Add L2-header as dev MTU is L3 size */
+>   	dev_len = mtu + dev->hard_header_len;
+>   
+> +	/* Use *mtu_len as input, L3 as iph->tot_len (like fib_lookup) */
+> +	if (*mtu_len)
+> +		xdp_len = *mtu_len + dev->hard_header_len;
+> +
+>   	xdp_len += len_diff; /* minus result pass check */
+>   	if (xdp_len > dev_len)
+>   		ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
+> 
 
-Something bogus, how? Does this apply to all uses of conntrack?
-Specifically NAT? Not trying to be obtuse, but I really find it hard
-to evaluate that part.
+Btw, one more note on the whole bpf_*_check_mtu() helper... Last week I implemented
+PMTU discovery support for clients for Cilium's XDP stand-alone LB in DSR mode, so I
+was briefly considering whether to use the bpf_xdp_check_mtu() helper for retrieving
+the device MTU, but then I thought to myself why having an unnecessary per-packet cost
+for an extra helper call if I could just pass it in via constant instead. So I went
+with the latter instead of the helper with the tradeoff to restart the Cilium agent
+if someone actually changes MTU in prod which is a rare event anyway.
 
-Please cc: the maintainers for patches that are meant to be merged, btw.
+Looking at what bpf_xdp_check_mtu() for example really offers is retrieval of dev->mtu
+as well as dev->hard_header_len and the rest can all be done inside the BPF prog itself
+w/o the helper overhead. Why am I mentioning this.. because the above change is a similar
+case of what could have been done /inside/ the BPF prog anyway (especially on XDP where
+extra overhead should be cut where possible).
+
+I think it got lost somewhere in the many versions of the original set where it was
+mentioned before, but allowing to retrieve the dev object into BPF context and then
+exposing it similarly to how we handle the case of struct bpf_tcp_sock would have been
+much cleaner approach, e.g. the prog from XDP and tc context would be able to do:
+
+   struct bpf_dev *dev = ctx->dev;
+
+And we expose initially, for example:
+
+   struct bpf_dev {
+     __u32 mtu;
+     __u32 hard_header_len;
+     __u32 ifindex;
+     __u32 rx_queues;
+     __u32 tx_queues;
+   };
+
+And we could also have a BPF helper for XDP and tc that would fetch a /different/ dev
+given we're under RCU context anyway, like ...
+
+BPF_CALL_2(bpf_get_dev, struct xdp_buff *, xdp, u32, ifindex)
+{
+	return dev_get_by_index_rcu(dev_net(xdp->rxq->dev), index);
+}
+
+... returning a new dev_or_null type. With this flexibility everything else can be done
+inside the prog, and later on it easily allows to expose more from dev side. Actually,
+I'm inclined to code it up ...
