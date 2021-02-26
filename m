@@ -2,115 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E536E326586
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FBBE3265A4
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:37:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbhBZQ0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 11:26:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
+        id S230087AbhBZQgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 11:36:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbhBZQ0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 11:26:49 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE43C06174A
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:26:07 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id b3so9139313wrj.5
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:26:07 -0800 (PST)
+        with ESMTP id S229550AbhBZQgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 11:36:35 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FBAC06178A
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:35:24 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id x19so9496983ybe.0
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:35:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=MCHAPcJe1qcCe9PqtI4xWPb7Njdj/4OwtFhb21MfPXY=;
-        b=PMhLznuFVbZ9vLfWMfQKxKh4RpG7LzwUe2lr0hC+Rmf6WrYl6/nGOjmcT9V2PUEVb9
-         Ch4ZLQ7HazvrGoQZ2xRikcE5uAP7He71efSyea3n8SjayALBFLiDPubOm1vzamT4fC5B
-         BHZE/n/Yhq4d3ybT3ACugY+hd6ZQF6cTpEC+EMeIFOTSSp8o3yoeOvIUTd4oD82CnYKY
-         9HokrVd+Eu8dXERIewiN/kn7symHA8jQMuLc61FFSNz4Pba8Puik76ER6un/6qVwHGbS
-         RLTqq9Pv7yElvrJijU04Mrx53TbchbdwkPcSydqsnS2/qmBcSNg7UsXD2OVHsxdC2EBj
-         1Bgw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lHVNeQILzQc3DvddInxQZMwaQso06/xEuc3t0kbfZTI=;
+        b=EMgODNntEcuFYkfHj6fGMVzTHTRLGquZyXnh8N86RGG+1vNS7Te7xF7sBbylhia3Ah
+         SIF6h9g/zvMMlflxJd7E8E3tNTyJMTk14K91YFil7vkHWSnQVZNhFaG1jB9SjDfPBRYb
+         5Iqd8EyyvxQnqlRj0GGEDV4btjEFGIRDAZCgXpnspO5HsRyYprj71zV/fMv1t+/UlUPs
+         W+VfFyz6Ar/zd2HMGLPiIR87in/WjgEmopo3F7snMeQeXEOYKxJxwTGjlc/KDwqFjeQ+
+         8IWOOQ6w+Y+3Eh1GdgXMOgkL3ghZHvs0WBgAQPpuD5DKdnSB+r/LgNKzUzmIOihNRk23
+         rC5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=MCHAPcJe1qcCe9PqtI4xWPb7Njdj/4OwtFhb21MfPXY=;
-        b=Y4WwA8KegzKIfpDu2WWLPqPezjarT9tOcCGHXolirn8tKIrxuT/Gv19yJAJfNRhxKb
-         QcL9dSu/WbRBOOBfEpg/hsdRbjO+U33WGmOrRaOSgfMDUynkp/aEGOgI0w6V2Svs2FbB
-         KW4GZleWVpEMpQXk4+RilE0a8tXnaaxs1kd0DeMG/4AwFrhAPOiR0VQG1EU2LipMCm/7
-         cmonOvkbKVio/rKiD5N5hJT/sTWLbiylFWZZXkvG4vnu8vj/f2Ecam0GMY8NLNri/Yuh
-         4a4dgB5CoqJsZlNvhElZVGciPbAHiR7xtd/0+clC9mHRd3+mLravG26Rd9Bwqf4G11h7
-         38Gw==
-X-Gm-Message-State: AOAM532X7SGdfD0Gji/OaxmvoorjVzl3O3uvqr8TcGqptxXI2rTkZp2j
-        Z5UCLp01+lNsmLYVKdCz7UI=
-X-Google-Smtp-Source: ABdhPJywnW7UT3jMnUFQQGi4AOg7mByO4mWUqEcJS8spgKGaijZfjs3LY42zQCtELIEgZVQjYO0ojg==
-X-Received: by 2002:adf:fe01:: with SMTP id n1mr4043051wrr.341.1614356765950;
-        Fri, 26 Feb 2021 08:26:05 -0800 (PST)
-Received: from silmaril.home ([188.120.85.11])
-        by smtp.gmail.com with ESMTPSA id h2sm16051284wrq.81.2021.02.26.08.26.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Feb 2021 08:26:05 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: TCP stall issue
-From:   Gil Pedersen <kanongil@gmail.com>
-In-Reply-To: <d5b6a39496db4a4aa5ceb770485dd47c@AcuMS.aculab.com>
-Date:   Fri, 26 Feb 2021 17:26:03 +0100
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <32E2B684-5D8C-41E3-B17A-938A5F784461@gmail.com>
-References: <35A4DDAA-7E8D-43CB-A1F5-D1E46A4ED42E@gmail.com>
- <CADVnQy=G=GU1USyEcGA_faJg5L-wLO6jS4EUocrVsjqkaGbvYw@mail.gmail.com>
- <C5332AE4-DFAF-4127-91D1-A9108877507A@gmail.com>
- <CADVnQynP40vvvTV3VY0fvYwEcSGQ=Y=F53FU8sEc-Bc=mzij5g@mail.gmail.com>
- <93A31D2F-1CDE-4042-9D00-A7E1E49A99A9@gmail.com>
- <CADVnQyn5jrkPC7HJAkMOFN-FBZjwtCw8ns-3Yx7q=-S57PdC6w@mail.gmail.com>
- <d5b6a39496db4a4aa5ceb770485dd47c@AcuMS.aculab.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lHVNeQILzQc3DvddInxQZMwaQso06/xEuc3t0kbfZTI=;
+        b=n4+QD0TGwQS9DSVtBF5FKLkQA6rk2znaILpc8s4gjSql2wy6V1ea9YMMqECJw+DeoI
+         bcJyNc8R8AJ4+gmbvqw4mfBfAPHwc9FVwOdYs1W1tKuIJSGvO0EWc08ZUjWsoyZqBKy3
+         5lPlzcRo1/D1RSX590LmUwS+maWaJVoMXdXWic9RvzqFikivkjtm6jlGvqSZ4Vla3GK/
+         WFzB3ndZGgnijDcB4ZRrWpDtO8/lDrNMrabC3YYEW5X560CwKbd5V9gLY3UwKbj1jSdH
+         BbwNtqms1DGhXriCvShd49vobyS8b7AkKrFV+Zaqzj6nTEkmSWacY0JfHkHDRHpiNocx
+         ITEQ==
+X-Gm-Message-State: AOAM531/TLod+5KXeG4briyA4cCqyIIrWs89pfYa7EeAKV1wuv0v5mrK
+        pnpDBDciZkh0mLrpUyc0uq/5Z71I1bT8ANyjrZbUNa9KSLVwNA==
+X-Google-Smtp-Source: ABdhPJxAepM6rNfeB0Eqm75WGDMnZzwVlLMP7ZP0yOgf0Bcx0esH0Nbt5DqBzJgqK+BeRW1PS1eYV50RAt4PHWCljy4=
+X-Received: by 2002:a25:1d88:: with SMTP id d130mr5345474ybd.446.1614357323214;
+ Fri, 26 Feb 2021 08:35:23 -0800 (PST)
+MIME-Version: 1.0
+References: <20210225152515.2072b5a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210225191552.19b36496@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANn89iJwfXFKnSAQpwaBnfrrE01PXyxLUieBxaB0RzyOajCzLQ@mail.gmail.com>
+ <CANn89iL7XCLBxsUnV3c_5AD8eSJ=jXs6o_KJUjmZAGo6_6sqUg@mail.gmail.com> <20210226080918.03617088@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210226080918.03617088@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 26 Feb 2021 17:35:11 +0100
+Message-ID: <CANn89iL8KO5KLqCRdGbGJg5cZj7zVBUjrStFv7A_wqnLusQQ_Q@mail.gmail.com>
+Subject: Re: Spurious TCP retransmissions on ack vs kfree_skb reordering
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Feb 26, 2021 at 5:09 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 26 Feb 2021 11:41:22 +0100 Eric Dumazet wrote:
+> > > > Seems like I'm pretty lost here and the tcp:tcp_retransmit_skb events
+> > > > are less spurious than I thought. Looking at some tcpdump traces we see:
+> > > >
+> > > > 0.045277 IP6 A > B: Flags [SEW], seq 2248382925:2248383296, win 61920, options [mss 1440,sackOK,TS val 658870494 ecr 0,nop,wscale 11], length 371
+> > > >
+> > > > 0.045348 IP6 B > A: Flags [S.E], seq 961169456, ack 2248382926, win 65535, options [mss 1440,sackOK,TS val 883864022 ecr 658870494,nop,wscale 9], length 0
+> > >
+> > > The SYNACK does not include the prior payload.
+> > >
+> > > > 0.045369 IP6 A > B: Flags [P.], seq 1:372, ack 1, win 31, options [nop,nop,TS val 658870494 ecr 883864022], length 371
+> > >
+> > > So this rtx is not spurious.
+> > >
+> > > However in your prior email you wrote :
+> > >
+> > > bytes_in:      0
+> > > bytes_out:   742
+> > > bytes_acked: 742
+> > >
+> > > Are you sure that at the time of the retransmit, bytes_acked was 742 ?
+> > > I do not see how this could happen.
+> >
+> > Yes, this packetdrill test confirms TCP INFO stuff seems correct .
+>
+> Looks like it's TcpExtTCPSpuriousRtxHostQueues - the TFO fails as it
+> might, but at the time the syn is still not kfree_skb()d because of
+> the IRQ coalescing settings, so __tcp_retransmit_skb() returns -EBUSY
+> and we have to wait for a timeout.
+>
+> Credit to Neil Spring @FB for figuring it out.
 
-> On 26 Feb 2021, at 15.39, David Laight <David.Laight@ACULAB.COM> =
-wrote:
->=20
-> Some thoughts...
->=20
-> Does a non-android linux system behave correctly through the same NAT =
-gateways?
-> Particularly with a similar kernel version.
->=20
-> If you have a USB OTG cable and USB ethernet dongle you may be able to =
-get
-> android to use a wired ethernet connection - excluding any WiFi =
-issues.
-> (OTG usually works for keyboard and mouse, dunno if ethernet support =
-is there.)
->=20
-> Does you android device work on any other networks?
+Yes, this makes sense.
 
-I have done some further tests. I managed to find another Android device =
-(kernel 4.9.113), which thankfully does _not_ send the weird D-SACKs and =
-quickly recovers, so the problem appears to be on the original device.
+Presumably tcp_send_syn_data() could allocate a regular (non fclone)
+skb, to avoid this.
 
-Additionally, I have managed to do a trace on the WLAN AP, where I can =
-confirm that all packets seem to be transferred without unnecessary =
-modifications or re-ordering. Ie. all segments sent from the server make =
-it to the device and any loss will be device local. As such this points =
-to a driver-level issue?
+But if skb_still_in_host_queue() returns true, __tcp_retransmit_skb()
+should return -EBUSY
+and your tracepoint should not be called ?
 
-I don't have an ethernet dongle ready. I tried to connect using cellular =
-and was unable to replicate the issue, so this further points at a =
-driver-level issue.
-
-Given that it now seems relevant, the device is an Android P20 Lite, =
-running a variant of Android 9.1 with an update from this year (kernel =
-was built jan. 05 2021).
-
-/Gil=
+In anycase, the bytes_acked should not be 742 as mentioned in your
+email, if only the SYN was acked ?
