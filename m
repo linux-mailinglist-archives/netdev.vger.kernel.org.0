@@ -2,75 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4343C3265D4
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:47:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9373265DE
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:51:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbhBZQrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 11:47:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229622AbhBZQr2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Feb 2021 11:47:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C48A464F0E;
-        Fri, 26 Feb 2021 16:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614358006;
-        bh=nipL5QNlQrS3dNd+bMjxQ5l9Be1ozMV7qdeitZLPUTM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qI7/+AfpHaWrKtA9pVaiwiAQEpOlARQuhfbhPC5tsMAbp4KYXIWO7q9VsV3NBs6bY
-         dHb5XUpI9btDsdL3IzeSOWOpsHMEyEql9/9NW2REe/OJ+QcFJcA33v2VBkDv0A/ltH
-         HNfBAyEEqtInsahV8BYYC05nqQHLxBjDmmgRCrwHQqGUGm7zRUjs3U35HGsN+SAk/C
-         LgXJE3u7w/Rgi5mqMONP2bPjyZLyju5sHRaRk9YJJ8/byID05/Z8zxetDYR3aanFey
-         g4epV9e2m0sh9uwJZghM2QcsO67uVUtPnrz4G/YSvl3iHJVudObUYdGakKgTWeUDkw
-         chvNcLJnDHNSw==
-Date:   Fri, 26 Feb 2021 08:46:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: Re: Spurious TCP retransmissions on ack vs kfree_skb reordering
-Message-ID: <20210226084644.37496374@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iL8KO5KLqCRdGbGJg5cZj7zVBUjrStFv7A_wqnLusQQ_Q@mail.gmail.com>
-References: <20210225152515.2072b5a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210225191552.19b36496@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iJwfXFKnSAQpwaBnfrrE01PXyxLUieBxaB0RzyOajCzLQ@mail.gmail.com>
-        <CANn89iL7XCLBxsUnV3c_5AD8eSJ=jXs6o_KJUjmZAGo6_6sqUg@mail.gmail.com>
-        <20210226080918.03617088@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iL8KO5KLqCRdGbGJg5cZj7zVBUjrStFv7A_wqnLusQQ_Q@mail.gmail.com>
+        id S229863AbhBZQvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 11:51:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229550AbhBZQve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 11:51:34 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267ACC061756
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:50:46 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id b18so2731117wrn.6
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:50:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JcMQC9svEtKNnsjRXVVzKmKPg+gakSjq3oHTLIMUWnA=;
+        b=GbRgobbI5YqAC9W6qnB8xsjPP1K1Mx12d0oKWk/B64DZKm8E0gGzm8GafeSR9Fg8Fu
+         mElkBtVO+Rckffn5JwNjKxpAl0qBv+iK0ya0i8ZWgvJBgPpL87NrQXB9nOFM23sd30Hg
+         ktR07mR0ptNNYazLv9vXiLrGm/Q88AkzEjKHsGvN886jFRHPHIa8M7Utwmvu5jOUa6O8
+         hSan1fqtTssqy1JpQFyu72hiTIramPjZSMgmY9F6JZFKTL+ic8XoBK7IxvWRlrmngnly
+         Gam0/euxvZwCWozN/4HyoV0eO+njyEVfHq6L7llh1m7k//5GcohKELgX2lu/jpywO+XP
+         IA8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JcMQC9svEtKNnsjRXVVzKmKPg+gakSjq3oHTLIMUWnA=;
+        b=XPWdKsCn+3Ya6c8F9RG2SlJJpVeZZz50IDVeVILsIIYtn//Vzb0xSFPUVCNSKS19cd
+         O9/ft7iWwFBZ+6dgIqeXR+zkr8eNKyNROJ3qpmdF+OwuQ3W36pxrH3T45V5Q12KREDL0
+         SjXpmj76ZKGn1b4YI08A4XCYfbdWLOJZx4BS2e9xuS7WyC8i+lwXRFVFoEptYB8qqwki
+         C8kmdXr0jiDDWknV0ldRRNLPsQJFr+/kIkTAZlnm82YvXWOhodFTXQShnnDpwlqTRK2Q
+         hObKktOfUOZaI/7S8O21pZ+Gqud4kRETerG5a0QLZ99sd6Oddg/f+oPdKidP0jTfKtnx
+         DeNg==
+X-Gm-Message-State: AOAM531d/m80kihzH4WOu8HEeVpe57BtWICleVhMmrrkd9eokNLeMH1o
+        YnqewNEhVjb2J5z0bJyO5c8w6f6v6drJG9k6pjI=
+X-Google-Smtp-Source: ABdhPJx+kBynr78v8lUIr4BFep8VxDIBoproABvLOZanBkj1zf0zDg05qBvi9nx3tq8j8l+Z7dQkVg==
+X-Received: by 2002:adf:8151:: with SMTP id 75mr4138303wrm.152.1614358244242;
+        Fri, 26 Feb 2021 08:50:44 -0800 (PST)
+Received: from [192.168.1.9] ([194.35.118.244])
+        by smtp.gmail.com with ESMTPSA id 36sm15503611wrh.94.2021.02.26.08.50.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Feb 2021 08:50:43 -0800 (PST)
+Subject: Re: [PATCH bpf-next] bpf: fix missing * in bpf.h
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Joe Stringer <joe@wand.net.nz>
+References: <20210223124554.1375051-1-liuhangbin@gmail.com>
+ <20210223154327.6011b5ee@carbon>
+ <2b917326-3a63-035e-39e9-f63fe3315432@iogearbox.net>
+ <CAEf4BzaqsyhJvav-GsJkxP7zHvxZQWvEbrcjc0FH2eXXmidKDw@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <b64fa932-5902-f13f-b3b9-f476e389db1b@isovalent.com>
+Date:   Fri, 26 Feb 2021 16:50:42 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAEf4BzaqsyhJvav-GsJkxP7zHvxZQWvEbrcjc0FH2eXXmidKDw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Feb 2021 17:35:11 +0100 Eric Dumazet wrote:
-> On Fri, Feb 26, 2021 at 5:09 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Fri, 26 Feb 2021 11:41:22 +0100 Eric Dumazet wrote:  
-> > > Yes, this packetdrill test confirms TCP INFO stuff seems correct .  
-> >
-> > Looks like it's TcpExtTCPSpuriousRtxHostQueues - the TFO fails as it
-> > might, but at the time the syn is still not kfree_skb()d because of
-> > the IRQ coalescing settings, so __tcp_retransmit_skb() returns -EBUSY
-> > and we have to wait for a timeout.
-> >
-> > Credit to Neil Spring @FB for figuring it out.  
+2021-02-24 10:59 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> On Wed, Feb 24, 2021 at 7:55 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> On 2/23/21 3:43 PM, Jesper Dangaard Brouer wrote:
+>>> On Tue, 23 Feb 2021 20:45:54 +0800
+>>> Hangbin Liu <liuhangbin@gmail.com> wrote:
+>>>
+>>>> Commit 34b2021cc616 ("bpf: Add BPF-helper for MTU checking") lost a *
+>>>> in bpf.h. This will make bpf_helpers_doc.py stop building
+>>>> bpf_helper_defs.h immediately after bpf_check_mtu, which will affect
+>>>> future add functions.
+>>>>
+>>>> Fixes: 34b2021cc616 ("bpf: Add BPF-helper for MTU checking")
+>>>> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+>>>> ---
+>>>>   include/uapi/linux/bpf.h       | 2 +-
+>>>>   tools/include/uapi/linux/bpf.h | 2 +-
+>>>>   2 files changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> Thanks for fixing that!
+>>>
+>>> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>>
+>> Thanks guys, applied!
+>>
+>>> I though I had already fix that, but I must have missed or reintroduced
+>>> this, when I rolling back broken ideas in V13.
+>>>
+>>> I usually run this command to check the man-page (before submitting):
+>>>
+>>>   ./scripts/bpf_helpers_doc.py | rst2man | man -l -
+>>
+>> [+ Andrii] maybe this could be included to run as part of CI to catch such
+>> things in advance?
 > 
-> Yes, this makes sense.
-> 
-> Presumably tcp_send_syn_data() could allocate a regular (non fclone)
-> skb, to avoid this.
-> 
-> But if skb_still_in_host_queue() returns true, __tcp_retransmit_skb()
-> should return -EBUSY
-> and your tracepoint should not be called ?
+> We do something like that as part of bpftool build, so there is no
+> reason we can't add this to selftests/bpf/Makefile as well.
 
-Right, looking at the stack trace the call I was tracing comes later
-from the RTO timer.
+Hi, pretty sure this is the case already? [0]
 
-> In anycase, the bytes_acked should not be 742 as mentioned in your
-> email, if only the SYN was acked ?
+This helps catching RST formatting issues, for example if a description
+is using invalid markup, and reported by rst2man. My understanding is
+that in the current case, the missing star simply ends the block for the
+helpers documentation from the parser point of view, it's not considered
+an error.
 
-You're right, it's 1. I did a braino in the trace print yesterday.
+I see two possible workarounds:
+
+1) Check that the number of helpers found ("len(self.helpers)") is equal
+to the number of helpers in the file, but that requires knowing how many
+helpers we have in the first place (e.g. parsing "__BPF_FUNC_MAPPER(FN)").
+
+2) Add some ending tag to the documentation block, and make sure we
+eventually reach it. This is probably a much simpler solution. I could
+work on this (or sync with Joe (+Cc) who is also working on these bits
+for documenting the bpf() syscall).
+
+[0]
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/Makefile?h=v5.11#n189
+
+Quentin
