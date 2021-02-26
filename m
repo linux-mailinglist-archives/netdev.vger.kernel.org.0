@@ -2,135 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9373265DE
-	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:51:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09FD83265EC
+	for <lists+netdev@lfdr.de>; Fri, 26 Feb 2021 17:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbhBZQvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 11:51:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53740 "EHLO
+        id S230175AbhBZQz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 11:55:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbhBZQve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 11:51:34 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267ACC061756
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:50:46 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id b18so2731117wrn.6
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:50:46 -0800 (PST)
+        with ESMTP id S229863AbhBZQz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 11:55:58 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99769C06174A
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:55:15 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id m6so6648654pfk.1
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 08:55:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JcMQC9svEtKNnsjRXVVzKmKPg+gakSjq3oHTLIMUWnA=;
-        b=GbRgobbI5YqAC9W6qnB8xsjPP1K1Mx12d0oKWk/B64DZKm8E0gGzm8GafeSR9Fg8Fu
-         mElkBtVO+Rckffn5JwNjKxpAl0qBv+iK0ya0i8ZWgvJBgPpL87NrQXB9nOFM23sd30Hg
-         ktR07mR0ptNNYazLv9vXiLrGm/Q88AkzEjKHsGvN886jFRHPHIa8M7Utwmvu5jOUa6O8
-         hSan1fqtTssqy1JpQFyu72hiTIramPjZSMgmY9F6JZFKTL+ic8XoBK7IxvWRlrmngnly
-         Gam0/euxvZwCWozN/4HyoV0eO+njyEVfHq6L7llh1m7k//5GcohKELgX2lu/jpywO+XP
-         IA8g==
+        bh=cxv8C0tA7k3niyP7HCOXKGtFxBP6/ZQl0VS87bwwRSI=;
+        b=YWOf4QRBLidTMdmg5MXd6XSbRxNUfLN2x785KmF+aX0xID4v9WmDaYn9FI7hT8fSz2
+         zl0pgAZIaVS5EJBfkFUjjw1YTLjfpojkLffLmbaKmU20kSSvM0At+Pe/dVX0Nw/BMt7S
+         9BUrRkEgEFumgLit8xQczJFXGmgtrti7lpthlLbIHI+JbFnFrkqqIhs+pgEBaiK4hixu
+         v1CU7mGGDEKQOPehi8/bfhwdi7D60srjp3zeIqSP5sCswyRilfuq4xNLZHgGPniXj89K
+         amBNmVfHfhPrdfAzLlpmKqAVE35nP/LK0C1c6CJVGBnL1cGwB0wimqAMAXKWlFDyi+wF
+         OKFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JcMQC9svEtKNnsjRXVVzKmKPg+gakSjq3oHTLIMUWnA=;
-        b=XPWdKsCn+3Ya6c8F9RG2SlJJpVeZZz50IDVeVILsIIYtn//Vzb0xSFPUVCNSKS19cd
-         O9/ft7iWwFBZ+6dgIqeXR+zkr8eNKyNROJ3qpmdF+OwuQ3W36pxrH3T45V5Q12KREDL0
-         SjXpmj76ZKGn1b4YI08A4XCYfbdWLOJZx4BS2e9xuS7WyC8i+lwXRFVFoEptYB8qqwki
-         C8kmdXr0jiDDWknV0ldRRNLPsQJFr+/kIkTAZlnm82YvXWOhodFTXQShnnDpwlqTRK2Q
-         hObKktOfUOZaI/7S8O21pZ+Gqud4kRETerG5a0QLZ99sd6Oddg/f+oPdKidP0jTfKtnx
-         DeNg==
-X-Gm-Message-State: AOAM531d/m80kihzH4WOu8HEeVpe57BtWICleVhMmrrkd9eokNLeMH1o
-        YnqewNEhVjb2J5z0bJyO5c8w6f6v6drJG9k6pjI=
-X-Google-Smtp-Source: ABdhPJx+kBynr78v8lUIr4BFep8VxDIBoproABvLOZanBkj1zf0zDg05qBvi9nx3tq8j8l+Z7dQkVg==
-X-Received: by 2002:adf:8151:: with SMTP id 75mr4138303wrm.152.1614358244242;
-        Fri, 26 Feb 2021 08:50:44 -0800 (PST)
-Received: from [192.168.1.9] ([194.35.118.244])
-        by smtp.gmail.com with ESMTPSA id 36sm15503611wrh.94.2021.02.26.08.50.42
+        bh=cxv8C0tA7k3niyP7HCOXKGtFxBP6/ZQl0VS87bwwRSI=;
+        b=Ttt39g6NDyfhqCLQ0/JI3wbdbG/6x68K1DRQw7DwpiApf7laaq4PFc1tPgiuCT3+XL
+         ddbgyPcYXcMns4Bqv5ocfdAX4gz2XQvzewop57JzWgVjnhtTN4rBjQwOclhETJ2TP6DL
+         VEqSEXbXfZZJOHbVoyy1cyTcApl2aPzS6SHU9+jVS7b1FX6mDGRw8gRNytEPplL6VEa+
+         mKIcXdDgMQcsxMe92EwMxKj4Dw/3Sg2+kr3UKH4NKyvOyQJm2K8wLSjf1TjbGS1DubxD
+         uu+uINdqw3udwZ/Hn3t6xlYFUvw1sxg/6Jz4NMrueeCx1Auy/GlaoAS0bS75NduPrxj4
+         wvFQ==
+X-Gm-Message-State: AOAM5314w2ynxTiTrW15E1LLGw+vWMuB3ekx5jwkKZMuk2rlhYA75qWa
+        8Njn/D/oFobih7+jRajxbWU=
+X-Google-Smtp-Source: ABdhPJx1pj5+QkOIBtU3FqRv8St8TOZurR7Axqxa8VjU9jXax+UNRFaLAUT8rUvYctE4Up6NBFkeQQ==
+X-Received: by 2002:a63:54:: with SMTP id 81mr3749232pga.410.1614358515097;
+        Fri, 26 Feb 2021 08:55:15 -0800 (PST)
+Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id s196sm8278565pfc.185.2021.02.26.08.55.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Feb 2021 08:50:43 -0800 (PST)
-Subject: Re: [PATCH bpf-next] bpf: fix missing * in bpf.h
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Joe Stringer <joe@wand.net.nz>
-References: <20210223124554.1375051-1-liuhangbin@gmail.com>
- <20210223154327.6011b5ee@carbon>
- <2b917326-3a63-035e-39e9-f63fe3315432@iogearbox.net>
- <CAEf4BzaqsyhJvav-GsJkxP7zHvxZQWvEbrcjc0FH2eXXmidKDw@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <b64fa932-5902-f13f-b3b9-f476e389db1b@isovalent.com>
-Date:   Fri, 26 Feb 2021 16:50:42 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        Fri, 26 Feb 2021 08:55:14 -0800 (PST)
+Subject: Re: [PATCH v2] bcm63xx_enet: fix internal phy IRQ assignment
+To:     =?UTF-8?Q?Daniel_Gonz=c3=a1lez_Cabanelas?= <dgcbueu@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org,
+        =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>
+References: <0e75a5c3-f6bd-6039-3cfd-8708da963d20@gmail.com>
+ <CABwr4_s6Y8OoeGNiPK8XpnduMsv3Sv3_mx_UcoGq=9vza6L2Ew@mail.gmail.com>
+ <7fc4933f-36d4-99dc-f968-9ca3b8758a9b@gmail.com>
+ <CABwr4_siD8PcXnYuAoYCqQp8ioikJQiMgDW=JehX1c+0Zuc3rQ@mail.gmail.com>
+ <b35ae75c-d0ce-2d29-b31a-72dc999a9bcc@gmail.com>
+ <CABwr4_u5azaW8vRix-OtTUyUMRKZ3ncHwsou5MLC9w4F0WUsvg@mail.gmail.com>
+ <c9e72b62-3b4e-6214-f807-b24ec506cb56@gmail.com>
+ <CABwr4_vpmgxyGAGYjM_C5TvdROT+pV738YBv=KnSKEO-ibUMxQ@mail.gmail.com>
+ <286fb043-b812-a5ba-c66e-eef63fe5cc98@gmail.com>
+ <CABwr4_tJqFiS-XtFitXGn=bjYzdv=YwqSSUaAvh1U-iHsbTZXQ@mail.gmail.com>
+ <YDkCrCIwtCOmOBAX@lunn.ch> <ff77ab40-57d3-72bf-8425-6f68851a01a7@gmail.com>
+ <CABwr4_s_w-0-rNVmjoHMy-b=vWcJSzSFOyvuJfu7TziBneOHBg@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <ccf012a3-9ab7-39d9-ed2a-465fe12e2233@gmail.com>
+Date:   Fri, 26 Feb 2021 08:55:06 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzaqsyhJvav-GsJkxP7zHvxZQWvEbrcjc0FH2eXXmidKDw@mail.gmail.com>
+In-Reply-To: <CABwr4_s_w-0-rNVmjoHMy-b=vWcJSzSFOyvuJfu7TziBneOHBg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-02-24 10:59 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> On Wed, Feb 24, 2021 at 7:55 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>
->> On 2/23/21 3:43 PM, Jesper Dangaard Brouer wrote:
->>> On Tue, 23 Feb 2021 20:45:54 +0800
->>> Hangbin Liu <liuhangbin@gmail.com> wrote:
->>>
->>>> Commit 34b2021cc616 ("bpf: Add BPF-helper for MTU checking") lost a *
->>>> in bpf.h. This will make bpf_helpers_doc.py stop building
->>>> bpf_helper_defs.h immediately after bpf_check_mtu, which will affect
->>>> future add functions.
->>>>
->>>> Fixes: 34b2021cc616 ("bpf: Add BPF-helper for MTU checking")
->>>> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
->>>> ---
->>>>   include/uapi/linux/bpf.h       | 2 +-
->>>>   tools/include/uapi/linux/bpf.h | 2 +-
->>>>   2 files changed, 2 insertions(+), 2 deletions(-)
->>>
->>> Thanks for fixing that!
->>>
->>> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
->>
->> Thanks guys, applied!
->>
->>> I though I had already fix that, but I must have missed or reintroduced
->>> this, when I rolling back broken ideas in V13.
->>>
->>> I usually run this command to check the man-page (before submitting):
->>>
->>>   ./scripts/bpf_helpers_doc.py | rst2man | man -l -
->>
->> [+ Andrii] maybe this could be included to run as part of CI to catch such
->> things in advance?
+
+
+On 2/26/2021 8:14 AM, Daniel González Cabanelas wrote:
+> I could update the BCM5365 phy_id in the downstream B53 driver to fix
+> it and avoid any kind of future conflicts if the driver is upstreamed.
+> Accordingly to documentation the whole BCM5365 UID (not masked) is
+> 0x00406370.
+> PHYID HIGH[15:0] = OUI[21:6]
+> PHYID LOW[15:0] = OUI[5:0] + MODEL[5:0] + REV[3:0]
 > 
-> We do something like that as part of bpftool build, so there is no
-> reason we can't add this to selftests/bpf/Makefile as well.
+> Right now the used mask is 0x1ffffc00. But if I understood correctly
+> it is only required to mask the last 3 bits. This would reflect in the
+> B53 driver:
+> ---snip---
+> /* BCM5365 */
+> static struct phy_driver b53_phy_driver_id3 = {
+> .phy_id = 0x00406370,
+> .name = "Broadcom B53 (3)",
+> .phy_id_mask = 0xfffffff8,,
+> ----snip---
+> 
+> For the tested board, BCM6348, the UID is 0x00406240 (read by the
+> kernel). But in this case its driver involves more SoCs/PHYs, maybe
+> with different UIDs.
 
-Hi, pretty sure this is the case already? [0]
-
-This helps catching RST formatting issues, for example if a description
-is using invalid markup, and reported by rst2man. My understanding is
-that in the current case, the missing star simply ends the block for the
-helpers documentation from the parser point of view, it's not considered
-an error.
-
-I see two possible workarounds:
-
-1) Check that the number of helpers found ("len(self.helpers)") is equal
-to the number of helpers in the file, but that requires knowing how many
-helpers we have in the first place (e.g. parsing "__BPF_FUNC_MAPPER(FN)").
-
-2) Add some ending tag to the documentation block, and make sure we
-eventually reach it. This is probably a much simpler solution. I could
-work on this (or sync with Joe (+Cc) who is also working on these bits
-for documenting the bpf() syscall).
-
-[0]
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/Makefile?h=v5.11#n189
-
-Quentin
+Or another way to solve this entirely is to move to the upstream DSA
+driver for b53 under drivers/net/dsa/b53 and register the switch as a
+mdio_device instead of as a phy_device.
+-- 
+Florian
