@@ -2,252 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80AE2326F98
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 00:28:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A163326FAD
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 00:49:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbhB0XYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Feb 2021 18:24:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
+        id S230122AbhB0XsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Feb 2021 18:48:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbhB0XYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 18:24:48 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398ECC06174A
-        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:24:08 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id f4so12876641ybk.11
-        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:24:08 -0800 (PST)
+        with ESMTP id S230040AbhB0XsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 18:48:10 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38892C06174A
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:47:30 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id h4so14821745ljl.0
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:47:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=I2mvV3bQGSDDQ5777uMurFEM0r5Gd0/dBZnoMxiJztY=;
-        b=meMpGWaBFEsCUHT/jOLar5Y2yj8t11Ek7SrBptFRxbTXG+lQcdasp0fDZeexJCTSNB
-         QFvlnl1Ihhx9rvRtPZvmF/nbXOfZd4SPdpEaCtorGZPv0DeIh8A9HtCKfuvVDu5/nBa9
-         1B4Ot/r6DB73/kUXbDT3tcdjcpcXWKtcC0PyeOcmViEy46vANWJhFJpwM/BeW3eLqA/T
-         8HVQhSLQCJ0FOdG/a3E7Wb+pFd4p9SoMT8umgSWn9dTDhqJDH/ku/hmhZ5SQdtWOfoht
-         8e+f1wCPhXvy63ubsNsWj1WmQxZf+lZ7iy3WBHSV0Z3B6wJD9GhHOzPENn0pjaHJzPCC
-         ZNFQ==
+        bh=j1VtW2X8LEXJJ/paDmy9xh4EVxSPrsHQs71fRPbsyLU=;
+        b=xt2GC1WVDtzEOGyKyEawlv0aE2HInn5u0M71JK0xOKfeyki167WEVJPegoF6J44weT
+         XOHJIj91DBb48yc+hO197Ux09F5qjr9lxj/WDt9YKJdV2d9mrU9VOoqM8qnGuxLkSu9H
+         Y54G6A0fL+FkmmjLVdBMD2E+N2wdQO8vi5RNqfg8yuXO9Cbz+b4enkDPh/IagJL8luuI
+         5TFB4MWvLmZ34Sd4LSLxh6NPjwhX5grZa/F2OPVJNMKpyfgv8rJpqzO7Fh+WhZ3TJvf9
+         nMng9lorC+duCMB8H/nTn7aEcy1XZrjE44FFo52SIFWtShmMbt5cxgqGN7w9o6ONdNfX
+         gKDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=I2mvV3bQGSDDQ5777uMurFEM0r5Gd0/dBZnoMxiJztY=;
-        b=C+8gbzIuOBBho5R0xVKw7qfDFd88L0MmDTssbtIPH92VFwricYTpBbCs//XM4VzhiD
-         g9Cj5ZlGwbjkk2ESGdZwz3Zodw3Yn8rEZs/e3f3EcUCjVO0HGaI9wLkkEVQ0zHSFagyH
-         EX5qf7DhNr+vvmMwwakXvwqGfnbO0sYeikvYwqlI2/HWagmnCdjSw2uuoh7VSWF6uGhh
-         O59jJjAHkLWZZVFA9NGnL6tsn4M85m7KLIB6RGKJmbzqy87g6xFCX/Dm8QeYRkZTo+UT
-         mu83L9Y33Tvjxfl34jdiZLXsiNcrmnogSYzTs6yD+C392bNV8wEhtAlZrYIzSyRCkA0O
-         VIhw==
-X-Gm-Message-State: AOAM531kfH9T3DRysYCvGkXWGKQCVnlYhDIW8V3RW6//+oqlE37jJCyz
-        m+WulHMmt5/J0lP+m1m0S7zUDt65Umnd7xN3nH2WjTgkAB/Gfw==
-X-Google-Smtp-Source: ABdhPJy+YYJzECq3MQmuliCWDN2/+CM4tLqNbne5YvHk0UE45D3b9OAK2dbnKmdZrCuKrbcDjoYq/aKt5qUci2lleUE=
-X-Received: by 2002:a25:fc3:: with SMTP id 186mr13528727ybp.452.1614468247015;
- Sat, 27 Feb 2021 15:24:07 -0800 (PST)
+        bh=j1VtW2X8LEXJJ/paDmy9xh4EVxSPrsHQs71fRPbsyLU=;
+        b=Fvdlr6ueBnb4OD7w75XMqUp5eQE4b3MQY9DS6VclBbn1GzNEQwJLm4dey/q2ECbafY
+         +82avLc85pmr36FRXYKW082ixpiK+QtfD6NfJgpzPJL8R8PY+nFlwPNzhZIndsDdgFTe
+         3pX3gvUEj31awVpjtO+GdebnH5l9M9AkGo7xhUQ7r3rBb8s7KrC61ZlTSOdRNr+Xsmy0
+         463cbn08UvEvvy1kFzxYRRZMn6kgQULMwPDZ4TotzD9oInB2FrMfiCQp/LDs7jZ/geRX
+         pOmQqjIdx6XaxfEIdJY/dFouAwmm5dsQQ9DUKnbS9+l50ZJ1r2gQQKGJHUhNh5fkJGva
+         SHSQ==
+X-Gm-Message-State: AOAM532qU0g5mp4oTveLGJHpyvRG8PTQ9sX9kNhU/lHGZcaERAjdpFcP
+        uFtuxDjW+wniUr8mYOmepya6f7WVqj9gKMtx2q69gw==
+X-Google-Smtp-Source: ABdhPJwx9inzx5EfnMExnrXKn6CJhM8Be7qX8NUqB3G3zP3X818fsu6IvSycQg7/fi01hEkqO00jUJzOs4Fw4HbXIg4=
+X-Received: by 2002:a2e:9004:: with SMTP id h4mr1954265ljg.326.1614469648640;
+ Sat, 27 Feb 2021 15:47:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20210227003047.1051347-1-weiwan@google.com> <20210226164803.4413571f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_CJx7K1Fab1C0Qkw=1VNnDaV9qwB_UUtikPMoqNUUWJuA@mail.gmail.com>
- <20210226172240.24d626e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_B6baYFZnEOMS=Nmvg0kA_qB=7ip4S96ys9ZoJWfOiOCA@mail.gmail.com>
- <20210226180833.09c98110@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAEA6p_ABZfs3zyQ+90cC1P8T8w94Lz4RvvBdQHQsHXEPP5aexQ@mail.gmail.com>
-In-Reply-To: <CAEA6p_ABZfs3zyQ+90cC1P8T8w94Lz4RvvBdQHQsHXEPP5aexQ@mail.gmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Sat, 27 Feb 2021 15:23:56 -0800
-Message-ID: <CAEA6p_DtTG6ryiG3GkxaySJeNcYF=RfkgCYTc-T-mHqMwL2-Gw@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: fix race between napi kthread mode and busy poll
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Martin Zaharinov <micron10@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>
+References: <20210217062139.7893-1-dqfext@gmail.com> <20210217062139.7893-2-dqfext@gmail.com>
+In-Reply-To: <20210217062139.7893-2-dqfext@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sun, 28 Feb 2021 00:47:17 +0100
+Message-ID: <CACRpkdaP9RGX9OY2s1fqkZJD0fc3jtZ4_R4A7VvL0=po-KEqyQ@mail.gmail.com>
+Subject: Re: [RFC net-next 1/2] net: dsa: add Realtek RTL8366S switch tag
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Mauri Sandberg <sandberg@mailfence.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 27, 2021 at 11:00 AM Wei Wang <weiwan@google.com> wrote:
+On Wed, Feb 17, 2021 at 7:21 AM DENG Qingfang <dqfext@gmail.com> wrote:
+
+> Add support for Realtek RTL8366S switch tag
 >
-> On Fri, Feb 26, 2021 at 6:08 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Fri, 26 Feb 2021 17:35:21 -0800 Wei Wang wrote:
-> > > On Fri, Feb 26, 2021 at 5:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > >
-> > > > On Fri, 26 Feb 2021 17:02:17 -0800 Wei Wang wrote:
-> > > > >  static int napi_thread_wait(struct napi_struct *napi)
-> > > > >  {
-> > > > > +       bool woken = false;
-> > > > > +
-> > > > >         set_current_state(TASK_INTERRUPTIBLE);
-> > > > >
-> > > > >         while (!kthread_should_stop() && !napi_disable_pending(napi)) {
-> > > > > -               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-> > > > > +               unsigned long state = READ_ONCE(napi->state);
-> > > > > +
-> > > > > +               if ((state & NAPIF_STATE_SCHED) &&
-> > > > > +                   ((state & NAPIF_STATE_SCHED_THREAD) || woken)) {
-> > > > >                         WARN_ON(!list_empty(&napi->poll_list));
-> > > > >                         __set_current_state(TASK_RUNNING);
-> > > > >                         return 0;
-> > > > > +               } else {
-> > > > > +                       WARN_ON(woken);
-> > > > >                 }
-> > > > >
-> > > > >                 schedule();
-> > > > > +               woken = true;
-> > > > >                 set_current_state(TASK_INTERRUPTIBLE);
-> > > > >         }
-> > > > >         __set_current_state(TASK_RUNNING);
-> > > > >
-> > > > > I don't think it is sufficient to only set SCHED_THREADED bit when the
-> > > > > thread is in RUNNING state.
-> > > > > In fact, the thread is most likely NOT in RUNNING mode before we call
-> > > > > wake_up_process() in ____napi_schedule(), because it has finished the
-> > > > > previous round of napi->poll() and SCHED bit was cleared, so
-> > > > > napi_thread_wait() sets the state to INTERRUPTIBLE and schedule() call
-> > > > > should already put it in sleep.
-> > > >
-> > > > That's why the check says "|| woken":
-> > > >
-> > > >         ((state & NAPIF_STATE_SCHED_THREAD) ||  woken))
-> > > >
-> > > > thread knows it owns the NAPI if:
-> > > >
-> > > >   (a) the NAPI has the explicit flag set
-> > > > or
-> > > >   (b) it was just worken up and !kthread_should_stop(), since only
-> > > >       someone who just claimed the normal SCHED on thread's behalf
-> > > >       will wake it up
-> > >
-> > > The 'woken' is set after schedule(). If it is the first time
-> > > napi_threaded_wait() is called, and SCHED_THREADED is not set, and
-> > > woken is not set either, this thread will be put to sleep when it
-> > > reaches schedule(), even though there is work waiting to be done on
-> > > that napi. And I think this kthread will not be woken up again
-> > > afterwards, since the SCHED bit is already grabbed.
-> >
-> > Indeed, looks like the task will be in WAKING state until it runs?
-> > We can switch the check in ____napi_schedule() from
-> >
-> >         if (thread->state == TASK_RUNNING)
-> >
-> > to
-> >
-> >         if (!(thread->state & TASK_INTERRUPTIBLE))
-> >
-> > ?
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+
+I understand this switch tag now sorry for confusion.
+
+> @@ -104,6 +104,12 @@ config NET_DSA_TAG_RTL4_A
+>           Realtek switches with 4 byte protocol A tags, sich as found in
+>           the Realtek RTL8366RB.
 >
-> Hmm... I am not very sure what state the thread will be put in after
-> kthread_create(). Could it be in TASK_INTERRUPTIBLE?
+> +config NET_DSA_TAG_RTL8366S
+> +       tristate "Tag driver for Realtek RTL8366S switch tags"
+> +       help
+> +         Say Y or M if you want to enable support for tagging frames for the
+> +         Realtek RTL8366S switch.
 
-I did a printk and confirmed that the thread->state is
-TASK_UNINTERRUPTIBLE after kthread_create() is called.
-So I think if we change the above state to:
-          if (thread->state != TASK_INTERRUPTIBLE)
-                  set_bit(NAPI_STATE_SCHED_THREADED, &napi->state);
-It should work.
+I names the previous protocol "RTL4 A" after a 4-byte tag
+with protocol indicted as "A", what about naming this
+"RTL2 9" in the same vein? It will be good if some other
+switch is using the same protocol. (If any...)
 
-I tested the following patch on my setup and saw no issues:
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ddf4cfc12615..682908707c1a 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -360,6 +360,7 @@ enum {
-        NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() owns this NAPI */
-        NAPI_STATE_PREFER_BUSY_POLL,    /* prefer busy-polling over
-softirq processing*/
-        NAPI_STATE_THREADED,            /* The poll is performed
-inside its own thread*/
-+       NAPI_STATE_SCHED_THREADED,      /* Napi is currently scheduled
-in threaded mode */
- };
+>  obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
+> +obj-$(CONFIG_NET_DSA_TAG_RTL8366S) += tag_rtl8366s.o
 
- enum {
-@@ -372,6 +373,7 @@ enum {
-        NAPIF_STATE_IN_BUSY_POLL        = BIT(NAPI_STATE_IN_BUSY_POLL),
-        NAPIF_STATE_PREFER_BUSY_POLL    = BIT(NAPI_STATE_PREFER_BUSY_POLL),
-        NAPIF_STATE_THREADED            = BIT(NAPI_STATE_THREADED),
-+       NAPIF_STATE_SCHED_THREADED      = BIT(NAPI_STATE_SCHED_THREADED),
- };
+So tag_rtl2_9.o etc.
 
- enum gro_result {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6c5967e80132..43607523ee99 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1501,17 +1501,18 @@ static int napi_kthread_create(struct napi_struct *n)
- {
-        int err = 0;
-
--       /* Create and wake up the kthread once to put it in
--        * TASK_INTERRUPTIBLE mode to avoid the blocked task
--        * warning and work with loadavg.
-+       /* Avoid waking up the kthread during creation to prevent
-+        * potential race.
-         */
--       n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
--                               n->dev->name, n->napi_id);
-+       n->thread = kthread_create(napi_threaded_poll, n, "napi/%s-%d",
-+                                  n->dev->name, n->napi_id);
-        if (IS_ERR(n->thread)) {
-                err = PTR_ERR(n->thread);
--               pr_err("kthread_run failed with err %d\n", err);
-+               pr_err("kthread_create failed with err %d\n", err);
-                n->thread = NULL;
-        }
-@@ -4294,6 +4295,8 @@ static inline void ____napi_schedule(struct
-softnet_data *sd,
-                 */
-                thread = READ_ONCE(napi->thread);
-                if (thread) {
-+                       if (thread->state != TASK_INTERRUPTIBLE)
-+                               set_bit(NAPI_STATE_SCHED_THREADED,
-&napi->state);
-                        wake_up_process(thread);
-                        return;
-                }
-@@ -6486,6 +6489,7 @@ bool napi_complete_done(struct napi_struct *n,
-int work_done)
-                WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
-
-                new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
-+                             NAPIF_STATE_SCHED_THREADED |
-                              NAPIF_STATE_PREFER_BUSY_POLL);
-
-                /* If STATE_MISSED was set, leave STATE_SCHED set,
-@@ -6968,16 +6972,24 @@ static int napi_poll(struct napi_struct *n,
-struct list_head *repoll)
-
- static int napi_thread_wait(struct napi_struct *napi)
- {
-+       bool woken = false;
-+
-        set_current_state(TASK_INTERRUPTIBLE);
-
-        while (!kthread_should_stop() && !napi_disable_pending(napi)) {
--               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-+               /* Testing SCHED_THREADED bit here to make sure the current
-+                * kthread owns this napi and could poll on this napi.
-+                * Testing SCHED bit is not enough because SCHED bit might be
-+                * set by some other busy poll thread or by napi_disable().
-+                */
-+               if (test_bit(NAPI_STATE_SCHED_THREADED, &napi->state)
-|| woken) {
-                        WARN_ON(!list_empty(&napi->poll_list));
-                        __set_current_state(TASK_RUNNING);
-                        return 0;
-                }
-
-                schedule();
-+                /* woken being true indicates this thread owns this napi. */
-+               woken = true;
-                set_current_state(TASK_INTERRUPTIBLE);
-        }
-        __set_current_state(TASK_RUNNING);
-
-Jakub, Eric and Alexander,
-What do you think of the above patch?
-To me, the logic here seems more complicated than the original v2
-patch, but it helps save quite some set_bit() in ____napi_schedule().
-So it may be worthwhile?
+Yours,
+Linus Walleij
