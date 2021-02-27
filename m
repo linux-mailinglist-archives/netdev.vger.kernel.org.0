@@ -2,81 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3365F326AD5
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 01:50:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E9D8326AD6
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 01:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230008AbhB0AuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 19:50:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbhB0AuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 19:50:06 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04919C061574
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 16:49:25 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id p1so8561827edy.2
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 16:49:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SFETy+Y2ZkcHkGwl4XZhNcdFfOvcKfn1d8V4EJlQDY4=;
-        b=X7Qrzs6ssHNh0+iky7lJ4xHODZrpPOxHYXRKVtcxO+rcOjHFGxHdtflWJJ0P9FzVeT
-         olH8DzSaXJbmWsNDILnAwTBMcCBkje3GppDc050r0PEJoT8W4FqqqhO8qHSKTbYcptd4
-         YVmex6fWevz3Pik6kF5sYKV7BKi8E/IkBFGpCf6g87HW5Pawe38vLN4o7gD8H8oJEIYu
-         e1gS7/c+l4DkjKdJD6JpAww0egU9C/UIXB6JGiY88sp+ph3Q8cqBOjd2LawLvo5q8O0+
-         /oxvCJR47v0g+BvLoaw3tcpCtH0Lm5MUbwdDknZe7mPe5Xu1N/+VRK73PtNYYMHh/Uga
-         ey5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SFETy+Y2ZkcHkGwl4XZhNcdFfOvcKfn1d8V4EJlQDY4=;
-        b=q9dkZ/iDEDADMC5gSAlpWmp/bLSv7Nfrbmi5OsFG+FnX5ikjC7nkdql9RA6uEVWdyj
-         8EbfgXkvuz0/MmtbvHLG4I8/lmyt6QtAhC4WwYLleWCXJBA/lwyojmGmM8TgyfX8/Ski
-         zt8eF5o6hjc180h0IIZxErkqZb8GLmXrCRkksiOeiZL9uikY+6VXCoUMjFfSmRx7lYUd
-         ISHQsjhyMwas1IIe3vRzy6r5W3MS2rHLNznYakENwMENxkrGwmHBwohiTaXLsXU9qr8z
-         9etBDTI2Meszu9bMgo9c56JOedx4z6DxPxv5awqM97sxGDBky/boY7s978I4NJI5Aoa5
-         ZTOg==
-X-Gm-Message-State: AOAM533TYlcJEDJSfU1RfShVFYtavEZHd6SRackMZOfjvxJTQR2eQVHv
-        m5ffKlfQItDRJOe/zdSm0dY=
-X-Google-Smtp-Source: ABdhPJw3OC9jAB9OhmYCcaz10nqjUJ+5qCRN6Lg5aD9sIv2zvgoIZd/uzcztxFlxKNZiPrJWoJlvHQ==
-X-Received: by 2002:a05:6402:4ce:: with SMTP id n14mr6167369edw.309.1614386964573;
-        Fri, 26 Feb 2021 16:49:24 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id t16sm2504302eds.76.2021.02.26.16.49.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 16:49:24 -0800 (PST)
-Date:   Sat, 27 Feb 2021 02:49:23 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Markus =?utf-8?Q?Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
-Subject: Re: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in
- IFF_PROMISC mode
-Message-ID: <20210227004923.vib4mksyoqt4ygz4@skbuf>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
- <20210225121835.3864036-6-olteanv@gmail.com>
- <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210226234244.w7xw7qnpo3skdseb@skbuf>
- <20210226154922.5956512b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210227001651.geuv4pt2bxkzuz5d@skbuf>
- <20210226164519.4da3775d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S229953AbhB0Ayo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 19:54:44 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:32858 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229622AbhB0Aym (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Feb 2021 19:54:42 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lFnrl-008gSc-0W; Sat, 27 Feb 2021 01:53:53 +0100
+Date:   Sat, 27 Feb 2021 01:53:53 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Guangbin Huang <huangguangbin2@huawei.com>
+Subject: Re: [PATCH net] net: phy: fix save wrong speed and duplex problem if
+ autoneg is on
+Message-ID: <YDmYIb0O5DZkL+X3@lunn.ch>
+References: <1614325482-25208-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210226164519.4da3775d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1614325482-25208-1-git-send-email-tanhuazhong@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 04:45:19PM -0800, Jakub Kicinski wrote:
-> I see, so this is indeed of practical importance to NXP.
->
-> Would you mind re-spinning with an expanded justification?
+On Fri, Feb 26, 2021 at 03:44:42PM +0800, Huazhong Tan wrote:
+> From: Guangbin Huang <huangguangbin2@huawei.com>
+> 
+> If phy uses generic driver and autoneg is on, enter command
+> "ethtool -s eth0 speed 50" will not change phy speed actually, but
+> command "ethtool eth0" shows speed is 50Mb/s because phydev->speed
+> has been set to 50 and no update later.
+> 
+> And duplex setting has same problem too.
+> 
+> However, if autoneg is on, phy only changes speed and duplex according to
+> phydev->advertising, but not phydev->speed and phydev->duplex. So in this
+> case, phydev->speed and phydev->duplex don't need to be set in function
+> phy_ethtool_ksettings_set() if autoneg is on.
+> 
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 
-Sure, I'll do that tomorrow. Thanks.
+I'm not sure, but i think this happens after
+
+commit 51e2a3846eab18711f4eb59cd0a4c33054e2980a
+Author: Trent Piepho <tpiepho@freescale.com>
+Date:   Wed Sep 24 10:55:46 2008 +0000
+
+    PHY: Avoid unnecessary aneg restarts
+    
+    The PHY's aneg is configured and restarted whenever the link is brought up,
+    e.g. when DHCP is started after the kernel has booted.  This can take the
+    link down for several seconds while auto-negotiation is redone.
+    
+    If the advertised features haven't changed, then it shouldn't be necessary
+    to bring down the link and start auto-negotiation over again.
+    
+    genphy_config_advert() is enhanced to return 0 when the advertised features
+    haven't been changed and >0 when they have been.
+    
+    genphy_config_aneg() then uses this information to not call
+    genphy_restart_aneg() if there has been no change.
+
+Before then, i think autoneg was unconditionally restarted, and so the
+speed would get overwritten when autoneg completed. After this patch,
+since autoneg is not being changed when only speed is set, autoneg is
+not triggered.
+
+	Andrew
