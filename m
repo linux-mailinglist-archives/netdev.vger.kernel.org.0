@@ -2,158 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE46326F03
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 22:17:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80AE2326F98
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 00:28:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbhB0VQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Feb 2021 16:16:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        id S230101AbhB0XYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Feb 2021 18:24:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbhB0VQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 16:16:08 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD36C06174A;
-        Sat, 27 Feb 2021 13:15:27 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id q85so12816633qke.8;
-        Sat, 27 Feb 2021 13:15:27 -0800 (PST)
+        with ESMTP id S230008AbhB0XYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 18:24:48 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398ECC06174A
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:24:08 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id f4so12876641ybk.11
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:24:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yACuRrWeAOm+vqBty/emieUeumPYE3QmVfAJc1GKnd8=;
-        b=Vu2BZkkQXqhikn25pbv0ujmiSS9XLUCndzZ/XThhFKestpyUcP1dPSZsWICjU5jNuO
-         m+sKQ2d/cXzWueEF33QmS6dlvTnTlXum4GyML+ixsxdRdyMeq8Kr5peXBsPzpdpssy8X
-         M+GIGRao1fZBUhIhSYo4XKH3Lhzp6LtGOUXsEloArnQPNJ+ZV/F67/PwL06aq07sT0/a
-         gIm86PE0SxIq9P9H+Le4HavdokadCsj3Dr08AZoEUYRJ+NzhaoSpQqOg0vqdwqaUyLNP
-         C6tC+60IAXh2m6DOwkgYCbP2J7WS02QA3OU/WyHBYIgWhCWutuV7Wt3yUqOZMboTd1KQ
-         t5eQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I2mvV3bQGSDDQ5777uMurFEM0r5Gd0/dBZnoMxiJztY=;
+        b=meMpGWaBFEsCUHT/jOLar5Y2yj8t11Ek7SrBptFRxbTXG+lQcdasp0fDZeexJCTSNB
+         QFvlnl1Ihhx9rvRtPZvmF/nbXOfZd4SPdpEaCtorGZPv0DeIh8A9HtCKfuvVDu5/nBa9
+         1B4Ot/r6DB73/kUXbDT3tcdjcpcXWKtcC0PyeOcmViEy46vANWJhFJpwM/BeW3eLqA/T
+         8HVQhSLQCJ0FOdG/a3E7Wb+pFd4p9SoMT8umgSWn9dTDhqJDH/ku/hmhZ5SQdtWOfoht
+         8e+f1wCPhXvy63ubsNsWj1WmQxZf+lZ7iy3WBHSV0Z3B6wJD9GhHOzPENn0pjaHJzPCC
+         ZNFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yACuRrWeAOm+vqBty/emieUeumPYE3QmVfAJc1GKnd8=;
-        b=K/QWAQCpN+FDGhXnfGKm5L1WqjCxzCd3/jQb6pEwQ7pW+rt8yXHxNFB1MrEqICmLw1
-         kADxMzTc7fDIFZNanwzrUVpOhL8lZEBnAkJpk4HI+5OOCe0H6x+oDEbNOuL7wj9hMOYE
-         zkNDQiIdFPvfSSmNIvQjbv5QWkES34swBeyg98AJyyD0kHFzDqEINptV0T4b19DMmsCL
-         FTauxQ7yyM6xu/p/hCKFVGU+CJeDvcU3J1FfPXKP8++ohjJ2yoOCE9ZeiW460sHFUlTN
-         3ylIOJm4G7N+ask7yARp8LznbflrOTXifvBc+X8lyCzWxkl2yVqYn5LEl1gqddmgwuW7
-         1LgQ==
-X-Gm-Message-State: AOAM531deDEvNCpdNzmcfCIF3obHxykD+0b5vc2fmBOQ7kIY0//ZwCtE
-        m0S00YaxPPvw+BvfNARzA9E=
-X-Google-Smtp-Source: ABdhPJy+9gYyjSKSu3sQW5y++DMYjarSycMC+uz64TI9TxVaEiAMqbBHwZIJqI2tnKRPiws5OIcrgA==
-X-Received: by 2002:a37:8806:: with SMTP id k6mr8370908qkd.339.1614460526217;
-        Sat, 27 Feb 2021 13:15:26 -0800 (PST)
-Received: from tong-desktop.local ([2601:5c0:c200:27c6:3177:5a9:ac9d:5621])
-        by smtp.googlemail.com with ESMTPSA id 12sm8372157qtt.88.2021.02.27.13.15.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Feb 2021 13:15:25 -0800 (PST)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ztong0001@gmail.com
-Subject: [PATCH] atm: eni: dont release is never initialized
-Date:   Sat, 27 Feb 2021 16:15:06 -0500
-Message-Id: <20210227211506.314125-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I2mvV3bQGSDDQ5777uMurFEM0r5Gd0/dBZnoMxiJztY=;
+        b=C+8gbzIuOBBho5R0xVKw7qfDFd88L0MmDTssbtIPH92VFwricYTpBbCs//XM4VzhiD
+         g9Cj5ZlGwbjkk2ESGdZwz3Zodw3Yn8rEZs/e3f3EcUCjVO0HGaI9wLkkEVQ0zHSFagyH
+         EX5qf7DhNr+vvmMwwakXvwqGfnbO0sYeikvYwqlI2/HWagmnCdjSw2uuoh7VSWF6uGhh
+         O59jJjAHkLWZZVFA9NGnL6tsn4M85m7KLIB6RGKJmbzqy87g6xFCX/Dm8QeYRkZTo+UT
+         mu83L9Y33Tvjxfl34jdiZLXsiNcrmnogSYzTs6yD+C392bNV8wEhtAlZrYIzSyRCkA0O
+         VIhw==
+X-Gm-Message-State: AOAM531kfH9T3DRysYCvGkXWGKQCVnlYhDIW8V3RW6//+oqlE37jJCyz
+        m+WulHMmt5/J0lP+m1m0S7zUDt65Umnd7xN3nH2WjTgkAB/Gfw==
+X-Google-Smtp-Source: ABdhPJy+YYJzECq3MQmuliCWDN2/+CM4tLqNbne5YvHk0UE45D3b9OAK2dbnKmdZrCuKrbcDjoYq/aKt5qUci2lleUE=
+X-Received: by 2002:a25:fc3:: with SMTP id 186mr13528727ybp.452.1614468247015;
+ Sat, 27 Feb 2021 15:24:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210227003047.1051347-1-weiwan@google.com> <20210226164803.4413571f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEA6p_CJx7K1Fab1C0Qkw=1VNnDaV9qwB_UUtikPMoqNUUWJuA@mail.gmail.com>
+ <20210226172240.24d626e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEA6p_B6baYFZnEOMS=Nmvg0kA_qB=7ip4S96ys9ZoJWfOiOCA@mail.gmail.com>
+ <20210226180833.09c98110@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAEA6p_ABZfs3zyQ+90cC1P8T8w94Lz4RvvBdQHQsHXEPP5aexQ@mail.gmail.com>
+In-Reply-To: <CAEA6p_ABZfs3zyQ+90cC1P8T8w94Lz4RvvBdQHQsHXEPP5aexQ@mail.gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Sat, 27 Feb 2021 15:23:56 -0800
+Message-ID: <CAEA6p_DtTG6ryiG3GkxaySJeNcYF=RfkgCYTc-T-mHqMwL2-Gw@mail.gmail.com>
+Subject: Re: [PATCH net v2] net: fix race between napi kthread mode and busy poll
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin Zaharinov <micron10@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-label err_eni_release is reachable when eni_start() fail.
-In eni_start() it calls dev->phy->start() in the last step, if start()
-fail we don't need to call phy->stop(), if start() is never called, we
-neither need to call phy->stop(), otherwise null-ptr-deref will happen.
+On Sat, Feb 27, 2021 at 11:00 AM Wei Wang <weiwan@google.com> wrote:
+>
+> On Fri, Feb 26, 2021 at 6:08 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Fri, 26 Feb 2021 17:35:21 -0800 Wei Wang wrote:
+> > > On Fri, Feb 26, 2021 at 5:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > >
+> > > > On Fri, 26 Feb 2021 17:02:17 -0800 Wei Wang wrote:
+> > > > >  static int napi_thread_wait(struct napi_struct *napi)
+> > > > >  {
+> > > > > +       bool woken = false;
+> > > > > +
+> > > > >         set_current_state(TASK_INTERRUPTIBLE);
+> > > > >
+> > > > >         while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+> > > > > -               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
+> > > > > +               unsigned long state = READ_ONCE(napi->state);
+> > > > > +
+> > > > > +               if ((state & NAPIF_STATE_SCHED) &&
+> > > > > +                   ((state & NAPIF_STATE_SCHED_THREAD) || woken)) {
+> > > > >                         WARN_ON(!list_empty(&napi->poll_list));
+> > > > >                         __set_current_state(TASK_RUNNING);
+> > > > >                         return 0;
+> > > > > +               } else {
+> > > > > +                       WARN_ON(woken);
+> > > > >                 }
+> > > > >
+> > > > >                 schedule();
+> > > > > +               woken = true;
+> > > > >                 set_current_state(TASK_INTERRUPTIBLE);
+> > > > >         }
+> > > > >         __set_current_state(TASK_RUNNING);
+> > > > >
+> > > > > I don't think it is sufficient to only set SCHED_THREADED bit when the
+> > > > > thread is in RUNNING state.
+> > > > > In fact, the thread is most likely NOT in RUNNING mode before we call
+> > > > > wake_up_process() in ____napi_schedule(), because it has finished the
+> > > > > previous round of napi->poll() and SCHED bit was cleared, so
+> > > > > napi_thread_wait() sets the state to INTERRUPTIBLE and schedule() call
+> > > > > should already put it in sleep.
+> > > >
+> > > > That's why the check says "|| woken":
+> > > >
+> > > >         ((state & NAPIF_STATE_SCHED_THREAD) ||  woken))
+> > > >
+> > > > thread knows it owns the NAPI if:
+> > > >
+> > > >   (a) the NAPI has the explicit flag set
+> > > > or
+> > > >   (b) it was just worken up and !kthread_should_stop(), since only
+> > > >       someone who just claimed the normal SCHED on thread's behalf
+> > > >       will wake it up
+> > >
+> > > The 'woken' is set after schedule(). If it is the first time
+> > > napi_threaded_wait() is called, and SCHED_THREADED is not set, and
+> > > woken is not set either, this thread will be put to sleep when it
+> > > reaches schedule(), even though there is work waiting to be done on
+> > > that napi. And I think this kthread will not be woken up again
+> > > afterwards, since the SCHED bit is already grabbed.
+> >
+> > Indeed, looks like the task will be in WAKING state until it runs?
+> > We can switch the check in ____napi_schedule() from
+> >
+> >         if (thread->state == TASK_RUNNING)
+> >
+> > to
+> >
+> >         if (!(thread->state & TASK_INTERRUPTIBLE))
+> >
+> > ?
+>
+> Hmm... I am not very sure what state the thread will be put in after
+> kthread_create(). Could it be in TASK_INTERRUPTIBLE?
 
-In order to fix this issue, don't call phy->stop() in label err_eni_release
+I did a printk and confirmed that the thread->state is
+TASK_UNINTERRUPTIBLE after kthread_create() is called.
+So I think if we change the above state to:
+          if (thread->state != TASK_INTERRUPTIBLE)
+                  set_bit(NAPI_STATE_SCHED_THREADED, &napi->state);
+It should work.
 
-[    4.875714] ==================================================================
-[    4.876091] BUG: KASAN: null-ptr-deref in suni_stop+0x47/0x100 [suni]
-[    4.876433] Read of size 8 at addr 0000000000000030 by task modprobe/95
-[    4.876778]
-[    4.876862] CPU: 0 PID: 95 Comm: modprobe Not tainted 5.11.0-rc7-00090-gdcc0b49040c7 #2
-[    4.877290] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-48-gd94
-[    4.877876] Call Trace:
-[    4.878009]  dump_stack+0x7d/0xa3
-[    4.878191]  kasan_report.cold+0x10c/0x10e
-[    4.878410]  ? __slab_free+0x2f0/0x340
-[    4.878612]  ? suni_stop+0x47/0x100 [suni]
-[    4.878832]  suni_stop+0x47/0x100 [suni]
-[    4.879043]  eni_do_release+0x3b/0x70 [eni]
-[    4.879269]  eni_init_one.cold+0x1152/0x1747 [eni]
-[    4.879528]  ? _raw_spin_lock_irqsave+0x7b/0xd0
-[    4.879768]  ? eni_ioctl+0x270/0x270 [eni]
-[    4.879990]  ? __mutex_lock_slowpath+0x10/0x10
-[    4.880226]  ? eni_ioctl+0x270/0x270 [eni]
-[    4.880448]  local_pci_probe+0x6f/0xb0
-[    4.880650]  pci_device_probe+0x171/0x240
-[    4.880864]  ? pci_device_remove+0xe0/0xe0
-[    4.881086]  ? kernfs_create_link+0xb6/0x110
-[    4.881315]  ? sysfs_do_create_link_sd.isra.0+0x76/0xe0
-[    4.881594]  really_probe+0x161/0x420
-[    4.881791]  driver_probe_device+0x6d/0xd0
-[    4.882010]  device_driver_attach+0x82/0x90
-[    4.882233]  ? device_driver_attach+0x90/0x90
-[    4.882465]  __driver_attach+0x60/0x100
-[    4.882671]  ? device_driver_attach+0x90/0x90
-[    4.882903]  bus_for_each_dev+0xe1/0x140
-[    4.883114]  ? subsys_dev_iter_exit+0x10/0x10
-[    4.883346]  ? klist_node_init+0x61/0x80
-[    4.883557]  bus_add_driver+0x254/0x2a0
-[    4.883764]  driver_register+0xd3/0x150
-[    4.883971]  ? 0xffffffffc0038000
-[    4.884149]  do_one_initcall+0x84/0x250
-[    4.884355]  ? trace_event_raw_event_initcall_finish+0x150/0x150
-[    4.884674]  ? unpoison_range+0xf/0x30
-[    4.884875]  ? ____kasan_kmalloc.constprop.0+0x84/0xa0
-[    4.885150]  ? unpoison_range+0xf/0x30
-[    4.885352]  ? unpoison_range+0xf/0x30
-[    4.885557]  do_init_module+0xf8/0x350
-[    4.885760]  load_module+0x3fe6/0x4340
-[    4.885960]  ? vm_unmap_ram+0x1d0/0x1d0
-[    4.886166]  ? ____kasan_kmalloc.constprop.0+0x84/0xa0
-[    4.886441]  ? module_frob_arch_sections+0x20/0x20
-[    4.886697]  ? __do_sys_finit_module+0x108/0x170
-[    4.886941]  __do_sys_finit_module+0x108/0x170
-[    4.887178]  ? __ia32_sys_init_module+0x40/0x40
-[    4.887419]  ? file_open_root+0x200/0x200
-[    4.887634]  ? do_sys_open+0x85/0xe0
-[    4.887826]  ? filp_open+0x50/0x50
-[    4.888009]  ? fpregs_assert_state_consistent+0x4d/0x60
-[    4.888287]  ? exit_to_user_mode_prepare+0x2f/0x130
-[    4.888547]  do_syscall_64+0x33/0x40
-[    4.888739]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[    4.889010] RIP: 0033:0x7ff62fcf1cf7
-[    4.889202] Code: 48 89 57 30 48 8b 04 24 48 89 47 38 e9 1d a0 02 00 48 89 f8 48 89 f71
-[    4.890172] RSP: 002b:00007ffe6644ade8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[    4.890570] RAX: ffffffffffffffda RBX: 0000000000f2ca70 RCX: 00007ff62fcf1cf7
-[    4.890944] RDX: 0000000000000000 RSI: 0000000000f2b9e0 RDI: 0000000000000003
-[    4.891318] RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
-[    4.891691] R10: 00007ff62fd55300 R11: 0000000000000246 R12: 0000000000f2b9e0
-[    4.892064] R13: 0000000000000000 R14: 0000000000f2bdd0 R15: 0000000000000001
-[    4.892439] ==================================================================
+I tested the following patch on my setup and saw no issues:
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index ddf4cfc12615..682908707c1a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -360,6 +360,7 @@ enum {
+        NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() owns this NAPI */
+        NAPI_STATE_PREFER_BUSY_POLL,    /* prefer busy-polling over
+softirq processing*/
+        NAPI_STATE_THREADED,            /* The poll is performed
+inside its own thread*/
++       NAPI_STATE_SCHED_THREADED,      /* Napi is currently scheduled
+in threaded mode */
+ };
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
----
- drivers/atm/eni.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ enum {
+@@ -372,6 +373,7 @@ enum {
+        NAPIF_STATE_IN_BUSY_POLL        = BIT(NAPI_STATE_IN_BUSY_POLL),
+        NAPIF_STATE_PREFER_BUSY_POLL    = BIT(NAPI_STATE_PREFER_BUSY_POLL),
+        NAPIF_STATE_THREADED            = BIT(NAPI_STATE_THREADED),
++       NAPIF_STATE_SCHED_THREADED      = BIT(NAPI_STATE_SCHED_THREADED),
+ };
 
-diff --git a/drivers/atm/eni.c b/drivers/atm/eni.c
-index 316a9947541f..b574cce98dc3 100644
---- a/drivers/atm/eni.c
-+++ b/drivers/atm/eni.c
-@@ -2260,7 +2260,8 @@ static int eni_init_one(struct pci_dev *pci_dev,
- 	return rc;
- 
- err_eni_release:
--	eni_do_release(dev);
-+	dev->phy = NULL;
-+	iounmap(ENI_DEV(dev)->ioaddr);
- err_unregister:
- 	atm_dev_deregister(dev);
- err_free_consistent:
--- 
-2.25.1
+ enum gro_result {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6c5967e80132..43607523ee99 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -1501,17 +1501,18 @@ static int napi_kthread_create(struct napi_struct *n)
+ {
+        int err = 0;
 
+-       /* Create and wake up the kthread once to put it in
+-        * TASK_INTERRUPTIBLE mode to avoid the blocked task
+-        * warning and work with loadavg.
++       /* Avoid waking up the kthread during creation to prevent
++        * potential race.
+         */
+-       n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
+-                               n->dev->name, n->napi_id);
++       n->thread = kthread_create(napi_threaded_poll, n, "napi/%s-%d",
++                                  n->dev->name, n->napi_id);
+        if (IS_ERR(n->thread)) {
+                err = PTR_ERR(n->thread);
+-               pr_err("kthread_run failed with err %d\n", err);
++               pr_err("kthread_create failed with err %d\n", err);
+                n->thread = NULL;
+        }
+@@ -4294,6 +4295,8 @@ static inline void ____napi_schedule(struct
+softnet_data *sd,
+                 */
+                thread = READ_ONCE(napi->thread);
+                if (thread) {
++                       if (thread->state != TASK_INTERRUPTIBLE)
++                               set_bit(NAPI_STATE_SCHED_THREADED,
+&napi->state);
+                        wake_up_process(thread);
+                        return;
+                }
+@@ -6486,6 +6489,7 @@ bool napi_complete_done(struct napi_struct *n,
+int work_done)
+                WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
+
+                new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
++                             NAPIF_STATE_SCHED_THREADED |
+                              NAPIF_STATE_PREFER_BUSY_POLL);
+
+                /* If STATE_MISSED was set, leave STATE_SCHED set,
+@@ -6968,16 +6972,24 @@ static int napi_poll(struct napi_struct *n,
+struct list_head *repoll)
+
+ static int napi_thread_wait(struct napi_struct *napi)
+ {
++       bool woken = false;
++
+        set_current_state(TASK_INTERRUPTIBLE);
+
+        while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+-               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
++               /* Testing SCHED_THREADED bit here to make sure the current
++                * kthread owns this napi and could poll on this napi.
++                * Testing SCHED bit is not enough because SCHED bit might be
++                * set by some other busy poll thread or by napi_disable().
++                */
++               if (test_bit(NAPI_STATE_SCHED_THREADED, &napi->state)
+|| woken) {
+                        WARN_ON(!list_empty(&napi->poll_list));
+                        __set_current_state(TASK_RUNNING);
+                        return 0;
+                }
+
+                schedule();
++                /* woken being true indicates this thread owns this napi. */
++               woken = true;
+                set_current_state(TASK_INTERRUPTIBLE);
+        }
+        __set_current_state(TASK_RUNNING);
+
+Jakub, Eric and Alexander,
+What do you think of the above patch?
+To me, the logic here seems more complicated than the original v2
+patch, but it helps save quite some set_bit() in ____napi_schedule().
+So it may be worthwhile?
