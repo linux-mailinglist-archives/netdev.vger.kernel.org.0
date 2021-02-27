@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 467AB326B5E
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 04:36:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C8F326B60
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 04:36:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbhB0DeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 22:34:23 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:13383 "EHLO
+        id S230134AbhB0De3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 22:34:29 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:13384 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbhB0DeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 22:34:20 -0500
+        with ESMTP id S229946AbhB0DeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 22:34:21 -0500
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DnXBm1Xxvz7qy3;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DnXBm2F3Cz7r01;
         Sat, 27 Feb 2021 11:32:00 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
@@ -21,11 +21,14 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>, Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 0/3] net: hns3: fixes fot -net
-Date:   Sat, 27 Feb 2021 11:34:04 +0800
-Message-ID: <1614396847-6001-1-git-send-email-tanhuazhong@huawei.com>
+        <linuxarm@openeuler.org>, Jian Shen <shenjian15@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net 1/3] net: hns3: fix error mask definition of flow director
+Date:   Sat, 27 Feb 2021 11:34:05 +0800
+Message-ID: <1614396847-6001-2-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1614396847-6001-1-git-send-email-tanhuazhong@huawei.com>
+References: <1614396847-6001-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.69.192.56]
@@ -34,17 +37,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patchset includes some fixes for the HNS3 ethernet driver.
+From: Jian Shen <shenjian15@huawei.com>
 
-Jian Shen (3):
-  net: hns3: fix error mask definition of flow director
-  net: hns3: fix query vlan mask value error for flow director
-  net: hns3: fix bug when calculating the TCAM table info
+Currently, some bit filed definitions of flow director TCAM
+configuration command are incorrect. Since the wrong MSB is
+always 0, and these fields are assgined in order, so it still works.
 
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h  | 6 +++---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 7 +++----
- 2 files changed, 6 insertions(+), 7 deletions(-)
+Fix it by redefine them.
 
+fixes: 11732868 ("net: hns3: Add input key and action config support for flow director")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index ff52a65..057dda7 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -1053,16 +1053,16 @@ struct hclge_fd_tcam_config_3_cmd {
+ #define HCLGE_FD_AD_DROP_B		0
+ #define HCLGE_FD_AD_DIRECT_QID_B	1
+ #define HCLGE_FD_AD_QID_S		2
+-#define HCLGE_FD_AD_QID_M		GENMASK(12, 2)
++#define HCLGE_FD_AD_QID_M		GENMASK(11, 2)
+ #define HCLGE_FD_AD_USE_COUNTER_B	12
+ #define HCLGE_FD_AD_COUNTER_NUM_S	13
+ #define HCLGE_FD_AD_COUNTER_NUM_M	GENMASK(20, 13)
+ #define HCLGE_FD_AD_NXT_STEP_B		20
+ #define HCLGE_FD_AD_NXT_KEY_S		21
+-#define HCLGE_FD_AD_NXT_KEY_M		GENMASK(26, 21)
++#define HCLGE_FD_AD_NXT_KEY_M		GENMASK(25, 21)
+ #define HCLGE_FD_AD_WR_RULE_ID_B	0
+ #define HCLGE_FD_AD_RULE_ID_S		1
+-#define HCLGE_FD_AD_RULE_ID_M		GENMASK(13, 1)
++#define HCLGE_FD_AD_RULE_ID_M		GENMASK(12, 1)
+ #define HCLGE_FD_AD_TC_OVRD_B		16
+ #define HCLGE_FD_AD_TC_SIZE_S		17
+ #define HCLGE_FD_AD_TC_SIZE_M		GENMASK(20, 17)
 -- 
 2.7.4
 
