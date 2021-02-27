@@ -2,134 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB1F4326DEE
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 17:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73CC1326E5F
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 18:23:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230232AbhB0QnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Feb 2021 11:43:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
+        id S230314AbhB0RU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Feb 2021 12:20:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbhB0QmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 11:42:06 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E671C06174A;
-        Sat, 27 Feb 2021 08:41:24 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id k12so5244140ljg.9;
-        Sat, 27 Feb 2021 08:41:24 -0800 (PST)
+        with ESMTP id S230258AbhB0RRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 12:17:30 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD30C061756
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 09:16:48 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id d5so10947388iln.6
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 09:16:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=2kJ+akVZdN0RZerG3cR+FK9vS9Cr6lCvITb5oXS64J4=;
-        b=FsE8+G6D3CJ417+4kZs5yOR5XZsmI4X4DTVrqshFXL0ob3/OO8x5woXqypXEcutF3m
-         oDNT7bD7lCTFMBKhv1GISBXNfg/wr40fp7Xn3eVnY8cP/niOa6cEZd33LC0rMIfrdpMJ
-         J0MpgG+D8dCBF2hN47qaICc8AFU9xtY+g50RL5U++JMxagZKoLgoqMGh9iv7B8joDty+
-         SZh7PO2mU/N7Vh4mlmmKXTQq8RsMbFOq31t+wEV5QparW20FQsqL/2U9Y7DTD72pDOnB
-         7eDHxQnUbIxtL9lKNpqqRuFheUt/MikEWh6UEquMunAFTXNY+tdaoNo3s9JerY7ljnb+
-         OKgw==
+        bh=gijZebkUadDk/rrUFgSEjO0CurEj4Iocej5zN8XOth4=;
+        b=Q2H405szbD1wMlX9fbtzlFPL8j/LZIGv6ZRnEcJwr1lVFMGBHhUdfvIchpU7l88aPT
+         XwbWK08LifMP9qeph4EYWSklMGNtG2fezLht76/4crYYkE5yHAszGeGHzh1+PAl1nB0m
+         xO/OZhHcuxR12s4+pl6RmYL2hdTth+CqFL4tFco0kird+C4wCh8nazDWkSs9Nb2f1lKu
+         aV2Dc9aVhOUTILLOZk7PtTnlQJpRWPXPoSbTzsx4SdPdFI0D9MBUcdOgdiDh/EnHZxMF
+         HSDvjqamNR/5oa4SNOJnOlRgBeTEizA2TsTMexWJfCDQOIW3MTSFzmGi5Mp6SHWltlgE
+         n/lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2kJ+akVZdN0RZerG3cR+FK9vS9Cr6lCvITb5oXS64J4=;
-        b=EFXJIugqQajo8kuk7R8tza3sZxN0e9sP7rtQOUc4rN+74G4UG7icuFxP4N7Tb/FoMs
-         OlzInRzKWY84tpNvWeYv8O+svhxvw0opJoMB7Tgp8GXj+iGW2v63xKGDob46EW6jkGcz
-         zq5DXDrNrqbDeg8kXjHHRwMJlF7G8LshBHu9ndNLG2E5xbKmex7ERlMynjXp/mfS1jCW
-         2IVK2wie4NuTf3HPxDYWvfEtxuwKnJKSHodl3AKr/7hk6svDcFHwA6nhlhIOCFnyAXZC
-         WcFRmo76MxGG5QH4LaeThKz2Og0m+pZalCeXGhxzT+u12d+tGILcS0RUQpkDrX3Gg+Uo
-         W6DQ==
-X-Gm-Message-State: AOAM5319CcX6pUHm7BloqmzqKvD7Sn9kPVR8bnPGiK43z4aEh2MK+nFY
-        6QrhMn2eA/TjThxZaQEAqZw=
-X-Google-Smtp-Source: ABdhPJxFCszFUea7FawYs/6SUHk8XvOJQTlQBLwm+ULp1tyXV41NJYMQqRJshbMYfK9sLoUxG1JQoA==
-X-Received: by 2002:a05:651c:229:: with SMTP id z9mr4839872ljn.267.1614444082640;
-        Sat, 27 Feb 2021 08:41:22 -0800 (PST)
-Received: from localhost.localdomain ([94.103.235.59])
-        by smtp.gmail.com with ESMTPSA id q16sm1726626lfu.153.2021.02.27.08.41.21
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=gijZebkUadDk/rrUFgSEjO0CurEj4Iocej5zN8XOth4=;
+        b=QlqY8pyVzv9djzRmWAHYfu52vTLuymBUJieKVa3t0q9lTBJuAuc1iUTzJVmNHGYn6u
+         Oxbep7fmxzZFUNNuphlaRO4NPalVp4lUUhfT3juiIOJAKXRstCfE1eUsgMtVs5MEdJV5
+         rCix22rm9Ra6mJajI6e2uuT5Jkdr1zbjOYSZxfabPEe0gt1hxGDWo+5kusqj7150ytg3
+         Y7muzxpS+AC67b6Uf+Q3z/2Tg6vaMHylovCw4kmkYe2tDCdnAlFmUfkuB8MW9hHVmwMK
+         8OrQHLtLzspRH9IO6J2TA28IQGs8y4Va6L1d8eJGxhiA6JhGrmT+umqajutawwLuMFfP
+         q2cg==
+X-Gm-Message-State: AOAM530K0tmOMFF0Aw2TIg5QnmpJBprjCLBoqO2QxE91hYTvePk4YjF3
+        aD6VBeOeeW1/Slik3fQFJXw=
+X-Google-Smtp-Source: ABdhPJy6ADLOTSkTdZwo88RtK1xUDBmrQ6BKCjOyAB8/xoU+/rkRzq2g/kvciSkiX+RKse6ppy7pIA==
+X-Received: by 2002:a92:d0c3:: with SMTP id y3mr6927881ila.303.1614446207716;
+        Sat, 27 Feb 2021 09:16:47 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id s7sm1977635ioj.16.2021.02.27.09.16.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Feb 2021 08:41:22 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     alobakin@pm.me
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        linmiaohe@huawei.com, netdev@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
-Subject: [PATCH v2] net/core/skbuff: fix passing wrong size to __alloc_skb
-Date:   Sat, 27 Feb 2021 19:41:01 +0300
-Message-Id: <20210227164101.19071-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210227110306.13360-1-alobakin@pm.me>
-References: <20210227110306.13360-1-alobakin@pm.me>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 27 Feb 2021 09:16:47 -0800 (PST)
+Date:   Sat, 27 Feb 2021 09:16:38 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tom Herbert <tom@herbertland.com>
+Message-ID: <603a7e767e1a8_25e5d20864@john-XPS-13-9370.notmuch>
+In-Reply-To: <CA+FuTSdn3zbynYOvuhLxZ02mmcDoRWQ5vUmBCbAgxeTa2X33YQ@mail.gmail.com>
+References: <20210226212248.8300-1-daniel@iogearbox.net>
+ <CA+FuTSdn3zbynYOvuhLxZ02mmcDoRWQ5vUmBCbAgxeTa2X33YQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: Fix gro aggregation for udp encaps with zero
+ csum
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found WARNING in __alloc_pages_nodemask()[1] when order >= MAX_ORDER.
-It was caused by __netdev_alloc_skb(), which doesn't check len value after adding NET_SKB_PAD.
-Order will be >= MAX_ORDER and passed to __alloc_pages_nodemask() if size > KMALLOC_MAX_SIZE.
-Same happens in __napi_alloc_skb.
+Willem de Bruijn wrote:
+> On Fri, Feb 26, 2021 at 4:23 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >
+> > We noticed a GRO issue for UDP-based encaps such as vxlan/geneve when the
+> > csum for the UDP header itself is 0. In that case, GRO aggregation does
+> > not take place on the phys dev, but instead is deferred to the vxlan/geneve
+> > driver (see trace below).
+> >
+> > The reason is essentially that GRO aggregation bails out in udp_gro_receive()
+> > for such case when drivers marked the skb with CHECKSUM_UNNECESSARY (ice, i40e,
+> > others) where for non-zero csums 2abb7cdc0dc8 ("udp: Add support for doing
+> > checksum unnecessary conversion") promotes those skbs to CHECKSUM_COMPLETE
+> > and napi context has csum_valid set. This is however not the case for zero
+> > UDP csum (here: csum_cnt is still 0 and csum_valid continues to be false).
+> >
+> > At the same time 57c67ff4bd92 ("udp: additional GRO support") added matches
+> > on !uh->check ^ !uh2->check as part to determine candidates for aggregation,
+> > so it certainly is expected to handle zero csums in udp_gro_receive(). The
+> > purpose of the check added via 662880f44203 ("net: Allow GRO to use and set
+> > levels of checksum unnecessary") seems to catch bad csum and stop aggregation
+> > right away.
+> >
+> > One way to fix aggregation in the zero case is to only perform the !csum_valid
+> > check in udp_gro_receive() if uh->check is infact non-zero.
+> >
 
-static void *kmalloc_large_node(size_t size, gfp_t flags, int node)
-{
-	struct page *page;
-	void *ptr = NULL;
-	unsigned int order = get_order(size);
-...
-	page = alloc_pages_node(node, flags, order);
-...
+[...]
 
-[1] WARNING in __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5014
-Call Trace:
- __alloc_pages include/linux/gfp.h:511 [inline]
- __alloc_pages_node include/linux/gfp.h:524 [inline]
- alloc_pages_node include/linux/gfp.h:538 [inline]
- kmalloc_large_node+0x60/0x110 mm/slub.c:3999
- __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4496
- __kmalloc_reserve net/core/skbuff.c:150 [inline]
- __alloc_skb+0x4e4/0x5a0 net/core/skbuff.c:210
- __netdev_alloc_skb+0x70/0x400 net/core/skbuff.c:446
- netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
- qrtr_endpoint_post+0x84/0x11b0 net/qrtr/qrtr.c:442
- qrtr_tun_write_iter+0x11f/0x1a0 net/qrtr/tun.c:98
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write+0x426/0x650 fs/read_write.c:518
- vfs_write+0x791/0xa30 fs/read_write.c:605
- ksys_write+0x12d/0x250 fs/read_write.c:658
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> We cannot do checksum conversion with zero field, but that does not
+> have to limit coalescing.
+> 
+> CHECKSUM_COMPLETE with a checksum validated by
+> skb_gro_checksum_validate_zero_check implies csum_valid.
+> 
+> So the test
+> 
+> >             (skb->ip_summed != CHECKSUM_PARTIAL &&
+> >              NAPI_GRO_CB(skb)->csum_cnt == 0 &&
+> >              !NAPI_GRO_CB(skb)->csum_valid) ||
+> 
+> Basically matches
+> 
+> - CHECKSUM_NONE
+> - CHECKSUM_UNNECESSARY which has already used up its valid state on a
+> prior header
+> - CHECKSUM_COMPLETE with bad checksum.
+> 
+> This change just refines to not drop for in the first two cases on a
+> zero checksum field.
 
-Reported-by: syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Change-Id: I480a6d6f818a4c0a387db0cd3f230b68a7daeb16
----
- net/core/skbuff.c | 6 ++++++
- 1 file changed, 6 insertions(+)
++1
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 785daff48030..a35ba145a060 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -443,6 +443,9 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
- 	if (len <= SKB_WITH_OVERHEAD(1024) ||
- 	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
- 	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
-+		if (unlikely(len > KMALLOC_MAX_SIZE))
-+			return NULL;
-+
- 		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
- 		if (!skb)
- 			goto skb_fail;
-@@ -517,6 +520,9 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
- 	if (len <= SKB_WITH_OVERHEAD(1024) ||
- 	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
- 	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
-+		if (unlikely(len > KMALLOC_MAX_SIZE))
-+			return NULL;
-+		
- 		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
- 		if (!skb)
- 			goto skb_fail;
--- 
-2.25.1
+> 
+> Making this explicit in case anyone sees holes in the logic. Else,
+> 
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
+LGTM,
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
