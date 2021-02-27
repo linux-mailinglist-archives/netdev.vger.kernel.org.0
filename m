@@ -2,99 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61996326B07
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 02:29:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FD7326B0F
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 02:37:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbhB0B2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 20:28:45 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2910 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbhB0B2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 20:28:43 -0500
-Received: from dggeme753-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4DnTPC178Gz5W4x;
-        Sat, 27 Feb 2021 09:25:51 +0800 (CST)
-Received: from [127.0.0.1] (10.69.26.252) by dggeme753-chm.china.huawei.com
- (10.3.19.99) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2106.2; Sat, 27
- Feb 2021 09:27:54 +0800
-Subject: Re: [PATCH net] net: phy: fix save wrong speed and duplex problem if
- autoneg is on
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Guangbin Huang <huangguangbin2@huawei.com>
-References: <1614325482-25208-1-git-send-email-tanhuazhong@huawei.com>
- <YDmYIb0O5DZkL+X3@lunn.ch>
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-Message-ID: <d323d07d-c189-b3eb-7942-9cadbd318f11@huawei.com>
-Date:   Sat, 27 Feb 2021 09:27:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S229990AbhB0BgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 20:36:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229618AbhB0BgN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 20:36:13 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47C2C06174A
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 17:35:32 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id m188so10746203yba.13
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 17:35:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tIb2bezq4uxAlB7U85abFzWb/GbUKFa/8Z4wNx3No3c=;
+        b=tylUwbY1Aa410eecNEIsK5SONSQePpUbD6alxzfrnPSmEnyDPGuksB20nFwsxiwyNt
+         wbDCY7kl7o9avEHKD40kWSXzpbPmaDaH+VHVMVCY5zfsN+I4gaRihyym3ou4mechcyvF
+         PAyj9Ig28NtVdmZaS0ry21p6cILDqw8BZB6z+1u1B36FbNDUE8ajxevWurLg/VHTV94S
+         658HVr22MBqzzV+XNk9tqV25HLIUdjj1lLsBAhQgZKcFIyjEd+10NoI9MBbpTPV7n1x8
+         fnYgMvJM7VUyY58ogfO/af6ysCkh2FDqTDo4p0GUBxgI/bJ0DZ8aXR8HTTEtw9wgG24E
+         2AuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tIb2bezq4uxAlB7U85abFzWb/GbUKFa/8Z4wNx3No3c=;
+        b=Ob+JhCiN83gfx6kCMkAodrEpkAlHnz4jCi2HMUQGrqa9e4+ydU95cjL5QCYemq0I7H
+         vD2nIalyibwA6vEewvgwUPkUMCCnFrTNjW8XvFZsVkxl4BYEX5T9pxGDT9YqfcMRfMrv
+         EbA44gGtb3l1xss0kRdrHHejj03APKZr0FgZTOZK1R1olyJROBHqXM3/VJ6up6Xie+Zn
+         YLMz2I8XDP2/WDNAJ1o4C02Q6rtXDd5TpUwssm++Z0ZlYn3aobs1KRHyj22yQ3gn+FQI
+         Ju7uUhQbEw4j/+HXkogkTe2hGJU+iLY1JZap3jIuZLU/GmkgHLLK94yEAtDmWWAk/2xc
+         mmQw==
+X-Gm-Message-State: AOAM532LYBxFQ6qTBJIAvtBqgy/BW0Ww+tLwE7vj0CCJ0D6+yIyOI3me
+        13RaN7IMGo2Z36jtEJt57b4v8N2Kz3aWSluwawQqpA==
+X-Google-Smtp-Source: ABdhPJxlg7pl95Je+6z2EZ8KZOJVCNlgsPLTrXu9N8GvRKKDJoZvOFEtDpoiNi9HrlMjFQEWtRtGd/7bSvTWPu0+QPM=
+X-Received: by 2002:a25:d016:: with SMTP id h22mr8495764ybg.278.1614389731793;
+ Fri, 26 Feb 2021 17:35:31 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <YDmYIb0O5DZkL+X3@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.69.26.252]
-X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
- dggeme753-chm.china.huawei.com (10.3.19.99)
-X-CFilter-Loop: Reflected
+References: <20210227003047.1051347-1-weiwan@google.com> <20210226164803.4413571f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEA6p_CJx7K1Fab1C0Qkw=1VNnDaV9qwB_UUtikPMoqNUUWJuA@mail.gmail.com> <20210226172240.24d626e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210226172240.24d626e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Fri, 26 Feb 2021 17:35:21 -0800
+Message-ID: <CAEA6p_B6baYFZnEOMS=Nmvg0kA_qB=7ip4S96ys9ZoJWfOiOCA@mail.gmail.com>
+Subject: Re: [PATCH net v2] net: fix race between napi kthread mode and busy poll
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin Zaharinov <micron10@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2021/2/27 8:53, Andrew Lunn wrote:
-> On Fri, Feb 26, 2021 at 03:44:42PM +0800, Huazhong Tan wrote:
->> From: Guangbin Huang <huangguangbin2@huawei.com>
->>
->> If phy uses generic driver and autoneg is on, enter command
->> "ethtool -s eth0 speed 50" will not change phy speed actually, but
->> command "ethtool eth0" shows speed is 50Mb/s because phydev->speed
->> has been set to 50 and no update later.
->>
->> And duplex setting has same problem too.
->>
->> However, if autoneg is on, phy only changes speed and duplex according to
->> phydev->advertising, but not phydev->speed and phydev->duplex. So in this
->> case, phydev->speed and phydev->duplex don't need to be set in function
->> phy_ethtool_ksettings_set() if autoneg is on.
->>
->> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
->> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> I'm not sure, but i think this happens after
+On Fri, Feb 26, 2021 at 5:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> commit 51e2a3846eab18711f4eb59cd0a4c33054e2980a
-> Author: Trent Piepho <tpiepho@freescale.com>
-> Date:   Wed Sep 24 10:55:46 2008 +0000
+> On Fri, 26 Feb 2021 17:02:17 -0800 Wei Wang wrote:
+> >  static int napi_thread_wait(struct napi_struct *napi)
+> >  {
+> > +       bool woken = false;
+> > +
+> >         set_current_state(TASK_INTERRUPTIBLE);
+> >
+> >         while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+> > -               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
+> > +               unsigned long state = READ_ONCE(napi->state);
+> > +
+> > +               if ((state & NAPIF_STATE_SCHED) &&
+> > +                   ((state & NAPIF_STATE_SCHED_THREAD) || woken)) {
+> >                         WARN_ON(!list_empty(&napi->poll_list));
+> >                         __set_current_state(TASK_RUNNING);
+> >                         return 0;
+> > +               } else {
+> > +                       WARN_ON(woken);
+> >                 }
+> >
+> >                 schedule();
+> > +               woken = true;
+> >                 set_current_state(TASK_INTERRUPTIBLE);
+> >         }
+> >         __set_current_state(TASK_RUNNING);
+> >
+> > I don't think it is sufficient to only set SCHED_THREADED bit when the
+> > thread is in RUNNING state.
+> > In fact, the thread is most likely NOT in RUNNING mode before we call
+> > wake_up_process() in ____napi_schedule(), because it has finished the
+> > previous round of napi->poll() and SCHED bit was cleared, so
+> > napi_thread_wait() sets the state to INTERRUPTIBLE and schedule() call
+> > should already put it in sleep.
 >
->      PHY: Avoid unnecessary aneg restarts
->      
->      The PHY's aneg is configured and restarted whenever the link is brought up,
->      e.g. when DHCP is started after the kernel has booted.  This can take the
->      link down for several seconds while auto-negotiation is redone.
->      
->      If the advertised features haven't changed, then it shouldn't be necessary
->      to bring down the link and start auto-negotiation over again.
->      
->      genphy_config_advert() is enhanced to return 0 when the advertised features
->      haven't been changed and >0 when they have been.
->      
->      genphy_config_aneg() then uses this information to not call
->      genphy_restart_aneg() if there has been no change.
+> That's why the check says "|| woken":
 >
-> Before then, i think autoneg was unconditionally restarted, and so the
-> speed would get overwritten when autoneg completed. After this patch,
-> since autoneg is not being changed when only speed is set, autoneg is
-> not triggered.
+>         ((state & NAPIF_STATE_SCHED_THREAD) ||  woken))
 >
-> 	Andrew
+> thread knows it owns the NAPI if:
+>
+>   (a) the NAPI has the explicit flag set
+> or
+>   (b) it was just worken up and !kthread_should_stop(), since only
+>       someone who just claimed the normal SCHED on thread's behalf
+>       will wake it up
 
-
-Thanks.
-
-
-> .
-
+The 'woken' is set after schedule(). If it is the first time
+napi_threaded_wait() is called, and SCHED_THREADED is not set, and
+woken is not set either, this thread will be put to sleep when it
+reaches schedule(), even though there is work waiting to be done on
+that napi. And I think this kthread will not be woken up again
+afterwards, since the SCHED bit is already grabbed.
