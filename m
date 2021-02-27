@@ -2,104 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68D5F326D1D
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 14:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C198B326DB8
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 17:03:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230041AbhB0NUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Feb 2021 08:20:20 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:34773 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbhB0NUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 08:20:19 -0500
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 3E4062222E;
-        Sat, 27 Feb 2021 14:19:37 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1614431977;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xKtdxwb28gZ9pdGPvFfAHLs97DZ5HUXdDgEhq5YsiXM=;
-        b=hkuj6z3ot5nI7PtiHFf46x0pcKvjCpWnPsVkWysyLGWSvsmVq8ilqhnzcEz0HZEu+0XZW9
-        AkuHpmsTvOGeWE41FjuN77H6RT3E02jYmRwDJXOv9L8TnEvo4pyb2787/ugQ4APCX2+HtR
-        CYrdZcSqxjLQnsCp8IuNGk+327GNYSI=
+        id S230144AbhB0QCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Feb 2021 11:02:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39210 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229999AbhB0QCQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 11:02:16 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7C3C06174A
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 08:01:35 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id p2so14718686edm.12
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 08:01:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gBDmT6R0gSzg2EHhAFG90ZVi1kIGmvAfZL7Zm2nzhUk=;
+        b=Q35yFhUdbIOCtZmJ9E4ixEEmqXfRYp4xkS8/aLMwoiufXvLjXmp5rNM9QEk1bl9H9M
+         qmb7v2bE1Dlz6s3hdhIH3YiKh9+5zsbBYvXKRcHieY1N9Ab2TDczgObYKmPgByIvVQYd
+         359umZCOEB8YTl05eviZLltfOhOruF9lLVrAS7vTxQTyzR2HPYU5YEYQH7IDZo5I09hZ
+         WdV7j8EVyz3Pef63P/BeDC92xB7DT63oOXFgNG6IT/KxDQHVc+l+lP5jYqb0nPz6Z+7k
+         O26oKChzvhiXPc+7TCGG3lKAdzl2W1I9/1h6ixMSl22B61Yx8NJsjMLCMWrw8nH6yML1
+         6Fnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gBDmT6R0gSzg2EHhAFG90ZVi1kIGmvAfZL7Zm2nzhUk=;
+        b=ejy7xEH8ro0kxvsA1QMeRXnX5bYQhgsk63z2ezufxZKWk074SdD1FtucW/7QRkEHVx
+         cg6lVLcpbqHtnydKHGrrQpsu5HAw1ssYayNPF8uzDLUwtaXZLRM/YZf0P3mWYx1RFrHg
+         83ZFBc3JBagps9QESsbSMCwHYtXyauIKDSlpberg3Jt5IaR5/c9IAVb25YLb/fZk63rw
+         DimgB/G5xp/ncuN0Zu9uYQgOYIva5iZHbGobfSvYrpf2GrbrKXj6iHf8Y9bxN7XGBI+N
+         JoSTae+mL7JCRNL+GV6FJiEc2w85SrK7FBvfAQ+X4GkLBxP0JiFH7hzU87rAKcMscNwD
+         /dgA==
+X-Gm-Message-State: AOAM5329XOSAFFo4aGuA/0Cf22MRzE3z83pw7w4wpZBUY2blnfbBrTbI
+        MLfl6Ey3nIZP3hOp8BpRhGaO6/N6TxE=
+X-Google-Smtp-Source: ABdhPJxXNcZ65s9OqWtRZL9Ccl/EkU8Gpv8qzZmypKWiXpNGDnrV0sN1k4fpf+ihdG9SuYUep/x7JA==
+X-Received: by 2002:a05:6402:1854:: with SMTP id v20mr8490791edy.56.1614441694264;
+        Sat, 27 Feb 2021 08:01:34 -0800 (PST)
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
+        by smtp.gmail.com with ESMTPSA id j18sm267276edr.6.2021.02.27.08.01.32
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 27 Feb 2021 08:01:33 -0800 (PST)
+Received: by mail-wm1-f50.google.com with SMTP id u187so7825626wmg.4
+        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 08:01:32 -0800 (PST)
+X-Received: by 2002:a7b:c5d6:: with SMTP id n22mr7655535wmk.70.1614441692561;
+ Sat, 27 Feb 2021 08:01:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sat, 27 Feb 2021 14:19:37 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v2 net 2/6] net: enetc: initialize RFS/RSS memories for
- unused ports too
-In-Reply-To: <20210225121835.3864036-3-olteanv@gmail.com>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
- <20210225121835.3864036-3-olteanv@gmail.com>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <d8e5e57392fec5aff2b65beceda161ea@walle.cc>
-X-Sender: michael@walle.cc
+References: <20210226212248.8300-1-daniel@iogearbox.net>
+In-Reply-To: <20210226212248.8300-1-daniel@iogearbox.net>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 27 Feb 2021 11:00:55 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSdn3zbynYOvuhLxZ02mmcDoRWQ5vUmBCbAgxeTa2X33YQ@mail.gmail.com>
+Message-ID: <CA+FuTSdn3zbynYOvuhLxZ02mmcDoRWQ5vUmBCbAgxeTa2X33YQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: Fix gro aggregation for udp encaps with zero csum
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-02-25 13:18, schrieb Vladimir Oltean:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Michael reports that since linux-next-20210211, the AER messages for 
-> ECC
-> errors have started reappearing, and this time they can be reliably
-> reproduced with the first ping on one of his LS1028A boards.
-> 
-> $ ping 1[   33.258069] pcieport 0000:00:1f.0: AER: Multiple Corrected
-> error received: 0000:00:00.0
-> 72.16.0.1
-> PING [   33.267050] pcieport 0000:00:1f.0: AER: can't find device of 
-> ID0000
-> 172.16.0.1 (172.16.0.1): 56 data bytes
-> 64 bytes from 172.16.0.1: seq=0 ttl=64 time=17.124 ms
-> 64 bytes from 172.16.0.1: seq=1 ttl=64 time=0.273 ms
-> 
-> $ devmem 0x1f8010e10 32
-> 0xC0000006
-> 
-> It isn't clear why this is necessary, but it seems that for the errors
-> to go away, we must clear the entire RFS and RSS memory, not just for
-> the ports in use.
-> 
-> Sadly the code is structured in such a way that we can't have unified
-> logic for the used and unused ports. For the minimal initialization of
-> an unused port, we need just to enable and ioremap the PF memory space,
-> and a control buffer descriptor ring. Unused ports must then free the
-> CBDR because the driver will exit, but used ports can not pick up from
-> where that code path left, since the CBDR API does not reinitialize a
-> ring when setting it up, so its producer and consumer indices are out 
-> of
-> sync between the software and hardware state. So a separate
-> enetc_init_unused_port function was created, and it gets called right
-> after the PF memory space is enabled.
-> 
-> Note that we need access from enetc_pf.c to the CBDR creation and
-> deletion methods, which were for some reason put in enetc.c. While
-> changing their definitions to be non-static, also move them to
-> enetc_cbdr.c which seems like a better place to hold these.
-> 
-> Fixes: 07bf34a50e32 ("net: enetc: initialize the RFS and RSS memories")
-> Reported-by: Michael Walle <michael@walle.cc>
+On Fri, Feb 26, 2021 at 4:23 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> We noticed a GRO issue for UDP-based encaps such as vxlan/geneve when the
+> csum for the UDP header itself is 0. In that case, GRO aggregation does
+> not take place on the phys dev, but instead is deferred to the vxlan/geneve
+> driver (see trace below).
+>
+> The reason is essentially that GRO aggregation bails out in udp_gro_receive()
+> for such case when drivers marked the skb with CHECKSUM_UNNECESSARY (ice, i40e,
+> others) where for non-zero csums 2abb7cdc0dc8 ("udp: Add support for doing
+> checksum unnecessary conversion") promotes those skbs to CHECKSUM_COMPLETE
+> and napi context has csum_valid set. This is however not the case for zero
+> UDP csum (here: csum_cnt is still 0 and csum_valid continues to be false).
+>
+> At the same time 57c67ff4bd92 ("udp: additional GRO support") added matches
+> on !uh->check ^ !uh2->check as part to determine candidates for aggregation,
+> so it certainly is expected to handle zero csums in udp_gro_receive(). The
+> purpose of the check added via 662880f44203 ("net: Allow GRO to use and set
+> levels of checksum unnecessary") seems to catch bad csum and stop aggregation
+> right away.
+>
+> One way to fix aggregation in the zero case is to only perform the !csum_valid
+> check in udp_gro_receive() if uh->check is infact non-zero.
+>
+> Before:
+>
+>   [...]
+>   swapper     0 [008]   731.946506: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100400 len=1500   (1)
+>   swapper     0 [008]   731.946507: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100200 len=1500
+>   swapper     0 [008]   731.946507: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101100 len=1500
+>   swapper     0 [008]   731.946508: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101700 len=1500
+>   swapper     0 [008]   731.946508: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101b00 len=1500
+>   swapper     0 [008]   731.946508: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100600 len=1500
+>   swapper     0 [008]   731.946508: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100f00 len=1500
+>   swapper     0 [008]   731.946509: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100a00 len=1500
+>   swapper     0 [008]   731.946516: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100500 len=1500
+>   swapper     0 [008]   731.946516: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100700 len=1500
+>   swapper     0 [008]   731.946516: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101d00 len=1500   (2)
+>   swapper     0 [008]   731.946517: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101000 len=1500
+>   swapper     0 [008]   731.946517: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101c00 len=1500
+>   swapper     0 [008]   731.946517: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101400 len=1500
+>   swapper     0 [008]   731.946518: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100e00 len=1500
+>   swapper     0 [008]   731.946518: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497101600 len=1500
+>   swapper     0 [008]   731.946521: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff966497100800 len=774
+>   swapper     0 [008]   731.946530: net:netif_receive_skb: dev=test_vxlan skbaddr=0xffff966497100400 len=14032 (1)
+>   swapper     0 [008]   731.946530: net:netif_receive_skb: dev=test_vxlan skbaddr=0xffff966497101d00 len=9112  (2)
+>   [...]
+>
+>   # netperf -H 10.55.10.4 -t TCP_STREAM -l 20
+>   MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 10.55.10.4 () port 0 AF_INET : demo
+>   Recv   Send    Send
+>   Socket Socket  Message  Elapsed
+>   Size   Size    Size     Time     Throughput
+>   bytes  bytes   bytes    secs.    10^6bits/sec
+>
+>    87380  16384  16384    20.01    13129.24
+>
+> After:
+>
+>   [...]
+>   swapper     0 [026]   521.862641: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff93ab0d479000 len=11286 (1)
+>   swapper     0 [026]   521.862643: net:netif_receive_skb: dev=test_vxlan skbaddr=0xffff93ab0d479000 len=11236 (1)
+>   swapper     0 [026]   521.862650: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff93ab0d478500 len=2898  (2)
+>   swapper     0 [026]   521.862650: net:netif_receive_skb: dev=enp10s0f0  skbaddr=0xffff93ab0d479f00 len=8490  (3)
+>   swapper     0 [026]   521.862653: net:netif_receive_skb: dev=test_vxlan skbaddr=0xffff93ab0d478500 len=2848  (2)
+>   swapper     0 [026]   521.862653: net:netif_receive_skb: dev=test_vxlan skbaddr=0xffff93ab0d479f00 len=8440  (3)
+>   [...]
+>
+>   # netperf -H 10.55.10.4 -t TCP_STREAM -l 20
+>   MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 10.55.10.4 () port 0 AF_INET : demo
+>   Recv   Send    Send
+>   Socket Socket  Message  Elapsed
+>   Size   Size    Size     Time     Throughput
+>   bytes  bytes   bytes    secs.    10^6bits/sec
+>
+>    87380  16384  16384    20.01    24576.53
+>
+> Fixes: 57c67ff4bd92 ("udp: additional GRO support")
+> Fixes: 662880f44203 ("net: Allow GRO to use and set levels of checksum unnecessary")
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
 > Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Cc: Tom Herbert <tom@herbertland.com>
 
-I had this patch in my tree for a while now. As we've learned, it
-really depends on a particular power-up state for the error to happen.
-So take this with a grain of salt: I haven't seen the error anymore,
-albeit multiple power-cycles. Thus:
+Makes sense to me.
 
-Tested-by: Michael Walle <michael@walle.cc>
+We cannot do checksum conversion with zero field, but that does not
+have to limit coalescing.
+
+CHECKSUM_COMPLETE with a checksum validated by
+skb_gro_checksum_validate_zero_check implies csum_valid.
+
+So the test
+
+>             (skb->ip_summed != CHECKSUM_PARTIAL &&
+>              NAPI_GRO_CB(skb)->csum_cnt == 0 &&
+>              !NAPI_GRO_CB(skb)->csum_valid) ||
+
+Basically matches
+
+- CHECKSUM_NONE
+- CHECKSUM_UNNECESSARY which has already used up its valid state on a
+prior header
+- CHECKSUM_COMPLETE with bad checksum.
+
+This change just refines to not drop for in the first two cases on a
+zero checksum field.
+
+Making this explicit in case anyone sees holes in the logic. Else,
+
+Acked-by: Willem de Bruijn <willemb@google.com>
