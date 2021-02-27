@@ -2,110 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0966E326AB2
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 01:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36EBB326ACA
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 01:31:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbhB0ARi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 19:17:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
+        id S229863AbhB0Abc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 19:31:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbhB0ARe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 19:17:34 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BFCC06174A
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 16:16:54 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id jt13so17631957ejb.0
-        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 16:16:54 -0800 (PST)
+        with ESMTP id S229618AbhB0Aba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 19:31:30 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17ADC061574
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 16:30:50 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id l10so11782499ybt.6
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 16:30:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=To/BYdeSxitLkJ0kvvJdi+2IEkk5UaJmW8nCv7113EM=;
-        b=Zpu8EHvPJsDdovYuYXZpunpJB2uC/oZmTsTIZk+cV/oR6d1rNqDuU/Y1c9noC6gdFD
-         AMBzauwkykyi8zXfXIBCs15uWJbqT+iCWjOHrff0zabyFLrHcW0A/6E1x/YFogzITKNe
-         L3wUBGQfkyKKaaa8OEGffgaJ0I0nPpdzYgiukwM50+100P8eITPmvdNvRVdhvdB+P5CJ
-         rQpw33kv9rkfT8f/+DB7g/iFDViV+kFC+ulxKtkBjXxfsKymFWrPK4GJpfyVtjeBQF/1
-         YRloCIl/QbEjrJLPNo1KsiGbKzB1E3k0VertIp8hxYNsy7f57Pe17dHdy+jyDJWFTx+i
-         kwjQ==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=zNkOb95Mez51iUey3t8FznRyErvpQgRmJ0V5OBkFo8Y=;
+        b=ZETO0bRSND9SLJmu+7tQFApE0/qvKgvdYSp22smp2NeHCB67OHLMMzJpLou0HsNn8A
+         v97Wf/QTHtsUmEzIB+jdfAWp8KtYL/Z5Xbv73Mm+dCoDE2ja3apT749/AffS/pHrQNn4
+         wVxbv31TEOjhJoVSIAzbQ6TKm8lPnwFYN/UIEPv8OaJqc+uaesNfV7mR951w+FOvZPVd
+         irZseIgCGtgbXMmkK39gHeRffTE6mqkOvyOv3cYSgxpTp9Lqagy5ma8U7fMUUXe0Htrk
+         KsfaVnkzeaGfRV1G4jDkaOjDLgZIiYnQ9Enkxov+kQ/EW6BlMZOH9mOJmdVJy6ZDLGs2
+         sQNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=To/BYdeSxitLkJ0kvvJdi+2IEkk5UaJmW8nCv7113EM=;
-        b=q805iHKEbIwZUpsJbjDyvHfugapJic9r37v/nBA3hiwTqnMmD0hUIDSKSteRlJ5n9Y
-         7XXQMIwQFt/M3tlOm2ZcCHZfwWGbVUCoH94tQy5BwfbWKg3XJWTJHcgHL6EM5R6T8TK7
-         aP99nKO9rLYLy7/4yBUQKeqhAWTe5ILBWMl7vunD8Z7wiw76WVtxB4JLzqyHNmzhxqK8
-         GXAf9FcUMl7+62ed+Zz35kpVWDGuYnCa974b53hiJ/2rG9nBRoxP+rvQOwG/peyciMA9
-         YoL1YtdNywM0bbpo9AXWzln5yLtOZcMQilz1OC23sncDzjkJnHgspzL394hP7PB/egD0
-         DUbg==
-X-Gm-Message-State: AOAM5325U0uwOz4kSjjtmIYu7RT0qST44I3wiBFNqXjkpCK3xrvFeJ+p
-        ToDA0HuqVulgucSUsjF42X4=
-X-Google-Smtp-Source: ABdhPJyO9zGF+m2t4X2nBmyMfa/rnN74cgFtZgZQaKHKvpRkinEkmQYlYkeYrQtDnWFQGFXgHOBX6Q==
-X-Received: by 2002:a17:906:a101:: with SMTP id t1mr6148252ejy.182.1614385013260;
-        Fri, 26 Feb 2021 16:16:53 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id q11sm6233344ejr.36.2021.02.26.16.16.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Feb 2021 16:16:52 -0800 (PST)
-Date:   Sat, 27 Feb 2021 02:16:51 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Markus =?utf-8?Q?Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
-Subject: Re: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in
- IFF_PROMISC mode
-Message-ID: <20210227001651.geuv4pt2bxkzuz5d@skbuf>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
- <20210225121835.3864036-6-olteanv@gmail.com>
- <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210226234244.w7xw7qnpo3skdseb@skbuf>
- <20210226154922.5956512b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210226154922.5956512b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=zNkOb95Mez51iUey3t8FznRyErvpQgRmJ0V5OBkFo8Y=;
+        b=Ns1RbNPtiduu7M+fm5yloQYRV/MAClUMzVOB8CMrTlYMiK91we8qAr3EMgPFSLTve/
+         ghqKiHFe8OqNjaKL5a38y9wOVUgBUwtU9NVrs62Xjvrs4wXhnVMTeFKg8bU6NOXoIN1j
+         YzBMLdokYFogjwiw4GsFjDRzz3lC//Bw/ToBxsHXIscgmWUq7E4V0rEKCGVa8JRw5y3T
+         RE5eSyNYpB/u6ge6GgGkSaWelQGzVoyJbV3TegivhBTrp4JIKX9DZYDKjAzH5mu4MGzB
+         R0cSeFSm+T5ukeDvI47LBlEqzsgEGcIbF+htUzQH94f2RIxpmqxgyUGD8XqRW/AS27sj
+         albg==
+X-Gm-Message-State: AOAM532SI+JFs32DU2tJ5J2bTJcxip3de3GacIv19oC5bOiLod6EMA6R
+        j1vPx2sddLrEDXq0ihzRJJH7ZqHEaso=
+X-Google-Smtp-Source: ABdhPJxzJJwdeqqVsoALpBAYIHZUY5tGnMSPv850Gp07/HlpbWSv/83mOe0YZ2ri6KyyjgyJ+3dpVC0vN78=
+Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:408:3f8f:3064:352])
+ (user=weiwan job=sendgmr) by 2002:a25:20c2:: with SMTP id g185mr8725749ybg.31.1614385849926;
+ Fri, 26 Feb 2021 16:30:49 -0800 (PST)
+Date:   Fri, 26 Feb 2021 16:30:47 -0800
+Message-Id: <20210227003047.1051347-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
+Subject: [PATCH net v2] net: fix race between napi kthread mode and busy poll
+From:   Wei Wang <weiwan@google.com>
+To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Martin Zaharinov <micron10@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 03:49:22PM -0800, Jakub Kicinski wrote:
-> On Sat, 27 Feb 2021 01:42:44 +0200 Vladimir Oltean wrote:
-> > On Fri, Feb 26, 2021 at 03:28:36PM -0800, Jakub Kicinski wrote:
-> > > I don't understand what you're fixing tho.
-> > >
-> > > Are we trying to establish vlan-filter-on as the expected behavior?
-> >
-> > What I'm fixing is unexpected behavior, according to the applicable
-> > standards I could find. If I don't mark this change as a bug fix but as
-> > a simple patch, somebody could claim it's a regression, since promiscuity
-> > used to be enough to see packets with unknown VLANs, and now it no
-> > longer is...
->
-> Can we take it into net-next? What's your feeling on that option?
+Currently, napi_thread_wait() checks for NAPI_STATE_SCHED bit to
+determine if the kthread owns this napi and could call napi->poll() on
+it. However, if socket busy poll is enabled, it is possible that the
+busy poll thread grabs this SCHED bit (after the previous napi->poll()
+invokes napi_complete_done() and clears SCHED bit) and tries to poll
+on the same napi. napi_disable() could grab the SCHED bit as well.
+This patch tries to fix this race by adding a new bit
+NAPI_STATE_SCHED_THREADED in napi->state. This bit gets set in
+____napi_schedule() if the threaded mode is enabled, and gets cleared
+in napi_complete_done(), and we only poll the napi in kthread if this
+bit is set. This helps distinguish the ownership of the napi between
+kthread and other scenarios and fixes the race issue.
 
-I see how you can view this patch as pointless, but there is some
-context to it. It isn't just for tcpdump/debugging, instead NXP has some
-TSN use cases which involve some asymmetric tc-vlan rules, which is how
-I arrived at this topic in the first place. I've already established
-that tc-vlan only works with ethtool -K eth0 rx-vlan-filter off:
-https://lore.kernel.org/netdev/CA+h21hoxwRdhq4y+w8Kwgm74d4cA0xLeiHTrmT-VpSaM7obhkg@mail.gmail.com/
-and that's what we recommend doing, but while adding the support for
-rx-vlan-filter in enetc I accidentally created another possibility for
-this to work on enetc, by turning IFF_PROMISC on. This is not portable,
-so if somebody develops a solution based on that in parallel, it will
-most certainly break on other non-enetc drivers.
-NXP has not released a kernel based on the v5.10 stable yet, so there is
-still time to change the behavior, but if this goes in through net-next,
-the apparent regression will only be visible when the next LTS comes
-around (whatever the number of that might be). Now, I'm going to
-backport this to the NXP v5.10 anyway, so that's not an issue, but there
-will still be the mild annoyance that the upstream v5.10 will behave
-differently in this regard compared to the NXP v5.10, which is again a
-point of potential confusion, but that seems to be out of my control.
+Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop support")
+Reported-by: Martin Zaharinov <micron10@gmail.com>
+Signed-off-by: Wei Wang <weiwan@google.com>
+Cc: Alexander Duyck <alexanderduyck@fb.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+---
+ include/linux/netdevice.h |  2 ++
+ net/core/dev.c            | 20 +++++++++++++-------
+ 2 files changed, 15 insertions(+), 7 deletions(-)
 
-So if you're still "yeah, don't care", then I guess I'm ok with leaving
-things alone on stable kernels.
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index ddf4cfc12615..682908707c1a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -360,6 +360,7 @@ enum {
+ 	NAPI_STATE_IN_BUSY_POLL,	/* sk_busy_loop() owns this NAPI */
+ 	NAPI_STATE_PREFER_BUSY_POLL,	/* prefer busy-polling over softirq processing*/
+ 	NAPI_STATE_THREADED,		/* The poll is performed inside its own thread*/
++	NAPI_STATE_SCHED_THREADED,	/* Napi is currently scheduled in threaded mode */
+ };
+ 
+ enum {
+@@ -372,6 +373,7 @@ enum {
+ 	NAPIF_STATE_IN_BUSY_POLL	= BIT(NAPI_STATE_IN_BUSY_POLL),
+ 	NAPIF_STATE_PREFER_BUSY_POLL	= BIT(NAPI_STATE_PREFER_BUSY_POLL),
+ 	NAPIF_STATE_THREADED		= BIT(NAPI_STATE_THREADED),
++	NAPIF_STATE_SCHED_THREADED	= BIT(NAPI_STATE_SCHED_THREADED),
+ };
+ 
+ enum gro_result {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6c5967e80132..d4ce154c8df5 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -1501,15 +1501,14 @@ static int napi_kthread_create(struct napi_struct *n)
+ {
+ 	int err = 0;
+ 
+-	/* Create and wake up the kthread once to put it in
+-	 * TASK_INTERRUPTIBLE mode to avoid the blocked task
+-	 * warning and work with loadavg.
++	/* Avoid waking up the kthread during creation to prevent
++	 * potential race.
+ 	 */
+-	n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
+-				n->dev->name, n->napi_id);
++	n->thread = kthread_create(napi_threaded_poll, n, "napi/%s-%d",
++				   n->dev->name, n->napi_id);
+ 	if (IS_ERR(n->thread)) {
+ 		err = PTR_ERR(n->thread);
+-		pr_err("kthread_run failed with err %d\n", err);
++		pr_err("kthread_create failed with err %d\n", err);
+ 		n->thread = NULL;
+ 	}
+ 
+@@ -4294,6 +4293,7 @@ static inline void ____napi_schedule(struct softnet_data *sd,
+ 		 */
+ 		thread = READ_ONCE(napi->thread);
+ 		if (thread) {
++			set_bit(NAPI_STATE_SCHED_THREADED, &napi->state);
+ 			wake_up_process(thread);
+ 			return;
+ 		}
+@@ -6486,6 +6486,7 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
+ 		WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
+ 
+ 		new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
++			      NAPIF_STATE_SCHED_THREADED |
+ 			      NAPIF_STATE_PREFER_BUSY_POLL);
+ 
+ 		/* If STATE_MISSED was set, leave STATE_SCHED set,
+@@ -6971,7 +6972,12 @@ static int napi_thread_wait(struct napi_struct *napi)
+ 	set_current_state(TASK_INTERRUPTIBLE);
+ 
+ 	while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+-		if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
++		/* Testing SCHED_THREADED bit here to make sure the current
++		 * kthread owns this napi and could poll on this napi.
++		 * Testing SCHED bit is not enough because SCHED bit might be
++		 * set by some other busy poll thread or by napi_disable().
++		 */
++		if (test_bit(NAPI_STATE_SCHED_THREADED, &napi->state)) {
+ 			WARN_ON(!list_empty(&napi->poll_list));
+ 			__set_current_state(TASK_RUNNING);
+ 			return 0;
+-- 
+2.30.1.766.gb4fecdf3b7-goog
+
