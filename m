@@ -2,79 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E9D8326AD6
-	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 01:55:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 586E7326AED
+	for <lists+netdev@lfdr.de>; Sat, 27 Feb 2021 02:03:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbhB0Ayo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Feb 2021 19:54:44 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:32858 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229622AbhB0Aym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Feb 2021 19:54:42 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lFnrl-008gSc-0W; Sat, 27 Feb 2021 01:53:53 +0100
-Date:   Sat, 27 Feb 2021 01:53:53 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Guangbin Huang <huangguangbin2@huawei.com>
-Subject: Re: [PATCH net] net: phy: fix save wrong speed and duplex problem if
- autoneg is on
-Message-ID: <YDmYIb0O5DZkL+X3@lunn.ch>
-References: <1614325482-25208-1-git-send-email-tanhuazhong@huawei.com>
+        id S230087AbhB0BDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Feb 2021 20:03:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230014AbhB0BDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Feb 2021 20:03:09 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE46C061574
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 17:02:28 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id p186so10731591ybg.2
+        for <netdev@vger.kernel.org>; Fri, 26 Feb 2021 17:02:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FOMI5GRqMF5dpZEEeV1HvfzAkfAJP8rsNygZ85BawSw=;
+        b=b1rS094CvuuK0oolrsz0Dx+wfzsn+OpQklT4shRbv9Vv/54hoxlN7ruSaSNwfBUDBG
+         BHg0vcOLowPpHhns8gvEt58ztJ4ciZ81OeDI3Jms6xc/8pfOiv2D5pk5LKFr06khTIuW
+         K55P8hnm6O8JAsnJ/jEh89ME4XTN9qObeCphKsANO4JZ1TdrID1w0JtYIdRo7qR2mVvr
+         rgx7jb/Fd8mEBZgprSYUyBVDnD3m48IVEIqq/mfcrwE8fJWo4CL2+YhkcX+86ocw3jiW
+         4dpqrTMeJvRjxYfxU0LUxyeu2V7YRbRiX8RDoVdlTahiNF1IjmlCymoeZorSgQNWtWhQ
+         foJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FOMI5GRqMF5dpZEEeV1HvfzAkfAJP8rsNygZ85BawSw=;
+        b=R7cvihjLbSZ7s7MMAlGFp3u+Jqb4HWmYhLy3fVp1YsfZuOvkLpJbc1O5FnbDDEc2ab
+         4ngw9U3VAXws4ZefEbRtNFeqz5Necdu2ZOFUqmdhRIpGg1tdRK7RBOPG2L1+V44lZy7t
+         wz1GpSza4fQ1XtY6gI6O0/RiD2ZdJswyQSEc7K+E8VrdPlSbLMYcvp27ZVKtNRovZRSO
+         sJmHHw+keJpU1bjQ3Da1VOeRVFJR35xtucvw611fbTewkpXlwM1NTpV02A+EGGMzuNkY
+         fivEKL8yMFstYrdZf4TYjw48qAbGE2QeAPmSE3heW4NyanKUCM6wi+LirFWb5toyRFk5
+         Z47g==
+X-Gm-Message-State: AOAM5302qeubqZOA8GbNiHKTbvw0hfY8rfprmDV0MzK4ltBC1VtKWMeN
+        uHL5OB0ZBxItWh223wkFt/kiFje16XPuIE8Y03vLrgm4pVLV1g==
+X-Google-Smtp-Source: ABdhPJxdwvNphpYKHRtCTwg/61MyvTyVTpwhfJxD6jD4TcpaE2fDr8f1dppMIQEJm8srAs4f4cdfvRnL3KotKMzbL4Y=
+X-Received: by 2002:a25:d016:: with SMTP id h22mr8358946ybg.278.1614387747874;
+ Fri, 26 Feb 2021 17:02:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1614325482-25208-1-git-send-email-tanhuazhong@huawei.com>
+References: <20210227003047.1051347-1-weiwan@google.com> <20210226164803.4413571f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210226164803.4413571f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Fri, 26 Feb 2021 17:02:17 -0800
+Message-ID: <CAEA6p_CJx7K1Fab1C0Qkw=1VNnDaV9qwB_UUtikPMoqNUUWJuA@mail.gmail.com>
+Subject: Re: [PATCH net v2] net: fix race between napi kthread mode and busy poll
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin Zaharinov <micron10@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 03:44:42PM +0800, Huazhong Tan wrote:
-> From: Guangbin Huang <huangguangbin2@huawei.com>
-> 
-> If phy uses generic driver and autoneg is on, enter command
-> "ethtool -s eth0 speed 50" will not change phy speed actually, but
-> command "ethtool eth0" shows speed is 50Mb/s because phydev->speed
-> has been set to 50 and no update later.
-> 
-> And duplex setting has same problem too.
-> 
-> However, if autoneg is on, phy only changes speed and duplex according to
-> phydev->advertising, but not phydev->speed and phydev->duplex. So in this
-> case, phydev->speed and phydev->duplex don't need to be set in function
-> phy_ethtool_ksettings_set() if autoneg is on.
-> 
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+On Fri, Feb 26, 2021 at 4:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 26 Feb 2021 16:30:47 -0800 Wei Wang wrote:
+> >               thread = READ_ONCE(napi->thread);
+> >               if (thread) {
+> > +                     set_bit(NAPI_STATE_SCHED_THREADED, &napi->state);
+> >                       wake_up_process(thread);
+>
+> What about the version which checks RUNNING? As long as
+> wake_up_process() implies a barrier I _think_ it should
+> work as well. Am I missing some case, or did you decide
+> to go with the simpler/safer approach?
 
-I'm not sure, but i think this happens after
 
-commit 51e2a3846eab18711f4eb59cd0a4c33054e2980a
-Author: Trent Piepho <tpiepho@freescale.com>
-Date:   Wed Sep 24 10:55:46 2008 +0000
+I assume you are referring to the following proposed patch in your
+previous email right?
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4294,6 +4294,8 @@ static inline void ____napi_schedule(struct
+softnet_data *sd,
+                 */
+                thread = READ_ONCE(napi->thread);
+                if (thread) {
++                       if (thread->state == TASK_RUNNING)
++                               set_bit(NAPIF_STATE_SCHED_THREAD, &napi->state);
+                        wake_up_process(thread);
+                        return;
+                }
+@@ -6486,7 +6488,8 @@ bool napi_complete_done(struct napi_struct *n,
+int work_done)
+                WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
 
-    PHY: Avoid unnecessary aneg restarts
-    
-    The PHY's aneg is configured and restarted whenever the link is brought up,
-    e.g. when DHCP is started after the kernel has booted.  This can take the
-    link down for several seconds while auto-negotiation is redone.
-    
-    If the advertised features haven't changed, then it shouldn't be necessary
-    to bring down the link and start auto-negotiation over again.
-    
-    genphy_config_advert() is enhanced to return 0 when the advertised features
-    haven't been changed and >0 when they have been.
-    
-    genphy_config_aneg() then uses this information to not call
-    genphy_restart_aneg() if there has been no change.
+                new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
+-                             NAPIF_STATE_PREFER_BUSY_POLL);
++                             NAPIF_STATE_PREFER_BUSY_POLL |
++                             NAPIF_STATE_SCHED_THREAD);
 
-Before then, i think autoneg was unconditionally restarted, and so the
-speed would get overwritten when autoneg completed. After this patch,
-since autoneg is not being changed when only speed is set, autoneg is
-not triggered.
+                /* If STATE_MISSED was set, leave STATE_SCHED set,
+                 * because we will call napi->poll() one more time.
+@@ -6968,16 +6971,24 @@ static int napi_poll(struct napi_struct *n,
+struct list_head *repoll)
 
-	Andrew
+ static int napi_thread_wait(struct napi_struct *napi)
+ {
++       bool woken = false;
++
+        set_current_state(TASK_INTERRUPTIBLE);
+
+        while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+-               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
++               unsigned long state = READ_ONCE(napi->state);
++
++               if ((state & NAPIF_STATE_SCHED) &&
++                   ((state & NAPIF_STATE_SCHED_THREAD) || woken)) {
+                        WARN_ON(!list_empty(&napi->poll_list));
+                        __set_current_state(TASK_RUNNING);
+                        return 0;
++               } else {
++                       WARN_ON(woken);
+                }
+
+                schedule();
++               woken = true;
+                set_current_state(TASK_INTERRUPTIBLE);
+        }
+        __set_current_state(TASK_RUNNING);
+
+I don't think it is sufficient to only set SCHED_THREADED bit when the
+thread is in RUNNING state.
+In fact, the thread is most likely NOT in RUNNING mode before we call
+wake_up_process() in ____napi_schedule(), because it has finished the
+previous round of napi->poll() and SCHED bit was cleared, so
+napi_thread_wait() sets the state to INTERRUPTIBLE and schedule() call
+should already put it in sleep.
