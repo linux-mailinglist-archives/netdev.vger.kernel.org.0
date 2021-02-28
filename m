@@ -2,83 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8E81327219
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 12:34:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C58327227
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 13:00:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230450AbhB1Ldf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 06:33:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbhB1Ldb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 06:33:31 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D592FC06174A
-        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 03:32:50 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id p10so47072ils.9
-        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 03:32:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zdRhJ5L+KmvDchRR3K2d2Fs9Vt3CM/mGoUkDGZ5+eUA=;
-        b=Kt4onAfl3+t4QOnhzg7PI6yeEBOJyMziPXFKzebcynDNK0i//bDxfJlkjtbsmnu1Xp
-         YOKh+CG10no5o8D6Xn6NMJrk5UmJiy2CrAgx/goIdkoC/UiNEs5vn0CyTFmbiLG9asyw
-         LxHAGz2oetPdZjE57emoNMOysO1kEcaK0DxdUDnd9PtVhcTwl8Nl0jokPLKJohlE6INL
-         e08rWKoKO97N6t9TEoZ2iFl/5l6XtGQuY1GSWTlHJWxIGm0apK7emEJosfaDuxB9ydZ8
-         xStOIC0nLoAHuFT+hJcysTfQsJUnkuBvFEOhfkXvNC3XMYhldTsTvxc2JffkAdYMnhuf
-         EErA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zdRhJ5L+KmvDchRR3K2d2Fs9Vt3CM/mGoUkDGZ5+eUA=;
-        b=lW4efbGPs9cShC57sDeCs7t3H2B4xuU3C+PlS8Dm0otk5SqPWUHTI1+WLTm1njRCoK
-         ysf0y4HDpaed+LdNb1WFEIPAobs8ts9lCCqVHQHK2Rt0RYeZArOYL3W9MH7knajPfKt6
-         ZQfmMGIY9LuU8re+vCmwJ80dEBZ9c06kSRB6OPC3MB5nwW41iCyZ61Ya1tzU7YBmdi+H
-         7Arcn3zV02dowGy7ce6hW542IdD5AtK+encn0Q9FmC2QilWFV8K9o8EqyqF081Q28VgR
-         W1uVnNFApr4KN4dqNm1TXYOzlcZ992340pj5J9NBHJekERsEJS/CFk9gJytIdiE1wcUL
-         hXoA==
-X-Gm-Message-State: AOAM531UwrU26ShYUSKbZBHyTGIeGLQYzY89tMUVnjTJm47TkaH4L5Nr
-        YXH9PHPcFJKfG6t5XBGFq2pe63IarC7Ths6scXA=
-X-Google-Smtp-Source: ABdhPJw4+uruPb3CeBoBUIO7QkVcNIJE5E9hMyyIw00tuMw1VSNXwDGPNi7t3ZnotOrYqBvVMOhutOtTUw5Ke3ilwiY=
-X-Received: by 2002:a05:6e02:1aa9:: with SMTP id l9mr9320615ilv.108.1614511970381;
- Sun, 28 Feb 2021 03:32:50 -0800 (PST)
-MIME-Version: 1.0
-References: <20210217062139.7893-1-dqfext@gmail.com> <20210217062139.7893-2-dqfext@gmail.com>
- <CACRpkdaP9RGX9OY2s1fqkZJD0fc3jtZ4_R4A7VvL0=po-KEqyQ@mail.gmail.com>
-In-Reply-To: <CACRpkdaP9RGX9OY2s1fqkZJD0fc3jtZ4_R4A7VvL0=po-KEqyQ@mail.gmail.com>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Sun, 28 Feb 2021 19:32:42 +0800
-Message-ID: <CALW65jbFu6apesQrdNiCSZPC2ziVOHBgjoGJi5NTgkZrD0Qv5A@mail.gmail.com>
-Subject: Re: [RFC net-next 1/2] net: dsa: add Realtek RTL8366S switch tag
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S230509AbhB1LwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 06:52:19 -0500
+Received: from spam.zju.edu.cn ([61.164.42.155]:40206 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230049AbhB1LwQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Feb 2021 06:52:16 -0500
+Received: from localhost.localdomain (unknown [10.192.85.18])
+        by mail-app3 (Coremail) with SMTP id cC_KCgD3TSSjgztgu_zZAQ--.16213S4;
+        Sun, 28 Feb 2021 19:51:02 +0800 (CST)
+From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
+To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Content-Type: text/plain; charset="UTF-8"
+        Catherine Sullivan <catherine.sullivan@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Shannon Nelson <shannon.nelson@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] i40e: Fix error handling in i40e_vsi_open
+Date:   Sun, 28 Feb 2021 19:50:58 +0800
+Message-Id: <20210228115059.28686-1-dinghao.liu@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgD3TSSjgztgu_zZAQ--.16213S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7WryrXFWUGw1Dtr1xKr1xKrg_yoWfKFc_Gr
+        nxXw1xGr45GryF9r1Ykr4xurWFyw4DXryrCFW7K34fu3yDCw1xAr97ur4fXw47Ww4xGa47
+        Aw1aga4fC348AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbVxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
+        c2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r
+        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
+        x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
+        73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgQGBlZdtSfEeAAUs3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 28, 2021 at 7:47 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> I names the previous protocol "RTL4 A" after a 4-byte tag
-> with protocol indicted as "A", what about naming this
-> "RTL2 9" in the same vein? It will be good if some other
-> switch is using the same protocol. (If any...)
+When vsi->type == I40E_VSI_FDIR, we have caught the return value of
+i40e_vsi_request_irq() but without further handling. Check and execute
+memory clean on failure just like the other i40e_vsi_request_irq().
 
-RTL8306 uses 0x9 too, but the tag format is different...
+Fixes: 8a9eb7d3cbcab ("i40e: rework fdir setup and teardown")
+Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+---
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
->
-> >  obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
-> > +obj-$(CONFIG_NET_DSA_TAG_RTL8366S) += tag_rtl8366s.o
->
-> So tag_rtl2_9.o etc.
->
-> Yours,
-> Linus Walleij
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 353deae139f9..c3bbc1310f8e 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -8724,6 +8724,8 @@ int i40e_vsi_open(struct i40e_vsi *vsi)
+ 			 dev_driver_string(&pf->pdev->dev),
+ 			 dev_name(&pf->pdev->dev));
+ 		err = i40e_vsi_request_irq(vsi, int_name);
++		if (err)
++			goto err_setup_rx;
+ 
+ 	} else {
+ 		err = -EINVAL;
+-- 
+2.17.1
+
