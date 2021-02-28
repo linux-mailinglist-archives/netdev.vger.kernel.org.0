@@ -2,95 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A163326FAD
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 00:49:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F238326FC3
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 01:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbhB0XsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Feb 2021 18:48:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbhB0XsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Feb 2021 18:48:10 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38892C06174A
-        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:47:30 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id h4so14821745ljl.0
-        for <netdev@vger.kernel.org>; Sat, 27 Feb 2021 15:47:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j1VtW2X8LEXJJ/paDmy9xh4EVxSPrsHQs71fRPbsyLU=;
-        b=xt2GC1WVDtzEOGyKyEawlv0aE2HInn5u0M71JK0xOKfeyki167WEVJPegoF6J44weT
-         XOHJIj91DBb48yc+hO197Ux09F5qjr9lxj/WDt9YKJdV2d9mrU9VOoqM8qnGuxLkSu9H
-         Y54G6A0fL+FkmmjLVdBMD2E+N2wdQO8vi5RNqfg8yuXO9Cbz+b4enkDPh/IagJL8luuI
-         5TFB4MWvLmZ34Sd4LSLxh6NPjwhX5grZa/F2OPVJNMKpyfgv8rJpqzO7Fh+WhZ3TJvf9
-         nMng9lorC+duCMB8H/nTn7aEcy1XZrjE44FFo52SIFWtShmMbt5cxgqGN7w9o6ONdNfX
-         gKDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j1VtW2X8LEXJJ/paDmy9xh4EVxSPrsHQs71fRPbsyLU=;
-        b=Fvdlr6ueBnb4OD7w75XMqUp5eQE4b3MQY9DS6VclBbn1GzNEQwJLm4dey/q2ECbafY
-         +82avLc85pmr36FRXYKW082ixpiK+QtfD6NfJgpzPJL8R8PY+nFlwPNzhZIndsDdgFTe
-         3pX3gvUEj31awVpjtO+GdebnH5l9M9AkGo7xhUQ7r3rBb8s7KrC61ZlTSOdRNr+Xsmy0
-         463cbn08UvEvvy1kFzxYRRZMn6kgQULMwPDZ4TotzD9oInB2FrMfiCQp/LDs7jZ/geRX
-         pOmQqjIdx6XaxfEIdJY/dFouAwmm5dsQQ9DUKnbS9+l50ZJ1r2gQQKGJHUhNh5fkJGva
-         SHSQ==
-X-Gm-Message-State: AOAM532qU0g5mp4oTveLGJHpyvRG8PTQ9sX9kNhU/lHGZcaERAjdpFcP
-        uFtuxDjW+wniUr8mYOmepya6f7WVqj9gKMtx2q69gw==
-X-Google-Smtp-Source: ABdhPJwx9inzx5EfnMExnrXKn6CJhM8Be7qX8NUqB3G3zP3X818fsu6IvSycQg7/fi01hEkqO00jUJzOs4Fw4HbXIg4=
-X-Received: by 2002:a2e:9004:: with SMTP id h4mr1954265ljg.326.1614469648640;
- Sat, 27 Feb 2021 15:47:28 -0800 (PST)
-MIME-Version: 1.0
-References: <20210217062139.7893-1-dqfext@gmail.com> <20210217062139.7893-2-dqfext@gmail.com>
-In-Reply-To: <20210217062139.7893-2-dqfext@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 28 Feb 2021 00:47:17 +0100
-Message-ID: <CACRpkdaP9RGX9OY2s1fqkZJD0fc3jtZ4_R4A7VvL0=po-KEqyQ@mail.gmail.com>
-Subject: Re: [RFC net-next 1/2] net: dsa: add Realtek RTL8366S switch tag
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S230142AbhB1Aqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Feb 2021 19:46:46 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33238 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230063AbhB1Aqn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Feb 2021 19:46:43 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lGADY-008o06-HA; Sun, 28 Feb 2021 01:45:52 +0100
+Date:   Sun, 28 Feb 2021 01:45:52 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Content-Type: text/plain; charset="UTF-8"
+        Adrian Pop <pop.adrian61@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Subject: Re: [RFC PATCH net-next 1/5] ethtool: Allow network drivers to dump
+ arbitrary EEPROM data
+Message-ID: <YDrnwFyvCFT8owgd@lunn.ch>
+References: <1614181274-28482-1-git-send-email-moshe@nvidia.com>
+ <1614181274-28482-2-git-send-email-moshe@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1614181274-28482-2-git-send-email-moshe@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 17, 2021 at 7:21 AM DENG Qingfang <dqfext@gmail.com> wrote:
+On Wed, Feb 24, 2021 at 05:41:10PM +0200, Moshe Shemesh wrote:
+> From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+> 
+> Define get_module_eeprom_data_by_page() ethtool callback and implement
+> netlink infrastructure.
+> 
+> get_module_eeprom_data_by_page() allows network drivers to dump a part
+> of module's EEPROM specified by page and bank numbers along with offset
+> and length. It is effectively a netlink replacement for
+> get_module_info() and get_module_eeprom() pair, which is needed due to
+> emergence of complex non-linear EEPROM layouts.
+> 
+> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+> ---
+>  include/linux/ethtool.h              |   5 +
+>  include/uapi/linux/ethtool.h         |  25 +++++
+>  include/uapi/linux/ethtool_netlink.h |  19 ++++
+>  net/ethtool/Makefile                 |   2 +-
+>  net/ethtool/eeprom.c                 | 149 +++++++++++++++++++++++++++
+>  net/ethtool/netlink.c                |  10 ++
+>  net/ethtool/netlink.h                |   2 +
+>  7 files changed, 211 insertions(+), 1 deletion(-)
+>  create mode 100644 net/ethtool/eeprom.c
+> 
+> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+> index ec4cd3921c67..6032313fa914 100644
+> --- a/include/linux/ethtool.h
+> +++ b/include/linux/ethtool.h
+> @@ -410,6 +410,9 @@ struct ethtool_pause_stats {
+>   * @get_ethtool_phy_stats: Return extended statistics about the PHY device.
+>   *	This is only useful if the device maintains PHY statistics and
+>   *	cannot use the standard PHY library helpers.
+> + * @get_module_eeprom_data_by_page: Get a region of plug-in module EEPROM data
+> + *	from specified page. Updates length to the amount actually read.
+> + *	Returns a negative error code or zero.
+>   *
+>   * All operations are optional (i.e. the function pointer may be set
+>   * to %NULL) and callers must take this into account.  Callers must
+> @@ -515,6 +518,8 @@ struct ethtool_ops {
+>  				   const struct ethtool_tunable *, void *);
+>  	int	(*set_phy_tunable)(struct net_device *,
+>  				   const struct ethtool_tunable *, const void *);
+> +	int	(*get_module_eeprom_data_by_page)(struct net_device *dev,
+> +						  struct ethtool_eeprom_data *page);
 
-> Add support for Realtek RTL8366S switch tag
->
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+Hi Moshe, Vladyslav
 
-I understand this switch tag now sorry for confusion.
+I think it would be good to pass an extack here, so we can report more
+useful errors.
 
-> @@ -104,6 +104,12 @@ config NET_DSA_TAG_RTL4_A
->           Realtek switches with 4 byte protocol A tags, sich as found in
->           the Realtek RTL8366RB.
->
-> +config NET_DSA_TAG_RTL8366S
-> +       tristate "Tag driver for Realtek RTL8366S switch tags"
-> +       help
-> +         Say Y or M if you want to enable support for tagging frames for the
-> +         Realtek RTL8366S switch.
+> +/**
+> + * struct ethtool_eeprom_data - EEPROM dump from specified page
+> + * @offset: Offset within the specified EEPROM page to begin read, in bytes.
+> + * @length: Number of bytes to read. On successful return, number of bytes
+> + *	actually read.
+> + * @page: Page number to read from.
+> + * @bank: Page bank number to read from, if applicable by EEPROM spec.
+> + * @i2c_address: I2C address of a page. Zero indicates a driver should choose
+> + *	by itself.
 
-I names the previous protocol "RTL4 A" after a 4-byte tag
-with protocol indicted as "A", what about naming this
-"RTL2 9" in the same vein? It will be good if some other
-switch is using the same protocol. (If any...)
+I don't particularly like the idea of the driver deciding what to
+read. User space should really be passing 0x50 or 0x51 for the normal
+case. And we need to make it clear what these addresses mean, since
+they are often referred to as 0xA0 and 0xA2, due to addresses being
+shifted one bit left and a r/w bit added.
 
->  obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
-> +obj-$(CONFIG_NET_DSA_TAG_RTL8366S) += tag_rtl8366s.o
+I also don't think the in place length should be modified. It would be
+better to follow the use semantics of returning a negative value on
+error, or a positive value for the length actually
+read. ethtool_eeprom_data can then be passed as a const.
 
-So tag_rtl2_9.o etc.
+> + * @data: Pointer to buffer with EEPROM data of @length size.
+> + *
+> + * This can be used to manage pages during EEPROM dump in ethtool and pass
+> + * required information to the driver.
+> + */
+> +struct ethtool_eeprom_data {
+> +	__u32	offset;
+> +	__u32	length;
+> +	__u32	page;
+> +	__u32	bank;
+> +	__u32	i2c_address;
+> +	__u8	*data;
+> +};
+> +
+>  /**
+>   * struct ethtool_eee - Energy Efficient Ethernet information
+>   * @cmd: ETHTOOL_{G,S}EEE
+> @@ -1865,6 +1888,8 @@ static inline int ethtool_validate_duplex(__u8 duplex)
+>  #define ETH_MODULE_SFF_8636_MAX_LEN     640
+>  #define ETH_MODULE_SFF_8436_MAX_LEN     640
+>  
+> +#define ETH_MODULE_EEPROM_MAX_LEN	640
 
-Yours,
-Linus Walleij
+I'm surprised such a high value is allowed. 128 seems more
+appropriate, given the size of 1/2 pages.
+
+> +
+>  /* Reset flags */
+>  /* The reset() operation must clear the flags for the components which
+>   * were actually reset.  On successful return, the flags indicate the
+> diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+> index a286635ac9b8..60dd848d0b54 100644
+> --- a/include/uapi/linux/ethtool_netlink.h
+> +++ b/include/uapi/linux/ethtool_netlink.h
+> @@ -42,6 +42,7 @@ enum {
+>  	ETHTOOL_MSG_CABLE_TEST_ACT,
+>  	ETHTOOL_MSG_CABLE_TEST_TDR_ACT,
+>  	ETHTOOL_MSG_TUNNEL_INFO_GET,
+> +	ETHTOOL_MSG_EEPROM_DATA_GET,
+>  
+>  	/* add new constants above here */
+>  	__ETHTOOL_MSG_USER_CNT,
+> @@ -80,6 +81,7 @@ enum {
+>  	ETHTOOL_MSG_CABLE_TEST_NTF,
+>  	ETHTOOL_MSG_CABLE_TEST_TDR_NTF,
+>  	ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
+> +	ETHTOOL_MSG_EEPROM_DATA_GET_REPLY,
+>  
+>  	/* add new constants above here */
+>  	__ETHTOOL_MSG_KERNEL_CNT,
+> @@ -629,6 +631,23 @@ enum {
+>  	ETHTOOL_A_TUNNEL_INFO_MAX = (__ETHTOOL_A_TUNNEL_INFO_CNT - 1)
+>  };
+>  
+> +/* MODULE EEPROM DATA */
+> +
+> +enum {
+> +	ETHTOOL_A_EEPROM_DATA_UNSPEC,
+> +	ETHTOOL_A_EEPROM_DATA_HEADER,
+> +
+> +	ETHTOOL_A_EEPROM_DATA_OFFSET,
+> +	ETHTOOL_A_EEPROM_DATA_LENGTH,
+> +	ETHTOOL_A_EEPROM_DATA_PAGE,
+> +	ETHTOOL_A_EEPROM_DATA_BANK,
+> +	ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS,
+> +	ETHTOOL_A_EEPROM_DATA,
+> +
+> +	__ETHTOOL_A_EEPROM_DATA_CNT,
+> +	ETHTOOL_A_EEPROM_DATA_MAX = (__ETHTOOL_A_EEPROM_DATA_CNT - 1)
+> +};
+> +
+>  /* generic netlink info */
+>  #define ETHTOOL_GENL_NAME "ethtool"
+>  #define ETHTOOL_GENL_VERSION 1
+> diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+> index 7a849ff22dad..d604346bc074 100644
+> --- a/net/ethtool/Makefile
+> +++ b/net/ethtool/Makefile
+> @@ -7,4 +7,4 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
+>  ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
+>  		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
+>  		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
+> -		   tunnels.o
+> +		   tunnels.o eeprom.o
+> diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
+> new file mode 100644
+> index 000000000000..51a2ed81a273
+> --- /dev/null
+> +++ b/net/ethtool/eeprom.c
+> @@ -0,0 +1,149 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +#include <linux/ethtool.h>
+> +#include "netlink.h"
+> +#include "common.h"
+> +
+> +struct eeprom_data_req_info {
+> +	struct ethnl_req_info	base;
+> +	u32			offset;
+> +	u32			length;
+> +	u32			page;
+> +	u32			bank;
+> +	u32			i2c_address;
+> +};
+> +
+> +struct eeprom_data_reply_data {
+> +	struct ethnl_reply_data base;
+> +	u32			length;
+> +	u32			i2c_address;
+> +	u8			*data;
+> +};
+> +
+> +#define EEPROM_DATA_REQINFO(__req_base) \
+> +	container_of(__req_base, struct eeprom_data_req_info, base)
+> +
+> +#define EEPROM_DATA_REPDATA(__reply_base) \
+> +	container_of(__reply_base, struct eeprom_data_reply_data, base)
+> +
+> +static int eeprom_data_prepare_data(const struct ethnl_req_info *req_base,
+> +				    struct ethnl_reply_data *reply_base,
+> +				    struct genl_info *info)
+> +{
+> +	struct eeprom_data_reply_data *reply = EEPROM_DATA_REPDATA(reply_base);
+> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_base);
+> +	struct ethtool_eeprom_data page_data = {0};
+> +	struct net_device *dev = reply_base->dev;
+> +	int err;
+> +
+> +	if (!dev->ethtool_ops->get_module_eeprom_data_by_page)
+> +		return -EOPNOTSUPP;
+> +	err = ethnl_ops_begin(dev);
+> +	if (err)
+> +		return err;
+> +
+> +	page_data.offset = request->offset;
+> +	page_data.length = request->length;
+> +	page_data.i2c_address = request->i2c_address;
+> +	page_data.page = request->page;
+> +	page_data.bank = request->bank;
+> +	page_data.data = kmalloc(page_data.length, GFP_KERNEL);
+> +	if (!page_data.data)
+> +		return -ENOMEM;
+
+Isn't an ethnl_ops_complete(dev); needed here? Maybe postpone the
+ethnl_ops_begin(dev) call until after the memory allocation?
+
+> +
+> +	err = dev->ethtool_ops->get_module_eeprom_data_by_page(dev, &page_data);
+> +	if (err)
+> +		goto err_out;
+> +
+> +	reply->length = page_data.length;
+> +	reply->i2c_address = page_data.i2c_address;
+> +	reply->data = page_data.data;
+> +
+> +	ethnl_ops_complete(dev);
+> +	return 0;
+> +
+> +err_out:
+> +	kfree(page_data.data);
+> +	ethnl_ops_complete(dev);
+> +	return err;
+> +}
+> +
+> +static int eeprom_data_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
+> +				     struct netlink_ext_ack *extack)
+> +{
+> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_info);
+> +
+> +	if (!tb[ETHTOOL_A_EEPROM_DATA_OFFSET] ||
+> +	    !tb[ETHTOOL_A_EEPROM_DATA_LENGTH] ||
+> +	    !tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS])
+> +		return -EINVAL;
+> +
+> +	request->length = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
+> +	if (request->length > ETH_MODULE_EEPROM_MAX_LEN)
+> +		return -EINVAL;
+> +
+> +	request->offset = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
+
+I think you need to validate that offset + length is not passed the
+end of a 1/2 page. There seems to be odd wrap around semantics, so we
+probably want to avoid that.
+
+
+> +	request->i2c_address = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS]);
+
+Maybe validate the i2c address. Most busses are limited to 7 bit
+addresses, but some do allow 10 bits. I think we can probably ignore
+10 bit addresses for this use case, so check that address is < 128.
+
+   Andrew
