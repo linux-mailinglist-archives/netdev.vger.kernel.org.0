@@ -2,80 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 084D4327300
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 16:23:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4B4327342
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 16:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbhB1PWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 10:22:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38137 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230433AbhB1PUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 10:20:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614525515;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2Bjh3DgtlYNb9J1LAYIfqCcgtyxWNouNwOMSlbNTffo=;
-        b=OvC95dhDjQMhXSpf5Omwss4eu0TJssY53urd9+XpMh814WgvtPYJDb3Ul2i++lDlJu6A0g
-        1K77NhEqo+L7lJ1S47JipNkd0CJ52szdduS+tu87NvsyCO+jiT1BFalHGzX9kJpczBVDb7
-        0rLooruXz47vNOoYKQNF7Sq7KJvJtBY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-264-xrVApX3ZPwmrq5exfDTYpA-1; Sun, 28 Feb 2021 10:18:33 -0500
-X-MC-Unique: xrVApX3ZPwmrq5exfDTYpA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED1948030C2;
-        Sun, 28 Feb 2021 15:18:31 +0000 (UTC)
-Received: from carbon.redhat.com (ovpn-112-225.rdu2.redhat.com [10.10.112.225])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 87E7B5C1D5;
-        Sun, 28 Feb 2021 15:18:31 +0000 (UTC)
-From:   Alexander Aring <aahringo@redhat.com>
-To:     stefan@datenfreihafen.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH wpan 17/17] net: ieee802154: stop dump llsec params for monitors
-Date:   Sun, 28 Feb 2021 10:18:17 -0500
-Message-Id: <20210228151817.95700-18-aahringo@redhat.com>
-In-Reply-To: <20210228151817.95700-1-aahringo@redhat.com>
-References: <20210228151817.95700-1-aahringo@redhat.com>
+        id S230503AbhB1Pxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 10:53:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230167AbhB1Px3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 10:53:29 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6A5C061756
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 07:52:49 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id i14so7705937pjz.4
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 07:52:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+MDVsqFDrX74IRsp1myuYu41HQaFKHLL77DDnEB1Fqk=;
+        b=QFt4hidHZE4BfKl25fDDfoXQ5/4d4UZEpkGApT7taJp9DlVTsH/3YgSE+WtqZm+r/R
+         ahteSvZNOLUtbll6//Hx/6QHnM9QFDT3ocjQtNbUxVbeTL3zZ2hG1qWX4vd+UipKMsep
+         Pmg9QIp9LQ58rwLbo05hzNHJbCXnkaYWdNcUQtA44CKw/H/A1ErZwjbN07Gz4KQdrYUJ
+         aieFypSsfr6BF/jp872hanyTO8CrLEHMxxxXeOCVBJNhMGc9gcr19ZQ27c1vHg7TFGe6
+         BI+2eEKYHQAgVQEODsnclaXDloWogLAMNU+dGHuJkHjrLO0RY8Sp+ec+tOwN2KkThrd1
+         q/oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+MDVsqFDrX74IRsp1myuYu41HQaFKHLL77DDnEB1Fqk=;
+        b=iXnSZlqFD/JkvYMLivrz78yV7zRe2R+AQqZlQ4wHlkfJsM/o0giGmw2A3KL+Sh078E
+         iDjkNnCdAOzduIjtmoo6Q+i2FgRqqTY93Lj92PYp4IylOV/lf9hWUW9DBZlA69sCmHF7
+         26VDX+/gXsGlecgkxkMtzL2kt4g6pjHPqSozXjDVMPwaxuPgI8ZDB19bnU5HLAdu0ekZ
+         3qXO55svXVsuDAWa9xvJteBxc5g9cLJKcu3Ar51rirI3xbxy61cqO+QICn6aG75CXwb8
+         7oOQzIWZXpnuz0ZKzd9Oi4WseEHk1Za8a3vQCNcOq6WBgckr9Cad6MZEcwdnWBSa++0k
+         W/9w==
+X-Gm-Message-State: AOAM532iMW0aj49v/1NtuRdSTREoqS7CXexQB78pkzqmjV/jRvg5TkeA
+        JNr69+0QIbWiyjn1relV3Zic
+X-Google-Smtp-Source: ABdhPJwnbT7D4+J5kaM+lK5Oa96bxgW7RFnZGoENJR/wCg5zoTWrXJrYf4oM6h1msGStQUy0MD7XSw==
+X-Received: by 2002:a17:90a:67ca:: with SMTP id g10mr12617629pjm.166.1614527568432;
+        Sun, 28 Feb 2021 07:52:48 -0800 (PST)
+Received: from thinkpad ([2409:4072:630a:43e1:8418:10a8:7c13:a7a3])
+        by smtp.gmail.com with ESMTPSA id q3sm15303413pfn.14.2021.02.28.07.52.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Feb 2021 07:52:47 -0800 (PST)
+Date:   Sun, 28 Feb 2021 21:22:36 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Aleksander Morgado <aleksander@aleksander.es>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        David Miller <davem@davemloft.net>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jeffrey Hugo <jhugo@codeaurora.org>,
+        Bhaumik Bhatt <bbhatt@codeaurora.org>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [RESEND PATCH v18 0/3] userspace MHI client interface driver
+Message-ID: <20210228155236.GA54373@thinkpad>
+References: <20210202042208.GB840@work>
+ <20210202201008.274209f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <835B2E08-7B84-4A02-B82F-445467D69083@linaro.org>
+ <20210203100508.1082f73e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMZdPi8o44RPTGcLSvP0nptmdUEmJWFO4HkCB_kjJvfPDgchhQ@mail.gmail.com>
+ <20210203104028.62d41962@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAAP7ucLZ5jKbKriSp39OtDLotbv72eBWKFCfqCbAF854kCBU8w@mail.gmail.com>
+ <20210209081744.43eea7b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210210062531.GA13668@work>
+ <CAAP7uc+Q=ToKVNz4wDv0JWHK4NTniSLE1QwMbP0eXEqVMTUwwQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAP7uc+Q=ToKVNz4wDv0JWHK4NTniSLE1QwMbP0eXEqVMTUwwQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch stops dumping llsec params for monitors which we don't support
-yet. Otherwise we will access llsec mib which isn't initialized for
-monitors.
+On Sun, Feb 28, 2021 at 03:12:42PM +0100, Aleksander Morgado wrote:
+> Hey Manivannan, Jakub & all,
+> 
+> >
+> > So please let us know the path forward on this series. We are open to
+> > any suggestions but you haven't provided one till now.
+> >
+> 
+> I just found out that Sierra Wireless also provides their own version
+> of mhi-net and mhi-uci in precompiled binaries for several Ubuntu
+> kernel versions and other setups; and that made me extremely unhappy.
+> They're not the only manufacturer doing that; most of them are doing
+> it, because we don't have yet a common solution in upstream Linux. Not
+> the first time we've seen this either, see the per-vendor GobiNet
+> implementations vs the upstream qmi_wwan one. I was hoping we could
+> avoid that mess again with the newer Qualcomm modules! :)
+> 
+> In ModemManager we've always *forced* all manufacturers we interact
+> with to first do the work in upstream Linux, and then we integrate
+> support in MM for those drivers. We've never accepted support for
+> vendor-specific proprietary kernel drivers, and that's something I
+> would personally like to keep on doing. The sad status right now is
+> that any user that wants to use the newer 5G modules with Qualcomm
+> chipsets, they need to go look for manufacturer-built precompiled
+> drivers for their specific kernel, and also then patch ModemManager
+> and the tools themselves. Obviously almost no one is doing all that,
+> except for some company with resources or a lot of interest. Some of
+> these new 5G modules are PCIe-only by default, unless some pin in the
+> chipset is brought up and then some of them may switch to USB support.
+> No one is really doing that either, as tampering with the hardware
+> voids warranty.
+> 
+> The iosm driver is also stalled in the mailing list and there doesn't
+> seem to be a lot of real need for a new common wwan subsystem to
+> rework everything...
+> 
+> I'm not involved with the mhi-uci driver development at all, and I
+> also don't have anything to say on what goes in the upstream kernel
+> and what doesn't. But as one of the ModemManager/libqmi/libmbim
+> maintainers I would like to represent all the users of these modules
+> that are right now forced to look for shady binary precompiled drivers
+> out there... that is no better solution than this proposed mhi-uci
+> common driver.
+> 
+> Manivannan, are you attempting to rework the mhi-uci driver in a
+> different way, or have you given up? Is there anything I could help
+> with?
+> 
 
-Reported-by: syzbot+cde43a581a8e5f317bc2@syzkaller.appspotmail.com
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
----
- net/ieee802154/nl802154.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Hemant is currently in-charge of the MHI UCI development effort. We were
+thinking about doing "mhi-wwan" driver which just exposes the channels needed
+for WWAN as Jakub said "you can move forward on purpose build drivers
+(e.g. for WWAN)." But we are open to other suggestions also.
 
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 576e418cf5aa..ca8e17a81a4f 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -820,8 +820,13 @@ nl802154_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flags,
- 		goto nla_put_failure;
- 
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-+	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR)
-+		goto out;
-+
- 	if (nl802154_get_llsec_params(msg, rdev, wpan_dev) < 0)
- 		goto nla_put_failure;
-+
-+out:
- #endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
- 
- 	genlmsg_end(msg, hdr);
--- 
-2.26.2
-
+Thanks,
+Mani
