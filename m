@@ -2,178 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE0C32718E
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 09:23:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 874E33271C7
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 10:47:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbhB1IXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 03:23:36 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:37573 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230079AbhB1IXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 03:23:33 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0UPn.YjK_1614500567;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UPn.YjK_1614500567)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 28 Feb 2021 16:22:47 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S230426AbhB1JqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 04:46:00 -0500
+Received: from spam.zju.edu.cn ([61.164.42.155]:31858 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230107AbhB1Jp7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Feb 2021 04:45:59 -0500
+Received: from localhost.localdomain (unknown [10.192.85.18])
+        by mail-app2 (Coremail) with SMTP id by_KCgCXfYj4ZTtgpbnTAQ--.32511S4;
+        Sun, 28 Feb 2021 17:44:27 +0800 (CST)
+From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
+To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH v3 net-next] virtio-net: support XDP_TX when not more queues
-Date:   Sun, 28 Feb 2021 16:22:47 +0800
-Message-Id: <1614500567-9059-1-git-send-email-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] e1000e: Fix error handling in e1000_set_d0_lplu_state_82571
+Date:   Sun, 28 Feb 2021 17:44:23 +0800
+Message-Id: <20210228094424.7884-1-dinghao.liu@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgCXfYj4ZTtgpbnTAQ--.32511S4
+X-Coremail-Antispam: 1UD129KBjvdXoWruFy8Xr13tr48GrWfCw1kuFg_yoWDurX_Gw
+        1jqw1fKry5G3sYvF4UKr4fGa4Yva1DJa4kWa4vq39xZF429rWUGrykury7Jr13WF1kuFnr
+        CrnIka4xC34ayjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_
+        JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
+        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
+        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
+        CI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU1a9aPUUUUU==
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgQGBlZdtSfEeAASsx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The number of queues implemented by many virtio backends is limited,
-especially some machines have a large number of CPUs. In this case, it
-is often impossible to allocate a separate queue for XDP_TX.
+There is one e1e_wphy() call in e1000_set_d0_lplu_state_82571
+that we have caught its return value but lack further handling.
+Check and terminate the execution flow just like other e1e_wphy()
+in this function.
 
-This patch allows XDP_TX to run by reuse the existing SQ with
-__netif_tx_lock() hold when there are not enough queues.
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
 ---
- drivers/net/virtio_net.c | 45 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 36 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/intel/e1000e/82571.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index ba8e637..a3116bc 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -195,6 +195,9 @@ struct virtnet_info {
- 	/* # of XDP queue pairs currently used by the driver */
- 	u16 xdp_queue_pairs;
- 
-+	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
-+	bool xdp_enabled;
-+
- 	/* I like... big packets and I cannot lie! */
- 	bool big_packets;
- 
-@@ -481,14 +484,34 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
- 	return 0;
- }
- 
--static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
-+static struct send_queue *virtnet_get_xdp_sq(struct virtnet_info *vi)
- {
-+	struct netdev_queue *txq;
- 	unsigned int qp;
- 
--	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
-+	if (vi->curr_queue_pairs > nr_cpu_ids) {
-+		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
-+	} else {
-+		qp = smp_processor_id() % vi->curr_queue_pairs;
-+		txq = netdev_get_tx_queue(vi->dev, qp);
-+		__netif_tx_lock(txq, raw_smp_processor_id());
-+	}
-+
- 	return &vi->sq[qp];
- }
- 
-+static void virtnet_put_xdp_sq(struct virtnet_info *vi, struct send_queue *sq)
-+{
-+	struct netdev_queue *txq;
-+	unsigned int qp;
-+
-+	if (vi->curr_queue_pairs <= nr_cpu_ids) {
-+		qp = sq - vi->sq;
-+		txq = netdev_get_tx_queue(vi->dev, qp);
-+		__netif_tx_unlock(txq);
-+	}
-+}
-+
- static int virtnet_xdp_xmit(struct net_device *dev,
- 			    int n, struct xdp_frame **frames, u32 flags)
- {
-@@ -512,7 +535,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	if (!xdp_prog)
- 		return -ENXIO;
- 
--	sq = virtnet_xdp_sq(vi);
-+	sq = virtnet_get_xdp_sq(vi);
- 
- 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
- 		ret = -EINVAL;
-@@ -560,12 +583,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	sq->stats.kicks += kicks;
- 	u64_stats_update_end(&sq->stats.syncp);
- 
-+	virtnet_put_xdp_sq(vi, sq);
- 	return ret;
- }
- 
- static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
- {
--	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
-+	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
- }
- 
- /* We copy the packet for XDP in the following cases:
-@@ -1457,12 +1481,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
- 		xdp_do_flush();
- 
- 	if (xdp_xmit & VIRTIO_XDP_TX) {
--		sq = virtnet_xdp_sq(vi);
-+		sq = virtnet_get_xdp_sq(vi);
- 		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
- 			u64_stats_update_begin(&sq->stats.syncp);
- 			sq->stats.kicks++;
- 			u64_stats_update_end(&sq->stats.syncp);
- 		}
-+		virtnet_put_xdp_sq(vi, sq);
- 	}
- 
- 	return received;
-@@ -2417,10 +2442,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 
- 	/* XDP requires extra queues for XDP_TX */
- 	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
--		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
--		netdev_warn(dev, "request %i queues but max is %i\n",
-+		netdev_warn(dev, "XDP request %i queues but max is %i. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.\n",
- 			    curr_qp + xdp_qp, vi->max_queue_pairs);
--		return -ENOMEM;
-+		xdp_qp = 0;
- 	}
- 
- 	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
-@@ -2454,11 +2478,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 	vi->xdp_queue_pairs = xdp_qp;
- 
- 	if (prog) {
-+		vi->xdp_enabled = true;
- 		for (i = 0; i < vi->max_queue_pairs; i++) {
- 			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
- 			if (i == 0 && !old_prog)
- 				virtnet_clear_guest_offloads(vi);
- 		}
-+	} else {
-+		vi->xdp_enabled = false;
- 	}
- 
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
-@@ -2526,7 +2553,7 @@ static int virtnet_set_features(struct net_device *dev,
- 	int err;
- 
- 	if ((dev->features ^ features) & NETIF_F_LRO) {
--		if (vi->xdp_queue_pairs)
-+		if (vi->xdp_enabled)
- 			return -EBUSY;
- 
- 		if (features & NETIF_F_LRO)
+diff --git a/drivers/net/ethernet/intel/e1000e/82571.c b/drivers/net/ethernet/intel/e1000e/82571.c
+index 88faf05e23ba..0b1e890dd583 100644
+--- a/drivers/net/ethernet/intel/e1000e/82571.c
++++ b/drivers/net/ethernet/intel/e1000e/82571.c
+@@ -899,6 +899,8 @@ static s32 e1000_set_d0_lplu_state_82571(struct e1000_hw *hw, bool active)
+ 	} else {
+ 		data &= ~IGP02E1000_PM_D0_LPLU;
+ 		ret_val = e1e_wphy(hw, IGP02E1000_PHY_POWER_MGMT, data);
++		if (ret_val)
++			return ret_val;
+ 		/* LPLU and SmartSpeed are mutually exclusive.  LPLU is used
+ 		 * during Dx states where the power conservation is most
+ 		 * important.  During driver activity we should enable
 -- 
-1.8.3.1
+2.17.1
 
