@@ -2,122 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66BF93271E5
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 11:39:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C5583271EA
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 11:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbhB1KgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 05:36:17 -0500
-Received: from smtp-16-i2.italiaonline.it ([213.209.12.16]:51483 "EHLO
-        libero.it" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230393AbhB1KgO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Feb 2021 05:36:14 -0500
-Received: from oxapps-31-138.iol.local ([10.101.8.184])
-        by smtp-16.iol.local with ESMTPA
-        id GJQBlDtyRf2ANGJQBlYPxt; Sun, 28 Feb 2021 11:35:31 +0100
+        id S230480AbhB1Kjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 05:39:53 -0500
+Received: from smtp-17.italiaonline.it ([213.209.10.17]:36310 "EHLO libero.it"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230165AbhB1Kjw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Feb 2021 05:39:52 -0500
+Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
+ ([87.20.116.197])
+        by smtp-17.iol.local with ESMTPA
+        id GJTalhz13lChfGJTglvZRl; Sun, 28 Feb 2021 11:39:10 +0100
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1614508531; bh=NULIkYeOU4BLtqTrd/JisnRnJK17Ka3rz6+/RjLJu1E=;
+        t=1614508750; bh=ziAzFVZ3uS0lb+druwSg3LA2nuwxKORpwdmOSwsrVeM=;
         h=From;
-        b=XlBgs/DbEu+yzqG7MVn3XEM4GofJHYbTXAgLceb//gy1GwfHBKuKKbUE58SWk0z4g
-         lgjc7zXBtJJ8MstLKi40unP3EalXxoggRq3rlyPhL6jHckX50Z0Dpqb+43Z+rTOsDK
-         +xm18/IcqZrAO8EV5ChZ1raALiWYwHg+qaZlHqedwqhPKWZeMNQFBYzhTldAWaM3O4
-         abHsT3f4VQchjCRm+9DG5+DJF2gycde1NHbPQE47gVDMxS9AvLbLx14GJpJS/tGdlY
-         wm9QSbxvWOmCyHJfQcN4Z4BAV4vu75PJjLzlz3Ks4gOJpJqWf+7xr46YmKEJV2S3eb
-         72QDH/xsyXKRw==
-X-CNFS-Analysis: v=2.4 cv=Adt0o1bG c=1 sm=1 tr=0 ts=603b71f3 cx=a_exe
- a=SkAuTGSu9wVn7tcq8ZjrZA==:117 a=UPWQtH3J-JgA:10 a=IkcTkHD0fZMA:10
- a=_gZzKa99_6AA:10 a=bGNZPXyTAAAA:8 a=bAF_0_vCazFOC95qmekA:9 a=QEXdDO2ut3YA:10
- a=yL4RfsBhuEsimFDS2qtJ:22
-Date:   Sun, 28 Feb 2021 11:35:31 +0100 (CET)
+        b=nCBVJz8btVGh/maCUphMLHHernNphjdPL4P+D3iDdjoFzksl+CC+n+MC7zedEaQEk
+         jnVIwhVYbwnNczGDndzNH8e6DzFs7ClA+GfCm14HQC5JnuMEWzuqBcVvuyTsJ9Jqm0
+         xeyJvwwMm4JAITvXHm6aFKyFIXKn3jdicFJG5b9EuEERK7SQjm6D15m54F/faou2fk
+         rHtD8wHq4KboVvxOAI/vdwW59vghjMwJh0o6p8KMB4Qe7c/rQrItyrGdz5Qkdp+ErW
+         5nFyrxjCMyW8X7evHg1ibH9dljysPZOfMwTCrLgfPDc+6/QhaRbz3o2s9pz0eukn7M
+         8lzX0Sz15lVew==
+X-CNFS-Analysis: v=2.4 cv=S6McfKgP c=1 sm=1 tr=0 ts=603b72ce cx=a_exe
+ a=AVqmXbCQpuNSdJmApS5GbQ==:117 a=AVqmXbCQpuNSdJmApS5GbQ==:17 a=gu6fZOg2AAAA:8
+ a=Tq4YLLmbGr4d6G5IlPUA:9 a=-FEs8UIgK8oA:10 a=NWVoK91CQyQA:10
+ a=2RSlZUUhi9gRBrsHwhhZ:22 a=pHzHmUro8NiASowvMSCR:22 a=Ew2E2A-JSTLzCXPT_086:22
 From:   Dario Binacchi <dariobin@libero.it>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org,
+To:     linux-kernel@vger.kernel.org
+Cc:     Federico Vaga <federico.vaga@gmail.com>,
         Alexander Stein <alexander.stein@systec-electronic.com>,
-        Federico Vaga <federico.vaga@gmail.com>,
+        Dario Binacchi <dariobin@libero.it>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         YueHaibing <yuehaibing@huawei.com>,
         Zhang Qilong <zhangqilong3@huawei.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Message-ID: <942251933.544595.1614508531322@mail1.libero.it>
-In-Reply-To: <20210226084456.l2oztlesjzl6t2nm@pengutronix.de>
-References: <20210225215155.30509-1-dariobin@libero.it>
- <20210225215155.30509-4-dariobin@libero.it>
- <20210226084456.l2oztlesjzl6t2nm@pengutronix.de>
-Subject: Re: [PATCH v2 3/6] can: c_can: fix control interface used by
- c_can_do_tx
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.3-Rev27
-X-Originating-IP: 87.20.116.197
-X-Originating-Client: open-xchange-appsuite
-x-libjamsun: +PaVVzVYPsxtI6fuW52eUtkgvkZv4krf
-x-libjamv: tKu69u0FWKo=
-X-CMAE-Envelope: MS4xfCq2BupWIOcmOjxc/q9eTplgcRRy+xMPwEufQ0d542+HiWMee4f6K6biashIngg0bOfcMPHzRUfKLFwFeY3rbjHVdgfs7V4B4LvJKZXzv5GiZXez9OBj
- CDsIlK8WGY69XyPLJd2OYH4ADNiQuXrj+D1nFuHxwH2kw40qLohHw5KlSGQBwpfcgjaCHnFDcGuwYEC7KYuktnlwzrZFH0M4SZFoESdxRj/azWE278ZRheAd
- G3VvKFKN/f+4ZcGHJhmDcgZC9v0FNmT9iFjQzO6D0RPOHFzMpEVHEuOiv0ZOfqRNCNHr7wzgiksfUAt0vI6WW9+7Tj/thWqKX+v0yd4sJTl0N6P9Dm2Dqmpk
- c66A4L8T9Uo+A4OMJ5ONbBliZxn4xwq2d8cDns5VqHpH94MkWAQ7i9tMdsL5hUp8Ty8V5PR9dQ7kD4jtgsXRTcvgAHPsD6PIs07cF60yPmLciG3DvXm+i46U
- nMZhmqcq+F+OlT4xhIkyus+pupVGCGGWU+84uyXAJ91M8CltI8bY7EOwJEWAvQtF1/mKBJrTjcujPvufyfOA30YdSjWZNaC8w6vaZ3OjPDx8vKnWn3JadZhZ
- YFHV0okst8+psoY7v9ieO2Ef3m6B+gfzk4atRkwpm3qRPg==
+Subject: [PATCH v3 0/6] can: c_can: add support to 64 message objects
+Date:   Sun, 28 Feb 2021 11:38:49 +0100
+Message-Id: <20210228103856.4089-1-dariobin@libero.it>
+X-Mailer: git-send-email 2.17.1
+X-CMAE-Envelope: MS4xfBfdn0MAFYXUTT9rWnrZZsFBNZzaW6Gt1SyHLr1O1thZ+2m3NdtXD++Z7t/W8X8IBi4zrvE98Wpm0R7zAwtJFRvwa6sw72TfiEm5gJ8+HsLUdMe/y0YC
+ 11crQcDsOYJ26ES4Z2dm0fUGSl/C5SEf2fDJ8dNzhVFi39Wllrq9LLNOvCluhWxNL7bmZ4u0w9S++GwBWY3WVnRLdyFLevNeN9zrNoQgIVyaVrtGl6ai+6mu
+ b8JJCHWwhqiemSq6+Z9rAjNiXEpW9n1ind3ow+I+OZ+8/Y5DvelqcEZlLY8AfMHTD9kQX3i4K4nUwb7QNuaE2ngVCEiEdObb5IqJGLbG/UGye+zHNMIxvTuR
+ MasSCjH++pzRwkNWUJCyyUgOzi0/SxBuzE7exZKUenRNZiEJP3KVnZZX1yCuP9FAL9pzHd1WK3ra+M1f1BeUAef7h0GvXohn5v74hrxmn3rIgMSe42ailMqW
+ ebMMyxPD5nqTs98SulmNCVmvKQpBIDQC1gJ9e2aImamVefq8zKAsCEoh77Y6E+q5XX10Ovm6R2V0VXEndmyyt6bPtYdjVWNWmWLbZGf5S/r2w9P0rBhda5Qy
+ vjw6EGxAdlj9P6Cbj/jDxBOUYmyIhCvUf6riVDLGqpq2wVbORrzOVik68kVTbzshjW9ANZwksgK64W/luXHqDKGIM9AEWipcRm3SQOdGEM8Qzw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
 
-> Il 26/02/2021 09:44 Marc Kleine-Budde <mkl@pengutronix.de> ha scritto:
-> 
->  
-> On 25.02.2021 22:51:52, Dario Binacchi wrote:
-> > According to commit 640916db2bf7 ("can: c_can: Make it SMP safe") let RX use
-> > IF1 (i.e. IF_RX) and TX use IF2 (i.e. IF_TX).
-> 
-> Is this a fix?
-> 
+The D_CAN controller supports up to 128 messages. Until now the driver
+only managed 32 messages although Sitara processors and DRA7 SOC can
+handle 64.
 
-I think that If I consider what is described in the 640916db2bf7 commit, using 
-the IF_RX interface in a tx routine is wrong.
+The series was tested on a beaglebone board.
 
-Thanks and regards
-Dario
+Note:
+I have not changed the type of tx_field (belonging to the c_can_priv
+structure) to atomic64_t because I think the atomic_t type has size
+of at least 32 bits on x86 and arm, which is enough to handle 64
+messages.
+http://marc.info/?l=linux-can&m=139746476821294&w=2 reports the results
+of tests performed just on x86 and arm architectures.
 
-> Marc
-> 
-> > 
-> > Signed-off-by: Dario Binacchi <dariobin@libero.it>
-> > ---
-> > 
-> > (no changes since v1)
-> > 
-> >  drivers/net/can/c_can/c_can.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/can/c_can/c_can.c b/drivers/net/can/c_can/c_can.c
-> > index dbcc1c1c92d6..69526c3a671c 100644
-> > --- a/drivers/net/can/c_can/c_can.c
-> > +++ b/drivers/net/can/c_can/c_can.c
-> > @@ -732,7 +732,7 @@ static void c_can_do_tx(struct net_device *dev)
-> >  		idx--;
-> >  		pend &= ~(1 << idx);
-> >  		obj = idx + C_CAN_MSG_OBJ_TX_FIRST;
-> > -		c_can_inval_tx_object(dev, IF_RX, obj);
-> > +		c_can_inval_tx_object(dev, IF_TX, obj);
-> >  		can_get_echo_skb(dev, idx, NULL);
-> >  		bytes += priv->dlc[idx];
-> >  		pkts++;
-> > -- 
-> > 2.17.1
-> > 
-> > 
-> 
-> -- 
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Changes in v3:
+- Use unsigned int instead of int as type of the msg_obj_* fields
+  in the c_can_priv structure.
+- Replace (u64)1 with 1UL in msg_obj_rx_mask setting.
+- Use unsigned int instead of int as type of the msg_obj_num field
+  in c_can_driver_data and c_can_pci_data structures.
+
+Changes in v2:
+- Fix compiling error reported by kernel test robot.
+- Add Reported-by tag.
+- Pass larger size to alloc_candev() routine to avoid an additional
+  memory allocation/deallocation.
+- Add message objects number to PCI driver data.
+
+Dario Binacchi (6):
+  can: c_can: remove unused code
+  can: c_can: fix indentation
+  can: c_can: fix control interface used by c_can_do_tx
+  can: c_can: use 32-bit write to set arbitration register
+  can: c_can: prepare to up the message objects number
+  can: c_can: add support to 64 message objects
+
+ drivers/net/can/c_can/c_can.c          | 77 +++++++++++++++-----------
+ drivers/net/can/c_can/c_can.h          | 32 +++++------
+ drivers/net/can/c_can/c_can_pci.c      |  6 +-
+ drivers/net/can/c_can/c_can_platform.c |  6 +-
+ 4 files changed, 68 insertions(+), 53 deletions(-)
+
+-- 
+2.17.1
+
