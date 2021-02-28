@@ -2,78 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C58327227
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 13:00:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 189AB32722F
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 13:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbhB1LwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 06:52:19 -0500
-Received: from spam.zju.edu.cn ([61.164.42.155]:40206 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230049AbhB1LwQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Feb 2021 06:52:16 -0500
-Received: from localhost.localdomain (unknown [10.192.85.18])
-        by mail-app3 (Coremail) with SMTP id cC_KCgD3TSSjgztgu_zZAQ--.16213S4;
-        Sun, 28 Feb 2021 19:51:02 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Catherine Sullivan <catherine.sullivan@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Shannon Nelson <shannon.nelson@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] i40e: Fix error handling in i40e_vsi_open
-Date:   Sun, 28 Feb 2021 19:50:58 +0800
-Message-Id: <20210228115059.28686-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgD3TSSjgztgu_zZAQ--.16213S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7WryrXFWUGw1Dtr1xKr1xKrg_yoWfKFc_Gr
-        nxXw1xGr45GryF9r1Ykr4xurWFyw4DXryrCFW7K34fu3yDCw1xAr97ur4fXw47Ww4xGa47
-        Aw1aga4fC348AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbVxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
-        c2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r
-        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
-        x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfUoOJ5UUUUU
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgQGBlZdtSfEeAAUs3
+        id S230161AbhB1MR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 07:17:28 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:62818 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230045AbhB1MR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 07:17:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1614514646; x=1646050646;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=+lCsR1Cpr636yBERgHfZqF60fw5sauAUtHSBuNEDgtM=;
+  b=b3Ao1Zh86loJv1XhymgNHyRpmF6RXUbBRrLiePzvlUmp2ix6YjsKOuNY
+   g8ggX6Nuw34ylaH0bIOmQh9+bb/w9fHT4rqNfF8csQUt2Q9FkerccJ1GH
+   9tb+TpOkqij6evZrY8zA0gxlPr3VA/trXUluovy7Kn8Rnf2KwHpeXvNIF
+   o=;
+X-IronPort-AV: E=Sophos;i="5.81,213,1610409600"; 
+   d="scan'208";a="91756580"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 28 Feb 2021 12:16:15 +0000
+Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com (Postfix) with ESMTPS id 8A449A2022;
+        Sun, 28 Feb 2021 12:16:13 +0000 (UTC)
+Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.161.244) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 28 Feb 2021 12:16:00 +0000
+References: <d0c326f95b2d0325f63e4040c1530bf6d09dc4d4.1614422144.git.lorenzo@kernel.org>
+User-agent: mu4e 1.4.12; emacs 27.1
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <brouer@redhat.com>, <toke@redhat.com>,
+        <freysteinn.alfredsson@kau.se>, <lorenzo.bianconi@redhat.com>,
+        <john.fastabend@gmail.com>, <jasowang@redhat.com>,
+        <mst@redhat.com>, <thomas.petazzoni@bootlin.com>,
+        <mw@semihalf.com>, <linux@armlinux.org.uk>,
+        <ilias.apalodimas@linaro.org>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <michael.chan@broadcom.com>,
+        <madalin.bucur@nxp.com>, <ioana.ciornei@nxp.com>,
+        <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
+        <saeedm@nvidia.com>, <grygorii.strashko@ti.com>,
+        <ecree.xilinx@gmail.com>
+Subject: Re: [PATCH v2 bpf-next] bpf: devmap: move drop error path to devmap
+ for XDP_REDIRECT
+In-Reply-To: <d0c326f95b2d0325f63e4040c1530bf6d09dc4d4.1614422144.git.lorenzo@kernel.org>
+Date:   Sun, 28 Feb 2021 14:15:29 +0200
+Message-ID: <pj41zly2f8wfq6.fsf@u68c7b5b1d2d758.ant.amazon.com>
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.161.244]
+X-ClientProxiedBy: EX13D50UWA003.ant.amazon.com (10.43.163.56) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When vsi->type == I40E_VSI_FDIR, we have caught the return value of
-i40e_vsi_request_irq() but without further handling. Check and execute
-memory clean on failure just like the other i40e_vsi_request_irq().
 
-Fixes: 8a9eb7d3cbcab ("i40e: rework fdir setup and teardown")
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Lorenzo Bianconi <lorenzo@kernel.org> writes:
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 353deae139f9..c3bbc1310f8e 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -8724,6 +8724,8 @@ int i40e_vsi_open(struct i40e_vsi *vsi)
- 			 dev_driver_string(&pf->pdev->dev),
- 			 dev_name(&pf->pdev->dev));
- 		err = i40e_vsi_request_irq(vsi, int_name);
-+		if (err)
-+			goto err_setup_rx;
- 
- 	} else {
- 		err = -EINVAL;
--- 
-2.17.1
+> ...
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index 102f2c91fdb8..7ad0557dedbd 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> ...
+> 
+> @@ -339,8 +337,8 @@ static int ena_xdp_xmit(struct net_device 
+> *dev, int n,
+>  			struct xdp_frame **frames, u32 flags)
+>  {
+>  	struct ena_adapter *adapter = netdev_priv(dev);
+> -	int qid, i, err, drops = 0;
+>  	struct ena_ring *xdp_ring;
+> +	int qid, i, nxmit = 0;
+>  
+>  	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
+>  		return -EINVAL;
+> @@ -360,12 +358,12 @@ static int ena_xdp_xmit(struct net_device 
+> *dev, int n,
+>  	spin_lock(&xdp_ring->xdp_tx_lock);
+>  
+>  	for (i = 0; i < n; i++) {
+> -		err = ena_xdp_xmit_frame(xdp_ring, dev, frames[i], 
+> 0);
+>  		/* The descriptor is freed by ena_xdp_xmit_frame 
+>  in case
+>  		 * of an error.
+>  		 */
 
+Thanks a lot for the patch. It's a good idea. Do you mind removing 
+the comment here as well ? ena_xdp_xmit_frame() no longer frees 
+the frame in case of an error after this patch.
+
+> -		if (err)
+> -			drops++;
+> +		if (ena_xdp_xmit_frame(xdp_ring, dev, frames[i], 
+> 0))
+> +			break;
+> +		nxmit++;
+>  	}
+>  
+>  	/* Ring doorbell to make device aware of the packets */
+> @@ -378,7 +376,7 @@ static int ena_xdp_xmit(struct net_device 
+> *dev, int n,
+>  	spin_unlock(&xdp_ring->xdp_tx_lock);
+>  
+>  	/* Return number of packets sent */
+> -	return n - drops;
+> +	return nxmit;
+>  }
+> ...
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index 85d9d1b72a33..9f158b3862df 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -344,29 +344,26 @@ static void bq_xmit_all(struct 
+> xdp_dev_bulk_queue *bq, u32 flags)
+>  
+>  	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, 
+>  bq->q, flags);
+>  	if (sent < 0) {
+> +		/* If ndo_xdp_xmit fails with an errno, no frames 
+> have
+> +		 * been xmit'ed.
+> +		 */
+>  		err = sent;
+>  		sent = 0;
+> -		goto error;
+>  	}
+> +
+>  	drops = bq->count - sent;
+> -out:
+> -	bq->count = 0;
+> +	if (unlikely(drops > 0)) {
+> +		/* If not all frames have been transmitted, it is 
+> our
+> +		 * responsibility to free them
+> +		 */
+> +		for (i = sent; i < bq->count; i++)
+> +			xdp_return_frame_rx_napi(bq->q[i]);
+> +	}
+
+Wouldn't the logic above be the same even w/o the 'if' condition ?
+
+>  
+> +	bq->count = 0;
+>  	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
+>  	bq->dev_rx = NULL;
+>  	__list_del_clearprev(&bq->flush_node);
+> -	return;
+> -error:
+> -	/* If ndo_xdp_xmit fails with an errno, no frames have 
+> been
+> -	 * xmit'ed and it's our responsibility to them free all.
+> -	 */
+> -	for (i = 0; i < bq->count; i++) {
+> -		struct xdp_frame *xdpf = bq->q[i];
+> -
+> -		xdp_return_frame_rx_napi(xdpf);
+> -		drops++;
+> -	}
+> -	goto out;
+>  }
+>  
+>  /* __dev_flush is called from xdp_do_flush() which _must_ be 
+>  signaled
+
+Thanks, Shay
