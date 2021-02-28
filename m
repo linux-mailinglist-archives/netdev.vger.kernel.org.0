@@ -2,113 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3511F32752B
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 00:24:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 501C8327552
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 00:47:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhB1XXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 18:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
+        id S231336AbhB1XlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 18:41:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbhB1XXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 18:23:34 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8C6C06174A;
-        Sun, 28 Feb 2021 15:22:53 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id 18so13959757lff.6;
-        Sun, 28 Feb 2021 15:22:53 -0800 (PST)
+        with ESMTP id S230207AbhB1Xk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 18:40:59 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0021DC06174A
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 15:40:16 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id o3so16288650oic.8
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 15:40:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4ldXGh03zy5ClnMT7q7y7sw5ze6F2NXvT0BQp+tFnFA=;
-        b=jJC96Eb4lChoHEwPbM9kg5VlJ0LO5Te9A4quhDZ2O6VpuJjb7L0HXdE1OL1qynu13q
-         UNbKzw0rQOvti2LPSNzPSpsOoaVhh/O0nvD0TreSJbmJOB3kLTwE5EPpIbhTemS9v0CH
-         7Q/Xs6E8fy7W4vH/LxSNzk5MadoBFoLPKokaBdK+M/HdJjIsFc483T0njwBBArgyN6x5
-         TP8dhdS4qeGYGtl23chw2r19X8gkoz8SwzIILrbxuaF862ioy7axrts1LEYkihHsxYB6
-         jvuch1B8YBVjEBVU7UP1tm7aE68+nV1vtoxUoa8mtF1bV3QsIXKKF4ccLuqY8skQu5Pa
-         qVqw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SPHvJj+IltyPkBB2zTHzUdkBQ7x4D/aaDL80Mdy2Gbk=;
+        b=ZodKtt2Te3eK1quPXqtR4kSmqvaQxoSchuhdabhFKVaAkcJ9GolfrkrUm7i290PRzr
+         b66bqLAAYloXdanaGffUkGnBkSxulCHGlzPI7dSZF7h79gib4wCtdqd5p2Fvm921OvBn
+         rtCH8isPn3HlyofUBLgi5FIqEVeaXtLF2OpLqrf4hUlYYygfaqepnECvsiCD/TQnlNUO
+         Ch5ZbVnDPPT24Qd1qveescRShktUiGdKIUszfiWgsjiC5K7kgZvdkn+kBmnUIgSMHSfI
+         8oZOvn5g6fHtOe9gLKpBqzir7dkZibV+0lczD0IA1B/CeQ8P3D7ZYIcbhteyFTUefhYm
+         y1eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4ldXGh03zy5ClnMT7q7y7sw5ze6F2NXvT0BQp+tFnFA=;
-        b=kWW/z33c8xYwnEflZyK9ndEbjOkMUICz7Y8vHKGb+CwVgT8OcJRDH0h72fTcWydS+v
-         zqdJz1wHB/h37I73pVNRBR4GNrHacCNNkrm1zUnb7jCXgiFl7kVUKswuwVk0ZSTTQUuh
-         g72lv1eHnHe+qDQURgu+6MwTnoGq52hL/jv3EUg9O46puLBGakSqXa1AY1xYH8vLnUYY
-         LYAKgXEZyXzJb3Npfh59eeH/MtWIR3GdDhPHEtyHaf/gyX3jvbtjmwYXnXSrL7Zf89vW
-         b8z5fA8lS+k0gv38YDyYlj4ktdfiXZuQQJVKGYOnHMlrb3bKbQRIhtp29H9+MqrtEeeF
-         MfKg==
-X-Gm-Message-State: AOAM530WQ4IPYQXqyh4pEwuftbGzpNNOInY4m0Yxffv/b44DBa8OzvEK
-        ucF2vLEhyjFNeH38HZc8ufw=
-X-Google-Smtp-Source: ABdhPJwMneoTihkP6Ycws6iCtdsRZqkCR4I+sSloNgDxrhE1qQ/76Iiw6Vga1FK56mntenZ8E9JVjw==
-X-Received: by 2002:ac2:4e71:: with SMTP id y17mr7687310lfs.153.1614554571918;
-        Sun, 28 Feb 2021 15:22:51 -0800 (PST)
-Received: from localhost.localdomain ([94.103.235.167])
-        by smtp.gmail.com with ESMTPSA id h62sm1246886lfd.234.2021.02.28.15.22.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Feb 2021 15:22:51 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     alobakin@pm.me
-Cc:     linmiaohe@huawei.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH v4] net/qrtr: fix __netdev_alloc_skb call
-Date:   Mon,  1 Mar 2021 02:22:40 +0300
-Message-Id: <20210228232240.972205-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210228201000.13606-1-alobakin@pm.me>
-References: <20210228201000.13606-1-alobakin@pm.me>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SPHvJj+IltyPkBB2zTHzUdkBQ7x4D/aaDL80Mdy2Gbk=;
+        b=VpbiuoUp6F/s1fbH/VJ9iCBGyjcWXer7SJ7D3xK95m2FC93og7Wxpx680NH8/Qg9Yn
+         Oqf986YwGA9DHw434RvbUkh65VJn/lZ1ZSzMWmbD4XAfhNuobBfKM/ZmPxeBwnmd/8Dh
+         Yr/T/exTIMIqNHD1vYcs6Mn+j1WprjoiKPpylHqAejy5S/gPOM4nVcIlvBD3lmXD32bM
+         T8EuLWmw3ZGnyKcc6hW623cmsoJzXmLyGXq1pEj3p6daBDBFRMO3iwbhza12HEvqxQ51
+         bPBu5CmNiRM4pCj6BnYCY11VTm9Py15RwanmIdNHeC7DYqKmLK2y+bWLE8C3TVsLXDo/
+         DBGw==
+X-Gm-Message-State: AOAM533Ll8t25U3t9MuSN4SRXKRU4GxY8a3q+4ybJvm5Ei5AJIKSMvUv
+        lEZSzzVf5gAzMtZ5G+//GEo=
+X-Google-Smtp-Source: ABdhPJy7lYTipHWmdc6Bt53xXTtrdxrHFd+Y//rULpYd/jfUvab36VAKxumXh4kOjyFa353cTbVX6g==
+X-Received: by 2002:aca:4508:: with SMTP id s8mr9810491oia.118.1614555616055;
+        Sun, 28 Feb 2021 15:40:16 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.40])
+        by smtp.googlemail.com with ESMTPSA id w23sm862411oow.25.2021.02.28.15.40.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Feb 2021 15:40:15 -0800 (PST)
+Subject: Re: [RFC PATCH net 1/2] nexthop: Do not flush blackhole nexthops when
+ loopback goes down
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        sharpd@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+References: <20210228142613.1642938-1-idosch@idosch.org>
+ <20210228142613.1642938-2-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1db96a26-9500-aa3d-16ce-2774e6dcc5f2@gmail.com>
+Date:   Sun, 28 Feb 2021 16:40:13 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210228142613.1642938-2-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found WARNING in __alloc_pages_nodemask()[1] when order >= MAX_ORDER.
-It was caused by a huge length value passed from userspace to qrtr_tun_write_iter(),
-which tries to allocate skb. Since the value comes from the untrusted source 
-there is no need to raise a warning in __alloc_pages_nodemask().
+On 2/28/21 7:26 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> As far as user space is concerned, blackhole nexthops do not have a
+> nexthop device and therefore should not be affected by the
+> administrative or carrier state of any netdev.
+> 
+> However, when the loopback netdev goes down all the blackhole nexthops
+> are flushed. This happens because internally the kernel associates
+> blackhole nexthops with the loopback netdev.
 
-[1] WARNING in __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5014
-Call Trace:
- __alloc_pages include/linux/gfp.h:511 [inline]
- __alloc_pages_node include/linux/gfp.h:524 [inline]
- alloc_pages_node include/linux/gfp.h:538 [inline]
- kmalloc_large_node+0x60/0x110 mm/slub.c:3999
- __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4496
- __kmalloc_reserve net/core/skbuff.c:150 [inline]
- __alloc_skb+0x4e4/0x5a0 net/core/skbuff.c:210
- __netdev_alloc_skb+0x70/0x400 net/core/skbuff.c:446
- netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
- qrtr_endpoint_post+0x84/0x11b0 net/qrtr/qrtr.c:442
- qrtr_tun_write_iter+0x11f/0x1a0 net/qrtr/tun.c:98
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write+0x426/0x650 fs/read_write.c:518
- vfs_write+0x791/0xa30 fs/read_write.c:605
- ksys_write+0x12d/0x250 fs/read_write.c:658
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+That was not intended, so definitely a bug.
 
-Reported-by: syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- net/qrtr/qrtr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> This behavior is both confusing to those not familiar with kernel
+> internals and also diverges from the legacy API where blackhole IPv4
+> routes are not flushed when the loopback netdev goes down:
+> 
+>  # ip route add blackhole 198.51.100.0/24
+>  # ip link set dev lo down
+>  # ip route show 198.51.100.0/24
+>  blackhole 198.51.100.0/24
+> 
+> Blackhole IPv6 routes are flushed, but at least user space knows that
+> they are associated with the loopback netdev:
+> 
+>  # ip -6 route show 2001:db8:1::/64
+>  blackhole 2001:db8:1::/64 dev lo metric 1024 pref medium
+> 
+> Fix this by only flushing blackhole nexthops when the loopback netdev is
+> unregistered.
+> 
+> Fixes: ab84be7e54fc ("net: Initial nexthop code")
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Reported-by: Donald Sharp <sharpd@nvidia.com>
+> ---
+>  net/ipv4/nexthop.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> index f1c6cbdb9e43..743777bce179 100644
+> --- a/net/ipv4/nexthop.c
+> +++ b/net/ipv4/nexthop.c
+> @@ -1399,7 +1399,7 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
+>  
+>  /* rtnl */
+>  /* remove all nexthops tied to a device being deleted */
+> -static void nexthop_flush_dev(struct net_device *dev)
+> +static void nexthop_flush_dev(struct net_device *dev, unsigned long event)
+>  {
+>  	unsigned int hash = nh_dev_hashfn(dev->ifindex);
+>  	struct net *net = dev_net(dev);
+> @@ -1411,6 +1411,10 @@ static void nexthop_flush_dev(struct net_device *dev)
+>  		if (nhi->fib_nhc.nhc_dev != dev)
+>  			continue;
+>  
+> +		if (nhi->reject_nh &&
+> +		    (event == NETDEV_DOWN || event == NETDEV_CHANGE))
+> +			continue;
+> +
+>  		remove_nexthop(net, nhi->nh_parent, NULL);
+>  	}
+>  }
+> @@ -2189,11 +2193,11 @@ static int nh_netdev_event(struct notifier_block *this,
+>  	switch (event) {
+>  	case NETDEV_DOWN:
+>  	case NETDEV_UNREGISTER:
+> -		nexthop_flush_dev(dev);
+> +		nexthop_flush_dev(dev, event);
+>  		break;
+>  	case NETDEV_CHANGE:
+>  		if (!(dev_get_flags(dev) & (IFF_RUNNING | IFF_LOWER_UP)))
+> -			nexthop_flush_dev(dev);
+> +			nexthop_flush_dev(dev, event);
+>  		break;
+>  	case NETDEV_CHANGEMTU:
+>  		info_ext = ptr;
+> 
 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index b34358282f37..82d2eb8c21d1 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -439,7 +439,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 	if (len == 0 || len & 3)
- 		return -EINVAL;
- 
--	skb = netdev_alloc_skb(NULL, len);
-+	skb = __netdev_alloc_skb(NULL, len, GFP_ATOMIC | __GFP_NOWARN);
- 	if (!skb)
- 		return -ENOMEM;
- 
--- 
-2.25.1
+LGTM. I suggest submitting without the RFC.
+
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
