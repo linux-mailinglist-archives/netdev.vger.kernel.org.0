@@ -2,77 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ACB0327233
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 13:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A37C9327246
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 13:46:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230128AbhB1M00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 07:26:26 -0500
-Received: from mail.zju.edu.cn ([61.164.42.155]:42754 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229715AbhB1M0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Feb 2021 07:26:24 -0500
-Received: from localhost.localdomain (unknown [10.192.85.18])
-        by mail-app3 (Coremail) with SMTP id cC_KCgCH3tiziztgoifaAQ--.16208S4;
-        Sun, 28 Feb 2021 20:25:26 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Stanislaw Gruszka <stf_xl@wp.pl>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iwlegacy: Add missing check in il4965_commit_rxon
-Date:   Sun, 28 Feb 2021 20:25:22 +0800
-Message-Id: <20210228122522.2513-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgCH3tiziztgoifaAQ--.16208S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xw4rXr17ZryfGFWkXF4ruFg_yoWDXFg_C3
-        4Igwn3trykGry093Wq9FZxArW0y3srGw1xua92qryfGw15G39ruFZ8ZF9xurWUXr4Y9Fn3
-        Crn8ZFy8J340qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
-        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
-        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgQGBlZdtSfEeAAZs6
+        id S230153AbhB1MqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 07:46:06 -0500
+Received: from mail-wm1-f41.google.com ([209.85.128.41]:50920 "EHLO
+        mail-wm1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230083AbhB1MqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 07:46:05 -0500
+Received: by mail-wm1-f41.google.com with SMTP id i9so10807556wml.0
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 04:45:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kRSLbhODb/XnkWXf2/NkFi0SqI8nfPA2LKM5fduKjT4=;
+        b=JibkB0+MfdDjdoUh4BnTwziyXpX57OmJZ7RGupfB5Z8XUMLLqZI6G8u9sK95ni+VQ5
+         FhUu4qnCv63bO7aa87Nkv8mkM6hv+GtZjD0L5Eb7//5Fit17hfqlJsUhiFN7SvvOPao3
+         6RkXoMSJqTSbGCBWV9MOcT0gLiCf2mj+7hc9viSmzCaz9ep+Q5t97gWhvAe8NMEhRCqu
+         MmDpendmDEW13KZ2E1UW9Z+j0SYs/OVHEb3/UnHfWLJwZLR+dn+n2IrMgeWKFxx9iBan
+         QHijg3WeVvuidln139ZYarKtutk8S7mxLUVlU9heFQmJQtqLP+7KPxMEim+ewYs6eOts
+         Regw==
+X-Gm-Message-State: AOAM533CvojvnRmtLbTXlrRrOhgwm7iyg4S2/FEX1IuLt38pW+HFkIBM
+        ahy3QIwIwFmJ9aGTmB5LccdD2KHPWZA=
+X-Google-Smtp-Source: ABdhPJxmUWKKEHGCAh9lmUS0nOYEXam/eqQJmG717zdskwEkLz44S2gytIpOSYryJU6Lr5lOHmt4qQ==
+X-Received: by 2002:a7b:c0c4:: with SMTP id s4mr1924607wmh.9.1614516323662;
+        Sun, 28 Feb 2021 04:45:23 -0800 (PST)
+Received: from localhost ([2a01:4b00:f419:6f00:e2db:6a88:4676:d01b])
+        by smtp.gmail.com with ESMTPSA id f7sm18159270wmh.39.2021.02.28.04.45.22
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Feb 2021 04:45:22 -0800 (PST)
+From:   Luca Boccassi <bluca@debian.org>
+To:     netdev@vger.kernel.org
+Subject: [PATCH iproute2] iproute: fix printing resolved localhost
+Date:   Sun, 28 Feb 2021 12:45:20 +0000
+Message-Id: <20210228124520.30005-1-bluca@debian.org>
+X-Mailer: git-send-email 2.30.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is one il_set_tx_power() call in this function without
-return value check. Print error message and return error code
-on failure just like the other il_set_tx_power() call.
+format_host_rta_r might return a cached hostname
+via its return value and not use the input buffer.
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+Before:
+
+$ ip -resolve -6 route
+ dev lo proto kernel metric 256 pref medium
+
+After:
+
+$ ip/ip -resolve -6 route
+localhost dev lo proto kernel metric 256 pref medium
+
+Bug-Debian: https://bugs.debian.org/983591
+
+Reported-by: Axel Scheepers <axel.scheepers76@gmail.com>
+Signed-off-by: Luca Boccassi <bluca@debian.org>
 ---
- drivers/net/wireless/intel/iwlegacy/4965.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ ip/iproute.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/4965.c b/drivers/net/wireless/intel/iwlegacy/4965.c
-index 9fa556486511..3235b8be1894 100644
---- a/drivers/net/wireless/intel/iwlegacy/4965.c
-+++ b/drivers/net/wireless/intel/iwlegacy/4965.c
-@@ -1361,7 +1361,11 @@ il4965_commit_rxon(struct il_priv *il)
- 		 * We do not commit tx power settings while channel changing,
- 		 * do it now if tx power changed.
- 		 */
--		il_set_tx_power(il, il->tx_power_next, false);
-+		ret = il_set_tx_power(il, il->tx_power_next, false);
-+		if (ret) {
-+			IL_ERR("Error sending TX power (%d)\n", ret);
-+			return ret;
-+		}
- 		return 0;
- 	}
- 
+diff --git a/ip/iproute.c b/ip/iproute.c
+index 291f1a58..5853f026 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -796,9 +796,10 @@ int print_route(struct nlmsghdr *n, void *arg)
+ 				 "%s/%u", rt_addr_n2a_rta(family, tb[RTA_DST]),
+ 				 r->rtm_dst_len);
+ 		} else {
+-			format_host_rta_r(family, tb[RTA_DST],
++			const char *hostname = format_host_rta_r(family, tb[RTA_DST],
+ 					  b1, sizeof(b1));
+-
++			if (hostname)
++				strncpy(b1, hostname, sizeof(b1) - 1);
+ 		}
+ 	} else if (r->rtm_dst_len) {
+ 		snprintf(b1, sizeof(b1), "0/%d ", r->rtm_dst_len);
+@@ -818,8 +819,10 @@ int print_route(struct nlmsghdr *n, void *arg)
+ 				 rt_addr_n2a_rta(family, tb[RTA_SRC]),
+ 				 r->rtm_src_len);
+ 		} else {
+-			format_host_rta_r(family, tb[RTA_SRC],
++			const char *hostname = format_host_rta_r(family, tb[RTA_SRC],
+ 					  b1, sizeof(b1));
++			if (hostname)
++				strncpy(b1, hostname, sizeof(b1) - 1);
+ 		}
+ 		print_color_string(PRINT_ANY, color,
+ 				   "from", "from %s ", b1);
 -- 
-2.17.1
+2.30.1
 
