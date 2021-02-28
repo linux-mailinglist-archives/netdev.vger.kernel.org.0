@@ -2,63 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92FF2327445
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 20:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A045327448
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 21:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbhB1TzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 14:55:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49958 "EHLO mail.kernel.org"
+        id S231283AbhB1UAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 15:00:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51532 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230386AbhB1TzD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Feb 2021 14:55:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D7E4660C41;
-        Sun, 28 Feb 2021 19:54:22 +0000 (UTC)
+        id S230167AbhB1UAs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Feb 2021 15:00:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4E28364E85;
+        Sun, 28 Feb 2021 20:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614542063;
-        bh=cKtE31HFNB8ZBcWmsLR1+pRpbPBcFL2odifW40lmBmk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HivyyI1YErTf65QQslwLRbFfI0qLj5v6R2gIJig6S9NXtp71wqJmKRaMkred2f6V4
-         4u7ntoFQ3AFly4PFF/I/zqUh5BC7CgZFGzqRr3o3ce20kAA3C+jL74AsvKYMsFrzQj
-         tTsWU9D9+j8HHrWESPq/2llbhHYB5wuFJlirAzOk4xqY4X3VpOB4QOgZpFPpnVm9z8
-         6IX234F8dfndcxC5V4c15TcsljHoDBxbhuAzYUO1XBPW711wo5iKspltTBlmrElmqQ
-         O35Wj7l6VDoEsysv9Tm8G0HHdU+VRX4m9S8PP7OvgIqr7wkLAcl9AVID+3WRQl4+Yw
-         WttL/V/rsbU3Q==
-Date:   Sun, 28 Feb 2021 11:54:22 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJl?= =?UTF-8?B?Y2tp?= <zajec5@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH net] net: broadcom: bcm4908_enet: enable RX after
- processing packets
-Message-ID: <20210228115422.490b7e5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f85294f6-be06-5cc1-b307-f2c5d6ce7ffe@gmail.com>
-References: <20210226132038.29849-1-zajec5@gmail.com>
-        <f85294f6-be06-5cc1-b307-f2c5d6ce7ffe@gmail.com>
+        s=k20201202; t=1614542408;
+        bh=rTsfVtPwEintF1A3cpJtsWVORAo/xR7t3plun5ypTXw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=V6BfzRwsU2OoEZibRCR+MYzie/6dQJDDk1OEKukkN9HNrRipeOMcjBh2ACxEjMBsI
+         BIkX0LbvVMhe/fBb4llAhQtgpr/XuxqtfyxzI5+3hjgMcTf3AB0M6cicG7ie96p7vu
+         OeDiuAIclgs+MmQwvkWJ2qjF6IXady8t/0HYqYEOzdQCai9iz0lIc5cG6yrBljJalP
+         rnFoIoA3gb9T5Yy5aZ+8RgY7Ats3s+5z8oBwTAjMMq7AvSdLQnnKX+l4Z+ONibpzgT
+         oOC2y08+92ujgM59+6dxF8XSRpOUUKKS+SpuR18mB1EQb+WNu3RctOcjgfmT/M51Dw
+         R7QfZoGJnY3BA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3D98A60A13;
+        Sun, 28 Feb 2021 20:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] ethtool: fix the check logic of at least one channel
+ for RX/TX
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161454240824.28159.15484906665567020829.git-patchwork-notify@kernel.org>
+Date:   Sun, 28 Feb 2021 20:00:08 +0000
+References: <20210225125102.23989-1-simon.horman@netronome.com>
+In-Reply-To: <20210225125102.23989-1-simon.horman@netronome.com>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, mkubecek@suse.cz,
+        yinjun.zhang@corigine.com, louis.peens@netronome.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 27 Feb 2021 08:38:24 -0800 Florian Fainelli wrote:
-> On 2/26/2021 5:20 AM, Rafa=C5=82 Mi=C5=82ecki wrote:
-> > From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-> >=20
-> > When receiving a lot of packets hardware may run out of free
-> > descriptiors and stop RX ring. Enable it every time after handling
-> > received packets.
-> >=20
-> > Fixes: 4feffeadbcb2 ("net: broadcom: bcm4908enet: add BCM4908 controlle=
-r driver")
-> > Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl> =20
->=20
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Hello:
 
-Applied, thanks!
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Out of curiosity - is the performance not impacted by this change?
-bcm4908_enet_dma_rx_ring_enable() does an RMW, the read could possibly
-removed by caching the expected value.
+On Thu, 25 Feb 2021 13:51:02 +0100 you wrote:
+> From: Yinjun Zhang <yinjun.zhang@corigine.com>
+> 
+> The command "ethtool -L <intf> combined 0" may clean the RX/TX channel
+> count and skip the error path, since the attrs
+> tb[ETHTOOL_A_CHANNELS_RX_COUNT] and tb[ETHTOOL_A_CHANNELS_TX_COUNT]
+> are NULL in this case when recent ethtool is used.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] ethtool: fix the check logic of at least one channel for RX/TX
+    https://git.kernel.org/netdev/net/c/a4fc088ad4ff
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
