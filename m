@@ -2,209 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C7F3274D5
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 23:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCA2E3274FA
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 23:49:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231556AbhB1W3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 17:29:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36749 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231544AbhB1W3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 17:29:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614551256;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0wryWcPaAxfw2RWINGUzgAUwuoqjsVNrZUxTgOc7xsM=;
-        b=NfCz3fbcekycYOnL9T5JMdUP8q1r2oTG4YecJySzZDqNVXz4TMLimpB/FO7qnJA4I1UwHQ
-        OCVGBeYtf7X9BUVNm8oGGL9Dfc+tsg0Q4wzYRzRgxy48c8aECYXjXky3fZm/YWmZEVYcyD
-        0rYTJ0WbdEl1lAEepX0cJ0uGGIJ3PwQ=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-604-NNCHEMSFOEyU3u26jwKJIA-1; Sun, 28 Feb 2021 17:27:32 -0500
-X-MC-Unique: NNCHEMSFOEyU3u26jwKJIA-1
-Received: by mail-wr1-f71.google.com with SMTP id p18so8401413wrt.5
-        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 14:27:32 -0800 (PST)
+        id S231164AbhB1Wsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 17:48:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230298AbhB1Wss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 17:48:48 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D32C06174A
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 14:48:08 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id f6so2523612edd.12
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 14:48:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZCGeFsZH83GtKBBYzx45cZC0zr/0BJD6gO7hkTDkN/s=;
+        b=SQ2ngMgcxGBS8hJgxxtovb3QXaDAN01Esf3mDZiyLzJN4yMQB5z7j7DwaK55LLpmzc
+         LicHc2KQEVSmhRydoCOsQI1PgOSXvxkw98qNnyL0Qe8+iQTKTmYym4v0UkGQS/WRFaje
+         fonbwmZ50Z/U7umoF2+QYiOHgYEgVFuEHRESuVcXPJSQ7W6toMO1aapKN02hC7ec+f44
+         j5Ugrb7TY9XJNMzuPohHcit1jmXja+r9a6cnTUsLBRlnwQLd8MhxzJZ+tdKDPqg6w9X5
+         BS2A/1Sl4HynUNlm0hbraOxzgWEF5K4thAn0gExqqe/cIS50EEF7mwaSh/IVvt6P0fTJ
+         5UNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=0wryWcPaAxfw2RWINGUzgAUwuoqjsVNrZUxTgOc7xsM=;
-        b=XCXr+gGO6dJzXVs+DFNFeYdKIVnqMtDwfZnySW4TuqqBww+Jg9ac2WEocKzU++aQxb
-         8jE+P8zmcBftz0HFfwc+hPpmP9V1iWi7Kweewemu8bnT+LMHHp9UZSHh8hVqneVrwyKE
-         73yqbJOK3HW26y4MDzwqZAey2LSqWsH8nFxm3Wg1JbAKJDptBgADBjsyan7h+YdeKanz
-         vWrSX1dnon7l71o9kWHEVkp0g4h+B4HESS1X6mAhKEicQfw8S5C8D1KKwLxOeYuWNQ5S
-         3yiWNGKygZ877Yvpgwx63NjWT+E8sg9Uw2PvwxWSvmw6zqCV08YgaP8YlAJkZZmqTQQ5
-         /PzQ==
-X-Gm-Message-State: AOAM531oR1MlYhIckb/g1b4hgLzCggzzs2XWC9KG2n1c80gTqCTdSgtH
-        SpYNJqarCHFv7rDABlaadeAHWu6fabrJAY+Iiu4BWTwvbqG62o4mbJNOCxZ2slFeEzakvJZ3XfC
-        vTbyArAzBn7QiPcbC
-X-Received: by 2002:a1c:7513:: with SMTP id o19mr12630013wmc.94.1614551251486;
-        Sun, 28 Feb 2021 14:27:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzYgvNUHTYNny7jun+QZnBKp5YO+4zPn+Ec4LSYVug/oiTEGiLWtPvA8m6114V++R7TnxKKGg==
-X-Received: by 2002:a1c:7513:: with SMTP id o19mr12629985wmc.94.1614551251262;
-        Sun, 28 Feb 2021 14:27:31 -0800 (PST)
-Received: from localhost ([151.66.54.126])
-        by smtp.gmail.com with ESMTPSA id f126sm8306606wmf.17.2021.02.28.14.27.29
+        bh=ZCGeFsZH83GtKBBYzx45cZC0zr/0BJD6gO7hkTDkN/s=;
+        b=Otykx951IkirmvssqvH+eXIf1uYPA6sH6gUdNfvB5/6n7cT+UgpKVlCiwLkAFc1HqV
+         EY4FFKUYI3JgrzZynEXLS7mFcWNFYRsoASnNlQ37+gROSvDhrzpmSdIHWf899CK1hxjU
+         wNE1PR8x114gwbOqr4WJmR2gET0uz5KTVLPyCsfaFEkveGRYC6MtDg2HLPCn6J+5wCuE
+         AiqtVDYpXYUXqN51vB5dJu+2vDVC+Gt8F+EJT/tdDZ8qSyS1bDXdMhUCjOlV5qLpzJEo
+         FeaPViSh+OynCbodjeqOjk92fj1rCZL19CREGJzW5X/C0sjdXhp/QA0xF5abGLTft+Nd
+         tHBg==
+X-Gm-Message-State: AOAM530/yKgrE8Tnkbi5vVpndvAkrETRnkPdxiGPBPim+gG5QQ76a7SW
+        1KF48ySI1EzVj5W7HkXRkEPQTnf5A8E=
+X-Google-Smtp-Source: ABdhPJzc7a1mKtdWRsCf1Y6JxcBy4QCSVjhNka7fyW6uRDyGvmHi7iTj0SYN1aNT4us2wlByBimtew==
+X-Received: by 2002:aa7:c1d5:: with SMTP id d21mr208695edp.167.1614552486773;
+        Sun, 28 Feb 2021 14:48:06 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id x21sm11393117eje.118.2021.02.28.14.48.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Feb 2021 14:27:30 -0800 (PST)
-Date:   Sun, 28 Feb 2021 23:27:25 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, brouer@redhat.com,
-        toke@redhat.com, freysteinn.alfredsson@kau.se,
-        john.fastabend@gmail.com, jasowang@redhat.com, mst@redhat.com,
-        thomas.petazzoni@bootlin.com, mw@semihalf.com,
-        linux@armlinux.org.uk, ilias.apalodimas@linaro.org,
-        netanel@amazon.com, akiyano@amazon.com, michael.chan@broadcom.com,
-        madalin.bucur@nxp.com, ioana.ciornei@nxp.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        saeedm@nvidia.com, grygorii.strashko@ti.com, ecree.xilinx@gmail.com
-Subject: Re: [PATCH v2 bpf-next] bpf: devmap: move drop error path to devmap
- for XDP_REDIRECT
-Message-ID: <YDwYzYVIDQABINyy@lore-laptop-rh>
-References: <d0c326f95b2d0325f63e4040c1530bf6d09dc4d4.1614422144.git.lorenzo@kernel.org>
- <pj41zly2f8wfq6.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        Sun, 28 Feb 2021 14:48:06 -0800 (PST)
+Date:   Mon, 1 Mar 2021 00:48:04 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Markus =?utf-8?Q?Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
+Subject: Re: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in
+ IFF_PROMISC mode
+Message-ID: <20210228224804.2zpenxrkh5vv45ph@skbuf>
+References: <20210225121835.3864036-1-olteanv@gmail.com>
+ <20210225121835.3864036-6-olteanv@gmail.com>
+ <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210226234244.w7xw7qnpo3skdseb@skbuf>
+ <20210226154922.5956512b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210227001651.geuv4pt2bxkzuz5d@skbuf>
+ <7bb61f7190bebadb9b6281cb02fa103d@walle.cc>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="KWqXVpklFboKTwdJ"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <pj41zly2f8wfq6.fsf@u68c7b5b1d2d758.ant.amazon.com>
+In-Reply-To: <7bb61f7190bebadb9b6281cb02fa103d@walle.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Feb 27, 2021 at 02:18:20PM +0100, Michael Walle wrote:
+> Am 2021-02-27 01:16, schrieb Vladimir Oltean:
+> > On Fri, Feb 26, 2021 at 03:49:22PM -0800, Jakub Kicinski wrote:
+> > > On Sat, 27 Feb 2021 01:42:44 +0200 Vladimir Oltean wrote:
+> > > > On Fri, Feb 26, 2021 at 03:28:36PM -0800, Jakub Kicinski wrote:
+> > > > > I don't understand what you're fixing tho.
+> > > > >
+> > > > > Are we trying to establish vlan-filter-on as the expected behavior?
+> > > >
+> > > > What I'm fixing is unexpected behavior, according to the applicable
+> > > > standards I could find.
+>
+> In the referenced thread you quoted from the IEEE802.3 about the promisc
+> mode.
+>   The MAC sublayer may also provide the capability of operating in the
+>   promiscuous receive mode. In this mode of operation, the MAC sublayer
+>   recognizes and accepts all valid frames, regardless of their Destination
+>   Address field values.
+>
+> Your argument was that the standard just talks about disabling the DMAC
+> filter. But was that really the _intention_ of the standard? Does the
+> standard even mention a possible vlan tag? What I mean is: maybe the
+> standard just mention the DMAC because it is the only filtering mechanism
+> in this standard and it's enough to disable it to "accept all valid frames".
+>
+> I was biten by "the NIC drops frames with an unknown VLAN" even if
+> promisc mode was enabled. And IMHO it was quite suprising for me.
 
---KWqXVpklFboKTwdJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In short, promiscuity is a function of the MAC sublayer, which is the
+lower portion of the Data Link Layer (the higher portion being the
+Logical Link Control layer - LLC). The MAC sublayer is governed by IEEE
+802.3, and IEEE 802.1Q does not change anything related to promiscuity,
+so everything still applies.
 
->=20
-> Lorenzo Bianconi <lorenzo@kernel.org> writes:
->=20
-> > ...
-> > diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > index 102f2c91fdb8..7ad0557dedbd 100644
-> > --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > ...
-> >=20
-> > @@ -339,8 +337,8 @@ static int ena_xdp_xmit(struct net_device *dev, int
-> > n,
-> >  			struct xdp_frame **frames, u32 flags)
-> >  {
-> >  	struct ena_adapter *adapter =3D netdev_priv(dev);
-> > -	int qid, i, err, drops =3D 0;
-> >  	struct ena_ring *xdp_ring;
-> > +	int qid, i, nxmit =3D 0;
-> >  	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-> >  		return -EINVAL;
-> > @@ -360,12 +358,12 @@ static int ena_xdp_xmit(struct net_device *dev,
-> > int n,
-> >  	spin_lock(&xdp_ring->xdp_tx_lock);
-> >  	for (i =3D 0; i < n; i++) {
-> > -		err =3D ena_xdp_xmit_frame(xdp_ring, dev, frames[i], 0);
-> >  		/* The descriptor is freed by ena_xdp_xmit_frame  in case
-> >  		 * of an error.
-> >  		 */
->=20
-> Thanks a lot for the patch. It's a good idea. Do you mind removing the
-> comment here as well ? ena_xdp_xmit_frame() no longer frees the frame in
-> case of an error after this patch.
+The MAC sublayer provides its services to the MAC client through
+something called the MAC service, which uses the following primitives:
 
-ack, will do in v3
+MA_DATA.request(
+	destination_address,
+	source_address,
+	mac_service_data_unit,
+	frame_check_sequence)
 
->=20
-> > -		if (err)
-> > -			drops++;
-> > +		if (ena_xdp_xmit_frame(xdp_ring, dev, frames[i], 0))
-> > +			break;
-> > +		nxmit++;
-> >  	}
-> >  	/* Ring doorbell to make device aware of the packets */
-> > @@ -378,7 +376,7 @@ static int ena_xdp_xmit(struct net_device *dev, int
-> > n,
-> >  	spin_unlock(&xdp_ring->xdp_tx_lock);
-> >  	/* Return number of packets sent */
-> > -	return n - drops;
-> > +	return nxmit;
-> >  }
-> > ...
-> > diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> > index 85d9d1b72a33..9f158b3862df 100644
-> > --- a/kernel/bpf/devmap.c
-> > +++ b/kernel/bpf/devmap.c
-> > @@ -344,29 +344,26 @@ static void bq_xmit_all(struct xdp_dev_bulk_queue
-> > *bq, u32 flags)
-> >    	sent =3D dev->netdev_ops->ndo_xdp_xmit(dev, bq->count,  bq->q, flag=
-s);
-> >  	if (sent < 0) {
-> > +		/* If ndo_xdp_xmit fails with an errno, no frames have
-> > +		 * been xmit'ed.
-> > +		 */
-> >  		err =3D sent;
-> >  		sent =3D 0;
-> > -		goto error;
-> >  	}
-> > +
-> >  	drops =3D bq->count - sent;
-> > -out:
-> > -	bq->count =3D 0;
-> > +	if (unlikely(drops > 0)) {
-> > +		/* If not all frames have been transmitted, it is our
-> > +		 * responsibility to free them
-> > +		 */
-> > +		for (i =3D sent; i < bq->count; i++)
-> > +			xdp_return_frame_rx_napi(bq->q[i]);
-> > +	}
->=20
-> Wouldn't the logic above be the same even w/o the 'if' condition ?
+to send a frame, and
 
-it is just an optimization to avoid the for loop instruction if sent =3D bq=
-->count
+MA_DATA.indication(
+	destination_address,
+	source_address,
+	mac_service_data_unit,
+	frame_check_sequence,
+	ReceiveStatus)
 
-Regards,
-Lorenzo
+to receive a frame.
 
->=20
-> > +	bq->count =3D 0;
-> >  	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
-> >  	bq->dev_rx =3D NULL;
-> >  	__list_del_clearprev(&bq->flush_node);
-> > -	return;
-> > -error:
-> > -	/* If ndo_xdp_xmit fails with an errno, no frames have been
-> > -	 * xmit'ed and it's our responsibility to them free all.
-> > -	 */
-> > -	for (i =3D 0; i < bq->count; i++) {
-> > -		struct xdp_frame *xdpf =3D bq->q[i];
-> > -
-> > -		xdp_return_frame_rx_napi(xdpf);
-> > -		drops++;
-> > -	}
-> > -	goto out;
-> >  }
-> >    /* __dev_flush is called from xdp_do_flush() which _must_ be
-> > signaled
->=20
-> Thanks, Shay
->=20
+One particular component of the MAC sublayer seems to be called the
+Internal Sublayer Service (ISS), and this one is defined in IEEE
+802.1AC-2016. To be frank, I don't quite grok why there needs to exist
+this extra layering, but nonetheless, the ISS has some similar service
+primitives to the MAC sublayer as well, and these are:
 
---KWqXVpklFboKTwdJ
-Content-Type: application/pgp-signature; name="signature.asc"
+M_UNITDATA.indication(
+	destination_address,
+	source_address,
+	mac_service_data_unit,
+	priority,
+	drop_eligible,
+	frame_check_sequence,
+	service_access_point_identifier,
+	connection_identifier)
 
------BEGIN PGP SIGNATURE-----
+M_UNITDATA.request(
+	destination_address,
+	source_address,
+	mac_service_data_unit,
+	priority,
+	drop_eligible,
+	frame_check_sequence,
+	service_access_point_identifier,
+	connection_identifier)
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYDwYygAKCRA6cBh0uS2t
-rC7XAQDElqjB70+Zyd/zfSOqd/TH+ol9lqLT2/vEfd89FBRRygEAuHTAFaKkSa6F
-NvoBNEPeg0Ouo66iX1+db8owSyBTZQk=
-=V7NY
------END PGP SIGNATURE-----
+where a "unit of data" is basically just very pompous speak for
+"a frame", I guess.
 
---KWqXVpklFboKTwdJ--
+Promiscuity is defined in IEEE 802.3 clause 4A.2.9 Frame reception,
+which _in_context_ talks about the interface between the MAC client and
+the MAC sublayer, so that means about the M_UNITDATA.indication or the
+MA_DATA.indication.
 
+Whereas VLAN filtering, as well as adding and removing VLAN tags, is
+governed by IEEE 802.1Q, as a function of the Enhanced Internal Sublayer
+Service (EISS), i.e. clause 6.8. In fact, the EISS is just an ISS
+enhanced for VLAN filtering, as the naming and definition implies.
+
+Of course (why not), the EISS has its own service primitives towards its
+higher-level clients for transmitting and receiving a frame. These are:
+
+EM_UNITDATA.request(
+	destination_address,
+	source_address,
+	mac_service_data_unit,
+	priority,
+	drop_eligible,
+	vlan_identifier,
+	frame_check_sequence,
+	service_access_point_identifier,
+	connection_identifier,
+	flow_hash,
+	time_to_live)
+
+EM_UNITDATA.indication(
+	destination_address,
+	source_address,
+	mac_service_data_unit,
+	priority,
+	drop_eligible,
+	vlan_identifier,
+	frame_check_sequence,
+	service_access_point_identifier,
+	connection_identifier,
+	flow_hash,
+	time_to_live)
+
+There's a big note in IEEE 802.1Q that says:
+
+The destination_address, source_address, mac_service_data_unit,
+priority, drop_eligible, service_access_point_identifier,
+connection_identifier, and frame_check_sequence parameters are as
+defined for the ISS.
+
+So basically, although the EISS extends the ISS, it has not changed the
+aspects of it regarding what constitutes a destination_address. So there
+is nothing that redefines the promiscuity concept to extend it with the
+vlan_identifier.
+
+Additionally, the 802.1Q spec talks about this EISS Multiplex Entity
+thing, which can be used by a VLAN-aware end station to provide a SAP
+(Service Access Point, in context it means an instance of the Internal
+Sublayer Service), one per VID of interest, to separate MAC clients.
+That is to say, the EISS Multiplex Entity provides multiple
+M_UNITDATA.indication and M_UNITDATA.request services to multiple MAC
+clients, one per VLAN. Each individual service can be in "promiscuous"
+mode. This is similar to how in Linux, each 8021q upper of a physical
+interface can be promiscuous or not.
+
+> > > > If I don't mark this change as a bug fix but as
+> > > > a simple patch, somebody could claim it's a regression, since promiscuity
+> > > > used to be enough to see packets with unknown VLANs, and now it no
+> > > > longer is...
+> > >
+> > > Can we take it into net-next? What's your feeling on that option?
+> >
+> > I see how you can view this patch as pointless, but there is some
+> > context to it. It isn't just for tcpdump/debugging, instead NXP has some
+> > TSN use cases which involve some asymmetric tc-vlan rules, which is how
+> > I arrived at this topic in the first place. I've already established
+> > that tc-vlan only works with ethtool -K eth0 rx-vlan-filter off:
+> > https://lore.kernel.org/netdev/CA+h21hoxwRdhq4y+w8Kwgm74d4cA0xLeiHTrmT-VpSaM7obhkg@mail.gmail.com/
+>
+> Wasn't the conclusion that the VID should be added to the filter so it
+> also works with vlan filter enabled? Am I missing another discussion?
+
+Well, the conclusion was just that a tc-flower key that contains a VLAN
+ID will not be accepted by a VLAN-filtering NIC. Similarly, a tc-flower
+key that contains a destination MAC address will not be accepted by a
+NIC with IFF_UNICAST_FLT.
+
+There was no further discussion, it is just an elementary deduction from
+that point. There are two equally valid options:
+- make tc-flower use the vlan_vid_add API when it installs a vlan_id
+  key, and the dev_uc_add/dev_mc_add API when it installs a dst_mac key
+OR
+- disable VLAN filtering if you're using vlan_id keys on VLAN-aware
+  NICs, and put the interface in promiscuous mode if you're using
+  dst_mac keys that are different from the NIC's filtering list.
+
+I chose option 2 because it was way simpler and was just as correct.
