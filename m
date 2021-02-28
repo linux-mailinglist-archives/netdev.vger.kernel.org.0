@@ -2,62 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB18E3273F7
-	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 20:07:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04107327401
+	for <lists+netdev@lfdr.de>; Sun, 28 Feb 2021 20:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbhB1TGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 14:06:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44066 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230019AbhB1TGb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Feb 2021 14:06:31 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BD6AC64E66;
-        Sun, 28 Feb 2021 19:05:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614539151;
-        bh=M0Zcw0IfcrOYYGGIYw8W7nsJGscf39K7eDvmuHdMvFo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DV4yEkUw1heC1fW4HVvqrX6mYmJvVIw3Bxig8hwIBYJlCkO0UG4AqNa4U1gyx3CeU
-         CYBvhiySN2Zp45G7UxPyBVwkFHQvnqxeiiH7Sj7qF00p93FA9w+U3djzHgby5QllB+
-         JiBhClY/0wpkyuu69/PVfTVyA+DnPQtA0eBOuEfr8FSqeTEMjHWTE4IF/aw7HHBhtj
-         StEy/zbQkToQlz+g8S78GBLPuTN/xIZ4Fk0SXoQ55c6F0xde6TsN2Cnc6behvyEP8J
-         nU3MFIgQfc04aTJHvzbKnJVtH069DAb2KHCy2si9qDxoY7MxWMAJvQmdpPmPKs8GQL
-         9GaqXADrOD0UQ==
-Date:   Sun, 28 Feb 2021 11:05:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexey Dobriyan <adobriyan@gmail.com>
-Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, 3chas3@gmail.com,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 01/11] pragma once: delete include/linux/atm_suni.h
-Message-ID: <20210228110550.17488e90@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YDvLqaIUVaoP8rtm@localhost.localdomain>
-References: <YDvLYzsGu+l1pQ2y@localhost.localdomain>
-        <YDvLqaIUVaoP8rtm@localhost.localdomain>
+        id S231334AbhB1TMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 14:12:50 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:21549 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231311AbhB1TMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 14:12:49 -0500
+Date:   Sun, 28 Feb 2021 19:11:59 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1614539526; bh=EJrinQ67qB/LlA99cwn6B7uEjbgLffctlyIaZybzzxc=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=k85JS7L2Gtu7m2ha48NGFELCzYqGbtrsZn5B46hyhwTFgz5DFyG+BqE7kFdS5EkLu
+         0Q8k1ZDByd5EPE/Nd4/lEFsbtbEADBNyRveTsDK/lA0oOZsQlTEKlbTMiR8CouchAy
+         IrckDnzU4JaVSvAD0zT2XHgtULKgVxN+8cejkk0ElokK375hAoZz7uORgpr1zJU1+m
+         U0PqCQX0KIJ0Dc1PFOubMylSPoSo7+AEWRK+yzG+ucVC5eexMsVD9+iJhmQwCWxCoH
+         0S2b1eE4ezAIkUD5v56qcE0W+8ipDFEAXoshnU2AI/Ucd3kWikfvzaSJl4NdvG9WSW
+         /ksfxqFt/XzmQ==
+To:     Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Pavel Skripkin <paskripkin@gmail.com>, davem@davemloft.net,
+        linmiaohe@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v3] net/core/skbuff: fix passing wrong size to __alloc_skb
+Message-ID: <20210228191150.10421-1-alobakin@pm.me>
+In-Reply-To: <20210228105552.4f810700@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210227110306.13360-1-alobakin@pm.me> <20210227175114.28645-1-paskripkin@gmail.com> <20210228181440.1715-1-alobakin@pm.me> <20210228105552.4f810700@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 28 Feb 2021 19:58:17 +0300 Alexey Dobriyan wrote:
-> From c17ac63e1334c742686cd411736699c1d34d45a7 Mon Sep 17 00:00:00 2001
-> From: Alexey Dobriyan <adobriyan@gmail.com>
-> Date: Wed, 10 Feb 2021 21:07:45 +0300
-> Subject: [PATCH 01/11] pragma once: delete include/linux/atm_suni.h
-> 
-> This file has been empty since 2.3.99-pre3!
-> Delete it instead of converting to #pragma once.
-> 
-> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Sun, 28 Feb 2021 10:55:52 -0800
 
-I'm guessing you want this to be merged via the networking tree?
-(Guessing since you didn't CC us on the cover letter).
+> On Sun, 28 Feb 2021 18:14:46 +0000 Alexander Lobakin wrote:
+> > > [1] WARNING in __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:501=
+4
+> > > Call Trace:
+> > >  __alloc_pages include/linux/gfp.h:511 [inline]
+> > >  __alloc_pages_node include/linux/gfp.h:524 [inline]
+> > >  alloc_pages_node include/linux/gfp.h:538 [inline]
+> > >  kmalloc_large_node+0x60/0x110 mm/slub.c:3999
+> > >  __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4496
+> > >  __kmalloc_reserve net/core/skbuff.c:150 [inline]
+> > >  __alloc_skb+0x4e4/0x5a0 net/core/skbuff.c:210
+> > >  __netdev_alloc_skb+0x70/0x400 net/core/skbuff.c:446
+> > >  netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
+> > >  qrtr_endpoint_post+0x84/0x11b0 net/qrtr/qrtr.c:442
+> > >  qrtr_tun_write_iter+0x11f/0x1a0 net/qrtr/tun.c:98
+> > >  call_write_iter include/linux/fs.h:1901 [inline]
+> > >  new_sync_write+0x426/0x650 fs/read_write.c:518
+> > >  vfs_write+0x791/0xa30 fs/read_write.c:605
+> > >  ksys_write+0x12d/0x250 fs/read_write.c:658
+> > >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+> > >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> >
+> > Ah, by the way. Have you tried to seek for the root cause, why
+> > a request for such insanely large (at least 4 Mib) skb happens
+> > in QRTR? I don't believe it's intended to be like this.
+> > Now I feel that silencing this error with early return isn't
+> > really correct approach for this.
+>
+> Right, IIUC Eric suggested we limit the length of the allocation
+> to 64KB because that's the max reasonable skb length, and QRTR tun write
+> results in generating a single skb. That seems like a good approach.
 
-In that case please wait a couple of days and re-post it as a
-standalone patch to netdev. Our build & validation bots can't deal 
-with series where we only get patches 1 and 10 on the list.
++1 for explicit capping max skb length to 64K.
 
-If someone else is willing to merge the entire series - consider 
-this patch acked.
+Al
+
