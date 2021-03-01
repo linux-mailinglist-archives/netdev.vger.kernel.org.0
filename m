@@ -2,260 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B1A328FB5
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 21:01:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4627328FC3
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 21:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241248AbhCATzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 14:55:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57754 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242121AbhCATvA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Mar 2021 14:51:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DFCFF65113;
-        Mon,  1 Mar 2021 17:52:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1614621142;
-        bh=ciGCpGMeDpO3Khdcrb4Tb6kPY5qMGGv/NSKcwd8Wo58=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YIumo/AvFSAljNYa6arrxp0zQpDyFDJmGz/fWQk8I/0zYsTarfMItQHq6au8xU+D1
-         OWIOcJULDmJ1YvxVu3kSOG06Yti1/pWbrCb3+M0hlW1XZgNE2PjmPj7pNDCo5d0Nil
-         mV78IBYifgetO2rjbEczOiq09GBB3UWVOQqID/QU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com,
-        syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com,
-        Matt Mullins <mmullins@mmlx.us>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.11 409/775] tracepoint: Do not fail unregistering a probe due to memory failure
-Date:   Mon,  1 Mar 2021 17:09:37 +0100
-Message-Id: <20210301161221.798296729@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210301161201.679371205@linuxfoundation.org>
-References: <20210301161201.679371205@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S242412AbhCAT57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 14:57:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242180AbhCATwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 14:52:47 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD3CC0617AA
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 11:49:29 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lGoXg-0000Jq-D8; Mon, 01 Mar 2021 20:49:20 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:6e66:a1a4:a449:44cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id A5B4E5EBAE7;
+        Mon,  1 Mar 2021 16:54:58 +0000 (UTC)
+Date:   Mon, 1 Mar 2021 17:54:57 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dariobin@libero.it>
+Cc:     linux-kernel@vger.kernel.org,
+        Federico Vaga <federico.vaga@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 5/6] can: c_can: prepare to up the message objects
+ number
+Message-ID: <20210301165457.6lkridxj3l2q5dxi@pengutronix.de>
+References: <20210228103856.4089-1-dariobin@libero.it>
+ <20210228103856.4089-6-dariobin@libero.it>
+ <20210301113805.jylhc373sip7zmed@pengutronix.de>
+ <20210301130845.3s45ujmhkazscm6x@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="42iif5wve5v33cbd"
+Content-Disposition: inline
+In-Reply-To: <20210301130845.3s45ujmhkazscm6x@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steven Rostedt (VMware) <rostedt@goodmis.org>
 
-[ Upstream commit befe6d946551d65cddbd32b9cb0170b0249fd5ed ]
+--42iif5wve5v33cbd
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The list of tracepoint callbacks is managed by an array that is protected
-by RCU. To update this array, a new array is allocated, the updates are
-copied over to the new array, and then the list of functions for the
-tracepoint is switched over to the new array. After a completion of an RCU
-grace period, the old array is freed.
+On 01.03.2021 14:08:45, Marc Kleine-Budde wrote:
+> On 01.03.2021 12:38:05, Marc Kleine-Budde wrote:
+> > On 28.02.2021 11:38:54, Dario Binacchi wrote:
+> > [...]
+> >=20
+> > > @@ -730,7 +728,7 @@ static void c_can_do_tx(struct net_device *dev)
+> > >  	while ((idx =3D ffs(pend))) {
+> > >  		idx--;
+> > >  		pend &=3D ~(1 << idx);
+> > > -		obj =3D idx + C_CAN_MSG_OBJ_TX_FIRST;
+> > > +		obj =3D idx + priv->msg_obj_tx_first;
+> > >  		c_can_inval_tx_object(dev, IF_TX, obj);
+> > >  		can_get_echo_skb(dev, idx, NULL);
+> > >  		bytes +=3D priv->dlc[idx];
+> > > @@ -740,7 +738,7 @@ static void c_can_do_tx(struct net_device *dev)
+> > >  	/* Clear the bits in the tx_active mask */
+> > >  	atomic_sub(clr, &priv->tx_active);
+> > > =20
+> > > -	if (clr & (1 << (C_CAN_MSG_OBJ_TX_NUM - 1)))
+> > > +	if (clr & (1 << (priv->msg_obj_tx_num - 1)))
+> >=20
+> > Do we need 1UL here, too?
+>=20
+> There are several more "1 <<" in the driver. As the right side of the
+> sift operation can be up to 32, I think you should replace all "1 <<"
+> with "1UL <<".
 
-This process happens for both adding a callback as well as removing one.
-But on removing a callback, if the new array fails to be allocated, the
-callback is not removed, and may be used after it is freed by the clients
-of the tracepoint.
+Even better use BIT() for setting single bits and GENMASK() to generate
+masks.
 
-There's really no reason to fail if the allocation for a new array fails
-when removing a function. Instead, the function can simply be replaced by a
-stub function that could be cleaned up on the next modification of the
-array. That is, instead of calling the function registered to the
-tracepoint, it would call a stub function in its place.
+Marc
 
-Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
-Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
-Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
-Link: https://lkml.kernel.org/r/20201118093405.7a6d2290@gandalf.local.home
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-[ Note, this version does use undefined compiler behavior (assuming that
-  a stub function with no parameters or return, can be called by a location
-  that thinks it has parameters but still no return value. Static calls
-  do the same thing, so this trick is not without precedent.
+--42iif5wve5v33cbd
+Content-Type: application/pgp-signature; name="signature.asc"
 
-  There's another solution that uses RCU tricks and is more complex, but
-  can be an alternative if this solution becomes an issue.
+-----BEGIN PGP SIGNATURE-----
 
-  Link: https://lore.kernel.org/lkml/20210127170721.58bce7cc@gandalf.local.home/
-]
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmA9HF8ACgkQqclaivrt
+76mXuAf+LWBl0K1DaCS4PCPNSR7YiCK0n8V+vvwO4HIG2PzhfapX/CYoou7SaXE+
+DWLtU7cRIs/orzzrNmXbgHgiYuA0srKE3LRET+xoe2eW/sv+pIXoinxXzcAdlg6L
+1llcSv5idKY74bf2BzCnlHb9DNERu9Bqaejj3mvp/2l1zgOC0pauOIhGH5bfWAvm
+4ZLzi9P7Hr1/f0SygP8SmlMt48wce2YvXBOOj7yjoNYQPMdks53b7tbEqk+4ZTuP
+q55d7mBTSMvnkd97U06M50TBKSV+WJxAw0yRu1qgMMSN6FP5dnjEnRrCn29IM6yJ
+oRRsjPE22khC/Fn+qFru6TX6pUQE1A==
+=+GGQ
+-----END PGP SIGNATURE-----
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@chromium.org>
-Cc: netdev <netdev@vger.kernel.org>
-Cc: bpf <bpf@vger.kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Florian Weimer <fw@deneb.enyo.de>
-Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
-Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
-Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-Reported-by: Matt Mullins <mmullins@mmlx.us>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Tested-by: Matt Mullins <mmullins@mmlx.us>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 64 insertions(+), 16 deletions(-)
-
-diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-index 7261fa0f5e3cc..e8f20ae29c18f 100644
---- a/kernel/tracepoint.c
-+++ b/kernel/tracepoint.c
-@@ -53,6 +53,12 @@ struct tp_probes {
- 	struct tracepoint_func probes[];
- };
- 
-+/* Called in removal of a func but failed to allocate a new tp_funcs */
-+static void tp_stub_func(void)
-+{
-+	return;
-+}
-+
- static inline void *allocate_probes(int count)
- {
- 	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
-@@ -131,6 +137,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- {
- 	struct tracepoint_func *old, *new;
- 	int nr_probes = 0;
-+	int stub_funcs = 0;
- 	int pos = -1;
- 
- 	if (WARN_ON(!tp_func->func))
-@@ -147,14 +154,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- 			if (old[nr_probes].func == tp_func->func &&
- 			    old[nr_probes].data == tp_func->data)
- 				return ERR_PTR(-EEXIST);
-+			if (old[nr_probes].func == tp_stub_func)
-+				stub_funcs++;
- 		}
- 	}
--	/* + 2 : one for new probe, one for NULL func */
--	new = allocate_probes(nr_probes + 2);
-+	/* + 2 : one for new probe, one for NULL func - stub functions */
-+	new = allocate_probes(nr_probes + 2 - stub_funcs);
- 	if (new == NULL)
- 		return ERR_PTR(-ENOMEM);
- 	if (old) {
--		if (pos < 0) {
-+		if (stub_funcs) {
-+			/* Need to copy one at a time to remove stubs */
-+			int probes = 0;
-+
-+			pos = -1;
-+			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-+				if (old[nr_probes].func == tp_stub_func)
-+					continue;
-+				if (pos < 0 && old[nr_probes].prio < prio)
-+					pos = probes++;
-+				new[probes++] = old[nr_probes];
-+			}
-+			nr_probes = probes;
-+			if (pos < 0)
-+				pos = probes;
-+			else
-+				nr_probes--; /* Account for insertion */
-+
-+		} else if (pos < 0) {
- 			pos = nr_probes;
- 			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
- 		} else {
-@@ -188,8 +215,9 @@ static void *func_remove(struct tracepoint_func **funcs,
- 	/* (N -> M), (N > 1, M >= 0) probes */
- 	if (tp_func->func) {
- 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
--			if (old[nr_probes].func == tp_func->func &&
--			     old[nr_probes].data == tp_func->data)
-+			if ((old[nr_probes].func == tp_func->func &&
-+			     old[nr_probes].data == tp_func->data) ||
-+			    old[nr_probes].func == tp_stub_func)
- 				nr_del++;
- 		}
- 	}
-@@ -208,14 +236,32 @@ static void *func_remove(struct tracepoint_func **funcs,
- 		/* N -> M, (N > 1, M > 0) */
- 		/* + 1 for NULL */
- 		new = allocate_probes(nr_probes - nr_del + 1);
--		if (new == NULL)
--			return ERR_PTR(-ENOMEM);
--		for (i = 0; old[i].func; i++)
--			if (old[i].func != tp_func->func
--					|| old[i].data != tp_func->data)
--				new[j++] = old[i];
--		new[nr_probes - nr_del].func = NULL;
--		*funcs = new;
-+		if (new) {
-+			for (i = 0; old[i].func; i++)
-+				if ((old[i].func != tp_func->func
-+				     || old[i].data != tp_func->data)
-+				    && old[i].func != tp_stub_func)
-+					new[j++] = old[i];
-+			new[nr_probes - nr_del].func = NULL;
-+			*funcs = new;
-+		} else {
-+			/*
-+			 * Failed to allocate, replace the old function
-+			 * with calls to tp_stub_func.
-+			 */
-+			for (i = 0; old[i].func; i++)
-+				if (old[i].func == tp_func->func &&
-+				    old[i].data == tp_func->data) {
-+					old[i].func = tp_stub_func;
-+					/* Set the prio to the next event. */
-+					if (old[i + 1].func)
-+						old[i].prio =
-+							old[i + 1].prio;
-+					else
-+						old[i].prio = -1;
-+				}
-+			*funcs = old;
-+		}
- 	}
- 	debug_print_probes(*funcs);
- 	return old;
-@@ -295,10 +341,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
- 	tp_funcs = rcu_dereference_protected(tp->funcs,
- 			lockdep_is_held(&tracepoints_mutex));
- 	old = func_remove(&tp_funcs, func);
--	if (IS_ERR(old)) {
--		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
-+	if (WARN_ON_ONCE(IS_ERR(old)))
- 		return PTR_ERR(old);
--	}
-+
-+	if (tp_funcs == old)
-+		/* Failed allocating new tp_funcs, replaced func with stub */
-+		return 0;
- 
- 	if (!tp_funcs) {
- 		/* Removed last function */
--- 
-2.27.0
-
-
-
+--42iif5wve5v33cbd--
