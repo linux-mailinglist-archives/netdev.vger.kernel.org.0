@@ -2,96 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B643278A1
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 08:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5FC53278AE
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 08:56:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232637AbhCAHy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 02:54:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25146 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232630AbhCAHy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 02:54:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614585179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r0CNsQ5PANkIBnhwAb5s093rNx2yiWanVGyrgP1R4R4=;
-        b=SLtD17zJDmikrX7aX9/5Qqv4I/HSXaZc9nYvPV/6KeP5eLj1DfQKNlwR6s+cDc2PPRQMBR
-        xqLHdpdOeFtdbLWzYA7RP/RhOuUNrh6IlIDKf6tdAuYzWAn/IitAUF4B3LDxXhExBV/Fov
-        b9yQyUH9B0oAiu52LyZ56aX7BUVdlxw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-238-og48gR6wNbKswwmGmqyYpw-1; Mon, 01 Mar 2021 02:52:54 -0500
-X-MC-Unique: og48gR6wNbKswwmGmqyYpw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8770E107ACF5;
-        Mon,  1 Mar 2021 07:52:53 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-188.pek2.redhat.com [10.72.13.188])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3CC1C6A8EA;
-        Mon,  1 Mar 2021 07:52:47 +0000 (UTC)
-Subject: Re: [PATCH] vdpa/mlx5: Fix wrong use of bit numbers
-To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20210301062817.39331-1-elic@nvidia.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <959916f2-5fc9-bdb4-31ca-632fe0d98979@redhat.com>
-Date:   Mon, 1 Mar 2021 15:52:45 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S232658AbhCAH4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 02:56:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40954 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232480AbhCAH4R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Mar 2021 02:56:17 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EDE164DBD;
+        Mon,  1 Mar 2021 07:55:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614585334;
+        bh=eeHQCvd8UbNO8JIbmuAMLChEtfZ+6ZSQnbzdOgqBwZI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=A89S5Fg+640FyMyslrCMMQ/22J05ojC+rZuqZW759yFfL025YiYpLzgOW5gpVu9aK
+         b8xZN3el+nr+mWlTJjUZUoAj0N1rYRpetFLJ/q4k64ZKBf2tn018yfN+NxAkw0eMlx
+         PBqFa9F4/fyU6GZ3TrdP8aHklJJ/BEtnpJ9BF2EMuNPEb29jjJ63NGNEXT/vk1qtJM
+         ZoQ8vvF96z3YyGtioBok3R2or7l12ihbmrytlh2lx1zty7xP0JaXRbCgo2FJaqQjsx
+         Urjl41kXUXkzn3+Q0ydLDYEBmuW5VkmBRNEXijXe9x9oPSPfzrJUDFOLIctnTZeRG1
+         SA4eg2Z40yHzg==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Date:   Mon,  1 Mar 2021 09:55:20 +0200
+Message-Id: <20210301075524.441609-1-leon@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-In-Reply-To: <20210301062817.39331-1-elic@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Leon Romanovsky <leonro@nvidia.com>
 
-On 2021/3/1 2:28 下午, Eli Cohen wrote:
-> VIRTIO_F_VERSION_1 is a bit number. Use BIT_ULL() with mask
-> conditionals.
->
-> Also, in mlx5_vdpa_is_little_endian() use BIT_ULL for consistency with
-> the rest of the code.
->
-> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
+@Alexander Duyck, please update me if I can add your ROB tag again
+to the series, because you liked v6 more.
 
+Thanks
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+---------------------------------------------------------------------------------
+Changelog
+v7:
+ * Rebase on top v5.12-rc1
+ * More english fixes
+ * Returned to static sysfs creation model as was implemented in v0/v1.
+v6: https://lore.kernel.org/linux-pci/20210209133445.700225-1-leon@kernel.org
+ * Patch 1:
+   * English fixes
+   * Moved pci_vf_set_msix_vec_count() from msi.c to iov.c
+   * Embedded pci_vf_set_msix_vec_count() into sriov_vf_msix_count_store
+   * Deleted sriov_vf_msix_count_show
+   * Deleted vfs_overlay folder
+   * Renamed functions *_vfs_overlay_* to be *_vf_overlay_*
+   * Deleted is_supported and attribute_group because it confused people more than
+     it gave advantage.
+   * Changed vf_total_msix to be callback
+ * Patch 3:
+   * Fixed english as suggested by Bjorn
+   * Added more explanations to the commit message
+ * Patch 4:
+   * Protected enable/disable with capability check
+v5: https://lore.kernel.org/linux-pci/20210126085730.1165673-1-leon@kernel.org
+ * Patch 1:
+  * Added forgotten "inline" keyword when declaring empty functions.
+v4: https://lore.kernel.org/linux-pci/20210124131119.558563-1-leon@kernel.org
+ * Used sysfs_emit() instead of sprintf() in new sysfs entries.
+ * Changed EXPORT_SYMBOL to be EXPORT_SYMBOL_GPL for pci_iov_virtfn_devfn().
+ * Rewrote sysfs registration code to be driven by PF that wants to enable VF
+   overlay instead of creating to all SR-IOV devices.
+ * Grouped all such functionality under new "vfs_overlay" folder.
+ * Combined two PCI patches into one.
+v3: https://lore.kernel.org/linux-pci/20210117081548.1278992-1-leon@kernel.org
+ * Renamed pci_set_msix_vec_count to be pci_vf_set_msix_vec_count.
+ * Added VF msix_cap check to hide sysfs entry if device doesn't support msix.
+ * Changed "-" to be ":" in the mlx5 patch to silence CI warnings about missing
+   kdoc description.
+ * Split differently error print in mlx5 driver to avoid checkpatch warning.
+v2: https://lore.kernel.org/linux-pci/20210114103140.866141-1-leon@kernel.org
+ * Patch 1:
+  * Renamed vf_msix_vec sysfs knob to be sriov_vf_msix_count
+  * Added PF and VF device locks during set MSI-X call to protect from parallel
+    driver bind/unbind operations.
+  * Removed extra checks when reading sriov_vf_msix, because users will
+    be able to distinguish between supported/not supported by looking on
+    sriov_vf_total_msix count.
+  * Changed all occurrences of "numb" to be "count"
+  * Changed returned error from EOPNOTSUPP to be EBUSY if user tries to set
+    MSI-X count after driver already bound to the VF.
+  * Added extra comment in pci_set_msix_vec_count() to emphasize that driver
+    should not be bound.
+ * Patch 2:
+  * Changed vf_total_msix from int to be u32 and updated function signatures
+    accordingly.
+  * Improved patch title
+v1: https://lore.kernel.org/linux-pci/20210110150727.1965295-1-leon@kernel.org
+ * Improved wording and commit messages of first PCI patch
+ * Added extra PCI patch to provide total number of MSI-X vectors
+ * Prohibited read of vf_msix_vec sysfs file if driver doesn't support write
+ * Removed extra function definition in pci.h
+v0: https://lore.kernel.org/linux-pci/20210103082440.34994-1-leon@kernel.org
 
+--------------------------------------------------------------------
+Hi,
 
-> ---
->   drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index dc7031132fff..7d21b857a94a 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -821,7 +821,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
->   	MLX5_SET(virtio_q, vq_ctx, event_qpn_or_msix, mvq->fwqp.mqp.qpn);
->   	MLX5_SET(virtio_q, vq_ctx, queue_size, mvq->num_ent);
->   	MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0,
-> -		 !!(ndev->mvdev.actual_features & VIRTIO_F_VERSION_1));
-> +		 !!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_F_VERSION_1)));
->   	MLX5_SET64(virtio_q, vq_ctx, desc_addr, mvq->desc_addr);
->   	MLX5_SET64(virtio_q, vq_ctx, used_addr, mvq->device_addr);
->   	MLX5_SET64(virtio_q, vq_ctx, available_addr, mvq->driver_addr);
-> @@ -1578,7 +1578,7 @@ static void teardown_virtqueues(struct mlx5_vdpa_net *ndev)
->   static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev *mvdev)
->   {
->   	return virtio_legacy_is_little_endian() ||
-> -		(mvdev->actual_features & (1ULL << VIRTIO_F_VERSION_1));
-> +		(mvdev->actual_features & BIT_ULL(VIRTIO_F_VERSION_1));
->   }
->   
->   static __virtio16 cpu_to_mlx5vdpa16(struct mlx5_vdpa_dev *mvdev, u16 val)
+The number of MSI-X vectors is PCI property visible through lspci, that
+field is read-only and configured by the device.
+
+The static assignment of an amount of MSI-X vectors doesn't allow utilize
+the newly created VF because it is not known to the device the future load
+and configuration where that VF will be used.
+
+The VFs are created on the hypervisor and forwarded to the VMs that have
+different properties (for example number of CPUs).
+
+To overcome the inefficiency in the spread of such MSI-X vectors, we
+allow the kernel to instruct the device with the needed number of such
+vectors, before VF is initialized and bounded to the driver.
+
+Before this series:
+[root@server ~]# lspci -vs 0000:08:00.2
+08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+....
+        Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
+
+Configuration script:
+1. Start fresh
+echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+modprobe -q -r mlx5_ib mlx5_core
+2. Ensure that driver doesn't run and it is safe to change MSI-X
+echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
+3. Load driver for the PF
+modprobe mlx5_core
+4. Configure one of the VFs with new number
+echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/sriov_vf_msix_count
+
+After this series:
+[root@server ~]# lspci -vs 0000:08:00.2
+08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+....
+        Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
+
+Thanks
+
+Leon Romanovsky (4):
+  PCI: Add a sysfs file to change the MSI-X table size of SR-IOV VFs
+  net/mlx5: Add dynamic MSI-X capabilities bits
+  net/mlx5: Dynamically assign MSI-X vectors count
+  net/mlx5: Implement sriov_get_vf_total_msix/count() callbacks
+
+ Documentation/ABI/testing/sysfs-bus-pci       |  29 +++++
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   6 ++
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  12 +++
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  73 +++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sriov.c   |  48 ++++++++-
+ drivers/pci/iov.c                             | 102 ++++++++++++++++--
+ drivers/pci/pci-sysfs.c                       |   3 +-
+ drivers/pci/pci.h                             |   3 +-
+ include/linux/mlx5/mlx5_ifc.h                 |  11 +-
+ include/linux/pci.h                           |   8 ++
+ 10 files changed, 284 insertions(+), 11 deletions(-)
+
+--
+2.29.2
 
