@@ -2,209 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D04328D0D
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 20:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2639328D61
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 20:12:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241032AbhCATEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 14:04:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240825AbhCATBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 14:01:13 -0500
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5648C061793
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 11:00:26 -0800 (PST)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id EF20C806B7;
-        Tue,  2 Mar 2021 08:00:23 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1614625223;
-        bh=WKHtECatzQfael+AQiWWuyJ3y/+f6zcgUcKeJWW2cbs=;
-        h=From:To:Cc:Subject:Date;
-        b=Wo7VoMveQJ7/MPyoV4CRwpv1OuAB39p1lx4AwAw+nKDQ4VbT2KbLBSRL80mBxWXOn
-         aSmL0WvO5PFYuATYVz7YNm+UagzQUd9PNl8MPQA2t0j8uKUa5KKd9ChTAhWT/v9kTk
-         v+mIKSLvBTW0DbQMwv3fiP4jjlJpojMeiOrsR/7Td1ux9WJ2B6dDCVn41J+LZLY2gi
-         qZjNo0EoH3MBIUYr7SaLjo/Mo1DTQ/C9eO+3ml5UgTYzRYiZqrE6UVN+e6nXezuVxK
-         f8js148C43ddT1uJeFmBCWcScVLHh/JdUVHepw0/O0+IsQZy/TJPC2bhwmgUlC/i0F
-         bSAL02iQ3uxpg==
-Received: from smtp (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B603d39c70000>; Tue, 02 Mar 2021 08:00:23 +1300
-Received: from evann-dl.ws.atlnz.lc (evann-dl.ws.atlnz.lc [10.33.23.31])
-        by smtp (Postfix) with ESMTP id 586FF13EECD;
-        Tue,  2 Mar 2021 08:00:34 +1300 (NZDT)
-Received: by evann-dl.ws.atlnz.lc (Postfix, from userid 1780)
-        id B33201A4EB7; Tue,  2 Mar 2021 08:00:23 +1300 (NZDT)
-From:   Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
-Subject: [PATCH v2 1/1] xfrm: Use actual socket sk instead of skb socket for xfrm_output_resume
-Date:   Tue,  2 Mar 2021 08:00:04 +1300
-Message-Id: <20210301190004.9586-1-evan.nimmo@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.27.0
+        id S235270AbhCATJY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Mar 2021 14:09:24 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:23989 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240859AbhCATF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 14:05:28 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-159-edM5UA9NMeiIOf2CMADLcw-1; Mon, 01 Mar 2021 14:04:25 -0500
+X-MC-Unique: edM5UA9NMeiIOf2CMADLcw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D0C67100A8EB;
+        Mon,  1 Mar 2021 19:04:23 +0000 (UTC)
+Received: from krava.cust.in.nbox.cz (unknown [10.40.192.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 11C4D10013C1;
+        Mon,  1 Mar 2021 19:04:16 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Yauheni Kaliuta <ykaliuta@redhat.com>
+Subject: [PATCH bpf-next] selftests/bpf: Fix test_attach_probe for powerpc uprobes
+Date:   Mon,  1 Mar 2021 20:04:16 +0100
+Message-Id: <20210301190416.90694-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=C7uXNjH+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=dESyimp9J3IA:10 a=7ZN4cI0QAAAA:8 a=tm9BhY98yDMkBz91zHIA:9 a=Dl0WHwQvj8hGZljrFLtM:22
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A situation can occur where the interface bound to the sk is different
-to the interface bound to the sk attached to the skb. The interface
-bound to the sk is the correct one however this information is lost insid=
-e
-xfrm_output2 and instead the sk on the skb is used in xfrm_output_resume
-instead. This assumes that the sk bound interface and the bound interface
-attached to the sk within the skb are the same which can lead to lookup
-failures inside ip_route_me_harder resulting in the packet being dropped.
+When testing uprobes we the test gets GEP (Global Entry Point)
+address from kallsyms, but then the function is called locally
+so the uprobe is not triggered.
 
-We have an l2tp v3 tunnel with ipsec protection. The tunnel is in the
-global VRF however we have an encapsulated dot1q tunnel interface that
-is within a different VRF. We also have a mangle rule that marks the=20
-packets causing them to be processed inside ip_route_me_harder.
+Fixing this by adjusting the address to LEP (Local Entry Point)
+for powerpc arch.
 
-Prior to commit 31c70d5956fc ("l2tp: keep original skb ownership") this
-worked fine as the sk attached to the skb was changed from the dot1q
-encapsulated interface to the sk for the tunnel which meant the interface
-bound to the sk and the interface bound to the skb were identical.
-Commit 46d6c5ae953c ("netfilter: use actual socket sk rather than skb sk
-when routing harder") fixed some of these issues however a similar
-problem existed in the xfrm code.
-
-Fixes: 31c70d5956fc ("l2tp: keep original skb ownership")
-
-Signed-off-by: Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
-Reviewed-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
-changes in v2:
-- Added proper fixes field for backporting
+ .../selftests/bpf/prog_tests/attach_probe.c    | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
- include/net/xfrm.h     |  2 +-
- net/ipv4/ah4.c         |  2 +-
- net/ipv4/esp4.c        |  2 +-
- net/ipv6/ah6.c         |  2 +-
- net/ipv6/esp6.c        |  2 +-
- net/xfrm/xfrm_output.c | 10 +++++-----
- 6 files changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index b2a06f10b62c..bfbc7810df94 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1557,7 +1557,7 @@ int xfrm_trans_queue_net(struct net *net, struct sk=
-_buff *skb,
- int xfrm_trans_queue(struct sk_buff *skb,
- 		     int (*finish)(struct net *, struct sock *,
- 				   struct sk_buff *));
--int xfrm_output_resume(struct sk_buff *skb, int err);
-+int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err);
- int xfrm_output(struct sock *sk, struct sk_buff *skb);
-=20
- #if IS_ENABLED(CONFIG_NET_PKTGEN)
-diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
-index d99e1be94019..36ed85bf2ad5 100644
---- a/net/ipv4/ah4.c
-+++ b/net/ipv4/ah4.c
-@@ -141,7 +141,7 @@ static void ah_output_done(struct crypto_async_reques=
-t *base, int err)
- 	}
-=20
- 	kfree(AH_SKB_CB(skb)->tmp);
--	xfrm_output_resume(skb, err);
-+	xfrm_output_resume(skb->sk, skb, err);
- }
-=20
- static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index a3271ec3e162..4b834bbf95e0 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -279,7 +279,7 @@ static void esp_output_done(struct crypto_async_reque=
-st *base, int err)
- 		    x->encap && x->encap->encap_type =3D=3D TCP_ENCAP_ESPINTCP)
- 			esp_output_tail_tcp(x, skb);
- 		else
--			xfrm_output_resume(skb, err);
-+			xfrm_output_resume(skb->sk, skb, err);
- 	}
- }
-=20
-diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
-index 440080da805b..080ee7f44c64 100644
---- a/net/ipv6/ah6.c
-+++ b/net/ipv6/ah6.c
-@@ -316,7 +316,7 @@ static void ah6_output_done(struct crypto_async_reque=
-st *base, int err)
- 	}
-=20
- 	kfree(AH_SKB_CB(skb)->tmp);
--	xfrm_output_resume(skb, err);
-+	xfrm_output_resume(skb->sk, skb, err);
- }
-=20
- static int ah6_output(struct xfrm_state *x, struct sk_buff *skb)
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 153ad103ba74..727d791ed5e6 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -314,7 +314,7 @@ static void esp_output_done(struct crypto_async_reque=
-st *base, int err)
- 		    x->encap && x->encap->encap_type =3D=3D TCP_ENCAP_ESPINTCP)
- 			esp_output_tail_tcp(x, skb);
- 		else
--			xfrm_output_resume(skb, err);
-+			xfrm_output_resume(skb->sk, skb, err);
- 	}
- }
-=20
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index a7ab19353313..b81ca117dac7 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -503,22 +503,22 @@ static int xfrm_output_one(struct sk_buff *skb, int=
- err)
- 	return err;
- }
-=20
--int xfrm_output_resume(struct sk_buff *skb, int err)
-+int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err)
- {
- 	struct net *net =3D xs_net(skb_dst(skb)->xfrm);
-=20
- 	while (likely((err =3D xfrm_output_one(skb, err)) =3D=3D 0)) {
- 		nf_reset_ct(skb);
-=20
--		err =3D skb_dst(skb)->ops->local_out(net, skb->sk, skb);
-+		err =3D skb_dst(skb)->ops->local_out(net, sk, skb);
- 		if (unlikely(err !=3D 1))
- 			goto out;
-=20
- 		if (!skb_dst(skb)->xfrm)
--			return dst_output(net, skb->sk, skb);
-+			return dst_output(net, sk, skb);
-=20
- 		err =3D nf_hook(skb_dst(skb)->ops->family,
--			      NF_INET_POST_ROUTING, net, skb->sk, skb,
-+			      NF_INET_POST_ROUTING, net, sk, skb,
- 			      NULL, skb_dst(skb)->dev, xfrm_output2);
- 		if (unlikely(err !=3D 1))
- 			goto out;
-@@ -534,7 +534,7 @@ EXPORT_SYMBOL_GPL(xfrm_output_resume);
-=20
- static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff=
- *skb)
- {
--	return xfrm_output_resume(skb, 1);
-+	return xfrm_output_resume(sk, skb, 1);
- }
-=20
- static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_b=
-uff *skb)
---=20
-2.27.0
+diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+index a0ee87c8e1ea..c3cfb48d3ed0 100644
+--- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
++++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+@@ -2,6 +2,22 @@
+ #include <test_progs.h>
+ #include "test_attach_probe.skel.h"
+ 
++#if defined(__powerpc64__)
++/*
++ * We get the GEP (Global Entry Point) address from kallsyms,
++ * but then the function is called locally, so we need to adjust
++ * the address to get LEP (Local Entry Point).
++ */
++#define LEP_OFFSET 8
++
++static ssize_t get_offset(ssize_t offset)
++{
++	return offset + LEP_OFFSET;
++}
++#else
++#define get_offset(offset) (offset)
++#endif
++
+ ssize_t get_base_addr() {
+ 	size_t start, offset;
+ 	char buf[256];
+@@ -36,7 +52,7 @@ void test_attach_probe(void)
+ 	if (CHECK(base_addr < 0, "get_base_addr",
+ 		  "failed to find base addr: %zd", base_addr))
+ 		return;
+-	uprobe_offset = (size_t)&get_base_addr - base_addr;
++	uprobe_offset = get_offset((size_t)&get_base_addr - base_addr);
+ 
+ 	skel = test_attach_probe__open_and_load();
+ 	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
+-- 
+2.29.2
 
