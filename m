@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F424329390
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 22:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 295EB32938E
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 22:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244256AbhCAV0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 16:26:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41266 "EHLO mail.kernel.org"
+        id S240099AbhCAV0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 16:26:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237196AbhCAVVJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237048AbhCAVVJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 1 Mar 2021 16:21:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 659EC600CC;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7AFB6601FD;
         Mon,  1 Mar 2021 21:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1614633607;
-        bh=R802yzk77LcuEq868nLAfZXeewiEIXjseqQ4aUbpyEo=;
+        bh=fQxQpZKOXT8AStxOrQnYFCaPGe7aeX5Fjq+F9WFr9bQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EUjMe+mFf+oC4srgEEW9lXYZdNtEI4c0RJgXX2xz7x9jToxhg7MNXqFRzKnGCpAwb
-         TFR/Smx/z9dQ/L4JQVsOXl/O4hygnE2cmkJ3UvO6sh1hcKcv0wMygAlS2T/Zi62bWh
-         jEa4t904x42YYB6/AQ0c76Q6NPbhguL78QUKMTCfGmdSwG98W/jedSUeCp2LYNxhWk
-         bQwAWfuA08cU5ubLwsLshoa9nCcqhl3SG+xEwDQ9VZmt6TJ5fUatPpfLTDmXd6dcyp
-         yknRevElAFlrXncb/17Ae6syyfGZDu4xrbaW8M1ZtyLh+ltsR1GCtKPTAFwMngR9Fq
-         Vr7EKx+5/pvzA==
+        b=WOdKm72M9kl5dxMX2iC1p10hkqd0ryy3Sb32v/4X4Y0rDdFvs/GTRxY7YLnY+7qwR
+         DIbUv/V3JQFBxRFRo9yoKKwNxNAhKdLfNuuTUeqKi4msrctU8N/PlKImoP3H9U6upj
+         4Pp3IGIaS1B173VtnSXmZpgRDIlFITYMUdP4wrVo1koUf59DfNMicU81WtOaKQC86a
+         7GaBiQ2g2U0NBYSUtCKc7gkycrJaW+UY/NA+F7PJANjqsPBlSRyUZXyi6xXkMf1gMj
+         hs+GSlV8KWWvl0lxH/Jxr2KRhq4umvhnUwQb3YMhemMzyouu6lWd+lEz3BJdTgWWea
+         4RaSwhbNW3hpA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5B9E960C25;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 725BA60C27;
         Mon,  1 Mar 2021 21:20:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] atm: eni: dont release is never initialized
+Subject: Re: [PATCH V2 net] net: phy: fix save wrong speed and duplex problem if
+ autoneg is on
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161463360737.8865.18082066320461407132.git-patchwork-notify@kernel.org>
+Message-Id: <161463360746.8865.12458813702859976119.git-patchwork-notify@kernel.org>
 Date:   Mon, 01 Mar 2021 21:20:07 +0000
-References: <20210227211506.314125-1-ztong0001@gmail.com>
-In-Reply-To: <20210227211506.314125-1-ztong0001@gmail.com>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1614395158-5294-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1614395158-5294-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        huangguangbin2@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,19 +49,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sat, 27 Feb 2021 16:15:06 -0500 you wrote:
-> label err_eni_release is reachable when eni_start() fail.
-> In eni_start() it calls dev->phy->start() in the last step, if start()
-> fail we don't need to call phy->stop(), if start() is never called, we
-> neither need to call phy->stop(), otherwise null-ptr-deref will happen.
+On Sat, 27 Feb 2021 11:05:58 +0800 you wrote:
+> From: Guangbin Huang <huangguangbin2@huawei.com>
 > 
-> In order to fix this issue, don't call phy->stop() in label err_eni_release
+> If phy uses generic driver and autoneg is on, enter command
+> "ethtool -s eth0 speed 50" will not change phy speed actually, but
+> command "ethtool eth0" shows speed is 50Mb/s because phydev->speed
+> has been set to 50 and no update later.
 > 
 > [...]
 
 Here is the summary with links:
-  - atm: eni: dont release is never initialized
-    https://git.kernel.org/netdev/net/c/4deb550bc3b6
+  - [V2,net] net: phy: fix save wrong speed and duplex problem if autoneg is on
+    https://git.kernel.org/netdev/net/c/d9032dba5a2b
 
 You are awesome, thank you!
 --
