@@ -2,110 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 220D9327900
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:16:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DE58327916
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:22:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232795AbhCAIPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 03:15:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48044 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232842AbhCAIP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Mar 2021 03:15:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8663A64E38;
-        Mon,  1 Mar 2021 08:14:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1614586485;
-        bh=e/EZNJEqbtARqW8q4zKN6+1Ox/OwDuDs68EFVl0hdV4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vboS17j1qNHl95CbLCj/K4lbg7ttbEsxPra0YKaBJjPSw/3yHCj3/k1KI3fU33Zx+
-         O8bXjH4RXVnUiryfj9wSNVstTVcFv1/FQvjnpnBM2zVCW4eFqvMUjMIZ7VXSD8NKek
-         aH4qLAyFHYnHvxxpcWA4Ebr4YvfFOq9komzijtzQ=
-Date:   Mon, 1 Mar 2021 09:14:42 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH mlx5-next v7 1/4] PCI: Add a sysfs file to change the
- MSI-X table size of SR-IOV VFs
-Message-ID: <YDyicnnKPhy5LMJy@kroah.com>
-References: <20210301075524.441609-1-leon@kernel.org>
- <20210301075524.441609-2-leon@kernel.org>
+        id S232888AbhCAIWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 03:22:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232849AbhCAIV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 03:21:58 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491C9C06174A
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 00:21:17 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id ci14so7588897ejc.7
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 00:21:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EoXFYeEw3KEDQKOrwVz/cIXJahTTaeLX0DT+rLifwdI=;
+        b=bb0QRgXb8Yet/pNSa+nDWdjPbwkQoj3pnNrqdtbWeNr3wrMj8n/vUOIY8Aqy6i6ogt
+         rCPIsQL1hcyuWWEYvVdh0NQGcISaJwY5sKYIuf0OCCGyzgpASuo1v1mEjblgTo05Vtl3
+         pYxrERXgPkobwDBgb8qHigANNUriamd0OwWKIbrgedFmMJ7ugMLWfzFMSM/JGmOYYpZ/
+         Choor3Qtgufut7a9w3qkXWcm/0nBpTpwnzVDo83eBAJZHpb9BeJLSG3O7KjZCuZUp6Nc
+         eNHfCZoq1bdJmwJkdbYlHKKtGFsfOWv5RdnfYiBJ/6HaQeoTmojMUVoHE2Id98cOMCvT
+         C5sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EoXFYeEw3KEDQKOrwVz/cIXJahTTaeLX0DT+rLifwdI=;
+        b=NPKH6y5xw4aBdZ4Hcia+QlEfJivOMJ+3foe07GCosZNmI1EA13BKwEO6f7EVUcIhzY
+         xyKZb01bzHE76DahMB3Y+oNiEXEEBaee3znqL35oKCP/I3cjswM0Jfmc2+XA1L0xMzI0
+         UhxCG3mjbjVg2SDH+VuaAiIlPQjuqRhzpz4aHTebdIPfVJQauJNNCzUDuUsmAKXtkBho
+         ScdbPJ2y+RB9+sprUSj4ZtKXzHY2yB2MIxbSwydBI/XLLcNa8jO5ofE5HTwGY2f6ygwQ
+         u8yzMUZH2ZoJQZfwwNyU/fRy+9vNkzJM4v+lSzKLDdMRMO5UE9vZE+VsemcrHnX3bNGJ
+         lLaQ==
+X-Gm-Message-State: AOAM533FCbNEVTpEUX8yOPR0kUScn04tucz9Sa/eCBR9IjyUYAcxyZdZ
+        DDU8Qv8cUGvNvLicS2pFDfI=
+X-Google-Smtp-Source: ABdhPJwvrabCJsqWQUjYI6nP+JLO1n6lWGfgT6+/m6UwJ6YPQmw8CpALe5dm9UBCY9qIXCuB7D8eyA==
+X-Received: by 2002:a17:907:2513:: with SMTP id y19mr14660248ejl.241.1614586875891;
+        Mon, 01 Mar 2021 00:21:15 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id r5sm13316705ejx.96.2021.03.01.00.21.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Mar 2021 00:21:15 -0800 (PST)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
+Date:   Mon, 1 Mar 2021 10:21:14 +0200
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ioana Ciornei <ciorneiioana@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Sven Schuchmann <schuchmann@schleissheimer.de>
+Subject: Re: [PATCH net] net: phy: ti: take into account all possible
+ interrupt sources
+Message-ID: <20210301082114.4cniggpjletsnibj@skbuf>
+References: <20210226153020.867852-1-ciorneiioana@gmail.com>
+ <20210228120027.76488180@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210301075524.441609-2-leon@kernel.org>
+In-Reply-To: <20210228120027.76488180@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 09:55:21AM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Sun, Feb 28, 2021 at 12:00:27PM -0800, Jakub Kicinski wrote:
+> On Fri, 26 Feb 2021 17:30:20 +0200 Ioana Ciornei wrote:
+> > diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+> > index be1224b4447b..f7a2ec150e54 100644
+> > --- a/drivers/net/phy/dp83822.c
+> > +++ b/drivers/net/phy/dp83822.c
+> > @@ -290,6 +290,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
+> >  
+> >  static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
+> >  {
+> > +	bool trigger_machine = false;
+> >  	int irq_status;
+> >  
+> >  	/* The MISR1 and MISR2 registers are holding the interrupt status in
+> > @@ -305,7 +306,7 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
+> >  		return IRQ_NONE;
+> >  	}
+> >  	if (irq_status & ((irq_status & GENMASK(7, 0)) << 8))
+> > -		goto trigger_machine;
+> > +		trigger_machine = true;
+> >  
+> >  	irq_status = phy_read(phydev, MII_DP83822_MISR2);
+> >  	if (irq_status < 0) {
+> > @@ -313,11 +314,11 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
+> >  		return IRQ_NONE;
+> >  	}
+> >  	if (irq_status & ((irq_status & GENMASK(7, 0)) << 8))
+> > -		goto trigger_machine;
+> > +		trigger_machine = true;
+> >  
+> > -	return IRQ_NONE;
+> > +	if (!trigger_machine)
+> > +		return IRQ_NONE;
+> >  
+> > -trigger_machine:
+> >  	phy_trigger_machine(phydev);
+> >  
+> >  	return IRQ_HANDLED;
 > 
-> A typical cloud provider SR-IOV use case is to create many VFs for use by
-> guest VMs. The VFs may not be assigned to a VM until a customer requests a
-> VM of a certain size, e.g., number of CPUs. A VF may need MSI-X vectors
-> proportional to the number of CPUs in the VM, but there is no standard way
-> to change the number of MSI-X vectors supported by a VF.
+> Would it be better to code it up as:
 > 
-> Some Mellanox ConnectX devices support dynamic assignment of MSI-X vectors
-> to SR-IOV VFs. This can be done by the PF driver after VFs are enabled,
-> and it can be done without affecting VFs that are already in use. The
-> hardware supports a limited pool of MSI-X vectors that can be assigned to
-> the PF or to individual VFs.  This is device-specific behavior that
-> requires support in the PF driver.
+> 	irqreturn_t ret = IRQ_NONE;
 > 
-> Add a read-only "sriov_vf_total_msix" sysfs file for the PF and a writable
-> "sriov_vf_msix_count" file for each VF. Management software may use these
-> to learn how many MSI-X vectors are available and to dynamically assign
-> them to VFs before the VFs are passed through to a VM.
+> 	if (irq_status & ...)
+> 		ret = IRQ_HANDLED;
 > 
-> If the PF driver implements the ->sriov_get_vf_total_msix() callback,
-> "sriov_vf_total_msix" contains the total number of MSI-X vectors available
-> for distribution among VFs.
+> 	/* .. */
 > 
-> If no driver is bound to the VF, writing "N" to "sriov_vf_msix_count" uses
-> the PF driver ->sriov_set_msix_vec_count() callback to assign "N" MSI-X
-> vectors to the VF.  When a VF driver subsequently reads the MSI-X Message
-> Control register, it will see the new Table Size "N".
+> 	if (ret != IRQ_NONE)
+> 		phy_trigger_machine(phydev);
 > 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-pci |  29 +++++++
->  drivers/pci/iov.c                       | 102 ++++++++++++++++++++++--
->  drivers/pci/pci-sysfs.c                 |   3 +-
->  drivers/pci/pci.h                       |   3 +-
->  include/linux/pci.h                     |   8 ++
->  5 files changed, 137 insertions(+), 8 deletions(-)
+> 	return ret;
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> index 25c9c39770c6..ebabd0d2ae88 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-pci
-> +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> @@ -375,3 +375,32 @@ Description:
->  		The value comes from the PCI kernel device state and can be one
->  		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
->  		The file is read only.
-> +
-> +What:		/sys/bus/pci/devices/.../sriov_vf_total_msix
-> +Date:		January 2021
-> +Contact:	Leon Romanovsky <leonro@nvidia.com>
-> +Description:
-> +		This file is associated with a SR-IOV PF.  It contains the
-> +		total number of MSI-X vectors available for assignment to
-> +		all VFs associated with PF.  It will zero if the device
+> That reads a tiny bit better to me, but it's probably majorly
+> subjective so I'm happy with existing patch if you prefer it.
 
-"The value will be zero if the device..."
+I think I prefer it as it is and this is because it would be in line
+with all the other PHY drivers which do this:
 
-And definition of "VF" and PF" are where in this file?
+	if (!(irq_status & int_enabled))
+		return IRQ_NONE;
 
-Otherwise looks semi-sane to me, thanks.
+	phy_trigger_machine(phydev);
 
-greg k-h
+	return IRQ_HANDLED;
+
+Ioana
