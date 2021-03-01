@@ -2,181 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 195B93290C4
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 21:16:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 867CE329090
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 21:12:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243100AbhCAUOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 15:14:45 -0500
-Received: from p3plsmtpa06-09.prod.phx3.secureserver.net ([173.201.192.110]:42605
-        "EHLO p3plsmtpa06-09.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242400AbhCAULG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 15:11:06 -0500
-X-Greylist: delayed 566 seconds by postgrey-1.27 at vger.kernel.org; Mon, 01 Mar 2021 15:11:05 EST
-Received: from chrisHP110 ([76.103.216.188])
-        by :SMTPAUTH: with ESMTPA
-        id GoiXlGZFlJpwyGoiYl5qCm; Mon, 01 Mar 2021 13:00:35 -0700
-X-CMAE-Analysis: v=2.4 cv=O+T8ADxW c=1 sm=1 tr=0 ts=603d47e3
- a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
- a=kj9zAlcOel0A:10 a=4bfsVOz7DzjSFatosxEA:9 a=CjuIK1q_8ugA:10
-X-SECURESERVER-ACCT: don@thebollingers.org
-From:   "Don Bollinger" <don@thebollingers.org>
-To:     "'Andrew Lunn'" <andrew@lunn.ch>
-Cc:     <arndb@arndb.de>, <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>, <brandon_chuang@edge-core.com>,
-        <wally_wang@accton.com>, <aken_liu@edge-core.com>,
-        <gulv@microsoft.com>, <jolevequ@microsoft.com>,
-        <xinxliu@microsoft.com>, "'netdev'" <netdev@vger.kernel.org>,
-        "'Moshe Shemesh'" <moshe@nvidia.com>
-References: <20210215193821.3345-1-don@thebollingers.org> <YDl3f8MNWdZWeOBh@lunn.ch> <000901d70cb2$b2848420$178d8c60$@thebollingers.org>
-In-Reply-To: <000901d70cb2$b2848420$178d8c60$@thebollingers.org>
-Subject: RE: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS EEPROMS
-Date:   Mon, 1 Mar 2021 12:00:34 -0800
-Message-ID: <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org>
+        id S238599AbhCAUJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 15:09:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242400AbhCAUHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 15:07:09 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49CF1C06178A
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 12:06:15 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id s23so313070pji.1
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 12:06:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9K7jUgE2LmNGDoZDwBfA1B86gHJCehExJZSP0d0xq6Q=;
+        b=LfZC7e1Abwp4SFyTkNDTrMGwigimuUz+CkvxeONBp6YcvvYKk5IafZZapAjzhjHXy4
+         Daru8urkNWAzXTMszOXYN7pVJ4s5C5wUFPHsqYjzDxpxaODlYrOk2IHTzqORnjAZsJze
+         juDHxwCbLQ0PwF/nso4Ctzc2zOdm2f5Z5Qgfw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9K7jUgE2LmNGDoZDwBfA1B86gHJCehExJZSP0d0xq6Q=;
+        b=OWf+d4+RFnKZXlVyg5+7jQuU7uMjLHSyMH4Bhm9AH74ne6g2/oi+IhcAAJtObnpUQK
+         7MtXJG80r8clxvedpqdsUiADHMar9LnUi9ZqSDDl9etbVymkDPKuG3fGJs4SnAAEkYmb
+         3q8VIupqNevFH/emOU6Yh05lj0JpNmYQiTm8h946IsuJOoOi0YK+atWQlRsa7Putcq9C
+         IhDlcG+yFEx5TbHiblVfJgMk3cHMBecE7gYrSimP96m8BNYIk1hkzR4EWtXWN8pWFdN5
+         GDzQjMJ8VIKjOug5c+bIhsMwLcPfdtR0OGl+n0g3voptTrh6Wh6RDPYmgecoSyUXf7ND
+         +cew==
+X-Gm-Message-State: AOAM531pVty4h8wosEYC7IduQKmRX2YBp6RYmKjyU/pGPuyY59agYIYa
+        E3tseP4VbCTod9IihvhOkhPMtA==
+X-Google-Smtp-Source: ABdhPJyOUFWHpB2eBwfNpAVcdon+IACxVbRZiRQFJuCOcZG4gMOgaxKCxuY+GU5MYhsnxmXQZgkU2Q==
+X-Received: by 2002:a17:902:f1c2:b029:e4:6c23:489f with SMTP id e2-20020a170902f1c2b02900e46c23489fmr369260plc.62.1614629174679;
+        Mon, 01 Mar 2021 12:06:14 -0800 (PST)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:d800:e660:6ed:356a])
+        by smtp.gmail.com with ESMTPSA id t4sm238256pjs.12.2021.03.01.12.06.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Mar 2021 12:06:14 -0800 (PST)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-bluetooth@vger.kernel.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Subject: [PATCH 0/2] Bluetooth: Suspend improvements
+Date:   Mon,  1 Mar 2021 12:06:03 -0800
+Message-Id: <20210301200605.106607-1-abhishekpandit@chromium.org>
+X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 15.0
-Thread-Index: AQKX2ThEytgxSBCv+zte4L/P7xUGAgJF1IfoAfArhLiozELRYA==
-Content-Language: en-us
-X-CMAE-Envelope: MS4xfP/eu0nQ6w59z0tUQDN5SwmEwZhy91MbjYJK7syv5imPIKqMv3NWRV6B27tBi7Jv1L6wsbhjMTB2OzJRuNb2B+kflcqaUx9dhqK/G1ynLZOONjBbhUmQ
- fXiKkZpjoijyHQOhGGV2/cVHha1tyWw6F61G0D70tuuHY0h4j+bdykwoFWxXxcLDBUtUqqOHrgGXY7LLi7au5kJ7ea3KHxVIaKWMTnFFdgPJUQP5kfgooNG/
- YlaxzKdSFpZeHlZoP3I1XS8xs4gxtj3v2mJ2AGB/y214hzAJVbuc40LuJcbv3z7CN++x0Lw5FNQpqGBc2oBBWq/L+RtuX56nhyG91Tll15vr/cnQ5Y6Lver5
- t4DMikyZ9uDe7lxy2DKF/tDJcCyHpz16xKA4HsFAI/ONLWV7hsiuI26tBIPPvWwP7pkMRMCoBj8zd8DzQ/1CsF50CYmAZ68vmJ/QFDXBcCn7DkMN/FDgPdAk
- dKtccdydLqLlIoJenj8MKLm+4Lh1f1KZVAFjOthfToE1to1Ld2DXO1OOWc8B1zIPZCNYNPj1IcW3vsy4DHxTuAJwNloYbSebcZPyJg==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 26, 2021 at 6:46 PM -0800, Don Bollinger wrote:
-> On Fri, Feb 26, 2021 at 2:35 PM -0800, Andrew Lunn wrote:
-> > On Mon, Feb 15, 2021 at 11:38:21AM -0800, Don Bollinger wrote:
-> > > optoe is an i2c based driver that supports read/write access to all
-> > > the pages (tables) of MSA standard SFP and similar devices
-> > > (conforming to the SFF-8472 spec), MSA standard QSFP and similar
-> > > devices (conforming to the SFF-8636 spec) and CMIS and similar
-> > > devices (conforming to the Common Management Interface
-> Specfication).
-> >
-> > Hi Don
-> >
-> > And we have seen this code before, and the netdev Maintainers have
-> > argued against it before.
-> 
-> Yes, though I have tried to make it more acceptable, and also more useful
-to
-> you...
-> 
-> > > These devices provide identification, operational status and control
-> > > registers via an EEPROM model.  These devices support one or 3 fixed
-> > > pages
-> > > (128 bytes) of data, and one page that is selected via a page
-> > > register on the first fixed page.  Thus the driver's main task is to
-> > > map these pages onto a simple linear address space for user space
-> > > management
-> > applications.
-> > > See the driver code for a detailed layout.
-> >
-> > I assume you have seen the work NVIDIA submitted last week? This idea
-> > of linear pages is really restrictive and we are moving away from it.
 
-Yes, I see at least most of it in your response in the netdev archive.  The
-linear pages are really a very simple mapping, but they also provide a very
-simple access model.  I can readily accommodate Moshe's addressing (i2c
-addr, page, bank, offset, len).  Details below...
+Hi Marcel (and linux bluetooth),
 
-> > > The EEPROM data is accessible to user space and kernel consumers via
-> > > the nvmem interface.
-> >
-> > ethtool -m ?
-> 
-> This is actually below ethtool.  Ethtool has to fetch the data from the
-eeprom
-> using an appropriate i2c interface (these are defined to be i2c devices).
-And,
-> to fetch the data from any but the first 256 bytes the code ethtool calls
-must
-> deal with the page register on the device.  This driver handles the page
-> register, for both SFP and QSFP/CMIS devices.  This driver would be a
-useful
-> path for ethtool to use when someone decides to make that data available.
-> Note for example, CMIS devices put the DOM data (per-channel Tx power,
-> Rx Power, laser bias) on page 0x11.  When you want that data, you'll have
-to
-> go past 256 bytes and deal with the page register.
-> optoe will do that for you.
+Here are a few suspend improvements based on user reports we saw on
+ChromeOS and feedback from Hans de Goede on the mailing list.
 
-To be more specific, optoe is only replacing the functionality of
-drivers/net/phy/sfp.c, the functions of sfp_i2c_read() and sfp_i2c_write().
-These are the routines at the very bottom of the ethtool stack that actually
-execute the i2c calls to get the data.  The existing routines are very
-limited, in that they don't handle pages at all.  Hence they can only reach
-256 bytes of QSFP EEPROM data and 512 bytes of SFP EEPROM data.  I can
-propose a shorter cleaner replacement for each of those routines which will
-provide access to the rest of the data on those devices.
+I have tested this using our ChromeOS suspend/resume automated tests
+(full SRHealth test coverage and some suspend resume stress tests).
 
-ALL of the ethtool stack remains unchanged, works exactly the same, and will
-now provide access to more data on the EEPROMs.  We may have to remove some
-range checks to allow requests to pages beyond page 0.
+Thanks
+Abhishek
 
-Note that Moshe's RFC does not include the actual access routines, the
-equivalent of sfp_i2c_read/write.  That will in fact require managing pages.
-Using optoe, those routines are a few lines of code to map his
-addr/page/bank/offset and a call to the new sfp_i2c_read/write calls.
 
-And, all of the i2c/EEPROM accesses go through the same code that routinely
-handles the rest of the EEPROMs in the system, with all of the architectural
-consolidation, i2c anomaly handling, and simplified support inherent in
-sharing common code.
- 
-> > In the past, this code has been NACKed because it does not integrate
-> > into the networking stack. Is this attempt any different?
-> 
-> Yes.  I have updated the driver with all the latest changes in at24.c, the
-> primary eeprom driver.  That update includes use of the nvmem interface,
-> which means this driver can now be called by kernel code.  I believe it
-would
-> be useful and easy to replace the sfp.c code that accesses the eeprom with
-> nvmem calls to this driver.  By doing so, you will be able to access the
-> additional pages of data on those devices.  You would also get the benefit
-of
-> sharing common code the other eeprom drivers.  As part of that cleanup,
-the
-> explicit sysfs creation of an eeprom device has been removed.
-> Full disclosure, the nvmem interface creates that device now.
-> 
-> > Thanks
-> > 	Andrew
-> 
-> One more point, I have been requested by the SONiC team to upstream this
-> driver.  It is on their short list of kernel code that is not upstream,
-and they
-> want to fix that.  They are not consumers of the netdev interface, but
-they
-> (and other NOS providers) have a need for a driver to access the eeprom
-> data.  Greg KH was involved in that request, and I related your concerns
-to
-> him, as well as my position that this is an eeprom driver with partners
-that
-> need it independent of netdev.  His response:
-> 
-> GKH> I can't remember the actual patch anymore, but you are right, it's
-> "just"
-> GKH> poking around in the EEPROM for the device, and doing what you want
-> GKH> in userspace, which really should be fine.  Submit it and I'll be
-> GKH> glad to
-> review it
-> GKH> under that type of functionality being added.
-> 
-> He didn't say he would override your position, but he suggested it was
-> appropriate to submit it.  So, here it is.
-> 
-> Thus:
-> 1.  There are existing NOS platforms that need and use this functionality,
-> they want it in the upstream kernel.
-> 2.  This driver is better than sfp.c, and could easily be plugged in to
-improve
-> netdev and ethtool access to SFP/QSFP/CMIS EEPROM data.
-> 
-> Don
+
+Abhishek Pandit-Subedi (2):
+  Bluetooth: Notify suspend on le conn failed
+  Bluetooth: Remove unneeded commands for suspend
+
+ include/net/bluetooth/hci.h |  1 +
+ net/bluetooth/hci_conn.c    | 10 +++++++++
+ net/bluetooth/hci_event.c   | 31 ++++++++++++++++++++++++++
+ net/bluetooth/hci_request.c | 44 +++++++++++++++++++++++--------------
+ 4 files changed, 69 insertions(+), 17 deletions(-)
+
+-- 
+2.30.1.766.gb4fecdf3b7-goog
 
