@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D17C6327CFE
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:20:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F6E0327CFF
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:20:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232283AbhCALTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 06:19:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S232384AbhCALTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 06:19:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232124AbhCALTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 06:19:17 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C09CC061756
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 03:18:37 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id h10so20095079edl.6
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 03:18:37 -0800 (PST)
+        with ESMTP id S232139AbhCALTS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 06:19:18 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575A2C0617A9
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 03:18:38 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id jt13so27514382ejb.0
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 03:18:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=n/3TB3LAlq1rQiWc+V07/zAlcw6bhT/udy9/FkJs4Vc=;
-        b=SxzwiOqJaw6PNXUcSXlCvW2HiHkHpkVaBla4SmmPTIjjH305AWFHpV4udG86ezea00
-         nZVwR+DUBN8H6huQQ7o9MOAqE4t6k0qriqtXpHENJvLRteEZ4yQJP9sLnsufJ/DIOsMR
-         4nGVBfPl/KNewa/InIt6bBZgVmyGMZ5WK46HKLZAlIPmOS+Nmlu7dr2CEeUC3oUt1gZ1
-         +RKn9Wz//ZQBRow905OhBTI2RqHtUhfUAym6b9K2n5RtVARHgU5YCJXK6FOwzyCtHnMD
-         5SeDJn/E4eVyeIOXar32NH9ZMhK9E1G+VETj89V40Ool0Hwm3azbrDRKQrMnmSoo0ErF
-         NlyQ==
+        bh=P2UgqtIaZNShOADApKa/iEfTtyfD4uVb4zvNzvGRm38=;
+        b=G2iTemoXzbsNVbC3XR3ZXiIhGovsJCNisrJI1pqJr/Dv1YmRItqrsdI7/TQE2Er3k4
+         g4LQ1bQFMh1mWcqIJfNhthTguyHj3DJESL+5CzAB/lwFFnzevwKecS0sNaj+C+Xb07NG
+         WqBUg6ptF3/08naurG+CIvA/Gd2mIW8Rwq3DfhlGmyAW6st3/c6JJ40cZGIyUJXJ48uM
+         4BNYadw5pZdcgCLrDfScWcJFloFr8MSlRI6IybAkDl8BgQlO5pgTtYvWux58GyYfCQnS
+         Kg7ZU5dN5OaYTn1fpyNOXQ6CZFxlONUr0xFQix8pb4X5aEIQKlchI3Q+lW5KVyHgA5VV
+         PbPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=n/3TB3LAlq1rQiWc+V07/zAlcw6bhT/udy9/FkJs4Vc=;
-        b=IS7SIm9L7BF5U2EMd81fwgBGkTvSAzps33VozByDfGODGWjKljRVtjIlBtqxa81ZdF
-         NAo8AGPMtllzREe7Et9PDVhrQc68ajLN+1SKQYgDDjwMFMqRRGIrBN2DIDbC1j+GQtvx
-         foIGAbemKZc4JIQonT184F7h1oKWcptJVrbhIEZVKSgGffS4NvXhSbYLGzBZQW8ibyQ8
-         AAbSHP7FUDfogG3KjIEoB4/+lcYejWyQXi4qy6P3Z99Xb8wiL5pLY/x3qeXtPYO22SDv
-         6izD5uqIPxHZOjh0ldAE92jxCBc0f11p2JtQYnQ7pj0GpJxv7VuXEeMw0HUGKSFofRZh
-         P4JA==
-X-Gm-Message-State: AOAM532Yu//oVAEpiTY/rs40aQp2W6HILcY4jx4jYp6ZJ5rrzCBQGHuy
-        7JSOCO5YzXHSvalpC4ZBrt8qZ0uwkak=
-X-Google-Smtp-Source: ABdhPJwFYVPJJSb0qB+N1NcKJWTtRsBW7AD9O5wRUCU5u13vs58wIUynSe8MdhiKfwgNEmBerbBSGQ==
-X-Received: by 2002:aa7:cb8e:: with SMTP id r14mr15911396edt.331.1614597516284;
-        Mon, 01 Mar 2021 03:18:36 -0800 (PST)
+        bh=P2UgqtIaZNShOADApKa/iEfTtyfD4uVb4zvNzvGRm38=;
+        b=UOD0+GvQuIazt4CvbOTe6Xesyxhad9djx6PyhwhWw74HvmKbmDFLr603A+HTRvmAb2
+         oEFReUIvrXLcgo4ysD6/c4bSRTa68SYjxmfqpvP1ZrooRxfbfhxb1Ai9gxGCMphTae2W
+         EA1coEFNqEfmndxZWi1q+QA5fokgzjhwhYNqzkAU2XsuiYUDb+aXVWKE6ebgoM+kvUf2
+         9/wDLOrzaYLywAixqQWCtdBm2P7MU0nA2LdgGIaYQ1MJ+GjgZd5q+y0LYNzMLJS7wa0k
+         EtBmg185VPqX7wFpwS5Al9gywkg6ceaCy8Yge9U7aXT2FZWC3a0JwZs2Ox7nnJxCIJr/
+         VErQ==
+X-Gm-Message-State: AOAM532DUdR56xO8dCqw5VQrycdnmVK3ZemHgX5tDE4xzmvU+ZHN+DwC
+        t6u6QR59GFar22+/nfHi43gE/mHybcI=
+X-Google-Smtp-Source: ABdhPJzTYVVL9JJ4HtavY3b2JpIAklMSgdAgAbDC/DILSlh2tJT9JoSWbFw4IH7iT86pDeC2T2uaHQ==
+X-Received: by 2002:a17:906:229b:: with SMTP id p27mr14831233eja.287.1614597517135;
+        Mon, 01 Mar 2021 03:18:37 -0800 (PST)
 Received: from localhost.localdomain ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id i13sm13586491ejj.2.2021.03.01.03.18.35
+        by smtp.gmail.com with ESMTPSA id i13sm13586491ejj.2.2021.03.01.03.18.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 03:18:35 -0800 (PST)
+        Mon, 01 Mar 2021 03:18:36 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -54,11 +54,10 @@ Cc:     Michael Walle <michael@walle.cc>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH v3 net 2/8] net: enetc: initialize RFS/RSS memories for unused ports too
-Date:   Mon,  1 Mar 2021 13:18:12 +0200
-Message-Id: <20210301111818.2081582-3-olteanv@gmail.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net 3/8] net: enetc: take the MDIO lock only once per NAPI poll cycle
+Date:   Mon,  1 Mar 2021 13:18:13 +0200
+Message-Id: <20210301111818.2081582-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210301111818.2081582-1-olteanv@gmail.com>
 References: <20210301111818.2081582-1-olteanv@gmail.com>
@@ -70,173 +69,178 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Michael reports that since linux-next-20210211, the AER messages for ECC
-errors have started reappearing, and this time they can be reliably
-reproduced with the first ping on one of his LS1028A boards.
+The workaround for the ENETC MDIO erratum caused a performance
+degradation of 82 Kpps (seen with IP forwarding of two 1Gbps streams of
+64B packets). This is due to excessive locking and unlocking in the fast
+path, which can be avoided.
 
-$ ping 1[   33.258069] pcieport 0000:00:1f.0: AER: Multiple Corrected error received: 0000:00:00.0
-72.16.0.1
-PING [   33.267050] pcieport 0000:00:1f.0: AER: can't find device of ID0000
-172.16.0.1 (172.16.0.1): 56 data bytes
-64 bytes from 172.16.0.1: seq=0 ttl=64 time=17.124 ms
-64 bytes from 172.16.0.1: seq=1 ttl=64 time=0.273 ms
+By taking the MDIO read-side lock only once per NAPI poll cycle, we are
+able to regain 54 Kpps (65%) of the performance hit. The rest of the
+performance degradation comes from the TX data path, but unfortunately
+it doesn't look like we can optimize that away easily, even with
+netdev_xmit_more(), there just isn't any skb batching done, to help with
+taking the MDIO lock less often than once per packet.
 
-$ devmem 0x1f8010e10 32
-0xC0000006
+We need to change the register accessor type for enetc_get_tx_tstamp,
+because it now runs under the enetc_lock_mdio as per the new call path
+detailed below:
 
-It isn't clear why this is necessary, but it seems that for the errors
-to go away, we must clear the entire RFS and RSS memory, not just for
-the ports in use.
+enetc_msix
+-> napi_schedule
+   -> enetc_poll
+      -> enetc_lock_mdio
+      -> enetc_clean_tx_ring
+         -> enetc_get_tx_tstamp
+      -> enetc_clean_rx_ring
+      -> enetc_unlock_mdio
 
-Sadly the code is structured in such a way that we can't have unified
-logic for the used and unused ports. For the minimal initialization of
-an unused port, we need just to enable and ioremap the PF memory space,
-and a control buffer descriptor ring. Unused ports must then free the
-CBDR because the driver will exit, but used ports can not pick up from
-where that code path left, since the CBDR API does not reinitialize a
-ring when setting it up, so its producer and consumer indices are out of
-sync between the software and hardware state. So a separate
-enetc_init_unused_port function was created, and it gets called right
-after the PF memory space is enabled.
-
-Fixes: 07bf34a50e32 ("net: enetc: initialize the RFS and RSS memories")
-Reported-by: Michael Walle <michael@walle.cc>
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Fixes: fd5736bf9f23 ("enetc: Workaround for MDIO register access issue")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Michael Walle <michael@walle.cc>
 ---
 Changes in v3:
-Leave the moving around of cbdr functions to a later refactoring patch,
-and keep the bug fix minimal.
+Detailed the enetc_get_tx_tstamp change as per Andrew's request.
 
 Changes in v2:
 None.
 
- drivers/net/ethernet/freescale/enetc/enetc.c  |  8 ++---
- drivers/net/ethernet/freescale/enetc/enetc.h  |  4 +++
- .../net/ethernet/freescale/enetc/enetc_pf.c   | 33 ++++++++++++++++---
- 3 files changed, 36 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 31 ++++++-------------
+ .../net/ethernet/freescale/enetc/enetc_hw.h   |  2 ++
+ 2 files changed, 11 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index fdb6b9e8da78..eb45830a1667 100644
+index eb45830a1667..9bcceb74fb9c 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -984,7 +984,7 @@ static void enetc_free_rxtx_rings(struct enetc_ndev_priv *priv)
- 		enetc_free_tx_ring(priv->tx_ring[i]);
- }
+@@ -281,6 +281,8 @@ static int enetc_poll(struct napi_struct *napi, int budget)
+ 	int work_done;
+ 	int i;
  
--static int enetc_alloc_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
-+int enetc_alloc_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
- {
- 	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
- 
-@@ -1005,7 +1005,7 @@ static int enetc_alloc_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
- 	return 0;
- }
- 
--static void enetc_free_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
-+void enetc_free_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
- {
- 	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
- 
-@@ -1013,7 +1013,7 @@ static void enetc_free_cbdr(struct device *dev, struct enetc_cbdr *cbdr)
- 	cbdr->bd_base = NULL;
- }
- 
--static void enetc_setup_cbdr(struct enetc_hw *hw, struct enetc_cbdr *cbdr)
-+void enetc_setup_cbdr(struct enetc_hw *hw, struct enetc_cbdr *cbdr)
- {
- 	/* set CBDR cache attributes */
- 	enetc_wr(hw, ENETC_SICAR2,
-@@ -1033,7 +1033,7 @@ static void enetc_setup_cbdr(struct enetc_hw *hw, struct enetc_cbdr *cbdr)
- 	cbdr->cir = hw->reg + ENETC_SICBDRCIR;
- }
- 
--static void enetc_clear_cbdr(struct enetc_hw *hw)
-+void enetc_clear_cbdr(struct enetc_hw *hw)
- {
- 	enetc_wr(hw, ENETC_SICBDRMR, 0);
- }
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index f8275cef3b5c..8b380fc13314 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -310,6 +310,10 @@ int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
- void enetc_set_ethtool_ops(struct net_device *ndev);
- 
- /* control buffer descriptor ring (CBDR) */
-+int enetc_alloc_cbdr(struct device *dev, struct enetc_cbdr *cbdr);
-+void enetc_free_cbdr(struct device *dev, struct enetc_cbdr *cbdr);
-+void enetc_setup_cbdr(struct enetc_hw *hw, struct enetc_cbdr *cbdr);
-+void enetc_clear_cbdr(struct enetc_hw *hw);
- int enetc_set_mac_flt_entry(struct enetc_si *si, int index,
- 			    char *mac_addr, int si_map);
- int enetc_clear_mac_flt_entry(struct enetc_si *si, int index);
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index d02ecb2e46ae..62ba4bf56f0d 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -1041,6 +1041,26 @@ static int enetc_init_port_rss_memory(struct enetc_si *si)
- 	return err;
- }
- 
-+static void enetc_init_unused_port(struct enetc_si *si)
-+{
-+	struct device *dev = &si->pdev->dev;
-+	struct enetc_hw *hw = &si->hw;
-+	int err;
++	enetc_lock_mdio();
 +
-+	si->cbd_ring.bd_count = ENETC_CBDR_DEFAULT_SIZE;
-+	err = enetc_alloc_cbdr(dev, &si->cbd_ring);
-+	if (err)
-+		return;
-+
-+	enetc_setup_cbdr(hw, &si->cbd_ring);
-+
-+	enetc_init_port_rfs_memory(si);
-+	enetc_init_port_rss_memory(si);
-+
-+	enetc_clear_cbdr(hw);
-+	enetc_free_cbdr(dev, &si->cbd_ring);
-+}
-+
- static int enetc_pf_probe(struct pci_dev *pdev,
- 			  const struct pci_device_id *ent)
- {
-@@ -1051,11 +1071,6 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	struct enetc_pf *pf;
- 	int err;
+ 	for (i = 0; i < v->count_tx_rings; i++)
+ 		if (!enetc_clean_tx_ring(&v->tx_ring[i], budget))
+ 			complete = false;
+@@ -291,8 +293,10 @@ static int enetc_poll(struct napi_struct *napi, int budget)
+ 	if (work_done)
+ 		v->rx_napi_work = true;
  
--	if (node && !of_device_is_available(node)) {
--		dev_info(&pdev->dev, "device is disabled, skipping\n");
--		return -ENODEV;
--	}
+-	if (!complete)
++	if (!complete) {
++		enetc_unlock_mdio();
+ 		return budget;
++	}
+ 
+ 	napi_complete_done(napi, work_done);
+ 
+@@ -301,8 +305,6 @@ static int enetc_poll(struct napi_struct *napi, int budget)
+ 
+ 	v->rx_napi_work = false;
+ 
+-	enetc_lock_mdio();
 -
- 	err = enetc_pci_probe(pdev, KBUILD_MODNAME, sizeof(*pf));
- 	if (err) {
- 		dev_err(&pdev->dev, "PCI probing failed\n");
-@@ -1069,6 +1084,13 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 		goto err_map_pf_space;
+ 	/* enable interrupts */
+ 	enetc_wr_reg_hot(v->rbier, ENETC_RBIER_RXTIE);
+ 
+@@ -327,8 +329,8 @@ static void enetc_get_tx_tstamp(struct enetc_hw *hw, union enetc_tx_bd *txbd,
+ {
+ 	u32 lo, hi, tstamp_lo;
+ 
+-	lo = enetc_rd(hw, ENETC_SICTR0);
+-	hi = enetc_rd(hw, ENETC_SICTR1);
++	lo = enetc_rd_hot(hw, ENETC_SICTR0);
++	hi = enetc_rd_hot(hw, ENETC_SICTR1);
+ 	tstamp_lo = le32_to_cpu(txbd->wb.tstamp);
+ 	if (lo <= tstamp_lo)
+ 		hi -= 1;
+@@ -358,9 +360,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ 	i = tx_ring->next_to_clean;
+ 	tx_swbd = &tx_ring->tx_swbd[i];
+ 
+-	enetc_lock_mdio();
+ 	bds_to_clean = enetc_bd_ready_count(tx_ring, i);
+-	enetc_unlock_mdio();
+ 
+ 	do_tstamp = false;
+ 
+@@ -403,8 +403,6 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ 			tx_swbd = tx_ring->tx_swbd;
+ 		}
+ 
+-		enetc_lock_mdio();
+-
+ 		/* BD iteration loop end */
+ 		if (is_eof) {
+ 			tx_frm_cnt++;
+@@ -415,8 +413,6 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ 
+ 		if (unlikely(!bds_to_clean))
+ 			bds_to_clean = enetc_bd_ready_count(tx_ring, i);
+-
+-		enetc_unlock_mdio();
  	}
  
-+	if (node && !of_device_is_available(node)) {
-+		enetc_init_unused_port(si);
-+		dev_info(&pdev->dev, "device is disabled, skipping\n");
-+		err = -ENODEV;
-+		goto err_device_disabled;
-+	}
-+
- 	pf = enetc_si_priv(si);
- 	pf->si = si;
- 	pf->total_vfs = pci_sriov_get_totalvfs(pdev);
-@@ -1151,6 +1173,7 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	si->ndev = NULL;
- 	free_netdev(ndev);
- err_alloc_netdev:
-+err_device_disabled:
- err_map_pf_space:
- 	enetc_pci_remove(pdev);
+ 	tx_ring->next_to_clean = i;
+@@ -660,8 +656,6 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 		u32 bd_status;
+ 		u16 size;
  
+-		enetc_lock_mdio();
+-
+ 		if (cleaned_cnt >= ENETC_RXBD_BUNDLE) {
+ 			int count = enetc_refill_rx_ring(rx_ring, cleaned_cnt);
+ 
+@@ -672,19 +666,15 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 
+ 		rxbd = enetc_rxbd(rx_ring, i);
+ 		bd_status = le32_to_cpu(rxbd->r.lstatus);
+-		if (!bd_status) {
+-			enetc_unlock_mdio();
++		if (!bd_status)
+ 			break;
+-		}
+ 
+ 		enetc_wr_reg_hot(rx_ring->idr, BIT(rx_ring->index));
+ 		dma_rmb(); /* for reading other rxbd fields */
+ 		size = le16_to_cpu(rxbd->r.buf_len);
+ 		skb = enetc_map_rx_buff_to_skb(rx_ring, i, size);
+-		if (!skb) {
+-			enetc_unlock_mdio();
++		if (!skb)
+ 			break;
+-		}
+ 
+ 		enetc_get_offloads(rx_ring, rxbd, skb);
+ 
+@@ -696,7 +686,6 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 
+ 		if (unlikely(bd_status &
+ 			     ENETC_RXBD_LSTATUS(ENETC_RXBD_ERR_MASK))) {
+-			enetc_unlock_mdio();
+ 			dev_kfree_skb(skb);
+ 			while (!(bd_status & ENETC_RXBD_LSTATUS_F)) {
+ 				dma_rmb();
+@@ -736,8 +725,6 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 
+ 		enetc_process_skb(rx_ring, skb);
+ 
+-		enetc_unlock_mdio();
+-
+ 		napi_gro_receive(napi, skb);
+ 
+ 		rx_frm_cnt++;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+index c71fe8d751d5..8b54562f5da6 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+@@ -453,6 +453,8 @@ static inline u64 _enetc_rd_reg64_wa(void __iomem *reg)
+ #define enetc_wr_reg(reg, val)		_enetc_wr_reg_wa((reg), (val))
+ #define enetc_rd(hw, off)		enetc_rd_reg((hw)->reg + (off))
+ #define enetc_wr(hw, off, val)		enetc_wr_reg((hw)->reg + (off), val)
++#define enetc_rd_hot(hw, off)		enetc_rd_reg_hot((hw)->reg + (off))
++#define enetc_wr_hot(hw, off, val)	enetc_wr_reg_hot((hw)->reg + (off), val)
+ #define enetc_rd64(hw, off)		_enetc_rd_reg64_wa((hw)->reg + (off))
+ /* port register accessors - PF only */
+ #define enetc_port_rd(hw, off)		enetc_rd_reg((hw)->port + (off))
 -- 
 2.25.1
 
