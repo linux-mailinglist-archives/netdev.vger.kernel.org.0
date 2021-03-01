@@ -2,133 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DF89327A22
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:57:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14621327A3B
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 10:00:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233690AbhCAIzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 03:55:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59126 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233391AbhCAIyY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Mar 2021 03:54:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4AAA861494;
-        Mon,  1 Mar 2021 08:53:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614588823;
-        bh=dI6F0ulTGZGplUNUAa5dvlOBloi+KrxvzV1SFB8xuzY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k6OCELfkCwC2/gI/eZGTu7p7A1NBN20pBMbtGqSnbiLbQiZdMo08MfsO9HT8u+Qu5
-         KkLJTaP3wPBq/hdp9L2jZvN+wt068nc1aQsXB2fxrzAZ5+TRx1wbUe7jln8Wif2yeN
-         hmZbne0LARy8D9CID2h1Ago9pDGUaT2cBKreJuWczhsyaq79dclAbmmkz143gf1Wt2
-         TwSkRQK12kdiI9N/TTZMfhap3abgytK4eDZPHJdwtOTO7iWSAF2ULgV8RGb3JV4Vxm
-         jgdiB0eJGw5UuG27Vz4VqkACla4mu1QqJ6q9Nb/g1hLPRZjbnr+NId/Fmb4In6igug
-         bIFy0qnUP8zAg==
-Date:   Mon, 1 Mar 2021 10:53:39 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH mlx5-next v7 1/4] PCI: Add a sysfs file to change the
- MSI-X table size of SR-IOV VFs
-Message-ID: <YDyrkxR50FsO5PMe@unreal>
-References: <20210301075524.441609-1-leon@kernel.org>
- <20210301075524.441609-2-leon@kernel.org>
- <YDyicnnKPhy5LMJy@kroah.com>
- <YDymifxqjvnaW3nw@unreal>
- <YDynvUsEGQ6bQGep@kroah.com>
+        id S233641AbhCAI6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 03:58:42 -0500
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:59331 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233614AbhCAIz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 03:55:27 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9C836580221;
+        Mon,  1 Mar 2021 03:54:37 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 01 Mar 2021 03:54:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=2wvNQI
+        WBpBOZWpWbefbd33FSrA5QpP7DmdH/BxqyZQE=; b=nve+oeJBo2TDkIH/qMAahu
+        QSly78fe6d9N7PH1CzszhHH2vdxjGw6EMkIII9WJPhanmPpuqpfVgI4/Uz7iyxpY
+        rXTffOVZxkqTkN4GXLR4n81li451mocOmn7QtkRsUMziY6GTfcyDrLt2NnzKqDgq
+        qMHzxvMT6ew+4T5kJ75BuH2M5HfiiI8cGoeoSt4JpL/aoRXHwcFsrpHgnSdsQMm0
+        dgXHPnIm4bM08GzxZSPLtoiCqhW8NXKVuylAz72q7iRVQXp2JRSVl50sXT8vCxI+
+        kxkBBH8/99L3pqnYt3RxRQHlDJHkhIcN4dIRx7lMBDex/CerNPsThav6vyRuXP0Q
+        ==
+X-ME-Sender: <xms:zKs8YEHC2wXN5ZRCbSeNIye4UN6JQO1z2li1bV3he1BqaphSJAQM3w>
+    <xme:zKs8YBkRKQIsyVh6mJnVXVKCUeOCpDcWmuuxl7ejRme_0Rd1dJsiuf_XdDKTO9wbU
+    11mHpMvdh65GIU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrleejgdduvdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:zKs8YJKqjwOdEj7Dkkg0t1GLl1U5eypDAPZTgZ38TADIZ0P_9GFWOg>
+    <xmx:zKs8YKbVAYHma4UbKk2rfNR-kpoz1Or260y8OgWIF6qQGnJ-Rkw2qg>
+    <xmx:zKs8YDa7VlXZg-bRpWaaC26PewimtSJXzDiA4YM6qsS01YKQWoEsQw>
+    <xmx:zas8YEiuDtDMWLYQMX3IpUOQXDef9IY3KhjhRdDkFgFtok12_yinhg>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7403B24005E;
+        Mon,  1 Mar 2021 03:54:36 -0500 (EST)
+Date:   Mon, 1 Mar 2021 10:54:32 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, vgupta@synopsys.com,
+        linux-snps-arc@lists.infradead.org, jiri@nvidia.com,
+        idosch@nvidia.com, netdev@vger.kernel.org, Jason@zx2c4.com,
+        mchehab@kernel.org
+Subject: Re: [PATCH 10/11] pragma once: delete few backslashes
+Message-ID: <YDyryN/GOj9JXFm+@shredder.lan>
+References: <YDvLYzsGu+l1pQ2y@localhost.localdomain>
+ <YDvNSg9OPv7JqfRS@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YDynvUsEGQ6bQGep@kroah.com>
+In-Reply-To: <YDvNSg9OPv7JqfRS@localhost.localdomain>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 09:37:17AM +0100, Greg Kroah-Hartman wrote:
-> On Mon, Mar 01, 2021 at 10:32:09AM +0200, Leon Romanovsky wrote:
-> > On Mon, Mar 01, 2021 at 09:14:42AM +0100, Greg Kroah-Hartman wrote:
-> > > On Mon, Mar 01, 2021 at 09:55:21AM +0200, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > >
-> > > > A typical cloud provider SR-IOV use case is to create many VFs for use by
-> > > > guest VMs. The VFs may not be assigned to a VM until a customer requests a
-> > > > VM of a certain size, e.g., number of CPUs. A VF may need MSI-X vectors
-> > > > proportional to the number of CPUs in the VM, but there is no standard way
-> > > > to change the number of MSI-X vectors supported by a VF.
-> > > >
-> > > > Some Mellanox ConnectX devices support dynamic assignment of MSI-X vectors
-> > > > to SR-IOV VFs. This can be done by the PF driver after VFs are enabled,
-> > > > and it can be done without affecting VFs that are already in use. The
-> > > > hardware supports a limited pool of MSI-X vectors that can be assigned to
-> > > > the PF or to individual VFs.  This is device-specific behavior that
-> > > > requires support in the PF driver.
-> > > >
-> > > > Add a read-only "sriov_vf_total_msix" sysfs file for the PF and a writable
-> > > > "sriov_vf_msix_count" file for each VF. Management software may use these
-> > > > to learn how many MSI-X vectors are available and to dynamically assign
-> > > > them to VFs before the VFs are passed through to a VM.
-> > > >
-> > > > If the PF driver implements the ->sriov_get_vf_total_msix() callback,
-> > > > "sriov_vf_total_msix" contains the total number of MSI-X vectors available
-> > > > for distribution among VFs.
-> > > >
-> > > > If no driver is bound to the VF, writing "N" to "sriov_vf_msix_count" uses
-> > > > the PF driver ->sriov_set_msix_vec_count() callback to assign "N" MSI-X
-> > > > vectors to the VF.  When a VF driver subsequently reads the MSI-X Message
-> > > > Control register, it will see the new Table Size "N".
-> > > >
-> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > ---
-> > > >  Documentation/ABI/testing/sysfs-bus-pci |  29 +++++++
-> > > >  drivers/pci/iov.c                       | 102 ++++++++++++++++++++++--
-> > > >  drivers/pci/pci-sysfs.c                 |   3 +-
-> > > >  drivers/pci/pci.h                       |   3 +-
-> > > >  include/linux/pci.h                     |   8 ++
-> > > >  5 files changed, 137 insertions(+), 8 deletions(-)
-> > > >
-> > > > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> > > > index 25c9c39770c6..ebabd0d2ae88 100644
-> > > > --- a/Documentation/ABI/testing/sysfs-bus-pci
-> > > > +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> > > > @@ -375,3 +375,32 @@ Description:
-> > > >  		The value comes from the PCI kernel device state and can be one
-> > > >  		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
-> > > >  		The file is read only.
-> > > > +
-> > > > +What:		/sys/bus/pci/devices/.../sriov_vf_total_msix
-> > > > +Date:		January 2021
-> > > > +Contact:	Leon Romanovsky <leonro@nvidia.com>
-> > > > +Description:
-> > > > +		This file is associated with a SR-IOV PF.  It contains the
-> > > > +		total number of MSI-X vectors available for assignment to
-> > > > +		all VFs associated with PF.  It will zero if the device
-> > >
-> > > "The value will be zero if the device..."
-> >
-> > Thanks, will fix when apply or resend if more fixes will be needed.
-> >
-> > >
-> > > And definition of "VF" and PF" are where in this file?
-> >
-> > They come from the PCI spec. It is part of SR-IOV lingo.
->
-> Yes, and the world does not have access to the PCI spec, so please
-> provide a hint as to what they are for those of us without access to
-> such things.
+On Sun, Feb 28, 2021 at 08:05:14PM +0300, Alexey Dobriyan wrote:
+> From 251ca5673886b5bb0a42004944290b9d2b267a4a Mon Sep 17 00:00:00 2001
+> From: Alexey Dobriyan <adobriyan@gmail.com>
+> Date: Fri, 19 Feb 2021 13:37:24 +0300
+> Subject: [PATCH 10/11] pragma once: delete few backslashes
+> 
+> Some macros contain one backslash too many and end up being the last
+> macro in a header file. When #pragma once conversion script truncates
+> the last #endif and whitespace before it, such backslash triggers
+> a warning about "OMG file ends up in a backslash-newline".
+> 
+> Needless to say I don't want to handle another case in my script,
+> so delete useless backslashes instead.
+> 
+> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
 
-No problem, I will replace PF to be "physical function" and VF to be
-"virtual function".
+For mlxsw:
+
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 
 Thanks
-
->
-> thanks,
->
-> greg k-h
