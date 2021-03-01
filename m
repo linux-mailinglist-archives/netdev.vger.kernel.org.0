@@ -2,19 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A0FF328346
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 17:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAF4D3283A2
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 17:23:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237629AbhCAQO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 11:14:58 -0500
-Received: from outbound-smtp50.blacknight.com ([46.22.136.234]:33065 "EHLO
-        outbound-smtp50.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237664AbhCAQND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 11:13:03 -0500
+        id S237651AbhCAQWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 11:22:34 -0500
+Received: from outbound-smtp10.blacknight.com ([46.22.139.15]:33499 "EHLO
+        outbound-smtp10.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237751AbhCAQUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 11:20:24 -0500
+X-Greylist: delayed 420 seconds by postgrey-1.27 at vger.kernel.org; Mon, 01 Mar 2021 11:20:17 EST
 Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
-        by outbound-smtp50.blacknight.com (Postfix) with ESMTPS id 69F1DFA8FF
+        by outbound-smtp10.blacknight.com (Postfix) with ESMTPS id C9D151C3CD1
         for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 16:12:01 +0000 (GMT)
-Received: (qmail 30423 invoked from network); 1 Mar 2021 16:12:01 -0000
+Received: (qmail 30450 invoked from network); 1 Mar 2021 16:12:01 -0000
 Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.22.4])
   by 81.17.254.9 with ESMTPA; 1 Mar 2021 16:12:01 -0000
 From:   Mel Gorman <mgorman@techsingularity.net>
@@ -26,55 +27,53 @@ Cc:     Chuck Lever <chuck.lever@oracle.com>,
         Linux-MM <linux-mm@kvack.org>,
         Linux-NFS <linux-nfs@vger.kernel.org>,
         Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 0/5] Introduce a bulk order-0 page allocator with two in-tree users
-Date:   Mon,  1 Mar 2021 16:11:55 +0000
-Message-Id: <20210301161200.18852-1-mgorman@techsingularity.net>
+Subject: [PATCH 1/5] SUNRPC: Set rq_page_end differently
+Date:   Mon,  1 Mar 2021 16:11:56 +0000
+Message-Id: <20210301161200.18852-2-mgorman@techsingularity.net>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210301161200.18852-1-mgorman@techsingularity.net>
+References: <20210301161200.18852-1-mgorman@techsingularity.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series introduces a bulk order-0 page allocator with sunrpc and
-the network page pool being the first users. The implementation is not
-particularly efficient and the intention is to iron out what the semantics
-of the API should have for users. Once the semantics are ironed out, it can
-be made more efficient.
+From: Chuck Lever <chuck.lever@oracle.com>
 
-Improving the implementation requires fairly deep surgery in numerous
-places. The lock scope would need to be significantly reduced, particularly
-as vmstat, per-cpu and the buddy allocator have different locking protocol
-that overall -- e.g. all partially depend on irqs being disabled at
-various points. Secondly, the core of the allocator deals with single
-pages where as both the bulk allocator and per-cpu allocator operate in
-batches. All of that has to be reconciled with all the existing users and
-their constraints (memory offline, CMA and cpusets being the trickiest).
+Refactor:
 
-Light testing passed, I'm relying on Chuck and Jesper to test the target
-users more aggressively but both report performance improvements with the
-initial RFC.
+I'm about to use the loop variable @i for something else.
 
-Patch 1 of this series is a cleanup to sunrpc, it could be merged
-	separately but is included here as a pre-requisite.
+As far as the "i++" is concerned, that is a post-increment. The
+value of @i is not used subsequently, so the increment operator
+is unnecessary and can be removed.
 
-Patch 2 is the prototype bulk allocator
+Also note that nfsd_read_actor() was renamed nfsd_splice_actor()
+by commit cf8208d0eabd ("sendfile: convert nfsd to
+splice_direct_to_actor()").
 
-Patch 3 is the sunrpc user. Chuck also has a patch which further caches
-	pages but is not included in this series. It's not directly
-	related to the bulk allocator and as it caches pages, it might
-	have other concerns (e.g. does it need a shrinker?)
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+---
+ net/sunrpc/svc_xprt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Patch 4 is a preparation patch only for the network user
-
-Patch 5 converts the net page pool to the bulk allocator for order-0 pages.
-
- include/linux/gfp.h   |  13 +++++
- mm/page_alloc.c       | 113 +++++++++++++++++++++++++++++++++++++++++-
- net/core/page_pool.c  | 102 +++++++++++++++++++++++---------------
- net/sunrpc/svc_xprt.c |  47 ++++++++++++------
- 4 files changed, 220 insertions(+), 55 deletions(-)
-
+diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
+index dcc50ae54550..cfa7e4776d0e 100644
+--- a/net/sunrpc/svc_xprt.c
++++ b/net/sunrpc/svc_xprt.c
+@@ -667,8 +667,8 @@ static int svc_alloc_arg(struct svc_rqst *rqstp)
+ 			}
+ 			rqstp->rq_pages[i] = p;
+ 		}
+-	rqstp->rq_page_end = &rqstp->rq_pages[i];
+-	rqstp->rq_pages[i++] = NULL; /* this might be seen in nfs_read_actor */
++	rqstp->rq_page_end = &rqstp->rq_pages[pages];
++	rqstp->rq_pages[pages] = NULL; /* this might be seen in nfsd_splice_actor() */
+ 
+ 	/* Make arg->head point to first page and arg->pages point to rest */
+ 	arg = &rqstp->rq_arg;
 -- 
 2.26.2
 
