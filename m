@@ -2,97 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1335F327686
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 04:59:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C095327696
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 05:03:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232221AbhCAD6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 22:58:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34503 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231185AbhCAD6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 22:58:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614571040;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=78HWJYXLEabIPzI/nSKwCmdBQ1NIC1XcNi9/L1zbQxY=;
-        b=dElJldIsOizPviVo8GNoa8Q0Abl5BKvVtY+cs3JfBLBSdImWJ0fTRSvov8fRB+yYCqyRXN
-        2UCIGdAQlc6oIMnUrEyIH1LoWhWkN++HGtkydpr16Hk50iBOAD4Rr/CjKCAmniu9asMxvh
-        c8CYgFFG+N+cA6E2oTciDhweuk5DBrI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-271-FJ5A8hxRMvOtSVBRIFU0jw-1; Sun, 28 Feb 2021 22:57:18 -0500
-X-MC-Unique: FJ5A8hxRMvOtSVBRIFU0jw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 559C86D4E0;
-        Mon,  1 Mar 2021 03:57:17 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-12-164.pek2.redhat.com [10.72.12.164])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B29F6BF6B;
-        Mon,  1 Mar 2021 03:56:59 +0000 (UTC)
-Subject: Re: [PATCH] vdpa/mlx5: set_features should allow reset to zero
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     elic@nvidia.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <1613735698-3328-1-git-send-email-si-wei.liu@oracle.com>
- <605e7d2d-4f27-9688-17a8-d57191752ee7@redhat.com>
- <20210222023040-mutt-send-email-mst@kernel.org>
- <22fe5923-635b-59f0-7643-2fd5876937c2@oracle.com>
- <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
- <20210223082536-mutt-send-email-mst@kernel.org>
- <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <20210224000057-mutt-send-email-mst@kernel.org>
- <52836a63-4e00-ff58-50fb-9f450ce968d7@oracle.com>
- <20210228163031-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <2cb51a6d-afa0-7cd1-d6f2-6b153186eaca@redhat.com>
-Date:   Mon, 1 Mar 2021 11:56:50 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S232474AbhCAEDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 23:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232363AbhCAEDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 23:03:06 -0500
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF5BC061756
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 20:02:24 -0800 (PST)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 3D318806B7;
+        Mon,  1 Mar 2021 17:02:22 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1614571342;
+        bh=dD5DUm3lkvPywW7I+tGGvYkLxO/6FVYZg31iMie/1ZU=;
+        h=From:To:Cc:Subject:Date;
+        b=nP3o7pvWDAVWP6s05P2cjscoP4va5D9EuuJo0dm6Psvei071aqaNshLlkzbtAYI+0
+         QV7nofBmPKl0H6NK0c4z1VvZdERWRSmR8dQjfR57X9cU9q05+tDwOXsPyh5Vcllmtr
+         FhL8PkPTBKBjzyqvgE7JNaPayJWKYmI+gFbUtjOQd+VK9S1oEMTKLWMxBOiNMj/fPt
+         j5KrDgiahV7aNEEI+oUmg9JKemv//GsaOIhg+ZIWJZr+zasB5d5zE5ryFmGyG4SQcq
+         gFTFNqY0iFYwm2mWdk+ZPNvSmXbA3mOaf4PUA5B3qZd18Te5lRC14Gu7k4laCLGevZ
+         eyp2duUkk5AKQ==
+Received: from smtp (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B603c674e0000>; Mon, 01 Mar 2021 17:02:22 +1300
+Received: from evann-dl.ws.atlnz.lc (evann-dl.ws.atlnz.lc [10.33.23.31])
+        by smtp (Postfix) with ESMTP id 7DA0F13EF08;
+        Mon,  1 Mar 2021 17:02:32 +1300 (NZDT)
+Received: by evann-dl.ws.atlnz.lc (Postfix, from userid 1780)
+        id 06D9F1A4EB7; Mon,  1 Mar 2021 17:02:22 +1300 (NZDT)
+From:   Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+Subject: [PATCH] xfrm: Use actual socket sk instead of skb socket for xfrm_output_resume
+Date:   Mon,  1 Mar 2021 17:02:08 +1300
+Message-Id: <20210301040208.20869-1-evan.nimmo@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20210228163031-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=C7uXNjH+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=dESyimp9J3IA:10 a=Dt8K1BYc2ykxIEzuzgsA:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+A situation can occur where the interface bound to the sk is different
+to the interface bound to the sk attached to the skb. The interface
+bound to the sk is the correct one however this information is lost insid=
+e
+xfrm_output2 and instead the sk on the skb is used in xfrm_output_resume
+instead. This assumes that the sk bound interface and the bound interface
+attached to the sk within the skb are the same which can lead to lookup
+failures inside ip_route_me_harder resulting in the packet being dropped.
 
-On 2021/3/1 5:34 上午, Michael S. Tsirkin wrote:
-> On Wed, Feb 24, 2021 at 10:24:41AM -0800, Si-Wei Liu wrote:
->>> Detecting it isn't enough though, we will need a new ioctl to notify
->>> the kernel that it's a legacy guest. Ugh :(
->> Well, although I think adding an ioctl is doable, may I know what the use
->> case there will be for kernel to leverage such info directly? Is there a
->> case QEMU can't do with dedicate ioctls later if there's indeed
->> differentiation (legacy v.s. modern) needed?
-> BTW a good API could be
->
-> #define VHOST_SET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> #define VHOST_GET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
->
-> we did it per vring but maybe that was a mistake ...
+We have an l2tp v3 tunnel with ipsec protection. The tunnel is in the
+global VRF however we have an encapsulated dot1q tunnel interface that
+is within a different VRF. We also have a mangle rule that marks the=20
+packets causing them to be processed inside ip_route_me_harder.
 
+Prior to commit 31c70d5956fc ("l2tp: keep original skb ownership") this
+worked fine as the sk attached to the skb was changed from the dot1q
+encapsulated interface to the sk for the tunnel which meant the interface
+bound to the sk and the interface bound to the skb were identical.
+Commit 46d6c5ae953c ("netfilter: use actual socket sk rather than skb sk
+when routing harder") fixed some of these issues however a similar
+problem existed in the xfrm code.
 
-Actually, I wonder whether it's good time to just not support legacy 
-driver for vDPA. Consider:
+Signed-off-by: Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+---
+ include/net/xfrm.h     |  2 +-
+ net/ipv4/ah4.c         |  2 +-
+ net/ipv4/esp4.c        |  2 +-
+ net/ipv6/ah6.c         |  2 +-
+ net/ipv6/esp6.c        |  2 +-
+ net/xfrm/xfrm_output.c | 10 +++++-----
+ 6 files changed, 10 insertions(+), 10 deletions(-)
 
-1) It's definition is no-normative
-2) A lot of budren of codes
-
-So qemu can still present the legacy device since the config space or 
-other stuffs that is presented by vhost-vDPA is not expected to be 
-accessed by guest directly. Qemu can do the endian conversion when 
-necessary in this case?
-
-Thanks
-
-
->
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index b2a06f10b62c..bfbc7810df94 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1557,7 +1557,7 @@ int xfrm_trans_queue_net(struct net *net, struct sk=
+_buff *skb,
+ int xfrm_trans_queue(struct sk_buff *skb,
+ 		     int (*finish)(struct net *, struct sock *,
+ 				   struct sk_buff *));
+-int xfrm_output_resume(struct sk_buff *skb, int err);
++int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err);
+ int xfrm_output(struct sock *sk, struct sk_buff *skb);
+=20
+ #if IS_ENABLED(CONFIG_NET_PKTGEN)
+diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
+index d99e1be94019..36ed85bf2ad5 100644
+--- a/net/ipv4/ah4.c
++++ b/net/ipv4/ah4.c
+@@ -141,7 +141,7 @@ static void ah_output_done(struct crypto_async_reques=
+t *base, int err)
+ 	}
+=20
+ 	kfree(AH_SKB_CB(skb)->tmp);
+-	xfrm_output_resume(skb, err);
++	xfrm_output_resume(skb->sk, skb, err);
+ }
+=20
+ static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index a3271ec3e162..4b834bbf95e0 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -279,7 +279,7 @@ static void esp_output_done(struct crypto_async_reque=
+st *base, int err)
+ 		    x->encap && x->encap->encap_type =3D=3D TCP_ENCAP_ESPINTCP)
+ 			esp_output_tail_tcp(x, skb);
+ 		else
+-			xfrm_output_resume(skb, err);
++			xfrm_output_resume(skb->sk, skb, err);
+ 	}
+ }
+=20
+diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
+index 440080da805b..080ee7f44c64 100644
+--- a/net/ipv6/ah6.c
++++ b/net/ipv6/ah6.c
+@@ -316,7 +316,7 @@ static void ah6_output_done(struct crypto_async_reque=
+st *base, int err)
+ 	}
+=20
+ 	kfree(AH_SKB_CB(skb)->tmp);
+-	xfrm_output_resume(skb, err);
++	xfrm_output_resume(skb->sk, skb, err);
+ }
+=20
+ static int ah6_output(struct xfrm_state *x, struct sk_buff *skb)
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 153ad103ba74..727d791ed5e6 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -314,7 +314,7 @@ static void esp_output_done(struct crypto_async_reque=
+st *base, int err)
+ 		    x->encap && x->encap->encap_type =3D=3D TCP_ENCAP_ESPINTCP)
+ 			esp_output_tail_tcp(x, skb);
+ 		else
+-			xfrm_output_resume(skb, err);
++			xfrm_output_resume(skb->sk, skb, err);
+ 	}
+ }
+=20
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index a7ab19353313..b81ca117dac7 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -503,22 +503,22 @@ static int xfrm_output_one(struct sk_buff *skb, int=
+ err)
+ 	return err;
+ }
+=20
+-int xfrm_output_resume(struct sk_buff *skb, int err)
++int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err)
+ {
+ 	struct net *net =3D xs_net(skb_dst(skb)->xfrm);
+=20
+ 	while (likely((err =3D xfrm_output_one(skb, err)) =3D=3D 0)) {
+ 		nf_reset_ct(skb);
+=20
+-		err =3D skb_dst(skb)->ops->local_out(net, skb->sk, skb);
++		err =3D skb_dst(skb)->ops->local_out(net, sk, skb);
+ 		if (unlikely(err !=3D 1))
+ 			goto out;
+=20
+ 		if (!skb_dst(skb)->xfrm)
+-			return dst_output(net, skb->sk, skb);
++			return dst_output(net, sk, skb);
+=20
+ 		err =3D nf_hook(skb_dst(skb)->ops->family,
+-			      NF_INET_POST_ROUTING, net, skb->sk, skb,
++			      NF_INET_POST_ROUTING, net, sk, skb,
+ 			      NULL, skb_dst(skb)->dev, xfrm_output2);
+ 		if (unlikely(err !=3D 1))
+ 			goto out;
+@@ -534,7 +534,7 @@ EXPORT_SYMBOL_GPL(xfrm_output_resume);
+=20
+ static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff=
+ *skb)
+ {
+-	return xfrm_output_resume(skb, 1);
++	return xfrm_output_resume(sk, skb, 1);
+ }
+=20
+ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_b=
+uff *skb)
+--=20
+2.27.0
 
