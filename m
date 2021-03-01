@@ -2,128 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52907328A9D
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 19:20:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3353328B09
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 19:30:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239631AbhCASUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 13:20:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
+        id S239903AbhCAS13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 13:27:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239424AbhCASRg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 13:17:36 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F3AC06178C
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 10:16:56 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id b10so17929867ybn.3
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 10:16:56 -0800 (PST)
+        with ESMTP id S239789AbhCASZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 13:25:04 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0439DC061793;
+        Mon,  1 Mar 2021 10:24:24 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id r5so12051944pfh.13;
+        Mon, 01 Mar 2021 10:24:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1/VjnvcPuJxO7/paEY6ICI9381BuU9pj16ZSZ8LXnT8=;
-        b=gIScon4JGGcyeEYxCbBUeAU+2Su9ifu4PHv0HrQsRK8BT1KOIcpcrf9k91zJZpjGp1
-         X8UadC27AkyXgU6endb1U1b+/VX2N+9vGnt3mKtzpGREvLtvEwdJ4k2K9EWIyZbvaacp
-         jUfHdh7pCYhHMn7Rg8lNjoyzuW4LLpZ9oNitOf42tKXAwCLc1MdMhilnvxovQh6skL/n
-         lZi/wi+myO/MITMkxMrlhhrrlsutzYes8mGjmCOj3MQg5rL9i84ZsRqkmuiqg7l9Fclb
-         Zhc+SUfA4yxronoYOBrPdk+rIPoUrgkl650cU+8vzBPSi3n7UbUvbRPBMlt4f8E9cNDa
-         r8wA==
+        bh=shpmX4JNEjgs4w3tnqp6tN85OJMJTBzrncvlDCPAXuQ=;
+        b=dJYEnomGd+M1qxZI3k5HkMPyn8Tfycb0tw2vDKCTITRKCZqYwT2aNSmOcN2lF8/DZ4
+         K4l5H1QUoCiNn4qVUvjyUomgqE5BbCwW5ns9uImgK2bpLki/5NBn1dsNQFRpCaX94sIu
+         EhxG/kNHM/2vfZWfrjecwkCXeCpVt805iMmrwPnS+Yweix9i8bM45GrB4McvAgt0ZcrM
+         o6kmeyPs+uRCmAEyqJn7NtRxK8gZOetPVmTmBjg6UCbiPi1WsNEkPoQ17rpRO7/E7m2a
+         9if3b6qBzt9I41ucdHPhRdfVMFg7OrFPs0XVgnfW6weMce+BERemMDm25EWcxBUaLvMY
+         egwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1/VjnvcPuJxO7/paEY6ICI9381BuU9pj16ZSZ8LXnT8=;
-        b=O76Mu0uchA/S1vc60j7jQ986N78wLPZokHs11dNZ56G3NmEMh1SKG7dtNqjdX6w413
-         6r+gffaXMy3tddx7GApoVH+2MAh//35qovSsawkX1Lf77AqeXhZldSWpdErCRK0fbxBl
-         X4isR40HC8ebkkzpSpZoD8rQ2+rdvWXToYCIHvhhII7AnRm/PaoR+djxPlv9csWnmqbw
-         9Q+IVmsQPlQsmvWKAoEIApcRhS1jJaGlR+c5iVCfAX5w08D5IU9xkvi0jmRsxZEw9KGO
-         qAPyjCryOWFU3TBQAXRwSyYagNd5Fx9WkfKJL4FAbpSxhXPEtaBOpflgp+2QiXLml9kb
-         e30w==
-X-Gm-Message-State: AOAM531NQMz7TsOi8Z8rM7D/ysaNcwhpXoQpRL5mCSsC2kX9GoeXDxIm
-        P8Ibe7k97eQ1+dP3HKgSpXAxbsYr0qh99gCOPHOrSlti/3o=
-X-Google-Smtp-Source: ABdhPJwCaEk+j6i1aGTuIsdtLH1Khk03rsi62AvUWb6Ajr4RyJN8uTD3Yyxki2dOVwwYZKJmOltY5P32Y9OcQWq1oPI=
-X-Received: by 2002:a25:9706:: with SMTP id d6mr24388022ybo.139.1614622616067;
- Mon, 01 Mar 2021 10:16:56 -0800 (PST)
+        bh=shpmX4JNEjgs4w3tnqp6tN85OJMJTBzrncvlDCPAXuQ=;
+        b=fEX7o9YjtqmY2ggqyCFh9aC6Wtca8eXGEE7p3jnsDr4kzfdPSKu2A5woEA7lXdO4xe
+         PcwrnI94sHb5unPOi8z+yi9ZBX5lZVWLosT1qZ/mZdmTDqqd1V1PtW3Zfy50aoa260Eu
+         X9v3EHp14FISVJXGerZP617fCfeoIMxI9xG/PWKXcHSV/rAI6+O816PbdR+CbtQyMCza
+         Ynoglh4Kyx49BYbSxorXTAAxLSL/sPePaUShwqML3tvF83Sh9ZFmSpfY97kTSx/Wy07j
+         UTYhLvy1TfFbk6y4wrP1ysCgDYasXuQIl1kTS/HvLCEAuPNEjdBtGZoDVRNlwtfUez0d
+         qGdg==
+X-Gm-Message-State: AOAM533mu0dFpIvABYTbny5tIpqMWt8oUHSv9vcmzLGLSY7XwlDSccdl
+        oKWDmxbFQ2fN1bV+06hprByQQ9eBfAB52kw9CvU=
+X-Google-Smtp-Source: ABdhPJy+Ru8qvv/mboqWa6py3j4A2EHM6toLYVIJDzx1OlqiHWWWo4TKttM1C4ZAbhXYWaqFLa69+M2E6Wy7jZsz4EM=
+X-Received: by 2002:a63:e109:: with SMTP id z9mr14803837pgh.5.1614623063477;
+ Mon, 01 Mar 2021 10:24:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20210227003047.1051347-1-weiwan@google.com> <20210226164803.4413571f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_CJx7K1Fab1C0Qkw=1VNnDaV9qwB_UUtikPMoqNUUWJuA@mail.gmail.com>
- <20210226172240.24d626e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_B6baYFZnEOMS=Nmvg0kA_qB=7ip4S96ys9ZoJWfOiOCA@mail.gmail.com>
- <20210226180833.09c98110@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_ABZfs3zyQ+90cC1P8T8w94Lz4RvvBdQHQsHXEPP5aexQ@mail.gmail.com>
- <CAEA6p_DtTG6ryiG3GkxaySJeNcYF=RfkgCYTc-T-mHqMwL2-Gw@mail.gmail.com> <20210228111710.4e82a88e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210228111710.4e82a88e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Mon, 1 Mar 2021 10:16:45 -0800
-Message-ID: <CAEA6p_BrxajA3EpdWcnMbBJPse45PU_KUUzWM0V-9T6LrhK8ww@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: fix race between napi kthread mode and busy poll
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Duyck <alexanderduyck@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Martin Zaharinov <micron10@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>
+References: <20210223184934.6054-1-xiyou.wangcong@gmail.com>
+ <20210223184934.6054-5-xiyou.wangcong@gmail.com> <CACAyw9-L9b+muEm2uFkBi-yRNY1enFGN7zLVvF7kOH2bjSb5+g@mail.gmail.com>
+In-Reply-To: <CACAyw9-L9b+muEm2uFkBi-yRNY1enFGN7zLVvF7kOH2bjSb5+g@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 1 Mar 2021 10:24:12 -0800
+Message-ID: <CAM_iQpUCsoXLJ_8BFywJQXmEAXA-Kmes0x7vCN2hnxtoiVaDoQ@mail.gmail.com>
+Subject: Re: [Patch bpf-next v7 4/9] skmsg: move sk_redir from TCP_SKB_CB to skb
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 28, 2021 at 11:17 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Mon, Mar 1, 2021 at 7:24 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
-> On Sat, 27 Feb 2021 15:23:56 -0800 Wei Wang wrote:
-> > > > Indeed, looks like the task will be in WAKING state until it runs?
-> > > > We can switch the check in ____napi_schedule() from
-> > > >
-> > > >         if (thread->state == TASK_RUNNING)
-> > > >
-> > > > to
-> > > >
-> > > >         if (!(thread->state & TASK_INTERRUPTIBLE))
-> > > >
-> > > > ?
-> > >
-> > > Hmm... I am not very sure what state the thread will be put in after
-> > > kthread_create(). Could it be in TASK_INTERRUPTIBLE?
+> On Tue, 23 Feb 2021 at 18:49, Cong Wang <xiyou.wangcong@gmail.com> wrote:
 > >
-> > I did a printk and confirmed that the thread->state is
-> > TASK_UNINTERRUPTIBLE after kthread_create() is called.
-> > So I think if we change the above state to:
-> >           if (thread->state != TASK_INTERRUPTIBLE)
-> >                   set_bit(NAPI_STATE_SCHED_THREADED, &napi->state);
-> > It should work.
->
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 6c5967e80132..43607523ee99 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -1501,17 +1501,18 @@ static int napi_kthread_create(struct napi_struct *n)
-> >  {
-> >         int err = 0;
+> > From: Cong Wang <cong.wang@bytedance.com>
 > >
-> > -       /* Create and wake up the kthread once to put it in
-> > -        * TASK_INTERRUPTIBLE mode to avoid the blocked task
-> > -        * warning and work with loadavg.
-> > +       /* Avoid waking up the kthread during creation to prevent
-> > +        * potential race.
-> >          */
-> > -       n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
-> > -                               n->dev->name, n->napi_id);
-> > +       n->thread = kthread_create(napi_threaded_poll, n, "napi/%s-%d",
-> > +                                  n->dev->name, n->napi_id);
+> > Currently TCP_SKB_CB() is hard-coded in skmsg code, it certainly
+> > does not work for any other non-TCP protocols. We can move them to
+> > skb ext, but it introduces a memory allocation on fast path.
+> >
+> > Fortunately, we only need to a word-size to store all the information,
+> > because the flags actually only contains 1 bit so can be just packed
+> > into the lowest bit of the "pointer", which is stored as unsigned
+> > long.
+> >
+> > Inside struct sk_buff, '_skb_refdst' can be reused because skb dst is
+> > no longer needed after ->sk_data_ready() so we can just drop it.
 >
-> Does kthread_run() make the thread go into TASK_INTERRUPTIBLE ?
-> It just calls wake_up_process(), which according to a comment in the
-> kdoc..
+> Hi Cong Wang,
 >
->  * Conceptually does:
->  *
->  *   If (@state & @p->state) @p->state = TASK_RUNNING.
+> I saw this on patchwork:
 >
-> So I think we could safely stick to kthread_run() if the condition in
-> at the NAPI wake point checks for INTERRUPTIBLE?
+> include/linux/skbuff.h:932: warning: Function parameter or member
+> '_sk_redir' not described in 'sk_buff'
+> New warnings added
+> 0a1
+> > include/linux/skbuff.h:932: warning: Function parameter or member '_sk_redir' not described in 'sk_buff'
+> Per-file breakdown
 
-I think so. kthread_run() wakes up the kthread and kthread_wait_poll()
-should put it to INTERRUPTIBLE mode and schedule() will make it go to
-sleep, and wait for the next napi_schedule().
-I've also tested on my setup and saw no issues.
+Ah, I didn't know the function doc is mandatory now.
+
+>
+> Source: https://patchwork.kernel.org/project/netdevbpf/patch/20210223184934.6054-5-xiyou.wangcong@gmail.com/
+>
+> Maybe something to follow up on, I'm not sure what the conventions are here.
+
+It is already merged, so we definitely need a one-line followup fix.
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index bd84f799c952..0503c917d773 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -656,6 +656,7 @@ typedef unsigned char *sk_buff_data_t;
+  *     @protocol: Packet protocol from driver
+  *     @destructor: Destruct function
+  *     @tcp_tsorted_anchor: list structure for TCP (tp->tsorted_sent_queue)
++ *     @_sk_redir: socket redirection information for skmsg
+  *     @_nfct: Associated connection, if any (with nfctinfo bits)
+  *     @nf_bridge: Saved data about a bridged frame - see br_netfilter.c
+  *     @skb_iif: ifindex of device we arrived on
+
+Thanks.
