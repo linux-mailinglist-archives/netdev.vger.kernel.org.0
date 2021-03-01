@@ -2,259 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37EEC327C2C
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 11:31:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 404E9327C5E
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 11:39:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234461AbhCAKbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 05:31:14 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:55024 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234251AbhCAKbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 05:31:08 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 637341C0B76; Mon,  1 Mar 2021 11:30:24 +0100 (CET)
-Date:   Mon, 1 Mar 2021 11:30:24 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        Dan Murphy <dmurphy@ti.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Ben Whitten <ben.whitten@gmail.com>
-Subject: Re: [PATCH RFC leds + net-next 2/7] leds: trigger: netdev: simplify
- the driver by using bit field members
-Message-ID: <20210301103024.GA31897@duo.ucw.cz>
-References: <20201030114435.20169-1-kabel@kernel.org>
- <20201030114435.20169-3-kabel@kernel.org>
+        id S234548AbhCAKjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 05:39:24 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:49344 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234327AbhCAKiF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 05:38:05 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 121AYRqh036884;
+        Mon, 1 Mar 2021 10:36:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=ztTmG0D3FIVh6A0R5PDcmqcRq76aDK1lu61HlH53ZnI=;
+ b=lfatlliHMA/tHZ+fZAwWYm7+Q+RKl3OUkW8pz9MYrYeE2/uMJIW9fx3R1S+WGYFVpuSx
+ Qc71ygwcmtszA1nKc2tGC00CbfvA+MKx4qOCIoHM0++iKhQQ2QE3v6kDxppfXvuwcXRH
+ +6UUnOtsrmTjGCNt8SCCkfozYJqM5H8ARaLkFUkWUeKN+qhjIAzBnp3eeu3UCvJA124K
+ NJdzvn/Iw4Df9eQhS/ECXcxU4JLo996oTb7D5smHjFLM4PA7LHCtoNU0Z0v1Is7CqsnO
+ QFB6mgeH/cMW0YuAHOG6BroMIGD11Hiz7qnw1iU4Mj6KEzjb/q5cd+Pvo36IYoDpaMb6 MQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 36ye1m39y6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 01 Mar 2021 10:36:46 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 121AYruF100201;
+        Mon, 1 Mar 2021 10:36:45 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 36yynmjavp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 01 Mar 2021 10:36:45 +0000
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 121AaeS7011432;
+        Mon, 1 Mar 2021 10:36:41 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 01 Mar 2021 10:36:40 +0000
+Date:   Mon, 1 Mar 2021 13:36:30 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Eran Ben Elisha <eranbe@nvidia.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, Aya Levin <ayal@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Ariel Levkovich <lariel@mellanox.com>,
+        "Pavel Machek (CIP)" <pavel@denx.de>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH mellanox-tree] net/mlx5: prevent an integer underflow in
+ mlx5_perout_configure()
+Message-ID: <20210301103630.GP2087@kadam>
+References: <YC+LoAcvcQSWLLKX@mwanda>
+ <e9beab47-4f32-4aa4-cdb6-6fa7402e55de@nvidia.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="6c2NcOVqGQ03X4Wi"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201030114435.20169-3-kabel@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <e9beab47-4f32-4aa4-cdb6-6fa7402e55de@nvidia.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9909 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 spamscore=0
+ bulkscore=0 suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103010088
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9909 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 priorityscore=1501
+ mlxlogscore=999 impostorscore=0 suspectscore=0 adultscore=0 malwarescore=0
+ mlxscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103010088
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Mar 01, 2021 at 12:12:34PM +0200, Eran Ben Elisha wrote:
+> 
+> 
+> On 2/19/2021 11:57 AM, Dan Carpenter wrote:
+> > The value of "sec" comes from the user.  Negative values will lead to
+> > shift wrapping inside the perout_conf_real_time() function and triggger
+> > a UBSan warning.
+> > 
+> > Add a check and return -EINVAL to prevent that from happening.
+> > 
+> > Fixes: 432119de33d9 ("net/mlx5: Add cyc2time HW translation mode support")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> > Saeed, I think this goes through your git tree and you will send a pull
+> > request to the networking?
+> > 
+> >  From static analysis.  Not tested.
+> > 
+> >   drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+> > index b0e129d0f6d8..286824ca62b5 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+> > @@ -516,7 +516,7 @@ static int mlx5_perout_configure(struct ptp_clock_info *ptp,
+> >   		nsec = rq->perout.start.nsec;
+> >   		sec = rq->perout.start.sec;
+> > -		if (rt_mode && sec > U32_MAX)
+> 
+> This if clause was set to reject perout time start sec bigger than U32_MAX,
+> as rt mode specifically doesn't support it.
+> 
+> A user negative values protection should be generic for all netdev drivers,
+> inside the caller ioctl func, and not part of any driver code.
+> 
 
---6c2NcOVqGQ03X4Wi
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm not a networking expert...  :/  It's easier for me to see that this
+code will trigger a syzbot splat vs saying that there is no valid use
+case for negative seconds any driver.
 
-On Fri 2020-10-30 12:44:30, Marek Beh=FAn wrote:
-> Use bit fields members in struct led_netdev_data instead of one mode
-> member and set_bit/clear_bit/test_bit functions. These functions are
-> suitable for longer or variable length bit arrays.
+What you're saying sounds reasonable enough to me, but I don't know
+enough about networking to comment one way or the other.  Maybe the
+other drivers have a use for negative seconds?
 
-They also provide atomicity guarantees. If you can explain why this is
-safe, we can do this, but it needs _way_ better changelog.
+regards,
+dan carpenter
 
-								Pavel
-
-> Signed-off-by: Marek Beh=FAn <kabel@kernel.org>
-> ---
->  drivers/leds/trigger/ledtrig-netdev.c | 69 ++++++++++++---------------
->  1 file changed, 30 insertions(+), 39 deletions(-)
->=20
-> diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger=
-/ledtrig-netdev.c
-> index 4f6b73e3b491..8f013b6df4fa 100644
-> --- a/drivers/leds/trigger/ledtrig-netdev.c
-> +++ b/drivers/leds/trigger/ledtrig-netdev.c
-> @@ -49,11 +49,11 @@ struct led_netdev_data {
->  	atomic_t interval;
->  	unsigned int last_activity;
-> =20
-> -	unsigned long mode;
-> -#define NETDEV_LED_LINK	0
-> -#define NETDEV_LED_TX	1
-> -#define NETDEV_LED_RX	2
-> -#define NETDEV_LED_MODE_LINKUP	3
-> +	unsigned link:1;
-> +	unsigned tx:1;
-> +	unsigned rx:1;
-> +
-> +	unsigned linkup:1;
->  };
-> =20
->  enum netdev_led_attr {
-> @@ -73,10 +73,10 @@ static void set_baseline_state(struct led_netdev_data=
- *trigger_data)
->  	if (!led_cdev->blink_brightness)
->  		led_cdev->blink_brightness =3D led_cdev->max_brightness;
-> =20
-> -	if (!test_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode))
-> +	if (!trigger_data->linkup)
->  		led_set_brightness(led_cdev, LED_OFF);
->  	else {
-> -		if (test_bit(NETDEV_LED_LINK, &trigger_data->mode))
-> +		if (trigger_data->link)
->  			led_set_brightness(led_cdev,
->  					   led_cdev->blink_brightness);
->  		else
-> @@ -85,8 +85,7 @@ static void set_baseline_state(struct led_netdev_data *=
-trigger_data)
->  		/* If we are looking for RX/TX start periodically
->  		 * checking stats
->  		 */
-> -		if (test_bit(NETDEV_LED_TX, &trigger_data->mode) ||
-> -		    test_bit(NETDEV_LED_RX, &trigger_data->mode))
-> +		if (trigger_data->tx || trigger_data->rx)
->  			schedule_delayed_work(&trigger_data->work, 0);
->  	}
->  }
-> @@ -131,10 +130,10 @@ static ssize_t device_name_store(struct device *dev,
->  		trigger_data->net_dev =3D
->  		    dev_get_by_name(&init_net, trigger_data->device_name);
-> =20
-> -	clear_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-> +	trigger_data->linkup =3D 0;
->  	if (trigger_data->net_dev !=3D NULL)
->  		if (netif_carrier_ok(trigger_data->net_dev))
-> -			set_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-> +			trigger_data->linkup =3D 1;
-> =20
->  	trigger_data->last_activity =3D 0;
-> =20
-> @@ -150,23 +149,24 @@ static ssize_t netdev_led_attr_show(struct device *=
-dev, char *buf,
->  	enum netdev_led_attr attr)
->  {
->  	struct led_netdev_data *trigger_data =3D led_trigger_get_drvdata(dev);
-> -	int bit;
-> +	int val;
-> =20
->  	switch (attr) {
->  	case NETDEV_ATTR_LINK:
-> -		bit =3D NETDEV_LED_LINK;
-> +		val =3D trigger_data->link;
->  		break;
->  	case NETDEV_ATTR_TX:
-> -		bit =3D NETDEV_LED_TX;
-> +		val =3D trigger_data->tx;
->  		break;
->  	case NETDEV_ATTR_RX:
-> -		bit =3D NETDEV_LED_RX;
-> +		val =3D trigger_data->rx;
->  		break;
->  	default:
-> -		return -EINVAL;
-> +		/* unreachable */
-> +		break;
->  	}
-> =20
-> -	return sprintf(buf, "%u\n", test_bit(bit, &trigger_data->mode));
-> +	return sprintf(buf, "%u\n", val);
->  }
-> =20
->  static ssize_t netdev_led_attr_store(struct device *dev, const char *buf,
-> @@ -175,33 +175,28 @@ static ssize_t netdev_led_attr_store(struct device =
-*dev, const char *buf,
->  	struct led_netdev_data *trigger_data =3D led_trigger_get_drvdata(dev);
->  	unsigned long state;
->  	int ret;
-> -	int bit;
-> =20
->  	ret =3D kstrtoul(buf, 0, &state);
->  	if (ret)
->  		return ret;
-> =20
-> +	cancel_delayed_work_sync(&trigger_data->work);
-> +
->  	switch (attr) {
->  	case NETDEV_ATTR_LINK:
-> -		bit =3D NETDEV_LED_LINK;
-> +		trigger_data->link =3D state;
->  		break;
->  	case NETDEV_ATTR_TX:
-> -		bit =3D NETDEV_LED_TX;
-> +		trigger_data->tx =3D state;
->  		break;
->  	case NETDEV_ATTR_RX:
-> -		bit =3D NETDEV_LED_RX;
-> +		trigger_data->rx =3D state;
->  		break;
->  	default:
-> -		return -EINVAL;
-> +		/* unreachable */
-> +		break;
->  	}
-> =20
-> -	cancel_delayed_work_sync(&trigger_data->work);
-> -
-> -	if (state)
-> -		set_bit(bit, &trigger_data->mode);
-> -	else
-> -		clear_bit(bit, &trigger_data->mode);
-> -
->  	set_baseline_state(trigger_data);
-> =20
->  	return size;
-> @@ -315,7 +310,7 @@ static int netdev_trig_notify(struct notifier_block *=
-nb,
-> =20
->  	spin_lock_bh(&trigger_data->lock);
-> =20
-> -	clear_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-> +	trigger_data->linkup =3D 0;
->  	switch (evt) {
->  	case NETDEV_CHANGENAME:
->  	case NETDEV_REGISTER:
-> @@ -331,7 +326,7 @@ static int netdev_trig_notify(struct notifier_block *=
-nb,
->  	case NETDEV_UP:
->  	case NETDEV_CHANGE:
->  		if (netif_carrier_ok(dev))
-> -			set_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
-> +			trigger_data->linkup =3D 1;
->  		break;
->  	}
-> =20
-> @@ -360,21 +355,17 @@ static void netdev_trig_work(struct work_struct *wo=
-rk)
->  	}
-> =20
->  	/* If we are not looking for RX/TX then return  */
-> -	if (!test_bit(NETDEV_LED_TX, &trigger_data->mode) &&
-> -	    !test_bit(NETDEV_LED_RX, &trigger_data->mode))
-> +	if (!trigger_data->tx && !trigger_data->rx)
->  		return;
-> =20
->  	dev_stats =3D dev_get_stats(trigger_data->net_dev, &temp);
-> -	new_activity =3D
-> -	    (test_bit(NETDEV_LED_TX, &trigger_data->mode) ?
-> -		dev_stats->tx_packets : 0) +
-> -	    (test_bit(NETDEV_LED_RX, &trigger_data->mode) ?
-> -		dev_stats->rx_packets : 0);
-> +	new_activity =3D (trigger_data->tx ? dev_stats->tx_packets : 0) +
-> +		       (trigger_data->rx ? dev_stats->rx_packets : 0);
-> =20
->  	if (trigger_data->last_activity !=3D new_activity) {
->  		led_stop_software_blink(trigger_data->led_cdev);
-> =20
-> -		invert =3D test_bit(NETDEV_LED_LINK, &trigger_data->mode);
-> +		invert =3D trigger_data->link;
->  		interval =3D jiffies_to_msecs(
->  				atomic_read(&trigger_data->interval));
->  		/* base state is ON (link present) */
-> --=20
-> 2.26.2
-
---=20
-http://www.livejournal.com/~pavelmachek
-
---6c2NcOVqGQ03X4Wi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYDzCQAAKCRAw5/Bqldv6
-8kHFAKCNwKKtKSy97DppcH5jmGLRM1bGGwCdHfW8OksJn+5c5lvwAukojPbEYic=
-=S5me
------END PGP SIGNATURE-----
-
---6c2NcOVqGQ03X4Wi--
+> > +		if (rt_mode && (sec < 0 || sec > U32_MAX))
+> >   			return -EINVAL;
+> >   		time_stamp = rt_mode ? perout_conf_real_time(sec, nsec) :
+> > 
