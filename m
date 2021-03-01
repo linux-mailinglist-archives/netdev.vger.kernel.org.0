@@ -2,136 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DE58327916
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:22:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CA03327932
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:28:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232888AbhCAIWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 03:22:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbhCAIV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 03:21:58 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491C9C06174A
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 00:21:17 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id ci14so7588897ejc.7
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 00:21:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EoXFYeEw3KEDQKOrwVz/cIXJahTTaeLX0DT+rLifwdI=;
-        b=bb0QRgXb8Yet/pNSa+nDWdjPbwkQoj3pnNrqdtbWeNr3wrMj8n/vUOIY8Aqy6i6ogt
-         rCPIsQL1hcyuWWEYvVdh0NQGcISaJwY5sKYIuf0OCCGyzgpASuo1v1mEjblgTo05Vtl3
-         pYxrERXgPkobwDBgb8qHigANNUriamd0OwWKIbrgedFmMJ7ugMLWfzFMSM/JGmOYYpZ/
-         Choor3Qtgufut7a9w3qkXWcm/0nBpTpwnzVDo83eBAJZHpb9BeJLSG3O7KjZCuZUp6Nc
-         eNHfCZoq1bdJmwJkdbYlHKKtGFsfOWv5RdnfYiBJ/6HaQeoTmojMUVoHE2Id98cOMCvT
-         C5sA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EoXFYeEw3KEDQKOrwVz/cIXJahTTaeLX0DT+rLifwdI=;
-        b=NPKH6y5xw4aBdZ4Hcia+QlEfJivOMJ+3foe07GCosZNmI1EA13BKwEO6f7EVUcIhzY
-         xyKZb01bzHE76DahMB3Y+oNiEXEEBaee3znqL35oKCP/I3cjswM0Jfmc2+XA1L0xMzI0
-         UhxCG3mjbjVg2SDH+VuaAiIlPQjuqRhzpz4aHTebdIPfVJQauJNNCzUDuUsmAKXtkBho
-         ScdbPJ2y+RB9+sprUSj4ZtKXzHY2yB2MIxbSwydBI/XLLcNa8jO5ofE5HTwGY2f6ygwQ
-         u8yzMUZH2ZoJQZfwwNyU/fRy+9vNkzJM4v+lSzKLDdMRMO5UE9vZE+VsemcrHnX3bNGJ
-         lLaQ==
-X-Gm-Message-State: AOAM533FCbNEVTpEUX8yOPR0kUScn04tucz9Sa/eCBR9IjyUYAcxyZdZ
-        DDU8Qv8cUGvNvLicS2pFDfI=
-X-Google-Smtp-Source: ABdhPJwvrabCJsqWQUjYI6nP+JLO1n6lWGfgT6+/m6UwJ6YPQmw8CpALe5dm9UBCY9qIXCuB7D8eyA==
-X-Received: by 2002:a17:907:2513:: with SMTP id y19mr14660248ejl.241.1614586875891;
-        Mon, 01 Mar 2021 00:21:15 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id r5sm13316705ejx.96.2021.03.01.00.21.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 00:21:15 -0800 (PST)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Mon, 1 Mar 2021 10:21:14 +0200
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Sven Schuchmann <schuchmann@schleissheimer.de>
-Subject: Re: [PATCH net] net: phy: ti: take into account all possible
- interrupt sources
-Message-ID: <20210301082114.4cniggpjletsnibj@skbuf>
-References: <20210226153020.867852-1-ciorneiioana@gmail.com>
- <20210228120027.76488180@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S232979AbhCAI22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 03:28:28 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:43207 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232965AbhCAI20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 03:28:26 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id C428D5C00EB;
+        Mon,  1 Mar 2021 03:27:16 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 01 Mar 2021 03:27:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=3VNe/Z
+        IQjG0QqQLJGcIdV8/TBAtjFq/Dmnk92GJqRy4=; b=HrE7ekOFAtZromWAf3v0rU
+        GXlkcV9Ji/97I4U6/br8rNmDzq2DuQh40oq2+GkNGAaOF5hA5/R+KmdqvQSwpLjJ
+        u0WjKtpx2yT/aKtMIDiGIYagoePEtm/ntWWuXap+lUhgzqcMTGtYX39qEa0Yh+QK
+        wipOwJBEcg/w9CyDOXmqFWJNqOkYvS0cWqbfCBUIX+dez3nfy10csmymZfSIexeo
+        AOyF3rovJCSsF1hUlwsChW2+IGAadHqpLokFfuNOGdadMmDkKHoZS179SKuIwM0T
+        WCRatdUaiTQNr5AA0zC8vyOyjm8++PrNBg8Bq2NyRcOS4o6dG3n+rPF9UI9MagJg
+        ==
+X-ME-Sender: <xms:ZKU8YIWXgavrrd9wTzwdhI3D9zUKHYSoG-f0Z-o-SzCqkuubz7uRxg>
+    <xme:ZKU8YMkd4cAU0Ih9bwZ8i9U0S7hOsQWgVM12tV9JDHkVkHyFpMfOiBZAw8CuL8_GG
+    awOh0nDiOCRlpI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrleejgdduvdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:ZKU8YMacSBt-BGN7ZnJ49tQsSKBWdHvjrglRxCTIaDq4vgPjldthGQ>
+    <xmx:ZKU8YHUQMFoDp1VZe60B94YTntUxTA5UWUuXfPMXOOJNOSCsZRgP6w>
+    <xmx:ZKU8YCnkX3OPhJf4ln0UAObrJX1ckd4-OGoKg3-udRKdvzE8A9kEuA>
+    <xmx:ZKU8YDBRmavXgDJ05F_5V-72uBGhX5bMrVnB7pRWQ4_PtebYxye09g>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1AFCD1080057;
+        Mon,  1 Mar 2021 03:27:15 -0500 (EST)
+Date:   Mon, 1 Mar 2021 10:27:12 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        roopa@nvidia.com, sharpd@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net 1/2] nexthop: Do not flush blackhole nexthops
+ when loopback goes down
+Message-ID: <YDylYHA/FsQS4Oa3@shredder.lan>
+References: <20210228142613.1642938-1-idosch@idosch.org>
+ <20210228142613.1642938-2-idosch@idosch.org>
+ <1db96a26-9500-aa3d-16ce-2774e6dcc5f2@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210228120027.76488180@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1db96a26-9500-aa3d-16ce-2774e6dcc5f2@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 28, 2021 at 12:00:27PM -0800, Jakub Kicinski wrote:
-> On Fri, 26 Feb 2021 17:30:20 +0200 Ioana Ciornei wrote:
-> > diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-> > index be1224b4447b..f7a2ec150e54 100644
-> > --- a/drivers/net/phy/dp83822.c
-> > +++ b/drivers/net/phy/dp83822.c
-> > @@ -290,6 +290,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
-> >  
-> >  static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
-> >  {
-> > +	bool trigger_machine = false;
-> >  	int irq_status;
-> >  
-> >  	/* The MISR1 and MISR2 registers are holding the interrupt status in
-> > @@ -305,7 +306,7 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
-> >  		return IRQ_NONE;
-> >  	}
-> >  	if (irq_status & ((irq_status & GENMASK(7, 0)) << 8))
-> > -		goto trigger_machine;
-> > +		trigger_machine = true;
-> >  
-> >  	irq_status = phy_read(phydev, MII_DP83822_MISR2);
-> >  	if (irq_status < 0) {
-> > @@ -313,11 +314,11 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
-> >  		return IRQ_NONE;
-> >  	}
-> >  	if (irq_status & ((irq_status & GENMASK(7, 0)) << 8))
-> > -		goto trigger_machine;
-> > +		trigger_machine = true;
-> >  
-> > -	return IRQ_NONE;
-> > +	if (!trigger_machine)
-> > +		return IRQ_NONE;
-> >  
-> > -trigger_machine:
-> >  	phy_trigger_machine(phydev);
-> >  
-> >  	return IRQ_HANDLED;
+On Sun, Feb 28, 2021 at 04:40:13PM -0700, David Ahern wrote:
+> LGTM. I suggest submitting without the RFC.
 > 
-> Would it be better to code it up as:
-> 
-> 	irqreturn_t ret = IRQ_NONE;
-> 
-> 	if (irq_status & ...)
-> 		ret = IRQ_HANDLED;
-> 
-> 	/* .. */
-> 
-> 	if (ret != IRQ_NONE)
-> 		phy_trigger_machine(phydev);
-> 
-> 	return ret;
-> 
-> That reads a tiny bit better to me, but it's probably majorly
-> subjective so I'm happy with existing patch if you prefer it.
+> Reviewed-by: David Ahern <dsahern@gmail.com>
 
-I think I prefer it as it is and this is because it would be in line
-with all the other PHY drivers which do this:
-
-	if (!(irq_status & int_enabled))
-		return IRQ_NONE;
-
-	phy_trigger_machine(phydev);
-
-	return IRQ_HANDLED;
-
-Ioana
+Thanks, David. Will let it go through regression and submit later this
+week.
