@@ -2,260 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01A603288CB
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 18:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6E7A328809
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 18:36:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238067AbhCARo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 12:44:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57778 "EHLO mail.kernel.org"
+        id S238294AbhCARcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 12:32:16 -0500
+Received: from mail1.ugh.no ([178.79.162.34]:52188 "EHLO mail1.ugh.no"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238120AbhCARh4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Mar 2021 12:37:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BF69164E37;
-        Mon,  1 Mar 2021 16:55:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1614617728;
-        bh=AMJNHFOU55Lr0ratCG7R4V8kA8uYLYXjAAALQ5qQZ3g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kfs5QSBUAD+bz4kujG2EpMasFR3Cl0YjmvAEZvr0fLqrp3u41ZBrSbRItJFfJbBxR
-         8DHbWCXOKiKoyr7seL4HnM9rNBFcykeDSB4yVEteryfsFCVIB5Bw+uSoIi/d/W/6PT
-         Zl+ZBPsDaEGTGhEfmc/UwEb0+is/JEMKUCDXeD30=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com,
-        syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com,
-        Matt Mullins <mmullins@mmlx.us>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 176/340] tracepoint: Do not fail unregistering a probe due to memory failure
-Date:   Mon,  1 Mar 2021 17:12:00 +0100
-Message-Id: <20210301161056.968245888@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210301161048.294656001@linuxfoundation.org>
-References: <20210301161048.294656001@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S238379AbhCARZ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Mar 2021 12:25:57 -0500
+X-Greylist: delayed 576 seconds by postgrey-1.27 at vger.kernel.org; Mon, 01 Mar 2021 12:25:53 EST
+Received: from localhost (localhost [127.0.0.1])
+        by mail1.ugh.no (Postfix) with ESMTP id 6A93F25416D;
+        Mon,  1 Mar 2021 18:15:02 +0100 (CET)
+Received: from mail1.ugh.no ([127.0.0.1])
+        by localhost (catastrophix.ugh.no [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id CnRblLKgRAdI; Mon,  1 Mar 2021 18:15:02 +0100 (CET)
+Received: from [IPv6:2a0a:2780:4e89:40:ab5f:9818:16a8:7606] (unknown [IPv6:2a0a:2780:4e89:40:ab5f:9818:16a8:7606])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: andre@tomt.net)
+        by mail.ugh.no (Postfix) with ESMTPSA id E3DE22541F6;
+        Mon,  1 Mar 2021 18:15:01 +0100 (CET)
+From:   Andre Tomt <andre@tomt.net>
+Subject: Multicast routing + sch_fq not working since 4.20 (bisected)
+To:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Message-ID: <4dc5ea60-a157-1af2-84db-7066b9b41da5@tomt.net>
+Date:   Mon, 1 Mar 2021 18:15:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steven Rostedt (VMware) <rostedt@goodmis.org>
+TLDR; Multicast routing (at least IPv4) in combination with sch_fq is 
+not working since kernel 4.20-rc1 and up to and including 5.12-rc1. 
+Other tested qdisc schedulers work fine (pfifo_fast, fq_codel, cake)
 
-[ Upstream commit befe6d946551d65cddbd32b9cb0170b0249fd5ed ]
+Hello all
 
-The list of tracepoint callbacks is managed by an array that is protected
-by RCU. To update this array, a new array is allocated, the updates are
-copied over to the new array, and then the list of functions for the
-tracepoint is switched over to the new array. After a completion of an RCU
-grace period, the old array is freed.
+I've been chasing a issue with multicast routing the past few days where 
+nothing went out on the physical egress port even though:
+* the multicast routes were registered and resolved with the correct 
+interfaces in ip mroute show
+* the reverse path was OK
+* data was flowing in on the ingress side
+* forwarding / mc_forwarding enabled
+* registered fine in a nftables log rule in forward (which was accepting 
+all)
+* packets showed up in (local) tcpdump on egress vlan virtual interface
 
-This process happens for both adding a callback as well as removing one.
-But on removing a callback, if the new array fails to be allocated, the
-callback is not removed, and may be used after it is freed by the clients
-of the tracepoint.
-
-There's really no reason to fail if the allocation for a new array fails
-when removing a function. Instead, the function can simply be replaced by a
-stub function that could be cleaned up on the next modification of the
-array. That is, instead of calling the function registered to the
-tracepoint, it would call a stub function in its place.
-
-Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
-Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
-Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
-Link: https://lkml.kernel.org/r/20201118093405.7a6d2290@gandalf.local.home
-
-[ Note, this version does use undefined compiler behavior (assuming that
-  a stub function with no parameters or return, can be called by a location
-  that thinks it has parameters but still no return value. Static calls
-  do the same thing, so this trick is not without precedent.
-
-  There's another solution that uses RCU tricks and is more complex, but
-  can be an alternative if this solution becomes an issue.
-
-  Link: https://lore.kernel.org/lkml/20210127170721.58bce7cc@gandalf.local.home/
-]
-
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@chromium.org>
-Cc: netdev <netdev@vger.kernel.org>
-Cc: bpf <bpf@vger.kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Florian Weimer <fw@deneb.enyo.de>
-Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
-Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
-Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-Reported-by: Matt Mullins <mmullins@mmlx.us>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Tested-by: Matt Mullins <mmullins@mmlx.us>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 64 insertions(+), 16 deletions(-)
-
-diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-index 73956eaff8a9c..be51df4508cbe 100644
---- a/kernel/tracepoint.c
-+++ b/kernel/tracepoint.c
-@@ -53,6 +53,12 @@ struct tp_probes {
- 	struct tracepoint_func probes[0];
- };
- 
-+/* Called in removal of a func but failed to allocate a new tp_funcs */
-+static void tp_stub_func(void)
-+{
-+	return;
-+}
-+
- static inline void *allocate_probes(int count)
- {
- 	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
-@@ -131,6 +137,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- {
- 	struct tracepoint_func *old, *new;
- 	int nr_probes = 0;
-+	int stub_funcs = 0;
- 	int pos = -1;
- 
- 	if (WARN_ON(!tp_func->func))
-@@ -147,14 +154,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- 			if (old[nr_probes].func == tp_func->func &&
- 			    old[nr_probes].data == tp_func->data)
- 				return ERR_PTR(-EEXIST);
-+			if (old[nr_probes].func == tp_stub_func)
-+				stub_funcs++;
- 		}
- 	}
--	/* + 2 : one for new probe, one for NULL func */
--	new = allocate_probes(nr_probes + 2);
-+	/* + 2 : one for new probe, one for NULL func - stub functions */
-+	new = allocate_probes(nr_probes + 2 - stub_funcs);
- 	if (new == NULL)
- 		return ERR_PTR(-ENOMEM);
- 	if (old) {
--		if (pos < 0) {
-+		if (stub_funcs) {
-+			/* Need to copy one at a time to remove stubs */
-+			int probes = 0;
-+
-+			pos = -1;
-+			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-+				if (old[nr_probes].func == tp_stub_func)
-+					continue;
-+				if (pos < 0 && old[nr_probes].prio < prio)
-+					pos = probes++;
-+				new[probes++] = old[nr_probes];
-+			}
-+			nr_probes = probes;
-+			if (pos < 0)
-+				pos = probes;
-+			else
-+				nr_probes--; /* Account for insertion */
-+
-+		} else if (pos < 0) {
- 			pos = nr_probes;
- 			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
- 		} else {
-@@ -188,8 +215,9 @@ static void *func_remove(struct tracepoint_func **funcs,
- 	/* (N -> M), (N > 1, M >= 0) probes */
- 	if (tp_func->func) {
- 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
--			if (old[nr_probes].func == tp_func->func &&
--			     old[nr_probes].data == tp_func->data)
-+			if ((old[nr_probes].func == tp_func->func &&
-+			     old[nr_probes].data == tp_func->data) ||
-+			    old[nr_probes].func == tp_stub_func)
- 				nr_del++;
- 		}
- 	}
-@@ -208,14 +236,32 @@ static void *func_remove(struct tracepoint_func **funcs,
- 		/* N -> M, (N > 1, M > 0) */
- 		/* + 1 for NULL */
- 		new = allocate_probes(nr_probes - nr_del + 1);
--		if (new == NULL)
--			return ERR_PTR(-ENOMEM);
--		for (i = 0; old[i].func; i++)
--			if (old[i].func != tp_func->func
--					|| old[i].data != tp_func->data)
--				new[j++] = old[i];
--		new[nr_probes - nr_del].func = NULL;
--		*funcs = new;
-+		if (new) {
-+			for (i = 0; old[i].func; i++)
-+				if ((old[i].func != tp_func->func
-+				     || old[i].data != tp_func->data)
-+				    && old[i].func != tp_stub_func)
-+					new[j++] = old[i];
-+			new[nr_probes - nr_del].func = NULL;
-+			*funcs = new;
-+		} else {
-+			/*
-+			 * Failed to allocate, replace the old function
-+			 * with calls to tp_stub_func.
-+			 */
-+			for (i = 0; old[i].func; i++)
-+				if (old[i].func == tp_func->func &&
-+				    old[i].data == tp_func->data) {
-+					old[i].func = tp_stub_func;
-+					/* Set the prio to the next event. */
-+					if (old[i + 1].func)
-+						old[i].prio =
-+							old[i + 1].prio;
-+					else
-+						old[i].prio = -1;
-+				}
-+			*funcs = old;
-+		}
- 	}
- 	debug_print_probes(*funcs);
- 	return old;
-@@ -271,10 +317,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
- 	tp_funcs = rcu_dereference_protected(tp->funcs,
- 			lockdep_is_held(&tracepoints_mutex));
- 	old = func_remove(&tp_funcs, func);
--	if (IS_ERR(old)) {
--		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
-+	if (WARN_ON_ONCE(IS_ERR(old)))
- 		return PTR_ERR(old);
--	}
-+
-+	if (tp_funcs == old)
-+		/* Failed allocating new tp_funcs, replaced func with stub */
-+		return 0;
- 
- 	if (!tp_funcs) {
- 		/* Removed last function */
--- 
-2.27.0
+After some digging, tracing, a bisect, and a kprint to verify, it seems 
+as the multicast routing code is using a different clock than fq and 
+setting skb->tstamp to something sch_fq considers far, far into the 
+future, failing the beyond horizon check.
 
 
+Things immediately starts to work if I do a tc qdisc replace with a 
+different scheduler, and stops when changing back to fq.
+
+This stopped working when fq changed to CLOCK_MONOTONIC in 
+fb420d5d91c1274d5966917725e71f27ed092a85 tcp/fq: move back to 
+CLOCK_MONOTONIC
+Reverting it on top of 4.20-rc1 restores multicast routing with fq.
+
+from debug printk in fq_enqueue when horizon check fails:
+tstamp skb 1614615921893669854 ktime 59949897819
+
+tstamp skb 1614615921968395652 ktime 60024624355
+
+tstamp skb 1614615922043160089 ktime 60099388127
+
+
+The setup is a Linux router running FRR bgpd + pimd for multicast 
+routing. The multicast source is some TV broadcast equipment one more 
+hop away sending a mpeg transport streams on IPv4, using 1316 byte TS 
+datagrams (not fragmented, jumbos or anything otherwise funny.)
+
+
+git bisect start
+
+# bad: [993f0b0510dad98b4e6e39506834dab0d13fd539] sched/topology: Fix 
+off by one bug
+
+git bisect bad 993f0b0510dad98b4e6e39506834dab0d13fd539
+
+# good: [84df9525b0c27f3ebc2ebb1864fa62a97fdedb7d] Linux 4.19
+
+git bisect good 2241b8bcf2b5f1b01ebb1cbd1231bbbb72230064
+
+# bad: [50b825d7e87f4cff7070df6eb26390152bb29537] Merge 
+git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next
+
+git bisect bad 50b825d7e87f4cff7070df6eb26390152bb29537
+
+# bad: [99e9acd85ccbdc8f5785f9e961d4956e96bd6aa5] Merge tag 
+'mlx5-updates-2018-10-17' of 
+git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+
+git bisect bad 99e9acd85ccbdc8f5785f9e961d4956e96bd6aa5
+
+# bad: [d793fb46822ff7408a1767313ef6b12e811baa55] Merge tag 
+'wireless-drivers-next-for-davem-2018-10-02' of 
+git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next
+
+git bisect bad d793fb46822ff7408a1767313ef6b12e811baa55
+
+# good: [72b0094f918294e6cb8cf5c3b4520d928fbb1a57] tcp: switch 
+tcp_clock_ns() to CLOCK_TAI base
+
+git bisect good 72b0094f918294e6cb8cf5c3b4520d928fbb1a57
+
+# bad: [d5486377b8c526e4f373ec0506c4c5398c99082e] Merge branch '100GbE' 
+of git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue
+
+git bisect bad d5486377b8c526e4f373ec0506c4c5398c99082e
+
+# good: [d888f39666774c7debfa34e4e20ba33cf61a6d71] net-ipv4: remove 2 
+always zero parameters from ipv4_update_pmtu()
+
+git bisect good d888f39666774c7debfa34e4e20ba33cf61a6d71
+
+# good: [041a14d2671573611ffd6412bc16e2f64469f7fb] tcp: start receiver 
+buffer autotuning sooner
+
+git bisect good 041a14d2671573611ffd6412bc16e2f64469f7fb
+
+# good: [6871af29b3abe6d6ae3a0e28b8bdf44bd4cb8d30] net: hns3: Add reset 
+handle for flow director
+
+git bisect good 6871af29b3abe6d6ae3a0e28b8bdf44bd4cb8d30
+
+# bad: [024926def6ca95819442699fbecc1fe376253fb9] net: phy: Convert to 
+using %pOFn instead of device_node.name
+
+git bisect bad 024926def6ca95819442699fbecc1fe376253fb9
+
+# good: [297357d1a165cf23cc85a6a7ec32ffc854cbf13c] net: systemport: 
+Utilize bcm_sysport_set_features() during resume/open
+
+git bisect good 297357d1a165cf23cc85a6a7ec32ffc854cbf13c
+
+# good: [a0651d8e2784b189924b4f4f41b901835feef8a4] Merge branch 
+'net-systemport-Turn-on-offloads-by-default'
+
+git bisect good a0651d8e2784b189924b4f4f41b901835feef8a4
+
+# good: [e3a9667a5bf7e520a1fa24eadccc6010c135ec53] hv_netvsc: Fix 
+rndis_per_packet_info internal field initialization
+
+git bisect good e3a9667a5bf7e520a1fa24eadccc6010c135ec53
+
+# bad: [fb420d5d91c1274d5966917725e71f27ed092a85] tcp/fq: move back to 
+CLOCK_MONOTONIC
+
+git bisect bad fb420d5d91c1274d5966917725e71f27ed092a85
+
+# good: [0ed3015c9964dab7a1693b3e40650f329c16691e] selftests/tls: Fix 
+recv(MSG_PEEK) & splice() test cases
+
+git bisect good 0ed3015c9964dab7a1693b3e40650f329c16691e
+
+# first bad commit: [fb420d5d91c1274d5966917725e71f27ed092a85] tcp/fq: 
+move back to CLOCK_MONOTONIC
 
