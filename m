@@ -2,72 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22CDE327AEF
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 10:38:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4634C327B65
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 11:00:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbhCAJhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 04:37:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233998AbhCAJhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 04:37:08 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02252C06174A;
-        Mon,  1 Mar 2021 01:36:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=OZ3bH+JR4+9gsZSrCT9awdEOfcNtvsdE0dvn419/Fmc=; b=DX9/HwOxU590uSE3bJsNni+pBS
-        Y5AKXm7VU8ZiPsGZ6jY1XKB/MY6YPKWrvogr1MMA4TldP2ku9rcMaRbezJdmQIk/tXOoxDZ4uZimz
-        K5wdcmrrkKjohNoppvizvdF88ov2bPrZ9We421bwSajl7yxeMsaljX5jekRWEE+lDWWs0V410Yq1Q
-        gDNJRiL1EIOIm6hyXy5rIU7d2b1jwo+pN51SgOiY0ltW/yO6WVEQ3Be0KDTR2MHRuhEMFMonL5jum
-        r2d2vDUEKce2p3ZEWbxrA2K3Q2n0OGCqwgs4zQ7+/m0ey0gNkFGW5KEvm1r+ijuWxX4ohKVrv6WO2
-        ui13Rb1g==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1lGeyR-0005i8-GM; Mon, 01 Mar 2021 09:36:19 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2A72F301959;
-        Mon,  1 Mar 2021 10:36:15 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 19776206A2928; Mon,  1 Mar 2021 10:36:15 +0100 (CET)
-Date:   Mon, 1 Mar 2021 10:36:15 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, mingo@redhat.com, kuba@kernel.org,
-        will@kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v3 0/3] Add lockdep_assert_not_held()
-Message-ID: <YDy1j+hMLGUWKKV6@hirez.programming.kicks-ass.net>
-References: <cover.1614383025.git.skhan@linuxfoundation.org>
- <YDyn+6N6EfgWJ5GV@hirez.programming.kicks-ass.net>
- <878s779s9f.fsf@codeaurora.org>
+        id S234389AbhCAJ7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 04:59:40 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1745 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234210AbhCAJ7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 04:59:04 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B603cbabe0000>; Mon, 01 Mar 2021 01:58:22 -0800
+Received: from reg-r-vrt-018-180.nvidia.com (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 1 Mar 2021 09:58:18 +0000
+References: <20210225125501.1792072-1-arnd@kernel.org>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Arnd Bergmann <arnd@kernel.org>, Saeed Mahameed <saeedm@nvidia.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dmytro Linkin <dlinkin@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
+        Eli Britstein <elibr@mellanox.com>,
+        Eli Cohen <eli@mellanox.com>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net/mlx5e: fix mlx5e_tc_tun_update_header_ipv6 dummy
+ definition
+In-Reply-To: <20210225125501.1792072-1-arnd@kernel.org>
+Message-ID: <ygnho8g3gprp.fsf@nvidia.com>
+Date:   Mon, 1 Mar 2021 11:57:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878s779s9f.fsf@codeaurora.org>
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1614592702; bh=5gphWubhgnY39oqs/H/cdG90CAjjo6DZUJCuo5ulKcw=;
+        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Message-ID:
+         Date:MIME-Version:Content-Type:X-Originating-IP:X-ClientProxiedBy;
+        b=ikSRmb9kBasfdP27ka5KWc6SaAXE2tRd8CYF4zIQto2Bt9M1/p7jadQt+qbLO2nM1
+         1QbAarK2Mqj1kZAh5t6jnwQcGrZ+cWUixalxFj3cZePSI7p7nZEun8IHva8i9ZLDLZ
+         /uP/TTY23lk9a4AatQoXVWwjvN+d8AWHBR2wHSscWat2uNwtTtqxSENYtHL2jMvxsN
+         P8EQGMnSJ511DFxHuMFR/DeozGC1kMYqAuodKX/bXHqGKV1Pm3pjOCnthlg8xb6E77
+         PM6pEPCQxGZr+jnuU5rm6S3EVRkmSwJO7dNAUBbIgqgQiZHBOdZzue+BtNAn9+6RzU
+         cFFBE5ZzvlHSw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 10:45:32AM +0200, Kalle Valo wrote:
-> Peter Zijlstra <peterz@infradead.org> writes:
-> 
-> > On Fri, Feb 26, 2021 at 05:06:57PM -0700, Shuah Khan wrote:
-> >> Shuah Khan (3):
-> >>   lockdep: add lockdep_assert_not_held()
-> >>   lockdep: add lockdep lock state defines
-> >>   ath10k: detect conf_mutex held ath10k_drain_tx() calls
-> >
-> > Thanks!
-> 
-> Via which tree should these go?
+On Thu 25 Feb 2021 at 14:54, Arnd Bergmann <arnd@kernel.org> wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> The alternative implementation of this function in a header file
+> is declared as a global symbol, and gets added to every .c file
+> that includes it, which leads to a link error:
+>
+> arm-linux-gnueabi-ld: drivers/net/ethernet/mellanox/mlx5/core/en_rx.o: in function `mlx5e_tc_tun_update_header_ipv6':
+> en_rx.c:(.text+0x0): multiple definition of `mlx5e_tc_tun_update_header_ipv6'; drivers/net/ethernet/mellanox/mlx5/core/en_main.o:en_main.c:(.text+0x0): first defined here
+>
+> Mark it 'static inline' like the other functions here.
+>
+> Fixes: c7b9038d8af6 ("net/mlx5e: TC preparation refactoring for routing update event")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
+> index 67de2bf36861..89d5ca91566e 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
+> @@ -76,10 +76,12 @@ int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
+>  static inline int
+>  mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
+>  				struct net_device *mirred_dev,
+> -				struct mlx5e_encap_entry *e) { return -EOPNOTSUPP; }
+> -int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
+> -				    struct net_device *mirred_dev,
+> -				    struct mlx5e_encap_entry *e)
+> +				struct mlx5e_encap_entry *e)
+> +{ return -EOPNOTSUPP; }
+> +static inline int
+> +mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
+> +				struct net_device *mirred_dev,
+> +				struct mlx5e_encap_entry *e)
+>  { return -EOPNOTSUPP; }
+>  #endif
+>  int mlx5e_tc_tun_route_lookup(struct mlx5e_priv *priv,
 
-I've just queued the lot for locking/core, which will show up in tip
-when the robots don't hate on it.
+Thanks Arnd!
 
-Does that work for you?
+Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
