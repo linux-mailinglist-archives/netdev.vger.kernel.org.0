@@ -2,80 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12BBB3281A8
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 16:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B96D3281C6
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 16:06:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236762AbhCAPBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 10:01:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
+        id S236783AbhCAPFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 10:05:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236767AbhCAPBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 10:01:45 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00F3C061756
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 07:01:05 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id 105so16735549otd.3
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 07:01:05 -0800 (PST)
+        with ESMTP id S236781AbhCAPE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 10:04:56 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A625C061756
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 07:04:16 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id f6so5375870edd.12
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 07:04:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=lABWButIZH2daj0A8oyuwcLJlf8u4Lya7J0JYdVPpd4=;
-        b=LJvt70BQTzqL8IWMpD5ItXQcWkKO4MlhGHgYyUlcI8yVvuN/6oMpR6AiO6RcW+YpFC
-         CPOV2oqLjEj/V1Ye3FK5njFjly1l+wiASGy5j2YOKVdmH5oGNSbvUwSd+XhM9U00dqhk
-         OpKjhd+BBKithDN8dT8NiQTt9NyHnvsfkCxCA1L9PKky484JULBDGsqT+ach1GX65Xqw
-         f9T1qRJJOesYFbhlGFEj/N050wkni0e/+76y+TdDfEjgavheOTbUxsunw7gHdZFmtVip
-         ky4JKTKleVvwGXFFbmEFr5M4tYm3UVVSMUjmWYmDjpfiyIri9CNPHZUfWaR7I5Vc4eD2
-         jDZw==
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=K4OpzeM0uoCAJP3TWREPkk9i3rsA64Mt1QD3mJUaugc=;
+        b=ZnkCqhI+7mHQ53lwM6WH60Jgon9tVUrbiDumUC3+4KVrgiFoHpEuT+jtEHj50NQylI
+         G1bijP9K3CzrXJB2S6wT4lp+i+xI7hznm8QVPV7ivlGiDOLeSwviReiSW3VhQpSKfse2
+         qsR7qNDj+NCswuwia6zEj9HUXkwnTzahpkFicPn5O1uf6+R3h3F5E5+8n8j0mSlTg/ov
+         rYL14jIYN1RJoBGkScFqr9NIzu5I8GTEx0VGR+bx00GGD8ui5OS+J+iyGq+KF1QdDj1O
+         CO3JlTAds+ZHZaNDzYBWEvdSedKy526cpiORF5EthAYCRkbQurOKNknwHvVQ8HpHVZWx
+         X2HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=lABWButIZH2daj0A8oyuwcLJlf8u4Lya7J0JYdVPpd4=;
-        b=PFo0cvsH8bX6OMVLh9u7tvBSx24R9VZiWnnIxtRaqjB45Fu7BBMXPQvqGjJqzHHQNU
-         GHeJgTyar9HkYP5HKHErw+728gkI0tMdzJnipSL0Rm1aXOXr3HZ/L7b84fn1P/okJsSj
-         qvUbSYSSEc3BlAvVCubE+t5fyT3j7X8nwhc6DwEH1u9rjlRzbsWabbvv14/SCQFGjJfL
-         UXH8aQhsKadfsT14CvDyGd4M8qTJiRJU4lOUzwkormQwhk7BvGNJWnDsvzpnzD/fbTYZ
-         a8dy7UNHIYHuk81nDvw89Q/CyhUHgHmL31/Z/4PJkoj9ZV+Lv9ld3drdzdmTdbWTNcmY
-         tFMw==
-X-Gm-Message-State: AOAM5328ooseUE9l4elYNL9CO8yHBEH8T4gCkmrBYzTzVewq78PPq+bq
-        xBA6wjvPZYfjRVB3HBtKG1EpICCnLM14mb9SdM5dbdPRWDwvUQ==
-X-Google-Smtp-Source: ABdhPJzuQBH+25CxNjAMADj9POUjOmORureUbMh310cBVh2OE3qLFpw+a1vbLFK8edTe3TEKpvkF7U+Es+IxYxA6ie8=
-X-Received: by 2002:a9d:3ef5:: with SMTP id b108mr3221877otc.89.1614610864705;
- Mon, 01 Mar 2021 07:01:04 -0800 (PST)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=K4OpzeM0uoCAJP3TWREPkk9i3rsA64Mt1QD3mJUaugc=;
+        b=XMs/Z9M70TdVs7nh0rUECCJMa87chCS/V1nI138LD+D9RiU4LATSmRD9QhSviQ73TV
+         JVtTCObNikegpiObJ7kJJghMjPvEgri7cf4TvFq7CV0hUlGTAwQr6arCIgLGbh1nfZ29
+         OVmxsb/7Yw+iO+EnA+AwXwkvR1ZhObx7TtqEPM0LsH56vtGZBK7n7aMs2kgjZtJT/HON
+         6cQHx8T9iVPorja3TiDki98ipKpimrXb3qwcxnljLec0/ZUIol66tCldab3ZkvfDUQ+d
+         uYv57O3+vGMI2xFj+bvkl/23cxSvm0sP0Px2tkl1XUDFC5coPGwNqraSCsL2WDsCumz/
+         WVUA==
+X-Gm-Message-State: AOAM532EuUn0biTN7CAmiKWp0icCShuWcU5v3ye31O7nAMtrMhyLM4zQ
+        aZwpKUIZ3Lz8fry3rzdbbXdyHA==
+X-Google-Smtp-Source: ABdhPJz7ze/sNsf7HaYXGXCaAkOu7chdPkN8aYq9EWu71wh3POUaX+kAnZ8DNKrehU1y7vOjOXOLFA==
+X-Received: by 2002:a05:6402:549:: with SMTP id i9mr7920438edx.379.1614611054980;
+        Mon, 01 Mar 2021 07:04:14 -0800 (PST)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:2f49:5dbe:a18d:8909])
+        by smtp.gmail.com with ESMTPSA id bi26sm14188762ejb.120.2021.03.01.07.04.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Mar 2021 07:04:14 -0800 (PST)
+To:     Chuck Lever <chuck.lever@oracle.com>,
+        syzbot <syzbot+e2fa57709a385e6db10f@syzkaller.appspotmail.com>
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        MPTCP Upstream <mptcp@lists.01.org>
+References: <0000000000001d8e2c05bc79e2fd@google.com>
+ <974A6057-4DE8-4C9A-A71E-4EC08BD8E81B@oracle.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: possible deadlock in ipv6_sock_mc_close
+Message-ID: <26b3858e-6e5e-d782-118b-c4d64e2532f2@tessares.net>
+Date:   Mon, 1 Mar 2021 16:04:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-From:   Tom Cook <tom.k.cook@gmail.com>
-Date:   Mon, 1 Mar 2021 15:00:53 +0000
-Message-ID: <CAFSh4UzYXp7OaNcZOWQfyxznQfcF+Ng0scboX9-kxhrcpLKd7w@mail.gmail.com>
-Subject: MACSEC configuration - is CONFIG_MACSEC enough?
-To:     Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <974A6057-4DE8-4C9A-A71E-4EC08BD8E81B@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm trying to use MACSEC on an arm64 embedded platform; I'm trying to
-create an encrypted channel between two of them rather than doing
-switch port access etc.  The vendor's BSP only provides a 4.9 kernel
-so that's what I'm using.  I've added CONFIG_MACSEC=y to the kernel
-config.  This then forces CONFIG_CRYPTO_GCM=y and CONFIG_CRYPTO_AES=y.
+Hi Chuck,
 
-I've tried both manual configuration of MACSEC interfaces and also
-using wpa_supplicant to do MKA negotiation.  I then add IP addresses
-to the MACSEC interfaces in the 192.168.149.0/24 subnet.  In both
-cases, the result is that the macsec0 interface has flags
-BROADCAST,MULTICAST,UP,LOWER_UP but is in the UNKNOWN state.
-Attempting to ping from one to the other results in encrypted ARP
-frames being transmitted but then discarded at the receiver end.
-tcpdump shows the frames arriving at the receiver and `ip -s macsec
-show` shows these frames being added to the InPktsNotValid counter.
+(+ cc: MPTCP list)
 
-AFAICT from macsec.c, InPktsNotValid means either that the decryption
-failed or that memory allocation for the decryption failed.
+On 01/03/2021 15:52, Chuck Lever wrote:
+>> On Mar 1, 2021, at 8:49 AM, syzbot <syzbot+e2fa57709a385e6db10f@syzkaller.appspotmail.com> wrote:
 
-Is there some other bit of kernel config I need to do to get the
-decryption to work correctly?
+(...)
 
-The SOC is a cavium cn8030.  This part is equipped with a crypto
-accelerator but support for it is not compiled into the kernel.
+>> syzbot found the following issue on:
 
-Thanks for any help,
-Tom Cook
+(...)
+
+> Hi, thanks for the report.
+> 
+> Initial analysis:
+> 
+> c8e88e3aa738 ("NFSD: Replace READ* macros in nfsd4_decode_layoutget()"
+> changes code several layers above the network layer. In addition,
+> neither of the stack traces contain NFSD functions. And, repro.c does
+> not appear to exercise any filesystem code.
+> 
+> Therefore the bisect result looks implausible to me. I don't see any
+> obvious connection between the lockdep splat and c8e88e3aa738. (If
+> someone else does, please let me know where to look).
+
+ From what I can see from the bisect logs, it looks like this issue is 
+difficult to reproduce. But it really looks like the issue is on MPTCP 
+side and not directly related to your patch.
+
+Thanks to the syzbot team for reporting this!
+
+It doesn't look very simple to fix but we are tracking this on our side: 
+https://github.com/multipath-tcp/mptcp_net-next/issues/170
+
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
