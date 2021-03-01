@@ -2,260 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 232573283BC
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 17:27:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5FF3283CD
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 17:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235412AbhCAQXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 11:23:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56678 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237803AbhCAQUx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Mar 2021 11:20:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7758364E04;
-        Mon,  1 Mar 2021 16:18:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1614615486;
-        bh=JowmsJO9HI3GmpnDp/I3MDQL0DA0AGM357niMSprdkU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VIqnFkQS6AMcbixcCVL0VDJyYIlJaGbfFdVIjFytGt5eVzKK7IqxX6eS+fQz9AUfb
-         BrfWwbYa3NoHvOvLoIvrmRwgNy8/lGWJJICJtTzLBeiHCSqHgMlpBMbkvBsNGAUAUs
-         4Yt/sEkvgO35UTkbVwQ0YgkYrnGHJw6Z5gaGXS0A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com,
-        syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com,
-        Matt Mullins <mmullins@mmlx.us>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 46/93] tracepoint: Do not fail unregistering a probe due to memory failure
-Date:   Mon,  1 Mar 2021 17:12:58 +0100
-Message-Id: <20210301161009.172926469@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210301161006.881950696@linuxfoundation.org>
-References: <20210301161006.881950696@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S232132AbhCAQY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 11:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237577AbhCAQWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 11:22:23 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93988C06178B;
+        Mon,  1 Mar 2021 08:21:41 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id o38so11892147pgm.9;
+        Mon, 01 Mar 2021 08:21:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nAKyn3bbJ2e2Np3T3RRoME/8+DrtqnaJzTBb2u34x6M=;
+        b=TMeEpeZTLo6HRYujk8PBneLGc2y147GZ/ksJNcuMO9S7ibrJNliVkb+UVawC+AV9mD
+         TOigQMYkQMLoLvl4VCfqKjgLGHSIFiFitf0dzhut23N6eADCkbF7Rm6xr2OuismTftil
+         qvvP7lWd1fvH6HFJNla7+hfz60R4CuM2TDIIXkXJWKKI85TP1nprBFKhnk4geUPzvb2y
+         W1LZTAE/jL9qQWZEn6vjodzDlENRjO21LGTVSg04JN6FcKP0f/xv+e8/rscEUqZKF0kF
+         jX2nLkkf1g1Z269WaPpbg3krjLidZNn3qdVeQqD9/GhdAP8oX4pyFdPFu7m2/cFmTDpf
+         BnCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nAKyn3bbJ2e2Np3T3RRoME/8+DrtqnaJzTBb2u34x6M=;
+        b=VWcq/DWUBM81q8/arqyMnomKyfrxD0ZmKNFUJs42UOX/b+1IychgPBtbTzVnZkbKFF
+         fcIOc4TalCO9cH1GGKMKzL+bJ4V6sqmAvShc02nrYBALw1glh9LC/ClOwvGII4T6II96
+         ZidH6Sdt/9z9tLvKIagWp6bvoMldvuqcuRN1fJPNPblN+4jI2bhIk7sxFl3kMGcEFWhw
+         QWhGnK8w17WsclaYp7NLf/1a1TMFHcp4YAiMb8sejWBz+d0ZKDXePX1Gkk9EGT7lHoUz
+         JgDGGdOdJTT43gs4JNV/5cMCrWftGm9l8lMNFBPlSUP098+Osyp0fGpPiQ4Dg/vmS/bb
+         FCfA==
+X-Gm-Message-State: AOAM533I0ydSBZ0iphtwTzKhP20DgxWZqGqHU0vlTnXy+odRua8QHZtV
+        B5RrlNaecsv7QuUbuWrL6zU=
+X-Google-Smtp-Source: ABdhPJz/9vJH0D7oCD0gvcN15JwVpe6nu6ezSu/irxMjX9Zo5zpRZYsAxWXobc5gW6fKPnvHOnaBAg==
+X-Received: by 2002:a63:f913:: with SMTP id h19mr14480486pgi.413.1614615701065;
+        Mon, 01 Mar 2021 08:21:41 -0800 (PST)
+Received: from nuc10 (104.36.148.139.aurocloud.com. [104.36.148.139])
+        by smtp.gmail.com with ESMTPSA id p7sm16470671pgg.2.2021.03.01.08.21.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Mar 2021 08:21:40 -0800 (PST)
+Date:   Mon, 1 Mar 2021 08:21:33 -0800
+From:   Rustam Kovhaev <rkovhaev@gmail.com>
+To:     syzbot <syzbot+f3694595248708227d35@syzkaller.appspotmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com, dvyukov@google.com,
+        gregkh@linuxfoundation.org
+Subject: Re: memory leak in bpf
+Message-ID: <YD0UjWjQmYgY4Qgh@nuc10>
+References: <000000000000911d3905b459824c@google.com>
+ <000000000000e56a2605b616b2d9@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000e56a2605b616b2d9@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steven Rostedt (VMware) <rostedt@goodmis.org>
+On Wed, Dec 09, 2020 at 10:58:10PM -0800, syzbot wrote:
+> syzbot has found a reproducer for the following issue on:
+> 
+> HEAD commit:    a68a0262 mm/madvise: remove racy mm ownership check
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11facf17500000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=4305fa9ea70c7a9f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=f3694595248708227d35
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159a9613500000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bf7123500000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+f3694595248708227d35@syzkaller.appspotmail.com
+> 
+> Debian GNU/Linux 9 syzkaller ttyS0
+> Warning: Permanently added '10.128.0.9' (ECDSA) to the list of known hosts.
+> executing program
+> executing program
+> executing program
+> BUG: memory leak
+> unreferenced object 0xffff88810efccc80 (size 64):
+>   comm "syz-executor334", pid 8460, jiffies 4294945724 (age 13.850s)
+>   hex dump (first 32 bytes):
+>     c0 cb 14 04 00 ea ff ff c0 c2 11 04 00 ea ff ff  ................
+>     c0 56 3f 04 00 ea ff ff 40 18 38 04 00 ea ff ff  .V?.....@.8.....
+>   backtrace:
+>     [<0000000036ae98a7>] kmalloc_node include/linux/slab.h:575 [inline]
+>     [<0000000036ae98a7>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:94 [inline]
+>     [<0000000036ae98a7>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:135 [inline]
+>     [<0000000036ae98a7>] ringbuf_map_alloc kernel/bpf/ringbuf.c:183 [inline]
+>     [<0000000036ae98a7>] ringbuf_map_alloc+0x1be/0x410 kernel/bpf/ringbuf.c:150
+>     [<00000000d2cb93ae>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
+>     [<00000000d2cb93ae>] map_create kernel/bpf/syscall.c:825 [inline]
+>     [<00000000d2cb93ae>] __do_sys_bpf+0x7d0/0x30a0 kernel/bpf/syscall.c:4381
+>     [<000000008feaf393>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>     [<00000000e1f53cfd>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> 
 
-[ Upstream commit befe6d946551d65cddbd32b9cb0170b0249fd5ed ]
+i am pretty sure that this one is a false positive
+the problem with reproducer is that it does not terminate all of the
+child processes that it spawns
 
-The list of tracepoint callbacks is managed by an array that is protected
-by RCU. To update this array, a new array is allocated, the updates are
-copied over to the new array, and then the list of functions for the
-tracepoint is switched over to the new array. After a completion of an RCU
-grace period, the old array is freed.
+i confirmed that it is a false positive by tracing __fput() and
+bpf_map_release(), i ran reproducer, got kmemleak report, then i
+manually killed those running leftover processes from reproducer and
+then both functions were executed and memory was freed
 
-This process happens for both adding a callback as well as removing one.
-But on removing a callback, if the new array fails to be allocated, the
-callback is not removed, and may be used after it is freed by the clients
-of the tracepoint.
-
-There's really no reason to fail if the allocation for a new array fails
-when removing a function. Instead, the function can simply be replaced by a
-stub function that could be cleaned up on the next modification of the
-array. That is, instead of calling the function registered to the
-tracepoint, it would call a stub function in its place.
-
-Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
-Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
-Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
-Link: https://lkml.kernel.org/r/20201118093405.7a6d2290@gandalf.local.home
-
-[ Note, this version does use undefined compiler behavior (assuming that
-  a stub function with no parameters or return, can be called by a location
-  that thinks it has parameters but still no return value. Static calls
-  do the same thing, so this trick is not without precedent.
-
-  There's another solution that uses RCU tricks and is more complex, but
-  can be an alternative if this solution becomes an issue.
-
-  Link: https://lore.kernel.org/lkml/20210127170721.58bce7cc@gandalf.local.home/
-]
-
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@chromium.org>
-Cc: netdev <netdev@vger.kernel.org>
-Cc: bpf <bpf@vger.kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Florian Weimer <fw@deneb.enyo.de>
-Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
-Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
-Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-Reported-by: Matt Mullins <mmullins@mmlx.us>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Tested-by: Matt Mullins <mmullins@mmlx.us>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 64 insertions(+), 16 deletions(-)
-
-diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-index eda85bbf1c2e4..a1f9be7030021 100644
---- a/kernel/tracepoint.c
-+++ b/kernel/tracepoint.c
-@@ -59,6 +59,12 @@ struct tp_probes {
- 	struct tracepoint_func probes[0];
- };
- 
-+/* Called in removal of a func but failed to allocate a new tp_funcs */
-+static void tp_stub_func(void)
-+{
-+	return;
-+}
-+
- static inline void *allocate_probes(int count)
- {
- 	struct tp_probes *p  = kmalloc(count * sizeof(struct tracepoint_func)
-@@ -97,6 +103,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- {
- 	struct tracepoint_func *old, *new;
- 	int nr_probes = 0;
-+	int stub_funcs = 0;
- 	int pos = -1;
- 
- 	if (WARN_ON(!tp_func->func))
-@@ -113,14 +120,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
- 			if (old[nr_probes].func == tp_func->func &&
- 			    old[nr_probes].data == tp_func->data)
- 				return ERR_PTR(-EEXIST);
-+			if (old[nr_probes].func == tp_stub_func)
-+				stub_funcs++;
- 		}
- 	}
--	/* + 2 : one for new probe, one for NULL func */
--	new = allocate_probes(nr_probes + 2);
-+	/* + 2 : one for new probe, one for NULL func - stub functions */
-+	new = allocate_probes(nr_probes + 2 - stub_funcs);
- 	if (new == NULL)
- 		return ERR_PTR(-ENOMEM);
- 	if (old) {
--		if (pos < 0) {
-+		if (stub_funcs) {
-+			/* Need to copy one at a time to remove stubs */
-+			int probes = 0;
-+
-+			pos = -1;
-+			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-+				if (old[nr_probes].func == tp_stub_func)
-+					continue;
-+				if (pos < 0 && old[nr_probes].prio < prio)
-+					pos = probes++;
-+				new[probes++] = old[nr_probes];
-+			}
-+			nr_probes = probes;
-+			if (pos < 0)
-+				pos = probes;
-+			else
-+				nr_probes--; /* Account for insertion */
-+
-+		} else if (pos < 0) {
- 			pos = nr_probes;
- 			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
- 		} else {
-@@ -154,8 +181,9 @@ static void *func_remove(struct tracepoint_func **funcs,
- 	/* (N -> M), (N > 1, M >= 0) probes */
- 	if (tp_func->func) {
- 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
--			if (old[nr_probes].func == tp_func->func &&
--			     old[nr_probes].data == tp_func->data)
-+			if ((old[nr_probes].func == tp_func->func &&
-+			     old[nr_probes].data == tp_func->data) ||
-+			    old[nr_probes].func == tp_stub_func)
- 				nr_del++;
- 		}
- 	}
-@@ -174,14 +202,32 @@ static void *func_remove(struct tracepoint_func **funcs,
- 		/* N -> M, (N > 1, M > 0) */
- 		/* + 1 for NULL */
- 		new = allocate_probes(nr_probes - nr_del + 1);
--		if (new == NULL)
--			return ERR_PTR(-ENOMEM);
--		for (i = 0; old[i].func; i++)
--			if (old[i].func != tp_func->func
--					|| old[i].data != tp_func->data)
--				new[j++] = old[i];
--		new[nr_probes - nr_del].func = NULL;
--		*funcs = new;
-+		if (new) {
-+			for (i = 0; old[i].func; i++)
-+				if ((old[i].func != tp_func->func
-+				     || old[i].data != tp_func->data)
-+				    && old[i].func != tp_stub_func)
-+					new[j++] = old[i];
-+			new[nr_probes - nr_del].func = NULL;
-+			*funcs = new;
-+		} else {
-+			/*
-+			 * Failed to allocate, replace the old function
-+			 * with calls to tp_stub_func.
-+			 */
-+			for (i = 0; old[i].func; i++)
-+				if (old[i].func == tp_func->func &&
-+				    old[i].data == tp_func->data) {
-+					old[i].func = tp_stub_func;
-+					/* Set the prio to the next event. */
-+					if (old[i + 1].func)
-+						old[i].prio =
-+							old[i + 1].prio;
-+					else
-+						old[i].prio = -1;
-+				}
-+			*funcs = old;
-+		}
- 	}
- 	debug_print_probes(*funcs);
- 	return old;
-@@ -234,10 +280,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
- 	tp_funcs = rcu_dereference_protected(tp->funcs,
- 			lockdep_is_held(&tracepoints_mutex));
- 	old = func_remove(&tp_funcs, func);
--	if (IS_ERR(old)) {
--		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
-+	if (WARN_ON_ONCE(IS_ERR(old)))
- 		return PTR_ERR(old);
--	}
-+
-+	if (tp_funcs == old)
-+		/* Failed allocating new tp_funcs, replaced func with stub */
-+		return 0;
- 
- 	if (!tp_funcs) {
- 		/* Removed last function */
--- 
-2.27.0
-
-
+i am marking this one as:
+#syz invalid
 
