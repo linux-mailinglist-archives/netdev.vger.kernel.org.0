@@ -2,88 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CE3327E53
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 13:29:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE2D327E99
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 13:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235031AbhCAM3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 07:29:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235024AbhCAM3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 07:29:10 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED18AC061756;
-        Mon,  1 Mar 2021 04:28:29 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id d11so9760072plo.8;
-        Mon, 01 Mar 2021 04:28:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SHD+dmI20QNVD+k93HgaG/ZSc57gPdyWhsIQt888bU0=;
-        b=QJe6otU7oFnzfVYfABFV+zT6K06uP2ouY1FwkhDAs5fQMTlX7zESkdd42368+uS1+4
-         mtGFqiqx2WvwaGDq5RzpIRY4m/cMk0PVqPaOlSJJNqy6QZlimSUgtqbU4bGuJKmbEPy1
-         SFsZLkTtYQXo2tMo1tkI03ODfqR9bheAguaWTjk8kegf7nSzeQfvZnMd735ZPpla6APW
-         ep/CcIo7DwOzHvbSKkw8RWHcyOoADegjU0SlyB1Ih6sXO6fi9fM76yGCW35+nxYkNzK9
-         GWIu7f+9XVREmMYy2vceexTD2zy97Fz8HNqyxWqxexeobxzftX3mE2WaoR2Z9m8yg40B
-         /oQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SHD+dmI20QNVD+k93HgaG/ZSc57gPdyWhsIQt888bU0=;
-        b=hQF+8oAD2AQ7s7W7hICdNGWDeZCmvFkRMWmMWbQYpv30zdoD9gzFoZGFW3kzokIkoT
-         YaXPlpfTuCNrgLG97SEi26DHb6mfYogJa9v2o0L4LiNQg0SP5uuTECcfooTi9pOM36qM
-         oO+fcpOkfYp2dXnq+pUrcIg4zmKPp8veGg5wtzT4d8nwhR55SBqAzO//ZuzHk7TrEd+U
-         jbXN2ef4w4HJIVrl2dkDAXPsO14KnOoOq081e67EnT+3xnaaXt3oF/ZLbYAD4MoonSFS
-         6a9uzFe1Jj7Kl/QvpV4pRUEiC8MLX4Xbc/+fBHCWiSnj2zcehcD9xD1D0GoJgEBEyUL4
-         ydyQ==
-X-Gm-Message-State: AOAM530ZmemdmGXAoS0vGwcZmRN17enqn4jG8aVISCK/QY0SAzqY81lL
-        z2cxuC3OzgfWh/geieAaDL4=
-X-Google-Smtp-Source: ABdhPJzEQ8vlTy7OvFbOoISMzQcbDLc2PAFRsaKgCo/GhaYQXKaVwcVjQJr8Ni3FbCn5P+ogokdJEQ==
-X-Received: by 2002:a17:902:b08b:b029:e4:deb:69a9 with SMTP id p11-20020a170902b08bb02900e40deb69a9mr14919133plr.35.1614601709598;
-        Mon, 01 Mar 2021 04:28:29 -0800 (PST)
-Received: from masabert (oki-109-236-4-100.jptransit.net. [109.236.4.100])
-        by smtp.gmail.com with ESMTPSA id a23sm17813748pfl.29.2021.03.01.04.28.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 04:28:29 -0800 (PST)
-Received: by masabert (Postfix, from userid 1000)
-        id 57870236050B; Mon,  1 Mar 2021 21:28:27 +0900 (JST)
-From:   Masanari Iida <standby24x7@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        corbet@lwn.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Masanari Iida <standby24x7@gmail.com>
-Subject: [PATCH] docs: networking: bonding.rst Fix a typo in bonding.rst
-Date:   Mon,  1 Mar 2021 21:28:23 +0900
-Message-Id: <20210301122823.1447948-1-standby24x7@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        id S235046AbhCAMts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 07:49:48 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14724 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235015AbhCAMtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 07:49:45 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B603ce2c10000>; Mon, 01 Mar 2021 04:49:05 -0800
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 1 Mar
+ 2021 12:49:04 +0000
+Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL103.nvidia.com
+ (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 1 Mar
+ 2021 12:48:39 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
+ by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Mon, 1 Mar 2021 12:48:39 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OLV+cKNIUt/6N9PjDxplSb9U1QJ95PelLnVHLaMTHN6k72Rfl8Oyb+ht1gZrKKsvBs/hXrQ+LUMn+Er6oD2IpYDdav5lpV1zPdW649NzNuU55YE325j2D/APhJQzaCtVb+FQqkfrw3mFCY3vm7AJ7AYUnhWw5SKhF4oDU7L5rYbj3Fs38LY62M3E1tBCkKi5UZX5ICR8tPM2VZkjR5yD5jiPIH9quL7lP+CVrh5z+N0jflnlA+KLCr3IPSad2GBjMFWA94KOwQtHGXpQrhF1v/vGX+3nfznvnt24u15GHcp2Mo0SWQ3t2AYJbGNc4ftCLMlzREZSAK2Pg62pJ0krMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ft86/QUvgjKD2y7oXbkkYXKLeR6WF+ZaO733OneUYpI=;
+ b=n8MhrQ4Bu3wA/BK9GFs4BqyKYlzFNUISfKOAx8jwQ67bAckcbYyWA73CNPHkPLfQwDn37yIQrP8twwH0pfzmf5G9Gz2MxD2OW4j2XWBL9r/kSkpBSgz0ZxfRZP+vkE6deuY67T1W5hFogid0Cj64P5u8+ecG4+SGJVjZtPuIZzQzvSxtVOmIt2a0cT2X8DwdfSPakot0gr+9HqtinaBGpG02iQEEtLCz3Q/iZSzLvsoG6y0SfM6fG+9OfrvDufqVHTyDcWeER5PpRpVVAiZ4pDnBRAuPQ5i9vqctBdYjHANUhWRkK2O8Vwxyy1ClWcmsKOR64UlXyp1jb5ere5SIDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4778.namprd12.prod.outlook.com (2603:10b6:5:167::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.26; Mon, 1 Mar
+ 2021 12:48:36 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3890.026; Mon, 1 Mar 2021
+ 12:48:36 +0000
+Date:   Mon, 1 Mar 2021 08:48:34 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Doug Ledford <dledford@redhat.com>, Mark Bloch <mbloch@nvidia.com>,
+        "Adit Ranadive" <aditr@vmware.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "Bart Van Assche" <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        "Christian Benvenuti" <benve@cisco.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        "Gal Pressman" <galpress@amazon.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lijun Ou <oulijun@huawei.com>, <linux-rdma@vger.kernel.org>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Nelson Escobar <neescoba@cisco.com>, <netdev@vger.kernel.org>,
+        Potnuri Bharat Teja <bharat@chelsio.com>,
+        "Saeed Mahameed" <saeedm@nvidia.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        <target-devel@vger.kernel.org>,
+        "VMware PV-Drivers" <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        "Wei Hu(Xavier)" <huwei87@hisilicon.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        "Zhu Yanjun" <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next] RDMA: Support more than 255 rdma ports
+Message-ID: <20210301124834.GE4247@nvidia.com>
+References: <20210301070420.439400-1-leon@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210301070420.439400-1-leon@kernel.org>
+X-ClientProxiedBy: BL0PR01CA0008.prod.exchangelabs.com (2603:10b6:208:71::21)
+ To DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR01CA0008.prod.exchangelabs.com (2603:10b6:208:71::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19 via Frontend Transport; Mon, 1 Mar 2021 12:48:36 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lGhyU-002UIW-MY; Mon, 01 Mar 2021 08:48:34 -0400
+X-Header: ProcessedBy-CMR-outbound
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1614602945; bh=Ft86/QUvgjKD2y7oXbkkYXKLeR6WF+ZaO733OneUYpI=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Header;
+        b=OIpUzU4vBocfj+Fvi/btU4ITRvQF4Sjr7SzA+PAmmmvtIBz58JqbkaseUDWRScVk+
+         7Uc7cpNwoYK2c7z2OUqTw8uHuTsGL00kxACPXpGL76nFwrrpKdCbWfyA7AcfVeVS8Y
+         ESunQul2jgxzLqJA5kQaPciy1G1CBE/bXEkFqOVonUghq6ttuecSJoJcFQxFt29kXz
+         ru7oyL8IxuLkPn9U7IvFdCYEuLHchkTD8wbNNIqgC9J/soaiYmNEGsUCK1iSTyLkLf
+         udz+xFwZ61kEgRzQRbz5PPOuWDGGI9Hipz53vMtvTdSbt8sZrEpkD27EU5pJKPoyid
+         Hbq1PVtcDlEsw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a spelling typo in bonding.rst.
+On Mon, Mar 01, 2021 at 09:04:20AM +0200, Leon Romanovsky wrote:
+> @@ -884,7 +884,7 @@ static void gid_table_reserve_default(struct ib_device *ib_dev, u8 port,
+> 
+>  static void gid_table_release_one(struct ib_device *ib_dev)
+>  {
+> -	unsigned int p;
+> +	u32 p;
+> 
+>  	rdma_for_each_port (ib_dev, p) {
+>  		release_gid_table(ib_dev, ib_dev->port_data[p].cache.gid);
+> @@ -895,7 +895,7 @@ static void gid_table_release_one(struct ib_device *ib_dev)
+>  static int _gid_table_setup_one(struct ib_device *ib_dev)
+>  {
+>  	struct ib_gid_table *table;
+> -	unsigned int rdma_port;
+> +	u32 rdma_port;
+> 
+>  	rdma_for_each_port (ib_dev, rdma_port) {
 
-Signed-off-by: Masanari Iida <standby24x7@gmail.com>
----
- Documentation/networking/bonding.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Why are we changing this? 'unsigned int' is the right type for port
+numbers
 
-diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
-index 5f690f0ad0e4..62f2aab8eaec 100644
---- a/Documentation/networking/bonding.rst
-+++ b/Documentation/networking/bonding.rst
-@@ -1988,7 +1988,7 @@ netif_carrier.
- If use_carrier is 0, then the MII monitor will first query the
- device's (via ioctl) MII registers and check the link state.  If that
- request fails (not just that it returns carrier down), then the MII
--monitor will make an ethtool ETHOOL_GLINK request to attempt to obtain
-+monitor will make an ethtool ETHTOOL_GLINK request to attempt to obtain
- the same information.  If both methods fail (i.e., the driver either
- does not support or had some error in processing both the MII register
- and ethtool requests), then the MII monitor will assume the link is
--- 
-2.25.0
-
+Jason
