@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09150327CBC
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F36A1327CC6
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233310AbhCAK7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 05:59:44 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:5928 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232660AbhCAK5w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 05:57:52 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B603cc8860000>; Mon, 01 Mar 2021 02:57:10 -0800
-Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 1 Mar
- 2021 10:57:09 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
-        <netdev@vger.kernel.org>
-CC:     Parav Pandit <parav@nvidia.com>
-Subject: [PATCH iproute2-next 4/4] devlink: Add error print when unknown values specified
-Date:   Mon, 1 Mar 2021 12:56:54 +0200
-Message-ID: <20210301105654.291949-5-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210301105654.291949-1-parav@nvidia.com>
-References: <20210301105654.291949-1-parav@nvidia.com>
+        id S233507AbhCALDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 06:03:44 -0500
+Received: from m42-2.mailgun.net ([69.72.42.2]:11942 "EHLO m42-2.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233218AbhCALDj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Mar 2021 06:03:39 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1614596593; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=+7BFJqQDeYvelmgTlxYpxBYI4TI83ZPuqrPorQnkW3Y=; b=roTE2t71xvmw7I59vg7NMeK8Vk+TQfWH5lYHGt9pbh6PJYUlHXOqr1Ah/UEQq2BYecd01aOG
+ hqBXRY44AEv39f/6VJZtkih6YqU3sDoNjPQswzHorRPP2SwX2M8oPxJpPFmM9arGL28I+MUN
+ RtNc2Lmv9KNrQQ29j8OVKO8izn0=
+X-Mailgun-Sending-Ip: 69.72.42.2
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 603cc9b222a1e56ef8922482 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 01 Mar 2021 11:02:10
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 15DCFC43463; Mon,  1 Mar 2021 11:02:10 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E44A1C433C6;
+        Mon,  1 Mar 2021 11:02:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E44A1C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
+        mingo@redhat.com, Shuah Khan <skhan@linuxfoundation.org>,
+        kuba@kernel.org, will@kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v3 0/3] Add lockdep_assert_not_held()
+References: <cover.1614383025.git.skhan@linuxfoundation.org>
+        <YDyn+6N6EfgWJ5GV@hirez.programming.kicks-ass.net>
+        <878s779s9f.fsf@codeaurora.org>
+        <YDy1j+hMLGUWKKV6@hirez.programming.kicks-ass.net>
+Date:   Mon, 01 Mar 2021 13:02:04 +0200
+In-Reply-To: <YDy1j+hMLGUWKKV6@hirez.programming.kicks-ass.net> (Peter
+        Zijlstra's message of "Mon, 1 Mar 2021 10:36:15 +0100")
+Message-ID: <87sg5f87df.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614596230; bh=b7ZVOJ0CxDueeS4X1KzwxHEOsHogvQSQSIIA358SGXc=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=CVD8Mcn7klXmLWhxnz3gnFN742/zycMMm3pe5bfo0vtuKWVfmS+KenU9GPB7NyOFh
-         XwZ/WFWsIbF+JSf5m+CQVMDDSYQNgKhFP8YQNi1sX+kWSrXmM9CwCSXrvc/QLEc5+A
-         VoyYJs5kKxGGvS2kOjid//S+Ks6zvrEd9BHTvJVOqwubNG9YPZ5wXtFHBsNUZ2nfA8
-         Vdg9ApEVKbG+aLHvX3t86kV6xup2ihCoE/ltOCeKRZKB4/QRyBcT9+CT8zjwWOxlrz
-         7UZfL25omlTHofkdPwpkIWDVOmWPH1RlMmHqEMIyFXPzCozjkcdLI+cdcG4fSsd2d7
-         EQcg4CQmvMz6A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When user specifies either unknown flavour or unknown state during
-devlink port commands, return appropriate error message.
+Peter Zijlstra <peterz@infradead.org> writes:
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- devlink/devlink.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+> On Mon, Mar 01, 2021 at 10:45:32AM +0200, Kalle Valo wrote:
+>> Peter Zijlstra <peterz@infradead.org> writes:
+>> 
+>> > On Fri, Feb 26, 2021 at 05:06:57PM -0700, Shuah Khan wrote:
+>> >> Shuah Khan (3):
+>> >>   lockdep: add lockdep_assert_not_held()
+>> >>   lockdep: add lockdep lock state defines
+>> >>   ath10k: detect conf_mutex held ath10k_drain_tx() calls
+>> >
+>> > Thanks!
+>> 
+>> Via which tree should these go?
+>
+> I've just queued the lot for locking/core, which will show up in tip
+> when the robots don't hate on it.
+>
+> Does that work for you?
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index eaac1806..16eca4f9 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -1372,8 +1372,10 @@ static int port_flavour_parse(const char *flavour, u=
-int16_t *value)
- 	int num;
-=20
- 	num =3D str_map_lookup_str(port_flavour_map, flavour);
--	if (num < 0)
-+	if (num < 0) {
-+		invarg("unknown flavour", flavour);
- 		return num;
-+	}
- 	*value =3D num;
- 	return 0;
- }
-@@ -1383,8 +1385,10 @@ static int port_fn_state_parse(const char *statestr,=
- uint8_t *state)
- 	int num;
-=20
- 	num =3D str_map_lookup_str(port_fn_state_map, statestr);
--	if (num < 0)
-+	if (num < 0) {
-+		invarg("unknown state", statestr);
- 		return num;
-+	}
- 	*state =3D num;
- 	return 0;
- }
---=20
-2.26.2
+That's perfect, thanks! Just making sure that the patches don't get
+lost.
 
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
