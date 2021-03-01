@@ -2,90 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD52D327F9C
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 14:37:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF16327FBF
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 14:42:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235698AbhCANfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 08:35:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        id S235860AbhCANlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 08:41:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235819AbhCANfI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 08:35:08 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D148BC061788
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 05:34:27 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id dx17so670569ejb.2
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 05:34:27 -0800 (PST)
+        with ESMTP id S235676AbhCANlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 08:41:19 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A20C061756;
+        Mon,  1 Mar 2021 05:40:39 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id a17so19438036ljq.2;
+        Mon, 01 Mar 2021 05:40:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TFCW00AVj8biu0KNVpBcjsjAdkVzVWzi4Dt6X4a3OIw=;
-        b=QtnajKnsDPdzw59f4/A+ydhWYagBgpNj2vdBJHR4tImoSkdHoacCYewWKgWTwJb8L4
-         b7AiJCqp3LTQ9qnaosG2WcJdja3tcMX0D4D/stnVxmGUqBKBv13yHxn4UV15ENvIabo0
-         8g3eJuwrB4q3b2t7XDALsKYsNODcM61/mIM32j39NJWiq9xVZqOyeeib0796nGG9O3Eo
-         JEM/Np8H+nf0ZPjSdNf18uaD1IA12YpoYFGodPnRB3qMe+OMGajXHyCdcGEZHYI33uz8
-         gINRGVGOJXl/O6Dm1pAAFRYbBjdEsUJfcgqVqROK5+WQsJF7kVrNDF7tiBcKvsgC3qki
-         sFwg==
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tfPkTHeTaVvR1yZ2FfXg8gmr0JM9q50LxKJc1Ac2dQE=;
+        b=PecNtnGblG27Yybc7mVkavx3/j9Q0qAn4P0EovQlbGaaBLtahgShK3UmyLX5d6pb3U
+         i4LAjuomGgAJZa/I3YCAHykgSjpt++iel9mKXb4QIq4hymK5is1/KrQ6PW292cvkztiF
+         TjP8pjJ3H9s4+v95xIJJ1ovjeYE5eoRhKXnQvuFiTseSHeroJdzlgBbLl627YSSH3ZrU
+         JZBpiCr5N9CEr0RqIOBSqKwU7dQ9GxmTWqEl6aAobflvu+FZNznQJgdDQeMd/rYVRbu3
+         ovXylYo1pXc3D5aNuFHlq8Nd517BKIIN6V34ITpwZfWiFhklhykVBepeqUYFay+HnZhp
+         NyYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TFCW00AVj8biu0KNVpBcjsjAdkVzVWzi4Dt6X4a3OIw=;
-        b=ofdXGSsGbYYlrI0EpwiMcn0P3OXiIy72dFheXNsIh2EyMGKeCjl0PDJNkAjc77qoUx
-         eKHTjhyb0uQqW/RbY4MkSLex29g94WHQfL1wyJykAMxrEECR7u1oh/N1LVYEE2bV5/qD
-         SJA/EA4O96FPd/mw9JQOPOfL3X2RGkQoHZHoMROQYTXAG43L50AumITiwmkjaTPkWPLC
-         7GBHUoxrUPLkhG2ReGpFTE8pQWTrR8q1ZtfAVwIKZSnBEi+kQBADF5WZC3u/f+toR3FU
-         yI5wnthIJMtKkSCJ3CBnihZO8uqndm4/68HLRSV57mmEdetctFOu7/SpfTugRLrFQDrI
-         TY+w==
-X-Gm-Message-State: AOAM531k/b3gk3hrLeaPnVflIcBRGv/iH4fUSdjBZH+LTsu7rQHftx97
-        UrRX/hnFa/bkcRASbCEYGtc=
-X-Google-Smtp-Source: ABdhPJzwo/sJxZe2+hwVvZ2G/i58mykrWNYMSRAIYSXXajDzMlDbW/D1ltwzA35nYKt61yMcpj78EA==
-X-Received: by 2002:a17:907:76ed:: with SMTP id kg13mr15202517ejc.99.1614605666599;
-        Mon, 01 Mar 2021 05:34:26 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id bw22sm14272234ejb.78.2021.03.01.05.34.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 05:34:26 -0800 (PST)
-Date:   Mon, 1 Mar 2021 15:34:25 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v3 net 8/8] net: enetc: keep RX ring consumer index in
- sync with hardware
-Message-ID: <20210301133425.drijvbm542apzv6b@skbuf>
-References: <20210301111818.2081582-1-olteanv@gmail.com>
- <20210301111818.2081582-9-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210301111818.2081582-9-olteanv@gmail.com>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tfPkTHeTaVvR1yZ2FfXg8gmr0JM9q50LxKJc1Ac2dQE=;
+        b=mOMHXH8L/xdHMI0RO0RMpx63Xx+qthDtEHRGWuAUKjc2C9GVarf1aeaVZ9FpVhjFnZ
+         xkA55aBvEmNEYsTazpcvy94HEpKbIR+iPuN3IOpjZG01fW0a7R7Apul9NvpkId6TE5jX
+         1uTT/dGjwD+cqOH3Df/saCCrxSmkeNHvSlqLMjiPzpqfUKUF6WXKNWwACyK1xFF5kF/u
+         jxwE5Uz4IyKyUiHHOlE+JwEAbZy9CDGjRQYREzNYmUc+HBaxNSlJiBdNe3USoXyQfbsp
+         yNJfb3Ihf9GRZzLkVCJ8JsEBulvtVYTT/UhA4LLpm9xeRdb1y6dKrMY9c+uo22GTb2Ra
+         2I6g==
+X-Gm-Message-State: AOAM530hLonFJ7srzLzA1wGImRwgiJeg0MiqZXH/UCNBIoN4jL1yitPW
+        VteuqJhywoU7Tv1kgOoPhf0=
+X-Google-Smtp-Source: ABdhPJy9PYq6Qagabf94XBUyJH6TuCeXLiP0AfPwRl3XcnEjhFpX1XCsZsJoHj+PhU2zMM0PnldndA==
+X-Received: by 2002:a2e:8151:: with SMTP id t17mr8927655ljg.163.1614606037897;
+        Mon, 01 Mar 2021 05:40:37 -0800 (PST)
+Received: from amakushkin-VirtualBox ([46.61.204.60])
+        by smtp.googlemail.com with ESMTPSA id h10sm2363229ljb.101.2021.03.01.05.40.36
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 01 Mar 2021 05:40:37 -0800 (PST)
+Message-ID: <4d22ecbe776ada30c8f4b553204e2776fc0d48ac.camel@gmail.com>
+Subject: Re: [PATCH] net/core/skbuff.c: __netdev_alloc_skb fix when len is
+ greater than KMALLOC_MAX_SIZE
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, linmiaohe@huawei.com,
+        Sabyrzhan Tasbolatov <snovitoll@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
+Date:   Mon, 01 Mar 2021 16:40:36 +0300
+In-Reply-To: <24d966a7-ed2e-eb50-23e9-71ff2e43371f@gmail.com>
+References: <20210226191106.554553-1-paskripkin@gmail.com>
+         <24d966a7-ed2e-eb50-23e9-71ff2e43371f@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 01:18:18PM +0200, Vladimir Oltean wrote:
-> The simpler thing would be to put the write to the consumer index into
-> enetc_refill_rx_ring directly, but there are issues with the MDIO
-> locking: in the NAPI poll code we have the enetc_lock_mdio() taken from
-> top-level and we use the unlocked enetc_wr_reg_hot, whereas in
-> enetc_open, the enetc_lock_mdio() is not taken at the top level, but
-> instead by each individual enetc_wr_reg, so we are forced to put an
-> additional enetc_wr_reg in enetc_setup_rxbdr. Better organization of
-> the code is left as a refactoring exercise.
-> 
-> Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet drivers")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
+Hi, thanks for your reply!
 
-Claudiu pointed out privately that this is exactly what was done prior
-to commit fd5736bf9f23 ("enetc: Workaround for MDIO register access issue"),
-and therefore, the driver used to work before that (I missed that during
-my assessment). So my Fixes: tag is actually incorrect. I will send a
-follow-up version where this is squashed with patch 7/8 and the Fixes:
-tag is adjusted.
+On Mon, 2021-03-01 at 14:09 +0100, Eric Dumazet wrote:
+> 
+> On 2/26/21 8:11 PM, Pavel Skripkin wrote:
+> > syzbot found WARNING in __alloc_pages_nodemask()[1] when order >=
+> > MAX_ORDER.
+> > It was caused by __netdev_alloc_skb(), which doesn't check len
+> > value after adding NET_SKB_PAD.
+> > Order will be >= MAX_ORDER and passed to __alloc_pages_nodemask()
+> > if size > KMALLOC_MAX_SIZE.
+> > 
+> > static void *kmalloc_large_node(size_t size, gfp_t flags, int node)
+> > {
+> > 	struct page *page;
+> > 	void *ptr = NULL;
+> > 	unsigned int order = get_order(size);
+> > ...
+> > 	page = alloc_pages_node(node, flags, order);
+> > ...
+> > 
+> > [1] WARNING in __alloc_pages_nodemask+0x5f8/0x730
+> > mm/page_alloc.c:5014
+> > Call Trace:
+> >  __alloc_pages include/linux/gfp.h:511 [inline]
+> >  __alloc_pages_node include/linux/gfp.h:524 [inline]
+> >  alloc_pages_node include/linux/gfp.h:538 [inline]
+> >  kmalloc_large_node+0x60/0x110 mm/slub.c:3999
+> >  __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4496
+> >  __kmalloc_reserve net/core/skbuff.c:150 [inline]
+> >  __alloc_skb+0x4e4/0x5a0 net/core/skbuff.c:210
+> >  __netdev_alloc_skb+0x70/0x400 net/core/skbuff.c:446
+> >  netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
+> >  qrtr_endpoint_post+0x84/0x11b0 net/qrtr/qrtr.c:442
+> >  qrtr_tun_write_iter+0x11f/0x1a0 net/qrtr/tun.c:98
+> >  call_write_iter include/linux/fs.h:1901 [inline]
+> >  new_sync_write+0x426/0x650 fs/read_write.c:518
+> >  vfs_write+0x791/0xa30 fs/read_write.c:605
+> >  ksys_write+0x12d/0x250 fs/read_write.c:658
+> >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > 
+> > Reported-by: syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
+> > Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> > Change-Id: I480a6d6f818a4c0a387db0cd3f230b68a7daeb16
+> > ---
+> >  net/core/skbuff.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 785daff48030..dc28c8f7bf5f 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -443,6 +443,9 @@ struct sk_buff *__netdev_alloc_skb(struct
+> > net_device *dev, unsigned int len,
+> >  	if (len <= SKB_WITH_OVERHEAD(1024) ||
+> >  	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+> >  	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
+> > +		if (len > KMALLOC_MAX_SIZE)
+> > +			return NULL;
+> > +
+> >  		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX,
+> > NUMA_NO_NODE);
+> >  		if (!skb)
+> >  			goto skb_fail;
+> > 
+> 
+> 
+> No, please fix the offender instead.
+
+Yesterday I already send newer patch version to Alexander Lobakin,
+where I added __GFP_NOWARN in qrtr_endpoint_post(). I think, You can
+check it in this thread. 
+
+> 
+> Offender tentative fix was in 
+> 
+> commit 2a80c15812372e554474b1dba0b1d8e467af295d
+> Author: Sabyrzhan Tasbolatov <snovitoll@gmail.com>
+> Date:   Tue Feb 2 15:20:59 2021 +0600
+> 
+>     net/qrtr: restrict user-controlled length in
+> qrtr_tun_write_iter()
+> 
+
+This patch fixes kzalloc() call, but the warning was caused by
+__netdev_alloc_skb().  
+
+> 
+> qrtr maintainers have to tell us what is the maximum datagram length
+> they need to support.
+> 
+> 
+> 
+With regards,
+Pavel Skripkin
+
+
