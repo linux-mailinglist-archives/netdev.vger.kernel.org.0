@@ -2,88 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CB183277A4
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 07:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B98F3277E7
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 07:59:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231959AbhCAGb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 01:31:58 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17469 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbhCAG3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 01:29:10 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B603c898c0004>; Sun, 28 Feb 2021 22:28:28 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 1 Mar
- 2021 06:28:28 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 1 Mar 2021 06:28:26 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-CC:     <elic@nvidia.com>
-Subject: [PATCH] vdpa/mlx5: Fix wrong use of bit numbers
-Date:   Mon, 1 Mar 2021 08:28:17 +0200
-Message-ID: <20210301062817.39331-1-elic@nvidia.com>
-X-Mailer: git-send-email 2.30.1
+        id S232128AbhCAG6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 01:58:33 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:44897 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231956AbhCAG6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 01:58:25 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1lGcTk-000Dkk-Ny; Mon, 01 Mar 2021 07:56:28 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1lGcTj-0004Jb-C3; Mon, 01 Mar 2021 07:56:27 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id C1593240041;
+        Mon,  1 Mar 2021 07:56:26 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 15BEC240040;
+        Mon,  1 Mar 2021 07:56:26 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id A23972018D;
+        Mon,  1 Mar 2021 07:56:25 +0100 (CET)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614580108; bh=nZ8RikqyTlTHqW01K1zLOKFk/xXep/HRaVtF/ixnczo=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type;
-        b=dD0mP5OQNqww5n1J5woUoxNMK5ZP21bFHXrrGuX3hqcDczgPIFQKJyLWtsikqNyEj
-         /9X6FVM4cTe/SyEGn4arCHyExJYJc/VAGSphSMj+UQa+tuiwXGIAB1D0B4hisWKqc6
-         O9wCSQY3gY0cvg266vuODv/NF6iW0uDFEaC7bZWHW98OMjhUDJ8c20Dxi15cbdvL23
-         HHWxv7UD4MF9fZ0+iVq6YEYb/PmM0HayWHkYt10qOJs+0qA/xw9In/zTRlwgBz7SW1
-         Bd//cdAdJDAvL3heRntTp8b58NSpFv7qhok8niDoU08GVqaGvGa2gr+7p5RlcFN6N9
-         XkPjn3+Crm6lA==
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 01 Mar 2021 07:56:25 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
+Organization: TDT AG
+In-Reply-To: <CAJht_ENP3Y98jgj1peGa3fGpQ-qPaF=1gtyYwMcawRFW_UCpeA@mail.gmail.com>
+References: <20210216201813.60394-1-xie.he.0141@gmail.com>
+ <YC4sB9OCl5mm3JAw@unreal>
+ <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
+ <YC5DVTHHd6OOs459@unreal>
+ <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
+ <YC7GHgYfGmL2wVRR@unreal>
+ <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
+ <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
+ <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EOru3pW6AHN4QVjiaERpLSfg-0G0ZEaqU_hkhX1acv0HQ@mail.gmail.com>
+ <906d8114f1965965749f1890680f2547@dev.tdt.de>
+ <CAJht_EPBJhhdCBoon=WMuPBk-sxaeYOq3veOpAd2jq5kFqQHBg@mail.gmail.com>
+ <e1750da4179aca52960703890e985af3@dev.tdt.de>
+ <CAJht_ENP3Y98jgj1peGa3fGpQ-qPaF=1gtyYwMcawRFW_UCpeA@mail.gmail.com>
+Message-ID: <ff200b159ef358494a922a676cbef8a6@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.16
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1614581788-0000B5A4-DEECE876/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VIRTIO_F_VERSION_1 is a bit number. Use BIT_ULL() with mask
-conditionals.
+On 2021-02-27 00:03, Xie He wrote:
+> On Fri, Feb 26, 2021 at 6:21 AM Martin Schiller <ms@dev.tdt.de> wrote:
+>> 
+>> I have now had a look at it. It works as expected.
+>> I just wonder if it would not be more appropriate to call
+>> the lapb_register() already in x25_hdlc_open(), so that the layer2
+>> (lapb) can already "work" before the hdlc<x>_x25 interface is up.
+> 
+> I think it's better not to keep LAPB running unless hdlc<x>_x25 is up.
+> If I am the user, I would expect that when I change the X.25 interface
+> to the DOWN state, the LAPB protocol would be completely stopped and
+> the LAPB layer would not generate any new frames anymore (even if the
+> other side wants to connect), and when I change the X.25 interface
+> back to the UP state, it would be a fresh new start for the LAPB
+> protocol.
+> 
+>> Also, I have a hard time assessing if such a wrap is really 
+>> enforceable.
+> 
+> Sorry. I don't understand what you mean. What "wrap" are you referring 
+> to?
 
-Also, in mlx5_vdpa_is_little_endian() use BIT_ULL for consistency with
-the rest of the code.
+I mean the change from only one hdlc<x> interface to both hdlc<x> and
+hdlc<x>_x25.
 
-Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices=
-")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I can't estimate how many users are out there and how their setup looks
+like.
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
-_vnet.c
-index dc7031132fff..7d21b857a94a 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -821,7 +821,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev,=
- struct mlx5_vdpa_virtque
- 	MLX5_SET(virtio_q, vq_ctx, event_qpn_or_msix, mvq->fwqp.mqp.qpn);
- 	MLX5_SET(virtio_q, vq_ctx, queue_size, mvq->num_ent);
- 	MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0,
--		 !!(ndev->mvdev.actual_features & VIRTIO_F_VERSION_1));
-+		 !!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_F_VERSION_1)));
- 	MLX5_SET64(virtio_q, vq_ctx, desc_addr, mvq->desc_addr);
- 	MLX5_SET64(virtio_q, vq_ctx, used_addr, mvq->device_addr);
- 	MLX5_SET64(virtio_q, vq_ctx, available_addr, mvq->driver_addr);
-@@ -1578,7 +1578,7 @@ static void teardown_virtqueues(struct mlx5_vdpa_net =
-*ndev)
- static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev *mvdev)
- {
- 	return virtio_legacy_is_little_endian() ||
--		(mvdev->actual_features & (1ULL << VIRTIO_F_VERSION_1));
-+		(mvdev->actual_features & BIT_ULL(VIRTIO_F_VERSION_1));
- }
-=20
- static __virtio16 cpu_to_mlx5vdpa16(struct mlx5_vdpa_dev *mvdev, u16 val)
---=20
-2.30.1
-
+> 
+>> Unfortunately I have no idea how many users there actually are.
