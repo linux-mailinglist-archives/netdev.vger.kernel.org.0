@@ -2,141 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBA233281DE
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 16:11:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 801A83281E1
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 16:11:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236923AbhCAPKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 10:10:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
+        id S236936AbhCAPLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 10:11:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236921AbhCAPJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 10:09:36 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485D4C061756
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 07:08:56 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id c6so21210005ede.0
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 07:08:56 -0800 (PST)
+        with ESMTP id S236943AbhCAPKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 10:10:33 -0500
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715D6C06178A
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 07:09:53 -0800 (PST)
+Received: by mail-vs1-xe34.google.com with SMTP id l192so8782603vsd.5
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 07:09:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xUvBhCvqgHU9uJl/dg8nlzrcYOGrjh1TuGIFOxZ4Ljc=;
-        b=vdHgI2WMAlDGboU1UvdtnIaiGvs/yqtPsYDYIj3ZuDoxFJYDgiB5SrnqAOFnWYGQWZ
-         uPbvJ2/C9oJRT/WARPx0e+5LrQIrtxwAxP0xYh1fpNyjoMLZ2Qquq39rge7yq7Yw9Jdb
-         gHci4UvFtieR0w0Gbp5Y04pFjW9Fu2759nKvMJDp5yT/VRd2HWGbLZK00p8w5djc/6Ay
-         IJocgwXuHdhZ9OfLZ1NQ+BoCxL1vM8H8w/e7Riu0tOtg3kQ+Q58Y8xxjiKMNXaPkUwz7
-         pwJnKs0CUO/yDgPQGm+cG9y3Dq5pKXAW/w2bS+kpW3Tgg+FaNUW/ySl3+cZAcxQdCOGM
-         X1Ug==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JYUshVdIGpfkx3r8XsmqIrACh8j5JhOEEsMDIbj1ZNM=;
+        b=nK2aj378rHybaUwUYrcASOBEi1Y+2U8yi/4VPcTrT+1iHfIpcN1Ht+x8RT1Ir89/DY
+         A5uuYcwYeygg/RlzIkvx7lEpiVMpIa2x39PtQw6lVJqToGS9mlDEyaIMfWjMJhAmnVfG
+         tmDGK8kI6MYEsNGBnHOXQGucZHSLV/PGi0MZlKqXHUyGHMcuVLN4XbK78ri0jCXljxC0
+         /Hf8squWSctk72FyiQm/CnIIudBXdPFvhA2ZsxbOV9ldj8viMWM9iAG0rT1Ci0a9e5zo
+         JzVIdIr4gRIU61gi9F/2lXq1NQOWIjlazdUjVPxhf+OuDmb2x3g8JGOivV/x8h5JSO3t
+         HhEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xUvBhCvqgHU9uJl/dg8nlzrcYOGrjh1TuGIFOxZ4Ljc=;
-        b=TY+OaGzNFBV1N5GL1+JH0M2FYN7lZyjkwB4RO10jMIoxOpjRHY+wa9me+YeCbBKz/4
-         dvhl1B0UH5Djr9ZG2ldIlLJ08bpfjyB0qi4qdYYDjEWglQCcOjn/btFacfHe9o2vsw7T
-         O17wo9I+mtjghnoOhnIvHvKwgEJnDwDrs7Q+WGGuV2KF5V2qjsrRL28cz6eOfSBmS3mC
-         aQSD7iy2Au70LX/l5gpHqaQRfy/Fzks20kKmnRIo6SgDKDMWPUoC3V6/fiA66LwuCQ86
-         G00TebvpdvWogKaallbO1gTt5lllii5MwWrW7nnVVsX9mc2sWGfQyCJ87JTzLp2uI/zn
-         zEag==
-X-Gm-Message-State: AOAM533FEWNQp3kf4l9m+vZ5xGarHrnTX1qguvT71uTL2HP8IR9fc/1Y
-        E9BzRLzzsAI++XvItUVkrJw=
-X-Google-Smtp-Source: ABdhPJxwxBylD7vgakgf3fWiy07DZuesr30IOcOf5obXCe34pS7mT8UDUoI10DDm4xAGEum+n79KTA==
-X-Received: by 2002:aa7:d987:: with SMTP id u7mr4672006eds.326.1614611334987;
-        Mon, 01 Mar 2021 07:08:54 -0800 (PST)
-Received: from skbuf ([188.25.217.13])
-        by smtp.gmail.com with ESMTPSA id u15sm14305737ejy.48.2021.03.01.07.08.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JYUshVdIGpfkx3r8XsmqIrACh8j5JhOEEsMDIbj1ZNM=;
+        b=QP6LNc8xycQN6QeveIU7a7Z2BJWJSSh75qUoSg2owBzJj83HtVB83E1dqNPb27GlYc
+         eC6yMDHw8tqfIJF6vqwmS+ZWf1JY6K+lRPrDDDTbVg0Z5KQv0Mv41EJd06EMwzW+qbHO
+         nJmVrmV337lkfbKyijMvm5S2TUrLcnrlA4zXHOT0tlf/QeMO0onq4Pegz0syo9ytrx77
+         tml9yC4ZlX+OPH6rpx2kM87Zng6KQUo95pxRll+E2JO+f4qVOwvuzxF0RTwn8eq2MTEX
+         HdQ2KmEyT2LUmSzRjSeI9MZPmmChc6ilgSRxR7NUE2MvdDP0PGQuzSQ9Dl98yzqM7/uT
+         FHQw==
+X-Gm-Message-State: AOAM530KrrsR3KLvlDUEGt7wgKk3QgrUPKzTpUJ2Kw62LT03UXfWrTgz
+        DQE+T08rFPgn5uAt0prVsGXFtBLtpbM=
+X-Google-Smtp-Source: ABdhPJwKNKEvqdmHKeRUlSwGMNZrhKNwQwU3nqLuYovqaN08/XlYFsVrtOtRrVHjV0mciCY8dCzu6Q==
+X-Received: by 2002:a67:808a:: with SMTP id b132mr8554566vsd.8.1614611392194;
+        Mon, 01 Mar 2021 07:09:52 -0800 (PST)
+Received: from willemb2.c.googlers.com.com (162.116.74.34.bc.googleusercontent.com. [34.74.116.162])
+        by smtp.gmail.com with ESMTPSA id r5sm2339808vkf.43.2021.03.01.07.09.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 07:08:54 -0800 (PST)
-Date:   Mon, 1 Mar 2021 17:08:52 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Markus =?utf-8?Q?Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
-Subject: Re: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in
- IFF_PROMISC mode
-Message-ID: <20210301150852.ejyouycigwu6o5ht@skbuf>
-References: <20210225121835.3864036-1-olteanv@gmail.com>
- <20210225121835.3864036-6-olteanv@gmail.com>
- <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210226234244.w7xw7qnpo3skdseb@skbuf>
- <20210226154922.5956512b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210227001651.geuv4pt2bxkzuz5d@skbuf>
- <7bb61f7190bebadb9b6281cb02fa103d@walle.cc>
- <20210228224804.2zpenxrkh5vv45ph@skbuf>
- <bfb5a084bfb17f9fdd0ea05ba519441b@walle.cc>
+        Mon, 01 Mar 2021 07:09:51 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Willem de Bruijn <willemb@google.com>,
+        Kris Karas <bugs-a17@moonlit-rail.com>
+Subject: [PATCH net] net: expand textsearch ts_state to fit skb_seq_state
+Date:   Mon,  1 Mar 2021 15:09:44 +0000
+Message-Id: <20210301150944.138500-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bfb5a084bfb17f9fdd0ea05ba519441b@walle.cc>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 03:36:15PM +0100, Michael Walle wrote:
-> Ok, I see, so your proposed behavior is backed by the standards. But
-> OTOH there was a summary by Markus of the behavior of other drivers:
-> https://lore.kernel.org/netdev/20201119153751.ix73o5h4n6dgv4az@ipetronik.com/
-> And a conclusion by Jakub:
-> https://lore.kernel.org/netdev/20201112164457.6af0fbaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/#t
-> And a propsed core change to disable vlan filtering with promisc mode.
-> Do I understand you correctly, that this shouldn't be done either?
->
-> Don't get me wrong, I don't vote against or in favor of this patch.
-> I just want to understand the behavior.
+From: Willem de Bruijn <willemb@google.com>
 
-So you can involuntarily ignore a standard, or you can ignore it
-deliberately. I can't force anyone to not ignore it in the latter case,
-but indeed, now that I tried to look it up, I personally don't think
-that promiscuity should disable VLAN filtering unless somebody comes up
-with a good reason for which Linux should basically disregard IEEE 802.3.
-In particular, Jakub seems to have been convinced in that thread by no
-other argument except that other drivers ignore the standards too, which
-I'm not sure is a convincing enough argument.
+The referenced commit expands the skb_seq_state used by
+skb_find_text with a 4B frag_off field, growing it to 48B.
 
-In my opinion, the fact that some drivers disable VLAN filtering should
-be treated like a marginal condition, similar to how, when you set the
-MTU on an interface to N octets, it might happen that it accepts packets
-larger than N octets, but it isn't guaranteed.
+This exceeds container ts_state->cb, causing a stack corruption:
 
-> I haven't had time to actually test this, but what if you do:
->  - don't load the 8021q module (or don't enable kernel support)
->  - enable promisc
->  (1)
->  - load 8021q module
->  (2)
->  - add a vlan interface
->  (3)
->  - add another vlan interface
->  (4)
->
-> What frames would you actually receive on the base interface
-> in (1), (2), (3), (4) and what is the user expectation?
-> I'd say its the same every time. (IIRC there is already some
-> discrepancy due to the VLAN filter hardware offloading)
+[   73.238353] Kernel panic - not syncing: stack-protector: Kernel stack
+is corrupted in: skb_find_text+0xc5/0xd0
+[   73.247384] CPU: 1 PID: 376 Comm: nping Not tainted 5.11.0+ #4
+[   73.252613] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS 1.14.0-2 04/01/2014
+[   73.260078] Call Trace:
+[   73.264677]  dump_stack+0x57/0x6a
+[   73.267866]  panic+0xf6/0x2b7
+[   73.270578]  ? skb_find_text+0xc5/0xd0
+[   73.273964]  __stack_chk_fail+0x10/0x10
+[   73.277491]  skb_find_text+0xc5/0xd0
+[   73.280727]  string_mt+0x1f/0x30
+[   73.283639]  ipt_do_table+0x214/0x410
 
-The default value is:
-ethtool -k eno0 | grep rx-vlan-filter
-rx-vlan-filter: off
+The struct is passed between skb_find_text and its callbacks
+skb_prepare_seq_read, skb_seq_read and skb_abort_seq read through
+the textsearch interface using TS_SKB_CB.
 
-so we receive all VLAN-tagged packets by default in enetc, unless VLAN
-filtering is turned on.
+I assumed that this mapped to skb->cb like other .._SKB_CB wrappers.
+skb->cb is 48B. But it maps to ts_state->cb, which is only 40B.
 
-> > I chose option 2 because it was way simpler and was just as correct.
->
-> Fair, but it will also put additional burden to the user to also
-> disable the vlan filtering, right?. Otherwise it would just work. And
-> it will waste CPU cycles for unwanted frames.
-> Although your new patch version contains a new "(yet)" ;)
+skb->cb was increased from 40B to 48B after ts_state was introduced,
+in commit 3e3850e989c5 ("[NETFILTER]: Fix xfrm lookup in
+ip_route_me_harder/ip6_route_me_harder").
 
-True, nobody said it's optimal, but you can't make progress if you
-always try to do things optimally the first time (but at least you
-should do something that's not wrong).
-Adding the dev_uc_add, dev_mc_add and vlan_vid_add calls to
-net/sched/cls_flower.c doesn't seem an impossible task (especially since
-all of them are refcounted, it should be pretty simple to avoid strange
-interactions with other layers such as 8021q), but nonetheless, it just
-wasn't (and still isn't) high enough on my list of priorities.
+Increase ts_state.cb[] to 48 to fit the struct.
+
+Also add a BUILD_BUG_ON to avoid a repeat.
+
+The alternative is to directly add a dependency from textsearch onto
+linux/skbuff.h, but I think the intent is textsearch to have no such
+dependencies on its callers.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=211911
+Fixes: 97550f6fa592 ("net: compound page support in skb_seq_read")
+Reported-by: Kris Karas <bugs-a17@moonlit-rail.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ include/linux/textsearch.h | 2 +-
+ net/core/skbuff.c          | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/textsearch.h b/include/linux/textsearch.h
+index 13770cfe33ad..6673e4d4ac2e 100644
+--- a/include/linux/textsearch.h
++++ b/include/linux/textsearch.h
+@@ -23,7 +23,7 @@ struct ts_config;
+ struct ts_state
+ {
+ 	unsigned int		offset;
+-	char			cb[40];
++	char			cb[48];
+ };
+ 
+ /**
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 545a472273a5..c421c8f80925 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3659,6 +3659,8 @@ unsigned int skb_find_text(struct sk_buff *skb, unsigned int from,
+ 	struct ts_state state;
+ 	unsigned int ret;
+ 
++	BUILD_BUG_ON(sizeof(struct skb_seq_state) > sizeof(state.cb));
++
+ 	config->get_next_block = skb_ts_get_next_block;
+ 	config->finish = skb_ts_finish;
+ 
+-- 
+2.30.1.766.gb4fecdf3b7-goog
+
