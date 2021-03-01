@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C64327D1B
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50172327D21
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232933AbhCALX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 06:23:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        id S233270AbhCALYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 06:24:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232896AbhCALWk (ORCPT
+        with ESMTP id S232982AbhCALWk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 06:22:40 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51461C0617AA
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 03:21:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1160DC06121D
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 03:21:15 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lGgbw-00033r-Tv
-        for netdev@vger.kernel.org; Mon, 01 Mar 2021 12:21:12 +0100
+        id 1lGgbx-00037H-KR
+        for netdev@vger.kernel.org; Mon, 01 Mar 2021 12:21:13 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 94DD25EB12F
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 11:21:10 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id B60745EB136
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 11:21:12 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 16E375EB0FB;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 907895EB0FF;
         Mon,  1 Mar 2021 11:21:04 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2c17ecd7;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 61ca5b99;
         Mon, 1 Mar 2021 11:21:02 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>
-Subject: [net 4/6] can: mcp251xfd: revert "can: mcp251xfd: add BQL support"
-Date:   Mon,  1 Mar 2021 12:20:58 +0100
-Message-Id: <20210301112100.197939-5-mkl@pengutronix.de>
+        kernel@pengutronix.de, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Andre Naujoks <nautsch2@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net 5/6] can: skb: can_skb_set_owner(): fix ref counting if socket was closed before setting skb ownership
+Date:   Mon,  1 Mar 2021 12:20:59 +0100
+Message-Id: <20210301112100.197939-6-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210301112100.197939-1-mkl@pengutronix.de>
 References: <20210301112100.197939-1-mkl@pengutronix.de>
@@ -54,127 +56,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the following 4 patches
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-| 99842c9685ab can: dev: can_rx_offload_get_echo_skb(): extend to return can frame length
-| 9420e1d495e2 can: dev: can_get_echo_skb(): extend to return can frame length
-| 1dcb6e57db83 can: dev: can_put_echo_skb(): extend to handle frame_len
-| f0ef72febc9a can: dev: extend struct can_skb_priv to hold CAN frame length
+There are two ref count variables controlling the free()ing of a socket:
+- struct sock::sk_refcnt - which is changed by sock_hold()/sock_put()
+- struct sock::sk_wmem_alloc - which accounts the memory allocated by
+  the skbs in the send path.
 
-the CAN echo SKB support was extended to hold the CAN frame
-length (which is the length of the CAN frame on the wire). It is meant
-as a helper for BQL support, to avoid the re-calculation of the frame
-length before sending it and on TX-completion.
+In case there are still TX skbs on the fly and the socket() is closed,
+the struct sock::sk_refcnt reaches 0. In the TX-path the CAN stack
+clones an "echo" skb, calls sock_hold() on the original socket and
+references it. This produces the following back trace:
 
-However if the CAN frame is send without the request to be looped back
-the SKB is discarded in can_put_echo_skb() and the subsequent
-can_get_echo_skb() and can_rx_offload_get_echo_skb() return 0 for the
-CAN frame length. This results in BQL stalling the TX queue after a
-few packages.
+| WARNING: CPU: 0 PID: 280 at lib/refcount.c:25 refcount_warn_saturate+0x114/0x134
+| refcount_t: addition on 0; use-after-free.
+| Modules linked in: coda_vpu(E) v4l2_jpeg(E) videobuf2_vmalloc(E) imx_vdoa(E)
+| CPU: 0 PID: 280 Comm: test_can.sh Tainted: G            E     5.11.0-04577-gf8ff6603c617 #203
+| Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+| Backtrace:
+| [<80bafea4>] (dump_backtrace) from [<80bb0280>] (show_stack+0x20/0x24) r7:00000000 r6:600f0113 r5:00000000 r4:81441220
+| [<80bb0260>] (show_stack) from [<80bb593c>] (dump_stack+0xa0/0xc8)
+| [<80bb589c>] (dump_stack) from [<8012b268>] (__warn+0xd4/0x114) r9:00000019 r8:80f4a8c2 r7:83e4150c r6:00000000 r5:00000009 r4:80528f90
+| [<8012b194>] (__warn) from [<80bb09c4>] (warn_slowpath_fmt+0x88/0xc8) r9:83f26400 r8:80f4a8d1 r7:00000009 r6:80528f90 r5:00000019 r4:80f4a8c2
+| [<80bb0940>] (warn_slowpath_fmt) from [<80528f90>] (refcount_warn_saturate+0x114/0x134) r8:00000000 r7:00000000 r6:82b44000 r5:834e5600 r4:83f4d540
+| [<80528e7c>] (refcount_warn_saturate) from [<8079a4c8>] (__refcount_add.constprop.0+0x4c/0x50)
+| [<8079a47c>] (__refcount_add.constprop.0) from [<8079a57c>] (can_put_echo_skb+0xb0/0x13c)
+| [<8079a4cc>] (can_put_echo_skb) from [<8079ba98>] (flexcan_start_xmit+0x1c4/0x230) r9:00000010 r8:83f48610 r7:0fdc0000 r6:0c080000 r5:82b44000 r4:834e5600
+| [<8079b8d4>] (flexcan_start_xmit) from [<80969078>] (netdev_start_xmit+0x44/0x70) r9:814c0ba0 r8:80c8790c r7:00000000 r6:834e5600 r5:82b44000 r4:82ab1f00
+| [<80969034>] (netdev_start_xmit) from [<809725a4>] (dev_hard_start_xmit+0x19c/0x318) r9:814c0ba0 r8:00000000 r7:82ab1f00 r6:82b44000 r5:00000000 r4:834e5600
+| [<80972408>] (dev_hard_start_xmit) from [<809c6584>] (sch_direct_xmit+0xcc/0x264) r10:834e5600 r9:00000000 r8:00000000 r7:82b44000 r6:82ab1f00 r5:834e5600 r4:83f27400
+| [<809c64b8>] (sch_direct_xmit) from [<809c6c0c>] (__qdisc_run+0x4f0/0x534)
 
-Until the BQL helpers can_get_echo_skb() and
-can_rx_offload_get_echo_skb() are fixed, revert the BQL support for
-the mcp251xfd driver.
+To fix this problem, only set skb ownership to sockets which have still
+a ref count > 0.
 
-This reverts commit 4162e18e949ba520d5116ac0323500355479a00e.
-
-Fixes: 4162e18e949b ("can: mcp251xfd: add BQL support")
-Cc: Manivannan Sadhasivam <mani@kernel.org>
-Cc: Thomas Kopp <thomas.kopp@microchip.com>
-Link: https://lore.kernel.org/r/20210228083347.28580-1-mkl@pengutronix.de
+Fixes: 0ae89beb283a ("can: add destructor for self generated skbs")
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+Cc: Andre Naujoks <nautsch2@gmail.com>
+Link: https://lore.kernel.org/r/20210226092456.27126-1-o.rempel@pengutronix.de
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Oliver Hartkopp <socketcan@hartkopp.net>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- .../net/can/spi/mcp251xfd/mcp251xfd-core.c    | 21 ++++---------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+ include/linux/can/skb.h | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index 3c5b92911d46..799e9d5d3481 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -335,8 +335,6 @@ static void mcp251xfd_ring_init(struct mcp251xfd_priv *priv)
- 	u8 len;
- 	int i, j;
+diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
+index 685f34cfba20..d438eb058069 100644
+--- a/include/linux/can/skb.h
++++ b/include/linux/can/skb.h
+@@ -65,8 +65,12 @@ static inline void can_skb_reserve(struct sk_buff *skb)
  
--	netdev_reset_queue(priv->ndev);
--
- 	/* TEF */
- 	tef_ring = priv->tef;
- 	tef_ring->head = 0;
-@@ -1249,8 +1247,7 @@ mcp251xfd_handle_tefif_recover(const struct mcp251xfd_priv *priv, const u32 seq)
- 
- static int
- mcp251xfd_handle_tefif_one(struct mcp251xfd_priv *priv,
--			   const struct mcp251xfd_hw_tef_obj *hw_tef_obj,
--			   unsigned int *frame_len_ptr)
-+			   const struct mcp251xfd_hw_tef_obj *hw_tef_obj)
+ static inline void can_skb_set_owner(struct sk_buff *skb, struct sock *sk)
  {
- 	struct net_device_stats *stats = &priv->ndev->stats;
- 	u32 seq, seq_masked, tef_tail_masked;
-@@ -1272,8 +1269,7 @@ mcp251xfd_handle_tefif_one(struct mcp251xfd_priv *priv,
- 	stats->tx_bytes +=
- 		can_rx_offload_get_echo_skb(&priv->offload,
- 					    mcp251xfd_get_tef_tail(priv),
--					    hw_tef_obj->ts,
--					    frame_len_ptr);
-+					    hw_tef_obj->ts, NULL);
- 	stats->tx_packets++;
- 	priv->tef->tail++;
- 
-@@ -1331,7 +1327,6 @@ mcp251xfd_tef_obj_read(const struct mcp251xfd_priv *priv,
- static int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
- {
- 	struct mcp251xfd_hw_tef_obj hw_tef_obj[MCP251XFD_TX_OBJ_NUM_MAX];
--	unsigned int total_frame_len = 0;
- 	u8 tef_tail, len, l;
- 	int err, i;
- 
-@@ -1353,9 +1348,7 @@ static int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
+-	if (sk) {
+-		sock_hold(sk);
++	/* If the socket has already been closed by user space, the
++	 * refcount may already be 0 (and the socket will be freed
++	 * after the last TX skb has been freed). So only increase
++	 * socket refcount if the refcount is > 0.
++	 */
++	if (sk && refcount_inc_not_zero(&sk->sk_refcnt)) {
+ 		skb->destructor = sock_efree;
+ 		skb->sk = sk;
  	}
- 
- 	for (i = 0; i < len; i++) {
--		unsigned int frame_len;
--
--		err = mcp251xfd_handle_tefif_one(priv, &hw_tef_obj[i], &frame_len);
-+		err = mcp251xfd_handle_tefif_one(priv, &hw_tef_obj[i]);
- 		/* -EAGAIN means the Sequence Number in the TEF
- 		 * doesn't match our tef_tail. This can happen if we
- 		 * read the TEF objects too early. Leave loop let the
-@@ -1365,8 +1358,6 @@ static int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
- 			goto out_netif_wake_queue;
- 		if (err)
- 			return err;
--
--		total_frame_len += frame_len;
- 	}
- 
-  out_netif_wake_queue:
-@@ -1397,7 +1388,6 @@ static int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
- 			return err;
- 
- 		tx_ring->tail += len;
--		netdev_completed_queue(priv->ndev, len, total_frame_len);
- 
- 		err = mcp251xfd_check_tef_tail(priv);
- 		if (err)
-@@ -2443,7 +2433,6 @@ static netdev_tx_t mcp251xfd_start_xmit(struct sk_buff *skb,
- 	struct mcp251xfd_priv *priv = netdev_priv(ndev);
- 	struct mcp251xfd_tx_ring *tx_ring = priv->tx;
- 	struct mcp251xfd_tx_obj *tx_obj;
--	unsigned int frame_len;
- 	u8 tx_head;
- 	int err;
- 
-@@ -2462,9 +2451,7 @@ static netdev_tx_t mcp251xfd_start_xmit(struct sk_buff *skb,
- 	if (mcp251xfd_get_tx_free(tx_ring) == 0)
- 		netif_stop_queue(ndev);
- 
--	frame_len = can_skb_get_frame_len(skb);
--	can_put_echo_skb(skb, ndev, tx_head, frame_len);
--	netdev_sent_queue(priv->ndev, frame_len);
-+	can_put_echo_skb(skb, ndev, tx_head, 0);
- 
- 	err = mcp251xfd_tx_obj_write(priv, tx_obj);
- 	if (err)
 -- 
 2.30.1
 
