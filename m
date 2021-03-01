@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58808327F95
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 14:35:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DB2327F93
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 14:34:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235820AbhCANeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 08:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
+        id S235826AbhCANdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 08:33:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235777AbhCANd2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 08:33:28 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE32C061756
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 05:32:47 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id p15so10472623ljc.13
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 05:32:47 -0800 (PST)
+        with ESMTP id S235814AbhCANd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 08:33:29 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C12AC061788
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 05:32:49 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id e7so25535873lft.2
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 05:32:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pcHwrN0wdUgHRkW93Ilur7+SDuQt+zWeqr8EgwbfNpo=;
-        b=nDVoUXsCLk26fGNNhSXXaXw6sR/qR9qagJ+MuZURL55GuNY25R96U9wauI0HryK0jp
-         ez7dndZwAJfpv9ohgkDmAK7JWHMlNfjWwJWrnCs8mlgFSht5bk+cORgnPvDAH9fkNCMI
-         SWEwSSNKp43YmycTufGOGOgVKUWbWDQYTtWKC/Hpqn58qT5O72+ejnFVuxhkk2fAJ2aR
-         /9cRkhp0HkG+iXcY98nQAiE05WsOFVtx2FH3fHKk9+Fdp0dPDIpv4gy+L+cuDWyUhRyq
-         7SLKXrTzus5JMedgDKnDonZGGEIdb0wwiJhr7r6AEW6jl6mo9TN5u3a7/3UdooMa9Mf/
-         d8Yg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cYZerRT2x1qlGnIcE8x6N2LpmT6kXCgWE2D5TP/WfCs=;
+        b=wKzXFcDLjNyyRoslx3XcGuzfeszZwxSUcGtgTwhw+Y3Hp51/yhR3A4MGHWVgreAN1x
+         hqUmNnCKT0MzuDnHrMC2sqDuere+4CpfTK30Zh9q3+YBF4hbk8WRE6AfH+ulCqd+/ozb
+         IyIruRdLbFzaSSbSdHLXUvLm3RZfSdFWdRt3MwBk8GUsSX/YsN/vOJac3U5nBkkbcmWF
+         PU6Ut6S+XWdx80tyfDhbi32War2XktED/mAnE/SQC0oAwLI9ey/c87+JWcaOu+MBDF1P
+         os2EfNbn1k8m2rEyM8mxtZ9I9Z+xilAWMTg6dPcbiiHg5bA9yVaWIDMW3YEwOrIcXZan
+         pTxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pcHwrN0wdUgHRkW93Ilur7+SDuQt+zWeqr8EgwbfNpo=;
-        b=XCbP5FWCubGxk8gJrWMlZkDKMtykOJJkHEmEjxk+PiIWy4afcXg/MefkMZKLf/aptP
-         tNhSpa0Vxg3BFWSSFTg8/TyGLPbbzuHiCXnLWBGmLBt+JfmafH/wDCQP5iUrOXJPGwBv
-         yhzJFzwTyeaPyf8DKN1v5GG+DqLZArbs9VBm+YV5w2QzW6hER/XOfyNQHdk2PVHqpMg/
-         q0wnVcErxlThoOJdxeybxJnFJex6gatw2/WulAqNBfHYxnIs56bZjDz1SiB/KicjS5u9
-         p8t9Ob9acPqMY1HPPn8w4YEz5+e78GEhrpr81q5HkC4ggjS3AFptDVe9tO4scYzH6FSC
-         p7ig==
-X-Gm-Message-State: AOAM531vqAJHxYc2WWrs3WWMULBdMEduwCjb0jaLn9Jb3aYFTmkFy2Kf
-        bfTxZF9Rr1Ca280kakwQKZS1fQ==
-X-Google-Smtp-Source: ABdhPJw3k4r8JgUncNdDhkbexyVZJGTb73S8fwY4Vi7Kyi0DC3HHviucbdtcyDov+U8ZpGdWHpSNyg==
-X-Received: by 2002:a2e:9791:: with SMTP id y17mr5165862lji.343.1614605566175;
-        Mon, 01 Mar 2021 05:32:46 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cYZerRT2x1qlGnIcE8x6N2LpmT6kXCgWE2D5TP/WfCs=;
+        b=QiOZ6AC8x3BGarY7QKEAz8QuMGQ7c3Y1RV6feSRUiNK6LATIdJRV5Rc875rl8Hq/XM
+         O5b/eqFcnlSqoNPY3ggPFlOqQCd1uYrUQ7Efcc9i9EH7BZSfMnfgic2SvueVNVXqjie3
+         KUu20KhTmmDmckU2Ur8bzxwPrIKyCkoGrB3qTERp8VwrHKU9MnTIFrSKH2+sIBULjHg4
+         dZ6Whc1z+MhnTreniXjMvQAgHm8PU3HMIEna3ClpcQub/W2ShERIF5csR/F+BD3i/UO/
+         QOgMvNq4bzhS6wiXjUmgjHsKLgXHPRP5Me8GDRy82I8O6TaqxL552Ccmchn7rkvYBcQg
+         riBA==
+X-Gm-Message-State: AOAM5320+pwStEPr84/OhFPg9wG4SHktfO/+8P1kFv6x0vb9Sg7s9yL2
+        LzE9zwyBsyBrAW9aLRLNafbC2Q==
+X-Google-Smtp-Source: ABdhPJzMORv9w8mlPRk+LNWq8NeIXXQP2/52SsAyKTL6Wqrcjlnlu0ez3dLFrZtpnyQTDyvo9KSG3w==
+X-Received: by 2002:a19:7d06:: with SMTP id y6mr9808950lfc.644.1614605567969;
+        Mon, 01 Mar 2021 05:32:47 -0800 (PST)
 Received: from localhost.localdomain (c-d7cb225c.014-348-6c756e10.bbcust.telenor.se. [92.34.203.215])
-        by smtp.gmail.com with ESMTPSA id c9sm2310066lft.144.2021.03.01.05.32.45
+        by smtp.gmail.com with ESMTPSA id c9sm2310066lft.144.2021.03.01.05.32.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 05:32:45 -0800 (PST)
+        Mon, 01 Mar 2021 05:32:47 -0800 (PST)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,42 +57,42 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
         DENG Qingfang <dqfext@gmail.com>,
         Mauri Sandberg <sandberg@mailfence.com>
-Subject: [PATCH net 1/3] net: dsa: rtl4_a: Pad using __skb_put_padto()
-Date:   Mon,  1 Mar 2021 14:32:39 +0100
-Message-Id: <20210301133241.1277164-1-linus.walleij@linaro.org>
+Subject: [PATCH net 2/3] net: dsa: rtl4_a: Drop skb_cow_head()
+Date:   Mon,  1 Mar 2021 14:32:40 +0100
+Message-Id: <20210301133241.1277164-2-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210301133241.1277164-1-linus.walleij@linaro.org>
+References: <20210301133241.1277164-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The eth_skb_pad() function will cause a double free
-on failure since dsa_slave_xmit() will try to free
-the frame if we return NULL. Fix this by using
-__skb_put_padto() instead.
+The DSA core already provides the tag headroom, drop this.
 
 Fixes: 86dd9868b878 ("net: dsa: tag_rtl4_a: Support also egress tags")
+Reported-by: Andrew Lunn <andrew@lunn.ch>
 Reported-by: DENG Qingfang <dqfext@gmail.com>
 Cc: Mauri Sandberg <sandberg@mailfence.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- net/dsa/tag_rtl4_a.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dsa/tag_rtl4_a.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/net/dsa/tag_rtl4_a.c b/net/dsa/tag_rtl4_a.c
-index c17d39b4a1a0..804d756dd80a 100644
+index 804d756dd80a..8098d81f660b 100644
 --- a/net/dsa/tag_rtl4_a.c
 +++ b/net/dsa/tag_rtl4_a.c
-@@ -40,7 +40,7 @@ static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
- 	u16 out;
- 
+@@ -42,8 +42,6 @@ static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
  	/* Pad out to at least 60 bytes */
--	if (unlikely(eth_skb_pad(skb)))
-+	if (__skb_put_padto(skb, ETH_ZLEN, false))
+ 	if (__skb_put_padto(skb, ETH_ZLEN, false))
  		return NULL;
- 	if (skb_cow_head(skb, RTL4_A_HDR_LEN) < 0)
- 		return NULL;
+-	if (skb_cow_head(skb, RTL4_A_HDR_LEN) < 0)
+-		return NULL;
+ 
+ 	netdev_dbg(dev, "add realtek tag to package to port %d\n",
+ 		   dp->index);
 -- 
 2.29.2
 
