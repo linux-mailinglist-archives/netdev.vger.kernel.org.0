@@ -2,136 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69538327CCC
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:06:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ABC6327CF9
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:18:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233416AbhCALGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 06:06:05 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:57706 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233271AbhCALGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 06:06:03 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id AFF1F1C0B7C; Mon,  1 Mar 2021 12:05:20 +0100 (CET)
-Date:   Mon, 1 Mar 2021 12:05:20 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        Dan Murphy <dmurphy@ti.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S232064AbhCALSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 06:18:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232035AbhCALSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 06:18:51 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99550C0617A7
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 03:18:35 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id gt32so15922953ejc.6
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 03:18:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AtCv1oN9J+HMhsVxOSXOK4NODLPrlAHMsc3XbWRlHcU=;
+        b=el4FgM7SYC3NqO/Vh0XyKrN6T97w298m8yLhrOBr9J1aHNBRCulvn1Egb6FyCOS7ZM
+         AixAC6DUNVbcBqi9xxxunKAIZiCbWYsp9VIscH79iBSol7zbti+pz0RQ6eo7g6Y6ufsq
+         ric7dekb1xx14gXp40vsm6mlnICc/+5Y+prSnsD65DAe/CwTSy7+XqNofDVqWnCD17qd
+         SUsTObcxbtF763SABsWtmQDZii8XobUoIkCE48CCix6EtgrDYTVPlFWodXLSmRBJzuZP
+         kv4RK/iRFmpcRZ+P/tfSbRX78ojgQCFtGYMOcqLwG4tiWSyHWYfyh91Cv7LnrOtSj45y
+         xAbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AtCv1oN9J+HMhsVxOSXOK4NODLPrlAHMsc3XbWRlHcU=;
+        b=G+GpK+T9cpeDkb6HybJknlDyo95wy7qoFWTxr1mSYNyy5nN9dVXGGtQGzSG6qMNLvr
+         sweiTlXv/lLGVwGkPDsM/4GKLcCvq7XGMJ3erQF9eBoGOHpfX80+gj4D+uwIdswCxagO
+         os+B3YPFn6GDb0TTNCzsGN4DmsEXYXOMUQF/CkzVIsVg+kjgjdrwyUDJsnMBwxQ08Ydq
+         fidxs+9NRJ5Mr136yz1cdf4B2El/9LUI6rg90Jv2Hd6Z0dXIYg09mo5d34oZy2bfMz6x
+         FEyTmRn4/iRF9xjdyjKD7gslxY1qa9pKSpw/1XXc7jtM34iiAoeC8UYtobrxtdba1j9C
+         +SMQ==
+X-Gm-Message-State: AOAM532XHZaS2+8OYmM+FcqiEh2KsyxiT5KH1qgMgahC5UuksfUO9lp/
+        PB1PDuMgFMkYRLlsBCACL6E=
+X-Google-Smtp-Source: ABdhPJxDE1y3Jyy7lPvjyhbcOXXDhX0G1NKiRs5T70x+4wcuotck+vSy8mGaxP65Lq9+V9SlC7DHYg==
+X-Received: by 2002:a17:907:b16:: with SMTP id h22mr15036520ejl.393.1614597514352;
+        Mon, 01 Mar 2021 03:18:34 -0800 (PST)
+Received: from localhost.localdomain ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id i13sm13586491ejj.2.2021.03.01.03.18.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Mar 2021 03:18:33 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Michael Walle <michael@walle.cc>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Ben Whitten <ben.whitten@gmail.com>
-Subject: Re: [PATCH RFC leds + net-next 7/7] net: phy: marvell: support LEDs
- connected on Marvell PHYs
-Message-ID: <20210301110520.GF31897@duo.ucw.cz>
-References: <20201030114435.20169-1-kabel@kernel.org>
- <20201030114435.20169-8-kabel@kernel.org>
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net 0/8] Fixes for NXP ENETC driver
+Date:   Mon,  1 Mar 2021 13:18:10 +0200
+Message-Id: <20210301111818.2081582-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="Zi0sgQQBxRFxMTsj"
-Content-Disposition: inline
-In-Reply-To: <20201030114435.20169-8-kabel@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
---Zi0sgQQBxRFxMTsj
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This contains an assorted set of fixes collected over the past 2 weeks
+on the enetc driver. Some are related to VLAN processing, some to
+physical link settings, some are fixups of previous hardware workarounds,
+and some are simply zero-day data path bugs that for some reason were
+never caught or at least identified.
 
-Hi!
+Vladimir Oltean (8):
+  net: enetc: don't overwrite the RSS indirection table when
+    initializing
+  net: enetc: initialize RFS/RSS memories for unused ports too
+  net: enetc: take the MDIO lock only once per NAPI poll cycle
+  net: enetc: fix incorrect TPID when receiving 802.1ad tagged packets
+  net: enetc: don't disable VLAN filtering in IFF_PROMISC mode
+  net: enetc: force the RGMII speed and duplex instead of operating in
+    inband mode
+  net: enetc: remove bogus write to SIRXIDR from enetc_setup_rxbdr
+  net: enetc: keep RX ring consumer index in sync with hardware
 
-> Add support for controlling the LEDs connected to several families of
-> Marvell PHYs via Linux LED API. These families currently are: 88E1112,
-> 88E1116R, 88E1118, 88E1121R, 88E1149R, 88E1240, 88E1318S, 88E1340S,
-> 88E1510, 88E1545 and 88E1548P.
->=20
-> This does not yet add support for compound LED modes. This could be
-> achieved via the LED multicolor framework.
->=20
-> netdev trigger offloading is also implemented.
->=20
-> Signed-off-by: Marek Beh=FAn <kabel@kernel.org>
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 87 ++++++++--------
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  5 +
+ .../net/ethernet/freescale/enetc/enetc_hw.h   | 18 +++-
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 98 +++++++++++++++----
+ .../net/ethernet/freescale/enetc/enetc_vf.c   |  7 ++
+ 5 files changed, 152 insertions(+), 63 deletions(-)
 
+-- 
+2.25.1
 
-> +	val =3D 0;
-> +	if (!active_low)
-> +		val |=3D BIT(0);
-> +	if (tristate)
-> +		val |=3D BIT(1);
-
-You are parsing these parameters in core... but they are not going to
-be common for all phys, right? Should you parse them in the driver?
-Should the parameters be same we have for gpio-leds?
-
-> +static const struct marvell_led_mode_info marvell_led_mode_info[] =3D {
-> +	{ LED_MODE(1, 0, 0), { 0x0,  -1, 0x0,  -1,  -1,  -1, }, COMMON },
-> +	{ LED_MODE(1, 1, 1), { 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, }, COMMON },
-> +	{ LED_MODE(0, 1, 1), { 0x4, 0x4, 0x4, 0x4, 0x4, 0x4, }, COMMON },
-> +	{ LED_MODE(1, 0, 1), {  -1, 0x2,  -1, 0x2, 0x2, 0x2, }, COMMON },
-> +	{ LED_MODE(0, 1, 0), { 0x5,  -1, 0x5,  -1, 0x5, 0x5, }, COMMON },
-> +	{ LED_MODE(0, 1, 0), {  -1,  -1,  -1, 0x5,  -1,  -1, }, L3V5_TX },
-> +	{ LED_MODE(0, 0, 1), {  -1,  -1,  -1,  -1, 0x0, 0x0, }, COMMON },
-> +	{ LED_MODE(0, 0, 1), {  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_RX },
-> +};
-> +
-> +static int marvell_find_led_mode(struct phy_device *phydev, struct phy_l=
-ed *led,
-> +				 struct led_netdev_data *trig)
-> +{
-> +	const struct marvell_leds_info *info =3D led->priv;
-> +	const struct marvell_led_mode_info *mode;
-> +	u32 key;
-> +	int i;
-> +
-> +	key =3D LED_MODE(trig->link, trig->tx, trig->rx);
-> +
-> +	for (i =3D 0; i < ARRAY_SIZE(marvell_led_mode_info); ++i) {
-> +		mode =3D &marvell_led_mode_info[i];
-> +
-> +		if (key !=3D mode->key || mode->regval[led->addr] =3D=3D -1 ||
-> +		    !(info->flags & mode->flags))
-> +			continue;
-> +
-> +		return mode->regval[led->addr];
-> +	}
-> +
-> +	dev_dbg(led->cdev.dev,
-> +		"cannot offload trigger configuration (%s, link=3D%i, tx=3D%i, rx=3D%i=
-)\n",
-> +		netdev_name(trig->net_dev), trig->link, trig->tx, trig->rx);
-> +
-> +	return -1;
-> +}
-
-I'm wondering if it makes sense to offload changes on link
-state. Those should be fairly infrequent and you are not saving
-significant power there... and seems to complicate things.
-
-The "shared frequency blinking" looks quite crazy.
-
-Rest looks reasonably sane.
-
-Best regards,
-								Pavel
-
---=20
-http://www.livejournal.com/~pavelmachek
-
---Zi0sgQQBxRFxMTsj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYDzKcAAKCRAw5/Bqldv6
-8lzpAJ9Dsy8g7bXAqzb5kG1EdFi2awx9wQCfaiq+VSv3LJD10zG2z7ZTcwZSZpc=
-=FgTW
------END PGP SIGNATURE-----
-
---Zi0sgQQBxRFxMTsj--
