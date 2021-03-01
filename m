@@ -2,154 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A59C328399
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 17:23:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 232573283BC
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 17:27:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237230AbhCAQWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 11:22:06 -0500
-Received: from outbound-smtp15.blacknight.com ([46.22.139.232]:51211 "EHLO
-        outbound-smtp15.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237752AbhCAQUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 11:20:25 -0500
-Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
-        by outbound-smtp15.blacknight.com (Postfix) with ESMTPS id 4FFA01C3CF2
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 16:12:02 +0000 (GMT)
-Received: (qmail 30566 invoked from network); 1 Mar 2021 16:12:01 -0000
-Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPA; 1 Mar 2021 16:12:01 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 5/5] net: page_pool: use alloc_pages_bulk in refill code path
-Date:   Mon,  1 Mar 2021 16:12:00 +0000
-Message-Id: <20210301161200.18852-6-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210301161200.18852-1-mgorman@techsingularity.net>
-References: <20210301161200.18852-1-mgorman@techsingularity.net>
+        id S235412AbhCAQXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 11:23:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56678 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237803AbhCAQUx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Mar 2021 11:20:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7758364E04;
+        Mon,  1 Mar 2021 16:18:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1614615486;
+        bh=JowmsJO9HI3GmpnDp/I3MDQL0DA0AGM357niMSprdkU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VIqnFkQS6AMcbixcCVL0VDJyYIlJaGbfFdVIjFytGt5eVzKK7IqxX6eS+fQz9AUfb
+         BrfWwbYa3NoHvOvLoIvrmRwgNy8/lGWJJICJtTzLBeiHCSqHgMlpBMbkvBsNGAUAUs
+         4Yt/sEkvgO35UTkbVwQ0YgkYrnGHJw6Z5gaGXS0A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Florian Weimer <fw@deneb.enyo.de>,
+        syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com,
+        syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com,
+        Matt Mullins <mmullins@mmlx.us>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 46/93] tracepoint: Do not fail unregistering a probe due to memory failure
+Date:   Mon,  1 Mar 2021 17:12:58 +0100
+Message-Id: <20210301161009.172926469@linuxfoundation.org>
+X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20210301161006.881950696@linuxfoundation.org>
+References: <20210301161006.881950696@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Steven Rostedt (VMware) <rostedt@goodmis.org>
 
-There are cases where the page_pool need to refill with pages from the
-page allocator. Some workloads cause the page_pool to release pages
-instead of recycling these pages.
+[ Upstream commit befe6d946551d65cddbd32b9cb0170b0249fd5ed ]
 
-For these workload it can improve performance to bulk alloc pages from
-the page-allocator to refill the alloc cache.
+The list of tracepoint callbacks is managed by an array that is protected
+by RCU. To update this array, a new array is allocated, the updates are
+copied over to the new array, and then the list of functions for the
+tracepoint is switched over to the new array. After a completion of an RCU
+grace period, the old array is freed.
 
-For XDP-redirect workload with 100G mlx5 driver (that use page_pool)
-redirecting xdp_frame packets into a veth, that does XDP_PASS to create
-an SKB from the xdp_frame, which then cannot return the page to the
-page_pool. In this case, we saw[1] an improvement of 18.8% from using
-the alloc_pages_bulk API (3,677,958 pps -> 4,368,926 pps).
+This process happens for both adding a callback as well as removing one.
+But on removing a callback, if the new array fails to be allocated, the
+callback is not removed, and may be used after it is freed by the clients
+of the tracepoint.
 
-[1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org
+There's really no reason to fail if the allocation for a new array fails
+when removing a function. Instead, the function can simply be replaced by a
+stub function that could be cleaned up on the next modification of the
+array. That is, instead of calling the function registered to the
+tracepoint, it would call a stub function in its place.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
+Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
+Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
+Link: https://lkml.kernel.org/r/20201118093405.7a6d2290@gandalf.local.home
+
+[ Note, this version does use undefined compiler behavior (assuming that
+  a stub function with no parameters or return, can be called by a location
+  that thinks it has parameters but still no return value. Static calls
+  do the same thing, so this trick is not without precedent.
+
+  There's another solution that uses RCU tricks and is more complex, but
+  can be an alternative if this solution becomes an issue.
+
+  Link: https://lore.kernel.org/lkml/20210127170721.58bce7cc@gandalf.local.home/
+]
+
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@chromium.org>
+Cc: netdev <netdev@vger.kernel.org>
+Cc: bpf <bpf@vger.kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Florian Weimer <fw@deneb.enyo.de>
+Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
+Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
+Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
+Reported-by: Matt Mullins <mmullins@mmlx.us>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Tested-by: Matt Mullins <mmullins@mmlx.us>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/page_pool.c | 63 ++++++++++++++++++++++++++++----------------
- 1 file changed, 40 insertions(+), 23 deletions(-)
+ kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 64 insertions(+), 16 deletions(-)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index a26f2ceb6a87..567680bd91c4 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -208,44 +208,61 @@ noinline
- static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 						 gfp_t _gfp)
- {
-+	const int bulk = PP_ALLOC_CACHE_REFILL;
-+	struct page *page, *next, *first_page;
- 	unsigned int pp_flags = pool->p.flags;
--	struct page *page;
-+	unsigned int pp_order = pool->p.order;
-+	int pp_nid = pool->p.nid;
-+	LIST_HEAD(page_list);
- 	gfp_t gfp = _gfp;
+diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
+index eda85bbf1c2e4..a1f9be7030021 100644
+--- a/kernel/tracepoint.c
++++ b/kernel/tracepoint.c
+@@ -59,6 +59,12 @@ struct tp_probes {
+ 	struct tracepoint_func probes[0];
+ };
  
--	/* We could always set __GFP_COMP, and avoid this branch, as
--	 * prep_new_page() can handle order-0 with __GFP_COMP.
--	 */
--	if (pool->p.order)
-+	/* Don't support bulk alloc for high-order pages */
-+	if (unlikely(pp_order)) {
- 		gfp |= __GFP_COMP;
-+		first_page = alloc_pages_node(pp_nid, gfp, pp_order);
-+		if (unlikely(!first_page))
-+			return NULL;
-+		goto out;
-+	}
- 
--	/* FUTURE development:
--	 *
--	 * Current slow-path essentially falls back to single page
--	 * allocations, which doesn't improve performance.  This code
--	 * need bulk allocation support from the page allocator code.
--	 */
--
--	/* Cache was empty, do real allocation */
--#ifdef CONFIG_NUMA
--	page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
--#else
--	page = alloc_pages(gfp, pool->p.order);
--#endif
--	if (!page)
-+	if (unlikely(!__alloc_pages_bulk_nodemask(gfp, pp_nid, NULL,
-+						  bulk, &page_list)))
- 		return NULL;
- 
-+	/* First page is extracted and returned to caller */
-+	first_page = list_first_entry(&page_list, struct page, lru);
-+	list_del(&first_page->lru);
++/* Called in removal of a func but failed to allocate a new tp_funcs */
++static void tp_stub_func(void)
++{
++	return;
++}
 +
-+	/* Remaining pages store in alloc.cache */
-+	list_for_each_entry_safe(page, next, &page_list, lru) {
-+		list_del(&page->lru);
-+		if (pp_flags & PP_FLAG_DMA_MAP &&
-+		    unlikely(!page_pool_dma_map(pool, page))) {
-+			put_page(page);
-+			continue;
-+		}
-+		if (likely(pool->alloc.count < PP_ALLOC_CACHE_SIZE)) {
-+			pool->alloc.cache[pool->alloc.count++] = page;
-+			pool->pages_state_hold_cnt++;
-+			trace_page_pool_state_hold(pool, page,
-+						   pool->pages_state_hold_cnt);
-+		} else {
-+			put_page(page);
-+		}
-+	}
-+out:
- 	if (pp_flags & PP_FLAG_DMA_MAP &&
--	    unlikely(!page_pool_dma_map(pool, page))) {
--		put_page(page);
-+	    unlikely(!page_pool_dma_map(pool, first_page))) {
-+		put_page(first_page);
- 		return NULL;
+ static inline void *allocate_probes(int count)
+ {
+ 	struct tp_probes *p  = kmalloc(count * sizeof(struct tracepoint_func)
+@@ -97,6 +103,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
+ {
+ 	struct tracepoint_func *old, *new;
+ 	int nr_probes = 0;
++	int stub_funcs = 0;
+ 	int pos = -1;
+ 
+ 	if (WARN_ON(!tp_func->func))
+@@ -113,14 +120,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
+ 			if (old[nr_probes].func == tp_func->func &&
+ 			    old[nr_probes].data == tp_func->data)
+ 				return ERR_PTR(-EEXIST);
++			if (old[nr_probes].func == tp_stub_func)
++				stub_funcs++;
+ 		}
  	}
+-	/* + 2 : one for new probe, one for NULL func */
+-	new = allocate_probes(nr_probes + 2);
++	/* + 2 : one for new probe, one for NULL func - stub functions */
++	new = allocate_probes(nr_probes + 2 - stub_funcs);
+ 	if (new == NULL)
+ 		return ERR_PTR(-ENOMEM);
+ 	if (old) {
+-		if (pos < 0) {
++		if (stub_funcs) {
++			/* Need to copy one at a time to remove stubs */
++			int probes = 0;
++
++			pos = -1;
++			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
++				if (old[nr_probes].func == tp_stub_func)
++					continue;
++				if (pos < 0 && old[nr_probes].prio < prio)
++					pos = probes++;
++				new[probes++] = old[nr_probes];
++			}
++			nr_probes = probes;
++			if (pos < 0)
++				pos = probes;
++			else
++				nr_probes--; /* Account for insertion */
++
++		} else if (pos < 0) {
+ 			pos = nr_probes;
+ 			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
+ 		} else {
+@@ -154,8 +181,9 @@ static void *func_remove(struct tracepoint_func **funcs,
+ 	/* (N -> M), (N > 1, M >= 0) probes */
+ 	if (tp_func->func) {
+ 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
+-			if (old[nr_probes].func == tp_func->func &&
+-			     old[nr_probes].data == tp_func->data)
++			if ((old[nr_probes].func == tp_func->func &&
++			     old[nr_probes].data == tp_func->data) ||
++			    old[nr_probes].func == tp_stub_func)
+ 				nr_del++;
+ 		}
+ 	}
+@@ -174,14 +202,32 @@ static void *func_remove(struct tracepoint_func **funcs,
+ 		/* N -> M, (N > 1, M > 0) */
+ 		/* + 1 for NULL */
+ 		new = allocate_probes(nr_probes - nr_del + 1);
+-		if (new == NULL)
+-			return ERR_PTR(-ENOMEM);
+-		for (i = 0; old[i].func; i++)
+-			if (old[i].func != tp_func->func
+-					|| old[i].data != tp_func->data)
+-				new[j++] = old[i];
+-		new[nr_probes - nr_del].func = NULL;
+-		*funcs = new;
++		if (new) {
++			for (i = 0; old[i].func; i++)
++				if ((old[i].func != tp_func->func
++				     || old[i].data != tp_func->data)
++				    && old[i].func != tp_stub_func)
++					new[j++] = old[i];
++			new[nr_probes - nr_del].func = NULL;
++			*funcs = new;
++		} else {
++			/*
++			 * Failed to allocate, replace the old function
++			 * with calls to tp_stub_func.
++			 */
++			for (i = 0; old[i].func; i++)
++				if (old[i].func == tp_func->func &&
++				    old[i].data == tp_func->data) {
++					old[i].func = tp_stub_func;
++					/* Set the prio to the next event. */
++					if (old[i + 1].func)
++						old[i].prio =
++							old[i + 1].prio;
++					else
++						old[i].prio = -1;
++				}
++			*funcs = old;
++		}
+ 	}
+ 	debug_print_probes(*funcs);
+ 	return old;
+@@ -234,10 +280,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
+ 	tp_funcs = rcu_dereference_protected(tp->funcs,
+ 			lockdep_is_held(&tracepoints_mutex));
+ 	old = func_remove(&tp_funcs, func);
+-	if (IS_ERR(old)) {
+-		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
++	if (WARN_ON_ONCE(IS_ERR(old)))
+ 		return PTR_ERR(old);
+-	}
++
++	if (tp_funcs == old)
++		/* Failed allocating new tp_funcs, replaced func with stub */
++		return 0;
  
- 	/* Track how many pages are held 'in-flight' */
- 	pool->pages_state_hold_cnt++;
--	trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
-+	trace_page_pool_state_hold(pool, first_page, pool->pages_state_hold_cnt);
- 
- 	/* When page just alloc'ed is should/must have refcnt 1. */
--	return page;
-+	return first_page;
- }
- 
- /* For using page_pool replace: alloc_pages() API calls, but provide
+ 	if (!tp_funcs) {
+ 		/* Removed last function */
 -- 
-2.26.2
+2.27.0
+
+
 
