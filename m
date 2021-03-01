@@ -2,102 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6681328CBB
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 20:00:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D04328D0D
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 20:06:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240755AbhCAS5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 13:57:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39980 "EHLO
+        id S241032AbhCATEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 14:04:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240587AbhCASz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 13:55:28 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C8CC0617A7;
-        Mon,  1 Mar 2021 10:54:48 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id k2so13465602ioh.5;
-        Mon, 01 Mar 2021 10:54:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=3WuD5KJwVIICV/S1qElOXfxsVldAv6ahO2BGQBm1n6g=;
-        b=MeLteGoni5CryvdK4U5PkRm00k4NUHjEDs7sdDGqcq5QQscBB3psBZIIBaqh3+NOtr
-         /snexHZoMx5OZ4EvxKRJEx97+37+gQzsKY430TdMvWwtEw44ZaduJVRtFuYgPAcvzE0n
-         DScwERBmSPxm9wc4CSUZOom57L3kibY7LfjZNbzk0A7qCESyct1UJYE1UOG2KZVxwdUh
-         IF3Dx3IsrkJTD9ZeTNzHFwFESwV4x5fhmdLozsadugftzRb5cU7XP3rgGjnNYpQbOzVW
-         MAq9SNU/hGyI+rEXRR1WNhCROQSxvv/RkqMIe68by14jzD16qt3g20q0Vq8IaNc6ZmBw
-         VAdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=3WuD5KJwVIICV/S1qElOXfxsVldAv6ahO2BGQBm1n6g=;
-        b=UFGOJsRcgZ2aHFi9ncsTL/vnplfpHhtGeWE6S39JbKY18jiZSbZiXDzVM5zrLQqCTE
-         0FDZr5Uuq26+24Gziq67rn9rZDh4tpqQGo3weAzeQxJB23OAPbT2pUuHXocoCHdzVayo
-         +k4/qHe3JlcAOOqWlayedBIpz0UYuyIS3Ywq8fnq4HrPnEvmO7Wg6kxlz6dtAR4pzaSj
-         onPkaK1kF8FStl+IvJ5EPFCfyGtombHDSJmcbzrVfY4R5WPdyf3hsOn9chXVbybk7GlO
-         a5lbwSx9+HDkJVjG3A6TzxPtQOb0CENwpYYZ7ocdYAKaZ31uzEiNmshhGku6xWiR/tRh
-         kUew==
-X-Gm-Message-State: AOAM5315J6hOuUWCuSZCwZFjE1sRJ6+Yu4J5BmdDi3qwvEGT3Negnn8t
-        PtIieTV3Re9htZN7LXEoHde5o4T+WhIedw==
-X-Google-Smtp-Source: ABdhPJwp2xHI0sax2w27zMgXDJjzBnq0PpWxJswtBwPu0Ydi/Fji91zssN54qzF5PXtqdKmQRA4wcg==
-X-Received: by 2002:a05:6602:737:: with SMTP id g23mr3164697iox.130.1614624887613;
-        Mon, 01 Mar 2021 10:54:47 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id s16sm484813ioe.44.2021.03.01.10.54.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 10:54:47 -0800 (PST)
-Date:   Mon, 01 Mar 2021 10:54:39 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Message-ID: <603d386fcb3e8_20893c208c5@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210301184805.8174-1-xiyou.wangcong@gmail.com>
-References: <20210301184805.8174-1-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next] skmsg: add function doc for skb->_sk_redir
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S240825AbhCATBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 14:01:13 -0500
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5648C061793
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 11:00:26 -0800 (PST)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id EF20C806B7;
+        Tue,  2 Mar 2021 08:00:23 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1614625223;
+        bh=WKHtECatzQfael+AQiWWuyJ3y/+f6zcgUcKeJWW2cbs=;
+        h=From:To:Cc:Subject:Date;
+        b=Wo7VoMveQJ7/MPyoV4CRwpv1OuAB39p1lx4AwAw+nKDQ4VbT2KbLBSRL80mBxWXOn
+         aSmL0WvO5PFYuATYVz7YNm+UagzQUd9PNl8MPQA2t0j8uKUa5KKd9ChTAhWT/v9kTk
+         v+mIKSLvBTW0DbQMwv3fiP4jjlJpojMeiOrsR/7Td1ux9WJ2B6dDCVn41J+LZLY2gi
+         qZjNo0EoH3MBIUYr7SaLjo/Mo1DTQ/C9eO+3ml5UgTYzRYiZqrE6UVN+e6nXezuVxK
+         f8js148C43ddT1uJeFmBCWcScVLHh/JdUVHepw0/O0+IsQZy/TJPC2bhwmgUlC/i0F
+         bSAL02iQ3uxpg==
+Received: from smtp (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B603d39c70000>; Tue, 02 Mar 2021 08:00:23 +1300
+Received: from evann-dl.ws.atlnz.lc (evann-dl.ws.atlnz.lc [10.33.23.31])
+        by smtp (Postfix) with ESMTP id 586FF13EECD;
+        Tue,  2 Mar 2021 08:00:34 +1300 (NZDT)
+Received: by evann-dl.ws.atlnz.lc (Postfix, from userid 1780)
+        id B33201A4EB7; Tue,  2 Mar 2021 08:00:23 +1300 (NZDT)
+From:   Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+Subject: [PATCH v2 1/1] xfrm: Use actual socket sk instead of skb socket for xfrm_output_resume
+Date:   Tue,  2 Mar 2021 08:00:04 +1300
+Message-Id: <20210301190004.9586-1-evan.nimmo@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=C7uXNjH+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=dESyimp9J3IA:10 a=7ZN4cI0QAAAA:8 a=tm9BhY98yDMkBz91zHIA:9 a=Dl0WHwQvj8hGZljrFLtM:22
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> This should fix the following warning:
-> 
-> include/linux/skbuff.h:932: warning: Function parameter or member
-> '_sk_redir' not described in 'sk_buff'
-> 
-> Reported-by: Lorenz Bauer <lmb@cloudflare.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  include/linux/skbuff.h | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index bd84f799c952..0503c917d773 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -656,6 +656,7 @@ typedef unsigned char *sk_buff_data_t;
->   *	@protocol: Packet protocol from driver
->   *	@destructor: Destruct function
->   *	@tcp_tsorted_anchor: list structure for TCP (tp->tsorted_sent_queue)
-> + *	@_sk_redir: socket redirection information for skmsg
->   *	@_nfct: Associated connection, if any (with nfctinfo bits)
->   *	@nf_bridge: Saved data about a bridged frame - see br_netfilter.c
->   *	@skb_iif: ifindex of device we arrived on
-> -- 
-> 2.25.1
-> 
+A situation can occur where the interface bound to the sk is different
+to the interface bound to the sk attached to the skb. The interface
+bound to the sk is the correct one however this information is lost insid=
+e
+xfrm_output2 and instead the sk on the skb is used in xfrm_output_resume
+instead. This assumes that the sk bound interface and the bound interface
+attached to the sk within the skb are the same which can lead to lookup
+failures inside ip_route_me_harder resulting in the packet being dropped.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+We have an l2tp v3 tunnel with ipsec protection. The tunnel is in the
+global VRF however we have an encapsulated dot1q tunnel interface that
+is within a different VRF. We also have a mangle rule that marks the=20
+packets causing them to be processed inside ip_route_me_harder.
+
+Prior to commit 31c70d5956fc ("l2tp: keep original skb ownership") this
+worked fine as the sk attached to the skb was changed from the dot1q
+encapsulated interface to the sk for the tunnel which meant the interface
+bound to the sk and the interface bound to the skb were identical.
+Commit 46d6c5ae953c ("netfilter: use actual socket sk rather than skb sk
+when routing harder") fixed some of these issues however a similar
+problem existed in the xfrm code.
+
+Fixes: 31c70d5956fc ("l2tp: keep original skb ownership")
+
+Signed-off-by: Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+Reviewed-by: Steffen Klassert <steffen.klassert@secunet.com>
+---
+changes in v2:
+- Added proper fixes field for backporting
+
+ include/net/xfrm.h     |  2 +-
+ net/ipv4/ah4.c         |  2 +-
+ net/ipv4/esp4.c        |  2 +-
+ net/ipv6/ah6.c         |  2 +-
+ net/ipv6/esp6.c        |  2 +-
+ net/xfrm/xfrm_output.c | 10 +++++-----
+ 6 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index b2a06f10b62c..bfbc7810df94 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1557,7 +1557,7 @@ int xfrm_trans_queue_net(struct net *net, struct sk=
+_buff *skb,
+ int xfrm_trans_queue(struct sk_buff *skb,
+ 		     int (*finish)(struct net *, struct sock *,
+ 				   struct sk_buff *));
+-int xfrm_output_resume(struct sk_buff *skb, int err);
++int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err);
+ int xfrm_output(struct sock *sk, struct sk_buff *skb);
+=20
+ #if IS_ENABLED(CONFIG_NET_PKTGEN)
+diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
+index d99e1be94019..36ed85bf2ad5 100644
+--- a/net/ipv4/ah4.c
++++ b/net/ipv4/ah4.c
+@@ -141,7 +141,7 @@ static void ah_output_done(struct crypto_async_reques=
+t *base, int err)
+ 	}
+=20
+ 	kfree(AH_SKB_CB(skb)->tmp);
+-	xfrm_output_resume(skb, err);
++	xfrm_output_resume(skb->sk, skb, err);
+ }
+=20
+ static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index a3271ec3e162..4b834bbf95e0 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -279,7 +279,7 @@ static void esp_output_done(struct crypto_async_reque=
+st *base, int err)
+ 		    x->encap && x->encap->encap_type =3D=3D TCP_ENCAP_ESPINTCP)
+ 			esp_output_tail_tcp(x, skb);
+ 		else
+-			xfrm_output_resume(skb, err);
++			xfrm_output_resume(skb->sk, skb, err);
+ 	}
+ }
+=20
+diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
+index 440080da805b..080ee7f44c64 100644
+--- a/net/ipv6/ah6.c
++++ b/net/ipv6/ah6.c
+@@ -316,7 +316,7 @@ static void ah6_output_done(struct crypto_async_reque=
+st *base, int err)
+ 	}
+=20
+ 	kfree(AH_SKB_CB(skb)->tmp);
+-	xfrm_output_resume(skb, err);
++	xfrm_output_resume(skb->sk, skb, err);
+ }
+=20
+ static int ah6_output(struct xfrm_state *x, struct sk_buff *skb)
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 153ad103ba74..727d791ed5e6 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -314,7 +314,7 @@ static void esp_output_done(struct crypto_async_reque=
+st *base, int err)
+ 		    x->encap && x->encap->encap_type =3D=3D TCP_ENCAP_ESPINTCP)
+ 			esp_output_tail_tcp(x, skb);
+ 		else
+-			xfrm_output_resume(skb, err);
++			xfrm_output_resume(skb->sk, skb, err);
+ 	}
+ }
+=20
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index a7ab19353313..b81ca117dac7 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -503,22 +503,22 @@ static int xfrm_output_one(struct sk_buff *skb, int=
+ err)
+ 	return err;
+ }
+=20
+-int xfrm_output_resume(struct sk_buff *skb, int err)
++int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err)
+ {
+ 	struct net *net =3D xs_net(skb_dst(skb)->xfrm);
+=20
+ 	while (likely((err =3D xfrm_output_one(skb, err)) =3D=3D 0)) {
+ 		nf_reset_ct(skb);
+=20
+-		err =3D skb_dst(skb)->ops->local_out(net, skb->sk, skb);
++		err =3D skb_dst(skb)->ops->local_out(net, sk, skb);
+ 		if (unlikely(err !=3D 1))
+ 			goto out;
+=20
+ 		if (!skb_dst(skb)->xfrm)
+-			return dst_output(net, skb->sk, skb);
++			return dst_output(net, sk, skb);
+=20
+ 		err =3D nf_hook(skb_dst(skb)->ops->family,
+-			      NF_INET_POST_ROUTING, net, skb->sk, skb,
++			      NF_INET_POST_ROUTING, net, sk, skb,
+ 			      NULL, skb_dst(skb)->dev, xfrm_output2);
+ 		if (unlikely(err !=3D 1))
+ 			goto out;
+@@ -534,7 +534,7 @@ EXPORT_SYMBOL_GPL(xfrm_output_resume);
+=20
+ static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff=
+ *skb)
+ {
+-	return xfrm_output_resume(skb, 1);
++	return xfrm_output_resume(sk, skb, 1);
+ }
+=20
+ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_b=
+uff *skb)
+--=20
+2.27.0
+
