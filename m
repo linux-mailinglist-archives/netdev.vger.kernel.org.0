@@ -2,79 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 045C03279E2
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:49:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF89327A22
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:57:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233449AbhCAIsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 03:48:18 -0500
-Received: from z11.mailgun.us ([104.130.96.11]:53393 "EHLO z11.mailgun.us"
+        id S233690AbhCAIzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 03:55:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233475AbhCAIqp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Mar 2021 03:46:45 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1614588365; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=O3yhFBjQe0kRff0bAX1BbX9HwQn6+fCi8LLDaatQMAw=; b=OIqX5NOKEM5SvWCbYoivT7IjOw7JbLvm4E1+BciTPQIg+m4Ro1N/GG1ir+lfA03JJyLwTOhz
- wt9gNfxxlPpzrrOExmcOsjv9DMS7YqXzQ73wEoBMzSbFP6FhFffQt8drwcs1caVVARYbLE2M
- g4VatVb5SxC0z2c1azQ+l+c7oxM=
-X-Mailgun-Sending-Ip: 104.130.96.11
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 603ca9b216ba745201a067fc (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 01 Mar 2021 08:45:38
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 29C02C43466; Mon,  1 Mar 2021 08:45:38 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8CD2AC433C6;
-        Mon,  1 Mar 2021 08:45:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8CD2AC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, mingo@redhat.com, kuba@kernel.org,
-        will@kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v3 0/3] Add lockdep_assert_not_held()
-References: <cover.1614383025.git.skhan@linuxfoundation.org>
-        <YDyn+6N6EfgWJ5GV@hirez.programming.kicks-ass.net>
-Date:   Mon, 01 Mar 2021 10:45:32 +0200
-In-Reply-To: <YDyn+6N6EfgWJ5GV@hirez.programming.kicks-ass.net> (Peter
-        Zijlstra's message of "Mon, 1 Mar 2021 09:38:19 +0100")
-Message-ID: <878s779s9f.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S233391AbhCAIyY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Mar 2021 03:54:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4AAA861494;
+        Mon,  1 Mar 2021 08:53:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614588823;
+        bh=dI6F0ulTGZGplUNUAa5dvlOBloi+KrxvzV1SFB8xuzY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=k6OCELfkCwC2/gI/eZGTu7p7A1NBN20pBMbtGqSnbiLbQiZdMo08MfsO9HT8u+Qu5
+         KkLJTaP3wPBq/hdp9L2jZvN+wt068nc1aQsXB2fxrzAZ5+TRx1wbUe7jln8Wif2yeN
+         hmZbne0LARy8D9CID2h1Ago9pDGUaT2cBKreJuWczhsyaq79dclAbmmkz143gf1Wt2
+         TwSkRQK12kdiI9N/TTZMfhap3abgytK4eDZPHJdwtOTO7iWSAF2ULgV8RGb3JV4Vxm
+         jgdiB0eJGw5UuG27Vz4VqkACla4mu1QqJ6q9Nb/g1hLPRZjbnr+NId/Fmb4In6igug
+         bIFy0qnUP8zAg==
+Date:   Mon, 1 Mar 2021 10:53:39 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH mlx5-next v7 1/4] PCI: Add a sysfs file to change the
+ MSI-X table size of SR-IOV VFs
+Message-ID: <YDyrkxR50FsO5PMe@unreal>
+References: <20210301075524.441609-1-leon@kernel.org>
+ <20210301075524.441609-2-leon@kernel.org>
+ <YDyicnnKPhy5LMJy@kroah.com>
+ <YDymifxqjvnaW3nw@unreal>
+ <YDynvUsEGQ6bQGep@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YDynvUsEGQ6bQGep@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Peter Zijlstra <peterz@infradead.org> writes:
-
-> On Fri, Feb 26, 2021 at 05:06:57PM -0700, Shuah Khan wrote:
->> Shuah Khan (3):
->>   lockdep: add lockdep_assert_not_held()
->>   lockdep: add lockdep lock state defines
->>   ath10k: detect conf_mutex held ath10k_drain_tx() calls
+On Mon, Mar 01, 2021 at 09:37:17AM +0100, Greg Kroah-Hartman wrote:
+> On Mon, Mar 01, 2021 at 10:32:09AM +0200, Leon Romanovsky wrote:
+> > On Mon, Mar 01, 2021 at 09:14:42AM +0100, Greg Kroah-Hartman wrote:
+> > > On Mon, Mar 01, 2021 at 09:55:21AM +0200, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > >
+> > > > A typical cloud provider SR-IOV use case is to create many VFs for use by
+> > > > guest VMs. The VFs may not be assigned to a VM until a customer requests a
+> > > > VM of a certain size, e.g., number of CPUs. A VF may need MSI-X vectors
+> > > > proportional to the number of CPUs in the VM, but there is no standard way
+> > > > to change the number of MSI-X vectors supported by a VF.
+> > > >
+> > > > Some Mellanox ConnectX devices support dynamic assignment of MSI-X vectors
+> > > > to SR-IOV VFs. This can be done by the PF driver after VFs are enabled,
+> > > > and it can be done without affecting VFs that are already in use. The
+> > > > hardware supports a limited pool of MSI-X vectors that can be assigned to
+> > > > the PF or to individual VFs.  This is device-specific behavior that
+> > > > requires support in the PF driver.
+> > > >
+> > > > Add a read-only "sriov_vf_total_msix" sysfs file for the PF and a writable
+> > > > "sriov_vf_msix_count" file for each VF. Management software may use these
+> > > > to learn how many MSI-X vectors are available and to dynamically assign
+> > > > them to VFs before the VFs are passed through to a VM.
+> > > >
+> > > > If the PF driver implements the ->sriov_get_vf_total_msix() callback,
+> > > > "sriov_vf_total_msix" contains the total number of MSI-X vectors available
+> > > > for distribution among VFs.
+> > > >
+> > > > If no driver is bound to the VF, writing "N" to "sriov_vf_msix_count" uses
+> > > > the PF driver ->sriov_set_msix_vec_count() callback to assign "N" MSI-X
+> > > > vectors to the VF.  When a VF driver subsequently reads the MSI-X Message
+> > > > Control register, it will see the new Table Size "N".
+> > > >
+> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > > ---
+> > > >  Documentation/ABI/testing/sysfs-bus-pci |  29 +++++++
+> > > >  drivers/pci/iov.c                       | 102 ++++++++++++++++++++++--
+> > > >  drivers/pci/pci-sysfs.c                 |   3 +-
+> > > >  drivers/pci/pci.h                       |   3 +-
+> > > >  include/linux/pci.h                     |   8 ++
+> > > >  5 files changed, 137 insertions(+), 8 deletions(-)
+> > > >
+> > > > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+> > > > index 25c9c39770c6..ebabd0d2ae88 100644
+> > > > --- a/Documentation/ABI/testing/sysfs-bus-pci
+> > > > +++ b/Documentation/ABI/testing/sysfs-bus-pci
+> > > > @@ -375,3 +375,32 @@ Description:
+> > > >  		The value comes from the PCI kernel device state and can be one
+> > > >  		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
+> > > >  		The file is read only.
+> > > > +
+> > > > +What:		/sys/bus/pci/devices/.../sriov_vf_total_msix
+> > > > +Date:		January 2021
+> > > > +Contact:	Leon Romanovsky <leonro@nvidia.com>
+> > > > +Description:
+> > > > +		This file is associated with a SR-IOV PF.  It contains the
+> > > > +		total number of MSI-X vectors available for assignment to
+> > > > +		all VFs associated with PF.  It will zero if the device
+> > >
+> > > "The value will be zero if the device..."
+> >
+> > Thanks, will fix when apply or resend if more fixes will be needed.
+> >
+> > >
+> > > And definition of "VF" and PF" are where in this file?
+> >
+> > They come from the PCI spec. It is part of SR-IOV lingo.
 >
-> Thanks!
+> Yes, and the world does not have access to the PCI spec, so please
+> provide a hint as to what they are for those of us without access to
+> such things.
 
-Via which tree should these go?
+No problem, I will replace PF to be "physical function" and VF to be
+"virtual function".
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Thanks
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
+> thanks,
+>
+> greg k-h
