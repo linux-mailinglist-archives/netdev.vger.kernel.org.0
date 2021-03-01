@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 668A6327A07
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:54:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 703B8327A05
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 09:54:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233737AbhCAIxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 03:53:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
+        id S233723AbhCAIwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 03:52:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233641AbhCAItL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 03:49:11 -0500
+        with ESMTP id S233647AbhCAIt0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 03:49:26 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E61C061788;
-        Mon,  1 Mar 2021 00:48:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319C0C06178C;
+        Mon,  1 Mar 2021 00:48:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=E/LKSHDwwzGiWLcH5n+WeTB74m8ESiCywnIfCbtw87s=; b=uq6dlLskuP/tcPB55euUeWUQsH
-        TkTGV9HhYmkI/tO9Ey/FA/o7V7Re3hEwZb28TvXyc9evs9IQhTKvixiX1+oWK2bQvd+YTkR8fr9hR
-        XFrLMsEwC1ES85XiFTfZPgRNst8sn4TJWNzpGWnHmTYuta9ncKNc4718W9DNrml4y5fV0DG77QLSn
-        euQ0SaijCGxeIESo1cjH/Epr9ezTG0aVMq4AIlUzm2XF3vM278ZO9BEESqvTl2WjcnC6nYNLyBbGR
-        M6SXkDwPXNb4l0x7gVGzKizpSFKeUfPkxs+370P6sIczRLHVEqXMSYwKBAv5l68T9YKjK40kKrgA/
-        FMVHdAGA==;
+        bh=ALxYsVJ/cIImR54U754S9zFIRqbEZNE+eVZlnB8jM9Y=; b=Cu0szhBztjZCXFMUzlSNd/q4vj
+        RqZHV6zXIH1r6oG0KZWp1ROb/zcEkDJaPauPXbSyQkGGOXk0uxkOWXQZngUya+UCU8CApSbYRCl3t
+        Y1vwCg/KXpYX0XbaLxdR7fnNJi8JR/PYxPcD8EDECZfRlAWQRdXQfndqopXFoYiwVaTqV2Xl2Mntz
+        D+ka77EgjQBI6sIPrqpSwNGEogePsxdxU0BKzvlmoUUF6cy41qjW51NDJdFz2Oj836s8WpKGsSqDC
+        RtI1dJvt/i6QGkcbNLcVYhH89aSiQuQgJWdk3iqVvaDQcJgBwbf6onpnbBqKBS2pQDY4NzjWTQIWm
+        QGO0BGJQ==;
 Received: from [2001:4bb8:19b:e4b7:cdf9:733f:4874:8eb4] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lGeDY-00FUsn-9n; Mon, 01 Mar 2021 08:48:00 +0000
+        id 1lGeDq-00FUu9-E6; Mon, 01 Mar 2021 08:48:16 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
         Li Yang <leoyang.li@nxp.com>
@@ -38,9 +38,9 @@ Cc:     Michael Ellerman <mpe@ellerman.id.au>,
         iommu@lists.linux-foundation.org,
         linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH 13/17] iommu: remove DOMAIN_ATTR_GEOMETRY
-Date:   Mon,  1 Mar 2021 09:42:53 +0100
-Message-Id: <20210301084257.945454-14-hch@lst.de>
+Subject: [PATCH 14/17] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
+Date:   Mon,  1 Mar 2021 09:42:54 +0100
+Message-Id: <20210301084257.945454-15-hch@lst.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210301084257.945454-1-hch@lst.de>
 References: <20210301084257.945454-1-hch@lst.de>
@@ -51,164 +51,408 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The geometry information can be trivially queried from the iommu_domain
-struture.
+Use explicit methods for setting and querying the information instead.
+
+Also remove the now unused iommu_domain_get_attr functionality.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/iommu.c               | 20 +++-----------------
- drivers/soc/fsl/qbman/qman_portal.c |  1 +
- drivers/vfio/vfio_iommu_type1.c     | 26 ++++++++++++--------------
- drivers/vhost/vdpa.c                | 10 +++-------
- include/linux/iommu.h               |  1 -
- 5 files changed, 19 insertions(+), 39 deletions(-)
+ drivers/iommu/amd/iommu.c                   | 23 ++-------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 47 ++++++-----------
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 56 +++++----------------
+ drivers/iommu/dma-iommu.c                   |  8 ++-
+ drivers/iommu/intel/iommu.c                 | 27 ++--------
+ drivers/iommu/iommu.c                       | 19 +++----
+ include/linux/iommu.h                       | 17 ++-----
+ 7 files changed, 51 insertions(+), 146 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9a4cda390993e6..23daaea7883b75 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2667,23 +2667,9 @@ core_initcall(iommu_init);
- int iommu_domain_get_attr(struct iommu_domain *domain,
- 			  enum iommu_attr attr, void *data)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a69a8b573e40d0..37a8e51db17656 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1771,24 +1771,11 @@ static struct iommu_group *amd_iommu_device_group(struct device *dev)
+ 	return acpihid_device_group(dev);
+ }
+ 
+-static int amd_iommu_domain_get_attr(struct iommu_domain *domain,
+-		enum iommu_attr attr, void *data)
++static bool amd_iommu_dma_use_flush_queue(struct iommu_domain *domain)
  {
--	struct iommu_domain_geometry *geometry;
--	int ret = 0;
--
--	switch (attr) {
--	case DOMAIN_ATTR_GEOMETRY:
--		geometry  = data;
--		*geometry = domain->geometry;
--
+-	switch (domain->type) {
+-	case IOMMU_DOMAIN_UNMANAGED:
+-		return -ENODEV;
+-	case IOMMU_DOMAIN_DMA:
+-		switch (attr) {
+-		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+-			*(int *)data = !amd_iommu_unmap_flush;
+-			return 0;
+-		default:
+-			return -ENODEV;
+-		}
 -		break;
 -	default:
--		if (!domain->ops->domain_get_attr)
--			return -EINVAL;
--
--		ret = domain->ops->domain_get_attr(domain, attr, data);
+-		return -EINVAL;
 -	}
--
--	return ret;
-+	if (!domain->ops->domain_get_attr)
-+		return -EINVAL;
-+	return domain->ops->domain_get_attr(domain, attr, data);
++	if (domain->type != IOMMU_DOMAIN_DMA)
++		return false;
++	return !amd_iommu_unmap_flush;
  }
- EXPORT_SYMBOL_GPL(iommu_domain_get_attr);
  
-diff --git a/drivers/soc/fsl/qbman/qman_portal.c b/drivers/soc/fsl/qbman/qman_portal.c
-index bf38eb0042ed52..4a4466cc26c232 100644
---- a/drivers/soc/fsl/qbman/qman_portal.c
-+++ b/drivers/soc/fsl/qbman/qman_portal.c
-@@ -53,6 +53,7 @@ static void portal_set_cpu(struct qm_portal_config *pcfg, int cpu)
- 		dev_err(dev, "%s(): iommu_domain_alloc() failed", __func__);
- 		goto no_iommu;
- 	}
+ /*****************************************************************************
+@@ -2257,7 +2244,7 @@ const struct iommu_ops amd_iommu_ops = {
+ 	.release_device = amd_iommu_release_device,
+ 	.probe_finalize = amd_iommu_probe_finalize,
+ 	.device_group = amd_iommu_device_group,
+-	.domain_get_attr = amd_iommu_domain_get_attr,
++	.dma_use_flush_queue = amd_iommu_dma_use_flush_queue,
+ 	.get_resv_regions = amd_iommu_get_resv_regions,
+ 	.put_resv_regions = generic_iommu_put_resv_regions,
+ 	.is_attach_deferred = amd_iommu_is_attach_deferred,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 8594b4a8304375..bf96172e8c1f71 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2449,33 +2449,21 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ 	return group;
+ }
+ 
+-static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+-				    enum iommu_attr attr, void *data)
++static bool arm_smmu_dma_use_flush_queue(struct iommu_domain *domain)
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
+-	switch (domain->type) {
+-	case IOMMU_DOMAIN_UNMANAGED:
+-		switch (attr) {
+-		case DOMAIN_ATTR_NESTING:
+-			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+-			return 0;
+-		default:
+-			return -ENODEV;
+-		}
+-		break;
+-	case IOMMU_DOMAIN_DMA:
+-		switch (attr) {
+-		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+-			*(int *)data = smmu_domain->non_strict;
+-			return 0;
+-		default:
+-			return -ENODEV;
+-		}
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
++	if (domain->type != IOMMU_DOMAIN_DMA)
++		return false;
++	return smmu_domain->non_strict;
++}
 +
- 	ret = fsl_pamu_configure_l1_stash(pcfg->iommu_domain, cpu);
- 	if (ret < 0) {
- 		dev_err(dev, "%s(): fsl_pamu_configure_l1_stash() = %d",
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 4bb162c1d649b3..c8e57f22f421c5 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -2252,7 +2252,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	int ret;
- 	bool resv_msi, msi_remap;
- 	phys_addr_t resv_msi_base = 0;
--	struct iommu_domain_geometry geo;
-+	struct iommu_domain_geometry *geo;
- 	LIST_HEAD(iova_copy);
- 	LIST_HEAD(group_resv_regions);
++
++static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
++{
++	if (domain->type != IOMMU_DOMAIN_DMA)
++		return;
++	to_smmu_domain(domain)->non_strict = true;
+ }
  
-@@ -2333,10 +2333,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_domain;
- 
- 	/* Get aperture info */
--	iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY, &geo);
--
--	if (vfio_iommu_aper_conflict(iommu, geo.aperture_start,
--				     geo.aperture_end)) {
-+	geo = &domain->domain->geometry;
-+	if (vfio_iommu_aper_conflict(iommu, geo->aperture_start,
-+				     geo->aperture_end)) {
+ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+@@ -2505,13 +2493,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 		}
+ 		break;
+ 	case IOMMU_DOMAIN_DMA:
+-		switch(attr) {
+-		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+-			smmu_domain->non_strict = *(int *)data;
+-			break;
+-		default:
+-			ret = -ENODEV;
+-		}
++		ret = -ENODEV;
+ 		break;
+ 	default:
  		ret = -EINVAL;
- 		goto out_detach;
- 	}
-@@ -2359,8 +2358,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_detach;
+@@ -2619,7 +2601,8 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.probe_device		= arm_smmu_probe_device,
+ 	.release_device		= arm_smmu_release_device,
+ 	.device_group		= arm_smmu_device_group,
+-	.domain_get_attr	= arm_smmu_domain_get_attr,
++	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
++	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index d8c6bfde6a6158..e7893e96f5177a 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -1481,42 +1481,20 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ 	return group;
+ }
  
--	ret = vfio_iommu_aper_resize(&iova_copy, geo.aperture_start,
--				     geo.aperture_end);
-+	ret = vfio_iommu_aper_resize(&iova_copy, geo->aperture_start,
-+				     geo->aperture_end);
- 	if (ret)
- 		goto out_detach;
- 
-@@ -2493,7 +2492,6 @@ static void vfio_iommu_aper_expand(struct vfio_iommu *iommu,
- 				   struct list_head *iova_copy)
+-static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+-				    enum iommu_attr attr, void *data)
++static bool arm_smmu_dma_use_flush_queue(struct iommu_domain *domain)
  {
- 	struct vfio_domain *domain;
--	struct iommu_domain_geometry geo;
- 	struct vfio_iova *node;
- 	dma_addr_t start = 0;
- 	dma_addr_t end = (dma_addr_t)~0;
-@@ -2502,12 +2500,12 @@ static void vfio_iommu_aper_expand(struct vfio_iommu *iommu,
- 		return;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
  
- 	list_for_each_entry(domain, &iommu->domain_list, next) {
--		iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY,
--				      &geo);
--		if (geo.aperture_start > start)
--			start = geo.aperture_start;
--		if (geo.aperture_end < end)
--			end = geo.aperture_end;
-+		struct iommu_domain_geometry *geo = &domain->domain->geometry;
-+
-+		if (geo->aperture_start > start)
-+			start = geo->aperture_start;
-+		if (geo->aperture_end < end)
-+			end = geo->aperture_end;
- 	}
+-	switch(domain->type) {
+-	case IOMMU_DOMAIN_UNMANAGED:
+-		switch (attr) {
+-		case DOMAIN_ATTR_NESTING:
+-			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+-			return 0;
+-		case DOMAIN_ATTR_IO_PGTABLE_CFG: {
+-			struct io_pgtable_domain_attr *pgtbl_cfg = data;
+-			*pgtbl_cfg = smmu_domain->pgtbl_cfg;
++	if (domain->type != IOMMU_DOMAIN_DMA)
++		return false;
++	return smmu_domain->pgtbl_cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT;
++}
  
- 	/* Modify aperture limits. The new aper is either same or bigger */
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index ef688c8c0e0e6f..25824fab433d0a 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -826,18 +826,14 @@ static void vhost_vdpa_free_domain(struct vhost_vdpa *v)
- static void vhost_vdpa_set_iova_range(struct vhost_vdpa *v)
+-			return 0;
+-		}
+-		default:
+-			return -ENODEV;
+-		}
+-		break;
+-	case IOMMU_DOMAIN_DMA:
+-		switch (attr) {
+-		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE: {
+-			bool non_strict = smmu_domain->pgtbl_cfg.quirks &
+-					  IO_PGTABLE_QUIRK_NON_STRICT;
+-			*(int *)data = non_strict;
+-			return 0;
+-		}
+-		default:
+-			return -ENODEV;
+-		}
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
++static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
++{
++	if (domain->type != IOMMU_DOMAIN_DMA)
++		return;
++	to_smmu_domain(domain)->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+ }
+ 
+ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+@@ -1557,16 +1535,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 		}
+ 		break;
+ 	case IOMMU_DOMAIN_DMA:
+-		switch (attr) {
+-		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+-			if (*(int *)data)
+-				smmu_domain->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+-			else
+-				smmu_domain->pgtbl_cfg.quirks &= ~IO_PGTABLE_QUIRK_NON_STRICT;
+-			break;
+-		default:
+-			ret = -ENODEV;
+-		}
++		ret = -ENODEV;
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -1631,7 +1600,8 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.probe_device		= arm_smmu_probe_device,
+ 	.release_device		= arm_smmu_release_device,
+ 	.device_group		= arm_smmu_device_group,
+-	.domain_get_attr	= arm_smmu_domain_get_attr,
++	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
++	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 9ab6ee22c11088..d3fe5aad9d6ecf 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -305,8 +305,8 @@ static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
+ 	cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
+ 	domain = cookie->fq_domain;
+ 	/*
+-	 * The IOMMU driver supporting DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
+-	 * implies that ops->flush_iotlb_all must be non-NULL.
++	 * The IOMMU driver supporting a DMA flush queue implies that
++	 * ops->flush_iotlb_all must be non-NULL.
+ 	 */
+ 	domain->ops->flush_iotlb_all(domain);
+ }
+@@ -329,7 +329,6 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	unsigned long order, base_pfn;
+ 	struct iova_domain *iovad;
+-	int attr;
+ 
+ 	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
+ 		return -EINVAL;
+@@ -365,8 +364,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 
+ 	init_iova_domain(iovad, 1UL << order, base_pfn);
+ 
+-	if (!cookie->fq_domain && !iommu_domain_get_attr(domain,
+-			DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, &attr) && attr) {
++	if (!cookie->fq_domain && iommu_dma_use_flush_queue(domain)) {
+ 		if (init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all,
+ 					  iommu_dma_entry_dtor))
+ 			pr_warn("iova flush queue initialization failed\n");
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ee0932307d646b..eaa80c33f4bc91 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -5453,13 +5453,13 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
+ 	return ret;
+ }
+ 
+-static bool domain_use_flush_queue(void)
++static bool intel_iommu_dma_use_flush_queue(struct iommu_domain *domain)
  {
- 	struct vdpa_iova_range *range = &v->range;
--	struct iommu_domain_geometry geo;
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+ 	bool r = true;
  
- 	if (ops->get_iova_range) {
- 		*range = ops->get_iova_range(vdpa);
--	} else if (v->domain &&
--		   !iommu_domain_get_attr(v->domain,
--		   DOMAIN_ATTR_GEOMETRY, &geo) &&
--		   geo.force_aperture) {
--		range->first = geo.aperture_start;
--		range->last = geo.aperture_end;
-+	} else if (v->domain && v->domain->geometry.force_aperture) {
-+		range->first = v->domain->geometry.aperture_start;
-+		range->last = v->domain->geometry.aperture_end;
- 	} else {
- 		range->first = 0;
- 		range->last = ULLONG_MAX;
+-	if (intel_iommu_strict)
++	if (domain->type != IOMMU_DOMAIN_DMA || intel_iommu_strict)
+ 		return false;
+ 
+ 	/*
+@@ -5483,27 +5483,6 @@ static bool domain_use_flush_queue(void)
+ 	return r;
+ }
+ 
+-static int
+-intel_iommu_domain_get_attr(struct iommu_domain *domain,
+-			    enum iommu_attr attr, void *data)
+-{
+-	switch (domain->type) {
+-	case IOMMU_DOMAIN_UNMANAGED:
+-		return -ENODEV;
+-	case IOMMU_DOMAIN_DMA:
+-		switch (attr) {
+-		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+-			*(int *)data = domain_use_flush_queue();
+-			return 0;
+-		default:
+-			return -ENODEV;
+-		}
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-}
+-
+ /*
+  * Check that the device does not live on an external facing PCI port that is
+  * marked as untrusted. Such devices should not be able to apply quirks and
+@@ -5576,7 +5555,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+ 	.domain_free		= intel_iommu_domain_free,
+-	.domain_get_attr        = intel_iommu_domain_get_attr,
++	.dma_use_flush_queue	= intel_iommu_dma_use_flush_queue,
+ 	.domain_set_attr	= intel_iommu_domain_set_attr,
+ 	.attach_dev		= intel_iommu_attach_device,
+ 	.detach_dev		= intel_iommu_detach_device,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 23daaea7883b75..0f12c4d58cdc42 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1512,12 +1512,8 @@ static int iommu_group_alloc_default_domain(struct bus_type *bus,
+ 	if (!group->domain)
+ 		group->domain = dom;
+ 
+-	if (!iommu_dma_strict) {
+-		int attr = 1;
+-		iommu_domain_set_attr(dom,
+-				      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+-				      &attr);
+-	}
++	if (!iommu_dma_strict && dom->ops->dma_enable_flush_queue)
++		dom->ops->dma_enable_flush_queue(dom);
+ 
+ 	return 0;
+ }
+@@ -2664,14 +2660,13 @@ static int __init iommu_init(void)
+ }
+ core_initcall(iommu_init);
+ 
+-int iommu_domain_get_attr(struct iommu_domain *domain,
+-			  enum iommu_attr attr, void *data)
++bool iommu_dma_use_flush_queue(struct iommu_domain *domain)
+ {
+-	if (!domain->ops->domain_get_attr)
+-		return -EINVAL;
+-	return domain->ops->domain_get_attr(domain, attr, data);
++	if (!domain->ops->dma_use_flush_queue)
++		return false;
++	return domain->ops->dma_use_flush_queue(domain);
+ }
+-EXPORT_SYMBOL_GPL(iommu_domain_get_attr);
++EXPORT_SYMBOL_GPL(iommu_dma_use_flush_queue);
+ 
+ int iommu_domain_set_attr(struct iommu_domain *domain,
+ 			  enum iommu_attr attr, void *data)
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 180ff4bd7fa7ef..c15a8658daad64 100644
+index c15a8658daad64..f30de33c6ff56e 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -107,7 +107,6 @@ enum iommu_cap {
-  */
+@@ -108,7 +108,6 @@ enum iommu_cap {
  
  enum iommu_attr {
--	DOMAIN_ATTR_GEOMETRY,
  	DOMAIN_ATTR_NESTING,	/* two stages of translation */
- 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+-	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
  	DOMAIN_ATTR_IO_PGTABLE_CFG,
+ 	DOMAIN_ATTR_MAX,
+ };
+@@ -194,7 +193,8 @@ struct iommu_iotlb_gather {
+  * @probe_finalize: Do final setup work after the device is added to an IOMMU
+  *                  group and attached to the groups domain
+  * @device_group: find iommu group for a particular device
+- * @domain_get_attr: Query domain attributes
++ * @dma_use_flush_queue: Returns %true if a DMA flush queue is used
++ * @dma_enable_flush_queue: Try to enable the DMA flush queue
+  * @domain_set_attr: Change domain attributes
+  * @get_resv_regions: Request list of reserved regions for a device
+  * @put_resv_regions: Free list of reserved regions for a device
+@@ -244,8 +244,8 @@ struct iommu_ops {
+ 	void (*release_device)(struct device *dev);
+ 	void (*probe_finalize)(struct device *dev);
+ 	struct iommu_group *(*device_group)(struct device *dev);
+-	int (*domain_get_attr)(struct iommu_domain *domain,
+-			       enum iommu_attr attr, void *data);
++	bool (*dma_use_flush_queue)(struct iommu_domain *domain);
++	void (*dma_enable_flush_queue)(struct iommu_domain *domain);
+ 	int (*domain_set_attr)(struct iommu_domain *domain,
+ 			       enum iommu_attr attr, void *data);
+ 
+@@ -491,8 +491,7 @@ extern int iommu_page_response(struct device *dev,
+ extern int iommu_group_id(struct iommu_group *group);
+ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+ 
+-extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+-				 void *data);
++bool iommu_dma_use_flush_queue(struct iommu_domain *domain);
+ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+ 
+@@ -861,12 +860,6 @@ static inline int iommu_group_id(struct iommu_group *group)
+ 	return -ENODEV;
+ }
+ 
+-static inline int iommu_domain_get_attr(struct iommu_domain *domain,
+-					enum iommu_attr attr, void *data)
+-{
+-	return -EINVAL;
+-}
+-
+ static inline int iommu_domain_set_attr(struct iommu_domain *domain,
+ 					enum iommu_attr attr, void *data)
+ {
 -- 
 2.29.2
 
