@@ -2,137 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D22328D68
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 20:12:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC892328D99
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 20:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233823AbhCATK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 14:10:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
+        id S241010AbhCATOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 14:14:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240974AbhCATGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 14:06:36 -0500
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C62C06178B
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 11:05:55 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id z190so17699825qka.9
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 11:05:55 -0800 (PST)
+        with ESMTP id S240927AbhCATKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 14:10:54 -0500
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAFFC06178A
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 11:09:58 -0800 (PST)
+Received: by mail-qk1-x72e.google.com with SMTP id d20so16731735qkc.2
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 11:09:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vltDR6nPmExSVgix/uycZqbK9vu4qx0KGQAFBNxtb08=;
-        b=dWjxltLxoMhu/cGdlWbJGFN82TRnUTSvcNFt8VbU0lJPhoQbyfb9qzf+Rlm36dRTfn
-         R4+hBO+2Df9oSjPSSLAn7AXckKPvLPAeUFHiE9/FQmI/a9jYcKrc9mPne65dElaL/dwH
-         zB0pReX7kaNRSciF9JwHZy0YqNsYCQHss6Nro4gmT0BBOtw4lurDzuMId5uiwx84/3d+
-         l8IbWc1Qrf7e+bxs2ZHmvHVVs4AA3Yj7fkx6LxNjewK/Yv1zDDHf71BAvOUZaobPg8j1
-         JMe/8fz2zB0TeGw+yvzzm+V8KWpgLOD5i7ZDNI9W3fZdYFr2fTpvwknrsDTsO+tAxKAE
-         1lpw==
+        d=cmpxchg-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i+xARtY+5W8Bn1AE04i/Ad5rFPbMh8nDWeTLAZo2lK0=;
+        b=Dmi55bD0YEnhSqHee72cnYtTysJPc/UwD5dR9ydldk6GNoQl1/DniyGpHgFg80docR
+         e1KdvcdDDqDdYhzqdjbwQC3WwGcI+gVUYGwEy/2ZHD9FDnWf38mhuSNKbYuja0dkYMwc
+         Dt1ZWtdL/AKMrYyS1KxGZHqiczC3VM3kJ6R+dzCrcHrTE05NQ5F/8yLtHGymvg1aq6BM
+         EXf4Kdm1R/J3x2USifUap32jpSxasFV9xs+YN9M/8OjxeDZd0alUdKogErFvkkhpAax4
+         4O0hiOHJwEitkpq+e0RPMg7fyDENlKa7NIV1yli4o3coe+gnJvv16u0eFWOoTS7x0HeU
+         rH1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vltDR6nPmExSVgix/uycZqbK9vu4qx0KGQAFBNxtb08=;
-        b=rI0zsaBcEWWhrZWj/i9CKs10bOWqJ1BeXaxxcoSIHu4XBv+2Zlga7H0CbKSru6RB+V
-         FSAgOkqFTLBkYOyuI2uy5yjFdwP1Dr4jayiF358m+A4P86dHc3Q+yoWOSUFsddby9X+Z
-         3gerM78McBrAX+AMW+Mv6AAoJaDUnRC4bHfHXImhvPdBznTDQrcAJhAhqcmpZnYC5oxH
-         hBED5ozyDzAP6jnx0j1rbI0kXqiiKadxy4pRyJxkr5kj74gk/8IvaBcvhVlApHSAGBck
-         COodZ2E8ZapdRXxQlcmsOH565GBzMxURtmd/o6KpjHqSKiKot4bvFSrQ07YocpNkZzSY
-         69XA==
-X-Gm-Message-State: AOAM533KffAgvFJk6fv2v6S9ZFmzh9hFPPkEkmd5h/B7hg9H4edW+g+e
-        EDystENFljkvrINAFEupE+7QaJTC8x/knCi1Ukkavw==
-X-Google-Smtp-Source: ABdhPJxZwmErIHsA+M8yHabv+voWVmw4iPHqCRMdf3gsDRfgfugEd3e53Nvhbifj61z6HqleXEXvj6IgyDDs3xSZUj0=
-X-Received: by 2002:a37:4743:: with SMTP id u64mr9584887qka.350.1614625554022;
- Mon, 01 Mar 2021 11:05:54 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000911d3905b459824c@google.com> <000000000000e56a2605b616b2d9@google.com>
- <YD0UjWjQmYgY4Qgh@nuc10>
-In-Reply-To: <YD0UjWjQmYgY4Qgh@nuc10>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 1 Mar 2021 20:05:42 +0100
-Message-ID: <CACT4Y+YQzTkk=UPNH5g96e+yPYyaPBemmhqXz5oaWEvW9xb-rQ@mail.gmail.com>
-Subject: Re: memory leak in bpf
-To:     Rustam Kovhaev <rkovhaev@gmail.com>
-Cc:     syzbot <syzbot+f3694595248708227d35@syzkaller.appspotmail.com>,
-        andrii@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i+xARtY+5W8Bn1AE04i/Ad5rFPbMh8nDWeTLAZo2lK0=;
+        b=pIwKpMR2W9zU6CFfpf8sxTwN8vm66lX5oXkdJoz9UqjT9LB4QiQrGqVXcqgLszkT2B
+         7mbEQo1Zt+pLCgRhxTfYP+Olbv0C+HWXm9pydHD2+cmhkgVPlxbHUeJ9e7nNMIIPzgyS
+         UpZmhJJZnJCE2e06+feF9PGu6M92EDxdvmXiWuNDn4ZjOdnptQpGb2/i2HBzeae/vKjE
+         gc3WA5Wbxn/Jv9GPqXGUAqQ6tjXhd5Gjz6iVAJjq4+WrJX2tfjGJe/zAOd1E0nKqNN8s
+         hCeteE1fd7CVso8z3z0aFTWT5VuVs41vJYQlO7giqADnjANz9mXbhl9S10jQpG2qQYZM
+         S1pw==
+X-Gm-Message-State: AOAM530fwpiuWEEv718SEWMz9E4qI160uML/cLUGVXljfswp14yI8chz
+        2nAaDOK42abdPNEHK0gwGhrfiQ==
+X-Google-Smtp-Source: ABdhPJzw9sBKATTH9+l4/FyjFyJ4xvsDXuoyNe+xu6pg1Fsl6HJWxo2SNSKnwbilZI0nWJ3JIsIPhA==
+X-Received: by 2002:a37:4a49:: with SMTP id x70mr15969541qka.118.1614625797396;
+        Mon, 01 Mar 2021 11:09:57 -0800 (PST)
+Received: from localhost ([2620:10d:c091:480::1:c0b0])
+        by smtp.gmail.com with ESMTPSA id 18sm3329057qkr.90.2021.03.01.11.09.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Mar 2021 11:09:56 -0800 (PST)
+Date:   Mon, 1 Mar 2021 14:09:55 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jan Kara <jack@suse.cz>, Amir Goldstein <amir73il@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        dietmar.eggemann@arm.com, Steven Rostedt <rostedt@goodmis.org>,
+        Benjamin Segall <bsegall@google.com>,
+        Mel Gorman <mgorman@suse.de>, bristot@redhat.com,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <guro@fb.com>,
+        Alex Shi <alex.shi@linux.alibaba.com>,
+        alexander.h.duyck@linux.intel.com,
+        Chris Down <chris@chrisdown.name>,
+        Wei Yang <richard.weiyang@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Peter Oskolkov <posk@google.com>, Jann Horn <jannh@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>, daniel.vetter@ffwll.ch,
+        Waiman Long <longman@redhat.com>,
+        Michel Lespinasse <walken@google.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>, krisman@collabora.com,
+        esyr@redhat.com, Suren Baghdasaryan <surenb@google.com>,
+        Marco Elver <elver@google.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        duanxiongchun@bytedance.com
+Subject: Re: [PATCH 2/5] mm: memcontrol: make page_memcg{_rcu} only
+ applicable for non-kmem page
+Message-ID: <YD08A+fEp/4pw10I@cmpxchg.org>
+References: <20210301062227.59292-1-songmuchun@bytedance.com>
+ <20210301062227.59292-3-songmuchun@bytedance.com>
+ <CALvZod7sysj0+wrzLTXnwn7s_Gf-V2eFPJ6cLcoRmR0LdAFk0Q@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALvZod7sysj0+wrzLTXnwn7s_Gf-V2eFPJ6cLcoRmR0LdAFk0Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 1, 2021 at 5:21 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
->
-> On Wed, Dec 09, 2020 at 10:58:10PM -0800, syzbot wrote:
-> > syzbot has found a reproducer for the following issue on:
-> >
-> > HEAD commit:    a68a0262 mm/madvise: remove racy mm ownership check
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=11facf17500000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=4305fa9ea70c7a9f
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=f3694595248708227d35
-> > compiler:       gcc (GCC) 10.1.0-syz 20200507
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159a9613500000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bf7123500000
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+f3694595248708227d35@syzkaller.appspotmail.com
-> >
-> > Debian GNU/Linux 9 syzkaller ttyS0
-> > Warning: Permanently added '10.128.0.9' (ECDSA) to the list of known hosts.
-> > executing program
-> > executing program
-> > executing program
-> > BUG: memory leak
-> > unreferenced object 0xffff88810efccc80 (size 64):
-> >   comm "syz-executor334", pid 8460, jiffies 4294945724 (age 13.850s)
-> >   hex dump (first 32 bytes):
-> >     c0 cb 14 04 00 ea ff ff c0 c2 11 04 00 ea ff ff  ................
-> >     c0 56 3f 04 00 ea ff ff 40 18 38 04 00 ea ff ff  .V?.....@.8.....
-> >   backtrace:
-> >     [<0000000036ae98a7>] kmalloc_node include/linux/slab.h:575 [inline]
-> >     [<0000000036ae98a7>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:94 [inline]
-> >     [<0000000036ae98a7>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:135 [inline]
-> >     [<0000000036ae98a7>] ringbuf_map_alloc kernel/bpf/ringbuf.c:183 [inline]
-> >     [<0000000036ae98a7>] ringbuf_map_alloc+0x1be/0x410 kernel/bpf/ringbuf.c:150
-> >     [<00000000d2cb93ae>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
-> >     [<00000000d2cb93ae>] map_create kernel/bpf/syscall.c:825 [inline]
-> >     [<00000000d2cb93ae>] __do_sys_bpf+0x7d0/0x30a0 kernel/bpf/syscall.c:4381
-> >     [<000000008feaf393>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-> >     [<00000000e1f53cfd>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >
-> >
->
-> i am pretty sure that this one is a false positive
-> the problem with reproducer is that it does not terminate all of the
-> child processes that it spawns
->
-> i confirmed that it is a false positive by tracing __fput() and
-> bpf_map_release(), i ran reproducer, got kmemleak report, then i
-> manually killed those running leftover processes from reproducer and
-> then both functions were executed and memory was freed
->
-> i am marking this one as:
-> #syz invalid
+Muchun, can you please reduce the CC list to mm/memcg folks only for
+the next submission? I think probably 80% of the current recipients
+don't care ;-)
 
+On Mon, Mar 01, 2021 at 10:11:45AM -0800, Shakeel Butt wrote:
+> On Sun, Feb 28, 2021 at 10:25 PM Muchun Song <songmuchun@bytedance.com> wrote:
+> >
+> > We want to reuse the obj_cgroup APIs to reparent the kmem pages when
+> > the memcg offlined. If we do this, we should store an object cgroup
+> > pointer to page->memcg_data for the kmem pages.
+> >
+> > Finally, page->memcg_data can have 3 different meanings.
+> >
+> >   1) For the slab pages, page->memcg_data points to an object cgroups
+> >      vector.
+> >
+> >   2) For the kmem pages (exclude the slab pages), page->memcg_data
+> >      points to an object cgroup.
+> >
+> >   3) For the user pages (e.g. the LRU pages), page->memcg_data points
+> >      to a memory cgroup.
+> >
+> > Currently we always get the memcg associated with a page via page_memcg
+> > or page_memcg_rcu. page_memcg_check is special, it has to be used in
+> > cases when it's not known if a page has an associated memory cgroup
+> > pointer or an object cgroups vector. Because the page->memcg_data of
+> > the kmem page is not pointing to a memory cgroup in the later patch,
+> > the page_memcg and page_memcg_rcu cannot be applicable for the kmem
+> > pages. In this patch, we introduce page_memcg_kmem to get the memcg
+> > associated with the kmem pages. And make page_memcg and page_memcg_rcu
+> > no longer apply to the kmem pages.
+> >
+> > In the end, there are 4 helpers to get the memcg associated with a
+> > page. The usage is as follows.
+> >
+> >   1) Get the memory cgroup associated with a non-kmem page (e.g. the LRU
+> >      pages).
+> >
+> >      - page_memcg()
+> >      - page_memcg_rcu()
+> 
+> Can you rename these to page_memcg_lru[_rcu] to make them explicitly
+> for LRU pages?
 
-Hi Rustam,
+The next patch removes page_memcg_kmem() again to replace it with
+page_objcg(). That should (luckily) remove the need for this
+distinction and keep page_memcg() simple and obvious.
 
-Thanks for looking into this.
-
-I wonder how/where are these objects referenced? If they are not
-leaked and referenced somewhere, KMEMLEAK should not report them as
-leaks.
-So even if this is a false positive for BPF, this is a true positive
-bug and something to fix for KMEMLEAK ;)
-And syzbot will probably re-create this bug report soon as this still
-happens and is not a one-off thing.
+It would be better to not introduce page_memcg_kmem() in the first
+place in this patch, IMO.
