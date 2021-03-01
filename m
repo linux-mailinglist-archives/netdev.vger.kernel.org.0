@@ -2,219 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB12328A4C
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 19:16:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52907328A9D
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 19:20:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239415AbhCASPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 13:15:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59032 "EHLO
+        id S239631AbhCASUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 13:20:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232384AbhCASMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 13:12:39 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8FBC061788
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 10:11:59 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id r23so20586879ljh.1
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 10:11:59 -0800 (PST)
+        with ESMTP id S239424AbhCASRg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 13:17:36 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F3AC06178C
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 10:16:56 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id b10so17929867ybn.3
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 10:16:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BGU0eUrGcHK/RDV2rfGKNSJvLH9RO1hVgeZSC29kjwo=;
-        b=ht1sFzXFGRfS8LWY4p2VzOH9ey6K1YEdVoK6ois+19WsBeTJoAIp0tgzWGYsYZupDU
-         qJFKb8PFVL3nJiTyit/TnKA8aEKQDxwwg71VD/oSYIQZaacqGy9Zwb2Fq8Pbi+ExaAsQ
-         VL6amJZRvFp93GD92cT48zqHKb0jTeHHHfyb5JEJEiyWdxMJa/5UUKgZZmbMNPXLu1L+
-         d7BSvB3G1hdvVn0qWuUDLAj/ndRvD7LVDuiJLAM1+CPfKY5NqqlhAQW6YxI5bLXG/pkJ
-         l/f7aZVczU7/iYKir9kKh5hnoT+daU64GUZ0uEi3m6Kvqzx8q9w4NEkVdDFmjzlboJ+r
-         yNCA==
+        bh=1/VjnvcPuJxO7/paEY6ICI9381BuU9pj16ZSZ8LXnT8=;
+        b=gIScon4JGGcyeEYxCbBUeAU+2Su9ifu4PHv0HrQsRK8BT1KOIcpcrf9k91zJZpjGp1
+         X8UadC27AkyXgU6endb1U1b+/VX2N+9vGnt3mKtzpGREvLtvEwdJ4k2K9EWIyZbvaacp
+         jUfHdh7pCYhHMn7Rg8lNjoyzuW4LLpZ9oNitOf42tKXAwCLc1MdMhilnvxovQh6skL/n
+         lZi/wi+myO/MITMkxMrlhhrrlsutzYes8mGjmCOj3MQg5rL9i84ZsRqkmuiqg7l9Fclb
+         Zhc+SUfA4yxronoYOBrPdk+rIPoUrgkl650cU+8vzBPSi3n7UbUvbRPBMlt4f8E9cNDa
+         r8wA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BGU0eUrGcHK/RDV2rfGKNSJvLH9RO1hVgeZSC29kjwo=;
-        b=WiCfxCx1Gsr7MaYS83RUjaaB5MH9HscLbsDKTIWcuQG6Y6E42XUOnUvMQqXDjWDBY4
-         u4lbEiEdiJFLEEoXbrIQZr7in1CVgO+cgvANc41AJOTXWkzAsKt3DvgVrfoBtEge7skR
-         RIW2X2WFkvE/Hv93l3AhVGcglKaKxFXqEMY2/hc0MubVEJZ5XagC8SLNu4AAmP+l047M
-         3TJZ1r6g4gPTB3MHjPY+imhvPswF9d0d1//cF3u6nJLRYVNM16IIIaQOzZaITTMTE7oS
-         r/cNIdM74LijuXEyoV3q6KUH4nhymBljwJ+15Ggvuv4p6SBAFnRy9hjAvdnpL7pa4817
-         kcuQ==
-X-Gm-Message-State: AOAM530X1HoJCiVtFCh1zXtNGIsNH0j2l/65qwdOCvSrgMBCao4ACkg8
-        2BG8bpoaT11YRtM+3i1hYkSRtrjFa/1/pUs4qcq2SQ==
-X-Google-Smtp-Source: ABdhPJyyN10CMbekqIe2EaCLHXVwEmhEw2eA0ojmVgi3XY81XzPa0cvQd4lzpVVcj9/BVccaJ8HjfF/Ze2+dV2hAXeM=
-X-Received: by 2002:a2e:9cc4:: with SMTP id g4mr981268ljj.34.1614622317485;
- Mon, 01 Mar 2021 10:11:57 -0800 (PST)
+        bh=1/VjnvcPuJxO7/paEY6ICI9381BuU9pj16ZSZ8LXnT8=;
+        b=O76Mu0uchA/S1vc60j7jQ986N78wLPZokHs11dNZ56G3NmEMh1SKG7dtNqjdX6w413
+         6r+gffaXMy3tddx7GApoVH+2MAh//35qovSsawkX1Lf77AqeXhZldSWpdErCRK0fbxBl
+         X4isR40HC8ebkkzpSpZoD8rQ2+rdvWXToYCIHvhhII7AnRm/PaoR+djxPlv9csWnmqbw
+         9Q+IVmsQPlQsmvWKAoEIApcRhS1jJaGlR+c5iVCfAX5w08D5IU9xkvi0jmRsxZEw9KGO
+         qAPyjCryOWFU3TBQAXRwSyYagNd5Fx9WkfKJL4FAbpSxhXPEtaBOpflgp+2QiXLml9kb
+         e30w==
+X-Gm-Message-State: AOAM531NQMz7TsOi8Z8rM7D/ysaNcwhpXoQpRL5mCSsC2kX9GoeXDxIm
+        P8Ibe7k97eQ1+dP3HKgSpXAxbsYr0qh99gCOPHOrSlti/3o=
+X-Google-Smtp-Source: ABdhPJwCaEk+j6i1aGTuIsdtLH1Khk03rsi62AvUWb6Ajr4RyJN8uTD3Yyxki2dOVwwYZKJmOltY5P32Y9OcQWq1oPI=
+X-Received: by 2002:a25:9706:: with SMTP id d6mr24388022ybo.139.1614622616067;
+ Mon, 01 Mar 2021 10:16:56 -0800 (PST)
 MIME-Version: 1.0
-References: <20210301062227.59292-1-songmuchun@bytedance.com> <20210301062227.59292-3-songmuchun@bytedance.com>
-In-Reply-To: <20210301062227.59292-3-songmuchun@bytedance.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 1 Mar 2021 10:11:45 -0800
-Message-ID: <CALvZod7sysj0+wrzLTXnwn7s_Gf-V2eFPJ6cLcoRmR0LdAFk0Q@mail.gmail.com>
-Subject: Re: [PATCH 2/5] mm: memcontrol: make page_memcg{_rcu} only applicable
- for non-kmem page
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        dietmar.eggemann@arm.com, Steven Rostedt <rostedt@goodmis.org>,
-        Benjamin Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>, bristot@redhat.com,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        alexander.h.duyck@linux.intel.com,
-        Chris Down <chris@chrisdown.name>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Peter Oskolkov <posk@google.com>, Jann Horn <jannh@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, daniel.vetter@ffwll.ch,
-        Waiman Long <longman@redhat.com>,
-        Michel Lespinasse <walken@google.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>, krisman@collabora.com,
-        esyr@redhat.com, Suren Baghdasaryan <surenb@google.com>,
-        Marco Elver <elver@google.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        duanxiongchun@bytedance.com
+References: <20210227003047.1051347-1-weiwan@google.com> <20210226164803.4413571f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEA6p_CJx7K1Fab1C0Qkw=1VNnDaV9qwB_UUtikPMoqNUUWJuA@mail.gmail.com>
+ <20210226172240.24d626e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEA6p_B6baYFZnEOMS=Nmvg0kA_qB=7ip4S96ys9ZoJWfOiOCA@mail.gmail.com>
+ <20210226180833.09c98110@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAEA6p_ABZfs3zyQ+90cC1P8T8w94Lz4RvvBdQHQsHXEPP5aexQ@mail.gmail.com>
+ <CAEA6p_DtTG6ryiG3GkxaySJeNcYF=RfkgCYTc-T-mHqMwL2-Gw@mail.gmail.com> <20210228111710.4e82a88e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210228111710.4e82a88e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Mon, 1 Mar 2021 10:16:45 -0800
+Message-ID: <CAEA6p_BrxajA3EpdWcnMbBJPse45PU_KUUzWM0V-9T6LrhK8ww@mail.gmail.com>
+Subject: Re: [PATCH net v2] net: fix race between napi kthread mode and busy poll
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin Zaharinov <micron10@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 28, 2021 at 10:25 PM Muchun Song <songmuchun@bytedance.com> wrote:
+On Sun, Feb 28, 2021 at 11:17 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> We want to reuse the obj_cgroup APIs to reparent the kmem pages when
-> the memcg offlined. If we do this, we should store an object cgroup
-> pointer to page->memcg_data for the kmem pages.
+> On Sat, 27 Feb 2021 15:23:56 -0800 Wei Wang wrote:
+> > > > Indeed, looks like the task will be in WAKING state until it runs?
+> > > > We can switch the check in ____napi_schedule() from
+> > > >
+> > > >         if (thread->state == TASK_RUNNING)
+> > > >
+> > > > to
+> > > >
+> > > >         if (!(thread->state & TASK_INTERRUPTIBLE))
+> > > >
+> > > > ?
+> > >
+> > > Hmm... I am not very sure what state the thread will be put in after
+> > > kthread_create(). Could it be in TASK_INTERRUPTIBLE?
+> >
+> > I did a printk and confirmed that the thread->state is
+> > TASK_UNINTERRUPTIBLE after kthread_create() is called.
+> > So I think if we change the above state to:
+> >           if (thread->state != TASK_INTERRUPTIBLE)
+> >                   set_bit(NAPI_STATE_SCHED_THREADED, &napi->state);
+> > It should work.
 >
-> Finally, page->memcg_data can have 3 different meanings.
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 6c5967e80132..43607523ee99 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -1501,17 +1501,18 @@ static int napi_kthread_create(struct napi_struct *n)
+> >  {
+> >         int err = 0;
+> >
+> > -       /* Create and wake up the kthread once to put it in
+> > -        * TASK_INTERRUPTIBLE mode to avoid the blocked task
+> > -        * warning and work with loadavg.
+> > +       /* Avoid waking up the kthread during creation to prevent
+> > +        * potential race.
+> >          */
+> > -       n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
+> > -                               n->dev->name, n->napi_id);
+> > +       n->thread = kthread_create(napi_threaded_poll, n, "napi/%s-%d",
+> > +                                  n->dev->name, n->napi_id);
 >
->   1) For the slab pages, page->memcg_data points to an object cgroups
->      vector.
+> Does kthread_run() make the thread go into TASK_INTERRUPTIBLE ?
+> It just calls wake_up_process(), which according to a comment in the
+> kdoc..
 >
->   2) For the kmem pages (exclude the slab pages), page->memcg_data
->      points to an object cgroup.
+>  * Conceptually does:
+>  *
+>  *   If (@state & @p->state) @p->state = TASK_RUNNING.
 >
->   3) For the user pages (e.g. the LRU pages), page->memcg_data points
->      to a memory cgroup.
->
-> Currently we always get the memcg associated with a page via page_memcg
-> or page_memcg_rcu. page_memcg_check is special, it has to be used in
-> cases when it's not known if a page has an associated memory cgroup
-> pointer or an object cgroups vector. Because the page->memcg_data of
-> the kmem page is not pointing to a memory cgroup in the later patch,
-> the page_memcg and page_memcg_rcu cannot be applicable for the kmem
-> pages. In this patch, we introduce page_memcg_kmem to get the memcg
-> associated with the kmem pages. And make page_memcg and page_memcg_rcu
-> no longer apply to the kmem pages.
->
-> In the end, there are 4 helpers to get the memcg associated with a
-> page. The usage is as follows.
->
->   1) Get the memory cgroup associated with a non-kmem page (e.g. the LRU
->      pages).
->
->      - page_memcg()
->      - page_memcg_rcu()
+> So I think we could safely stick to kthread_run() if the condition in
+> at the NAPI wake point checks for INTERRUPTIBLE?
 
-Can you rename these to page_memcg_lru[_rcu] to make them explicitly
-for LRU pages?
-
->
->   2) Get the memory cgroup associated with a kmem page (exclude the slab
->      pages).
->
->      - page_memcg_kmem()
->
->   3) Get the memory cgroup associated with a page. It has to be used in
->      cases when it's not known if a page has an associated memory cgroup
->      pointer or an object cgroups vector. Returns NULL for slab pages or
->      uncharged pages, otherwise, returns memory cgroup for charged pages
->      (e.g. kmem pages, LRU pages).
->
->      - page_memcg_check()
->
-> In some place, we use page_memcg to check whether the page is charged.
-> Now we introduce page_memcg_charged helper to do this.
->
-> This is a preparation for reparenting the kmem pages. To support reparent
-> kmem pages, we just need to adjust page_memcg_kmem and page_memcg_check in
-> the later patch.
->
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> ---
-[snip]
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -855,10 +855,11 @@ void __mod_lruvec_page_state(struct page *page, enum node_stat_item idx,
->                              int val)
->  {
->         struct page *head = compound_head(page); /* rmap on tail pages */
-> -       struct mem_cgroup *memcg = page_memcg(head);
-> +       struct mem_cgroup *memcg;
->         pg_data_t *pgdat = page_pgdat(page);
->         struct lruvec *lruvec;
->
-> +       memcg = PageMemcgKmem(head) ? page_memcg_kmem(head) : page_memcg(head);
-
-Should page_memcg_check() be used here?
-
->         /* Untracked pages have no memcg, no lruvec. Update only the node */
->         if (!memcg) {
->                 __mod_node_page_state(pgdat, idx, val);
-> @@ -3170,12 +3171,13 @@ int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order)
->   */
->  void __memcg_kmem_uncharge_page(struct page *page, int order)
->  {
-> -       struct mem_cgroup *memcg = page_memcg(page);
-> +       struct mem_cgroup *memcg;
->         unsigned int nr_pages = 1 << order;
->
-> -       if (!memcg)
-> +       if (!page_memcg_charged(page))
->                 return;
->
-> +       memcg = page_memcg_kmem(page);
->         VM_BUG_ON_PAGE(mem_cgroup_is_root(memcg), page);
->         __memcg_kmem_uncharge(memcg, nr_pages);
->         page->memcg_data = 0;
-> @@ -6831,24 +6833,25 @@ static void uncharge_batch(const struct uncharge_gather *ug)
->  static void uncharge_page(struct page *page, struct uncharge_gather *ug)
->  {
->         unsigned long nr_pages;
-> +       struct mem_cgroup *memcg;
->
->         VM_BUG_ON_PAGE(PageLRU(page), page);
->
-> -       if (!page_memcg(page))
-> +       if (!page_memcg_charged(page))
->                 return;
->
->         /*
->          * Nobody should be changing or seriously looking at
-> -        * page_memcg(page) at this point, we have fully
-> -        * exclusive access to the page.
-> +        * page memcg at this point, we have fully exclusive
-> +        * access to the page.
->          */
-> -
-> -       if (ug->memcg != page_memcg(page)) {
-> +       memcg = PageMemcgKmem(page) ? page_memcg_kmem(page) : page_memcg(page);
-
-Same, should page_memcg_check() be used here?
+I think so. kthread_run() wakes up the kthread and kthread_wait_poll()
+should put it to INTERRUPTIBLE mode and schedule() will make it go to
+sleep, and wait for the next napi_schedule().
+I've also tested on my setup and saw no issues.
