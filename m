@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA8E3293C6
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 22:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7DA3293CA
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 22:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238013AbhCAVfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 16:35:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46580 "EHLO mail.kernel.org"
+        id S238978AbhCAVf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 16:35:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46574 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244067AbhCAVat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S244063AbhCAVat (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 1 Mar 2021 16:30:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id EA78E6023C;
+Received: by mail.kernel.org (Postfix) with ESMTPS id E2E0F60233;
         Mon,  1 Mar 2021 21:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614634208;
-        bh=Jf2fL0eOIGshC3Tdb2nzd25RldbSAEtF7kGkDss+Za4=;
+        s=k20201202; t=1614634207;
+        bh=omtG+7mo69ei2OYE6UwIMpnkQejszK7aniuze9Izd+8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aW+kO478jDf60VWt+r0rSxWRsN/wMvU755F4+1hPpmy6jzLOFJ7IKlumzYYRryA+O
-         O35wiAFWIuQwj3ilXepxCNlmbAPBHjRvP+58HuUQ25iWkZNdxkSXUVbeAKXoVwU1S1
-         SuLKuIy8tgPtLn8+x2fPTeUIsqISFCETLTwVa4ymimyPnl1AYDq6hfW6FV6h63Jpj/
-         Toiut45goiKgCsx4bDRPm4ZRwvg9XZzg9uxbkhzVZXQZdNCehUXU39AcfIdcGgvqeY
-         I4W4Q9uNnbna3BnuPTmkxzidG0x31Kh/n6TJP7u/EHxbgrxew/LRpkOsEK8ba7qiBu
-         LxCCvheyqkcpQ==
+        b=L/tIjXR3I+VaPaBybj7dOFS+cngb+14Lah0DTuAKQ1GyBTi/npyWfvq0AItiChOCr
+         E9Ruryv+I2XfVXtU1ueiN4i9AwUNjHvhJfLcEc8iC/FogjMRPWihCRI7p1bGmak55v
+         PFKYV6ioMZqQeB0h4CLzBTS4BoWFLga6tbxRms4zjJU4wpePPXWH+VIH2bGO+O+9dG
+         hhhM45iWev0N/sdCFiprF3WUHaPbv8+LgkEjCimh9FdOf7F78UqCFFUDwmBXMZmYa+
+         hH39BMRv2R41OpJe16sXHBwHRd5/6qHITHlcZzkvkD83g7zZs9W9z/opOT94rk61//
+         3mEyem89BQGTA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DACD760C25;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D2A0060C26;
         Mon,  1 Mar 2021 21:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] atm: lanai: dont run lanai_dev_close if not open
+Subject: Re: [PATCH net 0/3] Fix TRSCER masks in the Ether driver
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161463420789.14233.14258851142782431296.git-patchwork-notify@kernel.org>
+Message-Id: <161463420785.14233.15454498386680107579.git-patchwork-notify@kernel.org>
 Date:   Mon, 01 Mar 2021 21:30:07 +0000
-References: <20210228035550.87183-1-ztong0001@gmail.com>
-In-Reply-To: <20210228035550.87183-1-ztong0001@gmail.com>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <7009ba70-4134-1acf-42b9-fa7e59b5d15d@omprussia.ru>
+In-Reply-To: <7009ba70-4134-1acf-42b9-fa7e59b5d15d@omprussia.ru>
+To:     Sergey Shtylyov <s.shtylyov@omprussia.ru>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Sat, 27 Feb 2021 22:55:50 -0500 you wrote:
-> lanai_dev_open() can fail. When it fail, lanai->base is unmapped and the
-> pci device is disabled. The caller, lanai_init_one(), then tries to run
-> atm_dev_deregister(). This will subsequently call lanai_dev_close() and
-> use the already released MMIO area.
+On Sun, 28 Feb 2021 23:24:16 +0300 you wrote:
+> Here are 3 patches against DaveM's 'net' repo. I'm fixing the TRSCER masks in
+> the driver to match the manuals...
 > 
-> To fix this issue, set the lanai->base to NULL if open fail,
-> and test the flag in lanai_dev_close().
-> 
-> [...]
+> [1/3] sh_eth: fix TRSCER mask for SH771x
+> [2/3] sh_eth: fix TRSCER mask for R7S72100
+> [3/3] sh_eth: fix TRSCER mask for R7S9210
 
 Here is the summary with links:
-  - atm: lanai: dont run lanai_dev_close if not open
-    https://git.kernel.org/netdev/net/c/a2bd45834e83
+  - [net,1/3] sh_eth: fix TRSCER mask for SH771x
+    https://git.kernel.org/netdev/net/c/8c91bc3d44df
+  - [net,2/3] sh_eth: fix TRSCER mask for R7S72100
+    https://git.kernel.org/netdev/net/c/75be7fb7f978
+  - [net,3/3] sh_eth: fix TRSCER mask for R7S9210
+    https://git.kernel.org/netdev/net/c/165bc5a4f30e
 
 You are awesome, thank you!
 --
