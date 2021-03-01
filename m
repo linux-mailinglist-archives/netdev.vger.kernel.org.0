@@ -2,113 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 251ED327D8C
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EED4327DAB
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 12:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234287AbhCALuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 06:50:06 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:44605 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234168AbhCALty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 06:49:54 -0500
-Received: by mail-io1-f69.google.com with SMTP id e11so4131058ioh.11
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 03:49:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DwARR0f16pytt1tCFzY3s3chbtjz6oz+ioNdZQ7XKbE=;
-        b=k7anrfbdJx64r8HdkGILpey+GUeV52zxA2SYouKiod1pmqEWJ00dHSUwwtk/luoJR3
-         //myzH2Ws7x3oQuvpqa5nTyYA6wRUDwzfAHH6bKqrPnKVrDX0U07afjZEXSBfrq98No7
-         Nr/hKk87JhgxgxZlkQCZihwnDaXaTuRMbcgyk3O4BeFN0rijdoRJvoaYP1EBwgJ5Y7ug
-         VEjzP+6yvbJ3+0zRodn+JPVWhXDvO4jzBY4GBb3q03hj1V3GbKCC8VPaFypBtzx1mdLR
-         nmSS+mW5r1JubpkAjD3VFqqNoIo1dKS8hT4ElI/enwyzQg+1P5uohyxuJdaSt2Bh6D1L
-         Cfew==
-X-Gm-Message-State: AOAM531T/g4HbXovyc2UKbPghJDBcCKMRZzq3gECoPs+3EluhtZ8PnZH
-        0EImFa2rIkLSOBKQVyN+e8SeMltiw4RGWEf8n9PQco9gslhu
-X-Google-Smtp-Source: ABdhPJxhD0zPY5Uhs0jKXVz/djbISrGEHK64CWufRALhFr638FsvoBeCA3iDrAmzXrTKoANokDPVKYR/wFXDWPFV2Ltp5x5IG7JS
+        id S234447AbhCALxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 06:53:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234399AbhCALwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 06:52:03 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA0AC06178B
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 03:51:21 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lGh4t-0006Kn-7h; Mon, 01 Mar 2021 12:51:07 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:6e66:a1a4:a449:44cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id EEF755EB1B2;
+        Mon,  1 Mar 2021 11:51:02 +0000 (UTC)
+Date:   Mon, 1 Mar 2021 12:51:02 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dariobin@libero.it>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Federico Vaga <federico.vaga@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 5/6] can: c_can: prepare to up the message objects
+ number
+Message-ID: <20210301115102.j5qwmiy2on3ezd4d@pengutronix.de>
+References: <20210225215155.30509-1-dariobin@libero.it>
+ <20210225215155.30509-6-dariobin@libero.it>
+ <20210226083315.cutpxc4iety4qedp@pengutronix.de>
+ <1564374858.544328.1614507493409@mail1.libero.it>
 MIME-Version: 1.0
-X-Received: by 2002:a92:6a0b:: with SMTP id f11mr12229147ilc.290.1614599353665;
- Mon, 01 Mar 2021 03:49:13 -0800 (PST)
-Date:   Mon, 01 Mar 2021 03:49:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ee0e3005bc783400@google.com>
-Subject: KMSAN: uninit-value in dgram_sendmsg
-From:   syzbot <syzbot+a209a964d48b219587cc@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        stefan@datenfreihafen.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2dhc5sepxjp7dlct"
+Content-Disposition: inline
+In-Reply-To: <1564374858.544328.1614507493409@mail1.libero.it>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+--2dhc5sepxjp7dlct
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-HEAD commit:    29ad81a1 arch/x86: add missing include to sparsemem.h
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=13b86466d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c8e3b38ca92283e
-dashboard link: https://syzkaller.appspot.com/bug?extid=a209a964d48b219587cc
-compiler:       Debian clang version 11.0.1-2
-userspace arch: i386
+On 28.02.2021 11:18:13, Dario Binacchi wrote:
+> > > +	u32 msg_obj_rx_mask;
+> >=20
+> > Is this variable big enough after you've extended the driver to use 64
+> > mailboxes?
+>=20
+> Yes. I have kept the message assignment policy unchanged, they are equall=
+y=20
+> divided between reception and transmission. Therefore, in the case of 64=
+=20
+> messages, 32 are used for reception and 32 for transmission. So a 32-bit=
+=20
+> variable is enough.
+>=20
+> >=20
+> > If you want to support 128 message objects converting the driver to the
+> > linux bitmap API is another option.
+> >=20
+>=20
+> Do you know if any of the hardware managed by Linux use a D_CAN controlle=
+r=20
+> with 128 message objects?
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Even the am437x only uses 64 message objects. Ok let's stay with 64 as
+max for now.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a209a964d48b219587cc@syzkaller.appspotmail.com
+regards,
+Marc
 
-=====================================================
-BUG: KMSAN: uninit-value in ieee802154_addr_from_sa include/net/ieee802154_netdev.h:174 [inline]
-BUG: KMSAN: uninit-value in dgram_sendmsg+0x14cb/0x15c0 net/ieee802154/socket.c:660
-CPU: 0 PID: 14314 Comm: syz-executor.3 Not tainted 5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- ieee802154_addr_from_sa include/net/ieee802154_netdev.h:174 [inline]
- dgram_sendmsg+0x14cb/0x15c0 net/ieee802154/socket.c:660
- ieee802154_sock_sendmsg+0xec/0x130 net/ieee802154/socket.c:97
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2345
- ___sys_sendmsg net/socket.c:2399 [inline]
- __sys_sendmsg+0x714/0x830 net/socket.c:2432
- __compat_sys_sendmsg net/compat.c:347 [inline]
- __do_compat_sys_sendmsg net/compat.c:354 [inline]
- __se_compat_sys_sendmsg+0xa7/0xc0 net/compat.c:351
- __ia32_compat_sys_sendmsg+0x4a/0x70 net/compat.c:351
- do_syscall_32_irqs_on arch/x86/entry/common.c:79 [inline]
- __do_fast_syscall_32+0x102/0x160 arch/x86/entry/common.c:141
- do_fast_syscall_32+0x6a/0xc0 arch/x86/entry/common.c:166
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:209
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-RIP: 0023:0xf7fcc549
-Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f55c65fc EFLAGS: 00000296 ORIG_RAX: 0000000000000172
-RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 0000000020000380
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Local variable ----address.i@__sys_sendmsg created at:
- ___sys_sendmsg net/socket.c:2389 [inline]
- __sys_sendmsg+0x30e/0x830 net/socket.c:2432
- ___sys_sendmsg net/socket.c:2389 [inline]
- __sys_sendmsg+0x30e/0x830 net/socket.c:2432
-=====================================================
+--2dhc5sepxjp7dlct
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmA81SMACgkQqclaivrt
+76nyPQf/aaa/oKtyI9yNhbSa5NQXHNe7o/CjFKpk5OCavnNpKh0eTRSxmdip+sDT
+PReCAnYwfvQAa4o2zMuW8xR4igotXas/6o2JXY/RLWmihXp3zTHVAuku0aRJlNiE
+ePSAVAof3SdenghvekzLu+y7gk1qgFULQkHyp6AZxY8ABJUowTOrarK5rhD9U8xy
+g8ERGLxVOObBqbDh9yEarTv0mY1PC224uZToSK4v94Bfyh4gUD97iYLknbtHdKhK
+gugf8iOvLfIVB1H2EUvxWL4SzPASF/IGJCKVzyuY3HPMmt31RIGiD14yYoKqBHJB
+/0yOSFgRkH6E24iHYGeP9co18gY0Bw==
+=4J6b
+-----END PGP SIGNATURE-----
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+--2dhc5sepxjp7dlct--
