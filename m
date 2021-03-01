@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 810F4327567
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 00:54:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EE12327589
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 01:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231495AbhB1Xxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 18:53:49 -0500
-Received: from mail1.protonmail.ch ([185.70.40.18]:15481 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbhB1Xxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 18:53:47 -0500
-Date:   Sun, 28 Feb 2021 23:53:00 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1614556384; bh=TRcjtYNTHqIoRaiMvcr4BoQWcvivKK8cOyItux+4GXc=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=B0OXYtVkWlCsA9WkXXI0BXkHc9WYbCjPWZdaryZbVjaVJ6+NT+gA79oUs4JC1gXvv
-         OsorXRv/1woDnGVBpCyGAinqulwoZfZE1S/zl8OoZa0tQBS129S0JjwYVpAF6J+cfR
-         7aciILQ1VPGSwIWO03YgUe/ivmHyNgV+Tb/yL3eF4T4T6/S9BfsI0wIdwGFRW+c+T9
-         K5l/TywCsn/oiuQ8mKdR3F0I+ZZtal2qs9rifxtMl/HXFN6MI8eQUwnZ2Dv2OzzSz7
-         VQaNN552MdXeKF01qi/9loPjMEVem70NMDTPqiYfqyzQi2eWmHyBIblXS9YSkjVe9c
-         Ba2M4q66oxVxA==
-To:     Pavel Skripkin <paskripkin@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linmiaohe@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v4] net/qrtr: fix __netdev_alloc_skb call
-Message-ID: <20210228235235.121609-1-alobakin@pm.me>
-In-Reply-To: <20210228232240.972205-1-paskripkin@gmail.com>
-References: <20210228201000.13606-1-alobakin@pm.me> <20210228232240.972205-1-paskripkin@gmail.com>
+        id S231259AbhCAARe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 19:17:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230084AbhCAARe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 19:17:34 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C52C06174A
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 16:16:54 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id m25so3355987oie.12
+        for <netdev@vger.kernel.org>; Sun, 28 Feb 2021 16:16:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wXvXgihuyU3Izq93Og6uIJ0iitlxJzOo3VnP0FEcf6o=;
+        b=s8QAzL5e/G0hOHzy4vaYWEx/MtDeDHaPkDHyKrlkaaYC9uB4vpmnltCJaL8tDIsQsd
+         nVlkVw8H/NrJS4fUmiBts98YuE9xgY17KLitY/c1Wnykamwrko4ZaejokFO71M930HOB
+         wg9EXTAdgEEkUvEzkk+PxDunbu4Web8/6F8ckQ+G8Ke7oXBFEnFiPFFVHryNyoj5smQK
+         XgQRkUkjpc1BPeYHq+pkaTgXKeBW6JJFkDiAN62lDtKd/SRGvP488IcauiHGwcuhSCvy
+         5lsDXqndmB+ZIk3Vl1mfjJlF3T/bpnBXg6D0xKLJ3qUNPojGK2c5DCTqk+lBT8eg8z43
+         kxQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wXvXgihuyU3Izq93Og6uIJ0iitlxJzOo3VnP0FEcf6o=;
+        b=tVk9iXcC+SmAuwciDwBPxrq1g9lP3hr6tqCe1dPxFYj5l3AtA/X6ItReTn9D/EnfSO
+         hMP0ARIjdePWAcy+wRVreltxxmY3/+oIpr4mM6T6t+jrn9QHD70Ih4u69UqmePJ/8Fjv
+         Z2vgite75zzGdtrPlbl75ZQ85n4gOEBt7+eIcFXfwdmEaqGzgGA6WT1tRveMFbDSiMaY
+         oZaO1Q73o7crll1BABxRj/+pG1mxymFb6pyWS0Z/dNSoSFrvxgbnLQo15uxdkEKgVuNn
+         Vl5e/1dR2Ucbj6o3GZ6+DE5lFDOhOIVb6j8EIQcNuz28TuB2vByFnQ7qbFrttQss+5aD
+         WV+Q==
+X-Gm-Message-State: AOAM530NOGpdKpKnPSlxPJ1nW39b88vLEe6HOnQ6snHdMqJG8VjL1pHl
+        HoBOTthojX+w4MW/gmrwGNE=
+X-Google-Smtp-Source: ABdhPJwP7ItcjfkDNzvDCOae9Twcy9dEy4m5DDy/mY9U3Bd1kYbfyz9sO7fQsHi8JFrnDW+ba7gTQg==
+X-Received: by 2002:aca:4817:: with SMTP id v23mr9765221oia.25.1614557813413;
+        Sun, 28 Feb 2021 16:16:53 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.40])
+        by smtp.googlemail.com with ESMTPSA id v9sm3056219oon.11.2021.02.28.16.16.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Feb 2021 16:16:52 -0800 (PST)
+Subject: Re: [PATCH iproute2-next] mptcp: add support for port based endpoint
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>, mptcp@lists.01.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <868cfad6ab2fbd7f4b2ac6522b3ec62fce858fed.1613767061.git.pabeni@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b76abf00-8883-8215-706f-4d1b407b82ef@gmail.com>
+Date:   Sun, 28 Feb 2021 17:16:51 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
+In-Reply-To: <868cfad6ab2fbd7f4b2ac6522b3ec62fce858fed.1613767061.git.pabeni@redhat.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
-Date: Mon, 1 Mar 2021 02:22:40 +0300
-
-> syzbot found WARNING in __alloc_pages_nodemask()[1] when order >=3D MAX_O=
-RDER.
-> It was caused by a huge length value passed from userspace to qrtr_tun_wr=
-ite_iter(),
-> which tries to allocate skb. Since the value comes from the untrusted sou=
-rce
-> there is no need to raise a warning in __alloc_pages_nodemask().
->
-> [1] WARNING in __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5014
-> Call Trace:
->  __alloc_pages include/linux/gfp.h:511 [inline]
->  __alloc_pages_node include/linux/gfp.h:524 [inline]
->  alloc_pages_node include/linux/gfp.h:538 [inline]
->  kmalloc_large_node+0x60/0x110 mm/slub.c:3999
->  __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4496
->  __kmalloc_reserve net/core/skbuff.c:150 [inline]
->  __alloc_skb+0x4e4/0x5a0 net/core/skbuff.c:210
->  __netdev_alloc_skb+0x70/0x400 net/core/skbuff.c:446
->  netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
->  qrtr_endpoint_post+0x84/0x11b0 net/qrtr/qrtr.c:442
->  qrtr_tun_write_iter+0x11f/0x1a0 net/qrtr/tun.c:98
->  call_write_iter include/linux/fs.h:1901 [inline]
->  new_sync_write+0x426/0x650 fs/read_write.c:518
->  vfs_write+0x791/0xa30 fs/read_write.c:605
->  ksys_write+0x12d/0x250 fs/read_write.c:658
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> Reported-by: syzbot+80dccaee7c6630fa9dcf@syzkaller.appspotmail.com
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-
-Acked-by: Alexander Lobakin <alobakin@pm.me>
-
-Thanks!
-
+On 2/19/21 1:42 PM, Paolo Abeni wrote:
+> The feature is supported by the kernel since 5.11-net-next,
+> let's allow user-space to use it.
+> 
+> Just parse and dump an additional, per endpoint, u16 attribute
+> 
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > ---
->  net/qrtr/qrtr.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index b34358282f37..82d2eb8c21d1 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -439,7 +439,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, cons=
-t void *data, size_t len)
->  =09if (len =3D=3D 0 || len & 3)
->  =09=09return -EINVAL;
->
-> -=09skb =3D netdev_alloc_skb(NULL, len);
-> +=09skb =3D __netdev_alloc_skb(NULL, len, GFP_ATOMIC | __GFP_NOWARN);
->  =09if (!skb)
->  =09=09return -ENOMEM;
->
-> --
-> 2.25.1
+>  ip/ipmptcp.c        | 16 ++++++++++++++--
+>  man/man8/ip-mptcp.8 |  8 ++++++++
+>  2 files changed, 22 insertions(+), 2 deletions(-)
+> 
 
-Al
+
+applied to iproute2-next. Thanks
+
 
