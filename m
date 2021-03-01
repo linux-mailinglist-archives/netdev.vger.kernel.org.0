@@ -2,244 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B3AD3290AE
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 21:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A569B329166
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 21:27:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238718AbhCAUMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 15:12:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237671AbhCAUJs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 15:09:48 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032CDC0617A7
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 12:06:18 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id jx13so301986pjb.1
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 12:06:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=U+yZn5oAcut/C/aebOJ16/bGakvc9MpdGSWik0h5VXc=;
-        b=WoqBGSdMrcG7i8F+POoakKo8qZE6yUVQgoE3Y8qtfWvdLpMLOZCPTFFQKFSpR4E/L7
-         0cYCUSTthhZ89M8yRs/gH4Gk6O/9YuTsqFPhhW+v3MNPl7ZKrHGLDN4HhlKScp2QTYX2
-         gOIBafTn/FrYPZkfvWQBE7NlZk1pEUmwAWO2E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=U+yZn5oAcut/C/aebOJ16/bGakvc9MpdGSWik0h5VXc=;
-        b=iDxdWUVHkwIVUNvtVOOhAyQHlqIu5fszoVuEgFqcWy4+rmmbKwAR8/tx4pMpwvqrtb
-         7Q3INqZSlzhhSvP501qHX4brUcsaeYOsjHoLcb6bUluq5RZ7ajhlX980JqHcnhUuhf4d
-         F2eL4cT2aYbBXqnOUzrzx0DznlyoX5uWrPJKzDwnAgFApKK0U4cbXZsswJwD3dztxQnu
-         5rWwfHV/7u90DK9ZsobNXPbL/4EVCSiiC0klSNtR210M02rDK8mv8ip75Nr9XORnt7to
-         Z3z7tj9ctJ8T/aBigLEg78BTJs7jrE46WRiBngSCjdO0diF7Y0RGMQwwkquhF0EtvoaO
-         7bag==
-X-Gm-Message-State: AOAM532lD6ARZlLXrebcySo4NGMxLYuovY00ahFcmqGNODEwB/UmC6mY
-        3ifMV/8QIaJoJb3UXf1yBMm9yw==
-X-Google-Smtp-Source: ABdhPJyNiWBUOGz2CemLY+WQB6z0EWQ7Xrcxm+QMYPJbcIFbDa2D/IXXStrtHhATfs0WLrfwaI2Xgg==
-X-Received: by 2002:a17:90a:ba16:: with SMTP id s22mr646925pjr.88.1614629177608;
-        Mon, 01 Mar 2021 12:06:17 -0800 (PST)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:d800:e660:6ed:356a])
-        by smtp.gmail.com with ESMTPSA id t4sm238256pjs.12.2021.03.01.12.06.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Mar 2021 12:06:17 -0800 (PST)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-bluetooth@vger.kernel.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: [PATCH 2/2] Bluetooth: Remove unneeded commands for suspend
-Date:   Mon,  1 Mar 2021 12:06:05 -0800
-Message-Id: <20210301120602.2.Ifcac8bd85b5339135af8e08370bacecc518b1c35@changeid>
-X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
-In-Reply-To: <20210301200605.106607-1-abhishekpandit@chromium.org>
-References: <20210301200605.106607-1-abhishekpandit@chromium.org>
+        id S241670AbhCAUZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 15:25:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35978 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241499AbhCAUUh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 15:20:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614629942;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tm9fKMa+OeMDf8cjUn2OSKTxJ285HlE2LNt99VSxN9w=;
+        b=VaxaXNAEKslfsChZ69FgJMB8sswHB2AsYIlIgVyoWiNp7vlUk616kbhBFc3xDSkmFC/UDf
+        hOnDy7tjmSntYlqDtqHJ/jiKMUdhHq/E0m2kGSI0GITZ9jg2Oa0g5PVwHf+iil9mhxgmRo
+        KwxETiY4MADv/C7IVl8+EwYdUxjTsC0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-58-MBh0QM-gMKGCfu9mq5AcXw-1; Mon, 01 Mar 2021 15:18:59 -0500
+X-MC-Unique: MBh0QM-gMKGCfu9mq5AcXw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4489D1005501;
+        Mon,  1 Mar 2021 20:18:56 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BA3FC6E52F;
+        Mon,  1 Mar 2021 20:18:38 +0000 (UTC)
+Date:   Mon, 1 Mar 2021 21:18:37 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <toke@redhat.com>,
+        <freysteinn.alfredsson@kau.se>, <john.fastabend@gmail.com>,
+        <jasowang@redhat.com>, <mst@redhat.com>,
+        <thomas.petazzoni@bootlin.com>, <mw@semihalf.com>,
+        <linux@armlinux.org.uk>, <ilias.apalodimas@linaro.org>,
+        <netanel@amazon.com>, <akiyano@amazon.com>,
+        <michael.chan@broadcom.com>, <madalin.bucur@nxp.com>,
+        <ioana.ciornei@nxp.com>, <jesse.brandeburg@intel.com>,
+        <anthony.l.nguyen@intel.com>, <saeedm@nvidia.com>,
+        <grygorii.strashko@ti.com>, <ecree.xilinx@gmail.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH v2 bpf-next] bpf: devmap: move drop error path to devmap
+ for XDP_REDIRECT
+Message-ID: <20210301211837.4a755c44@carbon>
+In-Reply-To: <pj41zlpn0jcgms.fsf@u68c7b5b1d2d758.ant.amazon.com>
+References: <d0c326f95b2d0325f63e4040c1530bf6d09dc4d4.1614422144.git.lorenzo@kernel.org>
+        <pj41zly2f8wfq6.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        <YDwYzYVIDQABINyy@lore-laptop-rh>
+        <20210301084847.5117a404@carbon>
+        <pj41zlpn0jcgms.fsf@u68c7b5b1d2d758.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During suspend, there are a few scan enable and set event filter
-commands that don't need to be sent unless there are actual BR/EDR
-devices capable of waking the system. Check the HCI_PSCAN bit before
-writing scan enable and use a new dev flag, HCI_EVENT_FILTER_CONFIGURED
-to control whether to clear the event filter.
+On Mon, 1 Mar 2021 13:23:06 +0200
+Shay Agroskin <shayagr@amazon.com> wrote:
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
----
+> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> 
+> > On Sun, 28 Feb 2021 23:27:25 +0100
+> > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+> >  
+> >> > >  	drops = bq->count - sent;
+> >> > > -out:
+> >> > > -	bq->count = 0;
+> >> > > +	if (unlikely(drops > 0)) {
+> >> > > +		/* If not all frames have been 
+> >> > > transmitted, it is our
+> >> > > +		 * responsibility to free them
+> >> > > +		 */
+> >> > > +		for (i = sent; i < bq->count; i++)
+> >> > > + 
+> >> > > xdp_return_frame_rx_napi(bq->q[i]);
+> >> > > +	}    
+> >> > 
+> >> > Wouldn't the logic above be the same even w/o the 'if' 
+> >> > condition ?    
+> >> 
+> >> it is just an optimization to avoid the for loop instruction if 
+> >> sent = bq->count  
+> >
+> > True, and I like this optimization.
+> > It will affect how the code layout is (and thereby I-cache 
+> > usage).  
+> 
+> I'm not sure what I-cache optimization you mean here. Compiling 
+> the following C code:
+> 
+> # define unlikely(x)	__builtin_expect(!!(x), 0)
+> 
+> extern void xdp_return_frame_rx_napi(int q);
+> 
+> struct bq_stuff {
+>     int q[4];
+>     int count;
+> };
+> 
+> int test(int sent, struct bq_stuff *bq) {
+>     int i;
+>     int drops;
+> 
+>     drops = bq->count - sent;
+>     if(unlikely(drops > 0))
+>         for (i = sent; i < bq->count; i++)
+>             xdp_return_frame_rx_napi(bq->q[i]);
+> 
+>     return 2;
+> }
+> 
+> with x86_64 gcc 10.2 with -O3 flag in https://godbolt.org/ (which 
+> provides the assembly code for different compilers) yields the 
+> following assembly:
+> 
+> test:
+>         mov     eax, DWORD PTR [rsi+16]
+>         mov     edx, eax
+>         sub     edx, edi
+>         test    edx, edx
+>         jg      .L10
+> .L6:
+>         mov     eax, 2
+>         ret
 
- include/net/bluetooth/hci.h |  1 +
- net/bluetooth/hci_event.c   | 31 ++++++++++++++++++++++++++
- net/bluetooth/hci_request.c | 44 +++++++++++++++++++++++--------------
- 3 files changed, 59 insertions(+), 17 deletions(-)
+This exactly shows my point.  Notice how 'ret' happens earlier in this
+function.  This is the common case, thus the CPU don't have to load the
+asm instruction below.
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index ba2f439bc04d34..ea4ae551c42687 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -320,6 +320,7 @@ enum {
- 	HCI_BREDR_ENABLED,
- 	HCI_LE_SCAN_INTERRUPTED,
- 	HCI_WIDEBAND_SPEECH_ENABLED,
-+	HCI_EVENT_FILTER_CONFIGURED,
+> .L10:
+>         cmp     eax, edi
+>         jle     .L6
+>         push    rbp
+>         mov     rbp, rsi
+>         push    rbx
+>         movsx   rbx, edi
+>         sub     rsp, 8
+> .L3:
+>         mov     edi, DWORD PTR [rbp+0+rbx*4]
+>         add     rbx, 1
+>         call    xdp_return_frame_rx_napi
+>         cmp     DWORD PTR [rbp+16], ebx
+>         jg      .L3
+>         add     rsp, 8
+>         mov     eax, 2
+>         pop     rbx
+>         pop     rbp
+>         ret
+> 
+> 
+> When dropping the 'if' completely I get the following assembly 
+> output
+> test:
+>         cmp     edi, DWORD PTR [rsi+16]
+>         jge     .L6
+
+Jump to .L6 which is the common case.  The code in between is not used
+in common case, but the CPU will likely load this into I-cache, and
+then jumps over the code in common case.
+
+>         push    rbp
+>         mov     rbp, rsi
+>         push    rbx
+>         movsx   rbx, edi
+>         sub     rsp, 8
+> .L3:
+>         mov     edi, DWORD PTR [rbp+0+rbx*4]
+>         add     rbx, 1
+>         call    xdp_return_frame_rx_napi
+>         cmp     DWORD PTR [rbp+16], ebx
+>         jg      .L3
+>         add     rsp, 8
+>         mov     eax, 2
+>         pop     rbx
+>         pop     rbp
+>         ret
+> .L6:
+>         mov     eax, 2
+>         ret
+> 
+> which exits earlier from the function if 'drops > 0' compared to 
+> the original code (the 'for' loop looks a little different, but 
+> this shouldn't affect icache).
+>
+> When removing the 'if' and surrounding the 'for' condition with 
+> 'unlikely' statement:
+> 
+> for (i = sent; unlikely(i < bq->count); i++)
+> 
+> I get the following assembly code:
+> 
+> test:
+>         cmp     edi, DWORD PTR [rsi+16]
+>         jl      .L10
+>         mov     eax, 2
+>         ret
+> .L10:
+>         push    rbx
+>         movsx   rbx, edi
+>         sub     rsp, 16
+> .L3:
+>         mov     edi, DWORD PTR [rsi+rbx*4]
+>         mov     QWORD PTR [rsp+8], rsi
+>         add     rbx, 1
+>         call    xdp_return_frame_rx_napi
+>         mov     rsi, QWORD PTR [rsp+8]
+>         cmp     DWORD PTR [rsi+16], ebx
+>         jg      .L3
+>         add     rsp, 16
+>         mov     eax, 2
+>         pop     rbx
+>         ret
+> 
+> which is shorter than the other two (one line compared to the 
+> second and 7 lines compared the original code) and seems as 
+> optimized as the second.
+
+You are also using unlikely() and get the earlier return, with less
+instructions, which is great.  Perhaps we can use this type of
+unlikely() in the for-statement?  WDYT Lorenzo?
  
- 	HCI_DUT_MODE,
- 	HCI_VENDOR_DIAG,
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 67668be3461e93..17847e672b98cf 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -395,6 +395,33 @@ static void hci_cc_write_scan_enable(struct hci_dev *hdev, struct sk_buff *skb)
- 	hci_dev_unlock(hdev);
- }
  
-+static void hci_cc_set_event_filter(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	__u8 status = *((__u8 *)skb->data);
-+	struct hci_cp_set_event_filter *cp;
-+	void *sent;
-+
-+	BT_DBG("%s status 0x%2.2x", hdev->name, status);
-+
-+	sent = hci_sent_cmd_data(hdev, HCI_OP_SET_EVENT_FLT);
-+	if (!sent)
-+		return;
-+
-+	cp = (struct hci_cp_set_event_filter *)sent;
-+
-+	hci_dev_lock(hdev);
-+
-+	if (status)
-+		goto done;
-+
-+	if (cp->flt_type == HCI_FLT_CLEAR_ALL)
-+		hci_dev_clear_flag(hdev, HCI_EVENT_FILTER_CONFIGURED);
-+	else
-+		hci_dev_set_flag(hdev, HCI_EVENT_FILTER_CONFIGURED);
-+done:
-+	hci_dev_unlock(hdev);
-+}
-+
- static void hci_cc_read_class_of_dev(struct hci_dev *hdev, struct sk_buff *skb)
- {
- 	struct hci_rp_read_class_of_dev *rp = (void *) skb->data;
-@@ -3328,6 +3355,10 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 		hci_cc_write_scan_enable(hdev, skb);
- 		break;
- 
-+	case HCI_OP_SET_EVENT_FLT:
-+		hci_cc_set_event_filter(hdev, skb);
-+		break;
-+
- 	case HCI_OP_READ_CLASS_OF_DEV:
- 		hci_cc_read_class_of_dev(hdev, skb);
- 		break;
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index e55976db4403e7..75a42178c82d9b 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1131,14 +1131,14 @@ static void hci_req_clear_event_filter(struct hci_request *req)
- {
- 	struct hci_cp_set_event_filter f;
- 
--	memset(&f, 0, sizeof(f));
--	f.flt_type = HCI_FLT_CLEAR_ALL;
--	hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &f);
-+	if (!hci_dev_test_flag(req->hdev, HCI_BREDR_ENABLED))
-+		return;
- 
--	/* Update page scan state (since we may have modified it when setting
--	 * the event filter).
--	 */
--	__hci_req_update_scan(req);
-+	if (hci_dev_test_flag(req->hdev, HCI_EVENT_FILTER_CONFIGURED)) {
-+		memset(&f, 0, sizeof(f));
-+		f.flt_type = HCI_FLT_CLEAR_ALL;
-+		hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &f);
-+	}
- }
- 
- static void hci_req_set_event_filter(struct hci_request *req)
-@@ -1147,6 +1147,10 @@ static void hci_req_set_event_filter(struct hci_request *req)
- 	struct hci_cp_set_event_filter f;
- 	struct hci_dev *hdev = req->hdev;
- 	u8 scan = SCAN_DISABLED;
-+	bool scanning = test_bit(HCI_PSCAN, &hdev->flags);
-+
-+	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
-+		return;
- 
- 	/* Always clear event filter when starting */
- 	hci_req_clear_event_filter(req);
-@@ -1167,12 +1171,13 @@ static void hci_req_set_event_filter(struct hci_request *req)
- 		scan = SCAN_PAGE;
- 	}
- 
--	if (scan)
-+	if (scan && !scanning) {
- 		set_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks);
--	else
-+		hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
-+	} else if (!scan && scanning) {
- 		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
--
--	hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
-+		hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
-+	}
- }
- 
- static void cancel_adv_timeout(struct hci_dev *hdev)
-@@ -1315,9 +1320,14 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 
- 		hdev->advertising_paused = true;
- 		hdev->advertising_old_state = old_state;
--		/* Disable page scan */
--		page_scan = SCAN_DISABLED;
--		hci_req_add(&req, HCI_OP_WRITE_SCAN_ENABLE, 1, &page_scan);
-+
-+		/* Disable page scan if enabled */
-+		if (test_bit(HCI_PSCAN, &hdev->flags)) {
-+			page_scan = SCAN_DISABLED;
-+			hci_req_add(&req, HCI_OP_WRITE_SCAN_ENABLE, 1,
-+				    &page_scan);
-+			set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
-+		}
- 
- 		/* Disable LE passive scan if enabled */
- 		if (hci_dev_test_flag(hdev, HCI_LE_SCAN)) {
-@@ -1328,9 +1338,6 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		/* Disable advertisement filters */
- 		hci_req_add_set_adv_filter_enable(&req, false);
- 
--		/* Mark task needing completion */
--		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
--
- 		/* Prevent disconnects from causing scanning to be re-enabled */
- 		hdev->scanning_paused = true;
- 
-@@ -1364,7 +1371,10 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		hdev->suspended = false;
- 		hdev->scanning_paused = false;
- 
-+		/* Clear any event filters and restore scan state */
- 		hci_req_clear_event_filter(&req);
-+		__hci_req_update_scan(&req);
-+
- 		/* Reset passive/background scanning to normal */
- 		__hci_update_background_scan(&req);
- 		/* Enable all of the advertisement filters */
+> I'm far from being an assembly expert, and I tested a code snippet 
+> I wrote myself rather than the kernel's code (for the sake of 
+> simplicity only).
+> Can you please elaborate on what makes the original 'if' essential 
+> (I took the time to do the assembly tests, please take the time on 
+> your side to prove your point, I'm not trying to be grumpy here).
+> 
+> Shay
+
 -- 
-2.30.1.766.gb4fecdf3b7-goog
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
