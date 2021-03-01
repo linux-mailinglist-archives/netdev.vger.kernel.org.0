@@ -2,132 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E601C3281D5
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 16:09:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA233281DE
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 16:11:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236910AbhCAPJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Mar 2021 10:09:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56502 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236896AbhCAPIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 10:08:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614611242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3CcxvPbENRoxnpPYUhLzxCww37f6skYKB+CD+PRX/BM=;
-        b=Ch2p7rc+kWj9s4Ru6vmKLAg2TTFvdLa2rE9d5VvlNeLzl3KPHQjHQg+sBCXjEGESsZgCJI
-        Um2gy+41xkW9qqgOgy7nsgV2tjMIDCNCufXpXof0zvhG+qnEaialdvecSarIq9dH4P+ijF
-        Lyz/ZjQgukuHhNg3dYBtHjDxkPfa3oc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-251-t7bwRF9dOFm6QxJxl1AHCQ-1; Mon, 01 Mar 2021 10:07:18 -0500
-X-MC-Unique: t7bwRF9dOFm6QxJxl1AHCQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B8B47107ACE6;
-        Mon,  1 Mar 2021 15:07:15 +0000 (UTC)
-Received: from ovpn-114-130.ams2.redhat.com (ovpn-114-130.ams2.redhat.com [10.36.114.130])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7AC695C3E5;
-        Mon,  1 Mar 2021 15:07:12 +0000 (UTC)
-Message-ID: <51bd5e035546937b8c46264b52e149f0331d0b60.camel@redhat.com>
-Subject: Re: possible deadlock in ipv6_sock_mc_close
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Chuck Lever <chuck.lever@oracle.com>,
-        syzbot <syzbot+e2fa57709a385e6db10f@syzkaller.appspotmail.com>
-Cc:     Bruce Fields <bfields@fieldses.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>
-Date:   Mon, 01 Mar 2021 16:07:11 +0100
-In-Reply-To: <974A6057-4DE8-4C9A-A71E-4EC08BD8E81B@oracle.com>
-References: <0000000000001d8e2c05bc79e2fd@google.com>
-         <974A6057-4DE8-4C9A-A71E-4EC08BD8E81B@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S236923AbhCAPKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Mar 2021 10:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236921AbhCAPJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Mar 2021 10:09:36 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485D4C061756
+        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 07:08:56 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id c6so21210005ede.0
+        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 07:08:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xUvBhCvqgHU9uJl/dg8nlzrcYOGrjh1TuGIFOxZ4Ljc=;
+        b=vdHgI2WMAlDGboU1UvdtnIaiGvs/yqtPsYDYIj3ZuDoxFJYDgiB5SrnqAOFnWYGQWZ
+         uPbvJ2/C9oJRT/WARPx0e+5LrQIrtxwAxP0xYh1fpNyjoMLZ2Qquq39rge7yq7Yw9Jdb
+         gHci4UvFtieR0w0Gbp5Y04pFjW9Fu2759nKvMJDp5yT/VRd2HWGbLZK00p8w5djc/6Ay
+         IJocgwXuHdhZ9OfLZ1NQ+BoCxL1vM8H8w/e7Riu0tOtg3kQ+Q58Y8xxjiKMNXaPkUwz7
+         pwJnKs0CUO/yDgPQGm+cG9y3Dq5pKXAW/w2bS+kpW3Tgg+FaNUW/ySl3+cZAcxQdCOGM
+         X1Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xUvBhCvqgHU9uJl/dg8nlzrcYOGrjh1TuGIFOxZ4Ljc=;
+        b=TY+OaGzNFBV1N5GL1+JH0M2FYN7lZyjkwB4RO10jMIoxOpjRHY+wa9me+YeCbBKz/4
+         dvhl1B0UH5Djr9ZG2ldIlLJ08bpfjyB0qi4qdYYDjEWglQCcOjn/btFacfHe9o2vsw7T
+         O17wo9I+mtjghnoOhnIvHvKwgEJnDwDrs7Q+WGGuV2KF5V2qjsrRL28cz6eOfSBmS3mC
+         aQSD7iy2Au70LX/l5gpHqaQRfy/Fzks20kKmnRIo6SgDKDMWPUoC3V6/fiA66LwuCQ86
+         G00TebvpdvWogKaallbO1gTt5lllii5MwWrW7nnVVsX9mc2sWGfQyCJ87JTzLp2uI/zn
+         zEag==
+X-Gm-Message-State: AOAM533FEWNQp3kf4l9m+vZ5xGarHrnTX1qguvT71uTL2HP8IR9fc/1Y
+        E9BzRLzzsAI++XvItUVkrJw=
+X-Google-Smtp-Source: ABdhPJxwxBylD7vgakgf3fWiy07DZuesr30IOcOf5obXCe34pS7mT8UDUoI10DDm4xAGEum+n79KTA==
+X-Received: by 2002:aa7:d987:: with SMTP id u7mr4672006eds.326.1614611334987;
+        Mon, 01 Mar 2021 07:08:54 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id u15sm14305737ejy.48.2021.03.01.07.08.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Mar 2021 07:08:54 -0800 (PST)
+Date:   Mon, 1 Mar 2021 17:08:52 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Markus =?utf-8?Q?Bl=C3=B6chl?= <Markus.Bloechl@ipetronik.com>
+Subject: Re: [PATCH v2 net 5/6] net: enetc: don't disable VLAN filtering in
+ IFF_PROMISC mode
+Message-ID: <20210301150852.ejyouycigwu6o5ht@skbuf>
+References: <20210225121835.3864036-1-olteanv@gmail.com>
+ <20210225121835.3864036-6-olteanv@gmail.com>
+ <20210226152836.31a0b1bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210226234244.w7xw7qnpo3skdseb@skbuf>
+ <20210226154922.5956512b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210227001651.geuv4pt2bxkzuz5d@skbuf>
+ <7bb61f7190bebadb9b6281cb02fa103d@walle.cc>
+ <20210228224804.2zpenxrkh5vv45ph@skbuf>
+ <bfb5a084bfb17f9fdd0ea05ba519441b@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bfb5a084bfb17f9fdd0ea05ba519441b@walle.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Mar 01, 2021 at 03:36:15PM +0100, Michael Walle wrote:
+> Ok, I see, so your proposed behavior is backed by the standards. But
+> OTOH there was a summary by Markus of the behavior of other drivers:
+> https://lore.kernel.org/netdev/20201119153751.ix73o5h4n6dgv4az@ipetronik.com/
+> And a conclusion by Jakub:
+> https://lore.kernel.org/netdev/20201112164457.6af0fbaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/#t
+> And a propsed core change to disable vlan filtering with promisc mode.
+> Do I understand you correctly, that this shouldn't be done either?
+>
+> Don't get me wrong, I don't vote against or in favor of this patch.
+> I just want to understand the behavior.
 
-On Mon, 2021-03-01 at 14:52 +0000, Chuck Lever wrote:
-> > On Mar 1, 2021, at 8:49 AM, syzbot <syzbot+e2fa57709a385e6db10f@syzkaller.appspotmail.com> wrote:
-> > 
-> > Hello,
-> > 
-> > syzbot found the following issue on:
-> > 
-> > HEAD commit:    eee7ede6 Merge branch 'bnxt_en-error-recovery-bug-fixes'
-> > git tree:       net
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=123ad632d00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=e2d5ba72abae4f14
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=e2fa57709a385e6db10f
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109d89b6d00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12e9e0dad00000
-> > 
-> > The issue was bisected to:
-> > 
-> > commit c8e88e3aa73889421461f878cd569ef84f231ceb
-> > Author: Chuck Lever <chuck.lever@oracle.com>
-> > Date:   Tue Nov 3 20:06:04 2020 +0000
-> > 
-> >    NFSD: Replace READ* macros in nfsd4_decode_layoutget()
-> > 
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13bef9ccd00000
-> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=107ef9ccd00000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=17bef9ccd00000
-> > 
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+e2fa57709a385e6db10f@syzkaller.appspotmail.com
-> > Fixes: c8e88e3aa738 ("NFSD: Replace READ* macros in nfsd4_decode_layoutget()")
-> > 
-> > ======================================================
-> > WARNING: possible circular locking dependency detected
-> > 5.11.0-syzkaller #0 Not tainted
-> > ------------------------------------------------------
-> > syz-executor905/8822 is trying to acquire lock:
-> > ffffffff8d678fe8 (rtnl_mutex){+.+.}-{3:3}, at: ipv6_sock_mc_close+0xd7/0x110 net/ipv6/mcast.c:323
-> > 
-> > but task is already holding lock:
-> > ffff888024390120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
-> > ffff888024390120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: mptcp6_release+0x57/0x130 net/mptcp/protocol.c:3507
-> > 
-> > which lock already depends on the new lock.
-> 
-> Hi, thanks for the report.
-> 
-> Initial analysis:
-> 
-> c8e88e3aa738 ("NFSD: Replace READ* macros in nfsd4_decode_layoutget()"
-> changes code several layers above the network layer. In addition,
-> neither of the stack traces contain NFSD functions. And, repro.c does
-> not appear to exercise any filesystem code.
-> 
-> Therefore the bisect result looks implausible to me. I don't see any
-> obvious connection between the lockdep splat and c8e88e3aa738. (If
-> someone else does, please let me know where to look).
+So you can involuntarily ignore a standard, or you can ignore it
+deliberately. I can't force anyone to not ignore it in the latter case,
+but indeed, now that I tried to look it up, I personally don't think
+that promiscuity should disable VLAN filtering unless somebody comes up
+with a good reason for which Linux should basically disregard IEEE 802.3.
+In particular, Jakub seems to have been convinced in that thread by no
+other argument except that other drivers ignore the standards too, which
+I'm not sure is a convincing enough argument.
 
-I agree the bisect result is unexpected.
+In my opinion, the fact that some drivers disable VLAN filtering should
+be treated like a marginal condition, similar to how, when you set the
+MTU on an interface to N octets, it might happen that it accepts packets
+larger than N octets, but it isn't guaranteed.
 
-This looks really as an MPTCP-specific issue, likely introduced by:
+> I haven't had time to actually test this, but what if you do:
+>  - don't load the 8021q module (or don't enable kernel support)
+>  - enable promisc
+>  (1)
+>  - load 8021q module
+>  (2)
+>  - add a vlan interface
+>  (3)
+>  - add another vlan interface
+>  (4)
+>
+> What frames would you actually receive on the base interface
+> in (1), (2), (3), (4) and what is the user expectation?
+> I'd say its the same every time. (IIRC there is already some
+> discrepancy due to the VLAN filter hardware offloading)
 
-32fcc880e0a9 ("mptcp: provide subflow aware release function")
+The default value is:
+ethtool -k eno0 | grep rx-vlan-filter
+rx-vlan-filter: off
 
-and should be fixed inside MPTCP.
+so we receive all VLAN-tagged packets by default in enetc, unless VLAN
+filtering is turned on.
 
-Cheers,
+> > I chose option 2 because it was way simpler and was just as correct.
+>
+> Fair, but it will also put additional burden to the user to also
+> disable the vlan filtering, right?. Otherwise it would just work. And
+> it will waste CPU cycles for unwanted frames.
+> Although your new patch version contains a new "(yet)" ;)
 
-Paolo
-
+True, nobody said it's optimal, but you can't make progress if you
+always try to do things optimally the first time (but at least you
+should do something that's not wrong).
+Adding the dev_uc_add, dev_mc_add and vlan_vid_add calls to
+net/sched/cls_flower.c doesn't seem an impossible task (especially since
+all of them are refcounted, it should be pretty simple to avoid strange
+interactions with other layers such as 8021q), but nonetheless, it just
+wasn't (and still isn't) high enough on my list of priorities.
