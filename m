@@ -2,123 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C17C3275A9
-	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 01:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3E1C3275E6
+	for <lists+netdev@lfdr.de>; Mon,  1 Mar 2021 02:44:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbhCAAyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Feb 2021 19:54:06 -0500
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:35493 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230084AbhCAAyE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 19:54:04 -0500
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 3EE19891AE;
-        Mon,  1 Mar 2021 13:53:21 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1614560001;
-        bh=oU64oT+/uvZCLimcb/1lw/7NAteJ0snaMeD1xJcKHCQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=bo+wJ57Mqkwt4efDuawg44+UOgC6kfDOvMaUw+VOB5Wa/a39r8yzyFqHF3zei77rG
-         gcrdUwLewsPqaWYhKaxAC9NpqX3JBmnrmD4yp69L+nmesCd3sZjENHtoD5N9WExc5H
-         GQ/9SmZzVysIYG9N5769pyok0yGfaePGlyxk/tFT/TWingQu1oQxn9czYv59KDv30Y
-         z7tNm5hhaxegXMAHqIsLkvfT1w55CD2u2hzr+FdrDGC0K+wncwFyHZr228xV+YMmne
-         MiNnCHHlbCOnPFPzf53N/mlgGEDFkIAFUJqVy4wzEkTO3hQDLGnpDnT6jU8nDnIJhu
-         eOqZa1QB7Gh+Q==
-Received: from smtp (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B603c3b010001>; Mon, 01 Mar 2021 13:53:21 +1300
-Received: from henrys-dl.ws.atlnz.lc (henrys-dl.ws.atlnz.lc [10.33.23.26])
-        by smtp (Postfix) with ESMTP id 829FE13EF2A;
-        Mon,  1 Mar 2021 13:53:31 +1300 (NZDT)
-Received: by henrys-dl.ws.atlnz.lc (Postfix, from userid 1052)
-        id 129934E1333; Mon,  1 Mar 2021 13:53:21 +1300 (NZDT)
-From:   Henry Shen <henry.shen@alliedtelesis.co.nz>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        chris.packham@alliedtelesis.co.nz,
-        Henry Shen <henry.shen@alliedtelesis.co.nz>
-Subject: [PATCH] net:ipv4: Packet is not forwarded if bc_forwarding not configured on ingress interface
-Date:   Mon,  1 Mar 2021 13:53:18 +1300
-Message-Id: <20210301005318.8959-2-henry.shen@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210301005318.8959-1-henry.shen@alliedtelesis.co.nz>
-References: <20210301005318.8959-1-henry.shen@alliedtelesis.co.nz>
+        id S231279AbhCABoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Feb 2021 20:44:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230084AbhCABoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Feb 2021 20:44:03 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239ACC06174A;
+        Sun, 28 Feb 2021 17:43:23 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id s7so4968466qkg.4;
+        Sun, 28 Feb 2021 17:43:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aRJxGDa+J6w/kx8AzlgOwBwW/kGWEGGndzPstBNruVg=;
+        b=eUqxoITuRO88v1pWT5sA1qBUfJlYWiVeQ4/LsJcucnDTR61Iq6mMPN3hTwt0Cumqps
+         ZDesTo3gwF6xYFMluPlKADHHZlhRcpmPyF0GGvxczEGBIz26simOXlXBPjy7ch+ZXfIS
+         cljfBrfjqzUhrltk2zY3PlwPUGJk6Wx78pSI9cETlOz4tm46mG8UF/99ezgZ/1molKdr
+         jZxzn5qwgA23OC+BuYHNqXRkHY748qmh11U0CsfYnWehmDjyWKjRvhwtCY1LQdoyLVFw
+         25g0Gix69SpNPm6isV2XvIO2H3swMXttmGNnL9aezPosvwWivtLdvB3+U9GTFc8Qr7QM
+         OV6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aRJxGDa+J6w/kx8AzlgOwBwW/kGWEGGndzPstBNruVg=;
+        b=BuIHu/exttmsL2q9jUisOhFqNqx51IHJJkMC3NXPEDJSfyZl4P9QoV6f65Dm/ioGWo
+         GhypeDtuvJ5Em0QsQRbTryWQaKLtnT9MUse1MNu0J+56K25Qwoo1hqqldrzZ8aW2yGQd
+         TinCGq82MGeNqTViZu/pqAcp3BE6tVULBwUfSTvf1WwZpu473vw/T9s72WtSo6I6+OMH
+         ZfYgSyfbNfFAODml5cJBJJAtu/+frBESdQf4+1gqB+/hDuqjL8PWruLg8a7o1j6FA3u+
+         ysoffGQiTL3d5udNjB0K2mwJd71aYAx82qvjb+qTAq+vDRaKvKCurbaf9StBvQbbRxiD
+         5LTQ==
+X-Gm-Message-State: AOAM5333xpacasIcgdtklHrvQjTMS4MJTXqzDG9UemaZge7Vb8lmYRgr
+        aCeSdoSK20MPU7pbabiH1POQjfhU50Ei11f9gOE=
+X-Google-Smtp-Source: ABdhPJwNnsqeCX0zu627oXAjvEgz30921B/QXoR5MeBCgyozRuFZ/i198WE2IyNfUxP+RoTR4meys9KYZOBpGTT5fC4=
+X-Received: by 2002:a37:9e56:: with SMTP id h83mr9223957qke.38.1614563002416;
+ Sun, 28 Feb 2021 17:43:22 -0800 (PST)
 MIME-Version: 1.0
+References: <20210226105746.29240-1-yejune.deng@gmail.com> <d16327f3-33c0-61c1-3adf-78f7edcbec6a@gmail.com>
+In-Reply-To: <d16327f3-33c0-61c1-3adf-78f7edcbec6a@gmail.com>
+From:   Yejune Deng <yejune.deng@gmail.com>
+Date:   Mon, 1 Mar 2021 09:43:10 +0800
+Message-ID: <CABWKuGU=sjmMer2rY3eQ2ttO+6SqeJ7K5T6oJrTUrsfOARx1MA@mail.gmail.com>
+Subject: Re: [PATCH] inetpeer: use else if instead of if to reduce judgment
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=C7uXNjH+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=dESyimp9J3IA:10 a=oz0IKz0CpFWYgAwaLeAA:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an IPv4 packet with a destination address of broadcast is received
-on an ingress interface, it will not be forwarded out of the egress
-interface if the ingress interface is not configured with bc_forwarding=20
-but the egress interface is. If both the ingress and egress interfaces
-are configured with bc_forwarding, the packet can be forwarded
-successfully.
+Thanks=EF=BC=8CI will adopt it and resubmit.
 
-This patch is to be inline with Cisco's implementation that packet can be=
-=20
-forwarded if ingress interface is NOT configured with bc_forwarding,=20
-but egress interface is.
-
-Signed-off-by: Henry Shen <henry.shen@alliedtelesis.co.nz>
----
- net/ipv4/route.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 02d81d79deeb..d082b199b8c6 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2101,6 +2101,8 @@ static int ip_route_input_slow(struct sk_buff *skb,=
- __be32 daddr, __be32 saddr,
- 	struct rtable	*rth;
- 	struct flowi4	fl4;
- 	bool do_cache =3D true;
-+	struct in_device *out_dev;
-+	int		rcv_local =3D 0;
-=20
- 	/* IP on this device is disabled. */
-=20
-@@ -2176,12 +2178,20 @@ static int ip_route_input_slow(struct sk_buff *sk=
-b, __be32 daddr, __be32 saddr,
- 	}
-=20
- 	if (res->type =3D=3D RTN_BROADCAST) {
-+		out_dev =3D in_dev_get(FIB_RES_DEV(*res));
-+		if (!out_dev)
-+			goto out;
-+
-+		if (in_dev =3D=3D out_dev)
-+			rcv_local =3D 1;
-+		in_dev_put(out_dev);
- 		if (IN_DEV_BFORWARD(in_dev))
- 			goto make_route;
- 		/* not do cache if bc_forwarding is enabled */
- 		if (IPV4_DEVCONF_ALL(net, BC_FORWARDING))
- 			do_cache =3D false;
--		goto brd_input;
-+		if (rcv_local)
-+			goto brd_input;
- 	}
-=20
- 	if (res->type =3D=3D RTN_LOCAL) {
-@@ -2197,7 +2207,8 @@ static int ip_route_input_slow(struct sk_buff *skb,=
- __be32 daddr, __be32 saddr,
- 		goto no_route;
- 	}
- 	if (res->type !=3D RTN_UNICAST)
--		goto martian_destination;
-+		if (res->type !=3D RTN_BROADCAST)
-+			goto martian_destination;
-=20
- make_route:
- 	err =3D ip_mkroute_input(skb, res, in_dev, daddr, saddr, tos, flkeys);
---=20
-2.30.1
-
+On Fri, Feb 26, 2021 at 10:50 PM Eric Dumazet <eric.dumazet@gmail.com> wrot=
+e:
+>
+>
+>
+> On 2/26/21 11:57 AM, Yejune Deng wrote:
+> > In inet_initpeers(), if si.totalram <=3D (8192*1024)/PAGE_SIZE, it will
+> > be judged three times. Use else if instead of if, it only needs to be
+> > judged once.
+> >
+> > Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+> > ---
+> >  net/ipv4/inetpeer.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/net/ipv4/inetpeer.c b/net/ipv4/inetpeer.c
+> > index ff327a62c9ce..07cd1f8204b3 100644
+> > --- a/net/ipv4/inetpeer.c
+> > +++ b/net/ipv4/inetpeer.c
+> > @@ -81,12 +81,12 @@ void __init inet_initpeers(void)
+> >        * <kuznet@ms2.inr.ac.ru>.  I don't have any opinion about the va=
+lues
+> >        * myself.  --SAW
+> >        */
+> > -     if (si.totalram <=3D (32768*1024)/PAGE_SIZE)
+> > +     if (si.totalram <=3D (8192 * 1024) / PAGE_SIZE)
+> > +             inet_peer_threshold >>=3D 4; /* about 128KB */
+> > +     else if (si.totalram <=3D (16384 * 1024) / PAGE_SIZE)
+> > +             inet_peer_threshold >>=3D 2; /* about 512KB */
+> > +     else if (si.totalram <=3D (32768 * 1024) / PAGE_SIZE)
+> >               inet_peer_threshold >>=3D 1; /* max pool size about 1MB o=
+n IA32 */
+>
+>
+> If you really want to change this stuff, I would suggest updating comment=
+s,
+> because nowadays, struct inet_peer on IA32 uses 128 bytes.
+>
+> So 32768 entries would consume 4 MB,
+>    16384 entries would consume 2 MB
+>
+> and 4096 entries would consume 512KB
+>
+> Another idea would be to get rid of the cascade and use something that
+> will not need to be adjusted in the future.
+>
+> diff --git a/net/ipv4/inetpeer.c b/net/ipv4/inetpeer.c
+> index ff327a62c9ce9b1794104c3c924f5f2b9820ac8b..d5f486bd8c35234f99b22842e=
+756a10531e070d6 100644
+> --- a/net/ipv4/inetpeer.c
+> +++ b/net/ipv4/inetpeer.c
+> @@ -65,7 +65,7 @@ EXPORT_SYMBOL_GPL(inet_peer_base_init);
+>  #define PEER_MAX_GC 32
+>
+>  /* Exported for sysctl_net_ipv4.  */
+> -int inet_peer_threshold __read_mostly =3D 65536 + 128;   /* start to thr=
+ow entries more
+> +int inet_peer_threshold __read_mostly; /* start to throw entries more
+>                                          * aggressively at this stage */
+>  int inet_peer_minttl __read_mostly =3D 120 * HZ; /* TTL under high load:=
+ 120 sec */
+>  int inet_peer_maxttl __read_mostly =3D 10 * 60 * HZ;     /* usual time t=
+o live: 10 min */
+> @@ -73,20 +73,13 @@ int inet_peer_maxttl __read_mostly =3D 10 * 60 * HZ; =
+ /* usual time to live: 10 min
+>  /* Called from ip_output.c:ip_init  */
+>  void __init inet_initpeers(void)
+>  {
+> -       struct sysinfo si;
+> +       u64 nr_entries;
+>
+> -       /* Use the straight interface to information about memory. */
+> -       si_meminfo(&si);
+> -       /* The values below were suggested by Alexey Kuznetsov
+> -        * <kuznet@ms2.inr.ac.ru>.  I don't have any opinion about the va=
+lues
+> -        * myself.  --SAW
+> -        */
+> -       if (si.totalram <=3D (32768*1024)/PAGE_SIZE)
+> -               inet_peer_threshold >>=3D 1; /* max pool size about 1MB o=
+n IA32 */
+> -       if (si.totalram <=3D (16384*1024)/PAGE_SIZE)
+> -               inet_peer_threshold >>=3D 1; /* about 512KB */
+> -       if (si.totalram <=3D (8192*1024)/PAGE_SIZE)
+> -               inet_peer_threshold >>=3D 2; /* about 128KB */
+> +       /* 1% of physical memory */
+> +       nr_entries =3D div64_ul((u64)totalram_pages() << PAGE_SHIFT,
+> +                             100 * L1_CACHE_ALIGN(sizeof(struct inet_pee=
+r)));
+> +
+> +       inet_peer_threshold =3D clamp_val(nr_entries, 4096, 65536 + 128);
+>
+>         peer_cachep =3D kmem_cache_create("inet_peer_cache",
+>                         sizeof(struct inet_peer),
+>
+>
+>
+>
+>
+>
