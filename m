@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2EFD32B36F
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:08:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF4432B385
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449634AbhCCEBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:01:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50734 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1383880AbhCBMcs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 07:32:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8027764F25;
-        Tue,  2 Mar 2021 11:56:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614686189;
-        bh=Lf4E2EbPxFAb0cIRYV4xQxcbHaujRyn/8kT+zabVpNo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jydTaEaIb9fF3TqAXdCcOI5Qongd3Ine8UzF2aQxKuLD3poJtxukZCDKPVvIv8Dyv
-         1tl+QoMSP1H0vTGm9AZV9GIC3JOMEoQXC3jLqofPH4Pvx+wg9PyGYZ+t4evVRhTdka
-         nawsMRPpFUXB5LKWlt8P9vtzlpU3Ob2mRR4OHtPir86vUIqzlFpW7zi5AgRADKbIVq
-         s2qb/Nc2B7IpXtcbPcCMicAJWt+apRoN/boYqNRU4etY5uXgDHhmXuyDicno9I1ozQ
-         IFwU81dYj1zYRbYQHv2ImtUjMDnIPcP107KUi0mdQD8wKMlW7DbmQrxqsq/yFrTxQW
-         FFZTWd8NWS1ow==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        Tony Brelinski <tonyx.brelinski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 42/52] i40e: Fix memory leak in i40e_probe
-Date:   Tue,  2 Mar 2021 06:55:23 -0500
-Message-Id: <20210302115534.61800-42-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210302115534.61800-1-sashal@kernel.org>
-References: <20210302115534.61800-1-sashal@kernel.org>
+        id S1449587AbhCCEA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:00:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383617AbhCBL4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 06:56:40 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D182C061756
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 03:56:00 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id 2so5410139qtw.1
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 03:56:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x2wS74TM4AizfALT8kxd/HMxnjBfALQbmC8anm8d68E=;
+        b=KXElxgfaQy6eVhDGR+xbMcSTry7qKYCP2pOogBHaYAH0871t0KEnkyVTFiVnGCxMNx
+         5Fi6FwslIKtGMdwBZvySZ3WdP9W8cxDCvpzKIv31IDHOE6KE3z2XeAVMQzNNmcejCyRg
+         hs/Q7PGYZMIYcisXNf37dNgntVZrndYOjQWM+7iHYwOmcM8E0vmReRtnaNFdBhP2VY9D
+         3arznmapPSndYNB1iKX6bNqPHAbuIYH1LT+WdOaPbA6BagZfwjPZL0NSLNnqILPiISQg
+         EYIerBPWC1DXOnXWpqrA9o4uBgVrj9pDu7sVsOahKQBhbnJy9eUFNqRfkT+sw3JOYGgV
+         9PnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x2wS74TM4AizfALT8kxd/HMxnjBfALQbmC8anm8d68E=;
+        b=bS8J2YIrlXMQhlliXFinmvdhEQp7gXA37YJKMw/yvf71ZyLCpel7pKKoqaARkskitn
+         xT+x6YrRhtglLAG1SGFoUpaiu6aa2miLycJekmlatWEaiYg5pspZz6QmLMj4jKfwdpDl
+         OgvcpukDqKTjxxarMKBVgFXcSP98V9nzAS/Ray/VhsrTRlM7tMWYiD4n60/d6zx78iCD
+         BgUJYJfUfq2t2fbEba45YIUUdB9XS6RHAXuxTY8Jtzt14srv4mkB1yF7DmfKiVsv6b+K
+         q8rc0c9xBnWAaRDfMpl/mQNpRzrhf17y6XZ7xZjXfEp8lLD7aG4RvjS+l/91lABWPEes
+         IA6A==
+X-Gm-Message-State: AOAM533r3fZJgPgURxidL+zBASMD13SO6sSYzA1Ycr2DxZgBJ+INtKiA
+        y1l7p0+k0to9/c/35cAFbPUEisdE0GorwYHGvDZ0oQ==
+X-Google-Smtp-Source: ABdhPJylDznA6rJTx2enwk+UXwNUHm49QotCLfmKiKlZIn6soRH2Ky1WqNuSdklYHGcVu++rxAk8eYmVzFMRm3OQ/nQ=
+X-Received: by 2002:ac8:3876:: with SMTP id r51mr11965163qtb.43.1614686159085;
+ Tue, 02 Mar 2021 03:55:59 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20210128024316.1425-1-hdanton@sina.com> <20210128105830.7d8aa91d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <60139ef4.1c69fb81.8d2f9.f26bSMTPIN_ADDED_MISSING@mx.google.com>
+ <CACT4Y+Z7152DKY=TKOUe17=z=yJmO3oTYmD66Qa-eOmV+XZCsw@mail.gmail.com> <603e0005.1c69fb81.e3eed.6025SMTPIN_ADDED_MISSING@mx.google.com>
+In-Reply-To: <603e0005.1c69fb81.e3eed.6025SMTPIN_ADDED_MISSING@mx.google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 2 Mar 2021 12:55:47 +0100
+Message-ID: <CACT4Y+Zv-p56cbs3P7ZEUXdYaN7jXB4AELG5=S19wVH4kj3a9g@mail.gmail.com>
+Subject: Re: [PATCH] netdevsim: init u64 stats for 32bit hardware
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com" 
+        <syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+On Tue, Mar 2, 2021 at 10:06 AM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Mar 2, 2021 at 16:40 Dmitry Vyukov wrote:
+>
+> >I hoped this would get at least into 5.12. syzbot can't start testing
+>
+> >arm32 because of this.
+>
+>
+>
+> Or what is more feasible is you send a fix to Jakub today.
 
-[ Upstream commit 58cab46c622d6324e47bd1c533693c94498e4172 ]
-
-Struct i40e_veb is allocated in function i40e_setup_pf_switch, and
-stored to an array field veb inside struct i40e_pf. However when
-i40e_setup_misc_vector fails, this memory leaks.
-
-Fix this by calling exit and teardown functions.
-
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 1db482d310c2..84916261f5df 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -15122,6 +15122,8 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		if (err) {
- 			dev_info(&pdev->dev,
- 				 "setup of misc vector failed: %d\n", err);
-+			i40e_cloud_filter_exit(pf);
-+			i40e_fdir_teardown(pf);
- 			goto err_vsis;
- 		}
- 	}
--- 
-2.30.1
-
+So far I can't figure out how to make git work with my Gmail account
+with 1.5-factor auth enabled, neither password nor asp work...
