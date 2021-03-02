@@ -2,97 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6869B32A3E0
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:22:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5607732A3E2
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:22:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382721AbhCBJwB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Mar 2021 04:52:01 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:47063 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379001AbhCBJhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 04:37:17 -0500
-Received: from ip5f5af0a0.dynamic.kabel-deutschland.de ([95.90.240.160] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1lH1Rq-00008b-Gf; Tue, 02 Mar 2021 09:36:10 +0000
-Date:   Tue, 2 Mar 2021 10:36:09 +0100
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Triggering WARN in net/wireless/nl80211.c
-Message-ID: <20210302093609.a6vmvwtlu3qns67s@wittgenstein>
+        id S1577711AbhCBJwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 04:52:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382679AbhCBJk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 04:40:59 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EC3C061756
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 01:38:59 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id l8so19997737ybe.12
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 01:38:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d6j4NC0xWisYBbDQLfYR2TP2URgucSEl3kDiBda4KeM=;
+        b=Kl6ajxITJStY7aqyzKvgaXV/wWJuOiyCeRA0DKZMEfS1NIanQz3D8QpnhyexUmUnc7
+         8BzV7SCQHTycBCUCbcaORl4QvXHBwqj46MdZImXL0ps/+4uYOuEW6n6VP0Hw4IC6dQhB
+         53NEdoKADVkPcGrva7gFBL1DOsd4xp590TpaHmN1uszvsWyMXmLkoLAqSxqs3zveFV1w
+         Yz1fm1qgqTVLNwxRp92iplkbgr+8Mx54zdM/vX0Z8musNSbO3CKEAwzUj5zj3VG7Ek+x
+         KKQkS8G8/4Iv8Y//L+bZxMnCtKpxcwRgu9CGGa9pL5bAembQO9A5uJ9vmqoWt9zzCnDH
+         x1wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d6j4NC0xWisYBbDQLfYR2TP2URgucSEl3kDiBda4KeM=;
+        b=jCEJZ9BT18knXDdkuzClgJea3qhYJRDfH4pU3dXfH/VmCQDPQvNzHyehX8JmVYV162
+         6LPOXqCBReJDkOyQWPk0cSyV2NxN33tPdfSRe4W6oYhz1KQefWPag2BuNLe0bc+tqfwy
+         7spb4NgoAC8XrICelWzGIqD3D7SH2LXqr0IVZt5Oa7yvMOmq335r0Ed7qgYKFrRQXSOx
+         anEegX2CyHtXoX07Ble09W2++A9Q+hYj/Ow4VNXZQgkXZu6oOASuK3rf8NCNu3mdsshF
+         kmNqnowK8Gdm/2NDIsdb9wa7s5W5Gf+6eDH+eQOJC/CI27PdRUdUVSvfVGoGL1XmEbpD
+         hY/g==
+X-Gm-Message-State: AOAM532OCgRQgPD7d5GPBXOM+hnrX1ZUb3vkfRWAfWOyXL6bv4OhPFW1
+        lpe/A8h3tKB07pTwDhOuAPRFZlZNi/P3yXEIawM4+A==
+X-Google-Smtp-Source: ABdhPJyCgc6a11s/WQeQX9gOi/JOm5u8CCx9hrpQsaEM+4J5oyn86/D4NnLAhehSc+fTOvmz2/kEhgqlqgZYnqkA/NQ=
+X-Received: by 2002:a25:b906:: with SMTP id x6mr29048098ybj.504.1614677938497;
+ Tue, 02 Mar 2021 01:38:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+References: <20210302060753.953931-1-kuba@kernel.org>
+In-Reply-To: <20210302060753.953931-1-kuba@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 2 Mar 2021 10:38:46 +0100
+Message-ID: <CANn89iLaQuCGeWOh7Hp8X9dL09FhPP8Nwj+zV=rhYX7Cq7efpg@mail.gmail.com>
+Subject: Re: [PATCH net] net: tcp: don't allocate fast clones for fastopen SYN
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@fb.com>, Neil Spring <ntspring@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey everyone,
+On Tue, Mar 2, 2021 at 7:08 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> When receiver does not accept TCP Fast Open it will only ack
+> the SYN, and not the data. We detect this and immediately queue
+> the data for (re)transmission in tcp_rcv_fastopen_synack().
+>
+> In DC networks with very low RTT and without RFS the SYN-ACK
+> may arrive before NIC driver reported Tx completion on
+> the original SYN. In which case skb_still_in_host_queue()
+> returns true and sender will need to wait for the retransmission
+> timer to fire milliseconds later.
+>
+> Revert back to non-fast clone skbs, this way
+> skb_still_in_host_queue() won't prevent the recovery flow
+> from completing.
+>
+> Suggested-by: Eric Dumazet <edumazet@google.com>
+> Fixes: 355a901e6cf1 ("tcp: make connect() mem charging friendly")
 
-I get the following WARN triggered in net/wireless/nl80211.c during boot
-on v5.12-rc1:
+Hmmm, not sure if this Fixes: tag makes sense.
 
-[   36.749643] ------------[ cut here ]------------
-[   36.749645] WARNING: CPU: 7 PID: 829 at net/wireless/nl80211.c:7746 nl80211_get_reg_do+0x215/0x250 [cfg80211]
-[   36.749683] Modules linked in: bnep ccm algif_aead des_generic libdes arc4 algif_skcipher cmac md4 algif_hash af_alg typec_displayport binfmt_misc snd_hda_codec_hdmi nls_iso8859_1 joydev mei_hdcp intel_rapl_msr x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm snd_hda_codec_realtek snd_hda_codec_generic rapl iwlmvm intel_cstate mac80211 snd_hda_intel snd_intel_dspcfg input_leds snd_seq_midi snd_hda_codec rmi_smbus libarc4 snd_seq_midi_event rmi_core serio_raw snd_hda_core uvcvideo snd_rawmidi efi_pstore iwlwifi snd_hwdep intel_wmi_thunderbolt videobuf2_vmalloc snd_pcm wmi_bmof btusb videobuf2_memops thinkpad_acpi videobuf2_v4l2 btrtl videobuf2_common processor_thermal_device btbcm processor_thermal_rfim nvram snd_seq btintel platform_profile videodev processor_thermal_mbox ucsi_acpi bluetooth ledtrig_audio processor_thermal_rapl mei_me snd_seq_device intel_rapl_common typec_ucsi mc ecdh_generic cfg80211 ecc intel_pch_thermal mei intel_soc_dts_iosf intel_xhci_usb_role_switch
-[   36.749713]  typec snd_timer snd soundcore int3403_thermal int340x_thermal_zone acpi_pad mac_hid int3400_thermal acpi_thermal_rel sch_fq_codel pkcs8_key_parser ip_tables x_tables autofs4 btrfs blake2b_generic xor zstd_compress raid6_pq libcrc32c dm_crypt uas usb_storage i915 crct10dif_pclmul crc32_pclmul ghash_clmulni_intel i2c_algo_bit aesni_intel crypto_simd drm_kms_helper cryptd syscopyarea nvme sysfillrect psmouse sysimgblt fb_sys_fops nvme_core cec e1000e i2c_i801 drm i2c_smbus wmi video
-[   36.749735] CPU: 7 PID: 829 Comm: iwd Tainted: G     U            5.12.0-rc1-brauner-v5.12-rc1 #316
-[   36.749737] Hardware name: LENOVO 20KHCTO1WW/20KHCTO1WW, BIOS N23ET75W (1.50 ) 10/13/2020
-[   36.749738] RIP: 0010:nl80211_get_reg_do+0x215/0x250 [cfg80211]
-[   36.749763] Code: 00 e8 8f f0 07 d0 85 c0 0f 84 ee fe ff ff eb a3 4c 89 e7 48 89 45 c0 e8 49 6d 44 d0 e8 64 09 47 d0 48 8b 45 c0 e9 36 ff ff ff <0f> 0b 4c 89 e7 e8 31 6d 44 d0 e8 4c 09 47 d0 b8 ea ff ff ff e9 1d
-[   36.749765] RSP: 0018:ffffa71800b7bb10 EFLAGS: 00010202
-[   36.749766] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-[   36.749767] RDX: ffff8bef4beb0008 RSI: 0000000000000000 RDI: ffff8bef4beb0300
-[   36.749768] RBP: ffffa71800b7bb50 R08: ffff8bef4beb0300 R09: ffff8bef4b7ba014
-[   36.749770] R10: 0000000000000000 R11: 000000000000001f R12: ffff8bef4d38e800
-[   36.749771] R13: ffffa71800b7bb78 R14: ffff8bef4b7ba014 R15: 0000000000000000
-[   36.749772] FS:  00007f89333c4740(0000) GS:ffff8bf2d17c0000(0000) knlGS:0000000000000000
-[   36.749773] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   36.749774] CR2: 00007ffdda038ca8 CR3: 0000000108ca0002 CR4: 00000000003706e0
-[   36.749776] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   36.749777] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   36.749778] Call Trace:
-[   36.749781]  ? rtnl_unlock+0xe/0x10
-[   36.749786]  genl_family_rcv_msg_doit.isra.0+0xec/0x150
-[   36.749791]  genl_rcv_msg+0xe5/0x1e0
-[   36.749793]  ? __cfg80211_rdev_from_attrs+0x1c0/0x1c0 [cfg80211]
-[   36.749821]  ? nl80211_send_regdom.constprop.0+0x1a0/0x1a0 [cfg80211]
-[   36.749847]  ? genl_family_rcv_msg_doit.isra.0+0x150/0x150
-[   36.749850]  netlink_rcv_skb+0x55/0x100
-[   36.749853]  genl_rcv+0x29/0x40
-[   36.749855]  netlink_unicast+0x1a8/0x250
-[   36.749858]  netlink_sendmsg+0x233/0x460
-[   36.749860]  sock_sendmsg+0x65/0x70
-[   36.749863]  __sys_sendto+0x113/0x190
-[   36.749865]  ? __secure_computing+0x42/0xe0
-[   36.749867]  __x64_sys_sendto+0x29/0x30
-[   36.749869]  do_syscall_64+0x38/0x90
-[   36.749872]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   36.749874] RIP: 0033:0x7f89334e16c0
-[   36.749875] Code: c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 1d 45 31 c9 45 31 c0 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 68 c3 0f 1f 80 00 00 00 00 55 48 83 ec 20 48
-[   36.749877] RSP: 002b:00007ffdda03da08 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-[   36.749878] RAX: ffffffffffffffda RBX: 0000561f2c3c7b00 RCX: 00007f89334e16c0
-[   36.749879] RDX: 000000000000001c RSI: 0000561f2c3e66c0 RDI: 0000000000000004
-[   36.749880] RBP: 0000561f2c3d28e0 R08: 0000000000000000 R09: 0000000000000000
-[   36.749880] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffdda03da6c
-[   36.749881] R13: 00007ffdda03da68 R14: 0000561f2c3d1790 R15: 0000000000000000
-[   36.749883] ---[ end trace 7cf430797302f3ab ]---
+Really, if we delay TX completions by say 10 ms, other parts of the
+stack will misbehave anyway.
 
-> dmesg | grep -i wifi
-[   32.842573] Intel(R) Wireless WiFi driver for Linux
-[   32.869098] iwlwifi 0000:02:00.0: Found debug destination: EXTERNAL_DRAM
-[   32.869102] iwlwifi 0000:02:00.0: Found debug configuration: 0
-[   32.869688] iwlwifi 0000:02:00.0: loaded firmware version 36.79ff3ccf.0 8265-36.ucode op_mode iwlmvm
-[   32.931443] iwlwifi 0000:02:00.0: Detected Intel(R) Dual Band Wireless AC 8265, REV=0x230
-[   32.952115] iwlwifi 0000:02:00.0: Applying debug destination EXTERNAL_DRAM
-[   32.952519] iwlwifi 0000:02:00.0: Allocated 0x00400000 bytes for firmware monitor.
-[   33.016062] iwlwifi 0000:02:00.0: base HW address: 3c:6a:a7:16:8c:cb
-[   36.861423] iwlwifi 0000:02:00.0: Applying debug destination EXTERNAL_DRAM
-[   36.993832] iwlwifi 0000:02:00.0: Applying debug destination EXTERNAL_DRAM
-[   37.061293] iwlwifi 0000:02:00.0: FW already configured (0) - re-configuring
+Also, backporting this patch up to linux-3.19 is going to be tricky.
 
-Thanks!
-Christian
+The real issue here is that skb_still_in_host_queue() can give a false positive.
+
+I have mixed feelings here, as you can read my answer :/
+
+Maybe skb_still_in_host_queue() signal should not be used when a part
+of the SKB has been received/acknowledged by the remote peer
+(in this case the SYN part).
+
+Alternative is that drivers unable to TX complete their skbs in a
+reasonable time should call skb_orphan()
+ to avoid skb_unclone() penalties (and this skb_still_in_host_queue() issue)
+
+If you really want to play and delay TX completions, maybe provide a
+way to disable skb_still_in_host_queue() globally,
+using a static key ?
+
+My personal WIP/hack was something like :
+
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 69a545db80d2ead47ffcf2f3819a6d066e95f35d..666f6f0a6a06fece204199e07a79e21d1faf8f92
+100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5995,7 +5995,8 @@ static bool tcp_rcv_fastopen_synack(struct sock
+*sk, struct sk_buff *synack,
+                else
+                        tp->fastopen_client_fail = TFO_DATA_NOT_ACKED;
+                skb_rbtree_walk_from(data) {
+-                       if (__tcp_retransmit_skb(sk, data, 1))
++                       /* segs = -1 to bypass
+skb_still_in_host_queue() check */
++                       if (__tcp_retransmit_skb(sk, data, -1))
+                                break;
+                }
+                tcp_rearm_rto(sk);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index fbf140a770d8e21b936369b79abbe9857537acd8..1d1489e596976e352fe7d5ccee7a6eae55fdbcce
+100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3155,8 +3155,12 @@ int __tcp_retransmit_skb(struct sock *sk,
+struct sk_buff *skb, int segs)
+                  sk->sk_sndbuf))
+                return -EAGAIN;
+
+-       if (skb_still_in_host_queue(sk, skb))
+-               return -EBUSY;
++       if (segs > 0) {
++               if (skb_still_in_host_queue(sk, skb))
++                       return -EBUSY;
++       } else {
++               segs = -segs;
++       }
+
+        if (before(TCP_SKB_CB(skb)->seq, tp->snd_una)) {
+                if (unlikely(before(TCP_SKB_CB(skb)->end_seq, tp->snd_una))) {
+
+
+> Signed-off-by: Neil Spring <ntspring@fb.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/ipv4/tcp_output.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index fbf140a770d8..cd9461588539 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -3759,9 +3759,16 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
+>         /* limit to order-0 allocations */
+>         space = min_t(size_t, space, SKB_MAX_HEAD(MAX_TCP_HEADER));
+>
+> -       syn_data = sk_stream_alloc_skb(sk, space, sk->sk_allocation, false);
+> +       syn_data = alloc_skb(MAX_TCP_HEADER + space, sk->sk_allocation);
+>         if (!syn_data)
+>                 goto fallback;
+> +       if (!sk_wmem_schedule(sk, syn_data->truesize)) {
+> +               __kfree_skb(syn_data);
+> +               goto fallback;
+> +       }
+> +       skb_reserve(syn_data, MAX_TCP_HEADER);
+> +       INIT_LIST_HEAD(&syn_data->tcp_tsorted_anchor);
+> +
+>         syn_data->ip_summed = CHECKSUM_PARTIAL;
+>         memcpy(syn_data->cb, syn->cb, sizeof(syn->cb));
+>         if (space) {
+> --
+> 2.26.2
+>
