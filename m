@@ -2,140 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0521A32B36C
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:08:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE29632B36E
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:08:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343854AbhCCDxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 22:53:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379964AbhCBKWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 05:22:34 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EEFC061793;
-        Tue,  2 Mar 2021 02:21:10 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id l22so1756902wme.1;
-        Tue, 02 Mar 2021 02:21:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=p/LO4ojFt4+oNs7gTlTDAx+oem2Oma63Bf52gj+VZow=;
-        b=TgDaZySDzPJ+5qEE7Iq84JeLmSHVsUES5b9lWP8ScDlFf76vpIx5LjxBgTeZ1S5C2R
-         n07maCPpT0HkRX4VODd84SadZ5I4uIK/na17FAL/dSSB6hoB3fc8MTtXkY8ahgAKlCuA
-         DcDr2+4AuQ4NlKmQTrqHzGs2iu2k2GuRV+op6WMPjtDxxQm/qd7tZ2+gw6gWtWiwzXgU
-         qYZHYg3w9X0tEQUSpbwOpH+9omsuzqWnCnZsIUhU1DLPeaO1E5zFVtSo86fAE8vWsUQa
-         bZ/3FN8cpoQjTLJoTYGaWEDAL1NnsS4hI4s4Y+x4z67OaE4FlYMSX45o14ZqPKpV2zBF
-         7iug==
+        id S1344002AbhCCDxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 22:53:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59224 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380003AbhCBKZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 05:25:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614680590;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SGioato23lbkvo7M0QJS06qhjk71ippSH/Xk3g8ZuNY=;
+        b=dsTj11O1qqgvhjAy+NpYwhcfeQityWn2dd0t98f24AqBl47FWPY99MNtUzdzdcK9oKazDb
+        TrL0TLKwYpN6lhtEpmPYBo8WpaZoz+7LF6Mn8kT/0wMX58j8+CM8FTRz4cVghg7vkIbvor
+        SCSW4oZIw3SdR7/TLkPRkMZcqY3QfJc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-566-_b_AjVymMu-rFPki3X5M6A-1; Tue, 02 Mar 2021 05:23:09 -0500
+X-MC-Unique: _b_AjVymMu-rFPki3X5M6A-1
+Received: by mail-ed1-f72.google.com with SMTP id l23so10186909edt.23
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 02:23:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=p/LO4ojFt4+oNs7gTlTDAx+oem2Oma63Bf52gj+VZow=;
-        b=s3ZOp0DkN2JpHqrz0a/lEvQJJlEWJeJuWYt58P5M9iz6SfAnBJB0vJK78qndbooQ4/
-         nHmloOHtfsD2HETyfUEDwcnQAA41PSBr/Dzky06kfnAs2zz9srmU/sxWlAxW6WHWtu5A
-         UukZwh35wnTSaqYe5PZcR2TIQrfRS4jgpd3oS7DxKSWCzmCv3MwJP8s78dGLkmExyxCc
-         Z/fcPZtcmkz8KnZ6IuMiPIvlvKirJM9tzOgYOX9Sy6/7PvQ94fB38YLrSSB4m637bjnt
-         9K5wo8JCFq89bagvwiJvjytRLyzclvpdI56y/i+93Fda/wZZa1zGpgJGZnKvR2rGyUWa
-         RjMA==
-X-Gm-Message-State: AOAM53276UVv6YZ/eLnLSev6nVyG8TPjjib09FFyZ6jflJhe3K02WAYU
-        niZs9inh5z37opkPG32dW30mxqXeEUjQfnL9MhLa0WKoctc=
-X-Google-Smtp-Source: ABdhPJyJx/SGxJY4Fp6S1xSLe3ZwJ64pj/TXmTVGmBkw7E2WgFAq93veeK/xcz3B8qPMOGLkz4cgrvv2KBqVvY4Ydzs=
-X-Received: by 2002:a1c:7312:: with SMTP id d18mr3239018wmb.155.1614680468365;
- Tue, 02 Mar 2021 02:21:08 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=SGioato23lbkvo7M0QJS06qhjk71ippSH/Xk3g8ZuNY=;
+        b=IZcs9tpRNFGpOnj5OeANtMQXXChX0MyGUy+wyVb2lIQRW0l+AcyaivE0eGkJPMQqZ6
+         Hd/WZzd7ZWegRuVyCXPu1PAlMnT3tInPI8Udso32+yiCIy5i84kgYH/4/VMbMGHrJXZj
+         +c9pt8CWsnDTzQcFp7osM2ClIn6rDXZaXmYaL5QHfcScRs2yZkA2q3M2zNHj7NEl5jyg
+         HYy1x8qd2RXS8FiAEw3CsNLEulNvEiCyafZHyFPHUabk8TQ91EZ2+KHzJpXDSU9OjBUZ
+         58VlOLM2rZeaimgZYXww/MDyRtOy3MP0fsMlSk/XELfkKt+klOzeSm9NIqKbKPDvLQsD
+         +jiQ==
+X-Gm-Message-State: AOAM532ifOLn5SXxB0sDivfcy04xlgUGf4mfAbfkZwr5sxfZ8gbjlHKg
+        e06AG8MnNL7SfWGLaojy9yErGTNONLiwSrYdpfAeE188kulL5xfI0JBN/nS0aiHfoaslx933pjq
+        zdZOJenjReqMKt7oY
+X-Received: by 2002:a17:907:98f1:: with SMTP id ke17mr20328489ejc.498.1614680587749;
+        Tue, 02 Mar 2021 02:23:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxXvNpAMqBBkGg+NOxtgWvOBSxWBoUndCBrESzleiWax8xy6W/ulefjzFx7PChqUiN+eNt+sw==
+X-Received: by 2002:a17:907:98f1:: with SMTP id ke17mr20328462ejc.498.1614680587415;
+        Tue, 02 Mar 2021 02:23:07 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id s2sm18031250edt.35.2021.03.02.02.23.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Mar 2021 02:23:06 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 413061800F1; Tue,  2 Mar 2021 11:23:06 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, paulmck@kernel.org
+Cc:     magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        maximmi@nvidia.com, andrii@kernel.org
+Subject: Re: [PATCH bpf-next 1/2] xsk: update rings for
+ load-acquire/store-release semantics
+In-Reply-To: <939aefb5-8f03-fc5a-9e8b-0b634aafd0a4@intel.com>
+References: <20210301104318.263262-1-bjorn.topel@gmail.com>
+ <20210301104318.263262-2-bjorn.topel@gmail.com> <87mtvmx3ec.fsf@toke.dk>
+ <939aefb5-8f03-fc5a-9e8b-0b634aafd0a4@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 02 Mar 2021 11:23:06 +0100
+Message-ID: <87zgzlvoqd.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20210223162304.7450-1-ciara.loftus@intel.com>
-In-Reply-To: <20210223162304.7450-1-ciara.loftus@intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 2 Mar 2021 11:20:56 +0100
-Message-ID: <CAJ+HfNhB3CG+exC4P-Xwm8+h=DHuzkShb4ujmuN+-GPPLKe2Zg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/4] selftests/bpf: xsk improvements and new
- stats tests
-To:     Ciara Loftus <ciara.loftus@intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Weqaar Janjua <weqaar.a.janjua@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Feb 2021 at 17:53, Ciara Loftus <ciara.loftus@intel.com> wrote:
->
-> This series attempts to improve the xsk selftest framework by:
-> 1. making the default output less verbose
-> 2. adding an optional verbose flag to both the test_xsk.sh script and xdp=
-xceiver app.
-> 3. renaming the debug option in the app to to 'dump-pkts' and add a flag =
-to the test_xsk.sh
-> script which enables the flag in the app.
-> 4. changing how tests are launched - now they are launched from the xdpxc=
-eiver app
-> instead of the script.
->
-> Once the improvements are made, a new set of tests are added which test t=
-he xsk
-> statistics.
->
-> The output of the test script now looks like:
->
-> ./test_xsk.sh
-> PREREQUISITES: [ PASS ]
-> 1..10
-> ok 1 PASS: SKB NOPOLL
-> ok 2 PASS: SKB POLL
-> ok 3 PASS: SKB NOPOLL Socket Teardown
-> ok 4 PASS: SKB NOPOLL Bi-directional Sockets
-> ok 5 PASS: SKB NOPOLL Stats
-> ok 6 PASS: DRV NOPOLL
-> ok 7 PASS: DRV POLL
-> ok 8 PASS: DRV NOPOLL Socket Teardown
-> ok 9 PASS: DRV NOPOLL Bi-directional Sockets
-> ok 10 PASS: DRV NOPOLL Stats
-> # Totals: pass:10 fail:0 xfail:0 xpass:0 skip:0 error:0
-> XSK KSELFTESTS: [ PASS ]
->
-> v2->v3:
-> * Rename dump-pkts to dump_pkts in test_xsk.sh
-> * Add examples of flag usage to test_xsk.sh
->
-> v1->v2:
-> * Changed '-d' flag in the shell script to '-D' to be consistent with the=
- xdpxceiver app.
-> * Renamed debug mode to 'dump-pkts' which better reflects the behaviour.
-> * Use libpf APIs instead of calls to ss for configuring xdp on the links
-> * Remove mutex init & destroy for each stats test
-> * Added a description for each of the new statistics tests
-> * Distinguish between exiting due to initialisation failure vs test failu=
-re
->
-> This series applies on commit d310ec03a34e92a77302edb804f7d68ee4f01ba0
->
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
 
-Ciara, this slipped on my side! Apologies! This is much better, thanks
-for working on it!
+> On 2021-03-01 17:08, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+>>=20
+>>> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>>>
+>>> Currently, the AF_XDP rings uses smp_{r,w,}mb() fences on the
+>>> kernel-side. By updating the rings for load-acquire/store-release
+>>> semantics, the full barrier on the consumer side can be replaced with
+>>> improved performance as a nice side-effect.
+>>>
+>>> Note that this change does *not* require similar changes on the
+>>> libbpf/userland side, however it is recommended [1].
+>>>
+>>> On x86-64 systems, by removing the smp_mb() on the Rx and Tx side, the
+>>> l2fwd AF_XDP xdpsock sample performance increases by
+>>> 1%. Weakly-ordered platforms, such as ARM64 might benefit even more.
+>>>
+>>> [1] https://lore.kernel.org/bpf/20200316184423.GA14143@willie-the-truck/
+>>>
+>>> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>>> ---
+>>>   net/xdp/xsk_queue.h | 27 +++++++++++----------------
+>>>   1 file changed, 11 insertions(+), 16 deletions(-)
+>>>
+>>> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+>>> index 2823b7c3302d..e24279d8d845 100644
+>>> --- a/net/xdp/xsk_queue.h
+>>> +++ b/net/xdp/xsk_queue.h
+>>> @@ -47,19 +47,18 @@ struct xsk_queue {
+>>>   	u64 queue_empty_descs;
+>>>   };
+>>>=20=20=20
+>>> -/* The structure of the shared state of the rings are the same as the
+>>> - * ring buffer in kernel/events/ring_buffer.c. For the Rx and completi=
+on
+>>> - * ring, the kernel is the producer and user space is the consumer. For
+>>> - * the Tx and fill rings, the kernel is the consumer and user space is
+>>> - * the producer.
+>>> +/* The structure of the shared state of the rings are a simple
+>>> + * circular buffer, as outlined in
+>>> + * Documentation/core-api/circular-buffers.rst. For the Rx and
+>>> + * completion ring, the kernel is the producer and user space is the
+>>> + * consumer. For the Tx and fill rings, the kernel is the consumer and
+>>> + * user space is the producer.
+>>>    *
+>>>    * producer                         consumer
+>>>    *
+>>> - * if (LOAD ->consumer) {           LOAD ->producer
+>>> - *                    (A)           smp_rmb()       (C)
+>>> + * if (LOAD ->consumer) {  (A)      LOAD.acq ->producer  (C)
+>>=20
+>> Why is LOAD.acq not needed on the consumer side?
+>>
+>
+> You mean why LOAD.acq is not needed on the *producer* side, i.e. the
+> ->consumer?
 
-For the series:
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+Yes, of course! The two words were, like, right next to each other ;)
+
+> The ->consumer is a control dependency for the store, so there is no
+> ordering constraint for ->consumer at producer side. If there's no
+> space, no data is written. So, no barrier is needed there -- at least
+> that has been my perspective.
+>
+> This is very similar to the buffer in
+> Documentation/core-api/circular-buffers.rst. Roping in Paul for some
+> guidance.
+
+Yeah, I did read that, but got thrown off by this bit: "Therefore, the
+unlock-lock pair between consecutive invocations of the consumer
+provides the necessary ordering between the read of the index indicating
+that the consumer has vacated a given element and the write by the
+producer to that same element."
+
+Since there is no lock in the XSK, what provides that guarantee here?
 
 
->
-> Ciara Loftus (3):
->   selftests/bpf: expose and rename debug argument
->   selftests/bpf: restructure xsk selftests
->   selftests/bpf: introduce xsk statistics tests
->
-> Magnus Karlsson (1):
->   selftest/bpf: make xsk tests less verbose
->
->  tools/testing/selftests/bpf/test_xsk.sh    | 135 ++------
->  tools/testing/selftests/bpf/xdpxceiver.c   | 380 +++++++++++++++------
->  tools/testing/selftests/bpf/xdpxceiver.h   |  57 +++-
->  tools/testing/selftests/bpf/xsk_prereqs.sh |  30 +-
->  4 files changed, 342 insertions(+), 260 deletions(-)
->
-> --
-> 2.17.1
->
+Oh, and BTW, when I re-read the rest of the comment in xsk_queue.h
+(below the diagram you are changing in this patch), the text still talks
+about "memory barriers" - maybe that should be updated to
+release/acquire as well while you're changing things?
+
+-Toke
+
