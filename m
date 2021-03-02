@@ -2,83 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 177F332A373
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:17:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E727732A377
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:17:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376807AbhCBJCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 04:02:06 -0500
-Received: from mga09.intel.com ([134.134.136.24]:12269 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1443720AbhCBIcv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 03:32:51 -0500
-IronPort-SDR: d+otvZh0Q61JEQaTR2dMskmBdekhOwW1heyzABFBnbNqQ4PbxkcCuYltGBXYDrcyyomv9Qw5aF
- /oKSZUj3j/XQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9910"; a="186854241"
-X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; 
-   d="scan'208";a="186854241"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 00:29:27 -0800
-IronPort-SDR: Lr9ZQY2imtSsrdnrHYfn3ON+IEPyfn3Xuay6C4vkPqhG4EfsRM213coS9nnyJaNTTpqfDOhiOz
- xCnZma5n568w==
-X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; 
-   d="scan'208";a="406614259"
-Received: from sneftin-mobl.ger.corp.intel.com (HELO [10.251.185.3]) ([10.251.185.3])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 00:29:25 -0800
-Subject: Re: [Intel-wired-lan] [PATCH net 1/2] e1000e: Fix duplicate include
- guard
-To:     Tom Seewald <tseewald@gmail.com>, netdev@vger.kernel.org
-Cc:     Auke Kok <auke-jan.h.kok@intel.com>, Jeff Garzik <jeff@garzik.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org,
-        "David S. Miller" <davem@davemloft.net>, gregkh@linuxfoundation.org
-References: <20210222040005.20126-1-tseewald@gmail.com>
-From:   "Neftin, Sasha" <sasha.neftin@intel.com>
-Message-ID: <4b289f9c-b7ca-c48e-de4b-b83b6b540da3@intel.com>
-Date:   Tue, 2 Mar 2021 10:29:23 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S1378891AbhCBJFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 04:05:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377973AbhCBIqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 03:46:04 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE96C06178C
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 00:35:41 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id h9so4326927qtq.7
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 00:35:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W6eKTrwZOGzZaaIPE5kajqz3v0GbqJdSsTU9GqqZVN8=;
+        b=nh8KTZ4SC9a3vuW0O0sud1WnspwurKyKthxIOMW4Xu4CjX+FpHMr87tHd+vO7RjFGD
+         JnQKl5LHwmHvNV7OgJVK3o3MkN4TUDRArAegR0dMxuoJPFeP1KWJWtKrfLpPu7eps4CO
+         0mVQZAsTdMsEuudm54HR/28qbTaLu5kURoKULuKDJRMT9zjvwWyvStfU8zzWnlgwv+9Y
+         ELjY0gq+zWWdN5Sxhi+csaiNQ7q5lvLdcMF9tXtVrr1tax2v143ZsW7OraH6oO+snZkS
+         z8gS1pKKs0uo6uyT+BesuMnNq1cK83G551UWa4c4LiHecydTal9v1NW1Iw8DyrU9Iaq2
+         s31w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W6eKTrwZOGzZaaIPE5kajqz3v0GbqJdSsTU9GqqZVN8=;
+        b=UU5BAIEGATiNhd7G5z+DL8jOBPEgQaq+2+d0sBiOY7wKwsaLqLvUflXp3WtKp6/0aH
+         AnF6IQc5iS6jr/nQCERfPDjhC8VKHjldYQXuXtPg3I08dvP9RGJIB5F1xkTeya4O84Uu
+         RJglkIQDo0RPMuS1eA4iG2EmSfOBRjjmRA1tBP3UcF5XUsqm+8h86xrauyQmRZwl5A6Z
+         8VFbXT9Op//NqrDThgVhQPeJc0aBSycoFpJKJUfJfC3HXVA7HFesHiUiYhqciUWf8Pp6
+         /tcSjz8AYcRvnQcJVuhzX1h785LcDi23BygKMgh0n3ApsMe7+jd8vqdt0wWB7Kkk+mCo
+         OfBA==
+X-Gm-Message-State: AOAM5335CLtK46Z7+hmKOf2F6eqFybh2ml1KM6ROlv5Fmsk2JdROM+FK
+        3vAd6J4M7ezjtxwp/ROzfpoQE0ltIR+9Bbr+mL4bhDuc15w=
+X-Google-Smtp-Source: ABdhPJxEDyVUlV4e1CjvzctnUjgMyOzA+eqo395T1EpZ1PQ33h35Ge9tFoBNBkLjCwwu1ofz6sGHvrdq9zZY/p6YcUw=
+X-Received: by 2002:ac8:6f3b:: with SMTP id i27mr5686549qtv.67.1614674139539;
+ Tue, 02 Mar 2021 00:35:39 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210222040005.20126-1-tseewald@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210128024316.1425-1-hdanton@sina.com> <20210128105830.7d8aa91d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <60139ef4.1c69fb81.8d2f9.f26bSMTPIN_ADDED_MISSING@mx.google.com>
+In-Reply-To: <60139ef4.1c69fb81.8d2f9.f26bSMTPIN_ADDED_MISSING@mx.google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 2 Mar 2021 09:35:28 +0100
+Message-ID: <CACT4Y+Z7152DKY=TKOUe17=z=yJmO3oTYmD66Qa-eOmV+XZCsw@mail.gmail.com>
+Subject: Re: [PATCH] netdevsim: init u64 stats for 32bit hardware
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com" 
+        <syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/22/2021 06:00, Tom Seewald wrote:
-> The include guard "_E1000_HW_H_" is used by header files in three
-> different drivers (e1000/e1000_hw.h, e1000e/hw.h, and igb/e1000_hw.h).
-> Using the same include guard macro in more than one header file may
-> cause unexpected behavior from the compiler. Fix the duplicate include
-> guard in the e1000e driver by renaming it.
-> 
-> Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)")
-> Signed-off-by: Tom Seewald <tseewald@gmail.com>
-> ---
->   drivers/net/ethernet/intel/e1000e/hw.h | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-> index 69a2329ea463..db79c4e6413e 100644
-> --- a/drivers/net/ethernet/intel/e1000e/hw.h
-> +++ b/drivers/net/ethernet/intel/e1000e/hw.h
-> @@ -1,8 +1,8 @@
->   /* SPDX-License-Identifier: GPL-2.0 */
->   /* Copyright(c) 1999 - 2018 Intel Corporation. */
->   
-> -#ifndef _E1000_HW_H_
-> -#define _E1000_HW_H_
-> +#ifndef _E1000E_HW_H_
-> +#define _E1000E_HW_H_
->   
->   #include "regs.h"
->   #include "defines.h"
-> @@ -714,4 +714,4 @@ struct e1000_hw {
->   #include "80003es2lan.h"
->   #include "ich8lan.h"
->   
-> -#endif
-> +#endif /* _E1000E_HW_H_ */
-> 
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+On Fri, Jan 29, 2021 at 6:36 AM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On 29 Jan 2021 2:58:22 Jakub Kicinski wrpte:
+>
+> >On Thu, 28 Jan 2021 10:43:16 +0800 Hillf Danton wrote:
+>
+> >> Init the u64 stats in order to avoid the lockdep prints on the 32bit
+>
+> >> hardware like
+>
+> >
+>
+> >Thanks for the fix!
+>
+>
+>
+> Hi Jakub,
+>
+> >
+>
+> >Unless it's my poor eyesight I think this didn't get into patchwork:
+>
+> >
+>
+> >https://patchwork.kernel.org/project/netdevbpf/list/
+>
+>
+>
+> You are right.
+>
+> And the reason is that my inbox never survived certain check
+>
+> at @vger.kernel.org.
+>
+>
+>
+> Hillf
+
+Hi,
+
+What happened with this patch?
+I hoped this would get at least into 5.12. syzbot can't start testing
+arm32 because of this.
