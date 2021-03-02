@@ -2,187 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE0F32A36A
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9367832A36B
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382165AbhCBI4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 03:56:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376390AbhCBH1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 02:27:11 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C077C06178A
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 23:26:28 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lGzQ4-0000p3-UA; Tue, 02 Mar 2021 08:26:13 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:170b:eff8:30a0:9455] (unknown [IPv6:2a03:f580:87bc:d400:170b:eff8:30a0:9455])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 602A85EC02E;
-        Tue,  2 Mar 2021 07:26:09 +0000 (UTC)
-Subject: Re: [PATCH v2] can: c_can: move runtime PM enable/disable to
- c_can_platform
-To:     Tong Zhang <ztong0001@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
+        id S1382170AbhCBI4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 03:56:37 -0500
+Received: from mail-co1nam11on2079.outbound.protection.outlook.com ([40.107.220.79]:14416
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1837221AbhCBHkp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 02:40:45 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CbdxY+4jocAy/jCHbZFmM60m0i5xtlJjIFbciR7Z1mFoOTiA8bG89AjGu1XYsBCYYdqPXhz6osjdFqa+XiIlvytLsgQxmqVpD8HAkZ2DLgATgOmGWAS9lYpRh/8tvlFN7fPfKHS7B3MPVN73ZDcouC5nPYvFdJr2Xp0LWjpAhrQZRQ8VbJRB+vXu38zLylJzX0Ke/nsKSJ+08yok/ekJJyIMclAJKySi8ljX2iCz+dbosTIh7fXZIRPe2IXqYh8CWLL1YOSwXx35J+G1hhYalNr9JsDqqt60vmen4uAkfm6rsK5MOKx8qcd+ntK2jMZXZBPDW4Jiv8+KETM72v7ylA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ilG9FI3hAhS+931MzlWsGukeFWJ3fzcmjnDxT+k9kdw=;
+ b=c7WYJaW0+guJSj0jagXZ9zWzGeDtzFriGpRRQYze4g0k240zTQ3PK8YI08v6qnj/3Y1dHwEgDQCInKIcHWMJpc3aUA0iTzm/NidLyjlD0OdjXC1jGE4tGHDwQxSRq0XlQYVAu+BwqN/qQ4xJzNQqUvESVwvWGN6l4FvFSV939hQbbbg6mH4wJlZxA0pIQBqC/st93wpRPM6AAjn1fhGvN0q+Rop2RP9iFkWu2Qo8irYo8S+L6jEFHFaEUES9NW0eJSl2bqyHXg8dScezr09q59+Ldy3Q8r1cxtuItfwkdtLnYyhq7pitMuUY6dzdF/h4e21d6d7fAfkNGUBE+2GF/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ilG9FI3hAhS+931MzlWsGukeFWJ3fzcmjnDxT+k9kdw=;
+ b=iUhezgDfKQmJeVYGmoPHA1iIU7jXQAMrnd2cbg/oQEHCuxooCll5s0JI6Ih0hh+aSSwprPreYTRPumUl2KG70D4srqcPbmrPP3f/d8aRt1eFXvbuIlrgnatRnbNBJ2HO1H0FOPdnl2NsUUyRf/isHAV76ophsDDkt1Mgd3scVHA=
+Authentication-Results: codewreck.org; dkim=none (message not signed)
+ header.d=none;codewreck.org; dmarc=none action=none
+ header.from=synaptics.com;
+Received: from BN3PR03MB2307.namprd03.prod.outlook.com
+ (2a01:111:e400:7bb1::16) by BN7PR03MB3601.namprd03.prod.outlook.com
+ (2603:10b6:406:c7::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.26; Tue, 2 Mar
+ 2021 07:39:55 +0000
+Received: from BN3PR03MB2307.namprd03.prod.outlook.com
+ ([fe80::246d:2f3d:93bf:ee56]) by BN3PR03MB2307.namprd03.prod.outlook.com
+ ([fe80::246d:2f3d:93bf:ee56%4]) with mapi id 15.20.3890.030; Tue, 2 Mar 2021
+ 07:39:55 +0000
+Date:   Tue, 2 Mar 2021 15:39:40 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20210301150840.mqngl7og46o3nxjb@pengutronix.de>
- <20210302025542.987600-1-ztong0001@gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <593fd5a2-b801-82cc-34ae-cc6617096ab5@pengutronix.de>
-Date:   Tue, 2 Mar 2021 08:26:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+Subject: Re: [PATCH] net: 9p: free what was emitted when read count is 0
+Message-ID: <20210302153940.64332d11@xhacker.debian>
+In-Reply-To: <YD3BMLuZXIcETtzp@codewreck.org>
+References: <20210301103336.2e29da13@xhacker.debian>
+        <YDxWrB8AoxJOmScE@odin>
+        <20210301110157.19d9ad4e@xhacker.debian>
+        <YD3BMLuZXIcETtzp@codewreck.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.147.44.204]
+X-ClientProxiedBy: BY3PR03CA0009.namprd03.prod.outlook.com
+ (2603:10b6:a03:39a::14) To BN3PR03MB2307.namprd03.prod.outlook.com
+ (2a01:111:e400:7bb1::16)
 MIME-Version: 1.0
-In-Reply-To: <20210302025542.987600-1-ztong0001@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="FR48JlmjKdecAeAeTvxOLPymBVRFXt0hA"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (192.147.44.204) by BY3PR03CA0009.namprd03.prod.outlook.com (2603:10b6:a03:39a::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19 via Frontend Transport; Tue, 2 Mar 2021 07:39:52 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: aaf0b43b-c23e-4a46-bbe6-08d8dd4e5f8c
+X-MS-TrafficTypeDiagnostic: BN7PR03MB3601:
+X-Microsoft-Antispam-PRVS: <BN7PR03MB3601819280186BDFAC2958D1ED999@BN7PR03MB3601.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: OvR/iLBLeKjhRz7X40I1/qFuey/xcyvZTUV0G8p3/8yPVrjL3bwi39yuePaBQRjTBkB9uzbNvCXzNEFSD+7nem+kwpo+ivQ/EKgPhZ66JavV5hOk2jFs5Ae4k+VhTmbsXTgdXUzFVpNAsKNvtTDmHgSOCvccE+2b1zO3baTC8Luwe6reC/51DNujm836DQwqJxXvUfcyaZUWWaIe1mS6mZz5pebVibcshjWt8YoXJWroNUPaiECdD4U9S5WhZza0NCCnx4PYSQTYqhs7Et9moJ/OvaxH3xbFVXoKMD7Zb72FeMwqq/kpNEnH6PgVLps+BR4FzXNt8xE0TjeVXRYPWhNYbbzdUP3n941KG185p4H5J+LtRhCOmux98BvnKTPGmf2IWl/adohgqOrxAp2/ijAlNteizNayNgBW/0LQtedomPnOpkA1RdNM6A7GCwU1sYhUnRZP2EEwDD+Agh69UzsJBR2+5SMFeuwhQzBhmee/AOLDk7RYva6Aue+5Pqv4oW/FMxeaEJkFfegyJ6TrnQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN3PR03MB2307.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39860400002)(366004)(346002)(396003)(376002)(6506007)(6666004)(26005)(2906002)(7696005)(86362001)(316002)(83380400001)(478600001)(52116002)(1076003)(186003)(66476007)(54906003)(956004)(16526019)(66556008)(9686003)(5660300002)(8936002)(6916009)(55016002)(4326008)(66946007)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ixJxUHH7TfgDKBFTlGclfKRo4GVlrtwUD7TtWVHLv8pBUd4PNuESx/Jt66DH?=
+ =?us-ascii?Q?gMWS36VMyGFHIBT+7i0xCE2ac2+Pfk/A4z3MMXxQc19ol/BXgeua0WmewEaC?=
+ =?us-ascii?Q?+GCak7dkU4TDvXOCwmRAgFaGaFd3O2Q8kNoGcE6ez5UTIgBZu0UJaM/arc8b?=
+ =?us-ascii?Q?n+QbDtNxTpCXPM7L+Ub0UakaRxj1Bn7uR05Ana6VQHi+8YawiBibFOYJWysG?=
+ =?us-ascii?Q?PN/TjObhu3y1VkiEy0dktPdNHxMfKDliWlbWK7BUw+6rE5fs3C1jdHc66ayr?=
+ =?us-ascii?Q?t8MKNoEN+zgtftQJZTsZL8nbHwYtLYsSx0sLFIsj21is2WrMrTkmnn7nFgFT?=
+ =?us-ascii?Q?YgqpnsOPkbDsBMqbB34Je3e9whj7Br7WR1SCYfs+B8TZVAUTLwJWUtTjAkA0?=
+ =?us-ascii?Q?kNQki3xuCdisH3O0NF3mrFd+d3hV0Zox6Dfg+UuYcmY68imb0xcsdKSWrJ0T?=
+ =?us-ascii?Q?DdRLvGpYVm9RN+QTbu2JqBjF7Rzq0Y5de65kmbckoRtIUf/ghzqLh0WzejZ2?=
+ =?us-ascii?Q?gFvwtMZHQK8HRVrw3nxzzDSSspVJjLirYr+Gf1SK3WfkAZXGoLO/nvhG7lQx?=
+ =?us-ascii?Q?PTXxXLKjQ9Uqsrc+D8nI0g/w1eoTSkDpjTrqrZ6t7XIW3+rtaklpTERSo0eh?=
+ =?us-ascii?Q?TiqM3cfLAlrsKYwq1+GoZ8aVIcCcMABuYoUBz2mKNCiOBgk87fFoSix5klJf?=
+ =?us-ascii?Q?5vjyGSKt1RNH0azpUtpOzfwzKk+PnAALkuzxprYSGFWMLPX67OLOAlw/t3EG?=
+ =?us-ascii?Q?AHITtpqEqOzR98p262iyz3owt+ZK6lON8WjPig/A7Q6B7N7lm7gjyYWkWjlU?=
+ =?us-ascii?Q?3BqkLUPANC5Go2u5BrovEPh5QJUfNNMePTVlthLjqOQ09QlQrthm0Vxb3O/S?=
+ =?us-ascii?Q?Pkj/7Q8gziS8DYTk/AtG/GnYyq2DEtdqafpDsRL9oGlNTeq88iXpDrw/+DdT?=
+ =?us-ascii?Q?YAN1M9LDBhPeGjJBuxyoc3bQqPSkww314FTBeF52ffgIIXgrHh34Kyna2FMK?=
+ =?us-ascii?Q?I01k9/UItmDiga37WEplSsO7JibOttSOq2y1oZlc0UUnj7SRUss43NAe3eEN?=
+ =?us-ascii?Q?UEaZrOU694IcfUjPIEuQUfdtO+1J9UrMki04V14uEhooCGFof3J9kqF4WX2f?=
+ =?us-ascii?Q?0Q6WGvdysEzqQDZPBhv/C7xD8bVh6/Ml0ajMP7WuAcMO3MHlMG/FPMzAIlaD?=
+ =?us-ascii?Q?TOi7lMy7JKdDKU8pFmIqk0g2bxBf569tKdVkLrl8ExkRGM7HSg+9EcrPUgC4?=
+ =?us-ascii?Q?94z6G7ywWkMBD67GWe6tTxfD5muGGgzpzf0HmMjcds5I6wj39OnFanFeX9D2?=
+ =?us-ascii?Q?Bn/eMvrYpGRuKWARTiU/DOsk?=
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aaf0b43b-c23e-4a46-bbe6-08d8dd4e5f8c
+X-MS-Exchange-CrossTenant-AuthSource: BN3PR03MB2307.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2021 07:39:55.5210
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Z2BDsZ7dbMnETflLP+Bju3WsSx/gn8WhsFj2IM86CZxW6dXGOd9cZyua3QammAJ8Uj7NTp8Wt6pUFaSzS4M/cQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR03MB3601
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---FR48JlmjKdecAeAeTvxOLPymBVRFXt0hA
-Content-Type: multipart/mixed; boundary="bIpJ6cYKzzPuqp8ApA7u1ny9oL9fZVC1F";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Tong Zhang <ztong0001@gmail.com>, Wolfgang Grandegger
- <wg@grandegger.com>, "David S. Miller" <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>,
- Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
- Oliver Hartkopp <socketcan@hartkopp.net>, YueHaibing
- <yuehaibing@huawei.com>, Zhang Qilong <zhangqilong3@huawei.com>,
- linux-can@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Message-ID: <593fd5a2-b801-82cc-34ae-cc6617096ab5@pengutronix.de>
-Subject: Re: [PATCH v2] can: c_can: move runtime PM enable/disable to
- c_can_platform
-References: <20210301150840.mqngl7og46o3nxjb@pengutronix.de>
- <20210302025542.987600-1-ztong0001@gmail.com>
-In-Reply-To: <20210302025542.987600-1-ztong0001@gmail.com>
+On Tue, 2 Mar 2021 13:38:08 +0900 Dominique Martinet wrote:
 
---bIpJ6cYKzzPuqp8ApA7u1ny9oL9fZVC1F
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+> 
+> 
+> Jisheng Zhang wrote on Mon, Mar 01, 2021 at 11:01:57AM +0800:
+> > Per my understanding of iov_iter, we need to call iov_iter_advance()
+> > even when the read out count is 0. I believe we can see this common style
+> > in other fs.  
+> 
+> I'm not sure where you see this style, but I don't see exceptions for
+> 0-sized read not advancing the iov in general, and I guess this makes
+> sense.
 
-On 3/2/21 3:55 AM, Tong Zhang wrote:
-> Currently doing modprobe c_can_pci will make kernel complain
-> "Unbalanced pm_runtime_enable!", this is caused by pm_runtime_enable()
-> called before pm is initialized.
-> This fix is similar to 227619c3ff7c, move those pm_enable/disable code =
-to
-> c_can_platform.
->=20
-> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+for example, function dio_refill_pages() in fs/direct-io.c, and below code piece
+from net/core/datagram.c:
 
-Applied to linux-can/testing.
+                copied = iov_iter_get_pages(from, pages, length,
+                                            MAX_SKB_FRAGS - frag, &start);
+                if (copied < 0)
+                        return -EFAULT;
 
-Thanks,
-Marc
+                iov_iter_advance(from, copied);
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+As can be seen, for "copied >=0" case, we call iov_iter_advance()
 
+> 
+> 
+> Rather than make an exception for 0, how about just removing the if as
+> follow ?
 
---bIpJ6cYKzzPuqp8ApA7u1ny9oL9fZVC1F--
+IMHO, we may need to keep the "if" in current logic. When count
+reaches zero, we need to break the "while(iov_iter_count(to))" loop, so removing
+the "if" modifying the logic.
 
---FR48JlmjKdecAeAeTvxOLPymBVRFXt0hA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> 
+> I've checked that the non_zc case (copy_to_iter with 0 size) also works
+> to the same effect, so I'm not sure why the check got added in the
+> first place... But then again this is old code so maybe the semantics
+> changed since 2015.
+> 
+> 
+> ----
+> diff --git a/net/9p/client.c b/net/9p/client.c
+> index 4f62f299da0c..0a0039255c5b 100644
+> --- a/net/9p/client.c
+> +++ b/net/9p/client.c
+> @@ -1623,11 +1623,6 @@ p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
+>         }
+> 
+>         p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
+> -       if (!count) {
+> -               p9_tag_remove(clnt, req);
+> -               return 0;
+> -       }
+> -
+>         if (non_zc) {
+>                 int n = copy_to_iter(dataptr, count, to);
+> 
+> 
+> ----
+> 
+> If you're ok with that, would you mind resending that way?
+> 
+> I'd also want the commit message to be reworded a bit, at least the
+> first line (summary) doesn't make sense right now: I have no idea
+> what you mean by "free what was emitted".
+> Just "9p: advance iov on empty read" or something similar would do.
 
------BEGIN PGP SIGNATURE-----
+Thanks for the suggestion. I will send a v2 to update the commit msg but
+keep the patch as is if you agree with above keeping "if" logic.
+> 
+> 
+> > > cat version? coreutils' doesn't seem to do that on their git)  
+> >
+> > busybox cat  
+> 
+> Ok, could reproduce with busybox cat, thanks.
+> As expected I can't reproduce with older kernels so will run a bisect
+> for the sake of it as time allows
+> 
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmA96IwACgkQqclaivrt
-76mD5QgArOA7uZnze0rcsB0hwCidoq0XSlcDosb8nF3hRfvLZmds52nfJjkm7loo
-jEfOqe8/HYQmW8a1mWknXXgEZMShuDEJA8aUR2SVREV/g6W1luJ7LoVpye/9zj9H
-HdAdvV5BoatFsQLhPNoB5ZFlMLdiqUKVoXTRk1zas7C6Y2h+ZbeREmProEtkqKVv
-TenR2Mo3iJtsWJjdkZ7boZQ8u5oA7ORhQJc8SpD8DKJ7DrWNhGA4L6wH/MBar65F
-Gkrm6rms9TdsptR5HcfNiJAh/YmL3syVA8WLqbqH9dMHOzkgO/RhC0t3Q2ZJzGlE
-dgHSYpITGSCl3O2/ZrpF6rusEkRqag==
-=xufc
------END PGP SIGNATURE-----
-
---FR48JlmjKdecAeAeTvxOLPymBVRFXt0hA--
+Thanks
