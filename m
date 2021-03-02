@@ -2,114 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F5032A3C2
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:21:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC47032A3DF
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:22:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379043AbhCBJix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 04:38:53 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:54144 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1838145AbhCBJ37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 04:29:59 -0500
-Received: by mail-il1-f198.google.com with SMTP id s12so14084171ilh.20
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 01:29:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=mWrgSF6bXDt8oZKzNoVO6j2ZDCRfyqKvx81/QMegxVY=;
-        b=GRJO0xK+G6Geud/Y/DkTfGzlLrbDWczDFwWX8eO0Pitos6hk90h4TOyqST+PJyMx8Y
-         FhRrOrFvA0cel8ocFJcLw9HFbQqRfIaERPciQwjzYg+8MRpfWF6e0WoB+qE1kxgVBQuh
-         6Xk85hwicjMXlbmL+S+RJHbpExCErliD1pGztf2ecl64c1cAojXoSGvS+L4eEbH7l2fs
-         yt2Bh45mur9JXajzShLw7tNt34jyhN6Ump+8v0vFIWTqszE5ANK0Y4/0wtwSqXaXOX/P
-         dzpdjdCTC5S4vuBM3XYn2bGGChWCThIcKwFLXwAAUpMj/ZWQXBJDRxxfy+/qWmziyUaH
-         G9Kw==
-X-Gm-Message-State: AOAM5314/QOsJ02QZcCAaLQMfN4X6pN+qVipYVSgFd0kt8FQrWB7N/vZ
-        xnTSzE7BXlttocdq6GgDuZur8KF+u0cXFoAmv4YvJ3eOii8u
-X-Google-Smtp-Source: ABdhPJzYRtugQNJwsfcvLS+hVKsgyEYDJW1KKRISaXRdJRbOrHfk6pYCMLv0Os1pprF2odVOB6j7luJaC0meF1O3pydUvjmKoHoJ
+        id S1379124AbhCBJvl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Mar 2021 04:51:41 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:28653 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1378983AbhCBJdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 04:33:21 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-557-5l0qKjv-M86_vv9I37WSKw-1; Tue, 02 Mar 2021 04:32:21 -0500
+X-MC-Unique: 5l0qKjv-M86_vv9I37WSKw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48A07E75D;
+        Tue,  2 Mar 2021 09:32:18 +0000 (UTC)
+Received: from hog (ovpn-112-129.ams2.redhat.com [10.36.112.129])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 605DC60C05;
+        Tue,  2 Mar 2021 09:32:15 +0000 (UTC)
+Date:   Tue, 2 Mar 2021 10:32:13 +0100
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Eyal Birger <eyal.birger@gmail.com>
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        bram-yvahk@mail.wizbit.be
+Subject: Re: [PATCH ipsec 0/2] vti(6): fix ipv4 pmtu check to honor ip header
+ df
+Message-ID: <YD4GHf4CZUIK6M2E@hog>
+References: <20210226213506.506799-1-eyal.birger@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:a606:: with SMTP id c6mr10241993jam.108.1614677357837;
- Tue, 02 Mar 2021 01:29:17 -0800 (PST)
-Date:   Tue, 02 Mar 2021 01:29:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000057420705bc8a5eeb@google.com>
-Subject: KMSAN: uninit-value in ieee802154_hdr_push
-From:   syzbot <syzbot+4f6e279a71100e94ae65@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        stefan@datenfreihafen.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210226213506.506799-1-eyal.birger@gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+2021-02-26, 23:35:04 +0200, Eyal Birger wrote:
+> This series aligns vti(6) handling of non-df IPv4 packets exceeding
+> the size of the tunnel MTU to avoid sending "Frag needed" and instead
+> fragment the packets after encapsulation.
+> 
+> Eyal Birger (2):
+>   vti: fix ipv4 pmtu check to honor ip header df
+>   vti6: fix ipv4 pmtu check to honor ip header df
 
-syzbot found the following issue on:
+Thanks Eyal.
+Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
 
-HEAD commit:    29ad81a1 arch/x86: add missing include to sparsemem.h
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=1756eff2d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c8e3b38ca92283e
-dashboard link: https://syzkaller.appspot.com/bug?extid=4f6e279a71100e94ae65
-compiler:       Debian clang version 11.0.1-2
-userspace arch: i386
+Steffen, that's going to conflict with commit 4372339efc06 ("net:
+always use icmp{,v6}_ndo_send from ndo_start_xmit") from net.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+-- 
+Sabrina
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4f6e279a71100e94ae65@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in ieee802154_hdr_push_sechdr net/ieee802154/header_ops.c:54 [inline]
-BUG: KMSAN: uninit-value in ieee802154_hdr_push+0xd68/0xdd0 net/ieee802154/header_ops.c:108
-CPU: 1 PID: 15015 Comm: syz-executor.3 Not tainted 5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- ieee802154_hdr_push_sechdr net/ieee802154/header_ops.c:54 [inline]
- ieee802154_hdr_push+0xd68/0xdd0 net/ieee802154/header_ops.c:108
- ieee802154_header_create+0xd07/0x1070 net/mac802154/iface.c:404
- wpan_dev_hard_header include/net/cfg802154.h:374 [inline]
- dgram_sendmsg+0xf48/0x15c0 net/ieee802154/socket.c:670
- ieee802154_sock_sendmsg+0xec/0x130 net/ieee802154/socket.c:97
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2345
- ___sys_sendmsg net/socket.c:2399 [inline]
- __sys_sendmsg+0x714/0x830 net/socket.c:2432
- __compat_sys_sendmsg net/compat.c:347 [inline]
- __do_compat_sys_sendmsg net/compat.c:354 [inline]
- __se_compat_sys_sendmsg+0xa7/0xc0 net/compat.c:351
- __ia32_compat_sys_sendmsg+0x4a/0x70 net/compat.c:351
- do_syscall_32_irqs_on arch/x86/entry/common.c:79 [inline]
- __do_fast_syscall_32+0x102/0x160 arch/x86/entry/common.c:141
- do_fast_syscall_32+0x6a/0xc0 arch/x86/entry/common.c:166
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:209
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-RIP: 0023:0xf7f65549
-Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f555f5fc EFLAGS: 00000296 ORIG_RAX: 0000000000000172
-RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 00000000200003c0
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-
-Local variable ----hdr@ieee802154_header_create created at:
- ieee802154_header_create+0xc9/0x1070 net/mac802154/iface.c:368
- ieee802154_header_create+0xc9/0x1070 net/mac802154/iface.c:368
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
