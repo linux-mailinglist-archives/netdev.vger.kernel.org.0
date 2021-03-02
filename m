@@ -2,162 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE29632B36E
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:08:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A60EF32B374
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:08:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344002AbhCCDxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 22:53:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59224 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380003AbhCBKZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 05:25:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614680590;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SGioato23lbkvo7M0QJS06qhjk71ippSH/Xk3g8ZuNY=;
-        b=dsTj11O1qqgvhjAy+NpYwhcfeQityWn2dd0t98f24AqBl47FWPY99MNtUzdzdcK9oKazDb
-        TrL0TLKwYpN6lhtEpmPYBo8WpaZoz+7LF6Mn8kT/0wMX58j8+CM8FTRz4cVghg7vkIbvor
-        SCSW4oZIw3SdR7/TLkPRkMZcqY3QfJc=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-566-_b_AjVymMu-rFPki3X5M6A-1; Tue, 02 Mar 2021 05:23:09 -0500
-X-MC-Unique: _b_AjVymMu-rFPki3X5M6A-1
-Received: by mail-ed1-f72.google.com with SMTP id l23so10186909edt.23
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 02:23:08 -0800 (PST)
+        id S1349773AbhCCDzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 22:55:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349600AbhCBKmh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 05:42:37 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F33C06178B
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 02:32:13 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id s8so24539148edd.5
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 02:32:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aHiivO66cBlvi2omwE76dmO7GHvGNT96Cj5+nu42PGg=;
+        b=I3uOr+q0RQRgiQgCS80GYwUSkTQnW9aaq4gmyDrvqidORji3JQgKK5Gk6gXKJx4JN6
+         Kdw/xd8w7zZL+nnUxuSZdMOnoz9eiyotnG5IKpT+Ud7NlWqTrt6YooiYlRRVi02JJMMr
+         4VYaUBZaNWsU4GxWuGvtyzk3NIV5/ZljDQKPkS7H3te3Wt54mTXFOXDjC2JdrQuaoHhI
+         QtV+wrlNU3ReiikOrRqrSIVv+puzwruHdJKxH4oXnS6xb8gPwknLRq7pC4a/EOpknuQO
+         +skcqqGEbtLCSfYhVvBfpY3tTCreILgdD5pwsxFpWM3+87sOSq+Bypy84M9wCvwAd7bE
+         Twvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=SGioato23lbkvo7M0QJS06qhjk71ippSH/Xk3g8ZuNY=;
-        b=IZcs9tpRNFGpOnj5OeANtMQXXChX0MyGUy+wyVb2lIQRW0l+AcyaivE0eGkJPMQqZ6
-         Hd/WZzd7ZWegRuVyCXPu1PAlMnT3tInPI8Udso32+yiCIy5i84kgYH/4/VMbMGHrJXZj
-         +c9pt8CWsnDTzQcFp7osM2ClIn6rDXZaXmYaL5QHfcScRs2yZkA2q3M2zNHj7NEl5jyg
-         HYy1x8qd2RXS8FiAEw3CsNLEulNvEiCyafZHyFPHUabk8TQ91EZ2+KHzJpXDSU9OjBUZ
-         58VlOLM2rZeaimgZYXww/MDyRtOy3MP0fsMlSk/XELfkKt+klOzeSm9NIqKbKPDvLQsD
-         +jiQ==
-X-Gm-Message-State: AOAM532ifOLn5SXxB0sDivfcy04xlgUGf4mfAbfkZwr5sxfZ8gbjlHKg
-        e06AG8MnNL7SfWGLaojy9yErGTNONLiwSrYdpfAeE188kulL5xfI0JBN/nS0aiHfoaslx933pjq
-        zdZOJenjReqMKt7oY
-X-Received: by 2002:a17:907:98f1:: with SMTP id ke17mr20328489ejc.498.1614680587749;
-        Tue, 02 Mar 2021 02:23:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxXvNpAMqBBkGg+NOxtgWvOBSxWBoUndCBrESzleiWax8xy6W/ulefjzFx7PChqUiN+eNt+sw==
-X-Received: by 2002:a17:907:98f1:: with SMTP id ke17mr20328462ejc.498.1614680587415;
-        Tue, 02 Mar 2021 02:23:07 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id s2sm18031250edt.35.2021.03.02.02.23.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Mar 2021 02:23:06 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 413061800F1; Tue,  2 Mar 2021 11:23:06 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, paulmck@kernel.org
-Cc:     magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        maximmi@nvidia.com, andrii@kernel.org
-Subject: Re: [PATCH bpf-next 1/2] xsk: update rings for
- load-acquire/store-release semantics
-In-Reply-To: <939aefb5-8f03-fc5a-9e8b-0b634aafd0a4@intel.com>
-References: <20210301104318.263262-1-bjorn.topel@gmail.com>
- <20210301104318.263262-2-bjorn.topel@gmail.com> <87mtvmx3ec.fsf@toke.dk>
- <939aefb5-8f03-fc5a-9e8b-0b634aafd0a4@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 02 Mar 2021 11:23:06 +0100
-Message-ID: <87zgzlvoqd.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aHiivO66cBlvi2omwE76dmO7GHvGNT96Cj5+nu42PGg=;
+        b=hItwfooYEgkNxhfvJPGJqlEETCs/EAHSz4cCe53hiagJnF32X2Fp5fWcwcbv02aMLc
+         149XZRMGhwXPkHYOYqZiqVqhEDyPeYfDKWwx5bV/pKqXMTMR3Ta5E3KVFBtQ1Vbi7X9A
+         lR5waIiQO599OygXERevuJ/Gl3vvib15vl6zUOg8lgrguoixUwbXB1i9LMPd9L9CsPMz
+         DMYwmJe3iFPUBVdTel40sCWKtS0HB91lkcrFxgHuhv5O/tMo3pgRR/0NNOBO2PVO5iW6
+         H4jmsWkovLnbabyuZQECuNu6VJC12WzzP960jMdKxVILTOXRyoS+7giKZNOC3l+55Djm
+         8QWA==
+X-Gm-Message-State: AOAM531cW6IOi9jR4G0TuIkgIhqAxjwuV5Gez6Y0hEiqwPTn8+t5ib0d
+        WmLyWrY4Up0arB8vVh0grLCOQeyiAb9/RjOxjM1R
+X-Google-Smtp-Source: ABdhPJzlkbp8GXrzTY+Abm6IQL/bSnnCkhRKckW2ZUkdVHBw9ERA3un1YwUAbOK+Sq4gG6u3AkoG0LR4jYRsbg5g92Q=
+X-Received: by 2002:a05:6402:180b:: with SMTP id g11mr10194555edy.195.1614681131866;
+ Tue, 02 Mar 2021 02:32:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20210223115048.435-1-xieyongji@bytedance.com> <20210223115048.435-2-xieyongji@bytedance.com>
+ <22e96bd6-0113-ef01-376e-0776d7bdbcd8@redhat.com>
+In-Reply-To: <22e96bd6-0113-ef01-376e-0776d7bdbcd8@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 2 Mar 2021 18:32:01 +0800
+Message-ID: <CACycT3vYA-2ut31KqzL2osGHDxRB_fTJBGyt4M7FvNkfv7zu7w@mail.gmail.com>
+Subject: Re: Re: [RFC v4 01/11] eventfd: Increase the recursion depth of eventfd_signal()
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
-
-> On 2021-03-01 17:08, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->>=20
->>> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->>>
->>> Currently, the AF_XDP rings uses smp_{r,w,}mb() fences on the
->>> kernel-side. By updating the rings for load-acquire/store-release
->>> semantics, the full barrier on the consumer side can be replaced with
->>> improved performance as a nice side-effect.
->>>
->>> Note that this change does *not* require similar changes on the
->>> libbpf/userland side, however it is recommended [1].
->>>
->>> On x86-64 systems, by removing the smp_mb() on the Rx and Tx side, the
->>> l2fwd AF_XDP xdpsock sample performance increases by
->>> 1%. Weakly-ordered platforms, such as ARM64 might benefit even more.
->>>
->>> [1] https://lore.kernel.org/bpf/20200316184423.GA14143@willie-the-truck/
->>>
->>> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->>> ---
->>>   net/xdp/xsk_queue.h | 27 +++++++++++----------------
->>>   1 file changed, 11 insertions(+), 16 deletions(-)
->>>
->>> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
->>> index 2823b7c3302d..e24279d8d845 100644
->>> --- a/net/xdp/xsk_queue.h
->>> +++ b/net/xdp/xsk_queue.h
->>> @@ -47,19 +47,18 @@ struct xsk_queue {
->>>   	u64 queue_empty_descs;
->>>   };
->>>=20=20=20
->>> -/* The structure of the shared state of the rings are the same as the
->>> - * ring buffer in kernel/events/ring_buffer.c. For the Rx and completi=
-on
->>> - * ring, the kernel is the producer and user space is the consumer. For
->>> - * the Tx and fill rings, the kernel is the consumer and user space is
->>> - * the producer.
->>> +/* The structure of the shared state of the rings are a simple
->>> + * circular buffer, as outlined in
->>> + * Documentation/core-api/circular-buffers.rst. For the Rx and
->>> + * completion ring, the kernel is the producer and user space is the
->>> + * consumer. For the Tx and fill rings, the kernel is the consumer and
->>> + * user space is the producer.
->>>    *
->>>    * producer                         consumer
->>>    *
->>> - * if (LOAD ->consumer) {           LOAD ->producer
->>> - *                    (A)           smp_rmb()       (C)
->>> + * if (LOAD ->consumer) {  (A)      LOAD.acq ->producer  (C)
->>=20
->> Why is LOAD.acq not needed on the consumer side?
->>
+On Tue, Mar 2, 2021 at 2:44 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> You mean why LOAD.acq is not needed on the *producer* side, i.e. the
-> ->consumer?
-
-Yes, of course! The two words were, like, right next to each other ;)
-
-> The ->consumer is a control dependency for the store, so there is no
-> ordering constraint for ->consumer at producer side. If there's no
-> space, no data is written. So, no barrier is needed there -- at least
-> that has been my perspective.
 >
-> This is very similar to the buffer in
-> Documentation/core-api/circular-buffers.rst. Roping in Paul for some
-> guidance.
+> On 2021/2/23 7:50 =E4=B8=8B=E5=8D=88, Xie Yongji wrote:
+> > Increase the recursion depth of eventfd_signal() to 1. This
+> > is the maximum recursion depth we have found so far.
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+>
+>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+>
+> It might be useful to explain how/when we can reach for this condition.
+>
 
-Yeah, I did read that, but got thrown off by this bit: "Therefore, the
-unlock-lock pair between consecutive invocations of the consumer
-provides the necessary ordering between the read of the index indicating
-that the consumer has vacated a given element and the write by the
-producer to that same element."
+Fine.
 
-Since there is no lock in the XSK, what provides that guarantee here?
-
-
-Oh, and BTW, when I re-read the rest of the comment in xsk_queue.h
-(below the diagram you are changing in this patch), the text still talks
-about "memory barriers" - maybe that should be updated to
-release/acquire as well while you're changing things?
-
--Toke
-
+Thanks,
+Yongji
