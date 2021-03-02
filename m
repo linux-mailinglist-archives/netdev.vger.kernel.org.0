@@ -2,109 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7B2632B3DA
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:23:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 262E832B3DB
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840222AbhCCEHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:07:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42046 "EHLO mail.kernel.org"
+        id S1840227AbhCCEHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:07:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52790 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2361127AbhCBXbQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 18:31:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0B04F64F3A;
-        Tue,  2 Mar 2021 23:30:35 +0000 (UTC)
+        id S233697AbhCBXzA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 18:55:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id B795064F3E;
+        Tue,  2 Mar 2021 23:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614727835;
-        bh=eaqbGMdh02IVWXqfTzJMMG0eXfyji5TImxVinimTfZ8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mNGVJGj74sulK1XpDtC+1PkfDz8pu+vd5dy/11440qyYXhOmgfChR3ePqAJ66/tFm
-         whjv4sQsgIG6JcRttlCQV/iA0GGZCXaZlNGnN3YLuQK4l/L2mXxFz35Xav1425icea
-         XTEP2yCPViD+lHhpxOKV4QhNpSI5eZkHuLbQGWgYyQqgCXwG/9xDgY/ZNO6XNzX/dL
-         euOlDcj+MHjwH7K1sz448UerEeBKMQND73XvXHTysPTBgmqT1JhaL8LyOnDfOWMIM8
-         uhb9TnP9VyQ9MX+03SHMZWRiczJF0yplPbGVe/KJnvDQRhda8PSQOTt0NmaUh487kp
-         2p84s69/cvvow==
-Date:   Tue, 2 Mar 2021 15:30:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Xie He <xie.he.0141@gmail.com>, Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB
- frames
-Message-ID: <20210302153034.5f4e320b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <41b77b1c3cf1bb7a51b750faf23900ef@dev.tdt.de>
-References: <20210216201813.60394-1-xie.he.0141@gmail.com>
-        <YC4sB9OCl5mm3JAw@unreal>
-        <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
-        <YC5DVTHHd6OOs459@unreal>
-        <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
-        <YC7GHgYfGmL2wVRR@unreal>
-        <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
-        <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
-        <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAJht_EOru3pW6AHN4QVjiaERpLSfg-0G0ZEaqU_hkhX1acv0HQ@mail.gmail.com>
-        <906d8114f1965965749f1890680f2547@dev.tdt.de>
-        <CAJht_EPBJhhdCBoon=WMuPBk-sxaeYOq3veOpAd2jq5kFqQHBg@mail.gmail.com>
-        <e1750da4179aca52960703890e985af3@dev.tdt.de>
-        <CAJht_ENP3Y98jgj1peGa3fGpQ-qPaF=1gtyYwMcawRFW_UCpeA@mail.gmail.com>
-        <ff200b159ef358494a922a676cbef8a6@dev.tdt.de>
-        <CAJht_EMG27YU+Jxtb2qeq1nXwu8uV8FXQPr62OcNHsE7DozD1g@mail.gmail.com>
-        <41b77b1c3cf1bb7a51b750faf23900ef@dev.tdt.de>
+        s=k20201202; t=1614728406;
+        bh=ABt6OaQXxSJrMIjXTxRUKwBVgyxYbL5f4ep+5/xdFyc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Tkkem2oFlI1G1THjSLzD4GWKMuu6c1oAjs5gVoZiQX4uYNKmDbMiez0y3mIYMdfug
+         81ryaxQ+Cvn4hv8vnt0EOR2b6oTbqE/Od33uLrmQiYKvOMAyxj9H2pTM/XoG1tfq9O
+         qfhBl8TNnpBuyF/8hpzYUcX7B0aTRFOcEsfd88TDPED8WamgHhBkbh0L5Hd6GrA9K3
+         Fadx3KhH4jOmxyjI/KQjIziXyIX+ljcWgtENVaex78BjrH7eySg1uypIdehht7/4er
+         oBvK25rSSfu8TBFpGxwBVvHECX/wrP2QuqxaosNeeQENeeaQ1dQzjJ0OM5sb+QH6B1
+         xnVSezNHkytmw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A594160192;
+        Tue,  2 Mar 2021 23:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/1] stmmac: intel: Fix mdio bus registration issue for
+ TGL-H/ADL-S
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161472840667.3168.1105400631486899998.git-patchwork-notify@kernel.org>
+Date:   Tue, 02 Mar 2021 23:40:06 +0000
+References: <20210302085721.3168-1-vee.khee.wong@intel.com>
+In-Reply-To: <20210302085721.3168-1-vee.khee.wong@intel.com>
+To:     Wong Vee Khee <vee.khee.wong@intel.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        muhammad.husaini.zulkifli@intel.com,
+        noor.azura.ahmad.tarmizi@intel.com, weifeng.voon@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 02 Mar 2021 08:04:20 +0100 Martin Schiller wrote:
-> On 2021-03-01 09:56, Xie He wrote:
-> > On Sun, Feb 28, 2021 at 10:56 PM Martin Schiller <ms@dev.tdt.de> wrote:  
-> >> I mean the change from only one hdlc<x> interface to both hdlc<x> and
-> >> hdlc<x>_x25.
-> >> 
-> >> I can't estimate how many users are out there and how their setup 
-> >> looks
-> >> like.  
-> > 
-> > I'm also thinking about solving this issue by adding new APIs to the
-> > HDLC subsystem (hdlc_stop_queue / hdlc_wake_queue) for hardware
-> > drivers to call instead of netif_stop_queue / netif_wake_queue. This
-> > way we can preserve backward compatibility.
-> > 
-> > However I'm reluctant to change the code of all the hardware drivers
-> > because I'm afraid of introducing bugs, etc. When I look at the code
-> > of "wan/lmc/lmc_main.c", I feel I'm not able to make sure there are no
-> > bugs (related to stop_queue / wake_queue) after my change (and even
-> > before my change, actually). There are even serious style problems:
-> > the majority of its lines are indented by spaces.
-> > 
-> > So I don't want to mess with all the hardware drivers. Hardware driver
-> > developers (if they wish to properly support hdlc_x25) should do the
-> > change themselves. This is not a problem for me, because I use my own
-> > out-of-tree hardware driver. However if I add APIs with no user code
-> > in the kernel, other developers may think these APIs are not
-> > necessary.  
-> 
-> I don't think a change that affects the entire HDLC subsystem is
-> justified, since the actual problem only affects the hdlc_x25 area.
-> 
-> The approach with the additional hdlc<x>_x25 is clean and purposeful and
-> I personally could live with it.
-> 
-> I just don't see myself in the position to decide such a change at the
-> moment.
-> 
-> @Jakub: What is your opinion on this.
+Hello:
 
-Hard question to answer, existing users seem happy and Xie's driver
-isn't upstream, so the justification for potentially breaking backward
-compatibility isn't exactly "strong".
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Can we cop out and add a knob somewhere to control spawning the extra
-netdev? Let people who just want a newer kernel carry on without
-distractions and those who want the extra layer can flip the switch?
+On Tue,  2 Mar 2021 16:57:21 +0800 you wrote:
+> On Intel platforms which consist of two Ethernet Controllers such as
+> TGL-H and ADL-S, a unique MDIO bus id is required for MDIO bus to be
+> successful registered:
+> 
+> [   13.076133] sysfs: cannot create duplicate filename '/class/mdio_bus/stmmac-1'
+> [   13.083404] CPU: 8 PID: 1898 Comm: systemd-udevd Tainted: G     U            5.11.0-net-next #106
+> [   13.092410] Hardware name: Intel Corporation Alder Lake Client Platform/AlderLake-S ADP-S DRR4 CRB, BIOS ADLIFSI1.R00.1494.B00.2012031421 12/03/2020
+> [   13.105709] Call Trace:
+> [   13.108176]  dump_stack+0x64/0x7c
+> [   13.111553]  sysfs_warn_dup+0x56/0x70
+> [   13.115273]  sysfs_do_create_link_sd.isra.2+0xbd/0xd0
+> [   13.120371]  device_add+0x4df/0x840
+> [   13.123917]  ? complete_all+0x2a/0x40
+> [   13.127636]  __mdiobus_register+0x98/0x310 [libphy]
+> [   13.132572]  stmmac_mdio_register+0x1c5/0x3f0 [stmmac]
+> [   13.137771]  ? stmmac_napi_add+0xa5/0xf0 [stmmac]
+> [   13.142493]  stmmac_dvr_probe+0x806/0xee0 [stmmac]
+> [   13.147341]  intel_eth_pci_probe+0x1cb/0x250 [dwmac_intel]
+> [   13.152884]  pci_device_probe+0xd2/0x150
+> [   13.156897]  really_probe+0xf7/0x4d0
+> [   13.160527]  driver_probe_device+0x5d/0x140
+> [   13.164761]  device_driver_attach+0x4f/0x60
+> [   13.168996]  __driver_attach+0xa2/0x140
+> [   13.172891]  ? device_driver_attach+0x60/0x60
+> [   13.177300]  bus_for_each_dev+0x76/0xc0
+> [   13.181188]  bus_add_driver+0x189/0x230
+> [   13.185083]  ? 0xffffffffc0795000
+> [   13.188446]  driver_register+0x5b/0xf0
+> [   13.192249]  ? 0xffffffffc0795000
+> [   13.195577]  do_one_initcall+0x4d/0x210
+> [   13.199467]  ? kmem_cache_alloc_trace+0x2ff/0x490
+> [   13.204228]  do_init_module+0x5b/0x21c
+> [   13.208031]  load_module+0x2a0c/0x2de0
+> [   13.211838]  ? __do_sys_finit_module+0xb1/0x110
+> [   13.216420]  __do_sys_finit_module+0xb1/0x110
+> [   13.220825]  do_syscall_64+0x33/0x40
+> [   13.224451]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [   13.229515] RIP: 0033:0x7fc2b1919ccd
+> [   13.233113] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 93 31 0c 00 f7 d8 64 89 01 48
+> [   13.251912] RSP: 002b:00007ffcea2e5b98 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+> [   13.259527] RAX: ffffffffffffffda RBX: 0000560558920f10 RCX: 00007fc2b1919ccd
+> [   13.266706] RDX: 0000000000000000 RSI: 00007fc2b1a881e3 RDI: 0000000000000012
+> [   13.273887] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000000000000000
+> [   13.281036] R10: 0000000000000012 R11: 0000000000000246 R12: 00007fc2b1a881e3
+> [   13.288183] R13: 0000000000000000 R14: 0000000000000000 R15: 00007ffcea2e5d58
+> [   13.295389] libphy: mii_bus stmmac-1 failed to register
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/1] stmmac: intel: Fix mdio bus registration issue for TGL-H/ADL-S
+    https://git.kernel.org/netdev/net/c/fa706dce2f2d
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
