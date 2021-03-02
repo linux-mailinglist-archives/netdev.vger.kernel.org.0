@@ -2,241 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA74832B3B8
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:21:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09E9F32B3B9
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449975AbhCCEFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:05:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581341AbhCBSum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 13:50:42 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CFDC0698C1
-        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 10:49:45 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id e9so2637941pjj.0
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 10:49:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=u7W2UvT3BWsclOQ3yTE8be/4H7Rp18TFIX3NsdArnfs=;
-        b=fdWtSvbArknoqc3tctztg3CfLtN6oa1RT2Ctuk6ZULuCcZAl60XEHp43+QQeHFFaAJ
-         FFhPcZC8JpOoVCczGD3DsCoKg6l1WpMbxk7bUB8pdW776cFGLNKcC6QilLf3wMtjjWwT
-         +bniJlp2NS043sM4XAolJTL7t9rc3TyzN2GCk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=u7W2UvT3BWsclOQ3yTE8be/4H7Rp18TFIX3NsdArnfs=;
-        b=h9HHAnnxFkQdPhuedwiYpbQdSWyZmeDbfKqRGGMiAW6/X55XQk4T4VuObpDGGS+F34
-         45YFzJmZYcbtD40gHX7hAaf6m+r0MKfq5fnCNK5F8u5qn6dosEaszfQkhsJqKeK1YPaO
-         l59XkzgH5z4Cwg6PaVkGuIfTRi8Au3F6rKl/zzuXNX3fkRq9PQXXcwP6JuSTObCDA9xv
-         gu/cFrsgvBKaYCwjZ3Iur4Q+YoY2JBXJ3K5l/3m7ja4Fud0PbvEJ4y7s7Plp2M9Nx0Hw
-         IDttDCjlDLIVMZvmwNT4ZrA4lHG2qwV+yARMABwckUj5r1HiEg4la27h8ZlU3F0ydHrL
-         vWCw==
-X-Gm-Message-State: AOAM531J3Jejk3QCA55BScGPW6tMx7bxmvTstsqIWVajBV4dPK8RmybJ
-        Wzy+tj1xtXbge+9Bi4b1zi4W+A==
-X-Google-Smtp-Source: ABdhPJzWqsO37yRTPl4RLQZHFXevT+YiB6QEB9fGxBb2zPHJ+7Rft4IGQ9LfLwXJ/BHnBZaphA1rQw==
-X-Received: by 2002:a17:90a:154e:: with SMTP id y14mr5831607pja.229.1614710985126;
-        Tue, 02 Mar 2021 10:49:45 -0800 (PST)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:9c83:cccc:4c1:7b17])
-        by smtp.gmail.com with ESMTPSA id 140sm21800839pfv.83.2021.03.02.10.49.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Mar 2021 10:49:44 -0800 (PST)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-bluetooth@vger.kernel.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: [PATCH v2 1/1] Bluetooth: Remove unneeded commands for suspend
-Date:   Tue,  2 Mar 2021 10:49:36 -0800
-Message-Id: <20210302104931.v2.1.Ifcac8bd85b5339135af8e08370bacecc518b1c35@changeid>
-X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
-In-Reply-To: <20210302184936.619740-1-abhishekpandit@chromium.org>
-References: <20210302184936.619740-1-abhishekpandit@chromium.org>
+        id S1572884AbhCCEFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:05:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36329 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1581619AbhCBTAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 14:00:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614711529;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=T21XN9MGnhH4cwAE4X6b7/PVEGlQuBJUKF8L3IcS/E4=;
+        b=eM6XHhcErsb2YYMRy4Z+vf8c96BNraHpyXKLH1ZjrxdFrgtiOaxtcWzM6kPulU2LtSR6Ju
+        waf/m7dCrvOy73K9i2EuoZQelUQ6Gxh0h2Mb5Z2c55uIpkOKzKZMwemhwgBV8P5jcMBDr/
+        ddSKmMXTsnzhigwzjRfZBlL6V8VuJNo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-239-9IMvX_1NNLC3Luf6vHIGCg-1; Tue, 02 Mar 2021 13:58:47 -0500
+X-MC-Unique: 9IMvX_1NNLC3Luf6vHIGCg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0125A835E2A;
+        Tue,  2 Mar 2021 18:58:46 +0000 (UTC)
+Received: from krava (unknown [10.40.195.211])
+        by smtp.corp.redhat.com (Postfix) with SMTP id ED01E61F20;
+        Tue,  2 Mar 2021 18:58:39 +0000 (UTC)
+Date:   Tue, 2 Mar 2021 19:58:38 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Yauheni Kaliuta <ykaliuta@redhat.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix test_attach_probe for
+ powerpc uprobes
+Message-ID: <YD6K3nex6MQ09u8U@krava>
+References: <20210301190416.90694-1-jolsa@kernel.org>
+ <CAEf4BzbBnR3M60HepC_CFDsdMQDBYoEWiWtREUaLxrrxyBce0Q@mail.gmail.com>
+ <YD4d+dmay+oKyiot@krava>
+ <CAEf4Bzah8Au01NvtwSogpkr3etwQ3_bObj3GObG8Lb3N0DqZwA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzah8Au01NvtwSogpkr3etwQ3_bObj3GObG8Lb3N0DqZwA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During suspend, there are a few scan enable and set event filter
-commands that don't need to be sent unless there are actual BR/EDR
-devices capable of waking the system. Check the HCI_PSCAN bit before
-writing scan enable and use a new dev flag, HCI_EVENT_FILTER_CONFIGURED
-to control whether to clear the event filter.
+On Tue, Mar 02, 2021 at 10:31:41AM -0800, Andrii Nakryiko wrote:
+> On Tue, Mar 2, 2021 at 3:14 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Mon, Mar 01, 2021 at 04:34:24PM -0800, Andrii Nakryiko wrote:
+> > > On Mon, Mar 1, 2021 at 11:11 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > >
+> > > > When testing uprobes we the test gets GEP (Global Entry Point)
+> > > > address from kallsyms, but then the function is called locally
+> > > > so the uprobe is not triggered.
+> > > >
+> > > > Fixing this by adjusting the address to LEP (Local Entry Point)
+> > > > for powerpc arch.
+> > > >
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > ---
+> > > >  .../selftests/bpf/prog_tests/attach_probe.c    | 18 +++++++++++++++++-
+> > > >  1 file changed, 17 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > > > index a0ee87c8e1ea..c3cfb48d3ed0 100644
+> > > > --- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > > > +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > > > @@ -2,6 +2,22 @@
+> > > >  #include <test_progs.h>
+> > > >  #include "test_attach_probe.skel.h"
+> > > >
+> > > > +#if defined(__powerpc64__)
+> > > > +/*
+> > > > + * We get the GEP (Global Entry Point) address from kallsyms,
+> > > > + * but then the function is called locally, so we need to adjust
+> > > > + * the address to get LEP (Local Entry Point).
+> > > > + */
+> > > > +#define LEP_OFFSET 8
+> > > > +
+> > > > +static ssize_t get_offset(ssize_t offset)
+> > >
+> > > if we mark this function __weak global, would it work as is? Would it
+> > > get an address of a global entry point? I know nothing about this GEP
+> > > vs LEP stuff, interesting :)
+> >
+> > you mean get_base_addr? it's already global
+> >
+> > all the calls to get_base_addr within the object are made
+> > to get_base_addr+0x8
+> >
+> > 00000000100350c0 <test_attach_probe>:
+> >     ...
+> >     100350e0:   59 fd ff 4b     bl      10034e38 <get_base_addr+0x8>
+> >     ...
+> >     100358a8:   91 f5 ff 4b     bl      10034e38 <get_base_addr+0x8>
+> >
+> >
+> > I'm following perf fix we had for similar issue:
+> >   7b6ff0bdbf4f perf probe ppc64le: Fixup function entry if using kallsyms lookup
+> >
+> > I'll get more info on that
+> 
+> My thinking was that if you mark the function as __weak, then the
+> compiler is not allowed to assume that the actual implementation of
+> that function will come from the same object (because it might be
+> replaced by the linker later), so it has to be pessimistic and use
+> global entry, no? Totally theoritizing here, of course.
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
----
+ah ok.. good idea, but it's still jumping to +8 in my test
 
-Changes in v2:
-* Removed hci_dev_lock from hci_cc_set_event_filter since flags are
-  set/cleared atomically
+    # nm test_progs | grep get_base_addr
+    0000000010034e30 W get_base_addr
 
- include/net/bluetooth/hci.h |  1 +
- net/bluetooth/hci_event.c   | 24 ++++++++++++++++++++
- net/bluetooth/hci_request.c | 44 +++++++++++++++++++++++--------------
- 3 files changed, 52 insertions(+), 17 deletions(-)
+    100350e0:   59 fd ff 4b     bl      10034e38 <get_base_addr+0x8>
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index ba2f439bc04d34..ea4ae551c42687 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -320,6 +320,7 @@ enum {
- 	HCI_BREDR_ENABLED,
- 	HCI_LE_SCAN_INTERRUPTED,
- 	HCI_WIDEBAND_SPEECH_ENABLED,
-+	HCI_EVENT_FILTER_CONFIGURED,
- 
- 	HCI_DUT_MODE,
- 	HCI_VENDOR_DIAG,
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 67668be3461e93..6eadc999ea1474 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -395,6 +395,26 @@ static void hci_cc_write_scan_enable(struct hci_dev *hdev, struct sk_buff *skb)
- 	hci_dev_unlock(hdev);
- }
- 
-+static void hci_cc_set_event_filter(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	__u8 status = *((__u8 *)skb->data);
-+	struct hci_cp_set_event_filter *cp;
-+	void *sent;
-+
-+	BT_DBG("%s status 0x%2.2x", hdev->name, status);
-+
-+	sent = hci_sent_cmd_data(hdev, HCI_OP_SET_EVENT_FLT);
-+	if (!sent || status)
-+		return;
-+
-+	cp = (struct hci_cp_set_event_filter *)sent;
-+
-+	if (cp->flt_type == HCI_FLT_CLEAR_ALL)
-+		hci_dev_clear_flag(hdev, HCI_EVENT_FILTER_CONFIGURED);
-+	else
-+		hci_dev_set_flag(hdev, HCI_EVENT_FILTER_CONFIGURED);
-+}
-+
- static void hci_cc_read_class_of_dev(struct hci_dev *hdev, struct sk_buff *skb)
- {
- 	struct hci_rp_read_class_of_dev *rp = (void *) skb->data;
-@@ -3328,6 +3348,10 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 		hci_cc_write_scan_enable(hdev, skb);
- 		break;
- 
-+	case HCI_OP_SET_EVENT_FLT:
-+		hci_cc_set_event_filter(hdev, skb);
-+		break;
-+
- 	case HCI_OP_READ_CLASS_OF_DEV:
- 		hci_cc_read_class_of_dev(hdev, skb);
- 		break;
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index e55976db4403e7..75a42178c82d9b 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1131,14 +1131,14 @@ static void hci_req_clear_event_filter(struct hci_request *req)
- {
- 	struct hci_cp_set_event_filter f;
- 
--	memset(&f, 0, sizeof(f));
--	f.flt_type = HCI_FLT_CLEAR_ALL;
--	hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &f);
-+	if (!hci_dev_test_flag(req->hdev, HCI_BREDR_ENABLED))
-+		return;
- 
--	/* Update page scan state (since we may have modified it when setting
--	 * the event filter).
--	 */
--	__hci_req_update_scan(req);
-+	if (hci_dev_test_flag(req->hdev, HCI_EVENT_FILTER_CONFIGURED)) {
-+		memset(&f, 0, sizeof(f));
-+		f.flt_type = HCI_FLT_CLEAR_ALL;
-+		hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &f);
-+	}
- }
- 
- static void hci_req_set_event_filter(struct hci_request *req)
-@@ -1147,6 +1147,10 @@ static void hci_req_set_event_filter(struct hci_request *req)
- 	struct hci_cp_set_event_filter f;
- 	struct hci_dev *hdev = req->hdev;
- 	u8 scan = SCAN_DISABLED;
-+	bool scanning = test_bit(HCI_PSCAN, &hdev->flags);
-+
-+	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
-+		return;
- 
- 	/* Always clear event filter when starting */
- 	hci_req_clear_event_filter(req);
-@@ -1167,12 +1171,13 @@ static void hci_req_set_event_filter(struct hci_request *req)
- 		scan = SCAN_PAGE;
- 	}
- 
--	if (scan)
-+	if (scan && !scanning) {
- 		set_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks);
--	else
-+		hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
-+	} else if (!scan && scanning) {
- 		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
--
--	hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
-+		hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
-+	}
- }
- 
- static void cancel_adv_timeout(struct hci_dev *hdev)
-@@ -1315,9 +1320,14 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 
- 		hdev->advertising_paused = true;
- 		hdev->advertising_old_state = old_state;
--		/* Disable page scan */
--		page_scan = SCAN_DISABLED;
--		hci_req_add(&req, HCI_OP_WRITE_SCAN_ENABLE, 1, &page_scan);
-+
-+		/* Disable page scan if enabled */
-+		if (test_bit(HCI_PSCAN, &hdev->flags)) {
-+			page_scan = SCAN_DISABLED;
-+			hci_req_add(&req, HCI_OP_WRITE_SCAN_ENABLE, 1,
-+				    &page_scan);
-+			set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
-+		}
- 
- 		/* Disable LE passive scan if enabled */
- 		if (hci_dev_test_flag(hdev, HCI_LE_SCAN)) {
-@@ -1328,9 +1338,6 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		/* Disable advertisement filters */
- 		hci_req_add_set_adv_filter_enable(&req, false);
- 
--		/* Mark task needing completion */
--		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
--
- 		/* Prevent disconnects from causing scanning to be re-enabled */
- 		hdev->scanning_paused = true;
- 
-@@ -1364,7 +1371,10 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		hdev->suspended = false;
- 		hdev->scanning_paused = false;
- 
-+		/* Clear any event filters and restore scan state */
- 		hci_req_clear_event_filter(&req);
-+		__hci_req_update_scan(&req);
-+
- 		/* Reset passive/background scanning to normal */
- 		__hci_update_background_scan(&req);
- 		/* Enable all of the advertisement filters */
--- 
-2.30.1.766.gb4fecdf3b7-goog
+looks like it's linker, because compiler leaves just jump to next instruction
+
+jirka
 
