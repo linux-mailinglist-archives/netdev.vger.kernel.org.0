@@ -2,64 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2EFD32B3CC
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:22:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2250832B3CD
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:22:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835902AbhCCEGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:06:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56486 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351082AbhCBVmp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 16:42:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2082A601FB;
-        Tue,  2 Mar 2021 21:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614721324;
-        bh=vExVERiAK+CqKVzzo6VrQtfRSSKKna3ICtCV3SbMyqk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=O+IDDm/aSFMAbrcQjJksklCWsvlpPYEXUlB/erhQioHEFsxWjP7i6Jxm9KEdllsKr
-         dBThDAv/AQ+qwkDNHmkSGTlFzmrwHxHHL5C+nGvmEos6WhE4z5xDr+AA+/34XZCpeq
-         YX19BpLV3rRxlEaizamDF+wXkPTfUx+TIYGM9JaQa7JXrgwF6kxeRJbd1VsqL13Uli
-         AZoZFtwFMdyfst/19j9ZIIbVHvvE9nTvDrVQtT2anAhipHUinc75he0DjIoK5Z9Pyl
-         CubZwprb6NlGYUGxdwqADzx8xLc4ZdTmRCuuBuhJocyUnZT2oarE0m8lDQeHI/JjuR
-         Z8cyylpDXnfuQ==
-Date:   Tue, 2 Mar 2021 13:42:03 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "Coelho\, Luciano" <luciano.coelho@intel.com>,
-        "nathan\@kernel.org" <nathan@kernel.org>,
-        "gil.adam\@intel.com" <gil.adam@intel.com>,
-        "Berg\, Johannes" <johannes.berg@intel.com>,
-        "weiyongjun1\@huawei.com" <weiyongjun1@huawei.com>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "Goodstein\, Mordechay" <mordechay.goodstein@intel.com>,
-        "hulkci\@huawei.com" <hulkci@huawei.com>,
-        "Grumbach\, Emmanuel" <emmanuel.grumbach@intel.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] iwlwifi: mvm: add terminate entry for dmi_system_id
- tables
-Message-ID: <20210302134203.4ee50efe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <877dmp8hdx.fsf@codeaurora.org>
-References: <20210223140039.1708534-1-weiyongjun1@huawei.com>
-        <20210226210640.GA21320@MSI.localdomain>
-        <87h7ly9fph.fsf@codeaurora.org>
-        <bd1bd942bcccffb9b3453344b611a13876d0e565.camel@intel.com>
-        <20210302110559.1809ceaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <877dmp8hdx.fsf@codeaurora.org>
+        id S1836062AbhCCEGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:06:55 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:37508 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382352AbhCBVpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 16:45:47 -0500
+Received: from [IPv6:2003:e9:d72a:21a0:8b4a:5ec4:afc4:817c] (p200300e9d72a21a08b4a5ec4afc4817c.dip0.t-ipconnect.de [IPv6:2003:e9:d72a:21a0:8b4a:5ec4:afc4:817c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 68498C07F4;
+        Tue,  2 Mar 2021 22:45:04 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1614721504;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jxEb6AzB4Hi58jqmVNIl9Zsljq62e2w8j1ymEKI1zLE=;
+        b=GsuNc//hjk3gmxmB/bAC4o3j+AMEFaotT6lIXcs91jawxmXXqUTlBvklujchB4EuHmtyrf
+        cHVWRaNNz2zV+MXrHH/9aOuDGVWXJL3zw321uN2F+qdpepQsoonEX2VnVF2zstNuioxe+u
+        pg7Rhtq+mXkDfYeOI3OYewJNQIDvucbN9//E90qzDltGFR+4Xl05037ZRrp7EgQcidcSgV
+        6HPgfn4U4AIWudcBc3f41biKu97oH61/joNNs1eAUxM4ZOwUPIsdc1VZJYhZhjcvwO59WE
+        iNc8eJKfXytlhb7IROPSzDnY2XFStp7IHSJIg0Zf95nCGGowlUcOIc9OjZpFDQ==
+Subject: Re: [PATCH wpan 04/17] net: ieee802154: forbid monitor for set llsec
+ params
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+References: <20210228151817.95700-1-aahringo@redhat.com>
+ <20210228151817.95700-5-aahringo@redhat.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <f4599ca2-31c3-a08e-fad8-444f35cc6f6b@datenfreihafen.org>
+Date:   Tue, 2 Mar 2021 22:45:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210228151817.95700-5-aahringo@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 02 Mar 2021 21:50:18 +0200 Kalle Valo wrote:
-> > if Wei doesn't respond could you please step in to make sure this
-> > fix is part of Dave's next PR to Linus?  
-> 
-> Will do. Related to this, what's your pull request schedule to Linus
-> nowadays? Do you submit it every Thursday?
+Hello Alex.
 
-Fair question :) Dave is back full time now, so I think it will be more
-merit based again.
+On 28.02.21 16:18, Alexander Aring wrote:
+> This patch forbids to set llsec params for monitor interfaces which we
+> don't support yet.
+> 
+> Reported-by: syzbot+8b6719da8a04beeafcc3@syzkaller.appspotmail.com
+> Signed-off-by: Alexander Aring <aahringo@redhat.com>
+> ---
+>   net/ieee802154/nl802154.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+> index 3ee09f6d13b7..67f0dc622bc2 100644
+> --- a/net/ieee802154/nl802154.c
+> +++ b/net/ieee802154/nl802154.c
+> @@ -1384,6 +1384,9 @@ static int nl802154_set_llsec_params(struct sk_buff *skb,
+>   	u32 changed = 0;
+>   	int ret;
+>   
+> +	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR)
+> +		return -EOPNOTSUPP;
+> +
+>   	if (info->attrs[NL802154_ATTR_SEC_ENABLED]) {
+>   		u8 enabled;
+>   
+> 
+
+I am fine with this patch and all the rest up to 17. They just do not 
+apply for me with 1 and 2 left out and only 3 applied.
+
+Could you resend 3-17 as a series and we can discuss 1 & 2 separately?
+
+regards
+Stefan Schmidt
