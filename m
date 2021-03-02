@@ -2,102 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3AB332B381
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D9432B382
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352683AbhCCEAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:00:43 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:48398 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344675AbhCBLZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 06:25:06 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 122BKHsY052110;
-        Tue, 2 Mar 2021 11:22:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=pdMfwbpSJC/Cr8zv0g4CbItRgCRo74rSKxb5p0B61JA=;
- b=VRbpLkTujaxzggxWvbD6+QT2rAHbqQA6xifgXw0NEitKJvuXMEPatNkTN2t5BBLClIZs
- C7BiL/Xt+f2sQ+t2Ge0LPDickhX5PWbnN3xOWeAmNybVO949p7VTBAMVUf3tg6AFxE1F
- NnuS7vQbdtdH7yH/eM3CjtBqBY7rhaKz+fmBLY6qi/DQAABCV4+KOYjPaNDp3Y3jcxqf
- VxD5mW4Y9XGvCsFIxFpg+TOEQisYBdgDI/tFUYmKWwMv7iMsPbd9oesKpQmg2FEcf9SS
- EG8+FlpaUV4MTgFYbj2t1KHmrDeavVF/t4b0X4DcjCwxrgXG0cj1JgVYwuL18AxM1pVA mQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 36ye1m769t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 02 Mar 2021 11:22:07 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 122BKwjm032067;
-        Tue, 2 Mar 2021 11:22:05 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 36yynp0p3k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 02 Mar 2021 11:22:05 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 122BM3u3008266;
-        Tue, 2 Mar 2021 11:22:03 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 02 Mar 2021 11:22:03 +0000
-Date:   Tue, 2 Mar 2021 14:21:54 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        hariprasad <hkelam@marvell.com>
-Cc:     Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net] octeontx2-af: cn10k: fix an array overflow in
- is_lmac_valid()
-Message-ID: <YD4f0vIQ1bW++7M7@mwanda>
+        id S1352688AbhCCEAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:00:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54010 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380382AbhCBL0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 06:26:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614684265;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1BhNztqEgWGMx7kPW5f0CLvD2WsnR/6LZwBjGCJ0xrE=;
+        b=Bc7bbDxKvISIhKpZ3k5gBH5Z9izdzi8Qk48G9DwZTo6B5JTwj4Q/QkVl95va3I9qMsutx2
+        xQLlmWOYBKkZoAl74sA9ZgDLFnsu9xpg2Twzczg1X0ha1WTBdmJj0v0LukJi7Up9xizTUk
+        r2obmSnJCp1515SbkuQ6IwqoUgBarZE=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-250-RImxKS3POMGWS12n_lDEsA-1; Tue, 02 Mar 2021 06:24:24 -0500
+X-MC-Unique: RImxKS3POMGWS12n_lDEsA-1
+Received: by mail-ej1-f70.google.com with SMTP id v10so8318733ejh.15
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 03:24:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=1BhNztqEgWGMx7kPW5f0CLvD2WsnR/6LZwBjGCJ0xrE=;
+        b=qut7RoNVes3RW5uNbIU68LT1BVwR95Rq3XGB7OkTkMEJ/BjjfRWDEbQ8Eypaa7Vs4y
+         /vsvJ1B/nBl0rFYXyUstmf+ihMENPrLVdiGH1/DCWPKiOnOg4iAEzQwt3aC3UgiCjeV1
+         2zxwAuRhbats6rhC/w1CKx5qoVuj/HcfstByyxp3Gf9YjxZRpiV7v0y/jLCdvzcGeG7s
+         5NtBIoBbJnQY4yqSfJOydnULhrxutTfTFwaqnVZ5gTUCwnqo6D9B1ttYBxfqfxe9pjdr
+         ou+nI1rwa7jbi7v7Esgs7MS1X0+ZEoZ8tS/2niuTMY39KLgPsqb7lLod7tCN4/lFCygx
+         pDFQ==
+X-Gm-Message-State: AOAM531+wU2HQG0H5DHcL4KhIjx9TD28SuJB/HrCS/C4WrLLH2BSq4J9
+        0KpJMDnT+tjZMs3GnVJL6/DVjmVC3j9RGSmk8ZhqVt212zbZ4SRRDIMxq5S2gSFkbedURBAqP/M
+        fOdFlmhKjnxqSQHPe
+X-Received: by 2002:a17:906:f296:: with SMTP id gu22mr19228814ejb.20.1614684263044;
+        Tue, 02 Mar 2021 03:24:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzGGNSokqgK/5RqqfSY3ERKl9lVWR62FSA4uJr14s6tOqkDbPKgW29y+nDnUA6mto+6bIvZew==
+X-Received: by 2002:a17:906:f296:: with SMTP id gu22mr19228806ejb.20.1614684262901;
+        Tue, 02 Mar 2021 03:24:22 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id h2sm15994879ejk.32.2021.03.02.03.24.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Mar 2021 03:24:22 -0800 (PST)
+Date:   Tue, 2 Mar 2021 06:24:19 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vdpa/mlx5: Fix wrong use of bit numbers
+Message-ID: <20210302062405-mutt-send-email-mst@kernel.org>
+References: <20210301062817.39331-1-elic@nvidia.com>
+ <959916f2-5fc9-bdb4-31ca-632fe0d98979@redhat.com>
+ <20210301103214-mutt-send-email-mst@kernel.org>
+ <20210302052306.GA227464@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9910 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 spamscore=0
- bulkscore=0 suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2103020095
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9910 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 priorityscore=1501
- mlxlogscore=999 impostorscore=0 suspectscore=0 adultscore=0 malwarescore=0
- mlxscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2103020095
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210302052306.GA227464@mtl-vdi-166.wap.labs.mlnx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The value of "lmac_id" can be controlled by the user and if it is larger
-then the number of bits in long then it reads outside the bitmap.
-The highest valid value is less than MAX_LMAC_PER_CGX (4).
+On Tue, Mar 02, 2021 at 07:23:06AM +0200, Eli Cohen wrote:
+> On Mon, Mar 01, 2021 at 10:33:14AM -0500, Michael S. Tsirkin wrote:
+> > On Mon, Mar 01, 2021 at 03:52:45PM +0800, Jason Wang wrote:
+> > > 
+> > > On 2021/3/1 2:28 下午, Eli Cohen wrote:
+> > > > VIRTIO_F_VERSION_1 is a bit number. Use BIT_ULL() with mask
+> > > > conditionals.
+> > > > 
+> > > > Also, in mlx5_vdpa_is_little_endian() use BIT_ULL for consistency with
+> > > > the rest of the code.
+> > > > 
+> > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+> > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > 
+> > > 
+> > > Acked-by: Jason Wang <jasowang@redhat.com>
+> > 
+> > And CC stable I guess?
+> 
+> Is this a question or a request? :-)
 
-Fixes: 91c6945ea1f9 ("octeontx2-af: cn10k: Add RPM MAC support")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+A question. net patches are cc'd by net maintainer.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 9caa375d01b1..68deae529bc9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -56,7 +56,9 @@ static bool is_dev_rpm(void *cgxd)
- 
- bool is_lmac_valid(struct cgx *cgx, int lmac_id)
- {
--	return cgx && test_bit(lmac_id, &cgx->lmac_bmap);
-+	if (!cgx || lmac_id < 0 || lmac_id >= MAX_LMAC_PER_CGX)
-+		return false;
-+	return test_bit(lmac_id, &cgx->lmac_bmap);
- }
- 
- struct mac_ops *get_mac_ops(void *cgxd)
--- 
-2.30.1
+> > 
+> > > 
+> > > > ---
+> > > >   drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+> > > >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > index dc7031132fff..7d21b857a94a 100644
+> > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > @@ -821,7 +821,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+> > > >   	MLX5_SET(virtio_q, vq_ctx, event_qpn_or_msix, mvq->fwqp.mqp.qpn);
+> > > >   	MLX5_SET(virtio_q, vq_ctx, queue_size, mvq->num_ent);
+> > > >   	MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0,
+> > > > -		 !!(ndev->mvdev.actual_features & VIRTIO_F_VERSION_1));
+> > > > +		 !!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_F_VERSION_1)));
+> > > >   	MLX5_SET64(virtio_q, vq_ctx, desc_addr, mvq->desc_addr);
+> > > >   	MLX5_SET64(virtio_q, vq_ctx, used_addr, mvq->device_addr);
+> > > >   	MLX5_SET64(virtio_q, vq_ctx, available_addr, mvq->driver_addr);
+> > > > @@ -1578,7 +1578,7 @@ static void teardown_virtqueues(struct mlx5_vdpa_net *ndev)
+> > > >   static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev *mvdev)
+> > > >   {
+> > > >   	return virtio_legacy_is_little_endian() ||
+> > > > -		(mvdev->actual_features & (1ULL << VIRTIO_F_VERSION_1));
+> > > > +		(mvdev->actual_features & BIT_ULL(VIRTIO_F_VERSION_1));
+> > > >   }
+> > > >   static __virtio16 cpu_to_mlx5vdpa16(struct mlx5_vdpa_dev *mvdev, u16 val)
+> > 
 
