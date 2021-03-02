@@ -2,238 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F53332B3AB
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE23432B3AD
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449913AbhCCEEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59976 "EHLO
+        id S1449918AbhCCEEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:04:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1580813AbhCBSV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 13:21:28 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E01CC0617AB
-        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 10:20:47 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id n14so22771459iog.3
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 10:20:47 -0800 (PST)
+        with ESMTP id S236964AbhCBSYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 13:24:47 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72925C0617A7;
+        Tue,  2 Mar 2021 10:23:40 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id o6so2572619pjf.5;
+        Tue, 02 Mar 2021 10:23:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=from:subject:to:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=xpJEhpQ2GWsXxXgysxj3qZ6P5jHEhmmxrmxPwP2CFhw=;
-        b=ZMLHiX4cf9IkWjXrPPFno+R5e7pe5D+1UiPg8iaXQRzKC9y22GTVRi9iG91dv/OpZY
-         ZJ4QW73kLHC15JBVAlXyikp+0wRvs8ui0A1gMwCF7XUT1ITqQaihtJy+n34XVvYW0FBJ
-         TaCsrs1Gu+B0NyQkMQt+yJ6+/l2F0p0OXMJM1AKb/J7AeIuqCNxeqV0+apbgO7crHTuM
-         OZhLe10z5/ZDXtYllJHiVPdbzSEOPHHua8lVlKSQJ9Pvx0Hi4zOwhSXpsln7bvMsxPyL
-         WjpxGCEBEWQDFGeS1ChhxisHd3rID16sm7xWmRfCSVl1HC3AQhcJxKDpvc0/owzCKIjV
-         Ca6A==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bnxJ87u4sbrwdk1LAB30YLXwHUgFDPCGUB44sFI7n1s=;
+        b=uI/i8gcpuYmFguZTeZ92j+H6EHouSCIOf1vxo0rFq4INLXiAhldffcUPKE31UyGoXb
+         rUieOrPz71RSIdEtfeXFKBHEcSdz3udJzOCuMb9SWQB7nPSl2Opu2gZWX2gWI2Csg43n
+         wOiPKKMTmOXkvx8UdE3ZwRVJ++bHYmNN8T7N+ZWZPPDhRkB5EwrJqAko4zd+BNnENLWZ
+         8eBPRcoP73a3SZ9es+bzRk6h1UfNzCN2riPte6TT8Pz/+GdHiUqBxmkxkL8ZGtVjkP8Y
+         iHUlCcs9AYc86qMy8pGiuCVjvGmoOXJJRnkRVcb/8xSYgBulx4082bpZUzN124KM+Cpr
+         nLjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=xpJEhpQ2GWsXxXgysxj3qZ6P5jHEhmmxrmxPwP2CFhw=;
-        b=Ly+bxmLjdo1lZ/ksW9WlxupPWQWPvzuzNZciO+yPY0RLUgQwtH4g6bKhCy6lP67gHU
-         b/uCyyIl46BZ++IBYbWIR5seVS7pPGk+mSoDIPiosRZI2Ds6gRzgnhcsvmDLfktNxuBE
-         z232R2IggfmbsMx4b2v+Zyq/0DvQ3xn7EC9bauC9huRQNZWItJ+Rh3nWvFRuuy0TKJj3
-         m+UGZwnNM4uq6kDZSBL5YFZs/WgStdFzxbQ7DxJ7DoYhPMzJBq+UmgFCUAO3nbO3B6OZ
-         dqIS3TjyetXwv1DNi6ONZVGtAPaw9jF7/nIcCLanBgmkEaaiPkeD8WROfhRgAqJMUbex
-         QCJw==
-X-Gm-Message-State: AOAM533TefQwLiQNFdo881p0sNQLc0+jW6Ur9fgl4zRfY7egxDWSwluL
-        I8Lv7PveW8+fbT4FaIl4CiMkr2OuUePM5g==
-X-Google-Smtp-Source: ABdhPJwk2WRfb61QQ9xgQ2Me29dJn4PLBkv1cOxiXew91ugV4t4s79QV7lA6F/TiFeaW62s5g1o+Bw==
-X-Received: by 2002:a6b:db15:: with SMTP id t21mr13592027ioc.133.1614709246609;
-        Tue, 02 Mar 2021 10:20:46 -0800 (PST)
-Received: from [192.168.1.30] ([65.144.74.34])
-        by smtp.gmail.com with ESMTPSA id h23sm10365943ila.15.2021.03.02.10.20.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Mar 2021 10:20:46 -0800 (PST)
-From:   Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH] iwlwifi: ensure that DMI scan table is properly terminated
-To:     netdev@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>
-Message-ID: <0d52ff85-323f-67b8-5fdb-bbf3093b0ccf@kernel.dk>
-Date:   Tue, 2 Mar 2021 11:20:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bnxJ87u4sbrwdk1LAB30YLXwHUgFDPCGUB44sFI7n1s=;
+        b=sLUOM0roNXK3MespzFIUJ3mHYz4H11cOjoo01SYqZGuFHxIoI4p0Xb6RAOysJ5tyIp
+         bgZraxAzvvZt4NZGr4coJcZzcodfI32qQKWcGzLnjKAipFn+kjRiGh+/3CnNv/MGispY
+         ydOWtiwb/4sqkHyYTKCxsoBr3J2YzsxtoxGFdppOaaOq+mpc4KRQ5FJVCOZxAuUEho1M
+         fNfrVsxQEU78d6dDSi6QDvIyBHnBHcxMVPY+FZv7gHca3/P9+2pbUTWcJepE9WXfQt7D
+         N4WeUR4Xke6Z2f620YQP5dYuAqf1ZlQo13zrh0z+xfSs5oqbyDHjFGE1llBeuCWnsc70
+         0dOA==
+X-Gm-Message-State: AOAM5317/mq4lhozH+GGkQ+PBhca7CpaEUNA9yDhooQZ/+tNgAoSTEfH
+        u2W9hPX/j5aABlM/pqmEumn7L7BgFSjfTpJzwHiAhm+bE1rWtw==
+X-Google-Smtp-Source: ABdhPJwKMmxE8PKMms10iLp+avFpm/jVT/64xFRltVsfI+uuHTglt6Su1krBT5kTb5KSxtJNLi3qMTCxgNaFQhOHS08=
+X-Received: by 2002:a17:90a:ce92:: with SMTP id g18mr5839612pju.52.1614709419796;
+ Tue, 02 Mar 2021 10:23:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210302023743.24123-1-xiyou.wangcong@gmail.com>
+ <20210302023743.24123-3-xiyou.wangcong@gmail.com> <CACAyw9-SjsNn4_J1KDXuFh1nd9Hr-Mo+=7S-kVtooJwdi1fodQ@mail.gmail.com>
+In-Reply-To: <CACAyw9-SjsNn4_J1KDXuFh1nd9Hr-Mo+=7S-kVtooJwdi1fodQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 2 Mar 2021 10:23:28 -0800
+Message-ID: <CAM_iQpXqE9qJ=+zKA6H1Rq=KKgm8LZ=p=ZtvrrH+hfSrTg+zxw@mail.gmail.com>
+Subject: Re: [Patch bpf-next v2 2/9] sock: introduce sk_prot->update_proto()
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My laptop crashes at boot, and I ran the same kernel with KASAN enabled.
-Turns out the DMI addition for iwlwifi is broken (and untested?), since
-it doesn't properly terminate the scan table. Ensure that we do so.
+On Tue, Mar 2, 2021 at 8:22 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> On Tue, 2 Mar 2021 at 02:37, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> ...
+> >  static inline void sk_psock_restore_proto(struct sock *sk,
+> >                                           struct sk_psock *psock)
+> >  {
+> >         sk->sk_prot->unhash = psock->saved_unhash;
+>
+> Not related to your patch set, but why do an extra restore of
+> sk_prot->unhash here? At this point sk->sk_prot is one of our tcp_bpf
+> / udp_bpf protos, so overwriting that seems wrong?
 
-==================================================================
-BUG: KASAN: global-out-of-bounds in dmi_check_system+0x5a/0x70
-Read of size 1 at addr ffffffffc16af750 by task NetworkManager/1913
+Good catch. It seems you are right, but I need a double check. And
+yes, it is completely unrelated to my patch, as the current code has
+the same problem.
 
-CPU: 4 PID: 1913 Comm: NetworkManager Not tainted 5.12.0-rc1+ #10057
-Hardware name: LENOVO 20THCTO1WW/20THCTO1WW, BIOS N2VET27W (1.12 ) 12/21/2020
-Call Trace:
- dump_stack+0x90/0xbe
- print_address_description.constprop.0+0x1d/0x140
- ? dmi_check_system+0x5a/0x70
- ? dmi_check_system+0x5a/0x70
- kasan_report.cold+0x7b/0xd4
- ? dmi_check_system+0x5a/0x70
- __asan_load1+0x4d/0x50
- dmi_check_system+0x5a/0x70
- iwl_mvm_up+0x1360/0x1690 [iwlmvm]
- ? iwl_mvm_send_recovery_cmd+0x270/0x270 [iwlmvm]
- ? setup_object.isra.0+0x27/0xd0
- ? kasan_poison+0x20/0x50
- ? ___slab_alloc.constprop.0+0x483/0x5b0
- ? mempool_kmalloc+0x17/0x20
- ? ftrace_graph_ret_addr+0x2a/0xb0
- ? kasan_poison+0x3c/0x50
- ? cfg80211_iftype_allowed+0x2e/0x90 [cfg80211]
- ? __kasan_check_write+0x14/0x20
- ? mutex_lock+0x86/0xe0
- ? __mutex_lock_slowpath+0x20/0x20
- __iwl_mvm_mac_start+0x49/0x290 [iwlmvm]
- iwl_mvm_mac_start+0x37/0x50 [iwlmvm]
- drv_start+0x73/0x1b0 [mac80211]
- ieee80211_do_open+0x53e/0xf10 [mac80211]
- ? ieee80211_check_concurrent_iface+0x266/0x2e0 [mac80211]
- ieee80211_open+0xb9/0x100 [mac80211]
- __dev_open+0x1b8/0x280
- ? dev_set_rx_mode+0x40/0x40
- __dev_change_flags+0x32f/0x3a0
- ? dev_set_allmulti+0x20/0x20
- ? is_bpf_text_address+0x24/0x30
- ? kernel_text_address+0xbb/0xd0
- dev_change_flags+0x63/0xc0
- do_setlink+0xb59/0x18c0
- ? rtnetlink_put_metrics+0x2e0/0x2e0
- ? stack_trace_consume_entry+0x90/0x90
- ? if6_seq_show+0xb0/0xb0
- ? kasan_save_stack+0x42/0x50
- ? kasan_save_stack+0x23/0x50
- ? kasan_set_track+0x20/0x30
- ? kasan_set_free_info+0x24/0x40
- ? __kasan_slab_free+0xea/0x120
- ? kfree+0x94/0x250
- ? memset+0x3c/0x50
- ? __nla_validate_parse+0xc1/0x12d0
- ? ____sys_sendmsg+0x430/0x450
- ? ___sys_sendmsg+0xf2/0x160
- ? __sys_sendmsg+0xc8/0x150
- ? __x64_sys_sendmsg+0x48/0x50
- ? do_syscall_64+0x32/0x80
- ? entry_SYSCALL_64_after_hwframe+0x44/0xae
- ? nla_get_range_signed+0x1c0/0x1c0
- ? nla_put_ifalias+0x86/0xf0
- ? __cgroup_bpf_run_filter_skb+0xc1/0x6f0
- ? memcpy+0x4e/0x60
- ? __kasan_check_read+0x11/0x20
- __rtnl_newlink+0x905/0xde0
- ? ipv6_dev_get_saddr+0x4c0/0x4c0
- ? rtnl_setlink+0x250/0x250
- ? ftrace_graph_ret_addr+0x2a/0xb0
- ? entry_SYSCALL_64_after_hwframe+0x44/0xae
- ? bpf_ksym_find+0x94/0xe0
- ? __rcu_read_unlock+0x39/0x60
- ? is_bpf_text_address+0x24/0x30
- ? kernel_text_address+0xbb/0xd0
- ? __kernel_text_address+0x12/0x40
- ? unwind_get_return_address+0x36/0x50
- ? create_prof_cpu_mask+0x30/0x30
- ? arch_stack_walk+0x98/0xf0
- ? stack_trace_save+0x94/0xc0
- ? stack_trace_consume_entry+0x90/0x90
- ? arch_stack_walk+0x98/0xf0
- ? __kasan_kmalloc+0x81/0xa0
- ? kmem_cache_alloc_trace+0xf4/0x220
- rtnl_newlink+0x55/0x80
- rtnetlink_rcv_msg+0x22f/0x560
- ? __kasan_slab_alloc+0x5f/0x80
- ? rtnl_calcit.isra.0+0x1e0/0x1e0
- ? __x64_sys_sendmsg+0x48/0x50
- ? do_syscall_64+0x32/0x80
- ? entry_SYSCALL_64_after_hwframe+0x44/0xae
- ? kernel_text_address+0xbb/0xd0
- ? __kernel_text_address+0x12/0x40
- ? unwind_get_return_address+0x36/0x50
- netlink_rcv_skb+0xe7/0x210
- ? rtnl_calcit.isra.0+0x1e0/0x1e0
- ? netlink_ack+0x580/0x580
- ? netlink_deliver_tap+0x68/0x3d0
- rtnetlink_rcv+0x15/0x20
- netlink_unicast+0x3a8/0x4f0
- ? netlink_attachskb+0x430/0x430
- ? __alloc_skb+0xd7/0x1e0
- netlink_sendmsg+0x3ff/0x710
- ? __rcu_read_unlock+0x39/0x60
- ? netlink_unicast+0x4f0/0x4f0
- ? iovec_from_user+0x6c/0x170
- ? __import_iovec+0x137/0x1c0
- ? netlink_unicast+0x4f0/0x4f0
- sock_sendmsg+0x74/0x80
- ____sys_sendmsg+0x430/0x450
- ? kernel_sendmsg+0x40/0x40
- ? do_recvmmsg+0x440/0x440
- ? kasan_save_stack+0x42/0x50
- ? kasan_save_stack+0x23/0x50
- ? kasan_record_aux_stack+0xac/0xc0
- ? call_rcu+0x5a/0x450
- ? __fput+0x1d7/0x3d0
- ? ____fput+0xe/0x10
- ___sys_sendmsg+0xf2/0x160
- ? sendmsg_copy_msghdr+0x120/0x120
- ? __kasan_check_write+0x14/0x20
- ? _raw_spin_lock+0x82/0xd0
- ? _raw_read_lock_irq+0x50/0x50
- ? __fget_files+0xce/0x110
- ? __fget_light+0x72/0x100
- ? __fdget+0x13/0x20
- __sys_sendmsg+0xc8/0x150
- ? __sys_sendmsg_sock+0x20/0x20
- ? __kasan_check_read+0x11/0x20
- ? fpregs_assert_state_consistent+0x5a/0x70
- __x64_sys_sendmsg+0x48/0x50
- do_syscall_64+0x32/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f752cc7312d
-Code: 28 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 ca ee ff ff 8b 54 24 1c 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 2f 44 89 c7 48 89 44 24 08 e8 fe ee ff ff 48
-RSP: 002b:00007ffd1962bc70 EFLAGS: 00000293 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000055e6574ba880 RCX: 00007f752cc7312d
-RDX: 0000000000000000 RSI: 00007ffd1962bcc0 RDI: 000000000000000c
-RBP: 00007ffd1962bcc0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000293 R12: 000055e6574ba880
-R13: 00007ffd1962be78 R14: 00007ffd1962be6c R15: 0000000000000000
+>
+> > -       if (inet_csk_has_ulp(sk)) {
+> > -               tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
+> > -       } else {
+> > -               sk->sk_write_space = psock->saved_write_space;
+> > -               /* Pairs with lockless read in sk_clone_lock() */
+> > -               WRITE_ONCE(sk->sk_prot, psock->sk_proto);
+> > -       }
+> > +       if (psock->saved_update_proto)
+> > +               psock->saved_update_proto(sk, true);
+> >  }
+> >
+> >  static inline void sk_psock_set_state(struct sk_psock *psock,
+> > diff --git a/include/net/sock.h b/include/net/sock.h
+> > index 636810ddcd9b..0e8577c917e8 100644
+> > --- a/include/net/sock.h
+> > +++ b/include/net/sock.h
+> > @@ -1184,6 +1184,9 @@ struct proto {
+> >         void                    (*unhash)(struct sock *sk);
+> >         void                    (*rehash)(struct sock *sk);
+> >         int                     (*get_port)(struct sock *sk, unsigned short snum);
+> > +#ifdef CONFIG_BPF_SYSCALL
+> > +       int                     (*update_proto)(struct sock *sk, bool restore);
+>
+> Kind of a nit, but this name suggests that the callback is a lot more
+> generic than it really is. The only thing you can use it for is to
+> prep the socket to be sockmap ready since we hardwire sockmap_unhash,
+> etc. It's also not at all clear that this only works if sk has an
+> sk_psock associated with it. Calling it without one would crash the
+> kernel since the update_proto functions don't check for !sk_psock.
+>
+> Might as well call it install_sockmap_hooks or something and have a
+> valid sk_psock be passed in to the callback. Additionally, I'd prefer
 
-The buggy address belongs to the variable:
- dmi_ppag_approved_list+0x570/0xffffffffffffde20 [iwlmvm]
+For the name, sure, I am always open to better names. Not sure if
+'install_sockmap_hooks' is a good name, I also want to express we
+are overriding sk_prot. How about 'psock_update_sk_prot'?
 
-Memory state around the buggy address:
- ffffffffc16af600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffffffffc16af680: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffffffffc16af700: 00 00 00 00 00 00 00 00 f9 f9 f9 f9 00 00 00 01
-                                                 ^
- ffffffffc16af780: f9 f9 f9 f9 00 00 00 00 00 00 02 f9 f9 f9 f9 f9
- ffffffffc16af800: 00 00 00 07 f9 f9 f9 f9 00 00 00 00 00 00 00 01
-==================================================================
 
-Fixes: a2ac0f48a07c ("iwlwifi: mvm: implement approved list for the PPAG feature")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> if the function returned a struct proto * like it does at the moment.
+> That way we keep sk->sk_prot manipulation confined to the sockmap code
+> and don't have to copy paste it into every proto.
 
----
+Well, TCP seems too special to do this, as it could call tcp_update_ulp()
+to update the proto.
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-index 15e2773ce7e7..71e5306bd695 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-@@ -1083,6 +1083,7 @@ static const struct dmi_system_id dmi_ppag_approved_list[] = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTek COMPUTER INC."),
- 		},
- 	},
-+	{ },
- };
- 
- static int iwl_mvm_ppag_init(struct iwl_mvm *mvm)
+>
+> > diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> > index 3bddd9dd2da2..13d2af5bb81c 100644
+> > --- a/net/core/sock_map.c
+> > +++ b/net/core/sock_map.c
+> > @@ -184,26 +184,10 @@ static void sock_map_unref(struct sock *sk, void *link_raw)
+> >
+> >  static int sock_map_init_proto(struct sock *sk, struct sk_psock *psock)
+> >  {
+> > -       struct proto *prot;
+> > -
+> > -       switch (sk->sk_type) {
+> > -       case SOCK_STREAM:
+> > -               prot = tcp_bpf_get_proto(sk, psock);
+> > -               break;
+> > -
+> > -       case SOCK_DGRAM:
+> > -               prot = udp_bpf_get_proto(sk, psock);
+> > -               break;
+> > -
+> > -       default:
+> > +       if (!sk->sk_prot->update_proto)
+> >                 return -EINVAL;
+> > -       }
+> > -
+> > -       if (IS_ERR(prot))
+> > -               return PTR_ERR(prot);
+> > -
+> > -       sk_psock_update_proto(sk, psock, prot);
+> > -       return 0;
+> > +       psock->saved_update_proto = sk->sk_prot->update_proto;
+> > +       return sk->sk_prot->update_proto(sk, false);
+>
+> I think reads / writes from sk_prot need READ_ONCE / WRITE_ONCE. We've
+> not been diligent about this so far, but I think it makes sense to be
+> careful in new code.
 
--- 
-Jens Axboe
+Hmm, there are many places not using READ_ONCE/WRITE_ONCE,
+for a quick example:
+
+void sock_map_unhash(struct sock *sk)
+{
+        void (*saved_unhash)(struct sock *sk);
+        struct sk_psock *psock;
+
+        rcu_read_lock();
+        psock = sk_psock(sk);
+        if (unlikely(!psock)) {
+                rcu_read_unlock();
+                if (sk->sk_prot->unhash)
+                        sk->sk_prot->unhash(sk);
+                return;
+        }
+
+        saved_unhash = psock->saved_unhash;
+        sock_map_remove_links(sk, psock);
+        rcu_read_unlock();
+        saved_unhash(sk);
+}
+
+Thanks.
