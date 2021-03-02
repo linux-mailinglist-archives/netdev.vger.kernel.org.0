@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C19F32A344
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:06:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19D1D32A346
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:06:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378785AbhCBIyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 03:54:46 -0500
-Received: from mx2.suse.de ([195.135.220.15]:39904 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1835884AbhCBGYn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 01:24:43 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 6EE01AFE2;
-        Tue,  2 Mar 2021 06:22:18 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 17/44] net: nfc: nci: drop nci_uart_default_recv
-Date:   Tue,  2 Mar 2021 07:21:47 +0100
-Message-Id: <20210302062214.29627-17-jslaby@suse.cz>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210302062214.29627-1-jslaby@suse.cz>
-References: <20210302062214.29627-1-jslaby@suse.cz>
+        id S1378796AbhCBIyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 03:54:52 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:13829 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1835933AbhCBG2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 01:28:08 -0500
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DqRvt3qYZz7sFX;
+        Tue,  2 Mar 2021 14:25:46 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 2 Mar 2021 14:27:20 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
+        <linuxarm@openeuler.org>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [RFC net-next 0/9] net: hns3: refactor and new features for flow director
+Date:   Tue, 2 Mar 2021 14:27:46 +0800
+Message-ID: <1614666475-13059-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nci_uart_register returns -EINVAL immediately when nu->ops.recv is not
-set. So the same 'if' later never triggers so nci_uart_default_recv is
-never used. Drop it.
+This patchset refactor some functions and add some new features for
+flow director.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
----
- net/nfc/nci/uart.c | 10 ----------
- 1 file changed, 10 deletions(-)
+patch 1~3: refactor large functions
+patch 4, 7: add traffic class and user-def field support for ethtool
+patch 5: use asynchronously configuration
+patch 6: clean up for hns3_del_all_fd_entries()
+patch 8, 9: add support for queue bonding mode
 
-diff --git a/net/nfc/nci/uart.c b/net/nfc/nci/uart.c
-index 5cf7d3729d5f..9958b37d8f9d 100644
---- a/net/nfc/nci/uart.c
-+++ b/net/nfc/nci/uart.c
-@@ -387,12 +387,6 @@ static int nci_uart_send(struct nci_uart *nu, struct sk_buff *skb)
- 	return 0;
- }
- 
--/* -- Default recv handler -- */
--static int nci_uart_default_recv(struct nci_uart *nu, struct sk_buff *skb)
--{
--	return nci_recv_frame(nu->ndev, skb);
--}
--
- int nci_uart_register(struct nci_uart *nu)
- {
- 	if (!nu || !nu->ops.open ||
-@@ -402,10 +396,6 @@ int nci_uart_register(struct nci_uart *nu)
- 	/* Set the send callback */
- 	nu->ops.send = nci_uart_send;
- 
--	/* Install default handlers if not overridden */
--	if (!nu->ops.recv)
--		nu->ops.recv = nci_uart_default_recv;
--
- 	/* Add this driver in the driver list */
- 	if (nci_uart_drivers[nu->driver]) {
- 		pr_err("driver %d is already registered\n", nu->driver);
+Jian Shen (9):
+  net: hns3: refactor out hclge_add_fd_entry()
+  net: hns3: refactor out hclge_fd_get_tuple()
+  net: hns3: refactor for function hclge_fd_convert_tuple
+  net: hns3: add support for traffic class tuple support for flow
+    director by ethtool
+  net: hns3: refactor flow director configuration
+  net: hns3: refine for hns3_del_all_fd_entries()
+  net: hns3: add support for user-def data of flow director
+  net: hns3: add support for queue bonding mode of flow director
+  net: hns3: add queue bonding mode support for VF
+
+ drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |    8 +
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |    9 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |    4 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |   91 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   14 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   13 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |    2 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |   21 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 1564 ++++++++++++++------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   63 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |    2 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |   74 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |    7 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c   |   16 +
+ 14 files changed, 1407 insertions(+), 481 deletions(-)
+
 -- 
-2.30.1
+2.7.4
 
