@@ -2,83 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 188B132A36C
+	by mail.lfdr.de (Postfix) with ESMTP id 8AF3532A36D
 	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:16:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444788AbhCBI47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 03:56:59 -0500
-Received: from mga11.intel.com ([192.55.52.93]:13300 "EHLO mga11.intel.com"
+        id S1446351AbhCBI5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 03:57:00 -0500
+Received: from mga06.intel.com ([134.134.136.31]:57818 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1376807AbhCBH5c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 02:57:32 -0500
-IronPort-SDR: klZKHoWBAVRyCZga7trrLlOav0JWpRjV/PW1oVxfRroRx2fQWvNyF8Gt1JKKUFRZ07JLoBYwUW
- QBrM5WF5kiqw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9910"; a="183326528"
+        id S1381544AbhCBIFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 03:05:09 -0500
+IronPort-SDR: hyhmsc4zGNJ+Fn6JkJR70aikt/B+udecgH643/wfA80JLtnJUPm7VodEleTOle3Us71ewMCR4k
+ VTMkEg0FmcDA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9910"; a="248133484"
 X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; 
-   d="scan'208";a="183326528"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2021 23:55:30 -0800
-IronPort-SDR: u1riAQjEWpeiMCENb62vSylPeEXER4CnjOv3IZUf4AfrVnxuoICCkuyyNe+axElIwj9ASC2fxU
- 19GdDSE9oTqg==
+   d="scan'208";a="248133484"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 00:04:24 -0800
+IronPort-SDR: 7/BMllbf0SeMqe4vEt4uKehpWuloRQC3+IJfz0KXBLYfrdR1YrQwMeewI3BV+QKj35YlT5CY0Z
+ 0fYwlKvZ+CKg==
 X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; 
-   d="scan'208";a="444641353"
-Received: from dfuxbrux-desk.ger.corp.intel.com (HELO [10.12.48.255]) ([10.12.48.255])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2021 23:55:27 -0800
-Subject: Re: [Intel-wired-lan] [PATCH net 1/2] e1000e: Fix duplicate include
- guard
-To:     Tom Seewald <tseewald@gmail.com>, netdev@vger.kernel.org
-Cc:     Auke Kok <auke-jan.h.kok@intel.com>, Jeff Garzik <jeff@garzik.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org,
-        "David S. Miller" <davem@davemloft.net>
-References: <20210222040005.20126-1-tseewald@gmail.com>
-From:   Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Message-ID: <fedcd02f-d3d3-763f-0032-dc68ca166a3c@linux.intel.com>
-Date:   Tue, 2 Mar 2021 09:55:14 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+   d="scan'208";a="398268019"
+Received: from ilick-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.41.237])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 00:04:20 -0800
+Subject: Re: [PATCH bpf-next 1/2] xsk: update rings for
+ load-acquire/store-release semantics
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, paulmck@kernel.org
+Cc:     magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        maximmi@nvidia.com, andrii@kernel.org
+References: <20210301104318.263262-1-bjorn.topel@gmail.com>
+ <20210301104318.263262-2-bjorn.topel@gmail.com> <87mtvmx3ec.fsf@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <939aefb5-8f03-fc5a-9e8b-0b634aafd0a4@intel.com>
+Date:   Tue, 2 Mar 2021 09:04:16 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210222040005.20126-1-tseewald@gmail.com>
+In-Reply-To: <87mtvmx3ec.fsf@toke.dk>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/02/2021 06:00, Tom Seewald wrote:
-> The include guard "_E1000_HW_H_" is used by header files in three
-> different drivers (e1000/e1000_hw.h, e1000e/hw.h, and igb/e1000_hw.h).
-> Using the same include guard macro in more than one header file may
-> cause unexpected behavior from the compiler. Fix the duplicate include
-> guard in the e1000e driver by renaming it.
+
+
+
+On 2021-03-01 17:08, Toke Høiland-Jørgensen wrote:
+> Björn Töpel <bjorn.topel@gmail.com> writes:
 > 
-> Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)")
-> Signed-off-by: Tom Seewald <tseewald@gmail.com>
-> ---
->   drivers/net/ethernet/intel/e1000e/hw.h | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
+>> From: Björn Töpel <bjorn.topel@intel.com>
+>>
+>> Currently, the AF_XDP rings uses smp_{r,w,}mb() fences on the
+>> kernel-side. By updating the rings for load-acquire/store-release
+>> semantics, the full barrier on the consumer side can be replaced with
+>> improved performance as a nice side-effect.
+>>
+>> Note that this change does *not* require similar changes on the
+>> libbpf/userland side, however it is recommended [1].
+>>
+>> On x86-64 systems, by removing the smp_mb() on the Rx and Tx side, the
+>> l2fwd AF_XDP xdpsock sample performance increases by
+>> 1%. Weakly-ordered platforms, such as ARM64 might benefit even more.
+>>
+>> [1] https://lore.kernel.org/bpf/20200316184423.GA14143@willie-the-truck/
+>>
+>> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+>> ---
+>>   net/xdp/xsk_queue.h | 27 +++++++++++----------------
+>>   1 file changed, 11 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+>> index 2823b7c3302d..e24279d8d845 100644
+>> --- a/net/xdp/xsk_queue.h
+>> +++ b/net/xdp/xsk_queue.h
+>> @@ -47,19 +47,18 @@ struct xsk_queue {
+>>   	u64 queue_empty_descs;
+>>   };
+>>   
+>> -/* The structure of the shared state of the rings are the same as the
+>> - * ring buffer in kernel/events/ring_buffer.c. For the Rx and completion
+>> - * ring, the kernel is the producer and user space is the consumer. For
+>> - * the Tx and fill rings, the kernel is the consumer and user space is
+>> - * the producer.
+>> +/* The structure of the shared state of the rings are a simple
+>> + * circular buffer, as outlined in
+>> + * Documentation/core-api/circular-buffers.rst. For the Rx and
+>> + * completion ring, the kernel is the producer and user space is the
+>> + * consumer. For the Tx and fill rings, the kernel is the consumer and
+>> + * user space is the producer.
+>>    *
+>>    * producer                         consumer
+>>    *
+>> - * if (LOAD ->consumer) {           LOAD ->producer
+>> - *                    (A)           smp_rmb()       (C)
+>> + * if (LOAD ->consumer) {  (A)      LOAD.acq ->producer  (C)
 > 
-> diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-> index 69a2329ea463..db79c4e6413e 100644
-> --- a/drivers/net/ethernet/intel/e1000e/hw.h
-> +++ b/drivers/net/ethernet/intel/e1000e/hw.h
-> @@ -1,8 +1,8 @@
->   /* SPDX-License-Identifier: GPL-2.0 */
->   /* Copyright(c) 1999 - 2018 Intel Corporation. */
->   
-> -#ifndef _E1000_HW_H_
-> -#define _E1000_HW_H_
-> +#ifndef _E1000E_HW_H_
-> +#define _E1000E_HW_H_
->   
->   #include "regs.h"
->   #include "defines.h"
-> @@ -714,4 +714,4 @@ struct e1000_hw {
->   #include "80003es2lan.h"
->   #include "ich8lan.h"
->   
-> -#endif
-> +#endif /* _E1000E_HW_H_ */
+> Why is LOAD.acq not needed on the consumer side?
+>
+
+You mean why LOAD.acq is not needed on the *producer* side, i.e. the
+->consumer? The ->consumer is a control dependency for the store, so
+there is no ordering constraint for ->consumer at producer side. If
+there's no space, no data is written. So, no barrier is needed there --
+at least that has been my perspective.
+
+This is very similar to the buffer in
+Documentation/core-api/circular-buffers.rst. Roping in Paul for some
+guidance.
+
+
+Björn
+
+> -Toke
 > 
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
