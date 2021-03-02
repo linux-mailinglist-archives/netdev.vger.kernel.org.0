@@ -2,85 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2515C32A333
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33E7132A334
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:02:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378019AbhCBIxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 03:53:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39646 "EHLO mail.kernel.org"
+        id S1378037AbhCBIyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 03:54:01 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39636 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1835641AbhCBGIu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 01:08:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A903A61494;
-        Tue,  2 Mar 2021 06:08:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614665282;
-        bh=rQNw/xi+4W1+7G9+UmpFyMt1lfZvXK5rsdJvgkGG7yM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hu+CIikzf5bfBlAx1cDQxTM2NxWUmdFTkBZS7rUOnjq6Prg8kVdZnUYhg0M9S9A4i
-         gS0XrHYLbWNXDCqqRiivXA74k8gjlj+Ce1atRNVgd4VOacWvyQ9vD2A/fd9Lv8RM6M
-         ETEIfcw/LcEsQ30PIohjKNaqXg7WH16i28bom99ZjebnzVnrOkhAIvZaAG6XvnX2UD
-         GBJ+iXkzYu8X2d6oF11CgEbx5A3AgXzZRHCG2U1dWCu420BxZqnw8LqCTRNQrOE9zw
-         sZx9cmDUcmtYUySAxe85SMQOawRscMlvHBjGCpkEvwH1eVMLq7Azsus/aDN/D02led
-         2sU2a5UZZsIVQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, kernel-team@fb.com,
-        Jakub Kicinski <kuba@kernel.org>, Neil Spring <ntspring@fb.com>
-Subject: [PATCH net] net: tcp: don't allocate fast clones for fastopen SYN
-Date:   Mon,  1 Mar 2021 22:07:53 -0800
-Message-Id: <20210302060753.953931-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1835866AbhCBGX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 01:23:59 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id D963FAFD7;
+        Tue,  2 Mar 2021 06:22:17 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 14/44] net: caif: inline register_ldisc
+Date:   Tue,  2 Mar 2021 07:21:44 +0100
+Message-Id: <20210302062214.29627-14-jslaby@suse.cz>
+X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20210302062214.29627-1-jslaby@suse.cz>
+References: <20210302062214.29627-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When receiver does not accept TCP Fast Open it will only ack
-the SYN, and not the data. We detect this and immediately queue
-the data for (re)transmission in tcp_rcv_fastopen_synack().
+register_ldisc only calls tty_register_ldisc. Inline register_ldisc into
+the only caller of register_ldisc, i.e. caif_ser_init. Now,
+caif_ser_init is symmetric to caif_ser_exit in this regard.
 
-In DC networks with very low RTT and without RFS the SYN-ACK
-may arrive before NIC driver reported Tx completion on
-the original SYN. In which case skb_still_in_host_queue()
-returns true and sender will need to wait for the retransmission
-timer to fire milliseconds later.
-
-Revert back to non-fast clone skbs, this way
-skb_still_in_host_queue() won't prevent the recovery flow
-from completing.
-
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Fixes: 355a901e6cf1 ("tcp: make connect() mem charging friendly")
-Signed-off-by: Neil Spring <ntspring@fb.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
 ---
- net/ipv4/tcp_output.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/caif/caif_serial.c | 17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index fbf140a770d8..cd9461588539 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3759,9 +3759,16 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
- 	/* limit to order-0 allocations */
- 	space = min_t(size_t, space, SKB_MAX_HEAD(MAX_TCP_HEADER));
+diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+index 675c374b32ee..da6fffb4d5a8 100644
+--- a/drivers/net/caif/caif_serial.c
++++ b/drivers/net/caif/caif_serial.c
+@@ -389,18 +389,6 @@ static struct tty_ldisc_ops caif_ldisc = {
+ 	.write_wakeup =	ldisc_tx_wakeup
+ };
  
--	syn_data = sk_stream_alloc_skb(sk, space, sk->sk_allocation, false);
-+	syn_data = alloc_skb(MAX_TCP_HEADER + space, sk->sk_allocation);
- 	if (!syn_data)
- 		goto fallback;
-+	if (!sk_wmem_schedule(sk, syn_data->truesize)) {
-+		__kfree_skb(syn_data);
-+		goto fallback;
-+	}
-+	skb_reserve(syn_data, MAX_TCP_HEADER);
-+	INIT_LIST_HEAD(&syn_data->tcp_tsorted_anchor);
+-static int register_ldisc(void)
+-{
+-	int result;
+-
+-	result = tty_register_ldisc(N_CAIF, &caif_ldisc);
+-	if (result < 0) {
+-		pr_err("cannot register CAIF ldisc=%d err=%d\n", N_CAIF,
+-			result);
+-		return result;
+-	}
+-	return result;
+-}
+ static const struct net_device_ops netdev_ops = {
+ 	.ndo_open = caif_net_open,
+ 	.ndo_stop = caif_net_close,
+@@ -443,7 +431,10 @@ static int __init caif_ser_init(void)
+ {
+ 	int ret;
+ 
+-	ret = register_ldisc();
++	ret = tty_register_ldisc(N_CAIF, &caif_ldisc);
++	if (ret < 0)
++		pr_err("cannot register CAIF ldisc=%d err=%d\n", N_CAIF, ret);
 +
- 	syn_data->ip_summed = CHECKSUM_PARTIAL;
- 	memcpy(syn_data->cb, syn->cb, sizeof(syn->cb));
- 	if (space) {
+ 	debugfsdir = debugfs_create_dir("caif_serial", NULL);
+ 	return ret;
+ }
 -- 
-2.26.2
+2.30.1
 
