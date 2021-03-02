@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE39332B397
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0C3232B3C5
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:22:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449795AbhCCEDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:03:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36880 "EHLO
+        id S1576692AbhCCEGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:06:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1839538AbhCBQhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 11:37:23 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F81C06121D
-        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 08:10:27 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id ci14so17267956ejc.7
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 08:10:27 -0800 (PST)
+        with ESMTP id S1381237AbhCBTmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 14:42:13 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102E0C06121F;
+        Tue,  2 Mar 2021 08:11:44 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id mm21so35972845ejb.12;
+        Tue, 02 Mar 2021 08:11:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vJDGGYw7tvcK+titjb5UUUKjKogKFbuBWfwBQn8pnpY=;
-        b=BlJkHpJ9gb2T6xH4d7E6DsfDVr0uh9W/Z84RVzgIuhv/Qy8ZfKayi3gWppMi4kMSXj
-         LErYX2rZn36FwdYsyG3kZGhKii9OoE6QpO+PUmmCSk5lI0YW5riJfIK1VIJMyxoFUqoG
-         379zxil7FtYzj0JPDQ2/87FgaXDypPkhU6TdwiaOl1WwN7NDqt+HBSgJOKFX9abjwpm+
-         cmJg9XDLYsaLp3xMOouOx7bqSBYoOvemqiKQ9XQXF+QPWZWPgXYG8shXQT06TnlRZRY4
-         x1zbduD4zPKj1TxcyaFrvvER8rnfiuu4G4X+MFT1K2gnsJTkZqi8JDtf5Sb59DPOWwEh
-         pHFg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cimOH74ExOm9n45WQhr2uwq67qtoQ7z880rvlczqwuo=;
+        b=lia4ZT8TqvrwoMgkKSX2e6p/voNPp4KfheU9My7YSyJu+O0vf/lx6oeOB5vWSztukm
+         lW2fWp87EdzWpntwmu1+89J5j9Z3f8Onj787Jxn5Ii7wHzf0VpTGhhwPl454uK1O6Bjv
+         7KdxQocMnc7bcPuExxpeI4YVxuobUuPprW9/9aVbEc8NrLm+07ARj+HgiVDj9Zi39Dco
+         DN+guwJTa5ufvMYqg3OgqjigwgfP6Wfvk/YNS7HZjM3/CRk//1gQf5PKVvOUQAGpLHqZ
+         Hsb7XLHmgvkGN9Yg6eAMndxIgjeZEKCAy0f8EtVURCYgmpNFCBg43QLoGDO4GpKmU1hh
+         BJfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vJDGGYw7tvcK+titjb5UUUKjKogKFbuBWfwBQn8pnpY=;
-        b=TMTuvqciFtsZxTjBH8FKVbew0/zohjqjapqr7M5oJOaG8kFO0+qP6ihQHAU2/q2ow8
-         6OCohcJ/MKXuVsStw/CrvJXOlVJ6UQCbiIrw3xarvyNcfT95uY8sjQGFw2qvzTxjy6yA
-         PeGfDFTKuoMGi0fzc9xdPrG4Jyl+czQMXpy22Q1OwmJV7aKvcPIS6O0cVpuTmcjgGRuI
-         bW/o9GhegsuLASMGEEbGkqfZLFBLyaL4TgLZdjt+1OQEActx5mU6FFE9biIIINdhmGRz
-         Ugvb1auUT1DD8fbFZIBI+oDMxyXmU6BiHb1KeOQles/tM0TQwlE40EuqmA+VXzDNbH4F
-         MbbQ==
-X-Gm-Message-State: AOAM530S64sznRkXKmbj6onuu7yFKEZrzcH8W/CuFj/ENLIfMVNvLzYT
-        5CUxoxjsaIg7uJmw5sNsgOlZ3C7eYLd05bTzJD2O
-X-Google-Smtp-Source: ABdhPJx8PQFaZgOM2xUwSD8DpzvBCZqhortPrXsbuQRmYKE4KenPCbP0EoVbTKZ9wj1YIut8Zj0gMSbUKh7l4apxoGg=
-X-Received: by 2002:a17:906:7056:: with SMTP id r22mr6639665ejj.106.1614701426386;
- Tue, 02 Mar 2021 08:10:26 -0800 (PST)
-MIME-Version: 1.0
-References: <0000000000006305c005bc8ba7f0@google.com> <CACT4Y+YFtUHzWcU3VBvxsdq-V_4hN_ZDs4riZiHPt4f0cy8ryA@mail.gmail.com>
-In-Reply-To: <CACT4Y+YFtUHzWcU3VBvxsdq-V_4hN_ZDs4riZiHPt4f0cy8ryA@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 2 Mar 2021 11:10:15 -0500
-Message-ID: <CAHC9VhTxrGgBDW_439HeSP=_F9Jt2_cYrrQ7DtAXtKG4evGb9g@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in cipso_v4_genopt
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+9ec037722d2603a9f52e@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, dsahern@kernel.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cimOH74ExOm9n45WQhr2uwq67qtoQ7z880rvlczqwuo=;
+        b=SQToOhi7Cl2D5/dCeVVIkVDH8LvhBuIeYd/MZbEDwsOpZqbo4mF9NjyzUOcUGUzsRY
+         5KohYiEbyz8UMobeNGMeQdiGLMyzIcHzGdt/GyxTStDDBRb/4nB3l4PCJ7kfPDYK3dTO
+         eM2X3/P87E/oYNTMqZurH+SIxhfo6ED5+qNIEO8wezLKWvuf/+dhjeykiPUCMA7rYoK7
+         l2SYaJfn2xRT2vqEhIBgYfv3UyidtWQaC+UeM8vbkwXyUa0+9D6Xh6m/UExJuGDFDDDH
+         JoSazjJB/ulVKSPxdjTwo3hImvYQQfJMQNkzL1YuZdSoWslCYgiMKjr/NgIHBwWFlo5d
+         b3yA==
+X-Gm-Message-State: AOAM531xPGmwl19braqoaZQrL798QJCSYB7LxfHzWCHCFaXdzaca3I10
+        fKQAcFe1iqqDy1UCTbr7n4M=
+X-Google-Smtp-Source: ABdhPJxBEHbIAr9oL6dyFLIaky9rTvZwAzmWifVZVvQpbPSK5A4ogtHIa5jmErDB3J/6JfqMld8AlQ==
+X-Received: by 2002:a17:906:71d3:: with SMTP id i19mr1210810ejk.347.1614701502805;
+        Tue, 02 Mar 2021 08:11:42 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id q11sm17924852ejr.36.2021.03.02.08.11.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Mar 2021 08:11:42 -0800 (PST)
+Date:   Tue, 2 Mar 2021 18:11:40 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-security-module <linux-security-module@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
         netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC net-next] net: dsa: rtl8366rb: support bridge offloading
+Message-ID: <20210302161140.l3jtvkcm3tvlv5q3@skbuf>
+References: <20210224061205.23270-1-dqfext@gmail.com>
+ <CACRpkdZykWgxM7Ge40gpMBaVUoa7WqJrOugrvSpm2Lc52hHC8w@mail.gmail.com>
+ <CALW65jYRaUHX7JBWbQa+y83_3KBStaMK1-_2Zj25v9isFKCLpQ@mail.gmail.com>
+ <CACRpkdZW1oWx-gnRO7gBuOM9dO23r+iifQRm1-M8z4Ms8En9cw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACRpkdZW1oWx-gnRO7gBuOM9dO23r+iifQRm1-M8z4Ms8En9cw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 2, 2021 at 6:03 AM Dmitry Vyukov <dvyukov@google.com> wrote:
->
+On Tue, Mar 02, 2021 at 05:05:00PM +0100, Linus Walleij wrote:
+> On Tue, Mar 2, 2021 at 4:58 AM DENG Qingfang <dqfext@gmail.com> wrote:
+> > On Mon, Mar 1, 2021 at 9:48 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+> > > With my minor changes:
+> > > Tested-by: Linus Walleij <linus.walleij@linaro.org>
+> >
+> > How about using a mutex lock in port_bridge_{join,leave} ?
+> > In my opinion all functions that access multiple registers should be
+> > synchronized.
+> 
+> That's one way, in some cases the framework (DSA) serialize
+> the accesses so I don't know if that already happens on a
+> higher level? Since it is accessed over a slow bus we should go
+> for mutex in that case indeed.
 
-...
+DSA does not serialize this. The .port_bridge_join and
+.port_bridge_leave calls are initiated from the NETDEV_CHANGEUPPER net
+device event, which is called under rtnl_mutex (see call_netdevice_notifiers).
+This is pretty fundamental and I don't think it will ever change.
 
-> Besides these 2 crashes, we've also seen one on a 4.19 based kernel, see below.
-> Based on the reports with mismatching stacks, it looks like
-> cipso_v4_genopt is doing some kind of wild pointer access (uninit
-> pointer?).
-
-Hmm, interesting.  Looking quickly at the stack dump, it appears that
-the problem occurs (at least in the recent kernel) when accessing the
-cipso_v4_doi.tags[] array which is embedded in the cipso_v4_doi
-struct.  Based on the code in cipso_v4_genopt() it doesn't appear that
-we are shooting past the end of the array/struct and the cipso_v4_doi
-struct appears to be refcounted correctly in cipso_v4_doi_getdef() and
-cipso_v4_doi_putdef().  I'll look at it some more today to see if
-something jumps out at me, but obviously a reproducer would be very
-helpful if you are able to find one.
-
-It's also worth adding that this code really hasn't changed much in a
-*long* time, not that this means it isn't broken, just that it might
-also be worth looking at other odd memory bugs to see if there is
-chance they are wandering around and stomping on memory ...
-
--- 
-paul moore
-www.paul-moore.com
+However, if you still want to add an extra layer of locking (with code
+paths that for some reason are not under the rtnl_mutex), then go ahead,
+I suppose. It will be challenging to make sure they do something that
+isn't snake oil, though.
