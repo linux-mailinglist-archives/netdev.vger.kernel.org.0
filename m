@@ -2,127 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA6832A39B
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:20:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0E932A39D
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378971AbhCBJXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 04:23:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38560 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1378837AbhCBJCz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 04:02:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 30C1264F14
-        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 09:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614675718;
-        bh=o3mCxuDJzYLePQJzSSI0Ar+My+bEW81VEOi2bsaAVK0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Rd7cdxyECEZhpIBxJb1hOSdY3K1SCI8G2PpC/LiUI2KKfRX5LpOJT8dUk/QwWGS3e
-         WD4pOOy+AT0rtQm37k7pq7CnwlMO978yh2xLXGZlDwEFkGVxdWPoUYrqQcZUCAyz1P
-         95F8erXRaPK8ma2UxhFd9tTr704u51q5il0h461Aa1VqTgD3o9sZrLYOeIW71dj8QT
-         HXhI+yV/acgCvQowJav+YhkT8Stydhts5KLFZOL7c2Ovv8IflhRMWoAv5zguAdJQTy
-         TzKt00bmyZT/aF/jtkgDb0CtE9mw+VbSASI78Ja2s2wzQ4jw/J+FZrUr3ziJ6vyM0E
-         HjXWMMHIQ+Z8A==
-Received: by mail-ot1-f48.google.com with SMTP id x9so14964048otp.8
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 01:01:58 -0800 (PST)
-X-Gm-Message-State: AOAM530W8w4bkjKi19/o7ybgpn0lyb26HWMkjGt/vVBTES9JvORbr4Ra
-        2P0WuntGBMgxA9jY3sXa20gn43gcorSuiVU4aPw=
-X-Google-Smtp-Source: ABdhPJwSJtXcu7/XJp1q0qytYriJjt/SZXaBJMnPi4Ir2Dr8knR4IbC07MLIbW6+AwM7pghjWzCWrj9Y5LgGDcBAaSc=
-X-Received: by 2002:a05:6830:1b65:: with SMTP id d5mr891656ote.305.1614675717341;
- Tue, 02 Mar 2021 01:01:57 -0800 (PST)
+        id S1382142AbhCBJYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 04:24:14 -0500
+Received: from www62.your-server.de ([213.133.104.62]:45288 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1837932AbhCBJOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 04:14:14 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lH15m-000CAX-27; Tue, 02 Mar 2021 10:13:22 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lH15l-000IT0-Pz; Tue, 02 Mar 2021 10:13:21 +0100
+Subject: Re: [PATCH bpf-next 2/2] libbpf, xsk: add libbpf_smp_store_release
+ libbpf_smp_load_acquire
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        maximmi@nvidia.com, andrii@kernel.org, will@kernel.org
+References: <20210301104318.263262-1-bjorn.topel@gmail.com>
+ <20210301104318.263262-3-bjorn.topel@gmail.com> <87k0qqx3be.fsf@toke.dk>
+ <e052a22a-4b7b-fe38-06ad-2ad04c83dda7@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <12f8969b-6780-f35f-62cd-ed67b1d8181a@iogearbox.net>
+Date:   Tue, 2 Mar 2021 10:13:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20210212025641.323844-1-saeed@kernel.org> <20210212025641.323844-2-saeed@kernel.org>
- <CAK8P3a0b88NUZUebzxLx5J9Lz4r=s2AmxsWPRTvvQm6ieFnuww@mail.gmail.com> <47a3455638c908e3dd7301de3ff41c896bdb765e.camel@kernel.org>
-In-Reply-To: <47a3455638c908e3dd7301de3ff41c896bdb765e.camel@kernel.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 2 Mar 2021 10:01:40 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0RvXYoWfBOP0m6E_T2=ySQzxtsohT1Lc4qX8NQAqBVTw@mail.gmail.com>
-Message-ID: <CAK8P3a0RvXYoWfBOP0m6E_T2=ySQzxtsohT1Lc4qX8NQAqBVTw@mail.gmail.com>
-Subject: Re: [net 01/15] net/mlx5e: E-switch, Fix rate calculation for overflow
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>, Eli Cohen <elic@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <e052a22a-4b7b-fe38-06ad-2ad04c83dda7@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26095/Mon Mar  1 13:10:16 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 2, 2021 at 1:52 AM Saeed Mahameed <saeed@kernel.org> wrote:
-> On Sat, 2021-02-27 at 13:14 +0100, Arnd Bergmann wrote:
-> > On Fri, Feb 12, 2021 at 3:59 AM Saeed Mahameed <saeed@kernel.org>
-> > wrote:
-> > >
-> > > From: Parav Pandit <parav@nvidia.com>
-> > >
-> > > rate_bytes_ps is a 64-bit field. It passed as 32-bit field to
-> > > apply_police_params(). Due to this when police rate is higher
-> > > than 4Gbps, 32-bit calculation ignores the carry. This results
-> > > in incorrect rate configurationn the device.
-> > >
-> > > Fix it by performing 64-bit calculation.
-> >
-> > I just stumbled over this commit while looking at an unrelated
-> > problem.
-> >
-> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > index dd0bfbacad47..717fbaa6ce73 100644
-> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > @@ -5040,7 +5040,7 @@ static int apply_police_params(struct
-> > > mlx5e_priv *priv, u64 rate,
-> > >          */
-> > >         if (rate) {
-> > >                 rate = (rate * BITS_PER_BYTE) + 500000;
-> > > -               rate_mbps = max_t(u32, do_div(rate, 1000000), 1);
-> > > +               rate_mbps = max_t(u64, do_div(rate, 1000000), 1);
-> >
-> > I think there are still multiple issues with this line:
-> >
-> > - Before commit 1fe3e3166b35 ("net/mlx5e: E-switch, Fix rate
-> > calculation for
-> >   overflow"), it was trying to calculate rate divided by 1000000, but
-> > now
-> >   it uses the remainder of the division rather than the quotient. I
-> > assume
-> >   this was meant to use div_u64() instead of do_div().
-> >
->
-> Yes, I already have a patch lined up to fix this issue.
+On 3/2/21 9:05 AM, Björn Töpel wrote:
+> On 2021-03-01 17:10, Toke Høiland-Jørgensen wrote:
+>> Björn Töpel <bjorn.topel@gmail.com> writes:
+>>> From: Björn Töpel <bjorn.topel@intel.com>
+>>>
+>>> Now that the AF_XDP rings have load-acquire/store-release semantics,
+>>> move libbpf to that as well.
+>>>
+>>> The library-internal libbpf_smp_{load_acquire,store_release} are only
+>>> valid for 32-bit words on ARM64.
+>>>
+>>> Also, remove the barriers that are no longer in use.
+>>
+>> So what happens if an updated libbpf is paired with an older kernel (or
+>> vice versa)?
+> 
+> "This is fine." ;-) This was briefly discussed in [1], outlined by the
+> previous commit!
+> 
+> ...even on POWER.
 
-ok
+Could you put a summary or quote of that discussion on 'why it is okay and does not
+cause /forward or backward/ compat issues with user space' directly into patch 1's
+commit message?
 
-> > - Both div_u64() and do_div() return a 32-bit number, and '1' is a
-> > constant
-> >   that also comfortably fits into a 32-bit number, so changing the
-> > max_t
-> >   to return a 64-bit type has no effect on the result
-> >
->
-> as of the above comment, we shouldn't be using the return value of
-> do_div().
+I feel just referring to a link is probably less suitable in this case as it should
+rather be part of the commit message that contains the justification on why it is
+waterproof - at least it feels that specific area may be a bit under-documented, so
+having it as direct part certainly doesn't hurt.
 
-Ok, I was confused here because do_div() returns a 32-bit type,
-and is called by div_u64(). Of course that was nonsense because
-do_div() returns the 32-bit remainder, while the division result
-remains 64-bit.
+Would also be great to get Will's ACK on that when you have a v2. :)
 
-> > - The maximum of an arbitrary unsigned integer and '1' is either one
-> > or zero,
-> >    so there doesn't need to be an expensive division here at all.
-> > From the
-> >    comment it sounds like the intention was to use 'min_t()' instead
-> > of 'max_t()'.
-> >    It has however used 'max_t' since the code was first introduced.
-> >
->
-> if the input rate is less that 1mbps then the quotient will be 0,
-> otherwise we want the quotient, and we don't allow 0, so max_t(rate, 1)
-> should be used, what am I missing ?
+Thanks,
+Daniel
 
-And I have no idea what I was thinking here, of course you are right
-and there is no other bug.
-
-       Arnd
+> [1] https://lore.kernel.org/bpf/20200316184423.GA14143@willie-the-truck/
