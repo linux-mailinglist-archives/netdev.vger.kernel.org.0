@@ -2,124 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70D9432B382
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2978E32B383
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352688AbhCCEAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:00:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54010 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380382AbhCBL0g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 06:26:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614684265;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1BhNztqEgWGMx7kPW5f0CLvD2WsnR/6LZwBjGCJ0xrE=;
-        b=Bc7bbDxKvISIhKpZ3k5gBH5Z9izdzi8Qk48G9DwZTo6B5JTwj4Q/QkVl95va3I9qMsutx2
-        xQLlmWOYBKkZoAl74sA9ZgDLFnsu9xpg2Twzczg1X0ha1WTBdmJj0v0LukJi7Up9xizTUk
-        r2obmSnJCp1515SbkuQ6IwqoUgBarZE=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-250-RImxKS3POMGWS12n_lDEsA-1; Tue, 02 Mar 2021 06:24:24 -0500
-X-MC-Unique: RImxKS3POMGWS12n_lDEsA-1
-Received: by mail-ej1-f70.google.com with SMTP id v10so8318733ejh.15
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 03:24:23 -0800 (PST)
+        id S1352631AbhCCEAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:00:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349686AbhCBL33 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 06:29:29 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46815C061756;
+        Tue,  2 Mar 2021 03:28:46 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id jt13so34620037ejb.0;
+        Tue, 02 Mar 2021 03:28:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ne1jKQEzc+j2RSXx8k9BrFVLTm1aSJu1puRRw+vucrg=;
+        b=p62PR86sZ80v2f6kAMBfm4+98DvMiqLXnID5q9XL4LZUf4XxXBCwks+xayAq2q4AWg
+         x5O/GkcXicGZZOIHt+dUl6LhULxNjWgKLWq/JfI+dpXQ8tCBVaMkl4DxZLF1aHT3e1uS
+         Qkuj8TsuWWwEaiQWLn5906i1XJMJr9HqkCZl1NCiXfiUPBwiT2m5bvHpFqBrKMKuLOLh
+         GyhpIMxDli58PhmnyWw6i8SOLzNLkvT+rYhVIEFtSgRjBM2p0WoDpTlhLeaGijG3RmdZ
+         C1IAh1W5/jj7kncsDJNj47BB/sRexS/nOIHclpYYFzHAS1HD1CouEBn8Ql8gix3rOUG9
+         NQhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=1BhNztqEgWGMx7kPW5f0CLvD2WsnR/6LZwBjGCJ0xrE=;
-        b=qut7RoNVes3RW5uNbIU68LT1BVwR95Rq3XGB7OkTkMEJ/BjjfRWDEbQ8Eypaa7Vs4y
-         /vsvJ1B/nBl0rFYXyUstmf+ihMENPrLVdiGH1/DCWPKiOnOg4iAEzQwt3aC3UgiCjeV1
-         2zxwAuRhbats6rhC/w1CKx5qoVuj/HcfstByyxp3Gf9YjxZRpiV7v0y/jLCdvzcGeG7s
-         5NtBIoBbJnQY4yqSfJOydnULhrxutTfTFwaqnVZ5gTUCwnqo6D9B1ttYBxfqfxe9pjdr
-         ou+nI1rwa7jbi7v7Esgs7MS1X0+ZEoZ8tS/2niuTMY39KLgPsqb7lLod7tCN4/lFCygx
-         pDFQ==
-X-Gm-Message-State: AOAM531+wU2HQG0H5DHcL4KhIjx9TD28SuJB/HrCS/C4WrLLH2BSq4J9
-        0KpJMDnT+tjZMs3GnVJL6/DVjmVC3j9RGSmk8ZhqVt212zbZ4SRRDIMxq5S2gSFkbedURBAqP/M
-        fOdFlmhKjnxqSQHPe
-X-Received: by 2002:a17:906:f296:: with SMTP id gu22mr19228814ejb.20.1614684263044;
-        Tue, 02 Mar 2021 03:24:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzGGNSokqgK/5RqqfSY3ERKl9lVWR62FSA4uJr14s6tOqkDbPKgW29y+nDnUA6mto+6bIvZew==
-X-Received: by 2002:a17:906:f296:: with SMTP id gu22mr19228806ejb.20.1614684262901;
-        Tue, 02 Mar 2021 03:24:22 -0800 (PST)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id h2sm15994879ejk.32.2021.03.02.03.24.21
+         :mime-version:content-disposition:in-reply-to;
+        bh=ne1jKQEzc+j2RSXx8k9BrFVLTm1aSJu1puRRw+vucrg=;
+        b=i4Ygd4c+OTLNOwjkPD9qxgkLNSyoGHlGWySOgwX+qHKfAnVDySiMe+4/rnB/Nw7Bi/
+         S3lbR2+nUngo2vVVr+NxgHt7i/cYTweJ22Kmt4B+LKzPl9XGNbosm7AQY44L0O3xFAtp
+         /rTsN4r5090uIue/I3h7JPZNilaMBEmObTgr3md2v1nX+5owziuYU/+3cw1GYfs2zOdl
+         1rgv8P12dQVBxTlcueAeWhE4VIf8EaKnpu3CpCAU311aA7wjTskdH1iAhdH/R8BKlHKq
+         ONIuJf6I5fmyRGq7yf5xI86oiFtPldbXAbiG4j4+TBpjvgf5JyIuT51v41yCsbJqBXe3
+         YZZA==
+X-Gm-Message-State: AOAM530v3yp4+/dD5dmbRhNPyRkWRXIkDWf9PZxxlZdNq1A4gHLsVR9g
+        z/xTLbS4IYy5XUpwBAhC2Hw=
+X-Google-Smtp-Source: ABdhPJw/jvJAKfJfUwxEWAZIAOYF5bvPWHeEgoHQPeuvjdlm6Vv4nDkbTh3/icJd2TOdqq6z37HOSw==
+X-Received: by 2002:a17:906:a51:: with SMTP id x17mr399300ejf.25.1614684524911;
+        Tue, 02 Mar 2021 03:28:44 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id w18sm15957552ejn.23.2021.03.02.03.28.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Mar 2021 03:24:22 -0800 (PST)
-Date:   Tue, 2 Mar 2021 06:24:19 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vdpa/mlx5: Fix wrong use of bit numbers
-Message-ID: <20210302062405-mutt-send-email-mst@kernel.org>
-References: <20210301062817.39331-1-elic@nvidia.com>
- <959916f2-5fc9-bdb4-31ca-632fe0d98979@redhat.com>
- <20210301103214-mutt-send-email-mst@kernel.org>
- <20210302052306.GA227464@mtl-vdi-166.wap.labs.mlnx>
+        Tue, 02 Mar 2021 03:28:44 -0800 (PST)
+Date:   Tue, 2 Mar 2021 13:28:42 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Birger Koblitz <git@birger-koblitz.de>,
+        =?utf-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
+        Stijn Segers <foss@volatilesystems.org>
+Subject: Re: dsa_master_find_slave()'s time complexity and potential
+ performance hit
+Message-ID: <20210302112842.5t54kgz3j556cm52@skbuf>
+References: <CALW65jatBuoE=NDRqccfiMVugPh5eeYSf-9a9qWYhvvszD2Jiw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210302052306.GA227464@mtl-vdi-166.wap.labs.mlnx>
+In-Reply-To: <CALW65jatBuoE=NDRqccfiMVugPh5eeYSf-9a9qWYhvvszD2Jiw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 02, 2021 at 07:23:06AM +0200, Eli Cohen wrote:
-> On Mon, Mar 01, 2021 at 10:33:14AM -0500, Michael S. Tsirkin wrote:
-> > On Mon, Mar 01, 2021 at 03:52:45PM +0800, Jason Wang wrote:
-> > > 
-> > > On 2021/3/1 2:28 下午, Eli Cohen wrote:
-> > > > VIRTIO_F_VERSION_1 is a bit number. Use BIT_ULL() with mask
-> > > > conditionals.
-> > > > 
-> > > > Also, in mlx5_vdpa_is_little_endian() use BIT_ULL for consistency with
-> > > > the rest of the code.
-> > > > 
-> > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > > 
-> > > 
-> > > Acked-by: Jason Wang <jasowang@redhat.com>
-> > 
-> > And CC stable I guess?
-> 
-> Is this a question or a request? :-)
+On Tue, Mar 02, 2021 at 01:51:42PM +0800, DENG Qingfang wrote:
+> Since commit 7b9a2f4bac68 ("net: dsa: use ports list to find slave"),
+> dsa_master_find_slave() has been iterating over a linked list instead
+> of accessing arrays, making its time complexity O(n).
+> The said function is called frequently in DSA RX path, so it may cause
+> a performance hit, especially for switches that have many ports (20+)
+> such as RTL8380/8390/9300 (There is a downstream DSA driver for it,
+> see https://github.com/openwrt/openwrt/tree/openwrt-21.02/target/linux/realtek/files-5.4/drivers/net/dsa/rtl83xx).
+> I don't have one of those switches, so I can't test if the performance
+> impact is huge or not.
 
-A question. net patches are cc'd by net maintainer.
+You actually can test that, you could create a tagger in mainline based
+on the rtl83xx tagger from downstream, and then you could modify
+dsa_loop to use DSA_TAG_PROTO_RTL83XX.
 
-> > 
-> > > 
-> > > > ---
-> > > >   drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
-> > > >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > index dc7031132fff..7d21b857a94a 100644
-> > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > @@ -821,7 +821,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
-> > > >   	MLX5_SET(virtio_q, vq_ctx, event_qpn_or_msix, mvq->fwqp.mqp.qpn);
-> > > >   	MLX5_SET(virtio_q, vq_ctx, queue_size, mvq->num_ent);
-> > > >   	MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0,
-> > > > -		 !!(ndev->mvdev.actual_features & VIRTIO_F_VERSION_1));
-> > > > +		 !!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_F_VERSION_1)));
-> > > >   	MLX5_SET64(virtio_q, vq_ctx, desc_addr, mvq->desc_addr);
-> > > >   	MLX5_SET64(virtio_q, vq_ctx, used_addr, mvq->device_addr);
-> > > >   	MLX5_SET64(virtio_q, vq_ctx, available_addr, mvq->driver_addr);
-> > > > @@ -1578,7 +1578,7 @@ static void teardown_virtqueues(struct mlx5_vdpa_net *ndev)
-> > > >   static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev *mvdev)
-> > > >   {
-> > > >   	return virtio_legacy_is_little_endian() ||
-> > > > -		(mvdev->actual_features & (1ULL << VIRTIO_F_VERSION_1));
-> > > > +		(mvdev->actual_features & BIT_ULL(VIRTIO_F_VERSION_1));
-> > > >   }
-> > > >   static __virtio16 cpu_to_mlx5vdpa16(struct mlx5_vdpa_dev *mvdev, u16 val)
-> > 
+Then you can craft some packets and inject them into the port on which
+dsa_loop is attached using tcpreplay.
+What I do is:
+- I initially send some packets using the xmit function of the tagger,
+  just to have an initial template to start with. This assumes that the
+  xmit format is more or less similar to the rcv format.
+- capture those xmit packets using tcpdump -i eth0 -Q out -w tagger.pcap
+- then open tagger-xmit.pcap in wireshark, run Export Specified Packet
+  and save it in the K12 text file format
+- edit the tagger-xmit.txt file according to my liking, in this case you
+  would have to create a receive packet on port 19 (the one where it's
+  most expensive to do the linear lookup of the ports list)
+- import the tagger.txt file again in Wireshark and save it as a new
+  tagger-rcv.pcap
+- run tcpreplay on that pcap file in a loop
 
+I would probably go with a very small packet size (64 bytes), and enable
+IP routing between two DSA interfaces lan0 and lan1:
+
+ip link set lan0 address de:ad:be:ef:00:00
+ip link set lan1 address de:ad:be:ef:00:01
+ip addr add 192.168.100.2/24 dev lan0
+ip addr add 192.168.101.2/24 dev lan1
+echo 1 > /proc/sys/net/ipv4/ip_forward
+arp -s 192.168.100.1 00:01:02:03:04:05 dev lan0 # towards spoofed sender
+arp -s 192.168.200.1 00:01:02:03:04:06 dev lan1 # towards spoofed receiver
+
+I would make sure the test packet from tagger-rcv.pcap has:
+- a source MAC address corresponding to your spoofed sender (in my
+  example 00:01:02:03:04:05).
+- a source IP address corresponding to your spoofed sender (in my
+  example 192.168.100.1)
+- a destination MAC address corresponding to the lan0 interface
+  (de:ad:be:ef:00:00)
+- a destination IP address corresponding to the spoofed receiver
+  (192.168.101.2)
+
+Then the network stack should route the received packet on lan0 by
+replacing the destination MAC address with that of the spoofed receiver
+(00:01:02:03:04:06), decrement the IP TTL to 63 and send it through lan1
+according to the routing table.
+
+To make sure your throughput is consistent you can do some things such
+as add a static flow steering rule on the DSA master to ensure the
+packets from the same flow are affine to the same CPU, and that if you
+send bidirectional traffic, it gets load balanced across multiple CPUs:
+
+ethtool --config-nfc eth0 flow-type ether dst de:ad:be:ef:00:00 m ff:ff:ff:ff:ff:ff action 0
+ethtool --config-nfc eth0 flow-type ether dst de:ad:be:ef:00:01 m ff:ff:ff:ff:ff:ff action 1
+
+Also, you should probably turn off GRO since it's not useful with IP
+forwarding and it takes a lot of time to do the re-segmentation on TX,
+to recalculate the checksums and all.
+
+ethtool -K lan0 gro off
+ethtool -K lan1 gro off
+
+You could probably adjust things a bit, like for example see if the rcv
+throughput on lan19 is higher than the throughput on lan0.
+
+That should give you a baseline. Only then would I start hacking at
+dsa_master_find_slave and see what benefit it brings to replace the list
+lookup with something of fixed temporal complexity, such as a linear
+array or something.
+
+I'm curious what you come up with.
