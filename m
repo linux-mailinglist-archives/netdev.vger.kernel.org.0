@@ -2,127 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B286D32A367
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:16:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2010E32A368
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:16:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382148AbhCBI42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 03:56:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30153 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345001AbhCBGw3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 01:52:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614667856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pw0+OpAgN2cuqHokScOT5T0Eyke5jNWE452MsWUrx9k=;
-        b=EpCnJRNeiXNbguN5amAqhrMxdrd16M6SektMiCg6ZHX6/jVbR2vG5hEdK7x3mRxAfKfXvG
-        UgvlpldDwqFyUcy0cOv0Rw6ZSPoSYjJkOIJnUJf4D6rZjr4ierhOiyOnKvRnXfxf1UZiFF
-        AFjlyumFh676BDPDtOD20Ne35S8mPwA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-382-iDdTdt3lNCipFcnOqlRw-g-1; Tue, 02 Mar 2021 01:50:52 -0500
-X-MC-Unique: iDdTdt3lNCipFcnOqlRw-g-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48CC8193578B;
-        Tue,  2 Mar 2021 06:50:50 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-12-133.pek2.redhat.com [10.72.12.133])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D86105D766;
-        Tue,  2 Mar 2021 06:50:38 +0000 (UTC)
-Subject: Re: [RFC v4 04/11] vdpa: Add an opaque pointer for
- vdpa_config_ops.dma_map()
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20210223115048.435-1-xieyongji@bytedance.com>
- <20210223115048.435-5-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <977e44fe-63ec-a695-11a5-d7c584124294@redhat.com>
-Date:   Tue, 2 Mar 2021 14:50:37 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S1382153AbhCBI4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 03:56:30 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:41177 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347607AbhCBHHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 02:07:13 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1lGz4z-00043R-4L; Tue, 02 Mar 2021 08:04:25 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1lGz4x-0001Ps-Gy; Tue, 02 Mar 2021 08:04:23 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 0AE98240041;
+        Tue,  2 Mar 2021 08:04:23 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 5CD2C240040;
+        Tue,  2 Mar 2021 08:04:22 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id DE26A20043;
+        Tue,  2 Mar 2021 08:04:20 +0100 (CET)
 MIME-Version: 1.0
-In-Reply-To: <20210223115048.435-5-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 02 Mar 2021 08:04:20 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
+Organization: TDT AG
+In-Reply-To: <CAJht_EMG27YU+Jxtb2qeq1nXwu8uV8FXQPr62OcNHsE7DozD1g@mail.gmail.com>
+References: <20210216201813.60394-1-xie.he.0141@gmail.com>
+ <YC4sB9OCl5mm3JAw@unreal>
+ <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
+ <YC5DVTHHd6OOs459@unreal>
+ <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
+ <YC7GHgYfGmL2wVRR@unreal>
+ <CAJht_EPZ7rVFd-XD6EQD2VJTDtmZZv0HuZvii+7=yhFgVz68VQ@mail.gmail.com>
+ <CAJht_EPPMhB0JTtjWtMcGbRYNiZwJeMLWSC5hS6WhWuw5FgZtg@mail.gmail.com>
+ <20210219103948.6644e61f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EOru3pW6AHN4QVjiaERpLSfg-0G0ZEaqU_hkhX1acv0HQ@mail.gmail.com>
+ <906d8114f1965965749f1890680f2547@dev.tdt.de>
+ <CAJht_EPBJhhdCBoon=WMuPBk-sxaeYOq3veOpAd2jq5kFqQHBg@mail.gmail.com>
+ <e1750da4179aca52960703890e985af3@dev.tdt.de>
+ <CAJht_ENP3Y98jgj1peGa3fGpQ-qPaF=1gtyYwMcawRFW_UCpeA@mail.gmail.com>
+ <ff200b159ef358494a922a676cbef8a6@dev.tdt.de>
+ <CAJht_EMG27YU+Jxtb2qeq1nXwu8uV8FXQPr62OcNHsE7DozD1g@mail.gmail.com>
+Message-ID: <41b77b1c3cf1bb7a51b750faf23900ef@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.16
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate: clean
+X-purgate-ID: 151534::1614668664-00002CDB-8FE715EC/0/0
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2021-03-01 09:56, Xie He wrote:
+> On Sun, Feb 28, 2021 at 10:56 PM Martin Schiller <ms@dev.tdt.de> wrote:
+>> 
+>> >> Also, I have a hard time assessing if such a wrap is really
+>> >> enforceable.
+>> >
+>> > Sorry. I don't understand what you mean. What "wrap" are you referring
+>> > to?
+>> 
+>> I mean the change from only one hdlc<x> interface to both hdlc<x> and
+>> hdlc<x>_x25.
+>> 
+>> I can't estimate how many users are out there and how their setup 
+>> looks
+>> like.
+> 
+> I'm also thinking about solving this issue by adding new APIs to the
+> HDLC subsystem (hdlc_stop_queue / hdlc_wake_queue) for hardware
+> drivers to call instead of netif_stop_queue / netif_wake_queue. This
+> way we can preserve backward compatibility.
+> 
+> However I'm reluctant to change the code of all the hardware drivers
+> because I'm afraid of introducing bugs, etc. When I look at the code
+> of "wan/lmc/lmc_main.c", I feel I'm not able to make sure there are no
+> bugs (related to stop_queue / wake_queue) after my change (and even
+> before my change, actually). There are even serious style problems:
+> the majority of its lines are indented by spaces.
+> 
+> So I don't want to mess with all the hardware drivers. Hardware driver
+> developers (if they wish to properly support hdlc_x25) should do the
+> change themselves. This is not a problem for me, because I use my own
+> out-of-tree hardware driver. However if I add APIs with no user code
+> in the kernel, other developers may think these APIs are not
+> necessary.
 
-On 2021/2/23 7:50 下午, Xie Yongji wrote:
-> Add an opaque pointer for DMA mapping.
->
-> Suggested-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+I don't think a change that affects the entire HDLC subsystem is
+justified, since the actual problem only affects the hdlc_x25 area.
 
+The approach with the additional hdlc<x>_x25 is clean and purposeful and
+I personally could live with it.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+I just don't see myself in the position to decide such a change at the
+moment.
 
-
-> ---
->   drivers/vdpa/vdpa_sim/vdpa_sim.c | 6 +++---
->   drivers/vhost/vdpa.c             | 2 +-
->   include/linux/vdpa.h             | 2 +-
->   3 files changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> index d5942842432d..5cfc262ce055 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> @@ -512,14 +512,14 @@ static int vdpasim_set_map(struct vdpa_device *vdpa,
->   }
->   
->   static int vdpasim_dma_map(struct vdpa_device *vdpa, u64 iova, u64 size,
-> -			   u64 pa, u32 perm)
-> +			   u64 pa, u32 perm, void *opaque)
->   {
->   	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
->   	int ret;
->   
->   	spin_lock(&vdpasim->iommu_lock);
-> -	ret = vhost_iotlb_add_range(vdpasim->iommu, iova, iova + size - 1, pa,
-> -				    perm);
-> +	ret = vhost_iotlb_add_range_ctx(vdpasim->iommu, iova, iova + size - 1,
-> +					pa, perm, opaque);
->   	spin_unlock(&vdpasim->iommu_lock);
->   
->   	return ret;
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 5500e3bf05c1..70857fe3263c 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -544,7 +544,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
->   		return r;
->   
->   	if (ops->dma_map) {
-> -		r = ops->dma_map(vdpa, iova, size, pa, perm);
-> +		r = ops->dma_map(vdpa, iova, size, pa, perm, NULL);
->   	} else if (ops->set_map) {
->   		if (!v->in_batch)
->   			r = ops->set_map(vdpa, dev->iotlb);
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index 4ab5494503a8..93dca2c328ae 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -241,7 +241,7 @@ struct vdpa_config_ops {
->   	/* DMA ops */
->   	int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *iotlb);
->   	int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
-> -		       u64 pa, u32 perm);
-> +		       u64 pa, u32 perm, void *opaque);
->   	int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
->   
->   	/* Free device resources */
-
+@Jakub: What is your opinion on this.
