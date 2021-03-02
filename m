@@ -2,94 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 314E032B3CB
+	by mail.lfdr.de (Postfix) with ESMTP id A2EFD32B3CC
 	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:22:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835889AbhCCEGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:06:50 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:36988 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381845AbhCBVez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 16:34:55 -0500
-Received: from [IPv6:2003:e9:d72a:21a0:8b4a:5ec4:afc4:817c] (p200300e9d72a21a08b4a5ec4afc4817c.dip0.t-ipconnect.de [IPv6:2003:e9:d72a:21a0:8b4a:5ec4:afc4:817c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id C8351C0A66;
-        Tue,  2 Mar 2021 22:33:17 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1614720798;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OqMTRRyluB1sCfHyssYtnEiA+exUEHJ21ivCDAdaazQ=;
-        b=eKa92Tog7kraMSM355h/9FmG3hBmW3sNO1EP17iyz8lBVkwkePzgTOhsShFT/eWtUaS9bU
-        DtIVVuaWb/hPP2hkQsrm1lcKXNMTel4rXU8iwbOugIPD5YIr0O35cD967yizN0KZgMefX9
-        LoQtZzVaPl7078CZ9uTyobNjglGmqqufgBPqxfp+vMV94KywAshji0fQyivYJBG4xZRY2Z
-        CNh/TBip7N7UWU1DHDdFm+sx4AIfl+FviMACgIzMHIkbC6GmhPmzBYD8xFqVcWAJhmCWIq
-        sknLTDQufY1MvIaP8U7Bd+KwLfyphuWHDV6AAjfu8jOBf9CIKDtXggDDnU6HWw==
-Subject: Re: [PATCH wpan 03/17] net: ieee802154: nl-mac: fix check on panid
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-References: <20210228151817.95700-1-aahringo@redhat.com>
- <20210228151817.95700-4-aahringo@redhat.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <9eb955c5-3f27-63d5-e292-0217ed56b8cb@datenfreihafen.org>
-Date:   Tue, 2 Mar 2021 22:33:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S1835902AbhCCEGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:06:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56486 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351082AbhCBVmp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 16:42:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2082A601FB;
+        Tue,  2 Mar 2021 21:42:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614721324;
+        bh=vExVERiAK+CqKVzzo6VrQtfRSSKKna3ICtCV3SbMyqk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=O+IDDm/aSFMAbrcQjJksklCWsvlpPYEXUlB/erhQioHEFsxWjP7i6Jxm9KEdllsKr
+         dBThDAv/AQ+qwkDNHmkSGTlFzmrwHxHHL5C+nGvmEos6WhE4z5xDr+AA+/34XZCpeq
+         YX19BpLV3rRxlEaizamDF+wXkPTfUx+TIYGM9JaQa7JXrgwF6kxeRJbd1VsqL13Uli
+         AZoZFtwFMdyfst/19j9ZIIbVHvvE9nTvDrVQtT2anAhipHUinc75he0DjIoK5Z9Pyl
+         CubZwprb6NlGYUGxdwqADzx8xLc4ZdTmRCuuBuhJocyUnZT2oarE0m8lDQeHI/JjuR
+         Z8cyylpDXnfuQ==
+Date:   Tue, 2 Mar 2021 13:42:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "Coelho\, Luciano" <luciano.coelho@intel.com>,
+        "nathan\@kernel.org" <nathan@kernel.org>,
+        "gil.adam\@intel.com" <gil.adam@intel.com>,
+        "Berg\, Johannes" <johannes.berg@intel.com>,
+        "weiyongjun1\@huawei.com" <weiyongjun1@huawei.com>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "Goodstein\, Mordechay" <mordechay.goodstein@intel.com>,
+        "hulkci\@huawei.com" <hulkci@huawei.com>,
+        "Grumbach\, Emmanuel" <emmanuel.grumbach@intel.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] iwlwifi: mvm: add terminate entry for dmi_system_id
+ tables
+Message-ID: <20210302134203.4ee50efe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <877dmp8hdx.fsf@codeaurora.org>
+References: <20210223140039.1708534-1-weiyongjun1@huawei.com>
+        <20210226210640.GA21320@MSI.localdomain>
+        <87h7ly9fph.fsf@codeaurora.org>
+        <bd1bd942bcccffb9b3453344b611a13876d0e565.camel@intel.com>
+        <20210302110559.1809ceaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <877dmp8hdx.fsf@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <20210228151817.95700-4-aahringo@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 28.02.21 16:18, Alexander Aring wrote:
-> This patch fixes a null pointer derefence for panid handle by move the
-> check for the netlink variable directly before accessing them.
+On Tue, 02 Mar 2021 21:50:18 +0200 Kalle Valo wrote:
+> > if Wei doesn't respond could you please step in to make sure this
+> > fix is part of Dave's next PR to Linus?  
 > 
-> Reported-by: syzbot+d4c07de0144f6f63be3a@syzkaller.appspotmail.com
-> Signed-off-by: Alexander Aring <aahringo@redhat.com>
-> ---
->   net/ieee802154/nl-mac.c | 7 ++++---
->   1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/ieee802154/nl-mac.c b/net/ieee802154/nl-mac.c
-> index 9c640d670ffe..0c1b0770c59e 100644
-> --- a/net/ieee802154/nl-mac.c
-> +++ b/net/ieee802154/nl-mac.c
-> @@ -551,9 +551,7 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
->   	desc->mode = nla_get_u8(info->attrs[IEEE802154_ATTR_LLSEC_KEY_MODE]);
->   
->   	if (desc->mode == IEEE802154_SCF_KEY_IMPLICIT) {
-> -		if (!info->attrs[IEEE802154_ATTR_PAN_ID] &&
-> -		    !(info->attrs[IEEE802154_ATTR_SHORT_ADDR] ||
-> -		      info->attrs[IEEE802154_ATTR_HW_ADDR]))
-> +		if (!info->attrs[IEEE802154_ATTR_PAN_ID])
->   			return -EINVAL;
->   
->   		desc->device_addr.pan_id = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_PAN_ID]);
-> @@ -562,6 +560,9 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
->   			desc->device_addr.mode = IEEE802154_ADDR_SHORT;
->   			desc->device_addr.short_addr = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_SHORT_ADDR]);
->   		} else {
-> +			if (!info->attrs[IEEE802154_ATTR_HW_ADDR])
-> +				return -EINVAL;
-> +
->   			desc->device_addr.mode = IEEE802154_ADDR_LONG;
->   			desc->device_addr.extended_addr = nla_get_hwaddr(info->attrs[IEEE802154_ATTR_HW_ADDR]);
->   		}
-> 
+> Will do. Related to this, what's your pull request schedule to Linus
+> nowadays? Do you submit it every Thursday?
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
-
-regards
-Stefan Schmidt
+Fair question :) Dave is back full time now, so I think it will be more
+merit based again.
