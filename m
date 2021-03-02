@@ -2,71 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E492032B38D
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD80232B38E
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449688AbhCCECC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:02:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
+        id S1449713AbhCCECZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:02:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448253AbhCBOTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 09:19:02 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8411EC061756;
-        Tue,  2 Mar 2021 06:18:22 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1lH5qr-00AnJW-Vv; Tue, 02 Mar 2021 15:18:18 +0100
-Message-ID: <0a0573f07a7e1468f83d52afcf8f5ba356725740.camel@sipsolutions.net>
-Subject: Re: BUG: soft lockup in ieee80211_tasklet_handler
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+27df43cf7ae73de7d8ee@syzkaller.appspotmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Date:   Tue, 02 Mar 2021 15:18:16 +0100
-In-Reply-To: <20210224023026.3001-1-hdanton@sina.com>
-References: <00000000000039404305bc049fa5@google.com>
-         <20210224023026.3001-1-hdanton@sina.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        with ESMTP id S1376858AbhCBOYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 09:24:51 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF00C06178A
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 06:23:54 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id w9so9265983edt.13
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 06:23:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FRuUQq30ioibxh1s4bVwuehg8mtomzSVObPwas+DnIg=;
+        b=IT5oSHASkikMtm5+s4mDKYrYKWItV+t92P4VfQoJ5Ou/G7Myg0EVwG+uHQpNNj6Cpm
+         bPja5SqMGlNAcU+CwE3v03PJqJR6S0M57k+5OWSfEWx+HECvCSgJBNUAyqPFYgj0bgq+
+         h8YhOx9ooxmr8z9nd2TvDMQ+O4BwWl0UvRJF506IVbuw3TvZ+srztEMMoKKF+mStKxVP
+         uLLET1eOi2uiZKjYWcLdHKadCi9AhrOl33PsI8bBCMYhwTY+BZX3fMhJLUW/z14Qv+Z7
+         5NV8czCy4ASTeDlpewvnTBX8Q5XpQiKu6Zd+w4NNbQV6cJXvpiB773YlH6y43fOxyqFy
+         PsSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FRuUQq30ioibxh1s4bVwuehg8mtomzSVObPwas+DnIg=;
+        b=FJuhJD9NJzvD7PidFaMXX8uz8uuxd/6Ps+s7X3hNrZN6P1YzO/7H3nLVB4BA9TYxt5
+         PMiGsxBK9OeRsCqdJFWojnraQ+xlpdR8YA/RE0SP6F6izGZIclQ3nSGW1D2Bw/LJF8xa
+         JQYRhzQBCeI9dIUyYfNmdrF6HjvcVq4wzK972lavouG46vGmPidgMKutU1iILOkSseZJ
+         SJAcLsldriQAOcIpq5zc8PFAo9kgvCRH71bZuqvHtpiXDGKRSvKYCGZEjc+5I4a7z2UI
+         1Q/tlaKo0d1UO4FqOKsDNhCRCb6JzTSD5vrLuRiyhW9leHp6G7aVOg+EkmxOhKH1xR6M
+         sPYg==
+X-Gm-Message-State: AOAM532Di+U7ibBMhTVERZC3s879+hJe98rB2+g+C2q6N6EuS+qFE9ui
+        uRtn8LGX+ifWqjaogP3X0dV4H8+0pls=
+X-Google-Smtp-Source: ABdhPJw3mteegPMDsRKGbXh6fddEUQcBDDITsXRT7DkQclbrm5uBo95Lgwv1KjRNXaPARhzFTxhSEg==
+X-Received: by 2002:a05:6402:b70:: with SMTP id cb16mr19522696edb.11.1614695033027;
+        Tue, 02 Mar 2021 06:23:53 -0800 (PST)
+Received: from skbuf ([188.25.217.13])
+        by smtp.gmail.com with ESMTPSA id x17sm18854567edq.42.2021.03.02.06.23.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Mar 2021 06:23:51 -0800 (PST)
+Date:   Tue, 2 Mar 2021 16:23:50 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuba@kernel.org, vladimir.oltean@nxp.com,
+        Jose.Abreu@synopsys.com, po.liu@nxp.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        mkubecek@suse.cz
+Subject: Re: [PATCH net-next v3 1/8] ethtool: Add support for configuring
+ frame preemption
+Message-ID: <20210302142350.4tu3n4gay53cjnig@skbuf>
+References: <20210122224453.4161729-1-vinicius.gomes@intel.com>
+ <20210122224453.4161729-2-vinicius.gomes@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210122224453.4161729-2-vinicius.gomes@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-02-24 at 10:30 +0800, Hillf Danton wrote:
+Hi Vinicius,
+
+On Fri, Jan 22, 2021 at 02:44:46PM -0800, Vinicius Costa Gomes wrote:
+> Frame preemption (described in IEEE 802.3br-2016) defines the concept
+> of preemptible and express queues. It allows traffic from express
+> queues to "interrupt" traffic from preemptible queues, which are
+> "resumed" after the express traffic has finished transmitting.
 > 
-> Add budget for the 80211 softint handler - it's feasible not to try to
-> build the giant pyramid in a week.
+> Frame preemption can only be used when both the local device and the
+> link partner support it.
 > 
-> --- x/net/mac80211/main.c
-> +++ y/net/mac80211/main.c
-> @@ -224,9 +224,15 @@ static void ieee80211_tasklet_handler(un
->  {
->  	struct ieee80211_local *local = (struct ieee80211_local *) data;
->  	struct sk_buff *skb;
-> +	int i = 0;
-> +
-> +	while (i++ < 64) {
-> +		skb = skb_dequeue(&local->skb_queue);
-> +		if (!skb)
-> +			skb = skb_dequeue(&local->skb_queue_unreliable);
-> +		if (!skb)
-> +			return;
+> Only parameters for enabling/disabling frame preemption and
+> configuring the minimum fragment size are included here. Expressing
+> which queues are marked as preemptible is left to mqprio/taprio, as
+> having that information there should be easier on the user.
+> 
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> ---
 
-I guess that's not such a bad idea, but I do wonder how we get here,
-userspace can submit packets faster than we can process?
+I just noticed that the aMACMergeStatusVerify variable is not exposed in
+the PREEMPT_GET command, which would allow the user to inspect the state
+of the MAC merge sublayer verification state machine. Also, a way in the
+PREEMPT_SET command to set the disableVerify variable would be nice.
 
-It feels like a simulation-only case, tbh, since over the air you have
-limits how much bandwidth you can get ... unless you have a very slow
-CPU?
-
-In any case, if you want anything merged you're going to have to submit
-a proper patch with a real commit message and Signed-off-by, etc.
-
-johannes
-
+Do you still have the iproute2 patch that goes along with this? If you
+don't have the time, I might try to take a stab at adding these extra
+parameters and resending.
