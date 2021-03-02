@@ -2,194 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 642F632A378
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:17:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA6832A39B
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:20:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378902AbhCBJGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 04:06:14 -0500
-Received: from mga04.intel.com ([192.55.52.120]:36854 "EHLO mga04.intel.com"
+        id S1378971AbhCBJXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 04:23:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38560 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1378027AbhCBIxy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 03:53:54 -0500
-IronPort-SDR: ulNC4hI8upLVx5ELJvNxXhrIMZsMmcN3+RL0uffEEAjn22Lo4+AbwAd1W70xTPO75rxXLgRzIh
- /yHoxed805Pw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9910"; a="184312452"
-X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; 
-   d="scan'208";a="184312452"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 00:53:07 -0800
-IronPort-SDR: oVg+7B6EV3pFoM4+wfvh8NYW635JPptoOQwO7Gfi44Hk0MgtrFRy3g94xkSWGCZ0PlOdYlZ4kT
- MRccacM2lcPA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; 
-   d="scan'208";a="398581626"
-Received: from glass.png.intel.com ([10.158.65.65])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2021 00:53:04 -0800
-From:   Wong Vee Khee <vee.khee.wong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1378837AbhCBJCz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 04:02:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 30C1264F14
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 09:01:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614675718;
+        bh=o3mCxuDJzYLePQJzSSI0Ar+My+bEW81VEOi2bsaAVK0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Rd7cdxyECEZhpIBxJb1hOSdY3K1SCI8G2PpC/LiUI2KKfRX5LpOJT8dUk/QwWGS3e
+         WD4pOOy+AT0rtQm37k7pq7CnwlMO978yh2xLXGZlDwEFkGVxdWPoUYrqQcZUCAyz1P
+         95F8erXRaPK8ma2UxhFd9tTr704u51q5il0h461Aa1VqTgD3o9sZrLYOeIW71dj8QT
+         HXhI+yV/acgCvQowJav+YhkT8Stydhts5KLFZOL7c2Ovv8IflhRMWoAv5zguAdJQTy
+         TzKt00bmyZT/aF/jtkgDb0CtE9mw+VbSASI78Ja2s2wzQ4jw/J+FZrUr3ziJ6vyM0E
+         HjXWMMHIQ+Z8A==
+Received: by mail-ot1-f48.google.com with SMTP id x9so14964048otp.8
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 01:01:58 -0800 (PST)
+X-Gm-Message-State: AOAM530W8w4bkjKi19/o7ybgpn0lyb26HWMkjGt/vVBTES9JvORbr4Ra
+        2P0WuntGBMgxA9jY3sXa20gn43gcorSuiVU4aPw=
+X-Google-Smtp-Source: ABdhPJwSJtXcu7/XJp1q0qytYriJjt/SZXaBJMnPi4Ir2Dr8knR4IbC07MLIbW6+AwM7pghjWzCWrj9Y5LgGDcBAaSc=
+X-Received: by 2002:a05:6830:1b65:: with SMTP id d5mr891656ote.305.1614675717341;
+ Tue, 02 Mar 2021 01:01:57 -0800 (PST)
+MIME-Version: 1.0
+References: <20210212025641.323844-1-saeed@kernel.org> <20210212025641.323844-2-saeed@kernel.org>
+ <CAK8P3a0b88NUZUebzxLx5J9Lz4r=s2AmxsWPRTvvQm6ieFnuww@mail.gmail.com> <47a3455638c908e3dd7301de3ff41c896bdb765e.camel@kernel.org>
+In-Reply-To: <47a3455638c908e3dd7301de3ff41c896bdb765e.camel@kernel.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 2 Mar 2021 10:01:40 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0RvXYoWfBOP0m6E_T2=ySQzxtsohT1Lc4qX8NQAqBVTw@mail.gmail.com>
+Message-ID: <CAK8P3a0RvXYoWfBOP0m6E_T2=ySQzxtsohT1Lc4qX8NQAqBVTw@mail.gmail.com>
+Subject: Re: [net 01/15] net/mlx5e: E-switch, Fix rate calculation for overflow
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>,
-        Noor Azura Ahmad Tarmizi <noor.azura.ahmad.tarmizi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>
-Subject: [PATCH net 1/1] stmmac: intel: Fix mdio bus registration issue for TGL-H/ADL-S
-Date:   Tue,  2 Mar 2021 16:57:21 +0800
-Message-Id: <20210302085721.3168-1-vee.khee.wong@intel.com>
-X-Mailer: git-send-email 2.17.0
+        Networking <netdev@vger.kernel.org>,
+        Parav Pandit <parav@nvidia.com>, Eli Cohen <elic@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Intel platforms which consist of two Ethernet Controllers such as
-TGL-H and ADL-S, a unique MDIO bus id is required for MDIO bus to be
-successful registered:
+On Tue, Mar 2, 2021 at 1:52 AM Saeed Mahameed <saeed@kernel.org> wrote:
+> On Sat, 2021-02-27 at 13:14 +0100, Arnd Bergmann wrote:
+> > On Fri, Feb 12, 2021 at 3:59 AM Saeed Mahameed <saeed@kernel.org>
+> > wrote:
+> > >
+> > > From: Parav Pandit <parav@nvidia.com>
+> > >
+> > > rate_bytes_ps is a 64-bit field. It passed as 32-bit field to
+> > > apply_police_params(). Due to this when police rate is higher
+> > > than 4Gbps, 32-bit calculation ignores the carry. This results
+> > > in incorrect rate configurationn the device.
+> > >
+> > > Fix it by performing 64-bit calculation.
+> >
+> > I just stumbled over this commit while looking at an unrelated
+> > problem.
+> >
+> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > > b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > > index dd0bfbacad47..717fbaa6ce73 100644
+> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > > @@ -5040,7 +5040,7 @@ static int apply_police_params(struct
+> > > mlx5e_priv *priv, u64 rate,
+> > >          */
+> > >         if (rate) {
+> > >                 rate = (rate * BITS_PER_BYTE) + 500000;
+> > > -               rate_mbps = max_t(u32, do_div(rate, 1000000), 1);
+> > > +               rate_mbps = max_t(u64, do_div(rate, 1000000), 1);
+> >
+> > I think there are still multiple issues with this line:
+> >
+> > - Before commit 1fe3e3166b35 ("net/mlx5e: E-switch, Fix rate
+> > calculation for
+> >   overflow"), it was trying to calculate rate divided by 1000000, but
+> > now
+> >   it uses the remainder of the division rather than the quotient. I
+> > assume
+> >   this was meant to use div_u64() instead of do_div().
+> >
+>
+> Yes, I already have a patch lined up to fix this issue.
 
-[   13.076133] sysfs: cannot create duplicate filename '/class/mdio_bus/stmmac-1'
-[   13.083404] CPU: 8 PID: 1898 Comm: systemd-udevd Tainted: G     U            5.11.0-net-next #106
-[   13.092410] Hardware name: Intel Corporation Alder Lake Client Platform/AlderLake-S ADP-S DRR4 CRB, BIOS ADLIFSI1.R00.1494.B00.2012031421 12/03/2020
-[   13.105709] Call Trace:
-[   13.108176]  dump_stack+0x64/0x7c
-[   13.111553]  sysfs_warn_dup+0x56/0x70
-[   13.115273]  sysfs_do_create_link_sd.isra.2+0xbd/0xd0
-[   13.120371]  device_add+0x4df/0x840
-[   13.123917]  ? complete_all+0x2a/0x40
-[   13.127636]  __mdiobus_register+0x98/0x310 [libphy]
-[   13.132572]  stmmac_mdio_register+0x1c5/0x3f0 [stmmac]
-[   13.137771]  ? stmmac_napi_add+0xa5/0xf0 [stmmac]
-[   13.142493]  stmmac_dvr_probe+0x806/0xee0 [stmmac]
-[   13.147341]  intel_eth_pci_probe+0x1cb/0x250 [dwmac_intel]
-[   13.152884]  pci_device_probe+0xd2/0x150
-[   13.156897]  really_probe+0xf7/0x4d0
-[   13.160527]  driver_probe_device+0x5d/0x140
-[   13.164761]  device_driver_attach+0x4f/0x60
-[   13.168996]  __driver_attach+0xa2/0x140
-[   13.172891]  ? device_driver_attach+0x60/0x60
-[   13.177300]  bus_for_each_dev+0x76/0xc0
-[   13.181188]  bus_add_driver+0x189/0x230
-[   13.185083]  ? 0xffffffffc0795000
-[   13.188446]  driver_register+0x5b/0xf0
-[   13.192249]  ? 0xffffffffc0795000
-[   13.195577]  do_one_initcall+0x4d/0x210
-[   13.199467]  ? kmem_cache_alloc_trace+0x2ff/0x490
-[   13.204228]  do_init_module+0x5b/0x21c
-[   13.208031]  load_module+0x2a0c/0x2de0
-[   13.211838]  ? __do_sys_finit_module+0xb1/0x110
-[   13.216420]  __do_sys_finit_module+0xb1/0x110
-[   13.220825]  do_syscall_64+0x33/0x40
-[   13.224451]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   13.229515] RIP: 0033:0x7fc2b1919ccd
-[   13.233113] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 93 31 0c 00 f7 d8 64 89 01 48
-[   13.251912] RSP: 002b:00007ffcea2e5b98 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   13.259527] RAX: ffffffffffffffda RBX: 0000560558920f10 RCX: 00007fc2b1919ccd
-[   13.266706] RDX: 0000000000000000 RSI: 00007fc2b1a881e3 RDI: 0000000000000012
-[   13.273887] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000000000000000
-[   13.281036] R10: 0000000000000012 R11: 0000000000000246 R12: 00007fc2b1a881e3
-[   13.288183] R13: 0000000000000000 R14: 0000000000000000 R15: 00007ffcea2e5d58
-[   13.295389] libphy: mii_bus stmmac-1 failed to register
+ok
 
-Fixes: 88af9bd4efbd ("stmmac: intel: Add ADL-S 1Gbps PCI IDs")
-Fixes: 8450e23f142f ("stmmac: intel: Add PCI IDs for TGL-H platform")
-Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 54 ++++++++++++++-----
- 1 file changed, 41 insertions(+), 13 deletions(-)
+> > - Both div_u64() and do_div() return a 32-bit number, and '1' is a
+> > constant
+> >   that also comfortably fits into a 32-bit number, so changing the
+> > max_t
+> >   to return a 64-bit type has no effect on the result
+> >
+>
+> as of the above comment, we shouldn't be using the return value of
+> do_div().
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 74b14d647619..e6eaf378e8e7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -462,8 +462,8 @@ static int tgl_common_data(struct pci_dev *pdev,
- 	return intel_mgbe_common_data(pdev, plat);
- }
- 
--static int tgl_sgmii_data(struct pci_dev *pdev,
--			  struct plat_stmmacenet_data *plat)
-+static int tgl_sgmii_phy0_data(struct pci_dev *pdev,
-+			       struct plat_stmmacenet_data *plat)
- {
- 	plat->bus_id = 1;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-@@ -472,12 +472,26 @@ static int tgl_sgmii_data(struct pci_dev *pdev,
- 	return tgl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info tgl_sgmii1g_info = {
--	.setup = tgl_sgmii_data,
-+static struct stmmac_pci_info tgl_sgmii1g_phy0_info = {
-+	.setup = tgl_sgmii_phy0_data,
- };
- 
--static int adls_sgmii_data(struct pci_dev *pdev,
--			   struct plat_stmmacenet_data *plat)
-+static int tgl_sgmii_phy1_data(struct pci_dev *pdev,
-+			       struct plat_stmmacenet_data *plat)
-+{
-+	plat->bus_id = 2;
-+	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->serdes_powerup = intel_serdes_powerup;
-+	plat->serdes_powerdown = intel_serdes_powerdown;
-+	return tgl_common_data(pdev, plat);
-+}
-+
-+static struct stmmac_pci_info tgl_sgmii1g_phy1_info = {
-+	.setup = tgl_sgmii_phy1_data,
-+};
-+
-+static int adls_sgmii_phy0_data(struct pci_dev *pdev,
-+				struct plat_stmmacenet_data *plat)
- {
- 	plat->bus_id = 1;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-@@ -487,10 +501,24 @@ static int adls_sgmii_data(struct pci_dev *pdev,
- 	return tgl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info adls_sgmii1g_info = {
--	.setup = adls_sgmii_data,
-+static struct stmmac_pci_info adls_sgmii1g_phy0_info = {
-+	.setup = adls_sgmii_phy0_data,
- };
- 
-+static int adls_sgmii_phy1_data(struct pci_dev *pdev,
-+				struct plat_stmmacenet_data *plat)
-+{
-+	plat->bus_id = 2;
-+	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+
-+	/* SerDes power up and power down are done in BIOS for ADL */
-+
-+	return tgl_common_data(pdev, plat);
-+}
-+
-+static struct stmmac_pci_info adls_sgmii1g_phy1_info = {
-+	.setup = adls_sgmii_phy1_data,
-+};
- static const struct stmmac_pci_func_data galileo_stmmac_func_data[] = {
- 	{
- 		.func = 6,
-@@ -772,11 +800,11 @@ static const struct pci_device_id intel_eth_pci_id_table[] = {
- 	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_RGMII1G_ID, &ehl_pse1_rgmii1g_info) },
- 	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G_ID, &ehl_pse1_sgmii1g_info) },
- 	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5_ID, &ehl_pse1_sgmii1g_info) },
--	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_info) },
--	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_0_ID, &tgl_sgmii1g_info) },
--	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_1_ID, &tgl_sgmii1g_info) },
--	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_0_ID, &adls_sgmii1g_info) },
--	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_1_ID, &adls_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_phy0_info) },
-+	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_0_ID, &tgl_sgmii1g_phy0_info) },
-+	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_1_ID, &tgl_sgmii1g_phy1_info) },
-+	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_0_ID, &adls_sgmii1g_phy0_info) },
-+	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_1_ID, &adls_sgmii1g_phy1_info) },
- 	{}
- };
- MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
--- 
-2.17.0
+Ok, I was confused here because do_div() returns a 32-bit type,
+and is called by div_u64(). Of course that was nonsense because
+do_div() returns the 32-bit remainder, while the division result
+remains 64-bit.
 
+> > - The maximum of an arbitrary unsigned integer and '1' is either one
+> > or zero,
+> >    so there doesn't need to be an expensive division here at all.
+> > From the
+> >    comment it sounds like the intention was to use 'min_t()' instead
+> > of 'max_t()'.
+> >    It has however used 'max_t' since the code was first introduced.
+> >
+>
+> if the input rate is less that 1mbps then the quotient will be 0,
+> otherwise we want the quotient, and we don't allow 0, so max_t(rate, 1)
+> should be used, what am I missing ?
+
+And I have no idea what I was thinking here, of course you are right
+and there is no other bug.
+
+       Arnd
