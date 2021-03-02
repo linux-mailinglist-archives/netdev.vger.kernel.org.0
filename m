@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FBFA32B39A
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B822532B3B3
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:21:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449833AbhCCEDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:03:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579205AbhCBQqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 11:46:47 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62788C061A2E
-        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 08:32:05 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id e2so17541085ljo.7
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 08:32:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XQihGGsHn2Ec1V5JNWmQEWb+2T5lqpeyNq/VKNaEHRw=;
-        b=E6cwBE5VzlV4wVDgZ+5gfHO3FSSotA0JLRjTSZdu7Bb7zSfQ/wTreBDQhnVBdNVO0P
-         BmEv42CMpVK7DbnhKX6fiE4gqmwCmby9jvYIPF3++DRR6GDQipmcvet6zeKbeOFhwVjn
-         9f9svBYlPd0qNABkFpXH8BuQNzAFjzNzfhXdw=
+        id S1449947AbhCCEFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:05:03 -0500
+Received: from mail-yb1-f171.google.com ([209.85.219.171]:37573 "EHLO
+        mail-yb1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350351AbhCBSpZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 13:45:25 -0500
+Received: by mail-yb1-f171.google.com with SMTP id p193so21780902yba.4;
+        Tue, 02 Mar 2021 10:44:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XQihGGsHn2Ec1V5JNWmQEWb+2T5lqpeyNq/VKNaEHRw=;
-        b=CqYKUU84F3HOWDtGUhmjMPgybRUCaWzvCX5rg7fFJEGVqzy+hyEaT6gWeXr24fRhAD
-         13z+XPef5cz9LNVYzkkbCAgjISHPqxXOenzXl7Wekqle0iPaCncT86Wz+p2Ky7kmnC6O
-         xhNOtiCrsZivpL4fFqOrb/TPGs5dt1dL5/F6c1n/D7jLXth2r9hZF17JdmD3bZebGGXA
-         mbUYe+lz1swCxXq4cqe9okWpp8ieTVM1DKk+OKzDEns/qOMUX6Go5fMh9Ftd3DpqsSMa
-         n7aLGc8Wqibc4j+l0fYQ4VwrPb0Ndq7LK8nd8Sxot9Ic46Dw8fJyLjW8VBxPXgt4cGwx
-         y/Dg==
-X-Gm-Message-State: AOAM531fDx9DlvsZuw2KoFiuXtNx12v0w0ZXtaByAuSl+yU36KC1q179
-        9ind1/Q7uvHUVJX35Fpchb5VZfZ9z4sTYzLuZMo4sw==
-X-Google-Smtp-Source: ABdhPJyqTCMe34NCYpbrf7DiAJUDrgXX6BaBkGrG0BXnYkXVOSQp6WYMnnPCYNt3vtXA9wfKPEJHoEWayR97nwfzEkY=
-X-Received: by 2002:a05:651c:1318:: with SMTP id u24mr12776204lja.426.1614702723884;
- Tue, 02 Mar 2021 08:32:03 -0800 (PST)
+        bh=MpNiiFnvCV60eMMYrHSzbuK2BLlpKg0lToCXPm/qLyA=;
+        b=QvJEHr7HWt4e+jVHbZgJaXGflGcW7fdQZNaTxNwSDMzgnYd8aYzeJyQHSJ1Jyt/mfl
+         t0cVQAVDroHTjIJ4V0B/qv/0BdeEqZcZPnpk3CJCqAJCDRhGNNtFf6C0LQ9V4U1Xd4OO
+         /Ioe99pRlmUYhX6dxb6ysVCpKgcEMY7u7OKR9y7PIWNhoqyMThBS3XT0xK6muOoyiqog
+         Xa60sH4FwpfYPq3Fgwnca9P5akyC6cBWTBM2TNPKuiliAnSIfa3s177LFmzXfOyNxycA
+         1W9J5kA2NJhUzEJRrLjs4xSIC1+XhIHL3z6l12bdq9yvurOMXxjME1KfkoLxGj6H06TO
+         g6VQ==
+X-Gm-Message-State: AOAM531FBE/2aT9ABo6tBjP/p+ZfTtBngPQU/zaK3UfPkrQo+4OjSLcb
+        Kaw9iQOtcQq1/G5Coym2E6JuU4UFGToapqHFhSOePrH4C1I=
+X-Google-Smtp-Source: ABdhPJzaIVG+VBlnAnse4ZYp+F3Z5KTEhgQqGDYqpX+qx+pYEUwpPZIuu6q8OUSkjXLzaWEJYGrfrE5E3BAI2t8nHxc=
+X-Received: by 2002:ab0:60b8:: with SMTP id f24mr12577728uam.58.1614702747813;
+ Tue, 02 Mar 2021 08:32:27 -0800 (PST)
 MIME-Version: 1.0
-References: <20210302023743.24123-1-xiyou.wangcong@gmail.com> <20210302023743.24123-10-xiyou.wangcong@gmail.com>
-In-Reply-To: <20210302023743.24123-10-xiyou.wangcong@gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 2 Mar 2021 16:31:53 +0000
-Message-ID: <CACAyw9-wmN-pGYPkk4Ey_bazoycWAn+1-ewccTKeo-ebpHqyPA@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 9/9] selftests/bpf: add a test case for udp sockmap
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
+References: <7009ba70-4134-1acf-42b9-fa7e59b5d15d@omprussia.ru> <161463420785.14233.15454498386680107579.git-patchwork-notify@kernel.org>
+In-Reply-To: <161463420785.14233.15454498386680107579.git-patchwork-notify@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 2 Mar 2021 17:32:16 +0100
+Message-ID: <CAMuHMdU_v=0MDqR5rU6eqA0e7C16WN6g3zE2AKmB7JsNqa=xdw@mail.gmail.com>
+Subject: Re: [PATCH net 0/3] Fix TRSCER masks in the Ether driver
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Mar 2021 at 02:38, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Mon, Mar 1, 2021 at 10:38 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
+> This series was applied to netdev/net.git (refs/heads/master):
 >
-> From: Cong Wang <cong.wang@bytedance.com>
+> On Sun, 28 Feb 2021 23:24:16 +0300 you wrote:
+> > Here are 3 patches against DaveM's 'net' repo. I'm fixing the TRSCER masks in
+> > the driver to match the manuals...
+> >
+> > [1/3] sh_eth: fix TRSCER mask for SH771x
+> > [2/3] sh_eth: fix TRSCER mask for R7S72100
+> > [3/3] sh_eth: fix TRSCER mask for R7S9210
 >
-> Add a test case to ensure redirection between two UDP sockets work.
+> Here is the summary with links:
+>   - [net,1/3] sh_eth: fix TRSCER mask for SH771x
+>     https://git.kernel.org/netdev/net/c/8c91bc3d44df
+>   - [net,2/3] sh_eth: fix TRSCER mask for R7S72100
+>     https://git.kernel.org/netdev/net/c/75be7fb7f978
+>   - [net,3/3] sh_eth: fix TRSCER mask for R7S9210
+>     https://git.kernel.org/netdev/net/c/165bc5a4f30e
 
-I basically don't understand how splicing works, but watching from the
-sidelines makes me think it'd be good to have more thorough tests.
-tools/testing/selftests/bpf/test_sockmap.c has quite elaborate tests
-for the TCP part, it'd be nice to get similar tests going for UDP. For
-example:
+That was quick.  And as they're queued in net, not net-next, they
+missed today's renesas-drivers release, and all related testing...
 
-* sendfile?
-* sendmmsg
-* Something Jakub mentioned: what happens when a connected, spliced
-socket is disconnected via connect(AF_UNSPEC)? Seems like we don't
-hook sk_prot->disconnect anywhere.
+I applied them manually, and boot-tested rskrza1 (R7S72100) and
+rza2mevb (R7S9210) using nfsroot. Worked fine.
+
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Review will take a bit longer...
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-www.cloudflare.com
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
