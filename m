@@ -2,96 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7045232B3C9
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:22:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A0A632B3CA
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835855AbhCCEGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:06:44 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:63564 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1447365AbhCBU6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 15:58:00 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 122Ks9jV143629;
-        Tue, 2 Mar 2021 15:56:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=hVR23tAwSFO9yvx7WPzuNPiKXDrwlLnYZqNbmksQv74=;
- b=PUE7dv+wJIWuyK5t4GfQ4uUar5+qrH7xj7INM95mbiE7LCry68uTJdNPsZRu6//WEg3O
- oUR/wV8zZFqFfPV2ZXzx7caTT6xd4WbRZFA+22fvrwExxBvGCQXxqKg5nIroFWGijb6n
- MXO/A//B+AzQ1Cm6xOKhbWRbtOjePfgmG0ztpKcAAKq6s3xXOEQnqI8rYwItfmViNA0r
- Mt7K2r7x70oIvW4RfH426PWAbTIA5WPv0G1f2VXsTyliSnPcrX9KtzS+fcpXHJ6DwtQt
- TlKH7XOr5cq5i/5V1ptPg46AKLvOsaOqv1Y2UQQdxvtR/rlJ+pfmSW8raUEWfB6KH/iU MA== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 371vnhge45-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Mar 2021 15:56:48 -0500
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 122KqXxx032371;
-        Tue, 2 Mar 2021 20:55:26 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma03wdc.us.ibm.com with ESMTP id 37128ga3f7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Mar 2021 20:55:26 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 122KtPXK24576266
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 2 Mar 2021 20:55:25 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 50FBA6E04E;
-        Tue,  2 Mar 2021 20:55:25 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 20B236E054;
-        Tue,  2 Mar 2021 20:55:25 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.154.76])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue,  2 Mar 2021 20:55:24 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 009312E18A5; Tue,  2 Mar 2021 12:55:21 -0800 (PST)
-Date:   Tue, 2 Mar 2021 12:55:21 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Michal Suchanek <msuchanek@suse.de>
-Cc:     netdev@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ibmvnic: Fix possibly uninitialized old_num_tx_queues
- variable warning.
-Message-ID: <20210302205521.GA1260939@us.ibm.com>
-References: <20210302194747.21704-1-msuchanek@suse.de>
+        id S1835876AbhCCEGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:06:47 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:36418 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1448179AbhCBVS6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 16:18:58 -0500
+Received: from [IPv6:2003:e9:d72a:21a0:8b4a:5ec4:afc4:817c] (p200300e9d72a21a08b4a5ec4afc4817c.dip0.t-ipconnect.de [IPv6:2003:e9:d72a:21a0:8b4a:5ec4:afc4:817c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 6D246C07F4;
+        Tue,  2 Mar 2021 22:18:15 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1614719895;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kdo6eum8wkd2iODfotmdqvpBWhx/QCj5SmddN3Nhegw=;
+        b=mecsQ6MkrEaxjuLy86lDGI/P41tcSX+OE/oE8Hp70lcO/30Zt14zV6TJ+Ne70Eh9Q2t3ku
+        8rpwqp9JTG6mVt42lS13homYXOI/44D7TrasHlu590SfvP+NjQ/P2qs4zxxisWl/oEFN7G
+        ed2ZIsrJJHzbId80Z76wbIp5yXyT3jUj2WQPy3p6aoPCEXpQjfCjVeAkp+JPKpu+rNaclT
+        7mHz920ojCIISCI//lHapGo3lzwOkcoh+6DJPb/SlzokImWRbF1ssz1946n768T++9Ac6F
+        pO3s7/fgypPnTY/HA4WkvWinAFwtEaOHaify3KQSaheXNB8/DnuYr0Aq8XpSCA==
+Subject: Re: [PATCH wpan 01/17] net: ieee802154: make shift exponent unsigned
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+References: <20210228151817.95700-1-aahringo@redhat.com>
+ <20210228151817.95700-2-aahringo@redhat.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <b9baaf49-0e25-4c74-e8b7-f826157e1d48@datenfreihafen.org>
+Date:   Tue, 2 Mar 2021 22:18:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210302194747.21704-1-msuchanek@suse.de>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-02_08:2021-03-01,2021-03-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
- mlxlogscore=999 suspectscore=0 impostorscore=0 priorityscore=1501
- spamscore=0 adultscore=0 malwarescore=0 bulkscore=0 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103020156
+In-Reply-To: <20210228151817.95700-2-aahringo@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Michal Suchanek [msuchanek@suse.de] wrote:
-> GCC 7.5 reports:
-> ../drivers/net/ethernet/ibm/ibmvnic.c: In function 'ibmvnic_reset_init':
-> ../drivers/net/ethernet/ibm/ibmvnic.c:5373:51: warning: 'old_num_tx_queues' may be used uninitialized in this function [-Wmaybe-uninitialized]
-> ../drivers/net/ethernet/ibm/ibmvnic.c:5373:6: warning: 'old_num_rx_queues' may be used uninitialized in this function [-Wmaybe-uninitialized]
-> 
-> The variable is initialized only if(reset) and used only if(reset &&
-> something) so this is a false positive. However, there is no reason to
-> not initialize the variables unconditionally avoiding the warning.
+Hello Alex.
 
-Yeah, its a false positive, but initializing doesn't hurt.
+On 28.02.21 16:18, Alexander Aring wrote:
+> This patch changes the iftype type variable to unsigned that it can
+> never be reach a negative value.
 > 
-> Fixes: 635e442f4a48 ("ibmvnic: merge ibmvnic_reset_init and ibmvnic_init")
-> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> Reported-by: syzbot+7bf7b22759195c9a21e9@syzkaller.appspotmail.com
+> Signed-off-by: Alexander Aring <aahringo@redhat.com>
+> ---
+>   net/ieee802154/nl802154.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+> index e9e4652cd592..3ee09f6d13b7 100644
+> --- a/net/ieee802154/nl802154.c
+> +++ b/net/ieee802154/nl802154.c
+> @@ -898,8 +898,8 @@ static int nl802154_get_interface(struct sk_buff *skb, struct genl_info *info)
+>   static int nl802154_new_interface(struct sk_buff *skb, struct genl_info *info)
+>   {
+>   	struct cfg802154_registered_device *rdev = info->user_ptr[0];
+> -	enum nl802154_iftype type = NL802154_IFTYPE_UNSPEC;
+>   	__le64 extended_addr = cpu_to_le64(0x0000000000000000ULL);
+> +	u32 type = NL802154_IFTYPE_UNSPEC;
+>   
+>   	/* TODO avoid failing a new interface
+>   	 * creation due to pending removal?
+> 
 
-Reviewed-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+I am concerned about this one. Maybe you can shed some light on it.
+NL802154_IFTYPE_UNSPEC is -1 which means the u32 will not hold this 
+value, but something at the end of the range for u32.
+
+There is a path (info->attrs[NL802154_ATTR_IFTYPE] is not true) where we 
+put type forward to  rdev_add_virtual_intf() with its changed value but 
+it would expect and enum which could hold -1 for UNSPEC.
+
+regards
+Stefan Schmidt
