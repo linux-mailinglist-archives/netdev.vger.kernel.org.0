@@ -2,141 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A4D32B380
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AB332B381
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352625AbhCCEA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:00:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58063 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1377071AbhCBLPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 06:15:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614683652;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZjwZOlNFnMgEc5U9Vx9A266uXH2z9pjdV5QAx0QGYm4=;
-        b=CUg0Nz543gf06F58oZzINDxk3U5ILtJP8qsaEcY2HCPg2qBwCWEBWBi6lFCH3wuUMzhcS8
-        QmBplBkY6nhblokux/u8hLzO7MkFBxX/K964B7PZxg/J3CagPO0lc3Y1w1Ps30EafbTIzd
-        UoVxseZqBRg8PEwiP9ScL5By509AVt8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-188-pVWwIBewOAiSfhMSawriMA-1; Tue, 02 Mar 2021 06:14:10 -0500
-X-MC-Unique: pVWwIBewOAiSfhMSawriMA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1D0DFDF8A4;
-        Tue,  2 Mar 2021 11:14:09 +0000 (UTC)
-Received: from krava (unknown [10.40.195.211])
-        by smtp.corp.redhat.com (Postfix) with SMTP id DABAF5C8AB;
-        Tue,  2 Mar 2021 11:14:02 +0000 (UTC)
-Date:   Tue, 2 Mar 2021 12:14:01 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Yauheni Kaliuta <ykaliuta@redhat.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix test_attach_probe for
- powerpc uprobes
-Message-ID: <YD4d+dmay+oKyiot@krava>
-References: <20210301190416.90694-1-jolsa@kernel.org>
- <CAEf4BzbBnR3M60HepC_CFDsdMQDBYoEWiWtREUaLxrrxyBce0Q@mail.gmail.com>
+        id S1352683AbhCCEAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:00:43 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:48398 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344675AbhCBLZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 06:25:06 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 122BKHsY052110;
+        Tue, 2 Mar 2021 11:22:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=pdMfwbpSJC/Cr8zv0g4CbItRgCRo74rSKxb5p0B61JA=;
+ b=VRbpLkTujaxzggxWvbD6+QT2rAHbqQA6xifgXw0NEitKJvuXMEPatNkTN2t5BBLClIZs
+ C7BiL/Xt+f2sQ+t2Ge0LPDickhX5PWbnN3xOWeAmNybVO949p7VTBAMVUf3tg6AFxE1F
+ NnuS7vQbdtdH7yH/eM3CjtBqBY7rhaKz+fmBLY6qi/DQAABCV4+KOYjPaNDp3Y3jcxqf
+ VxD5mW4Y9XGvCsFIxFpg+TOEQisYBdgDI/tFUYmKWwMv7iMsPbd9oesKpQmg2FEcf9SS
+ EG8+FlpaUV4MTgFYbj2t1KHmrDeavVF/t4b0X4DcjCwxrgXG0cj1JgVYwuL18AxM1pVA mQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 36ye1m769t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Mar 2021 11:22:07 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 122BKwjm032067;
+        Tue, 2 Mar 2021 11:22:05 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 36yynp0p3k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Mar 2021 11:22:05 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 122BM3u3008266;
+        Tue, 2 Mar 2021 11:22:03 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 02 Mar 2021 11:22:03 +0000
+Date:   Tue, 2 Mar 2021 14:21:54 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        hariprasad <hkelam@marvell.com>
+Cc:     Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] octeontx2-af: cn10k: fix an array overflow in
+ is_lmac_valid()
+Message-ID: <YD4f0vIQ1bW++7M7@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzbBnR3M60HepC_CFDsdMQDBYoEWiWtREUaLxrrxyBce0Q@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9910 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 spamscore=0
+ bulkscore=0 suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103020095
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9910 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 priorityscore=1501
+ mlxlogscore=999 impostorscore=0 suspectscore=0 adultscore=0 malwarescore=0
+ mlxscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103020095
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 04:34:24PM -0800, Andrii Nakryiko wrote:
-> On Mon, Mar 1, 2021 at 11:11 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > When testing uprobes we the test gets GEP (Global Entry Point)
-> > address from kallsyms, but then the function is called locally
-> > so the uprobe is not triggered.
-> >
-> > Fixing this by adjusting the address to LEP (Local Entry Point)
-> > for powerpc arch.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  .../selftests/bpf/prog_tests/attach_probe.c    | 18 +++++++++++++++++-
-> >  1 file changed, 17 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-> > index a0ee87c8e1ea..c3cfb48d3ed0 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-> > @@ -2,6 +2,22 @@
-> >  #include <test_progs.h>
-> >  #include "test_attach_probe.skel.h"
-> >
-> > +#if defined(__powerpc64__)
-> > +/*
-> > + * We get the GEP (Global Entry Point) address from kallsyms,
-> > + * but then the function is called locally, so we need to adjust
-> > + * the address to get LEP (Local Entry Point).
-> > + */
-> > +#define LEP_OFFSET 8
-> > +
-> > +static ssize_t get_offset(ssize_t offset)
-> 
-> if we mark this function __weak global, would it work as is? Would it
-> get an address of a global entry point? I know nothing about this GEP
-> vs LEP stuff, interesting :)
+The value of "lmac_id" can be controlled by the user and if it is larger
+then the number of bits in long then it reads outside the bitmap.
+The highest valid value is less than MAX_LMAC_PER_CGX (4).
 
-you mean get_base_addr? it's already global
+Fixes: 91c6945ea1f9 ("octeontx2-af: cn10k: Add RPM MAC support")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-all the calls to get_base_addr within the object are made
-to get_base_addr+0x8
-
-00000000100350c0 <test_attach_probe>:
-    ...
-    100350e0:   59 fd ff 4b     bl      10034e38 <get_base_addr+0x8>
-    ...
-    100358a8:   91 f5 ff 4b     bl      10034e38 <get_base_addr+0x8>
-
-
-I'm following perf fix we had for similar issue:
-  7b6ff0bdbf4f perf probe ppc64le: Fixup function entry if using kallsyms lookup
-
-I'll get more info on that
-
-jirka
-
-> 
-> > +{
-> > +       return offset + LEP_OFFSET;
-> > +}
-> > +#else
-> > +#define get_offset(offset) (offset)
-> > +#endif
-> > +
-> >  ssize_t get_base_addr() {
-> >         size_t start, offset;
-> >         char buf[256];
-> > @@ -36,7 +52,7 @@ void test_attach_probe(void)
-> >         if (CHECK(base_addr < 0, "get_base_addr",
-> >                   "failed to find base addr: %zd", base_addr))
-> >                 return;
-> > -       uprobe_offset = (size_t)&get_base_addr - base_addr;
-> > +       uprobe_offset = get_offset((size_t)&get_base_addr - base_addr);
-> >
-> >         skel = test_attach_probe__open_and_load();
-> >         if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-> > --
-> > 2.29.2
-> >
-> 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 9caa375d01b1..68deae529bc9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -56,7 +56,9 @@ static bool is_dev_rpm(void *cgxd)
+ 
+ bool is_lmac_valid(struct cgx *cgx, int lmac_id)
+ {
+-	return cgx && test_bit(lmac_id, &cgx->lmac_bmap);
++	if (!cgx || lmac_id < 0 || lmac_id >= MAX_LMAC_PER_CGX)
++		return false;
++	return test_bit(lmac_id, &cgx->lmac_bmap);
+ }
+ 
+ struct mac_ops *get_mac_ops(void *cgxd)
+-- 
+2.30.1
 
