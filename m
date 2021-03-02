@@ -2,123 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8584632B386
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:09:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5617532B377
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:08:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449597AbhCCEBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:01:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:37350 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1446818AbhCBMNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 07:13:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614687122;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LGBva5DKxG/huAqoNDsaExI9eBFrJH4w3rCGjKd3xQk=;
-        b=Dld80zAt12QO22T29W0FQZ3qJzciuN+Yperghd4mrKI8mR88cY9WZ9WYa6TvREz+mykPGG
-        81MzBhZ1ujZQgO9kEXLGEbHGikiHUBP4X5ePfNKHTucEJ8ZKcx0NQftbDTYN69OaRC0Ww9
-        m1Kod6f7E0NaAVrDHalsWmYX6cP5f50=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-50-i0WMWG6vPjGrowIkJsoFNQ-1; Tue, 02 Mar 2021 07:08:21 -0500
-X-MC-Unique: i0WMWG6vPjGrowIkJsoFNQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D6FEA1868408;
-        Tue,  2 Mar 2021 12:08:19 +0000 (UTC)
-Received: from gondolin (ovpn-113-150.ams2.redhat.com [10.36.113.150])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C84C60C05;
-        Tue,  2 Mar 2021 12:08:14 +0000 (UTC)
-Date:   Tue, 2 Mar 2021 13:08:12 +0100
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        virtio-dev@lists.oasis-open.org
-Subject: Re: [virtio-dev] Re: [PATCH] vdpa/mlx5: set_features should allow
- reset to zero
-Message-ID: <20210302130812.6227f176.cohuck@redhat.com>
-In-Reply-To: <cdd72199-ac7b-cc8d-2c40-81e43162c532@redhat.com>
-References: <20210223041740-mutt-send-email-mst@kernel.org>
-        <788a0880-0a68-20b7-5bdf-f8150b08276a@redhat.com>
-        <20210223110430.2f098bc0.cohuck@redhat.com>
-        <bbb0a09e-17e1-a397-1b64-6ce9afe18e44@redhat.com>
-        <20210223115833.732d809c.cohuck@redhat.com>
-        <8355f9b3-4cda-cd2e-98df-fed020193008@redhat.com>
-        <20210224121234.0127ae4b.cohuck@redhat.com>
-        <be6713d3-ac98-bbbf-1dc1-a003ed06a156@redhat.com>
-        <20210225135229-mutt-send-email-mst@kernel.org>
-        <0f8eb381-cc98-9e05-0e35-ccdb1cbd6119@redhat.com>
-        <20210228162306-mutt-send-email-mst@kernel.org>
-        <cdd72199-ac7b-cc8d-2c40-81e43162c532@redhat.com>
-Organization: Red Hat GmbH
+        id S1449646AbhCCEB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:01:28 -0500
+Received: from sitav-80046.hsr.ch ([152.96.80.46]:55440 "EHLO
+        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344792AbhCBMjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 07:39:12 -0500
+Received: from localhost.localdomain (unknown [185.12.128.224])
+        by mail.strongswan.org (Postfix) with ESMTPSA id 7CD5E409FE;
+        Tue,  2 Mar 2021 13:24:36 +0100 (CET)
+From:   Martin Willi <martin@strongswan.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+Subject: [PATCH net] can: dev: Move device back to init netns on owning netns delete
+Date:   Tue,  2 Mar 2021 13:24:23 +0100
+Message-Id: <20210302122423.872326-1-martin@strongswan.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Mar 2021 11:51:08 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+When a non-initial netns is destroyed, the usual policy is to delete
+all virtual network interfaces contained, but move physical interfaces
+back to the initial netns. This keeps the physical interface visible
+on the system.
 
-> On 2021/3/1 5:25 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote:
-> > On Fri, Feb 26, 2021 at 04:19:16PM +0800, Jason Wang wrote: =20
-> >> On 2021/2/26 2:53 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote: =20
+CAN devices are somewhat special, as they define rtnl_link_ops even
+if they are physical devices. If a CAN interface is moved into a
+non-initial netns, destroying that netns lets the interface vanish
+instead of moving it back to the initial netns. default_device_exit()
+skips CAN interfaces due to having rtnl_link_ops set. Reproducer:
 
-> >>> Confused. What is wrong with the above? It never reads the
-> >>> field unless the feature has been offered by device. =20
-> >>
-> >> So the spec said:
-> >>
-> >> "
-> >>
-> >> The following driver-read-only field, max_virtqueue_pairs only exists =
-if
-> >> VIRTIO_NET_F_MQ is set.
-> >>
-> >> "
-> >>
-> >> If I read this correctly, there will be no max_virtqueue_pairs field i=
-f the
-> >> VIRTIO_NET_F_MQ is not offered by device? If yes the offsetof() violat=
-es
-> >> what spec said.
-> >>
-> >> Thanks =20
-> > I think that's a misunderstanding. This text was never intended to
-> > imply that field offsets change beased on feature bits.
-> > We had this pain with legacy and we never wanted to go back there.
-> >
-> > This merely implies that without VIRTIO_NET_F_MQ the field
-> > should not be accessed. Exists in the sense "is accessible to driver".
-> >
-> > Let's just clarify that in the spec, job done. =20
->=20
->=20
-> Ok, agree. That will make things more eaiser.
+  ip netns add foo
+  ip link set can0 netns foo
+  ip netns delete foo
 
-Yes, that makes much more sense.
+WARNING: CPU: 1 PID: 84 at net/core/dev.c:11030 ops_exit_list+0x38/0x60
+CPU: 1 PID: 84 Comm: kworker/u4:2 Not tainted 5.10.19 #1
+Workqueue: netns cleanup_net
+[<c010e700>] (unwind_backtrace) from [<c010a1d8>] (show_stack+0x10/0x14)
+[<c010a1d8>] (show_stack) from [<c086dc10>] (dump_stack+0x94/0xa8)
+[<c086dc10>] (dump_stack) from [<c086b938>] (__warn+0xb8/0x114)
+[<c086b938>] (__warn) from [<c086ba10>] (warn_slowpath_fmt+0x7c/0xac)
+[<c086ba10>] (warn_slowpath_fmt) from [<c0629f20>] (ops_exit_list+0x38/0x60)
+[<c0629f20>] (ops_exit_list) from [<c062a5c4>] (cleanup_net+0x230/0x380)
+[<c062a5c4>] (cleanup_net) from [<c0142c20>] (process_one_work+0x1d8/0x438)
+[<c0142c20>] (process_one_work) from [<c0142ee4>] (worker_thread+0x64/0x5a8)
+[<c0142ee4>] (worker_thread) from [<c0148a98>] (kthread+0x148/0x14c)
+[<c0148a98>] (kthread) from [<c0100148>] (ret_from_fork+0x14/0x2c)
 
-What about adding the following to the "Basic Facilities of a Virtio
-Device/Device Configuration Space" section of the spec:
+To properly restore physical CAN devices to the initial netns on owning
+netns exit, introduce a flag on rtnl_link_ops that can be set by drivers.
+For CAN devices setting this flag, default_device_exit() considers them
+non-virtual, applying the usual namespace move.
 
-"If an optional configuration field does not exist, the corresponding
-space is still present, but reserved."
+The issue was introduced in the commit mentioned below, as at that time
+CAN devices did not have a dellink() operation.
 
-(Do we need to specify what a device needs to do if the driver tries to
-access a non-existing field? We cannot really make assumptions about
-config space accesses; virtio-ccw can just copy a chunk of config space
-that contains non-existing fields... I guess the device could ignore
-writes and return zeroes on read?)
+Fixes: e008b5fc8dc7 ("net: Simplfy default_device_exit and improve batching.")
+Signed-off-by: Martin Willi <martin@strongswan.org>
+---
+ drivers/net/can/dev/netlink.c | 1 +
+ include/net/rtnetlink.h       | 2 ++
+ net/core/dev.c                | 2 +-
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-I've opened https://github.com/oasis-tcs/virtio-spec/issues/98 for the
-spec issues.
+diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
+index 867f6be31230..f5d79e6e5483 100644
+--- a/drivers/net/can/dev/netlink.c
++++ b/drivers/net/can/dev/netlink.c
+@@ -355,6 +355,7 @@ static void can_dellink(struct net_device *dev, struct list_head *head)
+ 
+ struct rtnl_link_ops can_link_ops __read_mostly = {
+ 	.kind		= "can",
++	.netns_refund	= true,
+ 	.maxtype	= IFLA_CAN_MAX,
+ 	.policy		= can_policy,
+ 	.setup		= can_setup,
+diff --git a/include/net/rtnetlink.h b/include/net/rtnetlink.h
+index e2091bb2b3a8..4da61c950e93 100644
+--- a/include/net/rtnetlink.h
++++ b/include/net/rtnetlink.h
+@@ -33,6 +33,7 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
+  *
+  *	@list: Used internally
+  *	@kind: Identifier
++ *	@netns_refund: Physical device, move to init_net on netns exit
+  *	@maxtype: Highest device specific netlink attribute number
+  *	@policy: Netlink policy for device specific attribute validation
+  *	@validate: Optional validation function for netlink/changelink parameters
+@@ -64,6 +65,7 @@ struct rtnl_link_ops {
+ 	size_t			priv_size;
+ 	void			(*setup)(struct net_device *dev);
+ 
++	bool			netns_refund;
+ 	unsigned int		maxtype;
+ 	const struct nla_policy	*policy;
+ 	int			(*validate)(struct nlattr *tb[],
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6c5967e80132..a142a207fc1d 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -11346,7 +11346,7 @@ static void __net_exit default_device_exit(struct net *net)
+ 			continue;
+ 
+ 		/* Leave virtual devices for the generic cleanup */
+-		if (dev->rtnl_link_ops)
++		if (dev->rtnl_link_ops && !dev->rtnl_link_ops->netns_refund)
+ 			continue;
+ 
+ 		/* Push remaining network devices to init_net */
+-- 
+2.25.1
 
