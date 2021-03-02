@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF42232A32C
-	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:02:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39BA932A32E
+	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:02:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382035AbhCBIsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 03:48:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344087AbhCBFQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 00:16:44 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61204C061794
-        for <netdev@vger.kernel.org>; Mon,  1 Mar 2021 21:16:04 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id a13so20804699oid.0
-        for <netdev@vger.kernel.org>; Mon, 01 Mar 2021 21:16:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Gzm0zEheMSszyinNhmGqqUS/Nr58XxyY0cqmg7USJpo=;
-        b=irCO2CrrVT53hQWJvP+225Lla8q0JWBpQI6uuxdEz9lhoGryEpY7fe3Um9obf5K8nR
-         /oyUd3w9esgNM1I0+doSq8k+6/B1fO1C8rlyAfyPmt+ixL1Qpr5TEr/VGUh7qYFQz+Gz
-         JgNGF23J+5ZA3tFyzGXbnIi+EhGQdmJF8/GuI1ST1p5kCEb2DVJ03PBQyo/dTY3WAipZ
-         j/gtfmuQWbzttALtEYvQbhanaGSq9Iu/6+u653kAdU3Sddvgzx6EZEtmJtjDlP7Bdyfw
-         g038S3OCPbl6qYoEjww3+j9mSRfEtFebdiF7JyESK6+cqZnQIZs5JykwA+IebTC8lhzz
-         ET1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Gzm0zEheMSszyinNhmGqqUS/Nr58XxyY0cqmg7USJpo=;
-        b=kpUVBx+j2cdc2EHjVN2kgTfeV5Q5+YmNkyopMUteHrummayUjGERdz8UXN8Ab0yxOS
-         UQT/+pFcNUQ4HezlkF3WYbWZamkvLQ1KXw36RzbAsCXJ7FvCJXWjte35uOzSX8zyCz4m
-         nkMYj64PqDgkpwYoU+KjjxZY+SRqXerA5etbdbl8ooOOKDXa9HcSNG+JZBKap62F1uEp
-         AQYrl3xRraAAYq7vqQ8dV4ha9cBlFqlAEaxChfiFc5HH99jIV/5v48rjBKbDlj/hg8sc
-         qjXs0VNIKScgvDZ0mu9sM6MLi6PS17XTs3cFIzcHA7l0ZqEQuq4iXlBFszIFzsTqjt5J
-         hPHw==
-X-Gm-Message-State: AOAM533dLqfnPIZeA2x1VeM6Dnq4pkx0FDZpfRxWGPlRSC3Y/AZOSaiz
-        kb54+oGb8CC0jVBrXPA2VuVhWCSZ7jF8BehAlwisnQ==
-X-Google-Smtp-Source: ABdhPJx1orLxbk5AcwKD+Ifgjh9hj29WR7N9Qrf2vznZ2P1s/oJuAZdQvb9lT1a8rjg2qhGUUOVV4yBGUO6styG6+tE=
-X-Received: by 2002:a05:6808:130d:: with SMTP id y13mr1990083oiv.167.1614662163626;
- Mon, 01 Mar 2021 21:16:03 -0800 (PST)
+        id S1382056AbhCBIsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 03:48:36 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:17917 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347514AbhCBF3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 00:29:36 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B603dcbbf0009>; Mon, 01 Mar 2021 21:23:11 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 2 Mar 2021 05:23:09 +0000
+Date:   Tue, 2 Mar 2021 07:23:06 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Jason Wang <jasowang@redhat.com>, <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] vdpa/mlx5: Fix wrong use of bit numbers
+Message-ID: <20210302052306.GA227464@mtl-vdi-166.wap.labs.mlnx>
+References: <20210301062817.39331-1-elic@nvidia.com>
+ <959916f2-5fc9-bdb4-31ca-632fe0d98979@redhat.com>
+ <20210301103214-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 2 Mar 2021 10:45:52 +0530
-Message-ID: <CA+G9fYspCgCU3qggbXDUGm50_gK3S+LuNTO3BzvszGbhm3fcUA@mail.gmail.com>
-Subject: icmpv6.h:70:2: error: implicit declaration of function
- '__icmpv6_send'; did you mean 'icmpv6_send'? [-Werror=implicit-function-declaration]
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Cc:     linux-stable <stable@vger.kernel.org>, SinYu <liuxyon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210301103214-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1614662591; bh=wBB6MQw+SyLdjXxml/9vKVN7x4w0HR+GxTmyhn7I07s=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:Content-Transfer-Encoding:
+         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=MwbEyNcOtell+6MV1oUSSBHgilUfxVGPpik8njqbSYxQi2TAsjTOF/VPHDZ+1L9Gs
+         fBQ87O/2oGRs6twXJePEiOe/E9Cl1/y9ttnuCOGp9hqVlC8gYKEsL6EqvaHLHGbKFS
+         IsmNB4N5tAv5DAnGG8D0BGF7aPfXzt+jNzRJ9w5fRocQIC2Qpa5/sJsq3EN6ukhVOK
+         7q81QIzIv4SnXx8QuapwlY+YsIpgwUTreR8CkH2/s0pLO7YI9KcXlAzUYf1UHkZCS+
+         ifaF595go020tUNXn0qxDHcmWGorVR52oMghdbp720oH5KFoFGZ5okajDx6TYu4DAd
+         0YeVslCVZ+8Ug==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stable rc builds failed on arm64, arm, arc, mips, parisc, ppc, riscv,
-sh, s390 and x86_64.
-Build failed branches list:
-  - Stable-rc Linux 5.4.102-rc2
-  - Stable-rc Linux 4.19.178-rc2
-  - Stable-rc Linux 4.14.223-rc2
-  - Stable-rc Linux 4.9.259-rc1
+On Mon, Mar 01, 2021 at 10:33:14AM -0500, Michael S. Tsirkin wrote:
+> On Mon, Mar 01, 2021 at 03:52:45PM +0800, Jason Wang wrote:
+> >=20
+> > On 2021/3/1 2:28 =E4=B8=8B=E5=8D=88, Eli Cohen wrote:
+> > > VIRTIO_F_VERSION_1 is a bit number. Use BIT_ULL() with mask
+> > > conditionals.
+> > >=20
+> > > Also, in mlx5_vdpa_is_little_endian() use BIT_ULL for consistency wit=
+h
+> > > the rest of the code.
+> > >=20
+> > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 d=
+evices")
+> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> >=20
+> >=20
+> > Acked-by: Jason Wang <jasowang@redhat.com>
+>=20
+> And CC stable I guess?
 
-Failed build set list:
-  - arm64 (allnoconfig) with gcc-8, gcc-9 and gcc-10
-  - arm64 (tinyconfig) with gcc-8, gcc-9 and gcc-10
-  <many>
-  - x86_64 (allnoconfig) with gcc-8, gcc-9 and gcc-10
-  - x86_64 (tinyconfig) with gcc-8, gcc-9 and gcc-10
+Is this a question or a request? :-)
 
-# to reproduce this build locally:
-
-tuxmake --target-arch=arm64 --kconfig=allnoconfig --toolchain=gcc-9
---wrapper=sccache --environment=SCCACHE_BUCKET=sccache.tuxbuild.com
---runtime=podman --image=public.ecr.aws/tuxmake/arm64_gcc-9 config
-default kernel xipkernel modules dtbs dtbs-legacy debugkernel
-
-make --silent --keep-going --jobs=8
-O=/home/tuxbuild/.cache/tuxmake/builds/1/tmp ARCH=arm64
-CROSS_COMPILE=aarch64-linux-gnu- 'CC=sccache aarch64-linux-gnu-gcc'
-'HOSTCC=sccache gcc' allnoconfig
-make --silent --keep-going --jobs=8
-O=/home/tuxbuild/.cache/tuxmake/builds/1/tmp ARCH=arm64
-CROSS_COMPILE=aarch64-linux-gnu- 'CC=sccache aarch64-linux-gnu-gcc'
-'HOSTCC=sccache gcc'
-In file included from include/net/ndisc.h:53,
-                 from include/net/ipv6.h:18,
-                 from include/linux/sunrpc/clnt.h:28,
-                 from include/linux/nfs_fs.h:32,
-                 from init/do_mounts.c:23:
-include/linux/icmpv6.h: In function 'icmpv6_ndo_send':
-include/linux/icmpv6.h:70:2: error: implicit declaration of function
-'__icmpv6_send'; did you mean 'icmpv6_send'?
-[-Werror=implicit-function-declaration]
-   70 |  __icmpv6_send(skb_in, type, code, info, &parm);
-      |  ^~~~~~~~~~~~~
-      |  icmpv6_send
-cc1: some warnings being treated as errors
-make[2]: *** [scripts/Makefile.build:261: init/do_mounts.o] Error 1
-
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-
-Build log link,
-https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc/-/jobs/1064182703#L61
-https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc/-/jobs/1064593353#L62
-
---
-Linaro LKFT
-https://lkft.linaro.org
+>=20
+> >=20
+> > > ---
+> > >   drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+> > >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > >=20
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/ne=
+t/mlx5_vnet.c
+> > > index dc7031132fff..7d21b857a94a 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -821,7 +821,7 @@ static int create_virtqueue(struct mlx5_vdpa_net =
+*ndev, struct mlx5_vdpa_virtque
+> > >   	MLX5_SET(virtio_q, vq_ctx, event_qpn_or_msix, mvq->fwqp.mqp.qpn);
+> > >   	MLX5_SET(virtio_q, vq_ctx, queue_size, mvq->num_ent);
+> > >   	MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0,
+> > > -		 !!(ndev->mvdev.actual_features & VIRTIO_F_VERSION_1));
+> > > +		 !!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_F_VERSION_1)));
+> > >   	MLX5_SET64(virtio_q, vq_ctx, desc_addr, mvq->desc_addr);
+> > >   	MLX5_SET64(virtio_q, vq_ctx, used_addr, mvq->device_addr);
+> > >   	MLX5_SET64(virtio_q, vq_ctx, available_addr, mvq->driver_addr);
+> > > @@ -1578,7 +1578,7 @@ static void teardown_virtqueues(struct mlx5_vdp=
+a_net *ndev)
+> > >   static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev =
+*mvdev)
+> > >   {
+> > >   	return virtio_legacy_is_little_endian() ||
+> > > -		(mvdev->actual_features & (1ULL << VIRTIO_F_VERSION_1));
+> > > +		(mvdev->actual_features & BIT_ULL(VIRTIO_F_VERSION_1));
+> > >   }
+> > >   static __virtio16 cpu_to_mlx5vdpa16(struct mlx5_vdpa_dev *mvdev, u1=
+6 val)
+>=20
