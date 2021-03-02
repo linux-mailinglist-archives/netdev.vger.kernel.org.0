@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4134432A366
+	by mail.lfdr.de (Postfix) with ESMTP id B286D32A367
 	for <lists+netdev@lfdr.de>; Tue,  2 Mar 2021 16:16:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382139AbhCBI4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 03:56:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22080 "EHLO
+        id S1382148AbhCBI42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 03:56:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30153 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344957AbhCBGvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 01:51:09 -0500
+        by vger.kernel.org with ESMTP id S1345001AbhCBGw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 01:52:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614667768;
+        s=mimecast20190719; t=1614667856;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yWsCopsWZPSi41ULNKjBHGlcw6/zU4zCo27Dtmkuins=;
-        b=gFzzFvJGdJNYUbQzIEU1xHQPfx+4nWnZKiPR7U5a7kxQGf1+gQRaRGnKOl3WHnrGQf9A3r
-        f9CXW6iVhkR8T9ArsyRQcO9ewFdxWv6BUuMhConYz83d9jjqqgYeYiC6jdqZoBnY9Ep1Iy
-        QIPacw6NJ/C0dzew5z81E6OW/HyW/Z4=
+        bh=pw0+OpAgN2cuqHokScOT5T0Eyke5jNWE452MsWUrx9k=;
+        b=EpCnJRNeiXNbguN5amAqhrMxdrd16M6SektMiCg6ZHX6/jVbR2vG5hEdK7x3mRxAfKfXvG
+        UgvlpldDwqFyUcy0cOv0Rw6ZSPoSYjJkOIJnUJf4D6rZjr4ierhOiyOnKvRnXfxf1UZiFF
+        AFjlyumFh676BDPDtOD20Ne35S8mPwA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-110-uM0QVBUqN-K3HXizDZDIIw-1; Tue, 02 Mar 2021 01:49:24 -0500
-X-MC-Unique: uM0QVBUqN-K3HXizDZDIIw-1
+ us-mta-382-iDdTdt3lNCipFcnOqlRw-g-1; Tue, 02 Mar 2021 01:50:52 -0500
+X-MC-Unique: iDdTdt3lNCipFcnOqlRw-g-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 52E481005501;
-        Tue,  2 Mar 2021 06:49:22 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48CC8193578B;
+        Tue,  2 Mar 2021 06:50:50 +0000 (UTC)
 Received: from wangxiaodeMacBook-Air.local (ovpn-12-133.pek2.redhat.com [10.72.12.133])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BD1645D71F;
-        Tue,  2 Mar 2021 06:49:10 +0000 (UTC)
-Subject: Re: [RFC v4 03/11] vhost-iotlb: Add an opaque pointer for vhost IOTLB
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D86105D766;
+        Tue,  2 Mar 2021 06:50:38 +0000 (UTC)
+Subject: Re: [RFC v4 04/11] vdpa: Add an opaque pointer for
+ vdpa_config_ops.dma_map()
 To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
         stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
         bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
@@ -43,14 +44,14 @@ Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-aio@kvack.org,
         linux-fsdevel@vger.kernel.org
 References: <20210223115048.435-1-xieyongji@bytedance.com>
- <20210223115048.435-4-xieyongji@bytedance.com>
+ <20210223115048.435-5-xieyongji@bytedance.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <41c12b5a-d46c-2b80-d553-82efc3f94147@redhat.com>
-Date:   Tue, 2 Mar 2021 14:49:09 +0800
+Message-ID: <977e44fe-63ec-a695-11a5-d7c584124294@redhat.com>
+Date:   Tue, 2 Mar 2021 14:50:37 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
  Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <20210223115048.435-4-xieyongji@bytedance.com>
+In-Reply-To: <20210223115048.435-5-xieyongji@bytedance.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-GB
@@ -61,8 +62,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 2021/2/23 7:50 下午, Xie Yongji wrote:
-> Add an opaque pointer for vhost IOTLB. And introduce
-> vhost_iotlb_add_range_ctx() to accept it.
+> Add an opaque pointer for DMA mapping.
 >
 > Suggested-by: Jason Wang <jasowang@redhat.com>
 > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
@@ -72,83 +72,57 @@ Acked-by: Jason Wang <jasowang@redhat.com>
 
 
 > ---
->   drivers/vhost/iotlb.c       | 20 ++++++++++++++++----
->   include/linux/vhost_iotlb.h |  3 +++
->   2 files changed, 19 insertions(+), 4 deletions(-)
+>   drivers/vdpa/vdpa_sim/vdpa_sim.c | 6 +++---
+>   drivers/vhost/vdpa.c             | 2 +-
+>   include/linux/vdpa.h             | 2 +-
+>   3 files changed, 5 insertions(+), 5 deletions(-)
 >
-> diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-> index 0fd3f87e913c..5c99e1112cbb 100644
-> --- a/drivers/vhost/iotlb.c
-> +++ b/drivers/vhost/iotlb.c
-> @@ -36,19 +36,21 @@ void vhost_iotlb_map_free(struct vhost_iotlb *iotlb,
->   EXPORT_SYMBOL_GPL(vhost_iotlb_map_free);
->   
->   /**
-> - * vhost_iotlb_add_range - add a new range to vhost IOTLB
-> + * vhost_iotlb_add_range_ctx - add a new range to vhost IOTLB
->    * @iotlb: the IOTLB
->    * @start: start of the IOVA range
->    * @last: last of IOVA range
->    * @addr: the address that is mapped to @start
->    * @perm: access permission of this range
-> + * @opaque: the opaque pointer for the new mapping
->    *
->    * Returns an error last is smaller than start or memory allocation
->    * fails
->    */
-> -int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
-> -			  u64 start, u64 last,
-> -			  u64 addr, unsigned int perm)
-> +int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> +			      u64 start, u64 last,
-> +			      u64 addr, unsigned int perm,
-> +			      void *opaque)
->   {
->   	struct vhost_iotlb_map *map;
->   
-> @@ -71,6 +73,7 @@ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
->   	map->last = last;
->   	map->addr = addr;
->   	map->perm = perm;
-> +	map->opaque = opaque;
->   
->   	iotlb->nmaps++;
->   	vhost_iotlb_itree_insert(map, &iotlb->root);
-> @@ -80,6 +83,15 @@ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
->   
->   	return 0;
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> index d5942842432d..5cfc262ce055 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> @@ -512,14 +512,14 @@ static int vdpasim_set_map(struct vdpa_device *vdpa,
 >   }
-> +EXPORT_SYMBOL_GPL(vhost_iotlb_add_range_ctx);
-> +
-> +int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
-> +			  u64 start, u64 last,
-> +			  u64 addr, unsigned int perm)
-> +{
-> +	return vhost_iotlb_add_range_ctx(iotlb, start, last,
-> +					 addr, perm, NULL);
-> +}
->   EXPORT_SYMBOL_GPL(vhost_iotlb_add_range);
 >   
->   /**
-> diff --git a/include/linux/vhost_iotlb.h b/include/linux/vhost_iotlb.h
-> index 6b09b786a762..2d0e2f52f938 100644
-> --- a/include/linux/vhost_iotlb.h
-> +++ b/include/linux/vhost_iotlb.h
-> @@ -17,6 +17,7 @@ struct vhost_iotlb_map {
->   	u32 perm;
->   	u32 flags_padding;
->   	u64 __subtree_last;
-> +	void *opaque;
->   };
+>   static int vdpasim_dma_map(struct vdpa_device *vdpa, u64 iova, u64 size,
+> -			   u64 pa, u32 perm)
+> +			   u64 pa, u32 perm, void *opaque)
+>   {
+>   	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+>   	int ret;
 >   
->   #define VHOST_IOTLB_FLAG_RETIRE 0x1
-> @@ -29,6 +30,8 @@ struct vhost_iotlb {
->   	unsigned int flags;
->   };
+>   	spin_lock(&vdpasim->iommu_lock);
+> -	ret = vhost_iotlb_add_range(vdpasim->iommu, iova, iova + size - 1, pa,
+> -				    perm);
+> +	ret = vhost_iotlb_add_range_ctx(vdpasim->iommu, iova, iova + size - 1,
+> +					pa, perm, opaque);
+>   	spin_unlock(&vdpasim->iommu_lock);
 >   
-> +int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb, u64 start, u64 last,
-> +			      u64 addr, unsigned int perm, void *opaque);
->   int vhost_iotlb_add_range(struct vhost_iotlb *iotlb, u64 start, u64 last,
->   			  u64 addr, unsigned int perm);
->   void vhost_iotlb_del_range(struct vhost_iotlb *iotlb, u64 start, u64 last);
+>   	return ret;
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 5500e3bf05c1..70857fe3263c 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -544,7 +544,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+>   		return r;
+>   
+>   	if (ops->dma_map) {
+> -		r = ops->dma_map(vdpa, iova, size, pa, perm);
+> +		r = ops->dma_map(vdpa, iova, size, pa, perm, NULL);
+>   	} else if (ops->set_map) {
+>   		if (!v->in_batch)
+>   			r = ops->set_map(vdpa, dev->iotlb);
+> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> index 4ab5494503a8..93dca2c328ae 100644
+> --- a/include/linux/vdpa.h
+> +++ b/include/linux/vdpa.h
+> @@ -241,7 +241,7 @@ struct vdpa_config_ops {
+>   	/* DMA ops */
+>   	int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *iotlb);
+>   	int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
+> -		       u64 pa, u32 perm);
+> +		       u64 pa, u32 perm, void *opaque);
+>   	int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
+>   
+>   	/* Free device resources */
 
