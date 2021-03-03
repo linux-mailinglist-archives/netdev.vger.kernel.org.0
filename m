@@ -2,79 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FB032C4A3
+	by mail.lfdr.de (Postfix) with ESMTP id 6504A32C4A4
 	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450031AbhCDAPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:15:47 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:40213 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388526AbhCCVKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 16:10:49 -0500
-Received: from marcel-macbook.holtmann.net (p4ff9fb90.dip0.t-ipconnect.de [79.249.251.144])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 58E05CED0A;
-        Wed,  3 Mar 2021 22:17:37 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH] Bluetooth: Allow scannable adv with extended MGMT APIs
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210303111505.1.I3108b046a478cb4f1b85aeb84edb0f127cff81a8@changeid>
-Date:   Wed, 3 Mar 2021 22:10:02 +0100
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
+        id S1450073AbhCDAPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:15:48 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:59102 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1576221AbhCCVNR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 16:13:17 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 07D6F4D2ECC93;
+        Wed,  3 Mar 2021 13:12:35 -0800 (PST)
+Date:   Wed, 03 Mar 2021 13:12:31 -0800 (PST)
+Message-Id: <20210303.131231.1574207832462999993.davem@davemloft.net>
+To:     mkl@pengutronix.de
+Cc:     martin@strongswan.org, kuba@kernel.org, wg@grandegger.com,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org
+Subject: Re: [PATCH net] can: dev: Move device back to init netns on owning
+ netns delete,Re: [PATCH net] can: dev: Move device back to init netns on
+ owning netns delete
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <86f703d8-d658-505a-6493-54bf09ed65b2@pengutronix.de>
+References: <20210302122423.872326-1-martin@strongswan.org>
+        <20210302122423.872326-1-martin@strongswan.org>
+        <86f703d8-d658-505a-6493-54bf09ed65b2@pengutronix.de>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-Id: <EA8605ED-9E87-4A8F-BEE6-3B2720732278@holtmann.org>
-References: <20210303111505.1.I3108b046a478cb4f1b85aeb84edb0f127cff81a8@changeid>
-To:     Daniel Winkler <danielwinkler@google.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 03 Mar 2021 13:12:36 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+Date: Wed, 3 Mar 2021 21:29:39 +0100
 
-> An issue was found, where if a bluetooth client requests a broadcast
-> advertisement with scan response data, it will not be properly
-> registered with the controller. This is because at the time that the
-> hci_cp_le_set_scan_param structure is created, the scan response will
-> not yet have been received since it comes in a second MGMT call. With
-> empty scan response, the request defaults to a non-scannable PDU type.
-> On some controllers, the subsequent scan response request will fail due
-> to incorrect PDU type, and others will succeed and not use the scan
-> response.
+> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
 > 
-> This fix allows the advertising parameters MGMT call to include a flag
-> to let the kernel know whether a scan response will be coming, so that
-> the correct PDU type is used in the first place. A bluetoothd change is
-> also incoming to take advantage of it.
-> 
-> To test this, I created a broadcast advertisement with scan response
-> data and registered it on the hatch chromebook. Without this change, the
-> request fails, and with it will succeed.
-> 
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> Signed-off-by: Daniel Winkler <danielwinkler@google.com>
-> ---
-> 
-> include/net/bluetooth/mgmt.h | 1 +
-> net/bluetooth/hci_request.c  | 3 ++-
-> net/bluetooth/mgmt.c         | 1 +
-> 3 files changed, 4 insertions(+), 1 deletion(-)
+> David, Jakub are you taking this patch?
 
-patch has been applied to bluetooth-next tree.
-
-Regards
-
-Marcel
-
+Nope, please take via the can tree, thanks!
