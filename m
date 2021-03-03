@@ -2,196 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F11351445
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 13:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C04735173B
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 19:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234236AbhDALLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 07:11:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38220 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234207AbhDALLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 07:11:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617275433;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EeOJX2ut1yR1JpGJMK7VkaOeY20GXea4Wy+TEDh9VU8=;
-        b=AT0fDHpAuxOErp1fT6TaJ83eW+uf8WcfMZuPUKUcmUUh/YdXkGn9xRkJUICOfNtmVIHW8C
-        SnAEqk8TidyYLl92WYD6dPna6EZkI1BQ+Xskx26/iMVMJEypAJVyAebPBm6Ow95xljRRHX
-        6OHLvF0F9k4cspVCMMG9NmEcb1p08rc=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-308-IRNJK-L_Nrux0Lsk3TO2VQ-1; Thu, 01 Apr 2021 07:10:32 -0400
-X-MC-Unique: IRNJK-L_Nrux0Lsk3TO2VQ-1
-Received: by mail-ed1-f72.google.com with SMTP id r19so2667370edv.3
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 04:10:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=EeOJX2ut1yR1JpGJMK7VkaOeY20GXea4Wy+TEDh9VU8=;
-        b=H+E8r74xLfkhUKIb1Nv6W3YV6sIydUygvBYFTHR5r1xVn4E5LoXsPDZdF4UPPNGhMv
-         t7QqUIIdi22BV+oCvlZm0nG81KiMXQgJnwp8Ydr1TIVMABjxWOnrY6OO2yK7b7t/ssqh
-         afbQttXY7Y7DPvlMXPaAYdpq6ZQ6wAwW+aBqplGHCHuE8F8O0y8GA7wi0gHSOE65ShlA
-         kU7Xv8a5dvNCTnYPm1LeNThIqqDS4l/FnxK9wIHPVF/v27LYJlcNDEW7KJ5mUWawQZxs
-         0MYp0h9H2tadNIxoUtZA2FHus8wuCFXOqd557NfROujPsN8ODiiIOdBAQT9n1DhPwP0x
-         p3kg==
-X-Gm-Message-State: AOAM532NlkVfKzQ+f3kT0viXRj8IIXdbkGbKYrGlNBDWoyjqnKyzuyPc
-        cAhtJcRUud6S9LC4rj9VNU4mFNqLeFwF3sKvJdrJmS9fXtZz01p56jvRT8CFQup604+pI3ar+RY
-        M6OXI84ObDDcgufy2
-X-Received: by 2002:a17:906:ecaa:: with SMTP id qh10mr8507490ejb.425.1617275431190;
-        Thu, 01 Apr 2021 04:10:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyH/c17591YFQbsgmwGp7V0SjnoOBrfMHcajy8KjCCnk1H7QqgOkJGEEFnEo3CF9P6ujhIzGQ==
-X-Received: by 2002:a17:906:ecaa:: with SMTP id qh10mr8507458ejb.425.1617275430886;
-        Thu, 01 Apr 2021 04:10:30 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id gq9sm2689327ejb.62.2021.04.01.04.10.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 04:10:30 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 888D1180290; Thu,  1 Apr 2021 13:10:29 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?utf-8?B?QmrDtnJuIFQ=?= =?utf-8?B?w7ZwZWw=?= 
-        <bjorn.topel@gmail.com>
-Subject: Re: [PATCHv3 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-In-Reply-To: <20210401043004.GE2900@Leo-laptop-t470s>
-References: <20210325092733.3058653-1-liuhangbin@gmail.com>
- <20210325092733.3058653-3-liuhangbin@gmail.com> <87lfa3phj6.fsf@toke.dk>
- <20210401043004.GE2900@Leo-laptop-t470s>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 01 Apr 2021 13:10:29 +0200
-Message-ID: <87k0pmntui.fsf@toke.dk>
+        id S1358800AbhCDAOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:14:21 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:10136 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384860AbhCCQ2u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 11:28:50 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B603fb9160000>; Wed, 03 Mar 2021 08:28:06 -0800
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 3 Mar
+ 2021 16:28:06 +0000
+Received: from [10.21.240.34] (172.20.145.6) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 3 Mar 2021
+ 16:28:03 +0000
+Subject: Re: [RFC PATCH net-next 1/5] ethtool: Allow network drivers to dump
+ arbitrary EEPROM data
+To:     Andrew Lunn <andrew@lunn.ch>, Moshe Shemesh <moshe@nvidia.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Adrian Pop <pop.adrian61@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>
+References: <1614181274-28482-1-git-send-email-moshe@nvidia.com>
+ <1614181274-28482-2-git-send-email-moshe@nvidia.com>
+ <YDrnwFyvCFT8owgd@lunn.ch>
+From:   Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Message-ID: <e1775d96-9ab6-4f7a-bb0b-63652bc53164@nvidia.com>
+Date:   Wed, 3 Mar 2021 18:28:00 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YDrnwFyvCFT8owgd@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ DRHQMAIL107.nvidia.com (10.27.9.16)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1614788886; bh=1ITloKfvMCs5hhwG8infEro09iCV/Lrdgz4g2POXzew=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=OeLDoI7Ecov9YiX+gcPD5PEQ+UGGaGAahfyI2yzjOEKsXEv7nERIwJLwJMcNlAMzo
+         4ONyb2vrD6Pqv+fSHlwez21LjgK6kESiliMxXv0LKASBiZyLs/hsCPfqj+kZrbyOuZ
+         oI8cYQdR6sfc60vStV1oyIbA+2mpxYcdaAGqNWyfHBa5oJ8oQrquSq5ss93TV73tKB
+         k84GWBB8/CqPWID0XirJwMH4hLStxiOer+MreiN848v5QOuKLFlYOPOLjyEqjXZquc
+         6wc5Q0kiIj3WNKccG43vCoTT5lEEAbXYlrmnbKOm8EdP1ogjShWlNL/nADqs8r9Hv7
+         AhRKyCaFkLltQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> writes:
 
-> On Wed, Mar 31, 2021 at 03:41:17PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> > @@ -1491,13 +1492,20 @@ static __always_inline int __bpf_xdp_redirect_=
-map(struct bpf_map *map, u32 ifind
->> >  		 */
->> >  		ri->map_id =3D INT_MAX; /* Valid map id idr range: [1,INT_MAX[ */
->> >  		ri->map_type =3D BPF_MAP_TYPE_UNSPEC;
->> > -		return flags;
->> > +		return flags & BPF_F_ACTION_MASK;
->> >  	}
->> >=20=20
->> >  	ri->tgt_index =3D ifindex;
->> >  	ri->map_id =3D map->id;
->> >  	ri->map_type =3D map->map_type;
->> >=20=20
->> > +	if ((map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP ||
->> > +	     map->map_type =3D=3D BPF_MAP_TYPE_DEVMAP_HASH) &&
->> > +	    (flags & BPF_F_BROADCAST)) {
->> > +		ri->flags =3D flags;
->>=20
->> This, combined with this:
->>=20
->> [...]
->>=20
->> > +	if (ri->flags & BPF_F_BROADCAST) {
->> > +		map =3D READ_ONCE(ri->map);
->> > +		WRITE_ONCE(ri->map, NULL);
->> > +	}
->> > +
->> >  	switch (map_type) {
->> >  	case BPF_MAP_TYPE_DEVMAP:
->> >  		fallthrough;
->> >  	case BPF_MAP_TYPE_DEVMAP_HASH:
->> > -		err =3D dev_map_enqueue(fwd, xdp, dev);
->> > +		if (ri->flags & BPF_F_BROADCAST)
->> > +			err =3D dev_map_enqueue_multi(xdp, dev, map,
->> > +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
->> > +		else
->> > +			err =3D dev_map_enqueue(fwd, xdp, dev);
->>=20
->> Means that (since the flags value is never cleared again) once someone
->> has done a broadcast redirect, that's all they'll ever get until the
->> next reboot ;)
+On 28-Feb-21 02:45, Andrew Lunn wrote:
+> On Wed, Feb 24, 2021 at 05:41:10PM +0200, Moshe Shemesh wrote:
+>> From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+>>
+>> Define get_module_eeprom_data_by_page() ethtool callback and implement
+>> netlink infrastructure.
+>>
+>> get_module_eeprom_data_by_page() allows network drivers to dump a part
+>> of module's EEPROM specified by page and bank numbers along with offset
+>> and length. It is effectively a netlink replacement for
+>> get_module_info() and get_module_eeprom() pair, which is needed due to
+>> emergence of complex non-linear EEPROM layouts.
+>>
+>> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+>> ---
+>>   include/linux/ethtool.h              |   5 +
+>>   include/uapi/linux/ethtool.h         |  25 +++++
+>>   include/uapi/linux/ethtool_netlink.h |  19 ++++
+>>   net/ethtool/Makefile                 |   2 +-
+>>   net/ethtool/eeprom.c                 | 149 +++++++++++++++++++++++++++
+>>   net/ethtool/netlink.c                |  10 ++
+>>   net/ethtool/netlink.h                |   2 +
+>>   7 files changed, 211 insertions(+), 1 deletion(-)
+>>   create mode 100644 net/ethtool/eeprom.c
+>>
+>> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+>> index ec4cd3921c67..6032313fa914 100644
+>> --- a/include/linux/ethtool.h
+>> +++ b/include/linux/ethtool.h
+>> @@ -410,6 +410,9 @@ struct ethtool_pause_stats {
+>>    * @get_ethtool_phy_stats: Return extended statistics about the PHY device.
+>>    *	This is only useful if the device maintains PHY statistics and
+>>    *	cannot use the standard PHY library helpers.
+>> + * @get_module_eeprom_data_by_page: Get a region of plug-in module EEPROM data
+>> + *	from specified page. Updates length to the amount actually read.
+>> + *	Returns a negative error code or zero.
+>>    *
+>>    * All operations are optional (i.e. the function pointer may be set
+>>    * to %NULL) and callers must take this into account.  Callers must
+>> @@ -515,6 +518,8 @@ struct ethtool_ops {
+>>   				   const struct ethtool_tunable *, void *);
+>>   	int	(*set_phy_tunable)(struct net_device *,
+>>   				   const struct ethtool_tunable *, const void *);
+>> +	int	(*get_module_eeprom_data_by_page)(struct net_device *dev,
+>> +						  struct ethtool_eeprom_data *page);
+> Hi Moshe, Vladyslav
 >
-> How about just get the ri->flags first and clean it directly. e.g.
->
-> flags =3D ri->flags;
-> ri->flags =3D 0;
+> I think it would be good to pass an extack here, so we can report more
+> useful errors.
 
-That would fix the "until next reboot" issue, but would still render
-bpf_clear_redirect_map() useless. So you still need to check ri->map and
-if you do that you don't actually need to clear the flag field as long
-as it is set correctly whenever the map pointer is.
+Hi Andrew!
 
-> With this we don't need to add an extra field ri->exclude_ingress as you
-> mentioned later.
+Yes, I will add this parameter.
 
-The ri->exclude_ingress would be *instead* of the flags field. You could
-of course also just keep the flags field, but turning it into a bool
-makes it obvious that only one of the bits is actually used (and thus
-easier to see that it's correct to not clear it).
+>> +/**
+>> + * struct ethtool_eeprom_data - EEPROM dump from specified page
+>> + * @offset: Offset within the specified EEPROM page to begin read, in bytes.
+>> + * @length: Number of bytes to read. On successful return, number of bytes
+>> + *	actually read.
+>> + * @page: Page number to read from.
+>> + * @bank: Page bank number to read from, if applicable by EEPROM spec.
+>> + * @i2c_address: I2C address of a page. Zero indicates a driver should choose
+>> + *	by itself.
+> I don't particularly like the idea of the driver deciding what to
+> read. User space should really be passing 0x50 or 0x51 for the normal
+> case. And we need to make it clear what these addresses mean, since
+> they are often referred to as 0xA0 and 0xA2, due to addresses being
+> shifted one bit left and a r/w bit added.
 
-> People may also need the flags field in future.
+I was thinking what address should I send from userspace by default?
+Should I send 0x50 or 0xA0 and at some point to do the shift?
+mlx5 uses 0x50 and 0x51, for example.
 
-In which case they can add it back at that time :)
+> I also don't think the in place length should be modified. It would be
+> better to follow the use semantics of returning a negative value on
+> error, or a positive value for the length actually
+> read. ethtool_eeprom_data can then be passed as a const.
+But how would userspace know how much actually was read?
+Should I fail the command if only part of a data requested was read?
+>> + * @data: Pointer to buffer with EEPROM data of @length size.
+>> + *
+>> + * This can be used to manage pages during EEPROM dump in ethtool and pass
+>> + * required information to the driver.
+>> + */
+>> +struct ethtool_eeprom_data {
+>> +	__u32	offset;
+>> +	__u32	length;
+>> +	__u32	page;
+>> +	__u32	bank;
+>> +	__u32	i2c_address;
+>> +	__u8	*data;
+>> +};
+>> +
+>>   /**
+>>    * struct ethtool_eee - Energy Efficient Ethernet information
+>>    * @cmd: ETHTOOL_{G,S}EEE
+>> @@ -1865,6 +1888,8 @@ static inline int ethtool_validate_duplex(__u8 duplex)
+>>   #define ETH_MODULE_SFF_8636_MAX_LEN     640
+>>   #define ETH_MODULE_SFF_8436_MAX_LEN     640
+>>   
+>> +#define ETH_MODULE_EEPROM_MAX_LEN	640
+> I'm surprised such a high value is allowed. 128 seems more
+> appropriate, given the size of 1/2 pages.
 
->> Also, the bpf_clear_redirect_map() call has no effect since the call to
->> dev_map_enqueue_multi() only checks the flags and not the value of the
->> map pointer before deciding which enqueue function to call.
->>=20
->> To fix both of these, how about changing the logic so that:
->>=20
->> - __bpf_xdp_redirect_map() sets the map pointer if the broadcast flag is
->>   set (and clears it if the flag isn't set!)
->
-> OK
->>=20
->> - xdp_do_redirect() does the READ_ONCE/WRITE_ONCE on ri->map
->>   unconditionally and then dispatches to dev_map_enqueue_multi() if the
->>   read resulted in a non-NULL pointer
->>=20
->> Also, it should be invalid to set the broadcast flag with a map type
->> other than a devmap; __bpf_xdp_redirect_map() should check that.
->
-> The current code only do if (unlikely(flags > XDP_TX)) and didn't check t=
-he
-> map type. I also only set the map when there has devmap + broadcast flag.
-> Do you mean we need a more strict check? like
->
-> if (unlikely((flags & ~(BPF_F_ACTION_MASK | BPF_F_REDIR_MASK)) ||
-> 	      (map->map_type !=3D BPF_MAP_TYPE_DEVMAP &&
-> 	       map->map_type !=3D BPF_MAP_TYPE_DEVMAP_HASH &&
-> 	       flags & BPF_F_REDIR_MASK)))
+This is done for backwards compatibility mechanism (last patch in the 
+series)
+to work properly. I wanted to limit the length to 128 (or 256, maybe), but
+currently ethtool supports dumps of 640 bytes at most.
+I guess I can add another value like ETH_MODULE_EEPROM_PAGE_MAX_LEN 256 
+and if
+new ndo is available or page number is specified, use it for check.
+If ndo is not implemented, use 640 instead.
 
-Yeah, that's what I meant, but when you type it out that does seem like
-a bit too many checks.
+What do you think?
 
-However, I think we can do something different: Since Bj=C3=B6rn has
-helpfully split out the helper functions for the different map types, we
-can add another argument to __bpf_xdp_redirect_map() which is the mask
-of valid flag values. With this, dev_{hash_,}map_redirect() can include
-BPF_F_REDIR_MASK in the valid flags, and {xsk,cpu}_map_redirect() can
-leave them out. That makes the code do the right thing without actually
-adding any more checks in the fast path :)
+>> +
+>>   /* Reset flags */
+>>   /* The reset() operation must clear the flags for the components which
+>>    * were actually reset.  On successful return, the flags indicate the
+>> diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+>> index a286635ac9b8..60dd848d0b54 100644
+>> --- a/include/uapi/linux/ethtool_netlink.h
+>> +++ b/include/uapi/linux/ethtool_netlink.h
+>> @@ -42,6 +42,7 @@ enum {
+>>   	ETHTOOL_MSG_CABLE_TEST_ACT,
+>>   	ETHTOOL_MSG_CABLE_TEST_TDR_ACT,
+>>   	ETHTOOL_MSG_TUNNEL_INFO_GET,
+>> +	ETHTOOL_MSG_EEPROM_DATA_GET,
+>>   
+>>   	/* add new constants above here */
+>>   	__ETHTOOL_MSG_USER_CNT,
+>> @@ -80,6 +81,7 @@ enum {
+>>   	ETHTOOL_MSG_CABLE_TEST_NTF,
+>>   	ETHTOOL_MSG_CABLE_TEST_TDR_NTF,
+>>   	ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
+>> +	ETHTOOL_MSG_EEPROM_DATA_GET_REPLY,
+>>   
+>>   	/* add new constants above here */
+>>   	__ETHTOOL_MSG_KERNEL_CNT,
+>> @@ -629,6 +631,23 @@ enum {
+>>   	ETHTOOL_A_TUNNEL_INFO_MAX = (__ETHTOOL_A_TUNNEL_INFO_CNT - 1)
+>>   };
+>>   
+>> +/* MODULE EEPROM DATA */
+>> +
+>> +enum {
+>> +	ETHTOOL_A_EEPROM_DATA_UNSPEC,
+>> +	ETHTOOL_A_EEPROM_DATA_HEADER,
+>> +
+>> +	ETHTOOL_A_EEPROM_DATA_OFFSET,
+>> +	ETHTOOL_A_EEPROM_DATA_LENGTH,
+>> +	ETHTOOL_A_EEPROM_DATA_PAGE,
+>> +	ETHTOOL_A_EEPROM_DATA_BANK,
+>> +	ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS,
+>> +	ETHTOOL_A_EEPROM_DATA,
+>> +
+>> +	__ETHTOOL_A_EEPROM_DATA_CNT,
+>> +	ETHTOOL_A_EEPROM_DATA_MAX = (__ETHTOOL_A_EEPROM_DATA_CNT - 1)
+>> +};
+>> +
+>>   /* generic netlink info */
+>>   #define ETHTOOL_GENL_NAME "ethtool"
+>>   #define ETHTOOL_GENL_VERSION 1
+>> diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+>> index 7a849ff22dad..d604346bc074 100644
+>> --- a/net/ethtool/Makefile
+>> +++ b/net/ethtool/Makefile
+>> @@ -7,4 +7,4 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
+>>   ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
+>>   		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
+>>   		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
+>> -		   tunnels.o
+>> +		   tunnels.o eeprom.o
+>> diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
+>> new file mode 100644
+>> index 000000000000..51a2ed81a273
+>> --- /dev/null
+>> +++ b/net/ethtool/eeprom.c
+>> @@ -0,0 +1,149 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +
+>> +#include <linux/ethtool.h>
+>> +#include "netlink.h"
+>> +#include "common.h"
+>> +
+>> +struct eeprom_data_req_info {
+>> +	struct ethnl_req_info	base;
+>> +	u32			offset;
+>> +	u32			length;
+>> +	u32			page;
+>> +	u32			bank;
+>> +	u32			i2c_address;
+>> +};
+>> +
+>> +struct eeprom_data_reply_data {
+>> +	struct ethnl_reply_data base;
+>> +	u32			length;
+>> +	u32			i2c_address;
+>> +	u8			*data;
+>> +};
+>> +
+>> +#define EEPROM_DATA_REQINFO(__req_base) \
+>> +	container_of(__req_base, struct eeprom_data_req_info, base)
+>> +
+>> +#define EEPROM_DATA_REPDATA(__reply_base) \
+>> +	container_of(__reply_base, struct eeprom_data_reply_data, base)
+>> +
+>> +static int eeprom_data_prepare_data(const struct ethnl_req_info *req_base,
+>> +				    struct ethnl_reply_data *reply_base,
+>> +				    struct genl_info *info)
+>> +{
+>> +	struct eeprom_data_reply_data *reply = EEPROM_DATA_REPDATA(reply_base);
+>> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_base);
+>> +	struct ethtool_eeprom_data page_data = {0};
+>> +	struct net_device *dev = reply_base->dev;
+>> +	int err;
+>> +
+>> +	if (!dev->ethtool_ops->get_module_eeprom_data_by_page)
+>> +		return -EOPNOTSUPP;
+>> +	err = ethnl_ops_begin(dev);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	page_data.offset = request->offset;
+>> +	page_data.length = request->length;
+>> +	page_data.i2c_address = request->i2c_address;
+>> +	page_data.page = request->page;
+>> +	page_data.bank = request->bank;
+>> +	page_data.data = kmalloc(page_data.length, GFP_KERNEL);
+>> +	if (!page_data.data)
+>> +		return -ENOMEM;
+> Isn't an ethnl_ops_complete(dev); needed here? Maybe postpone the
+> ethnl_ops_begin(dev) call until after the memory allocation?
+Yes, I should just move it after kmalloc().
+>> +
+>> +	err = dev->ethtool_ops->get_module_eeprom_data_by_page(dev, &page_data);
+>> +	if (err)
+>> +		goto err_out;
+>> +
+>> +	reply->length = page_data.length;
+>> +	reply->i2c_address = page_data.i2c_address;
+>> +	reply->data = page_data.data;
+>> +
+>> +	ethnl_ops_complete(dev);
+>> +	return 0;
+>> +
+>> +err_out:
+>> +	kfree(page_data.data);
+>> +	ethnl_ops_complete(dev);
+>> +	return err;
+>> +}
+>> +
+>> +static int eeprom_data_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
+>> +				     struct netlink_ext_ack *extack)
+>> +{
+>> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_info);
+>> +
+>> +	if (!tb[ETHTOOL_A_EEPROM_DATA_OFFSET] ||
+>> +	    !tb[ETHTOOL_A_EEPROM_DATA_LENGTH] ||
+>> +	    !tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS])
+>> +		return -EINVAL;
+>> +
+>> +	request->length = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
+>> +	if (request->length > ETH_MODULE_EEPROM_MAX_LEN)
+>> +		return -EINVAL;
+>> +
+>> +	request->offset = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
+> I think you need to validate that offset + length is not passed the
+> end of a 1/2 page. There seems to be odd wrap around semantics, so we
+> probably want to avoid that.
 
-(You'd still need to AND the return value with BPF_F_ACTION_MASK when
-returning, of course).
+I think I will add this check in case a page was specified and this is not
+a case ofbackwards compatible flow.
 
--Toke
+>> +	request->i2c_address = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS]);
+> Maybe validate the i2c address. Most busses are limited to 7 bit
+> addresses, but some do allow 10 bits. I think we can probably ignore
+> 10 bit addresses for this use case, so check that address is < 128.
+
+Yes, this check is possible, if I expect 0x50 or 0x51 in request. I will 
+add it.
 
