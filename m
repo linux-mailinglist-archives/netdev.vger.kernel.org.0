@@ -2,74 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C3D932C499
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DAED32C49B
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446501AbhCDAPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:15:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50738 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1578009AbhCCSQR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 13:16:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B337464EEC;
-        Wed,  3 Mar 2021 18:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614795335;
-        bh=5T9bHIFj1CyoGXbVb1zYt1TrohJNGLumV+zjmV7GO9I=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=thLbqn6F/11rvo1ByfrUWKbCxykt3UKMvbxFWt++nWhbXCqHwUkjIN/0LnsLHBQcC
-         ez0V1GlQbWXbzmWbhKXPceHv9APr1lI57lVjDczrlqm4YOThn8aHFlSPRHLWjmQ8D1
-         iQD6MbshCrhjjNMsKPAp2fJCiDxASs6/e12hNedp9cOvbOVgEt4uLBhsh5CXNu94cD
-         RjhvBsOxFPzmtZW0TcehIorc3UdSH6AGyML5yQ75vBCafL5MlNv/HYQVJKqyRwhns5
-         /rFC2Clv5FhHTEh6Ht9mj/WPEqi3aTSy8P67mZXggY8yRlRHJokwhylh/Hg+eYGLwV
-         KhoBirn/8NN+w==
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 6CEA535237A1; Wed,  3 Mar 2021 10:15:35 -0800 (PST)
-Date:   Wed, 3 Mar 2021 10:15:35 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH drivers/net] #ifdef mdio_bus_phy_suspend() and
- mdio_bus_phy_suspend()
-Message-ID: <20210303181535.GF2696@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20210303175338.GA15338@paulmck-ThinkPad-P72>
- <20210303180422.GB1463@shell.armlinux.org.uk>
+        id S1446596AbhCDAPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:15:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235407AbhCCSVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 13:21:49 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0F1C061756;
+        Wed,  3 Mar 2021 10:21:00 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id p5so14512171plo.4;
+        Wed, 03 Mar 2021 10:21:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4y/QfsQkpSYAAw3hafZnj/vlVNmoohVbhAhRflF0msE=;
+        b=Y2vi2+SsRGMrGqyRdtJVXtgo81th8sHAP2XUVa58pJ2xSSbnqcmNIQNWFikWe620hb
+         pqi/YZibfco/l8UQQqGmCdlUQzj2zlRp+0GQBaL0swQPAPjTZteVxOCprJqTHMGZzaxA
+         SrR1rOMbsgJFpgu+z4F6LKZJ4PZXhvAQyB2g1ugj/0M+wF4I2JK8N7tNNr0AruIQ6ImR
+         UAl7NctZ5Di/ahbaC+5mDlqboIBFB2DRZWUu9cq/5fSgqA0RDh5uO+vdWhs/96QIhOR0
+         se/VcXFunnVZw8/Nr36671XyEOz9ZvM3v+kWKe7P4S/ouoScJ3dFGHjWM5Daz4P9u5lw
+         bqyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4y/QfsQkpSYAAw3hafZnj/vlVNmoohVbhAhRflF0msE=;
+        b=HuWWmRCcSL+O8wz9GUd4pwuKmOELe3vfUvNW5jMFJ93thd8oyW0IuraJXxWTjfPNNJ
+         Yfhd5JVbcV7AWVSMWz2Xx8QP9WqcFV4789qQmciZx3FXrQBVi1CpRQpBTaEooIYnXn8f
+         MmfXLdw9VjpZUdJjXlhN6pMVfPLyQeGobSzFUlZCEINMlL+1VOE/7KgbXQVRZoQRM44z
+         opKwowGqh2pU9XY0o0aQL5T20QAOK4Ng5wMH4Yd1uUJmhT3W5MTal2pPpMT/Ha0MGrLr
+         3gWXdhL/2e90k0mEOPWcfqlT99K+7GotorxXZhUBkjo4NtlsTU955gDdsA4ak2X2Leag
+         q5yQ==
+X-Gm-Message-State: AOAM531723M1SrlwNea0Eeiut2mMGo79B0a0VpRIbvBbpRCanR/YV5Zy
+        mviN0rMxPzzAnT/y9ocF0S89N3Md7YiBjeKOrNF+72zoHydzVw==
+X-Google-Smtp-Source: ABdhPJwt7MsDgz3wz0vGvxGbaLE8IMd0EM9FVlHiqhcqXYfye8y0P6MXLs+oU/wiiRdwPqL2ETl7jHLHhRwoYy5ipr8=
+X-Received: by 2002:a17:902:f781:b029:e4:419b:e891 with SMTP id
+ q1-20020a170902f781b02900e4419be891mr464680pln.10.1614795660095; Wed, 03 Mar
+ 2021 10:21:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210303180422.GB1463@shell.armlinux.org.uk>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20210302023743.24123-1-xiyou.wangcong@gmail.com>
+ <20210302023743.24123-3-xiyou.wangcong@gmail.com> <CACAyw9-SjsNn4_J1KDXuFh1nd9Hr-Mo+=7S-kVtooJwdi1fodQ@mail.gmail.com>
+ <CAM_iQpXqE9qJ=+zKA6H1Rq=KKgm8LZ=p=ZtvrrH+hfSrTg+zxw@mail.gmail.com> <CACAyw99BweMk-82f270=Vb=jDuec0q0N-6E8Rr8enaOGuZEDNQ@mail.gmail.com>
+In-Reply-To: <CACAyw99BweMk-82f270=Vb=jDuec0q0N-6E8Rr8enaOGuZEDNQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 3 Mar 2021 10:20:48 -0800
+Message-ID: <CAM_iQpWHTvFPifcPL-x64fWqY5k8yP9vu6Bnp8D-HdpUp6vs6g@mail.gmail.com>
+Subject: Re: [Patch bpf-next v2 2/9] sock: introduce sk_prot->update_proto()
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 03, 2021 at 06:04:22PM +0000, Russell King - ARM Linux admin wrote:
-> On Wed, Mar 03, 2021 at 09:53:38AM -0800, Paul E. McKenney wrote:
-> > drivers/net: #ifdef mdio_bus_phy_suspend() and mdio_bus_phy_suspend()
-> > 
-> > The following build error is emitted by rcutorture builds of v5.12-rc1:
-> > 
-> > drivers/net/phy/phy_device.c:293:12: warning: ‘mdio_bus_phy_resume’ defined but not used [-Wunused-function]
-> > drivers/net/phy/phy_device.c:273:12: warning: ‘mdio_bus_phy_suspend’ defined but not used [-Wunused-function]
-> > 
-> > The problem is that these functions are only used by SIMPLE_DEV_PM_OPS(),
-> > which creates a dev_pm_ops structure only in CONFIG_PM_SLEEP=y kernels.
-> > Therefore, the mdio_bus_phy_suspend() and mdio_bus_phy_suspend() functions
-> > will be used only in CONFIG_PM_SLEEP=y kernels.  This commit therefore
-> > wraps them in #ifdef CONFIG_PM_SLEEP.
-> 
-> Arnd submitted a patch that Jakub has applied which fix these warnings
-> in a slightly different way. Please see
-> 20210225145748.404410-1-arnd@kernel.org
+On Wed, Mar 3, 2021 at 1:35 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> On Tue, 2 Mar 2021 at 18:23, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > > if the function returned a struct proto * like it does at the moment.
+> > > That way we keep sk->sk_prot manipulation confined to the sockmap code
+> > > and don't have to copy paste it into every proto.
+> >
+> > Well, TCP seems too special to do this, as it could call tcp_update_ulp()
+> > to update the proto.
+>
+> I had a quick look, tcp_bpf_update_proto is the only caller of tcp_update_ulp,
+> which in turn is the only caller of icsk_ulp_ops->update, which in turn is only
+> implemented as tls_update in tls_main.c. Turns out that tls_update
+> has another one of these calls:
+>
+> } else {
+>     /* Pairs with lockless read in sk_clone_lock(). */
+>     WRITE_ONCE(sk->sk_prot, p);
+>     sk->sk_write_space = write_space;
+> }
+>
+> Maybe it looks familiar? :o) I think it would be a worthwhile change.
 
-Works for me!  When will this be hitting mainline?
+Yeah, I am not surprised we can change tcp_update_ulp() too, but
+why should I bother kTLS when I do not have to? What you suggest
+could at most save us a bit of code size, not a big gain. So, I'd keep
+its return value as it is, unless you see any other benefits.
 
-Not a huge deal given that I can suppress the resulting rcutorture
-failures by keeping a copy of either patch in -rcu, but I might not
-be the only one hitting this.
+BTW, I will rename it to 'psock_update_sk_prot', please let me know
+if you have any better names.
 
-							Thanx, Paul
+Thanks.
