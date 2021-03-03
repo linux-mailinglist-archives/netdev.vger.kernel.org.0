@@ -2,104 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9B832C4AB
+	by mail.lfdr.de (Postfix) with ESMTP id A5E5632C4AC
 	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450242AbhCDAP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:15:59 -0500
-Received: from mail.katalix.com ([3.9.82.81]:58932 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354763AbhCCWet (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 17:34:49 -0500
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id D3EBF7D718;
-        Wed,  3 Mar 2021 22:32:06 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1614810726; bh=JgojL7uEE8S0Atixqtrf9rO9YOzCU+W2zwfhGb2Vqaw=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Wed,=203=20Mar=202021=2022:32:06=20+0000|From:=20Tom=20Pa
-         rkin=20<tparkin@katalix.com>|To:=20Matthias=20Schiffer=20<mschiffe
-         r@universe-factory.net>|Cc:=20netdev@vger.kernel.org,=20"David=20S
-         .=20Miller"=20<davem@davemloft.net>,=0D=0A=09Jakub=20Kicinski=20<k
-         uba@kernel.org>,=20linux-kernel@vger.kernel.org|Subject:=20Re:=20[
-         PATCH=20net=20v2]=20net:=20l2tp:=20reduce=20log=20level=20of=20mes
-         sages=20in=0D=0A=20receive=20path,=20add=20counter=20instead|Messa
-         ge-ID:=20<20210303223206.GA7374@katalix.com>|References:=20<bd6f11
-         7b433969634b613153ec86ccd9d5fa3fb9.1614707999.git.mschiffer@univer
-         se-factory.net>|MIME-Version:=201.0|Content-Disposition:=20inline|
-         In-Reply-To:=20<bd6f117b433969634b613153ec86ccd9d5fa3fb9.161470799
-         9.git.mschiffer@universe-factory.net>;
-        b=bK+8OADEbtVmvEES+L1agA1ssHqKnODjTPqqxzVAb0B4ovgOujLqmqX0GvWOkgZvJ
-         0HgSI/UFg2NA596UEn7MO8NSTqIjVxX02Vngb/ogSY7loFpetVpjIWIoI4ABvIXTXg
-         Q1c/r70RPFeTDps3N4VEXF6lVWPfnyZ6Yrv6D9MDFmPxgLh6y8cB2q0s+yRiLAbEDa
-         MELLgsdEaPOu3BO45LiVG0G4YWH33p8OLdpEYLQl5jv7tTd8IooQRDUt2fTckXWd/V
-         7LSZdaDMCFVOzfXPt8JFjktIU3lscmOLpV9IG7o35d0rcAEGXCzJk8/INLAV6nJf9V
-         1oFZMIQUbKh7A==
-Date:   Wed, 3 Mar 2021 22:32:06 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Matthias Schiffer <mschiffer@universe-factory.net>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2] net: l2tp: reduce log level of messages in
- receive path, add counter instead
-Message-ID: <20210303223206.GA7374@katalix.com>
-References: <bd6f117b433969634b613153ec86ccd9d5fa3fb9.1614707999.git.mschiffer@universe-factory.net>
+        id S1450263AbhCDAQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:16:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33849 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1449532AbhCCWwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 17:52:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614811822;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I+ZGM20Ww175B2i0Qx4AwkjsbVbJ+G3IdGtLxfVijYs=;
+        b=gZyhESmQaGBk83HqGDtsPiQVkdLUYfm9KuGvrCv8BqmMe0wjC77nh2ZL8+PdjQDhqgFjrH
+        4Lc4UyxzOKaQ3hKcA/uF1OlS7aH8NqHwfxRDW3iTJG2A5b6+SLCltz2lDrBBjyLVQY7uyZ
+        2XAaYcVi7D10EQGEeEVp2Z/83eYNPig=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-88-4KA0ZT6oNeGHCVhnnpNx8A-1; Wed, 03 Mar 2021 17:50:18 -0500
+X-MC-Unique: 4KA0ZT6oNeGHCVhnnpNx8A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3FB97107ACE3;
+        Wed,  3 Mar 2021 22:50:16 +0000 (UTC)
+Received: from krava (unknown [10.40.196.53])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 127FF60BE2;
+        Wed,  3 Mar 2021 22:49:59 +0000 (UTC)
+Date:   Wed, 3 Mar 2021 23:49:59 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Cc:     Yonghong Song <yhs@fb.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Yauheni Kaliuta <ykaliuta@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Paul Mackerras <paulus@samba.org>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix test_attach_probe for
+ powerpc uprobes
+Message-ID: <YEASl9Z3Tl4X0B5L@krava>
+References: <20210301190416.90694-1-jolsa@kernel.org>
+ <309d8d05-4bbd-56b8-6c05-12a1aa98b843@fb.com>
+ <YD4U1x2SbTlJF2QU@krava>
+ <20210303064043.GB1913@DESKTOP-TDPLP67.localdomain>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="0OAP2g/MAC+5xKAE"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bd6f117b433969634b613153ec86ccd9d5fa3fb9.1614707999.git.mschiffer@universe-factory.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20210303064043.GB1913@DESKTOP-TDPLP67.localdomain>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 03, 2021 at 12:10:43PM +0530, Naveen N. Rao wrote:
+> On 2021/03/02 11:35AM, Jiri Olsa wrote:
+> > On Mon, Mar 01, 2021 at 02:58:53PM -0800, Yonghong Song wrote:
+> > > 
+> > > 
+> > > On 3/1/21 11:04 AM, Jiri Olsa wrote:
+> > > > When testing uprobes we the test gets GEP (Global Entry Point)
+> > > > address from kallsyms, but then the function is called locally
+> > > > so the uprobe is not triggered.
+> > > > 
+> > > > Fixing this by adjusting the address to LEP (Local Entry Point)
+> > > > for powerpc arch.
+> > > > 
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > ---
+> > > >   .../selftests/bpf/prog_tests/attach_probe.c    | 18 +++++++++++++++++-
+> > > >   1 file changed, 17 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > > > index a0ee87c8e1ea..c3cfb48d3ed0 100644
+> > > > --- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > > > +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > > > @@ -2,6 +2,22 @@
+> > > >   #include <test_progs.h>
+> > > >   #include "test_attach_probe.skel.h"
+> > > > +#if defined(__powerpc64__)
+> 
+> This needs to be specific to ELF v2 ABI, so you'll need to check 
+> _CALL_ELF. See commit d5c2e2c17ae1d6 ("perf probe ppc64le: Prefer symbol 
+> table lookup over DWARF") for an example.
 
---0OAP2g/MAC+5xKAE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+i see, there's the outer #if _CALL_ELF I missed
 
-On  Wed, Mar 03, 2021 at 16:50:49 +0100, Matthias Schiffer wrote:
-> Commit 5ee759cda51b ("l2tp: use standard API for warning log messages")
-> changed a number of warnings about invalid packets in the receive path
-> so that they are always shown, instead of only when a special L2TP debug
-> flag is set. Even with rate limiting these warnings can easily cause
-> significant log spam - potentially triggered by a malicious party
-> sending invalid packets on purpose.
->=20
-> In addition these warnings were noticed by projects like Tunneldigger [1],
-> which uses L2TP for its data path, but implements its own control
-> protocol (which is sufficiently different from L2TP data packets that it
-> would always be passed up to userspace even with future extensions of
-> L2TP).
->=20
-> Some of the warnings were already redundant, as l2tp_stats has a counter
-> for these packets. This commit adds one additional counter for invalid
-> packets that are passed up to userspace. Packets with unknown session are
-> not counted as invalid, as there is nothing wrong with the format of
-> these packets.
->=20
-> With the additional counter, all of these messages are either redundant
-> or benign, so we reduce them to pr_debug_ratelimited().
+> 
+> > > > +/*
+> > > > + * We get the GEP (Global Entry Point) address from kallsyms,
+> > > > + * but then the function is called locally, so we need to adjust
+> > > > + * the address to get LEP (Local Entry Point).
+> > > 
+> > > Any documentation in the kernel about this behavior? This will
+> > > help to validate the change without trying with powerpc64 qemu...
+> 
+> I don't think we have documented this in the kernel anywhere, but this 
+> is specific to the ELF v2 ABI and is described there:
+> - 2.3.2.1.  Function Prologue: 
+>   http://cdn.openpowerfoundation.org/wp-content/uploads/resources/leabi/content/dbdoclet.50655240___RefHeading___Toc377640597.html
+> - 3.4.1.  Symbol Values:
+>    http://cdn.openpowerfoundation.org/wp-content/uploads/resources/leabi/content/dbdoclet.50655241_95185.html
+> 
+> > 
+> > we got similar fix in perf:
+> > 
+> > 7b6ff0bdbf4f perf probe ppc64le: Fixup function entry if using kallsyms lookup
+> > 
+> > CC-ing few other folks from ppc land for more info
+> 
+> Thanks.
+> 
+> > > 
+> > > > + */
+> > > > +#define LEP_OFFSET 8
+> > > > +
+> > > > +static ssize_t get_offset(ssize_t offset)
+> > > > +{
+> > > > +	return offset + LEP_OFFSET;
+> > > > +}
+> > > > +#else
+> > > > +#define get_offset(offset) (offset)
+> > > > +#endif
+> > > > +
+> > > >   ssize_t get_base_addr() {
+> > > >   	size_t start, offset;
+> > > >   	char buf[256];
+> > > > @@ -36,7 +52,7 @@ void test_attach_probe(void)
+> > > >   	if (CHECK(base_addr < 0, "get_base_addr",
+> > > >   		  "failed to find base addr: %zd", base_addr))
+> > > >   		return;
+> > > > -	uprobe_offset = (size_t)&get_base_addr - base_addr;
+> > > > +	uprobe_offset = get_offset((size_t)&get_base_addr - base_addr);
+> > > >   	skel = test_attach_probe__open_and_load();
+> > > >   	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
+> > > > 
+> 
+> As documented in the links above, the right way to identify local entry 
+> point (LEP) is by looking at the symbol table. Falling back to using a 
+> hardcoded offset of 8 is a reasonable workaround if we don't have access 
+> to the symbol table.
 
-This looks good to me -- thanks Matthias! :-)
+thanks for the all the info, I'll send v2 with _CALL_ELF check
 
---0OAP2g/MAC+5xKAE
-Content-Type: application/pgp-signature; name="signature.asc"
+jirka
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmBADmIACgkQlIwGZQq6
-i9AYpwgAqkpw/Vw8I9Zk6EMpQz8rIw7uRP1RHjJKz94ReoaQUmfPT2Fx87CSm5D4
-7ojWyOt7dly9aFKvXF6bvi+KWA6AhzyXrVU0c8SjOxtb86J677HI2w4njsptKvxo
-5XPLfLKgo4fFyO4KWMAQqdnZxN8o1w1MKdjc/+B9EEKB9/XO7hf613Sl66eBBBaS
-GWSUH1IUYlgRF2JBR3RAq85pZPABzU5oseh10koBB8haSFSltQFbzpdmVuIdFrBp
-xQxXjYYf1m4MVYBN/exmifyKicpG0QHGz3kyjWn2SzkC44KCvhdXKpw5Sy9+mIFO
-GM11OWGGjNbk1cg9nqs1l58CFe4/mg==
-=EHmr
------END PGP SIGNATURE-----
-
---0OAP2g/MAC+5xKAE--
