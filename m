@@ -2,168 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CEB32C3EF
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:51:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F07E232C3F2
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:52:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353086AbhCDAJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:09:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
+        id S1354509AbhCDAJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:09:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1842513AbhCCIGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 03:06:16 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B4FC061356;
-        Tue,  2 Mar 2021 23:56:17 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id m1so5291481wml.2;
-        Tue, 02 Mar 2021 23:56:17 -0800 (PST)
+        with ESMTP id S1842689AbhCCIJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 03:09:52 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5A8C061793;
+        Wed,  3 Mar 2021 00:09:11 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id l12so22603398wry.2;
+        Wed, 03 Mar 2021 00:09:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=RBLhxuP0FB1FYDX0AaweN9vB+2psJPwvGQLdI0MwHS8=;
-        b=muD1HjbK4kM6y9RuW8+tAGEQ4Hz+bQEPJq19mcEUzqGBhKIG+a+H2syEwD/yfDxlne
-         bS7GYyr7s7oC7iHhcvL7rXDe83zcWGlP98XYeMvjmdqX7VPHMVCbp96Oarm8Mf6/9K8g
-         sb3F2J98SoxS6x2fc88kP5dKWiBpAX4oEDOF22WjNKz+CFn0Frxt3SyxYbhSq7nWmnUg
-         7mqpRbasJAIL0pXkZN+r8Hdo5NwuxTWTWmBQYTv+atMUsrGcGIv0cHWEBF0K0i4Bekze
-         xWui0OEvmXhBSe+kMQFcWT1T93PUZAQ1FkHFIpECUx/WGvsZ550um3Ta80uSUbXeP5YS
-         aCAA==
+        bh=DnIVLFqu+VwqwHPGnlO5sV/RQqOYO/AWeTL793zqEr8=;
+        b=PjEgRQ1mu8v8tCdEAFoMIBr/IlExGxq/VPkEhFFJd6l40hQijsPbFKU3J/VfDpg6xI
+         bxUiCKwbouagbp14RQnpIuIedmAtyiYvvS2eRqMlfkvwG65xVVCOqBQZyVL4wfpbBXWm
+         8fD4uoZY6a8y+EPfEyuylPNVFb1nOZPTRIAODeMWG2hyVwDZSj/NzS0P4ZfiW7rCcbQZ
+         vAvsIGsS45lpXCt84BgAxkMcj8PuYsgyJUZvjZNOVAX4pW6iHxagZQ9PNmFkk/HS18bz
+         G800XXGim5C6FdIg0orf1CnygWAG8C2PKuNzG30QN0mtXl2gZd8Sfqpu6W2k134NwLn+
+         QgBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RBLhxuP0FB1FYDX0AaweN9vB+2psJPwvGQLdI0MwHS8=;
-        b=tXHnnY3DTwfxmkKO+uDcekWiSkaBvgxDxbDqxCeSbwlIH1od7FNsidDy/Br3tVl4uS
-         ikgdgHHwnedUAyMxrFx0NGxl7kbo7JiN1j/1EGw+QdsIbTFIG2/EgVIABhqiBeKSqYA8
-         I75Zp4xBHURDgVbBX0ROKZNBW6rfaQlAIgp9y0ZAu74cfwmq7Anq5GhYCJlagvsAJe+M
-         SYT4tVXZ4vPt72p+i02WSlZNTAVbc8gTGs/ix03Zps5A9NPat3vedcGHhbOnasMugviW
-         C7RdO3/uZe/lHAgatN5poOu4GLr21krRb3YTKez7qJIN5DVclUA6bcQ69yUr0ZA1DbDN
-         WCJg==
-X-Gm-Message-State: AOAM53042i27uDbDVDaS5oeqqEMSMfdgWLJvWOuV5QXBHffk3GL8tPWl
-        rhIhozbz1jn8eIACDe8dhFkFgawHqHBvPAV1Gfg=
-X-Google-Smtp-Source: ABdhPJwey4QPkurKONqcpTvnGm+YzyEGsL1YeXqvKhK52hqSKst3C5TraCYlOyu4QFkcdP3fzmpSR8oT5pYprWqO6os=
-X-Received: by 2002:a1c:b687:: with SMTP id g129mr7920310wmf.165.1614758176228;
- Tue, 02 Mar 2021 23:56:16 -0800 (PST)
+        bh=DnIVLFqu+VwqwHPGnlO5sV/RQqOYO/AWeTL793zqEr8=;
+        b=Sp4va+hfgj3LbwQQvob3j3U4WJySXiGazXZGTzxH3ts7esNEogSXop75HMQxWgtX32
+         eT7oFv8XLeapAiet2Cufs2slfW/XsyTQPKakJcqPkxy+BuwKtep+AgGwpMrjq2IiFw91
+         pTPfX5QxFZJkGaUQU3nf8evcj+b9EkZeoYJfPBENgjhex9dgEnW7gDvm0q1UUC5wzMJN
+         YWeNQwNDv193TzAkWSAALyelvkcLN/t3KAygj5EwEVuJpvRExtVUoPsy/4WlJuquw22B
+         Z59MXGmorwosVCUItASkiLE+l/PsmrYnzObUMbl2O0hGGMr7jlcth6UQpRJOm3TY4mV0
+         VAkA==
+X-Gm-Message-State: AOAM531xY6x/1Hq4WEDdf4nhhLpqfjdfArzg5Yyuj3P42nJyrGTciEwg
+        eDe3zwlbhp3JJ1M/Rq/B+AKypHYVDgotwkKuxJI=
+X-Google-Smtp-Source: ABdhPJykMQ94hRqiqc/JZgBD0wAY4bA21nkxhhZaZm6J0r0akz6WCIJCcGAoRrcR4Aphgnfg4vODwIe2AZOS4e6DQtE=
+X-Received: by 2002:a5d:4141:: with SMTP id c1mr26897224wrq.248.1614758950368;
+ Wed, 03 Mar 2021 00:09:10 -0800 (PST)
 MIME-Version: 1.0
 References: <20210301104318.263262-1-bjorn.topel@gmail.com>
- <20210301104318.263262-2-bjorn.topel@gmail.com> <87mtvmx3ec.fsf@toke.dk>
- <939aefb5-8f03-fc5a-9e8b-0b634aafd0a4@intel.com> <87zgzlvoqd.fsf@toke.dk>
-In-Reply-To: <87zgzlvoqd.fsf@toke.dk>
+ <20210301104318.263262-3-bjorn.topel@gmail.com> <87k0qqx3be.fsf@toke.dk>
+ <e052a22a-4b7b-fe38-06ad-2ad04c83dda7@intel.com> <12f8969b-6780-f35f-62cd-ed67b1d8181a@iogearbox.net>
+ <0121ca03-d806-8e50-aaac-0f97795d0fbe@intel.com> <cb975a27-ade5-a638-af6e-2e4e1024649c@iogearbox.net>
+In-Reply-To: <cb975a27-ade5-a638-af6e-2e4e1024649c@iogearbox.net>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 3 Mar 2021 08:56:04 +0100
-Message-ID: <CAJ+HfNgf2jxL3fGL=ksAM4O3QC2evM-g=+VPBNZ1D-4qyzb4AA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] xsk: update rings for load-acquire/store-release
- semantics
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Date:   Wed, 3 Mar 2021 09:08:58 +0100
+Message-ID: <CAJ+HfNjTFOB1JB9gcHfe9r5xkjoSFCqdLZvFBrfkh4GGH322iQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] libbpf, xsk: add libbpf_smp_store_release libbpf_smp_load_acquire
+To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        paulmck@kernel.org, "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com,
-        Andrii Nakryiko <andrii@kernel.org>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Will Deacon <will@kernel.org>, paulmck@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Mar 2021 at 11:23, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.=
-com> wrote:
->
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
->
-> > On 2021-03-01 17:08, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
-> >>
-> >>> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >>>
-> >>> Currently, the AF_XDP rings uses smp_{r,w,}mb() fences on the
-> >>> kernel-side. By updating the rings for load-acquire/store-release
-> >>> semantics, the full barrier on the consumer side can be replaced with
-> >>> improved performance as a nice side-effect.
-> >>>
-> >>> Note that this change does *not* require similar changes on the
-> >>> libbpf/userland side, however it is recommended [1].
-> >>>
-> >>> On x86-64 systems, by removing the smp_mb() on the Rx and Tx side, th=
-e
-> >>> l2fwd AF_XDP xdpsock sample performance increases by
-> >>> 1%. Weakly-ordered platforms, such as ARM64 might benefit even more.
-> >>>
-> >>> [1] https://lore.kernel.org/bpf/20200316184423.GA14143@willie-the-tru=
-ck/
-> >>>
-> >>> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >>> ---
-> >>>   net/xdp/xsk_queue.h | 27 +++++++++++----------------
-> >>>   1 file changed, 11 insertions(+), 16 deletions(-)
-> >>>
-> >>> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> >>> index 2823b7c3302d..e24279d8d845 100644
-> >>> --- a/net/xdp/xsk_queue.h
-> >>> +++ b/net/xdp/xsk_queue.h
-> >>> @@ -47,19 +47,18 @@ struct xsk_queue {
-> >>>     u64 queue_empty_descs;
-> >>>   };
-> >>>
-> >>> -/* The structure of the shared state of the rings are the same as th=
-e
-> >>> - * ring buffer in kernel/events/ring_buffer.c. For the Rx and comple=
-tion
-> >>> - * ring, the kernel is the producer and user space is the consumer. =
-For
-> >>> - * the Tx and fill rings, the kernel is the consumer and user space =
-is
-> >>> - * the producer.
-> >>> +/* The structure of the shared state of the rings are a simple
-> >>> + * circular buffer, as outlined in
-> >>> + * Documentation/core-api/circular-buffers.rst. For the Rx and
-> >>> + * completion ring, the kernel is the producer and user space is the
-> >>> + * consumer. For the Tx and fill rings, the kernel is the consumer a=
-nd
-> >>> + * user space is the producer.
-> >>>    *
-> >>>    * producer                         consumer
-> >>>    *
-> >>> - * if (LOAD ->consumer) {           LOAD ->producer
-> >>> - *                    (A)           smp_rmb()       (C)
-> >>> + * if (LOAD ->consumer) {  (A)      LOAD.acq ->producer  (C)
-> >>
-> >> Why is LOAD.acq not needed on the consumer side?
-> >>
-> >
-> > You mean why LOAD.acq is not needed on the *producer* side, i.e. the
-> > ->consumer?
->
-> Yes, of course! The two words were, like, right next to each other ;)
->
-> > The ->consumer is a control dependency for the store, so there is no
-> > ordering constraint for ->consumer at producer side. If there's no
-> > space, no data is written. So, no barrier is needed there -- at least
-> > that has been my perspective.
-> >
-> > This is very similar to the buffer in
-> > Documentation/core-api/circular-buffers.rst. Roping in Paul for some
-> > guidance.
->
-> Yeah, I did read that, but got thrown off by this bit: "Therefore, the
-> unlock-lock pair between consecutive invocations of the consumer
-> provides the necessary ordering between the read of the index indicating
-> that the consumer has vacated a given element and the write by the
-> producer to that same element."
->
-> Since there is no lock in the XSK, what provides that guarantee here?
->
->
-> Oh, and BTW, when I re-read the rest of the comment in xsk_queue.h
-> (below the diagram you are changing in this patch), the text still talks
-> about "memory barriers" - maybe that should be updated to
-> release/acquire as well while you're changing things?
+On Tue, 2 Mar 2021 at 10:25, Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
 
-Make sense! I'll make sure to do that for the V2!
+[...]
+
+> > I wonder if it's possible to cook a LKMM litmus test for this...?
+>
+> That would be amazing! :-)
+>
+
+With the help of Paul and Alan [1] (Thanks!) I've cooked 8 litmus
+tests for this [2].
+
+The litmus tests is based on a one entry ring-buffer, and there are
+two scenarios. The ring is full, i.e. the producer has written an
+entry, so the consumer has to go first. The ring is empty, i.e. the
+producer has to go first. There is one test for each permutation:
+barrier only, acqrel only, acqrel+barrier, barrier+acqrel.
+
+According to these tests the code in this series is correct. Now, for
+the v2 some more wording/explanations are needed. Do you think I
+should include the litmus tests in the patch, or just refer to them?
+Paste parts of them into the cover?
+
+> (Another option which can be done independently could be to update [0] wi=
+th outlining a
+>   pairing scenario as we have here describing the forward/backward compat=
+ibility on the
+>   barriers used, I think that would be quite useful as well.)
+>
+>    [0] Documentation/memory-barriers.txt
+>
+
+Yeah, I agree. There is some information on it though in the "SMP
+BARRIER PAIRING" section:
+--8<--
+General barriers pair with each other, though they also pair with most
+other types of barriers, albeit without multicopy atomicity.  An acquire
+barrier pairs with a release barrier, but both may also pair with other
+barriers, including of course general barriers.  A write barrier pairs
+with a data dependency barrier, a control dependency, an acquire barrier,
+a release barrier, a read barrier, or a general barrier.  Similarly a
+read barrier, control dependency, or a data dependency barrier pairs
+with a write barrier, an acquire barrier, a release barrier, or a
+general barrier:
+-->8--
+
+And there's the tools/memory-model/Documentation/cheatsheet.txt.
+
+That being said; In this case more is more. :-D
+
 
 Bj=C3=B6rn
 
-> -Toke
+[1] https://lore.kernel.org/lkml/CAJ+HfNhxWFeKnn1aZw-YJmzpBuCaoeGkXXKn058Gh=
+Y-6ZBDtZA@mail.gmail.com/
+[2] https://github.com/bjoto/litmus-xsk/commit/0db0dc426a7e1248f83e21f10f9e=
+840f970f4cb7
+
+> >> Would also be great to get Will's ACK on that when you have a v2. :)
+> >
+> > Yup! :-)
+> >
+> >
+> > Bj=C3=B6rn
+> >
+> >
+> >> Thanks,
+> >> Daniel
+> >>
+> >>> [1] https://lore.kernel.org/bpf/20200316184423.GA14143@willie-the-tru=
+ck/
 >
