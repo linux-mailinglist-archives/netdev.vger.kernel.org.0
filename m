@@ -2,218 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7048E32C49E
+	by mail.lfdr.de (Postfix) with ESMTP id BC74632C49F
 	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447325AbhCDAPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:15:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
+        id S1448631AbhCDAPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:15:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350701AbhCCTHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 14:07:02 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6730BC061762
-        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 10:54:17 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id g3so31381685edb.11
-        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 10:54:17 -0800 (PST)
+        with ESMTP id S1387124AbhCCTQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 14:16:13 -0500
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4D5C061760
+        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 11:15:32 -0800 (PST)
+Received: by mail-qt1-x84a.google.com with SMTP id p32so10725016qtd.14
+        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 11:15:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YKFQH6E0yNZuowlitL0N34JlWPD6X2Se55p2GC5RTco=;
-        b=D2z0Gn99jifSpH4aD3vxwF1HsZhUEo7ZHIWKKwlftOgsXvzJy4CR9j1e7VGpMTpkzk
-         DZjltsb8hsZ6COVcSSf54oRduRqNS7HwYj0d3+nYyJet5DRWaUAokYRbA21zGi0HMGw6
-         icJDbi7zzceq1odFUJaaCO+0k8xJW974siTZFpSLH4a30gCdEjVxdBC7UBRiZvF53oWD
-         8qHDkxX4aWd3FCScLKj6sniICzf7CXnKV+HP/9mehA0vUP+/NNIIAUGyKm8G/Mp+ESOG
-         LV/4SOlxOCrrop84PalOIbCYRgU4bZ36CRmNPa6wlNOfx8eVLEDpBdPyFo0z+3BRF3kY
-         y46A==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=N8PCfwZicPjsnptNF7G2E2FEEsEc1qJ+kpbU5CqawP4=;
+        b=SiqOub67DbuT7DposIVvjRTO5q6bbjEYPp2lv1j+m1Fc+fdHLnq5h2pIQWBmODeHAa
+         3wo7u5CoSmMLYGcT3oouHik8GTpdL+NM6YC5ZX6ulHa1QJhSWAEYqdqETmOBpWLe0/px
+         FNGoIWcpECCqmMMpTApmatf2xo7Xs6b+t4/DSU4DJiBDbTYdDv1B8utLYMiWXFRXIeCi
+         a0Aqi1vTY+P8QypncQG1WY0T7N3CFAZxQihnDTt54xOYiqXFaQFuKLQpbRjdKJFGXy9R
+         Np1exSKW/If5gBbUoqqKhaViJNfq8ZWo4qcV5ZA3Q+qaj6HDhghLusZIeMNglzq+quo4
+         27yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YKFQH6E0yNZuowlitL0N34JlWPD6X2Se55p2GC5RTco=;
-        b=ZwVmWv2UtGUA23C7FdOc8niiBPaD5PClRSkd5qUEFKyVyM0ldIvgvRGMj60guUewUu
-         eXwBWkYXIxZkJ4IlMBsrD9pn1T16OShhQRxwGbrV7WogaPIKqtVh8R/fMmt4MqeJ3baT
-         nnGaDryFlWiWTwlBBPvr36jaFDeLkJ+F8hfoRkK72S6qLdIITaBVsatqV0dKGWFVnNQT
-         W+HLILelg9iVbaj5IL5aaHcZ5cjiyqdjWzX4UaIzdv1R4r2lraHQ879220fypSGVl3+z
-         0PQc7zogF4JOH+eLIGlgEPtjUwfRU6sNQsonmElRuWFasbk5NK1OaqkqxC2kVlCvUc17
-         mB4Q==
-X-Gm-Message-State: AOAM533vYhNMsFthp8SsgLCKXSzV1ePVk3kV4EIpAHeCRbRaMXMtLZvB
-        j9zTCuNLaMn3lwJxkrL5Szq28UlGOgk=
-X-Google-Smtp-Source: ABdhPJy7YQZUqGbt9w4tzCHV2+dPEKnDYwp7u2nFcKT8ScD4kNMkRwMugtWW6rq/q0/bwThyWcGsBA==
-X-Received: by 2002:a50:8b66:: with SMTP id l93mr706906edl.384.1614797655868;
-        Wed, 03 Mar 2021 10:54:15 -0800 (PST)
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
-        by smtp.gmail.com with ESMTPSA id cb1sm20566288ejb.69.2021.03.03.10.54.12
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Mar 2021 10:54:12 -0800 (PST)
-Received: by mail-wm1-f52.google.com with SMTP id l22so6034737wme.1
-        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 10:54:12 -0800 (PST)
-X-Received: by 2002:a05:600c:198c:: with SMTP id t12mr330047wmq.183.1614797651850;
- Wed, 03 Mar 2021 10:54:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20210303123338.99089-1-hxseverything@gmail.com>
-In-Reply-To: <20210303123338.99089-1-hxseverything@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 3 Mar 2021 13:53:34 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfY0y7Y2XSKO-rqPY5mX83NWgAWbQeVukFA94eJVu2B2g@mail.gmail.com>
-Message-ID: <CA+FuTSfY0y7Y2XSKO-rqPY5mX83NWgAWbQeVukFA94eJVu2B2g@mail.gmail.com>
-Subject: Re: [PATCH/v4] bpf: add bpf_skb_adjust_room flag BPF_F_ADJ_ROOM_ENCAP_L2_ETH
-To:     Xuesen Huang <hxseverything@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Xuesen Huang <huangxuesen@kuaishou.com>,
-        Zhiyong Cheng <chengzhiyong@kuaishou.com>,
-        Li Wang <wangli09@kuaishou.com>
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=N8PCfwZicPjsnptNF7G2E2FEEsEc1qJ+kpbU5CqawP4=;
+        b=YItP4ZVzfUZe6QizgLy56q9zVDY9CW4WagL8UHlt/UasoQeTWc6Cegexmcqvx5PJYg
+         BF1xTFAnA8H2J+QcTVQoTU/6LIC786nkVz2V2/REh6Twy5F0uDcdXusa4Td/ro6HmiWJ
+         OK2CgeZPtiyl3Qiqpok1A4yZBXs9gj8xBHoYV0KjSU1UlM3C538I7KCZrRvSb2mEbrvD
+         fzMYd91Xa4xunpz0pT+4qTdutp68ioNGFVfQiWQxf3lh7gJn7T8HeRdWFyOrzLc1TUTE
+         QUJFA9fFVb6c3dyPvYz1YsvCdBH7TZEjk5ufTl4tawv3653c3dKCyQdjpia0KUVh1/yl
+         H+cA==
+X-Gm-Message-State: AOAM532/l+EeGYLVvA/FcyAg5cFUZWzgdg/NII69ZPxMQmm1sFAyHRWT
+        Fp2qWR9YCXDlRbhF0l2R3YJ1av4IsxLw6OG1VjVh
+X-Google-Smtp-Source: ABdhPJya3+Hh2v8LbImh80jXmV/JKUWZRYhKVapcRH3hx1xBKqafauSSyEeY9KojiIXO5EJvCzYXFPuyCDgQowuwMnSE
+Sender: "danielwinkler via sendgmr" 
+        <danielwinkler@danielwinkler-linux.mtv.corp.google.com>
+X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:45cc:69de:aba1:a948])
+ (user=danielwinkler job=sendgmr) by 2002:ad4:5b86:: with SMTP id
+ 6mr669445qvp.15.1614798932019; Wed, 03 Mar 2021 11:15:32 -0800 (PST)
+Date:   Wed,  3 Mar 2021 11:15:23 -0800
+Message-Id: <20210303111505.1.I3108b046a478cb4f1b85aeb84edb0f127cff81a8@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
+Subject: [PATCH] Bluetooth: Allow scannable adv with extended MGMT APIs
+From:   Daniel Winkler <danielwinkler@google.com>
+To:     linux-bluetooth@vger.kernel.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Daniel Winkler <danielwinkler@google.com>,
+        Alain Michaud <alainm@chromium.org>,
+        Sonny Sasaka <sonnysasaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 3, 2021 at 7:33 AM Xuesen Huang <hxseverything@gmail.com> wrote:
->
-> From: Xuesen Huang <huangxuesen@kuaishou.com>
->
-> bpf_skb_adjust_room sets the inner_protocol as skb->protocol for packets
-> encapsulation. But that is not appropriate when pushing Ethernet header.
->
-> Add an option to further specify encap L2 type and set the inner_protocol
-> as ETH_P_TEB.
->
-> Update test_tc_tunnel to verify adding vxlan encapsulation works with
-> this flag.
->
-> Suggested-by: Willem de Bruijn <willemb@google.com>
-> Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
-> Signed-off-by: Zhiyong Cheng <chengzhiyong@kuaishou.com>
-> Signed-off-by: Li Wang <wangli09@kuaishou.com>
+An issue was found, where if a bluetooth client requests a broadcast
+advertisement with scan response data, it will not be properly
+registered with the controller. This is because at the time that the
+hci_cp_le_set_scan_param structure is created, the scan response will
+not yet have been received since it comes in a second MGMT call. With
+empty scan response, the request defaults to a non-scannable PDU type.
+On some controllers, the subsequent scan response request will fail due
+to incorrect PDU type, and others will succeed and not use the scan
+response.
 
-Thanks for adding the test. Perhaps that is better in a separate patch?
+This fix allows the advertising parameters MGMT call to include a flag
+to let the kernel know whether a scan response will be coming, so that
+the correct PDU type is used in the first place. A bluetoothd change is
+also incoming to take advantage of it.
 
-Overall looks great to me.
+To test this, I created a broadcast advertisement with scan response
+data and registered it on the hatch chromebook. Without this change, the
+request fails, and with it will succeed.
 
-The patch has not (yet?) arrived on patchwork.
+Reviewed-by: Alain Michaud <alainm@chromium.org>
+Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
+Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+Signed-off-by: Daniel Winkler <danielwinkler@google.com>
+---
 
->  enum {
-> diff --git a/tools/testing/selftests/bpf/progs/test_tc_tunnel.c b/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
-> index 37bce7a..6e144db 100644
-> --- a/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
-> +++ b/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
-> @@ -20,6 +20,14 @@
->  #include <bpf/bpf_endian.h>
->  #include <bpf/bpf_helpers.h>
->
-> +#define encap_ipv4(...) __encap_ipv4(__VA_ARGS__, 0)
-> +
-> +#define encap_ipv4_with_ext_proto(...) __encap_ipv4(__VA_ARGS__)
-> +
-> +#define encap_ipv6(...) __encap_ipv6(__VA_ARGS__, 0)
-> +
-> +#define encap_ipv6_with_ext_proto(...) __encap_ipv6(__VA_ARGS__)
-> +
+ include/net/bluetooth/mgmt.h | 1 +
+ net/bluetooth/hci_request.c  | 3 ++-
+ net/bluetooth/mgmt.c         | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-Instead of untyped macros, I'd define encap_ipv4 as a function that
-calls __encap_ipv4.
+diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+index 839a2028009ea1..a7cffb06956517 100644
+--- a/include/net/bluetooth/mgmt.h
++++ b/include/net/bluetooth/mgmt.h
+@@ -578,6 +578,7 @@ struct mgmt_rp_add_advertising {
+ #define MGMT_ADV_PARAM_TIMEOUT		BIT(13)
+ #define MGMT_ADV_PARAM_INTERVALS	BIT(14)
+ #define MGMT_ADV_PARAM_TX_POWER		BIT(15)
++#define MGMT_ADV_PARAM_SCAN_RSP		BIT(16)
+ 
+ #define MGMT_ADV_FLAG_SEC_MASK	(MGMT_ADV_FLAG_SEC_1M | MGMT_ADV_FLAG_SEC_2M | \
+ 				 MGMT_ADV_FLAG_SEC_CODED)
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 75a42178c82d9b..d7ee11ef70d3e1 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -2180,7 +2180,8 @@ int __hci_req_setup_ext_adv_instance(struct hci_request *req, u8 instance)
+ 			cp.evt_properties = cpu_to_le16(LE_EXT_ADV_CONN_IND);
+ 		else
+ 			cp.evt_properties = cpu_to_le16(LE_LEGACY_ADV_IND);
+-	} else if (adv_instance_is_scannable(hdev, instance)) {
++	} else if (adv_instance_is_scannable(hdev, instance) ||
++		   (flags & MGMT_ADV_PARAM_SCAN_RSP)) {
+ 		if (secondary_adv)
+ 			cp.evt_properties = cpu_to_le16(LE_EXT_ADV_SCAN_IND);
+ 		else
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 74971b4bd4570d..90334ac4a13589 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -7432,6 +7432,7 @@ static u32 get_supported_adv_flags(struct hci_dev *hdev)
+ 	flags |= MGMT_ADV_PARAM_TIMEOUT;
+ 	flags |= MGMT_ADV_PARAM_INTERVALS;
+ 	flags |= MGMT_ADV_PARAM_TX_POWER;
++	flags |= MGMT_ADV_PARAM_SCAN_RSP;
+ 
+ 	/* In extended adv TX_POWER returned from Set Adv Param
+ 	 * will be always valid.
+-- 
+2.30.1.766.gb4fecdf3b7-goog
 
-And no need for encap_ipv4_with_ext_proto equivalent to __encap_ipv4.
-
->  static const int cfg_port = 8000;
->
->  static const int cfg_udp_src = 20000;
-> @@ -27,11 +35,24 @@
->  #define        UDP_PORT                5555
->  #define        MPLS_OVER_UDP_PORT      6635
->  #define        ETH_OVER_UDP_PORT       7777
-> +#define        VXLAN_UDP_PORT          8472
-> +
-> +#define        EXTPROTO_VXLAN  0x1
-> +
-> +#define        VXLAN_N_VID     (1u << 24)
-> +#define        VXLAN_VNI_MASK  bpf_htonl((VXLAN_N_VID - 1) << 8)
-> +#define        VXLAN_FLAGS     0x8
-> +#define        VXLAN_VNI       1
->
->  /* MPLS label 1000 with S bit (last label) set and ttl of 255. */
->  static const __u32 mpls_label = __bpf_constant_htonl(1000 << 12 |
->                                                      MPLS_LS_S_MASK | 0xff);
->
-> +struct vxlanhdr {
-> +       __be32 vx_flags;
-> +       __be32 vx_vni;
-> +} __attribute__((packed));
-> +
->  struct gre_hdr {
->         __be16 flags;
->         __be16 protocol;
-> @@ -45,13 +66,13 @@ struct gre_hdr {
->  struct v4hdr {
->         struct iphdr ip;
->         union l4hdr l4hdr;
-> -       __u8 pad[16];                   /* enough space for L2 header */
-> +       __u8 pad[24];                   /* space for L2 header / vxlan header ... */
-
-could we use something like sizeof(..) instead of a constant?
-
-> @@ -171,14 +197,26 @@ static __always_inline int encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
->         }
->
->         /* add L2 encap (if specified) */
-> +       l2_hdr = (__u8 *)&h_outer + olen;
->         switch (l2_proto) {
->         case ETH_P_MPLS_UC:
-> -               *((__u32 *)((__u8 *)&h_outer + olen)) = mpls_label;
-> +               *(__u32 *)l2_hdr = mpls_label;
->                 break;
->         case ETH_P_TEB:
-> -               if (bpf_skb_load_bytes(skb, 0, (__u8 *)&h_outer + olen,
-> -                                      ETH_HLEN))
-
-This is non-standard indentation? Here and elsewhere.
-
-> @@ -249,7 +288,11 @@ static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
->                 break;
->         case ETH_P_TEB:
->                 l2_len = ETH_HLEN;
-> -               udp_dst = ETH_OVER_UDP_PORT;
-> +               if (ext_proto & EXTPROTO_VXLAN) {
-> +                       udp_dst = VXLAN_UDP_PORT;
-> +                       l2_len += sizeof(struct vxlanhdr);
-> +               } else
-> +                       udp_dst = ETH_OVER_UDP_PORT;
->                 break;
->         }
->         flags |= BPF_F_ADJ_ROOM_ENCAP_L2(l2_len);
-> @@ -267,7 +310,7 @@ static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
->                 h_outer.l4hdr.udp.source = __bpf_constant_htons(cfg_udp_src);
->                 h_outer.l4hdr.udp.dest = bpf_htons(udp_dst);
->                 tot_len = bpf_ntohs(iph_inner.payload_len) + sizeof(iph_inner) +
-> -                         sizeof(h_outer.l4hdr.udp);
-> +                         sizeof(h_outer.l4hdr.udp) + l2_len;
-
-Was this a bug previously?
-
->                 h_outer.l4hdr.udp.check = 0;
->                 h_outer.l4hdr.udp.len = bpf_htons(tot_len);
->                 break;
-> @@ -278,13 +321,24 @@ static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
->         }
->
->         /* add L2 encap (if specified) */
-> +       l2_hdr = (__u8 *)&h_outer + olen;
->         switch (l2_proto) {
->         case ETH_P_MPLS_UC:
-> -               *((__u32 *)((__u8 *)&h_outer + olen)) = mpls_label;
-> +               *(__u32 *)l2_hdr = mpls_label;
->                 break;
->         case ETH_P_TEB:
-> -               if (bpf_skb_load_bytes(skb, 0, (__u8 *)&h_outer + olen,
-> -                                      ETH_HLEN))
-> +               flags |= BPF_F_ADJ_ROOM_ENCAP_L2_ETH;
-
-This is a change also for the existing case. Correctly so, I imagine.
-But the test used to pass with the wrong protocol?
