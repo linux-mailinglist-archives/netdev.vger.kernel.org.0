@@ -2,111 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E78AD32C466
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:53:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4253632C46A
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:53:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354310AbhCDANi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 3 Mar 2021 19:13:38 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:46616 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244375AbhCCPvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 10:51:03 -0500
-Received: from marcel-macbook.holtmann.net (p4ff9fb90.dip0.t-ipconnect.de [79.249.251.144])
-        by mail.holtmann.org (Postfix) with ESMTPSA id BE66CCED03;
-        Wed,  3 Mar 2021 16:54:55 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH v2 1/1] Bluetooth: Remove unneeded commands for suspend
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210302104931.v2.1.Ifcac8bd85b5339135af8e08370bacecc518b1c35@changeid>
-Date:   Wed, 3 Mar 2021 16:47:21 +0100
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        id S1354927AbhCDANo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:13:44 -0500
+Received: from orthanc.universe-factory.net ([104.238.176.138]:34778 "EHLO
+        orthanc.universe-factory.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1452520AbhCCPvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 10:51:53 -0500
+Received: from avalon.. (unknown [IPv6:2001:19f0:6c01:100::2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by orthanc.universe-factory.net (Postfix) with ESMTPSA id BB0AF1F5DB;
+        Wed,  3 Mar 2021 16:51:05 +0100 (CET)
+From:   Matthias Schiffer <mschiffer@universe-factory.net>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <31B90F9D-E234-4825-A955-1CBA712E5188@holtmann.org>
-References: <20210302184936.619740-1-abhishekpandit@chromium.org>
- <20210302104931.v2.1.Ifcac8bd85b5339135af8e08370bacecc518b1c35@changeid>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+        Tom Parkin <tparkin@katalix.com>, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <mschiffer@universe-factory.net>
+Subject: [PATCH net v2] net: l2tp: reduce log level of messages in receive path, add counter instead
+Date:   Wed,  3 Mar 2021 16:50:49 +0100
+Message-Id: <bd6f117b433969634b613153ec86ccd9d5fa3fb9.1614707999.git.mschiffer@universe-factory.net>
+X-Mailer: git-send-email 2.30.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+Commit 5ee759cda51b ("l2tp: use standard API for warning log messages")
+changed a number of warnings about invalid packets in the receive path
+so that they are always shown, instead of only when a special L2TP debug
+flag is set. Even with rate limiting these warnings can easily cause
+significant log spam - potentially triggered by a malicious party
+sending invalid packets on purpose.
 
-> During suspend, there are a few scan enable and set event filter
-> commands that don't need to be sent unless there are actual BR/EDR
-> devices capable of waking the system. Check the HCI_PSCAN bit before
-> writing scan enable and use a new dev flag, HCI_EVENT_FILTER_CONFIGURED
-> to control whether to clear the event filter.
-> 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> ---
-> 
-> Changes in v2:
-> * Removed hci_dev_lock from hci_cc_set_event_filter since flags are
->  set/cleared atomically
-> 
-> include/net/bluetooth/hci.h |  1 +
-> net/bluetooth/hci_event.c   | 24 ++++++++++++++++++++
-> net/bluetooth/hci_request.c | 44 +++++++++++++++++++++++--------------
-> 3 files changed, 52 insertions(+), 17 deletions(-)
-> 
-> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-> index ba2f439bc04d34..ea4ae551c42687 100644
-> --- a/include/net/bluetooth/hci.h
-> +++ b/include/net/bluetooth/hci.h
-> @@ -320,6 +320,7 @@ enum {
-> 	HCI_BREDR_ENABLED,
-> 	HCI_LE_SCAN_INTERRUPTED,
-> 	HCI_WIDEBAND_SPEECH_ENABLED,
-> +	HCI_EVENT_FILTER_CONFIGURED,
-> 
-> 	HCI_DUT_MODE,
-> 	HCI_VENDOR_DIAG,
-> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> index 67668be3461e93..6eadc999ea1474 100644
-> --- a/net/bluetooth/hci_event.c
-> +++ b/net/bluetooth/hci_event.c
-> @@ -395,6 +395,26 @@ static void hci_cc_write_scan_enable(struct hci_dev *hdev, struct sk_buff *skb)
-> 	hci_dev_unlock(hdev);
-> }
-> 
-> +static void hci_cc_set_event_filter(struct hci_dev *hdev, struct sk_buff *skb)
-> +{
-> +	__u8 status = *((__u8 *)skb->data);
-> +	struct hci_cp_set_event_filter *cp;
-> +	void *sent;
-> +
-> +	BT_DBG("%s status 0x%2.2x", hdev->name, status);
-> +
-> +	sent = hci_sent_cmd_data(hdev, HCI_OP_SET_EVENT_FLT);
-> +	if (!sent || status)
-> +		return;
+In addition these warnings were noticed by projects like Tunneldigger [1],
+which uses L2TP for its data path, but implements its own control
+protocol (which is sufficiently different from L2TP data packets that it
+would always be passed up to userspace even with future extensions of
+L2TP).
 
-can we do this:
+Some of the warnings were already redundant, as l2tp_stats has a counter
+for these packets. This commit adds one additional counter for invalid
+packets that are passed up to userspace. Packets with unknown session are
+not counted as invalid, as there is nothing wrong with the format of
+these packets.
 
-	if (status)
-		return;
+With the additional counter, all of these messages are either redundant
+or benign, so we reduce them to pr_debug_ratelimited().
 
-	sent = hci_..
-	if (!sent)
-		return;
+[1] https://github.com/wlanslovenija/tunneldigger/issues/160
 
-Regards
+Fixes: 5ee759cda51b ("l2tp: use standard API for warning log messages")
+Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
+---
 
-Marcel
+v2:
+- Add counter for invalid packets
+- Reduce loglevel of more messages that can be abused for log spam
+
+ include/uapi/linux/l2tp.h |  1 +
+ net/l2tp/l2tp_core.c      | 41 +++++++++++++++++++++------------------
+ net/l2tp/l2tp_core.h      |  1 +
+ net/l2tp/l2tp_netlink.c   |  6 ++++++
+ 4 files changed, 30 insertions(+), 19 deletions(-)
+
+diff --git a/include/uapi/linux/l2tp.h b/include/uapi/linux/l2tp.h
+index 30c80d5ba4bf..bab8c9708611 100644
+--- a/include/uapi/linux/l2tp.h
++++ b/include/uapi/linux/l2tp.h
+@@ -145,6 +145,7 @@ enum {
+ 	L2TP_ATTR_RX_ERRORS,		/* u64 */
+ 	L2TP_ATTR_STATS_PAD,
+ 	L2TP_ATTR_RX_COOKIE_DISCARDS,	/* u64 */
++	L2TP_ATTR_RX_INVALID,		/* u64 */
+ 	__L2TP_ATTR_STATS_MAX,
+ };
+ 
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 7be5103ff2a8..8ed889f44d23 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -649,9 +649,9 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
+ 	/* Parse and check optional cookie */
+ 	if (session->peer_cookie_len > 0) {
+ 		if (memcmp(ptr, &session->peer_cookie[0], session->peer_cookie_len)) {
+-			pr_warn_ratelimited("%s: cookie mismatch (%u/%u). Discarding.\n",
+-					    tunnel->name, tunnel->tunnel_id,
+-					    session->session_id);
++			pr_debug_ratelimited("%s: cookie mismatch (%u/%u). Discarding.\n",
++					     tunnel->name, tunnel->tunnel_id,
++					     session->session_id);
+ 			atomic_long_inc(&session->stats.rx_cookie_discards);
+ 			goto discard;
+ 		}
+@@ -702,8 +702,8 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
+ 		 * If user has configured mandatory sequence numbers, discard.
+ 		 */
+ 		if (session->recv_seq) {
+-			pr_warn_ratelimited("%s: recv data has no seq numbers when required. Discarding.\n",
+-					    session->name);
++			pr_debug_ratelimited("%s: recv data has no seq numbers when required. Discarding.\n",
++					     session->name);
+ 			atomic_long_inc(&session->stats.rx_seq_discards);
+ 			goto discard;
+ 		}
+@@ -718,8 +718,8 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
+ 			session->send_seq = 0;
+ 			l2tp_session_set_header_len(session, tunnel->version);
+ 		} else if (session->send_seq) {
+-			pr_warn_ratelimited("%s: recv data has no seq numbers when required. Discarding.\n",
+-					    session->name);
++			pr_debug_ratelimited("%s: recv data has no seq numbers when required. Discarding.\n",
++					     session->name);
+ 			atomic_long_inc(&session->stats.rx_seq_discards);
+ 			goto discard;
+ 		}
+@@ -809,9 +809,9 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb)
+ 
+ 	/* Short packet? */
+ 	if (!pskb_may_pull(skb, L2TP_HDR_SIZE_MAX)) {
+-		pr_warn_ratelimited("%s: recv short packet (len=%d)\n",
+-				    tunnel->name, skb->len);
+-		goto error;
++		pr_debug_ratelimited("%s: recv short packet (len=%d)\n",
++				     tunnel->name, skb->len);
++		goto invalid;
+ 	}
+ 
+ 	/* Point to L2TP header */
+@@ -824,9 +824,9 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb)
+ 	/* Check protocol version */
+ 	version = hdrflags & L2TP_HDR_VER_MASK;
+ 	if (version != tunnel->version) {
+-		pr_warn_ratelimited("%s: recv protocol version mismatch: got %d expected %d\n",
+-				    tunnel->name, version, tunnel->version);
+-		goto error;
++		pr_debug_ratelimited("%s: recv protocol version mismatch: got %d expected %d\n",
++				     tunnel->name, version, tunnel->version);
++		goto invalid;
+ 	}
+ 
+ 	/* Get length of L2TP packet */
+@@ -834,7 +834,7 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb)
+ 
+ 	/* If type is control packet, it is handled by userspace. */
+ 	if (hdrflags & L2TP_HDRFLAG_T)
+-		goto error;
++		goto pass;
+ 
+ 	/* Skip flags */
+ 	ptr += 2;
+@@ -863,21 +863,24 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb)
+ 			l2tp_session_dec_refcount(session);
+ 
+ 		/* Not found? Pass to userspace to deal with */
+-		pr_warn_ratelimited("%s: no session found (%u/%u). Passing up.\n",
+-				    tunnel->name, tunnel_id, session_id);
+-		goto error;
++		pr_debug_ratelimited("%s: no session found (%u/%u). Passing up.\n",
++				     tunnel->name, tunnel_id, session_id);
++		goto pass;
+ 	}
+ 
+ 	if (tunnel->version == L2TP_HDR_VER_3 &&
+ 	    l2tp_v3_ensure_opt_in_linear(session, skb, &ptr, &optr))
+-		goto error;
++		goto invalid;
+ 
+ 	l2tp_recv_common(session, skb, ptr, optr, hdrflags, length);
+ 	l2tp_session_dec_refcount(session);
+ 
+ 	return 0;
+ 
+-error:
++invalid:
++	atomic_long_inc(&tunnel->stats.rx_invalid);
++
++pass:
+ 	/* Put UDP header back */
+ 	__skb_push(skb, sizeof(struct udphdr));
+ 
+diff --git a/net/l2tp/l2tp_core.h b/net/l2tp/l2tp_core.h
+index cb21d906343e..98ea98eb9567 100644
+--- a/net/l2tp/l2tp_core.h
++++ b/net/l2tp/l2tp_core.h
+@@ -39,6 +39,7 @@ struct l2tp_stats {
+ 	atomic_long_t		rx_oos_packets;
+ 	atomic_long_t		rx_errors;
+ 	atomic_long_t		rx_cookie_discards;
++	atomic_long_t		rx_invalid;
+ };
+ 
+ struct l2tp_tunnel;
+diff --git a/net/l2tp/l2tp_netlink.c b/net/l2tp/l2tp_netlink.c
+index 83956c9ee1fc..96eb91be9238 100644
+--- a/net/l2tp/l2tp_netlink.c
++++ b/net/l2tp/l2tp_netlink.c
+@@ -428,6 +428,9 @@ static int l2tp_nl_tunnel_send(struct sk_buff *skb, u32 portid, u32 seq, int fla
+ 			      L2TP_ATTR_STATS_PAD) ||
+ 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_ERRORS,
+ 			      atomic_long_read(&tunnel->stats.rx_errors),
++			      L2TP_ATTR_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_INVALID,
++			      atomic_long_read(&tunnel->stats.rx_invalid),
+ 			      L2TP_ATTR_STATS_PAD))
+ 		goto nla_put_failure;
+ 	nla_nest_end(skb, nest);
+@@ -771,6 +774,9 @@ static int l2tp_nl_session_send(struct sk_buff *skb, u32 portid, u32 seq, int fl
+ 			      L2TP_ATTR_STATS_PAD) ||
+ 	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_ERRORS,
+ 			      atomic_long_read(&session->stats.rx_errors),
++			      L2TP_ATTR_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, L2TP_ATTR_RX_INVALID,
++			      atomic_long_read(&session->stats.rx_invalid),
+ 			      L2TP_ATTR_STATS_PAD))
+ 		goto nla_put_failure;
+ 	nla_nest_end(skb, nest);
+-- 
+2.30.1
 
