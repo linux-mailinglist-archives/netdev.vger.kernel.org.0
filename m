@@ -2,129 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FCB32B3E3
+	by mail.lfdr.de (Postfix) with ESMTP id 8A37432B3E4
 	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:23:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840270AbhCCEHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:07:51 -0500
-Received: from mail-m965.mail.126.com ([123.126.96.5]:34344 "EHLO
-        mail-m965.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbhCCAzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 19:55:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=zTBYrG15e7+QyoK1Kg
-        DxPUBW9X3cE5LArQdAaL4Uk44=; b=er4yaXjTtKtxY6+fJKTufcGu8fSnEtkM3w
-        KBRDucwPvHpFyIKUcANoxz5lJB5j6+uzFGS87YkUbFLrj/apSXn9l0RpF+Gu4ZPO
-        dec1sWPdjgXo6tMeqbpT+nn06a/4kwNlqP9tb0f/IZ/qq2TrHfrMYaLKJZuvl9CB
-        X752zaQk4=
-Received: from localhost.localdomain (unknown [222.128.173.240])
-        by smtp10 (Coremail) with SMTP id NuRpCgBnhIcj3j5gGSY5lQ--.47531S4;
-        Wed, 03 Mar 2021 08:53:56 +0800 (CST)
-From:   zhang kai <zhangkaiheb@126.com>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org
-Cc:     zhang kai <zhangkaiheb@126.com>
-Subject: [PATCH] ipv6:delete duplicate code for reserved iid check
-Date:   Wed,  3 Mar 2021 08:53:21 +0800
-Message-Id: <20210303005321.29821-1-zhangkaiheb@126.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: NuRpCgBnhIcj3j5gGSY5lQ--.47531S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWxZFyxWF48Zr15Kr48Jry5Jwb_yoW5Cr4xpr
-        13Jay5GrW8Cr17GrZ7Jr1jywnxu392y3WUGFy7WwsYkr1agr92vwn8X34ava4FyryfWanx
-        tF90ka1F9FsxA3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U59N3UUUUU=
-X-Originating-IP: [222.128.173.240]
-X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi2QRK-lpEBAf-tgAAs9
+        id S1840275AbhCCEHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:07:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34310 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235142AbhCCBIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 20:08:12 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322E3C06178C
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 17:07:29 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id p8so12628755ejb.10
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 17:07:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5oirzlV2WU9rV7hNoLo5ppfN4J1BC/5n5Erc832oZVc=;
+        b=XP5VVf/l2QZ29V6quFuX5l8nQhnjKDLZ7I3tA6Ay0fYTS2PGgeyaZUuEN8Txtt2Hu8
+         Pwd7cPhaOcFLEgREOE66OoNgDBUpVSwJxcLKOsTX9iDLkPvJ0YC6zIwoQTTtKUxjPmY3
+         OXkj9VZLZa3AG/GyfVexXbOb0Sn+AsEyRbKZiCFBe0JGcDCOEZ/T+JUSfsswopWvkYMj
+         F9Ze8a8IgRC1FZ2n+ljQ2Bi4o373T1jGvykrL8/mVaBlRQpVbquPxLaSg+T6kGw/1C1/
+         qQCkp5Inv3xtMy/ym+GJs8k75/BugEeye3OXgdpSthFlKzVrD/R7XBP65qaB0Y7ZH4Lo
+         WwZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5oirzlV2WU9rV7hNoLo5ppfN4J1BC/5n5Erc832oZVc=;
+        b=nQVS0OLXR6OQfWDER7sNvELP4m418Ju4FXFqPI2aW9WJ30941Ne3i823DqIrJc6g8a
+         nFoM2wZ6PUqowVkmP6E70DJJVteoHg+WCcxcOWChK9dFSY9zXFAlMi9DLHIoUx4TfP4D
+         AS2MSJY87i7I6aKKvsZ1XTV5J1xH81HfY5CAQictX6QUiGtTnYV4mebbUIGBfyESfpth
+         7Hi44B9MXPrId7UIBvfRtGXSvzZ5bWy6UQrnhMJIasfwSeHj3fVTBIGTsxQGMbnV5+BL
+         04ViBIYgXcKhhBWCaIxCtiEJeGYr5sQW1ZoWhd6V751M557SFTnq1RkA28P/ZF+Qwsq/
+         d7Iw==
+X-Gm-Message-State: AOAM53218zW/dcfPS7nQn6wGJ02ZterbZ7Y1h4QaFVaz/Mx8XIG4iJyH
+        gs3AARS7F0Df5N5QS6Ibc0U=
+X-Google-Smtp-Source: ABdhPJx0ExBE6Ghc530RjvMwAR06EYb5UuUZ74x7RScjOzJ5vDtU94TA1K/l9JVAlekEap4T2O8zgw==
+X-Received: by 2002:a17:906:934c:: with SMTP id p12mr11654935ejw.131.1614733648004;
+        Tue, 02 Mar 2021 17:07:28 -0800 (PST)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id si7sm5243418ejb.84.2021.03.02.17.07.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Mar 2021 17:07:27 -0800 (PST)
+Date:   Wed, 3 Mar 2021 03:07:26 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuba@kernel.org, vladimir.oltean@nxp.com,
+        Jose.Abreu@synopsys.com, po.liu@nxp.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        mkubecek@suse.cz
+Subject: Re: [PATCH net-next v3 6/8] igc: Add support for tuning frame
+ preemption via ethtool
+Message-ID: <20210303010726.7rt6j53zg5xwwtex@skbuf>
+References: <20210122224453.4161729-1-vinicius.gomes@intel.com>
+ <20210122224453.4161729-7-vinicius.gomes@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210122224453.4161729-7-vinicius.gomes@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using the ipv6_reserved_interfaceid for interface id checking.
+On Fri, Jan 22, 2021 at 02:44:51PM -0800, Vinicius Costa Gomes wrote:
+> diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
+> index 0e78abfd99ee..c2155d109bd6 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_defines.h
+> +++ b/drivers/net/ethernet/intel/igc/igc_defines.h
+> @@ -410,10 +410,14 @@
+>  /* Transmit Scheduling */
+>  #define IGC_TQAVCTRL_TRANSMIT_MODE_TSN	0x00000001
+>  #define IGC_TQAVCTRL_ENHANCED_QAV	0x00000008
+> +#define IGC_TQAVCTRL_PREEMPT_ENA	0x00000002
+> +#define IGC_TQAVCTRL_MIN_FRAG_MASK	0x0000C000
+> +#define IGC_TQAVCTRL_MIN_FRAG_SHIFT	14
+> @@ -83,13 +89,22 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
+>  	wr32(IGC_DTXMXPKTSZ, IGC_DTXMXPKTSZ_TSN);
+>  	wr32(IGC_TXPBS, IGC_TXPBSIZE_TSN);
+>  
+> -	tqavctrl = rd32(IGC_TQAVCTRL);
+>  	rxpbs = rd32(IGC_RXPBS) & ~IGC_RXPBSIZE_SIZE_MASK;
+>  	rxpbs |= IGC_RXPBSIZE_TSN;
+>  
+>  	wr32(IGC_RXPBS, rxpbs);
+>  
+> +	tqavctrl = rd32(IGC_TQAVCTRL) &
+> +		~(IGC_TQAVCTRL_MIN_FRAG_MASK | IGC_TQAVCTRL_PREEMPT_ENA);
+>  	tqavctrl |= IGC_TQAVCTRL_TRANSMIT_MODE_TSN | IGC_TQAVCTRL_ENHANCED_QAV;
+> +
+> +	if (adapter->frame_preemption_active)
+> +		tqavctrl |= IGC_TQAVCTRL_PREEMPT_ENA;
 
-Signed-off-by: zhang kai <zhangkaiheb@126.com>
----
- net/ipv6/addrconf.c | 45 +++++++++++++++++++--------------------------
- 1 file changed, 19 insertions(+), 26 deletions(-)
+Question: when adapter->frame_preemption_active is false, does the port
+have the pMAC enabled, and can it receive preemptable frames? Maybe we
+should be very explicit that the ethtool frame preemption only configures
+the egress side, and that a driver capable of FP should always turn on
+the pMAC on RX. Are you aware of any performance downsides?
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index f2337fb75..e9d13ce62 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -135,6 +135,7 @@ static inline void addrconf_sysctl_unregister(struct inet6_dev *idev)
- }
- #endif
- 
-+static bool ipv6_reserved_interfaceid(struct in6_addr address);
- static void ipv6_gen_rnd_iid(struct in6_addr *addr);
- 
- static int ipv6_generate_eui64(u8 *eui, struct net_device *dev);
-@@ -2352,32 +2353,12 @@ static int ipv6_inherit_eui64(u8 *eui, struct inet6_dev *idev)
- 
- static void ipv6_gen_rnd_iid(struct in6_addr *addr)
- {
--regen:
--	get_random_bytes(&addr->s6_addr[8], 8);
--
--	/* <draft-ietf-6man-rfc4941bis-08.txt>, Section 3.3.1:
--	 * check if generated address is not inappropriate:
--	 *
--	 * - Reserved IPv6 Interface Identifers
--	 * - XXX: already assigned to an address on the device
--	 */
--
--	/* Subnet-router anycast: 0000:0000:0000:0000 */
--	if (!(addr->s6_addr32[2] | addr->s6_addr32[3]))
--		goto regen;
--
--	/* IANA Ethernet block: 0200:5EFF:FE00:0000-0200:5EFF:FE00:5212
--	 * Proxy Mobile IPv6:   0200:5EFF:FE00:5213
--	 * IANA Ethernet block: 0200:5EFF:FE00:5214-0200:5EFF:FEFF:FFFF
--	 */
--	if (ntohl(addr->s6_addr32[2]) == 0x02005eff &&
--	    (ntohl(addr->s6_addr32[3]) & 0Xff000000) == 0xfe000000)
--		goto regen;
-+	struct in6_addr temp;
- 
--	/* Reserved subnet anycast addresses */
--	if (ntohl(addr->s6_addr32[2]) == 0xfdffffff &&
--	    ntohl(addr->s6_addr32[3]) >= 0Xffffff80)
--		goto regen;
-+	do {
-+		get_random_bytes(&addr->s6_addr[8], 8);
-+		temp = *addr;
-+	} while (ipv6_reserved_interfaceid(temp));
- }
- 
- /*
-@@ -3189,15 +3170,27 @@ void addrconf_add_linklocal(struct inet6_dev *idev,
- }
- EXPORT_SYMBOL_GPL(addrconf_add_linklocal);
- 
-+/* <draft-ietf-6man-rfc4941bis-08.txt>, Section 3.3.1:
-+ * check if generated address is not inappropriate:
-+ *
-+ * - Reserved IPv6 Interface Identifers
-+ * - XXX: already assigned to an address on the device
-+ */
- static bool ipv6_reserved_interfaceid(struct in6_addr address)
- {
-+	/* Subnet-router anycast: 0000:0000:0000:0000 */
- 	if ((address.s6_addr32[2] | address.s6_addr32[3]) == 0)
- 		return true;
- 
-+	/* IANA Ethernet block: 0200:5EFF:FE00:0000-0200:5EFF:FE00:5212
-+	 * Proxy Mobile IPv6:   0200:5EFF:FE00:5213
-+	 * IANA Ethernet block: 0200:5EFF:FE00:5214-0200:5EFF:FEFF:FFFF
-+	 */
- 	if (address.s6_addr32[2] == htonl(0x02005eff) &&
--	    ((address.s6_addr32[3] & htonl(0xfe000000)) == htonl(0xfe000000)))
-+	    ((address.s6_addr32[3] & htonl(0xff000000)) == htonl(0xfe000000)))
- 		return true;
- 
-+	/* Reserved subnet anycast addresses */
- 	if (address.s6_addr32[2] == htonl(0xfdffffff) &&
- 	    ((address.s6_addr32[3] & htonl(0xffffff80)) == htonl(0xffffff80)))
- 		return true;
--- 
-2.17.1
-
+> +
+> +	frag_size_mult = ethtool_frag_size_to_mult(adapter->add_frag_size);
+> +
+> +	tqavctrl |= frag_size_mult << IGC_TQAVCTRL_MIN_FRAG_SHIFT;
+> +
+>  	wr32(IGC_TQAVCTRL, tqavctrl);
+>  
+>  	wr32(IGC_QBVCYCLET_S, cycle);
