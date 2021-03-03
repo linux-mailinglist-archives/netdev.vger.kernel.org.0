@@ -2,172 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FB1632B3F0
+	by mail.lfdr.de (Postfix) with ESMTP id F17A932B3F1
 	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840319AbhCCEIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38332 "EHLO
+        id S1840325AbhCCEIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:08:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235186AbhCCDi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 22:38:27 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9BBC061788;
-        Tue,  2 Mar 2021 19:37:37 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id u11so13247440plg.13;
-        Tue, 02 Mar 2021 19:37:37 -0800 (PST)
+        with ESMTP id S1352475AbhCCDt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 22:49:58 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4FEC06121E
+        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 19:49:06 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id b15so3326633pjb.0
+        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 19:49:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IZ6QulvHLpDIHpwCY/mKawCUaqyJPj9U6oC68gm8aqs=;
-        b=h3g3WUe+VJ3Oie76As+Hjodljz+AGzC/iA7L81lOg1fy34YoBqb6OCc1fveuegT6nt
-         GkZrPezmpHIeG1tEsNGaeM8coIvJw11+mVswhx0+ZJpaWbknrlL0i/UYZwqLK5XBBeOL
-         NySGOJk0bGb+PnH2s4x6aPoc9KaFUVC1DJVG4wwFj8lxAF3ID4kLr/crsu6yV4ZthHiC
-         68BqG0yEoQDn1AQuaPLfe0RF/ivEz6pLkt0Crg5CPHQtFCDZs99fBYun56+tkgzB+bUA
-         WW65oqbtUFPaBDXNu+NnyMzCsLxNdN7trCydRz7GPdqREZdq3k/xw5sJj/jBWlDx3WbJ
-         4C4A==
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=crpRlTuLsTSBDFZF1sG8XY3lyzjTrYU8f2s0Rmwad8E=;
+        b=hFWyfj3CaV8hJ4u7MmXF0hFuoziy8dw4cf2dba32u2CWwmQyOpRF2xRnw6POnIoIRA
+         dZGJt67sbZVhemUi9P0KnwXz8en0Q2DnBu3ZQxE0JbQ8edtIXrhqG77ccNoxSRi04BiW
+         ZQ8iYyz62GdZIAJkseRO8DREAOWjv9T4QIByjTQdS66S9pQXW2+2uPMt066mVwcYKjoz
+         cVNXFXGf2GLECiGgr2kyVZYewYa65JmrkqLiGWqk8vE+gW3ms+ahPfH+s0qB7z35OcJw
+         Ko5O+5i5R7Z1Ic5sLakbCyRxuWyBq/LF9acJlOmTHXtZATaeQvPMZ6imEAJVylYoimkp
+         R3vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=IZ6QulvHLpDIHpwCY/mKawCUaqyJPj9U6oC68gm8aqs=;
-        b=T7uouSpHayXZU6LJG2ZBIWQZLZx9lRZV8TKMGReA+hQunBsVnne9RuuMI5RhVxvPaA
-         p2GLf7pY00P34CFFqLp7j6z8cx5iEtxOqqLs3qaVVov1U2I5F1DHBNogE2OZTSuNmzB2
-         msI5IaYf48IUmsojfdoDjHQ0kVY4Ax2bV2nEQ4rxfgSDwm2v5D8LDQPmC+tTBObmECg1
-         BW5Bl5auOM8ZnrmwRC8xIdVxwXXvCrX54FGui0+jT79EeT8H7KicvjkdM9d2+JS6CrQN
-         X7jKFBemP51OJhFLbvHoU7n/j5xZMHMUeTFAyBMA7cLPL9l290eIIBwy8RrB7YIOhQLm
-         k+6g==
-X-Gm-Message-State: AOAM531FKRemW9ZYVrCC+Rce+ti6PhLl5utYpah7LmoixruiIxnVRo7W
-        69HsSFnOZT9Ew93aHuqtExI=
-X-Google-Smtp-Source: ABdhPJwFgVu9WZeoI+Uj4ePU6HYag9A/qWFsvogAQRtxhqXBzQcwjmU/ApSrVoUxrduClQbAwrVrxQ==
-X-Received: by 2002:a17:90a:e281:: with SMTP id d1mr7538973pjz.40.1614742657305;
-        Tue, 02 Mar 2021 19:37:37 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q9sm21419417pgs.28.2021.03.02.19.37.35
+        bh=crpRlTuLsTSBDFZF1sG8XY3lyzjTrYU8f2s0Rmwad8E=;
+        b=Yuh5CD7ZhIzR/XF9UDg9Q8/wAsH5UmuokEy0eKbYjMlanBMqmBWT7QA1EtuGfNqNvt
+         2V/81wpxQRKP4yKm+UcnHkMmCxu/RG2CfNgSmP0JRomHjeoHE9NSwrsCiKt+pQLXFor9
+         cw1+nHP+bdjaj9kcy+EYYCwWoqAq3seTgzQwMJsE72GfL4+LkMQESNLnmtwy9QT5tfZw
+         jC589EpPEvutKuzXIPppCklm+uewpPjGVzuKgbQl7H5G4dyEJOrZKt8CjsaS2sSGbYCv
+         uVf4bFxrZFQcURbt1v4sGH8RWJy9u29AzRGXXFA1g20MIylVqy6urHzQr/VWwYvRII2s
+         S9rg==
+X-Gm-Message-State: AOAM533mygkbkF/CcuwG6oExDEfa50JXHryKV+efn6b2bP4E+3dAz14+
+        BMwvKvbh7db9n0YtkSz3DSL0/A==
+X-Google-Smtp-Source: ABdhPJwUKK3hKO4MDPskjC/TL/jcUD2lNdUvh2EiZ5gVgcCIYL2JOQDbqHRux31h+/PAqQA5ZR8g9A==
+X-Received: by 2002:a17:90a:f302:: with SMTP id ca2mr7828805pjb.233.1614743345940;
+        Tue, 02 Mar 2021 19:49:05 -0800 (PST)
+Received: from [192.168.1.134] ([66.219.217.173])
+        by smtp.gmail.com with ESMTPSA id u9sm21456493pgc.59.2021.03.02.19.49.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Mar 2021 19:37:36 -0800 (PST)
-Subject: Re: [PATCH net-next v2 3/3] net: phy: broadcom: Allow BCM54210E to
- configure APD
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Chan <mchan@broadcom.com>,
-        "open list:BROADCOM ETHERNET PHY DRIVERS" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>, michael@walle.cc
-References: <20210213034632.2420998-1-f.fainelli@gmail.com>
- <20210213034632.2420998-4-f.fainelli@gmail.com>
- <20210213104245.uti4qb2u2r5nblef@skbuf>
- <4e1c1a4c-d276-c850-8e97-16ef1f08dcff@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <99e28317-e93d-88fa-f43f-d1d072b61292@gmail.com>
-Date:   Tue, 2 Mar 2021 19:37:34 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.8.0
+        Tue, 02 Mar 2021 19:49:05 -0800 (PST)
+Subject: Re: [PATCH] iwlwifi: ensure that DMI scan table is properly
+ terminated
+To:     "Coelho, Luciano" <luciano.coelho@intel.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
+References: <0d52ff85-323f-67b8-5fdb-bbf3093b0ccf@kernel.dk>
+ <782d5382b0c8c9b33277422c8e41180c49044128.camel@intel.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <3f8e28b1-0c15-7539-ef50-5cfb71a3591f@kernel.dk>
+Date:   Tue, 2 Mar 2021 20:49:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <4e1c1a4c-d276-c850-8e97-16ef1f08dcff@gmail.com>
+In-Reply-To: <782d5382b0c8c9b33277422c8e41180c49044128.camel@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/14/2021 8:29 PM, Florian Fainelli wrote:
+On 3/2/21 11:34 AM, Coelho, Luciano wrote:
+> On Tue, 2021-03-02 at 11:20 -0700, Jens Axboe wrote:
+>> My laptop crashes at boot, and I ran the same kernel with KASAN enabled.
+>> Turns out the DMI addition for iwlwifi is broken (and untested?), since
+>> it doesn't properly terminate the scan table. Ensure that we do so.
+>>
+>> ==================================================================
+>> BUG: KASAN: global-out-of-bounds in dmi_check_system+0x5a/0x70
+>> Read of size 1 at addr ffffffffc16af750 by task NetworkManager/1913
+>>
+>> CPU: 4 PID: 1913 Comm: NetworkManager Not tainted 5.12.0-rc1+ #10057
+>> Hardware name: LENOVO 20THCTO1WW/20THCTO1WW, BIOS N2VET27W (1.12 ) 12/21/2020
+>> Call Trace:
+>>  dump_stack+0x90/0xbe
+>>  print_address_description.constprop.0+0x1d/0x140
+>>  ? dmi_check_system+0x5a/0x70
+>>  ? dmi_check_system+0x5a/0x70
+>>  kasan_report.cold+0x7b/0xd4
+>>  ? dmi_check_system+0x5a/0x70
+>>  __asan_load1+0x4d/0x50
+>>  dmi_check_system+0x5a/0x70
+>>  iwl_mvm_up+0x1360/0x1690 [iwlmvm]
+>>  ? iwl_mvm_send_recovery_cmd+0x270/0x270 [iwlmvm]
+>>  ? setup_object.isra.0+0x27/0xd0
+>>  ? kasan_poison+0x20/0x50
+>>  ? ___slab_alloc.constprop.0+0x483/0x5b0
+>>  ? mempool_kmalloc+0x17/0x20
+>>  ? ftrace_graph_ret_addr+0x2a/0xb0
+>>  ? kasan_poison+0x3c/0x50
+>>  ? cfg80211_iftype_allowed+0x2e/0x90 [cfg80211]
+>>  ? __kasan_check_write+0x14/0x20
+>>  ? mutex_lock+0x86/0xe0
+>>  ? __mutex_lock_slowpath+0x20/0x20
+>>  __iwl_mvm_mac_start+0x49/0x290 [iwlmvm]
+>>  iwl_mvm_mac_start+0x37/0x50 [iwlmvm]
+>>  drv_start+0x73/0x1b0 [mac80211]
+>>  ieee80211_do_open+0x53e/0xf10 [mac80211]
+>>  ? ieee80211_check_concurrent_iface+0x266/0x2e0 [mac80211]
+>>  ieee80211_open+0xb9/0x100 [mac80211]
+>>  __dev_open+0x1b8/0x280
+>>  ? dev_set_rx_mode+0x40/0x40
+>>  __dev_change_flags+0x32f/0x3a0
+>>  ? dev_set_allmulti+0x20/0x20
+>>  ? is_bpf_text_address+0x24/0x30
+>>  ? kernel_text_address+0xbb/0xd0
+>>  dev_change_flags+0x63/0xc0
+>>  do_setlink+0xb59/0x18c0
+>>  ? rtnetlink_put_metrics+0x2e0/0x2e0
+>>  ? stack_trace_consume_entry+0x90/0x90
+>>  ? if6_seq_show+0xb0/0xb0
+>>  ? kasan_save_stack+0x42/0x50
+>>  ? kasan_save_stack+0x23/0x50
+>>  ? kasan_set_track+0x20/0x30
+>>  ? kasan_set_free_info+0x24/0x40
+>>  ? __kasan_slab_free+0xea/0x120
+>>  ? kfree+0x94/0x250
+>>  ? memset+0x3c/0x50
+>>  ? __nla_validate_parse+0xc1/0x12d0
+>>  ? ____sys_sendmsg+0x430/0x450
+>>  ? ___sys_sendmsg+0xf2/0x160
+>>  ? __sys_sendmsg+0xc8/0x150
+>>  ? __x64_sys_sendmsg+0x48/0x50
+>>  ? do_syscall_64+0x32/0x80
+>>  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
+>>  ? nla_get_range_signed+0x1c0/0x1c0
+>>  ? nla_put_ifalias+0x86/0xf0
+>>  ? __cgroup_bpf_run_filter_skb+0xc1/0x6f0
+>>  ? memcpy+0x4e/0x60
+>>  ? __kasan_check_read+0x11/0x20
+>>  __rtnl_newlink+0x905/0xde0
+>>  ? ipv6_dev_get_saddr+0x4c0/0x4c0
+>>  ? rtnl_setlink+0x250/0x250
+>>  ? ftrace_graph_ret_addr+0x2a/0xb0
+>>  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
+>>  ? bpf_ksym_find+0x94/0xe0
+>>  ? __rcu_read_unlock+0x39/0x60
+>>  ? is_bpf_text_address+0x24/0x30
+>>  ? kernel_text_address+0xbb/0xd0
+>>  ? __kernel_text_address+0x12/0x40
+>>  ? unwind_get_return_address+0x36/0x50
+>>  ? create_prof_cpu_mask+0x30/0x30
+>>  ? arch_stack_walk+0x98/0xf0
+>>  ? stack_trace_save+0x94/0xc0
+>>  ? stack_trace_consume_entry+0x90/0x90
+>>  ? arch_stack_walk+0x98/0xf0
+>>  ? __kasan_kmalloc+0x81/0xa0
+>>  ? kmem_cache_alloc_trace+0xf4/0x220
+>>  rtnl_newlink+0x55/0x80
+>>  rtnetlink_rcv_msg+0x22f/0x560
+>>  ? __kasan_slab_alloc+0x5f/0x80
+>>  ? rtnl_calcit.isra.0+0x1e0/0x1e0
+>>  ? __x64_sys_sendmsg+0x48/0x50
+>>  ? do_syscall_64+0x32/0x80
+>>  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
+>>  ? kernel_text_address+0xbb/0xd0
+>>  ? __kernel_text_address+0x12/0x40
+>>  ? unwind_get_return_address+0x36/0x50
+>>  netlink_rcv_skb+0xe7/0x210
+>>  ? rtnl_calcit.isra.0+0x1e0/0x1e0
+>>  ? netlink_ack+0x580/0x580
+>>  ? netlink_deliver_tap+0x68/0x3d0
+>>  rtnetlink_rcv+0x15/0x20
+>>  netlink_unicast+0x3a8/0x4f0
+>>  ? netlink_attachskb+0x430/0x430
+>>  ? __alloc_skb+0xd7/0x1e0
+>>  netlink_sendmsg+0x3ff/0x710
+>>  ? __rcu_read_unlock+0x39/0x60
+>>  ? netlink_unicast+0x4f0/0x4f0
+>>  ? iovec_from_user+0x6c/0x170
+>>  ? __import_iovec+0x137/0x1c0
+>>  ? netlink_unicast+0x4f0/0x4f0
+>>  sock_sendmsg+0x74/0x80
+>>  ____sys_sendmsg+0x430/0x450
+>>  ? kernel_sendmsg+0x40/0x40
+>>  ? do_recvmmsg+0x440/0x440
+>>  ? kasan_save_stack+0x42/0x50
+>>  ? kasan_save_stack+0x23/0x50
+>>  ? kasan_record_aux_stack+0xac/0xc0
+>>  ? call_rcu+0x5a/0x450
+>>  ? __fput+0x1d7/0x3d0
+>>  ? ____fput+0xe/0x10
+>>  ___sys_sendmsg+0xf2/0x160
+>>  ? sendmsg_copy_msghdr+0x120/0x120
+>>  ? __kasan_check_write+0x14/0x20
+>>  ? _raw_spin_lock+0x82/0xd0
+>>  ? _raw_read_lock_irq+0x50/0x50
+>>  ? __fget_files+0xce/0x110
+>>  ? __fget_light+0x72/0x100
+>>  ? __fdget+0x13/0x20
+>>  __sys_sendmsg+0xc8/0x150
+>>  ? __sys_sendmsg_sock+0x20/0x20
+>>  ? __kasan_check_read+0x11/0x20
+>>  ? fpregs_assert_state_consistent+0x5a/0x70
+>>  __x64_sys_sendmsg+0x48/0x50
+>>  do_syscall_64+0x32/0x80
+>>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> RIP: 0033:0x7f752cc7312d
+>> Code: 28 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 ca ee ff ff 8b 54 24 1c 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 2f 44 89 c7 48 89 44 24 08 e8 fe ee ff ff 48
+>> RSP: 002b:00007ffd1962bc70 EFLAGS: 00000293 ORIG_RAX: 000000000000002e
+>> RAX: ffffffffffffffda RBX: 000055e6574ba880 RCX: 00007f752cc7312d
+>> RDX: 0000000000000000 RSI: 00007ffd1962bcc0 RDI: 000000000000000c
+>> RBP: 00007ffd1962bcc0 R08: 0000000000000000 R09: 0000000000000000
+>> R10: 0000000000000001 R11: 0000000000000293 R12: 000055e6574ba880
+>> R13: 00007ffd1962be78 R14: 00007ffd1962be6c R15: 0000000000000000
+>>
+>> The buggy address belongs to the variable:
+>>  dmi_ppag_approved_list+0x570/0xffffffffffffde20 [iwlmvm]
+>>
+>> Memory state around the buggy address:
+>>  ffffffffc16af600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>>  ffffffffc16af680: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>>> ffffffffc16af700: 00 00 00 00 00 00 00 00 f9 f9 f9 f9 00 00 00 01
+>>                                                  ^
+>>  ffffffffc16af780: f9 f9 f9 f9 00 00 00 00 00 00 02 f9 f9 f9 f9 f9
+>>  ffffffffc16af800: 00 00 00 07 f9 f9 f9 f9 00 00 00 00 00 00 00 01
+>> ==================================================================
+>>
+>> Fixes: a2ac0f48a07c ("iwlwifi: mvm: implement approved list for the PPAG feature")
+>> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+>>
+>> ---
+>>
+>> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+>> index 15e2773ce7e7..71e5306bd695 100644
+>> --- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+>> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+>> @@ -1083,6 +1083,7 @@ static const struct dmi_system_id dmi_ppag_approved_list[] = {
+>>  			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTek COMPUTER INC."),
+>>  		},
+>>  	},
+>> +	{ },
+>>  };
+>>  
+>>
+>>  static int iwl_mvm_ppag_init(struct iwl_mvm *mvm)
+>>
 > 
+> Hi Jens,
 > 
-> On 2/13/2021 2:42 AM, Vladimir Oltean wrote:
->> On Fri, Feb 12, 2021 at 07:46:32PM -0800, Florian Fainelli wrote:
->>> BCM54210E/BCM50212E has been verified to work correctly with the
->>> auto-power down configuration done by bcm54xx_adjust_rxrefclk(), add it
->>> to the list of PHYs working.
->>>
->>> While we are at it, provide an appropriate name for the bit we are
->>> changing which disables the RXC and TXC during auto-power down when
->>> there is no energy on the cable.
->>>
->>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->>> ---
->>
->> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
->>
->>>  drivers/net/phy/broadcom.c | 8 +++++---
->>>  include/linux/brcmphy.h    | 2 +-
->>>  2 files changed, 6 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
->>> index 3ce266ab521b..91fbd26c809e 100644
->>> --- a/drivers/net/phy/broadcom.c
->>> +++ b/drivers/net/phy/broadcom.c
->>> @@ -193,6 +193,7 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
->>>  	if (BRCM_PHY_MODEL(phydev) != PHY_ID_BCM57780 &&
->>>  	    BRCM_PHY_MODEL(phydev) != PHY_ID_BCM50610 &&
->>>  	    BRCM_PHY_MODEL(phydev) != PHY_ID_BCM50610M &&
->>> +	    BRCM_PHY_MODEL(phydev) != PHY_ID_BCM54210E &&
->>>  	    BRCM_PHY_MODEL(phydev) != PHY_ID_BCM54810 &&
->>>  	    BRCM_PHY_MODEL(phydev) != PHY_ID_BCM54811)
->>>  		return;
->>> @@ -227,9 +228,10 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
->>>  		val |= BCM54XX_SHD_SCR3_DLLAPD_DIS;
->>>  
->>>  	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY) {
->>> -		if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54810 ||
->>> -		    BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54811)
->>> -			val |= BCM54810_SHD_SCR3_TRDDAPD;
->>> +		if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54210E ||
->>> +		    BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54810 ||
->>> +		    BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54210E)
->>> +			val |= BCM54XX_SHD_SCR3_RXCTXC_DIS;
->>>  		else
->>>  			val |= BCM54XX_SHD_SCR3_TRDDAPD;
->>>  	}
->>> diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
->>> index 844dcfe789a2..16597d3fa011 100644
->>> --- a/include/linux/brcmphy.h
->>> +++ b/include/linux/brcmphy.h
->>> @@ -193,6 +193,7 @@
->>>  #define  BCM54XX_SHD_SCR3_DEF_CLK125	0x0001
->>>  #define  BCM54XX_SHD_SCR3_DLLAPD_DIS	0x0002
->>>  #define  BCM54XX_SHD_SCR3_TRDDAPD	0x0004
->>> +#define  BCM54XX_SHD_SCR3_RXCTXC_DIS	0x0100
->>
->> Curiously enough, my BCM5464R datasheet does say:
->>
->> The TXC and RXC outputs can be disabled during auto-power down by setting the “1000BASE-T/100BASE-TX/10BASE-T
->> Spare Control 3 Register (Address 1Ch, Shadow Value 00101),” bit 8 =1.
->>
->> but when I go to the definition of the register, bit 8 is hidden. Odd.
->>
->> How can I ensure that the auto power down feature is doing something?
+> Thanks for the report and patch! And I'm sorry that we broke your
+> laptop's boot...
 > 
-> I am trying to confirm what the expected power levels should be from the
-> 54210E product engineer so I can give you an estimate of what you should
-> see with and without while measure the PHY's regulators.
+> We already have a patch to fix this:
+> 
+> https://patchwork.kernel.org/project/linux-wireless/patch/20210223140039.1708534-1-weiyongjun1@huawei.com/
+> 
+> I thought I had already acked it for Kalle to take it directly to
+> wireless-drivers, but apparently I hadn't.
+> 
+> I acked now and assigned it to him.
 
-Took a while but for the 54210E reference board here are the numbers,
-your mileage will vary depending on the supplies, regulator efficiency
-and PCB design around the PHY obviously:
+All good thanks, as long as it gets fixed and goes upstream I don't care
+where it's from :-)
 
-BMCR.PDOWN:			86.12 mW
-auto-power down:		77.84 mW
-auto-power-down, DLL disabled:  30.83 mW
-IDDQ-low power:			 9.85 mW (requires a RESETn toggle)
-IDDQ with soft recovery:	10.75 mW
-
-Interestingly, the 50212E that I am using requires writing the PDOWN bit
-and only that bit (not a RMW) in order to get in a correct state, both
-LEDs keep flashing when that happens, fixes coming.
-
-When net-next opens back up I will submit patches to support IDDQ with
-soft recovery since that is clearly much better than the standard power
-down and it does not require a RESETn toggle.
 -- 
-Florian
+Jens Axboe
+
