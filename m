@@ -2,151 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4B132C3FD
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:52:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F28532C444
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:53:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354726AbhCDAJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:09:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1842938AbhCCKWn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 05:22:43 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC86C061D7D
-        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 01:01:12 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lHNN5-0001kz-U1; Wed, 03 Mar 2021 10:00:44 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:a20d:2fb6:f2cb:982e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5D5DC5ECAB8;
-        Wed,  3 Mar 2021 09:00:37 +0000 (UTC)
-Date:   Wed, 3 Mar 2021 10:00:36 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dariobin@libero.it>
-Cc:     Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        linux-kernel@vger.kernel.org,
-        Federico Vaga <federico.vaga@gmail.com>,
-        Alexander Stein <alexander.stein@systec-electronic.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] can: c_can: prepare to up the message objects
- number
-Message-ID: <20210303090036.aocqk6gp3vqnzaku@pengutronix.de>
-References: <20210228103856.4089-1-dariobin@libero.it>
- <20210228103856.4089-6-dariobin@libero.it>
- <20210302184901.GD26930@x1.vandijck-laurijssen.be>
- <91394876.26757.1614759793793@mail1.libero.it>
+        id S1388402AbhCDAML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:12:11 -0500
+Received: from outbound-smtp17.blacknight.com ([46.22.139.234]:51643 "EHLO
+        outbound-smtp17.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234594AbhCCLpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 06:45:38 -0500
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp17.blacknight.com (Postfix) with ESMTPS id B93A81C42C7
+        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 09:18:28 +0000 (GMT)
+Received: (qmail 8195 invoked from network); 3 Mar 2021 09:18:28 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 3 Mar 2021 09:18:28 -0000
+Date:   Wed, 3 Mar 2021 09:18:25 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 4/5] net: page_pool: refactor dma_map into own function
+ page_pool_dma_map
+Message-ID: <20210303091825.GO3697@techsingularity.net>
+References: <20210301161200.18852-1-mgorman@techsingularity.net>
+ <20210301161200.18852-5-mgorman@techsingularity.net>
+ <YD6IosORkdRN9B2x@enceladus>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="chi2fdx3hgvidome"
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <91394876.26757.1614759793793@mail1.libero.it>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <YD6IosORkdRN9B2x@enceladus>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 02, 2021 at 08:49:06PM +0200, Ilias Apalodimas wrote:
+> Hi Mel,
+> 
+> Can you please CC me in future revisions. I almost missed that!
+> 
 
---chi2fdx3hgvidome
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Will do.
 
-On 03.03.2021 09:23:13, Dario Binacchi wrote:
-[...]
-> > > @@ -1205,17 +1203,31 @@ static int c_can_close(struct net_device *dev)
-> > >  	return 0;
-> > >  }
-> > > =20
-> > > -struct net_device *alloc_c_can_dev(void)
-> > > +struct net_device *alloc_c_can_dev(int msg_obj_num)
-> > >  {
-> > >  	struct net_device *dev;
-> > >  	struct c_can_priv *priv;
-> > > +	int msg_obj_tx_num =3D msg_obj_num / 2;
-> >=20
-> > IMO, a bigger tx queue is not usefull.
-> > A bigger rx queue however is.
->=20
-> This would not be good for my application. I think it really depends
-> on the type of application. We can probably say that being able to
-> size rx/tx queue would be a useful feature.
+> On Mon, Mar 01, 2021 at 04:11:59PM +0000, Mel Gorman wrote:
+> > From: Jesper Dangaard Brouer <brouer@redhat.com>
+> > 
+> > In preparation for next patch, move the dma mapping into its own
+> > function, as this will make it easier to follow the changes.
+> > 
+> > V2: make page_pool_dma_map return boolean (Ilias)
+> > 
+> 
+> [...]
+> 
+> > @@ -211,30 +234,14 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+> >  	if (!page)
+> >  		return NULL;
+> >  
+> > -	if (!(pool->p.flags & PP_FLAG_DMA_MAP))
+> > -		goto skip_dma_map;
+> > -
+> > -	/* Setup DMA mapping: use 'struct page' area for storing DMA-addr
+> > -	 * since dma_addr_t can be either 32 or 64 bits and does not always fit
+> > -	 * into page private data (i.e 32bit cpu with 64bit DMA caps)
+> > -	 * This mapping is kept for lifetime of page, until leaving pool.
+> > -	 */
+> > -	dma = dma_map_page_attrs(pool->p.dev, page, 0,
+> > -				 (PAGE_SIZE << pool->p.order),
+> > -				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> > -	if (dma_mapping_error(pool->p.dev, dma)) {
+> > +	if (pp_flags & PP_FLAG_DMA_MAP &&
+> 
+> Nit pick but can we have if ((pp_flags & PP_FLAG_DMA_MAP) && ...
+> 
 
-Ok. There is an ethtool interface to configure the size of the RX and TX
-queues. In ethtool it's called the RX/TX "ring" size and you can get it
-via the -g parameter, e.g. here for by Ethernet interface:
+Done.
 
-| $ ethtool -g enp0s25
-| Ring parameters for enp0s25:
-| Pre-set maximums:
-| RX:		4096
-| RX Mini:	n/a
-| RX Jumbo:	n/a
-| TX:		4096
-| Current hardware settings:
-| RX:		256
-| RX Mini:	n/a
-| RX Jumbo:	n/a
-| TX:		256
+> [...]
+>
+> > 
+> 
+> Otherwise 
+> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org> 
 
-If I understand correctly patch 6 has some assumptions that RX and TX
-are max 32. To support up to 64 RX objects, you have to convert:
-- u32 -> u64
-- BIT() -> BIT_ULL()
-- GENMASK() -> GENMASK_ULL()
+Thanks. I'll wait for other review feedback before sending a V2.
 
-The register access has to be converted, too. For performance reasons
-you want to do as least as possible. Which is probably the most
-complicated.
-
-In the flexcan driver I have a similar problem. The driver keeps masks,
-which mailboxes are RX and which TX and I added wrapper functions to
-minimize IO access:
-
-https://elixir.bootlin.com/linux/v5.11/source/drivers/net/can/flexcan.c#L904
-
-This should to IMHO into patch 6.
-
-Adding the ethtool support and making the rings configurable would be a
-separate patch.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---chi2fdx3hgvidome
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmA/UDIACgkQqclaivrt
-76kC3AgAtJ3JQNxw4L/+OzOaLHFaUh7ws8JUSJaAFPe3N0+kd7lmWDgBWWH5cDTE
-Yg7w6S05G+6G9QDI+St3fH1UsOSvBLtN5DPF08e3Vh43bxusvYQ9/mpibYu69hw5
-C+nkONomqysTM3umXC+Zo+DmlkPPU3VCMPnvLYWGs8ihDxsOFB6VzRgs9g7CPZm+
-UExOHqUQIp2CXglXt/UXywnTuVItEQm6R7HJRfVxfO1j3F2QXe5kH0aNugRciDtp
-cwG9NQq2r2D8Z0eJdWAoKeIxqVoxJvMTjtqnHjy+JswGfEYKEsBzA+s9yBkHNUJr
-9KfHhcqds95Y6ZG6xLcaBPSvcLoqKA==
-=8a5M
------END PGP SIGNATURE-----
-
---chi2fdx3hgvidome--
+-- 
+Mel Gorman
+SUSE Labs
