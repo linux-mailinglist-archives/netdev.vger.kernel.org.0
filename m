@@ -2,85 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8702632B3DE
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E36CC32B3DF
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:23:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840242AbhCCEHn convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Mar 2021 23:07:43 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:65098 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240174AbhCCAlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 19:41:02 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1230VClE023531
-        for <netdev@vger.kernel.org>; Tue, 2 Mar 2021 16:40:21 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3706sv74nv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 16:40:21 -0800
-Received: from intmgw006.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 2 Mar 2021 16:40:19 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id F1E1A2ED12D0; Tue,  2 Mar 2021 16:40:14 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        Martin Lau <kafai@fb.com>
-Subject: [PATCH bpf-next] tools/runqslower: allow substituting custom vmlinux.h for the build
-Date:   Tue, 2 Mar 2021 16:40:10 -0800
-Message-ID: <20210303004010.653954-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S1840247AbhCCEHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:07:44 -0500
+Received: from mga06.intel.com ([134.134.136.31]:3810 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237276AbhCCAoU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 19:44:20 -0500
+IronPort-SDR: rSMsRUJngww1GJXw47+x0abUL/3P/2aZ8If9x1zxU+NIyUbBCaq1eO6BgtUMbV44Phy3ykF92h
+ rzrZ6Mg2AaOQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9911"; a="248455310"
+X-IronPort-AV: E=Sophos;i="5.81,218,1610438400"; 
+   d="scan'208";a="248455310"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 16:40:57 -0800
+IronPort-SDR: mCKJf9u6bb5J4/ayaVlkAwJkxQHexYo3ubZ3HvJrld92vGMJCKEH0Y6QN1w4XYK8fLUMkF+HAm
+ KXotOC/lwXUQ==
+X-IronPort-AV: E=Sophos;i="5.81,218,1610438400"; 
+   d="scan'208";a="367405818"
+Received: from jdashevs-mobl.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.209.44.55])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 16:40:57 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuba@kernel.org, vladimir.oltean@nxp.com,
+        Jose.Abreu@synopsys.com, po.liu@nxp.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        mkubecek@suse.cz
+Subject: Re: [PATCH net-next v3 1/8] ethtool: Add support for configuring
+ frame preemption
+In-Reply-To: <20210302142350.4tu3n4gay53cjnig@skbuf>
+References: <20210122224453.4161729-1-vinicius.gomes@intel.com>
+ <20210122224453.4161729-2-vinicius.gomes@intel.com>
+ <20210302142350.4tu3n4gay53cjnig@skbuf>
+Date:   Tue, 02 Mar 2021 16:40:55 -0800
+Message-ID: <87o8g1nk6g.fsf@vcostago-mobl2.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-02_08:2021-03-01,2021-03-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- impostorscore=0 clxscore=1011 spamscore=0 mlxscore=0 mlxlogscore=769
- lowpriorityscore=0 adultscore=0 bulkscore=0 priorityscore=1501
- phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2103030001
-X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just like was done for bpftool and selftests in ec23eb705620 ("tools/bpftool:
-Allow substituting custom vmlinux.h for the build") and ca4db6389d61
-("selftests/bpf: Allow substituting custom vmlinux.h for selftests build"),
-allow to provide pre-generated vmlinux.h for runqslower build.
+Hi Vladimir,
 
-Cc: Martin Lau <kafai@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/bpf/runqslower/Makefile | 4 ++++
- 1 file changed, 4 insertions(+)
+Vladimir Oltean <olteanv@gmail.com> writes:
 
-diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
-index c96ba90c6f01..3818ec511fd2 100644
---- a/tools/bpf/runqslower/Makefile
-+++ b/tools/bpf/runqslower/Makefile
-@@ -69,12 +69,16 @@ $(OUTPUT) $(BPFOBJ_OUTPUT) $(BPFTOOL_OUTPUT):
- 	$(QUIET_MKDIR)mkdir -p $@
- 
- $(OUTPUT)/vmlinux.h: $(VMLINUX_BTF_PATH) | $(OUTPUT) $(BPFTOOL)
-+ifeq ($(VMLINUX_H),)
- 	$(Q)if [ ! -e "$(VMLINUX_BTF_PATH)" ] ; then \
- 		echo "Couldn't find kernel BTF; set VMLINUX_BTF to"	       \
- 			"specify its location." >&2;			       \
- 		exit 1;\
- 	fi
- 	$(QUIET_GEN)$(BPFTOOL) btf dump file $(VMLINUX_BTF_PATH) format c > $@
-+else
-+	$(Q)cp "$(VMLINUX_H)" $@
-+endif
- 
- $(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(BPFOBJ_OUTPUT)
- 	$(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC) OUTPUT=$(BPFOBJ_OUTPUT) $@
+> Hi Vinicius,
+>
+> On Fri, Jan 22, 2021 at 02:44:46PM -0800, Vinicius Costa Gomes wrote:
+>> Frame preemption (described in IEEE 802.3br-2016) defines the concept
+>> of preemptible and express queues. It allows traffic from express
+>> queues to "interrupt" traffic from preemptible queues, which are
+>> "resumed" after the express traffic has finished transmitting.
+>> 
+>> Frame preemption can only be used when both the local device and the
+>> link partner support it.
+>> 
+>> Only parameters for enabling/disabling frame preemption and
+>> configuring the minimum fragment size are included here. Expressing
+>> which queues are marked as preemptible is left to mqprio/taprio, as
+>> having that information there should be easier on the user.
+>> 
+>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>> ---
+>
+> I just noticed that the aMACMergeStatusVerify variable is not exposed in
+> the PREEMPT_GET command, which would allow the user to inspect the state
+> of the MAC merge sublayer verification state machine. Also, a way in the
+> PREEMPT_SET command to set the disableVerify variable would be nice.
+>
+
+The hardware I have won't have support for this.
+
+I am going to send the next version of this series soon. Care to send
+the support for verifyStatus/disableVerify as follow up series?
+
+
+Cheers,
 -- 
-2.24.1
-
+Vinicius
