@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6A432C487
+	by mail.lfdr.de (Postfix) with ESMTP id 5B53C32C488
 	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392548AbhCDAO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:14:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46092 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1445786AbhCCQus (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 11:50:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id C97E664ED0;
-        Wed,  3 Mar 2021 16:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614790206;
-        bh=vyWmKUOBbS6lHY2tc7qFSUiBwJxzrV0lRzpRy7/2YDE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hQpDBi9K/5eCdpWyWrMeGXSpuGA2uKWpCzJxN7hUXCk6Wvuwxfn9MeGdgf0zgwDWd
-         FsqZdGrbOBIc9UVVYE8oewGHr01XKcXbH4qES0rmzyZkk7toEDOOt1JHoHz+EAwfio
-         jLOv65KS7Q18aCe3w03b1E8MWyEAbNahG1z8j+KAwbrsAdoBQ0Z9Rypd/fuIahW03A
-         sXQT0kyir+CsWGG8R1G2/I/uutKiJmVdt8FjUw6I5OW1qw7Gxw6l7LJkTiph7nDJ/8
-         rbdo7/Vn0273TrkyhR2gULoZCn0OS6PiK1tIPFpMlc2Oqanji0frhu9EurdQW8+Wcp
-         RV81KGNJGcxUw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BC71F600DF;
-        Wed,  3 Mar 2021 16:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ibmvnic: Fix possibly uninitialized old_num_tx_queues
- variable warning.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161479020676.31057.2292593478574354971.git-patchwork-notify@kernel.org>
-Date:   Wed, 03 Mar 2021 16:50:06 +0000
-References: <20210302194747.21704-1-msuchanek@suse.de>
-In-Reply-To: <20210302194747.21704-1-msuchanek@suse.de>
-To:     Michal Suchanek <msuchanek@suse.de>
-Cc:     netdev@vger.kernel.org, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, drt@linux.ibm.com,
-        ljp@linux.ibm.com, sukadev@linux.ibm.com, davem@davemloft.net,
-        kuba@kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
+        id S1392572AbhCDAO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:14:59 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:32849 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452899AbhCCQvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 11:51:25 -0500
+Received: from marcel-macbook.holtmann.net (p4ff9fb90.dip0.t-ipconnect.de [79.249.251.144])
+        by mail.holtmann.org (Postfix) with ESMTPSA id E28C9CED05;
+        Wed,  3 Mar 2021 17:58:10 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
+Subject: Re: [PATCH v3 1/1] Bluetooth: Remove unneeded commands for suspend
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20210303083400.v3.1.Ifcac8bd85b5339135af8e08370bacecc518b1c35@changeid>
+Date:   Wed, 3 Mar 2021 17:50:36 +0100
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Bluetooth Kernel Mailing List 
+        <linux-bluetooth@vger.kernel.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <2CB58E31-C5CB-4A61-9983-EB4C9485E8A6@holtmann.org>
+References: <20210303163404.1779850-1-abhishekpandit@chromium.org>
+ <20210303083400.v3.1.Ifcac8bd85b5339135af8e08370bacecc518b1c35@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Abhishek,
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Tue,  2 Mar 2021 20:47:47 +0100 you wrote:
-> GCC 7.5 reports:
-> ../drivers/net/ethernet/ibm/ibmvnic.c: In function 'ibmvnic_reset_init':
-> ../drivers/net/ethernet/ibm/ibmvnic.c:5373:51: warning: 'old_num_tx_queues' may be used uninitialized in this function [-Wmaybe-uninitialized]
-> ../drivers/net/ethernet/ibm/ibmvnic.c:5373:6: warning: 'old_num_rx_queues' may be used uninitialized in this function [-Wmaybe-uninitialized]
+> During suspend, there are a few scan enable and set event filter
+> commands that don't need to be sent unless there are actual BR/EDR
+> devices capable of waking the system. Check the HCI_PSCAN bit before
+> writing scan enable and use a new dev flag, HCI_EVENT_FILTER_CONFIGURED
+> to control whether to clear the event filter.
 > 
-> The variable is initialized only if(reset) and used only if(reset &&
-> something) so this is a false positive. However, there is no reason to
-> not initialize the variables unconditionally avoiding the warning.
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+> Reviewed-by: Alain Michaud <alainm@chromium.org>
+> ---
 > 
-> [...]
+> Changes in v3:
+> * Minor change to if statement
+> 
+> Changes in v2:
+> * Removed hci_dev_lock from hci_cc_set_event_filter since flags are
+>  set/cleared atomically
+> 
+> include/net/bluetooth/hci.h |  1 +
+> net/bluetooth/hci_event.c   | 27 +++++++++++++++++++++++
+> net/bluetooth/hci_request.c | 44 +++++++++++++++++++++++--------------
+> 3 files changed, 55 insertions(+), 17 deletions(-)
 
-Here is the summary with links:
-  - ibmvnic: Fix possibly uninitialized old_num_tx_queues variable warning.
-    https://git.kernel.org/netdev/net/c/6881b07fdd24
+patch has been applied to bluetooth-next tree.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regards
 
+Marcel
 
