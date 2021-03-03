@@ -2,187 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E5832C476
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FC3232C47A
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352191AbhCDAOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:14:10 -0500
-Received: from correo.us.es ([193.147.175.20]:50672 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233088AbhCCQNx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 11:13:53 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 3CF691C4427
-        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 17:11:50 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2B15BDA798
-        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 17:11:50 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1F588DA793; Wed,  3 Mar 2021 17:11:50 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-105.9 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        FORGED_MUA_MOZILLA,NICE_REPLY_A,SMTPAUTH_US2,URIBL_BLOCKED,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A093EDA72F;
-        Wed,  3 Mar 2021 17:11:47 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 03 Mar 2021 17:11:47 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 8244242DF561;
-        Wed,  3 Mar 2021 17:11:47 +0100 (CET)
-Date:   Wed, 3 Mar 2021 17:11:47 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Oz Shlomo <ozsh@nvidia.com>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>
-Subject: Re: [PATCH nf-next] netfilter: flowtable: separate replace, destroy
- and stats to different workqueues
-Message-ID: <20210303161147.GA17082@salvia>
-References: <20210303125953.11911-1-ozsh@nvidia.com>
+        id S239167AbhCDAOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:14:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237382AbhCCQWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 11:22:33 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C9EC061761
+        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 08:20:58 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id w9so14600744edt.13
+        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 08:20:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7oMQzTqAOm2hnQffsTaCOfeTj0G+JUHHCY8d/eydSSY=;
+        b=z/W60i9vbwd/cA3kpfvw5073LOzVMbCldbbkRoUuapoRS/tBfyqr/PwXedDrSIthHc
+         b4Da17NVABWXlzLU71V4fhM4bcApBUhA0cerpZkRraT8hlzq7dnNVL86rhn35IDDZvM7
+         uwM59m8FyOpgHu6PU5eqTaaDRqPmhB76X3lEpicTWV7U+eq/pbKrRiYHWGHKO4caPvGj
+         L0q5RpCNgRmvkIbcZcBQeBcp8VPh2yWtGyOypXdVnfXLNs1Vu5q5yrrgyWkv5NmqK2y2
+         OSWEKg+WfcidFJ2uLdGucUQw+T3RgWPffmT3AzspSOHQugsHCPrq3A1UjHAp7hQqz2CL
+         1OHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7oMQzTqAOm2hnQffsTaCOfeTj0G+JUHHCY8d/eydSSY=;
+        b=aZowhhHjKSG67OZkXsHV1VuhgAX3kgt2w9CDa1t9IJD+5XGcK3wfzuhngjovGwz1B2
+         WoOXw+C4XiwhuLNiXUh+d6Yucwssc+1k44a5sRHSt20pk+wTNzwoeP8To5EZtbg4U9f/
+         q7FHdhxxCofAAJ4pff+d3NkopQ8NzFX3IKsuW3JBO/lyMo7WtWASm79kBQhsPZavXBZG
+         w2NLCxvGJwdt3mXr5RRugM2YGm/hV6I6BhSKg7Ftfm9azeQRvRNFyra2OgbVuV6oxuVF
+         74cQdfkC1EDa7WhpJ+7P0S+MbdsGO2yhZfZzJrFiE0SLsyHTEn77Cru0qSzwNHVWMTd7
+         TSmw==
+X-Gm-Message-State: AOAM533QZw/im+vCnxOFg8PefcVSwKku84bxoR6u0ja1s0Ief5fP5XQE
+        JhoXa19MIO5KIA4c/h315x4NiH11g6tTFbCoPAcE
+X-Google-Smtp-Source: ABdhPJzU43PvP/dKWjNdyFxXOAyjlNYOQrGgrKdkykxmaK2LCh0f1pMajRbc0LraMTOAnpzVkoO04VSwZUj38qXEBas=
+X-Received: by 2002:aa7:db4f:: with SMTP id n15mr77541edt.12.1614788457018;
+ Wed, 03 Mar 2021 08:20:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210303125953.11911-1-ozsh@nvidia.com>
-User-Agent: Mozilla/5.0
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <000000000000f022ff05bca3d9a3@google.com>
+In-Reply-To: <000000000000f022ff05bca3d9a3@google.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 3 Mar 2021 11:20:45 -0500
+Message-ID: <CAHC9VhT5DJzk9MVRHJtO7kR1RVkGW+WRx8xt_xGS01H3HLm3RA@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Write in cipso_v4_doi_putdef
+To:     syzbot <syzbot+521772a90166b3fca21f@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, Mar 3, 2021 at 10:53 AM syzbot
+<syzbot+521772a90166b3fca21f@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    7a7fd0de Merge branch 'kmap-conversion-for-5.12' of git://..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=164a74dad00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=779a2568b654c1c6
+> dashboard link: https://syzkaller.appspot.com/bug?extid=521772a90166b3fca21f
+> compiler:       Debian clang version 11.0.1-2
+>
+> Unfortunately, I don't have any reproducer for this issue yet.
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+521772a90166b3fca21f@syzkaller.appspotmail.com
+>
+> ==================================================================
+> BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+> BUG: KASAN: use-after-free in atomic_fetch_sub_release include/asm-generic/atomic-instrumented.h:220 [inline]
+> BUG: KASAN: use-after-free in __refcount_sub_and_test include/linux/refcount.h:272 [inline]
+> BUG: KASAN: use-after-free in __refcount_dec_and_test include/linux/refcount.h:315 [inline]
+> BUG: KASAN: use-after-free in refcount_dec_and_test include/linux/refcount.h:333 [inline]
+> BUG: KASAN: use-after-free in cipso_v4_doi_putdef+0x2d/0x190 net/ipv4/cipso_ipv4.c:586
+> Write of size 4 at addr ffff8880179ecb18 by task syz-executor.5/20110
 
-On Wed, Mar 03, 2021 at 02:59:53PM +0200, Oz Shlomo wrote:
-> Currently the flow table offload replace, destroy and stats work items are
-> executed on a single workqueue. As such, DESTROY and STATS commands may
-> be backloged after a burst of REPLACE work items. This scenario can bloat
-> up memory and may cause active connections to age.
-> 
-> Instatiate add, del and stats workqueues to avoid backlogs of non-dependent
-> actions. Provide sysfs control over the workqueue attributes, allowing
-> userspace applications to control the workqueue cpumask.
+Almost surely the same problem as the others, I'm currently chasing
+down a few remaining spots to make sure the fix I'm working on is
+correct.
 
-Probably it would be good to place REPLACE and DESTROY in one single
-queue so workqueues don't race? In case connections are quickly
-created and destroyed, we might get an out of order execution, instead
-of:
-
-  REPLACE -> DESTROY -> REPLACE
-
-events could be reordered to:
-
-  REPLACE -> REPLACE -> DESTROY
-
-So would it work for you if REPLACE and DESTROY go into one single
-workqueue and stats go into another?
-
-Or probably make the cookie unique is sufficient? The cookie refers to
-the memory address but memory can be recycled very quickly. If the
-cookie helps to catch the reorder scenario, then the conntrack id
-could be used instead of the memory address as cookie.
-
-Regarding exposing sysfs toogles, what kind of tuning are you
-expecting from users?  I'd prefer that the workqueue subsystem selects
-for me what is best (autotuning). I'm not a fan of exposing toggles to
-userspace that I don't know what users would do with it.
-
-Let me know, thanks.
-
-> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
-> Reviewed-by: Paul Blakey <paulb@nvidia.com>
-> ---
->  net/netfilter/nf_flow_table_offload.c | 44 ++++++++++++++++++++++++++++-------
->  1 file changed, 36 insertions(+), 8 deletions(-)
-> 
-> diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-> index 2a6993fa40d7..1b979c8b3ba0 100644
-> --- a/net/netfilter/nf_flow_table_offload.c
-> +++ b/net/netfilter/nf_flow_table_offload.c
-> @@ -13,7 +13,9 @@
->  #include <net/netfilter/nf_conntrack_core.h>
->  #include <net/netfilter/nf_conntrack_tuple.h>
->  
-> -static struct workqueue_struct *nf_flow_offload_wq;
-> +static struct workqueue_struct *nf_flow_offload_add_wq;
-> +static struct workqueue_struct *nf_flow_offload_del_wq;
-> +static struct workqueue_struct *nf_flow_offload_stats_wq;
->  
->  struct flow_offload_work {
->  	struct list_head	list;
-> @@ -826,7 +828,12 @@ static void flow_offload_work_handler(struct work_struct *work)
->  
->  static void flow_offload_queue_work(struct flow_offload_work *offload)
->  {
-> -	queue_work(nf_flow_offload_wq, &offload->work);
-> +	if (offload->cmd == FLOW_CLS_REPLACE)
-> +		queue_work(nf_flow_offload_add_wq, &offload->work);
-> +	else if (offload->cmd == FLOW_CLS_DESTROY)
-> +		queue_work(nf_flow_offload_del_wq, &offload->work);
-> +	else
-> +		queue_work(nf_flow_offload_stats_wq, &offload->work);
->  }
->  
->  static struct flow_offload_work *
-> @@ -898,8 +905,11 @@ void nf_flow_offload_stats(struct nf_flowtable *flowtable,
->  
->  void nf_flow_table_offload_flush(struct nf_flowtable *flowtable)
->  {
-> -	if (nf_flowtable_hw_offload(flowtable))
-> -		flush_workqueue(nf_flow_offload_wq);
-> +	if (nf_flowtable_hw_offload(flowtable)) {
-> +		flush_workqueue(nf_flow_offload_add_wq);
-> +		flush_workqueue(nf_flow_offload_del_wq);
-> +		flush_workqueue(nf_flow_offload_stats_wq);
-> +	}
->  }
->  
->  static int nf_flow_table_block_setup(struct nf_flowtable *flowtable,
-> @@ -1011,15 +1021,33 @@ int nf_flow_table_offload_setup(struct nf_flowtable *flowtable,
->  
->  int nf_flow_table_offload_init(void)
->  {
-> -	nf_flow_offload_wq  = alloc_workqueue("nf_flow_table_offload",
-> -					      WQ_UNBOUND, 0);
-> -	if (!nf_flow_offload_wq)
-> +	nf_flow_offload_add_wq  = alloc_workqueue("nf_ft_offload_add",
-> +						  WQ_UNBOUND | WQ_SYSFS, 0);
-> +	if (!nf_flow_offload_add_wq)
->  		return -ENOMEM;
->  
-> +	nf_flow_offload_del_wq  = alloc_workqueue("nf_ft_offload_del",
-> +						  WQ_UNBOUND | WQ_SYSFS, 0);
-> +	if (!nf_flow_offload_del_wq)
-> +		goto err_del_wq;
-> +
-> +	nf_flow_offload_stats_wq  = alloc_workqueue("nf_ft_offload_stats",
-> +						    WQ_UNBOUND | WQ_SYSFS, 0);
-> +	if (!nf_flow_offload_stats_wq)
-> +		goto err_stats_wq;
-> +
->  	return 0;
-> +
-> +err_stats_wq:
-> +	destroy_workqueue(nf_flow_offload_del_wq);
-> +err_del_wq:
-> +	destroy_workqueue(nf_flow_offload_add_wq);
-> +	return -ENOMEM;
->  }
->  
->  void nf_flow_table_offload_exit(void)
->  {
-> -	destroy_workqueue(nf_flow_offload_wq);
-> +	destroy_workqueue(nf_flow_offload_add_wq);
-> +	destroy_workqueue(nf_flow_offload_del_wq);
-> +	destroy_workqueue(nf_flow_offload_stats_wq);
->  }
-> -- 
-> 1.8.3.1
-> 
+-- 
+paul moore
+www.paul-moore.com
