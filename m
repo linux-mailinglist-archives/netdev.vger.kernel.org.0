@@ -2,71 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5059D32B414
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:35:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E0432B42A
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:44:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236581AbhCCETm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:19:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449743AbhCCEC7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 23:02:59 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD96C06121F
-        for <netdev@vger.kernel.org>; Tue,  2 Mar 2021 20:02:19 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id a13so24535803oid.0
-        for <netdev@vger.kernel.org>; Tue, 02 Mar 2021 20:02:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=MF3q5LsFxiiZEwIRvcWgf7VjHoEGODe2jEV+FbkK9D0=;
-        b=TgUh4eeU5KHIHhJ13O6bPbZGaKb6ICYIzD7CrHm9/X2hWdeplqZ/pQ7KrvP1QF4DXx
-         94XRLlMKsAVccACggnPbgljvJ7Kqgk/S5eAH2rFjBYW+1g3CpslqEN+iEa7u6FoxwFhS
-         UwbAI5/KlEUR1CIs2Ema454qhlBEpYwa94DoBmhYinZv+l8/xTFzKkQU7UwRcuMjAPyH
-         bP+6nyhBtKKK8oET7CFjw91pxzcATRh82UIqiDTnKjR9Z4+xRjI/bNngluUmvsR8jA8p
-         xpqZhwrUlu6RjXF1ZLuhERvJ4egMPmEV5dK4s4bypvsXiwWG2s2KQJHXwCV5LyTi4m2q
-         DAyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MF3q5LsFxiiZEwIRvcWgf7VjHoEGODe2jEV+FbkK9D0=;
-        b=RtmPi5LQt2oWSRKYqfND9mXZENmY33Qr4ksKp3V/dsp1JWpQauBCBSNqFosGnQXFtw
-         kVEqfarUCxRvuV3DIzfg1BNKx6vhZHO0TrC3ZIeuontRpO65R3Qet6VV4nAdhf0IwHPF
-         aWRr0mmB1h+B03QEidLwIEwCQ2hXLN5nmNdxVSm+USpGjwE+MMoe6uUIr/7DroSX+2Q5
-         Yf4Jx0ur3IPxhjlAzNvaxFQUFWP6jor8UKI58AAyyScTk4uTA7zQrFQXNxhlZVh7+pMU
-         2CwZYHAkO0U8MmM7MyfjhaiB18LyHYJTu3YzAVaBfP+i2Namz1/uyTIlPyUCAHlfNMM/
-         yuPg==
-X-Gm-Message-State: AOAM533GHCAlI6K2e/Q0lQsFtXt2XEpQ6U5/W/1iy57ewRBZQBQNkM7S
-        UxrgFJkBaxDycBRcOOIOS9ynEOZtYSo=
-X-Google-Smtp-Source: ABdhPJyU+3dTQR74Ni+fLE71fXlikMTo+ReBk7wtJcK5nmMQAr+oLIKzJeF1x0EIfAVvGYuUxuZ4Ug==
-X-Received: by 2002:a05:6808:f15:: with SMTP id m21mr5813410oiw.123.1614744138742;
-        Tue, 02 Mar 2021 20:02:18 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.40])
-        by smtp.googlemail.com with ESMTPSA id a84sm4509860oib.54.2021.03.02.20.02.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Mar 2021 20:02:18 -0800 (PST)
-Subject: Re: [PATCH iproute2-next 0/4] devlink: Use utils helpers
-To:     Parav Pandit <parav@nvidia.com>, stephen@networkplumber.org,
-        netdev@vger.kernel.org
-References: <20210301105654.291949-1-parav@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3b698223-8c50-9a28-1ce1-b1e7bd1b97a1@gmail.com>
-Date:   Tue, 2 Mar 2021 21:02:17 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S1352942AbhCCEgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:36:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45138 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1347712AbhCCELa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Mar 2021 23:11:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id EFA9264E74;
+        Wed,  3 Mar 2021 04:10:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614744608;
+        bh=2iTWY43mTbs048ITXSbGjDL46X2hweHRYNTSKVdsFdA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=L9ZZ9UsCFHKM110kKKJURYQtSn+2RG74W4sg0LiKogk+D3FqC25PK+fIQiVXku0nJ
+         WjA4wdrtFxWw5MZdHQ2uWF1XGHby+I1kIQBZfIzuM62I6SNLh9OcW3aiohUUVZgisv
+         WwBOW/+qVHHgulNHl+1BISN6Lqxl+pzUiCG+VbNcFesUrs41hCplfGahnEbYw/ES2d
+         zzYqE1U+l1NBFDMWWfZuvWmERdB0CPb9bqCcEZ9STEZT84i+JqKGznXRhP1KaPJdio
+         ohYl1Q/bZaVirCXRd+4byBU9KMQvYTn41atx7YQXmgVAtEG3FdJgmcgZN3qrrkLHac
+         wM8YafxEc/xbQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E0B0D609E2;
+        Wed,  3 Mar 2021 04:10:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next 0/4] devlink: Use utils helpers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161474460791.20759.14044138325168314556.git-patchwork-notify@kernel.org>
+Date:   Wed, 03 Mar 2021 04:10:07 +0000
+References: <20210301105654.291949-1-parav@nvidia.com>
 In-Reply-To: <20210301105654.291949-1-parav@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     dsahern@gmail.com, stephen@networkplumber.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/1/21 3:56 AM, Parav Pandit wrote:
+Hello:
+
+This series was applied to iproute2/iproute2-next.git (refs/heads/main):
+
+On Mon, 1 Mar 2021 12:56:50 +0200 you wrote:
 > This series uses utils helper for socket operations, string
 > processing and print error messages.
 > 
@@ -76,18 +56,21 @@ On 3/1/21 3:56 AM, Parav Pandit wrote:
 > Patch-3 converts devlink to use socket helpers from utlis library
 > Patch-4 print error when user provides invalid flavour or state
 > 
-> Parav Pandit (4):
->   devlink: Use library provided string processing APIs
->   utils: Introduce helper routines for generic socket recv
->   devlink: Use generic socket helpers from library
->   devlink: Add error print when unknown values specified
-> 
->  devlink/devlink.c   | 365 ++++++++++++++++++++------------------------
->  devlink/mnlg.c      | 121 ++-------------
->  devlink/mnlg.h      |  13 +-
->  include/mnl_utils.h |   6 +
->  lib/mnl_utils.c     |  25 ++-
->  5 files changed, 203 insertions(+), 327 deletions(-)
-> 
+> [...]
 
-applied to iproute2-next. Thanks, Parav
+Here is the summary with links:
+  - [iproute2-next,1/4] devlink: Use library provided string processing APIs
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=03662000e433
+  - [iproute2-next,2/4] utils: Introduce helper routines for generic socket recv
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=e3a4067e5257
+  - [iproute2-next,3/4] devlink: Use generic socket helpers from library
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=62ff25e51bb6
+  - [iproute2-next,4/4] devlink: Add error print when unknown values specified
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=c54e7bd60547
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
