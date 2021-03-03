@@ -2,161 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D9A132C41A
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:52:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3235E32C402
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:52:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354821AbhCDALM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:11:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40035 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1356595AbhCCKrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 05:47:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614768381;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cshNihsT70kA34dCPACF1CCG63bGyROQDb6b88wnZvg=;
-        b=MELuA1cprrxAn3eq+7gEfzSYw6dDbsyndykP1VkNobMyNZB4JUFgmvPkzKPsikAP8DFl4F
-        KmtfuFeg/cfwlwlCX/liY+QdSRCqnsTWJTO1EJe//7jW7V7QHv8cIF5JMapYpqrpL1i1cm
-        rU76lRyoyyF71oJFuE18ycTj/9nKK54=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-22-1Mti4t6rPmCOLdGj8DjvVg-1; Wed, 03 Mar 2021 04:45:41 -0500
-X-MC-Unique: 1Mti4t6rPmCOLdGj8DjvVg-1
-Received: by mail-pg1-f197.google.com with SMTP id j3so13817988pgb.3
-        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 01:45:41 -0800 (PST)
+        id S1378852AbhCDAKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:10:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1843022AbhCCKYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 05:24:31 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8F2C08ECA7
+        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 01:54:11 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id c131so23859149ybf.7
+        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 01:54:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fye25YydbjlJ3GVTAFSWXWYxwS+yMFJWqS03QxTluJE=;
+        b=IFeCaMnzNr4ygcc2IP9PB0wFLgoUt2zhcTsPxKpVrOExvp1MLJ6kZ319MurQVA1VVR
+         PNOyUGkYo0wozRGHCD+zRg4Hcbe6KFNwWlD9RIeEKHK964tucvteCSwTFDHd6yHyD28y
+         MYvwgu8MATTKidJKU7ENx/b480gsLmgTNILLwcmDZ5znBImMwF+8Y3GKtK9gi6p1bp65
+         O3aRTapPuHxYM1z/xs9Y4lGPU2eidje0VDAXXbCZ0LnzrpSfEnIoDP+h0zLekKN/Dsvg
+         TjGuBOaMdx3O6MDP6n+C98+IWb8PP4nXb/iefuapnAhlpSGHfjgDNLx4mxd/MJLuVK5f
+         IjXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cshNihsT70kA34dCPACF1CCG63bGyROQDb6b88wnZvg=;
-        b=KAdB86Gkm+kGv725VluwZgYEG5dmybHjayD1tKt/jrgQopj0IrY1y5Np41GdBz3Edi
-         L9Oe0wMkPH8zo/kCnhxrfffoRiWIbe0zTgReIpHa9IVI3tJEhYLeNcTLCnqnro+64G4p
-         g1a4mrf4EKZrJNZtB48O+PC2u5PFWcDYtoZD0p/2SpM7rAurl9WkXAHNrcQBgJWV0Sfq
-         P3uoe3ZWzx5z4JOhqG/e5JbbmT8xpOZTRUGY6vSoAKWXgRn/rKoLeh0cOmoGd2Mbro/p
-         p5MG3Erq6blF0Qbb2z1XsL2fJpWDlTjk+fkowmnfgFPi4yRa28L5bCvUOz2FZFnPCiCY
-         6b/g==
-X-Gm-Message-State: AOAM533jyDfhmrizdghJN5PPiSKgTE0Vh4jyDoPOBEP4RitcaCKL7rOY
-        eJATX0xNe6fUFu68WDeT7Kg/CERBVK2BQKjOwkFGT20iEL67RBjf6UUWopbpfCf8MwUgXJScSot
-        gzuZVVdOBUC9omBPI
-X-Received: by 2002:a17:902:968e:b029:e3:a9b8:60b4 with SMTP id n14-20020a170902968eb02900e3a9b860b4mr7325526plp.61.1614764740218;
-        Wed, 03 Mar 2021 01:45:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyhxw9k+pawLT6E5fKwXWvbGnWK52c80D5k5VW6r+WMv0sxJ0XABOxB+c5SZrcGoJ6gjtIdiA==
-X-Received: by 2002:a17:902:968e:b029:e3:a9b8:60b4 with SMTP id n14-20020a170902968eb02900e3a9b860b4mr7325512plp.61.1614764739880;
-        Wed, 03 Mar 2021 01:45:39 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x9sm6135360pjp.29.2021.03.03.01.45.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Mar 2021 01:45:39 -0800 (PST)
-Date:   Wed, 3 Mar 2021 17:44:58 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Bhupesh SHARMA <bhupesh.linux@gmail.com>
-Cc:     netdev@vger.kernel.org, kexec@lists.infradead.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH 4/4] i40e: don't open i40iw client for kdump
-Message-ID: <20210303094458.7yootsa5dvn5cnba@Rk>
-References: <20210222070701.16416-1-coxu@redhat.com>
- <20210222070701.16416-5-coxu@redhat.com>
- <CAFTCetS=G_JV4Ax6=Ty20uifoL1jscrqPGhdh7d2k+t=0d+L8g@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fye25YydbjlJ3GVTAFSWXWYxwS+yMFJWqS03QxTluJE=;
+        b=rPH17NXthIzv/dzNrmNbgOSYRZD08Y6tJl8QOkTaxsc+yYchHIA383eG20FGQp3Pja
+         E6u33n61Wu0Rm43jGihC8gFyxLbC+QIXzSMrU3GKyNvBxe72bvbJ9sc2DBcNr18PwxbC
+         xsdIL9Uoli5w7kzYHoSo1/tBX6iBzW7DojRH2np2ObaEcBhx4+P+gMVdGi4dP2XcLbYe
+         yT/TmGw2vlvWJgZovpbCqc4SO0JMR/GeH78LJfCeoFPW/6N5i68H2O1QF0UC9k2Mavxn
+         Og6ndnxVk0R49B4nVrenOvwxjZuyHM8mkICUlWuBDqCp9l1v4TZKLRk9Xin8fwrcPEzw
+         FMoA==
+X-Gm-Message-State: AOAM533g2oYsFry6+HpAm9R8vME0K6obBVjkRJe1PxP+dMzyO5iQt8K/
+        kqNSZIVeO8PeU/7iM+i0zE1aNljLZCpFHVTIkC57ng==
+X-Google-Smtp-Source: ABdhPJz6sMOghfMm04mffK6uKUDZouc53I3No0GhqKcF0nwiqggnWIZ3bGKDtKs+kZLShyC6EB9zYB5spoRLibSn8RY=
+X-Received: by 2002:a25:7306:: with SMTP id o6mr37888140ybc.132.1614765250462;
+ Wed, 03 Mar 2021 01:54:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAFTCetS=G_JV4Ax6=Ty20uifoL1jscrqPGhdh7d2k+t=0d+L8g@mail.gmail.com>
+References: <20210302012113.1432412-1-weiwan@google.com>
+In-Reply-To: <20210302012113.1432412-1-weiwan@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 3 Mar 2021 10:53:59 +0100
+Message-ID: <CANn89iKx141w0c+eQq-vXjJRfrnDD=yo8uBvfBJ11xaiV9kj_w@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: fix race between napi kthread mode and busy poll
+To:     Wei Wang <weiwan@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Martin Zaharinov <micron10@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bhupesh,
+On Tue, Mar 2, 2021 at 2:21 AM Wei Wang <weiwan@google.com> wrote:
+>
+> Currently, napi_thread_wait() checks for NAPI_STATE_SCHED bit to
+> determine if the kthread owns this napi and could call napi->poll() on
+> it. However, if socket busy poll is enabled, it is possible that the
+> busy poll thread grabs this SCHED bit (after the previous napi->poll()
+> invokes napi_complete_done() and clears SCHED bit) and tries to poll
+> on the same napi. napi_disable() could grab the SCHED bit as well.
+> This patch tries to fix this race by adding a new bit
+> NAPI_STATE_SCHED_THREADED in napi->state. This bit gets set in
+> ____napi_schedule() if the threaded mode is enabled, and gets cleared
+> in napi_complete_done(), and we only poll the napi in kthread if this
+> bit is set. This helps distinguish the ownership of the napi between
+> kthread and other scenarios and fixes the race issue.
+>
+> Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop support")
+> Reported-by: Martin Zaharinov <micron10@gmail.com>
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Wei Wang <weiwan@google.com>
+> Cc: Alexander Duyck <alexanderduyck@fb.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> ---
+>  include/linux/netdevice.h |  2 ++
+>  net/core/dev.c            | 14 +++++++++++++-
+>  2 files changed, 15 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index ddf4cfc12615..682908707c1a 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -360,6 +360,7 @@ enum {
+>         NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() owns this NAPI */
+>         NAPI_STATE_PREFER_BUSY_POLL,    /* prefer busy-polling over softirq processing*/
+>         NAPI_STATE_THREADED,            /* The poll is performed inside its own thread*/
+> +       NAPI_STATE_SCHED_THREADED,      /* Napi is currently scheduled in threaded mode */
+>  };
+>
+>  enum {
+> @@ -372,6 +373,7 @@ enum {
+>         NAPIF_STATE_IN_BUSY_POLL        = BIT(NAPI_STATE_IN_BUSY_POLL),
+>         NAPIF_STATE_PREFER_BUSY_POLL    = BIT(NAPI_STATE_PREFER_BUSY_POLL),
+>         NAPIF_STATE_THREADED            = BIT(NAPI_STATE_THREADED),
+> +       NAPIF_STATE_SCHED_THREADED      = BIT(NAPI_STATE_SCHED_THREADED),
+>  };
+>
+>  enum gro_result {
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 6c5967e80132..03c4763de351 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4294,6 +4294,8 @@ static inline void ____napi_schedule(struct softnet_data *sd,
+>                  */
+>                 thread = READ_ONCE(napi->thread);
+>                 if (thread) {
+> +                       if (thread->state != TASK_INTERRUPTIBLE)
 
-Glad to meet you here:)
+How safe is this read ?
 
-On Thu, Feb 25, 2021 at 03:41:55PM +0530, Bhupesh SHARMA wrote:
->Hello Coiby,
->
->On Mon, Feb 22, 2021 at 12:40 PM Coiby Xu <coxu@redhat.com> wrote:
->>
->> i40iw consumes huge amounts of memory. For example, on a x86_64 machine,
->> i40iw consumed 1.5GB for Intel Corporation Ethernet Connection X722 for
->> for 1GbE while "craskernel=auto" only reserved 160M. With the module
->> parameter "resource_profile=2", we can reduce the memory usage of i40iw
->> to ~300M which is still too much for kdump.
->>
->> Disabling the client registration would spare us the client interface
->> operation open , i.e., i40iw_open for iwarp/uda device. Thus memory is
->> saved for kdump.
->>
->> Signed-off-by: Coiby Xu <coxu@redhat.com>
->> ---
->>  drivers/net/ethernet/intel/i40e/i40e_client.c | 7 +++++++
->>  1 file changed, 7 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
->> index a2dba32383f6..aafc2587f389 100644
->> --- a/drivers/net/ethernet/intel/i40e/i40e_client.c
->> +++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
->> @@ -4,6 +4,7 @@
->>  #include <linux/list.h>
->>  #include <linux/errno.h>
->>  #include <linux/net/intel/i40e_client.h>
->> +#include <linux/crash_dump.h>
->>
->>  #include "i40e.h"
->>  #include "i40e_prototype.h"
->> @@ -741,6 +742,12 @@ int i40e_register_client(struct i40e_client *client)
->>  {
->>         int ret = 0;
->>
->> +       /* Don't open i40iw client for kdump because i40iw will consume huge
->> +        * amounts of memory.
->> +        */
->> +       if (is_kdump_kernel())
->> +               return ret;
->> +
->
->Since crashkernel size can be manually set on the command line by a
->user, and some users might be fine with a ~300M memory usage by i40iw
->client [with resource_profile=2"], in my view, disabling the client
->for all kdump cases seems too restrictive.
->
->We can probably check the crash kernel size allocated (
->$ cat /sys/kernel/kexec_crash_size) and then make a decision
->accordingly, so for example something like:
->
-> +       if (is_kdump_kernel() && kexec_crash_size < 512M)
-> +               return ret;
->
->What do you think?
->
+Presumably KMSAN will detect that another cpu/thread is able to change
+thread->state under us,
+so a READ_ONCE() (or data_race()) would be needed.
 
-Thanks for the suggestion! After having a discussion with the team, we
-think it's better to not intervene i40iw in the kernel space. Actually 
-when kexec-tools is building initramfs for kdump, i40iw is not included 
-by default unless a user explicitly asks to include i40iw by changing 
-/etc/kdump.conf, i.e., adding 'dracut_args --add-drivers "i40iw"'.
+Nowhere else in the kernel can we find a similar construct, I find
+unfortunate to bury
+in net/core/dev.c something that might be incorrect in the future.
 
-
->Regards,
->Bhupesh
+> +                               set_bit(NAPI_STATE_SCHED_THREADED, &napi->state);
+>                         wake_up_process(thread);
+>                         return;
+>                 }
+> @@ -6486,6 +6488,7 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
+>                 WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
 >
->>         if (!client) {
->>                 ret = -EIO;
->>                 goto out;
->> --
->> 2.30.1
->>
->>
->> _______________________________________________
->> kexec mailing list
->> kexec@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/kexec
+>                 new = val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
+> +                             NAPIF_STATE_SCHED_THREADED |
+>                               NAPIF_STATE_PREFER_BUSY_POLL);
 >
-
--- 
-Best regards,
-Coiby
-
+>                 /* If STATE_MISSED was set, leave STATE_SCHED set,
+> @@ -6968,16 +6971,25 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+>
+>  static int napi_thread_wait(struct napi_struct *napi)
+>  {
+> +       bool woken = false;
+> +
+>         set_current_state(TASK_INTERRUPTIBLE);
+>
+>         while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+> -               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
+> +               /* Testing SCHED_THREADED bit here to make sure the current
+> +                * kthread owns this napi and could poll on this napi.
+> +                * Testing SCHED bit is not enough because SCHED bit might be
+> +                * set by some other busy poll thread or by napi_disable().
+> +                */
+> +               if (test_bit(NAPI_STATE_SCHED_THREADED, &napi->state) || woken) {
+>                         WARN_ON(!list_empty(&napi->poll_list));
+>                         __set_current_state(TASK_RUNNING);
+>                         return 0;
+>                 }
+>
+>                 schedule();
+> +               /* woken being true indicates this thread owns this napi. */
+> +               woken = true;
+>                 set_current_state(TASK_INTERRUPTIBLE);
+>         }
+>         __set_current_state(TASK_RUNNING);
+> --
+> 2.30.1.766.gb4fecdf3b7-goog
+>
