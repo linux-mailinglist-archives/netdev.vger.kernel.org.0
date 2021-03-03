@@ -2,97 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B83F32C478
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13E5832C476
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390183AbhCDAOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:14:17 -0500
-Received: from m42-2.mailgun.net ([69.72.42.2]:34596 "EHLO m42-2.mailgun.net"
+        id S1352191AbhCDAOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:14:10 -0500
+Received: from correo.us.es ([193.147.175.20]:50672 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239319AbhCCQQH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 11:16:07 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1614788103; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=G2G4SJp4FwsECyB7Y/TK8uE4IGnj8LZzweQFpxCMat0=; b=H2GtZULEqAYoW6mQImsupoWkOQP9u78Jt9YGexmMw3A1gIRnTeD9a9453HB/abp+LZZAqc1e
- ljL2CLVNbn8wgCw+btok5GxhaoGPV77AtRMz5ko8Vjq1q+cmFBSENQrTQ09mq2Sb12l8oAax
- gdxmiT860hkoIm6/J2UXs2fP5Oc=
-X-Mailgun-Sending-Ip: 69.72.42.2
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 603fb309f7ec0ea57c0d2a27 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 03 Mar 2021 16:02:17
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 56B9DC43462; Wed,  3 Mar 2021 16:02:16 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
+        id S233088AbhCCQNx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 11:13:53 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3CF691C4427
+        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 17:11:50 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2B15BDA798
+        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 17:11:50 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 1F588DA793; Wed,  3 Mar 2021 17:11:50 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+X-Spam-Status: No, score=-105.9 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        FORGED_MUA_MOZILLA,NICE_REPLY_A,SMTPAUTH_US2,URIBL_BLOCKED,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A093EDA72F;
+        Wed,  3 Mar 2021 17:11:47 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 03 Mar 2021 17:11:47 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A3D25C433CA;
-        Wed,  3 Mar 2021 16:02:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A3D25C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     "Coelho\, Luciano" <luciano.coelho@intel.com>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] iwlwifi: ensure that DMI scan table is properly terminated
-References: <0d52ff85-323f-67b8-5fdb-bbf3093b0ccf@kernel.dk>
-        <782d5382b0c8c9b33277422c8e41180c49044128.camel@intel.com>
-        <3f8e28b1-0c15-7539-ef50-5cfb71a3591f@kernel.dk>
-        <20cdd691-0872-523d-e565-909f75e62956@kernel.dk>
-Date:   Wed, 03 Mar 2021 18:02:11 +0200
-In-Reply-To: <20cdd691-0872-523d-e565-909f75e62956@kernel.dk> (Jens Axboe's
-        message of "Tue, 2 Mar 2021 20:51:10 -0700")
-Message-ID: <8735xc8buk.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 8244242DF561;
+        Wed,  3 Mar 2021 17:11:47 +0100 (CET)
+Date:   Wed, 3 Mar 2021 17:11:47 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Oz Shlomo <ozsh@nvidia.com>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>
+Subject: Re: [PATCH nf-next] netfilter: flowtable: separate replace, destroy
+ and stats to different workqueues
+Message-ID: <20210303161147.GA17082@salvia>
+References: <20210303125953.11911-1-ozsh@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210303125953.11911-1-ozsh@nvidia.com>
+User-Agent: Mozilla/5.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jens Axboe <axboe@kernel.dk> writes:
+Hi,
 
-> On 3/2/21 8:49 PM, Jens Axboe wrote:
->> On 3/2/21 11:34 AM, Coelho, Luciano wrote:
->>
->>> Thanks for the report and patch! And I'm sorry that we broke your
->>> laptop's boot...
->>>
->>> We already have a patch to fix this:
->>>
->>> https://patchwork.kernel.org/project/linux-wireless/patch/20210223140039.1708534-1-weiyongjun1@huawei.com/
->>>
->>> I thought I had already acked it for Kalle to take it directly to
->>> wireless-drivers, but apparently I hadn't.
->>>
->>> I acked now and assigned it to him.
->> 
->> All good thanks, as long as it gets fixed and goes upstream I don't care
->> where it's from :-)
->
-> I looked at the link, and feel free to steal my commit trace/message it
-> you want.
+On Wed, Mar 03, 2021 at 02:59:53PM +0200, Oz Shlomo wrote:
+> Currently the flow table offload replace, destroy and stats work items are
+> executed on a single workqueue. As such, DESTROY and STATS commands may
+> be backloged after a burst of REPLACE work items. This scenario can bloat
+> up memory and may cause active connections to age.
+> 
+> Instatiate add, del and stats workqueues to avoid backlogs of non-dependent
+> actions. Provide sysfs control over the workqueue attributes, allowing
+> userspace applications to control the workqueue cpumask.
 
-Thanks, did that. The patch is now applied:
+Probably it would be good to place REPLACE and DESTROY in one single
+queue so workqueues don't race? In case connections are quickly
+created and destroyed, we might get an out of order execution, instead
+of:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git/commit/?id=a22549f12767fce49c74c53a853595f82b727935
+  REPLACE -> DESTROY -> REPLACE
 
-I'll send a pull request to the net tree later today.
+events could be reordered to:
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+  REPLACE -> REPLACE -> DESTROY
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+So would it work for you if REPLACE and DESTROY go into one single
+workqueue and stats go into another?
+
+Or probably make the cookie unique is sufficient? The cookie refers to
+the memory address but memory can be recycled very quickly. If the
+cookie helps to catch the reorder scenario, then the conntrack id
+could be used instead of the memory address as cookie.
+
+Regarding exposing sysfs toogles, what kind of tuning are you
+expecting from users?  I'd prefer that the workqueue subsystem selects
+for me what is best (autotuning). I'm not a fan of exposing toggles to
+userspace that I don't know what users would do with it.
+
+Let me know, thanks.
+
+> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+> Reviewed-by: Paul Blakey <paulb@nvidia.com>
+> ---
+>  net/netfilter/nf_flow_table_offload.c | 44 ++++++++++++++++++++++++++++-------
+>  1 file changed, 36 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+> index 2a6993fa40d7..1b979c8b3ba0 100644
+> --- a/net/netfilter/nf_flow_table_offload.c
+> +++ b/net/netfilter/nf_flow_table_offload.c
+> @@ -13,7 +13,9 @@
+>  #include <net/netfilter/nf_conntrack_core.h>
+>  #include <net/netfilter/nf_conntrack_tuple.h>
+>  
+> -static struct workqueue_struct *nf_flow_offload_wq;
+> +static struct workqueue_struct *nf_flow_offload_add_wq;
+> +static struct workqueue_struct *nf_flow_offload_del_wq;
+> +static struct workqueue_struct *nf_flow_offload_stats_wq;
+>  
+>  struct flow_offload_work {
+>  	struct list_head	list;
+> @@ -826,7 +828,12 @@ static void flow_offload_work_handler(struct work_struct *work)
+>  
+>  static void flow_offload_queue_work(struct flow_offload_work *offload)
+>  {
+> -	queue_work(nf_flow_offload_wq, &offload->work);
+> +	if (offload->cmd == FLOW_CLS_REPLACE)
+> +		queue_work(nf_flow_offload_add_wq, &offload->work);
+> +	else if (offload->cmd == FLOW_CLS_DESTROY)
+> +		queue_work(nf_flow_offload_del_wq, &offload->work);
+> +	else
+> +		queue_work(nf_flow_offload_stats_wq, &offload->work);
+>  }
+>  
+>  static struct flow_offload_work *
+> @@ -898,8 +905,11 @@ void nf_flow_offload_stats(struct nf_flowtable *flowtable,
+>  
+>  void nf_flow_table_offload_flush(struct nf_flowtable *flowtable)
+>  {
+> -	if (nf_flowtable_hw_offload(flowtable))
+> -		flush_workqueue(nf_flow_offload_wq);
+> +	if (nf_flowtable_hw_offload(flowtable)) {
+> +		flush_workqueue(nf_flow_offload_add_wq);
+> +		flush_workqueue(nf_flow_offload_del_wq);
+> +		flush_workqueue(nf_flow_offload_stats_wq);
+> +	}
+>  }
+>  
+>  static int nf_flow_table_block_setup(struct nf_flowtable *flowtable,
+> @@ -1011,15 +1021,33 @@ int nf_flow_table_offload_setup(struct nf_flowtable *flowtable,
+>  
+>  int nf_flow_table_offload_init(void)
+>  {
+> -	nf_flow_offload_wq  = alloc_workqueue("nf_flow_table_offload",
+> -					      WQ_UNBOUND, 0);
+> -	if (!nf_flow_offload_wq)
+> +	nf_flow_offload_add_wq  = alloc_workqueue("nf_ft_offload_add",
+> +						  WQ_UNBOUND | WQ_SYSFS, 0);
+> +	if (!nf_flow_offload_add_wq)
+>  		return -ENOMEM;
+>  
+> +	nf_flow_offload_del_wq  = alloc_workqueue("nf_ft_offload_del",
+> +						  WQ_UNBOUND | WQ_SYSFS, 0);
+> +	if (!nf_flow_offload_del_wq)
+> +		goto err_del_wq;
+> +
+> +	nf_flow_offload_stats_wq  = alloc_workqueue("nf_ft_offload_stats",
+> +						    WQ_UNBOUND | WQ_SYSFS, 0);
+> +	if (!nf_flow_offload_stats_wq)
+> +		goto err_stats_wq;
+> +
+>  	return 0;
+> +
+> +err_stats_wq:
+> +	destroy_workqueue(nf_flow_offload_del_wq);
+> +err_del_wq:
+> +	destroy_workqueue(nf_flow_offload_add_wq);
+> +	return -ENOMEM;
+>  }
+>  
+>  void nf_flow_table_offload_exit(void)
+>  {
+> -	destroy_workqueue(nf_flow_offload_wq);
+> +	destroy_workqueue(nf_flow_offload_add_wq);
+> +	destroy_workqueue(nf_flow_offload_del_wq);
+> +	destroy_workqueue(nf_flow_offload_stats_wq);
+>  }
+> -- 
+> 1.8.3.1
+> 
