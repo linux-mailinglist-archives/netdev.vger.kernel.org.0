@@ -2,100 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D02632B422
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:43:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BFB832C38F
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:08:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352897AbhCCEeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:34:22 -0500
-Received: from mga09.intel.com ([134.134.136.24]:26554 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235229AbhCCEIs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 23:08:48 -0500
-IronPort-SDR: R0elyS9hq+RhQbA9nDFV0v6C9KAw56s/FyRyNYFvDfExxWBAoTYymRJ7kyL/bR2chB1sUlGDyD
- eNtvhkLbwrvg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9911"; a="187208253"
-X-IronPort-AV: E=Sophos;i="5.81,218,1610438400"; 
-   d="scan'208";a="187208253"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 20:08:03 -0800
-IronPort-SDR: 6JOYJ6aBjXDsTvfNE18IvXvNacFMncaIzyC3On+Kl0FC2bUn/DjHPi2VdCy85nepbya1bbQ1Rx
- /mGjtM9oDFvA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,218,1610438400"; 
-   d="scan'208";a="407056226"
-Received: from intel-z390-ud.iind.intel.com ([10.223.96.21])
-  by orsmga008.jf.intel.com with ESMTP; 02 Mar 2021 20:07:59 -0800
-From:   ramesh.babu.b@intel.com
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Ramesh Babu B <ramesh.babu.b@intel.com>
-Subject: [PATCH net 1/1] net: stmmac: fix incorrect DMA channel intr enable setting of EQoS v4.10
-Date:   Wed,  3 Mar 2021 20:38:40 +0530
-Message-Id: <20210303150840.30024-1-ramesh.babu.b@intel.com>
+        id S1354290AbhCDAH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:07:58 -0500
+Received: from mail-m965.mail.126.com ([123.126.96.5]:53312 "EHLO
+        mail-m965.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450166AbhCCFbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 00:31:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=zTBYrG15e7+QyoK1Kg
+        DxPUBW9X3cE5LArQdAaL4Uk44=; b=er4yaXjTtKtxY6+fJKTufcGu8fSnEtkM3w
+        KBRDucwPvHpFyIKUcANoxz5lJB5j6+uzFGS87YkUbFLrj/apSXn9l0RpF+Gu4ZPO
+        dec1sWPdjgXo6tMeqbpT+nn06a/4kwNlqP9tb0f/IZ/qq2TrHfrMYaLKJZuvl9CB
+        X752zaQk4=
+Received: from localhost.localdomain (unknown [222.128.173.240])
+        by smtp10 (Coremail) with SMTP id NuRpCgBnhIcj3j5gGSY5lQ--.47531S4;
+        Wed, 03 Mar 2021 08:53:56 +0800 (CST)
+From:   zhang kai <zhangkaiheb@126.com>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     zhang kai <zhangkaiheb@126.com>
+Subject: [PATCH] ipv6:delete duplicate code for reserved iid check
+Date:   Wed,  3 Mar 2021 08:53:21 +0800
+Message-Id: <20210303005321.29821-1-zhangkaiheb@126.com>
 X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: NuRpCgBnhIcj3j5gGSY5lQ--.47531S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZFyxWF48Zr15Kr48Jry5Jwb_yoW5Cr4xpr
+        13Jay5GrW8Cr17GrZ7Jr1jywnxu392y3WUGFy7WwsYkr1agr92vwn8X34ava4FyryfWanx
+        tF90ka1F9FsxA3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U59N3UUUUU=
+X-Originating-IP: [222.128.173.240]
+X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi2QRK-lpEBAf-tgAAs9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ong Boon Leong <boon.leong.ong@intel.com>
+Using the ipv6_reserved_interfaceid for interface id checking.
 
-We introduce dwmac410_dma_init_channel() here for both EQoS v4.10 and
-above which use different DMA_CH(n)_Interrupt_Enable bit definitions for
-NIE and AIE.
-
-Fixes: 48863ce5940f ("stmmac: add DMA support for GMAC 4.xx")
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Ramesh Babu B <ramesh.babu.b@intel.com>
+Signed-off-by: zhang kai <zhangkaiheb@126.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ net/ipv6/addrconf.c | 45 +++++++++++++++++++--------------------------
+ 1 file changed, 19 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index bb29bfcd62c3..62aa0e95beb7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -124,6 +124,23 @@ static void dwmac4_dma_init_channel(void __iomem *ioaddr,
- 	       ioaddr + DMA_CHAN_INTR_ENA(chan));
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index f2337fb75..e9d13ce62 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -135,6 +135,7 @@ static inline void addrconf_sysctl_unregister(struct inet6_dev *idev)
+ }
+ #endif
+ 
++static bool ipv6_reserved_interfaceid(struct in6_addr address);
+ static void ipv6_gen_rnd_iid(struct in6_addr *addr);
+ 
+ static int ipv6_generate_eui64(u8 *eui, struct net_device *dev);
+@@ -2352,32 +2353,12 @@ static int ipv6_inherit_eui64(u8 *eui, struct inet6_dev *idev)
+ 
+ static void ipv6_gen_rnd_iid(struct in6_addr *addr)
+ {
+-regen:
+-	get_random_bytes(&addr->s6_addr[8], 8);
+-
+-	/* <draft-ietf-6man-rfc4941bis-08.txt>, Section 3.3.1:
+-	 * check if generated address is not inappropriate:
+-	 *
+-	 * - Reserved IPv6 Interface Identifers
+-	 * - XXX: already assigned to an address on the device
+-	 */
+-
+-	/* Subnet-router anycast: 0000:0000:0000:0000 */
+-	if (!(addr->s6_addr32[2] | addr->s6_addr32[3]))
+-		goto regen;
+-
+-	/* IANA Ethernet block: 0200:5EFF:FE00:0000-0200:5EFF:FE00:5212
+-	 * Proxy Mobile IPv6:   0200:5EFF:FE00:5213
+-	 * IANA Ethernet block: 0200:5EFF:FE00:5214-0200:5EFF:FEFF:FFFF
+-	 */
+-	if (ntohl(addr->s6_addr32[2]) == 0x02005eff &&
+-	    (ntohl(addr->s6_addr32[3]) & 0Xff000000) == 0xfe000000)
+-		goto regen;
++	struct in6_addr temp;
+ 
+-	/* Reserved subnet anycast addresses */
+-	if (ntohl(addr->s6_addr32[2]) == 0xfdffffff &&
+-	    ntohl(addr->s6_addr32[3]) >= 0Xffffff80)
+-		goto regen;
++	do {
++		get_random_bytes(&addr->s6_addr[8], 8);
++		temp = *addr;
++	} while (ipv6_reserved_interfaceid(temp));
  }
  
-+static void dwmac410_dma_init_channel(void __iomem *ioaddr,
-+				      struct stmmac_dma_cfg *dma_cfg, u32 chan)
-+{
-+	u32 value;
-+
-+	/* common channel control register config */
-+	value = readl(ioaddr + DMA_CHAN_CONTROL(chan));
-+	if (dma_cfg->pblx8)
-+		value = value | DMA_BUS_MODE_PBL;
-+
-+	writel(value, ioaddr + DMA_CHAN_CONTROL(chan));
-+
-+	/* Mask interrupts by writing to CSR7 */
-+	writel(DMA_CHAN_INTR_DEFAULT_MASK_4_10,
-+	       ioaddr + DMA_CHAN_INTR_ENA(chan));
-+}
-+
- static void dwmac4_dma_init(void __iomem *ioaddr,
- 			    struct stmmac_dma_cfg *dma_cfg, int atds)
+ /*
+@@ -3189,15 +3170,27 @@ void addrconf_add_linklocal(struct inet6_dev *idev,
+ }
+ EXPORT_SYMBOL_GPL(addrconf_add_linklocal);
+ 
++/* <draft-ietf-6man-rfc4941bis-08.txt>, Section 3.3.1:
++ * check if generated address is not inappropriate:
++ *
++ * - Reserved IPv6 Interface Identifers
++ * - XXX: already assigned to an address on the device
++ */
+ static bool ipv6_reserved_interfaceid(struct in6_addr address)
  {
-@@ -523,7 +540,7 @@ const struct stmmac_dma_ops dwmac4_dma_ops = {
- const struct stmmac_dma_ops dwmac410_dma_ops = {
- 	.reset = dwmac4_dma_reset,
- 	.init = dwmac4_dma_init,
--	.init_chan = dwmac4_dma_init_channel,
-+	.init_chan = dwmac410_dma_init_channel,
- 	.init_rx_chan = dwmac4_dma_init_rx_chan,
- 	.init_tx_chan = dwmac4_dma_init_tx_chan,
- 	.axi = dwmac4_dma_axi,
++	/* Subnet-router anycast: 0000:0000:0000:0000 */
+ 	if ((address.s6_addr32[2] | address.s6_addr32[3]) == 0)
+ 		return true;
+ 
++	/* IANA Ethernet block: 0200:5EFF:FE00:0000-0200:5EFF:FE00:5212
++	 * Proxy Mobile IPv6:   0200:5EFF:FE00:5213
++	 * IANA Ethernet block: 0200:5EFF:FE00:5214-0200:5EFF:FEFF:FFFF
++	 */
+ 	if (address.s6_addr32[2] == htonl(0x02005eff) &&
+-	    ((address.s6_addr32[3] & htonl(0xfe000000)) == htonl(0xfe000000)))
++	    ((address.s6_addr32[3] & htonl(0xff000000)) == htonl(0xfe000000)))
+ 		return true;
+ 
++	/* Reserved subnet anycast addresses */
+ 	if (address.s6_addr32[2] == htonl(0xfdffffff) &&
+ 	    ((address.s6_addr32[3] & htonl(0xffffff80)) == htonl(0xffffff80)))
+ 		return true;
 -- 
 2.17.1
 
