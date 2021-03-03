@@ -2,134 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7E6E32C4AA
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F9B832C4AB
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450228AbhCDAP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:15:58 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:53393 "EHLO ozlabs.org"
+        id S1450242AbhCDAP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:15:59 -0500
+Received: from mail.katalix.com ([3.9.82.81]:58932 "EHLO mail.katalix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1390898AbhCCWSy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 17:18:54 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DrT0F5Yrnz9sR4;
-        Thu,  4 Mar 2021 09:18:05 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1614809887;
-        bh=wmOp8R+qJFjoY4UzTY5NdSgLMMwegXgTcKNOkqrFtjM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=OHjL5ebtaH90mjqhkglHCx00AnYGd0KUXVY4dc/vMTfKx3vlVUDSOXU2IINAisg1J
-         exOUkR0p0F0QPPCnMrVz0ZmHOSNDtZIc1YyIdZvdjOd4Ok66Kol27DR2scI/B3sVjo
-         sEcWySMBWQnNUhTnxex8hJKT7Tbcdf5ETy3AJRpVu+lBcShCLewh/Q7Qgf6IcYlQCl
-         8zY3bEtCuz/fgtIzNifGAQaqjPHpSir4dpM11027KwqOlQ/jRIbMYHIYVKh4S3GonR
-         HbqyfvpvhIDfB9JJnjsrqmw78iCqPbfevzZa+MhShbYcXfQxr37sc6i30hLzB8uvws
-         Sl4NkqeVsNA5g==
-Date:   Thu, 4 Mar 2021 09:18:04 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Eyal Birger <eyal.birger@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the ipsec tree with the net tree
-Message-ID: <20210304091804.06055c81@canb.auug.org.au>
+        id S1354763AbhCCWet (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 17:34:49 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id D3EBF7D718;
+        Wed,  3 Mar 2021 22:32:06 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1614810726; bh=JgojL7uEE8S0Atixqtrf9rO9YOzCU+W2zwfhGb2Vqaw=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Wed,=203=20Mar=202021=2022:32:06=20+0000|From:=20Tom=20Pa
+         rkin=20<tparkin@katalix.com>|To:=20Matthias=20Schiffer=20<mschiffe
+         r@universe-factory.net>|Cc:=20netdev@vger.kernel.org,=20"David=20S
+         .=20Miller"=20<davem@davemloft.net>,=0D=0A=09Jakub=20Kicinski=20<k
+         uba@kernel.org>,=20linux-kernel@vger.kernel.org|Subject:=20Re:=20[
+         PATCH=20net=20v2]=20net:=20l2tp:=20reduce=20log=20level=20of=20mes
+         sages=20in=0D=0A=20receive=20path,=20add=20counter=20instead|Messa
+         ge-ID:=20<20210303223206.GA7374@katalix.com>|References:=20<bd6f11
+         7b433969634b613153ec86ccd9d5fa3fb9.1614707999.git.mschiffer@univer
+         se-factory.net>|MIME-Version:=201.0|Content-Disposition:=20inline|
+         In-Reply-To:=20<bd6f117b433969634b613153ec86ccd9d5fa3fb9.161470799
+         9.git.mschiffer@universe-factory.net>;
+        b=bK+8OADEbtVmvEES+L1agA1ssHqKnODjTPqqxzVAb0B4ovgOujLqmqX0GvWOkgZvJ
+         0HgSI/UFg2NA596UEn7MO8NSTqIjVxX02Vngb/ogSY7loFpetVpjIWIoI4ABvIXTXg
+         Q1c/r70RPFeTDps3N4VEXF6lVWPfnyZ6Yrv6D9MDFmPxgLh6y8cB2q0s+yRiLAbEDa
+         MELLgsdEaPOu3BO45LiVG0G4YWH33p8OLdpEYLQl5jv7tTd8IooQRDUt2fTckXWd/V
+         7LSZdaDMCFVOzfXPt8JFjktIU3lscmOLpV9IG7o35d0rcAEGXCzJk8/INLAV6nJf9V
+         1oFZMIQUbKh7A==
+Date:   Wed, 3 Mar 2021 22:32:06 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Matthias Schiffer <mschiffer@universe-factory.net>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] net: l2tp: reduce log level of messages in
+ receive path, add counter instead
+Message-ID: <20210303223206.GA7374@katalix.com>
+References: <bd6f117b433969634b613153ec86ccd9d5fa3fb9.1614707999.git.mschiffer@universe-factory.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/l/gWjPPpz17v8Fczr_3KV9m";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="0OAP2g/MAC+5xKAE"
+Content-Disposition: inline
+In-Reply-To: <bd6f117b433969634b613153ec86ccd9d5fa3fb9.1614707999.git.mschiffer@universe-factory.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/l/gWjPPpz17v8Fczr_3KV9m
-Content-Type: text/plain; charset=US-ASCII
+
+--0OAP2g/MAC+5xKAE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+On  Wed, Mar 03, 2021 at 16:50:49 +0100, Matthias Schiffer wrote:
+> Commit 5ee759cda51b ("l2tp: use standard API for warning log messages")
+> changed a number of warnings about invalid packets in the receive path
+> so that they are always shown, instead of only when a special L2TP debug
+> flag is set. Even with rate limiting these warnings can easily cause
+> significant log spam - potentially triggered by a malicious party
+> sending invalid packets on purpose.
+>=20
+> In addition these warnings were noticed by projects like Tunneldigger [1],
+> which uses L2TP for its data path, but implements its own control
+> protocol (which is sufficiently different from L2TP data packets that it
+> would always be passed up to userspace even with future extensions of
+> L2TP).
+>=20
+> Some of the warnings were already redundant, as l2tp_stats has a counter
+> for these packets. This commit adds one additional counter for invalid
+> packets that are passed up to userspace. Packets with unknown session are
+> not counted as invalid, as there is nothing wrong with the format of
+> these packets.
+>=20
+> With the additional counter, all of these messages are either redundant
+> or benign, so we reduce them to pr_debug_ratelimited().
 
-Today's linux-next merge of the ipsec tree got conflicts in:
+This looks good to me -- thanks Matthias! :-)
 
-  net/ipv4/ip_vti.c
-  net/ipv6/ip6_vti.c
-
-between commit:
-
-  4372339efc06 ("net: always use icmp{,v6}_ndo_send from ndo_start_xmit")
-
-from the net tree and commits:
-
-  c7c1abfd6d42 ("vti: fix ipv4 pmtu check to honor ip header df")
-  4c38255892c0 ("vti6: fix ipv4 pmtu check to honor ip header df")
-
-from the ipsec tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/ipv4/ip_vti.c
-index eb207089ece0,613741384490..000000000000
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@@ -238,8 -238,10 +238,10 @@@ static netdev_tx_t vti_xmit(struct sk_b
-  	if (skb->len > mtu) {
-  		skb_dst_update_pmtu_no_confirm(skb, mtu);
-  		if (skb->protocol =3D=3D htons(ETH_P_IP)) {
-+ 			if (!(ip_hdr(skb)->frag_off & htons(IP_DF)))
-+ 				goto xmit;
- -			icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
- -				  htonl(mtu));
- +			icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
- +				      htonl(mtu));
-  		} else {
-  			if (mtu < IPV6_MIN_MTU)
-  				mtu =3D IPV6_MIN_MTU;
-diff --cc net/ipv6/ip6_vti.c
-index f10e7a72ea62,2f0be5ac021c..000000000000
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@@ -521,10 -521,12 +521,12 @@@ vti6_xmit(struct sk_buff *skb, struct n
-  			if (mtu < IPV6_MIN_MTU)
-  				mtu =3D IPV6_MIN_MTU;
- =20
- -			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
- +			icmpv6_ndo_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
-  		} else {
-+ 			if (!(ip_hdr(skb)->frag_off & htons(IP_DF)))
-+ 				goto xmit;
- -			icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
- -				  htonl(mtu));
- +			icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
- +				      htonl(mtu));
-  		}
- =20
-  		err =3D -EMSGSIZE;
-
---Sig_/l/gWjPPpz17v8Fczr_3KV9m
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+--0OAP2g/MAC+5xKAE
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBACxwACgkQAVBC80lX
-0GxMCQf/eo2wIC4MrucE//qOZg6XJY4LIaYECtv4rKXVR+Ol2090h9PzB9USPIhD
-AprwJUtkVGhZ/v3af9vlGDXGcDWjJ+PC5NUiXDd1tlDtw1osAaZBZI/ikTUHp/8K
-JxeHl9VrxBCZdf8Efb5KkuDa2TNndOG84I2JUy5z3BGfU51aZbaH2I5W3ENMn5E5
-1WkIugvu0/B27Nrxfwww5haSpkpD2JpAWUbnyzkNUyEkvxaJR/p2j+uXshejWB8A
-M4I9sf1gAL7gib+3F+1/HYP7RlakjtrWQzj1YZ3uXPg9zPiFnMA4Kqwvu/xoae5h
-5a0olNxroDDiBfey1YpkpQ39n6AZng==
-=zTOC
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmBADmIACgkQlIwGZQq6
+i9AYpwgAqkpw/Vw8I9Zk6EMpQz8rIw7uRP1RHjJKz94ReoaQUmfPT2Fx87CSm5D4
+7ojWyOt7dly9aFKvXF6bvi+KWA6AhzyXrVU0c8SjOxtb86J677HI2w4njsptKvxo
+5XPLfLKgo4fFyO4KWMAQqdnZxN8o1w1MKdjc/+B9EEKB9/XO7hf613Sl66eBBBaS
+GWSUH1IUYlgRF2JBR3RAq85pZPABzU5oseh10koBB8haSFSltQFbzpdmVuIdFrBp
+xQxXjYYf1m4MVYBN/exmifyKicpG0QHGz3kyjWn2SzkC44KCvhdXKpw5Sy9+mIFO
+GM11OWGGjNbk1cg9nqs1l58CFe4/mg==
+=EHmr
 -----END PGP SIGNATURE-----
 
---Sig_/l/gWjPPpz17v8Fczr_3KV9m--
+--0OAP2g/MAC+5xKAE--
