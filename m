@@ -2,226 +2,468 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5258832C421
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:52:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3A632C435
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:53:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232808AbhCDALa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:11:30 -0500
-Received: from mail-vi1eur05on2082.outbound.protection.outlook.com ([40.107.21.82]:65280
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S1382531AbhCDALs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:11:48 -0500
+Received: from mail-eopbgr30052.outbound.protection.outlook.com ([40.107.3.52]:55015
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1357284AbhCCKtU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 05:49:20 -0500
+        id S1349859AbhCCLfv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 06:35:51 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m4I9IQYrUp6oG6omAgiVZ/uTNA7BpeqbBg57ckf7FCVUuaIsUPNtWDPiGnTJlVZW6N21gjQl7cJKB9iS3jxtSbwgjy9nHdmceJma2H+cTesh1ILTRi7mYdu/rK30GFEL37PN9EubNolkGZIIKazypjGseJTmges5mQospwv8ayWM2gqPw/AO6Pb6giFfKr8gfSsft+JOgyErKlbT/dAfTXDBP0nESom8SxqZsStxEEIAhQBJ0Db4NExEvbMGYJETGfNDWpRmU14rz0nxSVNbsTMX5b7vEvqzZfkA6DYhRPbd6wEp3KmPMYF1kj2LMhj8xm5xelgSAjbbKU5pjI80rw==
+ b=nM+BpWGWci1nRXaw7CtqXGDfcDqDN3ZTyILAwmlXkcj4fKb2r3AKiB2WJc64mBTfYkjH2cH8IkXrKcMloUpyYNRSrJDVVIhtFSyo3B7ENERZ9Ufq3MTVMD88qr8fuIVpeYcOeEpXlHW3ioOLnx1N0SA9XL8nXGHioXEk5Ee3KUffEsL9YtTV2ZbbyDQelwRLy62YBV+5WoLBvlUbgqa+kxv97GKc2AA4YUVp2BPU5CKodmLkmvOkU4x4duGoMvqP+cNi13t5d5Htz0XPNmafMyHHh3qKl35LUAYezq1CGQIL/XPzCjC+SIEATE+fCrVPGtDDrH7hwYOBje42ac6ETw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QNBWC0oARNa5FS8KraonBtwqLcIkzolvcXvFT0yuCXM=;
- b=MYYbSlmEP0wbvCmqgAOJYmbIg7LPpPgJnYTB1qdCIQJ/cDMLGOmHjYDEWC/zbwRHHC2gSa31EoApnjfTWIvbT84VRdbyLrPhHLf67PaNbwk1sHc4LFCAix0l2kAPQMWM/rPxaUmS0ecVRCh1ZDi3qWCb27sh2nQiBf2lY1ISF47FpWoesK4EikJ5q1iiuwFaaintQcrlrgI2E5FeNImst7/LXxc4l7AlvItDjSaOrkH60lq1dfNNOi/Gi6TkxCTqXNNUg+a1VAM8p5aL6rTxNZMUQKzyd1oS+/6glC0Gnz0URh4qjoMfnFrRbNM4XMSJuM5OKlY1I7UbMdqL96vpWg==
+ bh=mAwtc43SlYK4M74iEDjbof99YRtxQjizRpcKfDgFhv4=;
+ b=Oz8RS/f2xX7zIj+TAV92tDRqSaz9/DNU7hC6m92hPghjXbqXmPN0hVi/kVrRnaKW238fci2ruDngL7bgHhczYN1KJ8rE4yalINufAu88BiPP5Nee3Gz5HPUvzmw0tE9e6WBeQ7NdryhQNxIXUnkVOglPHF2nAKFYbk/GgHM7VqJLpIDxJLV/FkagT8On1gVfD43Cp4lShwxLWtRaF0ExALtxHFoBUDld+R4Nsq8uc61X6WE6tG/kDZUtsx6YrKLzgKV3JRjuItBGUwzXjeixPI6k5fOhoBOn+jXdrew85ZNTUzIpeSBUwfITEX63DbsUEtQeq8hVxVT0rOHvZm8U3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=nextfour.com; dmarc=pass action=none header.from=nextfour.com;
+ dkim=pass header.d=nextfour.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=NextfourGroupOy.onmicrosoft.com;
+ s=selector2-NextfourGroupOy-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QNBWC0oARNa5FS8KraonBtwqLcIkzolvcXvFT0yuCXM=;
- b=qDrx2yFbO1r8orI5pQo5pI+fAHOh2WvD56QdkX7Gx7OHqpp1qSIgvkyQTg6VK0UZUjINuWSVKl1lnFv1cHQvPrpqNTrJ3tUoWLi7wvZNLwaTTuQWd0y+pfB+pXa8PFMvxn1wOSKen4A1wTxb3M5tupehxN2ZLB5KavfTudmADtk=
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DBBPR04MB6252.eurprd04.prod.outlook.com (2603:10a6:10:c8::17) with
+ bh=mAwtc43SlYK4M74iEDjbof99YRtxQjizRpcKfDgFhv4=;
+ b=hhXjqk5cCTj5zt8HucW3Ix9mhl2YHOXjvHZpmbWl6ndTXS0bp+2KVskFdk4LIikEETbwdVpOt5sxFbO7+Ge48i1kEqCz4zwuj8HBaZMdheuZc/RKdTubNU6+ETNK63dpV6c5xCD1ebWCFJegqjC9eklvj/XbF5oViu+RL1+0J4g=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=nextfour.com;
+Received: from DBAPR03MB6630.eurprd03.prod.outlook.com (2603:10a6:10:194::6)
+ by DB6PR0302MB2598.eurprd03.prod.outlook.com (2603:10a6:4:ac::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.23; Wed, 3 Mar
- 2021 10:47:32 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::7d13:2d65:d6f7:b978]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::7d13:2d65:d6f7:b978%4]) with mapi id 15.20.3890.029; Wed, 3 Mar 2021
- 10:47:32 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: [RFC V3 net-next 3/3] net: stmmac: dwmac-imx: add platform level clocks management for i.MX
-Date:   Wed,  3 Mar 2021 18:47:24 +0800
-Message-Id: <20210303104724.1316-4-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210303104724.1316-1-qiangqing.zhang@nxp.com>
-References: <20210303104724.1316-1-qiangqing.zhang@nxp.com>
-Content-Type: text/plain
-X-Originating-IP: [119.31.174.71]
-X-ClientProxiedBy: HK2PR04CA0068.apcprd04.prod.outlook.com
- (2603:1096:202:15::12) To DB8PR04MB6795.eurprd04.prod.outlook.com
- (2603:10a6:10:fa::15)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.20; Wed, 3 Mar
+ 2021 10:52:54 +0000
+Received: from DBAPR03MB6630.eurprd03.prod.outlook.com
+ ([fe80::708e:9058:61ae:cb9d]) by DBAPR03MB6630.eurprd03.prod.outlook.com
+ ([fe80::708e:9058:61ae:cb9d%7]) with mapi id 15.20.3912.017; Wed, 3 Mar 2021
+ 10:52:54 +0000
+Subject: Re: [RFC v4 05/11] vdpa: Support transferring virtual addressing
+ during DMA mapping
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        jasowang@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+        parav@nvidia.com, bob.liu@oracle.com, hch@infradead.org,
+        rdunlap@infradead.org, willy@infradead.org,
+        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
+        corbet@lwn.net
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210223115048.435-1-xieyongji@bytedance.com>
+ <20210223115048.435-6-xieyongji@bytedance.com>
+From:   =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
+Message-ID: <e2232e4a-d74a-63c9-1e75-b61e4a7aefed@nextfour.com>
+Date:   Wed, 3 Mar 2021 12:52:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20210223115048.435-6-xieyongji@bytedance.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [194.215.55.162]
+X-ClientProxiedBy: HE1PR05CA0192.eurprd05.prod.outlook.com
+ (2603:10a6:3:f9::16) To DBAPR03MB6630.eurprd03.prod.outlook.com
+ (2603:10a6:10:194::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by HK2PR04CA0068.apcprd04.prod.outlook.com (2603:1096:202:15::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Wed, 3 Mar 2021 10:47:29 +0000
+Received: from [10.10.99.3] (194.215.55.162) by HE1PR05CA0192.eurprd05.prod.outlook.com (2603:10a6:3:f9::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Wed, 3 Mar 2021 10:52:50 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2814bb5f-a3c1-4f14-0388-08d8de31bfa5
-X-MS-TrafficTypeDiagnostic: DBBPR04MB6252:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBBPR04MB625247EB7EDDD90AFDB9B267E6989@DBBPR04MB6252.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:632;
+X-MS-Office365-Filtering-Correlation-Id: 68736ed3-86bd-4c96-e58e-08d8de327f9b
+X-MS-TrafficTypeDiagnostic: DB6PR0302MB2598:
+X-Microsoft-Antispam-PRVS: <DB6PR0302MB2598DC932BED26F5D4DF426083989@DB6PR0302MB2598.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ivsiwz8fMwzZmZsFpsmz6wojfm35glqlJm1GKpyB4zkzE+onfpSad6+BzLisrz9Bs2YLsSxtOcPHrsKRdsjMSquCOfH8vsSH6k9oLMkAx0ogBEmuo1A8pk8crr2F3KsGJWMr3n7/j7UF3MkJMqdhq3+kx3yvqpPuPbrtsiqd04/H+tsdLFxy22rVCDtISZxeIBn9JPF86d6Dr+wfrpBVZCeaRuFnG6ereisMaOKscyHG47oOHPCyu7+u9KLsRf9gskkbQU3aXgmykYC7cES3rvOLR+FLn0ymHHhj6t2/mraYstEqimOpKFpNJn4Bk0fZC7j8C7NODzt4jKCN2dJpxQ/jdm8gtpXEL5zaJvxuXJ6AM0SsR5RauCc/dW3qS+KBzlQdlqyhBySu31ze67WQ7KRb/T0tK3iUBKmTcaQgbDr+tn93LU9DKaBqP1lQg5SU3e7gV6zBpjIfewkzYnOHPUSPl/MgX4D/YfCFiU5fxGt5O6KA4Cxtw3UxNOfO6pTaqN0Ah8wd0csXiEyI7dA1lWgn7UBu8lVbRiILCE85APijmh1WYNm2Kw23fmAciqDVTU1oK5iiXZhJeV7dytxkMg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(396003)(366004)(346002)(136003)(478600001)(956004)(316002)(6486002)(66946007)(66556008)(16526019)(186003)(2616005)(26005)(66476007)(8936002)(2906002)(4326008)(8676002)(52116002)(5660300002)(36756003)(6512007)(6666004)(83380400001)(86362001)(1076003)(6506007)(69590400012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?O0Q8oLi9FeGm3jovyYHFnesRZxWj+l72+XHbGtjUDL8aUJS2zf63tB8thtcq?=
- =?us-ascii?Q?mPAMIOfk1hSFcS4mTKrcy03jB4HGV4WHOOFQSwVO4UfRLp6vK0s1SnkP9yqp?=
- =?us-ascii?Q?Q9jnakgjjm2yO4JLH/TffpFa+nZ2WNV1SchXS9d9ugv9103ZiJnbGu4pXCN5?=
- =?us-ascii?Q?NG4EGWbOm/r4Lbw/v0lajoZ4vci1N/P2y3MxORkRhgbxACDONuuHEeWyvFvl?=
- =?us-ascii?Q?bDUKt1jJBIlUyMZubNGwvcvPZLIcmbXkY9jFG2C+YflbbpPWLny8YQ+Wj1rW?=
- =?us-ascii?Q?K2rJ+MyjzN8b4zWWAUDkDu/BXuLUg6lz3eQk99GuggBrwzjBmcpNf3WuFFFc?=
- =?us-ascii?Q?rj5xXgBT+n2Uxrrgk6qWIkoqKybetQSEotNe+Vz9//uN+sdyi8HNgNsAKgUT?=
- =?us-ascii?Q?o5vxcHibZ/cisla5DQrx2KJMz+avPoUUmYkSOwfZ67DKEh/hweuF9/75wcZ0?=
- =?us-ascii?Q?1dO0rVQsN+MJirApF8LWsPIZ/zAdlkHk93NhUmaew+qT8iCzAPTgLhLbh0pG?=
- =?us-ascii?Q?24HbHno5dNA4CBUvqqOrSWAUZAxxHxPu5lkQ2NjKpRjU1EtYxyTczyd0zxn+?=
- =?us-ascii?Q?H94++nDt0XhnMIYPSkZcsbu1AzOKiWR+0hkY3BhwPeEfqAxjbXYasazArc0U?=
- =?us-ascii?Q?DGPHAbWy+b1v9pA3AI6ADpv+F+GnCwNyTKBTEh0oEBo/ZHI0wKUuc11NTWmF?=
- =?us-ascii?Q?ScXeybmqyBplqfkPconyETaN2TDsuy8gT7X9fK4ez4ljszDbgGAWtEAchk/V?=
- =?us-ascii?Q?HHLNfQM1BxYTypQCro0RDXmNAMnYlAb2HC/FLEXa8aVZtK/S2g1ohNeT4UJQ?=
- =?us-ascii?Q?A0D1Ykd8p6NakSI9iSTbTrN7w6XEYfka2e3mmpq41U9BsoNMW90d/6CHvGln?=
- =?us-ascii?Q?ibjr88tEeuXpuyy57SSVS/Biuu88KLszht6/WXAcdkaXrLUCoHmOjygD6++A?=
- =?us-ascii?Q?0L2cuui+yPdoD06zeDiFzLrXtuqcOG5hCSiN6UURrGS2At3VwgIZ6BWttvSN?=
- =?us-ascii?Q?pc/z7fHRL0524FrgbzA8GJIGH9yWtmAkHG5i+0juWOnnzFnU7Y8bLz7Y2uqn?=
- =?us-ascii?Q?0p1lfyQCfrcqjC/9OWEFCwc3xOiS4ayhoASwRIDWkr5mEo+Hy73pTRDwM5dR?=
- =?us-ascii?Q?O4ndP21EQMISSS9flhPqTJMMSW1JoN4N+d3k80DIlbAKcwF2XEGtPIpwaYvN?=
- =?us-ascii?Q?f2UM0Nu0nC6grkn/iaf049VJgWkZvkCOnszp1Hy7YdOJlowV14QylPKPftxa?=
- =?us-ascii?Q?aA952UqMkD79F9bGGjpT/sxzJU2CShwij6jXu57INNFn4svX/koMaCMCKyWw?=
- =?us-ascii?Q?cI7Pd9D6zEhmfSZDjKKATTLw?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2814bb5f-a3c1-4f14-0388-08d8de31bfa5
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: tIf3Kxy4hvRAgqCNssNfC1A+wIuAsHy9eft/UBR/QR77LR1uuYeN/c0VsrlnnOf9NbouHHKe7tP4UwadVmE3Wdclcp2/USLrGRp8eZ6gsZ2EvbNbceXfWdBGLdJAkxQxWna0yn2mxTP9t1fhS+F3zCSItxv/NoZ+KTYtZrBpkaI5bgVXq8qL2WKaEuWNlFU37lGMKnjkHkxnUJZAgJh6kScVfL8ybZOFQT7JYh1BgPI0ua2X18DtvypMz5aGiEpci2ZEaEYTLeKZVujI3KGzbQhXxOI8QYekvavVe14aFHCPzQdCSJQV6g8I8qMQ0EBqu3dfUnIqfMgmJ35MOBjbGb8TuDlchkiDcf2ENDyvwdwoaqtTyzz4Mt8mGgdDVifMwhNjYBpftmwg/cloKh3vuXO4W2pMnz/FdB6rDpv+LUyvheMCWDzqmTY/9RZjn1mtxYUH8XEZtLeVkJj8BVlqXGFTbCWEsJdFku6fQiXv9FpVJbjvFUk8oRKFdCsBGBXh4rfIY5BpbABZS8WSVDWXEYzKqqp7/3ddCbxlInAEe1lMcx+0Jxs3EeBhEfT/OKbLhBs1huxJd+i/c6lKJcM35iN35N8rVm/Nwjgkj6t5Pm0hUpb/+X7I7UJ1sGxnEmS/eI5kJY4DOZJij9ChhWSvMg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR03MB6630.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(39830400003)(346002)(366004)(396003)(376002)(136003)(2616005)(86362001)(52116002)(8936002)(36756003)(31686004)(66476007)(956004)(6486002)(30864003)(5660300002)(16576012)(921005)(83380400001)(8676002)(31696002)(16526019)(66556008)(4326008)(316002)(7416002)(478600001)(66946007)(26005)(2906002)(186003)(45980500001)(43740500002)(309714004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?Y1FkU0s2azFxb1FiU2duUXNoZnlXdDkxaVlCbFEwbHZMTkJjd3RQYkN5ZXg0?=
+ =?utf-8?B?Y2NjZEdXMU5wS2svMzZiWkxERWMxZ1NhaUpzSkl0dG80bjZqN282aXNSQ0pj?=
+ =?utf-8?B?enNqcEZzY25QTWR2SG10R1hNYjBKTEJ3T0FmY0JrZjZ1eDhUVkc5aWtRN1Ju?=
+ =?utf-8?B?NjRDdVZleGdVUWg4cnJZd3FRRitYSFl3ZHQ2UWZsTzdRVmZmdVQrTk41Rkk1?=
+ =?utf-8?B?QnZBU2JDQVpPTkl5RW5qWmg4UnBBOUxVY2J3bktJY1Avakc0QXJDMm9iK1Bw?=
+ =?utf-8?B?YVhQVTVpanlDd0xEZnlXUFJpTFBTTW5LUE9GUE01YXRRUnBJcmVvakMvUlRJ?=
+ =?utf-8?B?NGxSbCtaZ3ZudDArNENTZjNOODlQQ253Y2tlc1FMSmhPOENXd25SMWo5RTR4?=
+ =?utf-8?B?VG4wQUI1dmsyTzlHMC9PdFN6RHFsRmtLN1I2RVpmdTRPWllUTU1MMHVJWFNw?=
+ =?utf-8?B?VW5qU3lxVVZRek1ZVENWb0pySjhpWEVjT1ozVm5hNnp1R2wvSy9QbitlcG1C?=
+ =?utf-8?B?c1R5bzE5N3A4cEw4VGtDLzhWbVcva1lmRDBTUmtxcGdhS1hQa3RXOS9jbDZq?=
+ =?utf-8?B?UFBTSUE5a0poL1FNNXhqaTN1aDJCS1NuTTQ4b29wN3U5b0liYkg1SEVCNFc4?=
+ =?utf-8?B?MTBiU25PKzJzaTNwbWU2MlI5ZU5sWm13SDhMQWpNSGl4SDdWNDFWekpXVEFm?=
+ =?utf-8?B?U3hpTEhZbmpvWUxBL3Z5elFaaWs5YnNUeXJQOEwrQklSZlc3ZFY5UmpSWUky?=
+ =?utf-8?B?bVdXV1l2NkhOYnVUUUxjTjNGOWFzYmlWMjZvcm1Bb0pIclFPSHV6MW50RGNa?=
+ =?utf-8?B?SlRVVzJORWthYTdIYzRYNkVBRTF5RnVGMkR3MzJqNmg0Wi92alU0d3ZWYU1Z?=
+ =?utf-8?B?VWE3U3dqNUs4NkVPWHVYajFrY0NIZjAzcXVhbDA4cTJ1a2EwN1lSV0p4VXpF?=
+ =?utf-8?B?U0NEa1JrV2VsUEVHenpRNFhJSzY1V2dIZ0Nla1pLK2VNazFCQWVTQjBQdUJu?=
+ =?utf-8?B?U0ludytCSGJ3S0p4YldmQndmMk9qcjkvaWFaeGVRWStQUy95aDdoNGpxdHJ3?=
+ =?utf-8?B?NDNXRXNRVkxzU0g3NlNnQXBNc1NBc3BPcGI4dXVSOVpFbEx0YnFOT2dnTjBE?=
+ =?utf-8?B?dDR5QSt4am0zZHF4ZU5OdjhjbGlWSCsweGNyRnA5M3ZVQ3pQWFFCNkZFZWUz?=
+ =?utf-8?B?NVU2UklKSW80ZlRPd1QvcHk4NE1FQnZBZ2Qra0JYM1pQNys1d21SQURJU0xG?=
+ =?utf-8?B?M0F5bllKRE9DVnkyTWtYR2d3SWxlTXZoWWdQVFBBWkYxdjkvMlBaS0RUdlpM?=
+ =?utf-8?B?dThLTnJZaEtKQ3FtOExmWHdXZWtkRVNpbkZpdzV1RUp0c0JhQ2J6QWIySkJY?=
+ =?utf-8?B?c01TVm5ZajNYcVdHallnY3h1QUJudFd2N1Jnemt6RWdpancyaHNpTTRRcllP?=
+ =?utf-8?B?bHNTYzd0T1BDOTVBOG9yZTA5NHF0MFJFV1BJRCtLZ0ZpaGpjeTZHeThsbklB?=
+ =?utf-8?B?Rm5vUUl1VUcxaVdrU1h6VElWakQyZHBGOGFTWjlqWTE5eGd3bnpTalBlcURD?=
+ =?utf-8?B?SFpWRmxzK3RrZDVZUk41THZuNW9TYklTZ21hUXhhbXFrSEhvZU1sTDBLUEJk?=
+ =?utf-8?B?UjJJRVdhbjhLRlFiR1JDU2gxbnJ4Y2N6UDFiaXBqaFJERmxQSHBLb05zL3Vt?=
+ =?utf-8?B?Y3hiamRTQ1VZMEFqcU4yTkFocExOaG9nRFJJU1FEZVZydUZsalpuVEUxR2pX?=
+ =?utf-8?Q?XLWP/BkCPwQleJdFwo2Luqvs406WeJ1P1ze4Qx2?=
+X-OriginatorOrg: nextfour.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 68736ed3-86bd-4c96-e58e-08d8de327f9b
+X-MS-Exchange-CrossTenant-AuthSource: DBAPR03MB6630.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2021 10:47:32.4464
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2021 10:52:54.5471
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 972e95c2-9290-4a02-8705-4014700ea294
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SxjqMRw7LCpGDViRJjl6P5NpRE6RqZUA11GlHWLgxawOB4kuTLYPTVDrq5TKpH3pSpjfnn8IoOTSWe/XSLPwqA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6252
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0ne1/Kyt/6Hh3x2/IWEGmNtk2Xti2tFWO9QKFtbqHkQSAxMOfX8ZdP0ikCREmiUnTSCpTNuxaGiRNjfwyR5nGiG58I5XTZkcY1lGvFJUJ90=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0302MB2598
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Split clocks settings from init callback into clks_config callback,
-which could support platform level clocks management.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-imx.c   | 60 +++++++++++--------
- 1 file changed, 36 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-index 223f69da7e95..c1a361305a5a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-@@ -90,6 +90,32 @@ imx8dxl_set_intf_mode(struct plat_stmmacenet_data *plat_dat)
- 	return ret;
- }
- 
-+static int imx_dwmac_clks_config(void *priv, bool enabled)
-+{
-+	struct imx_priv_data *dwmac = priv;
-+	int ret = 0;
-+
-+	if (enabled) {
-+		ret = clk_prepare_enable(dwmac->clk_mem);
-+		if (ret) {
-+			dev_err(dwmac->dev, "mem clock enable failed\n");
-+			return ret;
-+		}
-+
-+		ret = clk_prepare_enable(dwmac->clk_tx);
-+		if (ret) {
-+			dev_err(dwmac->dev, "tx clock enable failed\n");
-+			clk_disable_unprepare(dwmac->clk_mem);
-+			return ret;
-+		}
-+	} else {
-+		clk_disable_unprepare(dwmac->clk_tx);
-+		clk_disable_unprepare(dwmac->clk_mem);
-+	}
-+
-+	return ret;
-+}
-+
- static int imx_dwmac_init(struct platform_device *pdev, void *priv)
- {
- 	struct plat_stmmacenet_data *plat_dat;
-@@ -98,39 +124,18 @@ static int imx_dwmac_init(struct platform_device *pdev, void *priv)
- 
- 	plat_dat = dwmac->plat_dat;
- 
--	ret = clk_prepare_enable(dwmac->clk_mem);
--	if (ret) {
--		dev_err(&pdev->dev, "mem clock enable failed\n");
--		return ret;
--	}
--
--	ret = clk_prepare_enable(dwmac->clk_tx);
--	if (ret) {
--		dev_err(&pdev->dev, "tx clock enable failed\n");
--		goto clk_tx_en_failed;
--	}
--
- 	if (dwmac->ops->set_intf_mode) {
- 		ret = dwmac->ops->set_intf_mode(plat_dat);
- 		if (ret)
--			goto intf_mode_failed;
-+			return ret;
- 	}
- 
- 	return 0;
--
--intf_mode_failed:
--	clk_disable_unprepare(dwmac->clk_tx);
--clk_tx_en_failed:
--	clk_disable_unprepare(dwmac->clk_mem);
--	return ret;
- }
- 
- static void imx_dwmac_exit(struct platform_device *pdev, void *priv)
- {
--	struct imx_priv_data *dwmac = priv;
--
--	clk_disable_unprepare(dwmac->clk_tx);
--	clk_disable_unprepare(dwmac->clk_mem);
-+	/* nothing to do now */
- }
- 
- static void imx_dwmac_fix_speed(void *priv, unsigned int speed)
-@@ -249,10 +254,15 @@ static int imx_dwmac_probe(struct platform_device *pdev)
- 	plat_dat->addr64 = dwmac->ops->addr_width;
- 	plat_dat->init = imx_dwmac_init;
- 	plat_dat->exit = imx_dwmac_exit;
-+	plat_dat->clks_config = imx_dwmac_clks_config;
- 	plat_dat->fix_mac_speed = imx_dwmac_fix_speed;
- 	plat_dat->bsp_priv = dwmac;
- 	dwmac->plat_dat = plat_dat;
- 
-+	ret = imx_dwmac_clks_config(dwmac, true);
-+	if (ret)
-+		goto err_clks_config;
-+
- 	ret = imx_dwmac_init(pdev, dwmac);
- 	if (ret)
- 		goto err_dwmac_init;
-@@ -263,9 +273,11 @@ static int imx_dwmac_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
--err_dwmac_init:
- err_drv_probe:
- 	imx_dwmac_exit(pdev, plat_dat->bsp_priv);
-+err_dwmac_init:
-+	imx_dwmac_clks_config(dwmac, false);
-+err_clks_config:
- err_parse_dt:
- err_match_data:
- 	stmmac_remove_config_dt(pdev, plat_dat);
--- 
-2.17.1
+On 23.2.2021 13.50, Xie Yongji wrote:
+> This patch introduces an attribute for vDPA device to indicate
+> whether virtual address can be used. If vDPA device driver set
+> it, vhost-vdpa bus driver will not pin user page and transfer
+> userspace virtual address instead of physical address during
+> DMA mapping. And corresponding vma->vm_file and offset will be
+> also passed as an opaque pointer.
+
+In the virtual addressing case, who is then responsible for the pinning 
+or even mapping physical pages to the vaddr?
+
+
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> ---
+>   drivers/vdpa/ifcvf/ifcvf_main.c   |   2 +-
+>   drivers/vdpa/mlx5/net/mlx5_vnet.c |   2 +-
+>   drivers/vdpa/vdpa.c               |   9 +++-
+>   drivers/vdpa/vdpa_sim/vdpa_sim.c  |   2 +-
+>   drivers/vhost/vdpa.c              | 104 +++++++++++++++++++++++++++++++-------
+>   include/linux/vdpa.h              |  20 ++++++--
+>   6 files changed, 113 insertions(+), 26 deletions(-)
+>
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> index 7c8bbfcf6c3e..228b9f920fea 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> @@ -432,7 +432,7 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>   
+>   	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
+>   				    dev, &ifc_vdpa_ops,
+> -				    IFCVF_MAX_QUEUE_PAIRS * 2, NULL);
+> +				    IFCVF_MAX_QUEUE_PAIRS * 2, NULL, false);
+>   	if (adapter == NULL) {
+>   		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
+>   		return -ENOMEM;
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 029822060017..54290438da28 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1964,7 +1964,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+>   	max_vqs = min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
+>   
+>   	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
+> -				 2 * mlx5_vdpa_max_qps(max_vqs), NULL);
+> +				 2 * mlx5_vdpa_max_qps(max_vqs), NULL, false);
+>   	if (IS_ERR(ndev))
+>   		return PTR_ERR(ndev);
+>   
+> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> index 9700a0adcca0..fafc0ee5eb05 100644
+> --- a/drivers/vdpa/vdpa.c
+> +++ b/drivers/vdpa/vdpa.c
+> @@ -72,6 +72,7 @@ static void vdpa_release_dev(struct device *d)
+>    * @nvqs: number of virtqueues supported by this device
+>    * @size: size of the parent structure that contains private data
+>    * @name: name of the vdpa device; optional.
+> + * @use_va: indicate whether virtual address can be used by this device
+>    *
+>    * Driver should use vdpa_alloc_device() wrapper macro instead of
+>    * using this directly.
+> @@ -81,7 +82,8 @@ static void vdpa_release_dev(struct device *d)
+>    */
+>   struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>   					const struct vdpa_config_ops *config,
+> -					int nvqs, size_t size, const char *name)
+> +					int nvqs, size_t size, const char *name,
+> +					bool use_va)
+>   {
+>   	struct vdpa_device *vdev;
+>   	int err = -EINVAL;
+> @@ -92,6 +94,10 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>   	if (!!config->dma_map != !!config->dma_unmap)
+>   		goto err;
+>   
+> +	/* It should only work for the device that use on-chip IOMMU */
+> +	if (use_va && !(config->dma_map || config->set_map))
+> +		goto err;
+> +
+>   	err = -ENOMEM;
+>   	vdev = kzalloc(size, GFP_KERNEL);
+>   	if (!vdev)
+> @@ -108,6 +114,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>   	vdev->config = config;
+>   	vdev->features_valid = false;
+>   	vdev->nvqs = nvqs;
+> +	vdev->use_va = use_va;
+>   
+>   	if (name)
+>   		err = dev_set_name(&vdev->dev, "%s", name);
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> index 5cfc262ce055..3a9a2dd4e987 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> @@ -235,7 +235,7 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+>   		ops = &vdpasim_config_ops;
+>   
+>   	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
+> -				    dev_attr->nvqs, dev_attr->name);
+> +				    dev_attr->nvqs, dev_attr->name, false);
+>   	if (!vdpasim)
+>   		goto err_alloc;
+>   
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 70857fe3263c..93769ace34df 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -480,21 +480,31 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>   static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
+>   {
+>   	struct vhost_dev *dev = &v->vdev;
+> +	struct vdpa_device *vdpa = v->vdpa;
+>   	struct vhost_iotlb *iotlb = dev->iotlb;
+>   	struct vhost_iotlb_map *map;
+> +	struct vdpa_map_file *map_file;
+>   	struct page *page;
+>   	unsigned long pfn, pinned;
+>   
+>   	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
+> -		pinned = map->size >> PAGE_SHIFT;
+> -		for (pfn = map->addr >> PAGE_SHIFT;
+> -		     pinned > 0; pfn++, pinned--) {
+> -			page = pfn_to_page(pfn);
+> -			if (map->perm & VHOST_ACCESS_WO)
+> -				set_page_dirty_lock(page);
+> -			unpin_user_page(page);
+> +		if (!vdpa->use_va) {
+> +			pinned = map->size >> PAGE_SHIFT;
+> +			for (pfn = map->addr >> PAGE_SHIFT;
+> +			     pinned > 0; pfn++, pinned--) {
+> +				page = pfn_to_page(pfn);
+> +				if (map->perm & VHOST_ACCESS_WO)
+> +					set_page_dirty_lock(page);
+> +				unpin_user_page(page);
+> +			}
+> +			atomic64_sub(map->size >> PAGE_SHIFT,
+> +					&dev->mm->pinned_vm);
+> +		} else {
+> +			map_file = (struct vdpa_map_file *)map->opaque;
+> +			if (map_file->file)
+> +				fput(map_file->file);
+> +			kfree(map_file);
+>   		}
+> -		atomic64_sub(map->size >> PAGE_SHIFT, &dev->mm->pinned_vm);
+>   		vhost_iotlb_map_free(iotlb, map);
+>   	}
+>   }
+> @@ -530,21 +540,21 @@ static int perm_to_iommu_flags(u32 perm)
+>   	return flags | IOMMU_CACHE;
+>   }
+>   
+> -static int vhost_vdpa_map(struct vhost_vdpa *v,
+> -			  u64 iova, u64 size, u64 pa, u32 perm)
+> +static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
+> +			  u64 size, u64 pa, u32 perm, void *opaque)
+>   {
+>   	struct vhost_dev *dev = &v->vdev;
+>   	struct vdpa_device *vdpa = v->vdpa;
+>   	const struct vdpa_config_ops *ops = vdpa->config;
+>   	int r = 0;
+>   
+> -	r = vhost_iotlb_add_range(dev->iotlb, iova, iova + size - 1,
+> -				  pa, perm);
+> +	r = vhost_iotlb_add_range_ctx(dev->iotlb, iova, iova + size - 1,
+> +				      pa, perm, opaque);
+>   	if (r)
+>   		return r;
+>   
+>   	if (ops->dma_map) {
+> -		r = ops->dma_map(vdpa, iova, size, pa, perm, NULL);
+> +		r = ops->dma_map(vdpa, iova, size, pa, perm, opaque);
+>   	} else if (ops->set_map) {
+>   		if (!v->in_batch)
+>   			r = ops->set_map(vdpa, dev->iotlb);
+> @@ -552,13 +562,15 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+>   		r = iommu_map(v->domain, iova, pa, size,
+>   			      perm_to_iommu_flags(perm));
+>   	}
+> -
+> -	if (r)
+> +	if (r) {
+>   		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
+> -	else
+> +		return r;
+> +	}
+> +
+> +	if (!vdpa->use_va)
+>   		atomic64_add(size >> PAGE_SHIFT, &dev->mm->pinned_vm);
+>   
+> -	return r;
+> +	return 0;
+>   }
+>   
+>   static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+> @@ -579,10 +591,60 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+>   	}
+>   }
+>   
+> +static int vhost_vdpa_va_map(struct vhost_vdpa *v,
+> +			     u64 iova, u64 size, u64 uaddr, u32 perm)
+> +{
+> +	struct vhost_dev *dev = &v->vdev;
+> +	u64 offset, map_size, map_iova = iova;
+> +	struct vdpa_map_file *map_file;
+> +	struct vm_area_struct *vma;
+> +	int ret;
+> +
+> +	mmap_read_lock(dev->mm);
+> +
+> +	while (size) {
+> +		vma = find_vma(dev->mm, uaddr);
+> +		if (!vma) {
+> +			ret = -EINVAL;
+> +			goto err;
+> +		}
+> +		map_size = min(size, vma->vm_end - uaddr);
+> +		offset = (vma->vm_pgoff << PAGE_SHIFT) + uaddr - vma->vm_start;
+> +		map_file = kzalloc(sizeof(*map_file), GFP_KERNEL);
+> +		if (!map_file) {
+> +			ret = -ENOMEM;
+> +			goto err;
+> +		}
+> +		if (vma->vm_file && (vma->vm_flags & VM_SHARED) &&
+> +			!(vma->vm_flags & (VM_IO | VM_PFNMAP))) {
+> +			map_file->file = get_file(vma->vm_file);
+> +			map_file->offset = offset;
+> +		}
+> +		ret = vhost_vdpa_map(v, map_iova, map_size, uaddr,
+> +				     perm, map_file);
+> +		if (ret) {
+> +			if (map_file->file)
+> +				fput(map_file->file);
+> +			kfree(map_file);
+> +			goto err;
+> +		}
+> +		size -= map_size;
+> +		uaddr += map_size;
+> +		map_iova += map_size;
+> +	}
+> +	mmap_read_unlock(dev->mm);
+> +
+> +	return 0;
+> +err:
+> +	vhost_vdpa_unmap(v, iova, map_iova - iova);
+> +	return ret;
+> +}
+> +
+>   static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   					   struct vhost_iotlb_msg *msg)
+>   {
+>   	struct vhost_dev *dev = &v->vdev;
+> +	struct vdpa_device *vdpa = v->vdpa;
+>   	struct vhost_iotlb *iotlb = dev->iotlb;
+>   	struct page **page_list;
+>   	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+> @@ -601,6 +663,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   				    msg->iova + msg->size - 1))
+>   		return -EEXIST;
+>   
+> +	if (vdpa->use_va)
+> +		return vhost_vdpa_va_map(v, msg->iova, msg->size,
+> +					 msg->uaddr, msg->perm);
+> +
+>   	/* Limit the use of memory for bookkeeping */
+>   	page_list = (struct page **) __get_free_page(GFP_KERNEL);
+>   	if (!page_list)
+> @@ -654,7 +720,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   				csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
+>   				ret = vhost_vdpa_map(v, iova, csize,
+>   						     map_pfn << PAGE_SHIFT,
+> -						     msg->perm);
+> +						     msg->perm, NULL);
+>   				if (ret) {
+>   					/*
+>   					 * Unpin the pages that are left unmapped
+> @@ -683,7 +749,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   
+>   	/* Pin the rest chunk */
+>   	ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) << PAGE_SHIFT,
+> -			     map_pfn << PAGE_SHIFT, msg->perm);
+> +			     map_pfn << PAGE_SHIFT, msg->perm, NULL);
+>   out:
+>   	if (ret) {
+>   		if (nchunks) {
+> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> index 93dca2c328ae..bfae6d780c38 100644
+> --- a/include/linux/vdpa.h
+> +++ b/include/linux/vdpa.h
+> @@ -44,6 +44,7 @@ struct vdpa_mgmt_dev;
+>    * @config: the configuration ops for this device.
+>    * @index: device index
+>    * @features_valid: were features initialized? for legacy guests
+> + * @use_va: indicate whether virtual address can be used by this device
+>    * @nvqs: maximum number of supported virtqueues
+>    * @mdev: management device pointer; caller must setup when registering device as part
+>    *	  of dev_add() mgmtdev ops callback before invoking _vdpa_register_device().
+> @@ -54,6 +55,7 @@ struct vdpa_device {
+>   	const struct vdpa_config_ops *config;
+>   	unsigned int index;
+>   	bool features_valid;
+> +	bool use_va;
+>   	int nvqs;
+>   	struct vdpa_mgmt_dev *mdev;
+>   };
+> @@ -69,6 +71,16 @@ struct vdpa_iova_range {
+>   };
+>   
+>   /**
+> + * Corresponding file area for device memory mapping
+> + * @file: vma->vm_file for the mapping
+> + * @offset: mapping offset in the vm_file
+> + */
+> +struct vdpa_map_file {
+> +	struct file *file;
+> +	u64 offset;
+> +};
+> +
+> +/**
+>    * vDPA_config_ops - operations for configuring a vDPA device.
+>    * Note: vDPA device drivers are required to implement all of the
+>    * operations unless it is mentioned to be optional in the following
+> @@ -250,14 +262,16 @@ struct vdpa_config_ops {
+>   
+>   struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>   					const struct vdpa_config_ops *config,
+> -					int nvqs, size_t size, const char *name);
+> +					int nvqs, size_t size,
+> +					const char *name, bool use_va);
+>   
+> -#define vdpa_alloc_device(dev_struct, member, parent, config, nvqs, name)   \
+> +#define vdpa_alloc_device(dev_struct, member, parent, config, \
+> +			  nvqs, name, use_va) \
+>   			  container_of(__vdpa_alloc_device( \
+>   				       parent, config, nvqs, \
+>   				       sizeof(dev_struct) + \
+>   				       BUILD_BUG_ON_ZERO(offsetof( \
+> -				       dev_struct, member)), name), \
+> +				       dev_struct, member)), name, use_va), \
+>   				       dev_struct, member)
+>   
+>   int vdpa_register_device(struct vdpa_device *vdev);
 
