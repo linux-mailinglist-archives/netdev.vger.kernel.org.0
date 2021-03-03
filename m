@@ -2,69 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 774D932B431
-	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:44:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBE9D32B433
+	for <lists+netdev@lfdr.de>; Wed,  3 Mar 2021 05:44:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578251AbhCCEjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Mar 2021 23:39:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51558 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352805AbhCCEUw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Mar 2021 23:20:52 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id B124A64E87;
-        Wed,  3 Mar 2021 04:20:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614745206;
-        bh=90ddkU2nE+lTNfzsbBUJ6Xv95pzUpvN1bO6XO94LI2k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=joTkRD79wMum6J8LkWPOoDHdHm3vpYL1l81gIFV3wkLWv55M15BcQqAeJNKFpDCqJ
-         eCGQSew2unV91hFB6lpbN0bE5QIEkWgWWcPHMGd8kI/3R+KBUUDETphoBYpKaM78da
-         IkN/jLx91qOnrNEdXPrLRm7YyZqJ8GSzBS3J4P0U+xgbJrlmJPYSHMlWSmP1x9jBli
-         M4ktXU9ZyMgBY8VF75fLr34mkaPD/C/a1ZlfLotbPzVeqRSN/6qtKZwSxhB7YtyEtp
-         bx16EpFsjjPf2nAJLgdhBg71JoPgKfXL7r2lekJTc2awoQGkpy6wiibiTYsgjA/w+y
-         JUv0Dvapi1Ptg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A1E04609E7;
-        Wed,  3 Mar 2021 04:20:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237060AbhCCEkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Mar 2021 23:40:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236734AbhCCE14 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Mar 2021 23:27:56 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2BBC061756;
+        Tue,  2 Mar 2021 20:27:16 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id h82so9346573ybc.13;
+        Tue, 02 Mar 2021 20:27:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fBF8gj9kqNqcjblmL6ZQ3CB+04Ivo3KVBToXOGMBVfo=;
+        b=FyTAgSUwhNXg7siQe2Tp8f81k2FGfBUulUZvHjhyt7vtMiis15M3KCaFuvVm7s1Guz
+         LEjAMrKP6hLv2DwI0YEq0Mj0d4W9pN+gpQF5KDzczDqlsruGA4H53pfhzJxw63k0R4JY
+         psLI8WaPOpGZMkh5mEzPeZwCoKZzvaZ3Ces+Tc3QUioADAfbO8DQ6sd5LEFzv+fYLe6O
+         RS1f79ac7e+rz1knMkPcruRn/0uceeKfuGrcZxkreW+hT3IzZctlGg+XgNJPgvVeEJE1
+         /em3maD8bzK4O0UILA1DqtA2H0GKJTdk1t9B5452TzEz7wUDIydXIY/HxDSRK/tN2ral
+         v5tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fBF8gj9kqNqcjblmL6ZQ3CB+04Ivo3KVBToXOGMBVfo=;
+        b=K8d507hZ6y2C2yHdIHPp7o6Svk3ENvoPuLE4uCui+RI4A4eaDj1z4YktaqbYmAn+sS
+         2GAkAY1smafHow/rKYdMdq+24jvWjS7eDWtywHppCu3QAyU/hSKubEiIq/c+8ufA/iG1
+         F12e6/mDRqjY/w2o0GQDWpNSH/ZMKLeCYfEM2uAuRrBoaBXdD8oiIr7hmGuqCe7ENMfC
+         x+VIr6G0qfB3IyEyu3L4QPlUd6BOllw9vZCiRnZWPJD3UKZ2DYPxhpSFNUcT+nWfJz33
+         wrG5tnvjBoGqWdrDyA58waPPpcbJbdSoxieE92L4Hej9HZHwhpTj5rWG4347hINrPoeK
+         nRCA==
+X-Gm-Message-State: AOAM530A3v1EeRylBlEYui2MMwEgcR0+JmLYrA4R/XtprLOledk8QEjQ
+        jJQ5t5Ypx65kMo0D1azr7Na3ki5/Y4rpxI5KV69SnEEdZmU=
+X-Google-Smtp-Source: ABdhPJz6LxSej6j5jca3f3+Yulb2eQe9Rmjxx4iPWu2s+AGHHWIFJUOGuTT2JGWp48n/dpvrPSGRgZuFIJ70PpUzu68=
+X-Received: by 2002:a25:3d46:: with SMTP id k67mr34222012yba.510.1614745635773;
+ Tue, 02 Mar 2021 20:27:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] tools/runqslower: allow substituting custom
- vmlinux.h for the build
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161474520665.24993.1081140250035171172.git-patchwork-notify@kernel.org>
-Date:   Wed, 03 Mar 2021 04:20:06 +0000
-References: <20210303004010.653954-1-andrii@kernel.org>
-In-Reply-To: <20210303004010.653954-1-andrii@kernel.org>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com, kafai@fb.com
+References: <20210301101859.46045-1-lmb@cloudflare.com> <20210301101859.46045-2-lmb@cloudflare.com>
+In-Reply-To: <20210301101859.46045-2-lmb@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 2 Mar 2021 20:27:04 -0800
+Message-ID: <CAEf4BzYvteVTJkGkyTNK_1YPV8aEQTYxDkW5uXTpWj5SvE4pvg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/5] bpf: consolidate shared test timing code
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Mar 1, 2021 at 2:19 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> Share the timing / signal interruption logic between different
+> implementations of PROG_TEST_RUN. There is a change in behaviour
+> as well. We check the loop exit condition before checking for
+> pending signals. This resolves an edge case where a signal
+> arrives during the last iteration. Instead of aborting with
+> EINTR we return the successful result to user space.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
+>  net/bpf/test_run.c | 141 +++++++++++++++++++++++++--------------------
+>  1 file changed, 78 insertions(+), 63 deletions(-)
+>
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index 58bcb8c849d5..ac8ee36d60cc 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -16,14 +16,78 @@
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/bpf_test_run.h>
+>
+> +struct test_timer {
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
+nit: super generic name, I'd add bpf_ prefix throughout
+(bpf_test_timer, bpf_test_timer_enter, bpf_test_timer_leave, and so
+on)
 
-On Tue, 2 Mar 2021 16:40:10 -0800 you wrote:
-> Just like was done for bpftool and selftests in ec23eb705620 ("tools/bpftool:
-> Allow substituting custom vmlinux.h for the build") and ca4db6389d61
-> ("selftests/bpf: Allow substituting custom vmlinux.h for selftests build"),
-> allow to provide pre-generated vmlinux.h for runqslower build.
-> 
-> Cc: Martin Lau <kafai@fb.com>
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> 
-> [...]
+> +       enum { NO_PREEMPT, NO_MIGRATE } mode;
+> +       u32 i;
+> +       u64 time_start, time_spent;
+> +};
+> +
 
-Here is the summary with links:
-  - [bpf-next] tools/runqslower: allow substituting custom vmlinux.h for the build
-    https://git.kernel.org/bpf/bpf-next/c/303dcc25b5c7
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+[...]
