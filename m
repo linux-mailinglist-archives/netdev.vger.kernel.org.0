@@ -2,42 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8400732C4AE
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABABD32C9C4
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 02:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235041AbhCDAQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:16:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41298 "EHLO mail.kernel.org"
+        id S242857AbhCDBMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 20:12:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354283AbhCDAH6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 19:07:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D8C6C64F42;
-        Thu,  4 Mar 2021 00:07:16 +0000 (UTC)
+        id S1453017AbhCDAlR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 19:41:17 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 82FF264E51;
+        Thu,  4 Mar 2021 00:40:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614816437;
-        bh=Cp69LfU3E0Jl+O7BluBIRN9GzlV1F83qSnc8AEys/VQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=f7GUZooSy51cGbI3nKPk7NhxOEyCXmJrr5RoJopqq0b0UHpUsniDqD1Q7AsyEesk0
-         kuER9jcXNjVGJAjOTCtz0fiwxI1aOHbJPLzldMhESJaebHhd/vwtKOQx2akAn8hZDM
-         AJvPhBkYjen5deG1o5/VtE70NgPmWbUdlLaPiU4hh5yRtPd1lrkVuRJ9vNobxMY470
-         eNW6qsLqRhFnEHebcU54BbifpQInr+7kuydsN5uC5Stfby9bHXsueJpX70yi9PNFlW
-         9Ts12KQzVgZg1sYI8lHM2Nl1GFd9cJ23ydVSZLpQi73fpvHYxxHgPwJG7dviJci8wV
-         WTq0yEpv4wLmg==
-Date:   Wed, 3 Mar 2021 16:07:15 -0800
+        s=k20201202; t=1614818436;
+        bh=jwIQue5ED+l/+m/HVgX1Ad5H+tP2gso4JEfV/YeNyAM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=bvHKNi3Do5hE6gQxIrowlDt2hSUVcw1I0Sh7PqozQ8cJ5N7BqK1TtCoifhctA3WjT
+         aywtS8ALqTL5KRSu9GKRpc62HK9TEE254toOAM5F/s35oivD8yjNcXTdYAVp8VdM6h
+         GErx/XWfSISNnCw1SJ9K6IV2TlnAODgk5YSG1PSXPVMqy8cVXZozYOK0rX0PUDO7lj
+         aj/j3cKXGVm7rVllsXmWYy+sPSm+5a6hruS23Vk3jeIRtKSHxXMCReRClq9hcOEYiN
+         GDVRyZcARI38AAqrR+/aeNCTJtXYOLUShhALivd/KbTnvViEenFZpEbX8pdXFYDfjh
+         BQ+LLf+luWwXw==
+Date:   Wed, 3 Mar 2021 16:40:35 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@fb.com>, Neil Spring <ntspring@fb.com>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: Re: [PATCH net] net: tcp: don't allocate fast clones for fastopen
- SYN
-Message-ID: <20210303160715.2333d0ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
-References: <20210302060753.953931-1-kuba@kernel.org>
-        <CANn89iLaQuCGeWOh7Hp8X9dL09FhPP8Nwj+zV=rhYX7Cq7efpg@mail.gmail.com>
-        <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
+To:     "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Cc:     erhard_f@mailbox.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: seqlock lockdep false positives?
+Message-ID: <20210303164035.1b9a1d07@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,89 +37,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 3 Mar 2021 13:35:53 -0800 Alexander Duyck wrote:
-> On Tue, Mar 2, 2021 at 1:37 PM Eric Dumazet <edumazet@google.com> wrote:
-> > On Tue, Mar 2, 2021 at 7:08 AM Jakub Kicinski <kuba@kernel.org> wrote:  
-> > > When receiver does not accept TCP Fast Open it will only ack
-> > > the SYN, and not the data. We detect this and immediately queue
-> > > the data for (re)transmission in tcp_rcv_fastopen_synack().
-> > >
-> > > In DC networks with very low RTT and without RFS the SYN-ACK
-> > > may arrive before NIC driver reported Tx completion on
-> > > the original SYN. In which case skb_still_in_host_queue()
-> > > returns true and sender will need to wait for the retransmission
-> > > timer to fire milliseconds later.
-> > >
-> > > Revert back to non-fast clone skbs, this way
-> > > skb_still_in_host_queue() won't prevent the recovery flow
-> > > from completing.
-> > >
-> > > Suggested-by: Eric Dumazet <edumazet@google.com>
-> > > Fixes: 355a901e6cf1 ("tcp: make connect() mem charging friendly")  
-> >
-> > Hmmm, not sure if this Fixes: tag makes sense.
-> >
-> > Really, if we delay TX completions by say 10 ms, other parts of the
-> > stack will misbehave anyway.
-> >
-> > Also, backporting this patch up to linux-3.19 is going to be tricky.
-> >
-> > The real issue here is that skb_still_in_host_queue() can give a false positive.
-> >
-> > I have mixed feelings here, as you can read my answer :/
-> >
-> > Maybe skb_still_in_host_queue() signal should not be used when a part
-> > of the SKB has been received/acknowledged by the remote peer
-> > (in this case the SYN part).
-> >
-> > Alternative is that drivers unable to TX complete their skbs in a
-> > reasonable time should call skb_orphan()
-> >  to avoid skb_unclone() penalties (and this skb_still_in_host_queue() issue)
-> >
-> > If you really want to play and delay TX completions, maybe provide a
-> > way to disable skb_still_in_host_queue() globally,
-> > using a static key ?  
-> 
-> The problem as I see it is that the original fclone isn't what we sent
-> out on the wire and that is confusing things. What we sent was a SYN
-> with data, but what we have now is just a data frame that hasn't been
-> put out on the wire yet.
+Hi Ahmed!
 
-Not sure I understand why it's the key distinction here. Is it
-re-transmitting part of the frame or having different flags?
-Is re-transmit of half of a GSO skb also considered not the same?
+Erhard is reporting a lockdep splat in drivers/net/ethernet/realtek/8139too.c
 
-To me the distinction is that the receiver has implicitly asked
-us for the re-transmission. If it was requested by SACK we should 
-ignore "in_queue" for the first transmission as well, even if the
-skb state is identical.
+https://bugzilla.kernel.org/show_bug.cgi?id=211575
 
-> I wonder if we couldn't get away with doing something like adding a
-> fourth option of SKB_FCLONE_MODIFIED that we could apply to fastopen
-> skbs? That would keep the skb_still_in_host queue from triggering as
-> we would be changing the state from SKB_FCLONE_ORIG to
-> SKB_FCLONE_MODIFIED for the skb we store in the retransmit queue. In
-> addition if we have to clone it again and the fclone reference count
-> is 1 we could reset it back to SKB_FCLONE_ORIG.
+I can't quite grasp how that happens it looks like it's the Rx
+lock/syncp on one side and the Tx lock on the other side :S
 
-The unused value of fclone was tempting me as well :)
+================================
+WARNING: inconsistent lock state
+5.12.0-rc1-Pentium4 #2 Not tainted
+--------------------------------
+inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
+swapper/0/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
+c113c804 (&syncp->seq#2){?.-.}-{0:0}, at: rtl8139_poll+0x251/0x350
+{IN-HARDIRQ-W} state was registered at:
+  lock_acquire+0x239/0x2c5
+  do_write_seqcount_begin_nested.constprop.0+0x1a/0x1f
+  rtl8139_interrupt+0x346/0x3cb
+  __handle_irq_event_percpu+0xe5/0x20c
+  handle_irq_event_percpu+0x17/0x3d
+  handle_irq_event+0x29/0x42
+  handle_fasteoi_irq+0x67/0xd7
+  __handle_irq+0x7d/0x9c
+  __common_interrupt+0x68/0xc3
+  common_interrupt+0x22/0x35
+  asm_common_interrupt+0x106/0x180
+  _raw_spin_unlock_irqrestore+0x41/0x45
+  __mod_timer+0x1cd/0x1d8
+  mod_timer+0xa/0xc
+  mld_ifc_start_timer+0x24/0x37
+  mld_ifc_timer_expire+0x1b0/0x1c0
+  call_timer_fn+0xfe/0x201
+  __run_timers+0x134/0x159
+  run_timer_softirq+0x14/0x27
+  __do_softirq+0x15f/0x307
+  call_on_stack+0x40/0x46
+  do_softirq_own_stack+0x1c/0x1e
+  __irq_exit_rcu+0x4f/0x85
+  irq_exit_rcu+0x8/0x11
+  sysvec_apic_timer_interrupt+0x20/0x2e
+  handle_exception_return+0x0/0xaf
+  default_idle+0xa/0xc
+  arch_cpu_idle+0xd/0xf
+  default_idle_call+0x48/0x74
+  do_idle+0xb7/0x1c3
+  cpu_startup_entry+0x19/0x1b
+  rest_init+0x11d/0x120
+  arch_call_rest_init+0x8/0xb
+  start_kernel+0x417/0x425
+  i386_start_kernel+0x43/0x45
+  startup_32_smp+0x164/0x168
+irq event stamp: 26328
+hardirqs last  enabled at (26328): [<c4362e64>] __slab_alloc.constprop.0+0x3e/0x59
+hardirqs last disabled at (26327): [<c4362e47>] __slab_alloc.constprop.0+0x21/0x59
+softirqs last  enabled at (26314): [<c4789f1f>] __do_softirq+0x2d7/0x307
+softirqs last disabled at (26321): [<c420fecb>] call_on_stack+0x40/0x46
 
-AFAICT we have at least these options:
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-1 - don't use a fclone skb [v1]
+       CPU0
+       ----
+  lock(&syncp->seq#2);
+  <Interrupt>
+    lock(&syncp->seq#2);
 
-2 - mark the fclone as "special" at Tx to escape the "in queue" check
+ *** DEADLOCK ***
 
-3 - indicate to retansmit that we're sure initial tx is out [v2]
+1 lock held by swapper/0/0:
+ #0: c113c8a4 (&tp->rx_lock){+.-.}-{2:2}, at: rtl8139_poll+0x31/0x350
 
-4 - same as above but with a bool / flag instead of negative seg
-
-5 - use the fclone bits but mark them at Rx when we see a rtx request
-
-6 - check the skb state in retransmit to match the TFO case (IIUC
-    Yuchung's suggestion)
-
-#5 is my favorite but I didn't know how to extend it to fast
-re-transmits so I just stuck to the suggestion from the ML :)
-
-WDYT? Eric, Yuchung?
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.12.0-rc1-Pentium4 #2
+Hardware name:  /FS51, BIOS 6.00 PG 12/02/2003
+Call Trace:
+ <SOFTIRQ>
+ dump_stack+0x78/0xa5
+ print_usage_bug+0x17d/0x188
+ mark_lock.part.0+0xfd/0x27a
+ ? hlock_class+0x18/0x58
+ ? mark_lock.part.0+0x33/0x27a
+ ? ___slab_alloc.constprop.0+0x2b7/0x2d1
+ __lock_acquire+0x458/0x1488
+ ? rcu_read_lock_sched_held+0x23/0x4a
+ ? trace_kmalloc+0x8c/0xb9
+ ? __kmalloc_track_caller+0x130/0x143
+ lock_acquire+0x239/0x2c5
+ ? rtl8139_poll+0x251/0x350
+ ? __alloc_skb+0xb7/0x102
+ do_write_seqcount_begin_nested.constprop.0+0x1a/0x1f
+ ? rtl8139_poll+0x251/0x350
+ rtl8139_poll+0x251/0x350
+ __napi_poll+0x24/0xf1
+ net_rx_action+0xbb/0x177
+ __do_softirq+0x15f/0x307
+ ? __entry_text_end+0x5/0x5
+ call_on_stack+0x40/0x46
+ </SOFTIRQ>
+ ? __irq_exit_rcu+0x4f/0x85
+ ? irq_exit_rcu+0x8/0x11
+ ? common_interrupt+0x27/0x35
+ ? asm_common_interrupt+0x106/0x180
+ ? ldsem_down_write+0x1f/0x1f
+ ? newidle_balance+0x1d0/0x3ab
+ ? default_idle+0xa/0xc
+ ? __pci_setup_bridge+0x4e/0x64
+ ? default_idle+0xa/0xc
+ ? arch_cpu_idle+0xd/0xf
+ ? default_idle_call+0x48/0x74
+ ? do_idle+0xb7/0x1c3
+ ? cpu_startup_entry+0x19/0x1b
+ ? rest_init+0x11d/0x120
+ ? arch_call_rest_init+0x8/0xb
+ ? start_kernel+0x417/0x425
+ ? i386_start_kernel+0x43/0x45
+ ? startup_32_smp+0x164/0x168
