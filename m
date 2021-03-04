@@ -2,227 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B691A32CD03
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 07:43:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C2D32CD05
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 07:44:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235497AbhCDGmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 01:42:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50351 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235522AbhCDGle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 01:41:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614840009;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mhc8+IYGUbK4OnkoVwRYTHNFwVq12BuILz0iHs1E/Uo=;
-        b=YnTOt/rkccfkC5xhxe0ZuXQBgwN/dGozzo5t10dls3H2x/ZW3hh5uE2qygmzsmOsHUj2o7
-        avMAhTkM65e8eab2SOBjCw0cdMgTl+2AXGKwRVNOWOReUK1Q6uBS35rw6R3tfx4R79bzE3
-        gfuhW+wB2/rbfVqLVigR78T0pqMPrxY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-349-M0FYuybqNzCq9i68Eos2Cw-1; Thu, 04 Mar 2021 01:40:05 -0500
-X-MC-Unique: M0FYuybqNzCq9i68Eos2Cw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 81669100CC8B;
-        Thu,  4 Mar 2021 06:40:02 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-12-113.pek2.redhat.com [10.72.12.113])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B93D65C1C2;
-        Thu,  4 Mar 2021 06:39:50 +0000 (UTC)
-Subject: Re: [RFC v4 09/11] Documentation: Add documentation for VDUSE
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20210223115048.435-1-xieyongji@bytedance.com>
- <20210223115048.435-10-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <366f2dcf-51ab-4d66-9c94-517349ef0bdd@redhat.com>
-Date:   Thu, 4 Mar 2021 14:39:49 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S235517AbhCDGmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 01:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235483AbhCDGlk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 01:41:40 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB742C061574;
+        Wed,  3 Mar 2021 22:40:59 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id a24so15551072plm.11;
+        Wed, 03 Mar 2021 22:40:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XCS1qy8ob7XsXX9kc+oSLC6Sq4kYNTiKKYp1XNnNPYo=;
+        b=MIrk1X/dYuDV1HYZaVsG13iy/qkH8SxReIQYTMCHRi1OKLtkdpmDvlkGFS0X2q9Amc
+         Dh/2qGLzT6dQfNcgsXIpqjXT6HsR63zslvuuIYffZvrGPpB/JrT6jogbWC0iTKn4DYwe
+         h5az6SUIo41VtDoUpgeKBewMX75G8EyZ6dZoXiooLMbiX8glHarLMHVxe1BqU/PftaMT
+         1N0H3Bt4v6oCwY99zaJcZ0H5EfuCqE8Nnt36xeJo08/6YEXbCbhCSWQ/091BYod6sFsV
+         n7Xjl0rmgwo2tbYIWka0N92+p8lmhQILasB4UB66csnoAVIM/mnNLcCa0x4lVBivFAZi
+         DUrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XCS1qy8ob7XsXX9kc+oSLC6Sq4kYNTiKKYp1XNnNPYo=;
+        b=gkyQKa1MCePL3ZgbJRCLAHD5QUF9BIXYJSuVdqrlX5gbjJj6Db0nWNQ/BeSLdL+qAJ
+         yzFLqESW/q6ZnbZeQ/otfOnxA17E8wE9lHiSy6p7OQ6PsUqVhqrNK4nX0e35Jba4PYI+
+         epbrFqKhlNuMVeWu3DgQ5e6RuEc5pTQoPYVCI8v5cjevUxcJ8fIwLHhpkNr2U4PIedaq
+         47DJ4KITKWN0rajDEAAKGouWjPQjKEhe3V2TNNufQlVUZ1KOq8uuImT9ozL7OeUPO5a0
+         JvoZiQxat2s1ZF1aE8X+HYc79Uig6xLJPLmoRWFa6M3VaNDE9hLCWtGe10j2lbugwil1
+         9NRQ==
+X-Gm-Message-State: AOAM531OwqJWCGZ8+fkUEjRkUFqD6mqBkAOGlJ5w3yrSmzLmH6qcHHSM
+        rHtJ0LCC0OPG4CEbQFQv0iv2xxc6Ht8bakZy
+X-Google-Smtp-Source: ABdhPJwkzlb6j0JpXmV/DZa0PWIzkaAwY9COyMFlQEVvWQdkBjkA5pMBdkeZatO9RORIuW/ZCn8YXw==
+X-Received: by 2002:a17:902:344:b029:e4:a7ab:2e55 with SMTP id 62-20020a1709020344b02900e4a7ab2e55mr2781692pld.63.1614840059491;
+        Wed, 03 Mar 2021 22:40:59 -0800 (PST)
+Received: from localhost.localdomain ([103.112.79.202])
+        by smtp.gmail.com with ESMTPSA id t10sm8712550pjf.30.2021.03.03.22.40.55
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Mar 2021 22:40:58 -0800 (PST)
+From:   Xuesen Huang <hxseverything@gmail.com>
+To:     daniel@iogearbox.net
+Cc:     davem@davemloft.net, bpf@vger.kernel.org,
+        willemdebruijn.kernel@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xiyou.wangcong@gmail.com,
+        Xuesen Huang <huangxuesen@kuaishou.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Zhiyong Cheng <chengzhiyong@kuaishou.com>,
+        Li Wang <wangli09@kuaishou.com>
+Subject: [PATCH/v5] bpf: add bpf_skb_adjust_room flag BPF_F_ADJ_ROOM_ENCAP_L2_ETH
+Date:   Thu,  4 Mar 2021 14:40:46 +0800
+Message-Id: <20210304064046.6232-1-hxseverything@gmail.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-In-Reply-To: <20210223115048.435-10-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Xuesen Huang <huangxuesen@kuaishou.com>
 
-On 2021/2/23 7:50 下午, Xie Yongji wrote:
-> VDUSE (vDPA Device in Userspace) is a framework to support
-> implementing software-emulated vDPA devices in userspace. This
-> document is intended to clarify the VDUSE design and usage.
->
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> ---
->   Documentation/userspace-api/index.rst |   1 +
->   Documentation/userspace-api/vduse.rst | 112 ++++++++++++++++++++++++++++++++++
->   2 files changed, 113 insertions(+)
->   create mode 100644 Documentation/userspace-api/vduse.rst
->
-> diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api/index.rst
-> index acd2cc2a538d..f63119130898 100644
-> --- a/Documentation/userspace-api/index.rst
-> +++ b/Documentation/userspace-api/index.rst
-> @@ -24,6 +24,7 @@ place where this information is gathered.
->      ioctl/index
->      iommu
->      media/index
-> +   vduse
->   
->   .. only::  subproject and html
->   
-> diff --git a/Documentation/userspace-api/vduse.rst b/Documentation/userspace-api/vduse.rst
-> new file mode 100644
-> index 000000000000..2a20e686bb59
-> --- /dev/null
-> +++ b/Documentation/userspace-api/vduse.rst
-> @@ -0,0 +1,112 @@
-> +==================================
-> +VDUSE - "vDPA Device in Userspace"
-> +==================================
-> +
-> +vDPA (virtio data path acceleration) device is a device that uses a
-> +datapath which complies with the virtio specifications with vendor
-> +specific control path. vDPA devices can be both physically located on
-> +the hardware or emulated by software. VDUSE is a framework that makes it
-> +possible to implement software-emulated vDPA devices in userspace.
-> +
-> +How VDUSE works
-> +------------
-> +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
-> +the character device (/dev/vduse/control). Then a device file with the
-> +specified name (/dev/vduse/$NAME) will appear, which can be used to
-> +implement the userspace vDPA device's control path and data path.
+bpf_skb_adjust_room sets the inner_protocol as skb->protocol for packets
+encapsulation. But that is not appropriate when pushing Ethernet header.
 
+Add an option to further specify encap L2 type and set the inner_protocol
+as ETH_P_TEB.
 
-It's better to mention that in order to le thte device to be registered 
-on the bus, admin need to use the management API(netlink) to create the 
-vDPA device.
+Suggested-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
+Signed-off-by: Zhiyong Cheng <chengzhiyong@kuaishou.com>
+Signed-off-by: Li Wang <wangli09@kuaishou.com>
+---
+ include/uapi/linux/bpf.h       |  5 +++++
+ net/core/filter.c              | 11 ++++++++++-
+ tools/include/uapi/linux/bpf.h |  5 +++++
+ 3 files changed, 20 insertions(+), 1 deletion(-)
 
-Some codes to demnonstrate how to create the device will be better.
-
-
-> +
-> +To implement control path, a message-based communication protocol and some
-> +types of control messages are introduced in the VDUSE framework:
-> +
-> +- VDUSE_SET_VQ_ADDR: Set the vring address of virtqueue.
-> +
-> +- VDUSE_SET_VQ_NUM: Set the size of virtqueue
-> +
-> +- VDUSE_SET_VQ_READY: Set ready status of virtqueue
-> +
-> +- VDUSE_GET_VQ_READY: Get ready status of virtqueue
-> +
-> +- VDUSE_SET_VQ_STATE: Set the state for virtqueue
-> +
-> +- VDUSE_GET_VQ_STATE: Get the state for virtqueue
-> +
-> +- VDUSE_SET_FEATURES: Set virtio features supported by the driver
-> +
-> +- VDUSE_GET_FEATURES: Get virtio features supported by the device
-> +
-> +- VDUSE_SET_STATUS: Set the device status
-> +
-> +- VDUSE_GET_STATUS: Get the device status
-> +
-> +- VDUSE_SET_CONFIG: Write to device specific configuration space
-> +
-> +- VDUSE_GET_CONFIG: Read from device specific configuration space
-> +
-> +- VDUSE_UPDATE_IOTLB: Notify userspace to update the memory mapping in device IOTLB
-> +
-> +Those control messages are mostly based on the vdpa_config_ops in
-> +include/linux/vdpa.h which defines a unified interface to control
-> +different types of vdpa device. Userspace needs to read()/write()
-> +on the VDUSE device file to receive/reply those control messages
-> +from/to VDUSE kernel module as follows:
-> +
-> +.. code-block:: c
-> +
-> +	static int vduse_message_handler(int dev_fd)
-> +	{
-> +		int len;
-> +		struct vduse_dev_request req;
-> +		struct vduse_dev_response resp;
-> +
-> +		len = read(dev_fd, &req, sizeof(req));
-> +		if (len != sizeof(req))
-> +			return -1;
-> +
-> +		resp.request_id = req.unique;
-> +
-> +		switch (req.type) {
-> +
-> +		/* handle different types of message */
-> +
-> +		}
-> +
-> +		len = write(dev_fd, &resp, sizeof(resp));
-> +		if (len != sizeof(resp))
-> +			return -1;
-> +
-> +		return 0;
-> +	}
-> +
-> +In the deta path, vDPA device's iova regions will be mapped into userspace
-> +with the help of VDUSE_IOTLB_GET_FD ioctl on the VDUSE device file:
-> +
-> +- VDUSE_IOTLB_GET_FD: get the file descriptor to iova region. Userspace can
-> +  access this iova region by passing the fd to mmap().
-
-
-It would be better to have codes to explain how it is expected to work here.
-
-
-> +
-> +Besides, the following ioctls on the VDUSE device file are provided to support
-> +interrupt injection and setting up eventfd for virtqueue kicks:
-> +
-> +- VDUSE_VQ_SETUP_KICKFD: set the kickfd for virtqueue, this eventfd is used
-> +  by VDUSE kernel module to notify userspace to consume the vring.
-> +
-> +- VDUSE_INJECT_VQ_IRQ: inject an interrupt for specific virtqueue
-> +
-> +- VDUSE_INJECT_CONFIG_IRQ: inject a config interrupt
-> +
-> +MMU-based IOMMU Driver
-> +----------------------
-> +In virtio-vdpa case, VDUSE framework implements an MMU-based on-chip IOMMU
-> +driver to support mapping the kernel DMA buffer into the userspace iova
-> +region dynamically.
-> +
-> +The basic idea behind this driver is treating MMU (VA->PA) as IOMMU (IOVA->PA).
-> +The driver will set up MMU mapping instead of IOMMU mapping for the DMA transfer
-> +so that the userspace process is able to use its virtual address to access
-> +the DMA buffer in kernel.
-> +
-> +And to avoid security issue, a bounce-buffering mechanism is introduced to
-> +prevent userspace accessing the original buffer directly which may contain other
-> +kernel data.
-
-
-It's worth to mention this is designed for virtio-vdpa (kernel virtio 
-drivers).
-
-Thanks
-
-
->   During the mapping, unmapping, the driver will copy the data from
-> +the original buffer to the bounce buffer and back, depending on the direction of
-> +the transfer. And the bounce-buffer addresses will be mapped into the user address
-> +space instead of the original one.
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 77d7c1b..d791596 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
+  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
+  *		  type; *len* is the length of the inner MAC header.
+  *
++ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
++ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
++ *		  L2 type as Ethernet.
++ *
+  * 		A call to this helper is susceptible to change the underlying
+  * 		packet buffer. Therefore, at load time, all checks on pointers
+  * 		previously done by the verifier are invalidated and must be
+@@ -4088,6 +4092,7 @@ enum {
+ 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
+ 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
+ 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
++	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
+ };
+ 
+ enum {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 255aeee..8d1fb61 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3412,6 +3412,7 @@ static u32 bpf_skb_net_base_len(const struct sk_buff *skb)
+ 					 BPF_F_ADJ_ROOM_ENCAP_L3_MASK | \
+ 					 BPF_F_ADJ_ROOM_ENCAP_L4_GRE | \
+ 					 BPF_F_ADJ_ROOM_ENCAP_L4_UDP | \
++					 BPF_F_ADJ_ROOM_ENCAP_L2_ETH | \
+ 					 BPF_F_ADJ_ROOM_ENCAP_L2( \
+ 					  BPF_ADJ_ROOM_ENCAP_L2_MASK))
+ 
+@@ -3448,6 +3449,10 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
+ 		    flags & BPF_F_ADJ_ROOM_ENCAP_L4_UDP)
+ 			return -EINVAL;
+ 
++		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH &&
++		    inner_mac_len < ETH_HLEN)
++			return -EINVAL;
++
+ 		if (skb->encapsulation)
+ 			return -EALREADY;
+ 
+@@ -3466,7 +3471,11 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
+ 		skb->inner_mac_header = inner_net - inner_mac_len;
+ 		skb->inner_network_header = inner_net;
+ 		skb->inner_transport_header = inner_trans;
+-		skb_set_inner_protocol(skb, skb->protocol);
++
++		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH)
++			skb_set_inner_protocol(skb, htons(ETH_P_TEB));
++		else
++			skb_set_inner_protocol(skb, skb->protocol);
+ 
+ 		skb->encapsulation = 1;
+ 		skb_set_network_header(skb, mac_len);
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 77d7c1b..d791596 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
+  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
+  *		  type; *len* is the length of the inner MAC header.
+  *
++ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
++ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
++ *		  L2 type as Ethernet.
++ *
+  * 		A call to this helper is susceptible to change the underlying
+  * 		packet buffer. Therefore, at load time, all checks on pointers
+  * 		previously done by the verifier are invalidated and must be
+@@ -4088,6 +4092,7 @@ enum {
+ 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
+ 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
+ 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
++	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
+ };
+ 
+ enum {
+-- 
+1.8.3.1
 
