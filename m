@@ -2,104 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C8C32C4AD
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8400732C4AE
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 01:54:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450287AbhCDAQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:16:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391877AbhCCW6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 17:58:01 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B89CC0613D9
-        for <netdev@vger.kernel.org>; Wed,  3 Mar 2021 14:55:17 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id bd6so19041407edb.10
-        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 14:55:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nNfmdMd0q/KJcPW/Pt2XOjgMWmsyCvOwypPBu+510F8=;
-        b=di36/4MerspWPQL3Hcu11fHLk90w33FzG8F9I72a+ih/Ph3wO5+iwcfG3gZdc1wx2K
-         4N7YuZdmj3W7dzyLiBk0pBPcxPKCgtuNNqjdUtMF4o30UBYDekj6LORZa2ywnCMOPsfd
-         Xtt2ySEJ4cByLi4V4gF8u7b024EixIKviB9vAHLgrKKgc1k6VSKXe5hdvHLsRMuVGuaC
-         qNRJ6N1CIaBAKSXBADNi7J/xkgxQaOtxVeDmgo9S2A5KnUhlJkuQ7LLMajiy8Wu0GMLt
-         iNYfAWEBtp2sPir90BDuUDCNcGnmsuv5xBlg3qazp2XfH7E1HqkWosB0ulNgTqX67JdV
-         qtPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nNfmdMd0q/KJcPW/Pt2XOjgMWmsyCvOwypPBu+510F8=;
-        b=f80dleLOJB+4GACGBkWjQy2MS8J/ei2h/75XcYFKwtcsIaRlLmczWejTkLB4/23fqe
-         vRpBq5sAvVfxpDemfxHQAbnF/JFxne/yuCpugjLRyeXax9vdQd7Ktc282rrcJXDmSPRB
-         qVLtCqNVz2xUrCNFsm0cV2xB2qqdIWkdwNy6GQB3WiEYV48S8lezjH+5Oc4kQ1ReGQ9/
-         YUt8Brd0DILwUWRyLu0+eXsMEiJASb8CD4ibd+acmLwCwLd9P7paNgH10qWmCbC4J0qP
-         2QaY+XMggrohs4iaAXvciq3Bc3f4sD4C8X7BalQurJVIiHFF3YxoFMSlryGKJQfhed7/
-         /8jQ==
-X-Gm-Message-State: AOAM530te3a48lgbsz5tPlRhIff+r4v7hNBWHxl6Pv0fhAk4M3NF2HHO
-        qiZgnBlmr0cMI0mC2JCP+JfZMDF/B8IpJ8K91d8d
-X-Google-Smtp-Source: ABdhPJyPKOFDLP4ZDIj9l7E7eyd/qGHvPBYKaGfRVFgSPGmbB0dG8m09mNyz2IEVAM1sB+qKVD0k1rI7v/yVQXju5D4=
-X-Received: by 2002:a50:ee05:: with SMTP id g5mr1412810eds.164.1614812115906;
- Wed, 03 Mar 2021 14:55:15 -0800 (PST)
+        id S235041AbhCDAQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 19:16:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41298 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1354283AbhCDAH6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 19:07:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D8C6C64F42;
+        Thu,  4 Mar 2021 00:07:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614816437;
+        bh=Cp69LfU3E0Jl+O7BluBIRN9GzlV1F83qSnc8AEys/VQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=f7GUZooSy51cGbI3nKPk7NhxOEyCXmJrr5RoJopqq0b0UHpUsniDqD1Q7AsyEesk0
+         kuER9jcXNjVGJAjOTCtz0fiwxI1aOHbJPLzldMhESJaebHhd/vwtKOQx2akAn8hZDM
+         AJvPhBkYjen5deG1o5/VtE70NgPmWbUdlLaPiU4hh5yRtPd1lrkVuRJ9vNobxMY470
+         eNW6qsLqRhFnEHebcU54BbifpQInr+7kuydsN5uC5Stfby9bHXsueJpX70yi9PNFlW
+         9Ts12KQzVgZg1sYI8lHM2Nl1GFd9cJ23ydVSZLpQi73fpvHYxxHgPwJG7dviJci8wV
+         WTq0yEpv4wLmg==
+Date:   Wed, 3 Mar 2021 16:07:15 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@fb.com>, Neil Spring <ntspring@fb.com>,
+        Yuchung Cheng <ycheng@google.com>
+Subject: Re: [PATCH net] net: tcp: don't allocate fast clones for fastopen
+ SYN
+Message-ID: <20210303160715.2333d0ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
+References: <20210302060753.953931-1-kuba@kernel.org>
+        <CANn89iLaQuCGeWOh7Hp8X9dL09FhPP8Nwj+zV=rhYX7Cq7efpg@mail.gmail.com>
+        <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
 MIME-Version: 1.0
-References: <000000000000f022ff05bca3d9a3@google.com> <CAHC9VhT5DJzk9MVRHJtO7kR1RVkGW+WRx8xt_xGS01H3HLm3RA@mail.gmail.com>
-In-Reply-To: <CAHC9VhT5DJzk9MVRHJtO7kR1RVkGW+WRx8xt_xGS01H3HLm3RA@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 3 Mar 2021 17:55:04 -0500
-Message-ID: <CAHC9VhQrwHhi_ODP2zC5FrF2LvVMctp57hJ3JqmQ09Ej3nSpVg@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Write in cipso_v4_doi_putdef
-To:     syzbot <syzbot+521772a90166b3fca21f@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 3, 2021 at 11:20 AM Paul Moore <paul@paul-moore.com> wrote:
-> On Wed, Mar 3, 2021 at 10:53 AM syzbot
-> <syzbot+521772a90166b3fca21f@syzkaller.appspotmail.com> wrote:
+On Wed, 3 Mar 2021 13:35:53 -0800 Alexander Duyck wrote:
+> On Tue, Mar 2, 2021 at 1:37 PM Eric Dumazet <edumazet@google.com> wrote:
+> > On Tue, Mar 2, 2021 at 7:08 AM Jakub Kicinski <kuba@kernel.org> wrote:  
+> > > When receiver does not accept TCP Fast Open it will only ack
+> > > the SYN, and not the data. We detect this and immediately queue
+> > > the data for (re)transmission in tcp_rcv_fastopen_synack().
+> > >
+> > > In DC networks with very low RTT and without RFS the SYN-ACK
+> > > may arrive before NIC driver reported Tx completion on
+> > > the original SYN. In which case skb_still_in_host_queue()
+> > > returns true and sender will need to wait for the retransmission
+> > > timer to fire milliseconds later.
+> > >
+> > > Revert back to non-fast clone skbs, this way
+> > > skb_still_in_host_queue() won't prevent the recovery flow
+> > > from completing.
+> > >
+> > > Suggested-by: Eric Dumazet <edumazet@google.com>
+> > > Fixes: 355a901e6cf1 ("tcp: make connect() mem charging friendly")  
 > >
-> > Hello,
+> > Hmmm, not sure if this Fixes: tag makes sense.
 > >
-> > syzbot found the following issue on:
+> > Really, if we delay TX completions by say 10 ms, other parts of the
+> > stack will misbehave anyway.
 > >
-> > HEAD commit:    7a7fd0de Merge branch 'kmap-conversion-for-5.12' of git://..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=164a74dad00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=779a2568b654c1c6
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=521772a90166b3fca21f
-> > compiler:       Debian clang version 11.0.1-2
+> > Also, backporting this patch up to linux-3.19 is going to be tricky.
 > >
-> > Unfortunately, I don't have any reproducer for this issue yet.
+> > The real issue here is that skb_still_in_host_queue() can give a false positive.
 > >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+521772a90166b3fca21f@syzkaller.appspotmail.com
+> > I have mixed feelings here, as you can read my answer :/
 > >
-> > ==================================================================
-> > BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
-> > BUG: KASAN: use-after-free in atomic_fetch_sub_release include/asm-generic/atomic-instrumented.h:220 [inline]
-> > BUG: KASAN: use-after-free in __refcount_sub_and_test include/linux/refcount.h:272 [inline]
-> > BUG: KASAN: use-after-free in __refcount_dec_and_test include/linux/refcount.h:315 [inline]
-> > BUG: KASAN: use-after-free in refcount_dec_and_test include/linux/refcount.h:333 [inline]
-> > BUG: KASAN: use-after-free in cipso_v4_doi_putdef+0x2d/0x190 net/ipv4/cipso_ipv4.c:586
-> > Write of size 4 at addr ffff8880179ecb18 by task syz-executor.5/20110
->
-> Almost surely the same problem as the others, I'm currently chasing
-> down a few remaining spots to make sure the fix I'm working on is
-> correct.
+> > Maybe skb_still_in_host_queue() signal should not be used when a part
+> > of the SKB has been received/acknowledged by the remote peer
+> > (in this case the SYN part).
+> >
+> > Alternative is that drivers unable to TX complete their skbs in a
+> > reasonable time should call skb_orphan()
+> >  to avoid skb_unclone() penalties (and this skb_still_in_host_queue() issue)
+> >
+> > If you really want to play and delay TX completions, maybe provide a
+> > way to disable skb_still_in_host_queue() globally,
+> > using a static key ?  
+> 
+> The problem as I see it is that the original fclone isn't what we sent
+> out on the wire and that is confusing things. What we sent was a SYN
+> with data, but what we have now is just a data frame that hasn't been
+> put out on the wire yet.
 
-I think I've now managed to convince myself that the patch I've got
-here is reasonable.  I'm looping over a series of tests right now and
-plan to let it continue overnight; assuming everything still looks
-good in the morning I'll post it.
+Not sure I understand why it's the key distinction here. Is it
+re-transmitting part of the frame or having different flags?
+Is re-transmit of half of a GSO skb also considered not the same?
 
-Thanks for your help.
+To me the distinction is that the receiver has implicitly asked
+us for the re-transmission. If it was requested by SACK we should 
+ignore "in_queue" for the first transmission as well, even if the
+skb state is identical.
 
--- 
-paul moore
-www.paul-moore.com
+> I wonder if we couldn't get away with doing something like adding a
+> fourth option of SKB_FCLONE_MODIFIED that we could apply to fastopen
+> skbs? That would keep the skb_still_in_host queue from triggering as
+> we would be changing the state from SKB_FCLONE_ORIG to
+> SKB_FCLONE_MODIFIED for the skb we store in the retransmit queue. In
+> addition if we have to clone it again and the fclone reference count
+> is 1 we could reset it back to SKB_FCLONE_ORIG.
+
+The unused value of fclone was tempting me as well :)
+
+AFAICT we have at least these options:
+
+1 - don't use a fclone skb [v1]
+
+2 - mark the fclone as "special" at Tx to escape the "in queue" check
+
+3 - indicate to retansmit that we're sure initial tx is out [v2]
+
+4 - same as above but with a bool / flag instead of negative seg
+
+5 - use the fclone bits but mark them at Rx when we see a rtx request
+
+6 - check the skb state in retransmit to match the TFO case (IIUC
+    Yuchung's suggestion)
+
+#5 is my favorite but I didn't know how to extend it to fast
+re-transmits so I just stuck to the suggestion from the ML :)
+
+WDYT? Eric, Yuchung?
