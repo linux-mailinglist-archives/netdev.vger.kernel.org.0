@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 788CF32DCF2
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:25:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F34F32DD04
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:30:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231247AbhCDWZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 17:25:13 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:40892 "EHLO vps0.lunn.ch"
+        id S231625AbhCDWaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 17:30:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56060 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229580AbhCDWZM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 17:25:12 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lHwP8-009LWk-UM; Thu, 04 Mar 2021 23:25:10 +0100
-Date:   Thu, 4 Mar 2021 23:25:10 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: stmmac driver timeout issue
-Message-ID: <YEFeRrKKK7gnmqcc@lunn.ch>
-References: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S229580AbhCDWaI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 17:30:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id CEDE964F4B;
+        Thu,  4 Mar 2021 22:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614897007;
+        bh=wT+tjbKC8paUl2xAF0d9Lr7i6fkGdDKRndhPFzm2ZSM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=I/ts6bY/4Agr8ViNDQPqCZ12HeiGZLauBqsE5UfM6vi2jhz9+W2RNm02143b8CCO1
+         lrpNtMDHdiShQb5pmfZ7fZ6uIldLSquZJEMpwk/TPLBFuNatdcKkrownIYU8/Abtx2
+         I7MBJ8ignodTiwOxuxvGW2bcq8aDaSVc+dUAxFnq6PNIX181XWLuJ68Cb0zsA3nOt6
+         MW+xF1NFXPR8ISKLVY7AetEXMRxY3qwDmNCFG+GNq8woORCpxqsCC3b5g9YJ4adkOt
+         0jz8LEXhPdMWuASTqIyO6qdHaQaaQJjL68KIFicMVIw0GLJKBMb9n64UiVDf9TbB/+
+         AiwfWpE9xDXqw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C45B0609EA;
+        Thu,  4 Mar 2021 22:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/2] net: dsa: sja1105: fix SGMII PCS being forced to
+ SPEED_UNKNOWN instead of SPEED_10
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161489700779.12854.8703147097417753157.git-patchwork-notify@kernel.org>
+Date:   Thu, 04 Mar 2021 22:30:07 +0000
+References: <20210304105654.873554-1-olteanv@gmail.com>
+In-Reply-To: <20210304105654.873554-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 04, 2021 at 01:14:31PM +0000, Joakim Zhang wrote:
-> 
-> Hello Andrew, Hello Jakub,
-> 
-> You may can give some suggestions based on your great networking knowledge, thanks in advance!
-> 
-> I found that add vlan id hw filter (stmmac_vlan_rx_add_vid) have possibility timeout when accessing VLAN Filter registers during ifup/ifdown stress test, and restore vlan id hw filter (stmmac_restore_hw_vlan_rx_fltr) always timeout when access VLAN Filter registers. 
-> 
-> My hardware is i.MX8MP (drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c, RGMII interface, RTL8211FDI-CG PHY), it needs fix mac speed(imx_dwmac_fix_speed), it indirectly involved in phylink_link_up. After debugging, if phylink_link_up is called later than adding vlan id hw filter, it will report timeout, so I guess we need fix mac speed before accessing VLAN Filter registers. Error like below:
-> 	[  106.389879] 8021q: adding VLAN 0 to HW filter on device eth1
-> 	[  106.395644] imx-dwmac 30bf0000.ethernet eth1: Timeout accessing MAC_VLAN_Tag_Filter
-> 	[  108.160734] imx-dwmac 30bf0000.ethernet eth1: Link is Up - 100Mbps/Full - flow control rx/tx   ->->-> which means accessing VLAN Filter registers before phylink_link_up is called.
-> 
-> Same case when system resume back, 
-> 	[ 1763.842294] imx-dwmac 30bf0000.ethernet eth1: configuring for phy/rgmii-id link mode
-> 	[ 1763.853084] imx-dwmac 30bf0000.ethernet eth1: No Safety Features support found
-> 	[ 1763.853186] imx-dwmac 30bf0000.ethernet eth1: Timeout accessing MAC_VLAN_Tag_Filter
-> 	[ 1763.873465] usb usb1: root hub lost power or was reset
-> 	[ 1763.873469] usb usb2: root hub lost power or was reset
-> 	[ 1764.090321] PM: resume devices took 0.248 seconds
-> 	[ 1764.257381] OOM killer enabled.
-> 	[ 1764.260518] Restarting tasks ... done.
-> 	[ 1764.265229] PM: suspend exit
-> 	===============================
-> 	suspend 12 times
-> 	===============================
-> 	[ 1765.887915] imx-dwmac 30bf0000.ethernet eth1: Link is Up - 100Mbps/Full - flow control rx/tx  ->->-> which means accessing VLAN Filter registers before phylink_link_up is called.
-> 
-> My question is that some MAC controllers need RXC clock from RGMII interface to reset DAM or access to some registers.
+Hello:
 
-There are some controllers which need the PHY clock. And some PHYs can
-give you some control over the clock. e.g. there are DT properties
-like "ti,clk-output-sel", "qca,clk-out-frequency". You probably want
-to look at the PHY datasheet and see what you can control. It might be
-possible to make it tick all the time. It has also been suggested that
-the PHY could implement a clk provider, which a MAC driver to
-clk_prepare_enable() when it needs it.
+This series was applied to netdev/net.git (refs/heads/master):
 
-     Andrew
+On Thu,  4 Mar 2021 12:56:53 +0200 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> When using MLO_AN_PHY or MLO_AN_FIXED, the MII_BMCR of the SGMII PCS is
+> read before resetting the switch so it can be reprogrammed afterwards.
+> This works for the speeds of 1Gbps and 100Mbps, but not for 10Mbps,
+> because SPEED_10 is actually 0, so AND-ing anything with 0 is false,
+> therefore that last branch is dead code.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/2] net: dsa: sja1105: fix SGMII PCS being forced to SPEED_UNKNOWN instead of SPEED_10
+    https://git.kernel.org/netdev/net/c/053d8ad10d58
+  - [net,2/2] net: dsa: sja1105: fix ucast/bcast flooding always remaining enabled
+    https://git.kernel.org/netdev/net/c/6a5166e07c02
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
