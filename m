@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AFA632DCE1
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 788CF32DCF2
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:25:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbhCDWUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 17:20:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54514 "EHLO mail.kernel.org"
+        id S231247AbhCDWZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 17:25:13 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:40892 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230421AbhCDWUH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 17:20:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 486F064FF9;
-        Thu,  4 Mar 2021 22:20:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614896407;
-        bh=DanseyaJDS0X9RQp6uBLZbOQWB3ajvqIMiVhQc6nOOY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JDbSoR/li6h31szziZqmAj84Rk3X0lkFxEkpwM/C6TQeMs6jLvpp2x2xsZfoTD0MO
-         XzUCKrGbgYGWWmu3r86COwDDhS2XvrDGE20nHdiwcQvBNajBvZwX+CqvevXNIhHYNC
-         tkF7QjN9JH7NIE6AQVw2rOtPp1kJU2nEEGQBvbAiGgO32Ntsq2+nSbq90aAkY/hUpa
-         Pw5pTKfY8xaDhXGM/f8sp4l+K0xhyWEhVltYEk/yNqZcF9dIy2MotunlENYOhAVD3A
-         Ebe35w1PmAodbQUNYWCfI1GXSW/HW4qjxk3TtbYN+D5Gi/w7r0LtQPs1nZtfMDCx2M
-         9NAfsNO0+qiEA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3CBEE60A12;
-        Thu,  4 Mar 2021 22:20:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229580AbhCDWZM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 17:25:12 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lHwP8-009LWk-UM; Thu, 04 Mar 2021 23:25:10 +0100
+Date:   Thu, 4 Mar 2021 23:25:10 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: stmmac driver timeout issue
+Message-ID: <YEFeRrKKK7gnmqcc@lunn.ch>
+References: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] nexthop: Do not flush blackhole nexthops when
- loopback goes down
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161489640724.7668.480896092445569577.git-patchwork-notify@kernel.org>
-Date:   Thu, 04 Mar 2021 22:20:07 +0000
-References: <20210304085754.1929848-1-idosch@idosch.org>
-In-Reply-To: <20210304085754.1929848-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@gmail.com, roopa@nvidia.com, sharpd@nvidia.com,
-        mlxsw@nvidia.com, idosch@nvidia.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Thu,  4 Mar 2021 10:57:52 +0200 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Thu, Mar 04, 2021 at 01:14:31PM +0000, Joakim Zhang wrote:
 > 
-> Patch #1 prevents blackhole nexthops from being flushed when the
-> loopback device goes down given that as far as user space is concerned,
-> these nexthops do not have a nexthop device.
+> Hello Andrew, Hello Jakub,
 > 
-> Patch #2 adds a test case.
+> You may can give some suggestions based on your great networking knowledge, thanks in advance!
 > 
-> [...]
+> I found that add vlan id hw filter (stmmac_vlan_rx_add_vid) have possibility timeout when accessing VLAN Filter registers during ifup/ifdown stress test, and restore vlan id hw filter (stmmac_restore_hw_vlan_rx_fltr) always timeout when access VLAN Filter registers. 
+> 
+> My hardware is i.MX8MP (drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c, RGMII interface, RTL8211FDI-CG PHY), it needs fix mac speed(imx_dwmac_fix_speed), it indirectly involved in phylink_link_up. After debugging, if phylink_link_up is called later than adding vlan id hw filter, it will report timeout, so I guess we need fix mac speed before accessing VLAN Filter registers. Error like below:
+> 	[  106.389879] 8021q: adding VLAN 0 to HW filter on device eth1
+> 	[  106.395644] imx-dwmac 30bf0000.ethernet eth1: Timeout accessing MAC_VLAN_Tag_Filter
+> 	[  108.160734] imx-dwmac 30bf0000.ethernet eth1: Link is Up - 100Mbps/Full - flow control rx/tx   ->->-> which means accessing VLAN Filter registers before phylink_link_up is called.
+> 
+> Same case when system resume back, 
+> 	[ 1763.842294] imx-dwmac 30bf0000.ethernet eth1: configuring for phy/rgmii-id link mode
+> 	[ 1763.853084] imx-dwmac 30bf0000.ethernet eth1: No Safety Features support found
+> 	[ 1763.853186] imx-dwmac 30bf0000.ethernet eth1: Timeout accessing MAC_VLAN_Tag_Filter
+> 	[ 1763.873465] usb usb1: root hub lost power or was reset
+> 	[ 1763.873469] usb usb2: root hub lost power or was reset
+> 	[ 1764.090321] PM: resume devices took 0.248 seconds
+> 	[ 1764.257381] OOM killer enabled.
+> 	[ 1764.260518] Restarting tasks ... done.
+> 	[ 1764.265229] PM: suspend exit
+> 	===============================
+> 	suspend 12 times
+> 	===============================
+> 	[ 1765.887915] imx-dwmac 30bf0000.ethernet eth1: Link is Up - 100Mbps/Full - flow control rx/tx  ->->-> which means accessing VLAN Filter registers before phylink_link_up is called.
+> 
+> My question is that some MAC controllers need RXC clock from RGMII interface to reset DAM or access to some registers.
 
-Here is the summary with links:
-  - [net,1/2] nexthop: Do not flush blackhole nexthops when loopback goes down
-    https://git.kernel.org/netdev/net/c/76c03bf8e262
-  - [net,2/2] selftests: fib_nexthops: Test blackhole nexthops when loopback goes down
-    https://git.kernel.org/netdev/net/c/3a1099d3147f
+There are some controllers which need the PHY clock. And some PHYs can
+give you some control over the clock. e.g. there are DT properties
+like "ti,clk-output-sel", "qca,clk-out-frequency". You probably want
+to look at the PHY datasheet and see what you can control. It might be
+possible to make it tick all the time. It has also been suggested that
+the PHY could implement a clk provider, which a MAC driver to
+clk_prepare_enable() when it needs it.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+     Andrew
