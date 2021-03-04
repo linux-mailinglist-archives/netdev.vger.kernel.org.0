@@ -2,58 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 214F332DDDA
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 00:27:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28F232DDE0
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 00:30:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233183AbhCDX1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 18:27:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233167AbhCDX1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 18:27:39 -0500
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D0BC061574
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 15:27:39 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 418214D2D0CC8;
-        Thu,  4 Mar 2021 15:27:37 -0800 (PST)
-Date:   Thu, 04 Mar 2021 15:27:33 -0800 (PST)
-Message-Id: <20210304.152733.1381456342956729385.davem@davemloft.net>
-To:     paul@paul-moore.com
+        id S231282AbhCDXaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 18:30:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47930 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229570AbhCDXaH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 18:30:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2F1C464FFF;
+        Thu,  4 Mar 2021 23:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614900607;
+        bh=mYItgB5OF8Z9/8sUYGC32ZVGnESrOA82MM7IhaZdjag=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HUGXa6UPgn9A7+CT4kwKLTaEhzT0qKe/S/j2M6QDZ3amPCoYDCfwG8A+oH8RE61GB
+         RKUiQ4RwqKLwpQxrEs/oT5asH7YEIvCl/0NVhqqFGAjDFjIq/Uoi4XYyM3hZTxHMXm
+         7OS3LqN/kOmuFp/OXpPTnnHNhFyZoyOx/a+19dNQpCYgrmMs/rJzLUZll6t/tJIHXL
+         w7dP16AxYKnSj88ywCXFIX9VK7xb57dGwAOov5seHwsDxb4IxSdQ+YfpxWWO3mJNNW
+         WbnS+AV2L/fiWpFY702ic6WNEbnJoebf2AlN6QEVe6gdx+/aRXQMWTUCjfydB+sPw0
+         EAYul4AukY9Tw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2405860A12;
+        Thu,  4 Mar 2021 23:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] cipso,calipso: resolve a number of problems with the DOI
+ refcounts
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161490060714.7752.4115541555811956751.git-patchwork-notify@kernel.org>
+Date:   Thu, 04 Mar 2021 23:30:07 +0000
+References: <161489339182.63157.2775083878484465675.stgit@olly>
+In-Reply-To: <161489339182.63157.2775083878484465675.stgit@olly>
+To:     Paul Moore <paul@paul-moore.com>
 Cc:     netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
         selinux@vger.kernel.org, dvyukov@google.com
-Subject: Re: [PATCH] cipso,calipso: resolve a number of problems with the
- DOI refcounts
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAHC9VhTxfMOzABdAg=RO3k1cfyE2A2DEQ0gUQ9M6NVELpJVw7Q@mail.gmail.com>
-References: <161489339182.63157.2775083878484465675.stgit@olly>
-        <20210304.143347.415521310565498642.davem@davemloft.net>
-        <CAHC9VhTxfMOzABdAg=RO3k1cfyE2A2DEQ0gUQ9M6NVELpJVw7Q@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 04 Mar 2021 15:27:37 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogUGF1bCBNb29yZSA8cGF1bEBwYXVsLW1vb3JlLmNvbT4NCkRhdGU6IFRodSwgNCBNYXIg
-MjAyMSAxODoxMzoyMSAtMDUwMA0KDQo+IE9uIFRodSwgTWFyIDQsIDIwMjEgYXQgNTozMyBQTSBE
-YXZpZCBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+IHdyb3RlOg0KPj4gRnJvbTogUGF1bCBN
-b29yZSA8cGF1bEBwYXVsLW1vb3JlLmNvbT4NCj4+IERhdGU6IFRodSwgMDQgTWFyIDIwMjEgMTY6
-Mjk6NTEgLTA1MDANCj4+DQo+PiA+ICtzdGF0aWMgdm9pZCBjYWxpcHNvX2RvaV9wdXRkZWYoc3Ry
-dWN0IGNhbGlwc29fZG9pICpkb2lfZGVmKTsNCj4+ID4gKw0KPj4NCj4+IFRoaXMgaXMgYSBnbG9i
-YWwgc3ltYm9sLCBzbyB3aHkgdGhlIHN0YXRpYyBkZWNsIGhlcmU/DQo+IA0KPiBUbyByZXNvbHZl
-IHRoaXM6DQo+IA0KPiAgIENDICAgICAgbmV0L2lwdjYvY2FsaXBzby5vDQo+IG5ldC9pcHY2L2Nh
-bGlwc28uYzogSW4gZnVuY3Rpb24goWNhbGlwc29fZG9pX3JlbW92ZaI6DQo+IG5ldC9pcHY2L2Nh
-bGlwc28uYzo0NTM6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIKFj
-YWxpcHNvX2RvaV9wDQo+IHV0ZGVmog0KPiANCj4gSSB0aGluayB0aGVyZSBhcmUgc29tZSBvZGQg
-dGhpbmdzIHdpdGggaG93IHRoZSBDQUxJUFNPIHByb3RvdHlwZXMgYXJlDQo+IGhhbmRsZWQsIHNv
-bWUgb2YgdGhhdCBJJ20gZ3Vlc3NpbmcgaXMgZHVlIHRvIGhhbmRsaW5nIElQdjYNCj4gYXMtYS1t
-b2R1bGUsIGJ1dCByZWdhcmRsZXNzIG9mIHRoZSByZWFzb24gaXQgc2VlbWVkIGxpa2UgdGhlIHNt
-YWxsZXN0DQo+IGZpeCB3YXMgdG8gYWRkIHRoZSBmb3J3YXJkIGRlY2xhcmF0aW9uIGF0IHRoZSB0
-b3Agb2YgdGhlIGZpbGUuDQo+IENvbnNpZGVyaW5nIHRoYXQgSSBiZWxpZXZlIHRoaXMgc2hvdWxk
-IGJlIHNlbnQgdG8gLXN0YWJsZSBJIGZpZ3VyZWQgYQ0KPiBzbWFsbGVyIHBhdGNoLCB3aXRoIGxl
-c3MgY2hhbmNlIGZvciBtZXJnZSBjb25mbGljdHMsIHdvdWxkIGJlIG1vcmUNCj4gZGVzaXJhYmxl
-Lg0KDQpUaGFua3MgZm9yIGV4cGxhaW5pbmcuLi4NCg0K
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Thu, 04 Mar 2021 16:29:51 -0500 you wrote:
+> The current CIPSO and CALIPSO refcounting scheme for the DOI
+> definitions is a bit flawed in that we:
+> 
+> 1. Don't correctly match gets/puts in netlbl_cipsov4_list().
+> 2. Decrement the refcount on each attempt to remove the DOI from the
+>    DOI list, only removing it from the list once the refcount drops
+>    to zero.
+> 
+> [...]
+
+Here is the summary with links:
+  - cipso,calipso: resolve a number of problems with the DOI refcounts
+    https://git.kernel.org/netdev/net/c/ad5d07f4a9cd
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
