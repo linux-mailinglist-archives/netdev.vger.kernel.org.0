@@ -2,179 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA15332D49C
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 14:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75F0832D4B6
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 14:58:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241623AbhCDNvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 08:51:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60749 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241615AbhCDNvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 08:51:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614865813;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8dKD6EMo2YP510AzFfioC+1u/tF8yICEAGoshmqfTsM=;
-        b=Aj32o2n/kc8gt+sksaZNyZPW8ET25ijRMQ+132WUnRK0TWXhdkRSYRH2y16kgZXnrVoaat
-        XvuYVjxHI5A8m3tI3u6QaT4Eg7fh++kOwCVT5VdTO/NWK3siKuxKfdmF8pJrcz26hrA7et
-        fxHV5XF03xNXCDndqLgiDF9jNBjRSNg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-214-ZZNokqHgORCQ1jjP6EJ2mA-1; Thu, 04 Mar 2021 08:50:10 -0500
-X-MC-Unique: ZZNokqHgORCQ1jjP6EJ2mA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1275874998;
-        Thu,  4 Mar 2021 13:50:08 +0000 (UTC)
-Received: from gondolin (ovpn-114-163.ams2.redhat.com [10.36.114.163])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A28D60244;
-        Thu,  4 Mar 2021 13:50:03 +0000 (UTC)
-Date:   Thu, 4 Mar 2021 14:50:00 +0100
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>, elic@nvidia.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        virtio-dev@lists.oasis-open.org
-Subject: Re: [virtio-dev] Re: [PATCH] vdpa/mlx5: set_features should allow
- reset to zero
-Message-ID: <20210304145000.149706ae.cohuck@redhat.com>
-In-Reply-To: <1b5b3f9b-41d7-795c-c677-c45f1d5a774e@redhat.com>
-References: <20210223041740-mutt-send-email-mst@kernel.org>
-        <788a0880-0a68-20b7-5bdf-f8150b08276a@redhat.com>
-        <20210223110430.2f098bc0.cohuck@redhat.com>
-        <bbb0a09e-17e1-a397-1b64-6ce9afe18e44@redhat.com>
-        <20210223115833.732d809c.cohuck@redhat.com>
-        <8355f9b3-4cda-cd2e-98df-fed020193008@redhat.com>
-        <20210224121234.0127ae4b.cohuck@redhat.com>
-        <be6713d3-ac98-bbbf-1dc1-a003ed06a156@redhat.com>
-        <20210225135229-mutt-send-email-mst@kernel.org>
-        <0f8eb381-cc98-9e05-0e35-ccdb1cbd6119@redhat.com>
-        <20210228162306-mutt-send-email-mst@kernel.org>
-        <cdd72199-ac7b-cc8d-2c40-81e43162c532@redhat.com>
-        <20210302130812.6227f176.cohuck@redhat.com>
-        <5f6972fe-7246-b622-958d-9cab8dd98e21@redhat.com>
-        <20210303092905.677eb66c.cohuck@redhat.com>
-        <1b5b3f9b-41d7-795c-c677-c45f1d5a774e@redhat.com>
-Organization: Red Hat GmbH
+        id S241718AbhCDN5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 08:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235755AbhCDN4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 08:56:46 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B5CC061574
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 05:56:06 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id mj10so29462751ejb.5
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 05:56:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zNqt364yKc9AWMgU3gsE1glWEHnIX0hXdX9QnycDgAE=;
+        b=h2MDWr0x+l/RRdWo87aMtBHYHL/EZs/ptnrUUCflnO+hIHY6vAI41jyhBF0syGZn/p
+         Op3XhjCGwMm/0GobwqzZwPc69RXJUMVBpaN54DUECA4S9O2T7SxDqu9P5GR5Jr7JAbBi
+         3xonWuM81lIInxPJBH7AABQqrezhq0wiLKqZ3ZlAe+DGtoWj1MDjKFDuYmVNT7cnvCPF
+         T0rSDDmILzCUYwmNsoKGMDS9ZJL5wEpQlVfEbc3MQ7EJiBMu/tmUiZ8qVGTACDpnUggm
+         P3z4cHSInsJnZ/lId4G3SFSzObh7UJ/sVc/zw8IB+ofkt/INH7XSoSiqfsvpVZu6L36d
+         KfUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zNqt364yKc9AWMgU3gsE1glWEHnIX0hXdX9QnycDgAE=;
+        b=jlnY3Pu2429r5JeS9p64MnqktnWiXw2wfkHqt+psPbV4zgIifsoohc71/GFKe3vRHF
+         6Q8Nm0m8ChXrxWOe+s2+rBq7vYABz+IA5RpBS41IRXUCZNaEpPySOnE1OMbKCbk/t3UR
+         FE9+VKa4JNMpUxzUA1dZnjTjMlbcHR2zx1wvmdGA0JrRDBtxKbibZE54Mq9ufmDc0u09
+         K4GT9jeK7lL6UHtoYdgZVp4YaQMg1dMTCC26FT/Hfwi4geH2uDMjH/XDCsuy/9Htbcqg
+         WehggpEocmiKr8Ibtxu4bUuArmHGyzfz1Z9IYlzdVCDLvl1RhZQ/aODxrdrrDlCvsTwT
+         puqg==
+X-Gm-Message-State: AOAM533qqcUxNxlmBsv29EWKOtGBGIi5vkp3ZjHRBkoXRuWFNM5FHT8F
+        4CdhbBRLTVNcsee3A+sw2CcnAUePMww=
+X-Google-Smtp-Source: ABdhPJxAN8N4NdgvjWU2MOXEnB6kADru+6UhFptJsbvinivZEE+I5c8Tze+KK7NVZ1dHn1cnFNPbFg==
+X-Received: by 2002:a17:907:2093:: with SMTP id pv19mr4433600ejb.134.1614866165087;
+        Thu, 04 Mar 2021 05:56:05 -0800 (PST)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id s14sm23865121ejf.47.2021.03.04.05.56.04
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Mar 2021 05:56:04 -0800 (PST)
+Received: by mail-wr1-f52.google.com with SMTP id b18so21269538wrn.6
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 05:56:04 -0800 (PST)
+X-Received: by 2002:adf:fa08:: with SMTP id m8mr4317031wrr.12.1614866163865;
+ Thu, 04 Mar 2021 05:56:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20210304064046.6232-1-hxseverything@gmail.com>
+In-Reply-To: <20210304064046.6232-1-hxseverything@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 4 Mar 2021 08:55:26 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSc3W9jcL97OF+ctRWLhFoUdNxb3P0MyPm9k7W8nTvWX0Q@mail.gmail.com>
+Message-ID: <CA+FuTSc3W9jcL97OF+ctRWLhFoUdNxb3P0MyPm9k7W8nTvWX0Q@mail.gmail.com>
+Subject: Re: [PATCH/v5] bpf: add bpf_skb_adjust_room flag BPF_F_ADJ_ROOM_ENCAP_L2_ETH
+To:     Xuesen Huang <hxseverything@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Xuesen Huang <huangxuesen@kuaishou.com>,
+        Zhiyong Cheng <chengzhiyong@kuaishou.com>,
+        Li Wang <wangli09@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 4 Mar 2021 16:24:16 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+On Thu, Mar 4, 2021 at 1:41 AM Xuesen Huang <hxseverything@gmail.com> wrote:
+>
+> From: Xuesen Huang <huangxuesen@kuaishou.com>
+>
+> bpf_skb_adjust_room sets the inner_protocol as skb->protocol for packets
+> encapsulation. But that is not appropriate when pushing Ethernet header.
+>
+> Add an option to further specify encap L2 type and set the inner_protocol
+> as ETH_P_TEB.
+>
+> Suggested-by: Willem de Bruijn <willemb@google.com>
+> Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
+> Signed-off-by: Zhiyong Cheng <chengzhiyong@kuaishou.com>
+> Signed-off-by: Li Wang <wangli09@kuaishou.com>
 
-> On 2021/3/3 4:29 =E4=B8=8B=E5=8D=88, Cornelia Huck wrote:
-> > On Wed, 3 Mar 2021 12:01:01 +0800
-> > Jason Wang <jasowang@redhat.com> wrote:
-> > =20
-> >> On 2021/3/2 8:08 =E4=B8=8B=E5=8D=88, Cornelia Huck wrote: =20
-> >>> On Mon, 1 Mar 2021 11:51:08 +0800
-> >>> Jason Wang <jasowang@redhat.com> wrote:
-> >>>    =20
-> >>>> On 2021/3/1 5:25 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote: =20
-> >>>>> On Fri, Feb 26, 2021 at 04:19:16PM +0800, Jason Wang wrote: =20
-> >>>>>> On 2021/2/26 2:53 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote: =20
-> >>>>>>> Confused. What is wrong with the above? It never reads the
-> >>>>>>> field unless the feature has been offered by device. =20
-> >>>>>> So the spec said:
-> >>>>>>
-> >>>>>> "
-> >>>>>>
-> >>>>>> The following driver-read-only field, max_virtqueue_pairs only exi=
-sts if
-> >>>>>> VIRTIO_NET_F_MQ is set.
-> >>>>>>
-> >>>>>> "
-> >>>>>>
-> >>>>>> If I read this correctly, there will be no max_virtqueue_pairs fie=
-ld if the
-> >>>>>> VIRTIO_NET_F_MQ is not offered by device? If yes the offsetof() vi=
-olates
-> >>>>>> what spec said.
-> >>>>>>
-> >>>>>> Thanks =20
-> >>>>> I think that's a misunderstanding. This text was never intended to
-> >>>>> imply that field offsets change beased on feature bits.
-> >>>>> We had this pain with legacy and we never wanted to go back there.
-> >>>>>
-> >>>>> This merely implies that without VIRTIO_NET_F_MQ the field
-> >>>>> should not be accessed. Exists in the sense "is accessible to drive=
-r".
-> >>>>>
-> >>>>> Let's just clarify that in the spec, job done. =20
-> >>>> Ok, agree. That will make things more eaiser. =20
-> >>> Yes, that makes much more sense.
-> >>>
-> >>> What about adding the following to the "Basic Facilities of a Virtio
-> >>> Device/Device Configuration Space" section of the spec:
-> >>>
-> >>> "If an optional configuration field does not exist, the corresponding
-> >>> space is still present, but reserved." =20
-> >>
-> >> This became interesting after re-reading some of the qemu codes.
-> >>
-> >> E.g in virtio-net.c we had:
-> >>
-> >> *static VirtIOFeature feature_sizes[] =3D {
-> >>   =C2=A0=C2=A0=C2=A0 {.flags =3D 1ULL << VIRTIO_NET_F_MAC,
-> >>   =C2=A0=C2=A0=C2=A0=C2=A0 .end =3D endof(struct virtio_net_config, ma=
-c)},
-> >>   =C2=A0=C2=A0=C2=A0 {.flags =3D 1ULL << VIRTIO_NET_F_STATUS,
-> >>   =C2=A0=C2=A0=C2=A0=C2=A0 .end =3D endof(struct virtio_net_config, st=
-atus)},
-> >>   =C2=A0=C2=A0=C2=A0 {.flags =3D 1ULL << VIRTIO_NET_F_MQ,
-> >>   =C2=A0=C2=A0=C2=A0=C2=A0 .end =3D endof(struct virtio_net_config, ma=
-x_virtqueue_pairs)},
-> >>   =C2=A0=C2=A0=C2=A0 {.flags =3D 1ULL << VIRTIO_NET_F_MTU,
-> >>   =C2=A0=C2=A0=C2=A0=C2=A0 .end =3D endof(struct virtio_net_config, mt=
-u)},
-> >>   =C2=A0=C2=A0=C2=A0 {.flags =3D 1ULL << VIRTIO_NET_F_SPEED_DUPLEX,
-> >>   =C2=A0=C2=A0=C2=A0=C2=A0 .end =3D endof(struct virtio_net_config, du=
-plex)},
-> >>   =C2=A0=C2=A0=C2=A0 {.flags =3D (1ULL << VIRTIO_NET_F_RSS) | (1ULL <<
-> >> VIRTIO_NET_F_HASH_REPORT),
-> >>   =C2=A0=C2=A0=C2=A0=C2=A0 .end =3D endof(struct virtio_net_config, su=
-pported_hash_types)},
-> >>   =C2=A0=C2=A0=C2=A0 {}
-> >> };*
-> >>
-> >> *It has a implict dependency chain. E.g MTU doesn't presnet if
-> >> DUPLEX/RSS is not offered ...
-> >> * =20
-> > But I think it covers everything up to the relevant field, no? So MTU
-> > is included if we have the feature bit, even if we don't have
-> > DUPLEX/RSS.
-> >
-> > Given that a config space may be shorter (but must not collapse
-> > non-existing fields), maybe a better wording would be:
-> >
-> > "If an optional configuration field does not exist, the corresponding
-> > space will still be present if it is not at the end of the
-> > configuration space (i.e., further configuration fields exist.) =20
->=20
->=20
-> This should work but I think we need to define the end of configuration=20
-> space first?
-
-What about sidestepping this:
-
-"...the corresponding space will still be present, unless no further
-configuration fields exist."
-
-?
-
->=20
-> > This
-> > implies that a given field, if it exists, is always at the same offset
-> > from the beginning of the configuration space."
-
+Acked-by: Willem de Bruijn <willemb@google.com>
