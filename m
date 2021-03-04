@@ -2,101 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DEBD32CF1E
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 10:00:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E7132CF2F
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 10:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237179AbhCDI7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 03:59:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237142AbhCDI6y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:58:54 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86923C061756
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 00:58:39 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id d13so28699122edp.4
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 00:58:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WcsXXXbrDSVn9JnL1kI4tSiyWOxm9D+WqcuRuZ8ZPPY=;
-        b=SgIJQX+v/dAp6zKtCoUdKvxd747j/oIsOOlWt3BXoINpvb8gM2GUvlCR5DCRqwiLzx
-         qanElF3lR5Fr1/bcxvlAMjAdzVuPop19Ck5lylT/XrIhZ3r2rle5OmJX8PxYEU9XKxuu
-         Iw6L1WE502mtn0lYP9httAirkVvwVutnvdqLR0+0sBBVZsjZd2vA/zVcYpTZI5p/MXAR
-         +tsVCNpQxU53RtJ4KyP79ztx2eVInM9T5VemFzBVpaRDtn5ogkX3Y6iMsEL6on25AwGM
-         QzTayVrZ5DCL6nhyaK0As2yq9bQ2XY7aGG4uM3iZbe2E67jW4p4yj4D7UlTLfDhQXcNl
-         Au8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WcsXXXbrDSVn9JnL1kI4tSiyWOxm9D+WqcuRuZ8ZPPY=;
-        b=M1opbV6zMPK2NSU79m1SNY3BzpD7Qb6L5PSDQixxkVE4MLZgrD9qtLeRPbYlX4V4x4
-         sZBvIzDTWJbAsoSbwQKnMahKdhtvJMjz5O3f3FpugLLw3ebtKnEmtXd75yv5glzzG3wN
-         x3yZES4ofx8YJJf2jxoYDJ1vXUS2aKJDnyhahUEhpEe2eq6KC2wgtN2I089Wt5u9bF15
-         I+8iduiWMnXyKUB8n8IOHsV2yqDnroEHiSg9Ksgh9fpEVLDF/87uDZiYdDfZOO2j47Bx
-         KOEHPWpxPknVOfeNVvtB+c5DF5wM0XSMYVrxpHhjGSM1bB2f04iUrOZUYbh+VqU2hN3Y
-         /Gzw==
-X-Gm-Message-State: AOAM531Y37BZV/1SdDE5gwOaC7j2WBym8jN4o0egYohOVlxRNF2QzcPH
-        M5odV+WoIA6dyasfGsFMUH55H1MxPDByGTQZS7n8
-X-Google-Smtp-Source: ABdhPJz1yhS4bpogbrj7802vVThEsweuzWygoO16SS4Sm5PZ+sHcuk5hH2T4ZXUpPr/tI/5DOjViugXNCjqXBngk2S0=
-X-Received: by 2002:a05:6402:6ca:: with SMTP id n10mr3201074edy.312.1614848318350;
- Thu, 04 Mar 2021 00:58:38 -0800 (PST)
+        id S237131AbhCDI7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 03:59:42 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:52407 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237147AbhCDI7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:59:12 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 5B2C15C0109;
+        Thu,  4 Mar 2021 03:58:26 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 04 Mar 2021 03:58:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=B+eabceFRT1QgRR/c
+        OfM+gQyyNBwRHp4Wx+XFc6HBLc=; b=Wjl/0+sCCegpQ9vj69bODV5ZevIOHL4mQ
+        qytJnKO8QBz8+Sx4HKa5pq50MCUs6gKhYZTF+dX4/HglcCEIIuEmVftvYcvAU/vH
+        cWhSEDXyJhhrTm/KifCaOkuOF/oz8Ma1sDNSLTsWN7Xpet//oKjO98IBItedwjWL
+        QP86aJhFjnPqx9EoOsPT3y/ZLum58X91OdAOT9UQVUG4J0riLeak9JEnXeDpIcwb
+        2DNBedQvq7YPmbzdAY0HAv1DMTJuCrzv68TSG3dD5DGEDHGXqS9Kg9XuKu7EShUK
+        kK7Tq0Q/l9YsC28Of9bC0DF5jEy4EdmOHS6Gea60dPiGHoCw81sbA==
+X-ME-Sender: <xms:MaFAYGYxJQBzhqmP8lMRGcG6AvjtLyoewRCIdG_VZKjQLxZdYUAZpg>
+    <xme:MaFAYJbINcCN3ObtaOKhukZHeDuYZaDXz-P4kUpuL0YAWl22RN4IB0952WfkBsiMn
+    4qTCMgfCeD44wo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddtfedguddugecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
+    ehteffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdduheefrdeggeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:MaFAYA-ExR5QgvZibNrMyonR1tXb3kkkgSpnRgdQqP_BL3hgctwp7A>
+    <xmx:MaFAYIogdpNbfsP5FH6Ufe8gCMx6UlL55BXwm6had0JqTrQhX1nIXA>
+    <xmx:MaFAYBqbA9K5s2UaTiaT1eRhRRERYkLUTcuK32O95-XSv5C7nE4K7g>
+    <xmx:MqFAYCnmZGJ8EBJ9f8la9wLQ_C5_gU1yL_41CjOyVieOsZ20C0mrdw>
+Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DD0F01080059;
+        Thu,  4 Mar 2021 03:58:23 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
+        roopa@nvidia.com, sharpd@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net 0/2] nexthop: Do not flush blackhole nexthops when loopback goes down
+Date:   Thu,  4 Mar 2021 10:57:52 +0200
+Message-Id: <20210304085754.1929848-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-References: <20210223115048.435-1-xieyongji@bytedance.com> <20210223115048.435-11-xieyongji@bytedance.com>
- <d63e4cfd-4992-8493-32b0-18e0478f6e1a@redhat.com>
-In-Reply-To: <d63e4cfd-4992-8493-32b0-18e0478f6e1a@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 4 Mar 2021 16:58:27 +0800
-Message-ID: <CACycT3tqM=ALOG1r0Ve6UTGmwJ7Wg7fQpLZypjZsJF1mJ+adMA@mail.gmail.com>
-Subject: Re: Re: [RFC v4 10/11] vduse: Introduce a workqueue for irq injection
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 4, 2021 at 2:59 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/2/23 7:50 =E4=B8=8B=E5=8D=88, Xie Yongji wrote:
-> > This patch introduces a workqueue to support injecting
-> > virtqueue's interrupt asynchronously. This is mainly
-> > for performance considerations which makes sure the push()
-> > and pop() for used vring can be asynchronous.
->
->
-> Do you have pref numbers for this patch?
->
+From: Ido Schimmel <idosch@nvidia.com>
 
-No, I can do some tests for it if needed.
+Patch #1 prevents blackhole nexthops from being flushed when the
+loopback device goes down given that as far as user space is concerned,
+these nexthops do not have a nexthop device.
 
-Another problem is the VIRTIO_RING_F_EVENT_IDX feature will be useless
-if we call irq callback in ioctl context. Something like:
+Patch #2 adds a test case.
 
-virtqueue_push();
-virtio_notify();
-    ioctl()
--------------------------------------------------
-        irq_cb()
-            virtqueue_get_buf()
+There are no regressions in fib_nexthops.sh with this change:
 
-The used vring is always empty each time we call virtqueue_push() in
-userspace. Not sure if it is what we expected.
+ # ./fib_nexthops.sh
+ ...
+ Tests passed: 165
+ Tests failed:   0
 
-Thanks,
-Yongji
+Ido Schimmel (2):
+  nexthop: Do not flush blackhole nexthops when loopback goes down
+  selftests: fib_nexthops: Test blackhole nexthops when loopback goes
+    down
+
+ net/ipv4/nexthop.c                          | 10 +++++++---
+ tools/testing/selftests/net/fib_nexthops.sh |  8 ++++++++
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+-- 
+2.29.2
+
