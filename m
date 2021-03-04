@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13BE332D9D3
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 19:59:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B118F32D9D2
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 19:59:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235802AbhCDS63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S235821AbhCDS63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 4 Mar 2021 13:58:29 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7993 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235691AbhCDS6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 13:58:11 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60412d9b0001>; Thu, 04 Mar 2021 10:57:31 -0800
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:4905 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235699AbhCDS6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 13:58:14 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60412d9e0001>; Thu, 04 Mar 2021 10:57:34 -0800
 Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL101.nvidia.com
  (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 4 Mar
- 2021 18:57:31 +0000
+ 2021 18:57:34 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Mar 2021 18:57:28 +0000
+ Transport; Thu, 4 Mar 2021 18:57:31 +0000
 From:   Moshe Shemesh <moshe@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -27,177 +27,157 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Don Bollinger <don@thebollingers.org>, <netdev@vger.kernel.org>
 CC:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [RFC PATCH V2 net-next 2/5] net/mlx5: Refactor module EEPROM query
-Date:   Thu, 4 Mar 2021 20:57:05 +0200
-Message-ID: <1614884228-8542-3-git-send-email-moshe@nvidia.com>
+Subject: [RFC PATCH V2 net-next 3/5] net/mlx5: Implement get_module_eeprom_data_by_page()
+Date:   Thu, 4 Mar 2021 20:57:06 +0200
+Message-ID: <1614884228-8542-4-git-send-email-moshe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1614884228-8542-1-git-send-email-moshe@nvidia.com>
 References: <1614884228-8542-1-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614884251; bh=XjJrGI0gx7yLAatxbRqvEgXBS5lBriQHj5Zp2JAXHPE=;
+        t=1614884254; bh=oakLmDywDT4j4XF+8Zb0cz+hBRrtv2GpQyF3HPsd1D4=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Type;
-        b=pqQlo4dbUYbeZqsPUTHUiiJQazrl9TZOFzK6ZlGqyKLXyA1KOZO8YnD90r9WSBKiY
-         X4pCrofFugLjE/SrGQDUETFQyc1eHWpKp/i97tg9HMaiy8QAjMEPlDPrPIQN1XwChc
-         qrWBU8ko/Ww0oF91auI46qJjUFoHtGy7fEZoZCR0LlL5NoCEPMAeH9tBuWvTGY/N0y
-         orzWJm8zK5PwbWUFWKZFJea7prwqjg5u3K4ysWaUKiq9Y+LFzl78l9nYKqxT8a8Pw5
-         xGdIKpr3odAMzY8PkGvMWR3EXnynFTAy7CauW3G6u+1uMOOaOsHgLXR89HF+Nc16wQ
-         8qcEMZ+cOvuVQ==
+        b=AA1lVvnLaPi43sPjQRSoo3DS9jAbp8Ly2Hlou9LJfIMwT7eVdtZAf+cWnLPqEI/Mz
+         6rUwRrTpVkdxWvG1eIF2KytB0lTiQBWT5goOdQS8BNszXra2NKNUwvEEvLw5JSpFuT
+         R4Gbopx9j2LrKXFuijyoLpmJd4eVU7pMZQ+SZ5JOW5RQUBohrQf8V7Yr4lKU5F16uS
+         KD/lIt2t3boyiqytkL+lRqdSqr/Aym8wzUHJNZ4PqJW7C47iAxZUUJ7yGE2SSVdA7p
+         ofprrMRz49OUDmsWU2EnTV952ixtwBjVNjNpclV1+EsEwL2j8Xr1SngvvPv1M71KQU
+         yUSSlu8o6Bwpw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 
-Prepare for ethtool_ops::get_module_eeprom_data() implementation by
-extracting common part of mlx5_query_module_eeprom() into a separate
-function.
+Implement ethtool_ops::get_module_eeprom_data_by_page() to enable
+support of new SFP standards.
 
 Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/port.c    | 79 +++++++++++--------
- include/linux/mlx5/port.h                     |  9 +++
- 2 files changed, 54 insertions(+), 34 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 42 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/port.c    | 33 +++++++++++++++
+ include/linux/mlx5/port.h                     |  2 +
+ 3 files changed, 77 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index 4bb219565c58..9b9f870d67a4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -353,67 +353,78 @@ static void mlx5_sfp_eeprom_params_set(u16 *i2c_addr, int *page_num, u16 *offset
- 	*offset -= MLX5_EEPROM_PAGE_LENGTH;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index abdf721bb264..6766ffb07c81 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -1769,6 +1769,47 @@ static int mlx5e_get_module_eeprom(struct net_device *netdev,
+ 	return 0;
  }
  
--int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
--			     u16 offset, u16 size, u8 *data)
-+static int mlx5_query_mcia(struct mlx5_core_dev *dev,
-+			   struct mlx5_module_eeprom_query_params *params, u8 *data)
- {
--	int module_num, status, err, page_num = 0;
- 	u32 in[MLX5_ST_SZ_DW(mcia_reg)] = {};
- 	u32 out[MLX5_ST_SZ_DW(mcia_reg)];
--	u16 i2c_addr = 0;
--	u8 module_id;
-+	int status, err;
- 	void *ptr;
-+	u16 size;
++static int mlx5e_get_module_eeprom_data_by_page(struct net_device *netdev,
++						const struct ethtool_eeprom_data *page_data,
++						struct netlink_ext_ack *extack)
++{
++	struct mlx5e_priv *priv = netdev_priv(netdev);
++	struct mlx5_module_eeprom_query_params query;
++	struct mlx5_core_dev *mdev = priv->mdev;
++	u8 *data = page_data->data;
++	int size_read;
++	int i = 0;
 +
-+	size = min_t(int, params->size, MLX5_EEPROM_MAX_BYTES);
++	if (!page_data->length)
++		return -EINVAL;
 +
-+	MLX5_SET(mcia_reg, in, l, 0);
-+	MLX5_SET(mcia_reg, in, size, size);
-+	MLX5_SET(mcia_reg, in, module, params->module_number);
-+	MLX5_SET(mcia_reg, in, device_address, params->offset);
-+	MLX5_SET(mcia_reg, in, page_number, params->page);
-+	MLX5_SET(mcia_reg, in, i2c_device_address, params->i2c_address);
- 
--	err = mlx5_query_module_num(dev, &module_num);
-+	err = mlx5_core_access_reg(dev, in, sizeof(in), out,
-+				   sizeof(out), MLX5_REG_MCIA, 0, 0);
- 	if (err)
- 		return err;
- 
--	err = mlx5_query_module_id(dev, module_num, &module_id);
-+	status = MLX5_GET(mcia_reg, out, status);
-+	if (status) {
-+		mlx5_core_err(dev, "query_mcia_reg failed: status: 0x%x\n",
-+			      status);
-+		return -EIO;
++	memset(data, 0, page_data->length);
++
++	query.offset = page_data->offset;
++	query.i2c_address = page_data->i2c_address;
++	query.bank = page_data->bank;
++	query.page = page_data->page;
++	while (i < page_data->length) {
++		query.size = page_data->length - i;
++		size_read = mlx5_query_module_eeprom_data(mdev, &query, data + i);
++
++		/* Done reading */
++		if (!size_read)
++			return 0;
++
++		if (size_read < 0) {
++			netdev_err(priv->netdev, "%s: mlx5_query_module_eeprom_data failed:0x%x\n",
++				   __func__, size_read);
++			return 0;
++		}
++
++		i += size_read;
++		query.offset += size_read;
 +	}
 +
-+	ptr = MLX5_ADDR_OF(mcia_reg, out, dword_0);
-+	memcpy(data, ptr, size);
-+
-+	return size;
++	return 0;
 +}
 +
-+int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
-+			     u16 offset, u16 size, u8 *data)
-+{
-+	struct mlx5_module_eeprom_query_params query = {0};
-+	u8 module_id;
-+	int err;
-+
-+	err = mlx5_query_module_num(dev, &query.module_number);
-+	if (err)
-+		return err;
-+
-+	err = mlx5_query_module_id(dev, query.module_number, &module_id);
- 	if (err)
- 		return err;
- 
- 	switch (module_id) {
- 	case MLX5_MODULE_ID_SFP:
--		mlx5_sfp_eeprom_params_set(&i2c_addr, &page_num, &offset);
-+		mlx5_sfp_eeprom_params_set(&query.i2c_address, &query.page, &query.offset);
- 		break;
- 	case MLX5_MODULE_ID_QSFP:
- 	case MLX5_MODULE_ID_QSFP_PLUS:
- 	case MLX5_MODULE_ID_QSFP28:
--		mlx5_qsfp_eeprom_params_set(&i2c_addr, &page_num, &offset);
-+		mlx5_qsfp_eeprom_params_set(&query.i2c_address, &query.page, &query.offset);
- 		break;
- 	default:
- 		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
- 		return -EINVAL;
- 	}
- 
--	if (offset + size > MLX5_EEPROM_PAGE_LENGTH)
-+	if (query.offset + size > MLX5_EEPROM_PAGE_LENGTH)
- 		/* Cross pages read, read until offset 256 in low page */
- 		size -= offset + size - MLX5_EEPROM_PAGE_LENGTH;
- 
--	size = min_t(int, size, MLX5_EEPROM_MAX_BYTES);
-+	query.size = size;
- 
--	MLX5_SET(mcia_reg, in, l, 0);
--	MLX5_SET(mcia_reg, in, module, module_num);
--	MLX5_SET(mcia_reg, in, i2c_device_address, i2c_addr);
--	MLX5_SET(mcia_reg, in, page_number, page_num);
--	MLX5_SET(mcia_reg, in, device_address, offset);
--	MLX5_SET(mcia_reg, in, size, size);
--
--	err = mlx5_core_access_reg(dev, in, sizeof(in), out,
--				   sizeof(out), MLX5_REG_MCIA, 0, 0);
--	if (err)
--		return err;
--
--	status = MLX5_GET(mcia_reg, out, status);
--	if (status) {
--		mlx5_core_err(dev, "query_mcia_reg failed: status: 0x%x\n",
--			      status);
--		return -EIO;
--	}
--
--	ptr = MLX5_ADDR_OF(mcia_reg, out, dword_0);
--	memcpy(data, ptr, size);
--
--	return size;
-+	return mlx5_query_mcia(dev, &query, data);
+ int mlx5e_ethtool_flash_device(struct mlx5e_priv *priv,
+ 			       struct ethtool_flash *flash)
+ {
+@@ -2148,6 +2189,7 @@ const struct ethtool_ops mlx5e_ethtool_ops = {
+ 	.set_wol	   = mlx5e_set_wol,
+ 	.get_module_info   = mlx5e_get_module_info,
+ 	.get_module_eeprom = mlx5e_get_module_eeprom,
++	.get_module_eeprom_data_by_page = mlx5e_get_module_eeprom_data_by_page,
+ 	.flash_device      = mlx5e_flash_device,
+ 	.get_priv_flags    = mlx5e_get_priv_flags,
+ 	.set_priv_flags    = mlx5e_set_priv_flags,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+index 9b9f870d67a4..f7a16fdfb8d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+@@ -428,6 +428,39 @@ int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
  }
  EXPORT_SYMBOL_GPL(mlx5_query_module_eeprom);
  
++int mlx5_query_module_eeprom_data(struct mlx5_core_dev *dev,
++				  struct mlx5_module_eeprom_query_params *params,
++				  u8 *data)
++{
++	u8 module_id;
++	int err;
++
++	err = mlx5_query_module_num(dev, &params->module_number);
++	if (err)
++		return err;
++
++	err = mlx5_query_module_id(dev, params->module_number, &module_id);
++	if (err)
++		return err;
++
++	if (module_id != MLX5_MODULE_ID_SFP &&
++	    module_id != MLX5_MODULE_ID_QSFP &&
++	    module_id != MLX5_MODULE_ID_QSFP28 &&
++	    module_id != MLX5_MODULE_ID_QSFP_PLUS) {
++		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
++		return -EINVAL;
++	}
++
++	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
++	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
++		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
++		return -EINVAL;
++	}
++
++	return mlx5_query_mcia(dev, params, data);
++}
++EXPORT_SYMBOL_GPL(mlx5_query_module_eeprom_data);
++
+ static int mlx5_query_port_pvlc(struct mlx5_core_dev *dev, u32 *pvlc,
+ 				int pvlc_size,  u8 local_port)
+ {
 diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-index 23edd2db4803..90b87aa82db3 100644
+index 90b87aa82db3..887cd43b41e8 100644
 --- a/include/linux/mlx5/port.h
 +++ b/include/linux/mlx5/port.h
-@@ -62,6 +62,15 @@ enum mlx5_an_status {
- #define MLX5_EEPROM_PAGE_LENGTH		256
- #define MLX5_EEPROM_HIGH_PAGE_LENGTH	128
+@@ -209,6 +209,8 @@ void mlx5_query_port_fcs(struct mlx5_core_dev *mdev, bool *supported,
+ 			 bool *enabled);
+ int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
+ 			     u16 offset, u16 size, u8 *data);
++int mlx5_query_module_eeprom_data(struct mlx5_core_dev *dev,
++				  struct mlx5_module_eeprom_query_params *params, u8 *data);
  
-+struct mlx5_module_eeprom_query_params {
-+	u16 size;
-+	u16 offset;
-+	u16 i2c_address;
-+	u32 page;
-+	u32 bank;
-+	u32 module_number;
-+};
-+
- enum mlx5e_link_mode {
- 	MLX5E_1000BASE_CX_SGMII	 = 0,
- 	MLX5E_1000BASE_KX	 = 1,
+ int mlx5_query_port_dcbx_param(struct mlx5_core_dev *mdev, u32 *out);
+ int mlx5_set_port_dcbx_param(struct mlx5_core_dev *mdev, u32 *in);
 -- 
 2.18.2
 
