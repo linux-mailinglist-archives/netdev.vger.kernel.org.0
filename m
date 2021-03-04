@@ -2,78 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB9DD32D8AB
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 18:37:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3B0B32D8F7
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 18:50:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238609AbhCDRfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 12:35:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
+        id S230514AbhCDRtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 12:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238054AbhCDRfb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 12:35:31 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEC4C061756
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 09:34:51 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id 18so4596605pfo.6
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 09:34:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2xQkEOsdGwG+u+CFWHs2eb6pdZOOXhDpLU358vUysAY=;
-        b=cibd0BXvekrWeRL7XEmAJ2rp5GBMqsbXiuGfvojavs69YFWqTvYXWd6u4gsSsBQn0X
-         hshjVGPwA/pd89Xpu8MosA9FqOqedFuJfzebUhtk6AdRpb1MmYFhdkFKAGBPFEneF0Cn
-         gIG/5TkBIFmY82N0IfSxsv9syOxK4cgMyouhTSPg/9/uT+4qMySSVLJjnM+g2eNHb2Ny
-         2mwUEvM3UU8xZd2HQHUMAygwAozClXLzrpmFMAQMk3fJiWAY2qC492MxukbaS7bj2EMk
-         yvdjvcJDyNdNZFFka/XGVaOrgzkn0mLSLtleXQv7e60+TR+Z2fxpuvOuBxys26AoGYm8
-         K+FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2xQkEOsdGwG+u+CFWHs2eb6pdZOOXhDpLU358vUysAY=;
-        b=G/pYnDUoKUjv/Gm/jAzck4XXAIxTfc94H1bs9p7r/juj6Zy/VjrqqKXKUSqWG3aCLl
-         7WFzz2DH1z1mpRhCkUHPzZ4ZTCjPCsYlXvBZciKakEFIFHb+NQTObWBGQaHBbKZXQoTv
-         tZpEQrzOXnI9oQ8CYm7tAKRWa8tSkmMzTN/OvobxwG4EBKAwPgWpOdr/sAZPoDNnduDQ
-         e7rtCScqDFA4kHw6ocFXnuIYaNfYC7Yw3fSTauRgDEqL9Mch5ZmyjkVGosYNirIqfZfH
-         KXsi1PVbhbHGbFNcFjqmv/k8dlNJ8cN19aOHlNXCYzUfyLZJ54DlQNAqEUGzQkLD9AiN
-         1AnQ==
-X-Gm-Message-State: AOAM5301oojbU+A2/9meo+ob81DakRwzhd5lv8UQlUvIEoXuFdCQZkly
-        vUqiU6p7mUqMfIQANHWYPKnJbg==
-X-Google-Smtp-Source: ABdhPJyMTzFNz5SqWebXQnpNR1W+OjS/3GuwgF49leYIwFDLReBtY+Sz76ywmtfuLjehwUDaNXTm3A==
-X-Received: by 2002:a63:d118:: with SMTP id k24mr4539897pgg.420.1614879290507;
-        Thu, 04 Mar 2021 09:34:50 -0800 (PST)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id g6sm48971pfi.15.2021.03.04.09.34.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Mar 2021 09:34:50 -0800 (PST)
-Date:   Thu, 4 Mar 2021 09:34:46 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Minor update to bridge-utils
-Message-ID: <20210304093446.356ba862@hermes.local>
+        with ESMTP id S234633AbhCDRtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 12:49:03 -0500
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DCFC061756;
+        Thu,  4 Mar 2021 09:48:23 -0800 (PST)
+Received: from miraculix.mork.no (fwa152.mork.no [192.168.9.152])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 124Hm75L029873
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Thu, 4 Mar 2021 18:48:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1614880088; bh=k8lipC/E54Rd/FqQsV+Pc4PWUTaqSq6y7rRIFcTRNak=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=FHU1uGMg4/ZpI4VMybQTKbXaUyEUWip1IMfgsqfRqsH+nsmLbEw9HGuJdQj4eApIO
+         sUD2EPMVYgATBIScJRPja5kPKB9t5agXRMXiw6PUHs1lPxIty8drp5jVUOki6pVsZy
+         GXOum921HBnFgn1SPmEJYVVXdURsHuEDqIFWCyWg=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
+        (envelope-from <bjorn@mork.no>)
+        id 1lHs50-0002Mi-HM; Thu, 04 Mar 2021 18:48:06 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Aleksander Morgado <aleksander@aleksander.es>
+Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: allow qmimux add/del with
+ master up
+Organization: m
+References: <20210304131513.3052-1-dnlplm@gmail.com>
+Date:   Thu, 04 Mar 2021 18:48:06 +0100
+In-Reply-To: <20210304131513.3052-1-dnlplm@gmail.com> (Daniele Palmas's
+        message of "Thu, 4 Mar 2021 14:15:13 +0100")
+Message-ID: <87lfb2kdyh.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Small changes to bridge-utils to address some minor issues.
+Daniele Palmas <dnlplm@gmail.com> writes:
 
-1. The default branch is main not master
+> There's no reason for preventing the creation and removal
+> of qmimux network interfaces when the underlying interface
+> is up.
+>
+> This makes qmi_wwan mux implementation more similar to the
+> rmnet one, simplifying userspace management of the same
+> logical interfaces.
+>
+> Fixes: c6adf77953bc ("net: usb: qmi_wwan: add qmap mux protocol support")
+> Reported-by: Aleksander Morgado <aleksander@aleksander.es>
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 
-2. Fixed some compiler warnings because Gcc 10 and Clang now
-   do checks for string overflow.
-
-3. Made a backup repository mirror at github.
-
-4. Fixed version string printed
-
-This is not a required update, none of these are important
-or critical to users.
-
-Do not intend to do any new features or serious fixes to
-bridge-utils; all users should convert to iproute2/bridge command.
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
