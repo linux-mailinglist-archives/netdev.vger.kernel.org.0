@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A4E32CE23
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 09:10:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC90D32CE4C
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 09:21:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbhCDIJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 03:09:01 -0500
-Received: from mail-vs1-f44.google.com ([209.85.217.44]:36301 "EHLO
-        mail-vs1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236260AbhCDIIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:08:53 -0500
-Received: by mail-vs1-f44.google.com with SMTP id a12so7462852vsd.3;
-        Thu, 04 Mar 2021 00:08:37 -0800 (PST)
+        id S236530AbhCDIUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 03:20:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236528AbhCDIT6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:19:58 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61558C06175F
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 00:19:18 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id w9so17429968edt.13
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 00:19:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=H3NNNzQtUvXt5Fye8sZNpucfc9FPlOfifbnnwnh2RMc=;
+        b=ZoNG+FOvrEGHS/G3iAhwPINVlJ00oFmpga62+C65qKMJLCK4lSbZFux+QNQ8qcgoLI
+         2Pjybn3zmN9ufzyxe+II872P6eW3hasLTfs1yAW7HjxrxeYpDk7mgOpHgQhwBtTR9UnX
+         120J1MYC7h8BiR2cv0B3NBxL5kBA3hQdNerlmAn+uu7tr0QaIo6HREKBcyAts+hf4EFL
+         AXpwqIU4unILaT5VN1PbiiyWAo4EsgeSAq/HTdr9Xs9VIxzE8MyPt6MbL2SB78rjnUM8
+         vPKsXhynMiDIkKHlYSa6ASqoHyJHCgDQGWK77SWBDp/vpkM8MSgYz0CBNGLjynfHBBjG
+         O3sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VIhNJJMVnzvhOohhU5+sHSGrbiWXYRzHlRt+5Fa9ZAM=;
-        b=dp9/2N97ID2W08m9XDtpLgdIenSHuAQYwynqWJ2JxBktdemD7D9+sJwGs/E9sPaPk4
-         64pW+KfwnlzrkHc32tsAIHWYUD3v/9n/3xwevaDjy0avQB4/vxOFbWIn1yuHyqMdc5nS
-         T3LiW9m4HIeiQa3JzWHq67JPdlaadDcR3lWzkjmBxAuoyVSnbaciSCGaY/KtEfoYp6a9
-         tTpklKqUeII925Hk/RNoM880kmWA3ZvJxU4EHnIIO+byI9DCNNLhvXQd9y+wWGNHlu3Z
-         3qXBfdCvUY29DktW9s+aKkQ/GSfcsn3yvCFZOTbXRF4CjcYFOSo/e3LoZSvHMOoXOd/m
-         RWxQ==
-X-Gm-Message-State: AOAM533cAzQNYHTwNwdP0YYYHUgzB3Gc+WTUYaDmo1CNYs7JQyE3cTkk
-        DYfLDzkXFrCt3SPCcbvX27kUmtVpcSCtfrd3yEU=
-X-Google-Smtp-Source: ABdhPJw0x8zdV/rT4XakBLSt5aNaEU9m6ptAA1rjZNeubRN69J3WPDnkAIu8HfFWZbRetFta0ELKelcJ5surbKmASqg=
-X-Received: by 2002:a67:fb86:: with SMTP id n6mr1779925vsr.3.1614845292063;
- Thu, 04 Mar 2021 00:08:12 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=H3NNNzQtUvXt5Fye8sZNpucfc9FPlOfifbnnwnh2RMc=;
+        b=kAow9yBnsZvDE2X2rZwUBvu0XaltNFwdwlZ2sZtZjuk3reuVjVBHJsomLxmk61vP4m
+         1Xflo4E2fe2dPNjeIqmFEGFSwyC+EZ2LTpYhiN0SI0VmWCjuMBGX2Rulv3d88fDKTmCd
+         VVdD0QEVX4iAxzNjkGCX/VNWaJj4TW3j46woXexbrmE+KviVKsBzUfxbIwE8utiuvcFS
+         NwpeXlxWU2lSNbqD2BH1Sx14JYYhh7iaiW4aBtaFwIrDqXI1OZoV5/hdZqouYA9q0Rj9
+         cr1XFxPkM03ltCqfx20Q6Kxxw+A8ocGqcbJzVeFZQFvhk7smi8GWJ7+WBPhtc+odaoPa
+         q/YQ==
+X-Gm-Message-State: AOAM530Q6UO86yFEMzFSO9O7nURqCfaJrzdyG0KANqaGF8CskjhB/Bsl
+        s6LvYlobOyndtlrRQyaiOycrBM4KHrlo29M13VnY
+X-Google-Smtp-Source: ABdhPJw7SQ5FmCmRVMs4bNdd9alpNsZzQvjSqli5sYS72PmhDvyRbtBr1jsItQcl4lUj1MuiSdZrKEphdwvmCULLauo=
+X-Received: by 2002:a05:6402:3122:: with SMTP id dd2mr2975252edb.253.1614845957202;
+ Thu, 04 Mar 2021 00:19:17 -0800 (PST)
 MIME-Version: 1.0
-References: <20210224115146.9131-1-aford173@gmail.com> <20210224115146.9131-4-aford173@gmail.com>
-In-Reply-To: <20210224115146.9131-4-aford173@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 4 Mar 2021 09:08:00 +0100
-Message-ID: <CAMuHMdXjQV7YrW5T_P4tkJk_d44NNTQ8Eu7v2ReESjg6R3tvfw@mail.gmail.com>
-Subject: Re: [PATCH V3 4/5] net: ethernet: ravb: Enable optional refclk
-To:     Adam Ford <aford173@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20210223115048.435-1-xieyongji@bytedance.com> <20210223115048.435-12-xieyongji@bytedance.com>
+ <d104a518-799d-c13f-311c-f7a673f9241b@redhat.com>
+In-Reply-To: <d104a518-799d-c13f-311c-f7a673f9241b@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 4 Mar 2021 16:19:06 +0800
+Message-ID: <CACycT3uaOU5ybwojfiSL0kSpW9GUnh82ZeDH7drdkfK72iP8bg@mail.gmail.com>
+Subject: Re: Re: [RFC v4 11/11] vduse: Support binding irq to the specified cpu
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Adam,
-
-On Wed, Feb 24, 2021 at 12:52 PM Adam Ford <aford173@gmail.com> wrote:
-> For devices that use a programmable clock for the AVB reference clock,
-> the driver may need to enable them.  Add code to find the optional clock
-> and enable it when available.
+On Thu, Mar 4, 2021 at 3:30 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-
-Thanks for your patch!
-
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -2148,6 +2148,13 @@ static int ravb_probe(struct platform_device *pdev)
->                 goto out_release;
->         }
 >
-> +       priv->refclk = devm_clk_get_optional(&pdev->dev, "refclk");
-> +       if (IS_ERR(priv->refclk)) {
-> +               error = PTR_ERR(priv->refclk);
-> +               goto out_release;
-> +       }
-> +       clk_prepare_enable(priv->refclk);
-> +
-
-Shouldn't the reference clock be disabled in case of any failure below?
-
->         ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
->         ndev->min_mtu = ETH_MIN_MTU;
+> On 2021/2/23 7:50 =E4=B8=8B=E5=8D=88, Xie Yongji wrote:
+> > Add a parameter for the ioctl VDUSE_INJECT_VQ_IRQ to support
+> > injecting virtqueue's interrupt to the specified cpu.
 >
-> @@ -2260,6 +2267,9 @@ static int ravb_remove(struct platform_device *pdev)
->         if (priv->chip_id != RCAR_GEN2)
->                 ravb_ptp_stop(ndev);
 >
-> +       if (priv->refclk)
-> +               clk_disable_unprepare(priv->refclk);
-> +
->         dma_free_coherent(ndev->dev.parent, priv->desc_bat_size, priv->desc_bat,
->                           priv->desc_bat_dma);
->         /* Set reset mode */
+> How userspace know which CPU is this irq for? It looks to me we need to
+> do it at different level.
+>
+> E.g introduce some API in sys to allow admin to tune for that.
+>
+> But I think we can do that in antoher patch on top of this series.
+>
 
-Gr{oetje,eeting}s,
+OK. I will think more about it.
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Yongji
