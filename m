@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D931732DCB6
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F6032DCCF
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:14:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241462AbhCDWJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 17:09:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
+        id S231190AbhCDWOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 17:14:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241291AbhCDWJX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 17:09:23 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0200C061574
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 14:08:42 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id k12so26294225ljg.9
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 14:08:42 -0800 (PST)
+        with ESMTP id S231131AbhCDWOV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 17:14:21 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D777C061574
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 14:14:20 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id p15so26397855ljc.13
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 14:14:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xQzzpQRDq3BboysdZruMiC3Se7y7eNICbRZtHByTqMk=;
-        b=NJO2j/ikNf8x/SaVM6raNaGtK59C9bLdTlxIooC8wnbAxcqcJtTwZ1JTr+RZh5e99s
-         tNNWaVLAVmOOo/vG6v4Rm2oqpgy1fTY8bnEAdiXJoVyWdcbe7ZTy1Nt3+/4+i1uDKQZX
-         +vOg8hkFIEd5lZbPmf50rpqskzDidS+zvW024=
+        bh=a+4iQV770MipBuuk319GZ3BHreEt+Cft3JqJ2kmp+rE=;
+        b=iH153Jxu1z3IJWhiLFfhtT2/jxzTvsFi72TshXz2rEB9p9Ns2let0yt534a5fCsOK1
+         7X5J6yi+PO7LtJ+XGM1S8XNZ5/s+oZxCjwVrizmwCKyd4jA6OOCKRZIkClEAO1Aq8lll
+         XYQZvPQKYJ0SpdN90LccNsCQOBbezCBR8cHAE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xQzzpQRDq3BboysdZruMiC3Se7y7eNICbRZtHByTqMk=;
-        b=gt5EyxqRO9LSAW8up6Dm5ehslnn588iDoSrbpwy9jv6e47L0biEXbRDWX44KGwxvN7
-         VSB7VYT56xjuNxK+zC897DiTspZik8N+dRP99EEa3ic7CzGpftHpbX6/gkJMJdpgQh3s
-         G5GNgV0L54L/LJg4bx+6+6WATceneSKssnRZifkKUHGgw58HdQcqKGX1/RNtNo/u49rJ
-         bnm+juOlfKwr78fwW4tisWr/phvEUDtrzyQtTIrHaygfEDtFKUutTN6ZGGpAQsYWSfnJ
-         Xhr8B6nFA7ELZKyDNWENXQj+uiYTZrIzMWFh85IWp0Iq5VicHu6JinVspsebxLXhY5oG
-         BXUQ==
-X-Gm-Message-State: AOAM531cHFeBu2W9G9Gj+sy3rwD1BNEDxDhKe9kMA29a1vVUNaxs4x1j
-        ftYhLSJqclS8LRz80K+PWgZeQfkhu8Cj2GVRs39HFw==
-X-Google-Smtp-Source: ABdhPJzAnKdCL2MBNUYzdcmpZZ+lw/GAjYMIMze5DAdv4n3VBvtkENafTlcY+CU/fxtYnwTJp8eWED4qcMsI99zU07Y=
-X-Received: by 2002:a2e:2f05:: with SMTP id v5mr3414337ljv.279.1614895721232;
- Thu, 04 Mar 2021 14:08:41 -0800 (PST)
+        bh=a+4iQV770MipBuuk319GZ3BHreEt+Cft3JqJ2kmp+rE=;
+        b=T/KfYIGwtBv/MtxrJ6Rw7vwHGiMjQLKmpA0B1xX2b4J6dVPz/oYTRIKfXv+jSTB12D
+         6DrrnxfT+xebHz12zJ6nb2xAFFsvqNXW/FfLO5w1CCQqiVhdRvH/qsCowQ61imR8484J
+         kHEUtWiJiGUkh4bON1N6BQCpRwA5oQCe7bHJbYGdoKyJbNsYZD4FzQTgT4Hugp5Y4sEQ
+         WGzXXLBKLZ2lSerIbLQAK8zM8y44Df11pECfR9NaggVpdZjSh+eiHz5MpOSvR/xHWWRC
+         TpRDuCd2en2XEAhmKQL2Yxo9JhYBV+OPN7O1X+PnMGdBmHr51VPKKjbZ2KKBFywtpY6C
+         TxDw==
+X-Gm-Message-State: AOAM533mv9I0ieqjIYGcLd0b8kjIKyNyeYZvlmzP/GGLkVBkRXJOGGSm
+        96YzRD/eVyYGP5rDk06GalnfNpwux9KSsvMkD0zSmap3EPA=
+X-Google-Smtp-Source: ABdhPJyzWGmnH07Bn/qjqhGrS90Reb18hgWagFVdGA66TAhYqSo4WqlkcRDR4gTTO8jc0udUAT7FkRcFddK0edJBDhE=
+X-Received: by 2002:a2e:b524:: with SMTP id z4mr2431580ljm.410.1614896059108;
+ Thu, 04 Mar 2021 14:14:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20210304090933.3538255-1-danieller@nvidia.com>
-In-Reply-To: <20210304090933.3538255-1-danieller@nvidia.com>
+References: <20210304090933.3538255-1-danieller@nvidia.com> <CAKOOJTwxMGL-uQ7VQZy1XGHddU5MWY-FnWDMwiFX8nS=Gu_E=Q@mail.gmail.com>
+In-Reply-To: <CAKOOJTwxMGL-uQ7VQZy1XGHddU5MWY-FnWDMwiFX8nS=Gu_E=Q@mail.gmail.com>
 From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Thu, 4 Mar 2021 14:08:04 -0800
-Message-ID: <CAKOOJTwxMGL-uQ7VQZy1XGHddU5MWY-FnWDMwiFX8nS=Gu_E=Q@mail.gmail.com>
+Date:   Thu, 4 Mar 2021 14:13:43 -0800
+Message-ID: <CAKOOJTxoi71y=4Z2Dm0fOWkNY2WTZ_FZXHxXdEUnyP8TTr9RLA@mail.gmail.com>
 Subject: Re: [PATCH net] ethtool: Add indicator field for link_mode validity
  to link_ksettings
 To:     Danielle Ratson <danieller@nvidia.com>
@@ -59,35 +59,41 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         mlxsw <mlxsw@nvidia.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000d4c16205bcbd352e"
+        boundary="000000000000f7accc05bcbd4976"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000d4c16205bcbd352e
+--000000000000f7accc05bcbd4976
 Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Mar 4, 2021 at 1:13 AM Danielle Ratson <danieller@nvidia.com> wrote:
+On Thu, Mar 4, 2021 at 2:08 PM Edwin Peer <edwin.peer@broadcom.com> wrote:
 
-> --- a/include/linux/ethtool.h
-> +++ b/include/linux/ethtool.h
-> @@ -130,6 +130,7 @@ struct ethtool_link_ksettings {
->         } link_modes;
->         u32     lanes;
->         enum ethtool_link_mode_bit_indices link_mode;
-> +       bool link_mode_valid;
->  };
+> On Thu, Mar 4, 2021 at 1:13 AM Danielle Ratson <danieller@nvidia.com> wrote:
+>
+> > --- a/include/linux/ethtool.h
+> > +++ b/include/linux/ethtool.h
+> > @@ -130,6 +130,7 @@ struct ethtool_link_ksettings {
+> >         } link_modes;
+> >         u32     lanes;
+> >         enum ethtool_link_mode_bit_indices link_mode;
+> > +       bool link_mode_valid;
+> >  };
+>
+> Why isn't this handled the same way as is done for lanes, with a
+> cap_link_mode_supported bit in ethtool_ops? This would be more
+> consistent from a driver API perspective. Then,
+> linkmodes_prepare_data() can set link_mode to -1 for drivers that
+> don't claim to supply link_mode.
 
-Why isn't this handled the same way as is done for lanes, with a
-cap_link_mode_supported bit in ethtool_ops? This would be more
-consistent from a driver API perspective. Then,
-linkmodes_prepare_data() can set link_mode to -1 for drivers that
-don't claim to supply link_mode.
+Or rather, since that happens too late, don't set it -1 at all and
+only set the implied parameters in __ethtool_get_link_ksettings()
+according to the capability.
 
 Regards,
 Edwin Peer
 
---000000000000d4c16205bcbd352e
+--000000000000f7accc05bcbd4976
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -158,13 +164,13 @@ nAO/qVpSFm11J9qSg2Tf6jN7yyAx/HLoM8uxnF3csFNBVyLssCrOJIkzQfRVgccOkm4EheBIXZZ+
 Ubfa6OVikUM8sf9aZkU2j4JEpaSTHAAj6fRPAgBYM1E4CbU2QeL/wpDwlI4xggJtMIICaQIBATBr
 MFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9i
 YWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwl1owS4QyKKm0xatYwDQYJYIZI
-AWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPFMf0FWMzyhGX14uFozs1oE3OeU65CUPALntvcJ
-InZhMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDMwNDIyMDg0
-MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQB
+AWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILvu08+IL7DJ6kly4xyCWzp8OK5OJqEz7WCIfxOg
+4VXgMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDMwNDIyMTQx
+OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQB
 AjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkq
-hkiG9w0BAQEFAASCAQAGlwBUIfm4ChzUyEGF6Wfbyt+7w89vEv+fkD1Wjfz+PAEe7abGYBA9SFOv
-xpSERQ7A5H9GmGYJDzkBRoV5kETdZ0i31+eUtPWfaKwQH16NYGPlzzhWkgPHXTFNdKv8Yf7Mi4Fy
-Lyp0blA2MDcAjPe9E7Rdazwwz9ky1jO9gbE6zcjjFIjONiMiZEnoKaUc2P+4WyWvosgco2DQyLTi
-MRBMjfz1rRLhbyb8nwj+XubHQrFTUVVHh49ODej1F+jn9zikqqMVXmgve5zrhMcoooN9i/XV3jeo
-0bjklqGOm2dllCGI8u1/VjjUXiTX6NSnD7KLCR0RVMVDtyZlfffeELaB
---000000000000d4c16205bcbd352e--
+hkiG9w0BAQEFAASCAQAC1Yjx2hN4OnZzlBcyXaohbpn698Lnhw051OTiOQPxkaXQ23UUFoQCx91w
+W9qfD08sIVwGcgigHNAlc55/nbWvtDbqFYcU2LmKclZDLY1kYA9VyMlkv+++bbgdqqXorwOQkNWo
+Y5w974I7kST61hlbOIStRxh6r2UC/gEb72wSCN0GWHJSC9fTPlsSX6Y9QsXULTxH3JLkssq+9a3w
+oaQPVOU4ODjU4DGDmyDwfB43n44u7PX1gDqq+4xALt7C2nA5QB3vY89oGwwNfy4YpuMQa5TJJeA9
+KjaiOt6RT99f9foiBJyoQ4CiXgYW7XE86NVlfa+1g+Ei7J0op8387R2z
+--000000000000f7accc05bcbd4976--
