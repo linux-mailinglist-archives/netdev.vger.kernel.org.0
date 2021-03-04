@@ -2,84 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD0C832DB5D
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 21:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2AC32DB70
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 21:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233189AbhCDUsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 15:48:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59808 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233144AbhCDUsB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 15:48:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CB0DC64F78;
-        Thu,  4 Mar 2021 20:47:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614890833;
-        bh=fbItLtW0McjQ6cGOGdvkwgGtFHROSfMYY+UFxruVygw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FQssWwEajlQ0NQ6yLH/zQF/vR0g8Aq6xV6z/yjciuQMwxLEznjkoNTUPOUin08pqr
-         RkwDP9a928JPk8Y8lDrkLCoB+8paRFpHaabDHnRD1JBarrqDx0hFqV4kYAK52B57uY
-         kF8A4fUaNUZo2mixUOQYkgFEHXB6Ahd8/46j0df8F7iByPix8+15V06xOGhlyzfhB5
-         reT8WkbVlXOVD7XAwi5ncZ2OyeuH5JTynK7BhLCt08ijnOMKQm+kRaKD1gLPgzduKn
-         TG4oh9jpjIIDSYlfrI+n1HBCGnqwbczFVvhrQd3tz+jAecRvPcJjSiMDQgsSZxngSR
-         X3E+TXoL5N5Vg==
-Date:   Thu, 4 Mar 2021 15:47:12 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Martin Kepplinger <martink@posteo.de>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.10 050/217] rsi: Fix TX EAPOL packet handling
- against iwlwifi AP
-Message-ID: <YEFHULdbXVVxORn9@sashalap>
-References: <20201223021626.2790791-1-sashal@kernel.org>
- <20201223021626.2790791-50-sashal@kernel.org>
- <68699f8a-2fcd-3b3d-f809-afa54790e9f9@denx.de>
+        id S238570AbhCDUvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 15:51:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238693AbhCDUvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 15:51:02 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7735C061574;
+        Thu,  4 Mar 2021 12:50:22 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id z5so3999630plg.3;
+        Thu, 04 Mar 2021 12:50:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nQR76nEKRwImSbpknXBAkPnCcRjHjuCtw+g6ieOUiMU=;
+        b=fnURJyD1+RQGEJkpq5+GNw1nH27VkZ7dk5ePc2DCUwvxO0ZhL7SufgUKqVzI4igp0z
+         dJghKyR7qV1zdw1d/cSfSaPFqwOO10mh6eud0YmB9XTx2YWc1zqidytjRd/yzByJJFAe
+         hvBd4T2qKfJQS/5ueeKyP62seAV998NlgOqE9WMGFw40ujnkK/pzEjqo2CTJ8stDI7wW
+         CuSAX16bmlV0akTw8Kgp5WU/Oe1R3E+uOVHmXekgRV4k26iqZOlJ0HJN5N484DEAl46F
+         6t7gZu13iStRaKs/83XH6S81ztSzM/EiTfQtxz9+Bfb3RMxUvHBTo4BwDLtmkFaGpTcK
+         RMpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nQR76nEKRwImSbpknXBAkPnCcRjHjuCtw+g6ieOUiMU=;
+        b=P7U6NUUZ40qkzPUhfH0bxKPvZEMjQjpbHlF6lOYqpPDe/aOA7WUzkFnOYmbg0k3BOF
+         4S7omyuXzG1GpP8iILGed90EqxfcwdNaMhPiQhwfmX4MYkOerjgigFoh4tVweGuh2LmU
+         CBuXDPDOBHDf23JGxLZOYb3g5XIT5Tmb3fi+RE9E/MDafECR4efv+1fZi+KrNyEjzL4G
+         EgI8sPqTYchrbKsMF1Ptz1h6fP1rDfc8Ge63Mthu2/JaKBtyb4UXltJBJaknEal4RXce
+         wRF9wDtxCeHb8E8aKWoPTscIIMYIViSzEbc6K7Q/VmG/MndWCdUwH4t15CT3iB7A/mnd
+         y1Qg==
+X-Gm-Message-State: AOAM532psEtoahb/G/tWSg56i+Q8+JOfpE2ZTo0UokffqhH6h5Qd0QXU
+        Z9PQu65UGLm+beIgz5+1Eig/zaxYNs9+3QsQeJE=
+X-Google-Smtp-Source: ABdhPJyjai1bP1CWf/fqbpbPk1Kj8GpoRphVOCQX07vyopsTZMXh6Ddbm+zkwQI0BIPWymSonWpmt1SBG/RlYa4Wg4I=
+X-Received: by 2002:a17:90a:8594:: with SMTP id m20mr6350792pjn.215.1614891022280;
+ Thu, 04 Mar 2021 12:50:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <68699f8a-2fcd-3b3d-f809-afa54790e9f9@denx.de>
+References: <20210304144317.78065-1-mheyne@amazon.de>
+In-Reply-To: <20210304144317.78065-1-mheyne@amazon.de>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 4 Mar 2021 12:50:10 -0800
+Message-ID: <CAM_iQpWv2qhqmn_kcpO5i=Y8qpTFGoZe7HAVJ5NEGKrjuS0QQQ@mail.gmail.com>
+Subject: Re: [PATCH] net: sched: avoid duplicates in classes dump
+To:     Maximilian Heyne <mheyne@amazon.de>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Kosina <jkosina@suse.cz>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 02, 2021 at 08:25:49PM +0100, Marek Vasut wrote:
->On 12/23/20 3:13 AM, Sasha Levin wrote:
+On Thu, Mar 4, 2021 at 6:44 AM Maximilian Heyne <mheyne@amazon.de> wrote:
 >
->Hello Sasha,
+> This is a follow up of commit ea3274695353 ("net: sched: avoid
+> duplicates in qdisc dump") which has fixed the issue only for the qdisc
+> dump.
 >
->>From: Marek Vasut <marex@denx.de>
->>
->>[ Upstream commit 65277100caa2f2c62b6f3c4648b90d6f0435f3bc ]
->>
->>In case RSI9116 SDIO WiFi operates in STA mode against Intel 9260 in AP mode,
->>the association fails. The former is using wpa_supplicant during association,
->>the later is set up using hostapd:
+> The duplicate printing also occurs when dumping the classes via
+>   tc class show dev eth0
 >
->[...]
->
->Was this patch possibly missed from 5.10.y ?
+> Fixes: 59cc1f61f09c ("net: sched: convert qdisc linked list to hashtable")
+> Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
 
-I'm not sure what happened there, but I can queue it up.
+Seems reasonable. If you can show the difference of tc class dump
+before and after this patch in your changelog, it would be helpful to
+understand the bug here.
 
->Also, while at it, I think it might make sense to pick the following 
->two patches as well, they dramatically reduce interrupt rate of the 
->RSI WiFi device, so it stops overloading lower-end devices:
->287431463e786 ("rsi: Move card interrupt handling to RX thread")
-
-And this one too.
-
->abd131a19f6b8 ("rsi: Clean up loop in the interrupt handler")
-
-But not this one, it looks like just a cleanup. Why is it needed?
-
--- 
-Thanks,
-Sasha
+Thanks.
