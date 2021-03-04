@@ -2,263 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C344532D0EC
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 11:37:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 133C232D149
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 11:59:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238726AbhCDKgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 05:36:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40568 "EHLO
+        id S239118AbhCDK6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 05:58:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238776AbhCDKfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 05:35:55 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF9EC06175F
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 02:35:15 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id d13so29075907edp.4
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 02:35:15 -0800 (PST)
+        with ESMTP id S239104AbhCDK5u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 05:57:50 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A2FC061574
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 02:57:10 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id jt13so48572487ejb.0
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 02:57:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=13pRJm2U7Qqc8F9qRjqfsDkKUIYvnnbBQbaolObg0q8=;
-        b=AZtMAjdXY//iyWTmLxk0j7cOQAlyWKNBrh3ejJbnk9TUwqtZTe598NEFSvxvlLcJn9
-         4AYPqCUGzzyA/E4xI3BlzeSYPnra4K6vxLHHs2K0cBNxurgCw2Br9lp8dR8hf79/2fxn
-         dufdO9CO/Ps9ke3cfkni694EKtxvfa+Fj1eJRmaM4VLKk85tNwSzZ6R1T0a/7YLJqINt
-         gnNMNnDfY3TZLOYJx9H7PD1raw4/CVQc4wRnb+qJ9ucq8u7kTwkAQVFXhPC5XvGlpElY
-         x+EQdNVFlFnB33ZFc4nzUyGMWi/AMFy/5myzYMRwEk+07fysdMJZFy9Zr2tD+DkFkyBZ
-         Dc0A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b9bUYoeieSP5RN1Ykfbla4tN7LP2oMjm52vIwmbyLQo=;
+        b=kR4gcWsrFCxneaQNEaklEm9tR3K8X5fJsSFByoA85Z6DuHgMXP1F9XFV1H1pbRadRz
+         LdXNzfu6iL4lO+LAIZDAsLYdRIx+m9hh2OFJm2y8PRWFQEEgc5UNFMsJY3SEzKHIMDLM
+         /RK9iRpm+JuhB33iu3BOq6zxFoRdiSz88aHA8YDxrluRrMKp5HtZiBahUKaiWfONoD3Z
+         0ANxyMeT5TgJmSv7GBqqkkhF7cecBgyLZboj+cyCx4R8FVVuvv/TmP4pK8OgAvFNPj0A
+         NLmzoPsHQCIwHZ/goN1K8aWcJ61Uma/q1k+wlkfR5TvYP3G+HPlVT0iFJCnjMt6AcipX
+         mB5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=13pRJm2U7Qqc8F9qRjqfsDkKUIYvnnbBQbaolObg0q8=;
-        b=WMYveI7bPoO7FnTy59A2i4ycFv7nzC7wG21wSQXgcFra1E0jR+bcAHGjKFsFFhH53Q
-         yQ7KURtTprjmI0uX3Cu3q4bUBCmLumFl2LFefwbNUS0tdtNlMyXh38ELiVEYdMr/INRS
-         T2CllmeepCRpmDgtapmXJJN+wiswzu7Y+iAi5qN8LOUOjkhoe0R0vGZRsF/X0/4k6102
-         gp81Bb9tijioHtxSGd/TfCFgNbOJ3HkZf3p55qScYpWTm6yGynhQKQPA7vT613UAd27t
-         vPFibUL+6mPaQWaRPNWTyLNtTWMbisWtQo/h0qvXsk8xLRhWW7HSqsjmUCOboNK6aU3f
-         dvPw==
-X-Gm-Message-State: AOAM5305qTQO2EuWl6tzww4Q+I0Zy+LBSDZPkpwER3FJshs8QNBLUvEJ
-        1ahgbkkIfdtfRY/cH1yw7I/UC1yX305FUfMeYOCm
-X-Google-Smtp-Source: ABdhPJyD011kYY+HKgFkmf0rSBAIy7U69faBXx9uGl7Gx818AoP3kpEtIvHyyz6wUVmsWr2aBzKkLIZfV+QLw4I9FS8=
-X-Received: by 2002:a05:6402:4314:: with SMTP id m20mr3456223edc.5.1614854113728;
- Thu, 04 Mar 2021 02:35:13 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b9bUYoeieSP5RN1Ykfbla4tN7LP2oMjm52vIwmbyLQo=;
+        b=UDXl18tdZm2qtCkjssEX/S+nEWwQA725lWfEVDHaq8UIixuPmnHTmtIIc1NuS+3uKc
+         XG2lGXHJ06mUFhffraJ1367XX92aBtmkxr8L0JqdbTVBVC16ei6voqMuJDY7VCiOp8Hb
+         H12jQb/kxzYR1TSjxy911uYIKK8kVdOCQn/cdEoOmrUruJDqUlCMdscIwLQP0NPQtfJx
+         ClX+RaICqooVFkV/XOXoO2bDvrY8HtfVlqsCfeMMax3e90DFR4qZlQnKK8PU+ABNjccT
+         hl+sn4aqRrawbiJ6tU5YP5yjRyYKYakh9vbEM/qSBO2x35Qoj8Dita1vWnTQ9WLA6iVD
+         1nug==
+X-Gm-Message-State: AOAM5339cZZpQPF1isUdi2fGTfxDtFYQTMWlvWPP6S9sFTFZa0Eu1rst
+        uV4RgrDlRrsXWSdnuTAnL1I=
+X-Google-Smtp-Source: ABdhPJwt/CjprRQv2C1jO5FI5OPiqA0FGmANHg/xtrZVzHU3TISAocWzmQFhoaYfhbgWeUimSust9Q==
+X-Received: by 2002:a17:906:558:: with SMTP id k24mr3567288eja.387.1614855428921;
+        Thu, 04 Mar 2021 02:57:08 -0800 (PST)
+Received: from localhost.localdomain ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id mc2sm19857824ejb.115.2021.03.04.02.57.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Mar 2021 02:57:08 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net 1/2] net: dsa: sja1105: fix SGMII PCS being forced to SPEED_UNKNOWN instead of SPEED_10
+Date:   Thu,  4 Mar 2021 12:56:53 +0200
+Message-Id: <20210304105654.873554-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210223115048.435-1-xieyongji@bytedance.com> <20210223115048.435-10-xieyongji@bytedance.com>
- <366f2dcf-51ab-4d66-9c94-517349ef0bdd@redhat.com>
-In-Reply-To: <366f2dcf-51ab-4d66-9c94-517349ef0bdd@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 4 Mar 2021 18:35:03 +0800
-Message-ID: <CACycT3tvj6Hie1bjnprenhevkGC-hknPGOrsfmY6TLxFYBXNxA@mail.gmail.com>
-Subject: Re: Re: [RFC v4 09/11] Documentation: Add documentation for VDUSE
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 4, 2021 at 2:40 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/2/23 7:50 =E4=B8=8B=E5=8D=88, Xie Yongji wrote:
-> > VDUSE (vDPA Device in Userspace) is a framework to support
-> > implementing software-emulated vDPA devices in userspace. This
-> > document is intended to clarify the VDUSE design and usage.
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > ---
-> >   Documentation/userspace-api/index.rst |   1 +
-> >   Documentation/userspace-api/vduse.rst | 112 +++++++++++++++++++++++++=
-+++++++++
-> >   2 files changed, 113 insertions(+)
-> >   create mode 100644 Documentation/userspace-api/vduse.rst
-> >
-> > diff --git a/Documentation/userspace-api/index.rst b/Documentation/user=
-space-api/index.rst
-> > index acd2cc2a538d..f63119130898 100644
-> > --- a/Documentation/userspace-api/index.rst
-> > +++ b/Documentation/userspace-api/index.rst
-> > @@ -24,6 +24,7 @@ place where this information is gathered.
-> >      ioctl/index
-> >      iommu
-> >      media/index
-> > +   vduse
-> >
-> >   .. only::  subproject and html
-> >
-> > diff --git a/Documentation/userspace-api/vduse.rst b/Documentation/user=
-space-api/vduse.rst
-> > new file mode 100644
-> > index 000000000000..2a20e686bb59
-> > --- /dev/null
-> > +++ b/Documentation/userspace-api/vduse.rst
-> > @@ -0,0 +1,112 @@
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +VDUSE - "vDPA Device in Userspace"
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +vDPA (virtio data path acceleration) device is a device that uses a
-> > +datapath which complies with the virtio specifications with vendor
-> > +specific control path. vDPA devices can be both physically located on
-> > +the hardware or emulated by software. VDUSE is a framework that makes =
-it
-> > +possible to implement software-emulated vDPA devices in userspace.
-> > +
-> > +How VDUSE works
-> > +------------
-> > +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
-> > +the character device (/dev/vduse/control). Then a device file with the
-> > +specified name (/dev/vduse/$NAME) will appear, which can be used to
-> > +implement the userspace vDPA device's control path and data path.
->
->
-> It's better to mention that in order to le thte device to be registered
-> on the bus, admin need to use the management API(netlink) to create the
-> vDPA device.
->
-> Some codes to demnonstrate how to create the device will be better.
->
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-OK.
+When using MLO_AN_PHY or MLO_AN_FIXED, the MII_BMCR of the SGMII PCS is
+read before resetting the switch so it can be reprogrammed afterwards.
+This works for the speeds of 1Gbps and 100Mbps, but not for 10Mbps,
+because SPEED_10 is actually 0, so AND-ing anything with 0 is false,
+therefore that last branch is dead code.
 
->
-> > +
-> > +To implement control path, a message-based communication protocol and =
-some
-> > +types of control messages are introduced in the VDUSE framework:
-> > +
-> > +- VDUSE_SET_VQ_ADDR: Set the vring address of virtqueue.
-> > +
-> > +- VDUSE_SET_VQ_NUM: Set the size of virtqueue
-> > +
-> > +- VDUSE_SET_VQ_READY: Set ready status of virtqueue
-> > +
-> > +- VDUSE_GET_VQ_READY: Get ready status of virtqueue
-> > +
-> > +- VDUSE_SET_VQ_STATE: Set the state for virtqueue
-> > +
-> > +- VDUSE_GET_VQ_STATE: Get the state for virtqueue
-> > +
-> > +- VDUSE_SET_FEATURES: Set virtio features supported by the driver
-> > +
-> > +- VDUSE_GET_FEATURES: Get virtio features supported by the device
-> > +
-> > +- VDUSE_SET_STATUS: Set the device status
-> > +
-> > +- VDUSE_GET_STATUS: Get the device status
-> > +
-> > +- VDUSE_SET_CONFIG: Write to device specific configuration space
-> > +
-> > +- VDUSE_GET_CONFIG: Read from device specific configuration space
-> > +
-> > +- VDUSE_UPDATE_IOTLB: Notify userspace to update the memory mapping in=
- device IOTLB
-> > +
-> > +Those control messages are mostly based on the vdpa_config_ops in
-> > +include/linux/vdpa.h which defines a unified interface to control
-> > +different types of vdpa device. Userspace needs to read()/write()
-> > +on the VDUSE device file to receive/reply those control messages
-> > +from/to VDUSE kernel module as follows:
-> > +
-> > +.. code-block:: c
-> > +
-> > +     static int vduse_message_handler(int dev_fd)
-> > +     {
-> > +             int len;
-> > +             struct vduse_dev_request req;
-> > +             struct vduse_dev_response resp;
-> > +
-> > +             len =3D read(dev_fd, &req, sizeof(req));
-> > +             if (len !=3D sizeof(req))
-> > +                     return -1;
-> > +
-> > +             resp.request_id =3D req.unique;
-> > +
-> > +             switch (req.type) {
-> > +
-> > +             /* handle different types of message */
-> > +
-> > +             }
-> > +
-> > +             len =3D write(dev_fd, &resp, sizeof(resp));
-> > +             if (len !=3D sizeof(resp))
-> > +                     return -1;
-> > +
-> > +             return 0;
-> > +     }
-> > +
-> > +In the deta path, vDPA device's iova regions will be mapped into users=
-pace
-> > +with the help of VDUSE_IOTLB_GET_FD ioctl on the VDUSE device file:
-> > +
-> > +- VDUSE_IOTLB_GET_FD: get the file descriptor to iova region. Userspac=
-e can
-> > +  access this iova region by passing the fd to mmap().
->
->
-> It would be better to have codes to explain how it is expected to work he=
-re.
->
+Do what others do (genphy_read_status_fixed, phy_mii_ioctl) and just
+remove the check for SPEED_10, let it fall into the default case.
 
-OK.
+Fixes: ffe10e679cec ("net: dsa: sja1105: Add support for the SGMII port")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/sja1105/sja1105_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> > +
-> > +Besides, the following ioctls on the VDUSE device file are provided to=
- support
-> > +interrupt injection and setting up eventfd for virtqueue kicks:
-> > +
-> > +- VDUSE_VQ_SETUP_KICKFD: set the kickfd for virtqueue, this eventfd is=
- used
-> > +  by VDUSE kernel module to notify userspace to consume the vring.
-> > +
-> > +- VDUSE_INJECT_VQ_IRQ: inject an interrupt for specific virtqueue
-> > +
-> > +- VDUSE_INJECT_CONFIG_IRQ: inject a config interrupt
-> > +
-> > +MMU-based IOMMU Driver
-> > +----------------------
-> > +In virtio-vdpa case, VDUSE framework implements an MMU-based on-chip I=
-OMMU
-> > +driver to support mapping the kernel DMA buffer into the userspace iov=
-a
-> > +region dynamically.
-> > +
-> > +The basic idea behind this driver is treating MMU (VA->PA) as IOMMU (I=
-OVA->PA).
-> > +The driver will set up MMU mapping instead of IOMMU mapping for the DM=
-A transfer
-> > +so that the userspace process is able to use its virtual address to ac=
-cess
-> > +the DMA buffer in kernel.
-> > +
-> > +And to avoid security issue, a bounce-buffering mechanism is introduce=
-d to
-> > +prevent userspace accessing the original buffer directly which may con=
-tain other
-> > +kernel data.
->
->
-> It's worth to mention this is designed for virtio-vdpa (kernel virtio
-> drivers).
->
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 7692338730df..c1982615c631 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1922,7 +1922,7 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 				speed = SPEED_1000;
+ 			else if (bmcr & BMCR_SPEED100)
+ 				speed = SPEED_100;
+-			else if (bmcr & BMCR_SPEED10)
++			else
+ 				speed = SPEED_10;
+ 
+ 			sja1105_sgmii_pcs_force_speed(priv, speed);
+-- 
+2.25.1
 
-Will do it.
-
-Thanks,
-Yongji
