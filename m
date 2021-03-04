@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F5C32D326
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 13:34:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 686DD32D329
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 13:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240803AbhCDMdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 07:33:23 -0500
-Received: from mga18.intel.com ([134.134.136.126]:37321 "EHLO mga18.intel.com"
+        id S240839AbhCDMdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 07:33:24 -0500
+Received: from mga07.intel.com ([134.134.136.100]:47218 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240614AbhCDMdO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 07:33:14 -0500
-IronPort-SDR: v4NoApf6/xB1tyMgpITHM6hRz0Ls4bigAbA6Z4/Ok4YM86SLuCu3DzvrgFBerBRJpX5GlOdgaq
- NVg+Qj+HD3fQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9912"; a="175035984"
+        id S240795AbhCDMdR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 07:33:17 -0500
+IronPort-SDR: 1LokIG9WDc1nY/Pngc4SlwXO7RFScTUXSo7OVzryNA+iywqfFmsI1Lim5cXMhfY5sz145YVNu/
+ FdQ+6TQoArdA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9912"; a="251444259"
 X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; 
-   d="scan'208";a="175035984"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 04:31:29 -0800
-IronPort-SDR: A6NQ3MoiuWyWnM+uvFHbs8bwjUXBDkmHZ5ScbetPz6CjODxeplW4Q/kTErMhemYeBdwpb9v4Qq
- zJDopct6GXZA==
+   d="scan'208";a="251444259"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 04:31:32 -0800
+IronPort-SDR: OG4/PFjM71UZlrAoJxFahoECFI/eAaZS72wRmEHJiqfVkSbPL3u5lAxs2eN84VW3AiCw6lHEmf
+ gRFV479VVxIQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; 
-   d="scan'208";a="400589989"
+   d="scan'208";a="368170056"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 04 Mar 2021 04:31:26 -0800
+  by orsmga003.jf.intel.com with ESMTP; 04 Mar 2021 04:31:29 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 589172B7; Thu,  4 Mar 2021 14:31:26 +0200 (EET)
+        id 6126B39E; Thu,  4 Mar 2021 14:31:26 +0200 (EET)
 From:   Mika Westerberg <mika.westerberg@linux.intel.com>
 To:     linux-usb@vger.kernel.org
 Cc:     Michael Jamet <michael.jamet@intel.com>,
@@ -37,9 +37,9 @@ Cc:     Michael Jamet <michael.jamet@intel.com>,
         Lukas Wunner <lukas@wunner.de>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 04/18] Documentation / thunderbolt: Drop speed/lanes entries for XDomain
-Date:   Thu,  4 Mar 2021 15:31:11 +0300
-Message-Id: <20210304123125.43630-5-mika.westerberg@linux.intel.com>
+Subject: [PATCH 05/18] thunderbolt: Add more logging to XDomain connections
+Date:   Thu,  4 Mar 2021 15:31:12 +0300
+Message-Id: <20210304123125.43630-6-mika.westerberg@linux.intel.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210304123125.43630-1-mika.westerberg@linux.intel.com>
 References: <20210304123125.43630-1-mika.westerberg@linux.intel.com>
@@ -49,51 +49,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are actually not needed as we already have similar entries that
-apply to all devices on the Thunderbolt bus.
+Currently the driver is pretty quiet when another host is connected
+which makes debugging possible issues harder. For this reason add more
+logging on debug level that can be turned on as needed.
 
-Cc: Isaac Hazan <isaac.hazan@intel.com>
+While there log the host-to-host connection on info level analogous to
+routers and retimers.
+
 Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 ---
- .../ABI/testing/sysfs-bus-thunderbolt         | 28 -------------------
- 1 file changed, 28 deletions(-)
+ drivers/thunderbolt/xdomain.c | 34 +++++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-index d7f09d011b6d..bfa4ca6f3fc1 100644
---- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
-+++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-@@ -1,31 +1,3 @@
--What:		/sys/bus/thunderbolt/devices/<xdomain>/rx_speed
--Date:		Feb 2021
--KernelVersion:	5.11
--Contact:	Isaac Hazan <isaac.hazan@intel.com>
--Description:	This attribute reports the XDomain RX speed per lane.
--		All RX lanes run at the same speed.
--
--What:		/sys/bus/thunderbolt/devices/<xdomain>/rx_lanes
--Date:		Feb 2021
--KernelVersion:	5.11
--Contact:	Isaac Hazan <isaac.hazan@intel.com>
--Description:	This attribute reports the number of RX lanes the XDomain
--		is using simultaneously through its upstream port.
--
--What:		/sys/bus/thunderbolt/devices/<xdomain>/tx_speed
--Date:		Feb 2021
--KernelVersion:	5.11
--Contact:	Isaac Hazan <isaac.hazan@intel.com>
--Description:	This attribute reports the XDomain TX speed per lane.
--		All TX lanes run at the same speed.
--
--What:		/sys/bus/thunderbolt/devices/<xdomain>/tx_lanes
--Date:		Feb 2021
--KernelVersion:	5.11
--Contact:	Isaac Hazan <isaac.hazan@intel.com>
--Description:	This attribute reports number of TX lanes the XDomain
--		is using simultaneously through its upstream port.
--
- What: /sys/bus/thunderbolt/devices/.../domainX/boot_acl
- Date:		Jun 2018
- KernelVersion:	4.17
+diff --git a/drivers/thunderbolt/xdomain.c b/drivers/thunderbolt/xdomain.c
+index 7cf8b9c85ab7..584bb5ec06f8 100644
+--- a/drivers/thunderbolt/xdomain.c
++++ b/drivers/thunderbolt/xdomain.c
+@@ -591,6 +591,8 @@ static void tb_xdp_handle_request(struct work_struct *work)
+ 
+ 	finalize_property_block();
+ 
++	tb_dbg(tb, "%llx: received XDomain request %#x\n", route, pkg->type);
++
+ 	switch (pkg->type) {
+ 	case PROPERTIES_REQUEST:
+ 		ret = tb_xdp_properties_response(tb, ctl, route, sequence, uuid,
+@@ -1002,9 +1004,12 @@ static void tb_xdomain_get_uuid(struct work_struct *work)
+ 	uuid_t uuid;
+ 	int ret;
+ 
++	dev_dbg(&xd->dev, "requesting remote UUID\n");
++
+ 	ret = tb_xdp_uuid_request(tb->ctl, xd->route, xd->uuid_retries, &uuid);
+ 	if (ret < 0) {
+ 		if (xd->uuid_retries-- > 0) {
++			dev_dbg(&xd->dev, "failed to request UUID, retrying\n");
+ 			queue_delayed_work(xd->tb->wq, &xd->get_uuid_work,
+ 					   msecs_to_jiffies(100));
+ 		} else {
+@@ -1013,6 +1018,8 @@ static void tb_xdomain_get_uuid(struct work_struct *work)
+ 		return;
+ 	}
+ 
++	dev_dbg(&xd->dev, "got remote UUID %pUb\n", &uuid);
++
+ 	if (uuid_equal(&uuid, xd->local_uuid))
+ 		dev_dbg(&xd->dev, "intra-domain loop detected\n");
+ 
+@@ -1052,11 +1059,15 @@ static void tb_xdomain_get_properties(struct work_struct *work)
+ 	u32 gen = 0;
+ 	int ret;
+ 
++	dev_dbg(&xd->dev, "requesting remote properties\n");
++
+ 	ret = tb_xdp_properties_request(tb->ctl, xd->route, xd->local_uuid,
+ 					xd->remote_uuid, xd->properties_retries,
+ 					&block, &gen);
+ 	if (ret < 0) {
+ 		if (xd->properties_retries-- > 0) {
++			dev_dbg(&xd->dev,
++				"failed to request remote properties, retrying\n");
+ 			queue_delayed_work(xd->tb->wq, &xd->get_properties_work,
+ 					   msecs_to_jiffies(1000));
+ 		} else {
+@@ -1123,6 +1134,11 @@ static void tb_xdomain_get_properties(struct work_struct *work)
+ 			dev_err(&xd->dev, "failed to add XDomain device\n");
+ 			return;
+ 		}
++		dev_info(&xd->dev, "new host found, vendor=%#x device=%#x\n",
++			 xd->vendor, xd->device);
++		if (xd->vendor_name && xd->device_name)
++			dev_info(&xd->dev, "%s %s\n", xd->vendor_name,
++				 xd->device_name);
+ 	} else {
+ 		kobject_uevent(&xd->dev.kobj, KOBJ_CHANGE);
+ 	}
+@@ -1143,13 +1159,19 @@ static void tb_xdomain_properties_changed(struct work_struct *work)
+ 					     properties_changed_work.work);
+ 	int ret;
+ 
++	dev_dbg(&xd->dev, "sending properties changed notification\n");
++
+ 	ret = tb_xdp_properties_changed_request(xd->tb->ctl, xd->route,
+ 				xd->properties_changed_retries, xd->local_uuid);
+ 	if (ret) {
+-		if (xd->properties_changed_retries-- > 0)
++		if (xd->properties_changed_retries-- > 0) {
++			dev_dbg(&xd->dev,
++				"failed to send properties changed notification, retrying\n");
+ 			queue_delayed_work(xd->tb->wq,
+ 					   &xd->properties_changed_work,
+ 					   msecs_to_jiffies(1000));
++		}
++		dev_err(&xd->dev, "failed to send properties changed notification\n");
+ 		return;
+ 	}
+ 
+@@ -1390,6 +1412,10 @@ struct tb_xdomain *tb_xdomain_alloc(struct tb *tb, struct device *parent,
+ 	xd->dev.groups = xdomain_attr_groups;
+ 	dev_set_name(&xd->dev, "%u-%llx", tb->index, route);
+ 
++	dev_dbg(&xd->dev, "local UUID %pUb\n", local_uuid);
++	if (remote_uuid)
++		dev_dbg(&xd->dev, "remote UUID %pUb\n", remote_uuid);
++
+ 	/*
+ 	 * This keeps the DMA powered on as long as we have active
+ 	 * connection to another host.
+@@ -1452,10 +1478,12 @@ void tb_xdomain_remove(struct tb_xdomain *xd)
+ 	pm_runtime_put_noidle(&xd->dev);
+ 	pm_runtime_set_suspended(&xd->dev);
+ 
+-	if (!device_is_registered(&xd->dev))
++	if (!device_is_registered(&xd->dev)) {
+ 		put_device(&xd->dev);
+-	else
++	} else {
++		dev_info(&xd->dev, "host disconnected\n");
+ 		device_unregister(&xd->dev);
++	}
+ }
+ 
+ /**
 -- 
 2.30.1
 
