@@ -2,95 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A441632D08A
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 11:18:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A17432D080
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 11:15:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238373AbhCDKRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 05:17:03 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:40237 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238359AbhCDKQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 05:16:44 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1lHl1X-0006ek-BG; Thu, 04 Mar 2021 10:16:03 +0000
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Subject: net: mscc: ocelot: issue with uninitialized pointer read in
- ocelot_flower_parse_key
-Message-ID: <0a0ebc62-4703-d3df-8f06-48ef50b20555@canonical.com>
-Date:   Thu, 4 Mar 2021 10:16:02 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S238393AbhCDKOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 05:14:55 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:13431 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238386AbhCDKOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 05:14:40 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Drmrf5c0QzjSYR;
+        Thu,  4 Mar 2021 18:12:34 +0800 (CST)
+Received: from localhost.localdomain (10.175.102.38) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 4 Mar 2021 18:13:48 +0800
+From:   'Wei Yongjun <weiyongjun1@huawei.com>
+To:     <weiyongjun1@huawei.com>, Luca Coelho <luciano.coelho@intel.com>,
+        "Kalle Valo" <kvalo@codeaurora.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Gregory Greenman" <gregory.greenman@intel.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH -next] iwlwifi: mvm: fix old-style static const declaration
+Date:   Thu, 4 Mar 2021 10:22:45 +0000
+Message-ID: <20210304102245.274847-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.102.38]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-Static analysis with Coverity had detected an uninitialized pointer read
-in function ocelot_flower_parse_key in
-drivers/net/ethernet/mscc/ocelot_flower.c introduced by commit:
+GCC reports warning as follows:
 
-commit 75944fda1dfe836fdd406bef6cb3cc8a80f7af83
-Author: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Date:   Fri Oct 2 15:02:23 2020 +0300
+drivers/net/wireless/intel/iwlwifi/mvm/rfi.c:14:1: warning:
+ 'static' is not at beginning of declaration [-Wold-style-declaration]
+   14 | const static struct iwl_rfi_lut_entry iwl_rfi_table[IWL_RFI_LUT_SIZE] = {
+      | ^~~~~
 
-    net: mscc: ocelot: offload ingress skbedit and vlan actions to VCAP IS1
+Move static to the beginning of declaration.
 
-The analysis is as follows:
+Fixes: 21254908cbe9 ("iwlwifi: mvm: add RFI-M support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/rfi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-531
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
+index 873919048143..4d5a99cbcc9d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
+@@ -11,7 +11,7 @@
+  * DDR needs frequency in units of 16.666MHz, so provide FW with the
+  * frequency values in the adjusted format.
+  */
+-const static struct iwl_rfi_lut_entry iwl_rfi_table[IWL_RFI_LUT_SIZE] = {
++static const struct iwl_rfi_lut_entry iwl_rfi_table[IWL_RFI_LUT_SIZE] = {
+ 	/* LPDDR4 */
+ 
+ 	/* frequency 3733MHz */
 
-   10. Condition flow_rule_match_key(rule,
-FLOW_DISSECTOR_KEY_IPV4_ADDRS), taking true branch.
-   11. Condition proto == 2048, taking true branch.
-
-532        if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IPV4_ADDRS) &&
-533            proto == ETH_P_IP) {
-
-   12. var_decl: Declaring variable match without initializer.
-
-534                struct flow_match_ipv4_addrs match;
-535                u8 *tmp;
-536
-
-   13. Condition filter->block_id == VCAP_ES0, taking false branch.
-
-537                if (filter->block_id == VCAP_ES0) {
-538                        NL_SET_ERR_MSG_MOD(extack,
-539                                           "VCAP ES0 cannot match on
-IP address");
-540                        return -EOPNOTSUPP;
-541                }
-542
-
-   14. Condition filter->block_id == VCAP_IS1, taking true branch.
-   Uninitialized pointer read (UNINIT)
-   15. uninit_use: Using uninitialized value match.mask.
-
-543                if (filter->block_id == VCAP_IS1 && *(u32
-*)&match.mask->dst) {
-544                        NL_SET_ERR_MSG_MOD(extack,
-545                                           "Key type S1_NORMAL cannot
-match on destination IP");
-546                        return -EOPNOTSUPP;
-547                }
-
-match is declared in line 534 and is not initialized and the
-uninitialized match.mask is being dereferenced on line 543. Not sure
-what intent was on this and how to fix, hence I'm reporting this issue.
-
-Colin
