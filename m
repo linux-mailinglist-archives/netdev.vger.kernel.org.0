@@ -2,70 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B23B32D196
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 12:11:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C5A32D32A
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 13:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239481AbhCDLLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 06:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238448AbhCDLKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 06:10:52 -0500
-Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE631C061574;
-        Thu,  4 Mar 2021 03:10:11 -0800 (PST)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id A5EF3321; Thu,  4 Mar 2021 12:10:08 +0100 (CET)
-Date:   Thu, 4 Mar 2021 12:10:04 +0100
-From:   Joerg Roedel <joro@8bytes.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: cleanup unused or almost unused IOMMU APIs and the FSL PAMU
- driver
-Message-ID: <20210304111004.GA26414@8bytes.org>
-References: <20210301084257.945454-1-hch@lst.de>
+        id S240829AbhCDMdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 07:33:24 -0500
+Received: from mga07.intel.com ([134.134.136.100]:47210 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240610AbhCDMdO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 07:33:14 -0500
+IronPort-SDR: ZKUP/vwU/cGdmCULgoiGcCyrRmMoS5msXYiOLD9SQ0SYO8tXPGOowP1Rab9gmu+cOEUhnEoUV2
+ 844eRLXd3KyQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9912"; a="251444241"
+X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; 
+   d="scan'208";a="251444241"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 04:31:28 -0800
+IronPort-SDR: B1t1Ob8O4NRatqazlh+huIjXuO9RiwGw4fKjrYUGgAuL7EtWTs+nq3ot62AYRRg7zRxL93lTcN
+ cepTXxN7nkfg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; 
+   d="scan'208";a="368170038"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 04 Mar 2021 04:31:26 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+        id 2E2931F1; Thu,  4 Mar 2021 14:31:25 +0200 (EET)
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     linux-usb@vger.kernel.org
+Cc:     Michael Jamet <michael.jamet@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Isaac Hazan <isaac.hazan@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 00/18] thunderbolt: Align with USB4 inter-domain and DROM specs
+Date:   Thu,  4 Mar 2021 15:31:07 +0300
+Message-Id: <20210304123125.43630-1-mika.westerberg@linux.intel.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210301084257.945454-1-hch@lst.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 09:42:40AM +0100, Christoph Hellwig wrote:
-> Diffstat:
->  arch/powerpc/include/asm/fsl_pamu_stash.h   |   12 
->  drivers/gpu/drm/msm/adreno/adreno_gpu.c     |    2 
->  drivers/iommu/amd/iommu.c                   |   23 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   85 ---
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       |  122 +---
->  drivers/iommu/dma-iommu.c                   |    8 
->  drivers/iommu/fsl_pamu.c                    |  264 ----------
->  drivers/iommu/fsl_pamu.h                    |   10 
->  drivers/iommu/fsl_pamu_domain.c             |  694 ++--------------------------
->  drivers/iommu/fsl_pamu_domain.h             |   46 -
->  drivers/iommu/intel/iommu.c                 |   55 --
->  drivers/iommu/iommu.c                       |   75 ---
->  drivers/soc/fsl/qbman/qman_portal.c         |   56 --
->  drivers/vfio/vfio_iommu_type1.c             |   31 -
->  drivers/vhost/vdpa.c                        |   10 
->  include/linux/iommu.h                       |   81 ---
->  16 files changed, 214 insertions(+), 1360 deletions(-)
+Hi all,
 
-Nice cleanup, thanks. The fsl_pamu driver and interface has always been
-a little bit of an alien compared to other IOMMU drivers. I am inclined
-to merge this after -rc3 is out, given some reviews. Can you also please
-add changelogs to the last three patches?
+The latest USB4 spec [1] also includes inter-domain (peer-to-peer, XDomain)
+and DROM (per-device ROM) specs. There are sligth differences between what
+the driver is doing now and what the spec say so this series tries to align
+the driver(s) with that. We also improve the "service" stack so that it is
+possible to run multiple DMA tunnels over a single XDomain connection, and
+update the two existing service drivers accordingly.
 
-Thanks,
+We also decrease the control channel timeout when software based connection
+manager is used.
 
-	Joerg
+The USB4 DROM spec adds a new product descriptor that includes the device
+and IDs instead of the generic entries in the Thunderbotl 1-3 DROMs. This
+series updates the driver to parse this descriptor too.
+
+[1] https://www.usb.org/document-library/usb4tm-specification
+
+Mika Westerberg (18):
+  thunderbolt: Disable retry logic for intra-domain control packets
+  thunderbolt: Do not pass timeout for tb_cfg_reset()
+  thunderbolt: Decrease control channel timeout for software connection manager
+  Documentation / thunderbolt: Drop speed/lanes entries for XDomain
+  thunderbolt: Add more logging to XDomain connections
+  thunderbolt: Do not re-establish XDomain DMA paths automatically
+  thunderbolt: Use pseudo-random number as initial property block generation
+  thunderbolt: Align XDomain protocol timeouts with the spec
+  thunderbolt: Add tb_property_copy_dir()
+  thunderbolt: Add support for maxhopid XDomain property
+  thunderbolt: Use dedicated flow control for DMA tunnels
+  thunderbolt: Drop unused tb_port_set_initial_credits()
+  thunderbolt: Allow multiple DMA tunnels over a single XDomain connection
+  net: thunderbolt: Align the driver to the USB4 networking spec
+  thunderbolt: Add KUnit tests for XDomain properties
+  thunderbolt: Add KUnit tests for DMA tunnels
+  thunderbolt: Check quirks in tb_switch_add()
+  thunderbolt: Add support for USB4 DROM
+
+ .../ABI/testing/sysfs-bus-thunderbolt         |  35 +-
+ drivers/net/thunderbolt.c                     |  56 +-
+ drivers/thunderbolt/ctl.c                     |  21 +-
+ drivers/thunderbolt/ctl.h                     |   8 +-
+ drivers/thunderbolt/dma_test.c                |  35 +-
+ drivers/thunderbolt/domain.c                  |  90 ++--
+ drivers/thunderbolt/eeprom.c                  | 105 +++-
+ drivers/thunderbolt/icm.c                     |  34 +-
+ drivers/thunderbolt/property.c                |  71 +++
+ drivers/thunderbolt/switch.c                  |  26 +-
+ drivers/thunderbolt/tb.c                      |  52 +-
+ drivers/thunderbolt/tb.h                      |  19 +-
+ drivers/thunderbolt/test.c                    | 492 ++++++++++++++++++
+ drivers/thunderbolt/tunnel.c                  | 102 +++-
+ drivers/thunderbolt/tunnel.h                  |   8 +-
+ drivers/thunderbolt/xdomain.c                 | 416 +++++++++------
+ include/linux/thunderbolt.h                   |  54 +-
+ 17 files changed, 1220 insertions(+), 404 deletions(-)
+
+-- 
+2.30.1
+
