@@ -2,225 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E951E32D349
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 13:36:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E9CC32D390
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 13:51:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240976AbhCDMe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 07:34:59 -0500
-Received: from mga05.intel.com ([192.55.52.43]:28648 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240994AbhCDMeh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 07:34:37 -0500
-IronPort-SDR: m95GBbiwC0W0gHdcBPoWxGphA/IvLfb8Vds3UV5EEbNyLp6wCAToRuxRdvc50NmE6qGRryBjtx
- SdsNX+5cbkyw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9912"; a="272407045"
-X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; 
-   d="scan'208";a="272407045"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 04:31:35 -0800
-IronPort-SDR: xCTp1s/OrcjpiNBQkt4NjSf5kzeKZ40lCf2WTpjO9Oix4ZjW88x69RMC43EUkofohO1j4DkNQ5
- mNvPCyOAyI1Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; 
-   d="scan'208";a="600508115"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 04 Mar 2021 04:31:32 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id EA9B676E; Thu,  4 Mar 2021 14:31:26 +0200 (EET)
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     linux-usb@vger.kernel.org
-Cc:     Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Isaac Hazan <isaac.hazan@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 18/18] thunderbolt: Add support for USB4 DROM
-Date:   Thu,  4 Mar 2021 15:31:25 +0300
-Message-Id: <20210304123125.43630-19-mika.westerberg@linux.intel.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210304123125.43630-1-mika.westerberg@linux.intel.com>
-References: <20210304123125.43630-1-mika.westerberg@linux.intel.com>
+        id S232338AbhCDMu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 07:50:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233488AbhCDMux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 07:50:53 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12563C06175F
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 04:50:13 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id t16so7566406ott.3
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 04:50:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JdmCgqxTyfY5I9xDaY/BPP2iZJNza/9ewn2ak7RkY8c=;
+        b=IRqibLQDdwElfOKotXOyk6Xm69sPl8sxQuqV9clOuFIxG9QXGOKdMTyqASjrHoAlc5
+         XbAzsS49oadxgoJZy1EUjRNB1HpeOMOPzkrh0336mMM4eax9oQyhJxO2OOK2e1LMMHxV
+         yH+o8/uUl2nRK/2lJS8ur7FNb0oPpl+ZtRZYP+si94EBqxYY5jLvvM4QRyPQ5JaWY/lS
+         QpulFo5IaziPPl5MSdGCUdqvZDGubjyrymWtl4cZQJ6Eh/4ZPJGUhJh4K55c5Xr1LfWR
+         AcCy6zPrb8C1Uq9tk1XIqOAbpbZZyyCiacXm3xPaWFcTMngYTQjwzsXF7xIiyRqACxjD
+         A7vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JdmCgqxTyfY5I9xDaY/BPP2iZJNza/9ewn2ak7RkY8c=;
+        b=HfAxof5ufg0PusPZ8G6HezHLDhMOfDxOWckiMOxMw51eyLsfBW9fE5/XLUfTDRYV+L
+         SbGPS1Ei08gRagd6Swb0KCpYdDugfm6rrVZWnrAilorNV6jFTHQyvw6I1zN6yrSJlCjs
+         GUMeXBqjb8X0xoX80ZMWZX1yu67CEALqLb1ao5rjtv0utMJ3x9mMTD+zmom6muXUnXWY
+         1HQTrIvej5wSYUZSAQE4WuR2BXMiHMP5JYS8Wd5rJvTF/zjZYZvmYx5xu6aAWt7uy90l
+         4z4yBGZz4OcSGKU3Dvw+W+cCAgsj9oGFsQofjIKcMteZWQFd920DxH6Wl7tndIdt20pk
+         FNaw==
+X-Gm-Message-State: AOAM533VMR3sOBvze04i9Ejc6kHi7z1RFv569NCY3/XeLOO8QusfLWgr
+        NALY7NB5InY+4QBacUvm2gCtz0dQ1CMkmFsINDY=
+X-Google-Smtp-Source: ABdhPJzbhicuu49yichXDV8SMjyqQgf9w6HbwCQwnIXpL+ttX6kIA914/CgbcAIy4idZZ7+voPTafSCOvktvmmlDhkY=
+X-Received: by 2002:a9d:6e17:: with SMTP id e23mr3389238otr.38.1614862212533;
+ Thu, 04 Mar 2021 04:50:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAJH0kmzrf4MpubB1RdcP9mu1baLM0YcN-MXKY41ouFHxD8ndNg@mail.gmail.com>
+ <20210302174451.59341082@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210302174451.59341082@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Zbynek Michl <zbynek.michl@gmail.com>
+Date:   Thu, 4 Mar 2021 13:50:01 +0100
+Message-ID: <CAJH0kmyTgLp4rJGL1EYo4hQ_qcd3t3JQS-s-e9FY8ERTPrmwqQ@mail.gmail.com>
+Subject: Re: [regression] Kernel panic on resume from sleep
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-USB4 router DROM differs sligthly from Thunderbolt 1-3 DROM. For
-instance it does not include UID and CRC8 in the header section, and it
-has product descriptor genereric entry to describe the product IDs and
-related information. If the "Version" field in the DROM header section
-reads 3 it means the router only has USB4 DROM and if it reads 1 it
-means the router supports TBT3 compatible DROM.
+Looks good so far, but need to wait some more time as the issue was irregular.
 
-For this reason, update the DROM parsing code to support "pure" USB4
-DROMs too.
+Do you have any explanation why the calls disorder caused the panic
+just occasionally?
 
-While there drop the extra empty line at the end of tb_drom_read().
+Also, the same (wrong) order I can see in the 3.16 kernel code, but it
+has worked fine with this kernel in all cases. So what is different in
+5.10?
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
- drivers/thunderbolt/eeprom.c | 104 +++++++++++++++++++++++++++--------
- 1 file changed, 80 insertions(+), 24 deletions(-)
+Thanks
+Zbynek
 
-diff --git a/drivers/thunderbolt/eeprom.c b/drivers/thunderbolt/eeprom.c
-index aecb0b9f0c75..46d0906a3070 100644
---- a/drivers/thunderbolt/eeprom.c
-+++ b/drivers/thunderbolt/eeprom.c
-@@ -277,6 +277,16 @@ struct tb_drom_entry_port {
- 	u8 unknown4:2;
- } __packed;
- 
-+/* USB4 product descriptor */
-+struct tb_drom_entry_desc {
-+	struct tb_drom_entry_header header;
-+	u16 bcdUSBSpec;
-+	u16 idVendor;
-+	u16 idProduct;
-+	u16 bcdProductFWRevision;
-+	u32 TID;
-+	u8 productHWRevision;
-+};
- 
- /**
-  * tb_drom_read_uid_only() - Read UID directly from DROM
-@@ -329,6 +339,16 @@ static int tb_drom_parse_entry_generic(struct tb_switch *sw,
- 		if (!sw->device_name)
- 			return -ENOMEM;
- 		break;
-+	case 9: {
-+		const struct tb_drom_entry_desc *desc =
-+			(const struct tb_drom_entry_desc *)entry;
-+
-+		if (!sw->vendor && !sw->device) {
-+			sw->vendor = desc->idVendor;
-+			sw->device = desc->idProduct;
-+		}
-+		break;
-+	}
- 	}
- 
- 	return 0;
-@@ -521,6 +541,51 @@ static int tb_drom_read_n(struct tb_switch *sw, u16 offset, u8 *val,
- 	return tb_eeprom_read_n(sw, offset, val, count);
- }
- 
-+static int tb_drom_parse(struct tb_switch *sw)
-+{
-+	const struct tb_drom_header *header =
-+		(const struct tb_drom_header *)sw->drom;
-+	u32 crc;
-+
-+	crc = tb_crc8((u8 *) &header->uid, 8);
-+	if (crc != header->uid_crc8) {
-+		tb_sw_warn(sw,
-+			"DROM UID CRC8 mismatch (expected: %#x, got: %#x), aborting\n",
-+			header->uid_crc8, crc);
-+		return -EINVAL;
-+	}
-+	if (!sw->uid)
-+		sw->uid = header->uid;
-+	sw->vendor = header->vendor_id;
-+	sw->device = header->model_id;
-+
-+	crc = tb_crc32(sw->drom + TB_DROM_DATA_START, header->data_len);
-+	if (crc != header->data_crc32) {
-+		tb_sw_warn(sw,
-+			"DROM data CRC32 mismatch (expected: %#x, got: %#x), continuing\n",
-+			header->data_crc32, crc);
-+	}
-+
-+	return tb_drom_parse_entries(sw);
-+}
-+
-+static int usb4_drom_parse(struct tb_switch *sw)
-+{
-+	const struct tb_drom_header *header =
-+		(const struct tb_drom_header *)sw->drom;
-+	u32 crc;
-+
-+	crc = tb_crc32(sw->drom + TB_DROM_DATA_START, header->data_len);
-+	if (crc != header->data_crc32) {
-+		tb_sw_warn(sw,
-+			   "DROM data CRC32 mismatch (expected: %#x, got: %#x), aborting\n",
-+			   header->data_crc32, crc);
-+		return -EINVAL;
-+	}
-+
-+	return tb_drom_parse_entries(sw);
-+}
-+
- /**
-  * tb_drom_read() - Copy DROM to sw->drom and parse it
-  * @sw: Router whose DROM to read and parse
-@@ -534,7 +599,6 @@ static int tb_drom_read_n(struct tb_switch *sw, u16 offset, u8 *val,
- int tb_drom_read(struct tb_switch *sw)
- {
- 	u16 size;
--	u32 crc;
- 	struct tb_drom_header *header;
- 	int res, retries = 1;
- 
-@@ -599,30 +663,21 @@ int tb_drom_read(struct tb_switch *sw)
- 		goto err;
- 	}
- 
--	crc = tb_crc8((u8 *) &header->uid, 8);
--	if (crc != header->uid_crc8) {
--		tb_sw_warn(sw,
--			"drom uid crc8 mismatch (expected: %#x, got: %#x), aborting\n",
--			header->uid_crc8, crc);
--		goto err;
--	}
--	if (!sw->uid)
--		sw->uid = header->uid;
--	sw->vendor = header->vendor_id;
--	sw->device = header->model_id;
-+	tb_sw_dbg(sw, "DROM version: %d\n", header->device_rom_revision);
- 
--	crc = tb_crc32(sw->drom + TB_DROM_DATA_START, header->data_len);
--	if (crc != header->data_crc32) {
--		tb_sw_warn(sw,
--			"drom data crc32 mismatch (expected: %#x, got: %#x), continuing\n",
--			header->data_crc32, crc);
-+	switch (header->device_rom_revision) {
-+	case 3:
-+		res = usb4_drom_parse(sw);
-+		break;
-+	default:
-+		tb_sw_warn(sw, "DROM device_rom_revision %#x unknown\n",
-+			   header->device_rom_revision);
-+		fallthrough;
-+	case 1:
-+		res = tb_drom_parse(sw);
-+		break;
- 	}
- 
--	if (header->device_rom_revision > 2)
--		tb_sw_warn(sw, "drom device_rom_revision %#x unknown\n",
--			header->device_rom_revision);
--
--	res = tb_drom_parse_entries(sw);
- 	/* If the DROM parsing fails, wait a moment and retry once */
- 	if (res == -EILSEQ && retries--) {
- 		tb_sw_warn(sw, "parsing DROM failed, retrying\n");
-@@ -632,10 +687,11 @@ int tb_drom_read(struct tb_switch *sw)
- 			goto parse;
- 	}
- 
--	return res;
-+	if (!res)
-+		return 0;
-+
- err:
- 	kfree(sw->drom);
- 	sw->drom = NULL;
- 	return -EIO;
--
- }
--- 
-2.30.1
-
+On Wed, Mar 3, 2021 at 2:44 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 1 Mar 2021 23:11:05 +0100 Zbynek Michl wrote:
+> > Hello,
+> >
+> > Can anybody help me with the following kernel issue?
+> > https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=983595
+> >
+> > Do I understand it correctly that the kernel crashes due to the bug in
+> > the alx driver?
+>
+> Order of calls on resume looks suspicious, can you give this a try?
+>
+> diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+> index 9b7f1af5f574..9e02f8864593 100644
+> --- a/drivers/net/ethernet/atheros/alx/main.c
+> +++ b/drivers/net/ethernet/atheros/alx/main.c
+> @@ -1894,13 +1894,16 @@ static int alx_resume(struct device *dev)
+>
+>         if (!netif_running(alx->dev))
+>                 return 0;
+> -       netif_device_attach(alx->dev);
+>
+>         rtnl_lock();
+>         err = __alx_open(alx, true);
+>         rtnl_unlock();
+> +       if (err)
+> +               return err;
+>
+> -       return err;
+> +       netif_device_attach(alx->dev);
+> +
+> +       return 0;
+>  }
+>
+>  static SIMPLE_DEV_PM_OPS(alx_pm_ops, alx_suspend, alx_resume);
