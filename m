@@ -2,117 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FA8432DA84
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 20:43:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B0C532DAB3
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 20:58:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236391AbhCDTmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 14:42:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233561AbhCDTmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 14:42:38 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DEFC06175F
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 11:41:58 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id m9so29793118ybk.8
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 11:41:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5inzGOmXl2dPiZFolyIoKS8T3zZi7XEEJyDRvg/FgMU=;
-        b=mQJZ+TiQoJMxofvyDf8y0V1KAxptE7bck3MOigBova7TKsuxa/7SMzP5rUGlmZ5/v+
-         jbkhyIJNMaKLbJPTV0eG6xOnXFiVCNrejsKZHAPE2KfYwggZAPp6Wo24Vck7RyqR6Dgq
-         Pw9gN+FJMpL37exZEKuLBq4y3b7YUxWiIETpqLrZWxeWvqAVDyDrcf57Wdo9cbn0NlzT
-         vR3lhJqDr8XPzk5fO7283EHVvrpQm19qphxySeOqBaOx7p/CrGCUarA8GVNPKyC9X++6
-         E+/kgUu3UanKx46c63qwFlaUxrPCW4WkkMXmkagjP9ttK5oyZkNYUxXWAQoRW7+MyTSB
-         7/Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5inzGOmXl2dPiZFolyIoKS8T3zZi7XEEJyDRvg/FgMU=;
-        b=PZx2LvyrER8NIj1OPd1Lj+Zeb7rgaqIr9h/Tu9ABAAOem17OxAu6+adU+AfifxJEM3
-         fJGb8Msf4juWGz+Phcs4aK7KchF6XdzgUZRNxy6258XS9qV73PzPRORzWTv8X8lP5EJr
-         87pLWXsul2Zodo9KjdpDhzw3sjBiKl5OsFM/5Msz52Z28VDWx+N1G8fvM+qh3U6SweFl
-         8uuOlNnrLoZchM1fPRLe3wlW3tbxXpE7dLwx9gSaLyY8m4AO39z45ayaQDOxaQUUjmQW
-         ijUwpn9wh5jDlfj+DMzdPOzeFtfTNRcO4G6lqZDSXcf+Tz9Ela8aotCfUscb4xuiiwsC
-         0c9A==
-X-Gm-Message-State: AOAM532h7zWiTF5R4c+QroNJcIQbKDb92MgsqT35WEP4SB5dQlkrp0JZ
-        G5JElypoCw6a+BkeC/xGNIGZ8bpK/pZpI21Qc51zzA==
-X-Google-Smtp-Source: ABdhPJzW8jp9ISb/8VaCQHsDqCInWU3PCIZHwBlKHxiEowdWQSsVT/IsXsYfXi3U1ibVa16J/Eoxh5P7qMNb198wskM=
-X-Received: by 2002:a25:2307:: with SMTP id j7mr9011516ybj.518.1614886916918;
- Thu, 04 Mar 2021 11:41:56 -0800 (PST)
+        id S236559AbhCDT5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 14:57:08 -0500
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.160]:12719 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234995AbhCDT4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 14:56:45 -0500
+X-Greylist: delayed 59770 seconds by postgrey-1.27 at vger.kernel.org; Thu, 04 Mar 2021 14:56:45 EST
+ARC-Seal: i=1; a=rsa-sha256; t=1614887574; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=Of7bXn3PIYr1QxRzs59sevKI6VndQnplYWSHB+MEECuWwUxu/iRrQU8oUMFtayBiuK
+    QQ/VbKd431R/yp1NGMvj5BnMR6wk7GOMfubAdEaISthqF0Ehzzq398+Sxqcvj4C4n3fR
+    SnvqkGa7IMAuQ55sG5FK9YDWO8XoNTEBbVIX01KHon1kNJzuBTuKnpBfr2Zbmc3AHygc
+    SLyCeQeeDam+OpErUtlEiYbNHxY5dzWfMZWUhag5WjtY3wBLA2oO4qrmBmdlYNT/J2Yo
+    D4QK/tHfTg+ySv9uzTJCi9FMSWwlegRNbJTL/yw6olbav7dMk+Bm10pvCfGNwrjEGm65
+    37rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1614887574;
+    s=strato-dkim-0002; d=strato.com;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=9ccTGlAu3qQh1vUjBEtp0mwjf2HH0YAmeV2L8N2WYf0=;
+    b=HlnmQRCll2YG55mmMFNBw4E/zJE5y3nwSuihAXS8VLb6wJXGGd2EB9UHINk4rm4MjF
+    SGRxKj+nIFrFS4EbdwpFWBEKhN99Z4wUknpyhEemJ0MnP+JvdeFRfOlpQs67XSkbzITM
+    TW5aG6dyTqs7XqQEjjqJgRsazt6ObEx9gghLAlI4LSipUmWrzyI7y5ArKqfTyXTQgctI
+    Cuk/0hK97+KceiNmA8ZyFUXJ7HFfBG9JbtxId9b9lK7zYwVjpKwGmtfCcKphxvd+11Q0
+    nKY9tBYbdiUVZlk/FIYeQvKSpFnSDN26lzeQ6281fWbsba/jyB95kaRjx/nsi3WsB1+3
+    8JRw==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1614887574;
+    s=strato-dkim-0002; d=fami-braun.de;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=9ccTGlAu3qQh1vUjBEtp0mwjf2HH0YAmeV2L8N2WYf0=;
+    b=TfarOpBO15+26JhYWlpC8ALpU4khEMocAXFn8JzYhJOMYLzY8XDsAg06arw8cc+APR
+    azCqgK3CMPgUfrIEIuKYAqYnAsiNHnHC3R3gHMHhdaXBZdp76oHwdwQ6X1Ls1ftOQEO8
+    Nb2l6Vbvc59KSGuS/1ObzCoh7WxqDPNH5+0seE16S/zFtJDoNEpBiyyi3Tv+7xW6/Vvs
+    W2Sh1c7y/ORJeGyOdWCtyuZCJH2A/4XQxy4O3zMV+gYT8JHbzN2F2LStpHisNSjOrMu/
+    uQTcg/AwV35T57eiOqbtBEXz2Z99Q0P/Pg+h505j3rbDLRrHH+YqY47pDkVEk2H4G557
+    zCuQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P20JeEWkefDI1ODZs1HHtgV3eF0OpFsRaGIBEm4ljegySSvO7VhbcRIBGrxpdQd5bmdzGXq2QVey/Dc="
+X-RZG-CLASS-ID: mo00
+Received: from dynamic.fami-braun.de
+    by smtp.strato.de (RZmta 47.20.3 DYNA|AUTH)
+    with ESMTPSA id 909468x24Jqs22Q
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 4 Mar 2021 20:52:54 +0100 (CET)
+Received: from dynamic.fami-braun.de (localhost [127.0.0.1])
+        by dynamic.fami-braun.de (fami-braun.de) with ESMTP id E92FE15410E;
+        Thu,  4 Mar 2021 20:52:53 +0100 (CET)
+Received: by dynamic.fami-braun.de (fami-braun.de, from userid 1001)
+        id BB6A715823D; Thu,  4 Mar 2021 20:52:53 +0100 (CET)
+From:   michael-dev@fami-braun.de
+To:     claudiu.manoil@nxp.com
+Cc:     netdev@vger.kernel.org, Michael Braun <michael-dev@fami-braun.de>
+Subject: [PATCHv2] gianfar: fix jumbo packets+napi+rx overrun crash
+Date:   Thu,  4 Mar 2021 20:52:52 +0100
+Message-Id: <20210304195252.16360-1-michael-dev@fami-braun.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210302060753.953931-1-kuba@kernel.org> <CANn89iLaQuCGeWOh7Hp8X9dL09FhPP8Nwj+zV=rhYX7Cq7efpg@mail.gmail.com>
- <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
- <20210303160715.2333d0ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKgT0Ue9w4WBojY94g3kcLaQrVbVk6S-HgsFgLVXoqsY20hwuw@mail.gmail.com>
- <CANn89iL9fBKDQvAM0mTnh_B5ggmsebDBYxM6WAfYgMuD8-vcBw@mail.gmail.com> <20210304110626.1575f7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210304110626.1575f7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 4 Mar 2021 20:41:45 +0100
-Message-ID: <CANn89i+cXQXP-7ioizFy90Dj-1SfjA0MQfwvDChxVXQ3wbTjFA@mail.gmail.com>
-Subject: Re: [PATCH net] net: tcp: don't allocate fast clones for fastopen SYN
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@fb.com>, Neil Spring <ntspring@fb.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 4, 2021 at 8:06 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 4 Mar 2021 13:51:15 +0100 Eric Dumazet wrote:
-> > I think we are over thinking this really (especially if the fix needs
-> > a change in core networking or drivers)
-> >
-> > We can reuse TSQ logic to have a chance to recover when the clone is
-> > eventually freed.
-> > This will be more generic, not only for the SYN+data of FastOpen.
-> >
-> > Can you please test the following patch ?
->
-> #7 - Eric comes up with something much better :)
->
->
-> But so far doesn't seem to quite do it, I'm looking but maybe you'll
-> know right away (FWIW testing a v5.6 backport but I don't think TSQ
-> changed?):
->
-> On __tcp_retransmit_skb kretprobe:
->
-> ==> Hit TFO case ret:-16 ca_state:0 skb:ffff888fdb4bac00!
->
-> First hit:
->         __tcp_retransmit_skb+1
->         tcp_rcv_state_process+2488
->         tcp_v6_do_rcv+405
->         tcp_v6_rcv+2984
->         ip6_protocol_deliver_rcu+180
->         ip6_input_finish+17
->
-> Successful hit:
->         __tcp_retransmit_skb+1
->         tcp_retransmit_skb+18
->         tcp_retransmit_timer+716
->         tcp_write_timer_handler+136
->         tcp_write_timer+141
->         call_timer_fn+43
->
->  skb:ffff888fdb4bac00 --- delay:51642us bytes_acked:1
+From: Michael Braun <michael-dev@fami-braun.de>
 
+When using jumbo packets and overrunning rx queue with napi enabled,
+the following sequence is observed in gfar_add_rx_frag:
 
-Humm maybe one of the conditions used in tcp_tsq_write() does not hold...
+   | lstatus                              |       | skb                   |
+t  | lstatus,  size, flags                | first | len, data_len, *ptr   |
+---+--------------------------------------+-------+-----------------------+
+13 | 18002348, 9032, INTERRUPT LAST       | 0     | 9600, 8000,  f554c12e |
+12 | 10000640, 1600, INTERRUPT            | 0     | 8000, 6400,  f554c12e |
+11 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  f554c12e |
+10 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  f554c12e |
+09 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  f554c12e |
+08 | 14000640, 1600, INTERRUPT FIRST      | 0     | 1600, 0,     f554c12e |
+07 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     f554c12e |
+06 | 1c000080, 128,  INTERRUPT LAST FIRST | 1     | 0,    0,     abf3bd6e |
+05 | 18002348, 9032, INTERRUPT LAST       | 0     | 8000, 6400,  c5a57780 |
+04 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  c5a57780 |
+03 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  c5a57780 |
+02 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  c5a57780 |
+01 | 10000640, 1600, INTERRUPT            | 0     | 1600, 0,     c5a57780 |
+00 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     c5a57780 |
 
-if (tp->lost_out > tp->retrans_out &&
-    tp->snd_cwnd > tcp_packets_in_flight(tp)) {
-    tcp_mstamp_refresh(tp);
-    tcp_xmit_retransmit_queue(sk);
-}
+So at t=7 a new packets is started but not finished, probably due to rx
+overrun - but rx overrun is not indicated in the flags. Instead a new
+packets starts at t=8. This results in skb->len to exceed size for the LAST
+fragment at t=13 and thus a negative fragment size added to the skb.
 
-Maybe FastOpen case is 'special' and tp->lost_out is wrong.
+This then crashes:
+
+kernel BUG at include/linux/skbuff.h:2277!
+Oops: Exception in kernel mode, sig: 5 [#1]
+...
+NIP [c04689f4] skb_pull+0x2c/0x48
+LR [c03f62ac] gfar_clean_rx_ring+0x2e4/0x844
+Call Trace:
+[ec4bfd38] [c06a84c4] _raw_spin_unlock_irqrestore+0x60/0x7c (unreliable)
+[ec4bfda8] [c03f6a44] gfar_poll_rx_sq+0x48/0xe4
+[ec4bfdc8] [c048d504] __napi_poll+0x54/0x26c
+[ec4bfdf8] [c048d908] net_rx_action+0x138/0x2c0
+[ec4bfe68] [c06a8f34] __do_softirq+0x3a4/0x4fc
+[ec4bfed8] [c0040150] run_ksoftirqd+0x58/0x70
+[ec4bfee8] [c0066ecc] smpboot_thread_fn+0x184/0x1cc
+[ec4bff08] [c0062718] kthread+0x140/0x144
+[ec4bff38] [c0012350] ret_from_kernel_thread+0x14/0x1c
+
+This patch fixes this by checking for computed LAST fragment size, so a
+negative sized fragment is never added.
+In order to prevent the newer rx frame from getting corrupted, the FIRST
+flag is checked to discard the incomplete older frame.
+
+Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
+---
+ drivers/net/ethernet/freescale/gianfar.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 541de32ea662..1cf8ef717453 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -2390,6 +2390,10 @@ static bool gfar_add_rx_frag(struct gfar_rx_buff *rxb, u32 lstatus,
+ 		if (lstatus & BD_LFLAG(RXBD_LAST))
+ 			size -= skb->len;
+ 
++		WARN(size < 0, "gianfar: rx fragment size underflow");
++		if (size < 0)
++			return false;
++
+ 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
+ 				rxb->page_offset + RXBUF_ALIGNMENT,
+ 				size, GFAR_RXB_TRUESIZE);
+@@ -2552,6 +2556,17 @@ static int gfar_clean_rx_ring(struct gfar_priv_rx_q *rx_queue,
+ 		if (lstatus & BD_LFLAG(RXBD_EMPTY))
+ 			break;
+ 
++		/* lost RXBD_LAST descriptor due to overrun */
++		if (skb &&
++		    (lstatus & BD_LFLAG(RXBD_FIRST))) {
++			/* discard faulty buffer */
++			dev_kfree_skb(skb);
++			skb = NULL;
++			rx_queue->stats.rx_dropped++;
++
++			/* can continue normally */
++		}
++
+ 		/* order rx buffer descriptor reads */
+ 		rmb();
+ 
+-- 
+2.20.1
+
