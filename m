@@ -2,103 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EDB532D14A
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 11:59:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B23B32D196
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 12:11:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239124AbhCDK6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 05:58:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        id S239481AbhCDLLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 06:11:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239108AbhCDK5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 05:57:51 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE19C061756
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 02:57:10 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id t1so4220418eds.7
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 02:57:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pQ4KuXKq+h5JJFMeS5vHSPBcL1PmMm3BpnDVmyXcVY0=;
-        b=FGl2JiIQ+Jy2bJkf63XLNZrBWVRZPW//jMvDlyD9qHdllcmE7eleV+IkbZlm05T2yP
-         EQG2LXV3aIh91rQMu1cbffNTLalhr5vIhqO1Od9UJvOgpDLiUUTZgy+fYgfdbNuRX+2o
-         t7bFahAE9ML5ZGqkINc9g/RKGg1yy+gzGp+3ywawqIECt2zO3k2NYF3tGV46m+BtPqnJ
-         SeX6KI9BftD1hIR5r1JZG4BUd/c83Lm70rXmgiKKrsSYoxdVPK4jF0gMT+NDdyEchGI/
-         ld1Li5Ih7XLbwT7PrNX5wdPvSaOQmJ2vz1ifJT6c7rBHJ720xFRxn7SktyaO6F6voXOF
-         PLeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pQ4KuXKq+h5JJFMeS5vHSPBcL1PmMm3BpnDVmyXcVY0=;
-        b=gu9HaPgSPviR6VNRqB8XX7RSX3J+tKYfHfN/XUCa4E9BnSEuluCJg2deP7Danw51T0
-         yTFuuQcrlEhU6/55kEB6CT6Vpw7OB3U2YfL2RlpJAwdbUF/tezaPSiLYnxtjLkQIoFcj
-         bBkfk0UizPxZNBUxp5aCB/zGDO9PtEejde6d/e4EB7DjXbfhIZSnXsa/RMlds8O04xV0
-         vQk/m82wCPodeRaJZWkxiq0vySckjIT645fn9SPVAuuECY3nuO9j5V5XcOxiVcdmDaEV
-         J4sGEHlp+6/KKSjridAgngFhK/Z7Q5tsf4fISInozZyltXp2M/+MEJFzN0Z/UbvOcVzJ
-         CCew==
-X-Gm-Message-State: AOAM533XCsWCk825RSvDhznnqoNPJlj0SqDjfcHNtnxCA4nv3feEMuSh
-        6/aJjp07HvAAPhIZM7c8kDpgO8caf9A=
-X-Google-Smtp-Source: ABdhPJzRsGnTswrWg7oMxrAegIjKsqwbCCNjoZEAHcrke1no6zTznUJx2kYlstiQRxrN7HwSjp7HNg==
-X-Received: by 2002:a50:fd83:: with SMTP id o3mr3766444edt.90.1614855429755;
-        Thu, 04 Mar 2021 02:57:09 -0800 (PST)
-Received: from localhost.localdomain ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id mc2sm19857824ejb.115.2021.03.04.02.57.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Mar 2021 02:57:09 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net 2/2] net: dsa: sja1105: fix ucast/bcast flooding always remaining enabled
-Date:   Thu,  4 Mar 2021 12:56:54 +0200
-Message-Id: <20210304105654.873554-2-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210304105654.873554-1-olteanv@gmail.com>
-References: <20210304105654.873554-1-olteanv@gmail.com>
+        with ESMTP id S238448AbhCDLKw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 06:10:52 -0500
+Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE631C061574;
+        Thu,  4 Mar 2021 03:10:11 -0800 (PST)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id A5EF3321; Thu,  4 Mar 2021 12:10:08 +0100 (CET)
+Date:   Thu, 4 Mar 2021 12:10:04 +0100
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: cleanup unused or almost unused IOMMU APIs and the FSL PAMU
+ driver
+Message-ID: <20210304111004.GA26414@8bytes.org>
+References: <20210301084257.945454-1-hch@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210301084257.945454-1-hch@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, Mar 01, 2021 at 09:42:40AM +0100, Christoph Hellwig wrote:
+> Diffstat:
+>  arch/powerpc/include/asm/fsl_pamu_stash.h   |   12 
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c     |    2 
+>  drivers/iommu/amd/iommu.c                   |   23 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   85 ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       |  122 +---
+>  drivers/iommu/dma-iommu.c                   |    8 
+>  drivers/iommu/fsl_pamu.c                    |  264 ----------
+>  drivers/iommu/fsl_pamu.h                    |   10 
+>  drivers/iommu/fsl_pamu_domain.c             |  694 ++--------------------------
+>  drivers/iommu/fsl_pamu_domain.h             |   46 -
+>  drivers/iommu/intel/iommu.c                 |   55 --
+>  drivers/iommu/iommu.c                       |   75 ---
+>  drivers/soc/fsl/qbman/qman_portal.c         |   56 --
+>  drivers/vfio/vfio_iommu_type1.c             |   31 -
+>  drivers/vhost/vdpa.c                        |   10 
+>  include/linux/iommu.h                       |   81 ---
+>  16 files changed, 214 insertions(+), 1360 deletions(-)
 
-In the blamed patch I managed to introduce a bug while moving code
-around: the same logic is applied to the ucast_egress_floods and
-bcast_egress_floods variables both on the "if" and the "else" branches.
+Nice cleanup, thanks. The fsl_pamu driver and interface has always been
+a little bit of an alien compared to other IOMMU drivers. I am inclined
+to merge this after -rc3 is out, given some reviews. Can you also please
+add changelogs to the last three patches?
 
-This is clearly an unintended change compared to how the code used to be
-prior to that bugfix, so restore it.
+Thanks,
 
-Fixes: 7f7ccdea8c73 ("net: dsa: sja1105: fix leakage of flooded frames outside bridging domain")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index c1982615c631..51ea104c63bb 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -3369,14 +3369,14 @@ static int sja1105_port_ucast_bcast_flood(struct sja1105_private *priv, int to,
- 		if (flags.val & BR_FLOOD)
- 			priv->ucast_egress_floods |= BIT(to);
- 		else
--			priv->ucast_egress_floods |= BIT(to);
-+			priv->ucast_egress_floods &= ~BIT(to);
- 	}
- 
- 	if (flags.mask & BR_BCAST_FLOOD) {
- 		if (flags.val & BR_BCAST_FLOOD)
- 			priv->bcast_egress_floods |= BIT(to);
- 		else
--			priv->bcast_egress_floods |= BIT(to);
-+			priv->bcast_egress_floods &= ~BIT(to);
- 	}
- 
- 	return sja1105_manage_flood_domains(priv);
--- 
-2.25.1
-
+	Joerg
