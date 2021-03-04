@@ -2,113 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DA7732CEF2
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 09:57:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DEBD32CF1E
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 10:00:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236971AbhCDIz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 03:55:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25571 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236964AbhCDIze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:55:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614848048;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0ALBoN6GuLRnOc5Ing6JXs8nS20VaQ0+cVKOusK5494=;
-        b=bSfEoD22S4UyxtK+zrSi8tANZ0MHAwn22HjvPURaN0Jem82MSmST138q2GKohnM0J9QH5L
-        ZQG3zlQcrnNEJ5PkkPHCQUwoanJLxhlXplOaflsXRw4qEmDPUme4EU5++Q5knQFHe0KwyU
-        dK1EPKzIWPUVtr0lWs0KuavydPCghrU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-594-ag5dkR-hMJW0UvGJkkLgAA-1; Thu, 04 Mar 2021 03:54:06 -0500
-X-MC-Unique: ag5dkR-hMJW0UvGJkkLgAA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D712157;
-        Thu,  4 Mar 2021 08:54:04 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A5F810023AB;
-        Thu,  4 Mar 2021 08:53:58 +0000 (UTC)
-Date:   Thu, 4 Mar 2021 09:53:56 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, anthony.l.nguyen@intel.com, kuba@kernel.org,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        brouer@redhat.com, Zhiqian Guan <zhguan@redhat.com>,
-        Jean Hsiao <jhsiao@redhat.com>
-Subject: Re: [PATCH intel-net 1/3] i40e: move headroom initialization to
- i40e_configure_rx_ring
-Message-ID: <20210304095356.054a8778@carbon>
-In-Reply-To: <20210303153928.11764-2-maciej.fijalkowski@intel.com>
-References: <20210303153928.11764-1-maciej.fijalkowski@intel.com>
-        <20210303153928.11764-2-maciej.fijalkowski@intel.com>
+        id S237179AbhCDI7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 03:59:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237142AbhCDI6y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:58:54 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86923C061756
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 00:58:39 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id d13so28699122edp.4
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 00:58:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=WcsXXXbrDSVn9JnL1kI4tSiyWOxm9D+WqcuRuZ8ZPPY=;
+        b=SgIJQX+v/dAp6zKtCoUdKvxd747j/oIsOOlWt3BXoINpvb8gM2GUvlCR5DCRqwiLzx
+         qanElF3lR5Fr1/bcxvlAMjAdzVuPop19Ck5lylT/XrIhZ3r2rle5OmJX8PxYEU9XKxuu
+         Iw6L1WE502mtn0lYP9httAirkVvwVutnvdqLR0+0sBBVZsjZd2vA/zVcYpTZI5p/MXAR
+         +tsVCNpQxU53RtJ4KyP79ztx2eVInM9T5VemFzBVpaRDtn5ogkX3Y6iMsEL6on25AwGM
+         QzTayVrZ5DCL6nhyaK0As2yq9bQ2XY7aGG4uM3iZbe2E67jW4p4yj4D7UlTLfDhQXcNl
+         Au8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WcsXXXbrDSVn9JnL1kI4tSiyWOxm9D+WqcuRuZ8ZPPY=;
+        b=M1opbV6zMPK2NSU79m1SNY3BzpD7Qb6L5PSDQixxkVE4MLZgrD9qtLeRPbYlX4V4x4
+         sZBvIzDTWJbAsoSbwQKnMahKdhtvJMjz5O3f3FpugLLw3ebtKnEmtXd75yv5glzzG3wN
+         x3yZES4ofx8YJJf2jxoYDJ1vXUS2aKJDnyhahUEhpEe2eq6KC2wgtN2I089Wt5u9bF15
+         I+8iduiWMnXyKUB8n8IOHsV2yqDnroEHiSg9Ksgh9fpEVLDF/87uDZiYdDfZOO2j47Bx
+         KOEHPWpxPknVOfeNVvtB+c5DF5wM0XSMYVrxpHhjGSM1bB2f04iUrOZUYbh+VqU2hN3Y
+         /Gzw==
+X-Gm-Message-State: AOAM531Y37BZV/1SdDE5gwOaC7j2WBym8jN4o0egYohOVlxRNF2QzcPH
+        M5odV+WoIA6dyasfGsFMUH55H1MxPDByGTQZS7n8
+X-Google-Smtp-Source: ABdhPJz1yhS4bpogbrj7802vVThEsweuzWygoO16SS4Sm5PZ+sHcuk5hH2T4ZXUpPr/tI/5DOjViugXNCjqXBngk2S0=
+X-Received: by 2002:a05:6402:6ca:: with SMTP id n10mr3201074edy.312.1614848318350;
+ Thu, 04 Mar 2021 00:58:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+References: <20210223115048.435-1-xieyongji@bytedance.com> <20210223115048.435-11-xieyongji@bytedance.com>
+ <d63e4cfd-4992-8493-32b0-18e0478f6e1a@redhat.com>
+In-Reply-To: <d63e4cfd-4992-8493-32b0-18e0478f6e1a@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 4 Mar 2021 16:58:27 +0800
+Message-ID: <CACycT3tqM=ALOG1r0Ve6UTGmwJ7Wg7fQpLZypjZsJF1mJ+adMA@mail.gmail.com>
+Subject: Re: Re: [RFC v4 10/11] vduse: Introduce a workqueue for irq injection
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  3 Mar 2021 16:39:26 +0100
-Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
+On Thu, Mar 4, 2021 at 2:59 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2021/2/23 7:50 =E4=B8=8B=E5=8D=88, Xie Yongji wrote:
+> > This patch introduces a workqueue to support injecting
+> > virtqueue's interrupt asynchronously. This is mainly
+> > for performance considerations which makes sure the push()
+> > and pop() for used vring can be asynchronous.
+>
+>
+> Do you have pref numbers for this patch?
+>
 
-> i40e_rx_offset(), that is supposed to initialize the Rx buffer headroom,
-> relies on I40E_RXR_FLAGS_BUILD_SKB_ENABLED flag.
-> 
-> Currently, the callsite of mentioned function is placed incorrectly
-> within i40e_setup_rx_descriptors() where Rx ring's build skb flag is not
-> set yet. This causes the XDP_REDIRECT to be partially broken due to
-> inability to create xdp_frame in the headroom space, as the headroom is
-> 0.
-> 
-> For the record, below is the call graph:
-> 
-> i40e_vsi_open
->  i40e_vsi_setup_rx_resources
->   i40e_setup_rx_descriptors
->    i40e_rx_offset() <-- sets offset to 0 as build_skb flag is set below
-> 
->  i40e_vsi_configure_rx
->   i40e_configure_rx_ring
->    set_ring_build_skb_enabled(ring) <-- set build_skb flag
-> 
-> Fix this by moving i40e_rx_offset() to i40e_configure_rx_ring() after
-> the flag setting.
-> 
-> Fixes: f7bb0d71d658 ("i40e: store the result of i40e_rx_offset() onto i40e_ring")
-> Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_main.c | 13 +++++++++++++
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 12 ------------
->  2 files changed, 13 insertions(+), 12 deletions(-)
+No, I can do some tests for it if needed.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Tested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Another problem is the VIRTIO_RING_F_EVENT_IDX feature will be useless
+if we call irq callback in ioctl context. Something like:
 
-I'm currently looking at extending samples/bpf/ xdp_redirect_map to
-detect the situation.  As with this bug the redirect tests/sample
-programs will just report really high performance numbers (because
-packets are dropped earlier due to err).   Knowing what performance
-numbers to expect, I could see that they were out-of-spec, and
-investigated the root-cause.
+virtqueue_push();
+virtio_notify();
+    ioctl()
+-------------------------------------------------
+        irq_cb()
+            virtqueue_get_buf()
 
-I assume Intel QA tested XDP-redirect and didn't find the bug due to
-this.  Red Hat QA also use samples/bpf/xdp* and based on the reports I
-get from them, I could not blame them if this bug would slip through,
-as the tool reports "good" results.
+The used vring is always empty each time we call virtqueue_push() in
+userspace. Not sure if it is what we expected.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks,
+Yongji
