@@ -2,123 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB7C32D5A7
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 15:48:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C786632D68B
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 16:26:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbhCDOrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 09:47:49 -0500
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:14514 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232521AbhCDOrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 09:47:25 -0500
+        id S233841AbhCDP0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 10:26:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232758AbhCDPZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 10:25:51 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42885C061756;
+        Thu,  4 Mar 2021 07:25:11 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id q25so23608421lfc.8;
+        Thu, 04 Mar 2021 07:25:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1614869246; x=1646405246;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=yrq2vS3QqX+W8d5Zoonnniw7JITVHBVaHNKpFXbSSxQ=;
-  b=sUb8lOgras6TajX+khbN2sh6knKY/QBz4sWt71GZGRHiiAvAjHYr8cK/
-   p5A1OtXTGpiRhP65UhT5odTAkMQwGahDVCJVhk6BQQM+GaPA6crgy3Gda
-   4BlesxjEjtmML5yArlxoODqCX5K9gmz6PelEEEjTiKyJzOX9OXHsbzv2g
-   s=;
-X-IronPort-AV: E=Sophos;i="5.81,222,1610409600"; 
-   d="scan'208";a="89924695"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 04 Mar 2021 14:43:45 +0000
-Received: from EX13D08EUB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id CA5FAA0811;
-        Thu,  4 Mar 2021 14:43:42 +0000 (UTC)
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX13D08EUB002.ant.amazon.com (10.43.166.232) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 4 Mar 2021 14:43:41 +0000
-Received: from dev-dsk-mheyne-60001.pdx1.corp.amazon.com (10.184.85.242) by
- mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 4 Mar 2021 14:43:41 +0000
-Received: by dev-dsk-mheyne-60001.pdx1.corp.amazon.com (Postfix, from userid 5466572)
-        id 5891D21EA9; Thu,  4 Mar 2021 14:43:40 +0000 (UTC)
-From:   Maximilian Heyne <mheyne@amazon.de>
-CC:     Maximilian Heyne <mheyne@amazon.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Kosina <jkosina@suse.cz>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net: sched: avoid duplicates in classes dump
-Date:   Thu, 4 Mar 2021 14:43:17 +0000
-Message-ID: <20210304144317.78065-1-mheyne@amazon.de>
-X-Mailer: git-send-email 2.16.6
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aeN2LKdORXb0lZrwnrlpd8qrBTJtdHVZ+ffDq501Us8=;
+        b=i+DknTjhTVuXq7MZUlypiuq2JeQK4/edGuiLVDG8YUHG3exXaY/yG8yLBtjp1r6zwu
+         xBCfPXSbY5SpQFOAV5/at+WrDVti0dDvr/nmHTeoNuGKcqwQTb9WyzERXzyjKwjcl65l
+         bTmQDbzaUFJFusDofGxg4vdMrRxa5XT2maO4+dFgSbuV8fXD9kp+tFctJm2jhtYsdp7W
+         S8HGt333upLNPULnrmgk55nDQT+Ij37chqPpzuj2xfYsTNts9Ah1/lAAoP+MbP4uovbN
+         BtesAzVJ/OW95zoaLiVJFxkR9KR5PuhF2TfQQ1sDbD9+wBteNpPr1N8wmkUkzBIOYP2f
+         PcBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aeN2LKdORXb0lZrwnrlpd8qrBTJtdHVZ+ffDq501Us8=;
+        b=KDS8v07OXXQ0s/HyfICTfv67Dec+R++3AFUSrhmcPFgFmAmwfgp0gA/93V2i7IYDCE
+         BS9RbAlaO+d2/5RP+PdvkCGTRL+i/hl+lGI3NmjUfhYMSEppvEJOntZqzeO0gb4NYYZb
+         lBrsOuRzCluPryJ4v3uvLUYMPRMDpOGQTFyhUCyxgcRpCr+vM+aQkgx8uSV0DHY0+hgs
+         EWQyyUqj64/adoumDVSPtrcFsXPGCvk6X8pYvLwM6XSuzEwZhCS3fslkxziXX8QD5DiK
+         ZGVRRK1DA7a1f1YdBHxpxCMvGTWMxNapcfxjGEFiO9nLSj1pxH6j8W8ukKM8S4YKZiF7
+         ZKtQ==
+X-Gm-Message-State: AOAM533QFicX6Hs3i8oh3nl4uIl+M9DcJLX8nDIsSt5SlQZ8gFaDmuiU
+        39pwL41ZETDtZmRionxbLbv64X2gtMFJDNTVGak=
+X-Google-Smtp-Source: ABdhPJwKMUQh9PtBYqbGI/8c5OxKmNVwr0F+4JArX5VTcw9L9vOFzh/5/DLlV1N2jv4ludGo8Dkv0w==
+X-Received: by 2002:a05:6512:906:: with SMTP id e6mr2644644lft.224.1614871509714;
+        Thu, 04 Mar 2021 07:25:09 -0800 (PST)
+Received: from localhost.localdomain ([94.103.235.167])
+        by smtp.gmail.com with ESMTPSA id d8sm467647ljc.129.2021.03.04.07.25.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Mar 2021 07:25:09 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     alex.aring@gmail.com, stefan@datenfreihafen.org,
+        davem@davemloft.net
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+9ec037722d2603a9f52e@syzkaller.appspotmail.com
+Subject: [PATCH v2] net: mac802154: Fix general protection fault
+Date:   Thu,  4 Mar 2021 18:21:25 +0300
+Message-Id: <20210304152125.1052825-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAB_54W7v1Dk9KjytfO8hAGfiqPJ6qO0SdgwDQ-s4ybA2yvuoCg@mail.gmail.com>
+References: <CAB_54W7v1Dk9KjytfO8hAGfiqPJ6qO0SdgwDQ-s4ybA2yvuoCg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a follow up of commit ea3274695353 ("net: sched: avoid
-duplicates in qdisc dump") which has fixed the issue only for the qdisc
-dump.
+syzbot found general protection fault in crypto_destroy_tfm()[1].
+It was caused by wrong clean up loop in llsec_key_alloc().
+If one of the tfm array members is in IS_ERR() range it will
+cause general protection fault in clean up function [1].
 
-The duplicate printing also occurs when dumping the classes via
-  tc class show dev eth0
+Call Trace:
+ crypto_free_aead include/crypto/aead.h:191 [inline] [1]
+ llsec_key_alloc net/mac802154/llsec.c:156 [inline]
+ mac802154_llsec_key_add+0x9e0/0xcc0 net/mac802154/llsec.c:249
+ ieee802154_add_llsec_key+0x56/0x80 net/mac802154/cfg.c:338
+ rdev_add_llsec_key net/ieee802154/rdev-ops.h:260 [inline]
+ nl802154_add_llsec_key+0x3d3/0x560 net/ieee802154/nl802154.c:1584
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fixes: 59cc1f61f09c ("net: sched: convert qdisc linked list to hashtable")
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reported-by: syzbot+9ec037722d2603a9f52e@syzkaller.appspotmail.com
+Change-Id: I29f7ac641a039096d63d1e6070bb32cb5a3beb07
 ---
- net/sched/sch_api.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/mac802154/llsec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index e2e4353db8a7..f87d07736a14 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -2168,7 +2168,7 @@ static int tc_dump_tclass_qdisc(struct Qdisc *q, struct sk_buff *skb,
+diff --git a/net/mac802154/llsec.c b/net/mac802154/llsec.c
+index 585d33144c33..55550ead2ced 100644
+--- a/net/mac802154/llsec.c
++++ b/net/mac802154/llsec.c
+@@ -152,7 +152,7 @@ llsec_key_alloc(const struct ieee802154_llsec_key *template)
+ 	crypto_free_sync_skcipher(key->tfm0);
+ err_tfm:
+ 	for (i = 0; i < ARRAY_SIZE(key->tfm); i++)
+-		if (key->tfm[i])
++		if (!IS_ERR_OR_NULL(key->tfm[i]))
+ 			crypto_free_aead(key->tfm[i]);
  
- static int tc_dump_tclass_root(struct Qdisc *root, struct sk_buff *skb,
- 			       struct tcmsg *tcm, struct netlink_callback *cb,
--			       int *t_p, int s_t)
-+			       int *t_p, int s_t, bool recur)
- {
- 	struct Qdisc *q;
- 	int b;
-@@ -2179,7 +2179,7 @@ static int tc_dump_tclass_root(struct Qdisc *root, struct sk_buff *skb,
- 	if (tc_dump_tclass_qdisc(root, skb, tcm, cb, t_p, s_t) < 0)
- 		return -1;
- 
--	if (!qdisc_dev(root))
-+	if (!qdisc_dev(root) || !recur)
- 		return 0;
- 
- 	if (tcm->tcm_parent) {
-@@ -2214,13 +2214,13 @@ static int tc_dump_tclass(struct sk_buff *skb, struct netlink_callback *cb)
- 	s_t = cb->args[0];
- 	t = 0;
- 
--	if (tc_dump_tclass_root(dev->qdisc, skb, tcm, cb, &t, s_t) < 0)
-+	if (tc_dump_tclass_root(dev->qdisc, skb, tcm, cb, &t, s_t, true) < 0)
- 		goto done;
- 
- 	dev_queue = dev_ingress_queue(dev);
- 	if (dev_queue &&
- 	    tc_dump_tclass_root(dev_queue->qdisc_sleeping, skb, tcm, cb,
--				&t, s_t) < 0)
-+				&t, s_t, false) < 0)
- 		goto done;
- 
- done:
+ 	kfree_sensitive(key);
 -- 
-2.16.6
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
+2.25.1
 
