@@ -2,68 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3B0B32D8F7
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 18:50:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0287D32D903
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 18:53:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbhCDRtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 12:49:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbhCDRtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 12:49:03 -0500
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DCFC061756;
-        Thu,  4 Mar 2021 09:48:23 -0800 (PST)
-Received: from miraculix.mork.no (fwa152.mork.no [192.168.9.152])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 124Hm75L029873
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Thu, 4 Mar 2021 18:48:07 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1614880088; bh=k8lipC/E54Rd/FqQsV+Pc4PWUTaqSq6y7rRIFcTRNak=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=FHU1uGMg4/ZpI4VMybQTKbXaUyEUWip1IMfgsqfRqsH+nsmLbEw9HGuJdQj4eApIO
-         sUD2EPMVYgATBIScJRPja5kPKB9t5agXRMXiw6PUHs1lPxIty8drp5jVUOki6pVsZy
-         GXOum921HBnFgn1SPmEJYVVXdURsHuEDqIFWCyWg=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
-        (envelope-from <bjorn@mork.no>)
-        id 1lHs50-0002Mi-HM; Thu, 04 Mar 2021 18:48:06 +0100
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Aleksander Morgado <aleksander@aleksander.es>
-Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: allow qmimux add/del with
- master up
-Organization: m
-References: <20210304131513.3052-1-dnlplm@gmail.com>
-Date:   Thu, 04 Mar 2021 18:48:06 +0100
-In-Reply-To: <20210304131513.3052-1-dnlplm@gmail.com> (Daniele Palmas's
-        message of "Thu, 4 Mar 2021 14:15:13 +0100")
-Message-ID: <87lfb2kdyh.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S231354AbhCDRwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 12:52:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50644 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231229AbhCDRvw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 12:51:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 997EC64F1E;
+        Thu,  4 Mar 2021 17:51:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614880271;
+        bh=aG75SNcfXkRVidGzRiRyF0zW0p/PnZG1I901bm6c3Bo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZoyzgQiylwjtzR58LxNbMpTye4LyecI24fkluMuDUSUOOf92kYYhohGXWnsOl3f2T
+         lj/CAfKAkioD/D8Ql75IFYkIB49PchItuQ2UPaVhMINE/xwMKGtmMqXOfGpS0rapUc
+         AeoTB+eemUj03cUS2Bs4q4dTaToDjgl7j3r0E8l/AJ6WVL2LQdcu9rV1kg5o8soyhN
+         i2gN6oyBT7xuZCateFCqPYQaXdLHbH8n5Ea7PDgn2zMsp2JQcmMNt4uEOeNjM6Qga3
+         xhK/3jhX2GPzf6OjovXGv7OTdbwveyRcJOMOmy5EPNSd53HtwQ6MCvPbThlAe3Tzjg
+         aX/Dw7cu0Epbw==
+Date:   Thu, 4 Mar 2021 09:51:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Zbynek Michl <zbynek.michl@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [regression] Kernel panic on resume from sleep
+Message-ID: <20210304095110.7830dce4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAJH0kmyTgLp4rJGL1EYo4hQ_qcd3t3JQS-s-e9FY8ERTPrmwqQ@mail.gmail.com>
+References: <CAJH0kmzrf4MpubB1RdcP9mu1baLM0YcN-MXKY41ouFHxD8ndNg@mail.gmail.com>
+        <20210302174451.59341082@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAJH0kmyTgLp4rJGL1EYo4hQ_qcd3t3JQS-s-e9FY8ERTPrmwqQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniele Palmas <dnlplm@gmail.com> writes:
+On Thu, 4 Mar 2021 13:50:01 +0100 Zbynek Michl wrote:
+> Looks good so far, but need to wait some more time as the issue was irregular.
+> 
+> Do you have any explanation why the calls disorder caused the panic
+> just occasionally?
 
-> There's no reason for preventing the creation and removal
-> of qmimux network interfaces when the underlying interface
-> is up.
->
-> This makes qmi_wwan mux implementation more similar to the
-> rmnet one, simplifying userspace management of the same
-> logical interfaces.
->
-> Fixes: c6adf77953bc ("net: usb: qmi_wwan: add qmap mux protocol support")
-> Reported-by: Aleksander Morgado <aleksander@aleksander.es>
-> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Depends if kernel attempts to try to send a packet before __alx_open()
+finishes. You can probably make it more likely by running trafgen, iperf
+or such while suspending and resuming?
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+> Also, the same (wrong) order I can see in the 3.16 kernel code, but it
+> has worked fine with this kernel in all cases. So what is different in
+> 5.10?
+
+At some point in between those versions the driver got modified to
+allocate and free the NAPI structures dynamically.
+
+I didn't look too closely to find out if things indeed worked 100%
+correctly before, but now they will reliably crash on a NULL pointer
+dereference if transmission comes before open is done.
