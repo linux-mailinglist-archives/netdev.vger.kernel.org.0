@@ -2,69 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6149632C9D1
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 02:20:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B496232C9CA
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 02:20:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243844AbhCDBMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 20:12:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39990 "EHLO mail.kernel.org"
+        id S245368AbhCDBMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 20:12:31 -0500
+Received: from mga11.intel.com ([192.55.52.93]:45179 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238406AbhCDBAz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 20:00:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8226864F5E;
-        Thu,  4 Mar 2021 01:00:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614819613;
-        bh=KSAWwbHb73EOPg5kPH2hKmEoVXP1BNoKlW+Hi1Bcse0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=H7mFgg08GUXFggoHDxaWut1SV4wsorIeXYYYNxGKcmXbfYb2YEDKNNcgxqaH4rucL
-         9h4Velz4pVMLLg9z0dlQ/VUxtb9ahJh73q4r+dyyKTBbTFAk73Ei4cEixRhkDUw/lX
-         pRVHPD/a4zvry4/6A+y6VbbaLz7KPNoXf2iLuxRceO6pysEk4qXYk1sz/nc0xv9Cgt
-         wa+efFS2hMyGg03Dsns9ita8cU0Pkm6k6iwXKoE5INxIgXMoSCS2qZBag5N3MiCSlS
-         X9xynModSskA8QXf71jkcse0xUHJTxBX7pG1bOA1H0JvvbVhZ7gi8ESfRpZCSGdfo2
-         v22ox4TOGtyAw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7691A609EA;
-        Thu,  4 Mar 2021 01:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1388758AbhCDBGU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 20:06:20 -0500
+IronPort-SDR: VyNpwvgoH6OuzuABwWVmuWlu1EOjMVueehBx63lag3Mt6YIrTdINGshfrd7KSzaVX94HA+6WE4
+ SIJ0mfPzDrWQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9912"; a="183934468"
+X-IronPort-AV: E=Sophos;i="5.81,221,1610438400"; 
+   d="scan'208";a="183934468"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2021 17:05:38 -0800
+IronPort-SDR: JnVm466Q38yCGHZ041Jt1j5IHY7xlFHQpDQ3nhiea7FrRqX0lmSg+lDxlKMCvIDZJdiiD4FPse
+ x+ClIBy+jPug==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,221,1610438400"; 
+   d="scan'208";a="367809979"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga003.jf.intel.com with ESMTP; 03 Mar 2021 17:05:38 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates 2021-03-03
+Date:   Wed,  3 Mar 2021 17:06:46 -0800
+Message-Id: <20210304010649.1858916-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Revert "r8152: adjust the settings about MAC clock speed
- down for RTL8153"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161481961348.28060.14733317250155775339.git-patchwork-notify@kernel.org>
-Date:   Thu, 04 Mar 2021 01:00:13 +0000
-References: <1394712342-15778-347-Taiwan-albertk@realtek.com>
-In-Reply-To: <1394712342-15778-347-Taiwan-albertk@realtek.com>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This series contains updates to ixgbe and ixgbevf drivers.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Bartosz Golaszewski does not error on -ENODEV from ixgbe_mii_bus_init()
+as this is valid for some devices with a shared bus for ixgbe.
 
-On Wed, 3 Mar 2021 16:39:47 +0800 you wrote:
-> This reverts commit 134f98bcf1b898fb9d6f2b91bc85dd2e5478b4b8.
-> 
-> The r8153_mac_clk_spd() is used for RTL8153A only, because the register
-> table of RTL8153B is different from RTL8153A. However, this function would
-> be called when RTL8153B calls r8153_first_init() and r8153_enter_oob().
-> That causes RTL8153B becomes unstable when suspending and resuming. The
-> worst case may let the device stop working.
-> 
-> [...]
+Antony Antony adds a check to fail for non transport mode SA with
+offload as this is not supported for ixgbe and ixgbevf.
 
-Here is the summary with links:
-  - [net] Revert "r8152: adjust the settings about MAC clock speed down for RTL8153"
-    https://git.kernel.org/netdev/net/c/4b5dc1a94d4f
+Dinghao Liu fixes a memory leak on failure to program a perfect filter
+for ixgbe.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The following are changes since commit dbbe7c962c3a8163bf724dbc3c9fdfc9b16d3117:
+  docs: networking: drop special stable handling
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 10GbE
 
+Antony Antony (1):
+  ixgbe: fail to create xfrm offload of IPsec tunnel mode SA
+
+Bartosz Golaszewski (1):
+  net: ethernet: ixgbe: don't propagate -ENODEV from
+    ixgbe_mii_bus_init()
+
+Dinghao Liu (1):
+  ixgbe: Fix memleak in ixgbe_configure_clsu32
+
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 5 +++++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  | 8 +++++---
+ drivers/net/ethernet/intel/ixgbevf/ipsec.c     | 5 +++++
+ 3 files changed, 15 insertions(+), 3 deletions(-)
+
+-- 
+2.26.2
 
