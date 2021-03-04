@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E19D232CEAD
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 09:44:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1332632CEB4
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 09:46:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236367AbhCDInl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 03:43:41 -0500
-Received: from mail-vs1-f48.google.com ([209.85.217.48]:35637 "EHLO
-        mail-vs1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236334AbhCDIng (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:43:36 -0500
-Received: by mail-vs1-f48.google.com with SMTP id t23so14156806vsk.2;
-        Thu, 04 Mar 2021 00:43:21 -0800 (PST)
+        id S236501AbhCDIpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 03:45:18 -0500
+Received: from mail-vk1-f170.google.com ([209.85.221.170]:45597 "EHLO
+        mail-vk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236479AbhCDIo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 03:44:59 -0500
+Received: by mail-vk1-f170.google.com with SMTP id i4so5048334vkc.12;
+        Thu, 04 Mar 2021 00:44:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=q2OhTnF2creedGjCoTW6jeoXvRZlk5sHqQYV+sTcA7U=;
-        b=FwmybSTMqY36JTEi5tuCmWluaj1zqa3qoQNhIhYcyIFOaMHvgTEIzu+7MN2yZ0a6Br
-         c2qAqxaAJ1+NV2ekhYhEey5UgAaUjHW/atuC//rMuvKyboQ7zJQWmMRjxU3IpvzzaN32
-         DV/A6mt51sxaO8fOV+1WjPZMNomCeZF6PG4PC3VENd0botsUy8qOotxj2stmRwG/gC4S
-         yGaWkB2QFGMgce8cGMmMWpkSIfRDJp5C3b1Eyb27uEaMgbQe/TGBxbizpm/JOFC2aBMT
-         JdbuJSYPBV2wdFliZBVRzXCz+phnJsDgZEl8ZtKUZxAwEcyEa3mHnd4zbS0tFXiSWTNU
-         WtlA==
-X-Gm-Message-State: AOAM531TeqX+max+U/ZUZ3LNDrRpG/pqUtZz3Uog/iSWChLII42fa4Ms
-        jOdpp8IMNDdvDGm+K1rKw+rrAR2hp58RlTn7BW8=
-X-Google-Smtp-Source: ABdhPJyhI1bosRWbMW0EnwUbh9sC17KiJru81eEqaAh4E9wnQjxi/4cc7+FR5+mypPP2WNuou6NQJfO3PhLs6YC8vBI=
-X-Received: by 2002:a67:2245:: with SMTP id i66mr2190624vsi.18.1614847375636;
- Thu, 04 Mar 2021 00:42:55 -0800 (PST)
+        bh=NjTjCbmpaRqWMFA5UJHtIDu4DTO8Uevja8yqVq+vdQ8=;
+        b=JRKxGtLQjOZ5zd9VRbSdmA2sbZ9PdhTNsOZL8Yo4/SJqKJYptOoUkvi/o1D/gJvxT2
+         c7Dzn7sWP/qhdCANmMCHjxPnW/gGqbNYWM29pPwdHb2ZV8hvOadWBU/JD/Rg/rXBfSdV
+         Hg15/USEU2yhNLqMi68XqzA92OcGTSliCuB09eE8iNSBpmd0u1790mUzndqJTgfsTY/P
+         yhEiaHoClJIbr6rDt/y2BbqLb7KJ5c4EFRbtOYMxPMmqobkynPFEOcIK4PrbA/d0ldug
+         GGoac2FyTgzU0bXaiX4XJzTB8tu2W1tF6qWJ7UGxSEhpQf/pJSzVrDWw8jSMaL7dEdou
+         C35w==
+X-Gm-Message-State: AOAM5330TBttHIb7F1AZ+mQy6e8CjwwrQKr3DR+qY5BpPyVRcD/1hv3s
+        TOF9WE2E97cM1707xPuXs8IbIDnWvyDrPHwOYCKglC6l
+X-Google-Smtp-Source: ABdhPJxdXH9McnYH/NH2/JCgbklPU0YJByirHpKQh1bqj2kvd6WsJGq7NfasTlmLb5foaAjC/Odi8+FlNvr7opPwwRM=
+X-Received: by 2002:a1f:fe89:: with SMTP id l131mr1901735vki.1.1614847459094;
+ Thu, 04 Mar 2021 00:44:19 -0800 (PST)
 MIME-Version: 1.0
-References: <7009ba70-4134-1acf-42b9-fa7e59b5d15d@omprussia.ru> <a92afef3-2ae8-e8c7-855d-f0e86a1beede@omprussia.ru>
-In-Reply-To: <a92afef3-2ae8-e8c7-855d-f0e86a1beede@omprussia.ru>
+References: <7009ba70-4134-1acf-42b9-fa7e59b5d15d@omprussia.ru> <8e901c23-65ad-d76d-5a05-11d9aa7c4fc3@omprussia.ru>
+In-Reply-To: <8e901c23-65ad-d76d-5a05-11d9aa7c4fc3@omprussia.ru>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 4 Mar 2021 09:42:44 +0100
-Message-ID: <CAMuHMdVgasQPwQRsoi3nc6jqBaL7yhwBoyo7feac=f7dLnz5Uw@mail.gmail.com>
-Subject: Re: [PATCH net 1/3] sh_eth: fix TRSCER mask for SH771x
+Date:   Thu, 4 Mar 2021 09:44:07 +0100
+Message-ID: <CAMuHMdWt3vsMPya5eq-QYrZEguXWqXWeXkWk6yPnJztmaEpQtg@mail.gmail.com>
+Subject: Re: [PATCH net 2/3] sh_eth: fix TRSCER mask for R7S72100
 To:     Sergey Shtylyov <s.shtylyov@omprussia.ru>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -47,14 +47,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, Feb 28, 2021 at 9:54 PM Sergey Shtylyov <s.shtylyov@omprussia.ru> wrote:
-> According  to  the SH7710, SH7712, SH7713 Group User's Manual: Hardware,
-> Rev. 3.00, the TRSCER register actually has only bit 7 valid (and named
-> differently), with all the other bits reserved. Apparently, this was not
-> the case with some early revisions of the manual as we have the other
-> bits declared (and set) in the original driver.  Follow the suit and add
-> the explicit sh_eth_cpu_data::trscer_err_mask initializer for SH771x...
+> According  to  the RZ/A1H Group, RZ/A1M Group User's Manual: Hardware,
+> Rev. 4.00, the TRSCER register has bit 9 reserved, hence we can't use
+> the driver's default TRSCER mask.  Add the explicit initializer for
+> sh_eth_cpu_data::trscer_err_mask for R7S72100.
 >
-> Fixes: 86a74ff21a7a ("net: sh_eth: add support for Renesas SuperH Ethernet")
+> Fixes: db893473d313 ("sh_eth: Add support for r7s72100")
 > Signed-off-by: Sergey Shtylyov <s.shtylyov@omprussia.ru>
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
