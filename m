@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA84832CA9D
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 03:58:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 545F732CAAB
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 04:03:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231932AbhCDC6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 21:58:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25470 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231683AbhCDC6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 21:58:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614826599;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2++HG/raBXrb2pYDlmO4aNJrzLxuw9/UCZRY3agwA7w=;
-        b=e1T70P1walt2YjnQD/sigZXRz1Q07rW8An4AFP5lDE9cZ8QoSMqxBRL0ZFKah7/uT2yYep
-        HI1m+rbnd3DVIms5UTPue1JBh3y6yQiBORbXYQZKuHtIEB6pxc1xvtA925QBAbp0OmW9Qx
-        96P3yO5lzjjs5SxIOwriiljv0sbFlqg=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-39-NZA2lYJRMHGViU-KBDKkVw-1; Wed, 03 Mar 2021 21:56:37 -0500
-X-MC-Unique: NZA2lYJRMHGViU-KBDKkVw-1
-Received: by mail-pf1-f200.google.com with SMTP id t13so17148263pfg.13
-        for <netdev@vger.kernel.org>; Wed, 03 Mar 2021 18:56:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2++HG/raBXrb2pYDlmO4aNJrzLxuw9/UCZRY3agwA7w=;
-        b=jJVwrkpc9hSUQJlae9/cH1yU7mriCN7qCSghZsntbZb842Etn9vYC5xJs47tIlMibS
-         L/zYePEA2gbRP2olDWc8GulYtGGkxxHW+k5k0BwYxfS0555gvWHZFtUvNcKD/4x+d3C0
-         58VhJdPEI28Tm2UnOcriLoC4Euhd7zfFYCdnL/NLiK7SWDtk9F6QNzFBJEBTGpbAiiuL
-         uPkiMSzokippDlw6Abe93fJBRiPZTqAgxDbLCcSBiunX0FElpFNcIvlHFp7Dy7ZWFoTy
-         ibJ8kQ+9eGxQiKloPpH8fvufuN7hODUOyADkkD/h3QQf7hX/ZQV1WSs6feiA1rxGfr/B
-         QScA==
-X-Gm-Message-State: AOAM533wh5A4dhB3i4NUHRP2aJR0UrfnpbHW2DkQNwPu/xYs+nr8F5bg
-        BPAjZIWEb2os+u3AKi3dBItuCT1L7OToGbt81p/vDNUwkQTKOLSvoEFi1LGAxfXKzMewpmE4abu
-        NJRhykP0TZX2ImJFiK0yamjHzVQAUQFqdqSiwGPQO8jmdYWjoQ9Y+f1pywDqdpoM=
-X-Received: by 2002:a65:63c6:: with SMTP id n6mr1849044pgv.298.1614826596565;
-        Wed, 03 Mar 2021 18:56:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxNF3mLv9QkYWO5TGYR64AQOa8lhwTHoP+hGHz+W6OXYdSFWgzrOJ+YI8ZH1CqKqskGK1p5tg==
-X-Received: by 2002:a65:63c6:: with SMTP id n6mr1849016pgv.298.1614826596192;
-        Wed, 03 Mar 2021 18:56:36 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id gt22sm8090144pjb.35.2021.03.03.18.56.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Mar 2021 18:56:35 -0800 (PST)
-From:   Coiby Xu <coxu@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     kexec@lists.infradead.org, intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v1 3/3] i40e: use minimal admin queue for kdump
-Date:   Thu,  4 Mar 2021 10:55:43 +0800
-Message-Id: <20210304025543.334912-4-coxu@redhat.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210304025543.334912-1-coxu@redhat.com>
-References: <20210304025543.334912-1-coxu@redhat.com>
+        id S231963AbhCDDCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 22:02:22 -0500
+Received: from nautica.notk.org ([91.121.71.147]:50898 "EHLO nautica.notk.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232113AbhCDDCG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 22:02:06 -0500
+X-Greylist: delayed 166961 seconds by postgrey-1.27 at vger.kernel.org; Wed, 03 Mar 2021 22:02:05 EST
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 02BF0C020; Thu,  4 Mar 2021 04:01:24 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1614826884; bh=5F7Z8p6mZsz3CvMl+8iJUXJXZOmn2B81gRz2UN5/6v0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yykxb+BSKnII9f2bQitmnPBKTpaugho7q80WToHdviyQjTExF6RiKrnTChRe+4K5r
+         ub+LVSQGM2H9bj0WYCGDqQUoaS44HoPhPs5t5ZlC7JF+L9K5oGoOGe7OXSN64a1oGY
+         5JbkmmClP1uT4Zyecl5gG/X8NokPAV3eiRUIhyGxENlkU1kK/GSp1vtnpR5RX7X12N
+         I90XRfNFwItDUPk25GQkoGwKIN5bszpjRE2tS0FhsEWHbh8FxGQvWbB2w6JGbdYbfX
+         YosteMEhC012WGkzHWTqNAg6qA4Fb+r17GY6AYN5mkbE7IeetAr7IH4m0qwgD0smdK
+         YovYPZnv8YCoA==
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=unavailable version=3.3.2
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 1936CC01B;
+        Thu,  4 Mar 2021 04:01:20 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1614826883; bh=5F7Z8p6mZsz3CvMl+8iJUXJXZOmn2B81gRz2UN5/6v0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lqgbDHyu5B2kFuEFvDsEwHmrwLGDI0ZTAMyOUJEqsy7GMHO2Wv83xF/EXUvt242K/
+         lI4gQyAdbuKMqbhQC9tNOCApUMhZjrlqTkCgVQTUm3V9o3bS6FkQDBiG7Yi4EkMOiL
+         8mJet03MZv3adjHukzkTVbFOAJUDcMLwGhypIhiSjY4iZpZxacWYDHJPdK5zZcfXnG
+         mQxK5JHQGYEX8tu4aP95z+Pd6pOfaA7Zxepz7BVVssrCqTQKVmNpIuJ7W3neG47KBk
+         0ZKG2hy6KqEWewRw5H2vQPYn0l4d3uGc83KCeCdOUfZY/qK/oEeeloyEm4W6H+jY4B
+         qMZkPY9ykEZyw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id c794a0c4;
+        Thu, 4 Mar 2021 03:01:18 +0000 (UTC)
+Date:   Thu, 4 Mar 2021 12:01:03 +0900
+From:   asmadeus@codewreck.org
+To:     davem@davemloft.net
+Cc:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>, ericvh@gmail.com,
+        lucho@ionkov.net, kuba@kernel.org,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: 9p: advance iov on empty read
+Message-ID: <YEBNb6MnQa7zRApd@codewreck.org>
+References: <20210302171932.28e86231@xhacker.debian>
+ <161482020724.32353.3785422808049340949.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <161482020724.32353.3785422808049340949.git-patchwork-notify@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The minimum size of admin send/receive queue is 1 and 2 respectively.
-The admin send queue can't be set to 1 because in that case, the
-firmware would fail to init.
 
-Signed-off-by: Coiby Xu <coxu@redhat.com>
----
- drivers/net/ethernet/intel/i40e/i40e.h      | 2 ++
- drivers/net/ethernet/intel/i40e/i40e_main.c | 9 +++++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+patchwork-bot+netdevbpf@kernel.org wrote on Thu, Mar 04, 2021 at 01:10:07AM +0000:
+> This patch was applied to netdev/net.git
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index cd53981fa5e0..09217944baa4 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -66,6 +66,8 @@
- #define I40E_FDIR_RING_COUNT		32
- #define I40E_MAX_AQ_BUF_SIZE		4096
- #define I40E_AQ_LEN			256
-+#define I40E_MIN_ARQ_LEN		1
-+#define I40E_MIN_ASQ_LEN		2
- #define I40E_AQ_WORK_LIMIT		66 /* max number of VFs + a little */
- #define I40E_MAX_USER_PRIORITY		8
- #define I40E_DEFAULT_TRAFFIC_CLASS	BIT(0)
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index d6868c7aee05..5d67fb12e576 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -15327,8 +15327,13 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	i40e_check_recovery_mode(pf);
- 
--	hw->aq.num_arq_entries = I40E_AQ_LEN;
--	hw->aq.num_asq_entries = I40E_AQ_LEN;
-+	if (is_kdump_kernel()) {
-+		hw->aq.num_arq_entries = I40E_MIN_ARQ_LEN;
-+		hw->aq.num_asq_entries = I40E_MIN_ASQ_LEN;
-+	} else {
-+		hw->aq.num_arq_entries = I40E_AQ_LEN;
-+		hw->aq.num_asq_entries = I40E_AQ_LEN;
-+	}
- 	hw->aq.arq_buf_size = I40E_MAX_AQ_BUF_SIZE;
- 	hw->aq.asq_buf_size = I40E_MAX_AQ_BUF_SIZE;
- 	pf->adminq_work_limit = I40E_AQ_WORK_LIMIT;
+thanks for taking the patch, I didn't take the time to reply yesterday
+after my bisect finally finished.
+
+I've got the culprit now, could you add the following?
+
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+(or reviewed-by/tested-by, or just leave it out I'm not fussy)
+Fixes: cf03f316ad20 ("fs: 9p: add generic splice_read file operations")
+Cc: stable@vger.kernel.org # v5.11
+
+
+Cheers,
 -- 
-2.30.1
-
+Dominique
