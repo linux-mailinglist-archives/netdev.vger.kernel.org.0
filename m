@@ -2,87 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9250D32DA0E
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 20:09:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E8032DA1D
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 20:12:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237866AbhCDTHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 14:07:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39324 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237847AbhCDTHa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 14:07:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 38AF964F69;
-        Thu,  4 Mar 2021 19:06:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614884787;
-        bh=8zECwZ3PQe3CB4hmZBjMYu9XF22SCzcVNcf9eEkliiI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CuV/WylTMkHoyD3EfoLRz8Vovqd9a6MaYItwL0yilVDR5QbFdYNue+sJqB4Nnp0JD
-         ia+THkZTFd8JbAoA/r9WgjqYOQpdPzVr52P5ZFCvOFfsoM1SdlMs3h+eBGYSHC+Xv3
-         z2acOPR96+fwKulwspsciiRLtDg36Y7GaWr5Av19u9XnRKYAwAbsl72kUYv6uBE+6E
-         AjN9rbnFmavTb/IwXsFSJui7qhfRVlqvFn/EYISWCWKVDmVVicAtHGkKtWsdGM1UZE
-         PXxKgqbYjaZzQVk5AQHSIifq59XhLf0P+WFOveckbB2Hz29hygq+7sylkqqcBdvx1x
-         qz+Y4deyZFBiA==
-Date:   Thu, 4 Mar 2021 11:06:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@fb.com>, Neil Spring <ntspring@fb.com>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: Re: [PATCH net] net: tcp: don't allocate fast clones for fastopen
- SYN
-Message-ID: <20210304110626.1575f7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iL9fBKDQvAM0mTnh_B5ggmsebDBYxM6WAfYgMuD8-vcBw@mail.gmail.com>
-References: <20210302060753.953931-1-kuba@kernel.org>
-        <CANn89iLaQuCGeWOh7Hp8X9dL09FhPP8Nwj+zV=rhYX7Cq7efpg@mail.gmail.com>
-        <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
-        <20210303160715.2333d0ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAKgT0Ue9w4WBojY94g3kcLaQrVbVk6S-HgsFgLVXoqsY20hwuw@mail.gmail.com>
-        <CANn89iL9fBKDQvAM0mTnh_B5ggmsebDBYxM6WAfYgMuD8-vcBw@mail.gmail.com>
+        id S231889AbhCDTLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 14:11:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230507AbhCDTLU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 14:11:20 -0500
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF5EC061574
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 11:10:40 -0800 (PST)
+Received: by mail-vs1-xe2e.google.com with SMTP id b189so9241394vsd.0
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 11:10:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rhbazE44Fq5VfyWjKwf9zuQsAn8On7g+SsZ62Ovv5F8=;
+        b=C+c/9+vwbzsfKbij8AjOmUq58ukoKryzZ43Oi4y+MSpEXBwS2iKiuF+8DoMQ+gzvEP
+         J4mgYFdtljDghVEszECgjhT1F+i0bS/c/Jz8FGOfU9RvZcFXCjjeVCiYP5J440IBAC+Q
+         ztcBQwtSlOe8xzxT8QjD/N7PtwkjqCCJ37ZG4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rhbazE44Fq5VfyWjKwf9zuQsAn8On7g+SsZ62Ovv5F8=;
+        b=hDTZFs4KuaoFsx+KCUVAYTk4YvdxCcI55qS7oWGXdolPnz+ClNgx+IlYCJM9FuivRV
+         3dLng0fpifRnmo9feBejpfFezQSQ0t7tYGJQy4Y5n/unL0EqauDbJc59Sa5XXtxGMWuu
+         HP4Uy6HiC9X77Pp0VGBpb1h4UsxsYN4T03WfmMSnwnjMfGNWGq2PW0f4gSnU6NX3g2pL
+         tWNxp3Uw+FDqUwATmQ4T2qwf0ghToYUuImRA8W2QiIMuoFbSO4ugQUTBLwVlsPzkR3a1
+         5Xp8SaQGXUgaQC9t76Oez5TzqrSkrReLRPiM3TjBNMWkDmEzNsfFFImiOjkiDGmLBBW4
+         HCOQ==
+X-Gm-Message-State: AOAM531rtrUJAwQvssd2cjGCI2qWm22xQq4NpIMreWVk1G1n5Gm0QWV4
+        eMIJrnE+idWZakvGmAs4buZORKIGJsJZI4kwHFt7wA==
+X-Google-Smtp-Source: ABdhPJzOfYmlSd897wkaIlC3GKlPTrkwUgr/BtnE3lesEsza2dlfKCvpLHqpP58/+PghdbiU/GxyNp1kUjFuDYhiKL0=
+X-Received: by 2002:a05:6102:ac2:: with SMTP id m2mr3757112vsh.52.1614885039545;
+ Thu, 04 Mar 2021 11:10:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210120011208.3768105-1-grundler@chromium.org>
+ <0a5e1dad04494f16869b44b8457f0980@realtek.com> <20210120090438.0f5bba6e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120090438.0f5bba6e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Grant Grundler <grundler@chromium.org>
+Date:   Thu, 4 Mar 2021 19:10:28 +0000
+Message-ID: <CANEJEGuBe3pN_erZZhNjfS+zP-qQnz=TaNO2jWkGhD3jUx0fOg@mail.gmail.com>
+Subject: Re: [PATCH net] net: usb: cdc_ncm: don't spew notifications
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Hayes Wang <hayeswang@realtek.com>,
+        Grant Grundler <grundler@chromium.org>,
+        Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 4 Mar 2021 13:51:15 +0100 Eric Dumazet wrote:
-> I think we are over thinking this really (especially if the fix needs
-> a change in core networking or drivers)
-> 
-> We can reuse TSQ logic to have a chance to recover when the clone is
-> eventually freed.
-> This will be more generic, not only for the SYN+data of FastOpen.
-> 
-> Can you please test the following patch ?
+On Wed, Jan 20, 2021 at 5:04 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 20 Jan 2021 03:38:32 +0000 Hayes Wang wrote:
+> > Grant Grundler <grundler@chromium.org>
+> > > Sent: Wednesday, January 20, 2021 9:12 AM
+> > > Subject: [PATCH net] net: usb: cdc_ncm: don't spew notifications
+> > >
+> > > RTL8156 sends notifications about every 32ms.
+> > > Only display/log notifications when something changes.
+> > >
+> > > This issue has been reported by others:
+> > >     https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1832472
+> > >     https://lkml.org/lkml/2020/8/27/1083
+> > >
+> > > Chrome OS cannot support RTL8156 until this is fixed.
+> > >
+> > > Signed-off-by: Grant Grundler <grundler@chromium.org>
+> >
+> > Reviewed-by: Hayes Wang <hayeswang@realtek.com>
+>
+> Applied, thanks!
+>
+> net should be merged back into net-next by the end of the day, so
+> if the other patches depend on this one to apply cleanly please keep
+> an eye and post after that happens. If there is no conflict you can
+> just post them with [PATCH net-next] now.
 
-#7 - Eric comes up with something much better :)
+Jakub, sorry, I "dropped the ball" on this one. I'll repost with
+"net-next" a bit later today.
 
-
-But so far doesn't seem to quite do it, I'm looking but maybe you'll
-know right away (FWIW testing a v5.6 backport but I don't think TSQ
-changed?):
-
-On __tcp_retransmit_skb kretprobe:
-
-==> Hit TFO case ret:-16 ca_state:0 skb:ffff888fdb4bac00!
-
-First hit:
-        __tcp_retransmit_skb+1
-        tcp_rcv_state_process+2488
-        tcp_v6_do_rcv+405
-        tcp_v6_rcv+2984
-        ip6_protocol_deliver_rcu+180
-        ip6_input_finish+17
-
-Successful hit:
-        __tcp_retransmit_skb+1
-        tcp_retransmit_skb+18
-        tcp_retransmit_timer+716
-        tcp_write_timer_handler+136
-        tcp_write_timer+141
-        call_timer_fn+43
-
- skb:ffff888fdb4bac00 --- delay:51642us bytes_acked:1
+cheers,
+grant
