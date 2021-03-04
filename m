@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA75F32D9D5
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0AB32D9D4
 	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 19:59:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235848AbhCDS6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 13:58:30 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:4920 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235730AbhCDS6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 13:58:17 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60412da10001>; Thu, 04 Mar 2021 10:57:37 -0800
+        id S235862AbhCDS6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 13:58:31 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:8025 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235734AbhCDS6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 13:58:20 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60412da40000>; Thu, 04 Mar 2021 10:57:40 -0800
 Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 4 Mar
- 2021 18:57:36 +0000
+ 2021 18:57:39 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Mar 2021 18:57:34 +0000
+ Transport; Thu, 4 Mar 2021 18:57:37 +0000
 From:   Moshe Shemesh <moshe@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -27,65 +27,143 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Don Bollinger <don@thebollingers.org>, <netdev@vger.kernel.org>
 CC:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [RFC PATCH V2 net-next 4/5] net/mlx5: Add support for DSFP module EEPROM dumps
-Date:   Thu, 4 Mar 2021 20:57:07 +0200
-Message-ID: <1614884228-8542-5-git-send-email-moshe@nvidia.com>
+Subject: [RFC PATCH V2 net-next 5/5] ethtool: Add fallback to get_module_eeprom from netlink command
+Date:   Thu, 4 Mar 2021 20:57:08 +0200
+Message-ID: <1614884228-8542-6-git-send-email-moshe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1614884228-8542-1-git-send-email-moshe@nvidia.com>
 References: <1614884228-8542-1-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614884257; bh=sMPig98lT6bUKgNLtfmNT5ef6l+6uoZMWfyYh5gcHxc=;
+        t=1614884260; bh=DeOB9+NkbYAtogFD9xnt6dCwP9zWklALwJih4wOs3sA=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Type;
-        b=SBGYCc1KDmPDUGpLEztCSrfSohqnw8+IwsfMilafONGBZ8xtC8heEHJhTbSmkPtvd
-         ni+fNgCuaO/ERPWVJH+N5S3wyH+2k2zjfLkqM9Zvjexx8UJGfC+MtH2uWZbf+Q5TeU
-         zFpM4RXx7SPhre/UIAMemnNG0qU6aswQjwjAALejWECANCwmqXJVRIOmjgfab5gh9g
-         AYa2BvMjfnN3D0zCQ08vdYMTzwt1qoBCj8M8xBvjx0fx8Sfr61k/jti84dgLx9zcCb
-         l+5w1zL4CF/SxV0xVgsWlyv6cyCL7AMKHmCwEzy+/gpYMtIjC3SJmPXUN1xgDr7OCJ
-         Ivcg1ecIFFrPA==
+        b=BKKPRim7isNSlXknLzDS2DNv7zQolpQH0aLi0LuXniFK+NsD4Qcrms4YjcxoP3fG/
+         IGx1JtgiirpYXlwo4mqTXiMUtfxBHbpjS8DdFx82Ibe5xoHj5BnOi70cYV+8qmRgDo
+         VHhKaYwQWHW9tZ/kVNW2+3Y1Bm0hSJ2YjLiHCOAOxUbag9/RvDzFHwXP3aP3foqVem
+         TL3BBqFHtAEnUniTfUdqGq4C7Q1DYIPWKoszCWZ+EZwNv/3omL/iC31qZdAXqFPlWI
+         J5SeH6f+p9YA797RV3VcY/FTxqoRojYSDpicCuWAiiUWPd2J74OCtApF6XfIylSmUB
+         xWdcSWiWXP0wQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 
-Allow the driver to recognise DSFP transceiver module ID and therefore
-allow its EEPROM dumps using ethtool.
+In case netlink get_module_eeprom_data_by_page() callback is not
+implemented by the driver, try to call old get_module_info() and
+get_module_eeprom() pair. Recalculate parameters to get_module_eeprom()
+offset and len using page number and their sizes. Return error if
+this can't be done.
 
 Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/port.c | 3 ++-
- include/linux/mlx5/port.h                      | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ net/ethtool/eeprom.c | 84 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 83 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index f7a16fdfb8d3..3a7aa6b05198 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -446,7 +446,8 @@ int mlx5_query_module_eeprom_data(struct mlx5_core_dev *dev,
- 	if (module_id != MLX5_MODULE_ID_SFP &&
- 	    module_id != MLX5_MODULE_ID_QSFP &&
- 	    module_id != MLX5_MODULE_ID_QSFP28 &&
--	    module_id != MLX5_MODULE_ID_QSFP_PLUS) {
-+	    module_id != MLX5_MODULE_ID_QSFP_PLUS &&
-+	    module_id != MLX5_MODULE_ID_DSFP) {
- 		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
- 		return -EINVAL;
- 	}
-diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-index 887cd43b41e8..71b4373cb96c 100644
---- a/include/linux/mlx5/port.h
-+++ b/include/linux/mlx5/port.h
-@@ -45,6 +45,7 @@ enum mlx5_module_id {
- 	MLX5_MODULE_ID_QSFP             = 0xC,
- 	MLX5_MODULE_ID_QSFP_PLUS        = 0xD,
- 	MLX5_MODULE_ID_QSFP28           = 0x11,
-+	MLX5_MODULE_ID_DSFP		= 0x1B,
- };
+diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
+index 2618a55b9a40..72c7714a9d37 100644
+--- a/net/ethtool/eeprom.c
++++ b/net/ethtool/eeprom.c
+@@ -26,6 +26,88 @@ struct eeprom_data_reply_data {
+ #define EEPROM_DATA_REPDATA(__reply_base) \
+ 	container_of(__reply_base, struct eeprom_data_reply_data, base)
  
- enum mlx5_an_status {
++static int fallback_set_params(struct eeprom_data_req_info *request,
++			       struct ethtool_modinfo *modinfo,
++			       struct ethtool_eeprom *eeprom)
++{
++	u32 offset = request->offset;
++	u32 length = request->length;
++
++	if (request->page)
++		offset = 128 + request->page * 128 + offset;
++
++	if (!length)
++		length = modinfo->eeprom_len;
++
++	if (offset >= modinfo->eeprom_len)
++		return -EINVAL;
++
++	if (modinfo->eeprom_len < offset + length)
++		length = modinfo->eeprom_len - offset;
++
++	eeprom->cmd = ETHTOOL_GMODULEEEPROM;
++	eeprom->len = length;
++	eeprom->offset = offset;
++
++	switch (modinfo->type) {
++	case ETH_MODULE_SFF_8079:
++		if (request->page > 1)
++			return -EINVAL;
++		break;
++	case ETH_MODULE_SFF_8472:
++		if (request->page > 3)
++			return -EINVAL;
++		break;
++	case ETH_MODULE_SFF_8436:
++	case ETH_MODULE_SFF_8636:
++		if (request->page > 3)
++			return -EINVAL;
++		break;
++	}
++	return 0;
++}
++
++static int eeprom_data_fallback(struct eeprom_data_req_info *request,
++				struct eeprom_data_reply_data *reply,
++				struct genl_info *info)
++{
++	struct net_device *dev = reply->base.dev;
++	struct ethtool_modinfo modinfo = {0};
++	struct ethtool_eeprom eeprom = {0};
++	u8 *data;
++	int err;
++
++	if ((!dev->ethtool_ops->get_module_info &&
++	     !dev->ethtool_ops->get_module_eeprom) ||
++	    request->bank || request->i2c_address) {
++		return -EOPNOTSUPP;
++	}
++	modinfo.cmd = ETHTOOL_GMODULEINFO;
++	err = dev->ethtool_ops->get_module_info(dev, &modinfo);
++	if (err < 0)
++		return err;
++
++	err = fallback_set_params(request, &modinfo, &eeprom);
++	if (err < 0)
++		return err;
++
++	data = kmalloc(eeprom.len, GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++	err = dev->ethtool_ops->get_module_eeprom(dev, &eeprom, data);
++	if (err < 0)
++		goto err_out;
++
++	reply->data = data;
++	reply->length = eeprom.len;
++
++	return 0;
++
++err_out:
++	kfree(data);
++	return err;
++}
++
+ static int eeprom_data_prepare_data(const struct ethnl_req_info *req_base,
+ 				    struct ethnl_reply_data *reply_base,
+ 				    struct genl_info *info)
+@@ -37,7 +119,7 @@ static int eeprom_data_prepare_data(const struct ethnl_req_info *req_base,
+ 	int err;
+ 
+ 	if (!dev->ethtool_ops->get_module_eeprom_data_by_page)
+-		return -EOPNOTSUPP;
++		return eeprom_data_fallback(request, reply, info);
+ 
+ 	page_data.offset = request->offset;
+ 	page_data.length = request->length;
 -- 
 2.18.2
 
