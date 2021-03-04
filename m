@@ -2,68 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F8932DD3E
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B106D32DD3A
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232086AbhCDWkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 17:40:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58994 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230442AbhCDWkJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231585AbhCDWkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 4 Mar 2021 17:40:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id E643865005;
+Received: from mail.kernel.org ([198.145.29.99]:58974 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229575AbhCDWkJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 17:40:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id C643164FF9;
         Thu,  4 Mar 2021 22:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614897609;
-        bh=8alrRYOcPgLzLurJ8ePq+svkQQ3viIz7d9SOI7FYyGM=;
+        s=k20201202; t=1614897608;
+        bh=9kkPpGdsGU5bMMNwGCo1G/gHG/+VPUbQSFXT+FJl2to=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=We/Lg5Va9nP+GF9zwmm6syoR3iieCeDZYnN+oaS/FjK8iuSLSmgwIG9AbbyPHudvJ
-         /0rmxEWXtByOcgKXj3IyLuawscMqLH14eCI44mzh3f175AOCCPCgA+hJYNAL28X8k/
-         AeOLmTt/C/W321Vs1b8TJFmpJ3B37jAbkZ4zNwM4cH0OuPH2BL6pbPSoxd9uXgZPEm
-         ETbCl6TEzJ3ljaocAQOpOlvzfIQ3xCuYwkPMWNg61WpkWI+klLkYmicy7u5g0FhbMk
-         jNp/6vwChkQVZEE8ohyRnnW7Eoaz0VdeEjPN9Gk+VIAZCUKKl8ACM8O9tYTBry0wo/
-         xKgMtkshURTiw==
+        b=JqA/Ul00nAWzDDRBZHts6Sm7tn9S0eUKOWBLkPawzrJ8pf8baUhY9NmUnwm7bEbW6
+         8w6uT+RZ2c3m+dlhXsRc7Qwv+oWqPomqXNNpj8GaCBXGa0rV+OTX4tP0B97m3G7Nro
+         cUmS5ro7SqvFnMG1jPXptZ8Qt4dl/i0wHe3mH5Mhj0yYJaW62d6Ec1oON9xd40t4sm
+         WZBJAGZaZUwJLHiGpNWSVGjVqa6wdZmiqGZMkwekTSA+om6Q1NcBjlnCjYqhWJO31l
+         V4l30LkLdNcwOrL36TmgxIU4f7LuqRRb89BWyb3lwsmT1JhuLIBJzYc4wqTmHPrPD6
+         +OT6v6VtuFo6A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D4EE260A1B;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B9D3B609E7;
         Thu,  4 Mar 2021 22:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] ibmvnic: always store valid MAC address
+Subject: Re: [PATCH net 0/9] mptcp: Fixes for v5.12
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161489760886.17160.16363885063231426399.git-patchwork-notify@kernel.org>
+Message-Id: <161489760875.17160.2919416232115076199.git-patchwork-notify@kernel.org>
 Date:   Thu, 04 Mar 2021 22:40:08 +0000
-References: <20210304161828.GA6104@incl>
-In-Reply-To: <20210304161828.GA6104@incl>
-To:     Jiri Wiesner <jwiesner@suse.com>
-Cc:     netdev@vger.kernel.org, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, drt@linux.ibm.com,
-        ljp@linux.ibm.com, sukadev@linux.ibm.com, davem@davemloft.net,
-        kuba@kernel.org, msuchanek@suse.de
+References: <20210304213216.205472-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20210304213216.205472-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.01.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 4 Mar 2021 17:18:28 +0100 you wrote:
-> The last change to ibmvnic_set_mac(), 8fc3672a8ad3, meant to prevent
-> users from setting an invalid MAC address on an ibmvnic interface
-> that has not been brought up yet. The change also prevented the
-> requested MAC address from being stored by the adapter object for an
-> ibmvnic interface when the state of the ibmvnic interface is
-> VNIC_PROBED - that is after probing has finished but before the
-> ibmvnic interface is brought up. The MAC address stored by the
-> adapter object is used and sent to the hypervisor for checking when
-> an ibmvnic interface is brought up.
+On Thu,  4 Mar 2021 13:32:07 -0800 you wrote:
+> These patches from the MPTCP tree fix a few multipath TCP issues:
+> 
+> 
+> Patches 1 and 5 clear some stale pointers when subflows close.
+> 
+> Patches 2, 4, and 9 plug some memory leaks.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] ibmvnic: always store valid MAC address
-    https://git.kernel.org/netdev/net/c/67eb211487f0
+  - [net,1/9] mptcp: reset last_snd on subflow close
+    https://git.kernel.org/netdev/net/c/e0be4931f3fe
+  - [net,2/9] mptcp: put subflow sock on connect error
+    https://git.kernel.org/netdev/net/c/f07157792c63
+  - [net,3/9] mptcp: fix memory accounting on allocation error
+    https://git.kernel.org/netdev/net/c/eaeef1ce55ec
+  - [net,4/9] mptcp: dispose initial struct socket when its subflow is closed
+    https://git.kernel.org/netdev/net/c/17aee05dc882
+  - [net,5/9] mptcp: reset 'first' and ack_hint on subflow close
+    https://git.kernel.org/netdev/net/c/c8fe62f0768c
+  - [net,6/9] mptcp: factor out __mptcp_retrans helper()
+    https://git.kernel.org/netdev/net/c/2948d0a1e5ae
+  - [net,7/9] mptcp: fix race in release_cb
+    https://git.kernel.org/netdev/net/c/c2e6048fa1cf
+  - [net,8/9] mptcp: fix missing wakeup
+    https://git.kernel.org/netdev/net/c/417789df4a03
+  - [net,9/9] mptcp: free resources when the port number is mismatched
+    https://git.kernel.org/netdev/net/c/9238e900d6ec
 
 You are awesome, thank you!
 --
