@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2415132DBDE
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 22:38:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0165432DBDB
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 22:35:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239545AbhCDVff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 16:35:35 -0500
+        id S239763AbhCDVea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 16:34:30 -0500
 Received: from mga03.intel.com ([134.134.136.65]:46776 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239482AbhCDVfb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 16:35:31 -0500
-IronPort-SDR: WEBTP5BIbrCek49sS/mOqbNR4AeQOPCGqqxmdQSyZsNs48/DuLrdbmFXbCY/2w1hZlELff3ugb
- ZAc+XSi8km9A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9913"; a="187566592"
+        id S239582AbhCDVeK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 16:34:10 -0500
+IronPort-SDR: Yb/TwRVysytJ54325umC6d6agRuzH1i8hXP6SU5GTywY7vDTYm2mQmI7ffCXodT/ar6cAhmHtm
+ wAS/NKOUnzVw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9913"; a="187566593"
 X-IronPort-AV: E=Sophos;i="5.81,223,1610438400"; 
-   d="scan'208";a="187566592"
+   d="scan'208";a="187566593"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 13:32:24 -0800
-IronPort-SDR: sAj+Y87z/a7Cpr75vhux/FBqNKH5NnVEOKxiq2dRN5tHp5hX93SQVhw6ftE+Jbex1/K0gmlli3
- X9VM2zeLcWvQ==
+IronPort-SDR: M8Pvzce1roZ4Hh6DmKTbhFZoSawbSXesrf/Sn9j1Q9jRoTblqAHpINwk0yzDWnBnqQz372Q+on
+ mIx7Wo6mSivg==
 X-IronPort-AV: E=Sophos;i="5.81,223,1610438400"; 
-   d="scan'208";a="368329485"
+   d="scan'208";a="368329487"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.105.71])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 13:32:23 -0800
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 13:32:24 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net, mptcp@lists.01.org,
-        Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 5/9] mptcp: reset 'first' and ack_hint on subflow close
-Date:   Thu,  4 Mar 2021 13:32:12 -0800
-Message-Id: <20210304213216.205472-6-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 6/9] mptcp: factor out __mptcp_retrans helper()
+Date:   Thu,  4 Mar 2021 13:32:13 -0800
+Message-Id: <20210304213216.205472-7-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210304213216.205472-1-mathew.j.martineau@linux.intel.com>
 References: <20210304213216.205472-1-mathew.j.martineau@linux.intel.com>
@@ -42,52 +41,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Paolo Abeni <pabeni@redhat.com>
 
-Just like with last_snd, we have to NULL 'first' on subflow close.
+Will simplify the following patch, no functional change
+intended.
 
-ack_hint isn't strictly required (its never dereferenced), but better to
-clear this explicitly as well instead of making it an exception.
-
-msk->first is dereferenced unconditionally at accept time, but
-at that point the ssk is not on the conn_list yet -- this means
-worker can't see it when iterating the conn_list.
-
-Reported-by: Paolo Abeni <pabeni@redhat.com>
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/mptcp/protocol.c | 93 ++++++++++++++++++++++++--------------------
+ 1 file changed, 50 insertions(+), 43 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index a58da04bed71..3dcb564b03ad 100644
+index 3dcb564b03ad..67aaf7154dca 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -2169,6 +2169,12 @@ static void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
- 	if (ssk == msk->last_snd)
- 		msk->last_snd = NULL;
- 
-+	if (ssk == msk->ack_hint)
-+		msk->ack_hint = NULL;
-+
-+	if (ssk == msk->first)
-+		msk->first = NULL;
-+
- 	if (msk->subflow && ssk == msk->subflow->sk)
- 		mptcp_dispose_initial_subflow(msk);
+@@ -2261,59 +2261,23 @@ static void mptcp_check_fastclose(struct mptcp_sock *msk)
+ 	mptcp_close_wake_up(sk);
  }
-@@ -3297,6 +3303,9 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
- 		/* PM/worker can now acquire the first subflow socket
- 		 * lock without racing with listener queue cleanup,
- 		 * we can notify it, if needed.
-+		 *
-+		 * Even if remote has reset the initial subflow by now
-+		 * the refcnt is still at least one.
- 		 */
- 		subflow = mptcp_subflow_ctx(msk->first);
- 		list_add(&subflow->node, &msk->conn_list);
+ 
+-static void mptcp_worker(struct work_struct *work)
++static void __mptcp_retrans(struct sock *sk)
+ {
+-	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
+-	struct sock *ssk, *sk = &msk->sk.icsk_inet.sk;
++	struct mptcp_sock *msk = mptcp_sk(sk);
+ 	struct mptcp_sendmsg_info info = {};
+ 	struct mptcp_data_frag *dfrag;
+ 	size_t copied = 0;
+-	int state, ret;
+-
+-	lock_sock(sk);
+-	state = sk->sk_state;
+-	if (unlikely(state == TCP_CLOSE))
+-		goto unlock;
+-
+-	mptcp_check_data_fin_ack(sk);
+-	__mptcp_flush_join_list(msk);
+-
+-	mptcp_check_fastclose(msk);
+-
+-	if (msk->pm.status)
+-		mptcp_pm_nl_work(msk);
+-
+-	if (test_and_clear_bit(MPTCP_WORK_EOF, &msk->flags))
+-		mptcp_check_for_eof(msk);
+-
+-	__mptcp_check_send_data_fin(sk);
+-	mptcp_check_data_fin(sk);
+-
+-	/* There is no point in keeping around an orphaned sk timedout or
+-	 * closed, but we need the msk around to reply to incoming DATA_FIN,
+-	 * even if it is orphaned and in FIN_WAIT2 state
+-	 */
+-	if (sock_flag(sk, SOCK_DEAD) &&
+-	    (mptcp_check_close_timeout(sk) || sk->sk_state == TCP_CLOSE)) {
+-		inet_sk_state_store(sk, TCP_CLOSE);
+-		__mptcp_destroy_sock(sk);
+-		goto unlock;
+-	}
+-
+-	if (test_and_clear_bit(MPTCP_WORK_CLOSE_SUBFLOW, &msk->flags))
+-		__mptcp_close_subflow(msk);
+-
+-	if (!test_and_clear_bit(MPTCP_WORK_RTX, &msk->flags))
+-		goto unlock;
++	struct sock *ssk;
++	int ret;
+ 
+ 	__mptcp_clean_una(sk);
+ 	dfrag = mptcp_rtx_head(sk);
+ 	if (!dfrag)
+-		goto unlock;
++		return;
+ 
+ 	ssk = mptcp_subflow_get_retrans(msk);
+ 	if (!ssk)
+-		goto reset_unlock;
++		goto reset_timer;
+ 
+ 	lock_sock(ssk);
+ 
+@@ -2339,9 +2303,52 @@ static void mptcp_worker(struct work_struct *work)
+ 	mptcp_set_timeout(sk, ssk);
+ 	release_sock(ssk);
+ 
+-reset_unlock:
++reset_timer:
+ 	if (!mptcp_timer_pending(sk))
+ 		mptcp_reset_timer(sk);
++}
++
++static void mptcp_worker(struct work_struct *work)
++{
++	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
++	struct sock *sk = &msk->sk.icsk_inet.sk;
++	int state;
++
++	lock_sock(sk);
++	state = sk->sk_state;
++	if (unlikely(state == TCP_CLOSE))
++		goto unlock;
++
++	mptcp_check_data_fin_ack(sk);
++	__mptcp_flush_join_list(msk);
++
++	mptcp_check_fastclose(msk);
++
++	if (msk->pm.status)
++		mptcp_pm_nl_work(msk);
++
++	if (test_and_clear_bit(MPTCP_WORK_EOF, &msk->flags))
++		mptcp_check_for_eof(msk);
++
++	__mptcp_check_send_data_fin(sk);
++	mptcp_check_data_fin(sk);
++
++	/* There is no point in keeping around an orphaned sk timedout or
++	 * closed, but we need the msk around to reply to incoming DATA_FIN,
++	 * even if it is orphaned and in FIN_WAIT2 state
++	 */
++	if (sock_flag(sk, SOCK_DEAD) &&
++	    (mptcp_check_close_timeout(sk) || sk->sk_state == TCP_CLOSE)) {
++		inet_sk_state_store(sk, TCP_CLOSE);
++		__mptcp_destroy_sock(sk);
++		goto unlock;
++	}
++
++	if (test_and_clear_bit(MPTCP_WORK_CLOSE_SUBFLOW, &msk->flags))
++		__mptcp_close_subflow(msk);
++
++	if (test_and_clear_bit(MPTCP_WORK_RTX, &msk->flags))
++		__mptcp_retrans(sk);
+ 
+ unlock:
+ 	release_sock(sk);
 -- 
 2.30.1
 
