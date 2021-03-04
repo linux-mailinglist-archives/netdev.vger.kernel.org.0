@@ -2,88 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED1932D525
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 15:20:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9B132D53A
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 15:24:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241884AbhCDOTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 09:19:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60392 "EHLO
+        id S241909AbhCDOXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 09:23:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241785AbhCDOTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 09:19:02 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F99C061756;
-        Thu,  4 Mar 2021 06:18:22 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id a4so18963467pgc.11;
-        Thu, 04 Mar 2021 06:18:22 -0800 (PST)
+        with ESMTP id S236830AbhCDOXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 09:23:07 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC54C061761;
+        Thu,  4 Mar 2021 06:22:27 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id e10so27609565wro.12;
+        Thu, 04 Mar 2021 06:22:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=LBqlEZyPcKTt510snqgHtrJs4QRW+RndpggZVW6Cb+U=;
-        b=qtwFImKXhr7tSBAHx4h06wq7ZHcxq94ai6Fpd1sBmD+6WVbNfohmeL8bkmQZtT3Xn4
-         BPsC2/bYDPPP/cFr+PoTaySPMZ36aZFfSqKJLvhEXXMFCJscqv+qNpjHdaMiqCWQwZMg
-         4XgjY8eiphEDPWolW9izecbXkm+L5Hljb05iHeHlvKmFIOIfpun57GkrdZuJ9iAlSK7L
-         kX+DZRRVmI9C1CdyvVw4tJS8Gf/6P/lF1VPEQMWAfKUza50s28hJBCVPwbpC+LxNh4UO
-         3R2CmAi6HJEXAU3MF9SDKlr5nxP12NdSaCk6AnIpE6e0DbtA/rJ3YHHzoRGOiQSUReQB
-         g6kg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VnG4tu4VgSlUkh5WwEH2QyWi6B9WiJssSBKAtiBStGM=;
+        b=iuycZa+F+vtISNTPXCWqu6NyoSjc78qNC7lctybLJBDC8RepTQibIElKvgblS1lt1R
+         fShdhag9+n7w3EoTkk0cDWiJss3Y+TVo2uzl3ddLcVYAXw0b/366cKhKRMC7HgaX+K8X
+         CeHQ3/A3l2Ke+SvG70chT4E8BAJTqa4L8MkbCEEbDnvKyDrJSwb6e0uNXkK7IZ7vZ8z7
+         ZwxoM3btIU5GIP1JQtqI7ALH+/u+WAOPlmElTGO5EcYa8bYJd55pC+z+XsvuvneQdFrG
+         dSZND5WVL4lVOrtxMr7zGzGg9o+4VK9xBNoesn/bgCTpOn9w8uPc8FPCsR67wzregTfS
+         V7CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=LBqlEZyPcKTt510snqgHtrJs4QRW+RndpggZVW6Cb+U=;
-        b=Tpns1et2D12YHwBPFJ289ip57QUzNI777/Mqatd3Ta5SUSUeppHBq7fiydA0jBqXeA
-         Z7gXBH/7fTeCq3NT7LLeieFCehIn1TWI/jV80EI59NngEf0nwyXR8wkE4dTEnwepilKE
-         OQLx40izqOHTuWvcCHrftyOfYyf1CbAsd0RyMzP8OVY+KUiz37bW3ngT88Ug1QfO3QTC
-         aeYueWVhlMbXZ1dmrsZEgcbuHDbjoZvSOqY2eKId5IK3CfUAwJE0nbrq/FDfNGi/rETb
-         Gz27qsPxqlkIcYrO3KTS9eW9JHIX8npmzTC8WwO5Fr6Z8mbpOqWfE8YbUo07rY0Llf1k
-         UjBw==
-X-Gm-Message-State: AOAM533K+KbuQ2IIvXOkAdb4YgiC2Wgdaf5/bGtSk2ePO0MN1opOShfa
-        Y+cAIYckYKfoBhqY5MdXSGE=
-X-Google-Smtp-Source: ABdhPJww6ZarzP1NxytLeX4O77IoK8O14A+I26ZWyCHmv/GKzvzp2A+zZQhVsCpgeb7RB9Hr2pBSbw==
-X-Received: by 2002:aa7:9711:0:b029:1ee:b2c7:ecfe with SMTP id a17-20020aa797110000b02901eeb2c7ecfemr3928358pfg.58.1614867502027;
-        Thu, 04 Mar 2021 06:18:22 -0800 (PST)
-Received: from localhost.localdomain ([45.135.186.129])
-        by smtp.gmail.com with ESMTPSA id x14sm28445213pfm.207.2021.03.04.06.18.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Mar 2021 06:18:21 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     borisp@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: mellanox: mlx5: fix error return code in mlx5_fpga_device_start()
-Date:   Thu,  4 Mar 2021 06:18:14 -0800
-Message-Id: <20210304141814.8508-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VnG4tu4VgSlUkh5WwEH2QyWi6B9WiJssSBKAtiBStGM=;
+        b=NHA7k2wuCD1jKtMfmN3x6wDWvr2kFlyAWQ0lflVEE3CMLd1RRrmC+aoQJHCzBQd3OE
+         ttcLeLIOgvVKXDEh8mm1htgOtCjHta31dO5w6z+QXNGoFaGI/8l036RaFlfmmAVW5hnC
+         jLx+GzSxdQvn8UW9wU1c9iS4SP+uVJe5N9LSYGPexv6vZwxxzJHmHnp62ZNhmirZbnRk
+         Wz1556ilzdUOXDBTA4/WTwymJp3i+nknGKlXvVx5k1kE0YnGg5dQnEK14UwsBWdV5nMJ
+         kieBDaqu62VVCE4fZzxxmhWp1Or/dZsPr5t/TNjwK3ShqPC4G4Am5MnbEvvop1reHmsl
+         kR7w==
+X-Gm-Message-State: AOAM532+05OSLk78RlIYJVUuz4UaalJkQ7sl31FM2KHeQvszhMEm9Jnp
+        kv9Lmy+R8hZMO5gxfvUjGwPbBxrgHOPmeA==
+X-Google-Smtp-Source: ABdhPJzTdLStXYk0J9Ktu6ilg4ACfPbm1fzFL0y0p4yBuqDQhZH7uMsAbQ+g0rVak6P7DJ5H15cnKA==
+X-Received: by 2002:a5d:4743:: with SMTP id o3mr4512397wrs.108.1614867746226;
+        Thu, 04 Mar 2021 06:22:26 -0800 (PST)
+Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
+        by smtp.gmail.com with ESMTPSA id h20sm10121146wmb.1.2021.03.04.06.22.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Mar 2021 06:22:25 -0800 (PST)
+Subject: Re: [PATCH 10/11] pragma once: delete few backslashes
+To:     Alexey Dobriyan <adobriyan@gmail.com>,
+        torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        vgupta@synopsys.com, linux-snps-arc@lists.infradead.org,
+        jiri@nvidia.com, idosch@nvidia.com, netdev@vger.kernel.org,
+        Jason@zx2c4.com, mchehab@kernel.org
+References: <YDvLYzsGu+l1pQ2y@localhost.localdomain>
+ <YDvNSg9OPv7JqfRS@localhost.localdomain>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <91f4ba8b-38a0-dfcf-1fec-31410a802f5f@gmail.com>
+Date:   Thu, 4 Mar 2021 14:22:24 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
+MIME-Version: 1.0
+In-Reply-To: <YDvNSg9OPv7JqfRS@localhost.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When mlx5_is_fpga_lookaside() returns a non-zero value, no error 
-return code is assigned.
-To fix this bug, err is assigned with -EINVAL as error return code.
+On 28/02/2021 17:05, Alexey Dobriyan wrote:
+> From 251ca5673886b5bb0a42004944290b9d2b267a4a Mon Sep 17 00:00:00 2001
+> From: Alexey Dobriyan <adobriyan@gmail.com>
+> Date: Fri, 19 Feb 2021 13:37:24 +0300
+> Subject: [PATCH 10/11] pragma once: delete few backslashes
+> 
+> Some macros contain one backslash too many and end up being the last
+> macro in a header file. When #pragma once conversion script truncates
+> the last #endif and whitespace before it, such backslash triggers
+> a warning about "OMG file ends up in a backslash-newline".
+> 
+> Needless to say I don't want to handle another case in my script,
+> so delete useless backslashes instead.
+> 
+> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> ---
+>  arch/arc/include/asm/cacheflush.h          | 2 +-
+>  drivers/net/ethernet/mellanox/mlxsw/item.h | 2 +-
+>  include/linux/once.h                       | 2 +-
+>  include/media/drv-intf/exynos-fimc.h       | 2 +-
+>  4 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/arc/include/asm/cacheflush.h b/arch/arc/include/asm/cacheflush.h
+> index e201b4b1655a..46704c341b17 100644
+> --- a/arch/arc/include/asm/cacheflush.h
+> +++ b/arch/arc/include/asm/cacheflush.h
+> @@ -112,6 +112,6 @@ do {									\
+>  } while (0)
+>  
+>  #define copy_from_user_page(vma, page, vaddr, dst, src, len)		\
+> -	memcpy(dst, src, len);						\
+> +	memcpy(dst, src, len)
+>  This changebar also removes a semicolon.
+It looks plausibly correct, but the commit message ought to mention it.
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/fpga/core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/core.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/core.c
-index 2ce4241459ce..c9e6da97126f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/core.c
-@@ -198,8 +198,10 @@ int mlx5_fpga_device_start(struct mlx5_core_dev *mdev)
- 	mlx5_fpga_info(fdev, "FPGA card %s:%u\n", mlx5_fpga_name(fpga_id), fpga_id);
- 
- 	/* No QPs if FPGA does not participate in net processing */
--	if (mlx5_is_fpga_lookaside(fpga_id))
-+	if (mlx5_is_fpga_lookaside(fpga_id)) {
-+		err = -EINVAL;
- 		goto out;
-+	}
- 
- 	mlx5_fpga_info(fdev, "%s(%d): image, version %u; SBU %06x:%04x version %d\n",
- 		       mlx5_fpga_image_name(fdev->last_oper_image),
--- 
-2.17.1
-
+-ed
