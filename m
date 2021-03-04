@@ -2,67 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2CC32D9AA
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 19:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D8332D9AD
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 19:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235111AbhCDSvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 13:51:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35460 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235268AbhCDSul (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 13:50:41 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3678E64F62;
-        Thu,  4 Mar 2021 18:50:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614883801;
-        bh=8TEBVrJx6zvAMycwaRz05lhz6ZfrWIcjBL8kdVPqmow=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=t6Lrs14H3reWWXieS9bCa/3NYokBgj4xg8C2qjZxoYnQjFOqR/KiC4RAVthkRU3Xd
-         uSQUAGv3LViFK72sh1f2+joqozTkhQH+l6MvDj9sJkG7Mv9jBSSsUIzQi3LYpOQ3cV
-         rWHff2dZco8L9sH4Zhg5wjbmh8yGxFrrXNgnt8X3ZDkbApeGOC25LtOL1dH5UXv7DL
-         wEwiaujpAlbt8rj++OxU+vnFBNcsz+sIlfWkmGenNsgYZ/fP8sAZPyIHpDF6jM8J0a
-         bz+vUnw/oyd0H7rE29FHQjT8Rhg4Tfqx4MTockkWqEcrR5o8M5/EKbjvGWmmAaADhW
-         Y+zXKnsUmFPYQ==
-Date:   Thu, 4 Mar 2021 10:50:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        Yongxin Liu <yongxin.liu@windriver.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: Re: [PATCH net 1/3] net: ethernet: ixgbe: don't propagate -ENODEV
- from ixgbe_mii_bus_init()
-Message-ID: <20210304105000.5c001707@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210304010649.1858916-2-anthony.l.nguyen@intel.com>
-References: <20210304010649.1858916-1-anthony.l.nguyen@intel.com>
-        <20210304010649.1858916-2-anthony.l.nguyen@intel.com>
+        id S235332AbhCDSwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 13:52:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230413AbhCDSvw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 13:51:52 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88B7C061574;
+        Thu,  4 Mar 2021 10:51:11 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id p193so29634599yba.4;
+        Thu, 04 Mar 2021 10:51:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t0mUxMzP1uepeSAdWqMh3fjoCNB/nXkx4OSipulV6e4=;
+        b=WU3baqetLfyrLno5WlUsPIEbWb85K7MZxum6eQlfA+NYtLvRM3/o0mApEt/rxLoXZX
+         xby82dA6IWAIoP2mzJhCW1p23M4hPIN92/o3q7d0l0599R67xttFYO9+MWmeSTxF7Ev+
+         jgvtCzSriKCEFLonVlhEzNzkL6VYQ64+KzHQGXmAqfzQqZ6MjRSKf8PoOIyhb8ir5wid
+         PTNwoRnKYh4iZMa0hoNSbfkFOn1tJoyPiJDMrniEEfdVfdNaPGqKydHpjWIpZqBpII4O
+         s9woqw22TgoSfZTaxi3g9yY8UB4WH2wxSSJyarDyIHxQIOK1C16NNnOLbRsU8KYsd/xc
+         hcrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t0mUxMzP1uepeSAdWqMh3fjoCNB/nXkx4OSipulV6e4=;
+        b=ZQ2eYmGQeEraP0oI/QpvS6CDQ3+KvTHs+N6mgy+MWkCKUqq2xuKb7FmwF2CjihrLat
+         zXXnTsRSmqqUjZ4FgpjN1BhxDDI0CGewv/WB/PegSu1S9xDIrCeSIKcfWjR15Ia6+v2n
+         0NgpNFN9Lj3Kj0rH8ts+5MVT2O1OZ0oAVrjEb25cSl3rF2khebtljoim+ymao6nekJVG
+         teKDgQ7lzVLKifyOb0FZ7QJ35skRw4+KFoNPgY468nW24FuFckW6YI/dr3EKPyTdMz4G
+         loUDAtsJPgquoNtEUPNKkttZFEwRuRe1X40a/jmPPVpA573e4XqcR2tkYawaPFNifpB/
+         ip8g==
+X-Gm-Message-State: AOAM533aYwQ8Ezipv1x785Aj/YCnwOpNYPmpgXpoF4ia9LQG6wfPEd/h
+        5UzEsYFz4kZ4nignrw/VFZeBZqH/Ol0VzTjjd2s=
+X-Google-Smtp-Source: ABdhPJxPi/yEngfFfb3h8xPJkn1snmFU2umjExdaTXpru8a+VkB5M/mDprJAfvfUlDDBChaF17BgzKRzTpoZQ3punf0=
+X-Received: by 2002:a25:bd12:: with SMTP id f18mr8338059ybk.403.1614883871186;
+ Thu, 04 Mar 2021 10:51:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210303101816.36774-1-lmb@cloudflare.com> <20210303101816.36774-2-lmb@cloudflare.com>
+In-Reply-To: <20210303101816.36774-2-lmb@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 4 Mar 2021 10:51:00 -0800
+Message-ID: <CAEf4BzaFT7CQwGbd2S46WjwwNoMkgPCycj8EKCDZXNjPHdWzRg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/5] bpf: consolidate shared test timing code
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  3 Mar 2021 17:06:47 -0800 Tony Nguyen wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> 
-> It's a valid use-case for ixgbe_mii_bus_init() to return -ENODEV - we
-> still want to finalize the registration of the ixgbe device. Check the
-> error code and don't bail out if err == -ENODEV.
-> 
-> This fixes an issue on C3000 family of SoCs where four ixgbe devices
-> share a single MDIO bus and ixgbe_mii_bus_init() returns -ENODEV for
-> three of them but we still want to register them.
-> 
-> Fixes: 09ef193fef7e ("net: ethernet: ixgbe: check the return value of ixgbe_mii_bus_init()")
-> Reported-by: Yongxin Liu <yongxin.liu@windriver.com>
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+On Wed, Mar 3, 2021 at 2:18 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> Share the timing / signal interruption logic between different
+> implementations of PROG_TEST_RUN. There is a change in behaviour
+> as well. We check the loop exit condition before checking for
+> pending signals. This resolves an edge case where a signal
+> arrives during the last iteration. Instead of aborting with
+> EINTR we return the successful result to user space.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
 
-Are you sure this is not already fixed upstream by:
+LGTM.
 
-bd7f14df9492 ("ixgbe: fix probing of multi-port devices with one MDIO")
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-?
+>  net/bpf/test_run.c | 141 +++++++++++++++++++++++++--------------------
+>  1 file changed, 78 insertions(+), 63 deletions(-)
+>
+
+[...]
