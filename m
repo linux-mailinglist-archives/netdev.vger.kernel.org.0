@@ -2,81 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FF2832DB86
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 22:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80D0732DB90
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 22:09:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236839AbhCDU7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 15:59:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60612 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236311AbhCDU7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 15:59:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614891457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=994d8GKfpytM/+tWkfNH21k4NVu/b8FCDhuDF+3piaE=;
-        b=QDk0bOAaiWhJefe75OIGfKe+H9ALjzherLXKov3fCVFYdnKa22dl3BqSi4l9rglHI0COl4
-        dGM6qqGsV+E0GeAL1XkFnJAHf1UHC8L1442D9Y0O5Ke1OXmqsajZzW+XaXjMx70bxnHLbs
-        7WNEKYh2LwobuFecnGyVgqWHQ3ub6RY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-558-gM63jOFsM3ibNM9VZb931Q-1; Thu, 04 Mar 2021 15:57:34 -0500
-X-MC-Unique: gM63jOFsM3ibNM9VZb931Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S236074AbhCDVIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 16:08:42 -0500
+Received: from mail-out.m-online.net ([212.18.0.9]:51564 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234921AbhCDVId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 16:08:33 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4Ds3NF6Zhxz1qs10;
+        Thu,  4 Mar 2021 22:07:24 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4Ds3ND3k9kz1qqkJ;
+        Thu,  4 Mar 2021 22:07:24 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id NF9l6MSuqCwo; Thu,  4 Mar 2021 22:07:22 +0100 (CET)
+X-Auth-Info: /bjdHCSRRBO1hy/kHQ3KWZ31WRCi0CyJyL23VTq/CMI=
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C1AF0E5760;
-        Thu,  4 Mar 2021 20:57:33 +0000 (UTC)
-Received: from carbon.redhat.com (unknown [10.10.115.251])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DC5C25C1A1;
-        Thu,  4 Mar 2021 20:57:32 +0000 (UTC)
-From:   Alexander Aring <aahringo@redhat.com>
-To:     pablo@netfilter.org
-Cc:     fw@strlen.de, netdev@vger.kernel.org, linux-man@vger.kernel.org,
-        teigland@redhat.com
-Subject: [PATCH resend] netlink.7: note not reliable if NETLINK_NO_ENOBUFS
-Date:   Thu,  4 Mar 2021 15:57:28 -0500
-Message-Id: <20210304205728.34477-1-aahringo@redhat.com>
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu,  4 Mar 2021 22:07:22 +0100 (CET)
+Subject: Re: [PATCH AUTOSEL 5.10 050/217] rsi: Fix TX EAPOL packet handling
+ against iwlwifi AP
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Angus Ainslie <angus@akkea.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Martin Kepplinger <martink@posteo.de>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20201223021626.2790791-1-sashal@kernel.org>
+ <20201223021626.2790791-50-sashal@kernel.org>
+ <68699f8a-2fcd-3b3d-f809-afa54790e9f9@denx.de> <YEFHULdbXVVxORn9@sashalap>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <d4b4f1d1-8041-3563-708a-850fe95549b8@denx.de>
+Date:   Thu, 4 Mar 2021 22:07:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <YEFHULdbXVVxORn9@sashalap>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a note to the netlink manpage that if NETLINK_NO_ENOBUFS
-is set there is no additional handling to make netlink reliable. It just
-disables the error notification. The used word "avoid" receiving ENOBUFS
-errors can be interpreted that netlink tries to do some additional queue
-handling to avoid that such scenario occurs at all, e.g. like zerocopy
-which tries to avoid memory copy. However disable is not the right word
-here as well that in some cases ENOBUFS can be still received. This
-patch makes clear that there will no additional handling to put netlink
-in a more reliable mode.
+On 3/4/21 9:47 PM, Sasha Levin wrote:
+> On Tue, Mar 02, 2021 at 08:25:49PM +0100, Marek Vasut wrote:
+>> On 12/23/20 3:13 AM, Sasha Levin wrote:
+>>
+>> Hello Sasha,
+>>
+>>> From: Marek Vasut <marex@denx.de>
+>>>
+>>> [ Upstream commit 65277100caa2f2c62b6f3c4648b90d6f0435f3bc ]
+>>>
+>>> In case RSI9116 SDIO WiFi operates in STA mode against Intel 9260 in 
+>>> AP mode,
+>>> the association fails. The former is using wpa_supplicant during 
+>>> association,
+>>> the later is set up using hostapd:
+>>
+>> [...]
+>>
+>> Was this patch possibly missed from 5.10.y ?
+> 
+> I'm not sure what happened there, but I can queue it up.
 
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
----
-resend:
- - forgot linux-man mailinglist in cc, sorry.
+Thank you
 
- man7/netlink.7 | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>> Also, while at it, I think it might make sense to pick the following 
+>> two patches as well, they dramatically reduce interrupt rate of the 
+>> RSI WiFi device, so it stops overloading lower-end devices:
+>> 287431463e786 ("rsi: Move card interrupt handling to RX thread")
+> 
+> And this one too.
 
-diff --git a/man7/netlink.7 b/man7/netlink.7
-index c69bb62bf..2cb0d1a55 100644
---- a/man7/netlink.7
-+++ b/man7/netlink.7
-@@ -478,7 +478,7 @@ errors.
- .\"	Author: Pablo Neira Ayuso <pablo@netfilter.org>
- This flag can be used by unicast and broadcast listeners to avoid receiving
- .B ENOBUFS
--errors.
-+errors. Note it does not turn netlink into any kind of more reliable mode.
- .TP
- .BR NETLINK_LISTEN_ALL_NSID " (since Linux 4.2)"
- .\"	commit 59324cf35aba5336b611074028777838a963d03b
--- 
-2.26.2
+Thanks
 
+>> abd131a19f6b8 ("rsi: Clean up loop in the interrupt handler")
+> 
+> But not this one, it looks like just a cleanup. Why is it needed?
+
+Now I got confused, yes, please skip abd131a19f6b8, thanks for spotting 
+it. (I still have one more patch for the RSI wifi which I need to send 
+out, but that's for later)
