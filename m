@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC5632DBE3
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 22:38:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEAA632DBD8
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 22:34:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239854AbhCDVhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 16:37:10 -0500
-Received: from mga12.intel.com ([192.55.52.136]:5221 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239599AbhCDVgv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 16:36:51 -0500
-IronPort-SDR: xz3yGCpIFO+mPC7qszuG9oSABBkwSM1bHcGWFkxOyRCylW77bFOH4TX4rOJO7brlRxJSERu4VN
- 4So02iJr0PyQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9913"; a="166769419"
-X-IronPort-AV: E=Sophos;i="5.81,223,1610438400"; 
-   d="scan'208";a="166769419"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 13:32:24 -0800
-IronPort-SDR: CrV11krjb7+wKupoGGQUgXvV5V5PfBSMo6moqh78VDQ/CUbltl/dTKFI/8zP24PvolC6lq5Mhk
- O4gTe+wyMadw==
-X-IronPort-AV: E=Sophos;i="5.81,223,1610438400"; 
-   d="scan'208";a="368329495"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.105.71])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 13:32:24 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net, mptcp@lists.01.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 9/9] mptcp: free resources when the port number is mismatched
-Date:   Thu,  4 Mar 2021 13:32:16 -0800
-Message-Id: <20210304213216.205472-10-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210304213216.205472-1-mathew.j.martineau@linux.intel.com>
-References: <20210304213216.205472-1-mathew.j.martineau@linux.intel.com>
+        id S234509AbhCDVd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 16:33:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237314AbhCDVdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 16:33:46 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7C9C061760
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 13:33:06 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id d13so31892342edp.4
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 13:33:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0qROWWTNz36x2w3xcMbLyxyZ1xmwI8HYrEV2dBDfDzY=;
+        b=0CwLBLNiLo1fwP/msdddCOm2cYa8rCYq+oioL39s+Ms2gEcWumQYr6RHjPmlol2qeP
+         2nFi9aY60gAzKw6DdGMiElgkFSUlJImhpqX2AWYL9Gu+0NUz3ausXJ+EH0VeU4/UcIFr
+         t4V3y3rstumz/CmV6XfGE6pD7hYZeirlPf5f3tJaoKB/2q0xA7fFheimMomFlcGVteQK
+         pKXkVWWHVW+/Irc5dzzHPgLeYvW+Dwe6v69wHNXQ5L87aPBEodOgrB6cd8wTaAKNlYN2
+         o4YQq92KLZ3GNRLO3FL3Bebp2WLws+zAWXQ3oQDqAswonyuJgx5FsxMMoY45jSWBsclo
+         7zbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0qROWWTNz36x2w3xcMbLyxyZ1xmwI8HYrEV2dBDfDzY=;
+        b=Ly7QcY1gHR6ms3t+qv0FVFQ5rTSFAomPrZeuwpSWURpCHiBmVRHdDv7p8zYzq3a0xG
+         9DRsf7DcxR2sNk12zXBcBNiQNkoOzTRPHFXbx1AedqnzraUlasH/e0iPJOaX9yRhA/ZU
+         rs+BcOJN8TCoxuwSPiJbtG1KdkOXUZId6G6NDOKg1nOg5Fazf5Md6w+Tmk6o+02TT7TS
+         GyspJmPd0jVX+s8hJ/hqOL58mYgPJaurnDeTXjWEoJ4dGBS/cJvEf0CvdUZ0zr3o3JcJ
+         hM11Cce9vIp4PW1gejtIwEenCNXk6TbMTJRO3nwG/plXrzcnKhcZL2cgpUQ9nLjjBfPa
+         T/Bw==
+X-Gm-Message-State: AOAM5311fmh09DfBw3AI6EOU0ribGR83QQW18dz45a1j/Ld96pjceVBD
+        ftX0H8XJ1+u83pR9Dt+wkqb++NCLkeaLWM8SrKEebcrmW2FH
+X-Google-Smtp-Source: ABdhPJzy4UbgOeVcYyn5pg7jcVZivwdX/+HaoAbCbn+pN9b29g6mYvb4yXwZjhuGJ7rLq53LL8NlW7vQ6Lj3YqLwJKU=
+X-Received: by 2002:a05:6402:3c7:: with SMTP id t7mr6651176edw.196.1614893584307;
+ Thu, 04 Mar 2021 13:33:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <161489339182.63157.2775083878484465675.stgit@olly>
+In-Reply-To: <161489339182.63157.2775083878484465675.stgit@olly>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 4 Mar 2021 16:32:53 -0500
+Message-ID: <CAHC9VhQuNf-PjxdHj2CkfVCZwFfucR_+5Xvr=OahkfXNPKgTmQ@mail.gmail.com>
+Subject: Re: [PATCH] cipso,calipso: resolve a number of problems with the DOI refcounts
+To:     netdev@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>
+Cc:     linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
+On Thu, Mar 4, 2021 at 4:29 PM Paul Moore <paul@paul-moore.com> wrote:
+>
+> The current CIPSO and CALIPSO refcounting scheme for the DOI
+> definitions is a bit flawed in that we:
+>
+> 1. Don't correctly match gets/puts in netlbl_cipsov4_list().
+> 2. Decrement the refcount on each attempt to remove the DOI from the
+>    DOI list, only removing it from the list once the refcount drops
+>    to zero.
+>
+> This patch fixes these problems by adding the missing "puts" to
+> netlbl_cipsov4_list() and introduces a more conventional, i.e.
+> not-buggy, refcounting mechanism to the DOI definitions.  Upon the
+> addition of a DOI to the DOI list, it is initialized with a refcount
+> of one, removing a DOI from the list removes it from the list and
+> drops the refcount by one; "gets" and "puts" behave as expected with
+> respect to refcounts, increasing and decreasing the DOI's refcount by
+> one.
+>
+> Fixes: b1edeb102397 ("netlabel: Replace protocol/NetLabel linking with refrerence counts")
+> Fixes: d7cce01504a0 ("netlabel: Add support for removing a CALIPSO DOI.")
+> Reported-by: syzbot+9ec037722d2603a9f52e@syzkaller.appspotmail.com
+> Signed-off-by: Paul Moore <paul@paul-moore.com>
+> ---
+>  net/ipv4/cipso_ipv4.c            |   11 +----------
+>  net/ipv6/calipso.c               |   14 +++++---------
+>  net/netlabel/netlabel_cipso_v4.c |    3 +++
+>  3 files changed, 9 insertions(+), 19 deletions(-)
 
-When the port number is mismatched with the announced ones, use
-'goto dispose_child' to free the resources instead of using 'goto out'.
+As a FYI, this patch has been tested by looping through a number of
+NetLabel/CALIPSO/CIPSO tests overnight, a reproducer from one of the
+syzbot reports (multiple times), and the selinux-testsuite tests;
+everything looked good at the end of the testing.
 
-This patch also moves the port number checking code in
-subflow_syn_recv_sock before mptcp_finish_join, otherwise subflow_drop_ctx
-will fail in dispose_child.
+Thanks to syzbot and Dmitry for finding and reporting the bug.
 
-Fixes: 5bc56388c74f ("mptcp: add port number check for MP_JOIN")
-Reported-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/subflow.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 41695e26c374..3d47d670e665 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -687,11 +687,6 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 			/* move the msk reference ownership to the subflow */
- 			subflow_req->msk = NULL;
- 			ctx->conn = (struct sock *)owner;
--			if (!mptcp_finish_join(child))
--				goto dispose_child;
--
--			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINACKRX);
--			tcp_rsk(req)->drop_req = true;
- 
- 			if (subflow_use_different_sport(owner, sk)) {
- 				pr_debug("ack inet_sport=%d %d",
-@@ -699,10 +694,16 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 					 ntohs(inet_sk((struct sock *)owner)->inet_sport));
- 				if (!mptcp_pm_sport_in_anno_list(owner, sk)) {
- 					SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_MISMATCHPORTACKRX);
--					goto out;
-+					goto dispose_child;
- 				}
- 				SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINPORTACKRX);
- 			}
-+
-+			if (!mptcp_finish_join(child))
-+				goto dispose_child;
-+
-+			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINACKRX);
-+			tcp_rsk(req)->drop_req = true;
- 		}
- 	}
- 
 -- 
-2.30.1
-
+paul moore
+www.paul-moore.com
