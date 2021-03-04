@@ -2,46 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 639AA32DD68
-	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:53:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7294932DD69
+	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 23:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232591AbhCDWxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 17:53:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38988 "EHLO mail.kernel.org"
+        id S232623AbhCDWyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 17:54:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229505AbhCDWxV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 17:53:21 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6AF0A64FF1;
-        Thu,  4 Mar 2021 22:53:20 +0000 (UTC)
+        id S229505AbhCDWyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 17:54:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1D67064FE9;
+        Thu,  4 Mar 2021 22:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614898401;
-        bh=1JsYNck3o/hQ5eTqJqLqsRGUXDWDncBO/AnJGGfNIq8=;
+        s=k20201202; t=1614898450;
+        bh=8OPfb+m2YP/MAo5C+K44izWc8zCgLju6+B4AERoiGWo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n+kDuJ4tAbrF8hpJ5kBuEJnNN4P7AHdgy2gj1Re36hiVP8gMHW3bGAoEUQnXkXwrt
-         NfltMY8oXutNZY/F2ssUHt3zv2xmdgOSgjX5JrYUFd5xxdzMnA1NhGxJgYRETpNAsG
-         +0mdWSles7k+xjYhgXyyWz+sTE7E09AX/qB1DYN/w7335ecjbexouCQ0MB0Acag+cu
-         4Jqifhb9MyIGCrjVFfVyWOngvLvpNHBM7UUpo3xcwo8C0fFd8TavAmRuwMTRXUUdtc
-         rFG0FxU92yS5J2Alpfy00CEM6nhisCcsO79e/GRz3JxsKbk5LLFqVb7saF5kAvk+TV
-         Spazwb0t1+HRQ==
-Date:   Thu, 4 Mar 2021 16:53:18 -0600
+        b=tIWOH1Cpa2YpsdO/GiYv55SJrS6px30ZxTAUH534kwV7OhKMeEuaKYwEnY0iQAbrW
+         o/LJYq8uwJ7jhnbIbOmfi76UTOHpadowtWRPFeCxdkBGWuY7Ta9/gw5+8dvh4Vb0eD
+         REqXSLsK1qd7jHnkQEZ+CMtralsP7P4zgJ0ZGh5mNkkjULPFAyvHZRmynOq8+O/IAX
+         BNCP9LdZNyWKnkDc/6f2bdAs0xkXqcrPGtNls+OqeoDQud6m3g1JV/+Eds3fKtszS9
+         9BSBsBNdKE6xBYZfSYsU7fDyYd/4VwfwMAf4su7EE8EzqzuL/761GnbNZZO/JjN7A7
+         I7AKZIDwin2rA==
+Date:   Thu, 4 Mar 2021 16:54:08 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 045/141] net: mscc: ocelot: Fix fall-through warnings for
- Clang
-Message-ID: <20210304225318.GC105908@embeddedor>
+Cc:     linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 076/141] decnet: Fix fall-through warnings for Clang
+Message-ID: <20210304225408.GD105908@embeddedor>
 References: <cover.1605896059.git.gustavoars@kernel.org>
- <a36175068f59c804403ec36a303cf1b72473a5a5.1605896059.git.gustavoars@kernel.org>
+ <c0b4dfadf61968028e9265fca33d537817e0771c.1605896059.git.gustavoars@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a36175068f59c804403ec36a303cf1b72473a5a5.1605896059.git.gustavoars@kernel.org>
+In-Reply-To: <c0b4dfadf61968028e9265fca33d537817e0771c.1605896059.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -54,28 +49,29 @@ Thanks
 --
 Gustavo
 
-On Fri, Nov 20, 2020 at 12:31:13PM -0600, Gustavo A. R. Silva wrote:
+On Fri, Nov 20, 2020 at 12:35:01PM -0600, Gustavo A. R. Silva wrote:
 > In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-> by explicitly adding a break statement instead of just letting the code
-> fall through to the next case.
+> by explicitly adding a break statement instead of letting the code fall
+> through to the next case.
 > 
 > Link: https://github.com/KSPP/linux/issues/115
 > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > ---
->  drivers/net/ethernet/mscc/ocelot_vcap.c | 1 +
->  1 file changed, 1 insertion(+)
+>  net/decnet/dn_route.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-> index d8c778ee6f1b..8f3ed81b9a08 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-> @@ -761,6 +761,7 @@ static void is1_entry_set(struct ocelot *ocelot, int ix,
->  			vcap_key_bytes_set(vcap, &data, VCAP_IS1_HK_ETYPE,
->  					   etype.value, etype.mask);
->  		}
+> diff --git a/net/decnet/dn_route.c b/net/decnet/dn_route.c
+> index 4cac31d22a50..2f3e5c49a221 100644
+> --- a/net/decnet/dn_route.c
+> +++ b/net/decnet/dn_route.c
+> @@ -1407,7 +1407,7 @@ static int dn_route_input_slow(struct sk_buff *skb)
+>  			flags |= RTCF_DOREDIRECT;
+>  
+>  		local_src = DN_FIB_RES_PREFSRC(res);
+> -
 > +		break;
->  	}
->  	default:
+>  	case RTN_BLACKHOLE:
+>  	case RTN_UNREACHABLE:
 >  		break;
 > -- 
 > 2.27.0
