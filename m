@@ -2,156 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABABD32C9C4
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1CF32C9C3
 	for <lists+netdev@lfdr.de>; Thu,  4 Mar 2021 02:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242857AbhCDBMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 20:12:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40670 "EHLO mail.kernel.org"
+        id S243283AbhCDBMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Mar 2021 20:12:08 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:46929 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1453017AbhCDAlR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Mar 2021 19:41:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 82FF264E51;
-        Thu,  4 Mar 2021 00:40:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614818436;
-        bh=jwIQue5ED+l/+m/HVgX1Ad5H+tP2gso4JEfV/YeNyAM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=bvHKNi3Do5hE6gQxIrowlDt2hSUVcw1I0Sh7PqozQ8cJ5N7BqK1TtCoifhctA3WjT
-         aywtS8ALqTL5KRSu9GKRpc62HK9TEE254toOAM5F/s35oivD8yjNcXTdYAVp8VdM6h
-         GErx/XWfSISNnCw1SJ9K6IV2TlnAODgk5YSG1PSXPVMqy8cVXZozYOK0rX0PUDO7lj
-         aj/j3cKXGVm7rVllsXmWYy+sPSm+5a6hruS23Vk3jeIRtKSHxXMCReRClq9hcOEYiN
-         GDVRyZcARI38AAqrR+/aeNCTJtXYOLUShhALivd/KbTnvViEenFZpEbX8pdXFYDfjh
-         BQ+LLf+luWwXw==
-Date:   Wed, 3 Mar 2021 16:40:35 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Ahmed S. Darwish" <a.darwish@linutronix.de>
-Cc:     erhard_f@mailbox.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: seqlock lockdep false positives?
-Message-ID: <20210303164035.1b9a1d07@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1453119AbhCDArP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Mar 2021 19:47:15 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DrXHX3dp2z9sSC;
+        Thu,  4 Mar 2021 11:46:32 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1614818794;
+        bh=OH1sKh2gaP7xqDkoSA802zvVl40HMC4Ik/IUhwyjuvA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=MK78aETaToPntuLGqvzzuER5nYs5PpfsVydxpsuYzwQB5rE41h7Atd5UUTMgT8dpm
+         kV2bt9yqbuJ/U8f2sAtwMnh5rJmHIRVGfF7YMD+n1NnaDPvTZF/2BCX2nvGxFysPUp
+         37zgJkXybHUr6H6JsRG4WnOO3bYGhqwxnBt5M8FJ5gndSCZU3OJA5dABo4BlacuIal
+         5VSsCDbuLGnnPQ3VUqnZ4wu1VRPLuk7BbOo9JDW1cUVZUvBbkO5y2tNobJzhIFrLdD
+         mIM/1tO1bwH0Gu4s/+hGBxJVnKrcq+VCKgitcJSkT2p1gYOWuuiKbjKhkSlwsWMCNT
+         7FnQUwJ+IYeng==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Jiri Olsa <jolsa@redhat.com>
+Cc:     Yonghong Song <yhs@fb.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Yauheni Kaliuta <ykaliuta@redhat.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Paul Mackerras <paulus@samba.org>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix test_attach_probe for
+ powerpc uprobes
+In-Reply-To: <20210303064043.GB1913@DESKTOP-TDPLP67.localdomain>
+References: <20210301190416.90694-1-jolsa@kernel.org>
+ <309d8d05-4bbd-56b8-6c05-12a1aa98b843@fb.com> <YD4U1x2SbTlJF2QU@krava>
+ <20210303064043.GB1913@DESKTOP-TDPLP67.localdomain>
+Date:   Thu, 04 Mar 2021 11:46:27 +1100
+Message-ID: <87blbzsq3g.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ahmed!
+"Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> writes:
+> On 2021/03/02 11:35AM, Jiri Olsa wrote:
+>> On Mon, Mar 01, 2021 at 02:58:53PM -0800, Yonghong Song wrote:
+>> > 
+>> > 
+>> > On 3/1/21 11:04 AM, Jiri Olsa wrote:
+>> > > When testing uprobes we the test gets GEP (Global Entry Point)
+>> > > address from kallsyms, but then the function is called locally
+>> > > so the uprobe is not triggered.
+>> > > 
+>> > > Fixing this by adjusting the address to LEP (Local Entry Point)
+>> > > for powerpc arch.
+>> > > 
+>> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+>> > > ---
+>> > >   .../selftests/bpf/prog_tests/attach_probe.c    | 18 +++++++++++++++++-
+>> > >   1 file changed, 17 insertions(+), 1 deletion(-)
+>> > > 
+>> > > diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+>> > > index a0ee87c8e1ea..c3cfb48d3ed0 100644
+>> > > --- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+>> > > +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+>> > > @@ -2,6 +2,22 @@
+>> > >   #include <test_progs.h>
+>> > >   #include "test_attach_probe.skel.h"
+>> > > +#if defined(__powerpc64__)
+>
+> This needs to be specific to ELF v2 ABI, so you'll need to check 
+> _CALL_ELF. See commit d5c2e2c17ae1d6 ("perf probe ppc64le: Prefer symbol 
+> table lookup over DWARF") for an example.
+>
+>> > > +/*
+>> > > + * We get the GEP (Global Entry Point) address from kallsyms,
+>> > > + * but then the function is called locally, so we need to adjust
+>> > > + * the address to get LEP (Local Entry Point).
+>> > 
+>> > Any documentation in the kernel about this behavior? This will
+>> > help to validate the change without trying with powerpc64 qemu...
+>
+> I don't think we have documented this in the kernel anywhere, but this 
+> is specific to the ELF v2 ABI and is described there:
+> - 2.3.2.1.  Function Prologue: 
+>   http://cdn.openpowerfoundation.org/wp-content/uploads/resources/leabi/content/dbdoclet.50655240___RefHeading___Toc377640597.html
+> - 3.4.1.  Symbol Values:
+>    http://cdn.openpowerfoundation.org/wp-content/uploads/resources/leabi/content/dbdoclet.50655241_95185.html
 
-Erhard is reporting a lockdep splat in drivers/net/ethernet/realtek/8139too.c
+There's a comment in ppc_function_entry(), but I don't think we have any
+actual "documentation".
 
-https://bugzilla.kernel.org/show_bug.cgi?id=211575
+static inline unsigned long ppc_function_entry(void *func)
+{
+#ifdef PPC64_ELF_ABI_v2
+	u32 *insn = func;
 
-I can't quite grasp how that happens it looks like it's the Rx
-lock/syncp on one side and the Tx lock on the other side :S
+	/*
+	 * A PPC64 ABIv2 function may have a local and a global entry
+	 * point. We need to use the local entry point when patching
+	 * functions, so identify and step over the global entry point
+	 * sequence.
+	 *
+	 * The global entry point sequence is always of the form:
+	 *
+	 * addis r2,r12,XXXX
+	 * addi  r2,r2,XXXX
+	 *
+	 * A linker optimisation may convert the addis to lis:
+	 *
+	 * lis   r2,XXXX
+	 * addi  r2,r2,XXXX
+	 */
+	if ((((*insn & OP_RT_RA_MASK) == ADDIS_R2_R12) ||
+	     ((*insn & OP_RT_RA_MASK) == LIS_R2)) &&
+	    ((*(insn+1) & OP_RT_RA_MASK) == ADDI_R2_R2))
+		return (unsigned long)(insn + 2);
+	else
+		return (unsigned long)func;
 
-================================
-WARNING: inconsistent lock state
-5.12.0-rc1-Pentium4 #2 Not tainted
---------------------------------
-inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
-swapper/0/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
-c113c804 (&syncp->seq#2){?.-.}-{0:0}, at: rtl8139_poll+0x251/0x350
-{IN-HARDIRQ-W} state was registered at:
-  lock_acquire+0x239/0x2c5
-  do_write_seqcount_begin_nested.constprop.0+0x1a/0x1f
-  rtl8139_interrupt+0x346/0x3cb
-  __handle_irq_event_percpu+0xe5/0x20c
-  handle_irq_event_percpu+0x17/0x3d
-  handle_irq_event+0x29/0x42
-  handle_fasteoi_irq+0x67/0xd7
-  __handle_irq+0x7d/0x9c
-  __common_interrupt+0x68/0xc3
-  common_interrupt+0x22/0x35
-  asm_common_interrupt+0x106/0x180
-  _raw_spin_unlock_irqrestore+0x41/0x45
-  __mod_timer+0x1cd/0x1d8
-  mod_timer+0xa/0xc
-  mld_ifc_start_timer+0x24/0x37
-  mld_ifc_timer_expire+0x1b0/0x1c0
-  call_timer_fn+0xfe/0x201
-  __run_timers+0x134/0x159
-  run_timer_softirq+0x14/0x27
-  __do_softirq+0x15f/0x307
-  call_on_stack+0x40/0x46
-  do_softirq_own_stack+0x1c/0x1e
-  __irq_exit_rcu+0x4f/0x85
-  irq_exit_rcu+0x8/0x11
-  sysvec_apic_timer_interrupt+0x20/0x2e
-  handle_exception_return+0x0/0xaf
-  default_idle+0xa/0xc
-  arch_cpu_idle+0xd/0xf
-  default_idle_call+0x48/0x74
-  do_idle+0xb7/0x1c3
-  cpu_startup_entry+0x19/0x1b
-  rest_init+0x11d/0x120
-  arch_call_rest_init+0x8/0xb
-  start_kernel+0x417/0x425
-  i386_start_kernel+0x43/0x45
-  startup_32_smp+0x164/0x168
-irq event stamp: 26328
-hardirqs last  enabled at (26328): [<c4362e64>] __slab_alloc.constprop.0+0x3e/0x59
-hardirqs last disabled at (26327): [<c4362e47>] __slab_alloc.constprop.0+0x21/0x59
-softirqs last  enabled at (26314): [<c4789f1f>] __do_softirq+0x2d7/0x307
-softirqs last disabled at (26321): [<c420fecb>] call_on_stack+0x40/0x46
 
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&syncp->seq#2);
-  <Interrupt>
-    lock(&syncp->seq#2);
-
- *** DEADLOCK ***
-
-1 lock held by swapper/0/0:
- #0: c113c8a4 (&tp->rx_lock){+.-.}-{2:2}, at: rtl8139_poll+0x31/0x350
-
-stack backtrace:
-CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.12.0-rc1-Pentium4 #2
-Hardware name:  /FS51, BIOS 6.00 PG 12/02/2003
-Call Trace:
- <SOFTIRQ>
- dump_stack+0x78/0xa5
- print_usage_bug+0x17d/0x188
- mark_lock.part.0+0xfd/0x27a
- ? hlock_class+0x18/0x58
- ? mark_lock.part.0+0x33/0x27a
- ? ___slab_alloc.constprop.0+0x2b7/0x2d1
- __lock_acquire+0x458/0x1488
- ? rcu_read_lock_sched_held+0x23/0x4a
- ? trace_kmalloc+0x8c/0xb9
- ? __kmalloc_track_caller+0x130/0x143
- lock_acquire+0x239/0x2c5
- ? rtl8139_poll+0x251/0x350
- ? __alloc_skb+0xb7/0x102
- do_write_seqcount_begin_nested.constprop.0+0x1a/0x1f
- ? rtl8139_poll+0x251/0x350
- rtl8139_poll+0x251/0x350
- __napi_poll+0x24/0xf1
- net_rx_action+0xbb/0x177
- __do_softirq+0x15f/0x307
- ? __entry_text_end+0x5/0x5
- call_on_stack+0x40/0x46
- </SOFTIRQ>
- ? __irq_exit_rcu+0x4f/0x85
- ? irq_exit_rcu+0x8/0x11
- ? common_interrupt+0x27/0x35
- ? asm_common_interrupt+0x106/0x180
- ? ldsem_down_write+0x1f/0x1f
- ? newidle_balance+0x1d0/0x3ab
- ? default_idle+0xa/0xc
- ? __pci_setup_bridge+0x4e/0x64
- ? default_idle+0xa/0xc
- ? arch_cpu_idle+0xd/0xf
- ? default_idle_call+0x48/0x74
- ? do_idle+0xb7/0x1c3
- ? cpu_startup_entry+0x19/0x1b
- ? rest_init+0x11d/0x120
- ? arch_call_rest_init+0x8/0xb
- ? start_kernel+0x417/0x425
- ? i386_start_kernel+0x43/0x45
- ? startup_32_smp+0x164/0x168
+cheers
