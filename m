@@ -2,264 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADDFD32EA42
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 13:39:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C6F32E9BB
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 13:36:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231174AbhCEMhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 07:37:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50064 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231950AbhCEMgy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 07:36:54 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C77B36501B;
-        Fri,  5 Mar 2021 12:36:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1614947814;
-        bh=lbTReERXvxq2Oru5uruefCkjvtBnEBp2vea4bu9bgAs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wWp9An0S9tKgiQ8vwl4Dc1H6vr7sFaqrcZz03hbv078+vJBk5gkeQh/mKexxKdNcY
-         mzEPT8axr1wBLFNzaE6MTwwIWQKw4qSO83ELfZsrqM8UGgLr3v1LPq10BG2pjq6IzF
-         aQKkLo8qQF2wgfIQdvPLKzO/Bq9wAusmCSAen5gA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Martin Kepplinger <martink@posteo.de>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 20/52] rsi: Move card interrupt handling to RX thread
-Date:   Fri,  5 Mar 2021 13:21:51 +0100
-Message-Id: <20210305120854.668240751@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210305120853.659441428@linuxfoundation.org>
-References: <20210305120853.659441428@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S231670AbhCEMee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 07:34:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231734AbhCEMeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 07:34:01 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D14C061574;
+        Fri,  5 Mar 2021 04:34:00 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id z7so1346608plk.7;
+        Fri, 05 Mar 2021 04:34:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cDHYQDViqzbpPf+x8O2nWKo0ig3l2N7a3nIJaBpZ9Y4=;
+        b=TPDsyCvA4Y5/27S4/O2jroS7o6q5W+ZE6+YngV5+9PwpMJF18OBkcRaZGmVFx6QGau
+         f6EGIpF72OaZ8/oTieSW/cLyluS8zYp4S1WsougUXH9gAABLsVVpAh3ffG33PbjvWkAl
+         4ljrDCEkawsGECTlzpLzgUTzI0z2WBMEpnuxyGNOjDURf6//1tBQfyp/GCw7S1wRT2+A
+         UHNAwFBzNRiHVYdWil/CSo5KzlKyTQSQuAAb+0EfnDvi2HU1J3vrwlbejXK69/l1RHuX
+         8EuTBK/Aj8szFvBRhD6cxZKHZvJLOc9gWYvSO8xxthOs+zipvtdXv01w9uwMGlPfzfHy
+         2Jxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cDHYQDViqzbpPf+x8O2nWKo0ig3l2N7a3nIJaBpZ9Y4=;
+        b=h63ttDeooce9txBtzyTPX1mmvJsYXOH50z27WnoraSkqMASOqHW2gh/iZE9TkwFeGg
+         qO4VsVA2adI8E8xus1LmH7RSB6k/tyYVRj0u2LAqw+HoAgCvp49Ert6JNRmZBFW0A1FT
+         tFWoj88KpvXay6vB/03tdYWAkD7co3iIO6IILS0AAbvZ2UG1ykuBpGbMozuXVbHkhPqz
+         cEQ0JkQ36LePFrOjEsDDcPy+TP2gU4PW76+AiHaEJEWA7sROBy9cf9ngMczXGk3q8px0
+         QDbhcNAO4m9aP55syFM49s2OsDTZko5mrfAHMy/NcJc6fmB4Gu7KB1TpIyL60a+GQlk2
+         GWKw==
+X-Gm-Message-State: AOAM532mKecQTvbAL7sZIsw08gGBxwW7f0EpREeH/I/mEEk5lXqP90m8
+        IGsqgBqDfGm/NeLbjoQC5eU=
+X-Google-Smtp-Source: ABdhPJxPpx1JFMRYtztDeHi3aTdktu921hWamTM9h+cXWZYblG2XlGj7mPALotaW8ZD2LjUMsMz56g==
+X-Received: by 2002:a17:90a:9f48:: with SMTP id q8mr10215203pjv.53.1614947640441;
+        Fri, 05 Mar 2021 04:34:00 -0800 (PST)
+Received: from localhost.localdomain ([103.112.79.202])
+        by smtp.gmail.com with ESMTPSA id r2sm2388898pgv.50.2021.03.05.04.33.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 05 Mar 2021 04:33:59 -0800 (PST)
+From:   Xuesen Huang <hxseverything@gmail.com>
+To:     daniel@iogearbox.net
+Cc:     davem@davemloft.net, bpf@vger.kernel.org,
+        willemdebruijn.kernel@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Xuesen Huang <huangxuesen@kuaishou.com>,
+        Li Wang <wangli09@kuaishou.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH bpf-next] selftests_bpf: extend test_tc_tunnel test with vxlan
+Date:   Fri,  5 Mar 2021 20:33:47 +0800
+Message-Id: <20210305123347.15311-1-hxseverything@gmail.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Xuesen Huang <huangxuesen@kuaishou.com>
 
-[ Upstream commit 287431463e786766e05e4dc26d0a11d5f8ac8815 ]
+Add BPF_F_ADJ_ROOM_ENCAP_L2_ETH flag to the existing tests which
+encapsulates the ethernet as the inner l2 header.
 
-The interrupt handling of the RS911x is particularly heavy. For each RX
-packet, the card does three SDIO transactions, one to read interrupt
-status register, one to RX buffer length, one to read the RX packet(s).
-This translates to ~330 uS per one cycle of interrupt handler. In case
-there is more incoming traffic, this will be more.
+Update a vxlan encapsulation test case.
 
-The drivers/mmc/core/sdio_irq.c has the following comment, quote "Just
-like traditional hard IRQ handlers, we expect SDIO IRQ handlers to be
-quick and to the point, so that the holding of the host lock does not
-cover too much work that doesn't require that lock to be held."
-
-The RS911x interrupt handler does not fit that. This patch therefore
-changes it such that the entire IRQ handler is moved to the RX thread
-instead, and the interrupt handler only wakes the RX thread.
-
-This is OK, because the interrupt handler only does things which can
-also be done in the RX thread, that is, it checks for firmware loading
-error(s), it checks buffer status, it checks whether a packet arrived
-and if so, reads out the packet and passes it to network stack.
-
-Moreover, this change permits removal of a code which allocated an
-skbuff only to get 4-byte-aligned buffer, read up to 8kiB of data
-into the skbuff, queue this skbuff into local private queue, then in
-RX thread, this buffer is dequeued, the data in the skbuff as passed
-to the RSI driver core, and the skbuff is deallocated. All this is
-replaced by directly calling the RSI driver core with local buffer.
-
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Tested-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20201103180941.443528-1-marex@denx.de
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
+Signed-off-by: Li Wang <wangli09@kuaishou.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
- drivers/net/wireless/rsi/rsi_91x_sdio.c     |  6 +--
- drivers/net/wireless/rsi/rsi_91x_sdio_ops.c | 52 ++++++---------------
- drivers/net/wireless/rsi/rsi_sdio.h         |  8 +---
- 3 files changed, 15 insertions(+), 51 deletions(-)
+ tools/testing/selftests/bpf/progs/test_tc_tunnel.c | 113 ++++++++++++++++++---
+ tools/testing/selftests/bpf/test_tc_tunnel.sh      |  15 ++-
+ 2 files changed, 111 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-index 81cc1044532d..f76a360cf1e3 100644
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -153,9 +153,7 @@ static void rsi_handle_interrupt(struct sdio_func *function)
- 	if (adapter->priv->fsm_state == FSM_FW_NOT_LOADED)
- 		return;
+diff --git a/tools/testing/selftests/bpf/progs/test_tc_tunnel.c b/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
+index 37bce7a..84cd632 100644
+--- a/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
++++ b/tools/testing/selftests/bpf/progs/test_tc_tunnel.c
+@@ -24,14 +24,29 @@
  
--	dev->sdio_irq_task = current;
--	rsi_interrupt_handler(adapter);
--	dev->sdio_irq_task = NULL;
-+	rsi_set_event(&dev->rx_thread.event);
- }
+ static const int cfg_udp_src = 20000;
  
- /**
-@@ -973,8 +971,6 @@ static int rsi_probe(struct sdio_func *pfunction,
- 		rsi_dbg(ERR_ZONE, "%s: Unable to init rx thrd\n", __func__);
- 		goto fail_kill_thread;
- 	}
--	skb_queue_head_init(&sdev->rx_q.head);
--	sdev->rx_q.num_rx_pkts = 0;
- 
- 	sdio_claim_host(pfunction);
- 	if (sdio_claim_irq(pfunction, rsi_handle_interrupt)) {
-diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c b/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c
-index 612c211e21a1..d66ae2f57314 100644
---- a/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio_ops.c
-@@ -60,39 +60,20 @@ int rsi_sdio_master_access_msword(struct rsi_hw *adapter, u16 ms_word)
- 	return status;
- }
- 
-+static void rsi_rx_handler(struct rsi_hw *adapter);
++#define	L2_PAD_SZ	(sizeof(struct vxlanhdr) + ETH_HLEN)
 +
- void rsi_sdio_rx_thread(struct rsi_common *common)
- {
- 	struct rsi_hw *adapter = common->priv;
- 	struct rsi_91x_sdiodev *sdev = adapter->rsi_dev;
--	struct sk_buff *skb;
--	int status;
+ #define	UDP_PORT		5555
+ #define	MPLS_OVER_UDP_PORT	6635
+ #define	ETH_OVER_UDP_PORT	7777
++#define	VXLAN_UDP_PORT		8472
++
++#define	EXTPROTO_VXLAN	0x1
++
++#define	VXLAN_N_VID     (1u << 24)
++#define	VXLAN_VNI_MASK	bpf_htonl((VXLAN_N_VID - 1) << 8)
++#define	VXLAN_FLAGS     0x8
++#define	VXLAN_VNI       1
  
- 	do {
- 		rsi_wait_event(&sdev->rx_thread.event, EVENT_WAIT_FOREVER);
- 		rsi_reset_event(&sdev->rx_thread.event);
-+		rsi_rx_handler(adapter);
-+	} while (!atomic_read(&sdev->rx_thread.thread_done));
+ /* MPLS label 1000 with S bit (last label) set and ttl of 255. */
+ static const __u32 mpls_label = __bpf_constant_htonl(1000 << 12 |
+ 						     MPLS_LS_S_MASK | 0xff);
  
--		while (true) {
--			if (atomic_read(&sdev->rx_thread.thread_done))
--				goto out;
--
--			skb = skb_dequeue(&sdev->rx_q.head);
--			if (!skb)
--				break;
--			if (sdev->rx_q.num_rx_pkts > 0)
--				sdev->rx_q.num_rx_pkts--;
--			status = rsi_read_pkt(common, skb->data, skb->len);
--			if (status) {
--				rsi_dbg(ERR_ZONE, "Failed to read the packet\n");
--				dev_kfree_skb(skb);
--				break;
--			}
--			dev_kfree_skb(skb);
--		}
--	} while (1);
--
--out:
- 	rsi_dbg(INFO_ZONE, "%s: Terminated SDIO RX thread\n", __func__);
--	skb_queue_purge(&sdev->rx_q.head);
- 	atomic_inc(&sdev->rx_thread.thread_done);
- 	complete_and_exit(&sdev->rx_thread.completion, 0);
++struct vxlanhdr {
++	__be32 vx_flags;
++	__be32 vx_vni;
++} __attribute__((packed));
++
+ struct gre_hdr {
+ 	__be16 flags;
+ 	__be16 protocol;
+@@ -45,13 +60,13 @@ struct gre_hdr {
+ struct v4hdr {
+ 	struct iphdr ip;
+ 	union l4hdr l4hdr;
+-	__u8 pad[16];			/* enough space for L2 header */
++	__u8 pad[L2_PAD_SZ];		/* space for L2 header / vxlan header ... */
+ } __attribute__((packed));
+ 
+ struct v6hdr {
+ 	struct ipv6hdr ip;
+ 	union l4hdr l4hdr;
+-	__u8 pad[16];			/* enough space for L2 header */
++	__u8 pad[L2_PAD_SZ];		/* space for L2 header / vxlan header ... */
+ } __attribute__((packed));
+ 
+ static __always_inline void set_ipv4_csum(struct iphdr *iph)
+@@ -69,14 +84,15 @@ static __always_inline void set_ipv4_csum(struct iphdr *iph)
+ 	iph->check = ~((csum & 0xffff) + (csum >> 16));
  }
-@@ -113,10 +94,6 @@ static int rsi_process_pkt(struct rsi_common *common)
- 	u32 rcv_pkt_len = 0;
- 	int status = 0;
- 	u8 value = 0;
--	struct sk_buff *skb;
--
--	if (dev->rx_q.num_rx_pkts >= RSI_MAX_RX_PKTS)
--		return 0;
  
- 	num_blks = ((adapter->interrupt_status & 1) |
- 			((adapter->interrupt_status >> RECV_NUM_BLOCKS) << 1));
-@@ -144,22 +121,19 @@ static int rsi_process_pkt(struct rsi_common *common)
+-static __always_inline int encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
+-				      __u16 l2_proto)
++static __always_inline int __encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
++					__u16 l2_proto, __u16 ext_proto)
+ {
+ 	__u16 udp_dst = UDP_PORT;
+ 	struct iphdr iph_inner;
+ 	struct v4hdr h_outer;
+ 	struct tcphdr tcph;
+ 	int olen, l2_len;
++	__u8 *l2_hdr = NULL;
+ 	int tcp_off;
+ 	__u64 flags;
  
- 	rcv_pkt_len = (num_blks * 256);
- 
--	skb = dev_alloc_skb(rcv_pkt_len);
--	if (!skb)
--		return -ENOMEM;
--
--	status = rsi_sdio_host_intf_read_pkt(adapter, skb->data, rcv_pkt_len);
-+	status = rsi_sdio_host_intf_read_pkt(adapter, dev->pktbuffer,
-+					     rcv_pkt_len);
- 	if (status) {
- 		rsi_dbg(ERR_ZONE, "%s: Failed to read packet from card\n",
- 			__func__);
--		dev_kfree_skb(skb);
- 		return status;
+@@ -141,7 +157,11 @@ static __always_inline int encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
+ 		break;
+ 	case ETH_P_TEB:
+ 		l2_len = ETH_HLEN;
+-		udp_dst = ETH_OVER_UDP_PORT;
++		if (ext_proto & EXTPROTO_VXLAN) {
++			udp_dst = VXLAN_UDP_PORT;
++			l2_len += sizeof(struct vxlanhdr);
++		} else
++			udp_dst = ETH_OVER_UDP_PORT;
+ 		break;
  	}
--	skb_put(skb, rcv_pkt_len);
--	skb_queue_tail(&dev->rx_q.head, skb);
--	dev->rx_q.num_rx_pkts++;
+ 	flags |= BPF_F_ADJ_ROOM_ENCAP_L2(l2_len);
+@@ -171,14 +191,26 @@ static __always_inline int encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
+ 	}
  
--	rsi_set_event(&dev->rx_thread.event);
-+	status = rsi_read_pkt(common, dev->pktbuffer, rcv_pkt_len);
-+	if (status) {
-+		rsi_dbg(ERR_ZONE, "Failed to read the packet\n");
-+		return status;
-+	}
- 
- 	return 0;
+ 	/* add L2 encap (if specified) */
++	l2_hdr = (__u8 *)&h_outer + olen;
+ 	switch (l2_proto) {
+ 	case ETH_P_MPLS_UC:
+-		*((__u32 *)((__u8 *)&h_outer + olen)) = mpls_label;
++		*(__u32 *)l2_hdr = mpls_label;
+ 		break;
+ 	case ETH_P_TEB:
+-		if (bpf_skb_load_bytes(skb, 0, (__u8 *)&h_outer + olen,
+-				       ETH_HLEN))
++		flags |= BPF_F_ADJ_ROOM_ENCAP_L2_ETH;
++
++		if (ext_proto & EXTPROTO_VXLAN) {
++			struct vxlanhdr *vxlan_hdr = (struct vxlanhdr *)l2_hdr;
++
++			vxlan_hdr->vx_flags = VXLAN_FLAGS;
++			vxlan_hdr->vx_vni = bpf_htonl((VXLAN_VNI & VXLAN_VNI_MASK) << 8);
++
++			l2_hdr += sizeof(struct vxlanhdr);
++		}
++
++		if (bpf_skb_load_bytes(skb, 0, l2_hdr, ETH_HLEN))
+ 			return TC_ACT_SHOT;
++
+ 		break;
+ 	}
+ 	olen += l2_len;
+@@ -214,14 +246,21 @@ static __always_inline int encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
+ 	return TC_ACT_OK;
  }
-@@ -251,12 +225,12 @@ int rsi_init_sdio_slave_regs(struct rsi_hw *adapter)
- }
  
- /**
-- * rsi_interrupt_handler() - This function read and process SDIO interrupts.
-+ * rsi_rx_handler() - Read and process SDIO interrupts.
-  * @adapter: Pointer to the adapter structure.
-  *
-  * Return: None.
-  */
--void rsi_interrupt_handler(struct rsi_hw *adapter)
-+static void rsi_rx_handler(struct rsi_hw *adapter)
+-static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
++static __always_inline int encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
+ 				      __u16 l2_proto)
  {
- 	struct rsi_common *common = adapter->priv;
- 	struct rsi_91x_sdiodev *dev =
-diff --git a/drivers/net/wireless/rsi/rsi_sdio.h b/drivers/net/wireless/rsi/rsi_sdio.h
-index 66dcd2ec9051..fd11f16fc74f 100644
---- a/drivers/net/wireless/rsi/rsi_sdio.h
-+++ b/drivers/net/wireless/rsi/rsi_sdio.h
-@@ -110,11 +110,6 @@ struct receive_info {
- 	u32 buf_available_counter;
- };
++	return __encap_ipv4(skb, encap_proto, l2_proto, 0);
++}
++
++static __always_inline int __encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
++					__u16 l2_proto, __u16 ext_proto)
++{
+ 	__u16 udp_dst = UDP_PORT;
+ 	struct ipv6hdr iph_inner;
+ 	struct v6hdr h_outer;
+ 	struct tcphdr tcph;
+ 	int olen, l2_len;
++	__u8 *l2_hdr = NULL;
+ 	__u16 tot_len;
+ 	__u64 flags;
  
--struct rsi_sdio_rx_q {
--	u8 num_rx_pkts;
--	struct sk_buff_head head;
--};
--
- struct rsi_91x_sdiodev {
- 	struct sdio_func *pfunction;
- 	struct task_struct *sdio_irq_task;
-@@ -127,11 +122,10 @@ struct rsi_91x_sdiodev {
- 	u16 tx_blk_size;
- 	u8 write_fail;
- 	bool buff_status_updated;
--	struct rsi_sdio_rx_q rx_q;
- 	struct rsi_thread rx_thread;
-+	u8 pktbuffer[8192] __aligned(4);
- };
+@@ -249,7 +288,11 @@ static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
+ 		break;
+ 	case ETH_P_TEB:
+ 		l2_len = ETH_HLEN;
+-		udp_dst = ETH_OVER_UDP_PORT;
++		if (ext_proto & EXTPROTO_VXLAN) {
++			udp_dst = VXLAN_UDP_PORT;
++			l2_len += sizeof(struct vxlanhdr);
++		} else
++			udp_dst = ETH_OVER_UDP_PORT;
+ 		break;
+ 	}
+ 	flags |= BPF_F_ADJ_ROOM_ENCAP_L2(l2_len);
+@@ -267,7 +310,7 @@ static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
+ 		h_outer.l4hdr.udp.source = __bpf_constant_htons(cfg_udp_src);
+ 		h_outer.l4hdr.udp.dest = bpf_htons(udp_dst);
+ 		tot_len = bpf_ntohs(iph_inner.payload_len) + sizeof(iph_inner) +
+-			  sizeof(h_outer.l4hdr.udp);
++			  sizeof(h_outer.l4hdr.udp) + l2_len;
+ 		h_outer.l4hdr.udp.check = 0;
+ 		h_outer.l4hdr.udp.len = bpf_htons(tot_len);
+ 		break;
+@@ -278,13 +321,24 @@ static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
+ 	}
  
--void rsi_interrupt_handler(struct rsi_hw *adapter);
- int rsi_init_sdio_slave_regs(struct rsi_hw *adapter);
- int rsi_sdio_read_register(struct rsi_hw *adapter, u32 addr, u8 *data);
- int rsi_sdio_host_intf_read_pkt(struct rsi_hw *adapter, u8 *pkt, u32 length);
+ 	/* add L2 encap (if specified) */
++	l2_hdr = (__u8 *)&h_outer + olen;
+ 	switch (l2_proto) {
+ 	case ETH_P_MPLS_UC:
+-		*((__u32 *)((__u8 *)&h_outer + olen)) = mpls_label;
++		*(__u32 *)l2_hdr = mpls_label;
+ 		break;
+ 	case ETH_P_TEB:
+-		if (bpf_skb_load_bytes(skb, 0, (__u8 *)&h_outer + olen,
+-				       ETH_HLEN))
++		flags |= BPF_F_ADJ_ROOM_ENCAP_L2_ETH;
++
++		if (ext_proto & EXTPROTO_VXLAN) {
++			struct vxlanhdr *vxlan_hdr = (struct vxlanhdr *)l2_hdr;
++
++			vxlan_hdr->vx_flags = VXLAN_FLAGS;
++			vxlan_hdr->vx_vni = bpf_htonl((VXLAN_VNI & VXLAN_VNI_MASK) << 8);
++
++			l2_hdr += sizeof(struct vxlanhdr);
++		}
++
++		if (bpf_skb_load_bytes(skb, 0, l2_hdr, ETH_HLEN))
+ 			return TC_ACT_SHOT;
+ 		break;
+ 	}
+@@ -309,6 +363,12 @@ static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
+ 	return TC_ACT_OK;
+ }
+ 
++static __always_inline int encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
++				      __u16 l2_proto)
++{
++	return __encap_ipv6(skb, encap_proto, l2_proto, 0);
++}
++
+ SEC("encap_ipip_none")
+ int __encap_ipip_none(struct __sk_buff *skb)
+ {
+@@ -372,6 +432,17 @@ int __encap_udp_eth(struct __sk_buff *skb)
+ 		return TC_ACT_OK;
+ }
+ 
++SEC("encap_vxlan_eth")
++int __encap_vxlan_eth(struct __sk_buff *skb)
++{
++	if (skb->protocol == __bpf_constant_htons(ETH_P_IP))
++		return __encap_ipv4(skb, IPPROTO_UDP,
++				    ETH_P_TEB,
++				    EXTPROTO_VXLAN);
++	else
++		return TC_ACT_OK;
++}
++
+ SEC("encap_sit_none")
+ int __encap_sit_none(struct __sk_buff *skb)
+ {
+@@ -444,6 +515,17 @@ int __encap_ip6udp_eth(struct __sk_buff *skb)
+ 		return TC_ACT_OK;
+ }
+ 
++SEC("encap_ip6vxlan_eth")
++int __encap_ip6vxlan_eth(struct __sk_buff *skb)
++{
++	if (skb->protocol == __bpf_constant_htons(ETH_P_IPV6))
++		return __encap_ipv6(skb, IPPROTO_UDP,
++				    ETH_P_TEB,
++				    EXTPROTO_VXLAN);
++	else
++		return TC_ACT_OK;
++}
++
+ static int decap_internal(struct __sk_buff *skb, int off, int len, char proto)
+ {
+ 	char buf[sizeof(struct v6hdr)];
+@@ -479,6 +561,9 @@ static int decap_internal(struct __sk_buff *skb, int off, int len, char proto)
+ 		case ETH_OVER_UDP_PORT:
+ 			olen += ETH_HLEN;
+ 			break;
++		case VXLAN_UDP_PORT:
++			olen += ETH_HLEN + sizeof(struct vxlanhdr);
++			break;
+ 		}
+ 		break;
+ 	default:
+diff --git a/tools/testing/selftests/bpf/test_tc_tunnel.sh b/tools/testing/selftests/bpf/test_tc_tunnel.sh
+index 7c76b84..c9dde9b 100755
+--- a/tools/testing/selftests/bpf/test_tc_tunnel.sh
++++ b/tools/testing/selftests/bpf/test_tc_tunnel.sh
+@@ -44,8 +44,8 @@ setup() {
+ 	# clamp route to reserve room for tunnel headers
+ 	ip -netns "${ns1}" -4 route flush table main
+ 	ip -netns "${ns1}" -6 route flush table main
+-	ip -netns "${ns1}" -4 route add "${ns2_v4}" mtu 1458 dev veth1
+-	ip -netns "${ns1}" -6 route add "${ns2_v6}" mtu 1438 dev veth1
++	ip -netns "${ns1}" -4 route add "${ns2_v4}" mtu 1450 dev veth1
++	ip -netns "${ns1}" -6 route add "${ns2_v6}" mtu 1430 dev veth1
+ 
+ 	sleep 1
+ 
+@@ -105,6 +105,12 @@ if [[ "$#" -eq "0" ]]; then
+ 	echo "sit"
+ 	$0 ipv6 sit none 100
+ 
++	echo "ip4 vxlan"
++	$0 ipv4 vxlan eth 2000
++
++	echo "ip6 vxlan"
++	$0 ipv6 ip6vxlan eth 2000
++
+ 	for mac in none mpls eth ; do
+ 		echo "ip gre $mac"
+ 		$0 ipv4 gre $mac 100
+@@ -214,6 +220,9 @@ if [[ "$tuntype" =~ "udp" ]]; then
+ 	targs="encap fou encap-sport auto encap-dport $dport"
+ elif [[ "$tuntype" =~ "gre" && "$mac" == "eth" ]]; then
+ 	ttype=$gretaptype
++elif [[ "$tuntype" =~ "vxlan" && "$mac" == "eth" ]]; then
++	ttype="vxlan"
++	targs="id 1 dstport 8472 udp6zerocsumrx"
+ else
+ 	ttype=$tuntype
+ 	targs=""
+@@ -242,7 +251,7 @@ if [[ "$tuntype" == "ip6udp" && "$mac" == "mpls" ]]; then
+ elif [[ "$tuntype" =~ "udp" && "$mac" == "eth" ]]; then
+ 	# No support for TEB fou tunnel; expect failure.
+ 	expect_tun_fail=1
+-elif [[ "$tuntype" =~ "gre" && "$mac" == "eth" ]]; then
++elif [[ "$tuntype" =~ (gre|vxlan) && "$mac" == "eth" ]]; then
+ 	# Share ethernet address between tunnel/veth2 so L2 decap works.
+ 	ethaddr=$(ip netns exec "${ns2}" ip link show veth2 | \
+ 		  awk '/ether/ { print $2 }')
 -- 
-2.30.1
-
-
+1.8.3.1
 
