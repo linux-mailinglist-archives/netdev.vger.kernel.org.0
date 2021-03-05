@@ -2,68 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D06F932F66C
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 00:10:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D16932F673
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 00:11:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230175AbhCEXKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 18:10:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50518 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230118AbhCEXKL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 18:10:11 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 15291650A7;
-        Fri,  5 Mar 2021 23:10:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614985811;
-        bh=yFKMPzG5kWJn0aHjATAiZbWKkeVB9hf5JPJ2fHOGdt8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=acJics5CMChP9r0lJ154TIvfjBOqf9Uo7nxh2/KAyCE02RBeYzBooEOMSu7FRtGkO
-         2A3vU4BufYp17p4R1nzcSviKWn9soCcGvjLvQ1O6T71aSlV5oPfQrxtBZv1VHuSCW2
-         /VSO3ld0RgHLE1zo/xIPZ1bpirb3r5QbnfIPvSljGphvVuZYTVM6L9cmcZ0GPr1rT/
-         uImQErP/56++5UR/jxws45Oeq6jJfEETakBeaOutkFDVTtkcK6YpHgl5W+QiGdNzJv
-         GZTMKaTAciSdWO3iDtFrvTiIyM3sz6GwTU5NeTxeQCrg9An6Vw14D1l6cfKtTIrRAH
-         jLrsVh2tc1hbg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0FF3D609D4;
-        Fri,  5 Mar 2021 23:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230191AbhCEXK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 18:10:56 -0500
+Received: from www62.your-server.de ([213.133.104.62]:45746 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230208AbhCEXKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 18:10:33 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lIJaW-000Ce3-8S; Sat, 06 Mar 2021 00:10:28 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lIJaW-000Qex-1j; Sat, 06 Mar 2021 00:10:28 +0100
+Subject: Re: [PATCH bpf-next] selftests_bpf: extend test_tc_tunnel test with
+ vxlan
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Xuesen Huang <hxseverything@gmail.com>,
+        David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Xuesen Huang <huangxuesen@kuaishou.com>,
+        Li Wang <wangli09@kuaishou.com>
+References: <20210305123347.15311-1-hxseverything@gmail.com>
+ <CA+FuTSc_RDHb8dmMzfwatt89pXsX2AA1--X98pEGkmmfpVs-Vg@mail.gmail.com>
+ <dfde1c9f-cd2d-6e7d-ea3e-58b486a1388b@iogearbox.net>
+ <CA+FuTSfk2HOupSwUfOjsNQBA4Z8HKUgfkQmyTViY5icbt4ujHg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <4730cd63-ba36-ae21-9a0d-5df108e7494a@iogearbox.net>
+Date:   Sat, 6 Mar 2021 00:10:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] lan743x: trim all 4 bytes of the FCS; not just 2
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161498581106.14945.12506796771360832279.git-patchwork-notify@kernel.org>
-Date:   Fri, 05 Mar 2021 23:10:11 +0000
-References: <20210305222445.19053-1-george.mccollister@gmail.com>
-In-Reply-To: <20210305222445.19053-1-george.mccollister@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, thesven73@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <CA+FuTSfk2HOupSwUfOjsNQBA4Z8HKUgfkQmyTViY5icbt4ujHg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26099/Fri Mar  5 13:02:51 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri,  5 Mar 2021 16:24:45 -0600 you wrote:
-> Trim all 4 bytes of the received FCS; not just 2 of them. Leaving 2
-> bytes of the FCS on the frame breaks DSA tailing tag drivers.
+On 3/5/21 5:15 PM, Willem de Bruijn wrote:
+> On Fri, Mar 5, 2021 at 11:10 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> On 3/5/21 4:08 PM, Willem de Bruijn wrote:
+>>> On Fri, Mar 5, 2021 at 7:34 AM Xuesen Huang <hxseverything@gmail.com> wrote:
+>>>>
+>>>> From: Xuesen Huang <huangxuesen@kuaishou.com>
+>>>>
+>>>> Add BPF_F_ADJ_ROOM_ENCAP_L2_ETH flag to the existing tests which
+>>>> encapsulates the ethernet as the inner l2 header.
+>>>>
+>>>> Update a vxlan encapsulation test case.
+>>>>
+>>>> Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
+>>>> Signed-off-by: Li Wang <wangli09@kuaishou.com>
+>>>> Signed-off-by: Willem de Bruijn <willemb@google.com>
+>>>
+>>> Please don't add my signed off by without asking.
+>>
+>> Agree, I can remove it if you prefer while applying and only keep the
+>> ack instead.
 > 
-> Fixes: a8db76d40e4d ("lan743x: boost performance on cpu archs w/o dma cache snooping")
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> ---
->  drivers/net/ethernet/microchip/lan743x_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> That would be great. Thanks, Daniel!
 
-Here is the summary with links:
-  - [net] lan743x: trim all 4 bytes of the FCS; not just 2
-    https://git.kernel.org/netdev/net/c/3e21a10fdea3
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Done & applied, thanks everyone!
