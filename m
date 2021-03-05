@@ -2,97 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A2532E4BF
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:26:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0CF132E4F0
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbhCEJ0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 04:26:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229709AbhCEJZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 04:25:48 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB38C061574;
-        Fri,  5 Mar 2021 01:25:48 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id a24so1093132plm.11;
-        Fri, 05 Mar 2021 01:25:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=3ZtfAy/DdB98MHPeY8FKZbpkecSyZ6GcXxZiHDxXOzY=;
-        b=gr7gqnyAoiRC+O5mo0KISftXCzLIrwlN0RDSw7BtZmpr9MRyG+yaPi0nb0e6PkVohL
-         NIfeZJTybWLcpEde2TiplP2s/iFBPC6sL+V0gkz4aba7D5buJbqP7WTu6UWz4/eK231F
-         d30yJPb0Mz8/4AY+BAd7nSiRcNPha0O6vtgCi62qf42TI69oP1QXcwN7zhiDFvS5idoN
-         7u6t3FNwt6A45HJrgAL+qXZFNiKTbeJxcvWn7RXbq8izZykUYDHV6Cm7uEreY3oZlN/C
-         wbv2JX9tYXeWlg1bgVQpcJui2ExeEObKfwCWhzxFhIzW3PE8PG1lkbAUp/8UuAm/C3EC
-         OpHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3ZtfAy/DdB98MHPeY8FKZbpkecSyZ6GcXxZiHDxXOzY=;
-        b=aQ8ZST2rsi3JBtNo76+qTycbb4HJW5WmwuCKjuzCsN/F4Tt55iqBo2SQFypZj6buHE
-         gUoWxb5w2am+LFme1te04dYeaabfQmyPBqupK7AXx8gooFXMQ4Beg5AoV5b8Rl+mftd1
-         RW11Ox4hF51GcIwfll7qWQpNqP4YWbaDlHWPHHgIWyQe9mZpk4GZ/5jEKI3Wfz02BrsF
-         u/Pygyqtha/9KsF6bfW/DpfZbs+w5ahY08MUGzYXVhsA3baWiwdMRqn5sZ0skA7CpgrH
-         Zjx+AjUR7VjMtfIKR3hWMH8fUTJ3TgNJVT476ijPRV7FVA/VNEvVzUkmlggGe/yBq8rR
-         qbCg==
-X-Gm-Message-State: AOAM530B+MzievsbpI+7U4RKgvGs2/hHlzM4yX/ZUJlQ1zUkwRnS4l07
-        TO239DhuhOrv03T+2Cf7C28=
-X-Google-Smtp-Source: ABdhPJzosWmE06mD7ZTcBU30UPBFyRlz0CWudMs7cisEtmu1jiqKZVAdFGHf258Qm1z+E/g6+DOlFw==
-X-Received: by 2002:a17:902:6b85:b029:e5:b91c:a265 with SMTP id p5-20020a1709026b85b02900e5b91ca265mr7961423plk.63.1614936347695;
-        Fri, 05 Mar 2021 01:25:47 -0800 (PST)
-Received: from localhost.localdomain ([45.135.186.129])
-        by smtp.gmail.com with ESMTPSA id ml17sm1956495pjb.18.2021.03.05.01.25.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Mar 2021 01:25:46 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     bjorn@kernel.org, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: xdp: fix error return code of xsk_generic_xmit()
-Date:   Fri,  5 Mar 2021 01:25:34 -0800
-Message-Id: <20210305092534.13121-1-baijiaju1990@gmail.com>
+        id S229843AbhCEJdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 04:33:40 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:46334 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229494AbhCEJdh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 04:33:37 -0500
+Received: from localhost.localdomain (unknown [124.16.141.241])
+        by APP-03 (Coremail) with SMTP id rQCowABXX0_V+kFg5nttAQ--.11138S2;
+        Fri, 05 Mar 2021 17:33:10 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] selftest/net/ipsec.c: Remove unneeded semicolon
+Date:   Fri,  5 Mar 2021 09:33:06 +0000
+Message-Id: <20210305093306.1403-1-vulab@iscas.ac.cn>
 X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: rQCowABXX0_V+kFg5nttAQ--.11138S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Gw4xAF45Zr45Kr4fGF4rXwb_yoW3Grb_tr
+        4Utas7CFs5AF9Fvr4fGF45uFZ5t3W5WF4xKFWUZa13tw4UAan8GFWkZr1DA3WxW3909342
+        vF4YyFy3W342gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbFAYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I
+        3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxV
+        WUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAF
+        wI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcI
+        k0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_
+        Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU56c_DUUUUU==
+X-Originating-IP: [124.16.141.241]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCgoLA1z4jaEWoAAAs2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When err is zero but xskq_prod_reserve() fails, no error return code of
-xsk_generic_xmit() is assigned.
-To fix this bug, err is assigned with the return value of
-xskq_prod_reserve(), and then err is checked.
-The spinlock is only used to protect the call to xskq_prod_reserve().
+fix semicolon.cocci warning:
+tools/testing/selftests/net/ipsec.c:1788:2-3: Unneeded semicolon
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 ---
- net/xdp/xsk.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/ipsec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 4faabd1ecfd1..f1c1db07dd07 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -484,8 +484,14 @@ static int xsk_generic_xmit(struct sock *sk)
- 		 * if there is space in it. This avoids having to implement
- 		 * any buffering in the Tx path.
- 		 */
-+		if (unlikely(err)) {
-+			kfree_skb(skb);
-+			goto out;
-+		}
-+
- 		spin_lock_irqsave(&xs->pool->cq_lock, flags);
--		if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-+		err = xskq_prod_reserve(xs->pool->cq);
-+		if (unlikely(err)) {
- 			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
- 			kfree_skb(skb);
- 			goto out;
+diff --git a/tools/testing/selftests/net/ipsec.c b/tools/testing/selftests/net/ipsec.c
+index 17ced7d6ce25..f23438d512c5 100644
+--- a/tools/testing/selftests/net/ipsec.c
++++ b/tools/testing/selftests/net/ipsec.c
+@@ -1785,7 +1785,7 @@ static void grand_child_serv(unsigned int nr, int cmd_fd, void *buf,
+ 		break;
+ 	default:
+ 		printk("got unknown msg type %d", msg->type);
+-	};
++	}
+ }
+ 
+ static int grand_child_f(unsigned int nr, int cmd_fd, void *buf)
 -- 
 2.17.1
 
