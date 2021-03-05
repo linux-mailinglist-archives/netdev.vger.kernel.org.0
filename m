@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D70432DF23
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 02:33:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C15132DF3E
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 02:50:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbhCEBdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 20:33:04 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:41102 "EHLO vps0.lunn.ch"
+        id S229687AbhCEBun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 20:50:43 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41126 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229436AbhCEBdE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 20:33:04 -0500
+        id S229531AbhCEBun (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 20:50:43 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lHzKm-009MZG-CQ; Fri, 05 Mar 2021 02:32:52 +0100
-Date:   Fri, 5 Mar 2021 02:32:52 +0100
+        id 1lHzbv-009MdW-LM; Fri, 05 Mar 2021 02:50:35 +0100
+Date:   Fri, 5 Mar 2021 02:50:35 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Don Bollinger <don@thebollingers.org>
 Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
@@ -23,78 +23,63 @@ Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
         'Adrian Pop' <pop.adrian61@gmail.com>,
         'Michal Kubecek' <mkubecek@suse.cz>, netdev@vger.kernel.org,
         'Vladyslav Tarasiuk' <vladyslavt@nvidia.com>
-Subject: Re: [RFC PATCH V2 net-next 1/5] ethtool: Allow network drivers to
- dump arbitrary EEPROM data
-Message-ID: <YEGKRNLce9dzFkqI@lunn.ch>
+Subject: Re: [RFC PATCH V2 net-next 5/5] ethtool: Add fallback to
+ get_module_eeprom from netlink command
+Message-ID: <YEGOa2NFiw3fc5sT@lunn.ch>
 References: <1614884228-8542-1-git-send-email-moshe@nvidia.com>
- <1614884228-8542-2-git-send-email-moshe@nvidia.com>
- <001101d71159$8721f4b0$9565de10$@thebollingers.org>
+ <1614884228-8542-6-git-send-email-moshe@nvidia.com>
+ <001201d71159$88013120$98039360$@thebollingers.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <001101d71159$8721f4b0$9565de10$@thebollingers.org>
+In-Reply-To: <001201d71159$88013120$98039360$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > + * @length: Number of bytes to read.
-> > + * @page: Page number to read from.
-> > + * @bank: Page bank number to read from, if applicable by EEPROM spec.
-> > + * @i2c_address: I2C address of a page. Value less than 0x7f expected.
-> > Most
-> > + *	EEPROMs use 0x50 or 0x51.
+> > +static int fallback_set_params(struct eeprom_data_req_info *request,
+> > +			       struct ethtool_modinfo *modinfo,
+> > +			       struct ethtool_eeprom *eeprom) {
 > 
-> The standards are all very clear
+> This is translating the new data structure into the old.  Hence, I assume we
+> have i2c_addr, page, bank, offset, len to work with, and we should use
+> all of them.
 
-Our experience so far is that manufactures of SFP modules like to
-ignore the standard. And none of the standards seem to cover copper
-modules, which have additional registers at some other page.
-Admittedly, they cannot be mapped as pages, you need some proprietary
-protocol to map MDIO onto I2C. But i would not be surprised to find
-some SFP that maps the FLASH of the microcontroller onto an address,
-which we might be able to read out using this API.
+Nope. We actually have none of them. The old API just asked the driver
+to give me the data in the SFP. And the driver gets to decide what it
+returns, following a well known layout. The driver can decide to give
+just the first 1/2 page, or any number of multiple 1/2 pages in a well
+known linear way, which ethtool knows how to decode.
 
-So i suggested we keep it generic, allowing access to these
-proprietary registers at other addresses. And if there is nothing
-there, you probably get a 1/2 page of 0xff.
+So when mapping the new KAPI onto the old driver API, you need to call
+the old API, and see if what is returned can be used to fulfil the
+KAPI request. If the bytes are there, great, return them, otherwise
+EOPNOTSUPP.
 
-> I suggest that 0xA0 and 0xA2 also be silently accepted, and
-> translated to 0x50 and 0x51 respectively.
+And we also need to consider the other way around. The old KAPI is
+used, and the MAC driver only supports the new driver API. Since the
+linear layout is well know, you need to make a number of calls into
+the driver to read the 1/2 pages, and them glue them together and
+return them.
 
-No, i don't like having two different values mean the same thing.  It
-just leads to confusion. And userspace is going to be confused when it
-asks for 0xA0 but the reply says it is for 0x50.
+I've not reviewed this code in detail yet, so i've no idea how it
+actually works. But i would like to see as much compatibility as
+possible. That has been the approach with moving from IOCTL to netlink
+with ethool. Everything the old KAPI can do, netlink should also be
+able to, plus there can be additional features.
 
-The Linux I2C subsystem does not magically map 8bit addresses in 7bit
-addresses. We should follow what the Linux I2C subsystem does.
-
-> > +
-> > +	request->offset =
-> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
-> > +	request->length =
-> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
-> > +	if (request->length > ETH_MODULE_EEPROM_MAX_LEN)
-> > +		return -EINVAL;	
+> > +	switch (modinfo->type) {
+> > +	case ETH_MODULE_SFF_8079:
+> > +		if (request->page > 1)
+> > +			return -EINVAL;
+> > +		break;
+> > +	case ETH_MODULE_SFF_8472:
+> > +		if (request->page > 3)
 > 
-> This is really problematic as there are MANY different max values, within
-> the specs
+> Not sure this is needed, there can be pages higher than 3.
 
-I agree. We should only be returning one 1/2 page as a maximum. So it
-should be limited to 128 bytes. And offset+length should not go beyond
-the end of a 1/2 page.
+Not with the old KAPI call. As far as i remember, it stops at three
+pages. But i need to check the ethtool(1) sources to be sure.
 
-> > +	if (tb[ETHTOOL_A_EEPROM_DATA_PAGE])
-> > +		request->page =
-> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_PAGE]);
-> > +	if (tb[ETHTOOL_A_EEPROM_DATA_BANK])
-> > +		request->bank =
-> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_BANK]);
-> 
-> Other checks:
-> 
-> Page and bank have to be between 0 and 255 (inclusive), they
-> go into an 8 bit register in the eeprom.
+       Andrew
 
-Yes, a u8 would be a better type here.
-
-     Andrew
