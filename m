@@ -2,95 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D73232F5FD
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 23:39:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 168EB32F62E
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 23:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbhCEWio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 17:38:44 -0500
-Received: from mga17.intel.com ([192.55.52.151]:64863 "EHLO mga17.intel.com"
+        id S230056AbhCEWz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 17:55:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229611AbhCEWi0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 17:38:26 -0500
-IronPort-SDR: gJUMpZFk7P4tkPlYF4m5pAfWy56d/TIFj/ZI3Ej2yS8ybqr6vq98y6EXTCuxsmds3NFlIqr0ec
- 8omB1pKBELfA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9914"; a="167640403"
-X-IronPort-AV: E=Sophos;i="5.81,226,1610438400"; 
-   d="scan'208";a="167640403"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 14:38:26 -0800
-IronPort-SDR: +gaITYTI6NYm23BqUUvKOghOCpx+Z4Lkhy/OW54TUB/LxCe3h9FAFg4RctYmKgFk9dMQfq/cvl
- R6Rx6cu+ry9w==
-X-IronPort-AV: E=Sophos;i="5.81,226,1610438400"; 
-   d="scan'208";a="508215288"
-Received: from bfrahm-mobl2.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.212.101.47])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 14:38:25 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, kuba@kernel.org, vladimir.oltean@nxp.com,
-        Jose.Abreu@synopsys.com, po.liu@nxp.com,
-        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
-        mkubecek@suse.cz
-Subject: Re: [PATCH net-next v3 1/8] ethtool: Add support for configuring
- frame preemption
-In-Reply-To: <20210303005112.im2zur47553uv2ld@skbuf>
-References: <20210122224453.4161729-1-vinicius.gomes@intel.com>
- <20210122224453.4161729-2-vinicius.gomes@intel.com>
- <20210302142350.4tu3n4gay53cjnig@skbuf>
- <87o8g1nk6g.fsf@vcostago-mobl2.amr.corp.intel.com>
- <20210303005112.im2zur47553uv2ld@skbuf>
-Date:   Fri, 05 Mar 2021 14:38:24 -0800
-Message-ID: <874khpns4f.fsf@vcostago-mobl2.amr.corp.intel.com>
+        id S230035AbhCEWzT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 17:55:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E8D1564F11;
+        Fri,  5 Mar 2021 22:55:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614984919;
+        bh=1CrTjEZoV5A6twTZemcbfp0/ikfp7xshxhN94nII4HE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XRapI5bpZ/1gK1LK9S7TSPUmza0m/ryBvnmYdNmJMrQYclcI3aKjGqvdIf7P3gBsr
+         sIx/uR24OOOKgZO/njQqR8wwiTfBpYVyJrU42CAXPmTpYAuVXXClrBY/Pl4KCC/PZE
+         JuebKxzrNx1UJE2KZ/taEaCZ5fNZfYd22tMCW+KpFAMs5niNTLXgSSBEHbcq5ghDXp
+         UB4HEicHVpdZGvCJ4NrgCgBmPaHtWmhze3EtVG82tsBm9qUeBS7lu5k2cRjpo//j3b
+         rmg7JcY8mDcm1D8RKS0Jr1t0qeDrvyv2qRa4vxKQ3qSsvP93CIuwXVIuRyAcVgNwnk
+         L8Z7SkIs4tXHQ==
+Date:   Fri, 5 Mar 2021 14:55:18 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Don Bollinger" <don@thebollingers.org>
+Cc:     "'Andrew Lunn'" <andrew@lunn.ch>, <arndb@arndb.de>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <brandon_chuang@edge-core.com>, <wally_wang@accton.com>,
+        <aken_liu@edge-core.com>, <gulv@microsoft.com>,
+        <jolevequ@microsoft.com>, <xinxliu@microsoft.com>,
+        "'netdev'" <netdev@vger.kernel.org>,
+        "'Moshe Shemesh'" <moshe@nvidia.com>
+Subject: Re: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS
+ EEPROMS
+Message-ID: <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
+References: <20210215193821.3345-1-don@thebollingers.org>
+        <YDl3f8MNWdZWeOBh@lunn.ch>
+        <000901d70cb2$b2848420$178d8c60$@thebollingers.org>
+        <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org>
+        <YD1ScQ+w8+1H//Y+@lunn.ch>
+        <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+On Fri, 5 Mar 2021 11:07:08 -0800 Don Bollinger wrote:
+> Acknowledging your objections, I nonetheless request that optoe be accepted
+> into upstream as an eeprom driver in drivers/misc/eeprom.  It is a
+> legitimate driver, with a legitimate user community, which deserves the
+> benefits of being managed as a legitimate part of the linux kernel.
 
-> On Tue, Mar 02, 2021 at 04:40:55PM -0800, Vinicius Costa Gomes wrote:
->> Hi Vladimir,
->>
->> Vladimir Oltean <olteanv@gmail.com> writes:
->>
->> > Hi Vinicius,
->> >
->> > On Fri, Jan 22, 2021 at 02:44:46PM -0800, Vinicius Costa Gomes wrote:
->> >> Frame preemption (described in IEEE 802.3br-2016) defines the concept
->> >> of preemptible and express queues. It allows traffic from express
->> >> queues to "interrupt" traffic from preemptible queues, which are
->> >> "resumed" after the express traffic has finished transmitting.
->> >>
->> >> Frame preemption can only be used when both the local device and the
->> >> link partner support it.
->> >>
->> >> Only parameters for enabling/disabling frame preemption and
->> >> configuring the minimum fragment size are included here. Expressing
->> >> which queues are marked as preemptible is left to mqprio/taprio, as
->> >> having that information there should be easier on the user.
->> >>
->> >> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
->> >> ---
->> >
->> > I just noticed that the aMACMergeStatusVerify variable is not exposed in
->> > the PREEMPT_GET command, which would allow the user to inspect the state
->> > of the MAC merge sublayer verification state machine. Also, a way in the
->> > PREEMPT_SET command to set the disableVerify variable would be nice.
->> >
->>
->> The hardware I have won't have support for this.
->
-> What exactly is not supported, FP verification or the disabling of it?
-> Does your hardware at least respond to verification frames?
->
-
-Not supported in the sense that the NIC doesn't expose those variables
-into registers.
-
-About the behavior, I am asking our hardware folks.
-
-
-Cheers,
--- 
-Vinicius
+It's in the best interest of the community to standardize on how 
+we expect things to operate. You're free to do whatever you want
+in your proprietary systems but please don't expect us to accept
+a parallel, in now way superior method of accessing SFPs. 
