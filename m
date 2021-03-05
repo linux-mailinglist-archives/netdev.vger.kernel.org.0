@@ -2,173 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0A732F378
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 20:08:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9229D32F430
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 20:46:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbhCETHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 14:07:31 -0500
-Received: from p3plsmtpa12-01.prod.phx3.secureserver.net ([68.178.252.230]:50798
-        "EHLO p3plsmtpa12-01.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229737AbhCETHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 14:07:11 -0500
-Received: from chrisHP110 ([76.103.216.188])
-        by :SMTPAUTH: with ESMTPA
-        id IFn2lgGNiU8CmIFn4lgJac; Fri, 05 Mar 2021 12:07:10 -0700
-X-CMAE-Analysis: v=2.4 cv=Y+Y9DjSN c=1 sm=1 tr=0 ts=6042815e
- a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
- a=kj9zAlcOel0A:10 a=Q5wZSigpbg05Vq6hFFoA:9 a=CjuIK1q_8ugA:10
-X-SECURESERVER-ACCT: don@thebollingers.org
-From:   "Don Bollinger" <don@thebollingers.org>
-To:     "'Andrew Lunn'" <andrew@lunn.ch>
-Cc:     <arndb@arndb.de>, <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>, <brandon_chuang@edge-core.com>,
-        <wally_wang@accton.com>, <aken_liu@edge-core.com>,
-        <gulv@microsoft.com>, <jolevequ@microsoft.com>,
-        <xinxliu@microsoft.com>, "'netdev'" <netdev@vger.kernel.org>,
-        "'Moshe Shemesh'" <moshe@nvidia.com>, <don@thebollingers.org>
-References: <20210215193821.3345-1-don@thebollingers.org> <YDl3f8MNWdZWeOBh@lunn.ch> <000901d70cb2$b2848420$178d8c60$@thebollingers.org> <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org> <YD1ScQ+w8+1H//Y+@lunn.ch>
-In-Reply-To: <YD1ScQ+w8+1H//Y+@lunn.ch>
-Subject: RE: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS EEPROMS
-Date:   Fri, 5 Mar 2021 11:07:08 -0800
-Message-ID: <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
+        id S229729AbhCETpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 14:45:36 -0500
+Received: from gateway32.websitewelcome.com ([192.185.145.171]:21816 "EHLO
+        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229578AbhCETpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 14:45:07 -0500
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway32.websitewelcome.com (Postfix) with ESMTP id 4972CE346
+        for <netdev@vger.kernel.org>; Fri,  5 Mar 2021 13:22:12 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id IG1clbuUG4HRaIG1clegUv; Fri, 05 Mar 2021 13:22:12 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=C72aJTZFqzs0Z+9XAwu1hW3tRHeE2ae9+7AYTQcn1o0=; b=fVD+ItGkq/K/5cbMt/WshLVAtP
+        vlV8T0GV/IEtMx7Bm0IwxeWohx8w1qQvIY05oQRJwHmoupjK1Y4BDDXOXwAdAty7h5fjDGmy8e2L5
+        PTMSfGTA/CBAFU38Ckdzk1TUxkcXY9J4cjiEFSSUn+f1pGNVdpFHFqYZEkLkmAtjk91AQD0YuzClQ
+        +K46YjNj0z5MZN5z7oGVIB2vz3HDTCDdhzaEdLk3HwphmNnXoExhuyCJOpKOAJnw6LEbfkkNqNHqa
+        1QSkSY9k+yKHhSkmT3+nkV+6GvTKMAVa5uLpgljd0+oJHh8aQtIfsb0SYG5eGAlo2IOeWiyF7wDiX
+        zu1jW6yw==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:43058 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lIG1c-000M4i-0N; Fri, 05 Mar 2021 13:22:12 -0600
+Subject: Re: [PATCH 045/141] net: mscc: ocelot: Fix fall-through warnings for
+ Clang
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <a36175068f59c804403ec36a303cf1b72473a5a5.1605896059.git.gustavoars@kernel.org>
+ <20210304225318.GC105908@embeddedor> <20210304230108.3govsjrwwmfcw72e@skbuf>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <62a27ed0-60af-5de8-cd7c-1d68b9a1a975@embeddedor.com>
+Date:   Fri, 5 Mar 2021 13:22:11 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+In-Reply-To: <20210304230108.3govsjrwwmfcw72e@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 15.0
-Thread-Index: AQKX2ThEytgxSBCv+zte4L/P7xUGAgJF1IfoAfArhLgBgnHheQD1wSRRqL6viIA=
-Content-Language: en-us
-X-CMAE-Envelope: MS4xfJguuAmuQnkPThJUpad+hujYXnRFL1pxw7HU3AbZbVXS185IF5ZGxysc22ky8+grtpUf7ckzSNxfLvLOu0F9wIhC30MRSRYpTqfa5dIYnmbqswpmAuTr
- IeuMIK0PYA51Bqel7rdaxThnVgAcbgFq74TkKEy0eRxQn2vWSgYapLA9rHoAPEHYabdP2XKTrUM0jS3ucnYmajwE1mvOfr7b4nY1iPzJMEaI6QgNEPH3HI6w
- mQOHcpfJlJ71HK22WWjewxsvyntW83b1VeR4T7QCaglgQR5v8tRRqhDwahPYNSpjCa+XNCpI/CVNtVseNV6pStVvK28X6A3NNMERVEZ5z1DOx1a1S5hiRmCj
- 6q3CcbJnodQuuvkdcBu+tmqD2cJ/rSgetCzr8NJkX5xvZ/LNxruH7fIwBY9vmECPQc2la1ginOPa726cd4ZWs7eblxIo3zstPBI2F2WuQt9WIkVvvK7NeZWO
- czfN9tJ+eeKuQHVaadDN7tDiqUsKTvpaV94F1kwERw47pBLD0NDEFGnTsFgWIen40HfXjeUUGHAD4eU+PP7qVfHvKfXQuM7TSiC+93eYaEdkvRCMLuirxaRG
- crY=
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lIG1c-000M4i-0N
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:43058
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 8
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 1, 2021 at 12:46 PM-0800, Andrew Lunn wrote:
-> > To be more specific, optoe is only replacing the functionality of
-> > drivers/net/phy/sfp.c, the functions of sfp_i2c_read() and
-sfp_i2c_write().
-> > These are the routines at the very bottom of the ethtool stack that
-> > actually execute the i2c calls to get the data.  The existing routines
-> > are very limited, in that they don't handle pages at all.  Hence they
-> > can only reach
-> > 256 bytes of QSFP EEPROM data and 512 bytes of SFP EEPROM data.  I can
-> > propose a shorter cleaner replacement for each of those routines which
-> > will provide access to the rest of the data on those devices.
+Hi Vladimir,
+
+On 3/4/21 17:01, Vladimir Oltean wrote:
+> Hi Gustavo,
 > 
-> drivers/net/phy/sfp.c is not the only code making use of this KAPI.
-> Any MAC driver can implement the ethtool op calls for reading SFP memory.
-> The MAC driver can either directly reply because it has the SFP hidden
-> behind firmware, or it can call into the sfp.c code, because Linux is
-driving the
-> SFP.
-
-OK, I have checked with my partners, including NOS vendors and switch
-platform vendors.  They are not using the netdev framework, they are
-basically not using kernel networking for managing the networking through
-tens to over a hundred network ports at 10G to 400G speeds.  The kernel is
-not the source of truth regarding the state of network devices.  I know
-netdev *could* manage these systems, and that you are working toward that
-goal, that is not the approach they are taking nor the direction they are
-heading.  I am not disparaging netdev, I respect and value the contribution
-to linux networking.  It's all good.  It just isn't the direction my
-partners are going at this time.
-
-You have described this architecture in the past as a 'bootloader'.  In fact
-Linux is the operating system running on those switches.  It is not
-temporary (eg loading the real OS and going away).  It is allocating memory,
-dispatching processes and threads, handling interrupts, hosting docker
-containers, and running the proprietary network APIs that manage the
-networks.  In this architecture, the optical modules are managed by the OS,
-through drivers.  The network APIs interact through these drivers.  For much
-of the configuration data, there are configuration files that match up
-device hardware (e.g. Low Power Mode GPIO lines and Tx disable lines) and
-i2c buses (through layers of i2c muxes) with switch ports as seen by the
-switch silicon.  Network management software (user space apps) is
-responsible for enabling, configuring and monitoring optical modules to
-match the config files.  Kernel drivers provide the access to the GPIO lines
-and the EEPROM control registers.
-
-Notably, in this architecture, there are actually NO kernel consumers of the
-module EEPROM data.  The version of optoe that is in production in these NOS
-and switch environments does not even have an entry point callable by the
-kernel.  All of the consumers are accessing the data via the sysfs file in
-/sys/bus/i2c/devices/*.   I have closely modeled the updated version of
-optoe on the at24 driver (drivers/misc/eeprom/at24.c).  Thus, the KAPI is
-actually the same as used by other eeprom drivers.  It is an eeprom, it is
-accessed by the nvmem interfaces, in both kernel and user space.
-
-My primary motivation for creating optoe is to consolidate a bunch of
-different implementations by different vendors, to add page support which
-most implementations lacked, to extend the reach to all of the architected
-pages (the standards describe them as proprietary, not forbidden), to
-provide write access, and to enable CMIS devices.  Those goals apply to the
-netdev/netlink environment as well.  I added the kernel access via nvmem to
-facilitate adoption in your network stack, to achieve the same goals
-(standardization and improvement of access to module EEPROMs).
-
+> On Thu, Mar 04, 2021 at 04:53:18PM -0600, Gustavo A. R. Silva wrote:
+>> Hi all,
+>>
+>> It's been more than 3 months; who can take this, please? :)
+>>
+>> Thanks
+>> --
+>> Gustavo
+>>
+>> On Fri, Nov 20, 2020 at 12:31:13PM -0600, Gustavo A. R. Silva wrote:
+>>> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+>>> by explicitly adding a break statement instead of just letting the code
+>>> fall through to the next case.
+>>>
+>>> Link: https://github.com/KSPP/linux/issues/115
+>>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>>> ---
 > 
-> Moshe is working on the Mellonox MAC drivers. As you say, the current
-sfp.c
-
-I love Moshe's KAPI, and am reviewing and commenting on it to ensure its
-success.
-
-> code is very limited. But once Moshe code is merged, i will do the work
-> needed to extend sfp.c to fully support the KAPI. It will then work for
-many
-> more MAC drivers, those using phylink.
-
-One piece of that work could be to replace the contents of
-drivers/net/phy/sfp.c, functions sfp_i2c_read() and sfp_i2c_write() with
-nvmem calls to optoe.  That would be an easy change, and provide all of the
-features of optoe (pages, access to all of the EEPROM, write support, CMIS),
-without writing and maintaining that i2c access code.  The actual i2c calls
-would be handled by the same code that is supporting at24.
-
-It is plausible that platform vendors would choose not to implement their
-own version of these functions if the generic sfp_i2c_read/write worked for
-them.   Fewer implementations of the same code, with more capability in the
-common implementation, is obviously beneficial.
-
-> For me, the KAPI is the important thing, and less so how the
-implementation
-> underneath works. Ideally, we want one KAPI for accessing SFP EEPROMs.
-> Up until now, that KAPI is the ethtool IOCTL.
-> But that KAPI is now showing its age, and it causing us problems. So we
-need
-> to replace that KAPI. ethtool has recently moved to using netlink
-messages.
-> So any replacement should be based on netlink. The whole network stack is
-> pretty much controlled via netlink. So you will find it very difficult to
-argue for
-> any other form of KAPI within the netdev community. Since optoe's KAPI is
-> not netlink based, it is very unlikely to be accepted.
+> You'd obviously need to resend. But when you do please add my:
 > 
-> But netlink is much more flexible than the older IOCTL interface.
-> Please work with us to ensure this new KAPI can work with your use cases.
-
-I accept all your points from the netdev/netlink perspective.  To that end,
-I offer optoe as an upgrade to the default implementation of
-sfp_i2c_read/write.
-
-I also have partners using a different architecture, for whom a
-netdev/netlink based solution would not be useful.  These partners have been
-using a sysfs based approach to module EEPROMs and have no motivation to
-change that.  This version of optoe is using the standard eeprom access
-method (nvmem) to provide this access.
-
-Acknowledging your objections, I nonetheless request that optoe be accepted
-into upstream as an eeprom driver in drivers/misc/eeprom.  It is a
-legitimate driver, with a legitimate user community, which deserves the
-benefits of being managed as a legitimate part of the linux kernel.
-
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
->      Andrew
+> And by the way, I think the netdev maintainers might want to take the
+> patches on network drivers to avoid conflicts, but on the other hand
+> they might not be too keen on cherry-picking bits and pieces of your 141
+> patch series. Would you mind creating a bundle of patches only for
+> netdev? I see there's definitely more than just one patch, they would
+> certainly get in a lot quicker that way.
 
-Don
+Thanks for your feedback. I already sent those patches again. I hope they
+are applied this time. :)
 
+--
+Gustavo
