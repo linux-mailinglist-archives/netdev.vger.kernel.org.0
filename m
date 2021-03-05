@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86D3932ED1D
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 15:29:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DD7732ED1F
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 15:29:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbhCEO3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 09:29:24 -0500
-Received: from m12-18.163.com ([220.181.12.18]:59793 "EHLO m12-18.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229821AbhCEO3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 09:29:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=KzhyB
-        nsVYnUhSOfd6PhuhP5B+5Mmhp9jN22Vts2dIoY=; b=i5OeG022sIcyGrnl/RZuL
-        H0nHNHJY95dX0DTwVUO07Ur1TePg45EFfzRmEhqIN8ZEW4wsomd7+yvWOOXtt/Ej
-        IXrTlhFec9RANur2fWN+I9Sl0Y6w4o4BfAuhhklpLHKOu6Df5IwzkNfuMl3wjXKy
-        x+ocKuvhmFVugFpJsEkBuY=
-Received: from yangjunlin.ccdomain.com (unknown [119.137.55.151])
-        by smtp14 (Coremail) with SMTP id EsCowADn8hnAP0JgTzXQXA--.15144S2;
-        Fri, 05 Mar 2021 22:27:13 +0800 (CST)
-From:   angkery <angkery@163.com>
-To:     leoyang.li@nxp.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Junlin Yang <yangjunlin@yulong.com>
-Subject: [PATCH] ethernet: ucc_geth: Use kmemdup instead of kmalloc and memcpy
-Date:   Fri,  5 Mar 2021 22:27:11 +0800
-Message-Id: <20210305142711.3022-1-angkery@163.com>
-X-Mailer: git-send-email 2.24.0.windows.2
+        id S230464AbhCEO3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 09:29:23 -0500
+Received: from mail-lf1-f54.google.com ([209.85.167.54]:46706 "EHLO
+        mail-lf1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229723AbhCEO3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 09:29:08 -0500
+Received: by mail-lf1-f54.google.com with SMTP id v5so3867749lft.13;
+        Fri, 05 Mar 2021 06:29:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5eGMjW0/0FS8wcIYA9qrwriQ7+t9gtpkbJxLpQkObag=;
+        b=YAdqN4T6q1MOyCXJfFgu0+MJoIveiMOFyg3NorUXJn51wMHoUjh2NecXuJtqwYgUfQ
+         g5GRHDVM3LtwcVZsY3vlBlMZlmIhFCL2A6QUrix6upKqSENi7elSpD8nO0Pq3FqFcpgG
+         9qKPSMTB5bs3lquEZnjq65CCFfKqnTXsuBvoA1c7F7Q6Tx//MzQGEwFx+hkSnwcaHL7Z
+         W0fDUdX8KF21sL9Zd1boenUfX/aGHkwmaAl4ApKZ3pHStFSiUoVd6aGBklrHA0NRPq1i
+         LOo/Ul1xR+76qYK+f78ZV4u4P3Sh2jJO0ODrSXwix3xMUuzMkfwioNaINXxTHkAy6dze
+         Ir2A==
+X-Gm-Message-State: AOAM530q5mcV7suYLuJh4m0M1Vsww8bJ8d5vOUNvOHtq6K9wTt1ymxMO
+        67cUmE2KdtM1W+IQ7KOia1w=
+X-Google-Smtp-Source: ABdhPJzeAIriOu+fmgUmq9fOPTAYqN45YFxQPaxFMOARDr2Wh/Br4w0m1/haldLk75HzbOBWAEywrQ==
+X-Received: by 2002:a05:6512:4c6:: with SMTP id w6mr5787673lfq.258.1614954546496;
+        Fri, 05 Mar 2021 06:29:06 -0800 (PST)
+Received: from localhost.. (broadband-188-32-236-56.ip.moscow.rt.ru. [188.32.236.56])
+        by smtp.googlemail.com with ESMTPSA id d4sm331040lfs.45.2021.03.05.06.29.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Mar 2021 06:29:05 -0800 (PST)
+From:   Denis Efremov <efremov@linux.com>
+To:     Andreas Koensgen <ajk@comnets.uni-bremen.de>
+Cc:     Denis Efremov <efremov@linux.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net/hamradio/6pack: remove redundant check in sp_encaps()
+Date:   Fri,  5 Mar 2021 19:26:22 +0300
+Message-Id: <20210305162622.67993-1-efremov@linux.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowADn8hnAP0JgTzXQXA--.15144S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZF1DGFyDKrW5GF4DGFyfJFb_yoWDAFcEkr
-        WfZrWYgr4jgFn2vw4a9w47Z340k3WkXrn5X3WSgFW5Ar9rZr15Wrs7Zr1fJwnxWF4I9FyD
-        Ar1xt34xA348tjkaLaAFLSUrUUUU0b8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUn3PEDUUUUU==
-X-Originating-IP: [119.137.55.151]
-X-CM-SenderInfo: 5dqjyvlu16il2tof0z/xtbBFAFMI1aD+lu31AAAst
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Junlin Yang <yangjunlin@yulong.com>
+"len > sp->mtu" checked twice in a row in sp_encaps().
+Remove the second check.
 
-Fixes coccicheck warnings:
-./drivers/net/ethernet/freescale/ucc_geth.c:3594:11-18:
-WARNING opportunity for kmemdup
-
-Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
+Signed-off-by: Denis Efremov <efremov@linux.com>
 ---
- drivers/net/ethernet/freescale/ucc_geth.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/hamradio/6pack.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
-index ef4e2fe..2c079ad 100644
---- a/drivers/net/ethernet/freescale/ucc_geth.c
-+++ b/drivers/net/ethernet/freescale/ucc_geth.c
-@@ -3591,10 +3591,9 @@ static int ucc_geth_probe(struct platform_device* ofdev)
- 	if ((ucc_num < 0) || (ucc_num > 7))
- 		return -ENODEV;
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 71d6629e65c9..9f5b5614a150 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -171,11 +171,6 @@ static void sp_encaps(struct sixpack *sp, unsigned char *icp, int len)
+ 		goto out_drop;
+ 	}
  
--	ug_info = kmalloc(sizeof(*ug_info), GFP_KERNEL);
-+	ug_info = kmemdup(&ugeth_primary_info, sizeof(*ug_info), GFP_KERNEL);
- 	if (ug_info == NULL)
- 		return -ENOMEM;
--	memcpy(ug_info, &ugeth_primary_info, sizeof(*ug_info));
- 
- 	ug_info->uf_info.ucc_num = ucc_num;
- 
+-	if (len > sp->mtu) {	/* sp->mtu = AX25_MTU = max. PACLEN = 256 */
+-		msg = "oversized transmit packet!";
+-		goto out_drop;
+-	}
+-
+ 	if (p[0] > 5) {
+ 		msg = "invalid KISS command";
+ 		goto out_drop;
 -- 
-1.9.1
-
+2.26.2
 
