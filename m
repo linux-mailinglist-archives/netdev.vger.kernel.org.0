@@ -2,108 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A13832E2CA
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 08:07:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD7032E2CC
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 08:08:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbhCEHH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 02:07:57 -0500
-Received: from m12-15.163.com ([220.181.12.15]:36099 "EHLO m12-15.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229446AbhCEHH4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 02:07:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=1CrzQ
-        K1FiZQ6UWshLPUj3+3c3rlvZ+x61jdocF6Jma8=; b=Inac1/PdOL9Oi2sDMH0WD
-        uOHyrLIK+aIUzdARMwf9vqeP7SOGpcj6EplN2U0F0JT65LhLE55uleZF+8CAywvh
-        Iqi86yjKeIZfuD4M/Ry+gs7+lsR+S/M6mSGbHEV72O9Zq3CQGwHRi+ON63cHLcVc
-        Fxa8dNZCQijfkmZuo3iibQ=
-Received: from localhost (unknown [119.137.55.151])
-        by smtp11 (Coremail) with SMTP id D8CowAC3vhKx10Fgj6uHDw--.63S2;
-        Fri, 05 Mar 2021 15:03:22 +0800 (CST)
-Date:   Fri, 5 Mar 2021 15:03:25 +0800
-From:   angkery <angkery@163.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        drt@linux.ibm.com, ljp@linux.ibm.com, sukadev@linux.ibm.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Junlin Yang <yangjunlin@yulong.com>
-Subject: Re: [PATCH] ibmvnic: remove excessive irqsave
-Message-ID: <20210305150325.0000286b.angkery@163.com>
-In-Reply-To: <67215668-0850-a0f3-06e1-49db590b8fcc@csgroup.eu>
-References: <20210305014350.1460-1-angkery@163.com>
-        <67215668-0850-a0f3-06e1-49db590b8fcc@csgroup.eu>
-Organization: yulong
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-w64-mingw32)
+        id S229559AbhCEHIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 02:08:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28914 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229446AbhCEHIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 02:08:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614928120;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NEKrOKBQjNeh6xpfaaDnnWjqElQJhMWyC0KTnixxBgY=;
+        b=HBPr5sODzX8TAag4Ykd/AtJbiVdpjrN8u/7wkXPjYMnY7oz//cJRLGnMCCvz1stV3yXEjI
+        LJOi6Y7t98FBQxXbAMCLkxeCUa6Qquph3eM0+GVK7kERtDUsnkgqyULUUv6n0rN+NciyZ9
+        NJmy/9pNvAfAWNjcX9WoHyLUeWZzQow=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-364-djdlyYmFP6OzVYBOTlM1Ew-1; Fri, 05 Mar 2021 02:08:38 -0500
+X-MC-Unique: djdlyYmFP6OzVYBOTlM1Ew-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D8B2457;
+        Fri,  5 Mar 2021 07:08:36 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-12-165.pek2.redhat.com [10.72.12.165])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 049F25D9C0;
+        Fri,  5 Mar 2021 07:08:28 +0000 (UTC)
+Subject: Re: [PATCH v5 net-next] virtio-net: support XDP when not more queues
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <1614568959-107464-1-git-send-email-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <7010e921-dd66-dc6c-220b-09144800d9d5@redhat.com>
+Date:   Fri, 5 Mar 2021 15:08:27 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=GB18030
+In-Reply-To: <1614568959-107464-1-git-send-email-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: D8CowAC3vhKx10Fgj6uHDw--.63S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJryfXrW5Jr1DGrWxuw45ZFb_yoW8trWkpF
-        srWFy3C3Wvqr1jgwsrXw10yFsrC3yDtry8WrykC3Wfuas8Zr1Fqr1rKFy29FWDJ3yfKan0
-        yF15Z3s3ZFn8C3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UzKZXUUUUU=
-X-Originating-IP: [119.137.55.151]
-X-CM-SenderInfo: 5dqjyvlu16il2tof0z/1tbiLQFMI1SIlLiOnAABsg
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 5 Mar 2021 06:49:14 +0100
-Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-> Le 05/03/2021 à 02:43, angkery a écrit :
-> > From: Junlin Yang <yangjunlin@yulong.com>
-> > 
-> > ibmvnic_remove locks multiple spinlocks while disabling interrupts:
-> > spin_lock_irqsave(&adapter->state_lock, flags);
-> > spin_lock_irqsave(&adapter->rwi_lock, flags);
-> > 
-> > there is no need for the second irqsave,since interrupts are
-> > disabled at that point, so remove the second irqsave:  
-> 
-> The problème is not that there is no need. The problem is a lot more
-> serious: As reported by coccinella, the second _irqsave() overwrites
-> the value saved in 'flags' by the first _irqsave, therefore when the
-> second _irqrestore comes, the value in 'flags' is not valid, the
-> value saved by the first _irqsave has been lost. This likely leads to
-> IRQs remaining disabled, which is _THE_ problem really.
-> 
+On 2021/3/1 11:22 涓婂崍, Xuan Zhuo wrote:
+> The number of queues implemented by many virtio backends is limited,
+> especially some machines have a large number of CPUs. In this case, it
+> is often impossible to allocate a separate queue for
+> XDP_TX/XDP_REDIRECT, then xdp cannot be loaded to work, even xdp does
+> not use the XDP_TX/XDP_REDIRECT.
+>
+> This patch allows XDP_TX/XDP_REDIRECT to run by reuse the existing SQ
+> with __netif_tx_lock() hold when there are not enough queues.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> ---
+> v5: change subject from 'support XDP_TX when not more queues'
+>
+> v4: make sparse happy
+>      suggested by Jakub Kicinski
+>
+> v3: add warning when no more queues
+>      suggested by Jesper Dangaard Brouer
+>
+>   drivers/net/virtio_net.c | 53 ++++++++++++++++++++++++++++++++++++++++--------
+>   1 file changed, 44 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index ba8e637..55f1dd1 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -195,6 +195,9 @@ struct virtnet_info {
+>   	/* # of XDP queue pairs currently used by the driver */
+>   	u16 xdp_queue_pairs;
+>
+> +	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
+> +	bool xdp_enabled;
+> +
+>   	/* I like... big packets and I cannot lie! */
+>   	bool big_packets;
+>
+> @@ -481,14 +484,42 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>   	return 0;
+>   }
+>
+> -static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
+> +static struct send_queue *virtnet_get_xdp_sq(struct virtnet_info *vi)
+> +	__acquires(lock)
+>   {
+> +	struct netdev_queue *txq;
+>   	unsigned int qp;
+>
+> -	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+> +	if (vi->curr_queue_pairs > nr_cpu_ids) {
+> +		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+> +
+> +		/* tell sparse we took the lock, but don't really take it */
+> +		__acquire(lock);
 
-Thank you for explaining the real problem.
-I will update the commit information with your description.
+
+The code can explain itself but you need to explain why we don't need to 
+hold tx lock here.
+
+And it looks to me we should use __netif_tx_acquire()/__netif_tx_release()?
+
+Btw, is it better to refactor the code then we can annote the code with 
+something like __acquire(txq->xmit_lock)?
+
+Thanks
 
 
-> > spin_lock_irqsave(&adapter->state_lock, flags);
-> > spin_lock(&adapter->rwi_lock);
-> > 
-> > Generated by: ./scripts/coccinelle/locks/flags.cocci
-> > ./drivers/net/ethernet/ibm/ibmvnic.c:5413:1-18:
-> > ERROR: nested lock+irqsave that reuses flags from line 5404.
-> > 
-> > Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
-> > ---
-> >   drivers/net/ethernet/ibm/ibmvnic.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
-> > b/drivers/net/ethernet/ibm/ibmvnic.c index 2464c8a..a52668d 100644
-> > --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> > +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> > @@ -5408,9 +5408,9 @@ static void ibmvnic_remove(struct vio_dev
-> > *dev)
-> >   	 * after setting state, so __ibmvnic_reset() which is
-> > called
-> >   	 * from the flush_work() below, can make progress.
-> >   	 */
-> > -	spin_lock_irqsave(&adapter->rwi_lock, flags);
-> > +	spin_lock(&adapter->rwi_lock);
-> >   	adapter->state = VNIC_REMOVING;
-> > -	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
-> > +	spin_unlock(&adapter->rwi_lock);
-> >   
-> >   	spin_unlock_irqrestore(&adapter->state_lock, flags);
-> >   
-> >   
 
+> +	} else {
+> +		qp = smp_processor_id() % vi->curr_queue_pairs;
+> +		txq = netdev_get_tx_queue(vi->dev, qp);
+> +		__netif_tx_lock(txq, raw_smp_processor_id());
+> +	}
+> +
+>   	return &vi->sq[qp];
+>   }
+>
+> +static void virtnet_put_xdp_sq(struct virtnet_info *vi, struct send_queue *sq)
+> +	__releases(lock)
+> +{
+> +	struct netdev_queue *txq;
+> +	unsigned int qp;
+> +
+> +	if (vi->curr_queue_pairs <= nr_cpu_ids) {
+> +		qp = sq - vi->sq;
+> +		txq = netdev_get_tx_queue(vi->dev, qp);
+> +		__netif_tx_unlock(txq);
+> +	} else {
+> +		/* make sparse happy */
+> +		__release(lock);
+> +	}
+> +}
+> +
+>   static int virtnet_xdp_xmit(struct net_device *dev,
+>   			    int n, struct xdp_frame **frames, u32 flags)
+>   {
+> @@ -512,7 +543,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>   	if (!xdp_prog)
+>   		return -ENXIO;
+>
+> -	sq = virtnet_xdp_sq(vi);
+> +	sq = virtnet_get_xdp_sq(vi);
+>
+>   	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
+>   		ret = -EINVAL;
+> @@ -560,12 +591,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>   	sq->stats.kicks += kicks;
+>   	u64_stats_update_end(&sq->stats.syncp);
+>
+> +	virtnet_put_xdp_sq(vi, sq);
+>   	return ret;
+>   }
+>
+>   static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+>   {
+> -	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
+> +	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
+>   }
+>
+>   /* We copy the packet for XDP in the following cases:
+> @@ -1457,12 +1489,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+>   		xdp_do_flush();
+>
+>   	if (xdp_xmit & VIRTIO_XDP_TX) {
+> -		sq = virtnet_xdp_sq(vi);
+> +		sq = virtnet_get_xdp_sq(vi);
+>   		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+>   			u64_stats_update_begin(&sq->stats.syncp);
+>   			sq->stats.kicks++;
+>   			u64_stats_update_end(&sq->stats.syncp);
+>   		}
+> +		virtnet_put_xdp_sq(vi, sq);
+>   	}
+>
+>   	return received;
+> @@ -2417,10 +2450,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>
+>   	/* XDP requires extra queues for XDP_TX */
+>   	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+> -		netdev_warn(dev, "request %i queues but max is %i\n",
+> +		netdev_warn(dev, "XDP request %i queues but max is %i. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.\n",
+>   			    curr_qp + xdp_qp, vi->max_queue_pairs);
+> -		return -ENOMEM;
+> +		xdp_qp = 0;
+>   	}
+>
+>   	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+> @@ -2454,11 +2486,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>   	vi->xdp_queue_pairs = xdp_qp;
+>
+>   	if (prog) {
+> +		vi->xdp_enabled = true;
+>   		for (i = 0; i < vi->max_queue_pairs; i++) {
+>   			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
+>   			if (i == 0 && !old_prog)
+>   				virtnet_clear_guest_offloads(vi);
+>   		}
+> +	} else {
+> +		vi->xdp_enabled = false;
+>   	}
+>
+>   	for (i = 0; i < vi->max_queue_pairs; i++) {
+> @@ -2526,7 +2561,7 @@ static int virtnet_set_features(struct net_device *dev,
+>   	int err;
+>
+>   	if ((dev->features ^ features) & NETIF_F_LRO) {
+> -		if (vi->xdp_queue_pairs)
+> +		if (vi->xdp_enabled)
+>   			return -EBUSY;
+>
+>   		if (features & NETIF_F_LRO)
+> --
+> 1.8.3.1
+>
 
