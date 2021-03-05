@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E9732E528
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:46:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04A6932E52E
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:47:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbhCEJpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 04:45:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41908 "EHLO mail.kernel.org"
+        id S229714AbhCEJrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 04:47:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42190 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229591AbhCEJpd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 04:45:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BEB3F64FE2;
-        Fri,  5 Mar 2021 09:45:31 +0000 (UTC)
+        id S229551AbhCEJqp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 04:46:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C79C364FE8;
+        Fri,  5 Mar 2021 09:46:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614937532;
-        bh=ivFJLmI4A7fdop5ItsWS2wAflvG/F4vJlncUIBuPGu0=;
+        s=k20201202; t=1614937604;
+        bh=jOhOPnGpy4/jsUIFCgwn/Z7qlNd4zdeoKzMUdRXrl3E=;
         h=Date:From:To:Cc:Subject:From;
-        b=mC/C1pu30D+hKnJ/Y0p+7GnRKxx6nSsIGqPlBTQd9mV1y9n19eyTgYQZo1laocQt0
-         8yHNC/Tgg0ZIBlWX+jwqlB7z225h6ws40o9e/o/XwT2NYx5q7doH5DAWznlbr8JmuA
-         6o3/n3fUYgoyL1Yuuqag87VnPlD1ES13bVaLp4PwFK9WfJU5FiQiSIfb5v69XmZLTh
-         B1h7pXMGh8ymxT/O9aTSTooY6YfJt95xb2PyDHefEH4tOZX3ltIfK/g7mht8zU/cbg
-         FmDIzk9F6MB1F02l40nWq7jChOJjcB8J7s8O7XUFvEhpYF0Yi9nNLhQNaeRXj3/XiA
-         omwMtw5TgnTQg==
-Date:   Fri, 5 Mar 2021 03:45:29 -0600
+        b=J5z0r5zjbV+eQHA1prDi2AwVZ4qKzUGlS/izBiKKnehrhWwSsDiJMUELr1U2RT1yf
+         HmLYQtoxwz1RYCyEwn9Ls6rrm5p8Uc256sdVqrajAMIgEvbWzqctefH9c4qTreUsru
+         QFqtKanAUFjbgLP2952sKcMTqMnZgrHMPlZXLFyQkb1QWPSZKC0d2W/JV2xHQH3BL7
+         N97kd5wrdrnP3f1+MAFUk9/jAlaR8mBqiA/AKtjS8r/WuhOFFieqiVD5ci5jZNkZuN
+         qid91No3dbap49DswgBk+rd6mulo4jbgZlbTELe2oBrSUgMCx2+RyTeg9nJj85bVhk
+         suQOETPnZEhbA==
+Date:   Fri, 5 Mar 2021 03:46:42 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Manish Chopra <manishc@marvell.com>,
-        Rahul Verma <rahulv@marvell.com>,
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH RESEND][next] netxen_nic: Fix fall-through warnings for Clang
-Message-ID: <20210305094529.GA140903@embeddedor>
+Subject: [PATCH RESEND][next] ixgbevf: Fix fall-through warnings for Clang
+Message-ID: <20210305094642.GA141002@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -43,26 +43,26 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-by explicitly adding a goto statement instead of just letting the code
+by explicitly adding a break statement instead of just letting the code
 fall through to the next case.
 
 Link: https://github.com/KSPP/linux/issues/115
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c | 1 +
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c b/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
-index 08f9477d2ee8..35ec9aab3dc7 100644
---- a/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
-+++ b/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
-@@ -1685,6 +1685,7 @@ netxen_process_rcv_ring(struct nx_host_sds_ring *sds_ring, int max)
- 			break;
- 		case NETXEN_NIC_RESPONSE_DESC:
- 			netxen_handle_fw_message(desc_cnt, consumer, sds_ring);
-+			goto skip;
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index 449d7d5b280d..ba2ed8a43d2d 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -2633,6 +2633,7 @@ static void ixgbevf_set_num_queues(struct ixgbevf_adapter *adapter)
+ 			adapter->num_rx_queues = rss;
+ 			adapter->num_tx_queues = rss;
+ 			adapter->num_xdp_queues = adapter->xdp_prog ? rss : 0;
++			break;
  		default:
- 			goto skip;
+ 			break;
  		}
 -- 
 2.27.0
