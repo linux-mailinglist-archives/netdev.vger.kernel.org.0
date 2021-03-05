@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 684CB32E451
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:07:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61FFD32E456
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:08:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbhCEJGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 04:06:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57314 "EHLO mail.kernel.org"
+        id S229660AbhCEJHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 04:07:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57446 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229608AbhCEJGP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 04:06:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 65ED764F44;
-        Fri,  5 Mar 2021 09:06:14 +0000 (UTC)
+        id S229464AbhCEJHV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 04:07:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E4BDF64F44;
+        Fri,  5 Mar 2021 09:07:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614935175;
-        bh=VTHRslqAi1uoY+aDcHnLLFPLWt88Db72fhwgoQKvPB8=;
+        s=k20201202; t=1614935240;
+        bh=ikzpr71mS+z2zxKgVFU67kaIOGEN5DRSzKmf5wpQ0/0=;
         h=Date:From:To:Cc:Subject:From;
-        b=mv5mTBaogU+1Y5d/hWqjKltuDVWzhkPr8EELnX5ynakrw6CBagOK3ubYc9txv8mhN
-         0UujYgblHcovwk8A6gO/eKrTUWNSdLDJojr20e570f66q8UvsagZwl0sHs5cg0NUIQ
-         yaOCj7t/aQKcybKh/OFXczrpT+OMaBgGillXJzglJS741CmCoRF1TOaXHPvBjV13Nr
-         Aueb/VsbFBnod+g5ZeuYapUCUy3/NT8llhKE/tdN4Ea8dtw6/dluL5f+ClfHtkkv09
-         cHzuGEoX0iOUVh9mOvFMzNdavxc3AFgioOhG5+MPd5WZom9yxZJ0LC7I0k1aFh45dl
-         k8zhLz3gnsC0w==
-Date:   Fri, 5 Mar 2021 03:06:12 -0600
+        b=hF8wOGhhfZcgTpyJg8FQrwG4cd/T9gtCrHq0gVkhdt5FVk3h3dm8NfAP4LahvPFOA
+         pJikgwz6fb7eeNLODtRvWHcQQuTwxeG0tpBfv+XIWX2f7XTPyuOuaUX8/izfB7En42
+         xMLUZlAjHiEJmISQ3I0RWiahCJlDSM3gnUjIgzTFYF/qzVELUXkZDo7f9pUjUyaa1a
+         jDzvF/VVS/bghoK4czQgjzTz1n84TlQQ7VxeYUBt2hLIxpdnXkM4azrSGh/vun7ora
+         pxfJzT4wiTpRep3Zipkrwz2xY5GZyHfUEt7BzHiEktgfPxKHni624fxVHmEHmdft6K
+         1XUajEkQtO3Hg==
+Date:   Fri, 5 Mar 2021 03:07:17 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+To:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH RESEND][next] rds: Fix fall-through warnings for Clang
-Message-ID: <20210305090612.GA139288@embeddedor>
+Subject: [PATCH RESEND][next] sctp: Fix fall-through warnings for Clang
+Message-ID: <20210305090717.GA139387@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -41,45 +43,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
-warnings by explicitly adding multiple break statements instead of
-letting the code fall through to the next case.
+In preparation to enable -Wimplicit-fallthrough for Clang, fix a couple
+of warnings by explicitly adding a break statement and replacing a
+comment with a goto statement instead of letting the code fall through
+to the next case.
 
 Link: https://github.com/KSPP/linux/issues/115
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- net/rds/tcp_connect.c | 1 +
- net/rds/threads.c     | 2 ++
- 2 files changed, 3 insertions(+)
+ net/sctp/input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/rds/tcp_connect.c b/net/rds/tcp_connect.c
-index 4e64598176b0..5461d77fff4f 100644
---- a/net/rds/tcp_connect.c
-+++ b/net/rds/tcp_connect.c
-@@ -78,6 +78,7 @@ void rds_tcp_state_change(struct sock *sk)
- 	case TCP_CLOSE_WAIT:
- 	case TCP_CLOSE:
- 		rds_conn_path_drop(cp, false);
-+		break;
- 	default:
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index d508f6f3dd08..5ceaf75105ba 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -633,7 +633,7 @@ int sctp_v4_err(struct sk_buff *skb, __u32 info)
  		break;
+ 	case ICMP_REDIRECT:
+ 		sctp_icmp_redirect(sk, transport, skb);
+-		/* Fall through to out_unlock. */
++		goto out_unlock;
+ 	default:
+ 		goto out_unlock;
  	}
-diff --git a/net/rds/threads.c b/net/rds/threads.c
-index 32dc50f0a303..1f424cbfcbb4 100644
---- a/net/rds/threads.c
-+++ b/net/rds/threads.c
-@@ -208,6 +208,7 @@ void rds_send_worker(struct work_struct *work)
- 		case -ENOMEM:
- 			rds_stats_inc(s_send_delayed_retry);
- 			queue_delayed_work(rds_wq, &cp->cp_send_w, 2);
-+			break;
- 		default:
- 			break;
- 		}
-@@ -232,6 +233,7 @@ void rds_recv_worker(struct work_struct *work)
- 		case -ENOMEM:
- 			rds_stats_inc(s_recv_delayed_retry);
- 			queue_delayed_work(rds_wq, &cp->cp_recv_w, 2);
+@@ -1236,6 +1236,7 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
+ 						net, ch, laddr,
+ 						sctp_hdr(skb)->source,
+ 						transportp);
 +			break;
  		default:
  			break;
