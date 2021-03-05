@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DE5232EDEE
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 16:09:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1EA32EDA9
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 16:05:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbhCEPJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 10:09:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbhCEPJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 10:09:00 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A314C061574
-        for <netdev@vger.kernel.org>; Fri,  5 Mar 2021 07:09:00 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id l12so3056188edt.3
-        for <netdev@vger.kernel.org>; Fri, 05 Mar 2021 07:09:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JjTJfcQAXeOWcp9QkQJCNvSpKl1Ds2qR5zvC+5VzgvI=;
-        b=CpyWh+9m1kcl9bm6CS/WtsL7nEetdYXq/2VszRk50K4nPPdMtT736vpXI66iJE+BnP
-         t8M5VYEFLqkXwIEad8lE8fLWYnkJMGaBvSLvWwSvibSg8gdi+vB6cm6o3ema3ymJDQCr
-         eF5qaICjAyLicS6JRBJ5Q+SM4a9temU0s9hUkJtp/QsB3KWbgOJRQFC9XJr14GCTDkj8
-         MsijxkYsXAqGstSCZWDAn3d9H/XiLJICOFqB2MaG/DRPPjEHUTt7cfphfPT0TdG1PRnF
-         TFVOapdBPLFDGav+yFTXhp7qDZ/uuVWuH++U/k3g/b2dk2ztzQksQfKYu6AC3nr/AftS
-         zG1g==
+        id S229666AbhCEPFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 10:05:02 -0500
+Received: from mail-lf1-f42.google.com ([209.85.167.42]:45440 "EHLO
+        mail-lf1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230052AbhCEPE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 10:04:57 -0500
+Received: by mail-lf1-f42.google.com with SMTP id k9so4084869lfo.12;
+        Fri, 05 Mar 2021 07:04:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JjTJfcQAXeOWcp9QkQJCNvSpKl1Ds2qR5zvC+5VzgvI=;
-        b=N2mlllnz/lSbl4g+ehHbFZofDfKIdtKvtCW7WrLgSCbG8lpcc3juAAg8g237UbHHzS
-         /z5Tf7a6ogEAdIH1MlpKTJ+TzDnvVWo08lxvEz6sDKv4swuzd5IX6A8Y5J5NBagwa4EO
-         8HsXVie78j8RQoFnG70y1R0huHQvG51RPCdh2aG+40U0UF3BGjxrXbU87SbgF5niRO1/
-         VlJxmIiP0VqoCYB8NBmVfy8fjETTpi86PHMydaiK+YWpF1HcqpiChuHL7F0+ri6H0DHX
-         BRXilziuGPFqmZRDFsTgJpkT9CA4FbpoNMbrFn5tE0l+0J7BcQ2ruHaQaAdzcXx7Nqk+
-         N7Dw==
-X-Gm-Message-State: AOAM531sSb4uoKtkUnFRSee7wO0ifg7cz9OpLdbP17W+DV4hdOU7Dn+B
-        LBOWPXqWGOklwotj+8V2Rbp8TWuri6w=
-X-Google-Smtp-Source: ABdhPJzxYXB0fSfP/LpLuhR5XcSqJDQV0rU07EpYwidNpaHbwTe/rvz6ZS4d7K7mkl8hEXW1fSinKA==
-X-Received: by 2002:aa7:c4d1:: with SMTP id p17mr9564391edr.387.1614956938514;
-        Fri, 05 Mar 2021 07:08:58 -0800 (PST)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
-        by smtp.gmail.com with ESMTPSA id k22sm1735260edv.33.2021.03.05.07.08.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Mar 2021 07:08:57 -0800 (PST)
-Received: by mail-wr1-f41.google.com with SMTP id w11so2436203wrr.10
-        for <netdev@vger.kernel.org>; Fri, 05 Mar 2021 07:08:56 -0800 (PST)
-X-Received: by 2002:a5d:640b:: with SMTP id z11mr9605831wru.327.1614956936586;
- Fri, 05 Mar 2021 07:08:56 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FxXT3yR6v7qc7jItpADfb+0ke++RwOmzj7MngvZr5H0=;
+        b=Wa3cT24mzVV/z1aC9S8Lmgg1h8Cnw1lDhtHGoNYGrmFEkTIysg1zLKPD90Un74Y1Nx
+         MYJpyIjrhKhACy6jSDBM7eyPmB5TbOxOmxgAJV9qJPthT3eo80C4B6mtLuR1gn5ohdSz
+         9ZIoyTltQOxGTV8Wp/+zp+wggoSgIoO1aBUpvjk12Sm/flQZahya9LMvmzdhW6gjng9j
+         l2NtqyGsvxgX9G2Qy0NZiaYFBuQXZWkftWFAdLNvKNLDemm7HEHxqD2QPV70qbfSvQvu
+         k7qCF8+Ih7NvbkinNuca+goe71MxS5WigfJA87rRLs2AMMlAJ8rx1XCBQnuvSDvGRK73
+         YTpw==
+X-Gm-Message-State: AOAM532YMBtSjmZJYY6oeU86qmksWJg7mVURD44Cjs8yLaGhSb+oH9VH
+        tlDvsJ1DiEJjW4OE3Gy7GbU=
+X-Google-Smtp-Source: ABdhPJxRyfHpDbCj9qZT15SJ39uV3oF8q5NUtgIH64IzW3fW+0ck5pg1xjdiX43XIaQLNW1ttGLwIw==
+X-Received: by 2002:a05:6512:b18:: with SMTP id w24mr5707094lfu.212.1614956695685;
+        Fri, 05 Mar 2021 07:04:55 -0800 (PST)
+Received: from localhost.. (broadband-188-32-236-56.ip.moscow.rt.ru. [188.32.236.56])
+        by smtp.googlemail.com with ESMTPSA id q26sm351475ljg.90.2021.03.05.07.04.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Mar 2021 07:04:55 -0800 (PST)
+From:   Denis Efremov <efremov@linux.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Denis Efremov <efremov@linux.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] sun/niu: fix wrong RXMAC_BC_FRM_CNT_COUNT count
+Date:   Fri,  5 Mar 2021 20:02:12 +0300
+Message-Id: <20210305170212.146135-1-efremov@linux.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210305123347.15311-1-hxseverything@gmail.com>
-In-Reply-To: <20210305123347.15311-1-hxseverything@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 5 Mar 2021 10:08:20 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSc_RDHb8dmMzfwatt89pXsX2AA1--X98pEGkmmfpVs-Vg@mail.gmail.com>
-Message-ID: <CA+FuTSc_RDHb8dmMzfwatt89pXsX2AA1--X98pEGkmmfpVs-Vg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests_bpf: extend test_tc_tunnel test with vxlan
-To:     Xuesen Huang <hxseverything@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Xuesen Huang <huangxuesen@kuaishou.com>,
-        Li Wang <wangli09@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 5, 2021 at 7:34 AM Xuesen Huang <hxseverything@gmail.com> wrote:
->
-> From: Xuesen Huang <huangxuesen@kuaishou.com>
->
-> Add BPF_F_ADJ_ROOM_ENCAP_L2_ETH flag to the existing tests which
-> encapsulates the ethernet as the inner l2 header.
->
-> Update a vxlan encapsulation test case.
->
-> Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
-> Signed-off-by: Li Wang <wangli09@kuaishou.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+RXMAC_BC_FRM_CNT_COUNT added to mp->rx_bcasts twice in a row
+in niu_xmac_interrupt(). Remove the second addition.
 
+Signed-off-by: Denis Efremov <efremov@linux.com>
+---
+I don't know the code of the dirver, but this looks like a real bug.
+Otherwise, it's more readable as:
+   mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT * 2;
 
-Please don't add my signed off by without asking.
+ drivers/net/ethernet/sun/niu.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-That said,
+diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
+index 68695d4afacd..707ccdd03b19 100644
+--- a/drivers/net/ethernet/sun/niu.c
++++ b/drivers/net/ethernet/sun/niu.c
+@@ -3931,8 +3931,6 @@ static void niu_xmac_interrupt(struct niu *np)
+ 		mp->rx_mcasts += RXMAC_MC_FRM_CNT_COUNT;
+ 	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
+ 		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
+-	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
+-		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
+ 	if (val & XRXMAC_STATUS_RXHIST1_CNT_EXP)
+ 		mp->rx_hist_cnt1 += RXMAC_HIST_CNT1_COUNT;
+ 	if (val & XRXMAC_STATUS_RXHIST2_CNT_EXP)
+-- 
+2.26.2
 
-Acked-by: Willem de Bruijn <willemb@google.com>
