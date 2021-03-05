@@ -2,113 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3888A32E0DE
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 05:52:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD2332E0E8
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 05:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbhCEEvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 23:51:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
+        id S229642AbhCEEyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 23:54:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbhCEEvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 23:51:53 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA07C061574
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 20:51:52 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id c10so841813ilo.8
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 20:51:52 -0800 (PST)
+        with ESMTP id S229475AbhCEEyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 23:54:23 -0500
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81C9C061574
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 20:54:21 -0800 (PST)
+Received: by mail-ot1-x329.google.com with SMTP id v12so614316ott.10
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 20:54:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TnGi8AEpI5ZKVG6mnh7UvPhO+sCMtGAg+B+k8ek7+Lc=;
-        b=ZUDl7FgCgEEyjrIb3yi3eGZNJ9UAicHuInZ+8wrXeUBkj0f+hU00FpRUh9Cqi7031e
-         xg0nM5gHs/+/qwvf4ALrzWYxNWXROHlgz326HOTQozczvsec14R+aPBFNH/Mr3V+9GFd
-         UuYClmrXCpA5HFjcztUnaUqJnMIUIYg8aYw7Q=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v5vUH7jZFg89PccMthKJVQxPCOGJqn1GXklu4BKBrBs=;
+        b=JuvOf4VVEYS89LfkQM53QREtjLbjv+M6xBZrd6lInijt/o4C39mz4CXUCN78+4APWG
+         cLRHwmUDY7sOY0CJpIUt1MLqwEwkp1q0GYdNbESH1KjA3aDqbVR9FDVoTXe1Sk9Xr16U
+         EDSsihGqbI4f6atWBiikbF9SUDcJpOuV44QOr6gLiZUUCkfV1dI/pBntjWMZppicxZWJ
+         dW8KwZrWbsQoLFVRzDCdhfr557JEkWfkC0+deY/U34AU8tJqLLVo3B8S1/pcJ5PtfxrD
+         GvEXPoJhZuSf2/8yRzyJEEiLXWaCpRkPfP9OOoYp2RR3FRJFbcdI5OqtY7LaOFRiJL/R
+         /kPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TnGi8AEpI5ZKVG6mnh7UvPhO+sCMtGAg+B+k8ek7+Lc=;
-        b=OQ485VXqhdNpXUCExPM1UmwgQ6aAlGTmCBYW+4gTSLfDXS1wPUGUwOQ4jNM6PDJxI6
-         oPulnhv2IZev03srC+BsOAKvChAwyDmrRpqBiqjDQzz9aiHOvD8GYql3OiF6RgHxvPc3
-         Qyc+DY+NycxNwCWW5SwC6TBBDA/sKpTvLPFfYaHUQeAL68b/FZ37P9PvkEakX6i0JVAp
-         doaFA1d21xO8nUKqlI5YaaN68VNDvjpCgWMk6bPgjCRniwdIzNRFhT2ejgPKE3hcP+1T
-         +iQUF5qpaAj1LmZ4eoWvoqK55aw96b3A8E/YRG36bkz0gMA/lESTyOoYzC9aNLhwsDND
-         PTAw==
-X-Gm-Message-State: AOAM5303Mw4qEy1kDZrG+GtXr9ZrvpM7vwF6lrXdhFUgf12na5L1GgCp
-        uPzrk1OrmouoNgn9e0qekU8qA5/c0YScWQ==
-X-Google-Smtp-Source: ABdhPJyk6h3gmJOUonNz+suqqjPazO+vuk4ZfMZPBeYgmzD5rcx4M/SJNC97QseTC9M+TwEiqYyw2Q==
-X-Received: by 2002:a92:6510:: with SMTP id z16mr7617150ilb.88.1614919912445;
-        Thu, 04 Mar 2021 20:51:52 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id x2sm797954ilj.31.2021.03.04.20.51.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Mar 2021 20:51:51 -0800 (PST)
-Subject: Re: [PATCH net-next 0/6] net: qualcomm: rmnet: stop using C
- bit-fields
-To:     subashab@codeaurora.org, Alex Elder <elder@linaro.org>
-Cc:     stranche@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        sharathv@codeaurora.org, bjorn.andersson@linaro.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v5vUH7jZFg89PccMthKJVQxPCOGJqn1GXklu4BKBrBs=;
+        b=IHTjtTswUQ0AWEEgzPBl5SXtYN7WFuA+UutHLsTmGq0W8Adv8+rVQlPVcYmASEHDJk
+         bENVoVygeoW9CwMMKwU0LZG0XTeAFdegJKwIZSTc5OBZDdELLfVyz3cATBcEMV37t97Z
+         gRrERODy9HxNo+0NFVLWwW5/gYxGH27F9w5NOYROloGwlPAyDLYI5WkHHr9Qt/BbcbjQ
+         kEvXUf8UxuDlVAxkRT0oQecWfhGXy3Zjy6fhH0fsDYWcZYWJC1JMlMKbfJmVJC/H8A5B
+         Nveb4DZ7UVLPpjwacfe6lSGUYhudIHpmU+72WsrOE8mUILB7tyf73otNTZkP5QrDdA6j
+         7HVg==
+X-Gm-Message-State: AOAM530EfBp8dPMQtJzN+2fOuSkZYfzPcze4lhO8E1GDzv/kZedYcvSu
+        U3FGRgzm5lJoSXQjIW9gqM64Vw==
+X-Google-Smtp-Source: ABdhPJx8mwLwoYpU80IxbM0PI2U+kNY5M/A1Cshqk+6PQRbHjEc7b3FUZ69dHwffF+iR/BW9pkEVGQ==
+X-Received: by 2002:a9d:7196:: with SMTP id o22mr6403661otj.107.1614920061290;
+        Thu, 04 Mar 2021 20:54:21 -0800 (PST)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id c25sm400317otk.35.2021.03.04.20.54.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Mar 2021 20:54:20 -0800 (PST)
+Date:   Thu, 4 Mar 2021 22:54:19 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, sharathv@codeaurora.org,
         evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 5/6] net: qualcomm: rmnet: don't use C
+ bit-fields in rmnet checksum trailer
+Message-ID: <YEG5e3K/gElI3bSh@builder.lan>
 References: <20210304223431.15045-1-elder@linaro.org>
- <3a4a4c26494c12f9961c50e2d4b83c99@codeaurora.org>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <f2d64441-81af-3e11-18da-390f91fbaf15@ieee.org>
-Date:   Thu, 4 Mar 2021 22:51:50 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+ <20210304223431.15045-6-elder@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <3a4a4c26494c12f9961c50e2d4b83c99@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210304223431.15045-6-elder@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/4/21 9:44 PM, subashab@codeaurora.org wrote:
+On Thu 04 Mar 16:34 CST 2021, Alex Elder wrote:
+
+> Replace the use of C bit-fields in the rmnet_map_dl_csum_trailer
+> structure with a single one-byte field, using constant field masks
+> to encode or get at embedded values.
 > 
-> Can you share what all tests have been done with these patches
 
-I'm testing with all of them applied and "it works."  On
-the first three I think they're simple enough that you
-can see by inspection they should be OK.  For the rest
-I tested more carefully.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-For runtime testing, I have used them on IPA v3.5.1 and
-IPA v4.2 platforms, running repeated ping and other network
-traffic tests over an rmnet connection.
+Regards,
+Bjorn
 
-For unit testing, I did essentially the following.  I'll
-use the MAP header structure as an example, but I did
-this on all structures I modified.
-
-	struct rmnet_map_header_new new;
-	struct rmnet_map_header *old = (void *)&new;
-	u8 val;
-
-	val = u8_encode_bits(1, MAP_CMD_FMASK);
-	val |= u8_encode_bits(0x23, MAP_PAD_LEN_FMASK);
-	new.flags = val;
-	new.mux_id = 0x45;
-	new.pkt_len = htons(0x6789);
-
-	printk("pad_len: 0x%x (want 0x23)\n", old->pad_len);
-	printk("reserved_bit: 0x%x (want 0x0)\n", old->reserved_bit);
-	printk("cd_bit: 0x%x (want 0x1)\n", old->cd_bit);
-	printk("mux_id: 0x%x (want 0x45)\n", old->mux_id);
-	printk("pkt_len: 0x%x (want 0x6789)\n", ntohs(old->pkt_len));
-
-I didn't do *exactly* or *only* this, but basically the
-process was manipulating the values assigned using the
-old structure then verifying it has the same representation
-in the new structure using the new access methods (and vice
-versa).
-
-I suspect you have a much better ability to test than
-I do, and I would really prefer to see this get tested
-rigorously if possible.
-
-					-Alex
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  .../ethernet/qualcomm/rmnet/rmnet_map_data.c    |  2 +-
+>  include/linux/if_rmnet.h                        | 17 +++++++----------
+>  2 files changed, 8 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> index 3291f252d81b0..29d485b868a65 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> @@ -365,7 +365,7 @@ int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len)
+>  
+>  	csum_trailer = (struct rmnet_map_dl_csum_trailer *)(skb->data + len);
+>  
+> -	if (!csum_trailer->valid) {
+> +	if (!u8_get_bits(csum_trailer->flags, MAP_CSUM_DL_VALID_FMASK)) {
+>  		priv->stats.csum_valid_unset++;
+>  		return -EINVAL;
+>  	}
+> diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
+> index 4824c6328a82c..1fbb7531238b6 100644
+> --- a/include/linux/if_rmnet.h
+> +++ b/include/linux/if_rmnet.h
+> @@ -19,21 +19,18 @@ struct rmnet_map_header {
+>  #define MAP_PAD_LEN_FMASK		GENMASK(5, 0)
+>  
+>  struct rmnet_map_dl_csum_trailer {
+> -	u8  reserved1;
+> -#if defined(__LITTLE_ENDIAN_BITFIELD)
+> -	u8  valid:1;
+> -	u8  reserved2:7;
+> -#elif defined (__BIG_ENDIAN_BITFIELD)
+> -	u8  reserved2:7;
+> -	u8  valid:1;
+> -#else
+> -#error	"Please fix <asm/byteorder.h>"
+> -#endif
+> +	u8 reserved1;
+> +	u8 flags;			/* MAP_CSUM_DL_*_FMASK */
+>  	__be16 csum_start_offset;
+>  	__be16 csum_length;
+>  	__be16 csum_value;
+>  } __aligned(1);
+>  
+> +/* rmnet_map_dl_csum_trailer flags field:
+> + *  VALID:	1 = checksum and length valid; 0 = ignore them
+> + */
+> +#define MAP_CSUM_DL_VALID_FMASK		GENMASK(0, 0)
+> +
+>  struct rmnet_map_ul_csum_header {
+>  	__be16 csum_start_offset;
+>  #if defined(__LITTLE_ENDIAN_BITFIELD)
+> -- 
+> 2.20.1
+> 
