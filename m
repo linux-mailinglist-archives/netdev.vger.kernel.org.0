@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF16E32E53E
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:49:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7728532E540
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 10:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbhCEJtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 04:49:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42610 "EHLO mail.kernel.org"
+        id S229637AbhCEJtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 04:49:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229669AbhCEJsx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 04:48:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8CDC064ECF;
-        Fri,  5 Mar 2021 09:48:52 +0000 (UTC)
+        id S229578AbhCEJtk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 04:49:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AF20B64FE8;
+        Fri,  5 Mar 2021 09:49:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614937733;
-        bh=PPSrmURA609muaJephVoMm0YZbJ0gmnU87bIHWpeduE=;
+        s=k20201202; t=1614937780;
+        bh=eY3rGMEBBqNXM9DWJ8q+8xbYaA0kUDZyDVNTJUPw/qc=;
         h=Date:From:To:Cc:Subject:From;
-        b=YNJOU7LAxyTmdN+z6jhZM3JLeP9qa3ZfZ5ELb4o6PYd0xy0qkoA4QjqigNJhLAL50
-         oIN8qnFApMSQsAqHlTJt4gyhqRNwvBa6t/9McFRk6Q2NWRhDzz3K41a0BFOCJ4nDaQ
-         RL70mOFW/0YiI7c+JFreT1TFSwX8Y127zqZTmqVz7YYbbeSNLOzc3YytW9LBkKtgsh
-         dDysvnxpUpjzmeP9jlKtXXBjHfx6b8gF+micLHx12Stw1p9v6414pt/RPFxrXNVwRM
-         wwRX5MaYeQejo6POvRJp9yV++A5GYYN2NFqAaG+w1pxbIbtVwH8+ly8lV+BsA+rYZl
-         Uh+WKTFH5f0bw==
-Date:   Fri, 5 Mar 2021 03:48:50 -0600
+        b=IVgtfkzIrezYADW7aXr2tRba8wLlD1mNgfpNFkiWVuT94M99+bHYGi3lFZ/gM/cBO
+         Lv7Jl0e9ZVRLqhitjGX8hyceDm5+5QVPgwohN1dO5KkA51aZYMQqifSkqVvRp+iCht
+         BSzIUb5CnPt5Q46qZarf6B4oen0A+r+7R6pF778v44F4u9U3x5rP2JR7CMZ9bvtfVX
+         BCz5g4ewUopt5zOjDp1RrovPoisR6s+JJGp9gHnLQN+JTfesBy5FxZCspi1ebeYjzs
+         n2T1VHHF/xV4m9fyTW77277VNaVvQhU9jksRoFpTGU9xlHGDRzEVXP9fSOnf7ry3W6
+         sjMgt03V0LeQA==
+Date:   Fri, 5 Mar 2021 03:49:37 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     oss-drivers@netronome.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH RESEND][next] rtl8xxxu: Fix fall-through warnings for Clang
-Message-ID: <20210305094850.GA141221@embeddedor>
+Subject: [PATCH RESEND][next] nfp: Fix fall-through warnings for Clang
+Message-ID: <20210305094937.GA141307@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -42,56 +41,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation to enable -Wimplicit-fallthrough for Clang, fix
-multiple warnings by replacing /* fall through */ comments with
-the new pseudo-keyword macro fallthrough; instead of letting the
-code fall through to the next case.
-
-Notice that Clang doesn't recognize /* fall through */ comments as
-implicit fall-through markings.
+In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+by explicitly adding a break statement instead of letting the code fall
+through to the next case.
 
 Link: https://github.com/KSPP/linux/issues/115
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_net_repr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 5cd7ef3625c5..afc97958fa4d 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -1145,7 +1145,7 @@ void rtl8xxxu_gen1_config_channel(struct ieee80211_hw *hw)
- 	switch (hw->conf.chandef.width) {
- 	case NL80211_CHAN_WIDTH_20_NOHT:
- 		ht = false;
--		/* fall through */
-+		fallthrough;
- 	case NL80211_CHAN_WIDTH_20:
- 		opmode |= BW_OPMODE_20MHZ;
- 		rtl8xxxu_write8(priv, REG_BW_OPMODE, opmode);
-@@ -1272,7 +1272,7 @@ void rtl8xxxu_gen2_config_channel(struct ieee80211_hw *hw)
- 	switch (hw->conf.chandef.width) {
- 	case NL80211_CHAN_WIDTH_20_NOHT:
- 		ht = false;
--		/* fall through */
-+		fallthrough;
- 	case NL80211_CHAN_WIDTH_20:
- 		rf_mode_bw |= WMAC_TRXPTCL_CTL_BW_20;
- 		subchannel = 0;
-@@ -1741,11 +1741,11 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
- 		case 3:
- 			priv->ep_tx_low_queue = 1;
- 			priv->ep_tx_count++;
--			/* fall through */
-+			fallthrough;
- 		case 2:
- 			priv->ep_tx_normal_queue = 1;
- 			priv->ep_tx_count++;
--			/* fall through */
-+			fallthrough;
- 		case 1:
- 			priv->ep_tx_high_queue = 1;
- 			priv->ep_tx_count++;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+index b3cabc274121..3b8e675087de 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+@@ -103,6 +103,7 @@ nfp_repr_get_stats64(struct net_device *netdev, struct rtnl_link_stats64 *stats)
+ 	case NFP_PORT_PF_PORT:
+ 	case NFP_PORT_VF_PORT:
+ 		nfp_repr_vnic_get_stats64(repr->port, stats);
++		break;
+ 	default:
+ 		break;
+ 	}
 -- 
 2.27.0
 
