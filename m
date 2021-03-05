@@ -2,107 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CF5132F1FC
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 18:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 128F032F2FB
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 19:42:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbhCER52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 12:57:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57874 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229493AbhCER5T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 12:57:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 57DAB6506A;
-        Fri,  5 Mar 2021 17:57:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614967038;
-        bh=kWIujxV213g1u6NMBoyZMWWUf4fXdzjhWrcbJl8m5C4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ocKvfltVipf42vp3IKI4XW7eKYx8fvZV8MYK2T0IFuFPJe7BRHY/0WRDN4eMzJ2bz
-         LCZzaMAeZbf5CjEmyQcVC9rix10pPNJODUmEssH+uQ9zvkBQeKtPMo9JFetRm3R7Lq
-         bK+zMfJ1ADyBAVLguU6rm6VYpIohpnAKacjxWn/xPHbBb0LLRqcOw5CtamFK/eMOXc
-         xQRv7TQ5yesbQsN92ZKLo2QLlU//930b4cgu1G1NdgRk0JPaDiQs8u388fa3xTYGSn
-         rXIffxy3E+r4y9jP5qyR+5M5F7rwpH6QBHuKhQG3mlqLKbuuHSJFhFa3OrlUs6bWx3
-         CzJkEZBadfHCg==
-Date:   Fri, 5 Mar 2021 09:57:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] ipv6: drop incoming packets having a v4mapped
- source address
-Message-ID: <20210305095717.241dbdf4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20191002163855.145178-1-edumazet@google.com>
-References: <20191002163855.145178-1-edumazet@google.com>
+        id S229486AbhCESm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 13:42:27 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:51216 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230148AbhCESmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 13:42:04 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 125IXDDe081720;
+        Fri, 5 Mar 2021 13:42:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=RDR7SdN+nkzOKyC4zcNAY2PUho1ERz4wPH2sn6x5sLs=;
+ b=pAJMd4rSgCNSZnQkkLgFEZbXrJyvegnyqKWJFjNiC941iB/pjoSB9qIbj2aH89sRVlwS
+ JUBm5zJs4uizVDJ6Kil7B8OC8uFsly72h5SE76VK9bmjgKanz2fCU7wS5R/vpoMQvxi2
+ vUdiuQBsrocEh3F2u/4ntDGVKjhPw6fGm4528vJu91DOSHEbVXZ94Ac/lnvku09Ilhfk
+ kEncoUEoA+UFPKEczA3PEFIMS1yS0wXqran6jbYp++34WlbX2FC40dxFAxZaA/OAr4JE
+ uNDwpbA6ByKryDkrff8KQ5hgR6I4bO0Q3/omGpafJuTaOurYYPFwNhA87mGJ2fHXDEtU Fg== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 373t14r6vk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 05 Mar 2021 13:42:02 -0500
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 125IfACo023849;
+        Fri, 5 Mar 2021 18:42:01 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma01wdc.us.ibm.com with ESMTP id 36ydq9sbuj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 05 Mar 2021 18:42:01 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 125Ig0Ui20906250
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 5 Mar 2021 18:42:00 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BF2D7AE062;
+        Fri,  5 Mar 2021 18:42:00 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9E3DAAE064;
+        Fri,  5 Mar 2021 18:42:00 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.85.156.62])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri,  5 Mar 2021 18:42:00 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id 1A9762E284E; Fri,  5 Mar 2021 10:41:57 -0800 (PST)
+Date:   Fri, 5 Mar 2021 10:41:57 -0800
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        drt@linux.ibm.com, tlfalcon@linux.ibm.com
+Subject: Re: [RFC PATCH net] ibmvnic: complete dev->poll nicely during
+ adapter reset
+Message-ID: <20210305184157.GA1411314@us.ibm.com>
+References: <20210305074456.88015-1-ljp@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210305074456.88015-1-ljp@linux.ibm.com>
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-05_13:2021-03-03,2021-03-05 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=970 spamscore=0 mlxscore=0 phishscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501
+ clxscore=1015 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2103050095
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  2 Oct 2019 09:38:55 -0700 Eric Dumazet wrote:
-> This began with a syzbot report. syzkaller was injecting
-> IPv6 TCP SYN packets having a v4mapped source address.
+Lijun Pan [ljp@linux.ibm.com] wrote:
+> The reset path will call ibmvnic_cleanup->ibmvnic_napi_disable
+> ->napi_disable(). This is supposed to stop the polling.
+> Commit 21ecba6c48f9 ("ibmvnic: Exit polling routine correctly
+> during adapter reset") reported that the during device reset,
+> polling routine never completed and napi_disable slept indefinitely.
+> In order to solve that problem, resetting bit was checked and
+> napi_complete_done was called before dev->poll::ibmvnic_poll exited.
 > 
-> After an unsuccessful 4-tuple lookup, TCP creates a request
-> socket (SYN_RECV) and calls reqsk_queue_hash_req()
-> 
-> reqsk_queue_hash_req() calls sk_ehashfn(sk)
-> 
-> At this point we have AF_INET6 sockets, and the heuristic
-> used by sk_ehashfn() to either hash the IPv4 or IPv6 addresses
-> is to use ipv6_addr_v4mapped(&sk->sk_v6_daddr)
-> 
-> For the particular spoofed packet, we end up hashing V4 addresses
-> which were not initialized by the TCP IPv6 stack, so KMSAN fired
-> a warning.
-> 
-> I first fixed sk_ehashfn() to test both source and destination addresses,
-> but then faced various problems, including user-space programs
-> like packetdrill that had similar assumptions.
-> 
-> Instead of trying to fix the whole ecosystem, it is better
-> to admit that we have a dual stack behavior, and that we
-> can not build linux kernels without V4 stack anyway.
-> 
-> The dual stack API automatically forces the traffic to be IPv4
-> if v4mapped addresses are used at bind() or connect(), so it makes
-> no sense to allow IPv6 traffic to use the same v4mapped class.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Florian Westphal <fw@strlen.de>
-> Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Checking for resetting bit in dev->poll is racy because resetting
+> bit may be false while being checked, but turns true immediately
+> afterwards.
 
-FTR this appears to break an UDP/sFlow application which used to work
-fine with mapped addresses. Given the IETF memo perhaps a sysctl would
-be appropriate, but even with that we're back to problems in TCP if the
-sysctl is flipped :S
+Yes, have been testing a fix for that.
+> 
+> Hence we call napi_complete in ibmvnic_napi_disable, which avoids
+> the racing with resetting, and makes sure dev->poll and napi_disalbe
 
-> diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> index d432d0011c160f41aec09640e95179dd7b364cfc..2bb0b66181a741c7fb73cacbdf34c5160f52d186 100644
-> --- a/net/ipv6/ip6_input.c
-> +++ b/net/ipv6/ip6_input.c
-> @@ -223,6 +223,16 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
->  	if (ipv6_addr_is_multicast(&hdr->saddr))
->  		goto err;
->  
-> +	/* While RFC4291 is not explicit about v4mapped addresses
-> +	 * in IPv6 headers, it seems clear linux dual-stack
-> +	 * model can not deal properly with these.
-> +	 * Security models could be fooled by ::ffff:127.0.0.1 for example.
-> +	 *
-> +	 * https://tools.ietf.org/html/draft-itojun-v6ops-v4mapped-harmful-02
-> +	 */
-> +	if (ipv6_addr_v4mapped(&hdr->saddr))
-> +		goto err;
-> +
->  	skb->transport_header = skb->network_header + sizeof(*hdr);
->  	IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
->  
+napi_complete() will prevent a new call to ibmvnic_poll() but what if
+ibmvnic_poll() is already executing and attempting to access the scrqs
+while the reset path is freeing them?
 
+Sukadev
