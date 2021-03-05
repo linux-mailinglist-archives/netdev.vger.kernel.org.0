@@ -2,101 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B66A32E1DF
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 06:49:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD2D32E1CF
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 06:46:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbhCEFth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 00:49:37 -0500
-Received: from pegase1.c-s.fr ([93.17.236.30]:13386 "EHLO pegase1.c-s.fr"
+        id S229573AbhCEFqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 00:46:42 -0500
+Received: from mga18.intel.com ([134.134.136.126]:26224 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229448AbhCEFtg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 00:49:36 -0500
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 4DsGyk0kMkz9v0y8;
-        Fri,  5 Mar 2021 06:49:34 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id rXh9-mUwBGuX; Fri,  5 Mar 2021 06:49:34 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4DsGyj70Ldz9v0y7;
-        Fri,  5 Mar 2021 06:49:33 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 36CF68B78B;
-        Fri,  5 Mar 2021 06:49:34 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id nNPIaJ4uIMZU; Fri,  5 Mar 2021 06:49:33 +0100 (CET)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 220958B78E;
-        Fri,  5 Mar 2021 06:49:27 +0100 (CET)
-Subject: Re: [PATCH] ibmvnic: remove excessive irqsave
-To:     angkery <angkery@163.com>, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, drt@linux.ibm.com,
-        ljp@linux.ibm.com, sukadev@linux.ibm.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Junlin Yang <yangjunlin@yulong.com>
-References: <20210305014350.1460-1-angkery@163.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <67215668-0850-a0f3-06e1-49db590b8fcc@csgroup.eu>
-Date:   Fri, 5 Mar 2021 06:49:14 +0100
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-MIME-Version: 1.0
-In-Reply-To: <20210305014350.1460-1-angkery@163.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+        id S229486AbhCEFqm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 00:46:42 -0500
+IronPort-SDR: ypad0dxyxDX8W1Z+bCxda6scOYrdaYTJAyE70bWSdSUdDeHeofBMOVHPBsnViitnb5s5N2HOQd
+ Q96cC8Cyvpvg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9913"; a="175205370"
+X-IronPort-AV: E=Sophos;i="5.81,224,1610438400"; 
+   d="scan'208";a="175205370"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 21:46:33 -0800
+IronPort-SDR: 2oWlfv1RIMS0G3hZt0P+/X/dqBMO+h83Ek/AfL+kLozvNggpjXeGNFtR32vYnA1/B6RCuf+v8I
+ VWoCrYH5BfZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,224,1610438400"; 
+   d="scan'208";a="446070894"
+Received: from glass.png.intel.com ([10.158.65.59])
+  by orsmga001.jf.intel.com with ESMTP; 04 Mar 2021 21:46:30 -0800
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: [PATCH net 1/1] net: stmmac: Fix VLAN filter delete timeout issue in Intel mGBE SGMII
+Date:   Fri,  5 Mar 2021 13:49:30 +0800
+Message-Id: <20210305054930.7434-1-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.17.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+For Intel mGbE controller, MAC VLAN filter delete operation will time-out
+if serdes power-down sequence happened first during driver remove() with
+below message.
 
+[82294.764958] intel-eth-pci 0000:00:1e.4 eth2: stmmac_dvr_remove: removing driver
+[82294.778677] intel-eth-pci 0000:00:1e.4 eth2: Timeout accessing MAC_VLAN_Tag_Filter
+[82294.779997] intel-eth-pci 0000:00:1e.4 eth2: failed to kill vid 0081/0
+[82294.947053] intel-eth-pci 0000:00:1d.2 eth1: stmmac_dvr_remove: removing driver
+[82295.002091] intel-eth-pci 0000:00:1d.1 eth0: stmmac_dvr_remove: removing driver
 
-Le 05/03/2021 à 02:43, angkery a écrit :
-> From: Junlin Yang <yangjunlin@yulong.com>
-> 
-> ibmvnic_remove locks multiple spinlocks while disabling interrupts:
-> spin_lock_irqsave(&adapter->state_lock, flags);
-> spin_lock_irqsave(&adapter->rwi_lock, flags);
-> 
-> there is no need for the second irqsave,since interrupts are disabled
-> at that point, so remove the second irqsave:
+Therefore, we delay the serdes power-down to be after unregister_netdev()
+which triggers the VLAN filter delete.
 
-The problème is not that there is no need. The problem is a lot more serious:
-As reported by coccinella, the second _irqsave() overwrites the value saved in 'flags' by the first 
-_irqsave, therefore when the second _irqrestore comes, the value in 'flags' is not valid, the value 
-saved by the first _irqsave has been lost. This likely leads to IRQs remaining disabled, which is 
-_THE_ problem really.
+Fixes: b9663b7ca6ff ("net: stmmac: Enable SERDES power up/down sequence")
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-> spin_lock_irqsave(&adapter->state_lock, flags);
-> spin_lock(&adapter->rwi_lock);
-> 
-> Generated by: ./scripts/coccinelle/locks/flags.cocci
-> ./drivers/net/ethernet/ibm/ibmvnic.c:5413:1-18:
-> ERROR: nested lock+irqsave that reuses flags from line 5404.
-> 
-> Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
-> ---
->   drivers/net/ethernet/ibm/ibmvnic.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-> index 2464c8a..a52668d 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -5408,9 +5408,9 @@ static void ibmvnic_remove(struct vio_dev *dev)
->   	 * after setting state, so __ibmvnic_reset() which is called
->   	 * from the flush_work() below, can make progress.
->   	 */
-> -	spin_lock_irqsave(&adapter->rwi_lock, flags);
-> +	spin_lock(&adapter->rwi_lock);
->   	adapter->state = VNIC_REMOVING;
-> -	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
-> +	spin_unlock(&adapter->rwi_lock);
->   
->   	spin_unlock_irqrestore(&adapter->state_lock, flags);
->   
-> 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 0eba44e9c1f8..208cae344ffa 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5249,13 +5249,16 @@ int stmmac_dvr_remove(struct device *dev)
+ 	netdev_info(priv->dev, "%s: removing driver", __func__);
+ 
+ 	stmmac_stop_all_dma(priv);
++	stmmac_mac_set(priv, priv->ioaddr, false);
++	netif_carrier_off(ndev);
++	unregister_netdev(ndev);
+ 
++	/* Serdes power down needs to happen after VLAN filter
++	 * is deleted that is triggered by unregister_netdev().
++	 */
+ 	if (priv->plat->serdes_powerdown)
+ 		priv->plat->serdes_powerdown(ndev, priv->plat->bsp_priv);
+ 
+-	stmmac_mac_set(priv, priv->ioaddr, false);
+-	netif_carrier_off(ndev);
+-	unregister_netdev(ndev);
+ #ifdef CONFIG_DEBUG_FS
+ 	stmmac_exit_fs(ndev);
+ #endif
+-- 
+2.17.0
+
