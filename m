@@ -2,141 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D79432F0E7
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 18:12:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF5132F1FC
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 18:58:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231455AbhCERMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 12:12:15 -0500
-Received: from mga02.intel.com ([134.134.136.20]:15154 "EHLO mga02.intel.com"
+        id S229719AbhCER52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 12:57:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57874 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231515AbhCERLw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 12:11:52 -0500
-IronPort-SDR: k4KPxxvu/IeXe3n3v/MZ7dMlD3unfKOtxckP/qWGe9dsDzW8TBe8SWZya26u5wK6vZZt9+eqdv
- eZCA+UDVD6Ow==
-X-IronPort-AV: E=McAfee;i="6000,8403,9914"; a="174799048"
-X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; 
-   d="scan'208";a="174799048"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 09:11:51 -0800
-IronPort-SDR: QnYQ33vzpaI8JxA7ylLM2g1KNooLV/OXI5KPbzeB0eNctUkvmCMkhKBXe7Dy9UgKAw1BT4hIEk
- avUXwZ83cZGA==
-X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; 
-   d="scan'208";a="408399582"
-Received: from luetzenk-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.43.131])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 09:11:46 -0800
-Subject: Re: [PATCH bpf-next v5 2/2] bpf, xdp: restructure redirect actions
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     maciej.fijalkowski@intel.com, hawk@kernel.org, toke@redhat.com,
-        magnus.karlsson@intel.com, john.fastabend@gmail.com,
-        kuba@kernel.org, davem@davemloft.net,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-References: <20210227122139.183284-1-bjorn.topel@gmail.com>
- <20210227122139.183284-3-bjorn.topel@gmail.com>
- <ddbbeadc-bead-904a-200a-b75cd995b254@iogearbox.net>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <222735a9-0cbe-7131-7fd8-f638ddecbedc@intel.com>
-Date:   Fri, 5 Mar 2021 18:11:43 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S229493AbhCER5T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 12:57:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 57DAB6506A;
+        Fri,  5 Mar 2021 17:57:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614967038;
+        bh=kWIujxV213g1u6NMBoyZMWWUf4fXdzjhWrcbJl8m5C4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ocKvfltVipf42vp3IKI4XW7eKYx8fvZV8MYK2T0IFuFPJe7BRHY/0WRDN4eMzJ2bz
+         LCZzaMAeZbf5CjEmyQcVC9rix10pPNJODUmEssH+uQ9zvkBQeKtPMo9JFetRm3R7Lq
+         bK+zMfJ1ADyBAVLguU6rm6VYpIohpnAKacjxWn/xPHbBb0LLRqcOw5CtamFK/eMOXc
+         xQRv7TQ5yesbQsN92ZKLo2QLlU//930b4cgu1G1NdgRk0JPaDiQs8u388fa3xTYGSn
+         rXIffxy3E+r4y9jP5qyR+5M5F7rwpH6QBHuKhQG3mlqLKbuuHSJFhFa3OrlUs6bWx3
+         CzJkEZBadfHCg==
+Date:   Fri, 5 Mar 2021 09:57:17 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: Re: [PATCH net] ipv6: drop incoming packets having a v4mapped
+ source address
+Message-ID: <20210305095717.241dbdf4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20191002163855.145178-1-edumazet@google.com>
+References: <20191002163855.145178-1-edumazet@google.com>
 MIME-Version: 1.0
-In-Reply-To: <ddbbeadc-bead-904a-200a-b75cd995b254@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-05 16:44, Daniel Borkmann wrote:
-> On 2/27/21 1:21 PM, Björn Töpel wrote:
-> [...]
->> diff --git a/include/linux/filter.h b/include/linux/filter.h
->> index 008691fd3b58..a7752badc2ec 100644
->> --- a/include/linux/filter.h
->> +++ b/include/linux/filter.h
->> @@ -646,11 +646,20 @@ struct bpf_redirect_info {
->>       u32 flags;
->>       u32 tgt_index;
->>       void *tgt_value;
->> -    struct bpf_map *map;
->> +    u32 map_id;
->> +    u32 tgt_type;
->>       u32 kern_flags;
->>       struct bpf_nh_params nh;
->>   };
->> +enum xdp_redirect_type {
->> +    XDP_REDIR_UNSET,
->> +    XDP_REDIR_DEV_IFINDEX,
+On Wed,  2 Oct 2019 09:38:55 -0700 Eric Dumazet wrote:
+> This began with a syzbot report. syzkaller was injecting
+> IPv6 TCP SYN packets having a v4mapped source address.
 > 
-> [...]
+> After an unsuccessful 4-tuple lookup, TCP creates a request
+> socket (SYN_RECV) and calls reqsk_queue_hash_req()
 > 
->> +    XDP_REDIR_DEV_MAP,
->> +    XDP_REDIR_CPU_MAP,
->> +    XDP_REDIR_XSK_MAP,
+> reqsk_queue_hash_req() calls sk_ehashfn(sk)
 > 
-> Did you eval whether for these maps we can avoid the redundant def above 
-> by just
-> passing in map->map_type as ri->tgt_type and inferring the 
-> XDP_REDIR_UNSET from
-> invalid map_id of 0 (given the idr will never allocate such)?
->
-
-I'll take a stab at it!
-
-
-> [...]
->> @@ -4068,10 +4039,9 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, 
->> flags)
->>       if (unlikely(flags))
->>           return XDP_ABORTED;
->> -    ri->flags = flags;
->> -    ri->tgt_index = ifindex;
->> -    ri->tgt_value = NULL;
->> -    WRITE_ONCE(ri->map, NULL);
->> +    ri->tgt_type = XDP_REDIR_DEV_IFINDEX;
->> +    ri->tgt_index = 0;
->> +    ri->tgt_value = (void *)(long)ifindex;
+> At this point we have AF_INET6 sockets, and the heuristic
+> used by sk_ehashfn() to either hash the IPv4 or IPv6 addresses
+> is to use ipv6_addr_v4mapped(&sk->sk_v6_daddr)
 > 
-> nit: Bit ugly to pass this in /read out this way, maybe union if we 
-> cannot use
-> tgt_index?
->
-
-Dito!
-
-
-Thanks for the input! I'll get back with a v6!
-
-
-Björn
-
-
->>       return XDP_REDIRECT;
->>   }
->> diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
->> index 711acb3636b3..2c58d88aa69d 100644
->> --- a/net/xdp/xskmap.c
->> +++ b/net/xdp/xskmap.c
->> @@ -87,7 +87,6 @@ static void xsk_map_free(struct bpf_map *map)
->>   {
->>       struct xsk_map *m = container_of(map, struct xsk_map, map);
->> -    bpf_clear_redirect_map(map);
->>       synchronize_net();
->>       bpf_map_area_free(m);
->>   }
->> @@ -229,7 +228,8 @@ static int xsk_map_delete_elem(struct bpf_map 
->> *map, void *key)
->>   static int xsk_map_redirect(struct bpf_map *map, u32 ifindex, u64 
->> flags)
->>   {
->> -    return __bpf_xdp_redirect_map(map, ifindex, flags, 
->> __xsk_map_lookup_elem);
->> +    return __bpf_xdp_redirect_map(map, ifindex, flags, 
->> __xsk_map_lookup_elem,
->> +                      XDP_REDIR_XSK_MAP);
->>   }
->>   void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
->>
+> For the particular spoofed packet, we end up hashing V4 addresses
+> which were not initialized by the TCP IPv6 stack, so KMSAN fired
+> a warning.
 > 
+> I first fixed sk_ehashfn() to test both source and destination addresses,
+> but then faced various problems, including user-space programs
+> like packetdrill that had similar assumptions.
+> 
+> Instead of trying to fix the whole ecosystem, it is better
+> to admit that we have a dual stack behavior, and that we
+> can not build linux kernels without V4 stack anyway.
+> 
+> The dual stack API automatically forces the traffic to be IPv4
+> if v4mapped addresses are used at bind() or connect(), so it makes
+> no sense to allow IPv6 traffic to use the same v4mapped class.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Florian Westphal <fw@strlen.de>
+> Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+
+FTR this appears to break an UDP/sFlow application which used to work
+fine with mapped addresses. Given the IETF memo perhaps a sysctl would
+be appropriate, but even with that we're back to problems in TCP if the
+sysctl is flipped :S
+
+> diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+> index d432d0011c160f41aec09640e95179dd7b364cfc..2bb0b66181a741c7fb73cacbdf34c5160f52d186 100644
+> --- a/net/ipv6/ip6_input.c
+> +++ b/net/ipv6/ip6_input.c
+> @@ -223,6 +223,16 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+>  	if (ipv6_addr_is_multicast(&hdr->saddr))
+>  		goto err;
+>  
+> +	/* While RFC4291 is not explicit about v4mapped addresses
+> +	 * in IPv6 headers, it seems clear linux dual-stack
+> +	 * model can not deal properly with these.
+> +	 * Security models could be fooled by ::ffff:127.0.0.1 for example.
+> +	 *
+> +	 * https://tools.ietf.org/html/draft-itojun-v6ops-v4mapped-harmful-02
+> +	 */
+> +	if (ipv6_addr_v4mapped(&hdr->saddr))
+> +		goto err;
+> +
+>  	skb->transport_header = skb->network_header + sizeof(*hdr);
+>  	IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
+>  
+
