@@ -2,165 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC09832EBC4
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 14:00:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CAD32EBC6
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 14:02:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbhCENAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 08:00:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbhCEM7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 07:59:53 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954A0C061756
-        for <netdev@vger.kernel.org>; Fri,  5 Mar 2021 04:59:53 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id 2so1610603qtw.1
-        for <netdev@vger.kernel.org>; Fri, 05 Mar 2021 04:59:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yasENDD7zbA4FMKVPyHza6cSklZikxEtfBF1Xaa+1NA=;
-        b=Xke4rpqHH7QF0plKZC4DbzGXx930n7F0EYmwDaVQzJH9TnNW9/b/FQK+Of7XHqG6R/
-         Kct0TGyDPV730OWdEOHStfVxy2qdBbG3PnpuPIIKYJr1bM1mMIx0/WJAfVomVPmhpZcd
-         QgvTkOZ84iUsmk8+NeHbAOVRfaJcVPT9Y67p5wykIIKuRBb63NehzFsMBKIPPBwJChu5
-         okXmTQwe8mb/T0bRqcTtJHN/rr5m3+00lM/kBLD6tvTgR7jA7Hxv0tTkgvCIbJ1FD1V1
-         WZGwBXA7/pA2i3YdHh+O+ZCKLWdEEGtHSHNCIGqMQcCGLS0uRrW1RU0hjB97YWeb8w0f
-         AU+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yasENDD7zbA4FMKVPyHza6cSklZikxEtfBF1Xaa+1NA=;
-        b=Xp2MbXhiluZ1CaboxVvMZDTF5AgA38TsgDS0Gn1H0UG0aGcmAWCkWROnRdHOsTbhN2
-         DyIBn+gSWoKW43feLKsmwa91gOUOiKHmysOoerj1pjSyI0NN5NPQJzv3kOGKu92bBcf2
-         1nKlQfNnvHiugR3oaD0dMHqh2trbCSElgQhBG8AJuKNVfOsguvWbkie7+jfpRgSkpwA3
-         wsOwzZfOF8+Vz+mnYmKNjMgc99YxX1k5erhDfmYzLZv0SfjXw7LZ4gTNj6yk7aSra/Yg
-         XrB8OX6pJ/zg7yhNrps31UxUX+5+oGx5QSJpC7GbDMQLwT4U4kweB1gRmYfI/1oBFNm2
-         5IFQ==
-X-Gm-Message-State: AOAM533UZ1Y7QnESSRfD+l4A51KBBupVpixhpN+mMRNzfHR6g+wL0XPb
-        NDXI8I8fQRgmvsum53vuRq6pACLKD7zldQ==
-X-Google-Smtp-Source: ABdhPJzeXJ1cRu4ixBm8McLCT/hXc8EIKetIfsE1+WJq7AwmYT6zV5VzMsm9CVncrbspTfzAp1qXhw==
-X-Received: by 2002:aed:2e63:: with SMTP id j90mr7867751qtd.241.1614949191996;
-        Fri, 05 Mar 2021 04:59:51 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id z7sm1642518qkf.136.2021.03.05.04.59.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Mar 2021 04:59:51 -0800 (PST)
-Subject: Re: [PATCH net-next 6/6] net: qualcomm: rmnet: don't use C bit-fields
- in rmnet checksum header
-To:     kernel test robot <lkp@intel.com>, subashab@codeaurora.org,
-        stranche@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     kbuild-all@01.org, sharathv@codeaurora.org,
-        bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org
-References: <20210304223431.15045-7-elder@linaro.org>
- <202103051434.KSZRphLE-lkp@intel.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <2bcbefab-7c4d-dd36-01f8-9759ba4b2bdf@linaro.org>
-Date:   Fri, 5 Mar 2021 06:59:50 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S229899AbhCENCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 08:02:01 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:12697 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229749AbhCENBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 08:01:38 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DsSVk1gvqzlT6v;
+        Fri,  5 Mar 2021 20:59:26 +0800 (CST)
+Received: from DESKTOP-9883QJJ.china.huawei.com (10.136.114.155) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.498.0; Fri, 5 Mar 2021 21:01:26 +0800
+From:   zhudi <zhudi21@huawei.com>
+To:     <j.vosburgh@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <zhudi21@huawei.com>,
+        <rose.chen@huawei.com>
+Subject: [PATCH] bonding: 3ad: fix a use-after-free in bond_3ad_state_machine_handle
+Date:   Fri, 5 Mar 2021 21:01:20 +0800
+Message-ID: <20210305130120.4128-1-zhudi21@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <202103051434.KSZRphLE-lkp@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.136.114.155]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/5/21 12:22 AM, kernel test robot wrote:
-> Hi Alex,
-> 
-> I love your patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on net-next/master]
+From: Di Zhu <zhudi21@huawei.com>
 
-Well that's embarrassing.  It explains why I had to make
-a change or two after testing though.
+I use the similar test method described in link below with KASAN enabled:
+https://lore.kernel.org/netdev/4c5e467e07fb410ab4135b391d663ec1@huawei.com/
+soon after, KASAN reports:
+[ 9041.977110] ==================================================================
+[ 9041.977151] BUG: KASAN: use-after-free in bond_3ad_state_machine_handler+0x1c34/0x20b0 [bonding]
+[ 9041.977156] Read of size 2 at addr ffff80394b8d70b0 by task kworker/u192:2/78492
 
-I will fix this so the bit fields are defined in host
-byte order, and will fix the encoding calls to use
-u32_encode_bits() instead of be32_encode_bits().
+[ 9041.977187] Workqueue: bond0 bond_3ad_state_machine_handler [bonding]
+[ 9041.977190] Call trace:
+[ 9041.977197]  dump_backtrace+0x0/0x310
+[ 9041.977201]  show_stack+0x28/0x38
+[ 9041.977207]  dump_stack+0xec/0x15c
+[ 9041.977213]  print_address_description+0x68/0x2d0
+[ 9041.977217]  kasan_report+0x130/0x2f0
+[ 9041.977221]  __asan_load2+0x80/0xa8
+[ 9041.977238]  bond_3ad_state_machine_handler+0x1c34/0x20b0 [bonding]
 
-I will redo my testing (for all of the patches) and
-will then submit version 2 of the series.
+[ 9041.977261] Allocated by task 138336:
+[ 9041.977266]  kasan_kmalloc+0xe0/0x190
+[ 9041.977271]  kmem_cache_alloc_trace+0x1d8/0x468
+[ 9041.977288]  bond_enslave+0x514/0x2160 [bonding]
+[ 9041.977305]  bond_option_slaves_set+0x188/0x2c8 [bonding]
+[ 9041.977323]  __bond_opt_set+0x1b0/0x740 [bonding]
 
-					-Alex
+[ 9041.977420] Freed by task 105873:
+[ 9041.977425]  __kasan_slab_free+0x120/0x228
+[ 9041.977429]  kasan_slab_free+0x10/0x18
+[ 9041.977432]  kfree+0x90/0x468
+[ 9041.977448]  slave_kobj_release+0x7c/0x98 [bonding]
+[ 9041.977452]  kobject_put+0x118/0x328
+[ 9041.977468]  __bond_release_one+0x688/0xa08 [bonding]
+[ 9041.977660]  pci_device_remove+0x80/0x198
 
-> 
-> url:    https://github.com/0day-ci/linux/commits/Alex-Elder/net-qualcomm-rmnet-stop-using-C-bit-fields/20210305-064128
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git d310ec03a34e92a77302edb804f7d68ee4f01ba0
-> config: riscv-randconfig-s031-20210305 (attached as .config)
-> compiler: riscv64-linux-gcc (GCC) 9.3.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # apt-get install sparse
->         # sparse version: v0.6.3-245-gacc5c298-dirty
->         # https://github.com/0day-ci/linux/commit/dba638b67dff001926855ed81e35e52bd54880ea
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Alex-Elder/net-qualcomm-rmnet-stop-using-C-bit-fields/20210305-064128
->         git checkout dba638b67dff001926855ed81e35e52bd54880ea
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' ARCH=riscv 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> 
-> "sparse warnings: (new ones prefixed by >>)"
->>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:208:13: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned short [usertype] val @@     got restricted __be16 @@
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:208:13: sparse:     expected unsigned short [usertype] val
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:208:13: sparse:     got restricted __be16
->>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:210:21: sparse: sparse: invalid assignment: |=
->>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:210:21: sparse:    left side has type unsigned short
->>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:210:21: sparse:    right side has type restricted __be16
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:211:13: sparse: sparse: invalid assignment: |=
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:211:13: sparse:    left side has type unsigned short
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:211:13: sparse:    right side has type restricted __be16
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:247:13: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned short [usertype] val @@     got restricted __be16 @@
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:247:13: sparse:     expected unsigned short [usertype] val
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:247:13: sparse:     got restricted __be16
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:249:21: sparse: sparse: invalid assignment: |=
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:249:21: sparse:    left side has type unsigned short
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:249:21: sparse:    right side has type restricted __be16
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:250:13: sparse: sparse: invalid assignment: |=
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:250:13: sparse:    left side has type unsigned short
->    drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:250:13: sparse:    right side has type restricted __be16
-> 
-> vim +208 drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-> 
->    195	
->    196	static void
->    197	rmnet_map_ipv4_ul_csum_header(void *iphdr,
->    198				      struct rmnet_map_ul_csum_header *ul_header,
->    199				      struct sk_buff *skb)
->    200	{
->    201		struct iphdr *ip4h = iphdr;
->    202		u16 offset;
->    203		u16 val;
->    204	
->    205		offset = skb_transport_header(skb) - (unsigned char *)iphdr;
->    206		ul_header->csum_start_offset = htons(offset);
->    207	
->  > 208		val = be16_encode_bits(1, MAP_CSUM_UL_ENABLED_FMASK);
->    209		if (ip4h->protocol == IPPROTO_UDP)
->  > 210			val |= be16_encode_bits(1, MAP_CSUM_UL_UDP_FMASK);
->    211		val |= be16_encode_bits(skb->csum_offset, MAP_CSUM_UL_OFFSET_FMASK);
->    212	
->    213		ul_header->csum_info = htons(val);
->    214	
->    215		skb->ip_summed = CHECKSUM_NONE;
->    216	
->    217		rmnet_map_complement_ipv4_txporthdr_csum_field(iphdr);
->    218	}
->    219	
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-> 
+The root cause is that in bond_3ad_unbind_slave() the last step is
+detach the port from aggregator including it. if find this aggregator
+and it has not any active ports, it will call ad_clear_agg() to do clear
+things, especially set aggregator->lag_ports = NULL.
+
+But ports in aggregator->lag_ports list which is set to NULL previously
+still has pointer to this aggregator through  port->aggregator, event after
+this aggregator has released.
+
+The use-after-free problem will cause some puzzling situactions,
+i am not sure whether fix this problem can solve all the problems mentioned
+by the link described earlier, but it did solve all problems i encountered.
+
+Signed-off-by: Di Zhu <zhudi21@huawei.com>
+---
+ drivers/net/bonding/bond_3ad.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 6908822d9773..5d5a903e899c 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -1793,6 +1793,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
+ static void ad_clear_agg(struct aggregator *aggregator)
+ {
+ 	if (aggregator) {
++		struct port *port;
++
+ 		aggregator->is_individual = false;
+ 		aggregator->actor_admin_aggregator_key = 0;
+ 		aggregator->actor_oper_aggregator_key = 0;
+@@ -1801,6 +1803,10 @@ static void ad_clear_agg(struct aggregator *aggregator)
+ 		aggregator->partner_oper_aggregator_key = 0;
+ 		aggregator->receive_state = 0;
+ 		aggregator->transmit_state = 0;
++		for (port = aggregator->lag_ports; port;
++				port = port->next_port_in_aggregator)
++			if (port->aggregator == aggregator)
++				port->aggregator = NULL;
+ 		aggregator->lag_ports = NULL;
+ 		aggregator->is_active = 0;
+ 		aggregator->num_of_ports = 0;
+-- 
+2.23.0
 
