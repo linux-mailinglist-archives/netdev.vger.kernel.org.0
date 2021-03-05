@@ -2,115 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8CAD32EBC6
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 14:02:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D99D32EC61
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 14:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229899AbhCENCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 08:02:01 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:12697 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbhCENBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 08:01:38 -0500
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DsSVk1gvqzlT6v;
-        Fri,  5 Mar 2021 20:59:26 +0800 (CST)
-Received: from DESKTOP-9883QJJ.china.huawei.com (10.136.114.155) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 5 Mar 2021 21:01:26 +0800
-From:   zhudi <zhudi21@huawei.com>
-To:     <j.vosburgh@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <zhudi21@huawei.com>,
-        <rose.chen@huawei.com>
-Subject: [PATCH] bonding: 3ad: fix a use-after-free in bond_3ad_state_machine_handle
-Date:   Fri, 5 Mar 2021 21:01:20 +0800
-Message-ID: <20210305130120.4128-1-zhudi21@huawei.com>
-X-Mailer: git-send-email 2.27.0
+        id S230480AbhCENj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 08:39:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30853 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230468AbhCENjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 08:39:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614951551;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=POZEtjl6d0SgOm6zoVhNtpERGrD7iyxEUNCPA7FIEsM=;
+        b=AvHnWeHuZHlZY45okrXIO5W2CNM34zfYyytp26BV+gVcUdTtZ8O+0B8ZkCeErXPKCo/vwc
+        x68SCdw+SAP4Ind23nT0AVcGu52E65shHBxR4hK3zEhg8JNUnnxWO5phD1Nzl1qIQEaXyp
+        5g88wpjzSdLJRsiUb2qnC9oiZD4wV3M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-509--fLQ0ZTOOPyo6kgzriODtA-1; Fri, 05 Mar 2021 08:39:10 -0500
+X-MC-Unique: -fLQ0ZTOOPyo6kgzriODtA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D53992686A;
+        Fri,  5 Mar 2021 13:39:07 +0000 (UTC)
+Received: from krava (unknown [10.40.196.10])
+        by smtp.corp.redhat.com (Postfix) with SMTP id C6DE919CB0;
+        Fri,  5 Mar 2021 13:38:59 +0000 (UTC)
+Date:   Fri, 5 Mar 2021 14:38:58 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>, Yonghong Song <yhs@fb.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Yauheni Kaliuta <ykaliuta@redhat.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Paul Mackerras <paulus@samba.org>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix test_attach_probe for
+ powerpc uprobes
+Message-ID: <YEI0cptuDzUUOaLr@krava>
+References: <20210301190416.90694-1-jolsa@kernel.org>
+ <309d8d05-4bbd-56b8-6c05-12a1aa98b843@fb.com>
+ <YD4U1x2SbTlJF2QU@krava>
+ <20210303064043.GB1913@DESKTOP-TDPLP67.localdomain>
+ <87blbzsq3g.fsf@mpe.ellerman.id.au>
+ <YEEC8EiOiBaFhqxF@krava>
+ <20210304013459.GG1913@DESKTOP-TDPLP67.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.136.114.155]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210304013459.GG1913@DESKTOP-TDPLP67.localdomain>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Di Zhu <zhudi21@huawei.com>
+On Thu, Mar 04, 2021 at 07:04:59AM +0530, Naveen N. Rao wrote:
 
-I use the similar test method described in link below with KASAN enabled:
-https://lore.kernel.org/netdev/4c5e467e07fb410ab4135b391d663ec1@huawei.com/
-soon after, KASAN reports:
-[ 9041.977110] ==================================================================
-[ 9041.977151] BUG: KASAN: use-after-free in bond_3ad_state_machine_handler+0x1c34/0x20b0 [bonding]
-[ 9041.977156] Read of size 2 at addr ffff80394b8d70b0 by task kworker/u192:2/78492
+SNIP
 
-[ 9041.977187] Workqueue: bond0 bond_3ad_state_machine_handler [bonding]
-[ 9041.977190] Call trace:
-[ 9041.977197]  dump_backtrace+0x0/0x310
-[ 9041.977201]  show_stack+0x28/0x38
-[ 9041.977207]  dump_stack+0xec/0x15c
-[ 9041.977213]  print_address_description+0x68/0x2d0
-[ 9041.977217]  kasan_report+0x130/0x2f0
-[ 9041.977221]  __asan_load2+0x80/0xa8
-[ 9041.977238]  bond_3ad_state_machine_handler+0x1c34/0x20b0 [bonding]
+> > > static inline unsigned long ppc_function_entry(void *func)
+> > > {
+> > > #ifdef PPC64_ELF_ABI_v2
+> > > 	u32 *insn = func;
+> > > 
+> > > 	/*
+> > > 	 * A PPC64 ABIv2 function may have a local and a global entry
+> > > 	 * point. We need to use the local entry point when patching
+> > > 	 * functions, so identify and step over the global entry point
+> > > 	 * sequence.
+> > 
+> > hm, so I need to do the instructions check below as well
+> 
+> It's a good check, but probably not necessary. In most functions, we 
+> expect to be able to probe two instructions later without much of a 
+> change to affect function tracing for userspace. For this reason, we 
+> just probe at an offset of 8 as a reasonable fallback.
+> 
+> It is definetely good if we can come up with a better approach though.
+> 
+> > 
+> > > 	 *
+> > > 	 * The global entry point sequence is always of the form:
+> > > 	 *
+> > > 	 * addis r2,r12,XXXX
+> > > 	 * addi  r2,r2,XXXX
+> > > 	 *
+> > > 	 * A linker optimisation may convert the addis to lis:
+> > > 	 *
+> > > 	 * lis   r2,XXXX
+> > > 	 * addi  r2,r2,XXXX
+> > > 	 */
+> > > 	if ((((*insn & OP_RT_RA_MASK) == ADDIS_R2_R12) ||
+> > > 	     ((*insn & OP_RT_RA_MASK) == LIS_R2)) &&
+> > > 	    ((*(insn+1) & OP_RT_RA_MASK) == ADDI_R2_R2))
+> > 
+> > is this check/instructions specific to kernel code?
+> > 
+> > In the test prog I see following instructions:
+> > 
+> > Dump of assembler code for function get_base_addr:
+> >    0x0000000010034cb0 <+0>:     lis     r2,4256
+> >    0x0000000010034cb4 <+4>:     addi    r2,r2,31488
+> >    ...
+> > 
+> > but first instruction does not match the check in kernel code above:
+> > 
+> > 	1.insn value:	0x3c4010a0
+> > 	2.insn value:	0x38427b00
+> > 
+> > the used defines are:
+> > 	#define OP_RT_RA_MASK   0xffff0000UL
+> > 	#define LIS_R2          0x3c020000UL
+> > 	#define ADDIS_R2_R12    0x3c4c0000UL
+> > 	#define ADDI_R2_R2      0x38420000UL
+> 
+> Good catch! That's wrong, and I suspect we haven't noticed since kernel 
+> almost always ends up using the addis variant. I will send a fix for 
+> this.
 
-[ 9041.977261] Allocated by task 138336:
-[ 9041.977266]  kasan_kmalloc+0xe0/0x190
-[ 9041.977271]  kmem_cache_alloc_trace+0x1d8/0x468
-[ 9041.977288]  bond_enslave+0x514/0x2160 [bonding]
-[ 9041.977305]  bond_option_slaves_set+0x188/0x2c8 [bonding]
-[ 9041.977323]  __bond_opt_set+0x1b0/0x740 [bonding]
+the new macro value from your fix works for the test,
+so I'll use it in v2, so we don't just blindly go to
++8 offset.. I'll send it out shortly
 
-[ 9041.977420] Freed by task 105873:
-[ 9041.977425]  __kasan_slab_free+0x120/0x228
-[ 9041.977429]  kasan_slab_free+0x10/0x18
-[ 9041.977432]  kfree+0x90/0x468
-[ 9041.977448]  slave_kobj_release+0x7c/0x98 [bonding]
-[ 9041.977452]  kobject_put+0x118/0x328
-[ 9041.977468]  __bond_release_one+0x688/0xa08 [bonding]
-[ 9041.977660]  pci_device_remove+0x80/0x198
+> 
+> > 
+> > 
+> > maybe we could skip the check, and run the test twice: first on
+> > kallsym address and if the uprobe is not hit we will run it again
+> > on address + 8
+> 
+> Sure, like I mentioned, I'm fine with any approach. Offset'ing into the 
+> function by 8 is easy and generally works. Re-trying is fine too. The 
+> proper approach will requires us to consult the symbol table and check 
+> st_other field [see commit 0b3c2264ae30ed ("perf symbols: Fix kallsyms 
+> perf test on ppc64le")]
 
-The root cause is that in bond_3ad_unbind_slave() the last step is
-detach the port from aggregator including it. if find this aggregator
-and it has not any active ports, it will call ad_clear_agg() to do clear
-things, especially set aggregator->lag_ports = NULL.
+I think we don't want to complicate this test with symbol table
+check. I'll propose the fix with the extra instructions check
+for now and we can add symbol table check in future if it's not
+enough
 
-But ports in aggregator->lag_ports list which is set to NULL previously
-still has pointer to this aggregator through  port->aggregator, event after
-this aggregator has released.
+thanks for all the info,
+jirka
 
-The use-after-free problem will cause some puzzling situactions,
-i am not sure whether fix this problem can solve all the problems mentioned
-by the link described earlier, but it did solve all problems i encountered.
-
-Signed-off-by: Di Zhu <zhudi21@huawei.com>
----
- drivers/net/bonding/bond_3ad.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 6908822d9773..5d5a903e899c 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -1793,6 +1793,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
- static void ad_clear_agg(struct aggregator *aggregator)
- {
- 	if (aggregator) {
-+		struct port *port;
-+
- 		aggregator->is_individual = false;
- 		aggregator->actor_admin_aggregator_key = 0;
- 		aggregator->actor_oper_aggregator_key = 0;
-@@ -1801,6 +1803,10 @@ static void ad_clear_agg(struct aggregator *aggregator)
- 		aggregator->partner_oper_aggregator_key = 0;
- 		aggregator->receive_state = 0;
- 		aggregator->transmit_state = 0;
-+		for (port = aggregator->lag_ports; port;
-+				port = port->next_port_in_aggregator)
-+			if (port->aggregator == aggregator)
-+				port->aggregator = NULL;
- 		aggregator->lag_ports = NULL;
- 		aggregator->is_active = 0;
- 		aggregator->num_of_ports = 0;
--- 
-2.23.0
+> 
+> Thanks,
+> - Naveen
+> 
 
