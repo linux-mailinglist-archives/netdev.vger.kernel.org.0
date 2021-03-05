@@ -2,118 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 702A232DFE2
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 04:04:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11BCF32DFE4
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 04:05:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbhCEDEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 22:04:44 -0500
-Received: from correo.us.es ([193.147.175.20]:53934 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229478AbhCEDEo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Mar 2021 22:04:44 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 0F572DA84E
-        for <netdev@vger.kernel.org>; Fri,  5 Mar 2021 04:04:40 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id F205DDA78D
-        for <netdev@vger.kernel.org>; Fri,  5 Mar 2021 04:04:39 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id E712CDA789; Fri,  5 Mar 2021 04:04:39 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-105.9 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        FORGED_MUA_MOZILLA,NICE_REPLY_A,SMTPAUTH_US2,USER_IN_WELCOMELIST,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9E437DA704;
-        Fri,  5 Mar 2021 04:04:37 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 05 Mar 2021 04:04:37 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S229848AbhCEDFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 22:05:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55795 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229688AbhCEDFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 22:05:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614913502;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NyeZ19kifPGrNPSu9tsx+U9SHlXSaVFqXfzKSyjA9QU=;
+        b=YxScW7OW5tMBG6f7L5d2S4CpSakIw154kHKhBMMDJNl/Jcvcf/ZCMlUz3CARg0Cc9lBQhU
+        Iiq9z6ChScuevoFqKBRcyM3Y6kvKKUwHkXWGFj8LqVEROlDcRfbF87bvG2N8p4jgKBgM1U
+        Mc993Uk2151l3TV/oU49l1UlERY9670=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-583-3LT2sfD5N0eNx-b62H3FiQ-1; Thu, 04 Mar 2021 22:05:00 -0500
+X-MC-Unique: 3LT2sfD5N0eNx-b62H3FiQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 8006742DC6E2;
-        Fri,  5 Mar 2021 04:04:37 +0100 (CET)
-Date:   Fri, 5 Mar 2021 04:04:37 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     fw@strlen.de, netdev@vger.kernel.org, linux-man@vger.kernel.org,
-        teigland@redhat.com
-Subject: Re: [PATCH resend] netlink.7: note not reliable if NETLINK_NO_ENOBUFS
-Message-ID: <20210305030437.GA4268@salvia>
-References: <20210304205728.34477-1-aahringo@redhat.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7C35F1084C83;
+        Fri,  5 Mar 2021 03:04:57 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-196.pek2.redhat.com [10.72.13.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9ECCC60C0F;
+        Fri,  5 Mar 2021 03:04:44 +0000 (UTC)
+Subject: Re: [RFC v4 10/11] vduse: Introduce a workqueue for irq injection
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210223115048.435-1-xieyongji@bytedance.com>
+ <20210223115048.435-11-xieyongji@bytedance.com>
+ <d63e4cfd-4992-8493-32b0-18e0478f6e1a@redhat.com>
+ <CACycT3tqM=ALOG1r0Ve6UTGmwJ7Wg7fQpLZypjZsJF1mJ+adMA@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <2d3418d9-856c-37ee-7614-af5b721becd7@redhat.com>
+Date:   Fri, 5 Mar 2021 11:04:42 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210304205728.34477-1-aahringo@redhat.com>
-User-Agent: Mozilla/5.0
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <CACycT3tqM=ALOG1r0Ve6UTGmwJ7Wg7fQpLZypjZsJF1mJ+adMA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
 
-On Thu, Mar 04, 2021 at 03:57:28PM -0500, Alexander Aring wrote:
-> This patch adds a note to the netlink manpage that if NETLINK_NO_ENOBUFS
-> is set there is no additional handling to make netlink reliable. It just
-> disables the error notification.
+On 2021/3/4 4:58 下午, Yongji Xie wrote:
+> On Thu, Mar 4, 2021 at 2:59 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> On 2021/2/23 7:50 下午, Xie Yongji wrote:
+>>> This patch introduces a workqueue to support injecting
+>>> virtqueue's interrupt asynchronously. This is mainly
+>>> for performance considerations which makes sure the push()
+>>> and pop() for used vring can be asynchronous.
+>>
+>> Do you have pref numbers for this patch?
+>>
+> No, I can do some tests for it if needed.
+>
+> Another problem is the VIRTIO_RING_F_EVENT_IDX feature will be useless
+> if we call irq callback in ioctl context. Something like:
+>
+> virtqueue_push();
+> virtio_notify();
+>      ioctl()
+> -------------------------------------------------
+>          irq_cb()
+>              virtqueue_get_buf()
+>
+> The used vring is always empty each time we call virtqueue_push() in
+> userspace. Not sure if it is what we expected.
 
-A bit more background on this toggle.
 
-NETLINK_NO_ENOBUFS also disables netlink broadcast congestion control
-which kicks in when the socket buffer gets full. The existing
-congestion control algorithm keeps dropping netlink event messages
-until the queue is emptied. Note that it might take a while until your
-userspace process fully empties the socket queue that is congested
-(and during that time _your process is losing every netlink event_).
+I'm not sure I get the issue.
 
-The usual approach when your process hits ENOBUFS is to resync via
-NLM_F_DUMP unicast request. However, getting back to sync with the
-kernel subsystem might be expensive if the number of items that are
-exposed via netlink is huge.
+THe used ring should be filled by virtqueue_push() which is done by 
+userspace before?
 
-Note that some people select very large socket buffer queue for
-netlink sockets when they notice ENOBUFS. This might however makes
-things worse because, as I said, congestion control drops every
-netlink message until the queue is emptied. Selecting a large socket
-buffer might help to postpone the ENOBUFS error, but once your process
-hits ENOBUFS, then the netlink congestion control kicks in and you
-will make you lose a lot of event messages (until the queue is empty
-again!).
+Thanks
 
-So NETLINK_NO_ENOBUFS from userspace makes sense if:
 
-1) You are subscribed to a netlink broadcast group (so it does _not_
-   make sense for unicast netlink sockets).
-2) The kernel subsystem delivers the netlink messages you are
-   subscribed to from atomic context (e.g. network packet path, if
-   the netlink event is triggered by network packets, your process
-   might get spammed with a lot of netlink messages in little time,
-   depending on your network workload).
-3) Your process does not want to resync on lost netlink messages.
-   Your process assumes that events might get lost but it does not
-   case / it does not want to make any specific action in such case.
-4) You want to disable the netlink broadcast congestion control.
+>
+> Thanks,
+> Yongji
+>
 
-To provide an example kernel subsystem, this toggle can be useful with
-the connection tracking system, when monitoring for new connection
-events in a soft real-time fashion.
-
-> The used word "avoid" receiving ENOBUFS errors can be interpreted
-> that netlink tries to do some additional queue handling to avoid
-> that such scenario occurs at all, e.g. like zerocopy which tries to
-> avoid memory copy. However disable is not the right word here as
-> well that in some cases ENOBUFS can be still received. This patch
-> makes clear that there will no additional handling to put netlink in
-> a more reliable mode.
-
-Right, the NETLINK_NO_ENOBUFS toggle alone itself is not making
-netlink more reliable for the broadcast scenario, it just changes the
-way it netlink broadcast deals with congestion: userspace process gets
-no reports on lost messages and netlink congestion control is
-disabled.
