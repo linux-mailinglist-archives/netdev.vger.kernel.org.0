@@ -2,118 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E29E832DECB
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 02:08:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D70432DF23
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 02:33:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229503AbhCEBIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 20:08:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbhCEBIt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 20:08:49 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88741C061574;
-        Thu,  4 Mar 2021 17:08:48 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id hs11so308528ejc.1;
-        Thu, 04 Mar 2021 17:08:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i5ilfQ3XxtvOpn+7UySt0qW9UnnudtCvGN/KPLL7gsM=;
-        b=NP4XsYjV7qBjLGubsMlArvr3jto1NKIrembYpGQ3AhzrOV6n6crt/pcAuRtNh1tmaK
-         wekz4LZgPhyVKj2RUCm5BXNvzJXZFwJ06v9XR09qM3JhzGsEaQ+P9ARcwNS76ukgSo0T
-         jR7bJSP2RPJyxajx/OHwL6TAuO6/BJCKSL3jELQlgKaR5aZ+acbuZ9INItWKZ3vOrI6S
-         xNLaB6Z1LPObRYR4hApNCfCBiyP2VjJZdQ3h9etaIKvb3/DHo5WgXCDQFukkN7mBFQjz
-         L0HSRNBTIxH3lkRUBBHU3SIPrhWi/cz9CIoBW9yK5c6+hRytSKnux07/DerDNRMOJrZf
-         OliA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i5ilfQ3XxtvOpn+7UySt0qW9UnnudtCvGN/KPLL7gsM=;
-        b=bOdIU8oVZs36dPwviXE7HuSrALf6WnigSDAS5634VObvwBWHp3dA2T9kVOfbqRH7Rk
-         +PcuGiLPZ2gWxAqJe9hFqLK2ABV58xILXnbbmY93xc0w8omA4BRmggnZIMmZP18CKOFi
-         uotHGgXzpJh/xjd8Cyxtdh51Mu5BH3zwIhFiDbNhuVNHU+dE/vTQQbZ4BQpF5HvYHVpy
-         bDfi7X8WjiqJkXltJxDodY8FGSVZ0DZ8Q07pYHRZn+pHVQ4nu51jA9yG1PsF9I/a2nvJ
-         HwjNwttiA8PyNZ//oJU/QPd5ZSvj1AX1p2y40pdQM3Hv0gHSzVpEnpB0cGwrFJJPUeDH
-         rseA==
-X-Gm-Message-State: AOAM53198BwSOf1QtRS0/H7PlitgplbiMyn2VkrLC2IcUe5fOeH6EChz
-        sHTujOn0Q+PMm2qKBSiuFO8=
-X-Google-Smtp-Source: ABdhPJwh/zP+w8eR27g3jgWHhAQrKVWQBfAufeyaCb534OdG9sEhqz8a3XIUcSZiiW3cuPMOGD+3Mg==
-X-Received: by 2002:a17:907:aa2:: with SMTP id bz2mr182538ejc.239.1614906527189;
-        Thu, 04 Mar 2021 17:08:47 -0800 (PST)
-Received: from skbuf ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id 35sm628326edp.85.2021.03.04.17.08.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Mar 2021 17:08:46 -0800 (PST)
-Date:   Fri, 5 Mar 2021 03:08:45 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Chan <mchan@broadcom.com>,
-        "open list:BROADCOM ETHERNET PHY DRIVERS" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>, michael@walle.cc
-Subject: Re: [PATCH net-next v2 3/3] net: phy: broadcom: Allow BCM54210E to
- configure APD
-Message-ID: <20210305010845.blqccudijh6ezm6a@skbuf>
-References: <20210213034632.2420998-1-f.fainelli@gmail.com>
- <20210213034632.2420998-4-f.fainelli@gmail.com>
- <20210213104245.uti4qb2u2r5nblef@skbuf>
- <4e1c1a4c-d276-c850-8e97-16ef1f08dcff@gmail.com>
- <99e28317-e93d-88fa-f43f-d1d072b61292@gmail.com>
+        id S229521AbhCEBdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 20:33:04 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41102 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229436AbhCEBdE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Mar 2021 20:33:04 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lHzKm-009MZG-CQ; Fri, 05 Mar 2021 02:32:52 +0100
+Date:   Fri, 5 Mar 2021 02:32:52 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Don Bollinger <don@thebollingers.org>
+Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        'Adrian Pop' <pop.adrian61@gmail.com>,
+        'Michal Kubecek' <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        'Vladyslav Tarasiuk' <vladyslavt@nvidia.com>
+Subject: Re: [RFC PATCH V2 net-next 1/5] ethtool: Allow network drivers to
+ dump arbitrary EEPROM data
+Message-ID: <YEGKRNLce9dzFkqI@lunn.ch>
+References: <1614884228-8542-1-git-send-email-moshe@nvidia.com>
+ <1614884228-8542-2-git-send-email-moshe@nvidia.com>
+ <001101d71159$8721f4b0$9565de10$@thebollingers.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <99e28317-e93d-88fa-f43f-d1d072b61292@gmail.com>
+In-Reply-To: <001101d71159$8721f4b0$9565de10$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 02, 2021 at 07:37:34PM -0800, Florian Fainelli wrote:
-> Took a while but for the 54210E reference board here are the numbers,
-> your mileage will vary depending on the supplies, regulator efficiency
-> and PCB design around the PHY obviously:
+> > + * @length: Number of bytes to read.
+> > + * @page: Page number to read from.
+> > + * @bank: Page bank number to read from, if applicable by EEPROM spec.
+> > + * @i2c_address: I2C address of a page. Value less than 0x7f expected.
+> > Most
+> > + *	EEPROMs use 0x50 or 0x51.
 > 
-> BMCR.PDOWN:			86.12 mW
-> auto-power down:		77.84 mW
+> The standards are all very clear
 
-Quite curious that the APD power is lower than the normal BMCR.PDOWN
-value. As far as my understanding goes, when in APD mode, the PHY even
-wakes up from time to time to send pulses to the link partner?
+Our experience so far is that manufactures of SFP modules like to
+ignore the standard. And none of the standards seem to cover copper
+modules, which have additional registers at some other page.
+Admittedly, they cannot be mapped as pages, you need some proprietary
+protocol to map MDIO onto I2C. But i would not be surprised to find
+some SFP that maps the FLASH of the microcontroller onto an address,
+which we might be able to read out using this API.
 
-> auto-power-down, DLL disabled:  30.83 mW
+So i suggested we keep it generic, allowing access to these
+proprietary registers at other addresses. And if there is nothing
+there, you probably get a 1/2 page of 0xff.
 
-The jump from simple APD to APD with DLL disabled is pretty big.
-Correct me if I'm wrong, but there's an intermediary step which was not
-measured, where the CLK125 is disabled but the internal DLL (Delay
-Locked Loop?) is still enabled. I think powering off the internal DLL
-also implies powering off the CLK125 pin, at least that's how the PHY
-driver treats things at the moment. But we don't know if the huge
-reduction in power is due just to CLK125 or the DLL (it's more likely
-it's due to both, in equal amounts).
+> I suggest that 0xA0 and 0xA2 also be silently accepted, and
+> translated to 0x50 and 0x51 respectively.
 
-Anyway, it's great to have some results which tell us exactly what is
-worthwhile and what isn't. In other news, I've added the BCM5464 to the
-list of PHYs with APD and I didn't see any issues thus far.
+No, i don't like having two different values mean the same thing.  It
+just leads to confusion. And userspace is going to be confused when it
+asks for 0xA0 but the reply says it is for 0x50.
 
-> IDDQ-low power:			 9.85 mW (requires a RESETn toggle)
-> IDDQ with soft recovery:	10.75 mW
+The Linux I2C subsystem does not magically map 8bit addresses in 7bit
+addresses. We should follow what the Linux I2C subsystem does.
+
+> > +
+> > +	request->offset =
+> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
+> > +	request->length =
+> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
+> > +	if (request->length > ETH_MODULE_EEPROM_MAX_LEN)
+> > +		return -EINVAL;	
 > 
-> Interestingly, the 50212E that I am using requires writing the PDOWN bit
-> and only that bit (not a RMW) in order to get in a correct state, both
-> LEDs keep flashing when that happens, fixes coming.
-> 
-> When net-next opens back up I will submit patches to support IDDQ with
-> soft recovery since that is clearly much better than the standard power
-> down and it does not require a RESETn toggle.
+> This is really problematic as there are MANY different max values, within
+> the specs
 
-Iddq must be the quiescent supply current, isn't it (but in that case,
-I'm a bit confused to not see a value in mA)? Is it an actual operating
-mode (I don't see anything about that mentioned in the BCM5464 sheet)
-and if it is, what is there exactly to support?
+I agree. We should only be returning one 1/2 page as a maximum. So it
+should be limited to 128 bytes. And offset+length should not go beyond
+the end of a 1/2 page.
+
+> > +	if (tb[ETHTOOL_A_EEPROM_DATA_PAGE])
+> > +		request->page =
+> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_PAGE]);
+> > +	if (tb[ETHTOOL_A_EEPROM_DATA_BANK])
+> > +		request->bank =
+> > nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_BANK]);
+> 
+> Other checks:
+> 
+> Page and bank have to be between 0 and 255 (inclusive), they
+> go into an 8 bit register in the eeprom.
+
+Yes, a u8 would be a better type here.
+
+     Andrew
