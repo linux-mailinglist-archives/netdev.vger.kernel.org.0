@@ -2,83 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A296632DF6F
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 03:07:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D40D32DFB8
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 03:44:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbhCECHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 21:07:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbhCECHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 21:07:01 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147C0C061574;
-        Thu,  4 Mar 2021 18:07:00 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id l18so952737pji.3;
-        Thu, 04 Mar 2021 18:07:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=/usniTDLiZiY8Exv4EpG2GjU878KlAu6Su7ozkPE5fc=;
-        b=e0aRU/TZORIsKilI2TQU8KUuzpMAjooSQyA9BAsirKE7H83ltJDp1PkAEOvLPg4a+d
-         VV0vnhyp+c4a0Hh1HL7AJazFVaQvTFX5WHoEwY1YD/UhaaKYRzQINMzA73bCgen4FgUy
-         vopD4PYed12SVSFBeBy2fsFRopnm9CEbUtTXoF6h2Z0HZT14AzeIxm1uIwMYdEXweLZe
-         7+ORYmxKJ8NY/xggGGfviDBJVmovmxEbY62/yAx/AQWEvKS6AwAwQQDOpNXtoRbRTr+R
-         /NmTO8CKNjqYwRUOcUermD1entHfXnUOk+dK1wcfR/RpJH38qaUtxa8mB0VmHDZ9VAI2
-         a4cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=/usniTDLiZiY8Exv4EpG2GjU878KlAu6Su7ozkPE5fc=;
-        b=SAOyA+UFqcktB3RbdCxN34mXBf74Qw5EEj3Ve4qt1NO64rhTY8GqLvcGAqJ6fy22Si
-         QMf3GQC384mW/9fbDN+uCxYJbomYIQ6Iy4F8HXzWirS3XKnIV4xLh9PXRc9nE2XKg9FH
-         MkJhMQXYX5RozvGG2CmwQYVx2UVcjx/MecRDQDic7d3e93Sct7LCVmRvo6LBKwPgtN+w
-         ngWeTI6Dxo4OLrw6xCWnW4+Lpy7MKTYBWQNnT8/DF/nK8RcqV4ZWdXSZY+zlLEe6ICZ5
-         xIWMOEW2jg3/qDiIv1h/aMKJLcIYupZRMVeJJ5buB0cCVR5UNPl2DToleLahpc/Hq5up
-         XaJw==
-X-Gm-Message-State: AOAM531u+umpsvC0LZzEsTFVpkjqKzW4Ikj3HS+BtKxgNzUDmmzjxCb3
-        mIRihhAQ/NG1VwdwYKh0Wew=
-X-Google-Smtp-Source: ABdhPJwMvt6h8jHR6WGGPI/ATAmWsG/FC6M72R2MjK437fW8DrVyjKiZG+s/2T8zKic4Xoq9iZujPA==
-X-Received: by 2002:a17:90a:8c08:: with SMTP id a8mr7730178pjo.136.1614910019577;
-        Thu, 04 Mar 2021 18:06:59 -0800 (PST)
-Received: from localhost.localdomain ([45.135.186.46])
-        by smtp.gmail.com with ESMTPSA id gm9sm461117pjb.13.2021.03.04.18.06.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Mar 2021 18:06:59 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     andy@greyhouse.net, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: tehuti: fix error return code in bdx_probe()
-Date:   Thu,  4 Mar 2021 18:06:48 -0800
-Message-Id: <20210305020648.3202-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S229503AbhCECok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 21:44:40 -0500
+Received: from p3plsmtpa12-03.prod.phx3.secureserver.net ([68.178.252.232]:55370
+        "EHLO p3plsmtpa12-03.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229436AbhCECok (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 21:44:40 -0500
+Received: from chrisHP110 ([76.103.216.188])
+        by :SMTPAUTH: with ESMTPA
+        id I0SElezqdKlXKI0SFlxY8k; Thu, 04 Mar 2021 19:44:39 -0700
+X-CMAE-Analysis: v=2.4 cv=UJAYoATy c=1 sm=1 tr=0 ts=60419b17
+ a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
+ a=kj9zAlcOel0A:10 a=SbwqLPgDKYiBIAsG-vMA:9 a=CjuIK1q_8ugA:10
+X-SECURESERVER-ACCT: don@thebollingers.org
+From:   "Don Bollinger" <don@thebollingers.org>
+To:     "'Andrew Lunn'" <andrew@lunn.ch>
+Cc:     "'Moshe Shemesh'" <moshe@nvidia.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Jakub Kicinski'" <kuba@kernel.org>,
+        "'Adrian Pop'" <pop.adrian61@gmail.com>,
+        "'Michal Kubecek'" <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
+        "'Vladyslav Tarasiuk'" <vladyslavt@nvidia.com>,
+        <don@thebollingers.org>
+References: <1614884228-8542-1-git-send-email-moshe@nvidia.com> <1614884228-8542-6-git-send-email-moshe@nvidia.com> <001201d71159$88013120$98039360$@thebollingers.org> <YEGOa2NFiw3fc5sT@lunn.ch>
+In-Reply-To: <YEGOa2NFiw3fc5sT@lunn.ch>
+Subject: RE: [RFC PATCH V2 net-next 5/5] ethtool: Add fallback to get_module_eeprom from netlink command
+Date:   Thu, 4 Mar 2021 18:44:37 -0800
+Message-ID: <001801d71169$7c7ec500$757c4f00$@thebollingers.org>
+MIME-Version: 1.0
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQFnKUugUW+R+aqYgGARCVs1/gX+XwI42Hg3AcbnmiUCE+tREqsj3zwg
+Content-Language: en-us
+X-CMAE-Envelope: MS4xfCXD5rAFszXw7oa5D4iCU+4wF0Ro9C43SGFqFX74e+RVKICLUu5ZmybcpQKwdQYAkCc/XLi0UUJGa6VdAKomv6amIV4r24VhuQyMByv262QU96WZyjAu
+ IvYf5kJ3VQPtSmFiFs0yhyWJwdMpSMGeu4sQb+hfitcE5hQoh1RA+EPrZyDNIdTB4z+yXAVRLPfK6Ab7PcvvOaRj35RqoTj2AxIskNTDOoPqtWHVADXTV/RG
+ wTPtf/FWM4pdVtGAD9LR8nahq+oC9gtdsl4Wr4wy9U5BqfArj3Dmb4ICfWoQInC8OnRoIvvbUznGMKfqQPSqp3M+JHj1Y+yda1a2ZJtIvmpGpdkcqb3TuAob
+ GY4WTRIsMYQ3f/6m4zkjyrlGTHjyoMh8aPqbXTwB5zx+TpYPpZk/YxVuRKHOfG3VxRgnEqxn
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When bdx_read_mac() fails, no error return code of bdx_probe() 
-is assigned.
-To fix this bug, err is assigned with -EFAULT as error return code.
+> > > +static int fallback_set_params(struct eeprom_data_req_info *request,
+> > > +			       struct ethtool_modinfo *modinfo,
+> > > +			       struct ethtool_eeprom *eeprom) {
+> >
+> > This is translating the new data structure into the old.  Hence, I
+> > assume we have i2c_addr, page, bank, offset, len to work with, and we
+> > should use all of them.
+> 
+> Nope. We actually have none of them. The old API just asked the driver to
+> give me the data in the SFP. And the driver gets to decide what it
+returns,
+> following a well known layout. The driver can decide to give just the
+first 1/2
+> page, or any number of multiple 1/2 pages in a well known linear way,
+which
+> ethtool knows how to decode.
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/ethernet/tehuti/tehuti.c | 1 +
- 1 file changed, 1 insertion(+)
+This code is to take a new KAPI request (a struct eeprom_data_req_info), and
+create an old driver API request (a struct ethtool_eeprom) that will get the
 
-diff --git a/drivers/net/ethernet/tehuti/tehuti.c b/drivers/net/ethernet/tehuti/tehuti.c
-index b8f4f419173f..d054c6e83b1c 100644
---- a/drivers/net/ethernet/tehuti/tehuti.c
-+++ b/drivers/net/ethernet/tehuti/tehuti.c
-@@ -2044,6 +2044,7 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		/*bdx_hw_reset(priv); */
- 		if (bdx_read_mac(priv)) {
- 			pr_err("load MAC address failed\n");
-+			err = -EFAULT;
- 			goto err_out_iomap;
- 		}
- 		SET_NETDEV_DEV(ndev, &pdev->dev);
--- 
-2.17.1
+same data.  It isn't actually fetching the data, it is just forming the data
+structure
+to create the request.  So, we do indeed have all of the new KAPI
+parameters, 
+and need to use all of them to precisely create the matching old KAPI
+request.
+
+> So when mapping the new KAPI onto the old driver API, you need to call the
+> old API, and see if what is returned can be used to fulfil the KAPI
+request. If
+> the bytes are there, great, return them, otherwise EOPNOTSUPP.
+
+Actually, this code has to figure out in advance whether the old API can
+return
+the data to fulfill the request, then form a request to accomplish that.
+ 
+> And we also need to consider the other way around. The old KAPI is used,
+> and the MAC driver only supports the new driver API. Since the linear
+layout
+> is well know, you need to make a number of calls into the driver to read
+the
+> 1/2 pages, and them glue them together and return them.
+
+That is a great idea, probably not difficult.  It is not in this patch set.
+ 
+> I've not reviewed this code in detail yet, so i've no idea how it actually
+works.
+> But i would like to see as much compatibility as possible. That has been
+the
+> approach with moving from IOCTL to netlink with ethool. Everything the old
+> KAPI can do, netlink should also be able to, plus there can be additional
+> features.
+> 
+> > > +	switch (modinfo->type) {
+> > > +	case ETH_MODULE_SFF_8079:
+> > > +		if (request->page > 1)
+> > > +			return -EINVAL;
+> > > +		break;
+> > > +	case ETH_MODULE_SFF_8472:
+> > > +		if (request->page > 3)
+> >
+> > Not sure this is needed, there can be pages higher than 3.
+> 
+> Not with the old KAPI call. As far as i remember, it stops at three pages.
+But i
+> need to check the ethtool(1) sources to be sure.
+> 
+>        Andrew
+
 
