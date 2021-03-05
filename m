@@ -2,223 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11AF332E156
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 06:18:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DB432E191
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 06:26:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229523AbhCEFRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 00:17:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
+        id S229488AbhCEF03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 00:26:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbhCEFRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 00:17:34 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C78CC061574
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 21:17:34 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id p193so675456yba.4
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 21:17:34 -0800 (PST)
+        with ESMTP id S229446AbhCEF02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 00:26:28 -0500
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0B9C061756
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 21:26:27 -0800 (PST)
+Received: by mail-ot1-x32f.google.com with SMTP id v12so671961ott.10
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 21:26:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T/7R4sid3Y7iG7a2k4Nga3B3LKDvmOJialmJYrWpMjg=;
-        b=Y8LxucOsCr/rCFcAMnYeYj0tdcQURNHJLbHdySzkBVD3yKgNqTaUWGZU1UhTH1pL9E
-         oedJEcJt5f7G0MvoG9EFv60ElgeZPIJaFiiFNOZO3ki/FjtEP8G6MeuyEHCbJs9tLr7o
-         TQsQCPkCWlVCYuW1GJWh/0CseyH6DjHm50WbRsp6jMSyDGz1unaOQxHzNtaJv3G64cw7
-         fhatH3g16cemagj3qcrjcaFT6RMqifWbFpipJuJPHrYyepvtnwHXNSRC77r3SGHteesT
-         HUQMMrUUPgTqihhVoIjT/5WLYuFu2WDpUe1VN4jLiMlIS6WY7lZcCLJLozQjOJ7KZcrb
-         hXoA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=e9xiYNY+6CRe7n01VVJfgZJ+/7nxidlPRaWVwT26cUU=;
+        b=m3tjq1W3YXjIl436zWYnjwhWsgpZ1ZsEqCA0Wmtcfz7k2ddyK+S9gBk6Db8BZj9tmc
+         mzyWCq20pUOdDY3a1QQ7jiNZI3uWhkeNejI4kb1u3SzIp2D8bC5nWp7RpHizZ7UZHy/y
+         X2VbHX/EjhnhAKEt3PeOUI9H79LvDHUE8ch02WsSOi3r14iGXwp/nmWqABQ5byi/MSFV
+         730Q/AYHN14ooxY6BhOXZcc2VJFI5gaybBN8OJ4LQEzPWNHPS1Ob1wVD1hJ+Bh9D+stj
+         cbhrJ1zLwLSlAka+egHu2s1r+5Fpa390k7p/v1DT4XytwPSuqK5HggmKiLpticIIj1hS
+         NumA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T/7R4sid3Y7iG7a2k4Nga3B3LKDvmOJialmJYrWpMjg=;
-        b=GtRuTExWC36NnwjIHauIjRD2JDM3qLK65Ycr47XsTBxwI1KEXO6o3/+SkTArf831W+
-         IlHldt7OM5mfW75duYdYnT+us0Ll88nKnPC5LNczwe05oxahjEYZ17Dh8NoJAp6AISbb
-         LQnC5WP27jE4aUQZY9Yu2qyNv4M+5/BVwYK8l3iyde4xn9gcbKhVRP6rOXQ7sIFzr0JO
-         19WNpSMTu7hgMKY3aFavgdRcnArS0uNRIOXW+ffJIL0BptguiP5UloeHWAPHmc/4iEWL
-         3lQgHF0avhCH9ksOW3WoLQ8EAYJxguFiUcA7LahYfG+O2IMQnyuI8/xg0Dg5U/v2dxFd
-         dHUQ==
-X-Gm-Message-State: AOAM530/l0BSHfj2GQWKuj4JxdReVr1TwM4VFieZfiSHN27NIqQwOyA1
-        SjCUzbN+nXgotxfYyOeoUw2Fbd2lxhvIPGzXEap4VQ==
-X-Google-Smtp-Source: ABdhPJzfXDZnaZieM0i6B/rtoSg5kaxc9y4C7njnJSbDCNC3MR4bIPB4223c4rLuH5l5SHqwH+hQEHBaM9meFHzc3q0=
-X-Received: by 2002:a25:b906:: with SMTP id x6mr11226928ybj.504.1614921452924;
- Thu, 04 Mar 2021 21:17:32 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e9xiYNY+6CRe7n01VVJfgZJ+/7nxidlPRaWVwT26cUU=;
+        b=Fs8ZQLk4ahS1sNBPXf0BMkssBq7ekZbOWpnSUDe4kQkf85Ev2tcKqSUoV9yTkSSiz2
+         4TPPHTUgp5Sa7e1Piuo1S6D8AsXCANuStjftUYz2A8dbMetdMXT0axjZ3m3lDGQfuMDW
+         aR9QHUeAOIp5QqhSWvx+mspLbw0D4lesOSjBYOYsH9m492dwRsKgA2OBJq0fGWK35i1J
+         CI/Jn1+ni9LSIr1q6MvovjsdkKmzfo9NGbq4tfzbPokOa7EPgxXGx3DOIohCS13zk4jU
+         ikO1JTNLtm2wUpgTNrLMElw4pPiZCElq/lkKpBy37DZZo/dapTzDJddfdO85ALtw7jrh
+         1AQQ==
+X-Gm-Message-State: AOAM530IBlGaTkr0a0XuaboOBqod///rl/flXC7Srcy73aMpqtXQk+Cv
+        T5ztm8sg7ClteI100NObaF3PEA==
+X-Google-Smtp-Source: ABdhPJwbjwUgJN6i2/JVWVSKLR6RCq6k3m5TOA6DbZwBeNPC5OCMrApGqzhvU3pk0Q+gGDxQwHXgRQ==
+X-Received: by 2002:a05:6830:2452:: with SMTP id x18mr6462837otr.322.1614921987053;
+        Thu, 04 Mar 2021 21:26:27 -0800 (PST)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id s73sm335831oih.36.2021.03.04.21.26.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Mar 2021 21:26:26 -0800 (PST)
+Date:   Thu, 4 Mar 2021 23:26:24 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, sharathv@codeaurora.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 6/6] net: qualcomm: rmnet: don't use C
+ bit-fields in rmnet checksum header
+Message-ID: <YEHBANdYaI+Meb7t@builder.lan>
+References: <20210304223431.15045-1-elder@linaro.org>
+ <20210304223431.15045-7-elder@linaro.org>
 MIME-Version: 1.0
-References: <20210302060753.953931-1-kuba@kernel.org> <CANn89iLaQuCGeWOh7Hp8X9dL09FhPP8Nwj+zV=rhYX7Cq7efpg@mail.gmail.com>
- <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
- <20210303160715.2333d0ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKgT0Ue9w4WBojY94g3kcLaQrVbVk6S-HgsFgLVXoqsY20hwuw@mail.gmail.com>
- <CANn89iL9fBKDQvAM0mTnh_B5ggmsebDBYxM6WAfYgMuD8-vcBw@mail.gmail.com>
- <20210304110626.1575f7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89i+cXQXP-7ioizFy90Dj-1SfjA0MQfwvDChxVXQ3wbTjFA@mail.gmail.com>
- <20210304210836.bkpqwbvfpkd5fagg@bsd-mbp.dhcp.thefacebook.com>
- <CANn89i+Sf66QknMO7+1gxowhV6g+Bs-DMhnvsvFx8vaqPfBVug@mail.gmail.com>
- <CANn89iLBi=2VzpiUBZPHaPHCeqqoFE-JmB0KAsf-vxaPvkvcxA@mail.gmail.com> <20210304152709.4e91bd8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210304152709.4e91bd8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 5 Mar 2021 06:17:21 +0100
-Message-ID: <CANn89iJKH37CMUuq66nERZQoMHFp+yuTe=yqxm1kf+RQ1RfHzw@mail.gmail.com>
-Subject: Re: [PATCH net] net: tcp: don't allocate fast clones for fastopen SYN
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@fb.com>, Neil Spring <ntspring@fb.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210304223431.15045-7-elder@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 5, 2021 at 12:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 4 Mar 2021 22:26:58 +0100 Eric Dumazet wrote:
-> > It would be nice if tun driver would have the ability to delay TX
-> > completions by N usecs,
-> > so that packetdrill tests could be used.
-> >
-> > It is probably not too hard to add such a feature.
->
-> Add an ioctl to turn off the skb_orphan, queue the skbs in tun_do_read()
-> to free them from a timer?
+On Thu 04 Mar 16:34 CST 2021, Alex Elder wrote:
 
-Yes, I  cooked a prototype like that a few hours ago before my night
-shift to launch our test suite.
+> Replace the use of C bit-fields in the rmnet_map_ul_csum_header
+> structure with a single two-byte (big endian) structure member,
+> and use field masks to encode or get values within it.
+> 
+> Previously rmnet_map_ipv4_ul_csum_header() would update values in
+> the host byte-order fields, and then forcibly fix their byte order
+> using a combination of byte order operations and types.
+> 
+> Instead, just compute the value that needs to go into the new
+> structure member and save it with a simple byte-order conversion.
+> 
+> Make similar simplifications in rmnet_map_ipv6_ul_csum_header().
+> 
+> Finally, in rmnet_map_checksum_uplink_packet() a set of assignments
+> zeroes every field in the upload checksum header.  Replace that with
+> a single memset() operation.
+> 
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 34 ++++++-------------
+>  include/linux/if_rmnet.h                      | 21 ++++++------
+>  2 files changed, 21 insertions(+), 34 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> index 29d485b868a65..db76bbf000aa1 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> @@ -198,23 +198,19 @@ rmnet_map_ipv4_ul_csum_header(void *iphdr,
+>  			      struct rmnet_map_ul_csum_header *ul_header,
+>  			      struct sk_buff *skb)
+>  {
+> -	__be16 *hdr = (__be16 *)ul_header;
+>  	struct iphdr *ip4h = iphdr;
+>  	u16 offset;
+> +	u16 val;
+>  
+>  	offset = skb_transport_header(skb) - (unsigned char *)iphdr;
+>  	ul_header->csum_start_offset = htons(offset);
+>  
+> -	ul_header->csum_insert_offset = skb->csum_offset;
+> -	ul_header->csum_enabled = 1;
+> +	val = be16_encode_bits(1, MAP_CSUM_UL_ENABLED_FMASK);
 
-I yet have to add a sane limit to the number of delayed skbs so that
-syzbot does not oom its hosts ;)
+Why are you using be16_ here? Won't that cancel the htons() below?
 
->
-> > I was testing this (note how I also removed the tcp_rearm_rto(sk) call)
-> >
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index 6f450e577975c7be9537338c8a4c0673d7d36c4c..9ef92ca55e530f76ad793d7342442c4ec06165f7
-> > 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -6471,11 +6471,10 @@ static bool tcp_rcv_fastopen_synack(struct
-> > sock *sk, struct sk_buff *synack,
-> >         tcp_fastopen_cache_set(sk, mss, cookie, syn_drop, try_exp);
-> >
-> >         if (data) { /* Retransmit unacked data in SYN */
-> > -               skb_rbtree_walk_from(data) {
-> > -                       if (__tcp_retransmit_skb(sk, data, 1))
-> > -                               break;
-> > -               }
-> > -               tcp_rearm_rto(sk);
-> > +               skb_rbtree_walk_from(data)
-> > +                       tcp_mark_skb_lost(sk, data);
-> > +
-> > +               tcp_xmit_retransmit_queue(sk);
-> >                 NET_INC_STATS(sock_net(sk),
-> >                                 LINUX_MIB_TCPFASTOPENACTIVEFAIL);
-> >                 return true;
->
-> AFAICT this works great now:
+Regards,
+Bjorn
 
-Yes but some packetdrill tests fail, I have to check them (sponge link
-for Googlers), but at first glance we have more investigations.
-
-Ran 2003 tests: 1990 passed, 13 failed
-Sponge: http://sponge2/b0d4c652-3173-4837-86ef-5e8cc59730a1
-
-Failures in
-//net/tcp/fastopen/client:ipv4-mapped-ipv6:cookie-disabled-prod-conn
-//net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-icmp-unreach-frag-needed
-//net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-icmp-unreach-frag-needed-with-seq
-//net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-only-syn-acked
-//net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-partial-or-over-ack
-//net/tcp/fastopen/client:ipv4:cookie-disabled-prod-conn
-//net/tcp/fastopen/client:ipv4:syn-data-icmp-unreach-frag-needed
-//net/tcp/fastopen/client:ipv4:syn-data-icmp-unreach-frag-needed-with-seq
-//net/tcp/fastopen/client:ipv4:syn-data-only-syn-acked
-//net/tcp/fastopen/client:ipv4:syn-data-partial-or-over-ack
-//net/tcp/fastopen/client:ipv6:cookie-disabled-prod-conn
-//net/tcp/fastopen/client:ipv6:syn-data-only-syn-acked
-//net/tcp/fastopen/client:ipv6:syn-data-partial-or-over-ack
-
-Showing test.log for
-//net/tcp/fastopen/client:ipv4:syn-data-icmp-unreach-frag-needed
-
-syn-data-icmp-unreach-frag-needed.pkt:33: error handling packet: live
-packet field ipv4_total_length: expected: 800 (0x320) vs actual: 1040
-(0x410)
-script packet: 0.090624 . 1:761(760) ack 1
-actual packet: 0.090619 P. 1:1001(1000) ack 1 win 256
-
-
-Yes, it looks like Alex patch no longer works
-
-commit c31b70c9968fe9c4194d1b5d06d07596a3b680de
-Author: Alexander Duyck <alexanderduyck@fb.com>
-Date:   Sat Dec 12 12:31:24 2020 -0800
-
-    tcp: Add logic to check for SYN w/ data in tcp_simple_retransmit
-
-
-
->
-> ==> TFO case ret:-16 (0) ca_state:0 skb:ffff8881d3513800!
->   FREED swapper/5 -- skb 0xffff8881d3513800 freed after: 1us
-> -----
-> First:
->         __tcp_retransmit_skb+1
->         tcp_retransmit_skb+18
->         tcp_xmit_retransmit_queue.part.70+339
->         tcp_rcv_state_process+2491
->         tcp_v6_do_rcv+405
->         tcp_v6_rcv+2984
->
-> Second:
->         __tcp_retransmit_skb+1
->         tcp_retransmit_skb+18
->         tcp_xmit_retransmit_queue.part.70+339
->         tcp_tsq_write.part.71+146
->         tcp_tsq_handler+53
->         tcp_tasklet_func+181
->
->  sk:0xffff8885adc16f00 skb:ffff8881d3513800 --- 61us acked:1
->
->
-> The other case where we hit RTO after __tcp_retransmit_skb() fails is:
->
-> ==> non-TFO case ret:-11 (0) ca_state:3 skb:ffff8883d71dd400!
-> -----
-> First:
->         __tcp_retransmit_skb+1
->         tcp_retransmit_skb+18
->         tcp_xmit_retransmit_queue.part.70+339
->         tcp_ack+2270
->         tcp_rcv_established+303
->         tcp_v6_do_rcv+190
->
-> Second:
->         __tcp_retransmit_skb+1
->         tcp_retransmit_skb+18
->         tcp_retransmit_timer+716
->         tcp_write_timer_handler+136
->         tcp_write_timer+141
->         call_timer_fn+43
->
->  sk:0xffff88801772d340 skb:ffff8883d71dd400 --- 51738us acked:47324
->
-> Which I believe is this:
->
->         if (refcount_read(&sk->sk_wmem_alloc) >
->             min_t(u32, sk->sk_wmem_queued + (sk->sk_wmem_queued >> 2),
->                   sk->sk_sndbuf))
->                 return -EAGAIN;
->
-> Because __tcp_retransmit_skb() seems to bail before
-> inet6_sk_rebuild_header gets called. Should we arm TSQ here as well?
-
-Yes, or make the limit slightly bigger since we now have the fclone
-more precise thing for standard drivers [1]
-
-if ((refcount_read(&sk->sk_wmem_alloc) >> 1) >
-    min_t(u32, sk->sk_wmem_queued,  sk->sk_sndbuf))
-   return -EAGAIN;
-
-[1] It is probably wise to keep this code because some drivers do call
-skb_orphan() in their ndo_start_xmit()
+>  	if (ip4h->protocol == IPPROTO_UDP)
+> -		ul_header->udp_ind = 1;
+> -	else
+> -		ul_header->udp_ind = 0;
+> +		val |= be16_encode_bits(1, MAP_CSUM_UL_UDP_FMASK);
+> +	val |= be16_encode_bits(skb->csum_offset, MAP_CSUM_UL_OFFSET_FMASK);
+>  
+> -	/* Changing remaining fields to network order */
+> -	hdr++;
+> -	*hdr = htons((__force u16)*hdr);
+> +	ul_header->csum_info = htons(val);
+>  
+>  	skb->ip_summed = CHECKSUM_NONE;
+>  
+> @@ -241,24 +237,19 @@ rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
+>  			      struct rmnet_map_ul_csum_header *ul_header,
+>  			      struct sk_buff *skb)
+>  {
+> -	__be16 *hdr = (__be16 *)ul_header;
+>  	struct ipv6hdr *ip6h = ip6hdr;
+>  	u16 offset;
+> +	u16 val;
+>  
+>  	offset = skb_transport_header(skb) - (unsigned char *)ip6hdr;
+>  	ul_header->csum_start_offset = htons(offset);
+>  
+> -	ul_header->csum_insert_offset = skb->csum_offset;
+> -	ul_header->csum_enabled = 1;
+> -
+> +	val = be16_encode_bits(1, MAP_CSUM_UL_ENABLED_FMASK);
+>  	if (ip6h->nexthdr == IPPROTO_UDP)
+> -		ul_header->udp_ind = 1;
+> -	else
+> -		ul_header->udp_ind = 0;
+> +		val |= be16_encode_bits(1, MAP_CSUM_UL_UDP_FMASK);
+> +	val |= be16_encode_bits(skb->csum_offset, MAP_CSUM_UL_OFFSET_FMASK);
+>  
+> -	/* Changing remaining fields to network order */
+> -	hdr++;
+> -	*hdr = htons((__force u16)*hdr);
+> +	ul_header->csum_info = htons(val);
+>  
+>  	skb->ip_summed = CHECKSUM_NONE;
+>  
+> @@ -425,10 +416,7 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
+>  	}
+>  
+>  sw_csum:
+> -	ul_header->csum_start_offset = 0;
+> -	ul_header->csum_insert_offset = 0;
+> -	ul_header->csum_enabled = 0;
+> -	ul_header->udp_ind = 0;
+> +	memset(ul_header, 0, sizeof(*ul_header));
+>  
+>  	priv->stats.csum_sw++;
+>  }
+> diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
+> index 1fbb7531238b6..149d696feb520 100644
+> --- a/include/linux/if_rmnet.h
+> +++ b/include/linux/if_rmnet.h
+> @@ -33,17 +33,16 @@ struct rmnet_map_dl_csum_trailer {
+>  
+>  struct rmnet_map_ul_csum_header {
+>  	__be16 csum_start_offset;
+> -#if defined(__LITTLE_ENDIAN_BITFIELD)
+> -	u16 csum_insert_offset:14;
+> -	u16 udp_ind:1;
+> -	u16 csum_enabled:1;
+> -#elif defined (__BIG_ENDIAN_BITFIELD)
+> -	u16 csum_enabled:1;
+> -	u16 udp_ind:1;
+> -	u16 csum_insert_offset:14;
+> -#else
+> -#error	"Please fix <asm/byteorder.h>"
+> -#endif
+> +	__be16 csum_info;		/* MAP_CSUM_UL_*_FMASK */
+>  } __aligned(1);
+>  
+> +/* csum_info field:
+> + *  ENABLED:	1 = checksum computation requested
+> + *  UDP:	1 = UDP checksum (zero checkum means no checksum)
+> + *  OFFSET:	where (offset in bytes) to insert computed checksum
+> + */
+> +#define MAP_CSUM_UL_OFFSET_FMASK	GENMASK(13, 0)
+> +#define MAP_CSUM_UL_UDP_FMASK		GENMASK(14, 14)
+> +#define MAP_CSUM_UL_ENABLED_FMASK	GENMASK(15, 15)
+> +
+>  #endif /* !(_LINUX_IF_RMNET_H_) */
+> -- 
+> 2.20.1
+> 
