@@ -2,55 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E49E232ED10
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 15:26:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9891B32ED16
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 15:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbhCEOZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 09:25:40 -0500
-Received: from mga01.intel.com ([192.55.52.88]:51077 "EHLO mga01.intel.com"
+        id S231259AbhCEOZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 09:25:42 -0500
+Received: from mga17.intel.com ([192.55.52.151]:27033 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229818AbhCEOZW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 09:25:22 -0500
-IronPort-SDR: LNWfaa1+t4uQpLCCQhpbfbue4ZatuykL+LHigGAEqGeMmZh1H+z1fx6zmX9Ze+eszgOvp3PIXn
- tCtCB3DR//4A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9914"; a="207392732"
+        id S230412AbhCEOZ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 09:25:29 -0500
+IronPort-SDR: RTfC759iLoxKC1cyrJHelMDhzJvQsMw7znutUcG5HLltLxSzQeC1uon0UFWNfTFMclwyuTWNu7
+ eQ+moj4rKsoA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9914"; a="167555564"
 X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; 
-   d="scan'208";a="207392732"
+   d="scan'208";a="167555564"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 06:25:22 -0800
-IronPort-SDR: cvMtf/qQOEQUJs4oT5VIDPPc9+J+nEP1Rl0oxCchgqUgzRyIRAxKGrp6Y2NBDzG6S6+26RviPy
- JQ/zL0787pWg==
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 06:25:29 -0800
+IronPort-SDR: nckXKTnu4bFavss5OQj23qtOON7wZys2As4nZTPKLZ8KyOTjc+O5qwaRsMDuxuQ48l3adQderq
+ DGbX27k7PY5w==
 X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; 
-   d="scan'208";a="408315609"
+   d="scan'208";a="408315642"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 06:25:19 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 06:25:26 -0800
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH 0/3] vDPA/ifcvf: enables Intel C5000X-PL virtio-net
-Date:   Fri,  5 Mar 2021 22:19:57 +0800
-Message-Id: <20210305142000.18521-1-lingshan.zhu@intel.com>
+Subject: [PATCH 1/3] vDPA/ifcvf: get_vendor_id returns a device specific vendor id
+Date:   Fri,  5 Mar 2021 22:19:58 +0800
+Message-Id: <20210305142000.18521-2-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210305142000.18521-1-lingshan.zhu@intel.com>
+References: <20210305142000.18521-1-lingshan.zhu@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series enabled Intel FGPA SmartNIC C5000X-PL virtio-net
-for vDPA
+In this commit, ifcvf_get_vendor_id() will return
+a device specific vendor id of the probed pci device
+than a hard code.
 
-Zhu Lingshan (3):
-  vDPA/ifcvf: get_vendor_id returns a device specific vendor id
-  vDPA/ifcvf: enable Intel C5000X-PL virtio-net for vDPA
-  vDPA/ifcvf: bump version string to 1.0
+Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+---
+ drivers/vdpa/ifcvf/ifcvf_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
- drivers/vdpa/ifcvf/ifcvf_base.h | 13 +++++++++----
- drivers/vdpa/ifcvf/ifcvf_main.c | 20 ++++++++++++++------
- 2 files changed, 23 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index fa1af301cf55..e501ee07de17 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -324,7 +324,10 @@ static u32 ifcvf_vdpa_get_device_id(struct vdpa_device *vdpa_dev)
+ 
+ static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
+ {
+-	return IFCVF_SUBSYS_VENDOR_ID;
++	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
++	struct pci_dev *pdev = adapter->pdev;
++
++	return pdev->subsystem_vendor;
+ }
+ 
+ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
 -- 
 2.27.0
 
