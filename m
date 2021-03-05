@@ -2,61 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168EB32F62E
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 23:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D92232F633
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 23:57:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230056AbhCEWz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 17:55:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47460 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230035AbhCEWzT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 17:55:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E8D1564F11;
-        Fri,  5 Mar 2021 22:55:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614984919;
-        bh=1CrTjEZoV5A6twTZemcbfp0/ikfp7xshxhN94nII4HE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XRapI5bpZ/1gK1LK9S7TSPUmza0m/ryBvnmYdNmJMrQYclcI3aKjGqvdIf7P3gBsr
-         sIx/uR24OOOKgZO/njQqR8wwiTfBpYVyJrU42CAXPmTpYAuVXXClrBY/Pl4KCC/PZE
-         JuebKxzrNx1UJE2KZ/taEaCZ5fNZfYd22tMCW+KpFAMs5niNTLXgSSBEHbcq5ghDXp
-         UB4HEicHVpdZGvCJ4NrgCgBmPaHtWmhze3EtVG82tsBm9qUeBS7lu5k2cRjpo//j3b
-         rmg7JcY8mDcm1D8RKS0Jr1t0qeDrvyv2qRa4vxKQ3qSsvP93CIuwXVIuRyAcVgNwnk
-         L8Z7SkIs4tXHQ==
-Date:   Fri, 5 Mar 2021 14:55:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Don Bollinger" <don@thebollingers.org>
-Cc:     "'Andrew Lunn'" <andrew@lunn.ch>, <arndb@arndb.de>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <brandon_chuang@edge-core.com>, <wally_wang@accton.com>,
-        <aken_liu@edge-core.com>, <gulv@microsoft.com>,
-        <jolevequ@microsoft.com>, <xinxliu@microsoft.com>,
-        "'netdev'" <netdev@vger.kernel.org>,
-        "'Moshe Shemesh'" <moshe@nvidia.com>
-Subject: Re: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS
- EEPROMS
-Message-ID: <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
-References: <20210215193821.3345-1-don@thebollingers.org>
-        <YDl3f8MNWdZWeOBh@lunn.ch>
-        <000901d70cb2$b2848420$178d8c60$@thebollingers.org>
-        <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org>
-        <YD1ScQ+w8+1H//Y+@lunn.ch>
-        <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
+        id S229672AbhCEW4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 17:56:35 -0500
+Received: from www62.your-server.de ([213.133.104.62]:39002 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229493AbhCEW4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 17:56:33 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lIJMt-000AqI-1e; Fri, 05 Mar 2021 23:56:23 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lIJMs-000Hzo-Pn; Fri, 05 Mar 2021 23:56:22 +0100
+Subject: Re: [PATCH bpf-next v5 2/2] bpf, xdp: restructure redirect actions
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     maciej.fijalkowski@intel.com, hawk@kernel.org, toke@redhat.com,
+        magnus.karlsson@intel.com, john.fastabend@gmail.com,
+        kuba@kernel.org, davem@davemloft.net,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <20210227122139.183284-1-bjorn.topel@gmail.com>
+ <20210227122139.183284-3-bjorn.topel@gmail.com>
+ <ddbbeadc-bead-904a-200a-b75cd995b254@iogearbox.net>
+ <222735a9-0cbe-7131-7fd8-f638ddecbedc@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f285c8c8-2640-8c34-804c-48928adbe0ff@iogearbox.net>
+Date:   Fri, 5 Mar 2021 23:56:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <222735a9-0cbe-7131-7fd8-f638ddecbedc@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26099/Fri Mar  5 13:02:51 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 5 Mar 2021 11:07:08 -0800 Don Bollinger wrote:
-> Acknowledging your objections, I nonetheless request that optoe be accepted
-> into upstream as an eeprom driver in drivers/misc/eeprom.  It is a
-> legitimate driver, with a legitimate user community, which deserves the
-> benefits of being managed as a legitimate part of the linux kernel.
+On 3/5/21 6:11 PM, Björn Töpel wrote:
+> On 2021-03-05 16:44, Daniel Borkmann wrote:
+>> On 2/27/21 1:21 PM, Björn Töpel wrote:
+>> [...]
+>>> diff --git a/include/linux/filter.h b/include/linux/filter.h
+>>> index 008691fd3b58..a7752badc2ec 100644
+>>> --- a/include/linux/filter.h
+>>> +++ b/include/linux/filter.h
+>>> @@ -646,11 +646,20 @@ struct bpf_redirect_info {
+>>>       u32 flags;
+>>>       u32 tgt_index;
+>>>       void *tgt_value;
+>>> -    struct bpf_map *map;
+>>> +    u32 map_id;
+>>> +    u32 tgt_type;
+>>>       u32 kern_flags;
+>>>       struct bpf_nh_params nh;
+>>>   };
+>>> +enum xdp_redirect_type {
+>>> +    XDP_REDIR_UNSET,
+>>> +    XDP_REDIR_DEV_IFINDEX,
+>>
+>> [...]
+>>
+>>> +    XDP_REDIR_DEV_MAP,
+>>> +    XDP_REDIR_CPU_MAP,
+>>> +    XDP_REDIR_XSK_MAP,
+>>
+>> Did you eval whether for these maps we can avoid the redundant def above by just
+>> passing in map->map_type as ri->tgt_type and inferring the XDP_REDIR_UNSET from
+>> invalid map_id of 0 (given the idr will never allocate such)?
+>>
+> 
+> I'll take a stab at it!
 
-It's in the best interest of the community to standardize on how 
-we expect things to operate. You're free to do whatever you want
-in your proprietary systems but please don't expect us to accept
-a parallel, in now way superior method of accessing SFPs. 
+Sounds good, thanks! If it doesn't simplify or gets worse, we can always stick to
+the one here.
+
+>> [...]
+>>> @@ -4068,10 +4039,9 @@ BPF_CALL_2(bpf_xdp_redirect, u32, ifindex, u64, flags)
+>>>       if (unlikely(flags))
+>>>           return XDP_ABORTED;
+>>> -    ri->flags = flags;
+>>> -    ri->tgt_index = ifindex;
+>>> -    ri->tgt_value = NULL;
+>>> -    WRITE_ONCE(ri->map, NULL);
+>>> +    ri->tgt_type = XDP_REDIR_DEV_IFINDEX;
+>>> +    ri->tgt_index = 0;
+>>> +    ri->tgt_value = (void *)(long)ifindex;
+>>
+>> nit: Bit ugly to pass this in /read out this way, maybe union if we cannot use
+>> tgt_index?
+>>
+> 
+> Dito!
+> 
+> 
+> Thanks for the input! I'll get back with a v6!
+> 
+> 
+> Björn
+> 
+> 
+>>>       return XDP_REDIRECT;
+>>>   }
+>>> diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+>>> index 711acb3636b3..2c58d88aa69d 100644
+>>> --- a/net/xdp/xskmap.c
+>>> +++ b/net/xdp/xskmap.c
+>>> @@ -87,7 +87,6 @@ static void xsk_map_free(struct bpf_map *map)
+>>>   {
+>>>       struct xsk_map *m = container_of(map, struct xsk_map, map);
+>>> -    bpf_clear_redirect_map(map);
+>>>       synchronize_net();
+>>>       bpf_map_area_free(m);
+>>>   }
+>>> @@ -229,7 +228,8 @@ static int xsk_map_delete_elem(struct bpf_map *map, void *key)
+>>>   static int xsk_map_redirect(struct bpf_map *map, u32 ifindex, u64 flags)
+>>>   {
+>>> -    return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_elem);
+>>> +    return __bpf_xdp_redirect_map(map, ifindex, flags, __xsk_map_lookup_elem,
+>>> +                      XDP_REDIR_XSK_MAP);
+>>>   }
+>>>   void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+>>>
+>>
+
