@@ -2,87 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4AF632DFEE
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 04:10:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB1732DFF6
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 04:11:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbhCEDKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 22:10:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbhCEDKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 22:10:18 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0AFC061574;
-        Thu,  4 Mar 2021 19:10:18 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id l2so383877pgb.1;
-        Thu, 04 Mar 2021 19:10:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=s/06w5QgrfcMPtzUsdqEmwK0JlC5zZBUGgXhBq3TD64=;
-        b=kGo37IFXZYumoVwQb3oAseOH7lw4OlGNqzdR6jwpJACgIljfSdjXqSM/AYoZFpxSjK
-         LRXDj8ny61n0kBGNu3zJ8poETfpKZNaOWLMD9LMcbr6Bll4ESU9UPxMiPYG0fDhp2Obz
-         h8ywDyEt1v1htnK8da0Wa/xF4c1EpPvOeNVxlUm1AnoR8BP/9PFa4+KfEDD3ST453chV
-         egxGRDiliEzoG5aOkYCAThQ8tuNmQ3ZyKr4Hk8O/qFJfPGoGqGmUvxsyhvJgqczgt1Q6
-         mbXY3pYohslqamKxEHttVnrhDwbir0SEOEtFh532Ilb0b9/faNgDBP7XcER9eZZW0qXi
-         vXQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=s/06w5QgrfcMPtzUsdqEmwK0JlC5zZBUGgXhBq3TD64=;
-        b=YBl8uAartBGpKwolVDTbwJ7sBfyESk5SDe8Y0mCxi+tBWbOwGRRkX6lxNDgi38ruMz
-         4CiCg1GMy/RwIFskiyAnHO8E6qum/IAsR6npYA0A/U/jSadXmyi0fV1k9OEd9D8qi0hH
-         Bt+UI1sLBeIQmdZN8hMEVOfSGD+XvkBTJh6yqpsBJwhbSN5qzDE6YYkCaHprXNJp5NmY
-         f3ge5NvrranywWwOhTyzyep+zkypDD9FaqisaJ0iJqPCxuosrncMyE7Nu8j3LUdwVqc8
-         hq/LXtTcVO38RgfhuUbF4vLNkqWqLvEGPYd14tgzCcg3kSAkbdIZwdIyt1tvgvldpvIB
-         m/HQ==
-X-Gm-Message-State: AOAM532jqnEsFhwNyZlRMpkci8rf1oiwa4I1YksXumsjxeqQdDRcGqqR
-        i+A4zBuq39W6iQmnM1DF1GU=
-X-Google-Smtp-Source: ABdhPJxJroc+YD7f8mRyciCHP8r3jc3N5NIQ6PbIRzQqkEN8zgiK9Eqt6sXv1Xj5ZTbry5MVdj4W7A==
-X-Received: by 2002:aa7:91cf:0:b029:1cb:1c6f:b77d with SMTP id z15-20020aa791cf0000b02901cb1c6fb77dmr7007696pfa.74.1614913817878;
-        Thu, 04 Mar 2021 19:10:17 -0800 (PST)
-Received: from localhost.localdomain ([45.135.186.129])
-        by smtp.gmail.com with ESMTPSA id 14sm682122pfo.141.2021.03.04.19.10.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Mar 2021 19:10:17 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: intel: iavf: fix error return code of iavf_init_get_resources()
-Date:   Thu,  4 Mar 2021 19:10:10 -0800
-Message-Id: <20210305031010.5396-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S229674AbhCEDL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 22:11:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55966 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229521AbhCEDL4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 22:11:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1614913916;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bRNOpSLwFJxiZfQagzjze9iaWCzAF8OGRLFEB+wT6tI=;
+        b=YLBOzpRPG48V4uJOGoqmgAXQorKLf8zVDRI7jORLxFKJ4/cTfXTwsGUuwTmN3qVUKwWUbE
+        n5ZsXEwtq9UcySHQQOtSIOOSjBLmRs+RKov3FjPz9Wq+i8JKRJuw7jqo+8jMiLDX9w35nS
+        ZptaHUjUvD8GqtKyuKBYTSco13dRlDA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-439-ZMZ_vDNzMG6EOd8-U9krxA-1; Thu, 04 Mar 2021 22:11:54 -0500
+X-MC-Unique: ZMZ_vDNzMG6EOd8-U9krxA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0E081107465F;
+        Fri,  5 Mar 2021 03:11:52 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-196.pek2.redhat.com [10.72.13.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 66B4A6268B;
+        Fri,  5 Mar 2021 03:11:40 +0000 (UTC)
+Subject: Re: [RFC v4 11/11] vduse: Support binding irq to the specified cpu
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210223115048.435-1-xieyongji@bytedance.com>
+ <20210223115048.435-12-xieyongji@bytedance.com>
+ <d104a518-799d-c13f-311c-f7a673f9241b@redhat.com>
+ <CACycT3uaOU5ybwojfiSL0kSpW9GUnh82ZeDH7drdkfK72iP8bg@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <86af7b84-23f0-dca7-183b-e4d586cbcea6@redhat.com>
+Date:   Fri, 5 Mar 2021 11:11:38 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
+MIME-Version: 1.0
+In-Reply-To: <CACycT3uaOU5ybwojfiSL0kSpW9GUnh82ZeDH7drdkfK72iP8bg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When iavf_process_config() fails, no error return code of
-iavf_init_get_resources() is assigned.
-To fix this bug, err is assigned with the return value of 
-iavf_process_config(), and then err is checked.
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/ethernet/intel/iavf/iavf_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 2021/3/4 4:19 下午, Yongji Xie wrote:
+> On Thu, Mar 4, 2021 at 3:30 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> On 2021/2/23 7:50 下午, Xie Yongji wrote:
+>>> Add a parameter for the ioctl VDUSE_INJECT_VQ_IRQ to support
+>>> injecting virtqueue's interrupt to the specified cpu.
+>>
+>> How userspace know which CPU is this irq for? It looks to me we need to
+>> do it at different level.
+>>
+>> E.g introduce some API in sys to allow admin to tune for that.
+>>
+>> But I think we can do that in antoher patch on top of this series.
+>>
+> OK. I will think more about it.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 0a867d64d467..dc5b3c06d1e0 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1776,7 +1776,8 @@ static int iavf_init_get_resources(struct iavf_adapter *adapter)
- 		goto err_alloc;
- 	}
- 
--	if (iavf_process_config(adapter))
-+	err = iavf_process_config(adapter);
-+	if (err)
- 		goto err_alloc;
- 	adapter->current_op = VIRTCHNL_OP_UNKNOWN;
- 
--- 
-2.17.1
+
+It should be soemthing like 
+/sys/class/vduse/$dev_name/vq/0/irq_affinity. Also need to make sure 
+eventfd could not be reused.
+
+Thanks
+
+
+>
+> Thanks,
+> Yongji
+>
 
