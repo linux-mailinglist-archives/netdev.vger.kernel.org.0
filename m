@@ -2,111 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E06E632DE36
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 01:04:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 386B132DE4F
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 01:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231659AbhCEAEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 19:04:21 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:47306 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231536AbhCEAET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 19:04:19 -0500
-Received: by mail-io1-f72.google.com with SMTP id o4so404981ioh.14
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 16:04:19 -0800 (PST)
+        id S230371AbhCEA2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 19:28:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229601AbhCEA2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 19:28:25 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6559BC061574
+        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 16:28:25 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id bj7so810493pjb.2
+        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 16:28:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=J4AKE+g34bDz2SzF2l7p1C+2gIH0nYgaYl8eOSvbSmw=;
+        b=hTy0SQaWWaJk/Em3pV2dt35MfnOfRBczwDnStrID5JGnTTXSmCyfiNt5hN7yp7oDvK
+         BCwNOsEoZ0vMmybz6PWWmdfvvmTv/el2YOHe9fEdaSwTtI1Eb24GGeKIibHdid76CPzP
+         sLARM7NnQvLw4oRMCyAHESQKKe3SeWuF5gC824dkdwYD1PriN2i+8a4M2M1+CBO9WRjQ
+         +Nuk5djXYV/XA/4RQ7Zp37C2IL+vzfv2emOpYAd8hifI7BWUHozyZCVaMWhoLFQquCOT
+         ef6sDQONXKU3dcH56pNwM9/Vi3PFTY5WUHK3HP99vHDqvZ67ViKbbksg8Fppxwn/wNg7
+         G9WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=bqLq8lEZAr3udvWoJ5bAlwyE7Hbzc7Aau7j02WMMyZQ=;
-        b=NqIJvNK7mGfM9djrcFJ8hAy1a07XGayyBBMy9P46hgV6KUkVhktjXHXZ0ryG2op2qM
-         X6/bOkod93PUOLYCYkjCZPKktbo6ycCHAOz/sTV7iLLEgX3DPSjVSNR97uBUoVqgil9e
-         iraH7Us6wHx+gZXk6qQFwmZX6yoyX9bHMkCtk9vywIiaaD5uOs3zsQTUuAKTJTWxk4m7
-         fVPsz4EpCEf38bak51RaCPHGH6eNN/mY9BAS8SA5B06nlmwcp8MTeBrdWz2ydrMcloLs
-         ddcEIlhMJTUJB8Tt5nmPqipJ4z51OqHDzID3i4clgI48+ev4pdl2a1LjO7rQydnHuoUN
-         Hikg==
-X-Gm-Message-State: AOAM533hAHOyzjMnusu5SXVXQ/Q+u0arAIPT+UhtM8DByztbC6rPDpMZ
-        i9jzgP/K5BKFTHsEMERJiBXWD6n28vjGQSWOgKx5yzd2Wz4v
-X-Google-Smtp-Source: ABdhPJyZ7X1PN5WYLX+tIw1Zbs+iVyIUGLXs1ez5SRC8FYFFL2+T/5vm5avVf1e1dadgDVcjILLDvy61otGySSFxz5gWtMQsnXWC
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=J4AKE+g34bDz2SzF2l7p1C+2gIH0nYgaYl8eOSvbSmw=;
+        b=NjRt9MAdI4jSRn8redJgBm0kMhuJXZXVXzVYPdjJogKi72RFd8xqqq/F+8PYm9k/GX
+         C27sl8cwKW1fLhczqJfssjgHESRr99SncesvG9POUyhIWcKBV4w8haIWiBWhpaAMAuml
+         taH8HKzaM92JtVbD4qfkglFc+DH/uc7mHgecEMc3VPd7s24OQWegSn7PKBKtpS1FBZv+
+         ADMAs0S5OCfjM5Cc/DSee5YjFscHf3KdwwSTxMg2mZTU0QoY8Em/2MdwuyLL+QblPumR
+         Idav5fyepWbcPmQRnad74czfBlUzAFB9E4he/k2g2umHD50s8oXwEyh5dpcjxGsyZ6Sb
+         PZrA==
+X-Gm-Message-State: AOAM5331PX8ETa7uOKx34b35HTKF1MidUGmussTtpI5jOVhWvHS3XgJd
+        ppb3PDC4qcnxRtNgcTddjR7JyxEbhss=
+X-Google-Smtp-Source: ABdhPJy65CjdUkqz08VC/manmJVzh3hgEwPefPCSbydrvue/WtqtFgmPt+NASeBbfJiSxvIBzHKoVA==
+X-Received: by 2002:a17:90a:c096:: with SMTP id o22mr7267666pjs.119.1614904104457;
+        Thu, 04 Mar 2021 16:28:24 -0800 (PST)
+Received: from [10.67.49.104] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id t17sm489247pgk.25.2021.03.04.16.28.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Mar 2021 16:28:23 -0800 (PST)
+Subject: Re: stmmac driver timeout issue
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <8a996459-fc77-2e98-cc0c-91defffc7f29@gmail.com>
+Date:   Thu, 4 Mar 2021 16:28:22 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-X-Received: by 2002:a5e:980e:: with SMTP id s14mr3880359ioj.63.1614902658921;
- Thu, 04 Mar 2021 16:04:18 -0800 (PST)
-Date:   Thu, 04 Mar 2021 16:04:18 -0800
-In-Reply-To: <0000000000009b387305bc00fda6@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000054fbc005bcbed38f@google.com>
-Subject: Re: WARNING in ieee802154_get_llsec_params
-From:   syzbot <syzbot+cde43a581a8e5f317bc2@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, stefan@datenfreihafen.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On 3/4/21 5:14 AM, Joakim Zhang wrote:
+> 
+> Hello Andrew, Hello Jakub,
+> 
+> You may can give some suggestions based on your great networking knowledge, thanks in advance!
+> 
+> I found that add vlan id hw filter (stmmac_vlan_rx_add_vid) have possibility timeout when accessing VLAN Filter registers during ifup/ifdown stress test, and restore vlan id hw filter (stmmac_restore_hw_vlan_rx_fltr) always timeout when access VLAN Filter registers. 
+> 
+> My hardware is i.MX8MP (drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c, RGMII interface, RTL8211FDI-CG PHY), it needs fix mac speed(imx_dwmac_fix_speed), it indirectly involved in phylink_link_up. After debugging, if phylink_link_up is called later than adding vlan id hw filter, it will report timeout, so I guess we need fix mac speed before accessing VLAN Filter registers. Error like below:
+> 	[  106.389879] 8021q: adding VLAN 0 to HW filter on device eth1
+> 	[  106.395644] imx-dwmac 30bf0000.ethernet eth1: Timeout accessing MAC_VLAN_Tag_Filter
+> 	[  108.160734] imx-dwmac 30bf0000.ethernet eth1: Link is Up - 100Mbps/Full - flow control rx/tx   ->->-> which means accessing VLAN Filter registers before phylink_link_up is called.
+> 
+> Same case when system resume back, 
+> 	[ 1763.842294] imx-dwmac 30bf0000.ethernet eth1: configuring for phy/rgmii-id link mode
+> 	[ 1763.853084] imx-dwmac 30bf0000.ethernet eth1: No Safety Features support found
+> 	[ 1763.853186] imx-dwmac 30bf0000.ethernet eth1: Timeout accessing MAC_VLAN_Tag_Filter
+> 	[ 1763.873465] usb usb1: root hub lost power or was reset
+> 	[ 1763.873469] usb usb2: root hub lost power or was reset
+> 	[ 1764.090321] PM: resume devices took 0.248 seconds
+> 	[ 1764.257381] OOM killer enabled.
+> 	[ 1764.260518] Restarting tasks ... done.
+> 	[ 1764.265229] PM: suspend exit
+> 	===============================
+> 	suspend 12 times
+> 	===============================
+> 	[ 1765.887915] imx-dwmac 30bf0000.ethernet eth1: Link is Up - 100Mbps/Full - flow control rx/tx  ->->-> which means accessing VLAN Filter registers before phylink_link_up is called.
+> 
+> My question is that some MAC controllers need RXC clock from RGMII interface to reset DAM or access to some registers. If there is any way to ensure phylink_link_up is invoked synchronously when we need it. I am not sure this timeout caused by a fix mac speed is needed before accessing VLAN Filter registers, is there ang hints, thanks a lot! We have another board i.MX8DXL which don't need fix mac speed attach to AR8031 PHY, can't reproduce this issue.
 
-HEAD commit:    f5427c24 Add linux-next specific files for 20210304
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12bb4ff2d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a7876f68bf0bea99
-dashboard link: https://syzkaller.appspot.com/bug?extid=cde43a581a8e5f317bc2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=124c7b46d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1276f5b0d00000
+Every Ethernet controller is different, but you can see that we
+struggled to fix a similar problem where we need the RXC from the PHY
+for the MAC to complete its reset side reset with GENET, it took several
+iterations to get there:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cde43a581a8e5f317bc2@syzkaller.appspotmail.com
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=88f6c8bf1aaed5039923fb4c701cab4d42176275
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=612eb1c3b9e504de24136c947ed7c07bc342f3aa
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6b6d017fccb4693767d2fcae9ef2fd05243748bb
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3a55402c93877d291b0a612d25edb03d1b4b93ac
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1f515486275a08a17a2c806b844cca18f7de5b34
 
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-WARNING: CPU: 1 PID: 8406 at kernel/locking/mutex.c:928 __mutex_lock_common kernel/locking/mutex.c:928 [inline]
-WARNING: CPU: 1 PID: 8406 at kernel/locking/mutex.c:928 __mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
-Modules linked in:
-CPU: 1 PID: 8406 Comm: syz-executor446 Not tainted 5.12.0-rc1-next-20210304-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:928 [inline]
-RIP: 0010:__mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
-Code: 08 84 d2 0f 85 a3 04 00 00 8b 05 98 77 c0 04 85 c0 0f 85 12 f5 ff ff 48 c7 c6 00 85 6b 89 48 c7 c7 c0 82 6b 89 e8 ed be bc ff <0f> 0b e9 f8 f4 ff ff 65 48 8b 1c 25 00 f0 01 00 be 08 00 00 00 48
-RSP: 0018:ffffc9000163f258 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88801e509c00 RSI: ffffffff815bc1b5 RDI: fffff520002c7e3d
-RBP: ffff8880220e0c90 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815b528e R11: 0000000000000000 R12: 0000000000000000
-R13: dffffc0000000000 R14: ffffffff8a8a8200 R15: 0000000000000000
-FS:  0000000001676300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffc942cffac CR3: 0000000020f9b000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- ieee802154_get_llsec_params+0x3f/0x70 net/mac802154/cfg.c:321
- rdev_get_llsec_params net/ieee802154/rdev-ops.h:241 [inline]
- nl802154_get_llsec_params+0xce/0x390 net/ieee802154/nl802154.c:745
- nl802154_send_iface+0x7cf/0xa70 net/ieee802154/nl802154.c:823
- nl802154_get_interface+0xeb/0x230 net/ieee802154/nl802154.c:889
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x440899
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe18370df8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000000107cf RCX: 0000000000440899
-RDX: 0000000000000000 RSI: 0000000020000300 RDI: 0000000000000005
-RBP: 0000000000000000 R08: 00007ffe18370f98 R09: 00007ffe18370f98
-R10: 00007ffe18370f98 R11: 0000000000000246 R12: 00007ffe18370e0c
-R13: 431bde82d7b634db R14: 00000000004ae018 R15: 00000000004004a0
-
+This driver uses PHYLIB (hardware is no longer developed and will not
+receive updates to support different PCS), but maybe you can glean some
+idea on how to solve this?
+-- 
+Florian
