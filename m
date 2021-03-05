@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12F1132DF51
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 02:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B9932DF54
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 02:57:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbhCEB5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Mar 2021 20:57:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
+        id S229517AbhCEB5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Mar 2021 20:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbhCEB5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 20:57:09 -0500
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59273C061574;
-        Thu,  4 Mar 2021 17:57:09 -0800 (PST)
-Received: by mail-oo1-xc2e.google.com with SMTP id x19so52507ooj.10;
+        with ESMTP id S229791AbhCEB5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Mar 2021 20:57:10 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04711C061574;
+        Thu,  4 Mar 2021 17:57:10 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id w3so309179oti.8;
         Thu, 04 Mar 2021 17:57:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=02/+efQXRRhrxIoXzRQc0o39Iu9TKok5AO33e3HYfho=;
-        b=pyu1tFw1P+8WOpYKHuBWrvTeLCsN1zwWxTxePpNS6s9LbTantjhr/SX693zmK+CU/B
-         SAo8orO9A1Ae4OsHT21TMIcpZYeWO8ftQYCyfUlNvFVMinM9THgP6XjuYoIOpk34V7MA
-         SGmng1W/el0G9i+Fd//r//cKiY3QCzJcVJ5FsBqlG22uwTVKDS3H9FTLtpDBcHs/TJtU
-         315MS/ykGFTfTZ2CdodMObrMazBvIVOPHRn/Cls/aXrqyT1g4Nxiz6G5YHPvkZDnvr9T
-         krcB3bMHNtKv6ZEgxE8hQ7PwVllokp50hcmT6OrK9Hnd+HcBCfPH4RtFEwDx1Ue+v6y+
-         dyOQ==
+        bh=bC4BMv/s3sCOyOd1K17vW7opInCuUyyPq+85GVpXtSo=;
+        b=c2i3SK7BiJgwZBR7Trn9VCs7xqpL8NTeSj2UAlawXVMf+Mg29mrxXFfsc09hPrLDzU
+         n6I5P7LDzpm0xuNOWu/dw1Ew5so0psEpQV0lfCNSDs5UFOitkVPvVyiWWPgkkhhVVMSY
+         SOvI5hYa2OiefPhbqptaiqvN5a6SySVs4bESY7PSuVIOIIfG+dIn9IlIQJaRDqpyJg3/
+         YybnvA5PGyHYolqSxljtTWAhIbuLCWzO3/UUZ6gX/r359FZk5sTC/D/edoJJlL+RaBOU
+         E1wjz4VMfCLTkuB7UEfVsuANgPO2t3lrp9m7Co8BWSFwjvesWvPNXH826m0kh02gc6IZ
+         Qn4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=02/+efQXRRhrxIoXzRQc0o39Iu9TKok5AO33e3HYfho=;
-        b=jXSStJvuuO2hche6PG5/tBeCCgKo4CiAs/hY6f1/HofUpadFU/MLANTI3Oi17WrwtT
-         SIy4o1Qy1rG/NS7XB+kME/oerdiLscSGH+vwIKt1uitzHnjDFJYL/Gflp+XfB0CHCll0
-         Qyf0MHTdHQ7o1D4C3RLErS3bX6KR7x5SkCTF1TegC+SJPgQsvfFlFoebS8B7xvGLT6Qs
-         ZSnBwV3UE4q8SuB3B9GgqHuYcRI4FR0PVSe7JgBLqUR8kK+ktQQ+Y6XSU1Z0hXbMp/cL
-         ypP1K1rnn2Q80jFHmgJYahLW6JrJhAlCy9Ogw9rLOgqnz3KTpJCOY/tMZY7qOVJ78n0X
-         Txhg==
-X-Gm-Message-State: AOAM532nnXKH1DNKWJ2uubzVkUhBxnkm7qnx9P2LeD6z7+T1WAA+fZoD
-        3EM7jvf2E9okpXSz4d+RkOJLxGKFgEDzYQ==
-X-Google-Smtp-Source: ABdhPJzpjWrNE3vkoFY6jP8dk1+NUwGDe7/bG/iyBSERM9kI4ZdzzSkhjbKm6d2tWZ/UIXCjKrivvA==
-X-Received: by 2002:a4a:a5cc:: with SMTP id k12mr5849754oom.37.1614909427973;
-        Thu, 04 Mar 2021 17:57:07 -0800 (PST)
+        bh=bC4BMv/s3sCOyOd1K17vW7opInCuUyyPq+85GVpXtSo=;
+        b=kw/rK0/Qr1mBXpSSRJQRKhB/4nqCezuAT5Z+3f6fICQqKSjTSp8bXUky8GYk30nEOM
+         CiBhFrGmSef5/HieLTmfQc9k5aAqoQaE9U11GatGOmpdgsCUXN6+TyS0n7Q9VuFFdu3s
+         ypUTNR552mXcjv/atEoy43ZMEzQ8Cad4F+3gzOtwLBXgVuJaSbwUx2kkhsFb2E5FRVXE
+         iUh141oGDYI/roRz7KBZOCHcVjcgi7qxPZB2PwldyD3/gM0NkMesoh0CFBxa49uIfn+Z
+         rTR6jpxVH3yhT4luiGL/QQTV/V+AO8zz4avDDI0we3XjZD7zIkSuOif6QE2bKXxnvIQc
+         XDWA==
+X-Gm-Message-State: AOAM533k8ml42wXIODfpYG26InS+6yoXNzCSIP7Yz5aCbuz5FS/zumYL
+        QdshI0tjIgW7lFLJJ54Sz3e8zWQKtydaHg==
+X-Google-Smtp-Source: ABdhPJxrBnW9RgYbvdN5QnaFDu3sBHy75xlA7Z+uD/035xIZ5m/1vfA25JDvD1eDmN9OL3Fy5QhoLw==
+X-Received: by 2002:a05:6830:558:: with SMTP id l24mr5964912otb.209.1614909429233;
+        Thu, 04 Mar 2021 17:57:09 -0800 (PST)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:95de:1d5:1b36:946a])
-        by smtp.gmail.com with ESMTPSA id r3sm224126oif.5.2021.03.04.17.57.06
+        by smtp.gmail.com with ESMTPSA id r3sm224126oif.5.2021.03.04.17.57.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Mar 2021 17:57:07 -0800 (PST)
+        Thu, 04 Mar 2021 17:57:08 -0800 (PST)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
@@ -56,9 +56,9 @@ Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next v3 2/9] sock: introduce sk->sk_prot->psock_update_sk_prot()
-Date:   Thu,  4 Mar 2021 17:56:48 -0800
-Message-Id: <20210305015655.14249-3-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next v3 3/9] udp: implement ->sendmsg_locked()
+Date:   Thu,  4 Mar 2021 17:56:49 -0800
+Message-Id: <20210305015655.14249-4-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210305015655.14249-1-xiyou.wangcong@gmail.com>
 References: <20210305015655.14249-1-xiyou.wangcong@gmail.com>
@@ -70,13 +70,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-Currently sockmap calls into each protocol to update the struct
-proto and replace it. This certainly won't work when the protocol
-is implemented as a module, for example, AF_UNIX.
-
-Introduce a new ops sk->sk_prot->psock_update_sk_prot(), so each
-protocol can implement its own way to replace the struct proto.
-This also helps get rid of symbol dependencies on CONFIG_INET.
+UDP already has udp_sendmsg() which takes lock_sock() inside.
+We have to build ->sendmsg_locked() on top of it, by adding
+a new parameter for whether the sock has been locked.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
@@ -84,289 +80,115 @@ Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/linux/skmsg.h | 18 +++---------------
- include/net/sock.h    |  3 +++
- include/net/tcp.h     |  1 +
- include/net/udp.h     |  1 +
- net/core/skmsg.c      |  5 -----
- net/core/sock_map.c   | 24 ++++--------------------
- net/ipv4/tcp_bpf.c    | 24 +++++++++++++++++++++---
- net/ipv4/tcp_ipv4.c   |  3 +++
- net/ipv4/udp.c        |  3 +++
- net/ipv4/udp_bpf.c    | 15 +++++++++++++--
- net/ipv6/tcp_ipv6.c   |  3 +++
- net/ipv6/udp.c        |  3 +++
- 12 files changed, 58 insertions(+), 45 deletions(-)
+ include/net/udp.h  |  1 +
+ net/ipv4/af_inet.c |  1 +
+ net/ipv4/udp.c     | 30 +++++++++++++++++++++++-------
+ 3 files changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 451530d41af7..c2e2bdff7338 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -98,6 +98,7 @@ struct sk_psock {
- 	void (*saved_close)(struct sock *sk, long timeout);
- 	void (*saved_write_space)(struct sock *sk);
- 	void (*saved_data_ready)(struct sock *sk);
-+	int  (*psock_update_sk_prot)(struct sock *sk, bool restore);
- 	struct proto			*sk_proto;
- 	struct sk_psock_work_state	work_state;
- 	struct work_struct		work;
-@@ -350,25 +351,12 @@ static inline void sk_psock_cork_free(struct sk_psock *psock)
- 	}
- }
- 
--static inline void sk_psock_update_proto(struct sock *sk,
--					 struct sk_psock *psock,
--					 struct proto *ops)
--{
--	/* Pairs with lockless read in sk_clone_lock() */
--	WRITE_ONCE(sk->sk_prot, ops);
--}
--
- static inline void sk_psock_restore_proto(struct sock *sk,
- 					  struct sk_psock *psock)
- {
- 	sk->sk_prot->unhash = psock->saved_unhash;
--	if (inet_csk_has_ulp(sk)) {
--		tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
--	} else {
--		sk->sk_write_space = psock->saved_write_space;
--		/* Pairs with lockless read in sk_clone_lock() */
--		WRITE_ONCE(sk->sk_prot, psock->sk_proto);
--	}
-+	if (psock->psock_update_sk_prot)
-+		psock->psock_update_sk_prot(sk, true);
- }
- 
- static inline void sk_psock_set_state(struct sk_psock *psock,
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 636810ddcd9b..eda64fbd5e3d 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1184,6 +1184,9 @@ struct proto {
- 	void			(*unhash)(struct sock *sk);
- 	void			(*rehash)(struct sock *sk);
- 	int			(*get_port)(struct sock *sk, unsigned short snum);
-+#ifdef CONFIG_BPF_SYSCALL
-+	int			(*psock_update_sk_prot)(struct sock *sk, bool restore);
-+#endif
- 
- 	/* Keeping track of sockets in use */
- #ifdef CONFIG_PROC_FS
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 075de26f449d..2efa4e5ea23d 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2203,6 +2203,7 @@ struct sk_psock;
- 
- #ifdef CONFIG_BPF_SYSCALL
- struct proto *tcp_bpf_get_proto(struct sock *sk, struct sk_psock *psock);
-+int tcp_bpf_update_proto(struct sock *sk, bool restore);
- void tcp_bpf_clone(const struct sock *sk, struct sock *newsk);
- #endif /* CONFIG_BPF_SYSCALL */
- 
 diff --git a/include/net/udp.h b/include/net/udp.h
-index d4d064c59232..df7cc1edc200 100644
+index df7cc1edc200..5264ba1439f9 100644
 --- a/include/net/udp.h
 +++ b/include/net/udp.h
-@@ -518,6 +518,7 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
- #ifdef CONFIG_BPF_SYSCALL
- struct sk_psock;
- struct proto *udp_bpf_get_proto(struct sock *sk, struct sk_psock *psock);
-+int udp_bpf_update_proto(struct sock *sk, bool restore);
- #endif
- 
- #endif	/* _UDP_H */
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 5efd790f1b47..7dbd8344ec89 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -563,11 +563,6 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
- 
- 	write_lock_bh(&sk->sk_callback_lock);
- 
--	if (inet_csk_has_ulp(sk)) {
--		psock = ERR_PTR(-EINVAL);
--		goto out;
--	}
--
- 	if (sk->sk_user_data) {
- 		psock = ERR_PTR(-EBUSY);
- 		goto out;
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 3bddd9dd2da2..7346c93d0f71 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -184,26 +184,10 @@ static void sock_map_unref(struct sock *sk, void *link_raw)
- 
- static int sock_map_init_proto(struct sock *sk, struct sk_psock *psock)
- {
--	struct proto *prot;
--
--	switch (sk->sk_type) {
--	case SOCK_STREAM:
--		prot = tcp_bpf_get_proto(sk, psock);
--		break;
--
--	case SOCK_DGRAM:
--		prot = udp_bpf_get_proto(sk, psock);
--		break;
--
--	default:
-+	if (!sk->sk_prot->psock_update_sk_prot)
- 		return -EINVAL;
--	}
--
--	if (IS_ERR(prot))
--		return PTR_ERR(prot);
--
--	sk_psock_update_proto(sk, psock, prot);
--	return 0;
-+	psock->psock_update_sk_prot = sk->sk_prot->psock_update_sk_prot;
-+	return sk->sk_prot->psock_update_sk_prot(sk, false);
- }
- 
- static struct sk_psock *sock_map_psock_get_checked(struct sock *sk)
-@@ -570,7 +554,7 @@ static bool sock_map_redirect_allowed(const struct sock *sk)
- 
- static bool sock_map_sk_is_suitable(const struct sock *sk)
- {
--	return sk_is_tcp(sk) || sk_is_udp(sk);
-+	return !!sk->sk_prot->psock_update_sk_prot;
- }
- 
- static bool sock_map_sk_state_allowed(const struct sock *sk)
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 17c322b875fd..2022de8b625a 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -601,20 +601,38 @@ static int tcp_bpf_assert_proto_ops(struct proto *ops)
- 	       ops->sendpage == tcp_sendpage ? 0 : -ENOTSUPP;
- }
- 
--struct proto *tcp_bpf_get_proto(struct sock *sk, struct sk_psock *psock)
-+int tcp_bpf_update_proto(struct sock *sk, bool restore)
- {
-+	struct sk_psock *psock = sk_psock(sk);
- 	int family = sk->sk_family == AF_INET6 ? TCP_BPF_IPV6 : TCP_BPF_IPV4;
- 	int config = psock->progs.msg_parser   ? TCP_BPF_TX   : TCP_BPF_BASE;
- 
-+	if (restore) {
-+		if (inet_csk_has_ulp(sk)) {
-+			tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
-+		} else {
-+			sk->sk_write_space = psock->saved_write_space;
-+			/* Pairs with lockless read in sk_clone_lock() */
-+			WRITE_ONCE(sk->sk_prot, psock->sk_proto);
-+		}
-+		return 0;
-+	}
-+
-+	if (inet_csk_has_ulp(sk))
-+		return -EINVAL;
-+
- 	if (sk->sk_family == AF_INET6) {
- 		if (tcp_bpf_assert_proto_ops(psock->sk_proto))
--			return ERR_PTR(-EINVAL);
-+			return -EINVAL;
- 
- 		tcp_bpf_check_v6_needs_rebuild(psock->sk_proto);
- 	}
- 
--	return &tcp_bpf_prots[family][config];
-+	/* Pairs with lockless read in sk_clone_lock() */
-+	WRITE_ONCE(sk->sk_prot, &tcp_bpf_prots[family][config]);
-+	return 0;
- }
-+EXPORT_SYMBOL_GPL(tcp_bpf_update_proto);
- 
- /* If a child got cloned from a listening socket that had tcp_bpf
-  * protocol callbacks installed, we need to restore the callbacks to
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index daad4f99db32..dfc6d1c0e710 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2806,6 +2806,9 @@ struct proto tcp_prot = {
- 	.hash			= inet_hash,
- 	.unhash			= inet_unhash,
- 	.get_port		= inet_csk_get_port,
-+#ifdef CONFIG_BPF_SYSCALL
-+	.psock_update_sk_prot	= tcp_bpf_update_proto,
-+#endif
- 	.enter_memory_pressure	= tcp_enter_memory_pressure,
- 	.leave_memory_pressure	= tcp_leave_memory_pressure,
- 	.stream_memory_free	= tcp_stream_memory_free,
+@@ -292,6 +292,7 @@ int udp_get_port(struct sock *sk, unsigned short snum,
+ int udp_err(struct sk_buff *, u32);
+ int udp_abort(struct sock *sk, int err);
+ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len);
++int udp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t len);
+ int udp_push_pending_frames(struct sock *sk);
+ void udp_flush_pending_frames(struct sock *sk);
+ int udp_cmsg_send(struct sock *sk, struct msghdr *msg, u16 *gso_size);
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index a02ce89b56b5..d8c73a848c53 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1071,6 +1071,7 @@ const struct proto_ops inet_dgram_ops = {
+ 	.setsockopt	   = sock_common_setsockopt,
+ 	.getsockopt	   = sock_common_getsockopt,
+ 	.sendmsg	   = inet_sendmsg,
++	.sendmsg_locked    = udp_sendmsg_locked,
+ 	.recvmsg	   = inet_recvmsg,
+ 	.mmap		   = sock_no_mmap,
+ 	.sendpage	   = inet_sendpage,
 diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 4a0478b17243..38952aaee3a1 100644
+index 38952aaee3a1..424231e910a9 100644
 --- a/net/ipv4/udp.c
 +++ b/net/ipv4/udp.c
-@@ -2849,6 +2849,9 @@ struct proto udp_prot = {
- 	.unhash			= udp_lib_unhash,
- 	.rehash			= udp_v4_rehash,
- 	.get_port		= udp_v4_get_port,
-+#ifdef CONFIG_BPF_SYSCALL
-+	.psock_update_sk_prot	= udp_bpf_update_proto,
-+#endif
- 	.memory_allocated	= &udp_memory_allocated,
- 	.sysctl_mem		= sysctl_udp_mem,
- 	.sysctl_wmem_offset	= offsetof(struct net, ipv4.sysctl_udp_wmem_min),
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index 7a94791efc1a..6001f93cd3a0 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -41,12 +41,23 @@ static int __init udp_bpf_v4_build_proto(void)
+@@ -1024,7 +1024,7 @@ int udp_cmsg_send(struct sock *sk, struct msghdr *msg, u16 *gso_size)
  }
- core_initcall(udp_bpf_v4_build_proto);
+ EXPORT_SYMBOL_GPL(udp_cmsg_send);
  
--struct proto *udp_bpf_get_proto(struct sock *sk, struct sk_psock *psock)
-+int udp_bpf_update_proto(struct sock *sk, bool restore)
+-int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
++static int __udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len, bool locked)
  {
- 	int family = sk->sk_family == AF_INET ? UDP_BPF_IPV4 : UDP_BPF_IPV6;
-+	struct sk_psock *psock = sk_psock(sk);
-+
-+	if (restore) {
-+		sk->sk_write_space = psock->saved_write_space;
-+		/* Pairs with lockless read in sk_clone_lock() */
-+		WRITE_ONCE(sk->sk_prot, psock->sk_proto);
-+		return 0;
-+	}
+ 	struct inet_sock *inet = inet_sk(sk);
+ 	struct udp_sock *up = udp_sk(sk);
+@@ -1063,15 +1063,18 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		 * There are pending frames.
+ 		 * The socket lock must be held while it's corked.
+ 		 */
+-		lock_sock(sk);
++		if (!locked)
++			lock_sock(sk);
+ 		if (likely(up->pending)) {
+ 			if (unlikely(up->pending != AF_INET)) {
+-				release_sock(sk);
++				if (!locked)
++					release_sock(sk);
+ 				return -EINVAL;
+ 			}
+ 			goto do_append_data;
+ 		}
+-		release_sock(sk);
++		if (!locked)
++			release_sock(sk);
+ 	}
+ 	ulen += sizeof(struct udphdr);
  
- 	if (sk->sk_family == AF_INET6)
- 		udp_bpf_check_v6_needs_rebuild(psock->sk_proto);
+@@ -1241,11 +1244,13 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		goto out;
+ 	}
  
--	return &udp_bpf_prots[family];
-+	/* Pairs with lockless read in sk_clone_lock() */
-+	WRITE_ONCE(sk->sk_prot, &udp_bpf_prots[family]);
-+	return 0;
+-	lock_sock(sk);
++	if (!locked)
++		lock_sock(sk);
+ 	if (unlikely(up->pending)) {
+ 		/* The socket is already corked while preparing it. */
+ 		/* ... which is an evident application bug. --ANK */
+-		release_sock(sk);
++		if (!locked)
++			release_sock(sk);
+ 
+ 		net_dbg_ratelimited("socket already corked\n");
+ 		err = -EINVAL;
+@@ -1272,7 +1277,8 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		err = udp_push_pending_frames(sk);
+ 	else if (unlikely(skb_queue_empty(&sk->sk_write_queue)))
+ 		up->pending = 0;
+-	release_sock(sk);
++	if (!locked)
++		release_sock(sk);
+ 
+ out:
+ 	ip_rt_put(rt);
+@@ -1302,8 +1308,18 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	err = 0;
+ 	goto out;
  }
-+EXPORT_SYMBOL_GPL(udp_bpf_update_proto);
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index bd44ded7e50c..4fdc58a9e19e 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -2134,6 +2134,9 @@ struct proto tcpv6_prot = {
- 	.hash			= inet6_hash,
- 	.unhash			= inet_unhash,
- 	.get_port		= inet_csk_get_port,
-+#ifdef CONFIG_BPF_SYSCALL
-+	.psock_update_sk_prot	= tcp_bpf_update_proto,
-+#endif
- 	.enter_memory_pressure	= tcp_enter_memory_pressure,
- 	.leave_memory_pressure	= tcp_leave_memory_pressure,
- 	.stream_memory_free	= tcp_stream_memory_free,
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index d25e5a9252fd..ef2c75bb4771 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1713,6 +1713,9 @@ struct proto udpv6_prot = {
- 	.unhash			= udp_lib_unhash,
- 	.rehash			= udp_v6_rehash,
- 	.get_port		= udp_v6_get_port,
-+#ifdef CONFIG_BPF_SYSCALL
-+	.psock_update_sk_prot	= udp_bpf_update_proto,
-+#endif
- 	.memory_allocated	= &udp_memory_allocated,
- 	.sysctl_mem		= sysctl_udp_mem,
- 	.sysctl_wmem_offset     = offsetof(struct net, ipv4.sysctl_udp_wmem_min),
++
++int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
++{
++	return __udp_sendmsg(sk, msg, len, false);
++}
+ EXPORT_SYMBOL(udp_sendmsg);
+ 
++int udp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t len)
++{
++	return __udp_sendmsg(sk, msg, len, true);
++}
++
+ int udp_sendpage(struct sock *sk, struct page *page, int offset,
+ 		 size_t size, int flags)
+ {
 -- 
 2.25.1
 
