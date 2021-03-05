@@ -2,67 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8FF232F54A
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 22:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9C5F32F5C9
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 23:18:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbhCEVaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 16:30:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53780 "EHLO mail.kernel.org"
+        id S229772AbhCEWSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 17:18:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38642 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229488AbhCEVaH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 16:30:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 42DC0650A5;
-        Fri,  5 Mar 2021 21:30:07 +0000 (UTC)
+        id S229611AbhCEWRc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 17:17:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F285F65077;
+        Fri,  5 Mar 2021 22:17:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614979807;
-        bh=DTONL60yEpVRMvsgkLaTmP8j8bp5a2QBpaR+fUy8OOQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mIH5yr/Id4rvxl9Mrwzc7P2UfDx4hxYVO6SxzXaUCNRBqfWvHaQpfmTTkR0uHAFTt
-         ++ffVLs//ObkblamZEK4XVYXEn1jF+yiuVe+tayTMVflgO4Wj6GH29+/s/aLM+dOZ4
-         1VTzqjHk3SML/sFYlGCByObNAx4mV3BLvQW+EYL7DDSNgTz4xnvXm78XHJoxpdvmxa
-         uylYf2dreNlm5Pzk/x7zHZVXvI6alL1Sjv/rnjhD0zWQhrcm94Ng5nsTMA/uOKZBar
-         MgyTv69oRIqlqRmO2TtUlEg3YmbFEJc36r25fVSpb8aKcEbJM05nJt1ioL5PnEyPHR
-         2Bel4nFb4TC3g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3BB4660A13;
-        Fri,  5 Mar 2021 21:30:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1614982652;
+        bh=QQA/VkUhA7KImA1MH4uivzt46BJXoB0NT1sTlls75rw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EwK1J9xTQRr1K4pG6T6jzVKZ99Q6jLIy3+teLRVcDKjVQQW5AmSWtXgnZQumfy0FZ
+         uvTIX5114rLXmGEAhBYi0P2hF5Vxt3+XNPe+UVkFANCEPSXlwH2J96C2UY2uUR+fv7
+         In5kBbCmU1ABC5oyvmdmfxjm5SOklh7HFSsOUOTjMF0AQErqcOwMce1CGqCFwlgz9v
+         6/yC8+OyWQLvjUq6gQ/Sz9K9CBIo3877jF1GmU81jYRnQ/nV7C9QtYlJt2a9j4TsQP
+         5JZt5PaY3vX5nNM0a1jK+6BESzztGRnlJa6JHnu1Nr32k5CnISi/sLMAu4Y7redytX
+         lpKYiEkk+dYQA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, zbynek.michl@gmail.com,
+        chris.snook@gmail.com, bruceshenzk@gmail.com,
+        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH net] ethernet: alx: fix order of calls on resume
+Date:   Fri,  5 Mar 2021 14:17:29 -0800
+Message-Id: <20210305221729.206096-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv2] gianfar: fix jumbo packets+napi+rx overrun crash
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161497980724.1292.9780244989230491690.git-patchwork-notify@kernel.org>
-Date:   Fri, 05 Mar 2021 21:30:07 +0000
-References: <20210304195252.16360-1-michael-dev@fami-braun.de>
-In-Reply-To: <20210304195252.16360-1-michael-dev@fami-braun.de>
-To:     Michael Braun <michael-dev@fami-braun.de>
-Cc:     claudiu.manoil@nxp.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+netif_device_attach() will unpause the queues so we can't call
+it before __alx_open(). This went undetected until
+commit b0999223f224 ("alx: add ability to allocate and free
+alx_napi structures") but now if stack tries to xmit immediately
+on resume before __alx_open() we'll crash on the NAPI being null:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+ BUG: kernel NULL pointer dereference, address: 0000000000000198
+ CPU: 0 PID: 12 Comm: ksoftirqd/0 Tainted: G           OE 5.10.0-3-amd64 #1 Debian 5.10.13-1
+ Hardware name: Gigabyte Technology Co., Ltd. To be filled by O.E.M./H77-D3H, BIOS F15 11/14/2013
+ RIP: 0010:alx_start_xmit+0x34/0x650 [alx]
+ Code: 41 56 41 55 41 54 55 53 48 83 ec 20 0f b7 57 7c 8b 8e b0
+0b 00 00 39 ca 72 06 89 d0 31 d2 f7 f1 89 d2 48 8b 84 df
+ RSP: 0018:ffffb09240083d28 EFLAGS: 00010297
+ RAX: 0000000000000000 RBX: ffffa04d80ae7800 RCX: 0000000000000004
+ RDX: 0000000000000000 RSI: ffffa04d80afa000 RDI: ffffa04e92e92a00
+ RBP: 0000000000000042 R08: 0000000000000100 R09: ffffa04ea3146700
+ R10: 0000000000000014 R11: 0000000000000000 R12: ffffa04e92e92100
+ R13: 0000000000000001 R14: ffffa04e92e92a00 R15: ffffa04e92e92a00
+ FS:  0000000000000000(0000) GS:ffffa0508f600000(0000) knlGS:0000000000000000
+ i915 0000:00:02.0: vblank wait timed out on crtc 0
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000198 CR3: 000000004460a001 CR4: 00000000001706f0
+ Call Trace:
+  dev_hard_start_xmit+0xc7/0x1e0
+  sch_direct_xmit+0x10f/0x310
 
-On Thu,  4 Mar 2021 20:52:52 +0100 you wrote:
-> From: Michael Braun <michael-dev@fami-braun.de>
-> 
-> When using jumbo packets and overrunning rx queue with napi enabled,
-> the following sequence is observed in gfar_add_rx_frag:
-> 
->    | lstatus                              |       | skb                   |
-> t  | lstatus,  size, flags                | first | len, data_len, *ptr   |
-> 
-> [...]
+Cc: <stable@vger.kernel.org> # 4.9+
+Fixes: bc2bebe8de8e ("alx: remove WoL support")
+Reported-by: Zbynek Michl <zbynek.michl@gmail.com>
+Link: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=983595
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/atheros/alx/main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Here is the summary with links:
-  - [PATCHv2] gianfar: fix jumbo packets+napi+rx overrun crash
-    https://git.kernel.org/netdev/net/c/d8861bab48b6
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+index 9b7f1af5f574..9e02f8864593 100644
+--- a/drivers/net/ethernet/atheros/alx/main.c
++++ b/drivers/net/ethernet/atheros/alx/main.c
+@@ -1894,13 +1894,16 @@ static int alx_resume(struct device *dev)
+ 
+ 	if (!netif_running(alx->dev))
+ 		return 0;
+-	netif_device_attach(alx->dev);
+ 
+ 	rtnl_lock();
+ 	err = __alx_open(alx, true);
+ 	rtnl_unlock();
++	if (err)
++		return err;
+ 
+-	return err;
++	netif_device_attach(alx->dev);
++
++	return 0;
+ }
+ 
+ static SIMPLE_DEV_PM_OPS(alx_pm_ops, alx_suspend, alx_resume);
+-- 
+2.26.2
 
