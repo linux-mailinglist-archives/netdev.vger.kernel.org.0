@@ -2,234 +2,389 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CE132E1A2
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 06:34:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C425D32E1C0
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 06:43:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229523AbhCEFeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 00:34:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60692 "EHLO
+        id S229602AbhCEFnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 00:43:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbhCEFeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 00:34:03 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1476C061574
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 21:34:03 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id p186so716808ybg.2
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 21:34:03 -0800 (PST)
+        with ESMTP id S229486AbhCEFnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 00:43:24 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECD5C061574;
+        Thu,  4 Mar 2021 21:43:24 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id q204so1222437pfq.10;
+        Thu, 04 Mar 2021 21:43:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aEsLOArh+u0YjZD00rPfzJx+Ri/ygq2bOK+26aQIwqQ=;
-        b=MZobGXCz5waMJ+BlDOpIOvmlhqfX1fN/pdNYAonwTokrBQFgbhCxftfaBjUXI+Ge/d
-         KnO74VNFjrWIW80dodrwvuQXhumiamEYLXKNz6x4G6UaxnOSfkDrjAPNd4Emrzn2lJyt
-         3zlQoOndVFVNonuH5/cv5zb/VundCK6YGtBugD+xInlvQ1pgjTuKXzNBwu33E0bBlvbi
-         UA+vUl9l9q37Ew1z7aEqM1sdPXATSV+5ovM4JH1mXwjvWtrDgstuQr9IvsOI09zZm1sm
-         bYdx7rm2l5VEk7pW2TT1ApwIf8LJDA32f7SsKIvOGOwp8K66IcjajuJQHus9uN0Ajsjw
-         j0Mg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ruVrfuVnPxBfe9jZ6kyV5vDYQuPMqlsZoXtnB9sKvqk=;
+        b=mYzuE6SHUtOZ4iQ0y2GD/MpAHSa/TFSB2wKtxKkLdYwpX2TwhJaTJmACKhxoCg95Ym
+         rVD34Wogwwe7CnvFmABTllD6QztvS7R8BSaCTZxMN5cKU/VRVvpHONF850pB5RIoOO+S
+         kt8sr5VuG113izzatrn8nZw0ZgFVIo8ZuUUCURYpWwfOf90FpnlETdBciQaNhd7IyZ7x
+         +gzHhvkOfU5/OXFJy0LPAsLxdYCPbwaMrPa5oue0RyTy+/96sf++fRRzhG8tV5xVpa60
+         6eHfeaZS9F0eoZ76nU+GW9A9cAhVhFxgK456/iWYw1vTRiYvo+qm4407hVsOdvaEbp/e
+         wyAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aEsLOArh+u0YjZD00rPfzJx+Ri/ygq2bOK+26aQIwqQ=;
-        b=m7wSru5930DzWVrssS/18j2IF0n14IB+2kGkzvbHHaCoieTT/jFAwUzDqOspo4NzW/
-         gd2fDcw9lg954ZLAXPkPxaDMlvfHBr4/2oMXEx1R7hxYlNvaOhNEB+GkxtK0Y2EO3LgC
-         gLqm3PYCfMSJGCz7FDzlv11ai9gW6PzZj0EYkcJdBDxBF4P72NFXJ7s18jmlC4ngyKxm
-         RR0+uP4+x6RIOTQQC/6FjikRa1XaVGLOMQK/TKZZ414PARNnS6DySUxodPI3tKGZZ7Xl
-         Xvo3ZyTBgNQgvIle7lkH4KEEoBGkhKy0+T7q2Kj9MAmU0RgaNY3031hljAg2DJbj64wb
-         qpLg==
-X-Gm-Message-State: AOAM533FPJA0wQFfSxgIl3JZzdwjqfZZ6XGcDqqB9Q1bCIWOftJnPMOq
-        OquRVmn4Isc1xuSLTk2kXnXBKYjInYbA2I64cHsa4Q==
-X-Google-Smtp-Source: ABdhPJw5c2ZytVVDuq4gQUT2/9Xq936ih3Ke1osKpmvCWmhCzhg92QbU5lEXXvAmqaLviKPj8sY1KXrWJC4AJNEjfgo=
-X-Received: by 2002:a25:1d88:: with SMTP id d130mr11945183ybd.446.1614922442516;
- Thu, 04 Mar 2021 21:34:02 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ruVrfuVnPxBfe9jZ6kyV5vDYQuPMqlsZoXtnB9sKvqk=;
+        b=QPEcL0Vpxmhxnq9JSrpOCx20J7fJfHY+YGzWyYVqIC6VGMWIM5+72gw7o5VCEGhlOp
+         CP+J0h1WmIh3K6M5Fp8OyAPnqciEkDwIflPzyfHlGvx7BiE+c8FvOi0NWN15GTnifpjQ
+         JXQlxDvnvK0raHUnG/qOb5OQWJY4kdXuPWDshXkMwSyQeUg7DsbfPbQ3Zf7SH2JPsEEJ
+         vu95EmKyb7Mm74gQYGnvCjJsMrIb01lwK4rZhKpQuBpUBBFDGB7I4bgqEsEdIFE84ajZ
+         qkK5h553AigBZrQVltD7bbOOFwQKZ6Qqd9OT7XYMY0tzsZDgG+XaBuXw+gfTh2r/enFt
+         Irjw==
+X-Gm-Message-State: AOAM531mgxBT3JL/LkabJ5uMkUVLjXA9Hi2E2un3p7cXlpGMVTMzJDZz
+        Kw8VT3KifHXWyx5qM8Kt98A=
+X-Google-Smtp-Source: ABdhPJynUqaHFHr9YldsYx2tgVZsPvc9/TFiF8Rab+m+ihGF1HuaVpfq+nf+dmbVbiUNtHxNJQxCOw==
+X-Received: by 2002:a63:db02:: with SMTP id e2mr6942747pgg.18.1614923003646;
+        Thu, 04 Mar 2021 21:43:23 -0800 (PST)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:6378:655:4fad:20f6])
+        by smtp.gmail.com with ESMTPSA id n184sm1145177pfd.205.2021.03.04.21.43.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Mar 2021 21:43:22 -0800 (PST)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     Martin Schiller <ms@dev.tdt.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Krzysztof Halasa <khc@pm.waw.pl>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next RFC] net: x25: Queue received packets in the drivers instead of per-CPU queues
+Date:   Thu,  4 Mar 2021 21:43:12 -0800
+Message-Id: <20210305054312.254922-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20210302060753.953931-1-kuba@kernel.org> <CANn89iLaQuCGeWOh7Hp8X9dL09FhPP8Nwj+zV=rhYX7Cq7efpg@mail.gmail.com>
- <CAKgT0UdXiFBW9oDwvsFPe_ZoGveHLGh6RXf55jaL6kOYPEh0Hg@mail.gmail.com>
- <20210303160715.2333d0ca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKgT0Ue9w4WBojY94g3kcLaQrVbVk6S-HgsFgLVXoqsY20hwuw@mail.gmail.com>
- <CANn89iL9fBKDQvAM0mTnh_B5ggmsebDBYxM6WAfYgMuD8-vcBw@mail.gmail.com>
- <20210304110626.1575f7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89i+cXQXP-7ioizFy90Dj-1SfjA0MQfwvDChxVXQ3wbTjFA@mail.gmail.com>
- <20210304210836.bkpqwbvfpkd5fagg@bsd-mbp.dhcp.thefacebook.com>
- <CANn89i+Sf66QknMO7+1gxowhV6g+Bs-DMhnvsvFx8vaqPfBVug@mail.gmail.com>
- <CANn89iLBi=2VzpiUBZPHaPHCeqqoFE-JmB0KAsf-vxaPvkvcxA@mail.gmail.com>
- <20210304152709.4e91bd8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CANn89iJKH37CMUuq66nERZQoMHFp+yuTe=yqxm1kf+RQ1RfHzw@mail.gmail.com>
-In-Reply-To: <CANn89iJKH37CMUuq66nERZQoMHFp+yuTe=yqxm1kf+RQ1RfHzw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 5 Mar 2021 06:33:50 +0100
-Message-ID: <CANn89iK_MORZmk4waXn3vfHYDZfz4AdqfQ5hrEr0Pwo8DMZG4w@mail.gmail.com>
-Subject: Re: [PATCH net] net: tcp: don't allocate fast clones for fastopen SYN
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@fb.com>, Neil Spring <ntspring@fb.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 5, 2021 at 6:17 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Mar 5, 2021 at 12:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 4 Mar 2021 22:26:58 +0100 Eric Dumazet wrote:
-> > > It would be nice if tun driver would have the ability to delay TX
-> > > completions by N usecs,
-> > > so that packetdrill tests could be used.
-> > >
-> > > It is probably not too hard to add such a feature.
-> >
-> > Add an ioctl to turn off the skb_orphan, queue the skbs in tun_do_read()
-> > to free them from a timer?
->
-> Yes, I  cooked a prototype like that a few hours ago before my night
-> shift to launch our test suite.
->
-> I yet have to add a sane limit to the number of delayed skbs so that
-> syzbot does not oom its hosts ;)
->
-> >
-> > > I was testing this (note how I also removed the tcp_rearm_rto(sk) call)
-> > >
-> > > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > > index 6f450e577975c7be9537338c8a4c0673d7d36c4c..9ef92ca55e530f76ad793d7342442c4ec06165f7
-> > > 100644
-> > > --- a/net/ipv4/tcp_input.c
-> > > +++ b/net/ipv4/tcp_input.c
-> > > @@ -6471,11 +6471,10 @@ static bool tcp_rcv_fastopen_synack(struct
-> > > sock *sk, struct sk_buff *synack,
-> > >         tcp_fastopen_cache_set(sk, mss, cookie, syn_drop, try_exp);
-> > >
-> > >         if (data) { /* Retransmit unacked data in SYN */
-> > > -               skb_rbtree_walk_from(data) {
-> > > -                       if (__tcp_retransmit_skb(sk, data, 1))
-> > > -                               break;
-> > > -               }
-> > > -               tcp_rearm_rto(sk);
-> > > +               skb_rbtree_walk_from(data)
-> > > +                       tcp_mark_skb_lost(sk, data);
-> > > +
-> > > +               tcp_xmit_retransmit_queue(sk);
-> > >                 NET_INC_STATS(sock_net(sk),
-> > >                                 LINUX_MIB_TCPFASTOPENACTIVEFAIL);
-> > >                 return true;
-> >
-> > AFAICT this works great now:
->
-> Yes but some packetdrill tests fail, I have to check them (sponge link
-> for Googlers), but at first glance we have more investigations.
->
-> Ran 2003 tests: 1990 passed, 13 failed
-> Sponge: http://sponge2/b0d4c652-3173-4837-86ef-5e8cc59730a1
->
-> Failures in
-> //net/tcp/fastopen/client:ipv4-mapped-ipv6:cookie-disabled-prod-conn
-> //net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-icmp-unreach-frag-needed
-> //net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-icmp-unreach-frag-needed-with-seq
-> //net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-only-syn-acked
-> //net/tcp/fastopen/client:ipv4-mapped-ipv6:syn-data-partial-or-over-ack
-> //net/tcp/fastopen/client:ipv4:cookie-disabled-prod-conn
-> //net/tcp/fastopen/client:ipv4:syn-data-icmp-unreach-frag-needed
-> //net/tcp/fastopen/client:ipv4:syn-data-icmp-unreach-frag-needed-with-seq
-> //net/tcp/fastopen/client:ipv4:syn-data-only-syn-acked
-> //net/tcp/fastopen/client:ipv4:syn-data-partial-or-over-ack
-> //net/tcp/fastopen/client:ipv6:cookie-disabled-prod-conn
-> //net/tcp/fastopen/client:ipv6:syn-data-only-syn-acked
-> //net/tcp/fastopen/client:ipv6:syn-data-partial-or-over-ack
->
-> Showing test.log for
-> //net/tcp/fastopen/client:ipv4:syn-data-icmp-unreach-frag-needed
->
-> syn-data-icmp-unreach-frag-needed.pkt:33: error handling packet: live
-> packet field ipv4_total_length: expected: 800 (0x320) vs actual: 1040
-> (0x410)
-> script packet: 0.090624 . 1:761(760) ack 1
-> actual packet: 0.090619 P. 1:1001(1000) ack 1 win 256
->
+X.25 Layer 3 (the Packet Layer) expects layer 2 to provide a reliable
+datalink service such that no packets are reordered or dropped. And
+X.25 Layer 2 (the LAPB layer) is indeed designed to provide such service.
 
-Actually this might be a good thing : We now resend the whole data in
-a TSO packet, now
-we call the standard rtx queue mechanism, instead of sending only one MSS
+However, this reliability is not preserved when a driver calls "netif_rx"
+to deliver the received packets to layer 3, because "netif_rx" will put
+the packets into per-CPU queues before they are delivered to layer 3.
+If there are multiple CPUs, the order of the packets may not be preserved.
+The per-CPU queues may also drop packets if there are too many.
 
-I will look at other test failures today (Friday) before submitting a
-patch series officially.
+Therefore, we should not call "netif_rx" to let it queue the packets.
+Instead, we should use our own queue that won't reorder or drop packets.
 
->
-> Yes, it looks like Alex patch no longer works
->
-> commit c31b70c9968fe9c4194d1b5d06d07596a3b680de
-> Author: Alexander Duyck <alexanderduyck@fb.com>
-> Date:   Sat Dec 12 12:31:24 2020 -0800
->
->     tcp: Add logic to check for SYN w/ data in tcp_simple_retransmit
->
->
->
-> >
-> > ==> TFO case ret:-16 (0) ca_state:0 skb:ffff8881d3513800!
-> >   FREED swapper/5 -- skb 0xffff8881d3513800 freed after: 1us
-> > -----
-> > First:
-> >         __tcp_retransmit_skb+1
-> >         tcp_retransmit_skb+18
-> >         tcp_xmit_retransmit_queue.part.70+339
-> >         tcp_rcv_state_process+2491
-> >         tcp_v6_do_rcv+405
-> >         tcp_v6_rcv+2984
-> >
-> > Second:
-> >         __tcp_retransmit_skb+1
-> >         tcp_retransmit_skb+18
-> >         tcp_xmit_retransmit_queue.part.70+339
-> >         tcp_tsq_write.part.71+146
-> >         tcp_tsq_handler+53
-> >         tcp_tasklet_func+181
-> >
-> >  sk:0xffff8885adc16f00 skb:ffff8881d3513800 --- 61us acked:1
-> >
-> >
-> > The other case where we hit RTO after __tcp_retransmit_skb() fails is:
-> >
-> > ==> non-TFO case ret:-11 (0) ca_state:3 skb:ffff8883d71dd400!
-> > -----
-> > First:
-> >         __tcp_retransmit_skb+1
-> >         tcp_retransmit_skb+18
-> >         tcp_xmit_retransmit_queue.part.70+339
-> >         tcp_ack+2270
-> >         tcp_rcv_established+303
-> >         tcp_v6_do_rcv+190
-> >
-> > Second:
-> >         __tcp_retransmit_skb+1
-> >         tcp_retransmit_skb+18
-> >         tcp_retransmit_timer+716
-> >         tcp_write_timer_handler+136
-> >         tcp_write_timer+141
-> >         call_timer_fn+43
-> >
-> >  sk:0xffff88801772d340 skb:ffff8883d71dd400 --- 51738us acked:47324
-> >
-> > Which I believe is this:
-> >
-> >         if (refcount_read(&sk->sk_wmem_alloc) >
-> >             min_t(u32, sk->sk_wmem_queued + (sk->sk_wmem_queued >> 2),
-> >                   sk->sk_sndbuf))
-> >                 return -EAGAIN;
-> >
-> > Because __tcp_retransmit_skb() seems to bail before
-> > inet6_sk_rebuild_header gets called. Should we arm TSQ here as well?
->
-> Yes, or make the limit slightly bigger since we now have the fclone
-> more precise thing for standard drivers [1]
->
-> if ((refcount_read(&sk->sk_wmem_alloc) >> 1) >
->     min_t(u32, sk->sk_wmem_queued,  sk->sk_sndbuf))
->    return -EAGAIN;
->
-> [1] It is probably wise to keep this code because some drivers do call
-> skb_orphan() in their ndo_start_xmit()
+This patch changes all X.25 drivers to use their own queues instead of
+calling "netif_rx". The patch also documents this requirement in the
+"x25-iface" documentation.
+
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ Documentation/networking/x25-iface.rst | 65 ++++----------------------
+ drivers/net/wan/hdlc_x25.c             | 29 +++++++++++-
+ drivers/net/wan/lapbether.c            | 46 ++++++++++++++++--
+ 3 files changed, 79 insertions(+), 61 deletions(-)
+
+diff --git a/Documentation/networking/x25-iface.rst b/Documentation/networking/x25-iface.rst
+index df401891dce6..f34e9ec64937 100644
+--- a/Documentation/networking/x25-iface.rst
++++ b/Documentation/networking/x25-iface.rst
+@@ -70,60 +70,13 @@ First Byte = 0x03 (X25_IFACE_PARAMS)
+ LAPB parameters. To be defined.
+ 
+ 
++Requirements for the device driver
++----------------------------------
+ 
+-Possible Problems
+-=================
+-
+-(Henner Eisen, 2000-10-28)
+-
+-The X.25 packet layer protocol depends on a reliable datalink service.
+-The LAPB protocol provides such reliable service. But this reliability
+-is not preserved by the Linux network device driver interface:
+-
+-- With Linux 2.4.x (and above) SMP kernels, packet ordering is not
+-  preserved. Even if a device driver calls netif_rx(skb1) and later
+-  netif_rx(skb2), skb2 might be delivered to the network layer
+-  earlier that skb1.
+-- Data passed upstream by means of netif_rx() might be dropped by the
+-  kernel if the backlog queue is congested.
+-
+-The X.25 packet layer protocol will detect this and reset the virtual
+-call in question. But many upper layer protocols are not designed to
+-handle such N-Reset events gracefully. And frequent N-Reset events
+-will always degrade performance.
+-
+-Thus, driver authors should make netif_rx() as reliable as possible:
+-
+-SMP re-ordering will not occur if the driver's interrupt handler is
+-always executed on the same CPU. Thus,
+-
+-- Driver authors should use irq affinity for the interrupt handler.
+-
+-The probability of packet loss due to backlog congestion can be
+-reduced by the following measures or a combination thereof:
+-
+-(1) Drivers for kernel versions 2.4.x and above should always check the
+-    return value of netif_rx(). If it returns NET_RX_DROP, the
+-    driver's LAPB protocol must not confirm reception of the frame
+-    to the peer.
+-    This will reliably suppress packet loss. The LAPB protocol will
+-    automatically cause the peer to re-transmit the dropped packet
+-    later.
+-    The lapb module interface was modified to support this. Its
+-    data_indication() method should now transparently pass the
+-    netif_rx() return value to the (lapb module) caller.
+-(2) Drivers for kernel versions 2.2.x should always check the global
+-    variable netdev_dropping when a new frame is received. The driver
+-    should only call netif_rx() if netdev_dropping is zero. Otherwise
+-    the driver should not confirm delivery of the frame and drop it.
+-    Alternatively, the driver can queue the frame internally and call
+-    netif_rx() later when netif_dropping is 0 again. In that case, delivery
+-    confirmation should also be deferred such that the internal queue
+-    cannot grow to much.
+-    This will not reliably avoid packet loss, but the probability
+-    of packet loss in netif_rx() path will be significantly reduced.
+-(3) Additionally, driver authors might consider to support
+-    CONFIG_NET_HW_FLOWCONTROL. This allows the driver to be woken up
+-    when a previously congested backlog queue becomes empty again.
+-    The driver could uses this for flow-controlling the peer by means
+-    of the LAPB protocol's flow-control service.
++Packets should not be reordered or dropped when delivering between the
++Packet Layer and the device driver.
++
++To avoid packets from being reordered or dropped when delivering from
++the device driver to the Packet Layer, the device driver should not
++call "netif_rx" to deliver the received packets. Instead, it should
++call "netif_receive_skb_core" from softirq context to deliver them.
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+index 4aaa6388b9ee..28e9cb2c5f1e 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/net/wan/hdlc_x25.c
+@@ -23,6 +23,8 @@
+ 
+ struct x25_state {
+ 	x25_hdlc_proto settings;
++	struct sk_buff_head rx_queue;
++	struct tasklet_struct rx_tasklet;
+ };
+ 
+ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
+@@ -32,10 +34,22 @@ static struct x25_state *state(hdlc_device *hdlc)
+ 	return hdlc->state;
+ }
+ 
++static void x25_rx_queue_kick(struct tasklet_struct *t)
++{
++	struct x25_state *x25st = from_tasklet(x25st, t, rx_tasklet);
++	struct sk_buff *skb = skb_dequeue(&x25st->rx_queue);
++
++	while (skb) {
++		netif_receive_skb_core(skb);
++		skb = skb_dequeue(&x25st->rx_queue);
++	}
++}
++
+ /* These functions are callbacks called by LAPB layer */
+ 
+ static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
+ {
++	struct x25_state *x25st = state(dev_to_hdlc(dev));
+ 	struct sk_buff *skb;
+ 	unsigned char *ptr;
+ 
+@@ -48,7 +62,9 @@ static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
+ 	*ptr = code;
+ 
+ 	skb->protocol = x25_type_trans(skb, dev);
+-	netif_rx(skb);
++
++	skb_queue_tail(&x25st->rx_queue, skb);
++	tasklet_schedule(&x25st->rx_tasklet);
+ }
+ 
+ 
+@@ -69,6 +85,7 @@ static void x25_disconnected(struct net_device *dev, int reason)
+ 
+ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+ {
++	struct x25_state *x25st = state(dev_to_hdlc(dev));
+ 	unsigned char *ptr;
+ 
+ 	if (skb_cow(skb, 1)) {
+@@ -82,7 +99,10 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+ 	*ptr = X25_IFACE_DATA;
+ 
+ 	skb->protocol = x25_type_trans(skb, dev);
+-	return netif_rx(skb);
++
++	skb_queue_tail(&x25st->rx_queue, skb);
++	tasklet_schedule(&x25st->rx_tasklet);
++	return NET_RX_SUCCESS;
+ }
+ 
+ 
+@@ -197,7 +217,10 @@ static int x25_open(struct net_device *dev)
+ 
+ static void x25_close(struct net_device *dev)
+ {
++	struct x25_state *x25st = state(dev_to_hdlc(dev));
++
+ 	lapb_unregister(dev);
++	tasklet_kill(&x25st->rx_tasklet);
+ }
+ 
+ 
+@@ -298,6 +321,8 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 			return result;
+ 
+ 		memcpy(&state(hdlc)->settings, &new_settings, size);
++		skb_queue_head_init(&state(hdlc)->rx_queue);
++		tasklet_setup(&state(hdlc)->rx_tasklet, x25_rx_queue_kick);
+ 
+ 		/* There's no header_ops so hard_header_len should be 0. */
+ 		dev->hard_header_len = 0;
+diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+index 605fe555e157..c85b2a1c8067 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/net/wan/lapbether.c
+@@ -51,6 +51,8 @@ struct lapbethdev {
+ 	struct list_head	node;
+ 	struct net_device	*ethdev;	/* link to ethernet device */
+ 	struct net_device	*axdev;		/* lapbeth device (lapb#) */
++	struct sk_buff_head	rx_queue;
++	struct napi_struct	napi;
+ };
+ 
+ static LIST_HEAD(lapbeth_devices);
+@@ -81,6 +83,25 @@ static __inline__ int dev_is_ethdev(struct net_device *dev)
+ 
+ /* ------------------------------------------------------------------------ */
+ 
++static int lapbeth_napi_poll(struct napi_struct *napi, int budget)
++{
++	struct lapbethdev *lapbeth = container_of(napi, struct lapbethdev, napi);
++	struct sk_buff *skb;
++	int processed = 0;
++
++	for (; processed < budget; ++processed) {
++		skb = skb_dequeue(&lapbeth->rx_queue);
++		if (!skb)
++			break;
++		netif_receive_skb_core(skb);
++	}
++
++	if (processed < budget)
++		napi_complete(napi);
++
++	return processed;
++}
++
+ /*
+  *	Receive a LAPB frame via an ethernet interface.
+  */
+@@ -129,6 +150,7 @@ static int lapbeth_rcv(struct sk_buff *skb, struct net_device *dev, struct packe
+ 
+ static int lapbeth_data_indication(struct net_device *dev, struct sk_buff *skb)
+ {
++	struct lapbethdev *lapbeth = netdev_priv(dev);
+ 	unsigned char *ptr;
+ 
+ 	if (skb_cow(skb, 1)) {
+@@ -142,7 +164,10 @@ static int lapbeth_data_indication(struct net_device *dev, struct sk_buff *skb)
+ 	*ptr = X25_IFACE_DATA;
+ 
+ 	skb->protocol = x25_type_trans(skb, dev);
+-	return netif_rx(skb);
++
++	skb_queue_tail(&lapbeth->rx_queue, skb);
++	napi_schedule(&lapbeth->napi);
++	return NET_RX_SUCCESS;
+ }
+ 
+ /*
+@@ -228,6 +253,7 @@ static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
+ 
+ static void lapbeth_connected(struct net_device *dev, int reason)
+ {
++	struct lapbethdev *lapbeth = netdev_priv(dev);
+ 	unsigned char *ptr;
+ 	struct sk_buff *skb = dev_alloc_skb(1);
+ 
+@@ -240,11 +266,14 @@ static void lapbeth_connected(struct net_device *dev, int reason)
+ 	*ptr = X25_IFACE_CONNECT;
+ 
+ 	skb->protocol = x25_type_trans(skb, dev);
+-	netif_rx(skb);
++
++	skb_queue_tail(&lapbeth->rx_queue, skb);
++	napi_schedule(&lapbeth->napi);
+ }
+ 
+ static void lapbeth_disconnected(struct net_device *dev, int reason)
+ {
++	struct lapbethdev *lapbeth = netdev_priv(dev);
+ 	unsigned char *ptr;
+ 	struct sk_buff *skb = dev_alloc_skb(1);
+ 
+@@ -257,7 +286,9 @@ static void lapbeth_disconnected(struct net_device *dev, int reason)
+ 	*ptr = X25_IFACE_DISCONNECT;
+ 
+ 	skb->protocol = x25_type_trans(skb, dev);
+-	netif_rx(skb);
++
++	skb_queue_tail(&lapbeth->rx_queue, skb);
++	napi_schedule(&lapbeth->napi);
+ }
+ 
+ /*
+@@ -285,8 +316,11 @@ static const struct lapb_register_struct lapbeth_callbacks = {
+  */
+ static int lapbeth_open(struct net_device *dev)
+ {
++	struct lapbethdev *lapbeth = netdev_priv(dev);
+ 	int err;
+ 
++	napi_enable(&lapbeth->napi);
++
+ 	if ((err = lapb_register(dev, &lapbeth_callbacks)) != LAPB_OK) {
+ 		pr_err("lapb_register error: %d\n", err);
+ 		return -ENODEV;
+@@ -298,6 +332,7 @@ static int lapbeth_open(struct net_device *dev)
+ 
+ static int lapbeth_close(struct net_device *dev)
+ {
++	struct lapbethdev *lapbeth = netdev_priv(dev);
+ 	int err;
+ 
+ 	netif_stop_queue(dev);
+@@ -305,6 +340,8 @@ static int lapbeth_close(struct net_device *dev)
+ 	if ((err = lapb_unregister(dev)) != LAPB_OK)
+ 		pr_err("lapb_unregister error: %d\n", err);
+ 
++	napi_disable(&lapbeth->napi);
++
+ 	return 0;
+ }
+ 
+@@ -359,6 +396,9 @@ static int lapbeth_new_device(struct net_device *dev)
+ 	dev_hold(dev);
+ 	lapbeth->ethdev = dev;
+ 
++	skb_queue_head_init(&lapbeth->rx_queue);
++	netif_napi_add(ndev, &lapbeth->napi, lapbeth_napi_poll, 16);
++
+ 	rc = -EIO;
+ 	if (register_netdevice(ndev))
+ 		goto fail;
+-- 
+2.27.0
+
