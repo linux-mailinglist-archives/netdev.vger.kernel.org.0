@@ -2,111 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 697C632F4D5
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 21:59:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6528732F50D
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 22:03:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbhCEU5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 15:57:41 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:53179 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbhCEU5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 15:57:17 -0500
-Received: by mail-il1-f200.google.com with SMTP id e16so2788769ile.19
-        for <netdev@vger.kernel.org>; Fri, 05 Mar 2021 12:57:17 -0800 (PST)
+        id S229788AbhCEVDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 16:03:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229704AbhCEVC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 16:02:58 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CE1C06175F
+        for <netdev@vger.kernel.org>; Fri,  5 Mar 2021 13:02:58 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id p10so3250469ils.9
+        for <netdev@vger.kernel.org>; Fri, 05 Mar 2021 13:02:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KDZZjAmqxj3nBD/QR2JR4FDldbeTt04JdeJXJxPd6S8=;
+        b=XTH+opjF0lun0/BAu4EyV3ZJ3Lsqf7XiX/1rYoibwaP/F3bXcL4IlX4TdPRqoqoHye
+         ++d4PzoH3qJZRxxRtwFzkkKpK/M4KGw9Mol9qW8269QqGlkw5EbaXydgP7ukM3iZD2b8
+         kdpWXWGqe9u1A9W+eA32UK1wbw2n+xgzWU834=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=N9h4PY940X2Vdb/yMG+r/6xuF1LLW6SS3G8crYPx4nQ=;
-        b=HivUN5Qq5T9gHzTgH3pJrpIb0kxWqJJSoRaJjCV3zuSWL+9cR+KrR6/P+y36b1Su24
-         /Hs+Ag6j7EW7g8mLF3N8fNTgqHSb4RIc/ARk/R+dcyLDccHLGa9gFIiCX0uuiCrxyks7
-         IGRE+f3W0drhFnA2y7EH5ptDDtFMljxc1eDvohR4AiG0eg6xsN9BI7jweUV6p7U8qBzm
-         7qTQrVIGS4hiB0ArtdIOPTCyW5sRGqzLegTKA3NEx18qlQJ5dVWI+5PDy5BwA9A8Ah8K
-         lGQAPXGR4CkQ4uvQeDU6c60ZmI/ikxo3P8F9QD75xciPwlXX9/cMYDVQL1OjgYBQv5IU
-         nUrw==
-X-Gm-Message-State: AOAM533KdJk491GCx3ztR9AE0wezvYGMseTZIbGJjSxUIW7GeaWfO2GR
-        ZoaDv6Zy8LfPa1X7FDu9+PRe4mgaBwA6hsCXHWmRz3vOkGZm
-X-Google-Smtp-Source: ABdhPJwuPfs/RQ+MRBFmjs3ZlWf8iRxe2qD/yDBCuuDqxnHW2dbFPjBuFTqWJ1MOnaMyxO4SN5g9837J/6kjBjwPuIErJvtY5mtD
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KDZZjAmqxj3nBD/QR2JR4FDldbeTt04JdeJXJxPd6S8=;
+        b=iLRwCajCChxx27VKFAUWw7gk2i2e4rNBwOt8fiu33FiFuojwkYqGucKKG4QWxGE5sr
+         6252Sj3L+oujY5DFCKwOnoxMpPI1fWRtXgbEhlOKQBb9MCiEfdYdgtc+TlcmPWbEsjnm
+         3O4Z1mthV2GF/AO6P4lHUsCUOtySgDYcQHZnHTTrfOjnL5wvEew1AtStyQd7Jjgy48D5
+         Z8P61rI1hB/jUgySi+YvLwhkpeyBbCNJn8qUp8GFyw1F3vaRYaGpiRKU3QxiAeBYlCDq
+         85rvcKr3385h4q5iOH1CbjrdKMVGkj+6hARCksH7cF8Z/6WOZ3OzCWhYJzC+DH/tmoA1
+         K70Q==
+X-Gm-Message-State: AOAM5316367XItNYRj7TNgaFrrzrcMG/6OG7HTPOFCT0dpHMM9BzAXu6
+        uAbfhAfQvS+/fQex1YyhsJb9k/JFydgLTA==
+X-Google-Smtp-Source: ABdhPJzpMsfXkVcnyFEnz/Jq0GyWKgp/9xROXsc/dvUpGUaLODsc2ftI/xVcjxwRG7yL91yQ+G2t1w==
+X-Received: by 2002:a05:6e02:b27:: with SMTP id e7mr10539153ilu.253.1614978177492;
+        Fri, 05 Mar 2021 13:02:57 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id k3sm1808484ioj.35.2021.03.05.13.02.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Mar 2021 13:02:56 -0800 (PST)
+Subject: Re: [PATCH net-next 2/6] net: qualcomm: rmnet: simplify some byte
+ order logic
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Alex Elder <elder@linaro.org>
+Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, sharathv@codeaurora.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210304223431.15045-1-elder@linaro.org>
+ <20210304223431.15045-3-elder@linaro.org> <YEGucXIUQ59UcLrJ@builder.lan>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <9f1fb37b-90cb-a855-cfa0-3c0e6a234b48@ieee.org>
+Date:   Fri, 5 Mar 2021 15:02:56 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:da48:: with SMTP id p8mr9941257ilq.137.1614977836989;
- Fri, 05 Mar 2021 12:57:16 -0800 (PST)
-Date:   Fri, 05 Mar 2021 12:57:16 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004b43a605bcd0545c@google.com>
-Subject: [syzbot] net-next boot error: WARNING in kvm_wait
-From:   syzbot <syzbot+05a8c6cb8281f23c8915@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YEGucXIUQ59UcLrJ@builder.lan>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 3/4/21 10:07 PM, Bjorn Andersson wrote:
+> On Thu 04 Mar 16:34 CST 2021, Alex Elder wrote:
+> 
+>> In rmnet_map_ipv4_ul_csum_header() and rmnet_map_ipv6_ul_csum_header()
+>> the offset within a packet at which checksumming should commence is
+>> calculated.  This calculation involves byte swapping and a forced type
+>> conversion that makes it hard to understand.
+>>
+>> Simplify this by computing the offset in host byte order, then
+>> converting the result when assigning it into the header field.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+>> ---
+>>   .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 22 ++++++++++---------
+>>   1 file changed, 12 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+>> index 21d38167f9618..bd1aa11c9ce59 100644
+>> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+>> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+>> @@ -197,12 +197,13 @@ rmnet_map_ipv4_ul_csum_header(void *iphdr,
+>>   			      struct rmnet_map_ul_csum_header *ul_header,
+>>   			      struct sk_buff *skb)
+>>   {
+>> -	struct iphdr *ip4h = (struct iphdr *)iphdr;
+>> -	__be16 *hdr = (__be16 *)ul_header, offset;
+>> +	__be16 *hdr = (__be16 *)ul_header;
+>> +	struct iphdr *ip4h = iphdr;
+>> +	u16 offset;
+>> +
+>> +	offset = skb_transport_header(skb) - (unsigned char *)iphdr;
+>> +	ul_header->csum_start_offset = htons(offset);
+>>   
+>> -	offset = htons((__force u16)(skb_transport_header(skb) -
+> 
+> Just curious, why does this require a __force, or even a cast?
 
-syzbot found the following issue on:
+The argument to htons() has type __u16.  In this case it
+is passed the difference between pointers, which will
+have type ptrdiff_t, which is certainly bigger than
+16 bits.  I don't think the __force is needed, but the
+cast to u16 might just be making the conversion to the
+smaller type explicit.  Here too though, I don't think
+it's necessary.
 
-HEAD commit:    d310ec03 Merge tag 'perf-core-2021-02-17' of git://git.ker..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1532e4c6d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=66df2ca4f2dd3022
-dashboard link: https://syzkaller.appspot.com/bug?extid=05a8c6cb8281f23c8915
+					-Alex
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+05a8c6cb8281f23c8915@syzkaller.appspotmail.com
+> Regardless, your proposed way of writing it is easier to read.
+> 
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> 
+> Regards,
+> Bjorn
+> 
+>> -				     (unsigned char *)iphdr));
+>> -	ul_header->csum_start_offset = offset;
+>>   	ul_header->csum_insert_offset = skb->csum_offset;
+>>   	ul_header->csum_enabled = 1;
+>>   	if (ip4h->protocol == IPPROTO_UDP)
+>> @@ -239,12 +240,13 @@ rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
+>>   			      struct rmnet_map_ul_csum_header *ul_header,
+>>   			      struct sk_buff *skb)
+>>   {
+>> -	struct ipv6hdr *ip6h = (struct ipv6hdr *)ip6hdr;
+>> -	__be16 *hdr = (__be16 *)ul_header, offset;
+>> +	__be16 *hdr = (__be16 *)ul_header;
+>> +	struct ipv6hdr *ip6h = ip6hdr;
+>> +	u16 offset;
+>> +
+>> +	offset = skb_transport_header(skb) - (unsigned char *)ip6hdr;
+>> +	ul_header->csum_start_offset = htons(offset);
+>>   
+>> -	offset = htons((__force u16)(skb_transport_header(skb) -
+>> -				     (unsigned char *)ip6hdr));
+>> -	ul_header->csum_start_offset = offset;
+>>   	ul_header->csum_insert_offset = skb->csum_offset;
+>>   	ul_header->csum_enabled = 1;
+>>   
+>> -- 
+>> 2.20.1
+>>
 
-------------[ cut here ]------------
-raw_local_irq_restore() called with IRQs enabled
-WARNING: CPU: 0 PID: 4818 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
-Modules linked in:
-CPU: 0 PID: 4818 Comm: selinux-autorel Not tainted 5.11.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
-Code: bf ff cc cc cc cc cc cc cc cc cc cc cc 80 3d 8a 88 b1 04 00 74 01 c3 48 c7 c7 40 a2 6b 89 c6 05 79 88 b1 04 01 e8 b8 37 bf ff <0f> 0b c3 48 39 77 10 0f 84 97 00 00 00 66 f7 47 22 f0 ff 74 4b 48
-RSP: 0018:ffffc900015cfc40 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffffffff8be287a0 RCX: 0000000000000000
-RDX: ffff888022b31bc0 RSI: ffffffff815b6845 RDI: fffff520002b9f7a
-RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff815af71e R11: 0000000000000000 R12: 0000000000000003
-R13: fffffbfff17c50f4 R14: 0000000000000001 R15: ffff8880b9c35f40
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ff7c1ccab04 CR3: 000000000bc8e000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- kvm_wait arch/x86/kernel/kvm.c:860 [inline]
- kvm_wait+0xc9/0xe0 arch/x86/kernel/kvm.c:837
- pv_wait arch/x86/include/asm/paravirt.h:564 [inline]
- pv_wait_head_or_lock kernel/locking/qspinlock_paravirt.h:470 [inline]
- __pv_queued_spin_lock_slowpath+0x8b8/0xb40 kernel/locking/qspinlock.c:508
- pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:554 [inline]
- queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:51 [inline]
- queued_spin_lock include/asm-generic/qspinlock.h:85 [inline]
- do_raw_spin_lock+0x200/0x2b0 kernel/locking/spinlock_debug.c:113
- spin_lock include/linux/spinlock.h:354 [inline]
- check_stack_usage kernel/exit.c:715 [inline]
- do_exit+0x1d6a/0x2ae0 kernel/exit.c:868
- do_group_exit+0x125/0x310 kernel/exit.c:922
- __do_sys_exit_group kernel/exit.c:933 [inline]
- __se_sys_exit_group kernel/exit.c:931 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff7c19e9618
-Code: Unable to access opcode bytes at RIP 0x7ff7c19e95ee.
-RSP: 002b:00007fff88573528 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff7c19e9618
-RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
-RBP: 000055658b8146e0 R08: 00000000000000e7 R09: ffffffffffffff98
-R10: 000055658bead6c0 R11: 0000000000000246 R12: 000055658b8037a0
-R13: 00007fff88573810 R14: 0000000000000000 R15: 0000000000000000
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
