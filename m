@@ -2,65 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2749232ED15
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 15:26:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86D3932ED1D
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 15:29:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbhCEOZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 09:25:45 -0500
-Received: from mga17.intel.com ([192.55.52.151]:27033 "EHLO mga17.intel.com"
+        id S231209AbhCEO3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 09:29:24 -0500
+Received: from m12-18.163.com ([220.181.12.18]:59793 "EHLO m12-18.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229562AbhCEOZg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Mar 2021 09:25:36 -0500
-IronPort-SDR: pfq+rW6GSYzE3cSy3OlO40t1iZh/LaYG0GnFxGDMp7yLn9yAUOQZ33bEAUUV2W0eomW2zYWCta
- IQRWaZFA8Luw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9914"; a="167555617"
-X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; 
-   d="scan'208";a="167555617"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 06:25:36 -0800
-IronPort-SDR: 7vkKKW1fpJMKfrG5vWfR+oVa8+wDgZWcmQ5/zjKG+st4jYlWZfFLfHh8sraqpPf+J12wziKKEu
- PXwEpxiGNL3Q==
-X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; 
-   d="scan'208";a="408315676"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2021 06:25:34 -0800
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH 3/3] vDPA/ifcvf: bump version string to 1.0
-Date:   Fri,  5 Mar 2021 22:20:00 +0800
-Message-Id: <20210305142000.18521-4-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210305142000.18521-1-lingshan.zhu@intel.com>
-References: <20210305142000.18521-1-lingshan.zhu@intel.com>
+        id S229821AbhCEO3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 09:29:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=KzhyB
+        nsVYnUhSOfd6PhuhP5B+5Mmhp9jN22Vts2dIoY=; b=i5OeG022sIcyGrnl/RZuL
+        H0nHNHJY95dX0DTwVUO07Ur1TePg45EFfzRmEhqIN8ZEW4wsomd7+yvWOOXtt/Ej
+        IXrTlhFec9RANur2fWN+I9Sl0Y6w4o4BfAuhhklpLHKOu6Df5IwzkNfuMl3wjXKy
+        x+ocKuvhmFVugFpJsEkBuY=
+Received: from yangjunlin.ccdomain.com (unknown [119.137.55.151])
+        by smtp14 (Coremail) with SMTP id EsCowADn8hnAP0JgTzXQXA--.15144S2;
+        Fri, 05 Mar 2021 22:27:13 +0800 (CST)
+From:   angkery <angkery@163.com>
+To:     leoyang.li@nxp.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Junlin Yang <yangjunlin@yulong.com>
+Subject: [PATCH] ethernet: ucc_geth: Use kmemdup instead of kmalloc and memcpy
+Date:   Fri,  5 Mar 2021 22:27:11 +0800
+Message-Id: <20210305142711.3022-1-angkery@163.com>
+X-Mailer: git-send-email 2.24.0.windows.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EsCowADn8hnAP0JgTzXQXA--.15144S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZF1DGFyDKrW5GF4DGFyfJFb_yoWDAFcEkr
+        WfZrWYgr4jgFn2vw4a9w47Z340k3WkXrn5X3WSgFW5Ar9rZr15Wrs7Zr1fJwnxWF4I9FyD
+        Ar1xt34xA348tjkaLaAFLSUrUUUU0b8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUn3PEDUUUUU==
+X-Originating-IP: [119.137.55.151]
+X-CM-SenderInfo: 5dqjyvlu16il2tof0z/xtbBFAFMI1aD+lu31AAAst
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit bumps ifcvf driver version string to 1.0
+From: Junlin Yang <yangjunlin@yulong.com>
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+Fixes coccicheck warnings:
+./drivers/net/ethernet/freescale/ucc_geth.c:3594:11-18:
+WARNING opportunity for kmemdup
+
+Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
 ---
- drivers/vdpa/ifcvf/ifcvf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/ucc_geth.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index fd5befc5cbcc..56a0974cf93c 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -14,7 +14,7 @@
- #include <linux/sysfs.h>
- #include "ifcvf_base.h"
+diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
+index ef4e2fe..2c079ad 100644
+--- a/drivers/net/ethernet/freescale/ucc_geth.c
++++ b/drivers/net/ethernet/freescale/ucc_geth.c
+@@ -3591,10 +3591,9 @@ static int ucc_geth_probe(struct platform_device* ofdev)
+ 	if ((ucc_num < 0) || (ucc_num > 7))
+ 		return -ENODEV;
  
--#define VERSION_STRING  "0.1"
-+#define VERSION_STRING  "1.0"
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
+-	ug_info = kmalloc(sizeof(*ug_info), GFP_KERNEL);
++	ug_info = kmemdup(&ugeth_primary_info, sizeof(*ug_info), GFP_KERNEL);
+ 	if (ug_info == NULL)
+ 		return -ENOMEM;
+-	memcpy(ug_info, &ugeth_primary_info, sizeof(*ug_info));
+ 
+ 	ug_info->uf_info.ucc_num = ucc_num;
  
 -- 
-2.27.0
+1.9.1
+
 
