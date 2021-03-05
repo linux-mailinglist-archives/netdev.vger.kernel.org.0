@@ -2,93 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DE732E767
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 12:49:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7EE732E7A7
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 13:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbhCELsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 06:48:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
+        id S229551AbhCEMI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 07:08:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbhCELs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 06:48:27 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F3BC061574;
-        Fri,  5 Mar 2021 03:48:26 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id o2so1194960wme.5;
-        Fri, 05 Mar 2021 03:48:26 -0800 (PST)
+        with ESMTP id S229493AbhCEMH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 07:07:58 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FE1C061574;
+        Fri,  5 Mar 2021 04:07:58 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id 18so1981995pfo.6;
+        Fri, 05 Mar 2021 04:07:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9LTUTXPKPI88WIB53+i/C5RZiHIuMYCI/f5QG8TqUTk=;
-        b=tBAIlenDYH32IfKXFpSR8GdTpyb6EUEUrrbv1QzoxowszraJHteDDuptV+NKvEuo5I
-         Bmhw1h9fUsXcgtzodLPgQFzId+9f/LejYgw+TIfd6JC0C1PclXgP2CHQHRmrC51waFhf
-         TXx/OB4Haaon2KS8WqVBCacr9tMdTiqkB1Lj1bkZcbucYGSSF9virtEjN5zz10xooJWL
-         Yv/D41v3MwwMxywrqPkWwE08503tfq0CgMAyiL/uiB2t3rlW5Er3VN/pt1MhsIMTmt3G
-         riyuUUwbMWtgQ7rxJlE25yRm4RmfPao12Y0l5E2wJv1Kt1awzvCyl2X/C+mn5TC3NNvW
-         NV/w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0T4sYjk3wRZzjG/QHAIvuP6rKIH4m6dqz5ONCAsok4U=;
+        b=X9aYOJ2QUP2xz10GjaNI2tVnTar2w3YTbJkB56nhZ43TCzh4a0g4Kb7e8XS9lECzRG
+         5BaePC2mMQk+/MQRKX0PGp2vpm3tkiA22y8AwJYIjs3X5Cb4tNKARktq6vkbAHcZpEGN
+         Yzk5DU2q50UwaF4xlEagNR7sQDl2vsDpaI8MGk1LmIkxSUhGnzkBfiJdIPSD9YjZnyNa
+         z1YfGjVkMVdCuwArFbDgpglD2TbV+2yMdfo6kvoEVGfKh5rKlrEnJMFxbOfCvicuiisY
+         RNMr4au0QQrZJcaf6eXQcZQnCjd/vxDr+cnEu0ELaz6rMPx2rCf8B1ya358Qg+QSuTmv
+         x0iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9LTUTXPKPI88WIB53+i/C5RZiHIuMYCI/f5QG8TqUTk=;
-        b=Aql1wQNHZNMSV/nZc5awGrMZMZKjCjvdTq3QnYnvAv+5krimEFTaMcmUwXtnkhvX6m
-         7L6RFGBGIIMshjrVwGNzz8+fAlkUuJvt4ICwFm20yLynrReJRKRedvbug6pTiv0KoA/2
-         cMb1KQbu252iTKHeh4jbRJpmnnLqsvdmg9Oe4ymEYxykFScbETXXqyIs6mGU0sQ1HxUr
-         tO4kkjgQSjLneuWXe+/zcDSK4dkZRMZaVoBkUHZlcwvLsIBhIVonqGhemHAAGxsjeZ9M
-         FOe4BrRFdx7vLSWLb4kcWHmtBkvaQUEBXJEJHx/ClF33vPx6gSKc6tuAELyxdwUCiXGz
-         c6ow==
-X-Gm-Message-State: AOAM532RCZrh/p58CmW0w2J4gdUJLpQvq2ESvgWBr/1T+MrxyT2m8H/C
-        ktmJG7FoDx6XNci4gWtgpUmkQJMjI14xSQ==
-X-Google-Smtp-Source: ABdhPJxA4ZqQLTocwVdHyJz6k/0X7FZ+ATSQ98QdxbQn+daJ9PkilSBQNk3gdQ8pq/NLIcIVujo2HA==
-X-Received: by 2002:a7b:cdef:: with SMTP id p15mr8661617wmj.0.1614944905206;
-        Fri, 05 Mar 2021 03:48:25 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:bb00:59ea:5fe5:d29c:ae07? (p200300ea8f1fbb0059ea5fe5d29cae07.dip0.t-ipconnect.de. [2003:ea:8f1f:bb00:59ea:5fe5:d29c:ae07])
-        by smtp.googlemail.com with ESMTPSA id h2sm4556160wrq.81.2021.03.05.03.48.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Mar 2021 03:48:24 -0800 (PST)
-Subject: Re: [PATCH net] r8169: fix r8168fp_adjust_ocp_cmd function
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     nic_swsd@realtek.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <1394712342-15778-348-Taiwan-albertk@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <46815c59-9eb0-8324-1ff3-df42cd95fdd3@gmail.com>
-Date:   Fri, 5 Mar 2021 12:48:18 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0T4sYjk3wRZzjG/QHAIvuP6rKIH4m6dqz5ONCAsok4U=;
+        b=TCto31YS7EouOtTyaWmRb/iuEU2nWAU08BaO+DE+yXb0BRGAyn2CippMV51mMot/sO
+         kDEZvJONg/qwXLJZHCE4P/Cv95X8qIyyr0Aag8vHveDE4BdzqBn3Sq4RdUMAsXTTSS0j
+         64oM9NcP0s9BgPqi+RJPu6wmyPyLwZPiw2oX381zFoaxNoxa/AbyjvkFJKvRDqiNLQxc
+         YloSSxnECuVXcMtPReDHt92qByZCWwBZw7WjrZXMygX8/h46zqV4y6u3l4fW2Fj8+qVp
+         dGs0sWCIeOyu7dlG5h3FYkb81YDlIOasebj8LvrC21oTpmDuDuRnh78ypy//LAUqya1t
+         d6tQ==
+X-Gm-Message-State: AOAM530CDL6FJxKh+8Vk/FQNKaSZFbkf2pg2fXjtutmqUcNu/wIrDJCq
+        WkmzaJqI7eKHhFpF6Ix1R+9UGZ5e26nqxgmwk3I=
+X-Google-Smtp-Source: ABdhPJwjqsfLw9ru8YkR/RGYr2KWgaGsQwQO4QmzMmJdg8R1OETnAH+U7oEtzJZBjg7l8BXUO4IWnv00awnX5hCZTkU=
+X-Received: by 2002:a63:1906:: with SMTP id z6mr8464802pgl.292.1614946078278;
+ Fri, 05 Mar 2021 04:07:58 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1394712342-15778-348-Taiwan-albertk@realtek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210305092534.13121-1-baijiaju1990@gmail.com>
+In-Reply-To: <20210305092534.13121-1-baijiaju1990@gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 5 Mar 2021 13:07:47 +0100
+Message-ID: <CAJ8uoz3dkGsnMQ5wnFmyyFVfkMrz8Z2pqPZ+frFXj=Sy72xpcw@mail.gmail.com>
+Subject: Re: [PATCH] net: xdp: fix error return code of xsk_generic_xmit()
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.03.2021 10:34, Hayes Wang wrote:
-> The (0xBAF70000 & 0x00FFF000) << 6 should be (0xf70 << 18).
-> 
-> Fixes: 561535b0f239 ("r8169: fix OCP access on RTL8117")
-> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index f704da3f214c..7aad0ba53372 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -767,7 +767,7 @@ static void r8168fp_adjust_ocp_cmd(struct rtl8169_private *tp, u32 *cmd, int typ
->  	if (type == ERIAR_OOB &&
->  	    (tp->mac_version == RTL_GIGA_MAC_VER_52 ||
->  	     tp->mac_version == RTL_GIGA_MAC_VER_53))
-> -		*cmd |= 0x7f0 << 18;
-> +		*cmd |= 0xf70 << 18;
->  }
->  
->  DECLARE_RTL_COND(rtl_eriar_cond)
-> 
-Acked-by: Heiner Kallweit <hkallweit1@gmail.com>
+On Fri, Mar 5, 2021 at 10:28 AM Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+>
+> When err is zero but xskq_prod_reserve() fails, no error return code of
+> xsk_generic_xmit() is assigned.
+> To fix this bug, err is assigned with the return value of
+> xskq_prod_reserve(), and then err is checked.
 
+This error is ignored by design. This so that the zero-copy path and
+the copy/skb path will return the same value (success in this case)
+when the completion ring does not have a spare entry we can put the
+future completion in. The problem lies with the zero-copy path that is
+asynchronous, in contrast to the skb path that is synchronous. The
+zero-copy path cannot return an error when this happens as this
+reservation in the completion ring is performed by the driver that
+might concurrently run on another core without any way to feed this
+back to the syscall that does not wait for the driver to execute in
+any case. Introducing a return value for this condition right now for
+the skb case, might break existing applications.
+
+Though it would be really good if you could submit a small patch to
+bpf-next that adds a comment explaining this to avoid any future
+confusion. Something along the lines of: /* The error code of
+xskq_prod_reserve is ignored so that skb mode will mimic the same
+behavior as zero-copy mode that does not signal an error in this case
+as it cannot. */. You could put it right after the if statement.
+
+Thank you: Magnus
+
+> The spinlock is only used to protect the call to xskq_prod_reserve().
+>
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> ---
+>  net/xdp/xsk.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 4faabd1ecfd1..f1c1db07dd07 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -484,8 +484,14 @@ static int xsk_generic_xmit(struct sock *sk)
+>                  * if there is space in it. This avoids having to implement
+>                  * any buffering in the Tx path.
+>                  */
+> +               if (unlikely(err)) {
+> +                       kfree_skb(skb);
+> +                       goto out;
+> +               }
+> +
+>                 spin_lock_irqsave(&xs->pool->cq_lock, flags);
+> -               if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> +               err = xskq_prod_reserve(xs->pool->cq);
+> +               if (unlikely(err)) {
+>                         spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>                         kfree_skb(skb);
+>                         goto out;
+> --
+> 2.17.1
+>
