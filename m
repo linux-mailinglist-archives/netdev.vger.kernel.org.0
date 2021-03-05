@@ -2,135 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D153532E346
-	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 08:59:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB84032E358
+	for <lists+netdev@lfdr.de>; Fri,  5 Mar 2021 09:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbhCEH70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 02:59:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
+        id S229489AbhCEIHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 03:07:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbhCEH7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 02:59:15 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD2EC06175F
-        for <netdev@vger.kernel.org>; Thu,  4 Mar 2021 23:59:14 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id b7so1289045edz.8
-        for <netdev@vger.kernel.org>; Thu, 04 Mar 2021 23:59:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kfcdi5i4Dla+kLcu7HczxYYRqU9dNa/w3fqv/WIar8k=;
-        b=ulZpSNIJCkHo3znvU2/lQnVodWmIUwSNKFlZlnAUvgJg1FujRXyV/u5SsqIoc231/x
-         qc89Dz4kf62UhSw8YIPzpGccZGr9T/rpEQEEk7P4JbQ9p5g/Ik5pEzB8vxJJz4WIVChV
-         j219LU19EmZH6GNrK8gkL4KWeKt91uUQwmbEs7iTJuan0jkvTtgaHctT4uyb+Q2ugM7Q
-         /2dTHc35nGuk5QJkBSlalrqX9VfSVt8UTE/vozNxHIHaC+SpHpgj1N5VSu78AmMXSd/x
-         YAfef4RG6Bbcif+ajErrhNun78fPOPNZm2l6QE6lIGcxSZMtxxjprATsjT1A8juKMBvE
-         UJ6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kfcdi5i4Dla+kLcu7HczxYYRqU9dNa/w3fqv/WIar8k=;
-        b=Sx3VNLgr/KNHa/NnyMi1bM5viu4llg3sIAQ6KyuDkYRAJ9sJIHCL1dDqmvZBZ08ksN
-         5fC6+lpSAqeo3bYEPWoY//JlCCKW1QqaapaIGDj4Bv6CrXPztihmfbbX172oEYttlRTL
-         wolZOiB9WCRkYbe1cLiAoBIL1Y1oq2/DJuGC/+2oEZuzzGJ16u44ryhMIMMS98r3l7Cw
-         xNhsnrG5s94/035RW+xdfKRzYcJVQndFi7Ifolx2/mOj13Uc5XaHQo2G9n6ju7Wxv82q
-         FgSB21YNtOPwX/sm/k16pPBe6U3woAqn8k0xup2zoGZs+qJi08Wy1gfVEZqaQaT0AUDE
-         mULA==
-X-Gm-Message-State: AOAM533QPiM/Rbv6CqQuu5lGQ+eU8z8ciTR/ssNL7ujuuNLZ+z8CrVe8
-        Sr18sHVJUclJ2DYY0RN5nwocbHlrFt7j50gsXd9N
-X-Google-Smtp-Source: ABdhPJxo2IyKxqbcHc4crFIXpHbr8uovLre7lWJCxwDJZflxxsWu1WDgrAtMQt1ymCeFzENr1Ydroi1DBvTLEstPGNA=
-X-Received: by 2002:a05:6402:180b:: with SMTP id g11mr7896239edy.195.1614931153317;
- Thu, 04 Mar 2021 23:59:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20210223115048.435-1-xieyongji@bytedance.com> <20210223115048.435-7-xieyongji@bytedance.com>
- <573ab913-55ce-045a-478f-1200bd78cf7b@redhat.com> <CACycT3sVhDKKu4zGbt1Lw-uWfKDAWs=O=C7kXXcuSnePohmBdQ@mail.gmail.com>
- <c173b7ec-8c90-d0e3-7272-a56aa8935e64@redhat.com> <CACycT3vb=WyrMpiOOdVDGEh8cEDb-xaj1esQx2UEQpJnOOWhmw@mail.gmail.com>
- <4db35f8c-ee3a-90fb-8d14-5d6014b4f6fa@redhat.com> <CACycT3sUJNmi2BdLsi3W72+qTKQaCo_nQYu-fdxg9y4pAvBMow@mail.gmail.com>
- <2652f696-faf7-26eb-a8b2-c4cfe3aaed15@redhat.com>
-In-Reply-To: <2652f696-faf7-26eb-a8b2-c4cfe3aaed15@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Fri, 5 Mar 2021 15:59:02 +0800
-Message-ID: <CACycT3uMV9wg5yVKmEJpbZrs3x0b4+b9eNcUTh3+CjxsG7x2LA@mail.gmail.com>
-Subject: Re: Re: [RFC v4 06/11] vduse: Implement an MMU-based IOMMU driver
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
+        with ESMTP id S229563AbhCEIHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 03:07:39 -0500
+X-Greylist: delayed 101 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Mar 2021 00:07:38 PST
+Received: from forward100o.mail.yandex.net (forward100o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::600])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2123C061574
+        for <netdev@vger.kernel.org>; Fri,  5 Mar 2021 00:07:38 -0800 (PST)
+Received: from myt6-de4b83149afa.qloud-c.yandex.net (myt6-de4b83149afa.qloud-c.yandex.net [IPv6:2a02:6b8:c12:401e:0:640:de4b:8314])
+        by forward100o.mail.yandex.net (Yandex) with ESMTP id 9E1C54AC30D0;
+        Fri,  5 Mar 2021 11:05:55 +0300 (MSK)
+Received: from myt5-ca5ec8faf378.qloud-c.yandex.net (myt5-ca5ec8faf378.qloud-c.yandex.net [2a02:6b8:c12:2514:0:640:ca5e:c8fa])
+        by myt6-de4b83149afa.qloud-c.yandex.net (mxback/Yandex) with ESMTP id rMTlpl49ET-5tHS1pR0;
+        Fri, 05 Mar 2021 11:05:55 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1614931555;
+        bh=rnfl6AI5bEmxaZZVWj+EEwQpJ+T1unrBHAWdm/Ymb9g=;
+        h=Cc:To:From:Subject:Message-ID:Date;
+        b=p14fcp6P2rJwgKpQvq6+TM12U9G7eJsI1Aod4qkBBhGz/XCRFWKMCEknvgG5a6uPH
+         FDwATwt/OtuRQf5LoZ0P9LXmBvNVBmogIkavmHAoaqZwuYCKf2Ke8oGh/FXyj1Db0A
+         4ys8KaNB957b246DDBGDkXsoqv3DHVztvH5akhaU=
+Authentication-Results: myt6-de4b83149afa.qloud-c.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by myt5-ca5ec8faf378.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id ZbnJKQx60t-5sJuaweI;
+        Fri, 05 Mar 2021 11:05:54 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+Message-ID: <962223cc9f1cd71814c66f563e35f53cc220f5ce.camel@yandex.ru>
+Subject: [PATCH v2] CIPSO: Fix unaligned memory access in cipso_v4_gentag_hdr
+From:   Sergey Nazarov <s-nazarov@yandex.ru>
+To:     linux-security-module@vger.kernel.org
+Cc:     paul@paul-moore.com, davem@davemloft.net, netdev@vger.kernel.org,
+        Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Fri, 05 Mar 2021 11:05:54 +0300
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.28.5 (3.28.5-10.el7) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 5, 2021 at 3:27 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/3/5 3:13 =E4=B8=8B=E5=8D=88, Yongji Xie wrote:
-> > On Fri, Mar 5, 2021 at 2:52 PM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2021/3/5 2:15 =E4=B8=8B=E5=8D=88, Yongji Xie wrote:
-> >>
-> >> Sorry if I've asked this before.
-> >>
-> >> But what's the reason for maintaing a dedicated IOTLB here? I think we
-> >> could reuse vduse_dev->iommu since the device can not be used by both
-> >> virtio and vhost in the same time or use vduse_iova_domain->iotlb for
-> >> set_map().
-> >>
-> >> The main difference between domain->iotlb and dev->iotlb is the way to
-> >> deal with bounce buffer. In the domain->iotlb case, bounce buffer
-> >> needs to be mapped each DMA transfer because we need to get the bounce
-> >> pages by an IOVA during DMA unmapping. In the dev->iotlb case, bounce
-> >> buffer only needs to be mapped once during initialization, which will
-> >> be used to tell userspace how to do mmap().
-> >>
-> >> Also, since vhost IOTLB support per mapping token (opauqe), can we use
-> >> that instead of the bounce_pages *?
-> >>
-> >> Sorry, I didn't get you here. Which value do you mean to store in the
-> >> opaque pointer=EF=BC=9F
-> >>
-> >> So I would like to have a way to use a single IOTLB for manage all kin=
-ds
-> >> of mappings. Two possible ideas:
-> >>
-> >> 1) map bounce page one by one in vduse_dev_map_page(), in
-> >> VDUSE_IOTLB_GET_FD, try to merge the result if we had the same fd. The=
-n
-> >> for bounce pages, userspace still only need to map it once and we can
-> >> maintain the actual mapping by storing the page or pa in the opaque
-> >> field of IOTLB entry.
-> >>
-> >> Looks like userspace still needs to unmap the old region and map a new
-> >> region (size is changed) with the fd in each VDUSE_IOTLB_GET_FD ioctl.
-> >>
-> >>
-> >> I don't get here. Can you give an example?
-> >>
-> > For example, userspace needs to process two I/O requests (one page per
-> > request). To process the first request, userspace uses
-> > VDUSE_IOTLB_GET_FD ioctl to query the iova region (0 ~ 4096) and mmap
-> > it.
->
->
-> I think in this case we should let VDUSE_IOTLB_GET_FD return the maximum
-> range as far as they are backed by the same fd.
->
+We need to use put_unaligned when writing 32-bit DOI value
+in cipso_v4_gentag_hdr to avoid unaligned memory access.
 
-But now the bounce page is mapped one by one. The second page (4096 ~
-8192) might not be mapped when userspace is processing the first
-request. So the maximum range is 0 ~ 4096 at that time.
+v2: unneeded type cast removed as Ondrej Mosnacek suggested.
 
-Thanks,
-Yongji
+Signed-off-by: Sergey Nazarov <s-nazarov@yandex.ru>
+---
+ net/ipv4/cipso_ipv4.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+index 471d33a..6e59902 100644
+--- a/net/ipv4/cipso_ipv4.c
++++ b/net/ipv4/cipso_ipv4.c
+@@ -1162,7 +1162,7 @@ static void cipso_v4_gentag_hdr(const struct
+cipso_v4_doi *doi_def,
+ {
+ 	buf[0] = IPOPT_CIPSO;
+ 	buf[1] = CIPSO_V4_HDR_LEN + len;
+-	*(__be32 *)&buf[2] = htonl(doi_def->doi);
++	put_unaligned_be32(doi_def->doi, &buf[2]);
+ }
+ 
+ /**
+-- 
+1.8.3.1
+
+
