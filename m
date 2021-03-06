@@ -2,79 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32A7C32FBB9
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 17:13:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B47132FC58
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 18:53:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231171AbhCFQMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Mar 2021 11:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231164AbhCFQMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Mar 2021 11:12:17 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F41C06174A
-        for <netdev@vger.kernel.org>; Sat,  6 Mar 2021 08:12:17 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id l11so1184870oov.13
-        for <netdev@vger.kernel.org>; Sat, 06 Mar 2021 08:12:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=tW1gHX3gSTz0GPVLpavmnO8eGOz65fyOhx30z8m2Pck=;
-        b=fV00oRQHKfKxnGmRqSFSplTeVj5lv3LrCAlIq81F7iB5sHvGvrv4Y9IqUce4UVXm85
-         Ips9P8voFRDnF783/quNtUCxNDU1LVsA555XfodSv/3jDMUj2NyTYWTkpYyWVuP/qWaI
-         x966LkVjI36A9n+hJ/bSIxSxyNkNaQMe9PgrUbuBX9dprh/nRC4FAQuhT8LLoSSkfQyT
-         rI6XCSZZctEM1WklF1CBN6+kfPHRLof3vTy6sv/Sk65NSOEhDO0RJfb0qzBaNptmK01L
-         FMPb33jecHIKWS9QqnJctSaGDIqeexOAxhzbSdT7Bu2ijjJrDip/LFEdH0sgBQEi6kEx
-         b9Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tW1gHX3gSTz0GPVLpavmnO8eGOz65fyOhx30z8m2Pck=;
-        b=cHWi7rjM2v3jZlhc+2qwn1sanby8UyzAp0BLkoR4+8YqEx7BGTSxAaBPyKfJny2Zyc
-         7/HuP9ZTRbCeK2xyJdxt//oUq4gXXeeQro8tCpdUxNAvYwLJ80CPsIj3hFI2vw2xhm3f
-         PHx2cYokkvuFYi7x5NmhM3IjxyCYp3Vhjo7MVTonSCwwmhMjYDVwxbYDKX+tks5utRm5
-         SKO8B7SJahjTEN4n5Paq/xbYu/1iDASSuBTm6EU6vq7AFzTzUmtpjg4qcBuWb+W1NVdj
-         9Vs4YWitpGopqDPp/nEIKdDnodmHVsmqqMszQ8WPOjBClnoolSEFAudPHdp6Gg9ovhKq
-         Cl9g==
-X-Gm-Message-State: AOAM533T1bN40aSb9fAl1nYlSi0HN+JkbBPvECise3OipCdDQciETLh5
-        gR0cN4/0GdCz2QfyZxu0PAdpw7f6qhw=
-X-Google-Smtp-Source: ABdhPJzeTqkfSr8kPpHf5jMgKyfBvoARq5AdjkGFP/QKuTdSExArTD0uNDG5Wv1h+xgodK4+pPb/Rw==
-X-Received: by 2002:a4a:c592:: with SMTP id x18mr12046907oop.9.1615047136888;
-        Sat, 06 Mar 2021 08:12:16 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.40])
-        by smtp.googlemail.com with ESMTPSA id k68sm1373538otk.28.2021.03.06.08.12.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 06 Mar 2021 08:12:16 -0800 (PST)
-Subject: Re: VRF leaking doesn't work
-To:     Greesha Mikhalkin <grigoriymikhalkin@gmail.com>,
-        netdev@vger.kernel.org
-References: <CADbyt64e2cmQzZTEg3VoY6py=1pAqkLDRw+mniRdr9Rua5XtgQ@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5b2595ed-bf5b-2775-405c-bb5031fd2095@gmail.com>
-Date:   Sat, 6 Mar 2021 09:12:15 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S231237AbhCFRw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Mar 2021 12:52:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32930 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230525AbhCFRwT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Mar 2021 12:52:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A1ACC64FF2;
+        Sat,  6 Mar 2021 17:52:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615053138;
+        bh=pQs+TAfh6EJs7cth0Wwcsp0KwtV/o5rdBeJ6m13PGKo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VIS29iDQnpPBPy0s8CQq8ua/JnH1NjmzmNOL0vBIFGefggHczlu6YC09w9PGff8t+
+         OuKNJKMaC8dtCCNnNU55QYtLWePsAalsW/ETOBpY464XYQUQnEaLa4KGF/5FxwjsqZ
+         9tAD2ev+pffh2miymBBTGInBwo1H3sY5V1g9Y1iYr3d29e/ev3CXzGlRJ7bJRsgTLQ
+         T8/dr++S+M9RGWHl2dYezKMUSAtFuPylzGGgXl8UuRPJWLCgkYswzWHzPaU2Wo/oIF
+         vmHGxNiwczhixNcW/8WZ+HDGCAHD4u125+O07zersDh6fD1Sh1dvB1AcXEiqbMNkXi
+         II4rURK5nO9vQ==
+Date:   Sat, 6 Mar 2021 12:52:15 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.11 16/67] net: sfp: add mode quirk for GPON
+ module Ubiquiti U-Fiber Instant
+Message-ID: <YEPBT69EMWmulQwv@sashalap>
+References: <20210224125026.481804-16-sashal@kernel.org>
+ <20210224125212.482485-12-sashal@kernel.org>
+ <20210225190306.65jnl557vvs6d7o3@pali>
+ <YEFgHQt6bp7yBjH/@sashalap>
+ <20210305233802.x3g6bfmgbpwmv3e2@pali>
 MIME-Version: 1.0
-In-Reply-To: <CADbyt64e2cmQzZTEg3VoY6py=1pAqkLDRw+mniRdr9Rua5XtgQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210305233802.x3g6bfmgbpwmv3e2@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/2/21 3:57 AM, Greesha Mikhalkin wrote:
-> Main goal is that 100.255.254.3 should be reachable from vrf2. But
-> after this setup it doesnâ€™t work. When i run `ping -I vrf2
-> 100.255.254.3` it sends packets from source address that belongs to
-> vlan1 enslaved by vrf1. I can see in tcpdump that ICMP packets are
-> sent and then returned to source address but they're not returned to
-> ping command for some reason. To be clear `ping -I vrf1 â€¦` works fine.
+On Sat, Mar 06, 2021 at 12:38:02AM +0100, Pali Rohár wrote:
+>On Thursday 04 March 2021 17:33:01 Sasha Levin wrote:
+>> On Thu, Feb 25, 2021 at 08:03:06PM +0100, Pali Rohár wrote:
+>> > On Wednesday 24 February 2021 07:49:34 Sasha Levin wrote:
+>> > > From: Pali Rohár <pali@kernel.org>
+>> > >
+>> > > [ Upstream commit f0b4f847673299577c29b71d3f3acd3c313d81b7 ]
+>> >
+>> > Hello! This commit requires also commit~1 from that patch series:
+>> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=426c6cbc409cbda9ab1a9dbf15d3c2ef947eb8c1
+>> >
+>> > Without it kernel cannot read EEPROM from Ubiquiti U-Fiber Instant
+>> > module and therefore the hook based on EEPROM data which is below would
+>> > not be applied.
+>>
+>> Looks like that commit is already in, thanks!
+>
+>Yes! Now I see that commit in 5.11 queue. So 5.11 would be OK.
+>
+>But I do not see it in 5.10 queue. In 5.10 queue I see only backport of
+>f0b4f8476732 commit. 426c6cbc409c seems to be still missing.
+>
+>Could you check it?
 
-I remember this case now: VRF route leaking works for fowarding, but not
-local traffic. If a packet arrives in vrf2, it should get forwarded to
-vrf1 and on to its destination. If the reverse route exists then round
-trip traffic works.
+Good point. It is now. Thanks!
+
+-- 
+Thanks,
+Sasha
