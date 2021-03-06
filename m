@@ -2,108 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C70F32F765
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 01:58:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B663632F778
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 02:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229964AbhCFA6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 19:58:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
+        id S229637AbhCFBVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 20:21:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbhCFA6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 19:58:01 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6383CC06175F;
-        Fri,  5 Mar 2021 16:58:01 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id t9so149972pjl.5;
-        Fri, 05 Mar 2021 16:58:01 -0800 (PST)
+        with ESMTP id S229493AbhCFBVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 20:21:06 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87350C06175F;
+        Fri,  5 Mar 2021 17:21:06 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id e2so3752892ilu.0;
+        Fri, 05 Mar 2021 17:21:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kEB+wkg0VXlo2zJ9VMKwJrG0JtlezJmZdygKl69AD+I=;
-        b=Doc9qVn0UogV3W56hb+iDnp3/OyBQwHdTQoy7LTDlplAxNfNnocU+qQ3IkdqnUXP5v
-         lkfNGz+Am9fJ8/hjJ8TLLgHZQDNusq+UjFzAPt/Eaq2Ut1y98WIu20C5AT3vXyTwRTlL
-         JMhSikGXh0djRA3q0N512fL30yaLx75QFbSMw967PrhFx/q08ZYJV+t+RWO5k/spW/RA
-         xqhJSvQ0lYBIfr7ibgnFoF+tXkQyCBIkupU+SA32QUnYMrmyfaJQoOe9ia8e3Optp+xE
-         +mjpqdYeLvTT6uv3E2Jl7J8svGQdkAfeKzqTrpr2Oyg7Id11PVFtJgGxl0vUTOIB6bZa
-         qesA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=5lSJ3kjsDvPGbTIMzkdA7HrV3yg0LgzvSV7ZarmtD0c=;
+        b=mcJ7A0v5dgFe21u+S5ZFErKtmIJmTqW7vnPz8mk4Fn0X24nFGEZgSQD62qUdoTS3sA
+         B0cUGs/NPkS3H7hsYSIwRCuKjE/qlPeSbETr8sb1y/qi+8hsV3hvi5iZ9TTDdYsG1saF
+         r7mNy4fZadBE8DodE3cC13UxT1SQjNlLDmu8MnoqkxeOmSYW+gTOy03Ro3W9P+hmurZu
+         s/xc0Q45LtHxq+q3DDCbY2porEhSspyW5uh612ED1qJTWvZFgn/2JPWPHCiu8BgDFXPW
+         i9yV+AH7MUrH69aOeeMtNf/Gkq5qOZkYXxDPGBqdsIHMUcnxCinrum9SBSFqXAfJMLvt
+         fzCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kEB+wkg0VXlo2zJ9VMKwJrG0JtlezJmZdygKl69AD+I=;
-        b=ZBfAoRgqdVg95tMY0MpwiINlYYd7qMqCUFjW9nAlM71Q3/y0H3Alfl2AIcU0LXM+cl
-         ORqSQDk00i0HZuNpk+pwvN4ioXWXAcBnOp7MtQOV3Pb6zZ3xBSptWox/oIp3C9Wu6akO
-         bQGrSZB4XP+dWwT80DRZtepoI7cY6yJYJpWcf76ky8t+/5QyQxfmRNkcMeaO0FySRJTG
-         fWyCxTAA40wr1sET55Eag65M7gLQpYM3g8n6vZgcNMekEtesRzOvrNHpq8AiXsBU4cE5
-         /VQzseW8dz0310pkdQM9zogpCQUNYeAwsc77RRRbxenwE+eVeWbXXdCZrQgXEd8+xSZI
-         bmbQ==
-X-Gm-Message-State: AOAM532Z9xxlbQn5cu+wmfx3KMpYfNM28DyrDwk1VjvamC42ROSV2NlN
-        lPI3qsQ/J9pyAzY7CNrhN51L17fFRmoyH1q90ZCF2rEpe1u0pw==
-X-Google-Smtp-Source: ABdhPJwbxFnpZfNws7VuiKzvxh4mG1T4EJ4x0sGRb61EkDmpZw5e4yJed6mgSIVWcC278lMexvUfahJHOrdUTC+QYFY=
-X-Received: by 2002:a17:90a:8594:: with SMTP id m20mr12810495pjn.215.1614992280821;
- Fri, 05 Mar 2021 16:58:00 -0800 (PST)
-MIME-Version: 1.0
-References: <20210302023743.24123-1-xiyou.wangcong@gmail.com>
- <20210302023743.24123-3-xiyou.wangcong@gmail.com> <CACAyw9-SjsNn4_J1KDXuFh1nd9Hr-Mo+=7S-kVtooJwdi1fodQ@mail.gmail.com>
- <CAM_iQpXqE9qJ=+zKA6H1Rq=KKgm8LZ=p=ZtvrrH+hfSrTg+zxw@mail.gmail.com>
- <CAM_iQpXXUv1FV8DQ85a2fs08JCfKHHt-fAWYbV0TTWmwUZ-K5Q@mail.gmail.com> <6042cc5f4f65a_135da20824@john-XPS-13-9370.notmuch>
-In-Reply-To: <6042cc5f4f65a_135da20824@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 5 Mar 2021 16:57:49 -0800
-Message-ID: <CAM_iQpUr7cvuXXdtYN9_MQPYy_Tfi88fBGSo3c8RRpMFBr55Og@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 2/9] sock: introduce sk_prot->update_proto()
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=5lSJ3kjsDvPGbTIMzkdA7HrV3yg0LgzvSV7ZarmtD0c=;
+        b=N35VVJMrFiOB2EZAH7Q8LzealW0lf8b67ca2LWpFPe7hXobaT9UET2l71+XiQ9VAGQ
+         oAiJc5jiljyCW+TuerMJVffsJ3vV1qSpw7LBSe3Z9UqlDxRADkU7IEpCez7x+ujPX/5+
+         K70OE/heKixXyM/QeAmvV7vqOS/mUM/zjg5ngpOemYsYhk4/wGgXLNLJlTIXx/N1wwOx
+         R/EEtgJDxQggCtTzoaa4ZaFTXJPW1DosDNmU/itz1+KZ4xA7BgI+53FeAHNGyJELoqCO
+         1aOgvWhtJLMcqIKoKbjx856NC2L3wgYMUXHxEgsGIGRV5fetUEHrgkh8R1q/J8yfijb2
+         YEcA==
+X-Gm-Message-State: AOAM530ucIu+Rw1XBzsOuXXuPdIE4OVBPySf3/MeVcQq14RHQ773cEdT
+        mdlXBcTmlfmyWBPCnZPZZTU=
+X-Google-Smtp-Source: ABdhPJymyv6By5j/o0dMpugGv3oJy57cMVDl+Fs2ONVe8gVMfLjb0pZRswfsPx4eSyPKSOyd8OnFKA==
+X-Received: by 2002:a05:6e02:b4e:: with SMTP id f14mr10526242ilu.289.1614993665758;
+        Fri, 05 Mar 2021 17:21:05 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id t9sm2101522ioi.27.2021.03.05.17.21.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Mar 2021 17:21:05 -0800 (PST)
+Date:   Fri, 05 Mar 2021 17:20:58 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
         Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <6042d8fa32b92_135da20871@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210305015655.14249-4-xiyou.wangcong@gmail.com>
+References: <20210305015655.14249-1-xiyou.wangcong@gmail.com>
+ <20210305015655.14249-4-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v3 3/9] udp: implement ->sendmsg_locked()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 5, 2021 at 4:27 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Cong Wang wrote:
-> > On Tue, Mar 2, 2021 at 10:23 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > On Tue, Mar 2, 2021 at 8:22 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> > > >
-> > > > On Tue, 2 Mar 2021 at 02:37, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >
-> > > > ...
-> > > > >  static inline void sk_psock_restore_proto(struct sock *sk,
-> > > > >                                           struct sk_psock *psock)
-> > > > >  {
-> > > > >         sk->sk_prot->unhash = psock->saved_unhash;
-> > > >
-> > > > Not related to your patch set, but why do an extra restore of
-> > > > sk_prot->unhash here? At this point sk->sk_prot is one of our tcp_bpf
-> > > > / udp_bpf protos, so overwriting that seems wrong?
->
-> "extra"? restore_proto should only be called when the psock ref count
-> is zero and we need to transition back to the original socks proto
-> handlers. To trigger this we can simply delete a sock from the map.
-> In the case where we are deleting the psock overwriting the tcp_bpf
-> protos is exactly what we want.?
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> UDP already has udp_sendmsg() which takes lock_sock() inside.
+> We have to build ->sendmsg_locked() on top of it, by adding
+> a new parameter for whether the sock has been locked.
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  include/net/udp.h  |  1 +
+>  net/ipv4/af_inet.c |  1 +
+>  net/ipv4/udp.c     | 30 +++++++++++++++++++++++-------
+>  3 files changed, 25 insertions(+), 7 deletions(-)
 
-Why do you want to overwrite tcp_bpf_prots->unhash? Overwriting
-tcp_bpf_prots is correct, but overwriting tcp_bpf_prots->unhash is not.
-Because once you overwrite it, the next time you use it to replace
-sk->sk_prot, it would be a different one rather than sock_map_unhash():
+[...]
 
-// tcp_bpf_prots->unhash == sock_map_unhash
-sk_psock_restore_proto();
-// Now  tcp_bpf_prots->unhash is inet_unhash
-...
-sk_psock_update_proto();
-// sk->sk_proto is now tcp_bpf_prots again,
-// so its ->unhash now is inet_unhash
-// but it should be sock_map_unhash here
+> -int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+> +static int __udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len, bool locked)
+>  {
 
-Thanks.
+The lock_sock is also taken by BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK() in
+udp_sendmsg(),
+
+ if (cgroup_bpf_enabled(BPF_CGROUP_UDP4_SENDMSG) && !connected) {
+    err = BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK(sk,
+                                    (struct sockaddr *)usin, &ipc.addr);
+
+so that will also need to be handled.
+
+It also looks like sk_dst_set() wants the sock lock to be held, but I'm not
+seeing how its covered in the current code,
+
+ static inline void
+ __sk_dst_set(struct sock *sk, struct dst_entry *dst)
+ {
+        struct dst_entry *old_dst;
+
+        sk_tx_queue_clear(sk);
+        sk->sk_dst_pending_confirm = 0;
+        old_dst = rcu_dereference_protected(sk->sk_dst_cache,
+                                            lockdep_sock_is_held(sk));
+        rcu_assign_pointer(sk->sk_dst_cache, dst);
+        dst_release(old_dst);
+ }
+
+I guess this could trip lockdep now, I'll dig a bit more Monday and see
+if its actually the case.
+
+In general I don't really like code that wraps locks in 'if' branches
+like this. It seem fragile to me. I didn't walk every path in the code
+to see if a lock is taken in any of the called functions but it looks
+like ip_send_skb() can call into netfilter code and may try to take
+the sock lock.
+
+Do we need this locked send at all? We use it in sk_psock_backlog
+but that routine needs an optimization rewrite for TCP anyways.
+Its dropping a lot of performance on the floor for no good reason.
+
+.John
