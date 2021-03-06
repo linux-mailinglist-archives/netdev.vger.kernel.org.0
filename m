@@ -2,75 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B47132FC58
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 18:53:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58CCA32FC73
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 19:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231237AbhCFRw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Mar 2021 12:52:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32930 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230525AbhCFRwT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Mar 2021 12:52:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A1ACC64FF2;
-        Sat,  6 Mar 2021 17:52:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615053138;
-        bh=pQs+TAfh6EJs7cth0Wwcsp0KwtV/o5rdBeJ6m13PGKo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VIS29iDQnpPBPy0s8CQq8ua/JnH1NjmzmNOL0vBIFGefggHczlu6YC09w9PGff8t+
-         OuKNJKMaC8dtCCNnNU55QYtLWePsAalsW/ETOBpY464XYQUQnEaLa4KGF/5FxwjsqZ
-         9tAD2ev+pffh2miymBBTGInBwo1H3sY5V1g9Y1iYr3d29e/ev3CXzGlRJ7bJRsgTLQ
-         T8/dr++S+M9RGWHl2dYezKMUSAtFuPylzGGgXl8UuRPJWLCgkYswzWHzPaU2Wo/oIF
-         vmHGxNiwczhixNcW/8WZ+HDGCAHD4u125+O07zersDh6fD1Sh1dvB1AcXEiqbMNkXi
-         II4rURK5nO9vQ==
-Date:   Sat, 6 Mar 2021 12:52:15 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.11 16/67] net: sfp: add mode quirk for GPON
- module Ubiquiti U-Fiber Instant
-Message-ID: <YEPBT69EMWmulQwv@sashalap>
-References: <20210224125026.481804-16-sashal@kernel.org>
- <20210224125212.482485-12-sashal@kernel.org>
- <20210225190306.65jnl557vvs6d7o3@pali>
- <YEFgHQt6bp7yBjH/@sashalap>
- <20210305233802.x3g6bfmgbpwmv3e2@pali>
+        id S231177AbhCFSR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Mar 2021 13:17:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231387AbhCFSRM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Mar 2021 13:17:12 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0616CC06174A
+        for <netdev@vger.kernel.org>; Sat,  6 Mar 2021 10:17:12 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id r3so3718859lfc.13
+        for <netdev@vger.kernel.org>; Sat, 06 Mar 2021 10:17:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=C05xZlO9pteK4aU1l5GEyVAPwIn0LPOj5hiIDDT2Fss=;
+        b=xT8d3FrvcW7uaIFKIdQYE85kZJtTROchu4PyocJZ7VSseaYKf5QJm1bcj9vgaRZ37+
+         mkZR9WmmahcQudd4nfh4eVPxErCO3g1QkZxD+SZfekH+XDWumPKLgWMOwcI4oJd0mFqs
+         NNT14bRuhUtj7iKvF9pdZsLFRHEKs1y/MAAsbCYuvBrhMyihMv0Dz7hOiFi9f2qki6aK
+         dNXzxEOnDJDKGLamOXWZCuyYGo2DsG/yj8EOZZqV+IIWXlGAmB5CAJ4lHhM0kyJ4xHHH
+         biYW2Nc9QgxV7J7H1ghwzbgiW83qB22wW8QkPIMszQh3ToLC0rJDlyH6I9CsXgQ/uQoX
+         +htg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=C05xZlO9pteK4aU1l5GEyVAPwIn0LPOj5hiIDDT2Fss=;
+        b=Z4qMTFI9G27pbkm2XBxbtoClbDYGQ1/1ELzbnbiXNTNUriQuTMniQqrqivExiQeRJ6
+         x0jc51cEHPWdy9k/VEEw0qWvg+4SOSWvYC2gMkY1I8bOVKc1aZRcR1EUrbBIZEY2f3ca
+         1fwikOfHcLN7QaAebhevnenFDOk0a3y6VtBMJ0HEsncWLZijJZ4VecXSAfaGOD0RdgLI
+         aWyJZRcmjK1r7xy6GZmfwI4OCnNCDn6P5gjITRiTDa+BUtPLAchsQJuzrqzXo8oIVQpM
+         bI+g1Lj/l+fH555Ja4XXbilgQ576nP/D+xr8x3ix/2M9uOYi2q2Xn/Ddv/eW0xEEgYCD
+         mhxQ==
+X-Gm-Message-State: AOAM532GIGkFUEG1ztg8K5zES/hTQ881jeJ742D004mAJ3rQcrWqRmE8
+        eaDkBCnYdN5xaLu7/snIzF7bsYeA+YU9gg==
+X-Google-Smtp-Source: ABdhPJyFzywrgh1jimi4CLpZQV4Ncohc++6aKVRfeVdUBdUaSnGIO+nefWLGb20mvtWVzEzZ3eRzUg==
+X-Received: by 2002:a05:6512:6d0:: with SMTP id u16mr9056774lff.300.1615054630210;
+        Sat, 06 Mar 2021 10:17:10 -0800 (PST)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id z20sm733396lfh.178.2021.03.06.10.17.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Mar 2021 10:17:09 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net: dsa: Always react to global bridge attribute changes
+In-Reply-To: <20210306140440.3uwmyji4smxdpgpm@skbuf>
+References: <20210306002455.1582593-1-tobias@waldekranz.com> <20210306002455.1582593-3-tobias@waldekranz.com> <20210306140033.axpbtqamaruzzzew@skbuf> <20210306140440.3uwmyji4smxdpgpm@skbuf>
+Date:   Sat, 06 Mar 2021 19:17:09 +0100
+Message-ID: <87czwcqh96.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210305233802.x3g6bfmgbpwmv3e2@pali>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 06, 2021 at 12:38:02AM +0100, Pali Rohár wrote:
->On Thursday 04 March 2021 17:33:01 Sasha Levin wrote:
->> On Thu, Feb 25, 2021 at 08:03:06PM +0100, Pali Rohár wrote:
->> > On Wednesday 24 February 2021 07:49:34 Sasha Levin wrote:
->> > > From: Pali Rohár <pali@kernel.org>
->> > >
->> > > [ Upstream commit f0b4f847673299577c29b71d3f3acd3c313d81b7 ]
->> >
->> > Hello! This commit requires also commit~1 from that patch series:
->> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=426c6cbc409cbda9ab1a9dbf15d3c2ef947eb8c1
->> >
->> > Without it kernel cannot read EEPROM from Ubiquiti U-Fiber Instant
->> > module and therefore the hook based on EEPROM data which is below would
->> > not be applied.
+On Sat, Mar 06, 2021 at 16:04, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Sat, Mar 06, 2021 at 04:00:33PM +0200, Vladimir Oltean wrote:
+>> Hi Tobias,
 >>
->> Looks like that commit is already in, thanks!
+>> On Sat, Mar 06, 2021 at 01:24:55AM +0100, Tobias Waldekranz wrote:
+>> > This is the second attempt to provide a fix for the issue described in
+>> > 99b8202b179f, which was reverted in the previous commit.
+>> >
+>> > When a change is made to some global bridge attribute, such as VLAN
+>> > filtering, accept events where orig_dev is the bridge master netdev.
+>> >
+>> > Separate the validation of orig_dev based on whether the attribute in
+>> > question is global or per-port.
+>> >
+>> > Fixes: 5696c8aedfcc ("net: dsa: Don't offload port attributes on standalone ports")
+>> > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> > ---
+>>
+>> What do you think about this alternative?
 >
->Yes! Now I see that commit in 5.11 queue. So 5.11 would be OK.
->
->But I do not see it in 5.10 queue. In 5.10 queue I see only backport of
->f0b4f8476732 commit. 426c6cbc409c seems to be still missing.
->
->Could you check it?
+> Ah, wait, this won't work when offloading objects/attributes on a LAG.
+> Let me actually test your patch.
 
-Good point. It is now. Thanks!
+Right. But you made me realize that my v1 is also flawed, because it
+does not guard against trying to apply attributes to non-offloaded
+ports. ...the original issue :facepalm:
 
--- 
-Thanks,
-Sasha
+I have a version ready which reuses the exact predicate that you
+previously added to dsa_port_offloads_netdev:
+
+-               if (netif_is_bridge_master(attr->orig_dev))
++               if (dp->bridge_dev == attr->orig_dev)
+
+Do you think anything else needs to be changed, or should I send that as
+v2?
