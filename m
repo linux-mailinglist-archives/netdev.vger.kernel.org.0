@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71B9132FC84
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 19:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DC6932FC8C
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 20:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbhCFShU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Mar 2021 13:37:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231296AbhCFShM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Mar 2021 13:37:12 -0500
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC08AC06174A
-        for <netdev@vger.kernel.org>; Sat,  6 Mar 2021 10:37:12 -0800 (PST)
-Received: by mail-ot1-x330.google.com with SMTP id f33so5149126otf.11
-        for <netdev@vger.kernel.org>; Sat, 06 Mar 2021 10:37:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eSsgjyRRIvFeN1TCRVSi7QLr9PE9/ieiuv6FbOJru3Y=;
-        b=iEImuB01BnN5j+PF1H5DU37+x4JVUwEFLXU43IhRQGJHUqQc8I3pAfqYQZ81wo4GD+
-         4+cpVC3ILGapeq6ETEzg+ylzCwSw9Ubosi7N/h3Qbr8KVy4yg8IHXsMe69WWCscwokVZ
-         B+3hixWmi/K7/+zgDWKvNVH4VlE+bk4/gEsMZ0h6pli961xfdgnELCY8JXxizSEk2Q5x
-         VrIPMKrtUqrTJtGnS0utGV3xVmSM7oyOK5wf2JGjeq/kJ9vQMpnkuWZk+6rKUM1WIJiv
-         aSPaZwFA1pGoPLzLVJivF0/3EIhxi/aupw80pUAEYGnJ4WWa81xljlQxr5TM/neuvkMi
-         JzAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eSsgjyRRIvFeN1TCRVSi7QLr9PE9/ieiuv6FbOJru3Y=;
-        b=G72o/GrI6TrnYZEU6BTkAapSPrOGOp3c+1O39LSbb5UMV2q0B4pCz8QTz0dDCB9BEO
-         V+ACE66RmqgZpB/EeOqkDobSrjscv5Xvuh67xiOGoK2qRSRKIu4MW/10ruaoHMIxnS+h
-         MORqV5B8kTqUCs+Ix9u8tqE2XfPVKEE5+5YpVyxqP+OCP7lvDdHHptys+Jp0b9mmxasH
-         Fl7p5nZHbNsEO9BFG3Waf0+Q1waGpIz2TsKAXO2hL+MArHF2ildltspt3KPgLEx8QQ24
-         q2FHVmzN5WrquMEjMRnNiHf7u2OFXJ/xMD93e5IHP2quFY/2HyVvWObAeMu6Na6ThNzB
-         eKvA==
-X-Gm-Message-State: AOAM532fwXOJvvHH6sDgpiIJAvrIMc+Fb/Kig5Wh6qw/EedbifJ9tOQP
-        vl0GRh7vcWpyzM5NQN1eAvagKG9X48k2wP3br/A=
-X-Google-Smtp-Source: ABdhPJxW4tDp5TfmpLM20l0QrMhKu0ChaGZ/XVSH8sH2a1YJp6MxlHoyLccTSze6sDUHdWqDJ8D9ifgY58WAGfG1gck=
-X-Received: by 2002:a9d:6081:: with SMTP id m1mr8344111otj.38.1615055832085;
- Sat, 06 Mar 2021 10:37:12 -0800 (PST)
+        id S231258AbhCFTES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Mar 2021 14:04:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34846 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231215AbhCFTDw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Mar 2021 14:03:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3072064FE2;
+        Sat,  6 Mar 2021 19:03:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615057432;
+        bh=JRtZ/TFBXzkK441kvDgVCYr+nOIEuplebT+5LmNhL+s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=M/tqtZLCOY2K9aDiV+xcCBp0qT0j3Skg+nCh9Vrt5jxHnqa1c/SFrwWbf+nJXxOfe
+         NkoMTUhwAh+jG08tB/M/O0j9eqYdYEicAjPw+4SKt2vJSoLkYyQlxit4FQWtr60BxB
+         x1Iu7ZkPh7m2DlaXqPZWcTH32HeCoDg/mc60M0N66ejSjP8vZCr1yrIrf7cJpeDaJV
+         bZvg1EstbQ6g5NxdnbWnhKYN21rdvJWozIRakO6ns3b/eG9deyHB8LUTiiPsXwzNt6
+         fi5cO6llEHD4cKhnl2EgDslbFnhh59HECQTxCk40MZhia0qOnnE8mLN4ryWe2VL3XN
+         HkxJbDPIv4Hmg==
+Date:   Sat, 6 Mar 2021 11:03:51 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, saeedm@nvidia.com,
+        andrew.gospodarek@broadcom.com, jacob.e.keller@intel.com,
+        guglielmo.morandin@broadcom.com, eugenem@fb.com,
+        eranbe@mellanox.com
+Subject: Re: [RFC] devlink: health: add remediation type
+Message-ID: <20210306110351.1d04f344@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YEOWK7HtiRz09XZm@lunn.ch>
+References: <20210306024220.251721-1-kuba@kernel.org>
+        <YEOWK7HtiRz09XZm@lunn.ch>
 MIME-Version: 1.0
-References: <CAJH0kmzrf4MpubB1RdcP9mu1baLM0YcN-MXKY41ouFHxD8ndNg@mail.gmail.com>
- <20210302174451.59341082@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJH0kmyTgLp4rJGL1EYo4hQ_qcd3t3JQS-s-e9FY8ERTPrmwqQ@mail.gmail.com>
- <20210304095110.7830dce4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJH0kmzTD2+zbTWrBxN0_2f4A266YhoUTFa4-Tcg+Obx=TDqgA@mail.gmail.com> <20210305141857.1e6e60a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210305141857.1e6e60a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Zbynek Michl <zbynek.michl@gmail.com>
-Date:   Sat, 6 Mar 2021 19:36:59 +0100
-Message-ID: <CAJH0kmw00RHaKXqxRFi-7aSj2waYaMBYpp3v1fnC-=237BEKZA@mail.gmail.com>
-Subject: Re: [regression] Kernel panic on resume from sleep
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Great, I submitted the patch and marked it for stable inclusion!
->
-> It should percolate through the trees in a couple of weeks.
+On Sat, 6 Mar 2021 15:48:11 +0100 Andrew Lunn wrote:
+> +/**
+> > + * enum devlink_health_reporter_remedy - severity of remediation procedure
+> > + * @DLH_REMEDY_NONE: transient error, no remediation required
+> > + * @DLH_REMEDY_COMP_RESET: associated device component (e.g. device queue)
+> > + *			will be reset
+> > + * @DLH_REMEDY_RESET: full device reset, will result in temporary unavailability
+> > + *			of the device, device configuration should not be lost
+> > + * @DLH_REMEDY_REINIT: device will be reinitialized and configuration lost
+> > + * @DLH_REMEDY_POWER_CYCLE: device requires a power cycle to recover
+> > + * @DLH_REMEDY_REIMAGE: device needs to be reflashed
+> > + * @DLH_REMEDY_BAD_PART: indication of failing hardware, device needs to be
+> > + *			replaced
+> > + *
+> > + * Used in %DEVLINK_ATTR_HEALTH_REPORTER_REMEDY, categorizes the health reporter
+> > + * by the severity of the required remediation, and indicates the remediation
+> > + * type to the user if it can't be applied automatically (e.g. "reimage").
+> > + */
+> > +enum devlink_health_reporter_remedy {
+> > +	DLH_REMEDY_NONE = 1,
+> > +	DLH_REMEDY_COMP_RESET,
+> > +	DLH_REMEDY_RESET,
+> > +	DLH_REMEDY_REINIT,
+> > +	DLH_REMEDY_POWER_CYCLE,
+> > +	DLH_REMEDY_REIMAGE,
+> > +	DLH_REMEDY_BAD_PART,
+> > +};  
+> 
+> Hi Jakub
+> 
+> Are there any cases where the host is the problem, not the device? The
+> host driver needs to be unloaded and reloaded? The host needs a
+> reboot?
 
-Cool. Jakub, thank you very much for your awesome assistance!
-
-Zbynek
+I was thinking of REINIT addressing that case. Maybe RELOAD would 
+be a better name since that's what the devlink command is called?
+But also to answer your direct question, I haven't seen such case 
+in practice, I don't think, just trying to cover all the bases.
