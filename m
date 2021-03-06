@@ -2,101 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F4232F70E
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 01:04:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5FCD32F71F
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 01:11:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbhCFAEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 19:04:22 -0500
-Received: from mail-ot1-f50.google.com ([209.85.210.50]:46698 "EHLO
-        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbhCFAD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 19:03:59 -0500
-Received: by mail-ot1-f50.google.com with SMTP id 97so3473289otf.13;
-        Fri, 05 Mar 2021 16:03:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FCbBlEEqgxfjPjtQfKvWFaWJOfXoBc2uhQxuYQUH8F0=;
-        b=GO0LtwNWRYb9u4XW25NfkPD3r/RhI52VXi+uLjQZXiRGoxB+UYP/kOBmc04kE4FFYp
-         xQ8TS5N6gQdOD4dDJznuOcZs0SkR1SAqdon/N0PoVEtxASSFJ2iLpH7jvhmmaYFaVAbt
-         nAnLsXtCODcHqzQoDNGsUZUPgFRILYQi29jlfVS5dbIFUOPXGruVY4X5rLIL1tUdaUqs
-         RNk+GeJIAC3wus7jKOFUHHykqyHGAN8tohhg89Ykpg6SBn8AUdHHKl6O2kLXhcm44id3
-         dD5r3s4fYbhvyADD7OenDthaRClQI63h3MSxhSChP33x6zliEG6nyZ6dV4zBbf0DqTad
-         7ZPA==
-X-Gm-Message-State: AOAM532Flxfhqx+QmMTvX64ZHEOPYkiGp3QpkKLpzzPqWCKNLQZzu/Vk
-        xqAIXJJUJQWjNtJ4WUzk36oUbcidzU4uWw==
-X-Google-Smtp-Source: ABdhPJyXvrdIbaJFHWm44DBCGnI1b4zn6+CHh1kzE5vAHgRbojumfT5/HghxSzgA/e0GigtlZ/hwCg==
-X-Received: by 2002:a9d:7ac1:: with SMTP id m1mr6652621otn.186.1614989038139;
-        Fri, 05 Mar 2021 16:03:58 -0800 (PST)
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com. [209.85.167.172])
-        by smtp.gmail.com with ESMTPSA id v3sm847536oix.48.2021.03.05.16.03.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Mar 2021 16:03:57 -0800 (PST)
-Received: by mail-oi1-f172.google.com with SMTP id y131so1550429oia.8;
-        Fri, 05 Mar 2021 16:03:56 -0800 (PST)
-X-Received: by 2002:a54:4794:: with SMTP id o20mr9228337oic.51.1614989036851;
- Fri, 05 Mar 2021 16:03:56 -0800 (PST)
+        id S229672AbhCFAKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Mar 2021 19:10:25 -0500
+Received: from correo.us.es ([193.147.175.20]:59956 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229616AbhCFAKX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Mar 2021 19:10:23 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 2DC3D117734
+        for <netdev@vger.kernel.org>; Sat,  6 Mar 2021 01:10:18 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1E672DA704
+        for <netdev@vger.kernel.org>; Sat,  6 Mar 2021 01:10:18 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 135E9DA722; Sat,  6 Mar 2021 01:10:18 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-105.9 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        FORGED_MUA_MOZILLA,NICE_REPLY_A,SMTPAUTH_US2,URIBL_BLOCKED,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C8CD1DA722;
+        Sat,  6 Mar 2021 01:10:15 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sat, 06 Mar 2021 01:10:15 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id AC69E42DF561;
+        Sat,  6 Mar 2021 01:10:15 +0100 (CET)
+Date:   Sat, 6 Mar 2021 01:10:15 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Alexander Ahring Oder Aring <aahringo@redhat.com>,
+        netdev@vger.kernel.org, linux-man@vger.kernel.org,
+        David Teigland <teigland@redhat.com>
+Subject: Re: [PATCH resend] netlink.7: note not reliable if NETLINK_NO_ENOBUFS
+Message-ID: <20210306001015.GA1638@salvia>
+References: <20210304205728.34477-1-aahringo@redhat.com>
+ <20210305030437.GA4268@salvia>
+ <CAK-6q+iBhzFVgm5NQaPCZhJ8tEvVVeTt2OAEGH4QkOfHqfYzaA@mail.gmail.com>
+ <20210305203657.GA9426@salvia>
+ <20210305232159.GB10808@breakpoint.cc>
 MIME-Version: 1.0
-References: <20210301084257.945454-1-hch@lst.de>
-In-Reply-To: <20210301084257.945454-1-hch@lst.de>
-From:   Li Yang <leoyang.li@nxp.com>
-Date:   Fri, 5 Mar 2021 18:03:45 -0600
-X-Gmail-Original-Message-ID: <CADRPPNTSzuuqW97_vd3h5cpHe7gOLyw3zCaqapb8YVqPF-rOfA@mail.gmail.com>
-Message-ID: <CADRPPNTSzuuqW97_vd3h5cpHe7gOLyw3zCaqapb8YVqPF-rOfA@mail.gmail.com>
-Subject: Re: cleanup unused or almost unused IOMMU APIs and the FSL PAMU driver
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        Netdev <netdev@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210305232159.GB10808@breakpoint.cc>
+User-Agent: Mozilla/5.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 1, 2021 at 2:44 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> Hi all,
->
-> there are a bunch of IOMMU APIs that are entirely unused, or only used as
-> a private communication channel between the FSL PAMU driver and it's only
-> consumer, the qbman portal driver.
->
-> So this series drops a huge chunk of entirely unused FSL PAMU
-> functionality, then drops all kinds of unused IOMMU APIs, and then
-> replaces what is left of the iommu_attrs with properly typed, smaller
-> and easier to use specific APIs.
+On Sat, Mar 06, 2021 at 12:21:59AM +0100, Florian Westphal wrote:
+> Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > > If I understand correctly, the connection tracking netlink interface
+> > > is an exception here because it has its own handling of dealing with
+> > > congestion ("more reliable"?) so you need to disable the "default
+> > > congestion control"?
+> > 
+> > In conntrack, you have to combine NETLINK_NO_ENOBUFS with
+> > NETLINK_BROADCAST_ERROR, then it's the kernel turns on the "more
+> > reliable" event delivery.
+> 
+> The "more reliable" event delivery guarantees that the kernel will
+> deliver at least the DESTROY notification (connection close).
+> 
+> If the userspace program is stuck, kernel has to hold on the expired
+> entries.  Eventually conntrack stops accepting new connections because
+> the table is full.
+> 
+> So this feature can't be recommended as a best-practice for conntrack
+> either.
 
-It looks like the unused APIs were added for functionality that were
-never completed later on.  So
+There are two use-cases for this:
 
-Acked-by: Li Yang <leoyang.li@nxp.com>
+- If you run conntrackd and you really want to sure you backup firewall
+  does not get out of sync.
 
->
-> Diffstat:
->  arch/powerpc/include/asm/fsl_pamu_stash.h   |   12
->  drivers/gpu/drm/msm/adreno/adreno_gpu.c     |    2
->  drivers/iommu/amd/iommu.c                   |   23
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   85 ---
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       |  122 +---
->  drivers/iommu/dma-iommu.c                   |    8
->  drivers/iommu/fsl_pamu.c                    |  264 ----------
->  drivers/iommu/fsl_pamu.h                    |   10
->  drivers/iommu/fsl_pamu_domain.c             |  694 ++--------------------------
->  drivers/iommu/fsl_pamu_domain.h             |   46 -
->  drivers/iommu/intel/iommu.c                 |   55 --
->  drivers/iommu/iommu.c                       |   75 ---
->  drivers/soc/fsl/qbman/qman_portal.c         |   56 --
->  drivers/vfio/vfio_iommu_type1.c             |   31 -
->  drivers/vhost/vdpa.c                        |   10
->  include/linux/iommu.h                       |   81 ---
->  16 files changed, 214 insertions(+), 1360 deletions(-)
+- If you run ulogd2 and you want to make sure your connection log is
+  complete (no events got lost).
+
+In both cases, this might comes at the cost of dropping packets if the
+table gets full. So it's placing the pressure on the conntrack side.
+With the right policy you could restrict the number of connection per
+second.
+
+I agree though that combination of NETLINK_NO_ENOBUFS and
+NETLINK_BROADCAST_ERROR only makes sense for very specific use-cases.
