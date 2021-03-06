@@ -2,81 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC6932FC8C
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 20:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F1AB32FD61
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 22:17:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231258AbhCFTES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Mar 2021 14:04:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34846 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231215AbhCFTDw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Mar 2021 14:03:52 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3072064FE2;
-        Sat,  6 Mar 2021 19:03:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615057432;
-        bh=JRtZ/TFBXzkK441kvDgVCYr+nOIEuplebT+5LmNhL+s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=M/tqtZLCOY2K9aDiV+xcCBp0qT0j3Skg+nCh9Vrt5jxHnqa1c/SFrwWbf+nJXxOfe
-         NkoMTUhwAh+jG08tB/M/O0j9eqYdYEicAjPw+4SKt2vJSoLkYyQlxit4FQWtr60BxB
-         x1Iu7ZkPh7m2DlaXqPZWcTH32HeCoDg/mc60M0N66ejSjP8vZCr1yrIrf7cJpeDaJV
-         bZvg1EstbQ6g5NxdnbWnhKYN21rdvJWozIRakO6ns3b/eG9deyHB8LUTiiPsXwzNt6
-         fi5cO6llEHD4cKhnl2EgDslbFnhh59HECQTxCk40MZhia0qOnnE8mLN4ryWe2VL3XN
-         HkxJbDPIv4Hmg==
-Date:   Sat, 6 Mar 2021 11:03:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, saeedm@nvidia.com,
-        andrew.gospodarek@broadcom.com, jacob.e.keller@intel.com,
-        guglielmo.morandin@broadcom.com, eugenem@fb.com,
-        eranbe@mellanox.com
-Subject: Re: [RFC] devlink: health: add remediation type
-Message-ID: <20210306110351.1d04f344@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YEOWK7HtiRz09XZm@lunn.ch>
-References: <20210306024220.251721-1-kuba@kernel.org>
-        <YEOWK7HtiRz09XZm@lunn.ch>
+        id S229759AbhCFVQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Mar 2021 16:16:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229642AbhCFVQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Mar 2021 16:16:15 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349BBC06174A
+        for <netdev@vger.kernel.org>; Sat,  6 Mar 2021 13:16:15 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id q25so12603473lfc.8
+        for <netdev@vger.kernel.org>; Sat, 06 Mar 2021 13:16:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=en8md+IJizqgaMmmIE+AOWKMVs74MqtB4uZeWP4ZEDY=;
+        b=tnLwOgBycq3JwcvZiG3elA1V25O3PfOrHy22SiDZjM0UPnh57F45unw0clQ7DTCE1H
+         X//xiIbvLY4Te9L93APq0PpR//W7vTlPeE+LUshKrch6dlD5elk2VSUc1jlNt6iY3m8M
+         iBgdEVi9DMydfQRIfpwpLJwS8bZDgoiJHs0XIP+vvptDemeZHAzkv6XE8olUZynwDdT/
+         xffXnTRKVwJnWECMrmnDzISeJGbSgiu7JhLA2yyqjCVtDuDdVwJFdVPvGDCVwhgpe3sy
+         U2ECAN+NEbobZPIJ1rtxOenZIHmGJPGShHSX+I6AraqMArz39yiX/JTj0Yru1XtV7roF
+         5U7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=en8md+IJizqgaMmmIE+AOWKMVs74MqtB4uZeWP4ZEDY=;
+        b=eDjvraAfRGr6L1ZuG1jo5f8tlT2jmh4iGeFw7eWd7GwnctCpACNifNx/VQGAWeAqCJ
+         xgQ7+6KOcMZitT3U+Dksctv5qkMvyN+HL+o5k3qU/FLqhPEv8uQkiZjaeQ5N2G4clPug
+         sVJVjwr+Ab3TyzM5W88i1xO0H2YPYbzL8ibteX3/4GBg25b07kE8gRTbS5YBHPcCvy1H
+         lCI6yf7yR+pr5JPcaCXIIPU6J8HUnedtG3PZOpKX/ZSxbd5ijxsRMi0e1AUD6kFPr0wx
+         jPIlx+qlB/+XpooHjVvE3+y2PHenPkSeEiUL4f8oO9Bk8EhJ6iCuuuKF0UOCuxxaWOOX
+         SB6g==
+X-Gm-Message-State: AOAM530WJLJYel+OKRXkyMuEXnbP84RgRevAhyvVgeqlg2hLdxZ/W1oR
+        7UszTbK+TIE3kt7iipoUCy8CYg==
+X-Google-Smtp-Source: ABdhPJy1SXuvpJCwLUU1hjru8ON6whFHskvNjBvhDEnAyTIm9VHSU7JxUJFWquX+s+Iqm/RFkjLgtg==
+X-Received: by 2002:a19:7402:: with SMTP id v2mr9498726lfe.58.1615065373712;
+        Sat, 06 Mar 2021 13:16:13 -0800 (PST)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id 188sm222675lfo.0.2021.03.06.13.16.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Mar 2021 13:16:12 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        George Cherian <gcherian@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: Query on new ethtool RSS hashing options
+In-Reply-To: <20210306125427.tzt42itdwukz2cto@skbuf>
+References: <CA+sq2CdJf0FFMAMbh0OZ67=j2Fo+C2aqP3qTKcYkcRgscfTGiw@mail.gmail.com> <20210305150702.1c652fe2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CA+sq2CfwCTZ1zXpBkYHZpKfWSFABuOrHpGqdG+4uRRip+O+pYQ@mail.gmail.com> <20210306125427.tzt42itdwukz2cto@skbuf>
+Date:   Sat, 06 Mar 2021 22:16:12 +0100
+Message-ID: <87a6rgq8yr.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 6 Mar 2021 15:48:11 +0100 Andrew Lunn wrote:
-> +/**
-> > + * enum devlink_health_reporter_remedy - severity of remediation procedure
-> > + * @DLH_REMEDY_NONE: transient error, no remediation required
-> > + * @DLH_REMEDY_COMP_RESET: associated device component (e.g. device queue)
-> > + *			will be reset
-> > + * @DLH_REMEDY_RESET: full device reset, will result in temporary unavailability
-> > + *			of the device, device configuration should not be lost
-> > + * @DLH_REMEDY_REINIT: device will be reinitialized and configuration lost
-> > + * @DLH_REMEDY_POWER_CYCLE: device requires a power cycle to recover
-> > + * @DLH_REMEDY_REIMAGE: device needs to be reflashed
-> > + * @DLH_REMEDY_BAD_PART: indication of failing hardware, device needs to be
-> > + *			replaced
-> > + *
-> > + * Used in %DEVLINK_ATTR_HEALTH_REPORTER_REMEDY, categorizes the health reporter
-> > + * by the severity of the required remediation, and indicates the remediation
-> > + * type to the user if it can't be applied automatically (e.g. "reimage").
-> > + */
-> > +enum devlink_health_reporter_remedy {
-> > +	DLH_REMEDY_NONE = 1,
-> > +	DLH_REMEDY_COMP_RESET,
-> > +	DLH_REMEDY_RESET,
-> > +	DLH_REMEDY_REINIT,
-> > +	DLH_REMEDY_POWER_CYCLE,
-> > +	DLH_REMEDY_REIMAGE,
-> > +	DLH_REMEDY_BAD_PART,
-> > +};  
-> 
-> Hi Jakub
-> 
-> Are there any cases where the host is the problem, not the device? The
-> host driver needs to be unloaded and reloaded? The host needs a
-> reboot?
+On Sat, Mar 06, 2021 at 14:54, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Sat, Mar 06, 2021 at 05:38:14PM +0530, Sunil Kovvuri wrote:
+>> > Can you share the format of the DSA tag? Is there a driver for it
+>> > upstream? Do we need to represent it in union ethtool_flow_union?
+>> >
+>> 
+>> No, there is no driver for this tag in the kernel.
+>> I have attached the tag format.
+>> There are multiple DSA tag formats and representing them ethtool_flow
+>> union would be difficult.
+>> Hence wondering if it would be okay to add a more flexible way ie
+>> offset and num_bytes from the start of packet.
+>
+> How sure are you that the tag format you've shared is not identical to
+> the one parsed by net/dsa/tag_dsa.c?
 
-I was thinking of REINIT addressing that case. Maybe RELOAD would 
-be a better name since that's what the devlink command is called?
-But also to answer your direct question, I haven't seen such case 
-in practice, I don't think, just trying to cover all the bases.
+That is indeed the format parsed by tag_dsa.c. Based on the layout in
+the image, I am pretty sure that it is from the functional spec. of the
+Amethyst (6393X). So while the format is supported, that specific device
+is not. Hopefully that will change soon:
+
+https://lore.kernel.org/netdev/cover.1610071984.git.pavana.sharma@digi.com/
+
+As for the NIC: Marvell has an EVK for the Amethyst, connected to a
+CN9130 SoC. The ethernet controllers in those can parse DSA tags in
+hardware, so I would put my money on that.
+
+The upstream driver (mvpp2) does not seem to support it though, AFAIK.
