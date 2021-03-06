@@ -2,141 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F25E32F833
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 05:30:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7720E32F8CE
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 08:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbhCFE1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Mar 2021 23:27:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229642AbhCFE0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Mar 2021 23:26:49 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334BFC06175F;
-        Fri,  5 Mar 2021 20:26:49 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id kr3-20020a17090b4903b02900c096fc01deso213061pjb.4;
-        Fri, 05 Mar 2021 20:26:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=C0fc0z8FwjdECdFL+lTC1saxBB6QAyp/014WA2umBAY=;
-        b=DJUmIgPB6QVL8f1DEx3XLfY+Nu1TBOodVQjhORI4QPbPg5LC4hHAyjr5ZUScAnot5n
-         IOUCU8cGNY5i48GsQ2r0F6L5CViJnjbSgQur5DNIjdznPkffRuTVUzASPUedqtHEZytj
-         Mp+7COo2nu/UPpKjg9QnU4smjxFLT6xlPPR+q6ec3ZFFhxutmx+GDlVix2KHvKIyUxX4
-         2qv+gikVKJnEhbBUG8xoJqSIgbFLAOUMMG+ZJby2oOcrMYu8B2eoVUNUVxO2Y0BX1dmU
-         86T2whdAPYSqn4GkTH+mKyUCbbg79lCx6CoasDU9vDOoQ7zs4JFI5c7nj+tLRRIyDWUd
-         YrRA==
+        id S229626AbhCFHht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Mar 2021 02:37:49 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:49523 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229672AbhCFHhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Mar 2021 02:37:22 -0500
+Received: by mail-io1-f69.google.com with SMTP id d4so3870958ioc.16
+        for <netdev@vger.kernel.org>; Fri, 05 Mar 2021 23:37:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=C0fc0z8FwjdECdFL+lTC1saxBB6QAyp/014WA2umBAY=;
-        b=Yzyfb14bKrmfasDEnAOHWPllj4fleyZfK3mGMKaTIN0qc/ondkW8++s1bJDkk76mnY
-         Mi6yLNNFxmPmTYQI1PFUuaAEgDf69dDyQ0iK8T2ICUcaKgmrw2xccQAJIJlXoZuhL8ut
-         eUK+lvDEtRP4rNfXXRMXjq1EZ8wljdP/FjQAeNS9clwijvOvzvhVyqmjMS5PcnDZj2HI
-         vaQVnjgqDX3vez7PxUtsnUxdZpJEOdEtMUD2DD4AZdeg/PXfyaMkN19cjq2ev9ObCHbS
-         1t6XUD/VM90oP9i9nehq3qTd7sApLMStJbRwdMiEF9jJv1mVWi6U/JGvqHOPmOJPqT3K
-         1igQ==
-X-Gm-Message-State: AOAM5314B/a1xS02fJ3DAJekPzX646B0w1brWUB1QGLt2F6SrA00qt7V
-        QFeMnEblWZ569Q6WW1EzwQg=
-X-Google-Smtp-Source: ABdhPJz4OoiLeNhbNJLVfW/+qy+iekVop9E1alzONPh8qwGHDpn2REE5h98elA8jq8NdWjzwb5EoPQ==
-X-Received: by 2002:a17:90a:de90:: with SMTP id n16mr12860466pjv.10.1615004808579;
-        Fri, 05 Mar 2021 20:26:48 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id mp1sm3381534pjb.48.2021.03.05.20.26.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Mar 2021 20:26:47 -0800 (PST)
-Subject: Re: [PATCH net-next v2 3/3] net: phy: broadcom: Allow BCM54210E to
- configure APD
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Chan <mchan@broadcom.com>,
-        "open list:BROADCOM ETHERNET PHY DRIVERS" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>, michael@walle.cc
-References: <20210213034632.2420998-1-f.fainelli@gmail.com>
- <20210213034632.2420998-4-f.fainelli@gmail.com>
- <20210213104245.uti4qb2u2r5nblef@skbuf>
- <4e1c1a4c-d276-c850-8e97-16ef1f08dcff@gmail.com>
- <99e28317-e93d-88fa-f43f-d1d072b61292@gmail.com>
- <20210305010845.blqccudijh6ezm6a@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <840bf142-d398-13cd-36a2-a013f6e44b53@gmail.com>
-Date:   Fri, 5 Mar 2021 20:26:41 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.8.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=vXgz7W/nNFO6zPluytqRFZLCcvj0BWqFGB3Du0qLm5Q=;
+        b=rw4fdketcpt7LmYCHmqLMSfgp2PCZxTnfOOEdbxUfXxAvhK96kx81TZPnYycHYhQuw
+         JM2bhABBqH4rH2hA7PLZ2iOVHB43Ip0tFLd+H01ytyl0Vde6pZ54G2YTlDbwwXTgfVlP
+         CsJqzF/LqwJPlPzTkdfLGSIUn4FQAEO1rp8QwI7wyYjZXC6uLWOZPIlW8OO9c1UDBOfd
+         P0Ga16zkWwQVjx8ryDxsa2zYgTVYIkTqcdtF80Z4SRIwEGs3oOjzcQu49n5nMHPrK3Kq
+         Yo9D+radCB5Ty1NFrNsLikfmu9Agy9vafsX6GC3pHbWTpI8zC28YNBaDoTOnQ4Oc8um0
+         1HzA==
+X-Gm-Message-State: AOAM532uuZjbeDvBxkB87soZyW0gPFF4SXsIe4b6SRErD36eg+ZofP1L
+        Kcdnk6rf3GhmQIu/Acuq0lxHZp9fs+v1DLrDWc6xQXsLAIzF
+X-Google-Smtp-Source: ABdhPJzYeuks+QUsjnVkmbsq3MQZfzsIFbgRpGTt6qd/SrMixto+VxsVhj8EEURiYji75n9I2kBTboOaHeSNAWAsi3i615FmoMK9
 MIME-Version: 1.0
-In-Reply-To: <20210305010845.blqccudijh6ezm6a@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:294e:: with SMTP id p75mr13636273jap.34.1615016241898;
+ Fri, 05 Mar 2021 23:37:21 -0800 (PST)
+Date:   Fri, 05 Mar 2021 23:37:21 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000067a89205bcd94527@google.com>
+Subject: [syzbot] bpf-next boot error: WARNING in kvm_wait
+From:   syzbot <syzbot+72d60f48cda58f46375a@syzkaller.appspotmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    d01b59c9 bpf: Add bpf_skb_adjust_room flag BPF_F_ADJ_ROOM_..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1592bd66d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=66df2ca4f2dd3022
+dashboard link: https://syzkaller.appspot.com/bug?extid=72d60f48cda58f46375a
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+72d60f48cda58f46375a@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+raw_local_irq_restore() called with IRQs enabled
+WARNING: CPU: 0 PID: 4813 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
+Modules linked in:
+CPU: 0 PID: 4813 Comm: systemd-cryptse Not tainted 5.11.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
+Code: bf ff cc cc cc cc cc cc cc cc cc cc cc 80 3d ca 72 b1 04 00 74 01 c3 48 c7 c7 40 a2 6b 89 c6 05 b9 72 b1 04 01 e8 b8 37 bf ff <0f> 0b c3 48 39 77 10 0f 84 97 00 00 00 66 f7 47 22 f0 ff 74 4b 48
+RSP: 0018:ffffc900012dfc40 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffffffff8be287a0 RCX: 0000000000000000
+RDX: ffff888023830000 RSI: ffffffff815b6895 RDI: fffff5200025bf7a
+RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff815af76e R11: 0000000000000000 R12: 0000000000000003
+R13: fffffbfff17c50f4 R14: 0000000000000001 R15: ffff8880b9c35f40
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f1b759e04b0 CR3: 000000000bc8e000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ kvm_wait arch/x86/kernel/kvm.c:860 [inline]
+ kvm_wait+0xc9/0xe0 arch/x86/kernel/kvm.c:837
+ pv_wait arch/x86/include/asm/paravirt.h:564 [inline]
+ pv_wait_head_or_lock kernel/locking/qspinlock_paravirt.h:470 [inline]
+ __pv_queued_spin_lock_slowpath+0x8b8/0xb40 kernel/locking/qspinlock.c:508
+ pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:554 [inline]
+ queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:51 [inline]
+ queued_spin_lock include/asm-generic/qspinlock.h:85 [inline]
+ do_raw_spin_lock+0x200/0x2b0 kernel/locking/spinlock_debug.c:113
+ spin_lock include/linux/spinlock.h:354 [inline]
+ check_stack_usage kernel/exit.c:715 [inline]
+ do_exit+0x1d6a/0x2ae0 kernel/exit.c:868
+ do_group_exit+0x125/0x310 kernel/exit.c:922
+ __do_sys_exit_group kernel/exit.c:933 [inline]
+ __se_sys_exit_group kernel/exit.c:931 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fed7b5d0618
+Code: Unable to access opcode bytes at RIP 0x7fed7b5d05ee.
+RSP: 002b:00007fff094428a8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fed7b5d0618
+RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
+RBP: 00007fed7b8ad8e0 R08: 00000000000000e7 R09: fffffffffffffee8
+R10: 00007fed79a8b158 R11: 0000000000000246 R12: 00007fed7b8ad8e0
+R13: 00007fed7b8b2c20 R14: 0000000000000000 R15: 0000000000000000
 
 
-On 3/4/2021 5:08 PM, Vladimir Oltean wrote:
-> On Tue, Mar 02, 2021 at 07:37:34PM -0800, Florian Fainelli wrote:
->> Took a while but for the 54210E reference board here are the numbers,
->> your mileage will vary depending on the supplies, regulator efficiency
->> and PCB design around the PHY obviously:
->>
->> BMCR.PDOWN:			86.12 mW
->> auto-power down:		77.84 mW
-> 
-> Quite curious that the APD power is lower than the normal BMCR.PDOWN
-> value. As far as my understanding goes, when in APD mode, the PHY even
-> wakes up from time to time to send pulses to the link partner?
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Auto-power down kicks in when the cable is disconnected. There is
-another IDDQ mode that supports energy detection though I am unsure of
-when it would be useful for most Linux enabled systems.
-
-> 
->> auto-power-down, DLL disabled:  30.83 mW
-> 
-> The jump from simple APD to APD with DLL disabled is pretty big.
-> Correct me if I'm wrong, but there's an intermediary step which was not
-> measured, where the CLK125 is disabled but the internal DLL (Delay
-> Locked Loop?) is still enabled. I think powering off the internal DLL
-> also implies powering off the CLK125 pin, at least that's how the PHY
-> driver treats things at the moment. But we don't know if the huge
-> reduction in power is due just to CLK125 or the DLL (it's more likely
-> it's due to both, in equal amounts).
-
-Agree, I do not have the break down though.
-
-> 
-> Anyway, it's great to have some results which tell us exactly what is
-> worthwhile and what isn't. In other news, I've added the BCM5464 to the
-> list of PHYs with APD and I didn't see any issues thus far.
-> 
->> IDDQ-low power:			 9.85 mW (requires a RESETn toggle)
->> IDDQ with soft recovery:	10.75 mW
->>
->> Interestingly, the 50212E that I am using requires writing the PDOWN bit
->> and only that bit (not a RMW) in order to get in a correct state, both
->> LEDs keep flashing when that happens, fixes coming.
->>
->> When net-next opens back up I will submit patches to support IDDQ with
->> soft recovery since that is clearly much better than the standard power
->> down and it does not require a RESETn toggle.
-> 
-> Iddq must be the quiescent supply current, isn't it (but in that case,
-> I'm a bit confused to not see a value in mA)? Is it an actual operating
-> mode (I don't see anything about that mentioned in the BCM5464 sheet)
-> and if it is, what is there exactly to support?
-
-You would put the PHY in IDDQ with soft recovery (or ultra low power)
-when you are administratively bringing down the network interface (and
-its PHY), or when suspending to a low power state where Wake-on-LAN is
-not enabled.
--- 
-Florian
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
