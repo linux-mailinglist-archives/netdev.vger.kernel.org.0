@@ -2,99 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58CCA32FC73
-	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 19:18:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5C8E32FC80
+	for <lists+netdev@lfdr.de>; Sat,  6 Mar 2021 19:35:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231177AbhCFSR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Mar 2021 13:17:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
+        id S231236AbhCFSfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Mar 2021 13:35:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbhCFSRM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Mar 2021 13:17:12 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0616CC06174A
-        for <netdev@vger.kernel.org>; Sat,  6 Mar 2021 10:17:12 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id r3so3718859lfc.13
-        for <netdev@vger.kernel.org>; Sat, 06 Mar 2021 10:17:11 -0800 (PST)
+        with ESMTP id S230346AbhCFSe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Mar 2021 13:34:26 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F90C06174A;
+        Sat,  6 Mar 2021 10:34:26 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id q2-20020a17090a2e02b02900bee668844dso873006pjd.3;
+        Sat, 06 Mar 2021 10:34:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=C05xZlO9pteK4aU1l5GEyVAPwIn0LPOj5hiIDDT2Fss=;
-        b=xT8d3FrvcW7uaIFKIdQYE85kZJtTROchu4PyocJZ7VSseaYKf5QJm1bcj9vgaRZ37+
-         mkZR9WmmahcQudd4nfh4eVPxErCO3g1QkZxD+SZfekH+XDWumPKLgWMOwcI4oJd0mFqs
-         NNT14bRuhUtj7iKvF9pdZsLFRHEKs1y/MAAsbCYuvBrhMyihMv0Dz7hOiFi9f2qki6aK
-         dNXzxEOnDJDKGLamOXWZCuyYGo2DsG/yj8EOZZqV+IIWXlGAmB5CAJ4lHhM0kyJ4xHHH
-         biYW2Nc9QgxV7J7H1ghwzbgiW83qB22wW8QkPIMszQh3ToLC0rJDlyH6I9CsXgQ/uQoX
-         +htg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8gZd8NLDd/BP6NMzCF+ksvN+bAQFSRD3GtTbo2ubDkg=;
+        b=YeWCLxQFoijZ9u8cGLT1NZjFpwNsJnGojQR4kv800xuHYCef/xiPVsXaxP8rqBn4Gc
+         e+vEzXw4x0YRxy6ZGtqn9aEF8pVhrM627aMY3Z0HH9t/lZQhKga//Babob/DWucJTwvM
+         IAO1vpbg4wczKSNEykc0gbUPO2hY0+R1rIx/BNKPNZczWRk8m5BR8LEiIUaiQhlEm/nQ
+         YlGC8Q9+M9mvpKUhR5U4nMs+d08cUz1KrmGb3p6dqZKRJg2QJZ+D4b/blIL4XJJiQavv
+         G6Thk7AG2YgJIoeuS7uFPWj0bmF4TIGHtJSgh9ge088KOJD3kKNUeqwwNDgHwm1mE0D5
+         csOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=C05xZlO9pteK4aU1l5GEyVAPwIn0LPOj5hiIDDT2Fss=;
-        b=Z4qMTFI9G27pbkm2XBxbtoClbDYGQ1/1ELzbnbiXNTNUriQuTMniQqrqivExiQeRJ6
-         x0jc51cEHPWdy9k/VEEw0qWvg+4SOSWvYC2gMkY1I8bOVKc1aZRcR1EUrbBIZEY2f3ca
-         1fwikOfHcLN7QaAebhevnenFDOk0a3y6VtBMJ0HEsncWLZijJZ4VecXSAfaGOD0RdgLI
-         aWyJZRcmjK1r7xy6GZmfwI4OCnNCDn6P5gjITRiTDa+BUtPLAchsQJuzrqzXo8oIVQpM
-         bI+g1Lj/l+fH555Ja4XXbilgQ576nP/D+xr8x3ix/2M9uOYi2q2Xn/Ddv/eW0xEEgYCD
-         mhxQ==
-X-Gm-Message-State: AOAM532GIGkFUEG1ztg8K5zES/hTQ881jeJ742D004mAJ3rQcrWqRmE8
-        eaDkBCnYdN5xaLu7/snIzF7bsYeA+YU9gg==
-X-Google-Smtp-Source: ABdhPJyFzywrgh1jimi4CLpZQV4Ncohc++6aKVRfeVdUBdUaSnGIO+nefWLGb20mvtWVzEzZ3eRzUg==
-X-Received: by 2002:a05:6512:6d0:: with SMTP id u16mr9056774lff.300.1615054630210;
-        Sat, 06 Mar 2021 10:17:10 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id z20sm733396lfh.178.2021.03.06.10.17.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Mar 2021 10:17:09 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: dsa: Always react to global bridge attribute changes
-In-Reply-To: <20210306140440.3uwmyji4smxdpgpm@skbuf>
-References: <20210306002455.1582593-1-tobias@waldekranz.com> <20210306002455.1582593-3-tobias@waldekranz.com> <20210306140033.axpbtqamaruzzzew@skbuf> <20210306140440.3uwmyji4smxdpgpm@skbuf>
-Date:   Sat, 06 Mar 2021 19:17:09 +0100
-Message-ID: <87czwcqh96.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8gZd8NLDd/BP6NMzCF+ksvN+bAQFSRD3GtTbo2ubDkg=;
+        b=i2NjWuA1g61EKh8sWgMTYjMMdgZekcMcsiywIQqnoWNk8NFYuvSRQbHhi8WO3751fZ
+         cuAhe1JtWqJGidDRLnK4Cn6zaHpEPWVEZcMgZe5QKQFpg5q5biB6F8vmOecN47unFP2t
+         x86T7sJf9+6t+qJPjf2phCOX7f+fGrXi+U58Tm1A83bG5B2maK7i5oGMDpTHzpnHJrTV
+         7uxTMO6mT3KJFYVUJw3rgknW0Myt2lRV4GQAPJ+OEhubvDhQUn1sP+LaoZ3wwlMI0FU2
+         MDkN3rGVW8a0N3t6J19gJrjfxTsZTOcH/YQeH6QiJ123vRTwn2CLUyVCh4VZjltSkjKu
+         IpeA==
+X-Gm-Message-State: AOAM533BTkykt2flZ4/sThEHnBTAB2pqkT/L3dVamyFo5dadJd0CwjCc
+        nn3vGUcqOvXfQtfM6ChuBCNGGpxSOftLm9jWHHSH9JGGye5s3Q==
+X-Google-Smtp-Source: ABdhPJwNm/lf4lFAKLxSBAqmBUgfgJ4j7uhweEd1iPsWxYLvM3HJlw+5dDBDVOqFGbldGdVEXu2MsJ5T+v2cnEmgbm8=
+X-Received: by 2002:a17:90a:ce92:: with SMTP id g18mr16960086pju.52.1615055665649;
+ Sat, 06 Mar 2021 10:34:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210305015655.14249-1-xiyou.wangcong@gmail.com>
+ <20210305015655.14249-4-xiyou.wangcong@gmail.com> <6042d8fa32b92_135da20871@john-XPS-13-9370.notmuch>
+In-Reply-To: <6042d8fa32b92_135da20871@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 6 Mar 2021 10:34:14 -0800
+Message-ID: <CAM_iQpWbcrBCguHXh0NhyOrCfP3N2x7LzM=pYqKHT6=NCN_JAw@mail.gmail.com>
+Subject: Re: [Patch bpf-next v3 3/9] udp: implement ->sendmsg_locked()
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 06, 2021 at 16:04, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Sat, Mar 06, 2021 at 04:00:33PM +0200, Vladimir Oltean wrote:
->> Hi Tobias,
->>
->> On Sat, Mar 06, 2021 at 01:24:55AM +0100, Tobias Waldekranz wrote:
->> > This is the second attempt to provide a fix for the issue described in
->> > 99b8202b179f, which was reverted in the previous commit.
->> >
->> > When a change is made to some global bridge attribute, such as VLAN
->> > filtering, accept events where orig_dev is the bridge master netdev.
->> >
->> > Separate the validation of orig_dev based on whether the attribute in
->> > question is global or per-port.
->> >
->> > Fixes: 5696c8aedfcc ("net: dsa: Don't offload port attributes on standalone ports")
->> > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
->> > ---
->>
->> What do you think about this alternative?
+On Fri, Mar 5, 2021 at 5:21 PM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> Ah, wait, this won't work when offloading objects/attributes on a LAG.
-> Let me actually test your patch.
+> Cong Wang wrote:
+> > From: Cong Wang <cong.wang@bytedance.com>
+> >
+> > UDP already has udp_sendmsg() which takes lock_sock() inside.
+> > We have to build ->sendmsg_locked() on top of it, by adding
+> > a new parameter for whether the sock has been locked.
+> >
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > Cc: Lorenz Bauer <lmb@cloudflare.com>
+> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > ---
+> >  include/net/udp.h  |  1 +
+> >  net/ipv4/af_inet.c |  1 +
+> >  net/ipv4/udp.c     | 30 +++++++++++++++++++++++-------
+> >  3 files changed, 25 insertions(+), 7 deletions(-)
+>
+> [...]
+>
+> > -int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+> > +static int __udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len, bool locked)
+> >  {
+>
+> The lock_sock is also taken by BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK() in
+> udp_sendmsg(),
+>
+>  if (cgroup_bpf_enabled(BPF_CGROUP_UDP4_SENDMSG) && !connected) {
+>     err = BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK(sk,
+>                                     (struct sockaddr *)usin, &ipc.addr);
+>
+> so that will also need to be handled.
 
-Right. But you made me realize that my v1 is also flawed, because it
-does not guard against trying to apply attributes to non-offloaded
-ports. ...the original issue :facepalm:
+Indeed, good catch!
 
-I have a version ready which reuses the exact predicate that you
-previously added to dsa_port_offloads_netdev:
+>
+> It also looks like sk_dst_set() wants the sock lock to be held, but I'm not
+> seeing how its covered in the current code,
+>
+>  static inline void
+>  __sk_dst_set(struct sock *sk, struct dst_entry *dst)
+>  {
+>         struct dst_entry *old_dst;
+>
+>         sk_tx_queue_clear(sk);
+>         sk->sk_dst_pending_confirm = 0;
+>         old_dst = rcu_dereference_protected(sk->sk_dst_cache,
+>                                             lockdep_sock_is_held(sk));
+>         rcu_assign_pointer(sk->sk_dst_cache, dst);
+>         dst_release(old_dst);
+>  }
 
--               if (netif_is_bridge_master(attr->orig_dev))
-+               if (dp->bridge_dev == attr->orig_dev)
+I do not see how __sk_dst_set() is called in udp_sendmsg().
 
-Do you think anything else needs to be changed, or should I send that as
-v2?
+>
+> I guess this could trip lockdep now, I'll dig a bit more Monday and see
+> if its actually the case.
+>
+> In general I don't really like code that wraps locks in 'if' branches
+> like this. It seem fragile to me. I didn't walk every path in the code
+
+I do not like it either, actually I spent quite some time trying to
+get rid of this lock_sock, it is definitely not easy. The comment in
+sk_psock_backlog() is clearly wrong, we do not lock_sock to keep
+sk_socket, we lock it to protect other structures like
+ingress_{skb,msg}.
+
+> to see if a lock is taken in any of the called functions but it looks
+> like ip_send_skb() can call into netfilter code and may try to take
+> the sock lock.
+
+Are you saying skb_send_sock_locked() is buggy? If so, clearly not
+my fault.
+
+>
+> Do we need this locked send at all? We use it in sk_psock_backlog
+> but that routine needs an optimization rewrite for TCP anyways.
+> Its dropping a lot of performance on the floor for no good reason.
+
+At least for ingress_msg. It is not as easy as adding a queue lock here,
+because we probably want to retrieve atomically with the receive queue
+together.
+
+Thanks.
