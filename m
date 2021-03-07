@@ -2,119 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C74B9330020
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 11:37:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3C8A330045
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 12:16:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231426AbhCGKgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 05:36:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231325AbhCGKga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 05:36:30 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956FCC06174A;
-        Sun,  7 Mar 2021 02:36:30 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id f12so8186979wrx.8;
-        Sun, 07 Mar 2021 02:36:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QUAGgQ+GCSEMKdmjw8dHGrKRA1a4GuPIKYGKPGuNTkI=;
-        b=NcLsOwyuZxWHoQPJrRmBfNOlGHj+UD4HB+xhzzUjurOMM6CDdbhVkYXxj2W8RoVvHo
-         PDgjDbRcwVehlJZycAQY801wI1dpbti9gfuZxRFcyQaJffE4doD0AOFLiJYblxlb/Yf+
-         W3nlPbDzafY99Ioo9lv6Qcsz2yTDQ60DHT9MrSCJq/xlcPxYOZPYn9YSE2jLjLnDKXBx
-         GIjq5oi6IG54erMX42Z+TFORd+0gtG+iFEti8sWdG7UA0XmXADq9Js2NsOLcbiTtDyav
-         C786jQHanihPoiwsUV3sN2i0FBGOpKgu6zK/oSPR20F1n68Gt0x4azPwc0AUKBYC389N
-         VNNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QUAGgQ+GCSEMKdmjw8dHGrKRA1a4GuPIKYGKPGuNTkI=;
-        b=Y2ZmGCzmgsphtihSXrqPFFkJ2NjYK3jmwwB97X5x8qy3D0YrNPqkMWlxTwswqks4a2
-         I59igp+i7H7jKABJFh9Erbiudi1s5nNeXsZIj5Duh6mqySbbjbLBPZmmyrc3btBAn6DH
-         /yVR6p30GF1EgsaMYUrLHmR1V58KcSYiZPM3jWUK0I9nWk0MwSVunDcwkc5OVrnqmLSH
-         aOntqUCIofM0Ukyoiu6GWuv4r5yVpL4ReWs2SR7mfiEp9KLES5IhY3rgg1X3C3vYHnS2
-         FPoKsSt2m5tnqq/25d0Hwq3fuaqEmRcllE/I+BASquR0cU2a2+jY3peq2XohsokHKKXe
-         MYIg==
-X-Gm-Message-State: AOAM532uT2QRw6rM93qt/gDK89e2RGP8tKKBulTHjVTAxfUXk0UZNWtz
-        J0XNfCtc3zG1iUcdpsNd0Lp2gxGOry0mtA==
-X-Google-Smtp-Source: ABdhPJzGMvdqpeuWDWa/seuVgiTG3Xn6d1iiAfETy4rAbCTVCKOwItLngRjiu17YCxDYXem4Zmercw==
-X-Received: by 2002:a5d:4ac4:: with SMTP id y4mr17495668wrs.86.1615113389054;
-        Sun, 07 Mar 2021 02:36:29 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:bb00:98ed:522e:af2a:b86a? (p200300ea8f1fbb0098ed522eaf2ab86a.dip0.t-ipconnect.de. [2003:ea:8f1f:bb00:98ed:522e:af2a:b86a])
-        by smtp.googlemail.com with ESMTPSA id d85sm13342172wmd.15.2021.03.07.02.36.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Mar 2021 02:36:28 -0800 (PST)
-Subject: Re: [PATCH] ath: ath6kl: fix error return code of
- ath6kl_htc_rx_bundle()
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210307090757.22617-1-baijiaju1990@gmail.com>
- <YESaSwoGRxGvrggv@unreal> <a55172ad-bf40-0110-8ef3-326001ecd13e@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <8e28cbdd-55f0-0479-04ee-22f5266ce0ac@gmail.com>
-Date:   Sun, 7 Mar 2021 11:36:19 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S231707AbhCGLMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 06:12:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28008 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231651AbhCGLMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 06:12:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615115563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=r9PFTq8BUDKVO428yQixr9bwpENpUHQxDq5isnXpbB8=;
+        b=PU7kgdnO/1VGRcDUb+8JcrCt8XY9GT+UqNP1YNJVpX054iFe1VyRrgC3EdeCOXP5woT1a6
+        wfl5ONwQxo/6wZUg6vFvPviu57lnW8LrZjF80PZPkOq7WhzSJcQLxmwQiBwV/us5lpH5oP
+        jzhx2vlgT/9ud/K/lY5NlkdtQhdQRzY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-117-i81ex38JNDyE8YSwE66DXw-1; Sun, 07 Mar 2021 06:12:41 -0500
+X-MC-Unique: i81ex38JNDyE8YSwE66DXw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1B95D81431C;
+        Sun,  7 Mar 2021 11:12:39 +0000 (UTC)
+Received: from krava (unknown [10.40.192.72])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 8604C19D9B;
+        Sun,  7 Mar 2021 11:12:32 +0000 (UTC)
+Date:   Sun, 7 Mar 2021 12:12:31 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Yauheni Kaliuta <ykaliuta@redhat.com>
+Subject: Re: [PATCHv2 bpf-next] selftests/bpf: Fix test_attach_probe for
+ powerpc uprobes
+Message-ID: <YES1HwAheriyuT6w@krava>
+References: <20210305134050.139840-1-jolsa@kernel.org>
+ <CAEf4BzanY2ogGDORCsOXrAivWii06vsUpJFT7rQy2nj0xarm+A@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <a55172ad-bf40-0110-8ef3-326001ecd13e@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzanY2ogGDORCsOXrAivWii06vsUpJFT7rQy2nj0xarm+A@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07.03.2021 10:31, Jia-Ju Bai wrote:
-> Hi Leon,
+On Sat, Mar 06, 2021 at 07:13:17PM -0800, Andrii Nakryiko wrote:
+> On Fri, Mar 5, 2021 at 5:42 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > When testing uprobes we the test gets GEP (Global Entry Point)
+> > address from kallsyms, but then the function is called locally
+> > so the uprobe is not triggered.
+> >
+> > Fixing this by adjusting the address to LEP (Local Entry Point)
+> > for powerpc arch plus instruction check stolen from ppc_function_entry
+> > function pointed out and explained by Michael and Naveen.
+> >
+> > Cc: Michael Ellerman <mpe@ellerman.id.au>
+> > Cc: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  .../selftests/bpf/prog_tests/attach_probe.c   | 40 ++++++++++++++++++-
+> >  1 file changed, 39 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > index a0ee87c8e1ea..9dc4e3dfbcf3 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> > @@ -2,6 +2,44 @@
+> >  #include <test_progs.h>
+> >  #include "test_attach_probe.skel.h"
+> >
+> > +#if defined(__powerpc64__) && defined(_CALL_ELF) && _CALL_ELF == 2
+> > +
+> > +#define OP_RT_RA_MASK   0xffff0000UL
+> > +#define LIS_R2          0x3c400000UL
+> > +#define ADDIS_R2_R12    0x3c4c0000UL
+> > +#define ADDI_R2_R2      0x38420000UL
+> > +
+> > +static ssize_t get_offset(ssize_t addr, ssize_t base)
+> > +{
+> > +       u32 *insn = (u32 *) addr;
+> > +
+> > +       /*
+> > +        * A PPC64 ABIv2 function may have a local and a global entry
+> > +        * point. We need to use the local entry point when patching
+> > +        * functions, so identify and step over the global entry point
+> > +        * sequence.
+> > +        *
+> > +        * The global entry point sequence is always of the form:
+> > +        *
+> > +        * addis r2,r12,XXXX
+> > +        * addi  r2,r2,XXXX
+> > +        *
+> > +        * A linker optimisation may convert the addis to lis:
+> > +        *
+> > +        * lis   r2,XXXX
+> > +        * addi  r2,r2,XXXX
+> > +        */
+> > +       if ((((*insn & OP_RT_RA_MASK) == ADDIS_R2_R12) ||
+> > +            ((*insn & OP_RT_RA_MASK) == LIS_R2)) &&
+> > +           ((*(insn + 1) & OP_RT_RA_MASK) == ADDI_R2_R2))
+> > +               return (ssize_t)(insn + 2) - base;
+> > +       else
+> > +               return addr - base;
+> > +}
+> > +#else
+> > +#define get_offset(addr, base) (addr - base)
 > 
-> I am quite sorry for my incorrect patches...
-> My static analysis tool reports some possible bugs about error handling code, and thus I write some patches for the bugs that seem to be true in my opinion.
-> Because I am not familiar with many device drivers, some of my reported bugs can be false positives...
+> I turned this into a static function, not sure why you preferred
 
-Then, before posting a patch for a driver, get familiar with it to
-an extent that you can identify false positives. Relying on others
-to detect the false positives is not the best approach.
+seemed simple enough to be dealt with in preprocessor,
+why bother compiler ;-)
 
-> 
-> 
-> Best wishes,
-> Jia-Ju Bai
-> 
-> On 2021/3/7 17:18, Leon Romanovsky wrote:
->> On Sun, Mar 07, 2021 at 01:07:57AM -0800, Jia-Ju Bai wrote:
->>> When hif_scatter_req_get() returns NULL to scat_req, no error return
->>> code of ath6kl_htc_rx_bundle() is assigned.
->>> To fix this bug, status is assigned with -EINVAL in this case.
->>>
->>> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
->>> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
->>> ---
->>>   drivers/net/wireless/ath/ath6kl/htc_mbox.c | 4 +++-
->>>   1 file changed, 3 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/wireless/ath/ath6kl/htc_mbox.c b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
->>> index 998947ef63b6..3f8857d19a0c 100644
->>> --- a/drivers/net/wireless/ath/ath6kl/htc_mbox.c
->>> +++ b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
->>> @@ -1944,8 +1944,10 @@ static int ath6kl_htc_rx_bundle(struct htc_target *target,
->>>
->>>       scat_req = hif_scatter_req_get(target->dev->ar);
->>>
->>> -    if (scat_req == NULL)
->>> +    if (scat_req == NULL) {
->>> +        status = -EINVAL;
->> I'm not sure about it.
->>
->> David. Jakub,
->> Please be warned that patches from this guy are not so great.
->> I looked on 4 patches and 3 of them were wrong (2 in RDMA and 1 for mlx5)
->> plus this patch most likely is incorrect too.
->>
+> #define here. Applied to bpf-next.
+
+thanks,
+jirka
 
