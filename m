@@ -2,279 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A3993301CE
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 14:59:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BD8B330285
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 16:18:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231931AbhCGN7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 08:59:24 -0500
-Received: from mga14.intel.com ([192.55.52.115]:54299 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232038AbhCGN7F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Mar 2021 08:59:05 -0500
-IronPort-SDR: wGhnbZiP50Of1u1nIZxvKGymLRcIXt3e/XgYI4U7b5o0qmn6xScWIsPdYgx/cRlSa3Q0R6b6Ne
- HdcjS0kakjKA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9915"; a="187260158"
-X-IronPort-AV: E=Sophos;i="5.81,230,1610438400"; 
-   d="scan'208";a="187260158"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2021 05:59:04 -0800
-IronPort-SDR: A4bEDb0IAwg+up9eE1oULqCxIIYRzeQ2B8ICWqE3XGYCwUxhOI3Nvg3LtLeaxEwUSiLQ8gKvy8
- 5Oy3a/CDU4xw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,230,1610438400"; 
-   d="scan'208";a="601819866"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by fmsmga005.fm.intel.com with ESMTP; 07 Mar 2021 05:59:04 -0800
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Sun, 7 Mar 2021 05:59:03 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Sun, 7 Mar 2021 05:59:03 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
- via Frontend Transport; Sun, 7 Mar 2021 05:59:03 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2106.2; Sun, 7 Mar 2021 05:59:03 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y+oG/BbyOqkbGSTAhc3QvWDtTiOAvmeP+u4Vt1gPFBcyadwr30m3RXFQ9yfutTB15FcPfv9ZpbC7WgxJDZlpn5hw7CE4jxvHOO4Z61IHc9xnDI6hQsPLYsBCCNtpFVQAIzLLtA0xfySZPtmhBfPIcRWqOV42wsX5ViR+kHRiZU3Oy/BVUIAUnvfb6259x17xLuVcdBpAbV+I3rWhoILVIksNpvDEeBCwjcD2Z1G1AuW84Vwfw1tLT3v+A9N222+BATHjnW5sjMiqpgri0ZpF2we0gHjPnuICps8/yMSpx9iAEcjjGb2e8Sqk25SHJtjJtLF0AcY4Xxum2bYz/FiLjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9EuDsMt2+PMq62l1c/OtUy3bvdtBGgQavAnkGNe8yCw=;
- b=PxjoKoN+XkCVLeh/w1VT0GXjpS+2R9ayVMpzwIfEBBNmbytwnwrfwZuKm5rYcgesDIe4B3bOZvqrOpqs5xauLAQBeZFn3VJ1VwbfVLktOUF9b/RY92CANON4CFJx1XQaSgQdmgEr4wzvd9KYWMxY+6k/kjayV6svsE2v1pkgDFkshBhDhh3miDTaogKBTS5ksB4IXhbeAVlLFuRLdV7o8CIF8jU4Kynuh80ay2ZrbY0HWIS3Ka9D92Qp92Ucqqmg4BjU/81XzfnkYCdXaZsA1InZ8A+U+eZBup3Flg/E7lAvx4s9XAG6j2Y9lx/PWJDdNJ7OU7txG26TwoS1ULBOhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9EuDsMt2+PMq62l1c/OtUy3bvdtBGgQavAnkGNe8yCw=;
- b=d8eHRp6C5Sbzi0i5R+y7G2+I07iOru/Mz5ZXRwAsQXHFfAs+7tKJgYvsJqtwtgEPo8o2L48y4SAxS4GABCoZIDYKxRQAklawmStOHlmoihYkngX+XIIlH7zPKwAfMF5n4IglD0dHjfzXpI39o5sJDPXwgxQoZkZmMLeUmBYDkOM=
-Received: from BYAPR11MB3095.namprd11.prod.outlook.com (2603:10b6:a03:91::26)
- by BYAPR11MB3637.namprd11.prod.outlook.com (2603:10b6:a03:f9::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Sun, 7 Mar
- 2021 13:59:02 +0000
-Received: from BYAPR11MB3095.namprd11.prod.outlook.com
- ([fe80::e47d:c2cb:fe53:e0e6]) by BYAPR11MB3095.namprd11.prod.outlook.com
- ([fe80::e47d:c2cb:fe53:e0e6%4]) with mapi id 15.20.3890.035; Sun, 7 Mar 2021
- 13:59:02 +0000
-From:   "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
-Subject: RE: [PATCH v10 01/20] dlb: add skeleton for DLB driver
-Thread-Topic: [PATCH v10 01/20] dlb: add skeleton for DLB driver
-Thread-Index: AQHW/9aKF0BC8ECZBUGvMe9o72Vjw6pdfE/wgAAaEICAGxaw0A==
-Date:   Sun, 7 Mar 2021 13:59:02 +0000
-Message-ID: <BYAPR11MB30950FD82E2D9A17CC8A0A93D9949@BYAPR11MB3095.namprd11.prod.outlook.com>
-References: <20210210175423.1873-1-mike.ximing.chen@intel.com>
- <20210210175423.1873-2-mike.ximing.chen@intel.com>
- <BYAPR11MB309511566DBD522FE70D971FD9859@BYAPR11MB3095.namprd11.prod.outlook.com>
- <YC4cxfhaBTD1Mb+2@kroah.com>
-In-Reply-To: <YC4cxfhaBTD1Mb+2@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-authentication-results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none
- header.from=intel.com;
-x-originating-ip: [69.141.163.46]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d1227bf7-60b2-4b6c-d131-08d8e1712a04
-x-ms-traffictypediagnostic: BYAPR11MB3637:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR11MB3637577B558918758BAE90AED9949@BYAPR11MB3637.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rtOyqJtC7TPQiMbIaAfyH/AyYZjUDanN3CTkNCnmwKjaMkmOhmrCxMaAVqm/vsu5bss9mvSNw8ru5RaDmEaXf6/cFno2GU+vxiOAKzpOlfEQ8mr3xtnv+zflbwFREozN7yJTPBPGo1ZY3fLTlvXpu3W2Ff7Q89YajaSUvQ1yoeoxuYHdLWAdcmRBRFYkXBVG5RLaGkVzU+yKH1NSdcz5RUPUabsgYIb8m8wo0kOT3oaaCg7hfSQZpqFwffGml8w52xcT6F2PHSNEr8wK6o5PhnQn8P/x6Ggq3/kNB+YcjyFnl2zFnGDgh2YB1Er208hXBbrUeGwSXC3FqNha5532nzLNGPMvpVp40BnsnYl06Twm7PHGBViI9OP807rI1RzcRXHOZYrXH95H1+oGIQuqcC5UjIBoCuGgjOdqrECJGIIUGJp90xfuI3hWuty5oWTJ2chq23ElWniYDRA7DcOkg1H2HfM/essLhYtajnie+aoIAeLI59hL57XiG2A41bzQjcKkaN1Arvo5A6VTeyUFiA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3095.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(376002)(346002)(136003)(366004)(396003)(316002)(4326008)(54906003)(9686003)(55016002)(66556008)(64756008)(8936002)(8676002)(66476007)(66946007)(76116006)(71200400001)(66446008)(2906002)(7696005)(52536014)(33656002)(186003)(26005)(53546011)(6506007)(83380400001)(86362001)(478600001)(5660300002)(6916009);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?ycbfMwtuO01EwbLA/Tnpev290lFpY+x1qYoZugKRCtOpuyXX5rW5+WZD3j+b?=
- =?us-ascii?Q?qOOoBy+YK56ujKeo1ercXqMQnEoIpkXCyU5Zaooa10hWsSqWGz9/cK9ufyPe?=
- =?us-ascii?Q?ph+Z5nLlkj6Go3up3mZZ1Oa7iNEl33UO5iUapSkPnk9o7hOVNUANpY8iCVwq?=
- =?us-ascii?Q?Mt2Sljd3lnYP1ecqw3PjcF9imaqB2XFwR0OgAaZGCy6B1hDC9d6aoFM0SfIu?=
- =?us-ascii?Q?V/VGGjvQHBrqQsjXSUdySHIcREOhnGdtlLV1n2WksM3zB55HkuQlMKz5NPwR?=
- =?us-ascii?Q?8Zqrvyw45b6GDGJhObiWYzYYCMl0tZBTWmY3KPvfB65VpwIo9IpxHp2kCKJh?=
- =?us-ascii?Q?cd3IWefesFXAOidxH+3XEtQspabZ1FfPD/9zNCshYSExhuJy1EMQ1reH1Swe?=
- =?us-ascii?Q?KLzrKiTNrW+gBQ326zVkO/sL3Log9VaWIx/pi+bJBKqIdne+9Vzjdr0jmJYf?=
- =?us-ascii?Q?jbSWxxFAVBvhDaXPRI/b63/LMEpIeEatUXWFX8eboImxW3WauX/miM80FeHv?=
- =?us-ascii?Q?FskKcNRYCFURwtDGjZHfbS3TcOuXZlRDcejhihDlG0YVMt8oiwTEm+oOc3ht?=
- =?us-ascii?Q?fgaSCfvo0BmV+ZXGzkhR3KtDIauNTlV2AG7owpEBmsM0uUkfSmXRCQT1CZsG?=
- =?us-ascii?Q?jXisgp8EiqipUyGeI7dH4hUka9iLhRVkhbZ6M/wFnQTOQq1kPlOPr28WgFpW?=
- =?us-ascii?Q?/WhwWzVjVmu4xvoZYkeFeZ/5oSP7z0Y9X3tJSBuDpE4XSpTZOdocyB2EASoR?=
- =?us-ascii?Q?OTOmmHhrakeajtH7EoKlonvOgYFrQ3sw/wfOteu0fpxxVz2g2lKq2Ptp45C8?=
- =?us-ascii?Q?fcG1kWyFMt+iENkrH45T9AAvMMcuq1nIDhHaHB7PkIYiC6HAZ0CyLEUnhnQX?=
- =?us-ascii?Q?305MRxHxiIKpfsT1yuJ722LeapKWY0Osoeh8PtrRd9DOUTjMw92J81plbGaH?=
- =?us-ascii?Q?9uv/yQ94oXowEjm75mhjbe2528zsx6JzpiRcFAiIveUUkDuMShm7GfLB8SQG?=
- =?us-ascii?Q?kSOoFHMfrrCc0RLOq0U9S/MhkGPvU1cRQXeo3ihO4vZRf2TKD06XvL94Ims/?=
- =?us-ascii?Q?IHK4LK+L9e26XYtnhuI2GUFtJ++bd4BIb2bn2xdJ8Ry0iu9ep2MjAc0w19SK?=
- =?us-ascii?Q?x536/yv6/V8HBJy1bvur+d+Hl9tqEVVm63im7G0626tcTXROzRE0EqBiAHeP?=
- =?us-ascii?Q?DCER/tydqrDT29m+gMlohdamyXHIS/QD9odS9LcTmqhgeAB+/9b+TsVQuyVh?=
- =?us-ascii?Q?dzhRWXJwaES4FxeWbtNhSwhosiA9UHum34fIqQFkLVHhieo9fuEtGqYwVNav?=
- =?us-ascii?Q?RlzhAR0KZayq9FNeQgILnwSW?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S231434AbhCGPR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 10:17:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230487AbhCGPR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 10:17:28 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4012C06174A
+        for <netdev@vger.kernel.org>; Sun,  7 Mar 2021 07:17:17 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id v2so2351289lft.9
+        for <netdev@vger.kernel.org>; Sun, 07 Mar 2021 07:17:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=HSBErEyrDSnb4IkBqIVsRuAuMSBH5oWCyYn2fpOctfc=;
+        b=SPfGLZzU7nZBP1XAjA9G4nlW1JaZZhFZ2feTeo8suRi3hQUWFxK8/JR6hL+poCpmL8
+         lj2wv4f4TACdckGE9JJChr5RKyyEEqa3bQAx/K1YhRYZbiTwvutxTVEy/+m/AgjLVP42
+         BvpgUJLHAfWTqukWyr5+NhDnm935dSH8Q1jsV/v8gwJpscpYAzyEsM8g9HI1+JqTgcsO
+         Q9OQvGrDBnDyxCwT1M7tvX+B72NvQx/rNxvS/zRBUHEIALEPQCzLeiHIUUDBiWzScxSy
+         lBkSmldvuECd0wUyTUu2CaVzgrirsH28Id+lO0d0WwCJRQRyBhdZKBIXVw6DIdkfVHYK
+         TSqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=HSBErEyrDSnb4IkBqIVsRuAuMSBH5oWCyYn2fpOctfc=;
+        b=Zce48mT2rSoeJi/9af4VCEhOxugA3ysYOChvdEchCYilv84fvoRm153nYVjCsGn9Ub
+         BY5FF6U63YVAFdnXLL/f454pJq+YSqCLSkspR2Opq7QX06Nbi2GxWUj5QYZP9i5zU16D
+         PxyrxUkbmgTtbxggsXtOAuBO1DR6ob3z2bs3GjAXFOvZKpyxT6takQVOe+IbpswoHHvs
+         CN25wAVh3L0CjLIzydV1vLrhkPMrpTPobL8dnvR5Y+S+IghYsYiTIX8CmIb3AmA1NoEv
+         pSsVJqD47ypIZNj+FCgkWraGODFOa5082MbONCo7cjs304cfDwzAXPVZij6+LgqvBvU1
+         O9rg==
+X-Gm-Message-State: AOAM531yO7aZraZd7nWSfBnlzOjNe2MoDIY4Yx8jjOu7wIxidzzpJ/pX
+        pVW6DiOoDUtmtzNIfikXJL6aUw==
+X-Google-Smtp-Source: ABdhPJxVEH/zLk6BxtpJGtE0hDX20Jhe91nuYQLg7DN/U+X6A3Af9rYt+KNuScNcH+R9ybmKkM1+1A==
+X-Received: by 2002:ac2:57c9:: with SMTP id k9mr11854994lfo.119.1615130236242;
+        Sun, 07 Mar 2021 07:17:16 -0800 (PST)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id g10sm1059239lfe.90.2021.03.07.07.17.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Mar 2021 07:17:15 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v2 net] net: dsa: fix switchdev objects on bridge master mistakenly being applied on ports
+In-Reply-To: <20210307102156.2282877-1-olteanv@gmail.com>
+References: <20210307102156.2282877-1-olteanv@gmail.com>
+Date:   Sun, 07 Mar 2021 16:17:14 +0100
+Message-ID: <874khnq9hh.fsf@waldekranz.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3095.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1227bf7-60b2-4b6c-d131-08d8e1712a04
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2021 13:59:02.4588
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6Y0aJA3UnrrBO1hdKlKHUD9qZJpqOYmxpx9A5fGRLu20ymRB0AQ4VvmLA2ei1e5Lhrmy52JF1qzSpEDbdj4JwHcMgJ/jkbF8JipFKh7zX7c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3637
-X-OriginatorOrg: intel.com
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Mar 07, 2021 at 12:21, Vladimir Oltean <olteanv@gmail.com> wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+> Tobias reports that after the blamed patch, VLAN objects being added to
+> a bridge device are being added to all slave ports instead (swp2, swp3).
+>
+> ip link add br0 type bridge vlan_filtering 1
+> ip link set swp2 master br0
+> ip link set swp3 master br0
+> bridge vlan add dev br0 vid 100 self
+>
+> This is because the fix was too broad: we made dsa_port_offloads_netdev
+> say "yes, I offload the br0 bridge" for all slave ports, but we didn't
+> add the checks whether the switchdev object was in fact meant for the
+> physical port or for the bridge itself. So we are reacting on events in
+> a way in which we shouldn't.
+>
+> The reason why the fix was too broad is because the question itself,
+> "does this DSA port offload this netdev", was too broad in the first
+> place. The solution is to disambiguate the question and separate it into
+> two different functions, one to be called for each switchdev attribute /
+> object that has an orig_dev == net_bridge (dsa_port_offloads_bridge),
+> and the other for orig_dev == net_bridge_port (*_offloads_bridge_port).
+>
+> In the case of VLAN objects on the bridge interface, this solves the
+> problem because we know that VLAN objects are per bridge port and not
+> per bridge. And when orig_dev is equal to the net_bridge, we offload it
+> as a bridge, but not as a bridge port; that's how we are able to skip
+> reacting on those events. Note that this is compatible with future plans
+> to have explicit offloading of VLAN objects on the bridge interface as a
+> bridge port (in DSA, this signifies that we should add that VLAN towards
+> the CPU port).
+>
+> Fixes: 99b8202b179f ("net: dsa: fix SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING getting ignored")
+> Reported-by: Tobias Waldekranz <tobias@waldekranz.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
+Please wait before applying.
 
-> -----Original Message-----
-> From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
-> Sent: Thursday, February 18, 2021 2:53 AM
-> To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
-> Cc: netdev@vger.kernel.org; Linux Kernel Mailing List <linux-
-> kernel@vger.kernel.org>; davem@davemloft.net; kuba@kernel.org; arnd@arndb=
-.de;
-> Williams, Dan J <dan.j.williams@intel.com>; pierre-louis.bossart@linux.in=
-tel.com
-> Subject: Re: [PATCH v10 01/20] dlb: add skeleton for DLB driver
->=20
-> On Thu, Feb 18, 2021 at 07:34:31AM +0000, Chen, Mike Ximing wrote:
-> >
-> >
-> > > -----Original Message-----
-> > > From: Mike Ximing Chen <mike.ximing.chen@intel.com>
-> > > Sent: Wednesday, February 10, 2021 12:54 PM
-> > > To: netdev@vger.kernel.org
-> > > Cc: davem@davemloft.net; kuba@kernel.org; arnd@arndb.de;
-> > > gregkh@linuxfoundation.org; Williams, Dan J <dan.j.williams@intel.com=
->;
-> pierre-
-> > > louis.bossart@linux.intel.com; Gage Eads <gage.eads@intel.com>
-> > > Subject: [PATCH v10 01/20] dlb: add skeleton for DLB driver
-> > >
-> > > diff --git a/Documentation/misc-devices/dlb.rst b/Documentation/misc-
-> > > devices/dlb.rst
-> > > new file mode 100644
-> > > index 000000000000..aa79be07ee49
-> > > --- /dev/null
-> > > +++ b/Documentation/misc-devices/dlb.rst
-> > > @@ -0,0 +1,259 @@
-> > > +.. SPDX-License-Identifier: GPL-2.0-only
-> > > +
-> > > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > +Intel(R) Dynamic Load Balancer Overview
-> > > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > +
-> > > +:Authors: Gage Eads and Mike Ximing Chen
-> > > +
-> > > +Contents
-> > > +=3D=3D=3D=3D=3D=3D=3D=3D
-> > > +
-> > > +- Introduction
-> > > +- Scheduling
-> > > +- Queue Entry
-> > > +- Port
-> > > +- Queue
-> > > +- Credits
-> > > +- Scheduling Domain
-> > > +- Interrupts
-> > > +- Power Management
-> > > +- User Interface
-> > > +- Reset
-> > > +
-> > > +Introduction
-> > > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > +
-> > > +The Intel(r) Dynamic Load Balancer (Intel(r) DLB) is a PCIe device t=
-hat
-> > > +provides load-balanced, prioritized scheduling of core-to-core commu=
-nication.
-> > > +
-> > > +Intel DLB is an accelerator for the event-driven programming model o=
-f
-> > > +DPDK's Event Device Library[2]. The library is used in packet proces=
-sing
-> > > +pipelines that arrange for multi-core scalability, dynamic load-bala=
-ncing, and
-> > > +variety of packet distribution and synchronization schemes.
-> > > +
-> > > +Intel DLB device consists of queues and arbiters that connect produc=
-er
-> > > +cores and consumer cores. The device implements load-balanced queuei=
-ng
-> > > features
-> > > +including:
-> > > +- Lock-free multi-producer/multi-consumer operation.
-> > > +- Multiple priority levels for varying traffic types.
-> > > +- 'Direct' traffic (i.e. multi-producer/single-consumer)
-> > > +- Simple unordered load-balanced distribution.
-> > > +- Atomic lock free load balancing across multiple consumers.
-> > > +- Queue element reordering feature allowing ordered load-balanced di=
-stribution.
-> > > +
-> >
-> > Hi Jakub/Dave,
-> > This is a device driver for a HW core-to-core communication accelerator=
-. It is
-> submitted
-> > to "linux-kernel" for a module under device/misc. Greg suggested (see b=
-elow) that
-> we
-> > also sent it to you for any potential feedback in case there is any int=
-eraction with
-> > networking initiatives. The device is used to handle the load balancing=
- among CPU
-> cores
-> > after the packets are received and forwarded to CPU. We don't think it =
-interferes
-> > with networking operations, but would appreciate very much your
-> review/comment on this.
->=20
-> It's the middle of the merge window, getting maintainers to review new
-> stuff until after 5.12-rc1 is out is going to be a very difficult thing
-> to do.
->=20
+I need to do some more testing later (possibly tomorrow). But I am
+pretty sure that this patch does not work with the (admittedly somewhat
+exotic) combination of:
 
-Hi Jakub/Dave,
-Just wonder if you had a chance to take a look at our patch. With the close=
- of 5.12
-merge window, we would like to get the process moving again.
+- Non-offloaded LAG
+- Bridge with VLAN filtering enabled.
 
-> In the meantime, why don't you all help out and review submitted patches
-> to the mailing lists for the subsystems you all are trying to get this
-> patch into.  I know maintainers would appreciate the help, right?
->=20
-> thanks,
->=20
-> greg k-h
-
-Did a few reviews last weekend, and will continue to help.
-
-Thanks
-Mike
+When adding the LAG to the bridge, I get an error because mv88e6xxx
+tries to add VLAN 1 to the ports (which it should not do as the LAG is
+not offloaded).
