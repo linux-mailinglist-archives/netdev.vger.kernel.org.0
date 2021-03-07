@@ -2,116 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0441A3304B7
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 21:56:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD153304CF
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 22:20:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233000AbhCGUzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 15:55:40 -0500
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.23]:23914 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232819AbhCGUzJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 15:55:09 -0500
-X-Greylist: delayed 664 seconds by postgrey-1.27 at vger.kernel.org; Sun, 07 Mar 2021 15:55:09 EST
-ARC-Seal: i=1; a=rsa-sha256; t=1615150325; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=khrypSP14nNp6tPD10zP94LbJfpItXaO3Ns0sd74Vn+xjK444+CUUMVLjCBtoZohlh
-    BALzEsY42jbUDIyxMkQiupDdhwgeQQUHh9WUmc0iKPtKDLy5ewTUyoSHY56QwZJNp1Yc
-    bFn/zYxo+4lN8BDLo0Z8EfhWd8MP4erlhoVkXdnseMlyLEkFINzYwyzyVJm8BVaYJ1Pp
-    XOJGi2+0l2r92irnoPd7M5CiVikw3t2kpjT4uYBalWdfqW51E86M+Vd0GzHH4jakkWpU
-    HT88Ix9DR2nNmYoGXeq6KTcOOm61qdSXgIhP/f3lHCD//HplR+GJR3d1q85w/FpD2x2n
-    xKew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1615150325;
-    s=strato-dkim-0002; d=strato.com;
-    h=Message-ID:References:In-Reply-To:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=3F5EyDIYfUKUKfWaxDBmit57Y4Zjlf0XdBuAIMMKit0=;
-    b=lE9IAGg6c2Z7O3+Qc+Us0Pk/qN6e3uRnJHaiO5tWr2auD02QxNJgILAwJ6WvNjPSuR
-    zZgq6AsH2Cdqvv4u58oMYBchh0dcfIgskqDGGUfi5oBtAOT9h5aa21NMZ7t9mL3FCMcN
-    +lNWiHREtr7A/XHc74/8HwQ2hOBoK1VBwvB0SRrXNE8wpum4zi71IL6E3itVJEL3pQGm
-    rEAWLpf0lYbBt9Gu4W7Wmyxignq54EoauDwFGQoqnmRRZ3qbBmN0f0MjcJU7HBkl5pEh
-    e8NGlSzRq1ZRyqd1DqoTZrNckbB6in2FGvfD2W8UwKTXGgkSUMIZ+HrOS12F/L3LlMR1
-    C6gg==
-ARC-Authentication-Results: i=1; strato.com;
-    dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1615150325;
-    s=strato-dkim-0002; d=fami-braun.de;
-    h=Message-ID:References:In-Reply-To:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=3F5EyDIYfUKUKfWaxDBmit57Y4Zjlf0XdBuAIMMKit0=;
-    b=tC3ASbn06Ut+dL+Ud7eLtwSuUU7+KR96DOxlws5OisE4LUdurkaciODZ22VEul9wGh
-    oGQs6dYB3qr0XxZzHUFgUsUsDe+g/PxTNU1+B1Y1B7RtwoIpJDYo/iu6hHlt393vw9Wo
-    65gjxgQMCPIwHS4lOedrTwhNYYe7I5gn+JktfRQ+EYlW0WvfDR6ljqxiwfYb41QbYjVd
-    HNEV+GM08+m/2ZY6VakikFVFJGzizp8rmkp8fZEzhIQGDbrfES0C2fKsNuktpcxlZ8qK
-    lLA5qQ5Vfix2gFz6p3EMr1m/S06HUpEHqps6U690kSrXHWfd5MIuLTr2CY9Ba8AN3nQS
-    Ck2Q==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P20JeEWkefDI1ODZs1HHtgV3eF0OpFsRaGIBEm4ljegySSvO7VhbcRIBGrxpdQd5bmdzGXu9QVR3m+Q="
-X-RZG-CLASS-ID: mo00
-Received: from dynamic.fami-braun.de
-    by smtp.strato.de (RZmta 47.20.3 DYNA|AUTH)
-    with ESMTPSA id 909468x27Kq4Auw
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Sun, 7 Mar 2021 21:52:04 +0100 (CET)
-Received: from dynamic.fami-braun.de (localhost [127.0.0.1])
-        by dynamic.fami-braun.de (fami-braun.de) with ESMTP id 5603D154101;
-        Sun,  7 Mar 2021 21:52:04 +0100 (CET)
-Received: from s0lc3mBNFZJwXWzwO4eTytZUC7fgj0ZWfMLIWRPFpptG4QL4lDcD/Q==
- (eGLGFaDD1yktrnGMRCs1205bdc4Oyqmc)
- by webmail.fami-braun.de
- with HTTP (HTTP/2.0 POST); Sun, 07 Mar 2021 21:51:59 +0100
+        id S233026AbhCGVTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 16:19:34 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:48683 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233016AbhCGVTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 16:19:16 -0500
+Received: by mail-il1-f199.google.com with SMTP id n12so6092457ili.15
+        for <netdev@vger.kernel.org>; Sun, 07 Mar 2021 13:19:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=b/8/TV2Ggjpg+ciG7XgCGRcOg8HJPj1kV6+Ap5MX/CY=;
+        b=tNVQbsZFEmtxUaVIXppOWvtBkmNm+T0QOSHzJ/TXrtqx/WtzNm6T7Y2oxIsnTzwNLv
+         mLKnCnu0dGBDTv+YEPWxzlSfbmqICvuvxMi0UMCwdB+TT5oWYtXRWGxLcF1GLfVRbyEm
+         v7Z8ezbhTSUd53Tr7wayXu7sIuKoMN49qMeBSgo628jm0WpvrD6rAyV58kWDGMkMY2Lg
+         iwiULFne4K6yw6a+D3XV0FtFs/rgua162o+Du3KU2AcklR+aUaKsp1zHzcGA2xRyGwwK
+         O+zSykXJdkuM2OzBzYJGjC3qbN5FqpM//8NQzShPE4YFLJXwa9SXWC2QkskxtfXUOV5o
+         pk/w==
+X-Gm-Message-State: AOAM530aVzpQ2OuFc1cq3iz0aRqB4moReQDYKqFxz5F3P6sThK9DPkGi
+        siYetm5W8Q/bGZn02Do9NLpo3OU5oyC4+DqHO1RaTfFZXuWW
+X-Google-Smtp-Source: ABdhPJzVhPF7jKxv/Gv5CpH0beyGmos+xXQz4bdA1lIez7e9mXZ+ZdPvXbH+SB7jIW9HhFKClnjp9qGTs18I8A5WpZu9DoHsR/AR
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sun, 07 Mar 2021 21:51:59 +0100
-From:   michael-dev <michael-dev@fami-braun.de>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] gianfar: fix jumbo packets+napi+rx overrun crash
-In-Reply-To: <DB8PR04MB67643BBB399B02ACBA48C06F96979@DB8PR04MB6764.eurprd04.prod.outlook.com>
-References: <20210304031238.28880-1-michael-dev@fami-braun.de>
- <DB8PR04MB67643BBB399B02ACBA48C06F96979@DB8PR04MB6764.eurprd04.prod.outlook.com>
-User-Agent: Roundcube Webmail/1.4.10
-Message-ID: <376d60c0bc99cd5933273e117e9d6fdc@fami-braun.de>
-X-Sender: michael-dev@fami-braun.de
-X-Virus-Scanned: clamav-milter 0.102.4 at gate
-X-Virus-Status: Clean
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on gate.zuhause.all
+X-Received: by 2002:a5e:8610:: with SMTP id z16mr15515017ioj.57.1615151955861;
+ Sun, 07 Mar 2021 13:19:15 -0800 (PST)
+Date:   Sun, 07 Mar 2021 13:19:15 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000096659005bcf8de0c@google.com>
+Subject: [syzbot] general protection fault in btf_type_id_size
+From:   syzbot <syzbot+8bab8ed346746e7540e8@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello,
 
-sorry I missed the mail.
+syzbot found the following issue on:
 
-Am 04.03.2021 11:05, schrieb Claudiu Manoil:
-> Could you help provide some context, e.g.:
-> On what board/soc were you able to trigger this issue?
+HEAD commit:    6185266c selftests/bpf: Mask bpf_csum_diff() return value ..
+git tree:       bpf
+console output: https://syzkaller.appspot.com/x/log.txt?x=14fd4ff2d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e2d5ba72abae4f14
+dashboard link: https://syzkaller.appspot.com/bug?extid=8bab8ed346746e7540e8
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=139778aed00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=158426dad00000
 
-I have an OpenWRT running on P1020WLAN boards and have IPsec for some 
-gretap tunnel configured.
-I run iperf3 -s on the AP and iperf3 -c --udp -b 1000M on some server 
-and then the AP reliably crashes.
-It also crashed sometimes during normal operations when doing some fast 
-download over the IPsec tunnel, but that was hard to reproduce.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8bab8ed346746e7540e8@syzkaller.appspotmail.com
 
-> How often does the overrun occur?
-Reliably within seconds with the above test.
+general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+CPU: 0 PID: 8380 Comm: syz-executor429 Not tainted 5.11.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:btf_resolved_type_id kernel/bpf/btf.c:1770 [inline]
+RIP: 0010:btf_type_id_size+0x40e/0x960 kernel/bpf/btf.c:1811
+Code: 48 c1 e9 03 80 3c 11 00 0f 85 17 05 00 00 49 8b 47 10 44 29 f3 48 8d 1c 98 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 14 02 48 89 d8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 ec
+RSP: 0018:ffffc90000fffd18 EFLAGS: 00010203
+RAX: dffffc0000000000 RBX: 0000000000000014 RCX: 1ffff11003a70482
+RDX: 0000000000000002 RSI: ffffffff818b12f3 RDI: ffff88801d382410
+RBP: ffff88801d382400 R08: 0000000000000005 R09: ffffffff818b114a
+R10: ffffffff818b128e R11: 000000000000000a R12: 0000000000000000
+R13: dffffc0000000000 R14: 0000000000000000 R15: ffff88801d382400
+FS:  0000000000ad5300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004ae0f0 CR3: 0000000024fca000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ map_check_btf kernel/bpf/syscall.c:757 [inline]
+ map_create kernel/bpf/syscall.c:860 [inline]
+ __do_sys_bpf+0x4000/0x4f00 kernel/bpf/syscall.c:4370
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43ff09
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc5f435ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 000000000001053e RCX: 000000000043ff09
+RDX: 0000000000000040 RSI: 0000000020000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 00007ffc5f436098 R09: 00007ffc5f436098
+R10: 00007ffc5f436098 R11: 0000000000000246 R12: 00007ffc5f435f0c
+R13: 431bde82d7b634db R14: 00000000004ae018 R15: 0000000000400488
+Modules linked in:
+---[ end trace a4216c6ef2fa85f5 ]---
+RIP: 0010:btf_resolved_type_id kernel/bpf/btf.c:1770 [inline]
+RIP: 0010:btf_type_id_size+0x40e/0x960 kernel/bpf/btf.c:1811
+Code: 48 c1 e9 03 80 3c 11 00 0f 85 17 05 00 00 49 8b 47 10 44 29 f3 48 8d 1c 98 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 14 02 48 89 d8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 ec
+RSP: 0018:ffffc90000fffd18 EFLAGS: 00010203
+RAX: dffffc0000000000 RBX: 0000000000000014 RCX: 1ffff11003a70482
+RDX: 0000000000000002 RSI: ffffffff818b12f3 RDI: ffff88801d382410
+RBP: ffff88801d382400 R08: 0000000000000005 R09: ffffffff818b114a
+R10: ffffffff818b128e R11: 000000000000000a R12: 0000000000000000
+R13: dffffc0000000000 R14: 0000000000000000 R15: ffff88801d382400
+FS:  0000000000ad5300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004ae0f0 CR3: 0000000024fca000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-> What's the use case? Is the issue triggered with smaller packets than 
-> 9600B?
-It cannot be triggered with 1500 Byte  MTU packets as these have FIRST 
-and LAST set in one.
-I use jumbo frames to speed up ipsec.
 
-> Increasing the Rx ring size does significantly reduce ring overruns?
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-I did not test this.
-
-Regards,
-Michael Braun
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
