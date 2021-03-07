@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F09893303BD
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 19:05:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4878C3303BE
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 19:05:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232749AbhCGSFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 13:05:02 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:51576 "EHLO
+        id S232791AbhCGSFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 13:05:04 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:51674 "EHLO
         mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232184AbhCGSE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 13:04:28 -0500
+        with ESMTP id S230422AbhCGSEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 13:04:45 -0500
 Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 026A35213B0;
-        Sun,  7 Mar 2021 21:04:25 +0300 (MSK)
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 38ABB520F83;
+        Sun,  7 Mar 2021 21:04:43 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1615140265;
-        bh=ggGQDCZLksbLFXg/a/i3Cm/Xpu6xzuNCaUFyN2WDOQQ=;
+        s=mail202102; t=1615140283;
+        bh=IIvaTSg8CcmNdvnPNgKjpwPkuo4UMX5c0QgfdgT/Vg8=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=smCHp/FyZTucVZ1Gcq4XQFG/3zUO8ccacUjUM6cbgoSeidX4FdxUwVXIuw3wMSAC7
-         W3TC/7ee7QOO1meHoT03xPCPiAzKOaGIJwXIKSnb6DYe54lrK1kTh3KtJhNn4uxp+j
-         tN09GNhpa0q/i4SdeZpoNm5KcZogVg7+N5hLVmjv+fcVhNpxjI5tG+pcqTMqOfVCmt
-         AqCbLZZR1wBW5d8UEsGIXljrKQx4b4P7PGNQhBwkJOQhQk9tiZazR947v+neSwhljz
-         VFqjU/Xc7IM8Y6HEGWQMYhNFDBukZ9gsYfBpZGrT8SASmxSqiEeNT0d6bbjPPdoZ6x
-         fadpM1kvJQBbg==
+        b=XtXQqFjcGyW/mEJb6aMhaJH8s+Z8m+ilxXG52U//ws8TZ2SeKRkUHpuGpTRh8uD72
+         nI1dBv4LABBmpSLK7gMrixyqULIYWo8sq+lhwVmIhgkSaxxLVMLgzTAk1UqmuJHjS5
+         SCdYcQLIYTO4OiVfsRlAFMxsdU+YoiGmooPGD40dRtJU/2nv2cl+p27ePqZ0YWtIxp
+         /flghqwLIqmMllnghB7bRtrXcxgJssTCqwjEfX5qNPBu/CPnb1D2TJGnYautug0Jw2
+         Cyt6yLgHEfNhYoldDh2sRQHHZa9+vscR5KKVuSVDX/E3mLegVev3ubO6Z7qEiqTlxe
+         MZyOylokIl/jw==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 9C5235213A2;
-        Sun,  7 Mar 2021 21:04:24 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id E75FC520E0B;
+        Sun,  7 Mar 2021 21:04:42 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sun, 7 Mar
- 2021 21:04:23 +0300
+ 2021 21:04:42 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -42,23 +42,23 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v6 18/22] virtio/vsock: setup SEQPACKET ops for transport
-Date:   Sun, 7 Mar 2021 21:04:15 +0300
-Message-ID: <20210307180418.3466716-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v6 19/22] vhost/vsock: setup SEQPACKET ops for transport
+Date:   Sun, 7 Mar 2021 21:04:33 +0300
+Message-ID: <20210307180436.3466836-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210307175722.3464068-1-arseny.krasnov@kaspersky.com>
 References: <20210307175722.3464068-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -118,54 +118,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds SEQPACKET ops for virtio transport and 'seqpacket_allow()'
-callback.
+This also removes ignore of non-stream type of packets and adds
+'seqpacket_allow()' callback.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/virtio_transport.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/vhost/vsock.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 41c5d0a31e08..1b957b5477c1 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -443,6 +443,8 @@ static void virtio_vsock_rx_done(struct virtqueue *vq)
- 	queue_work(virtio_vsock_workqueue, &vsock->rx_work);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 3b0a50e6de12..9d4bbf9b71e2 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -355,8 +355,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+ 		return NULL;
+ 	}
+ 
+-	if (le16_to_cpu(pkt->hdr.type) == VIRTIO_VSOCK_TYPE_STREAM)
+-		pkt->len = le32_to_cpu(pkt->hdr.len);
++	pkt->len = le32_to_cpu(pkt->hdr.len);
+ 
+ 	/* No payload */
+ 	if (!pkt->len)
+@@ -399,6 +398,8 @@ static bool vhost_vsock_more_replies(struct vhost_vsock *vsock)
+ 	return val < vq->num;
  }
  
-+static bool virtio_transport_seqpacket_allow(void);
++static bool vhost_transport_seqpacket_allow(void);
 +
- static struct virtio_transport virtio_transport = {
+ static struct virtio_transport vhost_transport = {
  	.transport = {
  		.module                   = THIS_MODULE,
-@@ -469,6 +471,11 @@ static struct virtio_transport virtio_transport = {
+@@ -425,6 +426,11 @@ static struct virtio_transport vhost_transport = {
  		.stream_is_active         = virtio_transport_stream_is_active,
  		.stream_allow             = virtio_transport_stream_allow,
  
 +		.seqpacket_seq_get_len	  = virtio_transport_seqpacket_seq_get_len,
 +		.seqpacket_dequeue        = virtio_transport_seqpacket_dequeue,
 +		.seqpacket_enqueue        = virtio_transport_seqpacket_enqueue,
-+		.seqpacket_allow          = virtio_transport_seqpacket_allow,
++		.seqpacket_allow          = vhost_transport_seqpacket_allow,
 +
  		.notify_poll_in           = virtio_transport_notify_poll_in,
  		.notify_poll_out          = virtio_transport_notify_poll_out,
  		.notify_recv_init         = virtio_transport_notify_recv_init,
-@@ -483,8 +490,14 @@ static struct virtio_transport virtio_transport = {
+@@ -440,8 +446,14 @@ static struct virtio_transport vhost_transport = {
  	},
  
- 	.send_pkt = virtio_transport_send_pkt,
+ 	.send_pkt = vhost_transport_send_pkt,
 +	.seqpacket_allow = false
  };
  
-+static bool virtio_transport_seqpacket_allow(void)
++static bool vhost_transport_seqpacket_allow(void)
 +{
-+	return virtio_transport.seqpacket_allow;
++	return vhost_transport.seqpacket_allow;
 +}
 +
- static void virtio_transport_rx_work(struct work_struct *work)
+ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
  {
- 	struct virtio_vsock *vsock =
+ 	struct vhost_virtqueue *vq = container_of(work, struct vhost_virtqueue,
 -- 
 2.25.1
 
