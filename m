@@ -2,118 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 332EA330053
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 12:34:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE7F33007C
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 12:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbhCGLdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 06:33:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S230449AbhCGLrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 06:47:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbhCGLdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 06:33:35 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D50C06174A;
-        Sun,  7 Mar 2021 03:33:35 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id j12so5215712pfj.12;
-        Sun, 07 Mar 2021 03:33:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QE9e3qNn83WSUIE3jJrl7w+oJ+JiRqDPe+H/RVHlaiQ=;
-        b=jAqGFUpvVIshblWcz1U92JGc/yzMRSJnQ4RRDb9E+TnPJHyE4UOL9UoKFi75TxovVB
-         BIk2hgvalBp3AZZdnAhoV5pLUklMWp0Zv75MJN/3FxoSrdksVVm9ekwCfGby/38kK9gU
-         xHDuASCH7ESLCeiiZJ2I67O3ABlNd0ECKi7jaQvv8WpzfIWEjsWkMQhfw9yQTEaHc69t
-         P2M8ao0YjlE6w8ibGYsBk2g5IeRgd9uYGqX+DRULmictZtgj7zhPwVsaM0VqH+/LNW9U
-         e+cG7skQI5UOcDqc0E7Ej0hyPZaj+igV9qICRgsIOF20HXFh+ZN09JiR9X0wai147vT/
-         SmXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QE9e3qNn83WSUIE3jJrl7w+oJ+JiRqDPe+H/RVHlaiQ=;
-        b=mktKYtDLn4HLLYJwNE4zu81Nrx9Tghvo8VvoJm47bu027nYDdKrq50x3jIki/Smx5F
-         oj31PIEK3IhW1a57uBnQWK4aBeZJtfh1HiYW6+f/+EyXolPhyVrLqBV2O4LgDf2tZeut
-         hRlp22mk+as2DTlmch3BfeGFJDppOFEI4qrR2eYXBscm0JEhitaidXceAuDwOdyvkQ0S
-         KaGA2OD4AYGA9QqDYrSGrECn/Zww4Fxrk7LVzDqs7MbzlitFsg1zK5vpwVgUyEP9oY5p
-         mHyR7yxxZNcNLieDUl950rQDisvCF4gjdSJ4fK5v+KAB1UYwjbRLqhsGX9Jc53h9mtXv
-         3/ug==
-X-Gm-Message-State: AOAM533xboWAf8FM2z9e3vEBs8kjDEP1Ubjo35roQ4k2oky5jSavZM65
-        MLCalgZlrdwenv0p99ksF0A=
-X-Google-Smtp-Source: ABdhPJxTGMQM2ns0X8ie7NcjXNv+b1/ikFV/9hVY8e25+Uro7slGW55TB38Ver9fiekPS5XUH7f6vQ==
-X-Received: by 2002:a63:5a02:: with SMTP id o2mr16054504pgb.202.1615116814913;
-        Sun, 07 Mar 2021 03:33:34 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:8b48:4689:855d:ef6b])
-        by smtp.gmail.com with ESMTPSA id r10sm7100110pfq.216.2021.03.07.03.33.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Mar 2021 03:33:34 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Martin Schiller <ms@dev.tdt.de>,
+        with ESMTP id S230414AbhCGLrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 06:47:00 -0500
+X-Greylist: delayed 576 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 07 Mar 2021 03:46:59 PST
+Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [IPv6:2001:4b7a:2000:18::164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CD7C06174A
+        for <netdev@vger.kernel.org>; Sun,  7 Mar 2021 03:46:59 -0800 (PST)
+Received: from localhost.localdomain (abac94.neoplus.adsl.tpnet.pl [83.6.166.94])
+        by m-r1.th.seeweb.it (Postfix) with ESMTPA id B0C891F50F;
+        Sun,  7 Mar 2021 12:37:11 +0100 (CET)
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+To:     phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net] net: lapbether: Remove netif_start_queue / netif_stop_queue
-Date:   Sun,  7 Mar 2021 03:33:07 -0800
-Message-Id: <20210307113309.443631-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
+Date:   Sun,  7 Mar 2021 12:35:45 +0100
+Message-Id: <20210307113550.7720-1-konrad.dybcio@somainline.org>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For the devices in this driver, the default qdisc is "noqueue",
-because their "tx_queue_len" is 0.
+Add support for BCM43596 dual-band AC chip, found in
+SONY Xperia X Performance, XZ and XZs smartphones (and
+*possibly* other devices from other manufacturers).
+The chip doesn't require any special handling and seems to work
+just fine OOTB.
 
-In function "__dev_queue_xmit" in "net/core/dev.c", devices with the
-"noqueue" qdisc are specially handled. Packets are transmitted without
-being queued after a "dev->flags & IFF_UP" check. However, it's possible
-that even if this check succeeds, "ops->ndo_stop" may still have already
-been called. This is because in "__dev_close_many", "ops->ndo_stop" is
-called before clearing the "IFF_UP" flag.
+PCIe IDs taken from: https://github.com/sonyxperiadev/kernel/commit/9e43fefbac8e43c3d7792e73ca52a052dd86d7e3.patch
 
-If we call "netif_stop_queue" in "ops->ndo_stop", then it's possible in
-"__dev_queue_xmit", it sees the "IFF_UP" flag is present, and then it
-checks "netif_xmit_stopped" and finds that the queue is already stopped.
-In this case, it will complain that:
-"Virtual device ... asks to queue packet!"
-
-To prevent "__dev_queue_xmit" from generating this complaint, we should
-not call "netif_stop_queue" in "ops->ndo_stop".
-
-We also don't need to call "netif_start_queue" in "ops->ndo_open",
-because after a netdev is allocated and registered, the
-"__QUEUE_STATE_DRV_XOFF" flag is initially not set, so there is no need
-to call "netif_start_queue" to clear it.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- drivers/net/wan/lapbether.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c       | 2 ++
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c       | 4 ++++
+ drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 4 ++++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index 605fe555e157..c3372498f4f1 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -292,7 +292,6 @@ static int lapbeth_open(struct net_device *dev)
- 		return -ENODEV;
- 	}
- 
--	netif_start_queue(dev);
- 	return 0;
- }
- 
-@@ -300,8 +299,6 @@ static int lapbeth_close(struct net_device *dev)
- {
- 	int err;
- 
--	netif_stop_queue(dev);
--
- 	if ((err = lapb_unregister(dev)) != LAPB_OK)
- 		pr_err("lapb_unregister error: %d\n", err);
- 
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+index 45037decba40..38ca0517f3cf 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+@@ -723,6 +723,7 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
+ 	case BRCM_CC_43666_CHIP_ID:
+ 		return 0x200000;
+ 	case BRCM_CC_4359_CHIP_ID:
++	case BRCM_CC_43596_CHIP_ID:
+ 		return (ci->pub.chiprev < 9) ? 0x180000 : 0x160000;
+ 	case BRCM_CC_4364_CHIP_ID:
+ 	case CY_CC_4373_CHIP_ID:
+@@ -1411,6 +1412,7 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
+ 		reg = chip->ops->read32(chip->ctx, addr);
+ 		return (reg & CC_SR_CTL0_ENABLE_MASK) != 0;
+ 	case BRCM_CC_4359_CHIP_ID:
++	case BRCM_CC_43596_CHIP_ID:
+ 	case CY_CC_43012_CHIP_ID:
+ 		addr = CORE_CC_REG(pmu->base, retention_ctl);
+ 		reg = chip->ops->read32(chip->ctx, addr);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index ad79e3b7e74a..da604fa17f94 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -71,6 +71,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+ 	BRCMF_FW_ENTRY(BRCM_CC_43570_CHIP_ID, 0xFFFFFFFF, 43570),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4358_CHIP_ID, 0xFFFFFFFF, 4358),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
++	BRCMF_FW_ENTRY(BRCM_CC_43596_CHIP_ID, 0xFFFFFFFF, 4359),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFFF, 4364),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0x0000000F, 4365B),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0xFFFFFFF0, 4365C),
+@@ -2107,6 +2108,9 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43570_DEVICE_ID),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4358_DEVICE_ID),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4359_DEVICE_ID),
++	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_DEVICE_ID),
++	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_2G_DEVICE_ID),
++	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_5G_DEVICE_ID),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_DEVICE_ID),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_2G_DEVICE_ID),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_5G_DEVICE_ID),
+diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+index 00309b272a0e..03542c096e40 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
++++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+@@ -43,6 +43,7 @@
+ #define BRCM_CC_43570_CHIP_ID		43570
+ #define BRCM_CC_4358_CHIP_ID		0x4358
+ #define BRCM_CC_4359_CHIP_ID		0x4359
++#define BRCM_CC_43596_CHIP_ID		43596
+ #define BRCM_CC_43602_CHIP_ID		43602
+ #define BRCM_CC_4364_CHIP_ID		0x4364
+ #define BRCM_CC_4365_CHIP_ID		0x4365
+@@ -72,6 +73,9 @@
+ #define BRCM_PCIE_43570_DEVICE_ID	0x43d9
+ #define BRCM_PCIE_4358_DEVICE_ID	0x43e9
+ #define BRCM_PCIE_4359_DEVICE_ID	0x43ef
++#define BRCM_PCIE_43596_DEVICE_ID	0x4415
++#define BRCM_PCIE_43596_2G_DEVICE_ID	0x4416
++#define BRCM_PCIE_43596_5G_DEVICE_ID	0x4417
+ #define BRCM_PCIE_43602_DEVICE_ID	0x43ba
+ #define BRCM_PCIE_43602_2G_DEVICE_ID	0x43bb
+ #define BRCM_PCIE_43602_5G_DEVICE_ID	0x43bc
 -- 
-2.27.0
+2.30.1
 
