@@ -2,240 +2,316 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 708F43302D3
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 17:00:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B118B33037E
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 18:59:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbhCGQAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 11:00:24 -0500
-Received: from mail-co1nam11on2055.outbound.protection.outlook.com ([40.107.220.55]:5468
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231226AbhCGQAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Mar 2021 11:00:09 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jOiuAILfmOsJin0T06NmOh27yr2ESwZYSsJMQBK7GNYjeJvLGgo0QZzQ2irbQlo1rAwM+7B0v3/70C8yEntAtrRlrZfeHRKnUoa082onYda1jCPI3uhpOH5WnI4wmf12uSqijyR3LE8oXS0d7CjCI3mJzCVFNMJ9X5ZxR4pGljEb1q6FqIC7+u2o2DMpkc2MAFvgF0HpNHr/BdMrZA8Jr7O4/GkhbbEl9DcHXUQ96sNZiHdPaIdwjzKZt8ZZmPum3Dufu6EB0bDAGyh2uf+5MueU17PWLNsfXfobqDXKSOnRKXmBXNIio1LIqTeD93Go5yf9R74YNr9DHlIwsAlNRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5pejd063JQsC6YHvLBYBXh4OEpT2AyG5PFOqioDAXRQ=;
- b=U5nVFlOxwwcyOOKXC1A5ajGXnXdjn3wOYbhu67tyUEfJWBtRTHb05EFTDScMIOEGek7MPrsaDab56sSg1mB8YDBvIlGJrOC8umL0hnlR4gZoDj88+wMqrhhoiBcnByBzKL6elSBKCi3jiadZ7n7JXvnqakOiNITd0SgbfPol6JrIF2iQEmIM/R2qthIB9b7kLywG9iqso1N5FKJOpOeZNOBeB0vs7ZjbOIXjp4J3sN7EnjqDUJ5n/ksZkbtT/wR4sHS8Lzws5gJoEnliK8VI0MzZ6e9TDMq7PFxiRUxFVW91gP19SnBSbdzEWl0bJIKQdm7/TRFOWdWVm0+RNsgtnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5pejd063JQsC6YHvLBYBXh4OEpT2AyG5PFOqioDAXRQ=;
- b=qnnCYibZlYcvm0fU0ett0bRAzS83BqFVPZRRrziIvhdNoTH5B7Qacat232RAh4976j4+erOjJbX3NMIs6ODWWw8akhjwgeylhlouUaiQ7JI+KC2O9RjgfvcFeU4B6uZ86tOnpEkGaUZXWuoGsZKNq3cgY84B8ERmo5TTscFmAqw=
-Received: from BN0PR04CA0158.namprd04.prod.outlook.com (2603:10b6:408:eb::13)
- by BN8PR12MB3124.namprd12.prod.outlook.com (2603:10b6:408:41::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.20; Sun, 7 Mar
- 2021 16:00:05 +0000
-Received: from BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:eb:cafe::f5) by BN0PR04CA0158.outlook.office365.com
- (2603:10b6:408:eb::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Sun, 7 Mar 2021 16:00:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT053.mail.protection.outlook.com (10.13.177.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3912.17 via Frontend Transport; Sun, 7 Mar 2021 16:00:05 +0000
-Received: from [172.27.12.69] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Mar
- 2021 16:00:01 +0000
-Subject: Re: [RFC] devlink: health: add remediation type
-To:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <jiri@resnulli.us>, <saeedm@nvidia.com>,
-        <andrew.gospodarek@broadcom.com>, <jacob.e.keller@intel.com>,
-        <guglielmo.morandin@broadcom.com>, <eugenem@fb.com>,
-        <eranbe@mellanox.com>
-References: <20210306024220.251721-1-kuba@kernel.org>
-From:   Eran Ben Elisha <eranbe@nvidia.com>
-Message-ID: <3d7e75bb-311d-ccd3-6852-cae5c32c9a8e@nvidia.com>
-Date:   Sun, 7 Mar 2021 17:59:58 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S231749AbhCGR6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 12:58:33 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:48915 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230503AbhCGR6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 12:58:12 -0500
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id A9ECD521036;
+        Sun,  7 Mar 2021 20:58:05 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1615139885;
+        bh=NR6fqczSPE3L//tu/oG3y++CW48ALi4JbNINbRcp+1g=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=uPHwL1LfASK9PcaJhZ8obezkst9HKp1Zdlbpaks1s5DTOhRObCVGZ33rr8ENwtxOq
+         Gptp1Rq3KZQNnnT0UDnj4FBvA9HYryJbgImclT9zNkB7IUJDpIy4rWxx+LtTK96Rxs
+         Ok4HWbk2Mj2VbxnN44V87yB/1eOtbL8iaWRA5SB7zrbxXit2+1VFfq4gYKMsA8Ht5C
+         ozCmLqplWhRUNz5QXoUZB8YZeA8gDylY5sNeY81OrWUPn1JBVO1a/7fUWKvnruXzfc
+         +hrxRPvEOaVfd5mtFPGixIklofQykhQukvQuooD+/qpAh5AajS4+8uMM2otcNn2kiz
+         ZbLwUWHjPH6hg==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 1D8FF521275;
+        Sun,  7 Mar 2021 20:58:00 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sun, 7 Mar
+ 2021 20:58:00 +0300
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stsp2@yandex.ru>, <oxffffaa@gmail.com>
+Subject: [RFC PATCH v6 00/22] virtio/vsock: introduce SOCK_SEQPACKET support
+Date:   Sun, 7 Mar 2021 20:57:19 +0300
+Message-ID: <20210307175722.3464068-1-arseny.krasnov@kaspersky.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210306024220.251721-1-kuba@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3069313e-76cc-486d-de78-08d8e18212fa
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3124:
-X-Microsoft-Antispam-PRVS: <BN8PR12MB3124D56F8665AFE68A0792EBB7949@BN8PR12MB3124.namprd12.prod.outlook.com>
-X-MS-Exchange-Transport-Forked: True
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wJquAPfhYWNwO8p5bBEwoQ9JEUGiEFGp/psIfTMOy0B+YghiZ6kUmnwUp3SxWX9Q3Yfia9qPdBJp3xazH88CkFqRxk7UGeA7FdcE8kAfrr0K9G+1y24syCI0kVfmErkmqU/IcJljf+4afJOiQW5J4/1oCeGjtI3Kt8OR0qgUeac4X2AtmdRwetHB4Mx7w5armr6oZHKWvMmOSDM1A6eD85VzDAC45BUf0IXVEsitKvP2vJ9puxM3JSqfrevaDKZwBVuRBrfXqYNHyZKnK9+j8ihTwTJs4NfClh0r7wk/GP2i4kOjTjaIrMWRKK0uGW28uRgWmE/OSkqjG0lYto8g5aNFBDfBXYjMUgNMonFFLhLZKXo9xo44rRJ0rridKp1f80hKEbusDLD2Gh5w3Fzaw8tOAkAvBY47jOGiij3OU4bphOnorhmXRbQdnvKYHmAgTeCUqixRu45C4y5mAg4yVyb2DWnSlgmpwt1t1wk2XNA9r0RcFeMWW8XDy17dUbFYqwd4KRlaAPEspCULyAzDPjap9l4bzubAty7YI57hPgg6BkHXHFJHYXRser6sLkpoIDPA6LrR1SaLeLor7QWK/CFmX4uxTUB6v3Lsm0BEwJA0PApnJmCH5hRsMyHdgQ++MA6zMHYuKaS8FFoYplY6Ex+xr+PjNdnxMexMFv8VzMG1jPABu7Jp0n+8kragU5mTJ/ZoFQuGqgMOSYJ7Yh8spN+Qa0phORE9Zr8fsQF17YE/kFVHplY5Gub3KSkZuCOR
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(396003)(136003)(346002)(46966006)(36840700001)(316002)(36756003)(478600001)(2906002)(2616005)(8936002)(47076005)(8676002)(53546011)(31686004)(5660300002)(426003)(36860700001)(16576012)(110136005)(36906005)(83380400001)(336012)(31696002)(70586007)(356005)(6666004)(86362001)(70206006)(26005)(34020700004)(186003)(82310400003)(7636003)(107886003)(4326008)(16526019)(82740400003)(54906003)(43740500002)(134885004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2021 16:00:05.1785
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3069313e-76cc-486d-de78-08d8e18212fa
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3124
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 03/07/2021 17:45:01
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 10
+X-KSE-AntiSpam-Info: Lua profiles 162254 [Mar 07 2021]
+X-KSE-AntiSpam-Info: LuaCore: 431 431 6af1f0c9661e70e28927a654c0fea10ff13ade05
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_ENCODING_NOT_JAPANESE}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_ENCODING_NOT_RUS}
+X-KSE-AntiSpam-Info: {Macro_CONTENT_TYPE_MISSED}
+X-KSE-AntiSpam-Info: {Macro_DATE_DOUBLE_SPACE}
+X-KSE-AntiSpam-Info: {Macro_DATE_MOSCOW}
+X-KSE-AntiSpam-Info: {Macro_FROM_DOUBLE_ENG_NAME}
+X-KSE-AntiSpam-Info: {Macro_FROM_LOWCAPS_DOUBLE_ENG_NAME_IN_EMAIL}
+X-KSE-AntiSpam-Info: {Macro_FROM_NOT_RU}
+X-KSE-AntiSpam-Info: {Macro_FROM_NOT_RUS_CHARSET}
+X-KSE-AntiSpam-Info: {Macro_FROM_REAL_NAME_MATCHES_ALL_USERNAME_PROB}
+X-KSE-AntiSpam-Info: {Macro_HEADERS_NOT_LIST}
+X-KSE-AntiSpam-Info: {Macro_MAILER_OTHER}
+X-KSE-AntiSpam-Info: {Macro_MISC_X_PRIORITY_MISSED}
+X-KSE-AntiSpam-Info: {Macro_NO_DKIM}
+X-KSE-AntiSpam-Info: {Macro_REPLY_TO_MISSED}
+X-KSE-AntiSpam-Info: {Macro_SUBJECT_AT_LEAST_2_WORDS}
+X-KSE-AntiSpam-Info: {Macro_SUBJECT_LONG_TEXT}
+X-KSE-AntiSpam-Info: {Macro_TO_CONTAINS_5_EMAILS}
+X-KSE-AntiSpam-Info: {Macro_TO_CONTAINS_SEVERAL_EMAILS}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;arseniy-pc.avp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 10
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 03/07/2021 17:47:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 07.03.2021 15:50:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/03/07 17:11:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/03/07 15:50:00 #16360637
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+	This patchset implements support of SOCK_SEQPACKET for virtio
+transport.
+	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+do it, two new packet operations were added: first for start of record
+ and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
+both operations carries metadata - to maintain boundaries and payload
+integrity. Metadata is introduced by adding special header with two
+fields - message id and message length:
 
+	struct virtio_vsock_seq_hdr {
+		__le32  msg_id;
+		__le32  msg_len;
+	} __attribute__((packed));
 
-On 3/6/2021 4:42 AM, Jakub Kicinski wrote:
-> Currently devlink health does not give user any clear information
-> of what kind of remediation ->recover callback will perform. This
-> makes it difficult to understand the impact of enabling auto-
-> -remediation, and the severity of the error itself.
-> 
-> To allow users to make more informed decision, as well as stretch
-> the applicability of devlink health beyond what can be fixed by
-> resetting things - add a new remediation type attribute.
-> 
-> Note that we only allow one remediation type per reporter, this
-> is intentional. devlink health is not built for mixing issues
-> of different severity into one reporter since it only maintains
-> one dump, of the first event and a single error counter.
-> Nudging vendors towards categorizing issues beyond coarse
-> groups is an added bonus.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->   include/net/devlink.h        |  2 ++
->   include/uapi/linux/devlink.h | 30 ++++++++++++++++++++++++++++++
->   net/core/devlink.c           |  7 +++++--
->   3 files changed, 37 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/net/devlink.h b/include/net/devlink.h
-> index 853420db5d32..70b5fd6a8c0d 100644
-> --- a/include/net/devlink.h
-> +++ b/include/net/devlink.h
-> @@ -664,6 +664,7 @@ enum devlink_health_reporter_state {
->   /**
->    * struct devlink_health_reporter_ops - Reporter operations
->    * @name: reporter name
-> + * remedy: severity of the remediation required
->    * @recover: callback to recover from reported error
->    *           if priv_ctx is NULL, run a full recover
->    * @dump: callback to dump an object
-> @@ -674,6 +675,7 @@ enum devlink_health_reporter_state {
->   
->   struct devlink_health_reporter_ops {
->   	char *name;
-> +	enum devlink_health_reporter_remedy remedy;
->   	int (*recover)(struct devlink_health_reporter *reporter,
->   		       void *priv_ctx, struct netlink_ext_ack *extack);
->   	int (*dump)(struct devlink_health_reporter *reporter,
-> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-> index f6008b2fa60f..bd490c5536b1 100644
-> --- a/include/uapi/linux/devlink.h
-> +++ b/include/uapi/linux/devlink.h
-> @@ -534,6 +534,9 @@ enum devlink_attr {
->   	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
->   
->   	DEVLINK_ATTR_PORT_PCI_SF_NUMBER,	/* u32 */
-> +
-> +	DEVLINK_ATTR_HEALTH_REPORTER_REMEDY,	/* u32 */
-> +
->   	/* add new attributes above here, update the policy in devlink.c */
->   
->   	__DEVLINK_ATTR_MAX,
-> @@ -608,4 +611,31 @@ enum devlink_port_fn_opstate {
->   	DEVLINK_PORT_FN_OPSTATE_ATTACHED,
->   };
->   
-> +/**
-> + * enum devlink_health_reporter_remedy - severity of remediation procedure
-> + * @DLH_REMEDY_NONE: transient error, no remediation required
-DLH_REMEDY_LOCAL_FIX: associated component will undergo a local 
-un-harmful fix attempt.
-(e.g look for lost interrupt in mlx5e_tx_reporter_timeout_recover())
+	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
+packets(buffer of second virtio descriptor in chain) in the same way as
+data transmitted in RW packets. Payload was chosen as buffer for this
+header to avoid touching first virtio buffer which carries header of
+packet, because someone could check that size of this buffer is equal
+to size of packet header. To send record, packet with start marker is
+sent first(it's header carries length of record and id),then all data
+is sent as usual 'RW' packets and finally SEQ_END is sent(it carries
+id of message, which is equal to id of SEQ_BEGIN), also after sending
+SEQ_END id is incremented. On receiver's side,size of record is known
+from packet with start record marker. To check that no packets were
+dropped by transport, 'msg_id's of two sequential SEQ_BEGIN and SEQ_END
+are checked to be equal and length of data between two markers is
+compared to then length in SEQ_BEGIN header.
+	Now as  packets of one socket are not reordered neither on
+vsock nor on vhost transport layers, such markers allows to restore
+original record on receiver's side. If user's buffer is smaller that
+record length, when all out of size data is dropped.
+	Maximum length of datagram is not limited as in stream socket,
+because same credit logic is used. Difference with stream socket is
+that user is not woken up until whole record is received or error
+occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+	Tests also implemented.
 
-> + * @DLH_REMEDY_COMP_RESET: associated device component (e.g. device queue)
-> + *			will be reset
-> + * @DLH_REMEDY_RESET: full device reset, will result in temporary unavailability
-> + *			of the device, device configuration should not be lost
-> + * @DLH_REMEDY_REINIT: device will be reinitialized and configuration lost
-> + * @DLH_REMEDY_POWER_CYCLE: device requires a power cycle to recover
-> + * @DLH_REMEDY_REIMAGE: device needs to be reflashed
-> + * @DLH_REMEDY_BAD_PART: indication of failing hardware, device needs to be
-> + *			replaced
-> + *
-> + * Used in %DEVLINK_ATTR_HEALTH_REPORTER_REMEDY, categorizes the health reporter
-> + * by the severity of the required remediation, and indicates the remediation
-> + * type to the user if it can't be applied automatically (e.g. "reimage").
-> + */
-The assumption here is that a reporter's recovery function has one 
-remedy. But it can have few remedies and escalate between them. Did you 
-consider a bitmask?
+	Thanks to stsp2@yandex.ru for encouragements and initial design
+recommendations.
 
-> +enum devlink_health_reporter_remedy {
-> +	DLH_REMEDY_NONE = 1,
-> +	DLH_REMEDY_COMP_RESET,
-> +	DLH_REMEDY_RESET,
-> +	DLH_REMEDY_REINIT,
-> +	DLH_REMEDY_POWER_CYCLE,
-> +	DLH_REMEDY_REIMAGE,
-In general, I don't expect a reported to perform POWER_CYCLE or REIMAGE 
-as part of the recovery.
+ Arseny Krasnov (22):
+  af_vsock: update functions for connectible socket
+  af_vsock: separate wait data loop
+  af_vsock: separate receive data loop
+  af_vsock: implement SEQPACKET receive loop
+  af_vsock: separate wait space loop
+  af_vsock: implement send logic for SEQPACKET
+  af_vsock: rest of SEQPACKET support
+  af_vsock: update comments for stream sockets
+  virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
+  virtio/vsock: simplify credit update function API
+  virtio/vsock: dequeue callback for SOCK_SEQPACKET
+  virtio/vsock: fetch length for SEQPACKET record
+  virtio/vsock: add SEQPACKET receive logic
+  virtio/vsock: rest of SOCK_SEQPACKET support
+  virtio/vsock: SEQPACKET feature bit
+  vhost/vsock: SEQPACKET feature bit support
+  virtio/vsock: SEQPACKET feature bit support
+  virtio/vsock: setup SEQPACKET ops for transport
+  vhost/vsock: setup SEQPACKET ops for transport
+  vsock/loopback: setup SEQPACKET ops for transport
+  vsock_test: add SOCK_SEQPACKET tests
+  virtio/vsock: update trace event for SEQPACKET
 
-> +	DLH_REMEDY_BAD_PART,
-BAD_PART probably indicates that the reporter (or any command line 
-execution) cannot recover the issue.
-As the suggested remedy is static per reporter's recover method, it 
-doesn't make sense for one to set a recover method that by design cannot 
-recover successfully.
+ drivers/vhost/vsock.c                        |  22 +-
+ include/linux/virtio_vsock.h                 |  22 +
+ include/net/af_vsock.h                       |  10 +
+ .../events/vsock_virtio_transport_common.h   |  48 +-
+ include/uapi/linux/virtio_vsock.h            |  19 +
+ net/vmw_vsock/af_vsock.c                     | 589 +++++++++++------
+ net/vmw_vsock/virtio_transport.c             |  18 +
+ net/vmw_vsock/virtio_transport_common.c      | 364 ++++++++--
+ net/vmw_vsock/vsock_loopback.c               |  13 +
+ tools/testing/vsock/util.c                   |  32 +-
+ tools/testing/vsock/util.h                   |   3 +
+ tools/testing/vsock/vsock_test.c             | 126 ++++
+ 12 files changed, 1013 insertions(+), 253 deletions(-)
 
-Maybe we should extend devlink_health_reporter_state with POWER_CYCLE, 
-REIMAGE and BAD_PART? To indicate the user that for a successful 
-recovery, it should run a non-devlink-health operation?
+ v5 -> v6:
+ General changelog:
+ - virtio transport specific callbacks which send SEQ_BEGIN or
+   SEQ_END now hidden inside virtio transport. Only enqueue,
+   dequeue and record length callbacks are provided by transport.
 
-> +};
-> +
->   #endif /* _UAPI_LINUX_DEVLINK_H_ */
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 737b61c2976e..73eb665070b9 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -6095,7 +6095,8 @@ __devlink_health_reporter_create(struct devlink *devlink,
->   {
->   	struct devlink_health_reporter *reporter;
->   
-> -	if (WARN_ON(graceful_period && !ops->recover))
-> +	if (WARN_ON(graceful_period && !ops->recover) ||
-> +	    WARN_ON(!ops->remedy))
-Here you fail every reported that doesn't have remedy set, not only the 
-ones with recovery callback
+ - virtio feature bit for SEQPACKET socket support introduced:
+   VIRTIO_VSOCK_F_SEQPACKET.
 
->   		return ERR_PTR(-EINVAL);
->   
->   	reporter = kzalloc(sizeof(*reporter), GFP_KERNEL);
-> @@ -6263,7 +6264,9 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
->   	if (!reporter_attr)
->   		goto genlmsg_cancel;
->   	if (nla_put_string(msg, DEVLINK_ATTR_HEALTH_REPORTER_NAME,
-> -			   reporter->ops->name))
-> +			   reporter->ops->name) ||
-> +	    nla_put_u32(msg, DEVLINK_ATTR_HEALTH_REPORTER_REMEDY,
-> +			reporter->ops->remedy))
-Why not new if clause like all other attributes later.
->   		goto reporter_nest_cancel;
->   	if (nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_STATE,
->   		       reporter->health_state))
-> 
+ - 'msg_cnt' field in 'struct virtio_vsock_seq_hdr' renamed to
+   'msg_id' and used as id.
+
+ Per patch changelog:
+ - 'af_vsock: separate wait data loop':
+    1) Commit message updated.
+    2) 'prepare_to_wait()' moved inside while loop(thanks to
+      Jorgen Hansen).
+    Marked 'Reviewed-by' with 1), but as 2) I removed R-b.
+
+ - 'af_vsock: separate receive data loop': commit message
+    updated.
+    Marked 'Reviewed-by' with that fix.
+
+ - 'af_vsock: implement SEQPACKET receive loop': style fixes.
+
+ - 'af_vsock: rest of SEQPACKET support':
+    1) 'module_put()' added when transport callback check failed.
+    2) Now only 'seqpacket_allow()' callback called to check
+       support of SEQPACKET by transport.
+
+ - 'af_vsock: update comments for stream sockets': commit message
+    updated.
+    Marked 'Reviewed-by' with that fix.
+
+ - 'virtio/vsock: set packet's type in send':
+    1) Commit message updated.
+    2) Parameter 'type' from 'virtio_transport_send_credit_update()'
+       also removed in this patch instead of in next.
+
+ - 'virtio/vsock: dequeue callback for SOCK_SEQPACKET': SEQPACKET
+    related state wrapped to special struct.
+
+ - 'virtio/vsock: update trace event for SEQPACKET': format strings
+    now not broken by new lines.
+
+ v4 -> v5:
+ - patches reorganized:
+   1) Setting of packet's type in 'virtio_transport_send_pkt_info()'
+      is moved to separate patch.
+   2) Simplifying of 'virtio_transport_send_credit_update()' is
+      moved to separate patch and before main virtio/vsock patches.
+ - style problem fixed
+ - in 'af_vsock: separate receive data loop' extra 'release_sock()'
+   removed
+ - added trace event fields for SEQPACKET
+ - in 'af_vsock: separate wait data loop':
+   1) 'vsock_wait_data()' removed 'goto out;'
+   2) Comment for invalid data amount is changed.
+ - in 'af_vsock: rest of SEQPACKET support', 'new_transport' pointer
+   check is moved after 'try_module_get()'
+ - in 'af_vsock: update comments for stream sockets', 'connect-oriented'
+   replaced with 'connection-oriented'
+ - in 'loopback/vsock: setup SEQPACKET ops for transport',
+   'loopback/vsock' replaced with 'vsock/loopback'
+
+ v3 -> v4:
+ - SEQPACKET specific metadata moved from packet header to payload
+   and called 'virtio_vsock_seq_hdr'
+ - record integrity check:
+   1) SEQ_END operation was added, which marks end of record.
+   2) Both SEQ_BEGIN and SEQ_END carries counter which is incremented
+      on every marker send.
+ - af_vsock.c: socket operations for STREAM and SEQPACKET call same
+   functions instead of having own "gates" differs only by names:
+   'vsock_seqpacket/stream_getsockopt()' now replaced with
+   'vsock_connectible_getsockopt()'.
+ - af_vsock.c: 'seqpacket_dequeue' callback returns error and flag that
+   record ready. There is no need to return number of copied bytes,
+   because case when record received successfully is checked at virtio
+   transport layer, when SEQ_END is processed. Also user doesn't need
+   number of copied bytes, because 'recv()' from SEQPACKET could return
+   error, length of users's buffer or length of whole record(both are
+   known in af_vsock.c).
+ - af_vsock.c: both wait loops in af_vsock.c(for data and space) moved
+   to separate functions because now both called from several places.
+ - af_vsock.c: 'vsock_assign_transport()' checks that 'new_transport'
+   pointer is not NULL and returns 'ESOCKTNOSUPPORT' instead of 'ENODEV'
+   if failed to use transport.
+ - tools/testing/vsock/vsock_test.c: rename tests
+
+ v2 -> v3:
+ - patches reorganized: split for prepare and implementation patches
+ - local variables are declared in "Reverse Christmas tree" manner
+ - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
+   fields access
+ - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
+   between stream and seqpacket sockets.
+ - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
+ - af_vsock.c: 'vsock_wait_data()' refactored.
+
+ v1 -> v2:
+ - patches reordered: af_vsock.c related changes now before virtio vsock
+ - patches reorganized: more small patches, where +/- are not mixed
+ - tests for SOCK_SEQPACKET added
+ - all commit messages updated
+ - af_vsock.c: 'vsock_pre_recv_check()' inlined to
+   'vsock_connectible_recvmsg()'
+ - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
+   was not found
+ - virtio_transport_common.c: transport callback for seqpacket dequeue
+ - virtio_transport_common.c: simplified
+   'virtio_transport_recv_connected()'
+ - virtio_transport_common.c: send reset on socket and packet type
+			      mismatch.
+
+Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+
+-- 
+2.25.1
+
