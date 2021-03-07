@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2878632FFA5
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 09:35:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABD532FFB0
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 09:41:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231222AbhCGIfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 03:35:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
+        id S230134AbhCGIlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 03:41:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230023AbhCGIe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 03:34:59 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3A0C06174A;
-        Sun,  7 Mar 2021 00:34:59 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id o38so4388862pgm.9;
-        Sun, 07 Mar 2021 00:34:59 -0800 (PST)
+        with ESMTP id S230269AbhCGIkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 03:40:37 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8787CC06174A;
+        Sun,  7 Mar 2021 00:40:37 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id q6-20020a17090a4306b02900c42a012202so1442806pjg.5;
+        Sun, 07 Mar 2021 00:40:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=Ztm3kMmO9foaT7tkUJFO2YdMILbFbAnDhEHXV2g/J4w=;
-        b=NJfBKm+6Po22NyGTrZqqEVmEdEdNe+GTidqjmEHd716kY6jxMvgBzSwkpnaTI77CtW
-         JWHi8stDcqW/bJtC7/luFcI9f5Os5LmJw4snh6bikdIqOEfLSmNcMikTolRd6wotD34V
-         J03OhLtLPoMP9pP21hYJN1+VS+pTxPuzwmQ8y6+fIlyLAMZLtfqiESrd6NxOdK0EeaDp
-         AadGekm+9mRbu8OzMoqhwZcevH4jFMi837azJda0h/u4EcgC0kh2huL0y00kRyYWXfah
-         aEcUQLsfXJ92j0FmJajL6EUu0r55zhbzpULw5a539NaMcaYXYr/BHoX4c7/RHGf5zTEM
-         cM7Q==
+        bh=zb+I3SxrI5NPVoptwXvVDUa4Jf+lOBb6Yh3g24lzCNM=;
+        b=uglPs/SKwundv7PMctDtGocRd/BtZsAiyM2AR8CgZIqvzwSkYI8PCK3LgXWMyhUShq
+         si1drAi4H1PmIpNsUOSYjNg7pzMOaqnGFMP50eThVWWcTHnQA4dYnscF6kgGMCq0K3ye
+         n2E1E4R0XM5DGxJTsXOUijvdkBg7zfhVL8lNQ8VehFUAmQs7Hz3dBSd0vW6xQHp1c9aP
+         uuNz4L5YaYK+1dT+GRdFIYPgdRydZwUqrhpk/mhknb5iAw9lr70aQezcgiZFKNWgd9CJ
+         hdQbgq/M0qvvt52YKw+MuicFga2dkuXlV3n0LrYN1w47fndIPmsVz9O83LR010Zw4l2e
+         dLUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Ztm3kMmO9foaT7tkUJFO2YdMILbFbAnDhEHXV2g/J4w=;
-        b=WxnZL9fKQmMMytzb7BeM1eGe935vCvA1nfsM34pU7bWET8THaqYl/Fi6M+PB54zaGi
-         3IS+18G0OPpM/a+AgVL+b8hzvazeJ5ZlcVwXrDjpvVIbhg+eWIr0RS+oNz06ngNkYNvx
-         EI/qqVVW7OXLJulzt0anMFnp4ro+Y2yf4mDbdvBKDPwnXyGOseLfVpg7gz9kgchMPb5B
-         DWxfVp5Pg7JuvN/ZZ48wLZHzWFvcgLftOFKYcNTr/AdiQlFcAWI4M5KUbYBepmy0hj0f
-         ZB1Wjth0HG+Kux+JV8DbZyTxvxDH8jfP0mV3ysHf0aDTTILN3HjodJjJukjBEHBWljzf
-         thzw==
-X-Gm-Message-State: AOAM532AxyqYRbzp8w1F3h4xh17UtrHfgN5L4MsWMBbrDzJnnZUJHKVM
-        6cgIAXARnPR3LlgnS4xX62s=
-X-Google-Smtp-Source: ABdhPJybCcPmwbuOYWbrYhW2kHIrHuCrDvfX/nvpR5jnAaXI3Xa0YmksH8Y+lKaOZJmJeoyoy7h3+Q==
-X-Received: by 2002:a65:524b:: with SMTP id q11mr15570433pgp.207.1615106098837;
-        Sun, 07 Mar 2021 00:34:58 -0800 (PST)
+        bh=zb+I3SxrI5NPVoptwXvVDUa4Jf+lOBb6Yh3g24lzCNM=;
+        b=cpZZSrVLHL3d8vtHIwXlhRkCpoBVPvivcqC/7LFR6VzxTZuk9DK9h0eEwKLwNwQ6+A
+         dBdYTRJMm72WGUoRZ4JP1pnV8tQW4gyJR4ApZxXvDqiTs9zlM7idRkm7p3hn1xuoS7u2
+         geE/nU5bKyO0VfRtMdM1ssGCx4HFV+0LXHTrdHpng8rC+KXRdjCjZ37PxMZz7ZBlBpah
+         eMyCAgvZ0BzWbmm4sWSCuRLDuNFIfGGR+oTS7sHsXRScNYJOFfWG4kNZFVvwHTA+fMBf
+         LkGTetZAvZgFo4wgIMFx7jL+VzJUXnZbe2Ugc6qVLUMleIKykXpvXNS9z6cUSuYWaLo0
+         L6Ug==
+X-Gm-Message-State: AOAM533ZDZsq61RWkgXb2OOYeV2SM/BxmWkLbso9otnyQ6l9KAuSk72K
+        CoJhTtbKygokLRVD+sVCPrE=
+X-Google-Smtp-Source: ABdhPJzcDXahAJOxVGl/ts9d1lX+DEFqBSF5YNgG5t/5A2HBhMwE3dsvQq3wf7+bncAE94BgYCSoBA==
+X-Received: by 2002:a17:90a:c902:: with SMTP id v2mr19408878pjt.144.1615106437140;
+        Sun, 07 Mar 2021 00:40:37 -0800 (PST)
 Received: from localhost.localdomain ([45.135.186.66])
-        by smtp.gmail.com with ESMTPSA id h6sm6747519pfv.84.2021.03.07.00.34.54
+        by smtp.gmail.com with ESMTPSA id q10sm6438043pfc.190.2021.03.07.00.40.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Mar 2021 00:34:58 -0800 (PST)
+        Sun, 07 Mar 2021 00:40:36 -0800 (PST)
 From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     amitkarwar@gmail.com, siva8118@gmail.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] rsi: fix error return code of rsi_load_9116_firmware()
-Date:   Sun,  7 Mar 2021 00:34:45 -0800
-Message-Id: <20210307083445.21322-1-baijiaju1990@gmail.com>
+To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, kuba@kernel.org, tariqt@mellanox.com,
+        jesse.brandeburg@intel.com, dinghao.liu@zju.edu.cn,
+        trix@redhat.com, song.bao.hua@hisilicon.com, Jason@zx2c4.com,
+        wanghai38@huawei.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: hisilicon: hns: fix error return code of hns_nic_clear_all_rx_fetch()
+Date:   Sun,  7 Mar 2021 00:40:12 -0800
+Message-Id: <20210307084012.21584-1-baijiaju1990@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kmemdup() returns NULL to ta_firmware, no error return code of
-rsi_load_9116_firmware() is assigned.
-To fix this bug, status is assigned with -ENOMEM in this case.
+When hns_assemble_skb() returns NULL to skb, no error return code of
+hns_nic_clear_all_rx_fetch() is assigned.
+To fix this bug, ret is assigned with -ENOMEM in this case.
 
 Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
 Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
- drivers/net/wireless/rsi/rsi_91x_hal.c | 4 +++-
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
-index ce9892152f4d..32ecb8b3d6c5 100644
---- a/drivers/net/wireless/rsi/rsi_91x_hal.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
-@@ -1038,8 +1038,10 @@ static int rsi_load_9116_firmware(struct rsi_hw *adapter)
- 	}
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index 5d7824d2b4d4..c66a7a51198e 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -1663,8 +1663,10 @@ static int hns_nic_clear_all_rx_fetch(struct net_device *ndev)
+ 			for (j = 0; j < fetch_num; j++) {
+ 				/* alloc one skb and init */
+ 				skb = hns_assemble_skb(ndev);
+-				if (!skb)
++				if (!skb) {
++					ret = -ENOMEM;
+ 					goto out;
++				}
+ 				rd = &tx_ring_data(priv, skb->queue_mapping);
+ 				hns_nic_net_xmit_hw(ndev, skb, rd);
  
- 	ta_firmware = kmemdup(fw_entry->data, fw_entry->size, GFP_KERNEL);
--	if (!ta_firmware)
-+	if (!ta_firmware) {
-+		status = -ENOMEM;
- 		goto fail_release_fw;
-+	}
- 	fw_p = ta_firmware;
- 	instructions_sz = fw_entry->size;
- 	rsi_dbg(INFO_ZONE, "FW Length = %d bytes\n", instructions_sz);
 -- 
 2.17.1
 
