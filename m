@@ -2,64 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 973A13300D7
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 13:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF546330126
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 14:20:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230260AbhCGM3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 07:29:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44240 "EHLO mail.kernel.org"
+        id S231303AbhCGNSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 08:18:23 -0500
+Received: from aposti.net ([89.234.176.197]:44256 "EHLO aposti.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229662AbhCGM2q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 7 Mar 2021 07:28:46 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0CBF965092;
-        Sun,  7 Mar 2021 12:28:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615120125;
-        bh=sY1HN2BTEJut9YpU7t00t6v+TXQSn/Gf4U69FgfKcdA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=POrEybZ4F4prA4n+UYe5izD5Imvnkvyrvg84/Wm2SjlPL/UtSYD2BQw7BAgTN2XJ0
-         BsaM2lMocTWp50+LIdiD6vC8JSHyhGEQZlFogbRSj8lLUIGIJullcNSmUmQoy2IIbH
-         NrobhxecgRpV4PN/mLlhSXElykQrjTkA5nktYU2R73k35eeIjrDqHfJcukhlewCVNN
-         Thpak2cAvfNisOG3xxWDTLGQjh8WuTBhM62r7HAMP/CgqeUW5i9bpPI2wnUGnA/Riu
-         2VRTewB1gXn91YhQmf2aBaAWtQmo89BIv5GUSmtmJarZLXr3hGIJ638q3HeFwdj1kD
-         Xkqs62JEf9U0A==
-Date:   Sun, 7 Mar 2021 14:28:40 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, kvalo@codeaurora.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath: ath6kl: fix error return code of
- ath6kl_htc_rx_bundle()
-Message-ID: <YETG+HrMTXs688MN@unreal>
-References: <20210307090757.22617-1-baijiaju1990@gmail.com>
- <YESaSwoGRxGvrggv@unreal>
- <a55172ad-bf40-0110-8ef3-326001ecd13e@gmail.com>
+        id S231288AbhCGNSN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Mar 2021 08:18:13 -0500
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     od@zcrc.me, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 1/3] net: davicom: Fix regulator not turned off on failed probe
+Date:   Sun,  7 Mar 2021 13:17:47 +0000
+Message-Id: <20210307131749.14960-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a55172ad-bf40-0110-8ef3-326001ecd13e@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 07, 2021 at 05:31:01PM +0800, Jia-Ju Bai wrote:
-> Hi Leon,
->
-> I am quite sorry for my incorrect patches...
-> My static analysis tool reports some possible bugs about error handling
-> code, and thus I write some patches for the bugs that seem to be true in my
-> opinion.
-> Because I am not familiar with many device drivers, some of my reported bugs
-> can be false positives...
+When the probe fails or requests to be defered, we must disable the
+regulator that was previously enabled.
 
-It will be much helpful if instead of writing new static analysis tool,
-you will invest time and improve existing well known tools, like smatch
-and sparse.
+Fixes: 7994fe55a4a2 ("dm9000: Add regulator and reset support to dm9000")
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ drivers/net/ethernet/davicom/dm9000.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-Right now, you didn't report bugs, but sent bunch of patches that most
-of the time are incorrect. So it is not "some of my reported bugs can
-be false positives...", but "some of my patches can fix real bugs by
-chance".
+diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
+index 3fdc70dab5c1..ae744826bb9e 100644
+--- a/drivers/net/ethernet/davicom/dm9000.c
++++ b/drivers/net/ethernet/davicom/dm9000.c
+@@ -1449,7 +1449,7 @@ dm9000_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(dev, "failed to request reset gpio %d: %d\n",
+ 				reset_gpios, ret);
+-			return -ENODEV;
++			goto out_regulator_disable;
+ 		}
+ 
+ 		/* According to manual PWRST# Low Period Min 1ms */
+@@ -1461,8 +1461,10 @@ dm9000_probe(struct platform_device *pdev)
+ 
+ 	if (!pdata) {
+ 		pdata = dm9000_parse_dt(&pdev->dev);
+-		if (IS_ERR(pdata))
+-			return PTR_ERR(pdata);
++		if (IS_ERR(pdata)) {
++			ret = PTR_ERR(pdata);
++			goto out_regulator_disable;
++		}
+ 	}
+ 
+ 	/* Init network device */
+@@ -1703,6 +1705,10 @@ dm9000_probe(struct platform_device *pdev)
+ 	dm9000_release_board(pdev, db);
+ 	free_netdev(ndev);
+ 
++out_regulator_disable:
++	if (!IS_ERR(power))
++		regulator_disable(power);
++
+ 	return ret;
+ }
+ 
+-- 
+2.30.1
 
-Thanks
