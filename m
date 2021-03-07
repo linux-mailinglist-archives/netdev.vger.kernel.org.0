@@ -2,114 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4FEC32FFE8
-	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 10:31:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA07632FFFD
+	for <lists+netdev@lfdr.de>; Sun,  7 Mar 2021 10:52:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbhCGJbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 04:31:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50354 "EHLO
+        id S231497AbhCGJvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 04:51:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbhCGJbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 04:31:09 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62059C06174A;
-        Sun,  7 Mar 2021 01:31:09 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id j12so5111160pfj.12;
-        Sun, 07 Mar 2021 01:31:09 -0800 (PST)
+        with ESMTP id S229872AbhCGJvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 04:51:23 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA1BC06174A
+        for <netdev@vger.kernel.org>; Sun,  7 Mar 2021 01:51:23 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id x4so7764910lfu.7
+        for <netdev@vger.kernel.org>; Sun, 07 Mar 2021 01:51:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=qyR07YDqUgRUKmk3fTa/Vt5RDMJrIvpFOr8PG+miymA=;
-        b=MfkgjOKnOVYLO3SuNni18rv4q5P5WwP9LauVxNPe0365fqeYG2qbTKJdCG1zWOFm96
-         qykaMHjkggeb5xmSn67OMHMBmPZHtBChA+ljSAwPp8Vk8bjisZ8m4BCwKEs8mYLXqz/t
-         He4L4SYLkJwgP8NBB01hKm+DXy9TcA1bWyFuh+LRNxdCszIf0wMddCu8hF+/N0yUmcrd
-         9SwEel14qIO7MJozGfKVN1Bfv2nbKxaUykL5Ea0QM3lTdOvYCVkFFqgDGRJu0nH08q0H
-         QSZb6ITpmrmKGe4f/8j0X6ue58DxKl8cRIrkQKvbvBZrXyRFAFljitEiUOGVyj01p+3L
-         jtfw==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=iXzCcfJI+V0GoPv6zkms2CVGugyfsxFLJoq7lUMNJeY=;
+        b=E51LvZaoXj+veHYJPIAfbOP86/B0x7H182y2AjIWAxlhpwU7nM+8unlyAZ/6PaKiyM
+         P1oRezfti/bb3sYZP/lrAqXkJbF9CG+tBgc4syYSSODgUzKzAx6jR01uPSFhPeo98YZ4
+         n6uS6TRWCS0MnK3JRXMtJieRPKCmXoUTBQ2u2E/+tMZszHpxfm5PrdJ+r8shn4tWdcxo
+         3eaqQhMorwbLcUFj9gCl6xgMWfAELo6ANym0+TTMDadMqfRcdE7wNrTsl4uTLMZ+Gait
+         r2ONJPuPBwEE/f3qhBKUN+LP+qVG1rBJTYSwEA2cilpnfVrWeamhSKwaE6XX+purJWDx
+         BY0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=qyR07YDqUgRUKmk3fTa/Vt5RDMJrIvpFOr8PG+miymA=;
-        b=EgSUq6yslcdiIZt/Sdfrfr6hF5mb9CMweZJYGGyJ0Md5fM9m89LNDIEJmCk+ph1EG6
-         VAmZ6zsgKnHN5R9MCw6TNvq9RQQTXQngd95mYAJhy76D4lOUJ/h090Bq2gFSZicqo4ZK
-         P0eFVUxu5bcFuepB1oTj1brdk1dj6o1xPzJQLES72dZRk2/OAY2wUOb5HWPY6DnwiYET
-         8NFpM2/mR1prFSCRp2ZUKExZ592yRar7mNY7mI2xAIONuFnhrBSUlLrJOIUlZ0DZRQUh
-         CHVWTes0hvCmSSZAvCZRBfVA+/3ghaMMMwM8kGs0bNU+K7z/ZD/uLH2QOwBsdw6vsllj
-         rkPA==
-X-Gm-Message-State: AOAM532aj4hpRtK4uRp33VOWx4EShGyYq7L3n/4M6+xghonv6GgyCjSX
-        uGpRQ8P10yxpoEmVRjI5CxN5gvOujnefAi3t
-X-Google-Smtp-Source: ABdhPJyD789MXxrFH1qFfdzEM4OXwC82uAqHFu8di0W3snf8KvjlhGvwm1lv77tVUwmmnx8gPFHZhg==
-X-Received: by 2002:a62:e502:0:b029:1e4:d7c3:5c59 with SMTP id n2-20020a62e5020000b02901e4d7c35c59mr16529517pff.51.1615109468420;
-        Sun, 07 Mar 2021 01:31:08 -0800 (PST)
-Received: from [10.74.0.22] ([45.135.186.99])
-        by smtp.gmail.com with ESMTPSA id 142sm7203548pfz.196.2021.03.07.01.31.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Mar 2021 01:31:07 -0800 (PST)
-Subject: Re: [PATCH] ath: ath6kl: fix error return code of
- ath6kl_htc_rx_bundle()
-To:     Leon Romanovsky <leon@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210307090757.22617-1-baijiaju1990@gmail.com>
- <YESaSwoGRxGvrggv@unreal>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <a55172ad-bf40-0110-8ef3-326001ecd13e@gmail.com>
-Date:   Sun, 7 Mar 2021 17:31:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=iXzCcfJI+V0GoPv6zkms2CVGugyfsxFLJoq7lUMNJeY=;
+        b=tjgrifRr9dzbsKmlFW5pPyV7NbAmFxF62B/uHS1gNXUE4xG8MUTSiGvwYKktP3DRZq
+         rnsSyxTrM0WAuZrqDUUI7Zlmfd4VzBnrJu/Ne44kme8UExAEq3hOeDyMWB+SRX+dw8Zx
+         9nFOTaLmoI6EWr3AEKCLp1F7YmRxLd/QXGxXd+BwEtfZ2RBKE/ibXxbyyQgQaW+zESnw
+         hNqH4oin5KBy6N/c7uLs9uQj6uw0YG1gry5aSD7VxVRiKyi0xSCtzWIN999x3Nq5zlwp
+         DkNCyBAIXByagmdOdccb3v0AcDHwjhdT5GTLj63X5AUd74B538lSlutKqoVZ0WtYiqQa
+         zNOA==
+X-Gm-Message-State: AOAM5317bb02N7ljrKzpPFX4zANu+Q5N0Gkjr9ALQ51U/qdv1chTDnwu
+        YG8BsthkmjFWxYU4KdfztM5sVE7dUw+KwA==
+X-Google-Smtp-Source: ABdhPJzSlB2cVDRO9J9GtksMhbULp7FesLmiMV+t91jDDtHWBhhwnJcVUFtkdkuKE2b8bMsaWeIPWQ==
+X-Received: by 2002:a05:6512:2016:: with SMTP id a22mr11073593lfb.645.1615110680425;
+        Sun, 07 Mar 2021 01:51:20 -0800 (PST)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id d7sm943938lfg.303.2021.03.07.01.51.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Mar 2021 01:51:19 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net: dsa: Always react to global bridge attribute changes
+In-Reply-To: <20210307005826.mj6jqyov4kzhqsti@skbuf>
+References: <20210306002455.1582593-1-tobias@waldekranz.com> <20210306002455.1582593-3-tobias@waldekranz.com> <20210306140033.axpbtqamaruzzzew@skbuf> <20210306140440.3uwmyji4smxdpgpm@skbuf> <87czwcqh96.fsf@waldekranz.com> <20210307005826.mj6jqyov4kzhqsti@skbuf>
+Date:   Sun, 07 Mar 2021 10:51:18 +0100
+Message-ID: <877dmjqokp.fsf@waldekranz.com>
 MIME-Version: 1.0
-In-Reply-To: <YESaSwoGRxGvrggv@unreal>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Leon,
-
-I am quite sorry for my incorrect patches...
-My static analysis tool reports some possible bugs about error handling 
-code, and thus I write some patches for the bugs that seem to be true in 
-my opinion.
-Because I am not familiar with many device drivers, some of my reported 
-bugs can be false positives...
-
-
-Best wishes,
-Jia-Ju Bai
-
-On 2021/3/7 17:18, Leon Romanovsky wrote:
-> On Sun, Mar 07, 2021 at 01:07:57AM -0800, Jia-Ju Bai wrote:
->> When hif_scatter_req_get() returns NULL to scat_req, no error return
->> code of ath6kl_htc_rx_bundle() is assigned.
->> To fix this bug, status is assigned with -EINVAL in this case.
->>
->> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
->> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
->> ---
->>   drivers/net/wireless/ath/ath6kl/htc_mbox.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/ath/ath6kl/htc_mbox.c b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
->> index 998947ef63b6..3f8857d19a0c 100644
->> --- a/drivers/net/wireless/ath/ath6kl/htc_mbox.c
->> +++ b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
->> @@ -1944,8 +1944,10 @@ static int ath6kl_htc_rx_bundle(struct htc_target *target,
->>
->>   	scat_req = hif_scatter_req_get(target->dev->ar);
->>
->> -	if (scat_req == NULL)
->> +	if (scat_req == NULL) {
->> +		status = -EINVAL;
-> I'm not sure about it.
+On Sun, Mar 07, 2021 at 02:58, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Sat, Mar 06, 2021 at 07:17:09PM +0100, Tobias Waldekranz wrote:
+>> On Sat, Mar 06, 2021 at 16:04, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> > On Sat, Mar 06, 2021 at 04:00:33PM +0200, Vladimir Oltean wrote:
+>> >> Hi Tobias,
+>> >>
+>> >> On Sat, Mar 06, 2021 at 01:24:55AM +0100, Tobias Waldekranz wrote:
+>> >> > This is the second attempt to provide a fix for the issue described in
+>> >> > 99b8202b179f, which was reverted in the previous commit.
+>> >> >
+>> >> > When a change is made to some global bridge attribute, such as VLAN
+>> >> > filtering, accept events where orig_dev is the bridge master netdev.
+>> >> >
+>> >> > Separate the validation of orig_dev based on whether the attribute in
+>> >> > question is global or per-port.
+>> >> >
+>> >> > Fixes: 5696c8aedfcc ("net: dsa: Don't offload port attributes on standalone ports")
+>> >> > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> >> > ---
+>> >>
+>> >> What do you think about this alternative?
+>> >
+>> > Ah, wait, this won't work when offloading objects/attributes on a LAG.
+>> > Let me actually test your patch.
+>> 
+>> Right. But you made me realize that my v1 is also flawed, because it
+>> does not guard against trying to apply attributes to non-offloaded
+>> ports. ...the original issue :facepalm:
+>> 
+>> I have a version ready which reuses the exact predicate that you
+>> previously added to dsa_port_offloads_netdev:
+>> 
+>> -               if (netif_is_bridge_master(attr->orig_dev))
+>> +               if (dp->bridge_dev == attr->orig_dev)
+>> 
+>> Do you think anything else needs to be changed, or should I send that as
+>> v2?
 >
-> David. Jakub,
-> Please be warned that patches from this guy are not so great.
-> I looked on 4 patches and 3 of them were wrong (2 in RDMA and 1 for mlx5)
-> plus this patch most likely is incorrect too.
+> Sorry, I just get a blank stare when I look at that blob of code you've
+> added at the beginning of dsa_slave_port_attr_set, it might as well be
+> correct but I'm not smart enough to process it and say "yes it is".
 >
+> What do you think about this one? At least for me it's easier to
+> understand what's going on, and would leave a lot more room for further
+> fixups if needed.
+
+I like the approach of having to explicitly state the supported orig_dev
+per attribute or object. I think we should go with your fix.
