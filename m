@@ -2,108 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAABA330EE3
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 14:09:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E866330F06
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 14:20:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbhCHNJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 08:09:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39088 "EHLO
+        id S229922AbhCHNTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 08:19:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbhCHNJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 08:09:00 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1D3C06174A;
-        Mon,  8 Mar 2021 05:09:00 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id c10so20220303ejx.9;
-        Mon, 08 Mar 2021 05:09:00 -0800 (PST)
+        with ESMTP id S230033AbhCHNTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 08:19:32 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA933C06174A
+        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 05:19:31 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id jt13so20391434ejb.0
+        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 05:19:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=COQSx+BU5m3hRHXgEDr9pW1DvKqmkyBSspURkSZqzdo=;
-        b=SkRZUSy+Q+ZZJNP90Qf0zfiJEPy6Z1GxVFohwD8Jo95gY0KNjktEBZlSfd5w38WenP
-         9Hou8ZCGQ45HNXyzyGbCZg90OWu9Jg8gIOuUB5gKGVctiM8bLb7JK1dXaRjqGzetfdra
-         bs32OYys8L3ymP15WNcfESDAM7OuMENaHahxJd2k4Oh+3M9IjIlg+rT/YlBTU/WHZxPi
-         zS0okbJVsrVsP5BQ0cs+lGTZ0vqsKlp868sgvIX+Tk5eT0AzABC/7dv/++ZmpzDCy49A
-         ntCiVOl9WHz7HmLs2YwTBgpixyWvGgtnAEBTbJITYhRQyaGc0LqXyMiQjGhVSrW1/qIG
-         EMDQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pdA0cgW9V9HG1J6DdfseyUJUHT0oF9YgXq2/0mScIDA=;
+        b=MHWFp5NVNh7uoMlrhEijKMr3lASC/nGAwPyk7RmiO51k4AUM0X3e19oyMES0cH+Bty
+         e5ksqrqDBGuGA8aRy/P4Kn0F9cgyhtIRmPYT5gW5S9zO/v7gPNBkrkMdT6U4L23356KX
+         TcjguLestNkjzP9IcJzmVWj5Xi8ogs0zv49K34tA4+OFJpRz3+Rlm8CPWBBlfK6UXvt8
+         vOGtpWOkki4txsVlhPrEaSxOlbaPbSUdMfY8eFYvNf6zjxdRKO7OOmWmxeXDtUBeGnBe
+         fju5gNRBi8ztBbaLrFkhrp2DMm68pEoqkC+hVFZukIYoMlEQAMpbmxeYtU6HLrmJSd4s
+         RdLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=COQSx+BU5m3hRHXgEDr9pW1DvKqmkyBSspURkSZqzdo=;
-        b=k3TCEweBLrNVVZhsnjo20R+boSYdPos3RGXHhhq1QDv0Yy2OACO0TbXnYhCbN59kFK
-         /Q/3kVp7zDxHs43FtzDbCrqus1lwPc9JHj2vdbUcIhtPHV14vENwVl+64CLj9w7qmj+o
-         LdZePWAoCAXGWT9hFFrVYsVqEfRRKAyJHIelfwcX1smvQ6AKpmwe64v/1ytIUJiB9/bM
-         r4KeKWz3GAS30R1IwnDX7CDIV3VUi/YRIu1rD2jxHkJfbFjHpIxz5pdWRhs2cuPdcRaq
-         qpI75qMYvtlYFb1QJSbPeHgpZPCEI5Rr9NN9468di26etSEwSBeVDYwuHF2cpACLNrsC
-         ZsPg==
-X-Gm-Message-State: AOAM531YG66JgmN/PtVq7dk6LwqvD/zr8CLhxmMRek3cW5J322pidi0A
-        PcEfPXNa0/PwGCWOdRrhwxQ=
-X-Google-Smtp-Source: ABdhPJy3vySAVrTjjiQgeBSEnREDCrTSbGTD/9AOrzK/k5Q1/va3eokyUO1aWkkFREtDsjtHe+Ht0Q==
-X-Received: by 2002:a17:906:2db2:: with SMTP id g18mr15307428eji.73.1615208938930;
-        Mon, 08 Mar 2021 05:08:58 -0800 (PST)
-Received: from localhost.localdomain ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id s13sm7260961edr.86.2021.03.08.05.08.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Mar 2021 05:08:55 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH devicetree] arm64: dts: ls1028a: set up the real link speed for ENETC port 2
-Date:   Mon,  8 Mar 2021 15:08:34 +0200
-Message-Id: <20210308130834.2994658-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pdA0cgW9V9HG1J6DdfseyUJUHT0oF9YgXq2/0mScIDA=;
+        b=eyNniUGJRK15faoy++zuAxygA4r0hboFk8wk8hnVORiqXkWzvprCdt8kdves2htWAT
+         KKbjmn/JmzZeUiptS4QsuMCGqdhsgNfFj0HxN6Mu3attsW2nNsnU/iaZDX0NgN9OrGOl
+         S+3SwafKBVxzhy4OpHJNLEpVOJuVBKUEsFyjckdgOvbsLbPwU6NYhF6LeyYDupBfynSv
+         NudpQyhYieyqLMz44lt1S7Txt5tzbv1f9/hHRopn5ejpp912rsYGzE3nip5VWdP9sl8I
+         dAkRxF267ncSRmXIwv8vENEdPxZMjFp0bj0aKGEuXuXz8V/XgMxvCDFS1qgKG3T+oLxn
+         8azw==
+X-Gm-Message-State: AOAM530RGr/z1CGQYXPRPVrzLmQmiS8R8TAlGH26QCisOy2KDCejd7wj
+        UWwBsJ2Wqd2sIqDj40nhEhCsvIYUqUoBpVeujR4=
+X-Google-Smtp-Source: ABdhPJxR5qsscYoTYdNjXKqcl2TZDUTH3J6vPGQGGYq3D8kqMtZ70eAPPG+2ueWy7+T86dvWa8zzi2KVa3Mbn6GAfvc=
+X-Received: by 2002:a17:907:e8f:: with SMTP id ho15mr15406196ejc.541.1615209570623;
+ Mon, 08 Mar 2021 05:19:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CA+sq2CdJf0FFMAMbh0OZ67=j2Fo+C2aqP3qTKcYkcRgscfTGiw@mail.gmail.com>
+ <20210305150702.1c652fe2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YELKIZzkU9LxpEE9@lunn.ch> <CA+sq2CfAsyFHEj=w3=ewTKk-qbF60FcCQNtk9e7_1wxf=tB7QA@mail.gmail.com>
+ <YEOSd09MDm6G2S3/@lunn.ch>
+In-Reply-To: <YEOSd09MDm6G2S3/@lunn.ch>
+From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date:   Mon, 8 Mar 2021 18:49:18 +0530
+Message-ID: <CA+sq2Ce0W+-oYs+o_99LT3QzZbSROUsLeyaa7jJZtuUDmML+MQ@mail.gmail.com>
+Subject: Re: Query on new ethtool RSS hashing options
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        George Cherian <gcherian@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sat, Mar 6, 2021 at 8:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Sat, Mar 06, 2021 at 06:04:14PM +0530, Sunil Kovvuri wrote:
+> > On Sat, Mar 6, 2021 at 5:47 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > On Fri, Mar 05, 2021 at 03:07:02PM -0800, Jakub Kicinski wrote:
+> > > > On Fri, 5 Mar 2021 16:15:51 +0530 Sunil Kovvuri wrote:
+> > > > > Hi,
+> > > > >
+> > > > > We have a requirement where in we want RSS hashing to be done on packet fields
+> > > > > which are not currently supported by the ethtool.
+> > > > >
+> > > > > Current options:
+> > > > > ehtool -n <dev> rx-flow-hash
+> > > > > tcp4|udp4|ah4|esp4|sctp4|tcp6|udp6|ah6|esp6|sctp6 m|v|t|s|d|f|n|r
+> > > > >
+> > > > > Specifically our requirement is to calculate hash with DSA tag (which
+> > > > > is inserted by switch) plus the TCP/UDP 4-tuple as input.
+> > > >
+> > > > Can you share the format of the DSA tag? Is there a driver for it
+> > > > upstream? Do we need to represent it in union ethtool_flow_union?
+> > >
+> > > Sorry, i missed the original question, there was no hint in the
+> > > subject line that DSA was involved.
+> > >
+> > > Why do you want to include DSA tag in the hash? What normally happens
+> > > with DSA tag drivers is we detect the frame has been received from a
+> > > switch, and modify where the core flow dissect code looks in the frame
+> > > to skip over the DSA header and parse the IP header etc as normal.
+> >
+> > I understand your point.
+> > The requirement to add DSA tag into RSS hashing is coming from one of
+> > our customer.
+>
+> So what is the customer requirement? Why does the customer want to do
+> this? Please explain the real use case.
 
-In NXP LS1028A there is a MAC-to-MAC internal link between enetc_port2
-and mscc_felix_port4. This link operates at 2.5Gbps and is described as
-such for the mscc_felix_port4 node.
+Very sorry, after further discussions got to know from customer that
+this is not needed.
+They were observing some other issue and thought this would solve it.
 
-The reason for the discrepancy is a limitation in the PHY library
-support for fixed-link nodes. Due to the fact that the PHY library
-registers a software PHY which emulates the clause 22 register map, the
-drivers/net/phy/fixed_phy.c driver only supports speeds up to 1Gbps.
-
-The mscc_felix_port4 node is probed by DSA, which does not use the PHY
-library directly, but phylink, and phylink has a different representation
-for fixed-link nodes, one that does not have the limitation of not being
-able to represent speeds > 1Gbps.
-
-Since the enetc driver was converted to phylink too as of commit
-71b77a7a27a3 ("enetc: Migrate to PHYLINK and PCS_LYNX"), the limitation
-has been practically lifted there too, and we can describe the real link
-speed in the device tree now.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index 262fbad8f0ec..bf60f3858b0f 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -1027,7 +1027,7 @@ enetc_port2: ethernet@0,2 {
- 				status = "disabled";
- 
- 				fixed-link {
--					speed = <1000>;
-+					speed = <2500>;
- 					full-duplex;
- 				};
- 			};
--- 
-2.25.1
-
+Thanks,
+Sunil.
