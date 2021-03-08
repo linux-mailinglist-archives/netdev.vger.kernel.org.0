@@ -2,121 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F90333160E
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:30:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD9F2331616
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:30:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbhCHS31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 13:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
+        id S230250AbhCHSaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 13:30:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231254AbhCHS3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:29:01 -0500
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBCFC06174A
-        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 10:29:00 -0800 (PST)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4DvRgY4wpDzQjwp;
-        Mon,  8 Mar 2021 19:28:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-transfer-encoding:content-type:content-type:mime-version
-        :references:in-reply-to:message-id:subject:subject:from:from
-        :date:date:received; s=mail20150812; t=1615228132; bh=xe3cIOx7yk
-        5hGgWBHXhtvAV+EMp6+77X4FIRKW11beM=; b=dQvE9TqvzIDA4VAFIQWGoR0n8m
-        c3DlRuPvXviWpdSV5ImU3lvMh6i4gXYHzCqro7eGX+ynkmODsPsIbwGVoBuZuEzu
-        7moTwprSesraYVB9kqVpuKk7o3PXDw2Rm72wNepgzsDzYS/xlMO8Jv/1ZxYojqcm
-        exjXX6KWML1rBoY9QXs1yfP7cfSqaPdfTvMkP47LZ07vYBrhlnM2qZ2Za9jwToa1
-        WEORBOFHmvWXbMC0u/ijI/sYxu93u9WrrC8V10MbWloQ+h3ZORMPZY7NOYfZGCBA
-        rQ7iGuH1AZUiolLAfKrFxU3+4G8qU6CdeQtK+ceJWSbmjz6xhN7x5+fzUEVQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1615228133;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6wTcrrq3uEtYYMJGRkofwY/gJu+CXcCgsaup1py6NVo=;
-        b=fN3PP/oQ0Fc+0XZG18N631AofsCNKhYED9sw+N/e5qVAOg4WQGdy8yPdTxWxaoE4eX8OzU
-        H9gFpSV/V7uAWix5zc3NGjq71ybt3jMPu+fdKp2ZP4GQLRrVPZmOPc7xoHLgh0HrPKQe8k
-        UBYubNzqb/OBkn4uiEfD3ztl1hle8fg0Fa6e0nk8fdgMlvphZC6NR9SkjMOwtOckwRu0+A
-        Weg/8GEyMKQC5rKKinbjEwdpk1KxbgcBi3mYahKBC54k2DDER6U+IkkbNLo7NI4kBMapck
-        dQensBWSz4S3sME1d3xJ74Z5YoDJThXsNzV4EOuCJZVH8NHyMvBNmLTaL01QUA==
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
-        with ESMTP id 4QII7ZAtGOro; Mon,  8 Mar 2021 19:28:52 +0100 (CET)
-Date:   Mon, 8 Mar 2021 19:28:49 +0100
-From:   "Erhard F." <erhard_f@mailbox.org>
-To:     "Ahmed S. Darwish" <a.darwish@linutronix.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: seqlock lockdep false positives?
-Message-ID: <20210308192849.153454f7@yea>
-In-Reply-To: <YESayEskbtjEWjFd@lx-t490>
-References: <20210303164035.1b9a1d07@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YESayEskbtjEWjFd@lx-t490>
+        with ESMTP id S230409AbhCHS3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:29:55 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75C6C06174A;
+        Mon,  8 Mar 2021 10:29:54 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id t85so2465107pfc.13;
+        Mon, 08 Mar 2021 10:29:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=hS02wbSzoMEK3YSbr170NOiHipyHYM37/iMcT14Z2+A=;
+        b=tPOLzSoD85YhF9xFbhFle9qe+XmtXMmjQ8f5rmALiw5Yh4c+gw8V+xx2qSSEB4vWdg
+         NSpkbLizQ1YGBm/ErXcsu+1eglVoRE8puiNANH8TWO36qmaqa6f4CAJPMvvKrwxxFrdm
+         lcnrAgkFvkZsC2F8R+9QWNr5pBxkqb22S6pGGEm2T6Ilbo9IDDGTut1ZwhUeiYbupiOP
+         teTej9BsQst9l1LoAFOTBRh1TXFbrgCjtASz4ttPD1p0QFNk030BBqevzJ3DcTKZR6dK
+         K4q/0aOf9sBnbzwbPqKunL4b2pP00YVyllL7em8R6uYwsX/7K8tvVsBs0OC4+7sFi5+4
+         vqKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hS02wbSzoMEK3YSbr170NOiHipyHYM37/iMcT14Z2+A=;
+        b=WeYUZshrYZWDfItiraARSRWiKSlRRdz+PIwdat8vROfjbXgTnjmHDX4e6WbhJcP24n
+         2linNLew1ro7vl5DAMTk2KccuWfkQgrDjKADk1dSa7ouerxzE62HaKSeX1tD+AeDPAbI
+         VPbwO3Nj1Z18e2Mb/I5MJwQQke9iSghvsaLwzAKMV62zdCR+8GOBk1Kkx5YKTQHm+VFc
+         wT/vmzOvFck1RuSAVSVpeJRWZZpPVStZ0ziAqbyKKzlo6jheONoTDZPaTXzvFcSr+N3j
+         puZvsgtlPFmZI6CX8EOrzZKXRHstELZAyXjaeEVoR9V4oKA9eF93HD48ljcM87b2ta8y
+         n/cQ==
+X-Gm-Message-State: AOAM531DxdsR7cN7vf8YIGCfRbKuNFYcdSxlN+fY+7UDY62Gao/bvTao
+        neX0qFR5r2Eg5NzLzzG4qr1EhnzBXuY=
+X-Google-Smtp-Source: ABdhPJzsID4IOnXez6qvwq4S8JVIauf6XFNQIk0VqcqAsWAhDVrzpqZwN+9JEecuyJJDKj4tYy07OA==
+X-Received: by 2002:a65:46cd:: with SMTP id n13mr21249568pgr.414.1615228194095;
+        Mon, 08 Mar 2021 10:29:54 -0800 (PST)
+Received: from [10.67.49.104] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id q64sm11376120pfb.6.2021.03.08.10.29.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Mar 2021 10:29:53 -0800 (PST)
+Subject: Re: [PATCH] net: dsa: b53: mmap: Add device tree support
+To:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
+        jonas.gorski@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210308180715.18571-1-noltari@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <06dab800-d554-e807-8a72-427c6e99e4de@gmail.com>
+Date:   Mon, 8 Mar 2021 10:29:52 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -3.49 / 15.00 / 15.00
-X-Rspamd-Queue-Id: AB4CD180D
-X-Rspamd-UID: 4b7a61
+In-Reply-To: <20210308180715.18571-1-noltari@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 7 Mar 2021 10:20:08 +0100
-"Ahmed S. Darwish" <a.darwish@linutronix.de> wrote:
-
-> @Erhard, can you please try below patch? Just want to confirm if this
-> theory has any validity to it:
+On 3/8/21 10:07 AM, Álvaro Fernández Rojas wrote:
+> Add device tree support to b53_mmap.c while keeping platform devices support.
 > 
-> diff --git a/drivers/net/ethernet/realtek/8139too.c b/drivers/net/ethernet/realtek/8139too.c
-> index 1e5a453dea14..c0dbb0418e9d 100644
-> --- a/drivers/net/ethernet/realtek/8139too.c
-> +++ b/drivers/net/ethernet/realtek/8139too.c
-> @@ -715,6 +715,11 @@ static const unsigned int rtl8139_rx_config =
->  static const unsigned int rtl8139_tx_config =
->  	TxIFG96 | (TX_DMA_BURST << TxDMAShift) | (TX_RETRY << TxRetryShift);
+> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+> ---
+>  drivers/net/dsa/b53/b53_mmap.c | 36 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
 > 
-> +#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-> +static struct lock_class_key rx_stats_key;
-> +static struct lock_class_key tx_stats_key;
-> +#endif
+> diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
+> index c628d0980c0b..b897b4263930 100644
+> --- a/drivers/net/dsa/b53/b53_mmap.c
+> +++ b/drivers/net/dsa/b53/b53_mmap.c
+> @@ -228,12 +228,48 @@ static const struct b53_io_ops b53_mmap_ops = {
+>  	.write64 = b53_mmap_write64,
+>  };
+>  
+> +static int b53_mmap_probe_of(struct platform_device *pdev,
+> +			     struct b53_platform_data **ppdata)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *np = dev->of_node;
+> +	struct b53_platform_data *pdata;
+> +	void __iomem *mem;
 > +
->  static void __rtl8139_cleanup_dev (struct net_device *dev)
+> +	mem = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(mem))
+> +		return PTR_ERR(mem);
+> +
+> +	pdata = devm_kzalloc(dev, sizeof(struct b53_platform_data),
+> +			     GFP_KERNEL);
+> +	if (!pdata)
+> +		return -ENOMEM;
+> +
+> +	pdata->regs = mem;
+> +	pdata->chip_id = BCM63XX_DEVICE_ID;
+> +	pdata->big_endian = of_property_read_bool(np, "big-endian");
+> +	of_property_read_u16(np, "brcm,ports", &pdata->enabled_ports);
+> +
+> +	*ppdata = pdata;
+> +
+> +	return 0;
+> +}
+> +
+>  static int b53_mmap_probe(struct platform_device *pdev)
 >  {
->  	struct rtl8139_private *tp = netdev_priv(dev);
-> @@ -794,8 +799,17 @@ static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
-> 
->  	pci_set_master (pdev);
-> 
-> -	u64_stats_init(&tp->rx_stats.syncp);
-> -	u64_stats_init(&tp->tx_stats.syncp);
-> +#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-> +	dev_warn(d, "Manually intializing tx/rx stats sequence counters\n");
-> +
-> +	tp->rx_stats.syncp.seq.sequence = 0;
-> +	lockdep_set_class_and_name(&tp->rx_stats.syncp.seq,
-> +				   &rx_stats_key, "RX stats");
-> +
-> +	tp->tx_stats.syncp.seq.sequence = 0;
-> +	lockdep_set_class_and_name(&tp->tx_stats.syncp.seq,
-> +				   &tx_stats_key, "TX stats");
-> +#endif
+> +	struct device_node *np = pdev->dev.of_node;
+>  	struct b53_platform_data *pdata = pdev->dev.platform_data;
+>  	struct b53_mmap_priv *priv;
+>  	struct b53_device *dev;
+>  
+> +	if (np) {
+> +		int ret = b53_mmap_probe_of(pdev, &pdata);
+> +		if (ret) {
+> +			dev_err(&pdev->dev, "OF probe error\n");
+> +			return ret;
+> +		}
+> +	}
 
-Hi Ahmed!
+I would be keen on making this less "OF-centric" and just have it happen
+whenever pdata is NULL such that we have an easier transition path if we
+wanted to migrate bcm63xx to passing down the switch base register
+address a platform_device source in the future (not that I expect it to
+happen though).
 
-With your patch on top of 5.12-rc2 the lockdep splat is gone in the kernel dmesg and I only get:
-
-[...]
-8139too: 8139too Fast Ethernet driver 0.9.28
-8139too 0000:00:0f.0: Manually intializing tx/rx stats sequence counters
-8139too 0000:00:0f.0 eth0: RealTek RTL8139 at 0x(ptrval), 00:30:1b:2f:2c:58, IRQ 18
-[...]
-
-Trying Peter's patch next.
+Other than that, the logic looks sound.
+-- 
+Florian
