@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16AF733155B
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 18:57:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7995331563
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:00:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbhCHR4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 12:56:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbhCHR4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 12:56:49 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BE2C061760
-        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 09:56:49 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id 16so6175898pfn.5
-        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 09:56:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EqoGlpC+7mcmjQ0PLZPTkqoc1U0k8KneLfUwlOYcIcE=;
-        b=ebvg4AN6mIkN/4JrTKRJeIpdageU0AKMVFNImGGzgMsRkH5EmnuJKFUvjDDqxYITMl
-         hd6S7vWaM37R+Tpfx9GBbFu8BaEMd6KLDKxto90PHthIksTqwZohDWm/QXrIxi3OgE19
-         BYo+T9L4FVy5kz2iBdA//Iq6nT9ubesbOz4dbDGvuDF6xkcu+NjhEalpdo+YjtShDSPt
-         QR/MI4tSTYUeCfvy0gaGj7MVEjYBPzWpdLan7ZbXJ2ZHphTRUgvHQ2isyso7ULXJOnhn
-         l888uKT0FKakvOGBuZsQFEla30uWt7/iJyFV38PCR70bSFsAJv/BYecYUZAJsPiEuRcM
-         VeVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EqoGlpC+7mcmjQ0PLZPTkqoc1U0k8KneLfUwlOYcIcE=;
-        b=DIKIZ7El04o8YuSd1P6njsLXmx+SUROvNkB0iDd2b/NLpOvlUHFL/SnsEbLXx0dOgs
-         1K/e+bfNWUP0s7zktfAcy2lpxTaMIZOmMhok3FkgVaXu0Qh2rutg/57WpITs2jF4tu/d
-         Mlag1VSqw3pD96G3biUWFAwAQ7onohGY7WDDDS5N1XlEyRO4dvNevHGz70Aen/5sxYH1
-         qh3KsMgX/YotMQnb3ID/f48yzVvw2FyopMJodPpWj3Y+qSNaleOVzaEOEUHA1Ytt0YTE
-         lmfdh08FMd4qDE8w0p88rGPh1TyEcdv1oeZUSnwfAGgG1cqMNCSpx/G/ey64zi7oAd3a
-         Z46w==
-X-Gm-Message-State: AOAM532D7aQAutEfVnCKlYTF6vio+hfktwQgntlOhrU8d+TPkX5BgTA9
-        p4CHnULmzz8/C9BbU/8m9eisvRxZQUQ=
-X-Google-Smtp-Source: ABdhPJx2pbG9Yyfj7bUERp4CsXXwbaSv8i0ImgjfAOv+orKcnSXYrd/ijzHKzArIpve90hLhoRQhtA==
-X-Received: by 2002:a05:6a00:1693:b029:1ec:b0af:d1d with SMTP id k19-20020a056a001693b02901ecb0af0d1dmr22034845pfc.42.1615226207935;
-        Mon, 08 Mar 2021 09:56:47 -0800 (PST)
-Received: from [10.67.49.104] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b9sm10288421pgn.42.2021.03.08.09.56.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Mar 2021 09:56:47 -0800 (PST)
-Subject: Re: stmmac driver timeout issue
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <8a996459-fc77-2e98-cc0c-91defffc7f29@gmail.com>
- <DB8PR04MB6795BB20842D377DF285BB5FE6939@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <49fedeb2-b25b-10d0-575f-f9808a537124@gmail.com>
-Date:   Mon, 8 Mar 2021 09:56:46 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S230126AbhCHSAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 13:00:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47782 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229646AbhCHR7w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Mar 2021 12:59:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B9548652AC;
+        Mon,  8 Mar 2021 17:59:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615226392;
+        bh=qOaD9Moa1INCaKhMmKbllBg09QsRr6h8zKRXogFWREQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kKL8W8Ub5/9HNbzIeBuw1XzZ4bLvqgYKWTaVQqol/ISUj51rZjb3vOX8uuu1w4zfR
+         QpHODvLLWVQzsuLdYD+/YbBl6RGioQXLdW2z8Pq/8F8AdCQmRK9/ZbkohPiHPlHO/U
+         d9fnRo6eUHT/LMXRvdB5JrUk/hkSNz8wa1ILKbsc6bhF98IMJMJ6jdtYi++s8/0hat
+         vOMNAJqG+Y7RmrkY6VtMxf3ce45Yj/9NoLJcYGCYnBOafllIdiQDo+uEYd5z8XEeFe
+         fBvIoOk3HkvG6qSoCeb5sIU6DEGXz508gnx5f8/j4jqAt364gMKvbrPXCCJw+0sHmm
+         3Nz3ewwDRxhmg==
+Date:   Mon, 8 Mar 2021 09:59:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eran Ben Elisha <eranbe@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, <jiri@resnulli.us>, <saeedm@nvidia.com>,
+        <andrew.gospodarek@broadcom.com>, <jacob.e.keller@intel.com>,
+        <guglielmo.morandin@broadcom.com>, <eugenem@fb.com>,
+        <eranbe@mellanox.com>
+Subject: Re: [RFC] devlink: health: add remediation type
+Message-ID: <20210308095950.3cede742@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210308091600.5f686fcd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210306024220.251721-1-kuba@kernel.org>
+        <3d7e75bb-311d-ccd3-6852-cae5c32c9a8e@nvidia.com>
+        <20210308091600.5f686fcd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB6795BB20842D377DF285BB5FE6939@DB8PR04MB6795.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/8/21 4:45 AM, Joakim Zhang wrote:
+On Mon, 8 Mar 2021 09:16:00 -0800 Jakub Kicinski wrote:
+> > > +	DLH_REMEDY_BAD_PART,    
+> > BAD_PART probably indicates that the reporter (or any command line 
+> > execution) cannot recover the issue.
+> > As the suggested remedy is static per reporter's recover method, it 
+> > doesn't make sense for one to set a recover method that by design cannot 
+> > recover successfully.
+> > 
+> > Maybe we should extend devlink_health_reporter_state with POWER_CYCLE, 
+> > REIMAGE and BAD_PART? To indicate the user that for a successful 
+> > recovery, it should run a non-devlink-health operation?  
 > 
-> Hi Florian, Andrew,
-> 
-> Thanks for your help, after debug, It seems related to PHY(RTL8211FDI). It stop output RXC clock for dozens to hundreds milliseconds during auto-negotiation, and there is no such issue with AR8031.
-> When do ifup/ifdown test or system suspend/resume test, it will suspend then resume phy which do power down and then change to normal operation.(switch from power to normal operation)
-> 
-> There is a note in RTL8211FDI datasheet:
-> Note 2: When the RTL8211F(I)/RTL8211FD(I) is switched from power to normal operation, a software reset and restart auto-negotiation is performed, even if bits Reset(0.15) and Restart_AN(0.9) are not set by the users.
-> 
-> Form above note, it will trigger auto-negotiation when do ifup/ifdown test or system suspend/resume, so we will meet RXC clock is stop issue on RTL8211FDI. My question is that, Is this a normal behavior, all PHYs will perform this behavior? And Linux PHY frame work can handle this case, there is no config_init after resume, will the config be reset?
+> Hm, export and extend devlink_health_reporter_state? I like that idea.
 
-I do not have experience with Realtek PHYs however what you describe
-does not sound completely far off from what Broadcom PHYs would do when
-auto-power down is enabled and when the link is dropped either because
-the PHY was powered down or auto-negotiation was restarted which then
-leads to the RXC/TXC clocks being disabled.
+Trying to type it up it looks less pretty than expected.
 
-For RGMII that connects to an actual PHY you can probably use the same
-technique that Doug had implemented for GENET whereby you put it in
-isolate mode and it maintains its RXC while you do the reset. The
-problem is that this really only work for an RGMII connection and a PHY,
-if you connect to a MAC you could create contention on the pins. I am
-afraid there is no fool proof situation but maybe you can find a way to
-configure the STMMAC so as to route another internal clock that it
-generates as a valid RXC just for the time you need it?
+Let's looks at some examples.
 
-With respect to your original problem, looks like it may be fixed with:
+A queue reporter, say "rx", resets the queue dropping all outstanding
+buffers. As previously mentioned when the normal remediation fails user
+is expected to power cycle the machine or maybe swap the card. The
+device itself does not have a crystal ball.
 
-https://git.kernel.org/netdev/net/c/9a7b3950c7e1
+A management FW reporter "fw", has a auto recovery of FW reset
+(REMEDY_RESET). On failure -> power cycle.
 
-or maybe this only works on the specific Intel platform?
--- 
-Florian
+An "io" reporter (PCI link had to be trained down) can only return 
+a hardware failure (we should probably have a HW failure other than
+BAD_PART for this).
+
+Flash reporters - the device will know if the flash had a bad block 
+or the entire part is bad, so probably can have 2 reporters for this.
+
+Most of the reporters would only report one "action" that can be
+performed to fix them. The cartesian product of ->recovery types vs
+manual recovery does not seem necessary. And drivers would get bloated
+with additional boilerplate of returning ERROR_NEED_POWER_CYCLE for
+_all_ cases with ->recovery. Because what else would the fix be if
+software-initiated reset didn't work?
