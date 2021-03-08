@@ -2,85 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FFA43315F7
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:26:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F90333160E
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbhCHSZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 13:25:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51786 "EHLO
+        id S229730AbhCHS31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 13:29:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbhCHSZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:25:27 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9819AC06174A;
-        Mon,  8 Mar 2021 10:25:27 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id o38so6935490pgm.9;
-        Mon, 08 Mar 2021 10:25:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=yAN0scPXMGXF3LJkgy7SJ6e6nyviExU5JvHmcgxFGKA=;
-        b=Yh9kD5gOl8uHv2pg5TZeK98DXgETC6e4Uh5tTZPwpYxvldZiNLIrx6iN5rLs0nKQIX
-         IaE7mRxCRmiKU8/hcCn67b9sKQrQcziRJBGLfGOeCl/HE36FFH4XcacaQkFlKlMob76m
-         7zNSq8I/h7uqWIhUW1LAtK2c7zzqBAxGdqXL4qSgOnLubCU5gFfFSS7CMGbZqqaFThVD
-         q8bd+ixEkO4W0o2sIVjurFqi2J3Ciqyuuc4oh/VkR0zcE17r5Fk6hGwlMeOpnVM5RZAL
-         F9i5VuqTXKGQsN/UnH7diLRS7orrlUYbg7to6woIlFizLfTolSJIM3gPTjiRTSRuxe4p
-         6CYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yAN0scPXMGXF3LJkgy7SJ6e6nyviExU5JvHmcgxFGKA=;
-        b=Y+8rSFUWE3fKgSYndFL8m2lp0td7rqpuoX7T9lq4TVPuBcphTjpetUMnt/9FoOA+f3
-         31Z8r6eFZ5UFVBBI9iYhxH+vkxtzPGZi26eqbo5ujidpvDX+FR/P4DhyQ2A836ZFYVUe
-         hHe9y2rkQkGRkmMxDiEqECJLAsB7eXvGFsBNN1KtAfRFviFmKofzU/Ra4qayU6lNJfwW
-         pAcR894ObqLMJF+9mB3dy4c8X0iw1DomOGHK7/uZkqG/iMVce/a4o3PBPNSk5Rn9dnfX
-         ypjX66PD46jg5aU3pUTTmdXG1oLUa1OKZvU1udIcGxlgkBEGvveDBFun4OruItyUxSpW
-         5a9w==
-X-Gm-Message-State: AOAM5316l5P2SD7yjVwDSRZo+VFEeYBxA6UxQvJAEnvx8eY9VUyxV79x
-        NmJ/DZhNuchxaIbwJ52TZtCw3oCI1gQ=
-X-Google-Smtp-Source: ABdhPJwAAeAq7JnefWnT8IecHo++ScGbzEcE2o0kSgbzSdfwxZdx4kUQzSqQS4JRBUAwAYHyaFHZbw==
-X-Received: by 2002:a62:5ec1:0:b029:1ee:7baf:8ed3 with SMTP id s184-20020a625ec10000b02901ee7baf8ed3mr138594pfb.62.1615227926861;
-        Mon, 08 Mar 2021 10:25:26 -0800 (PST)
-Received: from [10.67.49.104] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id t18sm5285234pfq.147.2021.03.08.10.25.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Mar 2021 10:25:26 -0800 (PST)
-Subject: Re: [PATCH] net: dsa: b53: relax is63xx() condition
-To:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
-        jonas.gorski@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210308180803.19123-1-noltari@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <895b26cc-3a4f-ec3b-f604-063a77a3d984@gmail.com>
-Date:   Mon, 8 Mar 2021 10:25:25 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        with ESMTP id S231254AbhCHS3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:29:01 -0500
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBCFC06174A
+        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 10:29:00 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4DvRgY4wpDzQjwp;
+        Mon,  8 Mar 2021 19:28:57 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
+        content-transfer-encoding:content-type:content-type:mime-version
+        :references:in-reply-to:message-id:subject:subject:from:from
+        :date:date:received; s=mail20150812; t=1615228132; bh=xe3cIOx7yk
+        5hGgWBHXhtvAV+EMp6+77X4FIRKW11beM=; b=dQvE9TqvzIDA4VAFIQWGoR0n8m
+        c3DlRuPvXviWpdSV5ImU3lvMh6i4gXYHzCqro7eGX+ynkmODsPsIbwGVoBuZuEzu
+        7moTwprSesraYVB9kqVpuKk7o3PXDw2Rm72wNepgzsDzYS/xlMO8Jv/1ZxYojqcm
+        exjXX6KWML1rBoY9QXs1yfP7cfSqaPdfTvMkP47LZ07vYBrhlnM2qZ2Za9jwToa1
+        WEORBOFHmvWXbMC0u/ijI/sYxu93u9WrrC8V10MbWloQ+h3ZORMPZY7NOYfZGCBA
+        rQ7iGuH1AZUiolLAfKrFxU3+4G8qU6CdeQtK+ceJWSbmjz6xhN7x5+fzUEVQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1615228133;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6wTcrrq3uEtYYMJGRkofwY/gJu+CXcCgsaup1py6NVo=;
+        b=fN3PP/oQ0Fc+0XZG18N631AofsCNKhYED9sw+N/e5qVAOg4WQGdy8yPdTxWxaoE4eX8OzU
+        H9gFpSV/V7uAWix5zc3NGjq71ybt3jMPu+fdKp2ZP4GQLRrVPZmOPc7xoHLgh0HrPKQe8k
+        UBYubNzqb/OBkn4uiEfD3ztl1hle8fg0Fa6e0nk8fdgMlvphZC6NR9SkjMOwtOckwRu0+A
+        Weg/8GEyMKQC5rKKinbjEwdpk1KxbgcBi3mYahKBC54k2DDER6U+IkkbNLo7NI4kBMapck
+        dQensBWSz4S3sME1d3xJ74Z5YoDJThXsNzV4EOuCJZVH8NHyMvBNmLTaL01QUA==
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
+        with ESMTP id 4QII7ZAtGOro; Mon,  8 Mar 2021 19:28:52 +0100 (CET)
+Date:   Mon, 8 Mar 2021 19:28:49 +0100
+From:   "Erhard F." <erhard_f@mailbox.org>
+To:     "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: seqlock lockdep false positives?
+Message-ID: <20210308192849.153454f7@yea>
+In-Reply-To: <YESayEskbtjEWjFd@lx-t490>
+References: <20210303164035.1b9a1d07@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YESayEskbtjEWjFd@lx-t490>
 MIME-Version: 1.0
-In-Reply-To: <20210308180803.19123-1-noltari@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -3.49 / 15.00 / 15.00
+X-Rspamd-Queue-Id: AB4CD180D
+X-Rspamd-UID: 4b7a61
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/8/21 10:08 AM, Álvaro Fernández Rojas wrote:
-> BCM63xx switches are present on bcm63xx and bmips devices.
+On Sun, 7 Mar 2021 10:20:08 +0100
+"Ahmed S. Darwish" <a.darwish@linutronix.de> wrote:
+
+> @Erhard, can you please try below patch? Just want to confirm if this
+> theory has any validity to it:
 > 
-> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+> diff --git a/drivers/net/ethernet/realtek/8139too.c b/drivers/net/ethernet/realtek/8139too.c
+> index 1e5a453dea14..c0dbb0418e9d 100644
+> --- a/drivers/net/ethernet/realtek/8139too.c
+> +++ b/drivers/net/ethernet/realtek/8139too.c
+> @@ -715,6 +715,11 @@ static const unsigned int rtl8139_rx_config =
+>  static const unsigned int rtl8139_tx_config =
+>  	TxIFG96 | (TX_DMA_BURST << TxDMAShift) | (TX_RETRY << TxRetryShift);
+> 
+> +#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
+> +static struct lock_class_key rx_stats_key;
+> +static struct lock_class_key tx_stats_key;
+> +#endif
+> +
+>  static void __rtl8139_cleanup_dev (struct net_device *dev)
+>  {
+>  	struct rtl8139_private *tp = netdev_priv(dev);
+> @@ -794,8 +799,17 @@ static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
+> 
+>  	pci_set_master (pdev);
+> 
+> -	u64_stats_init(&tp->rx_stats.syncp);
+> -	u64_stats_init(&tp->tx_stats.syncp);
+> +#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
+> +	dev_warn(d, "Manually intializing tx/rx stats sequence counters\n");
+> +
+> +	tp->rx_stats.syncp.seq.sequence = 0;
+> +	lockdep_set_class_and_name(&tp->rx_stats.syncp.seq,
+> +				   &rx_stats_key, "RX stats");
+> +
+> +	tp->tx_stats.syncp.seq.sequence = 0;
+> +	lockdep_set_class_and_name(&tp->tx_stats.syncp.seq,
+> +				   &tx_stats_key, "TX stats");
+> +#endif
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Hi Ahmed!
 
-Since you are targeting net-next, please make it clear in the patch
-subject next time:
+With your patch on top of 5.12-rc2 the lockdep splat is gone in the kernel dmesg and I only get:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n28
--- 
-Florian
+[...]
+8139too: 8139too Fast Ethernet driver 0.9.28
+8139too 0000:00:0f.0: Manually intializing tx/rx stats sequence counters
+8139too 0000:00:0f.0 eth0: RealTek RTL8139 at 0x(ptrval), 00:30:1b:2f:2c:58, IRQ 18
+[...]
+
+Trying Peter's patch next.
