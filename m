@@ -2,120 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3327C3305E7
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 03:31:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 878663305E8
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 03:33:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233537AbhCHCap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 21:30:45 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:55219 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbhCHCaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 21:30:39 -0500
-Received: by mail-il1-f199.google.com with SMTP id w8so6317546ilg.21
-        for <netdev@vger.kernel.org>; Sun, 07 Mar 2021 18:30:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=bxTzn20sw0YqGPnteZcFUQodhglpJ7rCkRvt/JGA98w=;
-        b=V+d1gBoWPVcpRdl4qsrNXb4OTm58LSzIQEtq4ONmr+S+Hagf6G6aqKPbtJTwvAdCw8
-         Wic9Wp75Kw9iQzhNStzsBvB7TunPiNEgGQy7Ywf5xqp0xQ3qKQthi3FcrMD05fbFEjei
-         YvFmr5IFW3GoCBJpM82G+k+57StWDkRUNgQTF7lrgztvnIq/eVF7Ja4soHDlH4adiYjY
-         qXCyAx4YtM2KPplDRTiS3XbLZJcWtrMSEsyDYKlLWkt71aCiOY069DFknAMjtvfHJGCq
-         JaSKVcO59O4QoSnsqrTnvFPMeA19UgL4684VS+py3BGXUQ7TldTDqX7tOWs56UgKYdch
-         yxHg==
-X-Gm-Message-State: AOAM531rohtvgv++WTYr8+uAAKO6q0gSg5NejsSPj3iDFmFO6WpCg/sb
-        K98ZVjP/J2LdttmLy2v30mGcnW83VotnlxKet+koVbx/l/q2
-X-Google-Smtp-Source: ABdhPJzr6F69xiYl85TA2EDzpPaEUsnYs2z1zwMY6xt6rXuRW0WGjtsXN11doPLldAFW/KoiyC1CvLZbQtSFkHJAaen3IMTUnSxu
+        id S231134AbhCHCcz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 7 Mar 2021 21:32:55 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3039 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231223AbhCHCca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 21:32:30 -0500
+Received: from nkgeml707-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Dv2Py6NXPzRMfq;
+        Mon,  8 Mar 2021 10:30:46 +0800 (CST)
+Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
+ nkgeml707-chm.china.huawei.com (10.98.57.157) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 8 Mar 2021 10:32:22 +0800
+Received: from dggpemm500021.china.huawei.com ([7.185.36.109]) by
+ dggpemm500021.china.huawei.com ([7.185.36.109]) with mapi id 15.01.2106.013;
+ Mon, 8 Mar 2021 10:32:22 +0800
+From:   "zhudi (J)" <zhudi21@huawei.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+Subject: Re: [PATCH] bonding: 3ad: fix a use-after-free in
+ bond_3ad_state_machine_handle
+Thread-Topic: [PATCH] bonding: 3ad: fix a use-after-free in
+ bond_3ad_state_machine_handle
+Thread-Index: AdcTt7PfxpAZE/IOSYC467Jxkow//g==
+Date:   Mon, 8 Mar 2021 02:32:22 +0000
+Message-ID: <70169de1827347468003465cd12cdc6c@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.114.155]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-Received: by 2002:a02:971a:: with SMTP id x26mr20900603jai.61.1615170627920;
- Sun, 07 Mar 2021 18:30:27 -0800 (PST)
-Date:   Sun, 07 Mar 2021 18:30:27 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000087674b05bcfd37a0@google.com>
-Subject: [syzbot] WARNING: ODEBUG bug in net_dm_cmd_trace
-From:   syzbot <syzbot+779559d6503f3a56213d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> >From: Di Zhu <zhudi21@huawei.com>
+> >
+> >I use the similar test method described in link below with KASAN enabled:
+> >https://lore.kernel.org/netdev/4c5e467e07fb410ab4135b391d663ec1@hua
+> wei.
+> >com/
+> >soon after, KASAN reports:
+> >[ 9041.977110]
+> >=========================================================
+> =========
+> >[ 9041.977151] BUG: KASAN: use-after-free in
+> >bond_3ad_state_machine_handler+0x1c34/0x20b0 [bonding]
+> 
+> 	What line of code is this?
 
-syzbot found the following issue on:
+Around  line 1022 in current net-next , bond_3ad_state_machine_handler()->ad_mux_machine():
+	} else {
+				/* if port state hasn't changed make
+				 * sure that a collecting distributing
+				 * port in an active aggregator is enabled
+				 */
+				if (port->aggregator &&
+-------------------->		port->aggregator->is_active &&
+				    !__port_is_enabled(port)) {
 
-HEAD commit:    d310ec03 Merge tag 'perf-core-2021-02-17' of git://git.ker..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=108adb32d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2b8307379601586a
-dashboard link: https://syzkaller.appspot.com/bug?extid=779559d6503f3a56213d
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12ad095cd00000
+					__enable_port(port);
+				}
+			}
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+779559d6503f3a56213d@syzkaller.appspotmail.com
+the aggregator pointed by port->aggregator has released
 
-------------[ cut here ]------------
-ODEBUG: init active (active state 0) object type: timer_list hint: sched_send_work+0x0/0x60 include/linux/list.h:135
-WARNING: CPU: 1 PID: 8649 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
-Modules linked in:
-CPU: 1 PID: 8649 Comm: syz-executor.0 Not tainted 5.11.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
-Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 40 4c bf 89 4c 89 ee 48 c7 c7 40 40 bf 89 e8 64 79 fa 04 <0f> 0b 83 05 15 e0 ff 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
-RSP: 0018:ffffc900021df438 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
-RDX: ffff888020cd1bc0 RSI: ffffffff815b4c85 RDI: fffff5200043be79
-RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815ade9e R11: 0000000000000000 R12: ffffffff896d8ea0
-R13: ffffffff89bf4540 R14: ffffffff8161d660 R15: ffffffff900042b0
-FS:  00007f73bb69e700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f7a4370f470 CR3: 000000001334a000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __debug_object_init+0x524/0xd10 lib/debugobjects.c:588
- debug_timer_init kernel/time/timer.c:722 [inline]
- debug_init kernel/time/timer.c:770 [inline]
- init_timer_key+0x2d/0x340 kernel/time/timer.c:814
- net_dm_trace_on_set net/core/drop_monitor.c:1111 [inline]
- set_all_monitor_traces net/core/drop_monitor.c:1188 [inline]
- net_dm_monitor_start net/core/drop_monitor.c:1295 [inline]
- net_dm_cmd_trace+0x720/0x1220 net/core/drop_monitor.c:1339
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2348
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2402
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2435
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x465ef9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f73bb69e188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000465ef9
-RDX: 0000000000000800 RSI: 0000000020000500 RDI: 0000000000000005
-RBP: 00007f73bb69e1d0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007ffdb1c8cb0f R14: 00007f73bb69e300 R15: 0000000000022000
+> 
+> >[ 9041.977156] Read of size 2 at addr ffff80394b8d70b0 by task
+> >kworker/u192:2/78492
+> >
+> >[ 9041.977187] Workqueue: bond0 bond_3ad_state_machine_handler
+> >[bonding] [ 9041.977190] Call trace:
+> >[ 9041.977197]  dump_backtrace+0x0/0x310 [ 9041.977201]
+> >show_stack+0x28/0x38 [ 9041.977207]  dump_stack+0xec/0x15c [
+> >9041.977213]  print_address_description+0x68/0x2d0
+> >[ 9041.977217]  kasan_report+0x130/0x2f0 [ 9041.977221]
+> >__asan_load2+0x80/0xa8 [ 9041.977238]
+> >bond_3ad_state_machine_handler+0x1c34/0x20b0 [bonding]
+> >
+> >[ 9041.977261] Allocated by task 138336:
+> >[ 9041.977266]  kasan_kmalloc+0xe0/0x190 [ 9041.977271]
+> >kmem_cache_alloc_trace+0x1d8/0x468
+> >[ 9041.977288]  bond_enslave+0x514/0x2160 [bonding] [ 9041.977305]
+> >bond_option_slaves_set+0x188/0x2c8 [bonding] [ 9041.977323]
+> >__bond_opt_set+0x1b0/0x740 [bonding]
+> >
+> >[ 9041.977420] Freed by task 105873:
+> >[ 9041.977425]  __kasan_slab_free+0x120/0x228 [ 9041.977429]
+> >kasan_slab_free+0x10/0x18 [ 9041.977432]  kfree+0x90/0x468 [
+> >9041.977448]  slave_kobj_release+0x7c/0x98 [bonding] [ 9041.977452]
+> >kobject_put+0x118/0x328 [ 9041.977468]
+> __bond_release_one+0x688/0xa08
+> >[bonding] [ 9041.977660]  pci_device_remove+0x80/0x198
+> >
+> >The root cause is that in bond_3ad_unbind_slave() the last step is
+> >detach the port from aggregator including it. if find this aggregator
+> >and it has not any active ports, it will call ad_clear_agg() to do
+> >clear things, especially set aggregator->lag_ports = NULL.
+> 
+> 	By "last step," are you referring to the following logic near the end of
+> bond_3ad_unbind_slave(), around line 2229 in the current net-next?
+> 
+> 				temp_aggregator->num_of_ports--;
+> 				if (__agg_active_ports(temp_aggregator) ==
+> 0) {
+> 					select_new_active_agg =
+> temp_aggregator->is_active;
+> 					ad_clear_agg(temp_aggregator);
+> 					if (select_new_active_agg) {
+> 
 
+	Yes,  it is right
+> 
+> >But ports in aggregator->lag_ports list which is set to NULL previously
+> >still has pointer to this aggregator through  port->aggregator, event
+> >after this aggregator has released.
+> 
+> 	This, I think, is the real problem.  If aggregator->num_of_ports is zero,
+> then there should not be any port->aggregator pointing to it.
+> 
+> >The use-after-free problem will cause some puzzling situactions, i am
+> >not sure whether fix this problem can solve all the problems mentioned
+> >by the link described earlier, but it did solve all problems i encountered.
+> 
+> 	I'm not sure, either, although the issues may be related somehow.
+> I've been testing with the following, but in light of this patch, I'm not sure
+> that mine is an actual fix, either, since I'm not able to reproduce the actual
+> issue and have forced it.  Or maybe there are multiple issues here.
+> 
+	Maybe the issue your patch want to fix is likely another one from the point 
+of view of code logic. we are still testing with the patch I submitted to see whether
+all the problems have been dealt with. The recurrence probability is relatively low, 
+so need a long time...
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> diff --git a/drivers/net/bonding/bond_3ad.c
+> b/drivers/net/bonding/bond_3ad.c index 6908822d9773..546adda42715
+> 100644
+> --- a/drivers/net/bonding/bond_3ad.c
+> +++ b/drivers/net/bonding/bond_3ad.c
+> @@ -1537,6 +1537,12 @@ static void ad_port_selection_logic(struct port
+> *port, bool *update_slave_arr)
+>  			slave_err(bond->dev, port->slave->dev,
+>  				  "Port %d did not find a suitable
+> aggregator\n",
+>  				  port->actor_port_number);
+> +
+> +			port->sm_vars |= AD_PORT_BEGIN;
+> +			aggregator = __get_first_agg(port);
+> +			ad_agg_selection_logic(aggregator,
+> update_slave_arr);
+> +
+> +			return;
+>  		}
+>  	}
+>  	/* if all aggregator's ports are READY_N == TRUE, set ready=TRUE
+> --
+> 2.17.1
+> 
+> 	-J
+> 
+> >Signed-off-by: Di Zhu <zhudi21@huawei.com>
+> >---
+> > drivers/net/bonding/bond_3ad.c | 6 ++++++
+> > 1 file changed, 6 insertions(+)
+> >
+> >diff --git a/drivers/net/bonding/bond_3ad.c
+> >b/drivers/net/bonding/bond_3ad.c index 6908822d9773..5d5a903e899c
+> >100644
+> >--- a/drivers/net/bonding/bond_3ad.c
+> >+++ b/drivers/net/bonding/bond_3ad.c
+> >@@ -1793,6 +1793,8 @@ static void ad_agg_selection_logic(struct
+> >aggregator *agg,  static void ad_clear_agg(struct aggregator
+> >*aggregator)  {
+> > 	if (aggregator) {
+> >+		struct port *port;
+> >+
+> > 		aggregator->is_individual = false;
+> > 		aggregator->actor_admin_aggregator_key = 0;
+> > 		aggregator->actor_oper_aggregator_key = 0; @@ -1801,6
+> +1803,10 @@
+> >static void ad_clear_agg(struct aggregator *aggregator)
+> > 		aggregator->partner_oper_aggregator_key = 0;
+> > 		aggregator->receive_state = 0;
+> > 		aggregator->transmit_state = 0;
+> >+		for (port = aggregator->lag_ports; port;
+> >+				port = port->next_port_in_aggregator)
+> >+			if (port->aggregator == aggregator)
+> >+				port->aggregator = NULL;
+> > 		aggregator->lag_ports = NULL;
+> > 		aggregator->is_active = 0;
+> > 		aggregator->num_of_ports = 0;
+> >--
+> >2.23.0
+> >
+> 
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks
