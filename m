@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BBC3331A9A
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 00:01:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5EE1331AD6
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 00:11:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbhCHXAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 18:00:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33444 "EHLO mail.kernel.org"
+        id S231760AbhCHXKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 18:10:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34680 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229488AbhCHXAI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Mar 2021 18:00:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id DC62F6528A;
-        Mon,  8 Mar 2021 23:00:07 +0000 (UTC)
+        id S231749AbhCHXKI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Mar 2021 18:10:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id BA5B46521F;
+        Mon,  8 Mar 2021 23:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615244407;
-        bh=4KvtxQQjLO5Q7FLFNDWpxrmRU8aRg63axlvNACF16nA=;
+        s=k20201202; t=1615245007;
+        bh=eZsbgmhSp1ZE6xyK39CROnAgKsXeSv0RyunU8E0yTrU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=g2CWhHv4Nqzy5ThTU7zrpe2nJjRdJpRHAmBHaQ7DCuuRlhZGpWBHm9E8uQ3VGauLQ
-         UPG0Se9+ueB2EXdsYB/9J0BlMhp4fcYPP2In377/IvHhIzDad0CaIRZ8Sa/LJD+bUq
-         C7ZzLZm2dwxjWaME6JcrLeT25TTPCVPrwC1Jvp+A9Wg+9xpKlFXKn+GIGFs8niXoF3
-         Vh5RVLsPPyeLc2iU6nxofb4R/eEJE6HzBhDGXFBwysCoCZMgNI9Fqy4Y188OqCdOHJ
-         sJ0ayAoi+ulwtXW50KSPhfQGEmZWXGNn3psi7SuVatcTBjoUwFp0rrbRcbSgd59HHZ
-         oIKzHYwwXdSBQ==
+        b=aZXITx5/C/IkquvkM5fE44yHwDjovy+tu+xFMEzlbfxxABjq0OzRUNGYjA9e+NBdb
+         VCYFkR7y+GmqHVADsyrRGI7lDtfOfKBKIC+DFcka6OBnkFeQE52cex0G+3cE/8SCZB
+         3GW4wpqNMl7nmKSOE3mly9d19qGDQfN1k1lyVNOZjK7BtK2MwPqn/RXIKBGWPQomHY
+         0GgvACan/4JuXVndYM8KB/V7aXa2zRjgy0teCCFoH/5JYRuGpDP9Hkr/Dzx+jUPQ4t
+         Lq0XNG3GciLFKRkW2xaGpSHsbjbNxf4AeFuxtrDOGJ3oOiKbs5xGmH/ockaecwlx0f
+         sbKJYrpTqE0vQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CE36E60952;
-        Mon,  8 Mar 2021 23:00:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A8213609E6;
+        Mon,  8 Mar 2021 23:10:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: bonding: fix error return code of bond_neigh_init()
+Subject: Re: [PATCH] net: qrtr: fix error return code of qrtr_sendmsg()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161524440784.4208.10501513000794222877.git-patchwork-notify@kernel.org>
-Date:   Mon, 08 Mar 2021 23:00:07 +0000
-References: <20210308031102.26730-1-baijiaju1990@gmail.com>
-In-Reply-To: <20210308031102.26730-1-baijiaju1990@gmail.com>
+Message-Id: <161524500768.8251.10623370492041781396.git-patchwork-notify@kernel.org>
+Date:   Mon, 08 Mar 2021 23:10:07 +0000
+References: <20210308091355.8726-1-baijiaju1990@gmail.com>
+In-Reply-To: <20210308091355.8726-1-baijiaju1990@gmail.com>
 To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+Cc:     davem@davemloft.net, kuba@kernel.org, loic.poulain@linaro.org,
+        bjorn.andersson@linaro.org, mani@kernel.org,
+        cjhuang@codeaurora.org, necip@google.com, edumazet@google.com,
+        miaoqinglang@huawei.com, dan.carpenter@oracle.com,
+        wenhu.wang@vivo.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -47,20 +50,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sun,  7 Mar 2021 19:11:02 -0800 you wrote:
-> When slave is NULL or slave_ops->ndo_neigh_setup is NULL, no error
-> return code of bond_neigh_init() is assigned.
-> To fix this bug, ret is assigned with -EINVAL in these cases.
+On Mon,  8 Mar 2021 01:13:55 -0800 you wrote:
+> When sock_alloc_send_skb() returns NULL to skb, no error return code of
+> qrtr_sendmsg() is assigned.
+> To fix this bug, rc is assigned with -ENOMEM in this case.
 > 
-> Fixes: 9e99bfefdbce ("bonding: fix bond_neigh_init()")
+> Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
 > Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
 > Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - net: bonding: fix error return code of bond_neigh_init()
-    https://git.kernel.org/netdev/net/c/2055a99da8a2
+  - net: qrtr: fix error return code of qrtr_sendmsg()
+    https://git.kernel.org/netdev/net/c/179d0ba0c454
 
 You are awesome, thank you!
 --
