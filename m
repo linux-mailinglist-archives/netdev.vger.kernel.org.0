@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3B24331270
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 16:45:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC94331283
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 16:49:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbhCHPow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 10:44:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45196 "EHLO
+        id S229955AbhCHPsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 10:48:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229740AbhCHPou (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 10:44:50 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D709C06174A
-        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 07:44:50 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id p8so21267700ejb.10
-        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 07:44:49 -0800 (PST)
+        with ESMTP id S229627AbhCHPsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 10:48:14 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53886C06174A
+        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 07:48:14 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id n14so10428207iog.3
+        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 07:48:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=J1R1pDlUe3V84VT4yo5K+kL3oars7gghoMvLNVDFRBs=;
-        b=dYaZ9Ij45EI7IQq0KYqRRabkV13AK7Bbi5Oq9KR+5UB4cGhzEodHEaRct2IjppeEL3
-         sSaKfEcoXN/F6hhovG8J2giaSyFZyYV41kaiEtF+JlROwzv2/piLZWJmjNvvX9Kj97p2
-         m89AL/4CKLNjTAV8AeFG247Fuj/dNX0KlCWs6A3P0F+xd7q2ckxbA3qUXDYbT65jqd3L
-         BKXgXdFGZgcHBi/3HLEM9ISHt+5baaaMRiVKmQQGDVk/VWOs+lR5SQ00ra/2Sk0EEpiM
-         9wIMblcG3aKrTb7t4nFotTJLoiheyoWph0XjsvhjHgr6sZG4/D2Cy/4Fqz8NWQIvHuws
-         Ah8Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sVonTVjJAMsK2GHD2m3lsQfvKmyuFm8091f3NUK9GTM=;
+        b=XM1yQwDjytAiC+dTxdsDGZnShzb9Uklg8sEHeZbXvsR8tjzYWuFWIOEr1+OpX2QxMw
+         pVfn7Mek2nBvTsFFPoMXemPvQSQKtUnehgMo56PPEHGRbdyDbiWliv8mIF/R2+EZ1Wko
+         tzUWXSovDnJq2LHkNXVdQbofPBn/GUrzzedrv8CL5DAc4k25EaSjv52rtH3gB5UVPbQh
+         sf9DarpMSLQ6cfC6TfUhqxv2qXeKwOcLDsLQBZUoNanK99bhwl5IEUpWB5EI1WY/WGcZ
+         0XzM01BISnRWncl9+ibS7UihoqrHwh+TfF8fNLOOUnSCOaMHUpZvUrQiQenxTkllzQob
+         F4rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J1R1pDlUe3V84VT4yo5K+kL3oars7gghoMvLNVDFRBs=;
-        b=nEtdaJqI/Acewp4RA2QvJL4qfjJX3fdPNGLB2cnmRHXfj9IapTWHjygXvLjq86ZXMP
-         CJgezCv1XRBcTLZUYe38c86Ns41zsxB3ci+CQsENyBh+WR1IMABecy2RmPcjB5o7gKn6
-         Dl2+AVZKj5QYHzuvvYCspXF91DQ4P47ai3qhiaaHpMpdy8AYVeNKhAjzyRcP1g6Ga2vl
-         xChY7AzWpbCMeixLlRvBPdw0rDDPazKB1s1JDp0dVcijmCkTQXD3+cr4IXhRymZobslZ
-         0YAcueKDnuDQx7rfTXIvciCJ69KOPLfT93b3j2lGhanKr4/3J5AC/sgeR3WyluWgux5n
-         1gvg==
-X-Gm-Message-State: AOAM532IdiDQlfsY7wIpa/6yruWmKu+fC8p4czrsmj/1Z8/kZXqgoIbf
-        5AS5EWpe7UPgGX3MhxzaLXs=
-X-Google-Smtp-Source: ABdhPJwj+CDXqGp09VdsxxSuP93EQQdQB1TYPxmWOZDJIPfmgc+7uwzo+Q9NDHab8mOOOBck40eq7Q==
-X-Received: by 2002:a17:906:aada:: with SMTP id kt26mr15320137ejb.137.1615218288694;
-        Mon, 08 Mar 2021 07:44:48 -0800 (PST)
-Received: from skbuf ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id i6sm6899233ejz.95.2021.03.08.07.44.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Mar 2021 07:44:47 -0800 (PST)
-Date:   Mon, 8 Mar 2021 17:44:46 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: dsa: Accept software VLANs for stacked
- interfaces
-Message-ID: <20210308154446.ceqp56bh65bsarlt@skbuf>
-References: <20210308150405.3694678-1-tobias@waldekranz.com>
- <20210308150405.3694678-2-tobias@waldekranz.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sVonTVjJAMsK2GHD2m3lsQfvKmyuFm8091f3NUK9GTM=;
+        b=CRlmCLrQpNmc6SRfQKpEmFxFKL1hyqEeip4z08AhJ+ncbd5UhPXiSu2cGopEPf23DD
+         Ymo08a0knJkQSPrgmE8jk5sMtmg2BSJ48pOkxd05OgaZJBS7q0Hy1D8N5AYSXxuopneV
+         4OWnkRk7Wr5DRuIFiwinXq523fWKEnUHGPwcKqCK+4CyKRZk9Y4oTfbsr3HT+M4mFpDj
+         1WRPB7fcez/5hGLVqYrRbgYIJ5N1Ot3ijPFkI7Br6ofE2T26kjYLpG1gem9HfVJBNYi+
+         gXQrK1dlAXdJ6Q0jsTuGw0eIjZtBL/90orKWkMP/LeWv/vV3PHVeGpNwsgI1eTupWoTX
+         7xRg==
+X-Gm-Message-State: AOAM531WNaFDxp+RJwg//Bp1htEQvhnliBeBCWi7Qq98BpIPsSG5QVy7
+        VaHs/lWzck0MamDffr6AkgmDZWG5tSo=
+X-Google-Smtp-Source: ABdhPJyGFbzYfW6XRnCbq9zmiRORGkI84jKb5CLLHwFYOOadJUIfLS8vJze/5P6BX7/X4ibPKOzcMQ==
+X-Received: by 2002:a02:7119:: with SMTP id n25mr24551630jac.48.1615218493572;
+        Mon, 08 Mar 2021 07:48:13 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.40])
+        by smtp.googlemail.com with ESMTPSA id c16sm6369686ils.2.2021.03.08.07.48.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Mar 2021 07:48:13 -0800 (PST)
+Subject: Re: mlx5 sub function issue
+To:     ze wang <wangze712@gmail.com>, Parav Pandit <parav@nvidia.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
+References: <CANS1P8H8sDGUzQEh_LEFVi=6tUZzVxAty9_OKWAs4CU67wdLeg@mail.gmail.com>
+ <BY5PR12MB43226FF17791F6365812D028DC939@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CANS1P8E8uPpR+SN4Qs9so_3Lve3p2jxsRg_3Grg5JBK5m55=Tw@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b026b2c8-fdd5-d0fc-f0a6-42aa7e9d26f8@gmail.com>
+Date:   Mon, 8 Mar 2021 08:48:12 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210308150405.3694678-2-tobias@waldekranz.com>
+In-Reply-To: <CANS1P8E8uPpR+SN4Qs9so_3Lve3p2jxsRg_3Grg5JBK5m55=Tw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 08, 2021 at 04:04:04PM +0100, Tobias Waldekranz wrote:
-> The dsa_slave_vlan_rx_{add,kill}_vid ndos are required for hardware
-> that can not control VLAN filtering per port, rather it is a device
-> global setting, in order to support VLAN uppers on non-bridged ports.
+On 3/8/21 12:21 AM, ze wang wrote:
+> mlxconfig tool from mft tools version 4.16.52 or higher to set number of SF.
 > 
-> For hardware that can control VLAN filtering per port, it is perfectly
-> fine to fallback to software VLANs in this scenario. So, make sure
-> that this "error" does not leave the DSA layer as vlan_add_vid does
-> not know the meaning of it.
+> mlxconfig -d b3:00.0  PF_BAR2_ENABLE=0 PER_PF_NUM_SF=1 PF_SF_BAR_SIZE=8
+> mlxconfig -d b3:00.0  PER_PF_NUM_SF=1 PF_TOTAL_SF=192 PF_SF_BAR_SIZE=8
+> mlxconfig -d b3:00.1  PER_PF_NUM_SF=1 PF_TOTAL_SF=192 PF_SF_BAR_SIZE=8
 > 
-> The blamed commit removed this exemption by not advertising the
-> feature if the driver did not implement VLAN offloading. But as we
-> know see, the assumption that if a driver supports VLAN offloading, it
-> will always use it, does not hold in certain edge cases.
+> Cold reboot power cycle of the system as this changes the BAR size in device
 > 
-> Fixes: 9b236d2a69da ("net: dsa: Advertise the VLAN offload netdev ability only if switch supports it")
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
 
-So these NDOs exist for drivers that need the 'rx-vlan-filter: on'
-feature in ethtool -k, which can be due to any of the following reasons:
-1. vlan_filtering_is_global = true, some ports are under a VLAN-aware
-   bridge while others are standalone (this is what you described)
-2. Hellcreek. This driver needs it because in standalone mode, it uses
-   unique VLANs per port to ensure separation. For separation of untagged
-   traffic, it uses different PVIDs for each port, and for separation of
-   VLAN-tagged traffic, it never accepts 8021q uppers with the same vid
-   on two ports.
-3. the ports that are under a VLAN-aware bridge should also set this
-   feature, for 8021q uppers having a VID not claimed by the bridge.
-   In this case, the driver will essentially not even know that the VID
-   is coming from the 8021q layer and not the bridge.
-
-If a driver does not fall under any of the above 3 categories, there is
-no reason why it should advertise the 'rx-vlan-filter' feature, therefore
-no reason why it should implement these NDOs, and return -EOPNOTSUPP.
-
-We are essentially saying the same thing, except what I propose is to
-better manage the 'rx-vlan-filter' feature of the DSA net devices. After
-your patches, the network stack still thinks that mv88e6xxx ports in
-standalone mode have VLAN filtering enabled, which they don't. That
-might be confusing. Not only that, but any other driver that is
-VLAN-unaware in standalone mode will similarly have to ignore VLANs
-coming from the 8021q layer, which may add uselessly add to their
-complexity. Let me prepare an alternative patch series and let's see how
-they compare against each other.
-
-As far as I see, mv88e6xxx needs to treat the VLAN NDOs in case 3 only,
-and DSA will do that without any sort of driver-level awareness. It's
-all the other cases (standalone ports mode) that are bothering you.
+Is that capability going to be added to devlink?
