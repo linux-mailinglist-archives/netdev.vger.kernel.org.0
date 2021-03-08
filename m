@@ -2,160 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6368331368
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 17:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C65B833137C
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 17:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230477AbhCHQ3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 11:29:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
+        id S230287AbhCHQdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 11:33:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbhCHQ2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 11:28:43 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFA9C06174A;
-        Mon,  8 Mar 2021 08:28:43 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id c10so21543138ejx.9;
-        Mon, 08 Mar 2021 08:28:42 -0800 (PST)
+        with ESMTP id S230046AbhCHQdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 11:33:16 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17E3C06174A;
+        Mon,  8 Mar 2021 08:33:15 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id 81so10545434iou.11;
+        Mon, 08 Mar 2021 08:33:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tiGJV2RhXExYKDWyCVs2qAl+gBXWf404MXhwFnRFKfg=;
-        b=D5xNvUgCTm+HE+ClgXE4PFyrTWhGyTev2oYsTrgWgJCNygG9wtoLhVDsLOPKKFNO3E
-         BspvA7gRqU1Lqeza9vUYk6t8fy6AzQjXTNRdIZvsVia46l+vsCKLhr7Vfi+psU+PelMj
-         1hkyjKuaOu1CPuMgRjoXo6Kh2tWNHIKA0CbcIfIXrkh1xtdiHiqHn/k4XpjvZLjHr+5x
-         fK3n4qso0tZGL4E7ZBo2zuOosfch4g1xKWD2WSYccy3Mci8AgxxRmD6OwoT6VJ/XJEhe
-         Q6SYhsbtfirG1U9axJFGDYMVV8j7rO4x1J5dbxNp6su9ZQXmtctXPiTm4uEaUvwYsdz7
-         vSgA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dpxk6smN5s9jqDRr6gszhbtGPRhqSGCZqwN880eOGkY=;
+        b=kyZMgMDY02446TqbVqNFcOxrq8jy3Mw89TwDgucEfhuSVHic1kyFNXyfmMo7N2qHjT
+         XRHfwhgGNNMFqGr5uYM31DcqYH5wv5IoIWKbnxQJKZcrTekqb7ddKsB24i8iVgNdMyox
+         AiJBlEgJLhosdb8M5HtwlNLjAB0lFQQJ2vlPk37qY48hHyl1KKc5TtaYx+4KfZq8hFlj
+         K3xDLqYSzEN0/f7/ITfMZSil3ZIpZ6XXfOWPLEHs1gIb2Omg/UpEeJajhgU+UYrW/SE9
+         oPpZwGnkTv3bN/cJ56iCLdWLGBNUhIeOxR32LyVf7u+4PH6nMp2al835aqY4wAmV0dkW
+         Y8xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tiGJV2RhXExYKDWyCVs2qAl+gBXWf404MXhwFnRFKfg=;
-        b=gNMS6dVuWb0vasvQHmvFNdRQzCqIYQ64LLfebyfCVMEQRPpmaFD1chP9GOSIhZ1uE+
-         OJW7VJLeyLMTkngT1v2InAMhQudhaWXCfZfnKWJofXCYmlbzdYKk4iLgQqB/AQREP5XE
-         zQvF79aAF27aShGNvggKSuGCC2cZKUdTGwzfpsB0Rv5QjaqFmKamH5B5QMTI3q5jMmW4
-         l/3hi+Sq9MqDhRMP+nTzIglx4J5685Pi3peW6JuuEYo06/z1kznIhr51VvgxMaIxQ8UM
-         XCdd5SSThI/rX6D5DaEpLlAEiro4JCJMebxPY35+SoulTFlPX5+uOBj33wBTdooV+3WT
-         YiOA==
-X-Gm-Message-State: AOAM532ud3SwaZOttR3DLFGAW8CdFy8nLEdhTRAGSTO83rqJwVanWppk
-        JuwT5ZgKjH9RxdZPk6qw1JP9PCbif7sbeQ==
-X-Google-Smtp-Source: ABdhPJxQ615Q0WZoiZU0iboEHaD3ayezp9N+A8KdIZdkd0cJk2xgD3w7nU8vCviGqHfG3FWSevYF9g==
-X-Received: by 2002:a17:907:76b3:: with SMTP id jw19mr15583419ejc.202.1615220921770;
-        Mon, 08 Mar 2021 08:28:41 -0800 (PST)
-Received: from [192.168.1.110] ([77.124.67.117])
-        by smtp.gmail.com with ESMTPSA id v1sm6767875ejd.3.2021.03.08.08.28.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Mar 2021 08:28:41 -0800 (PST)
-Subject: Re: [PATCH] net/mlx5e: allocate 'indirection_rqt' buffer dynamically
-To:     Arnd Bergmann <arnd@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Noam Stolero <noams@nvidia.com>, Tal Gilboa <talgi@nvidia.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>, Oz Shlomo <ozsh@mellanox.com>,
-        Eli Cohen <eli@mellanox.com>,
-        Ariel Levkovich <lariel@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Tariq Toukan <tariqt@mellanox.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-References: <20210308153318.2486939-1-arnd@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <31a031b3-e44e-66cb-a713-627be1f64ff6@gmail.com>
-Date:   Mon, 8 Mar 2021 18:28:36 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dpxk6smN5s9jqDRr6gszhbtGPRhqSGCZqwN880eOGkY=;
+        b=Zit/N4qs/QgTWfo34kbWiF+ou9vO4awqkLpgN8KKREpgP1vDSyO1zA2BqrrE2/acyj
+         k7V3zHOcV6uxLvjUWSMb/qKuAstwLK1mIqE7nUfSTboKRacoJZ2jUPegJxpWuFIFpALJ
+         kTP02bpDS3O3qTTwY96hST2kI6zARWBdFUZCvaW5djPp+aOFB2lTAC7jk3IhbLjevYRf
+         FL1uJwMNsvOjzfI7+A5VrN1mGZgVCLvXWKP/jJa+94avtvZpgYp8Ua/FxnXcLobH8cxS
+         BUBgZAYw9G6CF0ccQxOFyXWsD10YBIHcIH/c8zrKbW90IYbPaxv7vPM0e0nuNh1fsTiK
+         +dnw==
+X-Gm-Message-State: AOAM532wRaFca/hLxEyymn29VwEcVOpEuEqvI5P+i0ZPum+4L5Qi+UAu
+        LTTqhTDaNrnKze9w03mmAIJfTt0RRYrMryqy66sG5E7i4KM=
+X-Google-Smtp-Source: ABdhPJxQp9puHVHLX0mh0tI6TqzlVw+DA4E692ROnUueWsgY9ZUU8Sr9mYDd5sMcMrGom9e5vJDo/B0xt/u1SlxbyUM=
+X-Received: by 2002:a05:6638:329e:: with SMTP id f30mr7221139jav.121.1615221195168;
+ Mon, 08 Mar 2021 08:33:15 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210308153318.2486939-1-arnd@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210301075524.441609-1-leon@kernel.org> <CAKgT0Ue=g+1pZCct8Kd0OnkPEP0qhggBF96s=noDoWHMJTL6FA@mail.gmail.com>
+ <YEUnVcW+lIXBlqT1@unreal>
+In-Reply-To: <YEUnVcW+lIXBlqT1@unreal>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 8 Mar 2021 08:33:03 -0800
+Message-ID: <CAKgT0UdzjeD7fnE6kX2qN6V4ZddSV2ZMnONEwGXhwkSwoUXUug@mail.gmail.com>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Mar 7, 2021 at 11:19 AM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Sun, Mar 07, 2021 at 10:55:24AM -0800, Alexander Duyck wrote:
+> > On Sun, Feb 28, 2021 at 11:55 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > >
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > >
+> > > @Alexander Duyck, please update me if I can add your ROB tag again
+> > > to the series, because you liked v6 more.
+> > >
+> > > Thanks
+> > >
+> > > ---------------------------------------------------------------------------------
+> > > Changelog
+> > > v7:
+> > >  * Rebase on top v5.12-rc1
+> > >  * More english fixes
+> > >  * Returned to static sysfs creation model as was implemented in v0/v1.
+> >
+> > Yeah, so I am not a fan of the series. The problem is there is only
+> > one driver that supports this, all VFs are going to expose this sysfs,
+> > and I don't know how likely it is that any others are going to
+> > implement this functionality. I feel like you threw out all the
+> > progress from v2-v6.
+>
+> I'm with you here and tried to present the rationale in v6 when had
+> a discussion with Bjorn, so it is unfair to say "you threw out".
+>
+> Bjorn expressed his preference, and no one came forward to support v6.
 
+Sorry, it wasn't my intention to be accusatory. I'm just not a fan of
+going back to where we were with v1.
 
-On 3/8/2021 5:32 PM, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> Increasing the size of the indirection_rqt array from 128 to 256 bytes
-> pushed the stack usage of the mlx5e_hairpin_fill_rqt_rqns() function
-> over the warning limit when building with clang and CONFIG_KASAN:
-> 
-> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:970:1: error: stack frame size of 1180 bytes in function 'mlx5e_tc_add_nic_flow' [-Werror,-Wframe-larger-than=]
-> 
-> Using dynamic allocation here is safe because the caller does the
-> same, and it reduces the stack usage of the function to just a few
-> bytes.
-> 
-> Fixes: 1dd55ba2fb70 ("net/mlx5e: Increase indirection RQ table size to 256")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->   drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 16 +++++++++++++---
->   1 file changed, 13 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index 0da69b98f38f..66f98618dc13 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -445,12 +445,16 @@ static void mlx5e_hairpin_destroy_transport(struct mlx5e_hairpin *hp)
->   	mlx5_core_dealloc_transport_domain(hp->func_mdev, hp->tdn);
->   }
->   
-> -static void mlx5e_hairpin_fill_rqt_rqns(struct mlx5e_hairpin *hp, void *rqtc)
-> +static int mlx5e_hairpin_fill_rqt_rqns(struct mlx5e_hairpin *hp, void *rqtc)
->   {
-> -	u32 indirection_rqt[MLX5E_INDIR_RQT_SIZE], rqn;
-> +	u32 *indirection_rqt, rqn;
->   	struct mlx5e_priv *priv = hp->func_priv;
->   	int i, ix, sz = MLX5E_INDIR_RQT_SIZE;
->   
-> +	indirection_rqt = kzalloc(sz, GFP_KERNEL);
-> +	if (!indirection_rqt)
-> +		return -ENOMEM;
-> +
->   	mlx5e_build_default_indir_rqt(indirection_rqt, sz,
->   				      hp->num_channels);
->   
-> @@ -462,6 +466,9 @@ static void mlx5e_hairpin_fill_rqt_rqns(struct mlx5e_hairpin *hp, void *rqtc)
->   		rqn = hp->pair->rqn[ix];
->   		MLX5_SET(rqtc, rqtc, rq_num[i], rqn);
->   	}
-> +
-> +	kfree(indirection_rqt);
-> +	return 0;
->   }
->   
->   static int mlx5e_hairpin_create_indirect_rqt(struct mlx5e_hairpin *hp)
-> @@ -482,12 +489,15 @@ static int mlx5e_hairpin_create_indirect_rqt(struct mlx5e_hairpin *hp)
->   	MLX5_SET(rqtc, rqtc, rqt_actual_size, sz);
->   	MLX5_SET(rqtc, rqtc, rqt_max_size, sz);
->   
-> -	mlx5e_hairpin_fill_rqt_rqns(hp, rqtc);
-> +	err = mlx5e_hairpin_fill_rqt_rqns(hp, rqtc);
-> +	if (err)
-> +		goto out;
->   
->   	err = mlx5_core_create_rqt(mdev, in, inlen, &hp->indir_rqt.rqtn);
->   	if (!err)
->   		hp->indir_rqt.enabled = true;
->   
-> +out:
->   	kvfree(in);
->   	return err;
->   }
-> 
+With that said, if it is what Bjorn wants then you are probably better
+off going with that. However if that is the direction we are going in
+then you should probably focus on getting his Reviewed-by or Ack since
+he will ultimately be the maintainer for the code.
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Thanks for your patch.
+> >
+> > I really feel like the big issue is that this model is broken as you
+> > have the VFs exposing sysfs interfaces that make use of the PFs to
+> > actually implement. Greg's complaint was the PF pushing sysfs onto the
+> > VFs. My complaint is VFs sysfs files operating on the PF. The trick is
+> > to find a way to address both issues.
+>
+> It is hard to say something meaningful about Greg's complain, he was
+> added in the middle of the discussion without much chances to get full
+> picture.
 
-Tariq
+Right, but what I am getting at is that the underlying problem is that
+you either have sysfs being pushed onto a remote device, or sysfs that
+is having to call into another device. It's not exactly something we
+have had precedent for enabling before, and either perspective seems a
+bit ugly.
+
+> >
+> > Maybe the compromise is to reach down into the IOV code and have it
+> > register the sysfs interface at device creation time in something like
+> > pci_iov_sysfs_link if the PF has the functionality present to support
+> > it.
+>
+> IMHO, it adds nothing.
+
+My thought was to reduce clutter. As I mentioned before with this
+patch set we are enabling sysfs for functionality that is currently
+only exposed by one device. I'm not sure it will be used by many
+others or not. Having these sysfs interfaces instantiated at probe
+time or at creation time in the case of VFs was preferable to me.
+
+> >
+> > Also we might want to double check that the PF cannot be unbound while
+> > the VF is present. I know for a while there it was possible to remove
+> > the PF driver while the VF was present. The Mellanox drivers may not
+> > allow it but it might not hurt to look at taking a reference against
+> > the PF driver if you are allocating the VF MSI-X configuration sysfs
+> > file.
+>
+> Right now, we always allocate these sysfs without relation if PF
+> supports or not. The check is done during write() call to such sysfs
+> and at that phase we check the existence of the drivers. It greatly
+> simplifies creation phase.
+
+Yeah, I see that. From what I can tell the locking looks correct to
+keep things from breaking. For what we have it is probably good enough
+to keep things from causing any issues. My concern was more about
+preventing the driver from reloading if we only exposed these
+interfaces if the PF driver supported them.
