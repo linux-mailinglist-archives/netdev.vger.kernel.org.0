@@ -2,75 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCE5331AF6
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 00:30:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB34A331B05
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 00:40:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbhCHXaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 18:30:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37434 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229471AbhCHXaI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Mar 2021 18:30:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id D32BB6527D;
-        Mon,  8 Mar 2021 23:30:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615246207;
-        bh=8gZXx9QO4EzwmFshOMlCezfnEJ6cCSECVYl2qIl2V+o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R6Jo1NQ+n0uib6ZLbroLr0q3GqKuuvG69uGF7FwTohxl5YurepHECk+He46sCEGa0
-         HpUFoZB3tXBctUdZe8HNw407cYt40e5wq+zhI9y3nqJHtRjEdTM9ndRvUDgniysSCo
-         P4qmQFCT8fwVXY9s0ZP96TgDMAsmmpnEcA2ys7ADo3eJpNplzmmL/7k0eMHE6iKgEz
-         U/2j91fPpkhXdj/I2jk10hqUrtyITPzjXglrblnQsOflazlCoe7P3AD++W7r41k/LL
-         MKR58kNJult8NNAgeNL/8C0R89XUnXHxbMziYehnuDVsBvkRf37P2FkIj0qTkOI9zw
-         2I3zjrGI+OZeg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C2E8F6098E;
-        Mon,  8 Mar 2021 23:30:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/3] fix a couple of atm->phy_data related issues
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161524620779.17053.16108996062074686102.git-patchwork-notify@kernel.org>
-Date:   Mon, 08 Mar 2021 23:30:07 +0000
-References: <20210308032529.435224-1-ztong0001@gmail.com>
-In-Reply-To: <20210308032529.435224-1-ztong0001@gmail.com>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S231613AbhCHXjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 18:39:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230512AbhCHXjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 18:39:00 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D4EC06174A;
+        Mon,  8 Mar 2021 15:39:00 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id v192so5346193oia.5;
+        Mon, 08 Mar 2021 15:39:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=2u78htuCTna7EY9F4ZLyNc7j57MyX9k6GdRgfX2JGE0=;
+        b=AAd1fUrXNtpyONki+nL+TsZxT01ap0WhF9rIy/7QDuJew5lvQ0Jf5Y5MvckLHCXdCm
+         bjOlND0RhNJrrMmvcyLNHEP7OZV62ptbQMj6lg/WWsTEtP1BVIkDrJuzAQaCT/EAQMrL
+         xnUNAKFht7/+HTTlOKQDp8ah2Du8GEUXcVXiBs4whwEbPrOwcnCcHhglZ7tbHaNTBbOZ
+         Zsh0xC6JIWpVsiXWt9+jnL+WpnhmjVEIwlffsMO1vNbcK5Yo1P/IdVVu8d5ylYouph3q
+         ROf0ta03Uqvlm07ShyAiLODgK35mPXd80mlLiGuKukBiDrvZyW5eWn0aF8Jt4qIvcLe0
+         4AXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2u78htuCTna7EY9F4ZLyNc7j57MyX9k6GdRgfX2JGE0=;
+        b=DHB/SqlNBpJsGsKArerpTfIWklCljc1gNuQR6n6CJ1Gb4iZp6VHj1uKoIiejrt7M/h
+         QLA0rMzgNP/ApNNMLfj8FWzgl0hKx/44OeFIAL75ZAbUjksJTKRVqlxRYwslHfykhWtk
+         2KHGS0N9NOmnIqB9wzSLcX2ooP1Sfq2PgOVOH+vcDHjCMiA5oyk+m6Mi4qZLKssGm2Oq
+         XVULRiiPIZ7eRlzoS08F+M71CToPzMQWTyHz6elh4O6WnBlRNWnn6ixm+/EejkOO6bjt
+         mBZVEfxlDhW4P+L+Zbi8kqJ2F77dHKmUrHBZT250HofOYiuNpT8syU5VYQbq8pmuSDlN
+         balg==
+X-Gm-Message-State: AOAM532KEZ356e/nYDKEYSdy7rnEQxTEkZ5lrzXKw7el34iWyxlLa+Sn
+        tQyaJrTYhyCkJONJEkTqaXYhY3LUEkE8
+X-Google-Smtp-Source: ABdhPJxnNQkDkHHyS9QQZuN3s2I9aVx8520jA3FVFwA9Mjo+k+oze5cf6oDS/h1smOFQMzrPDHlPIQ==
+X-Received: by 2002:aca:1818:: with SMTP id h24mr1004650oih.16.1615246739059;
+        Mon, 08 Mar 2021 15:38:59 -0800 (PST)
+Received: from threadripper.novatech-llc.local ([216.21.169.52])
+        by smtp.gmail.com with ESMTPSA id a49sm2963846otc.37.2021.03.08.15.38.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 08 Mar 2021 15:38:58 -0800 (PST)
+From:   George McCollister <george.mccollister@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        George McCollister <george.mccollister@gmail.com>
+Subject: [PATCH net] net: dsa: xrs700x: check if partner is same as port in hsr join
+Date:   Mon,  8 Mar 2021 17:38:22 -0600
+Message-Id: <20210308233822.59729-1-george.mccollister@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Don't assign dp to partner if it's the same port that xrs700x_hsr_join
+was called with. The partner port is supposed to be the other port in
+the HSR/PRP redundant pair not the same port. This fixes an issue
+observed in testing where forwarding between redundant HSR ports on this
+switch didn't work depending on the order the ports were added to the
+hsr device.
 
-This series was applied to netdev/net.git (refs/heads/master):
+Fixes: bd62e6f5e6a9 ("net: dsa: xrs700x: add HSR offloading support")
+Signed-off-by: George McCollister <george.mccollister@gmail.com>
+---
+ drivers/net/dsa/xrs700x/xrs700x.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-On Sun,  7 Mar 2021 22:25:27 -0500 you wrote:
-> there are two drivers(zatm and idt77252) using PRIV() (i.e. atm->phy_data)
-> to store private data, but the driver happens to populate wrong
-> pointers: atm->dev_data. which actually cause null-ptr-dereference in
-> following PRIV(dev). This patch series attemps to fix those two issues
-> along with a typo in atm struct.
-> 
-> Tong Zhang (3):
->   atm: fix a typo in the struct description
->   atm: uPD98402: fix incorrect allocation
->   atm: idt77252: fix null-ptr-dereference
-> 
-> [...]
-
-Here is the summary with links:
-  - [1/3] atm: fix a typo in the struct description
-    https://git.kernel.org/netdev/net/c/1019d7923d9d
-  - [2/3] atm: uPD98402: fix incorrect allocation
-    https://git.kernel.org/netdev/net/c/3153724fc084
-  - [3/3] atm: idt77252: fix null-ptr-dereference
-    https://git.kernel.org/netdev/net/c/4416e98594dc
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+index f025f968f96d..fde6e99274b6 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x.c
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -528,7 +528,10 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
+ 		return -EOPNOTSUPP;
+ 
+ 	dsa_hsr_foreach_port(dp, ds, hsr) {
+-		partner = dp;
++		if (dp->index != port) {
++			partner = dp;
++			break;
++		}
+ 	}
+ 
+ 	/* We can't enable redundancy on the switch until both
+@@ -582,7 +585,10 @@ static int xrs700x_hsr_leave(struct dsa_switch *ds, int port,
+ 	unsigned int val;
+ 
+ 	dsa_hsr_foreach_port(dp, ds, hsr) {
+-		partner = dp;
++		if (dp->index != port) {
++			partner = dp;
++			break;
++		}
+ 	}
+ 
+ 	if (!partner)
+-- 
+2.11.0
 
