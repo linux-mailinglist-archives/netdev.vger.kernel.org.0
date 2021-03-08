@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77A9E33165E
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:41:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57F33331663
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231386AbhCHSlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 13:41:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55196 "EHLO
+        id S231455AbhCHSlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 13:41:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbhCHSlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:41:06 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B08EC06174A;
+        with ESMTP id S231283AbhCHSlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:41:07 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D22C06174A;
         Mon,  8 Mar 2021 10:41:06 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id j2so12537177wrx.9;
+Received: by mail-wm1-x32d.google.com with SMTP id y124-20020a1c32820000b029010c93864955so4425607wmy.5;
         Mon, 08 Mar 2021 10:41:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=Bd7FSKc4QEiWZ8cjfgbpQ3k9JXqnCheOmPT4Gp/P7p4=;
-        b=SaOhxnqe6K7xUtpr4rX645rAcbYdBVuE3prgyuL/5PcP55j1FCtFJOwPBrsEJTcyTG
-         jLH/05i2cVa82ULtrKGQUvOu8xzUwwsL/wQ07SAgIjBrk/ZZ0kJoidIUVLF2KRaabfok
-         jRVgiljriO7fzpOi6qW5lC1fEUDonLq/9yiDFsqkP0svJPHUc69l2rWLD7M70Ux5vVLl
-         s+RUO4YUjsn84Cn8m/uKq6VhSjzR4kTFXxGsspnT2bKG0BkEq9l3KoVdZzaigPkVpdHX
-         RGjKvVDvQL6aabuq9cqEiyJXdeYU+dtZh7D0NLenV1s18qTS4+nn+vh+AhEExcUIO7/p
-         Agjw==
+        bh=18bvLgC3vGglPBeXLuJAcZyGjW47MgJO0imamGWsbio=;
+        b=jQTQBvmV/eUlWXxCxp0zW8SXB9O0M8yYDRVZqVMU9xheZWPpLcOTVybtr1NdW3/RmU
+         nfLK6HmYth5p2Uo7nSn6Tazi3NaEIBSbS1XXe49W4xczVD6+326uzYFFvnYxwtx8w9uI
+         usJiMtyA4zhevxtqr7NxhU8sxcPZRkfgAYAf5Af+tiF+KQjn1kFfRhBrw2FT3AhJKnf1
+         3lpk6JWhSJSbNi1XFB2OtC8OZig2tb5wWHWvH9G6l5zEDzH9O1HfB2SREaYj/YIwYSX+
+         qiDGKUfMNd+cfjMAtxevtG8aqxvC+7NY9zIFCVz3PWKf87fBLMQsvNakEph2Jx/ySKYF
+         R8qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Bd7FSKc4QEiWZ8cjfgbpQ3k9JXqnCheOmPT4Gp/P7p4=;
-        b=r7KvwYenCwXh1wmd3HUQQIN960tp9jplI0Q72K6KgfBoOf9uFC54AKSH3igJyMfAYa
-         KI31Nx01s1iAcEe60+KwzQVWU5J3exDQGeorsMGJ6/uVL1ukPiIwC6kT1hxkqgEvVNI7
-         /Xcy5kfgxAImdYBCdLdn34bJIp8N2SLeRan8GLLRvKGu3XkG3JENTpeUWb60f/WucQxM
-         mGfkY8Kf+t2fTRcEcW5pVMq+2SMZzckE6qCmDLMo9p67DWgwOe4Rn4hy79dm327lACkP
-         mayhFB7KmCyvILIhg4PzQjz4h4PgLGUlUGnosWQ1et9Opu2L0yQVl4wEGxdOYmeB+1Jr
-         661g==
-X-Gm-Message-State: AOAM531xhZe6UVr5RFdH+mcMCh1L7BaU0PnVbvSBu+ydj1Dxz1uXiLev
-        dnGG65WTWF1EAweMUQ9DFvA=
-X-Google-Smtp-Source: ABdhPJyh/Rh1NwquvTh4038sAgUr6C9/zJ8//YColLGwVjlf6lVSKJAYAJ/AokgwRqBZdH20ht+1cw==
-X-Received: by 2002:a05:6000:18f:: with SMTP id p15mr24414191wrx.23.1615228864883;
-        Mon, 08 Mar 2021 10:41:04 -0800 (PST)
+        bh=18bvLgC3vGglPBeXLuJAcZyGjW47MgJO0imamGWsbio=;
+        b=OnL3rk6ZwARiwOXol/gYRahv7q/e1tIj/MqNDXS8FUNr45SA0Pp9822ToT6tAaIErP
+         jtDL3Tl3HK+JESiEQD3Vk9V2wKImgN+w52GzjR9jzqJYOARqF3N5u0M7s9nN3drnKN2t
+         Mw3j3KDzNcfRsYT6hYGAi+/vcq82YBw0RWiov7HTIQ6JJJSYa/iw16TwuLhpz0Wda4fa
+         CHI/93na1FJT+jMymhndHtHuj71zeClAKscAu6QR1feJNiku3LMpfHh8cZhNwTAMk9Al
+         yy4R+IkMM3nF/SSDVI5gTiNtFaw1pAyuxHvQTeIxPR7sK+kLFAfbdywV1FrYZjUTQH7Z
+         JWeQ==
+X-Gm-Message-State: AOAM530+n3Um0KOkRy/sdLWZxyTXuGuv1tR0LtAQGChtHA931yegjYKA
+        mFr8EUwQojzc+lduV3W7hDY=
+X-Google-Smtp-Source: ABdhPJziCYkVCCofJ3JcT+/EA3Vq/HbkcRUPk+Ba330vdQSNTmLez2VrfahtNT4DqsJLFqoyZqupGQ==
+X-Received: by 2002:a05:600c:608:: with SMTP id o8mr187927wmm.42.1615228865647;
+        Mon, 08 Mar 2021 10:41:05 -0800 (PST)
 Received: from skynet.lan (224.red-2-138-103.dynamicip.rima-tde.net. [2.138.103.224])
         by smtp.gmail.com with ESMTPSA id d29sm20146067wra.51.2021.03.08.10.41.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Mar 2021 10:41:04 -0800 (PST)
+        Mon, 08 Mar 2021 10:41:05 -0800 (PST)
 From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
         <noltari@gmail.com>
 To:     jonas.gorski@gmail.com, "David S. Miller" <davem@davemloft.net>,
@@ -57,9 +57,9 @@ To:     jonas.gorski@gmail.com, "David S. Miller" <davem@davemloft.net>,
         =?UTF-8?q?Fern=C3=A1ndez=20Rojas?= <noltari@gmail.com>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: net: Add bcm6368-mdio-mux bindings
-Date:   Mon,  8 Mar 2021 19:41:01 +0100
-Message-Id: <20210308184102.3921-2-noltari@gmail.com>
+Subject: [PATCH 2/2] net: mdio: Add BCM6368 MDIO mux bus controller
+Date:   Mon,  8 Mar 2021 19:41:02 +0100
+Message-Id: <20210308184102.3921-3-noltari@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210308184102.3921-1-noltari@gmail.com>
 References: <20210308184102.3921-1-noltari@gmail.com>
@@ -70,99 +70,236 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentations for bcm6368 mdio mux driver.
+This controller is present on BCM6318, BCM6328, BCM6362, BCM6368 and BCM63268
+SoCs.
 
 Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
 ---
- .../bindings/net/brcm,bcm6368-mdio-mux.yaml   | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml
+ drivers/net/mdio/Kconfig            |  11 ++
+ drivers/net/mdio/Makefile           |   1 +
+ drivers/net/mdio/mdio-mux-bcm6368.c | 179 ++++++++++++++++++++++++++++
+ 3 files changed, 191 insertions(+)
+ create mode 100644 drivers/net/mdio/mdio-mux-bcm6368.c
 
-diff --git a/Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml b/Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml
+diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
+index a10cc460d7cf..d06e06f5e31a 100644
+--- a/drivers/net/mdio/Kconfig
++++ b/drivers/net/mdio/Kconfig
+@@ -200,6 +200,17 @@ config MDIO_BUS_MUX_MESON_G12A
+ 	  the amlogic g12a SoC. The multiplexers connects either the external
+ 	  or the internal MDIO bus to the parent bus.
+ 
++config MDIO_BUS_MUX_BCM6368
++	tristate "Broadcom BCM6368 MDIO bus multiplexers"
++	depends on OF && OF_MDIO && (BMIPS_GENERIC || COMPILE_TEST)
++	select MDIO_BUS_MUX
++	default BMIPS_GENERIC
++	help
++	  This module provides a driver for MDIO bus multiplexers found in
++	  BCM6368 based Broadcom SoCs. This multiplexer connects one of several
++	  child MDIO bus to a parent bus. Buses could be internal as well as
++	  external and selection logic lies inside the same multiplexer.
++
+ config MDIO_BUS_MUX_BCM_IPROC
+ 	tristate "Broadcom iProc based MDIO bus multiplexers"
+ 	depends on OF && OF_MDIO && (ARCH_BCM_IPROC || COMPILE_TEST)
+diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
+index 5c498dde463f..c3ec0ef989df 100644
+--- a/drivers/net/mdio/Makefile
++++ b/drivers/net/mdio/Makefile
+@@ -22,6 +22,7 @@ obj-$(CONFIG_MDIO_THUNDER)		+= mdio-thunder.o
+ obj-$(CONFIG_MDIO_XGENE)		+= mdio-xgene.o
+ 
+ obj-$(CONFIG_MDIO_BUS_MUX)		+= mdio-mux.o
++obj-$(CONFIG_MDIO_BUS_MUX_BCM6368)	+= mdio-mux-bcm6368.o
+ obj-$(CONFIG_MDIO_BUS_MUX_BCM_IPROC)	+= mdio-mux-bcm-iproc.o
+ obj-$(CONFIG_MDIO_BUS_MUX_GPIO)		+= mdio-mux-gpio.o
+ obj-$(CONFIG_MDIO_BUS_MUX_MESON_G12A)	+= mdio-mux-meson-g12a.o
+diff --git a/drivers/net/mdio/mdio-mux-bcm6368.c b/drivers/net/mdio/mdio-mux-bcm6368.c
 new file mode 100644
-index 000000000000..d3481d1c59ae
+index 000000000000..79ab2e2af5b9
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/net/brcm,bcm6368-mdio-mux.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/brcm,bcm6368-mdio-mux.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/net/mdio/mdio-mux-bcm6368.c
+@@ -0,0 +1,179 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Broadcom BCM6368 mdiomux bus controller driver
++ *
++ * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
++ */
 +
-+title: Broadcom BCM6368 MDIO bus multiplexer
++#include <linux/delay.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/mdio-mux.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/of_mdio.h>
++#include <linux/phy.h>
++#include <linux/platform_device.h>
++#include <linux/sched.h>
 +
-+maintainers:
-+  - Álvaro Fernández Rojas <noltari@gmail.com>
++#define MDIOC_REG		0x0
++#define MDIOC_EXT_MASK		BIT(16)
++#define MDIOC_REG_SHIFT		20
++#define MDIOC_PHYID_SHIFT	25
++#define MDIOC_RD_MASK		BIT(30)
++#define MDIOC_WR_MASK		BIT(31)
 +
-+description:
-+  This MDIO bus multiplexer defines buses that could be internal as well as
-+  external to SoCs. When child bus is selected, one needs to select these two
-+  properties as well to generate desired MDIO transaction on appropriate bus.
++#define MDIOD_REG		0x4
 +
-+allOf:
-+  - $ref: "mdio.yaml#"
++struct bcm6368_mdiomux_desc {
++	void *mux_handle;
++	void __iomem *base;
++	struct device *dev;
++	struct mii_bus *mii_bus;
++	int ext_phy;
++};
 +
-+properties:
-+  compatible:
-+    const: brcm,bcm6368-mdio-mux
++static int bcm6368_mdiomux_read(struct mii_bus *bus, int phy_id, int loc)
++{
++	struct bcm6368_mdiomux_desc *md = bus->priv;
++	uint32_t reg;
++	int ret;
 +
-+  "#address-cells":
-+    const: 1
++	__raw_writel(0, md->base + MDIOC_REG);
 +
-+  "#size-cells":
-+    const: 0
++	reg = MDIOC_RD_MASK |
++	      (phy_id << MDIOC_PHYID_SHIFT) |
++	      (loc << MDIOC_REG_SHIFT);
++	if (md->ext_phy)
++		reg |= MDIOC_EXT_MASK;
 +
-+  reg:
-+    maxItems: 1
++	__raw_writel(reg, md->base + MDIOC_REG);
++	udelay(50);
++	ret = __raw_readw(md->base + MDIOD_REG);
 +
-+  clocks:
-+    maxItems: 1
++	return ret;
++}
 +
-+required:
-+  - compatible
-+  - reg
++static int bcm6368_mdiomux_write(struct mii_bus *bus, int phy_id, int loc,
++				 uint16_t val)
++{
++	struct bcm6368_mdiomux_desc *md = bus->priv;
++	uint32_t reg;
 +
-+patternProperties:
-+  '^mdio@[0-1]$':
-+    type: object
-+    properties:
-+      reg:
-+        maxItems: 1
++	__raw_writel(0, md->base + MDIOC_REG);
 +
-+      "#address-cells":
-+        const: 1
++	reg = MDIOC_WR_MASK |
++	      (phy_id << MDIOC_PHYID_SHIFT) |
++	      (loc << MDIOC_REG_SHIFT);
++	if (md->ext_phy)
++		reg |= MDIOC_EXT_MASK;
++	reg |= val;
 +
-+      "#size-cells":
-+        const: 0
++	__raw_writel(reg, md->base + MDIOC_REG);
++	udelay(50);
 +
-+    required:
-+      - reg
-+      - "#address-cells"
-+      - "#size-cells"
++	return 0;
++}
 +
-+unevaluatedProperties: false
++static int bcm6368_mdiomux_switch_fn(int current_child, int desired_child,
++				     void *data)
++{
++	struct bcm6368_mdiomux_desc *md = data;
 +
-+examples:
-+  - |
-+    mdio0: mdio@10e000b0 {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      compatible = "brcm,bcm6368-mdio-mux";
-+      reg = <0x10e000b0 0x6>;
++	md->ext_phy = desired_child;
 +
-+      mdio_int: mdio@0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        reg = <0>;
-+      };
++	return 0;
++}
 +
-+      mdio_ext: mdio@1 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        reg = <1>;
-+      };
-+    };
++static int bcm6368_mdiomux_probe(struct platform_device *pdev)
++{
++	struct bcm6368_mdiomux_desc *md;
++	struct mii_bus *bus;
++	struct resource *res;
++	int rc;
++
++	md = devm_kzalloc(&pdev->dev, sizeof(*md), GFP_KERNEL);
++	if (!md)
++		return -ENOMEM;
++	md->dev = &pdev->dev;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
++
++	/* Just ioremap, as this MDIO block is usually integrated into an
++	 * Ethernet MAC controller register range
++	 */
++	md->base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
++	if (!md->base) {
++		dev_err(&pdev->dev, "failed to ioremap register\n");
++		return -ENOMEM;
++	}
++
++	md->mii_bus = devm_mdiobus_alloc(&pdev->dev);
++	if (!md->mii_bus) {
++		dev_err(&pdev->dev, "mdiomux bus alloc failed\n");
++		return ENOMEM;
++	}
++
++	bus = md->mii_bus;
++	bus->priv = md;
++	bus->name = "BCM6368 MDIO mux bus";
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-%d", pdev->name, pdev->id);
++	bus->parent = &pdev->dev;
++	bus->read = bcm6368_mdiomux_read;
++	bus->write = bcm6368_mdiomux_write;
++	bus->phy_mask = 0x3f;
++	bus->dev.of_node = pdev->dev.of_node;
++
++	rc = mdiobus_register(bus);
++	if (rc) {
++		dev_err(&pdev->dev, "mdiomux registration failed\n");
++		return rc;
++	}
++
++	platform_set_drvdata(pdev, md);
++
++	rc = mdio_mux_init(md->dev, md->dev->of_node,
++			   bcm6368_mdiomux_switch_fn, &md->mux_handle, md,
++			   md->mii_bus);
++	if (rc) {
++		dev_info(md->dev, "mdiomux initialization failed\n");
++		goto out_register;
++	}
++
++	dev_info(&pdev->dev, "Broadcom BCM6368 MDIO mux bus\n");
++
++	return 0;
++
++out_register:
++	mdiobus_unregister(bus);
++	return rc;
++}
++
++static int bcm6368_mdiomux_remove(struct platform_device *pdev)
++{
++	struct bcm6368_mdiomux_desc *md = platform_get_drvdata(pdev);
++
++	mdio_mux_uninit(md->mux_handle);
++	mdiobus_unregister(md->mii_bus);
++
++	return 0;
++}
++
++static const struct of_device_id bcm6368_mdiomux_ids[] = {
++	{ .compatible = "brcm,bcm6368-mdio-mux", },
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, bcm6368_mdiomux_ids);
++
++static struct platform_driver bcm6368_mdiomux_driver = {
++	.driver = {
++		.name = "bcm6368-mdio-mux",
++		.of_match_table = bcm6368_mdiomux_ids,
++	},
++	.probe	= bcm6368_mdiomux_probe,
++	.remove	= bcm6368_mdiomux_remove,
++};
++module_platform_driver(bcm6368_mdiomux_driver);
 -- 
 2.20.1
 
