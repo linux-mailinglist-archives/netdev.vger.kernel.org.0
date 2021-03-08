@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C91E330889
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 08:02:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC6C330895
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 08:05:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbhCHHCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 02:02:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43898 "EHLO
+        id S230192AbhCHHFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 02:05:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52733 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235102AbhCHHCK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 02:02:10 -0500
+        by vger.kernel.org with ESMTP id S230446AbhCHHE3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 02:04:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615186930;
+        s=mimecast20190719; t=1615187068;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yhCvusN/okOy5hGR/lyFJR9D8I6idT/Y3re+gRmxEXY=;
-        b=CYsh9B6/sgiq1qCkaIrLjn/mkkwwhNxh++BsbaOR5p3LnBeS+ZQiuvGdvFoBQzKOEElOuo
-        WnzZDbaDZI2mxQ1j4a9dqSyd67RmQjffjPOpPWqTQ5NhtIJRwu5ioraJtQOg6Hclvs4/b5
-        PwoP2Gx1qCyIa8U0tmehQfFMqlHT9Sc=
+        bh=Nzo0gBDIUBxwZAv4o+4kKioscWKKFK2cbaFDxgnEqKA=;
+        b=ZIbqBTLc6335gdUfGNCxFKFCeczrLEDEMdC+Osg2kea9iRsRw2CBZTcKXB/7Ah2PH1Sl3B
+        Xvz9ExMC6JXLTAg2fdxrFJePcmYHeKIiX6X8O+eqnJWLioMcT3+v/CYpONe1rI8m1ItUUI
+        a6fJ8eRas9dEZaQM5KTThMDpePXX6to=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-35-IfK6N3WMNwmmcHF2qrDwuw-1; Mon, 08 Mar 2021 02:02:06 -0500
-X-MC-Unique: IfK6N3WMNwmmcHF2qrDwuw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-310-SHYYpOAEPryJIiwRYOEROw-1; Mon, 08 Mar 2021 02:04:24 -0500
+X-MC-Unique: SHYYpOAEPryJIiwRYOEROw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D447D881280;
-        Mon,  8 Mar 2021 07:02:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A06980432E;
+        Mon,  8 Mar 2021 07:04:22 +0000 (UTC)
 Received: from wangxiaodeMacBook-Air.local (ovpn-13-193.pek2.redhat.com [10.72.13.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 46D4410013D7;
-        Mon,  8 Mar 2021 07:01:48 +0000 (UTC)
-Subject: Re: [RFC v4 10/11] vduse: Introduce a workqueue for irq injection
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 133C01971C;
+        Mon,  8 Mar 2021 07:04:06 +0000 (UTC)
+Subject: Re: [RFC v4 06/11] vduse: Implement an MMU-based IOMMU driver
 To:     Yongji Xie <xieyongji@bytedance.com>
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Stefan Hajnoczi <stefanha@redhat.com>,
@@ -48,116 +48,120 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         kvm@vger.kernel.org, linux-aio@kvack.org,
         linux-fsdevel@vger.kernel.org
 References: <20210223115048.435-1-xieyongji@bytedance.com>
- <20210223115048.435-11-xieyongji@bytedance.com>
- <d63e4cfd-4992-8493-32b0-18e0478f6e1a@redhat.com>
- <CACycT3tqM=ALOG1r0Ve6UTGmwJ7Wg7fQpLZypjZsJF1mJ+adMA@mail.gmail.com>
- <2d3418d9-856c-37ee-7614-af5b721becd7@redhat.com>
- <CACycT3u0+LTbtFMS75grKGZ2mnXzHnKug+HGWbf+nqVybqwkZQ@mail.gmail.com>
- <b3faa4a6-a65b-faf7-985a-b2771533c8bb@redhat.com>
- <CACycT3uZ2ZPjUwVZqzQPZ4ke=VrHCkfNvYagA-oxggPUEUi0Vg@mail.gmail.com>
- <e933ec33-9d47-0ef5-9152-25cedd330ce2@redhat.com>
- <CACycT3ug30sQptdoSP8XzRJVN7Yb2DPLBtfG-RNbus3BOhdONA@mail.gmail.com>
- <b01d9ee7-b038-cef2-8996-cd6401003267@redhat.com>
- <CACycT3vSRvRUbqbPNjAPQ-TeXnbqtrQO+gD1M0qDRRqX1zovVA@mail.gmail.com>
- <44c21bf4-874d-24c9-334b-053c54e8422e@redhat.com>
- <CACycT3sZD2DEU=JxM-T+6dHBdsX5gOfAghh=Kg4PVw0PkNzEGw@mail.gmail.com>
+ <20210223115048.435-7-xieyongji@bytedance.com>
+ <573ab913-55ce-045a-478f-1200bd78cf7b@redhat.com>
+ <CACycT3sVhDKKu4zGbt1Lw-uWfKDAWs=O=C7kXXcuSnePohmBdQ@mail.gmail.com>
+ <c173b7ec-8c90-d0e3-7272-a56aa8935e64@redhat.com>
+ <CACycT3vb=WyrMpiOOdVDGEh8cEDb-xaj1esQx2UEQpJnOOWhmw@mail.gmail.com>
+ <4db35f8c-ee3a-90fb-8d14-5d6014b4f6fa@redhat.com>
+ <CACycT3sUJNmi2BdLsi3W72+qTKQaCo_nQYu-fdxg9y4pAvBMow@mail.gmail.com>
+ <2652f696-faf7-26eb-a8b2-c4cfe3aaed15@redhat.com>
+ <CACycT3uMV9wg5yVKmEJpbZrs3x0b4+b9eNcUTh3+CjxsG7x2LA@mail.gmail.com>
+ <d4681614-bd1e-8fe7-3b03-72eb2011c3c2@redhat.com>
+ <CACycT3uA5y=jcKPwu6rZ83Lqf1ytuPhnxWLCeMpDYrvRodHFVg@mail.gmail.com>
+ <0b671aef-f2b2-6162-f407-7ca5178dbebb@redhat.com>
+ <CACycT3tnd0SziHVpH=yUZFYpeG3c0V+vcGRNT19cp0q9b1GH2Q@mail.gmail.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <a3ee164e-4de8-2305-ec4e-6eeef4aced29@redhat.com>
-Date:   Mon, 8 Mar 2021 15:01:46 +0800
+Message-ID: <48d0a363-4f55-bf99-3653-315458643317@redhat.com>
+Date:   Mon, 8 Mar 2021 15:04:05 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
  Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <CACycT3sZD2DEU=JxM-T+6dHBdsX5gOfAghh=Kg4PVw0PkNzEGw@mail.gmail.com>
+In-Reply-To: <CACycT3tnd0SziHVpH=yUZFYpeG3c0V+vcGRNT19cp0q9b1GH2Q@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2021/3/8 12:50 下午, Yongji Xie wrote:
-> On Mon, Mar 8, 2021 at 11:04 AM Jason Wang <jasowang@redhat.com> wrote:
+On 2021/3/8 1:05 下午, Yongji Xie wrote:
+> On Mon, Mar 8, 2021 at 11:52 AM Jason Wang <jasowang@redhat.com> wrote:
 >>
->> On 2021/3/5 4:12 下午, Yongji Xie wrote:
->>> On Fri, Mar 5, 2021 at 3:37 PM Jason Wang <jasowang@redhat.com> wrote:
->>>> On 2021/3/5 3:27 下午, Yongji Xie wrote:
->>>>> On Fri, Mar 5, 2021 at 3:01 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>> On 2021/3/5 2:36 下午, Yongji Xie wrote:
->>>>>>> On Fri, Mar 5, 2021 at 11:42 AM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>> On 2021/3/5 11:30 上午, Yongji Xie wrote:
->>>>>>>>> On Fri, Mar 5, 2021 at 11:05 AM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>>>> On 2021/3/4 4:58 下午, Yongji Xie wrote:
->>>>>>>>>>> On Thu, Mar 4, 2021 at 2:59 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>>>>>> On 2021/2/23 7:50 下午, Xie Yongji wrote:
->>>>>>>>>>>>> This patch introduces a workqueue to support injecting
->>>>>>>>>>>>> virtqueue's interrupt asynchronously. This is mainly
->>>>>>>>>>>>> for performance considerations which makes sure the push()
->>>>>>>>>>>>> and pop() for used vring can be asynchronous.
->>>>>>>>>>>> Do you have pref numbers for this patch?
->>>>>>>>>>>>
->>>>>>>>>>> No, I can do some tests for it if needed.
->>>>>>>>>>>
->>>>>>>>>>> Another problem is the VIRTIO_RING_F_EVENT_IDX feature will be useless
->>>>>>>>>>> if we call irq callback in ioctl context. Something like:
->>>>>>>>>>>
->>>>>>>>>>> virtqueue_push();
->>>>>>>>>>> virtio_notify();
->>>>>>>>>>>           ioctl()
->>>>>>>>>>> -------------------------------------------------
->>>>>>>>>>>               irq_cb()
->>>>>>>>>>>                   virtqueue_get_buf()
->>>>>>>>>>>
->>>>>>>>>>> The used vring is always empty each time we call virtqueue_push() in
->>>>>>>>>>> userspace. Not sure if it is what we expected.
->>>>>>>>>> I'm not sure I get the issue.
->>>>>>>>>>
->>>>>>>>>> THe used ring should be filled by virtqueue_push() which is done by
->>>>>>>>>> userspace before?
->>>>>>>>>>
->>>>>>>>> After userspace call virtqueue_push(), it always call virtio_notify()
->>>>>>>>> immediately. In traditional VM (vhost-vdpa) cases, virtio_notify()
->>>>>>>>> will inject an irq to VM and return, then vcpu thread will call
->>>>>>>>> interrupt handler. But in container (virtio-vdpa) cases,
->>>>>>>>> virtio_notify() will call interrupt handler directly. So it looks like
->>>>>>>>> we have to optimize the virtio-vdpa cases. But one problem is we don't
->>>>>>>>> know whether we are in the VM user case or container user case.
->>>>>>>> Yes, but I still don't get why used ring is empty after the ioctl()?
->>>>>>>> Used ring does not use bounce page so it should be visible to the kernel
->>>>>>>> driver. What did I miss :) ?
+>> On 2021/3/8 11:45 上午, Yongji Xie wrote:
+>>> On Mon, Mar 8, 2021 at 11:17 AM Jason Wang <jasowang@redhat.com> wrote:
+>>>> On 2021/3/5 3:59 下午, Yongji Xie wrote:
+>>>>> On Fri, Mar 5, 2021 at 3:27 PM Jason Wang <jasowang@redhat.com> wrote:
+>>>>>> On 2021/3/5 3:13 下午, Yongji Xie wrote:
+>>>>>>> On Fri, Mar 5, 2021 at 2:52 PM Jason Wang <jasowang@redhat.com> wrote:
+>>>>>>>> On 2021/3/5 2:15 下午, Yongji Xie wrote:
 >>>>>>>>
->>>>>>> Sorry, I'm not saying the kernel can't see the correct used vring. I
->>>>>>> mean the kernel will consume the used vring in the ioctl context
->>>>>>> directly in the virtio-vdpa case. In userspace's view, that means
->>>>>>> virtqueue_push() is used vring's producer and virtio_notify() is used
->>>>>>> vring's consumer. They will be called one by one in one thread rather
->>>>>>> than different threads, which looks odd and has a bad effect on
->>>>>>> performance.
->>>>>> Yes, that's why we need a workqueue (WQ_UNBOUND you used). Or do you
->>>>>> want to squash this patch into patch 8?
+>>>>>>>> Sorry if I've asked this before.
+>>>>>>>>
+>>>>>>>> But what's the reason for maintaing a dedicated IOTLB here? I think we
+>>>>>>>> could reuse vduse_dev->iommu since the device can not be used by both
+>>>>>>>> virtio and vhost in the same time or use vduse_iova_domain->iotlb for
+>>>>>>>> set_map().
+>>>>>>>>
+>>>>>>>> The main difference between domain->iotlb and dev->iotlb is the way to
+>>>>>>>> deal with bounce buffer. In the domain->iotlb case, bounce buffer
+>>>>>>>> needs to be mapped each DMA transfer because we need to get the bounce
+>>>>>>>> pages by an IOVA during DMA unmapping. In the dev->iotlb case, bounce
+>>>>>>>> buffer only needs to be mapped once during initialization, which will
+>>>>>>>> be used to tell userspace how to do mmap().
+>>>>>>>>
+>>>>>>>> Also, since vhost IOTLB support per mapping token (opauqe), can we use
+>>>>>>>> that instead of the bounce_pages *?
+>>>>>>>>
+>>>>>>>> Sorry, I didn't get you here. Which value do you mean to store in the
+>>>>>>>> opaque pointer？
+>>>>>>>>
+>>>>>>>> So I would like to have a way to use a single IOTLB for manage all kinds
+>>>>>>>> of mappings. Two possible ideas:
+>>>>>>>>
+>>>>>>>> 1) map bounce page one by one in vduse_dev_map_page(), in
+>>>>>>>> VDUSE_IOTLB_GET_FD, try to merge the result if we had the same fd. Then
+>>>>>>>> for bounce pages, userspace still only need to map it once and we can
+>>>>>>>> maintain the actual mapping by storing the page or pa in the opaque
+>>>>>>>> field of IOTLB entry.
+>>>>>>>>
+>>>>>>>> Looks like userspace still needs to unmap the old region and map a new
+>>>>>>>> region (size is changed) with the fd in each VDUSE_IOTLB_GET_FD ioctl.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I don't get here. Can you give an example?
+>>>>>>>>
+>>>>>>> For example, userspace needs to process two I/O requests (one page per
+>>>>>>> request). To process the first request, userspace uses
+>>>>>>> VDUSE_IOTLB_GET_FD ioctl to query the iova region (0 ~ 4096) and mmap
+>>>>>>> it.
+>>>>>> I think in this case we should let VDUSE_IOTLB_GET_FD return the maximum
+>>>>>> range as far as they are backed by the same fd.
 >>>>>>
->>>>>> So I think we can see obvious difference when virtio-vdpa is used.
->>>>>>
->>>>> But it looks like we don't need this workqueue in vhost-vdpa cases.
->>>>> Any suggestions?
->>>> I haven't had a deep thought. But I feel we can solve this by using the
->>>> irq bypass manager (or something similar). Then we don't need it to be
->>>> relayed via workqueue and vdpa. But I'm not sure how hard it will be.
+>>>>> But now the bounce page is mapped one by one. The second page (4096 ~
+>>>>> 8192) might not be mapped when userspace is processing the first
+>>>>> request. So the maximum range is 0 ~ 4096 at that time.
+>>>>>
+>>>>> Thanks,
+>>>>> Yongji
+>>>> A question, if I read the code correctly, VDUSE_IOTLB_GET_FD will return
+>>>> the whole bounce map range which is setup in vduse_dev_map_page()? So my
+>>>> understanding is that usersapce may choose to map all its range via mmap().
 >>>>
->>>    Or let vdpa bus drivers give us some information?
+>>> Yes.
+>>>
+>>>> So if we 'map' bounce page one by one in vduse_dev_map_page(). (Here
+>>>> 'map' means using multiple itree entries instead of a single one). Then
+>>>> in the VDUSE_IOTLB_GET_FD we can keep traversing itree (dev->iommu)
+>>>> until the range is backed by a different file.
+>>>>
+>>>> With this, there's no userspace visible changes and there's no need for
+>>>> the domain->iotlb?
+>>>>
+>>> In this case, I wonder what range can be obtained if userspace calls
+>>> VDUSE_IOTLB_GET_FD when the first I/O (e.g. 4K) occurs. [0, 4K] or [0,
+>>> 64M]? In current implementation, userspace will map [0, 64M].
 >>
->> This kind of 'type' is proposed in the early RFC of vDPA series. One
->> issue is that at device level, we should not differ virtio from vhost,
->> so if we introduce that, it might encourge people to design a device
->> that is dedicated to vhost or virtio which might not be good.
+>> It should still be [0, 64M). Do you see any issue?
 >>
->> But we can re-visit this when necessary.
->>
-> OK, I see. How about adding some information in ops.set_vq_cb()?
+> Does it mean we still need to map the whole bounce buffer into itree
+> (dev->iommu) at initialization?
 
 
-I'm not sure I get this, maybe you can explain a little bit more?
+It's your choice I think, the point is to use a single IOTLB for 
+maintaining mappings of all types of pages (bounce, coherent, or shared).
 
 Thanks
 
