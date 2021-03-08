@@ -2,183 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7B333157B
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3630333157E
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:08:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbhCHSHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 13:07:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
+        id S230481AbhCHSHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 13:07:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbhCHSG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:06:58 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D182BC06174A;
-        Mon,  8 Mar 2021 10:06:58 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id g27so10951069iox.2;
-        Mon, 08 Mar 2021 10:06:58 -0800 (PST)
+        with ESMTP id S230488AbhCHSHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:07:35 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16012C06174A;
+        Mon,  8 Mar 2021 10:07:35 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id w11so12437622wrr.10;
+        Mon, 08 Mar 2021 10:07:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a5Hm2E9xMiJsF3r9LgfWYN1cF8yPtl0Xpa3GPsNgwtc=;
-        b=nM8Ijxyr9oynWDkK1QblS0EW/cK64bTJqE37qMvO7Q7ysw0HPq711m0wbgIQwa7QVr
-         K8cgWFJ+dQUy/x9nbaNaz3ed2TaBiHBkSG9FnMxoGwfzovV7AIZLvuWPS75qb7Z+LqhB
-         L6LmFBVmMPvAe19HDr/bqDwT0wjlH1SQp9D3bAgQPSY1207bk7If15vP3s1kQdAdeF1f
-         paXcyxcZNcmC3DvoO/zAYjyIFUc/jXkhdYiIGaMQ4IWSHm/JVq0SOO5w2PXymbKeq3Fo
-         XkXkw28m8mPaZrMzEbZNh+Yd1a2mFamVqW0uyCbqe3lguJQMPtvye/lqosTxGCPji1Vi
-         +Mdw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eXXm6RkQtTCNpGgM0WHM3tT7K7Hex/U099iaqa2eF0w=;
+        b=mqO4N4purk9yJjPq0JRku7ZDR2dA0PzrcGFoKwQ4di2g4aTLR7FPtn9XNPTSLyo0pX
+         OJLiokR6Xs3t6Q6EU1929NksdHkWQkkZRgwv9daTqiRSfAEHUgO+WAn6wg539tcEoKk5
+         r49nL/yViFuGCeDlmpQz0AGDelm0Eef3wKKv9lVONeURQc/ZBITNSP4/ANeqQztkpx2C
+         k1GikchASIxTqVUk9ohioBpfqT+G4820VtSjRJBZ3/efuHmNnMME+DDr5pnyuBmbFt6z
+         NfML8DEEDYh0j4UW+fgj852ISywxTMSIPgfn1bNQS2b8e4ITcj54q0KwKII9/Lk/qfCI
+         H9VQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a5Hm2E9xMiJsF3r9LgfWYN1cF8yPtl0Xpa3GPsNgwtc=;
-        b=jyBBtavDpIoFTnkxZGmi6ex/w0leyWIjUPl7f/xIZaPUnqQ+6zQFWYQfipq01TOSvo
-         pSleIWiBovWu1HnY1cdjYljVOGZjNPV2XkkSQ69R8iRh1Dgvju35YzFyJkvKKGmU53D6
-         RRKvqKHyiHYfURh53PM8nHbwbUZiDCx7IXHre8XVmNT2uy7ekyNy+aB4FaEVcyx0aXjV
-         tYAnndT7uTABtKgISNmfSjQ5r/ZWd632cw5UnYPFMwVYN0C2x5l5kgUUZLwqntHOPfZs
-         sfSNzoHv4qORy4QqagleGXSNOZLJBrPgUlFQZifoXU8C3eyMp8kcR3Fkd50vc+ZjA7gY
-         x4Eg==
-X-Gm-Message-State: AOAM5330E6QK/jAYRj+2OBgtSDLe3h5Jqn25RcQ9XiPmf5IKJBtmXYm3
-        EikxJ5I6LTuOZYXS+/LhcbP56dgadnR6xliRdSvq+uMkEKM=
-X-Google-Smtp-Source: ABdhPJyM2l2FJbQDgzmTqzq2xOaqrwrACq9EpMU37ex1xIQjv+vq6F2T5Za4qHPWXb0QlSymS3G5Pbhx3dUfjE/tHUU=
-X-Received: by 2002:a5e:8e41:: with SMTP id r1mr19984346ioo.5.1615226818154;
- Mon, 08 Mar 2021 10:06:58 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eXXm6RkQtTCNpGgM0WHM3tT7K7Hex/U099iaqa2eF0w=;
+        b=MVeydk2w6PLsr1nVnmm+i+/YXUblLX7t/nU4NTqQA4t0X5uQABvG+GH5WSdmKLwY3C
+         AqKsUoT6YAqy2sDdVR/jNoiovKTqE/uENMdokWonnOWlFn3glBKP9ukL9rgQb+/vgYCT
+         R69igoQDMwrOckKuepkUAglDkec7nktccAXdNESvG3jrSscUgKBZ+7OxfHF7xiWHwU9t
+         v8751fu6hXg9KbDbZhPFfhJKdd9e9DJuKR3d8WGO/uzK2bo6mKRb3OKdAKyQQxUKUWOO
+         2vwr0bq0gZlXwBDvVow8ZRuwTLy/EBwgU1Xp2bR0RKKR47MpWNcrMxkLi5/29iRLyM41
+         l6gQ==
+X-Gm-Message-State: AOAM5329D7D7jauVgZ9wg6fVpiIlGS3BE0e7CeWmHWOi65xR5GUTbV55
+        VmaoBspLEzPpYkg02AU6B9w=
+X-Google-Smtp-Source: ABdhPJyFR1Wsw03JKrEDMX35fAODz6FVaDnHDoYGwjAC7TPwV5M89A2ZbHjY2ASOs5bajrZsu4L5mw==
+X-Received: by 2002:adf:ed12:: with SMTP id a18mr24385253wro.249.1615226853796;
+        Mon, 08 Mar 2021 10:07:33 -0800 (PST)
+Received: from skynet.lan (224.red-2-138-103.dynamicip.rima-tde.net. [2.138.103.224])
+        by smtp.gmail.com with ESMTPSA id c9sm3763256wrr.78.2021.03.08.10.07.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Mar 2021 10:07:33 -0800 (PST)
+From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+To:     jonas.gorski@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+Subject: [PATCH] net: dsa: b53: mmap: Add device tree support
+Date:   Mon,  8 Mar 2021 19:07:15 +0100
+Message-Id: <20210308180715.18571-1-noltari@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210308032529.435224-1-ztong0001@gmail.com> <CAKgT0UftdTobwgA6hi=CdOfQ+1fdozhPs89fDmapbvcp7jLASw@mail.gmail.com>
- <CAA5qM4BG2PNvvLFDngQRe4kBL5zATUOnaHt_-2s7Y47CcJF+bA@mail.gmail.com>
-In-Reply-To: <CAA5qM4BG2PNvvLFDngQRe4kBL5zATUOnaHt_-2s7Y47CcJF+bA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 8 Mar 2021 10:06:46 -0800
-Message-ID: <CAKgT0UeqMEiv9vvsRE+3Wb0e9-f8E_n3QWEHGmu32bza_W5=Sw@mail.gmail.com>
-Subject: Re: [PATCH 0/3] fix a couple of atm->phy_data related issues
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tong,
+Add device tree support to b53_mmap.c while keeping platform devices support.
 
-Is this direct-assigned hardware or is QEMU being used to emulate the
-hardware here? Admittedly I don't know that much about ATM, so I am
-not sure when/if those phys would have gone out of production. However
-since the code dates back to 2005 I am guessing it is on the old side.
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+---
+ drivers/net/dsa/b53/b53_mmap.c | 36 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-Ultimately the decision is up to Chas. However if there has been code
-in place for this long that would trigger this kind of null pointer
-dereference then it kind of points to the fact that those phys have
-probably not been in use since at least back when Linus switched over
-to git in 2005.
+diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
+index c628d0980c0b..b897b4263930 100644
+--- a/drivers/net/dsa/b53/b53_mmap.c
++++ b/drivers/net/dsa/b53/b53_mmap.c
+@@ -228,12 +228,48 @@ static const struct b53_io_ops b53_mmap_ops = {
+ 	.write64 = b53_mmap_write64,
+ };
+ 
++static int b53_mmap_probe_of(struct platform_device *pdev,
++			     struct b53_platform_data **ppdata)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	struct b53_platform_data *pdata;
++	void __iomem *mem;
++
++	mem = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(mem))
++		return PTR_ERR(mem);
++
++	pdata = devm_kzalloc(dev, sizeof(struct b53_platform_data),
++			     GFP_KERNEL);
++	if (!pdata)
++		return -ENOMEM;
++
++	pdata->regs = mem;
++	pdata->chip_id = BCM63XX_DEVICE_ID;
++	pdata->big_endian = of_property_read_bool(np, "big-endian");
++	of_property_read_u16(np, "brcm,ports", &pdata->enabled_ports);
++
++	*ppdata = pdata;
++
++	return 0;
++}
++
+ static int b53_mmap_probe(struct platform_device *pdev)
+ {
++	struct device_node *np = pdev->dev.of_node;
+ 	struct b53_platform_data *pdata = pdev->dev.platform_data;
+ 	struct b53_mmap_priv *priv;
+ 	struct b53_device *dev;
+ 
++	if (np) {
++		int ret = b53_mmap_probe_of(pdev, &pdata);
++		if (ret) {
++			dev_err(&pdev->dev, "OF probe error\n");
++			return ret;
++		}
++	}
++
+ 	if (!pdata)
+ 		return -EINVAL;
+ 
+-- 
+2.20.1
 
-Thanks,
-
-- Alex
-
-On Mon, Mar 8, 2021 at 9:55 AM Tong Zhang <ztong0001@gmail.com> wrote:
->
-> Hi Alex,
-> attached is the kernel log for zatm(uPD98402) -- I also have
-> idt77252's log -- which is similar to this one --
-> I think it makes sense to drop if no one is actually using it --
-> - Tong
->
-> [    5.740774] BUG: KASAN: null-ptr-deref in uPD98402_start+0x5e/0x219
-> [uPD98402]
-> [    5.741179] Write of size 4 at addr 000000000000002c by task modprobe/96
-> [    5.741548]
-> [    5.741637] CPU: 0 PID: 96 Comm: modprobe Not tainted 5.12.0-rc2-dirty #71
-> [    5.742017] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
-> BIOS rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
-> [    5.742635] Call Trace:
-> [    5.742775]  dump_stack+0x8a/0xb5
-> [    5.742966]  kasan_report.cold+0x10f/0x111
-> [    5.743197]  ? uPD98402_start+0x5e/0x219 [uPD98402]
-> [    5.743473]  uPD98402_start+0x5e/0x219 [uPD98402]
-> [    5.743739]  zatm_init_one+0x10b5/0x1311 [zatm]
-> [    5.743998]  ? zatm_int.cold+0x30/0x30 [zatm]
-> [    5.744246]  ? _raw_write_lock_irqsave+0xd0/0xd0
-> [    5.744507]  ? __mutex_lock_slowpath+0x10/0x10
-> [    5.744757]  ? _raw_spin_unlock_irqrestore+0xd/0x20
-> [    5.745030]  ? zatm_int.cold+0x30/0x30 [zatm]
-> [    5.745278]  local_pci_probe+0x6f/0xb0
-> [    5.745492]  pci_device_probe+0x171/0x240
-> [    5.745718]  ? pci_device_remove+0xe0/0xe0
-> [    5.745949]  ? kernfs_create_link+0xb6/0x110
-> [    5.746190]  ? sysfs_do_create_link_sd.isra.0+0x76/0xe0
-> [    5.746482]  really_probe+0x161/0x420
-> [    5.746691]  driver_probe_device+0x6d/0xd0
-> [    5.746923]  device_driver_attach+0x82/0x90
-> [    5.747158]  ? device_driver_attach+0x90/0x90
-> [    5.747402]  __driver_attach+0x60/0x100
-> [    5.747621]  ? device_driver_attach+0x90/0x90
-> [    5.747864]  bus_for_each_dev+0xe1/0x140
-> [    5.748075]  ? subsys_dev_iter_exit+0x10/0x10
-> [    5.748320]  ? klist_node_init+0x61/0x80
-> [    5.748542]  bus_add_driver+0x254/0x2a0
-> [    5.748760]  driver_register+0xd3/0x150
-> [    5.748977]  ? 0xffffffffc0030000
-> [    5.749163]  do_one_initcall+0x84/0x250
-> [    5.749380]  ? trace_event_raw_event_initcall_finish+0x150/0x150
-> [    5.749714]  ? _raw_spin_unlock_irqrestore+0xd/0x20
-> [    5.749987]  ? create_object+0x395/0x510
-> [    5.750210]  ? kasan_unpoison+0x21/0x50
-> [    5.750427]  do_init_module+0xf8/0x350
-> [    5.750640]  load_module+0x40c5/0x4410
-> [    5.750854]  ? module_frob_arch_sections+0x20/0x20
-> [    5.751123]  ? kernel_read_file+0x1cd/0x3e0
-> [    5.751364]  ? __do_sys_finit_module+0x108/0x170
-> [    5.751628]  __do_sys_finit_module+0x108/0x170
-> [    5.751879]  ? __ia32_sys_init_module+0x40/0x40
-> [    5.752126]  ? file_open_root+0x200/0x200
-> [    5.752353]  ? do_sys_open+0x85/0xe0
-> [    5.752556]  ? filp_open+0x50/0x50
-> [    5.752750]  ? fpregs_assert_state_consistent+0x4d/0x60
-> [    5.753042]  ? exit_to_user_mode_prepare+0x2f/0x130
-> [    5.753316]  do_syscall_64+0x33/0x40
-> [    5.753519]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [    5.753802] RIP: 0033:0x7ff64032dcf7
->  ff c3 48 c7 c6 01 00 00 00 e9 a1
-> [    5.755029] RSP: 002b:00007ffd250ea358 EFLAGS: 00000246 ORIG_RAX:
-> 0000000000000139
-> [    5.755449] RAX: ffffffffffffffda RBX: 0000000001093a70 RCX: 00007ff64032dcf7
-> [    5.755847] RDX: 0000000000000000 RSI: 00000000010929e0 RDI: 0000000000000003
-> [    5.756242] RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
-> [    5.756635] R10: 00007ff640391300 R11: 0000000000000246 R12: 00000000010929e0
-> [    5.757029] R13: 0000000000000000 R14: 0000000001092dd0 R15: 0000000000000001
->
-> On Mon, Mar 8, 2021 at 12:47 PM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > On Mon, Mar 8, 2021 at 12:39 AM Tong Zhang <ztong0001@gmail.com> wrote:
-> > >
-> > > there are two drivers(zatm and idt77252) using PRIV() (i.e. atm->phy_data)
-> > > to store private data, but the driver happens to populate wrong
-> > > pointers: atm->dev_data. which actually cause null-ptr-dereference in
-> > > following PRIV(dev). This patch series attemps to fix those two issues
-> > > along with a typo in atm struct.
-> > >
-> > > Tong Zhang (3):
-> > >   atm: fix a typo in the struct description
-> > >   atm: uPD98402: fix incorrect allocation
-> > >   atm: idt77252: fix null-ptr-dereference
-> > >
-> > >  drivers/atm/idt77105.c | 4 ++--
-> > >  drivers/atm/uPD98402.c | 2 +-
-> > >  include/linux/atmdev.h | 2 +-
-> > >  3 files changed, 4 insertions(+), 4 deletions(-)
-> >
-> > For the 2 phys you actually seen null pointer dereferences or are your
-> > changes based on just code review?
-> >
-> > I ask because it seems like this code has been this way since 2005 and
-> > in the case of uPD98402_start the code doesn't seem like it should
-> > function the way it was as PRIV is phy_data and there being issues
-> > seems pretty obvious since the initialization of things happens
-> > immediately after the allocation.
-> >
-> > I'm just wondering if it might make more sense to drop the code if it
-> > hasn't been run in 15+ years rather than updating it?
