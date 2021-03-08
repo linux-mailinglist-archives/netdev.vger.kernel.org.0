@@ -2,194 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B6D83315C5
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:20:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B49DD3315CF
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 19:22:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbhCHSUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 13:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230299AbhCHSUR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:20:17 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B934C06174A;
-        Mon,  8 Mar 2021 10:20:17 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id v14so9690412ilj.11;
-        Mon, 08 Mar 2021 10:20:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NNTQykiI9gA2t58YTI7cpBAyD2RcDTE2cehocQiIsBU=;
-        b=Qvdlw4/eGJUQgFcaFQMmB//pgdcE82a6uVoEhi+VW5BG3QPeDbykzxT7ulGFQ2kZOF
-         kHS0DESygRuhGIev8l8/pge56Ty4LkL4jLH+AVsbZ1+WanyY0WAiwlgxJ4i+oxOgNT14
-         qwNkDI5q96ghhUQUPHaGH3vf/Qxleo6Q/sHucCjMlKPoehB1Rt7PxVTjf4caI6Gxvwh2
-         vAlbRhB2tJfBukUHmMCfXE6TypxKI/q6c6S9Lfr0rk/DpgIkbe3BZ/Z+5DyMVkG+kDqY
-         OPv9td3Fi65Y2OKfSHoFFlM8FkYbG0z8d3LRiXzztUvyQBBAqbPNjhOzw1yUYiOzBLNX
-         5o6Q==
+        id S230299AbhCHSV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 13:21:27 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:57247 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231184AbhCHSVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 13:21:20 -0500
+Received: by mail-il1-f197.google.com with SMTP id s4so8173995ilv.23
+        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 10:21:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NNTQykiI9gA2t58YTI7cpBAyD2RcDTE2cehocQiIsBU=;
-        b=EbgR2aAfufJBl4ovkw0VInCCaRHP+6zT2R+PBxrTYW5DTWVRq2vB7moyAJXbcj616b
-         M2TZQHzKGkYhQGQrAFIcxhBORxnfGkoEcvWabtGM1HVYTEJOs/nyLQWR2B4Dlppou+4T
-         moieldNwThZ59JZ1GBQHFTWIAV/SXuO3Nd+G5ISiYR6tDZvHXZIgQQxEtXgfo+XRA/7T
-         Z/4EwK5gCsANRj7PfI3qCDsrUUq4kn5SLNT9mRLdGXYeVbxDkm0LAAk6Txl5ZTcroNJG
-         e5HyH49LFLhQ/jRHF+1160XW8V6WeRtK75JONwbvldP5tQ9fCpCDWGiKXCSrgp23Trkd
-         u/1A==
-X-Gm-Message-State: AOAM5316KSMy+yTs0TG6EEhiFzswYe19b7TINkuZVZvJYjy9GGcFFEjw
-        dnfS9p8g40I7bOJE2lBLykbbOjKc5Nn+3O11SN21kiVHP+jUpQ==
-X-Google-Smtp-Source: ABdhPJy89frhoCx9bvGw9K5vGvSrxgh7FXPcmlVGtNQlAXPd5imSMyLiL6waukggKHiZKTTahiR0/ynRBDGNav9hDKI=
-X-Received: by 2002:a05:6e02:ef4:: with SMTP id j20mr19420597ilk.199.1615227616365;
- Mon, 08 Mar 2021 10:20:16 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=hEl/gcxr+ooZyCOqOKEktEWndl9iI87D4ZPiueI+7DY=;
+        b=FAKJ0AcZjHLDjpvL2HI/xI0na/SOVxJKQiK+pRujJua+FnQTpuh3/ckNJEOKXacip5
+         i2OIIA4Rk4lMQttUgswBPSt5htGBwuBF9nWVyzpde5b+2yEYJg1iJyLsj1uVP/QMTAF9
+         HsAqk19D9DH/60Ga4olCdnca1NG/yJWV8NNcuCE3WILH9ueRKCcv2bUBnQZcQRAiZcYy
+         SCnjPleGd5xxSs7al7BAwdKHlfSZ1ZK0RQbGEiVLQ5oRaee8wDxVjfnwWM1lqtTWSJg0
+         AuvXD6W3gflW48amoQkCaegYynRuHzq267Wg3IrHe5a2SGp6JzdKiS3i3byXUzKNK/bA
+         KkYw==
+X-Gm-Message-State: AOAM531aETFQFM8EIf9ZKt6qTxTqQkGcH4sJSxzWXDuSjBNbDtAPF7iB
+        hkXeEzqx+6VnGNg79dLQrA8zeNMrYreeS/mBQ25PQqhPtKW3
+X-Google-Smtp-Source: ABdhPJyMIuKYgOz8o5gvwVFLh1s4QvpJJOd25bzXwE5w+JHG85UOSreJuWpPaYynsoFzQMGQgLMrCCmQ7cRS/5EHR2E59CO5tqwP
 MIME-Version: 1.0
-References: <20210308032529.435224-1-ztong0001@gmail.com> <CAKgT0UftdTobwgA6hi=CdOfQ+1fdozhPs89fDmapbvcp7jLASw@mail.gmail.com>
- <CAA5qM4BG2PNvvLFDngQRe4kBL5zATUOnaHt_-2s7Y47CcJF+bA@mail.gmail.com> <CAKgT0UeqMEiv9vvsRE+3Wb0e9-f8E_n3QWEHGmu32bza_W5=Sw@mail.gmail.com>
-In-Reply-To: <CAKgT0UeqMEiv9vvsRE+3Wb0e9-f8E_n3QWEHGmu32bza_W5=Sw@mail.gmail.com>
-From:   Tong Zhang <ztong0001@gmail.com>
-Date:   Mon, 8 Mar 2021 13:20:05 -0500
-Message-ID: <CAA5qM4Cp6LxgfF+3pgFoRO25QGtjDiEF5LyLtJEqYLXKm-W0jQ@mail.gmail.com>
-Subject: Re: [PATCH 0/3] fix a couple of atm->phy_data related issues
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+X-Received: by 2002:a05:6e02:1154:: with SMTP id o20mr21655098ill.236.1615227679763;
+ Mon, 08 Mar 2021 10:21:19 -0800 (PST)
+Date:   Mon, 08 Mar 2021 10:21:19 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000015720b05bd0a80d9@google.com>
+Subject: [syzbot] WARNING in ieee802154_add_seclevel
+From:   syzbot <syzbot+6630070762b727ca8ebb@syzkaller.appspotmail.com>
+To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, stefan@datenfreihafen.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have this emulated device in QEMU,
--- and I agree with you that probably no one has been using it for a while
-IMHO, given the quality of the driver it also make sense to drop the
-support completely
-or we at least need to fix some obvious issues here.
-Best,
-- Tong
+Hello,
 
-On Mon, Mar 8, 2021 at 1:06 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> Hi Tong,
->
-> Is this direct-assigned hardware or is QEMU being used to emulate the
-> hardware here? Admittedly I don't know that much about ATM, so I am
-> not sure when/if those phys would have gone out of production. However
-> since the code dates back to 2005 I am guessing it is on the old side.
->
-> Ultimately the decision is up to Chas. However if there has been code
-> in place for this long that would trigger this kind of null pointer
-> dereference then it kind of points to the fact that those phys have
-> probably not been in use since at least back when Linus switched over
-> to git in 2005.
->
-> Thanks,
->
-> - Alex
->
-> On Mon, Mar 8, 2021 at 9:55 AM Tong Zhang <ztong0001@gmail.com> wrote:
-> >
-> > Hi Alex,
-> > attached is the kernel log for zatm(uPD98402) -- I also have
-> > idt77252's log -- which is similar to this one --
-> > I think it makes sense to drop if no one is actually using it --
-> > - Tong
-> >
-> > [    5.740774] BUG: KASAN: null-ptr-deref in uPD98402_start+0x5e/0x219
-> > [uPD98402]
-> > [    5.741179] Write of size 4 at addr 000000000000002c by task modprobe/96
-> > [    5.741548]
-> > [    5.741637] CPU: 0 PID: 96 Comm: modprobe Not tainted 5.12.0-rc2-dirty #71
-> > [    5.742017] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
-> > BIOS rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
-> > [    5.742635] Call Trace:
-> > [    5.742775]  dump_stack+0x8a/0xb5
-> > [    5.742966]  kasan_report.cold+0x10f/0x111
-> > [    5.743197]  ? uPD98402_start+0x5e/0x219 [uPD98402]
-> > [    5.743473]  uPD98402_start+0x5e/0x219 [uPD98402]
-> > [    5.743739]  zatm_init_one+0x10b5/0x1311 [zatm]
-> > [    5.743998]  ? zatm_int.cold+0x30/0x30 [zatm]
-> > [    5.744246]  ? _raw_write_lock_irqsave+0xd0/0xd0
-> > [    5.744507]  ? __mutex_lock_slowpath+0x10/0x10
-> > [    5.744757]  ? _raw_spin_unlock_irqrestore+0xd/0x20
-> > [    5.745030]  ? zatm_int.cold+0x30/0x30 [zatm]
-> > [    5.745278]  local_pci_probe+0x6f/0xb0
-> > [    5.745492]  pci_device_probe+0x171/0x240
-> > [    5.745718]  ? pci_device_remove+0xe0/0xe0
-> > [    5.745949]  ? kernfs_create_link+0xb6/0x110
-> > [    5.746190]  ? sysfs_do_create_link_sd.isra.0+0x76/0xe0
-> > [    5.746482]  really_probe+0x161/0x420
-> > [    5.746691]  driver_probe_device+0x6d/0xd0
-> > [    5.746923]  device_driver_attach+0x82/0x90
-> > [    5.747158]  ? device_driver_attach+0x90/0x90
-> > [    5.747402]  __driver_attach+0x60/0x100
-> > [    5.747621]  ? device_driver_attach+0x90/0x90
-> > [    5.747864]  bus_for_each_dev+0xe1/0x140
-> > [    5.748075]  ? subsys_dev_iter_exit+0x10/0x10
-> > [    5.748320]  ? klist_node_init+0x61/0x80
-> > [    5.748542]  bus_add_driver+0x254/0x2a0
-> > [    5.748760]  driver_register+0xd3/0x150
-> > [    5.748977]  ? 0xffffffffc0030000
-> > [    5.749163]  do_one_initcall+0x84/0x250
-> > [    5.749380]  ? trace_event_raw_event_initcall_finish+0x150/0x150
-> > [    5.749714]  ? _raw_spin_unlock_irqrestore+0xd/0x20
-> > [    5.749987]  ? create_object+0x395/0x510
-> > [    5.750210]  ? kasan_unpoison+0x21/0x50
-> > [    5.750427]  do_init_module+0xf8/0x350
-> > [    5.750640]  load_module+0x40c5/0x4410
-> > [    5.750854]  ? module_frob_arch_sections+0x20/0x20
-> > [    5.751123]  ? kernel_read_file+0x1cd/0x3e0
-> > [    5.751364]  ? __do_sys_finit_module+0x108/0x170
-> > [    5.751628]  __do_sys_finit_module+0x108/0x170
-> > [    5.751879]  ? __ia32_sys_init_module+0x40/0x40
-> > [    5.752126]  ? file_open_root+0x200/0x200
-> > [    5.752353]  ? do_sys_open+0x85/0xe0
-> > [    5.752556]  ? filp_open+0x50/0x50
-> > [    5.752750]  ? fpregs_assert_state_consistent+0x4d/0x60
-> > [    5.753042]  ? exit_to_user_mode_prepare+0x2f/0x130
-> > [    5.753316]  do_syscall_64+0x33/0x40
-> > [    5.753519]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > [    5.753802] RIP: 0033:0x7ff64032dcf7
-> >  ff c3 48 c7 c6 01 00 00 00 e9 a1
-> > [    5.755029] RSP: 002b:00007ffd250ea358 EFLAGS: 00000246 ORIG_RAX:
-> > 0000000000000139
-> > [    5.755449] RAX: ffffffffffffffda RBX: 0000000001093a70 RCX: 00007ff64032dcf7
-> > [    5.755847] RDX: 0000000000000000 RSI: 00000000010929e0 RDI: 0000000000000003
-> > [    5.756242] RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
-> > [    5.756635] R10: 00007ff640391300 R11: 0000000000000246 R12: 00000000010929e0
-> > [    5.757029] R13: 0000000000000000 R14: 0000000001092dd0 R15: 0000000000000001
-> >
-> > On Mon, Mar 8, 2021 at 12:47 PM Alexander Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> > >
-> > > On Mon, Mar 8, 2021 at 12:39 AM Tong Zhang <ztong0001@gmail.com> wrote:
-> > > >
-> > > > there are two drivers(zatm and idt77252) using PRIV() (i.e. atm->phy_data)
-> > > > to store private data, but the driver happens to populate wrong
-> > > > pointers: atm->dev_data. which actually cause null-ptr-dereference in
-> > > > following PRIV(dev). This patch series attemps to fix those two issues
-> > > > along with a typo in atm struct.
-> > > >
-> > > > Tong Zhang (3):
-> > > >   atm: fix a typo in the struct description
-> > > >   atm: uPD98402: fix incorrect allocation
-> > > >   atm: idt77252: fix null-ptr-dereference
-> > > >
-> > > >  drivers/atm/idt77105.c | 4 ++--
-> > > >  drivers/atm/uPD98402.c | 2 +-
-> > > >  include/linux/atmdev.h | 2 +-
-> > > >  3 files changed, 4 insertions(+), 4 deletions(-)
-> > >
-> > > For the 2 phys you actually seen null pointer dereferences or are your
-> > > changes based on just code review?
-> > >
-> > > I ask because it seems like this code has been this way since 2005 and
-> > > in the case of uPD98402_start the code doesn't seem like it should
-> > > function the way it was as PRIV is phy_data and there being issues
-> > > seems pretty obvious since the initialization of things happens
-> > > immediately after the allocation.
-> > >
-> > > I'm just wondering if it might make more sense to drop the code if it
-> > > hasn't been run in 15+ years rather than updating it?
+syzbot found the following issue on:
+
+HEAD commit:    d310ec03 Merge tag 'perf-core-2021-02-17' of git://git.ker..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=147866a2d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e681d54870713a40
+dashboard link: https://syzkaller.appspot.com/bug?extid=6630070762b727ca8ebb
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6630070762b727ca8ebb@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(lock->magic != lock)
+WARNING: CPU: 1 PID: 14622 at kernel/locking/mutex.c:928 __mutex_lock_common kernel/locking/mutex.c:928 [inline]
+WARNING: CPU: 1 PID: 14622 at kernel/locking/mutex.c:928 __mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
+Modules linked in:
+CPU: 1 PID: 14622 Comm: syz-executor.2 Not tainted 5.11.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:928 [inline]
+RIP: 0010:__mutex_lock+0xc0b/0x1120 kernel/locking/mutex.c:1093
+Code: 08 84 d2 0f 85 a3 04 00 00 8b 05 c8 90 c2 04 85 c0 0f 85 12 f5 ff ff 48 c7 c6 40 9b 6b 89 48 c7 c7 00 99 6b 89 e8 17 2a bd ff <0f> 0b e9 f8 f4 ff ff 65 48 8b 1c 25 00 f0 01 00 be 08 00 00 00 48
+RSP: 0018:ffffc9000940f400 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000040000 RSI: ffffffff815b4c85 RDI: fffff52001281e72
+RBP: ffff88807aa18c50 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815ade9e R11: 0000000000000000 R12: 0000000000000000
+R13: dffffc0000000000 R14: ffffc9000940f5b0 R15: 0000000000000000
+FS:  00007f6893111700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005627d0936188 CR3: 000000007933e000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ ieee802154_add_seclevel+0x3f/0x70 net/mac802154/cfg.c:367
+ rdev_add_seclevel net/ieee802154/rdev-ops.h:276 [inline]
+ nl802154_add_llsec_seclevel+0x194/0x230 net/ieee802154/nl802154.c:2077
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2348
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2402
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2435
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x465f69
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f6893111188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000056c008 RCX: 0000000000465f69
+RDX: 0000000000000000 RSI: 0000000020000180 RDI: 000000000000000a
+RBP: 00000000004bfa67 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056c008
+R13: 00007ffd15b1997f R14: 00007f6893111300 R15: 0000000000022000
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
