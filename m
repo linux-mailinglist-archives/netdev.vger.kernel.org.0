@@ -2,249 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0577F330673
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 04:29:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D934B33067B
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 04:35:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbhCHD3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Mar 2021 22:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbhCHD2q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 22:28:46 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0A9C06174A
-        for <netdev@vger.kernel.org>; Sun,  7 Mar 2021 19:28:46 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id m6so6316477pfk.1
-        for <netdev@vger.kernel.org>; Sun, 07 Mar 2021 19:28:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=c4vD6vTPI/RZFt/isVlX7YrFe5yiDDJqGbi4dx1DFpQ=;
-        b=DhPPWH+9WBX1YmkdL1nfF6bS8zxw0EfX2udHY+EeA9A3W7/NXnJe0S/M2vRhGZtu/C
-         I0HXStmDUrhv4L3NlSG9AJLasKFEc5FXM7Xm7fYawx2MbkcjHYM0xLDKh+Hm8xXdbt6V
-         IgyGwApuQ73u6DvHMmbtGInHS0bhk8QEpvXb0i7bY1+R0YrJM/9sKZYuBL8spoRBSL1r
-         c0supMYJ6RePM/0LSbC6HOtk1UuXJMj0Np1GO1O9xwriRHvoZyJbRCQHBs6DlhicfH4Y
-         QcQEhGpMi4nxEierBY9uYfFm/B4phSYxUDZnKRFM9N46JzpHntg2hYUusyBaeplw+JI8
-         QzkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=c4vD6vTPI/RZFt/isVlX7YrFe5yiDDJqGbi4dx1DFpQ=;
-        b=ZRf1ln1OslCYnEdByoJfT02Bq08hQMZdvVOdiJepZ6OVnF6MOlBdvQYtdTH3TO+6fM
-         hf3iPIUPCpXDAp2mATQM9TQ1+BDbpTotKlpTHRirQhHtYvnxCkfAXW6PgLEUkH2iq6Q2
-         vAVkJiQ1tf51jHmZIMwqTBwbDguX6d+m3RjKgFPp7TCgUi9DfRccKRk+Qq0ruGvFhTvE
-         4u/0JZnE6D6TEpCn2uWAicxNvd9aPUJx1cYQRtg9igUcVCQuko9WJQdardAqcCgJUhKP
-         ccBMxoWWHot64dUKILQoVsr0qFdn7ZLUlU67IM3wrFLAFlKK1rMa1qL1+6E574QbuRI3
-         8n4g==
-X-Gm-Message-State: AOAM532ZD67CSTZsv7+S/hAf+41pqfbHVXjlYn2si+I8TjPIPOJF1xKg
-        4fQf1JWdSZLHa6nGp3au7C8=
-X-Google-Smtp-Source: ABdhPJxdJ1XqhdZPC+9EHjGrwNvVggwagPXAzaWipyOwJvegXK8qRJcvhFfrAfoShQta6lI+rv/sig==
-X-Received: by 2002:a63:e511:: with SMTP id r17mr18809671pgh.163.1615174125593;
-        Sun, 07 Mar 2021 19:28:45 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v16sm8276085pfu.76.2021.03.07.19.28.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Mar 2021 19:28:44 -0800 (PST)
-Subject: Re: [PATCH v2 net] net: dsa: fix switchdev objects on bridge master
- mistakenly being applied on ports
-To:     Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-References: <20210307102156.2282877-1-olteanv@gmail.com>
- <874khnq9hh.fsf@waldekranz.com> <20210307154832.wcmbw7imachkdc3y@skbuf>
- <871rcqraui.fsf@waldekranz.com> <87y2eypojy.fsf@waldekranz.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <bf08d4cc-c4cc-8cd7-11b7-e3a05c6958cf@gmail.com>
-Date:   Sun, 7 Mar 2021 19:28:42 -0800
+        id S233969AbhCHDfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Mar 2021 22:35:14 -0500
+Received: from m9783.mail.qiye.163.com ([220.181.97.83]:7162 "EHLO
+        m9783.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233898AbhCHDem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Mar 2021 22:34:42 -0500
+X-Greylist: delayed 452 seconds by postgrey-1.27 at vger.kernel.org; Sun, 07 Mar 2021 22:34:42 EST
+Received: from [192.168.188.169] (unknown [106.75.220.2])
+        by m9783.mail.qiye.163.com (Hmail) with ESMTPA id 8273AC161A;
+        Mon,  8 Mar 2021 11:27:05 +0800 (CST)
+To:     parav@nvidia.com, saeedm@nvidia.com
+Cc:     netdev@vger.kernel.org
+From:   "avis.wang" <avis.wang@ucloud.cn>
+Subject: mlx5 sub function issue
+Message-ID: <fcf630f0-8cd7-87dd-61e2-0aee62f7465a@ucloud.cn>
+Date:   Mon, 8 Mar 2021 11:27:05 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.8.0
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <87y2eypojy.fsf@waldekranz.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZQh4ZGEJCGRgYS0kYVkpNSk5KTE9LSU5NSkpVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hNSlVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NVE6Hjo*MD00AygdOhIoNEoQ
+        F1ZPFChVSlVKTUpOSkxPS0lOQ0hOVTMWGhIXVRoNEghVDBoVHDsOGBcUDh9VGBVFWVdZEgtZQVlK
+        S01VTE5VSUlLVUlZV1kIAVlBSkNCQjcG
+X-HM-Tid: 0a780fdfc1a22085kuqy8273ac161a
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
+       I have some confusion with mlx5 sub function feature. I tested it 
+with Mellanox ConnectX-6 Dx recently,
+then I found the maximum amount of SF in each PF is just 128, I‘m not 
+sure if there is a problem with
+my configuration, or there are some limits of SF in ConnectX-6.
+Here is the environment:
+system:                    CentOS Linux release 7.9.2009
+NIC:                         Mellanox Technologies MT2892 Family 
+[ConnectX-6 Dx]
+firmware-version:   22.29.2002 (MT_0000000430)
+kernel:                    net-next master branch 
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
+mlxconfig:
+PF_BAR2_ENABLE  True(1)
+PF_BAR2_SIZE        8
+PER_PF_NUM_SF   True(1)
+PF_TOTAL_SF         65535
+PF_SF_BAR_SIZE    0
 
+When I tried to create more SF:
 
-On 3/7/2021 2:49 PM, Tobias Waldekranz wrote:
-> On Sun, Mar 07, 2021 at 21:02, Tobias Waldekranz <tobias@waldekranz.com> wrote:
->> On Sun, Mar 07, 2021 at 17:48, Vladimir Oltean <olteanv@gmail.com> wrote:
->>> On Sun, Mar 07, 2021 at 04:17:14PM +0100, Tobias Waldekranz wrote:
->>>> Please wait before applying.
->>>>
->>>> I need to do some more testing later (possibly tomorrow). But I am
->>>> pretty sure that this patch does not work with the (admittedly somewhat
->>>> exotic) combination of:
->>>>
->>>> - Non-offloaded LAG
->>>> - Bridge with VLAN filtering enabled.
->>>>
->>>> When adding the LAG to the bridge, I get an error because mv88e6xxx
->>>> tries to add VLAN 1 to the ports (which it should not do as the LAG is
->>>> not offloaded).
->>>
->>> Weird, how are you testing, and why does it attempt to add VLAN 1? Is it
->>> the mv88e6xxx driver itself that does this? Where from?
->>>
->>> The following is my test procedure:
->>>
->>> cat ./test_bond_no_offload.sh
->>> #!/bin/bash
->>>
->>> ip link del bond0
->>> for eth in swp0 swp1 swp2; do ip link set $eth down; done
->>> ip link add bond0 type bond mode broadcast
->>> ip link add br0 type bridge vlan_filtering 1
->>> ip link set swp0 master bond0
->>> ip link set swp1 master bond0
->>> ip link set swp2 master br0
->>> ip link set bond0 master br0
->>> for eth in swp0 swp1 swp2 bond0 br0; do ip link set $eth up; done
->>>
->>> ./test_bond_no_offload.sh
->>> [   27.004206] bond0 (unregistering): Released all slaves
->>> [   27.068440] mscc_felix 0000:00:00.5 swp0: configuring for inband/qsgmii link mode
->>> [   27.077811] 8021q: adding VLAN 0 to HW filter on device swp0
->>> [   27.083728] bond0: (slave swp0): Enslaving as an active interface with an up link
->>> Warning: dsa_core: Offloading not supported.
->>> [   27.095035] mscc_felix 0000:00:00.5 swp1: configuring for inband/qsgmii link mode
->>> [   27.104073] 8021q: adding VLAN 0 to HW filter on device swp1
->>> [   27.109948] bond0: (slave swp1): Enslaving as an active interface with an up link
->>> Warning: dsa_core: Offloading not supported.
->>> [   27.120214] br0: port 1(swp2) entered blocking state
->>> [   27.125407] br0: port 1(swp2) entered disabled state
->>> [   27.131738] mscc_felix 0000:00:00.5: dsa_port_vlan_filtering: port 2 vlan_filtering 1
->>> [   27.139625] mscc_felix 0000:00:00.5 swp2: dsa_slave_vlan_add: vid 1
->>> [   27.149223] br0: port 2(bond0) entered blocking state
->>> [   27.154341] br0: port 2(bond0) entered disabled state
->>> [   27.159600] device bond0 entered promiscuous mode
->>> [   27.164340] device swp0 entered promiscuous mode
->>> [   27.169028] device swp1 entered promiscuous mode
->>> [   27.173718] device swp2 entered promiscuous mode
->>> [   27.187698] mscc_felix 0000:00:00.5 swp2: configuring for inband/qsgmii link mode
->>> [   27.196312] 8021q: adding VLAN 0 to HW filter on device swp2
->>> [   27.207605] 8021q: adding VLAN 0 to HW filter on device bond0
->>> [   28.060872] IPv6: ADDRCONF(NETDEV_CHANGE): bond0: link becomes ready
->>> [   28.067323] br0: port 2(bond0) entered blocking state
->>> [   28.072406] br0: port 2(bond0) entered forwarding state
->>> [   28.077751] IPv6: ADDRCONF(NETDEV_CHANGE): br0: link becomes ready
->>> # bridge link
->>> 8: swp2@eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 master br0 state disabled priority 32 cost 100
->>> 10: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 master br0 state forwarding priority 32 cost 100
->>> # bridge vlan add dev bond0 vid 100
->>> # bridge vlan add dev swp2 vid 100
->>> [   48.669422] mscc_felix 0000:00:00.5 swp2: dsa_slave_vlan_add: vid 100
->>> # bridge vlan add dev br0 vid 100 self
->>
->> I ran the same test on my box (s/swp/eth/g just because that is what the
->> ports are called on my board):
->>
->> root@envoy:~# dmesg -c
->> root@envoy:~# ./test_bond_no_offload.sh
->> Warning: dsa_core: Offloading not supported.
->> Warning: dsa_core: Offloading not supported.
->> RTNETLINK answers: Operation not supported
->> root@envoy:~# dmesg -c
->> [   40.392113] device eth3 left promiscuous mode
->> [   40.392233] br0: port 1(eth3) entered disabled state
->> [   40.468035] bond0 (unregistering): (slave eth1): Releasing backup interface
->> [   40.480821] device eth1 left promiscuous mode
->> [   40.487626] bond0 (unregistering): (slave eth2): Releasing backup interface
->> [   40.508856] device eth2 left promiscuous mode
->> [   40.508870] device chan0 left promiscuous mode
->> [   40.515602] bond0 (unregistering): Released all slaves
->> [   40.571520] mv88e6085 30be0000.ethernet-1:04 eth1: configuring for inband/2500base-x link mode
->> [   40.574803] 8021q: adding VLAN 0 to HW filter on device eth1       
->> [   40.576595] bond0: (slave eth1): Enslaving as an active interface with an up link    
->> [   40.583908] mv88e6085 30be0000.ethernet-1:04 eth2: configuring for inband/sgmii link mode
->> [   40.587225] 8021q: adding VLAN 0 to HW filter on device eth2 
->> [   40.589014] bond0: (slave eth2): Enslaving as an active interface with an up link
->> [   40.591622] br0: port 1(eth3) entered blocking state
->> [   40.591642] br0: port 1(eth3) entered disabled state
->> [   40.602894] br0: port 2(bond0) entered blocking state
->> [   40.602931] br0: port 2(bond0) entered disabled state
->> [   40.603172] device bond0 entered promiscuous mode
->> [   40.603179] device eth1 entered promiscuous mode
->> [   40.603183] device chan0 entered promiscuous mode
->> [   40.603229] device eth2 entered promiscuous mode
->> [   40.603284] device eth3 entered promiscuous mode
->> [   40.605250] mv88e6085 30be0000.ethernet-1:04: p10: hw VLAN 1 already used by port 8 in br0
->> [   40.605268] CPU: 0 PID: 1734 Comm: ip Not tainted 5.11.0 #197
->> [   40.605276] Hardware name: lynx-2510 (DT)
->> [   40.605281] Call trace: 
->> [   40.605284]  dump_backtrace+0x0/0x1b0
->> [   40.605301]  show_stack+0x20/0x70
->> [   40.605310]  dump_stack+0xd0/0x12c
->> [   40.605320]  mv88e6xxx_port_vlan_add+0x79c/0x810
->> [   40.605333]  dsa_switch_event+0x600/0xc70
->> [   40.605343]  raw_notifier_call_chain+0x5c/0x80
->> [   40.605351]  dsa_tree_notify+0x1c/0x40
->> [   40.605358]  dsa_port_vlan_add+0x58/0x80
->> [   40.605365]  dsa_slave_vlan_rx_add_vid+0x80/0x130
->> [   40.605372]  vlan_add_rx_filter_info+0x60/0x90
->> [   40.605380]  vlan_vid_add+0xf4/0x1b0
->> [   40.605386]  bond_vlan_rx_add_vid+0x78/0x110
->> [   40.605394]  vlan_add_rx_filter_info+0x60/0x90
->> [   40.605400]  vlan_vid_add+0xf4/0x1b0
->> [   40.605406]  __vlan_add+0x6c8/0x840
->> [   40.605415]  nbp_vlan_add+0xfc/0x180
->> [   40.605423]  nbp_vlan_init+0x140/0x190
->> [   40.605433]  br_add_if+0x558/0x740
->> [   40.605440]  br_add_slave+0x1c/0x30
->>
->> (I added the dump_stack() just for demonstration purposes)
->>
->> So we are coming in from everyones favorite ndo: ndo_vlan_add_rx_vid!
->>
->> mv88e6xxx complains (rightly IMHO) that the hardware cannot offload VLAN
->> 1 to two different bridges. It sees that eth3 is connected to br0, and
->> the current port is trying to add the same VID to a different
->> bridge. The second bridge in this case is in fact NULL.
->>
->> One could argue that mv88e6xxx could just skip config if dp->bridge_dev
->> is not set. OTOH, the DSA layer manages all the intricacies of that in
->> all other scenarios.
->>
->> Should we return early from the ndo if dp->bridge_dev is NULL? But then
->> why do we implement those ndos at all?
-> 
-> If I understand Florian's original message (061f6a505ac3) correctly,
-> this was originally done to support HW that cannot control VLAN
-> filtering per port. I.e to support this setup:
-> 
->   vlan1
->     |
->    br0     vlan2
->   /   \      |
-> swp0  swp1  swp2
-> 
-> Where swp2 cannot be configured to ignore 1Q tags at the same time as
-> VLAN filtering is enabled on swp0 and swp1.
-> 
-> Florian, do I have that right?
+~# devlink port add pci/0000:b3:00.0 flavour pcisf pfnum 0 sfnum 128
+devlink answers: No space left on device
 
-Yes, this change was intended to support switches that have global VLAN
-filtering attributes (like b53, bcm_sf2) and where standalone ports that
-get a VLAN upper require us to program an appropriate VLAN table entry
-for these uppers to keep working.
+Is there anything missed in configuration? Can I create more sub 
+functions in ConnectX-6?
 
-> 
-> If so, I think we can safely just `return 0` on these in mv88e6xxx (and
-> any other drivers where the HW can control this per port).
-> 
-> Adding a guard against configuring VLANs on unbridged user ports in
-> mv88e6xxx_port_vlan_add does seem to do the trick.
-> 
-
-OK.
--- 
-Florian
+Trully yours,
+avis
