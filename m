@@ -2,91 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDCB330A11
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 10:14:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2820330A49
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 10:28:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbhCHJOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 04:14:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
+        id S229711AbhCHJ1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 04:27:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbhCHJOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 04:14:10 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE60C06174A;
-        Mon,  8 Mar 2021 01:14:10 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id a24so4545316plm.11;
-        Mon, 08 Mar 2021 01:14:10 -0800 (PST)
+        with ESMTP id S229754AbhCHJ1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 04:27:35 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD8AC06174A;
+        Mon,  8 Mar 2021 01:27:35 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id x29so6037810pgk.6;
+        Mon, 08 Mar 2021 01:27:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=LapUqhPgY5pST1dV0LdNgE6achMdsluxGY9BNdUk6gM=;
-        b=M92hkSmWsEPzlaOkTjyVbMet0gfve3NV9knTG3VWroGQy/URdxilBQ1Eg56nzg3POR
-         GUyn6yTh0v60khwdKLeyyqPdJ4Lt6lPEU2PSQcxotG0KdHaM27R7EDsZsaD9BiadyvOr
-         c2IOPU078wYi8AN0nUzjTQud0bQZRd9STxj8HEwQrn2rcSBRgvlDr9ZyBtfr2CDsNjfi
-         KB03YEPmfFfzC5LiCz/5/XEp6a34bmCCE98cN6ThGWB1jS4G/YQnPUh3YSGiCqOcnqK/
-         Y9VqoTFfkRv0BXfyVheYEt5I3IVfFwOgB9MNV+xsG+41ReG8nB1pyeLntwS52xbByYhG
-         O7kQ==
+        bh=FkcecBQ/uWNOh6SH1+lVeHED1t6Xg7QLIjl+W6LrKKI=;
+        b=IF9T0ZtK+A7Xu9/M6ex4Kvc/Hmy1QnWC5CQjIzyP6MVjbd6GamZLDrKjDhUYI4k5XP
+         9lZ0m5vRe/9CddhARoTqjBJhMbrZbo3hgfA+Bk6WKRzaVeG5TWug6r54lBJB0JR48HSi
+         Sqvz9KiyoN8hTCFthIv1lrt4r7up6e1OviRVzNeq/YstKp4Ahzp7Ka5ULxQ+okpvpNpE
+         zJq7Ir2bcnBahTrp8vAXUSbm/V6+TPTgp0XtZGYpFYjUWw4Exxafx1MeNkhRam1irniA
+         aFQp82xi0DCezbvKjn739mXCT6+InYVyot/PWw1huC9DZwB9DErigUkRlUvXKqF5f3EZ
+         E/Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=LapUqhPgY5pST1dV0LdNgE6achMdsluxGY9BNdUk6gM=;
-        b=nSBUYNzYryMJz8lbjuQP7L+WnEbFgJzooLSsZIe8je2VX31OBcoOCEdpkMFbYzu48G
-         H3uxN4LVFHCgntPWzZIA2vtCPpAlnJ9Yh0pDDF7F9dVQlvBpbgvYYatbuSC/7hM0XUKe
-         KQ/xSWIQFThn4NmvgkhGIf7UG9IKktN9Ng7ex59KCGpdEUyp0SjYLC4vNsl8I+Xy1Obk
-         bjwNxpKofaZz8NM7PGCNxy0/5UX43UY9d5Lvhs4oG0NfPEj0aCFWK7qBf2F9qAxNIwGX
-         HBBwjEMt8CR/ass7yFNDX+YZKM69uDNTob7zfZWmd595uOeyAvGPdoqd8a5IVLAMVIxT
-         VkqA==
-X-Gm-Message-State: AOAM531+QXzree+LNO7g9awC/t4hIZSGgor61+07k13Hy45vwDNz8eM/
-        EOT5WBk9mpANja5q+pIs13E=
-X-Google-Smtp-Source: ABdhPJzlzqOByUyGkswp00tSv/DGdDAYKsCCKsWrYMzRJ35ZT0k6dHCmfyPYcjSXwxqwy2z+KDYQRA==
-X-Received: by 2002:a17:90a:ce0c:: with SMTP id f12mr23879065pju.11.1615194850228;
-        Mon, 08 Mar 2021 01:14:10 -0800 (PST)
+        bh=FkcecBQ/uWNOh6SH1+lVeHED1t6Xg7QLIjl+W6LrKKI=;
+        b=WSk808CZQajSNOZn4hitA3XpIj6wAsThXkuhYo8FXMQwcpw8FzlNM+KeCUpxv03zcH
+         Op2CO3Fy/n3xSD7NL3MAeiPUxq2dI/+nq7SGK6D3i+1iLWStNEQ7t5R8BTgFX7bO6LjM
+         tYryqN7L7PN3Ds8nY3D8Vc2nQIIJufsI8ABFp4CDarEXu96K4RwzTaQLDXdB5/1C9zkZ
+         G0I/8GBT+Xu+XGjIC1XJonjaHkeliHjYG3kDA7YPDu+stcHeqLBIgZHCyBYFd8gj6BlS
+         167cVLeUbos1a1zbNVuzTm5U9RwRmUCpMMDPdsgZ+UcBP0r4G1czvP5Q+6MzoEs5wPCl
+         wopA==
+X-Gm-Message-State: AOAM532aFLXjKGC4007X8DayMzBXrEoYpnWCMT5DbO/p7eHKHxDXyKQx
+        gM7EKqa7rBYHSAMMgsh8rLQ=
+X-Google-Smtp-Source: ABdhPJyg0J+RG8DJ7HUAvCH/220Jxex5/mLy5l2vWTnWB+rHIE/EbU2o1v5mSwfpTLwvTQPKfA1kig==
+X-Received: by 2002:a65:41c6:: with SMTP id b6mr19364742pgq.7.1615195655142;
+        Mon, 08 Mar 2021 01:27:35 -0800 (PST)
 Received: from localhost.localdomain ([45.135.186.99])
-        by smtp.gmail.com with ESMTPSA id w8sm9511874pgk.46.2021.03.08.01.14.05
+        by smtp.gmail.com with ESMTPSA id a15sm10408491pju.34.2021.03.08.01.27.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Mar 2021 01:14:09 -0800 (PST)
+        Mon, 08 Mar 2021 01:27:34 -0800 (PST)
 From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, loic.poulain@linaro.org,
-        bjorn.andersson@linaro.org, mani@kernel.org,
-        cjhuang@codeaurora.org, necip@google.com, edumazet@google.com,
-        miaoqinglang@huawei.com, dan.carpenter@oracle.com,
-        wenhu.wang@vivo.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: qrtr: fix error return code of qrtr_sendmsg()
-Date:   Mon,  8 Mar 2021 01:13:55 -0800
-Message-Id: <20210308091355.8726-1-baijiaju1990@gmail.com>
+To:     alex.aring@gmail.com, stefan@datenfreihafen.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: ieee802154: fix error return code of raw_sendmsg()
+Date:   Mon,  8 Mar 2021 01:27:20 -0800
+Message-Id: <20210308092720.9552-1-baijiaju1990@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 When sock_alloc_send_skb() returns NULL to skb, no error return code of
-qrtr_sendmsg() is assigned.
-To fix this bug, rc is assigned with -ENOMEM in this case.
+raw_sendmsg() is assigned.
+To fix this bug, err is assigned with -ENOMEM in this case.
 
-Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
+Fixes: 78f821b64826 ("ieee802154: socket: put handling into one file")
 Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
 Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
- net/qrtr/qrtr.c | 4 +++-
+ net/ieee802154/socket.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index b34358282f37..ac2a4a7711da 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -958,8 +958,10 @@ static int qrtr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	plen = (len + 3) & ~3;
- 	skb = sock_alloc_send_skb(sk, plen + QRTR_HDR_MAX_SIZE,
- 				  msg->msg_flags & MSG_DONTWAIT, &rc);
+diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
+index a45a0401adc5..3d76b207385e 100644
+--- a/net/ieee802154/socket.c
++++ b/net/ieee802154/socket.c
+@@ -277,8 +277,10 @@ static int raw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 	tlen = dev->needed_tailroom;
+ 	skb = sock_alloc_send_skb(sk, hlen + tlen + size,
+ 				  msg->msg_flags & MSG_DONTWAIT, &err);
 -	if (!skb)
 +	if (!skb) {
-+		rc = -ENOMEM;
- 		goto out_node;
++		err = -ENOMEM;
+ 		goto out_dev;
 +	}
  
- 	skb_reserve(skb, QRTR_HDR_MAX_SIZE);
+ 	skb_reserve(skb, hlen);
  
 -- 
 2.17.1
