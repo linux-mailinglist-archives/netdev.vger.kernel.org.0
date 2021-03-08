@@ -2,70 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D008330996
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 09:42:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E908B330980
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 09:39:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232222AbhCHIli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 03:41:38 -0500
-Received: from mga03.intel.com ([134.134.136.65]:40492 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232037AbhCHIlF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Mar 2021 03:41:05 -0500
-IronPort-SDR: sGy/uDmHzYZcp9Y/Stpd1f0eT365jDqur7R3zMZbasz3wrfjm44lSCb4VxAvTOWyp6N0lTp78n
- 3535D8ZEACLQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9916"; a="188042011"
-X-IronPort-AV: E=Sophos;i="5.81,232,1610438400"; 
-   d="scan'208";a="188042011"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2021 00:41:05 -0800
-IronPort-SDR: NiUCzZ1PVNuzWDF/1gdervsY73ElYSGOdvyq09MUsrdu39JCVTKRckTWZ9++6g2HwibLU3dOv0
- fJg7GTEWuL4g==
-X-IronPort-AV: E=Sophos;i="5.81,232,1610438400"; 
-   d="scan'208";a="508855681"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2021 00:41:02 -0800
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V2 4/4] vDPA/ifcvf: remove the version number string
-Date:   Mon,  8 Mar 2021 16:35:25 +0800
-Message-Id: <20210308083525.382514-5-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210308083525.382514-1-lingshan.zhu@intel.com>
-References: <20210308083525.382514-1-lingshan.zhu@intel.com>
+        id S231286AbhCHIjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 03:39:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37310 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231202AbhCHIjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 03:39:06 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC40C06174A
+        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 00:39:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=fEFuTC/t38hMP3UYlU+bTUNBztK0qNI/lvqZMRVI6Sw=; b=rA1dSaU8N7b/TC6Feik7JyK7bJ
+        8N9xxMmw9xEWN0tguZBoyyIYOIbOvgg/0zr9sJRjpbMKdasvzndmIG8D/PT1TBvtCLhb51SRaCMVQ
+        Gr+g+uKne3lxqcr/KeqTLxqEUe36FDuBjf/tUs/BP/ghZgxg1OwA+8m/adeTVrev1DFGseenwb4Yy
+        FtJKYg5yIfPUNbwi2rmvmM1OCc+PD+D9oL8/AUjlVj0+5LuoDrt0Jpx8u6CTM+havG8x4WzdNsz4S
+        bCgE0o4i6S14BvVicDmPjSIkkwvNg9EGCWapQM3ZtVJOlh7Nklw5eoFr912Kmbb7OWklfRC3hZK4X
+        MCJVy4yg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lJBPB-00FEXj-Vj; Mon, 08 Mar 2021 08:38:32 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 56B84300238;
+        Mon,  8 Mar 2021 09:38:14 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 99B332BB25DDB; Mon,  8 Mar 2021 09:38:11 +0100 (CET)
+Date:   Mon, 8 Mar 2021 09:38:11 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, erhard_f@mailbox.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: seqlock lockdep false positives?
+Message-ID: <YEXicy6+9MksdLZh@hirez.programming.kicks-ass.net>
+References: <20210303164035.1b9a1d07@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YESayEskbtjEWjFd@lx-t490>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YESayEskbtjEWjFd@lx-t490>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit removes the version number string, using kernel
-version is enough.
+On Sun, Mar 07, 2021 at 10:20:08AM +0100, Ahmed S. Darwish wrote:
+> Hi Jakub,
+> 
+> On Wed, Mar 03, 2021 at 04:40:35PM -0800, Jakub Kicinski wrote:
+> > Hi Ahmed!
+> >
+> > Erhard is reporting a lockdep splat in drivers/net/ethernet/realtek/8139too.c
+> >
+> > https://bugzilla.kernel.org/show_bug.cgi?id=211575
+> >
+> > I can't quite grasp how that happens it looks like it's the Rx
+> > lock/syncp on one side and the Tx lock on the other side :S
+> >
+> > ================================
+> > WARNING: inconsistent lock state
+> > 5.12.0-rc1-Pentium4 #2 Not tainted
+> > --------------------------------
+> > inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
+> > swapper/0/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
+> > c113c804 (&syncp->seq#2){?.-.}-{0:0}, at: rtl8139_poll+0x251/0x350
+> > {IN-HARDIRQ-W} state was registered at:
+> >   lock_acquire+0x239/0x2c5
+> >   do_write_seqcount_begin_nested.constprop.0+0x1a/0x1f
+> >   rtl8139_interrupt+0x346/0x3cb
+> 
+> That's really weird.
+> 
+> The only way I can see this happening is lockdep mistakenly treating
+> both "tx_stats->syncp.seq" and "rx_stats->syncp.seq" as the same lockdep
+> class key... somehow.
+> 
+> It is claiming that the softirq code path at rtl8139_poll() is acquiring
+> the *tx*_stats sequence counter. But at rtl8139_poll(), I can only see
+> the *rx*_stats sequence counter getting acquired.
+> 
+> I've re-checked where tx/rx stats sequence counters are initialized, and
+> I see:
+> 
+>   static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
+>   {
+> 	...
+> 	u64_stats_init(&tp->rx_stats.syncp);
+> 	u64_stats_init(&tp->tx_stats.syncp);
+> 	...
+>   }
+> 
+> which means they should have different lockdep class keys.  The
+> u64_stats sequence counters are also initialized way before any IRQ
+> handlers are registered.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_main.c | 2 --
- 1 file changed, 2 deletions(-)
+Indeed, that's one area where inlines are very much not equivalent to
+macros. Static variables in inline functions aren't exact, but they very
+much do not get to be one per invocation.
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index fd5befc5cbcc..c34e1eec6b6c 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -14,7 +14,6 @@
- #include <linux/sysfs.h>
- #include "ifcvf_base.h"
- 
--#define VERSION_STRING  "0.1"
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
- 
-@@ -503,4 +502,3 @@ static struct pci_driver ifcvf_driver = {
- module_pci_driver(ifcvf_driver);
- 
- MODULE_LICENSE("GPL v2");
--MODULE_VERSION(VERSION_STRING);
--- 
-2.27.0
+Something like the below ought to be the right fix I think.
 
+diff --git a/include/linux/u64_stats_sync.h b/include/linux/u64_stats_sync.h
+index c6abb79501b3..e81856c0ba13 100644
+--- a/include/linux/u64_stats_sync.h
++++ b/include/linux/u64_stats_sync.h
+@@ -115,12 +115,13 @@ static inline void u64_stats_inc(u64_stats_t *p)
+ }
+ #endif
+ 
++#if BITS_PER_LONG == 32 && defined(CONFIG_SMP)
++#define u64_stats_init(syncp)	seqcount_init(&(syncp)->seq)
++#else
+ static inline void u64_stats_init(struct u64_stats_sync *syncp)
+ {
+-#if BITS_PER_LONG == 32 && defined(CONFIG_SMP)
+-	seqcount_init(&syncp->seq);
+-#endif
+ }
++#endif
+ 
+ static inline void u64_stats_update_begin(struct u64_stats_sync *syncp)
+ {
