@@ -2,73 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E20393307A5
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 06:44:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5EC330809
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 07:23:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234588AbhCHFnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 00:43:51 -0500
-Received: from mga02.intel.com ([134.134.136.20]:23519 "EHLO mga02.intel.com"
+        id S234831AbhCHGWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 01:22:12 -0500
+Received: from mga06.intel.com ([134.134.136.31]:59554 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234459AbhCHFnh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Mar 2021 00:43:37 -0500
-IronPort-SDR: KLv9ehSV3/gJ0l9Y2cROpynbJ75YsHDAp4QtuCg3mFl89Vi7dVBlj63kmWwqPI8Lv3IEbp7PkF
- zD19qsXBDtqQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9916"; a="175081843"
+        id S234856AbhCHGVp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Mar 2021 01:21:45 -0500
+IronPort-SDR: zcuPS3D57P+DwNV/0YwRkmM+7DMFZpAZRmo7xszQmI7SB7t/WqhDCuFcBIE4Jd5ZYE0m10yced
+ SXsuRLatg0qg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9916"; a="249354282"
 X-IronPort-AV: E=Sophos;i="5.81,231,1610438400"; 
-   d="scan'208";a="175081843"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2021 21:43:36 -0800
-IronPort-SDR: NtrqViryP86Vw4W3pRl+OQyWQXdENR/3Jx1LkW4B3PmE9P/knbk5JWoec6miaBeoDoXpAjSsGX
- TVoNW287NJZA==
+   d="scan'208";a="249354282"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2021 22:21:41 -0800
+IronPort-SDR: gCg4Bklf77IAVK8ZQLJLWqgFnNrw7iUpK+XKXYeiu+0dFww0TM2t48/F7X7g70lDK5S+tZ51KA
+ A5Z1YS3YBXgQ==
 X-IronPort-AV: E=Sophos;i="5.81,231,1610438400"; 
-   d="scan'208";a="402696119"
-Received: from sneftin-mobl.ger.corp.intel.com (HELO [10.185.168.83]) ([10.185.168.83])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2021 21:43:34 -0800
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Fix error handling in
- e1000_set_d0_lplu_state_82571
-To:     Dinghao Liu <dinghao.liu@zju.edu.cn>, kjlu@umn.edu
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20210228094424.7884-1-dinghao.liu@zju.edu.cn>
-From:   "Neftin, Sasha" <sasha.neftin@intel.com>
-Message-ID: <57bae851-e735-d015-114b-aeacd602f623@intel.com>
-Date:   Mon, 8 Mar 2021 07:43:26 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+   d="scan'208";a="409180330"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2021 22:21:39 -0800
+Received: by lahna (sSMTP sendmail emulation); Mon, 08 Mar 2021 08:21:36 +0200
+Date:   Mon, 8 Mar 2021 08:21:36 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Jax Jiang <jax.jiang.007@gmail.com>
+Cc:     michael.jamet@intel.com, YehezkelShB@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [BUG] Thunderbolt network package forward speed problem.
+Message-ID: <20210308062136.GB2542@lahna.fi.intel.com>
+References: <CAGCQqYbjG5_jxsC3+ONTRg=ow8BqWvkau2j4k=Fs+-hzsyYFjQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210228094424.7884-1-dinghao.liu@zju.edu.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGCQqYbjG5_jxsC3+ONTRg=ow8BqWvkau2j4k=Fs+-hzsyYFjQ@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/28/2021 11:44, Dinghao Liu wrote:
-> There is one e1e_wphy() call in e1000_set_d0_lplu_state_82571
-> that we have caught its return value but lack further handling.
-> Check and terminate the execution flow just like other e1e_wphy()
-> in this function.
+Hi,
+
+On Sat, Mar 06, 2021 at 11:33:57PM +0800, Jax Jiang wrote:
+> Hi!
+> Authors of Linux thunderbolt-network driver:
 > 
-> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
-> ---
->   drivers/net/ethernet/intel/e1000e/82571.c | 2 ++
->   1 file changed, 2 insertions(+)
+> Problem:
 > 
-> diff --git a/drivers/net/ethernet/intel/e1000e/82571.c b/drivers/net/ethernet/intel/e1000e/82571.c
-> index 88faf05e23ba..0b1e890dd583 100644
-> --- a/drivers/net/ethernet/intel/e1000e/82571.c
-> +++ b/drivers/net/ethernet/intel/e1000e/82571.c
-> @@ -899,6 +899,8 @@ static s32 e1000_set_d0_lplu_state_82571(struct e1000_hw *hw, bool active)
->   	} else {
->   		data &= ~IGP02E1000_PM_D0_LPLU;
->   		ret_val = e1e_wphy(hw, IGP02E1000_PHY_POWER_MGMT, data);
-> +		if (ret_val)
-> +			return ret_val;
->   		/* LPLU and SmartSpeed are mutually exclusive.  LPLU is used
->   		 * during Dx states where the power conservation is most
->   		 * important.  During driver activity we should enable
+> Thunderbolt network <- Software Router(NUC 11) <- 10G NIC   Speed is normal=
+>  about 9-10Gbps
+> Thunderbolt network -> Software Router(NUC 11) -> 10G NIC   Speed is super =
+> slow about 1Mbps-100Kbps
+
+Have you tried without the 10G NIC? I mean what is the speed you
+observe on NUC 11 in both directions?
+
+What the other host is that you connect to NUC 11 over Thunderbolt
+cable?
+
+> Thunderbolt network <- Software Router(NUC 11) <- 2.5G NIC(I225-V)   Speed =
+> is normal about 2.3-2.4Gbps
+> Thunderbolt network -> Software Router(NUC 11) -> 10G NIC   Speed is super =
+> slow about 1Mbps-100Kbps
 > 
-Good for me.
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+> I have already tested:
+> MAC<-> Thunderbolt network <-> Software Router(NUC11)     17Gpbs on both tw=
+> o direction.
+> 
+> Hardware: Intel NUC11 I5
+> CPU: Intel TigerLake 1135G7 4Core 8Thread
+> OS:  OpenWRT 19.07
+> Linux Kernel Version: 5.10.20
+> Already Tested Software that have problem: iperf3 smb
+> Network Layout:
+> 
+>  PC(With 2.5G NIC)
+> 
+>            ^
+> 
+>            |
+> 
+>            v
+> [macbook pro] <-----thunderbolt 3------------> Software
+> Router<---------------> NAS(With 10G NIC)
+>                            thunderbolt network         (NUC11 With 10G NIC)
+> 
+> I met problem like this in some network switch which does not support flow =
+> control.
+> So I guess maybe thunderbolt-network driver miss flow control support.
+> 
+> I am try to build a software router with using latest NUC hardware. Use thu=
+> nderbolt network to trans 10G NIC card or 2.5G NIC to latest having thunder=
+> bolt port laptop or devices. Latest intel mobile chip had internal thunderb=
+> olt controller, which is cheaper than previous devices. I think it=1B$B!G=
+> =1B(Bs a chance to bring high speed network to general consumer.
+> I am a coder but not familiar with Linux kernel source code.
+> At same time I am a want to build a cool product geek.
+> Any help would be great  ;-)
+> 
+> Thanks
+> 
+> A want to build a geek products geek.
+> Jax
