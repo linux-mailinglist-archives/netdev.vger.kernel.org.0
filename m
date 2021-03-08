@@ -2,200 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 920693308A3
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 08:09:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 834D43308B5
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 08:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbhCHHJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 02:09:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbhCHHJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 02:09:10 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B53C061760
-        for <netdev@vger.kernel.org>; Sun,  7 Mar 2021 23:08:58 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id bm21so18087722ejb.4
-        for <netdev@vger.kernel.org>; Sun, 07 Mar 2021 23:08:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jg9JCtFPk8LTcFKoLUjntv/IHAXfla9oZY8ieho81DI=;
-        b=yP18pRe640+Ha021yb77DdyFJ8YpC7Lw87+oFVslfg5dKJH0PDDTT/zTAI1/93SM1J
-         B39JlICd9dOYipufEBxYSh12n9VnBtVUU+M7eBQEPnzYAqkAfeZj/GK9zztaTLICWh0U
-         eOrMffW7JFtQOA0B6H/zkcTDGkvGAVTBagAatqRN2PbJq9184p/zpyLAwE7d6FWzCFD4
-         DJCxT6zrFiHzgPOO8yfK8ZJOK6aUWlD/8/0KZ90CIG251WlR7gszuAGNox4QyBYiw/eF
-         m66rkLqUbipugSQueclGdEcwYJ3j7PQ9nF1Z/YfClT1a+LWOojRvurhmchHOYBc91cNm
-         j27A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jg9JCtFPk8LTcFKoLUjntv/IHAXfla9oZY8ieho81DI=;
-        b=T9D6byeSgS3lEB/BL/UBEOd7kRnPdQcBDXq3BqXpnhVEkRh7wlgUepJiZFMD7g3bsK
-         4xr7nV7L3aG6oy27P8fa1PBWXWuwf75f4b+vMN8E4mVhWXp2jBXm+uoNZP2F7vsbhjjz
-         /ei+IZ/oTfkGlkns8pxcVSx5Ig11wCEHG115dnjxLSV+a0vsdGuURPVk1m8//JTJhFXu
-         MNPsl8EFs3ARLZa5PKImYOjZ3tunqhc3Vdd9OPJiseCp1jorYfoUwqWqvCtXNIdPqkEz
-         voFZ8V3p8Wrt9y/abRWJCtgX0Og7cekKcUmHNu5ZZEUOnnph0JT5cQKIxOH/pJmWYNkp
-         Q3GA==
-X-Gm-Message-State: AOAM531H/5KiebZBxBwyMeKwgJKwtLW6OZ6LcQzwetLuIeKiwHJuPRAn
-        WGjA0mqESRkUlD3K8jV/ip+1WQ3RgairgOifLK2m
-X-Google-Smtp-Source: ABdhPJxporhAFiyZx0kychbSwmpepgFGJlXjqUDAnKzrAzmIC/579hB2tN6tndkjlicQc5PsTqef257IaOYOCS2SDbs=
-X-Received: by 2002:a17:906:311a:: with SMTP id 26mr13678563ejx.395.1615187337315;
- Sun, 07 Mar 2021 23:08:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20210223115048.435-1-xieyongji@bytedance.com> <20210223115048.435-7-xieyongji@bytedance.com>
- <573ab913-55ce-045a-478f-1200bd78cf7b@redhat.com> <CACycT3sVhDKKu4zGbt1Lw-uWfKDAWs=O=C7kXXcuSnePohmBdQ@mail.gmail.com>
- <c173b7ec-8c90-d0e3-7272-a56aa8935e64@redhat.com> <CACycT3vb=WyrMpiOOdVDGEh8cEDb-xaj1esQx2UEQpJnOOWhmw@mail.gmail.com>
- <4db35f8c-ee3a-90fb-8d14-5d6014b4f6fa@redhat.com> <CACycT3sUJNmi2BdLsi3W72+qTKQaCo_nQYu-fdxg9y4pAvBMow@mail.gmail.com>
- <2652f696-faf7-26eb-a8b2-c4cfe3aaed15@redhat.com> <CACycT3uMV9wg5yVKmEJpbZrs3x0b4+b9eNcUTh3+CjxsG7x2LA@mail.gmail.com>
- <d4681614-bd1e-8fe7-3b03-72eb2011c3c2@redhat.com> <CACycT3uA5y=jcKPwu6rZ83Lqf1ytuPhnxWLCeMpDYrvRodHFVg@mail.gmail.com>
- <0b671aef-f2b2-6162-f407-7ca5178dbebb@redhat.com> <CACycT3tnd0SziHVpH=yUZFYpeG3c0V+vcGRNT19cp0q9b1GH2Q@mail.gmail.com>
- <48d0a363-4f55-bf99-3653-315458643317@redhat.com>
-In-Reply-To: <48d0a363-4f55-bf99-3653-315458643317@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Mon, 8 Mar 2021 15:08:46 +0800
-Message-ID: <CACycT3v8GXBT0sChJ-k=89FeUnP7-U2ksJyLMHEng2xn97f3dw@mail.gmail.com>
-Subject: Re: Re: [RFC v4 06/11] vduse: Implement an MMU-based IOMMU driver
-To:     Jason Wang <jasowang@redhat.com>
+        id S232405AbhCHHQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 02:16:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29709 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231933AbhCHHQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 02:16:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615187787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xy56k1+QF2gNmaRcrAb05H33U47yzoR6pT2ufcja+ug=;
+        b=KV64QnQTMUOVB7B8eVwxHi18ocEvgiBapHj+y4OI8uZ/6UNphu86sw5+N4mZmeXzjWC/2e
+        /PeGIEADS7YblGNMCXMt/4PhBpdOJ/vfZLc94IxbmLEyryVOY1Cl/Qxyv2YCnjFb5EhU7L
+        YS72dR2ETdbLSZkKZqlz29p4ic+6cts=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-91-3lQ5M0o3P-efHqsOUKG9Vg-1; Mon, 08 Mar 2021 02:16:24 -0500
+X-MC-Unique: 3lQ5M0o3P-efHqsOUKG9Vg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 82CB51005D6B;
+        Mon,  8 Mar 2021 07:16:22 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-193.pek2.redhat.com [10.72.13.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A1E4C19D7C;
+        Mon,  8 Mar 2021 07:16:14 +0000 (UTC)
+Subject: Re: [PATCH v6 net-next] virtio-net: support XDP when not more queues
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <1615182195.3656917-1-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <f1df26a7-3ca8-cfe5-86ed-52a33b37c3ac@redhat.com>
+Date:   Mon, 8 Mar 2021 15:16:13 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
+MIME-Version: 1.0
+In-Reply-To: <1615182195.3656917-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 8, 2021 at 3:04 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/3/8 1:05 =E4=B8=8B=E5=8D=88, Yongji Xie wrote:
-> > On Mon, Mar 8, 2021 at 11:52 AM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2021/3/8 11:45 =E4=B8=8A=E5=8D=88, Yongji Xie wrote:
-> >>> On Mon, Mar 8, 2021 at 11:17 AM Jason Wang <jasowang@redhat.com> wrot=
-e:
-> >>>> On 2021/3/5 3:59 =E4=B8=8B=E5=8D=88, Yongji Xie wrote:
-> >>>>> On Fri, Mar 5, 2021 at 3:27 PM Jason Wang <jasowang@redhat.com> wro=
-te:
-> >>>>>> On 2021/3/5 3:13 =E4=B8=8B=E5=8D=88, Yongji Xie wrote:
-> >>>>>>> On Fri, Mar 5, 2021 at 2:52 PM Jason Wang <jasowang@redhat.com> w=
-rote:
-> >>>>>>>> On 2021/3/5 2:15 =E4=B8=8B=E5=8D=88, Yongji Xie wrote:
-> >>>>>>>>
-> >>>>>>>> Sorry if I've asked this before.
-> >>>>>>>>
-> >>>>>>>> But what's the reason for maintaing a dedicated IOTLB here? I th=
-ink we
-> >>>>>>>> could reuse vduse_dev->iommu since the device can not be used by=
- both
-> >>>>>>>> virtio and vhost in the same time or use vduse_iova_domain->iotl=
-b for
-> >>>>>>>> set_map().
-> >>>>>>>>
-> >>>>>>>> The main difference between domain->iotlb and dev->iotlb is the =
-way to
-> >>>>>>>> deal with bounce buffer. In the domain->iotlb case, bounce buffe=
-r
-> >>>>>>>> needs to be mapped each DMA transfer because we need to get the =
-bounce
-> >>>>>>>> pages by an IOVA during DMA unmapping. In the dev->iotlb case, b=
-ounce
-> >>>>>>>> buffer only needs to be mapped once during initialization, which=
- will
-> >>>>>>>> be used to tell userspace how to do mmap().
-> >>>>>>>>
-> >>>>>>>> Also, since vhost IOTLB support per mapping token (opauqe), can =
-we use
-> >>>>>>>> that instead of the bounce_pages *?
-> >>>>>>>>
-> >>>>>>>> Sorry, I didn't get you here. Which value do you mean to store i=
-n the
-> >>>>>>>> opaque pointer=EF=BC=9F
-> >>>>>>>>
-> >>>>>>>> So I would like to have a way to use a single IOTLB for manage a=
-ll kinds
-> >>>>>>>> of mappings. Two possible ideas:
-> >>>>>>>>
-> >>>>>>>> 1) map bounce page one by one in vduse_dev_map_page(), in
-> >>>>>>>> VDUSE_IOTLB_GET_FD, try to merge the result if we had the same f=
-d. Then
-> >>>>>>>> for bounce pages, userspace still only need to map it once and w=
-e can
-> >>>>>>>> maintain the actual mapping by storing the page or pa in the opa=
-que
-> >>>>>>>> field of IOTLB entry.
-> >>>>>>>>
-> >>>>>>>> Looks like userspace still needs to unmap the old region and map=
- a new
-> >>>>>>>> region (size is changed) with the fd in each VDUSE_IOTLB_GET_FD =
-ioctl.
-> >>>>>>>>
-> >>>>>>>>
-> >>>>>>>> I don't get here. Can you give an example?
-> >>>>>>>>
-> >>>>>>> For example, userspace needs to process two I/O requests (one pag=
-e per
-> >>>>>>> request). To process the first request, userspace uses
-> >>>>>>> VDUSE_IOTLB_GET_FD ioctl to query the iova region (0 ~ 4096) and =
-mmap
-> >>>>>>> it.
-> >>>>>> I think in this case we should let VDUSE_IOTLB_GET_FD return the m=
-aximum
-> >>>>>> range as far as they are backed by the same fd.
-> >>>>>>
-> >>>>> But now the bounce page is mapped one by one. The second page (4096=
- ~
-> >>>>> 8192) might not be mapped when userspace is processing the first
-> >>>>> request. So the maximum range is 0 ~ 4096 at that time.
-> >>>>>
-> >>>>> Thanks,
-> >>>>> Yongji
-> >>>> A question, if I read the code correctly, VDUSE_IOTLB_GET_FD will re=
-turn
-> >>>> the whole bounce map range which is setup in vduse_dev_map_page()? S=
-o my
-> >>>> understanding is that usersapce may choose to map all its range via =
-mmap().
-> >>>>
-> >>> Yes.
-> >>>
-> >>>> So if we 'map' bounce page one by one in vduse_dev_map_page(). (Here
-> >>>> 'map' means using multiple itree entries instead of a single one). T=
-hen
-> >>>> in the VDUSE_IOTLB_GET_FD we can keep traversing itree (dev->iommu)
-> >>>> until the range is backed by a different file.
-> >>>>
-> >>>> With this, there's no userspace visible changes and there's no need =
-for
-> >>>> the domain->iotlb?
-> >>>>
-> >>> In this case, I wonder what range can be obtained if userspace calls
-> >>> VDUSE_IOTLB_GET_FD when the first I/O (e.g. 4K) occurs. [0, 4K] or [0=
-,
-> >>> 64M]? In current implementation, userspace will map [0, 64M].
-> >>
-> >> It should still be [0, 64M). Do you see any issue?
-> >>
-> > Does it mean we still need to map the whole bounce buffer into itree
-> > (dev->iommu) at initialization?
->
->
-> It's your choice I think, the point is to use a single IOTLB for
-> maintaining mappings of all types of pages (bounce, coherent, or shared).
->
 
-OK, got it.
+On 2021/3/8 1:43 下午, Xuan Zhuo wrote:
+> On Mon, 8 Mar 2021 11:41:03 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>> On 2021/3/5 6:29 下午, Xuan Zhuo wrote:
+>>> The number of queues implemented by many virtio backends is limited,
+>>> especially some machines have a large number of CPUs. In this case, it
+>>> is often impossible to allocate a separate queue for
+>>> XDP_TX/XDP_REDIRECT, then xdp cannot be loaded to work, even xdp does
+>>> not use the XDP_TX/XDP_REDIRECT.
+>>>
+>>> This patch allows XDP_TX/XDP_REDIRECT to run by reuse the existing SQ
+>>> with __netif_tx_lock() hold when there are not enough queues.
+>>>
+>>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+>>> ---
+>>> v6: 1. use __netif_tx_acquire()/__netif_tx_release(). (suggested by Jason Wang)
+>>>       2. add note for why not lock. (suggested by Jason Wang)
+>>>       3. Use variable 'flag' to record with or without locked.  It is not safe to
+>>>          use curr_queue_pairs in "virtnet_put_xdp_sq", because it may changed after
+>>>          "virtnet_get_xdp_sq".
+>>>
+>>> v5: change subject from 'support XDP_TX when not more queues'
+>>>
+>>> v4: make sparse happy
+>>>       suggested by Jakub Kicinski
+>>>
+>>> v3: add warning when no more queues
+>>>       suggested by Jesper Dangaard Brouer
+>>>
+>>>    drivers/net/virtio_net.c | 63 ++++++++++++++++++++++++++++++++++++++++--------
+>>>    1 file changed, 53 insertions(+), 10 deletions(-)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index ba8e637..f9e024d 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -195,6 +195,9 @@ struct virtnet_info {
+>>>    	/* # of XDP queue pairs currently used by the driver */
+>>>    	u16 xdp_queue_pairs;
+>>>
+>>> +	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
+>>> +	bool xdp_enabled;
+>>> +
+>>>    	/* I like... big packets and I cannot lie! */
+>>>    	bool big_packets;
+>>>
+>>> @@ -481,14 +484,48 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>>>    	return 0;
+>>>    }
+>>>
+>>> -static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
+>>> +static struct send_queue *virtnet_get_xdp_sq(struct virtnet_info *vi, int *flag)
+>>> +	__acquires(txq->_xmit_lock)
+>>>    {
+>>> +	struct netdev_queue *txq;
+>>>    	unsigned int qp;
+>>>
+>>> -	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+>>> +	if (vi->curr_queue_pairs > nr_cpu_ids) {
+>>> +		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+>>> +		txq = netdev_get_tx_queue(vi->dev, qp);
+>>> +
+>>> +		/* In this case, this txq is only used for xdp tx on the current
+>>> +		 * cpu, so it does not need to be locked.
+>>> +		 * __netif_tx_acquire is for sparse.
+>>> +		 */
+>>> +		__netif_tx_acquire(txq);
+>>> +		*flag = false;
+>>> +	} else {
+>>> +		qp = smp_processor_id() % vi->curr_queue_pairs;
+>>> +		txq = netdev_get_tx_queue(vi->dev, qp);
+>>> +		__netif_tx_lock(txq, raw_smp_ƒprocessor_id());
+>>> +		*flag = true;
+>>> +	}
+>>> +
+>>>    	return &vi->sq[qp];
+>>
+>> Two questions:
+>>
+>> 1) Can we simply check xdp_queue_paris against 0 then we don't need flag?
+>> 2) Can we pass txq to virtnet_get_xdp_sq() then the annotation looks
+>> even more better?
+>>
+>> Thanks
+> In this patch, I added xdp_enabled to determine the status of xdp, because
+> xdp_queue_pairs may be 0 when no more queues.
+>
+> But we can't use these to determine whether to unlock. Because after lock, this
+> variable may change, so we may make an error when we use this variable to
+> determine whether to unlock.
+>
+> When virtnet_get_xdp_sq is called by virtnet_xdp_xmit, it is actually safe to be
+> protected by rcu, but it is still called by virtnet_poll. This time is not safe.
+> It is possible that xdp_enabled will change after virtnet_get_xdp_sq.
 
-Thanks,
-Yongji
+
+I think NAPI is disabled when we want to set/unset XDP. So xdp_qp can't 
+be changed in virtnet_poll()?
+
+Thanks
+
+
+>   So I think
+> it is a better choice to add a local variable to record whether to unlock.
+>
+> Regarding the second question, I think it's okay. In this way, the code for
+> get/put is very simple, I think it is better to use macros directly.
+>
+> ```
+> static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi, int *flag)
+> {
+> 	unsigned int qp;
+>
+> 	if (vi->curr_queue_pairs > nr_cpu_ids) {
+> 		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+> 		*flag = false;
+> 	} else {
+> 		qp = smp_processor_id() % vi->curr_queue_pairs;
+> 		*flag = true;
+> 	}
+>
+> 	return &vi->sq[qp];
+> }
+>
+> #define virtnet_xdp_get_txq(vi, sq, flag)  \
+> 	if (flag) \
+> 		__netif_tx_acquire(netdev_get_tx_queue(vi->dev, vq2txq(sq->vq))); \
+> 	else \
+> 		__netif_tx_lock(netdev_get_tx_queue(vi->dev, vq2txq(sq->vq)), \
+> 				raw_smp_processor_id());
+>
+> #define virtnet_xdp_put_txq(vi, sq, flag)  \
+> 	if (flag) \
+> 		__netif_tx_unlock(netdev_get_tx_queue(vi->dev, vq2txq(sq->vq))); \
+> 	else \
+> 		__netif_tx_release(netdev_get_tx_queue(vi->dev, vq2txq(sq->vq)));
+>
+>
+>
+> 	sq = virtnet_xdp_sq(vi, &sq_flag);
+> 	virtnet_xdp_get_txq(vi, sq, sq_flag);
+> 	.......
+> 	virtnet_xdp_put_txq(vi, sq, sq_flag);
+> ```
+>
+> Do you think this is ok? @Jason
+>
+> thanks.
+>
+>>
+>>>    }
+>>>
+>>> +static void virtnet_put_xdp_sq(struct virtnet_info *vi, struct send_queue *sq,
+>>> +			       int flag)
+>>> +	__releases(txq->_xmit_lock)
+>>> +{
+>>> +	struct netdev_queue *txq;
+>>> +	unsigned int qp;
+>>> +
+>>> +	qp = sq - vi->sq;
+>>> +	txq = netdev_get_tx_queue(vi->dev, qp);
+>>> +
+>>> +	if (flag)
+>>> +		__netif_tx_unlock(txq);
+>>> +	else
+>>> +		__netif_tx_release(txq);
+>>> +}
+>>> +
+>>>    static int virtnet_xdp_xmit(struct net_device *dev,
+>>>    			    int n, struct xdp_frame **frames, u32 flags)
+>>>    {
+>>> @@ -496,12 +533,12 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>>>    	struct receive_queue *rq = vi->rq;
+>>>    	struct bpf_prog *xdp_prog;
+>>>    	struct send_queue *sq;
+>>> +	int ret, err, sq_flag;
+>>>    	unsigned int len;
+>>>    	int packets = 0;
+>>>    	int bytes = 0;
+>>>    	int drops = 0;
+>>>    	int kicks = 0;
+>>> -	int ret, err;
+>>>    	void *ptr;
+>>>    	int i;
+>>>
+>>> @@ -512,7 +549,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>>>    	if (!xdp_prog)
+>>>    		return -ENXIO;
+>>>
+>>> -	sq = virtnet_xdp_sq(vi);
+>>> +	sq = virtnet_get_xdp_sq(vi, &sq_flag);
+>>>
+>>>    	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
+>>>    		ret = -EINVAL;
+>>> @@ -560,12 +597,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>>>    	sq->stats.kicks += kicks;
+>>>    	u64_stats_update_end(&sq->stats.syncp);
+>>>
+>>> +	virtnet_put_xdp_sq(vi, sq, sq_flag);
+>>>    	return ret;
+>>>    }
+>>>
+>>>    static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+>>>    {
+>>> -	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
+>>> +	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
+>>>    }
+>>>
+>>>    /* We copy the packet for XDP in the following cases:
+>>> @@ -1457,12 +1495,15 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+>>>    		xdp_do_flush();
+>>>
+>>>    	if (xdp_xmit & VIRTIO_XDP_TX) {
+>>> -		sq = virtnet_xdp_sq(vi);
+>>> +		int sq_flag;
+>>> +
+>>> +		sq = virtnet_get_xdp_sq(vi, &sq_flag);
+>>>    		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+>>>    			u64_stats_update_begin(&sq->stats.syncp);
+>>>    			sq->stats.kicks++;
+>>>    			u64_stats_update_end(&sq->stats.syncp);
+>>>    		}
+>>> +		virtnet_put_xdp_sq(vi, sq, sq_flag);
+>>>    	}
+>>>
+>>>    	return received;
+>>> @@ -2417,10 +2458,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>>>
+>>>    	/* XDP requires extra queues for XDP_TX */
+>>>    	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+>>> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+>>> -		netdev_warn(dev, "request %i queues but max is %i\n",
+>>> +		netdev_warn(dev, "XDP request %i queues but max is %i. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.\n",
+>>>    			    curr_qp + xdp_qp, vi->max_queue_pairs);
+>>> -		return -ENOMEM;
+>>> +		xdp_qp = 0;
+>>>    	}
+>>>
+>>>    	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+>>> @@ -2454,11 +2494,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>>>    	vi->xdp_queue_pairs = xdp_qp;
+>>>
+>>>    	if (prog) {
+>>> +		vi->xdp_enabled = true;
+>>>    		for (i = 0; i < vi->max_queue_pairs; i++) {
+>>>    			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
+>>>    			if (i == 0 && !old_prog)
+>>>    				virtnet_clear_guest_offloads(vi);
+>>>    		}
+>>> +	} else {
+>>> +		vi->xdp_enabled = false;
+>>>    	}
+>>>
+>>>    	for (i = 0; i < vi->max_queue_pairs; i++) {
+>>> @@ -2526,7 +2569,7 @@ static int virtnet_set_features(struct net_device *dev,
+>>>    	int err;
+>>>
+>>>    	if ((dev->features ^ features) & NETIF_F_LRO) {
+>>> -		if (vi->xdp_queue_pairs)
+>>> +		if (vi->xdp_enabled)
+>>>    			return -EBUSY;
+>>>
+>>>    		if (features & NETIF_F_LRO)
+>>> --
+>>> 1.8.3.1
+>>>
+
