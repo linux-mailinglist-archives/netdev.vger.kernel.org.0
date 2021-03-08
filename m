@@ -2,122 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5D43309C4
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 09:55:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E0BF3309D9
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 10:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbhCHIyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 03:54:31 -0500
-Received: from mail-mw2nam12on2075.outbound.protection.outlook.com ([40.107.244.75]:14176
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229468AbhCHIyT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Mar 2021 03:54:19 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z82isvtgj03Sqrc0gXnHqaUNhOKcZz9UT71kYE2M+55XfFPbTzr85x8usB4e1QkL+TOTDyr27jVHJeuTeOMFL6bFwQjKmRrOJzoenLPKS1kxmQHKRVOjO1WfXfVLGIWHdN73GcRFnh26l1orM1PifBF6nXyHB2Yfulcl8K7VhV93pnYO0yea5Py7rEOvaEq3V4PuWKKeYWbNd9sqdOM/i+zBJ8PdmbIxBTqTXWQMmoskA4EqJyxTT1wzQPx6bPG/1qSSa+NAH4sPDoikigyPXcvIrXxQg8hNLXPkdKP//Tc+UhuD2zBUZNn68yc+JuRqhdG8lggHWkaKv0ndxtfjcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h1j/4JlQ0eiX0zlDTlIw5xn9qsosuWiws+E+QVcmAWc=;
- b=PmIfr8PTqOXQytaTrRW31obEpKkCPW9MWSWKjy5pxWUGQG+yTly9LsX3WGtMNgEP9SAAVILDCxTwAyPnfnB+VQfFl1PeQnI0N2NtvAyEmwuJG/5S1AUjs4B0iHgatJHzvnDeUJdeknt7aLX8nYPfBB9gjyqZl9tT9LGuKf45bh4/FL3vV5qSNDQMV/UwDBsl5+hQ/gLzRM9SV8hxqSjH2VBuCR6NH9+XTiUze/FaDDWxNaA9deA7Mu8Pjl23wKi0eQMrhj5YV2PhhZg5wKMhd0bYPfJYXD8blnZHqE7JZWetrnoBG0RkGbBnLHeoAx3BF0xhQFy86kZzaexPu1rQ9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h1j/4JlQ0eiX0zlDTlIw5xn9qsosuWiws+E+QVcmAWc=;
- b=RVFQ/Ba839iW00TYiQY4nyBahYvR45NUjzltdzFuprs2W0URXqOm0Mh989tZ2MoUgmTBH/DQXumd/uxj4K1yTKTv2nd8flQu6cMNXDxbEBMKvA+ZlevwXhLj2E9HpamPtCwJ9ig2XPjn2eLERPCl20uBmUIBeC6wp7fizZyv744=
-Received: from MW4PR04CA0193.namprd04.prod.outlook.com (2603:10b6:303:86::18)
- by BN8PR12MB3220.namprd12.prod.outlook.com (2603:10b6:408:9e::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19; Mon, 8 Mar
- 2021 08:54:16 +0000
-Received: from CO1NAM11FT045.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:86:cafe::d6) by MW4PR04CA0193.outlook.office365.com
- (2603:10b6:303:86::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Mon, 8 Mar 2021 08:54:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT045.mail.protection.outlook.com (10.13.175.181) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3912.17 via Frontend Transport; Mon, 8 Mar 2021 08:54:16 +0000
-Received: from [172.27.0.187] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 8 Mar
- 2021 08:54:13 +0000
-Subject: Re: [RFC PATCH V2 net-next 1/5] ethtool: Allow network drivers to
- dump arbitrary EEPROM data
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Adrian Pop <pop.adrian61@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        "Don Bollinger" <don@thebollingers.org>, <netdev@vger.kernel.org>,
-        "Vladyslav Tarasiuk" <vladyslavt@nvidia.com>
-References: <1614884228-8542-1-git-send-email-moshe@nvidia.com>
- <1614884228-8542-2-git-send-email-moshe@nvidia.com>
- <YEGQRW9cYK7pHOC7@lunn.ch>
-From:   Moshe Shemesh <moshe@nvidia.com>
-Message-ID: <d1010caf-5413-56d9-25dc-67ff08ec0e27@nvidia.com>
-Date:   Mon, 8 Mar 2021 10:54:10 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S229740AbhCHJAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 04:00:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43025 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229737AbhCHJA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 04:00:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615194028;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vrWUpIGtgFZn7irbq7MRye/8EbAlu1J6dvDk6oFAR6E=;
+        b=DWdCHv646jwsyeg7T0XM6aRZ7aiJKA+BNUYc0WJFhAy2wBh8WOWNbsUO2lSNN5ZhFnAgZK
+        fpnXjlNdggMyLzKDz4ky2Fz4/0jeWbXlk3h2/6hG4AS1MxzSTV8V7nU/rwZN9ZdC3D9hql
+        DZ9d8kgkekZ3TeevC9/gw9hEzql6Doo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-502-ybqmKa0dPRmKm9IE5XZdmQ-1; Mon, 08 Mar 2021 04:00:23 -0500
+X-MC-Unique: ybqmKa0dPRmKm9IE5XZdmQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 02AD857;
+        Mon,  8 Mar 2021 09:00:22 +0000 (UTC)
+Received: from computer-6.station (unknown [10.40.192.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3738A19D7C;
+        Mon,  8 Mar 2021 09:00:20 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        stable@vger.kernel.org, mptcp@lists.01.org
+Subject: [PATCH net] mptcp: fix length of ADD_ADDR with port sub-option
+Date:   Mon,  8 Mar 2021 10:00:04 +0100
+Message-Id: <66b3a2eec724af07ffdb04fefc6c7d50b85f296b.1615191605.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <YEGQRW9cYK7pHOC7@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ea81b454-d2d0-448c-608f-08d8e20fc115
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3220:
-X-Microsoft-Antispam-PRVS: <BN8PR12MB32204576E871A9E78576479DD4939@BN8PR12MB3220.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: at1UopaXYJekI66MfwIJ1KUgYgDxw0I0BwV7vPZDInJMjqC33pww97U4qsxoNgmCZlgjkZua3US2SR3PXKfyeeOlucpSieS/aXOyBsUljRYIfjEmQa93DsJzbwHZCMNdm/Utwu5U+BMGNe3xwEQiiQYmb9h/SHQzGtAJt9V4inInOtUvBQ3Fl7j9i0EcSuhEy1q8N9pYGzauxNmTyzgFg+C6zTUQG8b3BkU04nSNeGnmY4i9hG/qZm9xgfe3dHUWqz6YfdIVmv/h+mjb+Q38FoRWUHY+age9QNchnDP6ulfZGvhDBzYadt/uddBk4Qx6eDcUQBw7gH6SNbabDXO8VbCG5tKdH1WJn42MBCGfztQCGk+ExH84Qo2LLMzfj1jk3sCvnOL8km+B4r6WydNyFyE/L8r2hHC2AoUYo1na1Ibs1NVX6ybj3q3fWRiZsJZ6gzCY2obuIgfvdUA5g7uskWppEU6p5S0Hb4yxDKXsIBU1lay+RoWeEKGd7jiNIhrMPBYD9Sc/bUmNzp3IQ/ntUnOcgLBNpywVNLXHiKvyjxJerM9tBfXbFElyMS0wYX1GkUrTHz3OvWTdxivypH0oC230enBa/YRPhFtQBKEoArSJ45w5mH2PpIYRrgP/BGKhlSIiQkStTcuQy7zUEQ0GpQO3tLMq+Xm/oa7vUR2/cDnFT84MQc0pNK+aTRYkCE3R5zOsGRZwkyf1AykV2bLaq7V/fvI98evX8tNn9f/y98E=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(396003)(376002)(39860400002)(136003)(46966006)(36840700001)(336012)(426003)(6916009)(82740400003)(31686004)(47076005)(26005)(83380400001)(5660300002)(4744005)(16526019)(16576012)(2616005)(70206006)(478600001)(2906002)(8936002)(54906003)(4326008)(36756003)(36860700001)(7636003)(107886003)(186003)(70586007)(36906005)(53546011)(34020700004)(8676002)(82310400003)(31696002)(86362001)(356005)(316002)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2021 08:54:16.4036
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea81b454-d2d0-448c-608f-08d8e20fc115
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT045.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3220
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+in current Linux, MPTCP peers advertising endpoints with port numbers use
+a sub-option length that wrongly accounts for the trailing TCP NOP. Also,
+receivers will only process incoming ADD_ADDR with port having such wrong
+sub-option length. Fix this, making ADD_ADDR compliant to RFC8684 §3.4.1.
 
-On 3/5/2021 3:58 AM, Andrew Lunn wrote:
->
->> +/* MODULE EEPROM DATA */
->> +
->> +enum {
->> +     ETHTOOL_A_EEPROM_DATA_UNSPEC,
->> +     ETHTOOL_A_EEPROM_DATA_HEADER,
->> +
->> +     ETHTOOL_A_EEPROM_DATA_OFFSET,
->> +     ETHTOOL_A_EEPROM_DATA_LENGTH,
->> +     ETHTOOL_A_EEPROM_DATA_PAGE,
->> +     ETHTOOL_A_EEPROM_DATA_BANK,
->> +     ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS,
->> +     ETHTOOL_A_EEPROM_DATA,
-> If you look at all the other such enums in ethtool_netlink, you will
-> see a comment indicating the type. Please add them here as well.
->
-> Please also update Documentation/networking/ethtool-netlink.rst.
-Sure, will add.
->         Andrew
+this can be verified running tcpdump on the kselftests artifacts:
+
+ unpatched kernel:
+ [root@bottarga mptcp]# tcpdump -tnnr unpatched.pcap | grep add-addr
+ reading from file unpatched.pcap, link-type LINUX_SLL (Linux cooked v1), snapshot length 65535
+ IP 10.0.1.1.10000 > 10.0.1.2.53078: Flags [.], ack 101, win 509, options [nop,nop,TS val 214459678 ecr 521312851,mptcp add-addr v1 id 1 a00:201:2774:2d88:7436:85c3:17fd:101], length 0
+ IP 10.0.1.2.53078 > 10.0.1.1.10000: Flags [.], ack 101, win 502, options [nop,nop,TS val 521312852 ecr 214459678,mptcp add-addr[bad opt]]
+
+ patched kernel:
+ [root@bottarga mptcp]# tcpdump -tnnr patched.pcap | grep add-addr
+ reading from file patched.pcap, link-type LINUX_SLL (Linux cooked v1), snapshot length 65535
+ IP 10.0.1.1.10000 > 10.0.1.2.38178: Flags [.], ack 101, win 509, options [nop,nop,TS val 3728873902 ecr 2732713192,mptcp add-addr v1 id 1 10.0.2.1:10100 hmac 0xbccdfcbe59292a1f,nop,nop], length 0
+ IP 10.0.1.2.38178 > 10.0.1.1.10000: Flags [.], ack 101, win 502, options [nop,nop,TS val 2732713195 ecr 3728873902,mptcp add-addr v1-echo id 1 10.0.2.1:10100,nop,nop], length 0
+
+Fixes: 22fb85ffaefb ("mptcp: add port support for ADD_ADDR suboption writing")
+CC: stable@vger.kernel.org # 5.11+
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Acked-and-tested-by: Geliang Tang <geliangtang@gmail.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/mptcp/protocol.h | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 91827d949766..e21a5bc36cf0 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -52,14 +52,15 @@
+ #define TCPOLEN_MPTCP_DSS_MAP64		14
+ #define TCPOLEN_MPTCP_DSS_CHECKSUM	2
+ #define TCPOLEN_MPTCP_ADD_ADDR		16
+-#define TCPOLEN_MPTCP_ADD_ADDR_PORT	20
++#define TCPOLEN_MPTCP_ADD_ADDR_PORT	18
+ #define TCPOLEN_MPTCP_ADD_ADDR_BASE	8
+-#define TCPOLEN_MPTCP_ADD_ADDR_BASE_PORT	12
++#define TCPOLEN_MPTCP_ADD_ADDR_BASE_PORT	10
+ #define TCPOLEN_MPTCP_ADD_ADDR6		28
+-#define TCPOLEN_MPTCP_ADD_ADDR6_PORT	32
++#define TCPOLEN_MPTCP_ADD_ADDR6_PORT	30
+ #define TCPOLEN_MPTCP_ADD_ADDR6_BASE	20
+-#define TCPOLEN_MPTCP_ADD_ADDR6_BASE_PORT	24
+-#define TCPOLEN_MPTCP_PORT_LEN		4
++#define TCPOLEN_MPTCP_ADD_ADDR6_BASE_PORT	22
++#define TCPOLEN_MPTCP_PORT_LEN		2
++#define TCPOLEN_MPTCP_PORT_ALIGN	2
+ #define TCPOLEN_MPTCP_RM_ADDR_BASE	4
+ #define TCPOLEN_MPTCP_PRIO		3
+ #define TCPOLEN_MPTCP_PRIO_ALIGN	4
+@@ -701,8 +702,9 @@ static inline unsigned int mptcp_add_addr_len(int family, bool echo, bool port)
+ 		len = TCPOLEN_MPTCP_ADD_ADDR6_BASE;
+ 	if (!echo)
+ 		len += MPTCPOPT_THMAC_LEN;
++	/* account for 2 trailing 'nop' options */
+ 	if (port)
+-		len += TCPOLEN_MPTCP_PORT_LEN;
++		len += TCPOLEN_MPTCP_PORT_LEN + TCPOLEN_MPTCP_PORT_ALIGN;
+ 
+ 	return len;
+ }
+-- 
+2.29.2
+
