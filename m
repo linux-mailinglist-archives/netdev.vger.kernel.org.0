@@ -2,176 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E89A43308CE
-	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 08:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03494330926
+	for <lists+netdev@lfdr.de>; Mon,  8 Mar 2021 09:07:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbhCHHa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 02:30:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35137 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230502AbhCHHaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 02:30:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615188618;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NSowZP/H/N20kuwWMf0f/E//UBpn+jmFmDmmbPR2a7Q=;
-        b=Ru04S5Um0EetXeA+PqWpr9rSkDMIc98fBk2L+YVjJAy4s10kH7yu2Ag1Pqr3aFZ0gpjhR+
-        wOc6sWLLqUKdY7DhZFG/AT/RqLmcvsOrSUw3r5R34GeAc7NSMjQaeFuN7YjHWjbRgXDRGP
-        HTq/D7qBsEY9zJlsjIf7fkXVEFmcx0o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-190-JBdkdyovMXWHaYQ7w05D4w-1; Mon, 08 Mar 2021 02:30:14 -0500
-X-MC-Unique: JBdkdyovMXWHaYQ7w05D4w-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 19330101C8CF;
-        Mon,  8 Mar 2021 07:30:11 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-12-143.pek2.redhat.com [10.72.12.143])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 074B760C17;
-        Mon,  8 Mar 2021 07:29:54 +0000 (UTC)
-Subject: Re: [RFC v4 10/11] vduse: Introduce a workqueue for irq injection
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20210223115048.435-1-xieyongji@bytedance.com>
- <20210223115048.435-11-xieyongji@bytedance.com>
- <d63e4cfd-4992-8493-32b0-18e0478f6e1a@redhat.com>
- <CACycT3tqM=ALOG1r0Ve6UTGmwJ7Wg7fQpLZypjZsJF1mJ+adMA@mail.gmail.com>
- <2d3418d9-856c-37ee-7614-af5b721becd7@redhat.com>
- <CACycT3u0+LTbtFMS75grKGZ2mnXzHnKug+HGWbf+nqVybqwkZQ@mail.gmail.com>
- <b3faa4a6-a65b-faf7-985a-b2771533c8bb@redhat.com>
- <CACycT3uZ2ZPjUwVZqzQPZ4ke=VrHCkfNvYagA-oxggPUEUi0Vg@mail.gmail.com>
- <e933ec33-9d47-0ef5-9152-25cedd330ce2@redhat.com>
- <CACycT3ug30sQptdoSP8XzRJVN7Yb2DPLBtfG-RNbus3BOhdONA@mail.gmail.com>
- <b01d9ee7-b038-cef2-8996-cd6401003267@redhat.com>
- <CACycT3vSRvRUbqbPNjAPQ-TeXnbqtrQO+gD1M0qDRRqX1zovVA@mail.gmail.com>
- <44c21bf4-874d-24c9-334b-053c54e8422e@redhat.com>
- <CACycT3sZD2DEU=JxM-T+6dHBdsX5gOfAghh=Kg4PVw0PkNzEGw@mail.gmail.com>
- <a3ee164e-4de8-2305-ec4e-6eeef4aced29@redhat.com>
- <CACycT3stSn_ccZcpFd_NgNHB82FDsD3-9feJjMyf-yMOV0tXKw@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <16eb4c0e-50b1-5c9a-1d01-ea6cd7d09398@redhat.com>
-Date:   Mon, 8 Mar 2021 15:29:53 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S230432AbhCHIHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 03:07:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230425AbhCHIGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 03:06:37 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D718C06174A
+        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 00:06:36 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id u4so19633316lfs.0
+        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 00:06:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=sV1py7eP7mIZzJ0YRdW/Q5PSAusaIBUDzfB0Urz/gQ8=;
+        b=qonQxelSxaskpYku99DacNr0T6nnzLaeNfNj++tme3azTUfDCgW97aUM9Fhq4PBm9Y
+         NO231oU0ds4uJjgmy/oTLEQdoEPrHncCOXHVuSwgU0tL9ck2v7WXjcxgrS9SL6uSF/rn
+         ix9RKAOAIQWWGGkCeu0/V64ZtDlL9L+Z2ebMUu6V0334UmxwX1iUTLPbF9PBW+h6JIVe
+         HHxyBb16USrWMj41OfO+lZb4/0hETLh14LJ6fWHmizr98Ldnvvp4FbpQnHyV5vjbPNC+
+         wAWOwXNxF6EUxkHoNhQ5mNlF8lTatdyw1sI4iTlkBEiU2IA9lHojqwW5tWr6y1NSJ1Iz
+         yeBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=sV1py7eP7mIZzJ0YRdW/Q5PSAusaIBUDzfB0Urz/gQ8=;
+        b=D2OidCuWmZYOO4exwI3RN4K/2U/f4I8wJhOq4JdcXWY7RVveH/G/JVlM+22svPUfJT
+         NcOGnJkcgqsRkt924F+m7W3VV4JrMofLlbzk4ZcWGK9eoNvUW+ozqTqrnnvmHUBTDg+k
+         z/d8UAtXouKY5D6jKhCpLI+tzZYoXk5z3Iw+dtmEYH86G/RE64Y8MO3jnsFGvYBJyfTF
+         EPQWe1VnCoVpCItZRL1TbwX+3heDB46JBDvTAfDl85qgj73HaXuAz+w2qHU+wnQkcg02
+         69csKTejYnOVFB/b9txoBj6f7BEDcaJ49DhI/36HoScTJDtvb5mgapMUdh8GCrl00PP1
+         UNlw==
+X-Gm-Message-State: AOAM532KCQlRb7GICBdH3G7oQDBEqQQEPEuiarVFbdad2PwZZhN75DC+
+        lOFh3nKQtCyeRxa3cjK+lsn2Cg==
+X-Google-Smtp-Source: ABdhPJyxtUuC7eXhqLWrczhNq56Cj9SnKsHTVYKxkmFv8eqtcTIg67BUa/npjz141yBXn1ZYekjteg==
+X-Received: by 2002:a19:7709:: with SMTP id s9mr14198345lfc.250.1615190794878;
+        Mon, 08 Mar 2021 00:06:34 -0800 (PST)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id p21sm1261865lfu.227.2021.03.08.00.06.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Mar 2021 00:06:34 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v2 net] net: dsa: fix switchdev objects on bridge master mistakenly being applied on ports
+In-Reply-To: <20210307102156.2282877-1-olteanv@gmail.com>
+References: <20210307102156.2282877-1-olteanv@gmail.com>
+Date:   Mon, 08 Mar 2021 09:06:33 +0100
+Message-ID: <87v9a2oyra.fsf@waldekranz.com>
 MIME-Version: 1.0
-In-Reply-To: <CACycT3stSn_ccZcpFd_NgNHB82FDsD3-9feJjMyf-yMOV0tXKw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2021/3/8 3:16 下午, Yongji Xie wrote:
-> On Mon, Mar 8, 2021 at 3:02 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> On 2021/3/8 12:50 下午, Yongji Xie wrote:
->>> On Mon, Mar 8, 2021 at 11:04 AM Jason Wang <jasowang@redhat.com> wrote:
->>>> On 2021/3/5 4:12 下午, Yongji Xie wrote:
->>>>> On Fri, Mar 5, 2021 at 3:37 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>> On 2021/3/5 3:27 下午, Yongji Xie wrote:
->>>>>>> On Fri, Mar 5, 2021 at 3:01 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>> On 2021/3/5 2:36 下午, Yongji Xie wrote:
->>>>>>>>> On Fri, Mar 5, 2021 at 11:42 AM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>>>> On 2021/3/5 11:30 上午, Yongji Xie wrote:
->>>>>>>>>>> On Fri, Mar 5, 2021 at 11:05 AM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>>>>>> On 2021/3/4 4:58 下午, Yongji Xie wrote:
->>>>>>>>>>>>> On Thu, Mar 4, 2021 at 2:59 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>>>>>>>> On 2021/2/23 7:50 下午, Xie Yongji wrote:
->>>>>>>>>>>>>>> This patch introduces a workqueue to support injecting
->>>>>>>>>>>>>>> virtqueue's interrupt asynchronously. This is mainly
->>>>>>>>>>>>>>> for performance considerations which makes sure the push()
->>>>>>>>>>>>>>> and pop() for used vring can be asynchronous.
->>>>>>>>>>>>>> Do you have pref numbers for this patch?
->>>>>>>>>>>>>>
->>>>>>>>>>>>> No, I can do some tests for it if needed.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Another problem is the VIRTIO_RING_F_EVENT_IDX feature will be useless
->>>>>>>>>>>>> if we call irq callback in ioctl context. Something like:
->>>>>>>>>>>>>
->>>>>>>>>>>>> virtqueue_push();
->>>>>>>>>>>>> virtio_notify();
->>>>>>>>>>>>>            ioctl()
->>>>>>>>>>>>> -------------------------------------------------
->>>>>>>>>>>>>                irq_cb()
->>>>>>>>>>>>>                    virtqueue_get_buf()
->>>>>>>>>>>>>
->>>>>>>>>>>>> The used vring is always empty each time we call virtqueue_push() in
->>>>>>>>>>>>> userspace. Not sure if it is what we expected.
->>>>>>>>>>>> I'm not sure I get the issue.
->>>>>>>>>>>>
->>>>>>>>>>>> THe used ring should be filled by virtqueue_push() which is done by
->>>>>>>>>>>> userspace before?
->>>>>>>>>>>>
->>>>>>>>>>> After userspace call virtqueue_push(), it always call virtio_notify()
->>>>>>>>>>> immediately. In traditional VM (vhost-vdpa) cases, virtio_notify()
->>>>>>>>>>> will inject an irq to VM and return, then vcpu thread will call
->>>>>>>>>>> interrupt handler. But in container (virtio-vdpa) cases,
->>>>>>>>>>> virtio_notify() will call interrupt handler directly. So it looks like
->>>>>>>>>>> we have to optimize the virtio-vdpa cases. But one problem is we don't
->>>>>>>>>>> know whether we are in the VM user case or container user case.
->>>>>>>>>> Yes, but I still don't get why used ring is empty after the ioctl()?
->>>>>>>>>> Used ring does not use bounce page so it should be visible to the kernel
->>>>>>>>>> driver. What did I miss :) ?
->>>>>>>>>>
->>>>>>>>> Sorry, I'm not saying the kernel can't see the correct used vring. I
->>>>>>>>> mean the kernel will consume the used vring in the ioctl context
->>>>>>>>> directly in the virtio-vdpa case. In userspace's view, that means
->>>>>>>>> virtqueue_push() is used vring's producer and virtio_notify() is used
->>>>>>>>> vring's consumer. They will be called one by one in one thread rather
->>>>>>>>> than different threads, which looks odd and has a bad effect on
->>>>>>>>> performance.
->>>>>>>> Yes, that's why we need a workqueue (WQ_UNBOUND you used). Or do you
->>>>>>>> want to squash this patch into patch 8?
->>>>>>>>
->>>>>>>> So I think we can see obvious difference when virtio-vdpa is used.
->>>>>>>>
->>>>>>> But it looks like we don't need this workqueue in vhost-vdpa cases.
->>>>>>> Any suggestions?
->>>>>> I haven't had a deep thought. But I feel we can solve this by using the
->>>>>> irq bypass manager (or something similar). Then we don't need it to be
->>>>>> relayed via workqueue and vdpa. But I'm not sure how hard it will be.
->>>>>>
->>>>>     Or let vdpa bus drivers give us some information?
->>>> This kind of 'type' is proposed in the early RFC of vDPA series. One
->>>> issue is that at device level, we should not differ virtio from vhost,
->>>> so if we introduce that, it might encourge people to design a device
->>>> that is dedicated to vhost or virtio which might not be good.
->>>>
->>>> But we can re-visit this when necessary.
->>>>
->>> OK, I see. How about adding some information in ops.set_vq_cb()?
->>
->> I'm not sure I get this, maybe you can explain a little bit more?
->>
-> For example, add an extra parameter for ops.set_vq_cb() to indicate
-> whether this callback will trigger the interrupt handler directly.
-
-
-Sounds intersting. I think it may work.
-
-Thanks
-
-
+On Sun, Mar 07, 2021 at 12:21, Vladimir Oltean <olteanv@gmail.com> wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >
-> Thanks,
-> Yongji
+> Tobias reports that after the blamed patch, VLAN objects being added to
+> a bridge device are being added to all slave ports instead (swp2, swp3).
 >
+> ip link add br0 type bridge vlan_filtering 1
+> ip link set swp2 master br0
+> ip link set swp3 master br0
+> bridge vlan add dev br0 vid 100 self
+>
+> This is because the fix was too broad: we made dsa_port_offloads_netdev
+> say "yes, I offload the br0 bridge" for all slave ports, but we didn't
+> add the checks whether the switchdev object was in fact meant for the
+> physical port or for the bridge itself. So we are reacting on events in
+> a way in which we shouldn't.
+>
+> The reason why the fix was too broad is because the question itself,
+> "does this DSA port offload this netdev", was too broad in the first
+> place. The solution is to disambiguate the question and separate it into
+> two different functions, one to be called for each switchdev attribute /
+> object that has an orig_dev == net_bridge (dsa_port_offloads_bridge),
+> and the other for orig_dev == net_bridge_port (*_offloads_bridge_port).
+>
+> In the case of VLAN objects on the bridge interface, this solves the
+> problem because we know that VLAN objects are per bridge port and not
+> per bridge. And when orig_dev is equal to the net_bridge, we offload it
+> as a bridge, but not as a bridge port; that's how we are able to skip
+> reacting on those events. Note that this is compatible with future plans
+> to have explicit offloading of VLAN objects on the bridge interface as a
+> bridge port (in DSA, this signifies that we should add that VLAN towards
+> the CPU port).
+>
+> Fixes: 99b8202b179f ("net: dsa: fix SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING getting ignored")
+> Reported-by: Tobias Waldekranz <tobias@waldekranz.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> This is the logical v2 of Tobias' patches from here:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20210306002455.1582593-1-tobias@waldekranz.com/
+
+The issue related to the combo of software lagged ports in a VLAN
+filtering bridge is a separate one, so I think this is fine the way it
+is. I will address that issue in a separate patch.
+
+Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
+Tested-by: Tobias Waldekranz <tobias@waldekranz.com>
+
 
