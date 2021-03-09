@@ -2,159 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34153332D6C
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:41:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0958332D98
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:54:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbhCIRkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 12:40:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230173AbhCIRkO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Mar 2021 12:40:14 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5407A64FBD;
-        Tue,  9 Mar 2021 17:40:13 +0000 (UTC)
-Date:   Tue, 9 Mar 2021 12:40:11 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Tony Lu <tonylu@linux.alibaba.com>
-Cc:     davem@davemloft.net, mingo@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: add net namespace inode for all net_dev events
-Message-ID: <20210309124011.709c6cd3@gandalf.local.home>
-In-Reply-To: <20210309044349.6605-1-tonylu@linux.alibaba.com>
-References: <20210309044349.6605-1-tonylu@linux.alibaba.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S231645AbhCIRxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 12:53:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230359AbhCIRxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:53:43 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8881FC06174A;
+        Tue,  9 Mar 2021 09:53:43 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id c16so6992164ply.0;
+        Tue, 09 Mar 2021 09:53:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=O49svl5hJ5oi9Ex6IPLrJLltCuLctoPeu6fqaqxZkyQ=;
+        b=kgLVDdWZaA5sXk1CHfRrOMHRBFmCz+nqGzaUIGsSqSzBu25ogoSpTLCxKqm/115qhz
+         TOcyrcMryK5H9tN1uJhoPb7OTMFFUO2ob0EjVcTDyd9wOj+kGq9qIdxUD6hdfoJLlEpr
+         4K7ZA5Cu++SSGwH1jcJmdX0e0rRjAHTyDreJy9Ld03q8cqRWME6i0UlljwmQmaW6JAFU
+         VwJ4NCHZ3OZj9GmBBjUZNqPXdE8QvZ6Nr+yNIZjmQOa6/kzOvhCmXUWyL2OJBrdX/V4z
+         bXLlG0eVbnKzuKhtuTouWdeimyO7p7eeKCnQnT0lIKXxg2KLlQvGmi8prsVw7i6m7oMe
+         AopQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O49svl5hJ5oi9Ex6IPLrJLltCuLctoPeu6fqaqxZkyQ=;
+        b=sWl9HdY8x9vIEDBxdfoy4e+jZR4vKR6uvL5it/jiwT1LikDSMGclPAZI/UDZeq3l72
+         O4j3TXG1rQTekziVBLz/zWt+e10BfmTIhbiUFAcJP724oW9HhdNle9J8eQ0yMUS61mf1
+         3Y9M4qfvwOQpd3RWLzUx6ubJsIGjhdck1Z7FD57+7LfTuwg5ss11eCaz8sPmLJFxHupb
+         GH5B7oQKk+HV0yZo93n4T9iDL76URox7HBHfbPwvSQBSh66YIJR5+IPeVkg2KXqtaW9Q
+         wXmztOdBjU6oQv1dbtlW70FRZKpzlsdhvnFZ6bKrt5F9+wtBcMFcjIDB5QRCpzwzXlNe
+         d9IQ==
+X-Gm-Message-State: AOAM532ITYTELRQ+R1OKtyKvOWySFdnpS3sxACl5bDExQaFfc0Azpy+a
+        TqRrrzTC15eOCpe4iw4rzcr+vFqLFDDKXy6+8f8=
+X-Google-Smtp-Source: ABdhPJx5yr6ZF9T6MC2DvhYv9EuqFpeOtEYxrDKLG0l1tWVJzRz+KRncWy1+yY17Tp8kHiJ4XiQs6y1Qw3+511+u5H8=
+X-Received: by 2002:a17:90a:8b16:: with SMTP id y22mr5676763pjn.191.1615312423130;
+ Tue, 09 Mar 2021 09:53:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210302023743.24123-1-xiyou.wangcong@gmail.com>
+ <20210302023743.24123-3-xiyou.wangcong@gmail.com> <CACAyw9-SjsNn4_J1KDXuFh1nd9Hr-Mo+=7S-kVtooJwdi1fodQ@mail.gmail.com>
+ <CAM_iQpXqE9qJ=+zKA6H1Rq=KKgm8LZ=p=ZtvrrH+hfSrTg+zxw@mail.gmail.com>
+ <CAM_iQpXXUv1FV8DQ85a2fs08JCfKHHt-fAWYbV0TTWmwUZ-K5Q@mail.gmail.com>
+ <6042cc5f4f65a_135da20824@john-XPS-13-9370.notmuch> <CAM_iQpUr7cvuXXdtYN9_MQPYy_Tfi88fBGSo3c8RRpMFBr55Og@mail.gmail.com>
+ <6042e114a1c9e_135da20839@john-XPS-13-9370.notmuch>
+In-Reply-To: <6042e114a1c9e_135da20839@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 9 Mar 2021 09:53:31 -0800
+Message-ID: <CAM_iQpV5vJn5ORbhodinEYP7vV9tGbXwDN2Nw+TLqUNnp5ENcg@mail.gmail.com>
+Subject: Re: [Patch bpf-next v2 2/9] sock: introduce sk_prot->update_proto()
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  9 Mar 2021 12:43:50 +0800
-Tony Lu <tonylu@linux.alibaba.com> wrote:
-
-> There are lots of net namespaces on the host runs containers like k8s.
-> It is very common to see the same interface names among different net
-> namespaces, such as eth0. It is not possible to distinguish them without
-> net namespace inode.
-> 
-> This adds net namespace inode for all net_dev events, help us
-> distinguish between different net devices.
-> 
-> Output:
->   <idle>-0       [006] ..s.   133.306989: net_dev_xmit: net_inum=4026531992 dev=eth0 skbaddr=0000000011a87c68 len=54 rc=0
-> 
-> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-> ---
->  include/trace/events/net.h | 35 +++++++++++++++++++++++++----------
->  1 file changed, 25 insertions(+), 10 deletions(-)
-> 
-> diff --git a/include/trace/events/net.h b/include/trace/events/net.h
-> index 2399073c3afc..a52f90d83411 100644
-> --- a/include/trace/events/net.h
-> +++ b/include/trace/events/net.h
-> @@ -35,6 +35,7 @@ TRACE_EVENT(net_dev_start_xmit,
->  		__field(	u16,			gso_size	)
->  		__field(	u16,			gso_segs	)
->  		__field(	u16,			gso_type	)
-> +		__field(	unsigned int,		net_inum	)
->  	),
-
-This patch made me take a look at the net_dev_start_xmit trace event, and I
-see it's very "holy". That is, it has lots of holes in the structure.
-
-	TP_STRUCT__entry(
-		__string(	name,			dev->name	)
-		__field(	u16,			queue_mapping	)
-		__field(	const void *,		skbaddr		)
-		__field(	bool,			vlan_tagged	)
-		__field(	u16,			vlan_proto	)
-		__field(	u16,			vlan_tci	)
-		__field(	u16,			protocol	)
-		__field(	u8,			ip_summed	)
-		__field(	unsigned int,		len		)
-		__field(	unsigned int,		data_len	)
-		__field(	int,			network_offset	)
-		__field(	bool,			transport_offset_valid)
-		__field(	int,			transport_offset)
-		__field(	u8,			tx_flags	)
-		__field(	u16,			gso_size	)
-		__field(	u16,			gso_segs	)
-		__field(	u16,			gso_type	)
-		__field(	unsigned int,		net_inum	)
-	),
-
-If you look at /sys/kernel/tracing/events/net/net_dev_start_xmit/format
-
-name: net_dev_start_xmit
-ID: 1581
-format:
-	field:unsigned short common_type;	offset:0;	size:2;	signed:0;
-	field:unsigned char common_flags;	offset:2;	size:1;	signed:0;
-	field:unsigned char common_preempt_count;	offset:3;	size:1;	signed:0;
-	field:int common_pid;	offset:4;	size:4;	signed:1;
-
-	field:__data_loc char[] name;	offset:8;	size:4;	signed:1;
-	field:u16 queue_mapping;	offset:12;	size:2;	signed:0;
-	field:const void * skbaddr;	offset:16;	size:8;	signed:0;
-
-Notice, queue_mapping is 2 bytes at offset 12 (ends at offset 14), but
-skbaddr starts at offset 16. That means there's two bytes wasted.
-
-	field:bool vlan_tagged;	offset:24;	size:1;	signed:0;
-	field:u16 vlan_proto;	offset:26;	size:2;	signed:0;
-
-Another byte missing above (24 + 1 != 26)
-
-	field:u16 vlan_tci;	offset:28;	size:2;	signed:0;
-	field:u16 protocol;	offset:30;	size:2;	signed:0;
-	field:u8 ip_summed;	offset:32;	size:1;	signed:0;
-	field:unsigned int len;	offset:36;	size:4;	signed:0;
-
-Again another three bytes missing (32 + 1 != 36)
-
-	field:unsigned int data_len;	offset:40;	size:4;	signed:0;
-	field:int network_offset;	offset:44;	size:4;	signed:1;
-	field:bool transport_offset_valid;	offset:48;	size:1;	signed:0;
-	field:int transport_offset;	offset:52;	size:4;	signed:1;
-
-Again, another 3 bytes missing (48 + 1 != 52)
-
-	field:u8 tx_flags;	offset:56;	size:1;	signed:0;
-	field:u16 gso_size;	offset:58;	size:2;	signed:0;
-
-Another byte missing (56 + 1 != 58)
-
-	field:u16 gso_segs;	offset:60;	size:2;	signed:0;	
-	field:u16 gso_type;	offset:62;	size:2;	signed:0;
-	field:unsigned int net_inum;	offset:64;	size:4;	signed:0;
-
-The above shows 10 bytes wasted for this event.
-
-The order of the fields is important. Don't worry about breaking API by
-fixing it. The parsing code uses this output to find where the binary data
-is.
-
-Hmm, I should write a script that reads all the format files and point out
-areas that have holes in it.
-
-I haven't looked at the other trace events, but they may all have the same
-issues.
-
--- Steve
-
-
-
->  
->  	TP_fast_assign(
-> @@ -56,10 +57,12 @@ TRACE_EVENT(net_dev_start_xmit,
->  		__entry->gso_size = skb_shinfo(skb)->gso_size;
->  		__entry->gso_segs = skb_shinfo(skb)->gso_segs;
->  		__entry->gso_type = skb_shinfo(skb)->gso_type;
-> +		__entry->net_inum = dev_net(skb->dev)->ns.inum;
->  	),
->  
+On Fri, Mar 5, 2021 at 5:55 PM John Fastabend <john.fastabend@gmail.com> wrote:
 >
+> Cong Wang wrote:
+> > On Fri, Mar 5, 2021 at 4:27 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > >
+> > > Cong Wang wrote:
+> > > > On Tue, Mar 2, 2021 at 10:23 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > > >
+> > > > > On Tue, Mar 2, 2021 at 8:22 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> > > > > >
+> > > > > > On Tue, 2 Mar 2021 at 02:37, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > > > >
+> > > > > > ...
+> > > > > > >  static inline void sk_psock_restore_proto(struct sock *sk,
+> > > > > > >                                           struct sk_psock *psock)
+> > > > > > >  {
+> > > > > > >         sk->sk_prot->unhash = psock->saved_unhash;
+> > > > > >
+> > > > > > Not related to your patch set, but why do an extra restore of
+> > > > > > sk_prot->unhash here? At this point sk->sk_prot is one of our tcp_bpf
+> > > > > > / udp_bpf protos, so overwriting that seems wrong?
+> > >
+> > > "extra"? restore_proto should only be called when the psock ref count
+> > > is zero and we need to transition back to the original socks proto
+> > > handlers. To trigger this we can simply delete a sock from the map.
+> > > In the case where we are deleting the psock overwriting the tcp_bpf
+> > > protos is exactly what we want.?
+> >
+> > Why do you want to overwrite tcp_bpf_prots->unhash? Overwriting
+> > tcp_bpf_prots is correct, but overwriting tcp_bpf_prots->unhash is not.
+> > Because once you overwrite it, the next time you use it to replace
+> > sk->sk_prot, it would be a different one rather than sock_map_unhash():
+> >
+> > // tcp_bpf_prots->unhash == sock_map_unhash
+> > sk_psock_restore_proto();
+> > // Now  tcp_bpf_prots->unhash is inet_unhash
+> > ...
+> > sk_psock_update_proto();
+> > // sk->sk_proto is now tcp_bpf_prots again,
+> > // so its ->unhash now is inet_unhash
+> > // but it should be sock_map_unhash here
+>
+> Right, we can fix this on the TLS side. I'll push a fix shortly.
+
+Are you still working on this? If kTLS still needs it, then we can
+have something like this:
+
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 8edbbf5f2f93..5eb617df7f48 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -349,8 +349,8 @@ static inline void sk_psock_update_proto(struct sock *sk,
+ static inline void sk_psock_restore_proto(struct sock *sk,
+                                          struct sk_psock *psock)
+ {
+-       sk->sk_prot->unhash = psock->saved_unhash;
+        if (inet_csk_has_ulp(sk)) {
++               sk->sk_prot->unhash = psock->saved_unhash;
+                tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
+        } else {
+                sk->sk_write_space = psock->saved_write_space;
+
+
+Thanks.
