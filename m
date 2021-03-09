@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F06DC332122
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 09:46:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6077A332126
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 09:46:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231326AbhCIIqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 03:46:19 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:51468 "EHLO
+        id S231376AbhCIIqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 03:46:23 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:51322 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230424AbhCIIpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 03:45:42 -0500
-Message-Id: <20210309084242.313899703@linutronix.de>
+        with ESMTP id S230449AbhCIIpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 03:45:43 -0500
+Message-Id: <20210309084242.415583839@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1615279541;
+        s=2020; t=1615279542;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=l6Q3W/LryXAjvWJbzAW7nw1Byy8ZW+Ak6BqUHfGdIYA=;
-        b=wkfrvYWdeSxVkZZvGJrvJ5doa1FQOYEdrs9XtXy+47hkZr79UvWY+m+G9akaJQslI0Hptg
-        sYnBZXRXHiw7V+qHXT2/S2jvkbUf9V5/ePXCILMMjFH3RnIgn2E2s1uSQJfYZt1fCK1XtD
-        Of9D8bk7Jn0jf6Vpiom/NscjyJnL7uIE/s/W4ZKi2PExELJU0oOnY9lQc2U0/hwoX2RYTN
-        aHrp25gQZLqCU9Nj3Xq0qHr8+J9S3Ya78w107pmK4K3X42rqInFgO/e7lGS2qOKPcIcw0w
-        dw82CAulutJ4Psg1LyI6T7H3JYhWeQ1K6QVyGJzeEaDxAXlGa69vFi6ASruCrg==
+        bh=QGpDfJMmIlACx05EM2bvuZB38xRW2f8VO628eoWh8rs=;
+        b=ZPPTU832YYY3DB5bNt/1hbd+LTin0b21UuB+bOwFJWUlHhEek9cGKByRTNzYAr7Snrynx8
+        Q3cQeFv1TdHNsWclb9ML6GsTk0XnBu66XRnJx0xKJAa2FsfJgB9aemHbcfMOHByQXJ+5mz
+        pfgIw57fa0RqtWjPq4sbjsTIS9LG23r5sUeQxkSOP9i622HZ7aIyW9FwO+bQXhcOF2Tl2F
+        uM4ewrlYRxcuEJOen8YYySETwpa5AhmuSH/p9pCuxzUGwqryk9YIHkJpFnKwan99X6M6dY
+        tqy+gR5bYO7qMlT8IhX/xBDxEOtIt8+7gkkhMktGDDcLjXmcG0oopYKufm+wSQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1615279541;
+        s=2020e; t=1615279542;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=l6Q3W/LryXAjvWJbzAW7nw1Byy8ZW+Ak6BqUHfGdIYA=;
-        b=DTmNItlbUCzhKqosxEh/VQS7S4RBz18lFKbgeCay+vE0IyWWX0E4N9MzEuBG8k5h2jqMWK
-        HqURayVmIpwdfoCg==
-Date:   Tue, 09 Mar 2021 09:42:13 +0100
+        bh=QGpDfJMmIlACx05EM2bvuZB38xRW2f8VO628eoWh8rs=;
+        b=QPBa77aA1llDmSjFe4gs4pYWyd/5xnN8oPYCQFBpl1rPtJDQokKJpFiaqMjegedA/WihG9
+        gtjUJGH5B1Kd6iCQ==
+Date:   Tue, 09 Mar 2021 09:42:14 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Frederic Weisbecker <frederic@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        ath9k-devel@qca.qualcomm.com, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
         Peter Zijlstra <peterz@infradead.org>,
         Denis Kirjanov <kda@linux-powerpc.org>,
-        Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath9k-devel@qca.qualcomm.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org,
         "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
         Stephen Hemminger <sthemmin@microsoft.com>,
@@ -55,7 +55,8 @@ Cc:     Frederic Weisbecker <frederic@kernel.org>,
         linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
         Stefan Richter <stefanr@s5r6.in-berlin.de>,
         linux1394-devel@lists.sourceforge.net
-Subject: [patch 10/14] ath9k: Use tasklet_disable_in_atomic()
+Subject: [patch 11/14] atm: eni: Use tasklet_disable_in_atomic() in the send()
+ callback
 References: <20210309084203.995862150@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -66,39 +67,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-All callers of ath9k_beacon_ensure_primary_slot() are preemptible /
-acquire a mutex except for this callchain:
+The atmdev_ops::send callback which calls tasklet_disable() is invoked with
+bottom halfs disabled from net_device_ops::ndo_start_xmit(). All other
+invocations of tasklet_disable() in this driver happen in preemptible
+context.
 
-  spin_lock_bh(&sc->sc_pcu_lock);
-  ath_complete_reset()
-  -> ath9k_calculate_summary_state()
-     -> ath9k_beacon_ensure_primary_slot()
-
-It's unclear how that can be distangled, so use tasklet_disable_in_atomic()
-for now. This allows tasklet_disable() to become sleepable once the
-remaining atomic users are cleaned up.
+Change the send() call to use tasklet_disable_in_atomic() which allows
+tasklet_disable() to be made sleepable once the remaining atomic context
+usage sites are cleaned up.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: ath9k-devel@qca.qualcomm.com
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
+Cc: Chas Williams <3chas3@gmail.com>
+Cc: linux-atm-general@lists.sourceforge.net
 Cc: netdev@vger.kernel.org
 ---
- drivers/net/wireless/ath/ath9k/beacon.c |    2 +-
+ drivers/atm/eni.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/ath/ath9k/beacon.c
-+++ b/drivers/net/wireless/ath/ath9k/beacon.c
-@@ -251,7 +251,7 @@ void ath9k_beacon_ensure_primary_slot(st
- 	int first_slot = ATH_BCBUF;
- 	int slot;
- 
--	tasklet_disable(&sc->bcon_tasklet);
-+	tasklet_disable_in_atomic(&sc->bcon_tasklet);
- 
- 	/* Find first taken slot. */
- 	for (slot = 0; slot < ATH_BCBUF; slot++) {
+--- a/drivers/atm/eni.c
++++ b/drivers/atm/eni.c
+@@ -2054,7 +2054,7 @@ static int eni_send(struct atm_vcc *vcc,
+ 	}
+ 	submitted++;
+ 	ATM_SKB(skb)->vcc = vcc;
+-	tasklet_disable(&ENI_DEV(vcc->dev)->task);
++	tasklet_disable_in_atomic(&ENI_DEV(vcc->dev)->task);
+ 	res = do_tx(skb);
+ 	tasklet_enable(&ENI_DEV(vcc->dev)->task);
+ 	if (res == enq_ok) return 0;
 
