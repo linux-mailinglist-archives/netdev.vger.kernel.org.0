@@ -2,129 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC353321FA
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 10:30:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C5333220F
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 10:36:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbhCIJ3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 04:29:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52096 "EHLO mail.kernel.org"
+        id S229875AbhCIJgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 04:36:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53326 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229878AbhCIJ3Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Mar 2021 04:29:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EB48A65147;
-        Tue,  9 Mar 2021 09:29:23 +0000 (UTC)
+        id S229544AbhCIJf7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Mar 2021 04:35:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6859F6514A;
+        Tue,  9 Mar 2021 09:35:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1615282164;
-        bh=HFGmi8rzCAxBuPLkXLGdLa4BaBiywbkeurZcYob/UkU=;
+        s=korg; t=1615282559;
+        bh=5pFvOOvqI662JEp6sJpxhT5TSkcEIQojooEtA4imY+c=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=flktNeL7Xcd4MOIheBp0unULpR8hV4R7fKB4OBmDxHgJdmmGxjNmsTFgAZZmvz9qb
-         NSOBUgqZEYCl226cfL0VggRT0srtHq+iguRVXzBeUUkZuTN0fapG0LWdzVBxoGHfLP
-         nEPL3bQMKasdGxfXtk3a1vwxDF/GZBVH8ja2xY9E=
-Date:   Tue, 9 Mar 2021 10:29:21 +0100
+        b=0D1SjHDrV5Cy1lrg60HeYRc2dA+ZFChqgR6ZmC4w9ecoUfnIAmRi7q1crDCdNoCzF
+         jEcWbnnf34LaNpsttyZqnOCeZj7SaxW8snE7nyACukdvG8M3yIlSMqkDOghZIAjCdj
+         EOXbKLby99pLRLXEP8UmdzbCtGmcY3j0JklMHqqg=
+Date:   Tue, 9 Mar 2021 10:35:56 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Mike Ximing Chen <mike.ximing.chen@intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        arnd@arndb.de, dan.j.williams@intel.com,
-        pierre-louis.bossart@linux.intel.com,
-        Gage Eads <gage.eads@intel.com>
-Subject: Re: [PATCH v10 14/20] dlb: add start domain ioctl
-Message-ID: <YEc/8RxroJzrN3xm@kroah.com>
-References: <20210210175423.1873-1-mike.ximing.chen@intel.com>
- <20210210175423.1873-15-mike.ximing.chen@intel.com>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     kuba@kernel.org, davem@davemloft.net,
+        linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
+        hemantk@codeaurora.org
+Subject: Re: [PATCH net-next v3] net: Add Qcom WWAN control driver
+Message-ID: <YEdBfHAYkTGI8sE4@kroah.com>
+References: <1615279336-27227-1-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210210175423.1873-15-mike.ximing.chen@intel.com>
+In-Reply-To: <1615279336-27227-1-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 11:54:17AM -0600, Mike Ximing Chen wrote:
-> Add ioctl to start a domain. Once a scheduling domain and its resources
-> have been configured, this ioctl is called to allow the domain's ports to
-> begin enqueueing to the device. Once started, the domain's resources cannot
-> be configured again until after the domain is reset.
+On Tue, Mar 09, 2021 at 09:42:16AM +0100, Loic Poulain wrote:
+> The MHI WWWAN control driver allows MHI Qcom based modems to expose
+> different modem control protocols/ports to userspace, so that userspace
+> modem tools or daemon (e.g. ModemManager) can control WWAN config
+> and state (APN config, SMS, provider selection...). A Qcom based
+> modem can expose one or several of the following protocols:
+> - AT: Well known AT commands interactive protocol (microcom, minicom...)
+> - MBIM: Mobile Broadband Interface Model (libmbim, mbimcli)
+> - QMI: Qcom MSM/Modem Interface (libqmi, qmicli)
+> - QCDM: Qcom Modem diagnostic interface (libqcdm)
+> - FIREHOSE: XML-based protocol for Modem firmware management
+>         (qmi-firmware-update)
 > 
-> This ioctl instructs the DLB device to start load-balancing operations.
-> It corresponds to rte_event_dev_start() function in DPDK' eventdev library.
+> The different interfaces are exposed as character devices, in the same
+> way as for USB modem variants (known as modem 'ports').
 > 
-> Signed-off-by: Gage Eads <gage.eads@intel.com>
-> Signed-off-by: Mike Ximing Chen <mike.ximing.chen@intel.com>
-> Reviewed-by: Björn Töpel <bjorn.topel@intel.com>
-> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> Note that this patch is mostly a rework of the earlier MHI UCI
+> tentative that was a generic interface for accessing MHI bus from
+> userspace. As suggested, this new version is WWAN specific and is
+> dedicated to only expose channels used for controlling a modem, and
+> for which related opensource user support exist. Other MHI channels
+> not fitting the requirements will request either to be plugged to
+> the right Linux subsystem (when available) or to be discussed as a
+> new MHI driver (e.g AI accelerator, WiFi debug channels, etc...).
+> 
+> This change introduces a new drivers/net/wwan directory, aiming to
+> be the common place for WWAN drivers.
+> 
+> Co-developed-by: Hemant Kumar <hemantk@codeaurora.org>
+> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 > ---
->  drivers/misc/dlb/dlb_ioctl.c    |   3 +
->  drivers/misc/dlb/dlb_main.h     |   4 ++
->  drivers/misc/dlb/dlb_pf_ops.c   |   9 +++
->  drivers/misc/dlb/dlb_resource.c | 116 ++++++++++++++++++++++++++++++++
->  drivers/misc/dlb/dlb_resource.h |   4 ++
->  include/uapi/linux/dlb.h        |  22 ++++++
->  6 files changed, 158 insertions(+)
+>  v2: update copyright (2021)
+>  v3: Move driver to dedicated drivers/net/wwan directory
 > 
-> diff --git a/drivers/misc/dlb/dlb_ioctl.c b/drivers/misc/dlb/dlb_ioctl.c
-> index 6a311b969643..9b05344f03c8 100644
-> --- a/drivers/misc/dlb/dlb_ioctl.c
-> +++ b/drivers/misc/dlb/dlb_ioctl.c
-> @@ -51,6 +51,7 @@ DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(create_ldb_queue)
->  DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(create_dir_queue)
->  DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(get_ldb_queue_depth)
->  DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(get_dir_queue_depth)
-> +DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(start_domain)
+>  drivers/net/Kconfig              |   2 +
+>  drivers/net/Makefile             |   1 +
+>  drivers/net/wwan/Kconfig         |  26 ++
+>  drivers/net/wwan/Makefile        |   6 +
+>  drivers/net/wwan/mhi_wwan_ctrl.c | 559 +++++++++++++++++++++++++++++++++++++++
+>  5 files changed, 594 insertions(+)
+>  create mode 100644 drivers/net/wwan/Kconfig
+>  create mode 100644 drivers/net/wwan/Makefile
+>  create mode 100644 drivers/net/wwan/mhi_wwan_ctrl.c
+> 
+> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+> index 1ebb4b9..28b18f2 100644
+> --- a/drivers/net/Kconfig
+> +++ b/drivers/net/Kconfig
+> @@ -501,6 +501,8 @@ source "drivers/net/wan/Kconfig"
 >  
->  /*
->   * Port creation ioctls don't use the callback template macro.
-> @@ -322,6 +323,8 @@ long dlb_domain_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
->  		return dlb_domain_ioctl_get_dir_port_pp_fd(dlb, dom, arg);
->  	case DLB_IOC_GET_DIR_PORT_CQ_FD:
->  		return dlb_domain_ioctl_get_dir_port_cq_fd(dlb, dom, arg);
-> +	case DLB_IOC_START_DOMAIN:
-> +		return dlb_domain_ioctl_start_domain(dlb, dom, arg);
->  	default:
->  		return -ENOTTY;
->  	}
-> diff --git a/drivers/misc/dlb/dlb_main.h b/drivers/misc/dlb/dlb_main.h
-> index 477974e1a178..2f3096a45b1e 100644
-> --- a/drivers/misc/dlb/dlb_main.h
-> +++ b/drivers/misc/dlb/dlb_main.h
-> @@ -63,6 +63,10 @@ struct dlb_device_ops {
->  			       struct dlb_create_dir_port_args *args,
->  			       uintptr_t cq_dma_base,
->  			       struct dlb_cmd_response *resp);
-> +	int (*start_domain)(struct dlb_hw *hw,
-> +			    u32 domain_id,
-> +			    struct dlb_start_domain_args *args,
-> +			    struct dlb_cmd_response *resp);
->  	int (*get_num_resources)(struct dlb_hw *hw,
->  				 struct dlb_get_num_resources_args *args);
->  	int (*reset_domain)(struct dlb_hw *hw, u32 domain_id);
-> diff --git a/drivers/misc/dlb/dlb_pf_ops.c b/drivers/misc/dlb/dlb_pf_ops.c
-> index 02a188aa5a60..ce9d29b94a55 100644
-> --- a/drivers/misc/dlb/dlb_pf_ops.c
-> +++ b/drivers/misc/dlb/dlb_pf_ops.c
-> @@ -160,6 +160,14 @@ dlb_pf_create_dir_port(struct dlb_hw *hw, u32 id,
->  				       resp, false, 0);
->  }
+>  source "drivers/net/ieee802154/Kconfig"
 >  
-> +static int
-> +dlb_pf_start_domain(struct dlb_hw *hw, u32 id,
-> +		    struct dlb_start_domain_args *args,
-> +		    struct dlb_cmd_response *resp)
-> +{
-> +	return dlb_hw_start_domain(hw, id, args, resp, false, 0);
-> +}
+> +source "drivers/net/wwan/Kconfig"
 > +
->  static int dlb_pf_get_num_resources(struct dlb_hw *hw,
->  				    struct dlb_get_num_resources_args *args)
->  {
-> @@ -232,6 +240,7 @@ struct dlb_device_ops dlb_pf_ops = {
->  	.create_dir_queue = dlb_pf_create_dir_queue,
->  	.create_ldb_port = dlb_pf_create_ldb_port,
->  	.create_dir_port = dlb_pf_create_dir_port,
-> +	.start_domain = dlb_pf_start_domain,
+>  config XEN_NETDEV_FRONTEND
+>  	tristate "Xen network device frontend driver"
+>  	depends on XEN
+> diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+> index f4990ff..5da6424 100644
+> --- a/drivers/net/Makefile
+> +++ b/drivers/net/Makefile
+> @@ -68,6 +68,7 @@ obj-$(CONFIG_SUNGEM_PHY) += sungem_phy.o
+>  obj-$(CONFIG_WAN) += wan/
+>  obj-$(CONFIG_WLAN) += wireless/
+>  obj-$(CONFIG_IEEE802154) += ieee802154/
+> +obj-$(CONFIG_WWAN) += wwan/
+>  
+>  obj-$(CONFIG_VMXNET3) += vmxnet3/
+>  obj-$(CONFIG_XEN_NETDEV_FRONTEND) += xen-netfront.o
+> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
+> new file mode 100644
+> index 0000000..643aa10
+> --- /dev/null
+> +++ b/drivers/net/wwan/Kconfig
+> @@ -0,0 +1,26 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +#
+> +# Wireless WAN device configuration
+> +#
+> +
+> +menuconfig WWAN
+> +       bool "Wireless WAN"
+> +       help
+> +         This section contains Wireless WAN driver configurations.
+> +
+> +if WWAN
+> +
+> +config MHI_WWAN_CTRL
+> +	tristate "MHI WWAN control driver for QCOM based PCIe modems"
+> +	depends on MHI_BUS
+> +	help
+> +	  MHI WWAN CTRL allow QCOM based PCIe modems to expose different modem
+> +	  control protocols/ports to userspace, including AT, MBIM, QMI, DIAG
+> +	  and FIREHOSE. These protocols can be accessed directly from userspace
+> +	  (e.g. AT commands) or via libraries/tools (e.g. libmbim, libqmi,
+> +	  libqcdm...).
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called mhi_wwan_ctrl.
+> +
+> +endif # WWAN
+> diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
+> new file mode 100644
+> index 0000000..994a80b
+> --- /dev/null
+> +++ b/drivers/net/wwan/Makefile
+> @@ -0,0 +1,6 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# Makefile for the Linux WWAN device drivers.
+> +#
+> +
+> +obj-$(CONFIG_MHI_WWAN_CTRL) += mhi_wwan_ctrl.o
+> diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
+> new file mode 100644
+> index 0000000..3904cd0
+> --- /dev/null
+> +++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+> @@ -0,0 +1,559 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.*/
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/mhi.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/poll.h>
+> +
+> +#define MHI_WWAN_CTRL_DRIVER_NAME "mhi_wwan_ctrl"
 
-Why do you have a "callback" when you only ever call one function?  Why
-is that needed at all?
+So a driver name is the same as the class that is being created?
+
+That feels wrong, shouldn't the "class" be wwan?
+
+> +#define MHI_WWAN_CTRL_MAX_MINORS 128
+
+Why so many?
 
 thanks,
 
