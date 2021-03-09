@@ -2,80 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A682C332CFB
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:14:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA977332D56
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:33:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231646AbhCIRNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 12:13:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
+        id S231410AbhCIRdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 12:33:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231522AbhCIRNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:13:09 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DBEAC06174A;
-        Tue,  9 Mar 2021 09:13:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5U491TQdNsjhbIYsUSmgNKAf6MVmCm1WHLEIdhpS/JU=; b=gPUvkAbBbisJ6IK3aBstPSkfYW
-        LukBQjq/CPDnD0C7fLKVYWPdq9Iiad/BOrw2QSQfrb6a4muKVZ7KrqbRUBTR+lMUA+KCNg3xdtlQt
-        sAGf6WDADgoDIcO5wmX6UkX1Vtz2XQLXRFYZef49Hn4NcdwbVdoz428WnEGx+0zTA6zvcLTpbvHjG
-        JJHVj+uGRN8OrHg62WGpB64yAOFpCqCyhmX2wvRrNOMuWd4IqrETREBWRWrMGnYY5TilXWe3EhFwK
-        goyU/0YkSUWwsxfFfzhkhX6/4xLVqLCC2FMOQ8KfyjAGZ0OS7LGeC2XNoorKDvehK520r4/YMpWxB
-        UAOpD0Yg==;
-Received: from hch by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lJfuI-000q0x-T5; Tue, 09 Mar 2021 17:12:39 +0000
-Date:   Tue, 9 Mar 2021 17:12:30 +0000
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>
-Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
-Message-ID: <20210309171230.GA198878@infradead.org>
-References: <20210301161200.18852-1-mgorman@techsingularity.net>
- <20210301161200.18852-3-mgorman@techsingularity.net>
+        with ESMTP id S230303AbhCIRc6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:32:58 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8899AC06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 09:32:58 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id c131so14778711ybf.7
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 09:32:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mC6GSB0uid26yRhPck2cvVLewHW5/W5pfsGZ0mx0qJg=;
+        b=a9IZV448IuDtvvuFPP1qVAio9cXYpLARi7lyW+S4reK+bI1OxU/Am9wi16v4AcJMVM
+         utH6e0uV34IoEFBIOiQIgmutB6BkNzYgfQ4OtTxorON5pgy7td4OiU3Qbb/MT3dakLy7
+         JIucSpG+D/11ICb9puq4bwkCwjslsb7Q5kUbbtKK1j5zFezxrLCTzU24n/t8ESiM3gvm
+         5uVsJCwNuKrpKg1bNtQnP5KUvJ8OfB6To9xubthAnwjTRgl1XNWBtGbouaRdymJ6w5B4
+         AuCicuAnv9blnqN00wYnp23ypDFykft55Cy4RTKOwEHqqJ+0b6K8wvBqiy7/b7Etbc8a
+         xxdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mC6GSB0uid26yRhPck2cvVLewHW5/W5pfsGZ0mx0qJg=;
+        b=p9qRqzXDjAJoZDaijs0h340VQO9IhFB1snDtGHt9vSl71+QBzlYOwGv+843tKFeV9D
+         3XMEir9kpIkLJ9lmfXSjQlgWZMGkatqbC8Kq70YM3/pmgyHBFCD8/mfA/4tDi3kWDq7x
+         5l+MWcEg1g6pkgpMvQT9+z66EGmc2Yd1/YGLVW+axH4LYbgCmxGjY2bVvaod4NYPoNJW
+         8cbXAm3li6JAJevvqwFZxNe61KRfelFoLLmbVhAMtVbsS8kniQRn4+54O1YgJdY/9MRx
+         CxVF+IPTeVCyJcrkztOCR5Kva5tVZjLNKu/lE73Xfr8CrZLNCpM/sqyJxTFsCK18IJQl
+         /MJg==
+X-Gm-Message-State: AOAM530zw9NvY3fireRpRttYUAh3sPL78DQrkLo3wSPr7kwPkDJpfZZv
+        FpmgfRmu8PcStK8hmdjs7pGa9WlD8ltMuqg1vyYRgA==
+X-Google-Smtp-Source: ABdhPJwHiV95n3FEBk1aXtSLPl643W9UqaemHjqNg+fL0Nm3QWdTE/3S1a84VE8r1kqtf8oRrHmhTb8d6cDa/mkpDzw=
+X-Received: by 2002:a25:2d59:: with SMTP id s25mr43733317ybe.187.1615311177509;
+ Tue, 09 Mar 2021 09:32:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210301161200.18852-3-mgorman@techsingularity.net>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+References: <20210308192113.2721435-1-weiwan@google.com> <0d18e982-93de-5b88-b3a5-efb6ebd200f2@gmail.com>
+ <YEcukkO7bsKYVqEZ@shredder.lan>
+In-Reply-To: <YEcukkO7bsKYVqEZ@shredder.lan>
+From:   Wei Wang <weiwan@google.com>
+Date:   Tue, 9 Mar 2021 09:32:47 -0800
+Message-ID: <CAEA6p_C8TRWsMCvs2x7nW9TYUwEyBrL46Li3oB-HjNwUDjNcwQ@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6: fix suspecious RCU usage warning
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Would vmalloc be another good user of this API? 
+On Tue, Mar 9, 2021 at 12:15 AM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Mon, Mar 08, 2021 at 07:47:31PM -0700, David Ahern wrote:
+> > [ cc Ido and Petr ]
+> >
+> > On 3/8/21 12:21 PM, Wei Wang wrote:
+> > > diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+> > > index 7bc057aee40b..48956b144689 100644
+> > > --- a/include/net/nexthop.h
+> > > +++ b/include/net/nexthop.h
+> > > @@ -410,31 +410,39 @@ static inline struct fib_nh *fib_info_nh(struct fib_info *fi, int nhsel)
+> > >  int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
+> > >                    struct netlink_ext_ack *extack);
+> > >
+> > > -static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
+> > > +static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh,
+> > > +                                         bool bh_disabled)
+> >
+> > Hi Wei: I would prefer not to have a second argument to nexthop_fib6_nh
+> > for 1 code path, and a control path at that.
+> >
+> > >  {
+> > >     struct nh_info *nhi;
+> > >
+> > >     if (nh->is_group) {
+> > >             struct nh_group *nh_grp;
+> > >
+> > > -           nh_grp = rcu_dereference_rtnl(nh->nh_grp);
+> > > +           if (bh_disabled)
+> > > +                   nh_grp = rcu_dereference_bh_rtnl(nh->nh_grp);
+> > > +           else
+> > > +                   nh_grp = rcu_dereference_rtnl(nh->nh_grp);
+> > >             nh = nexthop_mpath_select(nh_grp, 0);
+> > >             if (!nh)
+> > >                     return NULL;
+> > >     }
+> > >
+> > > -   nhi = rcu_dereference_rtnl(nh->nh_info);
+> > > +   if (bh_disabled)
+> > > +           nhi = rcu_dereference_bh_rtnl(nh->nh_info);
+> > > +   else
+> > > +           nhi = rcu_dereference_rtnl(nh->nh_info);
+> > >     if (nhi->family == AF_INET6)
+> > >             return &nhi->fib6_nh;
+> > >
+> > >     return NULL;
+> > >  }
+> > >
+> >
+> > I am wary of duplicating code, but this helper is simple enough that it
+> > should be ok with proper documentation.
+> >
+> > Ido/Petr: I think your resilient hashing patch set touches this helper.
+> > How ugly does it get to have a second version?
+>
+> It actually doesn't touch this helper. Looks fine to me:
 
-> +	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
-> +	if (!prepare_alloc_pages(gfp_mask, 0, preferred_nid, nodemask, &ac, &alloc_mask, &alloc_flags))
 
-This crazy long line is really hard to follow.
+Thanks David and Ido.
+To clarify, David, you suggest we add a separate function instead of
+adding an extra parameter, right?
 
-> +		return 0;
-> +	gfp_mask = alloc_mask;
+>
+>
+> diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+> index ba94868a21d5..6df9c12546fd 100644
+> --- a/include/net/nexthop.h
+> +++ b/include/net/nexthop.h
+> @@ -496,6 +496,26 @@ static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
+>         return NULL;
+>  }
+>
+> +static inline struct fib6_nh *nexthop_fib6_nh_bh(struct nexthop *nh)
+> +{
+> +       struct nh_info *nhi;
 > +
-> +	/* Find an allowed local zone that meets the high watermark. */
-> +	for_each_zone_zonelist_nodemask(zone, z, ac.zonelist, ac.highest_zoneidx, ac.nodemask) {
-
-Same here.
-
-> +		unsigned long mark;
+> +       if (nh->is_group) {
+> +               struct nh_group *nh_grp;
 > +
-> +		if (cpusets_enabled() && (alloc_flags & ALLOC_CPUSET) &&
-> +		    !__cpuset_zone_allowed(zone, gfp_mask)) {
-> +			continue;
-> +		}
-
-No need for the curly braces.
-
->  	}
->  
-> -	gfp_mask &= gfp_allowed_mask;
-> -	alloc_mask = gfp_mask;
-
-Is this change intentional?
+> +               nh_grp = rcu_dereference_bh(nh->nh_grp);
+> +               nh = nexthop_mpath_select(nh_grp, 0);
+> +               if (!nh)
+> +                       return NULL;
+> +       }
+> +
+> +       nhi = rcu_dereference_bh(nh->nh_info);
+> +       if (nhi->family == AF_INET6)
+> +               return &nhi->fib6_nh;
+> +
+> +       return NULL;
+> +}
+> +
+>  static inline struct net_device *fib6_info_nh_dev(struct fib6_info *f6i)
+>  {
+>         struct fib6_nh *fib6_nh;
+> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+> index ef9d022e693f..679699e953f1 100644
+> --- a/net/ipv6/ip6_fib.c
+> +++ b/net/ipv6/ip6_fib.c
+> @@ -2486,7 +2486,7 @@ static int ipv6_route_native_seq_show(struct seq_file *seq, void *v)
+>         const struct net_device *dev;
+>
+>         if (rt->nh)
+> -               fib6_nh = nexthop_fib6_nh(rt->nh);
+> +               fib6_nh = nexthop_fib6_nh_bh(rt->nh);
+>
+>         seq_printf(seq, "%pi6 %02x ", &rt->fib6_dst.addr, rt->fib6_dst.plen);
