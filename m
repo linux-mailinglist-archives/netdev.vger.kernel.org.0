@@ -2,124 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A23C331D21
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 03:48:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B48331D4A
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 04:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbhCICr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 21:47:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
+        id S230045AbhCIDEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 22:04:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbhCICre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 21:47:34 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57024C06174A
-        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 18:47:34 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id e7so10824029ile.7
-        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 18:47:34 -0800 (PST)
+        with ESMTP id S229688AbhCIDEa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 22:04:30 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA87C06174A
+        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 19:04:29 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id d3so24534876lfg.10
+        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 19:04:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6uUJE1WeVsOHi3KGmU9QrNU7s/tFgygUoHaH+vDFSwo=;
-        b=h6umS0iRo1/tPR/9EUZDRU+krO+hNuoBFB2lZszxw6nOtc2JwhQ6KXX2aAF/864Bm8
-         3PBTF/kTWbpM1dEVySKglT+zFRn6L2oUrWJi4q2SIHLRHDQWxYrD+kNcKwwBAUtdcvcG
-         fQYuu36kcqZFX1sI08QEpjACHyoTm2AqSxFFsy5AjmPk+HUnGElISvnNM6IhRFpxjwc7
-         p0tUZ4ge5cMg6b27bo2lMrVosCT4uvHJSWSkAcOP/BZJaL0sERPdHwiapLPhaVFOlBdr
-         HoqhbI/1KBN8o9LnS8sZ9Pl9EdzObmnmkS1MieEc8rLHGU3ucRCjaY2XKSOir/kd7k4D
-         wlPg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jO15/awhroqxhgWC0DcldVkMjKJaQJqM/HacGSPP2jw=;
+        b=XgVeaU/YSyr9G9TDCLJTjZDUZgTJ7BdkqrrxjCNGQc/8S6rB4C3z/XTwUw39SMbNMd
+         12SXfztgxgap/4If0mZTENVkO6F82ZNyWeSJTSfNiBnIEVjhJ8vtXrvzIqRXy2MctUeT
+         sQ4GUpd+k8vFZvq5gRzko/dgbpZ16q6IN7BBH3dn+JkRhwwfoM9u6rO/mx710lYVXHam
+         D6ktTM28ZDA/JaS2vmloaRqjUIAUeWmKMoNFvwhMi+1M8oSaiAmEtaXl+CHzrpoOD0A8
+         lKe8VuZjF8Kfuj+JXMYkCGZXHtWPwMUD/YBGZBjeB8/fhJA2+zIg6lVnOAhEc6MgqLT4
+         +xuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6uUJE1WeVsOHi3KGmU9QrNU7s/tFgygUoHaH+vDFSwo=;
-        b=unWJCvjY/hY3MTBnBSxwVtehTy2F/0ObV23hTR7rcPgLnGr/K777E9EPhZAdxYdTIX
-         mkq0qm5QwKB/DsIZr2S+e25zNcIK2auCc2B1tZcwsB3O2BDqU8o0+LtxoOC4ww49H3aA
-         rgcrPeC+YVVU5lSCzEld7vF2PHDnWGNbOPINB9NV32/pc4wtVxqacpyMqyd37COSkOX1
-         swqjMxYU5ASkka2hI3D4ZSFnq8CvlClIlCeHbt27nSjFRPN8W7eR9vgvr/1rWX3t5aLE
-         uuHQpCbLgmE/uyzP9m+0/zF4eOwkgayyTFWazGluev+fUXqTihSWpcUfN4oQFsrx1EmH
-         HXlw==
-X-Gm-Message-State: AOAM532Sa2LLME40KkFpCBq/cBXlgtHq1s/YerfA+jubTkmdex5XUK95
-        VjsB4XyOLUqMrTAQxjzmZck=
-X-Google-Smtp-Source: ABdhPJxAOvSrjZFFMGbDw/kzfg5XFXqmx9pqiWCW0HCdecUksHsXYoOOeBUjBvnJyf3gu8HnytiRng==
-X-Received: by 2002:a92:dc01:: with SMTP id t1mr22576697iln.192.1615258053780;
-        Mon, 08 Mar 2021 18:47:33 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.40])
-        by smtp.googlemail.com with ESMTPSA id j12sm6811031ila.75.2021.03.08.18.47.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Mar 2021 18:47:33 -0800 (PST)
-Subject: Re: [PATCH net] ipv6: fix suspecious RCU usage warning
-To:     Wei Wang <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>
-Cc:     syzbot <syzkaller@googlegroups.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20210308192113.2721435-1-weiwan@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0d18e982-93de-5b88-b3a5-efb6ebd200f2@gmail.com>
-Date:   Mon, 8 Mar 2021 19:47:31 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jO15/awhroqxhgWC0DcldVkMjKJaQJqM/HacGSPP2jw=;
+        b=mF5uKA/Dvx36pIyS8R0SbLLEZibShaiM3KtY+tSKXu2/tSFhfdOY9RoNylH/JZ+YOw
+         6vbK+ULlzcSvJIw1HP/1/tvzoDVMJ6YzBV/Urb1QJiv9edX81TPTSGc4myWzQ3pNx476
+         cgE8ryC6Diic6cvLyybaqY+RSyrnSqdeTTQK3QV00C360Bj7tuU9YtsEdJNJP6DNtq9v
+         jWJ39zcO+BDRDJU/zosCASWIkMLYgbW/Lubd0t+uJ91ViETbLJIrsQStNjSmtJSj7Y1i
+         IWLKCzLjb1+mmgt42qwYVRQzCLRcchhbl5M/9eJOnjTdGKikcFZ6a74zADBF1UYzuWkv
+         JUYw==
+X-Gm-Message-State: AOAM532R2jc9JeOK0qR6oLA6vnCbQSnX4aZU5dR4P4T38gdbyuD19ED+
+        UDmnmzYC7zZTap+iDekBIXu63TZsYxTd77rvqqIAqBkauvd6/A==
+X-Google-Smtp-Source: ABdhPJwk/5HMWRI0J8btLKzBfQ3ZTMBgzOCabpNSsbHys5/oGe01fQvslrGZuS79zziNnei9VoRhCAe8Lbwt766nbwo=
+X-Received: by 2002:ac2:4292:: with SMTP id m18mr1502972lfh.430.1615259068418;
+ Mon, 08 Mar 2021 19:04:28 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210308192113.2721435-1-weiwan@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CANS1P8H8sDGUzQEh_LEFVi=6tUZzVxAty9_OKWAs4CU67wdLeg@mail.gmail.com>
+ <BY5PR12MB43226FF17791F6365812D028DC939@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CANS1P8E8uPpR+SN4Qs9so_3Lve3p2jxsRg_3Grg5JBK5m55=Tw@mail.gmail.com> <b026b2c8-fdd5-d0fc-f0a6-42aa7e9d26f8@gmail.com>
+In-Reply-To: <b026b2c8-fdd5-d0fc-f0a6-42aa7e9d26f8@gmail.com>
+From:   ze wang <wangze712@gmail.com>
+Date:   Tue, 9 Mar 2021 11:04:17 +0800
+Message-ID: <CANS1P8EHJ+ZSZT8MT43PzXH6bhZ6FVhrQ_sxxFWbWTvzyT+3rA@mail.gmail.com>
+Subject: Re: mlx5 sub function issue
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ cc Ido and Petr ]
+Hi David,
+      I can see that the variable settings are in effect=EF=BC=9A
+# mlxconfig -d b3:00.0 s PF_BAR2_ENABLE=3D0 PER_PF_NUM_SF=3D1 PF_SF_BAR_SIZ=
+E=3D8
+# mlxconfig -d b3:00.0 s PER_PF_NUM_SF=3D1 PF_TOTAL_SF=3D192 PF_SF_BAR_SIZE=
+=3D8
+# mlxconfig -d b3:00.1 s PER_PF_NUM_SF=3D1 PF_TOTAL_SF=3D192 PF_SF_BAR_SIZE=
+=3D8
 
-On 3/8/21 12:21 PM, Wei Wang wrote:
-> diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-> index 7bc057aee40b..48956b144689 100644
-> --- a/include/net/nexthop.h
-> +++ b/include/net/nexthop.h
-> @@ -410,31 +410,39 @@ static inline struct fib_nh *fib_info_nh(struct fib_info *fi, int nhsel)
->  int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
->  		       struct netlink_ext_ack *extack);
->  
-> -static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
-> +static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh,
-> +					      bool bh_disabled)
+after cold reboot:
+# mlxconfig -d b3:00.0 q|grep BAR
+PF_BAR2_ENABLE                           False(0)
+# mlxconfig -d b3:00.0 q|grep SF
+Description:    ConnectX-6 Dx EN adapter card; 25GbE; Dual-port SFP28;
+PCIe 4.0 x8; Crypto and Secure Boot
+         PER_PF_NUM_SF                   True(1)
+         PF_TOTAL_SF                         192
+         PF_SF_BAR_SIZE                   8
+# mlxconfig -d b3:00.1 q|grep SF
+Description:    ConnectX-6 Dx EN adapter card; 25GbE; Dual-port SFP28;
+PCIe 4.0 x8; Crypto and Secure Boot
+         PER_PF_NUM_SF                  True(1)
+         PF_TOTAL_SF                        192
+         PF_SF_BAR_SIZE                  8
 
-Hi Wei: I would prefer not to have a second argument to nexthop_fib6_nh
-for 1 code path, and a control path at that.
+I tried to create as many SF as possible, then I found each PF can
+create up to 132 SFs. I want to confirm the maximum number of SFs that
+CX6 can create. If the mft version is correct, can I think that CX6
+can create up to 132 SFs per PF?
 
->  {
->  	struct nh_info *nhi;
->  
->  	if (nh->is_group) {
->  		struct nh_group *nh_grp;
->  
-> -		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-> +		if (bh_disabled)
-> +			nh_grp = rcu_dereference_bh_rtnl(nh->nh_grp);
-> +		else
-> +			nh_grp = rcu_dereference_rtnl(nh->nh_grp);
->  		nh = nexthop_mpath_select(nh_grp, 0);
->  		if (!nh)
->  			return NULL;
->  	}
->  
-> -	nhi = rcu_dereference_rtnl(nh->nh_info);
-> +	if (bh_disabled)
-> +		nhi = rcu_dereference_bh_rtnl(nh->nh_info);
-> +	else
-> +		nhi = rcu_dereference_rtnl(nh->nh_info);
->  	if (nhi->family == AF_INET6)
->  		return &nhi->fib6_nh;
->  
->  	return NULL;
->  }
->  
-
-I am wary of duplicating code, but this helper is simple enough that it
-should be ok with proper documentation.
-
-Ido/Petr: I think your resilient hashing patch set touches this helper.
-How ugly does it get to have a second version?
+David Ahern <dsahern@gmail.com> =E4=BA=8E2021=E5=B9=B43=E6=9C=888=E6=97=A5=
+=E5=91=A8=E4=B8=80 =E4=B8=8B=E5=8D=8811:48=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On 3/8/21 12:21 AM, ze wang wrote:
+> > mlxconfig tool from mft tools version 4.16.52 or higher to set number o=
+f SF.
+> >
+> > mlxconfig -d b3:00.0  PF_BAR2_ENABLE=3D0 PER_PF_NUM_SF=3D1 PF_SF_BAR_SI=
+ZE=3D8
+> > mlxconfig -d b3:00.0  PER_PF_NUM_SF=3D1 PF_TOTAL_SF=3D192 PF_SF_BAR_SIZ=
+E=3D8
+> > mlxconfig -d b3:00.1  PER_PF_NUM_SF=3D1 PF_TOTAL_SF=3D192 PF_SF_BAR_SIZ=
+E=3D8
+> >
+> > Cold reboot power cycle of the system as this changes the BAR size in d=
+evice
+> >
+>
+> Is that capability going to be added to devlink?
