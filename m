@@ -2,238 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28750331CD9
+	by mail.lfdr.de (Postfix) with ESMTP id 74C36331CDA
 	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 03:18:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230431AbhCICRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 21:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbhCICRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 21:17:19 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89FEC06175F
-        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 18:17:18 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id c10so24412992ejx.9
-        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 18:17:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MwEUL3leO5vGNSGOykqxQ6pxQvePSNcDrkFy2vqfSik=;
-        b=HpE3JQcIak2NGtZ54JMp0ET7lfDORbbV+6T5WU8Zv4y0YiHvKxuB6nTSu53W3RhzjA
-         y0UJfexLD8hw2EBgEA5LHAilQpo8choFbsSvP2eSyHlLCblnKpw5P8CfGELF1rlOpzrl
-         oDXkVk5rrWRhcDpci6tfuvqol9ci65n7XHDT/ua7CSop+87EmW3ok9WYw6h0Z61MQHER
-         0lZ7QqxjzJalgcuCmMgxgisNBTqDi4m/FxVhHiqMJ6IqHnRlNY76otVnTmGFB1A08v7w
-         GsemA1IPrANtltPRA3TSEfq8zGf8MSeoJWxhniQbo0VTaEeWTVFGy35SQw/jeXP+wlqW
-         svrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MwEUL3leO5vGNSGOykqxQ6pxQvePSNcDrkFy2vqfSik=;
-        b=Tnw0a/9Sl8AWNPpOfDOtpiOvJ8g0yR1+rSIX9Yw+0l1njhv+KItuQJzOEjtbYavQAH
-         4li2X0cul23JwFvFzRHwZyZ5TkA0CHGiYFWt3KpQv9qgX4cdtoHnY+ZJgDhBUQhkAoEw
-         bokdFWCBjb47XVUWi1gzPMFlYg/9w15FK4jF89CedEkJ3mc658LzBkvFhK7sBd5iscBf
-         +pAZUI9wtvEPTqXGMK6/szNFAYdSMuewnmV57gIcaGfkMZHwKW/t/NxLrpBoTTvtW+y+
-         6esRICqKe+aTGaS+eQCfY6e+LRnfIlc54PTuCLSMFddBgegXxmy2dtqV52Q7osRbIt5g
-         uSGA==
-X-Gm-Message-State: AOAM532jRoiJsYU5X6Kj+dQ5nwk1NR4jwe+wGqtcWCJBW0ZmzbBZ9PiT
-        edYNe0ujXycDprX1/ivHOGSn3rpJNLQ=
-X-Google-Smtp-Source: ABdhPJws/b9GemTV6ei1JmxuEtQXcba+PU87ROeHgvqXvQzGdvAdtcyMGeOui6KVYD+UsOTcpK1W/A==
-X-Received: by 2002:a17:906:b884:: with SMTP id hb4mr17681721ejb.536.1615256237628;
-        Mon, 08 Mar 2021 18:17:17 -0800 (PST)
-Received: from localhost.localdomain ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id bj7sm4364902ejb.28.2021.03.08.18.17.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Mar 2021 18:17:17 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH net 4/4] net: dsa: let drivers state that they need VLAN filtering while standalone
-Date:   Tue,  9 Mar 2021 04:16:57 +0200
-Message-Id: <20210309021657.3639745-5-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210309021657.3639745-1-olteanv@gmail.com>
-References: <20210309021657.3639745-1-olteanv@gmail.com>
+        id S230450AbhCICRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 21:17:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52303 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230217AbhCICRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 21:17:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615256254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u6QvpOOqO9cbXP+W1bJXr9pOCC9HryjydKAN8qiu7fM=;
+        b=IowWba3PfFifEAaA2kEfPlctVgELmxGEQUVu+dZxnaroGekvZL9nmWY9yW5cJ3oQjfFD/v
+        hwBvc9q8XKSxNklNPcuTkNOH55k1cyt2+LFmvY4n7Hjf1bLHtVwFtseHbkjc1PKP8dVP7d
+        1D93NjNFEaoMZSKaukrKm0f3xZbt2zU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-342-N_iDmVjbOsS9s8nzi82q4A-1; Mon, 08 Mar 2021 21:17:30 -0500
+X-MC-Unique: N_iDmVjbOsS9s8nzi82q4A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B2CE71084C97;
+        Tue,  9 Mar 2021 02:17:28 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-202.pek2.redhat.com [10.72.13.202])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CAEC260C04;
+        Tue,  9 Mar 2021 02:17:20 +0000 (UTC)
+Subject: Re: [PATCH v7 net-next] virtio-net: support XDP when not more queues
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <1615193536-112130-1-git-send-email-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <184047a5-c26c-90ad-d2b0-bcab9889c9ce@redhat.com>
+Date:   Tue, 9 Mar 2021 10:17:16 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
+In-Reply-To: <1615193536-112130-1-git-send-email-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-As explained in the blamed patch, the hellcreek driver uses some tricks
-to comply with the network stack expectations: it enforces port
-separation in standalone mode using VLANs. For untagged traffic,
-bridging between ports is prevented by using different PVIDs, and for
-VLAN-tagged traffic, it never accepts 8021q uppers with the same VID on
-two ports, so packets with one VLAN cannot leak from one port to another.
+On 2021/3/8 4:52 下午, Xuan Zhuo wrote:
+> The number of queues implemented by many virtio backends is limited,
+> especially some machines have a large number of CPUs. In this case, it
+> is often impossible to allocate a separate queue for
+> XDP_TX/XDP_REDIRECT, then xdp cannot be loaded to work, even xdp does
+> not use the XDP_TX/XDP_REDIRECT.
+>
+> This patch allows XDP_TX/XDP_REDIRECT to run by reuse the existing SQ
+> with __netif_tx_lock() hold when there are not enough queues.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> ---
+> v7: 1. use macros to implement get/put
+>      2. remove 'flag'. (suggested by Jason Wang)
+>
+> v6: 1. use __netif_tx_acquire()/__netif_tx_release(). (suggested by Jason Wang)
+>      2. add note for why not lock. (suggested by Jason Wang)
+>      3. Use variable 'flag' to record with or without locked.  It is not safe to
+>         use curr_queue_pairs in "virtnet_put_xdp_sq", because it may changed after
+>         "virtnet_get_xdp_sq".
+>
+> v5: change subject from 'support XDP_TX when not more queues'
+>
+> v4: make sparse happy
+>      suggested by Jakub Kicinski
+>
+> v3: add warning when no more queues
+>      suggested by Jesper Dangaard Brouer
+>
+>   drivers/net/virtio_net.c | 55 ++++++++++++++++++++++++++++++++++++------------
+>   1 file changed, 42 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index ba8e637..5ce40ec 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -195,6 +195,9 @@ struct virtnet_info {
+>   	/* # of XDP queue pairs currently used by the driver */
+>   	u16 xdp_queue_pairs;
+>
+> +	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
+> +	bool xdp_enabled;
+> +
+>   	/* I like... big packets and I cannot lie! */
+>   	bool big_packets;
+>
+> @@ -481,12 +484,34 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>   	return 0;
+>   }
+>
+> -static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
+> -{
+> -	unsigned int qp;
+> -
+> -	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+> -	return &vi->sq[qp];
+> +/* when vi->curr_queue_pairs > nr_cpu_ids, the txq/sq is only used for xdp tx on
+> + * the current cpu, so it does not need to be locked.
+> + */
+> +#define virtnet_xdp_get_sq(vi) ({                                         \
+> +	struct netdev_queue *txq;                                         \
+> +	typeof(vi) v = (vi);                                              \
 
-That is almost fine*, and has worked because hellcreek relied on an
-implicit behavior of the DSA core that was changed by the previous
-patch: the standalone ports declare the 'rx-vlan-filter' feature as 'on
-[fixed]'. Since most of the DSA drivers are actually VLAN-unaware in
-standalone mode, that feature was actually incorrectly reflecting the
-hardware/driver state, so there was a desire to fix it. This leaves the
-hellcreek driver in a situation where it has to explicitly request this
-behavior from the DSA framework.
 
-We configure the ports as follows:
+Any reason for not using vi directly?
 
-- Standalone: 'rx-vlan-filter' is on. An 8021q upper on top of a
-  standalone hellcreek port will go through dsa_slave_vlan_rx_add_vid
-  and will add a VLAN to the hardware tables, giving the driver the
-  opportunity to refuse it through .port_prechangeupper.
+Other looks good.
 
-- Bridged with vlan_filtering=0: 'rx-vlan-filter' is off. An 8021q upper
-  on top of a bridged hellcreek port will not go through
-  dsa_slave_vlan_rx_add_vid, because there will not be any attempt to
-  offload this VLAN. The driver already disables VLAN awareness, so that
-  upper should receive the traffic it needs.
+Thanks
 
-- Bridged with vlan_filtering=1: 'rx-vlan-filter' is on. An 8021q upper
-  on top of a bridged hellcreek port will call dsa_slave_vlan_rx_add_vid,
-  and can again be vetoed through .port_prechangeupper.
 
-*It is not actually completely fine, because if I follow through
-correctly, we can have the following situation:
-
-ip link add br0 type bridge vlan_filtering 0
-ip link set lan0 master br0 # lan0 now becomes VLAN-unaware
-ip link set lan0 nomaster # lan0 fails to become VLAN-aware again, therefore breaking isolation
-
-This patch fixes that by extending the DSA core logic, based on this
-requested attribute, to change the VLAN awareness state of the switch
-(port) when it leaves the bridge.
-
-Fixes: e358bef7c392 ("net: dsa: Give drivers the chance to veto certain upper devices")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/hirschmann/hellcreek.c |  1 +
- include/net/dsa.h                      |  3 +++
- net/dsa/slave.c                        |  8 ++++++--
- net/dsa/switch.c                       | 20 +++++++++++++++-----
- 4 files changed, 25 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 463137c39db2..b8112de24b3f 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -1126,6 +1126,7 @@ static int hellcreek_setup(struct dsa_switch *ds)
- 	 * filtering setups are not supported.
- 	 */
- 	ds->vlan_filtering_is_global = true;
-+	ds->needs_standalone_vlan_filtering = true;
- 
- 	/* Intercept _all_ PTP multicast traffic */
- 	ret = hellcreek_setup_fdb(hellcreek);
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 83a933e563fe..58ce8089af9a 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -355,6 +355,9 @@ struct dsa_switch {
- 	 */
- 	bool			vlan_filtering_is_global;
- 
-+	/* Keep VLAN filtering enabled on unbridged ports. */
-+	bool			needs_standalone_vlan_filtering;
-+
- 	/* Pass .port_vlan_add and .port_vlan_del to drivers even for bridges
- 	 * that have vlan_filtering=0. All drivers should ideally set this (and
- 	 * then the option would get removed), but it is unknown whether this
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index e5ca29df7605..c878fedb81d5 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1395,9 +1395,11 @@ static int dsa_slave_clear_vlan(struct net_device *vdev, int vid, void *arg)
-  *
-  * - Standalone ports offload:
-  *   - no VLAN (any 8021q upper is a software VLAN) if
-- *     ds->vlan_filtering_is_global = false
-+ *     ds->vlan_filtering_is_global = false and
-+ *     ds->needs_standalone_vlan_filtering = false
-  *   - the 8021q upper VLANs if ds->vlan_filtering_is_global = true and there
-- *     are bridges spanning this switch chip which have vlan_filtering=1
-+ *     are bridges spanning this switch chip which have vlan_filtering=1, or
-+ *     ds->needs_standalone_vlan_filtering = true.
-  *
-  * - Ports under a vlan_filtering=0 bridge offload:
-  *   - no VLAN if ds->configure_vlan_while_not_filtering = false (deprecated)
-@@ -1903,6 +1905,8 @@ int dsa_slave_create(struct dsa_port *port)
- 
- 	slave_dev->features = master->vlan_features | NETIF_F_HW_TC;
- 	slave_dev->hw_features |= NETIF_F_HW_TC;
-+	if (ds->needs_standalone_vlan_filtering)
-+		slave_dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
- 	slave_dev->features |= NETIF_F_LLTX;
- 	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
- 	if (!IS_ERR_OR_NULL(port->mac))
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 56ed31b0e636..9a02d24739e1 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -104,9 +104,10 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 				   struct dsa_notifier_bridge_info *info)
- {
--	bool unset_vlan_filtering = br_vlan_enabled(info->br);
- 	struct dsa_switch_tree *dst = ds->dst;
- 	struct netlink_ext_ack extack = {0};
-+	bool change_vlan_filtering = false;
-+	bool vlan_filtering;
- 	int err, port;
- 
- 	if (dst->index == info->tree_index && ds->index == info->sw_index &&
-@@ -119,6 +120,15 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 						info->sw_index, info->port,
- 						info->br);
- 
-+	if (ds->needs_standalone_vlan_filtering && !br_vlan_enabled(info->br)) {
-+		change_vlan_filtering = true;
-+		vlan_filtering = true;
-+	} else if (!ds->needs_standalone_vlan_filtering &&
-+		   br_vlan_enabled(info->br)) {
-+		change_vlan_filtering = true;
-+		vlan_filtering = false;
-+	}
-+
- 	/* If the bridge was vlan_filtering, the bridge core doesn't trigger an
- 	 * event for changing vlan_filtering setting upon slave ports leaving
- 	 * it. That is a good thing, because that lets us handle it and also
-@@ -127,21 +137,21 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 	 * vlan_filtering callback is only when the last port the last
- 	 * VLAN-aware bridge.
- 	 */
--	if (unset_vlan_filtering && ds->vlan_filtering_is_global) {
-+	if (change_vlan_filtering && ds->vlan_filtering_is_global) {
- 		for (port = 0; port < ds->num_ports; port++) {
- 			struct net_device *bridge_dev;
- 
- 			bridge_dev = dsa_to_port(ds, port)->bridge_dev;
- 
- 			if (bridge_dev && br_vlan_enabled(bridge_dev)) {
--				unset_vlan_filtering = false;
-+				change_vlan_filtering = false;
- 				break;
- 			}
- 		}
- 	}
--	if (unset_vlan_filtering) {
-+	if (change_vlan_filtering) {
- 		err = dsa_port_vlan_filtering(dsa_to_port(ds, info->port),
--					      false, &extack);
-+					      vlan_filtering, &extack);
- 		if (extack._msg)
- 			dev_err(ds->dev, "port %d: %s\n", info->port,
- 				extack._msg);
--- 
-2.25.1
+> +	unsigned int qp;                                                  \
+> +	if (v->curr_queue_pairs > nr_cpu_ids) {                           \
+> +		qp = v->curr_queue_pairs - v->xdp_queue_pairs;            \
+> +		qp += smp_processor_id();                                 \
+> +		txq = netdev_get_tx_queue(v->dev, qp);                    \
+> +		__netif_tx_acquire(txq);                                  \
+> +	} else {                                                          \
+> +		qp = smp_processor_id() % v->curr_queue_pairs;            \
+> +		txq = netdev_get_tx_queue(v->dev, qp);                    \
+> +		__netif_tx_lock(txq, raw_smp_processor_id());             \
+> +	}                                                                 \
+> +	v->sq + qp;                                                       \
+> +})
+> +
+> +#define virtnet_xdp_put_sq(vi, q) {                                       \
+> +	struct netdev_queue *txq;                                         \
+> +	typeof(vi) v = (vi);                                              \
+> +	txq = netdev_get_tx_queue(v->dev, (q) - v->sq);                   \
+> +	if (v->curr_queue_pairs > nr_cpu_ids)                             \
+> +		__netif_tx_release(txq);                                  \
+> +	else                                                              \
+> +		__netif_tx_unlock(txq);                                   \
+>   }
+>
+>   static int virtnet_xdp_xmit(struct net_device *dev,
+> @@ -512,7 +537,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>   	if (!xdp_prog)
+>   		return -ENXIO;
+>
+> -	sq = virtnet_xdp_sq(vi);
+> +	sq = virtnet_xdp_get_sq(vi);
+>
+>   	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
+>   		ret = -EINVAL;
+> @@ -560,12 +585,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>   	sq->stats.kicks += kicks;
+>   	u64_stats_update_end(&sq->stats.syncp);
+>
+> +	virtnet_xdp_put_sq(vi, sq);
+>   	return ret;
+>   }
+>
+>   static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+>   {
+> -	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
+> +	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
+>   }
+>
+>   /* We copy the packet for XDP in the following cases:
+> @@ -1457,12 +1483,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+>   		xdp_do_flush();
+>
+>   	if (xdp_xmit & VIRTIO_XDP_TX) {
+> -		sq = virtnet_xdp_sq(vi);
+> +		sq = virtnet_xdp_get_sq(vi);
+>   		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+>   			u64_stats_update_begin(&sq->stats.syncp);
+>   			sq->stats.kicks++;
+>   			u64_stats_update_end(&sq->stats.syncp);
+>   		}
+> +		virtnet_xdp_put_sq(vi, sq);
+>   	}
+>
+>   	return received;
+> @@ -2417,10 +2444,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>
+>   	/* XDP requires extra queues for XDP_TX */
+>   	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+> -		netdev_warn(dev, "request %i queues but max is %i\n",
+> +		netdev_warn(dev, "XDP request %i queues but max is %i. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.\n",
+>   			    curr_qp + xdp_qp, vi->max_queue_pairs);
+> -		return -ENOMEM;
+> +		xdp_qp = 0;
+>   	}
+>
+>   	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+> @@ -2454,11 +2480,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>   	vi->xdp_queue_pairs = xdp_qp;
+>
+>   	if (prog) {
+> +		vi->xdp_enabled = true;
+>   		for (i = 0; i < vi->max_queue_pairs; i++) {
+>   			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
+>   			if (i == 0 && !old_prog)
+>   				virtnet_clear_guest_offloads(vi);
+>   		}
+> +	} else {
+> +		vi->xdp_enabled = false;
+>   	}
+>
+>   	for (i = 0; i < vi->max_queue_pairs; i++) {
+> @@ -2526,7 +2555,7 @@ static int virtnet_set_features(struct net_device *dev,
+>   	int err;
+>
+>   	if ((dev->features ^ features) & NETIF_F_LRO) {
+> -		if (vi->xdp_queue_pairs)
+> +		if (vi->xdp_enabled)
+>   			return -EBUSY;
+>
+>   		if (features & NETIF_F_LRO)
+> --
+> 1.8.3.1
+>
 
