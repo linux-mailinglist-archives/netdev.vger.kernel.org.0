@@ -2,119 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE054332C9A
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 17:53:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5969E332CD9
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230517AbhCIQw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 11:52:57 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:43882 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229799AbhCIQwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 11:52:32 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 129GXhRO118720;
-        Tue, 9 Mar 2021 11:52:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=5T+Sq8LYiE/LvGRDzrvRmOF3q8OXC6+wA8m0VnDb+ww=;
- b=Ooby4WFjkK4FDDl9smrpEbw0mSdtEk+TdFNyr4gHBXxE5qvW4AA1ShjcDjvzSwBOfwV5
- iIrzoYdFu3AHEBXZsd5pQJYxxoymcaPoGH/iSM48SpA2pPEbIeBV4Kkvk4Ur/BJDLAZz
- Shn+8O020Z7bbxvMlbkqABMdwxxB9/6nZrkHaRSdwU0AahqYM4XkaHWN+1tTw9XW19jC
- 4hMg35d/J1mul6YP3AUkq1IM52lYu/B2BHePlq5c2Ug4o8dQRd4TnM9n8rF7tmJWAN0F
- OyDw2m3hU8Re7wzHryXNTwLGVVqN/3x7XsrGvO3w2SXOlU5qToKTNvL6ZFmLWJSKYvjI mw== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3762wrb00v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Mar 2021 11:52:30 -0500
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 129Gi5Mx013907;
-        Tue, 9 Mar 2021 16:52:28 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3768urr70c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Mar 2021 16:52:28 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 129GqP3L42140102
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 9 Mar 2021 16:52:25 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C570C5204E;
-        Tue,  9 Mar 2021 16:52:25 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 7F23252050;
-        Tue,  9 Mar 2021 16:52:25 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
+        id S231236AbhCIRIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 12:08:11 -0500
+Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:21050 "EHLO
+        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231536AbhCIRIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:08:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1615309688; x=1646845688;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=haFn1f73pgKjgHf3KT43PZsgHzOafDlPYA0vouf0DHE=;
+  b=aUkCgQu2VdYjwYkTrbPuiCUKTEaLK4cajGQWKbEyFZHmzhg/DtjFvKzF
+   a5j5/1QthOw2TVR4oX7Yrjb/uEqC1s0pxqHqa++lMITM4yFcc3XH2ycBg
+   vdBIODH9dq1H//Wbaldg9+phrtsyzbXnZiIJDgrSP5SF0ekoMy6/aGTHq
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.81,236,1610409600"; 
+   d="scan'208";a="917792185"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-9103.sea19.amazon.com with ESMTP; 09 Mar 2021 17:08:01 +0000
+Received: from EX13D28EUB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id BB8BC1431AC;
+        Tue,  9 Mar 2021 17:08:00 +0000 (UTC)
+Received: from u570694869fb251.ant.amazon.com (10.43.161.39) by
+ EX13D28EUB001.ant.amazon.com (10.43.166.50) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 9 Mar 2021 17:07:51 +0000
+From:   Shay Agroskin <shayagr@amazon.com>
 To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net 4/4] s390/qeth: fix notification for pending buffers during teardown
-Date:   Tue,  9 Mar 2021 17:52:21 +0100
-Message-Id: <20210309165221.1735641-5-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210309165221.1735641-1-jwi@linux.ibm.com>
-References: <20210309165221.1735641-1-jwi@linux.ibm.com>
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Shay Agroskin <shayagr@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>
+Subject: [RFC Patch v1 0/3] Introduce ENA local page cache
+Date:   Tue, 9 Mar 2021 19:07:22 +0200
+Message-ID: <20210309170725.2187138-1-shayagr@amazon.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-09_13:2021-03-08,2021-03-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 bulkscore=0 adultscore=0 spamscore=0 malwarescore=0
- priorityscore=1501 suspectscore=0 phishscore=0 clxscore=1015
- mlxlogscore=999 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103090081
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.39]
+X-ClientProxiedBy: EX13D17UWC001.ant.amazon.com (10.43.162.188) To
+ EX13D28EUB001.ant.amazon.com (10.43.166.50)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cited commit reworked the state machine for pending TX buffers.
-In qeth_iqd_tx_complete() it turned PENDING into a transient state, and
-uses NEED_QAOB for buffers that get parked while waiting for their QAOB
-completion.
+High incoming pps rate leads to frequent memory allocations by the napi
+routine to refill the pages of the incoming packets.
 
-But it missed to adjust the check in qeth_tx_complete_buf(). So if
-qeth_tx_complete_pending_bufs() is called during teardown to drain
-the parked TX buffers, we no longer raise a notification for af_iucv.
+On several new instances in AWS fleet, with high pps rates, these
+frequent allocations create a contention between the different napi
+routines.
+The contention happens because the routines end up accessing the
+buddy allocator which is a shared resource and requires lock-based
+synchronization (also, when freeing a page the same lock is held). In
+our tests we observed that that this contention causes the CPUs that
+serve the RX queues to reach 100% and damage network performance.
+While this contention can be relieved by making sure that pages are
+allocated and freed on the same core, which would allow the driver to
+take advantage of PCP, this solution is not always available or easy to
+maintain.
 
-Instead of updating the checked state, just move this code into
-qeth_tx_complete_pending_bufs() itself. This also gets rid of the
-special-case in the common TX completion path.
+This patchset implements a page cache local to each RX queue. When the
+napi routine allocates a page, it first checks whether the cache has a
+previously allocated page that isn't used. If so, this page is fetched
+instead of allocating a new one. Otherwise, if the cache is out of free
+pages, a page is allocated using normal allocation path (PCP or buddy
+allocator) and returned to the caller.
+A page that is allocated outside the cache, is afterwards cached, up
+to cache's maximum size (set to 2048 pages in this patchset).
 
-Fixes: 8908f36d20d8 ("s390/qeth: fix af_iucv notification race")
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_core_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+The pages' availability is tracked by checking their refcount. A cached
+page has a refcount of 2 when it is passed to the napi routine as an RX
+buffer. When a refcount of a page reaches 1, the cache assumes that it is
+free to be re-used.
 
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index d0a56afec028..a814698387bc 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -1390,9 +1390,6 @@ static void qeth_tx_complete_buf(struct qeth_qdio_out_buffer *buf, bool error,
- 	struct qeth_qdio_out_q *queue = buf->q;
- 	struct sk_buff *skb;
- 
--	if (atomic_read(&buf->state) == QETH_QDIO_BUF_PENDING)
--		qeth_notify_skbs(queue, buf, TX_NOTIFY_GENERALERROR);
--
- 	/* Empty buffer? */
- 	if (buf->next_element_to_fill == 0)
- 		return;
-@@ -1465,6 +1462,9 @@ static void qeth_tx_complete_pending_bufs(struct qeth_card *card,
- 			QETH_CARD_TEXT(card, 5, "fp");
- 			QETH_CARD_TEXT_(card, 5, "%lx", (long) buf);
- 
-+			if (drain)
-+				qeth_notify_skbs(queue, buf,
-+						 TX_NOTIFY_GENERALERROR);
- 			qeth_tx_complete_buf(buf, drain, 0);
- 
- 			list_del(&buf->list_entry);
+To avoid traversing all pages in the cache when looking for an available
+page, we only check the availability of the first page fetched for the
+RX queue that wasn't returned to the cache yet (i.e. has a refcount of
+more than 1).
+
+For example, for a cache of size 8 from which pages at indices 0-7 were
+fetched (and placed in the RX SQ), the next time napi would try to fetch
+a page from the cache, the cache would check the availability of the
+page at index 0, and if it is available, this page would be fetched for
+the napi. The next time napi would try to fetch a page, the cache entry
+at index 1 would be checked, and so on.
+
+Memory consumption:
+
+In its maximum occupancy the cache would hold 2048 pages per each
+queue. Providing an interface with 32 queues, 32 * 2048 * 4K = 64MB
+are being used by the driver for its RX queues.
+
+To avoid choking the system, this feature is only enabled for
+instances with more than 16 queues which in AWS come with several tens
+Gigs of RAM. Moreover, the feature can be turned off completely using
+ethtool.
+
+Having said that, the memory cost of having RX queues with 2K entries
+would be the same as with 1K entries queue + LPC in worst case, while
+the latter allocates the memory only in case the traffic rate is higher
+than the rate of the pages being freed.
+
+Performance results:
+
+4 c5n.18xlarge instances sending iperf TCP traffic to a p4d.24xlarge instance.
+Packet size: 1500 bytes
+
+c5n.18xlarge specs:
+Intel(R) Xeon(R) Platinum 8124M CPU @ 3.00GHz
+with 72 cores. 32 queue pairs.
+
+p4d.24xlarge specs:
+Intel(R) Xeon(R) Platinum 8275CL CPU @ 3.00GHz
+with 96 cores. 4 * 32 = 128 (4 interfaces) queue pairs.
+
+|                     | before | after |
+|                     +        +       |
+| bandwidth (Gbps)    | 260    | 330   |
+| CPU utilization (%) | 100    | 56    |
+
+Shay Agroskin (3):
+  net: ena: implement local page cache (LPC) system
+  net: ena: update README file with a description about LPC
+  net: ena: support ethtool priv-flags and LPC state change
+
+ .../device_drivers/ethernet/amazon/ena.rst    |  28 ++
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  56 ++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 369 +++++++++++++++++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  32 ++
+ 4 files changed, 458 insertions(+), 27 deletions(-)
+
 -- 
 2.25.1
 
