@@ -2,99 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C85F9332164
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 09:56:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D38E4332169
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 09:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbhCIIzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 03:55:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
+        id S229714AbhCII5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 03:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbhCIIzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 03:55:43 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC30C06174A;
-        Tue,  9 Mar 2021 00:55:43 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id 16so7515853pfn.5;
-        Tue, 09 Mar 2021 00:55:43 -0800 (PST)
+        with ESMTP id S229688AbhCII5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 03:57:13 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B59AC06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 00:57:13 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id bd6so18685295edb.10
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 00:57:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=B5ih2s0wGc6zEFGLbxaitiDeyP8RPIDxWcG4Pgj6aB8=;
-        b=skIi6WtK6erYgcTFqAwcc4M5eJz175vB27CUN/27YkRO+dfOhWaYavQbh3YRsCJvxQ
-         H8V60Cqx1GIFDazpK5UDJUbLlDQS+5nvVb4Wkn8yyOstL5uP7Gtkmm3Sb+bccTtDJbXU
-         GZWUcydG+y6fQdpiYT/6fjbjkgjMC1o/p4BsXQq4Ka/B45g8y8t9uruFQgot5v/6vAHL
-         qDA8oDvupxDCrhVjfefEwbMk5C61cW6OkBFuKJpNbVJGoClU91RLL/MUClC0BnWvb45j
-         g7CBwhZPLSDFkUYicRdaYeu+qmsRbFkanzkliQDnIUxM6fej2uong4IjbKg8IkmNLG3w
-         dqmw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4Myx4qcG7usuxzVf+LTFNh+RF0r/lar9S1TIjtqXm1c=;
+        b=NM6f3ZYhfEQlbCM3lTGHLYclD83X1X9siQVGwA3OYG3FEz7GmM9v1XjxMSMvtu5PGg
+         p2/+cGfvvfKc6Pr6Z7Kf4Qpe9cemM2Tg1Q+rtYf213l5v0jK5iN/4bgJJk/+hh+Hi/pJ
+         a4YPgffgkeSqU+tkm1xzYMvZodPO7IzDRZSiQN0v32FfxbH+QAQKF7YbmqjZo5Sem/+g
+         nrFfIo/GXHPqVgMoHDfn3Mmm3f1qo9UnpZSb2YXv+m1fWq8cqFDnhMxONWzLTByAgap9
+         Twi9lU28JVFwRNBjszu3pJTkKj/RhaFEVFSHQt0AzY8K5Oy3y+X0fYWLCc1fL7AghVaH
+         fCHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=B5ih2s0wGc6zEFGLbxaitiDeyP8RPIDxWcG4Pgj6aB8=;
-        b=JUCM7LksH0bpIDY5he/OunPcJmhpLnqBCM8L07KZctsfv31h/W7LhpqeHsibO7IomI
-         VwroaJ5HfwmnrgnxnVGhYUMo3OEhihE5XhX3hIuIy0ATyt2v3VnTfWiG/gqNx/JkY2dF
-         2eP6kHSdqjOMYueQwQtve6lupnN82i+EwWt765v1GOHQ6zgOQ6mJDxwbhDiXIRnp5351
-         AzwUZUBMkFuBA5+Wi1kDLCG6C4aTDys9veu2zXidRqjHiE34N5ivcA9QSBEskvK4vIrL
-         Kf0YGteY3Ldorx2IjjT0RtJBTm/oHQMdaN/M7gLleMSP3SXUrQpMdr3Q0Byf2sfb54Xz
-         lkPw==
-X-Gm-Message-State: AOAM531MKz0U9SJOiT0lB/L2syGDfshsg9tdcei+szMuG96UuS2ZugbX
-        Z/tADrt8eB/XswXK80zWRWHldTxqhnv6I5AI
-X-Google-Smtp-Source: ABdhPJyUidhLxO3ucv6QEixM3GFAayp3mRjka2yVAXt2nBJzBPNyqYya/vLaPZLxcrpMT2cBdlI1bw==
-X-Received: by 2002:a63:a22:: with SMTP id 34mr23965822pgk.328.1615280142844;
-        Tue, 09 Mar 2021 00:55:42 -0800 (PST)
-Received: from [10.160.0.86] ([45.135.186.124])
-        by smtp.gmail.com with ESMTPSA id q34sm12073556pgl.92.2021.03.09.00.55.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Mar 2021 00:55:42 -0800 (PST)
-Subject: Re: [PATCH] net: netlink: fix error return code of
- netlink_proto_init()
-To:     Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        marcelo.leitner@gmail.com, mkubecek@suse.cz, jbi.octave@gmail.com,
-        yangyingliang@huawei.com, 0x7f454c46@gmail.com,
-        rdunlap@infradead.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20210309083356.24083-1-baijiaju1990@gmail.com>
- <1ca491b5-1c65-6dee-1f8c-d86006714b51@gmail.com>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <fb1e13d8-6b7e-ca47-2f65-930dfdb651dc@gmail.com>
-Date:   Tue, 9 Mar 2021 16:55:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4Myx4qcG7usuxzVf+LTFNh+RF0r/lar9S1TIjtqXm1c=;
+        b=eJG+trIHmiK6K944DYrsiWRPcGRgOGwQuG06OY8j8u3bdHG2Fsb5XOvmE625M+C4t+
+         Av+pqr2DB+PloyDlMepcq300otSEY0XNNJ8N/Y8jHts5o3NlccFp8sSfNm3shp6/+rnD
+         QveCuWNFh4HZDUm4fxNGLO9TKfZUVhpa6nYzqavh+zh0/nQmBUzYzfgkexnd+i/qhho1
+         dLBk+9M5Z5qKaCoCzlqqudUVfaNw+eWbTlT+ZTlEKq7EGWaqKnAiU1GXLTNbdGkJvc7o
+         KzesKA/lRsOZfaQ2FU/uLrme0cxU/506+iOz+hjANnlxwVlG1NaelWk5B6qoDDiAw9qh
+         lmOw==
+X-Gm-Message-State: AOAM5301v/UmKJLwEV1rPs/p56PmrCJwNU0wHzF5nGGmDk6Gmna29p+0
+        mz0qKA4V6ew9GoMxmBpHevM=
+X-Google-Smtp-Source: ABdhPJzILEBnEMDHDiDbtShjfXl/aKBuEsMCCwKQ6zv+QTD1W/EnSRK3zmtBnPWJQtJ72T1MYw9unQ==
+X-Received: by 2002:a05:6402:5:: with SMTP id d5mr2860547edu.121.1615280232060;
+        Tue, 09 Mar 2021 00:57:12 -0800 (PST)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id v15sm2857384edw.28.2021.03.09.00.57.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Mar 2021 00:57:11 -0800 (PST)
+Date:   Tue, 9 Mar 2021 10:57:10 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net] net: dsa: only unset VLAN filtering when last port
+ leaves last VLAN-aware bridge
+Message-ID: <20210309085710.xdo2h6xmm3oamdks@skbuf>
+References: <20210308135509.3040286-1-olteanv@gmail.com>
+ <87r1kon8hu.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <1ca491b5-1c65-6dee-1f8c-d86006714b51@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87r1kon8hu.fsf@kurt>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 09, 2021 at 07:31:25AM +0100, Kurt Kanzenbach wrote:
+> > @@ -124,13 +124,16 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+> >  	 * it. That is a good thing, because that lets us handle it and also
+> >  	 * handle the case where the switch's vlan_filtering setting is global
+> >  	 * (not per port). When that happens, the correct moment to trigger the
+> > -	 * vlan_filtering callback is only when the last port left this bridge.
+> > +	 * vlan_filtering callback is only when the last port the last
+> 
+> Somehow "left" got missing. Shouldn't that line be:
+> 
+> "vlan_filtering callback is only when the last port left the last" ?
+> 
 
-
-On 2021/3/9 16:47, Heiner Kallweit wrote:
-> On 09.03.2021 09:33, Jia-Ju Bai wrote:
->> When kcalloc() returns NULL to nl_table, no error return code of
->> netlink_proto_init() is assigned.
->> To fix this bug, err is assigned with -ENOMEM in this case.
->>
-> Didn't we talk enough about your incorrect patches yesterday?
-> This one is incorrect again. panic() never returns.
-> Stop sending patches until you understand the code you're changing!
-
-Ah, sorry, I was too confident about this bug report...
-Thanks for your reply.
-Following your advice, now I am sending the patches only for the bug 
-reports that I am confident about after careful code review.
-Some of the patches have been applied, but some of them are still wrong, 
-like this patch...
-I am sorry for the false positives...
-
-
-Best wishes,
-Jia-Ju Bai
+Thanks, you're right, I don't know how it happened, I'll resend.
