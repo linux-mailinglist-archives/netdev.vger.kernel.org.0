@@ -2,335 +2,381 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 222A9332E5E
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 19:37:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7065332E73
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 19:44:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbhCISge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 13:36:34 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:50616 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230425AbhCISga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 13:36:30 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 129IU3nJ011589;
-        Tue, 9 Mar 2021 10:36:15 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=lz7aK4bZoiaA5IKhu6U/by40Y2Xxk2aCfbSUrsyByXs=;
- b=P35qaYBgS/wvyybneNURSv9aJ/AWV4nbZ5Fh5i4f48Aaw2A2myN2kbD1iujZTkfLnqzQ
- 1gncmWoC3eNBHN1v/cOJG6fPwm7anEBkCnBl7nN9fa9z7ajohmFxRvxaqAXYA4LdwmDl
- PHrNLfnQ0lHVIKSgIflAyIQvwtYmqub3dJ0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 374tc14h0n-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 09 Mar 2021 10:36:14 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 9 Mar 2021 10:36:13 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l7WIV/QMO67s/NXEP01iKwAXqGg/3wX7f38Pwxlr+KgHyOPbH3Yme6ko/hnAzMBVuisaOraY0O1Y/62NUaJh7/aEJxfjK9gkFjEkv0byP6hfRDcL+BGfZyFTZDXziYk1968F5t3qD28PM02NtVffpgpWEObRushJt+NpJ02fjkzalvVJ3v/Zj5gKRbtXoTA8TvpZOUftM2rEieetMou0cG92QL+xXbXpApdu5p9Gog+MyL2/11m9iAOqw6fiPXZN7H7lWoPyEN6cMTGIV9CSfMPHxjq7Nf9c42fC++WQLFvJSrWC70BTFy3+rU/5Bj76Z6UoxIYk1LsguDRhZmnNFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lz7aK4bZoiaA5IKhu6U/by40Y2Xxk2aCfbSUrsyByXs=;
- b=WZnHm9gs5VeeKXj1qMxGQauisH3hwot2JTbLCwo09BppvxxWBV8Yp5nbOwPkzWXjh4F2xTOJaCR+akzWGhGd1prrrsS83KE5NNeVJg0GHsuSORncTSkKGrCRrhJVMh/Ko3FagrN84Q8fvQiniSj/wEmYrMGQpiDt6X6UnDY9DFdRuMyhHo9sVDVq+IsNfWPf2loU+xJxfWHsEPxA7/jBPCbFmffHCEAUaQknzJFDkJBzm8OuSl15Kaj93lBvxK3MSaXGRWjcb2CtvEZe9WkurPYt26Zh7ISES2xT1T3/hJuZDrMtBPCTSHP3SSCOjfhvyW6Q+hWLIOoB8En1E53Mgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA1PR15MB4738.namprd15.prod.outlook.com (2603:10b6:806:19d::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.21; Tue, 9 Mar
- 2021 18:36:11 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.3890.039; Tue, 9 Mar 2021
- 18:36:11 +0000
-Subject: Re: [BUG] hitting bug when running spinlock test
-To:     Roman Gushchin <guro@fb.com>
-CC:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YiFei Zhu <zhuyifei@google.com>,
-        Andrii Nakryiko <andriin@fb.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Yauheni Kaliuta <ykaliuta@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>, Hangbin Liu <haliu@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>
-References: <YEEvBUiJl2pJkxTd@krava>
- <YEKWyLG20OgpBMnt@carbon.DHCP.thefacebook.com>
- <14570a91-a793-3f56-047f-5c203cc44345@fb.com>
- <0c4e7013-b144-f40f-ebbe-3dff765baeff@fb.com>
- <YEe8mt+iJqDXD6CW@carbon.dhcp.thefacebook.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <45df5090-870a-ac49-3442-24ed67266d0e@fb.com>
-Date:   Tue, 9 Mar 2021 10:36:06 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
-In-Reply-To: <YEe8mt+iJqDXD6CW@carbon.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-X-Originating-IP: [2620:10d:c090:400::5:8cd6]
-X-ClientProxiedBy: MW4PR03CA0056.namprd03.prod.outlook.com
- (2603:10b6:303:8e::31) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21cf::1105] (2620:10d:c090:400::5:8cd6) by MW4PR03CA0056.namprd03.prod.outlook.com (2603:10b6:303:8e::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Tue, 9 Mar 2021 18:36:09 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b82fbeec-8966-43d6-c47c-08d8e32a365c
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4738:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA1PR15MB4738419E9E0389D17752ED60D3929@SA1PR15MB4738.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VjNFpd8l4pD0GCOk49+tv2Jo+Su7Dda1Sygyq/43+424xx7snq8xnVJc0z5JtcaWfnEHHI4c9ilnVDha2PC44pt/wmi5sY97I9gaelZMTdmDsxWiExEMhzhbJ3aEctQxf3HcraRWc9n9sD+O3mr60pZqUqKOjn6OOlbg2ElHah2cRvugIcWRsfdbPSYnRJijiHW2e4wzMK/gYJaQ95uqdf+JtGlvkNpmKI+YdynYBhvoxK2kZstzidwT8NV+OQ+7oPmUsO+2d9w+QE41FReA/W1sfPKyflF8zQ4Nnyty84KPpfLkOuL7TgEbJZiVHnoxiZT5ZBZQhb7No50QhMNvq1joC2H7Q+jlyZP5XjSrxYlz3rrd1fRL5htR2g2JkCKXwOTC81EevcKu0/XHtuDFVR1Xeh2ih7H5NzdhRI5b7Zky8MMHFOwWizbyyB0C6zceuKlv2OF5uf5A1BqzhVcp2IuxtY+uw9t2jj9Wq0KoSD6lG5I7FEivKAL4pH/DjFBf37NrnAnRmxU2Ym4RWqj9F7xSObNr20ANb0kcY3c3JWl9thFDMOBArJ8r1NyxUDIUJ1NKHE2FKg/l0M3j67pccj3fgYKVaK85D0GVlt2GLV6LqV8/tXCUsgvQDdSr71awLjCTUSS8iYFpjH7LXDwcpM2cVuQfgDIEb1Cqwnu9q03N0fWY4hfvRQhqBtmW+Y2v
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(346002)(136003)(376002)(366004)(396003)(66946007)(966005)(53546011)(8936002)(37006003)(478600001)(6486002)(8676002)(16526019)(6636002)(66476007)(66556008)(86362001)(7416002)(2616005)(83380400001)(54906003)(36756003)(5660300002)(6666004)(52116002)(4326008)(31686004)(2906002)(186003)(316002)(6862004)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?d3YwNFpTRW5tZ2F2a3MxQzdYSUREWjV4NytrZlQ0b243dVdTVzkzeS9yRGRu?=
- =?utf-8?B?bWVrSVptYnhlMGhQZGpFTzRCb2FZRm5Lc0l2WTAzTFVvT2hXdUFLMlBXU2Yv?=
- =?utf-8?B?WjBPODZVYXp1b1RVNlNDTDB5dlNDV0RBWTBEanZEU052SDY4VlkyaUFOZWRp?=
- =?utf-8?B?Vm5PSFFnK0lMc3IvN0lDZmZzUzlXcUFqT3pzNkVQWVlvRU1EK3dibk9xL2Nr?=
- =?utf-8?B?VGNqM3ZNdHdKVUVZeUtWbzVOeXVkaGkvRzFYU0pJOG5kOWZBbTJCREpPWUJW?=
- =?utf-8?B?SEZYbEFWOUdzQWxsRzFjTjJaS1A4ZzZ3ZWlabFoxei9VbXlaOHJEODc0Q3o2?=
- =?utf-8?B?S0s2YUE5S0RmN3FLejJabUtJVVh5MmNLYWdZZW1XUTU4TEpPSlpzdlhqS2c4?=
- =?utf-8?B?RlFRSmVDVGtzV2x0TVo4RU1jdXB1aVNvWWFtaXJqMGwrajcraEVZbkY2VXpa?=
- =?utf-8?B?MVdnYXdFa0dnRFFyY2JsQnBXN2FIb283N2FsZnk4L0toS1MwQk5OQ01vSHdm?=
- =?utf-8?B?cDVPMld5VlY2blNleTJ4VGYxd0kzSXZlYVlaRVNIeFI5ZUxJVkozcmFVaERw?=
- =?utf-8?B?enRYcUo5b0dHeUFvVUJQREpZY1ZETWIwelJwRGczTGJML3pBWnB3eUxrVkpv?=
- =?utf-8?B?L1FjOEI1eUo5bDJ3SUdiNDJ4ajYzRXFwdWRMVExZanBJVTJhZmxRc1lxcTg2?=
- =?utf-8?B?VEJHZUZnZng4VTgyUEJBam9wTjUrUzY5cG1KRk1lWTFWanNVYjdWaVp1T3U4?=
- =?utf-8?B?elZsT29PRXgxUlg1WnhETXE4RnVPQm1TdnBXWVV0VFZXTk5CaUJ6a25qOWZx?=
- =?utf-8?B?VjRnTTk1QmxYbTRwTFBIVW5JMDhIUSs0TEFnQ0NCSEZtM0hCQXp5ZmNXRFRt?=
- =?utf-8?B?VCtVNXZuN2cwVTdQZDhNUWJnRlRhVkRONnZSZFFaY0FuZXJEOHR1Vm1yRVhz?=
- =?utf-8?B?ZmtMK1dMR21ReERQOGkwdE9RbTQ1c2FrWUlUSllrOG1oUnFVenpEblYwd2cy?=
- =?utf-8?B?S1VURkEzYWd6SG42ZnUzSncwcjRaeXFVR3lFbzMzUkVWTnlCMzFrR2twNmxl?=
- =?utf-8?B?YlhHRG82aFBDbks1V0ZIcVNQNnFtaUQ2SkJDYUV1NTFCT2tHMzNCeTFGVkVP?=
- =?utf-8?B?VXJDa21TMHJtdjQyWDlmMCtpaUpTYmQ0OFdIellKNHZnd204b00rdEkxanRz?=
- =?utf-8?B?SWxieWNnYkpkNEVrYTNHQXUwMElIWTBYMU9EUVdlT0x6b3Zhb1MrSFBNNmRT?=
- =?utf-8?B?eUsxNGtqWHEza05MaHRrNDZwcTI0aHNSTnllU1hYU0xPcWpaQTk2T1lpOFB3?=
- =?utf-8?B?YW4wNTZGb0dmVlVwZWM1aC9KZzNGdDZ2RUd6dTZDZElFOVdybTQ0YUs3TE9p?=
- =?utf-8?B?bzIyaTc0TlpBN3RDQ0dQN0FTYUhQa0dhRU9XNnpLeHoxOWt0cW5ETTAyUjFt?=
- =?utf-8?B?US9iZHdaRitNeGRHVTZjdjNKL3BLMVZodTJTdGZYbzBVdVhySWt5akoyWVZw?=
- =?utf-8?B?VHhhV1N6K29GejMxb2JURDhoaWtDd2FmM01Rc29hdDZOVnRoNXlzbzRmdHly?=
- =?utf-8?B?QWh3clJ0bEs2VVkyRml2TmwvOXUrSWJ3QlhKR3Z3R0dlZWlBRnhUOWNZR0FQ?=
- =?utf-8?B?ajlkd00xNE1WOHN3VmZZdWFtUEtMbURqR2FZVG9uZm5zb3oxS1hCYzNOU3R4?=
- =?utf-8?B?ZmNIR0Z0bTRad3d6VHRtZ3RoeHpMaUczbVZhb1BWS0lZN1VxeWZYRGFuak9u?=
- =?utf-8?B?RG4vemJEd1prR0xFeWxmenRCWkdXZm9Qd2xRMC9uajIrMUVyNTZIZlNLYytK?=
- =?utf-8?B?MG80Qk1ObnlIbFJNU2RQZz09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b82fbeec-8966-43d6-c47c-08d8e32a365c
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2021 18:36:11.7073
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xIZfJsW9EgRI4yUX88cag3EcJku0M3Yn/xOhqM9TjW3v0NE+hB7405weyKRmGhXj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4738
-X-OriginatorOrg: fb.com
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S231138AbhCISnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 13:43:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230462AbhCISnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 13:43:12 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE426C06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 10:43:11 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id d3so28749015lfg.10
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 10:43:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=ibLfE9SB7taWeIhzU/TH+UoIMdEYkMISEHLg06mJuPo=;
+        b=vPfxERZmgEb/Bmq+pLbVj3GwVS46Hho6LyRgOhc+Aa8kx/NGoNTeSI3JH2YaRKG4mV
+         t7ql2kdHScCqoPTseiNk7gE1IVLnq7AhDPuxXE1x+ctvwJwQ9USs6H/C2GLUkcF8s7Et
+         SVjPENrYMwj022MH/dG4QOMvWJRoc5dHaku7mo7dyHy4tajwbdaD4My8pXkQFVtQiBR7
+         +3BqOZICJpjluU+qyDhLGqcIfPFDwIdiWg6jct2RhNsACByeUHW5vSXXv9P6CqfnJWad
+         6a5BjlqpfUJXQTuWIaJ2I6r1uuUA9SAiiK1IipsRhaQiBbLgSWpJv3D1v4+Zcoba6SBO
+         IK1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=ibLfE9SB7taWeIhzU/TH+UoIMdEYkMISEHLg06mJuPo=;
+        b=iMTebdGDNIwvlQ/5df8vVhJyDeHJftMMRbb9tcmsPjZzSMRSZTTBgHiHBXCt2G5Ox4
+         w7ZO2gNTsU1EODuAS2YH0hkB/f+XpVVNTotBgGg6/+xl9I8pSuuXkYkUDWue99arHH+u
+         y0+hWLdRo2V6mdx4inLsTAoDRgOK2io8ohwK3CRXQH9lKS4MDS8jKw0jVKBPrlr0MubM
+         spIvZrjLZdZtdIkp9dy4dgKwNEdM5fSQlFnx8NCdc9NXw3RcRSlvzytX20Had1/AycTf
+         C/YJkcMFti81DLA41iHb9/tiRSW78IhKN9vO1p0xz7BZfpJJ/FIyvkzMusjkH/ZVq4h3
+         mp3A==
+X-Gm-Message-State: AOAM533qq6b4aGr1IhdRtepCFUqAZNjF94eNj9JFTy1fiB0R+5p87ISP
+        hMPI26u4CK/h1Er/KVSPjooOZw==
+X-Google-Smtp-Source: ABdhPJwBY07QVC+1QBVWNbc7MQ95/8l9xRILYTjMKqvqOwrn6MlBr2vIkMRl4u3j2knTelFjqjXvSA==
+X-Received: by 2002:a05:6512:3045:: with SMTP id b5mr18108416lfb.32.1615315390225;
+        Tue, 09 Mar 2021 10:43:10 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id j20sm2020949lfu.94.2021.03.09.10.43.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Mar 2021 10:43:09 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: [RFC net] net: dsa: Centralize validation of VLAN configuration
+Date:   Tue,  9 Mar 2021 19:42:44 +0100
+Message-Id: <20210309184244.1970173-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-09_14:2021-03-09,2021-03-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- adultscore=0 bulkscore=0 phishscore=0 priorityscore=1501 spamscore=0
- impostorscore=0 mlxscore=0 malwarescore=0 mlxlogscore=673 clxscore=1015
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103090088
-X-FB-Internal: deliver
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There are three kinds of events that have an inpact on VLAN
+configuration of DSA ports:
 
+- Adding of stacked VLANs
+  (ip link add dev swp0.1 link swp0 type vlan id 1)
 
-On 3/9/21 10:21 AM, Roman Gushchin wrote:
-> On Mon, Mar 08, 2021 at 09:44:08PM -0800, Yonghong Song wrote:
->>
->>
->> On 3/5/21 1:10 PM, Yonghong Song wrote:
->>>
->>>
->>> On 3/5/21 12:38 PM, Roman Gushchin wrote:
->>>> On Thu, Mar 04, 2021 at 08:03:33PM +0100, Jiri Olsa wrote:
->>>>> hi,
->>>>> I'm getting attached BUG/crash when running in parralel selftests, like:
->>>>>
->>>>>     while :; do ./test_progs -t spinlock; done
->>>>>     while :; do ./test_progs ; done
->>>>>
->>>>> it's the latest bpf-next/master, I can send the .config if needed,
->>>>> but I don't think there's anything special about it, because I saw
->>>>> the bug on other servers with different generic configs
->>>>>
->>>>> it looks like it's related to cgroup local storage, for some reason
->>>>> the storage deref returns NULL
->>>>>
->>>>> I'm bit lost in this code, so any help would be great ;-)
->>>>
->>>> Hi!
->>>>
->>>> I think the patch to blame is df1a2cb7c74b ("bpf/test_run: fix
->>>> unkillable BPF_PROG_TEST_RUN").
->>>
->>> Thanks, Roman, I did some experiments and found the reason of NULL
->>> storage deref is because a tracing program (mostly like a kprobe) is run
->>> after bpf_cgroup_storage_set() is called but before bpf program calls
->>> bpf_get_local_storage(). Note that trace_call_bpf() macro
->>> BPF_PROG_RUN_ARRAY_CHECK does call bpf_cgroup_storage_set().
->>>
->>>> Prior to it, we were running the test program in the
->>>> preempt_disable() && rcu_read_lock()
->>>> section:
->>>>
->>>> preempt_disable();
->>>> rcu_read_lock();
->>>> bpf_cgroup_storage_set(storage);
->>>> ret = BPF_PROG_RUN(prog, ctx);
->>>> rcu_read_unlock();
->>>> preempt_enable();
->>>>
->>>> So, a percpu variable with a cgroup local storage pointer couldn't
->>>> go away.
->>>
->>> I think even with using preempt_disable(), if the bpf program calls map
->>> lookup and there is a kprobe bpf on function htab_map_lookup_elem(), we
->>> will have the issue as BPF_PROG_RUN_ARRAY_CHECK will call
->>> bpf_cgroup_storage_set() too. I need to write a test case to confirm
->>> this though.
->>>
->>>>
->>>> After df1a2cb7c74b we can temporarily enable the preemption, so
->>>> nothing prevents
->>>> another program to call into bpf_cgroup_storage_set() on the same cpu.
->>>> I guess it's exactly what happens here.
->>>
->>> It is. I confirmed.
->>
->> Actually, the failure is not due to breaking up preempt_disable(). Even with
->> adding cond_resched(), bpf_cgroup_storage_set() still happens
->> inside the preempt region. So it is okay. What I confirmed is that
->> changing migration_{disable/enable} to preempt_{disable/enable} fixed
->> the issue.
-> 
-> Hm, how so? If preemption is enabled, another task/bpf program can start
-> executing on the same cpu and set their cgroup storage. I guess it's harder
-> to reproduce or it will result in the (bpf map) memory corruption instead
-> of a panic, but I don't think it's safe.
+- Adding of bridged VLANs
+  (bridge vlan add dev swp0 vid 1)
 
-The code has been refactored recently. The following is the code right 
-before refactoring to make it easy to understand:
+- Changes to a bridge's VLAN filtering setting
+  (ip link set dev br0 type bridge vlan_filtering 1)
 
-         rcu_read_lock();
-         migrate_disable();
-         time_start = ktime_get_ns();
-         for (i = 0; i < repeat; i++) {
-                 bpf_cgroup_storage_set(storage);
+For all of these events, we want to ensure that some invariants are
+upheld:
 
-                 if (xdp)
-                         *retval = bpf_prog_run_xdp(prog, ctx);
-                 else
-                         *retval = BPF_PROG_RUN(prog, ctx);
+- For hardware where VLAN filtering is a global setting, either all
+  bridges must use VLAN filtering, or no bridge can.
 
-                 if (signal_pending(current)) {
-                         ret = -EINTR;
-                         break;
-                 }
+- For all filtering bridges, no stacked VLAN on any port may be
+  configured on multiple ports.
 
-                 if (need_resched()) {
-                         time_spent += ktime_get_ns() - time_start;
-                         migrate_enable();
-                         rcu_read_unlock();
+- For all filtering bridges, no stacked VLAN may be configured in the
+  bridge.
 
-                         cond_resched();
+Move the validation of these invariants to a central function, and use
+it from all sites where these events are handled. This way, we ensure
+that all invariants are always checked, avoiding certain configs being
+allowed or disallowed depending on the order in which commands are
+given.
 
-                         rcu_read_lock();
-                         migrate_disable();
-                         time_start = ktime_get_ns();
-                 }
-         }
-         time_spent += ktime_get_ns() - time_start;
-         migrate_enable();
-         rcu_read_unlock();
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
 
-bpf_cgroup_storage_set() is called inside migration_disable/enable().
-Previously it is called inside preempt_disable/enable(), so it should be 
-fine.
+There is still testing left to do on this, but I wanted to send early
+in order show what I meant by "generic" VLAN validation in this
+discussion:
 
-> 
->>
->> So migration_{disable/enable} is the issue since any other process (and its
->> bpf program) and preempted the current process/bpf program and run.
-> 
-> Oh, I didn't know about the preempt_{disable/enable}/migration_{disable/enable}
-> change. It's definitely not safe from a cgroup local storage perspective.
-> 
->> Currently for each program, we will set the local storage before the
->> program run and each program may access to multiple local storage
->> maps. So we might need something similar sk_local_storage.
->> Considering possibility of deep nested migration_{disable/enable},
->> the cgroup local storage has to be preserved in prog/map data
->> structure and not as a percpu variable as it will be very hard
->> to save and restore percpu virable content as migration can
->> happen anywhere. I don't have concrete design yet. Just throw some
->> idea here.
-> 
-> Initially I thought about saving this pointer on stack, but then we need
-> some sort of gcc/assembly magic to get this pointer from the stack outside
-> of the current scope. At that time we didn't have sleepable programs,
-> so the percpu approach looked simpler and more reliable. Maybe it's time
-> to review it.
+https://lore.kernel.org/netdev/87mtvdp97q.fsf@waldekranz.com/
 
-Indeed this is the time.
+This is basically an alternative implementation of 1/4 and 2/4 from
+this series by Vladimir:
 
-> 
->>
->> BTW, I send a patch to prevent tracing programs to mess up
->> with cgroup local storage:
->>     https://lore.kernel.org/bpf/20210309052638.400562-1-yhs@fb.com/T/#u
->> we now all programs access cgroup local storage should be in
->> process context and we don't need to worry about kprobe-induced
->> percpu local storage access.
-> 
-> Thank you! My only issue is that the commit log looks like an optimization
-> (like we're calling for set_cgroup_storage() for no good reason), where if
-> I understand it correctly, it prevents some class of problems.
+https://lore.kernel.org/netdev/20210309021657.3639745-1-olteanv@gmail.com/
 
-Yes, it prevents real problems as well. The reason I did not say it is 
-because the patch does not really fix fundamental issue. But it does
-prevent some issues. Let me reword the commit message.
+net/dsa/dsa_priv.h |   4 ++
+ net/dsa/port.c     | 167 ++++++++++++++++++++++++++++++++-------------
+ net/dsa/slave.c    |  31 +--------
+ 3 files changed, 125 insertions(+), 77 deletions(-)
 
-> 
-> Thanks!
-> 
->>
->>>
->>>>
->>>> One option to fix it is to make bpf_cgroup_storage_set() to return
->>>> the old value,
->>>> save it on a local variable and restore after the execution of the
->>>> program.
->>>
->>> In this particular case, we are doing bpf_test_run, we explicitly
->>> allocate storage and call bpf_cgroup_storage_set() right before
->>> each BPF_PROG_RUN.
->>>
->>>> But I didn't follow closely the development of sleepable bpf
->>>> programs, so I could
->>>> easily miss something.
->>>
->>> Yes, sleepable bpf program is another complication. I think we need a
->>> variable similar to bpf_prog_active, which should not nested bpf program
->>> execution for those bpf programs having local_storage map.
->>> Will try to craft some patch to facilitate the discussion.
->>>
->> [...]
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 9d4b0e9b1aa1..c88ef5a43612 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -188,6 +188,10 @@ int dsa_port_lag_change(struct dsa_port *dp,
+ int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
+ 		      struct netdev_lag_upper_info *uinfo);
+ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev);
++bool dsa_port_can_apply_stacked_vlan(struct dsa_port *dp, u16 vid,
++				     struct netlink_ext_ack *extack);
++bool dsa_port_can_apply_bridge_vlan(struct dsa_port *dp, u16 vid,
++				    struct netlink_ext_ack *extack);
+ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+ 			    struct netlink_ext_ack *extack);
+ bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index c9c6d7ab3f47..3bf457d6775d 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -292,72 +292,141 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag)
+ 	dsa_lag_unmap(dp->ds->dst, lag);
+ }
+ 
+-/* Must be called under rcu_read_lock() */
+-static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
+-					      bool vlan_filtering,
+-					      struct netlink_ext_ack *extack)
++static int dsa_port_stacked_vids_collect(struct net_device *vdev, int vid,
++					 void *_stacked_vids)
+ {
+-	struct dsa_switch *ds = dp->ds;
+-	int err, i;
++	unsigned long *stacked_vids = _stacked_vids;
++
++	if (test_bit(vid, stacked_vids))
++		return -EBUSY;
+ 
+-	/* VLAN awareness was off, so the question is "can we turn it on".
+-	 * We may have had 8021q uppers, those need to go. Make sure we don't
+-	 * enter an inconsistent state: deny changing the VLAN awareness state
+-	 * as long as we have 8021q uppers.
++	set_bit(vid, stacked_vids);
++	return 0;
++}
++
++static bool dsa_port_can_apply_vlan(struct dsa_port *dp, bool *mod_filter,
++				    u16 *stacked_vid, u16 *br_vid,
++				    struct netlink_ext_ack *extack)
++{
++	struct dsa_switch_tree *dst = dp->ds->dst;
++	unsigned long *stacked_vids = NULL;
++	struct dsa_port *other_dp;
++	bool filter;
++	u16 vid;
++
++	/* If the modification we are validating is not toggling VLAN
++	 * filtering, use the current setting.
+ 	 */
+-	if (vlan_filtering && dsa_is_user_port(ds, dp->index)) {
+-		struct net_device *upper_dev, *slave = dp->slave;
+-		struct net_device *br = dp->bridge_dev;
+-		struct list_head *iter;
++	if (mod_filter)
++		filter = *mod_filter;
++	else
++		filter = dp->bridge_dev && br_vlan_enabled(dp->bridge_dev);
+ 
+-		netdev_for_each_upper_dev_rcu(slave, upper_dev, iter) {
+-			struct bridge_vlan_info br_info;
+-			u16 vid;
++	/* For cases where enabling/disabling VLAN awareness is global
++	 * to the switch, we need to handle the case where multiple
++	 * bridges span different ports of the same switch device and
++	 * one of them has a different setting than what is being
++	 * requested.
++	 */
++	if (dp->ds->vlan_filtering_is_global) {
++		list_for_each_entry(other_dp, &dst->ports, list) {
++			if (!other_dp->bridge_dev ||
++			    other_dp->bridge_dev == dp->bridge_dev)
++				continue;
+ 
+-			if (!is_vlan_dev(upper_dev))
++			if (br_vlan_enabled(other_dp->bridge_dev) == filter)
+ 				continue;
+ 
+-			vid = vlan_dev_vlan_id(upper_dev);
+-
+-			/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
+-			 * device, respectively the VID is not found, returning
+-			 * 0 means success, which is a failure for us here.
+-			 */
+-			err = br_vlan_get_info(br, vid, &br_info);
+-			if (err == 0) {
+-				NL_SET_ERR_MSG_MOD(extack,
+-						   "Must first remove VLAN uppers having VIDs also present in bridge");
+-				return false;
+-			}
++			NL_SET_ERR_MSG_MOD(extack, "VLAN filtering is a global setting");
++			goto err;
+ 		}
++
+ 	}
+ 
+-	if (!ds->vlan_filtering_is_global)
++	if (!filter)
+ 		return true;
+ 
+-	/* For cases where enabling/disabling VLAN awareness is global to the
+-	 * switch, we need to handle the case where multiple bridges span
+-	 * different ports of the same switch device and one of them has a
+-	 * different setting than what is being requested.
+-	 */
+-	for (i = 0; i < ds->num_ports; i++) {
+-		struct net_device *other_bridge;
++	stacked_vids = bitmap_zalloc(VLAN_N_VID, GFP_KERNEL);
++	if (!stacked_vids) {
++		WARN_ON_ONCE(1);
++		goto err;
++	}
+ 
+-		other_bridge = dsa_to_port(ds, i)->bridge_dev;
+-		if (!other_bridge)
++	/* If the current operation is to add a stacked VLAN, mark it
++	 * as busy. */
++	if (stacked_vid)
++		set_bit(*stacked_vid, stacked_vids);
++
++	/* Forbid any VID used by a stacked VLAN to exist on more than
++	 * one port in the bridge, as the resulting configuration in
++	 * hardware would allow forwarding between those ports. */
++	list_for_each_entry(other_dp, &dst->ports, list) {
++		if (!dsa_is_user_port(other_dp->ds, other_dp->index) ||
++		    !other_dp->bridge_dev ||
++		    other_dp->bridge_dev != dp->bridge_dev)
+ 			continue;
+-		/* If it's the same bridge, it also has same
+-		 * vlan_filtering setting => no need to check
+-		 */
+-		if (other_bridge == dp->bridge_dev)
+-			continue;
+-		if (br_vlan_enabled(other_bridge) != vlan_filtering) {
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "VLAN filtering is a global setting");
+-			return false;
++
++		if (vlan_for_each(other_dp->slave, dsa_port_stacked_vids_collect,
++				  stacked_vids)) {
++			NL_SET_ERR_MSG_MOD(extack, "Two bridge ports cannot be "
++					   "the base interfaces for VLAN "
++					   "interfaces using the same VID");
++			goto err;
+ 		}
+ 	}
++
++	/* If the current operation is to add a bridge VLAN, make sure
++	 * that it is not used by a stacked VLAN. */
++	if (br_vid && test_bit(*br_vid, stacked_vids)) {
++		NL_SET_ERR_MSG_MOD(extack, "A bridge cannot use the same VID "
++				   "already in use by a VLAN interface "
++				   "configured on a bridge port");
++		goto err;
++	}
++
++	/* Ensure that no stacked VLAN is also configured on the bridge
++	 * offloaded by dp as that could result in leakage between
++	 * non-bridged ports. */
++	for_each_set_bit(vid, stacked_vids, VLAN_N_VID) {
++		struct bridge_vlan_info br_info;
++
++		if (br_vlan_get_info(dp->bridge_dev, vid, &br_info))
++			/* Error means that the VID does not exist,
++			 * which is what we want to ensure. */
++			continue;
++
++		NL_SET_ERR_MSG_MOD(extack, "A VLAN interface cannot use a VID "
++				   "that is already in use by a bridge");
++		goto err;
++	}
++
++	kfree(stacked_vids);
+ 	return true;
++
++err:
++	if (stacked_vids)
++		kfree(stacked_vids);
++	return false;
++}
++
++bool dsa_port_can_apply_stacked_vlan(struct dsa_port *dp, u16 vid,
++				     struct netlink_ext_ack *extack)
++{
++	return dsa_port_can_apply_vlan(dp, NULL, &vid, NULL, extack);
++}
++
++bool dsa_port_can_apply_bridge_vlan(struct dsa_port *dp, u16 vid,
++				    struct netlink_ext_ack *extack)
++{
++	return dsa_port_can_apply_vlan(dp, NULL, NULL, &vid, extack);
++}
++
++static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
++					      bool vlan_filtering,
++					      struct netlink_ext_ack *extack)
++{
++	return dsa_port_can_apply_vlan(dp, &vlan_filtering,
++				       NULL, NULL, extack);
+ }
+ 
+ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 992fcab4b552..fc0dfeb6b64c 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -363,19 +363,8 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+ 
+ 	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 
+-	/* Deny adding a bridge VLAN when there is already an 802.1Q upper with
+-	 * the same VID.
+-	 */
+-	if (br_vlan_enabled(dp->bridge_dev)) {
+-		rcu_read_lock();
+-		err = dsa_slave_vlan_check_for_8021q_uppers(dev, &vlan);
+-		rcu_read_unlock();
+-		if (err) {
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "Port already has a VLAN upper with this VID");
+-			return err;
+-		}
+-	}
++	if (!dsa_port_can_apply_bridge_vlan(dp, vlan.vid, extack))
++		return -EBUSY;
+ 
+ 	err = dsa_port_vlan_add(dp, &vlan, extack);
+ 	if (err)
+@@ -2083,28 +2072,14 @@ dsa_slave_check_8021q_upper(struct net_device *dev,
+ 			    struct netdev_notifier_changeupper_info *info)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+-	struct net_device *br = dp->bridge_dev;
+-	struct bridge_vlan_info br_info;
+ 	struct netlink_ext_ack *extack;
+-	int err = NOTIFY_DONE;
+ 	u16 vid;
+ 
+-	if (!br || !br_vlan_enabled(br))
+-		return NOTIFY_DONE;
+-
+ 	extack = netdev_notifier_info_to_extack(&info->info);
+ 	vid = vlan_dev_vlan_id(info->upper_dev);
+ 
+-	/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
+-	 * device, respectively the VID is not found, returning
+-	 * 0 means success, which is a failure for us here.
+-	 */
+-	err = br_vlan_get_info(br, vid, &br_info);
+-	if (err == 0) {
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "This VLAN is already configured by the bridge");
++	if (!dsa_port_can_apply_stacked_vlan(dp, vid, extack))
+ 		return notifier_from_errno(-EBUSY);
+-	}
+ 
+ 	return NOTIFY_DONE;
+ }
+-- 
+2.25.1
+
