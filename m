@@ -2,174 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA977332D56
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:33:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6BC332D6B
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:40:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbhCIRdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 12:33:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
+        id S230435AbhCIRkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 12:40:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbhCIRc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:32:58 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8899AC06174A
-        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 09:32:58 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id c131so14778711ybf.7
-        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 09:32:58 -0800 (PST)
+        with ESMTP id S230173AbhCIRjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:39:52 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE4CC06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 09:39:52 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id g27so14845245iox.2
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 09:39:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mC6GSB0uid26yRhPck2cvVLewHW5/W5pfsGZ0mx0qJg=;
-        b=a9IZV448IuDtvvuFPP1qVAio9cXYpLARi7lyW+S4reK+bI1OxU/Am9wi16v4AcJMVM
-         utH6e0uV34IoEFBIOiQIgmutB6BkNzYgfQ4OtTxorON5pgy7td4OiU3Qbb/MT3dakLy7
-         JIucSpG+D/11ICb9puq4bwkCwjslsb7Q5kUbbtKK1j5zFezxrLCTzU24n/t8ESiM3gvm
-         5uVsJCwNuKrpKg1bNtQnP5KUvJ8OfB6To9xubthAnwjTRgl1XNWBtGbouaRdymJ6w5B4
-         AuCicuAnv9blnqN00wYnp23ypDFykft55Cy4RTKOwEHqqJ+0b6K8wvBqiy7/b7Etbc8a
-         xxdg==
+        bh=lUaBBP/7pP4tS9Tf6LkqYKfvNFAq+wPQoN5CLfaWLvs=;
+        b=smX3pRbMx1Stj6rnMmLdF9Hm6gLrzk3ouuAuy+4LXFRNVmRxT4Kjiu4THJtrZ9hPNq
+         gQvpJ4SmCo+7Vvm9/PqmaMesPa78QnNhTCox0ok2VAN8TuFVNTxu8Dz/Tx9codycR1D6
+         rg7IZ4ufBchaT/YlmXeMqSH/SNxp5580BJtVcUkF3esqdCRhWo+iXkKt5cTEC5PCVjGi
+         9jwBUY5/DnzGh4ZEr+cH5d+mqgFzGboypnL9o6NFfgpw+nYcGZlE0RSjYjSrWLpXD0Mq
+         u9EH0lNyaF0eip/iUxLw2fPiudO+J6ODNeSrcP+3fstDUFoJLX6ZRF53MYCaWn+eQQkX
+         6myw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mC6GSB0uid26yRhPck2cvVLewHW5/W5pfsGZ0mx0qJg=;
-        b=p9qRqzXDjAJoZDaijs0h340VQO9IhFB1snDtGHt9vSl71+QBzlYOwGv+843tKFeV9D
-         3XMEir9kpIkLJ9lmfXSjQlgWZMGkatqbC8Kq70YM3/pmgyHBFCD8/mfA/4tDi3kWDq7x
-         5l+MWcEg1g6pkgpMvQT9+z66EGmc2Yd1/YGLVW+axH4LYbgCmxGjY2bVvaod4NYPoNJW
-         8cbXAm3li6JAJevvqwFZxNe61KRfelFoLLmbVhAMtVbsS8kniQRn4+54O1YgJdY/9MRx
-         CxVF+IPTeVCyJcrkztOCR5Kva5tVZjLNKu/lE73Xfr8CrZLNCpM/sqyJxTFsCK18IJQl
-         /MJg==
-X-Gm-Message-State: AOAM530zw9NvY3fireRpRttYUAh3sPL78DQrkLo3wSPr7kwPkDJpfZZv
-        FpmgfRmu8PcStK8hmdjs7pGa9WlD8ltMuqg1vyYRgA==
-X-Google-Smtp-Source: ABdhPJwHiV95n3FEBk1aXtSLPl643W9UqaemHjqNg+fL0Nm3QWdTE/3S1a84VE8r1kqtf8oRrHmhTb8d6cDa/mkpDzw=
-X-Received: by 2002:a25:2d59:: with SMTP id s25mr43733317ybe.187.1615311177509;
- Tue, 09 Mar 2021 09:32:57 -0800 (PST)
+        bh=lUaBBP/7pP4tS9Tf6LkqYKfvNFAq+wPQoN5CLfaWLvs=;
+        b=MSlXzEDNZV92WjhQuhVSNVdGHe9R6EGKAOTK/KZNzAzD7s3wJEneDvwE+R5hPS+imE
+         v6cPQ2nrtH70jF5GsZQyhN7KwQUZsfCpM7fnpzMNaGo1BYtkLs84K4yHYzfY6H66u0uh
+         OaR2rK2QlyfLWd9Ewe8HNlK1Dsmo31SEh6w3gxGCVRZnv+ldi3Y0CGQFQX7HYieT/Td1
+         6T1soQ6J1TsCqb0BZ/W8z5xkiiME35QPZzSGd+RKIp939pGCQUNSBAyQOyctKkH9l2gW
+         h6w9HtkjCbvrBtVO6QtLLVMDh5QUcEfP5xyY6Aa0Qp+LPPwHB1znyhQKaN7tHVFSMvnF
+         efqw==
+X-Gm-Message-State: AOAM530MMsfzaveelMgApOq3lCNltal4g3lkA4cn5Nij2Mnm7rb4V7dV
+        1bT9MI98l+/wWN0XB8GsiBIVbRpK1Mcd7ilcGSPAfnfSY0I=
+X-Google-Smtp-Source: ABdhPJydTGDzDZ4JJitnlBQnQFE2Vr3Jj0c3LBjKK/uEQdz/X0DOyADiq4Fg9EwzuCo/ZC26WYGE1rFhogfPHgukM54=
+X-Received: by 2002:a05:6638:1390:: with SMTP id w16mr29751069jad.83.1615311591557;
+ Tue, 09 Mar 2021 09:39:51 -0800 (PST)
 MIME-Version: 1.0
-References: <20210308192113.2721435-1-weiwan@google.com> <0d18e982-93de-5b88-b3a5-efb6ebd200f2@gmail.com>
- <YEcukkO7bsKYVqEZ@shredder.lan>
-In-Reply-To: <YEcukkO7bsKYVqEZ@shredder.lan>
-From:   Wei Wang <weiwan@google.com>
-Date:   Tue, 9 Mar 2021 09:32:47 -0800
-Message-ID: <CAEA6p_C8TRWsMCvs2x7nW9TYUwEyBrL46Li3oB-HjNwUDjNcwQ@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: fix suspecious RCU usage warning
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     David Ahern <dsahern@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
+References: <20210309031028.97385-1-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20210309031028.97385-1-xiangxia.m.yue@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 9 Mar 2021 09:39:40 -0800
+Message-ID: <CAKgT0UfZ0c4P4SMyCV9LAN=9PV=B6=0Ck+8jeZV4OxSGHnAuzg@mail.gmail.com>
+Subject: Re: [PATCH] net: sock: simplify tw proto registration
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 9, 2021 at 12:15 AM Ido Schimmel <idosch@idosch.org> wrote:
+On Mon, Mar 8, 2021 at 7:15 PM <xiangxia.m.yue@gmail.com> wrote:
 >
-> On Mon, Mar 08, 2021 at 07:47:31PM -0700, David Ahern wrote:
-> > [ cc Ido and Petr ]
-> >
-> > On 3/8/21 12:21 PM, Wei Wang wrote:
-> > > diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-> > > index 7bc057aee40b..48956b144689 100644
-> > > --- a/include/net/nexthop.h
-> > > +++ b/include/net/nexthop.h
-> > > @@ -410,31 +410,39 @@ static inline struct fib_nh *fib_info_nh(struct fib_info *fi, int nhsel)
-> > >  int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
-> > >                    struct netlink_ext_ack *extack);
-> > >
-> > > -static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
-> > > +static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh,
-> > > +                                         bool bh_disabled)
-> >
-> > Hi Wei: I would prefer not to have a second argument to nexthop_fib6_nh
-> > for 1 code path, and a control path at that.
-> >
-> > >  {
-> > >     struct nh_info *nhi;
-> > >
-> > >     if (nh->is_group) {
-> > >             struct nh_group *nh_grp;
-> > >
-> > > -           nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-> > > +           if (bh_disabled)
-> > > +                   nh_grp = rcu_dereference_bh_rtnl(nh->nh_grp);
-> > > +           else
-> > > +                   nh_grp = rcu_dereference_rtnl(nh->nh_grp);
-> > >             nh = nexthop_mpath_select(nh_grp, 0);
-> > >             if (!nh)
-> > >                     return NULL;
-> > >     }
-> > >
-> > > -   nhi = rcu_dereference_rtnl(nh->nh_info);
-> > > +   if (bh_disabled)
-> > > +           nhi = rcu_dereference_bh_rtnl(nh->nh_info);
-> > > +   else
-> > > +           nhi = rcu_dereference_rtnl(nh->nh_info);
-> > >     if (nhi->family == AF_INET6)
-> > >             return &nhi->fib6_nh;
-> > >
-> > >     return NULL;
-> > >  }
-> > >
-> >
-> > I am wary of duplicating code, but this helper is simple enough that it
-> > should be ok with proper documentation.
-> >
-> > Ido/Petr: I think your resilient hashing patch set touches this helper.
-> > How ugly does it get to have a second version?
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 >
-> It actually doesn't touch this helper. Looks fine to me:
-
-
-Thanks David and Ido.
-To clarify, David, you suggest we add a separate function instead of
-adding an extra parameter, right?
-
+> Introduce a new function twsk_prot_init, inspired by
+> req_prot_init, to simplify the "proto_register" function.
 >
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+>  net/core/sock.c | 44 ++++++++++++++++++++++++++++----------------
+>  1 file changed, 28 insertions(+), 16 deletions(-)
 >
-> diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-> index ba94868a21d5..6df9c12546fd 100644
-> --- a/include/net/nexthop.h
-> +++ b/include/net/nexthop.h
-> @@ -496,6 +496,26 @@ static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
->         return NULL;
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 0ed98f20448a..610de4295101 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -3475,6 +3475,32 @@ static int req_prot_init(const struct proto *prot)
+>         return 0;
 >  }
 >
-> +static inline struct fib6_nh *nexthop_fib6_nh_bh(struct nexthop *nh)
+> +static int twsk_prot_init(const struct proto *prot)
 > +{
-> +       struct nh_info *nhi;
+> +       struct timewait_sock_ops *twsk_prot = prot->twsk_prot;
 > +
-> +       if (nh->is_group) {
-> +               struct nh_group *nh_grp;
+> +       if (!twsk_prot)
+> +               return 0;
 > +
-> +               nh_grp = rcu_dereference_bh(nh->nh_grp);
-> +               nh = nexthop_mpath_select(nh_grp, 0);
-> +               if (!nh)
-> +                       return NULL;
+> +       twsk_prot->twsk_slab_name = kasprintf(GFP_KERNEL, "tw_sock_%s",
+> +                                             prot->name);
+> +       if (!twsk_prot->twsk_slab_name)
+> +               return -ENOMEM;
+> +
+> +       twsk_prot->twsk_slab =
+> +               kmem_cache_create(twsk_prot->twsk_slab_name,
+> +                                 twsk_prot->twsk_obj_size, 0,
+> +                                 SLAB_ACCOUNT | prot->slab_flags,
+> +                                 NULL);
+> +       if (!twsk_prot->twsk_slab) {
+> +               pr_crit("%s: Can't create timewait sock SLAB cache!\n",
+> +                       prot->name);
+> +               return -ENOMEM;
 > +       }
 > +
-> +       nhi = rcu_dereference_bh(nh->nh_info);
-> +       if (nhi->family == AF_INET6)
-> +               return &nhi->fib6_nh;
-> +
-> +       return NULL;
+> +       return 0;
 > +}
 > +
->  static inline struct net_device *fib6_info_nh_dev(struct fib6_info *f6i)
+
+So one issue here is that you have two returns but they both have the
+same error clean-up outside of the function. It might make more sense
+to look at freeing the kasprintf if the slab allocation fails and then
+using the out_free_request_sock_slab jump label below if the slab
+allocation failed.
+
+>  int proto_register(struct proto *prot, int alloc_slab)
 >  {
->         struct fib6_nh *fib6_nh;
-> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-> index ef9d022e693f..679699e953f1 100644
-> --- a/net/ipv6/ip6_fib.c
-> +++ b/net/ipv6/ip6_fib.c
-> @@ -2486,7 +2486,7 @@ static int ipv6_route_native_seq_show(struct seq_file *seq, void *v)
->         const struct net_device *dev;
+>         int ret = -ENOBUFS;
+> @@ -3496,22 +3522,8 @@ int proto_register(struct proto *prot, int alloc_slab)
+>                 if (req_prot_init(prot))
+>                         goto out_free_request_sock_slab;
 >
->         if (rt->nh)
-> -               fib6_nh = nexthop_fib6_nh(rt->nh);
-> +               fib6_nh = nexthop_fib6_nh_bh(rt->nh);
+> -               if (prot->twsk_prot != NULL) {
+> -                       prot->twsk_prot->twsk_slab_name = kasprintf(GFP_KERNEL, "tw_sock_%s", prot->name);
+> -
+> -                       if (prot->twsk_prot->twsk_slab_name == NULL)
+> -                               goto out_free_request_sock_slab;
+> -
+> -                       prot->twsk_prot->twsk_slab =
+> -                               kmem_cache_create(prot->twsk_prot->twsk_slab_name,
+> -                                                 prot->twsk_prot->twsk_obj_size,
+> -                                                 0,
+> -                                                 SLAB_ACCOUNT |
+> -                                                 prot->slab_flags,
+> -                                                 NULL);
+> -                       if (prot->twsk_prot->twsk_slab == NULL)
+> -                               goto out_free_timewait_sock_slab;
+> -               }
+> +               if (twsk_prot_init(prot))
+> +                       goto out_free_timewait_sock_slab;
+
+So assuming the code above takes care of freeing the slab name in case
+of slab allocation failure then this would be better off jumping to
+out_free_request_sock_slab.
+
+>         }
 >
->         seq_printf(seq, "%pi6 %02x ", &rt->fib6_dst.addr, rt->fib6_dst.plen);
+>         mutex_lock(&proto_list_mutex);
+> --
+> 2.27.0
+>
