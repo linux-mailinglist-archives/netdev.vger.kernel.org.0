@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C41AE332A55
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 16:25:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BE81332A58
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 16:25:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbhCIPYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 10:24:50 -0500
-Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:31246 "EHLO
+        id S231983AbhCIPZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 10:25:22 -0500
+Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:24765 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbhCIPYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 10:24:30 -0500
+        with ESMTP id S231699AbhCIPYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 10:24:48 -0500
 Received: from localhost.localdomain ([153.202.107.157])
         by mwinf5d20 with ME
-        id eFQD2400T3PnFJp03FQMkA; Tue, 09 Mar 2021 16:24:28 +0100
+        id eFQD2400T3PnFJp03FQjo9; Tue, 09 Mar 2021 16:24:47 +0100
 X-ME-Helo: localhost.localdomain
 X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Tue, 09 Mar 2021 16:24:28 +0100
+X-ME-Date: Tue, 09 Mar 2021 16:24:47 +0100
 X-ME-IP: 153.202.107.157
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
@@ -26,69 +26,60 @@ To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Randy Dunlap <rdunlap@infradead.org>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [RFC PATCH 0/1] Modify dql.min_limit value inside the driver
-Date:   Wed, 10 Mar 2021 00:23:53 +0900
-Message-Id: <20210309152354.95309-1-mailhol.vincent@wanadoo.fr>
+Subject: [RFC PATCH 1/1] dql: add dql_set_min_limit()
+Date:   Wed, 10 Mar 2021 00:23:54 +0900
+Message-Id: <20210309152354.95309-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210309152354.95309-1-mailhol.vincent@wanadoo.fr>
+References: <20210309152354.95309-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abstract: would like to directly set dql.min_limit value inside a
-driver to improve BQL performances of a CAN USB driver.
+Add a function to set the dynamic queue limit minimum value.
 
-CAN packets have a small PDU: for classical CAN maximum size is
-roughly 16 bytes (8 for payload and 8 for arbitration, CRC and
-others).
+This function is to be used by network drivers which are able to
+prove, at least through empirical tests, that they reach better
+performances with a specific predefined dql.min_limit value.
 
-I am writing an CAN driver for an USB interface. To compensate the
-extra latency introduced by the USB, I want to group several CAN
-frames and do one USB bulk send. To this purpose, I implemented BQL in
-my driver.
-
-However, the BQL algorithms can take time to adjust, especially if
-there are small bursts.
-
-The best way I found is to directly modify the dql.min_limit and set
-it to some empirical values. This way, even during small burst events
-I can have a good throughput. Slightly increasing the dql.min_limit
-has no measurable impact on the latency as long as frames fit in the
-same USB packet (i.e. BQL overheard is negligible compared to USB
-overhead).
-
-The BQL was not designed for USB nor was it designed for CAN's small
-PDUs which probably explains why I am the first one to ever have
-thought of using dql.min_limit within the driver.
-
-The code I wrote looks like:
-
-> #ifdef CONFIG_BQL
->	netdev_get_tx_queue(netdev, 0)->dql.min_limit = <some empirical value>;
-> #endif
-
-Using #ifdef to set up some variables is not a best practice. I am
-sending this RFC to see if we can add a function to set this
-dql.min_limit in a more pretty way.
-
-For your reference, this RFQ is a follow-up of a discussion on the
-linux-can mailing list:
-https://lore.kernel.org/linux-can/20210309125708.ei75tr5vp2sanfh6@pengutronix.de/
-
-Thank you for your comments.
-
-Yours sincerely,
-Vincent
-
-
-Vincent Mailhol (1):
-  dql: add dql_set_min_limit()
-
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
  include/linux/dynamic_queue_limits.h | 3 +++
  lib/dynamic_queue_limits.c           | 8 ++++++++
  2 files changed, 11 insertions(+)
 
+diff --git a/include/linux/dynamic_queue_limits.h b/include/linux/dynamic_queue_limits.h
+index 407c2f281b64..32437f168a35 100644
+--- a/include/linux/dynamic_queue_limits.h
++++ b/include/linux/dynamic_queue_limits.h
+@@ -103,6 +103,9 @@ void dql_reset(struct dql *dql);
+ /* Initialize dql state */
+ void dql_init(struct dql *dql, unsigned int hold_time);
+ 
++/* Set the dql minimum limit */
++void dql_set_min_limit(struct dql *dql, unsigned int min_limit);
++
+ #endif /* _KERNEL_ */
+ 
+ #endif /* _LINUX_DQL_H */
+diff --git a/lib/dynamic_queue_limits.c b/lib/dynamic_queue_limits.c
+index fde0aa244148..8b6ad1e0a2e3 100644
+--- a/lib/dynamic_queue_limits.c
++++ b/lib/dynamic_queue_limits.c
+@@ -136,3 +136,11 @@ void dql_init(struct dql *dql, unsigned int hold_time)
+ 	dql_reset(dql);
+ }
+ EXPORT_SYMBOL(dql_init);
++
++void dql_set_min_limit(struct dql *dql, unsigned int min_limit)
++{
++#ifdef CONFIG_BQL
++	dql->min_limit = min_limit;
++#endif
++}
++EXPORT_SYMBOL(dql_set_min_limit);
 -- 
 2.26.2
 
