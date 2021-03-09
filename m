@@ -2,94 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7695733225F
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 10:54:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D54EC33228D
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 11:06:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbhCIJyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 04:54:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
+        id S230094AbhCIKFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 05:05:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbhCIJyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 04:54:02 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107B5C06174A;
-        Tue,  9 Mar 2021 01:54:02 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id p21so8413843pgl.12;
-        Tue, 09 Mar 2021 01:54:02 -0800 (PST)
+        with ESMTP id S230081AbhCIKF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 05:05:27 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8E3C06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 02:05:27 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id v14so1507172pgq.2
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 02:05:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=F8WddIIudwuJ61pKa+W6PjZ144FyjkUIPXeQD/ma1qE=;
-        b=CVVcHI+fJnpAH1S/RCqbtBrgX3/XJnpBTRnwG4hOHCLelbU8TWSxzQjW/gx7ocYyyI
-         TUaoNq4VZzeMIkaJchXyBKY0kEcwobsfPLZKjc4V2pNWr81fF5J0qrp9P3ZSVdTq33em
-         Pnn/QrLEevm1sodLUM+FQeyfAam55uJEFwRHAdIGePqCYjmw6/JuHXA26eymVoYRZaPf
-         gb0kveaIq4/gO54jTM48ZHZbZea3/xviTI8SzM3b6nDioutFcgpHP2lxp+weN7mfiHs2
-         jZUUIoY4VkR3T9ZfHIRIbfjuCDWjHZOdUaV+zeTF4ok1XEtL1e6VwyQf6QVo9qMKQE9V
-         gNjg==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=6AB1N2CEv1uO/OWrbLkb4xKVAC6/jBjIAgWr7ep8KF8=;
+        b=Zam6xvd74inMCe6W6qKCfKBC/7XBFqag5Itx2WPzWuUaAWHm3GQMKyr+dh9oIEGht/
+         95teKgro7AVWEwcKdpp2hh1V45+JIGQWwkqHE0u2iXQidkK3qn2AiGiGdxx5CMuUEqBd
+         YRFnajakjCeBXj0YidBMkvlLWyLgk96GyMbhITJQBdmWMiNk1W2Val9Yif9buSXjkHZt
+         Y5KvIqdmoYEOkWOiSVAGH4R3R6jFeH3fKmo3eNfbj0pNA/vaOa1N5MzxohgHWDAtJlSp
+         5XGPn86ENYR/OQ/Uiq4ksYhnRDGfhzj5BlmGDWqshuQNsz+GhVlKYUr4xV8EkpXtWsxJ
+         jhJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=F8WddIIudwuJ61pKa+W6PjZ144FyjkUIPXeQD/ma1qE=;
-        b=s87ppxNkBwNgjWCEtpA78W4k+8Iao1LJv5QeA4OkZ1zJk023/mc9AKfkjABQGu6NWU
-         slVWUToWAz8e7etyes+iNI4kOfXryTa82einWCpbXM9vNjG1afd2BjcB+aqB/fO1AZdG
-         eYXnJ1K1G66o3kM1zTDi6UWbITLwxbA2IgQF7+v5lkbL3p4JtBlgfMwYrRo1vmH014NC
-         2DHNhol3M1ltz0sgAfwj1s3jYCqnaK6nk+oNhTqCBTzoRI3p1bZOK8+tTvLtngiumd2P
-         QUZqEVnYtfLUqQ56JsM5j2eipl8Ieewa0yJZFV/zrpGux9UsTXwsq68NyjX0RsQUVi5p
-         RT+A==
-X-Gm-Message-State: AOAM533ASNd2PoXblImLVOYU72LYEE+A1VlQ4g2gUlaLd2R4JeVl/RKe
-        bywg7HO88vzlb+gviLhUGcQ=
-X-Google-Smtp-Source: ABdhPJy7KFEkjn45gBVKdgPTFz2yDq6DuP8b6pajrTO6hEQx7IaayM4aW74x622TxDYTIXEaFsWoqQ==
-X-Received: by 2002:aa7:9418:0:b029:1f7:de99:9a29 with SMTP id x24-20020aa794180000b02901f7de999a29mr6518273pfo.69.1615283641666;
-        Tue, 09 Mar 2021 01:54:01 -0800 (PST)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 134sm12941763pfc.113.2021.03.09.01.53.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Mar 2021 01:54:01 -0800 (PST)
-Date:   Tue, 9 Mar 2021 17:53:49 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     kernel test robot <lkp@intel.com>, bpf@vger.kernel.org,
-        kbuild-all@01.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH bpf-next 2/4] xdp: extend xdp_redirect_map with broadcast
- support
-Message-ID: <20210309095349.GX2900@Leo-laptop-t470s>
-References: <20210309072948.2127710-3-liuhangbin@gmail.com>
- <202103091607.YXhmDMeL-lkp@intel.com>
- <20210309085530.GW2900@Leo-laptop-t470s>
- <5dfb1386-3369-47b6-7c07-08bd44d02e47@iogearbox.net>
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=6AB1N2CEv1uO/OWrbLkb4xKVAC6/jBjIAgWr7ep8KF8=;
+        b=rsmvLAc4j1ap51IrK7XedlW65DIaKlRDBZnEJzOMy9C6wgP4a/QS5jtottVfmorUhx
+         T/q4t5PzPDtXgnRmjyYo0ea9TLuSTe/qwxzEMetiw7fDm4fFnaXoLpuCWArHtF5YRjBg
+         YwUENgUbV/jlMFHsc+CWwGZF4+an9rKDcyp7wqq6tBfIMgPn4AUMucLdNX2XfpOI8cMN
+         lmH4JQfzUFE/UKTF2flpanLdmmN0NcduYbKbvxfmhUS855fCgPaGIakd6w8cp15iwpYp
+         IdDI8dbXu/Vyghsg3sJnxvYXOMhcKpOaclYqsxbB43A+nyoGsagmd3xVSCmIBRwJnmjP
+         508Q==
+X-Gm-Message-State: AOAM533swzPCg1YYqOeUrUtSK/p5ngWLdsRI0cW6xMFJJEeINNW1Vtpc
+        I7tW2lGQI5ayAmScQ0UKDJAKXfOQkaQ+FmJUpAs=
+X-Google-Smtp-Source: ABdhPJy5C4agGoFJsW0fTT+hAYiE8YAJhkCSnsbTFeaX5W7VN7LzBOu5W/L+jAb0Gi1Xdse28PORebMgKcb78WVHUtg=
+X-Received: by 2002:a63:d54a:: with SMTP id v10mr10363974pgi.83.1615284326927;
+ Tue, 09 Mar 2021 02:05:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5dfb1386-3369-47b6-7c07-08bd44d02e47@iogearbox.net>
+Sender: brianphilippe50@gmail.com
+Received: by 2002:a17:90a:9516:0:0:0:0 with HTTP; Tue, 9 Mar 2021 02:05:26
+ -0800 (PST)
+From:   "Mrs. Nadia Emaan" <mrsnadiaemaan50@gmail.com>
+Date:   Tue, 9 Mar 2021 10:05:26 +0000
+X-Google-Sender-Auth: YSJelsI3NcEq6ud3gv9qrxnzH7A
+Message-ID: <CAGvUTU_U-RTogPYyOEoQn7LJ-rNAvjsfSwKHeRN4=93U7XjEzA@mail.gmail.com>
+Subject: May the peace of Almighty God be with You!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 09, 2021 at 10:09:41AM +0100, Daniel Borkmann wrote:
-> On 3/9/21 9:55 AM, Hangbin Liu wrote:
-> > On Tue, Mar 09, 2021 at 04:22:44PM +0800, kernel test robot wrote:
-> > > Hi Hangbin,
-> > > 
-> > > Thank you for the patch! Yet something to improve:
-> > 
-> > Thanks, I forgot to modify it when rename the flag name.
-> 
-> Sigh, so this was not even compiled prior to submission ... ? :-(
+May God Bless you,
 
-I usually do compile the code before submission. Some times I may skip
-it if only need a small fix..
+I am contacting you through this means because I need your urgent
+assistance and also help me to carry a charity project in your
+country. I found your email address as a true child of God for past
+few days now that I have been praying to know if you are really the
+chosen one for this great charity project, according to God's
+direction, after all prayers I am convinced, and I have decided to
+contact you. Please, i want you use the funds for the Lord's work,
+with confidence, read and respond now.
 
-I compiled the code before rename the flags. After renaming the header file,
-I was interrupted by some other works and forgot to go on...
 
-I will fix it and re-submit.
+My name is Ms. Nadia Emaan Faroul , a widow, but currently based in West
+Africa since my life with my late husband, who was a businessman in
+this country before dying some years ago. We were married to many
+years without a child. He died after a brief illness that lasted only
+six days and I myself have been suffering from an ovarian cancer
+disease. At this moment I am about to finish the race in this way
+because the disease has reached a very bad stage, without any family
+member and without children. I hope you do not expose or betray this
+trust and I am sure that I am about to trust you for the mutual
+benefit of orphans and the less privileged. I have some funds that I
+inherited from my late husband, the total sum of ($ 12,500,000.00)
+deposited at a bank here in Burkina Faso. After knowing my current
+state of health, I decided to trust you with this fund, believing that
+you will use it in the way I will instruct here.
 
-Hangbin
+
+you will use this $12.5 Million for public benefit as follows;
+
+1. Establish An Orphanage Home To Help The Orphanages Children.
+2. Build A Hospital To Help The Poor.
+3. Build A Nursing Home For Elderly People Need Care & Meal.
+
+You will named them after my late husband.Therefore, I need you to
+help me and claim this money and use it for charities, for orphanages
+and provide justice and help to the poor, needy and to promote the
+words of God and the effort to maintain the house of God, according to
+the bible in the book of. Jeremiah 22: 15-16, without minding our
+different religions.
+
+It will be a pleasure to compensate with 40% percent of the total
+money for your effort in handling the transaction, while 60% of the
+money will go to charity project.
+
+All I need from you is sincerity and ability to complete the task of
+God without any failure. It will be my pleasure to see that the bank
+has finally released and transferred the fund to your bank account in
+the country, even before I die here in the hospital, due to my current
+state of health, everything must be processed as soon as possible.
+
+I am waiting for your immediate response, if you are only interested
+in obtaining more details about the transaction and execution of this
+humanitarian project for the glory and honor of God.
+
+Sorry if you received this letter in your spam, is due to recent
+connection/network error here in the country.
+
+Please I am waiting for your urgent reply now.
+
+May God Bless you,
+Mrs. Nadia Emaan Faroul .
