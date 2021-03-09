@@ -2,165 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CC6D331E0A
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 05:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D34C331E08
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 05:45:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbhCIEpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Mar 2021 23:45:30 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:51694 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230058AbhCIEpV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 23:45:21 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0UR1RlrC_1615265117;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UR1RlrC_1615265117)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 09 Mar 2021 12:45:17 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: add net namespace inode for all net_dev events
-Date:   Tue,  9 Mar 2021 12:43:50 +0800
-Message-Id: <20210309044349.6605-1-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.30.1
+        id S229992AbhCIEo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 23:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230084AbhCIEod (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 23:44:33 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7420C06174A
+        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 20:44:32 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id z128so11797225qkc.12
+        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 20:44:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ltvKTW8eEl4RxOaDXTwIFC8Z6ICSvQpFGMDcsXS9kbo=;
+        b=O0oM4wJ/TwOxLnmn8rzkoXoWrQ1JckhN/6bnjBK49UwduBSuOnyLjMcKmPo7UbQKCY
+         5T+1zFv9d/DEv3u+JoMInPX44I04VL+ZbhUMxlycywt+AXOcPCJ9Nf7PEp80eh2B0Ey4
+         E8/HYiVRW0nPx7WgtCkjmIif5MJSKEBTh3Sn3Ds/YS6OotSXNGg7XxBESgBnrmjrb3wr
+         FceX+dxexPl5K32DBY0cWIlh1U4PHkKAfbw8SQyYKLPTexYL9u0ZBonqm6RkL7JiAUCs
+         0WsN+uRlK4cQhQFRm1qoQ112XV7z2TcrXjQzgZo64uYrgm+3/AGK8d4I6gVX+2bhqYi8
+         R93w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ltvKTW8eEl4RxOaDXTwIFC8Z6ICSvQpFGMDcsXS9kbo=;
+        b=SU8MDbxYYcKgVtlub6OY4K7MIuEMV3ZSSdVq6AGkwFBwmNexvdInyuqw5juAVyd463
+         C69DF+jf/+afSnusT/Sl7B85bSfhOfKKtdC5jA2uH7iWk75oln+RJPYSPEum0xC7NhbD
+         mpM4IwaXOFMEguPdqn/zwjpsHjmEPKPnTY1Qk6prvXMVP9yJEK/HJGf6GiwHBuBwvImk
+         2ZFcZdOvxPJ38Uyr/sLD6xJmyZETkwHM7suYGeeoGMiHmb4MRrVvr8cYtgBV6vvjSb4W
+         8dcUdIfzecKDe1dH/mGruS3gFxSO3PNcQ+8ka7EKdjHc1Cat1pIBbqFV+E5CkFYoZuXz
+         XaHA==
+X-Gm-Message-State: AOAM530s6eVZ90AGZa+cdn9MtVkkF2N0O8Rqlyh58upc82uLkkFLwfIk
+        AExhO4/dnS3p99QniWiUgQ==
+X-Google-Smtp-Source: ABdhPJwnsRQkrLT87FEOwa5K2PCohOQHikPFQYrzRabo190fz5LUNdyjUyP7gKox1fdgeaC0sCvPUA==
+X-Received: by 2002:ae9:f706:: with SMTP id s6mr24669746qkg.163.1615265072085;
+        Mon, 08 Mar 2021 20:44:32 -0800 (PST)
+Received: from ICIPI.localdomain ([136.56.65.87])
+        by smtp.gmail.com with ESMTPSA id l186sm9208853qke.92.2021.03.08.20.44.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Mar 2021 20:44:31 -0800 (PST)
+Date:   Mon, 8 Mar 2021 23:44:24 -0500
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Yogesh Ankolekar <ayogesh@juniper.net>,
+        Girish Kumar S <girik@juniper.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Linux Ipv6 stats support
+Message-ID: <20210309044424.GA11084@ICIPI.localdomain>
+References: <PH0PR05MB7557A2136390919FB11B6714AAA09@PH0PR05MB7557.namprd05.prod.outlook.com>
+ <PH0PR05MB755758D4F271A5DB8897864AAABD9@PH0PR05MB7557.namprd05.prod.outlook.com>
+ <PH0PR05MB77013792D0D90212B1AA0D9EBABD9@PH0PR05MB7701.namprd05.prod.outlook.com>
+ <a1c21b7c-c345-0f05-2db1-3f94a2ad4f6a@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <a1c21b7c-c345-0f05-2db1-3f94a2ad4f6a@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are lots of net namespaces on the host runs containers like k8s.
-It is very common to see the same interface names among different net
-namespaces, such as eth0. It is not possible to distinguish them without
-net namespace inode.
+On Tue, Jan 26, 2021 at 09:05:22AM -0700, David Ahern wrote:
+> On 1/25/21 4:26 AM, Yogesh Ankolekar wrote:
+> > 
+> >    We are looking for below IPv6 stats support in linux. Looks below
+> > stats are not supported. Will these stats will be supported in future or
+> > it is already supported in some version. Please guide.
+> 
+> I am not aware of anyone working on adding more stats for IPv6. Stephen
+> Suryaputra attempted to add stats a few years back as I believe the
+> resistance was around memory and cpu usage for stats in the hot path.
 
-This adds net namespace inode for all net_dev events, help us
-distinguish between different net devices.
+Sorry that I missed this. At that time it was IPv4 ifstats. I'm missing
+the rest of the context here. Which IPv6 stats are being discussed here?
 
-Output:
-  <idle>-0       [006] ..s.   133.306989: net_dev_xmit: net_inum=4026531992 dev=eth0 skbaddr=0000000011a87c68 len=54 rc=0
+For my company, we have been doing the v4 stats using the implementation
+that I brought up to netdev then. It is useful to debug forwarding
+errors but it is an overhead having the out of tree patch everytime
+kernel upgrade is needed, esp on upgrade to a major version.
 
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
----
- include/trace/events/net.h | 35 +++++++++++++++++++++++++----------
- 1 file changed, 25 insertions(+), 10 deletions(-)
+Thank you,
 
-diff --git a/include/trace/events/net.h b/include/trace/events/net.h
-index 2399073c3afc..a52f90d83411 100644
---- a/include/trace/events/net.h
-+++ b/include/trace/events/net.h
-@@ -35,6 +35,7 @@ TRACE_EVENT(net_dev_start_xmit,
- 		__field(	u16,			gso_size	)
- 		__field(	u16,			gso_segs	)
- 		__field(	u16,			gso_type	)
-+		__field(	unsigned int,		net_inum	)
- 	),
- 
- 	TP_fast_assign(
-@@ -56,10 +57,12 @@ TRACE_EVENT(net_dev_start_xmit,
- 		__entry->gso_size = skb_shinfo(skb)->gso_size;
- 		__entry->gso_segs = skb_shinfo(skb)->gso_segs;
- 		__entry->gso_type = skb_shinfo(skb)->gso_type;
-+		__entry->net_inum = dev_net(skb->dev)->ns.inum;
- 	),
- 
--	TP_printk("dev=%s queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d len=%u data_len=%u network_offset=%d transport_offset_valid=%d transport_offset=%d tx_flags=%d gso_size=%d gso_segs=%d gso_type=%#x",
--		  __get_str(name), __entry->queue_mapping, __entry->skbaddr,
-+	TP_printk("net_inum=%u dev=%s queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d len=%u data_len=%u network_offset=%d transport_offset_valid=%d transport_offset=%d tx_flags=%d gso_size=%d gso_segs=%d gso_type=%#x",
-+		  __entry->net_inum, __get_str(name), __entry->queue_mapping,
-+		  __entry->skbaddr,
- 		  __entry->vlan_tagged, __entry->vlan_proto, __entry->vlan_tci,
- 		  __entry->protocol, __entry->ip_summed, __entry->len,
- 		  __entry->data_len,
-@@ -82,6 +85,7 @@ TRACE_EVENT(net_dev_xmit,
- 		__field(	unsigned int,	len		)
- 		__field(	int,		rc		)
- 		__string(	name,		dev->name	)
-+		__field(	unsigned int,	net_inum	)
- 	),
- 
- 	TP_fast_assign(
-@@ -89,10 +93,12 @@ TRACE_EVENT(net_dev_xmit,
- 		__entry->len = skb_len;
- 		__entry->rc = rc;
- 		__assign_str(name, dev->name);
-+		__entry->net_inum = dev_net(skb->dev)->ns.inum;
- 	),
- 
--	TP_printk("dev=%s skbaddr=%p len=%u rc=%d",
--		__get_str(name), __entry->skbaddr, __entry->len, __entry->rc)
-+	TP_printk("net_inum=%u dev=%s skbaddr=%p len=%u rc=%d",
-+		__entry->net_inum, __get_str(name), __entry->skbaddr,
-+		__entry->len, __entry->rc)
- );
- 
- TRACE_EVENT(net_dev_xmit_timeout,
-@@ -106,16 +112,19 @@ TRACE_EVENT(net_dev_xmit_timeout,
- 		__string(	name,		dev->name	)
- 		__string(	driver,		netdev_drivername(dev))
- 		__field(	int,		queue_index	)
-+		__field(	unsigned int,	net_inum	)
- 	),
- 
- 	TP_fast_assign(
- 		__assign_str(name, dev->name);
- 		__assign_str(driver, netdev_drivername(dev));
- 		__entry->queue_index = queue_index;
-+		__entry->net_inum = dev_net(dev)->ns.inum;
- 	),
- 
--	TP_printk("dev=%s driver=%s queue=%d",
--		__get_str(name), __get_str(driver), __entry->queue_index)
-+	TP_printk("net_inum=%u dev=%s driver=%s queue=%d",
-+		__entry->net_inum, __get_str(name), __get_str(driver),
-+		__entry->queue_index)
- );
- 
- DECLARE_EVENT_CLASS(net_dev_template,
-@@ -128,16 +137,19 @@ DECLARE_EVENT_CLASS(net_dev_template,
- 		__field(	void *,		skbaddr		)
- 		__field(	unsigned int,	len		)
- 		__string(	name,		skb->dev->name	)
-+		__field(	unsigned int,	net_inum	)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->skbaddr = skb;
- 		__entry->len = skb->len;
- 		__assign_str(name, skb->dev->name);
-+		__entry->net_inum = dev_net(skb->dev)->ns.inum;
- 	),
- 
--	TP_printk("dev=%s skbaddr=%p len=%u",
--		__get_str(name), __entry->skbaddr, __entry->len)
-+	TP_printk("net_inum=%u dev=%s skbaddr=%p len=%u",
-+		__entry->net_inum, __get_str(name), __entry->skbaddr,
-+		__entry->len)
- )
- 
- DEFINE_EVENT(net_dev_template, net_dev_queue,
-@@ -187,6 +199,7 @@ DECLARE_EVENT_CLASS(net_dev_rx_verbose_template,
- 		__field(	unsigned char,		nr_frags	)
- 		__field(	u16,			gso_size	)
- 		__field(	u16,			gso_type	)
-+		__field(	unsigned int,		net_inum	)
- 	),
- 
- 	TP_fast_assign(
-@@ -213,10 +226,12 @@ DECLARE_EVENT_CLASS(net_dev_rx_verbose_template,
- 		__entry->nr_frags = skb_shinfo(skb)->nr_frags;
- 		__entry->gso_size = skb_shinfo(skb)->gso_size;
- 		__entry->gso_type = skb_shinfo(skb)->gso_type;
-+		__entry->net_inum = dev_net(skb->dev)->ns.inum;
- 	),
- 
--	TP_printk("dev=%s napi_id=%#x queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d hash=0x%08x l4_hash=%d len=%u data_len=%u truesize=%u mac_header_valid=%d mac_header=%d nr_frags=%d gso_size=%d gso_type=%#x",
--		  __get_str(name), __entry->napi_id, __entry->queue_mapping,
-+	TP_printk("net_inum=%u dev=%s napi_id=%#x queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d hash=0x%08x l4_hash=%d len=%u data_len=%u truesize=%u mac_header_valid=%d mac_header=%d nr_frags=%d gso_size=%d gso_type=%#x",
-+		  __entry->net_inum, __get_str(name), __entry->napi_id,
-+		  __entry->queue_mapping,
- 		  __entry->skbaddr, __entry->vlan_tagged, __entry->vlan_proto,
- 		  __entry->vlan_tci, __entry->protocol, __entry->ip_summed,
- 		  __entry->hash, __entry->l4_hash, __entry->len,
--- 
-2.19.1.6.gb485710b
-
+Stephen.
