@@ -2,134 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0958332D98
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:54:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 433D7332DAC
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231645AbhCIRxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 12:53:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46704 "EHLO
+        id S230425AbhCIR5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 12:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbhCIRxn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:53:43 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8881FC06174A;
-        Tue,  9 Mar 2021 09:53:43 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id c16so6992164ply.0;
-        Tue, 09 Mar 2021 09:53:43 -0800 (PST)
+        with ESMTP id S231840AbhCIR5M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:57:12 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F3EC06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 09:57:12 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id f12so17429031wrx.8
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 09:57:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O49svl5hJ5oi9Ex6IPLrJLltCuLctoPeu6fqaqxZkyQ=;
-        b=kgLVDdWZaA5sXk1CHfRrOMHRBFmCz+nqGzaUIGsSqSzBu25ogoSpTLCxKqm/115qhz
-         TOcyrcMryK5H9tN1uJhoPb7OTMFFUO2ob0EjVcTDyd9wOj+kGq9qIdxUD6hdfoJLlEpr
-         4K7ZA5Cu++SSGwH1jcJmdX0e0rRjAHTyDreJy9Ld03q8cqRWME6i0UlljwmQmaW6JAFU
-         VwJ4NCHZ3OZj9GmBBjUZNqPXdE8QvZ6Nr+yNIZjmQOa6/kzOvhCmXUWyL2OJBrdX/V4z
-         bXLlG0eVbnKzuKhtuTouWdeimyO7p7eeKCnQnT0lIKXxg2KLlQvGmi8prsVw7i6m7oMe
-         AopQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OZ1afXUkFipehQmyzlYhzPLXHPkEEXtXkPM0N1xgILo=;
+        b=ZTFsEiR7X+shbgZLU+Bv2vOj2OiWfZcOcpROM+Stx+FYrO6a5bSLNA+rqRTE8CaVZU
+         eIheGiksmJcQe3iEqqvg6CQMUuKRvSnzxz99lxqtAwe655FtFXEr+Zt8JWuZRklGNRc/
+         zKctEUhckCai/L0EyrzsE2SfaXbCHNVlMAYpNuXEDgb2U5yfeWrC2P9ObGhII6SfFB/Y
+         sA7YwuVQRk9I2FxSxuodxJ/VViTAAGMES6A5VUkGxPdbhowUjS+VzLZy/Km8ytpa0cJy
+         NujLsKI6+mV7QiVfVaq/8iEFOlo6lTp3Xro7EqrwTciIiL3ty0B+hrXZQGavQgbz88yS
+         Ed2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O49svl5hJ5oi9Ex6IPLrJLltCuLctoPeu6fqaqxZkyQ=;
-        b=sWl9HdY8x9vIEDBxdfoy4e+jZR4vKR6uvL5it/jiwT1LikDSMGclPAZI/UDZeq3l72
-         O4j3TXG1rQTekziVBLz/zWt+e10BfmTIhbiUFAcJP724oW9HhdNle9J8eQ0yMUS61mf1
-         3Y9M4qfvwOQpd3RWLzUx6ubJsIGjhdck1Z7FD57+7LfTuwg5ss11eCaz8sPmLJFxHupb
-         GH5B7oQKk+HV0yZo93n4T9iDL76URox7HBHfbPwvSQBSh66YIJR5+IPeVkg2KXqtaW9Q
-         wXmztOdBjU6oQv1dbtlW70FRZKpzlsdhvnFZ6bKrt5F9+wtBcMFcjIDB5QRCpzwzXlNe
-         d9IQ==
-X-Gm-Message-State: AOAM532ITYTELRQ+R1OKtyKvOWySFdnpS3sxACl5bDExQaFfc0Azpy+a
-        TqRrrzTC15eOCpe4iw4rzcr+vFqLFDDKXy6+8f8=
-X-Google-Smtp-Source: ABdhPJx5yr6ZF9T6MC2DvhYv9EuqFpeOtEYxrDKLG0l1tWVJzRz+KRncWy1+yY17Tp8kHiJ4XiQs6y1Qw3+511+u5H8=
-X-Received: by 2002:a17:90a:8b16:: with SMTP id y22mr5676763pjn.191.1615312423130;
- Tue, 09 Mar 2021 09:53:43 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OZ1afXUkFipehQmyzlYhzPLXHPkEEXtXkPM0N1xgILo=;
+        b=ZY1DuWASX9NrsoinZo4bhMJsHJyt+kUYTVx2sTU2rOxV+eQlBYseIf8MHVQSlvG4oV
+         Sx6JGnRz2iaHpy1Kk6935bq9Dbw9qMIMt/9yma+8qJShjT1mQLzWYz4TWKnJrEVXJ87k
+         dxAoDAaqgqv5x7IxpL6SGfIod0a0wdXKwRtm1EVTiwQKc2EzE8dQCrrfO1nS5j9blZA0
+         lrfVorc8CLGVg4Ur04/8Ma/8pEWe0s2jGArpt06yZ34k2IV7noPhRMjM2LvimOZM1MmE
+         gZAbTDCPG+Yf08iDsPqdFses9sobGVsmIXAIpUZH8GhQMqI3qkRIS2QzZNw2th7s6OR8
+         kMVw==
+X-Gm-Message-State: AOAM532QCvx2SMB7lqFLFs6XigMPLQGl2ARtn5jgGg/59wklWSl+ze7p
+        9FppXU3EzeTBxNO0IY/QEis=
+X-Google-Smtp-Source: ABdhPJzWclTT/BboCxNHG6Q8VpDBfPST617ec35bEo/OYlQI5GJyMk/pJ4g16DU0QpUK7tdAK83gUw==
+X-Received: by 2002:a05:6000:10c3:: with SMTP id b3mr29109376wrx.96.1615312631113;
+        Tue, 09 Mar 2021 09:57:11 -0800 (PST)
+Received: from [192.168.1.101] ([37.165.49.26])
+        by smtp.gmail.com with ESMTPSA id r26sm5201201wmn.28.2021.03.09.09.57.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Mar 2021 09:57:09 -0800 (PST)
+Subject: Re: [RFC Patch v1 1/3] net: ena: implement local page cache (LPC)
+ system
+To:     Shay Agroskin <shayagr@amazon.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>
+References: <20210309171014.2200020-1-shayagr@amazon.com>
+ <20210309171014.2200020-2-shayagr@amazon.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <67d3cf28-b1fd-ce51-5011-96ddd783dc71@gmail.com>
+Date:   Tue, 9 Mar 2021 18:57:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210302023743.24123-1-xiyou.wangcong@gmail.com>
- <20210302023743.24123-3-xiyou.wangcong@gmail.com> <CACAyw9-SjsNn4_J1KDXuFh1nd9Hr-Mo+=7S-kVtooJwdi1fodQ@mail.gmail.com>
- <CAM_iQpXqE9qJ=+zKA6H1Rq=KKgm8LZ=p=ZtvrrH+hfSrTg+zxw@mail.gmail.com>
- <CAM_iQpXXUv1FV8DQ85a2fs08JCfKHHt-fAWYbV0TTWmwUZ-K5Q@mail.gmail.com>
- <6042cc5f4f65a_135da20824@john-XPS-13-9370.notmuch> <CAM_iQpUr7cvuXXdtYN9_MQPYy_Tfi88fBGSo3c8RRpMFBr55Og@mail.gmail.com>
- <6042e114a1c9e_135da20839@john-XPS-13-9370.notmuch>
-In-Reply-To: <6042e114a1c9e_135da20839@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 9 Mar 2021 09:53:31 -0800
-Message-ID: <CAM_iQpV5vJn5ORbhodinEYP7vV9tGbXwDN2Nw+TLqUNnp5ENcg@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 2/9] sock: introduce sk_prot->update_proto()
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210309171014.2200020-2-shayagr@amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 5, 2021 at 5:55 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Cong Wang wrote:
-> > On Fri, Mar 5, 2021 at 4:27 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > >
-> > > Cong Wang wrote:
-> > > > On Tue, Mar 2, 2021 at 10:23 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > >
-> > > > > On Tue, Mar 2, 2021 at 8:22 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> > > > > >
-> > > > > > On Tue, 2 Mar 2021 at 02:37, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > > >
-> > > > > > ...
-> > > > > > >  static inline void sk_psock_restore_proto(struct sock *sk,
-> > > > > > >                                           struct sk_psock *psock)
-> > > > > > >  {
-> > > > > > >         sk->sk_prot->unhash = psock->saved_unhash;
-> > > > > >
-> > > > > > Not related to your patch set, but why do an extra restore of
-> > > > > > sk_prot->unhash here? At this point sk->sk_prot is one of our tcp_bpf
-> > > > > > / udp_bpf protos, so overwriting that seems wrong?
-> > >
-> > > "extra"? restore_proto should only be called when the psock ref count
-> > > is zero and we need to transition back to the original socks proto
-> > > handlers. To trigger this we can simply delete a sock from the map.
-> > > In the case where we are deleting the psock overwriting the tcp_bpf
-> > > protos is exactly what we want.?
-> >
-> > Why do you want to overwrite tcp_bpf_prots->unhash? Overwriting
-> > tcp_bpf_prots is correct, but overwriting tcp_bpf_prots->unhash is not.
-> > Because once you overwrite it, the next time you use it to replace
-> > sk->sk_prot, it would be a different one rather than sock_map_unhash():
-> >
-> > // tcp_bpf_prots->unhash == sock_map_unhash
-> > sk_psock_restore_proto();
-> > // Now  tcp_bpf_prots->unhash is inet_unhash
-> > ...
-> > sk_psock_update_proto();
-> > // sk->sk_proto is now tcp_bpf_prots again,
-> > // so its ->unhash now is inet_unhash
-> > // but it should be sock_map_unhash here
->
-> Right, we can fix this on the TLS side. I'll push a fix shortly.
-
-Are you still working on this? If kTLS still needs it, then we can
-have something like this:
-
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 8edbbf5f2f93..5eb617df7f48 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -349,8 +349,8 @@ static inline void sk_psock_update_proto(struct sock *sk,
- static inline void sk_psock_restore_proto(struct sock *sk,
-                                          struct sk_psock *psock)
- {
--       sk->sk_prot->unhash = psock->saved_unhash;
-        if (inet_csk_has_ulp(sk)) {
-+               sk->sk_prot->unhash = psock->saved_unhash;
-                tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
-        } else {
-                sk->sk_write_space = psock->saved_write_space;
 
 
-Thanks.
+On 3/9/21 6:10 PM, Shay Agroskin wrote:
+> The page cache holds pages we allocated in the past during napi cycle,
+> and tracks their availability status using page ref count.
+> 
+> The cache can hold up to 2048 pages. Upon allocating a page, we check
+> whether the next entry in the cache contains an unused page, and if so
+> fetch it. If the next page is already used by another entity or if it
+> belongs to a different NUMA core than the napi routine, we allocate a
+> page in the regular way (page from a different NUMA core is replaced by
+> the newly allocated page).
+> 
+> This system can help us reduce the contention between different cores
+> when allocating page since every cache is unique to a queue.
+
+For reference, many drivers already use a similar strategy.
+
+> +
+> +/* Fetch the cached page (mark the page as used and pass it to the caller).
+> + * If the page belongs to a different NUMA than the current one, free the cache
+> + * page and allocate another one instead.
+> + */
+> +static struct page *ena_fetch_cache_page(struct ena_ring *rx_ring,
+> +					 struct ena_page *ena_page,
+> +					 dma_addr_t *dma,
+> +					 int current_nid)
+> +{
+> +	/* Remove pages belonging to different node than current_nid from cache */
+> +	if (unlikely(page_to_nid(ena_page->page) != current_nid)) {
+> +		ena_increase_stat(&rx_ring->rx_stats.lpc_wrong_numa, 1, &rx_ring->syncp);
+> +		ena_replace_cache_page(rx_ring, ena_page);
+> +	}
+> +
+> 
+
+And they use dev_page_is_reusable() instead of copy/pasting this logic.
+
+As a bonus, they properly deal with pfmemalloc
+
+
+
+
