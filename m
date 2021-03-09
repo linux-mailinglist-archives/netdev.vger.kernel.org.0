@@ -2,110 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C227C332F3E
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 20:45:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12249332F5B
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 20:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbhCITou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 14:44:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
+        id S231517AbhCITyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 14:54:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231467AbhCIToR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 14:44:17 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA04C06174A;
-        Tue,  9 Mar 2021 11:44:17 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id o11so15303775iob.1;
-        Tue, 09 Mar 2021 11:44:17 -0800 (PST)
+        with ESMTP id S229948AbhCITxk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 14:53:40 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F3CC06174A;
+        Tue,  9 Mar 2021 11:53:40 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id y131so13419258oia.8;
+        Tue, 09 Mar 2021 11:53:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h0LdCjjwzecnp1EYokdW4ebJBaUE+V7zj86mopJQUfk=;
-        b=kGKbT37spDgGsq64b2yUwd05ipI+8eRT+NKbHxXN/JRiGVRW/3lpfcSGRLEh0PgUxm
-         S+fzmf0yeP8Z2TqhFZtTHZzF+Ce7QrXg2RFRXFCEN/z847MuyOFOtPpI+llRKWc4Xa+7
-         zZHTxAxs5zjqeqBFu5rFXVNuA+Dtps1Msvwd8KLv+FTFZVSvlKUUedwXBl5IOP/ilJSt
-         8emDedCKrXwSrUjgPIyrRXnXQG71WdL3rnOIKvtEVJq5pnj5lR9cV44CN4fEFb9Es0Fe
-         qHu/mOJoiM9ieSNimMDWVhpOftTUFSGH9SbMMjzjWTeTL5XWKVctMVMvU1lmjiaGrjdR
-         08Ow==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xlm3NXLS5y/y/m14R+0UIQSq3jLijWbnK89X832gUiw=;
+        b=UfM72oRmW3ndgJT2HO0oPS5J3WGJDysd2sT8n0uYHd5JnkWZ8iQ8LwlkLfiSMFDO5j
+         BOXEtIshEk1wLYWJRukYRIcEpzGhipSql9Bf4EDkQ3o2HKzuCzJM9iJD9sJxl3KjcSWH
+         CUQfGysXPIM/8GSSNM815MYb8MhosjbbeiLCni7M1mGj5b4xXx87SjYPUw7vzA2dawS1
+         +BeYci5UnvJ0vPFIzdGZx0ig7gBmGBy8ZGkYhHYj+zywq2PP6YivLJ1tJdZB0YqvAP5F
+         B1BorM+eQsG0LZWuC8X8/ROm10ttR+hYf2MqSb6g6hymUWnWybjC5psydCdsT3UkYJ42
+         ArkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h0LdCjjwzecnp1EYokdW4ebJBaUE+V7zj86mopJQUfk=;
-        b=NUmqnbG5WIYw3m+bh29WQvNJqmcqlGHQHkrvuVD+6BLo6BiAhsruS7yyug8FK7GhpF
-         I9rNazlMmP5dgD3mqaMxxakizawUjqyL21KdDHUMlUj9N/u6+42zbfNh43n/TrGvAJhq
-         w20U+sfcI3MZoaDfYvWDI+13H79XuAb8gZ3ZjzA2jER0uE4k9B7xeOEvG4pCGHpYOVxs
-         AkTCmDKOchj1e8AaeLSyQHvsz9GttkMj+1VHDq8bi0AW5upRAilf2HqL5N7JZptlxAQ3
-         juQXkwPIoCtqiIjNhxTMjKRBEpe3DP+YnoFk58IZA7hDNn2dbqjrJsjA8Sd0TYlvEqYG
-         L1MA==
-X-Gm-Message-State: AOAM530tcRW7qVvH/i8hXy0CI2oImWWiyfEfEI/smjhAe5AaVFlp4sNr
-        Pek98leLoXOgy2777z3/OBcVygGr1PXomftfZUg=
-X-Google-Smtp-Source: ABdhPJyDizL1CBOqwFRy8H1vQEuwTFNUXxlaJPi2bSerzyJM/ggHe+xUxloch1cnoAX1BKQ4gBb5dmjCzMrHhMSb/PM=
-X-Received: by 2002:a5e:990a:: with SMTP id t10mr24345727ioj.161.1615319056963;
- Tue, 09 Mar 2021 11:44:16 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xlm3NXLS5y/y/m14R+0UIQSq3jLijWbnK89X832gUiw=;
+        b=L7V06MKDSoLQN/9Oqr9R1lGO0HA2Cji+diZOb6PV2Y4BCY9e19f6EHmUGnIhOtm6Yq
+         SthWb5xpB3cCkOStS+lMSixofXDqT7xyRQDHsPtrwQ1ZfjqwQGyno66s0DIo50ChZS4m
+         mudLyyN9ond5244n1/1L3OWqh2XQdDxaECyzDnbjXuG7QHDXd5M+D3ykQDTY91qPhcDp
+         f0bHqA0MKie1y/uoHTX9p3zL/3zQ1asyLvhA7vl3A29sBH29bALLWprQjCHj2jUCJL8g
+         9cfYVF7qp/cEnDZe99cJnQxI0TcO4c/J1NgXIJDyjTlBAVt3XnJfF4j/oFZ2XGlIYA+z
+         SD/w==
+X-Gm-Message-State: AOAM531VCMx0eRdF6Ey2ZbL1HlHIfwh71Gn8ZB3GuC6aybo2+KhFc0KT
+        A9hte+02UWEy+QyXoNCk20epMGqNCW4=
+X-Google-Smtp-Source: ABdhPJz4YNH7lhuHvJWo2XLQk4wBGRpx2GYdQuivjeczEVB14ZW4re3KcqXw/4BXIkV8QewGIVcNDQ==
+X-Received: by 2002:aca:4486:: with SMTP id r128mr4082901oia.171.1615319619686;
+        Tue, 09 Mar 2021 11:53:39 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.40])
+        by smtp.googlemail.com with ESMTPSA id p67sm3288625oih.21.2021.03.09.11.53.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Mar 2021 11:53:39 -0800 (PST)
+Subject: Re: [PATCH] net: add net namespace inode for all net_dev events
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Cc:     davem@davemloft.net, mingo@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210309044349.6605-1-tonylu@linux.alibaba.com>
+ <20210309124011.709c6cd3@gandalf.local.home>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5fda3ef7-d760-df4f-e076-23b635f6c758@gmail.com>
+Date:   Tue, 9 Mar 2021 12:53:37 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-References: <20210309152354.95309-1-mailhol.vincent@wanadoo.fr> <20210309152354.95309-2-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20210309152354.95309-2-mailhol.vincent@wanadoo.fr>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Tue, 9 Mar 2021 11:44:05 -0800
-Message-ID: <CAA93jw5+wB=va5tqUpCiPu20N+pn8VcMxUdySSWoQE_zqH8Qtg@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/1] dql: add dql_set_min_limit()
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Tom Herbert <therbert@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210309124011.709c6cd3@gandalf.local.home>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I note that "proof" is very much in the developer's opinion and
-limited testing base.
+On 3/9/21 10:40 AM, Steven Rostedt wrote:
+> The order of the fields is important. Don't worry about breaking API by
+> fixing it. The parsing code uses this output to find where the binary data
+> is.
 
-Actual operational experience, as in a real deployment, with other applications,
-heavy context switching, or virtualization, might yield better results.
-
-There's lots of defaults in the linux kernel that are just swags, the
-default NAPI and rx/tx ring buffer sizes being two where devs just
-copy/paste stuff, which either doesn't scale up, or doesn't scale
-down.
-
-This does not mean I oppose your patch! However I have two points I'd
-like to make
-regarding bql and dql in general that I have long longed be explored.
-
-0) Me being an advocate of low latency in general, does mean that I
-have no problem
-and even prefer, starving the device rather than always keeping it busy.
-
-/me hides
-
-1) BQL is MIAD - multiplicative increase, additive decrease. While in
-practice so far this does not seem to matter much (and also measuring
-things down to "us" really hard), a stabler algorithm is AIMD. BQL
-often absorbs a large TSO burst - usually a minimum of 128k is
-observed on gbit, where a stabler state (without GSO) seemed to be
-around 40k on many of the chipsets I worked with, back when I was
-working in this area.
-
-(cake's gso-splitting also gets lower bql values in general, if you
-have enough cpu to run cake)
-
-2) BQL + hardware mq is increasingly an issue in my mind in that, say,
-you are hitting
-64 hw queues, each with 128k stored in there, is additive, where in
-order to service interrupts properly and keep the media busy might
-only require 128k total, spread across the active queues and flows. I
-have often thought that making BQL scale better to multiple hw queues
-by globally sharing the buffering state(s), would lead to lower
-latency, but
-also that probably sharing that state would be too high overhead.
-
-Having not worked out a solution to 2), and preferring to start with
-1), and not having a whole lot of support for item 0) in the world, I
-just thought I'd mention it, in the hope
-someone might give it a go.
+Changing the order of the fields will impact any bpf programs expecting
+the existing format.
