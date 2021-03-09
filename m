@@ -2,147 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B6BC332D6B
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:40:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34153332D6C
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:41:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbhCIRkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 12:40:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbhCIRjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:39:52 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE4CC06174A
-        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 09:39:52 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id g27so14845245iox.2
-        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 09:39:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lUaBBP/7pP4tS9Tf6LkqYKfvNFAq+wPQoN5CLfaWLvs=;
-        b=smX3pRbMx1Stj6rnMmLdF9Hm6gLrzk3ouuAuy+4LXFRNVmRxT4Kjiu4THJtrZ9hPNq
-         gQvpJ4SmCo+7Vvm9/PqmaMesPa78QnNhTCox0ok2VAN8TuFVNTxu8Dz/Tx9codycR1D6
-         rg7IZ4ufBchaT/YlmXeMqSH/SNxp5580BJtVcUkF3esqdCRhWo+iXkKt5cTEC5PCVjGi
-         9jwBUY5/DnzGh4ZEr+cH5d+mqgFzGboypnL9o6NFfgpw+nYcGZlE0RSjYjSrWLpXD0Mq
-         u9EH0lNyaF0eip/iUxLw2fPiudO+J6ODNeSrcP+3fstDUFoJLX6ZRF53MYCaWn+eQQkX
-         6myw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lUaBBP/7pP4tS9Tf6LkqYKfvNFAq+wPQoN5CLfaWLvs=;
-        b=MSlXzEDNZV92WjhQuhVSNVdGHe9R6EGKAOTK/KZNzAzD7s3wJEneDvwE+R5hPS+imE
-         v6cPQ2nrtH70jF5GsZQyhN7KwQUZsfCpM7fnpzMNaGo1BYtkLs84K4yHYzfY6H66u0uh
-         OaR2rK2QlyfLWd9Ewe8HNlK1Dsmo31SEh6w3gxGCVRZnv+ldi3Y0CGQFQX7HYieT/Td1
-         6T1soQ6J1TsCqb0BZ/W8z5xkiiME35QPZzSGd+RKIp939pGCQUNSBAyQOyctKkH9l2gW
-         h6w9HtkjCbvrBtVO6QtLLVMDh5QUcEfP5xyY6Aa0Qp+LPPwHB1znyhQKaN7tHVFSMvnF
-         efqw==
-X-Gm-Message-State: AOAM530MMsfzaveelMgApOq3lCNltal4g3lkA4cn5Nij2Mnm7rb4V7dV
-        1bT9MI98l+/wWN0XB8GsiBIVbRpK1Mcd7ilcGSPAfnfSY0I=
-X-Google-Smtp-Source: ABdhPJydTGDzDZ4JJitnlBQnQFE2Vr3Jj0c3LBjKK/uEQdz/X0DOyADiq4Fg9EwzuCo/ZC26WYGE1rFhogfPHgukM54=
-X-Received: by 2002:a05:6638:1390:: with SMTP id w16mr29751069jad.83.1615311591557;
- Tue, 09 Mar 2021 09:39:51 -0800 (PST)
+        id S231175AbhCIRkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 12:40:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230173AbhCIRkO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Mar 2021 12:40:14 -0500
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5407A64FBD;
+        Tue,  9 Mar 2021 17:40:13 +0000 (UTC)
+Date:   Tue, 9 Mar 2021 12:40:11 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     davem@davemloft.net, mingo@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: add net namespace inode for all net_dev events
+Message-ID: <20210309124011.709c6cd3@gandalf.local.home>
+In-Reply-To: <20210309044349.6605-1-tonylu@linux.alibaba.com>
+References: <20210309044349.6605-1-tonylu@linux.alibaba.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20210309031028.97385-1-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20210309031028.97385-1-xiangxia.m.yue@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 9 Mar 2021 09:39:40 -0800
-Message-ID: <CAKgT0UfZ0c4P4SMyCV9LAN=9PV=B6=0Ck+8jeZV4OxSGHnAuzg@mail.gmail.com>
-Subject: Re: [PATCH] net: sock: simplify tw proto registration
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 8, 2021 at 7:15 PM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> Introduce a new function twsk_prot_init, inspired by
-> req_prot_init, to simplify the "proto_register" function.
->
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Tue,  9 Mar 2021 12:43:50 +0800
+Tony Lu <tonylu@linux.alibaba.com> wrote:
+
+> There are lots of net namespaces on the host runs containers like k8s.
+> It is very common to see the same interface names among different net
+> namespaces, such as eth0. It is not possible to distinguish them without
+> net namespace inode.
+> 
+> This adds net namespace inode for all net_dev events, help us
+> distinguish between different net devices.
+> 
+> Output:
+>   <idle>-0       [006] ..s.   133.306989: net_dev_xmit: net_inum=4026531992 dev=eth0 skbaddr=0000000011a87c68 len=54 rc=0
+> 
+> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
 > ---
->  net/core/sock.c | 44 ++++++++++++++++++++++++++++----------------
->  1 file changed, 28 insertions(+), 16 deletions(-)
->
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 0ed98f20448a..610de4295101 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -3475,6 +3475,32 @@ static int req_prot_init(const struct proto *prot)
->         return 0;
->  }
->
-> +static int twsk_prot_init(const struct proto *prot)
-> +{
-> +       struct timewait_sock_ops *twsk_prot = prot->twsk_prot;
-> +
-> +       if (!twsk_prot)
-> +               return 0;
-> +
-> +       twsk_prot->twsk_slab_name = kasprintf(GFP_KERNEL, "tw_sock_%s",
-> +                                             prot->name);
-> +       if (!twsk_prot->twsk_slab_name)
-> +               return -ENOMEM;
-> +
-> +       twsk_prot->twsk_slab =
-> +               kmem_cache_create(twsk_prot->twsk_slab_name,
-> +                                 twsk_prot->twsk_obj_size, 0,
-> +                                 SLAB_ACCOUNT | prot->slab_flags,
-> +                                 NULL);
-> +       if (!twsk_prot->twsk_slab) {
-> +               pr_crit("%s: Can't create timewait sock SLAB cache!\n",
-> +                       prot->name);
-> +               return -ENOMEM;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
+>  include/trace/events/net.h | 35 +++++++++++++++++++++++++----------
+>  1 file changed, 25 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/trace/events/net.h b/include/trace/events/net.h
+> index 2399073c3afc..a52f90d83411 100644
+> --- a/include/trace/events/net.h
+> +++ b/include/trace/events/net.h
+> @@ -35,6 +35,7 @@ TRACE_EVENT(net_dev_start_xmit,
+>  		__field(	u16,			gso_size	)
+>  		__field(	u16,			gso_segs	)
+>  		__field(	u16,			gso_type	)
+> +		__field(	unsigned int,		net_inum	)
+>  	),
 
-So one issue here is that you have two returns but they both have the
-same error clean-up outside of the function. It might make more sense
-to look at freeing the kasprintf if the slab allocation fails and then
-using the out_free_request_sock_slab jump label below if the slab
-allocation failed.
+This patch made me take a look at the net_dev_start_xmit trace event, and I
+see it's very "holy". That is, it has lots of holes in the structure.
 
->  int proto_register(struct proto *prot, int alloc_slab)
->  {
->         int ret = -ENOBUFS;
-> @@ -3496,22 +3522,8 @@ int proto_register(struct proto *prot, int alloc_slab)
->                 if (req_prot_init(prot))
->                         goto out_free_request_sock_slab;
->
-> -               if (prot->twsk_prot != NULL) {
-> -                       prot->twsk_prot->twsk_slab_name = kasprintf(GFP_KERNEL, "tw_sock_%s", prot->name);
-> -
-> -                       if (prot->twsk_prot->twsk_slab_name == NULL)
-> -                               goto out_free_request_sock_slab;
-> -
-> -                       prot->twsk_prot->twsk_slab =
-> -                               kmem_cache_create(prot->twsk_prot->twsk_slab_name,
-> -                                                 prot->twsk_prot->twsk_obj_size,
-> -                                                 0,
-> -                                                 SLAB_ACCOUNT |
-> -                                                 prot->slab_flags,
-> -                                                 NULL);
-> -                       if (prot->twsk_prot->twsk_slab == NULL)
-> -                               goto out_free_timewait_sock_slab;
-> -               }
-> +               if (twsk_prot_init(prot))
-> +                       goto out_free_timewait_sock_slab;
+	TP_STRUCT__entry(
+		__string(	name,			dev->name	)
+		__field(	u16,			queue_mapping	)
+		__field(	const void *,		skbaddr		)
+		__field(	bool,			vlan_tagged	)
+		__field(	u16,			vlan_proto	)
+		__field(	u16,			vlan_tci	)
+		__field(	u16,			protocol	)
+		__field(	u8,			ip_summed	)
+		__field(	unsigned int,		len		)
+		__field(	unsigned int,		data_len	)
+		__field(	int,			network_offset	)
+		__field(	bool,			transport_offset_valid)
+		__field(	int,			transport_offset)
+		__field(	u8,			tx_flags	)
+		__field(	u16,			gso_size	)
+		__field(	u16,			gso_segs	)
+		__field(	u16,			gso_type	)
+		__field(	unsigned int,		net_inum	)
+	),
 
-So assuming the code above takes care of freeing the slab name in case
-of slab allocation failure then this would be better off jumping to
-out_free_request_sock_slab.
+If you look at /sys/kernel/tracing/events/net/net_dev_start_xmit/format
 
->         }
->
->         mutex_lock(&proto_list_mutex);
-> --
-> 2.27.0
+name: net_dev_start_xmit
+ID: 1581
+format:
+	field:unsigned short common_type;	offset:0;	size:2;	signed:0;
+	field:unsigned char common_flags;	offset:2;	size:1;	signed:0;
+	field:unsigned char common_preempt_count;	offset:3;	size:1;	signed:0;
+	field:int common_pid;	offset:4;	size:4;	signed:1;
+
+	field:__data_loc char[] name;	offset:8;	size:4;	signed:1;
+	field:u16 queue_mapping;	offset:12;	size:2;	signed:0;
+	field:const void * skbaddr;	offset:16;	size:8;	signed:0;
+
+Notice, queue_mapping is 2 bytes at offset 12 (ends at offset 14), but
+skbaddr starts at offset 16. That means there's two bytes wasted.
+
+	field:bool vlan_tagged;	offset:24;	size:1;	signed:0;
+	field:u16 vlan_proto;	offset:26;	size:2;	signed:0;
+
+Another byte missing above (24 + 1 != 26)
+
+	field:u16 vlan_tci;	offset:28;	size:2;	signed:0;
+	field:u16 protocol;	offset:30;	size:2;	signed:0;
+	field:u8 ip_summed;	offset:32;	size:1;	signed:0;
+	field:unsigned int len;	offset:36;	size:4;	signed:0;
+
+Again another three bytes missing (32 + 1 != 36)
+
+	field:unsigned int data_len;	offset:40;	size:4;	signed:0;
+	field:int network_offset;	offset:44;	size:4;	signed:1;
+	field:bool transport_offset_valid;	offset:48;	size:1;	signed:0;
+	field:int transport_offset;	offset:52;	size:4;	signed:1;
+
+Again, another 3 bytes missing (48 + 1 != 52)
+
+	field:u8 tx_flags;	offset:56;	size:1;	signed:0;
+	field:u16 gso_size;	offset:58;	size:2;	signed:0;
+
+Another byte missing (56 + 1 != 58)
+
+	field:u16 gso_segs;	offset:60;	size:2;	signed:0;	
+	field:u16 gso_type;	offset:62;	size:2;	signed:0;
+	field:unsigned int net_inum;	offset:64;	size:4;	signed:0;
+
+The above shows 10 bytes wasted for this event.
+
+The order of the fields is important. Don't worry about breaking API by
+fixing it. The parsing code uses this output to find where the binary data
+is.
+
+Hmm, I should write a script that reads all the format files and point out
+areas that have holes in it.
+
+I haven't looked at the other trace events, but they may all have the same
+issues.
+
+-- Steve
+
+
+
+>  
+>  	TP_fast_assign(
+> @@ -56,10 +57,12 @@ TRACE_EVENT(net_dev_start_xmit,
+>  		__entry->gso_size = skb_shinfo(skb)->gso_size;
+>  		__entry->gso_segs = skb_shinfo(skb)->gso_segs;
+>  		__entry->gso_type = skb_shinfo(skb)->gso_type;
+> +		__entry->net_inum = dev_net(skb->dev)->ns.inum;
+>  	),
+>  
 >
