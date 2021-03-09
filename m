@@ -2,130 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 416413323F4
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 12:27:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E33C332419
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 12:32:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbhCIL0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 06:26:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230045AbhCIL03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 06:26:29 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32538C06175F
-        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 03:26:29 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lJaVF-0006wj-8H; Tue, 09 Mar 2021 12:26:17 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lJaVE-0000CO-7b; Tue, 09 Mar 2021 12:26:16 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH v2 7/7] ARM: imx7d: remove Atheros AR8031 PHY fixup
-Date:   Tue,  9 Mar 2021 12:26:15 +0100
-Message-Id: <20210309112615.625-8-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210309112615.625-1-o.rempel@pengutronix.de>
-References: <20210309112615.625-1-o.rempel@pengutronix.de>
+        id S230433AbhCILcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 06:32:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29509 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230122AbhCILcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 06:32:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615289521;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9Hd9dlI2mhGfzWKWP5M+r5dSFrh0DXyROodADpdYywg=;
+        b=bpPc4izYB1jwVpeS07xAYnVuPzcYAgYGlfiHijfN6EouCL1IBHwwV8mm1ilvKkXt6zgBFP
+        Q+eJqkrQh1W0p9oj7KB3/Y4d3snKQkh60SMCiAD2/N+AvYdms5yXJrHEnE63U6Re3y7Su7
+        0i4R3pUS9GBG8wlftuUpWGRyPV1GUg4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-265-gRUK1z1cPquk_dsKlOilhw-1; Tue, 09 Mar 2021 06:31:59 -0500
+X-MC-Unique: gRUK1z1cPquk_dsKlOilhw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F3DB801503;
+        Tue,  9 Mar 2021 11:31:58 +0000 (UTC)
+Received: from bnemeth.users.ipa.redhat.com (ovpn-115-104.ams2.redhat.com [10.36.115.104])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B4E7059451;
+        Tue,  9 Mar 2021 11:31:52 +0000 (UTC)
+From:   Balazs Nemeth <bnemeth@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
+        dsahern@gmail.com, davem@davemloft.net, willemb@google.com,
+        virtualization@lists.linux-foundation.org, bnemeth@redhat.com
+Subject: [PATCH net v3 0/2] net: prevent infinite loop caused by incorrect proto from virtio_net_hdr_set_proto
+Date:   Tue,  9 Mar 2021 12:30:59 +0100
+Message-Id: <cover.1615288658.git.bnemeth@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixup configures the IO voltage and disables the SmartEEE
-functionality.
+These patches prevent an infinite loop for gso packets with a protocol
+from virtio net hdr that doesn't match the protocol in the packet.
+Note that packets coming from a device without
+header_ops->parse_protocol being implemented will not be caught by
+the check in virtio_net_hdr_to_skb, but the infinite loop will still
+be prevented by the check in the gso layer.
 
-If this patch breaks your system, enable AT803X_PHY driver and configure
-the PHY by the device tree:
+Changes from v2 to v3:
+  - Remove unused *eth.
+  - Use MPLS_HLEN to also check if the MPLS header length is a multiple
+    of four.
 
-	phy-connection-type = "rgmii-id";
-	ethernet-phy@X {
-		reg = <0xX>;
+Balazs Nemeth (2):
+  net: check if protocol extracted by virtio_net_hdr_set_proto is
+    correct
+  net: avoid infinite loop in mpls_gso_segment when mpls_hlen == 0
 
-		qca,smarteee-tw-us-1g = <24>;
+ include/linux/virtio_net.h | 7 ++++++-
+ net/mpls/mpls_gso.c        | 3 +++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-		vddio-supply = <&vddh>;
-
-		vddio: vddio-regulator {
-			regulator-name = "VDDIO";
-			regulator-min-microvolt = <1800000>;
-			regulator-max-microvolt = <1800000>;
-		};
-
-		vddh: vddh-regulator {
-			regulator-name = "VDDH";
-		};
-	};
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- arch/arm/mach-imx/mach-imx7d.c | 22 ----------------------
- 1 file changed, 22 deletions(-)
-
-diff --git a/arch/arm/mach-imx/mach-imx7d.c b/arch/arm/mach-imx/mach-imx7d.c
-index 879c35929a13..ccf64ddf8b7e 100644
---- a/arch/arm/mach-imx/mach-imx7d.c
-+++ b/arch/arm/mach-imx/mach-imx7d.c
-@@ -14,25 +14,6 @@
- 
- #include "common.h"
- 
--static int ar8031_phy_fixup(struct phy_device *dev)
--{
--	u16 val;
--
--	/* Set RGMII IO voltage to 1.8V */
--	phy_write(dev, 0x1d, 0x1f);
--	phy_write(dev, 0x1e, 0x8);
--
--	/* disable phy AR8031 SmartEEE function. */
--	phy_write(dev, 0xd, 0x3);
--	phy_write(dev, 0xe, 0x805d);
--	phy_write(dev, 0xd, 0x4003);
--	val = phy_read(dev, 0xe);
--	val &= ~(0x1 << 8);
--	phy_write(dev, 0xe, val);
--
--	return 0;
--}
--
- static int bcm54220_phy_fixup(struct phy_device *dev)
- {
- 	/* enable RXC skew select RGMII copper mode */
-@@ -44,14 +25,11 @@ static int bcm54220_phy_fixup(struct phy_device *dev)
- 	return 0;
- }
- 
--#define PHY_ID_AR8031	0x004dd074
- #define PHY_ID_BCM54220	0x600d8589
- 
- static void __init imx7d_enet_phy_init(void)
- {
- 	if (IS_BUILTIN(CONFIG_PHYLIB)) {
--		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
--					   ar8031_phy_fixup);
- 		phy_register_fixup_for_uid(PHY_ID_BCM54220, 0xffffffff,
- 					   bcm54220_phy_fixup);
- 	}
--- 
+--
 2.29.2
 
