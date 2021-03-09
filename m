@@ -2,55 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0213A332F0C
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 20:34:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E7BD332F24
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 20:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbhCITd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 14:33:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40166 "EHLO
+        id S231387AbhCITiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 14:38:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbhCITdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 14:33:44 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B62C06174A
-        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 11:33:43 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id j22so8142080otp.2
-        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 11:33:43 -0800 (PST)
+        with ESMTP id S231138AbhCIThw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 14:37:52 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE16C06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 11:37:51 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id b10so15214421ybn.3
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 11:37:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=45VapyaJxkraY0/xl0liYLNmq4QHcW7DfEuE2Ey7MBc=;
-        b=auXOg8S9ei5rWbwUXiSEb2k9IftLplmxFk6SyQu1DmcUGV+5Vwpm1zTArFoRlZoRGW
-         MD1B6eRnBzDdGtvYov1HCwAwrNK6VZqXvTKwTxuUVdYGsK7aGWeMp7qgEAZ0b+4mBsBL
-         g7GiS56ZdmSbowcv+M8csQaWTcNd//3scLSsF98QuQiYzh6y6V0elEnIvy3/4Ws5GsZf
-         lMS7q3hQSbThbfn+I6YQ9CsisINNWUOze86l4diV5dZqyOtBVDZQCXKP89Z5OPt28RwZ
-         8s9bg2YIlpD5OIzSwzUD4YVSjekAkKRxULwOClwI979DYQ7Hksv3NzuekK0BXUGs6LJz
-         qcGg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E8irDDILWp3uBM3f6tu3LKVe1+TSzdb0Tt57sXKreYU=;
+        b=qfeeYnKuiG1V3FUWsFo7dR9z/gsazQFQQbVFEOFyHAkexd0DMSkpr25PApuefzEy92
+         kdO5e+gjVLmK9JwTWezRnzU4p4rM1G0nQcQnzUXeYpxAwhGXoskWZVLRWDU3ggLZc00C
+         mjGMiv2FjZcuhboQTFPoYloI8UX9vtOR/yHo75gKk15cUV27it28Ll0ypd23J85fR+8H
+         nOHms3sx8Xh6gMYReVxqDEo6x+rCfHrxH1oKzOiCA+EPZudXqJQ2bbkkA05rOuYZomn2
+         EMmzFciiMzB+k89khKDTWxatYLFI/OH9xN9mYuZY+PQzTHuaAzyzuhiajhloZmcLoZZz
+         iVeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=45VapyaJxkraY0/xl0liYLNmq4QHcW7DfEuE2Ey7MBc=;
-        b=sMsFobqSsF2aIwOZ/uBs30UqVz/exbGONEEv+hQBM0niI92rlafUZsaS5vnowD0JwN
-         L9WUeiU5khXP24fVLRNnnPLEjG4FxisX7SHItcb/wUkHD3ga28vtgoM60QmIBlwqaBJ2
-         gjvNvONdqvRrWalCHnNIc+RXL/CkybAqFCAm4dHsH0PmS8yaRt4zQQfpVgwiz6zxnHTN
-         9h8xvX3T0p/JDrCanIXdVegyk8wsRbxBb1rr+p8vefij2BbGrQ9b+1PVUjOimuLNWm5M
-         T88JH2my8pz0pYvXWTkj+zfsTqV2blTZGLsbREdq+XV7ZBQ8oIFwHmi+KrWJGP/1PO6m
-         wCxQ==
-X-Gm-Message-State: AOAM532F582RXoqGRvDhd7z6oZwOpVsY8B6KZIN311qaa921GKvfc/qf
-        tjB8jqiJvgN965LShOB7pASx3SJ3MrY=
-X-Google-Smtp-Source: ABdhPJzXENofFWUTwZffhH9WGKEIYmVIoHmyuOZcyMfwYiVbeSp3IcADz1hnWtUwQzFXvl3tEX4IxA==
-X-Received: by 2002:a05:6830:1304:: with SMTP id p4mr25074535otq.185.1615318423232;
-        Tue, 09 Mar 2021 11:33:43 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.40])
-        by smtp.googlemail.com with ESMTPSA id w7sm1888670ote.52.2021.03.09.11.33.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Mar 2021 11:33:42 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E8irDDILWp3uBM3f6tu3LKVe1+TSzdb0Tt57sXKreYU=;
+        b=T6dzPAu+62y8hfcbKk13bCCe87kThrnPITimUdWtLJIQZgJ5ZPfGxDXVKViWWZUegC
+         O8X3JebXObuoitibGz6LGTmWWhqmuwLY7v8rX7jlUA5Xe281/ejD6lmDUak6M/dcEDN/
+         C7xzeOl7Kseou7tDkQQBvMxdqfTQEBZwd4Rg2B5KFvz0F818y8K2CfXscm2LE8j+aQ3N
+         rOs1i5hYStSEiFUDrXAoSi+EH9+j9Kp5QOj+QzTUaLTq63/3ix0aihE02XwCAfEOVEKX
+         sQNr4IpUl8Y8Rk+9Fh9uYNftZAPCrNxDlgALGVzlkMzeOgl7+fPrm0jKv+FXaBCzY5Hh
+         yflg==
+X-Gm-Message-State: AOAM533YUOlUIMuQgxAd4wpxVCtod0HD3FjCdlZZAyxTNIzPAomaLYis
+        LJGsFIhJ8LpBFt/g209NC7IjNyf22I8Y5292fYAHiDJzn/M=
+X-Google-Smtp-Source: ABdhPJwbOKIStBz7cI3JOtnT9V7qPikxw451fccWVyqle96FRJhaThcdZLJIHJ4KvfXEtt2YYyM5em4cqDCLzZaufPk=
+X-Received: by 2002:a25:d016:: with SMTP id h22mr42660083ybg.278.1615318670842;
+ Tue, 09 Mar 2021 11:37:50 -0800 (PST)
+MIME-Version: 1.0
+References: <20210308192113.2721435-1-weiwan@google.com> <0d18e982-93de-5b88-b3a5-efb6ebd200f2@gmail.com>
+ <YEcukkO7bsKYVqEZ@shredder.lan> <CAEA6p_C8TRWsMCvs2x7nW9TYUwEyBrL46Li3oB-HjNwUDjNcwQ@mail.gmail.com>
+ <f4ffcaf3-adfe-3623-2779-fc9ce1a363ce@gmail.com>
+In-Reply-To: <f4ffcaf3-adfe-3623-2779-fc9ce1a363ce@gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Tue, 9 Mar 2021 11:37:40 -0800
+Message-ID: <CAEA6p_BGpiKmjEMr9TpuSdbK_hsxa+fPzeB6YTRzm59MSXisCw@mail.gmail.com>
 Subject: Re: [PATCH net] ipv6: fix suspecious RCU usage warning
-To:     Wei Wang <weiwan@google.com>, Ido Schimmel <idosch@idosch.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
         Ido Schimmel <idosch@nvidia.com>,
@@ -58,27 +62,18 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         syzbot <syzkaller@googlegroups.com>,
         David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>
-References: <20210308192113.2721435-1-weiwan@google.com>
- <0d18e982-93de-5b88-b3a5-efb6ebd200f2@gmail.com>
- <YEcukkO7bsKYVqEZ@shredder.lan>
- <CAEA6p_C8TRWsMCvs2x7nW9TYUwEyBrL46Li3oB-HjNwUDjNcwQ@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f4ffcaf3-adfe-3623-2779-fc9ce1a363ce@gmail.com>
-Date:   Tue, 9 Mar 2021 12:33:41 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
-MIME-Version: 1.0
-In-Reply-To: <CAEA6p_C8TRWsMCvs2x7nW9TYUwEyBrL46Li3oB-HjNwUDjNcwQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/9/21 10:32 AM, Wei Wang wrote:
-> Thanks David and Ido.
-> To clarify, David, you suggest we add a separate function instead of
-> adding an extra parameter, right?
+On Tue, Mar 9, 2021 at 11:33 AM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 3/9/21 10:32 AM, Wei Wang wrote:
+> > Thanks David and Ido.
+> > To clarify, David, you suggest we add a separate function instead of
+> > adding an extra parameter, right?
+>
+> for this case I think it is the better way to go.
 
-for this case I think it is the better way to go.
+OK. Will send out v2 for this.
