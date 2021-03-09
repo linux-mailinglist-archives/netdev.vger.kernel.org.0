@@ -2,118 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C1E332016
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 08:55:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A03EA332051
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 09:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbhCIHzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 02:55:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbhCIHyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 02:54:31 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012DFC06174A
-        for <netdev@vger.kernel.org>; Mon,  8 Mar 2021 23:54:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kpx4Luu1iBhf/IcgYUZ3D1SBClMlWaIyenKizmpNovg=; b=EPvuBVHXj4d/NdNEfXaWmysZA0
-        HMfaEgkjlp2hDnLJFF/kLrdp4KsuB/1lcWfxh7nt7A2pMylKavStNtofIpY+rW6wepFzo9EnDIBXx
-        dQsZCuLYnKupFv3fzurqBlxclJlq7h/3G9XGm29CdpsZ0BwZCZGbH+qW6HJo0W3f30BlVqTDXKjnv
-        ZUIOs0WU9Io/Sj6FcUCDudh3Vb4G6m2SdS5ZP0Bi8/DCza5m1XuwiilVDU8ac6jeKBTifq/1FpMTu
-        TAuDBI3HDykP1W2bsTAm41BXD7E7znLpL3ktnvYoCkeiv2qWtv4v1RJIxCj2hKg8/T8nk2VRg8jwk
-        GM2tLoPQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lJXC8-000Cri-3s; Tue, 09 Mar 2021 07:54:21 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A964E3010CF;
-        Tue,  9 Mar 2021 08:54:19 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9327C2D3E9B39; Tue,  9 Mar 2021 08:54:19 +0100 (CET)
-Date:   Tue, 9 Mar 2021 08:54:19 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Erhard F." <erhard_f@mailbox.org>
-Cc:     "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: seqlock lockdep false positives?
-Message-ID: <YEcpqwhQFMimu6Ml@hirez.programming.kicks-ass.net>
-References: <20210303164035.1b9a1d07@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YESayEskbtjEWjFd@lx-t490>
- <YEXicy6+9MksdLZh@hirez.programming.kicks-ass.net>
- <20210308214208.42a5577f@yea>
+        id S229916AbhCIIPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 03:15:23 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:58641 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229544AbhCIIPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 03:15:19 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id EF0DD5C0152;
+        Tue,  9 Mar 2021 03:15:18 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 09 Mar 2021 03:15:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=/avSBi
+        upZQmCrCBgUarTrqPFs8/GDiFc9quyDJ1J+tE=; b=tWPFPJOsjWjCGj3D8pH8tx
+        cggHiGGPsy/gL23b15ax+E0Cx+RAfaOnK7t2UpeoibJhfhQeFikH2+JXjJ/E3y9+
+        6BSpGqxJYLl+hjDr2UGPFW4PcijoY6s+U5USYElcj1ltmbuUlsq71AAKNjbOCqwz
+        HIS6rRojF6ygnZOlWN8cMje72km5N0asjJuK7RwRRGY2goAdDo5xhMFB8x4cjLwt
+        oOJN7q+9aIogZRsX+HPsGEL19gfgRN1L9xalgKCsvhyasJwEXVL/p1QQNndbSxM0
+        KIaGuu5xiufEatpNIa7Ockpcx1r98aLNXk3BXjvEi00079WFgczoCH8QCW7IUiDw
+        ==
+X-ME-Sender: <xms:li5HYFy8S31oAQyuQEVYV_mfSdMxqNxxfVEXKU8h3V5J-mUmaiF4uQ>
+    <xme:li5HYFT3Pxk-F5Z8cb69g_SqJm-tigMN5Qm-7OtSb0SP5rSKxRGfLzYs22XmlSwCM
+    94aOFHxONz7DyU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudduhedguddtlecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:li5HYPUeQgkGZT9zru60J9K--NZjUtCysp1kggR6n38Fr7yYZ58esg>
+    <xmx:li5HYHi4tp0yoPwMelpQDVeT6IkTIvdAD81ujhR2NvpVw5sK9srg_w>
+    <xmx:li5HYHAfbKtqddmOQU_HmkA2C6wylMHKCzHVXZRACDqvF1nU5oCA0A>
+    <xmx:li5HYJ3w0Oy25X7cIDRZdk9dsgqAHimJFJ_eR9s1R7leRHPTorpwFQ>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id E605424005A;
+        Tue,  9 Mar 2021 03:15:17 -0500 (EST)
+Date:   Tue, 9 Mar 2021 10:15:14 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Wei Wang <weiwan@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net] ipv6: fix suspecious RCU usage warning
+Message-ID: <YEcukkO7bsKYVqEZ@shredder.lan>
+References: <20210308192113.2721435-1-weiwan@google.com>
+ <0d18e982-93de-5b88-b3a5-efb6ebd200f2@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210308214208.42a5577f@yea>
+In-Reply-To: <0d18e982-93de-5b88-b3a5-efb6ebd200f2@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 08, 2021 at 09:42:08PM +0100, Erhard F. wrote:
+On Mon, Mar 08, 2021 at 07:47:31PM -0700, David Ahern wrote:
+> [ cc Ido and Petr ]
+> 
+> On 3/8/21 12:21 PM, Wei Wang wrote:
+> > diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+> > index 7bc057aee40b..48956b144689 100644
+> > --- a/include/net/nexthop.h
+> > +++ b/include/net/nexthop.h
+> > @@ -410,31 +410,39 @@ static inline struct fib_nh *fib_info_nh(struct fib_info *fi, int nhsel)
+> >  int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
+> >  		       struct netlink_ext_ack *extack);
+> >  
+> > -static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
+> > +static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh,
+> > +					      bool bh_disabled)
+> 
+> Hi Wei: I would prefer not to have a second argument to nexthop_fib6_nh
+> for 1 code path, and a control path at that.
+> 
+> >  {
+> >  	struct nh_info *nhi;
+> >  
+> >  	if (nh->is_group) {
+> >  		struct nh_group *nh_grp;
+> >  
+> > -		nh_grp = rcu_dereference_rtnl(nh->nh_grp);
+> > +		if (bh_disabled)
+> > +			nh_grp = rcu_dereference_bh_rtnl(nh->nh_grp);
+> > +		else
+> > +			nh_grp = rcu_dereference_rtnl(nh->nh_grp);
+> >  		nh = nexthop_mpath_select(nh_grp, 0);
+> >  		if (!nh)
+> >  			return NULL;
+> >  	}
+> >  
+> > -	nhi = rcu_dereference_rtnl(nh->nh_info);
+> > +	if (bh_disabled)
+> > +		nhi = rcu_dereference_bh_rtnl(nh->nh_info);
+> > +	else
+> > +		nhi = rcu_dereference_rtnl(nh->nh_info);
+> >  	if (nhi->family == AF_INET6)
+> >  		return &nhi->fib6_nh;
+> >  
+> >  	return NULL;
+> >  }
+> >  
+> 
+> I am wary of duplicating code, but this helper is simple enough that it
+> should be ok with proper documentation.
+> 
+> Ido/Petr: I think your resilient hashing patch set touches this helper.
+> How ugly does it get to have a second version?
 
-> I can confirm that your patch on top of 5.12-rc2 makes the lockdep
-> splat disappear (Ahmeds' 1st patch not installed).
+It actually doesn't touch this helper. Looks fine to me:
 
-Excellent, I'll queue the below in locking/urgent then.
-
-
----
-Subject: u64_stats,lockdep: Fix u64_stats_init() vs lockdep
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 8 Mar 2021 09:38:12 +0100
-
-Jakub reported that:
-
-    static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
-    {
-	    ...
-	    u64_stats_init(&tp->rx_stats.syncp);
-	    u64_stats_init(&tp->tx_stats.syncp);
-	    ...
-    }
-
-results in lockdep getting confused between the RX and TX stats lock.
-This is because u64_stats_init() is an inline calling seqcount_init(),
-which is a macro using a static variable to generate a lockdep class.
-
-By wrapping that in an inline, we negate the effect of the macro and
-fold the static key variable, hence the confusion.
-
-Fix by also making u64_stats_init() a macro for the case where it
-matters, leaving the other case an inline for argument validation
-etc.
-
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Debugged-by: "Ahmed S. Darwish" <a.darwish@linutronix.de>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: "Erhard F." <erhard_f@mailbox.org>
-Link: https://lkml.kernel.org/r/YEXicy6+9MksdLZh@hirez.programming.kicks-ass.net
----
- include/linux/u64_stats_sync.h |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
---- a/include/linux/u64_stats_sync.h
-+++ b/include/linux/u64_stats_sync.h
-@@ -115,12 +115,13 @@ static inline void u64_stats_inc(u64_sta
+diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+index ba94868a21d5..6df9c12546fd 100644
+--- a/include/net/nexthop.h
++++ b/include/net/nexthop.h
+@@ -496,6 +496,26 @@ static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
+ 	return NULL;
  }
- #endif
  
-+#if BITS_PER_LONG == 32 && defined(CONFIG_SMP)
-+#define u64_stats_init(syncp)	seqcount_init(&(syncp)->seq)
-+#else
- static inline void u64_stats_init(struct u64_stats_sync *syncp)
++static inline struct fib6_nh *nexthop_fib6_nh_bh(struct nexthop *nh)
++{
++	struct nh_info *nhi;
++
++	if (nh->is_group) {
++		struct nh_group *nh_grp;
++
++		nh_grp = rcu_dereference_bh(nh->nh_grp);
++		nh = nexthop_mpath_select(nh_grp, 0);
++		if (!nh)
++			return NULL;
++	}
++
++	nhi = rcu_dereference_bh(nh->nh_info);
++	if (nhi->family == AF_INET6)
++		return &nhi->fib6_nh;
++
++	return NULL;
++}
++
+ static inline struct net_device *fib6_info_nh_dev(struct fib6_info *f6i)
  {
--#if BITS_PER_LONG == 32 && defined(CONFIG_SMP)
--	seqcount_init(&syncp->seq);
--#endif
- }
-+#endif
+ 	struct fib6_nh *fib6_nh;
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index ef9d022e693f..679699e953f1 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -2486,7 +2486,7 @@ static int ipv6_route_native_seq_show(struct seq_file *seq, void *v)
+ 	const struct net_device *dev;
  
- static inline void u64_stats_update_begin(struct u64_stats_sync *syncp)
- {
+ 	if (rt->nh)
+-		fib6_nh = nexthop_fib6_nh(rt->nh);
++		fib6_nh = nexthop_fib6_nh_bh(rt->nh);
+ 
+ 	seq_printf(seq, "%pi6 %02x ", &rt->fib6_dst.addr, rt->fib6_dst.plen);
