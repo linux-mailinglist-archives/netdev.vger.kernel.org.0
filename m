@@ -2,124 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 251863331C5
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 23:54:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB823331F1
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 00:40:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232005AbhCIWxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 17:53:49 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48472 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232026AbhCIWxm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Mar 2021 17:53:42 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lJlES-00A52y-4B; Tue, 09 Mar 2021 23:53:40 +0100
-Date:   Tue, 9 Mar 2021 23:53:40 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Wyse, Chris" <cwyse@canoga.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "drichards@impinj.com" <drichards@impinj.com>
-Subject: Re: DSA
-Message-ID: <YEf8dFUCB+/vMkU8@lunn.ch>
-References: <MWHPR06MB3503CE521D6993C7786A3E93DC8D0@MWHPR06MB3503.namprd06.prod.outlook.com>
- <20180430125030.GB10066@lunn.ch>
- <bf9115d87b65766dab2d5671eceb1764d0d8dc0c.camel@canoga.com>
- <YEemYTQ9EhQQ9jyH@lunn.ch>
- <20fd4a9ce09117e765dbf63f1baa9da5c834a64b.camel@canoga.com>
+        id S232108AbhCIXjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 18:39:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231904AbhCIXjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 18:39:23 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD1FC06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 15:39:22 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id p16so15951134ioj.4
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 15:39:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NaIHW2oIK0pVkcFX+WgzEga219yv3WvbZC+V/hdymdU=;
+        b=qjOxHI9jaX99CYH8Hnhj91miA4ntOyiYEjniIy7wIaWN0NDo02iAlWPSfzNWFjjRSK
+         axp6HHe8EyicXvK7K8BFyq3MyguoKqQFDP32+WTjy3ZJxsKrtS7FUTEqRtB9f6sNRxee
+         VOQKFJPK/7qvQsewzparTawy4QcyekkVGXriE7KEA0Q9So75o0t74zIJIQuqYZrR/C/9
+         LoE52ZtDXwjADbGAu6kd/c1SU9DgMrv84TK3b2xMQitNsPTzGi2CW1zaRchZGyxce89N
+         QFD1cgBy4Kw/URU0kE1fl0nJazMk+DSlNHCIPnzHRzGuKnRb2z5Rnwqb7Xg3amX9TKOx
+         egTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NaIHW2oIK0pVkcFX+WgzEga219yv3WvbZC+V/hdymdU=;
+        b=QCT/bPaLp9x3e3rOYDBXNyz++hzXg4+WgiWCBygsIIZwUjod4CfZNQSG4Fcr7Cb/Js
+         EaRQCCqlvxUxvRZy8voT9QsHTt3Tn/lr7+VKAcU6IypUfF4SGXmQ5ZRaz4O9eA54v6W3
+         kL+sdmapf8hV35pgEphaLO4Tp8QpCAr4j6PWFsj3IDzM5pS2yN/kwuyp9G6UEkme8lTH
+         7Nc2VToetl+osrTQCt4BQ2490G9mr427gWA9ho8StwsBuf9w8jf5qM9L2gbfEpUv+p2Y
+         d06JusM7tcG354R36lCeKF21zjfs9rV+o2/AhwutqXIJpGfYfZ0pE3IC6yfbPHrEdT4J
+         4I4w==
+X-Gm-Message-State: AOAM530yquyXOXniAQ7msQCaHG96TWIrdp1wK8p5nweDTM2P7LGPJvgk
+        eLwyteLPx21oaSRjf1PWGfW/Tw==
+X-Google-Smtp-Source: ABdhPJxZz6FXADhzp4Qm9Mq/rVhZIInWIo0Pi9yvEk4bHLQTeMuo+SC2E/X5AlbvTteZlf4BKHkTcQ==
+X-Received: by 2002:a5e:841a:: with SMTP id h26mr430732ioj.179.1615333162353;
+        Tue, 09 Mar 2021 15:39:22 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id r3sm8438815ilq.42.2021.03.09.15.39.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Mar 2021 15:39:21 -0800 (PST)
+Subject: Re: [PATCH net-next v3 0/6] net: qualcomm: rmnet: stop using C
+ bit-fields
+From:   Alex Elder <elder@linaro.org>
+To:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     sharathv@codeaurora.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        David.Laight@ACULAB.COM, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210309124848.238327-1-elder@linaro.org>
+Message-ID: <bb7608cc-4a83-0e1d-0124-656246ec4a1f@linaro.org>
+Date:   Tue, 9 Mar 2021 17:39:20 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20fd4a9ce09117e765dbf63f1baa9da5c834a64b.camel@canoga.com>
+In-Reply-To: <20210309124848.238327-1-elder@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Take a look at arch/arm/boot/dts/imx6qdl-zii-rdu2.dtsi
-> >
-> > &pcie {
-> >         pinctrl-names = "default";
-> >         pinctrl-0 = <&pinctrl_pcie>;
-> >         reset-gpio = <&gpio7 12 GPIO_ACTIVE_LOW>;
-> >         status = "okay";
-> >
-> >         host@0 {
-> >                 reg = <0 0 0 0 0>;
-> >
-> >                 #address-cells = <3>;
-> >                 #size-cells = <2>;
-> >
-> >                 i210: i210@0 {
-> >                         reg = <0 0 0 0 0>;
-> >                 };
-> >         };
-> > };
-> >
-> I'll look at this, but one thing I see initially is that there are
-> references to other nodes that are not present in our device tree
-> overlay.  The overlay solely supports the IP modules in the FPGA.  Both
-> of our PCIe buses are handled via the ACPI table.  I'm not sure how to
-> handle something that already has an ACPI node.
+On 3/9/21 6:48 AM, Alex Elder wrote:
+> Version 3 of this series uses BIT() rather than GENMASK() to define
+> single-bit masks.  It then uses a simple AND (&) operation rather
+> than (e.g.) u8_get_bits() to access such flags.  This was suggested
+> by David Laight and really prefer the result.  With Bjorn's
+> permission I have preserved his Reviewed-by tags on the first five
+> patches.
 
-Overlay is also possibly too late. Maybe. I guess you need the DT
-available at the time the PCIe controller probes the bus. The core
-PCIe code then pokes around in the DT and finds the node which
-corresponds to the device on the bus. You might be able to work around
-this with pci hotplugging? Load the overlay, and then trigger a hot
-unplug/plug of the i210 via files in /sys? The relevant bit of code is
-pci_set_of_node() which appears to get called independent of ACPI or
-DT.
+Nice as all this looks, it doesn't *work*.  I did some very basic
+testing before sending out version 3, but not enough.  (More on
+the problem, below).
 
-Otherwise you need to go the platform driver route. What works for mv88e6xxx is
+		--> I retract this series <--
 
-static struct dsa_mv88e6xxx_pdata dsa_mv88e6xxx_pdata = {
-        .cd = {
-                .port_names[0] = NULL,
-                .port_names[1] = "cpu",
-                .port_names[2] = "red",
-                .port_names[3] = "blue",
-                .port_names[4] = "green",
-                .port_names[5] = NULL,
-                .port_names[6] = NULL,
-                .port_names[7] = NULL,
-                .port_names[8] = "waic0",
-        },
-        .compatible = "marvell,mv88e6190",
-        .enabled_ports = BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(8),
-        .eeprom_len = 65536,
-};
+I will send out an update (version 4).  But I won't be doing it
+for a few more days.
 
-static const struct mdio_board_info bdinfo = {
-        .bus_id = "gpio-0",
-        .modalias = "mv88e6085",
-        .mdio_addr = 0,
-        .platform_data = &dsa_mv88e6xxx_pdata,
-};
+The problem is that the BIT() flags are defined in host byte
+order.  But the values they're compared against are not always
+(or perhaps, never) in host byte order.
 
-        dsa_mv88e6xxx_pdata.netdev = dev_get_by_name(&init_net, "eth0");
-        if (!dsa_mv88e6xxx_pdata.netdev) {
-                dev_err(dev, "Error finding Ethernet device\n");
-                return -ENODEV;
-        }
+I regret the error, and will do a complete set of testing on
+version 4 before sending it out for review.
 
-        err = mdiobus_register_board_info(&bdinfo, 1);
-        if (err) {
-                dev_err(dev, "Error setting up MDIO board info\n");
-                goto out;
-        }
+					-Alex
 
-On this device, there is a bit-banging MDIO driver. The MDIO core has
-the needed code to associate the mdio_board_info to the bus, such that
-after the bus probes, it adds a platform device on that bus, the
-switch. The mv88e6xxx gets the dsa_mv88e6xxx_pdata, containing the
-name of the Ethernet interface. You can probably do something similar
-in your MFD for the FPGA.
+> Version 2 fixed bugs in the way the value written into the header
+> was computed.
+> 
+> The series was first posted here:
+>    https://lore.kernel.org/netdev/20210304223431.15045-1-elder@linaro.org/
+> Below is a summary of the original description.
+> 
+> This series converts data structures defined in <linux/if_rmnet.h>
+> so they use integral field values with bitfield masks rather than
+> relying on C bit-fields.
+>    - The first three patches lay the ground work for the others.
+>        - The first adds endianness notation to a structure.
+>        - The second simplifies a bit of complicated code.
+>        - The third open-codes some macros that needlessly
+>          obscured some simple code.
+>    - Each of the last three patches converts one of the structures
+>      defined in <linux/if_rmnet.h> so it no longer uses C bit-fields.
+> 
+>      					-Alex
+> 
+> Alex Elder (6):
+>    net: qualcomm: rmnet: mark trailer field endianness
+>    net: qualcomm: rmnet: simplify some byte order logic
+>    net: qualcomm: rmnet: kill RMNET_MAP_GET_*() accessor macros
+>    net: qualcomm: rmnet: use field masks instead of C bit-fields
+>    net: qualcomm: rmnet: don't use C bit-fields in rmnet checksum trailer
+>    net: qualcomm: rmnet: don't use C bit-fields in rmnet checksum header
+> 
+>   .../ethernet/qualcomm/rmnet/rmnet_handlers.c  | 11 ++--
+>   .../net/ethernet/qualcomm/rmnet/rmnet_map.h   | 12 ----
+>   .../qualcomm/rmnet/rmnet_map_command.c        | 11 +++-
+>   .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 60 ++++++++---------
+>   include/linux/if_rmnet.h                      | 65 +++++++++----------
+>   5 files changed, 70 insertions(+), 89 deletions(-)
+> 
 
-This a bit fragile. systemd can come in and rename your interface from
-eth0 to enp1s0, and then dev_get_by_name(). The advantage of DT is
-that the name does not matter, you point directly at the device.
-
-The other problem with this is you don't have a DT representation of
-the switch, making it hard to use phylink for the SFPs, etc. So
-getting overlays working would be best.
-
-     Andrew
