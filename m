@@ -2,235 +2,566 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B44533314D
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 22:56:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B6AA333152
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 23:01:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbhCIVzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 16:55:54 -0500
-Received: from mail-mw2nam10on2088.outbound.protection.outlook.com ([40.107.94.88]:11872
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230431AbhCIVzc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Mar 2021 16:55:32 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W5URzpYGkxW05q1l1EyYkADOAP/amDsPOOpKWfxg27ZAB7XiskStXYO7uPEP+YjsDD5rrynCwQYm1mX7w+q2fz/IHQi0U3RPYcZhGuYcpNRZtO3uLqtyW7p0J8nLQEoxF1UuS9fUUD+/VOP9p7fFKkpyoElxUI+rR4/dQPyffhdOCdcddhODPJ2ICnoBQW8UVCdDMNyKmoHwf5HAwwuzmJeKf5645vdoaqa+xbL+cQuh6Fq9Kkqlule+kDp3i51vGVS92c3+XgxDpR1j+jO72WFBolp5LVmBZA852L50HHdcy06qEhFZ/FvfYqUbzyib7DWTTG07qgtMiOaVWrlvDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Up599Wk6334GNXYQeaBkH7A37+n+P6sVXzRttqjBfD8=;
- b=k9QhCwonzNo4CB/3FdPHu9mtC8klLET3WW2zXm1CfcVLk1ji77xcLf3YcK08AHzE2aZKhKyMFIWxl2/XVurQ5r9A41SZT6TGEQ/pOTdao8zaFMkpad6K+Nyl5iSmsrFpV8XGj4YM6wjehNGljLT/xkg3EodBgqEbisCjkr+w21ArR6rJ5QR0/+qePamcjYd0vo2AH9OKpMtr+ArNN6OW5b+M74ULwdCcRC305tWLYudSJSDdJP8RHJzoRK7svcvNp2PV4EghuhoKRxQQuAXLPCih4RAj22b60RInjx5oEVujpan/7twK+/g66EQh4uiXqDnygsBWlUU/REhGZtQOuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 64.60.54.162) smtp.rcpttodomain=lunn.ch smtp.mailfrom=canoga.com; dmarc=none
- action=none header.from=canoga.com; dkim=none (message not signed); arc=none
+        id S231904AbhCIWBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 17:01:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230173AbhCIWBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 17:01:24 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897F7C06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 14:01:23 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id e19so32224839ejt.3
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 14:01:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=canogaperkins.onmicrosoft.com; s=selector1-canogaperkins-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Up599Wk6334GNXYQeaBkH7A37+n+P6sVXzRttqjBfD8=;
- b=rUnNrkGxtrp1jGFdmpugh/VYxK9LeKstbwCwr+yvqEbz308tWmDdc0drp5PLh8QLN6Fde2EGjsXkKfnVY/mqdmiDWoUNj7LremCv6DxIgYnRe/lGqHA/pacwl+a3L16SP+eUCeCTlu1mdDRHqpUTNxIu2iVP6DyQTCtQZYda784=
-Received: from SN4PR0701CA0016.namprd07.prod.outlook.com
- (2603:10b6:803:28::26) by BN3PR04MB2226.namprd04.prod.outlook.com
- (2a01:111:e400:c5f2::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Tue, 9 Mar
- 2021 21:55:29 +0000
-Received: from SN1NAM04FT004.eop-NAM04.prod.protection.outlook.com
- (2603:10b6:803:28:cafe::6d) by SN4PR0701CA0016.outlook.office365.com
- (2603:10b6:803:28::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Tue, 9 Mar 2021 21:55:29 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 64.60.54.162)
- smtp.mailfrom=canoga.com; lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=canoga.com;
-Received-SPF: Fail (protection.outlook.com: domain of canoga.com does not
- designate 64.60.54.162 as permitted sender) receiver=protection.outlook.com;
- client-ip=64.60.54.162; helo=EXCH-01.canoga.com;
-Received: from EXCH-01.canoga.com (64.60.54.162) by
- SN1NAM04FT004.mail.protection.outlook.com (10.152.88.171) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.3912.25 via Frontend Transport; Tue, 9 Mar 2021 21:55:29 +0000
-Received: from EXCH-01.canoga.com (172.16.1.71) by EXCH-01.canoga.com
- (172.16.1.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 9 Mar 2021
- 13:55:28 -0800
-Received: from EXCH-01.canoga.com ([fe80::c192:5930:394b:bb4a]) by
- EXCH-01.canoga.com ([fe80::c192:5930:394b:bb4a%11]) with mapi id
- 15.01.2176.002; Tue, 9 Mar 2021 13:55:28 -0800
-From:   "Wyse, Chris" <cwyse@canoga.com>
-To:     "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "drichards@impinj.com" <drichards@impinj.com>
-Subject: Re: DSA
-Thread-Topic: DSA
-Thread-Index: AQHXFOsWsphWsVyLO0WnfdN7crkaW6p8XaIAgAAGIICAAFZYgA==
-Date:   Tue, 9 Mar 2021 21:55:28 +0000
-Message-ID: <20fd4a9ce09117e765dbf63f1baa9da5c834a64b.camel@canoga.com>
-References: <MWHPR06MB3503CE521D6993C7786A3E93DC8D0@MWHPR06MB3503.namprd06.prod.outlook.com>
-         <20180430125030.GB10066@lunn.ch>
-         <bf9115d87b65766dab2d5671eceb1764d0d8dc0c.camel@canoga.com>
-         <YEemYTQ9EhQQ9jyH@lunn.ch>
-In-Reply-To: <YEemYTQ9EhQQ9jyH@lunn.ch>
-Reply-To: "Wyse, Chris" <cwyse@canoga.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [68.9.160.37]
-x-esetresult: clean, is OK
-x-esetid: 37303A2957037458627660
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3E9482BB00BEB645B3CDB700955BCAAD@canoga.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DbjvNZVDvIxiebT58vvCke7Ya0EpcLisY26J9Y40F0Q=;
+        b=UMKoLpzDwVKlCx2qmSLFQPS8IWlB9LL3lWpqfZwnnkK8n2x6CJFogw7aFXRPbP6ixC
+         w8RxpGc97PHkX6+xENyF71LQ6UrA+sJT/xuBaRP8MR7klhOSQgVWMceVxGWIsO14iO3s
+         Pute6g+keNl2V4jcNwRKeEnRMDB9GcaeKNGe/linxwYqo5nr4mZj5n+mQFAEomhidjoB
+         h7n7myKiiVqo6Jv/DIgjVWdT0MwfDyhGJtgs1bvpojsK193jxb93wvrZZq0tW+jmBjLV
+         CkWWmLHzsPBz7PW39gDIPbdJwPXg24C2HXv2gy1vsHAm8gCuO/ICb4BqsTlDRSFtnh7s
+         wYiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DbjvNZVDvIxiebT58vvCke7Ya0EpcLisY26J9Y40F0Q=;
+        b=EVowThdAxJhEHWJtE26QHVkdv4aP6T3thDGdpuAvKjrDfa6Ls7mThOvooYKC+/4A3n
+         xEjhVTj72/dsohq0WL+L+KzUOIXabM/3c20mPnzEpi3Pcil61AUsv7j939PlzAebzh+u
+         eNdeUz0oOCQvuybcPhm4ZQMo8m/JKEhk7DxGZsCf1dU/uyL2CBwCUnaR2jmOSWitg5RH
+         RH5Yu2/L0FZ6oYz5Gf+LJEB/pzlPuV4GdwkTY19Lsjh6sj1M3fyNN2X1Q66cpwBGgKh4
+         ig8xMJIrRVjMyeOMoPWPFgB4gDzomLEoHHBLtJwd7AMmmyfRukb/R00sw9LYKjaE2W8U
+         aSmQ==
+X-Gm-Message-State: AOAM533+SupGpebE1I7BeKNqslZVO3VXiiN64cLmQJIRDHlZFqbkeFK+
+        iwKQrJQMjYGxeDizSWNjjq0=
+X-Google-Smtp-Source: ABdhPJyOoDjBF5iBCDlB6owa983DlkjQGuTRzBtyn5+R1PbzAQXVcLul23nzhc5numTIhjAbJKIJaA==
+X-Received: by 2002:a17:906:388d:: with SMTP id q13mr231513ejd.34.1615327281112;
+        Tue, 09 Mar 2021 14:01:21 -0800 (PST)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id y17sm9006200ejf.116.2021.03.09.14.01.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Mar 2021 14:01:20 -0800 (PST)
+Date:   Wed, 10 Mar 2021 00:01:19 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [RFC net] net: dsa: Centralize validation of VLAN configuration
+Message-ID: <20210309220119.t24sdc7cqqfxhpfb@skbuf>
+References: <20210309184244.1970173-1-tobias@waldekranz.com>
+ <699042d3-e124-7584-6486-02a6fb45423e@gmail.com>
+ <87h7lkow44.fsf@waldekranz.com>
 MIME-Version: 1.0
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0048a05b-e100-485d-a633-08d8e3460df4
-X-MS-TrafficTypeDiagnostic: BN3PR04MB2226:
-X-Microsoft-Antispam-PRVS: <BN3PR04MB2226D3775373D5C59ACE8B00CB929@BN3PR04MB2226.namprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ruEQLH0MgOCFjA8x8QITjF0s6N4rUTkWmTuMu7y5u3uchPQl0m+ZtNBYl3rOB9IkssIG413mKxSY/O53z0mgyN2xM49uwNU4aEm3gtikBrNefho2RA9Uy5Bm+Daq8zDRfGj94Jopu6qppeEKadqAAFvfgiGTpfdgrsEnoNiRL6lXcORa9F2Zl9wXBoivVv5V/rtniGoK0I3qNZni5zEW1Vpqkig1jQB10A2YpTnk1dZ+E6x2Ajv7XlBnEyiB6xNeigDyFZyvG2o6iVm5X3Jd9S8yld4qjoGACX8fBoifoDMTrLuP7zJHa2y1KxllLoHehR2ROXtA6uq6ibYA3VSxJr2XCOeLHmrzXZasqXeQ6itWJwmAlRVg0Jw2kJJnDA7euKqHXIvUz6m9jBpxywzlzt23EqqgfE7D8JpWsF0LwV8yn1P3i4aVFehngiJFD52ckYfyg/cZDgG0hLMluORi7NhS3jt+kOtCl6uFOQTTuh9LdjzvYxjKNZB/AvCBhKNqe3ht42/NPdfrQPNZ39DtNRXOJ8T4brxY+9JO7uza351tloBQg15JbNlYvj8xNxNWU3bD6F/dv/t0r6vT29/gJOcdjuiLAhWUInFB4AKSy9RQ6fQFvkRWytIRSCs5cbMzkulH+gpZ7AeS1aLO9ZuWRRfLyh+nDx7uIVNSoyhM6AY=
-X-Forefront-Antispam-Report: CIP:64.60.54.162;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:EXCH-01.canoga.com;PTR:64-60-54-162.static-ip.telepacific.net;CAT:NONE;SFS:(136003)(396003)(376002)(39830400003)(346002)(36840700001)(46966006)(36756003)(478600001)(2906002)(86362001)(36860700001)(316002)(8936002)(82310400003)(70586007)(54906003)(2616005)(3480700007)(47076005)(70206006)(426003)(4326008)(8676002)(7116003)(36906005)(6916009)(356005)(5660300002)(26005)(186003)(3450700001)(7696005)(81166007)(336012)(83380400001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: canoga.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2021 21:55:29.3628
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0048a05b-e100-485d-a633-08d8e3460df4
-X-MS-Exchange-CrossTenant-Id: 6638fc67-e5b4-4bf1-8d4b-c62f4d909614
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=6638fc67-e5b4-4bf1-8d4b-c62f4d909614;Ip=[64.60.54.162];Helo=[EXCH-01.canoga.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM04FT004.eop-NAM04.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN3PR04MB2226
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87h7lkow44.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiBUdWUsIDIwMjEtMDMtMDkgYXQgMTc6NDYgKzAxMDAsIEFuZHJldyBMdW5uIHdyb3RlOg0K
-Pg0KPiA+IEkgaGF2ZSBhIGJvYXJkIHRoYXQgdXNlcyB0aGUgSW50ZWwgaTIxMCwgYW5kIEknZCBs
-aWtlIGl0IGJlIHRoZSBEU0ENCj4gPiBtYXN0ZXIuICBJJ20gbG9va2luZyBmb3Igc3VnZ2VzdGlv
-bnMgb24gaG93IHRvIHByb2NlZWQuDQo+ID4NCj4gPiBNeSBjb25maWd1cmF0aW9uIGlzIGFuIElu
-dGVsIEUzOTUwIENQVSBydW5uaW5nIExpbnV4IDQuMTkuNjIsDQo+DQo+IEhpIENocmlzDQo+DQo+
-IFRoYXQgaXMgb2xkLiBDYW4geW91IHVwZGF0ZSB0byA1LjEwLjIyPyBJZiB5b3UgcGxhbiBzdWJt
-aXR0aW5nIGFueQ0KPiBrZXJuZWwgcGF0Y2hlcywgeW91IHdpbGwgbmVlZCB0byBiZSB1c2luZyBu
-ZXQtbmV4dC4NCg0KRmlyc3QgLS0gdGhhbmtzIGZvciB0aGUgcXVpY2sgcmVzcG9uc2UuICBJJ20g
-bm90IGFzIHF1aWNrIGFzIHlvdS4uLg0KDQpBbnl3YXksIHllcyAtIHRoZSBrZXJuZWwgaXMgb2xk
-LiAgSSBjYW4ndCB1cGRhdGUgaXQgcmlnaHQgbm93LCBidXQNCndlJ3JlIHBsYW5uaW5nIGEgbmV3
-IHZlcnNpb24gdGhhdCB3b3VsZCB1c2UgYSBjdXJyZW50IGtlcm5lbC4NCg0KPg0KPiA+IHVzaW5n
-DQo+ID4gVUVGSS9BQ1BJLiAgVGhlIGJvYXJkIGhhcyBhIFhpbGlueCBGUEdBIHRoYXQgc3VwcG9y
-dHMgU0ZQICYgUVNGUA0KPiA+IGRldmljZXMuICBUaGUgU0ZQIHBvcnRzIHVzZSB0aGUgc3RhbmRh
-cmQgU0ZQIGRyaXZlciAmIHBoeWxpbmsuICBUaGUNCj4gPiBRU0ZQIHBvcnRzIHVzZSBhIG1vZGlm
-aWVkIHZlcnNpb24gb2YgdGhlIFNGUCBkcml2ZXIuDQo+DQo+IFJ1c2VsbCBLaW5nIGhhcyBzb21l
-IGN1cnJlbnRseSBvdXQgb2YgdHJlZSBwYXRjaGVzIGZvciBRU0ZQLiBTaW5jZSBoZQ0KPiB3cm90
-ZSB0aGUgU0ZQIGNvZGUsIHlvdSBzaG91bGQgdGFsayB0byBoaW0sIHNlZSB3aGF0IGlzIG5lZWRl
-ZCB0byBnZXQNCj4gaGlzIGNoYW5nZXMgbWVyZ2VkLg0KDQpUaGF0J3MgZ3JlYXQgaW5mb3JtYXRp
-b24uICBXZSBzZWFyY2hlZCBhbGwgb3ZlciBmb3IgUVNGUCBzdXBwb3J0LCBidXQNCmVuZGVkIHVw
-IHdyaXRpbmcgb3VyIG93bi4gIEknbGwgZ2V0IGluIHRvdWNoIHdpdGggUnVzZWxsLg0KDQo+DQo+
-ID4gSXQgYWxzbyBpbmNsdWRlcyBhbiBpbnRlcmZhY2UgdG8gYW4gSW50ZWwgaTIxMCBldGhlcm5l
-dC4NCj4gPg0KPiA+IFdlIHVzZSBkZXZpY2UgdHJlZSBvdmVybGF5cyB0byBsb2FkIHRoZSBpbmZv
-cm1hdGlvbiBmb3IgdGhlIGRldmljZXMNCj4gPiBzdXBwb3J0ZWQgYnkgdGhlIEZQR0EsIHRoZW4g
-bG9hZCBhbiBNRkQgRlBHQSBkcml2ZXIgdGhhdA0KPiBpbnN0YW50aWF0ZXMNCj4gPiBwbGF0Zm9y
-bSBkcml2ZXJzIGZvciBlYWNoIG9mIHRob3NlIGRldmljZXMuICBPbmUgb2YgdGhlIGRyaXZlcnMN
-Cj4gdGhhdA0KPiA+IGdldHMgbG9hZGVkIGlzIGEgRFNBIGRyaXZlciB0aGF0IGhhcyB0aGUgU0ZQ
-ICYgUVNGUCBkZXZpY2VzIGFzIGl0cw0KPiA+IHNsYXZlcy4gIFRoZSBpbnRlbnQgaXMgdG8gdXNl
-IHRoZSBJbnRlbCBpMjEwIG9uIHRoZSBtYXN0ZXIgcG9ydCBvZg0KPiB0aGUNCj4gPiBEU0EgZHJp
-dmVyLg0KPg0KPiBTbyB0aGUgc3dpdGNoIGlzIGluc2lkZSB0aGUgRlBHQT8gV2hhdCBpcyB0aGUg
-Y29udHJvbCBwYXRoIGZvciB0aGlzDQo+IHN3aXRjaD8gVGhlIGJpZ2dlc3QgcHJvYmxlbSB3aXRo
-IGkyMTAgaXMgaXRzIE1ESU8gYnVzLiBNRElPIGlzIG9mdGVuDQo+IHVzZWQgdG8gY29udHJvbCBh
-biBFdGhlcm5ldCBzd2l0Y2guIEJ1dCBpZiB5b3VyIHN3aXRjaCBpcyBpbnNpZGUgdGhlDQo+IEZQ
-R0EsIGkgZ3Vlc3MgeW91IGFyZSBub3QgdXNpbmcgTURJTz8NCj4NClllcywgdGhlIHN3aXRjaCBp
-cyBpbnNpZGUgdGhlIEZQR0EuICBUaGUgaTIxMCBpcyBjb25uZWN0ZWQgdG8gdGhlIENQVQ0Kdmlh
-IGEgUENJZSBidXMuICBJdCdzIGNvbm5lY3RlZCB0byBhIFBIWSB3aGljaCBpcyBjb25uZWN0ZWQg
-dG8gYQ0KbW9kaWZpZWQgRU1BQ0xpdGUgSVAgbW9kdWxlIGluIHRoZSBGUEdBIHdoaWNoIG9ubHkg
-c3VwcG9ydHMgTURJTywgYW5kDQp0byBhIGN1c3RvbSBNQUMgaW1wbGVtZW50ZWQgaW4gdGhlIEZQ
-R0EuICBUaGUgRlBHQSBsb2dpYyBkaXJlY3RzDQpwYWNrZXRzIHRvIHRoZSBhcHByb3ByaWF0ZSBw
-b3J0cyBvZiB0aGUgc3dpdGNoLCBhZGRpbmcgYW5kIHJlbW92aW5nDQp0YWdzIGFzIGFwcHJvcHJp
-YXRlLiAgVGhlIHN3aXRjaCBjb250YWlucyBtdWx0aXBsZSBNQUNzLCB3aGljaCBhcmUNCmNvbm5l
-Y3RlZCB0byBTRlBzIGFuZCBRU0ZQcyAobm90IHNob3duKS4NCg0KQXNzdW1pbmcgdGhlIGRyYXdp
-bmcgYmVsb3cgZG9lc24ndCBnZXQgY29ycnVwdGVkIHdpdGggbGluZSBicmVha3MsIGl0DQppcyBh
-IHByZXR0eSBnb29kIHJlcHJlc2VudGF0aW9uIG9mIG91ciBzeXN0ZW0uDQoNCistLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLSsNCnwgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwNCnwg
-IHwgfCAgICAgKy0tLS0tLS0tLS0tKyAgICAgIHwgICstLS0tLS0tLSsNCnwgIHxQfCAgICAgfCAg
-ICAgICAgICAgfCBNREkgIHwgIHxCcm9hZENvbXwNCnwgIHxDKy0tLS0tKyAgIGkyMTAgICAgKy0t
-LS0tLSstPnwgIFBIWSAgIHwNCnwgIHxJfCAgICAgfCAgICAgICAgICAgfCAgICAgIHwgIHwgICAg
-ICAgIHwNCnwgIHxlfCAgICAgKy0tLS0tLS0tLS0tKyAgICAgIHwgICstKy0tLS0rLSsNCnwgIHwg
-fCAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgfCAgICB8DQp8ICB8QnwgICAgICstLS0tLS0t
-LS0tKy0tLS0tKyB8ICAgIHwgICAgfA0KfCAgfHV8ICAgICB8RFNBIERyaXZlcnwgICAgIHwgfCAg
-ICB8ICAgIHwgIE1ESU8gT25seQ0KfCAgfHMrLS0tLS0rICAgVEFHf39/fyAgICB8IH9DUFUgfCB8
-ICAgIHwgICAgKy0tLS0tLS0tLS0tLS0rDQp8ICB8IHwgICAgIHwgUHJvdG9jb2wgfCAgICAgfCB8
-ICAgIHwgICAgICAgICAgICAgICAgICB8DQp8ICB8IHwgICAgICstLS0tLS0tLS0tKy0rLSstKyB8
-ICAgIHwgICAgICAgICAgICAgICAgICB8DQp8ICAgICAgICAgICAgICAgICAgICAgICB8UHwgICB8
-ICAgIHwgICAgICAgICAgICAgICAgICB8DQorLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rQystLS0r
-ICAgIHwgICAgICAgICAgICAgICAgICB8DQogICAgICAgICAgICAgICAgICAgICAgICB8SXwgICAg
-ICAgIHwgICAgICAgICAgICAgICAgICB8DQogICAgICAgICAgICAgICAgICAgICAgICB8ZXwgICAg
-ICAgIHwgICAgICAgICAgICAgICAgICB8DQogICAgICAgICAgICAgICAgICAgICAgICB8IHwgICAg
-ICAgIHwgU0dNSUkgICAgICAgICAgICB8DQogICAgICAgICAgICAgICAgICAgICAgICB8QnwgICAg
-ICAgICstLS0tLSsgICAgICAgICAgICB8DQogICAgICAgICAgICAgICAgICAgICAgICB8dXwgICAg
-ICAgICAgICAgIHwgICAgICAgICAgICB8DQogICAgICAgICAgICAgICAgICAgICAgICB8c3wgICAg
-ICAgICAgICAgIHwgICAgICAgICAgICB8DQogICAgICAgICAgICAgICAgICAgICAgICB8IHwgICAg
-ICAgICAgICAgIHYgICAgICAgICAgICB2DQorLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0rLSstLS0t
-LS0rLS0rLS0tLS0tLS0tLSstKy0tLS0tLS0tLS0tLSstLS0tKw0KfCAgICAgICAgICAgICAgICAg
-fCBQQ0llIENvbnRyb2wgfCAgfEN1c3RvbSBNQUN8IHwgRU1BQyBMaXRlICB8ICAgIHwNCnwgICst
-LS0tLS0tLS0rICAgIHwgQmxvY2sgICAgICAgIHwgIHwoTm8gTURJTykgfCB8IElQIE1vZHVsZSAg
-fCAgICB8DQp8ICB8U3dpdGNoICAgfCAgICArLSstLS0tLS0tLS0tLS0rICArLSstLS0tLS0tLSsg
-Ky0tLS0tLS0tLS0tLSsgICAgfA0KfCAgfFJlZ2lzdGVycystLS0tLS0rICAgICAgICAgICAgICAg
-ICB8ICAgXiAgICAgICAgICAgICAgICAgICAgICAgIHwNCnwgICstLS0tLS0tLS0rICAgICAgICAg
-ICAgICAgICAgICAgICAgfCAgIHwgICAgICAgICAgICAgICAgICAgICAgICB8DQp8ICAgICAgICAg
-ICAgICB/ICAgICAgICstLS0tLS0tLS0tLS0tLS0rICAgfCAgICAgICAgICAgICAgICAgICAgICAg
-IHwNCnwgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgIHwgICAgICAgICAg
-ICAgICAgICAgICAgICB8DQp8ICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgKy0tLS0t
-LS0rICAgICAgICstLS0tLS0tLS0tKy0tLS0tKw0KfCAgICAgICAgICAgICAgICAgICAgICB8ICAg
-ICAgICAgIHwgICAgICAgICAgICAgICB8ICAgICAgICAgIHwgICAgIHwNCnwgICAgICAgICAgICAg
-ICAgICAgICAgfCAgICArLS0tLS0rLS0tLS0rICAgICAgICAgfCAgICAgICAgICB8IE1BQyB8DQp8
-ICAgICAgICAgICAgICAgICAgICAgIHwgICAgfCBNYXAgJiBBZGQgfCAgICAgICAgIHwgICAgICAg
-ICAgfCAgICAgfA0KfCAgIEYgUCBHIEEgICAgICAgICAgICB8ICAgIHwgUG9ydCBUYWdzIHw8LS0t
-LS0tLS0rICAgICAgICAgICstLS0tLSsNCnwgICAgICAgICAgICAgICAgICAgICAgfCAgICArLS0t
-LS0tLS0tLS0rICAgICAgICAgfCAgICAgICAgICB8ICAgICB8DQp8ICAgICAgICAgICAgICAgICAg
-ICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICBTd2l0Y2ggfCBNQUMgfA0KfCAgICAg
-ICAgICAgICAgICAgICAgICB8ICAgICstLS0tLS0tLS0tLSsgICAgICAgICB8ICAgICAgICAgIHwg
-ICAgIHwNCnwgICAgICAgICAgICAgICAgICAgICAgKy0tLT58IERlbCAmIE1hcCArLS0tLS0tLS0+
-fCAgICAgICAgICArLS0tLS0rDQp8ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCBQb3J0IFRh
-Z3MgfCAgICAgICAgIHwgICAgICAgICAgfCAgICAgfA0KfCAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICstLS0tLS0tLS0tLSsgICAgICAgICB8ICAgICAgICAgIHwgTUFDIHwNCnwgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICB8ICAgICB8
-DQp8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICstLS0t
-LS0tLS0tKy0tLS0tKw0KfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIHwNCistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rDQo+ID4gQXQgZmlyc3QgZ2xh
-bmNlLCBJIGJlbGlldmUgSSBuZWVkIHRvIGNvbXBsZXRlIHRoZXNlIHRhc2tzOg0KPiA+ICAgMS4g
-IENyZWF0ZSBhIGRldmljZSB0cmVlIG5vZGUgZm9yIHRoZSBpMjEwLCBwcm92aWRpbmcgaW5mb3Jt
-YXRpb24NCj4gb24NCj4gPiB0aGUgYWxyZWFkeSBsb2FkZWQgZHJpdmVyLCB0aGF0IGNhbiBiZSB1
-c2VkIGJ5IHRoZSBEU0EgZHJpdmVyLg0KPiA+ICAgMi4gIE9idGFpbiBvciB1cGRhdGUgYSBpMjEw
-IGRyaXZlciB0aGF0IHdpbGwgd29yayB3aXRoIERTQQ0KPg0KPiBUYWtlIGEgbG9vayBhdCBhcmNo
-L2FybS9ib290L2R0cy9pbXg2cWRsLXppaS1yZHUyLmR0c2kNCj4NCj4gJnBjaWUgew0KPiAgICAg
-ICAgIHBpbmN0cmwtbmFtZXMgPSAiZGVmYXVsdCI7DQo+ICAgICAgICAgcGluY3RybC0wID0gPCZw
-aW5jdHJsX3BjaWU+Ow0KPiAgICAgICAgIHJlc2V0LWdwaW8gPSA8JmdwaW83IDEyIEdQSU9fQUNU
-SVZFX0xPVz47DQo+ICAgICAgICAgc3RhdHVzID0gIm9rYXkiOw0KPg0KPiAgICAgICAgIGhvc3RA
-MCB7DQo+ICAgICAgICAgICAgICAgICByZWcgPSA8MCAwIDAgMCAwPjsNCj4NCj4gICAgICAgICAg
-ICAgICAgICNhZGRyZXNzLWNlbGxzID0gPDM+Ow0KPiAgICAgICAgICAgICAgICAgI3NpemUtY2Vs
-bHMgPSA8Mj47DQo+DQo+ICAgICAgICAgICAgICAgICBpMjEwOiBpMjEwQDAgew0KPiAgICAgICAg
-ICAgICAgICAgICAgICAgICByZWcgPSA8MCAwIDAgMCAwPjsNCj4gICAgICAgICAgICAgICAgIH07
-DQo+ICAgICAgICAgfTsNCj4gfTsNCj4NCkknbGwgbG9vayBhdCB0aGlzLCBidXQgb25lIHRoaW5n
-IEkgc2VlIGluaXRpYWxseSBpcyB0aGF0IHRoZXJlIGFyZQ0KcmVmZXJlbmNlcyB0byBvdGhlciBu
-b2RlcyB0aGF0IGFyZSBub3QgcHJlc2VudCBpbiBvdXIgZGV2aWNlIHRyZWUNCm92ZXJsYXkuICBU
-aGUgb3ZlcmxheSBzb2xlbHkgc3VwcG9ydHMgdGhlIElQIG1vZHVsZXMgaW4gdGhlIEZQR0EuICBC
-b3RoDQpvZiBvdXIgUENJZSBidXNlcyBhcmUgaGFuZGxlZCB2aWEgdGhlIEFDUEkgdGFibGUuICBJ
-J20gbm90IHN1cmUgaG93IHRvDQpoYW5kbGUgc29tZXRoaW5nIHRoYXQgYWxyZWFkeSBoYXMgYW4g
-QUNQSSBub2RlLg0KDQpEZWZpbml0ZWx5IGEgYml0IGxvc3Qgb24gaG93IHRvIHByb2NlZWQgd2l0
-aCB0aGUgY29tYmluYXRpb24gb2YgQUNQSSAmDQpkZXZpY2UgdHJlZS4NCj4gU28gdGhpcyBpcyBh
-biBpMjEwIG9uIHRoZSBQQ0llIGJ1cyBvZiBhbiBJTVg2Lg0KPg0KPiBJdCBuZXZlciBtYWRlIGl0
-IGludG8gbWFpbGluZSwgYnV0IHdlIGRpZCBoYXZlIGEgc2V0dXAgd2hlcmUgaW5zdGVhZA0KPiBv
-ZiB1c2luZyB0aGUgRkVDIEV0aGVybmV0IGNvbnRyb2xsZXIgaW5zaWRlIHRoZSBJTVg2LCB3ZSB1
-c2VkIHRoZQ0KPiBpMjEwDQo+IGFzIHRoZSBtYXN0ZXIuIFRoZSB1c3VhbCBwaGFuZGxlIHRvIHRo
-aXMgaTIxMCBqdXN0IHdvcmtlZC4gVGhlIHN3aXRjaA0KPiB3YXMgbWFuYWdlZCB2aWEgTURJTyBm
-cm9tIHRoZSBGRUMsIG9yIGJpdCBiYW5naW5nLg0KPg0KPiBTbyBhc3N1bWluZyB5b3Ugc3dpdGNo
-IGNvbnRyb2wgaXMgbm90IHZpYSB0aGUgaTIxMCBNRElPIGJ1cywgd2l0aCB0aGUNCj4gY29ycmVj
-dCBEVCwgaXQgc2hvdWxkICdqdXN0IHdvcmsnLg0KPg0KPiAgICAgICBBbmRyZXcNCi0tDQoNCkNo
-cmlzIFd5c2UNCg0KDQpFbWJlZGRlZCBTb2Z0d2FyZSBEZXZlbG9wbWVudA0KKDIwMykgODg4LTc5
-MTQgZXh0IDIwMw0KDQoNCkNhbm9nYSBQZXJraW5zDQoxMDAgQmFuayBTdCwNClNleW1vdXIsIENU
-IDA2NDgzDQoNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg0KQ2Fub2dhIFBl
-cmtpbnMNCjIwNjAwIFByYWlyaWUgU3RyZWV0DQpDaGF0c3dvcnRoLCBDQSA5MTMxMQ0KKDgxOCkg
-NzE4LTYzMDANCg0KVGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2hlZCBkb2N1bWVudChzKSBpcyBj
-b25maWRlbnRpYWwgYW5kIGlzIGludGVuZGVkIG9ubHkgZm9yIHRoZSByZXZpZXcgb2YgdGhlIHBh
-cnR5IHRvIHdob20gaXQgaXMgYWRkcmVzc2VkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIHRy
-YW5zbWlzc2lvbiBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5
-IGFuZCBkaXNjYXJkIHRoZSBvcmlnaW5hbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudChzKS4N
-Cg==
+On Tue, Mar 09, 2021 at 10:28:11PM +0100, Tobias Waldekranz wrote:
+> On Tue, Mar 09, 2021 at 12:40, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> > On 3/9/21 10:42 AM, Tobias Waldekranz wrote:
+> >> There are three kinds of events that have an inpact on VLAN
+> >> configuration of DSA ports:
+> >> 
+> >> - Adding of stacked VLANs
+> >>   (ip link add dev swp0.1 link swp0 type vlan id 1)
+> >> 
+> >> - Adding of bridged VLANs
+> >>   (bridge vlan add dev swp0 vid 1)
+> >> 
+> >> - Changes to a bridge's VLAN filtering setting
+> >>   (ip link set dev br0 type bridge vlan_filtering 1)
+> >> 
+> >> For all of these events, we want to ensure that some invariants are
+> >> upheld:
+> >> 
+> >> - For hardware where VLAN filtering is a global setting, either all
+> >>   bridges must use VLAN filtering, or no bridge can.
+> >
+> > I suppose that is true, given that a non-VLAN filtering bridge must not
+> > perform ingress VID checking, OK.
+> >
+> >> 
+> >> - For all filtering bridges, no stacked VLAN on any port may be
+> >>   configured on multiple ports.
+> >
+> > You need to qualify multiple ports a bit more here, are you saying
+> > multiple ports that are part of said bridge, or?
+> 
+> Yeah sorry, I can imagine that makes no sense whatsoever without the
+> context of the recent discussions. It is basically guarding against this
+> situation:
+> 
+> .100  br0  .100
+>    \  / \  /
+>    lan0 lan1
+> 
+> $ ip link add dev br0 type bridge vlan_filtering 1
+> $ ip link add dev lan0.100 link lan0 type vlan id 100
+> $ ip link add dev lan1.100 link lan1 type vlan id 100
+> $ ip link set dev lan0 master br0
+> $ ip link set dev lan1 master br0 # This should fail
+> 
+> >> - For all filtering bridges, no stacked VLAN may be configured in the
+> >>   bridge.
+> >
+> > Being stacked in the bridge does not really compute for me, you mean, no
+> > VLAN upper must be configured on the bridge master device(s)? Why would
+> > that be a problem though?
+> 
+> Again sorry, I relize that this message needs a lot of work. It guards
+> against this scenario:
+> 
+> .100  br0
+>    \  / \
+>    lan0 lan1
+> 
+> $ ip link add dev br0 type bridge vlan_filtering 1
+> $ ip link add dev lan0.100 link lan0 type vlan id 100
+> $ ip link set dev lan0 master br0
+> $ ip link set dev lan1 master br0
+> $ bridge vlan add dev lan1 vid 100 # This should fail
+> 
+> >> Move the validation of these invariants to a central function, and use
+> >> it from all sites where these events are handled. This way, we ensure
+> >> that all invariants are always checked, avoiding certain configs being
+> >> allowed or disallowed depending on the order in which commands are
+> >> given.
+> >> 
+> >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> >> ---
+> >> 
+> >> There is still testing left to do on this, but I wanted to send early
+> >> in order show what I meant by "generic" VLAN validation in this
+> >> discussion:
+> >> 
+> >> https://lore.kernel.org/netdev/87mtvdp97q.fsf@waldekranz.com/
+> >> 
+> >> This is basically an alternative implementation of 1/4 and 2/4 from
+> >> this series by Vladimir:
+> >> 
+> >> https://lore.kernel.org/netdev/20210309021657.3639745-1-olteanv@gmail.com/
+> >
+> > I really have not been able to keep up with your discussion, and I am
+> > not sure if I will given how quickly you guys can spin patches (not a
+> > criticism, this is welcome).
+> 
+> Yeah I know, it has been a bit of a whirlwind.
+> 
+> Maybe I should just have posted this inline in the other thread, since
+> it was mostly to show Vladimir my idea, and it seemed easier to write it
+> in C than in English :)
+
+I like it, I think it has good potential.
+I wrote up this battery of tests, there is still one condition which you
+are not catching, but you should be able to add it. If you find more
+corner cases please feel free to add them to this list. Then you can
+clean up the patch and send it, I think.
+
+-----------------------------[ cut here ]-----------------------------
+From 9fcfccb6a38a9769962b098ba19d50e576710b5b Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Tue, 9 Mar 2021 23:51:01 +0200
+Subject: [PATCH] selftests: net: dsa: add checks for all VLAN configurations
+ known to mankind that should fail
+
+Offloading VLANs from two different directions is no easy feat,
+especially since we can toggle the VLAN filtering property at runtime,
+and even per port!
+
+Try to capture the combinations of commands that should be rejected by
+DSA, in the attempt of creating a validation procedure that catches them
+all.
+
+Note that this patch moves the irritating "require_command" for mausezahn
+outside the main net forwarding lib logic, into the functions that
+actually make use of it. My testing system doesn't have mausezahn, and
+this test doesn't even require it.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ .../drivers/net/dsa/vlan_validation.sh        | 316 ++++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |   9 +-
+ 2 files changed, 324 insertions(+), 1 deletion(-)
+ create mode 100755 tools/testing/selftests/drivers/net/dsa/vlan_validation.sh
+
+diff --git a/tools/testing/selftests/drivers/net/dsa/vlan_validation.sh b/tools/testing/selftests/drivers/net/dsa/vlan_validation.sh
+new file mode 100755
+index 000000000000..445ce17cb925
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/vlan_validation.sh
+@@ -0,0 +1,316 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++NUM_NETIFS=2
++lib_dir=$(dirname $0)/../../../net/forwarding
++source $lib_dir/lib.sh
++
++eth0=${NETIFS[p1]}
++eth1=${NETIFS[p2]}
++
++test_bridge_vlan_when_port_has_that_vlan_as_upper()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link set ${eth0} master br0
++	bridge vlan add dev ${eth0} vid 100 master
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "Add bridge VLAN when port has that VLAN as upper already"
++}
++
++test_bridge_vlan_when_port_has_that_vlan_as_upper_but_is_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link set ${eth0} master br0
++	bridge vlan add dev ${eth0} vid 100 master
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100
++	ip link del br0
++
++	log_test "Add bridge VLAN when port has that VLAN as upper already, but bridge is initially VLAN-unaware"
++}
++
++test_bridge_vlan_when_other_bridge_port_has_that_vlan_as_upper()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link set ${eth0} master br0
++	ip link set ${eth1} master br0
++	bridge vlan add dev ${eth0} vid 100 master
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth1}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "Add bridge VLAN when another bridge port has that VLAN as upper already"
++}
++
++test_bridge_vlan_when_other_bridge_port_has_that_vlan_as_upper_but_is_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link set ${eth0} master br0
++	ip link set ${eth1} master br0
++	bridge vlan add dev ${eth0} vid 100 master
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth1}.100
++	ip link del br0
++
++	log_test "Add bridge VLAN when another bridge port has that VLAN as upper already, but bridge is initially VLAN-unaware"
++}
++
++test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_vlan_upper()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	ip link set ${eth1} master br0
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100
++	ip link del ${eth1}.100
++	ip link del br0
++
++	log_test "Bridge join when new port has VLAN upper with same VID as another port's VLAN upper"
++}
++
++test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_vlan_upper_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	ip link set ${eth1} master br0
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100
++	ip link del ${eth1}.100
++	ip link del br0
++
++	log_test "Bridge join when new port has VLAN upper with same VID as another port's VLAN upper, and bridge is initially unaware"
++}
++
++test_bridge_join_when_new_port_has_vlan_upper_equal_to_pvid()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth0} name ${eth0}.1 type vlan id 1
++	ip link set ${eth0} master br0
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.1
++	ip link del br0
++
++	log_test "Bridge join when new port has VLAN upper equal to the PVID"
++}
++
++test_bridge_join_when_new_port_has_vlan_upper_equal_to_pvid_but_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth0} name ${eth0}.1 type vlan id 1
++	ip link set ${eth0} master br0
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.1
++	ip link del br0
++
++	log_test "Bridge join when new port has VLAN upper equal to the PVID, but bridge is initially VLAN-unaware"
++}
++
++test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_bridge_vlan()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	bridge vlan add dev ${eth0} vid 100 master
++	ip link set ${eth1} master br0
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth1}.100
++	ip link del br0
++
++	log_test "Bridge join when new port has VLAN upper with same VID as another port's bridge VLAN"
++}
++
++test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_bridge_vlan_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	bridge vlan add dev ${eth0} vid 100 master
++	ip link set ${eth1} master br0
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth1}.100
++	ip link del br0
++
++	log_test "Bridge join when new port has VLAN upper with same VID as another port's bridge VLAN, but bridge is initially unaware"
++}
++
++test_vlan_upper_on_bridge_port_when_another_port_has_upper_with_same_vid()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	ip link set ${eth1} master br0
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100
++	ip link del ${eth1}.100
++	ip link del br0
++
++	log_test "Add VLAN upper to port in bridge which has another port with same upper VLAN ID"
++}
++
++test_vlan_upper_on_bridge_port_when_another_port_has_upper_with_same_vid_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	ip link set ${eth1} master br0
++	ip link add link ${eth1} name ${eth1}.100 type vlan id 100
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100
++	ip link del ${eth1}.100
++	ip link del br0
++
++	log_test "Add VLAN upper to port in bridge which has another port with same upper VLAN ID, and bridge is initially unaware"
++}
++
++test_vlan_upper_join_vlan_aware_bridge_which_contains_the_physical_port()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	ip link set ${eth0}.100 master br0
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "VLAN upper joins VLAN-aware bridge"
++}
++
++test_vlan_upper_join_vlan_aware_bridge_which_contains_the_physical_port_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0} master br0
++	ip link set ${eth0}.100 master br0
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "VLAN upper joins VLAN-aware bridge, but bridge is initially unaware"
++}
++
++test_bridge_join_when_vlan_upper_is_already_in_bridge()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0}.100 master br0
++	ip link set ${eth0} master br0
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "Bridge join when VLAN upper is already in VLAN-aware bridge"
++}
++
++test_bridge_join_when_vlan_upper_is_already_in_bridge_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0}.100 master br0
++	ip link set ${eth0} master br0
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "Bridge join when VLAN upper is already in VLAN-aware bridge, which was initially VLAN-unaware"
++}
++
++test_vlan_upper_join_vlan_aware_bridge_which_contains_another_physical_port()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth1} master br0
++	ip link set ${eth0}.100 master br0
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "VLAN upper joins VLAN-aware bridge which contains another physical port"
++}
++
++test_vlan_upper_join_vlan_aware_bridge_which_contains_another_physical_port_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth1} master br0
++	ip link set ${eth0}.100 master br0
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "VLAN upper joins VLAN-aware bridge which contains another physical port, but bridge is initially unaware"
++}
++
++test_bridge_join_when_vlan_upper_of_another_port_is_already_in_bridge()
++{
++	ip link add br0 type bridge vlan_filtering 1
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0}.100 master br0
++	ip link set ${eth1} master br0
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "Bridge join when VLAN upper of another port is already in VLAN-aware bridge"
++}
++
++test_bridge_join_when_vlan_upper_of_another_port_is_already_in_bridge_initially_unaware()
++{
++	ip link add br0 type bridge vlan_filtering 0
++	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
++	ip link set ${eth0}.100 master br0
++	ip link set ${eth0} master br0
++	ip link set br0 type bridge vlan_filtering 1
++	check_fail $? "Expected to fail but didn't"
++	ip link del ${eth0}.100 > /dev/null 2>&1 || :
++	ip link del br0
++
++	log_test "Bridge join when VLAN upper of another port is already in VLAN-aware bridge, which was initially VLAN-unaware"
++}
++
++ALL_TESTS="
++	test_bridge_vlan_when_port_has_that_vlan_as_upper
++	test_bridge_vlan_when_port_has_that_vlan_as_upper_but_is_initially_unaware
++	test_bridge_vlan_when_other_bridge_port_has_that_vlan_as_upper
++	test_bridge_vlan_when_other_bridge_port_has_that_vlan_as_upper_but_is_initially_unaware
++	test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_vlan_upper
++	test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_vlan_upper_initially_unaware
++	test_bridge_join_when_new_port_has_vlan_upper_equal_to_pvid
++	test_bridge_join_when_new_port_has_vlan_upper_equal_to_pvid_but_initially_unaware
++	test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_bridge_vlan
++	test_bridge_join_when_new_port_has_vlan_upper_with_same_vid_as_another_port_bridge_vlan_initially_unaware
++	test_vlan_upper_on_bridge_port_when_another_port_has_upper_with_same_vid
++	test_vlan_upper_on_bridge_port_when_another_port_has_upper_with_same_vid_initially_unaware
++	test_vlan_upper_join_vlan_aware_bridge_which_contains_the_physical_port
++	test_vlan_upper_join_vlan_aware_bridge_which_contains_the_physical_port_initially_unaware
++	test_bridge_join_when_vlan_upper_is_already_in_bridge
++	test_bridge_join_when_vlan_upper_is_already_in_bridge_initially_unaware
++	test_vlan_upper_join_vlan_aware_bridge_which_contains_another_physical_port
++	test_vlan_upper_join_vlan_aware_bridge_which_contains_another_physical_port_initially_unaware
++	test_bridge_join_when_vlan_upper_of_another_port_is_already_in_bridge
++	test_bridge_join_when_vlan_upper_of_another_port_is_already_in_bridge_initially_unaware
++"
++
++tests_run
++
++exit $EXIT_STATUS
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index be71012b8fc5..8d7348a1834f 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -139,7 +139,6 @@ require_command()
+ }
+ 
+ require_command jq
+-require_command $MZ
+ 
+ if [[ ! -v NUM_NETIFS ]]; then
+ 	echo "SKIP: importer does not define \"NUM_NETIFS\""
+@@ -1113,6 +1112,8 @@ learning_test()
+ 	local mac=de:ad:be:ef:13:37
+ 	local ageing_time
+ 
++	require_command $MZ
++
+ 	RET=0
+ 
+ 	bridge -j fdb show br $bridge brport $br_port1 \
+@@ -1188,6 +1189,8 @@ flood_test_do()
+ 	local host2_if=$5
+ 	local err=0
+ 
++	require_command $MZ
++
+ 	# Add an ACL on `host2_if` which will tell us whether the packet
+ 	# was flooded to it or not.
+ 	tc qdisc add dev $host2_if ingress
+@@ -1276,6 +1279,8 @@ __start_traffic()
+ 	local dip=$1; shift
+ 	local dmac=$1; shift
+ 
++	require_command $MZ
++
+ 	$MZ $h_in -p 8000 -A $sip -B $dip -c 0 \
+ 		-a own -b $dmac -t "$proto" -q "$@" &
+ 	sleep 1
+@@ -1352,6 +1357,8 @@ mcast_packet_test()
+ 	local tc_proto="ip"
+ 	local mz_v6arg=""
+ 
++	require_command $MZ
++
+ 	# basic check to see if we were passed an IPv4 address, if not assume IPv6
+ 	if [[ ! $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+ 		tc_proto="ipv6"
+-----------------------------[ cut here ]-----------------------------
