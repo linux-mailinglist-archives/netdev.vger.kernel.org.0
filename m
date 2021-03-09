@@ -2,81 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA56331E05
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 05:44:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CC6D331E0A
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 05:46:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbhCIEnm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Mar 2021 23:43:42 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:62746 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229714AbhCIEn0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 23:43:26 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1294dhNM029180
-        for <netdev@vger.kernel.org>; Mon, 8 Mar 2021 20:43:26 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 374tew0qem-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 08 Mar 2021 20:43:26 -0800
-Received: from intmgw001.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 8 Mar 2021 20:43:24 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id A3A642ED1B43; Mon,  8 Mar 2021 20:43:23 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next] selftests/bpf: fix compiler warning in BPF_KPROBE definition in loop6.c
-Date:   Mon, 8 Mar 2021 20:43:22 -0800
-Message-ID: <20210309044322.3487636-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S230107AbhCIEpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Mar 2021 23:45:30 -0500
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:51694 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230058AbhCIEpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Mar 2021 23:45:21 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0UR1RlrC_1615265117;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UR1RlrC_1615265117)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 09 Mar 2021 12:45:17 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: add net namespace inode for all net_dev events
+Date:   Tue,  9 Mar 2021 12:43:50 +0800
+Message-Id: <20210309044349.6605-1-tonylu@linux.alibaba.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-09_03:2021-03-08,2021-03-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 adultscore=0 spamscore=0 mlxlogscore=871 phishscore=0
- malwarescore=0 priorityscore=1501 impostorscore=0 clxscore=1015 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103090021
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing return type to BPF_KPROBE definition. Without it, compiler
-generates the following warning:
+There are lots of net namespaces on the host runs containers like k8s.
+It is very common to see the same interface names among different net
+namespaces, such as eth0. It is not possible to distinguish them without
+net namespace inode.
 
-progs/loop6.c:68:12: warning: type specifier missing, defaults to 'int' [-Wimplicit-int]
-BPF_KPROBE(trace_virtqueue_add_sgs, void *unused, struct scatterlist **sgs,
-           ^
-1 warning generated.
+This adds net namespace inode for all net_dev events, help us
+distinguish between different net devices.
 
-Fixes: 86a35af628e5 ("selftests/bpf: Add a verifier scale test with unknown bounded loop")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Output:
+  <idle>-0       [006] ..s.   133.306989: net_dev_xmit: net_inum=4026531992 dev=eth0 skbaddr=0000000011a87c68 len=54 rc=0
+
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
 ---
- tools/testing/selftests/bpf/progs/loop6.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/trace/events/net.h | 35 +++++++++++++++++++++++++----------
+ 1 file changed, 25 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/loop6.c b/tools/testing/selftests/bpf/progs/loop6.c
-index 2a7141ac1656..38de0331e6b4 100644
---- a/tools/testing/selftests/bpf/progs/loop6.c
-+++ b/tools/testing/selftests/bpf/progs/loop6.c
-@@ -65,8 +65,8 @@ int config = 0;
- int result = 0;
+diff --git a/include/trace/events/net.h b/include/trace/events/net.h
+index 2399073c3afc..a52f90d83411 100644
+--- a/include/trace/events/net.h
++++ b/include/trace/events/net.h
+@@ -35,6 +35,7 @@ TRACE_EVENT(net_dev_start_xmit,
+ 		__field(	u16,			gso_size	)
+ 		__field(	u16,			gso_segs	)
+ 		__field(	u16,			gso_type	)
++		__field(	unsigned int,		net_inum	)
+ 	),
  
- SEC("kprobe/virtqueue_add_sgs")
--BPF_KPROBE(trace_virtqueue_add_sgs, void *unused, struct scatterlist **sgs,
--	   unsigned int out_sgs, unsigned int in_sgs)
-+int BPF_KPROBE(trace_virtqueue_add_sgs, void *unused, struct scatterlist **sgs,
-+	       unsigned int out_sgs, unsigned int in_sgs)
- {
- 	struct scatterlist *sgp = NULL;
- 	__u64 length1 = 0, length2 = 0;
+ 	TP_fast_assign(
+@@ -56,10 +57,12 @@ TRACE_EVENT(net_dev_start_xmit,
+ 		__entry->gso_size = skb_shinfo(skb)->gso_size;
+ 		__entry->gso_segs = skb_shinfo(skb)->gso_segs;
+ 		__entry->gso_type = skb_shinfo(skb)->gso_type;
++		__entry->net_inum = dev_net(skb->dev)->ns.inum;
+ 	),
+ 
+-	TP_printk("dev=%s queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d len=%u data_len=%u network_offset=%d transport_offset_valid=%d transport_offset=%d tx_flags=%d gso_size=%d gso_segs=%d gso_type=%#x",
+-		  __get_str(name), __entry->queue_mapping, __entry->skbaddr,
++	TP_printk("net_inum=%u dev=%s queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d len=%u data_len=%u network_offset=%d transport_offset_valid=%d transport_offset=%d tx_flags=%d gso_size=%d gso_segs=%d gso_type=%#x",
++		  __entry->net_inum, __get_str(name), __entry->queue_mapping,
++		  __entry->skbaddr,
+ 		  __entry->vlan_tagged, __entry->vlan_proto, __entry->vlan_tci,
+ 		  __entry->protocol, __entry->ip_summed, __entry->len,
+ 		  __entry->data_len,
+@@ -82,6 +85,7 @@ TRACE_EVENT(net_dev_xmit,
+ 		__field(	unsigned int,	len		)
+ 		__field(	int,		rc		)
+ 		__string(	name,		dev->name	)
++		__field(	unsigned int,	net_inum	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -89,10 +93,12 @@ TRACE_EVENT(net_dev_xmit,
+ 		__entry->len = skb_len;
+ 		__entry->rc = rc;
+ 		__assign_str(name, dev->name);
++		__entry->net_inum = dev_net(skb->dev)->ns.inum;
+ 	),
+ 
+-	TP_printk("dev=%s skbaddr=%p len=%u rc=%d",
+-		__get_str(name), __entry->skbaddr, __entry->len, __entry->rc)
++	TP_printk("net_inum=%u dev=%s skbaddr=%p len=%u rc=%d",
++		__entry->net_inum, __get_str(name), __entry->skbaddr,
++		__entry->len, __entry->rc)
+ );
+ 
+ TRACE_EVENT(net_dev_xmit_timeout,
+@@ -106,16 +112,19 @@ TRACE_EVENT(net_dev_xmit_timeout,
+ 		__string(	name,		dev->name	)
+ 		__string(	driver,		netdev_drivername(dev))
+ 		__field(	int,		queue_index	)
++		__field(	unsigned int,	net_inum	)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__assign_str(name, dev->name);
+ 		__assign_str(driver, netdev_drivername(dev));
+ 		__entry->queue_index = queue_index;
++		__entry->net_inum = dev_net(dev)->ns.inum;
+ 	),
+ 
+-	TP_printk("dev=%s driver=%s queue=%d",
+-		__get_str(name), __get_str(driver), __entry->queue_index)
++	TP_printk("net_inum=%u dev=%s driver=%s queue=%d",
++		__entry->net_inum, __get_str(name), __get_str(driver),
++		__entry->queue_index)
+ );
+ 
+ DECLARE_EVENT_CLASS(net_dev_template,
+@@ -128,16 +137,19 @@ DECLARE_EVENT_CLASS(net_dev_template,
+ 		__field(	void *,		skbaddr		)
+ 		__field(	unsigned int,	len		)
+ 		__string(	name,		skb->dev->name	)
++		__field(	unsigned int,	net_inum	)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->skbaddr = skb;
+ 		__entry->len = skb->len;
+ 		__assign_str(name, skb->dev->name);
++		__entry->net_inum = dev_net(skb->dev)->ns.inum;
+ 	),
+ 
+-	TP_printk("dev=%s skbaddr=%p len=%u",
+-		__get_str(name), __entry->skbaddr, __entry->len)
++	TP_printk("net_inum=%u dev=%s skbaddr=%p len=%u",
++		__entry->net_inum, __get_str(name), __entry->skbaddr,
++		__entry->len)
+ )
+ 
+ DEFINE_EVENT(net_dev_template, net_dev_queue,
+@@ -187,6 +199,7 @@ DECLARE_EVENT_CLASS(net_dev_rx_verbose_template,
+ 		__field(	unsigned char,		nr_frags	)
+ 		__field(	u16,			gso_size	)
+ 		__field(	u16,			gso_type	)
++		__field(	unsigned int,		net_inum	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -213,10 +226,12 @@ DECLARE_EVENT_CLASS(net_dev_rx_verbose_template,
+ 		__entry->nr_frags = skb_shinfo(skb)->nr_frags;
+ 		__entry->gso_size = skb_shinfo(skb)->gso_size;
+ 		__entry->gso_type = skb_shinfo(skb)->gso_type;
++		__entry->net_inum = dev_net(skb->dev)->ns.inum;
+ 	),
+ 
+-	TP_printk("dev=%s napi_id=%#x queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d hash=0x%08x l4_hash=%d len=%u data_len=%u truesize=%u mac_header_valid=%d mac_header=%d nr_frags=%d gso_size=%d gso_type=%#x",
+-		  __get_str(name), __entry->napi_id, __entry->queue_mapping,
++	TP_printk("net_inum=%u dev=%s napi_id=%#x queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d hash=0x%08x l4_hash=%d len=%u data_len=%u truesize=%u mac_header_valid=%d mac_header=%d nr_frags=%d gso_size=%d gso_type=%#x",
++		  __entry->net_inum, __get_str(name), __entry->napi_id,
++		  __entry->queue_mapping,
+ 		  __entry->skbaddr, __entry->vlan_tagged, __entry->vlan_proto,
+ 		  __entry->vlan_tci, __entry->protocol, __entry->ip_summed,
+ 		  __entry->hash, __entry->l4_hash, __entry->len,
 -- 
-2.24.1
+2.19.1.6.gb485710b
 
