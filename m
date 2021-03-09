@@ -2,127 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 433D7332DAC
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 18:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A56332DB6
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 19:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbhCIR5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 12:57:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
+        id S231273AbhCISAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 13:00:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231840AbhCIR5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 12:57:12 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F3EC06174A
-        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 09:57:12 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id f12so17429031wrx.8
-        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 09:57:12 -0800 (PST)
+        with ESMTP id S229688AbhCISA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 13:00:27 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C869C06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 10:00:27 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id n17so3429316plc.7
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 10:00:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OZ1afXUkFipehQmyzlYhzPLXHPkEEXtXkPM0N1xgILo=;
-        b=ZTFsEiR7X+shbgZLU+Bv2vOj2OiWfZcOcpROM+Stx+FYrO6a5bSLNA+rqRTE8CaVZU
-         eIheGiksmJcQe3iEqqvg6CQMUuKRvSnzxz99lxqtAwe655FtFXEr+Zt8JWuZRklGNRc/
-         zKctEUhckCai/L0EyrzsE2SfaXbCHNVlMAYpNuXEDgb2U5yfeWrC2P9ObGhII6SfFB/Y
-         sA7YwuVQRk9I2FxSxuodxJ/VViTAAGMES6A5VUkGxPdbhowUjS+VzLZy/Km8ytpa0cJy
-         NujLsKI6+mV7QiVfVaq/8iEFOlo6lTp3Xro7EqrwTciIiL3ty0B+hrXZQGavQgbz88yS
-         Ed2g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R7TQ040wzDNd2aycFNEuLXBa4mUNaIYvfCpS8YkBZ3M=;
+        b=Ht+o6mjSdv/GBRPUw0wX4591Ai8WumuqS68azcZwi6NXQKIAy3YlIUthKgHdXMiJb1
+         /7dCWubH34a6W7vA2foF16yyiVp772sgAj1ujkeCnvKDMy6MfJz5nGOZdF8YEqzp2e2u
+         ZhemzzpaYT/PpsrlOqr1Q7NP2YdPLGAmJTAoaKbMQImv1AJtBf0sH5DMB61qUGAvcjSy
+         FSvcE+SIFeD0mVXI75KY7l/pScq5v9CBpQx4owJchwHHM6ARYGD8FKSXAS6oFtsrKQPl
+         /B8Jk+rInnyZEYCQVvMgH1xPCTzxOu3/AI2c6mXxfYT1Ibzy4HSlZqOY1vGm5lGnupD0
+         8LTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OZ1afXUkFipehQmyzlYhzPLXHPkEEXtXkPM0N1xgILo=;
-        b=ZY1DuWASX9NrsoinZo4bhMJsHJyt+kUYTVx2sTU2rOxV+eQlBYseIf8MHVQSlvG4oV
-         Sx6JGnRz2iaHpy1Kk6935bq9Dbw9qMIMt/9yma+8qJShjT1mQLzWYz4TWKnJrEVXJ87k
-         dxAoDAaqgqv5x7IxpL6SGfIod0a0wdXKwRtm1EVTiwQKc2EzE8dQCrrfO1nS5j9blZA0
-         lrfVorc8CLGVg4Ur04/8Ma/8pEWe0s2jGArpt06yZ34k2IV7noPhRMjM2LvimOZM1MmE
-         gZAbTDCPG+Yf08iDsPqdFses9sobGVsmIXAIpUZH8GhQMqI3qkRIS2QzZNw2th7s6OR8
-         kMVw==
-X-Gm-Message-State: AOAM532QCvx2SMB7lqFLFs6XigMPLQGl2ARtn5jgGg/59wklWSl+ze7p
-        9FppXU3EzeTBxNO0IY/QEis=
-X-Google-Smtp-Source: ABdhPJzWclTT/BboCxNHG6Q8VpDBfPST617ec35bEo/OYlQI5GJyMk/pJ4g16DU0QpUK7tdAK83gUw==
-X-Received: by 2002:a05:6000:10c3:: with SMTP id b3mr29109376wrx.96.1615312631113;
-        Tue, 09 Mar 2021 09:57:11 -0800 (PST)
-Received: from [192.168.1.101] ([37.165.49.26])
-        by smtp.gmail.com with ESMTPSA id r26sm5201201wmn.28.2021.03.09.09.57.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Mar 2021 09:57:09 -0800 (PST)
-Subject: Re: [RFC Patch v1 1/3] net: ena: implement local page cache (LPC)
- system
-To:     Shay Agroskin <shayagr@amazon.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>
-References: <20210309171014.2200020-1-shayagr@amazon.com>
- <20210309171014.2200020-2-shayagr@amazon.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <67d3cf28-b1fd-ce51-5011-96ddd783dc71@gmail.com>
-Date:   Tue, 9 Mar 2021 18:57:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R7TQ040wzDNd2aycFNEuLXBa4mUNaIYvfCpS8YkBZ3M=;
+        b=jFu+xCNhQ1q7QCoAQ1/wLGlMrRehc0SqsbxjoTEXJivkPraIsXWKOheub9Y9iYos61
+         IVJNqdMwmkzGJ8qTD/ALjq3vxlolh7PGW6acVr0/kLECPcdFAxWxGjGoZrgoOAh4kosK
+         AIicwuO6xWAR/P3nc9zAuMSoTgdm3/UthHzuZR4WSN+rJR11r5AnTR3h7NoN1npSIhYs
+         J3o47T8h67wo0cRbU47yV5Uooq9M1n5VQMtFdCfP/RnQJ9eOVHWjp488OfJSxgs0YOX4
+         piyxJp/jM1SvbKAefTONb/c8O+PTdkCcQabjuFkgP0BdUoo3OCBGWdPEPrlr4dNv1kvR
+         ly/w==
+X-Gm-Message-State: AOAM5313XivZfdw3e7SgVfmAyWV7jb3CWXskuSB+6wk+LwADmUoHhpkH
+        THZ7U8ZwJ41g+323qW8BzWt42gJ49WEJJaMt6BI=
+X-Google-Smtp-Source: ABdhPJwEMYwqNb6hKbc5XiAhvZFJQY9ixvqvkaUNnWycH7FU13wfAO5096zRZoWDQe3lGvn4XfMW+sJwavMclZbj9+o=
+X-Received: by 2002:a17:90a:8b16:: with SMTP id y22mr5700191pjn.191.1615312826992;
+ Tue, 09 Mar 2021 10:00:26 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210309171014.2200020-2-shayagr@amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210309034736.8656-1-zhudi21@huawei.com> <07afbd8d9a76f3c0f0a0eb01759118a0c9e966a3.camel@redhat.com>
+ <672f06766f2d49ecbb573037b3cb445a@huawei.com>
+In-Reply-To: <672f06766f2d49ecbb573037b3cb445a@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 9 Mar 2021 10:00:15 -0800
+Message-ID: <CAM_iQpVcuxoczPrtfZd4yXhTrStb5KVA08P_6WTu7MCoQe4vsw@mail.gmail.com>
+Subject: Re: [PATCH] net/sched: act_pedit: fix a NULL pointer deref in tcf_pedit_init
+To:     "zhudi (J)" <zhudi21@huawei.com>
+Cc:     Davide Caratti <dcaratti@redhat.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 9, 2021 at 3:24 AM zhudi (J) <zhudi21@huawei.com> wrote:
+>
+> Yes, you are right.  I didn't notice your code submission(commit-id is f67169fef8dbcc1a) in 2019
+> and the kernel we tested is a bit old. Normally,  your code submission can avoid this bug.
 
+Please do not submit patches for the latest kernel unless you test it.
 
-On 3/9/21 6:10 PM, Shay Agroskin wrote:
-> The page cache holds pages we allocated in the past during napi cycle,
-> and tracks their availability status using page ref count.
-> 
-> The cache can hold up to 2048 pages. Upon allocating a page, we check
-> whether the next entry in the cache contains an unused page, and if so
-> fetch it. If the next page is already used by another entity or if it
-> belongs to a different NUMA core than the napi routine, we allocate a
-> page in the regular way (page from a different NUMA core is replaced by
-> the newly allocated page).
-> 
-> This system can help us reduce the contention between different cores
-> when allocating page since every cache is unique to a queue.
-
-For reference, many drivers already use a similar strategy.
-
-> +
-> +/* Fetch the cached page (mark the page as used and pass it to the caller).
-> + * If the page belongs to a different NUMA than the current one, free the cache
-> + * page and allocate another one instead.
-> + */
-> +static struct page *ena_fetch_cache_page(struct ena_ring *rx_ring,
-> +					 struct ena_page *ena_page,
-> +					 dma_addr_t *dma,
-> +					 int current_nid)
-> +{
-> +	/* Remove pages belonging to different node than current_nid from cache */
-> +	if (unlikely(page_to_nid(ena_page->page) != current_nid)) {
-> +		ena_increase_stat(&rx_ring->rx_stats.lpc_wrong_numa, 1, &rx_ring->syncp);
-> +		ena_replace_cache_page(rx_ring, ena_page);
-> +	}
-> +
-> 
-
-And they use dev_page_is_reusable() instead of copy/pasting this logic.
-
-As a bonus, they properly deal with pfmemalloc
-
-
-
-
+Thanks.
