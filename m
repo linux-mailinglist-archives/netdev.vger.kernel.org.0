@@ -2,91 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62046332A44
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 16:22:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C41AE332A55
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 16:25:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231835AbhCIPWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 10:22:08 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:53654 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231843AbhCIPV5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 10:21:57 -0500
-Date:   Tue, 9 Mar 2021 16:21:54 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1615303316;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dMzJIAXAV30j1DWB/JqGaPTwHrsv+jgx0jyX1dMqhMo=;
-        b=ftswzIWj+SpSqfoTdsjF9jYwsUZ7QmSJS28/2TmLeNwsNz3k9sItFtSmMQHJzTTAHn1l73
-        X+AI4oxoI9xuqHQn5N6yGS5zmQBFXR0sTTbBaSkyJmPokZkhKGw5Rt7yRIYgOKSlxAKO0/
-        iWLjf9J4+Z1WYG8e1cBqukW+PvN+5Ehe98iK5Rn4W18d+n8AQp/tUbMjdvpHpBfRWh+hv0
-        dTH35w1YOniiaqyYXdtLhDSVEwB9BzITsk5FUychB6d1PBB4HBn0l/ucowPnKkeX1cn/Qr
-        OsWuvmgbW5tqyJ46C2kczn/yc1oKeJZzac9Ax/3fHVAWZ8+U6G4IkveXKBd7nA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1615303316;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dMzJIAXAV30j1DWB/JqGaPTwHrsv+jgx0jyX1dMqhMo=;
-        b=7I+TC8Pc4LH6B4D6vhEbJbVGv2HrVwmyRUmFwd62TcoO/FW4sNuDVvS4FldBwqa7cxztZ3
-        iHD0Tkwptxth9xAw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Denis Kirjanov <kda@linux-powerpc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        ath9k-devel@qca.qualcomm.com, Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org, Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net
-Subject: Re: [patch 07/14] tasklets: Prevent tasklet_unlock_spin_wait()
- deadlock on RT
-Message-ID: <20210309152154.jqi62ep2ndkpoikc@linutronix.de>
-References: <20210309084203.995862150@linutronix.de>
- <20210309084241.988908275@linutronix.de>
- <20210309150036.5rcecmmz2wbu4ypc@linutronix.de>
+        id S231414AbhCIPYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 10:24:50 -0500
+Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:31246 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231575AbhCIPYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 10:24:30 -0500
+Received: from localhost.localdomain ([153.202.107.157])
+        by mwinf5d20 with ME
+        id eFQD2400T3PnFJp03FQMkA; Tue, 09 Mar 2021 16:24:28 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 09 Mar 2021 16:24:28 +0100
+X-ME-IP: 153.202.107.157
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Tom Herbert <therbert@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [RFC PATCH 0/1] Modify dql.min_limit value inside the driver
+Date:   Wed, 10 Mar 2021 00:23:53 +0900
+Message-Id: <20210309152354.95309-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210309150036.5rcecmmz2wbu4ypc@linutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-09 16:00:37 [+0100], To Thomas Gleixner wrote:
-> diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-> index 07c7329d21aa7..1c14ccd351091 100644
-> --- a/include/linux/interrupt.h
-> +++ b/include/linux/interrupt.h
-> @@ -663,15 +663,6 @@ static inline int tasklet_trylock(struct tasklet_struct *t)
->  void tasklet_unlock(struct tasklet_struct *t);
->  void tasklet_unlock_wait(struct tasklet_struct *t);
->  
-> -/*
-> - * Do not use in new code. Waiting for tasklets from atomic contexts is
-> - * error prone and should be avoided.
-> - */
-> -static inline void tasklet_unlock_spin_wait(struct tasklet_struct *t)
-> -{
-> -	while (test_bit(TASKLET_STATE_RUN, &t->state))
-> -		cpu_relax();
-> -}
+Abstract: would like to directly set dql.min_limit value inside a
+driver to improve BQL performances of a CAN USB driver.
 
-Look at that. The forward declaration for tasklet_unlock_spin_wait()
-should have remained. Sorry for that.
+CAN packets have a small PDU: for classical CAN maximum size is
+roughly 16 bytes (8 for payload and 8 for arbitration, CRC and
+others).
 
-Sebastian
+I am writing an CAN driver for an USB interface. To compensate the
+extra latency introduced by the USB, I want to group several CAN
+frames and do one USB bulk send. To this purpose, I implemented BQL in
+my driver.
+
+However, the BQL algorithms can take time to adjust, especially if
+there are small bursts.
+
+The best way I found is to directly modify the dql.min_limit and set
+it to some empirical values. This way, even during small burst events
+I can have a good throughput. Slightly increasing the dql.min_limit
+has no measurable impact on the latency as long as frames fit in the
+same USB packet (i.e. BQL overheard is negligible compared to USB
+overhead).
+
+The BQL was not designed for USB nor was it designed for CAN's small
+PDUs which probably explains why I am the first one to ever have
+thought of using dql.min_limit within the driver.
+
+The code I wrote looks like:
+
+> #ifdef CONFIG_BQL
+>	netdev_get_tx_queue(netdev, 0)->dql.min_limit = <some empirical value>;
+> #endif
+
+Using #ifdef to set up some variables is not a best practice. I am
+sending this RFC to see if we can add a function to set this
+dql.min_limit in a more pretty way.
+
+For your reference, this RFQ is a follow-up of a discussion on the
+linux-can mailing list:
+https://lore.kernel.org/linux-can/20210309125708.ei75tr5vp2sanfh6@pengutronix.de/
+
+Thank you for your comments.
+
+Yours sincerely,
+Vincent
+
+
+Vincent Mailhol (1):
+  dql: add dql_set_min_limit()
+
+ include/linux/dynamic_queue_limits.h | 3 +++
+ lib/dynamic_queue_limits.c           | 8 ++++++++
+ 2 files changed, 11 insertions(+)
+
+-- 
+2.26.2
+
