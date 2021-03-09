@@ -2,87 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BEB3326F9
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 14:24:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83797332735
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 14:32:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbhCINYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 08:24:08 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:55579 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231246AbhCINXx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 08:23:53 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1lJcKv-000AV7-QL; Tue, 09 Mar 2021 14:23:45 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1lJcKu-0006uV-H8; Tue, 09 Mar 2021 14:23:44 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 0C0D0240041;
-        Tue,  9 Mar 2021 14:23:44 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 6CB50240040;
-        Tue,  9 Mar 2021 14:23:43 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id DE993200DE;
-        Tue,  9 Mar 2021 14:23:41 +0100 (CET)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 09 Mar 2021 14:23:41 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Krzysztof Halasa <khc@pm.waw.pl>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        id S231472AbhCINcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 08:32:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231127AbhCINby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 08:31:54 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE26C06174A;
+        Tue,  9 Mar 2021 05:31:54 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so5206546pjv.1;
+        Tue, 09 Mar 2021 05:31:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=hzSCIKRAepKDBSqSG3kIFxZmTW4GplrRyROpRrL9fZk=;
+        b=VoUC+t+4QQEB+uwm9H46DQTFa9Lxcv65xlBoQILewDayS5eF40i8muFvUZwnMdTwEp
+         vndo1PrFpuvtxtttpGyVTXNI7XzW/5br+dEfWiRiPld2yrEHih/GMnxBJmXplP9KNYzu
+         0xC0a8SyJu3hpz3MXIFpaAlQgV8QL64PiJYqt9v1CHJTlgW8hgB6KbQ0qOxmv6RFGk2t
+         fBxGvLENa4EPpuyVJ+kkUeXFo5rLymW/ZOcZrLKoi8m7DpQus3oAbCYnkEv7CDKeM3d2
+         ihIqn6jFUMPv74suxw+3gSNUecSlJs5f6okTzGOy8RLA/2OHV2XB5rXSTkIjfuUMw5vy
+         +llw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=hzSCIKRAepKDBSqSG3kIFxZmTW4GplrRyROpRrL9fZk=;
+        b=AfR/x8OcmUHua7ETCZ2Why3d5rpL/hwE4IeVIhgZttIx+0qWSbi4V5mGD+z9Ls8x8v
+         BXwlsrZkitdej1FGT1NuNI93icV0AjeBBFzSxZn4fkaeeSD/HLdlxj/Al0Ta9rpEiUph
+         bht1DNa5/FMcSHW0sJxFpDKv52feaaQzZ6z5tLXTK5Up53ZuZPu/uRQukcIYOqL5aCgZ
+         RKI1hBJRfpLSagZFJnsqcf+SklAIZHrU2MJL4/ahduAK1Wvdl9AqrXHj3LavjwALlL4q
+         i6m47sL0Vgy9qB4j3KSIgiYJs8F/YMZbIyXxJ5o6+xtOYoKvDbAD51fiF4/KQjb8Kl5o
+         OQ/g==
+X-Gm-Message-State: AOAM5317E5WN+NWzkpZ4t626xN140RzaiLkxGluufeE3qODUMLIJ/VHm
+        hzi36mIbEe8nHBCWBQNp+yAyYNObh64hDd2A
+X-Google-Smtp-Source: ABdhPJxXio9p1SubQUEusIhDTwHFOdEwz2dvRviAy6id3mJP4DBEq5QQnW53AW5uv2HMkG4gCfbSsw==
+X-Received: by 2002:a17:90a:314:: with SMTP id 20mr4869559pje.72.1615296713955;
+        Tue, 09 Mar 2021 05:31:53 -0800 (PST)
+Received: from [166.111.139.108] ([166.111.139.108])
+        by smtp.gmail.com with ESMTPSA id d25sm2133784pfo.218.2021.03.09.05.31.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Mar 2021 05:31:53 -0800 (PST)
+Subject: Re: [PATCH] net: bridge: fix error return code of
+ do_update_counters()
+To:     Florian Westphal <fw@strlen.de>
+Cc:     pablo@netfilter.org, kadlec@netfilter.org, roopa@nvidia.com,
+        nikolay@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC] net: x25: Queue received packets in the
- drivers instead of per-CPU queues
-Organization: TDT AG
-In-Reply-To: <20210305054312.254922-1-xie.he.0141@gmail.com>
-References: <20210305054312.254922-1-xie.he.0141@gmail.com>
-Message-ID: <4b30ca506b0d79ef5ba1a5e9ce9cf2cd@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.16
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1615296225-0000B5A4-919C9C8D/0/0
+References: <20210309022854.17904-1-baijiaju1990@gmail.com>
+ <20210309110121.GD10808@breakpoint.cc>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Message-ID: <e0f4d41e-b600-ce3b-b2e8-ca5c12f151dc@gmail.com>
+Date:   Tue, 9 Mar 2021 21:31:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <20210309110121.GD10808@breakpoint.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-05 06:43, Xie He wrote:
-> X.25 Layer 3 (the Packet Layer) expects layer 2 to provide a reliable
-> datalink service such that no packets are reordered or dropped. And
-> X.25 Layer 2 (the LAPB layer) is indeed designed to provide such 
-> service.
-> 
-> However, this reliability is not preserved when a driver calls 
-> "netif_rx"
-> to deliver the received packets to layer 3, because "netif_rx" will put
-> the packets into per-CPU queues before they are delivered to layer 3.
-> If there are multiple CPUs, the order of the packets may not be 
-> preserved.
-> The per-CPU queues may also drop packets if there are too many.
-> 
-> Therefore, we should not call "netif_rx" to let it queue the packets.
-> Instead, we should use our own queue that won't reorder or drop 
-> packets.
-> 
-> This patch changes all X.25 drivers to use their own queues instead of
-> calling "netif_rx". The patch also documents this requirement in the
-> "x25-iface" documentation.
 
-I've tested the hdlc_x25 driver.
-Looks good to me.
 
-Acked-by: Martin Schiller <ms@dev.tdt.de>
+On 2021/3/9 19:01, Florian Westphal wrote:
+> Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+>> When find_table_lock() returns NULL to t, no error return code of
+>> do_update_counters() is assigned.
+> Its -ENOENT.
+>
+>>   	t = find_table_lock(net, name, &ret, &ebt_mutex);
+>                                         ^^^^^
+>
+> ret is passed to find_table_lock, which passes it to
+> find_inlist_lock_noload() which will set *ret = -ENOENT
+> for NULL case.
+
+Thanks for the reply!
+I did not notice "&ret" in find_table_lock()...
+I am sorry for the false positive.
+
+
+Best wishes,
+Jia-Ju Bai
