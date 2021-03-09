@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6ED332143
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 09:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10ED7332139
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 09:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231139AbhCIIqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 03:46:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbhCIIph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 03:45:37 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83949C06174A;
-        Tue,  9 Mar 2021 00:45:37 -0800 (PST)
-Message-Id: <20210309084241.890532921@linutronix.de>
+        id S231196AbhCIIqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 03:46:13 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:51322 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230231AbhCIIpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 03:45:38 -0500
+Message-Id: <20210309084241.988908275@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1615279536;
+        s=2020; t=1615279537;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=RESPeTyJ6azVCnEuJ5GRmkpcsMaksLQmntYP94M96Us=;
-        b=NUiBdRmSHOw8Uw7iGVCliq0SkijyDtSQeIlX2ttF5eYOB04ertkM2Uh8QIwMjzxknvM4Oi
-        GRczvMwF4Chxks6EHIdFcxf994wpOVMid6LgETyt8/3xRgaKeoLH3aRoLE9+RzkxtdL95l
-        p/LK6qN1CFSizLi9NxVul4Z4oW9fZhlPZNFfowy+hYy/bvs0/8AmGMrt7JSObaFS2zC75D
-        OBOxtN7SqvtX0InkXzFW/YoC2AIebW82mdvRv82KClxkE3l8y1cRUmjDxOxpUto6ZjvTy6
-        sOul2TdGNELQKcFbwi+hrqP2XMxO/1prGGp3y655xbR4HnXaPbUW0ukOcaLScQ==
+        bh=GYa4T+wysmchbWGyEHnP5D3R0q7070Yof//eaYXU1t4=;
+        b=yxyplOX4MXWNGUVOFyrXPOpSoz5Xwyp0qFq/PKDiLxB/oLCssT4uIrk0eh2pqbVlBbzI13
+        cVnrEX/vsYWP+i5SJ/Pm4awxHaL97/sJ5hT7Zp64PGIhiuDN3PwGW2MBj5qi+WGBo+fjTy
+        cFpnOcxJbCseftcCMRVBWgAGI8Eh7x3xYezUVHRZQZ3h5aDjV2yEY/eBwuPS9/6f2tjX2w
+        jTGnCw7JWlCYzG6d7GW9EKZTZ5p50ogEvi79Tvxy0ER8kF26iO3NF3IZ11ea/GV8tQwFnd
+        CiJE8PwenQN7BPD+Q1TAoUM6ruuq1Va68m8d8EKDQPUE/mOSfhuY3efshhyVjg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1615279536;
+        s=2020e; t=1615279537;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=RESPeTyJ6azVCnEuJ5GRmkpcsMaksLQmntYP94M96Us=;
-        b=ZlShNnj6ML8G8VM9soMkkHJnBGalF94sWxBHDfAV6jTJiZ89UrK4IDm7BXCH9G1FxgEGHe
-        KVDQyUY1lmDetZBw==
-Date:   Tue, 09 Mar 2021 09:42:09 +0100
+        bh=GYa4T+wysmchbWGyEHnP5D3R0q7070Yof//eaYXU1t4=;
+        b=uVSheKue6bDObKaJ12syhv7eSNkzNhgwmrD8T0lvpUxqFVWjK3FZc04NfNq0pEDVDjsSWe
+        k8TZrQM0mccfYkDw==
+Date:   Tue, 09 Mar 2021 09:42:10 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Frederic Weisbecker <frederic@kernel.org>,
@@ -57,7 +54,7 @@ Cc:     Frederic Weisbecker <frederic@kernel.org>,
         linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
         Stefan Richter <stefanr@s5r6.in-berlin.de>,
         linux1394-devel@lists.sourceforge.net
-Subject: [patch 06/14] tasklets: Replace spin wait in tasklet_kill()
+Subject: [patch 07/14] tasklets: Prevent tasklet_unlock_spin_wait() deadlock on RT
 References: <20210309084203.995862150@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -66,68 +63,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+tasklet_unlock_spin_wait() spin waits for the TASKLET_STATE_SCHED bit in
+the tasklet state to be cleared. This works on !RT nicely because the
+corresponding execution can only happen on a different CPU.
 
-tasklet_kill() spin waits for TASKLET_STATE_SCHED to be cleared invoking
-yield() from inside the loop. yield() is an ill defined mechanism and the
-result might still be wasting CPU cycles in a tight loop which is
-especially painful in a guest when the CPU running the tasklet is scheduled
-out.
+On RT softirq processing is preemptible, therefore a task preempting the
+softirq processing thread can spin forever.
 
-tasklet_kill() is used in teardown paths and not performance critical at
-all. Replace the spin wait with wait_var_event().
+Prevent this by invoking local_bh_disable()/enable() inside the loop. In
+case that the softirq processing thread was preempted by the current task,
+current will block on the local lock which yields the CPU to the preempted
+softirq processing thread. If the tasklet is processed on a different CPU
+then the local_bh_disable()/enable() pair is just a waste of processor
+cycles.
 
-Signed-off-by: Peter Zijlstra <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- kernel/softirq.c |   23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ include/linux/interrupt.h |    2 +-
+ kernel/softirq.c          |   28 +++++++++++++++++++++++++++-
+ 2 files changed, 28 insertions(+), 2 deletions(-)
 
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -658,7 +658,7 @@ enum
+ 	TASKLET_STATE_RUN	/* Tasklet is running (SMP only) */
+ };
+ 
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
+ static inline int tasklet_trylock(struct tasklet_struct *t)
+ {
+ 	return !test_and_set_bit(TASKLET_STATE_RUN, &(t)->state);
 --- a/kernel/softirq.c
 +++ b/kernel/softirq.c
-@@ -532,6 +532,16 @@ void __tasklet_hi_schedule(struct taskle
+@@ -616,6 +616,32 @@ void tasklet_init(struct tasklet_struct
  }
- EXPORT_SYMBOL(__tasklet_hi_schedule);
+ EXPORT_SYMBOL(tasklet_init);
  
-+static inline bool tasklet_clear_sched(struct tasklet_struct *t)
++#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
++/*
++ * Do not use in new code. There is no real reason to invoke this from
++ * atomic contexts.
++ */
++void tasklet_unlock_spin_wait(struct tasklet_struct *t)
 +{
-+	if (test_and_clear_bit(TASKLET_STATE_SCHED, &t->state)) {
-+		wake_up_var(&t->state);
-+		return true;
++	while (test_bit(TASKLET_STATE_RUN, &(t)->state)) {
++		if (IS_ENABLED(CONFIG_PREEMPT_RT)) {
++			/*
++			 * Prevent a live lock when current preempted soft
++			 * interrupt processing or prevents ksoftirqd from
++			 * running. If the tasklet runs on a different CPU
++			 * then this has no effect other than doing the BH
++			 * disable/enable dance for nothing.
++			 */
++			local_bh_disable();
++			local_bh_enable();
++		} else {
++			cpu_relax();
++		}
 +	}
-+
-+	return false;
 +}
++EXPORT_SYMBOL(tasklet_unlock_spin_wait);
++#endif
 +
- static void tasklet_action_common(struct softirq_action *a,
- 				  struct tasklet_head *tl_head,
- 				  unsigned int softirq_nr)
-@@ -551,8 +561,7 @@ static void tasklet_action_common(struct
- 
- 		if (tasklet_trylock(t)) {
- 			if (!atomic_read(&t->count)) {
--				if (!test_and_clear_bit(TASKLET_STATE_SCHED,
--							&t->state))
-+				if (!tasklet_clear_sched(t))
- 					BUG();
- 				if (t->use_callback)
- 					t->callback(t);
-@@ -612,13 +621,11 @@ void tasklet_kill(struct tasklet_struct
+ void tasklet_kill(struct tasklet_struct *t)
+ {
  	if (in_interrupt())
- 		pr_notice("Attempt to kill tasklet from interrupt\n");
- 
--	while (test_and_set_bit(TASKLET_STATE_SCHED, &t->state)) {
--		do {
--			yield();
--		} while (test_bit(TASKLET_STATE_SCHED, &t->state));
--	}
-+	while (test_and_set_bit(TASKLET_STATE_SCHED, &t->state))
-+		wait_var_event(&t->state, !test_bit(TASKLET_STATE_SCHED, &t->state));
-+
- 	tasklet_unlock_wait(t);
--	clear_bit(TASKLET_STATE_SCHED, &t->state);
-+	tasklet_clear_sched(t);
+@@ -629,7 +655,7 @@ void tasklet_kill(struct tasklet_struct
  }
  EXPORT_SYMBOL(tasklet_kill);
  
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
+ void tasklet_unlock(struct tasklet_struct *t)
+ {
+ 	smp_mb__before_atomic();
 
