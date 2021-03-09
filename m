@@ -2,116 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F21332E94
-	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 19:57:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E85332EF5
+	for <lists+netdev@lfdr.de>; Tue,  9 Mar 2021 20:25:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbhCIS4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 13:56:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        id S231358AbhCITZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 14:25:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbhCIS4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 13:56:14 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DF3C06174A
-        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 10:56:13 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id c19so13789609ljn.12
-        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 10:56:13 -0800 (PST)
+        with ESMTP id S230159AbhCITY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 14:24:56 -0500
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70731C06174A;
+        Tue,  9 Mar 2021 11:24:56 -0800 (PST)
+Received: by mail-qk1-x72f.google.com with SMTP id 130so14239629qkh.11;
+        Tue, 09 Mar 2021 11:24:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=LnmGCjQ4C8zQCydVtjZgL3of8o/zdUX2yEmxWYlFGQY=;
-        b=XMMCOIPKj8F9xeHDzmbByf/nxbEXZ1LrxTc4YjjHHM6EwdNwGGRO4/ZUzzhFTFGNlo
-         ZhYsDfleSoikwKicPmqFbpH4t6FM8vfo7QU7+W1dLzMyMnUMW1XaTaM/DsTSFHlkc4NF
-         0kdywZZLSwAf+aK7J8R9MXdnQyL9p+i00krHrRcjhZD/l2CF9/D8trpliz6sQxXR9lvf
-         2GB4OR+ljz7dn0iDtdv6yZVQ729JQDsHUU0JmT+rzLWL4TAlnRJr+NByWh8Aq1rnrUD0
-         vckergf5hrqRXHPu/CESJb6EIC0jdghHw/MUx+o2PcWR0sjDA+wvyPtEJO/TTZZQfY/6
-         SS8g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NyaWuBryBSVxlyjGEB0sbhHJoxkv3j/n+f1C5IJfUoc=;
+        b=OgmQKK5Gx1EXozVc2xW8ogHzbQcTybAtNIqF3/KGjhSpzecbNeauvBuKGRinIFBl1b
+         Wk9wQmap2tUIC4+0tllVLKcjTLVgwPpdM++uDzjypUA5hpBHL0uUAHzeCuZe2CDj3hFl
+         8xnnrL7U0f75rcRJnOLdPxKSAPA6tNFLEiIa+SKVXfUe6XtAoREPVZaozMlVkb1KYceS
+         BCNKAc1ZDpd2EQbrr+ZmRwbciwbutFT4gZo/CMQ5c/0WhRAzplx1Pvyg1AbrHJZwKrdb
+         Y3lfiJtvvwsx55GeeEK87v9BxISW7uLL3ei3XcdhxbiHv5zdXKwy/pX3W7bb3uCkHa2c
+         Sshw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=LnmGCjQ4C8zQCydVtjZgL3of8o/zdUX2yEmxWYlFGQY=;
-        b=sRRpMoGyfEq7oVAl56ILu6i49efxqyNRzI2NIaDFm+PSgknnQcGOgK7emICMX6CASM
-         IKnLD7F9AQlDS6jyCL1BtOyL+P2PLv/XYbs8FQp8GtaK1/AnrjtCLeKfXlEg8KIiaHSG
-         +/HsVbKxwaCwrpGVvIQjtkka1e6XoVPez7FMRdj4Frpc3kmOX7sPsYyFk9B5Yk5b5biZ
-         tiD0Jh0aQzBLA0D2P2sXd3uxgAN/otehpguMQ53+fxm3Zw2fWhguqXVToJMcI9PlAR4W
-         MXK8CPeo7JbN39Z1M6vHF5VIAshugtZA3jDhIhGRKnE7+MgSP+eUGoSly6wKil9oCnvM
-         7uJw==
-X-Gm-Message-State: AOAM533aXNQfrpVg177MEY1cI+ttYCuYIZ9xr90IfgpBQLBs4s4iaQj+
-        TQoYtU+TktYgXRwotQ6MprZ/4vcVNRV8Tg==
-X-Google-Smtp-Source: ABdhPJxl2fbongPvVdlJI/UScdXHhFAm1BpbaI442VP1lCqhMEdfXVu4/CGM/nPX5x1mnJv3OHutDQ==
-X-Received: by 2002:a2e:96d5:: with SMTP id d21mr8679716ljj.148.1615316172465;
-        Tue, 09 Mar 2021 10:56:12 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id k1sm607198lfg.3.2021.03.09.10.56.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NyaWuBryBSVxlyjGEB0sbhHJoxkv3j/n+f1C5IJfUoc=;
+        b=FfkeDBKjNnfTnhRivYfDAj6rt/hIk5W7QT3OPikJ0hVStEMrtZui1DR9u/i1A8SDmZ
+         alRxS1WbmW7aXKG2WymbQwhS7oVgD/JR4hCTsc8/JWXnyVcyrR73KWAjy8TrQVopk0qZ
+         cZIMo/Lywxr8Y8TnnT0WWiuQrWY/mKfg9m3yFhG8pK7qVg7k0FNcR+Yo17DHDeTVfWw3
+         Vf17s3qLWlBU57ZQbhvVj4sVxmUS3uXgyGruzBSv1ToOqRxGXo8pznakR0LuvpFU4DWQ
+         qidguTsLohEUl7s/s8qP/ZP8vFvBNJBeY1JzFB2KfulWJiHUCpCBtlHb7UWbW1FGSu3b
+         GQOQ==
+X-Gm-Message-State: AOAM532mkVvUiW46KSgBBmhaiJwxHr5bZ6sessYUQWYprP6zUZKRPzM+
+        IXLT+EZCDhQFsIGo1hxBjhE=
+X-Google-Smtp-Source: ABdhPJykpf18TQM0AcKNVz3s4ShZgiHKvlbMxVe56ixJN+Hu9e/RCNO3FrpvF5vZMfyVJkkrIiEmsQ==
+X-Received: by 2002:a05:620a:214a:: with SMTP id m10mr28244272qkm.372.1615317895675;
+        Tue, 09 Mar 2021 11:24:55 -0800 (PST)
+Received: from manjaro.fibertel.com.ar ([186.138.5.158])
+        by smtp.gmail.com with ESMTPSA id 90sm10599885qtc.86.2021.03.09.11.24.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Mar 2021 10:56:12 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net 2/4] net: dsa: prevent hardware forwarding between unbridged 8021q uppers
-In-Reply-To: <20210309021657.3639745-3-olteanv@gmail.com>
-References: <20210309021657.3639745-1-olteanv@gmail.com> <20210309021657.3639745-3-olteanv@gmail.com>
-Date:   Tue, 09 Mar 2021 19:56:11 +0100
-Message-ID: <87k0qgp35g.fsf@waldekranz.com>
+        Tue, 09 Mar 2021 11:24:54 -0800 (PST)
+From:   Lautaro Lecumberry <lautarolecumberry@gmail.com>
+Cc:     lautarolecumberry@gmail.com, "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: virtio_net: use min_t() instead of min()
+Date:   Tue,  9 Mar 2021 16:24:15 -0300
+Message-Id: <20210309192415.12386-1-lautarolecumberry@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 09, 2021 at 04:16, Vladimir Oltean <olteanv@gmail.com> wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
-> Tobias reports that the following set of commands, which bridge two
-> ports that have 8021q uppers with the same VID, is incorrectly accepted
-> by DSA as valid:
->
-> .100  br0  .100
->    \  / \  /
->    lan0 lan1
->
-> ip link add dev br0 type bridge vlan_filtering 1
-> ip link add dev lan0.100 link lan0 type vlan id 100
-> ip link add dev lan1.100 link lan1 type vlan id 100
+This patch fixes the following checkpatch warning:
 
-If I move this line...
+WARNING: min() should probably be min_t(unsigned int, budget, virtqueue_get_vring_size(rq->vq))
+1357: FILE: virtio_net.c:1357:
++	if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
 
-> ip link set dev lan0 master br0
-> ip link set dev lan1 master br0 # This should fail but doesn't
+Signed-off-by: Lautaro Lecumberry <lautarolecumberry@gmail.com>
+---
+ drivers/net/virtio_net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-...down here, the config is (erroneously) accepted.
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 82e520d2cb12..6b65f24c0130 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1354,7 +1354,7 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+ 		}
+ 	}
+ 
+-	if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
++	if (rq->vq->num_free > min_t(unsigned int, budget, virtqueue_get_vring_size(rq->vq)) / 2) {
+ 		if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+ 			schedule_delayed_work(&vi->refill, 0);
+ 	}
+-- 
+2.30.0
 
-> Again, this is a variation of the same theme of 'all VLANs kinda smell
-> the same in hardware, you can't tell if they came from 8021q or from the
-> bridge'. When the base interfaces are bridged, the expectation of the
-> Linux network stack is that traffic received by other upper interfaces
-> except the bridge is not captured by the bridge rx_handler, therefore
-> not subject to forwarding. So the above setup should not do forwarding
-> for VLAN ID 100, but it does it nonetheless. So it should be denied.
->
-> Reported-by: Tobias Waldekranz <tobias@waldekranz.com>
-> Fixes: 061f6a505ac3 ("net: dsa: Add ndo_vlan_rx_{add, kill}_vid implementation")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-
-This is what I meant by having bits and pieces of this validation
-scattered in multiple places, some things being checked for certain
-events but not for others, etc.
-
-I took an initial stab at this to show what I mean:
-
-https://lore.kernel.org/netdev/20210309184244.1970173-1-tobias@waldekranz.com
-
-I am sure there are holes in this as well, hence RFC, but I think it
-will be much easier to make sure that we avoid ordering issues using a
-structure like this.
-
-What do you think?
