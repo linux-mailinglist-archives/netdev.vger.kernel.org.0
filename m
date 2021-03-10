@@ -2,62 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7712F33372C
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14584333715
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:14:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231278AbhCJIVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 03:21:00 -0500
-Received: from mail.ispras.ru ([83.149.199.84]:36884 "EHLO mail.ispras.ru"
+        id S231163AbhCJIN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 03:13:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229564AbhCJIU1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 03:20:27 -0500
-X-Greylist: delayed 569 seconds by postgrey-1.27 at vger.kernel.org; Wed, 10 Mar 2021 03:20:26 EST
-Received: from localhost.localdomain (unknown [185.13.112.193])
-        by mail.ispras.ru (Postfix) with ESMTPSA id B9EAB40D403D;
-        Wed, 10 Mar 2021 08:10:52 +0000 (UTC)
-From:   Pavel Andrianov <andrianov@ispras.ru>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Pavel Andrianov <andrianov@ispras.ru>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
-Subject: [PATCH] net: pxa168_eth: Fix a potential data race in pxa168_eth_remove
-Date:   Wed, 10 Mar 2021 11:10:46 +0300
-Message-Id: <20210310081046.505747-1-andrianov@ispras.ru>
-X-Mailer: git-send-email 2.25.1
+        id S231293AbhCJINf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 03:13:35 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B400F64FCE;
+        Wed, 10 Mar 2021 08:13:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1615364007;
+        bh=7nUcNZr12utVPnw8WOSH71VwFcj/vspELHCKCeOftsY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kspCqylVJqSTeOBQQfYHRbJdcAXl4qzRD/UnCQx6mtsBwKVprHIAeDANgYgyUkttx
+         ukHd/K4uPaf6wkLHwYnbl6SJYELWVo+MF4aGmWaY0Jc72GGX3ojg7CU61igoeTcVCT
+         pAtidaaNazquN7C1EzCWk7MLHVg+JigQXNk0b8A8=
+Date:   Wed, 10 Mar 2021 09:13:24 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        Gage Eads <gage.eads@intel.com>
+Subject: Re: [PATCH v10 03/20] dlb: add resource and device initialization
+Message-ID: <YEh/pKVV36r2rbAr@kroah.com>
+References: <20210210175423.1873-1-mike.ximing.chen@intel.com>
+ <20210210175423.1873-4-mike.ximing.chen@intel.com>
+ <YEc+uL3SSf/T+EuG@kroah.com>
+ <BYAPR11MB3095C06792321F64E98394FCD9919@BYAPR11MB3095.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR11MB3095C06792321F64E98394FCD9919@BYAPR11MB3095.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pxa168_eth_remove() firstly calls unregister_netdev(),
-then cancels a timeout work. unregister_netdev() shuts down a device
-interface and removes it from the kernel tables. If the timeout occurs
-in parallel, the timeout work (pxa168_eth_tx_timeout_task) performs stop
-and open of the device. It may lead to an inconsistent state and memory
-leaks.
+On Wed, Mar 10, 2021 at 01:33:24AM +0000, Chen, Mike Ximing wrote:
+> 
+> > -----Original Message-----
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > 
+> > On Wed, Feb 10, 2021 at 11:54:06AM -0600, Mike Ximing Chen wrote:
+> > > +
+> > > +#include "dlb_bitmap.h"
+> > > +
+> > > +#define BITS_SET(x, val, mask)	(x = ((x) & ~(mask))     \
+> > > +				 | (((val) << (mask##_LOC)) & (mask)))
+> > > +#define BITS_GET(x, mask)       (((x) & (mask)) >> (mask##_LOC))
+> > 
+> > Why not use the built-in kernel functions for this?  Why are you
+> > creating your own?
+> >
+> FIELD_GET(_mask, _val) and FIELD_PREP(_mask, _val) in include/linux/bitfield.h
+> are similar to our BITS_GET() and BITS_SET().  However in our case, mask##_LOC
+> is a known constant defined in dlb_regs.h,  so we don't need to use 
+> _buildin_ffs(mask) to calculate the location of mask as FIELD_GET() and FIELD_PREP()
+> do.  We can still use FIELD_GET and FIELD_PREP, but our macros are a little more 
+> efficient. Would it be OK to keep them?
 
-Found by Linux Driver Verification project (linuxtesting.org).
+No, please use the kernel-wide proper functions, there's no need for
+single tiny driver to be "special" in this regard.  If somehow the
+in-kernel functions are not sufficient, it's always better to fix them
+up than to go your own way here.
 
-Signed-off-by: Pavel Andrianov <andrianov@ispras.ru>
----
- drivers/net/ethernet/marvell/pxa168_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks,
 
-diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
-index d1e4d42e497d..3712e1786091 100644
---- a/drivers/net/ethernet/marvell/pxa168_eth.c
-+++ b/drivers/net/ethernet/marvell/pxa168_eth.c
-@@ -1544,8 +1544,8 @@ static int pxa168_eth_remove(struct platform_device *pdev)
- 	clk_disable_unprepare(pep->clk);
- 	mdiobus_unregister(pep->smi_bus);
- 	mdiobus_free(pep->smi_bus);
--	unregister_netdev(dev);
- 	cancel_work_sync(&pep->tx_timeout_task);
-+	unregister_netdev(dev);
- 	free_netdev(dev);
- 	return 0;
- }
--- 
-2.25.1
-
+greg k-h
