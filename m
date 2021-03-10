@@ -2,113 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52975334A2F
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 22:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3480334A31
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 22:57:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbhCJVzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 16:55:44 -0500
-Received: from www62.your-server.de ([213.133.104.62]:58102 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbhCJVze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 16:55:34 -0500
-Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lK6ni-000CCL-Q3; Wed, 10 Mar 2021 22:55:30 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-03-10
-Date:   Wed, 10 Mar 2021 22:55:30 +0100
-Message-Id: <20210310215530.26047-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S231799AbhCJV4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 16:56:49 -0500
+Received: from mx1.emlix.com ([136.243.223.33]:44336 "EHLO mx1.emlix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231719AbhCJV4X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 16:56:23 -0500
+Received: from mailer.emlix.com (unknown [81.20.119.6])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1.emlix.com (Postfix) with ESMTPS id 31F795FCA4;
+        Wed, 10 Mar 2021 22:56:22 +0100 (CET)
+Date:   Wed, 10 Mar 2021 22:56:21 +0100
+From:   Daniel =?iso-8859-1?Q?Gl=F6ckner?= <dg@emlix.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+Subject: Re: Softirq error with mcp251xfd driver
+Message-ID: <20210310215621.GA5538@homes.emlix.com>
+References: <20210310064626.GA11893@homes.emlix.com>
+ <20210310071351.rimo5qvp5t3hwjli@pengutronix.de>
+ <20210310212254.GA2050@homes.emlix.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26104/Wed Mar 10 13:08:51 2021)
+In-Reply-To: <20210310212254.GA2050@homes.emlix.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+On Wed, Mar 10, 2021 at 10:22:54PM +0100, Daniel Glöckner wrote:
+> On Wed, Mar 10, 2021 at 08:13:51AM +0100, Marc Kleine-Budde wrote:
+> > On 10.03.2021 07:46:26, Daniel Glöckner wrote:
+> > > the mcp251xfd driver uses a threaded irq handler to queue skbs with the
+> > > can_rx_offload_* helpers. I get the following error on every packet until
+> > > the rate limit kicks in:
+> > > 
+> > > NOHZ tick-stop error: Non-RCU local softirq work is pending, handler
+> > > #08!!!
+> > 
+> > That's a known problem. But I had no time to investigate it.
+> > 
+> > > Adding local_bh_disable/local_bh_enable around the can_rx_offload_* calls
+> > > gets rid of the error, but is that the correct way to fix this?
+> > > Internally the can_rx_offload code uses spin_lock_irqsave to safely
+> > > manipulate its queue.
+> > 
+> > The problem is not the queue handling inside of rx_offload, but the call
+> > to napi_schedule(). This boils down to raising a soft IRQ (the NAPI)
+> > from the threaded IRQ handler of the mcp251xfd driver.
+> > 
+> > The local_bh_enable() "fixes" the problem running the softirq if needed.
+> > 
+> > https://elixir.bootlin.com/linux/v5.11/source/kernel/softirq.c#L1913
+> > 
+> > I'm not sure how to properly fix the problem, yet.
+> 
+> If I understand correctly, the point of using can_rx_offload_* in the
+> mcp251xfd driver is that it sorts the rx, tx, and error frames according
+> to their timestamp. In that case calling local_bh_enable after each packet
+> is not correct because there will never be more than one packet in the
+> queue. We want to call local_bh_disable + can_rx_offload_schedule +
+> local_bh_enable only at the end of mcp251xfd_irq after intf_pending
+> indicated that there are no more packets inside the chip. How about adding
+> a flag to struct can_rx_offload that suppresses the automatic calls to
+> can_rx_offload_schedule?
+> 
+> If there is the risk that under high load we will never exit the loop in
+> mcp251xfd_irq or if can_rx_offload_napi_poll might run again while we add
+> more packets to the queue, a more complex scheme is needed. We could
+> extend can_rx_offload_napi_poll to process only packets with a timestamp
+> below a certain value. That value has to be read from the TBC register
+> before we read the INT register. Then the three functions can be run after
+> each iteration to empty the queue. We need to update that timestamp limit
+> one more time when we finally exit the loop to process those packets that
+> have arrived after the reading of the TBC register when the INT register
+> still had bits set. Using the timestamp of the tail of the queue is
+> probably the easiest way to set the final limit.
 
-The following pull-request contains BPF updates for your *net* tree.
+Or we leave can_rx_offload unchanged and keep two additional lists of skbs
+inside the mcp251xfd driver: One for the packets that arrived before the
+timestamp read from TBC and one for the packets that arrived later. At the
+end of an iteration we call local_bh_disable, enqueue all packets from the
+first list with can_rx_offload_queue_sorted, and the ask the softirq to
+process them by calling local_bh_enable. Afterwards we move everything
+from the second list to the first list and do the next iteration.
 
-We've added 8 non-merge commits during the last 5 day(s) which contain
-a total of 11 files changed, 136 insertions(+), 17 deletions(-).
+The drawback is that we can't use can_rx_offload_get_echo_skb.
 
-The main changes are:
+Best regards,
 
-1) Reject bogus use of vmlinux BTF as map/prog creation BTF, from Alexei Starovoitov.
+  Daniel
 
-2) Fix allocation failure splat in x86 JIT for large progs. Also fix overwriting
-   percpu cgroup storage from tracing programs when nested, from Yonghong Song.
+-- 
+Dipl.-Math. Daniel Glöckner, emlix GmbH, http://www.emlix.com
+Fon +49 551 30664-0, Fax +49 551 30664-11,
+Gothaer Platz 3, 37083 Göttingen, Germany
+Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
+Geschäftsführung: Heike Jordan, Dr. Uwe Kracke
+Ust-IdNr.: DE 205 198 055
 
-3) Fix rx queue retrieval in XDP for multi-queue veth, from Maciej Fijalkowski.
-
-4) Fix bpf_check_mtu() helper API before freeze to have mtu_len as custom skb/xdp
-   L3 input length, from Jesper Dangaard Brouer.
-
-5) Fix inode_storage's lookup_elem return value upon having bad fd, from Tal Lossos.
-
-6) Fix bpftool and libbpf cross-build on MacOS, from Georgi Valkov.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-John Fastabend, KP Singh, Roman Gushchin, Toshiaki Makita, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit d8861bab48b6c1fc3cdbcab8ff9d1eaea43afe7f:
-
-  gianfar: fix jumbo packets+napi+rx overrun crash (2021-03-05 13:13:32 -0800)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to de920fc64cbaa031f947e9be964bda05fd090380:
-
-  bpf, x86: Use kvmalloc_array instead kmalloc_array in bpf_jit_comp (2021-03-10 00:10:23 +0100)
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      bpf: Dont allow vmlinux BTF to be used in map_create and prog_load.
-
-Georgi Valkov (1):
-      libbpf: Fix INSTALL flag order
-
-Jesper Dangaard Brouer (2):
-      bpf: BPF-helper for MTU checking add length input
-      selftests/bpf: Tests using bpf_check_mtu BPF-helper input mtu_len param
-
-Maciej Fijalkowski (1):
-      veth: Store queue_mapping independently of XDP prog presence
-
-Tal Lossos (1):
-      bpf: Change inode_storage's lookup_elem return value from NULL to -EBADF
-
-Yonghong Song (2):
-      bpf: Don't do bpf_cgroup_storage_set() for kuprobe/tp programs
-      bpf, x86: Use kvmalloc_array instead kmalloc_array in bpf_jit_comp
-
- arch/x86/net/bpf_jit_comp.c                        |  4 +-
- drivers/net/veth.c                                 |  3 +-
- include/linux/bpf.h                                |  9 ++-
- include/uapi/linux/bpf.h                           | 16 ++--
- kernel/bpf/bpf_inode_storage.c                     |  2 +-
- kernel/bpf/syscall.c                               |  5 ++
- kernel/bpf/verifier.c                              |  4 +
- net/core/filter.c                                  | 12 ++-
- tools/lib/bpf/Makefile                             |  2 +-
- tools/testing/selftests/bpf/prog_tests/check_mtu.c |  4 +
- tools/testing/selftests/bpf/progs/test_check_mtu.c | 92 ++++++++++++++++++++++
- 11 files changed, 136 insertions(+), 17 deletions(-)
+emlix - your embedded linux partner
