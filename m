@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F77333C64
+	by mail.lfdr.de (Postfix) with ESMTP id DA9DB333C65
 	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 13:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232787AbhCJMQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 07:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
+        id S232805AbhCJMQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 07:16:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232570AbhCJMPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:15:36 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131B5C061760
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:36 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id dm26so27619991edb.12
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:36 -0800 (PST)
+        with ESMTP id S232318AbhCJMPh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:15:37 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F33DC061760
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:37 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id b13so27755499edx.1
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Nf+fPfmcsZomK1JhatkWR5wa+0OaZUG5Ra45aFkxr7Y=;
-        b=IE61NHehJceXSwBf0IDwrevoY4KIJrOwYO+RblIeF2N9/+Y6NbiSIVLmjKAxEorhfQ
-         R9iDDXGpq2rNlNM0ipJPZFMVugkb1Sw5TPQzpniBv/SezBFxoQdCPAqvSzmLYheKmlrs
-         GxHBIlSHX6drDd1toP7g3qdELMoE6c5Xz0Cpe75Pyue1vTmT1BGufqQS9kajisjqeLbd
-         6z90ipmzfsa9wBh+nsY6CUScDxtgHivepTrB8Sdy/LSTiK7IWw2srylUr7YVBN9QroPD
-         zaUKQ+foMywv8bedAuwENxP7CPrrrDgHEDgMsGQ3/lmvBKoOT0PcFNgXXbfU6ZbkTydE
-         OQjQ==
+        bh=52lAask9jmGX6Fmh4VSr56m4xK8gi0rFlYMvzfcNqo4=;
+        b=dy7NgJMedCFnxzY23treeKMinjF3TNnUhL4OXF2PkoIWvnlFywejwxH2VB53S0YH5H
+         zefIJx57SgBOXHbai7hyT0kWTiVa6UeklE933DsWjGo6USrRl5P78AKhmPgHJ4ChE0sG
+         RofeAFA8nQJSmTFARGoTmP17FfaiSjK8RnTJwr2Gx0AFXZ17beKN5vb1q1UzouSncKld
+         fL9lpR/eCWPcoTipdpdo+vFpknS2Z4/jy5h5QjdfPhlYRRbVOwozwG759rKoCe7DWPa/
+         xGB3GgQkdiYf/PH6w3mDUC82JA6Y9t0NP+7dw3SFk5OWnXZQpAB/IIkrSdGSQ7NkHPSM
+         Wobg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Nf+fPfmcsZomK1JhatkWR5wa+0OaZUG5Ra45aFkxr7Y=;
-        b=DrzoftfbxUuj7LnG6b9Ha6F+dkW45S6Mp9usCYx/liiLOibZ3I9h7mMNppxI40uDON
-         AR/futQe1136wISYpJMvWEkhF+1AsHYs7Ii4NV4t5qO8fuR8facH34ltrbG+/UlaM8Rz
-         vhxU+F/BHLj1Z3UJCIf34GG/WP6EAQZwIZceHD+ye2aO3hIIOm0jkMIBoQvKhLVMb2nQ
-         ho9BWDD3T6f7B7mSy8Tbw9KpTE9SwkZf+QQxtLqQOMAJhjX+N/vWoJpVwwC9al0WA5I2
-         W6ecweUg5YELBlVyffXk0fv/QKZ7ZgTS42QpHImMKdi8dn9aGuuPat75vQZEArJeCpbH
-         GSIA==
-X-Gm-Message-State: AOAM531dug6ZDi8Z7Oo9LIUPKr4qL0UhRCGC74+HqxptAKwTiD1JQG3P
-        Faz90YBSY87Y2ZGAMoEZmx0=
-X-Google-Smtp-Source: ABdhPJwv3BoXj28YiorMYzyQn6NDpwu4CGJRBIyqUFLPk06ko3kc4UWBXPfr++FJErBYQEoCq2ZLjQ==
-X-Received: by 2002:a05:6402:3486:: with SMTP id v6mr2895224edc.109.1615378534806;
-        Wed, 10 Mar 2021 04:15:34 -0800 (PST)
+        bh=52lAask9jmGX6Fmh4VSr56m4xK8gi0rFlYMvzfcNqo4=;
+        b=Hk/NUiVyVkSEVHd3pqRH6EjcsXWbShWRmfz+nWmlaUPorMVPPGR8bNRFXa+xdSt9Lx
+         D5iCgEDe5cyu0D/pQn8ycueWMbH3wOgtFC78AT/4j5XPYsvDX0hkS3seOpEsDfiUJlIj
+         iDEO0ON/MVLJrZ4hSnOhALmOsYqOt3ioXMsujbT5gZYcu2OCk4Q3LxeerfOWGxQyWqxA
+         /cOLAp+ZAgJ+P+VHFSigJISTY18/rydpK3XA/byxs8+6nkTzfWsbBC2b9I/eoOvFofhR
+         mYitwZW41F4ANco70UBNyGqjEI84M1m8gqXCnxcCMVo1vKZfxGXx068pQPRIR+g/QgY3
+         LVGg==
+X-Gm-Message-State: AOAM533vLyaU1IkzghpS3al+1LvAJ1LJotco5oHFd5arVllHXJhQTkBb
+        FvRwuB8zUoSrIXC9fd65mI0=
+X-Google-Smtp-Source: ABdhPJx38cVKh/dihjUUWJu4UwAeXXbAgNPyXshk6x3JhHNcEo970zG8rACJwPu+pJC+IROJm9DE3Q==
+X-Received: by 2002:aa7:d316:: with SMTP id p22mr2811505edq.107.1615378535898;
+        Wed, 10 Mar 2021 04:15:35 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id v15sm4865527edw.28.2021.03.10.04.15.33
+        by smtp.gmail.com with ESMTPSA id v15sm4865527edw.28.2021.03.10.04.15.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 04:15:34 -0800 (PST)
+        Wed, 10 Mar 2021 04:15:35 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
         jiri@resnulli.us, ruxandra.radulescu@nxp.com,
         netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 05/15] staging: dpaa2-switch: setup buffer pool and RX path rings
-Date:   Wed, 10 Mar 2021 14:14:42 +0200
-Message-Id: <20210310121452.552070-6-ciorneiioana@gmail.com>
+Subject: [PATCH net-next 06/15] staging: dpaa2-switch: setup dpio
+Date:   Wed, 10 Mar 2021 14:14:43 +0200
+Message-Id: <20210310121452.552070-7-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210310121452.552070-1-ciorneiioana@gmail.com>
 References: <20210310121452.552070-1-ciorneiioana@gmail.com>
@@ -67,97 +67,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Allocate and setup a buffer pool, needed on the Rx path of the control
-interface. Also, define the Rx buffer size seen by the WRIOP from the
-PAGE_SIZE buffers seeded.
-
-Also, create the needed Rx rings for both frame queues used on the
-control interface.  On the Rx path, when a pull-dequeue operation is
-performed on a software portal, available frame descriptors are put in a
-ring - a DMA memory storage - for further usage.
+Setup interrupts on the control interface queues. We do not force an
+exact affinity between the interrupts received from a specific queue and
+a cpu.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h |  12 ++
- drivers/staging/fsl-dpaa2/ethsw/dpsw.c     |  31 +++++
- drivers/staging/fsl-dpaa2/ethsw/dpsw.h     |  26 +++++
- drivers/staging/fsl-dpaa2/ethsw/ethsw.c    | 126 +++++++++++++++++++++
- drivers/staging/fsl-dpaa2/ethsw/ethsw.h    |  14 +++
- 5 files changed, 209 insertions(+)
+ drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h | 15 +++++
+ drivers/staging/fsl-dpaa2/ethsw/dpsw.c     | 33 +++++++++++
+ drivers/staging/fsl-dpaa2/ethsw/dpsw.h     | 23 ++++++++
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.c    | 65 ++++++++++++++++++++++
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.h    |  1 +
+ 5 files changed, 137 insertions(+)
 
 diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h b/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
-index fc1ba45f8a3f..d76f80d1bd8b 100644
+index d76f80d1bd8b..d451e1e7f0a3 100644
 --- a/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
 +++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
-@@ -8,6 +8,8 @@
- #ifndef __FSL_DPSW_CMD_H
- #define __FSL_DPSW_CMD_H
- 
-+#include "dpsw.h"
-+
- /* DPSW Version */
- #define DPSW_VER_MAJOR		8
- #define DPSW_VER_MINOR		9
-@@ -73,6 +75,7 @@
- #define DPSW_CMDID_IF_SET_PRIMARY_MAC_ADDR  DPSW_CMD_ID(0x0A9)
+@@ -76,6 +76,7 @@
  
  #define DPSW_CMDID_CTRL_IF_GET_ATTR         DPSW_CMD_ID(0x0A0)
-+#define DPSW_CMDID_CTRL_IF_SET_POOLS        DPSW_CMD_ID(0x0A1)
+ #define DPSW_CMDID_CTRL_IF_SET_POOLS        DPSW_CMD_ID(0x0A1)
++#define DPSW_CMDID_CTRL_IF_SET_QUEUE        DPSW_CMD_ID(0x0A6)
  
  /* Macros for accessing command fields smaller than 1byte */
  #define DPSW_MASK(field)        \
-@@ -356,6 +359,15 @@ struct dpsw_rsp_ctrl_if_get_attr {
- 	__le32 tx_err_conf_fqid;
+@@ -368,6 +369,20 @@ struct dpsw_cmd_ctrl_if_set_pools {
+ 	__le16 buffer_size[DPSW_MAX_DPBP];
  };
  
-+#define DPSW_BACKUP_POOL(val, order)	(((val) & 0x1) << (order))
-+struct dpsw_cmd_ctrl_if_set_pools {
-+	u8 num_dpbp;
-+	u8 backup_pool_mask;
-+	__le16 pad;
-+	__le32 dpbp_id[DPSW_MAX_DPBP];
-+	__le16 buffer_size[DPSW_MAX_DPBP];
++#define DPSW_DEST_TYPE_SHIFT	0
++#define DPSW_DEST_TYPE_SIZE	4
++
++struct dpsw_cmd_ctrl_if_set_queue {
++	__le32 dest_id;
++	u8 dest_priority;
++	u8 pad;
++	/* from LSB: dest_type:4 */
++	u8 dest_type;
++	u8 qtype;
++	__le64 user_ctx;
++	__le32 options;
 +};
 +
  struct dpsw_rsp_get_api_version {
  	__le16 version_major;
  	__le16 version_minor;
 diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw.c b/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
-index a7794f012e78..a560270b2466 100644
+index a560270b2466..4bc5791c0fa1 100644
 --- a/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
 +++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
-@@ -1120,6 +1120,37 @@ int dpsw_ctrl_if_get_attributes(struct fsl_mc_io *mc_io, u32 cmd_flags,
- 	return 0;
+@@ -1151,6 +1151,39 @@ int dpsw_ctrl_if_set_pools(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
+ 	return mc_send_command(mc_io, &cmd);
  }
  
 +/**
-+ * dpsw_ctrl_if_set_pools() - Set control interface buffer pools
++ * dpsw_ctrl_if_set_queue() - Set Rx queue configuration
 + * @mc_io:	Pointer to MC portal's I/O object
 + * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-+ * @token:	Token of DPSW object
-+ * @cfg:	Buffer pools configuration
++ * @token:	Token of dpsw object
++ * @qtype:	dpsw_queue_type of the targeted queue
++ * @cfg:	Rx queue configuration
 + *
 + * Return:	'0' on Success; Error code otherwise.
 + */
-+int dpsw_ctrl_if_set_pools(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
-+			   const struct dpsw_ctrl_if_pools_cfg *cfg)
++int dpsw_ctrl_if_set_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
++			   enum dpsw_queue_type qtype,
++			   const struct dpsw_ctrl_if_queue_cfg *cfg)
 +{
-+	struct dpsw_cmd_ctrl_if_set_pools *cmd_params;
++	struct dpsw_cmd_ctrl_if_set_queue *cmd_params;
 +	struct fsl_mc_command cmd = { 0 };
-+	int i;
 +
-+	cmd.header = mc_encode_cmd_header(DPSW_CMDID_CTRL_IF_SET_POOLS,
-+					  cmd_flags, token);
-+	cmd_params = (struct dpsw_cmd_ctrl_if_set_pools *)cmd.params;
-+	cmd_params->num_dpbp = cfg->num_dpbp;
-+	for (i = 0; i < DPSW_MAX_DPBP; i++) {
-+		cmd_params->dpbp_id[i] = cpu_to_le32(cfg->pools[i].dpbp_id);
-+		cmd_params->buffer_size[i] =
-+			cpu_to_le16(cfg->pools[i].buffer_size);
-+		cmd_params->backup_pool_mask |=
-+			DPSW_BACKUP_POOL(cfg->pools[i].backup_pool, i);
-+	}
++	cmd.header = mc_encode_cmd_header(DPSW_CMDID_CTRL_IF_SET_QUEUE,
++					  cmd_flags,
++					  token);
++	cmd_params = (struct dpsw_cmd_ctrl_if_set_queue *)cmd.params;
++	cmd_params->dest_id = cpu_to_le32(cfg->dest_cfg.dest_id);
++	cmd_params->dest_priority = cfg->dest_cfg.priority;
++	cmd_params->qtype = qtype;
++	cmd_params->user_ctx = cpu_to_le64(cfg->user_ctx);
++	cmd_params->options = cpu_to_le32(cfg->options);
++	dpsw_set_field(cmd_params->dest_type,
++		       DEST_TYPE,
++		       cfg->dest_cfg.dest_type);
 +
 +	return mc_send_command(mc_io, &cmd);
 +}
@@ -166,247 +159,143 @@ index a7794f012e78..a560270b2466 100644
   * dpsw_get_api_version() - Get Data Path Switch API version
   * @mc_io:	Pointer to MC portal's I/O object
 diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw.h b/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
-index 8c8cc9600e8d..b14ec3e10b85 100644
+index b14ec3e10b85..f888778b70a1 100644
 --- a/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
 +++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
-@@ -196,6 +196,32 @@ enum dpsw_queue_type {
- 	DPSW_QUEUE_RX_ERR,
- };
+@@ -222,6 +222,29 @@ struct dpsw_ctrl_if_pools_cfg {
+ int dpsw_ctrl_if_set_pools(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
+ 			   const struct dpsw_ctrl_if_pools_cfg *cfg);
  
-+/**
-+ * Maximum number of DPBP
-+ */
-+#define DPSW_MAX_DPBP     8
++#define DPSW_CTRL_IF_QUEUE_OPT_USER_CTX		0x00000001
++#define DPSW_CTRL_IF_QUEUE_OPT_DEST		0x00000002
 +
-+/**
-+ * struct dpsw_ctrl_if_pools_cfg - Control interface buffer pools configuration
-+ * @num_dpbp: Number of DPBPs
-+ * @pools: Array of buffer pools parameters; The number of valid entries
-+ *	must match 'num_dpbp' value
-+ * @pools.dpbp_id: DPBP object ID
-+ * @pools.buffer_size: Buffer size
-+ * @pools.backup_pool: Backup pool
-+ */
-+struct dpsw_ctrl_if_pools_cfg {
-+	u8 num_dpbp;
-+	struct {
-+		int dpbp_id;
-+		u16 buffer_size;
-+		int backup_pool;
-+	} pools[DPSW_MAX_DPBP];
++enum dpsw_ctrl_if_dest {
++	DPSW_CTRL_IF_DEST_NONE = 0,
++	DPSW_CTRL_IF_DEST_DPIO = 1,
 +};
 +
-+int dpsw_ctrl_if_set_pools(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
-+			   const struct dpsw_ctrl_if_pools_cfg *cfg);
++struct dpsw_ctrl_if_dest_cfg {
++	enum dpsw_ctrl_if_dest dest_type;
++	int dest_id;
++	u8 priority;
++};
 +
++struct dpsw_ctrl_if_queue_cfg {
++	u32 options;
++	u64 user_ctx;
++	struct dpsw_ctrl_if_dest_cfg dest_cfg;
++};
++
++int dpsw_ctrl_if_set_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
++			   enum dpsw_queue_type qtype,
++			   const struct dpsw_ctrl_if_queue_cfg *cfg);
  /**
   * enum dpsw_action - Action selection for special/control frames
   * @DPSW_ACTION_DROP: Drop frame
 diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-index b03211fb6fc9..06998578355c 100644
+index 06998578355c..5e2d441cbc38 100644
 --- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
 +++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-@@ -1359,6 +1359,110 @@ static int dpaa2_switch_setup_fqs(struct ethsw_core *ethsw)
- 	return 0;
+@@ -1463,6 +1463,64 @@ static void dpaa2_switch_destroy_rings(struct ethsw_core *ethsw)
+ 		dpaa2_io_store_destroy(ethsw->fq[i].store);
  }
  
-+static int dpaa2_switch_setup_dpbp(struct ethsw_core *ethsw)
++static int dpaa2_switch_setup_dpio(struct ethsw_core *ethsw)
 +{
-+	struct dpsw_ctrl_if_pools_cfg dpsw_ctrl_if_pools_cfg = { 0 };
-+	struct device *dev = ethsw->dev;
-+	struct fsl_mc_device *dpbp_dev;
-+	struct dpbp_attr dpbp_attrs;
-+	int err;
++	struct dpsw_ctrl_if_queue_cfg queue_cfg;
++	struct dpaa2_io_notification_ctx *nctx;
++	int err, i, j;
 +
-+	err = fsl_mc_object_allocate(to_fsl_mc_device(dev), FSL_MC_POOL_DPBP,
-+				     &dpbp_dev);
-+	if (err) {
-+		if (err == -ENXIO)
++	for (i = 0; i < DPAA2_SWITCH_RX_NUM_FQS; i++) {
++		nctx = &ethsw->fq[i].nctx;
++
++		/* Register a new software context for the FQID.
++		 * By using NULL as the first parameter, we specify that we do
++		 * not care on which cpu are interrupts received for this queue
++		 */
++		nctx->is_cdan = 0;
++		nctx->id = ethsw->fq[i].fqid;
++		nctx->desired_cpu = DPAA2_IO_ANY_CPU;
++		err = dpaa2_io_service_register(NULL, nctx, ethsw->dev);
++		if (err) {
 +			err = -EPROBE_DEFER;
-+		else
-+			dev_err(dev, "DPBP device allocation failed\n");
-+		return err;
-+	}
-+	ethsw->dpbp_dev = dpbp_dev;
++			goto err_register;
++		}
 +
-+	err = dpbp_open(ethsw->mc_io, 0, dpbp_dev->obj_desc.id,
-+			&dpbp_dev->mc_handle);
-+	if (err) {
-+		dev_err(dev, "dpbp_open() failed\n");
-+		goto err_open;
-+	}
++		queue_cfg.options = DPSW_CTRL_IF_QUEUE_OPT_DEST |
++				    DPSW_CTRL_IF_QUEUE_OPT_USER_CTX;
++		queue_cfg.dest_cfg.dest_type = DPSW_CTRL_IF_DEST_DPIO;
++		queue_cfg.dest_cfg.dest_id = nctx->dpio_id;
++		queue_cfg.dest_cfg.priority = 0;
++		queue_cfg.user_ctx = nctx->qman64;
 +
-+	err = dpbp_reset(ethsw->mc_io, 0, dpbp_dev->mc_handle);
-+	if (err) {
-+		dev_err(dev, "dpbp_reset() failed\n");
-+		goto err_reset;
++		err = dpsw_ctrl_if_set_queue(ethsw->mc_io, 0,
++					     ethsw->dpsw_handle,
++					     ethsw->fq[i].type,
++					     &queue_cfg);
++		if (err)
++			goto err_set_queue;
 +	}
-+
-+	err = dpbp_enable(ethsw->mc_io, 0, dpbp_dev->mc_handle);
-+	if (err) {
-+		dev_err(dev, "dpbp_enable() failed\n");
-+		goto err_enable;
-+	}
-+
-+	err = dpbp_get_attributes(ethsw->mc_io, 0, dpbp_dev->mc_handle,
-+				  &dpbp_attrs);
-+	if (err) {
-+		dev_err(dev, "dpbp_get_attributes() failed\n");
-+		goto err_get_attr;
-+	}
-+
-+	dpsw_ctrl_if_pools_cfg.num_dpbp = 1;
-+	dpsw_ctrl_if_pools_cfg.pools[0].dpbp_id = dpbp_attrs.id;
-+	dpsw_ctrl_if_pools_cfg.pools[0].buffer_size = DPAA2_SWITCH_RX_BUF_SIZE;
-+	dpsw_ctrl_if_pools_cfg.pools[0].backup_pool = 0;
-+
-+	err = dpsw_ctrl_if_set_pools(ethsw->mc_io, 0, ethsw->dpsw_handle,
-+				     &dpsw_ctrl_if_pools_cfg);
-+	if (err) {
-+		dev_err(dev, "dpsw_ctrl_if_set_pools() failed\n");
-+		goto err_get_attr;
-+	}
-+	ethsw->bpid = dpbp_attrs.id;
 +
 +	return 0;
 +
-+err_get_attr:
-+	dpbp_disable(ethsw->mc_io, 0, dpbp_dev->mc_handle);
-+err_enable:
-+err_reset:
-+	dpbp_close(ethsw->mc_io, 0, dpbp_dev->mc_handle);
-+err_open:
-+	fsl_mc_object_free(dpbp_dev);
++err_set_queue:
++	dpaa2_io_service_deregister(NULL, nctx, ethsw->dev);
++err_register:
++	for (j = 0; j < i; j++)
++		dpaa2_io_service_deregister(NULL, &ethsw->fq[j].nctx,
++					    ethsw->dev);
++
 +	return err;
 +}
 +
-+static void dpaa2_switch_free_dpbp(struct ethsw_core *ethsw)
-+{
-+	dpbp_disable(ethsw->mc_io, 0, ethsw->dpbp_dev->mc_handle);
-+	dpbp_close(ethsw->mc_io, 0, ethsw->dpbp_dev->mc_handle);
-+	fsl_mc_object_free(ethsw->dpbp_dev);
-+}
-+
-+static int dpaa2_switch_alloc_rings(struct ethsw_core *ethsw)
-+{
-+	int i;
-+
-+	for (i = 0; i < DPAA2_SWITCH_RX_NUM_FQS; i++) {
-+		ethsw->fq[i].store =
-+			dpaa2_io_store_create(DPAA2_SWITCH_STORE_SIZE,
-+					      ethsw->dev);
-+		if (!ethsw->fq[i].store) {
-+			dev_err(ethsw->dev, "dpaa2_io_store_create failed\n");
-+			while (--i >= 0)
-+				dpaa2_io_store_destroy(ethsw->fq[i].store);
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void dpaa2_switch_destroy_rings(struct ethsw_core *ethsw)
++static void dpaa2_switch_free_dpio(struct ethsw_core *ethsw)
 +{
 +	int i;
 +
 +	for (i = 0; i < DPAA2_SWITCH_RX_NUM_FQS; i++)
-+		dpaa2_io_store_destroy(ethsw->fq[i].store);
++		dpaa2_io_service_deregister(NULL, &ethsw->fq[i].nctx,
++					    ethsw->dev);
 +}
 +
  static int dpaa2_switch_ctrl_if_setup(struct ethsw_core *ethsw)
  {
  	int err;
-@@ -1368,7 +1472,21 @@ static int dpaa2_switch_ctrl_if_setup(struct ethsw_core *ethsw)
+@@ -1481,8 +1539,14 @@ static int dpaa2_switch_ctrl_if_setup(struct ethsw_core *ethsw)
  	if (err)
- 		return err;
+ 		goto err_free_dpbp;
  
-+	/* setup the buffer pool needed on the Rx path */
-+	err = dpaa2_switch_setup_dpbp(ethsw);
++	err = dpaa2_switch_setup_dpio(ethsw);
 +	if (err)
-+		return err;
-+
-+	err = dpaa2_switch_alloc_rings(ethsw);
-+	if (err)
-+		goto err_free_dpbp;
++		goto err_destroy_rings;
 +
  	return 0;
-+
-+err_free_dpbp:
-+	dpaa2_switch_free_dpbp(ethsw);
-+
-+	return err;
- }
  
- static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
-@@ -1563,6 +1681,12 @@ static void dpaa2_switch_takedown(struct fsl_mc_device *sw_dev)
- 		dev_warn(dev, "dpsw_close err %d\n", err);
- }
- 
-+static void dpaa2_switch_ctrl_if_teardown(struct ethsw_core *ethsw)
-+{
++err_destroy_rings:
 +	dpaa2_switch_destroy_rings(ethsw);
-+	dpaa2_switch_free_dpbp(ethsw);
-+}
-+
- static int dpaa2_switch_remove(struct fsl_mc_device *sw_dev)
+ err_free_dpbp:
+ 	dpaa2_switch_free_dpbp(ethsw);
+ 
+@@ -1683,6 +1747,7 @@ static void dpaa2_switch_takedown(struct fsl_mc_device *sw_dev)
+ 
+ static void dpaa2_switch_ctrl_if_teardown(struct ethsw_core *ethsw)
  {
- 	struct ethsw_port_priv *port_priv;
-@@ -1573,6 +1697,8 @@ static int dpaa2_switch_remove(struct fsl_mc_device *sw_dev)
- 	dev = &sw_dev->dev;
- 	ethsw = dev_get_drvdata(dev);
- 
-+	dpaa2_switch_ctrl_if_teardown(ethsw);
-+
- 	dpaa2_switch_teardown_irqs(sw_dev);
- 
- 	dpsw_disable(ethsw->mc_io, 0, ethsw->dpsw_handle);
++	dpaa2_switch_free_dpio(ethsw);
+ 	dpaa2_switch_destroy_rings(ethsw);
+ 	dpaa2_switch_free_dpbp(ethsw);
+ }
 diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.h b/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
-index 24a203c42f5f..f5bd2cd3d140 100644
+index f5bd2cd3d140..50dd529e2a79 100644
 --- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
 +++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
-@@ -17,6 +17,8 @@
- #include <uapi/linux/if_bridge.h>
- #include <net/switchdev.h>
- #include <linux/if_bridge.h>
-+#include <linux/fsl/mc.h>
-+#include <soc/fsl/dpaa2-io.h>
- 
- #include "dpsw.h"
- 
-@@ -42,6 +44,15 @@
- /* Number of receive queues (one RX and one TX_CONF) */
- #define DPAA2_SWITCH_RX_NUM_FQS	2
- 
-+/* Hardware requires alignment for ingress/egress buffer addresses */
-+#define DPAA2_SWITCH_RX_BUF_RAW_SIZE	PAGE_SIZE
-+#define DPAA2_SWITCH_RX_BUF_TAILROOM \
-+	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
-+#define DPAA2_SWITCH_RX_BUF_SIZE \
-+	(DPAA2_SWITCH_RX_BUF_RAW_SIZE - DPAA2_SWITCH_RX_BUF_TAILROOM)
-+
-+#define DPAA2_SWITCH_STORE_SIZE 16
-+
- extern const struct ethtool_ops dpaa2_switch_port_ethtool_ops;
- 
- struct ethsw_core;
-@@ -49,6 +60,7 @@ struct ethsw_core;
- struct dpaa2_switch_fq {
+@@ -61,6 +61,7 @@ struct dpaa2_switch_fq {
  	struct ethsw_core *ethsw;
  	enum dpsw_queue_type type;
-+	struct dpaa2_io_store *store;
+ 	struct dpaa2_io_store *store;
++	struct dpaa2_io_notification_ctx nctx;
  	u32 fqid;
  };
  
-@@ -85,6 +97,8 @@ struct ethsw_core {
- 	struct workqueue_struct		*workqueue;
- 
- 	struct dpaa2_switch_fq		fq[DPAA2_SWITCH_RX_NUM_FQS];
-+	struct fsl_mc_device		*dpbp_dev;
-+	u16				bpid;
- };
- 
- static inline bool dpaa2_switch_supports_cpu_traffic(struct ethsw_core *ethsw)
 -- 
 2.30.0
 
