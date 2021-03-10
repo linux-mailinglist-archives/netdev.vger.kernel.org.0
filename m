@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44659334115
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 16:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58187334118
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 16:05:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233120AbhCJPEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 10:04:38 -0500
-Received: from mail-dm6nam11on2043.outbound.protection.outlook.com ([40.107.223.43]:13438
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        id S233167AbhCJPEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 10:04:41 -0500
+Received: from mail-mw2nam10on2081.outbound.protection.outlook.com ([40.107.94.81]:42368
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233072AbhCJPES (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 10:04:18 -0500
+        id S232965AbhCJPEW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 10:04:22 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oVnuZlS8/yhxjw9Jy0dXVj2/BjSRwyRGUgqiym5EYWTAfMuTlPspvuZqRa83KbXN/GiDOcb2o+k97pMGx97Ia8ydGYU825CsYsJ/0ve5ieARLGKRvR1FlbxfKkxrUVIkW+gnMIZX8KMOXK6qGkHmPgxZHLxNarL5x/cE92LbjcHCuP2yapW3vbbB+h6fdENT8gBuPw4TzvwyV89GaXPG+ayCAcA7S52cmaFNmEM941uN/QynPuKo7cKG0aaEbCkutxy3RpPxUw2//xL0JPulQZT9AiLp0e9YjMqo25PgtzaWaIAysJk/2oUqCC4PDY4Gi6nnq1KYJd3abdYPzA3Kaw==
+ b=N1nrzNj8pCW3r1gjXCmu9+gMzy5Q5Sn3U3XMRlYPlMZY+407hAmTIihVRKxIAajZielNr4bJSUi7gnqPbMDXqlV1Ac7PJLyI2GcjBaHVoitOSP6EbJo6fQm/e/StPzdJ4DJsQl8n7mnEQO7j5DcCofGqE+Hi8TUPgmbMgGW2Hce1agnqME8gJQJ8sUP2SKm/PQsNOCogOsjDzaN+o+J5tdL0VM4rYxWZtjPaRaWo+u3AdU5CXAw559SsXmRHw8ZYjYzPWQROFo6dW+K8bm7z3E5kxE7sluumDjhvFqraRbyLtC29T5yBfYvQ/1MCq/hwj1vHtgj4MB6RkRAM0NB0Jg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X/0P/r53StElDNs0CvOiG+UwGZBVO2omcVW5VaXqIbc=;
- b=Fx7EzVj7/z0NGSJoc5rPC8qOUbB/HTY/90vhTbsMpGi1aXg5y/zK/IptJnGlZeuUuaTwcJXIzURdZ/kRO4UMgiBeb9fJxkEIVcm8haf2W2jNrTT7hn1H2erw7C5M4j1ayhPobwzK2x9ulxyfI8EO1lx9y+KWPw4dt1BHIj7X5L6qPpxLFOMtEfA4xEvWwtviAHCFWEDf4ApcmFKqM27Tu9qNIDKWJmz18oLWr9fyukj6AFDHPoa4gxzYoMXMnl3G/VHz+TRrW9BSdd0jj4XevZsBdGrYTtcBhIkTdHuMA7iyY2/KCdc/UsPKtVusK/qJTwssUPezRxqPPGq8R50e/w==
+ bh=wm8Ybh0UilIXboV2ZsGDyug/u4bVsWnL8SzI6C7/iJg=;
+ b=BUlctblOJTQ7mseSnfJQvdtT3gyNLU6J5LU1MuTPFCo7dyBL5rX3SWmiZV9vgsxiygkGBRDCRL5iBTlWvCKqINJVIzfGKl95nNs11aS+9+CPp2r5RpqyJ0VKWSnIx6yUVtecHMfuAmHkF0gRag07KYvb/pjW/JUUmVg3sV9SA1Hl4m5IZu7892dKxLlAcHQCQgWTunnYvnBC++WaCJ8StxEx9b98qameVd1pnuPX7q/6ukbq+ULpKWTyoIq5cPoBeZIfUH7+ndA8ADd5+16FsINppONSLjjaQeYl9e5Z2nvF3yPwBnqTyyDi6SPQHXvk+vz81rrQJfPp1tFhh02FYA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,17 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X/0P/r53StElDNs0CvOiG+UwGZBVO2omcVW5VaXqIbc=;
- b=Xj1WpmAmb1YwDrE/qCSGapzuooJOuz+nDAtqgOVHepgzhYGEJEamuZcUVBLDyBbf5t/F5M5l/totXVoP93CwKy+vheyLk/WEdeSqPMS3MlakSJOdpQRnx1TCXw216oMjkIEeHYVq02Oa0SR9gyrRbTJU3EzTviJIDlu6nFzUci/YgD+HtvSAig7q/HLObbFHeD60yQ3XVE7CiYTTp9Vi21cV/R5fM+Yh8VsK8Fj3zssQ+Vo6zx5YHYY5wHHJ8aWxSVtMyYeXppcfrWj8g5hz7pRk1Ud4ERmu7scTnh3g42P7ELo8xOSmopxxjH0t/JIJlaJBYZLotBqRNnZlaR2dvQ==
-Received: from BN6PR17CA0043.namprd17.prod.outlook.com (2603:10b6:405:75::32)
- by DM5PR12MB1644.namprd12.prod.outlook.com (2603:10b6:4:f::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3912.26; Wed, 10 Mar 2021 15:04:17 +0000
-Received: from BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:75:cafe::af) by BN6PR17CA0043.outlook.office365.com
- (2603:10b6:405:75::32) with Microsoft SMTP Server (version=TLS1_2,
+ bh=wm8Ybh0UilIXboV2ZsGDyug/u4bVsWnL8SzI6C7/iJg=;
+ b=gyDv53cdJrFDAwEfFTNP3oiWT4NzvID4XUI9aDuCcLrY8sHwYqaATZqsWgqY61x5LRUP8kA0+95gMx+aBimS6KLiuKjO5lZPHrrOuscO+0rVLFkQ8fyWPmvQjA8iqaok9t5ZXdEnX/rjvdJAqnunEt25/6DXfbyftSnPR90uIxh3aHgmulwPfokwBW3SgywunTx8lwB1SjV49TAWK+AP7GQdB7ytFR39xrM/1yr9TKRZJV88dQn32ZChmeNqSwB6OOeho4+/ema/IUYs5Fp1QDhfqe354G/uNvsKCuVj98Re56huArmyFiFgZGhMy2yXYqMPjAOqNdx6KuDYmIiAXQ==
+Received: from BN9PR03CA0876.namprd03.prod.outlook.com (2603:10b6:408:13c::11)
+ by BY5PR12MB3812.namprd12.prod.outlook.com (2603:10b6:a03:1a7::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Wed, 10 Mar
+ 2021 15:04:20 +0000
+Received: from BN8NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13c:cafe::77) by BN9PR03CA0876.outlook.office365.com
+ (2603:10b6:408:13c::11) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Wed, 10 Mar 2021 15:04:17 +0000
+ Transport; Wed, 10 Mar 2021 15:04:19 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
@@ -44,21 +45,21 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT053.mail.protection.outlook.com (10.13.177.209) with Microsoft SMTP
+ BN8NAM11FT041.mail.protection.outlook.com (10.13.177.18) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Wed, 10 Mar 2021 15:04:16 +0000
+ 15.20.3933.31 via Frontend Transport; Wed, 10 Mar 2021 15:04:19 +0000
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Mar
- 2021 15:04:13 +0000
+ 2021 15:04:16 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ido Schimmel <idosch@nvidia.com>, David Ahern <dsahern@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         "Petr Machata" <petrm@nvidia.com>
-Subject: [PATCH net-next 09/14] nexthop: Allow reporting activity of nexthop buckets
-Date:   Wed, 10 Mar 2021 16:03:00 +0100
-Message-ID: <d1e3bab356ae50c7e716721ed63d3ffeae91a451.1615387786.git.petrm@nvidia.com>
+Subject: [PATCH net-next 10/14] nexthop: Add netlink handlers for resilient nexthop groups
+Date:   Wed, 10 Mar 2021 16:03:01 +0100
+Message-ID: <ab2c9b2de2d0454b38e81580fdc10866eb85aa9f.1615387786.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1615387786.git.petrm@nvidia.com>
 References: <cover.1615387786.git.petrm@nvidia.com>
@@ -70,113 +71,279 @@ X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9c6b7015-e4be-4954-8004-08d8e3d5c63e
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1644:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB16445D503685A4DD3B8B2601D6919@DM5PR12MB1644.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Office365-Filtering-Correlation-Id: acf49f38-85b7-454e-ee2b-08d8e3d5c7fa
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3812:
+X-Microsoft-Antispam-PRVS: <BY5PR12MB3812D0403377D6B510B0657CD6919@BY5PR12MB3812.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WBg4GNBG5ZrryGd1NnO70QU79TBaMpa2Wk7pni/pg8QVj6RM8QZfJQZLob8pt8jJzYzBPnzVXirrY7XGy+15DtHPB+euFm4DxZFa1JQ4MLFH+Cd5grJLEK2hUhiLp4hyVuQlOzVF/vJo9zM4o2YwlKKJNqNF0AUsvJ2G+FKWc+Q6zdOxQbDOEvJtFbb4cDtRaQuyCtGKedwJ+7i7bcnDywPzrXrJnvA1oyrF2oBKTcCgWOWw86l5tz8M88ElSPNxrkLdPRHLYRw3p+mEjumWvocbhXXind5GPrlP6bK3sgh1eMSWptHgPIP2tvOVg3DQqWZMh3+95SzD4tCqyBDQkdQv5bGEdU+gyLFWaAN/WZEiUskASnI7ZNRIjHYSJ931C9o2f2dcwWp0G/c7blYb6F5G6E/M1yjH6dn6n5uF2fdhm5P20lpurqFCkcxVN+939lS3q6/NWkRLusgN5BttlFxDc1JXHBVlp+UvvoqCiyfyJJZPV7xFHYUjRzbBK41GISZ8UGO39MwjQR9rI2xUo2CMUh4QfBrF7RHm//lHosgDw/s5U5WB75f1QCVqYT9UhfRIF6/jI5oIC9Wbb/dg1nBAs+KV5VCqv6Q7q4bEQ1WKx3BG9GIodiF0Gl8+FsWUaGnYioB0oB8lG0K+u1hL7Itqk6/PVcRvD/rEDqHRDIs/lZnHyI7JbCgiO50KgoMS
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(136003)(39860400002)(396003)(346002)(36840700001)(46966006)(83380400001)(70586007)(70206006)(54906003)(336012)(8676002)(86362001)(478600001)(5660300002)(426003)(2616005)(36860700001)(82740400003)(316002)(8936002)(16526019)(26005)(6916009)(6666004)(186003)(356005)(7636003)(36906005)(36756003)(34020700004)(2906002)(82310400003)(107886003)(4326008)(47076005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: PM0ktyJ2AUb+M19w49hGEKqA9pHXf8+saS94NMj2P4Vr4Y4rc03d8TLtzbyMvrbL/+YKDySuy1UQCZhSoipDRp7WM8UFZrIw8qVi1L+t7mQezzWR3rkBSCYMhHF8zIahBV+/6faM1Ft/XrH93NA9uGRZs2cuyZlhAcOSE/sP4hop0epiM9Srs4jlbx8jaexLktemgCAPHg63yTMMxQD6IgNp4ctTZIIHb3S507qgUSIil+bor1kgKAGLqqCbZiBOFip5Swa4sDdyo6iQEpc8gRxLjG3EePo52k+4idf4EbG+6A4d1BpgaJ7FSMCwu6mF8PGj8NmmVjDfXUsCEV8RHGAs5a+JbAqtAfKo5RgbnLvWpPZeWq/oCLf9VW8+P9en4VdA0UlnkTlvc0cgcGdsqwlKVz6iOt1E+FR/kZ9LXu3WoR2HsHRbXXu/Aduty50U/L7mkXtQw3jM74Qzw592tbBTfVJurVDKEFAAehu0HB+GoBzP/UGYBCSCfM13NEOKMeD+nCml3tEoiXgym6LH4DE22LtcCPzacunr4URMb1kJIvH+++QXxpJfjih/E1HIq+LFCa28+A/AWlBW9WOlDX/3AKbrcFW9TCPkoHdLt0OX51U/bZJdHb/ak69JtcFpElcU3XFARM8hDqc+h4w/FySa6OsXZkuUma2mXqvHt3c93wp/gwmdG3+O1qefB+K7
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(346002)(39860400002)(36840700001)(46966006)(70586007)(70206006)(54906003)(36860700001)(34020700004)(478600001)(336012)(16526019)(5660300002)(36906005)(426003)(8936002)(316002)(47076005)(107886003)(26005)(2906002)(7636003)(356005)(36756003)(82740400003)(2616005)(6666004)(8676002)(4326008)(6916009)(186003)(83380400001)(82310400003)(86362001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2021 15:04:16.4820
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2021 15:04:19.3286
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c6b7015-e4be-4954-8004-08d8e3d5c63e
+X-MS-Exchange-CrossTenant-Network-Message-Id: acf49f38-85b7-454e-ee2b-08d8e3d5c7fa
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT041.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1644
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3812
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+Implement the netlink messages that allow creation and dumping of resilient
+nexthop groups.
 
-The kernel periodically checks the idle time of nexthop buckets to
-determine if they are idle and can be re-populated with a new nexthop.
-
-When the resilient nexthop group is offloaded to hardware, the kernel
-will not see activity on nexthop buckets unless it is reported from
-hardware.
-
-Add a function that can be periodically called by device drivers to
-report activity on nexthop buckets after querying it from the underlying
-device.
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
 
 Notes:
     v1 (changes since RFC):
     - u32 -> u16 for bucket counts / indices
 
- include/net/nexthop.h |  2 ++
- net/ipv4/nexthop.c    | 35 +++++++++++++++++++++++++++++++++++
- 2 files changed, 37 insertions(+)
+ net/ipv4/nexthop.c | 150 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 145 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 685f208d26b5..ba94868a21d5 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -222,6 +222,8 @@ int unregister_nexthop_notifier(struct net *net, struct notifier_block *nb);
- void nexthop_set_hw_flags(struct net *net, u32 id, bool offload, bool trap);
- void nexthop_bucket_set_hw_flags(struct net *net, u32 id, u16 bucket_index,
- 				 bool offload, bool trap);
-+void nexthop_res_grp_activity_update(struct net *net, u32 id, u16 num_buckets,
-+				     unsigned long *activity);
- 
- /* caller is holding rcu or rtnl; no reference taken to nexthop */
- struct nexthop *nexthop_find_by_id(struct net *net, u32 id);
 diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 1fce4ff39390..495b5e69ffcd 100644
+index 495b5e69ffcd..439bf3b7ced5 100644
 --- a/net/ipv4/nexthop.c
 +++ b/net/ipv4/nexthop.c
-@@ -3106,6 +3106,41 @@ void nexthop_bucket_set_hw_flags(struct net *net, u32 id, u16 bucket_index,
- }
- EXPORT_SYMBOL(nexthop_bucket_set_hw_flags);
+@@ -16,6 +16,9 @@
+ #include <net/route.h>
+ #include <net/sock.h>
  
-+void nexthop_res_grp_activity_update(struct net *net, u32 id, u16 num_buckets,
-+				     unsigned long *activity)
++#define NH_RES_DEFAULT_IDLE_TIMER	(120 * HZ)
++#define NH_RES_DEFAULT_UNBALANCED_TIMER	0	/* No forced rebalancing. */
++
+ static void remove_nexthop(struct net *net, struct nexthop *nh,
+ 			   struct nl_info *nlinfo);
+ 
+@@ -32,6 +35,7 @@ static const struct nla_policy rtm_nh_policy_new[] = {
+ 	[NHA_ENCAP_TYPE]	= { .type = NLA_U16 },
+ 	[NHA_ENCAP]		= { .type = NLA_NESTED },
+ 	[NHA_FDB]		= { .type = NLA_FLAG },
++	[NHA_RES_GROUP]		= { .type = NLA_NESTED },
+ };
+ 
+ static const struct nla_policy rtm_nh_policy_get[] = {
+@@ -45,6 +49,12 @@ static const struct nla_policy rtm_nh_policy_dump[] = {
+ 	[NHA_FDB]		= { .type = NLA_FLAG },
+ };
+ 
++static const struct nla_policy rtm_nh_res_policy_new[] = {
++	[NHA_RES_GROUP_BUCKETS]			= { .type = NLA_U16 },
++	[NHA_RES_GROUP_IDLE_TIMER]		= { .type = NLA_U32 },
++	[NHA_RES_GROUP_UNBALANCED_TIMER]	= { .type = NLA_U32 },
++};
++
+ static bool nexthop_notifiers_is_empty(struct net *net)
+ {
+ 	return !net->nexthop.notifier_chain.head;
+@@ -588,6 +598,41 @@ static void nh_res_time_set_deadline(unsigned long next_time,
+ 		*deadline = next_time;
+ }
+ 
++static clock_t nh_res_table_unbalanced_time(struct nh_res_table *res_table)
 +{
-+	struct nh_res_table *res_table;
-+	struct nexthop *nexthop;
-+	struct nh_group *nhg;
-+	u16 i;
++	if (list_empty(&res_table->uw_nh_entries))
++		return 0;
++	return jiffies_delta_to_clock_t(jiffies - res_table->unbalanced_since);
++}
 +
-+	rcu_read_lock();
++static int nla_put_nh_group_res(struct sk_buff *skb, struct nh_group *nhg)
++{
++	struct nh_res_table *res_table = rtnl_dereference(nhg->res_table);
++	struct nlattr *nest;
 +
-+	nexthop = nexthop_find_by_id(net, id);
-+	if (!nexthop || !nexthop->is_group)
-+		goto out;
++	nest = nla_nest_start(skb, NHA_RES_GROUP);
++	if (!nest)
++		return -EMSGSIZE;
 +
-+	nhg = rcu_dereference(nexthop->nh_grp);
-+	if (!nhg->resilient)
-+		goto out;
++	if (nla_put_u16(skb, NHA_RES_GROUP_BUCKETS,
++			res_table->num_nh_buckets) ||
++	    nla_put_u32(skb, NHA_RES_GROUP_IDLE_TIMER,
++			jiffies_to_clock_t(res_table->idle_timer)) ||
++	    nla_put_u32(skb, NHA_RES_GROUP_UNBALANCED_TIMER,
++			jiffies_to_clock_t(res_table->unbalanced_timer)) ||
++	    nla_put_u64_64bit(skb, NHA_RES_GROUP_UNBALANCED_TIME,
++			      nh_res_table_unbalanced_time(res_table),
++			      NHA_RES_GROUP_PAD))
++		goto nla_put_failure;
 +
-+	/* Instead of silently ignoring some buckets, demand that the sizes
-+	 * be the same.
-+	 */
-+	res_table = rcu_dereference(nhg->res_table);
-+	if (num_buckets != res_table->num_nh_buckets)
-+		goto out;
++	nla_nest_end(skb, nest);
++	return 0;
 +
-+	for (i = 0; i < num_buckets; i++) {
-+		if (test_bit(i, activity))
-+			nh_res_bucket_set_busy(&res_table->nh_buckets[i]);
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -EMSGSIZE;
++}
++
+ static int nla_put_nh_group(struct sk_buff *skb, struct nh_group *nhg)
+ {
+ 	struct nexthop_grp *p;
+@@ -598,6 +643,8 @@ static int nla_put_nh_group(struct sk_buff *skb, struct nh_group *nhg)
+ 
+ 	if (nhg->mpath)
+ 		group_type = NEXTHOP_GRP_TYPE_MPATH;
++	else if (nhg->resilient)
++		group_type = NEXTHOP_GRP_TYPE_RES;
+ 
+ 	if (nla_put_u16(skb, NHA_GROUP_TYPE, group_type))
+ 		goto nla_put_failure;
+@@ -613,6 +660,9 @@ static int nla_put_nh_group(struct sk_buff *skb, struct nh_group *nhg)
+ 		p += 1;
+ 	}
+ 
++	if (nhg->resilient && nla_put_nh_group_res(skb, nhg))
++		goto nla_put_failure;
++
+ 	return 0;
+ 
+ nla_put_failure:
+@@ -700,13 +750,26 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
+ 	return -EMSGSIZE;
+ }
+ 
++static size_t nh_nlmsg_size_grp_res(struct nh_group *nhg)
++{
++	return nla_total_size(0) +	/* NHA_RES_GROUP */
++		nla_total_size(2) +	/* NHA_RES_GROUP_BUCKETS */
++		nla_total_size(4) +	/* NHA_RES_GROUP_IDLE_TIMER */
++		nla_total_size(4) +	/* NHA_RES_GROUP_UNBALANCED_TIMER */
++		nla_total_size_64bit(8);/* NHA_RES_GROUP_UNBALANCED_TIME */
++}
++
+ static size_t nh_nlmsg_size_grp(struct nexthop *nh)
+ {
+ 	struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
+ 	size_t sz = sizeof(struct nexthop_grp) * nhg->num_nh;
++	size_t tot = nla_total_size(sz) +
++		nla_total_size(2); /* NHA_GROUP_TYPE */
++
++	if (nhg->resilient)
++		tot += nh_nlmsg_size_grp_res(nhg);
+ 
+-	return nla_total_size(sz) +
+-	       nla_total_size(2);  /* NHA_GROUP_TYPE */
++	return tot;
+ }
+ 
+ static size_t nh_nlmsg_size_single(struct nexthop *nh)
+@@ -876,7 +939,7 @@ static int nh_check_attr_fdb_group(struct nexthop *nh, u8 *nh_family,
+ 
+ static int nh_check_attr_group(struct net *net,
+ 			       struct nlattr *tb[], size_t tb_size,
+-			       struct netlink_ext_ack *extack)
++			       u16 nh_grp_type, struct netlink_ext_ack *extack)
+ {
+ 	unsigned int len = nla_len(tb[NHA_GROUP]);
+ 	u8 nh_family = AF_UNSPEC;
+@@ -937,8 +1000,14 @@ static int nh_check_attr_group(struct net *net,
+ 	for (i = NHA_GROUP_TYPE + 1; i < tb_size; ++i) {
+ 		if (!tb[i])
+ 			continue;
+-		if (i == NHA_FDB)
++		switch (i) {
++		case NHA_FDB:
+ 			continue;
++		case NHA_RES_GROUP:
++			if (nh_grp_type == NEXTHOP_GRP_TYPE_RES)
++				continue;
++			break;
++		}
+ 		NL_SET_ERR_MSG(extack,
+ 			       "No other attributes can be set in nexthop groups");
+ 		return -EINVAL;
+@@ -2475,6 +2544,70 @@ static struct nexthop *nexthop_add(struct net *net, struct nh_config *cfg,
+ 	return nh;
+ }
+ 
++static int rtm_nh_get_timer(struct nlattr *attr, unsigned long fallback,
++			    unsigned long *timer_p, bool *has_p,
++			    struct netlink_ext_ack *extack)
++{
++	unsigned long timer;
++	u32 value;
++
++	if (!attr) {
++		*timer_p = fallback;
++		*has_p = false;
++		return 0;
 +	}
 +
-+out:
-+	rcu_read_unlock();
-+}
-+EXPORT_SYMBOL(nexthop_res_grp_activity_update);
++	value = nla_get_u32(attr);
++	timer = clock_t_to_jiffies(value);
++	if (timer == ~0UL) {
++		NL_SET_ERR_MSG(extack, "Timer value too large");
++		return -EINVAL;
++	}
 +
- static void __net_exit nexthop_net_exit(struct net *net)
- {
- 	rtnl_lock();
++	*timer_p = timer;
++	*has_p = true;
++	return 0;
++}
++
++static int rtm_to_nh_config_grp_res(struct nlattr *res, struct nh_config *cfg,
++				    struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[ARRAY_SIZE(rtm_nh_res_policy_new)] = {};
++	int err;
++
++	if (res) {
++		err = nla_parse_nested(tb,
++				       ARRAY_SIZE(rtm_nh_res_policy_new) - 1,
++				       res, rtm_nh_res_policy_new, extack);
++		if (err < 0)
++			return err;
++	}
++
++	if (tb[NHA_RES_GROUP_BUCKETS]) {
++		cfg->nh_grp_res_num_buckets =
++			nla_get_u16(tb[NHA_RES_GROUP_BUCKETS]);
++		cfg->nh_grp_res_has_num_buckets = true;
++		if (!cfg->nh_grp_res_num_buckets) {
++			NL_SET_ERR_MSG(extack, "Number of buckets needs to be non-0");
++			return -EINVAL;
++		}
++	}
++
++	err = rtm_nh_get_timer(tb[NHA_RES_GROUP_IDLE_TIMER],
++			       NH_RES_DEFAULT_IDLE_TIMER,
++			       &cfg->nh_grp_res_idle_timer,
++			       &cfg->nh_grp_res_has_idle_timer,
++			       extack);
++	if (err)
++		return err;
++
++	return rtm_nh_get_timer(tb[NHA_RES_GROUP_UNBALANCED_TIMER],
++				NH_RES_DEFAULT_UNBALANCED_TIMER,
++				&cfg->nh_grp_res_unbalanced_timer,
++				&cfg->nh_grp_res_has_unbalanced_timer,
++				extack);
++}
++
+ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
+ 			    struct nlmsghdr *nlh, struct nh_config *cfg,
+ 			    struct netlink_ext_ack *extack)
+@@ -2553,7 +2686,14 @@ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
+ 			NL_SET_ERR_MSG(extack, "Invalid group type");
+ 			goto out;
+ 		}
+-		err = nh_check_attr_group(net, tb, ARRAY_SIZE(tb), extack);
++		err = nh_check_attr_group(net, tb, ARRAY_SIZE(tb),
++					  cfg->nh_grp_type, extack);
++		if (err)
++			goto out;
++
++		if (cfg->nh_grp_type == NEXTHOP_GRP_TYPE_RES)
++			err = rtm_to_nh_config_grp_res(tb[NHA_RES_GROUP],
++						       cfg, extack);
+ 
+ 		/* no other attributes should be set */
+ 		goto out;
 -- 
 2.26.2
 
