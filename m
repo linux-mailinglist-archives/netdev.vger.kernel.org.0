@@ -2,119 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27145333AFE
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 12:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D92333B23
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 12:12:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232739AbhCJLEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 06:04:01 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:33025 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232715AbhCJLDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 06:03:46 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B30FF5C00B2;
-        Wed, 10 Mar 2021 06:03:45 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 10 Mar 2021 06:03:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=5duoNmiHFaIQUxOTkI8LME87DnZUjHvafM41SYInvNk=; b=loXuoyMn
-        kjr/0/dZlHszqfeYuCR9Fh6Kok9Emc/b6vPG7NSZd/ozmOZaTYTlvzWN8zP2j3ft
-        ycdLsI5R9raGSsI1UDmLWhfEZzi4GKRyrL9Ql9gzXmLKityFAzR65EvXEU6zs7aQ
-        u3pbYd5TT4NV21w8i+04aFnscsVX4f6zGZAErF7GdFOpDa3wyGFet0EOPFlDIG4d
-        vpCDldYal4dcCSQJAkphpYqb9vC3j+RM/TEOvLNW110wgrFfvwLPm3xFN5kMdKPo
-        K5mer/CUXwtKrBuagLAq7OxAvEKdeko0KaH+OOAFxNLYlLnvGD8vzF3zvXUQ/I9G
-        HClaQSgGkgG1Rg==
-X-ME-Sender: <xms:kadIYFQDhJOhO30eektfSxvRD1Dv7F-bRofDflSMRPsd30gB16di-g>
-    <xme:kadIYOz-mJvWF2p7oJHrcKHi3v-tK3CYf6xTDNBSiX4m5Y_omXQXTFZx6aW3WHdrv
-    5Pa9n0yAovaMis>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddukedgvdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:kadIYK3qHFav44tDagi5liO8DIcrnIhBg-JFojGV3Fak79FUeq4GFw>
-    <xmx:kadIYNDFhkeyi-2QzdPcU55TnaxYi8qHqT4KMRCQbuexpzhyRjOUTQ>
-    <xmx:kadIYOjdHoKvkxHmKVU3jS466ohKv5M1WMTtrhadEp8GQ_o4qFYggg>
-    <xmx:kadIYAZOnPAvdNEAz3wdvGD7DderoXfVu8i8EnhAQf3LqqPW4WgW1A>
-Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D7E5C1080066;
-        Wed, 10 Mar 2021 06:03:43 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        danieller@nvidia.com, amcohen@nvidia.com, petrm@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 6/6] mlxsw: Adjust some MFDE fields shift and size to fw implementation
-Date:   Wed, 10 Mar 2021 13:02:20 +0200
-Message-Id: <20210310110220.2534350-7-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210310110220.2534350-1-idosch@idosch.org>
-References: <20210310110220.2534350-1-idosch@idosch.org>
+        id S232318AbhCJLL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 06:11:59 -0500
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:25486 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231696AbhCJLLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 06:11:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1615374711; x=1646910711;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=PrqnaKixzRwVMZgF18I7NsnIoh+7m+JQmlYK+RfHK24=;
+  b=nAhY4FQqFYdaX0ZiPd+f3Hqoh+poZ5mE+6ap8vQyD4PMKdNlNWBWpZYc
+   cWZINpa7Tznp4bmfKjcjF6EgYqSaleG8DKE2naRwYqc/fjEX/qS+PfE56
+   hl1lbNCCmXZB/9qBaZnqEz35EmE0Vxa8+JGSDo1I6x1W0Z38XmK0SovxB
+   8=;
+X-IronPort-AV: E=Sophos;i="5.81,237,1610409600"; 
+   d="scan'208";a="91717614"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-c300ac87.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 10 Mar 2021 11:04:41 +0000
+Received: from EX13D28EUB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2b-c300ac87.us-west-2.amazon.com (Postfix) with ESMTPS id EBEC5A057A;
+        Wed, 10 Mar 2021 11:04:39 +0000 (UTC)
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.67) by
+ EX13D28EUB001.ant.amazon.com (10.43.166.50) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 10 Mar 2021 11:04:34 +0000
+References: <20210301161200.18852-1-mgorman@techsingularity.net>
+ <20210301161200.18852-3-mgorman@techsingularity.net>
+User-agent: mu4e 1.4.15; emacs 27.1
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+In-Reply-To: <20210301161200.18852-3-mgorman@techsingularity.net>
+Date:   Wed, 10 Mar 2021 13:04:17 +0200
+Message-ID: <pj41zl7dmfnuby.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.160.67]
+X-ClientProxiedBy: EX13D03UWC004.ant.amazon.com (10.43.162.49) To
+ EX13D28EUB001.ant.amazon.com (10.43.166.50)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
 
-MFDE.irisc_id and MFDE.event_id were adjusted according to what is
-actually implemented in firmware.
+Mel Gorman <mgorman@techsingularity.net> writes:
 
-Adjust the shift and size of these fields in mlxsw as well.
+>
+> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+> index 8572a1474e16..4903d1cc48dc 100644
+> --- a/include/linux/gfp.h
+> +++ b/include/linux/gfp.h
+> @@ -515,6 +515,10 @@ static inline int 
+> arch_make_page_accessible(struct page *page)
+>  }
+>  #endif
+>  
+> +int __alloc_pages_bulk_nodemask(gfp_t gfp_mask, int 
+> preferred_nid,
+> +				nodemask_t *nodemask, int 
+> nr_pages,
+> +				struct list_head *list);
+> +
+>  struct page *
+>  __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order, int 
+>  preferred_nid,
+>  							nodemask_t 
+>  *nodemask);
+> @@ -525,6 +529,14 @@ __alloc_pages(gfp_t gfp_mask, unsigned int 
+> order, int preferred_nid)
+>  	return __alloc_pages_nodemask(gfp_mask, order, 
+>  preferred_nid, NULL);
+>  }
+>  
+> +/* Bulk allocate order-0 pages */
+> +static inline unsigned long
+> +alloc_pages_bulk(gfp_t gfp_mask, unsigned long nr_pages, struct 
+> list_head *list)
+> +{
+> +	return __alloc_pages_bulk_nodemask(gfp_mask, 
+> numa_mem_id(), NULL,
+> +							nr_pages, 
+> list);
 
-Note that the displacement of the first field is not a regression.
-It was always incorrect and therefore reported "0".
+Is the second line indentation intentional ? Why not align it to 
+the first argument (gfp_mask) ?
 
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core.c | 2 +-
- drivers/net/ethernet/mellanox/mlxsw/reg.h  | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+> +}
+> +
+>  /*
+>   * Allocate pages, preferring the node given as nid. The node 
+>   must be valid and
+>   * online. For more general interface, see alloc_pages_node().
+> @@ -594,6 +606,7 @@ void * __meminit alloc_pages_exact_nid(int 
+> nid, size_t size, gfp_t gfp_mask);
+>  
+>  extern void __free_pages(struct page *page, unsigned int 
+>  order);
+>  extern void free_pages(unsigned long addr, unsigned int order);
+> +extern void free_pages_bulk(struct list_head *list);
+>  
+>  struct page_frag_cache;
+>  extern void __page_frag_cache_drain(struct page *page, unsigned 
+>  int count);
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 3e4b29ee2b1e..ff1e55793786 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -4436,6 +4436,21 @@ static void wake_all_kswapds(unsigned int 
+> order, gfp_t gfp_mask,
+>  	}
+>  }
+> ...
+>  
+> +/*
+> + * This is a batched version of the page allocator that 
+> attempts to
+> + * allocate nr_pages quickly from the preferred zone and add 
+> them to list.
+> + */
+> +int __alloc_pages_bulk_nodemask(gfp_t gfp_mask, int 
+> preferred_nid,
+> +			nodemask_t *nodemask, int nr_pages,
+> +			struct list_head *alloc_list)
+> +{
+> +	struct page *page;
+> +	unsigned long flags;
+> +	struct zone *zone;
+> +	struct zoneref *z;
+> +	struct per_cpu_pages *pcp;
+> +	struct list_head *pcp_list;
+> +	struct alloc_context ac;
+> +	gfp_t alloc_mask;
+> +	unsigned int alloc_flags;
+> +	int alloced = 0;
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index c53461ac4e10..7e9a7cb31720 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1728,7 +1728,7 @@ static int mlxsw_core_health_fw_fatal_dump(struct devlink_health_reporter *repor
- 		return err;
- 
- 	event_id = mlxsw_reg_mfde_event_id_get(mfde_pl);
--	err = devlink_fmsg_u8_pair_put(fmsg, "id", event_id);
-+	err = devlink_fmsg_u32_pair_put(fmsg, "id", event_id);
- 	if (err)
- 		return err;
- 	switch (event_id) {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index a042ff79d306..2f7f691f85ff 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -10919,7 +10919,7 @@ MLXSW_REG_DEFINE(mfde, MLXSW_REG_MFDE_ID, MLXSW_REG_MFDE_LEN);
-  * Which irisc triggered the event
-  * Access: RO
-  */
--MLXSW_ITEM32(reg, mfde, irisc_id, 0x00, 8, 4);
-+MLXSW_ITEM32(reg, mfde, irisc_id, 0x00, 24, 8);
- 
- enum mlxsw_reg_mfde_event_id {
- 	MLXSW_REG_MFDE_EVENT_ID_CRSPACE_TO = 1,
-@@ -10930,7 +10930,7 @@ enum mlxsw_reg_mfde_event_id {
- /* reg_mfde_event_id
-  * Access: RO
-  */
--MLXSW_ITEM32(reg, mfde, event_id, 0x00, 0, 8);
-+MLXSW_ITEM32(reg, mfde, event_id, 0x00, 0, 16);
- 
- enum mlxsw_reg_mfde_method {
- 	MLXSW_REG_MFDE_METHOD_QUERY,
--- 
-2.29.2
+Does alloced count the number of allocated pages ? Do you mind 
+renaming it to 'allocated' ?
+
+> +
+> +	if (nr_pages == 1)
+> +		goto failed;
+> +
+> +	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 
+> page. */
+> +	if (!prepare_alloc_pages(gfp_mask, 0, preferred_nid, 
+> nodemask, &ac, &alloc_mask, &alloc_flags))
+> +		return 0;
+> +	gfp_mask = alloc_mask;
+> +
+> +	/* Find an allowed local zone that meets the high 
+> watermark. */
+> +	for_each_zone_zonelist_nodemask(zone, z, ac.zonelist, 
+> ac.highest_zoneidx, ac.nodemask) {
+> +		unsigned long mark;
+> +
+> +		if (cpusets_enabled() && (alloc_flags & 
+> ALLOC_CPUSET) &&
+> +		    !__cpuset_zone_allowed(zone, gfp_mask)) {
+> +			continue;
+> +		}
+> +
+> +		if (nr_online_nodes > 1 && zone != 
+> ac.preferred_zoneref->zone &&
+> +		    zone_to_nid(zone) != 
+> zone_to_nid(ac.preferred_zoneref->zone)) {
+> +			goto failed;
+> +		}
+> +
+> +		mark = wmark_pages(zone, alloc_flags & 
+> ALLOC_WMARK_MASK) + nr_pages;
+> +		if (zone_watermark_fast(zone, 0,  mark,
+> + 
+> zonelist_zone_idx(ac.preferred_zoneref),
+> +				alloc_flags, gfp_mask)) {
+> +			break;
+> +		}
+> +	}
+> +	if (!zone)
+> +		return 0;
+> +
+> +	/* Attempt the batch allocation */
+> +	local_irq_save(flags);
+> +	pcp = &this_cpu_ptr(zone->pageset)->pcp;
+> +	pcp_list = &pcp->lists[ac.migratetype];
+> +
+> +	while (alloced < nr_pages) {
+> +		page = __rmqueue_pcplist(zone, ac.migratetype, 
+> alloc_flags,
+> + 
+> pcp, pcp_list);
+
+Same indentation comment as before
+
+> +		if (!page)
+> +			break;
+> +
+> +		prep_new_page(page, 0, gfp_mask, 0);
+> +		list_add(&page->lru, alloc_list);
+> +		alloced++;
+> +	}
+> +
+> +	if (!alloced)
+> +		goto failed_irq;
+> +
+> +	if (alloced) {
+> +		__count_zid_vm_events(PGALLOC, zone_idx(zone), 
+> alloced);
+> +		zone_statistics(zone, zone);
+> +	}
+> +
+> +	local_irq_restore(flags);
+> +
+> +	return alloced;
+> +
+> +failed_irq:
+> +	local_irq_restore(flags);
+> +
+> +failed:
+> +	page = __alloc_pages_nodemask(gfp_mask, 0, preferred_nid, 
+> nodemask);
+> +	if (page) {
+> +		alloced++;
+> +		list_add(&page->lru, alloc_list);
+> +	}
+> +
+> +	return alloced;
+> +}
+> +EXPORT_SYMBOL_GPL(__alloc_pages_bulk_nodemask);
+> +
+>  /*
+>   * This is the 'heart' of the zoned buddy allocator.
+>   */
+> @@ -4981,8 +5092,6 @@ __alloc_pages_nodemask(gfp_t gfp_mask, 
+> unsigned int order, int preferred_nid,
+>  		return NULL;
+>  	}
+>  
+> -	gfp_mask &= gfp_allowed_mask;
+> -	alloc_mask = gfp_mask;
+>  	if (!prepare_alloc_pages(gfp_mask, order, preferred_nid, 
+>  nodemask, &ac, &alloc_mask, &alloc_flags))
+>  		return NULL;
 
