@@ -2,108 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3480334A31
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 22:57:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6676A334A56
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 23:04:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbhCJV4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 16:56:49 -0500
-Received: from mx1.emlix.com ([136.243.223.33]:44336 "EHLO mx1.emlix.com"
+        id S233132AbhCJWAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 17:00:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46198 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231719AbhCJV4X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 16:56:23 -0500
-Received: from mailer.emlix.com (unknown [81.20.119.6])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1.emlix.com (Postfix) with ESMTPS id 31F795FCA4;
-        Wed, 10 Mar 2021 22:56:22 +0100 (CET)
-Date:   Wed, 10 Mar 2021 22:56:21 +0100
-From:   Daniel =?iso-8859-1?Q?Gl=F6ckner?= <dg@emlix.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
-Subject: Re: Softirq error with mcp251xfd driver
-Message-ID: <20210310215621.GA5538@homes.emlix.com>
-References: <20210310064626.GA11893@homes.emlix.com>
- <20210310071351.rimo5qvp5t3hwjli@pengutronix.de>
- <20210310212254.GA2050@homes.emlix.com>
+        id S232828AbhCJWAI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 17:00:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7E5E964FAB;
+        Wed, 10 Mar 2021 22:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615413608;
+        bh=UWOVUMz5Uk7kxc5dvofPgSuVGCnhJuzzkLv8jMm0274=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CcDGcr4NhOOzcBlymYUruvhmBPdC0Y7zm2Mu70j5hxQCVf02qnVyz5NQ8cNptGjn3
+         egto9f4YPaAtyx9Bg0CYn3f5hiLxBZRqqqu5r0RO3R8J3+AdY1kG6zjxpWkt6eFPm/
+         Ga/0RY9GE5XYFK9leBgBtB+pXlLWX9NmUuCNYcX+7LogGyXdP3rxbA1ZYbhG7KCe/Q
+         vPsvwI+uVmkofw6ywCNadJjba7uNsNgr4WgOeGgydd5ifrXyQEgp3TADEm0RFMhCJw
+         sEKJ8rfrLQqlwzyFdd/eARdYdseLXtXu5b5AcAUHLf8ZuIYJAJlcBMdJx1utJ9SbM2
+         C2XsEiE4l5k9Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 76036609B8;
+        Wed, 10 Mar 2021 22:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210310212254.GA2050@homes.emlix.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Subject: Re: [PATCH] bpf: fix warning comparing pointer to 0
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161541360847.31690.18054636918318010302.git-patchwork-notify@kernel.org>
+Date:   Wed, 10 Mar 2021 22:00:08 +0000
+References: <1615360714-30381-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <1615360714-30381-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 10:22:54PM +0100, Daniel Glöckner wrote:
-> On Wed, Mar 10, 2021 at 08:13:51AM +0100, Marc Kleine-Budde wrote:
-> > On 10.03.2021 07:46:26, Daniel Glöckner wrote:
-> > > the mcp251xfd driver uses a threaded irq handler to queue skbs with the
-> > > can_rx_offload_* helpers. I get the following error on every packet until
-> > > the rate limit kicks in:
-> > > 
-> > > NOHZ tick-stop error: Non-RCU local softirq work is pending, handler
-> > > #08!!!
-> > 
-> > That's a known problem. But I had no time to investigate it.
-> > 
-> > > Adding local_bh_disable/local_bh_enable around the can_rx_offload_* calls
-> > > gets rid of the error, but is that the correct way to fix this?
-> > > Internally the can_rx_offload code uses spin_lock_irqsave to safely
-> > > manipulate its queue.
-> > 
-> > The problem is not the queue handling inside of rx_offload, but the call
-> > to napi_schedule(). This boils down to raising a soft IRQ (the NAPI)
-> > from the threaded IRQ handler of the mcp251xfd driver.
-> > 
-> > The local_bh_enable() "fixes" the problem running the softirq if needed.
-> > 
-> > https://elixir.bootlin.com/linux/v5.11/source/kernel/softirq.c#L1913
-> > 
-> > I'm not sure how to properly fix the problem, yet.
+Hello:
+
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Wed, 10 Mar 2021 15:18:34 +0800 you wrote:
+> Fix the following coccicheck warning:
 > 
-> If I understand correctly, the point of using can_rx_offload_* in the
-> mcp251xfd driver is that it sorts the rx, tx, and error frames according
-> to their timestamp. In that case calling local_bh_enable after each packet
-> is not correct because there will never be more than one packet in the
-> queue. We want to call local_bh_disable + can_rx_offload_schedule +
-> local_bh_enable only at the end of mcp251xfd_irq after intf_pending
-> indicated that there are no more packets inside the chip. How about adding
-> a flag to struct can_rx_offload that suppresses the automatic calls to
-> can_rx_offload_schedule?
+> ./tools/testing/selftests/bpf/progs/fentry_test.c:67:12-13: WARNING
+> comparing pointer to 0.
 > 
-> If there is the risk that under high load we will never exit the loop in
-> mcp251xfd_irq or if can_rx_offload_napi_poll might run again while we add
-> more packets to the queue, a more complex scheme is needed. We could
-> extend can_rx_offload_napi_poll to process only packets with a timestamp
-> below a certain value. That value has to be read from the TBC register
-> before we read the INT register. Then the three functions can be run after
-> each iteration to empty the queue. We need to update that timestamp limit
-> one more time when we finally exit the loop to process those packets that
-> have arrived after the reading of the TBC register when the INT register
-> still had bits set. Using the timestamp of the tail of the queue is
-> probably the easiest way to set the final limit.
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> 
+> [...]
 
-Or we leave can_rx_offload unchanged and keep two additional lists of skbs
-inside the mcp251xfd driver: One for the packets that arrived before the
-timestamp read from TBC and one for the packets that arrived later. At the
-end of an iteration we call local_bh_disable, enqueue all packets from the
-first list with can_rx_offload_queue_sorted, and the ask the softirq to
-process them by calling local_bh_enable. Afterwards we move everything
-from the second list to the first list and do the next iteration.
+Here is the summary with links:
+  - bpf: fix warning comparing pointer to 0
+    https://git.kernel.org/bpf/bpf-next/c/a9c80b03e586
 
-The drawback is that we can't use can_rx_offload_get_echo_skb.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Best regards,
 
-  Daniel
-
--- 
-Dipl.-Math. Daniel Glöckner, emlix GmbH, http://www.emlix.com
-Fon +49 551 30664-0, Fax +49 551 30664-11,
-Gothaer Platz 3, 37083 Göttingen, Germany
-Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
-Geschäftsführung: Heike Jordan, Dr. Uwe Kracke
-Ust-IdNr.: DE 205 198 055
-
-emlix - your embedded linux partner
