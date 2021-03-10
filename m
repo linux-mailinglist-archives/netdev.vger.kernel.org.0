@@ -2,81 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D81D333762
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:35:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C7B1333768
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232338AbhCJIeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 03:34:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbhCJIeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 03:34:20 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3DAC06174A
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 00:34:19 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id gb6so1199483pjb.0
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 00:34:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rH/Scv3Jah+ZjqfZS1oVxmF90CJ9QMTAda0HLUUJ2YA=;
-        b=pQg4m0h/iA9oNn+cqaxqYoh1Wfb0QsmHcqwK/QAQiCTMr6F+G/wnZSZ1j8hp4IW9s5
-         ONxtZwHSKrdzIXAkhhnSrDUumh4A6VZKQXR+SRJj4Lq5rcFWwEZg/jSNhWHg/Ii8oBp1
-         gd0j/gMBS1zCGhhOjKqxO/T8WTIvRsbJfAqibeYnhZ3aAQSJR232SijwhI2a2CLlbNDC
-         /0bO0cS5K8kkBQFSooDkHyEPkX0ooXwT0UegLtJCcZk1RbuBrsJm8Zyj/32JXONxPKyF
-         8CYzIAsLdXApXMtgSRfpJO0H/0l9vUtglDsaR8NanCrl/bTL/frf66iV16hNy5oXRrlW
-         GOEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rH/Scv3Jah+ZjqfZS1oVxmF90CJ9QMTAda0HLUUJ2YA=;
-        b=jrbSNILWcOhoRpd648qpMLMpci1yaDVSx+EC7M6fkZALFAg1jsyEBetu2AM5SkS6Hr
-         JSgvedMUc93ySPAbbw/DdmZULROmet7TuPqsVwf9ahKzBzT48GodZS7e3Wk/At4YgEGs
-         bOEwGl1ngiwXMjMNHu9Rus5ZCYoUV58Sgl4FF99ienR++CjHlG+GNBkDjPmpFPc3fU0i
-         cKpOKOG8UyWvFec2Tf5rLCeMJz4KqutU2UaKrd1xyTJbqlM9VC/90OgCyX6x6zYdio2k
-         wfmEq/5hxUcGQ2putcugjpE4Jn78eqR4PBxcut5r57gkgbAqzsoPZJb2g5AwLWJsKDhz
-         jJ7w==
-X-Gm-Message-State: AOAM532/F00i/hwNnW6AGXNpuNb9n9tTQjm5oF1wjCF+giQWUT2pjsQx
-        UomPQQKwSWHOaNMxZ4hqPlzph9Jcufi7agT7DGUr4kKDIu84qQ==
-X-Google-Smtp-Source: ABdhPJzlxsww4ztf2eIBFu67Ag6HiIQOY2q7WE4fYS4AE4zty/nKatf+ii3DRTyPH06ByyLfWSjrLBFDxkuEFz860dk=
-X-Received: by 2002:a17:90a:4284:: with SMTP id p4mr2529120pjg.1.1615365259032;
- Wed, 10 Mar 2021 00:34:19 -0800 (PST)
+        id S232349AbhCJIfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 03:35:40 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:58426 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231149AbhCJIfV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 03:35:21 -0500
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1615365319;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KNVv9IVPxme33ODhBvY9HeZ8n0HmbebZpSdkkLbTl8w=;
+        b=xfcn6vZDFxE8PRpzk6pS7M+ebcY4niw6TUF7ZHp9kuQg/NUkf9Cl0sp6cBgeuRhOwjsv4n
+        6kiZ/RexPCwPtrvtgw3YaZSy/74AyJhGo1wiG2jmbqZlcMEQUvpFXNI/vUw7wqbywoKrYK
+        NqyMhuocQ698IZO1jv5Ts0taF01QuAanHRqnFHcO+iEVFmNA2p5mnEGzpnzVSM7O1fIwuQ
+        SIiAKhVr0BMGmhHSXnWDgBZ83AfYFaAb55Lpcwj6t5B+uAQsAfAj88wHnY5V7eRWZeKzJC
+        t02OHr1r//zhTizh5lwXtvfoua49UHnjG7o/KlA3k7QiRYlLQMQ1qnx7kOBXvg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1615365319;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KNVv9IVPxme33ODhBvY9HeZ8n0HmbebZpSdkkLbTl8w=;
+        b=9Gm97OGZ8/wBob3qxo3W9D+xqmPG4Mhj//BKk0KKZET0EAIo5+tOK5O1kbF76YtX9/VoJT
+        SAU2q1mI3E4g07Ag==
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Denis Kirjanov <kda@linux-powerpc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        ath9k-devel@qca.qualcomm.com, Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        linux1394-devel@lists.sourceforge.net
+Subject: Re: [patch 07/14] tasklets: Prevent tasklet_unlock_spin_wait() deadlock on RT
+In-Reply-To: <20210309152154.jqi62ep2ndkpoikc@linutronix.de>
+References: <20210309084203.995862150@linutronix.de> <20210309084241.988908275@linutronix.de> <20210309150036.5rcecmmz2wbu4ypc@linutronix.de> <20210309152154.jqi62ep2ndkpoikc@linutronix.de>
+Date:   Wed, 10 Mar 2021 09:35:18 +0100
+Message-ID: <87y2ev4da1.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-References: <CADbyt64e2cmQzZTEg3VoY6py=1pAqkLDRw+mniRdr9Rua5XtgQ@mail.gmail.com>
- <5b2595ed-bf5b-2775-405c-bb5031fd2095@gmail.com> <CADbyt66Ujtn5D+asPndkgBEDBWJiMScqicGVoNBVpNyR3iQ6PQ@mail.gmail.com>
-In-Reply-To: <CADbyt66Ujtn5D+asPndkgBEDBWJiMScqicGVoNBVpNyR3iQ6PQ@mail.gmail.com>
-From:   Greesha Mikhalkin <grigoriymikhalkin@gmail.com>
-Date:   Wed, 10 Mar 2021 09:34:07 +0100
-Message-ID: <CADbyt64HpzGf6A_=wrouL+vT73DBndww34gMPSH9jDOiGEysvQ@mail.gmail.com>
-Subject: Re: VRF leaking doesn't work
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I see. When i do `ping -I vrf2` to address that was leaked from vrf1
-it selects source address that's set as local in vrf1 routing table.
-Is this expected behavior? I guess, forwarding packets from vrf1 to
-vrf2 local address won't help here.
+On Tue, Mar 09 2021 at 16:21, Sebastian Andrzej Siewior wrote:
 
-6 mar. 2021 - 17:12, David Ahern <dsahern@gmail.com>:
+> On 2021-03-09 16:00:37 [+0100], To Thomas Gleixner wrote:
+>> diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+>> index 07c7329d21aa7..1c14ccd351091 100644
+>> --- a/include/linux/interrupt.h
+>> +++ b/include/linux/interrupt.h
+>> @@ -663,15 +663,6 @@ static inline int tasklet_trylock(struct tasklet_struct *t)
+>>  void tasklet_unlock(struct tasklet_struct *t);
+>>  void tasklet_unlock_wait(struct tasklet_struct *t);
+>>  
+>> -/*
+>> - * Do not use in new code. Waiting for tasklets from atomic contexts is
+>> - * error prone and should be avoided.
+>> - */
+>> -static inline void tasklet_unlock_spin_wait(struct tasklet_struct *t)
+>> -{
+>> -	while (test_bit(TASKLET_STATE_RUN, &t->state))
+>> -		cpu_relax();
+>> -}
+>
+> Look at that. The forward declaration for tasklet_unlock_spin_wait()
+> should have remained. Sorry for that.
 
->
-> On 3/2/21 3:57 AM, Greesha Mikhalkin wrote:
-> > Main goal is that 100.255.254.3 should be reachable from vrf2. But
-> > after this setup it doesn=E2=80=99t work. When i run `ping -I vrf2
-> > 100.255.254.3` it sends packets from source address that belongs to
-> > vlan1 enslaved by vrf1. I can see in tcpdump that ICMP packets are
-> > sent and then returned to source address but they're not returned to
-> > ping command for some reason. To be clear `ping -I vrf1 =E2=80=A6` work=
-s fine.
->
-> I remember this case now: VRF route leaking works for fowarding, but not
-> local traffic. If a packet arrives in vrf2, it should get forwarded to
-> vrf1 and on to its destination. If the reverse route exists then round
-> trip traffic works.
+No idea how I managed to mess that up and fail to notice. Brown
+paperbags to the rescue.
+
+Thanks,
+
+        tglx
