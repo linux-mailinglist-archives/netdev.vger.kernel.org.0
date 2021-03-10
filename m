@@ -2,83 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 955EB334752
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:01:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09800334764
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:04:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbhCJTBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 14:01:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231138AbhCJTAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 14:00:35 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED6EC061760;
-        Wed, 10 Mar 2021 11:00:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=eLUYXPQCapgp9lS9oibAyMyspjp7ZMO8iy8MRE7Vh+s=; b=zuUe0qkZ2JB0FiuYCbP1ZJNpX
-        FPyW9bwvqTu7digUkN6R1+cp66ssZGrUyY/pukGDTY/hCx8JhLEcq8nE80En2LDCejNK12VBPHFbH
-        sQOgIzJO8MsPaNJbHyqEAORb8mqdbyzboiMXtDKq+x2ClJMFKiLAApOuIbtpDpV0nH0c3BHbr0KQO
-        P495RaFP3vOHZowUQhFBe4kjA617gE2JzsxDZR3/qmjGH3gSGsUMrwHimQCWzp8JiXP8EZGkc+hxw
-        gCfXjhi/Dvwk6ps6f7LVE/DlkCQ8KAwTlJ71khbF2B2Cn0hNncQZGtKbsNsXrj0bOZRrF6c7CavPZ
-        ZvmuqEzyQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50730)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lK44C-0004oe-Kp; Wed, 10 Mar 2021 19:00:20 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lK44A-0000vX-FM; Wed, 10 Mar 2021 19:00:18 +0000
-Date:   Wed, 10 Mar 2021 19:00:18 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     stefanc@marvell.com
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, mw@semihalf.com,
-        andrew@lunn.ch, atenart@kernel.org, rabeeh@solid-run.com
-Subject: Re: [net-next] net: mvpp2: Add reserved port private flag
- configuration
-Message-ID: <20210310190018.GH1463@shell.armlinux.org.uk>
-References: <1615369329-9389-1-git-send-email-stefanc@marvell.com>
+        id S233746AbhCJTET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 14:04:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44260 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233713AbhCJTDx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 14:03:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A0DA564F9F;
+        Wed, 10 Mar 2021 19:03:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615403033;
+        bh=gXP8fqrwmuoJZ8StPMD/bAH+C87Nm40JGzAL18TqZew=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PVknQUbUl0x4gRcTW6+EBJLSTOZdV0R1q+JHetnDZLSOuSg0PEQJg3itZifZizt3B
+         vS1aoQGW7m5khoo1cZE+gY8Jz3JaG1Rb5XNAszinG/mgsFWbXZOOI20mJIfa3FrfZM
+         ydAi1uTfWr0yfkCN7/cKUMtZtVOVt01IbUKvBbmbFS+bdsWycUbsBnc2m/Pawg+Afh
+         qJjaZ9v33pUbV+Fsc796fR7A4umVhFiW2+kbsKfzwrFHJHXBq8sbEBClAiwkihvPK4
+         1Lzy47Do6BE6RKrzOVthXXxp2RvfpnuIB9c3i5pBWfPnCcKrtweiK/dqDjxDgNiYmx
+         2pYcfgI/8rg/A==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net 00/18] mlx5 fixes 2021-03-10
+Date:   Wed, 10 Mar 2021 11:03:24 -0800
+Message-Id: <20210310190342.238957-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1615369329-9389-1-git-send-email-stefanc@marvell.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 11:42:09AM +0200, stefanc@marvell.com wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
-> 
-> According to Armada SoC architecture and design, all the PPv2 ports
-> which are populated on the same communication processor silicon die
-> (CP11x) share the same Classifier and Parser engines.
-> 
-> Armada is an embedded platform and therefore there is a need to reserve
-> some of the PPv2 ports for different use cases.
-> 
-> For example, a port can be reserved for a CM3 CPU running FreeRTOS for
-> management purposes or by user-space data plane application.
-> 
-> During port reservation all common configurations are preserved and
-> only RXQ, TXQ, and interrupt vectors are disabled.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-If a port is reserved for use by the CM3, what are the implications
-for Linux running on the AP? Should Linux have knowledge of the port?
-What configurations of the port should be permitted?
+Hi Dave, Jakub
 
-I think describing how a port reserved for use by the CM3 CPU should
-appear to Linux is particularly important for the commit commentry
-to cover.
+This series introduces some fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks,
+Saeed.
+
+---
+The following changes since commit 05a59d79793d482f628a31753c671f2e92178a21:
+
+  Merge git://git.kernel.org:/pub/scm/linux/kernel/git/netdev/net (2021-03-09 17:15:56 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2021-03-10
+
+for you to fetch changes up to 84076c4c800d1be77199a139d65b8b136a61422e:
+
+  net/mlx5: DR, Fix potential shift wrapping of 32-bit value in STEv1 getter (2021-03-10 11:01:59 -0800)
+
+----------------------------------------------------------------
+mlx5-fixes-2021-03-10
+
+----------------------------------------------------------------
+Aya Levin (3):
+      net/mlx5e: Accumulate port PTP TX stats with other channels stats
+      net/mlx5e: Set PTP channel pointer explicitly to NULL
+      net/mlx5: Fix turn-off PPS command
+
+Maor Dickman (2):
+      net/mlx5e: Don't match on Geneve options in case option masks are all zero
+      net/mlx5: Disable VF tunnel TX offload if ignore_flow_level isn't supported
+
+Maor Gottlieb (2):
+      net/mlx5: Set QP timestamp mode to default
+      RDMA/mlx5: Fix timestamp default mode
+
+Maxim Mikityanskiy (2):
+      net/mlx5e: When changing XDP program without reset, take refs for XSK RQs
+      net/mlx5e: Revert parameters on errors when changing PTP state without reset
+
+Parav Pandit (2):
+      net/mlx5e: E-switch, Fix rate calculation division
+      net/mlx5: SF, Correct vhca context size
+
+Roi Dayan (2):
+      net/mlx5e: Check correct ip_version in decapsulation route resolution
+      net/mlx5e: Fix error flow in change profile
+
+Shay Drory (2):
+      net/mlx5: SF: Fix memory leak of work item
+      net/mlx5: SF: Fix error flow of SFs allocation flow
+
+Tariq Toukan (2):
+      net/mlx5e: Enforce minimum value check for ICOSQ size
+      net/mlx5e: RX, Mind the MPWQE gaps when calculating offsets
+
+Yevgeny Kliteynik (1):
+      net/mlx5: DR, Fix potential shift wrapping of 32-bit value in STEv1 getter
+
+ drivers/infiniband/hw/mlx5/qp.c                    | 18 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  7 ++-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |  8 +--
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |  3 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c |  4 ++
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  5 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 69 ++++++++++++++--------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  1 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  3 +-
+ .../net/ethernet/mellanox/mlx5/core/fpga/conn.c    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  4 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/clock.c    |  8 +--
+ .../net/ethernet/mellanox/mlx5/core/sf/hw_table.c  |  2 +-
+ .../mellanox/mlx5/core/sf/mlx5_ifc_vhca_event.h    |  2 +-
+ .../ethernet/mellanox/mlx5/core/sf/vhca_event.c    |  1 +
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c |  1 +
+ .../mellanox/mlx5/core/steering/dr_ste_v1.c        |  4 +-
+ include/linux/mlx5/qp.h                            |  7 +++
+ 20 files changed, 106 insertions(+), 49 deletions(-)
