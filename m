@@ -2,100 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 201C33346B4
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 19:28:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927A53346BE
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 19:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233357AbhCJS2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 13:28:20 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:56780 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233615AbhCJS2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 13:28:16 -0500
-Received: by mail-io1-f70.google.com with SMTP id y2so13452006ioa.23
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 10:28:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=dWnpxusVnWPr+rcJeULtT4fXHPYoawfba2p1aaq6XSA=;
-        b=DeseWMkDrr8ONsWOtXI4T7HPXRXt9NHl/kKrid6h2SLRQfAxJPxY1PwdfnYqK0np9J
-         diJywjUrqg25MM4Zw+iYcQGg1fJBBY49f0dX70pD5aXaSEtcRDB0iG58uUEaOga6yny1
-         jqprNGKLN9+VY8TR3Nr63WKzpRGupwO2U+hNuqO8qVDFCcnW6qlXssbDepSPs7j7wqc3
-         k6jWo8v3gklrDS2JKZXgeW58jzU2GnHB6afBDkTS5evNLvyxVbIIVI+t0//c9tiWy/aw
-         50HYnwuCOWG3Oo2/kqD56DvmcuYCUFouC7NuIsD2aOG6ElLCkTBq+lzmoWYcQb2Q8XxG
-         08jw==
-X-Gm-Message-State: AOAM531L7e60dopig+cVZS1aQ9SNDtbZAbpe9odcuTpXqksAreZ/AIVs
-        6sERuyMBRWwPOGrfOYTVvLBOuv35BR+dxCendoJeURKpPwWu
-X-Google-Smtp-Source: ABdhPJx/W+DGdwc0MBak58Y2XiC1RAxBcNNIPGImIFRLConkbFmwYSAHDTVxc4h21wvES82j7S8emtvKEcCMLvwIVXdkzgh9C01b
+        id S233424AbhCJS34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 13:29:56 -0500
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:50485 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232327AbhCJS3i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 13:29:38 -0500
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 12AITZlW020406;
+        Wed, 10 Mar 2021 19:29:35 +0100
+Date:   Wed, 10 Mar 2021 19:29:35 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     Henneberg - Systemdesign <lists@henneberg-systemdesign.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: TIOCOUTQ implementation for sockets vs. tty
+Message-ID: <20210310182935.GC17851@1wt.eu>
+References: <87ft12ri0t.fsf@henneberg-systemdesign.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9693:: with SMTP id m19mr3153243ion.46.1615400896209;
- Wed, 10 Mar 2021 10:28:16 -0800 (PST)
-Date:   Wed, 10 Mar 2021 10:28:16 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000096cdaa05bd32d46f@google.com>
-Subject: [syzbot] BUG: unable to handle kernel access to user memory in sock_ioctl
-From:   syzbot <syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ft12ri0t.fsf@henneberg-systemdesign.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot found the following issue on:
+On Wed, Mar 10, 2021 at 07:16:34PM +0100, Henneberg - Systemdesign wrote:
+> Hi,
+> 
+> I have a question regarding the implementation of ioctl TIOCOUTQ for
+> various sockets compared to the tty implementation.
+> 
+> For several sockets, e. g. AF_BLUETOOTH it is done like this
+> 
+> af_bluetooth.c:
+> case TIOCOUTQ:
+> 	if (sk->sk_state == BT_LISTEN)
+> 		return -EINVAL;
+> 
+> 	amount = sk->sk_sndbuf - sk_wmem_alloc_get(sk);
+> 	if (amount < 0)
+> 		amount = 0;
+> 	err = put_user(amount, (int __user *)arg);
+> 	break;
+> 
+> so the ioctl returns the available space in the send queue if I
+> understand the code correctly (this is also what I observed from tests).
+> 
+> The tty does this:
+> 
+> n_tty.c:
+> case TIOCOUTQ:
+> 	return put_user(tty_chars_in_buffer(tty), (int __user *) arg);
+> 
+> so it returns the used space in the send queue. This is also what I
+> would expect from the manpage description.
+> 
+> Is this mismatch intentional?
 
-HEAD commit:    0d7588ab riscv: process: Fix no prototype for arch_dup_tas..
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
-console output: https://syzkaller.appspot.com/x/log.txt?x=122c343ad00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e3c595255fb2d136
-dashboard link: https://syzkaller.appspot.com/bug?extid=c23c5421600e9b454849
-userspace arch: riscv64
+At least both man pages (tty_ioctl and tcp(7)) mention that TIOCOUTQ
+should return the number of byte in queue.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+What I suspect for sockets is that sk_sndbuf grows with allocations
+and that sk_wmem_alloc_get() in fact returns the number of unused
+allocations thus the difference would be the amount queued. But I
+could be wrong and I would tend to read the code the same way as you
+did.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com
-
-Unable to handle kernel access to user memory without uaccess routines at virtual address 0000000020000300
-Oops [#1]
-Modules linked in:
-CPU: 1 PID: 4488 Comm: syz-executor.0 Not tainted 5.12.0-rc2-syzkaller-00467-g0d7588ab9ef9 #0
-Hardware name: riscv-virtio,qemu (DT)
-epc : sock_ioctl+0x424/0x6ac net/socket.c:1124
- ra : sock_ioctl+0x424/0x6ac net/socket.c:1124
-epc : ffffffe002aeeb3e ra : ffffffe002aeeb3e sp : ffffffe023867da0
- gp : ffffffe005d25378 tp : ffffffe007e116c0 t0 : 0000000000000000
- t1 : 0000000000000001 t2 : 0000003fb8035e44 s0 : ffffffe023867e30
- s1 : 0000000000040000 a0 : 0000000000000000 a1 : 0000000000000007
- a2 : 1ffffffc00fc22d8 a3 : ffffffe003bc1d02 a4 : 0000000000000000
- a5 : 0000000000000000 a6 : 0000000000f00000 a7 : ffffffe000082eba
- s2 : 0000000000000000 s3 : 0000000000008902 s4 : 0000000020000300
- s5 : ffffffe005d2b0d0 s6 : ffffffe010facfc0 s7 : ffffffe008e00000
- s8 : 0000000000008903 s9 : ffffffe010fad080 s10: 0000000000000000
- s11: 0000000000020000 t3 : 982de389919f6300 t4 : ffffffc401175688
- t5 : ffffffc401175691 t6 : 0000000000000007
-status: 0000000000000120 badaddr: 0000000020000300 cause: 000000000000000f
-Call Trace:
-[<ffffffe002aeeb3e>] sock_ioctl+0x424/0x6ac net/socket.c:1124
-[<ffffffe0003fdb6a>] vfs_ioctl fs/ioctl.c:48 [inline]
-[<ffffffe0003fdb6a>] __do_sys_ioctl fs/ioctl.c:753 [inline]
-[<ffffffe0003fdb6a>] sys_ioctl+0x5c2/0xd56 fs/ioctl.c:739
-[<ffffffe000005562>] ret_from_syscall+0x0/0x2
-Dumping ftrace buffer:
-   (ftrace buffer empty)
----[ end trace a5f91e70f37b907b ]---
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Willy
