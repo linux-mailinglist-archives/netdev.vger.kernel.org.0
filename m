@@ -2,82 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22684333280
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 252AD333283
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:39:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231202AbhCJAhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 19:37:16 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48560 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229805AbhCJAhA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Mar 2021 19:37:00 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lJmqN-00A5qf-Qs; Wed, 10 Mar 2021 01:36:55 +0100
-Date:   Wed, 10 Mar 2021 01:36:55 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, vivien.didelot@gmail.com, netdev@vger.kernel.org
-Subject: Re: [RFC net] net: dsa: Centralize validation of VLAN configuration
-Message-ID: <YEgUp0E9uCtBjP5I@lunn.ch>
-References: <20210309184244.1970173-1-tobias@waldekranz.com>
- <699042d3-e124-7584-6486-02a6fb45423e@gmail.com>
- <87h7lkow44.fsf@waldekranz.com>
- <20210309220119.t24sdc7cqqfxhpfb@skbuf>
+        id S230094AbhCJAiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 19:38:54 -0500
+Received: from www62.your-server.de ([213.133.104.62]:43776 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229775AbhCJAi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 19:38:29 -0500
+Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lJmrs-0008uO-CS; Wed, 10 Mar 2021 01:38:28 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, john.fastabend@gmail.com, ast@kernel.org,
+        willemb@google.com, edumazet@google.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH net 0/2] Fix ip6ip6 crash for collect_md skbs
+Date:   Wed, 10 Mar 2021 01:38:08 +0100
+Message-Id: <cover.1615331093.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210309220119.t24sdc7cqqfxhpfb@skbuf>
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26103/Tue Mar  9 13:03:37 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > .100  br0  .100
-> >    \  / \  /
-> >    lan0 lan1
-> > 
-> > $ ip link add dev br0 type bridge vlan_filtering 1
-> > $ ip link add dev lan0.100 link lan0 type vlan id 100
-> > $ ip link add dev lan1.100 link lan1 type vlan id 100
-> > $ ip link set dev lan0 master br0
-> > $ ip link set dev lan1 master br0 # This should fail
+Fix a NULL pointer deref panic I ran into for regular ip6ip6 tunnel devices
+when collect_md populated skbs were redirected to them for xmit. See patches
+for further details, thanks!
 
-> > 
-> > .100  br0
-> >    \  / \
-> >    lan0 lan1
-> > 
-> > $ ip link add dev br0 type bridge vlan_filtering 1
-> > $ ip link add dev lan0.100 link lan0 type vlan id 100
-> > $ ip link set dev lan0 master br0
-> > $ ip link set dev lan1 master br0
-> > $ bridge vlan add dev lan1 vid 100 # This should fail
-> 
-> diff --git a/tools/testing/selftests/drivers/net/dsa/vlan_validation.sh b/tools/testing/selftests/drivers/net/dsa/vlan_validation.sh
+Daniel Borkmann (2):
+  net: Consolidate common blackhole dst ops
+  net, bpf: Fix ip6ip6 crash with collect_md populated skbs
 
-Hi Vladimir
+ include/net/dst.h | 11 +++++++++
+ net/core/dst.c    | 59 +++++++++++++++++++++++++++++++++--------------
+ net/ipv4/route.c  | 45 +++++++-----------------------------
+ net/ipv6/route.c  | 36 ++++++++---------------------
+ 4 files changed, 70 insertions(+), 81 deletions(-)
 
-Cool to see self tests.
+-- 
+2.21.0
 
-> new file mode 100755
-> index 000000000000..445ce17cb925
-> --- /dev/null
-> +++ b/tools/testing/selftests/drivers/net/dsa/vlan_validation.sh
-> @@ -0,0 +1,316 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +NUM_NETIFS=2
-> +lib_dir=$(dirname $0)/../../../net/forwarding
-> +source $lib_dir/lib.sh
-> +
-> +eth0=${NETIFS[p1]}
-> +eth1=${NETIFS[p2]}
-
-Could these be called lan0 and lan1, so they match the diagrams?  I
-find eth0 confusing, since that is often the master interface, not a
-slave interface.
-
-      Andrew
