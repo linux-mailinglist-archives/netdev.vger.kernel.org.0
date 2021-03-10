@@ -2,169 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05228334728
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 19:52:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56989334733
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 19:53:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233485AbhCJSv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 13:51:26 -0500
-Received: from z11.mailgun.us ([104.130.96.11]:58198 "EHLO z11.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232616AbhCJSvS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 13:51:18 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1615402278; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=cBKHhBbJTMWXn9V6I+Im4MZl8Vu1tPdJozwSyOcsf3k=; b=KsBy3vEcvjMYYMjeG6+JMHl8D1awS5jTMI1I5u11zxQYMfy5eR2CoAEQ+89BLgLyMmIP0R2H
- 4SdhlzwCd1DTtaunwda+y8xmtZuQpG9XLI+K5OY6yoPEr2zADihyNUBm256hgp0E8LHde81O
- 1XpYySl4Agizha4kFQsRaZQSeOQ=
-X-Mailgun-Sending-Ip: 104.130.96.11
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 60491521155a7cd234c680b0 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 10 Mar 2021 18:51:13
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9AE29C433C6; Wed, 10 Mar 2021 18:51:13 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from subashab-lnx.qualcomm.com (unknown [129.46.15.92])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1BAE1C433C6;
-        Wed, 10 Mar 2021 18:51:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1BAE1C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=subashab@codeaurora.org
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Subject: [PATCH net-next] net: ipv6: addrconf: Add accept_ra_prefix_route.
-Date:   Wed, 10 Mar 2021 11:49:53 -0700
-Message-Id: <1615402193-12122-1-git-send-email-subashab@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
+        id S233539AbhCJSxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 13:53:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233403AbhCJSwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 13:52:30 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478CDC061760;
+        Wed, 10 Mar 2021 10:52:30 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id t29so12603281pfg.11;
+        Wed, 10 Mar 2021 10:52:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V4YgXo58fsodWY8tVLTSwbceSR+eDpGyOkcHxaohODI=;
+        b=fjUeoiq4Y8MmY6pgSelBOCkJcqPMN9ezCduROyqUWvgCFUpDyM/8ZCs9M3YkGOaBSj
+         qfoRF7QEJW9fKXn7vkkpAmpCxxMtOW/bAnx1UutYX1DuYOv2cK9HKLmtnIPWCAWSpdt2
+         xa9Bn70UFJEfoklbgDw6Vu1RjMQVwT43O0dOm0VpWDto48LA1tlLIf5OaAQemVImOwUQ
+         yqQzNtX/Jht9xlQblQ7wBhDKnkhvxzsF36myRWsqGFpMn1W5qdBZEZSiIy39INczyLMd
+         iWsFCMCHfSVik2JEC8km7bITNNe6DQwVFD/x7Rtrbaul6it20FXIBy98xAHl3OVIGapL
+         b1NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V4YgXo58fsodWY8tVLTSwbceSR+eDpGyOkcHxaohODI=;
+        b=mzX3fdQg+Cqr0A68JM3yyZAi01CmbTQm+gliAz9uB7CM2DWqI7oO3P1HZ3kWD4Ri+7
+         eI/JuUMeWR0Ej+I1+8r+oexahCOdUT+SAarmmw5BH5bm02dnZ3P9OFU5oZgCsM99ZV8P
+         mPJJPb6DnscBXYoctIKErAO4iPBWarl5UrR/omhZLxcOzVOAkWZ0RmECRwwRwOmCHg55
+         puUZzFg3T1gwHP3Fk4ByskY3XxRcQqPidwqy7H7Zi6Rc905osTNQi7y74Re1yBe8h50L
+         Pdv9ctkavtVbMaWFEvHoVRexXocZt4c1B7uR+/8eVHJZpgX61USSZm6HdhS83sxqO/yE
+         UrwA==
+X-Gm-Message-State: AOAM530ra7XaZOCpMN6J2fWSXtHEVxeOYchSp4MAxUYRnAmCWFhJiWpC
+        X7uC+p0070Y8IvJx1jcnRV2li0UVdqk=
+X-Google-Smtp-Source: ABdhPJwnBKtvdjeC0kNlFIqmnIemBXZqmUH4/foXLjlOve1bh7fz81mJH2FY45NbNfpzTHeU9+7DTQ==
+X-Received: by 2002:a63:7885:: with SMTP id t127mr3836844pgc.237.1615402349384;
+        Wed, 10 Mar 2021 10:52:29 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b140sm243040pfb.98.2021.03.10.10.52.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Mar 2021 10:52:28 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: dsa: b53: Add debug prints in b53_vlan_enable()
+Date:   Wed, 10 Mar 2021 10:52:26 -0800
+Message-Id: <20210310185227.2685058-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added new procfs flag to toggle the automatic addition of prefix
-routes on a per device basis. The new flag is accept_ra_prefix_route.
+Having dynamic debug prints in b53_vlan_enable() has been helpful to
+uncover a recent but update the function to indicate the port being
+configured (or -1 for initial setup) and include the global VLAN enabled
+and VLAN filtering enable status.
 
-A value of 0 for the flag maybe used in some forwarding scenarios
-when a userspace daemon is managing the routing.
-Manual deletion of the kernel installed route was not sufficient as
-kernel was adding back the route.
-
-Defaults to 1 as to not break existing behavior.
-
-Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- Documentation/networking/ip-sysctl.rst | 10 ++++++++++
- include/linux/ipv6.h                   |  1 +
- include/uapi/linux/ipv6.h              |  1 +
- net/ipv6/addrconf.c                    | 16 +++++++++++++---
- 4 files changed, 25 insertions(+), 3 deletions(-)
+ drivers/net/dsa/b53/b53_common.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index c7952ac..9f0d92d 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2022,6 +2022,16 @@ accept_ra_mtu - BOOLEAN
- 		- enabled if accept_ra is enabled.
- 		- disabled if accept_ra is disabled.
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index a162499bcafc..9bd51c2a51d2 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -349,7 +349,7 @@ static void b53_set_forwarding(struct b53_device *dev, int enable)
+ 	b53_write8(dev, B53_CTRL_PAGE, B53_IP_MULTICAST_CTRL, mgmt);
+ }
  
-+accept_ra_prefix_route - BOOLEAN
-+	Apply the prefix route based on the RA. If disabled, kernel
-+	does not install the route. This can be used if a userspace
-+	daemon is managing the routing.
+-static void b53_enable_vlan(struct b53_device *dev, bool enable,
++static void b53_enable_vlan(struct b53_device *dev, int port, bool enable,
+ 			    bool enable_filtering)
+ {
+ 	u8 mgmt, vc0, vc1, vc4 = 0, vc5;
+@@ -431,6 +431,9 @@ static void b53_enable_vlan(struct b53_device *dev, bool enable,
+ 	b53_write8(dev, B53_CTRL_PAGE, B53_SWITCH_MODE, mgmt);
+ 
+ 	dev->vlan_enabled = enable;
 +
-+	Functional default:
-+
-+		- enabled if accept_ra_prefix_route is enabled
-+		- disabled if accept_ra_prefix_route is disabled
-+
- accept_redirects - BOOLEAN
- 	Accept Redirects.
++	dev_dbg(dev->dev, "Port %d VLAN enabled: %d, filtering: %d\n",
++		port, enable, enable_filtering);
+ }
  
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index 70b2ad3..ae81f7d 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -76,6 +76,7 @@ struct ipv6_devconf {
- 	__s32		disable_policy;
- 	__s32           ndisc_tclass;
- 	__s32		rpl_seg_enabled;
-+	__s32		accept_ra_prefix_route;
- 
- 	struct ctl_table_header *sysctl_header;
- };
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index 70603775..194b272 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -190,6 +190,7 @@ enum {
- 	DEVCONF_NDISC_TCLASS,
- 	DEVCONF_RPL_SEG_ENABLED,
- 	DEVCONF_RA_DEFRTR_METRIC,
-+	DEVCONF_ACCEPT_RA_PREFIX_ROUTE,
- 	DEVCONF_MAX
- };
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index f2337fb..5ddef05 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -237,6 +237,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
- 	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
- 	.disable_policy		= 0,
- 	.rpl_seg_enabled	= 0,
-+	.accept_ra_prefix_route = 1,
- };
- 
- static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
-@@ -293,6 +294,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
- 	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
- 	.disable_policy		= 0,
- 	.rpl_seg_enabled	= 0,
-+	.accept_ra_prefix_route = 1,
- };
- 
- /* Check if link is ready: is it up and is a valid qdisc available */
-@@ -2750,9 +2752,10 @@ void addrconf_prefix_rcv(struct net_device *dev, u8 *opt, int len, bool sllao)
- 				flags |= RTF_EXPIRES;
- 				expires = jiffies_to_clock_t(rt_expires);
- 			}
--			addrconf_prefix_route(&pinfo->prefix, pinfo->prefix_len,
--					      0, dev, expires, flags,
--					      GFP_ATOMIC);
-+			if (dev->ip6_ptr->cnf.accept_ra_prefix_route) {
-+				addrconf_prefix_route(&pinfo->prefix, pinfo->prefix_len,
-+						      0, dev, expires, flags, GFP_ATOMIC);
-+			}
- 		}
- 		fib6_info_release(rt);
+ static int b53_set_jumbo(struct b53_device *dev, bool enable, bool allow_10_100)
+@@ -743,7 +746,7 @@ int b53_configure_vlan(struct dsa_switch *ds)
+ 		b53_do_vlan_op(dev, VTA_CMD_CLEAR);
  	}
-@@ -6859,6 +6862,13 @@ static const struct ctl_table addrconf_sysctl[] = {
- 	{
- 		.procname	= "seg6_enabled",
- 		.data		= &ipv6_devconf.seg6_enabled,
-+		.maxlen         = sizeof(int),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dointvec,
-+	},
-+	{
-+		.procname	= "accept_ra_prefix_route",
-+		.data		= &ipv6_devconf.accept_ra_prefix_route,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
+ 
+-	b53_enable_vlan(dev, dev->vlan_enabled, ds->vlan_filtering);
++	b53_enable_vlan(dev, -1, dev->vlan_enabled, ds->vlan_filtering);
+ 
+ 	b53_for_each_port(dev, i)
+ 		b53_write16(dev, B53_VLAN_PAGE,
+@@ -1429,7 +1432,7 @@ int b53_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ {
+ 	struct b53_device *dev = ds->priv;
+ 
+-	b53_enable_vlan(dev, dev->vlan_enabled, vlan_filtering);
++	b53_enable_vlan(dev, port, dev->vlan_enabled, vlan_filtering);
+ 
+ 	return 0;
+ }
+@@ -1454,7 +1457,7 @@ static int b53_vlan_prepare(struct dsa_switch *ds, int port,
+ 	if (vlan->vid >= dev->num_vlans)
+ 		return -ERANGE;
+ 
+-	b53_enable_vlan(dev, true, ds->vlan_filtering);
++	b53_enable_vlan(dev, port, true, ds->vlan_filtering);
+ 
+ 	return 0;
+ }
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.25.1
 
