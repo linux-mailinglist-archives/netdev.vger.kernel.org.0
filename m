@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F529333585
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:44:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44F48333587
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:46:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232176AbhCJFoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 00:44:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33548 "EHLO mail.kernel.org"
+        id S229521AbhCJFpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 00:45:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33672 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232312AbhCJFns (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 00:43:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 57C2864F6D;
-        Wed, 10 Mar 2021 05:43:47 +0000 (UTC)
+        id S229632AbhCJFpZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 00:45:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3116264FE5;
+        Wed, 10 Mar 2021 05:45:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615355027;
-        bh=yAg8R9FSz2qmBTMCcjwkVEKAsIfn2g5B+rrRdFb2blg=;
+        s=k20201202; t=1615355124;
+        bh=ZnmCBtPGQPDnAgSACc/Eq90x0likYccLH8rqGBUrHYk=;
         h=Date:From:To:Cc:Subject:From;
-        b=d7z9DzWbSoLbs34tbH0j18sAEVTrIf7hyyQNvaPgW/zHDMVLMw2pthn/wbYY5WcQw
-         iu8JputDtusRXem/7v2Q3bvACPhAeu8apoGcEZdqXShOfqG/FCARmRMVhG00hYstbM
-         ybjOm9R2y+DbdunhJ/Usjsamu44uPSLeqKPAaYKjX1Pcu/T8GmQAD91g97rYhpbELO
-         pXj2oN6YjpPRRYJCDPJyiEurRcNPvZKx/BywWxYGc4TRKgfgti36yOUGGTF4JqoJGg
-         WGByqfHKFoQp91VVkpvrVmWL/PifteiQW8PKO7IoNUAIj3pgZ4pueVOEf/6+jsSXFE
-         TwLNjyZdMcY3A==
-Date:   Tue, 9 Mar 2021 23:43:45 -0600
+        b=OwIuUEMNOD5wFB2QixhzUjkIbDmgMk5PFi5jg6CFWT5n3dkKey+9OS3JTZttkfpJk
+         WJyM6hHCZUAQir7oqSL4zYZDGN1JukA05rflE3PCNoEAlx9kLekbAdTsJHE+A+NtaO
+         K2MZ9tviW5HrDK33jaPDgOVelJaYgJ/RT9S3B4lqdWXh5Qy5WySuLIeuvga872CJWb
+         zTZpzaLJZdRZIFN2I7QHVWugoPTGfQlfknQ7eLowpeEzc57pRrD0NdZa8DihMJSwWv
+         7MI+jsKZAyuMBrFe+4l9HL9fx9TGlsqtq01LL96RHiYC6gyOnMYiqhXsIa1Ah/5JdP
+         +fTnKql3j6XfQ==
+Date:   Tue, 9 Mar 2021 23:45:22 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH RESEND][next] net: rose: Fix fall-through warnings for Clang
-Message-ID: <20210310054345.GA286021@embeddedor>
+Subject: [PATCH RESEND][next] net: plip: Fix fall-through warnings for Clang
+Message-ID: <20210310054522.GA286165@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -51,29 +49,29 @@ Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
  Changes in RESEND:
  - None. Resending now that net-next is open.
 
- net/rose/rose_route.c | 2 ++
+ drivers/net/plip/plip.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index 6e35703ff353..c0e04c261a15 100644
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -347,6 +347,7 @@ static int rose_del_node(struct rose_route_struct *rose_route,
- 				case 1:
- 					rose_node->neighbour[1] =
- 						rose_node->neighbour[2];
-+					break;
- 				case 2:
- 					break;
- 				}
-@@ -508,6 +509,7 @@ void rose_rt_device_down(struct net_device *dev)
- 					fallthrough;
- 				case 1:
- 					t->neighbour[1] = t->neighbour[2];
-+					break;
- 				case 2:
- 					break;
- 				}
+diff --git a/drivers/net/plip/plip.c b/drivers/net/plip/plip.c
+index 4406b353123e..e26cf91bdec2 100644
+--- a/drivers/net/plip/plip.c
++++ b/drivers/net/plip/plip.c
+@@ -516,6 +516,7 @@ plip_receive(unsigned short nibble_timeout, struct net_device *dev,
+ 		*data_p |= (c0 << 1) & 0xf0;
+ 		write_data (dev, 0x00); /* send ACK */
+ 		*ns_p = PLIP_NB_BEGIN;
++		break;
+ 	case PLIP_NB_2:
+ 		break;
+ 	}
+@@ -808,6 +809,7 @@ plip_send_packet(struct net_device *dev, struct net_local *nl,
+ 				return HS_TIMEOUT;
+ 			}
+ 		}
++		break;
+ 
+ 	case PLIP_PK_LENGTH_LSB:
+ 		if (plip_send(nibble_timeout, dev,
 -- 
 2.27.0
 
