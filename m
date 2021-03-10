@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63ED8333C25
+	by mail.lfdr.de (Postfix) with ESMTP id AFDE9333C26
 	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 13:05:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232922AbhCJME4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 07:04:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56672 "EHLO
+        id S232930AbhCJME5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 07:04:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232932AbhCJMEr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:04:47 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22894C061761
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:04:47 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id e19so38231348ejt.3
+        with ESMTP id S232934AbhCJMEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:04:48 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0490CC061762
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:04:48 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id x9so27607869edd.0
         for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:04:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DEAVvFDcDkzIv8+6LoQc58Y1go1M6iSGO4707+Npq+4=;
-        b=E3/ymp0GVxMBCEHI8N5AZmKyR+6qAukat8UZlcgkOCHuWXTcM9I0dzTGDGgGAcWjJv
-         QKNtwuEJiMJ4falBOTGoc81rGdOUlsP0L2yiydPPh1InuHWhzb46PHZ3K6ooYN2GHSG4
-         8LkfJAEsV8QtAEdG28Bmj+StiYQmkzKWqJ02cgtx0b/o3HigUgCLBIwsBQUCKKEsmAJS
-         oNKwpUNACcTpV9eFE3ez8ahBY25IkJibcGUKRpFfgAy7BaadkELue2bj9NsCH+g6NBTc
-         qCOs0mLOzpCLTQMkco5bx210/RqPSGglUDRMhNazrdnGgx61gcLlBWc3XkRKyMwY+Swq
-         Z8SA==
+        bh=sox2Ii9W50FhUaR8bUHhhLyqmibUnWMc7Ry439DSURE=;
+        b=SDC9p8JqmmfrDqbr+eGudgzwqTkCJMgdqNa4jzAdvp8MNScih2frdKBv8wyRE6CdS8
+         cT3NICesJLD6MALwqx/lpBYqxwAPYR0z0mAoxcRYMGN5kRLNFrIuIEUq5GOJe3y7teLG
+         tvM+jwooa/ORN8Q2E9+zhjt/IOzEzwq+5JcnoO7S2AFLedYeHDV/yGiZeDAWOYrHF3tw
+         m6gXpCEu1GAVbRAKPP9FscSxpn4wl5y9R6VXhIAqCOiu9BbgKyaeaiR0X+2IJj4L1C5R
+         xsqyM7QaurIpE9Mee4e/rIE1yqSMktxwdUeqhlF4If4Ja+H9WWLMAmARBlCQS7GR5YaR
+         PWWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DEAVvFDcDkzIv8+6LoQc58Y1go1M6iSGO4707+Npq+4=;
-        b=dRAEGzZT+15NzfYjnCN6E8DxW6uoVsnDdgRA+BZpeIlyEahc/shabOHqgXInnhaLGB
-         w/u2xulP3MSVuCPlidRLgWrL17O0OR2NuGsXAqLNQFs8OWouc/vZsvuBS/AQdSYcnK6m
-         eoGmbLfJD1oOyODwZVuApfBy94Bju76i8sNAl1ine1acLtQ+EPOYD9JVAJricQbUsCaX
-         Bj5Jx2KVYMR9pQm6pLorJEGggr7lCzEZxEXHx5CLF7bQ1ORl50Yn8kKLJUpXh+guPRns
-         V1z1guCkTZmeBXfR+BFyBA+jEZukvMyFt5I3Hd4jUveRh2VA7qRzpl/Baktq4mslem6F
-         Peww==
-X-Gm-Message-State: AOAM5317jXYDJqJBDLyrzRQ4XLB5PoRK8iFVROaUwC4BCNIauuhbK8YV
-        cCA8tv57NesHLP49F2LLyZAUG0uQoOA=
-X-Google-Smtp-Source: ABdhPJynt9QzUSj9vkFJj3pkT88W7owSe4iIAWvzVH1W2Ly0hi6wSMTUxNeMjwoL6tLZxJeEgGmW1A==
-X-Received: by 2002:a17:906:607:: with SMTP id s7mr3190600ejb.495.1615377885937;
-        Wed, 10 Mar 2021 04:04:45 -0800 (PST)
+        bh=sox2Ii9W50FhUaR8bUHhhLyqmibUnWMc7Ry439DSURE=;
+        b=J39f8MI4Dag3oWLvRgPzG3fCwAeit6nryFYwI6rT+cM+ESgwTRkVDNnxIT7pRlTpYv
+         NeoZAfBoHQOvtWPhEemjKv9+L+/M+/p4onc3TTh1iO1FZznk0ByzW4X3+OyxcrdwdRCv
+         zIi+kfevI2Wp4NI6ObKV1WrgjBmZ2pGUFudoozQ/SgxNmb7EXF5ttRM4EDk9QtmGkGrA
+         iLmmnUF6dFePPLNl3laGwMRXh+53uvyL3G0CS3F23b1FIQYxlMSAVZMZfKz+tGzqLqJ0
+         lLv0XwmXLk9AxawiSMsoGHY3VliXG1gxJ1Wcb2x1SFKR5eNeRDN5zUHwbr8KZ3mjZGBA
+         vZ5Q==
+X-Gm-Message-State: AOAM533alfdpjWh3mitaD25tpYZMGFeol8D1sHPy+wdLiurXEMZY22Dl
+        EGO0tTWzaGQTiW4BskqtVYo=
+X-Google-Smtp-Source: ABdhPJzJDbXQGEp7eVN1xXjORdIJ+Nh0ugIsaSRJFZgj1rV/C0Ty9mz0PI9tdQfYdS9eQ+x5Dsrd9w==
+X-Received: by 2002:aa7:d841:: with SMTP id f1mr2813198eds.286.1615377886815;
+        Wed, 10 Mar 2021 04:04:46 -0800 (PST)
 Received: from localhost.localdomain ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id q20sm9913239ejs.41.2021.03.10.04.04.45
+        by smtp.gmail.com with ESMTPSA id q20sm9913239ejs.41.2021.03.10.04.04.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 04:04:45 -0800 (PST)
+        Wed, 10 Mar 2021 04:04:46 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 X-Google-Original-From: Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     Alex Marginean <alexandru.marginean@nxp.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: [PATCH net-next 05/12] net: enetc: squash clear_cbdr and free_cbdr into teardown_cbdr
-Date:   Wed, 10 Mar 2021 14:03:44 +0200
-Message-Id: <20210310120351.542292-6-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 06/12] net: enetc: pass bd_count as an argument to enetc_setup_cbdr
+Date:   Wed, 10 Mar 2021 14:03:45 +0200
+Message-Id: <20210310120351.542292-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210310120351.542292-1-vladimir.oltean@nxp.com>
 References: <20210310120351.542292-1-vladimir.oltean@nxp.com>
@@ -65,101 +65,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All call sites call enetc_clear_cbdr and enetc_free_cbdr one after
-another, so let's combine the two functions into a single method named
-enetc_teardown_cbdr which does both, and in the same order.
+It makes no sense from an API perspective to first initialize some
+portion of struct enetc_cbdr outside enetc_setup_cbdr, then leave that
+function to initialize the rest. enetc_setup_cbdr should be able to
+perform all initialization given a zero-initialized struct enetc_cbdr.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c      |  6 ++----
- drivers/net/ethernet/freescale/enetc/enetc.h      |  3 +--
- drivers/net/ethernet/freescale/enetc/enetc_cbdr.c | 11 ++++-------
- drivers/net/ethernet/freescale/enetc/enetc_pf.c   |  3 +--
- 4 files changed, 8 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c      | 6 ++----
+ drivers/net/ethernet/freescale/enetc/enetc.h      | 2 +-
+ drivers/net/ethernet/freescale/enetc/enetc_cbdr.c | 5 +++--
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c   | 3 +--
+ 4 files changed, 7 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index b1077a6e2b2b..a32283533408 100644
+index a32283533408..06fcab53c471 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -1078,8 +1078,7 @@ int enetc_alloc_si_resources(struct enetc_ndev_priv *priv)
- 	return 0;
- 
- err_alloc_cls:
--	enetc_clear_cbdr(&si->cbd_ring);
--	enetc_free_cbdr(&si->cbd_ring);
-+	enetc_teardown_cbdr(&si->cbd_ring);
- 
- 	return err;
+@@ -1054,9 +1054,6 @@ void enetc_init_si_rings_params(struct enetc_ndev_priv *priv)
+ 	priv->bdr_int_num = cpus;
+ 	priv->ic_mode = ENETC_IC_RX_ADAPTIVE | ENETC_IC_TX_MANUAL;
+ 	priv->tx_ictt = ENETC_TXIC_TIMETHR;
+-
+-	/* SI specific */
+-	si->cbd_ring.bd_count = ENETC_CBDR_DEFAULT_SIZE;
  }
-@@ -1088,8 +1087,7 @@ void enetc_free_si_resources(struct enetc_ndev_priv *priv)
- {
+ 
+ int enetc_alloc_si_resources(struct enetc_ndev_priv *priv)
+@@ -1064,7 +1061,8 @@ int enetc_alloc_si_resources(struct enetc_ndev_priv *priv)
  	struct enetc_si *si = priv->si;
+ 	int err;
  
--	enetc_clear_cbdr(&si->cbd_ring);
--	enetc_free_cbdr(&si->cbd_ring);
-+	enetc_teardown_cbdr(&si->cbd_ring);
+-	err = enetc_setup_cbdr(priv->dev, &si->hw, &si->cbd_ring);
++	err = enetc_setup_cbdr(priv->dev, &si->hw, ENETC_CBDR_DEFAULT_SIZE,
++			       &si->cbd_ring);
+ 	if (err)
+ 		return err;
  
- 	kfree(priv->cls_rules);
- }
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 9d4dbeef61ac..19772be63a2c 100644
+index 19772be63a2c..af8b8be114bd 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.h
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -314,8 +314,7 @@ void enetc_set_ethtool_ops(struct net_device *ndev);
+@@ -312,7 +312,7 @@ int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+ void enetc_set_ethtool_ops(struct net_device *ndev);
+ 
  /* control buffer descriptor ring (CBDR) */
- int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw,
+-int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw,
++int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw, int bd_count,
  		     struct enetc_cbdr *cbdr);
--void enetc_free_cbdr(struct enetc_cbdr *cbdr);
--void enetc_clear_cbdr(struct enetc_cbdr *cbdr);
-+void enetc_teardown_cbdr(struct enetc_cbdr *cbdr);
+ void enetc_teardown_cbdr(struct enetc_cbdr *cbdr);
  int enetc_set_mac_flt_entry(struct enetc_si *si, int index,
- 			    char *mac_addr, int si_map);
- int enetc_clear_mac_flt_entry(struct enetc_si *si, int index);
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
-index bb20a58e8830..bee453be2240 100644
+index bee453be2240..073e56dcca4e 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
-@@ -44,22 +44,19 @@ int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw,
- 	return 0;
- }
+@@ -3,10 +3,10 @@
  
--void enetc_free_cbdr(struct enetc_cbdr *cbdr)
-+void enetc_teardown_cbdr(struct enetc_cbdr *cbdr)
+ #include "enetc.h"
+ 
+-int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw,
++int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw, int bd_count,
+ 		     struct enetc_cbdr *cbdr)
  {
- 	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
+-	int size = cbdr->bd_count * sizeof(struct enetc_cbd);
++	int size = bd_count * sizeof(struct enetc_cbd);
  
-+	/* disable ring */
-+	enetc_wr_reg(cbdr->mr, 0);
-+
- 	dma_free_coherent(cbdr->dma_dev, size, cbdr->bd_base,
- 			  cbdr->bd_dma_base);
- 	cbdr->bd_base = NULL;
- 	cbdr->dma_dev = NULL;
- }
+ 	cbdr->bd_base = dma_alloc_coherent(dev, size, &cbdr->bd_dma_base,
+ 					   GFP_KERNEL);
+@@ -23,6 +23,7 @@ int enetc_setup_cbdr(struct device *dev, struct enetc_hw *hw,
+ 	cbdr->next_to_clean = 0;
+ 	cbdr->next_to_use = 0;
+ 	cbdr->dma_dev = dev;
++	cbdr->bd_count = bd_count;
  
--void enetc_clear_cbdr(struct enetc_cbdr *cbdr)
--{
--	/* disable ring */
--	enetc_wr_reg(cbdr->mr, 0);
--}
--
- static void enetc_clean_cbdr(struct enetc_cbdr *ring)
- {
- 	struct enetc_cbd *dest_cbd;
+ 	cbdr->pir = hw->reg + ENETC_SICBDRPIR;
+ 	cbdr->cir = hw->reg + ENETC_SICBDRCIR;
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index f083d49d7772..4dd7199d5007 100644
+index 4dd7199d5007..bf70b8f9943f 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -1095,8 +1095,7 @@ static void enetc_init_unused_port(struct enetc_si *si)
- 	enetc_init_port_rfs_memory(si);
- 	enetc_init_port_rss_memory(si);
+@@ -1087,8 +1087,7 @@ static void enetc_init_unused_port(struct enetc_si *si)
+ 	struct enetc_hw *hw = &si->hw;
+ 	int err;
  
--	enetc_clear_cbdr(&si->cbd_ring);
--	enetc_free_cbdr(&si->cbd_ring);
-+	enetc_teardown_cbdr(&si->cbd_ring);
- }
+-	si->cbd_ring.bd_count = ENETC_CBDR_DEFAULT_SIZE;
+-	err = enetc_setup_cbdr(dev, hw, &si->cbd_ring);
++	err = enetc_setup_cbdr(dev, hw, ENETC_CBDR_DEFAULT_SIZE, &si->cbd_ring);
+ 	if (err)
+ 		return;
  
- static int enetc_pf_probe(struct pci_dev *pdev,
 -- 
 2.25.1
 
