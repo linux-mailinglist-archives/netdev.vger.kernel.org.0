@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F5C333243
+	by mail.lfdr.de (Postfix) with ESMTP id 96599333242
 	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:21:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231243AbhCJAU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 19:20:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53462 "EHLO mail.kernel.org"
+        id S231175AbhCJAU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 19:20:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53470 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230488AbhCJAUK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230489AbhCJAUK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 9 Mar 2021 19:20:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id AE08E6510B;
+Received: by mail.kernel.org (Postfix) with ESMTPS id B2B1065111;
         Wed, 10 Mar 2021 00:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1615335609;
-        bh=FHkBi/Z1ApOPtXjt1QScWU6krkKz/xizDbaxwKPWf80=;
+        bh=A9xqNkpPU4US1WXfOAO6VZgrS/aoRmo4VDOY0uO/VL8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DAg+gWkQgP5jdhGVFW5Tadec0iWND9YL5H1t+b9smQbObGSRCtgdaVlvdZtMZZXyx
-         FMVx6KcRrz6LqYNMK4uPvRxKxILVbvQORVAnxc87/G7PRpBMu75qvr/lwN7S6cvXd+
-         DDa9IkUz5DzW7ot6VL6mVg3+4N8f7bv8VmCo9Qspztj67qyGFykQnEOtB7Q53o48y3
-         DAHEvz102gBdCvaQvm631VcP1UabTWXZxT2TwnxAz6m2+shAJziTGyvXjMEUm8SGTr
-         +wnNwUgY/Om2L2LE26zLvasQRQ/s5kb/xvO0pjFenUJ4yBf4Pt9QWsCmi+SsDyg4+h
-         kHCBEfRLRNnzQ==
+        b=anb3FPDDgekaPjN2fPP9lXM3Ev9RXubwB/w+lGkdTQrr/rzn6mw6Y8yGd6srkYqTU
+         LWmM4tQOXEsOGGlG8SLwl/CorEKo9W9yWXqhKHAK8OLWWTXjJuVkIBpgGi5t6goeUS
+         V+KsWZ7Xg4JWyYMdKlZ2TBjertk8wFxXadL/ujWuoTiMNdxksj0jnDFBPya7ZB9PeR
+         l3AcEv4uzsmd5Q7Pm0IgA/kVnmGAjfwAVr4mPnOomSa+WTvMxwfjghlloh+turPKDH
+         UiYQmyXudRYkXepy9jR5Xt6bWnTv5+B1SvyfNsW80vYtQy1Ni8GFcBBBfKmb7VFDU8
+         xkF56jpmx/qCg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9FE8B60A57;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A8C09609EC;
         Wed, 10 Mar 2021 00:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] s390/qeth: fixes 2021-03-09
+Subject: Re: [PATCH net] net: dsa: xrs700x: check if partner is same as port in
+ hsr join
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161533560965.32666.13038202888156607895.git-patchwork-notify@kernel.org>
+Message-Id: <161533560968.32666.6725371503487188210.git-patchwork-notify@kernel.org>
 Date:   Wed, 10 Mar 2021 00:20:09 +0000
-References: <20210309165221.1735641-1-jwi@linux.ibm.com>
-In-Reply-To: <20210309165221.1735641-1-jwi@linux.ibm.com>
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, hca@linux.ibm.com, kgraul@linux.ibm.com
+References: <20210308233822.59729-1-george.mccollister@gmail.com>
+In-Reply-To: <20210308233822.59729-1-george.mccollister@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue,  9 Mar 2021 17:52:17 +0100 you wrote:
-> Hi Dave & Jakub,
-> 
-> please apply the following patch series to netdev's net tree.
-> 
-> This brings one fix for a memleak in an error path of the setup code.
-> Also several fixes for dealing with pending TX buffers - two for old
-> bugs in their completion handling, and one recent regression in a
-> teardown path.
+On Mon,  8 Mar 2021 17:38:22 -0600 you wrote:
+> Don't assign dp to partner if it's the same port that xrs700x_hsr_join
+> was called with. The partner port is supposed to be the other port in
+> the HSR/PRP redundant pair not the same port. This fixes an issue
+> observed in testing where forwarding between redundant HSR ports on this
+> switch didn't work depending on the order the ports were added to the
+> hsr device.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/4] s390/qeth: fix memory leak after failed TX Buffer allocation
-    https://git.kernel.org/netdev/net/c/e7a36d27f6b9
-  - [net,2/4] s390/qeth: improve completion of pending TX buffers
-    https://git.kernel.org/netdev/net/c/c20383ad1656
-  - [net,3/4] s390/qeth: schedule TX NAPI on QAOB completion
-    https://git.kernel.org/netdev/net/c/3e83d467a08e
-  - [net,4/4] s390/qeth: fix notification for pending buffers during teardown
-    https://git.kernel.org/netdev/net/c/7eefda7f353e
+  - [net] net: dsa: xrs700x: check if partner is same as port in hsr join
+    https://git.kernel.org/netdev/net/c/286a8624d7f9
 
 You are awesome, thank you!
 --
