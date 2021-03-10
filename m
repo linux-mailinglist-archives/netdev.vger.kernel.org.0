@@ -2,98 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72528333CE3
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 13:52:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FEAB333D2D
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 13:59:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbhCJMwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 07:52:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231993AbhCJMwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:52:15 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EA6C061760
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:52:15 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id r3so25070550lfc.13
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:52:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=42SiVyZh8edce6RravWC5/J0Ena3Q7WSf5MxDdvC78I=;
-        b=p4G7wY/rwGwCgEH3HhL8ysG+1+ZpTWBYtB09IeBbYwpKwz388j4paFZi3TnZkjeQyD
-         dh+Ms1J90izV8r7pK8xCjSUZJHIAj+VNYMAA8L9GzKrBtaQX5MpLxrh8EIvq8pjUDYte
-         4m1CtP6wBFxNH1knNtyKYAZyipnzDy+kaFVXYLMOsJWKxY4yh6KSajUBMMOOV5brBteg
-         DMyRR8wvEOxjpbcHeMX+iINnhBJh8V8KQaN3CsJl8YzVKckhoY09v4YGf7RgrDCAKHRZ
-         8Yioic/qA5gGOU+jqgIaEDRCSawkyGIjnWVVTSaC6+2eES2Wlojm99NKAaAglWtGAzYu
-         Bcuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=42SiVyZh8edce6RravWC5/J0Ena3Q7WSf5MxDdvC78I=;
-        b=TYLoceyIvqTV0NTM2Vpmcl6HyD/zoC5VI7FcBX7G7GDKe019bgMOgRRbL+jlXVPKIt
-         +QzFabHpTZUVQ6tSvetdT1cOWnx7SJ9kyDrybvY88EYiIRIZAPOIKE991Vk5/s56zVpF
-         GlzjcE4dO/TpdbEplVGcQsNcJVfbFp7Kk2xgjkN9xlWSpvPwH8LQqMDQrKlins2wzgs8
-         dbfr6KtCB7asfiynR3qwC9K4MWZSG6tc4j9Ku3mAPIr2rJCqFOcS/wIgh9LPQZgJ6adr
-         oiIeMD4k8q94M/j06YUs4xpa2KEDYmK54GfIpyyMDPDt99rxTGCectxi9B1SJ0Jt+yJH
-         LE+Q==
-X-Gm-Message-State: AOAM5313gvS2hcbO9EdaBJvBRBbt654Raavk4+jb2kXRJEevcPFkpEbE
-        h7D/Fn7cqynSKrAX+qTgnHrdq4q4qlc=
-X-Google-Smtp-Source: ABdhPJwDTKVkkiI+bgsX9j59zV4yU33wYZy2bFIt7tiOcPKHDP5ECYaZRyznTH4lX+zoU5gyzqwVEg==
-X-Received: by 2002:a19:7412:: with SMTP id v18mr1902937lfe.234.1615380733652;
-        Wed, 10 Mar 2021 04:52:13 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id f8sm3124737ljp.24.2021.03.10.04.52.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 04:52:13 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH] net: dsa: bcm_sf2: use 2 Gbps IMP port link on BCM4908
-Date:   Wed, 10 Mar 2021 13:51:59 +0100
-Message-Id: <20210310125159.28533-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S232729AbhCJM6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 07:58:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52529 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232638AbhCJM6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:58:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615381122;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=focYiE8f6AZlwFwtTWyFc1fGn5rNUZQWCBuImpia4/w=;
+        b=V4lLFObT4mUQBI0GvseH0lTKYUcFnTVnUEV8iNLV3g0fCv0K6qWvf8aTCjlQaVaT4zaVbs
+        1kv7jqzmZt9VnK8K7UGRGgZ2zrj27PUU8yoVinC64/91AGuTHNYGAycORsavLkkDiY0lEw
+        3TQP4kfdNao7hMJ1bV9lZ5IQqPcPStY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-24-mZVwZQJ_MeK5xzM2jKWTiw-1; Wed, 10 Mar 2021 07:58:40 -0500
+X-MC-Unique: mZVwZQJ_MeK5xzM2jKWTiw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D16891084D68;
+        Wed, 10 Mar 2021 12:58:37 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-12-26.pek2.redhat.com [10.72.12.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0995960C0F;
+        Wed, 10 Mar 2021 12:58:31 +0000 (UTC)
+Subject: Re: [RFC v4 07/11] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210223115048.435-1-xieyongji@bytedance.com>
+ <20210223115048.435-8-xieyongji@bytedance.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <2c7446dd-38f8-a06a-e423-6744c6a7207f@redhat.com>
+Date:   Wed, 10 Mar 2021 20:58:30 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20210223115048.435-8-xieyongji@bytedance.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
 
-BCM4908 uses 2 Gbps link between switch and the Ethernet interface.
-Without this BCM4908 devices were able to achieve only 2 x ~895 Mb/s.
-This allows handling e.g. NAT traffic with 940 Mb/s.
+On 2021/2/23 7:50 下午, Xie Yongji wrote:
+> +
+> +	switch (cmd) {
+> +	case VDUSE_IOTLB_GET_FD: {
+> +		struct vduse_iotlb_entry entry;
+> +		struct vhost_iotlb_map *map;
+> +		struct vdpa_map_file *map_file;
+> +		struct file *f = NULL;
+> +
+> +		ret = -EFAULT;
+> +		if (copy_from_user(&entry, argp, sizeof(entry)))
+> +			break;
+> +
+> +		spin_lock(&dev->iommu_lock);
+> +		map = vhost_iotlb_itree_first(dev->iommu, entry.start,
+> +					      entry.last);
+> +		if (map) {
+> +			map_file = (struct vdpa_map_file *)map->opaque;
+> +			f = get_file(map_file->file);
+> +			entry.offset = map_file->offset;
+> +			entry.start = map->start;
+> +			entry.last = map->last;
+> +			entry.perm = map->perm;
+> +		}
+> +		spin_unlock(&dev->iommu_lock);
+> +		if (!f) {
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +		if (copy_to_user(argp, &entry, sizeof(entry))) {
+> +			fput(f);
+> +			ret = -EFAULT;
+> +			break;
+> +		}
+> +		ret = get_unused_fd_flags(perm_to_file_flags(entry.perm));
+> +		if (ret < 0) {
+> +			fput(f);
+> +			break;
+> +		}
+> +		fd_install(ret, f);
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
- drivers/net/dsa/bcm_sf2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 7583fc12a9d7..d183206c4bb4 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -114,7 +114,10 @@ static void bcm_sf2_imp_setup(struct dsa_switch *ds, int port)
- 		/* Force link status for IMP port */
- 		reg = core_readl(priv, offset);
- 		reg |= (MII_SW_OR | LINK_STS);
--		reg &= ~GMII_SPEED_UP_2G;
-+		if (priv->type == BCM4908_DEVICE_ID)
-+			reg |= GMII_SPEED_UP_2G;
-+		else
-+			reg &= ~GMII_SPEED_UP_2G;
- 		core_writel(priv, reg, offset);
- 
- 		/* Enable Broadcast, Multicast, Unicast forwarding to IMP port */
--- 
-2.26.2
+So at least we need to use receice_fd_user() here to give a chance to be 
+hooked into security module.
+
+Consider this is bascially a kind of passing file descriptor implicitly. 
+We need to be careful if any security stufss is missed.
+
+(Have a quick glance at scm_send/recv, feel ok but need to double check).
+
+Thanks
+
+
+> +		break;
+> +	}
 
