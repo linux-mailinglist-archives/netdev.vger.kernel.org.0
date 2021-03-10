@@ -2,115 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5202B334BF1
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 23:51:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A75334C03
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 23:55:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbhCJWvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 17:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
+        id S233818AbhCJWyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 17:54:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbhCJWux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 17:50:53 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4824FC061574;
-        Wed, 10 Mar 2021 14:50:53 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id t37so1583888pga.11;
-        Wed, 10 Mar 2021 14:50:53 -0800 (PST)
+        with ESMTP id S233992AbhCJWyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 17:54:02 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92953C061574;
+        Wed, 10 Mar 2021 14:54:01 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id p8so42101104ejb.10;
+        Wed, 10 Mar 2021 14:54:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1ODlB+wNAjJfOqOwgdUqm3qy/TaXtDcdVcL1QIyUcxw=;
-        b=L1NB2n+s2nV0b/NkmKm3lGAQTJruIQVn0bGrmwxfpZZlWgrYm1PofJ5Ma99HXP9wfn
-         hRiYyge7WWvk6rT2ZHDjidzXetOszj9Hm99Bu1WJDCo/CuUwjS85dhUizp8L4221GHo0
-         5fPo8cHY0F27HrwH63UDVY0HchmFGGTUsPtuYazP+CPE7G8078JQlybQas4hj7NoBfxa
-         AENw6h3Y5fQgngI93+hZadxZtEwRCgweUks44nPumeRW1QI/Lg1A69LUISdeXGKOPOJ4
-         BikE/4L0dUHr7IOocLF70YhhrHk95Rc/Ik2tAbODGCtmQEkiEFtb9MzzE/051BToqqdZ
-         t1Mg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4uV+qg2CjOKVdh2/NJUj9nvCWYeZPYQ96C2PXBxbl7A=;
+        b=hUZp8t8t4c8cx4X1d6YapLxX7wrGUJ5nyldG5IBa8ucjiqNvwVngHLfWeZZ+YDigff
+         d1+mpmV2/7BWX0g2m5UrrFRQweWoqSSXvz4NKDHUNbw8xyADpUtbeC5yuT8FrgXm1q4i
+         uSdE+oDyhaV+aaCmwzs4+mSVWp3GwUVfhxF9DGjZL0yokg7QmRFloZj0ksFxS5FGhwPn
+         OkMtv5p/44fPDlfjokVnNnCSWjvIB2lK7CDw8gZn4aeOhHAJfjtvFyGw2ul7e03vn7tB
+         aaQhZq6X5FAsX7N3IgANG7YgkQEJe7cnxeTS6qHXFArjpbp8vLTv52w70l5pi2OY/EcQ
+         NlTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1ODlB+wNAjJfOqOwgdUqm3qy/TaXtDcdVcL1QIyUcxw=;
-        b=igxJQ6hvBTDDTFHss38XRq1XCmvVYeF8sEFoanyrmA9N/CWtEBt6NV2E/Z1NmqXMz4
-         vLNa3qlq5dm1KzZVp15l2C9pVuMgZYixJe+hEnTCMN9Jq6paqpHsaDSTqen4D7E/3EZd
-         s1mH+Aiimdqpx4BGlYApWqMexUHLI/xJMLKHrIsP0aWnKmDZTSQtvGlLJ1cQyZfNNY1/
-         nWsAV7cl2nRM3/SGbNPQRe8NwvtFMxd9Xqxi1LP7PE+0ZHQYsGbC9avIaUIIfAEbJb++
-         rxw4/jfp/PA/WzOyTk+ht9lQBp3q+OIq0gt/QojItoH9iNSTEnksLt+X+NcxaRUed8cJ
-         KRNQ==
-X-Gm-Message-State: AOAM531GA0e37aHxf6k1XLwDtTNc6MsG7KhnzZ8CBozuOh1+ouIIga1x
-        XUG0aP+lANofkkUmUA79zjX90X7qJCI=
-X-Google-Smtp-Source: ABdhPJxnd3LSSyf97w+mWaV2VLRCEK98LA0F//Khv28j0B+eeZ/FQoWk2r2+EodGgDIjSSqrfGNKNg==
-X-Received: by 2002:aa7:8a19:0:b029:1f6:6839:7211 with SMTP id m25-20020aa78a190000b02901f668397211mr4666246pfa.40.1615416652204;
-        Wed, 10 Mar 2021 14:50:52 -0800 (PST)
-Received: from [10.67.49.104] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a22sm476947pgw.52.2021.03.10.14.50.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Mar 2021 14:50:51 -0800 (PST)
-Subject: Re: [PATCH net-next] net: phy: Expose phydev::dev_flags through sysfs
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20210310221244.2968469-1-f.fainelli@gmail.com>
- <20210310144848.53ffbbd9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ca946873-3872-dbc2-3331-d388782bd17e@gmail.com>
-Date:   Wed, 10 Mar 2021 14:50:50 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        bh=4uV+qg2CjOKVdh2/NJUj9nvCWYeZPYQ96C2PXBxbl7A=;
+        b=IEqLUkraYEH+AqCgoO/XOaiMsVE1d0wwZwYe99+Z++e6G41sjaBDkQMNm7JbXGnE+F
+         HajQjobp9UcNKQY/5StFd/YDqOIILyWEIQDdGK03fsJT0lJXE3brUrtD0hG1u+GFHA8C
+         fPxVm+9lXh/Qi0+5+fjyPwuGS6/h4aqOLprOWO8RR3rXlS9Fe7zi+7WIiTZqBL5FUrjM
+         KqFEGlkBuPkEwSZs86ep2AwxfGWG8XrYH1ny2HLqvzev3YxotvwfxmxSRnP/yoLCq+ix
+         n92+XDKc2MsPfB8gEUd42tN+V6LRMAH6ayqROdWOcjy3PYl2T/28/M1e2tuRWH/Yq66s
+         jgPA==
+X-Gm-Message-State: AOAM5329CZWY+ahrRtXYQZNbvPZfRIKteY0Y34kAnVT2DNvZKBUtc3lM
+        7PE+yKDD9X/ACf3i0Bc5rLc=
+X-Google-Smtp-Source: ABdhPJyaAnTp7x7iKvjJZApEFOzaSp/DCzIsyv9o/+hc9ww1iAAg2jboxcriTikoI+YBzUbtdozUZg==
+X-Received: by 2002:a17:906:5689:: with SMTP id am9mr188173ejc.298.1615416840346;
+        Wed, 10 Mar 2021 14:54:00 -0800 (PST)
+Received: from localhost.localdomain ([37.19.198.80])
+        by smtp.gmail.com with ESMTPSA id z17sm403447eju.27.2021.03.10.14.53.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Mar 2021 14:53:59 -0800 (PST)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, unixbhaskar@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     rdunlap@infradead.org
+Subject: [PATCH] net: fddi: skfp: Mundane typo fixes throughout the file smt.h
+Date:   Thu, 11 Mar 2021 04:21:23 +0530
+Message-Id: <20210310225123.4676-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20210310144848.53ffbbd9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/21 2:48 PM, Jakub Kicinski wrote:
-> On Wed, 10 Mar 2021 14:12:43 -0800 Florian Fainelli wrote:
->> phydev::dev_flags contains a bitmask of configuration bits requested by
->> the consumer of a PHY device (Ethernet MAC or switch) towards the PHY
->> driver. Since these flags are often used for requesting LED or other
->> type of configuration being able to quickly audit them without
->> instrumenting the kernel is useful.
->>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->>  Documentation/ABI/testing/sysfs-class-net-phydev | 12 ++++++++++++
->>  drivers/net/phy/phy_device.c                     | 11 +++++++++++
->>  2 files changed, 23 insertions(+)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
->> index 40ced0ea4316..ac722dd5e694 100644
->> --- a/Documentation/ABI/testing/sysfs-class-net-phydev
->> +++ b/Documentation/ABI/testing/sysfs-class-net-phydev
->> @@ -51,3 +51,15 @@ Description:
->>  		Boolean value indicating whether the PHY device is used in
->>  		standalone mode, without a net_device associated, by PHYLINK.
->>  		Attribute created only when this is the case.
->> +
->> +What:		/sys/class/mdio_bus/<bus>/<device>/phy_dev_flags
->> +Date:		March 2021
->> +KernelVersion:	5.13
->> +Contact:	netdev@vger.kernel.org
->> +Description:
->> +		32-bit hexadecimal number representing a bit mask of the
->> +		configuration bits passed from the consumer of the PHY
->> +		(Ethernet MAC, switch, etc.) to the PHY driver. The flags are
->> +		only used internally by the kernel and their placement are
->> +		not meant to be stable across kernel versions. This is intended
->> +		for facilitating the debugging of PHY drivers.
-> 
-> Why not debugfs, then?
-> 
 
-Mostly for consistency with what we already have exposed, I suppose that
-could be moved to debugfs.
+Few spelling fixes throughout the file.
 
--- 
-Florian
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+---
+ drivers/net/fddi/skfp/h/smt.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/fddi/skfp/h/smt.h b/drivers/net/fddi/skfp/h/smt.h
+index a0dbc0f57a55..8d104f13e2c3 100644
+--- a/drivers/net/fddi/skfp/h/smt.h
++++ b/drivers/net/fddi/skfp/h/smt.h
+@@ -411,7 +411,7 @@ struct smt_p_reason {
+ #define SMT_RDF_ILLEGAL 0x00000005	/* read only (PMF) */
+ #define SMT_RDF_NOPARAM	0x6		/* parameter not supported (PMF) */
+ #define SMT_RDF_RANGE	0x8		/* out of range */
+-#define SMT_RDF_AUTHOR	0x9		/* not autohorized */
++#define SMT_RDF_AUTHOR	0x9		/* not authorized */
+ #define SMT_RDF_LENGTH	0x0a		/* length error */
+ #define SMT_RDF_TOOLONG	0x0b		/* length error */
+ #define SMT_RDF_SBA	0x0d		/* SBA denied */
+@@ -450,7 +450,7 @@ struct smt_p_version {
+
+ struct smt_p_0015 {
+ 	struct smt_para	para ;		/* generic parameter header */
+-	u_int		res_type ;	/* recsource type */
++	u_int		res_type ;	/* resource type */
+ } ;
+
+ #define	SYNC_BW		0x00000001L	/* Synchronous Bandwidth */
+@@ -489,7 +489,7 @@ struct smt_p_0017 {
+ struct smt_p_0018 {
+ 	struct smt_para	para ;		/* generic parameter header */
+ 	int		sba_ov_req ;	/* total sync bandwidth req for overhead*/
+-} ;					/* measuered in bytes per T_Neg */
++} ;					/* measured in bytes per T_Neg */
+
+ /*
+  * P19 : SBA Allocation Address
+@@ -562,7 +562,7 @@ struct smt_p_fsc {
+ #define FSC_TYPE2	2		/* Special A/C indicator forwarding */
+
+ /*
+- * P00 21 : user defined authoriziation (see pmf.c)
++ * P00 21 : user defined authorization (see pmf.c)
+  */
+ #define SMT_P_AUTHOR	0x0021
+
+--
+2.26.2
+
