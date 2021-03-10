@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB16333700
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:10:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECFB8333704
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:10:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231453AbhCJIKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 03:10:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33598 "EHLO
+        id S230437AbhCJIKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 03:10:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232413AbhCJIJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 03:09:36 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80566C06174A;
-        Wed, 10 Mar 2021 00:09:36 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id e7so32021976lft.2;
-        Wed, 10 Mar 2021 00:09:36 -0800 (PST)
+        with ESMTP id S232417AbhCJIJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 03:09:38 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F09C06174A;
+        Wed, 10 Mar 2021 00:09:37 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id v2so18952611lft.9;
+        Wed, 10 Mar 2021 00:09:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lPoLy6iry9bp7nyGZjIyjIuU2UCPeHladdDawX+/oBM=;
-        b=jWZN+ZpeZawy3hzTZNzE8wHigDOngslxR0g3MWsO7og6gH65vfoxx0UvPO5ZJ5cyIv
-         sIO2UuqSKHHS1wwL67t9CROro34RvkAfhYZLina47Qqgdlv4I2WVRWPq/nE0UVupYa5n
-         PZBmktrQHp6aH0x/GOzV+EkG/GH0BMz4x7F+0b6VELByRirgYpisSYAj7ipbQoFlhw/y
-         9IWhO/udIhqoatQiNmFZjCTWXHtFq+mRC1Y1vL4Q0uBAYeC04SlpB/grsbhAXKtvE95U
-         Kj23LfVmwwN09Uj5W1WIzNe64WY8GtFwL/XD4pcmN8sA8+hKxa0UUqhnCJufqCa1n0U8
-         Msaw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BE9RCcaNGpshX4iYJfUpPreL/M/EC4I0fqj7I0+J8sA=;
+        b=MHNTloGfVJlEqOjkFM3mJUUJqWUYKTYgInWP6FoqqHdaDRuuQUIRT4W0zOYpaPFfV2
+         a+GjQyoCjwijYLn5RJJXpOYcQG+YPV5vLc2wehWmzpQ4V2+EQVys2k84hg1JCCbZf+7s
+         P/3j8ZtcowAZ+arlsEs6GbuATNz2KkUmvz7pW6SNUogvMKThHmVDfFzIvQnfvxax0Y2U
+         sgdkhkALc3BSICzF/Ggtsm4yjwC5lL7u6qs+DiHV9h5m+0OlsGbiukYr9Uce5C46eTdW
+         hrpnpJXPyY7Ik6LPGCEwGi6/4lkbxjRe5ymPp+4V3xYe+NgICf422qDGhIWMK5M3zDQL
+         5v9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lPoLy6iry9bp7nyGZjIyjIuU2UCPeHladdDawX+/oBM=;
-        b=HLXqELlDhVwZ6ubIWtkdSjxHJDdyao68Wp6QQhWZXeHfbD5IPNGC0thtcCHWDBUGET
-         tU+DH/Ec0uiX5Y6KmYuZpM3qI+SHbb83ukexesz3YCJ0+pX3rB6Qkns/ut/MxNW1YbCX
-         tTlE+k/Op2YNxtDi7frD9cBmOq/lgO0mXle115p5PWpuDE0ga0FdkfVJzeunpDnpFr9R
-         b6eYDLQcnsVcRR2C8EEZxWQ0zTQe/9atZQq4P1TWX/ItGcrwP/xw4PwZ/YBNjcrouVAm
-         NT04O1ILI/wOIDhNPVyDCw/DvWHJ2xm2WZlVNiblrY8HOQXxIXeEM4ljjX9fV0U/b5yx
-         nT1A==
-X-Gm-Message-State: AOAM533cUKi2TKXwlNwpqCN7+YNxcztAA0qsEvi4C+DvCaCNDtUdbgoV
-        njsYzeiAlp/iTWWGBUQLFCcADSqiBLxNHA==
-X-Google-Smtp-Source: ABdhPJzu/SRNStd9lF6UFbr9McR9tHrmSq+zXl47gRWCY7i/GqB0TBxN+7iYzeXSRzrJSUbC1yPV6w==
-X-Received: by 2002:a19:ef02:: with SMTP id n2mr1286253lfh.141.1615363774987;
-        Wed, 10 Mar 2021 00:09:34 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BE9RCcaNGpshX4iYJfUpPreL/M/EC4I0fqj7I0+J8sA=;
+        b=I1qxxQHdnzbiU22DFpL3drWI+4bWRpN17H4MI8zDtewO6PxRQO4++rq8WzZlW4eSV9
+         jcW8TJ11OFpZyzMn6tt3kAKWk2o9NevMVWKg85gLFrCC15vZVAdcfiRqzW3u6+nMz9G7
+         wcgRS/yGl0DY+BlCN5RZalHyM28pp0MOdeGgRuUJ2NkKNpL5844is21g9BhBum6i74db
+         Q8zwvFGaHmnxQZm0gS6KId9xBjIHJmKiS9sE9VHj7LsSCIVW/0OK40jUMHXkxPLuCM+O
+         VthsjNoPc6bCKmasJ/WM3zOJ9Sp38R1iUNkkjS/Gqc3s1MaSGXVH6TPGcddyzfGaseqF
+         xl5g==
+X-Gm-Message-State: AOAM5310K93LytNOyfIr7YUB4ib9EJRzTNcYIBc0sFiEDhNysFK4hbY5
+        NeWrGpU4rZbHpV8lqkvAWMpN9WN3sRxl9Q==
+X-Google-Smtp-Source: ABdhPJzMIVpbe2ctzEfXuhNKjkrdkN/JoRxzNtFsP99pEd1VOrUkrBFPVvOOS0dZvAMbmROEC1c2dQ==
+X-Received: by 2002:a05:6512:224f:: with SMTP id i15mr1367987lfu.545.1615363776359;
+        Wed, 10 Mar 2021 00:09:36 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id x1sm2812130ljh.62.2021.03.10.00.09.33
+        by smtp.gmail.com with ESMTPSA id x1sm2812130ljh.62.2021.03.10.00.09.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 00:09:34 -0800 (PST)
+        Wed, 10 Mar 2021 00:09:35 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org, andrii@kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        ciara.loftus@intel.com
-Subject: [PATCH bpf-next 0/2] libbpf/xsk cleanups
-Date:   Wed, 10 Mar 2021 09:09:27 +0100
-Message-Id: <20210310080929.641212-1-bjorn.topel@gmail.com>
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        maximmi@nvidia.com, ciara.loftus@intel.com
+Subject: [PATCH bpf-next 1/2] libbpf: xsk: remove linux/compiler.h header
+Date:   Wed, 10 Mar 2021 09:09:28 +0100
+Message-Id: <20210310080929.641212-2-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210310080929.641212-1-bjorn.topel@gmail.com>
+References: <20210310080929.641212-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -65,27 +66,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series removes a header dependency from xsk.h, and moves
-libbpf_util.h into xsk.h.
+From: Björn Töpel <bjorn.topel@intel.com>
 
-More details in each commit!
+In commit 291471dd1559 ("libbpf, xsk: Add libbpf_smp_store_release
+libbpf_smp_load_acquire") linux/compiler.h was added as a dependency
+to xsk.h, which is the user-facing API. This makes it harder for
+userspace application to consume the library. Here the header
+inclusion is removed, and instead {READ,WRITE}_ONCE() is added
+explicitly.
 
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+---
+ tools/lib/bpf/libbpf_util.h | 27 +++++++++++++++++----------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
 
-Thank you,
-Björn
-
-Björn Töpel (2):
-  libbpf: xsk: remove linux/compiler.h header
-  libbpf: xsk: move barriers from libbpf_util.h to xsk.h
-
- tools/lib/bpf/Makefile      |  1 -
- tools/lib/bpf/libbpf_util.h | 75 -------------------------------------
- tools/lib/bpf/xsk.h         | 68 ++++++++++++++++++++++++++++++++-
- 3 files changed, 67 insertions(+), 77 deletions(-)
- delete mode 100644 tools/lib/bpf/libbpf_util.h
-
-
-base-commit: 32f91529e2bdbe0d92edb3ced41dfba4beffa84a
+diff --git a/tools/lib/bpf/libbpf_util.h b/tools/lib/bpf/libbpf_util.h
+index cfbcfc063c81..954da9b34a34 100644
+--- a/tools/lib/bpf/libbpf_util.h
++++ b/tools/lib/bpf/libbpf_util.h
+@@ -5,25 +5,30 @@
+ #define __LIBBPF_LIBBPF_UTIL_H
+ 
+ #include <stdbool.h>
+-#include <linux/compiler.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
+-/* Use these barrier functions instead of smp_[rw]mb() when they are
+- * used in a libbpf header file. That way they can be built into the
+- * application that uses libbpf.
++/* Load-Acquire Store-Release barriers used by the XDP socket
++ * library. The following macros should *NOT* be considered part of
++ * the xsk.h API, and is subject to change anytime.
++ *
++ * LIBRARY INTERNAL
+  */
++
++#define __XSK_READ_ONCE(x) (*(volatile typeof(x) *)&x)
++#define __XSK_WRITE_ONCE(x, v) (*(volatile typeof(x) *)&x) = (v)
++
+ #if defined(__i386__) || defined(__x86_64__)
+ # define libbpf_smp_store_release(p, v)					\
+ 	do {								\
+ 		asm volatile("" : : : "memory");			\
+-		WRITE_ONCE(*p, v);					\
++		__XSK_WRITE_ONCE(*p, v);				\
+ 	} while (0)
+ # define libbpf_smp_load_acquire(p)					\
+ 	({								\
+-		typeof(*p) ___p1 = READ_ONCE(*p);			\
++		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+ 		asm volatile("" : : : "memory");			\
+ 		___p1;							\
+ 	})
+@@ -41,11 +46,11 @@ extern "C" {
+ # define libbpf_smp_store_release(p, v)					\
+ 	do {								\
+ 		asm volatile ("fence rw,w" : : : "memory");		\
+-		WRITE_ONCE(*p, v);					\
++		__XSK_WRITE_ONCE(*p, v);				\
+ 	} while (0)
+ # define libbpf_smp_load_acquire(p)					\
+ 	({								\
+-		typeof(*p) ___p1 = READ_ONCE(*p);			\
++		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+ 		asm volatile ("fence r,rw" : : : "memory");		\
+ 		___p1;							\
+ 	})
+@@ -55,19 +60,21 @@ extern "C" {
+ #define libbpf_smp_store_release(p, v)					\
+ 	do {								\
+ 		__sync_synchronize();					\
+-		WRITE_ONCE(*p, v);					\
++		__XSK_WRITE_ONCE(*p, v);				\
+ 	} while (0)
+ #endif
+ 
+ #ifndef libbpf_smp_load_acquire
+ #define libbpf_smp_load_acquire(p)					\
+ 	({								\
+-		typeof(*p) ___p1 = READ_ONCE(*p);			\
++		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+ 		__sync_synchronize();					\
+ 		___p1;							\
+ 	})
+ #endif
+ 
++/* LIBRARY INTERNAL -- END */
++
+ #ifdef __cplusplus
+ } /* extern "C" */
+ #endif
 -- 
 2.27.0
 
