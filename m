@@ -2,128 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C333340A2
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 15:46:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A803340C1
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 15:51:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbhCJOqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 09:46:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58568 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232799AbhCJOp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 09:45:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615387559;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qe7vnreao5ThhJBhWOb2yAQo6akg/BiUCkUWjObNy9A=;
-        b=jAQEJb0XW/eBEz+KnlZaNF1G8qQYLiWlKJ/yjS2yJC17t9GJJK8qIa7nWSijsQjMlR2Is1
-        +HfoTiSWHZfMLWctwkjF/pOo33Jq7FuM1pCoCfYPY6Sk8uZv/dCygPi8mxgqI08ELaZSkY
-        fa5vmZwVVK0TSi5I4GO9nK2Zl98tr78=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-537-JSW_rIipNBejYMaweABS8A-1; Wed, 10 Mar 2021 09:45:55 -0500
-X-MC-Unique: JSW_rIipNBejYMaweABS8A-1
-Received: by mail-qk1-f198.google.com with SMTP id a137so9214363qkb.20
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 06:45:55 -0800 (PST)
+        id S232408AbhCJOvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 09:51:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230450AbhCJOu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 09:50:57 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFC0C061760
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 06:50:57 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id l12so28507198edt.3
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 06:50:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MrbkQsyDQbRWH3cY6hRKJgB0osGycZ7aLgmVqGraerU=;
+        b=YrA+WPKgF30D6mZB2n2SrLtcZnnd+1/pA+vF7D53khTPMt5Bg/8aTANYQxGmf7xu9v
+         iPFXQSxAlLfkiJuzSSnsNc+s9QpR+CyyDg7d3UB4bjpFW7KoA5PudT0UFj+eyXrSuaGo
+         8jBXfJZs9U011cIzjPrmJHXGfOWdfF+u+KZLsska5/OjqgQxoRlva/PSwhdtEdD16/Fi
+         fHQqxHISVwnZwP4o+dzcRn8/5ongzC9NaOvE4Uu7ioT+3OSerbyHaxeJIcwqN0tZUi++
+         JbXfIr5vriMosVa2nHh0Fk0vQiDMtyCNie8t+CoQ7yX8JcQ1gDIEOLuVqun7nOnq22Us
+         yNjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Qe7vnreao5ThhJBhWOb2yAQo6akg/BiUCkUWjObNy9A=;
-        b=NjmdxFDbBrMep8jl1B4CEUX7gfgiOTLt5PdqhPvXW9WwQDOq+U/Q0jyKp4flxaETh+
-         yUUrx/uNlvRyVOqQm2qs7R6HTAAffwfyWtYcyeZ+QOOS8HBX5E3YCVqhlbdfZM0qNTd2
-         jnMrRw3ofboNsppzw+uVgihlGsR9Kdjz/jIYU2yVl5I0g4Q7rk78bF4Ixx63eRMWcH02
-         BgA6zDTFODSay2pGr147u8oznaWLeKgmYKPvYd0YYsdiGudMhqHosn61TqZgovBKgsCR
-         XB3kkKhQBju4HYsc1TVe2hkxpq2wKj3N3ZPDWzyIdMEODwmAlYKqnJe/EGNFRxFHVXnl
-         QP1A==
-X-Gm-Message-State: AOAM530wkkAkaht+Z9QyS7WBD7iPs7oLgnslKQtmoS6ThfzVuvckd244
-        FAROSBT8nW3I9YXM2d/BBQuohuFcU5DOn1rlK/FK8P53hI+Pn2UvVmrquEeKuEcrFtL9bbMCVKI
-        7yUk/jAwOLuiqHpRM
-X-Received: by 2002:a0c:8ec7:: with SMTP id y7mr3256309qvb.9.1615387555276;
-        Wed, 10 Mar 2021 06:45:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwlNoVM9BzWQNjpadCXVlfERPTQuROOGObYqvdAhHPCzlyHzhNVdnm6DSobOhCibwSlI7/4+g==
-X-Received: by 2002:a0c:8ec7:: with SMTP id y7mr3256274qvb.9.1615387555052;
-        Wed, 10 Mar 2021 06:45:55 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id d2sm12859520qkk.42.2021.03.10.06.45.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Mar 2021 06:45:54 -0800 (PST)
-Subject: Re: [RFC v2 3/5] arm64: socfpga: rename ARCH_STRATIX10 to
- ARCH_SOCFPGA64
-To:     Lee Jones <lee.jones@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Moritz Fischer <mdf@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-fpga@vger.kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>
-References: <20210310083327.480837-1-krzysztof.kozlowski@canonical.com>
- <20210310083840.481615-1-krzysztof.kozlowski@canonical.com>
- <20210310094527.GA701493@dell>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <35c39c81-08e4-24c8-f683-2fa7a7ea71de@redhat.com>
-Date:   Wed, 10 Mar 2021 06:45:50 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MrbkQsyDQbRWH3cY6hRKJgB0osGycZ7aLgmVqGraerU=;
+        b=Z3vN70H2L9i64q8SrJnl+O56CU3MRXuBaUqUrBorRON7Uelxpz0DThGpCwmhTT0IpV
+         y2fcdUITN+mfueb5TAEesFAiK4MxGFX/TGqXbR7VB0oZbm33jvoPt8hKW/fxwJ7D/HvQ
+         0vkYE241u4QHEHxmCStflOz8782QSWT/6cmZJPJjMDbCz47bhSuBAoZCQEFdFXH6ROvP
+         JoweNy2aUq8Z/wMueaZMx/iPK/f48g9Vae0gxhkIqoCIZv+2OjVUVZCuY26Wc+T64hKX
+         XRI3eCO0A5PEeprl/hWexP+gDsbvq/bDzKw3Ilysh7xMlZ0CyDbv2YGVsxwFu8fh+sMm
+         1GWQ==
+X-Gm-Message-State: AOAM530yNkiJLe0rD3aVTu298zJNZJFfghmg2qJk0+rSykcfHj/1ecps
+        rD4vAVsTOjC3hFCOMkectks=
+X-Google-Smtp-Source: ABdhPJzh755uR1RzdzZrnMZH7H1a2PceCSk+EWh34U4Ba55PzSSO19yWTaJ/n6xNebSjyOscskNBrQ==
+X-Received: by 2002:a05:6402:375:: with SMTP id s21mr3673556edw.287.1615387855714;
+        Wed, 10 Mar 2021 06:50:55 -0800 (PST)
+Received: from localhost.localdomain ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id g1sm11087149edh.31.2021.03.10.06.50.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Mar 2021 06:50:55 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+X-Google-Original-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: [PATCH net-next] net: add a helper to avoid issues with HW TX timestamping and SO_TXTIME
+Date:   Wed, 10 Mar 2021 16:50:44 +0200
+Message-Id: <20210310145044.614429-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210310094527.GA701493@dell>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As explained in commit 29d98f54a4fe ("net: enetc: allow hardware
+timestamping on TX queues with tc-etf enabled"), hardware TX
+timestamping requires an skb with skb->tstamp = 0. When a packet is sent
+with SO_TXTIME, the skb->skb_mstamp_ns corrupts the value of skb->tstamp,
+so the drivers need to explicitly reset skb->tstamp to zero after
+consuming the TX time.
 
-On 3/10/21 1:45 AM, Lee Jones wrote:
-> On Wed, 10 Mar 2021, Krzysztof Kozlowski wrote:
->
->> Prepare for merging Stratix 10, Agilex and N5X into one arm64
->> architecture by first renaming the ARCH_STRATIX10 into ARCH_SOCFPGA64.
->>
->> The existing ARCH_SOCFPGA (in ARMv7) Kconfig symbol cannot be used
->> because altera_edac driver builds differently between them (with
->> ifdefs).
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->> ---
->>  arch/arm64/Kconfig.platforms                |  7 ++++---
->>  arch/arm64/boot/dts/altera/Makefile         |  2 +-
->>  arch/arm64/configs/defconfig                |  2 +-
->>  drivers/clk/Makefile                        |  2 +-
->>  drivers/clk/socfpga/Kconfig                 |  4 ++--
->>  drivers/edac/Kconfig                        |  2 +-
->>  drivers/edac/altera_edac.c                  | 10 +++++-----
->>  drivers/firmware/Kconfig                    |  2 +-
->>  drivers/fpga/Kconfig                        |  2 +-
->>  drivers/mfd/Kconfig                         |  2 +-
-> If it's okay with everyone else, it'll be okay with me:
->
-> Acked-by: Lee Jones <lee.jones@linaro.org>
+Create a helper named skb_txtime_consumed() which does just that. All
+drivers which offload TC_SETUP_QDISC_ETF should implement it, and it
+would make it easier to assess during review whether they do the right
+thing in order to be compatible with hardware timestamping or not.
 
-I think the name is too broad, from the description in the config
+Suggested-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc.c | 8 ++------
+ drivers/net/ethernet/intel/igb/igb_main.c    | 2 +-
+ drivers/net/ethernet/intel/igc/igc_main.c    | 2 +-
+ include/net/pkt_sched.h                      | 9 +++++++++
+ 4 files changed, 13 insertions(+), 8 deletions(-)
 
-+	bool "Intel's SoCFPGA ARMv8 Families"
-
-A better name would be ARCH_INTEL_SOCFPGA64
-
-So other vendors like Xilinx could do their own thing.
-
-Tom
-
->
->>  drivers/net/ethernet/stmicro/stmmac/Kconfig |  4 ++--
->>  drivers/reset/Kconfig                       |  2 +-
->>  12 files changed, 21 insertions(+), 20 deletions(-)
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index e85dfccb9ed1..5a54976e6a28 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -5,6 +5,7 @@
+ #include <linux/tcp.h>
+ #include <linux/udp.h>
+ #include <linux/vmalloc.h>
++#include <net/pkt_sched.h>
+ 
+ /* ENETC overhead: optional extension BD + 1 BD gap */
+ #define ENETC_TXBDS_NEEDED(val)	((val) + 2)
+@@ -293,12 +294,7 @@ static void enetc_tstamp_tx(struct sk_buff *skb, u64 tstamp)
+ 	if (skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS) {
+ 		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+ 		shhwtstamps.hwtstamp = ns_to_ktime(tstamp);
+-		/* Ensure skb_mstamp_ns, which might have been populated with
+-		 * the txtime, is not mistaken for a software timestamp,
+-		 * because this will prevent the dispatch of our hardware
+-		 * timestamp to the socket.
+-		 */
+-		skb->tstamp = ktime_set(0, 0);
++		skb_txtime_consumed(skb);
+ 		skb_tstamp_tx(skb, &shhwtstamps);
+ 	}
+ }
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 878b31d534ec..369533feb4f2 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -5856,7 +5856,7 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
+ 	 */
+ 	if (tx_ring->launchtime_enable) {
+ 		ts = ktime_to_timespec64(first->skb->tstamp);
+-		first->skb->tstamp = ktime_set(0, 0);
++		skb_txtime_consumed(first->skb);
+ 		context_desc->seqnum_seed = cpu_to_le32(ts.tv_nsec / 32);
+ 	} else {
+ 		context_desc->seqnum_seed = 0;
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 7ac9597ddb84..059ffcfb0bda 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -941,7 +941,7 @@ static void igc_tx_ctxtdesc(struct igc_ring *tx_ring,
+ 		struct igc_adapter *adapter = netdev_priv(tx_ring->netdev);
+ 		ktime_t txtime = first->skb->tstamp;
+ 
+-		first->skb->tstamp = ktime_set(0, 0);
++		skb_txtime_consumed(first->skb);
+ 		context_desc->launch_time = igc_tx_launchtime(adapter,
+ 							      txtime);
+ 	} else {
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index 15b1b30f454e..f5c1bee0cd6a 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -188,4 +188,13 @@ struct tc_taprio_qopt_offload *taprio_offload_get(struct tc_taprio_qopt_offload
+ 						  *offload);
+ void taprio_offload_free(struct tc_taprio_qopt_offload *offload);
+ 
++/* Ensure skb_mstamp_ns, which might have been populated with the txtime, is
++ * not mistaken for a software timestamp, because this will otherwise prevent
++ * the dispatch of hardware timestamps to the socket.
++ */
++static inline void skb_txtime_consumed(struct sk_buff *skb)
++{
++	skb->tstamp = ktime_set(0, 0);
++}
++
+ #endif
+-- 
+2.25.1
 
