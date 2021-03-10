@@ -2,147 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BAAB3347E9
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:28:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D8FA3347EC
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:28:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233725AbhCJT1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 14:27:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
+        id S233735AbhCJT2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 14:28:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233418AbhCJT1H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 14:27:07 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A06DC061760
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 11:27:07 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id ha17so1432718pjb.2
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 11:27:07 -0800 (PST)
+        with ESMTP id S232633AbhCJT1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 14:27:31 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE3CC061760;
+        Wed, 10 Mar 2021 11:27:31 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id l8so19032593ybe.12;
+        Wed, 10 Mar 2021 11:27:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=8dftNfGs7u/TavY2VL10CRoiQcorWiSHQAURk/X4aiU=;
-        b=Y4ggoDjjzc6uk67uZSs+wCw3bZpQLiBpKorhRpzSW015f7lxMfrj/nPdf+QkJsTuTI
-         9riY2UD2HjMvn5yEBNnzlf1D22ewBxk4OZ8d5UtWKmOcLovGDfBVfi/48irDvHAMMnJ1
-         A9gb1Z3pqsk0ZnAWfX+AZmuxdEUx9AkfZyyqCgmGW5xH7XUHaPr617UilU7Jvmfm8pl0
-         wufYSP1jngZ+VjuGU3/q3hHO7oRdqerOJduKOgxQBAGWn7/xZzM4FlWw3ciNHGlmq4Qh
-         B1Dr9cxK2m09gQvdZW+tYyrQBx+wOeyQwzOcDTF9R9BYHg78LhRhDKVx1ddHVtU5tHYv
-         WULg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+afERrZACBSDM/epkPt76C1oUwcdWvQIXn6rl1uX6xE=;
+        b=meDgZjxzmUwSC3zLETkZNMT7Ybdo3bvmOhD77SiLuAs7Xonzl175nWPSkzjiTmPHTU
+         U1UPO/Lo+FPtSfAq3NTT1ZPnbZaLryKvhvSxI90eZ8Qnta7KU893tNT1uyI9wsmTOgBp
+         r+WZGQTX0Onb33p0f1ostgbk/Wa59p5wzEq/pcHUKrTjgm7WiiuM15gOsdbYjw4v1L9m
+         tgzdrKhg2xfuZHdvVlIetSibSE+i+OTjGsIcjecojtR9jowPajWayxVl7eh2CWQBgKke
+         mEO/yq7H5ETs/YJQ51tUWz8c7bPS85o3H/9U/VsVyt3IC/ZvCC5+ynkSGUfQYV32l0kX
+         77Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=8dftNfGs7u/TavY2VL10CRoiQcorWiSHQAURk/X4aiU=;
-        b=X8cWc6JqcWn08VDLQ68mvOo+SCyWIGLtHIdVGdsItk4LMke/DORJH3ImnNTyp+znaB
-         4f4KPzUJkNLWmev5TSTK5vSEoAZzMh0ucs63h4vO7E2LXCzA1jK51CHLKoXvvALt6Ywo
-         xGsQwqpBbIJZ4q89uk7dgX7mhOcC4M6qR6ljGfKGqPT/QImOKC1FGcJwKF+0NgUj3phY
-         HNkUe2dlfOPPwtgQcYlMAQXqet5k0gQZI2cKuyztTd2l1nWCVB3k/r9HFmJacxngP5NK
-         FD47oTpOAPC4iheYqgKt3TAyw+rB2gz7dvMeM9KpQK/CqNoa11VgO4bZU0mC2UTAc3AY
-         iPrg==
-X-Gm-Message-State: AOAM530FhhDmy7dHqtc2pSZIjTdCRW7k9fkbdIcVAj41hxV2WjLfPVgj
-        zAYwvuaum46E4ay3Huji2oblc8bdkEabXw==
-X-Google-Smtp-Source: ABdhPJyPQRzPg9V3c1YTz6/zL5vdlx4DIlINH0O9fw85OIB079jr3k+K/2Q5Q5RQabHX8716B2SDKw==
-X-Received: by 2002:a17:90b:ecc:: with SMTP id gz12mr5030968pjb.79.1615404426762;
-        Wed, 10 Mar 2021 11:27:06 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id 12sm306393pgw.18.2021.03.10.11.27.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 11:27:06 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 6/6] ionic: simplify use of completion types
-Date:   Wed, 10 Mar 2021 11:26:31 -0800
-Message-Id: <20210310192631.20022-7-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210310192631.20022-1-snelson@pensando.io>
-References: <20210310192631.20022-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+afERrZACBSDM/epkPt76C1oUwcdWvQIXn6rl1uX6xE=;
+        b=OPTrQMiQk6K0Tk043o4NKlwhbTLDB1RSTWw6QHiN3GW1XC2+gYkmaZv25AOSsl0pHR
+         QGWxBr1jNvcAQM6aKEcSjAa3g/26FYbiBTEorJGDMY9Pu0GaYXp37ZWjzsb6OCUSoDHz
+         9hSQu4NSLVUpgNorOT260ceMViekfPCiQEn4RxrCgwgw8z+tfGfeA5kuQ8ymH4prZgKL
+         N7+hSNhmgk4ueuZ8Py5OLXFrlutSR/qy3JY7qtkWg0upPjNFpIhsdkJK2WBiO3LiGYoo
+         0pVfAHXfJFcvkZZHjSCR59aopdeibhyq2WKP9QuXQj2oOaK6Uy+sTIgoAFTiIf/zHUu3
+         c8gQ==
+X-Gm-Message-State: AOAM533ZodqpJecMWJ+Y63r3FX6gDaU0x/vSYwwP+XPDpfaJfBD97rmm
+        FozbAqkE4OnATBsSELaxbIwjbp8oGMnGTc75MvE=
+X-Google-Smtp-Source: ABdhPJxjRRGLt4SjZNOyHVYpmZFX8W7chBMJkEM/yl7xRcCnjW+yG5Xnn4WUTfGvs/WTZ/MLjkt4tpkwFwA40Mqc004=
+X-Received: by 2002:a25:cc13:: with SMTP id l19mr6293249ybf.260.1615404450455;
+ Wed, 10 Mar 2021 11:27:30 -0800 (PST)
+MIME-Version: 1.0
+References: <20210205124020.683286-1-jolsa@kernel.org> <20210205124020.683286-2-jolsa@kernel.org>
+ <5a48579b-9aff-72a5-7b25-accb40c4dd52@freenet.de>
+In-Reply-To: <5a48579b-9aff-72a5-7b25-accb40c4dd52@freenet.de>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 10 Mar 2021 11:27:19 -0800
+Message-ID: <CAEf4BzYYG=3ZEu70CV0t0+T583082=FcytCv=jg2b83QaqyQRA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
+ libsubcmd in separate directories
+To:     =?UTF-8?B?VmlrdG9yIErDpGdlcnNrw7xwcGVy?= 
+        <viktor_jaegerskuepper@freenet.de>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make better use of our struct types and type checking by passing
-the actual Rx or Tx completion type rather than a generic void
-pointer type.
+On Wed, Mar 10, 2021 at 9:35 AM Viktor J=C3=A4gersk=C3=BCpper
+<viktor_jaegerskuepper@freenet.de> wrote:
+>
+> Hi,
+>
+> > Setting up separate build directories for libbpf and libpsubcmd,
+> > so it's separated from other objects and we don't get them mixed
+> > in the future.
+> >
+> > It also simplifies cleaning, which is now simple rm -rf.
+> >
+> > Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
+> > files in .gitignore anymore.
+> >
+> > Acked-by: Song Liu <songliubraving@fb.com>
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+>
+> when I invoke 'git status' on the master branch of my local git repositor=
+y
+> (cloned from stable/linux.git), which I have used to compile several kern=
+els,
+> it lists two untracked files:
+>
+>         tools/bpf/resolve_btfids/FEATURE-DUMP.libbpf
+>         tools/bpf/resolve_btfids/bpf_helper_defs.h
+>
+> 'git status' doesn't complain about these files with v5.11, and I can't g=
+et rid
+> of them by 'make clean' with v5.11 or v5.12-rc1/rc2. So I used 'git bisec=
+t' and
+> found that this is caused by commit fc6b48f692f89cc48bfb7fd1aa65454dfe9b2=
+d77,
+> which links to this thread.
+>
+> Looking at the diff it's obvious because of the change in the .gitignore =
+file,
+> but I don't know why these files are there and I have never touched anyth=
+ing in
+> the 'tools' directory.
+>
+> Can I savely delete the files? Do I even have to delete them before I com=
+pile
+> v5.12-rcX?
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+yes, those were auto-generated files. You can safely remove them.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index cd2540ff9251..c63e6e7aa47b 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -125,9 +125,8 @@ static bool ionic_rx_buf_recycle(struct ionic_queue *q,
- 
- static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
- 				      struct ionic_desc_info *desc_info,
--				      struct ionic_cq_info *cq_info)
-+				      struct ionic_rxq_comp *comp)
- {
--	struct ionic_rxq_comp *comp = cq_info->cq_desc;
- 	struct net_device *netdev = q->lif->netdev;
- 	struct ionic_buf_info *buf_info;
- 	struct ionic_rx_stats *stats;
-@@ -155,9 +154,6 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
- 	i = comp->num_sg_elems + 1;
- 	do {
- 		if (unlikely(!buf_info->page)) {
--			struct napi_struct *napi = &q_to_qcq(q)->napi;
--
--			napi->skb = NULL;
- 			dev_kfree_skb(skb);
- 			return NULL;
- 		}
-@@ -189,9 +185,8 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
- 
- static struct sk_buff *ionic_rx_copybreak(struct ionic_queue *q,
- 					  struct ionic_desc_info *desc_info,
--					  struct ionic_cq_info *cq_info)
-+					  struct ionic_rxq_comp *comp)
- {
--	struct ionic_rxq_comp *comp = cq_info->cq_desc;
- 	struct net_device *netdev = q->lif->netdev;
- 	struct ionic_buf_info *buf_info;
- 	struct ionic_rx_stats *stats;
-@@ -234,7 +229,7 @@ static void ionic_rx_clean(struct ionic_queue *q,
- 			   struct ionic_cq_info *cq_info,
- 			   void *cb_arg)
- {
--	struct ionic_rxq_comp *comp = cq_info->cq_desc;
-+	struct ionic_rxq_comp *comp = cq_info->rxcq;
- 	struct net_device *netdev = q->lif->netdev;
- 	struct ionic_qcq *qcq = q_to_qcq(q);
- 	struct ionic_rx_stats *stats;
-@@ -251,9 +246,9 @@ static void ionic_rx_clean(struct ionic_queue *q,
- 	stats->bytes += le16_to_cpu(comp->len);
- 
- 	if (le16_to_cpu(comp->len) <= q->lif->rx_copybreak)
--		skb = ionic_rx_copybreak(q, desc_info, cq_info);
-+		skb = ionic_rx_copybreak(q, desc_info, comp);
- 	else
--		skb = ionic_rx_frags(q, desc_info, cq_info);
-+		skb = ionic_rx_frags(q, desc_info, comp);
- 
- 	if (unlikely(!skb)) {
- 		stats->dropped++;
-@@ -309,7 +304,7 @@ static void ionic_rx_clean(struct ionic_queue *q,
- 
- static bool ionic_rx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
- {
--	struct ionic_rxq_comp *comp = cq_info->cq_desc;
-+	struct ionic_rxq_comp *comp = cq_info->rxcq;
- 	struct ionic_queue *q = cq->bound_q;
- 	struct ionic_desc_info *desc_info;
- 
-@@ -661,7 +656,7 @@ static void ionic_tx_clean(struct ionic_queue *q,
- 
- static bool ionic_tx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
- {
--	struct ionic_txq_comp *comp = cq_info->cq_desc;
-+	struct ionic_txq_comp *comp = cq_info->txcq;
- 	struct ionic_queue *q = cq->bound_q;
- 	struct ionic_desc_info *desc_info;
- 	u16 index;
--- 
-2.17.1
+>
+> Thanks,
+> Viktor
+>
 
+[...]
