@@ -2,72 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA925333245
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:21:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A711933324F
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:28:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231263AbhCJAUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 19:20:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53452 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230421AbhCJAUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Mar 2021 19:20:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9CBDF650F3;
-        Wed, 10 Mar 2021 00:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615335609;
-        bh=3QrPLDAwqczROX3zLFTJP9PbnmhqQxe/Lh233jR8pdg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e5sti+F+oR0MGYvzl8DpKlQaaqc5UWEuJWSTICJ+m7qkcsWgntLNUNIRtPQxI0K1R
-         WNZ4cC4Cxws61xC3sYtj0tQ+yazrz7kbvfWEofx94aqpzd+QQW+2rZ2vF3Ss4Z7ldE
-         Yg6c+352ZiHL8p9zwFTrse+sbSq5G8EsDvVvi9Qw8pMPgHQmwyX+gl/WhmJKkH5eiR
-         LVsXF+rbuftRLZ6fU/UFWN7WgzwlTEA5VbZgxnCLJYiY/xXGZDqi6oEgczND+3dMV5
-         gPA/VqHW2MTlCXwK5vaN4BXUdApK2MzRPPG90ZrJ/U/6jxdTIjECSBjeWB6xWR/aka
-         RIw7JSlGnQ9gQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 97F3260952;
-        Wed, 10 Mar 2021 00:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230502AbhCJA1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 19:27:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230183AbhCJA1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 19:27:35 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2E4C06174A;
+        Tue,  9 Mar 2021 16:27:34 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id d13so24371268edp.4;
+        Tue, 09 Mar 2021 16:27:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZZTGlUumhoxDqrAcSWjyFG+FNXfbOX0ESKJ2jMxsb8c=;
+        b=OWcsVydPYra+IWyyzx4umPbw5L1qc1JSRa067RviXdSpEdhvtpr3ORhRH1e36JdqoS
+         l5r64fbyERnzpxMs4/TQmreW61v2atdBe6jBelrLC1J5K6b/a2EvtVo+pHeHFl/+JZAL
+         XaEG2/mtp8D9DvEJwP9F1po6VtOVPPBPPTkcrn6KWGuQubk6i8M/zhem8JOPTzmWG5tj
+         5R8T98WHb/jqyV+/DLjRxhijN5cvbhplr4KYocxKKpTPfD2hKkaCZIyXesniWwTiCsfR
+         sMu6o4KocAV23W4abiymGXix5oECKCm8BxDFsyG38THFon11fjCfne1U6Z6XwgJKErlf
+         yK+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZZTGlUumhoxDqrAcSWjyFG+FNXfbOX0ESKJ2jMxsb8c=;
+        b=bkM687DOynDMhAFB9yXrOifyap4g4jLZuLtJunU5/9DtPZdoXeuMs+dHdNZNeMs9j/
+         pUUBZB4pL+3+tZl5VZpdybGgj8RQ9xBIZ7TdyxtR1qAFI64b2sW3bJDd7VFn4JAQWgUU
+         j1ABCP+uDp+cvE1PDTA+ADwMTtOfjpv+SAXVKJKZngokfS+AS71o/+vZMwDchVGMUNWR
+         sJJDjrOLUvsqf/AvboG0DU0vt6HKNP3cVg4OUeAFTwveb2cvZwQy5na/xSqiNaUKbuM8
+         3fMWLFLP/BA5htpT9zJXUj4wGAIDSEd7AfGO6xyxG28/GayMp/8Ufg7e+Q1I5r+KmHPb
+         9PKA==
+X-Gm-Message-State: AOAM531haJG31rWPssCUEPjX3pt2+BJFnmHJkXeno+KF/0LXaqjFQVCl
+        24YtDqSSVOSnH/DkiDycxNo=
+X-Google-Smtp-Source: ABdhPJwII8G3ryqkrqwOHprbbJMJBD+YXZCJzUxnQHLRRLmfbrxrwsQl3JdDjZfVzG8/JJI0PdKTjw==
+X-Received: by 2002:a50:cc4a:: with SMTP id n10mr261137edi.371.1615336053288;
+        Tue, 09 Mar 2021 16:27:33 -0800 (PST)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id b12sm9728374eds.94.2021.03.09.16.27.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Mar 2021 16:27:32 -0800 (PST)
+Date:   Wed, 10 Mar 2021 02:27:31 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alex Elder <elder@linaro.org>
+Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, sharathv@codeaurora.org,
+        bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, David.Laight@ACULAB.COM, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/6] net: qualcomm: rmnet: stop using C
+ bit-fields
+Message-ID: <20210310002731.adinf2sgzeshkjqd@skbuf>
+References: <20210309124848.238327-1-elder@linaro.org>
+ <bb7608cc-4a83-0e1d-0124-656246ec4a1f@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 0/2] net: prevent infinite loop caused by incorrect
- proto from virtio_net_hdr_set_proto
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161533560961.32666.14529023719562864396.git-patchwork-notify@kernel.org>
-Date:   Wed, 10 Mar 2021 00:20:09 +0000
-References: <cover.1615288658.git.bnemeth@redhat.com>
-In-Reply-To: <cover.1615288658.git.bnemeth@redhat.com>
-To:     Balazs Nemeth <bnemeth@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mst@redhat.com, jasowang@redhat.com, dsahern@gmail.com,
-        davem@davemloft.net, willemb@google.com,
-        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bb7608cc-4a83-0e1d-0124-656246ec4a1f@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Alex,
 
-This series was applied to netdev/net.git (refs/heads/master):
+On Tue, Mar 09, 2021 at 05:39:20PM -0600, Alex Elder wrote:
+> On 3/9/21 6:48 AM, Alex Elder wrote:
+> > Version 3 of this series uses BIT() rather than GENMASK() to define
+> > single-bit masks.  It then uses a simple AND (&) operation rather
+> > than (e.g.) u8_get_bits() to access such flags.  This was suggested
+> > by David Laight and really prefer the result.  With Bjorn's
+> > permission I have preserved his Reviewed-by tags on the first five
+> > patches.
+>
+> Nice as all this looks, it doesn't *work*.  I did some very basic
+> testing before sending out version 3, but not enough.  (More on
+> the problem, below).
+>
+> 		--> I retract this series <--
+>
+> I will send out an update (version 4).  But I won't be doing it
+> for a few more days.
+>
+> The problem is that the BIT() flags are defined in host byte
+> order.  But the values they're compared against are not always
+> (or perhaps, never) in host byte order.
+>
+> I regret the error, and will do a complete set of testing on
+> version 4 before sending it out for review.
 
-On Tue,  9 Mar 2021 12:30:59 +0100 you wrote:
-> These patches prevent an infinite loop for gso packets with a protocol
-> from virtio net hdr that doesn't match the protocol in the packet.
-> Note that packets coming from a device without
-> header_ops->parse_protocol being implemented will not be caught by
-> the check in virtio_net_hdr_to_skb, but the infinite loop will still
-> be prevented by the check in the gso layer.
-> 
-> [...]
+I think I understand some of your pain. I had a similar situation trying
+to write a driver for hardware with very strange bitfield organization,
+and my top priority was actually maintaining a set of bitfield definitions
+that could be taken directly from the user manual of said piece of
+hardware (and similar to you, I dislike C bitfields). What I came up
+with was an entirely new API called packing() which is described here:
+https://www.kernel.org/doc/html/latest/core-api/packing.html
+It doesn't have any users except code added by me (some in Ethernet fast
+paths), and it has some limitations (mainly that it only has support for
+u64 CPU words), but on the other hand, it's easy to understand, easy to
+use, supports any bit/byte layout under the sun, doesn't suffer from
+unaligned memory access issues due to its byte-by-byte approach, and is
+completely independent of host endianness.
+That said, I'm not completely happy with it because it has slightly
+higher overhead compared to typical bitfield accessors. I've been on the
+fence about even deleting it, considering that it's been two years since
+it's in mainline and it hasn't gained much of a traction. So I would
+rather try to work my way around a different API in the sja1105 driver.
 
-Here is the summary with links:
-  - [net,v3,1/2] net: check if protocol extracted by virtio_net_hdr_set_proto is correct
-    https://git.kernel.org/netdev/net/c/924a9bc362a5
-  - [net,v3,2/2] net: avoid infinite loop in mpls_gso_segment when mpls_hlen == 0
-    https://git.kernel.org/netdev/net/c/d348ede32e99
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Have you noticed this API and decided to not use it for whatever reason?
+Could you let me know what that was? Even better, in your quest to fix
+the rmnet driver, have you seen any API that is capable of extracting a
+bitfield that spans two 64-bit halves of an 128 bit word in a custom bit
+layout?
