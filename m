@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ABAD333241
+	by mail.lfdr.de (Postfix) with ESMTP id E1F5C333243
 	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:21:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbhCJAU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 19:20:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53414 "EHLO mail.kernel.org"
+        id S231243AbhCJAU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 19:20:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230372AbhCJAUI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Mar 2021 19:20:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6982C64FD2;
-        Wed, 10 Mar 2021 00:20:08 +0000 (UTC)
+        id S230488AbhCJAUK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Mar 2021 19:20:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id AE08E6510B;
+        Wed, 10 Mar 2021 00:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615335608;
-        bh=LexbJovwWtLGbZmuJDjjQa+ZkyKN8g10bCy4WoOO6zM=;
+        s=k20201202; t=1615335609;
+        bh=FHkBi/Z1ApOPtXjt1QScWU6krkKz/xizDbaxwKPWf80=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KvGhmx+D8Bfs3tDiXwHaTSPqvIbBHRj8n2YOFoChhcajwgfK9HFbF023dEBxg7mhI
-         BJxQTCri2+9CD/K3LsB3oghHhauBzYT6fwMS+HWCM3ix5W5AL8dYd+SuNFZvDtSFCQ
-         /bA4AZ5nHBF6dDtj7tnuTiQj0bqqvAZHh0CmECANLS+00pnX40s7xJFS0DGHllvjSK
-         Kja4KUWvExGKbeR0MV+U/umtCGP8ZT+abL2fbB0TX4W5ruUDLempQIFxDSRI+vsknr
-         UuLIL0gZBdlTNebhvpdqM/vwCOqByQbCJ04opBdCr6F1k34fRCMlFOoQyayq3ge7CS
-         CdwGhqkzwUUbg==
+        b=DAg+gWkQgP5jdhGVFW5Tadec0iWND9YL5H1t+b9smQbObGSRCtgdaVlvdZtMZZXyx
+         FMVx6KcRrz6LqYNMK4uPvRxKxILVbvQORVAnxc87/G7PRpBMu75qvr/lwN7S6cvXd+
+         DDa9IkUz5DzW7ot6VL6mVg3+4N8f7bv8VmCo9Qspztj67qyGFykQnEOtB7Q53o48y3
+         DAHEvz102gBdCvaQvm631VcP1UabTWXZxT2TwnxAz6m2+shAJziTGyvXjMEUm8SGTr
+         +wnNwUgY/Om2L2LE26zLvasQRQ/s5kb/xvO0pjFenUJ4yBf4Pt9QWsCmi+SsDyg4+h
+         kHCBEfRLRNnzQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 57C7E609EC;
-        Wed, 10 Mar 2021 00:20:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9FE8B60A57;
+        Wed, 10 Mar 2021 00:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v6 0/2] Optimize bpf_redirect_map()/xdp_do_redirect()
+Subject: Re: [PATCH net 0/4] s390/qeth: fixes 2021-03-09
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161533560835.32666.14006286141763345790.git-patchwork-notify@kernel.org>
-Date:   Wed, 10 Mar 2021 00:20:08 +0000
-References: <20210308112907.559576-1-bjorn.topel@gmail.com>
-In-Reply-To: <20210308112907.559576-1-bjorn.topel@gmail.com>
-To:     =?utf-8?b?QmrDtnJuIFTDtnBlbCA8Ympvcm4udG9wZWxAZ21haWwuY29tPg==?=@ci.codeaurora.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, bjorn.topel@intel.com,
-        maciej.fijalkowski@intel.com, hawk@kernel.org, toke@redhat.com,
-        magnus.karlsson@intel.com, john.fastabend@gmail.com,
-        kuba@kernel.org, davem@davemloft.net
+Message-Id: <161533560965.32666.13038202888156607895.git-patchwork-notify@kernel.org>
+Date:   Wed, 10 Mar 2021 00:20:09 +0000
+References: <20210309165221.1735641-1-jwi@linux.ibm.com>
+In-Reply-To: <20210309165221.1735641-1-jwi@linux.ibm.com>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, hca@linux.ibm.com, kgraul@linux.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to bpf/bpf-next.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Mon,  8 Mar 2021 12:29:05 +0100 you wrote:
-> Hi XDP-folks,
+On Tue,  9 Mar 2021 17:52:17 +0100 you wrote:
+> Hi Dave & Jakub,
 > 
-> This two patch series contain two optimizations for the
-> bpf_redirect_map() helper and the xdp_do_redirect() function.
+> please apply the following patch series to netdev's net tree.
 > 
-> The bpf_redirect_map() optimization is about avoiding the map lookup
-> dispatching. Instead of having a switch-statement and selecting the
-> correct lookup function, we let bpf_redirect_map() be a map operation,
-> where each map has its own bpf_redirect_map() implementation. This way
-> the run-time lookup is avoided.
+> This brings one fix for a memleak in an error path of the setup code.
+> Also several fixes for dealing with pending TX buffers - two for old
+> bugs in their completion handling, and one recent regression in a
+> teardown path.
 > 
 > [...]
 
 Here is the summary with links:
-  - [bpf-next,v6,1/2] bpf, xdp: make bpf_redirect_map() a map operation
-    https://git.kernel.org/bpf/bpf-next/c/e6a4750ffe9d
-  - [bpf-next,v6,2/2] bpf, xdp: restructure redirect actions
-    https://git.kernel.org/bpf/bpf-next/c/ee75aef23afe
+  - [net,1/4] s390/qeth: fix memory leak after failed TX Buffer allocation
+    https://git.kernel.org/netdev/net/c/e7a36d27f6b9
+  - [net,2/4] s390/qeth: improve completion of pending TX buffers
+    https://git.kernel.org/netdev/net/c/c20383ad1656
+  - [net,3/4] s390/qeth: schedule TX NAPI on QAOB completion
+    https://git.kernel.org/netdev/net/c/3e83d467a08e
+  - [net,4/4] s390/qeth: fix notification for pending buffers during teardown
+    https://git.kernel.org/netdev/net/c/7eefda7f353e
 
 You are awesome, thank you!
 --
