@@ -2,132 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64E7D3338BA
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 10:30:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DCEA3338BE
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 10:31:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbhCJJ3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 04:29:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50928 "EHLO
+        id S231228AbhCJJag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 04:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbhCJJ3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 04:29:11 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3CEC06174A
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 01:29:11 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id 18so32285238lff.6
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 01:29:11 -0800 (PST)
+        with ESMTP id S229538AbhCJJaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 04:30:08 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD41C06174A;
+        Wed, 10 Mar 2021 01:30:07 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id u18so8168463plc.12;
+        Wed, 10 Mar 2021 01:30:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6yh80nQY40PbFt2IsESnkkLcKsJBSUQZxo/JQ9QxsTA=;
-        b=DU89UfxXTESbvMybzt6TEwNod+QBpRbX2013U9r+zAeCVQVU4HFJbXuBph3SfxO8jV
-         cZZN2cYT7YP8b0Ya06tkHgi2VatO2DNAtE7sNZFGc8pZS+r6IkJUHVIjnqOSC2mUiQXo
-         Ybq2TQ8ytMdZOwtocOGIz+krvtv+1GA7ArqmCPjFMQKPg+nf0bwcW9g++R9mKkLdicgM
-         /jhKqPPJ8WBTGwMwVsflx79Yh+IosQWOCAoH37Kb86f0X3WG6feg3GR1pateauTqPkEo
-         Slcd+DQLo+HX4Rg7WO6Pnyhdb5Al6WR1SmnxzlVT3OvBAUB+1sY0Y3nUt678KgOOg/wR
-         qQRw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=7hG+7twcez7MRZ/W+scBmz//nBOUL19Yr2GHqNWu7Is=;
+        b=LahTqfCcgLxfDbgjtQzdMG4P4FE2PXpu8jeWAgvx/yAlN2mjy+d1rzEdxQH5KCLgYE
+         hAhhvjCfjgj7px2xsplLnlTrHmA19f47wvzqxFK/QpciGvD4lcnZSG6Xuh9IMlxqEkbr
+         in72RqQOMIxlcGoNOuX1W5kTwQ5Ja7njIczrbLxN5I8CMzuqAmjLh+GGflIIlMIyYUMQ
+         6ChNAaLxK5hOLqtiq/bzH7TE6ao4jznaK4XpISjXzM3FucFsj50zE1678vDl6eZpnF1L
+         rvYBB/SpOU5CbGmjTjaI87Jq5i60Xs7K9dzEuh8c5MCT+fxkUuL2GK2tRKnRGrZJl53r
+         6KEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6yh80nQY40PbFt2IsESnkkLcKsJBSUQZxo/JQ9QxsTA=;
-        b=lUYr1H+4yzrkmC0mPaycoE8+vdi6NXCwcApDliPAYMpJ6ESzrTShMsGf7WpzqakprM
-         YGsY/fEcgxL0hUdeF5IrR8Xl2STc4EN/6oQ1TJ8qzj1Fxc35+xncVyjZ695zJEFLviGb
-         KaiyMjEw1JZwFr/Y/nXQu6mW32iPDvlLmuYzPUoqvqCYjdE4aTenAZ5aDllXIEavDFnU
-         WLugrF1JfCf8ZUNGrtO22A4VgqWdFDmcTEwleVTYp5BcdT+D0xUHTymFmCr5sRAkqpGA
-         eWDXExs/X+PI/gaYE3eNYSd/HNW6v7Ed45zYAH9HQhcObtwY8iqa+oMh5aEGfePLd12k
-         /p/Q==
-X-Gm-Message-State: AOAM530ru7q1Mf1UrhWgZR2uXkuIcykGR87J09eEH7m20h966g1+XBKi
-        8HLhiUfx2ZxLlhBjnGP4ubNyFX1jNib+Dx4aXaE=
-X-Google-Smtp-Source: ABdhPJyR2zFVXwJiFMofqzwKbAODSxg1+8apOsI8hJGvv8neGcqvdJ+EpOGbBK077rbnUIGq0rjOQGV4tTln2tso0+A=
-X-Received: by 2002:a05:6512:991:: with SMTP id w17mr1539185lft.85.1615368549856;
- Wed, 10 Mar 2021 01:29:09 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=7hG+7twcez7MRZ/W+scBmz//nBOUL19Yr2GHqNWu7Is=;
+        b=HBd8TLbcx4WDH5M8oBOaNapDeEnQI33YvZTPnwHHtew7fuq8kDrCYPbElOAkKBV2yz
+         QdoiCSmVHYhRUOc2I8QvWpZEjm/rfmt8nj7Xu1psko5plbDCgXSrVGcgs+TkyqZqJ/2V
+         6pMTbfWYNVIAYGa2nvgawKa8Gtv23aPks1dzTg/lb3m55FKxjOOSflOvrPx8areWG1nk
+         QVdN+DOTf8eaqi9MYkuBKKEqUHgRgdllGmRpDMcrGLFiu1t6pQxNiKpjWce2YJIogc5v
+         iVpmfrxntQQAai5FXWRZWp5Ks156+jE1wtKML3vOF/Dlui5byILL+nZocvMh5s4zRzcV
+         2fqg==
+X-Gm-Message-State: AOAM530ZmsECP1O5s55krP/cfaisr22Ze6AmtrITzFuPsicW7hulX16k
+        id9ztBBVATJknCfIegMbbNE=
+X-Google-Smtp-Source: ABdhPJy1vfKSygh4rO1ndPybvPGAsVYVzApfh2e3zrvI0YfuwmH9JvBQ2yQ2xbkOGE9050KUoQQOrw==
+X-Received: by 2002:a17:90a:70c2:: with SMTP id a2mr2579432pjm.63.1615368607511;
+        Wed, 10 Mar 2021 01:30:07 -0800 (PST)
+Received: from [10.38.0.26] ([45.135.186.59])
+        by smtp.gmail.com with ESMTPSA id f14sm7908511pfk.92.2021.03.10.01.30.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Mar 2021 01:30:07 -0800 (PST)
+Subject: Re: [PATCH] net: bonding: fix error return code of bond_neigh_init()
+To:     Roi Dayan <roid@nvidia.com>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20210308031102.26730-1-baijiaju1990@gmail.com>
+ <e15f36f7-6421-69a3-f10a-45b83621b96f@nvidia.com>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Message-ID: <ff2fdc70-4ee5-a0eb-64d7-4deb39a62e03@gmail.com>
+Date:   Wed, 10 Mar 2021 17:29:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <CANS1P8H8sDGUzQEh_LEFVi=6tUZzVxAty9_OKWAs4CU67wdLeg@mail.gmail.com>
- <BY5PR12MB43226FF17791F6365812D028DC939@BY5PR12MB4322.namprd12.prod.outlook.com>
- <CANS1P8E8uPpR+SN4Qs9so_3Lve3p2jxsRg_3Grg5JBK5m55=Tw@mail.gmail.com>
- <b026b2c8-fdd5-d0fc-f0a6-42aa7e9d26f8@gmail.com> <CANS1P8EHJ+ZSZT8MT43PzXH6bhZ6FVhrQ_sxxFWbWTvzyT+3rA@mail.gmail.com>
- <BY5PR12MB4322F7A218F0C0D2BBF99EF1DC929@BY5PR12MB4322.namprd12.prod.outlook.com>
-In-Reply-To: <BY5PR12MB4322F7A218F0C0D2BBF99EF1DC929@BY5PR12MB4322.namprd12.prod.outlook.com>
-From:   ze wang <wangze712@gmail.com>
-Date:   Wed, 10 Mar 2021 17:28:58 +0800
-Message-ID: <CANS1P8ENKYGnRk44P7bT4fC4aZtfsdyPJ8hOv0CV9eXig03gJA@mail.gmail.com>
-Subject: Re: mlx5 sub function issue
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <e15f36f7-6421-69a3-f10a-45b83621b96f@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Parav,
-      Thanks for your help. I did enabled VFs, and after turning off
-SR-IOV, it works.
-Now the each PF can create 255 SFs, which is probably enough for us.
-Is it convenient
-to reveal how many SFs can be created at most?
 
-Ze Wang
 
-Parav Pandit <parav@nvidia.com> =E4=BA=8E2021=E5=B9=B43=E6=9C=889=E6=97=A5=
-=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=888:36=E5=86=99=E9=81=93=EF=BC=9A
+On 2021/3/10 17:24, Roi Dayan wrote:
 >
-> Hi Ze Wang,
 >
-> > From: ze wang <wangze712@gmail.com>
-> > Sent: Tuesday, March 9, 2021 8:34 AM
-> >
-> > Hi David,
-> >       I can see that the variable settings are in effect=EF=BC=9A
-> > # mlxconfig -d b3:00.0 s PF_BAR2_ENABLE=3D0 PER_PF_NUM_SF=3D1
-> > PF_SF_BAR_SIZE=3D8 # mlxconfig -d b3:00.0 s PER_PF_NUM_SF=3D1
-> > PF_TOTAL_SF=3D192 PF_SF_BAR_SIZE=3D8 # mlxconfig -d b3:00.1 s
-> > PER_PF_NUM_SF=3D1 PF_TOTAL_SF=3D192 PF_SF_BAR_SIZE=3D8
-> >
-> > after cold reboot:
-> > # mlxconfig -d b3:00.0 q|grep BAR
-> > PF_BAR2_ENABLE                           False(0)
-> > # mlxconfig -d b3:00.0 q|grep SF
-> > Description:    ConnectX-6 Dx EN adapter card; 25GbE; Dual-port SFP28;
-> > PCIe 4.0 x8; Crypto and Secure Boot
-> >          PER_PF_NUM_SF                   True(1)
-> >          PF_TOTAL_SF                         192
-> >          PF_SF_BAR_SIZE                   8
-> > # mlxconfig -d b3:00.1 q|grep SF
-> > Description:    ConnectX-6 Dx EN adapter card; 25GbE; Dual-port SFP28;
-> > PCIe 4.0 x8; Crypto and Secure Boot
-> >          PER_PF_NUM_SF                  True(1)
-> >          PF_TOTAL_SF                        192
-> >          PF_SF_BAR_SIZE                  8
-> >
-> > I tried to create as many SF as possible, then I found each PF can crea=
-te up to
-> > 132 SFs. I want to confirm the maximum number of SFs that
-> > CX6 can create. If the mft version is correct, can I think that CX6 can=
- create up
-> > to 132 SFs per PF?
-> Do  you have VFs enabled on the system? mlxconfig -d b3:00.0 q | grep VF
-> If so, please disable SRIOV.
+> On 2021-03-08 5:11 AM, Jia-Ju Bai wrote:
+>> When slave is NULL or slave_ops->ndo_neigh_setup is NULL, no error
+>> return code of bond_neigh_init() is assigned.
+>> To fix this bug, ret is assigned with -EINVAL in these cases.
+>>
+>> Fixes: 9e99bfefdbce ("bonding: fix bond_neigh_init()")
+>> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+>> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+>> ---
+>>   drivers/net/bonding/bond_main.c | 8 ++++++--
+>>   1 file changed, 6 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/bonding/bond_main.c 
+>> b/drivers/net/bonding/bond_main.c
+>> index 74cbbb22470b..456315bef3a8 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -3978,11 +3978,15 @@ static int bond_neigh_init(struct neighbour *n)
+>>         rcu_read_lock();
+>>       slave = bond_first_slave_rcu(bond);
+>> -    if (!slave)
+>> +    if (!slave) {
+>> +        ret = -EINVAL;
+>>           goto out;
+>> +    }
+>>       slave_ops = slave->dev->netdev_ops;
+>> -    if (!slave_ops->ndo_neigh_setup)
+>> +    if (!slave_ops->ndo_neigh_setup) {
+>> +        ret = -EINVAL;
+>>           goto out;
+>> +    }
+>>         /* TODO: find another way [1] to implement this.
+>>        * Passing a zeroed structure is fragile,
+>>
 >
-> >
-> > David Ahern <dsahern@gmail.com> =E4=BA=8E2021=E5=B9=B43=E6=9C=888=E6=97=
-=A5=E5=91=A8=E4=B8=80 =E4=B8=8B=E5=8D=8811:48=E5=86=99=E9=81=93
-> > =EF=BC=9A
-> > >
-> > > On 3/8/21 12:21 AM, ze wang wrote:
-> > > > mlxconfig tool from mft tools version 4.16.52 or higher to set numb=
-er of
-> > SF.
-> > > >
-> > > > mlxconfig -d b3:00.0  PF_BAR2_ENABLE=3D0 PER_PF_NUM_SF=3D1
-> > > > PF_SF_BAR_SIZE=3D8 mlxconfig -d b3:00.0  PER_PF_NUM_SF=3D1
-> > > > PF_TOTAL_SF=3D192 PF_SF_BAR_SIZE=3D8 mlxconfig -d b3:00.1
-> > > > PER_PF_NUM_SF=3D1 PF_TOTAL_SF=3D192 PF_SF_BAR_SIZE=3D8
-> > > >
-> > > > Cold reboot power cycle of the system as this changes the BAR size
-> > > > in device
-> > > >
-> > >
-> > > Is that capability going to be added to devlink?
+>
+> Hi,
+>
+> This breaks basic functionally that always worked. A slave doesn't need
+> to exists nor to implement ndo_neigh_setup.
+> Now trying to add a neigh entry because of that fails.
+> This commit needs to be reverted.
+>
+
+Okay, thanks for the explanation, and I am sorry for this false report...
+
+
+Best wishes,
+Jia-Ju Bai
