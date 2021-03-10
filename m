@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98772334778
+	by mail.lfdr.de (Postfix) with ESMTP id E4269334779
 	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:04:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233850AbhCJTE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 14:04:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44336 "EHLO mail.kernel.org"
+        id S233885AbhCJTE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 14:04:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233731AbhCJTD5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 14:03:57 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E96164E98;
-        Wed, 10 Mar 2021 19:03:56 +0000 (UTC)
+        id S233735AbhCJTD6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 14:03:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 50B9764FD0;
+        Wed, 10 Mar 2021 19:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1615403037;
-        bh=WhXFYRPJ5hNR0ip3KieHgzv6gTBOgxCYIB5+nZfp9pw=;
+        bh=6GK5UhIfTAoPjiNIQXf8nmSACDH8fWTBd5FcfAMHG8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=riJBTIt6ufgknTj6yVL80ENanK3YzSWxIo5vMXwRPY+2X5jkHnYdCUOeXgQfH/b1K
-         N5NgJ0n5GjpRB1JtEGxVlySQmoOViADsedzovK74ULPnPckNFTUtzZnt0HcWsc/49z
-         x2ySZwnjyZfVKzO8bWTJdg7zb/JdH0Uuc/+J4tMx1rbhiKt/FlBZDIZ+E1At7YEeHy
-         JMla/p1Dg0ZPGOsA8HJEBS9Ga3KyVZE4o2j7gC6w+5mr1WP5Qn4TqOg7kVHRn2cV56
-         7nt+KwkxHMOT+sHhmEwIbX5yEsw/kZzuhwnB3WeEnh1D/rDcN008ygmvRfMyWKGjD9
-         UPHS4217uDCRQ==
+        b=eqwAKt90WfxWktiWXzZso2vO5+tLGfvC/jArz5K92uUMCXMISRZ06EfQuAEb0XjD5
+         DwNx2y17LzJz1Qr064UiO3v4EAxNZY6+0K7wMxVDqVwjivClxQQOPTe0KFlpPQaqfU
+         rIspDQkDfYrENHJndNp4hDWc5rD8Om2gBZe/69GLWo5kKOIDCo0p1PaWvd0Dps3KR/
+         gRWNVOXbRMpgJz4hj5EczLQZeXTpkn/Z+16T9cW62jw8zmq25vYifj7iX+n69jCJ5q
+         Mw5rB820JlLenCWOvk6ans1p2ESfhQuqlYKDSYhSly5+CGIrZHmD88Ax1UMIeSNgmK
+         QIKDD2H/7hSYw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 07/18] net/mlx5e: Don't match on Geneve options in case option masks are all zero
-Date:   Wed, 10 Mar 2021 11:03:31 -0800
-Message-Id: <20210310190342.238957-8-saeed@kernel.org>
+Subject: [net 08/18] net/mlx5: Fix turn-off PPS command
+Date:   Wed, 10 Mar 2021 11:03:32 -0800
+Message-Id: <20210310190342.238957-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210310190342.238957-1-saeed@kernel.org>
 References: <20210310190342.238957-1-saeed@kernel.org>
@@ -43,40 +42,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-The cited change added offload support for Geneve options without verifying
-the validity of the options masks, this caused offload of rules with match
-on Geneve options with class,type and data masks which are zero to fail.
+Fix a bug of uninitialized pin index when trying to turn off PPS out.
 
-Fix by ignoring the match on Geneve options in case option masks are
-all zero.
-
-Fixes: 9272e3df3023 ("net/mlx5e: Geneve, Add support for encap/decap flows offload")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Fixes: de19cd6cc977 ("net/mlx5: Move some PPS logic into helper functions")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
-index e472ed0eacfb..7ed3f9f79f11 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
-@@ -227,6 +227,10 @@ static int mlx5e_tc_tun_parse_geneve_options(struct mlx5e_priv *priv,
- 	option_key = (struct geneve_opt *)&enc_opts.key->data[0];
- 	option_mask = (struct geneve_opt *)&enc_opts.mask->data[0];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+index b0e129d0f6d8..1e7f26b240de 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+@@ -495,15 +495,15 @@ static int mlx5_perout_configure(struct ptp_clock_info *ptp,
+ 		return -EINVAL;
  
-+	if (option_mask->opt_class == 0 && option_mask->type == 0 &&
-+	    !memchr_inv(option_mask->opt_data, 0, option_mask->length * 4))
-+		return 0;
+ 	field_select = MLX5_MTPPS_FS_ENABLE;
++	pin = ptp_find_pin(clock->ptp, PTP_PF_PEROUT, rq->perout.index);
++	if (pin < 0)
++		return -EBUSY;
 +
- 	if (option_key->length > max_tlv_option_data_len) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Matching on GENEVE options: unsupported option len");
+ 	if (on) {
+ 		bool rt_mode = mlx5_real_time_mode(mdev);
+ 		u32 nsec;
+ 		s64 sec;
+ 
+-		pin = ptp_find_pin(clock->ptp, PTP_PF_PEROUT, rq->perout.index);
+-		if (pin < 0)
+-			return -EBUSY;
+-
+ 		pin_mode = MLX5_PIN_MODE_OUT;
+ 		pattern = MLX5_OUT_PATTERN_PERIODIC;
+ 		ts.tv_sec = rq->perout.period.sec;
 -- 
 2.29.2
 
