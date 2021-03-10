@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B6DA333286
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2DB7333294
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 01:52:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbhCJAiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Mar 2021 19:38:55 -0500
-Received: from www62.your-server.de ([213.133.104.62]:43790 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbhCJAia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 19:38:30 -0500
-Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lJmrt-0008uc-Ck; Wed, 10 Mar 2021 01:38:29 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, john.fastabend@gmail.com, ast@kernel.org,
-        willemb@google.com, edumazet@google.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH net 2/2] net, bpf: Fix ip6ip6 crash with collect_md populated skbs
-Date:   Wed, 10 Mar 2021 01:38:10 +0100
-Message-Id: <4e8b5320b081e8c7b9444b26a6af446d9a0a737e.1615331093.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1615331093.git.daniel@iogearbox.net>
-References: <cover.1615331093.git.daniel@iogearbox.net>
+        id S230183AbhCJAv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Mar 2021 19:51:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229775AbhCJAvg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Mar 2021 19:51:36 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CA9C06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Mar 2021 16:51:35 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id b13so24484764edx.1
+        for <netdev@vger.kernel.org>; Tue, 09 Mar 2021 16:51:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=owQb56cWVlYEBc3shoHPbmBiP14n3jOFAOCgKVQbHH4=;
+        b=kyKurqUnZGSsSkEavcpUsTHVpJb45YuW2OTz9Jw4hGBNOU9yk6AiGcvJMKwvaq5XOY
+         LDsvVfNCKrW6XkO2SMzEwFt0S3nBynxZdj0tce78xU7w3lOT4BdAUUUUmA5mrfuhFub3
+         lAaw9D0UOvnZWbCpWP3aXW3Sb1hdzplcrveCdWy4NCsAUEvyiBUVIXitSxRMylZG+pXU
+         LBzGps7KNAxxhF2f1pRsimeFT1QIUS2t4ar1DM+gyONbOlRoSKxgl1/4D4XuJrCEIGSc
+         af3lUolft0CqLfnAHbLVlxIVAuLsYdxNgSBiDvZNb/36Fv4AyGjVF+Ce/QFnOIlf1qVk
+         pnKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=owQb56cWVlYEBc3shoHPbmBiP14n3jOFAOCgKVQbHH4=;
+        b=MO/KuweKpsOzqA+917Lg52EBPGiofseGpw+LMLHErOijJX/wLwFTqEq1on5gKpbSjf
+         uDJ1C/FFRMFcSx2gPfXuqOxQO90snKXojWAcX2lbIrjJMkw1RZP1SeUucKeL6I+Ps6R8
+         k93QGmQa1hYpiVugmvvw3hPG6A18eckT8NRINgOoHp1kjAJfIurU/aQ+58IdGcJWDQ0G
+         +Fl4R03DT0VCW3rn5WFxRvtr4QQrFGBsWT+zmxOXwhfL/02qz4rN/cB1Qt6ewSExH3SM
+         zLgW1wCA+/Cr1g2CiDCG+QrqzNOndIU8xlue6/JS/TFKVtrOhVZQUnS+oYNTnHOIRyoR
+         LiXQ==
+X-Gm-Message-State: AOAM532dHo9lb0dWKyugDZMZEjOY//qA5TzavAhpJHY5TL+4Ujon+m8i
+        +n4w0fa3zkmhRzOrVcBS97I=
+X-Google-Smtp-Source: ABdhPJwIQ36PZ3R3Kjzy4I8vTNq1kKJoGQbhzFU1gKT83sWikR1ORC/WjF8agqfxa1DdIWSmsR1qdw==
+X-Received: by 2002:aa7:d917:: with SMTP id a23mr383136edr.122.1615337494249;
+        Tue, 09 Mar 2021 16:51:34 -0800 (PST)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id 14sm9128034ejy.11.2021.03.09.16.51.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Mar 2021 16:51:34 -0800 (PST)
+Date:   Wed, 10 Mar 2021 02:51:32 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, vivien.didelot@gmail.com, netdev@vger.kernel.org
+Subject: Re: [RFC net] net: dsa: Centralize validation of VLAN configuration
+Message-ID: <20210310005132.mzfzkxtpo3hjnsts@skbuf>
+References: <20210309184244.1970173-1-tobias@waldekranz.com>
+ <699042d3-e124-7584-6486-02a6fb45423e@gmail.com>
+ <87h7lkow44.fsf@waldekranz.com>
+ <YEgTKSS+3ZmeXB66@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26103/Tue Mar  9 13:03:37 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YEgTKSS+3ZmeXB66@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I ran into a crash where setting up a ip6ip6 tunnel device which was /not/
-set to collect_md mode was receiving collect_md populated skbs for xmit.
+On Wed, Mar 10, 2021 at 01:30:33AM +0100, Andrew Lunn wrote:
+> On Tue, Mar 09, 2021 at 10:28:11PM +0100, Tobias Waldekranz wrote:
+> 
+> Hi Tobias
+> 
+> As with Florian, i've not been following the discussion.
 
-The BPF prog was populating the skb via bpf_skb_set_tunnel_key() which is
-assigning special metadata dst entry and then redirecting the skb to the
-device, taking ip6_tnl_start_xmit() -> ipxip6_tnl_xmit() -> ip6_tnl_xmit()
-and in the latter it performs a neigh lookup based on skb_dst(skb) where
-we trigger a NULL pointer dereference on dst->ops->neigh_lookup() since
-the md_dst_ops do not populate neigh_lookup callback with a fake handler.
+I'm afraid there isn't much context for these patches, except Tobias
+pointing out that some of the command sequences I've since spelled out
+in the selftest produce results that should be refused but aren't.
 
-Transform the md_dst_ops into generic dst_blackhole_ops that can also be
-reused elsewhere when needed, and use them for the metadata dst entries as
-callback ops.
+But this discussion has actually branched off and into the weeds from a
+completely different problem. Tobias reported that DSA attempts to
+install VLANs for 8021q uppers into the VTU when the mv88e6xxx ports are
+standalone, and the driver doesn't like that. This isn't due to an
+invalid constellation, but instead due to improper management of a valid
+one.
 
-Also, remove the dst_md_discard{,_out}() ops and rely on dst_discard{,_out}()
-from dst_init() which free the skb the same way modulo the splat. Given we
-will be able to recover just fine from there, avoid any potential splats
-iff this gets ever triggered in future (or worse, panic on warns when set).
+I've attempted to solve those issues through these three patches, which
+at the moment are not properly grouped together, but I think I will pull
+them out and send them separately, and let Tobias finish the central
+rejection of invalid VLAN constellations:
 
-Fixes: f38a9eb1f77b ("dst: Metadata destinations")
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
- net/core/dst.c | 31 +++++++++----------------------
- 1 file changed, 9 insertions(+), 22 deletions(-)
+https://patchwork.kernel.org/project/netdevbpf/patch/20210308135509.3040286-1-olteanv@gmail.com/
+https://patchwork.kernel.org/project/netdevbpf/patch/20210309021657.3639745-4-olteanv@gmail.com/
+https://patchwork.kernel.org/project/netdevbpf/patch/20210309021657.3639745-5-olteanv@gmail.com/
 
-diff --git a/net/core/dst.c b/net/core/dst.c
-index 5f6315601776..fb3bcba87744 100644
---- a/net/core/dst.c
-+++ b/net/core/dst.c
-@@ -275,37 +275,24 @@ unsigned int dst_blackhole_mtu(const struct dst_entry *dst)
- }
- EXPORT_SYMBOL_GPL(dst_blackhole_mtu);
- 
--static struct dst_ops md_dst_ops = {
--	.family =		AF_UNSPEC,
-+static struct dst_ops dst_blackhole_ops = {
-+	.family		= AF_UNSPEC,
-+	.neigh_lookup	= dst_blackhole_neigh_lookup,
-+	.check		= dst_blackhole_check,
-+	.cow_metrics	= dst_blackhole_cow_metrics,
-+	.update_pmtu	= dst_blackhole_update_pmtu,
-+	.redirect	= dst_blackhole_redirect,
-+	.mtu		= dst_blackhole_mtu,
- };
- 
--static int dst_md_discard_out(struct net *net, struct sock *sk, struct sk_buff *skb)
--{
--	WARN_ONCE(1, "Attempting to call output on metadata dst\n");
--	kfree_skb(skb);
--	return 0;
--}
--
--static int dst_md_discard(struct sk_buff *skb)
--{
--	WARN_ONCE(1, "Attempting to call input on metadata dst\n");
--	kfree_skb(skb);
--	return 0;
--}
--
- static void __metadata_dst_init(struct metadata_dst *md_dst,
- 				enum metadata_type type, u8 optslen)
--
- {
- 	struct dst_entry *dst;
- 
- 	dst = &md_dst->dst;
--	dst_init(dst, &md_dst_ops, NULL, 1, DST_OBSOLETE_NONE,
-+	dst_init(dst, &dst_blackhole_ops, NULL, 1, DST_OBSOLETE_NONE,
- 		 DST_METADATA | DST_NOCOUNT);
--
--	dst->input = dst_md_discard;
--	dst->output = dst_md_discard_out;
--
- 	memset(dst + 1, 0, sizeof(*md_dst) + optslen - sizeof(*dst));
- 	md_dst->type = type;
- }
--- 
-2.21.0
-
+It would be nice if you could take a look at those three patches before
+I resend them tomorrow, also for Tobias to let me know if they fix the
+issue he initially reported.
