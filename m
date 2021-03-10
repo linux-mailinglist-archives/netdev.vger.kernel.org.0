@@ -2,109 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0F2333718
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 450FE333746
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 09:29:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbhCJIPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 03:15:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50238 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231207AbhCJIOp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 03:14:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F088464F77;
-        Wed, 10 Mar 2021 08:14:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1615364085;
-        bh=REML057x1YQ7kil2IiGWp6ZVMYBK2+JotB4MVnn0E14=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Rm9l+M/so2zxYZOvcoFXMmUstRW/gq7/audoTuIgy7Z88P8XFDWuETkSpf6AT03Xh
-         dRlbYqJ7PdohEWizQm7dROy1L4xsG7Fomo8d17vHI2gxmZh+uDixCzBHY2Xh2SfggQ
-         H0L0jvAdBXhEsdJFfx6CpARdg/Fs4VoJ15mZtmLA=
-Date:   Wed, 10 Mar 2021 09:14:42 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v10 14/20] dlb: add start domain ioctl
-Message-ID: <YEh/8kGCXx6VIweA@kroah.com>
-References: <20210210175423.1873-1-mike.ximing.chen@intel.com>
- <20210210175423.1873-15-mike.ximing.chen@intel.com>
- <YEc/8RxroJzrN3xm@kroah.com>
- <BYAPR11MB3095CCF0E4931A4DB75AB3F7D9919@BYAPR11MB3095.namprd11.prod.outlook.com>
+        id S232154AbhCJI2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 03:28:42 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:13080 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230156AbhCJI23 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 03:28:29 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DwQC23BPhzMknJ;
+        Wed, 10 Mar 2021 16:26:06 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.498.0; Wed, 10 Mar 2021 16:28:14 +0800
+From:   l00371289 <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <alobakin@pm.me>, <jonathan.lemon@gmail.com>, <willemb@google.com>,
+        <linmiaohe@huawei.com>, <gnault@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>
+Subject: [PATCH net-next] skbuff: remove some unnecessary operation in skb_segment_list()
+Date:   Wed, 10 Mar 2021 16:28:58 +0800
+Message-ID: <1615364938-52943-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BYAPR11MB3095CCF0E4931A4DB75AB3F7D9919@BYAPR11MB3095.namprd11.prod.outlook.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 02:45:10AM +0000, Chen, Mike Ximing wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > On Wed, Feb 10, 2021 at 11:54:17AM -0600, Mike Ximing Chen wrote:
-> > >
-> > > diff --git a/drivers/misc/dlb/dlb_ioctl.c b/drivers/misc/dlb/dlb_ioctl.c
-> > > index 6a311b969643..9b05344f03c8 100644
-> > > --- a/drivers/misc/dlb/dlb_ioctl.c
-> > > +++ b/drivers/misc/dlb/dlb_ioctl.c
-> > > @@ -51,6 +51,7 @@
-> > DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(create_ldb_queue)
-> > >  DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(create_dir_queue)
-> > >  DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(get_ldb_queue_depth)
-> > >  DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(get_dir_queue_depth)
-> > > +DLB_DOMAIN_IOCTL_CALLBACK_TEMPLATE(start_domain)
-> > >
-> > > --- a/drivers/misc/dlb/dlb_pf_ops.c
-> > > +++ b/drivers/misc/dlb/dlb_pf_ops.c
-> > > @@ -160,6 +160,14 @@ dlb_pf_create_dir_port(struct dlb_hw *hw, u32 id,
-> > >  				       resp, false, 0);
-> > >  }
-> > >
-> > > +static int
-> > > +dlb_pf_start_domain(struct dlb_hw *hw, u32 id,
-> > > +		    struct dlb_start_domain_args *args,
-> > > +		    struct dlb_cmd_response *resp)
-> > > +{
-> > > +	return dlb_hw_start_domain(hw, id, args, resp, false, 0);
-> > > +}
-> > > +
-> > >  static int dlb_pf_get_num_resources(struct dlb_hw *hw,
-> > >  				    struct dlb_get_num_resources_args *args)
-> > >  {
-> > > @@ -232,6 +240,7 @@ struct dlb_device_ops dlb_pf_ops = {
-> > >  	.create_dir_queue = dlb_pf_create_dir_queue,
-> > >  	.create_ldb_port = dlb_pf_create_ldb_port,
-> > >  	.create_dir_port = dlb_pf_create_dir_port,
-> > > +	.start_domain = dlb_pf_start_domain,
-> > 
-> > Why do you have a "callback" when you only ever call one function?  Why
-> > is that needed at all?
-> > 
-> In our next submission, we are going to add virtual function (VF) support. The
-> callbacks for VFs are different from those for PF which is what we support in this
-> submission. We can defer the introduction of  the callback structure to when we 
-> add the VF support. But since we have many callback functions, that approach
-> will generate many changes in then "existing" code. We thought that putting
-> the callback structure in place now would make the job of adding VF support easier.
-> Is it OK?
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-No, do not add additional complexity when it is not needed.  It causes
-much more review work and I and no one else have any idea that
-"something might be coming in the future", so please do not make our
-lives harder.
+gro list uses skb_shinfo(skb)->frag_list to link two skb together,
+and NAPI_GRO_CB(p)->last->next is used when there are more skb,
+see skb_gro_receive_list(). gso expects that each segmented skb is
+linked together using skb->next, so only the first skb->next need
+to set to skb_shinfo(skb)-> frag_list when doing gso list segment.
 
-Make it simple, and work, now.  You can always add additional changes
-later, if it is ever needed.
+It is the same reason that nskb->next does not need to be set to
+list_skb before goto the error handling, because nskb->next already
+pointers to list_skb.
 
-thanks,
+And nskb is also the last skb at the end of loop, so remove tail
+variable and use nskb instead.
 
-greg k-h
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+ net/core/skbuff.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index c421c8f..e8320b5 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3732,13 +3732,13 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 	unsigned int tnl_hlen = skb_tnl_header_len(skb);
+ 	unsigned int delta_truesize = 0;
+ 	unsigned int delta_len = 0;
+-	struct sk_buff *tail = NULL;
+ 	struct sk_buff *nskb, *tmp;
+ 	int err;
+ 
+ 	skb_push(skb, -skb_network_offset(skb) + offset);
+ 
+ 	skb_shinfo(skb)->frag_list = NULL;
++	skb->next = list_skb;
+ 
+ 	do {
+ 		nskb = list_skb;
+@@ -3756,17 +3756,8 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 			}
+ 		}
+ 
+-		if (!tail)
+-			skb->next = nskb;
+-		else
+-			tail->next = nskb;
+-
+-		if (unlikely(err)) {
+-			nskb->next = list_skb;
++		if (unlikely(err))
+ 			goto err_linearize;
+-		}
+-
+-		tail = nskb;
+ 
+ 		delta_len += nskb->len;
+ 		delta_truesize += nskb->truesize;
+@@ -3793,7 +3784,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 
+ 	skb_gso_reset(skb);
+ 
+-	skb->prev = tail;
++	skb->prev = nskb;
+ 
+ 	if (skb_needs_linearize(skb, features) &&
+ 	    __skb_linearize(skb))
+-- 
+2.7.4
+
