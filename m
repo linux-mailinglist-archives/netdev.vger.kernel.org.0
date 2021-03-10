@@ -2,118 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2394C334BBE
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 23:43:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3242E334BEF
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 23:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233470AbhCJWnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 17:43:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26332 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233498AbhCJWmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 17:42:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615416174;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zZUIxQMuHfM2ZGFCSPdMxrKfMjQr1/7Fk1M57+SSlMY=;
-        b=Vt5jVhxZibXnaYh/q2KS5nSXFpiQmIiEDEzrojaDEuF+Ebme5tbY+8Sp8MTHQxMwSK+qg6
-        rlsL6Fr+SBX4ChDsy+N2rB15IT5heCvP2ZfQgtJpqnMbQ+FMnPWzCkly8dOllAfqlTbMVL
-        BB+wuQsW+l61d+0TZTX2wnLh7FK95T0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-520-kJGkAKZbO4q5nzZz_s0F4Q-1; Wed, 10 Mar 2021 17:42:51 -0500
-X-MC-Unique: kJGkAKZbO4q5nzZz_s0F4Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 409C21084C97;
-        Wed, 10 Mar 2021 22:42:48 +0000 (UTC)
-Received: from krava (unknown [10.40.195.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6A45B50D0D;
-        Wed, 10 Mar 2021 22:42:44 +0000 (UTC)
-Date:   Wed, 10 Mar 2021 23:42:43 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Viktor =?iso-8859-1?Q?J=E4gersk=FCpper?= 
-        <viktor_jaegerskuepper@freenet.de>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
- libsubcmd in separate directories
-Message-ID: <YElLY7Ht7NNTmoWB@krava>
-References: <20210205124020.683286-1-jolsa@kernel.org>
- <20210205124020.683286-2-jolsa@kernel.org>
- <5a48579b-9aff-72a5-7b25-accb40c4dd52@freenet.de>
- <CAEf4BzYYG=3ZEu70CV0t0+T583082=FcytCv=jg2b83QaqyQRA@mail.gmail.com>
+        id S233077AbhCJWs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 17:48:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60696 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233150AbhCJWsx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 17:48:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 090F864F60;
+        Wed, 10 Mar 2021 22:48:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615416529;
+        bh=hMhnxe2pT2lcv/axs+glNzsnZ5FBBEWTJS4v8suCwjY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mj9WPA4pXbA+qEUD0Xe2o6g6OwxZAunjyXrn1eEvjRRPpEIdUDfC4P0tUuje8zRT7
+         n2gTvNWGDNGMiWw411KPeFvOnKpoj/njY6b9Dz/iuqJlnz+btc5A78UtsUE3z5dT4q
+         LtCDEUw4gcAEdRS51bhLzvwexDO7hJtdEI3YcOgsP1kSsEGn9vPuWL6j0ggiVL8tQ+
+         8UmBkZaNfpjh4PmfwSaVtCSO+eAkqnerhcAfVKOxWITvU1pgVGxaD5p0DnVZQeDS7n
+         fvMct3H07A7zI/0Auzrda4j9n8OxxCVRzAluheKej+qRGTCiIMaJJ6v68T1CCGvErb
+         OTqpAc0Wz4t9w==
+Date:   Wed, 10 Mar 2021 14:48:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH net-next] net: phy: Expose phydev::dev_flags through
+ sysfs
+Message-ID: <20210310144848.53ffbbd9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210310221244.2968469-1-f.fainelli@gmail.com>
+References: <20210310221244.2968469-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEf4BzYYG=3ZEu70CV0t0+T583082=FcytCv=jg2b83QaqyQRA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 11:27:19AM -0800, Andrii Nakryiko wrote:
-> On Wed, Mar 10, 2021 at 9:35 AM Viktor Jägersküpper
-> <viktor_jaegerskuepper@freenet.de> wrote:
-> >
-> > Hi,
-> >
-> > > Setting up separate build directories for libbpf and libpsubcmd,
-> > > so it's separated from other objects and we don't get them mixed
-> > > in the future.
-> > >
-> > > It also simplifies cleaning, which is now simple rm -rf.
-> > >
-> > > Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
-> > > files in .gitignore anymore.
-> > >
-> > > Acked-by: Song Liu <songliubraving@fb.com>
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> >
-> > when I invoke 'git status' on the master branch of my local git repository
-> > (cloned from stable/linux.git), which I have used to compile several kernels,
-> > it lists two untracked files:
-> >
-> >         tools/bpf/resolve_btfids/FEATURE-DUMP.libbpf
-> >         tools/bpf/resolve_btfids/bpf_helper_defs.h
-> >
-> > 'git status' doesn't complain about these files with v5.11, and I can't get rid
-> > of them by 'make clean' with v5.11 or v5.12-rc1/rc2. So I used 'git bisect' and
-> > found that this is caused by commit fc6b48f692f89cc48bfb7fd1aa65454dfe9b2d77,
-> > which links to this thread.
-> >
-> > Looking at the diff it's obvious because of the change in the .gitignore file,
-> > but I don't know why these files are there and I have never touched anything in
-> > the 'tools' directory.
-> >
-> > Can I savely delete the files? Do I even have to delete them before I compile
-> > v5.12-rcX?
+On Wed, 10 Mar 2021 14:12:43 -0800 Florian Fainelli wrote:
+> phydev::dev_flags contains a bitmask of configuration bits requested by
+> the consumer of a PHY device (Ethernet MAC or switch) towards the PHY
+> driver. Since these flags are often used for requesting LED or other
+> type of configuration being able to quickly audit them without
+> instrumenting the kernel is useful.
 > 
-> yes, those were auto-generated files. You can safely remove them.
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  Documentation/ABI/testing/sysfs-class-net-phydev | 12 ++++++++++++
+>  drivers/net/phy/phy_device.c                     | 11 +++++++++++
+>  2 files changed, 23 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
+> index 40ced0ea4316..ac722dd5e694 100644
+> --- a/Documentation/ABI/testing/sysfs-class-net-phydev
+> +++ b/Documentation/ABI/testing/sysfs-class-net-phydev
+> @@ -51,3 +51,15 @@ Description:
+>  		Boolean value indicating whether the PHY device is used in
+>  		standalone mode, without a net_device associated, by PHYLINK.
+>  		Attribute created only when this is the case.
+> +
+> +What:		/sys/class/mdio_bus/<bus>/<device>/phy_dev_flags
+> +Date:		March 2021
+> +KernelVersion:	5.13
+> +Contact:	netdev@vger.kernel.org
+> +Description:
+> +		32-bit hexadecimal number representing a bit mask of the
+> +		configuration bits passed from the consumer of the PHY
+> +		(Ethernet MAC, switch, etc.) to the PHY driver. The flags are
+> +		only used internally by the kernel and their placement are
+> +		not meant to be stable across kernel versions. This is intended
+> +		for facilitating the debugging of PHY drivers.
 
-hm, I answered this email, but for some reason I can't see it on
-lore.. FWIW, trying once more ;-)
-
-
-hi,
-yes, you can delete them, this patch moved libbpf and libsubcmd
-into their own build directories, so those 2 files stayed there
-from your last build without the patch
-
-jirka
+Why not debugfs, then?
 
