@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C9F333C5C
+	by mail.lfdr.de (Postfix) with ESMTP id 74F6D333C5D
 	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 13:16:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232540AbhCJMPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 07:15:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
+        id S232579AbhCJMPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 07:15:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232059AbhCJMP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:15:29 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3B0C061760
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:28 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id ox4so22631656ejb.11
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:28 -0800 (PST)
+        with ESMTP id S232318AbhCJMPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:15:30 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D77C061760
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:30 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id bm21so38249617ejb.4
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=70ar6MtM4I/ssnFLEWejVtLDarbaNeN6DESDTHNsN1k=;
-        b=SoorARaQ2yLoQBjGEh4pyu8vzLetwyrAf/lKAyPkALWMIhyzSyf3jbUbmfE0pbX4Zp
-         RlY8nvS5CSOH/mysgkuO5IN2c3iwjl0QgUW2tDoxLK32+aoPXXNbnWVySd+bJSv9HoZE
-         bXGbVKOw0b6+4HvqC8dWkKc4vi2JARzqBbVjsNGmsH02xbezop0RM44fRN8gWUC/KW26
-         OUQ9sCiTzyTH85pPrP/CtxHt4GE9SW/jorPvNjMidLeBX3B2IEzbYNpbHKuxuv4uGN9a
-         kcouIIQh6DspnMGBdLCFPrjC8ZBf5aa0ZblHLAuXJGo0FQ2pt/BIGyq8y5HReFDIPtD1
-         CA4A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sAY2dnpd67XSTDCEBHYBxFeSiTVnRIpfswARonGRgPo=;
+        b=jooIUgJlm19tOKzdNwsE/z6b471Nh+TYWmwLNyhpJVhAIg1GHgBTs3m18j5nj9GTH4
+         OMbxhwS0OkMVZy2CGzimKFND/XFHB8ezDpx9pYgIx33WzVeyT8HlLdDcKC+iG6kwFb2L
+         e/qsOYivkOM7dolcLRbNbaCc8vPXS6Q9XfRwU2n8gpvyOi0Vf4tZdE4Vc9/uaPZnQDxp
+         94Z/NuEzXd6w2ZlsMmFvRYIgfmebAr7hmM8UA7Cr1yP2td8xt9Qs77/icYzUVdJzBgDJ
+         mg/fWa8Q4C9dv6qpA2GT3H/DflYrKbH001DE6Z4x7Cps8zy0l6zCidZ26Xau1+HiSy8o
+         0h1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=70ar6MtM4I/ssnFLEWejVtLDarbaNeN6DESDTHNsN1k=;
-        b=gfMBtDFi78uulK856i0MERnD8YYW2EOCF39FV7BYWA+GZHJdVX08ruqBHN1yMbJ9Qx
-         Z9irIYu9pi0TfUfJp5ebGgyWpc0gnF58hmNcGoInFKz6J04pn7uFsmafJ1+lvo/CX8Qn
-         eZt5907VMm99xAUE7odbWMwJxy1WTrL60rHORK9pDe0Y6sJE6S4+4At8mI/n/qozrx9m
-         /lS4n8WOfzhKE6CVZ4wZM/1c4IvN7Yzhv3Hz9NTXAGxRVq16sMQQ7RWbtmEHzSYF13A/
-         ATC4mkRTJDf+RAWixY+/xMpbTMRphennrIbBeNqNGjHPtDugY6mbgY0ZjeBgY1sPuHH9
-         tihg==
-X-Gm-Message-State: AOAM533A1nQZ9TICklZkfhPXBVVf4CDFRaRDNGAH8kvKHe8G11iCOylk
-        mZGQK0ohXV6iwY2hEPKg24E=
-X-Google-Smtp-Source: ABdhPJzcgOXdzJLLshyOnX0n04zynzn9Jxt1PAOc1GcqQ4hHHG7i9MfzvVYoKa5ecljidWHiYf0u5A==
-X-Received: by 2002:a17:906:405b:: with SMTP id y27mr3420215ejj.332.1615378527502;
-        Wed, 10 Mar 2021 04:15:27 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sAY2dnpd67XSTDCEBHYBxFeSiTVnRIpfswARonGRgPo=;
+        b=cQ0khDaDrbG4ywTfdjxFYU6wd10LvacqvWQ4wycOy/yTuDhp/OhYPPoXFP0yITFpXf
+         n9I1ewyrhLLO4qvK2i0ObXfesduGXtI6KKEg10mkdXw+Q8vuKprBQRfAQ+oRDaEFJ15l
+         lMDESo5FuPiNdLho9WIArBIObZvR4zpwrO4gH19qAfcDlySQFhz2Zf9Boby2SpU1rY4F
+         JrHtR3lxHzjonCs9ofRgzBiS4zBwonF50pW7I+IVIO0aTwzFxt2eVWUmZAqRSNWkCSzR
+         3nz1tCh5A8I8nDGSO1dYaxM0h8WR1PGjkIn5sxAYye/mljzhPmMTa2hVdplPIp6q8CFG
+         Aulw==
+X-Gm-Message-State: AOAM530WHSFm0eZ3TaxdEmZEd4u0yQR+ldDYgriwY2NvLq1+0v76H26n
+        KNzufz2cxTW/5EQdX/nxGrs=
+X-Google-Smtp-Source: ABdhPJxNK0DQIpPymJsTB2ztg3dQDNkVsuUO2isYiXwPx+qR76eMWynUjlpvndCRSfnJNE76JzEW7w==
+X-Received: by 2002:a17:906:32d1:: with SMTP id k17mr3370687ejk.94.1615378528765;
+        Wed, 10 Mar 2021 04:15:28 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id v15sm4865527edw.28.2021.03.10.04.15.26
+        by smtp.gmail.com with ESMTPSA id v15sm4865527edw.28.2021.03.10.04.15.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 04:15:26 -0800 (PST)
+        Wed, 10 Mar 2021 04:15:28 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
         jiri@resnulli.us, ruxandra.radulescu@nxp.com,
-        netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 00/15] dpaa2-switch: CPU terminated traffic and move out of staging
-Date:   Wed, 10 Mar 2021 14:14:37 +0200
-Message-Id: <20210310121452.552070-1-ciorneiioana@gmail.com>
+        netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 01/15] staging: dpaa2-switch: remove broken learning and flooding support
+Date:   Wed, 10 Mar 2021 14:14:38 +0200
+Message-Id: <20210310121452.552070-2-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210310121452.552070-1-ciorneiioana@gmail.com>
+References: <20210310121452.552070-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -64,98 +67,447 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-This patch set adds support for Rx/Tx capabilities on DPAA2 switch port
-interfaces as well as fixing up some major blunders in how we take care
-of the switching domains. The last patch actually moves the driver out
-of staging now that the minimum requirements are met.
+This patch is removing the current configuration of learning and
+flooding states per switch port because they are essentially broken in
+terms of integration with the switchdev APIs and the bridge
+understanding of these states.
 
-I am sending this directly towards the net-next tree so that I can use
-the rest of the development cycle adding new features on top of the
-current driver without worrying about merge conflicts between the
-staging and net-next tree.
+First of all, the learning state is a per switch port configuration
+while the dpaa2-switch driver was using it to configure the entire
+bridging domain. This is broken since the software learning state could
+be out of sync with the hardware state when ports from the same bridging
+domain are configured by the user with different learning parameters.
 
-The control interface is comprised of 3 queues in total: Rx, Rx error
-and Tx confirmation. In this patch set we only enable Rx and Tx conf.
-All switch ports share the same queues when frames are redirected to the
-CPU.  Information regarding the ingress switch port is passed through
-frame metadata - the flow context field of the descriptor.
+The BR_FLOOD flag has been misinterpreted as well. Instead of denoting
+whether unicast traffic for which there is no FDB entry will be flooded
+towards a given port, the dpaa2-switch used the flag to configure
+whether or not a frame with an unknown destination received on a given
+port should be flooded or not. In summary, it was used as ingress
+setting instead of a egress one.
 
-NAPI instances are also shared between switch net_devices and are
-enabled when at least on one of the switch ports .dev_open() was called
-and disabled when no switch port is still up.
+Also, remove the unnecessary call to dpsw_if_set_broadcast() and the API
+definition. The HW default is to let all switch ports to be able to
+flood broadcast traffic thus there is no need to call the API again.
 
-Since the last version of this feature was submitted to the list, I
-reworked how the switching and flooding domains are taken care of by the
-driver, thus the switch is now able to also add the control port (the
-queues that the CPU can dequeue from) into the flooding domains of a
-port (broadcast, unknown unicast etc). With this, we are able to receive
-and sent traffic from the switch interfaces.
+Instead of trying to patch things up, just remove the support for the
+moment so that we'll add it back cleanly once the driver is out of
+staging.
 
-Also, the capability to properly partition the DPSW object into multiple
-switching domains was added so that when not under a bridge, the ports
-are not actually capable to switch between them. This is possible by
-adding a private FDB table per switch interface.  When multiple switch
-interfaces are under the same bridge, they will all use the same FDB
-table.
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h |  24 ----
+ drivers/staging/fsl-dpaa2/ethsw/dpsw.c     |  93 ----------------
+ drivers/staging/fsl-dpaa2/ethsw/dpsw.h     |  18 ---
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.c    | 123 ---------------------
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.h    |   1 -
+ 5 files changed, 259 deletions(-)
 
-Another thing that is fixed in this patch set is how the driver handles
-VLAN awareness. The DPAA2 switch is not capable to run as VLAN unaware
-but this was not reflected in how the driver responded to requests to
-change the VLAN awareness. In the last patch, this is fixed by
-describing the switch interfaces as Rx VLAN filtering on [fixed] and
-declining any request to join a VLAN unaware bridge.
-
-
-Ioana Ciornei (15):
-  staging: dpaa2-switch: remove broken learning and flooding support
-  staging: dpaa2-switch: fix up initial forwarding configuration done by
-    firmware
-  staging: dpaa2-switch: remove obsolete .ndo_fdb_{add|del} callbacks
-  staging: dpaa2-switch: get control interface attributes
-  staging: dpaa2-switch: setup buffer pool and RX path rings
-  staging: dpaa2-switch: setup dpio
-  staging: dpaa2-switch: handle Rx path on control interface
-  staging: dpaa2-switch: add .ndo_start_xmit() callback
-  staging: dpaa2-switch: enable the control interface
-  staging: dpaa2-switch: properly setup switching domains
-  staging: dpaa2-switch: move the notifier register to module_init()
-  staging: dpaa2-switch: accept only vlan-aware upper devices
-  staging: dpaa2-switch: add fast-ageing on bridge leave
-  staging: dpaa2-switch: prevent joining a bridge while VLAN uppers are
-    present
-  staging: dpaa2-switch: move the driver out of staging
-
- MAINTAINERS                                   |    6 +-
- drivers/net/ethernet/freescale/dpaa2/Kconfig  |    8 +
- drivers/net/ethernet/freescale/dpaa2/Makefile |    2 +
- .../freescale/dpaa2/dpaa2-switch-ethtool.c}   |    2 +-
- .../ethernet/freescale/dpaa2/dpaa2-switch.c}  | 1704 +++++++++++++----
- .../ethernet/freescale/dpaa2/dpaa2-switch.h   |  178 ++
- .../ethernet/freescale/dpaa2}/dpsw-cmd.h      |  128 +-
- .../ethernet/freescale/dpaa2}/dpsw.c          |  328 +++-
- .../ethernet/freescale/dpaa2}/dpsw.h          |  199 +-
- drivers/staging/Kconfig                       |    2 -
- drivers/staging/Makefile                      |    1 -
- drivers/staging/fsl-dpaa2/Kconfig             |   19 -
- drivers/staging/fsl-dpaa2/Makefile            |    6 -
- drivers/staging/fsl-dpaa2/ethsw/Makefile      |   10 -
- drivers/staging/fsl-dpaa2/ethsw/README        |  106 -
- drivers/staging/fsl-dpaa2/ethsw/TODO          |   13 -
- drivers/staging/fsl-dpaa2/ethsw/ethsw.h       |   80 -
- 17 files changed, 2097 insertions(+), 695 deletions(-)
- rename drivers/{staging/fsl-dpaa2/ethsw/ethsw-ethtool.c => net/ethernet/freescale/dpaa2/dpaa2-switch-ethtool.c} (99%)
- rename drivers/{staging/fsl-dpaa2/ethsw/ethsw.c => net/ethernet/freescale/dpaa2/dpaa2-switch.c} (51%)
- create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.h
- rename drivers/{staging/fsl-dpaa2/ethsw => net/ethernet/freescale/dpaa2}/dpsw-cmd.h (76%)
- rename drivers/{staging/fsl-dpaa2/ethsw => net/ethernet/freescale/dpaa2}/dpsw.c (83%)
- rename drivers/{staging/fsl-dpaa2/ethsw => net/ethernet/freescale/dpaa2}/dpsw.h (73%)
- delete mode 100644 drivers/staging/fsl-dpaa2/Kconfig
- delete mode 100644 drivers/staging/fsl-dpaa2/Makefile
- delete mode 100644 drivers/staging/fsl-dpaa2/ethsw/Makefile
- delete mode 100644 drivers/staging/fsl-dpaa2/ethsw/README
- delete mode 100644 drivers/staging/fsl-dpaa2/ethsw/TODO
- delete mode 100644 drivers/staging/fsl-dpaa2/ethsw/ethsw.h
-
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h b/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
+index 450841cc6ca8..2a921ed9594d 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
++++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
+@@ -48,8 +48,6 @@
+ #define DPSW_CMDID_IF_SET_MAX_FRAME_LENGTH  DPSW_CMD_ID(0x044)
+ 
+ #define DPSW_CMDID_IF_GET_LINK_STATE        DPSW_CMD_ID(0x046)
+-#define DPSW_CMDID_IF_SET_FLOODING          DPSW_CMD_ID(0x047)
+-#define DPSW_CMDID_IF_SET_BROADCAST         DPSW_CMD_ID(0x048)
+ 
+ #define DPSW_CMDID_IF_GET_TCI               DPSW_CMD_ID(0x04A)
+ 
+@@ -68,7 +66,6 @@
+ #define DPSW_CMDID_FDB_REMOVE_UNICAST       DPSW_CMD_ID(0x085)
+ #define DPSW_CMDID_FDB_ADD_MULTICAST        DPSW_CMD_ID(0x086)
+ #define DPSW_CMDID_FDB_REMOVE_MULTICAST     DPSW_CMD_ID(0x087)
+-#define DPSW_CMDID_FDB_SET_LEARNING_MODE    DPSW_CMD_ID(0x088)
+ #define DPSW_CMDID_FDB_DUMP                 DPSW_CMD_ID(0x08A)
+ 
+ #define DPSW_CMDID_IF_GET_PORT_MAC_ADDR     DPSW_CMD_ID(0x0A7)
+@@ -191,18 +188,6 @@ struct dpsw_rsp_get_attr {
+ 	__le64 options;
+ };
+ 
+-struct dpsw_cmd_if_set_flooding {
+-	__le16 if_id;
+-	/* from LSB: enable:1 */
+-	u8 enable;
+-};
+-
+-struct dpsw_cmd_if_set_broadcast {
+-	__le16 if_id;
+-	/* from LSB: enable:1 */
+-	u8 enable;
+-};
+-
+ #define DPSW_VLAN_ID_SHIFT	0
+ #define DPSW_VLAN_ID_SIZE	12
+ #define DPSW_DEI_SHIFT		12
+@@ -350,15 +335,6 @@ struct dpsw_cmd_fdb_multicast_op {
+ 	__le64 if_id[4];
+ };
+ 
+-#define DPSW_LEARNING_MODE_SHIFT	0
+-#define DPSW_LEARNING_MODE_SIZE		4
+-
+-struct dpsw_cmd_fdb_set_learning_mode {
+-	__le16 fdb_id;
+-	/* only the first 4 bits from LSB */
+-	u8 mode;
+-};
+-
+ struct dpsw_cmd_fdb_dump {
+ 	__le16 fdb_id;
+ 	__le16 pad0;
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw.c b/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
+index f8bfe779bd30..f7013d71dc84 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
++++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
+@@ -431,68 +431,6 @@ int dpsw_if_get_link_state(struct fsl_mc_io *mc_io,
+ 	return 0;
+ }
+ 
+-/**
+- * dpsw_if_set_flooding() - Enable Disable flooding for particular interface
+- * @mc_io:	Pointer to MC portal's I/O object
+- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+- * @token:	Token of DPSW object
+- * @if_id:	Interface Identifier
+- * @en:		1 - enable, 0 - disable
+- *
+- * Return:	Completion status. '0' on Success; Error code otherwise.
+- */
+-int dpsw_if_set_flooding(struct fsl_mc_io *mc_io,
+-			 u32 cmd_flags,
+-			 u16 token,
+-			 u16 if_id,
+-			 u8 en)
+-{
+-	struct fsl_mc_command cmd = { 0 };
+-	struct dpsw_cmd_if_set_flooding *cmd_params;
+-
+-	/* prepare command */
+-	cmd.header = mc_encode_cmd_header(DPSW_CMDID_IF_SET_FLOODING,
+-					  cmd_flags,
+-					  token);
+-	cmd_params = (struct dpsw_cmd_if_set_flooding *)cmd.params;
+-	cmd_params->if_id = cpu_to_le16(if_id);
+-	dpsw_set_field(cmd_params->enable, ENABLE, en);
+-
+-	/* send command to mc*/
+-	return mc_send_command(mc_io, &cmd);
+-}
+-
+-/**
+- * dpsw_if_set_broadcast() - Enable/disable broadcast for particular interface
+- * @mc_io:	Pointer to MC portal's I/O object
+- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+- * @token:	Token of DPSW object
+- * @if_id:	Interface Identifier
+- * @en:		1 - enable, 0 - disable
+- *
+- * Return:	Completion status. '0' on Success; Error code otherwise.
+- */
+-int dpsw_if_set_broadcast(struct fsl_mc_io *mc_io,
+-			  u32 cmd_flags,
+-			  u16 token,
+-			  u16 if_id,
+-			  u8 en)
+-{
+-	struct fsl_mc_command cmd = { 0 };
+-	struct dpsw_cmd_if_set_broadcast *cmd_params;
+-
+-	/* prepare command */
+-	cmd.header = mc_encode_cmd_header(DPSW_CMDID_IF_SET_BROADCAST,
+-					  cmd_flags,
+-					  token);
+-	cmd_params = (struct dpsw_cmd_if_set_broadcast *)cmd.params;
+-	cmd_params->if_id = cpu_to_le16(if_id);
+-	dpsw_set_field(cmd_params->enable, ENABLE, en);
+-
+-	/* send command to mc*/
+-	return mc_send_command(mc_io, &cmd);
+-}
+-
+ /**
+  * dpsw_if_set_tci() - Set default VLAN Tag Control Information (TCI)
+  * @mc_io:	Pointer to MC portal's I/O object
+@@ -1151,37 +1089,6 @@ int dpsw_fdb_remove_multicast(struct fsl_mc_io *mc_io,
+ 	return mc_send_command(mc_io, &cmd);
+ }
+ 
+-/**
+- * dpsw_fdb_set_learning_mode() - Define FDB learning mode
+- * @mc_io:	Pointer to MC portal's I/O object
+- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+- * @token:	Token of DPSW object
+- * @fdb_id:	Forwarding Database Identifier
+- * @mode:	Learning mode
+- *
+- * Return:	Completion status. '0' on Success; Error code otherwise.
+- */
+-int dpsw_fdb_set_learning_mode(struct fsl_mc_io *mc_io,
+-			       u32 cmd_flags,
+-			       u16 token,
+-			       u16 fdb_id,
+-			       enum dpsw_fdb_learning_mode mode)
+-{
+-	struct fsl_mc_command cmd = { 0 };
+-	struct dpsw_cmd_fdb_set_learning_mode *cmd_params;
+-
+-	/* prepare command */
+-	cmd.header = mc_encode_cmd_header(DPSW_CMDID_FDB_SET_LEARNING_MODE,
+-					  cmd_flags,
+-					  token);
+-	cmd_params = (struct dpsw_cmd_fdb_set_learning_mode *)cmd.params;
+-	cmd_params->fdb_id = cpu_to_le16(fdb_id);
+-	dpsw_set_field(cmd_params->mode, LEARNING_MODE, mode);
+-
+-	/* send command to mc*/
+-	return mc_send_command(mc_io, &cmd);
+-}
+-
+ /**
+  * dpsw_get_api_version() - Get Data Path Switch API version
+  * @mc_io:	Pointer to MC portal's I/O object
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw.h b/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
+index 9cfd8a8e0197..bc6bcfb6893d 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
++++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
+@@ -235,18 +235,6 @@ int dpsw_if_get_link_state(struct fsl_mc_io *mc_io,
+ 			   u16 if_id,
+ 			   struct dpsw_link_state *state);
+ 
+-int dpsw_if_set_flooding(struct fsl_mc_io *mc_io,
+-			 u32 cmd_flags,
+-			 u16 token,
+-			 u16 if_id,
+-			 u8 en);
+-
+-int dpsw_if_set_broadcast(struct fsl_mc_io *mc_io,
+-			  u32 cmd_flags,
+-			  u16 token,
+-			  u16 if_id,
+-			  u8 en);
+-
+ /**
+  * struct dpsw_tci_cfg - Tag Control Information (TCI) configuration
+  * @pcp: Priority Code Point (PCP): a 3-bit field which refers
+@@ -555,12 +543,6 @@ enum dpsw_fdb_learning_mode {
+ 	DPSW_FDB_LEARNING_MODE_SECURE = 3
+ };
+ 
+-int dpsw_fdb_set_learning_mode(struct fsl_mc_io *mc_io,
+-			       u32 cmd_flags,
+-			       u16 token,
+-			       u16 fdb_id,
+-			       enum dpsw_fdb_learning_mode mode);
+-
+ /**
+  * struct dpsw_fdb_attr - FDB Attributes
+  * @max_fdb_entries: Number of FDB entries
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
+index 703055e063ff..edcaf99c24fc 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
++++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
+@@ -161,44 +161,6 @@ static int dpaa2_switch_port_add_vlan(struct ethsw_port_priv *port_priv,
+ 	return 0;
+ }
+ 
+-static int dpaa2_switch_set_learning(struct ethsw_core *ethsw, bool enable)
+-{
+-	enum dpsw_fdb_learning_mode learn_mode;
+-	int err;
+-
+-	if (enable)
+-		learn_mode = DPSW_FDB_LEARNING_MODE_HW;
+-	else
+-		learn_mode = DPSW_FDB_LEARNING_MODE_DIS;
+-
+-	err = dpsw_fdb_set_learning_mode(ethsw->mc_io, 0, ethsw->dpsw_handle, 0,
+-					 learn_mode);
+-	if (err) {
+-		dev_err(ethsw->dev, "dpsw_fdb_set_learning_mode err %d\n", err);
+-		return err;
+-	}
+-	ethsw->learning = enable;
+-
+-	return 0;
+-}
+-
+-static int dpaa2_switch_port_set_flood(struct ethsw_port_priv *port_priv, bool enable)
+-{
+-	int err;
+-
+-	err = dpsw_if_set_flooding(port_priv->ethsw_data->mc_io, 0,
+-				   port_priv->ethsw_data->dpsw_handle,
+-				   port_priv->idx, enable);
+-	if (err) {
+-		netdev_err(port_priv->netdev,
+-			   "dpsw_if_set_flooding err %d\n", err);
+-		return err;
+-	}
+-	port_priv->flood = enable;
+-
+-	return 0;
+-}
+-
+ static int dpaa2_switch_port_set_stp_state(struct ethsw_port_priv *port_priv, u8 state)
+ {
+ 	struct dpsw_stp_cfg stp_cfg = {
+@@ -908,41 +870,6 @@ static int dpaa2_switch_port_attr_stp_state_set(struct net_device *netdev,
+ 	return dpaa2_switch_port_set_stp_state(port_priv, state);
+ }
+ 
+-static int
+-dpaa2_switch_port_attr_br_flags_pre_set(struct net_device *netdev,
+-					struct switchdev_brport_flags flags)
+-{
+-	if (flags.mask & ~(BR_LEARNING | BR_FLOOD))
+-		return -EINVAL;
+-
+-	return 0;
+-}
+-
+-static int
+-dpaa2_switch_port_attr_br_flags_set(struct net_device *netdev,
+-				    struct switchdev_brport_flags flags)
+-{
+-	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
+-	int err = 0;
+-
+-	if (flags.mask & BR_LEARNING) {
+-		/* Learning is enabled per switch */
+-		err = dpaa2_switch_set_learning(port_priv->ethsw_data,
+-						!!(flags.val & BR_LEARNING));
+-		if (err)
+-			return err;
+-	}
+-
+-	if (flags.mask & BR_FLOOD) {
+-		err = dpaa2_switch_port_set_flood(port_priv,
+-						  !!(flags.val & BR_FLOOD));
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+ static int dpaa2_switch_port_attr_set(struct net_device *netdev,
+ 				      const struct switchdev_attr *attr)
+ {
+@@ -953,14 +880,6 @@ static int dpaa2_switch_port_attr_set(struct net_device *netdev,
+ 		err = dpaa2_switch_port_attr_stp_state_set(netdev,
+ 							   attr->u.stp_state);
+ 		break;
+-	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
+-		err = dpaa2_switch_port_attr_br_flags_pre_set(netdev,
+-							      attr->u.brport_flags);
+-		break;
+-	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
+-		err = dpaa2_switch_port_attr_br_flags_set(netdev,
+-							  attr->u.brport_flags);
+-		break;
+ 	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
+ 		/* VLANs are supported by default  */
+ 		break;
+@@ -1232,24 +1151,6 @@ static int dpaa2_switch_port_bridge_join(struct net_device *netdev,
+ 		}
+ 	}
+ 
+-	/* Enable flooding */
+-	err = dpaa2_switch_port_set_flood(port_priv, 1);
+-	if (!err)
+-		port_priv->bridge_dev = upper_dev;
+-
+-	return err;
+-}
+-
+-static int dpaa2_switch_port_bridge_leave(struct net_device *netdev)
+-{
+-	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
+-	int err;
+-
+-	/* Disable flooding */
+-	err = dpaa2_switch_port_set_flood(port_priv, 0);
+-	if (!err)
+-		port_priv->bridge_dev = NULL;
+-
+ 	return err;
+ }
+ 
+@@ -1270,8 +1171,6 @@ static int dpaa2_switch_port_netdevice_event(struct notifier_block *nb,
+ 		if (netif_is_bridge_master(upper_dev)) {
+ 			if (info->linking)
+ 				err = dpaa2_switch_port_bridge_join(netdev, upper_dev);
+-			else
+-				err = dpaa2_switch_port_bridge_leave(netdev);
+ 		}
+ 	}
+ 
+@@ -1513,13 +1412,6 @@ static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
+ 		goto err_close;
+ 	}
+ 
+-	err = dpsw_fdb_set_learning_mode(ethsw->mc_io, 0, ethsw->dpsw_handle, 0,
+-					 DPSW_FDB_LEARNING_MODE_HW);
+-	if (err) {
+-		dev_err(dev, "dpsw_fdb_set_learning_mode err %d\n", err);
+-		goto err_close;
+-	}
+-
+ 	stp_cfg.vlan_id = DEFAULT_VLAN_ID;
+ 	stp_cfg.state = DPSW_STP_STATE_FORWARDING;
+ 
+@@ -1531,15 +1423,6 @@ static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
+ 				err, i);
+ 			goto err_close;
+ 		}
+-
+-		err = dpsw_if_set_broadcast(ethsw->mc_io, 0,
+-					    ethsw->dpsw_handle, i, 1);
+-		if (err) {
+-			dev_err(dev,
+-				"dpsw_if_set_broadcast err %d for port %d\n",
+-				err, i);
+-			goto err_close;
+-		}
+ 	}
+ 
+ 	ethsw->workqueue = alloc_ordered_workqueue("%s_%d_ordered",
+@@ -1689,9 +1572,6 @@ static int dpaa2_switch_probe_port(struct ethsw_core *ethsw,
+ 	port_priv->idx = port_idx;
+ 	port_priv->stp_state = BR_STATE_FORWARDING;
+ 
+-	/* Flooding is implicitly enabled */
+-	port_priv->flood = true;
+-
+ 	SET_NETDEV_DEV(port_netdev, dev);
+ 	port_netdev->netdev_ops = &dpaa2_switch_port_ops;
+ 	port_netdev->ethtool_ops = &dpaa2_switch_port_ethtool_ops;
+@@ -1756,9 +1636,6 @@ static int dpaa2_switch_probe(struct fsl_mc_device *sw_dev)
+ 	/* DEFAULT_VLAN_ID is implicitly configured on the switch */
+ 	ethsw->vlans[DEFAULT_VLAN_ID] = ETHSW_VLAN_MEMBER;
+ 
+-	/* Learning is implicitly enabled */
+-	ethsw->learning = true;
+-
+ 	ethsw->ports = kcalloc(ethsw->sw_attr.num_ifs, sizeof(*ethsw->ports),
+ 			       GFP_KERNEL);
+ 	if (!(ethsw->ports)) {
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.h b/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
+index 5f9211ccb1ef..448f60755eea 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
++++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
+@@ -69,7 +69,6 @@ struct ethsw_core {
+ 	struct ethsw_port_priv		**ports;
+ 
+ 	u8				vlans[VLAN_VID_MASK + 1];
+-	bool				learning;
+ 
+ 	struct notifier_block		port_nb;
+ 	struct notifier_block		port_switchdev_nb;
 -- 
 2.30.0
 
