@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4401333C62
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 13:17:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BBDA333C63
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 13:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232750AbhCJMQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S232762AbhCJMQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 10 Mar 2021 07:16:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbhCJMPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:15:33 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCDBC061761
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:33 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id w9so27667390edc.11
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:33 -0800 (PST)
+        with ESMTP id S231906AbhCJMPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 07:15:35 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D996DC061760
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:34 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id t1so27711878eds.7
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 04:15:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FCzdhfFeLuimC7tMP6ktlzTOBwPmQ7o6+J5v8sj8Djc=;
-        b=XxCHuPWxyLwiZdltBmvsKQZUq+eSvzlwVyTLugKrEYPqWZu+OMPoLqGXR1G2UwvFgv
-         rcpiaS5Msg7W3Ik+AA+vboX4fkJTcxMWTEK3+HNdYy/tWI8ljIvSdtDd5BN344GjWp4x
-         gCdsKj5rFRLxNky+kQ+W60Yrv5qlzsGPotYq4Id+7aTvdwCobD1/Aoz7lm4vhcSKESC2
-         kgHabIW1zuv7tCKUmMfo9vH4hI1jyPUdgNjO+Em6Y/sdfgSPGEUWk3xIRlZMybTxiJ9Q
-         8HxJkwJGZyHRzOOPtBOJhIc3TlC4raFeuWL2dYvL8VjnE2Xz+74QPuV/ZKXWctftiEfn
-         8JCQ==
+        bh=J5bH24nbCnqQ9uR5j8B2xFG4PtJMJ8mHyETriZocZvk=;
+        b=o9q4Mep3WbzPXsqsygfbu6lhmnZKW0buF88zvwiePeHtJTaLXIXnPHZvjfq4wQixl2
+         OuvtmRVVAMB6VcFuM7mkd7IWnLTM9d8HJPUXVuSSwvd2BJM9skvfP5UJ50FYK/CfNnpl
+         oSrFWnXJJXQWS3RLhT3Qj8ZEoGOD5Q8lL1xQxK4mq54h6KFKcTTMMglKlyJEumBWBkL+
+         TnRE9e/BtRl6rMMWg1d60QF0gGFnIdQfbdcvX9z6CAU2na+OSUE9HTuceBdMWeYsEe1c
+         8kAfYxkIHFPnP7Kw7SIPt4LOJXig/+wgXH/8QmotR0dsdl59aq9wjvcAtHZC/OkPRJrz
+         +ohA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FCzdhfFeLuimC7tMP6ktlzTOBwPmQ7o6+J5v8sj8Djc=;
-        b=m9AnTCdVokRQ4s5PfFFOWUKMxr1w24jEDEouFDpilrTT0wxW72G5hzx90o42HNqBtx
-         YjAkZvP5NXHfg31IVoF2x2hzyyJBYCRu86Tf7N7UzUy5hbvaYOEgSbSjJi04F98KZC2k
-         /c2/0HmY2PBRV/4oP/aOve8DRGhCF6SnO5pYM+yaV+MMkJVyUMYqbKOUX8k5BK3UAoYO
-         H9X6rn/MEqULqz21bpMeul2iLuj2snDWzQIQlm9C5Ylnl6XlA/N8f+IisT2Q6ZlS/dX5
-         FAhB4V3i0xDeozL9XU+L1+ns0SmYXQ7CPsN9fE851xl39ASt96qRj5ucR2uS9w+A5U1y
-         SH9A==
-X-Gm-Message-State: AOAM533HrSpMn7yxHZaF0cpH0Vh9CcoVxnQiU9+MdFRHkRsW0yfXWifG
-        Ycgo5umvqhqL1yerSPXcGsI=
-X-Google-Smtp-Source: ABdhPJzXEA9KluvSQCHk+TcQjXpLDkHl6801sAQNm3nGcOn0G/yv2j2H/5Z/1HIAjkvRr7f8CKJYLQ==
-X-Received: by 2002:aa7:c9d1:: with SMTP id i17mr2861653edt.46.1615378532221;
-        Wed, 10 Mar 2021 04:15:32 -0800 (PST)
+        bh=J5bH24nbCnqQ9uR5j8B2xFG4PtJMJ8mHyETriZocZvk=;
+        b=IZX6br9FW75AyvjOrwwztwtU0WXxRu3xmuug4C//dnUpjJ/l1xlu+QsIh68h2dgEbo
+         6h9ub1eXI6syeagtMoDjWZDT4mqOxFtlt8KESUEAbB1YtfI/Oih0gh0uWflV4z5pLhqT
+         9FV5iO+n2ZpGVVq2oM7BGVoyFk3lx3wVNIQDrfxxYx1y4bI+WUOsIRQthhsumv2VRl91
+         zlZu0tzzSS1mI1BAGd58dZF2fMHOG4K15jWkI8zWtbua+KeUwGckwytqH3ZdvwzqZHOl
+         CRoNPw8XvDhS4R9SU/576dmOG0lg+wwetRjuri0JNdNNhCzM8GicwB/EnSGxj3Y9K1pX
+         aH/w==
+X-Gm-Message-State: AOAM532vOYGYZfrymBYveoNnHTzZUj2MCE5tqRkRUn0tCX4aibbbN9QB
+        QFTlqO8lrzZYnIVBCn89CP8QW1yscM1EAMXn
+X-Google-Smtp-Source: ABdhPJzGayhnTeTpzYU8Y1aS6t82XDzUZUTpOu97CDaTmFxMJmtqr5lGGGdx1rxt4mVzep8Am1Y7Tw==
+X-Received: by 2002:a05:6402:2070:: with SMTP id bd16mr2876465edb.133.1615378533515;
+        Wed, 10 Mar 2021 04:15:33 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.219.167])
-        by smtp.gmail.com with ESMTPSA id v15sm4865527edw.28.2021.03.10.04.15.31
+        by smtp.gmail.com with ESMTPSA id v15sm4865527edw.28.2021.03.10.04.15.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 04:15:31 -0800 (PST)
+        Wed, 10 Mar 2021 04:15:33 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
         jiri@resnulli.us, ruxandra.radulescu@nxp.com,
         netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 03/15] staging: dpaa2-switch: remove obsolete .ndo_fdb_{add|del} callbacks
-Date:   Wed, 10 Mar 2021 14:14:40 +0200
-Message-Id: <20210310121452.552070-4-ciorneiioana@gmail.com>
+Subject: [PATCH net-next 04/15] staging: dpaa2-switch: get control interface attributes
+Date:   Wed, 10 Mar 2021 14:14:41 +0200
+Message-Id: <20210310121452.552070-5-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210310121452.552070-1-ciorneiioana@gmail.com>
 References: <20210310121452.552070-1-ciorneiioana@gmail.com>
@@ -67,79 +67,301 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Since the dpaa2-switch already listens for SWITCHDEV_FDB_ADD_TO_DEVICE /
-SWITCHDEV_FDB_DEL_TO_DEVICE events emitted by the bridge, we don't need
-the bridge bypass operations, and now is a good time to delete them. All
-'bridge fdb' commands need the 'master' flag specified now.
+Introduce a new structure to hold all necessary info related to an RX
+queue for the control interface and populate the FQ IDs.
+We only have one Rx queue and one Tx confirmation queue on the control
+interface, both shared by all the switch ports.
 
-In fact, having the obsolete .ndo_fdb_{add|del} callbacks would even
-complicate the bridge leave/join procedures without any real benefit.
-Every FDB entry is installed in an FDB ID as far as the hardware is
-concerned, and the dpaa2-switch ports change their FDB ID when they join
-or leave a bridge. So we would need to manually delete these FDB entries
-when the FDB ID changes. That's because, unlike FDB entries added
-through switchdev, where the bridge automatically deletes those on
-leave, there isn't anybody who will remove the static FDB entries
-installed via the bridge bypass operations upon a change in the upper
-device.
-
-Note that we still need .ndo_fdb_dump though. The dpaa2-switch does not
-emit any interrupts when a new address is learnt, so we cannot keep the
-bridge FDB in sync with the hardware FDB. Therefore, we need this
-callback to get a chance to print the FDB entries that were dynamically
-learnt by our hardware.
+Also, increase the minimum version of the object supported by the driver
+since for a basic switch driver support we'll be in need for some ABIs
+added in the latest version of firmware.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/staging/fsl-dpaa2/ethsw/ethsw.c | 27 -------------------------
- 1 file changed, 27 deletions(-)
+ drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h | 13 ++++-
+ drivers/staging/fsl-dpaa2/ethsw/dpsw.c     | 33 ++++++++++++-
+ drivers/staging/fsl-dpaa2/ethsw/dpsw.h     | 23 ++++++++-
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.c    | 56 +++++++++++++++++++---
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.h    | 22 ++++++++-
+ 5 files changed, 136 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-index fa0ec54b49fa..3067289a15a1 100644
---- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-+++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-@@ -295,31 +295,6 @@ static int dpaa2_switch_port_fdb_del_mc(struct ethsw_port_priv *port_priv,
- 	return err;
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h b/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
+index 2a921ed9594d..fc1ba45f8a3f 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
++++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw-cmd.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright 2014-2016 Freescale Semiconductor Inc.
+- * Copyright 2017-2020 NXP
++ * Copyright 2017-2021 NXP
+  *
+  */
+ 
+@@ -10,7 +10,7 @@
+ 
+ /* DPSW Version */
+ #define DPSW_VER_MAJOR		8
+-#define DPSW_VER_MINOR		5
++#define DPSW_VER_MINOR		9
+ 
+ #define DPSW_CMD_BASE_VERSION	1
+ #define DPSW_CMD_VERSION_2	2
+@@ -72,6 +72,8 @@
+ #define DPSW_CMDID_IF_GET_PRIMARY_MAC_ADDR  DPSW_CMD_ID(0x0A8)
+ #define DPSW_CMDID_IF_SET_PRIMARY_MAC_ADDR  DPSW_CMD_ID(0x0A9)
+ 
++#define DPSW_CMDID_CTRL_IF_GET_ATTR         DPSW_CMD_ID(0x0A0)
++
+ /* Macros for accessing command fields smaller than 1byte */
+ #define DPSW_MASK(field)        \
+ 	GENMASK(DPSW_##field##_SHIFT + DPSW_##field##_SIZE - 1, \
+@@ -347,6 +349,13 @@ struct dpsw_rsp_fdb_dump {
+ 	__le16 num_entries;
+ };
+ 
++struct dpsw_rsp_ctrl_if_get_attr {
++	__le64 pad;
++	__le32 rx_fqid;
++	__le32 rx_err_fqid;
++	__le32 tx_err_conf_fqid;
++};
++
+ struct dpsw_rsp_get_api_version {
+ 	__le16 version_major;
+ 	__le16 version_minor;
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw.c b/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
+index f7013d71dc84..a7794f012e78 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
++++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+  * Copyright 2014-2016 Freescale Semiconductor Inc.
+- * Copyright 2017-2018 NXP
++ * Copyright 2017-2021 NXP
+  *
+  */
+ 
+@@ -1089,6 +1089,37 @@ int dpsw_fdb_remove_multicast(struct fsl_mc_io *mc_io,
+ 	return mc_send_command(mc_io, &cmd);
  }
  
--static int dpaa2_switch_port_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
--				     struct net_device *dev, const unsigned char *addr,
--				     u16 vid, u16 flags,
--				     struct netlink_ext_ack *extack)
--{
--	if (is_unicast_ether_addr(addr))
--		return dpaa2_switch_port_fdb_add_uc(netdev_priv(dev),
--						    addr);
--	else
--		return dpaa2_switch_port_fdb_add_mc(netdev_priv(dev),
--						    addr);
--}
--
--static int dpaa2_switch_port_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
--				     struct net_device *dev,
--				     const unsigned char *addr, u16 vid)
--{
--	if (is_unicast_ether_addr(addr))
--		return dpaa2_switch_port_fdb_del_uc(netdev_priv(dev),
--						    addr);
--	else
--		return dpaa2_switch_port_fdb_del_mc(netdev_priv(dev),
--						    addr);
--}
--
- static void dpaa2_switch_port_get_stats(struct net_device *netdev,
- 					struct rtnl_link_stats64 *stats)
- {
-@@ -726,8 +701,6 @@ static const struct net_device_ops dpaa2_switch_port_ops = {
- 	.ndo_change_mtu		= dpaa2_switch_port_change_mtu,
- 	.ndo_has_offload_stats	= dpaa2_switch_port_has_offload_stats,
- 	.ndo_get_offload_stats	= dpaa2_switch_port_get_offload_stats,
--	.ndo_fdb_add		= dpaa2_switch_port_fdb_add,
--	.ndo_fdb_del		= dpaa2_switch_port_fdb_del,
- 	.ndo_fdb_dump		= dpaa2_switch_port_fdb_dump,
++/**
++ * dpsw_ctrl_if_get_attributes() - Obtain control interface attributes
++ * @mc_io:	Pointer to MC portal's I/O object
++ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
++ * @token:	Token of DPSW object
++ * @attr:	Returned control interface attributes
++ *
++ * Return:	'0' on Success; Error code otherwise.
++ */
++int dpsw_ctrl_if_get_attributes(struct fsl_mc_io *mc_io, u32 cmd_flags,
++				u16 token, struct dpsw_ctrl_if_attr *attr)
++{
++	struct dpsw_rsp_ctrl_if_get_attr *rsp_params;
++	struct fsl_mc_command cmd = { 0 };
++	int err;
++
++	cmd.header = mc_encode_cmd_header(DPSW_CMDID_CTRL_IF_GET_ATTR,
++					  cmd_flags, token);
++
++	err = mc_send_command(mc_io, &cmd);
++	if (err)
++		return err;
++
++	rsp_params = (struct dpsw_rsp_ctrl_if_get_attr *)cmd.params;
++	attr->rx_fqid = le32_to_cpu(rsp_params->rx_fqid);
++	attr->rx_err_fqid = le32_to_cpu(rsp_params->rx_err_fqid);
++	attr->tx_err_conf_fqid = le32_to_cpu(rsp_params->tx_err_conf_fqid);
++
++	return 0;
++}
++
+ /**
+  * dpsw_get_api_version() - Get Data Path Switch API version
+  * @mc_io:	Pointer to MC portal's I/O object
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/dpsw.h b/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
+index bc6bcfb6893d..8c8cc9600e8d 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
++++ b/drivers/staging/fsl-dpaa2/ethsw/dpsw.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright 2014-2016 Freescale Semiconductor Inc.
+- * Copyright 2017-2018 NXP
++ * Copyright 2017-2021 NXP
+  *
+  */
  
- 	.ndo_start_xmit		= dpaa2_switch_port_dropframe,
+@@ -175,6 +175,27 @@ int dpsw_get_attributes(struct fsl_mc_io *mc_io,
+ 			u16 token,
+ 			struct dpsw_attr *attr);
+ 
++/**
++ * struct dpsw_ctrl_if_attr - Control interface attributes
++ * @rx_fqid:		Receive FQID
++ * @rx_err_fqid:	Receive error FQID
++ * @tx_err_conf_fqid:	Transmit error and confirmation FQID
++ */
++struct dpsw_ctrl_if_attr {
++	u32 rx_fqid;
++	u32 rx_err_fqid;
++	u32 tx_err_conf_fqid;
++};
++
++int dpsw_ctrl_if_get_attributes(struct fsl_mc_io *mc_io, u32 cmd_flags,
++				u16 token, struct dpsw_ctrl_if_attr *attr);
++
++enum dpsw_queue_type {
++	DPSW_QUEUE_RX,
++	DPSW_QUEUE_TX_ERR_CONF,
++	DPSW_QUEUE_RX_ERR,
++};
++
+ /**
+  * enum dpsw_action - Action selection for special/control frames
+  * @DPSW_ACTION_DROP: Drop frame
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
+index 3067289a15a1..b03211fb6fc9 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
++++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
+@@ -20,7 +20,7 @@
+ 
+ /* Minimal supported DPSW version */
+ #define DPSW_MIN_VER_MAJOR		8
+-#define DPSW_MIN_VER_MINOR		1
++#define DPSW_MIN_VER_MINOR		9
+ 
+ #define DEFAULT_VLAN_ID			1
+ 
+@@ -1334,6 +1334,43 @@ static void dpaa2_switch_detect_features(struct ethsw_core *ethsw)
+ 		ethsw->features |= ETHSW_FEATURE_MAC_ADDR;
+ }
+ 
++static int dpaa2_switch_setup_fqs(struct ethsw_core *ethsw)
++{
++	struct dpsw_ctrl_if_attr ctrl_if_attr;
++	struct device *dev = ethsw->dev;
++	int i = 0;
++	int err;
++
++	err = dpsw_ctrl_if_get_attributes(ethsw->mc_io, 0, ethsw->dpsw_handle,
++					  &ctrl_if_attr);
++	if (err) {
++		dev_err(dev, "dpsw_ctrl_if_get_attributes() = %d\n", err);
++		return err;
++	}
++
++	ethsw->fq[i].fqid = ctrl_if_attr.rx_fqid;
++	ethsw->fq[i].ethsw = ethsw;
++	ethsw->fq[i++].type = DPSW_QUEUE_RX;
++
++	ethsw->fq[i].fqid = ctrl_if_attr.tx_err_conf_fqid;
++	ethsw->fq[i].ethsw = ethsw;
++	ethsw->fq[i++].type = DPSW_QUEUE_TX_ERR_CONF;
++
++	return 0;
++}
++
++static int dpaa2_switch_ctrl_if_setup(struct ethsw_core *ethsw)
++{
++	int err;
++
++	/* setup FQs for Rx and Tx Conf */
++	err = dpaa2_switch_setup_fqs(ethsw);
++	if (err)
++		return err;
++
++	return 0;
++}
++
+ static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
+ {
+ 	struct device *dev = &sw_dev->dev;
+@@ -1371,11 +1408,14 @@ static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
+ 	if (ethsw->major < DPSW_MIN_VER_MAJOR ||
+ 	    (ethsw->major == DPSW_MIN_VER_MAJOR &&
+ 	     ethsw->minor < DPSW_MIN_VER_MINOR)) {
+-		dev_err(dev, "DPSW version %d:%d not supported. Use %d.%d or greater.\n",
+-			ethsw->major,
+-			ethsw->minor,
+-			DPSW_MIN_VER_MAJOR, DPSW_MIN_VER_MINOR);
+-		err = -ENOTSUPP;
++		dev_err(dev, "DPSW version %d:%d not supported. Use firmware 10.28.0 or greater.\n",
++			ethsw->major, ethsw->minor);
++		err = -EOPNOTSUPP;
++		goto err_close;
++	}
++
++	if (!dpaa2_switch_supports_cpu_traffic(ethsw)) {
++		err = -EOPNOTSUPP;
+ 		goto err_close;
+ 	}
+ 
+@@ -1447,6 +1487,10 @@ static int dpaa2_switch_init(struct fsl_mc_device *sw_dev)
+ 		goto err_close;
+ 	}
+ 
++	err = dpaa2_switch_ctrl_if_setup(ethsw);
++	if (err)
++		goto err_destroy_ordered_workqueue;
++
+ 	err = dpaa2_switch_register_notifier(dev);
+ 	if (err)
+ 		goto err_destroy_ordered_workqueue;
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.h b/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
+index 448f60755eea..24a203c42f5f 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
++++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.h
+@@ -3,7 +3,7 @@
+  * DPAA2 Ethernet Switch declarations
+  *
+  * Copyright 2014-2016 Freescale Semiconductor Inc.
+- * Copyright 2017-2018 NXP
++ * Copyright 2017-2021 NXP
+  *
+  */
+ 
+@@ -39,10 +39,19 @@
+ 
+ #define ETHSW_FEATURE_MAC_ADDR	BIT(0)
+ 
++/* Number of receive queues (one RX and one TX_CONF) */
++#define DPAA2_SWITCH_RX_NUM_FQS	2
++
+ extern const struct ethtool_ops dpaa2_switch_port_ethtool_ops;
+ 
+ struct ethsw_core;
+ 
++struct dpaa2_switch_fq {
++	struct ethsw_core *ethsw;
++	enum dpsw_queue_type type;
++	u32 fqid;
++};
++
+ /* Per port private data */
+ struct ethsw_port_priv {
+ 	struct net_device	*netdev;
+@@ -74,6 +83,17 @@ struct ethsw_core {
+ 	struct notifier_block		port_switchdev_nb;
+ 	struct notifier_block		port_switchdevb_nb;
+ 	struct workqueue_struct		*workqueue;
++
++	struct dpaa2_switch_fq		fq[DPAA2_SWITCH_RX_NUM_FQS];
+ };
+ 
++static inline bool dpaa2_switch_supports_cpu_traffic(struct ethsw_core *ethsw)
++{
++	if (ethsw->sw_attr.options & DPSW_OPT_CTRL_IF_DIS) {
++		dev_err(ethsw->dev, "Control Interface is disabled, cannot probe\n");
++		return false;
++	}
++
++	return true;
++}
+ #endif	/* __ETHSW_H */
 -- 
 2.30.0
 
