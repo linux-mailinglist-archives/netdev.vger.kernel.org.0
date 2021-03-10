@@ -2,152 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D81283349B8
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 22:15:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B13EC3349C0
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 22:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232136AbhCJVOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 16:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
+        id S232202AbhCJVPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 16:15:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231975AbhCJVO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 16:14:29 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260B3C061574;
-        Wed, 10 Mar 2021 13:14:29 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so7944733pjh.1;
-        Wed, 10 Mar 2021 13:14:29 -0800 (PST)
+        with ESMTP id S232825AbhCJVPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 16:15:36 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABDA3C061574
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 13:15:36 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id s21so2336899pjq.1
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 13:15:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+v6qAt05GB3pyWDepiyyyWC9bZx8wHfiUnSye/9786g=;
-        b=Bfqtm0qvVc7TNTh3q4/EWyuJxpXX1jie2lxkaJCEITbnbLyk0BhgBkeuSK8vlurR3I
-         tHGC2RErjqD8Us9Bkr/Oy5IwY/9UbbTnbCJNyit/Z2EFVhC9DrB1yUtiZj8oN6U7R093
-         RfQEKm6ske5N6nQN3d35cJcADPN2pmjnYHYQMxea6SB80bI5w1wTZGPvNaHHjOyW3TL4
-         K29LwBcVT1BvpysQmbya22RNFNTMpAbOuwb6elDvr6QK4EuudQ6Y2nwpeDUC6rJ4kngV
-         yMuvwW5/lxRwCHbHlceUYpFBgVTgH7xDbMAJi+D7Pybpef7uE42zewEDfeAX4MV93Wh9
-         eSxg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=a5DmH7nS0LBPa0S8uLRnkFmLHn8b1TnGXl4N1l+URbo=;
+        b=YEO8DEZG+xYHDbnax3rU9Jvv3plmEZ5VRinPjDBTGR9fUPiEMKM7ae1gBgVc5dWT/u
+         N9kWaCdX7kLlbrgq9NnQi9LvKp4k4vVm6UdLUF8NMDBPeyEzGBp8Au7KziR5v/UKzu9D
+         TuNQZAEH8B/6rOfKGp/3FF6QCHtFbKXhEhBu790ai1UiDOmh6kr2kFVpYjsoOvZ79tx7
+         RMvfaREBT+ng45WhRsBDBP2LtWeqRbNVRSmPAXoDmykm35Pw9Y3MNwqvnzH+mRBgGvni
+         qXdocCS3x0vgPdeXgR+z2U3K7kI2BlBf2sLuy410jM9X7/ZZZi286lS1oPdJdEyQ+1Ex
+         Y0MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+v6qAt05GB3pyWDepiyyyWC9bZx8wHfiUnSye/9786g=;
-        b=Nw+X7P9RLENEoeOhfnWOEWIz6yFNnbAN0bWYw9jxFfESm1OpX9SjenHb67anG9lTUx
-         nQl3TaV+s101Lvyw7w0Ve5rbSf2gZWJ6ZvWclWXhF5Z35ENp2xvYwJCHCGk9a96HUa0C
-         yLJah7V6wCDkIiQq/lY0Tmz1WPrSPG8rINY+UiHIDkMqkCH1FGJeD5/jIr8c8XwDxtng
-         LkbGcBWj1VeFmFasrOzqeJnX7vKlhs1QPGUib2cpqsOZeg0Ad4IUlviYGDs6Va5T8iwk
-         WNu38hflniVgqLbKBg9LvVq4YWLr9yJ6GHMycWMmFBK2z/JF4OUnmbMqVZjbXm6m1vrm
-         CYmg==
-X-Gm-Message-State: AOAM530z/TEo7lWL/NR361f2jr7YPjXCd/koGduP9tyP4l7mGUGc0nFg
-        eTkAfwefCSGEZ5Pj8g1wX+s=
-X-Google-Smtp-Source: ABdhPJzQXy7sfY96AqR6uwF3anxp4aOhTVgA5r50zW/IN+aChTsFBaAEqBcwxyoybmQBG0s5wUTYQw==
-X-Received: by 2002:a17:90a:7182:: with SMTP id i2mr5360459pjk.111.1615410868697;
-        Wed, 10 Mar 2021 13:14:28 -0800 (PST)
-Received: from ilya-fury.lan ([2602:61:738f:1000::b87])
-        by smtp.gmail.com with ESMTPSA id 35sm412090pgr.14.2021.03.10.13.14.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 13:14:27 -0800 (PST)
-From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH 3/3] net: dsa: mt7530: setup core clock even in TRGMII mode
-Date:   Wed, 10 Mar 2021 13:14:20 -0800
-Message-Id: <20210310211420.649985-3-ilya.lipnitskiy@gmail.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210310211420.649985-1-ilya.lipnitskiy@gmail.com>
-References: <20210310211420.649985-1-ilya.lipnitskiy@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=a5DmH7nS0LBPa0S8uLRnkFmLHn8b1TnGXl4N1l+URbo=;
+        b=RIKmXUNEYb2rrM2XEUGB6c/Lx0ZKoLBPAu5r475zU2fR9urD+35QFhZBYHDQPs8XVA
+         +F7LgDspIkh0ptnjOeCHVYBPpVoRdJAodMjPXszhBMj8lMTkLvZ/F9kznCkXSUtaHAlj
+         wbr/e3pV1IWr14lkOGdQgT2KaTA/O80XjB9zWTssa1Gts5HchwjXIsSbktnOern7Tx1z
+         BzCr/5j769/FEYOK+7iFVyXc7BTnmbFKEgyDOhNkigNs+3+dC25yBwqaZ4ZUx0znqdyy
+         /zc5dJokJteyrB5/odJYl7/pxAgIkKZCPM9Hi3khxEI/tfbGHJpUAYO9w2ulgCvbVj2i
+         1SJw==
+X-Gm-Message-State: AOAM531VkK9Jtr6JgW9u5iNVEmG8usm5aASld7STX/kWWcNF5MpYmGAa
+        qqZhZbZY/x81BxxF3teVl5s=
+X-Google-Smtp-Source: ABdhPJw4zXKEDULFhZkG7nYkyf2dVt896WnQglP0JVlURVWHv6UpTO5LgHK93iMg9CnEexkFoCRv4g==
+X-Received: by 2002:a17:90a:9f4a:: with SMTP id q10mr5524310pjv.129.1615410936169;
+        Wed, 10 Mar 2021 13:15:36 -0800 (PST)
+Received: from [10.67.49.104] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id f2sm255131pju.46.2021.03.10.13.15.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Mar 2021 13:15:35 -0800 (PST)
+Subject: Re: [PATCH net 2/3] net: phy: broadcom: Only set BMCR.PDOWN to
+ suspend
+To:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, kuba@kernel.org, davem@davemloft.net
+References: <20210310204106.2767772-1-f.fainelli@gmail.com>
+ <20210310204106.2767772-3-f.fainelli@gmail.com>
+ <d2dec3e9-146a-1e07-5eb5-690b972c3315@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <f7f0e6d2-447d-4b12-94f6-5e483e02ca87@gmail.com>
+Date:   Wed, 10 Mar 2021 13:15:30 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <d2dec3e9-146a-1e07-5eb5-690b972c3315@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-3f9ef7785a9c ("MIPS: ralink: manage low reset lines") made it so mt7530
-actually resets the switch on platforms such as mt7621 (where bit 2 is
-the reset line for the switch). That exposed an issue where the switch
-would not function properly in TRGMII mode after a reset.
+On 3/10/21 1:07 PM, Heiner Kallweit wrote:
+> On 10.03.2021 21:41, Florian Fainelli wrote:
+>> B50212E PHYs have been observed to get into an incorrect state with the
+>> visible effect of having both activity and link LEDs flashing
+>> alternatively instead of being turned off as intended when
+>> genphy_suspend() was issued. The BCM54810 is a similar design and
+>> equally suffers from that issue.
+>>
+>> The datasheet is not particularly clear whether a read/modify/write
+>> sequence is acceptable and only indicates that BMCR.PDOWN=1 should be
+>> utilized to enter the power down mode. When this was done the PHYs were
+>> always measured to have power levels that match the expectations and
+>> LEDs powered off.
+>>
+>> Fixes: fe26821fa614 ("net: phy: broadcom: Wire suspend/resume for BCM54810")
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>> ---
+>>  drivers/net/phy/broadcom.c | 17 ++++++++++++++++-
+>>  1 file changed, 16 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+>> index b8eb736fb456..b33ffd44f799 100644
+>> --- a/drivers/net/phy/broadcom.c
+>> +++ b/drivers/net/phy/broadcom.c
+>> @@ -388,6 +388,21 @@ static int bcm54xx_config_init(struct phy_device *phydev)
+>>  	return 0;
+>>  }
+>>  
+>> +static int bcm54xx_suspend(struct phy_device *phydev)
+>> +{
+>> +	/* We cannot perform a read/modify/write like what genphy_suspend()
+>> +	 * does because depending on the time we can observe the PHY having
+>> +	 * both of its LEDs flashing indicating that it is in an incorrect
+>> +	 * state and not powered down as expected.
+>> +	 *
+>> +	 * There is not a clear indication in the datasheet whether a
+>> +	 * read/modify/write would be acceptable, but a blind write to the
+>> +	 * register has been proven to be functional unlike the
+>> +	 * Read/Modify/Write.
+>> +	 */
+>> +	return phy_write(phydev, MII_BMCR, BMCR_PDOWN);
+> 
+> This clears all other bits in MII_BMCR, incl. ANENABLE and the ones used in
+> forced mode. So you have to rely on somebody calling genphy_config_aneg()
+> to sync the register bits with the values cached in struct phy_device
+> on resume. Typically the phylib state machine takes care, but do we have
+> to consider use cases where this is not the case?
 
-Reconfigure core clock in TRGMII mode to fix the issue.
-
-Also, disable both core and TRGMII Tx clocks prior to reconfiguring.
-Previously, only the core clock was disabled, but not TRGMII Tx clock.
-
-Tested on Ubiquity ER-X (MT7621) with TRGMII mode enabled.
-
-Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
----
- drivers/net/dsa/mt7530.c | 44 ++++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index b106ea816778..7ef5e7c23e05 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -435,30 +435,30 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
- 		mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
- 			     TD_DM_DRVP(8) | TD_DM_DRVN(8));
- 
--	/* Setup core clock for MT7530 */
--	if (!trgint) {
--		/* Disable MT7530 core clock */
--		core_clear(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
--
--		/* Disable PLL, since phy_device has not yet been created
--		 * provided for phy_[read,write]_mmd_indirect is called, we
--		 * provide our own core_write_mmd_indirect to complete this
--		 * function.
--		 */
--		core_write(priv, CORE_GSWPLL_GRP1, 0);
--
--		/* Set core clock into 500Mhz */
--		core_write(priv, CORE_GSWPLL_GRP2,
--			   RG_GSWPLL_POSDIV_500M(1) |
--			   RG_GSWPLL_FBKDIV_500M(25));
-+	/* Since phy_device has not yet been created and
-+	 * phy_[read,write]_mmd_indirect is not available, we provide our own
-+	 * core_write_mmd_indirect with core_{clear,write,set} wrappers to
-+	 * complete this function.
-+	 */
- 
--		/* Enable PLL */
--		core_write(priv, CORE_GSWPLL_GRP1,
--			   RG_GSWPLL_EN_PRE |
--			   RG_GSWPLL_POSDIV_200M(2) |
--			   RG_GSWPLL_FBKDIV_200M(32));
-+	/* Disable MT7530 core and TRGMII Tx clocks */
-+	core_clear(priv, CORE_TRGMII_GSW_CLK_CG,
-+		   REG_GSWCK_EN | REG_TRGMIICK_EN);
- 
--	}
-+	/* Setup core clock for MT7530 */
-+	/* Disable PLL */
-+	core_write(priv, CORE_GSWPLL_GRP1, 0);
-+
-+	/* Set core clock into 500Mhz */
-+	core_write(priv, CORE_GSWPLL_GRP2,
-+		   RG_GSWPLL_POSDIV_500M(1) |
-+		   RG_GSWPLL_FBKDIV_500M(25));
-+
-+	/* Enable PLL */
-+	core_write(priv, CORE_GSWPLL_GRP1,
-+		   RG_GSWPLL_EN_PRE |
-+		   RG_GSWPLL_POSDIV_200M(2) |
-+		   RG_GSWPLL_FBKDIV_200M(32));
- 
- 	/* Setup the MT7530 TRGMII Tx Clock */
- 	core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
+Good point, how about if we had forced the link before suspending, does
+PHYLIB take care of re-applying the same parameters? It arguably should
+do that in all cases given that power to the PHY can be cut depending on
+the suspend mode.
 -- 
-2.30.1
-
+Florian
