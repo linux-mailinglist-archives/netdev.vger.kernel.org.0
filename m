@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A561533448B
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 18:01:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB0F33449B
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 18:04:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233729AbhCJRBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 12:01:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36372 "EHLO
+        id S232682AbhCJRDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 12:03:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233589AbhCJRAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 12:00:44 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DECEC061760
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 09:00:44 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id q204so12375919pfq.10
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 09:00:44 -0800 (PST)
+        with ESMTP id S229784AbhCJRDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 12:03:30 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E099C061760;
+        Wed, 10 Mar 2021 09:03:30 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id w7so7559538wmb.5;
+        Wed, 10 Mar 2021 09:03:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FJViD43l32C74nm5vHxzaYOz3BWbke3N1CnEs6xvNgE=;
-        b=FGOhvj2/OjkIpo/hY50xTge8418FojgbjFoCJDBHM9Hh39CVpXYZSMyvZtEm7scOJu
-         uji+ZvunnPhds59th0BI0XZP+9N8r8IEiX09FyvmthnLYLbCsxxZhbtkycV9XDeEPGc2
-         Jg1HygVDCSPCoARgoS/B3uUy2Mv/Vr9kaUbtg7kKiRNNhy7D7OPi0ApVl1O/E5s6yYwU
-         8en8n/gf82mIpsNvA0ZPlhnH90shOZX14R2cPr+f1WYPbfkss8cKMCtBbfibG+0+9dN9
-         hzPEtmGRuTJ4GeUL5sEVduuTDJT1vKU1ifquQLx6kLbgityfGQft3BairpY0cLGkgeMY
-         wzVA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=ympu7O43K3Db79lovMl1NKQz2KzXR5qu3jkJ5oIzf9o=;
+        b=QZ6Ug2PzFBFF/BrOgVyXXHoRWx9nr16c64EdNPDa4ZVdvEnmdsNyUvfjNMNUc/alEX
+         314wIm9KeR6hOHwUK+/18TJIOD9hHk55gQqzTSVQyoiWOewsN1LoLciImzBqftq7DBpN
+         cN2dgDAET6VCAE4gN3Zym50OV8aNHykBew/rv94y4Ma2mR9daS8sOR44y8GhQJGAA0vQ
+         cJTFHtn09QwaYsqLfgnDe7z3WQSPEVnYc+AJRdztb2jo18nUSc/oERBAeXfhbtgrv9oL
+         ttU4bZijIHm6PKoKLAnYPhz0+sc3Jqoksf9mU8sMGQMHEFMW4cjS+6vRp6sAwkqlcoMM
+         Sw7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=FJViD43l32C74nm5vHxzaYOz3BWbke3N1CnEs6xvNgE=;
-        b=VzNriR7yVgDRD/f+othHaU0zhvnqOXrLFvfnmliLsX+YD5arkDHGgUfroGsrkOQR44
-         C9cPjxi6nYdfD8tAlXSn5bhpDUhfX42DbSw8X5RbrQRba8LeU3r1f+sFFhOoPHnqDcYb
-         280seAJKoD4BlMGk9yBrEvZakN29ejcABVOdcDc2yiTdsFCSvE3K3EhXXTpSP1s4+LP2
-         GyRQAsTELDEbjnBJUXbjzv+iPdhJmCONQBVyvWpbvt2rdrGOUWKeELtgOHg3BNNadS2R
-         tj80YOJEH51u00AEKOgyH7OpRV/0glrUBNxv2cyGZrmr9659T/wAPVLVmK+Ah1rMfRcY
-         qKFA==
-X-Gm-Message-State: AOAM531XYEe8gR7j5eYqpONH9NacLLM8iSWr7le8c06z1E+chhK70vDv
-        QYX8H2sg4G210jRg0bKrRF0=
-X-Google-Smtp-Source: ABdhPJxFdN9pz+aBy/sohTvhafM55/7/WjH01cJ5EiwdRgbnuPxAnISyIcGheWQKUh0CQFyM1j9IgQ==
-X-Received: by 2002:a62:485:0:b029:1ef:2110:d91d with SMTP id 127-20020a6204850000b02901ef2110d91dmr3555423pfe.43.1615395643998;
-        Wed, 10 Mar 2021 09:00:43 -0800 (PST)
-Received: from [10.67.49.104] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h7sm91817pfo.45.2021.03.10.09.00.42
+        bh=ympu7O43K3Db79lovMl1NKQz2KzXR5qu3jkJ5oIzf9o=;
+        b=Zl3bH7V9MABe65e2yNi0wZ6ZLNRHgnLtlAowEolDNy5FKO1FGi6dyUh+SeeGycHpf7
+         w4RLt4WQiWsA/oAI3Dn4rl/AufFUq9Oi5iP1KtW/cjsY2aN7wr7u10yYq+quAn64/QNK
+         of3W4lr1fMw46yX/EPnBZ9vfKi7qCaoNBsWD5Kyc2/K7s71xz5yUow1CyH+QL0lTQyld
+         jvthxz7Mb+mbXZoU4Sq7bX5TSeVUbzL9mTREU48EiQh/XJITZjPGgsqN3irD9wyJV8xC
+         z0zUloBVbIA6jik8TY79qYHlzMumHj0+VrGzU54atCJrax75eZQ6mnbw7mt2yJ4UQ+Wq
+         Tptw==
+X-Gm-Message-State: AOAM531Uf5HSQUZoNZvVXsAYXO0GgTafbhN7c9UWohI5SCJdIzfoQwJ1
+        1aDporJrAjX04z6dCORJnJs=
+X-Google-Smtp-Source: ABdhPJzlCJpXVF/uIV0QwwePwjvSOXM4O3EM/OMCzAVdcw0h4t+h8MoP1B72Bvd8zL01P1yCq5GxsA==
+X-Received: by 2002:a7b:cd81:: with SMTP id y1mr4305364wmj.51.1615395809157;
+        Wed, 10 Mar 2021 09:03:29 -0800 (PST)
+Received: from [192.168.1.101] ([37.171.47.61])
+        by smtp.gmail.com with ESMTPSA id h62sm44035wmf.37.2021.03.10.09.03.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Mar 2021 09:00:43 -0800 (PST)
-Subject: Re: [PATCH] net: dsa: bcm_sf2: use 2 Gbps IMP port link on BCM4908
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210310125159.28533-1-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e4e0e910-ef57-70ef-c2e1-4b400ec35761@gmail.com>
-Date:   Wed, 10 Mar 2021 09:00:41 -0800
+        Wed, 10 Mar 2021 09:03:27 -0800 (PST)
+Subject: Re: [syzbot] BUG: unable to handle kernel NULL pointer dereference in
+ htb_select_queue
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzbot+b53a709f04722ca12a3c@syzkaller.appspotmail.com>,
+        davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        maximmi@mellanox.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tariqt@nvidia.com,
+        xiyou.wangcong@gmail.com
+References: <000000000000c0510605bd1bfd39@google.com>
+ <21985b6f-a13b-2208-790a-bfe42e1b1985@gmail.com>
+ <cb2163b1-8b63-1934-b786-050e903785b4@nvidia.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a6201db2-9c88-b80e-eed5-11c49e462b91@gmail.com>
+Date:   Wed, 10 Mar 2021 18:03:25 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210310125159.28533-1-zajec5@gmail.com>
+In-Reply-To: <cb2163b1-8b63-1934-b786-050e903785b4@nvidia.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -72,15 +75,217 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/21 4:51 AM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> BCM4908 uses 2 Gbps link between switch and the Ethernet interface.
-> Without this BCM4908 devices were able to achieve only 2 x ~895 Mb/s.
-> This allows handling e.g. NAT traffic with 940 Mb/s.
-> 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+
+On 3/10/21 3:54 PM, Maxim Mikityanskiy wrote:
+> On 2021-03-09 17:20, Eric Dumazet wrote:
+>>
+>>
+>> On 3/9/21 4:13 PM, syzbot wrote:
+>>> Hello,
+>>>
+>>> syzbot found the following issue on:
+>>>
+>>> HEAD commit:    38b5133a octeontx2-pf: Fix otx2_get_fecparam()
+>>> git tree:       net-next
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=166288a8d00000
+>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=dbc1ca9e55dc1f9f
+>>> dashboard link: https://syzkaller.appspot.com/bug?extid=b53a709f04722ca12a3c
+>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119454ccd00000
+>>>
+>>> The issue was bisected to:
+>>>
+>>> commit d03b195b5aa015f6c11988b86a3625f8d5dbac52
+>>> Author: Maxim Mikityanskiy <maximmi@mellanox.com>
+>>> Date:   Tue Jan 19 12:08:13 2021 +0000
+>>>
+>>>      sch_htb: Hierarchical QoS hardware offload
+>>>
+>>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13ab12ecd00000
+>>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=106b12ecd00000
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=17ab12ecd00000
+>>>
+>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>> Reported-by: syzbot+b53a709f04722ca12a3c@syzkaller.appspotmail.com
+>>> Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+>>>
+>>> BUG: kernel NULL pointer dereference, address: 0000000000000000
+>>> #PF: supervisor instruction fetch in kernel mode
+>>> #PF: error_code(0x0010) - not-present page
+>>> PGD 183fe067 P4D 183fe067 PUD 21aef067 PMD 0
+>>> Oops: 0010 [#1] PREEMPT SMP KASAN
+>>> CPU: 0 PID: 10125 Comm: syz-executor.0 Not tainted 5.11.0-rc7-syzkaller #0
+>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>>> RIP: 0010:0x0
+>>> Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+>>> RSP: 0018:ffffc9000a9c74e8 EFLAGS: 00010246
+>>> RAX: dffffc0000000000 RBX: 1ffff92001538e9e RCX: 0000000000000000
+>>> RDX: ffffc9000a9c7520 RSI: 0000000000000012 RDI: ffff88802d158000
+>>> RBP: ffff88802d158000 R08: 00000000fffffff1 R09: 0000000000000400
+>>> R10: ffffffff871631c4 R11: 0000000000000000 R12: ffffffff89ea6b40
+>>> R13: dffffc0000000000 R14: ffff888012b79c00 R15: 00000000ffff0000
+>>> FS:  00007f73f9698700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: ffffffffffffffd6 CR3: 00000000173b5000 CR4: 00000000001506f0
+>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>> Call Trace:
+>>>   htb_offload net/sched/sch_htb.c:1011 [inline]
+>>>   htb_select_queue+0x17f/0x2c0 net/sched/sch_htb.c:1349
+>>>   tc_modify_qdisc+0x44a/0x1a50 net/sched/sch_api.c:1657
+>>>   rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5553
+>>>   netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+>>>   netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+>>>   netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+>>>   netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+>>>   sock_sendmsg_nosec net/socket.c:652 [inline]
+>>>   sock_sendmsg+0xcf/0x120 net/socket.c:672
+>>>   ____sys_sendmsg+0x6e8/0x810 net/socket.c:2348
+>>>   ___sys_sendmsg+0xf3/0x170 net/socket.c:2402
+>>>   __sys_sendmsg+0xe5/0x1b0 net/socket.c:2435
+>>>   do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>>>   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>> RIP: 0033:0x466019
+>>> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+>>> RSP: 002b:00007f73f9698188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+>>> RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000466019
+>>> RDX: 0000000000000000 RSI: 00000000200007c0 RDI: 0000000000000004
+>>> RBP: 00000000004bd067 R08: 0000000000000000 R09: 0000000000000000
+>>> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
+>>> R13: 00007fffefccc11f R14: 00007f73f9698300 R15: 0000000000022000
+>>> Modules linked in:
+>>> CR2: 0000000000000000
+>>> ---[ end trace e1544e8206616773 ]---
+>>> RIP: 0010:0x0
+>>> Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+>>> RSP: 0018:ffffc9000a9c74e8 EFLAGS: 00010246
+>>> RAX: dffffc0000000000 RBX: 1ffff92001538e9e RCX: 0000000000000000
+>>> RDX: ffffc9000a9c7520 RSI: 0000000000000012 RDI: ffff88802d158000
+>>> RBP: ffff88802d158000 R08: 00000000fffffff1 R09: 0000000000000400
+>>> R10: ffffffff871631c4 R11: 0000000000000000 R12: ffffffff89ea6b40
+>>> R13: dffffc0000000000 R14: ffff888012b79c00 R15: 00000000ffff0000
+>>> FS:  00007f73f9698700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: ffffffffffffffd6 CR3: 00000000173b5000 CR4: 00000000001506e0
+>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>>
+>>>
+>>> ---
+>>> This report is generated by a bot. It may contain errors.
+>>> See https://goo.gl/tpsmEJ for more information about syzbot.
+>>> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>>>
+>>> syzbot will keep track of this issue. See:
+>>> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>>> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+>>> syzbot can test patches for this issue, for details see:
+>>> https://goo.gl/tpsmEJ#testing-patches
+>>>
+>>
+>>
+>> Hmm... what about this :
+>>
+>> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+>> index f87d07736a1404edcfd17a792321758cd4bdd173..680afb5bfe2294a5531c7aaeed698b95ea3ab20c 100644
+>> --- a/net/sched/sch_api.c
+>> +++ b/net/sched/sch_api.c
+>> @@ -1651,15 +1651,16 @@ static int tc_modify_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
+>>                          err = -ENOENT;
+>>                  }
+>>          } else {
+>> -               struct netdev_queue *dev_queue;
+>> +               struct netdev_queue *dev_queue = NULL;
+>>                    if (p && p->ops->cl_ops && p->ops->cl_ops->select_queue)
+>>                          dev_queue = p->ops->cl_ops->select_queue(p, tcm);
+>> -               else if (p)
+>> -                       dev_queue = p->dev_queue;
+>> -               else
+>> -                       dev_queue = netdev_get_tx_queue(dev, 0);
+>> -
+>> +               if (!dev_queue) {
+>> +                       if (p)
+>> +                               dev_queue = p->dev_queue;
+>> +                       else
+>> +                               dev_queue = netdev_get_tx_queue(dev, 0);
+>> +               }
+>>                  q = qdisc_create(dev, dev_queue, p,
+>>                                   tcm->tcm_parent, tcm->tcm_handle,
+>>                                   tca, &err, extack);
+>> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+>> index dff3adf5a9156c2412c64a10ad1b2ce9e1367433..cc6eccd688701ae00255f07e32fb4b0efbaf45ce 100644
+>> --- a/net/sched/sch_htb.c
+>> +++ b/net/sched/sch_htb.c
+>> @@ -1008,6 +1008,8 @@ static void htb_set_lockdep_class_child(struct Qdisc *q)
+>>     static int htb_offload(struct net_device *dev, struct tc_htb_qopt_offload *opt)
+>>   {
+>> +       if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
+>> +               return -EOPNOTSUPP;
+> 
+> My fault, all calls to htb_offload must be protected by if (q->offload). Rather than checking tc_can_offload and ndo_setup_tc in htb_offload every time, I suggest to fix htb_select_queue:
+> 
+> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+> index dff3adf5a915..b23203159996 100644
+> --- a/net/sched/sch_htb.c
+> +++ b/net/sched/sch_htb.c
+> @@ -1340,8 +1340,12 @@ htb_select_queue(struct Qdisc *sch, struct tcmsg *tcm)
+>  {
+>      struct net_device *dev = qdisc_dev(sch);
+>      struct tc_htb_qopt_offload offload_opt;
+> +    struct htb_sched *q = qdisc_priv(sch);
+>      int err;
+> 
+> +    if (!q->offload)
+> +        return sch->dev_queue;
+> +
+>      offload_opt = (struct tc_htb_qopt_offload) {
+>          .command = TC_HTB_LEAF_QUERY_QUEUE,
+>          .classid = TC_H_MIN(tcm->tcm_parent),
+> 
+> htb_init ensures that tc_can_offload and ndo_setup_tc are checked if q->offload is true. Also, we can avoid changing tc_modify_qdisc if htb_select_queue mimics its behavior in non-offload mode, as shown above.
+> 
+> There is also a case where htb_select_queue returns NULL on errors, and that is handled in qdisc_create (the error message will be "No device queue given"), which I think is a sane behavior.
+> 
+> What do you think of this fix? If it fits, I'll send it as a patch.
+
+
+I think that it is not enough, since you overwrite q->offload in htb_init()
+even if an error will be provided.
+
+So a malicious user will find its way.
+
+You probably also need this :
+
+
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index dff3adf5a9156c2412c64a10ad1b2ce9e1367433..d15ee7cf33b34221d09dfc81105dcb6c2b2fd489 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -1020,6 +1020,7 @@ static int htb_init(struct Qdisc *sch, struct nlattr *opt,
+        struct nlattr *tb[TCA_HTB_MAX + 1];
+        struct tc_htb_glob *gopt;
+        unsigned int ntx;
++       bool offload;
+        int err;
+ 
+        qdisc_watchdog_init(&q->watchdog, sch);
+@@ -1044,9 +1045,9 @@ static int htb_init(struct Qdisc *sch, struct nlattr *opt,
+        if (gopt->version != HTB_VER >> 16)
+                return -EINVAL;
+ 
+-       q->offload = nla_get_flag(tb[TCA_HTB_OFFLOAD]);
++       offload = nla_get_flag(tb[TCA_HTB_OFFLOAD]);
+ 
+-       if (q->offload) {
++       if (offload) {
+                if (sch->parent != TC_H_ROOT)
+                        return -EOPNOTSUPP;
+ 
+@@ -1060,6 +1061,7 @@ static int htb_init(struct Qdisc *sch, struct nlattr *opt,
+                if (!q->direct_qdiscs)
+                        return -ENOMEM;
+        }
++       q->offload = offload;
+ 
+        err = qdisc_class_hash_init(&q->clhash);
+        if (err < 0)
