@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64DA2333591
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CFBD33359F
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:59:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbhCJFvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 00:51:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34074 "EHLO mail.kernel.org"
+        id S231794AbhCJF6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 00:58:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34806 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229476AbhCJFuz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 00:50:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0131D64FEF;
-        Wed, 10 Mar 2021 05:50:53 +0000 (UTC)
+        id S230373AbhCJF6e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 00:58:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6BECE64FEF;
+        Wed, 10 Mar 2021 05:58:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615355454;
-        bh=2DhMBcTJQmQLalLr92IqUGzEdsUlm1QvvfBDfUeZJcs=;
+        s=k20201202; t=1615355914;
+        bh=oKAzncBdG8ATSVc9xU+M2M2wid2Yp5AptqtxCYKZt7I=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AbUEYlgg8BBPTwGY5+n+b80FswbRdJe8CZRBy6GcwU5aYtN6sdp525zoJysJ5rCiO
-         6Q99TGJjgKO48YVGHZ+aARTJOsi9LLrNmqgP/ZNpZTYt77iySA4evp6aH6cFVh1bai
-         Rg1L8xh4oM6mJDMooegmUn2lbWlRyLG6gDwP9PlzDUEXcF9LrNIkFj8mjLT0IX+e9b
-         5+ojWwhMesTyD8aygRAFKYLXyu1KUxgekHewgGrG7Vw/HMHlVKI7VKoMqkvuFHANSL
-         Y4ovEm9IulvuOtf1mtNcDus6KIXAPcmBOhByDdmcZ7qWLpOOx16mZY1bxmOa7nwcvM
-         9h78Fw01RbH0w==
-Date:   Wed, 10 Mar 2021 07:50:50 +0200
+        b=e9hlh0OjilzV7vVhu7KfBVDWN5a+KpzIFgSivBW0Ej1H3h4C7GUykufOavoqAi9Zq
+         zHPcoHudR4265ahRikuTewj0VzZx1a0ADW7xgrPH3jwuFQoL/wFSVcEk30Pd5K6jY7
+         UI7Fbd2grkDRtxDp3prQZc74ZSOayzEQxAovtLfc5IPdIV+5yBigXRlxmp5K3BNQat
+         rbVyDOKIhjFc7RDuCn9G43TUMWt0uz7V4hY8OlRl+i+7BTwCSbYqxvlk4Ld7TwKof2
+         ijniBYokBe8h5oTd8nmRfOtlNYne/zXJAltm8m8Z/99EY2AmjwvTJ4KOpX4lkD0NcD
+         FsOUZtUoBgZLw==
+Date:   Wed, 10 Mar 2021 07:58:30 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, alice.michael@intel.com,
-        alan.brady@intel.com
-Subject: Re: [RFC net-next] iavf: refactor plan proposal
-Message-ID: <YEheOtKsKm1DfCR8@unreal>
-References: <20210308162858.00004535@intel.com>
- <YEcRHkhJIkZnTgza@unreal>
- <20210309211146.00002f2d@intel.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <YEhgBlWIfxu6Hjl/@unreal>
+References: <20210301075524.441609-1-leon@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210309211146.00002f2d@intel.com>
+In-Reply-To: <20210301075524.441609-1-leon@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 09, 2021 at 09:11:46PM -0800, Jesse Brandeburg wrote:
-> Leon Romanovsky wrote:
->
-> > > 3) Plan is to make the "new" iavf driver the default iavf once
-> > >    extensive regression testing can be completed.
-> > > 	a. Current proposal is to make CONFIG_IAVF have a sub-option
-> > > 	   CONFIG_IAVF_V2 that lets the user adopt the new code,
-> > > 	   without changing the config for existing users or breaking
-> > > 	   them.
-> >
-> > I don't think that .config options are considered ABIs, so it is unclear
-> > what do you mean by saying "disrupting current users". Instead of the
-> > complication wrote above, do like any other driver does: perform your
-> > testing, submit the code and switch to the new code at the same time.
->
-> Because this VF driver runs on multiple hardware PFs (they all expose
-> the same VF device ID) the testing matrix is quite huge and will take
-> us a while to get through it. We aim to avoid making users's life hard
-> by having CONFIG_IAVF=m become a surprise new code base behind the back
-> of the user.
+On Mon, Mar 01, 2021 at 09:55:20AM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 
-Don't you already test your patches against that testing DB?
-Like Jakub said, do incremental changes and it will be much saner for everyone.
+<...>
 
->
-> I've always thought that the .config options *are* a sort of ABI,
-> because when you do "make oldconfig" it tries to pick up your previous
-> configuration and if, for instance, a driver changes it's Kconfig name,
-> it will not pick up the old value of the old driver Kconfig name for
-> the new build, and with either default or ask the user. The way we're
-> proposing I think will allow the old driver to stay default until the
-> user answers Y to the "new option" for the new, iecm based code.
+> Leon Romanovsky (4):
+>   PCI: Add a sysfs file to change the MSI-X table size of SR-IOV VFs
+>   net/mlx5: Add dynamic MSI-X capabilities bits
+>   net/mlx5: Dynamically assign MSI-X vectors count
+>   net/mlx5: Implement sriov_get_vf_total_msix/count() callbacks
 
-I understand the rationale, but no - .config is not ABI at all.
-There are three types of "users" who are messing with configs:
-1. Distro people
-2. Kernel developers
-3. "Experts" who wants/needs rebuild kernel
+Bjorn,
 
-All of them are expected to be proficient enough to handle changes
-in CONFIG_* land. In your proposal you are trying to solve non-existent
-problem of having users who are building their own kernel, but dumb
-enough do not understand what they are doing.
-
-We are removing/adding/renaming CONFIG_* all the time, this is no
-different.
-
->
-> > > [1]
-> > > https://lore.kernel.org/netdev/20200824173306.3178343-1-anthony.l.nguyen@intel.com/
-> >
-> > Please don't introduce module parameters in new code.
->
-> Thanks, we certainly won't. :-)
-> I'm not sure why you commented about module parameters, but the above
-> link is to the previous submission for a new driver that uses some
-> common code as a module (iecm) for a new device driver (idpf) we had
-> sent. The point of this email was to solicit feedback and give notice
-> about doing a complicated refactor/replace where we end up re-using
-> iecm for the new version of the iavf code, with the intent to be up
-> front and working with the community throughout the process. Because of
-> the complexity, we want do the right thing the first time so we can to
-> avoid a restart/redesign.
-
-I commented simply because it jumped in front of my eyes when I looked
-on the patches in that link. It was general enough to write it here,
-rest of my comments are too specific and better to be posted as a reply
-to the patches itself.
+This is gentle reminder, can we please progress with this series?
 
 Thanks
 
 >
-> Thanks,
->  Jesse
+>  Documentation/ABI/testing/sysfs-bus-pci       |  29 +++++
+>  .../net/ethernet/mellanox/mlx5/core/main.c    |   6 ++
+>  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  12 +++
+>  .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  73 +++++++++++++
+>  .../net/ethernet/mellanox/mlx5/core/sriov.c   |  48 ++++++++-
+>  drivers/pci/iov.c                             | 102 ++++++++++++++++--
+>  drivers/pci/pci-sysfs.c                       |   3 +-
+>  drivers/pci/pci.h                             |   3 +-
+>  include/linux/mlx5/mlx5_ifc.h                 |  11 +-
+>  include/linux/pci.h                           |   8 ++
+>  10 files changed, 284 insertions(+), 11 deletions(-)
+>
+> --
+> 2.29.2
+>
