@@ -2,56 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4665B333881
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 10:16:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AED053338A1
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 10:23:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232568AbhCJJQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 04:16:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34042 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232176AbhCJJQO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 04:16:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 247FD64F67;
-        Wed, 10 Mar 2021 09:16:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615367773;
-        bh=4F4UviQ0MAwWWHGmRaFTU410NI5y3UWsDtvwcmlSP2U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rPmwTLlrtWTu2qQuhPhBH52pvWiMC67U6RLHUy5jFd6s5KV5WISTGY82LshD7IroU
-         P3CGm/60n76YpIAvfRAj4De7EnEiyj45rrhpMhyVwoo3FJVJYIiuVve5WeXS6PfN+v
-         vucVqHnGJ36woeUDu2CljqJKgqdNTCYVcKmF5pVjbUaTtoStsfD9iRndJSbcJP46/D
-         ykkfDHqnuDiZfFKDOPT+KNVS3zkiddTsGadEMt7Haio1eSHWVhlykg5DHC3BD2sOqy
-         GW784CMMmtKIZFv5qqzkMPK4LkB6lCMisjNCFnXNx9r4WNbzrtfvVZ02ExxIC/5RC/
-         sWzWsne7OPVqg==
-Date:   Wed, 10 Mar 2021 11:16:09 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3 4/6] vDPA/ifcvf: remove the version number string
-Message-ID: <YEiOWd9jXHnw4b11@unreal>
-References: <20210310090052.4762-1-lingshan.zhu@intel.com>
- <20210310090052.4762-5-lingshan.zhu@intel.com>
+        id S232519AbhCJJW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 04:22:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231149AbhCJJWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 04:22:46 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4E2C061760
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 01:22:46 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id k9so32252724lfo.12
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 01:22:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WpZ+pkoDgZkjwssVaGIfHtpG80mv7ecIlWX/mJKDp9E=;
+        b=Dx5wVzf+PTZw4A54jcWtPGPN1I+GRu3qRjRozpppgh3p77erkhdW7ULPuakUGWxvGl
+         fJEDjlXMwfcUA/LG0FVJIaWrq3v4Rh/kHqCSMRYtann19Pjozqfz4hiOYEi22LER274I
+         j3ey2oHtkBxTqfPTQD7N+Uw3g24Jv5jAoouq4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WpZ+pkoDgZkjwssVaGIfHtpG80mv7ecIlWX/mJKDp9E=;
+        b=boq1HR7wz31ktqQsanYbC4iUj8bWWmfEtVUhR90ujgLN22THNxxZGWainnxWi5rX/5
+         p9tOMLtu7Dm7PFkfeqh1IrpbVb858AFOKkHLW25GSXTNaJa7eAdclkHy6zox2zeFWvkL
+         w8d2VQNLS1FiqSF0MBgErOHyjdyuDSTF4+4XJrvqnWoIhjPqeex9iChVcR7uCBEy9l7K
+         VnPZF+SrxDBRmquR2NbqFCTDdhFgHnul93h1HVMKDXgdzNoE/nMIkMgas8koKukyesbJ
+         Ipvn114Sutg8IClu3iE9Ai5vXySMto2CB55ZaMA23xZu1wXFhwyRnf5/Z5e8/ydL0BXA
+         tb4A==
+X-Gm-Message-State: AOAM5314Q6Uf4RuMO9zNHFDp8zZs8EXr6t83Czww0Ax3G4XGcL8re/MH
+        4geFHp7c8x5S5PUxyDP4pc+3Wjy/gMadBFeGinzR/g==
+X-Google-Smtp-Source: ABdhPJwF4szkL55sAOtiaq5Pvt6aCXZl1ThSle1JWyDBgh3FOmB6lTRjepbw38wmzLsif/kHuRq2U7O0rX5gWyto1TQ=
+X-Received: by 2002:a05:6512:12c3:: with SMTP id p3mr1429035lfg.97.1615368164840;
+ Wed, 10 Mar 2021 01:22:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210310090052.4762-5-lingshan.zhu@intel.com>
+References: <20210309044349.6605-1-tonylu@linux.alibaba.com> <203c49a3-6dd8-105e-e12a-0e15da0d4df7@gmail.com>
+In-Reply-To: <203c49a3-6dd8-105e-e12a-0e15da0d4df7@gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Wed, 10 Mar 2021 09:22:34 +0000
+Message-ID: <CACAyw9-tacJC-5Cimars4Ncu0PzZ6gg-qfj7g_yz_UgX5h6H-Q@mail.gmail.com>
+Subject: Re: [PATCH] net: add net namespace inode for all net_dev events
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>, rostedt@goodmis.org,
+        mingo@redhat.com, Networking <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 05:00:50PM +0800, Zhu Lingshan wrote:
-> This commit removes the version number string, using kernel
-> version is enough.
+On Tue, 9 Mar 2021 at 20:12, Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> ---
->  drivers/vdpa/ifcvf/ifcvf_main.c | 2 --
->  1 file changed, 2 deletions(-)
+> On 3/9/21 5:43 AM, Tony Lu wrote:
+> > There are lots of net namespaces on the host runs containers like k8s.
+> > It is very common to see the same interface names among different net
+> > namespaces, such as eth0. It is not possible to distinguish them without
+> > net namespace inode.
+> >
+> > This adds net namespace inode for all net_dev events, help us
+> > distinguish between different net devices.
+> >
+> > Output:
+> >   <idle>-0       [006] ..s.   133.306989: net_dev_xmit: net_inum=4026531992 dev=eth0 skbaddr=0000000011a87c68 len=54 rc=0
+> >
+> > Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> > ---
+> >
 >
+> There was a proposal from Lorenz to use netns cookies (SO_NETNS_COOKIE) instead.
+>
+> They have a guarantee of being not reused.
+>
+> After 3d368ab87cf6681f9 ("net: initialize net->net_cookie at netns setup")
+> net->net_cookie is directly available.
 
-I already added my ROB, but will add again.
+The patch set is at
+https://lore.kernel.org/bpf/20210219154330.93615-1-lmb@cloudflare.com/
+but I decided to abandon it. I can work around my issue by comparing
+the netns inode of two processes, which is "good enough" for now.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
