@@ -2,86 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FA593342C3
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 17:12:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8A93342D5
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 17:16:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbhCJQLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 11:11:39 -0500
-Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:55054 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233414AbhCJQLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 11:11:24 -0500
-Received: from localhost.localdomain ([153.202.107.157])
-        by mwinf5d63 with ME
-        id egAx2400D3PnFJp03gBFtw; Wed, 10 Mar 2021 17:11:20 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 10 Mar 2021 17:11:20 +0100
-X-ME-IP: 153.202.107.157
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Dave Taht <dave.taht@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        id S233038AbhCJQPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 11:15:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54760 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231519AbhCJQPJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 11:15:09 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EF8C061760
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 08:15:09 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id n23so11269006otq.1
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 08:15:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=T7kGzRNnCMOsh/8T66jkf8hStIE3TfkmsNmveWUDPuw=;
+        b=WhZFLjlCPlWj1jdggSsadPWwEPhsY/kGXjZgXJUjYcUdad/SpAo0myr5fLHzBQb2S0
+         ipGqvPqJs2LNtzQhj4qswq0+/zN9JAYs6ViHJoujr/2VyaadtzdFXPL4PJPKtry/v14d
+         uLjC7nmJEYiIu9imgYPS/+Y+10oBWzo5OQhATxdKxx5q1haphwxc5tqFrZkQxru2l0qk
+         CvQ8dGiTXqrA6B+Z+3URcUdQjA35LUfR0B1n+t3aZM4BYiDmCpAsv4fYuTS+cNqUaZ0W
+         MWEomEq+ZgUbzF/GkHaB6HQtOWysjNgWMbinkN/A36CCE6lLcYE3J3G1XD3ySsLL41IJ
+         xwqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=T7kGzRNnCMOsh/8T66jkf8hStIE3TfkmsNmveWUDPuw=;
+        b=OKFxWw36l0a4nNToniCFUAQWHwHl+VQmtCOH5lTCkiRD0LYxb0GU2M7i1Ob9Qhc6uQ
+         1O+AXhZ5GYS7EIu7I7TlY4JRYDkitbr1xsB/WRXoTKav6jOw/CSgKH/wL+E5NRQaxtYJ
+         ccc6IPiLCOyaxYm7b+apOmTi2JeSppnPiDR7Upvr7NXirsDApjusQ/wE5Ha5pWcwFSjf
+         DjFhQFnFZ+zohbzL+5+2WZzmMlOIRlThYsCDQ4p9uHuqzOvGZicCutiThlPag+lDDv91
+         TXLbbS5BjqjzNhp5RSvnxNkJWnKeS6LDVlIwPatb50a22EuJFFZUeLfFT4sPxnKaW+pO
+         uvBA==
+X-Gm-Message-State: AOAM533/q6h4my+GdQs4OdxuVhNvUKa8FGIfBKgMe/Xhtfxbhcq0Xs+q
+        q/fF8c20gwy4ZQMfjnklaxI=
+X-Google-Smtp-Source: ABdhPJz3wK5lEPXskOjxvfF95xz7hR/CDeIdgS8oNvtqXIMDLRpohWhsorjh4VXWOudnq1fpy8MAJA==
+X-Received: by 2002:a9d:19a3:: with SMTP id k32mr3157266otk.189.1615392908695;
+        Wed, 10 Mar 2021 08:15:08 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id s21sm3719414oos.5.2021.03.10.08.15.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Mar 2021 08:15:07 -0800 (PST)
+Subject: Re: [PATCH net v2] ipv6: fix suspecious RCU usage warning
+To:     Wei Wang <weiwan@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [RFC PATCH v2 1/1] netdev: add netdev_queue_set_dql_min_limit()
-Date:   Thu, 11 Mar 2021 01:10:51 +0900
-Message-Id: <20210310161051.23826-2-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210310161051.23826-1-mailhol.vincent@wanadoo.fr>
-References: <20210310161051.23826-1-mailhol.vincent@wanadoo.fr>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     syzbot <syzkaller@googlegroups.com>,
+        David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        Petr Machata <petrm@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <20210310022035.2908294-1-weiwan@google.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2cdaaaed-7529-48cf-5bcc-59da5c93c6d2@gmail.com>
+Date:   Wed, 10 Mar 2021 09:15:03 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210310022035.2908294-1-weiwan@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a function to set the dynamic queue limit minimum value.
+On 3/9/21 7:20 PM, Wei Wang wrote:
+> Syzbot reported the suspecious RCU usage in nexthop_fib6_nh() when
+> called from ipv6_route_seq_show(). The reason is ipv6_route_seq_start()
+> calls rcu_read_lock_bh(), while nexthop_fib6_nh() calls
+> rcu_dereference_rtnl().
+> The fix proposed is to add a variant of nexthop_fib6_nh() to use
+> rcu_dereference_bh_rtnl() for ipv6_route_seq_show().
+> 
 
-This function is to be used by network drivers which are able to
-prove, at least through empirical tests on several environment (with
-other applications, heavy context switching, virtualization...), that
-they constantly reach better performances with a specific predefined
-dql.min_limit value with no noticeable latency impact.
+...
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
+> 
+> Fixes: f88d8ea67fbdb ("ipv6: Plumb support for nexthop object in a fib6_info")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Wei Wang <weiwan@google.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Ido Schimmel <idosch@idosch.org>
+> Cc: Petr Machata <petrm@nvidia.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> ---
+>  include/net/nexthop.h | 24 ++++++++++++++++++++++++
+>  net/ipv6/ip6_fib.c    |  2 +-
+>  2 files changed, 25 insertions(+), 1 deletion(-)
+> 
 
- include/linux/netdevice.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ddf4cfc12615..7fceea9a202d 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3389,6 +3389,23 @@ netif_xmit_frozen_or_drv_stopped(const struct netdev_queue *dev_queue)
- 	return dev_queue->state & QUEUE_STATE_DRV_XOFF_OR_FROZEN;
- }
- 
-+/**
-+ *	netdev_queue_set_dql_min_limit - set dql minimum limit
-+ *	@dev_queue: pointer to transmit queue
-+ *	@min_limit: dql minimum limit
-+ *
-+ * Forces xmit_more() to return true until the minimum threshold
-+ * defined by @min_limit is reached. Warning: to be use with care,
-+ * misuse will impact the latency.
-+ */
-+static inline void netdev_queue_set_dql_min_limit(struct netdev_queue *q,
-+						  unsigned int min_limit)
-+{
-+#ifdef CONFIG_BQL
-+	q->dql.min_limit = min_limit;
-+#endif
-+}
-+
- /**
-  *	netdev_txq_bql_enqueue_prefetchw - prefetch bql data for write
-  *	@dev_queue: pointer to transmit queue
--- 
-2.26.2
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
+Thanks, Wei.
