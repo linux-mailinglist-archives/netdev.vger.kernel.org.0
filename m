@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99895333576
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:39:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D040333578
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:40:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231532AbhCJFil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 00:38:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32976 "EHLO mail.kernel.org"
+        id S232269AbhCJFkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 00:40:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33118 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232311AbhCJFiO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 00:38:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 15C6264D90;
-        Wed, 10 Mar 2021 05:38:13 +0000 (UTC)
+        id S229470AbhCJFjp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 00:39:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DA1A864F59;
+        Wed, 10 Mar 2021 05:39:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615354693;
-        bh=HEbOjc/PITm8oz4nfMKzFJ3cbaJmd0Dg6I/RKPWIIgg=;
+        s=k20201202; t=1615354784;
+        bh=OSa/NWiOxT9hUBy3oJFQuT8JLZChm6Td8cUlrIATMfc=;
         h=Date:From:To:Cc:Subject:From;
-        b=LIXEtGlEPHW/qimEs9ftYG+cyEy6rYG63mxIUNkUj7VPiY0ZVt8fFv3t6/D9MQVot
-         AJ7fjVGLSz0xwfDf1o4oBimqwwSQD0BVdRn3/yH6ijEj+R4zItt9AO7tm6HvM/+q+s
-         moNHZCXbnfKWUy5dSLOzhgnS/thHW2Okf+zGQEswY5zwsYf4roPlcEe4SepAiMITcA
-         NLBz0N4kkaySqfCjxDwT/ilwhiYHUSZQtfSCq5fxJbbEBzBbm158f+V9sbD5D2/C8x
-         Ss416VtzGEXrBenPUrrKYfZlHcDjxheByFhc2SMxyADZU+XSf8RxinsCHGISe3Yjl1
-         UrwymCVAT9anA==
-Date:   Tue, 9 Mar 2021 23:38:11 -0600
+        b=n1bGpmAFfRDZ7DSpW+rsiDie5b+sW0p4yQan1cFEHhG9CCiMNyhmr66lnypjtBvS+
+         WmvkmqB7X5gDmWGWQ3g/MKqjmACoWuCT4IV0/DdJO0GnBT/lBqVKmMWs6NiQ5SieIu
+         s5Cl7d6IGx0gllc8fOviZoCyjFnzebPUODE2mngET2vMAs8Z4Surm+XdIE9DHIWAFZ
+         aEqByUjJzIEGGh+IVPHgMzN3ulyxvPNedHExDNXo7IEpRo4OVOkBPHiO8hVIzop84P
+         RYXJZxcLrkUjn6vNkUu5MSeCq1TAPEZd7tIUOdY0A+MRf7MKLjVij31GN5Ro1PsPom
+         qnrQS5jzbSjfg==
+Date:   Tue, 9 Mar 2021 23:39:41 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+To:     Joerg Reuter <jreuter@yaina.de>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH RESEND][next] decnet: Fix fall-through warnings for Clang
-Message-ID: <20210310053811.GA285532@embeddedor>
+Subject: [PATCH RESEND][next] net: ax25: Fix fall-through warnings for Clang
+Message-ID: <20210310053941.GA285638@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -50,22 +52,21 @@ Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
  Changes in RESEND:
  - None. Resending now that net-next is open.
 
- net/decnet/dn_route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ax25/af_ax25.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/decnet/dn_route.c b/net/decnet/dn_route.c
-index 2193ae529e75..37c90c1fdc93 100644
---- a/net/decnet/dn_route.c
-+++ b/net/decnet/dn_route.c
-@@ -1407,7 +1407,7 @@ static int dn_route_input_slow(struct sk_buff *skb)
- 			flags |= RTCF_DOREDIRECT;
- 
- 		local_src = DN_FIB_RES_PREFSRC(res);
--
-+		break;
- 	case RTN_BLACKHOLE:
- 	case RTN_UNREACHABLE:
- 		break;
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 269ee89d2c2b..2631efc6e359 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -850,6 +850,7 @@ static int ax25_create(struct net *net, struct socket *sock, int protocol,
+ 		case AX25_P_ROSE:
+ 			if (ax25_protocol_is_registered(AX25_P_ROSE))
+ 				return -ESOCKTNOSUPPORT;
++			break;
+ #endif
+ 		default:
+ 			break;
 -- 
 2.27.0
 
