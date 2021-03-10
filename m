@@ -2,541 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F56333904
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 10:43:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEC20333920
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 10:46:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231384AbhCJJnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 04:43:02 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:20760 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229747AbhCJJmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 04:42:36 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12A9Vjd2029588;
-        Wed, 10 Mar 2021 01:42:21 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=l/qq8KUfzfSTdaYEhXAxx0tLHa5CDlzW2PKHLJB/J6s=;
- b=fymRlTn+fqI5LCuD69k6eD7BfrMhNryzzNacGabYASSw+OsRiXPgo96pk5fVQuiJdDSy
- hQleREnY3LzR8JUVnw5zDGI9WXqEA4w250Ch+LEGGh3nw4pKL+qtyAxDQkyAQtLquKp0
- pQWXx/rVBX48vf1Pr0YZ5BBJAeo/WmYDrQkYrZ00r5ofZkhoYu36H/50WA9URt/Ca9Iu
- nretSUrQRBi9msT0PAy2GyD0iv+k9S7y5lNJwpBdSgY4ExUX5tamHUjEW7IyvXBJL+io
- 6GshYpWAEL1p2R9gaGBDLBoFKOpqzXv87yrQF2qDYCw8tj39AcieqMfpfFrvaNqQUv+T xg== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3747yv3avt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 10 Mar 2021 01:42:21 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Mar
- 2021 01:42:19 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Mar
- 2021 01:42:19 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 10 Mar 2021 01:42:19 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 0A7623F7041;
-        Wed, 10 Mar 2021 01:42:15 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>, <rabeeh@solid-run.com>
-Subject: [net-next] net: mvpp2: Add reserved port private flag configuration
-Date:   Wed, 10 Mar 2021 11:42:09 +0200
-Message-ID: <1615369329-9389-1-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
+        id S229747AbhCJJpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 04:45:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232524AbhCJJpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 04:45:21 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA157C06174A
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 01:45:21 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id ha17so540392pjb.2
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 01:45:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=VT9h/2hYm4XAtx5JWtKs8v0bihT7eprcIXrzZkRxLy8=;
+        b=la1ZnCd6cfDQqXYf2UiuOKGyPFmtaSFqtg+zLMnUkcyrgt/SnsvMjyVnsJ+0nD5rMu
+         bXGDxJTybPFEYYnGtEMVG92C6HZBPrz1jqQ5+DaFjbdjqOVhdCm5K2m90f9RbmPQDPxJ
+         AHgWIJmBteo2TejEXa3jVZhPjRxsv6e2xNSC6cQx+kv4ALqrNlHXxCU6/IGMLWrs+tAc
+         0J3xHIJ8kQ/C9sPkJ2YTLKdKnBtktoCBzqoGgLrhMzzYe5rhv6rSTQkFuaR8moTXY2by
+         eFdWfG9kUNTK+/IfMQotAUO9caIIpFI4Grv8symwCRI8lGolOuF1LvTtYFohf8jt2Xe/
+         HHFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=VT9h/2hYm4XAtx5JWtKs8v0bihT7eprcIXrzZkRxLy8=;
+        b=HsGTymYyV/Gqt3xGzr7yR5TANVD/ra86sEaRfX49n8LPDTpjbdJrjHLMGm0DQRteaM
+         8fPDpNPlogex6xaeIJ1zVdHbeoz3UngJVMSTXXPfnqxtn2CiQHi5aKNsAySmyaUvIref
+         wbJHdOLuhPDyxCQ2teLYyYK5RTRmo+pdwhdpY4XxDO0buA8P7r1yQHKBy7kWMnZg9MFT
+         AHSPt4qnu5os7//cVbcSkVkPGoF9DkV3O2crLTlZQx3cfLwA0JVRSACbBNLpW3iVqT+v
+         RDA1wdT0SASFHTQ1RT43erbhUoOQkhFc1d+5k1vwx/hVvJkC++jU5/dmxez36X8M0g1c
+         6hdw==
+X-Gm-Message-State: AOAM530J53SVV4GBbR1/yZjA5+ijWlEFH7x8MTl2imqfgB4MN6GLql0l
+        +EQC57HEUNR17R8oz7WCKhcoPWPySlSeK1GmUas=
+X-Google-Smtp-Source: ABdhPJz+LwofocN1sbT1KF8vTae3Tf+Ufd1aIcOUOyL47KNK8epJnCCgZerGPF74PZ6QjIG7XF8DPzgnxU3MOCiIjyE=
+X-Received: by 2002:a17:902:f1c2:b029:e4:6c23:489f with SMTP id
+ e2-20020a170902f1c2b02900e46c23489fmr2322883plc.62.1615369521266; Wed, 10 Mar
+ 2021 01:45:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-10_07:2021-03-10,2021-03-10 signatures=0
+Reply-To: 5kabiruwahid@gmail.com
+Sender: mrsgwisdom202family@gmail.com
+Received: by 2002:a05:6a10:fe10:0:0:0:0 with HTTP; Wed, 10 Mar 2021 01:45:19
+ -0800 (PST)
+From:   Mr Kabiru Wahid <5kabiruwahid@gmail.com>
+Date:   Tue, 9 Mar 2021 21:45:19 -1200
+X-Google-Sender-Auth: nFntYxgf4uwzjVeb2EKPNYFZo9k
+Message-ID: <CAG4bLKtR03o67r9T0fuJdrBRSQX_=Bz--tjusLMdKTe0f7kv1Q@mail.gmail.com>
+Subject: I Need Your Urgent Respond!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
-
-According to Armada SoC architecture and design, all the PPv2 ports
-which are populated on the same communication processor silicon die
-(CP11x) share the same Classifier and Parser engines.
-
-Armada is an embedded platform and therefore there is a need to reserve
-some of the PPv2 ports for different use cases.
-
-For example, a port can be reserved for a CM3 CPU running FreeRTOS for
-management purposes or by user-space data plane application.
-
-During port reservation all common configurations are preserved and
-only RXQ, TXQ, and interrupt vectors are disabled.
-
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |   4 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 286 ++++++++++++++++----
- 2 files changed, 242 insertions(+), 48 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 8edba5e..e2f8eec 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -865,6 +865,7 @@
- /* Port flags */
- #define MVPP2_F_LOOPBACK		BIT(0)
- #define MVPP2_F_DT_COMPAT		BIT(1)
-+#define MVPP22_F_IF_RESERVED		BIT(2)
- 
- /* Marvell tag types */
- enum mvpp2_tag_type {
-@@ -1251,6 +1252,9 @@ struct mvpp2_port {
- 
- 	/* Firmware TX flow control */
- 	bool tx_fc;
-+
-+	/* private storage, allocated/used by Reserved/Normal mode toggling */
-+	void *res_cfg;
- };
- 
- /* The mvpp2_tx_desc and mvpp2_rx_desc structures describe the
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index d415447..80ddf1c 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -55,6 +55,14 @@ enum mvpp2_bm_pool_log_num {
- 	int buf_num;
- } mvpp2_pools[MVPP2_BM_POOLS_NUM];
- 
-+struct mvpp2_port_port_cfg {
-+	unsigned int nqvecs;
-+	unsigned int nrxqs;
-+	unsigned int ntxqs;
-+	int mtu;
-+	bool rxhash_en;
-+};
-+
- /* The prototype is added here to be used in start_dev when using ACPI. This
-  * will be removed once phylink is used for all modes (dt+ACPI).
-  */
-@@ -1431,6 +1439,9 @@ static void mvpp2_interrupts_unmask(void *arg)
- 	if (cpu >= port->priv->nthreads)
- 		return;
- 
-+	if (port->flags & MVPP22_F_IF_RESERVED)
-+		return;
-+
- 	thread = mvpp2_cpu_to_thread(port->priv, cpu);
- 
- 	val = MVPP2_CAUSE_MISC_SUM_MASK |
-@@ -1942,48 +1953,58 @@ static u32 mvpp2_read_index(struct mvpp2 *priv, u32 index, u32 reg)
- 						 (ARRAY_SIZE(mvpp2_ethtool_rxq_regs) * (nrxqs)) + \
- 						 ARRAY_SIZE(mvpp2_ethtool_xdp))
- 
-+static const char mvpp22_priv_flags_strings[][ETH_GSTRING_LEN] = {
-+	"reserved",
-+};
-+
-+#define MVPP22_F_IF_RESERVED_PRIV	BIT(0)
-+
- static void mvpp2_ethtool_get_strings(struct net_device *netdev, u32 sset,
- 				      u8 *data)
- {
- 	struct mvpp2_port *port = netdev_priv(netdev);
- 	int i, q;
- 
--	if (sset != ETH_SS_STATS)
--		return;
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_mib_regs); i++) {
-+			strscpy(data, mvpp2_ethtool_mib_regs[i].string,
-+				ETH_GSTRING_LEN);
-+			data += ETH_GSTRING_LEN;
-+		}
- 
--	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_mib_regs); i++) {
--		strscpy(data, mvpp2_ethtool_mib_regs[i].string,
--			ETH_GSTRING_LEN);
--		data += ETH_GSTRING_LEN;
--	}
-+		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_port_regs); i++) {
-+			strscpy(data, mvpp2_ethtool_port_regs[i].string,
-+				ETH_GSTRING_LEN);
-+			data += ETH_GSTRING_LEN;
-+		}
- 
--	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_port_regs); i++) {
--		strscpy(data, mvpp2_ethtool_port_regs[i].string,
--			ETH_GSTRING_LEN);
--		data += ETH_GSTRING_LEN;
--	}
-+		for (q = 0; q < port->ntxqs; q++) {
-+			for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_txq_regs); i++) {
-+				snprintf(data, ETH_GSTRING_LEN,
-+					 mvpp2_ethtool_txq_regs[i].string, q);
-+				data += ETH_GSTRING_LEN;
-+			}
-+		}
- 
--	for (q = 0; q < port->ntxqs; q++) {
--		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_txq_regs); i++) {
--			snprintf(data, ETH_GSTRING_LEN,
--				 mvpp2_ethtool_txq_regs[i].string, q);
--			data += ETH_GSTRING_LEN;
-+		for (q = 0; q < port->nrxqs; q++) {
-+			for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_rxq_regs); i++) {
-+				snprintf(data, ETH_GSTRING_LEN,
-+					 mvpp2_ethtool_rxq_regs[i].string,
-+					 q);
-+				data += ETH_GSTRING_LEN;
-+			}
- 		}
--	}
- 
--	for (q = 0; q < port->nrxqs; q++) {
--		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_rxq_regs); i++) {
--			snprintf(data, ETH_GSTRING_LEN,
--				 mvpp2_ethtool_rxq_regs[i].string,
--				 q);
-+		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_xdp); i++) {
-+			strscpy(data, mvpp2_ethtool_xdp[i].string,
-+				ETH_GSTRING_LEN);
- 			data += ETH_GSTRING_LEN;
- 		}
--	}
--
--	for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_xdp); i++) {
--		strscpy(data, mvpp2_ethtool_xdp[i].string,
--			ETH_GSTRING_LEN);
--		data += ETH_GSTRING_LEN;
-+		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		memcpy(data, mvpp22_priv_flags_strings,
-+		       ARRAY_SIZE(mvpp22_priv_flags_strings) * ETH_GSTRING_LEN);
- 	}
- }
- 
-@@ -2130,8 +2151,13 @@ static int mvpp2_ethtool_get_sset_count(struct net_device *dev, int sset)
- {
- 	struct mvpp2_port *port = netdev_priv(dev);
- 
--	if (sset == ETH_SS_STATS)
-+	switch (sset) {
-+	case ETH_SS_STATS:
- 		return MVPP2_N_ETHTOOL_STATS(port->ntxqs, port->nrxqs);
-+	case ETH_SS_PRIV_FLAGS:
-+		return (port->priv->hw_version == MVPP21) ?
-+			0 : ARRAY_SIZE(mvpp22_priv_flags_strings);
-+	}
- 
- 	return -EOPNOTSUPP;
- }
-@@ -2207,6 +2233,9 @@ static inline void mvpp2_gmac_max_rx_size_set(struct mvpp2_port *port)
- {
- 	u32 val;
- 
-+	if (port->flags & MVPP22_F_IF_RESERVED)
-+		return;
-+
- 	val = readl(port->base + MVPP2_GMAC_CTRL_0_REG);
- 	val &= ~MVPP2_GMAC_MAX_RX_SIZE_MASK;
- 	val |= (((port->pkt_size - MVPP2_MH_SIZE) / 2) <<
-@@ -2219,6 +2248,9 @@ static inline void mvpp2_xlg_max_rx_size_set(struct mvpp2_port *port)
- {
- 	u32 val;
- 
-+	if (port->flags & MVPP22_F_IF_RESERVED)
-+		return;
-+
- 	val =  readl(port->base + MVPP22_XLG_CTRL1_REG);
- 	val &= ~MVPP22_XLG_CTRL1_FRAMESIZELIMIT_MASK;
- 	val |= ((port->pkt_size - MVPP2_MH_SIZE) / 2) <<
-@@ -2321,6 +2353,9 @@ static void mvpp2_egress_enable(struct mvpp2_port *port)
- 	int queue;
- 	int tx_port_num = mvpp2_egress_port(port);
- 
-+	if (port->flags & MVPP22_F_IF_RESERVED)
-+		return;
-+
- 	/* Enable all initialized TXs. */
- 	qmap = 0;
- 	for (queue = 0; queue < port->ntxqs; queue++) {
-@@ -2343,6 +2378,9 @@ static void mvpp2_egress_disable(struct mvpp2_port *port)
- 	int delay;
- 	int tx_port_num = mvpp2_egress_port(port);
- 
-+	if (port->flags & MVPP22_F_IF_RESERVED)
-+		return;
-+
- 	/* Issue stop command for active channels only */
- 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_PORT_INDEX_REG, tx_port_num);
- 	reg_data = (mvpp2_read(port->priv, MVPP2_TXP_SCHED_Q_CMD_REG)) &
-@@ -3411,7 +3449,8 @@ static void mvpp2_isr_handle_link(struct mvpp2_port *port, bool link)
- 		mvpp2_egress_enable(port);
- 		mvpp2_ingress_enable(port);
- 		netif_carrier_on(dev);
--		netif_tx_wake_all_queues(dev);
-+		if (!(port->flags & MVPP22_F_IF_RESERVED))
-+			netif_tx_wake_all_queues(dev);
- 	} else {
- 		netif_tx_stop_all_queues(dev);
- 		netif_carrier_off(dev);
-@@ -4556,7 +4595,8 @@ static void mvpp2_start_dev(struct mvpp2_port *port)
- 		mvpp2_acpi_start(port);
- 	}
- 
--	netif_tx_start_all_queues(port->dev);
-+	if (!(port->flags & MVPP22_F_IF_RESERVED))
-+		netif_tx_start_all_queues(port->dev);
- 
- 	clear_bit(0, &port->state);
- }
-@@ -4702,7 +4742,8 @@ static void mvpp2_irqs_deinit(struct mvpp2_port *port)
- static bool mvpp22_rss_is_supported(struct mvpp2_port *port)
- {
- 	return (queue_mode == MVPP2_QDIST_MULTI_MODE) &&
--		!(port->flags & MVPP2_F_LOOPBACK);
-+		!(port->flags & MVPP2_F_LOOPBACK) &&
-+		!(port->flags & MVPP22_F_IF_RESERVED);
- }
- 
- static int mvpp2_open(struct net_device *dev)
-@@ -4719,20 +4760,23 @@ static int mvpp2_open(struct net_device *dev)
- 		netdev_err(dev, "mvpp2_prs_mac_da_accept BC failed\n");
- 		return err;
- 	}
--	err = mvpp2_prs_mac_da_accept(port, dev->dev_addr, true);
--	if (err) {
--		netdev_err(dev, "mvpp2_prs_mac_da_accept own addr failed\n");
--		return err;
--	}
--	err = mvpp2_prs_tag_mode_set(port->priv, port->id, MVPP2_TAG_TYPE_MH);
--	if (err) {
--		netdev_err(dev, "mvpp2_prs_tag_mode_set failed\n");
--		return err;
--	}
--	err = mvpp2_prs_def_flow(port);
--	if (err) {
--		netdev_err(dev, "mvpp2_prs_def_flow failed\n");
--		return err;
-+
-+	if (!(port->flags & MVPP22_F_IF_RESERVED)) {
-+		err = mvpp2_prs_mac_da_accept(port, dev->dev_addr, true);
-+		if (err) {
-+			netdev_err(dev, "mvpp2_prs_mac_da_accept own addr failed\n");
-+			return err;
-+		}
-+		err = mvpp2_prs_tag_mode_set(port->priv, port->id, MVPP2_TAG_TYPE_MH);
-+		if (err) {
-+			netdev_err(dev, "mvpp2_prs_tag_mode_set failed\n");
-+			return err;
-+		}
-+		err = mvpp2_prs_def_flow(port);
-+		if (err) {
-+			netdev_err(dev, "mvpp2_prs_def_flow failed\n");
-+			return err;
-+		}
- 	}
- 
- 	/* Allocate the Rx/Tx queues */
-@@ -4979,6 +5023,11 @@ static int mvpp2_change_mtu(struct net_device *dev, int mtu)
- 	struct mvpp2 *priv = port->priv;
- 	int err;
- 
-+	if (port->flags & MVPP22_F_IF_RESERVED) {
-+		netdev_err(dev, "MTU can not be modified for port in reserved mode\n");
-+		return -EPERM;
-+	}
-+
- 	if (!IS_ALIGNED(MVPP2_RX_PKT_SIZE(mtu), 8)) {
- 		netdev_info(dev, "illegal MTU value %d, round to %d\n", mtu,
- 			    ALIGN(MVPP2_RX_PKT_SIZE(mtu), 8));
-@@ -5385,12 +5434,16 @@ static int mvpp2_ethtool_get_coalesce(struct net_device *dev,
- static void mvpp2_ethtool_get_drvinfo(struct net_device *dev,
- 				      struct ethtool_drvinfo *drvinfo)
- {
-+	struct mvpp2_port *port = netdev_priv(dev);
-+
- 	strlcpy(drvinfo->driver, MVPP2_DRIVER_NAME,
- 		sizeof(drvinfo->driver));
- 	strlcpy(drvinfo->version, MVPP2_DRIVER_VERSION,
- 		sizeof(drvinfo->version));
- 	strlcpy(drvinfo->bus_info, dev_name(&dev->dev),
- 		sizeof(drvinfo->bus_info));
-+	drvinfo->n_priv_flags = (port->priv->hw_version == MVPP21) ?
-+			0 : ARRAY_SIZE(mvpp22_priv_flags_strings);
- }
- 
- static void mvpp2_ethtool_get_ringparam(struct net_device *dev,
-@@ -5662,6 +5715,139 @@ static int mvpp2_ethtool_set_rxfh_context(struct net_device *dev,
- 
- 	return mvpp22_port_rss_ctx_indir_set(port, *rss_context, indir);
- }
-+
-+static u32 mvpp22_get_priv_flags(struct net_device *dev)
-+{
-+	struct mvpp2_port *port = netdev_priv(dev);
-+	u32 priv_flags = 0;
-+
-+	if (port->flags & MVPP22_F_IF_RESERVED)
-+		priv_flags |= MVPP22_F_IF_RESERVED_PRIV;
-+	return priv_flags;
-+}
-+
-+static int mvpp2_port_reserved_cfg(struct net_device *dev, bool ena)
-+{
-+	struct mvpp2_port *port = netdev_priv(dev);
-+	struct mvpp2_port_port_cfg *cfg;
-+
-+	if (ena) {
-+		/* Disable Queues and IntVec allocations for reserved ports,
-+		 * but save original values.
-+		 */
-+		cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
-+		if (!cfg)
-+			return -ENOMEM;
-+		port->res_cfg = (void *)cfg;
-+		cfg->nqvecs = port->nqvecs;
-+		cfg->nrxqs  = port->nrxqs;
-+		cfg->ntxqs = port->ntxqs;
-+		cfg->mtu = dev->mtu;
-+		cfg->rxhash_en = !!(dev->hw_features & NETIF_F_RXHASH);
-+
-+		port->nqvecs = 0;
-+		port->nrxqs  = 0;
-+		port->ntxqs  = 0;
-+		if (cfg->rxhash_en) {
-+			dev->hw_features &= ~NETIF_F_RXHASH;
-+			netdev_update_features(dev);
-+		}
-+	} else {
-+		struct mvpp2_bm_pool *pool;
-+		int i;
-+
-+		/* Back to normal mode */
-+		cfg = port->res_cfg;
-+		port->nqvecs = cfg->nqvecs;
-+		port->nrxqs  = cfg->nrxqs;
-+		port->ntxqs  = cfg->ntxqs;
-+		if (cfg->rxhash_en) {
-+			dev->hw_features |= NETIF_F_RXHASH;
-+			netdev_update_features(dev);
-+		}
-+		kfree(cfg);
-+		port->res_cfg = NULL;
-+
-+		/* Restore RxQ/pool association */
-+		for (i = 0; i < port->nrxqs; i++) {
-+			if (port->priv->percpu_pools) {
-+				pool = &port->priv->bm_pools[i];
-+				mvpp2_rxq_short_pool_set(port, i, pool->id);
-+				pool = &port->priv->bm_pools[i + port->nrxqs];
-+				mvpp2_rxq_long_pool_set(port, i, pool->id);
-+			} else {
-+				mvpp2_rxq_short_pool_set(port, i, port->pool_short->id);
-+				mvpp2_rxq_long_pool_set(port, i, port->pool_long->id);
-+			}
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int mvpp2_port_reserved_set(struct net_device *dev, bool ena)
-+{
-+	struct mvpp2_port *port = netdev_priv(dev);
-+	bool running = netif_running(dev);
-+	struct mvpp2 *priv = port->priv;
-+	int err;
-+
-+	/* This procedure is called by ethtool change or by Module-remove.
-+	 * For "remove" do anything only if we are in reserved-mode
-+	 * and toggling back to Normal-mode is required.
-+	 */
-+	if (!ena && !port->res_cfg)
-+		return 0;
-+
-+	if (ena) {
-+		port->flags |= MVPP22_F_IF_RESERVED;
-+		if (priv->percpu_pools)
-+			mvpp2_bm_switch_buffers(priv, false);
-+	} else {
-+		bool reserved = false;
-+		int i;
-+
-+		port->flags &= ~MVPP22_F_IF_RESERVED;
-+		for (i = 0; i < priv->port_count; i++)
-+			if (priv->port_list[i] != port &&
-+			    priv->port_list[i]->flags & MVPP22_F_IF_RESERVED) {
-+				reserved = true;
-+				break;
-+			}
-+
-+		if (!reserved) {
-+			dev_info(port->dev->dev.parent,
-+				 "No ports in reserved mode, switching to per-cpu buffers");
-+			mvpp2_bm_switch_buffers(priv, true);
-+		}
-+	}
-+
-+	if (running)
-+		mvpp2_stop(dev);
-+
-+	err = mvpp2_port_reserved_cfg(dev, ena);
-+	if (err)
-+		netdev_err(dev, "reserved set=%d: error=%d\n", ena, err);
-+
-+	if (running)
-+		mvpp2_open(dev);
-+
-+	return 0;
-+}
-+
-+static int mvpp22_set_priv_flags(struct net_device *dev, u32 priv_flags)
-+{
-+	struct mvpp2_port *port = netdev_priv(dev);
-+	bool f_old, f_new;
-+	int err = 0;
-+
-+	f_old = port->flags & MVPP22_F_IF_RESERVED;
-+	f_new = priv_flags & MVPP22_F_IF_RESERVED_PRIV;
-+	if (f_old != f_new)
-+		err = mvpp2_port_reserved_set(dev, f_new);
-+
-+	return err;
-+}
-+
- /* Device ops */
- 
- static const struct net_device_ops mvpp2_netdev_ops = {
-@@ -5705,6 +5891,8 @@ static int mvpp2_ethtool_set_rxfh_context(struct net_device *dev,
- 	.set_rxfh		= mvpp2_ethtool_set_rxfh,
- 	.get_rxfh_context	= mvpp2_ethtool_get_rxfh_context,
- 	.set_rxfh_context	= mvpp2_ethtool_set_rxfh_context,
-+	.get_priv_flags		= mvpp22_get_priv_flags,
-+	.set_priv_flags		= mvpp22_set_priv_flags,
- };
- 
- /* Used for PPv2.1, or PPv2.2 with the old Device Tree binding that
-@@ -6602,7 +6790,8 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 
- 	mvpp2_egress_enable(port);
- 	mvpp2_ingress_enable(port);
--	netif_tx_wake_all_queues(port->dev);
-+	if (!(port->flags & MVPP22_F_IF_RESERVED))
-+		netif_tx_wake_all_queues(port->dev);
- }
- 
- static void mvpp2_mac_link_down(struct phylink_config *config,
-@@ -6944,6 +7133,7 @@ static void mvpp2_port_remove(struct mvpp2_port *port)
- {
- 	int i;
- 
-+	mvpp2_port_reserved_set(port->dev, false);
- 	unregister_netdev(port->dev);
- 	if (port->phylink)
- 		phylink_destroy(port->phylink);
--- 
-1.9.1
-
+Dear Sir,
+I came across your e-mail contact prior a private search while in need
+of your assistance. I have investment funds worth million of dollars i
+need a trusted investment Manager/Partner because of my current
+status, If you are willing to handle this project on my behalf kindly
+reply urgent to enable me provide you more information please this is
+not a spam, its a real business that will benefit both of us your
+urgent reply will be appreciated i will explain to you on how the
+business will be executed! Mr Kabiru Wahid! (bfkabiruwahid@gmail.com)
