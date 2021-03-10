@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C6E333AFD
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 12:04:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27145333AFE
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 12:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232732AbhCJLEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 06:04:00 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:42715 "EHLO
+        id S232739AbhCJLEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 06:04:01 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:33025 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232707AbhCJLDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 06:03:44 -0500
+        by vger.kernel.org with ESMTP id S232715AbhCJLDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 06:03:46 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 832225C0129;
-        Wed, 10 Mar 2021 06:03:43 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id B30FF5C00B2;
+        Wed, 10 Mar 2021 06:03:45 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 10 Mar 2021 06:03:43 -0500
+  by compute3.internal (MEProxy); Wed, 10 Mar 2021 06:03:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=duknaemZiB+8lFzr9u9IoyEWv7rihDW4dANsEtpqQ1U=; b=l6MyLuh3
-        /YmdCzS3DoS/S55xs5jG/5DH8B+iBv6jFXXXq22hj31kIu51eXRNimTkQ26IZqg6
-        gU9rJJ5oAHCrNZS08zTW6uPjX6T4UJl3+nTgYwiiNwBtnbppJTeBwoOKCJolau7F
-        RKtOslCHrnGOTAjZvvxqZsQYvIRNhQ3A/IDyn6d5B2A5k90179Bpc9me+aYMZuDQ
-        u7E1UTPH12juZzzSh5Gkl0uDv2By5S9IGZ5UGjFNmoPycSe3+/7qmOrzCTJcQTpz
-        JmDhit2IZ3/uvYitWBUCjzbLDzH5pik55Uy/mvW4Q9MufoaHOADn28kyyeIuxG3w
-        CKNXA/oayUQoSg==
-X-ME-Sender: <xms:j6dIYEbjB-KZc4bPnIUkzlA-LxCNE_4CgriHajyJz3fkq6WNSERxqQ>
-    <xme:j6dIYK47Jy9Pzlko0Z2nWEgwaBqkgxWsRnpJvd0hggxZVNlVng0yPvE528Z211Rue
-    Ntc_b5feanKgbY>
+        fm2; bh=5duoNmiHFaIQUxOTkI8LME87DnZUjHvafM41SYInvNk=; b=loXuoyMn
+        kjr/0/dZlHszqfeYuCR9Fh6Kok9Emc/b6vPG7NSZd/ozmOZaTYTlvzWN8zP2j3ft
+        ycdLsI5R9raGSsI1UDmLWhfEZzi4GKRyrL9Ql9gzXmLKityFAzR65EvXEU6zs7aQ
+        u3pbYd5TT4NV21w8i+04aFnscsVX4f6zGZAErF7GdFOpDa3wyGFet0EOPFlDIG4d
+        vpCDldYal4dcCSQJAkphpYqb9vC3j+RM/TEOvLNW110wgrFfvwLPm3xFN5kMdKPo
+        K5mer/CUXwtKrBuagLAq7OxAvEKdeko0KaH+OOAFxNLYlLnvGD8vzF3zvXUQ/I9G
+        HClaQSgGkgG1Rg==
+X-ME-Sender: <xms:kadIYFQDhJOhO30eektfSxvRD1Dv7F-bRofDflSMRPsd30gB16di-g>
+    <xme:kadIYOz-mJvWF2p7oJHrcKHi3v-tK3CYf6xTDNBSiX4m5Y_omXQXTFZx6aW3WHdrv
+    5Pa9n0yAovaMis>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddukedgvdefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:j6dIYFbnW8Eg2VZ75dWTmzXP2xbFgQyXhUMwaQoVbmXrwFSEWxSOmg>
-    <xmx:j6dIYJiAVvJB24ZrvJbztP7g-oMU_NM41pCJP9rWdCpJC20s50EWPQ>
-    <xmx:j6dIYG-qeUZZ5cezFY9BteoJ-KSDtcQNk0uqkj1QIoor6YxheKM-jQ>
-    <xmx:j6dIYG_IbQT7WNfwVYB6JIH5RvcsRMzZy66c_R1ByR3e5cNsc3TcTw>
+X-ME-Proxy: <xmx:kadIYK3qHFav44tDagi5liO8DIcrnIhBg-JFojGV3Fak79FUeq4GFw>
+    <xmx:kadIYNDFhkeyi-2QzdPcU55TnaxYi8qHqT4KMRCQbuexpzhyRjOUTQ>
+    <xmx:kadIYOjdHoKvkxHmKVU3jS466ohKv5M1WMTtrhadEp8GQ_o4qFYggg>
+    <xmx:kadIYAZOnPAvdNEAz3wdvGD7DderoXfVu8i8EnhAQf3LqqPW4WgW1A>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 842FA1080059;
-        Wed, 10 Mar 2021 06:03:41 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id D7E5C1080066;
+        Wed, 10 Mar 2021 06:03:43 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         danieller@nvidia.com, amcohen@nvidia.com, petrm@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/6] mlxsw: core: Expose MFDE.log_ip to devlink health
-Date:   Wed, 10 Mar 2021 13:02:19 +0200
-Message-Id: <20210310110220.2534350-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/6] mlxsw: Adjust some MFDE fields shift and size to fw implementation
+Date:   Wed, 10 Mar 2021 13:02:20 +0200
+Message-Id: <20210310110220.2534350-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210310110220.2534350-1-idosch@idosch.org>
 References: <20210310110220.2534350-1-idosch@idosch.org>
@@ -64,32 +64,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@nvidia.com>
 
-Add the MFDE.log_ip field to devlink health reporter in order to ease
-firmware debug. This field encodes the instruction pointer that triggered
-the CR space timeout.
+MFDE.irisc_id and MFDE.event_id were adjusted according to what is
+actually implemented in firmware.
+
+Adjust the shift and size of these fields in mlxsw as well.
+
+Note that the displacement of the first field is not a regression.
+It was always incorrect and therefore reported "0".
 
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h  | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 52fdc34251ba..c53461ac4e10 100644
+index c53461ac4e10..7e9a7cb31720 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1806,6 +1806,10 @@ static int mlxsw_core_health_fw_fatal_dump(struct devlink_health_reporter *repor
- 		err = devlink_fmsg_u8_pair_put(fmsg, "log_irisc_id", val);
- 		if (err)
- 			return err;
-+		val = mlxsw_reg_mfde_log_ip_get(mfde_pl);
-+		err = devlink_fmsg_u64_pair_put(fmsg, "log_ip", val);
-+		if (err)
-+			return err;
- 	} else if (event_id == MLXSW_REG_MFDE_EVENT_ID_KVD_IM_STOP) {
- 		val = mlxsw_reg_mfde_pipes_mask_get(mfde_pl);
- 		err = devlink_fmsg_u32_pair_put(fmsg, "pipes_mask", val);
+@@ -1728,7 +1728,7 @@ static int mlxsw_core_health_fw_fatal_dump(struct devlink_health_reporter *repor
+ 		return err;
+ 
+ 	event_id = mlxsw_reg_mfde_event_id_get(mfde_pl);
+-	err = devlink_fmsg_u8_pair_put(fmsg, "id", event_id);
++	err = devlink_fmsg_u32_pair_put(fmsg, "id", event_id);
+ 	if (err)
+ 		return err;
+ 	switch (event_id) {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index a042ff79d306..2f7f691f85ff 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -10919,7 +10919,7 @@ MLXSW_REG_DEFINE(mfde, MLXSW_REG_MFDE_ID, MLXSW_REG_MFDE_LEN);
+  * Which irisc triggered the event
+  * Access: RO
+  */
+-MLXSW_ITEM32(reg, mfde, irisc_id, 0x00, 8, 4);
++MLXSW_ITEM32(reg, mfde, irisc_id, 0x00, 24, 8);
+ 
+ enum mlxsw_reg_mfde_event_id {
+ 	MLXSW_REG_MFDE_EVENT_ID_CRSPACE_TO = 1,
+@@ -10930,7 +10930,7 @@ enum mlxsw_reg_mfde_event_id {
+ /* reg_mfde_event_id
+  * Access: RO
+  */
+-MLXSW_ITEM32(reg, mfde, event_id, 0x00, 0, 8);
++MLXSW_ITEM32(reg, mfde, event_id, 0x00, 0, 16);
+ 
+ enum mlxsw_reg_mfde_method {
+ 	MLXSW_REG_MFDE_METHOD_QUERY,
 -- 
 2.29.2
 
