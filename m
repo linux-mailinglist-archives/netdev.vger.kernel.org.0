@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C743347E5
+	by mail.lfdr.de (Postfix) with ESMTP id 851C33347E6
 	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:28:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233698AbhCJT13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 14:27:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        id S233716AbhCJT1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 14:27:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbhCJT1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 14:27:03 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E0FC061760
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 11:27:03 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id p21so12053173pgl.12
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 11:27:03 -0800 (PST)
+        with ESMTP id S232874AbhCJT1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 14:27:04 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4F1C061760
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 11:27:04 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id 16so11279875pfn.5
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 11:27:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7AIcDmp2DlXe8umzlTU6/4/VbL9gBw7NYacBaslGxGc=;
-        b=hCnNGj6K+gef5Dsa6Sxu2NPgnrPyUpEBb5/UOB9y6zAXuSdvvNe3OnRuDHb8DL6Wzn
-         oqOA+ftzlxzVuiEG90R9EErdJTTasFj35XCxVNfAkLbEyDirYkOtdDFor845y4Pazwyu
-         k22yd3oBAHOyZPbO7kOWjTU2Q6krw7WDMdfOvQ1seG6R3sqv3MnO7p88DHvNu4cV2ZE/
-         5ht/G3tL69DbsroOHkqfGGzkP3xevGdKd/0hkjX17nC5O4I6RDPU8ZJfdimRsOiIuw+3
-         YzTYO02mNn4gjcVkx8yB1fkAd3D/0VR8M8z4GX9QpQkov443WNg5WwIv84BBX5f+6B2X
-         WCqQ==
+        bh=LUw/9S7XVIiz2FEwi+SyGdTLJj7pZWeSBY9aL56mEH8=;
+        b=JAFuSv/ObqlnLC3KD8kdYIou0eBxT1088j/a9qsK0X/He2ma3UKKAaemr661gsEOK4
+         ah9j7yROqQQPei+CzGZ3Oedms/ri/pfQoRvAnnBEiuRCFLn2vKo8R58blV28yi//PXjF
+         jplxkbD9auVQ+EvcmrnKJh2ZYNGDiuGhplF/avHmy2ptlX8gIjplX/2nKIWnFGxsitb3
+         egJmaoHTZbxp4OuFF4k2DtpSJSsjvD1iEsnfAO28NQron9gtSlK4DybUFdZRhcioyeZt
+         xWosWocuVhmQbnrOYzkQJsYDVvrQuLqoxk35kou+jeIDepzxhdzkYJvXhTMVz47OhF6k
+         ltig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7AIcDmp2DlXe8umzlTU6/4/VbL9gBw7NYacBaslGxGc=;
-        b=DI0/Ss5Pc1cWW66ciJd+bRsGquDvxigCxnvp2hcnBDpdqj+0lcEx+uvGO9ZMvrQq56
-         DCNdn7XZKbejCkaJvg93zB/ItO9NANENhdPo/NY+HkK0Riln+GS530Yb6pot9ScOEHPO
-         t1gBFghBFNwoazcFiM6FfnLgmtGVmXAbN5sXtSsCZUH4aD3YDyEm59jnW3CJL1dbat9q
-         bXx0qjMNSab9rhaAKWu4ioLE4wSIupMJzK9SGfcl5CjMbom7KYN2Nl1/5b/XuoGOt1dZ
-         GFTTdR6SbkYP3vki+WNRFxb7zwqB1CbYPeI/hbqN/7x8SW33T2KL09Gwr4+W9I5lPgW0
-         eoYA==
-X-Gm-Message-State: AOAM53014t5MR1DBIV/nrkq1dT6j6nY5rO4xsharJO/pY5JPzfqWO8YJ
-        oaYd3S8n7+V0HDhkJxWCbKJPSMSBjuQQVw==
-X-Google-Smtp-Source: ABdhPJy/RC3xyCHD77gjOLeWJRat78xOjRWvd/TxmlOdFTFPTPo7LrchnBr/151juWPiq+LN7HJCTg==
-X-Received: by 2002:aa7:8649:0:b029:1fb:283:6047 with SMTP id a9-20020aa786490000b02901fb02836047mr4320388pfo.62.1615404422112;
-        Wed, 10 Mar 2021 11:27:02 -0800 (PST)
+        bh=LUw/9S7XVIiz2FEwi+SyGdTLJj7pZWeSBY9aL56mEH8=;
+        b=QoNWNIAP40z2EATH3v20YdM3iehFxk5XneBHSjNQaH10+lHz/eSWJOq0yZSViCkBIX
+         Ng4mBQaaPszIfoeR5ROulmFkCnnCo+JayRaBtITO7RuGC82ccF3kvqPpTOJapPe1roV4
+         p7hgiF0XLuM+r7oE1TfAQQwYW7lEnnmaVl27jhXmOkrslNnAgh56OHQMuj0Otj3R/7C3
+         6p5X+UHzE62MjoFkzjKKi8OqGDLKnTCr9CLe58hoqEQ5Y3EVZgNL3Clh02XeYme4+Ew2
+         o9ECeeU4mQrWBG9r8YcvSPzr5AnfBArxYNqzfN4A7vhLfUBBNUOSbrrRizpSDauAPDVs
+         TTiA==
+X-Gm-Message-State: AOAM533mNWjZGRibNzbhu09/KW3CTAivJdq2GB30ufoDfPEGn6544PuN
+        WornThGkIhH10+jfPneOMdaTKkcjoZF1hg==
+X-Google-Smtp-Source: ABdhPJxeMqJA7i6tHiYjQ/04WJ+xnT5y0QUL78F8ZUF+MBDw4dtZkLYnp9KvYCSFvcMIrQ5hZ542XA==
+X-Received: by 2002:a65:4b8f:: with SMTP id t15mr4078049pgq.222.1615404423139;
+        Wed, 10 Mar 2021 11:27:03 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id 12sm306393pgw.18.2021.03.10.11.27.01
+        by smtp.gmail.com with ESMTPSA id 12sm306393pgw.18.2021.03.10.11.27.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 11:27:01 -0800 (PST)
+        Wed, 10 Mar 2021 11:27:02 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 2/6] ionic: implement Rx page reuse
-Date:   Wed, 10 Mar 2021 11:26:27 -0800
-Message-Id: <20210310192631.20022-3-snelson@pensando.io>
+Subject: [PATCH net-next 3/6] ionic: optimize fastpath struct usage
+Date:   Wed, 10 Mar 2021 11:26:28 -0800
+Message-Id: <20210310192631.20022-4-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210310192631.20022-1-snelson@pensando.io>
 References: <20210310192631.20022-1-snelson@pensando.io>
@@ -59,419 +59,372 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rework the Rx buffer allocations to use pages twice when using
-normal MTU in order to cut down on buffer allocation and mapping
-overhead.
-
-Instead of tracking individual pages, in which we may have
-wasted half the space when using standard 1500 MTU, we track
-buffers which use half pages, so we can use the second half
-of the page rather than allocate and map a new page once the
-first buffer has been used.
+Clean up a couple of struct uses to make for better fast path
+access.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_dev.h   |  12 +-
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 215 +++++++++++-------
- 2 files changed, 138 insertions(+), 89 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  4 +--
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  7 ++--
+ .../net/ethernet/pensando/ionic/ionic_lif.c   |  3 +-
+ .../net/ethernet/pensando/ionic/ionic_lif.h   | 22 ++++++-------
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  4 +--
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  | 33 +++++++++----------
+ 6 files changed, 34 insertions(+), 39 deletions(-)
 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+index fb2b5bf179d7..b951bf5bbdc4 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -585,9 +585,9 @@ void ionic_q_sg_map(struct ionic_queue *q, void *base, dma_addr_t base_pa)
+ void ionic_q_post(struct ionic_queue *q, bool ring_doorbell, ionic_desc_cb cb,
+ 		  void *cb_arg)
+ {
+-	struct device *dev = q->lif->ionic->dev;
+ 	struct ionic_desc_info *desc_info;
+ 	struct ionic_lif *lif = q->lif;
++	struct device *dev = q->dev;
+ 
+ 	desc_info = &q->info[q->head_idx];
+ 	desc_info->cb = cb;
+@@ -629,7 +629,7 @@ void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
+ 
+ 	/* stop index must be for a descriptor that is not yet completed */
+ 	if (unlikely(!ionic_q_is_posted(q, stop_index)))
+-		dev_err(q->lif->ionic->dev,
++		dev_err(q->dev,
+ 			"ionic stop is not posted %s stop %u tail %u head %u\n",
+ 			q->name, stop_index, q->tail_idx, q->head_idx);
+ 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index 690768ff0143..0f877c86eba6 100644
+index 0f877c86eba6..339824cfd618 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -170,9 +170,15 @@ typedef void (*ionic_desc_cb)(struct ionic_queue *q,
- 			      struct ionic_desc_info *desc_info,
- 			      struct ionic_cq_info *cq_info, void *cb_arg);
+@@ -205,10 +205,12 @@ struct ionic_queue {
+ 	struct device *dev;
+ 	struct ionic_lif *lif;
+ 	struct ionic_desc_info *info;
++	u64 dbval;
+ 	u16 head_idx;
+ 	u16 tail_idx;
+ 	unsigned int index;
+ 	unsigned int num_descs;
++	unsigned int max_sg_elems;
+ 	u64 dbell_count;
+ 	u64 stop;
+ 	u64 wake;
+@@ -217,7 +219,6 @@ struct ionic_queue {
+ 	unsigned int type;
+ 	unsigned int hw_index;
+ 	unsigned int hw_type;
+-	u64 dbval;
+ 	union {
+ 		void *base;
+ 		struct ionic_txq_desc *txq;
+@@ -235,7 +236,7 @@ struct ionic_queue {
+ 	unsigned int sg_desc_size;
+ 	unsigned int pid;
+ 	char name[IONIC_QUEUE_NAME_MAX_SZ];
+-};
++} ____cacheline_aligned_in_smp;
  
--struct ionic_page_info {
-+#define IONIC_PAGE_SIZE				PAGE_SIZE
-+#define IONIC_PAGE_SPLIT_SZ			(PAGE_SIZE / 2)
-+#define IONIC_PAGE_GFP_MASK			(GFP_ATOMIC | __GFP_NOWARN |\
-+						 __GFP_COMP | __GFP_MEMALLOC)
-+
-+struct ionic_buf_info {
- 	struct page *page;
- 	dma_addr_t dma_addr;
-+	u32 page_offset;
+ #define IONIC_INTR_INDEX_NOT_ASSIGNED	-1
+ #define IONIC_INTR_NAME_MAX_SZ		32
+@@ -262,7 +263,7 @@ struct ionic_cq {
+ 	u64 compl_count;
+ 	void *base;
+ 	dma_addr_t base_pa;
+-};
++} ____cacheline_aligned_in_smp;
+ 
+ struct ionic;
+ 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 11140915c2da..6f8a5daaadfa 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -495,6 +495,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
+ 		goto err_out;
+ 	}
+ 
++	new->q.dev = dev;
+ 	new->flags = flags;
+ 
+ 	new->q.info = devm_kcalloc(dev, num_descs, sizeof(*new->q.info),
+@@ -506,6 +507,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
+ 	}
+ 
+ 	new->q.type = type;
++	new->q.max_sg_elems = lif->qtype_info[type].max_sg_elems;
+ 
+ 	err = ionic_q_init(lif, idev, &new->q, index, name, num_descs,
+ 			   desc_size, sg_desc_size, pid);
+@@ -2450,7 +2452,6 @@ int ionic_lif_alloc(struct ionic *ionic)
+ 	lif->index = 0;
+ 	lif->ntxq_descs = IONIC_DEF_TXRX_DESC;
+ 	lif->nrxq_descs = IONIC_DEF_TXRX_DESC;
+-	lif->tx_budget = IONIC_TX_BUDGET_DEFAULT;
+ 
+ 	/* Convert the default coalesce value to actual hw resolution */
+ 	lif->rx_coalesce_usecs = IONIC_ITR_COAL_USEC_DEFAULT;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+index 563dba384a53..8ffda32a0a7d 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+@@ -159,16 +159,11 @@ struct ionic_qtype_info {
+ 
+ #define IONIC_LIF_NAME_MAX_SZ		32
+ struct ionic_lif {
+-	char name[IONIC_LIF_NAME_MAX_SZ];
+-	struct list_head list;
+ 	struct net_device *netdev;
+ 	DECLARE_BITMAP(state, IONIC_LIF_F_STATE_SIZE);
+ 	struct ionic *ionic;
+-	bool registered;
+ 	unsigned int index;
+ 	unsigned int hw_index;
+-	unsigned int kern_pid;
+-	u64 __iomem *kern_dbpage;
+ 	struct mutex queue_lock;	/* lock for queue structures */
+ 	spinlock_t adminq_lock;		/* lock for AdminQ operations */
+ 	struct ionic_qcq *adminqcq;
+@@ -177,20 +172,25 @@ struct ionic_lif {
+ 	struct ionic_tx_stats *txqstats;
+ 	struct ionic_qcq **rxqcqs;
+ 	struct ionic_rx_stats *rxqstats;
++	struct ionic_deferred deferred;
++	struct work_struct tx_timeout_work;
+ 	u64 last_eid;
++	unsigned int kern_pid;
++	u64 __iomem *kern_dbpage;
+ 	unsigned int neqs;
+ 	unsigned int nxqs;
+ 	unsigned int ntxq_descs;
+ 	unsigned int nrxq_descs;
+ 	u32 rx_copybreak;
+-	u32 tx_budget;
+ 	unsigned int rx_mode;
+ 	u64 hw_features;
++	bool registered;
+ 	bool mc_overflow;
+-	unsigned int nmcast;
+ 	bool uc_overflow;
+ 	u16 lif_type;
++	unsigned int nmcast;
+ 	unsigned int nucast;
++	char name[IONIC_LIF_NAME_MAX_SZ];
+ 
+ 	union ionic_lif_identity *identity;
+ 	struct ionic_lif_info *info;
+@@ -205,16 +205,14 @@ struct ionic_lif {
+ 	u32 rss_ind_tbl_sz;
+ 
+ 	struct ionic_rx_filters rx_filters;
+-	struct ionic_deferred deferred;
+-	unsigned long *dbid_inuse;
+-	unsigned int dbid_count;
+-	struct dentry *dentry;
+ 	u32 rx_coalesce_usecs;		/* what the user asked for */
+ 	u32 rx_coalesce_hw;		/* what the hw is using */
+ 	u32 tx_coalesce_usecs;		/* what the user asked for */
+ 	u32 tx_coalesce_hw;		/* what the hw is using */
++	unsigned long *dbid_inuse;
++	unsigned int dbid_count;
+ 
+-	struct work_struct tx_timeout_work;
++	struct dentry *dentry;
  };
  
- struct ionic_desc_info {
-@@ -187,8 +193,8 @@ struct ionic_desc_info {
- 		struct ionic_txq_sg_desc *txq_sg_desc;
- 		struct ionic_rxq_sg_desc *rxq_sgl_desc;
- 	};
--	unsigned int npages;
--	struct ionic_page_info pages[IONIC_RX_MAX_SG_ELEMS + 1];
-+	unsigned int nbufs;
-+	struct ionic_buf_info bufs[IONIC_RX_MAX_SG_ELEMS + 1];
- 	ionic_desc_cb cb;
- 	void *cb_arg;
- };
+ struct ionic_queue_params {
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index fbc57de6683e..14ece909a451 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -234,17 +234,15 @@ static void ionic_adminq_cb(struct ionic_queue *q,
+ {
+ 	struct ionic_admin_ctx *ctx = cb_arg;
+ 	struct ionic_admin_comp *comp;
+-	struct device *dev;
+ 
+ 	if (!ctx)
+ 		return;
+ 
+ 	comp = cq_info->cq_desc;
+-	dev = &q->lif->netdev->dev;
+ 
+ 	memcpy(&ctx->comp, comp, sizeof(*comp));
+ 
+-	dev_dbg(dev, "comp admin queue command:\n");
++	dev_dbg(q->dev, "comp admin queue command:\n");
+ 	dynamic_hex_dump("comp ", DUMP_PREFIX_OFFSET, 16, 1,
+ 			 &ctx->comp, sizeof(ctx->comp), true);
+ 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 70b997f302ac..3e13cfee9ecd 100644
+index 3e13cfee9ecd..c472c14b3a80 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -54,7 +54,7 @@ static struct sk_buff *ionic_rx_skb_alloc(struct ionic_queue *q,
- 	if (frags)
- 		skb = napi_get_frags(&q_to_qcq(q)->napi);
- 	else
--		skb = netdev_alloc_skb_ip_align(netdev, len);
-+		skb = napi_alloc_skb(&q_to_qcq(q)->napi, len);
+@@ -82,7 +82,7 @@ static int ionic_rx_page_alloc(struct ionic_queue *q,
+ 	struct device *dev;
  
- 	if (unlikely(!skb)) {
- 		net_warn_ratelimited("%s: SKB alloc failed on %s!\n",
-@@ -66,8 +66,15 @@ static struct sk_buff *ionic_rx_skb_alloc(struct ionic_queue *q,
- 	return skb;
- }
- 
-+static void ionic_rx_buf_reset(struct ionic_buf_info *buf_info)
-+{
-+	buf_info->page = NULL;
-+	buf_info->page_offset = 0;
-+	buf_info->dma_addr = 0;
-+}
-+
- static int ionic_rx_page_alloc(struct ionic_queue *q,
--			       struct ionic_page_info *page_info)
-+			       struct ionic_buf_info *buf_info)
- {
- 	struct ionic_lif *lif = q->lif;
- 	struct ionic_rx_stats *stats;
-@@ -78,26 +85,26 @@ static int ionic_rx_page_alloc(struct ionic_queue *q,
- 	dev = lif->ionic->dev;
+ 	netdev = lif->netdev;
+-	dev = lif->ionic->dev;
++	dev = q->dev;
  	stats = q_to_rx_stats(q);
  
--	if (unlikely(!page_info)) {
--		net_err_ratelimited("%s: %s invalid page_info in alloc\n",
-+	if (unlikely(!buf_info)) {
-+		net_err_ratelimited("%s: %s invalid buf_info in alloc\n",
- 				    netdev->name, q->name);
- 		return -EINVAL;
- 	}
- 
--	page_info->page = dev_alloc_page();
--	if (unlikely(!page_info->page)) {
-+	buf_info->page = alloc_pages(IONIC_PAGE_GFP_MASK, 0);
-+	if (unlikely(!buf_info->page)) {
- 		net_err_ratelimited("%s: %s page alloc failed\n",
- 				    netdev->name, q->name);
- 		stats->alloc_err++;
- 		return -ENOMEM;
- 	}
-+	buf_info->page_offset = 0;
- 
--	page_info->dma_addr = dma_map_page(dev, page_info->page, 0, PAGE_SIZE,
--					   DMA_FROM_DEVICE);
--	if (unlikely(dma_mapping_error(dev, page_info->dma_addr))) {
--		put_page(page_info->page);
--		page_info->dma_addr = 0;
--		page_info->page = NULL;
-+	buf_info->dma_addr = dma_map_page(dev, buf_info->page, buf_info->page_offset,
-+					  IONIC_PAGE_SIZE, DMA_FROM_DEVICE);
-+	if (unlikely(dma_mapping_error(dev, buf_info->dma_addr))) {
-+		__free_pages(buf_info->page, 0);
-+		ionic_rx_buf_reset(buf_info);
- 		net_err_ratelimited("%s: %s dma map failed\n",
- 				    netdev->name, q->name);
- 		stats->dma_map_err++;
-@@ -108,32 +115,46 @@ static int ionic_rx_page_alloc(struct ionic_queue *q,
- }
- 
- static void ionic_rx_page_free(struct ionic_queue *q,
--			       struct ionic_page_info *page_info)
-+			       struct ionic_buf_info *buf_info)
+ 	if (unlikely(!buf_info)) {
+@@ -118,7 +118,7 @@ static void ionic_rx_page_free(struct ionic_queue *q,
+ 			       struct ionic_buf_info *buf_info)
  {
--	struct ionic_lif *lif = q->lif;
--	struct net_device *netdev;
--	struct device *dev;
--
--	netdev = lif->netdev;
--	dev = lif->ionic->dev;
-+	struct net_device *netdev = q->lif->netdev;
-+	struct device *dev = q->lif->ionic->dev;
+ 	struct net_device *netdev = q->lif->netdev;
+-	struct device *dev = q->lif->ionic->dev;
++	struct device *dev = q->dev;
  
--	if (unlikely(!page_info)) {
--		net_err_ratelimited("%s: %s invalid page_info in free\n",
-+	if (unlikely(!buf_info)) {
-+		net_err_ratelimited("%s: %s invalid buf_info in free\n",
- 				    netdev->name, q->name);
- 		return;
- 	}
- 
--	if (unlikely(!page_info->page)) {
--		net_err_ratelimited("%s: %s invalid page in free\n",
--				    netdev->name, q->name);
-+	if (!buf_info->page)
- 		return;
--	}
- 
--	dma_unmap_page(dev, page_info->dma_addr, PAGE_SIZE, DMA_FROM_DEVICE);
-+	dma_unmap_page(dev, buf_info->dma_addr, IONIC_PAGE_SIZE, DMA_FROM_DEVICE);
-+	__free_pages(buf_info->page, 0);
-+	ionic_rx_buf_reset(buf_info);
-+}
-+
-+static bool ionic_rx_buf_recycle(struct ionic_queue *q,
-+				 struct ionic_buf_info *buf_info, u32 used)
-+{
-+	u32 size;
-+
-+	/* don't re-use pages allocated in low-mem condition */
-+	if (page_is_pfmemalloc(buf_info->page))
-+		return false;
-+
-+	/* don't re-use buffers from non-local numa nodes */
-+	if (page_to_nid(buf_info->page) != numa_mem_id())
-+		return false;
-+
-+	size = ALIGN(used, IONIC_PAGE_SPLIT_SZ);
-+	buf_info->page_offset += size;
-+	if (buf_info->page_offset >= IONIC_PAGE_SIZE)
-+		return false;
-+
-+	get_page(buf_info->page);
- 
--	put_page(page_info->page);
--	page_info->dma_addr = 0;
--	page_info->page = NULL;
-+	return true;
- }
- 
- static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
-@@ -142,16 +163,16 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
+ 	if (unlikely(!buf_info)) {
+ 		net_err_ratelimited("%s: %s invalid buf_info in free\n",
+@@ -162,8 +162,8 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
+ 				      struct ionic_cq_info *cq_info)
  {
  	struct ionic_rxq_comp *comp = cq_info->cq_desc;
- 	struct device *dev = q->lif->ionic->dev;
--	struct ionic_page_info *page_info;
-+	struct ionic_buf_info *buf_info;
+-	struct device *dev = q->lif->ionic->dev;
+ 	struct ionic_buf_info *buf_info;
++	struct device *dev = q->dev;
  	struct sk_buff *skb;
  	unsigned int i;
  	u16 frag_len;
- 	u16 len;
- 
--	page_info = &desc_info->pages[0];
-+	buf_info = &desc_info->bufs[0];
- 	len = le16_to_cpu(comp->len);
- 
--	prefetch(page_address(page_info->page) + NET_IP_ALIGN);
-+	prefetch(buf_info->page);
- 
- 	skb = ionic_rx_skb_alloc(q, len, true);
- 	if (unlikely(!skb))
-@@ -159,7 +180,7 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
- 
- 	i = comp->num_sg_elems + 1;
- 	do {
--		if (unlikely(!page_info->page)) {
-+		if (unlikely(!buf_info->page)) {
- 			struct napi_struct *napi = &q_to_qcq(q)->napi;
- 
- 			napi->skb = NULL;
-@@ -167,15 +188,25 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
- 			return NULL;
- 		}
- 
--		frag_len = min(len, (u16)PAGE_SIZE);
-+		frag_len = min_t(u16, len, IONIC_PAGE_SIZE - buf_info->page_offset);
- 		len -= frag_len;
- 
--		dma_unmap_page(dev, dma_unmap_addr(page_info, dma_addr),
--			       PAGE_SIZE, DMA_FROM_DEVICE);
-+		dma_sync_single_for_cpu(dev,
-+					buf_info->dma_addr + buf_info->page_offset,
-+					frag_len, DMA_FROM_DEVICE);
-+
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
--				page_info->page, 0, frag_len, PAGE_SIZE);
--		page_info->page = NULL;
--		page_info++;
-+				buf_info->page, buf_info->page_offset, frag_len,
-+				IONIC_PAGE_SIZE);
-+
-+		if (!ionic_rx_buf_recycle(q, buf_info, frag_len)) {
-+			dma_unmap_page(dev, buf_info->dma_addr,
-+				       IONIC_PAGE_SIZE, DMA_FROM_DEVICE);
-+			ionic_rx_buf_reset(buf_info);
-+		}
-+
-+		buf_info++;
-+
- 		i--;
- 	} while (i > 0);
- 
-@@ -188,26 +219,26 @@ static struct sk_buff *ionic_rx_copybreak(struct ionic_queue *q,
+@@ -218,8 +218,8 @@ static struct sk_buff *ionic_rx_copybreak(struct ionic_queue *q,
+ 					  struct ionic_cq_info *cq_info)
  {
  	struct ionic_rxq_comp *comp = cq_info->cq_desc;
- 	struct device *dev = q->lif->ionic->dev;
--	struct ionic_page_info *page_info;
-+	struct ionic_buf_info *buf_info;
+-	struct device *dev = q->lif->ionic->dev;
+ 	struct ionic_buf_info *buf_info;
++	struct device *dev = q->dev;
  	struct sk_buff *skb;
  	u16 len;
  
--	page_info = &desc_info->pages[0];
-+	buf_info = &desc_info->bufs[0];
- 	len = le16_to_cpu(comp->len);
- 
- 	skb = ionic_rx_skb_alloc(q, len, false);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	if (unlikely(!page_info->page)) {
-+	if (unlikely(!buf_info->page)) {
- 		dev_kfree_skb(skb);
- 		return NULL;
- 	}
- 
--	dma_sync_single_for_cpu(dev, dma_unmap_addr(page_info, dma_addr),
-+	dma_sync_single_for_cpu(dev, buf_info->dma_addr + buf_info->page_offset,
- 				len, DMA_FROM_DEVICE);
--	skb_copy_to_linear_data(skb, page_address(page_info->page), len);
--	dma_sync_single_for_device(dev, dma_unmap_addr(page_info, dma_addr),
-+	skb_copy_to_linear_data(skb, page_address(buf_info->page) + buf_info->page_offset, len);
-+	dma_sync_single_for_device(dev, buf_info->dma_addr + buf_info->page_offset,
- 				   len, DMA_FROM_DEVICE);
- 
- 	skb_put(skb, len);
-@@ -327,64 +358,73 @@ void ionic_rx_fill(struct ionic_queue *q)
- {
- 	struct net_device *netdev = q->lif->netdev;
- 	struct ionic_desc_info *desc_info;
--	struct ionic_page_info *page_info;
- 	struct ionic_rxq_sg_desc *sg_desc;
+@@ -362,7 +362,6 @@ void ionic_rx_fill(struct ionic_queue *q)
  	struct ionic_rxq_sg_elem *sg_elem;
-+	struct ionic_buf_info *buf_info;
+ 	struct ionic_buf_info *buf_info;
  	struct ionic_rxq_desc *desc;
-+	unsigned int max_sg_elems;
+-	unsigned int max_sg_elems;
  	unsigned int remain_len;
--	unsigned int seg_len;
-+	unsigned int frag_len;
+ 	unsigned int frag_len;
  	unsigned int nfrags;
- 	unsigned int i, j;
+@@ -370,7 +369,6 @@ void ionic_rx_fill(struct ionic_queue *q)
  	unsigned int len;
  
  	len = netdev->mtu + ETH_HLEN + VLAN_HLEN;
--	nfrags = round_up(len, PAGE_SIZE) / PAGE_SIZE;
-+	max_sg_elems = q->lif->qtype_info[IONIC_QTYPE_RXQ].max_sg_elems;
+-	max_sg_elems = q->lif->qtype_info[IONIC_QTYPE_RXQ].max_sg_elems;
  
  	for (i = ionic_q_space_avail(q); i; i--) {
-+		nfrags = 0;
- 		remain_len = len;
- 		desc_info = &q->info[q->head_idx];
- 		desc = desc_info->desc;
--		sg_desc = desc_info->sg_desc;
--		page_info = &desc_info->pages[0];
-+		buf_info = &desc_info->bufs[0];
+ 		nfrags = 0;
+@@ -397,7 +395,7 @@ void ionic_rx_fill(struct ionic_queue *q)
  
--		if (page_info->page) { /* recycle the buffer */
--			ionic_rxq_post(q, false, ionic_rx_clean, NULL);
--			continue;
--		}
--
--		/* fill main descriptor - pages[0] */
--		desc->opcode = (nfrags > 1) ? IONIC_RXQ_DESC_OPCODE_SG :
--					      IONIC_RXQ_DESC_OPCODE_SIMPLE;
--		desc_info->npages = nfrags;
--		if (unlikely(ionic_rx_page_alloc(q, page_info))) {
--			desc->addr = 0;
--			desc->len = 0;
--			return;
-+		if (!buf_info->page) { /* alloc a new buffer? */
-+			if (unlikely(ionic_rx_page_alloc(q, buf_info))) {
-+				desc->addr = 0;
-+				desc->len = 0;
-+				return;
-+			}
- 		}
--		desc->addr = cpu_to_le64(page_info->dma_addr);
--		seg_len = min_t(unsigned int, PAGE_SIZE, len);
--		desc->len = cpu_to_le16(seg_len);
--		remain_len -= seg_len;
--		page_info++;
- 
--		/* fill sg descriptors - pages[1..n] */
--		for (j = 0; j < nfrags - 1; j++) {
--			if (page_info->page) /* recycle the sg buffer */
--				continue;
-+		/* fill main descriptor - buf[0] */
-+		desc->addr = cpu_to_le64(buf_info->dma_addr + buf_info->page_offset);
-+		frag_len = min_t(u16, len, IONIC_PAGE_SIZE - buf_info->page_offset);
-+		desc->len = cpu_to_le16(frag_len);
-+		remain_len -= frag_len;
-+		buf_info++;
-+		nfrags++;
- 
-+		/* fill sg descriptors - buf[1..n] */
-+		sg_desc = desc_info->sg_desc;
-+		for (j = 0; remain_len > 0 && j < max_sg_elems; j++) {
+ 		/* fill sg descriptors - buf[1..n] */
+ 		sg_desc = desc_info->sg_desc;
+-		for (j = 0; remain_len > 0 && j < max_sg_elems; j++) {
++		for (j = 0; remain_len > 0 && j < q->max_sg_elems; j++) {
  			sg_elem = &sg_desc->elems[j];
--			if (unlikely(ionic_rx_page_alloc(q, page_info))) {
--				sg_elem->addr = 0;
--				sg_elem->len = 0;
--				return;
-+			if (!buf_info->page) { /* alloc a new sg buffer? */
-+				if (unlikely(ionic_rx_page_alloc(q, buf_info))) {
-+					sg_elem->addr = 0;
-+					sg_elem->len = 0;
-+					return;
-+				}
- 			}
--			sg_elem->addr = cpu_to_le64(page_info->dma_addr);
--			seg_len = min_t(unsigned int, PAGE_SIZE, remain_len);
--			sg_elem->len = cpu_to_le16(seg_len);
--			remain_len -= seg_len;
--			page_info++;
-+
-+			sg_elem->addr = cpu_to_le64(buf_info->dma_addr + buf_info->page_offset);
-+			frag_len = min_t(u16, remain_len, IONIC_PAGE_SIZE - buf_info->page_offset);
-+			sg_elem->len = cpu_to_le16(frag_len);
-+			remain_len -= frag_len;
-+			buf_info++;
-+			nfrags++;
+ 			if (!buf_info->page) { /* alloc a new sg buffer? */
+ 				if (unlikely(ionic_rx_page_alloc(q, buf_info))) {
+@@ -416,7 +414,7 @@ void ionic_rx_fill(struct ionic_queue *q)
  		}
  
-+		/* clear end sg element as a sentinel */
-+		if (j < max_sg_elems) {
-+			sg_elem = &sg_desc->elems[j];
-+			memset(sg_elem, 0, sizeof(*sg_elem));
-+		}
-+
-+		desc->opcode = (nfrags > 1) ? IONIC_RXQ_DESC_OPCODE_SG :
-+					      IONIC_RXQ_DESC_OPCODE_SIMPLE;
-+		desc_info->nbufs = nfrags;
-+
- 		ionic_rxq_post(q, false, ionic_rx_clean, NULL);
- 	}
+ 		/* clear end sg element as a sentinel */
+-		if (j < max_sg_elems) {
++		if (j < q->max_sg_elems) {
+ 			sg_elem = &sg_desc->elems[j];
+ 			memset(sg_elem, 0, sizeof(*sg_elem));
+ 		}
+@@ -568,7 +566,7 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
+ 	idev = &lif->ionic->idev;
+ 	txcq = &lif->txqcqs[qi]->cq;
  
-@@ -395,21 +435,24 @@ void ionic_rx_fill(struct ionic_queue *q)
- void ionic_rx_empty(struct ionic_queue *q)
+-	tx_work_done = ionic_cq_service(txcq, lif->tx_budget,
++	tx_work_done = ionic_cq_service(txcq, IONIC_TX_BUDGET_DEFAULT,
+ 					ionic_tx_service, NULL, NULL);
+ 
+ 	rx_work_done = ionic_cq_service(rxcq, budget,
+@@ -601,7 +599,7 @@ static dma_addr_t ionic_tx_map_single(struct ionic_queue *q,
+ 				      void *data, size_t len)
  {
- 	struct ionic_desc_info *desc_info;
--	struct ionic_page_info *page_info;
-+	struct ionic_buf_info *buf_info;
- 	unsigned int i, j;
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+-	struct device *dev = q->lif->ionic->dev;
++	struct device *dev = q->dev;
+ 	dma_addr_t dma_addr;
  
- 	for (i = 0; i < q->num_descs; i++) {
- 		desc_info = &q->info[i];
- 		for (j = 0; j < IONIC_RX_MAX_SG_ELEMS + 1; j++) {
--			page_info = &desc_info->pages[j];
--			if (page_info->page)
--				ionic_rx_page_free(q, page_info);
-+			buf_info = &desc_info->bufs[j];
-+			if (buf_info->page)
-+				ionic_rx_page_free(q, buf_info);
- 		}
+ 	dma_addr = dma_map_single(dev, data, len, DMA_TO_DEVICE);
+@@ -619,7 +617,7 @@ static dma_addr_t ionic_tx_map_frag(struct ionic_queue *q,
+ 				    size_t offset, size_t len)
+ {
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+-	struct device *dev = q->lif->ionic->dev;
++	struct device *dev = q->dev;
+ 	dma_addr_t dma_addr;
  
--		desc_info->npages = 0;
-+		desc_info->nbufs = 0;
- 		desc_info->cb = NULL;
- 		desc_info->cb_arg = NULL;
- 	}
-+
-+	q->head_idx = 0;
-+	q->tail_idx = 0;
- }
+ 	dma_addr = skb_frag_dma_map(dev, frag, offset, len, DMA_TO_DEVICE);
+@@ -640,7 +638,7 @@ static void ionic_tx_clean(struct ionic_queue *q,
+ 	struct ionic_txq_sg_elem *elem = sg_desc->elems;
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+ 	struct ionic_txq_desc *desc = desc_info->desc;
+-	struct device *dev = q->lif->ionic->dev;
++	struct device *dev = q->dev;
+ 	u8 opcode, flags, nsge;
+ 	u16 queue_index;
+ 	unsigned int i;
+@@ -822,8 +820,8 @@ static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
+ {
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+ 	struct ionic_desc_info *rewind_desc_info;
+-	struct device *dev = q->lif->ionic->dev;
+ 	struct ionic_txq_sg_elem *elem;
++	struct device *dev = q->dev;
+ 	struct ionic_txq_desc *desc;
+ 	unsigned int frag_left = 0;
+ 	unsigned int offset = 0;
+@@ -994,7 +992,7 @@ static int ionic_tx_calc_csum(struct ionic_queue *q, struct sk_buff *skb)
+ {
+ 	struct ionic_txq_desc *desc = q->info[q->head_idx].txq_desc;
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+-	struct device *dev = q->lif->ionic->dev;
++	struct device *dev = q->dev;
+ 	dma_addr_t dma_addr;
+ 	bool has_vlan;
+ 	u8 flags = 0;
+@@ -1034,7 +1032,7 @@ static int ionic_tx_calc_no_csum(struct ionic_queue *q, struct sk_buff *skb)
+ {
+ 	struct ionic_txq_desc *desc = q->info[q->head_idx].txq_desc;
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+-	struct device *dev = q->lif->ionic->dev;
++	struct device *dev = q->dev;
+ 	dma_addr_t dma_addr;
+ 	bool has_vlan;
+ 	u8 flags = 0;
+@@ -1071,7 +1069,7 @@ static int ionic_tx_skb_frags(struct ionic_queue *q, struct sk_buff *skb)
+ 	unsigned int len_left = skb->len - skb_headlen(skb);
+ 	struct ionic_txq_sg_elem *elem = sg_desc->elems;
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+-	struct device *dev = q->lif->ionic->dev;
++	struct device *dev = q->dev;
+ 	dma_addr_t dma_addr;
+ 	skb_frag_t *frag;
+ 	u16 len;
+@@ -1120,7 +1118,6 @@ static int ionic_tx(struct ionic_queue *q, struct sk_buff *skb)
  
- static void ionic_dim_update(struct ionic_qcq *qcq)
+ static int ionic_tx_descs_needed(struct ionic_queue *q, struct sk_buff *skb)
+ {
+-	int sg_elems = q->lif->qtype_info[IONIC_QTYPE_TXQ].max_sg_elems;
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+ 	int err;
+ 
+@@ -1129,7 +1126,7 @@ static int ionic_tx_descs_needed(struct ionic_queue *q, struct sk_buff *skb)
+ 		return (skb->len / skb_shinfo(skb)->gso_size) + 1;
+ 
+ 	/* If non-TSO, just need 1 desc and nr_frags sg elems */
+-	if (skb_shinfo(skb)->nr_frags <= sg_elems)
++	if (skb_shinfo(skb)->nr_frags <= q->max_sg_elems)
+ 		return 1;
+ 
+ 	/* Too many frags, so linearize */
 -- 
 2.17.1
 
