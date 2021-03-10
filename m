@@ -2,288 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 355A833355C
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:33:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E65333561
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 06:35:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232280AbhCJFd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 00:33:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbhCJFdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 00:33:03 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5730CC0613DA;
-        Tue,  9 Mar 2021 21:32:50 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id f124so15694680qkj.5;
-        Tue, 09 Mar 2021 21:32:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=g3nptvPrG/Rja0vDg1eqjKadpsNbfe6SjFJEHfl1sz0=;
-        b=csfo5ny9vn031XTr0QE9HHX4i5g2UGrJhAVDLHHWHJt+orut2ZnSAqyUb23H2B02Zr
-         PFz69KIbPrEAxSk08Fs9OzG94dM3NwiFP9EW1bYZgU/6QA1e4Uk/K0gklG4Z645sRhVZ
-         JXyKIJlvtCWavocboX2xG0S5mblAgQqs1TGCq8+6BGidJKhK/RIU0X3VbRFQj1FMrdwi
-         GNQ4NPTJd5qqp5N+VEEY6oroXNoMXo8oIjiZwuGfzz2olZd4+XtYY+EZsjgPQiDfQxZW
-         nZ1WRrQjYNtSUV5VH+9eVP00XYw2wOjCRKZbb3igTW/se5pCCLx0NN3VvJjZMrQtYVaZ
-         0q1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g3nptvPrG/Rja0vDg1eqjKadpsNbfe6SjFJEHfl1sz0=;
-        b=lmXi2Q/4+X2TGPEiw4F3xlJN4vC/opKM+iId/tcf0TpfKIwvnesnLW71FiXSE8+sWu
-         rXe5WekbSybHLViZu/u+KxZTOK8bUvcvVVI+ggNBw65IauhVRo/u7MPPdkSNYeZksEY2
-         CPT4a3WBVRpYw9akRSwHuX1pwhwfzga0kjw3OiRxxZIGQ7dGY6VLGNjzrr5OyB5f9oJ4
-         8WfCsGDnruPMvNhyoArybpR3byRl4XPtkuLfaCwk/HDtQe0TvwmCDn+VFVWlPgbsGQDN
-         mI/LN4U6YFxK0TpQ63SjB3IeE4hJwLAWgC637ynfxWPlBN5E4ATnVRQiHMNEc8j/W3Kc
-         pHGQ==
-X-Gm-Message-State: AOAM530nz/qI/as8QEFfhUrlmYO0DVGUuZFJ6CBzyRvzEroJW3Yt6DjL
-        ViJwMbAcvxgvOnn7d6n2CvsXphQw7S548w==
-X-Google-Smtp-Source: ABdhPJykyOB/de8QBgiE0zmwljU20PunVO/V01yp5Fp6+6Sc/jWqASB0xZdMiwrJa3GcfUl0LfUq9Q==
-X-Received: by 2002:ae9:eb57:: with SMTP id b84mr1109459qkg.271.1615354369428;
-        Tue, 09 Mar 2021 21:32:49 -0800 (PST)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:91f3:e7ef:7f61:a131])
-        by smtp.gmail.com with ESMTPSA id g21sm12118739qkk.72.2021.03.09.21.32.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Mar 2021 21:32:48 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next v4 11/11] selftests/bpf: add a test case for udp sockmap
-Date:   Tue,  9 Mar 2021 21:32:22 -0800
-Message-Id: <20210310053222.41371-12-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210310053222.41371-1-xiyou.wangcong@gmail.com>
-References: <20210310053222.41371-1-xiyou.wangcong@gmail.com>
+        id S232323AbhCJFdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 00:33:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60224 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232131AbhCJFdX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 00:33:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3964264FE7;
+        Wed, 10 Mar 2021 05:33:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615354399;
+        bh=tPOLvHWlyO1O6LPs+6mBheK5snXKGRuNdiwmdhTzTzo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=cNrMkyW8LEYy/LT/y+lO0d9wuK+DUDpdCeUI1tCNXigoY4K2/wgWR4oG/6iSwux+w
+         JV5jcTm+Mi46vw+uEpBPzjvkKFBpcAIrMHjs6tN2RMPnJRmv0E1jzYp6cc5RZEwu90
+         KlVyz5llhtzU8zaEGuPvm/L7AxSF6SLC0N7pJ7oji4hbCJ2I9HkxQ3aFTFMfqizZsF
+         Qrw2GxhyAODZDspmJXgSeldksiQkMH/3A9eq/15+vXA3wqNUExTWwdeqavnyGSpOJk
+         5RoQGghyPFrcWepNbPf6K9i2Bhlhga5TZrEFSFSByWgKirCwBfIcMjqvC5VJmdK2DF
+         FahXi6ThqVEkw==
+Date:   Tue, 9 Mar 2021 23:33:16 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH RESEND][next] net: mscc: ocelot: Fix fall-through warnings
+ for Clang
+Message-ID: <20210310053316.GA285225@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+by explicitly adding a break statement instead of just letting the code
+fall through to the next case.
 
-Add a test case to ensure redirection between two UDP sockets work.
-
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://github.com/KSPP/linux/issues/115
 ---
- .../selftests/bpf/prog_tests/sockmap_listen.c | 140 ++++++++++++++++++
- .../selftests/bpf/progs/test_sockmap_listen.c |  22 +++
- 2 files changed, 162 insertions(+)
+ Changes in RESEND:
+ - None. Resendig now that net-next is open.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index c26e6bf05e49..a549ebd3b5a6 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -1563,6 +1563,142 @@ static void test_redir(struct test_sockmap_listen *skel, struct bpf_map *map,
+ drivers/net/ethernet/mscc/ocelot_vcap.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index 37a232911395..7945393a0655 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -761,6 +761,7 @@ static void is1_entry_set(struct ocelot *ocelot, int ix,
+ 			vcap_key_bytes_set(vcap, &data, VCAP_IS1_HK_ETYPE,
+ 					   etype.value, etype.mask);
+ 		}
++		break;
  	}
- }
- 
-+static void udp_redir_to_connected(int family, int sotype, int sock_mapfd,
-+				   int verd_mapfd, enum redir_mode mode)
-+{
-+	const char *log_prefix = redir_mode_str(mode);
-+	struct sockaddr_storage addr;
-+	int c0, c1, p0, p1;
-+	unsigned int pass;
-+	socklen_t len;
-+	int err, n;
-+	u64 value;
-+	u32 key;
-+	char b;
-+
-+	zero_verdict_count(verd_mapfd);
-+
-+	p0 = socket_loopback(family, sotype | SOCK_NONBLOCK);
-+	if (p0 < 0)
-+		return;
-+	len = sizeof(addr);
-+	err = xgetsockname(p0, sockaddr(&addr), &len);
-+	if (err)
-+		goto close_peer0;
-+
-+	c0 = xsocket(family, sotype | SOCK_NONBLOCK, 0);
-+	if (c0 < 0)
-+		goto close_peer0;
-+	err = xconnect(c0, sockaddr(&addr), len);
-+	if (err)
-+		goto close_cli0;
-+	err = xgetsockname(c0, sockaddr(&addr), &len);
-+	if (err)
-+		goto close_cli0;
-+	err = xconnect(p0, sockaddr(&addr), len);
-+	if (err)
-+		goto close_cli0;
-+
-+	p1 = socket_loopback(family, sotype | SOCK_NONBLOCK);
-+	if (p1 < 0)
-+		goto close_cli0;
-+	err = xgetsockname(p1, sockaddr(&addr), &len);
-+	if (err)
-+		goto close_cli0;
-+
-+	c1 = xsocket(family, sotype | SOCK_NONBLOCK, 0);
-+	if (c1 < 0)
-+		goto close_peer1;
-+	err = xconnect(c1, sockaddr(&addr), len);
-+	if (err)
-+		goto close_cli1;
-+	err = xgetsockname(c1, sockaddr(&addr), &len);
-+	if (err)
-+		goto close_cli1;
-+	err = xconnect(p1, sockaddr(&addr), len);
-+	if (err)
-+		goto close_cli1;
-+
-+	key = 0;
-+	value = p0;
-+	err = xbpf_map_update_elem(sock_mapfd, &key, &value, BPF_NOEXIST);
-+	if (err)
-+		goto close_cli1;
-+
-+	key = 1;
-+	value = p1;
-+	err = xbpf_map_update_elem(sock_mapfd, &key, &value, BPF_NOEXIST);
-+	if (err)
-+		goto close_cli1;
-+
-+	n = write(c1, "a", 1);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: write", log_prefix);
-+	if (n == 0)
-+		FAIL("%s: incomplete write", log_prefix);
-+	if (n < 1)
-+		goto close_cli1;
-+
-+	key = SK_PASS;
-+	err = xbpf_map_lookup_elem(verd_mapfd, &key, &pass);
-+	if (err)
-+		goto close_cli1;
-+	if (pass != 1)
-+		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
-+
-+	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: read", log_prefix);
-+	if (n == 0)
-+		FAIL("%s: incomplete read", log_prefix);
-+
-+close_cli1:
-+	xclose(c1);
-+close_peer1:
-+	xclose(p1);
-+close_cli0:
-+	xclose(c0);
-+close_peer0:
-+	xclose(p0);
-+}
-+
-+static void udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+					   struct bpf_map *inner_map, int family,
-+					   int sotype)
-+{
-+	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-+	int verdict_map = bpf_map__fd(skel->maps.verdict_map);
-+	int sock_map = bpf_map__fd(inner_map);
-+	int err;
-+
-+	err = xbpf_prog_attach(verdict, sock_map, BPF_SK_SKB_VERDICT, 0);
-+	if (err)
-+		return;
-+
-+	skel->bss->test_ingress = false;
-+	udp_redir_to_connected(family, sotype, sock_map, verdict_map,
-+			       REDIR_EGRESS);
-+	skel->bss->test_ingress = true;
-+	udp_redir_to_connected(family, sotype, sock_map, verdict_map,
-+			       REDIR_INGRESS);
-+
-+	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
-+}
-+
-+static void test_udp_redir(struct test_sockmap_listen *skel, struct bpf_map *map,
-+			   int family)
-+{
-+	const char *family_name, *map_name;
-+	char s[MAX_TEST_NAME];
-+
-+	family_name = family_str(family);
-+	map_name = map_type_str(map);
-+	snprintf(s, sizeof(s), "%s %s %s", map_name, family_name, __func__);
-+	if (!test__start_subtest(s))
-+		return;
-+	udp_skb_redir_to_connected(skel, map, family, SOCK_DGRAM);
-+}
-+
- static void test_reuseport(struct test_sockmap_listen *skel,
- 			   struct bpf_map *map, int family, int sotype)
- {
-@@ -1626,10 +1762,14 @@ void test_sockmap_listen(void)
- 	skel->bss->test_sockmap = true;
- 	run_tests(skel, skel->maps.sock_map, AF_INET);
- 	run_tests(skel, skel->maps.sock_map, AF_INET6);
-+	test_udp_redir(skel, skel->maps.sock_map, AF_INET);
-+	test_udp_redir(skel, skel->maps.sock_map, AF_INET6);
- 
- 	skel->bss->test_sockmap = false;
- 	run_tests(skel, skel->maps.sock_hash, AF_INET);
- 	run_tests(skel, skel->maps.sock_hash, AF_INET6);
-+	test_udp_redir(skel, skel->maps.sock_hash, AF_INET);
-+	test_udp_redir(skel, skel->maps.sock_hash, AF_INET6);
- 
- 	test_sockmap_listen__destroy(skel);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_listen.c b/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
-index fa221141e9c1..a39eba9f5201 100644
---- a/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
-@@ -29,6 +29,7 @@ struct {
- } verdict_map SEC(".maps");
- 
- static volatile bool test_sockmap; /* toggled by user-space */
-+static volatile bool test_ingress; /* toggled by user-space */
- 
- SEC("sk_skb/stream_parser")
- int prog_stream_parser(struct __sk_buff *skb)
-@@ -55,6 +56,27 @@ int prog_stream_verdict(struct __sk_buff *skb)
- 	return verdict;
- }
- 
-+SEC("sk_skb/skb_verdict")
-+int prog_skb_verdict(struct __sk_buff *skb)
-+{
-+	unsigned int *count;
-+	__u32 zero = 0;
-+	int verdict;
-+
-+	if (test_sockmap)
-+		verdict = bpf_sk_redirect_map(skb, &sock_map, zero,
-+					      test_ingress ? BPF_F_INGRESS : 0);
-+	else
-+		verdict = bpf_sk_redirect_hash(skb, &sock_hash, &zero,
-+					       test_ingress ? BPF_F_INGRESS : 0);
-+
-+	count = bpf_map_lookup_elem(&verdict_map, &verdict);
-+	if (count)
-+		(*count)++;
-+
-+	return verdict;
-+}
-+
- SEC("sk_msg")
- int prog_msg_verdict(struct sk_msg_md *msg)
- {
+ 	default:
+ 		break;
 -- 
-2.25.1
+2.27.0
 
