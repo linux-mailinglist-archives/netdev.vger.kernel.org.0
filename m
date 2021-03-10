@@ -2,71 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB799334A52
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 23:04:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BDA5334A5C
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 23:04:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232767AbhCJWAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 17:00:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46202 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232845AbhCJWAI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 17:00:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 880AE64E27;
-        Wed, 10 Mar 2021 22:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615413608;
-        bh=N9nIpb+7khXuC8q/4agRC1J0DvRtQshCBUqPToq27v0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WGru9/D22ou9yzpolPUZJLgHlTM2VfqoKSvlW6lHmnUViKdv6TfBh6ED9U5+Igv1t
-         cYcVKox2UKg0e6PZz23WKuyDVURhlJ4szfBM18oCox/JqGAyAz878j5k4SrVzFlLSY
-         DnpCydAH3KY6ku/q2kjJPxJEaIiO31b9PT1aiOCCIrqx19tKPJ4JovBjFavh3KYJo6
-         rM1eIzT4+hwLtbtU+4yTacckO1FRBgMKyUP+vZKpJvD5Ws8BA5UT138sABLyJmI23Q
-         mLQbg5b8BHBH6wZeN73Et0LraUg2SeaRL0u0NB1zUJ2wXbcp7JV8H0zKKO5jXu+4yv
-         SAfukmk7iqkgg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7F635609D0;
-        Wed, 10 Mar 2021 22:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233383AbhCJWBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 17:01:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233470AbhCJWA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 17:00:59 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F435C061574;
+        Wed, 10 Mar 2021 14:00:59 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id m9so19530061ybk.8;
+        Wed, 10 Mar 2021 14:00:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/StaUZQ+CAb4VUH79k623QJzl3pky5FxKv1ddOiOQpE=;
+        b=TSBfW9KWLinAtMJySInVFkMQpYc7Zskg3TzMkYSt8AGVi29yDbMmsVyVcbSY4rlLmx
+         FUL10OBKURvcrIL9Kv0RR0RWpafEU5bJ0fxbeOnYDW2j0Ke9OjrnJHecfFE2b5VG/PrT
+         PIZcnw1I/ScsHcMhhBP/5DMJ3/gV37b/7a4XWhkxGO8VsuxIkdM5tkjRzXh0xa+XZ01W
+         qNeprI/D2ahfKPojm35F168QhMMBKq0HvU8ssNt82zBNG+40Z7sH80BRC+LBURm8sL1n
+         vyltoDG00hDtSyStfqriB8TzpoNo2aMv9NtBoZSdV4O0pWXKptD+A5pzjmIQjte+/aIh
+         pI0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/StaUZQ+CAb4VUH79k623QJzl3pky5FxKv1ddOiOQpE=;
+        b=fZKt55YdsVK5SnuUy6nXvnGHiF9TlzCJpgz5vkLthsB/ukTJpVuP3/TIEAKfoW5htC
+         265yA9t9Dzk/WL2a+GLZKG5SZQmRPzq8ZL1T7kYGoi9GIr1OlcDOzepweAQLxNskARIR
+         VB1yUDV8RwfO8nqAULyZ+jGpHd+RTsVCsixwM+SzAlMW7xDlRRHvA8Dlo5ciEF4VXEsQ
+         s2ATpmHJXcsaYdGqIth4XdlmZAP58cpWa4Fd5E2398QFgX7Vdid0RKTnR8LGIQRYRgCE
+         HEEesBk/P+QiixKV21tlnyFzJkE1sPuoSQbjN2qr3y6OlFPATbB/anSmswr/HxXw06tu
+         2bSA==
+X-Gm-Message-State: AOAM530jwJixIx5oGMXQatI5yP60IK7oPjo6HxoKB7YFuWnIIx9gnUW3
+        of905VdGZgyPNpY+mMdR9Ejr6ArTDdoChVKqweE=
+X-Google-Smtp-Source: ABdhPJzDtTZ1xjvGkQfnIr2ZgoWqj82t19wyzQzCXfJcXVcfy2FJR4ez+9oNxXQFxYAECCKuQqUbjWj4IyYAh/StABE=
+X-Received: by 2002:a25:37c4:: with SMTP id e187mr7442658yba.347.1615413658911;
+ Wed, 10 Mar 2021 14:00:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests/bpf: fix warning comparing pointer to 0
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161541360851.31690.1803072687405130309.git-patchwork-notify@kernel.org>
-Date:   Wed, 10 Mar 2021 22:00:08 +0000
-References: <1615357366-97612-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <1615357366-97612-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210310080929.641212-1-bjorn.topel@gmail.com> <20210310080929.641212-3-bjorn.topel@gmail.com>
+In-Reply-To: <20210310080929.641212-3-bjorn.topel@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 10 Mar 2021 14:00:48 -0800
+Message-ID: <CAEf4BzYPDF87At4=_gsndxof84OiqyJxgAHL7_jvpuntovUQ8w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] libbpf: xsk: move barriers from
+ libbpf_util.h to xsk.h
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com,
+        ciara.loftus@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Mar 10, 2021 at 12:09 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.c=
+om> wrote:
+>
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> The only user of libbpf_util.h is xsk.h. Move the barriers to xsk.h,
+> and remove libbpf_util.h. The barriers are used as an implementation
+> detail, and should not be considered part of the stable API.
+>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> ---
+>  tools/lib/bpf/Makefile      |  1 -
+>  tools/lib/bpf/libbpf_util.h | 82 -------------------------------------
+>  tools/lib/bpf/xsk.h         | 68 +++++++++++++++++++++++++++++-
+>  3 files changed, 67 insertions(+), 84 deletions(-)
+>  delete mode 100644 tools/lib/bpf/libbpf_util.h
+>
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
+[...]
 
-On Wed, 10 Mar 2021 14:22:46 +0800 you wrote:
-> Fix the following coccicheck warning:
-> 
-> ./tools/testing/selftests/bpf/progs/test_global_func10.c:17:12-13:
-> WARNING comparing pointer to 0.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> 
-> [...]
+> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+> index a9fdea87b5cd..1d846a419d21 100644
+> --- a/tools/lib/bpf/xsk.h
+> +++ b/tools/lib/bpf/xsk.h
+> @@ -4,6 +4,7 @@
+>   * AF_XDP user-space access library.
+>   *
+>   * Copyright(c) 2018 - 2019 Intel Corporation.
 
-Here is the summary with links:
-  - selftests/bpf: fix warning comparing pointer to 0
-    https://git.kernel.org/bpf/bpf-next/c/04ea63e34a2e
+Couldn't unsee ^this mismatch. Added space there.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Also, removing libbpf_util.h caused incremental build failure for the
+kernel due to cached dependency files. make clean solved the issue. So
+just FYI for everyone.
 
+Applied to bpf-next, thanks.
 
+> + * Copyright (c) 2019 Facebook
+>   *
+>   * Author(s): Magnus Karlsson <magnus.karlsson@intel.com>
+>   */
+> @@ -13,15 +14,80 @@
+>
+>  #include <stdio.h>
+>  #include <stdint.h>
+> +#include <stdbool.h>
+>  #include <linux/if_xdp.h>
+>
+>  #include "libbpf.h"
+> -#include "libbpf_util.h"
+>
+>  #ifdef __cplusplus
+>  extern "C" {
+>  #endif
+>
+
+[...]
