@@ -2,75 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF937334782
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83641334792
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 20:10:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233943AbhCJTEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 14:04:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44428 "EHLO mail.kernel.org"
+        id S233610AbhCJTJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 14:09:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233770AbhCJTED (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 14:04:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C423664FCD;
-        Wed, 10 Mar 2021 19:04:02 +0000 (UTC)
+        id S232880AbhCJTJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 14:09:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 609A764F93;
+        Wed, 10 Mar 2021 19:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615403043;
-        bh=AsCp7Q3ASY5fQ3uCys1QXS4icwVJ/QYriXknYc6Ii6E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t89z4xbLWjvMJnBWTqHlX+pJQt/RXHEdPi0OVvakwMfKTPENnAMkrrZEbnDbrMINP
-         mNs4hmzRvZo8YeJ54JDS50vkawFvCy7AnhuJSwCmGliPHVxfcEDmw8WC9NUrcV5lZN
-         kG151lNtqg+SrJrBZeGMaeEdVc8UjrEZtPVEITS9qb2mc7yKVAZLszqiHZvrwgUI7+
-         g213IH4N7sx528oLl1h68rm6WwJzmWUywPqDm8NWoH6smoSRLIYpevow3syJesAOYj
-         MbhYAUXqNul+MZmFjMIiPTsSvbos0Dz+09hC/bKKJJaekrbDttNgpedbeK+z2nKQIc
-         VorBx632U2Glg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 18/18] net/mlx5: DR, Fix potential shift wrapping of 32-bit value in STEv1 getter
-Date:   Wed, 10 Mar 2021 11:03:42 -0800
-Message-Id: <20210310190342.238957-19-saeed@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210310190342.238957-1-saeed@kernel.org>
-References: <20210310190342.238957-1-saeed@kernel.org>
+        s=k20201202; t=1615403348;
+        bh=/zpyjVEYsl5qnKnsooOKZ2w+XT7cw6yuEAItNuarinc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=hVtTJdMIu4SQ2XrTyYP3PKyc0zktSkjizJJujRecAM+7qc/DqUUZEsM8+aKrf+SwE
+         UZiSJb42rwlhmkT2RTD+C/slo+LmD9Nnae8qFtSYGdPBJWL/yBm4WB3D1YmGFJ0PLI
+         8d3s6/fZbRFHNmSwcZWgSin3kExP4X+LXNy9Y/KODfuyysAxvezcxwAqLEIJImjULA
+         QTLUFEY+znsoSooI6UYYbJoz806X8HVfCKYy43Ayi+a1nJ2KxRi8/fBXs9e+8yG9Dv
+         y8Mdq5DEUlQ6OZeHRlZGiUvfN2LHsURoIGpEAEixF0PvBZ5Cigd07bLnCEfyqE549N
+         qTAJr2GfTPOxg==
+Date:   Wed, 10 Mar 2021 13:09:06 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210310190906.GA2020121@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Ue=g+1pZCct8Kd0OnkPEP0qhggBF96s=noDoWHMJTL6FA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+On Sun, Mar 07, 2021 at 10:55:24AM -0800, Alexander Duyck wrote:
+> On Sun, Feb 28, 2021 at 11:55 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > @Alexander Duyck, please update me if I can add your ROB tag again
+> > to the series, because you liked v6 more.
+> >
+> > Thanks
+> >
+> > ---------------------------------------------------------------------------------
+> > Changelog
+> > v7:
+> >  * Rebase on top v5.12-rc1
+> >  * More english fixes
+> >  * Returned to static sysfs creation model as was implemented in v0/v1.
+> 
+> Yeah, so I am not a fan of the series. The problem is there is only
+> one driver that supports this, all VFs are going to expose this sysfs,
+> and I don't know how likely it is that any others are going to
+> implement this functionality. I feel like you threw out all the
+> progress from v2-v6.
 
-Fix 32-bit variable shift wrapping in dr_ste_v1_get_miss_addr.
+pci_enable_vfs_overlay() turned up in v4, so I think v0-v3 had static
+sysfs files regardless of whether the PF driver was bound.
 
-Fixes: a6098129c781 ("net/mlx5: DR, Add STEv1 setters and getters")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> I really feel like the big issue is that this model is broken as you
+> have the VFs exposing sysfs interfaces that make use of the PFs to
+> actually implement. Greg's complaint was the PF pushing sysfs onto the
+> VFs. My complaint is VFs sysfs files operating on the PF. The trick is
+> to find a way to address both issues.
+> 
+> Maybe the compromise is to reach down into the IOV code and have it
+> register the sysfs interface at device creation time in something like
+> pci_iov_sysfs_link if the PF has the functionality present to support
+> it.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
-index 4088d6e51508..9143ec326ebf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
-@@ -264,8 +264,8 @@ static void dr_ste_v1_set_miss_addr(u8 *hw_ste_p, u64 miss_addr)
- static u64 dr_ste_v1_get_miss_addr(u8 *hw_ste_p)
- {
- 	u64 index =
--		(MLX5_GET(ste_match_bwc_v1, hw_ste_p, miss_address_31_6) |
--		 MLX5_GET(ste_match_bwc_v1, hw_ste_p, miss_address_39_32) << 26);
-+		((u64)MLX5_GET(ste_match_bwc_v1, hw_ste_p, miss_address_31_6) |
-+		 ((u64)MLX5_GET(ste_match_bwc_v1, hw_ste_p, miss_address_39_32)) << 26);
- 
- 	return index << 6;
- }
--- 
-2.29.2
+IIUC there are two questions on the table:
 
+  1) Should the sysfs files be visible only when a PF driver that
+     supports MSI-X vector assignment is bound?
+
+     I think this is a cosmetic issue.  The presence of the file is
+     not a reliable signal to management software; it must always
+     tolerate files that don't exist (e.g., on old kernels) or files
+     that are visible but don't work (e.g., vectors may be exhausted).
+
+     If we start with the files always being visible, we should be
+     able to add smarts later to expose them only when the PF driver
+     is bound.
+
+     My concerns with pci_enable_vf_overlay() are that it uses a
+     little more sysfs internals than I'd like (although there are
+     many callers of sysfs_create_files()) and it uses
+     pci_get_domain_bus_and_slot(), which is generally a hack and
+     creates refcounting hassles.  Speaking of which, isn't v6 missing
+     a pci_dev_put() to match the pci_get_domain_bus_and_slot()?
+
+  2) Should a VF sysfs file use the PF to implement this?
+
+     Can you elaborate on your idea here?  I guess
+     pci_iov_sysfs_link() makes a "virtfnX" link from the PF to the
+     VF, and you're thinking we could also make a "virtfnX_msix_count"
+     in the PF directory?  That's a really interesting idea.
+
+> Also we might want to double check that the PF cannot be unbound while
+> the VF is present. I know for a while there it was possible to remove
+> the PF driver while the VF was present. The Mellanox drivers may not
+> allow it but it might not hurt to look at taking a reference against
+> the PF driver if you are allocating the VF MSI-X configuration sysfs
+> file.
+
+Unbinding the PF driver will either remove the *_msix_count files or
+make them stop working.  Is that a problem?  I'm not sure we should
+add a magic link that prevents driver unbinding.  Seems like it would
+be hard for users to figure out why the driver can't be removed.
+
+Bjorn
