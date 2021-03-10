@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3ED83349B5
-	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 22:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66F033349B7
+	for <lists+netdev@lfdr.de>; Wed, 10 Mar 2021 22:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232030AbhCJVOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 16:14:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S232086AbhCJVOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 16:14:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231935AbhCJVOZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 16:14:25 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D3BC061574;
-        Wed, 10 Mar 2021 13:14:25 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id x7-20020a17090a2b07b02900c0ea793940so7946927pjc.2;
-        Wed, 10 Mar 2021 13:14:25 -0800 (PST)
+        with ESMTP id S231964AbhCJVO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 16:14:27 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CF4C061574;
+        Wed, 10 Mar 2021 13:14:27 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id a188so13009293pfb.4;
+        Wed, 10 Mar 2021 13:14:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4FsyvPll9hketVRRLkgN32e9nK5xbA0yUQ+/xWtjN5A=;
-        b=sS6imgOph8gR00hEK59z03oQEPnKC5OOit9DuHc9a9zW2bnRVXnbj4Sw2fC032b0w1
-         Z40vFIAbd7Yg2JVUAlD0lsjjiKM5UyAS4EBh/3RAhonPZdbdzZcrXYiidJo2DkgJX2nL
-         iiny/jjkthqyHfBbwuEkA44ykbHmGoMM97WzSzveom1U4u9koOGpnryhADOT/I6WTQ3u
-         IH6mSU5vuAWSxYl6cCvbPWu2QDBsWEaMnM1KP2S0K5uk6gp0ZG/JBh1LXBnnibnqDEA2
-         6H7ZYyd/lbb+asSbJAIYAIMIALiWGYV8PnZXdwrX/iXVy5Khvx/t581cLa1Preoz7UaU
-         M6+Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yve5BB90c/as2wOa80BfMCFbUCTgC67sdO61zec9GZ0=;
+        b=OZFfh8Vt0Cu4mawZtmQpyBKOGCaQ3clX9KdNOdqxLlZlt3nh4BWL25L3UmLNExzU6y
+         HP5PnPu+01ahyzmFSZBlPUcZV4hkVhbANq5YHl0L+xf1kEY4DLs5qLrvegvH3MSV11qY
+         K1/NVsmNEO0H48Idn80xECABCEvIiuPrNfA8OBW94V4d9dDZH44elFDcYId8ac0lQ3Dg
+         wN/a2R+IvD3Jt+sqgDi4yFS/qqxRauhBmESg5Oowog0js8pFPoVV68Moj2fCHKLKmKzT
+         5pSvOBjCLlDzJZ/o6UrgnGMCxHwMxHHTMAdqf8ctCZ7Oos49zwWP0YSGQd2/4ZjKbA8R
+         kDEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4FsyvPll9hketVRRLkgN32e9nK5xbA0yUQ+/xWtjN5A=;
-        b=Q8hD+T2j5+sDwgZHGhtZilFVJe1oQVjPf5SDVw/6eafdq3MUgLxZibktyZOJt7QAxN
-         iy2MDlcLH2jpErQWygkGEzAlKfWnqRVuVPYdRCgTL60eFtDspvXXKY/YszvJ/hUXrmyv
-         xOIZusAAiMMvZK+5CUxCNvGFM35q9kOl7Qtq2rpCflfO7SgP8adcD78Wq5d3ZtuyJU1o
-         KrhzW/stVu96b6zvXXgJ8VXyfctRWrqHknK1hCsM28ckHrZfduiTbnmGxAPi40jKvDXx
-         0ANqvNLvJvYc0GV1QtWlJTZxrsY5fgdgmBvGU2XPqSg1tMiLh0lVuHsSOmIz8jdeH1Y4
-         rTQg==
-X-Gm-Message-State: AOAM5327lkZR4N+Tm9xyberjq/Qz2Bf+Y9FcTJg9IGxyoG4AQHlbJt5S
-        4Ozw4Y64gdJOrnRR23wN14s=
-X-Google-Smtp-Source: ABdhPJw4sfCLQailZ4/acL2LUKzPF+3TwjE25+ZJKEaff5COFkOBbZnQseKx/45xHgF0zVbL/vIMLA==
-X-Received: by 2002:a17:90b:3890:: with SMTP id mu16mr5447946pjb.9.1615410865096;
-        Wed, 10 Mar 2021 13:14:25 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yve5BB90c/as2wOa80BfMCFbUCTgC67sdO61zec9GZ0=;
+        b=cpPJYDfZJbSe9qLG5NLGeDEKGaAlXQEfb9Q+96FIFKQ6rPcauqBO1EYDXDqh5dDeKf
+         vkhpbs4j9cMwY6BIIxdv1tW0CGSfsc6ByhL+I6hWYze7tsgYrXxtmIxJ9yZMWNgkqpfT
+         EvPQw2cQ/D4l5c3Xk2XiEQfW0XI+sPRn/MYmYdfbLNhTUS4OEuWIvYBriHyD0mkQ9k8T
+         6fTH1Jkmxia8vT+OHu4gmEWua5QUHitkkXXmq2s5AMERgr6PT9dVWkMsOI4rY7rRFvr/
+         5r2AeqgtjXx2yfERtfF7g8rEv+172u9mhUMoF0EhFzJtNTlcnONTAzXLUm1eaz52jWS2
+         hUPw==
+X-Gm-Message-State: AOAM5303s+7bau++eT6DoRRaV/22twxPyLy2hW1CNPDqKy9AYHExlry3
+        zjma9p5O7BNFx8i2E9y2Gm8=
+X-Google-Smtp-Source: ABdhPJwlWieVx5tgc77i//vC5nut7Ty2JzURJWrddKHuT8PXEAoSEMjY4mbMYUmyAOKryS8JCD/2Vw==
+X-Received: by 2002:a05:6a00:78c:b029:1f5:d587:1701 with SMTP id g12-20020a056a00078cb02901f5d5871701mr4544454pfu.59.1615410866803;
+        Wed, 10 Mar 2021 13:14:26 -0800 (PST)
 Received: from ilya-fury.lan ([2602:61:738f:1000::b87])
-        by smtp.gmail.com with ESMTPSA id 35sm412090pgr.14.2021.03.10.13.14.23
+        by smtp.gmail.com with ESMTPSA id 35sm412090pgr.14.2021.03.10.13.14.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 13:14:24 -0800 (PST)
+        Wed, 10 Mar 2021 13:14:26 -0800 (PST)
 From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 To:     Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
@@ -62,51 +62,44 @@ To:     Sean Wang <sean.wang@mediatek.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH 1/3] net: dsa: mt7530: remove redundant clock enables
-Date:   Wed, 10 Mar 2021 13:14:18 -0800
-Message-Id: <20210310211420.649985-1-ilya.lipnitskiy@gmail.com>
+Subject: [PATCH 2/3] net: dsa: mt7530: use core_write wrapper
+Date:   Wed, 10 Mar 2021 13:14:19 -0800
+Message-Id: <20210310211420.649985-2-ilya.lipnitskiy@gmail.com>
 X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20210310211420.649985-1-ilya.lipnitskiy@gmail.com>
+References: <20210310211420.649985-1-ilya.lipnitskiy@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In RGMII mode, the REG_GSWCK_EN bit of CORE_TRGMII_GSW_CLK_CG gets
-set three times in a row. In TRGMII mode, two times. Simplify the code
-and only set it once for both modes.
+When disabling PLL, there is no need to call core_write_mmd_indirect
+directly, use the core_write wrapper instead like the rest of the code
+in the function does. This change helps with consistency and
+readability.
 
 Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 ---
- drivers/net/dsa/mt7530.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/dsa/mt7530.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index f06f5fa2f898..e785f80f966b 100644
+index e785f80f966b..b106ea816778 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -461,12 +461,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
- 			   RG_GSWPLL_POSDIV_200M(2) |
- 			   RG_GSWPLL_FBKDIV_200M(32));
+@@ -445,10 +445,7 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
+ 		 * provide our own core_write_mmd_indirect to complete this
+ 		 * function.
+ 		 */
+-		core_write_mmd_indirect(priv,
+-					CORE_GSWPLL_GRP1,
+-					MDIO_MMD_VEND2,
+-					0);
++		core_write(priv, CORE_GSWPLL_GRP1, 0);
  
--		/* Enable MT7530 core clock */
--		core_set(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
- 	}
- 
- 	/* Setup the MT7530 TRGMII Tx Clock */
--	core_set(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
- 	core_write(priv, CORE_PLL_GROUP5, RG_LCDDS_PCW_NCPO1(ncpo1));
- 	core_write(priv, CORE_PLL_GROUP6, RG_LCDDS_PCW_NCPO0(0));
- 	core_write(priv, CORE_PLL_GROUP10, RG_LCDDS_SSC_DELTA(ssc_delta));
-@@ -480,6 +477,8 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
- 	core_write(priv, CORE_PLL_GROUP7,
- 		   RG_LCDDS_PCW_NCPO_CHG | RG_LCCDS_C(3) |
- 		   RG_LCDDS_PWDB | RG_LCDDS_ISO_EN);
-+
-+	/* Enable MT7530 core and TRGMII Tx clocks */
- 	core_set(priv, CORE_TRGMII_GSW_CLK_CG,
- 		 REG_GSWCK_EN | REG_TRGMIICK_EN);
- 
+ 		/* Set core clock into 500Mhz */
+ 		core_write(priv, CORE_GSWPLL_GRP2,
 -- 
 2.30.1
 
