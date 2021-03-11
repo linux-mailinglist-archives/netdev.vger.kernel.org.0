@@ -2,110 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A34337FE0
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 22:49:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A7D2337FE5
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 22:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231157AbhCKVsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 16:48:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        id S231201AbhCKVt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 16:49:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbhCKVsj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 16:48:39 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD7CC061574
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 13:48:38 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id cl21-20020a17090af695b02900c61ac0f0e9so3825591pjb.1
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 13:48:38 -0800 (PST)
+        with ESMTP id S231241AbhCKVtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 16:49:36 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E05FC061574;
+        Thu, 11 Mar 2021 13:49:36 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id o11so23635372iob.1;
+        Thu, 11 Mar 2021 13:49:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3+CIhpA1m62Ph557v4cOEjCgNrX3ZeXRVo+vSbxcOIA=;
-        b=Q7srQEBm9GSYUqtFO7m7ol/3TfksJuPrWe7oMh0mbXNfnnk4UOXxeV8J9ObnJYzPqJ
-         DfnvmtUDXcPvWOXP6gV3TaPhLz67DzYrC4sUX4sqLsFiMi1u3ozYD1/gCkMFbygL02Oq
-         dMXHqhVWyhgFeomAyDdyR2Znrrcw6ODr5qd1B0CAvYtJ7WC2Xtm9yaoUlEzji8D5XE8n
-         LHgk5vRMYuZM3vw+w64eWJygFqKivU62TqPqhiWdu4AAdp1eyFKiWFuiIdEc83dmQC84
-         rQV+d3iFD22axo4dImUgI8HRrdkI7tPLZi/loAhFD3OJkVL6OgLNrnJfnSjRf1cHdTDN
-         BpRQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FaW1u4lii1eMOVOjbdqEE3cWWsAzYgJvCw4BFDocnyw=;
+        b=M8Nl8ipU93z4L71sKy8NCW61yH5h7J/Pcb+6hLBNRm17Ge5cXYZxVHorvGjuWOKm5R
+         G2X0vDdOCiX8qjnxIS47MAeC4eIK5J55G1iKtWTG60A1HPLizB948N2m+wxDX4zmeUGL
+         uY/ZVOZ2rN7Clt2z5svzw2hNw+8aA8ovmpqFL1JH41jE2r+kKa/ldeBeyr8JO/DtryPw
+         HxXEddW2fDPyDqSPzBdveRMASD4UOKzwPveXw4Yn8Vx5zLNTWyyQflfkuXH7Qx5UOm87
+         lT/L6JvLpGlsoRw3mYNwfwgZ4bWubyFpGQRysklRp5N/F8pFGyPglW/Ps3U/LbWd/CPH
+         yaxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3+CIhpA1m62Ph557v4cOEjCgNrX3ZeXRVo+vSbxcOIA=;
-        b=Ox1yxohlpQ0O8ni1RebifPyWJWO+pb6DfGl323hjKffAvmQmkfGBDZ2o0N0CHT55rR
-         Gm1ZYEl891VV5rq8NSeme2ZIBXRgoevEyMIWTeadHj0rODMa3+pg3aI+mV3+W0QRL2l2
-         WOsuxZwOno7IzV9v/kl4O2WLS/cvhY2p5xPODVqOxtcCuZEZnX1q/uhA0iyFjdbMaO0G
-         IK/UmbgFOtUNKZ/H10cPLTNBolz6vT9cYtSANlDSvhVFLjkwGS+YAl4RFl35HWOUJBSI
-         gvqLlfcGhBalKRQYfsLc2siO/bC+bQzzSKliGQh/S6Reb215NT4fmG73CaUjGVLbAfOC
-         nhOg==
-X-Gm-Message-State: AOAM533f0PYr6eTuZsLYaz5NcKhgmSdQmJlTSOxomqj1FtMwEVJFDSjx
-        bV8w5bjQ4Yw0V2nVFYXeXr0=
-X-Google-Smtp-Source: ABdhPJzicsjzk9PusYqdRCiLQo4oS1ycnfasKeWYpvcSy+d/euR6kddeOjcfvi4daAYuVOfxShiJjg==
-X-Received: by 2002:a17:90a:d907:: with SMTP id c7mr10407014pjv.45.1615499318273;
-        Thu, 11 Mar 2021 13:48:38 -0800 (PST)
-Received: from localhost.localdomain ([2001:470:e92d:10:c82a:4639:bab2:3dcf])
-        by smtp.gmail.com with ESMTPSA id n11sm3120022pgm.30.2021.03.11.13.48.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Mar 2021 13:48:37 -0800 (PST)
-From:   Tony Ambardar <tony.ambardar@gmail.com>
-X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>, netdev@vger.kernel.org,
-        Rui Salvaterra <rsalvaterra@gmail.com>
-Subject: [PATCH iproute2] lib/bpf: add missing limits.h includes
-Date:   Thu, 11 Mar 2021 13:47:54 -0800
-Message-Id: <20210311214754.3566712-1-Tony.Ambardar@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FaW1u4lii1eMOVOjbdqEE3cWWsAzYgJvCw4BFDocnyw=;
+        b=S89hFwa45VJjr5ZrzifU7UNMC0mfphUNw+5DX4G1jDRoP8DkyM+I6bwagF7EzxKHcS
+         Kge3VrWul/ArpO6W0ujC0Mk0EJvSpjzX6ZfOCeTJBmm0TBn2C8fYDlxci4gx5EBA3tbO
+         6edBpndhSZBfexaTxfSiqycPzIh7qRAq5P2pyqfB78tGOw1U2H836PyC5aeIA4ilhcTM
+         QjPziqM7QckiVfjm2fifkaYPgX5kEi6J5iJQ3D24atRVsRIfBsuhCtj6Mkh231r4iRv9
+         +6M9YM3DehoXxnZyI0OFgFQe/92HQsaJPAZALOmNFfyZ98P9JNkhVb+YXS7WOuhLFYpZ
+         +xSA==
+X-Gm-Message-State: AOAM532d/thGm3GtWELVr/zdtMejp/3OmBPKKqSj7NWIqNGC2EJsHwIn
+        8Yuyt0GkzGidlos4le37lLjv1ARefdltuzu5b5U=
+X-Google-Smtp-Source: ABdhPJzBl3mb1ZzvYcF8nKsXbAVio4pBAzUXtvXwYeDPVZhgxXMkL2s18H4mrAMqBEfYyrPuE6208EldCtjC1Le0b4s=
+X-Received: by 2002:a6b:f909:: with SMTP id j9mr7915991iog.138.1615499375774;
+ Thu, 11 Mar 2021 13:49:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
+ <20210311181729.GA2148230@bjorn-Precision-5520> <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
+ <20210311201929.GN2356281@nvidia.com>
+In-Reply-To: <20210311201929.GN2356281@nvidia.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 11 Mar 2021 13:49:24 -0800
+Message-ID: <CAKgT0Ud1tzpAWO4+5GxiUiHT2wEaLacjC0NEifZ2nfOPPLW0cg@mail.gmail.com>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Several functions in bpf_glue.c and bpf_libbpf.c rely on PATH_MAX, which is
-normally included from <limits.h> in other iproute2 source files.
+On Thu, Mar 11, 2021 at 12:19 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> On Thu, Mar 11, 2021 at 11:37:28AM -0800, Alexander Duyck wrote:
+>
+>
+> > Then the flow for this could be changed where we take the VF lock and
+> > mark it as "stale" to prevent any driver binding and then we can
+> > release the VF lock. Next we would perform the PF operation telling it
+> > to update the VF.  Then we spin on the VF waiting for the stale data
+> > to be updated and once that happens we can pop the indication that the
+> > device is "stale" freeing it for use.
+>
+> I always get leary when people propose to open code locking constructs
+> :\
 
-It fixes errors seen using gcc 10.2.0, binutils 2.35.1 and musl 1.1.24:
+I'm not suggesting we replace the lock. It is more about essentially
+revoking the VF. What we are doing is essentially rewriting the PCIe
+config of the VF so in my mind it makes sense to take sort of an RCU
+approach where the old one is readable, but not something a new driver
+can be bound to.
 
-bpf_glue.c: In function 'get_libbpf_version':
-bpf_glue.c:46:11: error: 'PATH_MAX' undeclared (first use in this function);
-did you mean 'AF_MAX'?
-   46 |  char buf[PATH_MAX], *s;
-      |           ^~~~~~~~
-      |           AF_MAX
+> There is already an existing lock to prevent probe() it is the
+> device_lock() mutex on the VF. With no driver bound there is not much
+> issue to hold it over the HW activity.
 
-Reported-by: Rui Salvaterra <rsalvaterra@gmail.com>
-Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
----
- lib/bpf_glue.c   | 2 ++
- lib/bpf_libbpf.c | 1 +
- 2 files changed, 3 insertions(+)
+Yes. But sitting on those locks also has side effects such as
+preventing us from taking any other actions such as disabling SR-IOV.
+One concern I have is that if somebody else tries to implement this in
+the future and they don't have a synchronous setup, or worse yet they
+do but it takes a long time to process a request because they have a
+slow controller it would be preferable to just have us post the
+message to the PF and then have the thread spin and wait on the VF to
+be updated rather than block on the PF while sitting on two locks.
 
-diff --git a/lib/bpf_glue.c b/lib/bpf_glue.c
-index d00a0dc1..eaa9504f 100644
---- a/lib/bpf_glue.c
-+++ b/lib/bpf_glue.c
-@@ -4,6 +4,8 @@
-  * Authors:	Hangbin Liu <haliu@redhat.com>
-  *
-  */
-+#include <limits.h>
-+
- #include "bpf_util.h"
- #ifdef HAVE_LIBBPF
- #include <bpf/bpf.h>
-diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
-index d05737a4..864f8c35 100644
---- a/lib/bpf_libbpf.c
-+++ b/lib/bpf_libbpf.c
-@@ -13,6 +13,7 @@
- #include <stdint.h>
- #include <errno.h>
- #include <fcntl.h>
-+#include <limits.h>
- 
- #include <libelf.h>
- #include <gelf.h>
--- 
-2.25.1
+> This lock is normally held around the entire probe() and remove()
+> function which has huge amounts of HW activity already.
 
+Yes, but usually that activity is time bound. You are usually reading
+values and processing them in a timely fashion. In the case of probe
+we even have cases where we have to defer because we don't want to
+hold these locks for too long.
+
+> We don't need to invent new locks and new complexity for something
+> that is trivially solved already.
+
+I am not wanting a new lock. What I am wanting is a way to mark the VF
+as being stale/offline while we are performing the update. With that
+we would be able to apply similar logic to any changes in the future.
