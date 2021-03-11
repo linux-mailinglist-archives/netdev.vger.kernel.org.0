@@ -2,183 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F3FB337577
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 15:23:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AD15337599
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 15:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233487AbhCKOXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 09:23:23 -0500
-Received: from mail-mw2nam12on2054.outbound.protection.outlook.com ([40.107.244.54]:44825
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233493AbhCKOXS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 09:23:18 -0500
+        id S233881AbhCKOY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 09:24:59 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:59010 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234131AbhCKOYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 09:24:47 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12BEIuXr138017;
+        Thu, 11 Mar 2021 14:23:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=wBvGh0zhwelsUreG1OZibGpyGAkgIn+cl8MC0A+dMKk=;
+ b=beMZnKO9PhzRl//r18ZEDQYigOv5Y4Lse9Pb5YQs26IL6+PpwzgA2o8TWDhU5MLVNxth
+ UwFmN24pDugal5Jy8ZNDOE9HVDKK9H1wKkpiqQE4rhDYXAcAd6lr2pSjvrfLEDqPiDRn
+ 0YgYdkQWNUvc6mVTd9m3d25HRIaieKb+q0WCZKkj+CrnT0F9VxU9LsI9AGw3AJ3Xj5Uy
+ /wCg9atY3rbRt3NQchoK6Ny+R7A28dU0w1akc2fgYn2P3PmisE4dLCSOjqkiS4P64gqg
+ TDG2D0+EkzteNWiT9FHXOjOokCO38SzImDXtBCe/FkLSDL+5AleH8Mhkx3L+LIZfJxTG ow== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 3741pmpqvk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Mar 2021 14:23:59 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12BEJWgs086771;
+        Thu, 11 Mar 2021 14:23:58 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
+        by userp3030.oracle.com with ESMTP id 374kp11aea-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Mar 2021 14:23:58 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mvcFLWYpgddbkhiHIEnuqwl0vHs7hdl5py8HEThNUUFjp2rp99oP3Z+rU6cldnCquCoSFhw0ofQ1jIYzthJebpAbo8FJFjq64kbAPuuJb0+uImQ5QI/ewxRbKQVDBoBFzKefYYtuIqp0/j8nsFgHwtX4QhyJr+27IxrA5/JvToriCYZiWftAkIolamD9jb7svOnLiV94t/QHVBmbsf1vZ9rE+EItdvmcQNECaVEPDeIGn9Zq8FTpPa7wPyJBsHYA4wQ+1nUjquCOTo6HSDZ6E1pUyFGCJPGxN0q2DPP/hm4z7mN84JE4qS+QCSYu06qVwoeUWB4ZRmk3ZXagXrguQg==
+ b=geuVFNYw7u7Ud2VRZ4OxRefIy6acUo0rx2+ohlZee9zZ4XmP9zunsVGVyyPjEQb18p2nXBqmrxLW2e3Di7L2MveGvrVlbpDoJ3j0Ecd4QZrNjJRH+55pX7ToocN/8stAeAbIYDMMtwnNyZ4cGrqzX8ho80edM4fv0xVNpVAieiHmlpUz9ALUKn/WWzt3AgLQ+fAVofW6/f3Mg+q5JszAWA3QmFLe8EfUKjgtl2y5RWa7f7bGigUf2JjC7DR7TiF/phUB7guoiyfeRTxJQU74ds/hZTcgzNXL9SBYXzPDmAf8WBjk+6wF9NwhM7QqF2sB3lz1+LpVGPtWLBEd90ixJA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5vi8hvq8ekD5eb2BgjzGdni2M1u7QXvcUm/eeQekWag=;
- b=e6Tv4kfP2m3FgsL3DafdmVzbFMb4VzpP0ZZOTlaUSvpzzw09Y98PenV/UibYzdUY73RjpFzh3iQks0JEB8tK8jjxM99qz4ID3eQv3FIGiEkRvOp/fk47KflBYpNrLztC4wKbCH7ll/xqRtgwQFwGbadXH7NgQUX8ugXTf78qAQM8TXCIUsQdLELbF54SeqDgyuPavECzOFw8ayhTsIJU1sVT7ExK5K4JJ86qjlevP7t1TspNoqMKolJRfnGpNSRuLrckVyEo9NSP9a5JMC/Cz2IVXLl34w2/7B5hkUQMauwAaTHrPBxbYxlrZvVdvR1c6fnnWKZ3zjyngceyvC7AIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=wBvGh0zhwelsUreG1OZibGpyGAkgIn+cl8MC0A+dMKk=;
+ b=CACh981tOZgG6cxr8lPQUN9eSHVCo3BRJwmU+v8CKDj1ykHJ+pntcvkT7tFVi09pfSeGErtoeEQqaopTOmyS69/DeABqtQb2eDs5p/QG0g4yvz++yL/9YO705tdwBvhRrCQjhMvPZs34lU2fnq1oNV6pxx5R5WBwd2U0mjCTaaU1JVFqcp8aNFGOmkGDQAoOoG1Sb+tLebGei45kRIQThmZUSBUyLAPG46QmFgtH0MaoSQguhOox2dXPkLtwWXGoxiLYpu9zJRlnHatAPZY+EaI0ZW57x2CFUPBhtXC45evssy2Lz2PCpy99QFuugD2XQwWx9nNONfch/ie1qCcPQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5vi8hvq8ekD5eb2BgjzGdni2M1u7QXvcUm/eeQekWag=;
- b=qegyuAbnkEJNHOxk9c2wEBJnLutxw9QhXdI1/jSM6PD0zGkQfWZ9iH7bsukig6bMr5yyYV5a/DyWwposNNSvaHHCdrEEhM/xaSrimuUsBu7lXu8LMRdr6uSip+Am1zTZx8+Reus9FjlnC/G3HV7cKlxrCLOCItCB2cqNzV5DgEcp5/SmNbe00UoPqc7t9Rl+/y1vk020kWYUtow89YTW1gPbxdIUnSg6UJu1hg5cAZenUgAqGp18TiDIMGSKdlVnNIwyMNmoLl8UNOmKvOaoEWNhxoPXph6KCROWd6oEHSVfPPg9+wtM5aoNcnTNpGJPHWgS8hGDF0nx3WJOb52v3Q==
-Received: from BN6PR1201CA0005.namprd12.prod.outlook.com
- (2603:10b6:405:4c::15) by DM5PR12MB1883.namprd12.prod.outlook.com
- (2603:10b6:3:113::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19; Thu, 11 Mar
- 2021 14:23:17 +0000
-Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:4c:cafe::35) by BN6PR1201CA0005.outlook.office365.com
- (2603:10b6:405:4c::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Thu, 11 Mar 2021 14:23:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 14:23:16 +0000
-Received: from [172.27.12.248] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar
- 2021 14:23:12 +0000
-Subject: Re: [RFC net-next v2 3/3] devlink: add more failure modes
-To:     <f242ed68-d31b-527d-562f-c5a35123861a@intel.com>,
-        <netdev@vger.kernel.org>
-CC:     <jiri@resnulli.us>, <saeedm@nvidia.com>,
-        <andrew.gospodarek@broadcom.com>, <jacob.e.keller@intel.com>,
-        <guglielmo.morandin@broadcom.com>, <eugenem@fb.com>,
-        <eranbe@mellanox.com>, Jakub Kicinski <kuba@kernel.org>,
-        Aya Levin <ayal@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
-References: <20210311032613.1533100-1-kuba@kernel.org>
- <20210311032613.1533100-3-kuba@kernel.org>
-From:   Eran Ben Elisha <eranbe@nvidia.com>
-Message-ID: <8d61628c-9ca7-13ac-2dcd-97ecc9378a9e@nvidia.com>
-Date:   Thu, 11 Mar 2021 16:23:09 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
-MIME-Version: 1.0
-In-Reply-To: <20210311032613.1533100-3-kuba@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+ bh=wBvGh0zhwelsUreG1OZibGpyGAkgIn+cl8MC0A+dMKk=;
+ b=oFd4UOa+M3bcLA8CFmNO48ZPWXsbG4GZ/MwcnNMX0w4vf7hXVoWU4u6+Jm3n6W/6RUecg0MvYXwH3rwOwyUKKDJyWZx5hYjuiOmNDbWdxuXPduhPHUY6zdaju4RJtQ6IQH3gX++/CSa0Cciosq1/nCfWFAzz/DFT/SUxRJIKskw=
+Received: from SJ0PR10MB4688.namprd10.prod.outlook.com (2603:10b6:a03:2db::24)
+ by SJ0PR10MB4608.namprd10.prod.outlook.com (2603:10b6:a03:2d4::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.28; Thu, 11 Mar
+ 2021 14:23:54 +0000
+Received: from SJ0PR10MB4688.namprd10.prod.outlook.com
+ ([fe80::6da8:6d28:b83:702b]) by SJ0PR10MB4688.namprd10.prod.outlook.com
+ ([fe80::6da8:6d28:b83:702b%4]) with mapi id 15.20.3912.030; Thu, 11 Mar 2021
+ 14:23:53 +0000
+From:   Chuck Lever III <chuck.lever@oracle.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 3/5] SUNRPC: Refresh rq_pages using a bulk page allocator
+Thread-Topic: [PATCH 3/5] SUNRPC: Refresh rq_pages using a bulk page allocator
+Thread-Index: AQHXFmygcjHo9VnTG0yxtwtZKdm64Kp+13mA
+Date:   Thu, 11 Mar 2021 14:23:53 +0000
+Message-ID: <8F34578A-A5AC-4D6A-BF32-1578B14FDE45@oracle.com>
+References: <20210311114935.11379-1-mgorman@techsingularity.net>
+ <20210311114935.11379-4-mgorman@techsingularity.net>
+In-Reply-To: <20210311114935.11379-4-mgorman@techsingularity.net>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b3a698f7-99c6-4de6-89f3-08d8e4993673
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1883:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1883D3C5A4DE4609DCC445C1B7909@DM5PR12MB1883.namprd12.prod.outlook.com>
-X-MS-Exchange-Transport-Forked: True
-X-MS-Oob-TLC-OOBClassifiers: OLM:529;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c90+GBOJo1q1vsI3Oxc0NsjYLrJ0SQk1hfUphBQw2ISwGFGXpH7NCNNrSRPeEAic0ZAGiVeid5Rn74FFI53Taz786ASASt6DVC6wTdrWLqxzNIF+HZXSOdPsgpZfBjSkmOfXoomS9A/OuIBOSJxRd0NUKBs686f6jOOZfV16ZzM8jCAsoe4y41tROKChmhLBHmDUlHCF59NW7ZsI9RRmDBS5U69oFhHc50xg+ChPzgsXZJqk3ORoIEW4D4g03qC7gHb4/nPyj6Rmsekb9raobaKYMvC7oZ2VZyjiQUeyjyTyly9LMY2XVhFoXjW1/YElriUal378KTeS7cuNHQaf29oTR0ThJzqezx62K+DwVjPLy4z0ar4wH0qS+SEwjXInJZiQm5O1ckWi/x0T/4+RENbHxTFFQVP1oL45CyR1MnV+/gof21Kl23D+bdR7TNrrnAiflz3vKp/joowJMlJI9aaGRvPtZljyQtbuv2VI5UP5YPYg2RH/oVnNF/zWMgI/UQFGR1BS8B3XqEkCK4PLssrlv+GU/AmXYPmiOQ8ANj8/aWlKuUg55bWRQR2jQqWcabyJHuEkxUr7j2whTajot9KXyxjAKsGqsWw5bs9kpAxhtPC9c7GtY3VCaNJ70x6p9OCOErW3Vo7HcQsxJwficCFl2AaVSmjr/QQ1ybhuoKcTesfO9elqDCzCJqzf9B1Wchy3SvKb/etrSFacezdk4b0FDT0Af6TDzNpIv/wNSnc=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(396003)(39860400002)(346002)(36840700001)(46966006)(26005)(70586007)(356005)(16576012)(36906005)(70206006)(316002)(110136005)(54906003)(2616005)(34070700002)(36860700001)(107886003)(36756003)(4326008)(426003)(31686004)(8676002)(336012)(5660300002)(82740400003)(478600001)(2906002)(53546011)(8936002)(186003)(47076005)(16526019)(6666004)(83380400001)(31696002)(86362001)(7636003)(82310400003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 14:23:16.5966
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: techsingularity.net; dkim=none (message not signed)
+ header.d=none;techsingularity.net; dmarc=none action=none
+ header.from=oracle.com;
+x-originating-ip: [68.61.232.219]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0a284d03-8179-4dae-af5b-08d8e4994ca0
+x-ms-traffictypediagnostic: SJ0PR10MB4608:
+x-microsoft-antispam-prvs: <SJ0PR10MB4608638CD4BF20128C4D675C93909@SJ0PR10MB4608.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1169;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1uKpr40sefA57bV6WXnQfxCl0pwOFny6NGa+lhOASKhWbphczKcBaohOy4hfqUrEC3Scwvl6WI1ihv//M6ZWQpWqG3AXiV4wlFNJeo8SuroZnL0yMeXZvyog55xTKO0SMLoWGtzdUC3R7Wyns/2DqJTt5UVrrhdpzni0RDp8Zd0Pn+ccBtLc9tcVyNcfeHAmtluUTlo5PNNM5mks/l6ueHpiJM283M4YSU2UbudtkFEgdmwYBEawsaoVAm65z1s99iM0skQc4Gd+syavGaWuobIQlWU9H8FAJZGZG+u/UD52Kvaz8PtxcovLL8Pq5QWzzsTXV2DConasPbzCNYDRqRi3d69QUsPK5soPhmz7ekFuxalYNGtxA1u+RFC/TjNkUJduzfSdp2uFNaj0IZZgWSetB9C+baLTDshbADeg4qcaIhrk18s4dOSa0dmJUJij1w3nww7s78uXGZSlbT7Kw+seDLEMccWK3jPOcNAoa2J7j0Jq8l++jMshP2O8UNxE3Ksh54y/NYAGjDYQy+IAzheZgPiVcb7UeBI1Jzb+Nk0jIaTiEF+KBUercGHyNCo1HX+7mpQvk3EGcWxLxChUvw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4688.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39860400002)(136003)(396003)(366004)(376002)(6512007)(2616005)(6486002)(6916009)(4326008)(66476007)(76116006)(2906002)(83380400001)(66556008)(478600001)(71200400001)(36756003)(54906003)(86362001)(8936002)(6506007)(53546011)(33656002)(66946007)(5660300002)(91956017)(8676002)(66446008)(316002)(64756008)(26005)(186003)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?MtZydzWb5GU7UjD409k+Tg/f9CCvkLGfHdfUXqWpQJ6NtoViEZWWFwQzu4vZ?=
+ =?us-ascii?Q?/Fi72sJLnoW/N5+IzVqKQsIQ9WCjsV8jwZaJk69JPVLuLxKlgG0yZSzY1LTF?=
+ =?us-ascii?Q?fXBsnAlqKLvbv6prhlYXdRpBvRfu/YA5toltV3hb2aAtAoOZll2NijZMxfjd?=
+ =?us-ascii?Q?VyP9SN1PECbLf0Dy0QsquG14i4x4BR0XL0XngN2ArhGVlhl136e9/7nPEx6k?=
+ =?us-ascii?Q?ZqhS0YMsc33ilYVvxGIV++kMLLosQyi5QgFDo4hTC16wM/LkZ2IP1fkLwu3t?=
+ =?us-ascii?Q?auWWwg/gJVlsMkjw4XxGLqQxRjROYHZEiu5gw7QWgCD4JBz/zS9Puas2edvf?=
+ =?us-ascii?Q?th2284w4VRR7Z6tRe+zSuWYwGHe4xVR3/kxvX9tIZg65kIyc5NAbaaAD+WND?=
+ =?us-ascii?Q?eeBHiv+Le1u5rKdTmoBplhnj5V5hA9rLTcn2KBSCtM/3SN4g0Kq469D5V9Mk?=
+ =?us-ascii?Q?HYH/qjDYvmYSwDU4SEfJlQSvF/r1Mhj7LAHo6ZVK27WTqWW1f3W5cvpZaepj?=
+ =?us-ascii?Q?YfyccO2WKvXfGRGU/oCbRor5rg3AOpRUMt7zoTK98vJ2ec8lkcfmH1Vp65G7?=
+ =?us-ascii?Q?39zqsm/nh6kJLRs7RLOfgxL3PQugEYA/vVB8uoULP7LlWAX4PyLhPNwbtFp7?=
+ =?us-ascii?Q?Co6V26Pur6LYpnoGLPM7+83cba7y3xplYc5n0cVjOLe/9Nt0t23ukeWgwvmF?=
+ =?us-ascii?Q?LyJoo/M6x9tYrdtx9n2Vm+6AgpBPbF4Pa3YIqBCKZsadcQ/I4AGUSR6o6CIX?=
+ =?us-ascii?Q?VGekkLEUtNMngzNGJMLnDUXyDo2Nsf2e9Aw8wbmFWd10OQgqDkhH4Uvyj97M?=
+ =?us-ascii?Q?lnWmTbvujWwJNI3FT71bSVAptfZq71yVdVUCoJXxBZC1tVdBzU3X3vGnOQKc?=
+ =?us-ascii?Q?6HdHRoeqf3YTtRa4ejT5v0mn3Uxa+ZeAnvbgvw3OvM4Hb4KV/TeQXHCOeWmm?=
+ =?us-ascii?Q?gVSznmFXPasIWoLHrlpAfDuxglIA/ZIlDKNGJjIWQwmTkVmj/d3RxVJ56nfT?=
+ =?us-ascii?Q?2lApcbsuawnkCSOq131cg226MgKN000lactNhx74D+SVNFM1cndlumb9kipX?=
+ =?us-ascii?Q?GoHiDw7TMJSAYJfKEe/Li2HU1YbCo6vLQtQJp2aU3d0mplF0KQwBFkicWXzK?=
+ =?us-ascii?Q?zW7B+ftJPqkJDifNTQtQdXxAin4ZO5GHfsjUFzKzTYSnXaUHumO6U7vxYJT8?=
+ =?us-ascii?Q?sMZByE9tfdEidcFML8fBmJ4rUV/kRFZh7fkXH//rtmq0OPxBwRO55kpCl8Gz?=
+ =?us-ascii?Q?rAIRrRorV1mtNVnZCPns0eIjVAmGYD7YWesDAQPPk0OH/ICViqJFkX5HAiL+?=
+ =?us-ascii?Q?puqBXB3n80m/ec/+tEei7Spe?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <054189F63B037747BBEF5A1408F536B3@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4688.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a284d03-8179-4dae-af5b-08d8e4994ca0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2021 14:23:53.8508
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3a698f7-99c6-4de6-89f3-08d8e4993673
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1883
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ecgx/pBtkRNvtkCd2cIUjtv1YfbE2V3UaE8lS4kkutRRjFUshZGKydtbFau8JRApr7GXBa4FQlOhxU8CRHPOJA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4608
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9920 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 adultscore=0
+ phishscore=0 malwarescore=0 mlxscore=0 bulkscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103110078
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9920 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 mlxlogscore=999
+ adultscore=0 impostorscore=0 suspectscore=0 clxscore=1011 malwarescore=0
+ priorityscore=1501 phishscore=0 spamscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103110078
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/11/2021 5:26 AM, Jakub Kicinski wrote:
->>> Pending vendors adding the right reporters. <<
+> On Mar 11, 2021, at 6:49 AM, Mel Gorman <mgorman@techsingularity.net> wro=
+te:
+>=20
+> From: Chuck Lever <chuck.lever@oracle.com>
+>=20
+> Reduce the rate at which nfsd threads hammer on the page allocator.
+> This improve throughput scalability by enabling the threads to run
+> more independently of each other.
 
-Would you like Nvidia to reply with the remedy per reporter or to 
-actually prepare the patch?
+Mel, if you should repost this series: ^improve^improves
 
-> 
-> Extend the applicability of devlink health reporters
-> beyond what can be locally remedied. Add failure modes
-> which require re-flashing the NVM image or HW changes.
-> 
-> The expectation is that driver will call
-> devlink_health_reporter_state_update() to put hardware
-> health reporters into bad state.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 > ---
->   include/uapi/linux/devlink.h | 7 +++++++
->   net/core/devlink.c           | 3 +--
->   2 files changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-> index 8cd1508b525b..f623bbc63489 100644
-> --- a/include/uapi/linux/devlink.h
-> +++ b/include/uapi/linux/devlink.h
-> @@ -617,10 +617,17 @@ enum devlink_port_fn_opstate {
->    * @DL_HEALTH_STATE_ERROR: error state, running health reporter's recovery
->    *			may fix the issue, otherwise user needs to try
->    *			power cycling or other forms of reset
-> + * @DL_HEALTH_STATE_BAD_IMAGE: device's non-volatile memory needs
-> + *			to be re-written, usually due to block corruption
-> + * @DL_HEALTH_STATE_BAD_HW: hardware errors detected, device, host
-> + *			or the connection between the two may be at fault
->    */
->   enum devlink_health_state {
->   	DL_HEALTH_STATE_HEALTHY,
->   	DL_HEALTH_STATE_ERROR,
+> net/sunrpc/svc_xprt.c | 43 +++++++++++++++++++++++++++++++------------
+> 1 file changed, 31 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
+> index cfa7e4776d0e..38a8d6283801 100644
+> --- a/net/sunrpc/svc_xprt.c
+> +++ b/net/sunrpc/svc_xprt.c
+> @@ -642,11 +642,12 @@ static void svc_check_conn_limits(struct svc_serv *=
+serv)
+> static int svc_alloc_arg(struct svc_rqst *rqstp)
+> {
+> 	struct svc_serv *serv =3D rqstp->rq_server;
+> +	unsigned long needed;
+> 	struct xdr_buf *arg;
+> +	struct page *page;
+> 	int pages;
+> 	int i;
+>=20
+> -	/* now allocate needed pages.  If we get a failure, sleep briefly */
+> 	pages =3D (serv->sv_max_mesg + 2 * PAGE_SIZE) >> PAGE_SHIFT;
+> 	if (pages > RPCSVC_MAXPAGES) {
+> 		pr_warn_once("svc: warning: pages=3D%u > RPCSVC_MAXPAGES=3D%lu\n",
+> @@ -654,19 +655,28 @@ static int svc_alloc_arg(struct svc_rqst *rqstp)
+> 		/* use as many pages as possible */
+> 		pages =3D RPCSVC_MAXPAGES;
+> 	}
+> -	for (i =3D 0; i < pages ; i++)
+> -		while (rqstp->rq_pages[i] =3D=3D NULL) {
+> -			struct page *p =3D alloc_page(GFP_KERNEL);
+> -			if (!p) {
+> -				set_current_state(TASK_INTERRUPTIBLE);
+> -				if (signalled() || kthread_should_stop()) {
+> -					set_current_state(TASK_RUNNING);
+> -					return -EINTR;
+> -				}
+> -				schedule_timeout(msecs_to_jiffies(500));
 > +
-> +	DL_HEALTH_STATE_BAD_IMAGE,
-> +	DL_HEALTH_STATE_BAD_HW,
->   };
->   
->   /**
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 09d77d43ff63..4a9fa6288a4a 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -6527,8 +6527,7 @@ void
->   devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
->   				     enum devlink_health_state state)
->   {
-> -	if (WARN_ON(state != DL_HEALTH_STATE_HEALTHY &&
-> -		    state != DL_HEALTH_STATE_ERROR))
-> +	if (WARN_ON(state > DL_HEALTH_STATE_BAD_HW))
->   		return;
->   
->   	if (reporter->health_state == state)
-> 
+> +	for (needed =3D 0, i =3D 0; i < pages ; i++)
+> +		if (!rqstp->rq_pages[i])
+> +			needed++;
+> +	if (needed) {
+> +		LIST_HEAD(list);
+> +
+> +retry:
+> +		alloc_pages_bulk(GFP_KERNEL, needed, &list);
+> +		for (i =3D 0; i < pages; i++) {
+> +			if (!rqstp->rq_pages[i]) {
+> +				page =3D list_first_entry_or_null(&list,
+> +								struct page,
+> +								lru);
+> +				if (unlikely(!page))
+> +					goto empty_list;
+> +				list_del(&page->lru);
+> +				rqstp->rq_pages[i] =3D page;
+> +				needed--;
+> 			}
+> -			rqstp->rq_pages[i] =3D p;
+> 		}
+> +	}
+> 	rqstp->rq_page_end =3D &rqstp->rq_pages[pages];
+> 	rqstp->rq_pages[pages] =3D NULL; /* this might be seen in nfsd_splice_ac=
+tor() */
+>=20
+> @@ -681,6 +691,15 @@ static int svc_alloc_arg(struct svc_rqst *rqstp)
+> 	arg->len =3D (pages-1)*PAGE_SIZE;
+> 	arg->tail[0].iov_len =3D 0;
+> 	return 0;
+> +
+> +empty_list:
+> +	set_current_state(TASK_INTERRUPTIBLE);
+> +	if (signalled() || kthread_should_stop()) {
+> +		set_current_state(TASK_RUNNING);
+> +		return -EINTR;
+> +	}
+> +	schedule_timeout(msecs_to_jiffies(500));
+> +	goto retry;
+> }
+>=20
+> static bool
+> --=20
+> 2.26.2
+>=20
 
-devlink_health_reporter_recover() requires an update as well.
-something like:
+--
+Chuck Lever
 
-@@ -6346,8 +6346,15 @@ devlink_health_reporter_recover(struct 
-devlink_health_reporter *reporter,
-  {
-         int err;
 
--   if (reporter->health_state == DL_HEALTH_STATE_HEALTHY)
-+ switch (reporter->health_state) {
-+ case DL_HEALTH_STATE_HEALTHY:
-                 return 0;
-+ case DL_HEALTH_STATE_ERROR:
-+         break;
-+ case DL_HEALTH_STATE_BAD_IMAGE:
-+ case DL_HEALTH_STATE_BAD_HW:
-+         return -EOPNOTSUPP;
-+ }
-
-         if (!reporter->ops->recover)
-                 return -EOPNOTSUPP;
 
