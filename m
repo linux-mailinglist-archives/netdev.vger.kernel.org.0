@@ -2,185 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA134336D4C
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:49:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C714A336D89
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 09:14:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbhCKHsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 02:48:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbhCKHsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 02:48:37 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4F5C061574
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 23:48:36 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id 124-20020a1c00820000b029010b871409cfso12563631wma.4
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 23:48:36 -0800 (PST)
+        id S230224AbhCKIN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 03:13:27 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:21176 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229830AbhCKINI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 03:13:08 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12B89Zth011252;
+        Thu, 11 Mar 2021 00:12:56 -0800
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2171.outbound.protection.outlook.com [104.47.56.171])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3747yv75pq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Mar 2021 00:12:56 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cYa1Fb4GGGqGcKmsamQmisU+LcwL6kNYjU6jpH2KriUNbrDy73e1xMn/VqK92L/llQW9NLRjuEWGsaIHzjBgxPoDfi6vclcXlLi1nCwAHb1XBSEerJWpkGwHTjW3gf23Od93JsHY338FLBmRDqMB/88QHu7dodmUSAN1Jf6t3MUGNbCRbo5hmDnc6+zcxQeYBz5wVUWQiOGkTxgFjJlyE05ISnkY8y/a7YKVen3KICNzNdFPzldAuBfgacqk27cZVy62xUsownftSgiTK5JOos8RQ4tfxPqJaYUXQk0oSG7SlxOrRNExoJLiTyDZ7gmfa/3DRWil/gxoNWcPBRy0lg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pbY+BSNXsmA77Jy3nYZ4WvLMJOTZIWiQar6U+p3QdPA=;
+ b=iwmUiS9GxETm1aeAStzAl5DUN9N7CQOX245L+K4MOuxgMueT/7jeVYeUFec/WkiQ4QasCONFFysYdxm66gv2SnDX/kTuCcBnPrRNI0PoOxFT17VUoK1PGXRBxYo2wD5dP7J/R1G6nnII1ntgckY27t72lbOfem0+3aLY/z+H3F0oRp8HX+IvMQgdEKCaIHJr1z/yU5amn3c9uAaum/VmVR/wUFSK77HH7sJ1IRvkj0aSA5dKzzm88iiM+8gLSJ7RTLjEM99iaULWRd+A8/VP4/9ts17Qkz4Em+6ibR1Pj7qzmBc7YtuS2fDUAyjTu/a2uGjK0dlIM4O60mdK/IvLOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Nwm91IEvGZkfgj6uykvylon1QZQCNxzxbiY5K8O34LY=;
-        b=yU9DAiFa2TkSrssKRlV/oe64MfnSCDt5bGeZlI8QlvPII/nnSYNbYL/JNCNA5WRmKn
-         ecVvupcdqkCE8qzHmUByckuXumDKloLXGmmDOIBnUUwCbXbMfocuXtE+nWYC0gHSHgTY
-         W1r1C/q6yVAzXdd2S8Nk3txh49K2iuKBvhWvgVrb/USyEaENxkoocL7SryVQRMVn0veG
-         vKxuR8SN2c0jyLzfCxaz88qlim8/ud3Z0Iup5MRgtx3+gf8y8N0cQYsnC0/xGY/A7Kgt
-         aDza9pS3raUCmPBoLDuMtzzLIxw2vK0DjFPS7LSOrNH7QSKSbM5lwjTZmK5At4yh4kLp
-         wB8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Nwm91IEvGZkfgj6uykvylon1QZQCNxzxbiY5K8O34LY=;
-        b=TG51NmtawAqaYwYCtImSoQa5a7rzI9BHs5MCdDIPuN1GBvWlQXMVPgrOq6csgw/Rer
-         xF55szKGQoG91KGfwcufmgvZpggkbGKsy4ro3NvzxfWRfa4HlXyD9xF4gmJCWOZAONTV
-         xuNR0R7Ml4Hcqe3jCMrvh9JLQKhsozv6Y0DxUVw9eUXxhtsutFmaqYs9D/F2KMR4lxuH
-         kB448Gew8WWGd0imtF9kpbd/Er2KDOMkPX2OP2mmjFvnFanXsxuF0ioQcI96UMEu0m+h
-         8LfWMTjaK079juPJI5aLxY3cPfRHg68X/v7x4EGtXAM6pDD8TJCPUQBpkCqHtai3bwv0
-         6Q8w==
-X-Gm-Message-State: AOAM532iiKNrvvsjGNu7cvbFoh4QdR5TKuy6OflUxpQB4rU6QrWK5ALf
-        4lwjAPXI5c2IypAbiWTjOeof9A==
-X-Google-Smtp-Source: ABdhPJxUBpOXo/ZviotdcV6STOilHvFMyIYK/s4g02gx+WDKCAUhjO5UxM5VQAdN2tbLIjiy4xFxVQ==
-X-Received: by 2002:a7b:c1c9:: with SMTP id a9mr6690425wmj.145.1615448914939;
-        Wed, 10 Mar 2021 23:48:34 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id b17sm2347781wrt.17.2021.03.10.23.48.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 23:48:34 -0800 (PST)
-Date:   Thu, 11 Mar 2021 08:48:33 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     f242ed68-d31b-527d-562f-c5a35123861a@intel.com
-Cc:     netdev@vger.kernel.org, saeedm@nvidia.com,
-        andrew.gospodarek@broadcom.com, jacob.e.keller@intel.com,
-        guglielmo.morandin@broadcom.com, eugenem@fb.com,
-        eranbe@mellanox.com, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [RFC net-next v2 2/3] devlink: health: add remediation type
-Message-ID: <20210311074833.GO4652@nanopsycho.orion>
-References: <20210311032613.1533100-1-kuba@kernel.org>
- <20210311032613.1533100-2-kuba@kernel.org>
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pbY+BSNXsmA77Jy3nYZ4WvLMJOTZIWiQar6U+p3QdPA=;
+ b=V8M2dWBUHFkCnIsGUXL+tv8wwX4kBUUwhfquZcllJ7SLvkQmMhKG/kUyuUaooqIIzUMQ9YTdzt4V+t1qHjpp6IbOH6v/aGSfQ13z6XLLQ6VNP1lY4q8lCTEjbmKFLkUkpBd6llIDBJavLn6bKMbx9Z9o8lUndfez1VhC0IH2d8o=
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
+ by MW2PR18MB2123.namprd18.prod.outlook.com (2603:10b6:907:8::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.30; Thu, 11 Mar
+ 2021 08:12:53 +0000
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a]) by CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a%3]) with mapi id 15.20.3912.031; Thu, 11 Mar 2021
+ 08:12:53 +0000
+From:   Stefan Chulski <stefanc@marvell.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mw@semihalf.com" <mw@semihalf.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "rabeeh@solid-run.com" <rabeeh@solid-run.com>
+Subject: RE: [EXT] Re: [net-next] net: mvpp2: Add reserved port private flag
+ configuration
+Thread-Topic: [EXT] Re: [net-next] net: mvpp2: Add reserved port private flag
+ configuration
+Thread-Index: AQHXFZGs7YE0C+mbQkm8VJDJz1s2Cap9lBUAgADY6YA=
+Date:   Thu, 11 Mar 2021 08:12:53 +0000
+Message-ID: <CO6PR18MB387348835224340046050A19B0909@CO6PR18MB3873.namprd18.prod.outlook.com>
+References: <1615369329-9389-1-git-send-email-stefanc@marvell.com>
+ <20210310190018.GH1463@shell.armlinux.org.uk>
+In-Reply-To: <20210310190018.GH1463@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=marvell.com;
+x-originating-ip: [77.124.210.111]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 32db565f-ebea-48e3-e2c3-08d8e46578a0
+x-ms-traffictypediagnostic: MW2PR18MB2123:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW2PR18MB21234F647D5AFF508FF885D5B0909@MW2PR18MB2123.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5fQZZ4t1wqpB/9tWp03StxSnY8fSPJBGEDtXd424V8XVHnFVIWvWI70rfPEYJ2BB24w5UgDL1zmjHYhbkk5F9D0Dj+CTktv5LVcmQKZd+stYlvXqliWfWsDOoH7OwjMbY5zUVLwP7v5bigC3NND6/ZFkJJf82c/c0f3QxmapXyE/b1pOeMFtOXqXChROmUwWx3jMtDf9+6wFqT7v5raonZXBXHOFi93P2xtcQWX6gvwOfGuyLKWePReAExREjZH11pCrbvCtK72jW0RsWEVOFgDcBz6TjlWxSihgRww2714+gdWMAZs0Ue6vF9H0Ur+W9GZBOUANPUa1zl7TvZ6XHt6tE73q7YSXS06oveewTSWB46TQOvanTk5+kZhs767yzzKw3TriyySGlvU2SYvHYqRjVhY/ChZN87vHha3UJuPOnWmb2yVidnLX/vRn2zd4VgvJ+Sbuozl8p7mpgFYL3lZTqE8X6MZvY69l+Ye2CX+HMzZgdobnAfsgVfoJ2c7euMwLSXDzw4J8wAjOpKz3AQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(396003)(376002)(136003)(366004)(8676002)(86362001)(54906003)(76116006)(4326008)(6506007)(8936002)(26005)(316002)(5660300002)(55016002)(52536014)(186003)(9686003)(66556008)(83380400001)(64756008)(66946007)(6916009)(2906002)(7696005)(7416002)(71200400001)(478600001)(66446008)(33656002)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?2+YxNYEUDfMwXK54K0MHHAX0WVv+yYuHiUwUplIceCFUQCyDdTsFXEoRuoiy?=
+ =?us-ascii?Q?egHttPq7BhpLlaD2JpCmL8dta/xgEKJ4ieRzZHPnuPRbuBM8TtniJ0WqmEFz?=
+ =?us-ascii?Q?Njm2xB9owMa+pivE7F4kYdxdCj25vtFsnTXdfBDU+KtLLpR//ykzK/Lo22JU?=
+ =?us-ascii?Q?drlJQwubl6ecXhGx6cCQ6V3H9RX/RrdaztU9yd+ox3RWOHZ/Uic9lKKINXL1?=
+ =?us-ascii?Q?ST3FUOXlM5HlxP2DhS7nKePXVuNGNW/nUmg6pgA+4NNgWVzO3Dwx87RssK7m?=
+ =?us-ascii?Q?5SXIvynRQXc3ak92OCnmc1S/a/0HWNCovKgH4wsNflWUENoJRiVmrwTaQsix?=
+ =?us-ascii?Q?Gz9rJz/cZCHp9WcnIPuHUa5AWyYlOJkxQMOfjbC3xtXzyG71hGYY0LtUVYwb?=
+ =?us-ascii?Q?CNHyd8wS3xrvvDsg0NqBoTILVAjRZnxTpybF4eK/wwdPHIBPNVxI3vV65aFd?=
+ =?us-ascii?Q?db1qadzJ1Dt4pTkipCOSMlW7WcYXHb+7fBvph7+xOXQous3inlIPm3IOO37a?=
+ =?us-ascii?Q?ahtQ/lbGWtX1AXCVhJ2/qY3uwAi91xbnxS/XF6I4L/EtV6eyDzD+fiQnEKe+?=
+ =?us-ascii?Q?k5xQODqGG3FOMe4rEOIGkO5b6m2lpfkC1o6c+st4xx6XLtg697aFTG1evDyn?=
+ =?us-ascii?Q?6QMQZbAhEJg9Mzs2CpQb6pezaxk2XBHQmAXykRren53RRYiUKvfHpCoT4IpY?=
+ =?us-ascii?Q?DIR/IjJNft0PCeM6d+WhMX/udvf+81wzCB7qnxGBsRYS2yTBTLhueNlX2NU6?=
+ =?us-ascii?Q?5J6rzXiZbHjW0BXlhTH40YxgBAcU8MACDCoMRJX2isqdcqMVcw6wBOomiZoO?=
+ =?us-ascii?Q?TTYIW0xGabeVs+CX4aBM9kWIuKLm2ENxp2L8QymIScawz8mtcHWSzoqedPq4?=
+ =?us-ascii?Q?zbc57Sb1EX9hhcC6cWDVCNYrCTrjM7NBGnSvuP1O1ZG8ONqP5zwGCe2JpwS7?=
+ =?us-ascii?Q?Em6pPW+qdGQi2gJKAcAgzzdqq2EmQLcphA1KrdbNCd6VMTExdySupvae8jsD?=
+ =?us-ascii?Q?Nc0U2me0IhuHu4vmaUyuDdz5VcW7eKgRGY0eHkb3yfsl28SNyLRvBFMGdKXe?=
+ =?us-ascii?Q?PEp/dKKd+zAPkXADHs9sYbVsi5mAO+FUGLYruHwQvgY/UKMgCmIqk+2sRs1+?=
+ =?us-ascii?Q?/g8iU97q2yFo3wVidYhJkjUn4ETEkjjZlhIYoHkhqjNdFt0E+39HctLf6gGe?=
+ =?us-ascii?Q?rRmv8BbzU+zJhdj/EP3/E4VcFHJeapkdQJX97yR6AYfFBemfMypkzC8CDhD6?=
+ =?us-ascii?Q?Y+cEbE6Dl1HrU9K7G3Ugy12xPZo42UvS/0B5w9pvOn1bwlfOv7czJy39C4IA?=
+ =?us-ascii?Q?vhoYHYDq6tF286coPw+zncFa?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210311032613.1533100-2-kuba@kernel.org>
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32db565f-ebea-48e3-e2c3-08d8e46578a0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2021 08:12:53.8519
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Vhi9iwt3ZLkado59xSq6Gk9DNxK6xaPi59JAEFTEJctBG4K5yZGtFM6/TiNL18tiFLM2Y+agm2sI18ApznS9tQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR18MB2123
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-11_02:2021-03-10,2021-03-11 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 11, 2021 at 04:26:12AM CET, kuba@kernel.org wrote:
->Currently devlink health does not give user any clear information
->of what kind of remediation ->recover callback will perform. This
->makes it difficult to understand the impact of enabling auto-
->-remediation, and the severity of the error itself.
->
->To allow users to make more informed decision add a new remediation
->type attribute.
->
->Note that we only allow one remediation type per reporter, this
->is intentional. devlink health is not built for mixing issues
->of different severity into one reporter since it only maintains
->one dump, of the first event and a single error counter.
->Nudging vendors towards categorizing issues beyond coarse
->groups is an added bonus.
->
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->---
-> include/net/devlink.h        |  2 ++
-> include/uapi/linux/devlink.h | 25 +++++++++++++++++++++++++
-> net/core/devlink.c           |  7 ++++++-
-> 3 files changed, 33 insertions(+), 1 deletion(-)
->
->diff --git a/include/net/devlink.h b/include/net/devlink.h
->index b424328af658..72b37769761f 100644
->--- a/include/net/devlink.h
->+++ b/include/net/devlink.h
->@@ -659,6 +659,7 @@ struct devlink_health_reporter;
-> /**
->  * struct devlink_health_reporter_ops - Reporter operations
->  * @name: reporter name
->+ * remedy: severity of the remediation required
->  * @recover: callback to recover from reported error
->  *           if priv_ctx is NULL, run a full recover
->  * @dump: callback to dump an object
->@@ -669,6 +670,7 @@ struct devlink_health_reporter;
-> 
-> struct devlink_health_reporter_ops {
-> 	char *name;
->+	enum devlink_health_remedy remedy;
-> 	int (*recover)(struct devlink_health_reporter *reporter,
-> 		       void *priv_ctx, struct netlink_ext_ack *extack);
-> 	int (*dump)(struct devlink_health_reporter *reporter,
->diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
->index 41a6ea3b2256..8cd1508b525b 100644
->--- a/include/uapi/linux/devlink.h
->+++ b/include/uapi/linux/devlink.h
->@@ -534,6 +534,9 @@ enum devlink_attr {
-> 	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
-> 
-> 	DEVLINK_ATTR_PORT_PCI_SF_NUMBER,	/* u32 */
->+
->+	DEVLINK_ATTR_HEALTH_REPORTER_REMEDY,	/* u32 */
->+
-> 	/* add new attributes above here, update the policy in devlink.c */
-> 
-> 	__DEVLINK_ATTR_MAX,
->@@ -620,4 +623,26 @@ enum devlink_health_state {
-> 	DL_HEALTH_STATE_ERROR,
-> };
-> 
->+/**
->+ * enum devlink_health_reporter_remedy - severity of remediation procedure
->+ * @DL_HEALTH_REMEDY_NONE: transient error, no remediation required
->+ * @DL_HEALTH_REMEDY_KICK: device stalled, processing will be re-triggered
->+ * @DL_HEALTH_REMEDY_COMP_RESET: associated device component (e.g. device queue)
->+ *			will be reset
->+ * @DL_HEALTH_REMEDY_RESET: full device reset, will result in temporary
->+ *			unavailability of the device, device configuration
->+ *			should not be lost
->+ * @DL_HEALTH_REMEDY_REINIT: device will be reinitialized and configuration lost
->+ *
->+ * Used in %DEVLINK_ATTR_HEALTH_REPORTER_REMEDY, categorizes the health reporter
->+ * by the severity of the remediation.
->+ */
->+enum devlink_health_remedy {
->+	DL_HEALTH_REMEDY_NONE = 1,
->+	DL_HEALTH_REMEDY_KICK,
->+	DL_HEALTH_REMEDY_COMP_RESET,
->+	DL_HEALTH_REMEDY_RESET,
->+	DL_HEALTH_REMEDY_REINIT,
+> > From: Stefan Chulski <stefanc@marvell.com>
+> >
+> > According to Armada SoC architecture and design, all the PPv2 ports
+> > which are populated on the same communication processor silicon die
+> > (CP11x) share the same Classifier and Parser engines.
+> >
+> > Armada is an embedded platform and therefore there is a need to
+> > reserve some of the PPv2 ports for different use cases.
+> >
+> > For example, a port can be reserved for a CM3 CPU running FreeRTOS for
+> > management purposes or by user-space data plane application.
+> >
+> > During port reservation all common configurations are preserved and
+> > only RXQ, TXQ, and interrupt vectors are disabled.
+>=20
+> If a port is reserved for use by the CM3, what are the implications for L=
+inux
+> running on the AP? Should Linux have knowledge of the port?
+> What configurations of the port should be permitted?
 
-It is nice if enum name and values are consistent:
-enum something {
-	SOMETHING_*
+In reserved mode all port TXQ's closed(Linux won't transmit any packet from=
+ this ports) and
+RX interrupts disabled(Linux won't receive any packet). We still can change=
+ port MAC address, do port UP/DOWN from Linux running on the AP.
+Only permitted configurations Is MTU change.
+Driver .ndo_change_mtu callback has logic that switch between percpu_pools =
+and shared pools buffer mode, we should avoid this since buffer management =
+not done by Kernel.
 
+> I think describing how a port reserved for use by the CM3 CPU should appe=
+ar
+> to Linux is particularly important for the commit commentry to cover.
 
->+};
->+
-> #endif /* _UAPI_LINUX_DEVLINK_H_ */
->diff --git a/net/core/devlink.c b/net/core/devlink.c
->index 8e4e4bd7bb36..09d77d43ff63 100644
->--- a/net/core/devlink.c
->+++ b/net/core/devlink.c
->@@ -6095,7 +6095,8 @@ __devlink_health_reporter_create(struct devlink *devlink,
-> {
-> 	struct devlink_health_reporter *reporter;
-> 
->-	if (WARN_ON(graceful_period && !ops->recover))
->+	if (WARN_ON(graceful_period && !ops->recover) ||
->+	    WARN_ON(ops->recover && !ops->remedy))
-> 		return ERR_PTR(-EINVAL);
-> 
-> 	reporter = kzalloc(sizeof(*reporter), GFP_KERNEL);
->@@ -6265,6 +6266,10 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
-> 	if (nla_put_string(msg, DEVLINK_ATTR_HEALTH_REPORTER_NAME,
-> 			   reporter->ops->name))
-> 		goto reporter_nest_cancel;
->+	if (reporter->ops->remedy &&
->+	    nla_put_u32(msg, DEVLINK_ATTR_HEALTH_REPORTER_REMEDY,
->+			reporter->ops->remedy))
->+		goto reporter_nest_cancel;
-> 	if (nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_STATE,
-> 		       reporter->health_state))
-> 		goto reporter_nest_cancel;
->-- 
->2.29.2
->
+Ok, I would add more info to commit message.
+
+Thanks,
+Stefan.
+
