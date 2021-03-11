@@ -2,161 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 349E1337168
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 12:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD26337193
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 12:43:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232717AbhCKLbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 06:31:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49350 "EHLO
+        id S232582AbhCKLm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 06:42:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232704AbhCKLbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 06:31:34 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FF8C061760
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 03:31:33 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id ox4so29887926ejb.11
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 03:31:33 -0800 (PST)
+        with ESMTP id S232733AbhCKLmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 06:42:20 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76846C061760
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 03:42:20 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id h98so1473521wrh.11
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 03:42:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=shReJa4AgIfLUWHCUqyNFfkucc6ll1o83cioDojSEyA=;
-        b=SJ91y3ZGCR0RFq8qvq85hLkFV4sjQqqRxEU5t5tG1dZnpQb+nlWYnss+cjWkDE3ZR8
-         z419v0HZmfWW5SIxUCi4m7Z4+vlvpCXUWARQQDMLQpsiwO0f8uJGg8x+g3Mur++BIADA
-         qPAaL5ZJ/T0Txr9PUJzEpZNL6j4hNQddtuYGS+XgCLmYNOTvNdERkYyrb6dm3WgxFN8x
-         FQu0mEN5D3WJSzM/qiaI6fMdY7IxLr6dvT5I0KJiYQiC2nEB/2uH34svn2U6KZ4YyHOD
-         jouGcrvY4muUxX/M7AYMtnDaMMoQyjt6Au/zACBH+zEeRkhq+4yTqZGCtMD1bdKEEL2V
-         K8VA==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=lTuAlmKpzGDKQ5EMwcLuGVUtBW+trFeNE8cI/WVzAcA=;
+        b=TIjaaIlN8eH10HrJ5INRoJwQg/W4Y9Rd5FFY1XPldeMbfP7y6jPeagvhpdVErliaXj
+         ODt1L7GhjOyvQYIpqTFJ06OFhvstQy9+Gx2jgaw5M/TSkbWxZTb71JVrhMj0qGSJELUh
+         JDciJ0iInSQHz5rVIsAIbmQ7dsnWOBD4l48sc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=shReJa4AgIfLUWHCUqyNFfkucc6ll1o83cioDojSEyA=;
-        b=jWm+ndbuEZbTFp3oqll/idRWcKCAybQul4vlkL+tkKT9FbskH1S7pgKUn+JZozSI1n
-         DYdElcdA54bfrsnKDnetaWeERpq3wdu6FLrleeI984tFGYfQBXx2NmLroVO32DafCYCW
-         jAKaqzb0hjuMsnC/+NdEBQqRekHpDFh8ORyVqfFKXLHVCc9mOxRpu9PINWdCen7Ohy8b
-         c7efByljqn2RYUDb9M7kMWVY6j3vOxBpc0y7D+cPffyHufsNBZLD6oCt8xmk2bJpY3Y9
-         PCZ7FLguOgqDWAiT0FZbhU0/0+WoLvUKyPfxqjG87epEK+Bs4Rp748ZsQFazTg8RyP3C
-         HUCQ==
-X-Gm-Message-State: AOAM531sGy71CgtYN7R2Jr5xPvuK2YxbBnmi8BOFYVWSDztep2NrHvlG
-        /DN7HYrfbaJNjcLsts7gHlDwKN0F3C9+3OYF
-X-Google-Smtp-Source: ABdhPJy9h2zVYQA3nuvS/DToLhBm7WYxTe7009GkSPpP34Jvb1tvjRR7hFIGd+yDMPlrhXb20m106g==
-X-Received: by 2002:a17:906:cb11:: with SMTP id lk17mr2511315ejb.405.1615462292335;
-        Thu, 11 Mar 2021 03:31:32 -0800 (PST)
-Received: from [192.168.1.8] ([194.35.119.86])
-        by smtp.gmail.com with ESMTPSA id i6sm1168932ejz.95.2021.03.11.03.31.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Mar 2021 03:31:31 -0800 (PST)
-Subject: Re: [PATCH bpf-next 07/10] bpftool: add `gen bpfo` command to perform
- BPF static linking
-To:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     kernel-team@fb.com
-References: <20210310040431.916483-1-andrii@kernel.org>
- <20210310040431.916483-8-andrii@kernel.org>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <9f44eedf-79a3-0025-0f31-ee70f2f7d98b@isovalent.com>
-Date:   Thu, 11 Mar 2021 11:31:31 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=lTuAlmKpzGDKQ5EMwcLuGVUtBW+trFeNE8cI/WVzAcA=;
+        b=tm0uMaTnkjYk0wrctY6EKmF3rRt+zxbwuUIc9iXiwhWvXnwJ+7lSkQYItaOWMhz8x6
+         7kwjhTERstdtus70Q3YvzrtHq5qFukLvhHw+/iAQCIMdX+Mc90uPbyk/Xxv+CnP960pc
+         SkdrQ9vAA/7njcZ34Nc0Tu/WQGso/8d5OjC6XYf0bP6f8EJ939Y2AK2p9pyvnr2mrlWN
+         3dfZ4nGctc/2FzUqKNDRBZwGO/poAoD9a0VS9t+ICrniyg9oovOr5km1q2T4ba1SKXCO
+         b9gT7scQp67RyqlytE83MOWViHPPWpB57ijOy05+PunxwuiG+K9OfEpKJ0Sd5U/LhuPN
+         oJUg==
+X-Gm-Message-State: AOAM53012cemzIyqYV5qleAXkXsIbbbUCjn2iZYNqtxKajIZsUe5HOgG
+        U/lY2CXdTkVjyhX7IZRRYH0ksw==
+X-Google-Smtp-Source: ABdhPJwJMWt5V23DvcfEfkkSZTv2GTu9OzXvPD6JXbWgh3Btxltrh6szbPUtatAKIXZuEm3Ut1akoA==
+X-Received: by 2002:a5d:55c4:: with SMTP id i4mr8346085wrw.84.1615462939042;
+        Thu, 11 Mar 2021 03:42:19 -0800 (PST)
+Received: from cloudflare.com (79.184.34.53.ipv4.supernova.orange.pl. [79.184.34.53])
+        by smtp.gmail.com with ESMTPSA id j20sm2987755wmp.30.2021.03.11.03.42.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Mar 2021 03:42:17 -0800 (PST)
+References: <20210310053222.41371-1-xiyou.wangcong@gmail.com>
+ <20210310053222.41371-4-xiyou.wangcong@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [Patch bpf-next v4 03/11] skmsg: introduce skb_send_sock() for
+ sock_map
+In-reply-to: <20210310053222.41371-4-xiyou.wangcong@gmail.com>
+Date:   Thu, 11 Mar 2021 12:42:16 +0100
+Message-ID: <87zgz93oiv.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <20210310040431.916483-8-andrii@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-03-09 20:04 UTC-0800 ~ Andrii Nakryiko <andrii@kernel.org>
-> Add `bpftool gen bpfo <output-file> <input_file>...` command to statically
-> link multiple BPF object files into a single output BPF object file.
-> 
-> Similarly to existing '*.o' convention, bpftool is establishing a '*.bpfo'
-> convention for statically-linked BPF object files. Both .o and .bpfo suffixes
-> will be stripped out during BPF skeleton generation to infer BPF object name.
-> 
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+On Wed, Mar 10, 2021 at 06:32 AM CET, Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+>
+> We only have skb_send_sock_locked() which requires callers
+> to use lock_sock(). Introduce a variant skb_send_sock()
+> which locks on its own, callers do not need to lock it
+> any more. This will save us from adding a ->sendmsg_locked
+> for each protocol.
+>
+> To reuse the code, pass function pointers to __skb_send_sock()
+> and build skb_send_sock() and skb_send_sock_locked() on top.
+>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 > ---
->  tools/bpf/bpftool/gen.c | 46 ++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 45 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> index 4033c46d83e7..8b1ed6c0a62f 100644
-> --- a/tools/bpf/bpftool/gen.c
-> +++ b/tools/bpf/bpftool/gen.c
-> +static int do_bpfo(int argc, char **argv)
-
-> +{
-> +	struct bpf_linker *linker;
-> +	const char *output_file, *file;
-> +	int err;
-> +
-> +	if (!REQ_ARGS(2)) {
-> +		usage();
-> +		return -1;
-> +	}
-> +
-> +	output_file = GET_ARG();
-> +
-> +	linker = bpf_linker__new(output_file, NULL);
-> +	if (!linker) {
-> +		p_err("failed to create BPF linker instance");
-> +		return -1;
-> +	}
-> +
-> +	while (argc) {
-> +		file = GET_ARG();
-> +
-> +		err = bpf_linker__add_file(linker, file);
-> +		if (err) {
-> +			p_err("failed to link '%s': %d", file, err);
-
-I think you mentioned before that your preference was for having just
-the error code instead of using strerror(), but I think it would be more
-user-friendly for the majority of users who don't know the error codes
-if we had something more verbose? How about having both strerror()
-output and the error code?
-
-> +			goto err_out;
-> +		}
-> +	}
-> +
-> +	err = bpf_linker__finalize(linker);
-> +	if (err) {
-> +		p_err("failed to finalize ELF file: %d", err);
-> +		goto err_out;
-> +	}
-> +
-> +	return 0;
-> +err_out:
-> +	bpf_linker__free(linker);
-> +	return -1;
-
-Should you call bpf_linker__free() even on success? I see that
-bpf_linker__finalize() frees some of the resources, but it seems that
-bpf_linker__free() does a more thorough job?
-
-> +}
-> +
->  static int do_help(int argc, char **argv)
+>  include/linux/skbuff.h |  1 +
+>  net/core/skbuff.c      | 52 ++++++++++++++++++++++++++++++++++++------
+>  2 files changed, 46 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 0503c917d773..2fc8c3657c53 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -3626,6 +3626,7 @@ int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
+>  		    unsigned int flags);
+>  int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
+>  			 int len);
+> +int skb_send_sock(struct sock *sk, struct sk_buff *skb, int offset, int len);
+>  void skb_copy_and_csum_dev(const struct sk_buff *skb, u8 *to);
+>  unsigned int skb_zerocopy_headlen(const struct sk_buff *from);
+>  int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 545a472273a5..396586bd6ae3 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -2500,9 +2500,12 @@ int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
+>  }
+>  EXPORT_SYMBOL_GPL(skb_splice_bits);
+>
+> -/* Send skb data on a socket. Socket must be locked. */
+> -int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
+> -			 int len)
+> +typedef int (*sendmsg_func)(struct sock *sk, struct msghdr *msg,
+> +			    struct kvec *vec, size_t num, size_t size);
+> +typedef int (*sendpage_func)(struct sock *sk, struct page *page, int offset,
+> +			   size_t size, int flags);
+> +static int __skb_send_sock(struct sock *sk, struct sk_buff *skb, int offset,
+> +			   int len, sendmsg_func sendmsg, sendpage_func sendpage)
 >  {
->  	if (json_output) {
-> @@ -611,6 +654,7 @@ static int do_help(int argc, char **argv)
->  
->  static const struct cmd cmds[] = {
->  	{ "skeleton",	do_skeleton },
-> +	{ "bpfo",	do_bpfo },
->  	{ "help",	do_help },
->  	{ 0 }
->  };
-> 
+>  	unsigned int orig_len = len;
+>  	struct sk_buff *head = skb;
+> @@ -2522,7 +2525,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
+>  		memset(&msg, 0, sizeof(msg));
+>  		msg.msg_flags = MSG_DONTWAIT;
+>
+> -		ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
+> +		ret = sendmsg(sk, &msg, &kv, 1, slen);
 
-Please update the usage help message, man page, and bash completion,
-thanks. Especially because what "bpftool gen bpfo" does is not intuitive
-(but I don't have a better name suggestion at the moment).
 
-Great work!
+Maybe use INDIRECT_CALLABLE_DECLARE() and INDIRECT_CALL_2() since there
+are just two possibilities? Same for sendpage below.
 
-Quentin
+>  		if (ret <= 0)
+>  			goto error;
+>
+> @@ -2553,9 +2556,9 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
+>  		slen = min_t(size_t, len, skb_frag_size(frag) - offset);
+>
+>  		while (slen) {
+> -			ret = kernel_sendpage_locked(sk, skb_frag_page(frag),
+> -						     skb_frag_off(frag) + offset,
+> -						     slen, MSG_DONTWAIT);
+> +			ret = sendpage(sk, skb_frag_page(frag),
+> +				       skb_frag_off(frag) + offset,
+> +				       slen, MSG_DONTWAIT);
+>  			if (ret <= 0)
+>  				goto error;
+>
+
+[...]
