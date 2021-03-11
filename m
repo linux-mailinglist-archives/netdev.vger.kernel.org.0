@@ -2,115 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C234337864
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 16:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2F433786F
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 16:49:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234224AbhCKPqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 10:46:11 -0500
-Received: from mail-eopbgr760057.outbound.protection.outlook.com ([40.107.76.57]:35695
-        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234179AbhCKPqA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 10:46:00 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VjkW7YMb4G2l++SKxGcw+Vtxh0iVS4q9PZQLCoW2tnghH7Ai9CCV6/VR9D8CbPx3SGpwXEhlr/zM7XFJFSD56yNnhh3Nne24JFueXOMOAxL78upxfcI+2UMuNTLLB8ZwrBwfeA+xzhav+KxFihMQfn9qkZ6Uwv9Kwu3Cd6SATnCdljha8XxoaZfjd4MoHUC50B7206s519ZUfb08wC2BiarxxYrZc6f8YOmxBvB01oyhchdd77IEggT4BRVaYkS2sGDNRy9RV8NsMtMcX2sbOq2Iv3aMe4O03AvLVX0cEov6Ei553ayajZAM3fspRWTXDYENv8ABQEEosHo3KehEOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DpjzToF27LfUjWpAvENP3fGdm/+/1YKosj+G0dSFZAY=;
- b=isjPTlOzCUKaOhFU28jvhATg4HEK3UHOyoiDkI32pX8RvOfrwbp6x7x7Wyw6Rh9c8R7aG/BJ1kXZZCcJYjrSUKTHNANbmPcEa1efiZe+n3ybKQ/GjEt+b90BcPmm5BnwlrTdqNt2QPO3/EHeoU/l6jomtKe3xlkMFjcY+pTQf6xFlrAcWRKCJ7zjrk7oexo27BmrmFNpI3/hDS4RefkmCzX6I4Lzk3gChwInBVYLXdJC/kP1f43fb1u7Pv+rRQN7BhJKvgRXd/uko8v9kK3c78egg4GMLxZEpTAZ5IwzXvyOjY9Ps3+Uv97KA9aoUFOQMIpRdbkOg0tJq3CwKP23jA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DpjzToF27LfUjWpAvENP3fGdm/+/1YKosj+G0dSFZAY=;
- b=I2+tgYuTXGqeBRbxWg1rCLliIy9oUNme1TA2n1hIywxTXsyi83IMx8ctX090/MvPHqh7YFKzrnD7WF7iV6h0IdfJl9rgm/KuJAw7F6Vpy41VtWpc2xMKIsqMNSFLoEK+erV8UXDfZbkh7TMaTj0y+6GEbcNEilpSDgDlPrjhnOVghznARs29QeA0oRkGDQob8tD/smy/zaVj8DN9Z/eCjFX+Ie2ib2dfqU13RntuG0bb3cdj/zhJxoDmMlje1tVDZX0X0++vcZ8PxsuEc3OoFpWSO1mnBOXKit9XxvOsG6q+gaKezqh8VNQZioV2jzHrbUgAcuuRGt3wHVn6qh20Dw==
-Received: from BN0PR04CA0144.namprd04.prod.outlook.com (2603:10b6:408:ed::29)
- by DM6PR12MB3276.namprd12.prod.outlook.com (2603:10b6:5:15e::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.26; Thu, 11 Mar
- 2021 15:45:51 +0000
-Received: from BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ed:cafe::6f) by BN0PR04CA0144.outlook.office365.com
- (2603:10b6:408:ed::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Thu, 11 Mar 2021 15:45:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT024.mail.protection.outlook.com (10.13.177.38) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 15:45:51 +0000
-Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar 2021 15:45:06
- +0000
-References: <cover.1615387786.git.petrm@nvidia.com>
- <674ece8e7d2fcdad3538d34e1db641e0b616cfae.1615387786.git.petrm@nvidia.com>
- <b42999d9-1be3-203b-e143-e4ac5e7d268b@gmail.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
+        id S234085AbhCKPsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 10:48:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234067AbhCKPsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 10:48:05 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71448C061760
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 07:48:02 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id u198so18609920oia.4
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 07:48:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EVrcvfoDioxQkelS/mYR+VepRoHSAgaO7oE/svzUp3s=;
+        b=HAfuYg0irHqa4s/v4O8tCkDQ086vJsfu77AVr+CJrZ5FGOyGbaFj4WELdi62NPVLhm
+         WAv9EW+7FW36ZxJ5qtlOlKLstMi6WDb8S2Z2SMts/3g/V7YtIK3C4KW6/hWGxINFc5df
+         6AnqZY9DBF2mFb13gy3+OQOVksBxV4LffJDPCQu7kOv1f+I4SFYQBWUuN22AzEKp24qa
+         gbT7Tb8aA+jL/o8tfMCCad7LNWo5/qm5VT2Tr0xDtVZ4YW2SMvUuHAc6B0M3X31p20y+
+         LwK7847HTCdT+pt/fBLY0G4gJKX63mqdTVV8+6QAC4iFQ+4/LMK+dW/8SuUuzZcfhl0E
+         PD2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EVrcvfoDioxQkelS/mYR+VepRoHSAgaO7oE/svzUp3s=;
+        b=Ih2yPl+4LZFv5jrAAs/B+BUkfsIpDPZt35VA4rh/Ur5ZWJWoK7awUDPgJOP43J/GYM
+         EgV/h4wTBRADKNLgSvWnZJYvn9WoLtuK1XLl3BmkDTVOTQDL570kV1x6z9tAtzjRF6qT
+         tjhtZAGOqjTy5iGlzPFhHVfR0tsBg3xwyTRy4EsyG7GhRc84plEbZWvNrTQ9aKIBjtgd
+         +tDQleLPGRZL6Hp4okXHK9wAQjIS6NBmxmqTJ9myiZdk3zcEosw2oBYzZLi1bdhsVHB9
+         kuH7hzdKdiEu7NYTyNusmYaB5O6FVorr7SAMXGfLRO5kJJY94FxS375yqIVO5zI0KfRK
+         DloQ==
+X-Gm-Message-State: AOAM531n3p1muEkY898Z9TkVVCZg6t0A9oS9q9PDQJL5jIP+uI5XPylr
+        ankUB8p6tmpUEkPkr8UuRk9HERjH37w=
+X-Google-Smtp-Source: ABdhPJy9acpj94NL6aq2ps3XxVjiC0OISmX1xjQE99/lpN29CY4J2iJY44nso3qlQWocn9O0ybPr8Q==
+X-Received: by 2002:aca:1e15:: with SMTP id m21mr6404317oic.62.1615477681819;
+        Thu, 11 Mar 2021 07:48:01 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id d1sm678517oth.13.2021.03.11.07.48.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Mar 2021 07:48:01 -0800 (PST)
+Subject: Re: [PATCH net-next 05/14] nexthop: Add implementation of resilient
+ next-hop groups
+To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org
+Cc:     Ido Schimmel <idosch@nvidia.com>, David Ahern <dsahern@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next 04/14] nexthop: Add netlink defines and
- enumerators for resilient NH groups
-In-Reply-To: <b42999d9-1be3-203b-e143-e4ac5e7d268b@gmail.com>
-Date:   Thu, 11 Mar 2021 16:45:02 +0100
-Message-ID: <87ft11itj5.fsf@nvidia.com>
+References: <cover.1615387786.git.petrm@nvidia.com>
+ <7a7d8a6578430dd47e303301e5506e40e0a8cc2b.1615387786.git.petrm@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c571f456-f9dc-73fa-cddb-a02ba54c03d7@gmail.com>
+Date:   Thu, 11 Mar 2021 08:47:58 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4a733387-1131-41b3-efb7-08d8e4a4bfe0
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3276:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3276BC6ED71B656361CFC3E1D6909@DM6PR12MB3276.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C81F6wqtQQt610sKWm/IouCeaujFL3mADXmWdNE/P+hcaRidW8w5eWudL2CJtpmXEsHPJi8DndZHI8IWMADIWynCUZUhKNJmQQY1bLmhnkk9AwJqT7+dk8UBN8mAC9j6bqi7ZyEt7sYVs27V/JCQp1durfOE6uE8qZys9NGVWy5YFAUXG52bDyhzB09+duAFeWFnsCKoNPcMUaxOjpsyR8WAeWJCGorG5EFgYnxDq44/NxVq1K8LV5D+GkdKR7GT6um1G5yXZB6GUr+nQ/UcC5crrVyDqYuUEbdUAcl5EABGayY8K96DUTYHibz9R+avrlzvJndpn672HQyxwZ/U7BXfCp3/yXnhsHVeDUpn+YUZWdPTEDlG2xR7qT2vRdQWvexo7e0c6SVXgSPN/TDKFGKzCk5EEC2vEWn8hdt1Lrd7ng2X9h99klF7hoeSXX1TjYHLENJ/ii/3x0+4i5G9cNSEIAdHKVFQ7BD5R0YHnHO6lFHnsjWU/s4KhwXYo5XCsDggkUCrxmaEQ4l6ttGG2pH+xgK7VgZB1K5WEWfrfRXs2365NrP4ftrS8KVEeyKK1VNWZ0E2Li2V7y/Yvfa3tkKRlPX6C70DZYXLURPklfj2Scd3V3xmeZnb6vJ/zf3IVGHJ0rFcyQkA009w1RXM6jyIGgHlGG8AfE07dVisttGEYBxsMUhhLhZEij9XAZS0
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(346002)(136003)(396003)(36840700001)(46966006)(34070700002)(8676002)(83380400001)(478600001)(26005)(426003)(36756003)(54906003)(336012)(5660300002)(4744005)(86362001)(316002)(36906005)(4326008)(6666004)(53546011)(36860700001)(82310400003)(356005)(2616005)(70586007)(16526019)(6916009)(8936002)(186003)(47076005)(82740400003)(7636003)(2906002)(70206006);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 15:45:51.6275
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a733387-1131-41b3-efb7-08d8e4a4bfe0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3276
+In-Reply-To: <7a7d8a6578430dd47e303301e5506e40e0a8cc2b.1615387786.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 3/10/21 8:02 AM, Petr Machata wrote:
+> At this moment, there is only one type of next-hop group: an mpath group,
+> which implements the hash-threshold algorithm.
+> 
+> To select a next hop, hash-threshold algorithm first assigns a range of
+> hashes to each next hop in the group, and then selects the next hop by
+> comparing the SKB hash with the individual ranges. When a next hop is
+> removed from the group, the ranges are recomputed, which leads to
+> reassignment of parts of hash space from one next hop to another. While
+> there will usually be some overlap between the previous and the new
+> distribution, some traffic flows change the next hop that they resolve to.
+> That causes problems e.g. as established TCP connections are reset, because
+> the traffic is forwarded to a server that is not familiar with the
+> connection.
+> 
+> Resilient hashing is a technique to address the above problem. Resilient
+> next-hop group has another layer of indirection between the group itself
+> and its constituent next hops: a hash table. The selection algorithm uses a
+> straightforward modulo operation to choose a hash bucket, and then reads
+> the next hop that this bucket contains, and forwards traffic there.
+> 
+> This indirection brings an important feature. In the hash-threshold
+> algorithm, the range of hashes associated with a next hop must be
+> continuous. With a hash table, mapping between the hash table buckets and
+> the individual next hops is arbitrary. Therefore when a next hop is deleted
+> the buckets that held it are simply reassigned to other next hops. When
+> weights of next hops in a group are altered, it may be possible to choose a
+> subset of buckets that are currently not used for forwarding traffic, and
+> use those to satisfy the new next-hop distribution demands, keeping the
+> "busy" buckets intact. This way, established flows are ideally kept being
+> forwarded to the same endpoints through the same paths as before the
+> next-hop group change.
+> 
+> In a nutshell, the algorithm works as follows. Each next hop has a number
+> of buckets that it wants to have, according to its weight and the number of
+> buckets in the hash table. In case of an event that might cause bucket
+> allocation change, the numbers for individual next hops are updated,
+> similarly to how ranges are updated for mpath group next hops. Following
+> that, a new "upkeep" algorithm runs, and for idle buckets that belong to a
+> next hop that is currently occupying more buckets than it wants (it is
+> "overweight"), it migrates the buckets to one of the next hops that has
+> fewer buckets than it wants (it is "underweight"). If, after this, there
+> are still underweight next hops, another upkeep run is scheduled to a
+> future time.
+> 
+> Chances are there are not enough "idle" buckets to satisfy the new demands.
+> The algorithm has knobs to select both what it means for a bucket to be
+> idle, and for whether and when to forcefully migrate buckets if there keeps
+> being an insufficient number of idle buckets.
+> 
+> There are three users of the resilient data structures.
+> 
+> - The forwarding code accesses them under RCU, and does not modify them
+>   except for updating the time a selected bucket was last used.
+> 
+> - Netlink code, running under RTNL, which may modify the data.
+> 
+> - The delayed upkeep code, which may modify the data. This runs unlocked,
+>   and mutual exclusion between the RTNL code and the delayed upkeep is
+>   maintained by canceling the delayed work synchronously before the RTNL
+>   code touches anything. Later it restarts the delayed work if necessary.
+> 
+> The RTNL code has to implement next-hop group replacement, next hop
+> removal, etc. For removal, the mpath code uses a neat trick of having a
+> backup next hop group structure, doing the necessary changes offline, and
+> then RCU-swapping them in. However, the hash tables for resilient hashing
+> are about an order of magnitude larger than the groups themselves (the size
+> might be e.g. 4K entries), and it was felt that keeping two of them is an
+> overkill. Both the primary next-hop group and the spare therefore use the
+> same resilient table, and writers are careful to keep all references valid
+> for the forwarding code. The hash table references next-hop group entries
+> from the next-hop group that is currently in the primary role (i.e. not
+> spare). During the transition from primary to spare, the table references a
+> mix of both the primary group and the spare. When a next hop is deleted,
+> the corresponding buckets are not set to NULL, but instead marked as empty,
+> so that the pointer is valid and can be used by the forwarding code. The
+> buckets are then migrated to a new next-hop group entry during upkeep. The
+> only times that the hash table is invalid is the very beginning and very
+> end of its lifetime. Between those points, it is always kept valid.
+> 
+> This patch introduces the core support code itself. It does not handle
+> notifications towards drivers, which are kept as if the group were an mpath
+> one. It does not handle netlink either. The only bit currently exposed to
+> user space is the new next-hop group type, and that is currently bounced.
+> There is therefore no way to actually access this code.
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+> 
 
-David Ahern <dsahern@gmail.com> writes:
+Thanks for the detailed documentation around exclusion expectations.
 
-> On 3/10/21 8:02 AM, Petr Machata wrote:
->> diff --git a/include/uapi/linux/nexthop.h b/include/uapi/linux/nexthop.h
->> index 2d4a1e784cf0..8efebf3cb9c7 100644
->> --- a/include/uapi/linux/nexthop.h
->> +++ b/include/uapi/linux/nexthop.h
->> @@ -22,6 +22,7 @@ struct nexthop_grp {
->>  
->>  enum {
->>  	NEXTHOP_GRP_TYPE_MPATH,  /* default type if not specified */
->
-> Update the above comment that it is for legacy, hash based multipath.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Maybe this would make sense?
 
-	NEXTHOP_GRP_TYPE_MPATH,  /* hash-threshold nexthop group */
