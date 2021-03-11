@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFE03380B5
+	by mail.lfdr.de (Postfix) with ESMTP id 405BC3380B4
 	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 23:38:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbhCKWiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 17:38:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33558 "EHLO mail.kernel.org"
+        id S231308AbhCKWiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 17:38:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33566 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230397AbhCKWhl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230431AbhCKWhl (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 11 Mar 2021 17:37:41 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AC32864F94;
-        Thu, 11 Mar 2021 22:37:40 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 39FA064F91;
+        Thu, 11 Mar 2021 22:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1615502261;
-        bh=wd4kKlrWLi0wrZXjuF66I8Nbe8CHxvaM2wdGlIXFAas=;
+        bh=iRALGk144mG2c5nN2tggwcYtrB8tV017xOgAN0XWtHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EtzjdOSnHrurq5A5WjPqiMiW14NJWKueHBSB8ud3/DUx+hiSKtIUnI38tvNHTr2G+
-         9dEB6BfVKYGwKC2PRTZNV1/2ILYaJNWtOWwzZzkljgok7bsA5c0UWdrV540N5cx9i0
-         qc2vMgGawN0AP/R/YLkCYdl6dL4PMGHMrUZ8iISLKDfBZm7u9YWm1Up1xKs9z3DGJR
-         o8QqkLUTQLidIEet1smKGbcAcSA0JbncxH82VmVp1FIzoyGJhh6M2H1XmY5KhLlsfT
-         LT5XHRVZlUn3HBoYworEUsjYqN8ghSnKrnqHai5KjJuKV2BkfNHZEAX9TpztdprinC
-         LoghpLyKulSZw==
+        b=XOzD4TSqve9gsUT7k9iCecwVD9BMgTy+ZC5YQ9t92uzcvLgrfY3fkU4+M7yARduHb
+         KuHgl9OSiDUnbzofdZpfbqY+KCtAwzvHIHDUay1Pdu/Fw/hieS5mz51XiakiPxdl2g
+         cCpswJyJHO8l7HyP9ZbtKfQE1BwhNuqzCUvp4pQn/5T270QhnbQPOrW5vc5swW3rcW
+         jBgIB2vC5CBRRnwwGirz3I8FE7vE8JMdHvhIZ5x02PryABz17HTeT78WQVq8YTZ4Vr
+         /KKiK4yNcrZUhTX4mQixTdQpQUgEeBsnrAfDAi44fIwgA6uSCRt3sHRYu5a3ztOugw
+         fNOFw1fgIak9A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 14/15] net/mlx5: Avoid unnecessary operation
-Date:   Thu, 11 Mar 2021 14:37:22 -0800
-Message-Id: <20210311223723.361301-15-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 15/15] net/mlx5e: Alloc flow spec using kvzalloc instead of kzalloc
+Date:   Thu, 11 Mar 2021 14:37:23 -0800
+Message-Id: <20210311223723.361301-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210311223723.361301-1-saeed@kernel.org>
 References: <20210311223723.361301-1-saeed@kernel.org>
@@ -40,40 +40,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Roi Dayan <roid@nvidia.com>
 
-fs_get_obj retrieves the container of fs_parent_node just to pass the
-same value as &fs_ns->node. Just pass fs_parent_node to
-init_root_tree_recursive() to get exactly the same effect.
+flow spec is not small and we do allocate it using kvzalloc
+in most places of the driver. fix rest of the places
+to use kvzalloc to avoid failure in allocation when
+memory is too fragmented.
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 14 +++++++-------
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c         |  4 ++--
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  4 ++--
+ 3 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 66ad599bd488..f5517ea2f6be 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2395,14 +2395,12 @@ static int init_root_tree(struct mlx5_flow_steering *steering,
- 			  struct init_tree_node *init_node,
- 			  struct fs_node *fs_parent_node)
- {
--	int i;
--	struct mlx5_flow_namespace *fs_ns;
- 	int err;
-+	int i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index f81da2dc6af1..3a6095c912f1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -695,7 +695,7 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
  
--	fs_get_obj(fs_ns, fs_parent_node);
- 	for (i = 0; i < init_node->ar_size; i++) {
- 		err = init_root_tree_recursive(steering, &init_node->children[i],
--					       &fs_ns->node,
-+					       fs_parent_node,
- 					       init_node, i);
- 		if (err)
- 			return err;
+ 	zone_rule->nat = nat;
+ 
+-	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
++	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
+ 	if (!spec)
+ 		return -ENOMEM;
+ 
+@@ -737,7 +737,7 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
+ 
+ 	zone_rule->attr = attr;
+ 
+-	kfree(spec);
++	kvfree(spec);
+ 	ct_dbg("Offloaded ct entry rule in zone %d", entry->tuple.zone);
+ 
+ 	return 0;
+@@ -749,7 +749,7 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
+ err_mod_hdr:
+ 	kfree(attr);
+ err_attr:
+-	kfree(spec);
++	kvfree(spec);
+ 	return err;
+ }
+ 
+@@ -1684,10 +1684,10 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 	struct mlx5_ct_ft *ft;
+ 	u32 fte_id = 1;
+ 
+-	post_ct_spec = kzalloc(sizeof(*post_ct_spec), GFP_KERNEL);
++	post_ct_spec = kvzalloc(sizeof(*post_ct_spec), GFP_KERNEL);
+ 	ct_flow = kzalloc(sizeof(*ct_flow), GFP_KERNEL);
+ 	if (!post_ct_spec || !ct_flow) {
+-		kfree(post_ct_spec);
++		kvfree(post_ct_spec);
+ 		kfree(ct_flow);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+@@ -1822,7 +1822,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 
+ 	attr->ct_attr.ct_flow = ct_flow;
+ 	dealloc_mod_hdr_actions(&pre_mod_acts);
+-	kfree(post_ct_spec);
++	kvfree(post_ct_spec);
+ 
+ 	return rule;
+ 
+@@ -1843,7 +1843,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ err_idr:
+ 	mlx5_tc_ct_del_ft_cb(ct_priv, ft);
+ err_ft:
+-	kfree(post_ct_spec);
++	kvfree(post_ct_spec);
+ 	kfree(ct_flow);
+ 	netdev_warn(priv->netdev, "Failed to offload ct flow, err %d\n", err);
+ 	return ERR_PTR(err);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+index 381a9c8c9da9..34119ce92031 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+@@ -60,7 +60,7 @@ static int rx_err_add_rule(struct mlx5e_priv *priv,
+ 	struct mlx5_flow_spec *spec;
+ 	int err = 0;
+ 
+-	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
++	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
+ 	if (!spec)
+ 		return -ENOMEM;
+ 
+@@ -101,7 +101,7 @@ static int rx_err_add_rule(struct mlx5e_priv *priv,
+ 	if (err)
+ 		mlx5_modify_header_dealloc(mdev, modify_hdr);
+ out_spec:
+-	kfree(spec);
++	kvfree(spec);
+ 	return err;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 703753ac2e02..a215ccee3e61 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -1446,7 +1446,7 @@ esw_add_restore_rule(struct mlx5_eswitch *esw, u32 tag)
+ 	if (!mlx5_eswitch_reg_c1_loopback_supported(esw))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+-	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
++	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
+ 	if (!spec)
+ 		return ERR_PTR(-ENOMEM);
+ 
+@@ -1469,7 +1469,7 @@ esw_add_restore_rule(struct mlx5_eswitch *esw, u32 tag)
+ 	dest.ft = esw->offloads.ft_offloads;
+ 
+ 	flow_rule = mlx5_add_flow_rules(ft, spec, &flow_act, &dest, 1);
+-	kfree(spec);
++	kvfree(spec);
+ 
+ 	if (IS_ERR(flow_rule))
+ 		esw_warn(esw->dev,
 -- 
 2.29.2
 
