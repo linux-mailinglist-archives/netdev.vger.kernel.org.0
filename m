@@ -2,60 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C879336DC7
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 09:26:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 697A1336DED
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 09:37:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231328AbhCKI0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 03:26:18 -0500
-Received: from verein.lst.de ([213.95.11.211]:39850 "EHLO verein.lst.de"
+        id S231428AbhCKIha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 03:37:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231351AbhCKI0P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 03:26:15 -0500
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id F3A2D68BEB; Thu, 11 Mar 2021 09:26:09 +0100 (CET)
-Date:   Thu, 11 Mar 2021 09:26:09 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 14/17] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-Message-ID: <20210311082609.GA6990@lst.de>
-References: <20210301084257.945454-1-hch@lst.de> <20210301084257.945454-15-hch@lst.de> <1658805c-ed28-b650-7385-a56fab3383e3@arm.com> <20210310091501.GC5928@lst.de> <20210310092533.GA6819@lst.de> <fdacf87a-be14-c92c-4084-1d1dd4fc7766@arm.com>
+        id S231362AbhCKIhI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 03:37:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CB06E64F87;
+        Thu, 11 Mar 2021 08:37:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615451827;
+        bh=WTRYhIbXBuo/t5BkaB+NdSfbK6vNcQ7O2pTkFSkZ2ZE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OFUY4tcN4rgrDUp7yv4hcD2Js8LhS1pItQ8BCFEpxRm8Vp6WuYOhDwCTtbJlDTjMD
+         rEDZvL8W/B7LtpwWh0BxLRQR/3pkBiMcSgE+OAXAa2HScEklnzz2uJDixwJafV2APg
+         ZGCkkNF0Yvf+b+qvkk1ICzRoWP4EEAATWRyyWttOeyb+oUcOhgoIItEM3k2dTc4vh/
+         kZSgjAy4aJ+1U0evadfnEOLq0qHfDGmu2MLFyTcbGM/3UBuUN5zGMzMc24CcNW4vmn
+         FcHPTe7s4dlhZVRknHp6asfa5Ft9VJlPqMVe4uO+eH3+98PZJis0weHCXpLxsT/Qz/
+         iRtNgLEfNtgxQ==
+Date:   Thu, 11 Mar 2021 10:37:03 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <YEnWr/xufSXvszIw@unreal>
+References: <CAKgT0Ue=g+1pZCct8Kd0OnkPEP0qhggBF96s=noDoWHMJTL6FA@mail.gmail.com>
+ <20210310190906.GA2020121@bjorn-Precision-5520>
+ <YEknweta9TXcw1l5@unreal>
+ <YEkqY5ZJLXp8dork@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fdacf87a-be14-c92c-4084-1d1dd4fc7766@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <YEkqY5ZJLXp8dork@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 06:39:57PM +0000, Robin Murphy wrote:
->> Actually... Just mirroring the iommu_dma_strict value into
->> struct iommu_domain should solve all of that with very little
->> boilerplate code.
+On Wed, Mar 10, 2021 at 09:21:55PM +0100, Greg Kroah-Hartman wrote:
+> On Wed, Mar 10, 2021 at 10:10:41PM +0200, Leon Romanovsky wrote:
+> > On Wed, Mar 10, 2021 at 01:09:06PM -0600, Bjorn Helgaas wrote:
+> > > On Sun, Mar 07, 2021 at 10:55:24AM -0800, Alexander Duyck wrote:
+> > > > On Sun, Feb 28, 2021 at 11:55 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > >
+> > > > > @Alexander Duyck, please update me if I can add your ROB tag again
+> > > > > to the series, because you liked v6 more.
+> > > > >
+> > > > > Thanks
+> > > > >
+> > > > > ---------------------------------------------------------------------------------
+> > > > > Changelog
+> > > > > v7:
+> > > > >  * Rebase on top v5.12-rc1
+> > > > >  * More english fixes
+> > > > >  * Returned to static sysfs creation model as was implemented in v0/v1.
+> >
+> > <...>
+> >
+> > >   2) Should a VF sysfs file use the PF to implement this?
+> > >
+> > >      Can you elaborate on your idea here?  I guess
+> > >      pci_iov_sysfs_link() makes a "virtfnX" link from the PF to the
+> > >      VF, and you're thinking we could also make a "virtfnX_msix_count"
+> > >      in the PF directory?  That's a really interesting idea.
+> >
+> > I want to remind that we are talking about mlx5 devices that support
+> > upto 255 VFs and they indeed are used to their limits. So seeing 255
+> > links of virtfnX_msix_count in the same directory looks too much unpleasant
+> > to me.
 >
-> Yes, my initial thought was to directly replace the attribute with a
-> common flag at iommu_domain level, but since in all cases the behaviour
-> is effectively global rather than actually per-domain, it seemed
-> reasonable to take it a step further. This passes compile-testing for
-> arm64 and x86, what do you think?
+> 255 files are nothing, if that's what the hardware supports, what is the
+> problem?  If it's "unpleasant", go complain to the hardware designers :)
 
-It seems to miss a few bits, and also generally seems to be not actually
-apply to recent mainline or something like it due to different empty
-lines in a few places.
+It is 255 same files that every SR-IOV user will see in /sys/bus/pci/devices/*/
+folder, unless we will do dynamic creation of those files and this is something
+that Bjorn didn't like in v7.
 
-Let me know what you think of the version here:
+So instead of complaining to the hardware designers, I will complain here.
+I probably implemented all possible variants already. :)
 
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/iommu-cleanup
+Thanks
 
-I'll happily switch the patch to you as the author if you're fine with
-that as well.
+>
+> greg k-h
