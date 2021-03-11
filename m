@@ -2,122 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6AC337E6A
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 20:46:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D03C6337E7E
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 20:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbhCKTp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 14:45:59 -0500
-Received: from mail-ej1-f44.google.com ([209.85.218.44]:36542 "EHLO
-        mail-ej1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230414AbhCKTp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 14:45:26 -0500
-Received: by mail-ej1-f44.google.com with SMTP id e19so48788116ejt.3;
-        Thu, 11 Mar 2021 11:45:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OeCiiJBsFe7jdSlbBr+NErlckMGg0noG5UTFudr/xQg=;
-        b=nlmh4IuPsrC9/yRJValBnwzz5QgO4TLUJoMExnBSDOLu+u3drUg+GRFaqvyOZuo2iw
-         5+SENAX9Gt7rdBzq6w/lrICkr12FDxdnbj8UAvnsMRsRTlsojP6cWa6vl3XXrBh0HFf0
-         9MtwzzO/GZin40gE2PzSqzDaNbkPR2OY6lN2E3e+v8Ul5d5FC82m6obX5KoS/6woH18e
-         ACqE6xCiB3srPfRtxvYbDlZ3IPMid8b+DDobBJ9sSLTaAPeQx871KuywJ6Rl3xv1oYTe
-         EgNJSaZUo2YyiKg7jkGs4WXiaKbIOaOnc9Nd5u9SvkE9F6CAx7bsPBJua7mR2P3YUZNc
-         sRCQ==
-X-Gm-Message-State: AOAM533HqUQKerSl/KiSI1K2+khha45RFdgTBKcYAZIlybOa8E3Ebgov
-        PBoYdX5ngqAexxyge1ubpfMjg2+g9OU=
-X-Google-Smtp-Source: ABdhPJyv/nXJ6jqUnFK1YSLBHWALjvbKGaD2EgXaa8fpdAV1hkKMgtKDwfZNovwsvwlzZg4ZkLiZfA==
-X-Received: by 2002:a17:906:1386:: with SMTP id f6mr4626744ejc.45.1615491924807;
-        Thu, 11 Mar 2021 11:45:24 -0800 (PST)
-Received: from msft-t490s.teknoraver.net (net-188-216-41-250.cust.vodafonedsl.it. [188.216.41.250])
-        by smtp.gmail.com with ESMTPSA id t16sm1875652edi.60.2021.03.11.11.45.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Mar 2021 11:45:24 -0800 (PST)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [RFC net-next 6/6] mvneta: recycle buffers
-Date:   Thu, 11 Mar 2021 20:42:56 +0100
-Message-Id: <20210311194256.53706-7-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210311194256.53706-1-mcroce@linux.microsoft.com>
-References: <20210311194256.53706-1-mcroce@linux.microsoft.com>
+        id S230259AbhCKTwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 14:52:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49532 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229490AbhCKTvz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 14:51:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 16F5C64F80;
+        Thu, 11 Mar 2021 19:51:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615492314;
+        bh=2KlA7EfVuhHt9Lg7khxrZsPO9Aw6CY4WB7/VJn7+giM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G6o2P1PKtqem7HP4l0h6g27R6D8sLxNRlMz+vpy2lkFpuutiOOpcp9j9ZoGTLyjP0
+         eNxsvN85ObsVGUDXX+JOCpZ0W9XRopKRLCu/fY/C9GSiyijxEzH7DgJTGUtfRhKnY5
+         f8Y0WJ5qbwqzzH0Tlz6iYfweSZ8/U6R6dQoBqcQW22aqVG15RNSUtj6+7ft8YvQkZ9
+         zfMAEq0E1T8Pttquy/dtDzPW9CqAqtmXEP2UX4Oukg1VUBYncQ2IvfouLHRSPKtBn5
+         i/IufPLOqP0zteJcueUS1NVBT0bx6Q3a/yMoWlUHOoq/y4KgzgBuNSd89u7g6DDtDp
+         IswmIV+KbYXmQ==
+Date:   Thu, 11 Mar 2021 21:51:50 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <YEp01m0GiNzOSUV8@unreal>
+References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
+ <20210311181729.GA2148230@bjorn-Precision-5520>
+ <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+On Thu, Mar 11, 2021 at 11:37:28AM -0800, Alexander Duyck wrote:
+> On Thu, Mar 11, 2021 at 10:17 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> >
+> > On Wed, Mar 10, 2021 at 03:34:01PM -0800, Alexander Duyck wrote:
+> > > On Wed, Mar 10, 2021 at 11:09 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Sun, Mar 07, 2021 at 10:55:24AM -0800, Alexander Duyck wrote:
+> > > > > On Sun, Feb 28, 2021 at 11:55 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > >
+> > > > > > @Alexander Duyck, please update me if I can add your ROB tag again
+> > > > > > to the series, because you liked v6 more.
+> > > > > >
+> > > > > > Thanks
+> > > > > >
+> > > > > > ---------------------------------------------------------------------------------
+> > > > > > Changelog
+> > > > > > v7:
+> > > > > >  * Rebase on top v5.12-rc1
+> > > > > >  * More english fixes
+> > > > > >  * Returned to static sysfs creation model as was implemented in v0/v1.
 
-Use the new recycling API for page_pool.
-In a drop rate test, the packet rate increased di 10%,
-from 269 Kpps to 296 Kpps.
+<...>
 
-perf top on a stock system shows:
+> > > representors rather than being actual PCIe devices. Having
+> > > functionality that only works when the VF driver is not loaded just
+> > > feels off. The VF sysfs directory feels like it is being used as a
+> > > subdirectory of the PF rather than being a device on its own.
+> >
+> > Moving "virtfnX_msix_count" to the PF seems like it would mitigate
+> > this somewhat.  I don't know how to make this work while a VF driver
+> > is bound without making the VF feel even less like a PCIe device,
+> > i.e., we won't be able to use the standard MSI-X model.
+>
+> Yeah, I actually do kind of like that idea. In addition it would
+> address one of the things I pointed out as an issue before as you
+> could place the virtfn values that the total value in the same folder
+> so that it is all in one central spot rather than having to walk all
+> over the sysfs hierarchy to check the setting for each VF when trying
+> to figure out how the vectors are currently distributed.
 
-Overhead  Shared Object     Symbol
-  21.78%  [kernel]          [k] __pi___inval_dcache_area
-  21.66%  [mvneta]          [k] mvneta_rx_swbm
-   7.00%  [kernel]          [k] kmem_cache_alloc
-   6.05%  [kernel]          [k] eth_type_trans
-   4.44%  [kernel]          [k] kmem_cache_free.part.0
-   3.80%  [kernel]          [k] __netif_receive_skb_core
-   3.68%  [kernel]          [k] dev_gro_receive
-   3.65%  [kernel]          [k] get_page_from_freelist
-   3.43%  [kernel]          [k] page_pool_release_page
-   3.35%  [kernel]          [k] free_unref_page
+User binds specific VF with specific PCI ID to VM, so instead of
+changing MSI-X table for that specific VF, he will need to translate
+from virtfn25_msix_count to PCI ID.
 
-And this is the same output with recycling enabled:
+I also gave an example of my system where I have many PFs and VFs
+function numbers are not distributed nicely. On that system virtfn25_msix_count
+won't translate to AA:BB:CC.25 but to something else.
 
-Overhead  Shared Object     Symbol
-  24.10%  [kernel]          [k] __pi___inval_dcache_area
-  23.02%  [mvneta]          [k] mvneta_rx_swbm
-   7.19%  [kernel]          [k] kmem_cache_alloc
-   6.50%  [kernel]          [k] eth_type_trans
-   4.93%  [kernel]          [k] __netif_receive_skb_core
-   4.77%  [kernel]          [k] kmem_cache_free.part.0
-   3.93%  [kernel]          [k] dev_gro_receive
-   3.03%  [kernel]          [k] build_skb
-   2.91%  [kernel]          [k] page_pool_put_page
-   2.85%  [kernel]          [k] __xdp_return
-
-The test was done with mausezahn on the TX side with 64 byte raw
-ethernet frames.
-
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
----
- drivers/net/ethernet/marvell/mvneta.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index a635cf84608a..8b3250394703 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2332,7 +2332,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
- 
--	page_pool_release_page(rxq->page_pool, virt_to_page(xdp->data));
-+	skb_mark_for_recycle(skb, virt_to_page(xdp->data), &xdp->rxq->mem);
- 
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
-@@ -2344,7 +2344,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
- 				skb_frag_page(frag), skb_frag_off(frag),
- 				skb_frag_size(frag), PAGE_SIZE);
--		page_pool_release_page(rxq->page_pool, skb_frag_page(frag));
-+		skb_mark_for_recycle(skb, skb_frag_page(frag), &xdp->rxq->mem);
- 	}
- 
- 	return skb;
--- 
-2.29.2
-
+Thanks
