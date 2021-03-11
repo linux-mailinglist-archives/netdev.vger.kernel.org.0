@@ -2,77 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED43336E49
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 09:54:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03FC1336E5E
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 09:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231817AbhCKIyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 03:54:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231438AbhCKIxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 03:53:34 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE8FC061574
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 00:53:34 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id 9so1121722ljd.7
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 00:53:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=cNGljFPZRpYFKEu48myr7eYFUT4vLWZX348426Ewac8=;
-        b=PHibtLImqs4TGXU3niy8gSYHXD2sKelQqSek6fklujAWvebIak56HzHlCy7RBzx4ta
-         4jDFDMzn0f31MOz4rsnhcsehEHubm7GPTTJHlFA8Kl26mq7q/GFSIU0pVEOLbw4pLeSe
-         G7kQppx+nNtputZnQBemDgCy+VEJVljEjd73oS0ckvncE7Q6qQKgyO33HbugQGoCfe34
-         wHFPSDH8HyRSbq5BTguKD5sPXqsg4tS+6hG7t2j1hHuXcMA+mrVqQT9v3hazSzzYwfV9
-         kBRkp2qBtw0Dh5ctxbvS9yloJiq1cmRYTA3u33c0gdbiDS1zvOaioZNfyFxXpamyIaPz
-         M1aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=cNGljFPZRpYFKEu48myr7eYFUT4vLWZX348426Ewac8=;
-        b=Ph6p0xMtEG11uCURDXlWkYzjo7TSKUseWyJ6UB6C0n7mu7aDDvH4sZcUD/gYdCcxD5
-         HgT2Hehbd/Kn5bfmVK0R4gmbt0LOYQAFnsjdD3jZ+l5u/H+/li6usPxOlzvVThutHYXU
-         gpJ/q9d/2+CAyXTIsIL/RWP3PHUpcyRCSk4GY4DJTwxnc3hI01E5cPbI9CMvsexdYqjW
-         f0d6NVnCrtkJMg+U/7XDOjUPV1ZdFqtaLitPgysfPg+NA6aJTO+9BaRg9/PdDmn5EfbB
-         XXLSdVhOTCbdo4vvVj6A90O2UD7W3GG6+f6dEHVka4nHk4vekFWfaFVryINpvVsvNiYZ
-         aZxA==
-X-Gm-Message-State: AOAM532Gdmon096gtJgdvFBfqXtDi5bq85+7yvpOMEJQdUb1G8iofDb0
-        DNNpOMOMleIgP8OQiJg0omAIPe46GNM0IvyYnSE=
-X-Google-Smtp-Source: ABdhPJwhST1WXaf+BfhtGNso3EmXvsNeS73pbMk6PYwLsP6ElRchfpFQgihSyXuDMwodTRME3MutVaVN6z/v+8HNx1M=
-X-Received: by 2002:a2e:b88b:: with SMTP id r11mr4160903ljp.495.1615452812689;
- Thu, 11 Mar 2021 00:53:32 -0800 (PST)
+        id S231548AbhCKI6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 03:58:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42444 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231759AbhCKI6c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 03:58:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CE55D64FAF;
+        Thu, 11 Mar 2021 08:58:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615453111;
+        bh=yYIE61zje/ydl7SY0eomGVI8O8IaPIjC/6GGNFKJhiY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HaJCjeFTKvu48RIrTy3kqXigy72TXLGjJ5XU88/ljMzqNSFayZStuti6C0EZ4nlTs
+         c/4Slo5fKClqm5w6bEFde7fWB72YTdKqUUQUurLSTDb9rAIIRPXi7Ys8cjW7cTGmTG
+         qzseULJDnozMU/k7fWoZRCmkqqCpN1aAGyh5WHK9UbG4G8IexHka09nYty8+DJ0IHd
+         bT6MrIspBazbiOpG4Ac6I0fryYPM/0g6LTNkXf7a8kx/uhDK63owgA6x4ywks1jPYy
+         kHbTi+MYRz16IbEGUt9p99LmTpu63ZX2+y/njJJUU9yoq0jfITj7N9eYUce1j/dUnP
+         w+dCtsRTp7HOg==
+Date:   Thu, 11 Mar 2021 10:58:27 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net 13/18] RDMA/mlx5: Fix timestamp default mode
+Message-ID: <YEnbsx7aaIie1U0z@unreal>
+References: <20210310190342.238957-1-saeed@kernel.org>
+ <20210310190342.238957-14-saeed@kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a2e:1649:0:0:0:0:0 with HTTP; Thu, 11 Mar 2021 00:53:32
- -0800 (PST)
-Reply-To: georgemike7031@gmail.com
-From:   george mike <barristerlevi@gmail.com>
-Date:   Thu, 11 Mar 2021 09:53:32 +0100
-Message-ID: <CAEJ6CheK9bSARUhPvdNs3=HPzDi97Uxg1ic=LaF6AYWB9gzw_Q@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210310190342.238957-14-saeed@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo
+On Wed, Mar 10, 2021 at 11:03:37AM -0800, Saeed Mahameed wrote:
+> From: Maor Gottlieb <maorg@nvidia.com>
+>
+> 1. Don't set the ts_format bit to default when it reserved - device is
+>    running in the old mode (free running).
+> 2. XRC doesn't have a CQ therefore the ts format in the QP
+>    context should be default / free running.
+> 3. Set ts_format to WQ.
+>
+> Fixes: 2fe8d4b87802 ("RDMA/mlx5: Fail QP creation if the device can not support the CQE TS")
+> Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  drivers/infiniband/hw/mlx5/qp.c | 18 ++++++++++++++----
+>  1 file changed, 14 insertions(+), 4 deletions(-)
+>
 
-Ich hei=C3=9Fe George Mike. Ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte=
- dir anbieten
-engster Verwandter meines Klienten. Sie erben die Gesamtsumme (8,5
-Millionen US-Dollar).
-Dollar, die mein Kunde vor seinem Tod auf der Bank gelassen hat.
+I reviewed it too.
 
-Mein Klient ist ein Staatsangeh=C3=B6riger Ihres Landes, der mit seiner
-Frau bei einem Autounfall ums Leben gekommen ist
-und einziger Sohn. Ich habe Anspruch auf 50% des Gesamtfonds, w=C3=A4hrend
-50% davon berechtigt sind
-Sein f=C3=BCr dich.
-F=C3=BCr weitere Informationen wenden Sie sich bitte an meine private
-E-Mail-Adresse: georgemike7031@gmail.com
-
-Vielen Dank im Voraus,
-Herr George Mike,
+Thanks,
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
