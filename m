@@ -2,97 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA26336A97
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D9E336A9F
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:24:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230491AbhCKDVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 22:21:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbhCKDVb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 22:21:31 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC6AC061574;
-        Wed, 10 Mar 2021 19:21:21 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id e2so4264516pld.9;
-        Wed, 10 Mar 2021 19:21:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Ivcy7Ra48iIN4fx9xpDqQ0r9uvJj0RhC3xsJ+4+M9iU=;
-        b=hYxB/u6+hGcYGbqzJPZ4n+/YI9KIHDNbEmLn8g+mdbX+cCoWaGweefCTDixi2LzIhS
-         0JvxCVfQO1M5ROnGAZ5hGSPutHS465fxaAXVosQn6JdE9A8vE3Nq4KdZ+SBqjW3oMESa
-         bt9oWgULGfJ825ReLVN2CZSWltXvVe+3FxIY+4RZ4KMG5zJzKWGz87XOT22ejroq0WmZ
-         QCPMxFyy4piD0WzUSC5td3xRyCjt9D4nU8SQY0nGj58WFFVr0s8t0ac+bWDwpZlFJzky
-         d+C6x3YJ8WRlk/2DuWBgsJc3EBvRBop9NdCmAufc4sIAY1ANG6McLtnv8gw4TTKHR+ON
-         yFDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ivcy7Ra48iIN4fx9xpDqQ0r9uvJj0RhC3xsJ+4+M9iU=;
-        b=jBZ2eIp24TkEtBa89UfJOH/q6wkcQTULwlqtmCA0Rz09vHkHESIkkRRus9QEfiKYwv
-         yNmq9gz9n7zDy7YvzKOdzW7WfagCnVw2za72oa8rjU7fnp8HhMFi4+2QFAnO7w/k4JCD
-         1GImHTIoIajk1oCVnDa+y41ePArlvaN1U3BmMOZMFrq6JIl4aKop05YEzi5EIjtwN/Bf
-         41ZuBFbOBLmHivzoA/0DZe3Y2Wnk12+ep24uT1E3Uq8OTf7XmUM5jIAvlzsqA4JKw5dD
-         aQVoJHhZj2TbOQiCjiCVoGD9dpJmezZ1cxPQvP9MN/mLcFCvTjKPPRtxfr9RnckA6iLx
-         sbTA==
-X-Gm-Message-State: AOAM532jWyk7qQbtSqT/wzN3xG7SD/DS0/15RYDd1IDm6lZJdi6G195M
-        EXG9wgx9mA/XsK6jcJjm7tiVaytxmJI=
-X-Google-Smtp-Source: ABdhPJyj+GyJRKG6iL6Nx3uSY7ZT0SWl2tNgBCpdqHyf/QQZBu1QJgB57lu9L31MorFZqGua4kz9eQ==
-X-Received: by 2002:a17:90a:a584:: with SMTP id b4mr6724628pjq.186.1615432880340;
-        Wed, 10 Mar 2021 19:21:20 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y16sm778432pgl.58.2021.03.10.19.21.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Mar 2021 19:21:19 -0800 (PST)
-Subject: Re: [PATCH net] net: dsa: mt7530: setup core clock even in TRGMII
- mode
-To:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20210311012108.7190-1-ilya.lipnitskiy@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <79be95b7-0c56-f831-2f3f-5a41006d0037@gmail.com>
-Date:   Wed, 10 Mar 2021 19:21:17 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.8.1
+        id S230499AbhCKDXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 22:23:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54735 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230450AbhCKDXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 22:23:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615432993;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ub6/EcBH4E/sCu55924OCkZmHzGxaR27DdB+w8cXwRQ=;
+        b=TSYKOPjz3UC9/rUHfsruus39QHqJcov7wqcwJm6Jchu+WXaXW3SpAy46wuAYmFJsRVDFTX
+        fKF4GIjhAjKhEtcLOAs1vpJHwSCb0WsiZwZOpVP4GkReNbLw3Of58zP1rByOHw+Ut1+YKf
+        V46hliZ+4H48nbL8Hs3Klq4IvFs+G6Y=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-497-yd4R6GCRP2SgM5WkG-ef4g-1; Wed, 10 Mar 2021 22:23:10 -0500
+X-MC-Unique: yd4R6GCRP2SgM5WkG-ef4g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1669C801817;
+        Thu, 11 Mar 2021 03:23:09 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-9.pek2.redhat.com [10.72.13.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E96D10023AC;
+        Thu, 11 Mar 2021 03:23:01 +0000 (UTC)
+Subject: Re: [PATCH V3 1/6] vDPA/ifcvf: get_vendor_id returns a device
+ specific vendor id
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        lulu@redhat.com, leonro@nvidia.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210310090052.4762-1-lingshan.zhu@intel.com>
+ <20210310090052.4762-2-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ff5fc8f9-f886-bd2a-60cc-771c628c6c4b@redhat.com>
+Date:   Thu, 11 Mar 2021 11:23:00 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <20210311012108.7190-1-ilya.lipnitskiy@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210310090052.4762-2-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 2021/3/10 5:00 下午, Zhu Lingshan wrote:
+> In this commit, ifcvf_get_vendor_id() will return
+> a device specific vendor id of the probed pci device
+> than a hard code.
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>   drivers/vdpa/ifcvf/ifcvf_main.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> index fa1af301cf55..e501ee07de17 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> @@ -324,7 +324,10 @@ static u32 ifcvf_vdpa_get_device_id(struct vdpa_device *vdpa_dev)
+>   
+>   static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
+>   {
+> -	return IFCVF_SUBSYS_VENDOR_ID;
+> +	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
+> +	struct pci_dev *pdev = adapter->pdev;
+> +
+> +	return pdev->subsystem_vendor;
+>   }
 
-On 3/10/2021 5:21 PM, Ilya Lipnitskiy wrote:
-> A recent change to MIPS ralink reset logic made it so mt7530 actually
-> resets the switch on platforms such as mt7621 (where bit 2 is the reset
-> line for the switch). That exposed an issue where the switch would not
-> function properly in TRGMII mode after a reset.
-> 
-> Reconfigure core clock in TRGMII mode to fix the issue.
-> 
-> Tested on Ubiquiti ER-X (MT7621) with TRGMII mode enabled.
-> 
-> Fixes: 3f9ef7785a9c ("MIPS: ralink: manage low reset lines")
-> Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+While at this, I wonder if we can do something similar in 
+get_device_id() if it could be simple deduced from some simple math from 
+the pci device id?
+
+Thanks
+
+
+>   
+>   static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
+
