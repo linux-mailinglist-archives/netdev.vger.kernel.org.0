@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB313375F7
+	by mail.lfdr.de (Postfix) with ESMTP id 5FCF23375F8
 	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 15:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbhCKOmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 09:42:38 -0500
-Received: from mail-dm6nam11on2088.outbound.protection.outlook.com ([40.107.223.88]:58460
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        id S233466AbhCKOmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 09:42:40 -0500
+Received: from mail-bn8nam12on2089.outbound.protection.outlook.com ([40.107.237.89]:48993
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233869AbhCKOmP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 09:42:15 -0500
+        id S230259AbhCKOmR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 09:42:17 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dvd2JbD7bUyAttM9og+3vXA3lmSPel4DMFmNEPiROBLHUWyX/Z2xNgJOuT+Qt1PGx3xx7pb/Vt1aOzr9+jOOlsdMkWmLC3O6LYX+lfReM6qDgPd4WxxTeTYyN1XnTgQSKyZaH3zWgs5wlb5zg7C+HPrkfhu8Gr3RQV6PzMw7EZws7KL/nnlXdDqiNsOQgh7GPJEMb6b+pu+4YU39GbOwfxGJ0MztHYCjXmTB+MdsgohqTc8WGu22xnpRCUZdTkaa5uvD87Zs9VqLyxQKlWF3mGqogfH7AFvLHxtEP7rReEAAKFEqR6hDHV4UtyUgoP01fzkOmLqNSm280GUxZaHXkg==
+ b=ehki8zxOK4xC2GSo+Dx36ZiQwPaGO24xwSHDdS8GXSw1TLpbbbp3zu11Ig9wBN/uaXkb8pSk2nZfM6TqXWtrs3M1iitBdtxPE81r55ZF6hO4q0vb/ZagbQZojPuMmIoe8eVJOE9/pzHZVmlFRAeVEEKikBUUWgYOW2UUzWWVvuYvKj/xelkkefCbGl0AmGchf4rpxbPhCwr7mvjdVOw5741D1RC0I9RxrtgZFKzJswnxz6XiMbnPAoR/GoiyHA8nOOtpHRnV5lj0RpolSXUSPK10/tiK8FOCoZu4+MjjlFMyl1xd4FhH926A9E/cp/Ir2+0Mgl5KNoPt4rSeJmbyJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=03hwXMKMNgrR5Rc7aBYtBRc3Q47Jow/CuvntVi0OR7s=;
- b=D2GF8nv7g4cdmM/4jHzWfT1DKRLZiDMhK7kqqhjUGNj6Gc75NzGoE8r0zGrmaXnHBXIYG6xdHQwuUk+f39oObx5zvcE0dnDN231A/e9n6TB4dc+UR1hIr6ts+wqn5QYuYZ7rO+ZfcJMck3RboW1/36zjP4Ax0bmr7BGcigOLohSaFrQe3/6i4O8pTBZ5IIZzNq0oyOiyNc4m+Bbl//liWOs8dTj3HlJwXF3gb9pJwWcVOJnVCqvujg108Ik6MDKy+gVrIarzzdz124SiF37v0Qq+sMdKYb1z8yxZC7OIicojnKGczKsbz0FNsS8eei4I8heJTFVsXetFD7qyIPbLwQ==
+ bh=CQcWCbdoRpAnEMsg0bWI0ctQ9+0BuTe44xk+PRTXJiY=;
+ b=YGkQPqqDPewgqV7UWvA/Lp3iySN2dmkoWR8Edd6ONr0UDguAzvI8fBJ9Im27SMrMXbG+v9jT2WiARaKnP8IQrCsQqnHffgY8gDtvtXY6FPULr/9RJq2HD7Pu1QM2dAb5PhDluccePaoy06JAge5FzaMUTlKvDRZNaL23+gW1u7ZpiFN+Iv7AC6dpxGh2OxL1EwIhl7mAhnru1UL3LctPkVDun7GDSSqIwmiLK4XgpH+7mOcHUwXPvfPdm2G2XeLD8bLgrQdXoiYY3/YMcO1HodrSktIo6+FfzQOeAM5d1vPDYdWbBAWseXtAYrtddIRHASTf/Nf+kE0hM3xxH5Suyg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
+ 216.228.112.36) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=03hwXMKMNgrR5Rc7aBYtBRc3Q47Jow/CuvntVi0OR7s=;
- b=PM1anU+v/OPB5GQDDDF+JknzuSstflh5YOFWzwPAAetH3/Uk4/iKHY6BkuPVpqXUGoMA7FHKbFuv/VkEzgkDPJbbMauJH8wz2s4S9Aw+zkudLaxpdA8YS50kln5UhwfEzqk1R47EBuJhzef9A0zw/rOFgvkYwJYVIvO+pUxNgohXnQAcBk9HjOkHgQxqvvDbXQ8/xX23F4abWHQ1ujDpkIK9ZKyfq9umnlD3+JTgrjXzkgtko0O67wb/N3VRF3e13PFEYWVIbhcdyHBr1okrQsWrURV/bp4wCAewOoiNoOVzUqOcztZ5s3unidrMSRtw/JF1+7wlj33+Ux7p8IRpUw==
-Received: from BN9PR03CA0292.namprd03.prod.outlook.com (2603:10b6:408:f5::27)
- by BYAPR12MB3495.namprd12.prod.outlook.com (2603:10b6:a03:ae::13) with
+ bh=CQcWCbdoRpAnEMsg0bWI0ctQ9+0BuTe44xk+PRTXJiY=;
+ b=YxnL9lmzaJe7vXej+pAkauRvO/XkGPh4oQiAgE1UfL0dQW2viM9G2eUAzi4QXH0nKREpDoJ1zamvR+cn3BfB6BjIuulsXELYSKNd6y3RbeKl0GCtGUglLJ88jFlITnmEWwVcyI97hyqvznj52hVzPdcSRW7ai8co8COY8WREkGyLYvXMq1PadDnPSk/PLeSavyOK7RT8/gz43Fwbn4J63OdCuYeMRZXNxNZLwmJKQcHZW5o6k6btpe8xKXkE/os4HYBRE1UYMpoH/Gfivb6juNpB6N5M8LeRxGLcEx+PP0kmqBQVj0y9raHd51WDDfHVy8hSoWQlkUzsoZjGdxamrA==
+Received: from MWHPR12CA0065.namprd12.prod.outlook.com (2603:10b6:300:103::27)
+ by DM6PR12MB3098.namprd12.prod.outlook.com (2603:10b6:5:11c::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.30; Thu, 11 Mar
- 2021 14:42:12 +0000
-Received: from BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f5:cafe::63) by BN9PR03CA0292.outlook.office365.com
- (2603:10b6:408:f5::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.19; Thu, 11 Mar
+ 2021 14:42:15 +0000
+Received: from CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:103:cafe::72) by MWHPR12CA0065.outlook.office365.com
+ (2603:10b6:300:103::27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Thu, 11 Mar 2021 14:42:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ Transport; Thu, 11 Mar 2021 14:42:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
  smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
  header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- BN8NAM11FT042.mail.protection.outlook.com (10.13.177.85) with Microsoft SMTP
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ CO1NAM11FT025.mail.protection.outlook.com (10.13.175.232) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 14:42:11 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar
- 2021 14:42:11 +0000
+ 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 14:42:14 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar
+ 2021 14:42:14 +0000
 Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL105.nvidia.com
  (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar
- 2021 14:42:11 +0000
+ 2021 14:42:14 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 11 Mar 2021 14:42:08 +0000
+ Transport; Thu, 11 Mar 2021 14:42:11 +0000
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
@@ -65,50 +65,77 @@ CC:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Tariq Toukan <tariqt@nvidia.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
-        <netdev@vger.kernel.org>, Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net 0/2] Bugfixes for HTB
-Date:   Thu, 11 Mar 2021 16:42:04 +0200
-Message-ID: <20210311144206.2135872-1-maximmi@nvidia.com>
+        <netdev@vger.kernel.org>, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        <syzbot+b53a709f04722ca12a3c@syzkaller.appspotmail.com>
+Subject: [PATCH net 1/2] sch_htb: Fix select_queue for non-offload mode
+Date:   Thu, 11 Mar 2021 16:42:05 +0200
+Message-ID: <20210311144206.2135872-2-maximmi@nvidia.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210311144206.2135872-1-maximmi@nvidia.com>
+References: <20210311144206.2135872-1-maximmi@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2706d71c-b010-492c-8ede-08d8e49bdb2c
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3495:
-X-Microsoft-Antispam-PRVS: <BYAPR12MB34953E54F0C4EDB6C894364EDC909@BYAPR12MB3495.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Office365-Filtering-Correlation-Id: c25d8169-e7d9-46c1-c7c6-08d8e49bdce3
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3098:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3098601934FA43939A2EAFC3DC909@DM6PR12MB3098.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:949;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B2BsdypbClHbR6MRYMPiuZJuMcQB7lwuYB0t3gF6f7j216N4gZp3W/QtL6XI6Jyl0zIobp1p+zjtOL8JpgR2/99vM+wjyfz08rK7nHKmaeLc+BwyRMKpGgjUYPFDYmKnn3ZNiM3y72/vLYe/F1UQBm7pMyxWaQls7FzQJrJFl8O5gGeI8Y9tj9LcAUDup9qBMNMPLgl8pBRqEiugXgX7HVxMjOWqqno8AmPW1lwG4bQ0alrKuoeLdLDMfcpWUvSfuasavG5D2K4qx70YEmVM8ijxJCJzaUhTWzfy/3Qv0u93rphKDP7351yc3xaGh19aVTGc5sXwVgCCGtIgb2zfAf1K0L+nsVGbmU+Tdnw2sq+h/Msy/Yrsj75cWqRbEGo5LJVbNFnlOqcd+my6wnp5spJUaFT2uPTb19y//Vg+a9DFbSUokw9jYs1k5zRTkXZDMzQF9zjQ2eWR2k9fluu90lr0Wrxf7a2MWwCJ+ollIX6oAGk0Vgl50J2nkRUMPsthSxtIpnpqU91LdPW7jxNbsOWLf+C8QnjhGD1OeIDVBrlPgOJHnLn9zD7czIf/HrEm1Fkeq7QEDtisz+zLL/l4rm/OWqvwjmnmlSX+m/2ZF+Q7IqT3aKj1trHw8u23SNN8f/+em4z/SfcjLxSbrt5RpqldGAfw0z4BTgv4vPWB5MArgzNiL7XvcGM4NeJCb3ma
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(376002)(136003)(346002)(46966006)(36840700001)(426003)(82310400003)(6666004)(47076005)(110136005)(2616005)(7696005)(316002)(478600001)(8936002)(186003)(336012)(1076003)(34070700002)(83380400001)(4326008)(54906003)(26005)(36756003)(2906002)(4744005)(70206006)(70586007)(86362001)(107886003)(8676002)(7636003)(5660300002)(82740400003)(356005)(36860700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: YW0OGJOrPMagqOEEHfu1RVJgdA+/oBVPZ+GrC8qTYl1PAZAM1HkZV4XIi1gGXjTa7alWXGFKX3VuoTWu8OvKGzJVVs12jQ1RpbEiIkEN8misZ4b8VH7HjnrvJmMQe8MltRm0tHsM+K2mTxnbUHJYUbCynNbHxfMwudX12ci7++rjrNrbeF2xWBVe7yd2sahvwNZqVwrM1zTIP7lkKZxKtd5KKVJAM1A4azFTP7S+12HiJle49b0psteWRPMuc4YJ+Zqo8gsWslTLjLeM9hZR1tLMcEgw+WSbQ9G7fsbppQx7MVS1wdCFdv1cn/a9+I16f+4rYcOw4IH3RGCEWRs8AEq0ZQpEkvJQpq4c9qYlHU+QECa/5h325DaDPyPPMMdLfQbQ+yaO0SIJqQnIIwkaLpM/cDeO3qVmAbwsLJ/m/vlJrvY3Nwg9/euWwtztIVfqqR5C+dI95jN8lBp9nQUMW7gqDpPnWBdyhl6Ixg+tQDlX7wWT/XLZaLcZGAE0cn/9kXv6S25gy1bOdMLEstxPZPkYii68tqfVm5RNtkX1vhXsZ+f385wQtAz+USCoVhk7gjPTf/IdGxns+czaSq2gmksLxq3YURfSdEW86x0U4gLc+Jcz1VbqZts/aDgJENyXXZEVsoVhDQR/cL0NRXVVIFDCMzPUlAkc1WMwoy3JgLp5zYPMrv5AAYD2pDt23yTZ
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39860400002)(376002)(46966006)(36840700001)(186003)(54906003)(2906002)(2616005)(110136005)(26005)(6666004)(316002)(336012)(36906005)(356005)(36756003)(47076005)(7636003)(82310400003)(86362001)(4326008)(8936002)(70586007)(478600001)(70206006)(8676002)(34070700002)(7696005)(82740400003)(36860700001)(5660300002)(426003)(1076003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 14:42:11.9540
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 14:42:14.8824
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2706d71c-b010-492c-8ede-08d8e49bdb2c
+X-MS-Exchange-CrossTenant-Network-Message-Id: c25d8169-e7d9-46c1-c7c6-08d8e49bdce3
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3495
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3098
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The HTB offload feature introduced a few bugs in HTB. One affects the
-non-offload mode, preventing attaching qdiscs to HTB classes, and the
-other affects the error flow, when the netdev doesn't support the
-offload, but it was requested. This short series fixes them.
+htb_select_queue assumes it's always the offload mode, and it ends up in
+calling ndo_setup_tc without any checks. It may lead to a NULL pointer
+dereference if ndo_setup_tc is not implemented, or to an error returned
+from the driver, which will prevent attaching qdiscs to HTB classes in
+the non-offload mode.
 
-Maxim Mikityanskiy (2):
-  sch_htb: Fix select_queue for non-offload mode
-  sch_htb: Fix offload cleanup in htb_destroy on htb_init failure
+This commit fixes the bug by adding the missing check to
+htb_select_queue. In the non-offload mode it will return sch->dev_queue,
+mimicking tc_modify_qdisc's behavior for the case where select_queue is
+not implemented.
 
- net/sched/sch_htb.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+Reported-by: syzbot+b53a709f04722ca12a3c@syzkaller.appspotmail.com
+Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+---
+ net/sched/sch_htb.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index dff3adf5a915..b23203159996 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -1340,8 +1340,12 @@ htb_select_queue(struct Qdisc *sch, struct tcmsg *tcm)
+ {
+ 	struct net_device *dev = qdisc_dev(sch);
+ 	struct tc_htb_qopt_offload offload_opt;
++	struct htb_sched *q = qdisc_priv(sch);
+ 	int err;
+ 
++	if (!q->offload)
++		return sch->dev_queue;
++
+ 	offload_opt = (struct tc_htb_qopt_offload) {
+ 		.command = TC_HTB_LEAF_QUERY_QUEUE,
+ 		.classid = TC_H_MIN(tcm->tcm_parent),
 -- 
 2.25.1
 
