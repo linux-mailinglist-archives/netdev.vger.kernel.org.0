@@ -2,191 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39FE9336D03
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13C57336D0F
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:30:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231740AbhCKHXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 02:23:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbhCKHXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 02:23:19 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AF6C061574;
-        Wed, 10 Mar 2021 23:23:19 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id b23so5256655pfo.8;
-        Wed, 10 Mar 2021 23:23:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bQ+MhgJJeqZ2ppdhkPvqIcV/LFOsRoAQhfX9yedaWFQ=;
-        b=rRJwKAV0XQJNWpgy57IHYDrA29NKx01MUeBDc0ROiH4DQn09oY4U4ohqgcGnm03LZI
-         7p6NQY2vQ1yQAH/ikjafv18OZCs36VRuqc4x4PZ7GibDqKW4PqWcbzT1rqRVovRQwbDX
-         VQqdQuhh3L+GNUToiqf5c7MufjEc3a10lGrbT7f5fcI8N+vIVgBFL5oUn150vgGKI6Hb
-         hMpCJ6ojmCox3xcEhS/lftViVQWl8Yiod5XhQMyXMrD4GF5W4MM0F4Qm/O383hhq1mNK
-         PIRiu5H++/jODPG7Sw0gxVNHgZgiPg23CERgB83CYAARcLZcXpN5z1p1uYmHlM0GiJsW
-         VpDQ==
+        id S231669AbhCKHaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 02:30:15 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:48718 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231673AbhCKH3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 02:29:46 -0500
+Received: from mail-wr1-f70.google.com ([209.85.221.70])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lKFlP-00030O-Mj
+        for netdev@vger.kernel.org; Thu, 11 Mar 2021 07:29:43 +0000
+Received: by mail-wr1-f70.google.com with SMTP id m9so9124871wrx.6
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 23:29:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=bQ+MhgJJeqZ2ppdhkPvqIcV/LFOsRoAQhfX9yedaWFQ=;
-        b=fyfuz3hq+5OGnTNAJYo1ZNhyGYcyCdJmV3AkiyUFfPp3Y2CfqqMsyJKGnPw1i4rDT2
-         xod1Es4lpFYnORiVIs8noZlHzNZVXx9t4d8Mv9W4UsSNVj4mxPD77J29/9/J2H3rsr25
-         lewKXFe2N91tqP5iHFZqn1oJ+DKFrZSIRyKnTAMUES2kAtTigrO5ng6K9zkea9nTzFZn
-         1MAk5u0Wwp26w+QTRLGicQH+0Y0Nn1FCV/SkH3gPMSgWsnqZUi0G+iyRbr+E34gSrYH9
-         Ezx+ecSQPdAta4WGM6vXrMNWi/zAuzWjZOJhLn0nHPMbBI1Z1WtFIpEgjjkGIUrf+LhU
-         cDsA==
-X-Gm-Message-State: AOAM530jzP11Xp38xDZimokX4yBNLS/m/XxSN1RhnQKD0KjRmQOWPIlq
-        6O16RQoUGTPG753D3NF50H8DS/bvAVU=
-X-Google-Smtp-Source: ABdhPJxeYFCjxIueFXov0trhx3KlrCmnBpnb/cEg7BxLz4lJLip5QKwAHjfhtcrswFPjirHlLVidLQ==
-X-Received: by 2002:a62:e708:0:b029:1f8:c092:ff93 with SMTP id s8-20020a62e7080000b02901f8c092ff93mr6165670pfh.21.1615447398981;
-        Wed, 10 Mar 2021 23:23:18 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:18d9:c811:37df:1c17])
-        by smtp.gmail.com with ESMTPSA id e1sm1439730pfi.175.2021.03.10.23.23.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 23:23:18 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Martin Schiller <ms@dev.tdt.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net] net: lapbether: Prevent racing when checking whether the netif is running
-Date:   Wed, 10 Mar 2021 23:23:09 -0800
-Message-Id: <20210311072311.2969-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        bh=UM3RKX0XCDpJCuubU4GyjNFkIs45HL7bg2XqkxuxPoo=;
+        b=FVPvuOyYigsETucbXKY4ijM6xV27VhTohDxsqBlNeoU91KElqgx9pzAMXKrEH/w5a+
+         o4jKAaxnf/L4SIO0vOJkl/NaI/1QBMOYsGlyILReLma8Wp9E46SPtbBG6Axy9BeUosJg
+         u/yuNuwdkmdPjxIrotHA9xOUjr4ln2XY5pr7u/63oIhjlKvwxoC93OjOJBlZRdqSLJoK
+         ZqzO9Fa3LdIsTvbvYcZjfxYCqcQD63B8vqznRStYWodWASxj0H7T/rBqcgkTyIdlqaoY
+         8kosZvj/aEE9l8ilKINK+ma+QwxyO5mP4o56lTWv0i82V80Ya27TAUzxkTnIy+nU8HiP
+         S1jw==
+X-Gm-Message-State: AOAM5300RPDWIbxMR069wtQMf/f+uu40YrPsSivKMQxgrYyvINjLiJ9P
+        oKKaanrFP0VeiemCT+3TwlqQtTkf994jIgim8n5mHuYpitx0BpNaMtzTnNxxOw3IA3d+ZRHWY82
+        x5SzR9gTj4PhBLxvSNRRCByY3tTkL5veD+g==
+X-Received: by 2002:a5d:4708:: with SMTP id y8mr7473160wrq.382.1615447783436;
+        Wed, 10 Mar 2021 23:29:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwntEUdVEQpqMsRTDpIua5kEKJ6BAuZNIC5Far5vVjfExGBGIXOrXsOxt/q5mJ8+gEXtFcFdw==
+X-Received: by 2002:a5d:4708:: with SMTP id y8mr7473131wrq.382.1615447783295;
+        Wed, 10 Mar 2021 23:29:43 -0800 (PST)
+Received: from [192.168.1.116] (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
+        by smtp.gmail.com with ESMTPSA id z3sm2323807wrw.96.2021.03.10.23.29.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Mar 2021 23:29:42 -0800 (PST)
+Subject: Re: [RFC v2 5/5] clk: socfpga: allow compile testing of Stratix 10 /
+ Agilex clocks
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Moritz Fischer <mdf@kernel.org>, Tom Rix <trix@redhat.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        linux-edac@vger.kernel.org, linux-fpga@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com, arm-soc <arm@kernel.org>,
+        SoC Team <soc@kernel.org>, Olof Johansson <olof@lixom.net>
+References: <20210310083327.480837-1-krzysztof.kozlowski@canonical.com>
+ <20210310083840.481615-1-krzysztof.kozlowski@canonical.com>
+ <20210310083840.481615-3-krzysztof.kozlowski@canonical.com>
+ <CAK8P3a27hAExCKtsO7k1HQwLKk-5Q8uxYYt_G2v-Osq8RZv2tg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <a1f296ad-19db-824e-5d33-c93c6af87e70@canonical.com>
+Date:   Thu, 11 Mar 2021 08:29:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK8P3a27hAExCKtsO7k1HQwLKk-5Q8uxYYt_G2v-Osq8RZv2tg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two "netif_running" checks in this driver. One is in
-"lapbeth_xmit" and the other is in "lapbeth_rcv". They serve to make
-sure that the LAPB APIs called in these functions are called before
-"lapb_unregister" is called by the "ndo_stop" function.
+On 10/03/2021 17:48, Arnd Bergmann wrote:
+> On Wed, Mar 10, 2021 at 9:38 AM Krzysztof Kozlowski
+> <krzysztof.kozlowski@canonical.com> wrote:
+>> --- a/drivers/clk/socfpga/Kconfig
+>> +++ b/drivers/clk/socfpga/Kconfig
+>> @@ -1,6 +1,17 @@
+>>  # SPDX-License-Identifier: GPL-2.0
+>> +config COMMON_CLK_SOCFPGA
+>> +       bool "Intel SoCFPGA family clock support" if COMPILE_TEST && !ARCH_SOCFPGA && !ARCH_SOCFPGA64
+>> +       depends on ARCH_SOCFPGA || ARCH_SOCFPGA64 || COMPILE_TEST
+>> +       default y if ARCH_SOCFPGA || ARCH_SOCFPGA64
+> 
+> I think the 'depends on' line here is redundant if you also have the
+> 'if' line and the default.
 
-However, these "netif_running" checks are unreliable, because it's
-possible that immediately after "netif_running" returns true, "ndo_stop"
-is called (which causes "lapb_unregister" to be called).
-
-This patch adds locking to make sure "lapbeth_xmit" and "lapbeth_rcv" can
-reliably check and ensure the netif is running while doing their work.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/lapbether.c | 32 +++++++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index c3372498f4f1..8fda0446ff71 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -51,6 +51,8 @@ struct lapbethdev {
- 	struct list_head	node;
- 	struct net_device	*ethdev;	/* link to ethernet device */
- 	struct net_device	*axdev;		/* lapbeth device (lapb#) */
-+	bool			up;
-+	spinlock_t		up_lock;	/* Protects "up" */
- };
- 
- static LIST_HEAD(lapbeth_devices);
-@@ -101,8 +103,9 @@ static int lapbeth_rcv(struct sk_buff *skb, struct net_device *dev, struct packe
- 	rcu_read_lock();
- 	lapbeth = lapbeth_get_x25_dev(dev);
- 	if (!lapbeth)
--		goto drop_unlock;
--	if (!netif_running(lapbeth->axdev))
-+		goto drop_unlock_rcu;
-+	spin_lock_bh(&lapbeth->up_lock);
-+	if (!lapbeth->up)
- 		goto drop_unlock;
- 
- 	len = skb->data[0] + skb->data[1] * 256;
-@@ -117,11 +120,14 @@ static int lapbeth_rcv(struct sk_buff *skb, struct net_device *dev, struct packe
- 		goto drop_unlock;
- 	}
- out:
-+	spin_unlock_bh(&lapbeth->up_lock);
- 	rcu_read_unlock();
- 	return 0;
- drop_unlock:
- 	kfree_skb(skb);
- 	goto out;
-+drop_unlock_rcu:
-+	rcu_read_unlock();
- drop:
- 	kfree_skb(skb);
- 	return 0;
-@@ -151,13 +157,11 @@ static int lapbeth_data_indication(struct net_device *dev, struct sk_buff *skb)
- static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
- 				      struct net_device *dev)
- {
-+	struct lapbethdev *lapbeth = netdev_priv(dev);
- 	int err;
- 
--	/*
--	 * Just to be *really* sure not to send anything if the interface
--	 * is down, the ethernet device may have gone.
--	 */
--	if (!netif_running(dev))
-+	spin_lock_bh(&lapbeth->up_lock);
-+	if (!lapbeth->up)
- 		goto drop;
- 
- 	/* There should be a pseudo header of 1 byte added by upper layers.
-@@ -194,6 +198,7 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
- 		goto drop;
- 	}
- out:
-+	spin_unlock_bh(&lapbeth->up_lock);
- 	return NETDEV_TX_OK;
- drop:
- 	kfree_skb(skb);
-@@ -285,6 +290,7 @@ static const struct lapb_register_struct lapbeth_callbacks = {
-  */
- static int lapbeth_open(struct net_device *dev)
- {
-+	struct lapbethdev *lapbeth = netdev_priv(dev);
- 	int err;
- 
- 	if ((err = lapb_register(dev, &lapbeth_callbacks)) != LAPB_OK) {
-@@ -292,13 +298,22 @@ static int lapbeth_open(struct net_device *dev)
- 		return -ENODEV;
- 	}
- 
-+	spin_lock_bh(&lapbeth->up_lock);
-+	lapbeth->up = true;
-+	spin_unlock_bh(&lapbeth->up_lock);
-+
- 	return 0;
- }
- 
- static int lapbeth_close(struct net_device *dev)
- {
-+	struct lapbethdev *lapbeth = netdev_priv(dev);
- 	int err;
- 
-+	spin_lock_bh(&lapbeth->up_lock);
-+	lapbeth->up = false;
-+	spin_unlock_bh(&lapbeth->up_lock);
-+
- 	if ((err = lapb_unregister(dev)) != LAPB_OK)
- 		pr_err("lapb_unregister error: %d\n", err);
- 
-@@ -356,6 +371,9 @@ static int lapbeth_new_device(struct net_device *dev)
- 	dev_hold(dev);
- 	lapbeth->ethdev = dev;
- 
-+	lapbeth->up = false;
-+	spin_lock_init(&lapbeth->up_lock);
-+
- 	rc = -EIO;
- 	if (register_netdevice(ndev))
- 		goto fail;
--- 
-2.27.0
-
+Yes, you're right.
+Best regards,
+Krzysztof
