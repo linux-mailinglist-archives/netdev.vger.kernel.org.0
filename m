@@ -2,150 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AD26337193
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 12:43:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D43B83371B3
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 12:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232582AbhCKLm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 06:42:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232733AbhCKLmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 06:42:20 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76846C061760
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 03:42:20 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id h98so1473521wrh.11
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 03:42:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=lTuAlmKpzGDKQ5EMwcLuGVUtBW+trFeNE8cI/WVzAcA=;
-        b=TIjaaIlN8eH10HrJ5INRoJwQg/W4Y9Rd5FFY1XPldeMbfP7y6jPeagvhpdVErliaXj
-         ODt1L7GhjOyvQYIpqTFJ06OFhvstQy9+Gx2jgaw5M/TSkbWxZTb71JVrhMj0qGSJELUh
-         JDciJ0iInSQHz5rVIsAIbmQ7dsnWOBD4l48sc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=lTuAlmKpzGDKQ5EMwcLuGVUtBW+trFeNE8cI/WVzAcA=;
-        b=tm0uMaTnkjYk0wrctY6EKmF3rRt+zxbwuUIc9iXiwhWvXnwJ+7lSkQYItaOWMhz8x6
-         7kwjhTERstdtus70Q3YvzrtHq5qFukLvhHw+/iAQCIMdX+Mc90uPbyk/Xxv+CnP960pc
-         SkdrQ9vAA/7njcZ34Nc0Tu/WQGso/8d5OjC6XYf0bP6f8EJ939Y2AK2p9pyvnr2mrlWN
-         3dfZ4nGctc/2FzUqKNDRBZwGO/poAoD9a0VS9t+ICrniyg9oovOr5km1q2T4ba1SKXCO
-         b9gT7scQp67RyqlytE83MOWViHPPWpB57ijOy05+PunxwuiG+K9OfEpKJ0Sd5U/LhuPN
-         oJUg==
-X-Gm-Message-State: AOAM53012cemzIyqYV5qleAXkXsIbbbUCjn2iZYNqtxKajIZsUe5HOgG
-        U/lY2CXdTkVjyhX7IZRRYH0ksw==
-X-Google-Smtp-Source: ABdhPJwJMWt5V23DvcfEfkkSZTv2GTu9OzXvPD6JXbWgh3Btxltrh6szbPUtatAKIXZuEm3Ut1akoA==
-X-Received: by 2002:a5d:55c4:: with SMTP id i4mr8346085wrw.84.1615462939042;
-        Thu, 11 Mar 2021 03:42:19 -0800 (PST)
-Received: from cloudflare.com (79.184.34.53.ipv4.supernova.orange.pl. [79.184.34.53])
-        by smtp.gmail.com with ESMTPSA id j20sm2987755wmp.30.2021.03.11.03.42.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Mar 2021 03:42:17 -0800 (PST)
-References: <20210310053222.41371-1-xiyou.wangcong@gmail.com>
- <20210310053222.41371-4-xiyou.wangcong@gmail.com>
-User-agent: mu4e 1.1.0; emacs 27.1
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [Patch bpf-next v4 03/11] skmsg: introduce skb_send_sock() for
- sock_map
-In-reply-to: <20210310053222.41371-4-xiyou.wangcong@gmail.com>
-Date:   Thu, 11 Mar 2021 12:42:16 +0100
-Message-ID: <87zgz93oiv.fsf@cloudflare.com>
+        id S232768AbhCKLuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 06:50:01 -0500
+Received: from outbound-smtp09.blacknight.com ([46.22.139.14]:40333 "EHLO
+        outbound-smtp09.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232777AbhCKLtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 06:49:51 -0500
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp09.blacknight.com (Postfix) with ESMTPS id 953351C3FEC
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 11:49:35 +0000 (GMT)
+Received: (qmail 21490 invoked from network); 11 Mar 2021 11:49:35 -0000
+Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPA; 11 Mar 2021 11:49:35 -0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: [PATCH 0/5 v3] Introduce a bulk order-0 page allocator with two in-tree users
+Date:   Thu, 11 Mar 2021 11:49:30 +0000
+Message-Id: <20210311114935.11379-1-mgorman@techsingularity.net>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 06:32 AM CET, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> We only have skb_send_sock_locked() which requires callers
-> to use lock_sock(). Introduce a variant skb_send_sock()
-> which locks on its own, callers do not need to lock it
-> any more. This will save us from adding a ->sendmsg_locked
-> for each protocol.
->
-> To reuse the code, pass function pointers to __skb_send_sock()
-> and build skb_send_sock() and skb_send_sock_locked() on top.
->
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  include/linux/skbuff.h |  1 +
->  net/core/skbuff.c      | 52 ++++++++++++++++++++++++++++++++++++------
->  2 files changed, 46 insertions(+), 7 deletions(-)
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 0503c917d773..2fc8c3657c53 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -3626,6 +3626,7 @@ int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
->  		    unsigned int flags);
->  int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
->  			 int len);
-> +int skb_send_sock(struct sock *sk, struct sk_buff *skb, int offset, int len);
->  void skb_copy_and_csum_dev(const struct sk_buff *skb, u8 *to);
->  unsigned int skb_zerocopy_headlen(const struct sk_buff *from);
->  int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 545a472273a5..396586bd6ae3 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -2500,9 +2500,12 @@ int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
->  }
->  EXPORT_SYMBOL_GPL(skb_splice_bits);
->
-> -/* Send skb data on a socket. Socket must be locked. */
-> -int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
-> -			 int len)
-> +typedef int (*sendmsg_func)(struct sock *sk, struct msghdr *msg,
-> +			    struct kvec *vec, size_t num, size_t size);
-> +typedef int (*sendpage_func)(struct sock *sk, struct page *page, int offset,
-> +			   size_t size, int flags);
-> +static int __skb_send_sock(struct sock *sk, struct sk_buff *skb, int offset,
-> +			   int len, sendmsg_func sendmsg, sendpage_func sendpage)
->  {
->  	unsigned int orig_len = len;
->  	struct sk_buff *head = skb;
-> @@ -2522,7 +2525,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
->  		memset(&msg, 0, sizeof(msg));
->  		msg.msg_flags = MSG_DONTWAIT;
->
-> -		ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
-> +		ret = sendmsg(sk, &msg, &kv, 1, slen);
+Changelog since v3
+o Prep new pages with IRQs enabled
+o Minor documentation update
 
+Changelog since v1
+o Parenthesise binary and boolean comparisons
+o Add reviewed-bys
+o Rebase to 5.12-rc2
 
-Maybe use INDIRECT_CALLABLE_DECLARE() and INDIRECT_CALL_2() since there
-are just two possibilities? Same for sendpage below.
+This series introduces a bulk order-0 page allocator with sunrpc and
+the network page pool being the first users. The implementation is not
+particularly efficient and the intention is to iron out what the semantics
+of the API should have for users. Once the semantics are ironed out, it
+can be made more efficient. Despite that, this is a performance-related
+for users that require multiple pages for an operation without multiple
+round-trips to the page allocator. Quoting the last patch for the
+high-speed networking use-case.
 
->  		if (ret <= 0)
->  			goto error;
->
-> @@ -2553,9 +2556,9 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
->  		slen = min_t(size_t, len, skb_frag_size(frag) - offset);
->
->  		while (slen) {
-> -			ret = kernel_sendpage_locked(sk, skb_frag_page(frag),
-> -						     skb_frag_off(frag) + offset,
-> -						     slen, MSG_DONTWAIT);
-> +			ret = sendpage(sk, skb_frag_page(frag),
-> +				       skb_frag_off(frag) + offset,
-> +				       slen, MSG_DONTWAIT);
->  			if (ret <= 0)
->  				goto error;
->
+    For XDP-redirect workload with 100G mlx5 driver (that use page_pool)
+    redirecting xdp_frame packets into a veth, that does XDP_PASS to
+    create an SKB from the xdp_frame, which then cannot return the page
+    to the page_pool. In this case, we saw[1] an improvement of 18.8%
+    from using the alloc_pages_bulk API (3,677,958 pps -> 4,368,926 pps).
 
-[...]
+Both users in this series are corner cases (NFS and high-speed networks)
+so it is unlikely that most users will see any benefit in the short
+term. Potential other users are batch allocations for page cache
+readahead, fault around and SLUB allocations when high-order pages are
+unavailable. It's unknown how much benefit would be seen by converting
+multiple page allocation calls to a single batch or what difference it may
+make to headline performance. It's a chicken and egg problem given that
+the potential benefit cannot be investigated without an implementation
+to test against.
+
+Light testing passed, I'm relying on Chuck and Jesper to test the target
+users more aggressively but both report performance improvements with the
+initial RFC.
+
+Patch 1 of this series is a cleanup to sunrpc, it could be merged
+	separately but is included here as a pre-requisite.
+
+Patch 2 is the prototype bulk allocator
+
+Patch 3 is the sunrpc user. Chuck also has a patch which further caches
+	pages but is not included in this series. It's not directly
+	related to the bulk allocator and as it caches pages, it might
+	have other concerns (e.g. does it need a shrinker?)
+
+Patch 4 is a preparation patch only for the network user
+
+Patch 5 converts the net page pool to the bulk allocator for order-0 pages.
+
+There is no obvious impact to the existing paths as only new users of the
+API should notice a difference between multiple calls to the allocator
+and a single bulk allocation.
+
+ include/linux/gfp.h   |  13 +++++
+ mm/page_alloc.c       | 118 +++++++++++++++++++++++++++++++++++++++++-
+ net/core/page_pool.c  | 102 ++++++++++++++++++++++--------------
+ net/sunrpc/svc_xprt.c |  47 ++++++++++++-----
+ 4 files changed, 225 insertions(+), 55 deletions(-)
+
+-- 
+2.26.2
+
