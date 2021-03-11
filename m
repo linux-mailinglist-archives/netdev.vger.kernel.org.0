@@ -2,117 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68363336AAA
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:27:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50831336AA7
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:27:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229843AbhCKD00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 22:26:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56838 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230033AbhCKD0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 22:26:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615433168;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MFqvqdxhcEJJpTkmLszHn4IZfhxa3EbZT89ftgo2+BY=;
-        b=FXSoE1583X3yS43pcB6l/YyZnPK01xgoaaw0zSF+/iU6e1Whsyk74CbmNX6AOi5VlP+xEM
-        oV7OoqoKLKvb9vc7nPYQYglTbGHPn8+LeTFgv62AMu9XvcM2uutDk5NljhWikbxGOzuRXz
-        +FZ2LjGWWfGpVvjikrfsoD1ZRMpijmE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-148-YZ3Xp-TGOkGLGBFEgckrVg-1; Wed, 10 Mar 2021 22:26:05 -0500
-X-MC-Unique: YZ3Xp-TGOkGLGBFEgckrVg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 014A41009E2D;
-        Thu, 11 Mar 2021 03:26:04 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-9.pek2.redhat.com [10.72.13.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2129F5D6D7;
-        Thu, 11 Mar 2021 03:25:57 +0000 (UTC)
-Subject: Re: [PATCH V3 3/6] vDPA/ifcvf: rename original IFCVF dev ids to N3000
- ids
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        lulu@redhat.com, leonro@nvidia.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210310090052.4762-1-lingshan.zhu@intel.com>
- <20210310090052.4762-4-lingshan.zhu@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <5e2b22cc-7faa-2987-a30a-ce32f10099b6@redhat.com>
-Date:   Thu, 11 Mar 2021 11:25:56 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
+        id S230450AbhCKD02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 22:26:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49354 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230122AbhCKD0R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 22:26:17 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 75EA164F9F;
+        Thu, 11 Mar 2021 03:26:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615433176;
+        bh=KUEW2t6cH7hWlD+QXDaWwlVzpmeN19XinrPOSNGScNE=;
+        h=From:To:Cc:Subject:Date:Reply-To:From;
+        b=sc62NkeBpY9PA7CkhUb5mJTZ0WjnPiR29CC0VAH7hZmm4va6QnP8oxgB1jAQgF2PM
+         UeB4aFFUGKUlJUdk2e4ohPmFGWWYicLu3AlzsMPPzyy+eUuO8KG9HISzU1Zrv/ulJh
+         OfAMBlMYnGI4hMx22pSvYcIA69+eG88HDAA9L6+gT0DzGDQvT1iu6HA6r/Jysle+TJ
+         pGiRrpLPB+IRvkNfmcSFNTB6XhIi6XaVGOmwDvInaMbMOV39ednekLe1zdubDzySmA
+         yB2kbjbKGyoSDVN9IV72gvcS1ZkSEqmwimovKbM7ZKItIDXS7JpHh2BetC4gvRNSI2
+         6kgTFbG92FLcA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     jiri@resnulli.us, saeedm@nvidia.com,
+        andrew.gospodarek@broadcom.com, jacob.e.keller@intel.com,
+        guglielmo.morandin@broadcom.com, eugenem@fb.com,
+        eranbe@mellanox.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [RFC net-next v2 1/3] devlink: move health state to uAPI
+Date:   Wed, 10 Mar 2021 19:26:11 -0800
+Message-Id: <20210311032613.1533100-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.29.2
+Reply-To: f242ed68-d31b-527d-562f-c5a35123861a@intel.com
 MIME-Version: 1.0
-In-Reply-To: <20210310090052.4762-4-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Move the health states into uAPI, so applications can use them.
 
-On 2021/3/10 5:00 下午, Zhu Lingshan wrote:
-> IFCVF driver probes multiple types of devices now,
-> to distinguish the original device driven by IFCVF
-> from others, it is renamed as "N3000".
->
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> ---
->   drivers/vdpa/ifcvf/ifcvf_base.h | 8 ++++----
->   drivers/vdpa/ifcvf/ifcvf_main.c | 8 ++++----
->   2 files changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-> index 75d9a8052039..794d1505d857 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-> @@ -18,10 +18,10 @@
->   #include <uapi/linux/virtio_config.h>
->   #include <uapi/linux/virtio_pci.h>
->   
-> -#define IFCVF_VENDOR_ID		0x1AF4
-> -#define IFCVF_DEVICE_ID		0x1041
-> -#define IFCVF_SUBSYS_VENDOR_ID	0x8086
-> -#define IFCVF_SUBSYS_DEVICE_ID	0x001A
-> +#define N3000_VENDOR_ID		0x1AF4
-> +#define N3000_DEVICE_ID		0x1041
-> +#define N3000_SUBSYS_VENDOR_ID	0x8086
-> +#define N3000_SUBSYS_DEVICE_ID	0x001A
->   
->   #define C5000X_PL_VENDOR_ID		0x1AF4
->   #define C5000X_PL_DEVICE_ID		0x1000
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index 26a2dab7ca66..fd5befc5cbcc 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -480,10 +480,10 @@ static void ifcvf_remove(struct pci_dev *pdev)
->   }
->   
->   static struct pci_device_id ifcvf_pci_ids[] = {
-> -	{ PCI_DEVICE_SUB(IFCVF_VENDOR_ID,
-> -		IFCVF_DEVICE_ID,
-> -		IFCVF_SUBSYS_VENDOR_ID,
-> -		IFCVF_SUBSYS_DEVICE_ID) },
-> +	{ PCI_DEVICE_SUB(N3000_VENDOR_ID,
-> +			 N3000_DEVICE_ID,
+Note that we need to change the name of the enum because
+user space is likely already defining the same values.
+E.g. iproute2 does.
 
+Use this opportunity to shorten the names.
 
-I am not sure the plan for Intel but I wonder if we can simply use 
-PCI_ANY_ID for device id here. Otherewise you need to maintain a very 
-long list of ids here.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c  |  4 ++--
+ .../ethernet/mellanox/mlx5/core/en/health.c    |  4 ++--
+ include/net/devlink.h                          |  7 +------
+ include/uapi/linux/devlink.h                   | 12 ++++++++++++
+ net/core/devlink.c                             | 18 +++++++++---------
+ 5 files changed, 26 insertions(+), 19 deletions(-)
 
-Thanks
-
-
-> +			 N3000_SUBSYS_VENDOR_ID,
-> +			 N3000_SUBSYS_DEVICE_ID) },
->   	{ PCI_DEVICE_SUB(C5000X_PL_VENDOR_ID,
->   			 C5000X_PL_DEVICE_ID,
->   			 C5000X_PL_SUBSYS_VENDOR_ID,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 64381be935a8..cafc98ab4b5e 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -252,9 +252,9 @@ void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy)
+ 	u8 state;
+ 
+ 	if (healthy)
+-		state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
++		state = DL_HEALTH_STATE_HEALTHY;
+ 	else
+-		state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
++		state = DL_HEALTH_STATE_ERROR;
+ 
+ 	if (health->fatal)
+ 		devlink_health_reporter_state_update(health->fw_fatal_reporter,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
+index 84e501e057b4..c526e31e562c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
+@@ -151,10 +151,10 @@ void mlx5e_health_channels_update(struct mlx5e_priv *priv)
+ {
+ 	if (priv->tx_reporter)
+ 		devlink_health_reporter_state_update(priv->tx_reporter,
+-						     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
++						     DL_HEALTH_STATE_HEALTHY);
+ 	if (priv->rx_reporter)
+ 		devlink_health_reporter_state_update(priv->rx_reporter,
+-						     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
++						     DL_HEALTH_STATE_HEALTHY);
+ }
+ 
+ int mlx5e_health_sq_to_ready(struct mlx5_core_dev *mdev, struct net_device *dev, u32 sqn)
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 853420db5d32..b424328af658 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -656,11 +656,6 @@ struct devlink_port_region_ops {
+ struct devlink_fmsg;
+ struct devlink_health_reporter;
+ 
+-enum devlink_health_reporter_state {
+-	DEVLINK_HEALTH_REPORTER_STATE_HEALTHY,
+-	DEVLINK_HEALTH_REPORTER_STATE_ERROR,
+-};
+-
+ /**
+  * struct devlink_health_reporter_ops - Reporter operations
+  * @name: reporter name
+@@ -1675,7 +1670,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
+ 			  const char *msg, void *priv_ctx);
+ void
+ devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
+-				     enum devlink_health_reporter_state state);
++				     enum devlink_health_state state);
+ void
+ devlink_health_reporter_recovery_done(struct devlink_health_reporter *reporter);
+ 
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index f6008b2fa60f..41a6ea3b2256 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -608,4 +608,16 @@ enum devlink_port_fn_opstate {
+ 	DEVLINK_PORT_FN_OPSTATE_ATTACHED,
+ };
+ 
++/**
++ * enum devlink_health_state - indicates the state of a health reporter
++ * @DL_HEALTH_STATE_HEALTHY: fully operational, working state
++ * @DL_HEALTH_STATE_ERROR: error state, running health reporter's recovery
++ *			may fix the issue, otherwise user needs to try
++ *			power cycling or other forms of reset
++ */
++enum devlink_health_state {
++	DL_HEALTH_STATE_HEALTHY,
++	DL_HEALTH_STATE_ERROR,
++};
++
+ #endif /* _UAPI_LINUX_DEVLINK_H_ */
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 737b61c2976e..8e4e4bd7bb36 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -6346,7 +6346,7 @@ devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
+ {
+ 	int err;
+ 
+-	if (reporter->health_state == DEVLINK_HEALTH_REPORTER_STATE_HEALTHY)
++	if (reporter->health_state == DL_HEALTH_STATE_HEALTHY)
+ 		return 0;
+ 
+ 	if (!reporter->ops->recover)
+@@ -6357,7 +6357,7 @@ devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
+ 		return err;
+ 
+ 	devlink_health_reporter_recovery_done(reporter);
+-	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
++	reporter->health_state = DL_HEALTH_STATE_HEALTHY;
+ 	devlink_recover_notify(reporter, DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
+ 
+ 	return 0;
+@@ -6416,7 +6416,7 @@ static int devlink_health_do_dump(struct devlink_health_reporter *reporter,
+ int devlink_health_report(struct devlink_health_reporter *reporter,
+ 			  const char *msg, void *priv_ctx)
+ {
+-	enum devlink_health_reporter_state prev_health_state;
++	enum devlink_health_state prev_health_state;
+ 	struct devlink *devlink = reporter->devlink;
+ 	unsigned long recover_ts_threshold;
+ 
+@@ -6425,14 +6425,14 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
+ 	trace_devlink_health_report(devlink, reporter->ops->name, msg);
+ 	reporter->error_count++;
+ 	prev_health_state = reporter->health_state;
+-	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
++	reporter->health_state = DL_HEALTH_STATE_ERROR;
+ 	devlink_recover_notify(reporter, DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
+ 
+ 	/* abort if the previous error wasn't recovered */
+ 	recover_ts_threshold = reporter->last_recovery_ts +
+ 			       msecs_to_jiffies(reporter->graceful_period);
+ 	if (reporter->auto_recover &&
+-	    (prev_health_state != DEVLINK_HEALTH_REPORTER_STATE_HEALTHY ||
++	    (prev_health_state != DL_HEALTH_STATE_HEALTHY ||
+ 	     (reporter->last_recovery_ts && reporter->recovery_count &&
+ 	      time_is_after_jiffies(recover_ts_threshold)))) {
+ 		trace_devlink_health_recover_aborted(devlink,
+@@ -6443,7 +6443,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
+ 		return -ECANCELED;
+ 	}
+ 
+-	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
++	reporter->health_state = DL_HEALTH_STATE_ERROR;
+ 
+ 	if (reporter->auto_dump) {
+ 		mutex_lock(&reporter->dump_lock);
+@@ -6520,10 +6520,10 @@ devlink_health_reporter_get_from_cb(struct netlink_callback *cb)
+ 
+ void
+ devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
+-				     enum devlink_health_reporter_state state)
++				     enum devlink_health_state state)
+ {
+-	if (WARN_ON(state != DEVLINK_HEALTH_REPORTER_STATE_HEALTHY &&
+-		    state != DEVLINK_HEALTH_REPORTER_STATE_ERROR))
++	if (WARN_ON(state != DL_HEALTH_STATE_HEALTHY &&
++		    state != DL_HEALTH_STATE_ERROR))
+ 		return;
+ 
+ 	if (reporter->health_state == state)
+-- 
+2.29.2
 
