@@ -2,70 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62616337367
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 14:07:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A5333743D
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 14:43:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbhCKNGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 08:06:52 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:13908 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233252AbhCKNGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 08:06:38 -0500
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Dx8LP3y2PzkXdy;
-        Thu, 11 Mar 2021 21:05:01 +0800 (CST)
-Received: from localhost.localdomain (10.175.102.38) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 11 Mar 2021 21:06:20 +0800
-From:   'Wei Yongjun <weiyongjun1@huawei.com>
-To:     <weiyongjun1@huawei.com>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Christian Brauner <christian@brauner.io>,
-        Song Liu <songliubraving@fb.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH bpf-next] bpf: Make symbol 'bpf_task_storage_busy' static
-Date:   Thu, 11 Mar 2021 13:15:05 +0000
-Message-ID: <20210311131505.1901509-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S233724AbhCKNnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 08:43:14 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:19072 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233620AbhCKNmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 08:42:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1615470176; x=1647006176;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=0Dm43OTjlPuwXIrW3yljmNFuhk3JiZgiZDXuXeFWhIc=;
+  b=esUjMXVLCWRrHFH6bpW9PFKxX+sKBuG5pInCUZp4C0t07F27MeHmJSgG
+   9CalYBh6/Trg5ahIRs0sHWjqcPrj+b+EFXLjvPOJUGVnTlzXlsupAweAr
+   /Q4Glop3Ay5kLD3fuGLWacKE2p2iDpSAKt27XBBhCTLsqMbAFjZhxmZbS
+   s=;
+IronPort-HdrOrdr: A9a23:Z100d6nm6E6fuJXaQBq4+PjsH0fpDfNyimdD5ilNYBxZY6Wkvu
+ qpm+kW0gKxtSYJVBgb6Km9EYSjYVeZz5565oENIayvNTONhEKEJJxvhLGSpgHINDb58odmpM
+ VdWoh4TOb9FF1ryfv9iTPIcOoI5Pmi3OSWifzFz3FrJDsKV4hF4x1iAgiWVm1aLTM2YaYRL5
+ aX6spZqzfIQx1+BfiTPXULU/POoNfGjvvdASIuPQIt6wWFkFqTmdnHOiWfty1uNQ9n8PMN9S
+ zgnxbi7quu98unwgLRvlW+071m3PXmzNVHCIigqOgwbg/thAGheZh7V9S50QwdkaWA7lAlld
+ WJmRM8JoBI7W/LdG3dm3TQ8jil6zol53/8xVLwuxXenfA=
+X-IronPort-AV: E=Sophos;i="5.81,240,1610409600"; 
+   d="scan'208";a="96445353"
+Subject: RE: [RFC PATCH 05/10] ena: Update driver to use ethtool_gsprintf
+Thread-Topic: [RFC PATCH 05/10] ena: Update driver to use ethtool_gsprintf
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-81e76b79.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 11 Mar 2021 13:42:46 +0000
+Received: from EX13D06EUA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2b-81e76b79.us-west-2.amazon.com (Postfix) with ESMTPS id D9355A1D77;
+        Thu, 11 Mar 2021 13:42:43 +0000 (UTC)
+Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
+ EX13D06EUA002.ant.amazon.com (10.43.165.241) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 11 Mar 2021 13:42:41 +0000
+Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
+ EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1497.012;
+ Thu, 11 Mar 2021 13:42:41 +0000
+From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
+        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
+        "skalluru@marvell.com" <skalluru@marvell.com>,
+        "rmody@marvell.com" <rmody@marvell.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "pv-drivers@vmware.com" <pv-drivers@vmware.com>,
+        "doshir@vmware.com" <doshir@vmware.com>,
+        "alexanderduyck@fb.com" <alexanderduyck@fb.com>
+Thread-Index: AQHXFhboRwyXcTUcVkS467rmptG2KKp+yylA
+Date:   Thu, 11 Mar 2021 13:42:21 +0000
+Deferred-Delivery: Thu, 11 Mar 2021 13:41:28 +0000
+Message-ID: <a8d66ff7d2034b75ada799de8b9de448@EX13D22EUA004.ant.amazon.com>
+References: <161542634192.13546.4185974647834631704.stgit@localhost.localdomain>
+ <161542654541.13546.817443057977441498.stgit@localhost.localdomain>
+In-Reply-To: <161542654541.13546.817443057977441498.stgit@localhost.localdomain>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.166.52]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.102.38]
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
-
-The sparse tool complains as follows:
-
-kernel/bpf/bpf_task_storage.c:23:1: warning:
- symbol '__pcpu_scope_bpf_task_storage_busy' was not declared. Should it be static?
-
-This symbol is not used outside of bpf_task_storage.c, so this
-commit marks it static.
-
-Fixes: bc235cdb423a ("bpf: Prevent deadlock from recursive bpf_task_storage_[get|delete]")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- kernel/bpf/bpf_task_storage.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/bpf_task_storage.c b/kernel/bpf/bpf_task_storage.c
-index fd3c74ef608e..3ce75758d394 100644
---- a/kernel/bpf/bpf_task_storage.c
-+++ b/kernel/bpf/bpf_task_storage.c
-@@ -20,7 +20,7 @@
- 
- DEFINE_BPF_STORAGE_CACHE(task_cache);
- 
--DEFINE_PER_CPU(int, bpf_task_storage_busy);
-+static DEFINE_PER_CPU(int, bpf_task_storage_busy);
- 
- static void bpf_task_storage_lock(void)
- {
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbGV4YW5kZXIgRHV5Y2sgPGFs
+ZXhhbmRlci5kdXlja0BnbWFpbC5jb20+DQo+IFNlbnQ6IFRodXJzZGF5LCBNYXJjaCAxMSwgMjAy
+MSAzOjM2IEFNDQo+IFRvOiBrdWJhQGtlcm5lbC5vcmcNCj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5l
+bC5vcmc7IG9zcy1kcml2ZXJzQG5ldHJvbm9tZS5jb207DQo+IHNpbW9uLmhvcm1hbkBuZXRyb25v
+bWUuY29tOyB5aXNlbi56aHVhbmdAaHVhd2VpLmNvbTsNCj4gc2FsaWwubWVodGFAaHVhd2VpLmNv
+bTsgaW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmc7DQo+IGplc3NlLmJyYW5kZWJ1cmdA
+aW50ZWwuY29tOyBhbnRob255Lmwubmd1eWVuQGludGVsLmNvbTsNCj4gZHJpdmVyc0BwZW5zYW5k
+by5pbzsgc25lbHNvbkBwZW5zYW5kby5pbzsgQmVsZ2F6YWwsIE5ldGFuZWwNCj4gPG5ldGFuZWxA
+YW1hem9uLmNvbT47IEtpeWFub3Zza2ksIEFydGh1ciA8YWtpeWFub0BhbWF6b24uY29tPjsNCj4g
+VHphbGlrLCBHdXkgPGd0emFsaWtAYW1hem9uLmNvbT47IEJzaGFyYSwgU2FlZWQgPHNhZWVkYkBh
+bWF6b24uY29tPjsNCj4gR1ItTGludXgtTklDLURldkBtYXJ2ZWxsLmNvbTsgc2thbGx1cnVAbWFy
+dmVsbC5jb207DQo+IHJtb2R5QG1hcnZlbGwuY29tOyBreXNAbWljcm9zb2Z0LmNvbTsgaGFpeWFu
+Z3pAbWljcm9zb2Z0LmNvbTsNCj4gc3RoZW1taW5AbWljcm9zb2Z0LmNvbTsgd2VpLmxpdUBrZXJu
+ZWwub3JnOyBtc3RAcmVkaGF0LmNvbTsNCj4gamFzb3dhbmdAcmVkaGF0LmNvbTsgcHYtZHJpdmVy
+c0B2bXdhcmUuY29tOyBkb3NoaXJAdm13YXJlLmNvbTsNCj4gYWxleGFuZGVyZHV5Y2tAZmIuY29t
+DQo+IFN1YmplY3Q6IFtFWFRFUk5BTF0gW1JGQyBQQVRDSCAwNS8xMF0gZW5hOiBVcGRhdGUgZHJp
+dmVyIHRvIHVzZQ0KPiBldGh0b29sX2dzcHJpbnRmDQo+IA0KPiBDQVVUSU9OOiBUaGlzIGVtYWls
+IG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24uIERvIG5vdCBjbGlj
+aw0KPiBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2FuIGNvbmZpcm0gdGhl
+IHNlbmRlciBhbmQga25vdyB0aGUNCj4gY29udGVudCBpcyBzYWZlLg0KPiANCj4gDQo+IA0KPiBG
+cm9tOiBBbGV4YW5kZXIgRHV5Y2sgPGFsZXhhbmRlcmR1eWNrQGZiLmNvbT4NCj4gDQo+IFJlcGxh
+Y2UgaW5zdGFuY2VzIG9mIHNucHJpbnRmIG9yIG1lbWNweSB3aXRoIGEgcG9pbnRlciB1cGRhdGUg
+d2l0aA0KPiBldGh0b29sX2dzcHJpbnRmLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogQWxleGFuZGVy
+IER1eWNrIDxhbGV4YW5kZXJkdXlja0BmYi5jb20+DQoNCkFja2VkLWJ5OiBBcnRodXIgS2l5YW5v
+dnNraSA8YWtpeWFub0BhbWF6b24uY29tPg0K
