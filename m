@@ -2,132 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DB2337ECD
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:13:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38AE3337EF5
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:19:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbhCKUMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 15:12:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230016AbhCKUML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 15:12:11 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433ABC061574;
-        Thu, 11 Mar 2021 12:12:11 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id o11so23357977iob.1;
-        Thu, 11 Mar 2021 12:12:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0BWzRRmxcHXMo1GESs4pU1GSd6L40zWcyadyEujahI8=;
-        b=KRf84g2Npibxl0qELT/JLkyVIT/Z6l9FevlNRXCjezPmNdSOUMnq0pmaKZrXs4vn6d
-         wZB/MIY2rfNQxyPgV5YTy2PYFYoF4O7+AZyhQrl5ek4Tl/mjEBPBeKLN6deowiTPpVJ9
-         O78TZmt3D3iaGpce4002oBKtHZnKVtLaeCMVHp66FND8wcuMVwKJW3ED3QfSl+V9PmKG
-         JFWg6vejVZw7QHSJkoiIW8uhDXZdgVNfuc65/Y6qSOzhIVOHF4sA6xvxjZNfMrXrmFRL
-         aRi6i10L30yK679BxVVyeNWvhFtW0Capo3KW2RuM5OJDXiqXEaQxhPKcjI/ass53JhLU
-         dv+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0BWzRRmxcHXMo1GESs4pU1GSd6L40zWcyadyEujahI8=;
-        b=pNs5bzOZSzvmmwwgv8V2yepXMHd2jn45xy8a3eywI6jrvBOvZlFp326Ke9QczVB5sK
-         Yg8FIndBUL/ZlvyosfWNmRC7c6Xs6oq0tdBrUEmONAgFkpIeBnAEahmc2doF0z0Y5BrS
-         DbV9FZQiTXTJWlq9ZL63SkRjEchukxY+6zoGn+Bh80eNTACYqekSvasD8tsNosiyox0e
-         F6dbb05XzEnBWIV6NP9digMQ5e6Q/D/aBbGNngyPqrgTBx87J5qXnm6493Jt9RvqhBRK
-         m7Gt2yuWfSlgyhYli7FgTQ/jLHHHKfzerGwbHGzDMK5hyS63oGMCzpmrDrZqHgDKVSLX
-         GPPQ==
-X-Gm-Message-State: AOAM531TjcBBS5DBvB/ni68HPSICpgJKGcgQ2uhmMaaecOr5IMdg3mcA
-        LXy0c+QKezBA57VRRp5Mm+mB9DtMB9jnriJdkRY=
-X-Google-Smtp-Source: ABdhPJw054MpAcEdRnSJVTojPnIUo5su5huEFuZV55yOCCRdcJhaILMUr2dNUkdgob4ObL/tKjH5Zm4+cvftiYuhcgE=
-X-Received: by 2002:a02:53:: with SMTP id 80mr5369628jaa.96.1615493530582;
- Thu, 11 Mar 2021 12:12:10 -0800 (PST)
+        id S230397AbhCKUTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 15:19:07 -0500
+Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:63839 "EHLO
+        mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230299AbhCKUS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 15:18:59 -0500
+Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12BKBoQR029473;
+        Thu, 11 Mar 2021 15:18:39 -0500
+Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2055.outbound.protection.outlook.com [104.47.61.55])
+        by mx0c-0054df01.pphosted.com with ESMTP id 376bes9j08-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Mar 2021 15:18:39 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UQAa6AIGKxpc1+d4TGAbGYCmmCz/vf5VEnLwiccY4NmNEUpiSNtUXAu6oldO4msIT1cUvQvx4mMevVCShP++HeDPjlyGYcmGx78yfqUPSSa4UoPlVUIv6IzaJIM8hs4iZU4tzvPr2Il2dkj3m0JVr/V/kc8K4HbqhHT9SYcE+WcXjRzuOxp9Z5Wg2Kpp2BL9JTwHzUPCVLBxrfP30RCXmhNSOa6IKwVozIrhQrGqBsSMM1/KnyBJ1GqN9JLpM2vnYKdHr9tBHFXUk3zSbxiFD3vLVagtbUDnVaH/j/DQ/CGj1+ouM+4TT422v+BqfUOcaHrkcwtM+zjdR6ysF1OZzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=raW57/4tblB6UWUk6q6xeyZ1Jq9zjYc2DXSH3byE/pE=;
+ b=iVigf0R00bCF3i/amfYF6ybaQSAFGqUF0W8NeXTRakqOZnhKhDrTFJQNZxNwLKeJqIgsJfKk4MB0fj+kPtxJ8NE3/i2ssypjdpyz5CaQOMQo+3nCMBVot7XVj1nXw6RnZovV6l0wldstfF9yR4KFZqS/tT6bERf/7rSqvIzM8EcMpTP/2bjTAqWwiPt9jYLiBRQyZtAQJR/Ii8ELMis44NUFworJAb0n6aChLAEQ5BZBYOrf3MdAP2bd4fQK9i3unRfgs8VRJ0IVQGQBCL9+ip2gSojAopP8kiPBOl9YZN9RSS8+kb8UUL7DIpCLfxYqyZV+Xub14xicccD9VBcnRQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=raW57/4tblB6UWUk6q6xeyZ1Jq9zjYc2DXSH3byE/pE=;
+ b=R2VJLLn195Ilg9itzrhwNMK+rFE40GgHU+rWOut9MfaS+DP3lGEe4eU8O6WYpLJFDCOYvSCxTO0Vc5mSBieP5ZuqfQI1Cj3C6v+clw1AkZm5E9K0WQMg7MGLOOY+Lmtt9H31WSo4Pb3CFenkjPPZ5Q3Yl4TYqQiC5pyYeJzADVE=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=calian.com;
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
+ by YTBPR01MB3872.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:1e::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.25; Thu, 11 Mar
+ 2021 20:18:37 +0000
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::90d4:4d5b:b4c2:fdeb]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::90d4:4d5b:b4c2:fdeb%7]) with mapi id 15.20.3912.027; Thu, 11 Mar 2021
+ 20:18:37 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH net-next 0/2] macb SGMII fixed-link fixes
+Date:   Thu, 11 Mar 2021 14:18:11 -0600
+Message-Id: <20210311201813.3804249-1-robert.hancock@calian.com>
+X-Mailer: git-send-email 2.27.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [204.83.154.189]
+X-ClientProxiedBy: DM5PR17CA0071.namprd17.prod.outlook.com
+ (2603:10b6:3:13f::33) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:f::20)
 MIME-Version: 1.0
-References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
- <20210311181729.GA2148230@bjorn-Precision-5520> <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
- <YEp01m0GiNzOSUV8@unreal>
-In-Reply-To: <YEp01m0GiNzOSUV8@unreal>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 11 Mar 2021 12:11:59 -0800
-Message-ID: <CAKgT0Ue363fZEwqGUa1UAAYotUYH8QpEADW1U5yfNS7XkOLx0Q@mail.gmail.com>
-Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (204.83.154.189) by DM5PR17CA0071.namprd17.prod.outlook.com (2603:10b6:3:13f::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Thu, 11 Mar 2021 20:18:36 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 008326c1-b5a0-40bc-4a67-08d8e4cada50
+X-MS-TrafficTypeDiagnostic: YTBPR01MB3872:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <YTBPR01MB387248EC5441493E7BE416A4EC909@YTBPR01MB3872.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kl1EsYDYFgL+DtsiIDM0KfXWvSHXac6GLQ0hKrZ8x7+2tOF+w3r1Vm9++PZyA+vbhVAs0oFsCB3Hl2AaUb1WkUmT0YQrnsy4MYCslxJ75wflaW2mdn5QFHQNUTcr0ucLseo53TKWQHxIMD+v/Ftxm0JVO3Rprafr2TQOoBvnpTQV86jp9XqbhFhCkDAHsc7EP8wkrMFyDdEdPiDYCSHSnkl+08j4cdhSMFtIIaEsry18DNY0Myc/GNrWzGrzf6k2RmxKrL50bB6yuoi9NpmFrpKQ8yyMi2BDdCgr9KbM16hfDxIsG5gb4AguiUavPxacdP5MxEQaCmRSOXcUbkiBMNiiT7l3LThkjki/YZfeRRdO2n0WhkiVJxIcb6sz5lV/eKmUVQ7aGib9r1ZcR1TbBNLhyzTU2LrJuiv9WeVdicRpxSHa9ohawn48J6RYv7X0trOnjn4Irgx7ZwemdO22otbDAlUXG/r2FRMN00TRs4kvTw9oz+JEuIeeNzteD8AgkqU6mVBhZLOeUwCjSxzSe2AfGKtUoVjiKyjLYggiS4JwS9i/C8kcb6KnNh9As6GKY7Kv3t4O1Ugiqior+nbKyg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(376002)(366004)(39850400004)(396003)(66946007)(36756003)(6486002)(478600001)(52116002)(69590400012)(66476007)(2906002)(66556008)(316002)(44832011)(86362001)(6506007)(186003)(16526019)(2616005)(8676002)(956004)(8936002)(26005)(6512007)(107886003)(4744005)(5660300002)(1076003)(6666004)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?7NMcvNgLHFsuMmBPaf0UpQTVxjf0srFPLV6wVrg3szwUbveO/sicpjj9OY13?=
+ =?us-ascii?Q?tgR8Nhw1Ecs32plkqtM98jd3Nk8/P2Rpbj4aTmosRQ89P7afXlKtUO07hd+/?=
+ =?us-ascii?Q?frAF86s0ghXD4yjdgJ6ZKsiLNFDjEF9EjLka39ybLb3rDAt24w4i79vqqLQl?=
+ =?us-ascii?Q?Y+0eDpO7WQeqZdjqXUeOnysElefq/WVAEfiqG4qfwLd4RjRIx7LcEZpFJM1M?=
+ =?us-ascii?Q?IURCqOC4jBIwQvxgqXcKolF9T6ClbNI7Ss3KUnDpgV0J7za9ocnv9eiWx8mA?=
+ =?us-ascii?Q?fGuAd78Tw5jQhgSf42PplCkdKknxnoEGyj27hBRkFV4josxFF77/Yi4ORWtG?=
+ =?us-ascii?Q?zUX5HvEs5utchMmy7EgYWdUp04GpV8TK1xvjIA7MR9wMwIcTD9fpMlf0L+85?=
+ =?us-ascii?Q?1sx5d5EfB95DPCKshB8DaZ4bi7PfHENH5IoTeVk1ufe1FOBCNeVzfpGJUch+?=
+ =?us-ascii?Q?ykSbZ1REejnm8gZfI1q0QSEzCYCTzygrfTUs2mLn1baagykGKNQy7SEhiPSr?=
+ =?us-ascii?Q?cLT4721zR4Awnv1zGofWV8Y9n/7KRX1doa1Ek/N58o1lKU1qWZAdP4BSlEgw?=
+ =?us-ascii?Q?9WbUWqQ1tQmSmJN1hWiku1yagxcCwNV/ZKfpZ9gkBLVef85MTxQYYghkBRdk?=
+ =?us-ascii?Q?IsjcFGreymMhanp5RqHIj8MQsGCHkqJ+L0STO1kwOzNA5DoR3l8547GKgQEN?=
+ =?us-ascii?Q?ALOcc6GyvHcdy6TAj7iGwsgkB0KZqc7MMJhTWJ6fPtPfuCqa4rAbTD5QpPCy?=
+ =?us-ascii?Q?JYZaLR6ikoHQI27CuT6o2wpKJGrFNuvbzmCDWgo5IpCN71HVYNwTppiAyYTt?=
+ =?us-ascii?Q?FrNW9y4Q0ZVDueo/H56FUns1mNSH6rKfcwqTE9A7UA446h6LbI0DTmLn5AfF?=
+ =?us-ascii?Q?gaqMsC4zd3sAPE0fk4+m8QoIZ43p11UjAHYU9+KwC4t80eEjKKAihwG+Ld8d?=
+ =?us-ascii?Q?GrEx4lmSPQq3f95lA4bfdgann8fg9F+0hDp/zYS5McBVf0A0AUgeb24LlYD+?=
+ =?us-ascii?Q?nX6LS045w0FwMoZscj890sTBcwVoM0SwREY6uCvskfii/Or2sC30OTwkb2+K?=
+ =?us-ascii?Q?QmoeJOB7gcwr+p5oBFV0aoK+mOByB9K5n5ndHs0rL0vEA6s5302ey41Mgstp?=
+ =?us-ascii?Q?NHiCaZlLrtMHpz7D9NXqt5mGar5nICPJX5MEXv8djtUAZnwDS+IjJ9hwrvNX?=
+ =?us-ascii?Q?O+Ne0OMKwnScgG5TT0AmNEP4ohsGno+Id9VI1hxM+RUriGDN9r7R19q79BOr?=
+ =?us-ascii?Q?E9GCIUaCpXsg5FbBbAXsy3AWCA3TYlvLn0ggGOBQTBebidrUfHeehzB0v0k5?=
+ =?us-ascii?Q?9czl3aWCQGSW7UUsOIvbUTjj?=
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 008326c1-b5a0-40bc-4a67-08d8e4cada50
+X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 20:18:37.1805
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HzJmgFQW14Qp4byyrJeqkSeistnFEBwdE44uodVxoflpWSBfriTRaYJpctvOxUsT5ExiI7Dwo1Gi6kIUgLur2DuX67jj7Dd6faQCM6nLDoI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTBPR01MB3872
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-11_08:2021-03-10,2021-03-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=577 phishscore=0
+ priorityscore=1501 adultscore=0 spamscore=0 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 mlxscore=0 suspectscore=0 clxscore=1011 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103110104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 11:51 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Thu, Mar 11, 2021 at 11:37:28AM -0800, Alexander Duyck wrote:
-> > On Thu, Mar 11, 2021 at 10:17 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > >
-> > > On Wed, Mar 10, 2021 at 03:34:01PM -0800, Alexander Duyck wrote:
-> > > > On Wed, Mar 10, 2021 at 11:09 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > > On Sun, Mar 07, 2021 at 10:55:24AM -0800, Alexander Duyck wrote:
-> > > > > > On Sun, Feb 28, 2021 at 11:55 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > >
-> > > > > > > @Alexander Duyck, please update me if I can add your ROB tag again
-> > > > > > > to the series, because you liked v6 more.
-> > > > > > >
-> > > > > > > Thanks
-> > > > > > >
-> > > > > > > ---------------------------------------------------------------------------------
-> > > > > > > Changelog
-> > > > > > > v7:
-> > > > > > >  * Rebase on top v5.12-rc1
-> > > > > > >  * More english fixes
-> > > > > > >  * Returned to static sysfs creation model as was implemented in v0/v1.
->
-> <...>
->
-> > > > representors rather than being actual PCIe devices. Having
-> > > > functionality that only works when the VF driver is not loaded just
-> > > > feels off. The VF sysfs directory feels like it is being used as a
-> > > > subdirectory of the PF rather than being a device on its own.
-> > >
-> > > Moving "virtfnX_msix_count" to the PF seems like it would mitigate
-> > > this somewhat.  I don't know how to make this work while a VF driver
-> > > is bound without making the VF feel even less like a PCIe device,
-> > > i.e., we won't be able to use the standard MSI-X model.
-> >
-> > Yeah, I actually do kind of like that idea. In addition it would
-> > address one of the things I pointed out as an issue before as you
-> > could place the virtfn values that the total value in the same folder
-> > so that it is all in one central spot rather than having to walk all
-> > over the sysfs hierarchy to check the setting for each VF when trying
-> > to figure out how the vectors are currently distributed.
->
-> User binds specific VF with specific PCI ID to VM, so instead of
-> changing MSI-X table for that specific VF, he will need to translate
-> from virtfn25_msix_count to PCI ID.
+Some fixes to the macb driver for use in SGMII mode with a fixed-link (such as
+for chip-to-chip connectivity).
 
-Wouldn't that just be a matter of changing the naming so that the PCI
-ID was present in the virtfn name?
+Robert Hancock (2):
+  net: macb: poll for fixed link state in SGMII mode
+  net: macb: Disable PCS auto-negotiation for SGMII fixed-link mode
 
-> I also gave an example of my system where I have many PFs and VFs
-> function numbers are not distributed nicely. On that system virtfn25_msix_count
-> won't translate to AA:BB:CC.25 but to something else.
+ drivers/net/ethernet/cadence/macb.h      | 14 +++++++++++
+ drivers/net/ethernet/cadence/macb_main.c | 30 ++++++++++++++++++++++++
+ 2 files changed, 44 insertions(+)
 
-That isn't too surprising since normally we only support 7 functions
-per device. I am okay with not using the name virtfnX. If you wanted
-to embed the bus, device, func in the naming scheme that would work
-for me too.
+-- 
+2.27.0
 
-Really in general as a naming scheme just using a logical number have
-probably never provided all that much value. There may be an argument
-to be made for renaming the virtfn symlinks to include bus, device,
-function instead.
