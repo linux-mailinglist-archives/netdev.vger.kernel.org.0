@@ -2,186 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 484A3337C52
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09176337CA5
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:27:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhCKSSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 13:18:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58194 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229674AbhCKSRb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 13:17:31 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 179AD64F94;
-        Thu, 11 Mar 2021 18:17:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615486651;
-        bh=yeoiWbOU3bw9D/Q5zhGzs0LucK/FKA5Un0rmRGtK/90=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=TLFip4LsN55AS5P0Bks1thVrAJF/U+FBK/jLpJ2TUASUGajYp32xlamBMxoAT6hOY
-         nnPOyURdiLsnL7X/KesOe3XrsdmAFivL6t28nDI6oG8B3/qBHgsWzZxk3vT062al3z
-         sfH7Qg8boCYrkLat1qQg/OpZQStEFAzVIfZEuFiYvo9veXJvJlVwwBBWHAWI5v0QNA
-         w63gJjGJwCe1/dzoDDvIe4iJdhrNMFvsPsub4/Gjc3HtR8AQzuza7jsvJDNUVnwhET
-         iF3GQ/ru+ZPE/NRtNJwhryEBhMKaHjHURPfbHbQehnN+EQTzFErELdWr3yKbxwSTXZ
-         VcbwQe5Whbeag==
-Date:   Thu, 11 Mar 2021 12:17:29 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        id S229809AbhCKS0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 13:26:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58718 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230033AbhCKS0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 13:26:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615487199;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7/wSGYLh9BUQ/m4VK2E3Iu8L1K7AWw+HwFDDXH/P7x4=;
+        b=Dt56iO4QJuJA+k3BrHjVi7X4akcMO+fRI3Op/0Vlc4YS1d0fSliXBiTt5M6YPh81npUeAo
+        DONzHVH3vUzM3i7Q/rhj6Wb86BvX9R713O30qm86eYnTVWaw712H2o2v2ckbvL/zzFODWg
+        NXs61CYptcr97lCFNI+HveKAq/RCz64=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-194-DBEQwzUsOQWmVDZr9ZnDdg-1; Thu, 11 Mar 2021 13:26:37 -0500
+X-MC-Unique: DBEQwzUsOQWmVDZr9ZnDdg-1
+Received: by mail-qk1-f200.google.com with SMTP id i188so16228119qkd.7
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 10:26:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=7/wSGYLh9BUQ/m4VK2E3Iu8L1K7AWw+HwFDDXH/P7x4=;
+        b=A9hGhgUi4zcuO7CX8IQr/yULSE7uv2oAry3N2r321Y+Zt8lD8btHaeOVWaWIiuoPNG
+         YvfqxJQ986rCv+TcFu3K22dLNYo/huweOoIp4UPE4CyBs/4OIwi7SfXwe6c6ZnDd6ciz
+         z8Ak6jmax59H7eIUQBShTTGDe+cxTundujVOQsiNdvaaHNhiLbWBKVPit59smKhi1y+N
+         9fKvN9pNStRwuYpnNS8kewKkbdkmqmxZ5KlrwfNVc0+6GmuugoKLN7w2qPWPyP16qzP7
+         91W12Bgf3rn5O/ISnhRazu+mix7oHlcVF7WP1538lRjZ66HEoOzhwawYid0utYf53eLt
+         vkOQ==
+X-Gm-Message-State: AOAM530EalnoKFEKyQPOwzAq09Fp4FS7+K6DRlR3V93ZOQP3gtM1IVpG
+        ib6y1eCXeI4wj5246IJeKot9cl4Yl02xxUh8dxBiCA5uv0PeB3LFIANIkLLUt4FRygxrernLNhn
+        uTQ3qkPggBap2xXTN
+X-Received: by 2002:ac8:68d:: with SMTP id f13mr8512362qth.300.1615487197329;
+        Thu, 11 Mar 2021 10:26:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJykrRpLf1VdnWeXfJOmyNvXTcgKB/EbD8MxyP146EU0lCHJTfc5M6K1GGvBKnS5gI4cz7i4ig==
+X-Received: by 2002:ac8:68d:: with SMTP id f13mr8512326qth.300.1615487197076;
+        Thu, 11 Mar 2021 10:26:37 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id 77sm2571571qko.48.2021.03.11.10.26.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Mar 2021 10:26:36 -0800 (PST)
+Subject: Re: [PATCH v3 00/15] arm64 / clk: socfpga: simplifying, cleanups and
+ compile testing
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Moritz Fischer <mdf@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
-Message-ID: <20210311181729.GA2148230@bjorn-Precision-5520>
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+References: <20210311152545.1317581-1-krzysztof.kozlowski@canonical.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <f0b90916-9047-d5da-5cde-75d4330cf041@redhat.com>
+Date:   Thu, 11 Mar 2021 10:26:32 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
+In-Reply-To: <20210311152545.1317581-1-krzysztof.kozlowski@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 03:34:01PM -0800, Alexander Duyck wrote:
-> On Wed, Mar 10, 2021 at 11:09 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > On Sun, Mar 07, 2021 at 10:55:24AM -0800, Alexander Duyck wrote:
-> > > On Sun, Feb 28, 2021 at 11:55 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > >
-> > > > @Alexander Duyck, please update me if I can add your ROB tag again
-> > > > to the series, because you liked v6 more.
-> > > >
-> > > > Thanks
-> > > >
-> > > > ---------------------------------------------------------------------------------
-> > > > Changelog
-> > > > v7:
-> > > >  * Rebase on top v5.12-rc1
-> > > >  * More english fixes
-> > > >  * Returned to static sysfs creation model as was implemented in v0/v1.
-> > >
-> > > Yeah, so I am not a fan of the series. The problem is there is only
-> > > one driver that supports this, all VFs are going to expose this sysfs,
-> > > and I don't know how likely it is that any others are going to
-> > > implement this functionality. I feel like you threw out all the
-> > > progress from v2-v6.
-> >
-> > pci_enable_vfs_overlay() turned up in v4, so I think v0-v3 had static
-> > sysfs files regardless of whether the PF driver was bound.
-> >
-> > > I really feel like the big issue is that this model is broken as you
-> > > have the VFs exposing sysfs interfaces that make use of the PFs to
-> > > actually implement. Greg's complaint was the PF pushing sysfs onto the
-> > > VFs. My complaint is VFs sysfs files operating on the PF. The trick is
-> > > to find a way to address both issues.
-> > >
-> > > Maybe the compromise is to reach down into the IOV code and have it
-> > > register the sysfs interface at device creation time in something like
-> > > pci_iov_sysfs_link if the PF has the functionality present to support
-> > > it.
-> >
-> > IIUC there are two questions on the table:
-> >
-> >   1) Should the sysfs files be visible only when a PF driver that
-> >      supports MSI-X vector assignment is bound?
-> >
-> >      I think this is a cosmetic issue.  The presence of the file is
-> >      not a reliable signal to management software; it must always
-> >      tolerate files that don't exist (e.g., on old kernels) or files
-> >      that are visible but don't work (e.g., vectors may be exhausted).
-> >
-> >      If we start with the files always being visible, we should be
-> >      able to add smarts later to expose them only when the PF driver
-> >      is bound.
-> >
-> >      My concerns with pci_enable_vf_overlay() are that it uses a
-> >      little more sysfs internals than I'd like (although there are
-> >      many callers of sysfs_create_files()) and it uses
-> >      pci_get_domain_bus_and_slot(), which is generally a hack and
-> >      creates refcounting hassles.  Speaking of which, isn't v6 missing
-> >      a pci_dev_put() to match the pci_get_domain_bus_and_slot()?
-> 
-> I'm not so much worried about management software as the fact that
-> this is a vendor specific implementation detail that is shaping how
-> the kernel interfaces are meant to work. Other than the mlx5 I don't
-> know if there are any other vendors really onboard with this sort of
-> solution.
 
-I know this is currently vendor-specific, but I thought the value
-proposition of dynamic configuration of VFs for different clients
-sounded compelling enough that other vendors would do something
-similar.  But I'm not an SR-IOV guy and have no vendor insight, so
-maybe that's not the case?
+On 3/11/21 7:25 AM, Krzysztof Kozlowski wrote:
+> Hi,
+>
+> All three Intel arm64 SoCFPGA architectures (Agilex, N5X and Stratix 10)
+> are basically flavors/platforms of the same architecture.  At least from
+> the Linux point of view.  Up to a point that N5X and Agilex share DTSI.
+> Having three top-level architectures for the same one barely makes
+> sense and complicates driver selection.
+>
+> Additionally it was pointed out that ARCH_SOCFPGA name is too generic.
+> There are other vendors making SoC+FPGA designs, so the name should be
+> changed to have real vendor (currently: Intel).
+>
+>
+> Dependencies / merging
+> ======================
+> 1. Patch 1 is used as base, so other changes depend on its hunks.
+>    I put it at beginning as it is something close to a fix, so candidate
+>    for stable (even though I did not mark it like that).
+> 2. Patch 2: everything depends on it.
+>
+> 3. 64-bit path:
+> 3a. Patches 3-7: depend on patch 2, from 64-bit point of view.
+> 3b. Patch 8: depends on 2-7 as it finally removes 64-bit ARCH_XXX
+>     symbols.
+>
+> 4. 32-bit path:
+> 4a. Patches 9-14: depend on 2, from 32-bit point of view.
+> 4b. Patch 15: depends on 9-14 as it finally removes 32-bit ARCH_SOCFPGA
+>     symbol.
+>
+> If the patches look good, proposed merging is via SoC tree (after
+> getting acks from everyone). Sharing immutable branches is also a way.
+>
+>
+> Changes since v2
+> ================
+> 1. Several new patches and changes.
+> 2. Rename ARCH_SOCFPGA to ARCH_INTEL_SOCFPGA on 32-bit and 64-bit.
+> 3. Enable compile testing of 32-bit socfpga clock drivers.
+> 4. Split changes per subsystems for easier review.
+> 5. I already received an ack from Lee Jones, but I did not add it as
+>    there was big refactoring.  Please kindly ack one more time if it
+>    looks good.
+>
+> Changes since v1
+> ================
+> 1. New patch 3: arm64: socfpga: rename ARCH_STRATIX10 to ARCH_SOCFPGA64.
+> 2. New patch 4: arm64: intel: merge Agilex and N5X into ARCH_SOCFPGA64.
+> 3. Fix build is.sue reported by kernel test robot (with ARCH_STRATIX10
+>    and COMPILE_TEST but without selecting some of the clocks).
+>
+>
+> RFT
+> ===
+> I tested compile builds on few configurations, so I hope kbuild 0-day
+> will check more options (please give it few days on the lists).
+> I compare the generated autoconf.h and found no issues.  Testing on real
+> hardware would be appreciated.
+>
+> Best regards,
+> Krzysztof
+>
+> Krzysztof Kozlowski (15):
+>   clk: socfpga: allow building N5X clocks with ARCH_N5X
+>   ARM: socfpga: introduce common ARCH_INTEL_SOCFPGA
+>   mfd: altera: merge ARCH_SOCFPGA and ARCH_STRATIX10
+>   net: stmmac: merge ARCH_SOCFPGA and ARCH_STRATIX10
+>   clk: socfpga: build together Stratix 10, Agilex and N5X clock drivers
+>   clk: socfpga: merge ARCH_SOCFPGA and ARCH_STRATIX10
+>   EDAC: altera: merge ARCH_SOCFPGA and ARCH_STRATIX10
+>   arm64: socfpga: merge Agilex and N5X into ARCH_INTEL_SOCFPGA
+>   clk: socfpga: allow compile testing of Stratix 10 / Agilex clocks
+>   clk: socfpga: use ARCH_INTEL_SOCFPGA also for 32-bit ARM SoCs (and
+>     compile test)
+>   dmaengine: socfpga: use ARCH_INTEL_SOCFPGA also for 32-bit ARM SoCs
+>   fpga: altera: use ARCH_INTEL_SOCFPGA also for 32-bit ARM SoCs
+>   i2c: altera: use ARCH_INTEL_SOCFPGA also for 32-bit ARM SoCs
+>   reset: socfpga: use ARCH_INTEL_SOCFPGA also for 32-bit ARM SoCs
+>   ARM: socfpga: drop ARCH_SOCFPGA
+>
+>  arch/arm/Kconfig                            |  2 +-
+>  arch/arm/Kconfig.debug                      |  6 +++---
+>  arch/arm/Makefile                           |  2 +-
+>  arch/arm/boot/dts/Makefile                  |  2 +-
+>  arch/arm/configs/multi_v7_defconfig         |  2 +-
+>  arch/arm/configs/socfpga_defconfig          |  2 +-
+>  arch/arm/mach-socfpga/Kconfig               |  4 ++--
+>  arch/arm64/Kconfig.platforms                | 17 ++++-------------
+>  arch/arm64/boot/dts/altera/Makefile         |  2 +-
+>  arch/arm64/boot/dts/intel/Makefile          |  6 +++---
+>  arch/arm64/configs/defconfig                |  3 +--
+>  drivers/clk/Kconfig                         |  1 +
+>  drivers/clk/Makefile                        |  4 +---
+>  drivers/clk/socfpga/Kconfig                 | 19 +++++++++++++++++++
+>  drivers/clk/socfpga/Makefile                | 11 +++++------
+>  drivers/dma/Kconfig                         |  2 +-
+>  drivers/edac/Kconfig                        |  2 +-
+>  drivers/edac/altera_edac.c                  | 17 +++++++++++------
+>  drivers/firmware/Kconfig                    |  2 +-
+>  drivers/fpga/Kconfig                        |  8 ++++----
+>  drivers/i2c/busses/Kconfig                  |  2 +-
+>  drivers/mfd/Kconfig                         |  4 ++--
+>  drivers/net/ethernet/stmicro/stmmac/Kconfig |  4 ++--
+>  drivers/reset/Kconfig                       |  6 +++---
+>  24 files changed, 71 insertions(+), 59 deletions(-)
+>  create mode 100644 drivers/clk/socfpga/Kconfig
+>
+Thanks for changing the config name.
 
-> In addition it still feels rather hacky to be modifying read-only PCIe
-> configuration space on the fly via a backdoor provided by the PF. It
-> almost feels like this should be some sort of quirk rather than a
-> standard feature for an SR-IOV VF.
+Please review checkpatch --strict on this set, the typical complaint is
 
-I agree, I'm not 100% comfortable with modifying the read-only Table
-Size register.  Maybe there's another approach that would be better?
-It *is* nice that the current approach doesn't require changes in the
-VF driver.
+clk: socfpga: use ARCH_INTEL_SOCFPGA also for 32-bit ARM SoCs (and compile test)    
+WARNING: please write a paragraph that describes the config symbol fully
+#35: FILE: drivers/clk/socfpg/Kconfig:11:                       
++config CLK_INTEL_SOCFPGA32
 
-> >   2) Should a VF sysfs file use the PF to implement this?
-> >
-> >      Can you elaborate on your idea here?  I guess
-> >      pci_iov_sysfs_link() makes a "virtfnX" link from the PF to the
-> >      VF, and you're thinking we could also make a "virtfnX_msix_count"
-> >      in the PF directory?  That's a really interesting idea.
-> 
-> I would honestly be more comfortable if the PF owned these files
-> instead of the VFs. One of the things I didn't like about this back
-> during the V1/2 days was the fact that it gave the impression that
-> MSI-X count was something that is meant to be edited. Since then I
-> think at least the naming was changed so that it implies that this is
-> only possible due to SR-IOV.
-> 
-> I also didn't like that it makes the VFs feel like they are port
-> representors rather than being actual PCIe devices. Having
-> functionality that only works when the VF driver is not loaded just
-> feels off. The VF sysfs directory feels like it is being used as a
-> subdirectory of the PF rather than being a device on its own.
+Tom
 
-Moving "virtfnX_msix_count" to the PF seems like it would mitigate
-this somewhat.  I don't know how to make this work while a VF driver
-is bound without making the VF feel even less like a PCIe device,
-i.e., we won't be able to use the standard MSI-X model.
-
-> > > Also we might want to double check that the PF cannot be unbound while
-> > > the VF is present. I know for a while there it was possible to remove
-> > > the PF driver while the VF was present. The Mellanox drivers may not
-> > > allow it but it might not hurt to look at taking a reference against
-> > > the PF driver if you are allocating the VF MSI-X configuration sysfs
-> > > file.
-> >
-> > Unbinding the PF driver will either remove the *_msix_count files or
-> > make them stop working.  Is that a problem?  I'm not sure we should
-> > add a magic link that prevents driver unbinding.  Seems like it would
-> > be hard for users to figure out why the driver can't be removed.
-> 
-> I checked it again, it will make the *_msix_count files stop working.
-> In order to guarantee it cannot happen in the middle of things though
-> we are sitting on the device locks for both the PF and the VF. I'm not
-> a fan of having to hold 2 locks while we perform a firmware operation
-> for one device, but I couldn't find anything where we would deadlock
-> so it should be fine.
-
-I agree again, it's not ideal to hold two locks.  Is it possible we
-could get by without the VF lock?  If we simply check whether a VF
-driver is bound (without a lock), a VF driver bind can race with the
-PF sriov_set_msix_vec_count().
-
-If the VF driver bind wins, it reads the old Table Size.  If it reads
-a too-small size, it won't use all the vectors.  If it reads a
-too-large size, it will try to use too many vectors and some won't
-work.  But the race would be caused by a bug in the management
-software, and the consequence doesn't seem *terrible*.
-
-Bjorn
