@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49FEB337254
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:21:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F372337282
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:25:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232759AbhCKMU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 07:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233148AbhCKMU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:20:56 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848F4C061760
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 04:20:56 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lKKJC-000182-TI; Thu, 11 Mar 2021 13:20:54 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:cd1a:e083:465e:4edf])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 064CE5F3608;
-        Thu, 11 Mar 2021 12:20:53 +0000 (UTC)
-Date:   Thu, 11 Mar 2021 13:20:53 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Daniel =?utf-8?B?R2zDtmNrbmVy?= <dg@emlix.com>
-Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
-Subject: Re: Softirq error with mcp251xfd driver
-Message-ID: <20210311122053.4ymta6byqjeocmsv@pengutronix.de>
-References: <20210310064626.GA11893@homes.emlix.com>
- <20210310071351.rimo5qvp5t3hwjli@pengutronix.de>
- <20210310212254.GA2050@homes.emlix.com>
- <20210310215621.GA5538@homes.emlix.com>
+        id S233076AbhCKMZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 07:25:14 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:58977 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232709AbhCKMZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:25:06 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7D2B45C008B;
+        Thu, 11 Mar 2021 07:25:05 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 11 Mar 2021 07:25:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=uyoOmZcEbjVxODH+1
+        WEQaBWpXhhNJG/3Bk2DulHQ/9w=; b=XuhwzMiboxkvIVetCfN0t/tKdlphR6DFO
+        VODRPHKwm+uDkVh21pMzhtgsndx8KEZgFO1uvDK69TycFHoNjyyA4HQXMCvS3Clr
+        PzNPNGf2pHY2PuwwiT9l5wwTxTzeraaW23ntK0Q0jvogcy/aiCtjRWQpUmFujoXI
+        j3uKQazD2i8LxfPv5HxKqUg9sam/LsTf35AL294nLUqYyu5851xtiq02d++G1jIq
+        5wvp+ijSJd9s07PbbfoFpf/xtr1rOdjYOos7kznyxLFj9teZ4tZnNjj4jhOKmPu0
+        b33WB4bqFqQD3f3/x8U0KKqq4A4iFAjePYpc4csPs4dIUClAngSWQ==
+X-ME-Sender: <xms:IQxKYE9E-ut7ydnjrdr7GKsknApo86wFnuXe8I78rY6TaVLi9zMMew>
+    <xme:IQxKYMsruBWe_Q6Kpe8HJRttdkz5EMYC70TIjpEk9MTVvn1Cx3OTWWsfHyZRZVeWj
+    EoDWEpDpimR2bk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvtddggedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:IQxKYKBfRxe31DICgFgry2ez4FWvR3-E5Rl2ZErfzMrYth6Zt3jzqQ>
+    <xmx:IQxKYEfjsDWOFk-O4r3sjIAy2-WPKI8UVWQW9AAIa0CAH4J2asMmjA>
+    <xmx:IQxKYJNTOhxoie-sCdrYA4VjL9gIkmrJk4fj5rFeuaYXN9LF_D6W_w>
+    <xmx:IQxKYCYgd_sWvbzd7oNIHfD0gRn-5zN4HREZTWBmsrM_STu_wZSLIg>
+Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 893E21080057;
+        Thu, 11 Mar 2021 07:25:03 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/6] mlxsw: Implement sampling using mirroring
+Date:   Thu, 11 Mar 2021 14:24:10 +0200
+Message-Id: <20210311122416.2620300-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6aabzysww5xjeyax"
-Content-Disposition: inline
-In-Reply-To: <20210310215621.GA5538@homes.emlix.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Ido Schimmel <idosch@nvidia.com>
 
---6aabzysww5xjeyax
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So far, sampling was implemented using a dedicated sampling mechanism
+that is available on all Spectrum ASICs. Spectrum-2 and later ASICs
+support sampling by mirroring packets to the CPU port with probability.
+This method has a couple of advantages compared to the legacy method:
 
-On 10.03.2021 22:56:21, Daniel Gl=C3=B6ckner wrote:
-[...]
-> Or we leave can_rx_offload unchanged and keep two additional lists of skbs
-> inside the mcp251xfd driver: One for the packets that arrived before the
-> timestamp read from TBC and one for the packets that arrived later. At the
-> end of an iteration we call local_bh_disable, enqueue all packets from the
-> first list with can_rx_offload_queue_sorted, and the ask the softirq to
-> process them by calling local_bh_enable. Afterwards we move everything
-> from the second list to the first list and do the next iteration.
+* Extra metadata per-packet: Egress port, egress traffic class, traffic
+  class occupancy and end-to-end latency
+* Ability to sample packets on egress / per-flow as opposed to only
+  ingress
 
-In the patch series (which was started by Kurt Van Dijck) there is a
-second queue in rx-offload, this one is filled inside the IRQ handler
-and than added at the end of the IRQ handler to the queue that NAPI
-works on. He started this to get rid of the spin_lock operation on every
-skb added to the queue.
+This series should not result in any user-visible changes and its aim is
+to convert Spectrum-2 and later ASICs to perform sampling by mirroring
+to the CPU port with probability. Future submissions will expose the
+additional metadata and enable sampling using more triggers (e.g.,
+egress).
 
-> The drawback is that we can't use can_rx_offload_get_echo_skb.
+Series overview:
 
-I'd like to keep it, as this optimizes other use cases, too.
+Patches #1-#3 extend the SPAN (mirroring) module to accept new
+parameters required for sampling. See individual commit messages for
+detailed explanation.
 
-regards,
-Marc
+Patch #4-#5 split sampling support between Spectrum-1 and later ASIC while
+still using the legacy method for all ASIC generations.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Patch #6 converts Spectrum-2 and later ASICs to perform sampling by
+mirroring to the CPU port with probability.
 
---6aabzysww5xjeyax
-Content-Type: application/pgp-signature; name="signature.asc"
+Ido Schimmel (6):
+  mlxsw: spectrum_span: Add SPAN session identifier support
+  mlxsw: reg: Extend mirroring registers with probability rate field
+  mlxsw: spectrum_span: Add SPAN probability rate support
+  mlxsw: spectrum_matchall: Split sampling support between ASICs
+  mlxsw: spectrum_trap: Split sampling traps between ASICs
+  mlxsw: spectrum_matchall: Implement sampling using mirroring
 
------BEGIN PGP SIGNATURE-----
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     | 17 +++-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  3 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    | 12 +++
+ .../mellanox/mlxsw/spectrum_matchall.c        | 86 ++++++++++++++++++-
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  |  5 +-
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   | 21 ++++-
+ .../ethernet/mellanox/mlxsw/spectrum_span.h   | 16 ++++
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 43 +++++++---
+ 8 files changed, 181 insertions(+), 22 deletions(-)
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmBKCyIACgkQqclaivrt
-76nUyQf/eri29ha+3N/5YdQ6kq6PPo7xTdHMUTU6MLA5SZL7dxBgB+yKU0j//1xw
-Ryn7ovUTWa7K0AScFXtGQVXg7p4nJjGDEdcexUh7A27YOBTcli2/b3t7g3onBXmH
-UOEtsEKNpqv/2EzOg9Dgo2wSPTMNzftSeBvagNIGCOU/k1U1jCSzgMyEL6mqrY72
-aIimXO6kDSgX5GLFWusR5a7vYSotNIKhDHmjkaoiYT2Hlo8EXtsLDJ2/EEgtZ8nF
-Ahai9hRjrrNitRiOiecqjMcOT0QlYbcgGvwtH/QtnAre6AP7lMEYDAf0D5L+DpVI
-dxs+/rxFsxcYWvE8tMVuqfPT5Lwpmw==
-=a5V8
------END PGP SIGNATURE-----
+-- 
+2.29.2
 
---6aabzysww5xjeyax--
