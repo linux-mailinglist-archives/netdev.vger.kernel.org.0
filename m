@@ -2,121 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 237A33380DB
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC0B3380DC
 	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 23:49:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbhCKWsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 17:48:45 -0500
-Received: from mail-pg1-f171.google.com ([209.85.215.171]:38704 "EHLO
-        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbhCKWsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 17:48:08 -0500
-Received: by mail-pg1-f171.google.com with SMTP id q5so1947313pgk.5;
-        Thu, 11 Mar 2021 14:48:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Yp/zf/TAjp/DgsBtmkn2h95rlPfAql88KAJ1HBTmgds=;
-        b=N/FxOEVl779PVlBHxLIMSqM/0lYSVxxKhk5nWz7vvVtBEIinSimCAOMd0XDNNhdZc4
-         FjsTkq5t5mC4fNIHQs9lSHt5DXDKAV/nqU7BYWSmRYN6LJQf/gd5B/FVtr4/11ThrpJT
-         fLP83HYaHUCYz+ULRt+ZZ2yPoTmaysNyMk8KbLh1aisCSHlQ4t6/igqqP2v4QhINy2pI
-         LJ0IyDyge3TjkeWHu0tz7Wqln5B+Vg1oZXnTAAbPZl3oTQvTUAlFPUw/ZlEnPp4Azu7Z
-         AHhXGL6aiDIR6wDIJdSe1HhQRcTB4NmL1SlZ90QOtcZvMmA1rB2/CU33L1xsUSFfGoD+
-         x+iw==
-X-Gm-Message-State: AOAM533U+cqap7tLjD9Fad6tnML5dqvl7Ls5JhPC+6sbRVt2bhzJMmPK
-        UboDfrRDzAvtuJ51WXH1CVk=
-X-Google-Smtp-Source: ABdhPJz8cvoO7cjx+Ydi2AzXzvDOKfJqCw7+rk33vFgwXIa9cNT/DNeCu3LAtFW6UsvUmJpd+zx4VQ==
-X-Received: by 2002:a63:5c1e:: with SMTP id q30mr8763269pgb.259.1615502887491;
-        Thu, 11 Mar 2021 14:48:07 -0800 (PST)
-Received: from localhost ([2601:647:5b00:1161:a4cc:eef9:fbc0:2781])
-        by smtp.gmail.com with ESMTPSA id n10sm3227074pgk.91.2021.03.11.14.48.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Mar 2021 14:48:06 -0800 (PST)
-Date:   Thu, 11 Mar 2021 14:48:05 -0800
-From:   Moritz Fischer <mdf@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Moritz Fischer <mdf@kernel.org>, Tom Rix <trix@redhat.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        id S230372AbhCKWsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 17:48:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36722 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229674AbhCKWsZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 17:48:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 93ECD64F26;
+        Thu, 11 Mar 2021 22:48:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615502905;
+        bh=YQ7sKWMjLFENB0F0uZS21DUq7mds7ydrbZt7pYqXU6Q=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=R6+rjzPpK3p2c+PEffgXrFvPMqJM0N2oq47+/f2jFkibfmBTw9wP6YSjNVu0syjkK
+         FrBuHCnKB42XkQsSo1chdDuqQ7tEGyxwxskUfBo7Igm1LSlMdQ44oT6r5RRrefPAwa
+         lu+/4f7hGS//eDqfTtQFQRwkLiHhMtMYqmLqQfovOTRIlucSh9e58uo+70GI2l2jFC
+         7QBhIFwEEJj8vobJeWkHvelEMUpR62H6FgNaGyr5J3Z0yRaJrI7GGHK2x+K5gJ/nzC
+         bm5TI0lwflToW1cQf01idxUgH+BEapD+uCsTH2OU+quKfU3FcPZfcVmijEzb/oX5Xb
+         8szzZyNw7myYQ==
+Message-ID: <ac6955443a4aa5d0a72e6f2bf15c494f36b78f5c.camel@kernel.org>
+Subject: Re: [PATCH] net/mlx5e: include net/nexthop.h where needed
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Roi Dayan <roid@nvidia.com>, Arnd Bergmann <arnd@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-fpga@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH v3 12/15] fpga: altera: use ARCH_INTEL_SOCFPGA also for
- 32-bit ARM SoCs
-Message-ID: <YEqeJSFnQJVV15P1@epycbox.lan>
-References: <20210311152545.1317581-1-krzysztof.kozlowski@canonical.com>
- <20210311152735.1318487-1-krzysztof.kozlowski@canonical.com>
+        Dmytro Linkin <dlinkin@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 11 Mar 2021 14:48:23 -0800
+In-Reply-To: <5fd5e630-0db2-f83b-63c8-265c4ac372e8@nvidia.com>
+References: <20210308153143.2392122-1-arnd@kernel.org>
+         <5fd5e630-0db2-f83b-63c8-265c4ac372e8@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210311152735.1318487-1-krzysztof.kozlowski@canonical.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
+On Mon, 2021-03-08 at 20:23 +0200, Roi Dayan wrote:
+> 
+> 
+> On 2021-03-08 5:31 PM, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> > 
+> > drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c:1510:12:
+> > error: implicit declaration of function 'fib_info_nh' [-Werror,-
+> > Wimplicit-function-declaration]
+> >          fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
+> >                    ^
+> > drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c:1510:12:
+> > note: did you mean 'fib_info_put'?
+> > include/net/ip_fib.h:529:20: note: 'fib_info_put' declared here
+> > static inline void fib_info_put(struct fib_info *fi)
+> >                     ^
+> > 
+> > Fixes: 8914add2c9e5 ("net/mlx5e: Handle FIB events to update tunnel
+> > endpoint device")
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > ---
+> >   drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c | 1 +
+> >   1 file changed, 1 insertion(+)
+> > 
+> > diff --git
+> > a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> > b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> > index 6a116335bb21..32d06fe94acc 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> > @@ -2,6 +2,7 @@
+> >   /* Copyright (c) 2021 Mellanox Technologies. */
+> >   
+> >   #include <net/fib_notifier.h>
+> > +#include <net/nexthop.h>
+> >   #include "tc_tun_encap.h"
+> >   #include "en_tc.h"
+> >   #include "tc_tun.h"
+> > 
+> 
+> Hi,
+> 
+> I see internally we have a pending commit from Vlad fixing this
+> already,
+> with few more fixes. "net/mlx5e: Add missing include"
+> 
+> I'll check why it's being held.
 
-On Thu, Mar 11, 2021 at 04:27:35PM +0100, Krzysztof Kozlowski wrote:
-> ARCH_SOCFPGA is being renamed to ARCH_INTEL_SOCFPGA so adjust the
-> 32-bit ARM drivers to rely on new symbol.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Acked-by: Moritz Fischer <mdf@kernel.org>
-> ---
->  drivers/fpga/Kconfig | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-> index fd325e9c5ce6..b1026c6fb119 100644
-> --- a/drivers/fpga/Kconfig
-> +++ b/drivers/fpga/Kconfig
-> @@ -14,13 +14,13 @@ if FPGA
->  
->  config FPGA_MGR_SOCFPGA
->  	tristate "Altera SOCFPGA FPGA Manager"
-> -	depends on ARCH_SOCFPGA || COMPILE_TEST
-> +	depends on ARCH_INTEL_SOCFPGA || COMPILE_TEST
->  	help
->  	  FPGA manager driver support for Altera SOCFPGA.
->  
->  config FPGA_MGR_SOCFPGA_A10
->  	tristate "Altera SoCFPGA Arria10"
-> -	depends on ARCH_SOCFPGA || COMPILE_TEST
-> +	depends on ARCH_INTEL_SOCFPGA || COMPILE_TEST
->  	select REGMAP_MMIO
->  	help
->  	  FPGA manager driver support for Altera Arria10 SoCFPGA.
-> @@ -99,7 +99,7 @@ config FPGA_BRIDGE
->  
->  config SOCFPGA_FPGA_BRIDGE
->  	tristate "Altera SoCFPGA FPGA Bridges"
-> -	depends on ARCH_SOCFPGA && FPGA_BRIDGE
-> +	depends on ARCH_INTEL_SOCFPGA && FPGA_BRIDGE
->  	help
->  	  Say Y to enable drivers for FPGA bridges for Altera SOCFPGA
->  	  devices.
-> -- 
-> 2.25.1
-> 
-Thanks,
-Moritz
+Just submitted to net-next. 
+Thanks!
+
+
