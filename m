@@ -2,110 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49C2E336E2D
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 09:48:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ED43336E49
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 09:54:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231157AbhCKIso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 03:48:44 -0500
-Received: from outbound-smtp14.blacknight.com ([46.22.139.231]:49803 "EHLO
-        outbound-smtp14.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231613AbhCKIs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 03:48:29 -0500
-Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
-        by outbound-smtp14.blacknight.com (Postfix) with ESMTPS id 958391C52E4
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 08:48:28 +0000 (GMT)
-Received: (qmail 19459 invoked from network); 11 Mar 2021 08:48:28 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 11 Mar 2021 08:48:28 -0000
-Date:   Thu, 11 Mar 2021 08:48:27 +0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>
-Subject: Re: [PATCH 0/5] Introduce a bulk order-0 page allocator with two
- in-tree users
-Message-ID: <20210311084827.GS3697@techsingularity.net>
-References: <20210310104618.22750-1-mgorman@techsingularity.net>
- <20210310154704.9389055d0be891a0c3549cc2@linux-foundation.org>
+        id S231817AbhCKIyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 03:54:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231438AbhCKIxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 03:53:34 -0500
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE8FC061574
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 00:53:34 -0800 (PST)
+Received: by mail-lj1-x241.google.com with SMTP id 9so1121722ljd.7
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 00:53:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=cNGljFPZRpYFKEu48myr7eYFUT4vLWZX348426Ewac8=;
+        b=PHibtLImqs4TGXU3niy8gSYHXD2sKelQqSek6fklujAWvebIak56HzHlCy7RBzx4ta
+         4jDFDMzn0f31MOz4rsnhcsehEHubm7GPTTJHlFA8Kl26mq7q/GFSIU0pVEOLbw4pLeSe
+         G7kQppx+nNtputZnQBemDgCy+VEJVljEjd73oS0ckvncE7Q6qQKgyO33HbugQGoCfe34
+         wHFPSDH8HyRSbq5BTguKD5sPXqsg4tS+6hG7t2j1hHuXcMA+mrVqQT9v3hazSzzYwfV9
+         kBRkp2qBtw0Dh5ctxbvS9yloJiq1cmRYTA3u33c0gdbiDS1zvOaioZNfyFxXpamyIaPz
+         M1aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=cNGljFPZRpYFKEu48myr7eYFUT4vLWZX348426Ewac8=;
+        b=Ph6p0xMtEG11uCURDXlWkYzjo7TSKUseWyJ6UB6C0n7mu7aDDvH4sZcUD/gYdCcxD5
+         HgT2Hehbd/Kn5bfmVK0R4gmbt0LOYQAFnsjdD3jZ+l5u/H+/li6usPxOlzvVThutHYXU
+         gpJ/q9d/2+CAyXTIsIL/RWP3PHUpcyRCSk4GY4DJTwxnc3hI01E5cPbI9CMvsexdYqjW
+         f0d6NVnCrtkJMg+U/7XDOjUPV1ZdFqtaLitPgysfPg+NA6aJTO+9BaRg9/PdDmn5EfbB
+         XXLSdVhOTCbdo4vvVj6A90O2UD7W3GG6+f6dEHVka4nHk4vekFWfaFVryINpvVsvNiYZ
+         aZxA==
+X-Gm-Message-State: AOAM532Gdmon096gtJgdvFBfqXtDi5bq85+7yvpOMEJQdUb1G8iofDb0
+        DNNpOMOMleIgP8OQiJg0omAIPe46GNM0IvyYnSE=
+X-Google-Smtp-Source: ABdhPJwhST1WXaf+BfhtGNso3EmXvsNeS73pbMk6PYwLsP6ElRchfpFQgihSyXuDMwodTRME3MutVaVN6z/v+8HNx1M=
+X-Received: by 2002:a2e:b88b:: with SMTP id r11mr4160903ljp.495.1615452812689;
+ Thu, 11 Mar 2021 00:53:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20210310154704.9389055d0be891a0c3549cc2@linux-foundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:a2e:1649:0:0:0:0:0 with HTTP; Thu, 11 Mar 2021 00:53:32
+ -0800 (PST)
+Reply-To: georgemike7031@gmail.com
+From:   george mike <barristerlevi@gmail.com>
+Date:   Thu, 11 Mar 2021 09:53:32 +0100
+Message-ID: <CAEJ6CheK9bSARUhPvdNs3=HPzDi97Uxg1ic=LaF6AYWB9gzw_Q@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 03:47:04PM -0800, Andrew Morton wrote:
-> On Wed, 10 Mar 2021 10:46:13 +0000 Mel Gorman <mgorman@techsingularity.net> wrote:
-> 
-> > This series introduces a bulk order-0 page allocator with sunrpc and
-> > the network page pool being the first users.
-> 
-> <scratches head>
-> 
-> Right now, the [0/n] doesn't even tell us that it's a performance
-> patchset!
-> 
+Hallo
 
-I'll add a note about this improving performance for users that operate
-on batches of patches and want to avoid multiple round-trips to the
-page allocator.
+Ich hei=C3=9Fe George Mike. Ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte=
+ dir anbieten
+engster Verwandter meines Klienten. Sie erben die Gesamtsumme (8,5
+Millionen US-Dollar).
+Dollar, die mein Kunde vor seinem Tod auf der Bank gelassen hat.
 
-> The whole point of this patchset appears to appear in the final paragraph
-> of the final patch's changelog.
-> 
+Mein Klient ist ein Staatsangeh=C3=B6riger Ihres Landes, der mit seiner
+Frau bei einem Autounfall ums Leben gekommen ist
+und einziger Sohn. Ich habe Anspruch auf 50% des Gesamtfonds, w=C3=A4hrend
+50% davon berechtigt sind
+Sein f=C3=BCr dich.
+F=C3=BCr weitere Informationen wenden Sie sich bitte an meine private
+E-Mail-Adresse: georgemike7031@gmail.com
 
-I'll copy&paste that note to the introduction. It's likely that high-speed
-networking is the most relevant user in the short-term.
-
-> : For XDP-redirect workload with 100G mlx5 driver (that use page_pool)
-> : redirecting xdp_frame packets into a veth, that does XDP_PASS to create
-> : an SKB from the xdp_frame, which then cannot return the page to the
-> : page_pool.  In this case, we saw[1] an improvement of 18.8% from using
-> : the alloc_pages_bulk API (3,677,958 pps -> 4,368,926 pps).
-> 
-> Much more detail on the overall objective and the observed results,
-> please?
-> 
-
-I cannot generate that data right now so I need Jesper to comment on
-exactly why this is beneficial. For example, while I get that more data
-can be processed in a microbenchmark, I do not have a good handle on how
-much difference that makes to a practical application. About all I know
-is that this problem has been knocking around for 3-4 years at least.
-
-> Also, that workload looks awfully corner-casey.  How beneficial is this
-> work for more general and widely-used operations?
-> 
-
-At this point, probably nothing for most users because batch page
-allocation is not common. It's primarily why I avoided reworking the
-whole allocator just to make this a bit tidier.
-
-> > The implementation is not
-> > particularly efficient and the intention is to iron out what the semantics
-> > of the API should have for users. Once the semantics are ironed out, it can
-> > be made more efficient.
-> 
-> And some guesstimates about how much benefit remains to be realized
-> would be helpful.
-> 
-
-I don't have that information unfortunately. It's a chicken and egg
-problem because without the API, there is no point creating new users.
-For example, fault around or readahead could potentially batch pages
-but whether it is actually noticable when page zeroing has to happen
-is a completely different story. It's a similar story for SLUB, we know
-lower order allocations hurt some microbenchmarks like hackbench-sockets
-but have not quantified what happens if SLUB batch allocates pages when
-high-order allocations fail.
-
--- 
-Mel Gorman
-SUSE Labs
+Vielen Dank im Voraus,
+Herr George Mike,
