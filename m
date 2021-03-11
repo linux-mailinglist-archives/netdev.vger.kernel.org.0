@@ -2,243 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFBAC337ACB
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 18:27:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF87B337AE8
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 18:34:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbhCKR0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 12:26:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230242AbhCKR0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 12:26:37 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93897C061574
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 09:26:37 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id c10so19623915ilo.8
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 09:26:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vWFZnSI4fjpP6NU9dzwqzAIildDi5xJ9YhZRlXp99p0=;
-        b=kbCzRhDkcw7edOjdu5Djo5PKGjeUjIL5OpioQ2frXcN+28UYmm4T4yRs3OLbHzIoC4
-         TmcJ9Q9AHUFXwMqaKKowTCrHtjBwFPBpeoVGoAU0LCmDwsE+gw4eZcY7HzR20huAsFXo
-         GTM6iKuYRcN+ecCxgJmGV8SUzaEVdzZouRXI47Rgir2oP8VMZD3zuRWVL7JqanQOjloj
-         7onjU2r0fCyaD/kKP8S5UeqDTCB2s7WV6xS3CzvkHEaTY67AcEeoTr0SNjr3pwSQB+SQ
-         cCX3uzu6JBTbxvwLmfKEvmB4HOsH1yI4GI5tpdVf3CAikbi3L+AFQgznbYVcNDeUcPMz
-         qObQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vWFZnSI4fjpP6NU9dzwqzAIildDi5xJ9YhZRlXp99p0=;
-        b=SUkYLZSmYYLwTqttjfvmzCVWZZFHiwWHKNiU6uOBuJCmb0EpmMZyAZd0/TUdOKHNIn
-         Cp44+vkDReS0uBWEfqHGw8GDZJKZudlYN/mdvta6r6YK7TZhNePRFjR+mjgAwvBpbpah
-         htCpxCFymXy4TQaqDG3Nm1Rcl10+6K0LpVYnFKlc0TbFdo/qwjHkJqqQ79gErFkJFQBl
-         84Q76ZkJlJIum7ko/OuiVk9g/vU+RnBXd/Szra2URThqdF/PDSAMeDNXGGJ60HwrwtCN
-         qszm1xixwFq1/C5jdlrd8Oue14HgBg6ff4cGgo3XCuK4hbVpRqIYuLbrrGRcCMdOmsIn
-         c94w==
-X-Gm-Message-State: AOAM5329UQ8nqCvKLYYpztFjLBk8Kr/XY+JDT92pJL+zhA96BwoIz2MJ
-        nKrlACjUr66Bdtd6XxJd4504Yg==
-X-Google-Smtp-Source: ABdhPJxU+noZwRpmQOeVN97CJ6ZDHv+8w4K/YZtng/MXM+LgskPMj/Jvfr46NPDeUiTMV1xrzxK4MA==
-X-Received: by 2002:a92:50c:: with SMTP id q12mr7590083ile.59.1615483596910;
-        Thu, 11 Mar 2021 09:26:36 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id v8sm1611079ilg.21.2021.03.11.09.26.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Mar 2021 09:26:36 -0800 (PST)
-Subject: Re: [PATCH net-next v3 0/6] net: qualcomm: rmnet: stop using C
- bit-fields
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, sharathv@codeaurora.org,
-        bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, David.Laight@ACULAB.COM, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210309124848.238327-1-elder@linaro.org>
- <bb7608cc-4a83-0e1d-0124-656246ec4a1f@linaro.org>
- <20210310002731.adinf2sgzeshkjqd@skbuf>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <65399001-78bb-a810-0e65-2f692810fafa@linaro.org>
-Date:   Thu, 11 Mar 2021 11:26:35 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S229789AbhCKRdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 12:33:55 -0500
+Received: from mail-bn7nam10on2086.outbound.protection.outlook.com ([40.107.92.86]:35680
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229806AbhCKRdj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 12:33:39 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XLPfKrtFZhQ27DFRneO2/Fpk1lqdp71wQNtEhFir2aS5Vxglsw7tYGCVLGofUTN7vwpKsZzU8sbdMBdqwcbqEFnRLxBceGyq8cN0lZRYc6fSRVAN/KoMizLqIAObBcw2nmC4SAF3E+VnEn2bYK7L2i8/5996/GYP0CPRTaawUpvE10g8Og2lnxWhIam6qeQGG7JdtcgWOht8YjclPZJ2Wf0Nwt4fR7F8P0N4luZGpZVfx1cVFRf8YczT83ccFj27V6xMz7VntVGc2metyoC+m/F9hp9gqpGX3s+xaTqWoU64kOwH3ISzwqYmNj//ecBmETs85SR1cldGo6kXjf1Hhg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FbstgYSpkrAMyABzav+0yJgWivv2jMYROirGopQN5LE=;
+ b=Mnv1ZsinxV4Ue7ZpBdqyjqmn3zKrYsJdHv+w1ERYnIH51RQHHc1ISxXogS3FA0Q2hjjMado8Xk1Lb0HGTNWBmEDqZr009Stb/saundkY9pSGestzuj+7H9ZtVarh+/POxEGGj4LRKEL3QDm3tv7h1KGNzc0/JwkemGJVc5KW/24NZxpTpbR7E/Xk9Y10NHJlv7y/QsSxLc73wL6a+ZXhTOjEEc3Hae/4+PuqjYEhzzlnetXZ4b0T/mw60ra9fkn3jcqJXgOLEw6YW+i1nTlTSKJZbqR/i+z87oYMiewPmvRp9q0afVrGp4Di63ruP2DS/2z9w2UjTWF/vSoUBucKqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FbstgYSpkrAMyABzav+0yJgWivv2jMYROirGopQN5LE=;
+ b=FrxGkxbI23RcRx5dn43gE20b/XfZs/oYkTxavC7LNhJYVFyf+rNJrNV51a0QLQn1iN2fwEAENiYyrXp845/DVcpwyarZzKMhA7KC0HgyBbx4LSUOZk9vTjppQKBNnuqbFE7/FdvMI0lEc8IyaAKBbjubxV84HXYbwVs5UUSp11NM8zlurwkorfq1verTPhhy+beE84zF21rGuiu1jm5b9QyFBnpuq/64Hg74TExpjnKQKZ+ufRbEAZ31YPI0eN3YoPfvuUqiTUBq7E73ZaVIbyCuE0TuiOHn0lRdAQbP/2pW6+VZbDytOUqUxDmLYK7G7zc75mKdZkBynBHF/RHl6w==
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3211.namprd12.prod.outlook.com (2603:10b6:5:15c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.19; Thu, 11 Mar
+ 2021 17:33:38 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3933.031; Thu, 11 Mar 2021
+ 17:33:38 +0000
+Date:   Thu, 11 Mar 2021 13:33:35 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>
+Subject: Re: [PATCH mlx5-next 6/9] RDMA/mlx5: Use represntor E-Switch when
+ getting netdev and metadata
+Message-ID: <20210311173335.GA2710053@nvidia.com>
+References: <20210311070915.321814-1-saeed@kernel.org>
+ <20210311070915.321814-7-saeed@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210311070915.321814-7-saeed@kernel.org>
+X-Originating-IP: [142.162.115.133]
+X-ClientProxiedBy: BL0PR01CA0005.prod.exchangelabs.com (2603:10b6:208:71::18)
+ To DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-In-Reply-To: <20210310002731.adinf2sgzeshkjqd@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR01CA0005.prod.exchangelabs.com (2603:10b6:208:71::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Thu, 11 Mar 2021 17:33:36 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lKPBn-00BN3C-FY; Thu, 11 Mar 2021 13:33:35 -0400
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1fd71d66-a99b-48d7-e865-08d8e4b3cd68
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3211:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3211AD36F17341F19117F304C2909@DM6PR12MB3211.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: h43xlhPXT3Rlfju0XWhDcaJz8gD33eLRQUFJ/Jlrv2svxANCpBrWmiOiXaCz3Mq4AsbeTuuh0PvUHzfrjfvvHRrx1iRfVkemFuNNo3yjoUGrzqA9Q8ebSY/mMVJctZ7F7tW/KxOSlEwAYmP3ioRLPnpahaKg8pG2XimoGILL7bA9xcxcoA9bZyIoH7e+jQ/q93hEY5C45XBujYphJ07EoMLNHO9myniWgEv6zgv2DQ9/0YwmopXZ635MjtqD45AAyny8RyOE2gObllie7cyt7J9JRqHOKqHS1UWBepQMCs4O2Z/TY6l8BTFpg3hbcqe3bB6x7wu0v3Zlr6Wlc5oECc9dwwKsVnBcAzHbog8qso3siIXnshQzL99vVNjfJbhuAA/opACmhu20S6z+AQeCi2UJrMYyi7X7Hsc+AoYBM+pEwcwHvvMSB4gtUPZrkZ9zODyk05gIdPLku1icMKE1qLR7vmqFXPB5gTT62pJ7WTO17JN+3dq50ggNlJvEYyiaI9G0JNqpcEeQX1jpSH4KEA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(396003)(366004)(136003)(8676002)(66946007)(107886003)(26005)(36756003)(2616005)(66476007)(8936002)(86362001)(426003)(66556008)(33656002)(54906003)(83380400001)(6916009)(2906002)(4326008)(5660300002)(1076003)(9786002)(9746002)(478600001)(186003)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?3ki7zsdWGUiWZibNcCqySw3V38HSWVNW7+IgbSR1to+yk5kJncvXaIJFK94J?=
+ =?us-ascii?Q?VPcn1VISR9MToVEKbjHQjEER7suZN8B3x7qnBAEo7n6LRUa902Bzg2vx140D?=
+ =?us-ascii?Q?ptCk42JF0c7tgDsAQ67BqiJjD7QLtOMRWVivqLKQoMWrKma5k0CLGP4Y3+YH?=
+ =?us-ascii?Q?SlGJBzSoFbjROGd54q3mmAyd3HLuYmVhyGRBNJPl3sY0RgSGDaddEGSuKAKW?=
+ =?us-ascii?Q?aRU2blzqbl6nC3lECO4tZ3rJcmkuhgBILDW8guB4GGCgM3AnqBMLqP9HA+zz?=
+ =?us-ascii?Q?42rm7tqACQCFskmc8oo+yz4ObbNI0vMV/w4iUxF9CGhBWoGGSIOdzFjDZdPa?=
+ =?us-ascii?Q?11+YDekj7EKPzaTbI0Fuogu6Cfgbp+gWgkRFKUKF1aGVIa7X0WskCKjwcWqb?=
+ =?us-ascii?Q?jYntX/lkjXUYixB8RJlpU+mUIzXF14v/qZn+KpbYGdevpOTBUCQfmgSD79xI?=
+ =?us-ascii?Q?OKbv4gr/DIrLWTjwK16WFYRk/JIfosnvj+nO2Xf4W16TghLCZlaWZHtbcOc7?=
+ =?us-ascii?Q?YA3VYIAB4xi2JWpZ8HWaBxPH/OQNW+rayTLjwalkTi8SOY0RCgH3FlQrL31a?=
+ =?us-ascii?Q?gnW98oORWaWSSvt1L1axcl/80o1j2NkPx2wBnsH+k+zfBQCeH6OwdC/AFcP5?=
+ =?us-ascii?Q?ONHC1kKxj00bh2EhOPq7cUJJwgS/nMYYmFBZosIJwXZxoFVSaRXo6sPx9PlU?=
+ =?us-ascii?Q?bzHS7dXzsJw6yiG+15ShxXlb8TZsX3rnXdSgmsicNTkbtU5Pg6Nh2Qvkri5d?=
+ =?us-ascii?Q?PI3KxEbZtdYgqwS5RhA5ST1Dw77AQvkk3VcNSKufY8X9GGUmGTriB67LqaZl?=
+ =?us-ascii?Q?pC1I7n+B8Ja8TBm3z6Z3ndrmipPqTQ6wC8otv0d9JE8y5u/nEEbFS9ldZA+8?=
+ =?us-ascii?Q?XCB5AJH9vFyWvwOsg/Hs7TB1XbgibyXNDVdR4TZd+PjvbhrjlfxlE3Bevb35?=
+ =?us-ascii?Q?PIhQCGBteOOlU3ktfxf+FWEeJhRHylyJAkWE3cIQKFPM5UESrvB+AdhwaO0q?=
+ =?us-ascii?Q?oH7GTpgRsAJJA7bysRSX5EFGy4+NxNwhIXH9LVhE8MbEleuoMHeIdWhdc/FJ?=
+ =?us-ascii?Q?D6I1kzZj5M2nl/v9Ry2fUKC+U2j+ARC+wcYlovdni+Nu/OjBU0ufnPxEEGre?=
+ =?us-ascii?Q?6ng3tzbvMJYGnljwZi+2y4XIQBOOs7NkDyKC4JKA1VLVS+CMMH4W8woe5a5O?=
+ =?us-ascii?Q?n2uHKPIQV0hW9qovj3lKruKRN6/rSloiyuX+bWwBNSfXAYUEd85q5BayDy7H?=
+ =?us-ascii?Q?UiEISfL4YEyIKXVvqzPYyYtG4y5q4UyrE8qOJPBqZbUHJ1RIzv8RNa3BLshc?=
+ =?us-ascii?Q?UA4vyQ9hnRptNDU9KVkG/HcVGX33ASGvhZNvlkJSmVp2kw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fd71d66-a99b-48d7-e865-08d8e4b3cd68
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 17:33:38.2840
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xF+vvBAouLsCxRXxrvJkYBeChzFWHMKXXja/RaP+OvseQctU1UplbsWoiypt3xpZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3211
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/9/21 6:27 PM, Vladimir Oltean wrote:
-> Hi Alex,
+On Wed, Mar 10, 2021 at 11:09:12PM -0800, Saeed Mahameed wrote:
+> From: Mark Bloch <mbloch@nvidia.com>
 > 
-> On Tue, Mar 09, 2021 at 05:39:20PM -0600, Alex Elder wrote:
->> On 3/9/21 6:48 AM, Alex Elder wrote:
->>> Version 3 of this series uses BIT() rather than GENMASK() to define
->>> single-bit masks.  It then uses a simple AND (&) operation rather
->>> than (e.g.) u8_get_bits() to access such flags.  This was suggested
->>> by David Laight and really prefer the result.  With Bjorn's
->>> permission I have preserved his Reviewed-by tags on the first five
->>> patches.
->>
->> Nice as all this looks, it doesn't *work*.  I did some very basic
->> testing before sending out version 3, but not enough.  (More on
->> the problem, below).
->>
->> 		--> I retract this series <--
->>
->> I will send out an update (version 4).  But I won't be doing it
->> for a few more days.
->>
->> The problem is that the BIT() flags are defined in host byte
->> order.  But the values they're compared against are not always
->> (or perhaps, never) in host byte order.
->>
->> I regret the error, and will do a complete set of testing on
->> version 4 before sending it out for review.
+> Now that a pointer to the managing E-Switch is stored in the representor
+> use it.
 > 
-> I think I understand some of your pain. I had a similar situation trying
+> Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  drivers/infiniband/hw/mlx5/fs.c     | 2 +-
+>  drivers/infiniband/hw/mlx5/ib_rep.c | 2 +-
+>  drivers/infiniband/hw/mlx5/main.c   | 3 +--
+>  3 files changed, 3 insertions(+), 4 deletions(-)
 
-I appreciate your saying that.  In this case these were
-mistakes of my own making, but it has been surprisingly
-tricky to make sense of exactly how bits are laid out
-under various scenarios, old and new.
+Spelling error in the subject
 
-> to write a driver for hardware with very strange bitfield organization,
-> and my top priority was actually maintaining a set of bitfield definitions
-> that could be taken directly from the user manual of said piece of
-> hardware (and similar to you, I dislike C bitfields). What I came up
+ 
+> diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
+> index 25da0b05b4e2..01370d9a871a 100644
+> --- a/drivers/infiniband/hw/mlx5/fs.c
+> +++ b/drivers/infiniband/hw/mlx5/fs.c
+> @@ -879,7 +879,7 @@ static void mlx5_ib_set_rule_source_port(struct mlx5_ib_dev *dev,
+>  				    misc_parameters_2);
+>  
+>  		MLX5_SET(fte_match_set_misc2, misc, metadata_reg_c_0,
+> -			 mlx5_eswitch_get_vport_metadata_for_match(esw,
+> +			 mlx5_eswitch_get_vport_metadata_for_match(rep->esw,
+>  								   rep->vport));
 
-That seems like a reasonable thing to do.  The conventional
-layout of big endian bytes and bits in network documentation
-is great, but it is also different from other conventions
-used elsewhere, and sometimes that too can lead to confusion.
+Why not change the esw reference above too?
 
-For example, network specs list tend to show groups of 4 bytes
-in  a row with high-order byte *and bit* numbered 0:
+Seems Ok otherwise
 
-  high order byte
-|       0       |          1          |    2    |     3    |
-|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|   ...   |  ...  |31|
-  ^-- high bit
+Acked-by: Jason Gunthorpe <jgg@nvidia.com>
 
-While SCSI shows 1 byte rows, high-order bit numbered 7:
-
-Byte| 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
-  0  | ^-- high bit                  |
-  1  |
-
-> with was an entirely new API called packing() which is described here:
-> https://www.kernel.org/doc/html/latest/core-api/packing.html
-
-I was not aware of that.  And I have now looked at it and have
-a few comments, below.
-
-> It doesn't have any users except code added by me (some in Ethernet fast
-> paths), and it has some limitations (mainly that it only has support for
-> u64 CPU words), but on the other hand, it's easy to understand, easy to
-> use, supports any bit/byte layout under the sun, doesn't suffer from
-> unaligned memory access issues due to its byte-by-byte approach, and is
-> completely independent of host endianness.
-> That said, I'm not completely happy with it because it has slightly
-> higher overhead compared to typical bitfield accessors. I've been on the
-> fence about even deleting it, considering that it's been two years since
-> it's in mainline and it hasn't gained much of a traction. So I would
-> rather try to work my way around a different API in the sja1105 driver.
-> 
-> Have you noticed this API and decided to not use it for whatever reason?
-
-I had not noticed it before you brought it to my attention.
-
-> Could you let me know what that was? Even better, in your quest to fix
-> the rmnet driver, have you seen any API that is capable of extracting a
-> bitfield that spans two 64-bit halves of an 128 bit word in a custom bit
-> layout?
-
-I have not seen an interface that attempts to handle things that
-span multiple 64-bit units of memory.
-
-Your document uses big endian 64-bit word (not u64) as its "no
-quirks" example (listing high-order bytes first, and numbering
-bytes--and bits--starting at higher numbers).  My only objection
-to that is that you should probably call it __be64.  Otherwise
-I'm just pointing out that it is a convention, and as pointed
-out above, it isn't universal.
-
-For my purposes, all registers are 32 bits.  So to use your
-packing() interface I would have to implement 32-bit versions
-of the function.  But that's not really a big deal.  I do
-see what you're doing, defining exactly what you want to
-do in the arguments passed to packing(), and allowing the
-one function to both encode and extract values in a 64-bit
-register regardless of endianness.
-
-Having looked at this, though, I prefer the functions and
-macros defined in <linux/bitfield.h>.  Probably the biggest
-reason is a bias I have about the fact that a single mask
-value represents both the position and width of a field
-within a register.  I independently "invented/discovered"
-this and implemented it for my own use, only to learn later
-it had already been done.  So I switched to the functions
-that were already upstream.
-
-The "bitfield.h" functions *require* the field mask to
-be a runtime constant.  That is great, because it means
-that determining the width and position of fields from
-the mask can be done at compile time, and can be done
-as efficiently as possible.  The downside is that it
-would occasionally be nice to be able to supply a variable
-mask value.  I've had to go to some lengths in the IPA
-driver to get a result that compiles in some cases.
-
-But because you asked, I'll list some other reasons why
-I prefer those functions over your packing() function.
-- As mentioned, a single mask defines both the position and
-   size of a field.  It is specified in "natural" host byte
-   order, but provides options for encoding or extracting
-   values for big- or little-endian objects as well.
-- I prefer to have the size of the integral types (and the
-   operations on them) to be explicit.  I.e., yes, "int"
-   is supposed to be the most efficient type on a machine,
-   but in working with the hardware I like declaring exactly
-   what size object I'm dealing with.  The "bitfield.h"
-   functions have that, for every standard word size.
-- I think that your one function, although convenient,
-   is too general-purpose.  I'd rather *at least* have
-   one function for encoding values and a second for
-   decoding.
-- In contrast, the "bitfield.h" functions each do one
-   thing--either encode or extract, on an object of a
-   known size and endianness.  The arguments passed are
-   minimal but sufficient to perform each operation.
-- I prefer having the encoding function *return* the
-   encoded value rather than passing the address of
-   an object to be updated.
-- Although I recognize exactly the problem it solves,
-   the QUIRKS flags you have aren't a lot more intuitive
-   to me than the __LITTLE_ENDIAN_BITFIELD symbol is.
-   At least the names you use offer a little more clarity.
-
-None of these are strong criticisms.  In fact I like that
-you created a function/system to solve this problem.  But
-you requested some reasoning, so I wanted to offer some.
-
-In this particular RMNet series, I followed conventions
-I used for the IPA driver.  In that case, there are many
-registers with fields, so it was important to follow
-some consistent patterns.  For this case, not nearly as
-much generality is needed, so I could probably get away
-with simpler masks, possibly without even using the
-u16_encode_bits() functions.  Not sure what I'll settle
-on but I plan to post version 4 of the series early
-next week.
-
-Thanks for your note.  I do appreciate having someone
-say "hey, I've been there."  And I'm glad to now be
-aware of the packing() function.
-	
-					-Alex
+Jason
