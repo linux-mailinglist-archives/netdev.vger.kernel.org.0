@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3313369C9
+	by mail.lfdr.de (Postfix) with ESMTP id F11E93369CA
 	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 02:37:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229570AbhCKBgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 20:36:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S229757AbhCKBgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 20:36:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbhCKBgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 20:36:12 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C46C061574
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 17:36:12 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id s21so2642041pjq.1
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 17:36:12 -0800 (PST)
+        with ESMTP id S229851AbhCKBgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 20:36:19 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABD4C061574
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 17:36:19 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id l7so13437349pfd.3
+        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 17:36:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=DJltLUYcs98/kijveBfZyUaWDIHwVhRt97pqpufw9i0=;
-        b=scU65pB6xFpMzm1+8nIhbovGBVQq1DtmdBjSrEWTrUXE9VHbZuS3Lp1yFfeNpGFfxd
-         Cg192aYX3oZnj0Vjf/xDZXhzxbnPGFY6nzOYMcZgXEafssYgqgiQTUElhKKRk1RSIt3w
-         j6uwqDsJhAIHRrxiUgh8lfrcN5TpkjTx9T0VqizaOYxrtVhx/IlOCru4UmCjbY5kWqbK
-         hsxwpPM5A2aN1K8dtdZ340qIcfmC9lMWZZV5vG9vB1Aap5phcHGC0vAoAxGZNO4njQf+
-         pgr1Yh/62kmsT8+WMW12lAtChaLX09Czqn5I8v7f7yqp65WdgUmwpIhEmMacY/3e2efZ
-         DjdQ==
+        bh=zwmi3JuPnTfduGik1QpBW0Dj/Zas5L1dP4lxc4Bo/Vs=;
+        b=i4G35mw/8BI/K7IRD8mxtGPoZ3WhZrM1+xPmXQbsjDp38uqH0L+G8bAycOsStHzfZM
+         z8PoUY9ighgV7plV1V1XegX1IzaWG+rXAuUKPqGk1Sb1upJX1R3LU7N0I6/TdfnPq5JT
+         oYq2vGqUPNuyhh6KTTw9eneYlDBLaO1/ALpoVGcapnsSHspcYpuKVAoMRCw+DOdnwA55
+         5d4OnRuOdbDAT67Cm5OdVLCg+89Hlqwjf6aPNobPBuJFcqgm8ED3aGeeZQZHouR2Hfcr
+         NgXSJ5PpgOFyxiObAjxgNSSBRFoH1JElrl8zh5YXxR18eBdDBEIvQ7LERtg0U8soKrvt
+         dBRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=DJltLUYcs98/kijveBfZyUaWDIHwVhRt97pqpufw9i0=;
-        b=QCYiVZvQ93pGono5y/+k8seszsOTBgrwy715/z4jNlEtDQmXmKs2c24hQOtuP+yYiD
-         GUdk8auC8KKJYdt9p6lJJASCayrFjivrfX+DA4dwrd0X6sNucrkFAipzJcpxjpfYQudF
-         WJuALcdB5Lr/kaWOV2UKLY2f3djqNgv6ePSk2mMrT+ZcsJ3OxFGEolzmTgo9sP0ej6c3
-         TU9i16taomOBDfVXHEqEXruRusLOX4dMqgJRUII9h6W3W/Oez1s/aX7NVuwf8NOynKfB
-         /2+4ApWPoxR+WxrYaVWuwzE2m+YmNGvuUzcMpHKr8bZrU1vj7ZQ2GdMmvHGX6VCu7LH+
-         Ythw==
-X-Gm-Message-State: AOAM533+xtox93OY7wFjwFtf96NnCBn8J/j/nvWRhjIHSZJsrWX1bdWh
-        o0i43qICzKNSOpw3fNtwPW8=
-X-Google-Smtp-Source: ABdhPJzYqOo5VXwSONbDqpY26hTZ33JQIrILn89H5MFVviNNdeqdtDsgwtLdyDkytIH8dBO1ybn1gQ==
-X-Received: by 2002:a17:90a:5302:: with SMTP id x2mr6557715pjh.232.1615426572198;
-        Wed, 10 Mar 2021 17:36:12 -0800 (PST)
+        bh=zwmi3JuPnTfduGik1QpBW0Dj/Zas5L1dP4lxc4Bo/Vs=;
+        b=CvPseak1tqBk/i2580JV7mdyxWyGH0A9DgyF4+CpScuY2H+/rTt5NgLyFmwQgq3ORx
+         McRALpSnXZYNHizCLIJTUSzaohz66nZNMg4t/TXSEltlYQQ7m6lrOP46Z6vXO91hTAMa
+         MdmpvJApdfiHm2x0f4RmAjD8nB7NcOomdQd/swHUnmmqiCq91sz7RPYUh5gMVztfO3uy
+         PIX0GN1sJ2aOLI+E+o4vH0PiFKSbBSfwgF682HqaHsxBtbKI+bYb2e5EN0lbz8p9sO+2
+         kUr4Qv/j6eUkyeJYLQDQYLsQ/ggcBXV4lz/ssIURcboH981y1g6dwMG9UcDeGAgRdU+e
+         dqIw==
+X-Gm-Message-State: AOAM53007DtQjRtCTIZc0wthUE+MbPie6AnRUOVzDnW5RfgFmce7LQsc
+        GdLnOiBBK1qsTv0E8scA/S4=
+X-Google-Smtp-Source: ABdhPJzK4EkTkJtt9aP4Ni5V8SaqhKldWhBhRqKKxLz96ZlccdDyVk5oHYBCdFpvS0za6aU4PbCdTA==
+X-Received: by 2002:a62:e805:0:b029:1f8:16ba:4518 with SMTP id c5-20020a62e8050000b02901f816ba4518mr5290933pfi.37.1615426578576;
+        Wed, 10 Mar 2021 17:36:18 -0800 (PST)
 Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id e1sm518190pjm.12.2021.03.10.17.36.11
+        by smtp.gmail.com with ESMTPSA id gg22sm532748pjb.20.2021.03.10.17.36.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 17:36:11 -0800 (PST)
-Subject: [RFC PATCH 09/10] bna: Update driver to use ethtool_gsprintf
+        Wed, 10 Mar 2021 17:36:18 -0800 (PST)
+Subject: [RFC PATCH 10/10] ionic: Update driver to use ethtool_gsprintf
 From:   Alexander Duyck <alexander.duyck@gmail.com>
 To:     kuba@kernel.org
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -61,8 +61,8 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         sthemmin@microsoft.com, wei.liu@kernel.org, mst@redhat.com,
         jasowang@redhat.com, pv-drivers@vmware.com, doshir@vmware.com,
         alexanderduyck@fb.com
-Date:   Wed, 10 Mar 2021 17:36:10 -0800
-Message-ID: <161542657091.13546.17503493571307422104.stgit@localhost.localdomain>
+Date:   Wed, 10 Mar 2021 17:36:17 -0800
+Message-ID: <161542657729.13546.14928347259921159903.stgit@localhost.localdomain>
 In-Reply-To: <161542634192.13546.4185974647834631704.stgit@localhost.localdomain>
 References: <161542634192.13546.4185974647834631704.stgit@localhost.localdomain>
 User-Agent: StGit/0.23
@@ -75,309 +75,177 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Duyck <alexanderduyck@fb.com>
 
-Update the bnad_get_strings to make use of ethtool_gsprintf and avoid
-unnecessary line wrapping. To do this we invert the logic for the string
-set test and instead exit immediately if we are not working with the stats
-strings. In addition the function is broken up into subfunctions for each
-area so that we can simply call ethtool_gsprintf once for each string in a
-given subsection.
+Update the ionic driver to make use of ethtool_gsprintf. In addition add
+separate functions for Tx/Rx stats strings in order to reduce the total
+amount of indenting needed in the driver code.
 
 Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
 ---
- drivers/net/ethernet/brocade/bna/bnad_ethtool.c |  266 +++++++++--------------
- 1 file changed, 105 insertions(+), 161 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_stats.c |  145 +++++++++------------
+ 1 file changed, 60 insertions(+), 85 deletions(-)
 
-diff --git a/drivers/net/ethernet/brocade/bna/bnad_ethtool.c b/drivers/net/ethernet/brocade/bna/bnad_ethtool.c
-index 588c4804d10a..9d72f896880d 100644
---- a/drivers/net/ethernet/brocade/bna/bnad_ethtool.c
-+++ b/drivers/net/ethernet/brocade/bna/bnad_ethtool.c
-@@ -524,6 +524,68 @@ bnad_set_pauseparam(struct net_device *netdev,
- 	return 0;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.c b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
+index 6ae75b771a15..1dac960386df 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_stats.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
+@@ -246,98 +246,73 @@ static u64 ionic_sw_stats_get_count(struct ionic_lif *lif)
+ 	return total;
  }
  
-+static void bnad_get_txf_strings(u8 **string, int f_num)
++static void ionic_sw_stats_get_tx_strings(struct ionic_lif *lif, u8 **buf,
++					  int q_num)
 +{
-+	ethtool_gsprintf(string, "txf%d_ucast_octets", f_num);
-+	ethtool_gsprintf(string, "txf%d_ucast", f_num);
-+	ethtool_gsprintf(string, "txf%d_ucast_vlan", f_num);
-+	ethtool_gsprintf(string, "txf%d_mcast_octets", f_num);
-+	ethtool_gsprintf(string, "txf%d_mcast", f_num);
-+	ethtool_gsprintf(string, "txf%d_mcast_vlan", f_num);
-+	ethtool_gsprintf(string, "txf%d_bcast_octets", f_num);
-+	ethtool_gsprintf(string, "txf%d_bcast", f_num);
-+	ethtool_gsprintf(string, "txf%d_bcast_vlan", f_num);
-+	ethtool_gsprintf(string, "txf%d_errors", f_num);
-+	ethtool_gsprintf(string, "txf%d_filter_vlan", f_num);
-+	ethtool_gsprintf(string, "txf%d_filter_mac_sa", f_num);
-+}
++	int i;
 +
-+static void bnad_get_rxf_strings(u8 **string, int f_num)
-+{
-+	ethtool_gsprintf(string, "rxf%d_ucast_octets", f_num);
-+	ethtool_gsprintf(string, "rxf%d_ucast", f_num);
-+	ethtool_gsprintf(string, "rxf%d_ucast_vlan", f_num);
-+	ethtool_gsprintf(string, "rxf%d_mcast_octets", f_num);
-+	ethtool_gsprintf(string, "rxf%d_mcast", f_num);
-+	ethtool_gsprintf(string, "rxf%d_mcast_vlan", f_num);
-+	ethtool_gsprintf(string, "rxf%d_bcast_octets", f_num);
-+	ethtool_gsprintf(string, "rxf%d_bcast", f_num);
-+	ethtool_gsprintf(string, "rxf%d_bcast_vlan", f_num);
-+	ethtool_gsprintf(string, "rxf%d_frame_drops", f_num);
-+}
++	for (i = 0; i < IONIC_NUM_TX_STATS; i++)
++		ethtool_gsprintf(buf, "tx_%d_%s", q_num,
++				 ionic_tx_stats_desc[i].name);
 +
-+static void bnad_get_cq_strings(u8 **string, int q_num)
-+{
-+	ethtool_gsprintf(string, "cq%d_producer_index", q_num);
-+	ethtool_gsprintf(string, "cq%d_consumer_index", q_num);
-+	ethtool_gsprintf(string, "cq%d_hw_producer_index", q_num);
-+	ethtool_gsprintf(string, "cq%d_intr", q_num);
-+	ethtool_gsprintf(string, "cq%d_poll", q_num);
-+	ethtool_gsprintf(string, "cq%d_schedule", q_num);
-+	ethtool_gsprintf(string, "cq%d_keep_poll", q_num);
-+	ethtool_gsprintf(string, "cq%d_complete", q_num);
-+}
-+
-+static void bnad_get_rxq_strings(u8 **string, int q_num)
-+{
-+	ethtool_gsprintf(string, "rxq%d_packets", q_num);
-+	ethtool_gsprintf(string, "rxq%d_bytes", q_num);
-+	ethtool_gsprintf(string, "rxq%d_packets_with_error", q_num);
-+	ethtool_gsprintf(string, "rxq%d_allocbuf_failed", q_num);
-+	ethtool_gsprintf(string, "rxq%d_mapbuf_failed", q_num);
-+	ethtool_gsprintf(string, "rxq%d_producer_index", q_num);
-+	ethtool_gsprintf(string, "rxq%d_consumer_index", q_num);
-+}
-+
-+static void bnad_get_txq_strings(u8 **string, int q_num)
-+{
-+	ethtool_gsprintf(string, "txq%d_packets", q_num);
-+	ethtool_gsprintf(string, "txq%d_bytes", q_num);
-+	ethtool_gsprintf(string, "txq%d_producer_index", q_num);
-+	ethtool_gsprintf(string, "txq%d_consumer_index", q_num);
-+	ethtool_gsprintf(string, "txq%d_hw_consumer_index", q_num);
-+}
-+
- static void
- bnad_get_strings(struct net_device *netdev, u32 stringset, u8 *string)
- {
-@@ -531,175 +593,57 @@ bnad_get_strings(struct net_device *netdev, u32 stringset, u8 *string)
- 	int i, j, q_num;
- 	u32 bmap;
- 
-+	if (stringset != ETH_SS_STATS)
++	if (!test_bit(IONIC_LIF_F_UP, lif->state) ||
++	    !test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state))
 +		return;
 +
- 	mutex_lock(&bnad->conf_mutex);
++	for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++)
++		ethtool_gsprintf(buf, "txq_%d_%s", q_num,
++				 ionic_txq_stats_desc[i].name);
++	for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++)
++		ethtool_gsprintf(buf, "txq_%d_cq_%s", q_num,
++				 ionic_dbg_cq_stats_desc[i].name);
++	for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++)
++		ethtool_gsprintf(buf, "txq_%d_intr_%s", q_num,
++				 ionic_dbg_intr_stats_desc[i].name);
++	for (i = 0; i < IONIC_MAX_NUM_SG_CNTR; i++)
++		ethtool_gsprintf(buf, "txq_%d_sg_cntr_%d", q_num, i);
++}
++
++static void ionic_sw_stats_get_rx_strings(struct ionic_lif *lif, u8 **buf,
++					  int q_num)
++{
++	int i;
++
++	for (i = 0; i < IONIC_NUM_RX_STATS; i++)
++		ethtool_gsprintf(buf, "rx_%d_%s", q_num,
++				 ionic_rx_stats_desc[i].name);
++
++	if (!test_bit(IONIC_LIF_F_UP, lif->state) ||
++	    !test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state))
++		return;
++
++	for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++)
++		ethtool_gsprintf(buf, "rxq_%d_cq_%s", q_num,
++				 ionic_dbg_cq_stats_desc[i].name);
++	for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++)
++		ethtool_gsprintf(buf, "rxq_%d_intr_%s", q_num,
++				 ionic_dbg_intr_stats_desc[i].name);
++	for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++)
++		ethtool_gsprintf(buf, "rxq_%d_napi_%s", q_num,
++				 ionic_dbg_napi_stats_desc[i].name);
++	for (i = 0; i < IONIC_MAX_NUM_NAPI_CNTR; i++)
++		ethtool_gsprintf(buf, "rxq_%d_napi_work_done_%d", q_num, i);
++}
++
+ static void ionic_sw_stats_get_strings(struct ionic_lif *lif, u8 **buf)
+ {
+ 	int i, q_num;
  
--	switch (stringset) {
--	case ETH_SS_STATS:
--		for (i = 0; i < BNAD_ETHTOOL_STATS_NUM; i++) {
--			BUG_ON(!(strlen(bnad_net_stats_strings[i]) <
--				   ETH_GSTRING_LEN));
--			strncpy(string, bnad_net_stats_strings[i],
--				ETH_GSTRING_LEN);
--			string += ETH_GSTRING_LEN;
+-	for (i = 0; i < IONIC_NUM_LIF_STATS; i++) {
+-		snprintf(*buf, ETH_GSTRING_LEN, ionic_lif_stats_desc[i].name);
+-		*buf += ETH_GSTRING_LEN;
+-	}
++	for (i = 0; i < IONIC_NUM_LIF_STATS; i++)
++		ethtool_gsprintf(buf, ionic_lif_stats_desc[i].name);
+ 
+-	for (i = 0; i < IONIC_NUM_PORT_STATS; i++) {
+-		snprintf(*buf, ETH_GSTRING_LEN,
+-			 ionic_port_stats_desc[i].name);
+-		*buf += ETH_GSTRING_LEN;
+-	}
++	for (i = 0; i < IONIC_NUM_PORT_STATS; i++)
++		ethtool_gsprintf(buf, ionic_port_stats_desc[i].name);
+ 
+-	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
+-		for (i = 0; i < IONIC_NUM_TX_STATS; i++) {
+-			snprintf(*buf, ETH_GSTRING_LEN, "tx_%d_%s",
+-				 q_num, ionic_tx_stats_desc[i].name);
+-			*buf += ETH_GSTRING_LEN;
 -		}
--		bmap = bna_tx_rid_mask(&bnad->bna);
--		for (i = 0; bmap; i++) {
--			if (bmap & 1) {
--				sprintf(string, "txf%d_ucast_octets", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_ucast", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_ucast_vlan", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_mcast_octets", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_mcast", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_mcast_vlan", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_bcast_octets", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_bcast", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_bcast_vlan", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_errors", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_filter_vlan", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txf%d_filter_mac_sa", i);
--				string += ETH_GSTRING_LEN;
++	for (q_num = 0; q_num < MAX_Q(lif); q_num++)
++		ionic_sw_stats_get_tx_strings(lif, buf, q_num);
+ 
+-		if (test_bit(IONIC_LIF_F_UP, lif->state) &&
+-		    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
+-			for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "txq_%d_%s",
+-					 q_num,
+-					 ionic_txq_stats_desc[i].name);
+-				*buf += ETH_GSTRING_LEN;
 -			}
--			bmap >>= 1;
--		}
-+	for (i = 0; i < BNAD_ETHTOOL_STATS_NUM; i++) {
-+		BUG_ON(!(strlen(bnad_net_stats_strings[i]) < ETH_GSTRING_LEN));
-+		ethtool_gsprintf(&string, bnad_net_stats_strings[i]);
-+	}
- 
--		bmap = bna_rx_rid_mask(&bnad->bna);
--		for (i = 0; bmap; i++) {
--			if (bmap & 1) {
--				sprintf(string, "rxf%d_ucast_octets", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_ucast", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_ucast_vlan", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_mcast_octets", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_mcast", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_mcast_vlan", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_bcast_octets", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_bcast", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_bcast_vlan", i);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxf%d_frame_drops", i);
--				string += ETH_GSTRING_LEN;
+-			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "txq_%d_cq_%s",
+-					 q_num,
+-					 ionic_dbg_cq_stats_desc[i].name);
+-				*buf += ETH_GSTRING_LEN;
 -			}
--			bmap >>= 1;
--		}
-+	bmap = bna_tx_rid_mask(&bnad->bna);
-+	for (i = 0; bmap; i++) {
-+		if (bmap & 1)
-+			bnad_get_txf_strings(&string, i);
-+		bmap >>= 1;
-+	}
- 
--		q_num = 0;
--		for (i = 0; i < bnad->num_rx; i++) {
--			if (!bnad->rx_info[i].rx)
--				continue;
--			for (j = 0; j < bnad->num_rxp_per_rx; j++) {
--				sprintf(string, "cq%d_producer_index", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "cq%d_consumer_index", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "cq%d_hw_producer_index",
--					q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "cq%d_intr", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "cq%d_poll", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "cq%d_schedule", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "cq%d_keep_poll", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "cq%d_complete", q_num);
--				string += ETH_GSTRING_LEN;
--				q_num++;
+-			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "txq_%d_intr_%s",
+-					 q_num,
+-					 ionic_dbg_intr_stats_desc[i].name);
+-				*buf += ETH_GSTRING_LEN;
+-			}
+-			for (i = 0; i < IONIC_MAX_NUM_SG_CNTR; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "txq_%d_sg_cntr_%d",
+-					 q_num, i);
+-				*buf += ETH_GSTRING_LEN;
 -			}
 -		}
-+	bmap = bna_rx_rid_mask(&bnad->bna);
-+	for (i = 0; bmap; i++, bmap >>= 1) {
-+		if (bmap & 1)
-+			bnad_get_rxf_strings(&string, i);
-+		bmap >>= 1;
-+	}
- 
--		q_num = 0;
--		for (i = 0; i < bnad->num_rx; i++) {
--			if (!bnad->rx_info[i].rx)
--				continue;
--			for (j = 0; j < bnad->num_rxp_per_rx; j++) {
--				sprintf(string, "rxq%d_packets", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxq%d_bytes", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxq%d_packets_with_error",
--								q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxq%d_allocbuf_failed", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxq%d_mapbuf_failed", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxq%d_producer_index", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "rxq%d_consumer_index", q_num);
--				string += ETH_GSTRING_LEN;
--				q_num++;
--				if (bnad->rx_info[i].rx_ctrl[j].ccb &&
--					bnad->rx_info[i].rx_ctrl[j].ccb->
--					rcb[1] &&
--					bnad->rx_info[i].rx_ctrl[j].ccb->
--					rcb[1]->rxq) {
--					sprintf(string, "rxq%d_packets", q_num);
--					string += ETH_GSTRING_LEN;
--					sprintf(string, "rxq%d_bytes", q_num);
--					string += ETH_GSTRING_LEN;
--					sprintf(string,
--					"rxq%d_packets_with_error", q_num);
--					string += ETH_GSTRING_LEN;
--					sprintf(string, "rxq%d_allocbuf_failed",
--								q_num);
--					string += ETH_GSTRING_LEN;
--					sprintf(string, "rxq%d_mapbuf_failed",
--						q_num);
--					string += ETH_GSTRING_LEN;
--					sprintf(string, "rxq%d_producer_index",
--								q_num);
--					string += ETH_GSTRING_LEN;
--					sprintf(string, "rxq%d_consumer_index",
--								q_num);
--					string += ETH_GSTRING_LEN;
--					q_num++;
--				}
--			}
+-	}
+-	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
+-		for (i = 0; i < IONIC_NUM_RX_STATS; i++) {
+-			snprintf(*buf, ETH_GSTRING_LEN,
+-				 "rx_%d_%s",
+-				 q_num, ionic_rx_stats_desc[i].name);
+-			*buf += ETH_GSTRING_LEN;
 -		}
-+	q_num = 0;
-+	for (i = 0; i < bnad->num_rx; i++) {
-+		if (!bnad->rx_info[i].rx)
-+			continue;
-+		for (j = 0; j < bnad->num_rxp_per_rx; j++)
-+			bnad_get_cq_strings(&string, q_num++);
-+	}
- 
--		q_num = 0;
--		for (i = 0; i < bnad->num_tx; i++) {
--			if (!bnad->tx_info[i].tx)
--				continue;
--			for (j = 0; j < bnad->num_txq_per_tx; j++) {
--				sprintf(string, "txq%d_packets", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txq%d_bytes", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txq%d_producer_index", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txq%d_consumer_index", q_num);
--				string += ETH_GSTRING_LEN;
--				sprintf(string, "txq%d_hw_consumer_index",
--									q_num);
--				string += ETH_GSTRING_LEN;
--				q_num++;
--			}
-+	q_num = 0;
-+	for (i = 0; i < bnad->num_rx; i++) {
-+		if (!bnad->rx_info[i].rx)
-+			continue;
-+		for (j = 0; j < bnad->num_rxp_per_rx; j++) {
-+			bnad_get_rxq_strings(&string, q_num++);
-+			if (bnad->rx_info[i].rx_ctrl[j].ccb &&
-+			    bnad->rx_info[i].rx_ctrl[j].ccb->rcb[1] &&
-+			    bnad->rx_info[i].rx_ctrl[j].ccb->rcb[1]->rxq)
-+				bnad_get_rxq_strings(&string, q_num++);
- 		}
-+	}
- 
--		break;
 -
--	default:
--		break;
-+	q_num = 0;
-+	for (i = 0; i < bnad->num_tx; i++) {
-+		if (!bnad->tx_info[i].tx)
-+			continue;
-+		for (j = 0; j < bnad->num_txq_per_tx; j++)
-+			bnad_get_txq_strings(&string, q_num++);
- 	}
+-		if (test_bit(IONIC_LIF_F_UP, lif->state) &&
+-		    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
+-			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "rxq_%d_cq_%s",
+-					 q_num,
+-					 ionic_dbg_cq_stats_desc[i].name);
+-				*buf += ETH_GSTRING_LEN;
+-			}
+-			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "rxq_%d_intr_%s",
+-					 q_num,
+-					 ionic_dbg_intr_stats_desc[i].name);
+-				*buf += ETH_GSTRING_LEN;
+-			}
+-			for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "rxq_%d_napi_%s",
+-					 q_num,
+-					 ionic_dbg_napi_stats_desc[i].name);
+-				*buf += ETH_GSTRING_LEN;
+-			}
+-			for (i = 0; i < IONIC_MAX_NUM_NAPI_CNTR; i++) {
+-				snprintf(*buf, ETH_GSTRING_LEN,
+-					 "rxq_%d_napi_work_done_%d",
+-					 q_num, i);
+-				*buf += ETH_GSTRING_LEN;
+-			}
+-		}
+-	}
++	for (q_num = 0; q_num < MAX_Q(lif); q_num++)
++		ionic_sw_stats_get_rx_strings(lif, buf, q_num);
+ }
  
- 	mutex_unlock(&bnad->conf_mutex);
+ static void ionic_sw_stats_get_values(struct ionic_lif *lif, u64 **buf)
 
 
