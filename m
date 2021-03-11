@@ -2,98 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 253DD336B24
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 05:28:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B951336B3A
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 05:45:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbhCKE20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 23:28:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S231248AbhCKEok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 23:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231248AbhCKE2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 23:28:01 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7353FC061574;
-        Wed, 10 Mar 2021 20:28:01 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id 73so251901qtg.13;
-        Wed, 10 Mar 2021 20:28:01 -0800 (PST)
+        with ESMTP id S230231AbhCKEoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 23:44:19 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11FCC061574;
+        Wed, 10 Mar 2021 20:44:18 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id x7-20020a17090a2b07b02900c0ea793940so8454251pjc.2;
+        Wed, 10 Mar 2021 20:44:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EjES33pghkplwmPotcH24a/bCQBQOuZ6RX89GB25dlU=;
-        b=Koyj1Zk7sbi7mVjTgbvqs9TiqOhPIiHI/qcvdsEGyo8VhIddw0zKe5lNZYgkEEx9Mh
-         woWFsSfsYzUmFXIBd+sWNFXegzpxn8vV0Q+9OcBl1xy4J7WPrdrVviqnZFOXXC0kDSUX
-         otE+FZGKhbzkBRAM/kc/lNiKKlaCnQe/jG8qvw0Ac5YmtQ9tNaqEzJfCuFJYx9UvczgT
-         XfPAblr3jUIMculciAa0UTO+WU+w3+c1xps4gO/JsLZ0G0/fCWA67c+DeYfAFBe3csTJ
-         XXucn/IQ8XVIP9Tm9AsqrgudhsiXKElgzNr4J/sdc9w8EKwYXfJ7aLY9ry2+pJJqQr9P
-         pdZg==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=PBkku/s8mSRHKOyuiBeMgbH6xJfrQRrxhjnYIQVUXQs=;
+        b=SAQrWzzVIZjUX8ihYY/mELiJMaFs5+/w1hA1Xg6sWnLxVwVl5APgLAJnpFVTkwnaUZ
+         a5Bj68/Edc1sDe8rskRtYrA7oMlUJusDwVfTEKKrYtPb+xZC4d9pJioPJWMuZDVRqSrE
+         itoWIVYntz+9g8099eS3SBT+QXq8U2HXotamRX/PAwgVxUV1k9XG/sUQOtSug84mTK/l
+         GzpS/2qo/Ye8N3t2lml6cWOFZL1kWOoFjjfZyYdkTna9ZjxX7BjBuQDN2SOPnVLEIhBS
+         ka3nQtsUo3mCR58HBaPx/Y/1m+NZT7V28Gor9Bx3wBYxODgfuVg2BIVaf7N3beSHr3o1
+         bMqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EjES33pghkplwmPotcH24a/bCQBQOuZ6RX89GB25dlU=;
-        b=cD/beNddz2lQA0KOgURqI1SuSDZVKbkAPpIL+PkWbx49CLVNYboIeTrY6GtzRH9kt1
-         0Tz1UfoR8ESFKmVhg4Ze24jVHWjLtKApVn+fMjekh9J3iubyFqtDv0fVxe3575EJxUHY
-         tET4Q6mGBhzfl+R8GsYKNoE+I7Yu0dUoq7eqVsvPYWeI1LvK7V+IKaTp5UAKJ/gwVm04
-         zfjpvu2cByVIUB7ls759ogL76rfg0Fw70Ovaav6Y3dIAUhqPfIzqjIGj358/D161lUo9
-         xNa5Nf2cDxPBYVSK4zYpEugZX3H0rzqoqMtszzQ64LgMoQ14qAMSMeTv4iJywsCJ6vOy
-         X5og==
-X-Gm-Message-State: AOAM532NLslj0g9+/HmQR+Hcl5j0IRmJ0B3fgXZDMuiuDJ36jI3lQiYl
-        vDA5N1Cqz9DPylv/Y49qMu4=
-X-Google-Smtp-Source: ABdhPJzYKwpvnDH9e/jr7oq+CIiwYhN7lvlFm/55ul1htJ9mgJjm765Sbrr2/GgpixvIU232bPoicQ==
-X-Received: by 2002:a05:622a:42:: with SMTP id y2mr5699882qtw.11.1615436880721;
-        Wed, 10 Mar 2021 20:28:00 -0800 (PST)
-Received: from tong-desktop.local ([2601:5c0:c200:27c6:615f:1cdf:698f:e42f])
-        by smtp.googlemail.com with ESMTPSA id 131sm1171582qkl.74.2021.03.10.20.28.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 20:28:00 -0800 (PST)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     Karsten Keil <isdn@linux-pingi.de>,
-        Tong Zhang <ztong0001@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] isdn: remove extra spaces in the header file
-Date:   Wed, 10 Mar 2021 23:27:55 -0500
-Message-Id: <20210311042756.2062322-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=PBkku/s8mSRHKOyuiBeMgbH6xJfrQRrxhjnYIQVUXQs=;
+        b=WmHpPlGpmEdUUBp7Z57rHa2ZakwlochYkN5ynMhGPwO+lFlRNH21X4DlomOLJfIbwE
+         CZ4i6QakUZhy0TbocfsNWmVI+gTY6i/rqpRuBGdnNKhhOjWaQhoo05JRhxg0U/3ByBtF
+         yl7WH+jPHx5CUN7SXoKvAXQk4IyIDKX/bvcPeiszDU6DWsD5/MhpfHuxczDAnoW6r1FR
+         Pr1+XZBf56QG2vtSwDOgU4hl4IOmNXC68OcGZOhTd5kdP5zLfd2nOVqpMznkJyPrSpcm
+         JgyU5qww7Ja8yLGEortIRhUiGTRTl115AL9eZ9B0emGB80eyT9hZc60liA/vawe3LTFU
+         2/gg==
+X-Gm-Message-State: AOAM532On3LvTymYc+8YanTB9cz8JuTssFfGSpe/WqPDSO+YnvFR8RNs
+        bO+zdafT2Ek7guDt2XHJ+o8=
+X-Google-Smtp-Source: ABdhPJzzzRgStXu2L42e7HgxDNVOCLfDuaoKyvKox8SmFfUzZDnTB42v/eChvfZOD3eaCCoWhUFe7w==
+X-Received: by 2002:a17:90a:7f87:: with SMTP id m7mr6889022pjl.64.1615437858315;
+        Wed, 10 Mar 2021 20:44:18 -0800 (PST)
+Received: from localhost ([122.179.55.249])
+        by smtp.gmail.com with ESMTPSA id 3sm822311pjk.26.2021.03.10.20.44.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 10 Mar 2021 20:44:17 -0800 (PST)
+Date:   Thu, 11 Mar 2021 10:14:08 +0530
+From:   Shubhankar Kuranagatti <shubhankarvk@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, bkkarthik@pesu.pes.edu
+Subject: [PATCH] net: socket.c: Fix comparison issues
+Message-ID: <20210311044408.t6qut7taaagt4a63@kewl-virtual-machine>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix some coding style issues in the isdn header
+The constant has been placed to the right side of the test.
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Signed-off-by: Shubhankar Kuranagatti <shubhankarvk@gmail.com>
 ---
- drivers/isdn/hardware/mISDN/iohelper.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ net/socket.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/iohelper.h b/drivers/isdn/hardware/mISDN/iohelper.h
-index b2b2bde8edba..c81f7aba4b57 100644
---- a/drivers/isdn/hardware/mISDN/iohelper.h
-+++ b/drivers/isdn/hardware/mISDN/iohelper.h
-@@ -13,14 +13,14 @@
- #ifndef _IOHELPER_H
- #define _IOHELPER_H
+diff --git a/net/socket.c b/net/socket.c
+index 84a8049c2b09..a23dd4348793 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1495,7 +1495,7 @@ int __sys_socket(int family, int type, int protocol)
+ 		return -EINVAL;
+ 	type &= SOCK_TYPE_MASK;
  
--typedef	u8	(read_reg_func)(void *hwp, u8 offset);
--			       typedef	void	(write_reg_func)(void *hwp, u8 offset, u8 value);
--			       typedef	void	(fifo_func)(void *hwp, u8 offset, u8 *datap, int size);
-+typedef u8 (read_reg_func)(void *hwp, u8 offset);
-+typedef void (write_reg_func)(void *hwp, u8 offset, u8 value);
-+typedef void (fifo_func)(void *hwp, u8 offset, u8 *datap, int size);
+-	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
++	if ((flags & SOCK_NONBLOCK) && SOCK_NONBLOCK != O_NONBLOCK)
+ 		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
  
--			       struct _ioport {
--				       u32	port;
--				       u32	ale;
--			       };
-+struct _ioport {
-+	u32 port;
-+	u32 ale;
-+};
+ 	retval = sock_create(family, type, protocol, &sock);
+@@ -1526,7 +1526,7 @@ int __sys_socketpair(int family, int type, int protocol, int __user *usockvec)
+ 		return -EINVAL;
+ 	type &= SOCK_TYPE_MASK;
  
- #define IOFUNC_IO(name, hws, ap)					\
- 	static u8 Read##name##_IO(void *p, u8 off) {			\
+-	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
++	if ((flags & SOCK_NONBLOCK) && SOCK_NONBLOCK != O_NONBLOCK)
+ 		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
+ 
+ 	/*
+@@ -1693,7 +1693,7 @@ int __sys_accept4_file(struct file *file, unsigned file_flags,
+ 	if (flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
+ 		return -EINVAL;
+ 
+-	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
++	if ((flags & SOCK_NONBLOCK) && SOCK_NONBLOCK != O_NONBLOCK)
+ 		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
+ 
+ 	sock = sock_from_file(file);
 -- 
-2.25.1
+2.17.1
 
