@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C166B337286
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 252A0337287
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:25:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233103AbhCKMZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 07:25:17 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:37005 "EHLO
+        id S233156AbhCKMZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 07:25:19 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:42601 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232878AbhCKMZK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:25:10 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 274055C0131;
-        Thu, 11 Mar 2021 07:25:10 -0500 (EST)
+        by vger.kernel.org with ESMTP id S232894AbhCKMZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:25:12 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id B03995C008B;
+        Thu, 11 Mar 2021 07:25:11 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 11 Mar 2021 07:25:10 -0500
+  by compute3.internal (MEProxy); Thu, 11 Mar 2021 07:25:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=8WQnWuvLLKvEEvwgZGWU4BnzGUGXXaC1ri7lDcOj7cw=; b=FqlGCsI+
-        4ssDuuCWDqriTbGkv8rwd45/OOcwEERAZ8HSG9+1v6pmCIfEuYhVHj6HpWzetKtz
-        jPzGlnn65vLL8FSIjzDuCDKjWXG0DLc5rrLp9rlT87ExNjiaZyeTl675Gjd+K3d0
-        vxaRpfwdViIu5r6TbKU+rHIxL33SoUPcPfIYLYJUufiyjup43Xirgzq9Ifrva8JL
-        +PdCddJfP2yp+Gu2OsJLq06z9EYS7iOiDMN47JlsAB85B/0EjdDlqy9DQo/+a+Pq
-        t1Aja065xSfzgDJpZ+/56RQ2sW0zy6cw+pKtGBrdSpy1/k3hidBYkctXMZTaGZFf
-        iw0dD50D7t85fQ==
-X-ME-Sender: <xms:JgxKYOpp7ovFOE8QLYhMmovst9MGYCWoeTfDG5WVD2TJ58ypdL_dog>
-    <xme:JgxKYMnV2L-nUPhuyi4GDU-fNL18dqyzCSoMeiEvawpxootMYUpMOEJknsH4aY8uJ
-    bfFEBaBotcDzpM>
+        fm2; bh=jpRulsbNpf0NmRTzlHinhyeQRdoXFjHo2jPhzlYL+fc=; b=PuOcexFD
+        LiIPGT9D8vGjQgOlrGUC3nmxvYWJI7T95zQG4QmgVPTmTNQ4WM14dQNSSYAWO5ER
+        3BeJi1Pj2kpc+V2gCVNSQC9ihB6y/YvAnfZ8tfhKyxJqNqofKKEn2TwiBk8VKyvI
+        jMPNkg5rjgIMvMD+FOSzClhVcr562bbl7hLVItW3B2GtWVKwWR0TPdwOoiGxk91V
+        0aa9d5X4rU9YcNLFQwhtFJqqvM5Qt8eTCifd3pwC5gI3PKAi9vxWN4bwHvGPXbMl
+        NR0qJS95dXoG/Ri+0bAed0i1WH4oLYLZrydQmD1iviKWvZxRwXpuEnj4M8hRKqEL
+        clRK5KV9vP6EhQ==
+X-ME-Sender: <xms:JwxKYB7Fy-_54tM2Q2V0ETnJgO_sstEdKL0YRHyUmnWJlm5JFOp7CQ>
+    <xme:JwxKYO79eTC0mLOv_Fqgcqkp7WJphHZakJzqiplrrqZOuWVNYsOv9nPSkn8Ac_CHx
+    fOrlx1CCXpv5v0>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvtddggedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvtddggedtucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
     necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:JgxKYAGS1oPowYivHLTTAT3KixuHu9f1r7tvfZRlMdkmZK8I4gVT2w>
-    <xmx:JgxKYFr9HyLOxzbNtZAAsTXJVkvF0vHZyKogJhfJtN_EB8vBszxrXw>
-    <xmx:JgxKYM7ENO-hKMTaKCYG0ECWfRg2Gb_D1-OY6nPvSyeAUOqCfN9T_A>
-    <xmx:JgxKYI1KTF1Jqtu0sL7RkRPDSgp2Rclii86gxyX5OoaTgu20Fvm9Tw>
+X-ME-Proxy: <xmx:JwxKYIdK3bDSPhX226WtIFGhrfOxgkfAicttkCnIyaRH3zEsL8BUjQ>
+    <xmx:JwxKYKJxhSpCiUtjbz8mJ1yfvDrXz1Izkan21o0m6DwiqemFFWD9Mw>
+    <xmx:JwxKYFKyhHjGogHcf4hjHNF-zKPXhbtwxpYuxVZlZEao8wHbNZ6S1A>
+    <xmx:JwxKYMX3gGTs4o3mQ2-YeyyzUKB3JRrILjgrgS0093NO0xz1xi10Qg>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id F370F108005C;
-        Thu, 11 Mar 2021 07:25:08 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5DE0B108005C;
+        Thu, 11 Mar 2021 07:25:10 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 3/6] mlxsw: spectrum_span: Add SPAN probability rate support
-Date:   Thu, 11 Mar 2021 14:24:13 +0200
-Message-Id: <20210311122416.2620300-4-idosch@idosch.org>
+Subject: [PATCH net-next 4/6] mlxsw: spectrum_matchall: Split sampling support between ASICs
+Date:   Thu, 11 Mar 2021 14:24:14 +0200
+Message-Id: <20210311122416.2620300-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210311122416.2620300-1-idosch@idosch.org>
 References: <20210311122416.2620300-1-idosch@idosch.org>
@@ -63,105 +63,142 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Currently, every packet that matches a mirroring trigger (e.g., received
-packets, buffer dropped packets) is mirrored. Spectrum-2 and later ASICs
-support mirroring with probability, where every 1 in N matched packets
-is mirrored.
+Sampling of ingress packets is supported using a dedicated sampling
+mechanism on all Spectrum ASICs. However, Spectrum-2 and later ASICs
+support more sophisticated sampling by mirroring packets to the CPU.
 
-Extend the API that creates the binding between the trigger and the SPAN
-agent with a probability rate parameter, which is an attribute of the
-trigger. Set it to '1' to maintain existing behavior.
-
-Subsequent patches will use it to perform more sophisticated sampling,
-by mirroring packets to the CPU with probability.
+As a preparation for more advanced sampling configurations, split the
+sampling operations between Spectrum-1 and later ASICs.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_matchall.c   |  1 +
- .../net/ethernet/mellanox/mlxsw/spectrum_qdisc.c  |  1 +
- .../net/ethernet/mellanox/mlxsw/spectrum_span.c   | 15 ++++++++++++---
- .../net/ethernet/mellanox/mlxsw/spectrum_span.h   |  1 +
- 4 files changed, 15 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  3 ++
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    | 11 +++++++
+ .../mellanox/mlxsw/spectrum_matchall.c        | 32 +++++++++++++++++--
+ 3 files changed, 43 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index dbf95e52b341..93b15b8c007e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -2804,6 +2804,7 @@ static int mlxsw_sp1_init(struct mlxsw_core *mlxsw_core,
+ 	mlxsw_sp->span_ops = &mlxsw_sp1_span_ops;
+ 	mlxsw_sp->policer_core_ops = &mlxsw_sp1_policer_core_ops;
+ 	mlxsw_sp->trap_ops = &mlxsw_sp1_trap_ops;
++	mlxsw_sp->mall_ops = &mlxsw_sp1_mall_ops;
+ 	mlxsw_sp->listeners = mlxsw_sp1_listener;
+ 	mlxsw_sp->listeners_count = ARRAY_SIZE(mlxsw_sp1_listener);
+ 	mlxsw_sp->lowest_shaper_bs = MLXSW_REG_QEEC_LOWEST_SHAPER_BS_SP1;
+@@ -2833,6 +2834,7 @@ static int mlxsw_sp2_init(struct mlxsw_core *mlxsw_core,
+ 	mlxsw_sp->span_ops = &mlxsw_sp2_span_ops;
+ 	mlxsw_sp->policer_core_ops = &mlxsw_sp2_policer_core_ops;
+ 	mlxsw_sp->trap_ops = &mlxsw_sp2_trap_ops;
++	mlxsw_sp->mall_ops = &mlxsw_sp2_mall_ops;
+ 	mlxsw_sp->lowest_shaper_bs = MLXSW_REG_QEEC_LOWEST_SHAPER_BS_SP2;
+ 
+ 	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
+@@ -2860,6 +2862,7 @@ static int mlxsw_sp3_init(struct mlxsw_core *mlxsw_core,
+ 	mlxsw_sp->span_ops = &mlxsw_sp3_span_ops;
+ 	mlxsw_sp->policer_core_ops = &mlxsw_sp2_policer_core_ops;
+ 	mlxsw_sp->trap_ops = &mlxsw_sp2_trap_ops;
++	mlxsw_sp->mall_ops = &mlxsw_sp2_mall_ops;
+ 	mlxsw_sp->lowest_shaper_bs = MLXSW_REG_QEEC_LOWEST_SHAPER_BS_SP3;
+ 
+ 	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index d9d9e1f488f9..1ec9a3c48a42 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -179,6 +179,7 @@ struct mlxsw_sp {
+ 	const struct mlxsw_sp_span_ops *span_ops;
+ 	const struct mlxsw_sp_policer_core_ops *policer_core_ops;
+ 	const struct mlxsw_sp_trap_ops *trap_ops;
++	const struct mlxsw_sp_mall_ops *mall_ops;
+ 	const struct mlxsw_listener *listeners;
+ 	size_t listeners_count;
+ 	u32 lowest_shaper_bs;
+@@ -1033,6 +1034,16 @@ extern const struct mlxsw_afk_ops mlxsw_sp1_afk_ops;
+ extern const struct mlxsw_afk_ops mlxsw_sp2_afk_ops;
+ 
+ /* spectrum_matchall.c */
++struct mlxsw_sp_mall_ops {
++	int (*sample_add)(struct mlxsw_sp *mlxsw_sp,
++			  struct mlxsw_sp_port *mlxsw_sp_port, u32 rate);
++	void (*sample_del)(struct mlxsw_sp *mlxsw_sp,
++			   struct mlxsw_sp_port *mlxsw_sp_port);
++};
++
++extern const struct mlxsw_sp_mall_ops mlxsw_sp1_mall_ops;
++extern const struct mlxsw_sp_mall_ops mlxsw_sp2_mall_ops;
++
+ enum mlxsw_sp_mall_action_type {
+ 	MLXSW_SP_MALL_ACTION_TYPE_MIRROR,
+ 	MLXSW_SP_MALL_ACTION_TYPE_SAMPLE,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-index f30599ad6019..2b7652b4b0bb 100644
+index 2b7652b4b0bb..ad1209df81ea 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-@@ -51,6 +51,7 @@ mlxsw_sp_mall_port_mirror_add(struct mlxsw_sp_port *mlxsw_sp_port,
- 	trigger = mall_entry->ingress ? MLXSW_SP_SPAN_TRIGGER_INGRESS :
- 					MLXSW_SP_SPAN_TRIGGER_EGRESS;
- 	parms.span_id = mall_entry->mirror.span_id;
-+	parms.probability_rate = 1;
- 	err = mlxsw_sp_span_agent_bind(mlxsw_sp, trigger, mlxsw_sp_port,
- 				       &parms);
- 	if (err)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-index 9d16823320ae..baf17c0b2702 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-@@ -1341,6 +1341,7 @@ static int mlxsw_sp_qevent_span_configure(struct mlxsw_sp *mlxsw_sp,
- 		goto err_analyzed_port_get;
+@@ -96,6 +96,7 @@ static int
+ mlxsw_sp_mall_port_sample_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			      struct mlxsw_sp_mall_entry *mall_entry)
+ {
++	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
+ 	int err;
  
- 	trigger_parms.span_id = span_id;
-+	trigger_parms.probability_rate = 1;
- 	err = mlxsw_sp_span_agent_bind(mlxsw_sp, qevent_binding->span_trigger, mlxsw_sp_port,
- 				       &trigger_parms);
- 	if (err)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-index 7711ace07ec8..3398cc01e5ec 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-@@ -1231,8 +1231,12 @@ __mlxsw_sp_span_trigger_port_bind(struct mlxsw_sp_span *span,
- 		return -EINVAL;
+ 	if (rtnl_dereference(mlxsw_sp_port->sample)) {
+@@ -104,8 +105,8 @@ mlxsw_sp_mall_port_sample_add(struct mlxsw_sp_port *mlxsw_sp_port,
  	}
+ 	rcu_assign_pointer(mlxsw_sp_port->sample, &mall_entry->sample);
  
-+	if (trigger_entry->parms.probability_rate > MLXSW_REG_MPAR_RATE_MAX)
-+		return -EINVAL;
+-	err = mlxsw_sp_mall_port_sample_set(mlxsw_sp_port, true,
+-					    mall_entry->sample.rate);
++	err = mlxsw_sp->mall_ops->sample_add(mlxsw_sp, mlxsw_sp_port,
++					     mall_entry->sample.rate);
+ 	if (err)
+ 		goto err_port_sample_set;
+ 	return 0;
+@@ -118,10 +119,12 @@ mlxsw_sp_mall_port_sample_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ static void
+ mlxsw_sp_mall_port_sample_del(struct mlxsw_sp_port *mlxsw_sp_port)
+ {
++	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
 +
- 	mlxsw_reg_mpar_pack(mpar_pl, trigger_entry->local_port, i_e, enable,
--			    trigger_entry->parms.span_id, 1);
-+			    trigger_entry->parms.span_id,
-+			    trigger_entry->parms.probability_rate);
- 	return mlxsw_reg_write(span->mlxsw_sp->core, MLXSW_REG(mpar), mpar_pl);
+ 	if (!mlxsw_sp_port->sample)
+ 		return;
+ 
+-	mlxsw_sp_mall_port_sample_set(mlxsw_sp_port, false, 1);
++	mlxsw_sp->mall_ops->sample_del(mlxsw_sp, mlxsw_sp_port);
+ 	RCU_INIT_POINTER(mlxsw_sp_port->sample, NULL);
  }
  
-@@ -1366,8 +1370,11 @@ mlxsw_sp2_span_trigger_global_bind(struct mlxsw_sp_span_trigger_entry *
- 		return -EINVAL;
- 	}
- 
-+	if (trigger_entry->parms.probability_rate > MLXSW_REG_MPAGR_RATE_MAX)
-+		return -EINVAL;
-+
- 	mlxsw_reg_mpagr_pack(mpagr_pl, trigger, trigger_entry->parms.span_id,
--			     1);
-+			     trigger_entry->parms.probability_rate);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(mpagr), mpagr_pl);
+@@ -356,3 +359,26 @@ int mlxsw_sp_mall_prio_get(struct mlxsw_sp_flow_block *block, u32 chain_index,
+ 	*p_max_prio = block->mall.max_prio;
+ 	return 0;
  }
- 
-@@ -1565,7 +1572,9 @@ int mlxsw_sp_span_agent_bind(struct mlxsw_sp *mlxsw_sp,
- 							 trigger,
- 							 mlxsw_sp_port);
- 	if (trigger_entry) {
--		if (trigger_entry->parms.span_id != parms->span_id)
-+		if (trigger_entry->parms.span_id != parms->span_id ||
-+		    trigger_entry->parms.probability_rate !=
-+		    parms->probability_rate)
- 			return -EINVAL;
- 		refcount_inc(&trigger_entry->ref_count);
- 		goto out;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-index 6e84cc049428..dea1c0d31310 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-@@ -48,6 +48,7 @@ enum mlxsw_sp_span_trigger {
- 
- struct mlxsw_sp_span_trigger_parms {
- 	int span_id;
-+	u32 probability_rate;
- };
- 
- struct mlxsw_sp_span_agent_parms {
++
++static int mlxsw_sp1_mall_sample_add(struct mlxsw_sp *mlxsw_sp,
++				     struct mlxsw_sp_port *mlxsw_sp_port,
++				     u32 rate)
++{
++	return mlxsw_sp_mall_port_sample_set(mlxsw_sp_port, true, rate);
++}
++
++static void mlxsw_sp1_mall_sample_del(struct mlxsw_sp *mlxsw_sp,
++				      struct mlxsw_sp_port *mlxsw_sp_port)
++{
++	mlxsw_sp_mall_port_sample_set(mlxsw_sp_port, false, 1);
++}
++
++const struct mlxsw_sp_mall_ops mlxsw_sp1_mall_ops = {
++	.sample_add = mlxsw_sp1_mall_sample_add,
++	.sample_del = mlxsw_sp1_mall_sample_del,
++};
++
++const struct mlxsw_sp_mall_ops mlxsw_sp2_mall_ops = {
++	.sample_add = mlxsw_sp1_mall_sample_add,
++	.sample_del = mlxsw_sp1_mall_sample_del,
++};
 -- 
 2.29.2
 
