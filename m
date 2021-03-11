@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50831336AA7
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:27:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A10F336AA4
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:27:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230450AbhCKD02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 22:26:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49354 "EHLO mail.kernel.org"
+        id S230035AbhCKD01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 22:26:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49370 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230122AbhCKD0R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230125AbhCKD0R (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 10 Mar 2021 22:26:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 75EA164F9F;
-        Thu, 11 Mar 2021 03:26:16 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 22E7D64FC9;
+        Thu, 11 Mar 2021 03:26:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615433176;
-        bh=KUEW2t6cH7hWlD+QXDaWwlVzpmeN19XinrPOSNGScNE=;
-        h=From:To:Cc:Subject:Date:Reply-To:From;
-        b=sc62NkeBpY9PA7CkhUb5mJTZ0WjnPiR29CC0VAH7hZmm4va6QnP8oxgB1jAQgF2PM
-         UeB4aFFUGKUlJUdk2e4ohPmFGWWYicLu3AlzsMPPzyy+eUuO8KG9HISzU1Zrv/ulJh
-         OfAMBlMYnGI4hMx22pSvYcIA69+eG88HDAA9L6+gT0DzGDQvT1iu6HA6r/Jysle+TJ
-         pGiRrpLPB+IRvkNfmcSFNTB6XhIi6XaVGOmwDvInaMbMOV39ednekLe1zdubDzySmA
-         yB2kbjbKGyoSDVN9IV72gvcS1ZkSEqmwimovKbM7ZKItIDXS7JpHh2BetC4gvRNSI2
-         6kgTFbG92FLcA==
+        s=k20201202; t=1615433177;
+        bh=c68gw+qPQpsb6OkRTN6dewkYJxoVacZSeWgUNGpNM5c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
+        b=SyWuyMaOzQnnEj2uSBDlQmzFLj0iGzLflYyyW+BoNjr55Z4e+4OSI2cnS55hqRblz
+         oZOTJfViYrgCHf2gegVP3X74wtNS7I9b+F9vVgIWfGmgm3AEdXi/4MFqpo9aAUvt29
+         9kadAoAuHUWlpcIiO4txMnwjZzl+kUadb+7ycD2m4HzQjF/lsvU8/FA9Xy1CIEhfVy
+         n7RgjVVJG6Epzsuo/dPP9KV8rCi7ACbq+NomVuYsf7uCcFbXM5/krrqz3V6SGrVF6h
+         EqzepchTqdXmC67l4pUqsGaAqAzyRP1RcRLw0T54rTHJHu4z917XHYOBfu8ABQSxAs
+         QEHjmRccDUCkA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, saeedm@nvidia.com,
         andrew.gospodarek@broadcom.com, jacob.e.keller@intel.com,
         guglielmo.morandin@broadcom.com, eugenem@fb.com,
         eranbe@mellanox.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC net-next v2 1/3] devlink: move health state to uAPI
-Date:   Wed, 10 Mar 2021 19:26:11 -0800
-Message-Id: <20210311032613.1533100-1-kuba@kernel.org>
+Subject: [RFC net-next v2 2/3] devlink: health: add remediation type
+Date:   Wed, 10 Mar 2021 19:26:12 -0800
+Message-Id: <20210311032613.1533100-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210311032613.1533100-1-kuba@kernel.org>
+References: <20210311032613.1533100-1-kuba@kernel.org>
 Reply-To: f242ed68-d31b-527d-562f-c5a35123861a@intel.com
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -40,173 +42,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the health states into uAPI, so applications can use them.
+Currently devlink health does not give user any clear information
+of what kind of remediation ->recover callback will perform. This
+makes it difficult to understand the impact of enabling auto-
+-remediation, and the severity of the error itself.
 
-Note that we need to change the name of the enum because
-user space is likely already defining the same values.
-E.g. iproute2 does.
+To allow users to make more informed decision add a new remediation
+type attribute.
 
-Use this opportunity to shorten the names.
+Note that we only allow one remediation type per reporter, this
+is intentional. devlink health is not built for mixing issues
+of different severity into one reporter since it only maintains
+one dump, of the first event and a single error counter.
+Nudging vendors towards categorizing issues beyond coarse
+groups is an added bonus.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c  |  4 ++--
- .../ethernet/mellanox/mlx5/core/en/health.c    |  4 ++--
- include/net/devlink.h                          |  7 +------
- include/uapi/linux/devlink.h                   | 12 ++++++++++++
- net/core/devlink.c                             | 18 +++++++++---------
- 5 files changed, 26 insertions(+), 19 deletions(-)
+ include/net/devlink.h        |  2 ++
+ include/uapi/linux/devlink.h | 25 +++++++++++++++++++++++++
+ net/core/devlink.c           |  7 ++++++-
+ 3 files changed, 33 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 64381be935a8..cafc98ab4b5e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -252,9 +252,9 @@ void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy)
- 	u8 state;
- 
- 	if (healthy)
--		state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
-+		state = DL_HEALTH_STATE_HEALTHY;
- 	else
--		state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
-+		state = DL_HEALTH_STATE_ERROR;
- 
- 	if (health->fatal)
- 		devlink_health_reporter_state_update(health->fw_fatal_reporter,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
-index 84e501e057b4..c526e31e562c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
-@@ -151,10 +151,10 @@ void mlx5e_health_channels_update(struct mlx5e_priv *priv)
- {
- 	if (priv->tx_reporter)
- 		devlink_health_reporter_state_update(priv->tx_reporter,
--						     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
-+						     DL_HEALTH_STATE_HEALTHY);
- 	if (priv->rx_reporter)
- 		devlink_health_reporter_state_update(priv->rx_reporter,
--						     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
-+						     DL_HEALTH_STATE_HEALTHY);
- }
- 
- int mlx5e_health_sq_to_ready(struct mlx5_core_dev *mdev, struct net_device *dev, u32 sqn)
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 853420db5d32..b424328af658 100644
+index b424328af658..72b37769761f 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -656,11 +656,6 @@ struct devlink_port_region_ops {
- struct devlink_fmsg;
- struct devlink_health_reporter;
- 
--enum devlink_health_reporter_state {
--	DEVLINK_HEALTH_REPORTER_STATE_HEALTHY,
--	DEVLINK_HEALTH_REPORTER_STATE_ERROR,
--};
--
+@@ -659,6 +659,7 @@ struct devlink_health_reporter;
  /**
   * struct devlink_health_reporter_ops - Reporter operations
   * @name: reporter name
-@@ -1675,7 +1670,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
- 			  const char *msg, void *priv_ctx);
- void
- devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
--				     enum devlink_health_reporter_state state);
-+				     enum devlink_health_state state);
- void
- devlink_health_reporter_recovery_done(struct devlink_health_reporter *reporter);
++ * remedy: severity of the remediation required
+  * @recover: callback to recover from reported error
+  *           if priv_ctx is NULL, run a full recover
+  * @dump: callback to dump an object
+@@ -669,6 +670,7 @@ struct devlink_health_reporter;
  
+ struct devlink_health_reporter_ops {
+ 	char *name;
++	enum devlink_health_remedy remedy;
+ 	int (*recover)(struct devlink_health_reporter *reporter,
+ 		       void *priv_ctx, struct netlink_ext_ack *extack);
+ 	int (*dump)(struct devlink_health_reporter *reporter,
 diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index f6008b2fa60f..41a6ea3b2256 100644
+index 41a6ea3b2256..8cd1508b525b 100644
 --- a/include/uapi/linux/devlink.h
 +++ b/include/uapi/linux/devlink.h
-@@ -608,4 +608,16 @@ enum devlink_port_fn_opstate {
- 	DEVLINK_PORT_FN_OPSTATE_ATTACHED,
+@@ -534,6 +534,9 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
+ 
+ 	DEVLINK_ATTR_PORT_PCI_SF_NUMBER,	/* u32 */
++
++	DEVLINK_ATTR_HEALTH_REPORTER_REMEDY,	/* u32 */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+@@ -620,4 +623,26 @@ enum devlink_health_state {
+ 	DL_HEALTH_STATE_ERROR,
  };
  
 +/**
-+ * enum devlink_health_state - indicates the state of a health reporter
-+ * @DL_HEALTH_STATE_HEALTHY: fully operational, working state
-+ * @DL_HEALTH_STATE_ERROR: error state, running health reporter's recovery
-+ *			may fix the issue, otherwise user needs to try
-+ *			power cycling or other forms of reset
++ * enum devlink_health_reporter_remedy - severity of remediation procedure
++ * @DL_HEALTH_REMEDY_NONE: transient error, no remediation required
++ * @DL_HEALTH_REMEDY_KICK: device stalled, processing will be re-triggered
++ * @DL_HEALTH_REMEDY_COMP_RESET: associated device component (e.g. device queue)
++ *			will be reset
++ * @DL_HEALTH_REMEDY_RESET: full device reset, will result in temporary
++ *			unavailability of the device, device configuration
++ *			should not be lost
++ * @DL_HEALTH_REMEDY_REINIT: device will be reinitialized and configuration lost
++ *
++ * Used in %DEVLINK_ATTR_HEALTH_REPORTER_REMEDY, categorizes the health reporter
++ * by the severity of the remediation.
 + */
-+enum devlink_health_state {
-+	DL_HEALTH_STATE_HEALTHY,
-+	DL_HEALTH_STATE_ERROR,
++enum devlink_health_remedy {
++	DL_HEALTH_REMEDY_NONE = 1,
++	DL_HEALTH_REMEDY_KICK,
++	DL_HEALTH_REMEDY_COMP_RESET,
++	DL_HEALTH_REMEDY_RESET,
++	DL_HEALTH_REMEDY_REINIT,
 +};
 +
  #endif /* _UAPI_LINUX_DEVLINK_H_ */
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 737b61c2976e..8e4e4bd7bb36 100644
+index 8e4e4bd7bb36..09d77d43ff63 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -6346,7 +6346,7 @@ devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
+@@ -6095,7 +6095,8 @@ __devlink_health_reporter_create(struct devlink *devlink,
  {
- 	int err;
+ 	struct devlink_health_reporter *reporter;
  
--	if (reporter->health_state == DEVLINK_HEALTH_REPORTER_STATE_HEALTHY)
-+	if (reporter->health_state == DL_HEALTH_STATE_HEALTHY)
- 		return 0;
+-	if (WARN_ON(graceful_period && !ops->recover))
++	if (WARN_ON(graceful_period && !ops->recover) ||
++	    WARN_ON(ops->recover && !ops->remedy))
+ 		return ERR_PTR(-EINVAL);
  
- 	if (!reporter->ops->recover)
-@@ -6357,7 +6357,7 @@ devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
- 		return err;
- 
- 	devlink_health_reporter_recovery_done(reporter);
--	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
-+	reporter->health_state = DL_HEALTH_STATE_HEALTHY;
- 	devlink_recover_notify(reporter, DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
- 
- 	return 0;
-@@ -6416,7 +6416,7 @@ static int devlink_health_do_dump(struct devlink_health_reporter *reporter,
- int devlink_health_report(struct devlink_health_reporter *reporter,
- 			  const char *msg, void *priv_ctx)
- {
--	enum devlink_health_reporter_state prev_health_state;
-+	enum devlink_health_state prev_health_state;
- 	struct devlink *devlink = reporter->devlink;
- 	unsigned long recover_ts_threshold;
- 
-@@ -6425,14 +6425,14 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
- 	trace_devlink_health_report(devlink, reporter->ops->name, msg);
- 	reporter->error_count++;
- 	prev_health_state = reporter->health_state;
--	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
-+	reporter->health_state = DL_HEALTH_STATE_ERROR;
- 	devlink_recover_notify(reporter, DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
- 
- 	/* abort if the previous error wasn't recovered */
- 	recover_ts_threshold = reporter->last_recovery_ts +
- 			       msecs_to_jiffies(reporter->graceful_period);
- 	if (reporter->auto_recover &&
--	    (prev_health_state != DEVLINK_HEALTH_REPORTER_STATE_HEALTHY ||
-+	    (prev_health_state != DL_HEALTH_STATE_HEALTHY ||
- 	     (reporter->last_recovery_ts && reporter->recovery_count &&
- 	      time_is_after_jiffies(recover_ts_threshold)))) {
- 		trace_devlink_health_recover_aborted(devlink,
-@@ -6443,7 +6443,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
- 		return -ECANCELED;
- 	}
- 
--	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
-+	reporter->health_state = DL_HEALTH_STATE_ERROR;
- 
- 	if (reporter->auto_dump) {
- 		mutex_lock(&reporter->dump_lock);
-@@ -6520,10 +6520,10 @@ devlink_health_reporter_get_from_cb(struct netlink_callback *cb)
- 
- void
- devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
--				     enum devlink_health_reporter_state state)
-+				     enum devlink_health_state state)
- {
--	if (WARN_ON(state != DEVLINK_HEALTH_REPORTER_STATE_HEALTHY &&
--		    state != DEVLINK_HEALTH_REPORTER_STATE_ERROR))
-+	if (WARN_ON(state != DL_HEALTH_STATE_HEALTHY &&
-+		    state != DL_HEALTH_STATE_ERROR))
- 		return;
- 
- 	if (reporter->health_state == state)
+ 	reporter = kzalloc(sizeof(*reporter), GFP_KERNEL);
+@@ -6265,6 +6266,10 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
+ 	if (nla_put_string(msg, DEVLINK_ATTR_HEALTH_REPORTER_NAME,
+ 			   reporter->ops->name))
+ 		goto reporter_nest_cancel;
++	if (reporter->ops->remedy &&
++	    nla_put_u32(msg, DEVLINK_ATTR_HEALTH_REPORTER_REMEDY,
++			reporter->ops->remedy))
++		goto reporter_nest_cancel;
+ 	if (nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_STATE,
+ 		       reporter->health_state))
+ 		goto reporter_nest_cancel;
 -- 
 2.29.2
 
