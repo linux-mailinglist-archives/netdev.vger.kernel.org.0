@@ -2,72 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5F16336A09
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 03:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3AE9336A07
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 03:08:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbhCKCKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 21:10:30 -0500
-Received: from m12-14.163.com ([220.181.12.14]:33349 "EHLO m12-14.163.com"
+        id S229612AbhCKCIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 21:08:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229544AbhCKCKF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 21:10:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=qyUs4
-        6i2FA688vwg0k0f54ioff9WxpH9cOp5ivb9sgM=; b=So5eQYKGDWqD2yBVzCjV6
-        AoXT5+5s7T+3AlCM9b9abvMRRl8cqaeZ9u5mtyST7o/AhFjX4/OtJ4KawsmX2YVo
-        c3J7e8uDy6y4cpncE1I75GVq0OryOdDpqg9etBCSSZiFFB76XwWfaWswcKaCU4Pd
-        ezlmDVuLngGrk5uiWiIuZs=
-Received: from yangjunlin.ccdomain.com (unknown [119.137.52.39])
-        by smtp10 (Coremail) with SMTP id DsCowABndY29e0lgQ14Qow--.17433S2;
-        Thu, 11 Mar 2021 10:09:02 +0800 (CST)
-From:   angkery <angkery@163.com>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Junlin Yang <yangjunlin@yulong.com>
-Subject: [PATCH] esp6: remove a duplicative condition
-Date:   Thu, 11 Mar 2021 10:07:56 +0800
-Message-Id: <20210311020756.1570-1-angkery@163.com>
-X-Mailer: git-send-email 2.24.0.windows.2
+        id S229512AbhCKCIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 21:08:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1435564FAA;
+        Thu, 11 Mar 2021 02:08:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615428489;
+        bh=NLWsAdZX4Z7588LIkFwbfw139IjUY4CRLCIvxvC3TBA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Hsk/nFWRhJV6YvrHzO8BJOANQaMYYcu5PosERdHcsiub2TVeUY22/dJCqClyLsMkq
+         BgvnvaB8zq6E+VQKu2pKTDqRk8e71ZgJy5q+S+D6jmf8DtMUFLqtAMmVynJPM4KW0v
+         X7z157aXfnRAuqyrzREEw9mDqjoqJEvjOvt4DSIuodAIltlPKFO6PQX/TYS1ew6S4W
+         fcZsLXedJYSn2X/4dYSmJPVcYjteHi4Tj3KK3Bd1O6CCs31cBV3LblF1l3BHAmaaZP
+         gUkefhDSM03GAKDcrHjSiCNEgTC+H+9R2JaoOl8GlcLcT9S2Bli/ogr7n51xZ36xap
+         LDY67frNuwO1Q==
+Date:   Wed, 10 Mar 2021 18:08:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        simon.horman@netronome.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        drivers@pensando.io, snelson@pensando.io, netanel@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com, saeedb@amazon.com,
+        GR-Linux-NIC-Dev@marvell.com, skalluru@marvell.com,
+        rmody@marvell.com, kys@microsoft.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, wei.liu@kernel.org, mst@redhat.com,
+        jasowang@redhat.com, pv-drivers@vmware.com, doshir@vmware.com,
+        alexanderduyck@fb.com
+Subject: Re: [RFC PATCH 01/10] ethtool: Add common function for filling out
+ strings
+Message-ID: <20210310180807.5fb1752d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <161542651749.13546.3959589547085613076.stgit@localhost.localdomain>
+References: <161542634192.13546.4185974647834631704.stgit@localhost.localdomain>
+        <161542651749.13546.3959589547085613076.stgit@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowABndY29e0lgQ14Qow--.17433S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZF1DtF47KFy5JFy5AryDGFg_yoWfGFc_CF
-        4v9FWUGFW8J34vyw1ayFWrWw12yw18uFZakry2g3y8Gw15Ar1rXrs2qr98CFWqgr1xWrW2
-        qF4DuFy8Jry29jkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8V6wtUUUUU==
-X-Originating-IP: [119.137.52.39]
-X-CM-SenderInfo: 5dqjyvlu16il2tof0z/1tbiKx9SI1QHWr82iAAAsN
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Junlin Yang <yangjunlin@yulong.com>
+On Wed, 10 Mar 2021 17:35:17 -0800 Alexander Duyck wrote:
+> From: Alexander Duyck <alexanderduyck@fb.com>
+> 
+> Add a function to handle the common pattern of printing a string into the
+> ethtool strings interface and incrementing the string pointer by the
+> ETH_GSTRING_LEN. Most of the drivers end up doing this and several have
+> implemented their own versions of this function so it would make sense to
+> consolidate on one implementation.
+> 
+> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+> ---
+>  include/linux/ethtool.h |    9 +++++++++
+>  net/ethtool/ioctl.c     |   12 ++++++++++++
+>  2 files changed, 21 insertions(+)
+> 
+> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+> index ec4cd3921c67..0493f13b2b20 100644
+> --- a/include/linux/ethtool.h
+> +++ b/include/linux/ethtool.h
+> @@ -571,4 +571,13 @@ struct ethtool_phy_ops {
+>   */
+>  void ethtool_set_ethtool_phy_ops(const struct ethtool_phy_ops *ops);
+>  
+> +/**
+> + * ethtool_gsprintf - Write formatted string to ethtool string data
+> + * @data: Pointer to start of string to update
+> + * @fmt: Format of string to write
+> + *
+> + * Write formatted string to data. Update data to point at start of
+> + * next string.
+> + */
+> +extern __printf(2, 3) void ethtool_gsprintf(u8 **data, const char *fmt, ...);
 
-Fixes coccicheck warnings:
-./net/ipv6/esp6_offload.c:319:32-34:
-WARNING !A || A && B is equivalent to !A || B
+I'd drop the 'g' TBH, it seems to have made its way from the ethtool
+command ('gstrings') to various places but without the 'string' after
+it - it becomes less and less meaningful. Just ethtool_sprintf() would
+be fine IMHO.
 
-Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
----
- net/ipv6/esp6_offload.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index 1ca516f..631c168 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -316,7 +316,7 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
- 	esp.plen = esp.clen - skb->len - esp.tfclen;
- 	esp.tailen = esp.tfclen + esp.plen + alen;
- 
--	if (!hw_offload || (hw_offload && !skb_is_gso(skb))) {
-+	if (!hw_offload || !skb_is_gso(skb)) {
- 		esp.nfrags = esp6_output_head(x, skb, &esp);
- 		if (esp.nfrags < 0)
- 			return esp.nfrags;
--- 
-1.9.1
-
-
+Other than that there is a minor rev xmas tree violation in patch 2 :)
