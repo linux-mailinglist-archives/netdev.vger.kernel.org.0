@@ -2,60 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C1F3372BE
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:35:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E3663372C5
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233274AbhCKMfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 07:35:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
+        id S233118AbhCKMfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 07:35:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233163AbhCKMew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:34:52 -0500
-Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53606C061574;
-        Thu, 11 Mar 2021 04:34:48 -0800 (PST)
+        with ESMTP id S233327AbhCKMfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:35:36 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4338BC061574;
+        Thu, 11 Mar 2021 04:35:36 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id v2so26467974lft.9;
+        Thu, 11 Mar 2021 04:35:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID;
-        bh=ryfXHe18DN1UjZnxckhWgKsLfHZNN7X4RUYg2FqUcMo=; b=Uf6DLvNnY63HV
-        LvMaIuLY6sE+wc+X9lW5C4SPDAy+V3Xd9m8xwAqQrgpYG6cN90XQVsRIihmS3PpM
-        guwvCZNmp+Vp/WWi/1cEtcHP9qSqe1/MWdZVkeqfZ4CcnZxVKAQI5QK9AK1soyhf
-        ER1p2tvr9b2J6OLePgZifs8UaZq2FQ=
-Received: by ajax-webmail-newmailweb.ustc.edu.cn (Coremail) ; Thu, 11 Mar
- 2021 20:34:44 +0800 (GMT+08:00)
-X-Originating-IP: [202.79.170.108]
-Date:   Thu, 11 Mar 2021 20:34:44 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   lyl2019@mail.ustc.edu.cn
-To:     paulus@samba.org, davem@davemloft.net
-Cc:     linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [BUG] net/ppp: A use after free in ppp_unregister_channe
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT3.0.8 dev build
- 20190610(cb3344cf) Copyright (c) 2002-2021 www.mailtech.cn ustc-xl
-X-SendMailWithSms: false
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=UTF-8
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Lkb4fhMWbYfgcrHFjrq5Zx1jnIW2z6RnyfRiSQSgbwM=;
+        b=MGIdunE/4ebuipg/dNhIiKykhRA1jPxnkQBV/JuRjA5pFDmxg1KGu8bXs8l1zMa9Hv
+         tSHFVFo8JwEKSOcf9S1TSgaf2Bf4m31l8reuwWR7NxJ1k8KVXNDzdnM8bAtkEGMWSd8I
+         cEgBixcznbXFe+VsPpYx4agPF+Ya5zx2zK4UUQJ6o/dD9JMxpWNaL55wekEqG3qwS37f
+         X6QpRpGe9ykOLWAaLu4ZzGaNGQAp5fBcZIcCvGZvHq8RZbSvrAt3TbFpzA6TtM2LfBgs
+         7P4ou7ij14ClXvMBoTTYDlWhYGdIaLloCnq4cLY4BNhlfO+cCcfS6j8zmYacoFP3cOXl
+         CJFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Lkb4fhMWbYfgcrHFjrq5Zx1jnIW2z6RnyfRiSQSgbwM=;
+        b=KUvM5o5jvnSFRyqjopH7aOytbu3eIVDfMheSdltXLX24n5qoTKgmh61ZwTcp4sZdJu
+         PRmT5ZKrJTWi6aHoXZuRVeXrXNjA8syzurCMZdie/DZoh47twdEb1KX4xc1BobyJORK4
+         v9jvbbjtVD7Lj+xH0lrBkDucXHsjDhotzAWXgFbIGo97BFvo3Sc7IrfBpDNLHtPSdeK2
+         DZ9jG52xed2WVY4ziIA6PFdwgyB9x/WMYqatJd0uVPDn/GnI7mibOoa/WfRgy4gMZ9hf
+         Z2WIEkqX1NALZbjVbh+/uzFsYShvyVOEqtbfxlX6qdoyCy1MsBO/m8KoHeq7WC3wBDVy
+         LT5Q==
+X-Gm-Message-State: AOAM533eOFGXJKKESM1T/FQtQx7gIv943ONfPtoK0JpxITE+FBrGKqQD
+        Npa4k4JAbmybmtTLa3CLo2w=
+X-Google-Smtp-Source: ABdhPJzdMhPBsG75UDNglRTs0o/EtLVkOfvOQ/nWtUdCORsXRsAyvy9aKrpV3g8+xve4GCTPPXAngg==
+X-Received: by 2002:a05:6512:3249:: with SMTP id c9mr2294161lfr.5.1615466134758;
+        Thu, 11 Mar 2021 04:35:34 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id j144sm774280lfj.241.2021.03.11.04.35.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Mar 2021 04:35:33 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V2 net-next 1/2] dt-bindings: net: bcm4908-enet: add optional TX interrupt
+Date:   Thu, 11 Mar 2021 13:35:20 +0100
+Message-Id: <20210311123521.22777-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210310091410.10164-1-zajec5@gmail.com>
+References: <20210310091410.10164-1-zajec5@gmail.com>
 MIME-Version: 1.0
-Message-ID: <6057386d.ca12.1782148389e.Coremail.lyl2019@mail.ustc.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: LkAmygCHiBhkDkpgRUoMAA--.0W
-X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/1tbiAQsRBlQhn5AN0QACs5
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-File: drivers/net/ppp/ppp_generic.c
+From: Rafał Miłecki <rafal@milecki.pl>
 
-In ppp_unregister_channel, pch could be freed in ppp_unbridge_channels()
-but after that pch is still in use. Inside the function ppp_unbridge_channels,
-if "pchbb == pch" is true and then pch will be freed.
+I discovered that hardware actually supports two interrupts, one per DMA
+channel (RX and TX).
 
-I checked the commit history and found that this problem is introduced from
-4cf476ced45d7 ("ppp: add PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN ioctls").
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ .../bindings/net/brcm,bcm4908-enet.yaml         | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-I have no idea about how to generate a suitable patch, sorry.
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+index 79c38ea14237..2a3be0f9a1a1 100644
+--- a/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
++++ b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+@@ -22,10 +22,18 @@ properties:
+     maxItems: 1
+ 
+   interrupts:
+-    description: RX interrupt
++    minItems: 1
++    maxItems: 2
++    items:
++      - description: RX interrupt
++      - description: TX interrupt
+ 
+   interrupt-names:
+-    const: rx
++    minItems: 1
++    maxItems: 2
++    items:
++      - const: rx
++      - const: tx
+ 
+ required:
+   - reg
+@@ -43,6 +51,7 @@ examples:
+         compatible = "brcm,bcm4908-enet";
+         reg = <0x80002000 0x1000>;
+ 
+-        interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
+-        interrupt-names = "rx";
++        interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-names = "rx", "tx";
+     };
+-- 
+2.26.2
+
