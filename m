@@ -2,63 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05328337F14
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:34:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B4D4337F1A
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:34:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230513AbhCKUdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 15:33:11 -0500
-Received: from mga05.intel.com ([192.55.52.43]:34284 "EHLO mga05.intel.com"
+        id S231149AbhCKUd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 15:33:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230454AbhCKUcf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 15:32:35 -0500
-IronPort-SDR: VVghjzSiHlNMzfdtr3N+xwsQkJLMdFEJMZTQKjGlEjVLz7QJ28cTdOuZXQ3/tvMoPpovu/gg0K
- zOGO6tWiHAWg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9920"; a="273776822"
-X-IronPort-AV: E=Sophos;i="5.81,241,1610438400"; 
-   d="scan'208";a="273776822"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 12:32:34 -0800
-IronPort-SDR: 8xNhb8wMcbUS77T52NVrxn7TvEEBcUq3HgASnvdPs2ySDrE05KoWH6NFqJDrxPfOx86BxTu34B
- SkoOJuQVEZ1w==
-X-IronPort-AV: E=Sophos;i="5.81,241,1610438400"; 
-   d="scan'208";a="438277275"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.251.18.194])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 12:32:30 -0800
-Date:   Thu, 11 Mar 2021 12:32:29 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "simon.horman@netronome.com" <simon.horman@netronome.com>,
-        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
-        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        "snelson@pensando.io" <snelson@pensando.io>,
-        "netanel@amazon.com" <netanel@amazon.com>,
-        "akiyano@amazon.com" <akiyano@amazon.com>,
-        "gtzalik@amazon.com" <gtzalik@amazon.com>,
-        "saeedb@amazon.com" <saeedb@amazon.com>,
-        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
-        "skalluru@marvell.com" <skalluru@marvell.com>,
-        "rmody@marvell.com" <rmody@marvell.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "pv-drivers@vmware.com" <pv-drivers@vmware.com>,
-        "doshir@vmware.com" <doshir@vmware.com>,
-        "alexanderduyck@fb.com" <alexanderduyck@fb.com>
-Subject: Re: [RFC PATCH 02/10] intel: Update drivers to use ethtool_gsprintf
-Message-ID: <20210311123229.00007580@intel.com>
-In-Reply-To: <161542652605.13546.13143472024905128153.stgit@localhost.localdomain>
-References: <161542634192.13546.4185974647834631704.stgit@localhost.localdomain>
-        <161542652605.13546.13143472024905128153.stgit@localhost.localdomain>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S230483AbhCKUdP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 15:33:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 64E7964ECD;
+        Thu, 11 Mar 2021 20:33:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615494795;
+        bh=e6yQMlzLM3Zx5M9FQ/wZu/xICC5IVVwqDRVUpsW4INM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XIMmDpPUo/l975V5mNFU2c0yBmIPMviPeWlWV3ckho83Qbhqxllq1gItIkinp5TYQ
+         WqOmxLfuJcRf8Y/RccZcMTaYmbNXJ4ov4z5BbU5kaNhKU5bDmg+MbZFJ9lQb8EoC9E
+         a5x7gVADojbEuin43UyPJAp28611gwtgt3XbDkU2eknohFUIOTxYcfSaLTz2clPQHn
+         k/HF2VtGIyqgVsoAbqY/TCCZ7QGOHUzKkjsBRyT3juyyyYg1kQYOyrLLzMM+Os18eS
+         4doDUo/nJsQmvKGYBdrnmEdRFXWi085LTk9n5LOSk6leTZ0oI5vTUfJbZP02C11Pbm
+         4AvPVDOERzMag==
+Date:   Thu, 11 Mar 2021 12:33:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <stefanc@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <thomas.petazzoni@bootlin.com>,
+        <davem@davemloft.net>, <nadavh@marvell.com>,
+        <ymarkman@marvell.com>, <linux-kernel@vger.kernel.org>,
+        <linux@armlinux.org.uk>, <mw@semihalf.com>, <andrew@lunn.ch>,
+        <rmk+kernel@armlinux.org.uk>, <atenart@kernel.org>,
+        <rabeeh@solid-run.com>
+Subject: Re: [V2 net-next] net: mvpp2: Add reserved port private flag
+ configuration
+Message-ID: <20210311123313.0f5e7f80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1615481007-16735-1-git-send-email-stefanc@marvell.com>
+References: <1615481007-16735-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -66,34 +44,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander Duyck wrote:
-
-> From: Alexander Duyck <alexanderduyck@fb.com>
+On Thu, 11 Mar 2021 18:43:27 +0200 stefanc@marvell.com wrote:
+> According to Armada SoC architecture and design, all the PPv2 ports
+> which are populated on the same communication processor silicon die
+> (CP11x) share the same Classifier and Parser engines.
 > 
-> Update the Intel drivers to make use of ethtool_gsprintf. The general idea
-> is to reduce code size and overhead by replacing the repeated pattern of
-> string printf statements and ETH_STRING_LEN counter increments.
+> Armada is an embedded platform and therefore there is a need to reserve
+> some of the PPv2 ports for different use cases.
 > 
-> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_ethtool.c   |   16 ++----
->  drivers/net/ethernet/intel/ice/ice_ethtool.c     |   55 +++++++---------------
->  drivers/net/ethernet/intel/igb/igb_ethtool.c     |   40 ++++++----------
->  drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c |   40 ++++++----------
->  4 files changed, 50 insertions(+), 101 deletions(-)
+> For example, a port can be reserved for a CM3 CPU running FreeRTOS for
+> management purposes or by user-space data plane application.
 > 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-> index c70dec65a572..932c6635cfd6 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-> @@ -2368,21 +2368,15 @@ static void i40e_get_priv_flag_strings(struct net_device *netdev, u8 *data)
->  	struct i40e_netdev_priv *np = netdev_priv(netdev);
->  	struct i40e_vsi *vsi = np->vsi;
->  	struct i40e_pf *pf = vsi->back;
-> -	char *p = (char *)data;
-> +	u8 *p = data;
->  	unsigned int i;
+> During port reservation all common configurations are preserved and
+> only RXQ, TXQ, and interrupt vectors are disabled.
+> Since TXQ's are disabled, the Kernel won't transmit any packet
+> from this port, and to due the closed RXQ interrupts, the Kernel won't
+> receive any packet.
+> The port MAC address and administrative UP/DOWN state can still
+> be changed.
+> The only permitted configuration in this mode is MTU change.
+> The driver's .ndo_change_mtu callback has logic that switches between
+> percpu_pools and shared pools buffer mode, since the buffer management
+> not done by Kernel this should be permitted.
 
-As Jakub said, RCT... :-)
+Andrew asks good questions. This looks like a strange construct.
 
-no other comments on the rest of the patch, looks good and Thanks!
+IMO Linux should either not see the port (like it doesn't see NC-SI),
+or we need representors for physical and logical ports and explicit
+forwarding rules.
