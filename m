@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED524337284
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:25:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45022337285
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:25:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbhCKMZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 07:25:15 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:58875 "EHLO
+        id S233128AbhCKMZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 07:25:16 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:47957 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232813AbhCKMZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:25:07 -0500
+        by vger.kernel.org with ESMTP id S232852AbhCKMZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:25:09 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2D4375C017F;
-        Thu, 11 Mar 2021 07:25:07 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id D0E775C0172;
+        Thu, 11 Mar 2021 07:25:08 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 11 Mar 2021 07:25:07 -0500
+  by compute3.internal (MEProxy); Thu, 11 Mar 2021 07:25:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=PgS6RhO67ehT1TCJo8Tycn+TJV6U5MIq5a74k7NxfJU=; b=iVPQJfqf
-        3vkpoUEEmTdjIYEWvPvsiOOvpEFVX+8ruu8JINXE7R0UnyTs2/LXx0RKQNB3C5yL
-        rW3AVg9DdODKxDQU2Yu2mCly3gvnKiRSGBUZa4lfNBOmuEvp6P+elzZFu7ojISOY
-        XxxnEQPYqeMvb4yLD/53T52F7o/37vAgAku+EUCMdZK/WPSiixQehHOCHYUDEhQS
-        HxyLTueq1YIPtV6dgyxB+8/FxZ4YkEQ/ZxbaoKcnUpfPudZIs1Y49vluMnGxLgEK
-        kZz8PVRSx9cirI0RM/hnZdF1rsmjS74rCr7y8ZZalJzaT0+o272/gfh7oonGoSPH
-        UjTMRjPBnCuOhw==
-X-ME-Sender: <xms:IwxKYBcEOikuaQbLHZQ-ZJEf0WI2-1gbAWWjmkipokjYyOyPwdwZDg>
-    <xme:IwxKYPODiqxdpXWNLzA-9UoiZZZqMUGSpdAcc7hnCWRiG1DS2uzg8os5Byua598rj
-    DcdnmFzmMXKc8U>
+        fm2; bh=Cb3+om5RAAa7c3PNJJROdYZ8rN4poKp87At/vyrcFKg=; b=KCh9GgpD
+        tNvH40YLKD5tckEeThsN47IQThmAoovey3OcWb5sAucgLa8eUBaggUutHx6RHF7N
+        g4eejS6nRFrqftl/wasYnCgxgKUVjtvxThWu9vXGf+zwhVlMg23+JPvdJoawCicb
+        Z7cxj4O9JLd2fzT4nS0bUkfjx9whKkypM4X6pC+bUVaB9w64ZpdiqXZATPBiGM3H
+        o0kfmzIoon2CsBzXCB8UZeG4XZ2FfG++pF0Ln/094r37f1QmNUFKcS0PydhHuakz
+        IsM8jb9plXiOMPG7jSPhm+bfQaUGGVyfRUo9n8kAOdU8fNxWfVVg2qSQZvaXe15Q
+        W1DfQWffsDb5Fw==
+X-ME-Sender: <xms:JAxKYJti30m8KTK7jGYmMwSCTi_VnQcWWnswA3QbHxeH_sakEWbtBA>
+    <xme:JAxKYCdajr_vHgZQHYueGRKTQ39bZdZLiONJYUWlNxPcPReEMtWCsgBGmDW55fpmk
+    vABEc7EA00uyFo>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvtddggedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvtddggedtucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
     necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:IwxKYKjY6j7yoJkv7MdMaJBrXAtfFrhzzM88rq4OY_UsUTl4zGLgzg>
-    <xmx:IwxKYK-baHjp9oW2an6U9pfkjb6yV5yy0vi8uRgev8o2RGelUi16AQ>
-    <xmx:IwxKYNtHAcSlWGobNf1msfR38quJ74baJRJTW8tnVF_T0TDr3iPMDg>
-    <xmx:IwxKYG5VPTS8G_RUdqXlbvXSXMstKW1ayc-Gv-YcML7bZViqrzqzAA>
+X-ME-Proxy: <xmx:JAxKYMzE71kp6p09qdMy1mheHKswxEQplrE3SEGesW2JyQ3vSFftMw>
+    <xmx:JAxKYAN_2U56LtGKp5wIT54n4lMyxIMoe7Odnjh-50o2xkjEq9YwsA>
+    <xmx:JAxKYJ-Kv-eYoU-tbDSD1UUFegbbHoeEwzcGBiHhniye0W7umgN3lg>
+    <xmx:JAxKYLKsj118XMpOknDri2PrhC2f2WuRJiYPmiG3p3kIW3IqLzj4Zg>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 626C91080068;
-        Thu, 11 Mar 2021 07:25:05 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 6DED91080057;
+        Thu, 11 Mar 2021 07:25:07 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 1/6] mlxsw: spectrum_span: Add SPAN session identifier support
-Date:   Thu, 11 Mar 2021 14:24:11 +0200
-Message-Id: <20210311122416.2620300-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/6] mlxsw: reg: Extend mirroring registers with probability rate field
+Date:   Thu, 11 Mar 2021 14:24:12 +0200
+Message-Id: <20210311122416.2620300-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210311122416.2620300-1-idosch@idosch.org>
 References: <20210311122416.2620300-1-idosch@idosch.org>
@@ -63,122 +63,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-When packets are mirrored to the CPU, the trap identifier with which the
-packets are trapped is determined according to the session identifier of
-the SPAN agent performing the mirroring. Packets that are trapped for
-the same logical reason (e.g., buffer drops) should use the same session
-identifier.
-
-Currently, a single session is implicitly supported (identifier 0) and
-is used for packets that are mirrored to the CPU due to buffer drops
-(e.g., early drop).
-
-Subsequent patches are going to mirror packets to the CPU due to
-sampling, which will require a different session identifier.
-
-Prepare for that by making the session identifier an attribute of the
-SPAN agent.
+The MPAR and MPAGR registers are used to configure the binding between
+the mirroring trigger (e.g., received packet) and the SPAN agent. Add
+probability rate field, which will allow us to support sampling by
+mirroring to the CPU.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum_qdisc.c   |  4 +++-
- .../net/ethernet/mellanox/mlxsw/spectrum_span.c    |  6 +++++-
- .../net/ethernet/mellanox/mlxsw/spectrum_span.h    | 14 ++++++++++++++
- 3 files changed, 22 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h       | 17 ++++++++++++++++-
+ .../net/ethernet/mellanox/mlxsw/spectrum_span.c |  2 +-
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-index fd672c6c9133..9d16823320ae 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-@@ -1404,7 +1404,9 @@ static int mlxsw_sp_qevent_trap_configure(struct mlxsw_sp *mlxsw_sp,
- 					  struct mlxsw_sp_mall_entry *mall_entry,
- 					  struct mlxsw_sp_qevent_binding *qevent_binding)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index 2f7f691f85ff..44f836246e33 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -9925,15 +9925,28 @@ MLXSW_ITEM32(reg, mpar, enable, 0x04, 31, 1);
+  */
+ MLXSW_ITEM32(reg, mpar, pa_id, 0x04, 0, 4);
+ 
++#define MLXSW_REG_MPAR_RATE_MAX 3500000000UL
++
++/* reg_mpar_probability_rate
++ * Sampling rate.
++ * Valid values are: 1 to 3.5*10^9
++ * Value of 1 means "sample all". Default is 1.
++ * Reserved when Spectrum-1.
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, mpar, probability_rate, 0x08, 0, 32);
++
+ static inline void mlxsw_reg_mpar_pack(char *payload, u8 local_port,
+ 				       enum mlxsw_reg_mpar_i_e i_e,
+-				       bool enable, u8 pa_id)
++				       bool enable, u8 pa_id,
++				       u32 probability_rate)
  {
--	struct mlxsw_sp_span_agent_parms agent_parms = {};
-+	struct mlxsw_sp_span_agent_parms agent_parms = {
-+		.session_id = MLXSW_SP_SPAN_SESSION_ID_BUFFER,
-+	};
- 	int err;
- 
- 	err = mlxsw_sp_trap_group_policer_hw_id_get(mlxsw_sp,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-index 1892cea05ee7..3287211819df 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-@@ -186,6 +186,7 @@ mlxsw_sp_span_entry_phys_configure(struct mlxsw_sp_span_entry *span_entry,
- 	/* Create a new port analayzer entry for local_port. */
- 	mlxsw_reg_mpat_pack(mpat_pl, pa_id, local_port, true,
- 			    MLXSW_REG_MPAT_SPAN_TYPE_LOCAL_ETH);
-+	mlxsw_reg_mpat_session_id_set(mpat_pl, sparms.session_id);
- 	mlxsw_reg_mpat_pide_set(mpat_pl, sparms.policer_enable);
- 	mlxsw_reg_mpat_pid_set(mpat_pl, sparms.policer_id);
- 
-@@ -203,6 +204,7 @@ mlxsw_sp_span_entry_deconfigure_common(struct mlxsw_sp_span_entry *span_entry,
- 	int pa_id = span_entry->id;
- 
- 	mlxsw_reg_mpat_pack(mpat_pl, pa_id, local_port, false, span_type);
-+	mlxsw_reg_mpat_session_id_set(mpat_pl, span_entry->parms.session_id);
- 	mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(mpat), mpat_pl);
+ 	MLXSW_REG_ZERO(mpar, payload);
+ 	mlxsw_reg_mpar_local_port_set(payload, local_port);
+ 	mlxsw_reg_mpar_enable_set(payload, enable);
+ 	mlxsw_reg_mpar_i_e_set(payload, i_e);
+ 	mlxsw_reg_mpar_pa_id_set(payload, pa_id);
++	mlxsw_reg_mpar_probability_rate_set(payload, probability_rate);
  }
  
-@@ -938,7 +940,8 @@ mlxsw_sp_span_entry_find_by_parms(struct mlxsw_sp *mlxsw_sp,
+ /* MGIR - Management General Information Register
+@@ -10577,6 +10590,8 @@ MLXSW_ITEM32(reg, mpagr, trigger, 0x00, 0, 4);
+  */
+ MLXSW_ITEM32(reg, mpagr, pa_id, 0x04, 0, 4);
  
- 		if (refcount_read(&curr->ref_count) && curr->to_dev == to_dev &&
- 		    curr->parms.policer_enable == sparms->policer_enable &&
--		    curr->parms.policer_id == sparms->policer_id)
-+		    curr->parms.policer_id == sparms->policer_id &&
-+		    curr->parms.session_id == sparms->session_id)
- 			return curr;
++#define MLXSW_REG_MPAGR_RATE_MAX 3500000000UL
++
+ /* reg_mpagr_probability_rate
+  * Sampling rate.
+  * Valid values are: 1 to 3.5*10^9
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+index 3287211819df..7711ace07ec8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+@@ -1232,7 +1232,7 @@ __mlxsw_sp_span_trigger_port_bind(struct mlxsw_sp_span *span,
  	}
- 	return NULL;
-@@ -1085,6 +1088,7 @@ int mlxsw_sp_span_agent_get(struct mlxsw_sp *mlxsw_sp, int *p_span_id,
  
- 	sparms.policer_id = parms->policer_id;
- 	sparms.policer_enable = parms->policer_enable;
-+	sparms.session_id = parms->session_id;
- 	span_entry = mlxsw_sp_span_entry_get(mlxsw_sp, to_dev, ops, sparms);
- 	if (!span_entry)
- 		return -ENOBUFS;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-index aa1cd409c0e2..6e84cc049428 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-@@ -13,6 +13,18 @@
- struct mlxsw_sp;
- struct mlxsw_sp_port;
+ 	mlxsw_reg_mpar_pack(mpar_pl, trigger_entry->local_port, i_e, enable,
+-			    trigger_entry->parms.span_id);
++			    trigger_entry->parms.span_id, 1);
+ 	return mlxsw_reg_write(span->mlxsw_sp->core, MLXSW_REG(mpar), mpar_pl);
+ }
  
-+/* SPAN session identifiers that correspond to MLXSW_TRAP_ID_MIRROR_SESSION<i>
-+ * trap identifiers. The session identifier is an attribute of the SPAN agent,
-+ * which determines the trap identifier of packets that are mirrored to the
-+ * CPU. Packets that are trapped to the CPU for the same logical reason (e.g.,
-+ * buffer drops) should use the same session identifier.
-+ */
-+enum mlxsw_sp_span_session_id {
-+	MLXSW_SP_SPAN_SESSION_ID_BUFFER,
-+
-+	__MLXSW_SP_SPAN_SESSION_ID_MAX = 8,
-+};
-+
- struct mlxsw_sp_span_parms {
- 	struct mlxsw_sp_port *dest_port; /* NULL for unoffloaded SPAN. */
- 	unsigned int ttl;
-@@ -23,6 +35,7 @@ struct mlxsw_sp_span_parms {
- 	u16 vid;
- 	u16 policer_id;
- 	bool policer_enable;
-+	enum mlxsw_sp_span_session_id session_id;
- };
- 
- enum mlxsw_sp_span_trigger {
-@@ -41,6 +54,7 @@ struct mlxsw_sp_span_agent_parms {
- 	const struct net_device *to_dev;
- 	u16 policer_id;
- 	bool policer_enable;
-+	enum mlxsw_sp_span_session_id session_id;
- };
- 
- struct mlxsw_sp_span_entry_ops;
 -- 
 2.29.2
 
