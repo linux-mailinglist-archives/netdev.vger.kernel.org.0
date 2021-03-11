@@ -2,74 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62BE7336CA3
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:00:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADFDE336CA8
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231455AbhCKHAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 02:00:23 -0500
-Received: from mga05.intel.com ([192.55.52.43]:27367 "EHLO mga05.intel.com"
+        id S229731AbhCKHAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 02:00:55 -0500
+Received: from z11.mailgun.us ([104.130.96.11]:10088 "EHLO z11.mailgun.us"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229731AbhCKG7y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 01:59:54 -0500
-IronPort-SDR: zEntlNvJppVsZhHetCbT3/ecJMa9qbOYPC8rBONy8qKdadmLJ1Rt/ldEfdyVNxGaYNk+rURefp
- eq2Y6vdFoegg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9919"; a="273662898"
-X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
-   d="scan'208";a="273662898"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 22:59:54 -0800
-IronPort-SDR: etC1/Qix5RDSZFoTajB90yb4CFzzecsx1G7yzSSOWXTlITDi7yEXly3N8mhF7SsKL8x0yc6CEx
- vAPpTUFpQw8A==
-X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
-   d="scan'208";a="410506705"
-Received: from eefimov-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.48.42])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 22:59:50 -0800
-Subject: Re: [PATCH bpf-next 2/2] libbpf: xsk: move barriers from
- libbpf_util.h to xsk.h
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, andrii@kernel.org, magnus.karlsson@intel.com,
-        maximmi@nvidia.com, ciara.loftus@intel.com
-References: <20210310080929.641212-1-bjorn.topel@gmail.com>
- <20210310080929.641212-3-bjorn.topel@gmail.com>
- <20210311000605.tuo7rg4b7keo76iy@bsd-mbp.dhcp.thefacebook.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <0535ce9f-0db6-40f7-e512-e327f6f54c35@intel.com>
-Date:   Thu, 11 Mar 2021 07:59:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S231473AbhCKHAo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 02:00:44 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1615446044; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=3+uYjBQK4ORw94HoS3mEIbHBXvqWMu6fhtYX/73Hjuc=; b=oCO1GMaPzOLZE4XRCz5vqesuPt6sXYabDpIUqu/wpBdqXu1fm6smrsMQ8FThbrRCPFIMP6av
+ A4wZd7yd7XRSC1p12WQhs8Wcna/s15f6gVqp3nBF9+uofxCCURcoprhzhd1Ni+zVIAup6wa/
+ c5wj7kMoawgSrmS8c5kGnMQgStY=
+X-Mailgun-Sending-Ip: 104.130.96.11
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 6049bff9b86af9bf23f5b444 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 11 Mar 2021 07:00:09
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 907F9C433CA; Thu, 11 Mar 2021 07:00:08 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 66F14C433CA;
+        Thu, 11 Mar 2021 07:00:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 66F14C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jes Sorensen <Jes.Sorensen@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH RESEND][next] rtl8xxxu: Fix fall-through warnings for Clang
+References: <20210305094850.GA141221@embeddedor>
+        <871rct67n2.fsf@codeaurora.org> <202103101107.BE8B6AF2@keescook>
+Date:   Thu, 11 Mar 2021 09:00:03 +0200
+In-Reply-To: <202103101107.BE8B6AF2@keescook> (Kees Cook's message of "Wed, 10
+        Mar 2021 11:14:56 -0800")
+Message-ID: <878s6uyy30.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20210311000605.tuo7rg4b7keo76iy@bsd-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-11 01:06, Jonathan Lemon wrote:
-> On Wed, Mar 10, 2021 at 09:09:29AM +0100, Björn Töpel wrote:
->> From: Björn Töpel <bjorn.topel@intel.com>
->>
->> The only user of libbpf_util.h is xsk.h. Move the barriers to xsk.h,
->> and remove libbpf_util.h. The barriers are used as an implementation
->> detail, and should not be considered part of the stable API.
-> 
-> Does that mean that anything else which uses the same type of
-> shared rings (bpf ringbuffer, io_uring, zctap) have to implement
-> the same primitives that xsk.h has?
-> 
+Kees Cook <keescook@chromium.org> writes:
 
-Jonathan, there's a longer explanation on back-/forward-compatibility in
-the commit message [1]. Again, this is for the XDP socket rings, so I
-wont comment on the other rings. I would not assume compatibility
-between different rings (e.g. the bpf ringbuffer and XDP sockets rings),
-not even prior the barrier change.
+> On Fri, Mar 05, 2021 at 03:40:33PM +0200, Kalle Valo wrote:
+>> "Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
+>> 
+>> > In preparation to enable -Wimplicit-fallthrough for Clang, fix
+>> > multiple warnings by replacing /* fall through */ comments with
+>> > the new pseudo-keyword macro fallthrough; instead of letting the
+>> > code fall through to the next case.
+>> >
+>> > Notice that Clang doesn't recognize /* fall through */ comments as
+>> > implicit fall-through markings.
+>> >
+>> > Link: https://github.com/KSPP/linux/issues/115
+>> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>> 
+>> It's not cool that you ignore the comments you got in [1], then after a
+>> while mark the patch as "RESEND" and not even include a changelog why it
+>> was resent.
+>> 
+>> [1] https://patchwork.kernel.org/project/linux-wireless/patch/d522f387b2d0dde774785c7169c1f25aa529989d.1605896060.git.gustavoars@kernel.org/
+>
+> Hm, this conversation looks like a miscommunication, mainly? I see
+> Gustavo, as requested by many others[1], replacing the fallthrough
+> comments with the "fallthrough" statement. (This is more than just a
+> "Clang doesn't parse comments" issue.)
 
+v1 was clearly rejected by Jes, so sending a new version without any
+changelog or comments is not the way to go. The changelog shoud at least
+have had "v1 was rejected but I'm resending this again because <insert
+reason here>" or something like that to make it clear what's happening.
 
-Björn
+> This could be a tree-wide patch and not bother you, but Greg KH has
+> generally advised us to send these changes broken out. Anyway, this
+> change still needs to land, so what would be the preferred path? I think
+> Gustavo could just carry it for Linus to merge without bothering you if
+> that'd be preferred?
 
-[1] 
-https://lore.kernel.org/bpf/20210305094113.413544-2-bjorn.topel@gmail.com/ 
+I agree with Greg. Please don't do cleanups like this via another tree
+as that just creates more work due to conflicts between the trees, which
+is a lot more annoying to deal with than applying few patches. But when
+submitting patches please follow the rules, don't cut corners.
 
+Jes, I don't like 'fallthrough' either and prefer the original comment,
+but the ship has sailed on this one. Maybe we should just take it?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
