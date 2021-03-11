@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C7E9337F12
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:34:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCF4337F16
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230476AbhCKUdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 15:33:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
+        id S231126AbhCKUdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 15:33:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbhCKUce (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 15:32:34 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13C8C061761
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 12:32:33 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id e9so431800wrw.10
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 12:32:33 -0800 (PST)
+        with ESMTP id S230468AbhCKUcf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 15:32:35 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53ACC061574
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 12:32:34 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id 124-20020a1c00820000b029010b871409cfso14347346wma.4
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 12:32:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=b2wIaTSiCWaYVSO004GKU7hpJ8QoMMIfDjc8w0PCKnM=;
-        b=Ls8sKZHA4006w6sHlBLrJkU2k5Gyas+6yxYmXbOVh2eyM6T3T0W0yNCa5ss22l4ZaA
-         5JNippxHaibb4qhVD4MLC8hgsrJrrDjPk+nfXwwi2LsrCi+HVRNqzpTkNRAdZSbLfgUA
-         ZuOlEE1xKUje9XVGHB352wT7PZEpHKXsKzLr3Z6oJFpmWs603HtXpDVOP7UKAttuDD5y
-         PGoFhbe48a51hwHfkphNWBNaC2OP9HEXJWz+fS00b/KlUQIocvUXmRncFDEEey9IH8C2
-         hpyN+zMdPBcZbq3g8ZdkrS4f62mAPIjNe9Mv/ZCRb1pXmcYS8gTGfkm0J7arYpvKk3PL
-         zn2Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=a5tvKFNf4Lr8x9N8CjdQWU4WGFckJjYxDYQWdAtCXUY=;
+        b=gMuGJV3Xl/9FRVPfwRlhxN93h1/cSP7z+gBrNR8KJUq0/wChFwBkOERidn7wc6JxJm
+         lzZF6UXVj7gcggX1yOfIKyzqQu/TbnoL6nkLF+O5Qf5UC3w0BdEMjI2zOQNDwekpfjW9
+         MPzpoxHI3Fc9XcPqPgGdnA9rxGNnUjJEb2E9fMf8B/P4ik69pZtPhde96/NVffT89WC4
+         GAOFz4ItFJY5GP/qeNgU73vYq3wLWliwPmxJkAObb9eB+S1bD/eU5VXNyTx7Biq8IdGB
+         rYfKeeH/ycQfODsZSbnYrRTxoPi0rr7TJd2ZPx5oUnXdWqP9y7sP31p98Gy2bVT1Y0DH
+         ai0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=b2wIaTSiCWaYVSO004GKU7hpJ8QoMMIfDjc8w0PCKnM=;
-        b=oKVv4ayJgW2PvkZ8DH5LRX5QSvXS5x8tx1HRGoDncAG9KZWHUnntBiNdlLlqFP2UnM
-         W1FbPpcebOmcJBNezUPzlK4kd7MEm5bBJemHuSBmAuOy15g4ZgHTvoAVinW0vfUtzNOJ
-         NbIiAfDLZ3o9KAU4gp5zJ8R2tnPOQ4Bt7ciiIhxEcW0lxeHA95Vzu2cvw6zK9WTww3A3
-         afZBXbmV4R8aS73ZUOQRRvGvdotJKWcHmVL+70/NACqCii+WcVz8XOWrUXYlR8Sx6q3/
-         xoktbyqWs/Vkp8y8XfflhstdZAt1LrGzgotoJNpCDSdQrDVVilpq4sBC9SY/hlZOpTKL
-         SLfg==
-X-Gm-Message-State: AOAM533BA1pdoO1NTU2WLUtkzxnNRU0uqj/UPCEWt6QaOVWWGJnWq1CV
-        3JznA7+tvFjI8qDrnpPO4gyswQ==
-X-Google-Smtp-Source: ABdhPJxDZ+BuKJiCG0sZKWczddG9C3UIutACSFY4Hx7YZtUKC/QzhN4wAqt+TGRR7o18zsEb/J8KrQ==
-X-Received: by 2002:a5d:534b:: with SMTP id t11mr10371897wrv.186.1615494752029;
-        Thu, 11 Mar 2021 12:32:32 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=a5tvKFNf4Lr8x9N8CjdQWU4WGFckJjYxDYQWdAtCXUY=;
+        b=VMvm6jUQtSZxddHCmCjkSG9jW9nnTNFyX19a3LyDCiiPWZ34lWc0P4hGG1KNTALtrP
+         OXBuOptqbt8zCRtFsSU00tMzqtA6b9FjK9Y39otIlD8xTPInMq9R89VInYSLkf6PIcGC
+         f5E5n/T7ZkqRr14WbEssw5DKPTgxd0+CgdFmkmYA4lZTzj+0hGd6pUAHEFI9nlNZnqSY
+         8BnyWTafB0wnRvFyetWdoVZJtuHIIX4lGOVXN9lsqtNmXD319iXi6wYUxR7HNqr6I0cC
+         Nlcjw+Zj9RpWn3ejRBxtXTO/u8ITZlJI3UZXHq1V+Pgs8r0YxEML5G5Cm4y/fF+Ee9Js
+         pc1w==
+X-Gm-Message-State: AOAM531sipS6sdLMzk5zJKr/tvzP2QTnVmFQft55mto2bXYOO+dHQ/sQ
+        prVPEYhMn1/yEWzXWi9SCfMclA==
+X-Google-Smtp-Source: ABdhPJx7uAp0QAsAQOPbxqREhazjPv/GBUYHuM04CnuvoQzjaK8KDaU3hbflJf29Ws0QkOF5l+mdzQ==
+X-Received: by 2002:a05:600c:2204:: with SMTP id z4mr10244125wml.31.1615494753390;
+        Thu, 11 Mar 2021 12:32:33 -0800 (PST)
 Received: from localhost.localdomain ([2a01:e0a:82c:5f0:f986:9cd7:bf3d:f6cb])
-        by smtp.gmail.com with ESMTPSA id h22sm5901077wmb.36.2021.03.11.12.32.30
+        by smtp.gmail.com with ESMTPSA id h22sm5901077wmb.36.2021.03.11.12.32.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Mar 2021 12:32:31 -0800 (PST)
+        Thu, 11 Mar 2021 12:32:32 -0800 (PST)
 From:   Loic Poulain <loic.poulain@linaro.org>
 To:     kuba@kernel.org, davem@davemloft.net, gregkh@linuxfoundation.org
 Cc:     linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
@@ -52,582 +53,588 @@ Cc:     linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
         bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
         hemantk@codeaurora.org, jhugo@codeaurora.org,
         rdunlap@infradead.org, Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH net-next v5 1/2] net: Add a WWAN subsystem
-Date:   Thu, 11 Mar 2021 21:41:03 +0100
-Message-Id: <1615495264-6816-1-git-send-email-loic.poulain@linaro.org>
+Subject: [PATCH net-next v5 2/2] net: Add Qcom WWAN control driver
+Date:   Thu, 11 Mar 2021 21:41:04 +0100
+Message-Id: <1615495264-6816-2-git-send-email-loic.poulain@linaro.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1615495264-6816-1-git-send-email-loic.poulain@linaro.org>
+References: <1615495264-6816-1-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change introduces initial support for a WWAN subsystem. Given the
-complexity and heterogeneity of existing WWAN hardwares and interfaces,
-there is no strict definition of what a WWAN device is and how it should
-be represented. It's often a collection of multiple components/devices
-that perform the global WWAN feature (netdev, tty, chardev, etc).
+The MHI WWWAN control driver allows MHI QCOM-based modems to expose
+different modem control protocols/ports to userspace, so that userspace
+modem tools or daemon (e.g. ModemManager) can control WWAN config
+and state (APN config, SMS, provider selection...). A QCOM-based
+modem can expose one or several of the following protocols:
+- AT: Well known AT commands interactive protocol (microcom, minicom...)
+- MBIM: Mobile Broadband Interface Model (libmbim, mbimcli)
+- QMI: QCOM MSM/Modem Interface (libqmi, qmicli)
+- QCDM: QCOM Modem diagnostic interface (libqcdm)
+- FIREHOSE: XML-based protocol for Modem firmware management
+        (qmi-firmware-update)
 
-One usual way to expose modem controls and configuration is via high
-level protocols such as the well known AT command protocol, MBIM or
-QMI. The USB modems started to expose that as character devices, and
-user daemons such as ModemManager learnt how to deal with that. This
-initial version adds the concept of WWAN port, which can be registered
-by any driver to expose one of these protocols. The WWAN core takes
-care of the generic part, including character device creation and lets
-the driver implementing access (fops) to the selected protocol.
+The different interfaces are exposed as character devices through the
+WWAN subsystem, in the same way as for USB modem variants.
 
-Since the different components/devices do no necesserarly know about
-each others, and can be created/removed in different orders, the
-WWAN core ensures that devices being part of the same hardware are
-also represented as a unique WWAN device, relying on the provided
-parent device (e.g. mhi controller, USB device). It's a 'trick' I
-copied from Johannes's earlier WWAN subsystem proposal.
-
-This initial version is purposely minimalist, it's essentially moving
-the generic part of the previously proposed mhi_wwan_ctrl driver inside
-a common WWAN framework, but the implementation is open and flexible
-enough to allow extension for further drivers.
+Note that this patch is mostly a rework of the earlier MHI UCI
+tentative that was a generic interface for accessing MHI bus from
+userspace. As suggested, this new version is WWAN specific and is
+dedicated to only expose channels used for controlling a modem, and
+for which related opensource user support exist. Other MHI channels
+not fitting the requirements will request either to be plugged to
+the right Linux subsystem (when available) or to be discussed as a
+new MHI driver (e.g AI accelerator, WiFi debug channels, etc...).
 
 Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
- v2: not part of the series
- v3: not part of the series
- v4: Introduce WWAN framework/subsystem
- v5: Specify WWAN_CORE module name in Kconfig
+ v2: update copyright (2021)
+ v3: Move driver to dedicated drivers/net/wwan directory
+ v4: Rework to use wwan framework instead of self cdev management
+ v5: Fix errors/typos in Kconfig
 
- drivers/net/Kconfig          |   2 +
- drivers/net/Makefile         |   1 +
- drivers/net/wwan/Kconfig     |  22 +++++++
- drivers/net/wwan/Makefile    |   8 +++
- drivers/net/wwan/wwan_core.c | 150 +++++++++++++++++++++++++++++++++++++++++++
- drivers/net/wwan/wwan_core.h |  20 ++++++
- drivers/net/wwan/wwan_port.c | 136 +++++++++++++++++++++++++++++++++++++++
- include/linux/wwan.h         | 121 ++++++++++++++++++++++++++++++++++
- 8 files changed, 460 insertions(+)
- create mode 100644 drivers/net/wwan/Kconfig
- create mode 100644 drivers/net/wwan/Makefile
- create mode 100644 drivers/net/wwan/wwan_core.c
- create mode 100644 drivers/net/wwan/wwan_core.h
- create mode 100644 drivers/net/wwan/wwan_port.c
- create mode 100644 include/linux/wwan.h
+ drivers/net/wwan/Kconfig         |  14 ++
+ drivers/net/wwan/Makefile        |   1 +
+ drivers/net/wwan/mhi_wwan_ctrl.c | 497 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 512 insertions(+)
+ create mode 100644 drivers/net/wwan/mhi_wwan_ctrl.c
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 260f9f4..ec00f92 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -500,6 +500,8 @@ source "drivers/net/wan/Kconfig"
- 
- source "drivers/net/ieee802154/Kconfig"
- 
-+source "drivers/net/wwan/Kconfig"
-+
- config XEN_NETDEV_FRONTEND
- 	tristate "Xen network device frontend driver"
- 	depends on XEN
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index f4990ff..5da6424 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -68,6 +68,7 @@ obj-$(CONFIG_SUNGEM_PHY) += sungem_phy.o
- obj-$(CONFIG_WAN) += wan/
- obj-$(CONFIG_WLAN) += wireless/
- obj-$(CONFIG_IEEE802154) += ieee802154/
-+obj-$(CONFIG_WWAN) += wwan/
- 
- obj-$(CONFIG_VMXNET3) += vmxnet3/
- obj-$(CONFIG_XEN_NETDEV_FRONTEND) += xen-netfront.o
 diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-new file mode 100644
-index 0000000..545fe54
---- /dev/null
+index 545fe54..ce0bbfb 100644
+--- a/drivers/net/wwan/Kconfig
 +++ b/drivers/net/wwan/Kconfig
-@@ -0,0 +1,22 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Wireless WAN device configuration
-+#
-+
-+menuconfig WWAN
-+	bool "Wireless WAN"
+@@ -19,4 +19,18 @@ config WWAN_CORE
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called wwan.
+ 
++config MHI_WWAN_CTRL
++	tristate "MHI WWAN control driver for QCOM-based PCIe modems"
++	select WWAN_CORE
++	depends on MHI_BUS
 +	help
-+	  This section contains Wireless WAN driver configurations.
-+
-+if WWAN
-+
-+config WWAN_CORE
-+	tristate "WWAN Driver Core"
-+	help
-+	  Say Y here if you want to use the WWAN driver core. This driver
-+	  provides a common framework for WWAN drivers.
++	  MHI WWAN CTRL allows QCOM-based PCIe modems to expose different modem
++	  control protocols/ports to userspace, including AT, MBIM, QMI, DIAG
++	  and FIREHOSE. These protocols can be accessed directly from userspace
++	  (e.g. AT commands) or via libraries/tools (e.g. libmbim, libqmi,
++	  libqcdm...).
 +
 +	  To compile this driver as a module, choose M here: the module will be
-+	  called wwan.
++	  called mhi_wwan_ctrl
 +
-+endif # WWAN
+ endif # WWAN
 diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
-new file mode 100644
-index 0000000..ca8bb5a
---- /dev/null
+index ca8bb5a..e18ecda 100644
+--- a/drivers/net/wwan/Makefile
 +++ b/drivers/net/wwan/Makefile
-@@ -0,0 +1,8 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Linux WWAN device drivers.
-+#
-+
-+obj-$(CONFIG_WWAN_CORE) += wwan.o
-+wwan-objs += wwan_core.o wwan_port.o
-+
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+@@ -6,3 +6,4 @@
+ obj-$(CONFIG_WWAN_CORE) += wwan.o
+ wwan-objs += wwan_core.o wwan_port.o
+ 
++obj-$(CONFIG_MHI_WWAN_CTRL) += mhi_wwan_ctrl.o
+diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
 new file mode 100644
-index 0000000..42ba6c0
+index 0000000..abda4b0
 --- /dev/null
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -0,0 +1,150 @@
++++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+@@ -0,0 +1,497 @@
 +// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
++/* Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.*/
 +
-+#include <linux/err.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/fs.h>
-+#include <linux/idr.h>
 +#include <linux/kernel.h>
++#include <linux/mhi.h>
++#include <linux/mod_devicetable.h>
 +#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/wwan.h>
++#include <linux/poll.h>
 +
 +#include "wwan_core.h"
 +
-+static LIST_HEAD(wwan_list);	/* list of registered wwan devices */
-+static DEFINE_IDA(wwan_ida);
-+static DEFINE_MUTEX(wwan_global_lock);
-+struct class *wwan_class;
++#define MHI_WWAN_CTRL_DRIVER_NAME "mhi_wwan_ctrl"
++#define MHI_WWAN_CTRL_MAX_MINORS 128
++#define MHI_WWAN_MAX_MTU 0x8000
 +
-+static struct wwan_device *__wwan_find_by_parent(struct device *parent)
-+{
-+	struct wwan_device *wwandev;
++/* MHI wwan device flags */
++#define MHI_WWAN_DL_CAP		BIT(0)
++#define MHI_WWAN_UL_CAP		BIT(1)
++#define MHI_WWAN_CONNECTED	BIT(2)
 +
-+	if (!parent)
-+		return NULL;
-+
-+	list_for_each_entry(wwandev, &wwan_list, list) {
-+		if (wwandev->dev.parent == parent)
-+			return wwandev;
-+	}
-+
-+	return NULL;
-+}
-+
-+static void wwan_dev_release(struct device *dev)
-+{
-+	struct wwan_device *wwandev = to_wwan_dev(dev);
-+
-+	kfree(wwandev);
-+}
-+
-+static const struct device_type wwan_type = {
-+	.name    = "wwan",
-+	.release = wwan_dev_release,
++struct mhi_wwan_buf {
++	struct list_head node;
++	void *data;
++	size_t len;
++	size_t consumed;
 +};
 +
-+struct wwan_device *wwan_create_dev(struct device *parent)
++struct mhi_wwan_dev {
++	unsigned int minor;
++	size_t mtu;
++
++	/* Lower level is a mhi dev, upper level is wwan port/device */
++	struct mhi_device *mhi_dev;
++	struct wwan_device *wwan_dev;
++	struct wwan_port wwan_port;
++
++	/* Protect against concurrent MHI device accesses (start, stop, open, close) */
++	struct mutex mhi_dev_lock;
++	unsigned int mhi_dev_open_count;
++
++	wait_queue_head_t ul_wq;
++	wait_queue_head_t dl_wq;
++
++	/* Protect download buf queue against concurent update (read/xfer_cb) */
++	spinlock_t dl_queue_lock;
++	struct list_head dl_queue;
++
++	/* For serializing write/queueing to a same MHI channel */
++	struct mutex write_lock;
++
++	unsigned long flags;
++
++	/* kref is used to safely track and release a mhi_wwan_dev instance,
++	 * shared between mhi device probe/remove and user open/close.
++	 */
++	struct kref ref_count;
++};
++
++static void mhi_wwan_ctrl_dev_release(struct kref *ref)
 +{
-+	struct wwan_device *wwandev;
-+	int err, id;
++	struct mhi_wwan_dev *mhiwwan = container_of(ref, struct mhi_wwan_dev, ref_count);
++	struct mhi_wwan_buf *buf_itr, *tmp;
 +
-+	mutex_lock(&wwan_global_lock);
-+
-+	wwandev = __wwan_find_by_parent(parent);
-+	if (wwandev) {
-+		get_device(&wwandev->dev);
-+		wwandev->usage++;
-+		goto done_unlock;
++	/* Release non consumed buffers */
++	list_for_each_entry_safe(buf_itr, tmp, &mhiwwan->dl_queue, node) {
++		list_del(&buf_itr->node);
++		kfree(buf_itr->data);
 +	}
 +
-+	id = ida_alloc(&wwan_ida, GFP_KERNEL);
-+	if (id < 0)
-+		goto done_unlock;
++	mutex_destroy(&mhiwwan->mhi_dev_lock);
++	mutex_destroy(&mhiwwan->write_lock);
 +
-+	wwandev = kzalloc(sizeof(*wwandev), GFP_KERNEL);
-+	if (!wwandev) {
-+		ida_free(&wwan_ida, id);
-+		goto done_unlock;
-+	}
-+
-+	wwandev->dev.parent = parent;
-+	wwandev->dev.class = wwan_class;
-+	wwandev->dev.type = &wwan_type;
-+	wwandev->id = id;
-+	dev_set_name(&wwandev->dev, "wwan%d", wwandev->id);
-+	wwandev->usage = 1;
-+	INIT_LIST_HEAD(&wwandev->ports);
-+
-+	err = device_register(&wwandev->dev);
-+	if (err) {
-+		put_device(&wwandev->dev);
-+		ida_free(&wwan_ida, id);
-+		wwandev = NULL;
-+		goto done_unlock;
-+	}
-+
-+	list_add_tail(&wwandev->list, &wwan_list);
-+
-+done_unlock:
-+	mutex_unlock(&wwan_global_lock);
-+
-+	return wwandev;
++	kfree(mhiwwan);
 +}
-+EXPORT_SYMBOL_GPL(wwan_create_dev);
 +
-+void wwan_destroy_dev(struct wwan_device *wwandev)
++static int mhi_wwan_ctrl_queue_inbound(struct mhi_wwan_dev *mhiwwan)
 +{
-+	mutex_lock(&wwan_global_lock);
-+	wwandev->usage--;
++	struct mhi_device *mhi_dev = mhiwwan->mhi_dev;
++	struct device *dev = &mhi_dev->dev;
++	int nr_desc, i, ret = -EIO;
++	struct mhi_wwan_buf *ubuf;
++	void *buf;
 +
-+	if (wwandev->usage)
-+		goto done_unlock;
++	/* skip queuing without error if dl channel is not supported. This
++	 * allows open to succeed for udev, supporting ul only channel.
++	 */
++	if (!mhiwwan->mhi_dev->dl_chan)
++		return 0;
 +
-+	/* Someone destroyed the wwan device without removing ports */
-+	WARN_ON(!list_empty(&wwandev->ports));
++	nr_desc = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
 +
-+	list_del(&wwandev->list);
-+	device_unregister(&wwandev->dev);
-+	ida_free(&wwan_ida, wwandev->id);
-+	put_device(&wwandev->dev);
++	for (i = 0; i < nr_desc; i++) {
++		buf = kmalloc(mhiwwan->mtu + sizeof(*ubuf), GFP_KERNEL);
++		if (!buf)
++			return -ENOMEM;
 +
-+done_unlock:
-+	mutex_unlock(&wwan_global_lock);
++		/* save mhi_wwan_buf info at the end of buf */
++		ubuf = buf + mhiwwan->mtu;
++		ubuf->data = buf;
++
++		ret = mhi_queue_buf(mhi_dev, DMA_FROM_DEVICE, buf, mhiwwan->mtu, MHI_EOT);
++		if (ret) {
++			kfree(buf);
++			dev_err(dev, "Failed to queue buffer %d\n", i);
++			return ret;
++		}
++	}
++
++	return ret;
 +}
-+EXPORT_SYMBOL_GPL(wwan_destroy_dev);
 +
-+static int __init wwan_init(void)
++static int mhi_wwan_ctrl_open(struct inode *inode, struct file *filp)
 +{
-+	int err;
++	struct mhi_wwan_dev *mhiwwan = filp->private_data;
++	int ret = 0;
 +
-+	wwan_class = class_create(THIS_MODULE, "wwan");
-+	if (IS_ERR(wwan_class))
-+		return PTR_ERR(wwan_class);
++	kref_get(&mhiwwan->ref_count);
 +
-+	err = wwan_port_init();
-+	if (err)
-+		goto err_class_destroy;
++	/* Start MHI channel(s) if not yet started and fill RX queue */
++	mutex_lock(&mhiwwan->mhi_dev_lock);
++	if (!mhiwwan->mhi_dev_open_count++) {
++		ret = mhi_prepare_for_transfer(mhiwwan->mhi_dev);
++		if (!ret)
++			ret = mhi_wwan_ctrl_queue_inbound(mhiwwan);
++		if (ret)
++			mhiwwan->mhi_dev_open_count--;
++	}
++	mutex_unlock(&mhiwwan->mhi_dev_lock);
++
++	return ret;
++}
++
++static int mhi_wwan_ctrl_release(struct inode *inode, struct file *file)
++{
++	struct mhi_wwan_dev *mhiwwan = file->private_data;
++
++	/* Stop the channels, if not already destroyed */
++	mutex_lock(&mhiwwan->mhi_dev_lock);
++	if (!(--mhiwwan->mhi_dev_open_count) && mhiwwan->mhi_dev)
++		mhi_unprepare_from_transfer(mhiwwan->mhi_dev);
++	mutex_unlock(&mhiwwan->mhi_dev_lock);
++
++	kref_put(&mhiwwan->ref_count, mhi_wwan_ctrl_dev_release);
 +
 +	return 0;
-+
-+err_class_destroy:
-+	class_destroy(wwan_class);
-+	return err;
 +}
 +
-+static void __exit wwan_exit(void)
++static __poll_t mhi_wwan_ctrl_poll(struct file *file, poll_table *wait)
 +{
-+	wwan_port_deinit();
-+	class_destroy(wwan_class);
++	struct mhi_wwan_dev *mhiwwan = file->private_data;
++	__poll_t mask = 0;
++
++	poll_wait(file, &mhiwwan->ul_wq, wait);
++	poll_wait(file, &mhiwwan->dl_wq, wait);
++
++	/* Any buffer in the DL queue ? */
++	spin_lock_bh(&mhiwwan->dl_queue_lock);
++	if (!list_empty(&mhiwwan->dl_queue))
++		mask |= EPOLLIN | EPOLLRDNORM;
++	spin_unlock_bh(&mhiwwan->dl_queue_lock);
++
++	/* If MHI queue is not full, write is possible */
++	mutex_lock(&mhiwwan->mhi_dev_lock);
++	if (!mhiwwan->mhi_dev)
++		mask = EPOLLERR | EPOLLHUP;
++	else if (!mhi_queue_is_full(mhiwwan->mhi_dev, DMA_TO_DEVICE))
++		mask |= EPOLLOUT | EPOLLWRNORM;
++	mutex_unlock(&mhiwwan->mhi_dev_lock);
++
++	return mask;
 +}
 +
-+//subsys_initcall(wwan_init);
-+module_init(wwan_init);
-+module_exit(wwan_exit);
-+
-+MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
-+MODULE_DESCRIPTION("WWAN core");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/net/wwan/wwan_core.h b/drivers/net/wwan/wwan_core.h
-new file mode 100644
-index 0000000..21d187a
---- /dev/null
-+++ b/drivers/net/wwan/wwan_core.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-+
-+#ifndef __WWAN_CORE_H
-+#define __WWAN_CORE_H
-+
-+#include <linux/device.h>
-+#include <linux/wwan.h>
-+
-+#define to_wwan_dev(d) container_of(d, struct wwan_device, dev)
-+
-+struct wwan_device *wwan_create_dev(struct device *parent);
-+void wwan_destroy_dev(struct wwan_device *wwandev);
-+
-+int wwan_port_init(void);
-+void wwan_port_deinit(void);
-+
-+extern struct class *wwan_class;
-+
-+#endif /* WWAN_CORE_H */
-diff --git a/drivers/net/wwan/wwan_port.c b/drivers/net/wwan/wwan_port.c
-new file mode 100644
-index 0000000..b32da8f
---- /dev/null
-+++ b/drivers/net/wwan/wwan_port.c
-@@ -0,0 +1,136 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-+
-+#include <linux/err.h>
-+#include <linux/errno.h>
-+#include <linux/fs.h>
-+#include <linux/idr.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/wwan.h>
-+
-+#include "wwan_core.h"
-+
-+#define WWAN_MAX_MINORS 32
-+
-+static int wwan_major;
-+static DEFINE_IDR(wwan_port_idr);
-+static DEFINE_MUTEX(wwan_port_idr_lock);
-+
-+static const char * const wwan_port_type_str[] = {
-+	"AT",
-+	"MBIM",
-+	"QMI",
-+	"QCDM",
-+	"FIREHOSE"
-+};
-+
-+int wwan_add_port(struct wwan_port *port)
++static ssize_t mhi_wwan_ctrl_write(struct file *file, const char __user *buf,
++				   size_t count, loff_t *offp)
 +{
-+	struct wwan_device *wwandev = port->wwandev;
-+	struct device *dev;
-+	int minor, err;
++	struct mhi_wwan_dev *mhiwwan = file->private_data;
++	size_t bytes_xfered = 0;
++	void *kbuf = NULL;
++	int ret;
 +
-+	if (port->type >= WWAN_PORT_MAX || !port->fops || !wwandev)
++	if (!test_bit(MHI_WWAN_UL_CAP, &mhiwwan->flags))
++		return -EOPNOTSUPP;
++
++	if (!buf || !count)
 +		return -EINVAL;
 +
-+	mutex_lock(&wwan_port_idr_lock);
-+	minor = idr_alloc(&wwan_port_idr, port, 0, WWAN_MAX_MINORS, GFP_KERNEL);
-+	mutex_unlock(&wwan_port_idr_lock);
++	/* Serialize MHI queueing */
++	if (mutex_lock_interruptible(&mhiwwan->write_lock))
++		return -EINTR;
 +
-+	if (minor < 0)
-+		return minor;
++	while (count) {
++		size_t xfer_size;
 +
-+	mutex_lock(&wwandev->lock);
++		/* Wait for available transfer descriptor */
++		ret = wait_event_interruptible(mhiwwan->ul_wq,
++				!test_bit(MHI_WWAN_CONNECTED, &mhiwwan->flags) ||
++				!mhi_queue_is_full(mhiwwan->mhi_dev, DMA_TO_DEVICE));
++		if (ret)
++			break;
 +
-+	dev = device_create(wwan_class, &wwandev->dev,
-+			    MKDEV(wwan_major, minor), port,
-+			    "wwan%dp%u%s", wwandev->id, wwandev->port_idx,
-+			    wwan_port_type_str[port->type]);
-+	if (IS_ERR(dev)) {
-+		err = PTR_ERR(dev);
-+		mutex_unlock(&wwandev->lock);
-+		goto error_free_idr;
++		if (!test_bit(MHI_WWAN_CONNECTED, &mhiwwan->flags)) {
++			ret = -EPIPE;
++			break;
++		}
++
++		xfer_size = min_t(size_t, count, mhiwwan->mtu);
++		kbuf = kmalloc(xfer_size, GFP_KERNEL);
++		if (!kbuf) {
++			ret = -ENOMEM;
++			break;
++		}
++
++		ret = copy_from_user(kbuf, buf, xfer_size);
++		if (ret)
++			break;
++
++		/* Add buffer to MHI queue */
++		ret = mhi_queue_buf(mhiwwan->mhi_dev, DMA_TO_DEVICE, kbuf,
++				    xfer_size, MHI_EOT);
++		if (ret)
++			break;
++
++		bytes_xfered += xfer_size;
++		count -= xfer_size;
++		buf += xfer_size;
++		kbuf = NULL;
 +	}
 +
-+	port->id = wwandev->port_idx++;
-+	port->minor = minor;
++	mutex_unlock(&mhiwwan->write_lock);
 +
-+	list_add(&port->list, &wwandev->ports);
++	kfree(kbuf);
 +
-+	mutex_unlock(&port->wwandev->lock);
++	return ret ? ret : bytes_xfered;
++}
++
++static int mhi_wwan_ctrl_recycle_ubuf(struct mhi_wwan_dev *mhiwwan,
++				      struct mhi_wwan_buf *ubuf)
++{
++	int ret;
++
++	mutex_lock(&mhiwwan->mhi_dev_lock);
++
++	if (!mhiwwan->mhi_dev) {
++		ret = -ENODEV;
++		goto exit_unlock;
++	}
++
++	ret = mhi_queue_buf(mhiwwan->mhi_dev, DMA_FROM_DEVICE, ubuf->data,
++			    mhiwwan->mtu, MHI_EOT);
++
++exit_unlock:
++	mutex_unlock(&mhiwwan->mhi_dev_lock);
++
++	return ret;
++}
++
++static ssize_t mhi_wwan_ctrl_read(struct file *file, char __user *buf,
++				  size_t count, loff_t *ppos)
++{
++	struct mhi_wwan_dev *mhiwwan = file->private_data;
++	bool recycle_buf = false;
++	struct mhi_wwan_buf *ubuf;
++	size_t copy_len;
++	char *copy_ptr;
++	int ret = 0;
++
++	if (!test_bit(MHI_WWAN_DL_CAP, &mhiwwan->flags))
++		return -EOPNOTSUPP;
++
++	if (!buf)
++		return -EINVAL;
++
++	spin_lock_irq(&mhiwwan->dl_queue_lock);
++
++	/* Wait for at least one buffer in the dl queue (or device removal) */
++	ret = wait_event_interruptible_lock_irq(mhiwwan->dl_wq,
++				!list_empty(&mhiwwan->dl_queue) ||
++				!test_bit(MHI_WWAN_CONNECTED, &mhiwwan->flags),
++				mhiwwan->dl_queue_lock);
++	if (ret) {
++		goto err_unlock;
++	} else if (!test_bit(MHI_WWAN_CONNECTED, &mhiwwan->flags)) {
++		ret = -EPIPE;
++		goto err_unlock;
++	}
++
++	ubuf = list_first_entry_or_null(&mhiwwan->dl_queue, struct mhi_wwan_buf, node);
++	if (!ubuf) {
++		ret = -EIO;
++		goto err_unlock;
++	}
++
++	/* Consume the buffer */
++	copy_len = min_t(size_t, count, ubuf->len - ubuf->consumed);
++	copy_ptr = ubuf->data + ubuf->consumed;
++	ubuf->consumed += copy_len;
++
++	/* Remove buffer from the DL queue if entirely consumed */
++	if (ubuf->consumed == ubuf->len) {
++		list_del(&ubuf->node);
++		recycle_buf = true;
++	}
++
++	spin_unlock_irq(&mhiwwan->dl_queue_lock);
++
++	ret = copy_to_user(buf, copy_ptr, copy_len);
++	if (ret)
++		return -EFAULT;
++
++	if (recycle_buf) {
++		/* Give the buffer back to MHI queue */
++		ret = mhi_wwan_ctrl_recycle_ubuf(mhiwwan, ubuf);
++		if (ret) /* unable to recycle, release */
++			kfree(ubuf->data);
++	}
++
++	return copy_len;
++
++err_unlock:
++	spin_unlock_irq(&mhiwwan->dl_queue_lock);
++
++	return ret;
++}
++
++static const struct file_operations mhidev_fops = {
++	.owner = THIS_MODULE,
++	.open = mhi_wwan_ctrl_open,
++	.release = mhi_wwan_ctrl_release,
++	.read = mhi_wwan_ctrl_read,
++	.write = mhi_wwan_ctrl_write,
++	.poll = mhi_wwan_ctrl_poll,
++};
++
++static void mhi_ul_xfer_cb(struct mhi_device *mhi_dev,
++			   struct mhi_result *mhi_result)
++{
++	struct mhi_wwan_dev *mhiwwan = dev_get_drvdata(&mhi_dev->dev);
++	struct device *dev = &mhi_dev->dev;
++
++	dev_dbg(dev, "%s: status: %d xfer_len: %zu\n", __func__,
++		mhi_result->transaction_status, mhi_result->bytes_xferd);
++
++	kfree(mhi_result->buf_addr);
++
++	/* Some space available in the 'upload' queue, advertise that */
++	if (!mhi_result->transaction_status)
++		wake_up_interruptible(&mhiwwan->ul_wq);
++}
++
++static void mhi_dl_xfer_cb(struct mhi_device *mhi_dev,
++			   struct mhi_result *mhi_result)
++{
++	struct mhi_wwan_dev *mhiwwan = dev_get_drvdata(&mhi_dev->dev);
++	struct mhi_wwan_buf *ubuf;
++
++	dev_dbg(&mhi_dev->dev, "%s: status: %d receive_len: %zu\n", __func__,
++		mhi_result->transaction_status, mhi_result->bytes_xferd);
++
++	if (mhi_result->transaction_status &&
++	    mhi_result->transaction_status != -EOVERFLOW) {
++		kfree(mhi_result->buf_addr);
++		return;
++	}
++
++	/* ubuf is placed at the end of the buffer (cf mhi_wwan_ctrl_queue_inbound) */
++	ubuf = mhi_result->buf_addr + mhiwwan->mtu;
++
++	/* paranoia, should never happen */
++	if (WARN_ON(mhi_result->buf_addr != ubuf->data)) {
++		kfree(mhi_result->buf_addr);
++		return;
++	}
++
++	ubuf->data = mhi_result->buf_addr;
++	ubuf->len = mhi_result->bytes_xferd;
++	ubuf->consumed = 0;
++
++	spin_lock_bh(&mhiwwan->dl_queue_lock);
++	list_add_tail(&ubuf->node, &mhiwwan->dl_queue);
++	spin_unlock_bh(&mhiwwan->dl_queue_lock);
++
++	wake_up_interruptible(&mhiwwan->dl_wq);
++}
++
++static int mhi_wwan_ctrl_probe(struct mhi_device *mhi_dev,
++			       const struct mhi_device_id *id)
++{
++	struct mhi_controller *cntrl = mhi_dev->mhi_cntrl;
++	struct mhi_wwan_dev *mhiwwan;
++	struct wwan_device *wwan_dev;
++	int err;
++
++	/* Create mhi_wwan data context */
++	mhiwwan = kzalloc(sizeof(*mhiwwan), GFP_KERNEL);
++	if (!mhiwwan)
++		return -ENOMEM;
++
++	/* Create a WWAN device, use mhi controller as parent device which
++	 * represent the modem instance.
++	 */
++	wwan_dev = wwan_create_dev(&cntrl->mhi_dev->dev);
++	if (!wwan_dev) {
++		err = -ENOMEM;
++		goto err_free_mhiwwan;
++	}
++
++	/* Init mhi_wwan data */
++	kref_init(&mhiwwan->ref_count);
++	mutex_init(&mhiwwan->mhi_dev_lock);
++	mutex_init(&mhiwwan->write_lock);
++	init_waitqueue_head(&mhiwwan->ul_wq);
++	init_waitqueue_head(&mhiwwan->dl_wq);
++	spin_lock_init(&mhiwwan->dl_queue_lock);
++	INIT_LIST_HEAD(&mhiwwan->dl_queue);
++	mhiwwan->mhi_dev = mhi_dev;
++	mhiwwan->wwan_dev = wwan_dev;
++	mhiwwan->mtu = MHI_WWAN_MAX_MTU;
++	set_bit(MHI_WWAN_CONNECTED, &mhiwwan->flags);
++
++	if (mhi_dev->dl_chan)
++		set_bit(MHI_WWAN_DL_CAP, &mhiwwan->flags);
++	if (mhi_dev->ul_chan)
++		set_bit(MHI_WWAN_UL_CAP, &mhiwwan->flags);
++
++	dev_set_drvdata(&mhi_dev->dev, mhiwwan);
++
++	/* Register as cdev port */
++	mhiwwan->wwan_port.wwandev = wwan_dev;
++	mhiwwan->wwan_port.fops = &mhidev_fops;
++	mhiwwan->wwan_port.type = id->driver_data;
++	mhiwwan->wwan_port.private_data = mhiwwan;
++	err = wwan_add_port(&mhiwwan->wwan_port);
++	if (err)
++		goto err_destroy_wwan;
 +
 +	return 0;
 +
-+error_free_idr:
-+	mutex_lock(&wwan_port_idr_lock);
-+	idr_remove(&wwan_port_idr, minor);
-+	mutex_unlock(&wwan_port_idr_lock);
++err_destroy_wwan:
++	wwan_destroy_dev(wwan_dev);
++err_free_mhiwwan:
++	kfree(mhiwwan);
++	dev_set_drvdata(&mhi_dev->dev, NULL);
 +
 +	return err;
-+}
-+EXPORT_SYMBOL_GPL(wwan_add_port);
-+
-+void wwan_remove_port(struct wwan_port *port)
-+{
-+	struct wwan_device *wwandev = port->wwandev;
-+
-+	WARN_ON(!wwandev);
-+
-+	mutex_lock(&wwandev->lock);
-+	device_destroy(wwan_class, MKDEV(wwan_major, port->minor));
-+	list_del(&port->list);
-+	mutex_unlock(&wwandev->lock);
-+
-+	mutex_lock(&wwan_port_idr_lock);
-+	idr_remove(&wwan_port_idr, port->minor);
-+	mutex_unlock(&wwan_port_idr_lock);
-+}
-+EXPORT_SYMBOL_GPL(wwan_remove_port);
-+
-+static int wwan_port_open(struct inode *inode, struct file *file)
-+{
-+	const struct file_operations *new_fops;
-+	unsigned int minor = iminor(inode);
-+	struct wwan_port *port;
-+	int err = 0;
-+
-+	mutex_lock(&wwan_port_idr_lock);
-+	port = idr_find(&wwan_port_idr, minor);
-+	if (!port) {
-+		mutex_unlock(&wwan_port_idr_lock);
-+		return -ENODEV;
-+	}
-+	mutex_unlock(&wwan_port_idr_lock);
-+
-+	file->private_data = port->private_data ? port->private_data : port;
-+	stream_open(inode, file);
-+
-+	new_fops = fops_get(port->fops);
-+	replace_fops(file, new_fops);
-+	if (file->f_op->open)
-+		err = file->f_op->open(inode, file);
-+
-+	return err;
-+}
-+
-+static const struct file_operations wwan_port_fops = {
-+	.owner	= THIS_MODULE,
-+	.open	= wwan_port_open,
-+	.llseek = noop_llseek,
 +};
 +
-+int wwan_port_init(void)
++static void mhi_wwan_ctrl_remove(struct mhi_device *mhi_dev)
 +{
-+	wwan_major = register_chrdev(0, "wwanport", &wwan_port_fops);
-+	if (wwan_major < 0)
-+		return wwan_major;
++	struct mhi_wwan_dev *mhiwwan = dev_get_drvdata(&mhi_dev->dev);
 +
-+	return 0;
++	dev_set_drvdata(&mhi_dev->dev, NULL);
++
++	clear_bit(MHI_WWAN_CONNECTED, &mhiwwan->flags);
++
++	/* remove wwan port and device */
++	wwan_remove_port(&mhiwwan->wwan_port);
++	wwan_destroy_dev(mhiwwan->wwan_dev);
++
++	/* Unlink mhi_dev from mhi_wwan_dev */
++	mutex_lock(&mhiwwan->mhi_dev_lock);
++	mhiwwan->mhi_dev = NULL;
++	mutex_unlock(&mhiwwan->mhi_dev_lock);
++
++	/* wake up any blocked user */
++	wake_up_interruptible(&mhiwwan->dl_wq);
++	wake_up_interruptible(&mhiwwan->ul_wq);
++
++	kref_put(&mhiwwan->ref_count, mhi_wwan_ctrl_dev_release);
 +}
 +
-+void wwan_port_deinit(void)
-+{
-+	unregister_chrdev(wwan_major, "wwanport");
-+	idr_destroy(&wwan_port_idr);
-+}
-diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-new file mode 100644
-index 0000000..6caca5c
---- /dev/null
-+++ b/include/linux/wwan.h
-@@ -0,0 +1,121 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
++static const struct mhi_device_id mhi_wwan_ctrl_match_table[] = {
++	{ .chan = "DUN", .driver_data = WWAN_PORT_AT },
++	{ .chan = "MBIM", .driver_data = WWAN_PORT_MBIM },
++	{ .chan = "QMI", .driver_data = WWAN_PORT_QMI },
++	{ .chan = "DIAG", .driver_data = WWAN_PORT_QCDM },
++	{ .chan = "FIREHOSE", .driver_data = WWAN_PORT_FIREHOSE },
++	{},
++};
++MODULE_DEVICE_TABLE(mhi, mhi_wwan_ctrl_match_table);
 +
-+#ifndef __WWAN_H
-+#define __WWAN_H
-+
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+
-+/**
-+ * struct wwan_device - The structure that defines a WWAN device
-+ *
-+ * @id:		WWAN device unique ID.
-+ * @usage:	WWAN device usage counter.
-+ * @dev:	underlying device.
-+ * @list:	list to chain WWAN devices.
-+ * @ports:	list of attached wwan_port.
-+ * @port_idx:	port index counter.
-+ * @lock:	mutex protecting members of this structure.
-+ */
-+struct wwan_device {
-+	int id;
-+	unsigned int usage;
-+
-+	struct device dev;
-+	struct list_head list;
-+
-+	struct list_head ports;
-+	unsigned int port_idx;
-+
-+	struct mutex lock;
++static struct mhi_driver mhi_wwan_ctrl_driver = {
++	.id_table = mhi_wwan_ctrl_match_table,
++	.remove = mhi_wwan_ctrl_remove,
++	.probe = mhi_wwan_ctrl_probe,
++	.ul_xfer_cb = mhi_ul_xfer_cb,
++	.dl_xfer_cb = mhi_dl_xfer_cb,
++	.driver = {
++		.name = MHI_WWAN_CTRL_DRIVER_NAME,
++	},
 +};
 +
-+/**
-+ * enum wwan_port_type - WWAN port types
-+ * @WWAN_PORT_AT:	AT commands.
-+ * @WWAN_PORT_MBIM:	Mobile Broadband Interface Model control.
-+ * @WWAN_PORT_QMI:	Qcom modem/MSM interface for modem control.
-+ * @WWAN_PORT_QCDM:	Qcom Modem diagnostic interface.
-+ * @WWAN_PORT_FIREHOSE: XML based command protocol.
-+ * @WWAN_PORT_MAX
-+ */
-+enum wwan_port_type {
-+	WWAN_PORT_AT,
-+	WWAN_PORT_MBIM,
-+	WWAN_PORT_QMI,
-+	WWAN_PORT_QCDM,
-+	WWAN_PORT_FIREHOSE,
-+	WWAN_PORT_MAX,
-+};
++module_mhi_driver(mhi_wwan_ctrl_driver);
 +
-+/**
-+ * struct wwan_port - The structure that defines a WWAN port
-+ *
-+ * @wwandev:		WWAN device this port belongs to.
-+ * @fops:		Port file operations.
-+ * @private_data:	underlying device.
-+ * @type:		port type.
-+ * @id:			port allocated ID.
-+ * @minor:		port allocated minor ID for cdev.
-+ * @list:		list to chain WWAN ports.
-+ */
-+struct wwan_port {
-+	struct wwan_device *wwandev;
-+	const struct file_operations *fops;
-+	void *private_data;
-+	enum wwan_port_type type;
-+
-+	/* private */
-+	unsigned int id;
-+	int minor;
-+	struct list_head list;
-+};
-+
-+#define to_wwan_dev(d) container_of(d, struct wwan_device, dev)
-+
-+/**
-+ * wwan_create_dev - Create a new WWAN device
-+ * @parent: parent device of the WWAN device
-+ *
-+ * If parent is not NULL, WWAN core ensures that only one WWAN device is
-+ * allocated for a given parent. If a WWAN device with the specified parent
-+ * already exists, a reference is taken and the WWAN device is returned.
-+ *
-+ * This function must be balanced with a call to wwan_destroy_dev().
-+ *
-+ * Returns pointer to the wwan_device or NULL.
-+ */
-+struct wwan_device *wwan_create_dev(struct device *parent);
-+
-+/**
-+ * wwan_create_dev - Destroy a WWAN device
-+ * @wwandev: wwan_device to destroy
-+ *
-+ * This releases a previoulsy created WWAN device.
-+ */
-+void wwan_destroy_dev(struct wwan_device *wwandev);
-+
-+/**
-+ * wwan_add_port - Add a new WWAN port
-+ * @port: WWAN port to add
-+ *
-+ * Prior calling this function, caller must allocate and fill the wwan_port
-+ * with wwandev, fops, and type fields. A port is automatically exposed to
-+ * user as character device, and provided file operations will be used.
-+ *
-+ * This function must be balanced with a call to wwan_remove_port().
-+ *
-+ * Returns zero on success or a negative error code.
-+ */
-+int wwan_add_port(struct wwan_port *port);
-+
-+/**
-+ * wwan_remove_port - Remove a WWAN port
-+ * @port: WWAN port to remove
-+ *
-+ * Remove a previously added port.
-+ */
-+void wwan_remove_port(struct wwan_port *port);
-+
-+#endif /* __WWAN_H */
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("MHI WWAN CTRL Driver");
++MODULE_AUTHOR("Hemant Kumar <hemantk@codeaurora.org>");
++MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
 -- 
 2.7.4
 
