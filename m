@@ -2,130 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED3F337519
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 15:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3FB337577
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 15:23:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233678AbhCKOHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 09:07:51 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:39760 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233826AbhCKOHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 09:07:24 -0500
-Received: by mail-il1-f200.google.com with SMTP id v20so15493687ile.6
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 06:07:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=oSSMkoO2iwx+Y3QJBh7Yl6QGzvkcw+HW5CoIi/jlJDo=;
-        b=J7D1xRWZc50Z7nn2tXjRUNJFN3SaiCnJGz1z5H40uDKLwUPV/PtGHMwDNd4CXjU/yT
-         3tDLvBll0qwtc7MZQASOIX89N4xUHsB2lZGUrN93NQgxBJHktxvyU+rOp9knsahNQpoh
-         F4qElpMTNX7rCRUDiJBigF4jurNvs2fS9vKZfkSu6CL9/8yvG2CW+nugBMK1ZTlHl72b
-         bZ1xlTAWR8lIR225gexgcwnnt75ogg5dAIL+/GPpVvwZqCOrHvFPRh1nWfG8niSioPtA
-         7Xzg7Yhmz9aD8xYt+XOAatJxqXDMX9JyJjwUbP1zHWnFmZ24jBZILx3qEReix8BpjHYf
-         FAWA==
-X-Gm-Message-State: AOAM532KLxoXhYIH4ek6YGzcwaCkhdcDjQviRobrZqnf/clZoM1KTUXt
-        5Pog4uS/oh8C2RROxyH3eE+xUsAI1wMnCNSrurmO35HUiDNT
-X-Google-Smtp-Source: ABdhPJzmXgC5fGa8aIKmKXOLrkYQF71/Mz+oI0aHPSljhvDhT5DRbaZ6sFa29XwCgH47zW5XIbrLZ3ouEQNF5ZhgCqeGnwvDZ3xm
+        id S233487AbhCKOXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 09:23:23 -0500
+Received: from mail-mw2nam12on2054.outbound.protection.outlook.com ([40.107.244.54]:44825
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233493AbhCKOXS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 09:23:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mvcFLWYpgddbkhiHIEnuqwl0vHs7hdl5py8HEThNUUFjp2rp99oP3Z+rU6cldnCquCoSFhw0ofQ1jIYzthJebpAbo8FJFjq64kbAPuuJb0+uImQ5QI/ewxRbKQVDBoBFzKefYYtuIqp0/j8nsFgHwtX4QhyJr+27IxrA5/JvToriCYZiWftAkIolamD9jb7svOnLiV94t/QHVBmbsf1vZ9rE+EItdvmcQNECaVEPDeIGn9Zq8FTpPa7wPyJBsHYA4wQ+1nUjquCOTo6HSDZ6E1pUyFGCJPGxN0q2DPP/hm4z7mN84JE4qS+QCSYu06qVwoeUWB4ZRmk3ZXagXrguQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5vi8hvq8ekD5eb2BgjzGdni2M1u7QXvcUm/eeQekWag=;
+ b=e6Tv4kfP2m3FgsL3DafdmVzbFMb4VzpP0ZZOTlaUSvpzzw09Y98PenV/UibYzdUY73RjpFzh3iQks0JEB8tK8jjxM99qz4ID3eQv3FIGiEkRvOp/fk47KflBYpNrLztC4wKbCH7ll/xqRtgwQFwGbadXH7NgQUX8ugXTf78qAQM8TXCIUsQdLELbF54SeqDgyuPavECzOFw8ayhTsIJU1sVT7ExK5K4JJ86qjlevP7t1TspNoqMKolJRfnGpNSRuLrckVyEo9NSP9a5JMC/Cz2IVXLl34w2/7B5hkUQMauwAaTHrPBxbYxlrZvVdvR1c6fnnWKZ3zjyngceyvC7AIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5vi8hvq8ekD5eb2BgjzGdni2M1u7QXvcUm/eeQekWag=;
+ b=qegyuAbnkEJNHOxk9c2wEBJnLutxw9QhXdI1/jSM6PD0zGkQfWZ9iH7bsukig6bMr5yyYV5a/DyWwposNNSvaHHCdrEEhM/xaSrimuUsBu7lXu8LMRdr6uSip+Am1zTZx8+Reus9FjlnC/G3HV7cKlxrCLOCItCB2cqNzV5DgEcp5/SmNbe00UoPqc7t9Rl+/y1vk020kWYUtow89YTW1gPbxdIUnSg6UJu1hg5cAZenUgAqGp18TiDIMGSKdlVnNIwyMNmoLl8UNOmKvOaoEWNhxoPXph6KCROWd6oEHSVfPPg9+wtM5aoNcnTNpGJPHWgS8hGDF0nx3WJOb52v3Q==
+Received: from BN6PR1201CA0005.namprd12.prod.outlook.com
+ (2603:10b6:405:4c::15) by DM5PR12MB1883.namprd12.prod.outlook.com
+ (2603:10b6:3:113::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.19; Thu, 11 Mar
+ 2021 14:23:17 +0000
+Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:4c:cafe::35) by BN6PR1201CA0005.outlook.office365.com
+ (2603:10b6:405:4c::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
+ Transport; Thu, 11 Mar 2021 14:23:16 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
+ header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 14:23:16 +0000
+Received: from [172.27.12.248] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar
+ 2021 14:23:12 +0000
+Subject: Re: [RFC net-next v2 3/3] devlink: add more failure modes
+To:     <f242ed68-d31b-527d-562f-c5a35123861a@intel.com>,
+        <netdev@vger.kernel.org>
+CC:     <jiri@resnulli.us>, <saeedm@nvidia.com>,
+        <andrew.gospodarek@broadcom.com>, <jacob.e.keller@intel.com>,
+        <guglielmo.morandin@broadcom.com>, <eugenem@fb.com>,
+        <eranbe@mellanox.com>, Jakub Kicinski <kuba@kernel.org>,
+        Aya Levin <ayal@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
+References: <20210311032613.1533100-1-kuba@kernel.org>
+ <20210311032613.1533100-3-kuba@kernel.org>
+From:   Eran Ben Elisha <eranbe@nvidia.com>
+Message-ID: <8d61628c-9ca7-13ac-2dcd-97ecc9378a9e@nvidia.com>
+Date:   Thu, 11 Mar 2021 16:23:09 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a6b:590e:: with SMTP id n14mr6439081iob.107.1615471644420;
- Thu, 11 Mar 2021 06:07:24 -0800 (PST)
-Date:   Thu, 11 Mar 2021 06:07:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000082ae5a05bd434d67@google.com>
-Subject: [syzbot] WARNING in netlink_broadcast_filtered
-From:   syzbot <syzbot+e79c128f58297b9148dc@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210311032613.1533100-3-kuba@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b3a698f7-99c6-4de6-89f3-08d8e4993673
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1883:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1883D3C5A4DE4609DCC445C1B7909@DM5PR12MB1883.namprd12.prod.outlook.com>
+X-MS-Exchange-Transport-Forked: True
+X-MS-Oob-TLC-OOBClassifiers: OLM:529;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: c90+GBOJo1q1vsI3Oxc0NsjYLrJ0SQk1hfUphBQw2ISwGFGXpH7NCNNrSRPeEAic0ZAGiVeid5Rn74FFI53Taz786ASASt6DVC6wTdrWLqxzNIF+HZXSOdPsgpZfBjSkmOfXoomS9A/OuIBOSJxRd0NUKBs686f6jOOZfV16ZzM8jCAsoe4y41tROKChmhLBHmDUlHCF59NW7ZsI9RRmDBS5U69oFhHc50xg+ChPzgsXZJqk3ORoIEW4D4g03qC7gHb4/nPyj6Rmsekb9raobaKYMvC7oZ2VZyjiQUeyjyTyly9LMY2XVhFoXjW1/YElriUal378KTeS7cuNHQaf29oTR0ThJzqezx62K+DwVjPLy4z0ar4wH0qS+SEwjXInJZiQm5O1ckWi/x0T/4+RENbHxTFFQVP1oL45CyR1MnV+/gof21Kl23D+bdR7TNrrnAiflz3vKp/joowJMlJI9aaGRvPtZljyQtbuv2VI5UP5YPYg2RH/oVnNF/zWMgI/UQFGR1BS8B3XqEkCK4PLssrlv+GU/AmXYPmiOQ8ANj8/aWlKuUg55bWRQR2jQqWcabyJHuEkxUr7j2whTajot9KXyxjAKsGqsWw5bs9kpAxhtPC9c7GtY3VCaNJ70x6p9OCOErW3Vo7HcQsxJwficCFl2AaVSmjr/QQ1ybhuoKcTesfO9elqDCzCJqzf9B1Wchy3SvKb/etrSFacezdk4b0FDT0Af6TDzNpIv/wNSnc=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(396003)(39860400002)(346002)(36840700001)(46966006)(26005)(70586007)(356005)(16576012)(36906005)(70206006)(316002)(110136005)(54906003)(2616005)(34070700002)(36860700001)(107886003)(36756003)(4326008)(426003)(31686004)(8676002)(336012)(5660300002)(82740400003)(478600001)(2906002)(53546011)(8936002)(186003)(47076005)(16526019)(6666004)(83380400001)(31696002)(86362001)(7636003)(82310400003)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 14:23:16.5966
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3a698f7-99c6-4de6-89f3-08d8e4993673
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1883
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    a74e6a01 Merge tag 's390-5.12-3' of git://git.kernel.org/p..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16f7c83ad00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c7ac5ce2d1160e16
-dashboard link: https://syzkaller.appspot.com/bug?extid=e79c128f58297b9148dc
-userspace arch: arm
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e79c128f58297b9148dc@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 7650 at include/linux/seqlock.h:271 __seqprop_assert include/linux/seqlock.h:271 [inline]
-WARNING: CPU: 0 PID: 7650 at include/linux/seqlock.h:271 __seqprop_assert.constprop.0+0xf0/0x11c include/linux/seqlock.h:269
-Modules linked in:
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 7650 Comm: udevd Not tainted 5.12.0-rc2-syzkaller #0
-Hardware name: ARM-Versatile Express
-Backtrace: 
-[<82107738>] (dump_backtrace) from [<821079ac>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:252)
- r7:00000080 r6:60000093 r5:00000000 r4:83966184
-[<82107994>] (show_stack) from [<82110980>] (__dump_stack lib/dump_stack.c:79 [inline])
-[<82107994>] (show_stack) from [<82110980>] (dump_stack+0xb8/0xe8 lib/dump_stack.c:120)
-[<821108c8>] (dump_stack) from [<82108540>] (panic+0x130/0x378 kernel/panic.c:231)
- r7:8293262c r6:8383dd64 r5:00000000 r4:83b620d0
-[<82108410>] (panic) from [<80244924>] (__warn+0xb0/0x164 kernel/panic.c:605)
- r3:83822c8c r2:00000000 r1:00000000 r0:8293262c
- r7:0000010f
-[<80244874>] (__warn) from [<821087f0>] (warn_slowpath_fmt+0x68/0xd4 kernel/panic.c:628)
- r7:818c4fc8 r6:0000010f r5:8292aac0 r4:00000000
-[<8210878c>] (warn_slowpath_fmt) from [<818c4fc8>] (__seqprop_assert include/linux/seqlock.h:271 [inline])
-[<8210878c>] (warn_slowpath_fmt) from [<818c4fc8>] (__seqprop_assert.constprop.0+0xf0/0x11c include/linux/seqlock.h:269)
- r8:e85fc000 r7:819ab52c r6:00000001 r5:88799e40 r4:00000001
-[<818c4ed8>] (__seqprop_assert.constprop.0) from [<818c7524>] (u64_stats_update_begin include/linux/u64_stats_sync.h:128 [inline])
-[<818c4ed8>] (__seqprop_assert.constprop.0) from [<818c7524>] (__bpf_prog_run_save_cb include/linux/filter.h:727 [inline])
-[<818c4ed8>] (__seqprop_assert.constprop.0) from [<818c7524>] (bpf_prog_run_save_cb include/linux/filter.h:741 [inline])
-[<818c4ed8>] (__seqprop_assert.constprop.0) from [<818c7524>] (sk_filter_trim_cap+0x224/0x434 net/core/filter.c:149)
- r5:88799e40 r4:00000000
-[<818c7300>] (sk_filter_trim_cap) from [<819ab52c>] (sk_filter include/linux/filter.h:867 [inline])
-[<818c7300>] (sk_filter_trim_cap) from [<819ab52c>] (do_one_broadcast net/netlink/af_netlink.c:1468 [inline])
-[<818c7300>] (sk_filter_trim_cap) from [<819ab52c>] (netlink_broadcast_filtered+0x27c/0x4fc net/netlink/af_netlink.c:1520)
- r10:00000001 r9:8430585c r8:00000000 r7:86f24064 r6:88799e40 r5:88f45000
- r4:86f24000
-[<819ab2b0>] (netlink_broadcast_filtered) from [<819ae010>] (netlink_broadcast net/netlink/af_netlink.c:1544 [inline])
-[<819ab2b0>] (netlink_broadcast_filtered) from [<819ae010>] (netlink_sendmsg+0x3d0/0x478 net/netlink/af_netlink.c:1925)
- r10:00000000 r9:00000002 r8:88f45000 r7:000000ce r6:88799780 r5:88b8ff50
- r4:88e82800
-[<819adc40>] (netlink_sendmsg) from [<81867400>] (sock_sendmsg_nosec net/socket.c:654 [inline])
-[<819adc40>] (netlink_sendmsg) from [<81867400>] (sock_sendmsg+0x3c/0x4c net/socket.c:674)
- r10:00000000 r9:88b8fdd4 r8:00000000 r7:87dc4680 r6:00000000 r5:87dc4680
- r4:88b8ff50
-[<818673c4>] (sock_sendmsg) from [<8186897c>] (____sys_sendmsg+0x230/0x29c net/socket.c:2350)
- r5:00000040 r4:88b8ff50
-[<8186874c>] (____sys_sendmsg) from [<8186a968>] (___sys_sendmsg+0xac/0xe4 net/socket.c:2404)
- r10:00000128 r9:88b8e000 r8:00000000 r7:00000000 r6:87dc4680 r5:88b8ff50
- r4:00000000
-[<8186a8bc>] (___sys_sendmsg) from [<8186ab50>] (__sys_sendmsg net/socket.c:2433 [inline])
-[<8186a8bc>] (___sys_sendmsg) from [<8186ab50>] (__do_sys_sendmsg net/socket.c:2442 [inline])
-[<8186a8bc>] (___sys_sendmsg) from [<8186ab50>] (sys_sendmsg+0x58/0xa0 net/socket.c:2440)
- r8:80200224 r7:00000128 r6:00000000 r5:7e90c3dc r4:87dc4680
-[<8186aaf8>] (sys_sendmsg) from [<80200060>] (ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64)
-Exception stack(0x88b8ffa8 to 0x88b8fff0)
-ffa0:                   00000000 00000000 0000000c 7e90c3dc 00000000 00000000
-ffc0: 00000000 00000000 76f1f840 00000128 00000000 000000a6 7e90c3dc 000563f8
-ffe0: 00056110 7e90c3a0 00036cec 76bfbf44
- r6:76f1f840 r5:00000000 r4:00000000
-Dumping ftrace buffer:
-   (ftrace buffer empty)
-Rebooting in 1 seconds..
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 3/11/2021 5:26 AM, Jakub Kicinski wrote:
+>>> Pending vendors adding the right reporters. <<
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Would you like Nvidia to reply with the remedy per reporter or to 
+actually prepare the patch?
+
+> 
+> Extend the applicability of devlink health reporters
+> beyond what can be locally remedied. Add failure modes
+> which require re-flashing the NVM image or HW changes.
+> 
+> The expectation is that driver will call
+> devlink_health_reporter_state_update() to put hardware
+> health reporters into bad state.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>   include/uapi/linux/devlink.h | 7 +++++++
+>   net/core/devlink.c           | 3 +--
+>   2 files changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> index 8cd1508b525b..f623bbc63489 100644
+> --- a/include/uapi/linux/devlink.h
+> +++ b/include/uapi/linux/devlink.h
+> @@ -617,10 +617,17 @@ enum devlink_port_fn_opstate {
+>    * @DL_HEALTH_STATE_ERROR: error state, running health reporter's recovery
+>    *			may fix the issue, otherwise user needs to try
+>    *			power cycling or other forms of reset
+> + * @DL_HEALTH_STATE_BAD_IMAGE: device's non-volatile memory needs
+> + *			to be re-written, usually due to block corruption
+> + * @DL_HEALTH_STATE_BAD_HW: hardware errors detected, device, host
+> + *			or the connection between the two may be at fault
+>    */
+>   enum devlink_health_state {
+>   	DL_HEALTH_STATE_HEALTHY,
+>   	DL_HEALTH_STATE_ERROR,
+> +
+> +	DL_HEALTH_STATE_BAD_IMAGE,
+> +	DL_HEALTH_STATE_BAD_HW,
+>   };
+>   
+>   /**
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 09d77d43ff63..4a9fa6288a4a 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -6527,8 +6527,7 @@ void
+>   devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
+>   				     enum devlink_health_state state)
+>   {
+> -	if (WARN_ON(state != DL_HEALTH_STATE_HEALTHY &&
+> -		    state != DL_HEALTH_STATE_ERROR))
+> +	if (WARN_ON(state > DL_HEALTH_STATE_BAD_HW))
+>   		return;
+>   
+>   	if (reporter->health_state == state)
+> 
+
+devlink_health_reporter_recover() requires an update as well.
+something like:
+
+@@ -6346,8 +6346,15 @@ devlink_health_reporter_recover(struct 
+devlink_health_reporter *reporter,
+  {
+         int err;
+
+-   if (reporter->health_state == DL_HEALTH_STATE_HEALTHY)
++ switch (reporter->health_state) {
++ case DL_HEALTH_STATE_HEALTHY:
+                 return 0;
++ case DL_HEALTH_STATE_ERROR:
++         break;
++ case DL_HEALTH_STATE_BAD_IMAGE:
++ case DL_HEALTH_STATE_BAD_HW:
++         return -EOPNOTSUPP;
++ }
+
+         if (!reporter->ops->recover)
+                 return -EOPNOTSUPP;
+
