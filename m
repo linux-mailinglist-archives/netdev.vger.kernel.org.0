@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16BC7337288
+	by mail.lfdr.de (Postfix) with ESMTP id 63A25337289
 	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 13:26:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232849AbhCKMZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 07:25:46 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:37575 "EHLO
+        id S232999AbhCKMZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 07:25:48 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:50647 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230509AbhCKMZN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:25:13 -0500
+        by vger.kernel.org with ESMTP id S233104AbhCKMZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 07:25:15 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2491F5C008B;
-        Thu, 11 Mar 2021 07:25:13 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id A09FD5C008B;
+        Thu, 11 Mar 2021 07:25:14 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 11 Mar 2021 07:25:13 -0500
+  by compute3.internal (MEProxy); Thu, 11 Mar 2021 07:25:14 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=SEWGWtwP94090qJTcQx534wWVLByi8473Dvd1Ri+78g=; b=e38eePEE
-        /Uy5BXpKi0k/6hoPOIyvI9OCghcT6A+7TLm4qxiHZAdACrogSO5FvXaA3rYEuWSH
-        EcaJJMWKVPsEE4SELkh7ZdoGeF4zQLWd1aihLQ283ZYt8IPy3Wx1JlshdLantb2l
-        jvPeyejX1c3Vz53yzJOJ1s5DIuTjVz3SfV9neInTR6bdG45iRj82SNhrzApMktog
-        Go3UqMUYZ+x5weV+fvElLEqVv0oVD1gOQadBhcdMLy+rRkSk5TJ1lVmFUtsrn1oR
-        5pSf0eO9285fTFqy+bLWKFFBmvLIMnAHA2+Xph0LGZ01JF+fGhKxjVzHdX+oe+vb
-        pRsJvy9Usw/bmg==
-X-ME-Sender: <xms:KQxKYAfDNdJ1cQ_wfD7W2INkJ3Ba6cbG5TQnSFsKyjFsX70sMcK7kw>
-    <xme:KQxKYCNwhvJ5GMvZLZpgT5FzocbMEELu1cXzeuvKyN5ITi_dSMBUcX1WdPqbp0czc
-    2m8paJ1rMo0h5Q>
+        fm2; bh=+Fep2oDVd/rBU2UDXbwSyLWBg6PrLWaUjY6wngluK3E=; b=oSSc3eIi
+        2iyMmuspzlhtGUrUcBxnWlxS5JGly7KPM6SaLnWeaRZj6hkGRDkGnDxo7LMIwmrN
+        etsQpgJeRmtaDky5Ts2Ikyw8i8f86kBwTMxjowg3/aeQtCBiLellOpdEG/QrvR0s
+        +j11mCUg6G2Q0d2dE1oiiQ89o8NaBGAPSjpNUq4nd/FRfWckqXFXWiq+/lCbQOJU
+        rPvyKPS46uU34LmX1Xz0Grb/vYHapPrt9Mar1mk2cQj892AKg2G0rBD8xv8+Cz0G
+        Jz0Y1EMCC2CjpLbxjZfJ0JtHBPLwqY6gfO90FoPDx8CrSukzSrSlw4l5eW5lVMAH
+        Iw+6QJ+wKb3G4A==
+X-ME-Sender: <xms:KgxKYCB7tkI1veYZWwJoihUGeGOLw_u5wSd3AqIgCVkdiDS5W_zBGw>
+    <xme:KgxKYMhIx-PkgCuD9Rbjn0-3PvPaLHRXi9psbqie5rBdu-VaYm-NSAWMxL-IaCm9e
+    jVOkMZF8WLfTpA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvtddggedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvtddggedtucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
     necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:KQxKYBiJob0Ef7NpC2XofK-tUHH7gWp3qwx9-4Zz306Da-PVkP4ZSw>
-    <xmx:KQxKYF9b9lUS3jrIvKgxIMwAFK9BXPeWafi7aGuKuRajwn45txS4bQ>
-    <xmx:KQxKYMsF1Mki84P575NxdvRMC98BXwWDZ6OqEoaHSqTNPlB_NckHnw>
-    <xmx:KQxKYF7hD1wZFthL6D6YogMKGLlQQV5lsIhM0Rr2mRMDgFuB1UQWTw>
+X-ME-Proxy: <xmx:KgxKYFkF_oa812FC9CO9y1pTYrBbKyKGYIg1TPKLzUrLKKlWfvhr3w>
+    <xmx:KgxKYAyp5ROW2bcuHFsB6ILJyFUQ6VDPBxuQL0gJnQG4-3lJZGDP5g>
+    <xmx:KgxKYHSG_UmbvIbZYa4YUgOOaO6skGh3rYmfOrhgTZEqLys3sIZE1A>
+    <xmx:KgxKYCduvzeJysbJyTpTVOryrZRXu2MklpjaVFRtqsTBRj4uI5bpCw>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D34B3108005C;
-        Thu, 11 Mar 2021 07:25:11 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5106C1080057;
+        Thu, 11 Mar 2021 07:25:13 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/6] mlxsw: spectrum_trap: Split sampling traps between ASICs
-Date:   Thu, 11 Mar 2021 14:24:15 +0200
-Message-Id: <20210311122416.2620300-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/6] mlxsw: spectrum_matchall: Implement sampling using mirroring
+Date:   Thu, 11 Mar 2021 14:24:16 +0200
+Message-Id: <20210311122416.2620300-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210311122416.2620300-1-idosch@idosch.org>
 References: <20210311122416.2620300-1-idosch@idosch.org>
@@ -63,105 +63,153 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Sampling of ingress packets is supported using a dedicated sampling
-mechanism on all Spectrum ASICs. However, Spectrum-2 and later ASICs
-support more sophisticated sampling by mirroring packets to the CPU.
+Spectrum-2 and later ASICs support sampling of packets by mirroring to
+the CPU with probability. There are several advantages compared to the
+legacy dedicated sampling mechanism:
 
-As a preparation for more advanced sampling configurations, split the trap
-configuration used for sampled packets between Spectrum-1 and later ASICs.
+* Extra metadata per-packet: Egress port, egress traffic class, traffic
+  class occupancy and end-to-end latency
+* Ability to sample packets on egress / per-flow
 
-This is needed since packets that are mirrored to the CPU are trapped
-via a different trap identifier compared to packets that are sampled
-using the dedicated sampling mechanism.
+Convert Spectrum-2 and later ASICs to perform sampling by mirroring to
+the CPU with probability.
+
+Subsequent patches will add support for egress / per-flow sampling and
+expose the extra metadata.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 39 ++++++++++++-------
- 1 file changed, 26 insertions(+), 13 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  1 +
+ .../mellanox/mlxsw/spectrum_matchall.c        | 57 ++++++++++++++++++-
+ .../ethernet/mellanox/mlxsw/spectrum_span.h   |  1 +
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  8 ++-
+ 4 files changed, 63 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index 1ec9a3c48a42..bc7006de7873 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -238,6 +238,7 @@ struct mlxsw_sp_port_sample {
+ 	u32 trunc_size;
+ 	u32 rate;
+ 	bool truncate;
++	int span_id;	/* Relevant for Spectrum-2 onwards. */
+ };
+ 
+ struct mlxsw_sp_bridge_port;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
+index ad1209df81ea..841a2de37f36 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
+@@ -378,7 +378,60 @@ const struct mlxsw_sp_mall_ops mlxsw_sp1_mall_ops = {
+ 	.sample_del = mlxsw_sp1_mall_sample_del,
+ };
+ 
++static int mlxsw_sp2_mall_sample_add(struct mlxsw_sp *mlxsw_sp,
++				     struct mlxsw_sp_port *mlxsw_sp_port,
++				     u32 rate)
++{
++	struct mlxsw_sp_span_trigger_parms trigger_parms = {};
++	struct mlxsw_sp_span_agent_parms agent_parms = {
++		.to_dev = NULL,	/* Mirror to CPU. */
++		.session_id = MLXSW_SP_SPAN_SESSION_ID_SAMPLING,
++	};
++	struct mlxsw_sp_port_sample *sample;
++	int err;
++
++	sample = rtnl_dereference(mlxsw_sp_port->sample);
++
++	err = mlxsw_sp_span_agent_get(mlxsw_sp, &sample->span_id, &agent_parms);
++	if (err)
++		return err;
++
++	err = mlxsw_sp_span_analyzed_port_get(mlxsw_sp_port, true);
++	if (err)
++		goto err_analyzed_port_get;
++
++	trigger_parms.span_id = sample->span_id;
++	trigger_parms.probability_rate = rate;
++	err = mlxsw_sp_span_agent_bind(mlxsw_sp, MLXSW_SP_SPAN_TRIGGER_INGRESS,
++				       mlxsw_sp_port, &trigger_parms);
++	if (err)
++		goto err_agent_bind;
++
++	return 0;
++
++err_agent_bind:
++	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, true);
++err_analyzed_port_get:
++	mlxsw_sp_span_agent_put(mlxsw_sp, sample->span_id);
++	return err;
++}
++
++static void mlxsw_sp2_mall_sample_del(struct mlxsw_sp *mlxsw_sp,
++				      struct mlxsw_sp_port *mlxsw_sp_port)
++{
++	struct mlxsw_sp_span_trigger_parms trigger_parms = {};
++	struct mlxsw_sp_port_sample *sample;
++
++	sample = rtnl_dereference(mlxsw_sp_port->sample);
++
++	trigger_parms.span_id = sample->span_id;
++	mlxsw_sp_span_agent_unbind(mlxsw_sp, MLXSW_SP_SPAN_TRIGGER_INGRESS,
++				   mlxsw_sp_port, &trigger_parms);
++	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, true);
++	mlxsw_sp_span_agent_put(mlxsw_sp, sample->span_id);
++}
++
+ const struct mlxsw_sp_mall_ops mlxsw_sp2_mall_ops = {
+-	.sample_add = mlxsw_sp1_mall_sample_add,
+-	.sample_del = mlxsw_sp1_mall_sample_del,
++	.sample_add = mlxsw_sp2_mall_sample_add,
++	.sample_del = mlxsw_sp2_mall_sample_del,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
+index dea1c0d31310..efaefd1ae863 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
+@@ -21,6 +21,7 @@ struct mlxsw_sp_port;
+  */
+ enum mlxsw_sp_span_session_id {
+ 	MLXSW_SP_SPAN_SESSION_ID_BUFFER,
++	MLXSW_SP_SPAN_SESSION_ID_SAMPLING,
+ 
+ 	__MLXSW_SP_SPAN_SESSION_ID_MAX = 8,
+ };
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 4ef12e3e021a..6ecc77fde095 100644
+index 6ecc77fde095..e0e6ee58d31a 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -463,11 +463,6 @@ static const struct mlxsw_sp_trap_group_item mlxsw_sp_trap_group_items_arr[] = {
- 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_PTP1,
- 		.priority = 2,
+@@ -49,6 +49,8 @@ enum {
+ #define MLXSW_SP_TRAP_METADATA DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT
+ 
+ enum {
++	/* Packet was mirrored from ingress. */
++	MLXSW_SP_MIRROR_REASON_INGRESS = 1,
+ 	/* Packet was early dropped. */
+ 	MLXSW_SP_MIRROR_REASON_INGRESS_WRED = 9,
+ };
+@@ -1753,6 +1755,7 @@ mlxsw_sp2_trap_group_items_arr[] = {
+ 		.group = DEVLINK_TRAP_GROUP_GENERIC(ACL_SAMPLE, 0),
+ 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_PKT_SAMPLE,
+ 		.priority = 0,
++		.fixed_policer = true,
  	},
--	{
--		.group = DEVLINK_TRAP_GROUP_GENERIC(ACL_SAMPLE, 0),
--		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_PKT_SAMPLE,
--		.priority = 0,
--	},
- 	{
- 		.group = DEVLINK_TRAP_GROUP_GENERIC(ACL_TRAP, 18),
- 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_FLOW_LOGGING,
-@@ -992,14 +987,6 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 			MLXSW_SP_RXL_NO_MARK(PTP1, PTP1, TRAP_TO_CPU, false),
- 		},
- 	},
--	{
--		.trap = MLXSW_SP_TRAP_CONTROL(FLOW_ACTION_SAMPLE, ACL_SAMPLE,
--					      MIRROR),
--		.listeners_arr = {
+ };
+ 
+@@ -1769,8 +1772,9 @@ mlxsw_sp2_trap_items_arr[] = {
+ 		.trap = MLXSW_SP_TRAP_CONTROL(FLOW_ACTION_SAMPLE, ACL_SAMPLE,
+ 					      MIRROR),
+ 		.listeners_arr = {
 -			MLXSW_RXL(mlxsw_sp_rx_sample_listener, PKT_SAMPLE,
 -				  MIRROR_TO_CPU, false, SP_PKT_SAMPLE, DISCARD),
--		},
--	},
- 	{
- 		.trap = MLXSW_SP_TRAP_CONTROL(FLOW_ACTION_TRAP, ACL_TRAP, TRAP),
- 		.listeners_arr = {
-@@ -1709,10 +1696,23 @@ int mlxsw_sp_trap_group_policer_hw_id_get(struct mlxsw_sp *mlxsw_sp, u16 id,
- 
- static const struct mlxsw_sp_trap_group_item
- mlxsw_sp1_trap_group_items_arr[] = {
-+	{
-+		.group = DEVLINK_TRAP_GROUP_GENERIC(ACL_SAMPLE, 0),
-+		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_PKT_SAMPLE,
-+		.priority = 0,
-+	},
- };
- 
- static const struct mlxsw_sp_trap_item
- mlxsw_sp1_trap_items_arr[] = {
-+	{
-+		.trap = MLXSW_SP_TRAP_CONTROL(FLOW_ACTION_SAMPLE, ACL_SAMPLE,
-+					      MIRROR),
-+		.listeners_arr = {
-+			MLXSW_RXL(mlxsw_sp_rx_sample_listener, PKT_SAMPLE,
-+				  MIRROR_TO_CPU, false, SP_PKT_SAMPLE, DISCARD),
-+		},
-+	},
- };
- 
- static int
-@@ -1749,6 +1749,11 @@ mlxsw_sp2_trap_group_items_arr[] = {
- 		.priority = 0,
- 		.fixed_policer = true,
- 	},
-+	{
-+		.group = DEVLINK_TRAP_GROUP_GENERIC(ACL_SAMPLE, 0),
-+		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_PKT_SAMPLE,
-+		.priority = 0,
-+	},
- };
- 
- static const struct mlxsw_sp_trap_item
-@@ -1760,6 +1765,14 @@ mlxsw_sp2_trap_items_arr[] = {
++			MLXSW_RXL_MIRROR(mlxsw_sp_rx_sample_listener, 1,
++					 SP_PKT_SAMPLE,
++					 MLXSW_SP_MIRROR_REASON_INGRESS),
  		},
- 		.is_source = true,
  	},
-+	{
-+		.trap = MLXSW_SP_TRAP_CONTROL(FLOW_ACTION_SAMPLE, ACL_SAMPLE,
-+					      MIRROR),
-+		.listeners_arr = {
-+			MLXSW_RXL(mlxsw_sp_rx_sample_listener, PKT_SAMPLE,
-+				  MIRROR_TO_CPU, false, SP_PKT_SAMPLE, DISCARD),
-+		},
-+	},
  };
- 
- static int
 -- 
 2.29.2
 
