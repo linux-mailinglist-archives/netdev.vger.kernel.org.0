@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 193F3337AF0
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 18:36:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B58337B27
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 18:42:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbhCKRfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 12:35:32 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:52346 "EHLO vps0.lunn.ch"
+        id S229552AbhCKRl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 12:41:56 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52380 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229705AbhCKRfL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 12:35:11 -0500
+        id S229663AbhCKRlt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 12:41:49 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lKPDB-00AOKn-6Q; Thu, 11 Mar 2021 18:35:01 +0100
-Date:   Thu, 11 Mar 2021 18:35:01 +0100
+        id 1lKPJc-00AOPZ-Fp; Thu, 11 Mar 2021 18:41:40 +0100
+Date:   Thu, 11 Mar 2021 18:41:40 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 Cc:     Sean Wang <sean.wang@mediatek.com>,
@@ -29,55 +29,31 @@ Cc:     Sean Wang <sean.wang@mediatek.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] net: dsa: mt7530: use core_write wrapper
-Message-ID: <YEpUxS055rIVJ6VH@lunn.ch>
-References: <20210310211420.649985-1-ilya.lipnitskiy@gmail.com>
- <20210310211420.649985-2-ilya.lipnitskiy@gmail.com>
+Subject: Re: [PATCH net-next,v2 1/3] net: dsa: mt7530: setup core clock even
+ in TRGMII mode
+Message-ID: <YEpWVAnYLkytpIWB@lunn.ch>
+References: <20210311020954.842341-1-ilya.lipnitskiy@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210310211420.649985-2-ilya.lipnitskiy@gmail.com>
+In-Reply-To: <20210311020954.842341-1-ilya.lipnitskiy@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 01:14:19PM -0800, Ilya Lipnitskiy wrote:
-> When disabling PLL, there is no need to call core_write_mmd_indirect
-> directly, use the core_write wrapper instead like the rest of the code
-> in the function does. This change helps with consistency and
-> readability.
+On Wed, Mar 10, 2021 at 06:09:52PM -0800, Ilya Lipnitskiy wrote:
+> A recent change to MIPS ralink reset logic made it so mt7530 actually
+> resets the switch on platforms such as mt7621 (where bit 2 is the reset
+> line for the switch). That exposed an issue where the switch would not
+> function properly in TRGMII mode after a reset.
 > 
-> Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-> ---
->  drivers/net/dsa/mt7530.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
+> Reconfigure core clock in TRGMII mode to fix the issue.
 > 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index e785f80f966b..b106ea816778 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -445,10 +445,7 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
->  		 * provide our own core_write_mmd_indirect to complete this
->  		 * function.
->  		 */
-> -		core_write_mmd_indirect(priv,
-> -					CORE_GSWPLL_GRP1,
-> -					MDIO_MMD_VEND2,
-> -					0);
-> +		core_write(priv, CORE_GSWPLL_GRP1, 0);
+> Tested on Ubiquiti ER-X (MT7621) with TRGMII mode enabled.
 
-		/* Disable PLL, since phy_device has not yet been created
-		 * provided for phy_[read,write]_mmd_indirect is called, we
-		 * provide our own core_write_mmd_indirect to complete this
-		 * function.
-		 */
-		core_write_mmd_indirect(priv,
-					CORE_GSWPLL_GRP1,
-					MDIO_MMD_VEND2,
-					0);
+Please don't submit the same patch to net and net-next.  Anything
+which is accepted into net, will get merged into net-next about a week
+later. If your other two patches depend on this patch, you need to
+wait for the merge to happen, then submit them.
 
-What about the comment? Seems odd to reference
-core_write_mmd_indirect() when it is not actually called here after
-your change.
-
-     Andrew
+	  Andrew
