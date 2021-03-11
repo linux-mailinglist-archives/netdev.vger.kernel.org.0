@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE213379CE
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 17:46:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA6BE3379DA
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 17:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbhCKQpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 11:45:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58580 "EHLO mail.kernel.org"
+        id S229739AbhCKQrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 11:47:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58850 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229789AbhCKQpG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 11:45:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A0F2264FA7;
-        Thu, 11 Mar 2021 16:45:03 +0000 (UTC)
+        id S229641AbhCKQq4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 11:46:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C9EA464FA7;
+        Thu, 11 Mar 2021 16:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615481104;
-        bh=EXpi1LOxV+xj3fzXv+kV9gwkiBBydCLwnB5P7s0smHU=;
+        s=k20201202; t=1615481216;
+        bh=4K8HXtxCIe511n97OwlEiYmXkazGyXPyrCkj+nL8eLc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HxbsPwE9ANzDBI/bZ6Ua9jqd52csVeOtmJFyAWc7375NJd3E12wm2fcL8kS7SdS7c
-         6eIOiVcH7XTEzWTwd8zVLnd3X07uHlT8dyMbi3LOoiLvT+wE1CCMi8LJIMFfcXYEu3
-         glhByyJa9IbW1CHr5FlI0zeGE4x90dBrsNUi2ObN+yiwdOXNJEyzBPkSXRucZ1V/JB
-         eeopcQh3Xb47HArstGK2/A5yf+gWoSgXibUL3GhZ1BbrflxIS5nOSHVHlwH5Wx3Dzj
-         wvVVJ/EP/EUI3WULZauwKRpq2zNT2BxpoUcSAHHMvVNaCI5dFuW3LP+ZnyM4aWWSM9
-         iBOXiO7yD6oAw==
-Date:   Thu, 11 Mar 2021 08:45:02 -0800
+        b=MIl6nejvYaqTtbIXvoEiOlzMlJdZvlK0wvSB0V2lOz/C8jhnD1DBrAEdJbDwDHylX
+         grXPYX3jmpZ27ndAhrNgTIzkviI1qkh1syDIf/+NUuzt43pVOrdT2yFsNWQeTJCbbl
+         WpBcA0grAO46oPiL7Oofctdt8YjDNmHJyyiyaeSz0z6fidRH07CEBnuGhRZVcBDgm0
+         8kyQt0/npYlV6cW37R+OcDrQL4yqP+SRqEsPNIGVYTda6cTCOaoeOitPeC0VnepkZP
+         G3QpSjrJyvLeVsjT3f+B2okBwAlVelcoiYV3NKe4NoQjLIylqZZ1uC5OKx/NQ02otG
+         ituTa7Jg/rbaQ==
+Date:   Thu, 11 Mar 2021 08:46:54 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eran Ben Elisha <eranbe@nvidia.com>
-Cc:     <netdev@vger.kernel.org>, <jiri@resnulli.us>, <saeedm@nvidia.com>,
-        <andrew.gospodarek@broadcom.com>, <jacob.e.keller@intel.com>,
-        <guglielmo.morandin@broadcom.com>, <eugenem@fb.com>,
-        <eranbe@mellanox.com>
-Subject: Re: [RFC net-next v2 2/3] devlink: health: add remediation type
-Message-ID: <20210311084502.40c146d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <53f182d0-e1f6-5e18-ac04-ff7f6ec56af8@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     f242ed68-d31b-527d-562f-c5a35123861a@intel.com,
+        netdev@vger.kernel.org, saeedm@nvidia.com,
+        andrew.gospodarek@broadcom.com, jacob.e.keller@intel.com,
+        guglielmo.morandin@broadcom.com, eugenem@fb.com,
+        eranbe@mellanox.com
+Subject: Re: [RFC net-next v2 1/3] devlink: move health state to uAPI
+Message-ID: <20210311084654.4dcfdb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210311074734.GN4652@nanopsycho.orion>
 References: <20210311032613.1533100-1-kuba@kernel.org>
-        <20210311032613.1533100-2-kuba@kernel.org>
-        <53f182d0-e1f6-5e18-ac04-ff7f6ec56af8@nvidia.com>
+        <20210311074734.GN4652@nanopsycho.orion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,51 +43,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Mar 2021 16:32:44 +0200 Eran Ben Elisha wrote:
-> > +/**
-> > + * enum devlink_health_reporter_remedy - severity of remediation procedure
-> > + * @DL_HEALTH_REMEDY_NONE: transient error, no remediation required
-> > + * @DL_HEALTH_REMEDY_KICK: device stalled, processing will be re-triggered
-> > + * @DL_HEALTH_REMEDY_COMP_RESET: associated device component (e.g. device queue)
-> > + *			will be reset
-> > + * @DL_HEALTH_REMEDY_RESET: full device reset, will result in temporary
-> > + *			unavailability of the device, device configuration
-> > + *			should not be lost
-> > + * @DL_HEALTH_REMEDY_REINIT: device will be reinitialized and configuration lost
-> > + *
-> > + * Used in %DEVLINK_ATTR_HEALTH_REPORTER_REMEDY, categorizes the health reporter
-> > + * by the severity of the remediation.
-> > + */
-> > +enum devlink_health_remedy {
-> > +	DL_HEALTH_REMEDY_NONE = 1,  
+On Thu, 11 Mar 2021 08:47:34 +0100 Jiri Pirko wrote:
+> Thu, Mar 11, 2021 at 04:26:11AM CET, kuba@kernel.org wrote:
+> >Move the health states into uAPI, so applications can use them.
+> >
+> >Note that we need to change the name of the enum because
+> >user space is likely already defining the same values.
+> >E.g. iproute2 does.
+> >
+> >Use this opportunity to shorten the names.
+> >
+> >Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> >---
+> > .../net/ethernet/broadcom/bnxt/bnxt_devlink.c  |  4 ++--
+> > .../ethernet/mellanox/mlx5/core/en/health.c    |  4 ++--
+> > include/net/devlink.h                          |  7 +------
+> > include/uapi/linux/devlink.h                   | 12 ++++++++++++
+> > net/core/devlink.c                             | 18 +++++++++---------
+> > 5 files changed, 26 insertions(+), 19 deletions(-)
+> >
+> >diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+> >index 64381be935a8..cafc98ab4b5e 100644
+> >--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+> >+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+> >@@ -252,9 +252,9 @@ void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy)
+> > 	u8 state;
+> > 
+> > 	if (healthy)
+> >-		state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
+> >+		state = DL_HEALTH_STATE_HEALTHY;
+> > 	else
+> >-		state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
+> >+		state = DL_HEALTH_STATE_ERROR;  
 > 
-> What is the reason zero is skipped?
-> 
-> > +	DL_HEALTH_REMEDY_KICK,
-> > +	DL_HEALTH_REMEDY_COMP_RESET,
-> > +	DL_HEALTH_REMEDY_RESET,
-> > +	DL_HEALTH_REMEDY_REINIT,
-> > +};
-> > +
-> >   #endif /* _UAPI_LINUX_DEVLINK_H_ */
-> > diff --git a/net/core/devlink.c b/net/core/devlink.c
-> > index 8e4e4bd7bb36..09d77d43ff63 100644
-> > --- a/net/core/devlink.c
-> > +++ b/net/core/devlink.c
-> > @@ -6095,7 +6095,8 @@ __devlink_health_reporter_create(struct devlink *devlink,
-> >   {
-> >   	struct devlink_health_reporter *reporter;
-> >   
-> > -	if (WARN_ON(graceful_period && !ops->recover))
-> > +	if (WARN_ON(graceful_period && !ops->recover) ||
-> > +	    WARN_ON(ops->recover && !ops->remedy))  
-> 
-> It allows drivers to set recover callback and report DL_HEALTH_REMEDY_NONE.
-> Defining DL_HEALTH_REMEDY_NONE = 0  would make this if clause to catch it.
+> I don't like the inconsistencies in the uapi (DL/DEVLINK). Can't we
+> stick with "DEVLINK" prefix for all, which is what we got so far?
 
-I was intending for "none" to mean no remediation from the driver side.
-E.g. device sees bad descriptor and tosses it away. 
-
-That's different from cases where remediation is fully manual.
-
-I will improve the kdoc.
+Sure, but you have seen the previous discussion about the length of
+devlink names, right? I'm not the only one who thinks this is a counter
+productive rule.
