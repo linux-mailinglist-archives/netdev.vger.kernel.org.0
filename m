@@ -2,69 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE3CE336847
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 01:01:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8159336858
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 01:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbhCKAAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 19:00:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44322 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229775AbhCKAAI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 19:00:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9012A64FCA;
-        Thu, 11 Mar 2021 00:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615420808;
-        bh=1aoIbQMbDKhRtG+wyxONAPZvcdOmf/K+Dj4rhW5H9gE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NOdPAW7ft2qHXViEKMysTl8CDEaLADjq8fYs5XKGBXVjjlDCGhBiCzRJqTW6va5Si
-         HgUs7H+DIkGlVFqq0S+M5DYfnOTqXiQIaO+oHyoxlYGuv1hS0lJyzjM3u26oVM64sx
-         USdh2hB6pxbYS9pQkgI++ml4QSoEUCF8SfUvFbNZs4rRMprpLGgZR1Kum5zz5OKqsu
-         8nWIpc24E7iPuYnSHcuJBpSjaDQEuCjOMrItuLhtqRmlpPxXT7EbC8YK+tcQXjx0rI
-         SkXMjfoWNppCJG7Si1JCDSbA+eREgRpQK2dJnRJFxZ4OKoeUxo1WzZKdH9zOfWJIHr
-         ljJoFW3ULAxjQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8044A609D0;
-        Thu, 11 Mar 2021 00:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229887AbhCKAGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 19:06:30 -0500
+Received: from smtp4.emailarray.com ([65.39.216.22]:39396 "EHLO
+        smtp4.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229927AbhCKAGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 19:06:08 -0500
+Received: (qmail 62062 invoked by uid 89); 11 Mar 2021 00:06:07 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
+  by smtp4.emailarray.com with SMTP; 11 Mar 2021 00:06:07 -0000
+Date:   Wed, 10 Mar 2021 16:06:05 -0800
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, andrii@kernel.org,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, maximmi@nvidia.com,
+        ciara.loftus@intel.com
+Subject: Re: [PATCH bpf-next 2/2] libbpf: xsk: move barriers from
+ libbpf_util.h to xsk.h
+Message-ID: <20210311000605.tuo7rg4b7keo76iy@bsd-mbp.dhcp.thefacebook.com>
+References: <20210310080929.641212-1-bjorn.topel@gmail.com>
+ <20210310080929.641212-3-bjorn.topel@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: b53: VLAN filtering is global to all users
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161542080852.19331.3067516552691002345.git-patchwork-notify@kernel.org>
-Date:   Thu, 11 Mar 2021 00:00:08 +0000
-References: <20210310184610.2683648-1-f.fainelli@gmail.com>
-In-Reply-To: <20210310184610.2683648-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org
+In-Reply-To: <20210310080929.641212-3-bjorn.topel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Wed, 10 Mar 2021 10:46:10 -0800 you wrote:
-> The bcm_sf2 driver uses the b53 driver as a library but does not make
-> usre of the b53_setup() function, this made it fail to inherit the
-> vlan_filtering_is_global attribute. Fix this by moving the assignment to
-> b53_switch_alloc() which is used by bcm_sf2.
+On Wed, Mar 10, 2021 at 09:09:29AM +0100, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
 > 
-> Fixes: 7228b23e68f7 ("net: dsa: b53: Let DSA handle mismatched VLAN filtering settings")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> [...]
+> The only user of libbpf_util.h is xsk.h. Move the barriers to xsk.h,
+> and remove libbpf_util.h. The barriers are used as an implementation
+> detail, and should not be considered part of the stable API.
 
-Here is the summary with links:
-  - [net] net: dsa: b53: VLAN filtering is global to all users
-    https://git.kernel.org/netdev/net/c/d45c36bafb94
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Does that mean that anything else which uses the same type of
+shared rings (bpf ringbuffer, io_uring, zctap) have to implement
+the same primitives that xsk.h has?
+-- 
+Jonathan
