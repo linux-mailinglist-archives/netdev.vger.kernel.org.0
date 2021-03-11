@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69D83368CC
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 01:37:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF813368D0
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 01:37:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229459AbhCKAgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 19:36:42 -0500
-Received: from correo.us.es ([193.147.175.20]:49994 "EHLO mail.us.es"
+        id S229655AbhCKAgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 19:36:43 -0500
+Received: from correo.us.es ([193.147.175.20]:50004 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229469AbhCKAgM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229641AbhCKAgM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 10 Mar 2021 19:36:12 -0500
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id E3EA512E82A
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 01:36:10 +0100 (CET)
+        by mail.us.es (Postfix) with ESMTP id D3A8912E830
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 01:36:11 +0100 (CET)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C7D18DA78A
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 01:36:10 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C6888DA78E
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 01:36:11 +0100 (CET)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id BCCD8DA73F; Thu, 11 Mar 2021 01:36:10 +0100 (CET)
+        id BB9CBDA78B; Thu, 11 Mar 2021 01:36:11 +0100 (CET)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
         autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5409DDA704;
-        Thu, 11 Mar 2021 01:36:08 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6B299DA722;
+        Thu, 11 Mar 2021 01:36:09 +0100 (CET)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 11 Mar 2021 01:36:08 +0100 (CET)
+ Thu, 11 Mar 2021 01:36:09 +0100 (CET)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 1F9EC42DC6E2;
-        Thu, 11 Mar 2021 01:36:08 +0100 (CET)
+        by entrada.int (Postfix) with ESMTPSA id 37BD642DC6E2;
+        Thu, 11 Mar 2021 01:36:09 +0100 (CET)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         Felix Fietkau <nbd@nbd.name>
-Subject: [PATCH net-next 00/23] netfilter: flowtable enhancements
-Date:   Thu, 11 Mar 2021 01:35:41 +0100
-Message-Id: <20210311003604.22199-1-pablo@netfilter.org>
+Subject: [PATCH net-next 01/23] net: resolve forwarding path from virtual netdevice and HW destination address
+Date:   Thu, 11 Mar 2021 01:35:42 +0100
+Message-Id: <20210311003604.22199-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210311003604.22199-1-pablo@netfilter.org>
+References: <20210311003604.22199-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: ClamAV using ClamSMTP
@@ -53,169 +55,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patch adds dev_fill_forward_path() which resolves the path to reach
+the real netdevice from the IP forwarding side. This function takes as
+input the netdevice and the destination hardware address and it walks
+down the devices calling .ndo_fill_forward_path() for each device until
+the real device is found.
 
-The following patchset augments the Netfilter flowtable fastpath to
-support for network topologies that combine IP forwarding, bridge,
-classic VLAN devices, bridge VLAN filtering, DSA and PPPoE. This
-includes support for the flowtable software and hardware datapaths.
+For instance, assuming the following topology:
 
-The following pictures provides an example scenario:
+               IP forwarding
+              /             \
+           br0              eth0
+           / \
+       eth1  eth2
+        .
+        .
+        .
+       ethX
+ ab:cd:ef:ab:cd:ef
 
-                        fast path!
-                .------------------------.
-               /                          \
-               |           IP forwarding  |
-               |          /             \ \/
-               |       br0               wan ..... eth0
-               .       / \                         host C
-               -> veth1  veth2
-                   .           switch/router
-                   .
-                   .
-                 eth0
-		host A
+where eth1 and eth2 are bridge ports and eth0 provides WAN connectivity.
+ethX is the interface in another box which is connected to the eth1
+bridge port.
 
-The bridge master device 'br0' has an IP address and a DHCP server is
-also assumed to be running to provide connectivity to host A which
-reaches the Internet through 'br0' as default gateway. Then, packet
-enters the IP forwarding path and Netfilter is used to NAT the packets
-before they leave through the wan device.
+For packets going through IP forwarding to br0 whose destination MAC
+address is ab:cd:ef:ab:cd:ef, dev_fill_forward_path() provides the
+following path:
 
-The general idea is to accelerate forwarding by building a fast path
-that takes packets from the ingress path of the bridge port and place
-them in the egress path of the wan device (and vice versa). Hence,
-skipping the classic bridge and IP stack paths.
+	br0 -> eth1
 
-** Patch from #1 to #6 add the infrastructure which describes the list of
-   netdevice hops to reach a given destination MAC address in the local
-   network topology.
+.ndo_fill_forward_path for br0 looks up at the FDB for the bridge port
+from the destination MAC address to get the bridge port eth1.
 
-Patch #1 adds dev_fill_forward_path() and .ndo_fill_forward_path() to
-         netdev_ops.
+This information allows to create a fast path that bypasses the classic
+bridge and IP forwarding paths, so packets go directly from the bridge
+port eth1 to eth0 (wan interface) and vice versa.
 
-Patch #2 adds .ndo_fill_forward_path for vlan devices, which provides
-	 the next device hop via vlan->real_dev, the vlan ID and the
-         protocol.
+             fast path
+      .------------------------.
+     /                          \
+    |           IP forwarding   |
+    |          /             \  \/
+    |       br0               eth0
+    .       / \
+     -> eth1  eth2
+        .
+        .
+        .
+       ethX
+ ab:cd:ef:ab:cd:ef
 
-Patch #3 adds .ndo_fill_forward_path for bridge devices, which allows to make
-         lookups to the FDB to locate the next device hop (bridge port) in the
-         forwarding path.
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ include/linux/netdevice.h | 27 +++++++++++++++++++++++
+ net/core/dev.c            | 46 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 73 insertions(+)
 
-Patch #4 extends bridge .ndo_fill_forward_path to support for bridge VLAN
-	 filtering.
-
-Patch #5 adds .ndo_fill_forward_path for PPPoE devices.
-
-Patch #6 adds .ndo_fill_forward_path for DSA.
-
-Patches from #7 to #14 update the flowtable software datapath:
-
-Patch #7 adds the transmit path type field to the flow tuple. Two transmit
-         paths are supported so far: the neighbour and the xfrm transmit
-         paths.
-
-Patch #8 and #9 update the flowtable datapath to use dev_fill_forward_path()
-         to obtain the real ingress/egress device for the flowtable datapath.
-	 This adds the new ethernet xmit direct path to the flowtable.
-
-Patch #10 adds native flowtable VLAN support (up to 2 VLAN tags) through
-          dev_fill_forward_path(). The flowtable stores the VLAN id and
-          protocol in the flow tuple.
-
-Patch #11 adds native flowtable bridge VLAN filter support through
-          dev_fill_forward_path().
-
-Patch #12 adds native flowtable bridge PPPoE through dev_fill_forward_path().
-
-Patch #13 adds DSA support through dev_fill_forward_path().
-
-Patch #14 extends flowtable selftests to cover for flowtable software
-	  datapath enhancements.
-
-** Patches from #15 to #20 update the flowtable hardware offload datapath:
-
-Patch #15 extends the flowtable hardware offload to support for the
-          direct ethernet xmit path. This also includes VLAN support.
-
-Patch #16 stores the egress real device in the flow tuple. The software
-          flowtable datapath uses dev_hard_header() to transmit packets,
-          hence it might refer to VLAN/DSA/PPPoE software device, not
-          the real ethernet device.
-
-Patch #17 deals with switchdev PVID hardware offload to skip it on
-	  egress.
-
-Patch #18 adds FLOW_ACTION_PPPOE_PUSH to the flow_offload action API.
-
-Patch #19 extends the flowtable hardware offload to support for PPPoE
-
-Patch #20 adds TC_SETUP_FT support for DSA.
-
-** Patches from #20 to #23: Felix Fietkau adds a new driver which support
-   hardware offload for the mtk PPE engine through the existing flow
-   offload API which supports for the flowtable enhancements coming in
-   this batch.
-
-Felix Fietkau (7):
-  net: bridge: resolve forwarding path for VLAN tag actions in bridge devices
-  net: ppp: resolve forwarding path for bridge pppoe devices
-  net: dsa: resolve forwarding path for dsa slave ports
-  netfilter: flowtable: bridge vlan hardware offload and switchdev
-  net: ethernet: mtk_eth_soc: add support for initializing the PPE
-  net: ethernet: mtk_eth_soc: add flow offloading support
-  net: ethernet: mtk_eth_soc: fix parsing packets in GDM
-
-Pablo Neira Ayuso (16):
-  net: resolve forwarding path from virtual netdevice and HW destination address
-  net: 8021q: resolve forwarding path for vlan devices
-  net: bridge: resolve forwarding path for bridge devices
-  netfilter: flowtable: add xmit path types
-  netfilter: flowtable: use dev_fill_forward_path() to obtain ingress device
-  netfilter: flowtable: use dev_fill_forward_path() to obtain egress device
-  netfilter: flowtable: add vlan support
-  netfilter: flowtable: add bridge vlan filtering support
-  netfilter: flowtable: add pppoe support
-  netfilter: flowtable: add dsa support
-  selftests: netfilter: flowtable bridge and vlan support
-  netfilter: flowtable: add offload support for xmit path types
-  netfilter: nft_flow_offload: use direct xmit if hardware offload is enabled
-  net: flow_offload: add FLOW_ACTION_PPPOE_PUSH
-  netfilter: flowtable: support for FLOW_ACTION_PPPOE_PUSH
-  dsa: slave: add support for TC_SETUP_FT
-
- drivers/net/ethernet/mediatek/Makefile        |   2 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  41 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  23 +-
- drivers/net/ethernet/mediatek/mtk_ppe.c       | 511 ++++++++++++++++++
- drivers/net/ethernet/mediatek/mtk_ppe.h       | 287 ++++++++++
- .../net/ethernet/mediatek/mtk_ppe_debugfs.c   | 217 ++++++++
- .../net/ethernet/mediatek/mtk_ppe_offload.c   | 485 +++++++++++++++++
- drivers/net/ethernet/mediatek/mtk_ppe_regs.h  | 144 +++++
- drivers/net/ppp/ppp_generic.c                 |  22 +
- drivers/net/ppp/pppoe.c                       |  23 +
- include/linux/netdevice.h                     |  59 ++
- include/linux/ppp_channel.h                   |   3 +
- include/net/flow_offload.h                    |   4 +
- include/net/netfilter/nf_flow_table.h         |  47 +-
- net/8021q/vlan_dev.c                          |  21 +
- net/bridge/br_device.c                        |  49 ++
- net/bridge/br_private.h                       |  20 +
- net/bridge/br_vlan.c                          |  55 ++
- net/core/dev.c                                |  46 ++
- net/dsa/slave.c                               |  36 +-
- net/netfilter/nf_flow_table_core.c            |  49 +-
- net/netfilter/nf_flow_table_ip.c              | 270 +++++++--
- net/netfilter/nf_flow_table_offload.c         | 179 ++++--
- net/netfilter/nft_flow_offload.c              | 211 +++++++-
- .../selftests/netfilter/nft_flowtable.sh      |  82 +++
- 25 files changed, 2768 insertions(+), 118 deletions(-)
- create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe.c
- create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe.h
- create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
- create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe_offload.c
- create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 5b67ea89d5f2..70eb88a4adbb 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -831,6 +831,27 @@ typedef u16 (*select_queue_fallback_t)(struct net_device *dev,
+ 				       struct sk_buff *skb,
+ 				       struct net_device *sb_dev);
+ 
++enum net_device_path_type {
++	DEV_PATH_ETHERNET = 0,
++};
++
++struct net_device_path {
++	enum net_device_path_type	type;
++	const struct net_device		*dev;
++};
++
++#define NET_DEVICE_PATH_STACK_MAX	5
++
++struct net_device_path_stack {
++	int			num_paths;
++	struct net_device_path	path[NET_DEVICE_PATH_STACK_MAX];
++};
++
++struct net_device_path_ctx {
++	const struct net_device *dev;
++	const u8		*daddr;
++};
++
+ enum tc_setup_type {
+ 	TC_SETUP_QDISC_MQPRIO,
+ 	TC_SETUP_CLSU32,
+@@ -1265,6 +1286,8 @@ struct netdev_net_notifier {
+  * struct net_device *(*ndo_get_peer_dev)(struct net_device *dev);
+  *	If a device is paired with a peer device, return the peer instance.
+  *	The caller must be under RCU read context.
++ * int (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx, struct net_device_path *path);
++ *     Get the forwarding path to reach the real device from the HW destination address
+  */
+ struct net_device_ops {
+ 	int			(*ndo_init)(struct net_device *dev);
+@@ -1471,6 +1494,8 @@ struct net_device_ops {
+ 	int			(*ndo_tunnel_ctl)(struct net_device *dev,
+ 						  struct ip_tunnel_parm *p, int cmd);
+ 	struct net_device *	(*ndo_get_peer_dev)(struct net_device *dev);
++	int                     (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx,
++                                                         struct net_device_path *path);
+ };
+ 
+ /**
+@@ -2844,6 +2869,8 @@ void dev_remove_offload(struct packet_offload *po);
+ 
+ int dev_get_iflink(const struct net_device *dev);
+ int dev_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb);
++int dev_fill_forward_path(const struct net_device *dev, const u8 *daddr,
++			  struct net_device_path_stack *stack);
+ struct net_device *__dev_get_by_flags(struct net *net, unsigned short flags,
+ 				      unsigned short mask);
+ struct net_device *dev_get_by_name(struct net *net, const char *name);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6c5967e80132..e9a00a00afee 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -848,6 +848,52 @@ int dev_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
+ }
+ EXPORT_SYMBOL_GPL(dev_fill_metadata_dst);
+ 
++static struct net_device_path *dev_fwd_path(struct net_device_path_stack *stack)
++{
++	int k = stack->num_paths++;
++
++	if (WARN_ON_ONCE(k >= NET_DEVICE_PATH_STACK_MAX))
++		return NULL;
++
++	return &stack->path[k];
++}
++
++int dev_fill_forward_path(const struct net_device *dev, const u8 *daddr,
++			  struct net_device_path_stack *stack)
++{
++	const struct net_device *last_dev;
++	struct net_device_path_ctx ctx = {
++		.dev	= dev,
++		.daddr	= daddr,
++	};
++	struct net_device_path *path;
++	int ret = 0;
++
++	stack->num_paths = 0;
++	while (ctx.dev && ctx.dev->netdev_ops->ndo_fill_forward_path) {
++		last_dev = ctx.dev;
++		path = dev_fwd_path(stack);
++		if (!path)
++			return -1;
++
++		memset(path, 0, sizeof(struct net_device_path));
++		ret = ctx.dev->netdev_ops->ndo_fill_forward_path(&ctx, path);
++		if (ret < 0)
++			return -1;
++
++		if (WARN_ON_ONCE(last_dev == ctx.dev))
++			return -1;
++	}
++	path = dev_fwd_path(stack);
++	if (!path)
++		return -1;
++	path->type = DEV_PATH_ETHERNET;
++	path->dev = ctx.dev;
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(dev_fill_forward_path);
++
+ /**
+  *	__dev_get_by_name	- find a device by its name
+  *	@net: the applicable net namespace
 -- 
 2.20.1
 
