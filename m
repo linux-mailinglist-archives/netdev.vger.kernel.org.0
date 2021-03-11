@@ -2,175 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A5F337EA3
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D78D3337EB2
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:06:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbhCKUCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 15:02:46 -0500
-Received: from mail-db8eur05on2072.outbound.protection.outlook.com ([40.107.20.72]:65019
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229675AbhCKUCd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 15:02:33 -0500
+        id S230182AbhCKUGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 15:06:01 -0500
+Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:27317 "EHLO
+        mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230300AbhCKUFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 15:05:51 -0500
+Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12BK1iHQ018259;
+        Thu, 11 Mar 2021 15:05:48 -0500
+Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2053.outbound.protection.outlook.com [104.47.60.53])
+        by mx0c-0054df01.pphosted.com with ESMTP id 376bes9hs8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Mar 2021 15:05:47 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MKjaQpoHX+oTy8Xmg1CWuOfsD0kdyRpFUs2Tjo8dGPeklRU7PHFB8knenpTIHiX8eL9DlU2RAoNbEYVuOyPhQ9vwUYB9jiO2FDeXTWvGsGjUTJU3oyQxtLJYZ3kArV+z1lc5sLwbJXxbK+Ur1/75QFlFop578pa17sA5+gm1B+pk+07JY2xKl+UU9Y6UTTjsMLonYYYvTPwjfZMoXPqaXQ7N8pqeo49qFT4SaHF+hGOjYHDGqNex0a7Oeu+T2Y3jXZFJ9gPqNFw+J8iKM7qwc3jE5zBZ8X6hWMbkiF4+oiNZdWyKSOc1MYa33SeEbxZpASWX5dTt946FM5RZm4IMrg==
+ b=fA3AIl2hu94rDZVM0yvWzJujsxsBt900jiuKdKNtvXChU4QLex8qBnI/bEr1vXtDtjC3xqQAT8fWqmGJAVCuF1i9P1au1EsOgR50VncMQ2tdCDJn/qUXHZNSv2L76fb+cxlW85Upo8o9iB6hNNJ/LfmVwJy0NgURYwN7QqRof1P/6KOPHHZKbSDc+AWbEkGFQHlU/Os/KFRmnquo1DHlkxkFses2In2GvAJ6XK6tgj2xdF1GXLN6kBAxw9oiyQ0FQxtYT7LhJxgSyEgd6oJwNbHvmuQLwjyPOitM9pD3bWAJCzUhm8H2Ufuu0fAzvjx2+tZKkdPiXcG8vwD03OznGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7OxblKuxqr4+O9YqYOXIcT91iocF0pSRDo5jw5CICXY=;
- b=dkNJJkQP7f+nIr5zzBgc9JbVedotfbOi25V3PzM5T3WGdClBKmyyk+SBqU+fIbYbpvTRBYPqI+86EzR7T9et6JxhsqRwa8TRXwOK8HkmmN1xAC+s4OZAoc3gG0kG78KSHnXPnsYErnLOHrInJfsgWYJsPE3x043eWZcntIAmz0e/4NoiRE0zLbvl4QXNMUrWyny+rOAWDZv3OpHLgvrfOTZx9/CF/QWCx3m/E3nLTs9OqPVev89T+n+j+t/tlkfRuZn0yzLvGEeU9o4pzYn1DDC1s33m9dF2ZYUqzJbuV5kiFtr6QmsKwwf2XPR+nRDw31M9csntmDox/MEy0Ke1xA==
+ bh=iowwEzv8TUQ2+2YylyBoLPTi2x4gDCPXSUMkdhtWvVs=;
+ b=Bca/ICsknBHkQxPxg15D66OuURNRqyCWAfNcWWZGz8H2hAcZ8A/i1jMT7vRZwGysUjEgJ07uS30KY95e6IXcYW+EIEOTR4R5hMOWuPlha3HsyeWaOHM3pgAnx3R+YoMMVV9K+JjyS3yQ0JifO15Wic1fvhpfh7UbxqYukiJGscz8gCAVDIWN8Cxvl6cpj8xC8xOT8zQmSg0glMTPQs/3VrLLD+h3xD12IpzXjrAMhVa8kq9uTNRb1dm1hQ4tWnU+g0uSthZBuNlWWOxmBfMZXkFvaoglFL1i9KRhMPPixoszkSohCivAn69Y9iRp1qIDKnUzpb4MPSWhmf7AdbQRYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7OxblKuxqr4+O9YqYOXIcT91iocF0pSRDo5jw5CICXY=;
- b=Fck2u+rdmtT9goGqmUUgO4tIeztj8CMMSLQawWzjkP8FPsMsuiUxdmXRqLZ6/IKRq4nN9SSspvdg0dRLf2MGmDILUq4pFOKq1vsRDUdXCfnD/PuIc+MUGrOMvcGbWLROGpmbAz9v/mHFUBEgM8RBe7yu2aKAjw6QyzoUc9g6XD8=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB7325.eurprd04.prod.outlook.com (2603:10a6:800:1af::14) with
+ bh=iowwEzv8TUQ2+2YylyBoLPTi2x4gDCPXSUMkdhtWvVs=;
+ b=jg/F5byyzcvab7tzwpFPCv9udLQJEQvNm+jqootGkcjXQROw8NLFTkyVBpDsCpsiSW+eWvVodzCZ3tXvpZKe1hBHadpr205WOikHFESSCAFc6NJ7gB6dSnQj0wSZhIYFOtRLXgIcEVfquUms0p1w0dwpS8HfUaeFOr0Av7/cXRY=
+Authentication-Results: xilinx.com; dkim=none (message not signed)
+ header.d=none;xilinx.com; dmarc=none action=none header.from=calian.com;
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
+ by YT1PR01MB3289.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:7::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Thu, 11 Mar
- 2021 20:02:30 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3912.028; Thu, 11 Mar 2021
- 20:02:30 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: ocelot: Extend MRP
-Thread-Topic: [PATCH net-next] net: ocelot: Extend MRP
-Thread-Index: AQHXFe9o676ST1OCi02wgkx0HQevhap97k2AgAE/uACAAAkLAA==
-Date:   Thu, 11 Mar 2021 20:02:30 +0000
-Message-ID: <20210311200230.k4jzp44lcphhtuor@skbuf>
-References: <20210310205140.1428791-1-horatiu.vultur@microchip.com>
- <20210311002549.4ilz4fw2t6sdxxtv@skbuf>
- <20210311193008.vasrdiephy36fnxa@soft-dev3-1.localhost>
-In-Reply-To: <20210311193008.vasrdiephy36fnxa@soft-dev3-1.localhost>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: microchip.com; dkim=none (message not signed)
- header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.219.167]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 2f3a9d09-2106-465e-e103-08d8e4c89a64
-x-ms-traffictypediagnostic: VE1PR04MB7325:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB73259602B0DCBBF2B7E859E4E0909@VE1PR04MB7325.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2cNsZSKAnChFC6dpzSXu9CAN1jR1iCUzhnmMoWWWfJ4y39xFRIMlwSuHXeA8Fc+qvd0H5kn+ODQje7G13RTtimwBqv8WQS1zE8nD/LUtowmDQH21y/T/8SK56m7zdvM12rp4K8/qTfPvF69i5mQ28y7t/uzHNEhqL608LVI1yBPo7Zbzx8PCsLmSAiZ+1xgsRdep9zWxTYNDdlrB4WOL8P0Nfcivr4JLlKSwxMhaLlV1N4y7iUgaRyZPXH3jRASmB/55L34bYVx1hQKj0YKH5yZWwlRHKfCSlpmldVnEEqOkYPE+WvxWmEDtSvhRsKPYBc3D0nMYiHtG8yTkl0vpd3eWWYh8SYWuapW0K8nsSi2WaIepZlmvNRv2gX49sZ6PPxAeL8Y96TYSNKPEBDKc57cXzS/AMC9Wjehnvs710XPm65ZQjyhtklfa6hc/Hhjhz3xWBNOO5Ha3/EWgEpDlgIUKOrFEhZOak4tVtjMR8WycWvegmwGLKF7sJteoQ6CBSMKhkCCrNiXcbsJNY+zfE/XlWYGKvCWTyykcVECl8BfnaXU9lA6K9B1k0N5FmH9j
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(396003)(39860400002)(136003)(366004)(346002)(376002)(64756008)(66556008)(66946007)(66446008)(66476007)(76116006)(186003)(33716001)(6506007)(83380400001)(54906003)(316002)(4326008)(8676002)(44832011)(1076003)(5660300002)(478600001)(6916009)(6486002)(71200400001)(86362001)(8936002)(26005)(9686003)(6512007)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?yHnxJepLhOPRF4kzLzXI6dXbNmdArsUtgSCZwpTU71Ew6OkzEcyGEFUxReRR?=
- =?us-ascii?Q?fPA+uZW24WzCEKIykX4k0tQEJ0//ccT6t7zjmQLMAPqYb7h4SJmhX+mRMlPZ?=
- =?us-ascii?Q?vYShs0pJBmPCOX/auqMy/0IASW9aq3Wijq7GErImZBVkRt3fW0EHkVwa+/Qq?=
- =?us-ascii?Q?xL0LlPHmkBjAEp0ISu6ogQpT6VnX8RITMl3D59JU5NCY4Hy0alqceOW7UZyp?=
- =?us-ascii?Q?blkqUCRkq/60KC5irLXblCKZ19jMQA1gGFCxTZHkpIC4I5MnPAWYjAzHPPfv?=
- =?us-ascii?Q?pAN70EMtRsCPZVju4nAxy86a4jp0XYDVd3ASkOtAkaAeZ+7WmPI7gVz8EtDu?=
- =?us-ascii?Q?7GhrPljNxikTfPM53dbLhupJ/UtdKQGl4D3YQsAaphxGTqEkGFAyU9GtKgDT?=
- =?us-ascii?Q?DJcifkqmWgxeDTqB6WybeHwl3gzpQ3RpCwJKtSAfw8lhQwZN3H6YIXP16VVy?=
- =?us-ascii?Q?Zk8kgLy8WwwxU5VL1f91fkvgQPKqv2Mtux1mFOHS32qbadrT4F8E/zijq6FF?=
- =?us-ascii?Q?CYIydEeCiMp+AqF1eP1wpQDIJbBFbru5hWltqHIex1xdPyRJXk1W7ZIrWg97?=
- =?us-ascii?Q?1TBMKbO/crrosdun0sWtuBm791/W6xZXCfvnFqolaaD779xcVTXxhgGCj15z?=
- =?us-ascii?Q?gu1VzqJ9uqS2T5lYx5MR1PmmxfBNMg5U/fLIb/fHRp9hL6bOkv2UpuTgF/8V?=
- =?us-ascii?Q?1xkhlXnYPCU93whHOxILSwHgGrd/HZq/ZK+kmb4kYDI752fkCrtxk+umNRja?=
- =?us-ascii?Q?H7ZBaTyVkDMQmLAWb8ZScqXIk+0zAF0Jfcl5Egyq3hzHGwL+8h/uDBvq48Sq?=
- =?us-ascii?Q?Z8Fpa9ZlPDywdt3/fmCbqahQChe4DFmEccVhgZZsfmlRLUEuagYiT24kzK0R?=
- =?us-ascii?Q?Pt+X8vYM2QrIa1Fdmo8yZ6P9Eh7hx11HU/KnGMk+iVEjD+AtJ1JpsxF+d+QE?=
- =?us-ascii?Q?c/HzpUDVBh5+fSqqySoAzM8xywZl79khLakwtOL7Lqj5cxBsQWLGGZ4+UvM0?=
- =?us-ascii?Q?wrp0RKOdvZk2wq9Kr6HZVZc7HzEEvmJ73MSTFc2ZIN8HdL2p3NC9IHzv9f3v?=
- =?us-ascii?Q?QQfY+s7bGuDOUh5ZwN0omFNWEcYqwI+cWrJ5GBQRxP16ckSzh0wLKgy6or9F?=
- =?us-ascii?Q?GHZTbsmq6YVc29SeMvKT4Ck/vbWxwRILjoYZDrrYm5y2Gk0j/2Mr6qgiHi+d?=
- =?us-ascii?Q?gog0gHalH+C9RN/zfrsIFvqNxlibgYm12dhHP5kPkYKPmUE64HcFvJPapCDr?=
- =?us-ascii?Q?BctE9sWVfQi3SRcbquNbVksK1UkY9Jn3hph1KEMGStu6GObOF80kXN3OHm1s?=
- =?us-ascii?Q?rgyx+BXkePuqVjA+/nrz/8InC222+v+IX279vNS6Arc2PQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <30AB007EA4D5604987404E5805773341@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3890.25; Thu, 11 Mar
+ 2021 20:05:46 +0000
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::90d4:4d5b:b4c2:fdeb]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::90d4:4d5b:b4c2:fdeb%7]) with mapi id 15.20.3912.027; Thu, 11 Mar 2021
+ 20:05:46 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH net] net: axienet: Fix probe error cleanup
+Date:   Thu, 11 Mar 2021 14:05:18 -0600
+Message-Id: <20210311200518.3801916-1-robert.hancock@calian.com>
+X-Mailer: git-send-email 2.27.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [204.83.154.189]
+X-ClientProxiedBy: MWHPR04CA0060.namprd04.prod.outlook.com
+ (2603:10b6:300:6c::22) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:f::20)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (204.83.154.189) by MWHPR04CA0060.namprd04.prod.outlook.com (2603:10b6:300:6c::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Thu, 11 Mar 2021 20:05:45 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6e6696b0-bc50-4ad5-9737-08d8e4c90ec8
+X-MS-TrafficTypeDiagnostic: YT1PR01MB3289:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <YT1PR01MB3289845BBD3393B08447FEE7EC909@YT1PR01MB3289.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1923;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FKeMhO6pGpWUMNIxICJd2ZrYs7kpn4/jF7QY/E7XdIbFCLu1bXBIYhpaduwpU68u7TSQaR2O+9uBHapxWnsx6fCIK/deUgREswKCUkMXlX0Vc6+CSQ5X3vBG9YH4L0axIg9s8nIgev4vB3MD4wCagmGGiVv5434HUXRd0Xq9RVtZVtX0O4Pq3VEPXlkOgt0Sjzma8vVUs1KqsDfiV24HmB2OlekYJPy/ZulS9xP6Z6EnJhyd/M6yhiyI7CtJkao3RMnhWXkLRy3d81b/LmA8OmoM3tpEy0Yabo0duu+lojm28bA0pnGsoJev0QXaSiWd5xLYa+ElgVdcH6ITcrYyFUN1ywx4JVyKtoC+/SUJn0Y9QcMxO+wAiBEOzRXymnU9GAbuRYv3gtjQrMEUSE8rKiWwDBFVzTNvtKN0e9b8yVX/GhhRP+ybBv1hstSHOuEvUlA0TtULMYlnPBFeN8vQdHwz1XGS1464VNVXDLAadwRpud7tR2bUN9OI9MHfGW3pRqQSxQnQLEuMrA6UvxIvCdnceXRuZtpRmdPrBtZrmmY1GMEhcxaLY60WO0BN2i7IYw7O4rFI4gOKGzfJpw/P7Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(376002)(366004)(346002)(136003)(396003)(26005)(66556008)(6506007)(8936002)(83380400001)(316002)(66946007)(6486002)(6512007)(66476007)(107886003)(4326008)(52116002)(478600001)(1076003)(2906002)(69590400012)(5660300002)(2616005)(956004)(86362001)(16526019)(36756003)(8676002)(6666004)(44832011)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?OzGOXZxPaAW3QHhJL0lQaC0ULq2MlJzPgCt/OD1hgkldWL2YHR7Q+0PqzsLA?=
+ =?us-ascii?Q?/fKdCVcL3g8aE3cXpBjEHG1epo/sGqAWMqTFWnY9P36GkBWG3r179bJKNLz5?=
+ =?us-ascii?Q?Hq1eVepyBVE8QtjDEdsF8i/IC1imiP5nBGMsDdU82ukjoE4yY21ptMHNgA7Q?=
+ =?us-ascii?Q?x5l+TTxPa+F1gBgrzN+m9Gujt3P+q689m12qzd9JLt8LHaKkqPrS6Ykff9iP?=
+ =?us-ascii?Q?6npaKTF3Fxnms9RxpuxoHxoiRtfrXsv3u4AtO1zm7/gTffFts5QhGiXxVRFt?=
+ =?us-ascii?Q?yPKYWUOxtYFcIr3vobrtUJnVS10Y9UPtAu/dOdyRuPeVxAxgud9fEr7DGF0b?=
+ =?us-ascii?Q?PO8Hf9RH0zeizRU3A4ANICrZD9m3/yx9ya1PD+/VNME95XVwKBve3sHF4i6a?=
+ =?us-ascii?Q?NoFAlZ1lDrb0+b6NZPUIFGo8lDoybyqVpiCQd9qG+U/jRh56+1jnbvyOwLYA?=
+ =?us-ascii?Q?iSCNgoec168BsibGAS7KxCIvr9svFBGcR+211pEahjhce95OrPRBOaABaw8k?=
+ =?us-ascii?Q?r4RqarcHBLyiSrrdJCdb+7wLUF++tazNiXtkUczla3w/4Yh/8Q5sln+keDss?=
+ =?us-ascii?Q?p0EZSBu1DHi1hS4xR5UtHjqH45v+PGYkBrIUw2hx1hZ1IaGj7fQuA1W15bPv?=
+ =?us-ascii?Q?FNZG+D0qz4cstJ4poz2sVvj2jMz9VhSKzypaFAF/Ya/hDe5RHgkzgEBuJWUs?=
+ =?us-ascii?Q?6jFXrLcCqK/k83eUmpNbcNtY6ynL2kat1UCy0rIqy+vhkZGNtxBAy0KOy6mA?=
+ =?us-ascii?Q?L9iOJALaAcNepe5uqCDRT9QqgR5EM+IQhoeF8637liKuWa7IIY3QimGzf0cE?=
+ =?us-ascii?Q?ZexNSDD2p10JqwmYdebkXmEfMyAGWHRJiI5oc8EWuoWKfbyp8ugMUmrSd/oQ?=
+ =?us-ascii?Q?JVmc2+/C5muiYShhU62YiTbgNDEXtzskswVN7v/ahz129kLnxVR0CBOEi01q?=
+ =?us-ascii?Q?1I7ZfSKmgk1MvtS17GNB71/xzgHhzyH/qPM1vWqrwZbGY0w+STSVgWh3CHlA?=
+ =?us-ascii?Q?SwP7bfht3AGx5daI0BTPpkS1AT3LTmw6WDgGV/TiC+/5qm075o23rV/WP9xc?=
+ =?us-ascii?Q?Y1UiZFQ6FyDjm2OUxqQB4k90UufWrh0/IxQ/1cUwg/YtcbQBeB/YeUTmO6Hs?=
+ =?us-ascii?Q?ANPtNjDG/seq/dqvLx3+Q9hDSSlJJiB+rJlOgnBZMlf4K755S+bVyp083Teq?=
+ =?us-ascii?Q?Q7VAOFP6AjgBc+VYlSthdiP/iKwxKfmSADqH02cjS5ZSKt/NZcl7R64dIwO1?=
+ =?us-ascii?Q?+hqAea7Yhvt/zDCyPC92CJqdjZUpF7zwadE3C4rFqmVJHDHwFd6cI3MjoOhZ?=
+ =?us-ascii?Q?fOt4D29iaGX9ietsdUqEou+Q?=
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e6696b0-bc50-4ad5-9737-08d8e4c90ec8
+X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f3a9d09-2106-465e-e103-08d8e4c89a64
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2021 20:02:30.6590
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 20:05:46.2590
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qPfsQD6r3LzwTOcIaXifp89Su+JZhtk6HOT1v6U2/El4BrTWdYS4Gv1rSzvN3bfWKHDJDqGA5+fT3fDRUt6SXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7325
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NS1F9pZIA/HQ4moRAiNv1CL5O3sD2fh4g92ZCw628UgEoq0NHNTwBkr5xI1XZ4oGCyH4jWRwA/d6d+l44II9ibVSN8Ra2IchhDHJnvcxKfA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT1PR01MB3289
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-11_08:2021-03-10,2021-03-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 phishscore=0
+ priorityscore=1501 adultscore=0 spamscore=0 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 mlxscore=0 suspectscore=0 clxscore=1011 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103110103
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 08:30:08PM +0100, Horatiu Vultur wrote:
-> > > +static void ocelot_mrp_save_mac(struct ocelot *ocelot,
-> > > +                             struct ocelot_port *port)
-> > > +{
-> > > +     ocelot_mact_learn(ocelot, PGID_MRP, mrp_test_dmac,
-> > > +                       port->pvid_vlan.vid, ENTRYTYPE_LOCKED);
-> > > +     ocelot_mact_learn(ocelot, PGID_MRP, mrp_control_dmac,
-> > > +                       port->pvid_vlan.vid, ENTRYTYPE_LOCKED);
-> >
-> > Let me make sure I understand.
-> > By learning these multicast addresses, you mark them as 'not unknown' i=
-n
-> > the MAC table, because otherwise they will be flooded, including to the
-> > CPU port module, and there's no way you can remove the CPU from the
-> > flood mask, even if the packets get later redirected through VCAP IS2?
->
-> Yes, so far you are right.
->
-> > I mean that's the reason why we have the policer on the CPU port for th=
-e
-> > drop action in ocelot_vcap_init, no?
->
-> I am not sure that would work because I want the action to be redirect
-> and not policy. Or maybe I am missing something?
+The driver did not always clean up all allocated resources when probe
+failed. Fix the probe cleanup path to clean up everything that was
+allocated.
 
-Yes, it is not the same context as for tc-drop. The problem for tc-drop
-was that the packets would get removed from the hardware datapath, but
-they would still get copied to the CPU nonetheless. A policer there was
-an OK solution because we wanted to kill those packets completely. Here,
-the problem is the same, but we cannot use the same solution, since a
-policer will also prevent the frames from being redirected.
+Fixes: 57baf8cc70 ("net: axienet: Handle deferred probe on clock properly")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+---
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 37 +++++++++++++------
+ 1 file changed, 25 insertions(+), 12 deletions(-)
 
-> >
-> > > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> > > index 425ff29d9389..c41696d2e82b 100644
-> > > --- a/include/soc/mscc/ocelot.h
-> > > +++ b/include/soc/mscc/ocelot.h
-> > > @@ -51,6 +51,7 @@
-> > >   */
-> > >
-> > >  /* Reserve some destination PGIDs at the end of the range:
-> > > + * PGID_MRP: used for not flooding MRP frames to CPU
-> >
-> > Could this be named PGID_BLACKHOLE or something? It isn't specific to
-> > MRP if I understand correctly. We should also probably initialize it
-> > with zero.
->
-> It shouldn't matter the value, what is important that the CPU port not
-> to be set. Because the value of this PGID will not be used in the
-> fowarding decision.
-> Currently only MRP is using it so that is the reason for naming it like
-> that but I can rename it and initialized it to 0 to be more clear.
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 3a8775e0ca55..5d677db0aee5 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1880,7 +1880,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 	if (IS_ERR(lp->regs)) {
+ 		dev_err(&pdev->dev, "could not map Axi Ethernet regs.\n");
+ 		ret = PTR_ERR(lp->regs);
+-		goto free_netdev;
++		goto cleanup_clk;
+ 	}
+ 	lp->regs_start = ethres->start;
+ 
+@@ -1958,18 +1958,18 @@ static int axienet_probe(struct platform_device *pdev)
+ 			break;
+ 		default:
+ 			ret = -EINVAL;
+-			goto free_netdev;
++			goto cleanup_clk;
+ 		}
+ 	} else {
+ 		ret = of_get_phy_mode(pdev->dev.of_node, &lp->phy_mode);
+ 		if (ret)
+-			goto free_netdev;
++			goto cleanup_clk;
+ 	}
+ 	if (lp->switch_x_sgmii && lp->phy_mode != PHY_INTERFACE_MODE_SGMII &&
+ 	    lp->phy_mode != PHY_INTERFACE_MODE_1000BASEX) {
+ 		dev_err(&pdev->dev, "xlnx,switch-x-sgmii only supported with SGMII or 1000BaseX\n");
+ 		ret = -EINVAL;
+-		goto free_netdev;
++		goto cleanup_clk;
+ 	}
+ 
+ 	/* Find the DMA node, map the DMA registers, and decode the DMA IRQs */
+@@ -1982,7 +1982,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 			dev_err(&pdev->dev,
+ 				"unable to get DMA resource\n");
+ 			of_node_put(np);
+-			goto free_netdev;
++			goto cleanup_clk;
+ 		}
+ 		lp->dma_regs = devm_ioremap_resource(&pdev->dev,
+ 						     &dmares);
+@@ -2002,12 +2002,12 @@ static int axienet_probe(struct platform_device *pdev)
+ 	if (IS_ERR(lp->dma_regs)) {
+ 		dev_err(&pdev->dev, "could not map DMA regs\n");
+ 		ret = PTR_ERR(lp->dma_regs);
+-		goto free_netdev;
++		goto cleanup_clk;
+ 	}
+ 	if ((lp->rx_irq <= 0) || (lp->tx_irq <= 0)) {
+ 		dev_err(&pdev->dev, "could not determine irqs\n");
+ 		ret = -ENOMEM;
+-		goto free_netdev;
++		goto cleanup_clk;
+ 	}
+ 
+ 	/* Autodetect the need for 64-bit DMA pointers.
+@@ -2037,7 +2037,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(addr_width));
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "No suitable DMA available\n");
+-		goto free_netdev;
++		goto cleanup_clk;
+ 	}
+ 
+ 	/* Check for Ethernet core IRQ (optional) */
+@@ -2068,12 +2068,12 @@ static int axienet_probe(struct platform_device *pdev)
+ 		if (!lp->phy_node) {
+ 			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
+ 			ret = -EINVAL;
+-			goto free_netdev;
++			goto cleanup_mdio;
+ 		}
+ 		lp->pcs_phy = of_mdio_find_device(lp->phy_node);
+ 		if (!lp->pcs_phy) {
+ 			ret = -EPROBE_DEFER;
+-			goto free_netdev;
++			goto cleanup_mdio;
+ 		}
+ 		lp->phylink_config.pcs_poll = true;
+ 	}
+@@ -2087,17 +2087,30 @@ static int axienet_probe(struct platform_device *pdev)
+ 	if (IS_ERR(lp->phylink)) {
+ 		ret = PTR_ERR(lp->phylink);
+ 		dev_err(&pdev->dev, "phylink_create error (%i)\n", ret);
+-		goto free_netdev;
++		goto cleanup_mdio;
+ 	}
+ 
+ 	ret = register_netdev(lp->ndev);
+ 	if (ret) {
+ 		dev_err(lp->dev, "register_netdev() error (%i)\n", ret);
+-		goto free_netdev;
++		goto cleanup_phylink;
+ 	}
+ 
+ 	return 0;
+ 
++cleanup_phylink:
++	phylink_destroy(lp->phylink);
++
++cleanup_mdio:
++	if (lp->pcs_phy)
++		put_device(&lp->pcs_phy->dev);
++	if (lp->mii_bus)
++		axienet_mdio_teardown(lp);
++	of_node_put(lp->phy_node);
++
++cleanup_clk:
++	clk_disable_unprepare(lp->clk);
++
+ free_netdev:
+ 	free_netdev(ndev);
+ 
+-- 
+2.27.0
 
-So tell me more about this behavior.
-Is there no way to suppress the flooding to CPU action, even if the
-frame was hit by a TCAM rule? Let's forget about MRP, assume this is an
-broadcast IPv4 packet, and we have a matching src_ip rule to perform
-mirred egress redirect to another port.
-Would the CPU be flooded with this traffic too? What would you do to
-avoid that situation?=
