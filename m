@@ -2,136 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A2E8336A4D
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EFD4336A86
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 04:18:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbhCKDBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 22:01:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53048 "EHLO
+        id S230325AbhCKDSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 22:18:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbhCKDB2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 22:01:28 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBC8C061574
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 19:01:28 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id q130so2640142oif.13
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 19:01:28 -0800 (PST)
+        with ESMTP id S230125AbhCKDSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 22:18:04 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01018C061574;
+        Wed, 10 Mar 2021 19:18:03 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id k2so17667243ili.4;
+        Wed, 10 Mar 2021 19:18:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=QqqDh8TjAj6Dh4tKZDOB+6W75csEvzru/rNrT/f/Ss8=;
-        b=bNZM1RADqOaCC+PuqDSHxYmb9ooYFyvowkAs3dNtSIyW5pufeK8qGMgZUDgG3e4Sa/
-         N3OBo14YcFCBe+RATbsSnMQQB7cYDg0TSsnBUk1czYXZzZ/vsH6OwrH9wed7ablPXqKq
-         y0yX3/0yOrlS7gpoYFJ0jMPB1PTxDfUSLWPghIEarPr7huDMYaxGY2Desf4hlsBO8fzM
-         nmAGXQQTETL3UjeHHKiitlVnbDpwm6xh8xPo6NXveWNAWWO35vI+xA9inFUjPbn+fev0
-         rWsZPKq8y92BjUUBnZRTB9X6qLQbZ5YNCprkiUKfpF6sJcbtUHMowNqeLC3cf1Iz43nq
-         nYCg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gDVCmWBMN4wY4blBCdk5NbxQ4zATbHUHg6v9hjuwVWI=;
+        b=lRq96C4BWNBxmE9Wkmv695xAY5/ghHOfDUq3ch5uIRfQn0e1KfAkVtU/mT7Dtdi/5V
+         pNX5+vC/lSuHO33M/yNWgVrLUk4Qu7oyIukjcFYJQf3Ytbt4I6xHZ8ABUk5j8yxYDusI
+         2f8iAsGLUGP7jMVNTQ4kutwrezoOhjPhNDZTitOLQVgb2F9ZbUf2ylMZZrCtMOv7Z7A2
+         QF2gyeu0uhQxGxl3DGySDhLxoBYOCXSieMhrz4gHtdWrzwS7ma5ForjOTHfdLwF6mIpW
+         MjXilZQrELyFczNZJVNu6dKA8Z5VqDHetBMP+dAwi1Jh8qWkHm1eeVcET/AVIiWlj0+4
+         6Y/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=QqqDh8TjAj6Dh4tKZDOB+6W75csEvzru/rNrT/f/Ss8=;
-        b=BKfoQPW2qIeNReRnPMldbpPQRtKLFjL9P0AizKVkoqYlp2D/7jkv3R9cDJDTar4aXk
-         JJQIuF64DAcoVGEnkyE+jG4h93+DspNnyEfYImYjD0AoPdY/Yjqh2PrhIAnOYIrApc6+
-         ktjAbJ7XbiYEOaLAflzjxJT4HoR0srvN4FEfxrP1GPGeMaV8OFvWkbt7HyF9eHbj7dQy
-         sKqn5LHtgHH1MxChtJPs9BnMlkwzCBUhO7n9FUKF1bpC2TMeUjtRQupi/HiFedzkzpzS
-         fe0OI/8YwV0BgKIROQGdtq2TXzU0578hymDOr5mK12vweLVXss4njVEZDFpUYZBNzpfX
-         Cmfw==
-X-Gm-Message-State: AOAM533Bu6zPt7IJ6/3F0MMfa50iKuQSFj8ENeYgimtAzU/8FtJA2Oqg
-        N1J41qehP16damnSEV/0DcsZ6ONdUR4=
-X-Google-Smtp-Source: ABdhPJzg38t4AEV7boqguoCI9/DdviFaHmToc0Q9MXdINs3P4B6OxFk5SMThYHpIoBZhVCxvmIHiTQ==
-X-Received: by 2002:aca:4c52:: with SMTP id z79mr4795354oia.125.1615431687784;
-        Wed, 10 Mar 2021 19:01:27 -0800 (PST)
-Received: from localhost.localdomain ([50.236.19.102])
-        by smtp.gmail.com with ESMTPSA id v2sm364569ota.59.2021.03.10.19.01.24
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Mar 2021 19:01:27 -0800 (PST)
-From:   xiangxia.m.yue@gmail.com
-To:     netdev@vger.kernel.org, alexanderduyck@fb.com
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v2] net: sock: simplify tw proto registration
-Date:   Thu, 11 Mar 2021 10:57:36 +0800
-Message-Id: <20210311025736.77235-1-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.15.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gDVCmWBMN4wY4blBCdk5NbxQ4zATbHUHg6v9hjuwVWI=;
+        b=X86JK36idgxw1SAs6K5RmAZSmJ4/KIQEqjXdv8Spy6sAmunQ39jSGRhK4EE/yg7wZK
+         lNscYH22gLOlsmDxNJXCGc57iN5xE2u+sYrpofzENrPecnyVGKeQTPpQfc2K6YH7xefX
+         gZTwIj/UfX/lXqy1sHDxR8eYc5WQuwHD/FcZHguMsLy3CFe1UrXJMot3E/6hKHzqGZYQ
+         pjKwwcp1Zvwwa4D31M48DuC8aJ/VOI/DmSEDS2k5RlOH0/V74uYXRnXS7cI95d5eZYO/
+         269oXDDiM8/8tyzZ7tuZKG4u5xk1UOP9WEqiNBl81RxHwPxt4mlcWEGtacc2xgp2C9yb
+         0AVA==
+X-Gm-Message-State: AOAM531Th2lBnDBz4BLPDoXjLibX2zn83aK2xbXMJQ24FCVpKn5kc+iU
+        kwXIjNLQzjaU+q/CiYzOcwCwW7ufJV9m5SUtawM=
+X-Google-Smtp-Source: ABdhPJwO613Bp41zr2CTUp0cH4WSHwqSazEWIyoQLC+TpS/jWusNSS40OlnL9oW2D2BOPwrYb2nn4Vd6sm1TkTrrIV0=
+X-Received: by 2002:a92:cb49:: with SMTP id f9mr4997838ilq.0.1615432683376;
+ Wed, 10 Mar 2021 19:18:03 -0800 (PST)
+MIME-Version: 1.0
+References: <20210310211420.649985-1-ilya.lipnitskiy@gmail.com>
+ <20210310211420.649985-3-ilya.lipnitskiy@gmail.com> <20210310231026.lhxakeldngkr7prm@skbuf>
+In-Reply-To: <20210310231026.lhxakeldngkr7prm@skbuf>
+From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Date:   Wed, 10 Mar 2021 19:17:52 -0800
+Message-ID: <CALCv0x0FKVKpVtKsxkq5BwzrSP2SnuYUaK38RHjd_zgoBCpdeA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] net: dsa: mt7530: setup core clock even in TRGMII mode
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Hi Vladimir,
 
-Introduce the new function tw_prot_init (inspired by
-req_prot_init) to simplify "proto_register" function.
-
-tw_prot_cleanup will take care of a partially initialized
-timewait_sock_ops.
-
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
----
- net/core/sock.c | 44 ++++++++++++++++++++++++++++----------------
- 1 file changed, 28 insertions(+), 16 deletions(-)
-
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 0ed98f20448a..cc31b601ae10 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3440,6 +3440,32 @@ static void tw_prot_cleanup(struct timewait_sock_ops *twsk_prot)
- 	twsk_prot->twsk_slab = NULL;
- }
- 
-+static int tw_prot_init(const struct proto *prot)
-+{
-+	struct timewait_sock_ops *twsk_prot = prot->twsk_prot;
-+
-+	if (!twsk_prot)
-+		return 0;
-+
-+	twsk_prot->twsk_slab_name = kasprintf(GFP_KERNEL, "tw_sock_%s",
-+					      prot->name);
-+	if (!twsk_prot->twsk_slab_name)
-+		return -ENOMEM;
-+
-+	twsk_prot->twsk_slab =
-+		kmem_cache_create(twsk_prot->twsk_slab_name,
-+				  twsk_prot->twsk_obj_size, 0,
-+				  SLAB_ACCOUNT | prot->slab_flags,
-+				  NULL);
-+	if (!twsk_prot->twsk_slab) {
-+		pr_crit("%s: Can't create timewait sock SLAB cache!\n",
-+			prot->name);
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
- static void req_prot_cleanup(struct request_sock_ops *rsk_prot)
- {
- 	if (!rsk_prot)
-@@ -3496,22 +3522,8 @@ int proto_register(struct proto *prot, int alloc_slab)
- 		if (req_prot_init(prot))
- 			goto out_free_request_sock_slab;
- 
--		if (prot->twsk_prot != NULL) {
--			prot->twsk_prot->twsk_slab_name = kasprintf(GFP_KERNEL, "tw_sock_%s", prot->name);
--
--			if (prot->twsk_prot->twsk_slab_name == NULL)
--				goto out_free_request_sock_slab;
--
--			prot->twsk_prot->twsk_slab =
--				kmem_cache_create(prot->twsk_prot->twsk_slab_name,
--						  prot->twsk_prot->twsk_obj_size,
--						  0,
--						  SLAB_ACCOUNT |
--						  prot->slab_flags,
--						  NULL);
--			if (prot->twsk_prot->twsk_slab == NULL)
--				goto out_free_timewait_sock_slab;
--		}
-+		if (tw_prot_init(prot))
-+			goto out_free_timewait_sock_slab;
- 	}
- 
- 	mutex_lock(&proto_list_mutex);
--- 
-2.27.0
-
+On Wed, Mar 10, 2021 at 3:10 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> Hello Ilya,
+>
+> On Wed, Mar 10, 2021 at 01:14:20PM -0800, Ilya Lipnitskiy wrote:
+> > 3f9ef7785a9c ("MIPS: ralink: manage low reset lines") made it so mt7530
+> > actually resets the switch on platforms such as mt7621 (where bit 2 is
+> > the reset line for the switch). That exposed an issue where the switch
+> > would not function properly in TRGMII mode after a reset.
+> >
+> > Reconfigure core clock in TRGMII mode to fix the issue.
+> >
+> > Also, disable both core and TRGMII Tx clocks prior to reconfiguring.
+> > Previously, only the core clock was disabled, but not TRGMII Tx clock.
+> >
+> > Tested on Ubiquity ER-X (MT7621) with TRGMII mode enabled.
+> >
+> > Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+> > ---
+>
+> For the networking subsystem there are two git trees, "net" for bugfixes
+> and "net-next" for new features, and we specify the target tree using
+> git send-email --subject-prefix="PATCH net-next".
+>
+> I assume you would like the v5.12 kernel to actually be functional on
+> the Ubiquiti ER-X switch, so I would recommend keeping this patch
+> minimal and splitting it out from the current series, and targeting it
+> towards the "net" tree, which will eventually get merged into one of the
+> v5.12 rc's and then into the final version. The other patches won't go
+> into v5.12 but into v5.13, hence the "next" name.
+I thought I figured it out - now I'm confused. Can you explain why
+https://patchwork.kernel.org/project/netdevbpf/patch/20210311012108.7190-1-ilya.lipnitskiy@gmail.com/
+is marked as supeseded?
+>
+> Also add these lines in your .gitconfig:
+>
+> [core]
+>         abbrev = 12
+> [pretty]
+>         fixes = Fixes: %h (\"%s\")
+>
+> and run:
+>
+> git show 3f9ef7785a9c --pretty=fixes
+> Fixes: 3f9ef7785a9c ("MIPS: ralink: manage low reset lines")
+>
+> and paste that "Fixes:" line in the commit message, right above your
+> Signed-off-by: tag.
