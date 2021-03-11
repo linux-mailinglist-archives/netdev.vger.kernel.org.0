@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2AA6336B12
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 05:22:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B3DC336B1A
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 05:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231152AbhCKEV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 23:21:56 -0500
-Received: from mga02.intel.com ([134.134.136.20]:33617 "EHLO mga02.intel.com"
+        id S231216AbhCKEYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 23:24:05 -0500
+Received: from mga05.intel.com ([192.55.52.43]:31125 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230462AbhCKEVv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Mar 2021 23:21:51 -0500
-IronPort-SDR: yJQPSWQ3T/Wpr99F48lKRe4CirL5sj+fndyEwuCzyuX7EaiYZiDubzI23MCg7UHARo3flOYBKe
- 9udlW2oEbNwA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9919"; a="175716896"
+        id S231183AbhCKEXx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Mar 2021 23:23:53 -0500
+IronPort-SDR: yYqZ2YYRzLozLR3nrMW2+rfEP854p7h3gcbf2wspRZzpCARhgKr15HkKNFeA7SzsL1+FKMq95f
+ i4oUxo91dOuw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9919"; a="273649201"
 X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
-   d="scan'208";a="175716896"
+   d="scan'208";a="273649201"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 20:21:50 -0800
-IronPort-SDR: 55TR9K9caS5NVQLkbSlzyZ3lHQOoazlWGFpZarFnzMTjZ9KbQwjDgIGXQWNDyxVz7Z70qQVMJU
- OaEJ8EA0Vsqw==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 20:23:52 -0800
+IronPort-SDR: fEmxznOusV/EE//0QLoDz7Fhmh9dS9730zuo/CNMC2b1gT+6vjt1Gr1uWtlus2v/69m3+HqoFB
+ 0WpLbgNgCLig==
 X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
-   d="scan'208";a="410467824"
+   d="scan'208";a="410468138"
 Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.249.170.224]) ([10.249.170.224])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 20:21:48 -0800
-Subject: Re: [PATCH V3 1/6] vDPA/ifcvf: get_vendor_id returns a device
- specific vendor id
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 20:23:49 -0800
+Subject: Re: [PATCH V3 3/6] vDPA/ifcvf: rename original IFCVF dev ids to N3000
+ ids
 To:     Jason Wang <jasowang@redhat.com>,
         Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
         lulu@redhat.com, leonro@nvidia.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20210310090052.4762-1-lingshan.zhu@intel.com>
- <20210310090052.4762-2-lingshan.zhu@intel.com>
- <ff5fc8f9-f886-bd2a-60cc-771c628c6c4b@redhat.com>
+ <20210310090052.4762-4-lingshan.zhu@intel.com>
+ <5e2b22cc-7faa-2987-a30a-ce32f10099b6@redhat.com>
 From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
-Message-ID: <5f2d915f-e1b0-c9eb-9fc8-4b64f5d8cd0f@linux.intel.com>
-Date:   Thu, 11 Mar 2021 12:21:45 +0800
+Message-ID: <4472d8f3-ef44-37a0-8ee1-82caa4a0a843@linux.intel.com>
+Date:   Thu, 11 Mar 2021 12:23:48 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <ff5fc8f9-f886-bd2a-60cc-771c628c6c4b@redhat.com>
+In-Reply-To: <5e2b22cc-7faa-2987-a30a-ce32f10099b6@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -50,49 +50,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/11/2021 11:23 AM, Jason Wang wrote:
+On 3/11/2021 11:25 AM, Jason Wang wrote:
 >
 > On 2021/3/10 5:00 下午, Zhu Lingshan wrote:
->> In this commit, ifcvf_get_vendor_id() will return
->> a device specific vendor id of the probed pci device
->> than a hard code.
+>> IFCVF driver probes multiple types of devices now,
+>> to distinguish the original device driven by IFCVF
+>> from others, it is renamed as "N3000".
 >>
 >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 >> ---
->>   drivers/vdpa/ifcvf/ifcvf_main.c | 5 ++++-
->>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>   drivers/vdpa/ifcvf/ifcvf_base.h | 8 ++++----
+>>   drivers/vdpa/ifcvf/ifcvf_main.c | 8 ++++----
+>>   2 files changed, 8 insertions(+), 8 deletions(-)
 >>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
+>> b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> index 75d9a8052039..794d1505d857 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> @@ -18,10 +18,10 @@
+>>   #include <uapi/linux/virtio_config.h>
+>>   #include <uapi/linux/virtio_pci.h>
+>>   -#define IFCVF_VENDOR_ID        0x1AF4
+>> -#define IFCVF_DEVICE_ID        0x1041
+>> -#define IFCVF_SUBSYS_VENDOR_ID    0x8086
+>> -#define IFCVF_SUBSYS_DEVICE_ID    0x001A
+>> +#define N3000_VENDOR_ID        0x1AF4
+>> +#define N3000_DEVICE_ID        0x1041
+>> +#define N3000_SUBSYS_VENDOR_ID    0x8086
+>> +#define N3000_SUBSYS_DEVICE_ID    0x001A
+>>     #define C5000X_PL_VENDOR_ID        0x1AF4
+>>   #define C5000X_PL_DEVICE_ID        0x1000
 >> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
 >> b/drivers/vdpa/ifcvf/ifcvf_main.c
->> index fa1af301cf55..e501ee07de17 100644
+>> index 26a2dab7ca66..fd5befc5cbcc 100644
 >> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
 >> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->> @@ -324,7 +324,10 @@ static u32 ifcvf_vdpa_get_device_id(struct 
->> vdpa_device *vdpa_dev)
->>     static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
->>   {
->> -    return IFCVF_SUBSYS_VENDOR_ID;
->> +    struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
->> +    struct pci_dev *pdev = adapter->pdev;
->> +
->> +    return pdev->subsystem_vendor;
+>> @@ -480,10 +480,10 @@ static void ifcvf_remove(struct pci_dev *pdev)
 >>   }
+>>     static struct pci_device_id ifcvf_pci_ids[] = {
+>> -    { PCI_DEVICE_SUB(IFCVF_VENDOR_ID,
+>> -        IFCVF_DEVICE_ID,
+>> -        IFCVF_SUBSYS_VENDOR_ID,
+>> -        IFCVF_SUBSYS_DEVICE_ID) },
+>> +    { PCI_DEVICE_SUB(N3000_VENDOR_ID,
+>> +             N3000_DEVICE_ID,
 >
 >
-> While at this, I wonder if we can do something similar in 
-> get_device_id() if it could be simple deduced from some simple math 
-> from the pci device id?
+> I am not sure the plan for Intel but I wonder if we can simply use 
+> PCI_ANY_ID for device id here. Otherewise you need to maintain a very 
+> long list of ids here.
 >
 > Thanks
 Hi Jason,
 
-IMHO, this implementation is just some memory read ops, I think other 
-implementations may not save many cpu cycles, an if cost at least three 
-cpu cycles.
+Thanks! but maybe if we present a very simple and clear list like what 
+e1000 does can help the users understand what we support easily.
 
 Thanks!
 >
 >
->>     static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
+>> + N3000_SUBSYS_VENDOR_ID,
+>> +             N3000_SUBSYS_DEVICE_ID) },
+>>       { PCI_DEVICE_SUB(C5000X_PL_VENDOR_ID,
+>>                C5000X_PL_DEVICE_ID,
+>>                C5000X_PL_SUBSYS_VENDOR_ID,
 >
 
