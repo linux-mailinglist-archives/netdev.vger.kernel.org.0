@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D63B9337C6A
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:23:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F4CE337C6C
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:23:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbhCKSWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 13:22:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53478 "EHLO
+        id S230142AbhCKSWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 13:22:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbhCKSWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 13:22:08 -0500
+        with ESMTP id S229483AbhCKSWL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 13:22:11 -0500
 Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CFBC061574
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 10:22:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD61C061574
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 10:22:11 -0800 (PST)
 Received: from p548da928.dip0.t-ipconnect.de ([84.141.169.40] helo=kmk0.Speedport_W_724V_09011603_06_007); authenticated
         by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1lKPVc-0008Vo-C4; Thu, 11 Mar 2021 18:54:04 +0100
+        id 1lKPVc-0008Vo-R8; Thu, 11 Mar 2021 18:54:04 +0100
 From:   Kurt Kanzenbach <kurt@kmk-computers.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -25,148 +25,41 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Kurt Kanzenbach <kurt@kmk-computers.de>
-Subject: [PATCH net-next 3/6] net: dsa: hellcreek: Add devlink VLAN region
-Date:   Thu, 11 Mar 2021 18:53:41 +0100
-Message-Id: <20210311175344.3084-4-kurt@kmk-computers.de>
+Subject: [PATCH net-next 4/6] net: dsa: hellcreek: Use boolean value
+Date:   Thu, 11 Mar 2021 18:53:42 +0100
+Message-Id: <20210311175344.3084-5-kurt@kmk-computers.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210311175344.3084-1-kurt@kmk-computers.de>
 References: <20210311175344.3084-1-kurt@kmk-computers.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1615486927;e5b29ed7;
-X-HE-SMSGID: 1lKPVc-0008Vo-C4
+X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1615486931;396d5fba;
+X-HE-SMSGID: 1lKPVc-0008Vo-R8
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow to dump the VLAN table via devlink. This especially useful, because the
-driver internally leverages VLANs for the port separation. These are not visible
-via the bridge utility.
+hellcreek_select_vlan() takes a boolean instead of an integer.
+So, use false accordingly.
 
 Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
 ---
- drivers/net/dsa/hirschmann/hellcreek.c | 73 ++++++++++++++++++++++++++
- drivers/net/dsa/hirschmann/hellcreek.h |  6 +++
- 2 files changed, 79 insertions(+)
+ drivers/net/dsa/hirschmann/hellcreek.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index d3760e2c9d8a..910c992a84b0 100644
+index 910c992a84b0..d21f614f1c23 100644
 --- a/drivers/net/dsa/hirschmann/hellcreek.c
 +++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -1146,6 +1146,66 @@ static int hellcreek_setup_devlink_resources(struct dsa_switch *ds)
- 	return err;
- }
+@@ -437,7 +437,7 @@ static void hellcreek_unapply_vlan(struct hellcreek *hellcreek, int port,
  
-+static int hellcreek_devlink_region_vlan_snapshot(struct devlink *dl,
-+						  const struct devlink_region_ops *ops,
-+						  struct netlink_ext_ack *extack,
-+						  u8 **data)
-+{
-+	struct hellcreek_devlink_vlan_entry *table, *entry;
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
-+	struct hellcreek *hellcreek = ds->priv;
-+	int i;
-+
-+	table = kcalloc(VLAN_N_VID, sizeof(*entry), GFP_KERNEL);
-+	if (!table)
-+		return -ENOMEM;
-+
-+	entry = table;
-+
-+	mutex_lock(&hellcreek->reg_lock);
-+	for (i = 0; i < VLAN_N_VID; ++i, ++entry) {
-+		entry->member = hellcreek->vidmbrcfg[i];
-+		entry->vid    = i;
-+	}
-+	mutex_unlock(&hellcreek->reg_lock);
-+
-+	*data = (u8 *)table;
-+
-+	return 0;
-+}
-+
-+static struct devlink_region_ops hellcreek_region_vlan_ops = {
-+	.name	    = "vlan",
-+	.snapshot   = hellcreek_devlink_region_vlan_snapshot,
-+	.destructor = kfree,
-+};
-+
-+static int hellcreek_setup_devlink_regions(struct dsa_switch *ds)
-+{
-+	struct hellcreek *hellcreek = ds->priv;
-+	struct devlink_region_ops *ops;
-+	struct devlink_region *region;
-+	u64 size;
-+
-+	size = VLAN_N_VID * sizeof(struct hellcreek_devlink_vlan_entry);
-+	ops  = &hellcreek_region_vlan_ops;
-+
-+	region = dsa_devlink_region_create(ds, ops, 1, size);
-+	if (IS_ERR(region))
-+		return PTR_ERR(region);
-+
-+	hellcreek->vlan_region = region;
-+
-+	return 0;
-+}
-+
-+static void hellcreek_teardown_devlink_regions(struct dsa_switch *ds)
-+{
-+	struct hellcreek *hellcreek = ds->priv;
-+
-+	dsa_devlink_region_destroy(hellcreek->vlan_region);
-+}
-+
- static int hellcreek_setup(struct dsa_switch *ds)
- {
- 	struct hellcreek *hellcreek = ds->priv;
-@@ -1207,11 +1267,24 @@ static int hellcreek_setup(struct dsa_switch *ds)
- 		return ret;
- 	}
+ 	mutex_lock(&hellcreek->reg_lock);
  
-+	ret = hellcreek_setup_devlink_regions(ds);
-+	if (ret) {
-+		dev_err(hellcreek->dev,
-+			"Failed to setup devlink regions!\n");
-+		goto err_regions;
-+	}
-+
- 	return 0;
-+
-+err_regions:
-+	dsa_devlink_resources_unregister(ds);
-+
-+	return ret;
- }
+-	hellcreek_select_vlan(hellcreek, vid, 0);
++	hellcreek_select_vlan(hellcreek, vid, false);
  
- static void hellcreek_teardown(struct dsa_switch *ds)
- {
-+	hellcreek_teardown_devlink_regions(ds);
- 	dsa_devlink_resources_unregister(ds);
- }
- 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirschmann/hellcreek.h
-index 06737caac37e..c0f17a2f13a0 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.h
-+++ b/drivers/net/dsa/hirschmann/hellcreek.h
-@@ -278,6 +278,7 @@ struct hellcreek {
- 	struct mutex reg_lock;	/* Switch IP register lock */
- 	struct mutex vlan_lock;	/* VLAN bitmaps lock */
- 	struct mutex ptp_lock;	/* PTP IP register lock */
-+	struct devlink_region *vlan_region;
- 	void __iomem *base;
- 	void __iomem *ptp_base;
- 	u16 swcfg;		/* swcfg shadow */
-@@ -308,4 +309,9 @@ enum hellcreek_devlink_resource_id {
- 	HELLCREEK_DEVLINK_PARAM_ID_METADATA_USAGE,
- };
- 
-+struct hellcreek_devlink_vlan_entry {
-+	u16 vid;
-+	u16 member;
-+};
-+
- #endif /* _HELLCREEK_H_ */
+ 	/* Setup port vlan membership */
+ 	hellcreek_select_vlan_params(hellcreek, port, &shift, &mask);
 -- 
 2.30.2
 
