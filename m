@@ -2,104 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D988337D08
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:58:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A00337D12
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:59:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbhCKS60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 13:58:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
+        id S230408AbhCKS6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 13:58:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbhCKS4y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 13:56:54 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BD6C061760;
-        Thu, 11 Mar 2021 10:56:27 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id n195so22762282ybg.9;
-        Thu, 11 Mar 2021 10:56:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=th5U7zFe0FU/O5O7Dd2Akwz7VzPCvkDhXRqRT58M53c=;
-        b=DKlbjlr2WrjsMJ8TrWRPW/vmdQIB+AEpsChvJPDmxna4dBvvlbWBnB0c6v5KYG4iT9
-         QZxJKxtHIQ3kvHFl2CiS/uIJWVnRvJR767xT9B5440kX8sQzPzndMOviSIxzQoTpokwc
-         LLRtG5NeClKq/T2balBQdLEO35WyeXvBIG26dU+1uwE+DZPVWtkHhFocLcO3EtnVLMIq
-         WgNjFVoGSCzDxc4HqIJ/CWg09hX3S5KhobUT0BDxe/yRwEjqaCLwcEHCI9/Ke7JPvaP1
-         HZTdoBpMVh3VgsrWbovsCSL1O485eF3VaQ9zUAD9VSq9puXy7Wb6j+hG6w7c+S8TbGxB
-         M58g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=th5U7zFe0FU/O5O7Dd2Akwz7VzPCvkDhXRqRT58M53c=;
-        b=XmVSZOBayq5u2+t7LEejsD8fFytVgCmewvsiBtV7b4JVkejOBXhEB91CLlk2KCGOz0
-         st3zl4GKO8hbTWORBkVyLbb8LniX1JoMba0Pgt0khMlpVqY+d9mlmSVqSEBhDs2sloE+
-         knVCaqS+ybB9A5cakaIQZdeqJKpWGRiU+IsoHuVS9huWODXnmqjUuSVxB8abSfUym/se
-         D656CLE2knK5bO9IjNl6uwgHK5ctJY7Al7z8AuitIhWnNLVovR5zjTyaJN8TFakUVFkV
-         Zy3fGkFrCZofDaF4n4RZvwBS7f+8To5dgSUrmMyb8uJ7qWToWPwe2P7ry4NW4z3lk8Lk
-         pVyA==
-X-Gm-Message-State: AOAM530WENt5BPib44q5eeUMAvVaiD+hM0lWRFQ6NNsy1qO0LdnHu/Us
-        jaEjQmg/cvD6zpCGnaWUmBoGgTga36UIoTt0H6o=
-X-Google-Smtp-Source: ABdhPJwj7WfnvuR3BlKipoL1l1LfQDGM7kVlljXj8cg9yovU3lrDzmTwRWs78ggavLNNBhiphPMcWpQXTFsadNPtj6g=
-X-Received: by 2002:a25:874c:: with SMTP id e12mr12699919ybn.403.1615488987293;
- Thu, 11 Mar 2021 10:56:27 -0800 (PST)
+        with ESMTP id S229562AbhCKS6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 13:58:20 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537DFC061574;
+        Thu, 11 Mar 2021 10:58:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=gs58FMZ4ZIcfp6tfvdbnTyV06IaEwhAIrr46llssbNY=; b=SmjiH2VQPT/IQ9vdX+mLbBABzW
+        7nAGGw1kx3hP4G1deRuKlhGw/pDeioyLbtCldjJuk3WEKTdiP7x40NWrmv3qaWHzZw1M0KwK81cbW
+        +x56KLo5eisidpJ669nOaSG90ryudnrK/rJLpY8jgbGPoylfB0x9iBeU+J8kk69/1h+TmOxdx/KBI
+        CADghUQjLwN1d6SS78Z2F/okLD5sKPjHkoSq2EtMT+Sxuyv8z3Vumgv6Fd4Sn0+PnxkgSP6545qwy
+        z3/UwAsw283xzKhmo0/Smg3a4lyjfRUUsEGVfx9kKSM9UXR+D8NVxkLs4iPwiBzUGTbQEIQg2gAOe
+        tIH9mo/g==;
+Received: from [2601:1c0:6280:3f0::3ba4]
+        by merlin.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lKQVj-000xjJ-53; Thu, 11 Mar 2021 18:58:15 +0000
+Subject: Re: [PATCH net-next v4 2/2] net: Add Qcom WWAN control driver
+To:     Loic Poulain <loic.poulain@linaro.org>, kuba@kernel.org,
+        davem@davemloft.net, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
+        hemantk@codeaurora.org, jhugo@codeaurora.org
+References: <1615480746-28518-1-git-send-email-loic.poulain@linaro.org>
+ <1615480746-28518-2-git-send-email-loic.poulain@linaro.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <bb73e0bf-1c30-89f7-a28d-4e51998eec9f@infradead.org>
+Date:   Thu, 11 Mar 2021 10:58:11 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-References: <20210310080929.641212-1-bjorn.topel@gmail.com>
- <20210310080929.641212-3-bjorn.topel@gmail.com> <20210311000605.tuo7rg4b7keo76iy@bsd-mbp.dhcp.thefacebook.com>
- <0535ce9f-0db6-40f7-e512-e327f6f54c35@intel.com>
-In-Reply-To: <0535ce9f-0db6-40f7-e512-e327f6f54c35@intel.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Mar 2021 10:56:16 -0800
-Message-ID: <CAEf4BzbuFzQKF2DBCUmGnLyP4WTPR7CLBxoT8W0_DRSrn_g4ww@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] libbpf: xsk: move barriers from
- libbpf_util.h to xsk.h
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        maximmi@nvidia.com, ciara.loftus@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1615480746-28518-2-git-send-email-loic.poulain@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 10:59 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.c=
-om> wrote:
->
-> On 2021-03-11 01:06, Jonathan Lemon wrote:
-> > On Wed, Mar 10, 2021 at 09:09:29AM +0100, Bj=C3=B6rn T=C3=B6pel wrote:
-> >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >>
-> >> The only user of libbpf_util.h is xsk.h. Move the barriers to xsk.h,
-> >> and remove libbpf_util.h. The barriers are used as an implementation
-> >> detail, and should not be considered part of the stable API.
-> >
-> > Does that mean that anything else which uses the same type of
-> > shared rings (bpf ringbuffer, io_uring, zctap) have to implement
-> > the same primitives that xsk.h has?
-> >
->
-> Jonathan, there's a longer explanation on back-/forward-compatibility in
-> the commit message [1]. Again, this is for the XDP socket rings, so I
-> wont comment on the other rings. I would not assume compatibility
-> between different rings (e.g. the bpf ringbuffer and XDP sockets rings),
-> not even prior the barrier change.
->
->
+On 3/11/21 8:39 AM, Loic Poulain wrote:
+> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
+> index b7d58b7..1e8ac0b 100644
+> --- a/drivers/net/wwan/Kconfig
+> +++ b/drivers/net/wwan/Kconfig
+> @@ -16,4 +16,18 @@ config WWAN_CORE
+>  	  Say Y here if you want to use the WWAN driver core. This driver
+>  	  provides a common framework for WWAN drivers.
+>  
+> +config MHI_WWAN_CTRL
+> +	tristate "MHI WWAN control driver for QCOM based PCIe modems"
 
-BPF ringbuf is using smp_store_release()/smp_load_acquire(), which are
-coming from asm/barrier.h. But libbpf abstracts all the low-level
-details, so users don't have to use such low-level primitives
-directly.
+	                                      QCOM-based
 
-> Bj=C3=B6rn
->
-> [1]
-> https://lore.kernel.org/bpf/20210305094113.413544-2-bjorn.topel@gmail.com=
-/
->
+> +	select WWAN_CORE
+> +	depends on MHI_BUS
+> +	help
+> +	  MHI WWAN CTRL allow QCOM based PCIe modems to expose different modem
+
+	                allows QCOM-based
+
+> +	  control protocols/ports to userspace, including AT, MBIM, QMI, DIAG
+> +	  and FIREHOSE. These protocols can be accessed directly from userspace
+> +	  (e.g. AT commands) or via libraries/tools (e.g. libmbim, libqmi,
+> +	  libqcdm...).
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called mhi_wwan_ctrl.
+> +
+>  endif # WWAN
+
+
+-- 
+~Randy
+
