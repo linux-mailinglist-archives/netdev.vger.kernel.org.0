@@ -2,115 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99DA9336D2B
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:35:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F7C6336D32
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbhCKHfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 02:35:23 -0500
-Received: from mga05.intel.com ([192.55.52.43]:29828 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231805AbhCKHem (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 02:34:42 -0500
-IronPort-SDR: CAEDVrC4pyi8RRkqz7JmnAxtcvPczXDXHRQx71oJBe97+wK3vHI9lcBS6F/xwj4lJT0FPL5Y+c
- FzDK/pbMvJ2g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9919"; a="273666471"
-X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
-   d="scan'208";a="273666471"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 23:34:39 -0800
-IronPort-SDR: NuRQBgchhrV+Vt6dNKgNTu/EnK2Uk6O5ySowyrfz123EJac6kux1f+hM1li+qNGkFydBecweTA
- XiJ26AKXSH9g==
-X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
-   d="scan'208";a="410515964"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.249.170.224]) ([10.249.170.224])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 23:34:36 -0800
-Subject: Re: [PATCH V3 1/6] vDPA/ifcvf: get_vendor_id returns a device
- specific vendor id
-To:     Jason Wang <jasowang@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@linux.intel.com>, mst@redhat.com,
-        lulu@redhat.com, leonro@nvidia.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210310090052.4762-1-lingshan.zhu@intel.com>
- <20210310090052.4762-2-lingshan.zhu@intel.com>
- <ff5fc8f9-f886-bd2a-60cc-771c628c6c4b@redhat.com>
- <5f2d915f-e1b0-c9eb-9fc8-4b64f5d8cd0f@linux.intel.com>
- <05e3fbc9-be49-a208-19a4-85f891323312@redhat.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Message-ID: <a5b0c4e1-dbca-22d2-cce5-19451388ae86@intel.com>
-Date:   Thu, 11 Mar 2021 15:34:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S231631AbhCKHid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 02:38:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231700AbhCKHhr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 02:37:47 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22042C061574;
+        Wed, 10 Mar 2021 23:37:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=GbNcgOHLGMy86885Ok+FY4vdiVw9mClMYoLXE3N1vXM=; b=HjxHoey09FeabfFj1I3cyZMn2B
+        7ROjoCZJZQQbbrRBKdptrni7pihXGdaqK5kxPEqWPukMh5VoYWf7HBrXJufrpkJfzNP82bkYh7bba
+        l2jnUNnb4g2d/J1+CBzcKhb0A3+Q0e1tKPTSP0WRlV4ThoMrSHO/ovfI+ZlczFWQtwd+3FDiToUBK
+        PS8J8fsYrG8knWTHZmnc0WJ4rW9MSpswRBYz1sJcjOkVDWS7wjmsy9L8BS3a9TYsV/aF2ykqPMUAJ
+        OGIjOzZODj8rPYBCDA1A94GOU/TZ7X1f0AnkuBrmT/7Y0tPOFcBDCq2DgRbdqtMzTUB/GFdw1t/dI
+        CkNX95QQ==;
+Received: from [2001:4bb8:180:9884:c70:4a89:bc61:3] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lKFsz-006l7r-SA; Thu, 11 Mar 2021 07:37:35 +0000
+Date:   Thu, 11 Mar 2021 08:37:32 +0100
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Felix Manlunas <felix.manlunas@cavium.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: module refcount issues in the liquidio driver
+Message-ID: <YEnIvMOComLaaVa5@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <05e3fbc9-be49-a208-19a4-85f891323312@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
 
+I just stumbled over the odd handling of module refcounts in the liquidio
+driver.  The big red flag is the call to module_refcount in
+liquidio_watchdog, which will do the wrong thing for any external module
+refcount, like a userspace open.
 
-On 3/11/2021 2:13 PM, Jason Wang wrote:
->
-> On 2021/3/11 12:21 下午, Zhu Lingshan wrote:
->>
->>
->> On 3/11/2021 11:23 AM, Jason Wang wrote:
->>>
->>> On 2021/3/10 5:00 下午, Zhu Lingshan wrote:
->>>> In this commit, ifcvf_get_vendor_id() will return
->>>> a device specific vendor id of the probed pci device
->>>> than a hard code.
->>>>
->>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>> ---
->>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 5 ++++-
->>>>   1 file changed, 4 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
->>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> index fa1af301cf55..e501ee07de17 100644
->>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> @@ -324,7 +324,10 @@ static u32 ifcvf_vdpa_get_device_id(struct 
->>>> vdpa_device *vdpa_dev)
->>>>     static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
->>>>   {
->>>> -    return IFCVF_SUBSYS_VENDOR_ID;
->>>> +    struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
->>>> +    struct pci_dev *pdev = adapter->pdev;
->>>> +
->>>> +    return pdev->subsystem_vendor;
->>>>   }
->>>
->>>
->>> While at this, I wonder if we can do something similar in 
->>> get_device_id() if it could be simple deduced from some simple math 
->>> from the pci device id?
->>>
->>> Thanks
->> Hi Jason,
->>
->> IMHO, this implementation is just some memory read ops, I think other 
->> implementations may not save many cpu cycles, an if cost at least 
->> three cpu cycles.
->>
->> Thanks!
->
->
-> Well, I meant whehter you can deduce virtio device id from 
-> pdev->subsystem_device.
->
-> Thanks
-Oh, sure, I get you
->
->
->>>
->>>
->>>>     static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
->>>
->>
->
+But more importantly the whole concept of acquiring module refcounts from
+inside the driver is pretty bogus.  What problem does this try to solve?
+
 
