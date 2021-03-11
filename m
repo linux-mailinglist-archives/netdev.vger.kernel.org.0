@@ -2,134 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74578337A26
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 17:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A3F337A3C
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 18:00:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbhCKQ5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 11:57:20 -0500
-Received: from mail-dm6nam11on2055.outbound.protection.outlook.com ([40.107.223.55]:43587
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        id S229843AbhCKQ7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 11:59:30 -0500
+Received: from mail-vi1eur05on2059.outbound.protection.outlook.com ([40.107.21.59]:32160
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229712AbhCKQ5T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 11:57:19 -0500
+        id S229777AbhCKQ7G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 11:59:06 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CJOd9BUfN4p4zO5Szyp9fIaNGo1R/N+61pedCF/gIGt9eqke0AK6K5fWL/Zgl2a4ibh3p6+POBA55WSu4HDHjwV8NDhuSMswRqZRxVi7TyLZwFygsYy2pQmoq68nAYfFovALFpVjE7PCsiXgnbw2EmcvW2JHUv+xp1oW2bqx++XXopgc+pneOsXq4C1lvCV26OBfM+uP5B17XpL/FctD7WgTRCcNXeY7patdga8FCe2IaiqzSYpjzHbZfYJLe9lRp8kSVL/HmOk5q8lBShkCv2PH9QQuk/9kEYYbDI9wQpDFJ55UBCTK++XnpQNCoWlWWORrfISl4oZKAaIJE4pxcQ==
+ b=lH2xR99AjdHut7RRI6fa4Z2UCrZt7l/LPEBUgHS9K7v+aUHKViJ3/5wtALXJzJp93xLRouluObktorjJO6zAmw699PXlAZg6XEnDwG2xrB1DzpGt++J9wIVDXlrWGFe15Z9tYewDbxU7y+7568Knd/zTk7SCs7mvJ3BRnOP/KVwf0BSBJVu3IVksU7ne8JkCIzKuBWQXabIRlnQEM527vLN7tsugAJRzaCl4jCmIgO08GT6Q9ortqz0ga5I++zg/TgSwB0oTfrrcAlmMwIckETG77u3kfoppcY9l/d2A8SwxHyT02P2EZuHYEolsvCMcQxkCoijKBihvOYa5rbXNhg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D3ksDIO+2tdsqhdMQM6wkmqV2ZwYKSvviY0qV1B+c48=;
- b=NMK8oKAMmmKAy3CWzFiRbbv6h+jhd9CTr2pXpvjbLTzaz1g3azvFmRorrjU689LKDGFaGtdcMq6Uz5wUo+q82Lhmmt5HGsXizaXbY6MN6QyenE0m9zfRh6yl2pgrHx2Hkgg3yJCHGK9TxPYe3BcKjHx2+oPuTBHMfsA89UJLpDxC53flpJC1vMtlFpyN4BRKLR5TouEhr2Zs9ApSXTPDmS1nIR5nZrFVRoaLliu27+JWcmIAFU4SZ2Xl4MGPoDUZvAD78ayD8r/QSwwEcrqvSEhRaZGlXgIYTNd7XG81o3/IVW+qLYmktpN1f/18ztYw8GTKUT+j1zgy6wrurtSPXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=30owklYDPw6/B3081fpd+SyKPNneVzz3HHlLP+tXRjQ=;
+ b=FDit8e2MTmEGEuY1lbuEom50WbBUTDD/fWrxoMPTzylijnCYlReBjMOlIDucKz7bZuog3BZ8o0MTUeemFNuuKV65GccQUVpiIu8GfCgj0hmkFMdq2rlgifeiwbJ9w+4MEn9ZN4nji4UqG6UCQxOkBT1b1k9CoV57VCNwAFRoTxw10QkWIs/CIIXkcnujIbbbCT1pchg3yHEmFsrY/ENtDGxBuloSxzuyWKaVA1ajItxdMCYvK+K66AceztVyvJ09oBToLiXn3lVECvzJMzMk/UXBCxq5q97u2w09Vl4sToQMhlfrNQUe79T1nOijs9Bl48A9QljIeLkdthDCjBiiPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D3ksDIO+2tdsqhdMQM6wkmqV2ZwYKSvviY0qV1B+c48=;
- b=l6wICCwLvAqzqQ/itcfMHcFndLHBkFQ4rx/vh2dxtMCJNGlcWoa/QuaQFb1/yf0q01uWa/ddrueCtNs6Pi9G4UJ9QcuHBTqWq8oJaM8fX9CU38AJCTpwdttlrilt9PtDrmXt/wjGNjtBEodAwuR4KggXIHsum8WjLc8Gpnj7ffoNqsz1KsoLj7o+lZ1Y9d1T9zqZxF1L8AW0xXtt4eN8aGuqHroNix5GnX0wc8IIySljuIX3Ygar2KV1qRgf73jRqMn00TS2JsuHRWavLFf8ocNE1Xxu0MEeP6NSzEr6XrMQdG2N0GDG/Qvngi/HUMuMMD7Hj3VjlU1neuh2mzR8/A==
-Received: from BN9PR03CA0073.namprd03.prod.outlook.com (2603:10b6:408:fc::18)
- by DM6PR12MB4730.namprd12.prod.outlook.com (2603:10b6:5:30::18) with
+ bh=30owklYDPw6/B3081fpd+SyKPNneVzz3HHlLP+tXRjQ=;
+ b=eAo4qMlYjkSbHVmq9qeiIaEzfWb+zyZaRbT4lzWooYEcniSxk3wWOlB3/E6nGnd6MRS4VoBeg6vWnwHLKhVejd+VYubPY2e+ia+Gs/sHWFKkhmVo9KNn95IPQhe7FIpu4y/A1fnYAUBqlL2xTpucNBVj4oyny77O6gq7NT5Rr6Q=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB6964.eurprd04.prod.outlook.com (2603:10a6:208:18a::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.19; Thu, 11 Mar
- 2021 16:57:16 +0000
-Received: from BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fc:cafe::91) by BN9PR03CA0073.outlook.office365.com
- (2603:10b6:408:fc::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Thu, 11 Mar 2021 16:57:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT036.mail.protection.outlook.com (10.13.177.168) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 16:57:16 +0000
-Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar 2021 16:57:13
- +0000
-References: <cover.1615387786.git.petrm@nvidia.com>
- <99559c7574a7081b26a8ff466b8abb49e22789c7.1615387786.git.petrm@nvidia.com>
- <5cc5ef4d-2d33-eb62-08cb-4b36357a5fd3@gmail.com>
- <87k0qditsu.fsf@nvidia.com>
- <6c703efe-0357-e83a-f5b0-3fbba1b3228e@gmail.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Thu, 11 Mar
+ 2021 16:59:03 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1cd:7101:5570:cd79]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1cd:7101:5570:cd79%7]) with mapi id 15.20.3912.027; Thu, 11 Mar 2021
+ 16:59:03 +0000
+Date:   Thu, 11 Mar 2021 22:28:42 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Randy Dunlap <rdunlap@infradead.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>, netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next 03/14] nexthop: Add a dedicated flag for
- multipath next-hop groups
-In-Reply-To: <6c703efe-0357-e83a-f5b0-3fbba1b3228e@gmail.com>
-Date:   Thu, 11 Mar 2021 17:57:09 +0100
-Message-ID: <87a6r9iq6y.fsf@nvidia.com>
+Subject: Re: [net-next PATCH v7 02/16] net: phy: Introduce
+ fwnode_mdio_find_device()
+Message-ID: <20210311165842.GA5031@lsv03152.swis.in-blr01.nxp.com>
+References: <20210311062011.8054-1-calvin.johnson@oss.nxp.com>
+ <20210311062011.8054-3-calvin.johnson@oss.nxp.com>
+ <CAGETcx87Upc701NZstiDx8Px1o9b+s4ANpbG0AP5bjC8DxMMrg@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx87Upc701NZstiDx8Px1o9b+s4ANpbG0AP5bjC8DxMMrg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [14.142.151.118]
+X-ClientProxiedBy: HK2PR04CA0081.apcprd04.prod.outlook.com
+ (2603:1096:202:15::25) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by HK2PR04CA0081.apcprd04.prod.outlook.com (2603:1096:202:15::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Thu, 11 Mar 2021 16:58:54 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e0ca8c5a-5125-46bf-f882-08d8e4aeb9de
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4730:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4730CBC882F9E6050E99DFF2D6909@DM6PR12MB4730.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 9c3fcf88-92e7-4c4e-3c26-08d8e4aef8c5
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6964:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6964C4A5ACC4D21AE18E3126D2909@AM0PR04MB6964.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TRTNyOsRoovHzlxS2ZrqkKH5iF53ErkeLNlVqq53+eQW0t6pPpcqrteExN3v0R7+ensdy94wxiIGIxS4UxSxUGBMH3P7hBLVsIp5gLzgVpSd56aomf7xpCZYDIQ7YsEgaKtPb4L1n4684V73NYLXYzs0HFD5+/AexkQ94k+AYx+fwuAMvlwXfMAUAveWAPyNhY+p4DZ1mhG4fmKLQwe7TZWcaCMrbxmwDoqcIrv65JErGIdmqoPrxoKqJBvgnAIS9aDQmAqzsepkw+iSn3mdfmrl7/rzJtLCT4+TYbd+Nzav8qcgGeVY98lT563RA63I73HGJGQZgfX5kLpjMi+X56YEe86/qSfBzQLnsHqZqwburIyiCMpv/F6I6YRwY1pIU9Aux78ViNOdj6e++yP7oWYI3mmzXfnNGNmL1ar017fvkw9RnEW0yLzv6GesELmL1nvuBSkGuGTyL4drVZ6G+qr9nOya3NhSuoqzzF6mAOKjRGSkXzlghUtY3iOco0nni/Qxyd23g++HPyP+ULtWg5uKijHOiPc8OaRoDhXbPNwDGj6WQ6OPinNLZDkZvBQmt6+ToqNsVKNOM/iA6xYgVCuU7xFpBDsMbwPdj4A6ZQEt5r4TLDEKP1KOAJaVitvgF7614RtXBAzNVXoG0t73xhb5lZ9C2VtTsx9xRLoqqvex0J+3PPKilMISGD73IogD
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(376002)(346002)(46966006)(36840700001)(336012)(478600001)(36860700001)(70586007)(54906003)(8936002)(82310400003)(47076005)(6916009)(34070700002)(86362001)(5660300002)(7636003)(82740400003)(53546011)(36756003)(2616005)(16526019)(6666004)(2906002)(8676002)(426003)(70206006)(4326008)(36906005)(316002)(26005)(83380400001)(356005)(186003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 16:57:16.5086
+X-Microsoft-Antispam-Message-Info: f79K+yUci+CnbiF5dLWoDngffz/27hQmVDhmCIql7+LliWej5+CCT0P5BOMN7tLB8OS9w0J5CkDFS6jMpgTO8L/aakx4FNro6tSYH46mO2LawHPb9OY4i3fMF4wwgB4iVsgeL6dGUHEbz5g6iX0pql6Ghlb8qTNo5iYZdY+blXnOcCsQLFX+hzE8Sn1Ni9Ee6u8H/6oxSj3BOpZyCqnxKOVGjvPn4I4zIgDRvofn2WLeMOv9+w9v+7NGXrCn8Z9az4X2cM89kTdm+8yucaXoaloz7fr4ZTzJFzKKxwZX9jLya/x6xrcHGozKSgdYOHCKMsGzbPGUrmeIMhnMCwWZU1Z0fwv+4UkNzTfAB+pTDoFXIrKp3noM1hTa91C5w6pcLfDYG/BpAppPXqWguIzDqzGmM9sYGLG+SEuEQm1o8FK1fCYvs90kUB5ZCZwuJ93qOuvmo+AaBvz0Ce55+XNGfhEVvRrztliy5G3p3XLwKRVfyz+szI16Ue8kjur6fcC3OtF1rkeuaLUGesqIfOIdZMY1L01sjVdfpVeBmGzsmpw6aPosCcfL61mSSKhiZIQKB/Idqk5uNad/V/3GX5FzFg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(346002)(366004)(396003)(54906003)(478600001)(316002)(8676002)(53546011)(6506007)(66476007)(66946007)(6666004)(86362001)(26005)(7696005)(33656002)(52116002)(8936002)(66556008)(4326008)(44832011)(55236004)(186003)(83380400001)(2906002)(6916009)(1076003)(7416002)(16526019)(1006002)(956004)(9686003)(55016002)(5660300002)(110426009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?AGQulN+g9iAgME6fcs/ftEg6QH6PSwBqsx3jXzVcKVF3wwHeX+j6hWIi0/yv?=
+ =?us-ascii?Q?FwCDmoD9hEaPIE2Ck9pXEtXFaRBBrhj5WkGBaAHNeDwi8BdkVTp03c25CUSN?=
+ =?us-ascii?Q?bVBTGdeTUFyzDbqck3CoK6/h+1ys1hUL66/FzbD1khLEhwRxV4zsBJrk1yHt?=
+ =?us-ascii?Q?3wNrH1wFDdZgaLutq25d8T5YN8iGrc1zDyqZJ+LUoweOfFyUaHJW6OVQZwJt?=
+ =?us-ascii?Q?azamQs1mBRO3Kiu6p/JLXHNCSu76zjJ1F+/kyZPGOZECQc6+iZb/DhBJ1mqg?=
+ =?us-ascii?Q?hlkViUJ/A+KkBJ+Ht9kXCnMQCH3JrHO8JfhlhpRwyo6l/U1qilS8Hq4aPfj5?=
+ =?us-ascii?Q?jiibtAu6jJNs3/1b1EekVczzXc410MhNegXHzUxIGKvVNSu0Zim5aXORltL+?=
+ =?us-ascii?Q?HNG0rU1B4chjdTc6O1EozTtq6nM0HTx4g/+O96pIrN/UCqDIC8Hc6kgZh9rm?=
+ =?us-ascii?Q?febhnk/CxMpSeI3b/iRpQJadlm1bPgiJt4DphLN5bFDxVmULtlokSyUUePfR?=
+ =?us-ascii?Q?0sLPEHQ61scJP/HNsTBQm5W9Q67AdfpaWpzB1VNucL3oSXozUJC2H6K+zPhq?=
+ =?us-ascii?Q?rd6Su1Y2uqngTDN5lQ4wGzFiYj7SDXThz6m5g+V6B1W+c+rd+WdUMMcKp1w2?=
+ =?us-ascii?Q?V7pi21im+vnQg842u3iBaXGTl58AI3rIH1SBzMNaNYpryR8yS53sixI1d8xy?=
+ =?us-ascii?Q?U9/tfoeY7JKgR5Z8EqeR5Rr10CTI1Cb0o3BaO4dBa73doU/bwlLv5fjLx9wG?=
+ =?us-ascii?Q?OO7RkjrCCKOXICTvlxZClpdjf9BO9sm6K+mj1IjeBcWtewWZbNC7srJKA4Ib?=
+ =?us-ascii?Q?i4aoLVMS2gvvBwUG+tIMjC0WdOlLCGsMYMaF9yg0Q1D6NVyzTJsrxknYczOi?=
+ =?us-ascii?Q?nJ9NsJNWodHur6oBsG7On2d54hctvQfTI9n+FWAcqfEH0lZUkoYbOAiSbEk1?=
+ =?us-ascii?Q?kOTVbUs9ojkSVXb/sJvt+pWSA6BhsOi27uB2onvdSDGpUcRxfYPCX7Wc7jgC?=
+ =?us-ascii?Q?mo83qwUnlCLLuhTd1LA/wngGSj+g4BbGBZo6aPEcR3IOvGHRyf4TP3PT+Ofj?=
+ =?us-ascii?Q?yBeJBY9P7406cadlw3UYE4mEAvti3PCm9HHxg1Cr3RbjSR2M22/qG8jrXBaG?=
+ =?us-ascii?Q?CSygUISaswZR6YGNULyLcOzKIpjnt6S2wK7ch06WJCrquvmR7Y5EXybgfK8E?=
+ =?us-ascii?Q?K/KQ7vXngyl0Jea1XjZVfKMnDnVRuBHW//SzUI973eHichVlVUlxhvh5Sicj?=
+ =?us-ascii?Q?Ff+yFLBkvKyPzwAYzhDKp3b1l5BuVX+Bu5z3tdcNW5gy+QqA54AHPqLwQEp+?=
+ =?us-ascii?Q?qg8gtqG6mWa9A4HAslUBWsKr?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c3fcf88-92e7-4c4e-3c26-08d8e4aef8c5
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 16:59:02.9049
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e0ca8c5a-5125-46bf-f882-08d8e4aeb9de
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4730
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FudVrajInlxEoNbmFvgKN84mm3UJKKyskUpSrrX/gytE8Engd++Xneqj322g9HO8hwYv7IHfYQpCFW5xzJMkVQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6964
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 10, 2021 at 10:50:57PM -0800, Saravana Kannan wrote:
+> On Wed, Mar 10, 2021 at 10:21 PM Calvin Johnson
+> <calvin.johnson@oss.nxp.com> wrote:
+> >
+> > Define fwnode_mdio_find_device() to get a pointer to the
+> > mdio_device from fwnode passed to the function.
+> >
+> > Refactor of_mdio_find_device() to use fwnode_mdio_find_device().
+> >
+> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > ---
+> >
+> > Changes in v7:
+> > - correct fwnode_mdio_find_device() description
+> >
+> > Changes in v6:
+> > - fix warning for function parameter of fwnode_mdio_find_device()
+> >
+> > Changes in v5: None
+> > Changes in v4: None
+> > Changes in v3: None
+> > Changes in v2: None
+> >
+> >  drivers/net/mdio/of_mdio.c   | 11 +----------
+> >  drivers/net/phy/phy_device.c | 23 +++++++++++++++++++++++
+> >  include/linux/phy.h          |  6 ++++++
+> >  3 files changed, 30 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
+> > index ea9d5855fb52..d5e0970b2561 100644
+> > --- a/drivers/net/mdio/of_mdio.c
+> > +++ b/drivers/net/mdio/of_mdio.c
+> > @@ -347,16 +347,7 @@ EXPORT_SYMBOL(of_mdiobus_register);
+> >   */
+> >  struct mdio_device *of_mdio_find_device(struct device_node *np)
+> >  {
+> > -       struct device *d;
+> > -
+> > -       if (!np)
+> > -               return NULL;
+> > -
+> > -       d = bus_find_device_by_of_node(&mdio_bus_type, np);
+> > -       if (!d)
+> > -               return NULL;
+> > -
+> > -       return to_mdio_device(d);
+> > +       return fwnode_mdio_find_device(of_fwnode_handle(np));
+> >  }
+> >  EXPORT_SYMBOL(of_mdio_find_device);
+> >
+> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > index cc38e326405a..daabb17bba00 100644
+> > --- a/drivers/net/phy/phy_device.c
+> > +++ b/drivers/net/phy/phy_device.c
+> > @@ -2819,6 +2819,29 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+> >         return phydrv->config_intr && phydrv->handle_interrupt;
+> >  }
+> >
+> > +/**
+> > + * fwnode_mdio_find_device - Given a fwnode, find the mdio_device
+> > + * @fwnode: pointer to the mdio_device's fwnode
+> > + *
+> > + * If successful, returns a pointer to the mdio_device with the embedded
+> > + * struct device refcount incremented by one, or NULL on failure.
+> > + * The caller should call put_device() on the mdio_device after its use.
+> > + */
+> > +struct mdio_device *fwnode_mdio_find_device(struct fwnode_handle *fwnode)
+> > +{
+> > +       struct device *d;
+> > +
+> > +       if (!fwnode)
+> > +               return NULL;
+> > +
+> > +       d = bus_find_device_by_fwnode(&mdio_bus_type, fwnode);
+> 
+> Sorry about the late review, but can you look into using
+> get_dev_from_fwnode()? As long as you aren't registering two devices
+> for the same fwnode, it's an O(1) operation instead of having to loop
+> through a list of devices in a bus. You can check the returned
+> device's bus type if you aren't sure about not registering two devices
+> with the same fw_node and then fall back to this looping.
 
-David Ahern <dsahern@gmail.com> writes:
+I think it is better to keep it simple and clear with
+bus_find_device_by_fwnode() instead of the additional code that comes
+with get_dev_from_fwnode() until it has clear advantage over the former.
 
-> On 3/11/21 8:39 AM, Petr Machata wrote:
->> 
->> David Ahern <dsahern@gmail.com> writes:
->> 
->>>> diff --git a/include/net/nexthop.h b/include/net/nexthop.h
->>>> index 7bc057aee40b..5062c2c08e2b 100644
->>>> --- a/include/net/nexthop.h
->>>> +++ b/include/net/nexthop.h
->>>> @@ -80,6 +80,7 @@ struct nh_grp_entry {
->>>>  struct nh_group {
->>>>  	struct nh_group		*spare; /* spare group for removals */
->>>>  	u16			num_nh;
->>>> +	bool			is_multipath;
->>>>  	bool			mpath;
->>>
->>>
->>> It would be good to rename the existing type 'mpath' to something else.
->>> You have 'resilient' as a group type later, so maybe rename this one to
->>> hash or hash_threshold.
->> 
->> All right, I'll send a follow-up with that.
->
-> I'm fine with the rename being a followup after this patch set or as the
-> last patch in this set.
-
-I looked at this, it's more than just this struct field. There is a
-whole number of functions with mpath in their name to reflect that they
-are for the hash-threshold algorithm. (And then some where the "mpath"
-reflects is_multipath assumption.)
-
-So I'll send this separately, and have it go through our regression.
-It's still trivialish renaming, but a fair amount thereof.
+regards
+Calvin
