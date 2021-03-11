@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8259C336990
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 02:21:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1197F33698C
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 02:21:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbhCKBUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Mar 2021 20:20:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
+        id S229724AbhCKBUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Mar 2021 20:20:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbhCKBUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 20:20:18 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12F8C061574;
-        Wed, 10 Mar 2021 17:20:17 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id b2-20020a7bc2420000b029010be1081172so11818436wmj.1;
-        Wed, 10 Mar 2021 17:20:17 -0800 (PST)
+        with ESMTP id S229646AbhCKBUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Mar 2021 20:20:19 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EDAC061574;
+        Wed, 10 Mar 2021 17:20:19 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id 7so25455386wrz.0;
+        Wed, 10 Mar 2021 17:20:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7uMncpPAE4jWoflI5coLB5nSFQY4/AWNCX9VZjYJxzI=;
-        b=Nc8MYQYGmJoLdEd5ZZcCH+7s+60s9bd/sJLF8qjzYXn6l7+txx7hTxtnP5Sw6c0YEL
-         bAcOivsyT3iQ7BNoJ5lscEOXY1jkjKc1p8fzQB0IDMsROHUt/Sr53iUVQT6Ltx57eEBf
-         vrn6YVe8AGS8B8nmLJrPnhuwAAXEadzk/ATK8DN88N1nUPy+ni4d3wDO5XdSq1F9np9e
-         94CUx7XFusbAZWXY27KYS038loBRa6l3QtLTrmtmZWbDRBL9rPQDnKx55Ohh92pf2Rpp
-         03GJmKh7lSg4yd+6d220RMg91o3FNxJ2b52JgKKThg8RtrQi7hE4l3XxzVYEudf3I+O4
-         gY4g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ehVRDxcjYT4kjvF6VjL17bBzgNtlONIBkFhsI3t47oA=;
+        b=Vki/R/Lh7cSFAWKC5hIOGi/ouxV7t9bTTJeBzainn6CrAq7GxXDeBG4wwgLll9fpU7
+         5WWMagtE4Y9LHHrgLdmsvZTikxIAue119E6Lt1CxJFN2c6s2/nTgLxVMk5V9Bx0nDtzV
+         cTVfK7uVe4S/8tJ8zTrbCrmtki8WOYLn7hM5jabUZE6YOZbtqdkTJFZ6orYznCjblDqz
+         Ha2PNTxTHG9p6NH0QJC8iFu5abpXYCTFWbadXiaQZLfrcX4Q/t6JMkZ0nSwk4+d3lvoX
+         Cm2v/uNz70MXwix7BRBWc22NmZ9siQIrC2ps225Heq3QU7ESeAGeWe3mcynm72LPRP3J
+         PH1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7uMncpPAE4jWoflI5coLB5nSFQY4/AWNCX9VZjYJxzI=;
-        b=keLk1ZFPIfZEvuSXAyWO6ivV94g5jHHO9blok0Id6wDX5OpyHnPhLw2S7HD2HAjeX0
-         oIvSwHphnHxq+51PFy7E/qWREmKLGIqaoyEKfXhusNWoFXiDwkWUJRusPCZtnRg7ll2A
-         3/FpqwWNhjgkkb4nWPMriheXXt8AsaZTzkQ0PCBR5mKrbg0V+xUUhygNKjZ684yDBP0S
-         dka1hNcGto20duakUkiaWPk4gmK/LSVOxHy7f6oFU4aAklzxhDNeGbwGWLruS3QV1z9Z
-         ZCSiGkSRSc+4SE4Ff4O9OFDxyIhUKlaZtx+X5q4LA2vLtPr5ERn8MCpfg83r99WnDv3/
-         y7xw==
-X-Gm-Message-State: AOAM531ePzMtLy9+9tYdq+8TIUPJfRydmnPkuBkWz53QFbQyRL1OkTzC
-        AScmpeSnjKfAXgU6smSudst/2XpB0/w=
-X-Google-Smtp-Source: ABdhPJwkA4xwc4RDlD/r9Gu6ew3RAMijLC75fiSCNAWFfjnKG95xxAfGFd47g2ZGBxvGN9qANG/Plw==
-X-Received: by 2002:a1c:541a:: with SMTP id i26mr5562580wmb.75.1615425616652;
-        Wed, 10 Mar 2021 17:20:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ehVRDxcjYT4kjvF6VjL17bBzgNtlONIBkFhsI3t47oA=;
+        b=i/1zwq4yLpnrWBRyrprtl1Mam4/zUTG5hoUpeUt4i9aGacah/dts6uAIfQ5C2CQBEE
+         /pLKyhmXEPDbDlk+H59GMqITkBR4f8k25Jg0rBTQn6+Bg1cEo8bh0fIHBq+QOlj/EBhp
+         u7YWURm7Q/uqOEGPPEr9xDRl234SoOqK3RxDaGesgaLT0ahGgrwdC4T23IL2ulhyEs3B
+         XfUhNvMzJvZtzSsEILKgmbfTfUTwDmRJcsB+jaOEF4ZPnn7DFaVbQ1exsw7ltGvZoCYG
+         Vs/+L0Uok75yeHxjC++asU4ZQkcPVAsKlDACmSID1QH4k81BMl7w9gKfyZk1OMeKO6I5
+         Uaog==
+X-Gm-Message-State: AOAM533WlsYiZ0J9EUWW4IB8bDhDb6uw9O/c4ZxabOJG81PUqDNC7hWq
+        U2Z5l/AAa+jgLWb1yqSZfLnSmshrAag=
+X-Google-Smtp-Source: ABdhPJwuRoBpRkgCLg64hcecjmH2Le0uQ45Gzfj/RUDRoJW1GcMad/osCgjjX5Aq7fO9CbWkIi3yNg==
+X-Received: by 2002:adf:f78f:: with SMTP id q15mr5915748wrp.383.1615425617903;
+        Wed, 10 Mar 2021 17:20:17 -0800 (PST)
 Received: from localhost.localdomain ([81.18.95.223])
-        by smtp.gmail.com with ESMTPSA id d85sm1199127wmd.15.2021.03.10.17.20.15
+        by smtp.gmail.com with ESMTPSA id d85sm1199127wmd.15.2021.03.10.17.20.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Mar 2021 17:20:15 -0800 (PST)
+        Wed, 10 Mar 2021 17:20:17 -0800 (PST)
 From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -57,60 +57,127 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] Add support for Actions Semi Owl Ethernet MAC
-Date:   Thu, 11 Mar 2021 03:20:11 +0200
-Message-Id: <cover.1615423279.git.cristian.ciocaltea@gmail.com>
+Subject: [PATCH 1/3] dt-bindings: net: Add Actions Semi Owl Ethernet MAC binding
+Date:   Thu, 11 Mar 2021 03:20:12 +0200
+Message-Id: <cc79f78c9e685474491b3d65be8a4e0be4bf3778.1615423279.git.cristian.ciocaltea@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <cover.1615423279.git.cristian.ciocaltea@gmail.com>
+References: <cover.1615423279.git.cristian.ciocaltea@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds support for the Ethernet MAC found on the Actions
+Add devicetree binding for the Ethernet MAC present on the Actions
 Semi Owl family of SoCs.
 
-For the moment I have only tested the driver on RoseapplePi SBC, which is
-based on the S500 SoC variant. It might work on S900 as well, but I cannot
-tell for sure since the S900 datasheet I currently have doesn't provide
-any information regarding the MAC registers - so I couldn't check the
-compatibility with S500.
+For the moment enable only the support for the Actions Semi S500 SoC
+variant.
 
-Similar story for S700: the datasheet I own is incomplete, but it seems
-the MAC is advertised with Gigabit capabilities. For that reason most
-probably we need to extend the current implementation in order to support
-this SoC variant as well.
-
-Please note that for testing the driver it is also necessary to update the
-S500 clock subsystem:
-
-https://lore.kernel.org/lkml/cover.1615221459.git.cristian.ciocaltea@gmail.com/
-
-The DTS changes for the S500 SBCs will be provided separately.
-
-Thanks,
-Cristi
-
-Cristian Ciocaltea (3):
-  dt-bindings: net: Add Actions Semi Owl Ethernet MAC binding
-  net: ethernet: actions: Add Actions Semi Owl Ethernet MAC driver
-  MAINTAINERS: Add entries for Actions Semi Owl Ethernet MAC
-
- .../bindings/net/actions,owl-emac.yaml        |   91 +
- MAINTAINERS                                   |    2 +
- drivers/net/ethernet/Kconfig                  |    1 +
- drivers/net/ethernet/Makefile                 |    1 +
- drivers/net/ethernet/actions/Kconfig          |   39 +
- drivers/net/ethernet/actions/Makefile         |    6 +
- drivers/net/ethernet/actions/owl-emac.c       | 1660 +++++++++++++++++
- drivers/net/ethernet/actions/owl-emac.h       |  278 +++
- 8 files changed, 2078 insertions(+)
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+---
+ .../bindings/net/actions,owl-emac.yaml        | 91 +++++++++++++++++++
+ 1 file changed, 91 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/actions,owl-emac.yaml
- create mode 100644 drivers/net/ethernet/actions/Kconfig
- create mode 100644 drivers/net/ethernet/actions/Makefile
- create mode 100644 drivers/net/ethernet/actions/owl-emac.c
- create mode 100644 drivers/net/ethernet/actions/owl-emac.h
 
+diff --git a/Documentation/devicetree/bindings/net/actions,owl-emac.yaml b/Documentation/devicetree/bindings/net/actions,owl-emac.yaml
+new file mode 100644
+index 000000000000..d5a0da0d20bc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/actions,owl-emac.yaml
+@@ -0,0 +1,91 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/actions,owl-emac.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Actions Semi Owl SoCs Ethernet MAC Controller
++
++maintainers:
++  - Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
++
++description: |
++  This Ethernet MAC is used on the Owl family of SoCs from Actions Semi.
++  It is compliant with the IEEE 802.3 CSMA/CD standard and supports both
++  half-duplex and full-duplex operation modes at 10/100 Mb/s.
++
++allOf:
++  - $ref: "ethernet-controller.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++      - const: actions,owl-emac
++      - items:
++          - enum:
++              - actions,s500-emac
++          - const: actions,owl-emac
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    minItems: 2
++    maxItems: 2
++
++  clock-names:
++    additionalItems: false
++    items:
++      - const: eth
++      - const: rmii
++
++  resets:
++    maxItems: 1
++
++  actions,ethcfg:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Phandle to the device containing custom config.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - resets
++  - phy-mode
++  - phy-handle
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/actions,s500-cmu.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/reset/actions,s500-reset.h>
++
++    ethernet@b0310000 {
++        compatible = "actions,s500-emac", "actions,owl-emac";
++        reg = <0xb0310000 0x10000>;
++        interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&cmu 59 /*CLK_ETHERNET*/>, <&cmu CLK_RMII_REF>;
++        clock-names = "eth", "rmii";
++        resets = <&cmu RESET_ETHERNET>;
++        phy-handle = <&eth_phy>;
++        phy-mode = "rmii";
++
++        mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            eth_phy: ethernet-phy@3 {
++                reg = <0x3>;
++                interrupt-parent = <&sirq>;
++                interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++            };
++        };
++    };
 -- 
 2.30.2
 
