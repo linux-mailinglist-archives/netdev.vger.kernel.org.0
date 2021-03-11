@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74B4C3380B2
+	by mail.lfdr.de (Postfix) with ESMTP id E6BD43380B3
 	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 23:38:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229603AbhCKWh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231299AbhCKWh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 11 Mar 2021 17:37:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33542 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:33550 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230283AbhCKWhk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230385AbhCKWhk (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 11 Mar 2021 17:37:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B378864F8D;
-        Thu, 11 Mar 2021 22:37:39 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 372AA64F93;
+        Thu, 11 Mar 2021 22:37:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1615502260;
-        bh=HlHrgscsKX/ddrJhgdxGdqWExn4GZ0IQemK587HclyI=;
+        bh=KT7CpD4zM0tl0e6SVybHbEYbQUJYmXbhF6dTZXXW5KU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PLuYvE7+3akyl9KBZYgFSTOANC3Sjk+liUqP1Sy2SHkAdYKlII/f1CB0dw3L9atNH
-         P5ZLyx0wBeuxHknRKeM/d5dzSRrMziRw768EujlGecXGR0MMzWK3ZlE/5q56U4OpTS
-         Sfu11Qjl2ad3/O79yAtpQwwhXN2Nz4ySpUKVpsOzHW8tBJKe67pzHANOFw4FuHc2r9
-         S1IQO4a5if3Lsp07sZqz6FEsHJqAeo0NoFjyPxvrDesne8Yw9c3B6nEkKn2iSh3pcu
-         9xWWZLonDRtIFnCpxvUzengycdhC1wrey8h1HBz8WMLNhRi8PfQMh95IXIuXGQB2Gk
-         sLEwqNFPTOS/w==
+        b=gH3IgRt6qS3boVzekbQi2vBZze/wCy9H0SBBAHiFKwFt4G4+FF0LN11do1Jekus+t
+         CybQnS90M1xyY4XIpEwEVkAY0JvA4iual16ZGr611S9VmjdPUrav2tntY8aoS8HBze
+         RCk3zvdpemnuAHYsPp/5eGloG5ciQwfT/BZtz/fdVSvrB4yqiU5e6wMSHwtoFxGTFe
+         iYSR/lOfPP3dM88VPqDG8uDVUeCCH3fKbW/Uj0tshKlJfzicZ5M8IZksu7wOWeDhmk
+         /Lwcv10EZfF1B9MxV40KVIBLjWqKEXagIXmL3Zbq/ykeiGgw50xC0IqGz3ZAZgOfuy
+         Xg4LxG9cWtsog==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 12/15] net/mlx5: SF, Fix return type
-Date:   Thu, 11 Mar 2021 14:37:20 -0800
-Message-Id: <20210311223723.361301-13-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>
+Subject: [net-next 13/15] net/mlx5e: rep: Improve reg_cX conditions
+Date:   Thu, 11 Mar 2021 14:37:21 -0800
+Message-Id: <20210311223723.361301-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210311223723.361301-1-saeed@kernel.org>
 References: <20210311223723.361301-1-saeed@kernel.org>
@@ -40,32 +40,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Fix the following coccicheck warnings:
+There is no point of calculating reg_c1 or overriding reg_c0 if we are
+going to abort the function.
 
-drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h:50:8-9: WARNING:
-return of 0/1 in function 'mlx5_sf_dev_allocated' with return type bool
-
-Signed-off-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-index 4de02902aef1..149fd9e698cf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-@@ -47,7 +47,7 @@ static inline void mlx5_sf_driver_unregister(void)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 065126370acd..fcae3c0a4e9f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -621,11 +621,7 @@ bool mlx5e_rep_tc_update_skb(struct mlx5_cqe64 *cqe,
+ 	int err;
  
- static inline bool mlx5_sf_dev_allocated(const struct mlx5_core_dev *dev)
- {
--	return 0;
-+	return false;
- }
+ 	reg_c0 = (be32_to_cpu(cqe->sop_drop_qpn) & MLX5E_TC_FLOW_ID_MASK);
+-	if (reg_c0 == MLX5_FS_DEFAULT_FLOW_TAG)
+-		reg_c0 = 0;
+-	reg_c1 = be32_to_cpu(cqe->ft_metadata);
+-
+-	if (!reg_c0)
++	if (!reg_c0 || reg_c0 == MLX5_FS_DEFAULT_FLOW_TAG)
+ 		return true;
  
- #endif
+ 	/* If reg_c0 is not equal to the default flow tag then skb->mark
+@@ -633,6 +629,8 @@ bool mlx5e_rep_tc_update_skb(struct mlx5_cqe64 *cqe,
+ 	 */
+ 	skb->mark = 0;
+ 
++	reg_c1 = be32_to_cpu(cqe->ft_metadata);
++
+ 	priv = netdev_priv(skb->dev);
+ 	esw = priv->mdev->priv.eswitch;
+ 
 -- 
 2.29.2
 
