@@ -2,66 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1364336CA4
+	by mail.lfdr.de (Postfix) with ESMTP id 62BE7336CA3
 	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:00:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231340AbhCKHAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 02:00:21 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:58021 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230119AbhCKG7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 01:59:50 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R321e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0URPRedH_1615445980;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0URPRedH_1615445980)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 11 Mar 2021 14:59:45 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     peterz@infradead.org
-Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH v2] perf machine: Assign boolean values to a bool variable
-Date:   Thu, 11 Mar 2021 14:59:39 +0800
-Message-Id: <1615445979-52513-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S231455AbhCKHAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 02:00:23 -0500
+Received: from mga05.intel.com ([192.55.52.43]:27367 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229731AbhCKG7y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 01:59:54 -0500
+IronPort-SDR: zEntlNvJppVsZhHetCbT3/ecJMa9qbOYPC8rBONy8qKdadmLJ1Rt/ldEfdyVNxGaYNk+rURefp
+ eq2Y6vdFoegg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9919"; a="273662898"
+X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
+   d="scan'208";a="273662898"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 22:59:54 -0800
+IronPort-SDR: etC1/Qix5RDSZFoTajB90yb4CFzzecsx1G7yzSSOWXTlITDi7yEXly3N8mhF7SsKL8x0yc6CEx
+ vAPpTUFpQw8A==
+X-IronPort-AV: E=Sophos;i="5.81,239,1610438400"; 
+   d="scan'208";a="410506705"
+Received: from eefimov-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.48.42])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 22:59:50 -0800
+Subject: Re: [PATCH bpf-next 2/2] libbpf: xsk: move barriers from
+ libbpf_util.h to xsk.h
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, andrii@kernel.org, magnus.karlsson@intel.com,
+        maximmi@nvidia.com, ciara.loftus@intel.com
+References: <20210310080929.641212-1-bjorn.topel@gmail.com>
+ <20210310080929.641212-3-bjorn.topel@gmail.com>
+ <20210311000605.tuo7rg4b7keo76iy@bsd-mbp.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <0535ce9f-0db6-40f7-e512-e327f6f54c35@intel.com>
+Date:   Thu, 11 Mar 2021 07:59:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
+MIME-Version: 1.0
+In-Reply-To: <20210311000605.tuo7rg4b7keo76iy@bsd-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warnings:
+On 2021-03-11 01:06, Jonathan Lemon wrote:
+> On Wed, Mar 10, 2021 at 09:09:29AM +0100, Björn Töpel wrote:
+>> From: Björn Töpel <bjorn.topel@intel.com>
+>>
+>> The only user of libbpf_util.h is xsk.h. Move the barriers to xsk.h,
+>> and remove libbpf_util.h. The barriers are used as an implementation
+>> detail, and should not be considered part of the stable API.
+> 
+> Does that mean that anything else which uses the same type of
+> shared rings (bpf ringbuffer, io_uring, zctap) have to implement
+> the same primitives that xsk.h has?
+> 
 
-./tools/perf/util/machine.c:2041:9-10: WARNING: return of 0/1 in
-function 'symbol__match_regex' with return type bool.
+Jonathan, there's a longer explanation on back-/forward-compatibility in
+the commit message [1]. Again, this is for the XDP socket rings, so I
+wont comment on the other rings. I would not assume compatibility
+between different rings (e.g. the bpf ringbuffer and XDP sockets rings),
+not even prior the barrier change.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
-Changes in v2:
-  - Make code simpler.
 
- tools/perf/util/machine.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Björn
 
-diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
-index b5c2d8b..ba6517b 100644
---- a/tools/perf/util/machine.c
-+++ b/tools/perf/util/machine.c
-@@ -2037,9 +2037,7 @@ int machine__process_event(struct machine *machine, union perf_event *event,
- 
- static bool symbol__match_regex(struct symbol *sym, regex_t *regex)
- {
--	if (!regexec(regex, sym->name, 0, NULL, 0))
--		return 1;
--	return 0;
-+	return !regexec(regex, sym->name, 0, NULL, 0);
- }
- 
- static void ip__resolve_ams(struct thread *thread,
--- 
-1.8.3.1
+[1] 
+https://lore.kernel.org/bpf/20210305094113.413544-2-bjorn.topel@gmail.com/ 
 
