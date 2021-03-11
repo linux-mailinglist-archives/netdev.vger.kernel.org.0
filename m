@@ -2,86 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A00337D12
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:59:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF5C337D7E
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 20:17:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbhCKS6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 13:58:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbhCKS6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 13:58:20 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537DFC061574;
-        Thu, 11 Mar 2021 10:58:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=gs58FMZ4ZIcfp6tfvdbnTyV06IaEwhAIrr46llssbNY=; b=SmjiH2VQPT/IQ9vdX+mLbBABzW
-        7nAGGw1kx3hP4G1deRuKlhGw/pDeioyLbtCldjJuk3WEKTdiP7x40NWrmv3qaWHzZw1M0KwK81cbW
-        +x56KLo5eisidpJ669nOaSG90ryudnrK/rJLpY8jgbGPoylfB0x9iBeU+J8kk69/1h+TmOxdx/KBI
-        CADghUQjLwN1d6SS78Z2F/okLD5sKPjHkoSq2EtMT+Sxuyv8z3Vumgv6Fd4Sn0+PnxkgSP6545qwy
-        z3/UwAsw283xzKhmo0/Smg3a4lyjfRUUsEGVfx9kKSM9UXR+D8NVxkLs4iPwiBzUGTbQEIQg2gAOe
-        tIH9mo/g==;
-Received: from [2601:1c0:6280:3f0::3ba4]
-        by merlin.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lKQVj-000xjJ-53; Thu, 11 Mar 2021 18:58:15 +0000
-Subject: Re: [PATCH net-next v4 2/2] net: Add Qcom WWAN control driver
-To:     Loic Poulain <loic.poulain@linaro.org>, kuba@kernel.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
-        hemantk@codeaurora.org, jhugo@codeaurora.org
-References: <1615480746-28518-1-git-send-email-loic.poulain@linaro.org>
- <1615480746-28518-2-git-send-email-loic.poulain@linaro.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <bb73e0bf-1c30-89f7-a28d-4e51998eec9f@infradead.org>
-Date:   Thu, 11 Mar 2021 10:58:11 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S230076AbhCKTQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 14:16:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41646 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229520AbhCKTQH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 14:16:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E9FC164EF2;
+        Thu, 11 Mar 2021 19:16:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615490165;
+        bh=nKWwGiGO6+FXiSkDFk2w1sq4arv1V6JlzszSg8Y7QMk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QCTE5HITElA7vkXUnbkkVn25zFyNucD5HJhhQSQBkXcg70gMTjEECxGHBXChGk79g
+         Lm3gzOD8AsvbZ5OMcOgcOED9ANxr2HB18+o11euDlZ9yHps5RflUgDPbD7ZC+3djP1
+         jJxh/ojDT0tXtzdUK0j5tXQ2K4g24gkCN1+ftlMctQg8R/bFRTPCOdK5P+c+/yjcBf
+         UxjoKlGGsp32pXrnTS8W4Je9VbF/S5mFvfDf9pUjuW0W6gRnZrpscoGD8bpcA256MK
+         HFqluwZME3NoLOHpQ/+2aM/qE3CDUZMNuMQFbpAVYJ40ikBbQiagHQa5NW2zB+FqgN
+         +jzD2jkB1MvBQ==
+Date:   Thu, 11 Mar 2021 12:16:02 -0700
+From:   Keith Busch <kbusch@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210311191602.GA36893@C02WT3WMHTD6>
+References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
+ <20210311181729.GA2148230@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <1615480746-28518-2-git-send-email-loic.poulain@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210311181729.GA2148230@bjorn-Precision-5520>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/11/21 8:39 AM, Loic Poulain wrote:
-> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-> index b7d58b7..1e8ac0b 100644
-> --- a/drivers/net/wwan/Kconfig
-> +++ b/drivers/net/wwan/Kconfig
-> @@ -16,4 +16,18 @@ config WWAN_CORE
->  	  Say Y here if you want to use the WWAN driver core. This driver
->  	  provides a common framework for WWAN drivers.
->  
-> +config MHI_WWAN_CTRL
-> +	tristate "MHI WWAN control driver for QCOM based PCIe modems"
+On Thu, Mar 11, 2021 at 12:17:29PM -0600, Bjorn Helgaas wrote:
+> On Wed, Mar 10, 2021 at 03:34:01PM -0800, Alexander Duyck wrote:
+> > 
+> > I'm not so much worried about management software as the fact that
+> > this is a vendor specific implementation detail that is shaping how
+> > the kernel interfaces are meant to work. Other than the mlx5 I don't
+> > know if there are any other vendors really onboard with this sort of
+> > solution.
+> 
+> I know this is currently vendor-specific, but I thought the value
+> proposition of dynamic configuration of VFs for different clients
+> sounded compelling enough that other vendors would do something
+> similar.  But I'm not an SR-IOV guy and have no vendor insight, so
+> maybe that's not the case?
 
-	                                      QCOM-based
-
-> +	select WWAN_CORE
-> +	depends on MHI_BUS
-> +	help
-> +	  MHI WWAN CTRL allow QCOM based PCIe modems to expose different modem
-
-	                allows QCOM-based
-
-> +	  control protocols/ports to userspace, including AT, MBIM, QMI, DIAG
-> +	  and FIREHOSE. These protocols can be accessed directly from userspace
-> +	  (e.g. AT commands) or via libraries/tools (e.g. libmbim, libqmi,
-> +	  libqcdm...).
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called mhi_wwan_ctrl.
-> +
->  endif # WWAN
-
-
--- 
-~Randy
-
+NVMe has a similar feature defined by the standard where a PF controller can
+dynamically assign MSIx vectors to VFs. The whole thing is managed in user
+space with an ioctl, though. I guess we could wire up the driver to handle it
+through this sysfs interface too, but I think the protocol specific tooling is
+more appropriate for nvme.
