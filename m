@@ -2,109 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0222A336EA0
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 10:15:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96585336F17
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 10:44:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbhCKJP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 04:15:28 -0500
-Received: from mout.kundenserver.de ([212.227.126.187]:36025 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231995AbhCKJPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 04:15:12 -0500
-Received: from mail-ot1-f53.google.com ([209.85.210.53]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MFbFW-1lWvnJ0PaY-00H7e9; Thu, 11 Mar 2021 10:15:07 +0100
-Received: by mail-ot1-f53.google.com with SMTP id 75so854357otn.4;
-        Thu, 11 Mar 2021 01:15:06 -0800 (PST)
-X-Gm-Message-State: AOAM530eVF7rVrpAp1XLvQIrseRQla+swzeBKntkJBil4am9F6BNaHgT
-        /7lc/bi2WdFhGObsvTlTFukx3xklGp4XhWG4Fm0=
-X-Google-Smtp-Source: ABdhPJyn+biUFqeUpWbgYz+onSoY1lB5lZXnaVdOJ59ivfe6fWw6B/LYP9dm97k0WNF1I7ZVkGTZlALTwC9lFjwxZew=
-X-Received: by 2002:a05:6830:14c1:: with SMTP id t1mr6129948otq.305.1615454105254;
- Thu, 11 Mar 2021 01:15:05 -0800 (PST)
+        id S232114AbhCKJoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 04:44:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231904AbhCKJn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 04:43:58 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F28C061574;
+        Thu, 11 Mar 2021 01:43:58 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id u18so9915370plc.12;
+        Thu, 11 Mar 2021 01:43:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=jQIVJbhzgg9ExMqmPGfrcbGNRUuxXYmbfOhJYaQQYi4=;
+        b=NHOvI6XY1tH9NH8L8YhqVRMWUxequ4w8UwfuGERHU6bus4Km+pfxVgyTpNwHdbAQhY
+         CLkgYtOf7zs5peS1TQYIDgIgs8kUoVYaIQn5yDGNEmcE7l/CfJ0SNPdOXa1JjXBFsUDu
+         mLIz2yS27If3BvxQuOlBxFC8Coe/LmEVyHrpiIvI0Y25QhX77U8eeIss6vILXwchQz9B
+         ckLTTSqGgKJ6WILr01gTodq9GCrmKinA4fj+twzA+QRIc9ohnKZFbwOzDPYbN1z3h4Q2
+         +G5hCs6lv4BIIYt/KMPl/YoVKbx+RDh0gRmHVB/I1sfQn5TTTm3glnMM6xcPCUjd4j40
+         rCLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=jQIVJbhzgg9ExMqmPGfrcbGNRUuxXYmbfOhJYaQQYi4=;
+        b=PCps7lzNyceA4RtRNmyCiuVwHdCuE1ILTiWbVIQc5QYzW1kLQrx7S2i34nkrbu+n7R
+         CJHFo5BdNLo5lFpUR4INZIZtLWaHxtXEA8dN9RPrM1RXql3BnczTBDdrhtEtngwtuZjY
+         T3W+GlWqRlH9SHTNBl/BMxT1jy/2GVNyfSGvmN0iOBm1VOYT10yeBroLuOxkVBg8JEsn
+         tVwGm6EsKBfG/L/F64sVIqpQNw1DbBVJqHQ3FrLn5nJza4/cFWFCf1QG4hqjnC7pL96y
+         GUsKwDHEa197ArCFK/UNyoy6X/5NqcHlW3tuI1J2trUzuPY6uM99qlou9OqWqxjI9XSl
+         YmkA==
+X-Gm-Message-State: AOAM533FAh4b1ZdnmbYwJZVF2kvE1xwDcIDoivcwRBXeAjrvo3dAswAf
+        hnQVayx2m3g2+6sM3/Z6EmeUfUCM0QD0YYNw
+X-Google-Smtp-Source: ABdhPJzFo1V2aQFgO8GTV3WKxfZ211m88OQti6EFoaJTA+t376UZ5jrVsYoD6WuvmD6XYTHOG3DoJw==
+X-Received: by 2002:a17:902:8f8c:b029:e3:7e6c:36fa with SMTP id z12-20020a1709028f8cb02900e37e6c36famr7430132plo.77.1615455837746;
+        Thu, 11 Mar 2021 01:43:57 -0800 (PST)
+Received: from localhost ([122.179.55.249])
+        by smtp.gmail.com with ESMTPSA id l15sm1800084pjq.9.2021.03.11.01.43.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 11 Mar 2021 01:43:57 -0800 (PST)
+Date:   Thu, 11 Mar 2021 15:13:49 +0530
+From:   Shubhankar Kuranagatti <shubhankarvk@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bkkarthik@pesu.pes.edu
+Subject: [PATCH] net: core: bpf_sk_storage.c: Fix bare usage of unsigned
+Message-ID: <20210311094349.5q76vsxuqk3riwyq@kewl-virtual-machine>
 MIME-Version: 1.0
-References: <20210310083327.480837-1-krzysztof.kozlowski@canonical.com>
- <20210310083840.481615-1-krzysztof.kozlowski@canonical.com>
- <20210310094527.GA701493@dell> <35c39c81-08e4-24c8-f683-2fa7a7ea71de@redhat.com>
- <1c06cb74-f0b0-66e5-a594-ed1ee9bc876e@canonical.com> <CAK8P3a1CCQwbeH4KiUgif+-HdubVjjZBkMXimEjYkgeh4eJ7cg@mail.gmail.com>
- <52d0489f-0f77-76a2-3269-e3004c6b6c07@canonical.com> <ba2536a6-7c74-0cca-023f-cc6179950d37@canonical.com>
- <CAK8P3a1k7c5X5x=-_-=f=ACwY+uQQ8YEcAGXYfdTdSnqpo96sA@mail.gmail.com> <fb0d8ca3-ac46-f547-02b0-7f47ff8fff6b@canonical.com>
-In-Reply-To: <fb0d8ca3-ac46-f547-02b0-7f47ff8fff6b@canonical.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 11 Mar 2021 10:14:49 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a05VkttECKTgonxKCSjJR0W4V1TRrUYMydgUGywbCSCWQ@mail.gmail.com>
-Message-ID: <CAK8P3a05VkttECKTgonxKCSjJR0W4V1TRrUYMydgUGywbCSCWQ@mail.gmail.com>
-Subject: Re: [RFC v2 3/5] arm64: socfpga: rename ARCH_STRATIX10 to ARCH_SOCFPGA64
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Tom Rix <trix@redhat.com>, Lee Jones <lee.jones@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Moritz Fischer <mdf@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        linux-edac@vger.kernel.org, linux-fpga@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com, arm-soc <arm@kernel.org>,
-        SoC Team <soc@kernel.org>, Olof Johansson <olof@lixom.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:8zSo19FEMGDxyiVQDBPRPGNk7oUpBJKvj23wAA3LeoGeGTVaVDe
- tYcAtEWJuc6QF3xHchWKOFHw7SzdIyvsUGzwG5ZCAIbpfSiEs2I44sZv8Ig0uLr7MILLENl
- cggEdUK03qWlQ/08UCGbvsKoo6DI2tigOl0tTfxiLh2W3CnAAeAKnlFxyt1SxNWb91t9oNT
- f3uj0KvErM5ZZx+1XApng==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DHa3uyTr8Bg=:mYAf3HuyZSpvNDQzaYFPIa
- LQ8jH4G5xwF5IsG18LSCUNEXu4cXgmL7HkSnx6t4Odmq50eV26cIJzOSX95EuRoTU568WFmVF
- 6D6D2deAwUPjNAd5o/5141PGlP5tMgZPA3BihdFgV9Vw8oifzBng1y8RuPF4IX6cUvqY5NNbz
- en5TQeAfMSBlKae749fUXQxsregl6IgMbfo+qesr2t5g5x2bCVIUzGqMysf6XNbekDVasEP3g
- 6EXFmth3Dl/KzQzYt3UXUELR8LXIo7HFiARyafcLr85kuYQpClWDo5ZRL1uOd+ggzsJb/7YIE
- CGe/BYpm/a3+KFbtnRLNP15PnpWixRxwkjNUvGXUaeCU9viIXWzITSL9ZLlZatpM1k3BK4VZp
- gadboAk6GmkTmKrcXZfqvdunIX95jT0D0bli/LjuuMhmXSPV40LWZHonSaELFmzWfjcBHMIJ5
- z3Fq8/5O8dgcvuQ3hGKZOMoL+YW/IWvOOEsxT4sU+CK9ihrHpjVf/eIrZ8h4RNFNvXWG6gPgJ
- M+CdNro9r1nbTqwf74QTm4hvH8nIJCY5WcW0ZvCL+Ii/J7pF2RXZfOlA/V0c0xtqA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 8:08 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
-> On 10/03/2021 17:42, Arnd Bergmann wrote:
-> > On Wed, Mar 10, 2021 at 4:54 PM Krzysztof Kozlowski
-> > <krzysztof.kozlowski@canonical.com> wrote:
-> >> On 10/03/2021 16:47, Krzysztof Kozlowski wrote:
-> >>> This edac Altera driver is very weird... it uses the same compatible
-> >>> differently depending whether this is 32-bit or 64-bit (e.g. Stratix
-> >>> 10)! On ARMv7 the compatible means for example one IRQ... On ARMv8, we
-> >>> have two. It's quite a new code (2019 from Intel), not some ancient
-> >>> legacy, so it should never have been accepted...
-> >>
-> >> Oh, it's not that horrible as it sounds. They actually have different
-> >> compatibles for edac driver with these differences (e.g. in interrupts).
-> >> They just do not use them and instead check for the basic (common?)
-> >> compatible and architecture... Anyway without testing I am not the
-> >> person to fix the edac driver.
-> >
-> > Ok, This should be fixed properly as you describe, but as a quick hack
-> > it wouldn't be hard to just change the #ifdef to check for CONFIG_64BIT
-> > instead of CONFIG_ARCH_STRATIX10 during the rename of the config
-> > symbol.
->
-> This would work. The trouble with renaming ARCH_SOCFPGA into
-> ARCH_INTEL_SOCFPGA is that still SOCFPGA will appear in many other
-> Kconfig symbols or even directory paths.
->
-> Let me use ARCH_INTEL_SOCFPGA for 64bit here and renaming of 32bit a
-> little bit later.
+Changed bare usage of unsigned to unsigned int
 
-Maybe you can introduce a hidden 'ARCH_INTEL_SOCFPGA' option first
-and select that from both the 32-bit and the 64-bit platforms in the first step.
+Signed-off-by: Shubhankar Kuranagatti <shubhankarvk@gmail.com>
+---
+ net/core/bpf_sk_storage.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-That should decouple the cleanups, so you can change the drivers to
-(only) 'depends on ARCH_INTEL_SOCFPGA' before removing the other
-names.
+diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+index 4edd033e899c..d99753f88a70 100644
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -723,7 +723,7 @@ EXPORT_SYMBOL_GPL(bpf_sk_storage_diag_put);
+ struct bpf_iter_seq_sk_storage_map_info {
+ 	struct bpf_map *map;
+ 	unsigned int bucket_id;
+-	unsigned skip_elems;
++	unsigned int skip_elems;
+ };
+ 
+ static struct bpf_local_storage_elem *
+-- 
+2.17.1
 
-        Arnd
