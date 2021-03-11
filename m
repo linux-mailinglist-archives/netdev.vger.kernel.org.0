@@ -2,412 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 427B6337B95
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 511F1337BA6
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 19:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbhCKSAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 13:00:55 -0500
-Received: from mail-eopbgr80050.outbound.protection.outlook.com ([40.107.8.50]:35654
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S229705AbhCKSEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 13:04:05 -0500
+Received: from mail-bn7nam10on2082.outbound.protection.outlook.com ([40.107.92.82]:19031
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229784AbhCKSAe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 13:00:34 -0500
+        id S229883AbhCKSD6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 13:03:58 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jBic6skNyWHNtghSqTUum09k2OxGRNlf3aV3WUJaFZ+3GTkkNOMzmzJ6zh67osyWsXGMVaHoGJ3MjW14tANq5tC430BnLaU1vrduAcPSh5CrsPoznmTJ3A8WBKn9rPfqFSDpQA1Hci/DF2ZDpFDacFbBgTCPepPKw1igPk21Hg+jnUA4rToU/5F3Sk9b16FgoQ1i19irV88uAkXI3NvQBVv59heTmYxl7z83xcu44pDB//GnQo0RToHrHIo5wMhJCqV6k67PwIrTXcBfhDyHfKC2GgMf5yC4XsxKT6ZMRqQJ+P1n0Oxm7tD7cOM0O7WZLGT07jV3lJypCrJFLo1Wew==
+ b=Lw3fnRPk/VF3MF/fi42S6/wU6J8wgHCl4pcbzXQ1L37qzj4/1/6ILW4cLznyEx5ucvHoFNV78xYAyD0E1Odq+dk1Tv1m0gCtXTolTJpFRldWO7vi6mVXglleaElPC0i2CwTrnvntgRt+y+67ySJlNIs9g3OkVDX5faw/PmvS5T4KK+ad6x4n0LzlaY4+9dv5OwjYL16P0Iq9ou/1NWukiSf6ZTNFa4rXY9c4ayqfclsXJmds1dtxKGLjGcCaxotgR3dhMcnSa5td4GNZ864mkRV4BQijEybJJsNB5MieCZJogb7Gbt80Rk/bOyP52K+KJNkenD8pzWUlzatlJdPJ1w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ze50xbDM6B7YKcPfHVDEQJs+eSCCpNhGzjLqLFpvxsc=;
- b=Q54qQ4EDuuTSwJ6VUv2ZCNLWFdjPJWpd34YUFSmEyyv5Mil9bB7lIFcVdmxOTemec4uoj29zVmEkO4A34XCY42UJf9n88q47fyOobU0XwUp2ytLbU+M/+dYsaUIjAAp9RusPcW1L8k0d3KfBwKOvNPii6qdfZtcPFWx4jIMHP1AVORVlArcQ6GoOWinG/XpSwxeGGVIKPjpKhpBg7BrWpMRt6fL3S8YsYYpjtQiYjJUKaLai/dkqwdugunUp4vg4HYVgdhUU/QN/5kz3kPpzP0WfRL8dJKDziwfnXv9+GMQ2+QChqjrXfi1fkoba1yiWU4vuiKvZ4LuJug+7gFjHYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
+ bh=YLcOCp93CY5JoR4ToCUtHbo+isdke2nJgjE6N+PJzio=;
+ b=RrgmPD0GZ54oBPyEE8h48cRQP49/Uc2XScuipllgZDb5wJ08UUt2JPa0D8R2ZGBDz1m3U2l/hoY69dWeVCWWEcGLOdKiCayJUBb96C4AjmdyjgLel5Ow1bM/mpxpZtcpRxPVFD7XDG/4Oc/o7OZLnQMBFxOdXZAvQ05d1xmyKO5zdjzv0gI8veer35nKVTDptYZ2rZqxSsJ47RkSgvjNNCqNpnaA1RuEY9BivgEemOU6la0QTcsHCNr3sKNlQhSKiWEtRFf7U5styd8X3UsmEkLrp3Fi8f3CRZJLaUFjdEGhXyCtknqqUFCqN0jP5K3Rf1GUZtCIhSMUoBHnDWFxqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ze50xbDM6B7YKcPfHVDEQJs+eSCCpNhGzjLqLFpvxsc=;
- b=CFwf9sIyKAipIp5/Dht4J3mhDWyfj37pq2JF2aZvpmz7HbfwTIKMy4rtlaCgCZsGUwFr5b2aNh24uYM7sV/Ne2pYI17PVW9UPAE36G0V1OfMK1AZeIax6CmmljzukFxy3eapLGgr+cyFx1fuBwkuZGTly78QRsc9N0amhLk0qRc=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB6898.eurprd04.prod.outlook.com (2603:10a6:208:185::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Thu, 11 Mar
- 2021 18:00:28 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::1cd:7101:5570:cd79]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::1cd:7101:5570:cd79%7]) with mapi id 15.20.3912.027; Thu, 11 Mar 2021
- 18:00:28 +0000
-Date:   Thu, 11 Mar 2021 23:30:10 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+ bh=YLcOCp93CY5JoR4ToCUtHbo+isdke2nJgjE6N+PJzio=;
+ b=EilmAUzYF62/mapIMlDnnaF/8Q1YWMm9DI1Q7OSPbDyhYbVgO7ttQwItbsIIwXFgcMRQK7eYF5JnFAFHQS8AOjiRrADD1g7Bruzlw2oYu74CqPPyhYDpLbin65YsN8WAj86/qkf8uji+m/o8OyvRoj5KVv4es0ulJtAAGhN4LWI/5lNUYDCJBIHgjr5G0nR/HL/Jp6jqrLM13ef6GNhxgyo260EQPU1xdhMBJd+/Xtvh7xasdkjJoA6MfK50JJTbdTOhC3WbLO4qUocovHPY8u5SQq9h6tgI6ZfaexqCdqhtuEafZ6KwOt6/CLSPUKWdtGsSpPK4PLOJd3PrBqlKvw==
+Received: from BN6PR2001CA0034.namprd20.prod.outlook.com
+ (2603:10b6:405:16::20) by BN8PR12MB3538.namprd12.prod.outlook.com
+ (2603:10b6:408:96::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.29; Thu, 11 Mar
+ 2021 18:03:55 +0000
+Received: from BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:16:cafe::29) by BN6PR2001CA0034.outlook.office365.com
+ (2603:10b6:405:16::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
+ Transport; Thu, 11 Mar 2021 18:03:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT047.mail.protection.outlook.com (10.13.177.220) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 18:03:55 +0000
+Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Mar
+ 2021 18:03:51 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ido Schimmel <idosch@nvidia.com>, David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Subject: Re: [net-next PATCH v7 08/16] net: mdiobus: Introduce
- fwnode_mdiobus_register_phy()
-Message-ID: <20210311180010.GC5031@lsv03152.swis.in-blr01.nxp.com>
-References: <20210311062011.8054-1-calvin.johnson@oss.nxp.com>
- <20210311062011.8054-9-calvin.johnson@oss.nxp.com>
- <CAHp75VfKoNvBxbj5tKb9NqGGbn36s=uZznm9QDBzkVWYNa=LCA@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VfKoNvBxbj5tKb9NqGGbn36s=uZznm9QDBzkVWYNa=LCA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [14.142.151.118]
-X-ClientProxiedBy: HK2P15301CA0021.APCP153.PROD.OUTLOOK.COM
- (2603:1096:202:1::31) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        "Petr Machata" <petrm@nvidia.com>
+Subject: [PATCH net-next v2 00/14] nexthop: Resilient next-hop groups
+Date:   Thu, 11 Mar 2021 19:03:11 +0100
+Message-ID: <cover.1615485052.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by HK2P15301CA0021.APCP153.PROD.OUTLOOK.COM (2603:1096:202:1::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.3 via Frontend Transport; Thu, 11 Mar 2021 18:00:18 +0000
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 764fdaba-bea8-435c-cdb0-08d8e4b78d69
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6898:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB68989BF8E3C961BD1E2DC54DD2909@AM0PR04MB6898.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Office365-Filtering-Correlation-Id: b27b2c25-8937-4011-03e7-08d8e4b8093d
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3538:
+X-Microsoft-Antispam-PRVS: <BN8PR12MB35384675563D03BFD34E4844D6909@BN8PR12MB3538.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ds3hzcK1yQLXAh7jdNjX97T3ARM5wtvvcxHpKRflB2bGj2MwsGrh6u2h41kjiqVjevr/a0TwFWZuApn5z5tx5Q4GxbzubutQumv+2Ckea2GtzLdUTcZpQuZtWVrDkwdSH5jQj7OyzcJ/c4RLTieJ542iKCFbOrjfvaQL+rwMitz1+zpKF8kiDEMs20sm1hiIL08J/UFZIXDwShtnoMITkeRTwfxR8XVNJq9DgkutpFmgIHjQ2L3EHXN3CLkkiQ6Ge1bz0Zs3KwgifGeGfTm3Q6xYaH/RlTOFdWGg921opaS2JA0LDdXT/n2iSusEZDjyINWtKcqTdcV4UW+Yf+IW8GHLwfPiSYVVZbPE0N1MQ4M96eM63oqbTlASLI+8XbtbZCdmPAiJH2ZOuC1eOndsEa/oKkIb71KFszRUSxo5hcAWDhmci6okDsV0P4VIPkI+ux7aKYBCVEiwXvmPNzxkMTY+MiVl+bolmQYTy63VworIElcZubHjqH/hwPD4mjysZ2eAdVaPwza1hM/gbzyJvDoYZvYSdDf/9ZLYUO3L8DFbWzLrmLKo2S5XDzYHynJEpdnu+/2VWStMAfw6tS96PQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(136003)(346002)(396003)(39860400002)(33656002)(5660300002)(7416002)(52116002)(66946007)(6916009)(8676002)(66476007)(66556008)(55236004)(54906003)(26005)(956004)(6666004)(44832011)(16526019)(9686003)(8936002)(4326008)(6506007)(1006002)(55016002)(1076003)(53546011)(7696005)(86362001)(316002)(83380400001)(2906002)(478600001)(186003)(110426009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?xVhhu7yFkvVOrssPtkPvpDCTTwiyO0FcMcDU0UXpRxvVxU/XBY6jKonFUNat?=
- =?us-ascii?Q?A5KMDh6RtUmrdthR0Z7MtR/Y9sY98d4c68t+4VyRA/g9ZrDFqpTVzMVtiKge?=
- =?us-ascii?Q?53a69E3LUZX9dexL/OwpnUvoudsK7A3KDJaEHqi8Y3nA3l0Rhqv/iKNZ3ytS?=
- =?us-ascii?Q?QLFYRG2n34qylYpq+nSJpbWGGoMxvXjUKxqfmRqjsIaZEFAkEanYIk+4SDsZ?=
- =?us-ascii?Q?m9GvDiqdk1Bz5KDUsSjrffzN+qp96XVBnWOD/h0fdwH0sNkGOueyul8iu9Uy?=
- =?us-ascii?Q?CQfsiYPCb+TvMb7HiXhKLEh1QNNnZ+ICe/SMeUP2+xwCRBLEVXHaO8Lg2opr?=
- =?us-ascii?Q?KP/jtJabHvl4InHIiuYsTFoX//YKHD/wgixu+9ph5ijfgTGAzkHVldBVK+CH?=
- =?us-ascii?Q?toGpxUwXFDWIbHulpyxRH0IH8/h4gAtzIzikiiVg/YSbLGAZMwRGSSn1Jm9s?=
- =?us-ascii?Q?PYDMUXwUrmF8UfuUPtGNmMoiJjKXsYYEUnDmpZ+vq30boPpopJhxWBaA5/db?=
- =?us-ascii?Q?mZ9p1fxGko0vlf0WRrPvPQamcvqxIRvCtXNojPq/Kv2i8uTqcMRzCGjbS+N/?=
- =?us-ascii?Q?MVtdZOlFgnCiKwpCNMmjhS1zy4PCWAuiJGjzPFS7O5rxxAFOvI5UT42ilZ6j?=
- =?us-ascii?Q?Ox6Xqrezc0j+Cs43UcPuCzbv5FfQkP3A8JDIvHuxQiZGyqR7GoHvSdgN1cLJ?=
- =?us-ascii?Q?8SZxr7fgEBtgoJmGlhIc1IwpdQTINruYR6gOLyJ2b1XxOYQKMLssGRdBoBRw?=
- =?us-ascii?Q?SbUKDSQkkCDhXUj2uGKibwmx8EdyaZiicTWLis6lZGdMQ3uw8RuTqS1eoDFi?=
- =?us-ascii?Q?rQZaRfyt0OSlsoPe1Q1IMmJwixpWdCqyVcBPILOU3n5twmGYzdL3zGr8Aqpg?=
- =?us-ascii?Q?ZCibNMihXr1S/E3yZhwdD7WpBHvNbXFvynahz4Xer1dRNgQQXl15+UByho48?=
- =?us-ascii?Q?5zmy+SuyVhzYLe2FzSlwtH9vdfpDmSg2awwL6L5HLx2BJqfrbEZB5bm3MzL4?=
- =?us-ascii?Q?h4s0Cr2MMOoXaMZQzNvchnfl4g5r8VJrtKkeG9PliDfwuaIDmSW+I4zTSYpb?=
- =?us-ascii?Q?YzfvBwT6DuC7HojHS/3kjRGt7w7PKu9e7BNIjySrCaeqtq4lr6YwbgStMl3Z?=
- =?us-ascii?Q?1q/seKDskqk140LG8gLJSTEDZEzTEBNvcTIOffVcyk1ImqmN8AfyMUW1hrjM?=
- =?us-ascii?Q?0QTEVxTNrzW58M0OfSzn7p+2bQdD4Mr2+abqmUf9Xlw6wf92WlbwCRuZeDg2?=
- =?us-ascii?Q?yLMCLV2MoyEjjFzHR0G3pgteeuS+sUOfqistrpMdv9mdrp3QkJeoIebLqTnV?=
- =?us-ascii?Q?O3QQLwmsxiy8jLXWUchIIAXY?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 764fdaba-bea8-435c-cdb0-08d8e4b78d69
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 18:00:28.0681
+X-Microsoft-Antispam-Message-Info: zvx46XY5qbjous9LeTQT0nk5PSi/Yo00WohLmgx4XQYk92UaG/mI1gmA6kHRGk+kYOt/0wjn7y1vbGeyqX39h7HnPL6g6eqLuuMNAyZPYpkqDTaVeCx472OkZzeNU92AT+kgpa7/epg66YbQ4o0gp5lx8APfZAt+bu1xP2DwkHuAPuko/HcALGpCOjUj8Adzggtz7T37nXN7suYRWOXjKshXvf83IQbERJ/le0M533vZz4k8iYGAlFRicx4BeuX7/vNwYngeaCGZWQias30/qAcsMkFjjW5rJHREtoG+SMQjBIWjFI04fbU1/B3NxNlEG4v6WS6rrMXk7Oz89CyehIcNLpMWV13FWHGpOiwFKpy5lpMzC7hC+PGutml+u6puTSNxHvLdPvk6+7lEXvqfOCWileMpJWJZQ/u/6T7bI/JPhYFbDPQ+bpUa/ntrsjJrlqpHgIbWsURXiaYX+DhpAIk66B4tvOW+ztTZ1v36AQaCtLw6+ANgmAr0Wf1rrI6HTPkbM8tNGE2lpSxgvlREHJdx6zakpxp604Ll7uJHD8moHffDHVlaX6MNs6QamdtNaNRkuZWGYtHDqJH0r1wu8Ag60zHmfdgwyI1nljRoFTZe8trARNopaG/zsBQaVxVH8PSkPLuurRGBd8XrwEugRmnk7ZQK7jlc7u88U92MUU/bUWUzAgwccZjl+UGqlG2Las/Cm7bN7fc894gBg4lYAhXwCFxMvR3I0eVROb/2vdy7d3/zcAKiuvxaGU/e06cpcYF6ql3K5pVh6M0Q9lluFw==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(346002)(376002)(136003)(46966006)(36840700001)(70206006)(26005)(5660300002)(426003)(356005)(2616005)(30864003)(54906003)(478600001)(2906002)(966005)(16526019)(186003)(6666004)(336012)(83380400001)(82740400003)(316002)(36906005)(36860700001)(86362001)(4326008)(34020700004)(36756003)(8676002)(8936002)(82310400003)(70586007)(107886003)(7636003)(6916009)(47076005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 18:03:55.0565
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RGHCEMCjOayRJN0B8nsnmXEpdhUTqxBJIy6ejmeDfCJKrv0gk2eJ4sw8g8pDLv0lsh4x4HMdCZgjhVew2GvwQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6898
+X-MS-Exchange-CrossTenant-Network-Message-Id: b27b2c25-8937-4011-03e7-08d8e4b8093d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3538
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 02:09:37PM +0200, Andy Shevchenko wrote:
-> On Thu, Mar 11, 2021 at 8:21 AM Calvin Johnson
-> <calvin.johnson@oss.nxp.com> wrote:
-> >
-> > Introduce fwnode_mdiobus_register_phy() to register PHYs on the
-> > mdiobus. From the compatible string, identify whether the PHY is
-> > c45 and based on this create a PHY device instance which is
-> > registered on the mdiobus.
-> 
-> > uninitialized symbol 'mii_ts'
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-> I don't think it's important to have it in a history of Git. I would
-> move this after the cutter '---' line below.
+At this moment, there is only one type of next-hop group: an mpath group.
+Mpath groups implement the hash-threshold algorithm, described in RFC
+2992[1].
 
-Sorry. I thought I had removed it. Will definitely take care next time.
+To select a next hop, hash-threshold algorithm first assigns a range of
+hashes to each next hop in the group, and then selects the next hop by
+comparing the SKB hash with the individual ranges. When a next hop is
+removed from the group, the ranges are recomputed, which leads to
+reassignment of parts of hash space from one next hop to another. RFC 2992
+illustrates it thus:
 
-> 
-> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> > ---
-> >
-> > Changes in v7:
-> > - Call unregister_mii_timestamper() without NULL check
-> > - Create fwnode_mdio.c and move fwnode_mdiobus_register_phy()
-> >
-> > Changes in v6:
-> > - Initialize mii_ts to NULL
-> >
-> > Changes in v5: None
-> > Changes in v4: None
-> > Changes in v3: None
-> > Changes in v2: None
-> >
-> >  MAINTAINERS                    |  1 +
-> >  drivers/net/mdio/Kconfig       |  9 ++++
-> >  drivers/net/mdio/Makefile      |  3 +-
-> >  drivers/net/mdio/fwnode_mdio.c | 77 ++++++++++++++++++++++++++++++++++
-> >  drivers/net/mdio/of_mdio.c     |  3 +-
-> >  include/linux/fwnode_mdio.h    | 24 +++++++++++
-> >  include/linux/of_mdio.h        |  6 ++-
-> >  7 files changed, 120 insertions(+), 3 deletions(-)
-> >  create mode 100644 drivers/net/mdio/fwnode_mdio.c
-> >  create mode 100644 include/linux/fwnode_mdio.h
-> >
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index e1fa5ad9bb30..146de41d2656 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -6680,6 +6680,7 @@ F:        Documentation/devicetree/bindings/net/mdio*
-> >  F:     Documentation/devicetree/bindings/net/qca,ar803x.yaml
-> >  F:     Documentation/networking/phy.rst
-> >  F:     drivers/net/mdio/
-> > +F:     drivers/net/mdio/fwnode_mdio.c
-> >  F:     drivers/net/mdio/of_mdio.c
-> >  F:     drivers/net/pcs/
-> >  F:     drivers/net/phy/
-> > diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-> > index a10cc460d7cf..2d5bf5ccffb5 100644
-> > --- a/drivers/net/mdio/Kconfig
-> > +++ b/drivers/net/mdio/Kconfig
-> > @@ -19,6 +19,15 @@ config MDIO_BUS
-> >           reflects whether the mdio_bus/mdio_device code is built as a
-> >           loadable module or built-in.
-> >
-> > +config FWNODE_MDIO
-> > +       def_tristate PHYLIB
-> 
-> (Seems "selectable only" item)
+             +-------+-------+-------+-------+-------+
+             |   1   |   2   |   3   |   4   |   5   |
+             +-------+-+-----+---+---+-----+-+-------+
+             |    1    |    2    |    4    |    5    |
+             +---------+---------+---------+---------+
 
-What do you mean by "selectable only" item here? Can you please point to some
-other example?
+              Before and after deletion of next hop 3
+	      under the hash-threshold algorithm.
 
-> 
-> > +       depends on ACPI
-> > +       depends on OF
-> 
-> Wouldn't be better to have
->   depends on (ACPI || OF) || COMPILE_TEST
-> 
-> And honestly I don't understand it in either (AND or OR) variant. Why
-> do you need a dependency like this for fwnode API?
+Note how next hop 2 gave up part of the hash space in favor of next hop 1,
+and 4 in favor of 5. While there will usually be some overlap between the
+previous and the new distribution, some traffic flows change the next hop
+that they resolve to.
 
-Here, fwnode_mdiobus_register_phy() uses objects from both ACPI and OF.
+If a multipath group is used for load-balancing between multiple servers,
+this hash space reassignment causes an issue that packets from a single
+flow suddenly end up arriving at a server that does not expect them, which
+may lead to TCP reset.
 
-> 
-> Moreover dependencies don't work for "selectable only" items.
-> 
-> > +       depends on PHYLIB
-> > +       select FIXED_PHY
-> > +       help
-> > +         FWNODE MDIO bus (Ethernet PHY) accessors
-> > +
-> >  config OF_MDIO
-> >         def_tristate PHYLIB
-> >         depends on OF
-> > diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
-> > index 5c498dde463f..ea5390e2ef84 100644
-> > --- a/drivers/net/mdio/Makefile
-> > +++ b/drivers/net/mdio/Makefile
-> > @@ -1,7 +1,8 @@
-> >  # SPDX-License-Identifier: GPL-2.0
-> >  # Makefile for Linux MDIO bus drivers
-> >
-> > -obj-$(CONFIG_OF_MDIO)  += of_mdio.o
-> > +obj-$(CONFIG_FWNODE_MDIO)      += fwnode_mdio.o
-> > +obj-$(CONFIG_OF_MDIO)          += of_mdio.o
-> >
-> >  obj-$(CONFIG_MDIO_ASPEED)              += mdio-aspeed.o
-> >  obj-$(CONFIG_MDIO_BCM_IPROC)           += mdio-bcm-iproc.o
-> > diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-> > new file mode 100644
-> > index 000000000000..0982e816a6fb
-> > --- /dev/null
-> > +++ b/drivers/net/mdio/fwnode_mdio.c
-> > @@ -0,0 +1,77 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * fwnode helpers for the MDIO (Ethernet PHY) API
-> > + *
-> > + * This file provides helper functions for extracting PHY device information
-> > + * out of the fwnode and using it to populate an mii_bus.
-> > + */
-> > +
-> > +#include <linux/acpi.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_mdio.h>
-> > +#include <linux/phy.h>
-> > +
-> > +MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
-> > +MODULE_LICENSE("GPL");
-> > +
-> > +int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-> > +                               struct fwnode_handle *child, u32 addr)
-> > +{
-> > +       struct mii_timestamper *mii_ts = NULL;
-> > +       struct phy_device *phy;
-> > +       bool is_c45 = false;
-> > +       u32 phy_id;
-> > +       int rc;
-> > +
-> > +       if (is_of_node(child)) {
-> > +               mii_ts = of_find_mii_timestamper(to_of_node(child));
-> > +               if (IS_ERR(mii_ts))
-> > +                       return PTR_ERR(mii_ts);
-> > +       }
-> > +
-> > +       rc = fwnode_property_match_string(child, "compatible", "ethernet-phy-ieee802.3-c45");
-> > +       if (rc >= 0)
-> > +               is_c45 = true;
-> > +
-> > +       if (is_c45 || fwnode_get_phy_id(child, &phy_id))
-> > +               phy = get_phy_device(bus, addr, is_c45);
-> > +       else
-> > +               phy = phy_device_create(bus, addr, phy_id, 0, NULL);
-> > +       if (IS_ERR(phy)) {
-> > +               unregister_mii_timestamper(mii_ts);
-> > +               return PTR_ERR(phy);
-> > +       }
-> > +
-> > +       if (is_acpi_node(child)) {
-> > +               phy->irq = bus->irq[addr];
-> > +
-> > +               /* Associate the fwnode with the device structure so it
-> > +                * can be looked up later.
-> > +                */
-> > +               phy->mdio.dev.fwnode = child;
-> > +
-> > +               /* All data is now stored in the phy struct, so register it */
-> > +               rc = phy_device_register(phy);
-> > +               if (rc) {
-> > +                       phy_device_free(phy);
-> > +                       fwnode_handle_put(phy->mdio.dev.fwnode);
-> > +                       return rc;
-> > +               }
-> > +       } else if (is_of_node(child)) {
-> > +               rc = of_mdiobus_phy_device_register(bus, phy, to_of_node(child), addr);
-> > +               if (rc) {
-> > +                       unregister_mii_timestamper(mii_ts);
-> > +                       phy_device_free(phy);
-> > +                       return rc;
-> > +               }
-> > +       }
-> > +
-> > +       /* phy->mii_ts may already be defined by the PHY driver. A
-> > +        * mii_timestamper probed via the device tree will still have
-> > +        * precedence.
-> > +        */
-> > +       if (mii_ts)
-> > +               phy->mii_ts = mii_ts;
-> > +       return 0;
-> > +}
-> > +EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
-> > diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
-> > index 48b6b8458c17..db293e0b8249 100644
-> > --- a/drivers/net/mdio/of_mdio.c
-> > +++ b/drivers/net/mdio/of_mdio.c
-> > @@ -32,7 +32,7 @@ static int of_get_phy_id(struct device_node *device, u32 *phy_id)
-> >         return fwnode_get_phy_id(of_fwnode_handle(device), phy_id);
-> >  }
-> >
-> > -static struct mii_timestamper *of_find_mii_timestamper(struct device_node *node)
-> > +struct mii_timestamper *of_find_mii_timestamper(struct device_node *node)
-> >  {
-> >         struct of_phandle_args arg;
-> >         int err;
-> > @@ -49,6 +49,7 @@ static struct mii_timestamper *of_find_mii_timestamper(struct device_node *node)
-> >
-> >         return register_mii_timestamper(arg.np, arg.args[0]);
-> >  }
-> > +EXPORT_SYMBOL(of_find_mii_timestamper);
-> >
-> >  int of_mdiobus_phy_device_register(struct mii_bus *mdio, struct phy_device *phy,
-> >                               struct device_node *child, u32 addr)
-> > diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
-> > new file mode 100644
-> > index 000000000000..8c0392845916
-> > --- /dev/null
-> > +++ b/include/linux/fwnode_mdio.h
-> > @@ -0,0 +1,24 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > +/*
-> > + * FWNODE helper for the MDIO (Ethernet PHY) API
-> > + */
-> > +
-> > +#ifndef __LINUX_FWNODE_MDIO_H
-> > +#define __LINUX_FWNODE_MDIO_H
-> > +
-> > +#include <linux/phy.h>
-> > +
-> > +#if IS_ENABLED(CONFIG_FWNODE_MDIO)
-> > +int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-> > +                               struct fwnode_handle *child, u32 addr);
-> > +
-> > +#else /* CONFIG_FWNODE_MDIO */
-> > +static inline int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-> > +                                             struct fwnode_handle *child,
-> > +                                             u32 addr)
-> > +{
-> > +       return -EINVAL;
-> > +}
-> > +#endif
-> > +
-> > +#endif /* __LINUX_FWNODE_MDIO_H */
-> > diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
-> > index 2b05e7f7c238..e4ee6c4d9431 100644
-> > --- a/include/linux/of_mdio.h
-> > +++ b/include/linux/of_mdio.h
-> > @@ -31,6 +31,7 @@ struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np);
-> >  int of_phy_register_fixed_link(struct device_node *np);
-> >  void of_phy_deregister_fixed_link(struct device_node *np);
-> >  bool of_phy_is_fixed_link(struct device_node *np);
-> > +struct mii_timestamper *of_find_mii_timestamper(struct device_node *np);
-> >  int of_mdiobus_phy_device_register(struct mii_bus *mdio, struct phy_device *phy,
-> >                                    struct device_node *child, u32 addr);
-> >
-> > @@ -118,7 +119,10 @@ static inline bool of_phy_is_fixed_link(struct device_node *np)
-> >  {
-> >         return false;
-> >  }
-> > -
-> > +static inline struct mii_timestamper *of_find_mii_timestamper(struct device_node *np)
-> > +{
-> > +       return NULL;
-> > +}
-> >  static inline int of_mdiobus_phy_device_register(struct mii_bus *mdio,
-> >                                             struct phy_device *phy,
-> >                                             struct device_node *child, u32 addr)
-> > --
-> > 2.17.1
-> >
-> 
-> 
-Regards
-Calvin
+If a multipath group is used for load-balancing among available paths to
+the same server, the issue is that different latencies and reordering along
+the way causes the packets to arrive in the wrong order.
+
+Resilient hashing is a technique to address the above problem. Resilient
+next-hop group has another layer of indirection between the group itself
+and its constituent next hops: a hash table. The selection algorithm uses a
+straightforward modulo operation on the SKB hash to choose a hash table
+bucket, then reads the next hop that this bucket contains, and forwards
+traffic there.
+
+This indirection brings an important feature. In the hash-threshold
+algorithm, the range of hashes associated with a next hop must be
+continuous. With a hash table, mapping between the hash table buckets and
+the individual next hops is arbitrary. Therefore when a next hop is deleted
+the buckets that held it are simply reassigned to other next hops:
+
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+             |1|1|1|1|2|2|2|2|3|3|3|3|4|4|4|4|5|5|5|5|
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	                      v v v v
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+             |1|1|1|1|2|2|2|2|1|2|4|5|4|4|4|4|5|5|5|5|
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Before and after deletion of next hop 3
+	      under the resilient hashing algorithm.
+
+When weights of next hops in a group are altered, it may be possible to
+choose a subset of buckets that are currently not used for forwarding
+traffic, and use those to satisfy the new next-hop distribution demands,
+keeping the "busy" buckets intact. This way, established flows are ideally
+kept being forwarded to the same endpoints through the same paths as before
+the next-hop group change.
+
+This patch set adds the implementation of resilient next-hop groups.
+
+In a nutshell, the algorithm works as follows. Each next hop has a number
+of buckets that it wants to have, according to its weight and the number of
+buckets in the hash table. In case of an event that might cause bucket
+allocation change, the numbers for individual next hops are updated,
+similarly to how ranges are updated for mpath group next hops. Following
+that, a new "upkeep" algorithm runs, and for idle buckets that belong to a
+next hop that is currently occupying more buckets than it wants (it is
+"overweight"), it migrates the buckets to one of the next hops that has
+fewer buckets than it wants (it is "underweight"). If, after this, there
+are still underweight next hops, another upkeep run is scheduled to a
+future time.
+
+Chances are there are not enough "idle" buckets to satisfy the new demands.
+The algorithm has knobs to select both what it means for a bucket to be
+idle, and for whether and when to forcefully migrate buckets if there keeps
+being an insufficient number of idle ones.
+
+To illustrate the usage, consider the following commands:
+
+ # ip nexthop add id 1 via 192.0.2.2 dev dummy1
+ # ip nexthop add id 2 via 192.0.2.3 dev dummy1
+ # ip nexthop add id 10 group 1/2 type resilient \
+	buckets 8 idle_timer 60 unbalanced_timer 300
+
+The last command creates a resilient next-hop group. It will have 8
+buckets, each bucket will be considered idle when no traffic hits it for at
+least 60 seconds, and if the table remains out of balance for 300 seconds,
+it will be forcefully brought into balance.
+
+If not present in netlink message, the idle timer defaults to 120 seconds,
+and there is no unbalanced timer, meaning the group may remain unbalanced
+indefinitely. The value of 120 is the default in Cumulus implementation of
+resilient next-hop groups. To a degree the default is arbitrary, the only
+value that certainly does not make sense is 0. Therefore going with an
+existing deployed implementation is reasonable.
+
+Unbalanced time, i.e. how long since the last time that all nexthops had as
+many buckets as they should according to their weights, is reported when
+the group is dumped:
+
+ # ip nexthop show id 10
+ id 10 group 1/2 type resilient buckets 8 idle_timer 60 unbalanced_timer 300 unbalanced_time 0
+
+When replacing next hops or changing weights, if one does not specify some
+parameters, their value is left as it was:
+
+ # ip nexthop replace id 10 group 1,2/2 type resilient
+ # ip nexthop show id 10
+ id 10 group 1,2/2 type resilient buckets 8 idle_timer 60 unbalanced_timer 300 unbalanced_time 0
+
+It is also possible to do a dump of individual buckets (and now you know
+why there were only 8 of them in the example above):
+
+ # ip nexthop bucket show id 10
+ id 10 index 0 idle_time 5.59 nhid 1
+ id 10 index 1 idle_time 5.59 nhid 1
+ id 10 index 2 idle_time 8.74 nhid 2
+ id 10 index 3 idle_time 8.74 nhid 2
+ id 10 index 4 idle_time 8.74 nhid 1
+ id 10 index 5 idle_time 8.74 nhid 1
+ id 10 index 6 idle_time 8.74 nhid 1
+ id 10 index 7 idle_time 8.74 nhid 1
+
+Note the two buckets that have a shorter idle time. Those are the ones that
+were migrated after the nexthop replace command to satisfy the new demand
+that nexthop 1 be given 6 buckets instead of 4.
+
+The patchset proceeds as follows:
+
+- Patches #1 and #2 are small refactoring patches.
+
+- Patch #3 adds a new flag to struct nh_group, is_multipath. This flag is
+  meant to be set for all nexthop groups that in general have several
+  nexthops from which they choose, and avoids a more expensive dispatch
+  based on reading several flags, one for each nexthop group type.
+
+- Patch #4 contains defines of new UAPI attributes and the new next-hop
+  group type. At this point, the nexthop code is made to bounce the new
+  type. As the resilient hashing code is gradually added in the following
+  patch sets, it will remain dead. The last patch will make it accessible.
+
+  This patch also adds a suite of new messages related to next hop buckets.
+  This approach was taken instead of overloading the information on the
+  existing RTM_{NEW,DEL,GET}NEXTHOP messages for the following reasons.
+
+  First, a next-hop group can contain a large number of next-hop buckets
+  (4k is not unheard of). This imposes limits on the amount of information
+  that can be encoded for each next-hop bucket given a netlink message is
+  limited to 64k bytes.
+
+  Second, while RTM_NEWNEXTHOPBUCKET is only used for notifications at this
+  point, in the future it can be extended to provide user space with
+  control over next-hop buckets configuration.
+
+- Patch #5 contains the meat of the resilient next-hop group support.
+
+- Patches #6 and #7 implement support for notifications towards the
+  drivers.
+
+- Patch #8 adds an interface for the drivers to report resilient hash
+  table bucket activity. Drivers will be able to report through this
+  interface whether traffic is hitting a given bucket.
+
+- Patch #9 adds an interface for the drivers to report whether a given
+  hash table bucket is offloaded or trapping traffic.
+
+- In patches #10, #11, #12 and #13, UAPI is implemented. This includes all
+  the code necessary for creation of resilient groups, bucket dumping and
+  getting, and bucket migration notifications.
+
+- In patch #14 the next-hop groups are finally made available.
+
+The overall plan is to contribute approximately the following patchsets:
+
+1) Nexthop policy refactoring (already pushed)
+2) Preparations for resilient next-hop groups (already pushed)
+3) Implementation of resilient next-hop groups (this patchset)
+4) Netdevsim offload plus a suite of selftests
+5) Preparations for mlxsw offload of resilient next-hop groups
+6) mlxsw offload including selftests
+
+Interested parties can look at the current state of the code at [2] and
+[3].
+
+[1] https://tools.ietf.org/html/rfc2992
+[2] https://github.com/idosch/linux/commits/submit/res_integ_v1
+[3] https://github.com/idosch/iproute2/commits/submit/res_v1
+
+v2:
+- Patch #4:
+    - Comment at NEXTHOP_GRP_TYPE_MPATH that it's for the hash-threshold
+      groups.
+
+v1 (changes since RFC):
+- Patch #3:
+    - This patch is new
+- Patches #4-#13:
+    - u32 -> u16 for bucket counts / indices
+- Patch #5:
+    - set the new flag is_multipath for resilient groups
+
+Ido Schimmel (4):
+  nexthop: Add netlink defines and enumerators for resilient NH groups
+  nexthop: Add data structures for resilient group notifications
+  nexthop: Allow setting "offload" and "trap" indication of nexthop
+    buckets
+  nexthop: Allow reporting activity of nexthop buckets
+
+Petr Machata (10):
+  nexthop: Pass nh_config to replace_nexthop()
+  nexthop: __nh_notifier_single_info_init(): Make nh_info an argument
+  nexthop: Add a dedicated flag for multipath next-hop groups
+  nexthop: Add implementation of resilient next-hop groups
+  nexthop: Implement notifiers for resilient nexthop groups
+  nexthop: Add netlink handlers for resilient nexthop groups
+  nexthop: Add netlink handlers for bucket dump
+  nexthop: Add netlink handlers for bucket get
+  nexthop: Notify userspace about bucket migrations
+  nexthop: Enable resilient next-hop groups
+
+ include/net/nexthop.h          |   72 +-
+ include/uapi/linux/nexthop.h   |   47 +-
+ include/uapi/linux/rtnetlink.h |    7 +
+ net/ipv4/nexthop.c             | 1524 ++++++++++++++++++++++++++++++--
+ security/selinux/nlmsgtab.c    |    5 +-
+ 5 files changed, 1600 insertions(+), 55 deletions(-)
+
+-- 
+2.26.2
 
