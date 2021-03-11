@@ -2,43 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FB06338169
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 00:26:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E402338171
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 00:27:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbhCKXZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 18:25:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55258 "EHLO mail.kernel.org"
+        id S231403AbhCKX1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 18:27:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230388AbhCKXY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 18:24:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D4EB864F8D;
-        Thu, 11 Mar 2021 23:24:55 +0000 (UTC)
+        id S229441AbhCKX06 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 18:26:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 266B464F92;
+        Thu, 11 Mar 2021 23:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615505096;
-        bh=gwBIEm5eCEuFPWt/lCBtyPTARvKErQXYjIBh09bK8nw=;
+        s=k20201202; t=1615505217;
+        bh=muPWX0Eq0pYxdUFY28jWi+rGMz0Zydt8/SQ82W/z3so=;
         h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=YeLVThZSuUV3lgKuJgngaUxk0h45cJzN7SEhidEFZlqAcV7kxzrDrA3DGZzo/YA0b
-         5VSXrajqBqv8lmVAuRbCQl9KjQj1VrPjSISlhVtBy0McQKG4s1Z9ogqf2AgAvyvoP2
-         WVmzsgYILuT3QOqEXa02Sms12XWkHzUO/NjFVP37RADgV9i4G9y3XiW2dgUugH3+de
-         4SRT5/vDrXgLLiESYt1gIUK8Wdx6XbTpvGn/gPNuGPaCwgpfSzQppFdjo2wmECSWSO
-         Rk3N9oPeqxvBL7+hd4rvOFQXZrGVJ8gxcJvYigCuS4lOmh3JDnutnR2rac4R5NPN6F
-         wba8reH1fXWEw==
-Message-ID: <46d60ad85a94e8bc693abbfbcbaf55ab6f7ca91e.camel@kernel.org>
-Subject: Re: [PATCH] net/mlx5: remove unneeded semicolon
+        b=nOCXmdDd4W8iPpCd/c2YLLaPr7trLnJAypKblgP0h/KQ2jnH75dP8zJIAHXHjpCch
+         orGeYVHwTQiYg3lsyL34m2hu1tIQvqszSlPkNltgKV1LKj8v2Jwie8vpIYs+B3k2Bp
+         qSxRNurUwUQOgkWIGyN2qZHqSUFao+bx86RM1WkxQzWHlXmTHcGPC8lXxfCK0Mvcz/
+         +eE5iL8eHhuXmURBggTvuk63LFeZ/41r9D43BNddBKD3KSlY9SizA6+hTLfBscebgu
+         nq2JbdzTu6GmDASoplvHqyt+t4JikVo3CSqc8BpmUIAeGV8v1o0ppXTBhVmfpPzfLN
+         14gRe7ig2FZJQ==
+Message-ID: <bdfceaa00159629ea2dbcc30eaa8e4ece0c96021.camel@kernel.org>
+Subject: Re: [PATCH] net/mlx5: use kvfree() for memory allocated with
+ kvzalloc()
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Thu, 11 Mar 2021 15:24:55 -0800
-In-Reply-To: <DM6PR12MB433097A211B6A99DAF690958DC989@DM6PR12MB4330.namprd12.prod.outlook.com>
-References: <1613987819-43161-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-         <BY5PR12MB4322C25D61EC6E4549370917DC819@BY5PR12MB4322.namprd12.prod.outlook.com>
-         <DM6PR12MB433097A211B6A99DAF690958DC989@DM6PR12MB4330.namprd12.prod.outlook.com>
+To:     Roi Dayan <roid@nvidia.com>, angkery <angkery@163.com>,
+        leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        vladbu@nvidia.com, dlinkin@nvidia.com, dan.carpenter@oracle.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Junlin Yang <yangjunlin@yulong.com>
+Date:   Thu, 11 Mar 2021 15:26:56 -0800
+In-Reply-To: <0c195a3a-53cc-dbd2-f656-54a92e5a569b@nvidia.com>
+References: <20210303024019.2245-1-angkery@163.com>
+         <0c195a3a-53cc-dbd2-f656-54a92e5a569b@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
@@ -47,54 +44,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-03-03 at 08:52 +0000, Parav Pandit wrote:
-> Hi Saeed,
+On Wed, 2021-03-03 at 09:54 +0200, Roi Dayan wrote:
 > 
-> > From: Parav Pandit <parav@nvidia.com>
-> > Sent: Monday, February 22, 2021 3:32 PM
-> > 
-> > 
-> > > From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> > > Sent: Monday, February 22, 2021 3:27 PM
-> > > 
-> > > Fix the following coccicheck warnings:
-> > > 
-> > > ./drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c:495:2-3:
-> > > Unneeded semicolon.
-> > > 
-> > > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> > > Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> > > ---
-> > >  drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-> > > b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-> > > index c2ba41b..60a6328 100644
-> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-> > > @@ -492,7 +492,7 @@ static int mlx5_sf_esw_event(struct
-> > > notifier_block
-> > > *nb, unsigned long event, voi
-> > >                 break;
-> > >         default:
-> > >                 break;
-> > > -       };
-> > > +       }
-> > > 
-> > >         return 0;
-> > >  }
-> > > --
-> > > 1.8.3.1
-> > 
-> > Reviewed-by: Parav Pandit <parav@nvidia.com>
 > 
-> Will you take this patch [1] to your queue?
+> On 2021-03-03 4:40 AM, angkery wrote:
+> > From: Junlin Yang <yangjunlin@yulong.com>
+> > 
+> > It is allocated with kvzalloc(), the corresponding release function
+> > should not be kfree(), use kvfree() instead.
+> > 
+> > Generated by: scripts/coccinelle/api/kfree_mismatch.cocci
+> > 
+> > Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
+> > ---
+> >   drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c | 10
+> > +++++-----
+> >   1 file changed, 5 insertions(+), 5 deletions(-)
+> > 
+> > diff --git
+> > a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
+> > b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
+> > index 6f6772b..3da7bec 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
+> > @@ -248,7 +248,7 @@ static int mlx5_esw_indir_table_rule_get(struct
+> > mlx5_eswitch *esw,
+> >   err_ethertype:
+> >         kfree(rule);
+> >   out:
+> > -       kfree(rule_spec);
+> > +       kvfree(rule_spec);
+> >         return err;
+> >   }
+> >   
+> > @@ -328,7 +328,7 @@ static int
+> > mlx5_create_indir_recirc_group(struct mlx5_eswitch *esw,
+> >         e->recirc_cnt = 0;
+> >   
+> >   out:
+> > -       kfree(in);
+> > +       kvfree(in);
+> >         return err;
+> >   }
+> >   
+> > @@ -347,7 +347,7 @@ static int mlx5_create_indir_fwd_group(struct
+> > mlx5_eswitch *esw,
+> >   
+> >         spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
+> >         if (!spec) {
+> > -               kfree(in);
+> > +               kvfree(in);
+> >                 return -ENOMEM;
+> >         }
+> >   
+> > @@ -371,8 +371,8 @@ static int mlx5_create_indir_fwd_group(struct
+> > mlx5_eswitch *esw,
+> >         }
+> >   
+> >   err_out:
+> > -       kfree(spec);
+> > -       kfree(in);
+> > +       kvfree(spec);
+> > +       kvfree(in);
+> >         return err;
+> >   }
+> >   
+> > 
 > 
-> [1]
-> https://lore.kernel.org/linux-rdma/1613987819-43161-1-git-send-email-jiapeng.chong@linux.alibaba.com/
+> thanks!
+> 
+> Reviewed-by: Roi Dayan <roid@nvidia.com>
+> 
 
-Applied to net-next-mlx5.
-Thanks,
-Saeed.
+applied to net-next-mlx5
 
