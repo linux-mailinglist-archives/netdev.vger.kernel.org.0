@@ -2,73 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4D4337F1A
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:34:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2030A337F1F
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 21:36:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbhCKUd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 15:33:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46662 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230483AbhCKUdP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 15:33:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 64E7964ECD;
-        Thu, 11 Mar 2021 20:33:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615494795;
-        bh=e6yQMlzLM3Zx5M9FQ/wZu/xICC5IVVwqDRVUpsW4INM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XIMmDpPUo/l975V5mNFU2c0yBmIPMviPeWlWV3ckho83Qbhqxllq1gItIkinp5TYQ
-         WqOmxLfuJcRf8Y/RccZcMTaYmbNXJ4ov4z5BbU5kaNhKU5bDmg+MbZFJ9lQb8EoC9E
-         a5x7gVADojbEuin43UyPJAp28611gwtgt3XbDkU2eknohFUIOTxYcfSaLTz2clPQHn
-         k/HF2VtGIyqgVsoAbqY/TCCZ7QGOHUzKkjsBRyT3juyyyYg1kQYOyrLLzMM+Os18eS
-         4doDUo/nJsQmvKGYBdrnmEdRFXWi085LTk9n5LOSk6leTZ0oI5vTUfJbZP02C11Pbm
-         4AvPVDOERzMag==
-Date:   Thu, 11 Mar 2021 12:33:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <stefanc@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <thomas.petazzoni@bootlin.com>,
-        <davem@davemloft.net>, <nadavh@marvell.com>,
-        <ymarkman@marvell.com>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <mw@semihalf.com>, <andrew@lunn.ch>,
-        <rmk+kernel@armlinux.org.uk>, <atenart@kernel.org>,
-        <rabeeh@solid-run.com>
-Subject: Re: [V2 net-next] net: mvpp2: Add reserved port private flag
- configuration
-Message-ID: <20210311123313.0f5e7f80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1615481007-16735-1-git-send-email-stefanc@marvell.com>
-References: <1615481007-16735-1-git-send-email-stefanc@marvell.com>
+        id S231197AbhCKUgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 15:36:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230434AbhCKUfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 15:35:48 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412D4C061574
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 12:35:48 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id lr1-20020a17090b4b81b02900ea0a3f38c1so2195320pjb.0
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 12:35:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bnoqCNJaWiwi+Y0V4hNJkf28BV4nNKLfK4WQyVtf2XM=;
+        b=F8idy7udIyDEpz+UZTDLFewR3EO1zyE96eyjeeWd4KvN30/1pKHOVQJqkxtYhzXZwJ
+         1gOUVsm8ykLLVX0yUDQ0DduyJdj3rD9OQv9cYqxi4OeEVpvna7/YrWr6jlCEYM2zUv/w
+         V590FazFlz6Icayz26GER5A0UiPXaqm9vEE7eahSmn3l3LljD0wXKHhJgUmjKQxDmT29
+         Iegp9qsYz2q2S/kTP6nr+r1/7svAIRrcsZg2CaVmHp5Ux+MRbcddZ+GZu5eVdDeS0+qQ
+         BW6IQmQTB7SlqVToVnmJgNHYBtJXcXvyFgmH26tZh+rh4t4WDPhC/rBPusC6s/scVYA4
+         9lag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bnoqCNJaWiwi+Y0V4hNJkf28BV4nNKLfK4WQyVtf2XM=;
+        b=rwiJFHFiwcC9eRcUExzALcINhS2Fv7Glg7i5yp1tbNa0z6OQrr2fHALJXjm8JNY4OY
+         tJxodvChZ5WK1bT8g5Qt4ZHEQxVR/5bg5SPDYU9psaswfNShYbI5jYPvfwAuKoJWVvdN
+         mPhnroHdaWOtgFUAZtNYK3686kjICQHieSJbjWW675MfaLTl32fs4v2PVMAUbtiU/w9v
+         RPNv0HDgprLUXdWwC9WOEnvcDUP/5H+ZvmKv0lPdv7yMPTZkC19FLHP7IS50OVnkFsIL
+         d/2XEBrQf9nCSKMhUQV/NCrthIHwF8LwNmx3/Y5vnmG7DmEUIdK6b8EqmBZg+HDTmDlA
+         igyg==
+X-Gm-Message-State: AOAM530Q+5HtGBngSRdDOhnrrOWwLvHP0IaFzjq5nA5jOzo2BqWuFMv4
+        xXRFmL9zZMiRe09VEfj+FkM=
+X-Google-Smtp-Source: ABdhPJw+Q+Hc/JXZcqLaZof3SkLDEGH4ajwGh1aThPUVF2TjYZu5ovskbecvaEfRoBegrJLNHRA/mQ==
+X-Received: by 2002:a17:902:c1d5:b029:e6:52e0:6bdd with SMTP id c21-20020a170902c1d5b02900e652e06bddmr10140429plc.49.1615494947766;
+        Thu, 11 Mar 2021 12:35:47 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5186:d796:2218:6442])
+        by smtp.gmail.com with ESMTPSA id 25sm3232745pfh.199.2021.03.11.12.35.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Mar 2021 12:35:46 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Neil Spring <ntspring@fb.com>
+Subject: [PATCH net-next 0/3] tcp: better deal with delayed TX completions
+Date:   Thu, 11 Mar 2021 12:35:03 -0800
+Message-Id: <20210311203506.3450792-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Mar 2021 18:43:27 +0200 stefanc@marvell.com wrote:
-> According to Armada SoC architecture and design, all the PPv2 ports
-> which are populated on the same communication processor silicon die
-> (CP11x) share the same Classifier and Parser engines.
-> 
-> Armada is an embedded platform and therefore there is a need to reserve
-> some of the PPv2 ports for different use cases.
-> 
-> For example, a port can be reserved for a CM3 CPU running FreeRTOS for
-> management purposes or by user-space data plane application.
-> 
-> During port reservation all common configurations are preserved and
-> only RXQ, TXQ, and interrupt vectors are disabled.
-> Since TXQ's are disabled, the Kernel won't transmit any packet
-> from this port, and to due the closed RXQ interrupts, the Kernel won't
-> receive any packet.
-> The port MAC address and administrative UP/DOWN state can still
-> be changed.
-> The only permitted configuration in this mode is MTU change.
-> The driver's .ndo_change_mtu callback has logic that switches between
-> percpu_pools and shared pools buffer mode, since the buffer management
-> not done by Kernel this should be permitted.
+From: Eric Dumazet <edumazet@google.com>
 
-Andrew asks good questions. This looks like a strange construct.
+Jakub and Neil reported an increase of RTO timers whenever
+TX completions are delayed a bit more (by increasing
+NIC TX coalescing parameters)
 
-IMO Linux should either not see the port (like it doesn't see NC-SI),
-or we need representors for physical and logical ports and explicit
-forwarding rules.
+While problems have been there forever, second patch might
+introduce some regressions so I prefer not backport
+them to stable releases before things settle.
+
+Many thanks to FB team for their help and tests.
+
+Few packetdrill tests need to be changed to reflect
+the improvements brought by this series.
+
+Eric Dumazet (3):
+  tcp: plug skb_still_in_host_queue() to TSQ
+  tcp: consider using standard rtx logic in tcp_rcv_fastopen_synack()
+  tcp: remove obsolete check in __tcp_retransmit_skb()
+
+ include/linux/skbuff.h |  2 +-
+ net/ipv4/tcp_input.c   | 10 ++++------
+ net/ipv4/tcp_output.c  | 20 ++++++++------------
+ 3 files changed, 13 insertions(+), 19 deletions(-)
+
+-- 
+2.31.0.rc2.261.g7f71774620-goog
+
