@@ -2,99 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C57336D0F
-	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB16336D34
+	for <lists+netdev@lfdr.de>; Thu, 11 Mar 2021 08:39:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231669AbhCKHaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 02:30:15 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:48718 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbhCKH3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 02:29:46 -0500
-Received: from mail-wr1-f70.google.com ([209.85.221.70])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lKFlP-00030O-Mj
-        for netdev@vger.kernel.org; Thu, 11 Mar 2021 07:29:43 +0000
-Received: by mail-wr1-f70.google.com with SMTP id m9so9124871wrx.6
-        for <netdev@vger.kernel.org>; Wed, 10 Mar 2021 23:29:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UM3RKX0XCDpJCuubU4GyjNFkIs45HL7bg2XqkxuxPoo=;
-        b=FVPvuOyYigsETucbXKY4ijM6xV27VhTohDxsqBlNeoU91KElqgx9pzAMXKrEH/w5a+
-         o4jKAaxnf/L4SIO0vOJkl/NaI/1QBMOYsGlyILReLma8Wp9E46SPtbBG6Axy9BeUosJg
-         u/yuNuwdkmdPjxIrotHA9xOUjr4ln2XY5pr7u/63oIhjlKvwxoC93OjOJBlZRdqSLJoK
-         ZqzO9Fa3LdIsTvbvYcZjfxYCqcQD63B8vqznRStYWodWASxj0H7T/rBqcgkTyIdlqaoY
-         8kosZvj/aEE9l8ilKINK+ma+QwxyO5mP4o56lTWv0i82V80Ya27TAUzxkTnIy+nU8HiP
-         S1jw==
-X-Gm-Message-State: AOAM5300RPDWIbxMR069wtQMf/f+uu40YrPsSivKMQxgrYyvINjLiJ9P
-        oKKaanrFP0VeiemCT+3TwlqQtTkf994jIgim8n5mHuYpitx0BpNaMtzTnNxxOw3IA3d+ZRHWY82
-        x5SzR9gTj4PhBLxvSNRRCByY3tTkL5veD+g==
-X-Received: by 2002:a5d:4708:: with SMTP id y8mr7473160wrq.382.1615447783436;
-        Wed, 10 Mar 2021 23:29:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwntEUdVEQpqMsRTDpIua5kEKJ6BAuZNIC5Far5vVjfExGBGIXOrXsOxt/q5mJ8+gEXtFcFdw==
-X-Received: by 2002:a5d:4708:: with SMTP id y8mr7473131wrq.382.1615447783295;
-        Wed, 10 Mar 2021 23:29:43 -0800 (PST)
-Received: from [192.168.1.116] (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.gmail.com with ESMTPSA id z3sm2323807wrw.96.2021.03.10.23.29.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Mar 2021 23:29:42 -0800 (PST)
-Subject: Re: [RFC v2 5/5] clk: socfpga: allow compile testing of Stratix 10 /
- Agilex clocks
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Moritz Fischer <mdf@kernel.org>, Tom Rix <trix@redhat.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        linux-edac@vger.kernel.org, linux-fpga@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com, arm-soc <arm@kernel.org>,
-        SoC Team <soc@kernel.org>, Olof Johansson <olof@lixom.net>
-References: <20210310083327.480837-1-krzysztof.kozlowski@canonical.com>
- <20210310083840.481615-1-krzysztof.kozlowski@canonical.com>
- <20210310083840.481615-3-krzysztof.kozlowski@canonical.com>
- <CAK8P3a27hAExCKtsO7k1HQwLKk-5Q8uxYYt_G2v-Osq8RZv2tg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <a1f296ad-19db-824e-5d33-c93c6af87e70@canonical.com>
-Date:   Thu, 11 Mar 2021 08:29:42 +0100
+        id S231730AbhCKHjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 02:39:08 -0500
+Received: from gateway24.websitewelcome.com ([192.185.50.252]:17314 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231905AbhCKHio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 02:38:44 -0500
+X-Greylist: delayed 1346 seconds by postgrey-1.27 at vger.kernel.org; Thu, 11 Mar 2021 02:38:44 EST
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 239E8AD1C
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 01:16:18 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id KFYQldfUOqvFOKFYQlhiAL; Thu, 11 Mar 2021 01:16:18 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=P4Y38n76j62lvthTB0qszyWArTxZMSacXEcyaFhm0Ps=; b=nEEmjHx/6wNVcHPvj0mBJauBXh
+        mlfX6bQmPo5qB5ENedRT46pN4eCpVnY/cwL+kdkebtuhNjubEA26ySEvrjGAtl3AmC1G0SmK3Dk66
+        4iwYPBaPiDH+HLThkZ9Z65V1e7tyyl9Es0oZCKR/xwpyGlDJLjbrUuiCrP0bmzP8VtECXD7dZBRYH
+        EtRYN6Y6U89lFdENoDRQhp0t9HF0fsTKi19cGbtmtN6fY89k7lSRAQVcqqoKwDZYFmXZOb30tw3tO
+        gIemvgm1gVguNNGhCZTxbk9MNdEG3RdJcKlRjSNuS3Hgp+55ZmUiG2e/9d1mGTpJOvSNNN/0ar5GV
+        VrDltHng==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:48552 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lKFYP-001Uab-MY; Thu, 11 Mar 2021 01:16:17 -0600
+Subject: Re: [PATCH RESEND][next] rtl8xxxu: Fix fall-through warnings for
+ Clang
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Kees Cook <keescook@chromium.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jes Sorensen <Jes.Sorensen@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20210305094850.GA141221@embeddedor>
+ <871rct67n2.fsf@codeaurora.org> <202103101107.BE8B6AF2@keescook>
+ <878s6uyy30.fsf@codeaurora.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <e10b2a6a-d91a-9783-ddbe-ea2c10a1539a@embeddedor.com>
+Date:   Thu, 11 Mar 2021 01:16:17 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a27hAExCKtsO7k1HQwLKk-5Q8uxYYt_G2v-Osq8RZv2tg@mail.gmail.com>
+In-Reply-To: <878s6uyy30.fsf@codeaurora.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lKFYP-001Uab-MY
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:48552
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 8
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/03/2021 17:48, Arnd Bergmann wrote:
-> On Wed, Mar 10, 2021 at 9:38 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@canonical.com> wrote:
->> --- a/drivers/clk/socfpga/Kconfig
->> +++ b/drivers/clk/socfpga/Kconfig
->> @@ -1,6 +1,17 @@
->>  # SPDX-License-Identifier: GPL-2.0
->> +config COMMON_CLK_SOCFPGA
->> +       bool "Intel SoCFPGA family clock support" if COMPILE_TEST && !ARCH_SOCFPGA && !ARCH_SOCFPGA64
->> +       depends on ARCH_SOCFPGA || ARCH_SOCFPGA64 || COMPILE_TEST
->> +       default y if ARCH_SOCFPGA || ARCH_SOCFPGA64
-> 
-> I think the 'depends on' line here is redundant if you also have the
-> 'if' line and the default.
 
-Yes, you're right.
-Best regards,
-Krzysztof
+
+On 3/11/21 01:00, Kalle Valo wrote:
+> Kees Cook <keescook@chromium.org> writes:
+> 
+>> On Fri, Mar 05, 2021 at 03:40:33PM +0200, Kalle Valo wrote:
+>>> "Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
+>>>
+>>>> In preparation to enable -Wimplicit-fallthrough for Clang, fix
+>>>> multiple warnings by replacing /* fall through */ comments with
+>>>> the new pseudo-keyword macro fallthrough; instead of letting the
+>>>> code fall through to the next case.
+>>>>
+>>>> Notice that Clang doesn't recognize /* fall through */ comments as
+>>>> implicit fall-through markings.
+>>>>
+>>>> Link: https://github.com/KSPP/linux/issues/115
+>>>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>>>
+>>> It's not cool that you ignore the comments you got in [1], then after a
+>>> while mark the patch as "RESEND" and not even include a changelog why it
+>>> was resent.
+>>>
+>>> [1] https://patchwork.kernel.org/project/linux-wireless/patch/d522f387b2d0dde774785c7169c1f25aa529989d.1605896060.git.gustavoars@kernel.org/
+>>
+>> Hm, this conversation looks like a miscommunication, mainly? I see
+>> Gustavo, as requested by many others[1], replacing the fallthrough
+>> comments with the "fallthrough" statement. (This is more than just a
+>> "Clang doesn't parse comments" issue.)
+> 
+> v1 was clearly rejected by Jes, so sending a new version without any
+> changelog or comments is not the way to go. The changelog shoud at least
+> have had "v1 was rejected but I'm resending this again because <insert
+> reason here>" or something like that to make it clear what's happening.
+
+Why the fact that I replied to that original thread with the message
+below is being ignored?
+
+"Just notice that the idea behind this and the following patch is exactly
+the same:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git/commit/?id=3f95e92c8a8516b745594049dfccc8c5f8895eea
+
+I could resend this same patch with a different changelog text, but I
+don't think such a thing is necessary. However, if people prefer that
+approach, just let me know and I can do it.
+
+Thanks
+--
+Gustavo"
+
+Why no one replied to what I was proposing at the time?
+
+It seems to me that the person that was ignored was actually me, and not the
+other way around. :/
+
+--
+Gustavo
+
+> 
+>> This could be a tree-wide patch and not bother you, but Greg KH has
+>> generally advised us to send these changes broken out. Anyway, this
+>> change still needs to land, so what would be the preferred path? I think
+>> Gustavo could just carry it for Linus to merge without bothering you if
+>> that'd be preferred?
+> 
+> I agree with Greg. Please don't do cleanups like this via another tree
+> as that just creates more work due to conflicts between the trees, which
+> is a lot more annoying to deal with than applying few patches. But when
+> submitting patches please follow the rules, don't cut corners.
+> 
+> Jes, I don't like 'fallthrough' either and prefer the original comment,
+> but the ship has sailed on this one. Maybe we should just take it?
+> 
