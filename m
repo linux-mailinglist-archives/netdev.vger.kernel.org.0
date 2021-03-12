@@ -2,91 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A72C3398E5
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 22:12:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C58E339934
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 22:44:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235161AbhCLVLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 16:11:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33286 "EHLO
+        id S235293AbhCLVoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 16:44:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234964AbhCLVLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 16:11:14 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58F0C061574;
-        Fri, 12 Mar 2021 13:11:13 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id gb6so5753304pjb.0;
-        Fri, 12 Mar 2021 13:11:13 -0800 (PST)
+        with ESMTP id S234219AbhCLVnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 16:43:53 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70F6C061574;
+        Fri, 12 Mar 2021 13:43:52 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id t18so5784201pjs.3;
+        Fri, 12 Mar 2021 13:43:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=sender:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Wz7DsDh9in1WQ8szNmEgdOyLhNi2EeCu5C/ACTNPo9U=;
-        b=qLfwf/C+s6b8IixldJWT2CBWm5O3NiwsoHnQCRPa+ctPdpl3rSv0xXRGf+w5KoVvbp
-         1BVn3YU0S1FEdpQx5BgDJItFt8iNIQ1EFfCv6vx/j1muM1eKeMeZ5jrjgGbfCuh5nbNc
-         b6yVS3dqks+Ey0/1jPtGX6jdmuogG4aQi/2gnXNDwWO2Gj4HtxNgzIqQ9bSTyR5YPAVB
-         iMiOjTF0u7Rav8MWsKpR0BZAj54z2jbgTzb38fdcGIGHV+xkAzOi4Ehpzkcq4K0smWzx
-         KU77hJnPChSxVFtwn8F61+VCpUltKWN7NyIHKT/9UsHO/4t/SF8eavVRpwSbjYQa6Fl7
-         7TEA==
+        bh=THf+Q27rCE5bAqT61RxqjUfzIMw5JhYn8NNtx0p14fg=;
+        b=WiHXeodK/wol85oDmp7yWl+34nzWFLLznfcL4ts+vBP6cg2Py3p4BieaEbNbDTe6om
+         xkRVMLslLYumR2uzSl78EdTI8MsgzfYtMNPrOXE/SWeFNA4zcrufbk5yk3ZK/uytmFfk
+         wq4sgh5mkTgrYox0bpP+WB3IvJKnTO+AzctCuG9GzUbfdrwBgd3K+wLtZ4sWMjvZssa6
+         /xsIvLMuWh9TUa4OGYX6GQJx4UB3I2NJ1Ksajt1xjKmPTSMcldIl7IDIz+ZkwoVqhXAn
+         2X0O6w79P2l3F5KxyrbWoZWrXcfpRYIz7RJFUIEcJXwdBoBi0g4ZaHeHowiy4re1GO8H
+         PvEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Wz7DsDh9in1WQ8szNmEgdOyLhNi2EeCu5C/ACTNPo9U=;
-        b=extL8IDXv13G64cPoGv/J7sW/de9HK7Ys4i5c6vmQD8TLV1paIGX+7n5SsqS4u/j/Q
-         BbH+dTfb1AbnGP1AOCs1nxjZ0tbyostlQxLhuuVun2BQ6pzF7ofkBmvdXGyttjDknKZP
-         KVa8tskkEXlxPkpXXbhiwW2mN+NpmAshvUAO1rPFO7zXt830Iox6X+rRc2pbA/CthNYg
-         64I6hwRJ2xvMdCKNBLfN2p+/MqfV4G3hqkuRM9fH7N2vYhPREq/C5EjOymb4i5hSxZoc
-         i2B8q4VYOSOLqMxYWrsSSeMYTHRRfGvWkoex7Fn4dMfwOk5FGDzcghG8bWog++Heub/X
-         eETw==
-X-Gm-Message-State: AOAM530AWNUvXrxLH5VpECS0ULhhhqUCoFrojKV22A4MDOFHKGTOSVUf
-        QMsIGVmAfDZBKOk1IJtHiDADW+6A1Og=
-X-Google-Smtp-Source: ABdhPJzP5j8G5Q1nTRmqPQ6pqv8fZyFzxMAaR9N48HRdcnMrQcsZx4fJ7g/xCcQrMe8c1X004LFUTw==
-X-Received: by 2002:a17:902:ab8b:b029:e5:ea3a:3d61 with SMTP id f11-20020a170902ab8bb02900e5ea3a3d61mr371524plr.71.1615583473070;
-        Fri, 12 Mar 2021 13:11:13 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o13sm6559634pgv.40.2021.03.12.13.11.08
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=THf+Q27rCE5bAqT61RxqjUfzIMw5JhYn8NNtx0p14fg=;
+        b=LxY92C9cir5N9cLtm+aNVVwOCG+BFmbq1BrtwxzWi6qKQJ/uPvhR2KfZmMS+rwNOKA
+         M+gfZ2b8sQotAz9padBDfrdF0Y8KW0VW+nAZl88xcMgRT/StMnkwUHMpeCvOG/g9GQFB
+         tTLZvcHrA6f4V9yahRGbQulf7/JRiaCO4NK+l5SJEEUYsfcpczHa0ndaJX5lZ9eEoH7N
+         uPE3Frq2sDXr+6Gbq5dDmrwb+nRtSZIm1tp9hkgwrYrba07RAlPzIZMQUTFiYPc5lX42
+         7H41s8/srGUD6JwJseb1QOHxf2qFthicU88LYHHNXl39xtpPsB2SeFnNXSMkTeZdbHGl
+         jfcA==
+X-Gm-Message-State: AOAM531mhg0c9fEJVWiMytH+YdVnoOcD+9NiKkl3EyQgxQtaRz9cUu3f
+        GQBXI4oUufJJ4czJeWPOseVT0XkJPWZLRw==
+X-Google-Smtp-Source: ABdhPJz6w93PgiD066C/BiK3t9o/2rLknMqYdxlQkTKKQWq+fqnlBPZd4bUmpUG9Ddoh9NsZbtsVvA==
+X-Received: by 2002:a17:902:bd96:b029:e6:3d73:f90e with SMTP id q22-20020a170902bd96b02900e63d73f90emr480048pls.63.1615585432536;
+        Fri, 12 Mar 2021 13:43:52 -0800 (PST)
+Received: from sultan-box.localdomain (static-198-54-131-119.cust.tzulo.com. [198.54.131.119])
+        by smtp.gmail.com with ESMTPSA id e63sm6276094pfe.208.2021.03.12.13.43.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Mar 2021 13:11:12 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     zajec5@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: dsa: bcm_sf2: Fill in BCM4908 CFP entries
-Date:   Fri, 12 Mar 2021 13:11:01 -0800
-Message-Id: <20210312211102.3545866-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 12 Mar 2021 13:43:52 -0800 (PST)
+Sender: Sultan Alsawaf <sultan.kerneltoast@gmail.com>
+From:   Sultan Alsawaf <sultan@kerneltoast.com>
+X-Google-Original-From: Sultan Alsawaf
+Cc:     Sultan Alsawaf <sultan@kerneltoast.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] libbpf: Use the correct fd when attaching to perf events
+Date:   Fri, 12 Mar 2021 13:43:15 -0800
+Message-Id: <20210312214316.132993-1-sultan@kerneltoast.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The BCM4908 switch has 256 CFP entrie, update that setting so CFP can be
-used.
+From: Sultan Alsawaf <sultan@kerneltoast.com>
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+We should be using the program fd here, not the perf event fd.
+
+Fixes: 63f2f5ee856ba ("libbpf: add ability to attach/detach BPF program to perf event")
+Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
 ---
- drivers/net/dsa/bcm_sf2.c | 2 +-
+ tools/lib/bpf/libbpf.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index f277df922fcd..60a004f8465d 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -1151,7 +1151,7 @@ static const struct bcm_sf2_of_data bcm_sf2_4908_data = {
- 	.type		= BCM4908_DEVICE_ID,
- 	.core_reg_align	= 0,
- 	.reg_offsets	= bcm_sf2_4908_reg_offsets,
--	.num_cfp_rules	= 0, /* FIXME */
-+	.num_cfp_rules	= 256,
- };
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index d43cc3f29dae..3d20d57d4af5 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -9538,7 +9538,7 @@ struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog,
+ 	if (!link)
+ 		return ERR_PTR(-ENOMEM);
+ 	link->detach = &bpf_link__detach_perf_event;
+-	link->fd = pfd;
++	link->fd = prog_fd;
  
- /* Register offsets for the SWITCH_REG_* block */
+ 	if (ioctl(pfd, PERF_EVENT_IOC_SET_BPF, prog_fd) < 0) {
+ 		err = -errno;
 -- 
-2.25.1
+2.30.2
 
