@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DC25338250
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 01:31:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0166338253
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 01:31:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbhCLAaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 19:30:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53640 "EHLO mail.kernel.org"
+        id S231336AbhCLAac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 19:30:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231245AbhCLAaP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231197AbhCLAaP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 11 Mar 2021 19:30:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0585F64FA0;
-        Fri, 12 Mar 2021 00:30:15 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id DF9AF64F91;
+        Fri, 12 Mar 2021 00:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615509015;
-        bh=ggTS/ELicy+Wvwfb3B6wHhcEivfIfOW9EY9YXj2SXOE=;
+        s=k20201202; t=1615509014;
+        bh=JFkSdXDJk5Cl3aWg8vyC01K/rfowkxDb8IeNBUu6UpM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Fa/MSYtxtiZL9cpcNl6ioKWpqkj92iLBB7f0kmZcC96agCrd+7pAV5QTZm9LaQJTv
-         GlrJqAYJ1G7IYrZQ0qXzbmOgJJDcV+3u1Oiq2P67Pn+1Yo/qJkuSpVPVqZqfJyE+S5
-         CPsqQteABVnAJoxbs9KX3xOhOijQc34UQrNsBUHG+3iscSqfuuV5VhVtpTLhowTZLO
-         +iosRv2/f1GvBvZHMXrN3NLhwRsrvbAvF3mMxPFvWuLdSbd5g96KxAS8uu1PR1wCjQ
-         cUTPSge9rIGPTeH4Db+PMRUE3UapTocgQKQtV9dkZh4xuqmc9zmWbEDu9s/ZujwaDy
-         r9T1aDD9JER0A==
+        b=a7AmY3YK0mbVOUVDgrImUxYWYqf2NenZYGRqgJCYlyDrgxasdLfLMwypA1Xl/gAJB
+         r7Q/CM1SYIfBTprjhd/e8STKa2COUn3g0fLzqWW649BS51nKzybFAXC9WPYeJkqN1H
+         r19usszrfPGIjtnFOMkj17q4E9uV8HATK5ZDW8VE3dzydZBF4HoKPlFQE4X4KcI9lt
+         661MLAiigEjQMVrDARlBej++OEmirVB7kuLLmvaQMx4GKIkA1JKkip6VBn7hLYlRkC
+         zfPx3xIZGfvt2p/cR8DfzA2hm201Rh7ZuJHjLHRx5AwGOhyNCR9jWqRRU8GeS8XYl3
+         OI23E50jKkGnQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F1E636096F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DB18A609CD;
         Fri, 12 Mar 2021 00:30:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 01/15] net/mlx5: Don't skip vport check
+Subject: Re: [PATCH net-next 0/6] mlxsw: Implement sampling using mirroring
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161550901498.18262.17694065791280917601.git-patchwork-notify@kernel.org>
+Message-Id: <161550901489.18262.8972537262922383855.git-patchwork-notify@kernel.org>
 Date:   Fri, 12 Mar 2021 00:30:14 +0000
-References: <20210311223723.361301-2-saeed@kernel.org>
-In-Reply-To: <20210311223723.361301-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        saeedm@nvidia.com, elic@nvidia.com, leonro@nvidia.com
+References: <20210311122416.2620300-1-idosch@idosch.org>
+In-Reply-To: <20210311122416.2620300-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,50 +46,29 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 11 Mar 2021 14:37:09 -0800 you wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
+On Thu, 11 Mar 2021 14:24:10 +0200 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> Users of mlx5_eswitch_get_vport() are required to check return value
-> prior to passing mlx5_vport further. Fix all the places to do not skip
-> that check.
-> 
-> Reviewed-by: Eli Cohen <elic@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> So far, sampling was implemented using a dedicated sampling mechanism
+> that is available on all Spectrum ASICs. Spectrum-2 and later ASICs
+> support sampling by mirroring packets to the CPU port with probability.
+> This method has a couple of advantages compared to the legacy method:
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/15] net/mlx5: Don't skip vport check
-    https://git.kernel.org/netdev/net-next/c/7bef147a6ab6
-  - [net-next,02/15] net/mlx5: Remove impossible checks of interface state
-    https://git.kernel.org/netdev/net-next/c/d89edb360705
-  - [net-next,03/15] net/mlx5: Separate probe vs. reload flows
-    https://git.kernel.org/netdev/net-next/c/6dea2f7eff96
-  - [net-next,04/15] net/mlx5: Remove second FW tracer check
-    https://git.kernel.org/netdev/net-next/c/7e615b997802
-  - [net-next,05/15] net/mlx5: Don't rely on interface state bit
-    https://git.kernel.org/netdev/net-next/c/7ad67a20f28f
-  - [net-next,06/15] net/mlx5: Check returned value from health recover sequence
-    https://git.kernel.org/netdev/net-next/c/fe06992b04a9
-  - [net-next,07/15] net/mlx5e: CT, Avoid false lock dependency warning
-    https://git.kernel.org/netdev/net-next/c/76e68d950a17
-  - [net-next,08/15] net/mlx5e: fix mlx5e_tc_tun_update_header_ipv6 dummy definition
-    https://git.kernel.org/netdev/net-next/c/87f77a679797
-  - [net-next,09/15] net/mlx5e: Add missing include
-    https://git.kernel.org/netdev/net-next/c/5632817b144f
-  - [net-next,10/15] net/mlx5: Fix indir stable stubs
-    https://git.kernel.org/netdev/net-next/c/fbeab6be054c
-  - [net-next,11/15] net/mlx5e: mlx5_tc_ct_init does not fail
-    https://git.kernel.org/netdev/net-next/c/51ada5a52379
-  - [net-next,12/15] net/mlx5: SF, Fix return type
-    https://git.kernel.org/netdev/net-next/c/3094552bcd72
-  - [net-next,13/15] net/mlx5e: rep: Improve reg_cX conditions
-    https://git.kernel.org/netdev/net-next/c/03e219c4cf84
-  - [net-next,14/15] net/mlx5: Avoid unnecessary operation
-    https://git.kernel.org/netdev/net-next/c/61e9508f1e5e
-  - [net-next,15/15] net/mlx5e: Alloc flow spec using kvzalloc instead of kzalloc
-    https://git.kernel.org/netdev/net-next/c/9f4d9283388d
+  - [net-next,1/6] mlxsw: spectrum_span: Add SPAN session identifier support
+    https://git.kernel.org/netdev/net-next/c/5c7659eba873
+  - [net-next,2/6] mlxsw: reg: Extend mirroring registers with probability rate field
+    https://git.kernel.org/netdev/net-next/c/fa3faeb7aedb
+  - [net-next,3/6] mlxsw: spectrum_span: Add SPAN probability rate support
+    https://git.kernel.org/netdev/net-next/c/2dcbd9207b33
+  - [net-next,4/6] mlxsw: spectrum_matchall: Split sampling support between ASICs
+    https://git.kernel.org/netdev/net-next/c/20afb9bc480d
+  - [net-next,5/6] mlxsw: spectrum_trap: Split sampling traps between ASICs
+    https://git.kernel.org/netdev/net-next/c/34a277212c67
+  - [net-next,6/6] mlxsw: spectrum_matchall: Implement sampling using mirroring
+    https://git.kernel.org/netdev/net-next/c/cf31190ae0b7
 
 You are awesome, thank you!
 --
