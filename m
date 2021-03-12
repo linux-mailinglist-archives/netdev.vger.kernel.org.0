@@ -2,102 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34DD8338FA0
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 15:16:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E58338FC3
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 15:23:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbhCLOQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 09:16:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S231808AbhCLOWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 09:22:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230256AbhCLOPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 09:15:54 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE7DC061574
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 06:15:54 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id j2so4886159wrx.9
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 06:15:54 -0800 (PST)
+        with ESMTP id S231772AbhCLOWe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 09:22:34 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EE0C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 06:22:34 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id c10so53596896ejx.9
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 06:22:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gjPoNMZNSTzPXrAXZmjnLajknbd1LUti8Ev0FxxPAyE=;
-        b=qRUlSd/fAe0tlUdL3YGDnfi4Q1pwqp1h0Qj3wmKd2V4BqBRdEdxUaqiIDXBLbaAsLo
-         WkkgYFlEOxWzlfpf+fiRnRVrrMtMDwvd71CvUZUZwKbb42B/S5xLNi5m8jMLHgU9OfJw
-         uZ5NrHvjgFQqLxGa4oB5lZZqesdMBEjkamm+2RBqAf2lfRg3HN8/yQaQCKspE+zbhNvp
-         iR7rFepyZphJG8c9sXCWRwqcwRxEfTJ105ghCVN00Gc+fPT5qJd7OLs6jSyQzkolvJEl
-         hxtl+jKBkY37/HukIZII+Ig9KQMb8Sx5pB0bYlexCOdMD0wlaB3FH79Ld5vrIvKsvwmM
-         pjZw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=x00L4ypjQvflBM+ls+7UW8AaP6IEJEOU+og8wpHgukc=;
+        b=KQiyeopfgTXh9G7P1XfCSIKL89+dTpSQzkRpcqe+9fKWbs6k9QElAtS9YKmvjR/DVU
+         pMRtCUlzW3Whd6s2AkxyCqRcSvVFyanpIcRDdHLFrerFjahc9ClBpZ1lyHYGWNh38eux
+         Gc143xfAwfyBbKKi6ITSAF3cKD5xJdB5FTXx8WGOq/HDY7+u3BjZkAbGdibqYqWNPST3
+         gA6obkgakLCH7LBxdW7rLnyQJvTwc8m+TVnZ0jDEGBU8GbP1oHSOVdrvW6iDaBKbBiDV
+         XqcVsXiyI4lf8y7EcvPx0oAhE2pbcQm0/p9S8rIUeWn8cHydX0oB1h6AiV4WyYvpOzPJ
+         pfpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gjPoNMZNSTzPXrAXZmjnLajknbd1LUti8Ev0FxxPAyE=;
-        b=MeSr4Hfdpgr08B7xlzesm5/3/M4t1xc9c5q+9Uqam0yG882Co38FGAub2aARBwDY4w
-         p2+yD4mnysFrmSSvETpETF9Qge7EDbMDYZq1qXhsdnD6ehDJyU23e7R0eLQ3zXDUVVgy
-         YyTqjuwrA5EWzxHglRV81oZzYedfsH2vGZfSkdSuhGwMrmwYHgkKDly55rwnkekkcXAa
-         GLHL3/Y1lYQUyZiP4a+SS9mYfp2aIe7yBSwoA1NryytoiFymE9AHPeIUqsbhyF3rWN+x
-         kjrqSCjrZt0ZVWX4QbF1L8lJXMhWRGilPWgcCoHQ+6d2mq56cgKs37pTBnWOB8exnAoV
-         Dt8A==
-X-Gm-Message-State: AOAM532NRoHxpuhuUcRJdQvxGfMQE4ZZO72e6lA9g0+m1s9ICKAyjaaJ
-        4MY66O+6ngn3tI2sZV/tzV0=
-X-Google-Smtp-Source: ABdhPJxqpfeAgwxtvHCKPGL+S2iu9NpdZr/Z3+03AtAPKp/EM44tifmeeSMt+WXUUExhH5+EeNXNLA==
-X-Received: by 2002:a5d:4e83:: with SMTP id e3mr14345155wru.82.1615558553141;
-        Fri, 12 Mar 2021 06:15:53 -0800 (PST)
-Received: from [192.168.1.101] ([37.173.73.116])
-        by smtp.gmail.com with ESMTPSA id c8sm579659wmb.34.2021.03.12.06.15.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Mar 2021 06:15:52 -0800 (PST)
-Subject: Re: [PATCH net-next v2] net: sock: simplify tw proto registration
-To:     patchwork-bot+netdevbpf@kernel.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, alexanderduyck@fb.com
-References: <20210311025736.77235-1-xiangxia.m.yue@gmail.com>
- <161550780854.9767.12432124529018963233.git-patchwork-notify@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <30bd9ce2-24b7-d643-17aa-7a687652d30d@gmail.com>
-Date:   Fri, 12 Mar 2021 15:15:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=x00L4ypjQvflBM+ls+7UW8AaP6IEJEOU+og8wpHgukc=;
+        b=TY9hjfurwhHh7vXfqlu3s+Zu7GJXyvX6jheUQR51WzYEzc5pZIZVRxep1WlA9DG44/
+         Jkwl8fl9ruEoT5SUWkbuFMhUq7ft4PMwMN/rtRhDujGB6TrIy6nd1m1p7KsMtVR8+HKF
+         kVfTdSgI9eAaLnxHuBi3/soVWpzTLtPESA/zP/neEigerChW2fIEIhcMwg8+JLcPPykY
+         BwI+H5Tx9XcKp721fwuiWAz5iAZ9K676ettNfmWBYzQ3GbGbN8t4TILXiJsE0YzBGKlg
+         VKkiE/xkfZfkdjOYOVecnqrs2B901pH7Rv8niZJWReLrP/3L6/jJ1CFG1bV8hazfcLxP
+         t/Wg==
+X-Gm-Message-State: AOAM531QJvs27yViJsVhuEUExq5QHFwcisZfF9wkzKLbZ6oEsIbnzuN5
+        P+mgOOQMof2L7LRL/BbhuS+Ob5U1GBZovQ==
+X-Google-Smtp-Source: ABdhPJzKJym8jhGTgO6emut9iGQFGoGosy8pErqjn0gyLHb/arekfaQ8Q7cBmXT3OX42rS+woRw5Tg==
+X-Received: by 2002:a17:906:3850:: with SMTP id w16mr9017717ejc.286.1615558952837;
+        Fri, 12 Mar 2021 06:22:32 -0800 (PST)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id p3sm2768473ejd.7.2021.03.12.06.22.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Mar 2021 06:22:32 -0800 (PST)
+Date:   Fri, 12 Mar 2021 15:22:31 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Xingfeng Hu <xingfeng.hu@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@netronome.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: Re: [PATCH v3 net-next 0/3] net/sched: act_police: add support for
+ packet-per-second policing
+Message-ID: <20210312142230.GA25717@netronome.com>
+References: <20210312140831.23346-1-simon.horman@netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <161550780854.9767.12432124529018963233.git-patchwork-notify@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210312140831.23346-1-simon.horman@netronome.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Mar 12, 2021 at 03:08:28PM +0100, Simon Horman wrote:
+> This series enhances the TC policer action implementation to allow a
+> policer action instance to enforce a rate-limit based on
+> packets-per-second, configurable using a packet-per-second rate and burst
+> parameters.
 
+...
 
-On 3/12/21 1:10 AM, patchwork-bot+netdevbpf@kernel.org wrote:
-> Hello:
-> 
-> This patch was applied to netdev/net.git (refs/heads/master):
-> 
-> On Thu, 11 Mar 2021 10:57:36 +0800 you wrote:
->> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->>
->> Introduce the new function tw_prot_init (inspired by
->> req_prot_init) to simplify "proto_register" function.
->>
->> tw_prot_cleanup will take care of a partially initialized
->> timewait_sock_ops.
->>
->> [...]
-> 
-> Here is the summary with links:
->   - [net-next,v2] net: sock: simplify tw proto registration
->     https://git.kernel.org/netdev/net/c/b80350f39370
-> 
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
-> 
-> 
+Sorry, I missed CCing a number of interested parties when posting
+this patch-set. I've added them to this email.
 
-For some reason I see the patch in net tree, not in net-next
-
-I wonder what happened.
+Ref: https://lore.kernel.org/netdev/20210312140831.23346-1-simon.horman@netronome.com/
