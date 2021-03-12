@@ -2,110 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69151338EEE
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 14:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 886E9338F10
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 14:45:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbhCLNhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 08:37:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50178 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229567AbhCLNgj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 08:36:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E742064FD6;
-        Fri, 12 Mar 2021 13:36:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615556199;
-        bh=IgvfWN4FdKSbPuArR2z1vB9S58Cgh830mSjrvY30dD0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d8JTJKYFV4htN57lyadr7mDInf3Ile3Cs8/BNb08hzSxINfojXFlcS0wO/c1B0HRb
-         3blvXwHL3ASCIAeDyAunDeNd12LDsyKjrv0hCDuSZGqjAGhfAriM6xVAAedmbmUUfo
-         vCS1gCe2EwCdpIgH4mO5d+XnxmRHN0Chi2TvJUIWEcHrHleGhHy1fwspH7Q7hSExJJ
-         XTAZm8YvfawT3K/xTA2PGPGa3cUagnoEoP0jUUfAmRoHKkb/leKRjI9JH3spSzsGQe
-         QvOeUHE1U8cVKdHwSsvHuislYrOH+bu/egR68VB4LwErOuD+HXr/Wm+zk7Q+dhx9Q8
-         3qR97yJZRrayA==
-Date:   Fri, 12 Mar 2021 06:36:37 -0700
-From:   Keith Busch <kbusch@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
-Message-ID: <20210312133637.GA43947@C02WT3WMHTD6>
-References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
- <20210311181729.GA2148230@bjorn-Precision-5520>
- <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
- <20210311201929.GN2356281@nvidia.com>
- <CAKgT0Ud1tzpAWO4+5GxiUiHT2wEaLacjC0NEifZ2nfOPPLW0cg@mail.gmail.com>
- <20210311232059.GR2356281@nvidia.com>
- <CAKgT0Ud+gnw=W-2U22_iQ671himz8uWkr-DaBnVT9xfAsx6pUg@mail.gmail.com>
- <20210312130017.GT2356281@nvidia.com>
+        id S231458AbhCLNpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 08:45:18 -0500
+Received: from outbound-smtp61.blacknight.com ([46.22.136.249]:52897 "EHLO
+        outbound-smtp61.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231473AbhCLNo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 08:44:58 -0500
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp61.blacknight.com (Postfix) with ESMTPS id 2F019FAF9A
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 13:44:57 +0000 (GMT)
+Received: (qmail 26842 invoked from network); 12 Mar 2021 13:44:57 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 12 Mar 2021 13:44:57 -0000
+Date:   Fri, 12 Mar 2021 13:44:55 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210312134455.GU3697@techsingularity.net>
+References: <20210310104618.22750-1-mgorman@techsingularity.net>
+ <20210310104618.22750-3-mgorman@techsingularity.net>
+ <20210310154650.ad9760cd7cb9ac4acccf77ee@linux-foundation.org>
+ <20210311084200.GR3697@techsingularity.net>
+ <20210312124609.33d4d4ba@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <20210312130017.GT2356281@nvidia.com>
+In-Reply-To: <20210312124609.33d4d4ba@carbon>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 12, 2021 at 09:00:17AM -0400, Jason Gunthorpe wrote:
-> On Thu, Mar 11, 2021 at 06:53:16PM -0800, Alexander Duyck wrote:
-> > On Thu, Mar 11, 2021 at 3:21 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > >
-> > > On Thu, Mar 11, 2021 at 01:49:24PM -0800, Alexander Duyck wrote:
-> > > > > We don't need to invent new locks and new complexity for something
-> > > > > that is trivially solved already.
-> > > >
-> > > > I am not wanting a new lock. What I am wanting is a way to mark the VF
-> > > > as being stale/offline while we are performing the update. With that
-> > > > we would be able to apply similar logic to any changes in the future.
-> > >
-> > > I think we should hold off doing this until someone comes up with HW
-> > > that needs it. The response time here is microseconds, it is not worth
-> > > any complexity
+On Fri, Mar 12, 2021 at 12:46:09PM +0100, Jesper Dangaard Brouer wrote:
+> > > > <SNIP>
+> > > > +	if (!zone)
+> > > > +		return 0;
+> > > > +
+> > > > +	/* Attempt the batch allocation */
+> > > > +	local_irq_save(flags);
+> > > > +	pcp = &this_cpu_ptr(zone->pageset)->pcp;
+> > > > +	pcp_list = &pcp->lists[ac.migratetype];
+> > > > +
+> > > > +	while (alloced < nr_pages) {
+> > > > +		page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
+> > > > +								pcp, pcp_list);
+> > > > +		if (!page)
+> > > > +			break;
+> > > > +
+> > > > +		prep_new_page(page, 0, gfp_mask, 0);  
+> > > 
+> > > I wonder if it would be worth running prep_new_page() in a second pass,
+> > > after reenabling interrupts.
+> > >   
 > > 
-> > I disagree. Take a look at section 8.5.3 in the NVMe document that was
-> > linked to earlier:
-> > https://nvmexpress.org/wp-content/uploads/NVM-Express-1_4a-2020.03.09-Ratified.pdf
-> > 
-> > This is exactly what they are doing and I think it makes a ton of
-> > sense. Basically the VF has to be taken "offline" before you are
+> > Possibly, I could add another patch on top that does this because it's
+> > trading the time that IRQs are disabled for a list iteration.
 > 
-> AFAIK this is internal to the NVMe command protocol, not something we
-> can expose generically to the OS. mlx5 has no protocol to "offline" an
-> already running VF, for instance.
+> I for one like this idea, of moving prep_new_page() to a second pass.
+> As per below realtime concern, to reduce the time that IRQs are
+> disabled.
 > 
-> The way Leon has it arranged that online/offline scheme has no
-> relevance because there is no driver or guest attached to the VF to
-> see the online/offline transition.
-> 
-> I wonder if people actually do offline a NVMe VF from a hypervisor?
-> Seems pretty weird.
 
-I agree, that would be weird. I'm pretty sure you can't modify these resources
-once you attach the nvme VF to a guest. The resource allocation needs to happen
-prior to that.
- 
-> > Another way to think of this is that we are essentially pulling a
-> > device back after we have already allocated the VFs and we are
-> > reconfiguring it before pushing it back out for usage. Having a flag
-> > that we could set on the VF device to say it is "under
-> > construction"/modification/"not ready for use" would be quite useful I
-> > would think.
+Already done.
+
+> > > Speaking of which, will the realtime people get upset about the
+> > > irqs-off latency?  How many pages are we talking about here?
+> > >   
 > 
-> Well, yes, the whole SRIOV VF lifecycle is a pretty bad fit for the
-> modern world.
+> In my page_pool patch I'm bulk allocating 64 pages. I wanted to ask if
+> this is too much? (PP_ALLOC_CACHE_REFILL=64).
 > 
-> I'd rather not see a half-job on a lifecycle model by hacking in
-> random flags. It needs a proper comprehensive design.
+
+I expect no, it's not too much. The refill path should be short.
+
+> > At the moment, it looks like batches of up to a few hundred at worst. I
+> > don't think realtime sensitive applications are likely to be using the
+> > bulk allocator API at this point.
+> > 
+> > The realtime people have a worse problem in that the per-cpu list does
+> > not use local_lock and disable IRQs more than it needs to on x86 in
+> > particular. I've a prototype series for this as well which splits the
+> > locking for the per-cpu list and statistic handling and then converts the
+> > per-cpu list to local_lock but I'm getting this off the table first because
+> > I don't want multiple page allocator series in flight at the same time.
+> > Thomas, Peter and Ingo would need to be cc'd on that series to review
+> > the local_lock aspects.
+> > 
+> > Even with local_lock, it's not clear to me why per-cpu lists need to be
+> > locked at all because potentially it could use a lock-free llist with some
+> > struct page overloading. That one is harder to predict when batches are
+> > taken into account as splicing a batch of free pages with llist would be
+> > unsafe so batch free might exchange IRQ disabling overhead with multiple
+> > atomics. I'd need to recheck things like whether NMI handlers ever call
+> > the page allocator (they shouldn't but it should be checked).  It would
+> > need a lot of review and testing.
 > 
-> Jason
+> The result of the API is to deliver pages as a double-linked list via
+> LRU (page->lru member).  If you are planning to use llist, then how to
+> handle this API change later?
+> 
+
+I would not have to. The per-cpu list internally can use llist internally
+while pages returned to the bulk allocator user can still be a doubly
+linked list. An llist_node fits in less space than the list_head lru.
+
+> Have you notice that the two users store the struct-page pointers in an
+> array?  We could have the caller provide the array to store struct-page
+> pointers, like we do with kmem_cache_alloc_bulk API.
+> 
+
+That is a possibility but it ties the caller into declaring an array,
+either via kmalloc, within an existing struct or on-stack. They would
+then need to ensure that nr_pages does not exceed the array size or pass
+in the array size. It's more error prone and a harder API to use.
+
+> You likely have good reasons for returning the pages as a list (via
+> lru), as I can see/imagine that there are some potential for grabbing
+> the entire PCP-list.
+> 
+
+I used a list so that user was only required to define a list_head on
+the stack to use the API.
+
+-- 
+Mel Gorman
+SUSE Labs
