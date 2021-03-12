@@ -2,558 +2,347 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3073338AED
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 12:04:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 207BE338BCA
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 12:47:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233884AbhCLLD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 06:03:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233659AbhCLLDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 06:03:53 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AADCC061761
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 03:03:53 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id nh23-20020a17090b3657b02900c0d5e235a8so10901033pjb.0
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 03:03:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b8dblWCmMen2mJ/vK+IaoikcPuuBlCMe+NK6ht5ox7k=;
-        b=tcfU+QWwc7XHsA1jFZv7bSnCIHpjK6wp8KzeKwRV6kvEZTDxGzH7+iQjxJCHx0we9V
-         LTaklK85yE3D6mLdhbhwFX76QmHMAcdt4J6SrZvjmQbAgpjGKBxeLnxd4Sk9kox0z8pw
-         aMfm0bsU0Z7OAIofq1kcQq8YyoUlSDOjkJMx54v4wnyOqUr6i1ZQrkzRp+qTYK0+yIZF
-         4QECs59E+Ph2XvrLL5rqe+umXOtfm78eUbcHFlLMZ+j8iA+RjVZnAUz8X/kE12kx9Trb
-         KYdzjX3DZ5b73OcdQ+CHPGG5PfpnzEVcVV+1ZipwZ/6zJ+G/1lFImeoOCbygV0Ayc1OV
-         XcWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b8dblWCmMen2mJ/vK+IaoikcPuuBlCMe+NK6ht5ox7k=;
-        b=B0aJU0g01pTFkspzj8oVQwWRJnL8hMcFf2lFJmrPeHqxCr0pMoRz5pWij/F6y/aeG7
-         53trZMccQO5AcGZBoVm9+9Cj8AP9+5ML8piwyH5MGMwLucal7/4RHybVCczKBTWS7WMQ
-         sOcdJOmx4dfAmYrZgcJ0sDVRgUeHLsMIl3rkIO33S2jEo1inkuIMmUtwmFE1Bcd+PHcg
-         q0qx5geEoNNIPM/Xk7d9WYGD2yvpgdfsXIRTFzg5/3zY0FEpm5Rll32DLl5vyHdTbDg/
-         U5cxOcZLAFSPi5wNwDddb9Grq3p0fz91M8GOllmBjWMDjyHEIHA4nM1ab4HhkexyX3UB
-         varQ==
-X-Gm-Message-State: AOAM532zdKBBLAfRyv9EX1wDy8YQPmbHxDEiXdpnzhSq4AFjbe+60eIp
-        AJCoSS/L6qRbSBVSiAekoU595pTYXGWXacgWZi51IQ==
-X-Google-Smtp-Source: ABdhPJyRZ55VpyITwBwJ9lR1xEN5J8TVjPt54vx1MBjT9CMjbCVGyAOFKvhpj2QqiLxFArDcRHcU1UU2XGkGlbfvhxc=
-X-Received: by 2002:a17:902:7287:b029:e5:bd05:4a97 with SMTP id
- d7-20020a1709027287b02900e5bd054a97mr12795627pll.27.1615547031566; Fri, 12
- Mar 2021 03:03:51 -0800 (PST)
+        id S231294AbhCLLqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 06:46:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45624 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231370AbhCLLqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 06:46:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615549583;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QFgIam+1YEePX9Y79XCtf58e9Otzw7JnjlFfPRahEVQ=;
+        b=L+3zbywWhBvW5xgowLwEhnoc/iRpiIw7CogXwqUxFH2aVK3IpuyzOxbC0e+gSDR1di29Zf
+        YAhdETy6sG+bjpToGTEIfw45zag7RvNdzN85L+S+72w6iFQTwBlFLtAdSnbzkEmF0fihM3
+        +zXhkNeDw7Bm9H8KDdroE5kb/CSk5aw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-380-vmvFWGQgMIqy70juG-kJWw-1; Fri, 12 Mar 2021 06:46:21 -0500
+X-MC-Unique: vmvFWGQgMIqy70juG-kJWw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A651D196632A;
+        Fri, 12 Mar 2021 11:46:19 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 198E360877;
+        Fri, 12 Mar 2021 11:46:13 +0000 (UTC)
+Date:   Fri, 12 Mar 2021 12:46:09 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210312124609.33d4d4ba@carbon>
+In-Reply-To: <20210311084200.GR3697@techsingularity.net>
+References: <20210310104618.22750-1-mgorman@techsingularity.net>
+        <20210310104618.22750-3-mgorman@techsingularity.net>
+        <20210310154650.ad9760cd7cb9ac4acccf77ee@linux-foundation.org>
+        <20210311084200.GR3697@techsingularity.net>
 MIME-Version: 1.0
-References: <1615495264-6816-1-git-send-email-loic.poulain@linaro.org> <YEsQobygYgKRQlgC@kroah.com>
-In-Reply-To: <YEsQobygYgKRQlgC@kroah.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Fri, 12 Mar 2021 12:11:50 +0100
-Message-ID: <CAMZdPi-EHirVg7k5XQ2hmZ5O0BT6dLh46crCv4EMwZTHDNC_tg@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 1/2] net: Add a WWAN subsystem
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        open list <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Hemant Kumar <hemantk@codeaurora.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>, rdunlap@infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
+On Thu, 11 Mar 2021 08:42:00 +0000
+Mel Gorman <mgorman@techsingularity.net> wrote:
 
-On Fri, 12 Mar 2021 at 07:56, Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Mar 11, 2021 at 09:41:03PM +0100, Loic Poulain wrote:
-> > This change introduces initial support for a WWAN subsystem. Given the
-> > complexity and heterogeneity of existing WWAN hardwares and interfaces,
-> > there is no strict definition of what a WWAN device is and how it should
-> > be represented. It's often a collection of multiple components/devices
-> > that perform the global WWAN feature (netdev, tty, chardev, etc).
-> >
-> > One usual way to expose modem controls and configuration is via high
-> > level protocols such as the well known AT command protocol, MBIM or
-> > QMI. The USB modems started to expose that as character devices, and
-> > user daemons such as ModemManager learnt how to deal with that. This
-> > initial version adds the concept of WWAN port, which can be registered
-> > by any driver to expose one of these protocols. The WWAN core takes
-> > care of the generic part, including character device creation and lets
-> > the driver implementing access (fops) to the selected protocol.
-> >
-> > Since the different components/devices do no necesserarly know about
-> > each others, and can be created/removed in different orders, the
-> > WWAN core ensures that devices being part of the same hardware are
-> > also represented as a unique WWAN device, relying on the provided
-> > parent device (e.g. mhi controller, USB device). It's a 'trick' I
-> > copied from Johannes's earlier WWAN subsystem proposal.
-> >
-> > This initial version is purposely minimalist, it's essentially moving
-> > the generic part of the previously proposed mhi_wwan_ctrl driver inside
-> > a common WWAN framework, but the implementation is open and flexible
-> > enough to allow extension for further drivers.
-> >
-> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-[...]
-> > +#include <linux/err.h>
-> > +#include <linux/errno.h>
-> > +#include <linux/init.h>
-> > +#include <linux/fs.h>
-> > +#include <linux/idr.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/types.h>
-> > +#include <linux/wwan.h>
-> > +
-> > +#include "wwan_core.h"
-> > +
-> > +static LIST_HEAD(wwan_list); /* list of registered wwan devices */
->
-> Why do you need a list as you already have a list of them all in the
-> class structure?
+> On Wed, Mar 10, 2021 at 03:46:50PM -0800, Andrew Morton wrote:
+> > On Wed, 10 Mar 2021 10:46:15 +0000 Mel Gorman <mgorman@techsingularity.net> wrote:
+> >   
+> > > This patch adds a new page allocator interface via alloc_pages_bulk,
+> > > and __alloc_pages_bulk_nodemask. A caller requests a number of pages
+> > > to be allocated and added to a list. They can be freed in bulk using
+> > > free_pages_bulk().  
+> > 
+> > Why am I surprised we don't already have this.
+> >   
+> 
+> It was prototyped a few years ago and discussed at LSF/MM so it's in
+> the back of your memory somewhere. It never got merged because it lacked
+> users and I didn't think carrying dead untested code was appropriate.
 
-Thanks, indeed, I can use class helpers for that.
+And I guess didn't push hard enough and showed the use-case in code.
+Thus, I will also take part of the blame for this stalling out.
 
->
-> > +static DEFINE_IDA(wwan_ida);
-> > +static DEFINE_MUTEX(wwan_global_lock);
->
-> What is this lock for?  I don't think you need a lock for a ida/idr
-> structure if you use it in the "simple" mode, right?
->
-> > +struct class *wwan_class;
->
-> Why is this a global structure?
 
-It's also used inside wwan_port.c, but we can also retrieve the class
-directly from wwandev->dev.class, so yes it's not strictly necessary
-to have it global.
+> > > The API is not guaranteed to return the requested number of pages and
+> > > may fail if the preferred allocation zone has limited free memory, the
+> > > cpuset changes during the allocation or page debugging decides to fail
+> > > an allocation. It's up to the caller to request more pages in batch
+> > > if necessary.
+> > > 
+> > > Note that this implementation is not very efficient and could be improved
+> > > but it would require refactoring. The intent is to make it available early
+> > > to determine what semantics are required by different callers. Once the
+> > > full semantics are nailed down, it can be refactored.
+> > > 
+> > > ...
+> > >
+> > > +/* Drop reference counts and free order-0 pages from a list. */
+> > > +void free_pages_bulk(struct list_head *list)
+> > > +{
+> > > +	struct page *page, *next;
+> > > +
+> > > +	list_for_each_entry_safe(page, next, list, lru) {
+> > > +		trace_mm_page_free_batched(page);
+> > > +		if (put_page_testzero(page)) {
+> > > +			list_del(&page->lru);
+> > > +			__free_pages_ok(page, 0, FPI_NONE);
+> > > +		}
+> > > +	}
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(free_pages_bulk);  
+> > 
+> > I expect that batching games are planned in here as well?
+> >   
+> 
+> Potentially it could be done but the page allocator would need to be
+> fundamentally aware of batching to make it tidy or the per-cpu allocator
+> would need knowledge of how to handle batches in the free path.  Batch
+> freeing to the buddy allocator is problematic as buddy merging has to
+> happen. Batch freeing to per-cpu hits pcp->high limitations.
+> 
+> There are a couple of ways it *could* be done. Per-cpu lists could be
+> allowed to temporarily exceed the high limits and reduce them out-of-band
+> like what happens with counter updates or remote pcp freeing. Care
+> would need to be taken when memory is low to avoid premature OOM
+> and to guarantee draining happens in a timely fashion. There would be
+> additional benefits to this. For example, release_pages() can hammer the
+> zone lock when freeing very large batches and would benefit from either
+> large batching or "plugging" the per-cpu list. I prototyped a series to
+> allow the batch limits to be temporarily exceeded but it did not actually
+> improve performance because of errors in the implementation and it needs
+> a lot of work.
+> 
+> > >  static inline unsigned int
+> > >  gfp_to_alloc_flags(gfp_t gfp_mask)
+> > >  {
+> > > @@ -4919,6 +4934,9 @@ static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+> > >  		struct alloc_context *ac, gfp_t *alloc_mask,
+> > >  		unsigned int *alloc_flags)
+> > >  {
+> > > +	gfp_mask &= gfp_allowed_mask;
+> > > +	*alloc_mask = gfp_mask;
+> > > +
+> > >  	ac->highest_zoneidx = gfp_zone(gfp_mask);
+> > >  	ac->zonelist = node_zonelist(preferred_nid, gfp_mask);
+> > >  	ac->nodemask = nodemask;
+> > > @@ -4960,6 +4978,99 @@ static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+> > >  	return true;
+> > >  }
+> > >  
+> > > +/*
+> > > + * This is a batched version of the page allocator that attempts to
+> > > + * allocate nr_pages quickly from the preferred zone and add them to list.
+> > > + */  
+> > 
+> > Documentation is rather lame.  Returns number of pages allocated...
+> >   
+> 
+> I added a note on the return value. The documentation is lame because at
+> this point, we do not know what the required semantics for future users
+> are. We have two examples at the moment in this series but I think it
+> would be better to add kerneldoc documentation when there is a reasonable
+> expectation that the API will not change. For example, SLUB could use
+> this API when it fails to allocate a high-order page and instead allocate
+> batches of order-0 pages but I did not investigate how feasible that
+> is. Similarly, it's possible that we really need to deal with high-order
+> batch allocations in which case, the per-cpu list should be high-order
+> aware or the core buddy allocator needs to be batch-allocation aware.
+> 
+> > > +int __alloc_pages_bulk_nodemask(gfp_t gfp_mask, int preferred_nid,
+> > > +			nodemask_t *nodemask, int nr_pages,
+> > > +			struct list_head *alloc_list)
+> > > +{
+> > > +	struct page *page;
+> > > +	unsigned long flags;
+> > > +	struct zone *zone;
+> > > +	struct zoneref *z;
+> > > +	struct per_cpu_pages *pcp;
+> > > +	struct list_head *pcp_list;
+> > > +	struct alloc_context ac;
+> > > +	gfp_t alloc_mask;
+> > > +	unsigned int alloc_flags;
+> > > +	int alloced = 0;
+> > > +
+> > > +	if (nr_pages == 1)
+> > > +		goto failed;
+> > > +
+> > > +	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
+> > > +	if (!prepare_alloc_pages(gfp_mask, 0, preferred_nid, nodemask, &ac, &alloc_mask, &alloc_flags))
+> > > +		return 0;
+> > > +	gfp_mask = alloc_mask;
+> > > +
+> > > +	/* Find an allowed local zone that meets the high watermark. */
+> > > +	for_each_zone_zonelist_nodemask(zone, z, ac.zonelist, ac.highest_zoneidx, ac.nodemask) {
+> > > +		unsigned long mark;
+> > > +
+> > > +		if (cpusets_enabled() && (alloc_flags & ALLOC_CPUSET) &&
+> > > +		    !__cpuset_zone_allowed(zone, gfp_mask)) {
+> > > +			continue;
+> > > +		}
+> > > +
+> > > +		if (nr_online_nodes > 1 && zone != ac.preferred_zoneref->zone &&
+> > > +		    zone_to_nid(zone) != zone_to_nid(ac.preferred_zoneref->zone)) {
+> > > +			goto failed;
+> > > +		}
+> > > +
+> > > +		mark = wmark_pages(zone, alloc_flags & ALLOC_WMARK_MASK) + nr_pages;
+> > > +		if (zone_watermark_fast(zone, 0,  mark,
+> > > +				zonelist_zone_idx(ac.preferred_zoneref),
+> > > +				alloc_flags, gfp_mask)) {
+> > > +			break;
+> > > +		}
+> > > +	}  
+> > 
+> > I suspect the above was stolen from elsewhere and that some code
+> > commonification is planned.
+> >   
+> 
+> It's based on get_page_from_freelist. It would be messy to have them share
+> common code at this point with a risk that the fast path for the common
+> path (single page requests) would be impaired. The issue is that the
+> fast path and slow paths have zonelist iteration, kswapd wakeup, cpuset
+> enforcement and reclaim actions all mixed together at various different
+> points. The locking is also mixed up with per-cpu list locking, statistic
+> locking and buddy locking all having inappropriate overlaps (e.g. IRQ
+> disabling protects per-cpu list locking, partially and unnecessarily
+> protects statistics depending on architecture and overlaps with the
+> IRQ-safe zone lock.
+> 
+> Ironing this out risks hurting the single page allocation path. It would
+> need to be done incrementally with ultimately the core of the allocator
+> dealing with batches to avoid false bisections.
+> 
+> >   
+> > > +	if (!zone)
+> > > +		return 0;
+> > > +
+> > > +	/* Attempt the batch allocation */
+> > > +	local_irq_save(flags);
+> > > +	pcp = &this_cpu_ptr(zone->pageset)->pcp;
+> > > +	pcp_list = &pcp->lists[ac.migratetype];
+> > > +
+> > > +	while (alloced < nr_pages) {
+> > > +		page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
+> > > +								pcp, pcp_list);
+> > > +		if (!page)
+> > > +			break;
+> > > +
+> > > +		prep_new_page(page, 0, gfp_mask, 0);  
+> > 
+> > I wonder if it would be worth running prep_new_page() in a second pass,
+> > after reenabling interrupts.
+> >   
+> 
+> Possibly, I could add another patch on top that does this because it's
+> trading the time that IRQs are disabled for a list iteration.
 
->
-> > +
-> > +static struct wwan_device *__wwan_find_by_parent(struct device *parent)
-> > +{
-> > +     struct wwan_device *wwandev;
-> > +
-> > +     if (!parent)
-> > +             return NULL;
-> > +
-> > +     list_for_each_entry(wwandev, &wwan_list, list) {
-> > +             if (wwandev->dev.parent == parent)
-> > +                     return wwandev;
->
-> Nice, no locking!
->
-> :(
->
-> Again, why not use the driver core bits for this?
->
-> Also, no reference counting is used here, sure way to cause problems :(
->
-> > +     }
-> > +
-> > +     return NULL;
-> > +}
-> > +
-> > +static void wwan_dev_release(struct device *dev)
-> > +{
-> > +     struct wwan_device *wwandev = to_wwan_dev(dev);
-> > +
-> > +     kfree(wwandev);
-> > +}
-> > +
-> > +static const struct device_type wwan_type = {
-> > +     .name    = "wwan",
-> > +     .release = wwan_dev_release,
-> > +};
-> > +
-> > +struct wwan_device *wwan_create_dev(struct device *parent)
-> > +{
-> > +     struct wwan_device *wwandev;
-> > +     int err, id;
-> > +
-> > +     mutex_lock(&wwan_global_lock);
-> > +
-> > +     wwandev = __wwan_find_by_parent(parent);
-> > +     if (wwandev) {
-> > +             get_device(&wwandev->dev);
->
-> Ah, you lock outside of the function, and increment the reference count,
-> that's a sure way to cause auditing problems over time.  Don't do that,
-> you know better.
+I for one like this idea, of moving prep_new_page() to a second pass.
+As per below realtime concern, to reduce the time that IRQs are
+disabled.
 
-Ok, that makes sense.
+> > Speaking of which, will the realtime people get upset about the
+> > irqs-off latency?  How many pages are we talking about here?
+> >   
 
->
-> > +             wwandev->usage++;
->
-> Hah, why?  You now have 2 reference counts for the same structure?
+In my page_pool patch I'm bulk allocating 64 pages. I wanted to ask if
+this is too much? (PP_ALLOC_CACHE_REFILL=64).
 
-'usage' is probably not the right term, but this counter tracks device
-registration life to determine when the device must be unregistered
-from the system (several wwan drivers can be exposed as a unique wwan
-device), while device kref tracks the wwan device life. They are kind
-of coupled, but a device can not be released if not priorly
-unregistered.
+The mlx5 driver have a while loop for allocation 64 pages, which it
+used in this case, that is why 64 is chosen.  If we choose a lower
+bulk number, then the bulk-alloc will just be called more times.
 
->
-> > +             goto done_unlock;
-> > +     }
-> > +
-> > +     id = ida_alloc(&wwan_ida, GFP_KERNEL);
->
-> Again, I do not think you need a lock if you use this structure in a
-> safe way.
->
-> > +     if (id < 0)
-> > +             goto done_unlock;
-> > +
-> > +     wwandev = kzalloc(sizeof(*wwandev), GFP_KERNEL);
-> > +     if (!wwandev) {
-> > +             ida_free(&wwan_ida, id);
-> > +             goto done_unlock;
-> > +     }
-> > +
-> > +     wwandev->dev.parent = parent;
-> > +     wwandev->dev.class = wwan_class;
-> > +     wwandev->dev.type = &wwan_type;
-> > +     wwandev->id = id;
-> > +     dev_set_name(&wwandev->dev, "wwan%d", wwandev->id);
-> > +     wwandev->usage = 1;
-> > +     INIT_LIST_HEAD(&wwandev->ports);
-> > +
-> > +     err = device_register(&wwandev->dev);
-> > +     if (err) {
-> > +             put_device(&wwandev->dev);
-> > +             ida_free(&wwan_ida, id);
-> > +             wwandev = NULL;
-> > +             goto done_unlock;
-> > +     }
-> > +
-> > +     list_add_tail(&wwandev->list, &wwan_list);
-> > +
-> > +done_unlock:
-> > +     mutex_unlock(&wwan_global_lock);
-> > +
-> > +     return wwandev;
-> > +}
-> > +EXPORT_SYMBOL_GPL(wwan_create_dev);
-> > +
-> > +void wwan_destroy_dev(struct wwan_device *wwandev)
-> > +{
-> > +     mutex_lock(&wwan_global_lock);
-> > +     wwandev->usage--;
->
-> Nice, 2 references!  :(
->
-> > +
-> > +     if (wwandev->usage)
-> > +             goto done_unlock;
->
-> No, you don't need this.
->
-> > +
-> > +     /* Someone destroyed the wwan device without removing ports */
-> > +     WARN_ON(!list_empty(&wwandev->ports));
->
-> why?
->
-> Did you just reboot a system?
->
-> > +
-> > +     list_del(&wwandev->list);
-> > +     device_unregister(&wwandev->dev);
-> > +     ida_free(&wwan_ida, wwandev->id);
-> > +     put_device(&wwandev->dev);
-> > +
-> > +done_unlock:
-> > +     mutex_unlock(&wwan_global_lock);
-> > +}
-> > +EXPORT_SYMBOL_GPL(wwan_destroy_dev);
-> > +
-> > +static int __init wwan_init(void)
-> > +{
-> > +     int err;
-> > +
-> > +     wwan_class = class_create(THIS_MODULE, "wwan");
-> > +     if (IS_ERR(wwan_class))
-> > +             return PTR_ERR(wwan_class);
-> > +
-> > +     err = wwan_port_init();
-> > +     if (err)
-> > +             goto err_class_destroy;
-> > +
-> > +     return 0;
-> > +
-> > +err_class_destroy:
-> > +     class_destroy(wwan_class);
-> > +     return err;
-> > +}
-> > +
-> > +static void __exit wwan_exit(void)
-> > +{
-> > +     wwan_port_deinit();
-> > +     class_destroy(wwan_class);
-> > +}
-> > +
-> > +//subsys_initcall(wwan_init);
->
-> ???
->
-> Debugging code left around?
->
-> > +module_init(wwan_init);
-> > +module_exit(wwan_exit);
-> > +
-> > +MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
-> > +MODULE_DESCRIPTION("WWAN core");
-> > +MODULE_LICENSE("GPL v2");
-> > diff --git a/drivers/net/wwan/wwan_core.h b/drivers/net/wwan/wwan_core.h
-> > new file mode 100644
-> > index 0000000..21d187a
-> > --- /dev/null
-> > +++ b/drivers/net/wwan/wwan_core.h
-> > @@ -0,0 +1,20 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > +/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-> > +
-> > +#ifndef __WWAN_CORE_H
-> > +#define __WWAN_CORE_H
-> > +
-> > +#include <linux/device.h>
-> > +#include <linux/wwan.h>
-> > +
-> > +#define to_wwan_dev(d) container_of(d, struct wwan_device, dev)
-> > +
-> > +struct wwan_device *wwan_create_dev(struct device *parent);
-> > +void wwan_destroy_dev(struct wwan_device *wwandev);
-> > +
-> > +int wwan_port_init(void);
-> > +void wwan_port_deinit(void);
-> > +
-> > +extern struct class *wwan_class;
-> > +
-> > +#endif /* WWAN_CORE_H */
-> > diff --git a/drivers/net/wwan/wwan_port.c b/drivers/net/wwan/wwan_port.c
-> > new file mode 100644
-> > index 0000000..b32da8f
-> > --- /dev/null
-> > +++ b/drivers/net/wwan/wwan_port.c
-> > @@ -0,0 +1,136 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-> > +
-> > +#include <linux/err.h>
-> > +#include <linux/errno.h>
-> > +#include <linux/fs.h>
-> > +#include <linux/idr.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/wwan.h>
-> > +
-> > +#include "wwan_core.h"
-> > +
-> > +#define WWAN_MAX_MINORS 32
->
-> Why only 32?
 
-It's an arbitrary value, 32 wwan ports seem enough.
+> At the moment, it looks like batches of up to a few hundred at worst. I
+> don't think realtime sensitive applications are likely to be using the
+> bulk allocator API at this point.
+> 
+> The realtime people have a worse problem in that the per-cpu list does
+> not use local_lock and disable IRQs more than it needs to on x86 in
+> particular. I've a prototype series for this as well which splits the
+> locking for the per-cpu list and statistic handling and then converts the
+> per-cpu list to local_lock but I'm getting this off the table first because
+> I don't want multiple page allocator series in flight at the same time.
+> Thomas, Peter and Ingo would need to be cc'd on that series to review
+> the local_lock aspects.
+> 
+> Even with local_lock, it's not clear to me why per-cpu lists need to be
+> locked at all because potentially it could use a lock-free llist with some
+> struct page overloading. That one is harder to predict when batches are
+> taken into account as splicing a batch of free pages with llist would be
+> unsafe so batch free might exchange IRQ disabling overhead with multiple
+> atomics. I'd need to recheck things like whether NMI handlers ever call
+> the page allocator (they shouldn't but it should be checked).  It would
+> need a lot of review and testing.
 
->
-> > +
-> > +static int wwan_major;
-> > +static DEFINE_IDR(wwan_port_idr);
-> > +static DEFINE_MUTEX(wwan_port_idr_lock);
->
-> More idrs?
+The result of the API is to deliver pages as a double-linked list via
+LRU (page->lru member).  If you are planning to use llist, then how to
+handle this API change later?
 
-These idrs are used for getting wwan_port minors (more below).
+Have you notice that the two users store the struct-page pointers in an
+array?  We could have the caller provide the array to store struct-page
+pointers, like we do with kmem_cache_alloc_bulk API.
 
-> > +
-> > +static const char * const wwan_port_type_str[] = {
-> > +     "AT",
-> > +     "MBIM",
-> > +     "QMI",
-> > +     "QCDM",
-> > +     "FIREHOSE"
-> > +};
-[...]
-> > +static int wwan_port_open(struct inode *inode, struct file *file)
-> > +{
-> > +     const struct file_operations *new_fops;
-> > +     unsigned int minor = iminor(inode);
-> > +     struct wwan_port *port;
-> > +     int err = 0;
-> > +
-> > +     mutex_lock(&wwan_port_idr_lock);
-> > +     port = idr_find(&wwan_port_idr, minor);
-> > +     if (!port) {
-> > +             mutex_unlock(&wwan_port_idr_lock);
-> > +             return -ENODEV;
-> > +     }
-> > +     mutex_unlock(&wwan_port_idr_lock);
-> > +
-> > +     file->private_data = port->private_data ? port->private_data : port;
-> > +     stream_open(inode, file);
-> > +
-> > +     new_fops = fops_get(port->fops);
-> > +     replace_fops(file, new_fops);
->
-> Why replace the fops?
+You likely have good reasons for returning the pages as a list (via
+lru), as I can see/imagine that there are some potential for grabbing
+the entire PCP-list.
 
-WWAN port behaves a bit like the misc framework here, allowing a wwan
-driver to register its own file ops. When the user opens a wwan cdev
-port, we simply switch from generic wwan no-op to the specific
-driver's registered fops. The sound subsystem also does that
-(snd_open). Another way would be to define generic wwan file
-operations in the core, and forward them to a set of wwan port ops
-(e.g. wwan_port->ops.read), but I don't think it brings too much
-benefit for now.
+ 
+> > > +		list_add(&page->lru, alloc_list);
+> > > +		alloced++;
+> > > +	}
+> > > +
+> > > +	if (!alloced)
+> > > +		goto failed_irq;
+> > > +
+> > > +	if (alloced) {
+> > > +		__count_zid_vm_events(PGALLOC, zone_idx(zone),
+> > > alloced);
+> > > +		zone_statistics(zone, zone);
+> > > +	}
+> > > +
+> > > +	local_irq_restore(flags);
+> > > +
+> > > +	return alloced;
+> > > +
+> > > +failed_irq:
+> > > +	local_irq_restore(flags);
+> > > +
+> > > +failed:  
+> > 
+> > Might we need some counter to show how often this path happens?
+> >   
+> 
+> I think that would be overkill at this point. It only gives useful
+> information to a developer using the API for the first time and that
+> can be done with a debugging patch (or probes if you're feeling
+> creative). I'm already unhappy with the counter overhead in the page
+> allocator. zone_statistics in particular has no business being an
+> accurate statistic. It should have been a best-effort counter like
+> vm_events that does not need IRQs to be disabled. If that was a
+> simply counter as opposed to an accurate statistic then a failure
+> counter at failed_irq would be very cheap to add.
 
->
-> > +     if (file->f_op->open)
-> > +             err = file->f_op->open(inode, file);
-> > +
-> > +     return err;
-> > +}
-> > +
-> > +static const struct file_operations wwan_port_fops = {
-> > +     .owner  = THIS_MODULE,
-> > +     .open   = wwan_port_open,
-> > +     .llseek = noop_llseek,
-> > +};
-> > +
-> > +int wwan_port_init(void)
-> > +{
-> > +     wwan_major = register_chrdev(0, "wwanport", &wwan_port_fops);
-> > +     if (wwan_major < 0)
-> > +             return wwan_major;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +void wwan_port_deinit(void)
-> > +{
-> > +     unregister_chrdev(wwan_major, "wwanport");
-> > +     idr_destroy(&wwan_port_idr);
-> > +}
->
->
-> I'm confused, you have 1 class, but 2 different major numbers for this
-> class?  You have a device and ports with different numbers, how are they
-> all tied together?
 
-There is one wwan class with different device types (wwan devices and
-wwan control ports), a port is a child of a wwan device. Only wwan
-ports are exposed as character devices and IDR is used for getting a
-minor. wwan device IDA is just used to alloc unique wwan device ID.
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-> > diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-> > new file mode 100644
-> > index 0000000..6caca5c
-> > --- /dev/null
-> > +++ b/include/linux/wwan.h
-> > @@ -0,0 +1,121 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > +/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-> > +
-> > +#ifndef __WWAN_H
-> > +#define __WWAN_H
-> > +
-> > +#include <linux/device.h>
-> > +#include <linux/kernel.h>
-> > +
-> > +/**
-> > + * struct wwan_device - The structure that defines a WWAN device
-> > + *
-> > + * @id:              WWAN device unique ID.
-> > + * @usage:   WWAN device usage counter.
-> > + * @dev:     underlying device.
-> > + * @list:    list to chain WWAN devices.
-> > + * @ports:   list of attached wwan_port.
-> > + * @port_idx:        port index counter.
-> > + * @lock:    mutex protecting members of this structure.
-> > + */
-> > +struct wwan_device {
-> > +     int id;
-> > +     unsigned int usage;
->
-> Again, not needed.
->
-> > +
-> > +     struct device dev;
-> > +     struct list_head list;
->
-> You should use the list in the class instead.
-
-Will do.
-
->
-> > +
-> > +     struct list_head ports;
->
-> Are you sure you need this?
-
-No, indeed, I can just rely on the wwan device child list.
-
->
-> > +     unsigned int port_idx;
-> > +
-> > +     struct mutex lock;
-> > +};
-> > +
-> > +/**
-> > + * enum wwan_port_type - WWAN port types
-> > + * @WWAN_PORT_AT:    AT commands.
-> > + * @WWAN_PORT_MBIM:  Mobile Broadband Interface Model control.
-> > + * @WWAN_PORT_QMI:   Qcom modem/MSM interface for modem control.
-> > + * @WWAN_PORT_QCDM:  Qcom Modem diagnostic interface.
-> > + * @WWAN_PORT_FIREHOSE: XML based command protocol.
-> > + * @WWAN_PORT_MAX
-> > + */
-> > +enum wwan_port_type {
-> > +     WWAN_PORT_AT,
-> > +     WWAN_PORT_MBIM,
-> > +     WWAN_PORT_QMI,
-> > +     WWAN_PORT_QCDM,
-> > +     WWAN_PORT_FIREHOSE,
-> > +     WWAN_PORT_MAX,
-> > +};
-> > +
-> > +/**
-> > + * struct wwan_port - The structure that defines a WWAN port
-> > + *
-> > + * @wwandev:         WWAN device this port belongs to.
-> > + * @fops:            Port file operations.
-> > + * @private_data:    underlying device.
-> > + * @type:            port type.
-> > + * @id:                      port allocated ID.
-> > + * @minor:           port allocated minor ID for cdev.
-> > + * @list:            list to chain WWAN ports.
-> > + */
-> > +struct wwan_port {
-> > +     struct wwan_device *wwandev;
-> > +     const struct file_operations *fops;
-> > +     void *private_data;
-> > +     enum wwan_port_type type;
-> > +
-> > +     /* private */
-> > +     unsigned int id;
-> > +     int minor;
-> > +     struct list_head list;
->
-> So a port is not a device?  Why not?
-
-A port is represented as a device, device_create is called when port
-is attached to wwan core, but it indeed would make more sense to
-simply make wwan_port a device.
-
-Thanks,
-Loic
