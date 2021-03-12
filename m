@@ -2,85 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C0DB338F7D
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 15:10:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8065D338FA1
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 15:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231812AbhCLOJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 09:09:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54631 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231636AbhCLOJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 09:09:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615558162;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=sQYoIfj5WQ3gNxzaMGVHtAJ8toU1d/6LwVnCduC2jYw=;
-        b=LRFkbdiZM2Agp62DLBALgezzkAZIvFCe3OWMccp5oNzpOCNqltb445MO/K9xGAfAbIqN1j
-        DniVc7N6C5v0GxMRGuxLH2ncov5fZZZ1ms2czgbtv+of3R/Vo5n1VkG/DVrMS1pf2DUzoZ
-        6UVkCmr8S+L/xMffbzH9XJ5n8etzoqQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-340-A4vm1f_pNRqwjRFzk--NuQ-1; Fri, 12 Mar 2021 09:09:20 -0500
-X-MC-Unique: A4vm1f_pNRqwjRFzk--NuQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3D392EC1A0;
-        Fri, 12 Mar 2021 14:09:19 +0000 (UTC)
-Received: from thinkpad.redhat.com (ovpn-112-75.ams2.redhat.com [10.36.112.75])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B52F60877;
-        Fri, 12 Mar 2021 14:09:14 +0000 (UTC)
-From:   Laurent Vivier <lvivier@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Subject: [PATCH] vhost: Fix vhost_vq_reset()
-Date:   Fri, 12 Mar 2021 15:09:13 +0100
-Message-Id: <20210312140913.788592-1-lvivier@redhat.com>
+        id S229908AbhCLOQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 09:16:16 -0500
+Received: from outbound-smtp16.blacknight.com ([46.22.139.233]:59981 "EHLO
+        outbound-smtp16.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229913AbhCLOPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 09:15:51 -0500
+Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
+        by outbound-smtp16.blacknight.com (Postfix) with ESMTPS id CEA401C3CE7
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 14:15:45 +0000 (GMT)
+Received: (qmail 20309 invoked from network); 12 Mar 2021 14:15:45 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 12 Mar 2021 14:15:45 -0000
+Date:   Fri, 12 Mar 2021 14:15:44 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210312141544.GV3697@techsingularity.net>
+References: <20210310104618.22750-1-mgorman@techsingularity.net>
+ <20210310104618.22750-3-mgorman@techsingularity.net>
+ <20210312124331.GY3479805@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20210312124331.GY3479805@casper.infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vhost_reset_is_le() is vhost_init_is_le(), and in the case of
-cross-endian legacy, vhost_init_is_le() depends on vq->user_be.
+On Fri, Mar 12, 2021 at 12:43:31PM +0000, Matthew Wilcox wrote:
+> On Wed, Mar 10, 2021 at 10:46:15AM +0000, Mel Gorman wrote:
+> > +int __alloc_pages_bulk_nodemask(gfp_t gfp_mask, int preferred_nid,
+> > +				nodemask_t *nodemask, int nr_pages,
+> > +				struct list_head *list);
+> 
+> For the next revision, can you ditch the '_nodemask' part of the name?
+> Andrew just took this patch from me:
+> 
 
-vq->user_be is set by vhost_disable_cross_endian().
+Ok, the first three patches are needed from that series. For convenience,
+I'm going to post the same series with the rest of the patches as a
+pre-requisite to avoid people having to take patches out of mmotm to test.
+For review purposes, they can be ignored.
 
-But in vhost_vq_reset(), we have:
+> > <SNIP>
+> >
+> > @@ -4919,6 +4934,9 @@ static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+> >  		struct alloc_context *ac, gfp_t *alloc_mask,
+> >  		unsigned int *alloc_flags)
+> >  {
+> > +	gfp_mask &= gfp_allowed_mask;
+> > +	*alloc_mask = gfp_mask;
+> 
+> Also I renamed alloc_mask to alloc_gfp.
+> 
 
-    vhost_reset_is_le(vq);
-    vhost_disable_cross_endian(vq);
+It then becomes obvious that prepare_alloc_pages does not share the same
+naming convention as __alloc_pages(). In an effort to keep the naming
+convention consistent, I updated the patch to also rename gfp_mask to
+gfp in prepare_alloc_pages.
 
-And so user_be is used before being set.
+As a complete aside, I don't actually like the gfp name and would have
+preferred gfp_flags because GFP is just an acronym and the context of the
+variable is that it's a set of GFP Flags. The mask naming was wrong I admit
+because it's not a mask but I'm not interested in naming the bike shed :)
 
-To fix that, reverse the lines order as there is no other dependency
-between them.
+Thanks for pointing this out early because it would have been a merge
+headache!
 
-Signed-off-by: Laurent Vivier <lvivier@redhat.com>
----
- drivers/vhost/vhost.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index a262e12c6dc2..5ccb0705beae 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -332,8 +332,8 @@ static void vhost_vq_reset(struct vhost_dev *dev,
- 	vq->error_ctx = NULL;
- 	vq->kick = NULL;
- 	vq->log_ctx = NULL;
--	vhost_reset_is_le(vq);
- 	vhost_disable_cross_endian(vq);
-+	vhost_reset_is_le(vq);
- 	vq->busyloop_timeout = 0;
- 	vq->umem = NULL;
- 	vq->iotlb = NULL;
 -- 
-2.29.2
-
+Mel Gorman
+SUSE Labs
