@@ -2,128 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7595C3396ED
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 19:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF7B533970E
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:04:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233680AbhCLSt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 13:49:59 -0500
-Received: from foss.arm.com ([217.140.110.172]:59532 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233668AbhCLStr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 13:49:47 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 494C2ED1;
-        Fri, 12 Mar 2021 10:49:47 -0800 (PST)
-Received: from [10.57.17.106] (unknown [10.57.17.106])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C5D73F793;
-        Fri, 12 Mar 2021 10:49:45 -0800 (PST)
-Subject: Re: [PATCH v2 1/5] thermal/drivers/core: Use a char pointer for the
- cooling device name
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>
-References: <20210312170316.3138-1-daniel.lezcano@linaro.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-Message-ID: <18fdc11b-abda-25d9-582f-de2f9dfa2feb@arm.com>
-Date:   Fri, 12 Mar 2021 18:49:43 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S234043AbhCLTEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 14:04:24 -0500
+Received: from p3plsmtpa08-10.prod.phx3.secureserver.net ([173.201.193.111]:58984
+        "EHLO p3plsmtpa08-10.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233517AbhCLTEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:04:14 -0500
+Received: from chrisHP110 ([76.103.216.188])
+        by :SMTPAUTH: with ESMTPA
+        id Kn4wl6nPrOhTrKn4xlQAXf; Fri, 12 Mar 2021 12:04:08 -0700
+X-CMAE-Analysis: v=2.4 cv=TJGA93pa c=1 sm=1 tr=0 ts=604bbb28
+ a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
+ a=kj9zAlcOel0A:10 a=-7CivnDRKoGH-SBZfI8A:9 a=CjuIK1q_8ugA:10
+X-SECURESERVER-ACCT: don@thebollingers.org
+From:   "Don Bollinger" <don@thebollingers.org>
+To:     "'Andrew Lunn'" <andrew@lunn.ch>
+Cc:     "'Jakub Kicinski'" <kuba@kernel.org>, <arndb@arndb.de>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <brandon_chuang@edge-core.com>, <wally_wang@accton.com>,
+        <aken_liu@edge-core.com>, <gulv@microsoft.com>,
+        <jolevequ@microsoft.com>, <xinxliu@microsoft.com>,
+        "'netdev'" <netdev@vger.kernel.org>,
+        "'Moshe Shemesh'" <moshe@nvidia.com>
+References: <20210215193821.3345-1-don@thebollingers.org> <YDl3f8MNWdZWeOBh@lunn.ch> <000901d70cb2$b2848420$178d8c60$@thebollingers.org> <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org> <YD1ScQ+w8+1H//Y+@lunn.ch> <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org> <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <005e01d71230$ad203be0$0760b3a0$@thebollingers.org> <YEL3ksdKIW7cVRh5@lunn.ch>
+In-Reply-To: <YEL3ksdKIW7cVRh5@lunn.ch>
+Subject: RE: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS EEPROMS
+Date:   Fri, 12 Mar 2021 11:04:06 -0800
+Message-ID: <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org>
 MIME-Version: 1.0
-In-Reply-To: <20210312170316.3138-1-daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQKX2ThEytgxSBCv+zte4L/P7xUGAgJF1IfoAfArhLgBgnHheQD1wSRRAcnMEPsCilAQ5QM6jzKkAZTVJ62ogJyhMA==
+Content-Language: en-us
+X-CMAE-Envelope: MS4xfNc00aF/ZWf8Ydww900RPjaTU9TyR3HBfOwU2asZHyRMd9JIoDne9bb33QIKI48dLZhUa6BFQZFsUBG6u+f16UvUTdlQnfc7L4GdO3hM5LWqF49h7hQi
+ Rbo5PIXPf1LDIHVIhxy4RVpQomjDFknO1p/dCTB0JsJ/clc7jxMVzSy0c7yQCwtkc8YRxPvHaCf2jfnPwrWWeUxKZPWin6FgBKfgEX4wgGDQJ4zolshkl0q2
+ oQ7wyO8pjkLyB45TrxvUn1lb9BpmQsM637cL09gmwIhV2PZY2WeHWyO+gynDmN7DQGqVnsUbKDEStnAPf2xLkkcqxVfgBaXasVKWlWotDcO7TAud98stA4Ft
+ T49HhP+ZWVcm8ASHl9Wgn1UknHe/M7KYWH0URy3e7FpEMsdM+KjZLIg0eAMSmV904/gychBlDWcB9Oq6yyEvExquRTEITVo38SqpOyBVNnunhsdED575CZDU
+ wlOge9pD1v8U7LTCYVksKNGn4mbTGNLlY9RDXaebivqLN50AeinQraUIOONrlRF5wkmtTr0WrlU0M1WsPawGoBysNFmeL/+r7tlQCxu3FSRI8+cmKbi2xoX2
+ G7s=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/12/21 5:03 PM, Daniel Lezcano wrote:
-> We want to have any kind of name for the cooling devices as we do no
-> longer want to rely on auto-numbering. Let's replace the cooling
-> device's fixed array by a char pointer to be allocated dynamically
-> when registering the cooling device, so we don't limit the length of
-> the name.
+On Fri, 5 Mar 2021 19:32 -0800 Andrew Lunn wrote:
+> > I am proposing acceptance of a commonly used implementation for
+> > accessing SFPs because the one used by the netdev/netlink community
+> > does not fit the architecture of the white box NOS/switch community.
 > 
-> Rework the error path at the same time as we have to rollback the
-> allocations in case of error.
+> Please could you expand on this. I've given suggests as to how the new
+> netlink KAPI could be used for this use case, without being attached to a
+> netdev. And you have said nothing about why it cannot be made to work.
+> You cannot argue the architecture does not fit without actually saying why
+it
+> does not fit.
 > 
-> Tested with a dummy device having the name:
->   "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
-> 
-> A village on the island of Anglesey (Wales), known to have the longest
-> name in Europe.
-> 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> ---
->   .../ethernet/mellanox/mlxsw/core_thermal.c    |  2 +-
->   drivers/thermal/thermal_core.c                | 38 +++++++++++--------
->   include/linux/thermal.h                       |  2 +-
->   3 files changed, 24 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> index bf85ce9835d7..7447c2a73cbd 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> @@ -141,7 +141,7 @@ static int mlxsw_get_cooling_device_idx(struct mlxsw_thermal *thermal,
->   	/* Allow mlxsw thermal zone binding to an external cooling device */
->   	for (i = 0; i < ARRAY_SIZE(mlxsw_thermal_external_allowed_cdev); i++) {
->   		if (strnstr(cdev->type, mlxsw_thermal_external_allowed_cdev[i],
-> -			    sizeof(cdev->type)))
-> +			    strlen(cdev->type)))
->   			return 0;
->   	}
->   
-> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-> index 996c038f83a4..9ef8090eb645 100644
-> --- a/drivers/thermal/thermal_core.c
-> +++ b/drivers/thermal/thermal_core.c
-> @@ -960,10 +960,7 @@ __thermal_cooling_device_register(struct device_node *np,
->   {
->   	struct thermal_cooling_device *cdev;
->   	struct thermal_zone_device *pos = NULL;
-> -	int result;
-> -
-> -	if (type && strlen(type) >= THERMAL_NAME_LENGTH)
-> -		return ERR_PTR(-EINVAL);
-> +	int ret;
->   
->   	if (!ops || !ops->get_max_state || !ops->get_cur_state ||
->   	    !ops->set_cur_state)
-> @@ -973,14 +970,17 @@ __thermal_cooling_device_register(struct device_node *np,
->   	if (!cdev)
->   		return ERR_PTR(-ENOMEM);
->   
-> -	result = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
-> -	if (result < 0) {
-> -		kfree(cdev);
-> -		return ERR_PTR(result);
-> +	ret = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
-> +	if (ret < 0)
-> +		goto out_kfree_cdev;
-> +	cdev->id = ret;
-> +
-> +	cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
-> +	if (!cdev->type) {
-> +		ret = -ENOMEM;
+>    Andrew
 
-Since we haven't called the device_register() yet, I would call here:
-kfree(cdev);
-and then jump
+Sorry it took some time to clarify this for myself.  I'm using SONiC (the
+NOS
+Microsoft uses to run the switches in its Azure cloud) as my example.  They
+are users of optoe, and they actually initiated the request to push optoe 
+upstream.  Other white box NOS vendors are similar.
 
-> +		goto out_ida_remove;
->   	}
->   
+SONiC manages all aspects of SFP/QSFP/CMIS interaction through user
+space.  They have specified an API that is implemented by switch platform
+vendors, that provides things like presence detection, LowPower mode
+up/down/status, raw access to EEPROM content, interpretation of EEPROM
+content (including TxPower/RxPower/bias, high/low alarm/warning thresholds,
+static content like serial number and part number, and dozens of other
+items).
+This interface is implemented in python scripts provided by the switch
+platform
+vendor.  Those scripts encode the mapping of CPLD i2c muxes to i2c buses to
+port numbers, specific to each switch.
 
-Other than that, LGTM
+At the bottom of that python stack, all EEPROM access goes through
+open/seek/read/close access to the optoe managed file in 
+/sys/bus/i2c/devices/{num}-0050/eeprom.
 
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+You're not going to like this, but ethtool -e and ethtool -m both return 
+' Ethernet0 Cannot get EEPROM data: Operation not supported', for
+every port managed by the big switch silicon.
 
-Regards,
-Lukasz
+So, my users are using Linux for all the usual Linux things (memory 
+management, process management, I/O, IPC, containers), but they don't
+use Linux networking to manage the ports that are managed by the big
+switch silicon.  (Linux networking is still in use for the management port
+that talks to the management processor running Linux.)
+
+optoe provides the device EEPROM foundation for this architecture, but 
+requires the sysfs interface (via nvmem) to provide it.  optoe can also
+easily
+provide the default EEPROM access for the netdev/netlink interface through
+the old and new KAPI.
+
+Don
+
