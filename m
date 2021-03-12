@@ -2,197 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A79338608
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 07:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6B333860E
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 07:41:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbhCLGjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 01:39:45 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:45567 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhCLGjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 01:39:16 -0500
-Received: by mail-il1-f198.google.com with SMTP id h17so17438511ila.12
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 22:39:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=g3zjpdswFE2kA27UXZk7hLq/73z12NA10NHqfoa280k=;
-        b=jvt1AJV4UYPkI46nX6+yfHRCdBkZ3lmBoXTCi0kUeXjjKG8uZI2GKNrIVv218SnKqj
-         TmDf0bVBp4HpzI+f1/JG2NrPstcxqw+hh0m4WFJ2Ki0HJJDW4vbKz6KyNcT2N3dXHBLA
-         xR3AJNXXN5CKYzOiXPIwRYtEWQA9G2hkFTjdfpZC3u1Sh25drz/3kw6ntxzjrfWzOzzQ
-         TuXvXMOBMKZQoiw67sW5j3Z1/RZ/nC0u1T/Qv12qu7RwZ5kdHsv+PHL8rvWdgD3eddrO
-         LeNJSYpdQOnLleUXsX4XSYMNYgWZHAsb8VJXBwn85MroBzn05rokE7yTNbykW2eOlOaw
-         e55g==
-X-Gm-Message-State: AOAM533yByewwjyQhkFSgcz72JvJOfwZJ+T47nlQMnP6fZ6FFLthBW36
-        b8SyEpAby6Ttnx7vLTCLF6vYcaxaJdjf7+XQPvOj+3pGu//S
-X-Google-Smtp-Source: ABdhPJymlvH42sOil6uLqdn+S94g+eap5aObLWy+OCHp8jQIADHRiWr8qS9ScR5ieVxVBAKy9cFABjLclDQ+ORH1R0vbFKrZqevb
+        id S231890AbhCLGkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 01:40:49 -0500
+Received: from mga04.intel.com ([192.55.52.120]:1795 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230175AbhCLGkh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 01:40:37 -0500
+IronPort-SDR: WpSkSycepxtyrJacb5u8TFUU4Wd7Jg3rfPfr2AovdFpNpfUNaZNyCwsC4K8RiwvGMhjFCzk3tj
+ 16edUv7Pe+xg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9920"; a="186416776"
+X-IronPort-AV: E=Sophos;i="5.81,242,1610438400"; 
+   d="scan'208";a="186416776"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 22:40:36 -0800
+IronPort-SDR: T6+IIT5dUJgvUP2o5e2S60+UU2tbglvfwcnw/zvytnFpNdDjZhOgeCvMaop0Q4TNhHm0iQCpkg
+ RecChuH4nEUA==
+X-IronPort-AV: E=Sophos;i="5.81,242,1610438400"; 
+   d="scan'208";a="410909635"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.214.210]) ([10.254.214.210])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 22:40:33 -0800
+Subject: Re: [PATCH V3 6/6] vDPA/ifcvf: verify mandatory feature bits for vDPA
+To:     Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@linux.intel.com>, mst@redhat.com,
+        lulu@redhat.com, leonro@nvidia.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
+References: <20210310090052.4762-1-lingshan.zhu@intel.com>
+ <20210310090052.4762-7-lingshan.zhu@intel.com>
+ <3e53a5c9-c531-48ee-c9a7-907dfdacc9d1@redhat.com>
+ <9c2fb3d0-2d69-20b9-589d-cc5ffc830f38@linux.intel.com>
+ <4f3ef2bb-d823-d53d-3bb0-0152a3f6c9f1@redhat.com>
+ <a1f346cc-c9fd-6d16-39d7-b59965a18b0a@intel.com>
+ <67be60b6-bf30-de85-ed42-d9fad974f42b@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <2a6e31d3-ea31-9b64-0749-1f149b656623@intel.com>
+Date:   Fri, 12 Mar 2021 14:40:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:d47:: with SMTP id d7mr7174593jak.2.1615531156128;
- Thu, 11 Mar 2021 22:39:16 -0800 (PST)
-Date:   Thu, 11 Mar 2021 22:39:16 -0800
-In-Reply-To: <000000000000540c0405ba3e9dff@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000af467105bd5128fc@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in firmware_fallback_sysfs
-From:   syzbot <syzbot+de271708674e2093097b@syzkaller.appspotmail.com>
-To:     broonie@kernel.org, catalin.marinas@arm.com,
-        gregkh@linuxfoundation.org, kristina.martsenko@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, mbenes@suse.cz, mcgrof@kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org,
-        syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <67be60b6-bf30-de85-ed42-d9fad974f42b@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
 
-HEAD commit:    47142ed6 net: dsa: bcm_sf2: Qualify phydev->dev_flags base..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=11ccd12ad00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=eec733599e95cd87
-dashboard link: https://syzkaller.appspot.com/bug?extid=de271708674e2093097b
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15437d56d00000
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+de271708674e2093097b@syzkaller.appspotmail.com
-
-platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
-platform regulatory.0: Falling back to sysfs fallback for: regulatory.db
-==================================================================
-BUG: KASAN: use-after-free in __list_add_valid+0x81/0xa0 lib/list_debug.c:23
-Read of size 8 at addr ffff888028830ac8 by task syz-executor.4/9852
-
-CPU: 0 PID: 9852 Comm: syz-executor.4 Not tainted 5.12.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:232
- __kasan_report mm/kasan/report.c:399 [inline]
- kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:416
- __list_add_valid+0x81/0xa0 lib/list_debug.c:23
- __list_add include/linux/list.h:67 [inline]
- list_add include/linux/list.h:86 [inline]
- fw_load_sysfs_fallback drivers/base/firmware_loader/fallback.c:516 [inline]
- fw_load_from_user_helper drivers/base/firmware_loader/fallback.c:581 [inline]
- firmware_fallback_sysfs+0x455/0xe20 drivers/base/firmware_loader/fallback.c:657
- _request_firmware+0xa80/0xe80 drivers/base/firmware_loader/main.c:831
- request_firmware+0x32/0x50 drivers/base/firmware_loader/main.c:875
- reg_reload_regdb+0x7a/0x240 net/wireless/reg.c:1095
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x465f69
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f6d26af9188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000465f69
-RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
-RBP: 00000000004bfa8f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
-R13: 00007ffdd4adb6bf R14: 00007f6d26af9300 R15: 0000000000022000
-
-Allocated by task 9835:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:427 [inline]
- ____kasan_kmalloc mm/kasan/common.c:506 [inline]
- ____kasan_kmalloc mm/kasan/common.c:465 [inline]
- __kasan_kmalloc+0x99/0xc0 mm/kasan/common.c:515
- kmalloc include/linux/slab.h:554 [inline]
- kzalloc include/linux/slab.h:684 [inline]
- __allocate_fw_priv drivers/base/firmware_loader/main.c:186 [inline]
- alloc_lookup_fw_priv drivers/base/firmware_loader/main.c:250 [inline]
- _request_firmware_prepare drivers/base/firmware_loader/main.c:744 [inline]
- _request_firmware+0x2de/0xe80 drivers/base/firmware_loader/main.c:806
- request_firmware+0x32/0x50 drivers/base/firmware_loader/main.c:875
- reg_reload_regdb+0x7a/0x240 net/wireless/reg.c:1095
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Freed by task 9835:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:357
- ____kasan_slab_free mm/kasan/common.c:360 [inline]
- ____kasan_slab_free mm/kasan/common.c:325 [inline]
- __kasan_slab_free+0xf5/0x130 mm/kasan/common.c:367
- kasan_slab_free include/linux/kasan.h:199 [inline]
- slab_free_hook mm/slub.c:1562 [inline]
- slab_free_freelist_hook+0x92/0x210 mm/slub.c:1600
- slab_free mm/slub.c:3161 [inline]
- kfree+0xe5/0x7f0 mm/slub.c:4213
- __free_fw_priv drivers/base/firmware_loader/main.c:282 [inline]
- kref_put include/linux/kref.h:65 [inline]
- free_fw_priv+0x2b1/0x4d0 drivers/base/firmware_loader/main.c:289
- firmware_free_data drivers/base/firmware_loader/main.c:584 [inline]
- release_firmware.part.0+0xc7/0xf0 drivers/base/firmware_loader/main.c:1053
- release_firmware drivers/base/firmware_loader/main.c:840 [inline]
- _request_firmware+0x709/0xe80 drivers/base/firmware_loader/main.c:839
- request_firmware+0x32/0x50 drivers/base/firmware_loader/main.c:875
- reg_reload_regdb+0x7a/0x240 net/wireless/reg.c:1095
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff888028830a00
- which belongs to the cache kmalloc-256 of size 256
-The buggy address is located 200 bytes inside of
- 256-byte region [ffff888028830a00, ffff888028830b00)
-The buggy address belongs to the page:
-page:ffffea0000a20c00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x28830
-head:ffffea0000a20c00 order:1 compound_mapcount:0
-flags: 0xfff00000010200(slab|head)
-raw: 00fff00000010200 dead000000000100 dead000000000122 ffff888010841b40
-raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888028830980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888028830a00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff888028830a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                              ^
- ffff888028830b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888028830b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
+On 3/12/2021 1:52 PM, Jason Wang wrote:
+>
+> On 2021/3/11 3:19 下午, Zhu, Lingshan wrote:
+>>
+>>
+>> On 3/11/2021 2:20 PM, Jason Wang wrote:
+>>>
+>>> On 2021/3/11 12:16 下午, Zhu Lingshan wrote:
+>>>>
+>>>>
+>>>> On 3/11/2021 11:20 AM, Jason Wang wrote:
+>>>>>
+>>>>> On 2021/3/10 5:00 下午, Zhu Lingshan wrote:
+>>>>>> vDPA requres VIRTIO_F_ACCESS_PLATFORM as a must, this commit
+>>>>>> examines this when set features.
+>>>>>>
+>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>> ---
+>>>>>>   drivers/vdpa/ifcvf/ifcvf_base.c | 8 ++++++++
+>>>>>>   drivers/vdpa/ifcvf/ifcvf_base.h | 1 +
+>>>>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 5 +++++
+>>>>>>   3 files changed, 14 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c 
+>>>>>> b/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>>>> index ea6a78791c9b..58f47fdce385 100644
+>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>>>> @@ -224,6 +224,14 @@ u64 ifcvf_get_features(struct ifcvf_hw *hw)
+>>>>>>       return hw->hw_features;
+>>>>>>   }
+>>>>>>   +int ifcvf_verify_min_features(struct ifcvf_hw *hw)
+>>>>>> +{
+>>>>>> +    if (!(hw->hw_features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+>>>>>> +        return -EINVAL;
+>>>>>> +
+>>>>>> +    return 0;
+>>>>>> +}
+>>>>>> +
+>>>>>>   void ifcvf_read_net_config(struct ifcvf_hw *hw, u64 offset,
+>>>>>>                  void *dst, int length)
+>>>>>>   {
+>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
+>>>>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>> index dbb8c10aa3b1..91c5735d4dc9 100644
+>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>> @@ -123,6 +123,7 @@ void io_write64_twopart(u64 val, u32 *lo, u32 
+>>>>>> *hi);
+>>>>>>   void ifcvf_reset(struct ifcvf_hw *hw);
+>>>>>>   u64 ifcvf_get_features(struct ifcvf_hw *hw);
+>>>>>>   u64 ifcvf_get_hw_features(struct ifcvf_hw *hw);
+>>>>>> +int ifcvf_verify_min_features(struct ifcvf_hw *hw);
+>>>>>>   u16 ifcvf_get_vq_state(struct ifcvf_hw *hw, u16 qid);
+>>>>>>   int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
+>>>>>>   struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
+>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>>>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> index 25fb9dfe23f0..f624f202447d 100644
+>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> @@ -179,6 +179,11 @@ static u64 ifcvf_vdpa_get_features(struct 
+>>>>>> vdpa_device *vdpa_dev)
+>>>>>>   static int ifcvf_vdpa_set_features(struct vdpa_device 
+>>>>>> *vdpa_dev, u64 features)
+>>>>>>   {
+>>>>>>       struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>>>> +    int ret;
+>>>>>> +
+>>>>>> +    ret = ifcvf_verify_min_features(vf);
+>>>>>
+>>>>>
+>>>>> So this validate device features instead of driver which is the 
+>>>>> one we really want to check?
+>>>>>
+>>>>> Thanks
+>>>>
+>>>> Hi Jason,
+>>>>
+>>>> Here we check device feature bits to make sure the device support 
+>>>> ACCESS_PLATFORM. 
+>>>
+>>>
+>>> If you want to check device features, you need to do that during 
+>>> probe() and fail the probing if without the feature. But I think you 
+>>> won't ship cards without ACCESS_PLATFORM.
+>> Yes, there are no reasons ship a card without ACCESS_PLATFORM
+>>>
+>>>
+>>>> In get_features(),
+>>>> it will return a intersection of device features bit and driver 
+>>>> supported features bits(which includes ACCESS_PLATFORM).
+>>>> Other components like QEMU should not set features bits more than 
+>>>> this intersection of bits. so we can make sure if this
+>>>> ifcvf_verify_min_features() passed, both device and driver support 
+>>>> ACCESS_PLATFORM.
+>>>>
+>>>> Are you suggesting check driver feature bits in 
+>>>> ifcvf_verify_min_features() in the meantime as well?
+>>>
+>>>
+>>> So it really depends on your hardware. If you hardware can always 
+>>> offer ACCESS_PLATFORM, you just need to check driver features. This 
+>>> is how vdpa_sim and mlx5_vdpa work.
+>> Yes, we always support ACCESS_PLATFORM, so it is hard coded in the 
+>> macro IFCVF_SUPPORTED_FEATURES.
+>
+>
+> That's not what I read from the code:
+>
+>         features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
+ifcvf_get_features() reads device feature bits(which should always has 
+ACCSSS_PLATFORM) and IFCVF_SUPPORTED_FEATURES is the driver supported 
+feature bits which hard coded ACCESS_PLATFORM, so the intersection 
+should include ACCESS_PLATFORM.
+the intersection "features" is returned in get_features(), qemu should 
+set features according to it.
+>
+>
+>> Now we check whether device support this feature bit as a double 
+>> conformation, are you suggesting we should check whether 
+>> ACCESS_PLATFORM & IFCVF_SUPPORTED_FEATURES
+>> in set_features() as well?
+>
+>
+> If we know device will always offer ACCESS_PLATFORM, there's no need 
+> to check it again. What we should check if whether driver set that, 
+> and if it doesn't we need to fail set_features(). I think there's 
+> little chance that IFCVF can work when IOMMU_PLATFORM is not negotiated.
+Agree, will check the features bit to set instead of device feature 
+bits. Thanks!
+>
+>
+>
+>> I prefer check both device and IFCVF_SUPPORTED_FEATURES both, more 
+>> reliable.
+>
+>
+> So again, if you want to check device features, set_features() is not 
+> the proper place. We need to fail the probe in this case.
+>
+> Thanks
+>
+>
+>>
+>> Thanks!
+>>>
+>>> Thanks
+>>>
+>>>
+>>>>
+>>>> Thanks！
+>>>>>
+>>>>>
+>>>>>> +    if (ret)
+>>>>>> +        return ret;
+>>>>>>         vf->req_features = features;
+>>>>>
+>>>>> _______________________________________________
+>>>>> Virtualization mailing list
+>>>>> Virtualization@lists.linux-foundation.org
+>>>>> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+>>>>
+>>>
+>>
+>
 
