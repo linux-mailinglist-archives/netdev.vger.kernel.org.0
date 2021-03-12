@@ -2,114 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2E9D338396
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 03:30:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E8F3383F7
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 03:49:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbhCLCaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 21:30:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37068 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231197AbhCLCaP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 21:30:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id B040464F91;
-        Fri, 12 Mar 2021 02:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615516215;
-        bh=8E6sU0LnweLIbQgKpvMYPT+z10uZzmOr5ZiEdlS1IVA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LDV/jka2iy3f2izicescFmjG/neCQw6MFXHyeZLFf5Gg9YbwVhXYhRWOKMCLrF2Qn
-         i0s8K/ZNTADrMsu6OvaLmGqL3Lwm9/Vh5YO11NA7zUMTXxST+ZqeKXeJNL1Bd3ONy+
-         SJnrDI29wll1nLMue18FBjNujqx3icwtES7S8DoPuNmtnAeIG1jkSf7QAqgV0pCIl1
-         nWbNEf2PVuJsA5HJEtcm2PE3kInYivcWTt69lrEK0qrCME3g3B9pjM+kSkRnjCG2Mv
-         /WkGPTwHJHrwmqyCs4uJLvr9OcWUizz/Jg7iIKWTxsz7hKYmD/j9DeL6Fe2569wfHl
-         7BB23rsNAnThA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A76B1609E7;
-        Fri, 12 Mar 2021 02:30:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231738AbhCLCsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 21:48:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231351AbhCLCsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 21:48:25 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9310CC061574
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 18:48:25 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id h10so5910313edt.13
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 18:48:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ehiaeXpp+Zar1ad6NRlCTrQUXSShR06s+7m0an7WV5c=;
+        b=YS/54lvlZ7wjQZlFAWpUSsyAsKHtfiNmeIT9EYVsg7sBMR+lDnK0bXVsqp7uCUuPde
+         BV7IuVl3cAzLIdb/SS4k8IKNkX2ZTHtdcz4fxk5mxQGunBOmaeH9oabxqU0gFdtD23NH
+         G3dcYAFjVi8uAXfPVx0UCe2ek0GGu36lRpqhVN7sf0JjuZSsH1ONzgCWHzRclGB4hIps
+         EoE4doUyW5Xn8+QSYIG0qknoyJrDdhjqov8+BMxRQuTCLLIvi44AxA41yMyhukNLc2ke
+         ef/jQnEuhVEz8bIndjvcBB8qRD+32wvXp4MSdqBHTWbw3ts6+TlrAByyLZ5oX+ReZ9gB
+         dWlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ehiaeXpp+Zar1ad6NRlCTrQUXSShR06s+7m0an7WV5c=;
+        b=O12beOjY5Dwm6U/GzulCXyw+ty4BpN+7RSt5xIMVipRXFewC0yTXIfCX+thQcZrqwn
+         SGk+vdqv6jYVOY+Y8xqdhWZbVrZ/AMdJpY93dBmUgkMrebhkKlsjt3l7s1NfS89uUK7x
+         owEa8OWaR2iZcZJUqX7wUaCNAfTlslqJz63L/L2R0mcMYkeFBs6JCSKyVQuodgpt3Dx5
+         +GYutkfigxL5BuzjyiwKO+/RKrMYkNdww38TSfnz6GSqLIQcCHJtmTKZHdtIo0X+/Ntg
+         BANpci1KSfHDKAtE0iMkVqk3DmFFhC1KxJvtEOdiiOMTW1ZFx8yKh529FhtIebAjlQ88
+         +5VQ==
+X-Gm-Message-State: AOAM532r9sOlWlhaou6ncHxNNCPoYyucUQ5xkR91HMieAtlMCPDKWBr1
+        KrgfhnQD+flEq9A+IxBOMC984EG/VCg=
+X-Google-Smtp-Source: ABdhPJxnTzIiWT1QCG8DowtfQP0UQhH67aqykY/7JGXdyHbPTaW6+IzB72aY38S4aAlwE5N/zyIHqA==
+X-Received: by 2002:a05:6402:1c86:: with SMTP id cy6mr11463089edb.276.1615517303964;
+        Thu, 11 Mar 2021 18:48:23 -0800 (PST)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id p3sm2062976ejd.7.2021.03.11.18.48.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Mar 2021 18:48:23 -0800 (PST)
+Received: by mail-wr1-f41.google.com with SMTP id 61so934733wrm.12
+        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 18:48:23 -0800 (PST)
+X-Received: by 2002:a5d:640b:: with SMTP id z11mr11266115wru.327.1615517302768;
+ Thu, 11 Mar 2021 18:48:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] mISDN: fix crash in fritzpci
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161551621568.2118.5359755247201765154.git-patchwork-notify@kernel.org>
-Date:   Fri, 12 Mar 2021 02:30:15 +0000
-References: <20210311042736.2062228-1-ztong0001@gmail.com>
-In-Reply-To: <20210311042736.2062228-1-ztong0001@gmail.com>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     isdn@linux-pingi.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210312004706.33046-1-ishaangandhi@gmail.com>
+In-Reply-To: <20210312004706.33046-1-ishaangandhi@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 11 Mar 2021 21:47:45 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfcqotSBVtEWhbC8LdjDyOrsfuSv1QHt1Ga+s01phbmaA@mail.gmail.com>
+Message-ID: <CA+FuTSfcqotSBVtEWhbC8LdjDyOrsfuSv1QHt1Ga+s01phbmaA@mail.gmail.com>
+Subject: Re: [PATCH] icmp: support rfc 5837
+To:     ishaangandhi <ishaangandhi@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Mar 11, 2021 at 7:47 PM ishaangandhi <ishaangandhi@gmail.com> wrote:
+>
+> From: Ishaan Gandhi <ishaangandhi@gmail.com>
+>
+> This patch identifies the interface a packet arrived on when sending
+> ICMP time exceeded, destination unreachable, and parameter problem
+> messages, in accordance with RFC 5837.
+>
+> It was tested by pinging a machine with a ttl of 1, and observing the
+> response in Wireshark.
+>
+> Signed-off-by: Ishaan Gandhi <ishaangandhi@gmail.com>
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Such additional optional data (MAY in RFC 5837) should be optional and
+off by default.
 
-On Wed, 10 Mar 2021 23:27:35 -0500 you wrote:
-> setup_fritz() in avmfritz.c might fail with -EIO and in this case the
-> isac.type and isac.write_reg is not initialized and remains 0(NULL).
-> A subsequent call to isac_release() will dereference isac->write_reg and
-> crash.
-> 
-> [    1.737444] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [    1.737809] #PF: supervisor instruction fetch in kernel mode
-> [    1.738106] #PF: error_code(0x0010) - not-present page
-> [    1.738378] PGD 0 P4D 0
-> [    1.738515] Oops: 0010 [#1] SMP NOPTI
-> [    1.738711] CPU: 0 PID: 180 Comm: systemd-udevd Not tainted 5.12.0-rc2+ #78
-> [    1.739077] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-48-gd9c812dda519-p
-> rebuilt.qemu.org 04/01/2014
-> [    1.739664] RIP: 0010:0x0
-> [    1.739807] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-> [    1.740200] RSP: 0018:ffffc9000027ba10 EFLAGS: 00010202
-> [    1.740478] RAX: 0000000000000000 RBX: ffff888102f41840 RCX: 0000000000000027
-> [    1.740853] RDX: 00000000000000ff RSI: 0000000000000020 RDI: ffff888102f41800
-> [    1.741226] RBP: ffffc9000027ba20 R08: ffff88817bc18440 R09: ffffc9000027b808
-> [    1.741600] R10: 0000000000000001 R11: 0000000000000001 R12: ffff888102f41840
-> [    1.741976] R13: 00000000fffffffb R14: ffff888102f41800 R15: ffff8881008b0000
-> [    1.742351] FS:  00007fda3a38a8c0(0000) GS:ffff88817bc00000(0000) knlGS:0000000000000000
-> [    1.742774] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    1.743076] CR2: ffffffffffffffd6 CR3: 00000001021ec000 CR4: 00000000000006f0
-> [    1.743452] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [    1.743828] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [    1.744206] Call Trace:
-> [    1.744339]  isac_release+0xcc/0xe0 [mISDNipac]
-> [    1.744582]  fritzpci_probe.cold+0x282/0x739 [avmfritz]
-> [    1.744861]  local_pci_probe+0x48/0x80
-> [    1.745063]  pci_device_probe+0x10f/0x1c0
-> [    1.745278]  really_probe+0xfb/0x420
-> [    1.745471]  driver_probe_device+0xe9/0x160
-> [    1.745693]  device_driver_attach+0x5d/0x70
-> [    1.745917]  __driver_attach+0x8f/0x150
-> [    1.746123]  ? device_driver_attach+0x70/0x70
-> [    1.746354]  bus_for_each_dev+0x7e/0xc0
-> [    1.746560]  driver_attach+0x1e/0x20
-> [    1.746751]  bus_add_driver+0x152/0x1f0
-> [    1.746957]  driver_register+0x74/0xd0
-> [    1.747157]  ? 0xffffffffc00d8000
-> [    1.747334]  __pci_register_driver+0x54/0x60
-> [    1.747562]  AVM_init+0x36/0x1000 [avmfritz]
-> [    1.747791]  do_one_initcall+0x48/0x1d0
-> [    1.747997]  ? __cond_resched+0x19/0x30
-> [    1.748206]  ? kmem_cache_alloc_trace+0x390/0x440
-> [    1.748458]  ? do_init_module+0x28/0x250
-> [    1.748669]  do_init_module+0x62/0x250
-> [    1.748870]  load_module+0x23ee/0x26a0
-> [    1.749073]  __do_sys_finit_module+0xc2/0x120
-> [    1.749307]  ? __do_sys_finit_module+0xc2/0x120
-> [    1.749549]  __x64_sys_finit_module+0x1a/0x20
-> [    1.749782]  do_syscall_64+0x38/0x90
-> 
-> [...]
-
-Here is the summary with links:
-  - mISDN: fix crash in fritzpci
-    https://git.kernel.org/netdev/net/c/a9f81244d2e3
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+See also the security considerations in Sec 6. Those suggestions are
+too fine grained to implement, but at the least a sysctl to
+disable/enable the entire feature.
 
 
+> +void icmp_identify_arrival_interface(struct sk_buff *skb, struct net *net, int room,
+> +                                    struct icmphdr *icmph)
+> +{
+> +       unsigned int ext_len, if_index, orig_len, offset, extra_space_needed,
+> +                    word_aligned_orig_len, mtu, name_len, name_subobj_len;
+> +       struct interface_ipv4_addr_sub_obj ip_addr;
+> +       struct icmp_extobj_hdr *iio_hdr;
+> +       struct icmp_ext_hdr *ext_hdr;
+> +       struct net_device *dev;
+> +       void *subobj_offset;
+> +       char *name, ctype;
+> +
+> +       skb_linearize(skb);
+> +       if_index = inet_iif(skb);
+
+skb->skb_iif is overwritten in __netif_receive_skb on each round, so
+this will not necessarily point to the physical device on which the
+packet arrived.
+
+> +               name = dev->name;
+> +               if (name) {
+> +                       name_len = strlen(name);
+> +                       name_subobj_len = min_t(unsigned int, name_len, ICMP_5837_MAX_NAME_LEN) + 1;
+
+device name length is always <= IFNAMSIZ (incl terminating 0) <
+ICMP_5837_MAX_NAME_LEN
+
+> +                       name_subobj_len = (name_subobj_len + 3) & ~0x03;
+> +                       ctype |= ICMP_5837_NAME_CTYPE;
+> +                       ext_len += name_subobj_len;
+> +               }
+> +
+> +               mtu = dev->mtu;
+> +               if (mtu) {
+
+always true
+
+> +                       ctype |= ICMP_5837_MTU_CTYPE;
+> +                       ext_len += 4;
+
+sizeof(__be32)
+
+>  /*
+>   *     Send an ICMP message in response to a situation
+>   *
+> @@ -731,6 +864,10 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+>                 room = 576;
+>         room -= sizeof(struct iphdr) + icmp_param.replyopts.opt.opt.optlen;
+>         room -= sizeof(struct icmphdr);
+> +       if (type == ICMP_DEST_UNREACH || type == ICMP_TIME_EXCEEDED ||
+> +           type == ICMP_PARAMETERPROB) {
+> +               icmp_identify_arrival_interface(skb_in, net, room, &icmp_param.data.icmph);
+> +       }
+
+If adding a feature for ICMP that is also valid for ICMPv6, please
+introduce to both protocols in the same patch series. IPv6 is a first
+class citizen.
