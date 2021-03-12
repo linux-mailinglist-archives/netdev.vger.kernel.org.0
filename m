@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A5DB339029
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 15:38:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3DC33902E
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 15:41:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbhCLOi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 09:38:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28858 "EHLO
+        id S231346AbhCLOlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 09:41:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33200 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229487AbhCLOiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 09:38:10 -0500
+        by vger.kernel.org with ESMTP id S229959AbhCLOkx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 09:40:53 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615559889;
+        s=mimecast20190719; t=1615560052;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=wqR2VXBD9ShzLCVtX+qqk63mSGBNYYonntBUYfSNkBU=;
-        b=a7RyGF0sLSy0wOWAMa0okxjQfBCLI1TO4lKIYi56lDn5Ued7N95TW6+1lA3igD742ZH9Ur
-        qtaxZdhQQwR+LhZl0b7GJNDJBA2yOMRql/yFnyOdqQcdJ0JI5qfInp7sq1VkltrjyLC8iu
-        RnDnk/SZXOed6Ps6S1t0Kw+DnSTCJB8=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-422-e18xACSWPJCeRw0LOpRZTQ-1; Fri, 12 Mar 2021 09:38:07 -0500
-X-MC-Unique: e18xACSWPJCeRw0LOpRZTQ-1
-Received: by mail-wr1-f71.google.com with SMTP id p15so11130659wre.13
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 06:38:07 -0800 (PST)
+        bh=UHFz+ZfMKEJbP5t9K2bCk5hCYslzNNC+cpLu7ln61Mg=;
+        b=e/LLKnXCTPu71GWT3YBPiLzffzy7ojHs83LivvDizEg5K5EdgcJtHaSr6sSOHIcL7ncKaX
+        Pv8TKdmYgptST9XMXtkXAURpjMbeTjZl3gAQUICSbLQeqC+APh0nxtzkQN0o3Fd03LFYQb
+        AJV5xZJeiJrRkYZ1qESQDHX4sqqRiJo=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-84-V3I1dClpPVqnRW3V9hVfOw-1; Fri, 12 Mar 2021 09:40:50 -0500
+X-MC-Unique: V3I1dClpPVqnRW3V9hVfOw-1
+Received: by mail-wr1-f70.google.com with SMTP id n16so10175475wro.1
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 06:40:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wqR2VXBD9ShzLCVtX+qqk63mSGBNYYonntBUYfSNkBU=;
-        b=omHIfYoCSeZNn1aWAdc13X1YF/RmCCtI+s/kpDo42GLYax8/kCmVUj7A9uKpBarOSW
-         dzIbeJivrR69EjA3Kk1dDRWEzlK9MeFhqTLl2ExQ5MYS18XTBy9Vx9RSy0M798rCEh3z
-         CKlAg/GnNjm8rfBuWSqS2jbBCSOVvGfKI65WyXFOSayxkcldzqluqg+wsJIZR46tSEfi
-         uTa20SqzrDrWXRi2sDn8ZFZB7xWPTdg5qTomuklumC9krwKssva4hoqc/9Racd0+hm8U
-         Q3qYx9CRMigEnmJJay9/6P3FIMIUY/8atytxbLa2pPsVTCOijNw4qK+fYlkTZ4MM8kk7
-         GZjQ==
-X-Gm-Message-State: AOAM533RXqZbRh/r18A+IqRbgECnG5xq30GVOXaBUmMuBUM/ZTnn2KUu
-        wf/1HEJ1/+YZb252Vhmqv4tJoLT6hrfyzBJcJjEFL6rpiHyCWmXIqRnbJvuFuhpYEJmWAo97MP7
-        OkTeAiC45fMQyKLQA
-X-Received: by 2002:adf:a4d0:: with SMTP id h16mr14234128wrb.52.1615559886546;
-        Fri, 12 Mar 2021 06:38:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxCMOehTT6EynoUYujDmF8ZxV5JxPQ3Xa+h0M2h9lyxZbt2sDFpKhYb/X+GcurEHDbm83cQTA==
-X-Received: by 2002:adf:a4d0:: with SMTP id h16mr14234110wrb.52.1615559886374;
-        Fri, 12 Mar 2021 06:38:06 -0800 (PST)
+        bh=UHFz+ZfMKEJbP5t9K2bCk5hCYslzNNC+cpLu7ln61Mg=;
+        b=WDn/q3Igv4d8R5tKbVkIQzOLjsVqfLjrzcXINZRafWt4repBudpuS5daOqR8r1KgGk
+         29sr6GgRI2wLL0/utbunbg+m6sclXy9GiSPfWE2uMZhA/AMsH5YrsmFu/sRB3rKhsbAb
+         MpISsKbJpQbMn2ZtwQErjjkqP3hi9tg2CuTDCtVMxDEDOB5JnbumTRcisl/9kC8Jrl7Y
+         RltxKRBanZOZoSsuTra76zT6KVA17Jpt5RcKJjPdqxy+k6D6YjYsd/6b9JG6cxBLVEgz
+         VjZaDMJWjDnOdALG7XxLL+3A1h14kVM2pJ20uhq1zoQX0FfdAjFzSTDSUatpXVz/pP0L
+         rJKA==
+X-Gm-Message-State: AOAM531KmzeJLsW066vHk1O6ADWPulZP9ENhWFaPbZaSFcsIoaF8L8z2
+        yGrwDTEoEKys4R26DomvXyjcbgWrBPXAifylfyLaqVkW1JZp6IrC+jY6mNUlOjb4OrTiBYusMUD
+        kog5SaIqDaE6Kq6CW
+X-Received: by 2002:adf:f841:: with SMTP id d1mr14157280wrq.36.1615560049592;
+        Fri, 12 Mar 2021 06:40:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzgzENVDWH77SrdxqPP5xavvsUwfa0+M+2ZdEnSJauzOQ012YEkvpkDBfuH0dxQ2NcCuQ1oKw==
+X-Received: by 2002:adf:f841:: with SMTP id d1mr14157254wrq.36.1615560049394;
+        Fri, 12 Mar 2021 06:40:49 -0800 (PST)
 Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id x11sm2760458wme.9.2021.03.12.06.38.05
+        by smtp.gmail.com with ESMTPSA id q17sm3268632wrv.25.2021.03.12.06.40.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Mar 2021 06:38:05 -0800 (PST)
-Date:   Fri, 12 Mar 2021 15:38:03 +0100
+        Fri, 12 Mar 2021 06:40:49 -0800 (PST)
+Date:   Fri, 12 Mar 2021 15:40:46 +0100
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
 Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
@@ -58,34 +58,32 @@ Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
         Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
+        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v6 01/22] af_vsock: update functions for connectible
- socket
-Message-ID: <20210312143803.hcq4byotzx5x65j7@steredhat>
+Subject: Re: [RFC PATCH v6 02/22] af_vsock: separate wait data loop
+Message-ID: <20210312144046.dnthewowhmkvfotd@steredhat>
 References: <20210307175722.3464068-1-arseny.krasnov@kaspersky.com>
- <20210307175843.3464468-1-arseny.krasnov@kaspersky.com>
+ <20210307175905.3464610-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20210307175843.3464468-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <20210307175905.3464610-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 07, 2021 at 08:58:39PM +0300, Arseny Krasnov wrote:
->This prepares af_vsock.c for SEQPACKET support: some functions such
->as setsockopt(), getsockopt(), connect(), recvmsg(), sendmsg() are
->shared between both types of sockets, so rename them in general
->manner.
+On Sun, Mar 07, 2021 at 08:59:01PM +0300, Arseny Krasnov wrote:
+>This moves wait loop for data to dedicated function, because later it
+>will be used by SEQPACKET data receive loop. While moving the code
+>around, let's update an old comment.
 >
 >Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 >---
-> net/vmw_vsock/af_vsock.c | 64 +++++++++++++++++++++-------------------
-> 1 file changed, 34 insertions(+), 30 deletions(-)
+> net/vmw_vsock/af_vsock.c | 156 +++++++++++++++++++++------------------
+> 1 file changed, 84 insertions(+), 72 deletions(-)
 
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
