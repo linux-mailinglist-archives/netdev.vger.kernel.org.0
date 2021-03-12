@@ -2,66 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA00733821C
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 01:11:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E420338241
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 01:27:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231393AbhCLAK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 19:10:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230516AbhCLAKc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 19:10:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8953264F86;
-        Fri, 12 Mar 2021 00:10:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615507831;
-        bh=h8hG6xxanahHaqGCf65+TvGHPEWMZDrBHbB++93jOFk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gDLfCOm0rmXX1tOxTGcySetptlPlSEkO+cMUJD5cna3ehVsDkMQcqa1yLuLA/aNhb
-         oEpiBcwsyuj2NrgJlmLklBRRuCYke+xFXsS/cyKGzPCOcBSctgnucfkI1me/wm2DzI
-         i6wKmOp/JvjONNDUORfY0A10U3RwP11WW+ZXQShz+VSeHPBuoqN0U/g0Vc32zZVbfD
-         lHW6p8ahljDNixxJOuEk+3WRQjd8gqAyZ6YL5jSYH67KQhTwgKZHIPIyXZeph3cIhp
-         QgpCs3j+LCr8i6bMpi1Rc1mfDbsdSKswymEu3OKY78ozj4ZSRbggXRDR/CZ93PLZhb
-         jNXcvYN8h85zQ==
-Date:   Thu, 11 Mar 2021 16:10:30 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Martin Schiller <ms@dev.tdt.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: lapbether: Prevent racing when checking
- whether the netif is running
-Message-ID: <20210311161030.5ed11805@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAJht_EMR6kqsetwNUbJJziLW97T0pXBSqSNZ5ma-q175cxoKyQ@mail.gmail.com>
-References: <20210311072311.2969-1-xie.he.0141@gmail.com>
-        <20210311124309.5ee0ef02@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAJht_EMToKj2OeeE1fMfwAVYvhbgZpENkv0C7ac+XHnWcTe2Tg@mail.gmail.com>
-        <20210311145230.5f368151@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAJht_EMR6kqsetwNUbJJziLW97T0pXBSqSNZ5ma-q175cxoKyQ@mail.gmail.com>
+        id S231151AbhCLA1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 19:27:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230228AbhCLA04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 19:26:56 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB36C061574;
+        Thu, 11 Mar 2021 16:26:56 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id a9so22650587qkn.13;
+        Thu, 11 Mar 2021 16:26:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FbmokgZymiS3iblK7SguwZRYnWpNx1j40+buPp7T5hI=;
+        b=Whz4MyDX/Z4x61M2IOu46yFDNbrBy9hxI40mUilWmBGYlA6KNkDz/vz3svNyBHzQWQ
+         gLeaU5E2C4JDURV0Ro3lWaIi7CZzig33rNWCj6r1XmNNZeowmF0drcd3o1ADJTATwwGH
+         iP65fPEnz//mgxSwPRetyM1YEmdYAMC9np278=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FbmokgZymiS3iblK7SguwZRYnWpNx1j40+buPp7T5hI=;
+        b=eLFGSILP/XQj3j7In2f96CBD/rBFVUePfy/+wav4rxdcCFIf7skROvotnFMCzvdV2s
+         tbAM7ZG/zy+bMikTu0YZtdbqFvkV2My7nK9sRin1UW0PNtF9IqGDVNCqvM16MCoybeJN
+         4feF2ZzHpfuR1i9C6nO3R/Se0+pc/78q5MPVan4epsffBEFMvtEfLkLsdGIFyOY+secL
+         ul7GI7o1SvxXwVkpaZj/UBOuueoOIP562PKaBZ8ADty6zKrQIeewUCrgRspWOx7OygQs
+         IvNZ9m0fwf5oKUgat05wU9yrGOEY2eOeN/dM+6UkVQ5Fg2mZaiPSD+FpiR2fa425tBA8
+         DVWA==
+X-Gm-Message-State: AOAM5308YVWNvVX+t5qL25QYPNwmHdlIXXLuGfb3szTeY3gwyhtnxYvL
+        rkn+En21Ey9cpQVS8XF6eA/C4mYINMyXebO60Qg=
+X-Google-Smtp-Source: ABdhPJzQy1fZxNI+jlTTtWmDGQKTLadDYa40QFao7q89di04GjVYULBfHmtP6r+/2GRiITO90WaY0pQIh8Gx0mHD8xQ=
+X-Received: by 2002:a37:a147:: with SMTP id k68mr10400285qke.66.1615508815554;
+ Thu, 11 Mar 2021 16:26:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201019085717.32413-1-dylan_hung@aspeedtech.com>
+ <20201019085717.32413-5-dylan_hung@aspeedtech.com> <CACPK8Xc8NSBzN+LnZ=b5t7ODjLg9B6m2WDdR-C9SRWaDEXwOtQ@mail.gmail.com>
+In-Reply-To: <CACPK8Xc8NSBzN+LnZ=b5t7ODjLg9B6m2WDdR-C9SRWaDEXwOtQ@mail.gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Fri, 12 Mar 2021 00:26:43 +0000
+Message-ID: <CACPK8XfMEy2o39v3CG4Zzj9H_kqSFBOddL3SC-_OryMqVXEjOw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] ftgmac100: Restart MAC HW once
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Po-Yu Chuang <ratbert@faraday-tech.com>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        BMC-SW <BMC-SW@aspeedtech.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Mar 2021 15:13:01 -0800 Xie He wrote:
-> On Thu, Mar 11, 2021 at 2:52 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, 20 Oct 2020 at 04:14, Joel Stanley <joel@jms.id.au> wrote:
+>
+> On Mon, 19 Oct 2020 at 08:57, Dylan Hung <dylan_hung@aspeedtech.com> wrote:
 > >
-> > Normally driver's ndo_stop() calls netif_tx_disable() which takes TX
-> > locks, so unless your driver is lockless (LLTX) there should be no xmit
-> > calls after that point.  
-> 
-> Do you mean I should call "netif_tx_disable" inside my "ndo_stop"
-> function as a fix for the racing between "ndo_stop" and
-> "ndo_start_xmit"?
-> 
-> I can't call "netif_tx_disable" inside my "ndo_stop" function because
-> "netif_tx_disable" will call "netif_tx_stop_queue", which causes
-> another racing problem. Please see my recent commit f7d9d4854519
-> ("net: lapbether: Remove netif_start_queue / netif_stop_queue")
+> > The interrupt handler may set the flag to reset the mac in the future,
+> > but that flag is not cleared once the reset has occured.
+> >
+> > Fixes: 10cbd6407609 ("ftgmac100: Rework NAPI & interrupts handling")
+> > Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> > Signed-off-by: Joel Stanley <joel@jms.id.au>
+>
+> Reviewed-by: Joel Stanley <joel@jms.id.au>
 
-And the "noqueue" queue is there because it's on top of hdlc_fr.c
-somehow or some out of tree driver? Or do you install it manually?
+net maintainers, this one never made it into the tree. Do you need me
+to re-send it?
+
+Cheers,
+
+Joel
+
+>
+> > ---
+> >  drivers/net/ethernet/faraday/ftgmac100.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> > index 0c67fc3e27df..57736b049de3 100644
+> > --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> > @@ -1326,6 +1326,7 @@ static int ftgmac100_poll(struct napi_struct *napi, int budget)
+> >          */
+> >         if (unlikely(priv->need_mac_restart)) {
+> >                 ftgmac100_start_hw(priv);
+> > +               priv->need_mac_restart = false;
+> >
+> >                 /* Re-enable "bad" interrupts */
+> >                 ftgmac100_write(FTGMAC100_INT_BAD, priv->base + FTGMAC100_OFFSET_IER);
+> > --
+> > 2.17.1
+> >
