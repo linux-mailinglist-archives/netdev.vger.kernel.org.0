@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E69339395
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C0AB3393B1
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:39:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232675AbhCLQhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 11:37:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38996 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232283AbhCLQh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 11:37:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615567047;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FnVUzFvzsl3Bp0QFRDBlIHeV43tl8slTgFSG/RNrL70=;
-        b=NGaY7GgPaYyHMDgiCO+jFe+7BkYPJjVJ0EI2VWUJ7SZqVBiljmQk8M/DgmMr1wOMeH3GSI
-        5hFi3fTN+dsjLfV8dzDRRZ7m+A7hQuhPyCKWlplMiHHaYg/g2MwWduvxU7jVXeROYLmXM2
-        mQIiGWECdd0bYtwsnhXa2+mUfjSA+04=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-540-kF_I14VGMT-R9-CJQ8RLzQ-1; Fri, 12 Mar 2021 11:37:23 -0500
-X-MC-Unique: kF_I14VGMT-R9-CJQ8RLzQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FF9E192D786;
-        Fri, 12 Mar 2021 16:37:22 +0000 (UTC)
-Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 077E8610A8;
-        Fri, 12 Mar 2021 16:37:15 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net] wireless/nl80211: fix wdev_id may be used uninitialized
-Date:   Fri, 12 Mar 2021 11:36:51 -0500
-Message-Id: <20210312163651.1398207-1-jarod@redhat.com>
+        id S232223AbhCLQjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 11:39:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232590AbhCLQjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 11:39:08 -0500
+Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D899C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 08:39:08 -0800 (PST)
+Received: by mail-oo1-xc2b.google.com with SMTP id n6-20020a4ac7060000b02901b50acc169fso1671421ooq.12
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 08:39:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1LbaPYIrGTEqy7YWkkcKHcitaEFTMWEyocZYWrmXi9M=;
+        b=mu80Nnr7TDpas2rtHLzOCExgIQXfcFjgiGzlcM55ExLPqHUGrDv9dqjnoC6MjHQumE
+         Nojo0q2dbdrTAF7LOaWt/oKp4ewE8gdj2Y8Sex/jfQBTT4JYL4wqWo7siesizX/QE+8b
+         B7LCMmM149UPSqELKr6V67iU82SeeNDePOtUyW/k0PbyHefMrlJabcggYgYFwDVuBaXq
+         /SThfjXyQHy5fHbZygL52OLinNRXHpcSvzxIrZdzI6Jkp60CFyu155tS2lioeTdGyMAz
+         Z+Xkmo8b59NTNx9h7iLvVsUPc03iQQcJKyySa7jE4x8CwIiOmC34Vo5+Mc1afvuiOp7P
+         N3Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1LbaPYIrGTEqy7YWkkcKHcitaEFTMWEyocZYWrmXi9M=;
+        b=c1HvFQo/TD1s9aNTL8jh6dYx2UcPxNstx8a/VU3WHd4sCvNXzrTooydU6w7PwyMYhU
+         HMWpKaoZccGYI//r6EGWakfuh2TkO8twJBOa883MwomqmQz/F2V8eNhTYgjnuwPHt8dr
+         yMiAgChs5raA3c7ZXZ5k6XeNRYU7mF3uYUAwE7vgHYMgN6fREg5dgGIYD9cuiwrIdmcb
+         E1dqvZT5dokpqXhjCHZfMfQn+WFqZvVwLmgRLJ0fGYcnsM8ent0oMTqmr/3/83uA7Q0z
+         g9Qx12x/i/tlM44WXAbkr2Sp2XgkWwBviSVyFouVmdMq/qwBzAQJXfiJN4rEmI/CYOfp
+         QLyQ==
+X-Gm-Message-State: AOAM532wd4tMdhjfPGeHN80l5K42/Ny5wEVwZbh/ieH2LAGu+YSercu5
+        jRz58zrZd/mQGfPKN1GVq/wALBjOXB0=
+X-Google-Smtp-Source: ABdhPJxM3Cot2d6j/qq2shADk4wvq18pu8nmv1CxwWvBrdLvZWAgaGXAahORqA7HHdAMAkeNnczgqA==
+X-Received: by 2002:a4a:b302:: with SMTP id m2mr3799545ooo.59.1615567147326;
+        Fri, 12 Mar 2021 08:39:07 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id a30sm1427828oiy.42.2021.03.12.08.39.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Mar 2021 08:39:06 -0800 (PST)
+Subject: Re: VRF leaking doesn't work
+To:     Greesha Mikhalkin <grigoriymikhalkin@gmail.com>
+Cc:     netdev@vger.kernel.org
+References: <CADbyt64e2cmQzZTEg3VoY6py=1pAqkLDRw+mniRdr9Rua5XtgQ@mail.gmail.com>
+ <5b2595ed-bf5b-2775-405c-bb5031fd2095@gmail.com>
+ <CADbyt66Ujtn5D+asPndkgBEDBWJiMScqicGVoNBVpNyR3iQ6PQ@mail.gmail.com>
+ <CADbyt64HpzGf6A_=wrouL+vT73DBndww34gMPSH9jDOiGEysvQ@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5f673241-9cb1-eb36-be9a-a82b0174bd9c@gmail.com>
+Date:   Fri, 12 Mar 2021 09:39:05 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+In-Reply-To: <CADbyt64HpzGf6A_=wrouL+vT73DBndww34gMPSH9jDOiGEysvQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Build currently fails with -Werror=maybe-uninitialized set:
+On 3/10/21 1:34 AM, Greesha Mikhalkin wrote:
+> I see. When i do `ping -I vrf2` to address that was leaked from vrf1
+> it selects source address that's set as local in vrf1 routing table.
+> Is this expected behavior? I guess, forwarding packets from vrf1 to
+> vrf2 local address won't help here.
+> 
 
-net/wireless/nl80211.c: In function '__cfg80211_wdev_from_attrs':
-net/wireless/nl80211.c:124:44: error: 'wdev_id' may be used
-uninitialized in this function [-Werror=maybe-uninitialized]
+That's the way the source address selection works -- it takes the fib
+lookup result and finds the best source address match for it.
 
-Easy fix is to just initialize wdev_id to 0, since it's value doesn't
-otherwise matter unless have_wdev_id is true.
+Try adding 'src a.b.c.d' to the leaked route. e.g.,
+    ip ro add 172.16.1.0/24 dev red vrf blue src 172.16.2.1
 
-Fixes: a05829a7222e ("cfg80211: avoid holding the RTNL when calling the driver")
-CC: Johannes Berg <johannes@sipsolutions.net>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: linux-wireless@vger.kernel.org
-CC: netdev@vger.kernel.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- net/wireless/nl80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 521d36bb0803..a157783760c7 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -70,7 +70,7 @@ __cfg80211_wdev_from_attrs(struct cfg80211_registered_device *rdev,
- 	struct wireless_dev *result = NULL;
- 	bool have_ifidx = attrs[NL80211_ATTR_IFINDEX];
- 	bool have_wdev_id = attrs[NL80211_ATTR_WDEV];
--	u64 wdev_id;
-+	u64 wdev_id = 0;
- 	int wiphy_idx = -1;
- 	int ifidx = -1;
- 
--- 
-2.29.2
-
+where red and blue are VRFs, 172.16.2.1 is a valid source address in VRF
+blue and VRF red has the reverse route installed.
