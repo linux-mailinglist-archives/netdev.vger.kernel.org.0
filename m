@@ -2,114 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65444338664
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 08:09:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D14338667
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 08:09:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231847AbhCLHIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 02:08:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231849AbhCLHIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 02:08:13 -0500
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5EAC061574;
-        Thu, 11 Mar 2021 23:08:13 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id f12so3085942qtq.4;
-        Thu, 11 Mar 2021 23:08:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DvgmjGd5npZcPxA1X72is4z6QiybdF+GT4ayLBGttvY=;
-        b=Q7mRlVcx8SIMhCb2j8vkqdkMC4Q1arhBzdr/hbccH47+lFebC9eYJRNuoStNBOjW2A
-         I6wiLGNCsjTsN3sfGWQ10sR4WAuzxS+436sL0hji1lGGdVo7ERHBWxGpX/xsMSQYqYtl
-         r5WgMujO7q95FJorLmpR1NltARuuRJrKlyANd2Ec3TPw9beb6uyUEOxI3OyH9XxPsIH8
-         h5u3iot2noBD4rHCQoAbcc0NZnpqljlDqghlqrUrjup5/RUPGjeslr433H3lpudCgOE6
-         KBUEyNFLiGh4mtbBSeOex1xjTzMtk0gl+FKumWbpwSQrOvbxthRcnm4O0O360usrap0R
-         npQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DvgmjGd5npZcPxA1X72is4z6QiybdF+GT4ayLBGttvY=;
-        b=FlJW8YFv42UVQTKvCK2zb3ymhrPbzNp8u1khOUhehZBMPlKeaSvdN/UAy4m4+NrJuh
-         DEvB1agS1BpZUk1U59VpPQLv3AeeGxfjsry8rze3rjzClaegJJ/bP0CR5CGaTMk8qCI3
-         xchxN8oysowcY7GBBIu5NuBfBlNMval5yoK3EgdfPYNK55DAZ3soP559+gKHGrY7CMI1
-         PQpfF3tnIxGYgYMg35lQZjjv/1J5kW91A5EE5LTcaT0MTZSajgn1BhJnPkJX+wPttvN2
-         jMCzgYnJ57MgPQGuJOeOSI8YLQwsnRorusIwqk1fZ/5PH09psYAEzNOLFIPL+ZzwoNqA
-         OOog==
-X-Gm-Message-State: AOAM530emQjysirXb5tR854/VXp2ar9rbTjYe/MKQmHoy4KOHcQibIXu
-        ao60c94marApdX89Y5yibBM=
-X-Google-Smtp-Source: ABdhPJykIktGOZFOaqpLdbrnH6dgVY2BrDHqyqbH3dyO+U1lJoo28ioXvnzNVxSt5crCWMtyI5VkUw==
-X-Received: by 2002:ac8:5047:: with SMTP id h7mr9480366qtm.22.1615532892774;
-        Thu, 11 Mar 2021 23:08:12 -0800 (PST)
-Received: from localhost.localdomain ([138.199.13.196])
-        by smtp.gmail.com with ESMTPSA id 7sm3870536qkm.64.2021.03.11.23.08.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Mar 2021 23:08:12 -0800 (PST)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, unixbhaskar@gmail.com,
-        netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org
-Subject: [PATCH] net: ethernet: dec: tulip: Random spelling fixes throughout the file pnic2.c
-Date:   Fri, 12 Mar 2021 12:35:42 +0530
-Message-Id: <20210312070542.31309-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S231929AbhCLHJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 02:09:09 -0500
+Received: from mga18.intel.com ([134.134.136.126]:48048 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231928AbhCLHI7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 02:08:59 -0500
+IronPort-SDR: G1ba+bE5eZ7/z3tJUxDljovP3+8lgrQxUNqjekiZEdfMNL2/qJSXcrOXX6wqfqTrq2eqf5oM/L
+ cY5/R+RrFn8g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9920"; a="176385839"
+X-IronPort-AV: E=Sophos;i="5.81,242,1610438400"; 
+   d="scan'208";a="176385839"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 23:08:59 -0800
+IronPort-SDR: kkXI+umYoTMCwy8UfK8j5GA5HLLX3JznDMO9VVopjx8ODszJpK4FN395GRqcKZsJ7Cc+Ht6lHt
+ 066uR5yTwF3Q==
+X-IronPort-AV: E=Sophos;i="5.81,242,1610438400"; 
+   d="scan'208";a="410915047"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.214.210]) ([10.254.214.210])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 23:08:56 -0800
+Subject: Re: [PATCH V3 6/6] vDPA/ifcvf: verify mandatory feature bits for vDPA
+To:     Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@linux.intel.com>, mst@redhat.com,
+        lulu@redhat.com, leonro@nvidia.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
+References: <20210310090052.4762-1-lingshan.zhu@intel.com>
+ <20210310090052.4762-7-lingshan.zhu@intel.com>
+ <3e53a5c9-c531-48ee-c9a7-907dfdacc9d1@redhat.com>
+ <9c2fb3d0-2d69-20b9-589d-cc5ffc830f38@linux.intel.com>
+ <4f3ef2bb-d823-d53d-3bb0-0152a3f6c9f1@redhat.com>
+ <a1f346cc-c9fd-6d16-39d7-b59965a18b0a@intel.com>
+ <67be60b6-bf30-de85-ed42-d9fad974f42b@redhat.com>
+ <2a6e31d3-ea31-9b64-0749-1f149b656623@intel.com>
+ <2111b14b-4857-34c8-82c4-72d182ca50c5@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <7405714f-c29a-6636-b01f-243af49a685c@intel.com>
+Date:   Fri, 12 Mar 2021 15:08:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
+In-Reply-To: <2111b14b-4857-34c8-82c4-72d182ca50c5@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Random spelling fixes throughout the file.
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- drivers/net/ethernet/dec/tulip/pnic2.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+On 3/12/2021 3:00 PM, Jason Wang wrote:
+>
+> On 2021/3/12 2:40 下午, Zhu, Lingshan wrote:
+>>
+>>
+>> On 3/12/2021 1:52 PM, Jason Wang wrote:
+>>>
+>>> On 2021/3/11 3:19 下午, Zhu, Lingshan wrote:
+>>>>
+>>>>
+>>>> On 3/11/2021 2:20 PM, Jason Wang wrote:
+>>>>>
+>>>>> On 2021/3/11 12:16 下午, Zhu Lingshan wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 3/11/2021 11:20 AM, Jason Wang wrote:
+>>>>>>>
+>>>>>>> On 2021/3/10 5:00 下午, Zhu Lingshan wrote:
+>>>>>>>> vDPA requres VIRTIO_F_ACCESS_PLATFORM as a must, this commit
+>>>>>>>> examines this when set features.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>>>> ---
+>>>>>>>>   drivers/vdpa/ifcvf/ifcvf_base.c | 8 ++++++++
+>>>>>>>>   drivers/vdpa/ifcvf/ifcvf_base.h | 1 +
+>>>>>>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 5 +++++
+>>>>>>>>   3 files changed, 14 insertions(+)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c 
+>>>>>>>> b/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>>>>>> index ea6a78791c9b..58f47fdce385 100644
+>>>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>>>>>> @@ -224,6 +224,14 @@ u64 ifcvf_get_features(struct ifcvf_hw *hw)
+>>>>>>>>       return hw->hw_features;
+>>>>>>>>   }
+>>>>>>>>   +int ifcvf_verify_min_features(struct ifcvf_hw *hw)
+>>>>>>>> +{
+>>>>>>>> +    if (!(hw->hw_features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+>>>>>>>> +        return -EINVAL;
+>>>>>>>> +
+>>>>>>>> +    return 0;
+>>>>>>>> +}
+>>>>>>>> +
+>>>>>>>>   void ifcvf_read_net_config(struct ifcvf_hw *hw, u64 offset,
+>>>>>>>>                  void *dst, int length)
+>>>>>>>>   {
+>>>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
+>>>>>>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>>>> index dbb8c10aa3b1..91c5735d4dc9 100644
+>>>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>>>> @@ -123,6 +123,7 @@ void io_write64_twopart(u64 val, u32 *lo, 
+>>>>>>>> u32 *hi);
+>>>>>>>>   void ifcvf_reset(struct ifcvf_hw *hw);
+>>>>>>>>   u64 ifcvf_get_features(struct ifcvf_hw *hw);
+>>>>>>>>   u64 ifcvf_get_hw_features(struct ifcvf_hw *hw);
+>>>>>>>> +int ifcvf_verify_min_features(struct ifcvf_hw *hw);
+>>>>>>>>   u16 ifcvf_get_vq_state(struct ifcvf_hw *hw, u16 qid);
+>>>>>>>>   int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
+>>>>>>>>   struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
+>>>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>>>>>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>>>> index 25fb9dfe23f0..f624f202447d 100644
+>>>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>>>> @@ -179,6 +179,11 @@ static u64 ifcvf_vdpa_get_features(struct 
+>>>>>>>> vdpa_device *vdpa_dev)
+>>>>>>>>   static int ifcvf_vdpa_set_features(struct vdpa_device 
+>>>>>>>> *vdpa_dev, u64 features)
+>>>>>>>>   {
+>>>>>>>>       struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>>>>>> +    int ret;
+>>>>>>>> +
+>>>>>>>> +    ret = ifcvf_verify_min_features(vf);
+>>>>>>>
+>>>>>>>
+>>>>>>> So this validate device features instead of driver which is the 
+>>>>>>> one we really want to check?
+>>>>>>>
+>>>>>>> Thanks
+>>>>>>
+>>>>>> Hi Jason,
+>>>>>>
+>>>>>> Here we check device feature bits to make sure the device support 
+>>>>>> ACCESS_PLATFORM. 
+>>>>>
+>>>>>
+>>>>> If you want to check device features, you need to do that during 
+>>>>> probe() and fail the probing if without the feature. But I think 
+>>>>> you won't ship cards without ACCESS_PLATFORM.
+>>>> Yes, there are no reasons ship a card without ACCESS_PLATFORM
+>>>>>
+>>>>>
+>>>>>> In get_features(),
+>>>>>> it will return a intersection of device features bit and driver 
+>>>>>> supported features bits(which includes ACCESS_PLATFORM).
+>>>>>> Other components like QEMU should not set features bits more than 
+>>>>>> this intersection of bits. so we can make sure if this
+>>>>>> ifcvf_verify_min_features() passed, both device and driver 
+>>>>>> support ACCESS_PLATFORM.
+>>>>>>
+>>>>>> Are you suggesting check driver feature bits in 
+>>>>>> ifcvf_verify_min_features() in the meantime as well?
+>>>>>
+>>>>>
+>>>>> So it really depends on your hardware. If you hardware can always 
+>>>>> offer ACCESS_PLATFORM, you just need to check driver features. 
+>>>>> This is how vdpa_sim and mlx5_vdpa work.
+>>>> Yes, we always support ACCESS_PLATFORM, so it is hard coded in the 
+>>>> macro IFCVF_SUPPORTED_FEATURES.
+>>>
+>>>
+>>> That's not what I read from the code:
+>>>
+>>>         features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
+>> ifcvf_get_features() reads device feature bits(which should always 
+>> has ACCSSS_PLATFORM) and IFCVF_SUPPORTED_FEATURES is the driver 
+>> supported feature bits 
+>
+>
+> For "driver" you probably mean IFCVF. So there's some misunderstanding 
+> before, what I meant for "driver" is virtio driver that do feature 
+> negotaitation with the device.
+>
+> I wonder what features are supported by the device but not the IFCVF 
+> driver?
+>
+> Thanks
+we did not use TSO hardware feature bits in IFCVF driver for now. 
+Anyway, we will check the features bits to set in set_features than 
+hw/ifcvf driver feature bits.
 
-diff --git a/drivers/net/ethernet/dec/tulip/pnic2.c b/drivers/net/ethernet/dec/tulip/pnic2.c
-index 412adaa7fdf8..04daffb8db2a 100644
---- a/drivers/net/ethernet/dec/tulip/pnic2.c
-+++ b/drivers/net/ethernet/dec/tulip/pnic2.c
-@@ -107,7 +107,7 @@ void pnic2_start_nway(struct net_device *dev)
-          */
- 	csr14 = (ioread32(ioaddr + CSR14) & 0xfff0ee39);
-
--        /* bit 17 - advetise 100baseTx-FD */
-+        /* bit 17 - advertise 100baseTx-FD */
-         if (tp->sym_advertise & 0x0100) csr14 |= 0x00020000;
-
-         /* bit 16 - advertise 100baseTx-HD */
-@@ -116,7 +116,7 @@ void pnic2_start_nway(struct net_device *dev)
-         /* bit 6 - advertise 10baseT-HD */
-         if (tp->sym_advertise & 0x0020) csr14 |= 0x00000040;
-
--        /* Now set bit 12 Link Test Enable, Bit 7 Autonegotiation Enable
-+        /* Now set bit 12 Link Test Enable, Bit 7 Auto negotiation Enable
-          * and bit 0 Don't PowerDown 10baseT
-          */
-         csr14 |= 0x00001184;
-@@ -157,7 +157,7 @@ void pnic2_start_nway(struct net_device *dev)
-         /* all set up so now force the negotiation to begin */
-
-         /* read in current values and mask off all but the
--	 * Autonegotiation bits 14:12.  Writing a 001 to those bits
-+	 * Auto negotiation bits 14:12.  Writing a 001 to those bits
-          * should start the autonegotiation
-          */
-         csr12 = (ioread32(ioaddr + CSR12) & 0xffff8fff);
-@@ -290,7 +290,7 @@ void pnic2_lnk_change(struct net_device *dev, int csr5)
- 	                csr14 = (ioread32(ioaddr + CSR14) & 0xffffff7f);
-                         iowrite32(csr14,ioaddr + CSR14);
-
--                        /* what should we do when autonegotiate fails?
-+                        /* what should we do when auto negotiate fails?
-                          * should we try again or default to baseline
-                          * case.  I just don't know.
-                          *
---
-2.26.2
+THanks!
+>
+>
+>> which hard coded ACCESS_PLATFORM, so the intersection should include 
+>> ACCESS_PLATFORM.
+>> the intersection "features" is returned in get_features(), qemu 
+>> should set features according to it.
+>>>
+>>>
+>>>> Now we check whether device support this feature bit as a double 
+>>>> conformation, are you suggesting we should check whether 
+>>>> ACCESS_PLATFORM & IFCVF_SUPPORTED_FEATURES
+>>>> in set_features() as well?
+>>>
+>>>
+>>> If we know device will always offer ACCESS_PLATFORM, there's no need 
+>>> to check it again. What we should check if whether driver set that, 
+>>> and if it doesn't we need to fail set_features(). I think there's 
+>>> little chance that IFCVF can work when IOMMU_PLATFORM is not 
+>>> negotiated.
+>> Agree, will check the features bit to set instead of device feature 
+>> bits. Thanks!
+>>>
+>>>
+>>>
+>>>> I prefer check both device and IFCVF_SUPPORTED_FEATURES both, more 
+>>>> reliable.
+>>>
+>>>
+>>> So again, if you want to check device features, set_features() is 
+>>> not the proper place. We need to fail the probe in this case.
+>>>
+>>> Thanks
+>>>
+>>>
+>>>>
+>>>> Thanks!
+>>>>>
+>>>>> Thanks
+>>>>>
+>>>>>
+>>>>>>
+>>>>>> Thanks！
+>>>>>>>
+>>>>>>>
+>>>>>>>> +    if (ret)
+>>>>>>>> +        return ret;
+>>>>>>>>         vf->req_features = features;
+>>>>>>>
+>>>>>>> _______________________________________________
+>>>>>>> Virtualization mailing list
+>>>>>>> Virtualization@lists.linux-foundation.org
+>>>>>>> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+>
 
