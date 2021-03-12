@@ -2,160 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8E433941B
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 18:00:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4360B339425
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 18:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232493AbhCLQ7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 11:59:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
+        id S232518AbhCLRAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 12:00:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232398AbhCLQ7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 11:59:49 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C5AC061574;
-        Fri, 12 Mar 2021 08:59:49 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id c10so3177269ilo.8;
-        Fri, 12 Mar 2021 08:59:49 -0800 (PST)
+        with ESMTP id S232389AbhCLQ77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 11:59:59 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E50C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 08:59:59 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id p21so16252461pgl.12
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 08:59:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8lyG9mI2+ZJ9STRsO49iQYUUEtp1pPpZxebMdUf5OrU=;
-        b=lOa/pXAUadrrdSUfTfsnb3u9ozA2I3n4dpJYV1nAZQ3IftoPv6nv0MKopf8+HxrPsJ
-         DLugt+E+IRC3GDqzvl6dAtuBVuzGeR2reElxkayv+VhzxT1Eya4mvuxiYjyg6XVbT6iQ
-         1Wwh7YoXz8Rrj7S4jKcthXJ3/qBE+y3kZbccxBs9Ef4XMoILwwvfUSxHi4G+bBspAgXs
-         KYSjQpgYS+l0aseN1WIMVYMChTtZu44Sj/v7IGNhJTtPzLMElIN4V1T9xnXOqr8oT2j4
-         DDBK2GTkN9R4dd1TLAhuhSylTzjop8abB1LeIHc+C8EITCLC/A5hVraS02E4I9gDGb7g
-         +hww==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R4e0vHpXmVEA0zpvL1or9GwOS3zC6hREPl8g9mZwthg=;
+        b=dZV7MBFapJ1xt29/IgWx9ylnQPZ89lJhaZBuGj7J4XbfTmjgnReAsv7DW8rjprrmV3
+         ZVmeL6aP9j1ohBOpQQWOLGZhB6G8JlYjxt4ig9V2WIjOmWaTXikGJVFBlRkzsmPilBiZ
+         gNptAnFLUBHqd+rznn7aa5nasOuNA0RTJw5m00d5EzqXVndIthSzFiUyciL9rQdRyCPZ
+         ykAEEXYbHOlielSFhM8dMAWJrmRNtqjwfmPuzh0zJ2BfdylwWjXRSL9RU+Pxggy4Bv2I
+         F67/C2YMUFE0/iYhJk3xoGMU/LS/NuhFzaZkbJ0GHyU3X9yKa5TgghGiuQtrj4kSIIRu
+         YCYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8lyG9mI2+ZJ9STRsO49iQYUUEtp1pPpZxebMdUf5OrU=;
-        b=QSlgiCkBzddeOUH3dXbB8khWS9RNs2vQ9M3aW5L9/WYtNfrlLjFnE4nf1tUeM2Q28g
-         kGCLTc0V0+gegsiid/Hmid5y96zywyO0VGLy8rmGBq5XlBTY5emMDqw9tvWWCgceFhx8
-         WYYSjZG/8bJeE3N+9aWBJOOZiNDWQyBdcq/LRtF+eeWVnRwf4hsDiA3m87FD5l9IsA7h
-         jSytbKHFpp1KrCwM7zzvRw5x8I4HkN23NO9jEEsgUxriz+0CWJgN1MaPwfwDau7XQouo
-         5Y9Ek++N8FpRe1wRNm3Dt70KXaT9TKj8uPqklG21J8gLQ5VX4IF4LRfzEin/6KpG+JVb
-         BwhQ==
-X-Gm-Message-State: AOAM5321/bfXJmqj1NWmMzj+fWFu6szHRNBshBckk69ojsC5l53bI6Bd
-        e3gutdqvGjl2LZERO0/MTuobN+ZtQIwP8kJFfCA=
-X-Google-Smtp-Source: ABdhPJyxhAZqqHgpN7WIcSRLeNGYeqqplMBUXvARRawTxYw/AyadyFWdybe5WkPRPdMigwFmCN6SbgSFFU26kRoUOeI=
-X-Received: by 2002:a92:d18c:: with SMTP id z12mr3132686ilz.95.1615568389141;
- Fri, 12 Mar 2021 08:59:49 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R4e0vHpXmVEA0zpvL1or9GwOS3zC6hREPl8g9mZwthg=;
+        b=nTjiXhVLQx9f76//uS2ZwCndmgfL9PCRH9Qz8lGUiPntIdQPY/Xsb6jifq9/UTf5tH
+         9M1OVYqi7U7sWpmJFtYIOJQEgnf949VKWkRU/XiyQ/ZLY3MrhsYgXLz4Ur/KDTRGUepN
+         xWjQicZhyRU0hVVTGEzU0bQM5C3mtcZds11kQY0nwHt+JgAYof37fXB6e3yOqKC0CWMp
+         gCrC0OY44STe6YWZ0/t5Zxp55ISt6WJEZoQgY4bbWXCSALDmKx5R2n8L8myRB16RXiFt
+         u2JRfaC5i/W2MDcu/TG0vEm+3+/pIxBGODWVeV/4jS1pxiRLlYOgaFN0EfzzyGVW4F49
+         RhFA==
+X-Gm-Message-State: AOAM532GDjFm8/tEyCicmJQ9CWSRxQ/G/oEeUnYhUyQ4jepuN+8BOF4i
+        RcDx1NUnTYUZmBIj7E4r7qs=
+X-Google-Smtp-Source: ABdhPJxkeRZY9t1wLn5Nuwht6aKGwY1NY1ap9A01c9OV4Ly09D7I1KQmBNEapHBr3D7id3CJ9gzKRg==
+X-Received: by 2002:a63:d0f:: with SMTP id c15mr12342258pgl.367.1615568399077;
+        Fri, 12 Mar 2021 08:59:59 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6452:a7e2:4139:2684])
+        by smtp.gmail.com with ESMTPSA id m21sm6044811pff.61.2021.03.12.08.59.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Mar 2021 08:59:58 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Courtney Cavin <courtney.cavin@sonymobile.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] net: qrtr: fix a kernel-infoleak in qrtr_recvmsg()
+Date:   Fri, 12 Mar 2021 08:59:48 -0800
+Message-Id: <20210312165948.909295-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
 MIME-Version: 1.0
-References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
- <20210311181729.GA2148230@bjorn-Precision-5520> <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
- <20210311201929.GN2356281@nvidia.com> <CAKgT0Ud1tzpAWO4+5GxiUiHT2wEaLacjC0NEifZ2nfOPPLW0cg@mail.gmail.com>
- <20210311232059.GR2356281@nvidia.com> <CAKgT0Ud+gnw=W-2U22_iQ671himz8uWkr-DaBnVT9xfAsx6pUg@mail.gmail.com>
- <YEsK6zoNY+BXfbQ7@unreal>
-In-Reply-To: <YEsK6zoNY+BXfbQ7@unreal>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 12 Mar 2021 08:59:38 -0800
-Message-ID: <CAKgT0UfsoXayB72KD+H_h14eN7wiYtWCUjxKJxwiNKr44XUPfA@mail.gmail.com>
-Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 10:32 PM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Thu, Mar 11, 2021 at 06:53:16PM -0800, Alexander Duyck wrote:
-> > On Thu, Mar 11, 2021 at 3:21 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > >
-> > > On Thu, Mar 11, 2021 at 01:49:24PM -0800, Alexander Duyck wrote:
-> > > > > We don't need to invent new locks and new complexity for something
-> > > > > that is trivially solved already.
-> > > >
-> > > > I am not wanting a new lock. What I am wanting is a way to mark the VF
-> > > > as being stale/offline while we are performing the update. With that
-> > > > we would be able to apply similar logic to any changes in the future.
-> > >
-> > > I think we should hold off doing this until someone comes up with HW
-> > > that needs it. The response time here is microseconds, it is not worth
-> > > any complexity
->
-> <...>
->
-> > Another way to think of this is that we are essentially pulling a
-> > device back after we have already allocated the VFs and we are
-> > reconfiguring it before pushing it back out for usage. Having a flag
-> > that we could set on the VF device to say it is "under
-> > construction"/modification/"not ready for use" would be quite useful I
-> > would think.
->
-> It is not simple flag change, but change of PCI state machine, which is
-> far more complex than holding two locks or call to sysfs_create_file in
-> the loop that made Bjorn nervous.
->
-> I want to remind again that the suggestion here has nothing to do with
-> the real use case of SR-IOV capable devices in the Linux.
->
-> The flow is:
-> 1. Disable SR-IOV driver autoprobe
-> 2. Create as much as possible VFs
-> 3. Wait for request from the user to get VM
-> 4. Change MSI-X table according to requested in item #3
-> 5. Bind ready to go VF to VM
-> 6. Inform user about VM readiness
->
-> The destroy flow includes VM destroy and unbind.
->
-> Let's focus on solutions for real problems instead of trying to solve theoretical
-> cases that are not going to be tested and deployed.
->
-> Thanks
+From: Eric Dumazet <edumazet@google.com>
 
-So part of the problem with this all along has been that you are only
-focused on how you are going to use this and don't think about how
-somebody else might need to use or implement it. In addition there are
-a number of half measures even within your own flow. In reality if we
-are thinking we are going to have to reconfigure every device it might
-make sense to simply block the driver from being able to load until
-you have configured it. Then the SR-IOV autoprobe would be redundant
-since you could use something like the "offline" flag to avoid that.
+struct sockaddr_qrtr has a 2-byte hole, and qrtr_recvmsg() currently
+does not clear it before copying kernel data to user space.
 
-If you are okay with step 1 where you are setting a flag to prevent
-driver auto probing why is it so much more overhead to set a bit
-blocking drivers from loading entirely while you are changing the
-config space? Sitting on two locks and assuming a synchronous
-operation is assuming a lot about the hardware and how this is going
-to be used.
+It might be too late to name the hole since sockaddr_qrtr structure is uapi.
 
-In addition it seems like the logic is that step 4 will always
-succeed. What happens if for example you send the message to the
-firmware and you don't get a response? Do you just say the request
-failed let the VF be used anyway? This is another reason why I would
-be much more comfortable with the option to offline the device and
-then tinker with it rather than hope that your operation can somehow
-do everything in one shot.
+BUG: KMSAN: kernel-infoleak in kmsan_copy_to_user+0x9c/0xb0 mm/kmsan/kmsan_hooks.c:249
+CPU: 0 PID: 29705 Comm: syz-executor.3 Not tainted 5.11.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x21c/0x280 lib/dump_stack.c:120
+ kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
+ kmsan_internal_check_memory+0x202/0x520 mm/kmsan/kmsan.c:402
+ kmsan_copy_to_user+0x9c/0xb0 mm/kmsan/kmsan_hooks.c:249
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+ _copy_to_user+0x1ac/0x270 lib/usercopy.c:33
+ copy_to_user include/linux/uaccess.h:209 [inline]
+ move_addr_to_user+0x3a2/0x640 net/socket.c:237
+ ____sys_recvmsg+0x696/0xd50 net/socket.c:2575
+ ___sys_recvmsg net/socket.c:2610 [inline]
+ do_recvmmsg+0xa97/0x22d0 net/socket.c:2710
+ __sys_recvmmsg net/socket.c:2789 [inline]
+ __do_sys_recvmmsg net/socket.c:2812 [inline]
+ __se_sys_recvmmsg+0x24a/0x410 net/socket.c:2805
+ __x64_sys_recvmmsg+0x62/0x80 net/socket.c:2805
+ do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x465f69
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f43659d6188 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000465f69
+RDX: 0000000000000008 RSI: 0000000020003e40 RDI: 0000000000000003
+RBP: 00000000004bfa8f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000010060 R11: 0000000000000246 R12: 000000000056bf60
+R13: 0000000000a9fb1f R14: 00007f43659d6300 R15: 0000000000022000
 
-In my mind step 4 really should be 4 steps.
+Local variable ----addr@____sys_recvmsg created at:
+ ____sys_recvmsg+0x168/0xd50 net/socket.c:2550
+ ____sys_recvmsg+0x168/0xd50 net/socket.c:2550
 
-1. Offline VF to reserve it for modification
-2. Submit request for modification
-3. Verify modification has occurred, reset if needed.
-4. Online VF
+Bytes 2-3 of 12 are uninitialized
+Memory access of size 12 starts at ffff88817c627b40
+Data copied to user address 0000000020000140
 
-Doing it in that order allows for handling many more scenarios
-including those where perhaps step 2 actually consists of several
-changes to support any future extensions that are needed. Splitting
-step 2 and 3 allows for an asynchronous event where you can wait if
-firmware takes an excessively long time, or if step 2 somehow fails
-you can then repeat or revert it to get back to a consistent state.
-Lastly by splitting out the onlining step you can avoid potentially
-releasing a broken VF to be reserved if there is some sort of
-unrecoverable error between steps 2 and 3.
+Fixes: bdabad3e363d ("net: Add Qualcomm IPC router")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Courtney Cavin <courtney.cavin@sonymobile.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/qrtr/qrtr.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index edb6ac17cecabd94fe392eb4f589dbbbf7bfa2c0..dfc820ee553a0948cc64f25f5b8f9c5d0061cfd4 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -1058,6 +1058,11 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
+ 	rc = copied;
+ 
+ 	if (addr) {
++		/* There is an anonymous 2-byte hole after sq_family,
++		 * make sure to clear it.
++		 */
++		memset(addr, 0, sizeof(*addr));
++
+ 		addr->sq_family = AF_QIPCRTR;
+ 		addr->sq_node = cb->src_node;
+ 		addr->sq_port = cb->src_port;
+-- 
+2.31.0.rc2.261.g7f71774620-goog
+
