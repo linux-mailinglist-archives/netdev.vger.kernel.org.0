@@ -2,127 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 772BD339106
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 16:19:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18771339122
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 16:21:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231416AbhCLPSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 10:18:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231857AbhCLPSN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 10:18:13 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A7DC061762
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 07:18:12 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id e10so5004366wro.12
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 07:18:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=leC2X22bIXYvyYORNNtIO2HJvzBD3GajS0ITQJHF+zY=;
-        b=wO4VWlopNcXvLMHwptFGjkgljtbl60J9/gxUV+HlYPrZIupnaDeNy2YvPMYFDILyIQ
-         j8RgVqHvsXU861Im78uhe/Rre2Py1krC2YyC5nUCz/2WtR1HB83+QDPpQhb2cIRZ75oJ
-         sWVqq6M+t4Sbw8uOnu8IsPqOYzpHRAOg/zp+fSXM+VgPr6rQTBABUeLXYoewDjtH4TPU
-         eOs9YP4auDU5P5ukpgsncUoNY5sqGJo99jB5uOWuUuFiiyzFuk7BvGVVHo92YZ26GgA5
-         nNWVaMO/WZBUeeR2hIRjlNsrCObYErm3n4/v9IfHhYB+w31vdRGUrqrHvU7WkLdvLpYh
-         CS+A==
+        id S232302AbhCLPVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 10:21:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:46525 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231730AbhCLPU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 10:20:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615562455;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XNhlw58yD5yXI9Wev/02PZnuhLLW5yA/Trw5RjUWlz8=;
+        b=YsGwYCKnU1cvfhechO5ZIWBUZi6RVanAX/JQReoAhqwQc37+my+l/7YNakJtSkC1Da7bnb
+        MbvNVzMbN22pdt3MWtohMQQrLZnRfE0ozqu2Mha5ezcV+VHOxXR/E17cujAy2EzYr0aYU9
+        AW9m0ctO/TBWQX2fNUW93A7hAnVNORw=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-284-rs8BeedWOLKRubRG6vUu1g-1; Fri, 12 Mar 2021 10:20:54 -0500
+X-MC-Unique: rs8BeedWOLKRubRG6vUu1g-1
+Received: by mail-wm1-f69.google.com with SMTP id 73so5482965wma.3
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 07:20:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=leC2X22bIXYvyYORNNtIO2HJvzBD3GajS0ITQJHF+zY=;
-        b=h7nj5qpOKne2qihtZAWZvV+/XlUcf0l9+jyoODEJj95gGXTFDygWRi1KCyxh/gHRYX
-         Q9jYX73hymSihVjmBvvkV66yPj0So7q8t0KfXD3tAyd0nx2dE2QFhXWIZetWHcX8qjyU
-         IvJXSQzhHhHxpWKV9jVvbOtAK2vxnpNIvwGhzsJSqqLc4FUZWo8jAVpPlgF8N5+aQfbe
-         NnyhQdleROz9gy6OFotV/tCUQL/tRXyBdfUWij2Jjy6/v7Qsgovho1lol07MvQBj4cEx
-         WOXFvPZGEC81/CnV92AaB0MgoqfpwiY2gtwJHg2FBM2Nf6xJ9OjUCCjxQDedjJqG9ArT
-         ab7w==
-X-Gm-Message-State: AOAM533K+EOWsW2s0VWG1bC2y5GbQ8FnzpAu164U7tnSLCCIR5iTcz6n
-        Tpj8+knx/nx7tOl4z/hxPIQtFQ==
-X-Google-Smtp-Source: ABdhPJxNcPDdfwbr38+iqUrdfR5ppoiRhbwNm7g/cyUHSZMNM6kzY3pY6Dy+RcrdNd5YncvS9zBFJA==
-X-Received: by 2002:adf:9bcf:: with SMTP id e15mr14087256wrc.276.1615562291271;
-        Fri, 12 Mar 2021 07:18:11 -0800 (PST)
-Received: from dell ([91.110.221.204])
-        by smtp.gmail.com with ESMTPSA id i17sm8142788wrp.77.2021.03.12.07.18.10
+         :mime-version:content-disposition:in-reply-to;
+        bh=XNhlw58yD5yXI9Wev/02PZnuhLLW5yA/Trw5RjUWlz8=;
+        b=k6uDpgs9RDxO8Dt43/qlkALfpEGJOjmPu/qb0KuSYXw6IhRsQIlIbKSeUm4y7kvfRK
+         Y3SM9DVqLLJQEXwKKFYcmsXZZ88Rrg9u5SmBMhW2gaJwrEQAJrMWXxsr9J5lw1PVIfD+
+         G8UnCE2kT1k7FXk0A1KDzo/FB7y+vANK97Q5QTQFzBtVpvUeKRI2KTsn6i3wuzJkRLRq
+         szWQM2cI4eXkaZMmxKhB2bp3nmZsX0a7AtpTbrgyxj03EC5HLtQmU9lASmtBVBKD8FHE
+         pw6gzMkrpjlH4OOlbxWtrISAvvz4qZaoUZMYOrFPFqU/OaYHua/QpdbPXjtkfH0ND0uU
+         O0zg==
+X-Gm-Message-State: AOAM531iR34x35aGJrwnwD3Byi0bxF7aWFfHYcFsKHZT1QXrh+wShby2
+        fvK7CPJhbnZHZ96+zDGNWMiIx85aaAFgXTf2C6WaCraFNn0nJDua2Y1xqsiefh1lUWR4gQ2Km3v
+        Ee38NtOJ1EVB7zp+P
+X-Received: by 2002:adf:8562:: with SMTP id 89mr14637739wrh.101.1615562452730;
+        Fri, 12 Mar 2021 07:20:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwOgAMv5zfx20zVxHk8NkAVCtdDWRTDNIVXsPFGWUxUqnBQhG1JfeKtcQP8FzSMF5UIyygdGw==
+X-Received: by 2002:adf:8562:: with SMTP id 89mr14637714wrh.101.1615562452552;
+        Fri, 12 Mar 2021 07:20:52 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id s84sm2463651wme.11.2021.03.12.07.20.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Mar 2021 07:18:10 -0800 (PST)
-Date:   Fri, 12 Mar 2021 15:18:09 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 08/10] of: of_net: Demote non-conforming kernel-doc header
-Message-ID: <20210312151809.GW701493@dell>
-References: <20210312110758.2220959-1-lee.jones@linaro.org>
- <20210312110758.2220959-9-lee.jones@linaro.org>
- <YEt1GlakFcST27F0@lunn.ch>
+        Fri, 12 Mar 2021 07:20:52 -0800 (PST)
+Date:   Fri, 12 Mar 2021 16:20:49 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v6 12/22] virtio/vsock: fetch length for SEQPACKET
+ record
+Message-ID: <20210312152049.iiarapjotp6eqho2@steredhat>
+References: <20210307175722.3464068-1-arseny.krasnov@kaspersky.com>
+ <20210307180235.3465973-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YEt1GlakFcST27F0@lunn.ch>
+In-Reply-To: <20210307180235.3465973-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 12 Mar 2021, Andrew Lunn wrote:
+On Sun, Mar 07, 2021 at 09:02:31PM +0300, Arseny Krasnov wrote:
+>This adds transport callback which tries to fetch record begin marker
+>from socket's rx queue. It is called from af_vsock.c before reading data
+>packets of record.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> include/linux/virtio_vsock.h            |  1 +
+> net/vmw_vsock/virtio_transport_common.c | 53 +++++++++++++++++++++++++
+> 2 files changed, 54 insertions(+)
+>
+>diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>index 466a5832d2f5..d7edcfeb4cd2 100644
+>--- a/include/linux/virtio_vsock.h
+>+++ b/include/linux/virtio_vsock.h
+>@@ -88,6 +88,7 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+> 			       struct msghdr *msg,
+> 			       size_t len, int flags);
+>
+>+size_t virtio_transport_seqpacket_seq_get_len(struct vsock_sock *vsk);
+> int
+> virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+> 				   struct msghdr *msg,
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index 5f1e283e43f3..6fc78fec41c0 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -399,6 +399,59 @@ static inline void virtio_transport_remove_pkt(struct virtio_vsock_pkt *pkt)
+> 	virtio_transport_free_pkt(pkt);
+> }
+>
+>+static size_t virtio_transport_drop_until_seq_begin(struct virtio_vsock_sock *vvs)
+>+{
+>+	struct virtio_vsock_pkt *pkt, *n;
+>+	size_t bytes_dropped = 0;
+>+
+>+	list_for_each_entry_safe(pkt, n, &vvs->rx_queue, list) {
+>+		if (le16_to_cpu(pkt->hdr.op) == VIRTIO_VSOCK_OP_SEQ_BEGIN)
+>+			break;
+>+
+>+		bytes_dropped += le32_to_cpu(pkt->hdr.len);
+>+		virtio_transport_dec_rx_pkt(vvs, pkt);
+>+		virtio_transport_remove_pkt(pkt);
+>+	}
+>+
+>+	return bytes_dropped;
+>+}
+>+
+>+size_t virtio_transport_seqpacket_seq_get_len(struct vsock_sock *vsk)
+>+{
+>+	struct virtio_vsock_seq_hdr *seq_hdr;
+>+	struct virtio_vsock_sock *vvs;
+>+	struct virtio_vsock_pkt *pkt;
+>+	size_t bytes_dropped;
+>+
+>+	vvs = vsk->trans;
+>+
+>+	spin_lock_bh(&vvs->rx_lock);
+>+
+>+	/* Fetch all orphaned 'RW' packets and send credit update. */
+>+	bytes_dropped = virtio_transport_drop_until_seq_begin(vvs);
+>+
+>+	if (list_empty(&vvs->rx_queue))
+>+		goto out;
 
-> On Fri, Mar 12, 2021 at 11:07:56AM +0000, Lee Jones wrote:
-> > Fixes the following W=1 kernel build warning(s):
-> > 
-> >  drivers/of/of_net.c:104: warning: Function parameter or member 'np' not described in 'of_get_mac_address'
-> >  drivers/of/of_net.c:104: warning: expecting prototype for mac(). Prototype was for of_get_mac_address() instead
-> > 
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> > Cc: Russell King <linux@armlinux.org.uk>
-> > Cc: Rob Herring <robh+dt@kernel.org>
-> > Cc: Frank Rowand <frowand.list@gmail.com>
-> > Cc: netdev@vger.kernel.org
-> > Cc: devicetree@vger.kernel.org
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  drivers/of/of_net.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
-> > index 6e411821583e4..9b41a343e88ab 100644
-> > --- a/drivers/of/of_net.c
-> > +++ b/drivers/of/of_net.c
-> > @@ -78,7 +78,7 @@ static const void *of_get_mac_addr_nvmem(struct device_node *np)
-> >  	return mac;
-> >  }
-> >  
-> > -/**
-> > +/*
-> >   * Search the device tree for the best MAC address to use.  'mac-address' is
-> >   * checked first, because that is supposed to contain to "most recent" MAC
-> >   * address. If that isn't set, then 'local-mac-address' is checked next,
-> 
-> Hi Lee
-> 
-> of_get_mac_address() is a pretty important API function. So it would
-> be better to add the missing header to make this valid kdoc.
+What do we return to in this case?
 
-Pretty important, yes.  Referenced/documented, no. :)
+IIUC we return the len of the previous packet, should we set 
+vvs->seqpacket_state.user_read_seq_len to 0?
 
-  `git grep kernel-doc:: | grep drivers/of`
+>+
+>+	pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
+>+
+>+	vvs->seqpacket_state.user_read_copied = 0;
+>+
+>+	seq_hdr = (struct virtio_vsock_seq_hdr *)pkt->buf;
+>+	vvs->seqpacket_state.user_read_seq_len = 
+>le32_to_cpu(seq_hdr->msg_len);
+>+	vvs->seqpacket_state.curr_rx_msg_id = le32_to_cpu(seq_hdr->msg_id);
+>+	virtio_transport_dec_rx_pkt(vvs, pkt);
+>+	virtio_transport_remove_pkt(pkt);
+>+out:
+>+	spin_unlock_bh(&vvs->rx_lock);
+>+
+>+	if (bytes_dropped)
+>+		virtio_transport_send_credit_update(vsk);
+>+
+>+	return vvs->seqpacket_state.user_read_seq_len;
+>+}
+>+EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_seq_get_len);
+>+
+> static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+> 						 struct msghdr *msg,
+> 						 bool *msg_ready)
+>-- 
+>2.25.1
+>
 
-> /**
->  * of_get_mac_address - Get MAC address from device tree
->  * @np: Pointer to the device_node of the interface
->  *
-> 
->  Andrew
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
