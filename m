@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E0833972E
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:10:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 317D8339730
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234021AbhCLTJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 14:09:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
+        id S234218AbhCLTKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 14:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234138AbhCLTJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:09:37 -0500
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D266C061574
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 11:09:37 -0800 (PST)
-Received: by mail-vs1-xe29.google.com with SMTP id e21so11059668vsh.5
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 11:09:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e7t9VojiwipX4c0DRhanIDC4EbKbaw1JgeC7dh9/MO8=;
-        b=o08uydWy9F4YyPA6hhBy2OBscsfZKNrXdsZH83oOzGF+TOyN1Z4hISahePWEHIsrnF
-         QfAlSd+9BGHZ9Q3LFbalQ8eNEkP0dtCnP7FiBVJD9ewYmeUWJOVm1A4sD8x6GrrSLCiE
-         vNrZyM4R1Kr4mNmVZe9/HQOAZq7l0iQv/F0GmjVf0S018n+vgFFysM9dCb7OgeJNDhCY
-         BVvXDlQL+N6lVLEsZtUfJnE5iv7rVEnkZtPovB74bsIe+cE65gXBK65bW7ktAES5JlaM
-         nnvzXvUWjEeVgV1KZQh28eU34BQl8jNi8tR0FVlAYwdmY2F7rKwNoxMBZyB6+Ubp3McF
-         kaqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e7t9VojiwipX4c0DRhanIDC4EbKbaw1JgeC7dh9/MO8=;
-        b=PqbwIp2XG+8bqVsXNXzga2/sJw19EXhv6vqWNt9L8ITDFNL8HRh4SVs4GPa+D0MLJH
-         yL+3WmmHJElFjagQAG7dqt5e31yofdEWny6lOEj3tziTu0TevUfZoIIPfSb6RmGOaEEz
-         +u2xUwkAnjxapsp92s4jIaNIWWdw14VKPg2Huep/doDIL+fKyLBqSLSkOV93JzilTERx
-         0ceNT4GaetfYC5f061EdIzNXo9xJLT9X0MTsC3+VBofMXVY6TLmopqdXtKVpjuhLVoq3
-         8+h0OmYPyWvQ3xGDJVmlDepgdSy1gJyrCQZLOam6rGRbvFx7TLGCFte+7AYQ0doLArws
-         4f2w==
-X-Gm-Message-State: AOAM532iEaHIVZi0DyK1UFA6twUeMojkRv5EfAKnvXQDzYQOtIHE3G8i
-        ttBFRk3QmfMRAv8DnfPio3qf2+YClybJ0baqS7o0aA==
-X-Google-Smtp-Source: ABdhPJxvn9Cq+22q4BiAMsAECZ+Zh/E5gmtQVktrPL4UZRrmuAAld72+wJRbxVB7Q9o+4+gJ3TQcDhoC7cYbsGfKCbw=
-X-Received: by 2002:a67:1005:: with SMTP id 5mr9565286vsq.52.1615576176281;
- Fri, 12 Mar 2021 11:09:36 -0800 (PST)
+        with ESMTP id S234144AbhCLTJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:09:51 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07B7C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 11:09:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=DCkzR8+e85DChyd/6ktWZc41wjVGKK7x0dAqArN8kys=; b=aCkpLJQzRV39KK4/JCPogvBQ7
+        u1ew82EcIuQ/odS3zc8tzRW8mkNDRAhwp32RF2eJYX5ASivH0bgsSoDXsKiFsYJabygZPrfzoIT4X
+        4C5jNWWDiD2NsE8bqI6IuH2V4ufPsBOPvF4Jfik0JMhGGhoUJPLraPT2iBrIzy6I295hq7ce3pWth
+        yZEyUHJ62EM/Wyts/TERA3ykWL5q5PL83EDFqma4XolQtkxOBAMlRxosSJ/+8aGgJS2VsbC32cZG6
+        6F1Ol3A4X+y7c1D1mkE3+IkcQByvAp/tPCx+Biffjb4i61KPVoRabduP9luPFnmVZ4PYTCh5rP60K
+        hsDafPYaA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50972)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lKnAE-00070F-0G; Fri, 12 Mar 2021 19:09:34 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lKnAD-0002nG-3U; Fri, 12 Mar 2021 19:09:33 +0000
+Date:   Fri, 12 Mar 2021 19:09:33 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: stmmac driver timeout issue
+Message-ID: <20210312190932.GK1463@shell.armlinux.org.uk>
+References: <DB8PR04MB679570F30CC2E4FEAFE942C5E6979@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <8a996459-fc77-2e98-cc0c-91defffc7f29@gmail.com>
+ <DB8PR04MB6795BB20842D377DF285BB5FE6939@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <49fedeb2-b25b-10d0-575f-f9808a537124@gmail.com>
+ <DB8PR04MB6795BCB93919DF684CA8DA79E6909@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <5d636daa-b25a-d0f1-dc95-b021cb0f53eb@gmail.com>
 MIME-Version: 1.0
-References: <20210311203506.3450792-1-eric.dumazet@gmail.com>
- <20210312101847.7391bb8c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAK6E8=dwWsvnimB1VW2WUcnVHQ298E6uuo0v9ej92TawAV+S2Q@mail.gmail.com>
-In-Reply-To: <CAK6E8=dwWsvnimB1VW2WUcnVHQ298E6uuo0v9ej92TawAV+S2Q@mail.gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 12 Mar 2021 14:09:19 -0500
-Message-ID: <CADVnQynwUZxaCyWgAikounP6esrKNy9Z40cA30aLBCVf8QNwiQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/3] tcp: better deal with delayed TX completions
-To:     Yuchung Cheng <ycheng@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Neil Spring <ntspring@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5d636daa-b25a-d0f1-dc95-b021cb0f53eb@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 12, 2021 at 2:05 PM Yuchung Cheng <ycheng@google.com> wrote:
->
-> On Fri, Mar 12, 2021 at 10:18 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 11 Mar 2021 12:35:03 -0800 Eric Dumazet wrote:
-> > > From: Eric Dumazet <edumazet@google.com>
-> > >
-> > > Jakub and Neil reported an increase of RTO timers whenever
-> > > TX completions are delayed a bit more (by increasing
-> > > NIC TX coalescing parameters)
-> > >
-> > > While problems have been there forever, second patch might
-> > > introduce some regressions so I prefer not backport
-> > > them to stable releases before things settle.
-> > >
-> > > Many thanks to FB team for their help and tests.
-> > >
-> > > Few packetdrill tests need to be changed to reflect
-> > > the improvements brought by this series.
-> >
-> > FWIW I run some workloads with this for a day and looks good:
-> >
-> > Tested-by: Jakub Kicinski <kuba@kernel.org>
-> Acked-by: Yuchung Cheng <ycheng@google.com>
-> Thank you Eric for fixing the bug.
+On Fri, Mar 12, 2021 at 10:33:06AM -0800, Florian Fainelli wrote:
+> On 3/11/21 4:04 AM, Joakim Zhang wrote:
+> > I have a question about PHY framework, please point me if something I misunderstanding.
+> > There are many scenarios from PHY framework would trigger auto-nego, such as switch from power down to normal operation, but it never polling the ack of auto-nego (phy_poll_aneg_done), is there any special reasons? Is it possible and reasonable for MAC controller driver to poll this ack, if yes, at least we have a stable RXC at that time.
+> 
+> Adding Heiner and Russell as well. Usually you do not want, or rather
+> cannot know whether auto-negotiation will ever succeed, so waiting for
+> it could essentially hog your system for some fairly indefinite amount
+> of time.
 
-The series looks good to me as well.
+I think the question being asked is essentially whether checking the
+link status bit (1.2) without checking the aneg complete bit (1.5) is
+sufficient.
 
-Re this one:
--               WARN_ON(tp->retrans_out != 0);
-+               WARN_ON(tp->retrans_out != 0 && !tp->syn_data);
+Reading 802.3, it seems to be defined that if autonegotiation is in
+use, the link shall be reported as down until autonegotiation has
+completed - which is logical. The link can only be up if a valid
+data path capable of transferring data has been established, which
+implies that autonegotiation must have completed.
 
-it seems a little unfortunate to lose the power of this WARN_ON for
-the lifetime of TFO connections, but I do not have a better idea. :-)
+However, note that when coming out of power down, there is no guarantee
+that there is anything connected to the other side of the media, and
+thus there is no guarantee that autonegotiation will complete. Waiting
+for autonegotiation to complete in this case would not be feasible.
 
-thanks,
-neal
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
