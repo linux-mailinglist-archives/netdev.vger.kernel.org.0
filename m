@@ -2,91 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 003F43396DA
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 19:46:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7595C3396ED
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 19:50:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233970AbhCLSpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 13:45:42 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:12236 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233962AbhCLSpf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 13:45:35 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12CIXQEj063339
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 13:45:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=Cmx/80GclWPESQwu9gO+Jwee57BaijdNP/T3Lg+g5Yo=;
- b=ATtKPmpV+O1xCROXFw6iglJUwvCYNcSUVidZNICrkiZmz/jMbzoJDOLkAqWb7C0wtEC2
- JV8QRBFsefjFxcg/oB+XW3ERA9xZZAMl10yaL1AKLt8ism58BWKCRpGBJ+JuYppFN3O+
- Ssmm1RD3C0ovM3ss8W/FnHMATafI8noct06GRMDT406h8sFLXuFIxqLYfTozETwjTHdt
- eRdEElZpw3eOXQT7fJHpmrNyuzNq/GkeIuJK56L3eXfuGQl/8RyBPND9fxqWPJaZXYME
- BqCK/a9CwuMd4kqx4crrty6xzstdOSnrMRsIpxE61anZir6843HGzgPVqG/oqcOm1sZP Pg== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 378an95u2h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 13:45:34 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 12CIRPbe032621
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 18:45:34 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma01wdc.us.ibm.com with ESMTP id 3768mhhmkc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 18:45:33 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 12CIjWEi31392218
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 12 Mar 2021 18:45:32 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6238A6A058;
-        Fri, 12 Mar 2021 18:45:32 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B2E506A04D;
-        Fri, 12 Mar 2021 18:45:31 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.85.135.179])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 12 Mar 2021 18:45:31 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     tlfalcon@linux.ibm.com, Lijun Pan <ljp@linux.ibm.com>
-Subject: [PATCH net] ibmvnic: update MAINTAINERS
-Date:   Fri, 12 Mar 2021 12:45:30 -0600
-Message-Id: <20210312184530.14962-1-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
+        id S233680AbhCLSt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 13:49:59 -0500
+Received: from foss.arm.com ([217.140.110.172]:59532 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233668AbhCLStr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 13:49:47 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 494C2ED1;
+        Fri, 12 Mar 2021 10:49:47 -0800 (PST)
+Received: from [10.57.17.106] (unknown [10.57.17.106])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C5D73F793;
+        Fri, 12 Mar 2021 10:49:45 -0800 (PST)
+Subject: Re: [PATCH v2 1/5] thermal/drivers/core: Use a char pointer for the
+ cooling device name
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>
+References: <20210312170316.3138-1-daniel.lezcano@linaro.org>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+Message-ID: <18fdc11b-abda-25d9-582f-de2f9dfa2feb@arm.com>
+Date:   Fri, 12 Mar 2021 18:49:43 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-12_06:2021-03-12,2021-03-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=0 priorityscore=1501 adultscore=0 impostorscore=0
- mlxlogscore=999 spamscore=0 clxscore=1015 phishscore=0 mlxscore=0
- bulkscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103120135
+In-Reply-To: <20210312170316.3138-1-daniel.lezcano@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tom wrote most of the driver code and his experience is valuable to us.
-Add him as a Reviewer so that patches will be Cc'ed and reviewed by him.
 
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 47ae27ff6b4b..5a40554b2948 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8496,6 +8496,7 @@ IBM Power SRIOV Virtual NIC Device Driver
- M:	Dany Madden <drt@linux.ibm.com>
- M:	Lijun Pan <ljp@linux.ibm.com>
- M:	Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-+R:	Thomas Falcon <tlfalcon@linux.ibm.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/ibm/ibmvnic.*
--- 
-2.23.0
+On 3/12/21 5:03 PM, Daniel Lezcano wrote:
+> We want to have any kind of name for the cooling devices as we do no
+> longer want to rely on auto-numbering. Let's replace the cooling
+> device's fixed array by a char pointer to be allocated dynamically
+> when registering the cooling device, so we don't limit the length of
+> the name.
+> 
+> Rework the error path at the same time as we have to rollback the
+> allocations in case of error.
+> 
+> Tested with a dummy device having the name:
+>   "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
+> 
+> A village on the island of Anglesey (Wales), known to have the longest
+> name in Europe.
+> 
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> ---
+>   .../ethernet/mellanox/mlxsw/core_thermal.c    |  2 +-
+>   drivers/thermal/thermal_core.c                | 38 +++++++++++--------
+>   include/linux/thermal.h                       |  2 +-
+>   3 files changed, 24 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> index bf85ce9835d7..7447c2a73cbd 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> @@ -141,7 +141,7 @@ static int mlxsw_get_cooling_device_idx(struct mlxsw_thermal *thermal,
+>   	/* Allow mlxsw thermal zone binding to an external cooling device */
+>   	for (i = 0; i < ARRAY_SIZE(mlxsw_thermal_external_allowed_cdev); i++) {
+>   		if (strnstr(cdev->type, mlxsw_thermal_external_allowed_cdev[i],
+> -			    sizeof(cdev->type)))
+> +			    strlen(cdev->type)))
+>   			return 0;
+>   	}
+>   
+> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+> index 996c038f83a4..9ef8090eb645 100644
+> --- a/drivers/thermal/thermal_core.c
+> +++ b/drivers/thermal/thermal_core.c
+> @@ -960,10 +960,7 @@ __thermal_cooling_device_register(struct device_node *np,
+>   {
+>   	struct thermal_cooling_device *cdev;
+>   	struct thermal_zone_device *pos = NULL;
+> -	int result;
+> -
+> -	if (type && strlen(type) >= THERMAL_NAME_LENGTH)
+> -		return ERR_PTR(-EINVAL);
+> +	int ret;
+>   
+>   	if (!ops || !ops->get_max_state || !ops->get_cur_state ||
+>   	    !ops->set_cur_state)
+> @@ -973,14 +970,17 @@ __thermal_cooling_device_register(struct device_node *np,
+>   	if (!cdev)
+>   		return ERR_PTR(-ENOMEM);
+>   
+> -	result = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
+> -	if (result < 0) {
+> -		kfree(cdev);
+> -		return ERR_PTR(result);
+> +	ret = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
+> +	if (ret < 0)
+> +		goto out_kfree_cdev;
+> +	cdev->id = ret;
+> +
+> +	cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
+> +	if (!cdev->type) {
+> +		ret = -ENOMEM;
 
+Since we haven't called the device_register() yet, I would call here:
+kfree(cdev);
+and then jump
+
+> +		goto out_ida_remove;
+>   	}
+>   
+
+Other than that, LGTM
+
+Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+
+Regards,
+Lukasz
