@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC03D338216
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8B3338215
 	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 01:10:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231327AbhCLAKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 19:10:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35068 "EHLO mail.kernel.org"
+        id S231278AbhCLAKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 19:10:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35104 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230516AbhCLAKI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Mar 2021 19:10:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9874064F86;
-        Fri, 12 Mar 2021 00:10:08 +0000 (UTC)
+        id S230386AbhCLAKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 19:10:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7533164F94;
+        Fri, 12 Mar 2021 00:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615507808;
-        bh=Y3sk1aioaT2vZPU4+RoV2ntPrdby9FZLhK4jyRPlXZA=;
+        s=k20201202; t=1615507809;
+        bh=uOVYYV1YCWAEMC/RvrT1HZxGF1JSq+39rFFp7YjAv1o=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=t/44NLXednal7UiqXGsBu03lc16XHFOJtJPO23N1XOCqGFQz1FX/N9SVGYTfXtAIW
-         hQS2aOvYfvozQLdpq9lf5rN5IVO0rFpZpxpQ77ke2xrSpQzWurdRF7RfDpzrZwaNXr
-         kdD09g5a/Wu7IQ8UVJchr+TQUC1Y2SGCI2CSHcp/OpL7Uh3+n/66cTCExsp17s1kDu
-         NzD8r3yM60fDNqTgO0Is+7ma54wJFlKa6i3w4qbZMs7OJGTg3Yr+uNZzKKxoLsXlwv
-         lD6+PjltN04OnafSm2MJhWA0EM70nyKYwwXLqz+UexQxGM4H4+dBtW0YxkjqrR/CDo
-         RCC14H81efTPg==
+        b=MOyXw279zvTmU5E7WRv1EUeZOtGF0810I00sVy8l8LHww8Wzpt89AWNC8/84FtJbD
+         u1n6vTDmwXomCqfXcYlDOhCPiYRE20iL9VfKXEYSzas9UaehFGp6NkGiZ3vWVISWmM
+         HgQI73X8TKT4nRB3jJwpZbpuLyouK4TX7uYlB1EtYRMYF5J0/iY/HHPLTKJkvUFKf2
+         lC4EBjGiHyqanMIsUxRkZHsp/X3YAVHGHZbHX5d01eZQHDGN5Yn1r+/axfHrNZp4p8
+         VVXdvoXrK6pm06eZ7KSrRTurqqdR0+ppj4natPgsgU8c2vs2zl6LqYMDsoOqRlMyjV
+         f+HIqsfDlgeBg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 866FB609E7;
-        Fri, 12 Mar 2021 00:10:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 69C06609CD;
+        Fri, 12 Mar 2021 00:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net: sock: simplify tw proto registration
+Subject: Re: [PATCH net-next 0/2] net: hns3: two updates for -next
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161550780854.9767.12432124529018963233.git-patchwork-notify@kernel.org>
-Date:   Fri, 12 Mar 2021 00:10:08 +0000
-References: <20210311025736.77235-1-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20210311025736.77235-1-xiangxia.m.yue@gmail.com>
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     netdev@vger.kernel.org, alexanderduyck@fb.com
+Message-Id: <161550780942.9767.14297288301053264586.git-patchwork-notify@kernel.org>
+Date:   Fri, 12 Mar 2021 00:10:09 +0000
+References: <1615428852-2637-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1615428852-2637-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        huangdaode@huawei.com, linuxarm@openeuler.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 11 Mar 2021 10:57:36 +0800 you wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Thu, 11 Mar 2021 10:14:10 +0800 you wrote:
+> This series includes two updates for the HNS3 ethernet driver.
 > 
-> Introduce the new function tw_prot_init (inspired by
-> req_prot_init) to simplify "proto_register" function.
+> Yufeng Mo (2):
+>   net: hns3: use FEC capability queried from firmware
+>   net: hns3: use pause capability queried from firmware
 > 
-> tw_prot_cleanup will take care of a partially initialized
-> timewait_sock_ops.
-> 
-> [...]
+>  drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  4 ++++
+>  drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  3 +++
+>  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  8 +++++++
+>  .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  9 +++++++-
+>  .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  2 ++
+>  .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 26 +++++++++++++++-------
+>  6 files changed, 43 insertions(+), 9 deletions(-)
 
 Here is the summary with links:
-  - [net-next,v2] net: sock: simplify tw proto registration
-    https://git.kernel.org/netdev/net/c/b80350f39370
+  - [net-next,1/2] net: hns3: use FEC capability queried from firmware
+    https://git.kernel.org/netdev/net-next/c/433ccce83504
+  - [net-next,2/2] net: hns3: use pause capability queried from firmware
+    https://git.kernel.org/netdev/net-next/c/e8194f326205
 
 You are awesome, thank you!
 --
