@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D28D338263
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 01:33:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B746338268
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 01:33:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbhCLAcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 19:32:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48298 "EHLO
+        id S231591AbhCLAcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 19:32:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231374AbhCLAcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 19:32:19 -0500
-Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10592C061763
+        with ESMTP id S231390AbhCLAcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 19:32:20 -0500
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF834C061761
         for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 16:32:19 -0800 (PST)
-Received: by mail-oo1-xc2a.google.com with SMTP id n12-20020a4ad12c0000b02901b63e7bc1b4so1132835oor.5
+Received: by mail-oo1-xc2f.google.com with SMTP id x187-20020a4a41c40000b02901b664cf3220so1135471ooa.10
         for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 16:32:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6wVekdiQ/YA8nS7fIn/RALJfKdTTK3aVMvAOi2iip9U=;
-        b=pQemKSOE2hWkcq5S0NsPmn6nU08qCVCXLnEJAtAtWJVAePAKnrQyWP9/amyIGzQ+Fc
-         lQrm5qOh0SQC/I5AgFw6fS36FUwIevc62X/V6SMIkPC+yX8PdjEvIhTyA+u3WFppiYNq
-         pUl56X1em620q7eaTmMrb1TC9swVGLqukK04XKHGrGzJbRCUm7jV+NfbuaZHHQrMscXQ
-         VD7Fi9B+lDo+N3rsPL47gWwqqKN/ihGkrR4Zv0/UuYGXzTi3ayyKWM1naKrt0eu5y277
-         iueFGHixkgH+lEJE2c8FEvt3AecU8dGDBAkviowSiVbkzJ0byYMR6keTva6DmHkbnEgU
-         pKcA==
+        bh=vpiFAbc6Uj1QpQm54fJTeQbUXCAmAi96NAe0y5IDSWo=;
+        b=aejdvpsEyC/BPed7zecl+iL1hN5CAvgm1psnCqNP9GrIMZ8BMVzDvgFU+w8FXYOX64
+         NUg3GDnYBpih6KQ6Ijk6GRZQWDYuy4vs9ZYWsEEs+CnkW3n/2j6HInmSz38XOA/kiGTX
+         8Qm0xAX8BLjm5iIzhWV3+VDLuofhsPaAs0JpFiQp1SQZ4CetJflbTwFdvPMivmhRU4Wz
+         Z+mu5XpyN1jVwjdySmLHUxgzu4mbiAGPQQfY46Mm5vcoHYUBva1C7Cx71CO3FsC+Lxhi
+         X88EWICica45qO9eMI92t6h7QV7ujca1Z5WaTB02yrGXXiGvmT3nPEoa68dHO3ysqowX
+         SOKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6wVekdiQ/YA8nS7fIn/RALJfKdTTK3aVMvAOi2iip9U=;
-        b=W8TGAhZTRXheUJzb71OvKXO8id41R+ya3jxQh/J4/KiP2WybTh8jgZK7VYJVsKtCr5
-         VU+I7bQT7uNt7QvQFYLOpGGMdluTeAUQSCf1PyQju989n3UKGtD1CoYo1sNYWPqUa5Xw
-         YjH3ke+KrBZ5mW5gQz9vPRVH/aNsIOQBGpZaUg6v3JThvuZR5ARdcu6Rwx32aQU9btos
-         Es4OuYR1Mqol92tpS2kvlGjlFk5+Uty5o54jIQnQmcDqUkuJuuoElPn8Gvf8/9kw4wC5
-         CijW+9LUu/RaOJbjmwJcXdaMZcYvKlhnFJ9r2SD08RFJUSq6VUfgFm/LyRpbmW4vhYiX
-         fKJA==
-X-Gm-Message-State: AOAM531qzHNXUquBSuonpyGWIEoiKErNZ+oaHS+FoG+e/JLcXMCp0tfT
-        64QuyRIqcC/dd03SHB0+LV9wWA==
-X-Google-Smtp-Source: ABdhPJz1080lUBbniInnevnVB5hPiBvUGGcsqjokAVA002Q1OJ7/tfAjDImT8qm+F5JURaa+IyZLiw==
-X-Received: by 2002:a4a:96b3:: with SMTP id s48mr1254406ooi.11.1615509138437;
-        Thu, 11 Mar 2021 16:32:18 -0800 (PST)
+        bh=vpiFAbc6Uj1QpQm54fJTeQbUXCAmAi96NAe0y5IDSWo=;
+        b=GRM3paKAUFoMT364xRzyFmLxhRmT58fuJKlRDEThB9XPPNdd9jheVWImGGS5OiyuK0
+         RCgxrnvW8WBIQ6fDA+B5LnFGvsmvW/N4fDEgZw1lEg2PRcYiOzvsunSIXw5MQjHrO7Jq
+         327UBFJJEFYbnPeBLD66Xmm/ZqSss3DyjU/8KVTHtTikvmiTFgOPiWvWI8+X9pF8MkbH
+         1PXWi4ilS2J1CPcX3gdPkTdhArbkZHzm0+EGoAT5U+1KWdrvsWr8bfaEVo6z0zGRrPo0
+         NOp4tx9eFe0tzL35t8f07ca977fTZ6rqEz8MvFgXoF2CH2WD3g2LTQ5jF0K2zJh8V7AH
+         EUBA==
+X-Gm-Message-State: AOAM532oPbuCLLFlCLWZLOddlVfTYpy49FF7T/bmBByrCzSJy1f5p9/Z
+        Q4vWjRQ3wqRnynj8HgI43Eom7w==
+X-Google-Smtp-Source: ABdhPJwV3C0wPBRrcozaVMxaPYrDPhOxXN9oLRcsCz24V/4Of+nC2WLxrO3w9bi8byr52Gwhj+9UZA==
+X-Received: by 2002:a4a:e1e4:: with SMTP id u4mr1229682ood.41.1615509139396;
+        Thu, 11 Mar 2021 16:32:19 -0800 (PST)
 Received: from localhost.localdomain (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id l190sm670835oig.39.2021.03.11.16.32.17
+        by smtp.gmail.com with ESMTPSA id l190sm670835oig.39.2021.03.11.16.32.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Mar 2021 16:32:18 -0800 (PST)
+        Thu, 11 Mar 2021 16:32:19 -0800 (PST)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ Cc:     Kalle Valo <kvalo@codeaurora.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, wcn36xx@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 4/5] soc: qcom: wcnss_ctrl: Allow reading firmware-name from DT
-Date:   Thu, 11 Mar 2021 16:33:17 -0800
-Message-Id: <20210312003318.3273536-5-bjorn.andersson@linaro.org>
+Subject: [PATCH 5/5] arm64: dts: qcom: msm8916: Enable modem and WiFi
+Date:   Thu, 11 Mar 2021 16:33:18 -0800
+Message-Id: <20210312003318.3273536-6-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210312003318.3273536-1-bjorn.andersson@linaro.org>
 References: <20210312003318.3273536-1-bjorn.andersson@linaro.org>
@@ -70,47 +70,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The WLAN NV firmware blob differs between platforms, and possibly
-devices, so add support in the wcnss_ctrl driver for reading the path of
-this file from DT in order to allow these files to live in a generic
-file system (or linux-firmware).
-
-The new property is optional and the code falls back to the old filename
-if the property isn't specified.
+Enable the modem and WiFi subsystems and specify msm8916 specific
+firmware path for these and the WCNSS control service.
 
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/soc/qcom/wcnss_ctrl.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi | 12 ++++++++++++
+ arch/arm64/boot/dts/qcom/msm8916.dtsi     |  2 +-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/qcom/wcnss_ctrl.c b/drivers/soc/qcom/wcnss_ctrl.c
-index 358526b9de06..2a06d631e415 100644
---- a/drivers/soc/qcom/wcnss_ctrl.c
-+++ b/drivers/soc/qcom/wcnss_ctrl.c
-@@ -200,6 +200,7 @@ static int wcnss_download_nv(struct wcnss_ctrl *wcnss, bool *expect_cbc)
- 	struct wcnss_download_nv_req *req;
- 	const struct firmware *fw;
- 	struct device *dev = wcnss->dev;
-+	const char *nvbin = NVBIN_FILE;
- 	const void *data;
- 	ssize_t left;
- 	int ret;
-@@ -208,10 +209,13 @@ static int wcnss_download_nv(struct wcnss_ctrl *wcnss, bool *expect_cbc)
- 	if (!req)
- 		return -ENOMEM;
+diff --git a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+index 6aef0c2e4f0a..448e3561ef63 100644
+--- a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
++++ b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+@@ -305,6 +305,12 @@ &mdss {
+ 	status = "okay";
+ };
  
--	ret = request_firmware(&fw, NVBIN_FILE, dev);
-+	ret = of_property_read_string(dev->of_node, "firmware-name", &nvbin);
-+	if (ret < 0 && ret != -EINVAL)
-+		goto free_req;
++&mpss {
++	status = "okay";
 +
-+	ret = request_firmware(&fw, nvbin, dev);
- 	if (ret < 0) {
--		dev_err(dev, "Failed to load nv file %s: %d\n",
--			NVBIN_FILE, ret);
-+		dev_err(dev, "Failed to load nv file %s: %d\n", nvbin, ret);
- 		goto free_req;
- 	}
++	firmware-name = "qcom/msm8916/mba.mbn", "qcom/msm8916/modem.mbn";
++};
++
+ &pm8916_resin {
+ 	status = "okay";
+ 	linux,code = <KEY_VOLUMEDOWN>;
+@@ -312,6 +318,8 @@ &pm8916_resin {
+ 
+ &pronto {
+ 	status = "okay";
++
++	firmware-name = "qcom/msm8916/wcnss.mbn";
+ };
+ 
+ &sdhc_1 {
+@@ -394,6 +402,10 @@ &wcd_codec {
+ 	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
+ };
+ 
++&wcnss_ctrl {
++	firmware-name = "qcom/msm8916/WCNSS_qcom_wlan_nv.bin";
++};
++
+ /* Enable CoreSight */
+ &cti0 { status = "okay"; };
+ &cti1 { status = "okay"; };
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index 5353da521974..1118836c15dd 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -1738,7 +1738,7 @@ smd-edge {
+ 
+ 				label = "pronto";
+ 
+-				wcnss {
++				wcnss_ctrl: wcnss {
+ 					compatible = "qcom,wcnss";
+ 					qcom,smd-channels = "WCNSS_CTRL";
  
 -- 
 2.29.2
