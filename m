@@ -2,157 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E46B3391B3
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 16:44:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BD1B33922E
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 16:48:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232314AbhCLPoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 10:44:06 -0500
-Received: from outbound-smtp32.blacknight.com ([81.17.249.64]:44192 "EHLO
-        outbound-smtp32.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231928AbhCLPnf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 10:43:35 -0500
-Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
-        by outbound-smtp32.blacknight.com (Postfix) with ESMTPS id 650F1BEC33
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 15:43:33 +0000 (GMT)
-Received: (qmail 19934 invoked from network); 12 Mar 2021 15:43:33 -0000
-Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPA; 12 Mar 2021 15:43:33 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 7/7] net: page_pool: use alloc_pages_bulk in refill code path
-Date:   Fri, 12 Mar 2021 15:43:31 +0000
-Message-Id: <20210312154331.32229-8-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210312154331.32229-1-mgorman@techsingularity.net>
-References: <20210312154331.32229-1-mgorman@techsingularity.net>
+        id S231990AbhCLPrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 10:47:47 -0500
+Received: from simonwunderlich.de ([79.140.42.25]:38816 "EHLO
+        simonwunderlich.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231922AbhCLPre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 10:47:34 -0500
+Received: from kero.packetmixer.de (p4fd57512.dip0.t-ipconnect.de [79.213.117.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by simonwunderlich.de (Postfix) with ESMTPSA id 891DF174022;
+        Fri, 12 Mar 2021 16:47:32 +0100 (CET)
+From:   Simon Wunderlich <sw@simonwunderlich.de>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
+        Simon Wunderlich <sw@simonwunderlich.de>
+Subject: [PATCH 0/1] pull request for net-next: batman-adv 2021-03-12
+Date:   Fri, 12 Mar 2021 16:47:23 +0100
+Message-Id: <20210312154724.14980-1-sw@simonwunderlich.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Hi Jakub, hi David,
 
-There are cases where the page_pool need to refill with pages from the
-page allocator. Some workloads cause the page_pool to release pages
-instead of recycling these pages.
+this time we only have one patch in the pull request of batman-adv to
+go into net-next.
 
-For these workload it can improve performance to bulk alloc pages from
-the page-allocator to refill the alloc cache.
+Please pull or let me know of any problem!
 
-For XDP-redirect workload with 100G mlx5 driver (that use page_pool)
-redirecting xdp_frame packets into a veth, that does XDP_PASS to create
-an SKB from the xdp_frame, which then cannot return the page to the
-page_pool. In this case, we saw[1] an improvement of 18.8% from using
-the alloc_pages_bulk API (3,677,958 pps -> 4,368,926 pps).
+Thank you,
+      Simon
 
-[1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org
+The following changes since commit 25d81f9307ffc166427d93152498f45178f5936a:
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
- net/core/page_pool.c | 62 ++++++++++++++++++++++++++++----------------
- 1 file changed, 39 insertions(+), 23 deletions(-)
+  batman-adv: Fix names for kernel-doc blocks (2021-02-06 09:22:45 +0100)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 40e1b2beaa6c..a5889f1b86aa 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -208,44 +208,60 @@ noinline
- static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 						 gfp_t _gfp)
- {
-+	const int bulk = PP_ALLOC_CACHE_REFILL;
-+	struct page *page, *next, *first_page;
- 	unsigned int pp_flags = pool->p.flags;
--	struct page *page;
-+	unsigned int pp_order = pool->p.order;
-+	int pp_nid = pool->p.nid;
-+	LIST_HEAD(page_list);
- 	gfp_t gfp = _gfp;
- 
--	/* We could always set __GFP_COMP, and avoid this branch, as
--	 * prep_new_page() can handle order-0 with __GFP_COMP.
--	 */
--	if (pool->p.order)
-+	/* Don't support bulk alloc for high-order pages */
-+	if (unlikely(pp_order)) {
- 		gfp |= __GFP_COMP;
-+		first_page = alloc_pages_node(pp_nid, gfp, pp_order);
-+		if (unlikely(!first_page))
-+			return NULL;
-+		goto out;
-+	}
- 
--	/* FUTURE development:
--	 *
--	 * Current slow-path essentially falls back to single page
--	 * allocations, which doesn't improve performance.  This code
--	 * need bulk allocation support from the page allocator code.
--	 */
--
--	/* Cache was empty, do real allocation */
--#ifdef CONFIG_NUMA
--	page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
--#else
--	page = alloc_pages(gfp, pool->p.order);
--#endif
--	if (!page)
-+	if (unlikely(!__alloc_pages_bulk(gfp, pp_nid, NULL, bulk, &page_list)))
- 		return NULL;
- 
-+	/* First page is extracted and returned to caller */
-+	first_page = list_first_entry(&page_list, struct page, lru);
-+	list_del(&first_page->lru);
-+
-+	/* Remaining pages store in alloc.cache */
-+	list_for_each_entry_safe(page, next, &page_list, lru) {
-+		list_del(&page->lru);
-+		if ((pp_flags & PP_FLAG_DMA_MAP) &&
-+		    unlikely(!page_pool_dma_map(pool, page))) {
-+			put_page(page);
-+			continue;
-+		}
-+		if (likely(pool->alloc.count < PP_ALLOC_CACHE_SIZE)) {
-+			pool->alloc.cache[pool->alloc.count++] = page;
-+			pool->pages_state_hold_cnt++;
-+			trace_page_pool_state_hold(pool, page,
-+						   pool->pages_state_hold_cnt);
-+		} else {
-+			put_page(page);
-+		}
-+	}
-+out:
- 	if ((pp_flags & PP_FLAG_DMA_MAP) &&
--	    unlikely(!page_pool_dma_map(pool, page))) {
--		put_page(page);
-+	    unlikely(!page_pool_dma_map(pool, first_page))) {
-+		put_page(first_page);
- 		return NULL;
- 	}
- 
- 	/* Track how many pages are held 'in-flight' */
- 	pool->pages_state_hold_cnt++;
--	trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
-+	trace_page_pool_state_hold(pool, first_page, pool->pages_state_hold_cnt);
- 
- 	/* When page just alloc'ed is should/must have refcnt 1. */
--	return page;
-+	return first_page;
- }
- 
- /* For using page_pool replace: alloc_pages() API calls, but provide
--- 
-2.26.2
+are available in the Git repository at:
 
+  git://git.open-mesh.org/linux-merge.git tags/batadv-next-pullrequest-20210312
+
+for you to fetch changes up to b1de0f01b0115575982cf24c88b35106449e9aa7:
+
+  batman-adv: Use netif_rx_any_context(). (2021-02-13 18:08:40 +0100)
+
+----------------------------------------------------------------
+There is only a single patch this time:
+
+ - Use netif_rx_any_context(), by Sebastian Andrzej Siewior
+
+----------------------------------------------------------------
+Sebastian Andrzej Siewior (1):
+      batman-adv: Use netif_rx_any_context().
+
+ net/batman-adv/bridge_loop_avoidance.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
