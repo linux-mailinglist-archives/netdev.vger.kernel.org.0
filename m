@@ -2,80 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAE623397DA
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 21:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DA6A3397DC
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 21:01:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234547AbhCLT75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 14:59:57 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:54722 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234524AbhCLT7x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 14:59:53 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lKnwj-00Aa3i-DN; Fri, 12 Mar 2021 20:59:41 +0100
-Date:   Fri, 12 Mar 2021 20:59:41 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Don Bollinger <don@thebollingers.org>
-Cc:     'Jakub Kicinski' <kuba@kernel.org>, arndb@arndb.de,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        brandon_chuang@edge-core.com, wally_wang@accton.com,
-        aken_liu@edge-core.com, gulv@microsoft.com, jolevequ@microsoft.com,
-        xinxliu@microsoft.com, 'netdev' <netdev@vger.kernel.org>,
-        'Moshe Shemesh' <moshe@nvidia.com>
-Subject: Re: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS
- EEPROMS
-Message-ID: <YEvILa9FK8qQs5QK@lunn.ch>
-References: <20210215193821.3345-1-don@thebollingers.org>
- <YDl3f8MNWdZWeOBh@lunn.ch>
- <000901d70cb2$b2848420$178d8c60$@thebollingers.org>
- <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org>
- <YD1ScQ+w8+1H//Y+@lunn.ch>
- <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
- <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <005e01d71230$ad203be0$0760b3a0$@thebollingers.org>
- <YEL3ksdKIW7cVRh5@lunn.ch>
- <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org>
+        id S234339AbhCLUAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 15:00:34 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:62182 "EHLO
+        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234517AbhCLTrD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:47:03 -0500
+Date:   Fri, 12 Mar 2021 19:46:57 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1615578421; bh=OtoaEa4C9A8M8IjnX8ICb3j9vVq3aPxG0RyT+eIX9OU=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=V85xkCPVeVQhvYy7zZb5ATiY7ybI8IaO1ADBBYQH3uO/HtG021dPYP9SF81OIwtiQ
+         2oOyTTEEgpLjTxUzUcPpRzPPkLYBlRyrcTnF0d1gjg8uxa8TDdXL94S367o7aePwy2
+         svwpdW7jzhiFQTudYqjxyjEj4Z0DWrtuJIrZM0cdyGjVBIu120xJaq0pPwnBsU/l5X
+         lmHSCJHppAY6v4k0MkB60ShTWnTp+XbuIrw7nK18k6GZ91p0fSX1/qcLVqEfJ9Wrb0
+         kRUGz2BlJe9BZYsc/oVuQHtmoTJHsVl1KQ1yFp5EgDsftLl/Vc2M7o49F0VG/VFJFC
+         SA/RO78NuKUZA==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ariel Levkovich <lariel@mellanox.com>,
+        Wang Qing <wangqing@vivo.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH net-next 5/6] ethernet: constify eth_get_headlen()'s @data argument
+Message-ID: <20210312194538.337504-6-alobakin@pm.me>
+In-Reply-To: <20210312194538.337504-1-alobakin@pm.me>
+References: <20210312194538.337504-1-alobakin@pm.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This interface is implemented in python scripts provided by the switch
-> platform
-> vendor.  Those scripts encode the mapping of CPLD i2c muxes to i2c buses to
-> port numbers, specific to each switch.
-> 
-> At the bottom of that python stack, all EEPROM access goes through
-> open/seek/read/close access to the optoe managed file in 
-> /sys/bus/i2c/devices/{num}-0050/eeprom.
+It's used only for flow dissection, which now takes constant data
+pointers.
 
-And this python stack is all open source? So you should be able to
-throw away parts of the bottom end and replace it with a different
-KAPI, and nobody will notice? In fact, this is probably how it was
-designed. Anybody working with out of tree code knows what gets merged
-later is going to be different because of review comments. And KAPI
-code is even more likely to be different. So nobody really expected
-optoe to get merged as is.
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+---
+ include/linux/etherdevice.h | 2 +-
+ net/ethernet/eth.c          | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> You're not going to like this, but ethtool -e and ethtool -m both
-> return ' Ethernet0 Cannot get EEPROM data: Operation not supported',
-> for every port managed by the big switch silicon.
+diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+index bcb2f81baafb..330345b1be54 100644
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -29,7 +29,7 @@ struct device;
+ int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr);
+ unsigned char *arch_get_platform_mac_address(void);
+ int nvmem_get_mac_address(struct device *dev, void *addrbuf);
+-u32 eth_get_headlen(const struct net_device *dev, void *data, unsigned int=
+ len);
++u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 le=
+n);
+ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
+ extern const struct header_ops eth_header_ops;
 
-You are still missing what i said. The existing IOCTL interface needs
-a network interface name. But there is no reason why you cannot extend
-the new netlink KAPI to take an alternative identifier, sfp42. That
-maps directly to the SFP device, without using an interface name. Your
-pile of python can directly use the netlink API, the ethtool command
-does not need to make use of this form of identifier, and you don't
-need to "screen scrape" ethtool.
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index 4106373180c6..e01cf766d2c5 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -122,7 +122,7 @@ EXPORT_SYMBOL(eth_header);
+  * Make a best effort attempt to pull the length for all of the headers fo=
+r
+  * a given frame in a linear buffer.
+  */
+-u32 eth_get_headlen(const struct net_device *dev, void *data, unsigned int=
+ len)
++u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 le=
+n)
+ {
+ =09const unsigned int flags =3D FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
+ =09const struct ethhdr *eth =3D (const struct ethhdr *)data;
+--
+2.30.2
 
-It seems very unlikely optoe is going to get merged. The network
-maintainers are against it, due to KAPI issues. I'm trying to point
-out a path you can take to get code merged. But it is up to you if you
-decided to follow it.
 
-	Andrew
