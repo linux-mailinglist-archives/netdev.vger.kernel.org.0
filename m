@@ -2,132 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F213397D3
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAE623397DA
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 21:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbhCLT4q convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 12 Mar 2021 14:56:46 -0500
-Received: from mga17.intel.com ([192.55.52.151]:45564 "EHLO mga17.intel.com"
+        id S234547AbhCLT75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 14:59:57 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54722 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232445AbhCLT4g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 14:56:36 -0500
-IronPort-SDR: MEs5AAPzGTwJNpCo94qBpWt183Me6GWVNDJSx7juvJkSxPDGgNOhtj39ZdhEEGxf2o6RQ1gQkn
- Ajqn7V396/3g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9921"; a="168798196"
-X-IronPort-AV: E=Sophos;i="5.81,244,1610438400"; 
-   d="scan'208";a="168798196"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2021 11:56:35 -0800
-IronPort-SDR: lo0eVtuq9niIqctdLC7zcWbI+l4+49Xv8/Ye4bIXxiKocV4QcftDJYP+HXUJA4WVf3vLB+MSzu
- Rm70hW6ItMlw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,244,1610438400"; 
-   d="scan'208";a="589647738"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by orsmga005.jf.intel.com with ESMTP; 12 Mar 2021 11:56:35 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 12 Mar 2021 11:56:35 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 12 Mar 2021 11:56:34 -0800
-Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
- ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2106.013;
- Fri, 12 Mar 2021 11:56:34 -0800
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>
-CC:     "f242ed68-d31b-527d-562f-c5a35123861a@intel.com" 
-        <f242ed68-d31b-527d-562f-c5a35123861a@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "guglielmo.morandin@broadcom.com" <guglielmo.morandin@broadcom.com>,
-        "eugenem@fb.com" <eugenem@fb.com>,
-        "eranbe@mellanox.com" <eranbe@mellanox.com>
-Subject: RE: [RFC net-next v2 1/3] devlink: move health state to uAPI
-Thread-Topic: [RFC net-next v2 1/3] devlink: move health state to uAPI
-Thread-Index: AQHXFiZNx+FhzhRDYEGXkuwGACHYP6p+72gAgACWsACAAUDRAA==
-Date:   Fri, 12 Mar 2021 19:56:34 +0000
-Message-ID: <209931b3a2504a328db3b91802dc618e@intel.com>
-References: <20210311032613.1533100-1-kuba@kernel.org>
-        <20210311074734.GN4652@nanopsycho.orion>
- <20210311084654.4dcfdb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210311084654.4dcfdb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S234524AbhCLT7x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 14:59:53 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lKnwj-00Aa3i-DN; Fri, 12 Mar 2021 20:59:41 +0100
+Date:   Fri, 12 Mar 2021 20:59:41 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Don Bollinger <don@thebollingers.org>
+Cc:     'Jakub Kicinski' <kuba@kernel.org>, arndb@arndb.de,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        brandon_chuang@edge-core.com, wally_wang@accton.com,
+        aken_liu@edge-core.com, gulv@microsoft.com, jolevequ@microsoft.com,
+        xinxliu@microsoft.com, 'netdev' <netdev@vger.kernel.org>,
+        'Moshe Shemesh' <moshe@nvidia.com>
+Subject: Re: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS
+ EEPROMS
+Message-ID: <YEvILa9FK8qQs5QK@lunn.ch>
+References: <20210215193821.3345-1-don@thebollingers.org>
+ <YDl3f8MNWdZWeOBh@lunn.ch>
+ <000901d70cb2$b2848420$178d8c60$@thebollingers.org>
+ <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org>
+ <YD1ScQ+w8+1H//Y+@lunn.ch>
+ <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
+ <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <005e01d71230$ad203be0$0760b3a0$@thebollingers.org>
+ <YEL3ksdKIW7cVRh5@lunn.ch>
+ <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, March 11, 2021 8:47 AM
-> To: Jiri Pirko <jiri@resnulli.us>
-> Cc: f242ed68-d31b-527d-562f-c5a35123861a@intel.com;
-> netdev@vger.kernel.org; saeedm@nvidia.com;
-> andrew.gospodarek@broadcom.com; Keller, Jacob E <jacob.e.keller@intel.com>;
-> guglielmo.morandin@broadcom.com; eugenem@fb.com;
-> eranbe@mellanox.com
-> Subject: Re: [RFC net-next v2 1/3] devlink: move health state to uAPI
+> This interface is implemented in python scripts provided by the switch
+> platform
+> vendor.  Those scripts encode the mapping of CPLD i2c muxes to i2c buses to
+> port numbers, specific to each switch.
 > 
-> On Thu, 11 Mar 2021 08:47:34 +0100 Jiri Pirko wrote:
-> > Thu, Mar 11, 2021 at 04:26:11AM CET, kuba@kernel.org wrote:
-> > >Move the health states into uAPI, so applications can use them.
-> > >
-> > >Note that we need to change the name of the enum because
-> > >user space is likely already defining the same values.
-> > >E.g. iproute2 does.
-> > >
-> > >Use this opportunity to shorten the names.
-> > >
-> > >Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > >---
-> > > .../net/ethernet/broadcom/bnxt/bnxt_devlink.c  |  4 ++--
-> > > .../ethernet/mellanox/mlx5/core/en/health.c    |  4 ++--
-> > > include/net/devlink.h                          |  7 +------
-> > > include/uapi/linux/devlink.h                   | 12 ++++++++++++
-> > > net/core/devlink.c                             | 18 +++++++++---------
-> > > 5 files changed, 26 insertions(+), 19 deletions(-)
-> > >
-> > >diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> > >index 64381be935a8..cafc98ab4b5e 100644
-> > >--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> > >+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> > >@@ -252,9 +252,9 @@ void bnxt_dl_health_status_update(struct bnxt *bp,
-> bool healthy)
-> > > 	u8 state;
-> > >
-> > > 	if (healthy)
-> > >-		state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
-> > >+		state = DL_HEALTH_STATE_HEALTHY;
-> > > 	else
-> > >-		state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
-> > >+		state = DL_HEALTH_STATE_ERROR;
-> >
-> > I don't like the inconsistencies in the uapi (DL/DEVLINK). Can't we
-> > stick with "DEVLINK" prefix for all, which is what we got so far?
-> 
-> Sure, but you have seen the previous discussion about the length of
-> devlink names, right? I'm not the only one who thinks this is a counter
-> productive rule.
+> At the bottom of that python stack, all EEPROM access goes through
+> open/seek/read/close access to the optoe managed file in 
+> /sys/bus/i2c/devices/{num}-0050/eeprom.
 
-I'd like  to see us shorten the names where possible. I do think we should be consistent in how we do it. I like DL_, but it would be nice if we could get "DL_HEATH_" for all health related ones, and so on, working towards shortening across the board over time?
+And this python stack is all open source? So you should be able to
+throw away parts of the bottom end and replace it with a different
+KAPI, and nobody will notice? In fact, this is probably how it was
+designed. Anybody working with out of tree code knows what gets merged
+later is going to be different because of review comments. And KAPI
+code is even more likely to be different. So nobody really expected
+optoe to get merged as is.
 
-I also didn't mind the "DLH_" that you used in another spot, though that could get us into trouble eventually once two features start with the same letter...
+> You're not going to like this, but ethtool -e and ethtool -m both
+> return ' Ethernet0 Cannot get EEPROM data: Operation not supported',
+> for every port managed by the big switch silicon.
 
-Thanks,
-Jake
+You are still missing what i said. The existing IOCTL interface needs
+a network interface name. But there is no reason why you cannot extend
+the new netlink KAPI to take an alternative identifier, sfp42. That
+maps directly to the SFP device, without using an interface name. Your
+pile of python can directly use the netlink API, the ethtool command
+does not need to make use of this form of identifier, and you don't
+need to "screen scrape" ethtool.
+
+It seems very unlikely optoe is going to get merged. The network
+maintainers are against it, due to KAPI issues. I'm trying to point
+out a path you can take to get code merged. But it is up to you if you
+decided to follow it.
+
+	Andrew
