@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 153AD3393EF
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:53:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 435B33393F0
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:53:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232847AbhCLQwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 11:52:23 -0500
-Received: from mail-mw2nam12on2086.outbound.protection.outlook.com ([40.107.244.86]:10961
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S232501AbhCLQw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 11:52:29 -0500
+Received: from mail-bn8nam12on2082.outbound.protection.outlook.com ([40.107.237.82]:22913
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231519AbhCLQvt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 11:51:49 -0500
+        id S232666AbhCLQvu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 11:51:50 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ndSlVYHc902oWvXRtRouerxs3Bn1SSYUTg6VYTA8WmzuTKu+8zzp4TaFTr+OCCmbRhCw5fXmIC/jA/+QXi8Xm99T90XwuS9jQYwgemT0E1Uy4Go0mM+IY1NVs5b0flZELd3uiSBrAYGQYLubsKlUoFaWqVgNDutT6QdP/J0NLuqz3N5VyWxFRQ+0BWTb17X8ZhHTE1ZDlrfZ7j89H1a+BoZ7XPOvq7t6UvrvdZ27nnxDYLaBNjmG2SY30SNJO3OOVBMV9V8nXoX9azlGz/0FMumpkZFmxosa8eMiwCXi/eVx5A8Fvn542tQX4DrX4gLKu+pRrpsNKPCuqOL6wrteHA==
+ b=Uq5AlKPs6ahEYQ2ooMno6gceK5I3YkFbZoajABxSlM1Jxa2vtVfVm1XoVKLMH+khJeDKrgkvLtECXTL0xU9kR0opRnSP+Dms/zFPh+peaBChEepJX/VOg8MYVcjp6qFkxPugVUbs3P0eNMUZ7ZxBOYr0b8Z+rjQtMkmVnsrwY34aCG9MBTgTQfRW6hPdtUmWL9CiSWACLDYTCT0zvWTXWum0kNqBLCMY3KO62nFMFn6i+8S0vusUS+CMpYvBj8RRbyscnmCrNLz8kE4fk0me5xYfr/0G88YDR2XmCJGCujZze0T80pd2+StglV7qlJ2FRTwhF9Tw6RSiLEBB45/LTQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NkUcFnf44rGycw34vXvF9ji7xQNYh6/LIC55T22mLm0=;
- b=gje5fz0yTJhjlbIKHl+5G5UZlk44V5oZm9x1hG42XBQxcePfhhFhUfBt1EX/K0w/k5tzQdr08bus7TcHwB3IusICJ4i1BNL7qxx1NYgmWcs+jj90c0MyYrTqYYAD3wdg5mzQNN+68pUjMz3Y8RvXce5jnk+1AvtmFhoXGSc0iC6wFLgBUVdBB3RDtBRBp2kzZXCw0BtrfyQFrFXQBu4rr4BbuXFS7XSf9TiYycoZnVjdldJXusYFyCRJJGNRGom5JXFm3NaVZSCuk4zBWC/wNIKnyjzqlredXVe2/an1cg9Ck6hf7NBU4MPXNXayNC7e00YTvlJQNyUp/apydNVUOQ==
+ bh=RDwJ/nY47edYHe0KDOtAEiqHJboO5e+d36PkGw1+738=;
+ b=dI6kD59H1uh90+GQola7IKrz90fmX2rhr2L+3zeLFOBjl4P8rn5R+WLjIZorwvlrWmEH98wWEsQEvS6w1bArrIaGxSFlkM+sijADEtXig6aZhZfUPdtDafB6MxJoJbTcMaCtg3I6AfT7MLxa8KSptCwffulTmdbQdfvgbyHzdsqsQGUt/R2lcBgmY5STLKjaIh4EufLWhoicma9ZeGO2rIfn9iVKnAgFtetXQCg4SF2c8dNqbZOu3befUJXFgz94YOTT33z+Z4RA7XQvOLumP9mMKLU+M0Q4P3QLyGKfIcmwqvjw02O3+TwZB7d7FHwUt2VTz8yhFiowE7vWCXLEDg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,17 +26,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NkUcFnf44rGycw34vXvF9ji7xQNYh6/LIC55T22mLm0=;
- b=c3YmKYtBb1Z0ObEW2khAfq/UbquIQB3/4IU2zaswHplGC1rop1Bumg4EktqWK0Zl6E4B+cXBknoCvx+WRRRghqWR2FRPk6RDle22tdnq9EjDxMSR6XYutOlkqp7cajO2M9s/i684JRwPnwRlGW7qOGiTHW5Vjwn/dQqR89PGph+SZ8mzEaivZnJSLla+8u69VLrDqVofvAeFiM7tEynQw8TMOnCBXbEhnT4VtiGgORX27+SSADTuxxCoNKihGIPPmsD/X6DJRJEtUEe0o4qjrcoWnx+xfMbEepuPyIx2UvpRR6fRTcz9AkZU1OgGqNF7Wdx7HLFh31T8QZ9rfX2k/Q==
-Received: from DM3PR12CA0053.namprd12.prod.outlook.com (2603:10b6:0:56::21) by
- BN7PR12MB2675.namprd12.prod.outlook.com (2603:10b6:408:2f::14) with Microsoft
+ bh=RDwJ/nY47edYHe0KDOtAEiqHJboO5e+d36PkGw1+738=;
+ b=rqEkCV8kJ3CqoqkdNSY88WiMDY4YlMqElslj22gmHyhUkdR9gxCeeQNqOSRLCz/W9HMKcjomhmq8KP/pAIp+qBXY4nGEPszHLk4x9Gb/PDF/Zp/hp+8I7gKmbPqGQEXc6Cmrw/jwo78RMmrS16p7O50MfZcTLj6hTBeehHeR6pZ7oVKIIew5kWjVV9YhTPUbgoPLEz/gypouw885MraEViXXBg8bPueiSmrw0+gTeDVcwfsCrHYZMyluNbIhFdBMoWPtFiiPN98zovNX/BPqgWgcmjR+QDjnSr2Yvc9GLBn5aZ9E2BLeJ34eyGJt/mJ6yP2MPEguJKd/TIQNNGAHAg==
+Received: from DM3PR12CA0045.namprd12.prod.outlook.com (2603:10b6:0:56::13) by
+ SN1PR12MB2558.namprd12.prod.outlook.com (2603:10b6:802:2b::18) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3846.27; Fri, 12 Mar 2021 16:51:42 +0000
+ 15.20.3933.32; Fri, 12 Mar 2021 16:51:47 +0000
 Received: from DM6NAM11FT062.eop-nam11.prod.protection.outlook.com
- (2603:10b6:0:56:cafe::a8) by DM3PR12CA0053.outlook.office365.com
- (2603:10b6:0:56::21) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:0:56:cafe::b8) by DM3PR12CA0045.outlook.office365.com
+ (2603:10b6:0:56::13) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Fri, 12 Mar 2021 16:51:42 +0000
+ Transport; Fri, 12 Mar 2021 16:51:47 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
@@ -46,19 +46,19 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.112.34) by
  DM6NAM11FT062.mail.protection.outlook.com (10.13.173.40) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Fri, 12 Mar 2021 16:51:41 +0000
+ 15.20.3933.31 via Frontend Transport; Fri, 12 Mar 2021 16:51:46 +0000
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 12 Mar
- 2021 16:51:38 +0000
+ 2021 16:51:41 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ido Schimmel <idosch@nvidia.com>, David Ahern <dsahern@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         "Petr Machata" <petrm@nvidia.com>
-Subject: [PATCH net-next 09/10] selftests: forwarding: Add resilient multipath tunneling nexthop test
-Date:   Fri, 12 Mar 2021 17:50:25 +0100
-Message-ID: <a9945581de7f3bb7b5d4c4a33e64371a9c8d8f17.1615563035.git.petrm@nvidia.com>
+Subject: [PATCH net-next 10/10] selftests: netdevsim: Add test for resilient nexthop groups offload API
+Date:   Fri, 12 Mar 2021 17:50:26 +0100
+Message-ID: <a195b3615166768daac20ce8fd4bd7b8887ab777.1615563035.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1615563035.git.petrm@nvidia.com>
 References: <cover.1615563035.git.petrm@nvidia.com>
@@ -70,409 +70,721 @@ X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 80971995-4ae6-482b-7e2a-08d8e5771cab
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2675:
-X-Microsoft-Antispam-PRVS: <BN7PR12MB26751AA0011459F88009F447D66F9@BN7PR12MB2675.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:635;
+X-MS-Office365-Filtering-Correlation-Id: 2073038d-8e6b-480b-0e20-08d8e5771fcb
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2558:
+X-Microsoft-Antispam-PRVS: <SN1PR12MB2558AC906577774A0D756947D66F9@SN1PR12MB2558.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rxsQz0cqfzkzyCKKXXvRyVi/kulun/f2T9bcwTaVLzFSchWnnTAoHxfruSdwXZ/MXciz4c31uZ50oH1QrXuWnCGK/IsvlX68fZ+3En8oMRSlaEl/QZYeAsVY6/IU2glJHz4oI2Nkk52WcjYCtaDYg/IKfP31d8yGLdUbuAJAA0BIY9n7W3nYuN1CPXe2A+XSuZRqu/2Sd4Sb39I2rRbxQNX8b9x+OS9mpVMK8pjLl5WVEnZuo7KB9okhJkixknYqWTp+H1GCBQM24ITtaGrF95EMAn6mrP9g++eHTmpKOLw33WjjXtnXop045C9zcBOq0FPtfteOR4NFYhikjtpc6vtrnn5W7RAbUH8ZdHy6Nl9Kva/jbZZg+f5Tq2im5sC3jQX0mLBAkgsaTJxG3RgGu+7L90jFVMUDx16BmLEvIGlk+UyWF+qd3hjmf7w0aunbT10OAx8BrdGREF/zcoWuuuiP6spAjTEF9JaguT1VEjEv9W0IU6g15y+cJ/H+AAaLc1Ha7cUPOKDdBRMHzb4zdcBy8pJV1wYJO2A/l2++J7Hu5lOZuOwUjHbZRAdBvhYfZmRW8fjV1BZwlH1v0oAqeCD1GWJ4/oGRlPAwDYG0+38ArijiKWji2cPedFdRVrZ/FiN5zIXqGmof0H6EMy/C/W6/iFNu5tnD6nxF5WElPm2FYzPEjw0Mid3RoSATe3gR
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(396003)(376002)(346002)(39860400002)(36840700001)(46966006)(356005)(426003)(2616005)(83380400001)(36860700001)(4326008)(8676002)(186003)(107886003)(8936002)(6666004)(34020700004)(82310400003)(82740400003)(47076005)(7636003)(54906003)(16526019)(5660300002)(478600001)(36756003)(336012)(2906002)(86362001)(70586007)(70206006)(6916009)(316002)(26005)(36906005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 9eGZHY/QKNk1jpS2Y8xgwtrzSIWUqMpqBB6GX9cTQxunBWdp87vM7bU1RQBBLRnaaBtUJO+Ttgp2XghcN3cjIyMGnr0bRwshU0L/A1hqzg1KJUxWIir3Q2pE0Z4jfvBYuyVqVhU964XDXjXfNFAJ4gsVrFrVGhsDLWhv1PNxgVll0ecVM7jWdFyhPncFMQ/0p2Ks+5IM3juP5VeVo5CsqIG4SCInFVnQSMsAS13Mzt1vLhf0B6VuvCB2pE4UlDj8AWt0iErdU8sD3z1L39feSXeOVUgFFqn671W45khy9ogpd9WeuPnMMNv1ZXbn5rx1vmGBQh5hjM25pB7HGlqAl5IDxbwe1HMeOzN0MR0S98iuaGMBxXZ5KU6S9+nib5qy9CWP9sgShgV5NRDuGTvdwAAY+eE+H/nBre+FZKqa1gnfTXyZCEqxcH6qJ8/1fxo0byNyIfpYjOlQ6yyO9KDrt9SKvTOtLzWoWXrOQoPqF0DPp5Pi0rg1mFIF+hbvFdrll7Qz6G7jn2318KUzdFfKD9emZ7OH4GncX4RdkwtaG0S0oJB6N0sb8q77s7Drs+nQuB5z+iEU4DeYS2/EluE0X3FeyT47+fEJhvJc0bpgpnJzAnSZ72lU/R4jllk/fb/EK+B20u+8pn/yaWt8YnPPqYN+fWh8qjHrQvuZl8adDSzEvtvSIvayb6fZm/CoWEf/
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(396003)(376002)(136003)(39860400002)(36840700001)(46966006)(36906005)(426003)(316002)(54906003)(30864003)(6666004)(7636003)(34020700004)(8676002)(82310400003)(2616005)(478600001)(356005)(8936002)(36756003)(36860700001)(82740400003)(47076005)(86362001)(186003)(16526019)(26005)(5660300002)(2906002)(6916009)(336012)(83380400001)(107886003)(70586007)(70206006)(4326008);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 16:51:41.6295
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 16:51:46.9065
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80971995-4ae6-482b-7e2a-08d8e5771cab
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2073038d-8e6b-480b-0e20-08d8e5771fcb
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT062.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2675
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2558
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Add a resilient nexthop objects version of gre_multipath_nh.sh. Test
-that both IPv4 and IPv6 overlays work with resilient nexthop groups
-where the nexthops are two GRE tunnels.
+Test various aspects of the resilient nexthop group offload API on top
+of the netdevsim implementation. Both good and bad flows are tested.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
+Co-developed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 ---
- .../net/forwarding/gre_multipath_nh_res.sh    | 361 ++++++++++++++++++
- 1 file changed, 361 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/gre_multipath_nh_res.sh
+ .../drivers/net/netdevsim/nexthop.sh          | 620 ++++++++++++++++++
+ 1 file changed, 620 insertions(+)
 
-diff --git a/tools/testing/selftests/net/forwarding/gre_multipath_nh_res.sh b/tools/testing/selftests/net/forwarding/gre_multipath_nh_res.sh
-new file mode 100755
-index 000000000000..088b65e64d66
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/gre_multipath_nh_res.sh
-@@ -0,0 +1,361 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# Test traffic distribution when a wECMP route forwards traffic to two GRE
-+# tunnels.
-+#
-+# +-------------------------+
-+# | H1                      |
-+# |               $h1 +     |
-+# |      192.0.2.1/28 |     |
-+# |  2001:db8:1::1/64 |     |
-+# +-------------------|-----+
-+#                     |
-+# +-------------------|------------------------+
-+# | SW1               |                        |
-+# |              $ol1 +                        |
-+# |      192.0.2.2/28                          |
-+# |  2001:db8:1::2/64                          |
-+# |                                            |
-+# |  + g1a (gre)          + g1b (gre)          |
-+# |    loc=192.0.2.65       loc=192.0.2.81     |
-+# |    rem=192.0.2.66 --.   rem=192.0.2.82 --. |
-+# |    tos=inherit      |   tos=inherit      | |
-+# |  .------------------'                    | |
-+# |  |                    .------------------' |
-+# |  v                    v                    |
-+# |  + $ul1.111 (vlan)    + $ul1.222 (vlan)    |
-+# |  | 192.0.2.129/28     | 192.0.2.145/28     |
-+# |   \                  /                     |
-+# |    \________________/                      |
-+# |            |                               |
-+# |            + $ul1                          |
-+# +------------|-------------------------------+
-+#              |
-+# +------------|-------------------------------+
-+# | SW2        + $ul2                          |
-+# |     _______|________                       |
-+# |    /                \                      |
-+# |   /                  \                     |
-+# |  + $ul2.111 (vlan)    + $ul2.222 (vlan)    |
-+# |  ^ 192.0.2.130/28     ^ 192.0.2.146/28     |
-+# |  |                    |                    |
-+# |  |                    '------------------. |
-+# |  '------------------.                    | |
-+# |  + g2a (gre)        | + g2b (gre)        | |
-+# |    loc=192.0.2.66   |   loc=192.0.2.82   | |
-+# |    rem=192.0.2.65 --'   rem=192.0.2.81 --' |
-+# |    tos=inherit          tos=inherit        |
-+# |                                            |
-+# |              $ol2 +                        |
-+# |     192.0.2.17/28 |                        |
-+# |  2001:db8:2::1/64 |                        |
-+# +-------------------|------------------------+
-+#                     |
-+# +-------------------|-----+
-+# | H2                |     |
-+# |               $h2 +     |
-+# |     192.0.2.18/28       |
-+# |  2001:db8:2::2/64       |
-+# +-------------------------+
-+
-+ALL_TESTS="
-+	ping_ipv4
-+	ping_ipv6
-+	multipath_ipv4
-+	multipath_ipv6
-+	multipath_ipv6_l4
-+"
-+
-+NUM_NETIFS=6
-+source lib.sh
-+
-+h1_create()
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/nexthop.sh b/tools/testing/selftests/drivers/net/netdevsim/nexthop.sh
+index be0c1b5ee6b8..ba75c81cda91 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/nexthop.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/nexthop.sh
+@@ -11,14 +11,33 @@ ALL_TESTS="
+ 	nexthop_single_add_err_test
+ 	nexthop_group_add_test
+ 	nexthop_group_add_err_test
++	nexthop_res_group_add_test
++	nexthop_res_group_add_err_test
+ 	nexthop_group_replace_test
+ 	nexthop_group_replace_err_test
++	nexthop_res_group_replace_test
++	nexthop_res_group_replace_err_test
++	nexthop_res_group_idle_timer_test
++	nexthop_res_group_idle_timer_del_test
++	nexthop_res_group_increase_idle_timer_test
++	nexthop_res_group_decrease_idle_timer_test
++	nexthop_res_group_unbalanced_timer_test
++	nexthop_res_group_unbalanced_timer_del_test
++	nexthop_res_group_no_unbalanced_timer_test
++	nexthop_res_group_short_unbalanced_timer_test
++	nexthop_res_group_increase_unbalanced_timer_test
++	nexthop_res_group_decrease_unbalanced_timer_test
++	nexthop_res_group_force_migrate_busy_test
+ 	nexthop_single_replace_test
+ 	nexthop_single_replace_err_test
+ 	nexthop_single_in_group_replace_test
+ 	nexthop_single_in_group_replace_err_test
++	nexthop_single_in_res_group_replace_test
++	nexthop_single_in_res_group_replace_err_test
+ 	nexthop_single_in_group_delete_test
+ 	nexthop_single_in_group_delete_err_test
++	nexthop_single_in_res_group_delete_test
++	nexthop_single_in_res_group_delete_err_test
+ 	nexthop_replay_test
+ 	nexthop_replay_err_test
+ "
+@@ -27,6 +46,7 @@ DEV_ADDR=1337
+ DEV=netdevsim${DEV_ADDR}
+ DEVLINK_DEV=netdevsim/${DEV}
+ SYSFS_NET_DIR=/sys/bus/netdevsim/devices/$DEV/net/
++DEBUGFS_NET_DIR=/sys/kernel/debug/netdevsim/$DEV/
+ NUM_NETIFS=0
+ source $lib_dir/lib.sh
+ source $lib_dir/devlink_lib.sh
+@@ -44,6 +64,28 @@ nexthop_check()
+ 	return 0
+ }
+ 
++nexthop_bucket_nhid_count_check()
 +{
-+	simple_if_init $h1 192.0.2.1/28 2001:db8:1::1/64
-+	ip route add vrf v$h1 192.0.2.16/28 via 192.0.2.2
-+	ip route add vrf v$h1 2001:db8:2::/64 via 2001:db8:1::2
-+}
++	local group_id=$1; shift
++	local expected
++	local count
++	local nhid
++	local ret
 +
-+h1_destroy()
-+{
-+	ip route del vrf v$h1 2001:db8:2::/64 via 2001:db8:1::2
-+	ip route del vrf v$h1 192.0.2.16/28 via 192.0.2.2
-+	simple_if_fini $h1 192.0.2.1/28
-+}
++	while (($# > 0)); do
++		nhid=$1; shift
++		expected=$1; shift
 +
-+sw1_create()
-+{
-+	simple_if_init $ol1 192.0.2.2/28 2001:db8:1::2/64
-+	__simple_if_init $ul1 v$ol1
-+	vlan_create $ul1 111 v$ol1 192.0.2.129/28
-+	vlan_create $ul1 222 v$ol1 192.0.2.145/28
-+
-+	tunnel_create g1a gre 192.0.2.65 192.0.2.66 tos inherit dev v$ol1
-+	__simple_if_init g1a v$ol1 192.0.2.65/32
-+	ip route add vrf v$ol1 192.0.2.66/32 via 192.0.2.130
-+
-+	tunnel_create g1b gre 192.0.2.81 192.0.2.82 tos inherit dev v$ol1
-+	__simple_if_init g1b v$ol1 192.0.2.81/32
-+	ip route add vrf v$ol1 192.0.2.82/32 via 192.0.2.146
-+
-+	ip -6 nexthop add id 101 dev g1a
-+	ip -6 nexthop add id 102 dev g1b
-+	ip nexthop add id 103 group 101/102 type resilient buckets 512 \
-+		idle_timer 0
-+
-+	ip route add vrf v$ol1 192.0.2.16/28 nhid 103
-+	ip route add vrf v$ol1 2001:db8:2::/64 nhid 103
-+}
-+
-+sw1_destroy()
-+{
-+	ip route del vrf v$ol1 2001:db8:2::/64
-+	ip route del vrf v$ol1 192.0.2.16/28
-+
-+	ip nexthop del id 103
-+	ip -6 nexthop del id 102
-+	ip -6 nexthop del id 101
-+
-+	ip route del vrf v$ol1 192.0.2.82/32 via 192.0.2.146
-+	__simple_if_fini g1b 192.0.2.81/32
-+	tunnel_destroy g1b
-+
-+	ip route del vrf v$ol1 192.0.2.66/32 via 192.0.2.130
-+	__simple_if_fini g1a 192.0.2.65/32
-+	tunnel_destroy g1a
-+
-+	vlan_destroy $ul1 222
-+	vlan_destroy $ul1 111
-+	__simple_if_fini $ul1
-+	simple_if_fini $ol1 192.0.2.2/28 2001:db8:1::2/64
-+}
-+
-+sw2_create()
-+{
-+	simple_if_init $ol2 192.0.2.17/28 2001:db8:2::1/64
-+	__simple_if_init $ul2 v$ol2
-+	vlan_create $ul2 111 v$ol2 192.0.2.130/28
-+	vlan_create $ul2 222 v$ol2 192.0.2.146/28
-+
-+	tunnel_create g2a gre 192.0.2.66 192.0.2.65 tos inherit dev v$ol2
-+	__simple_if_init g2a v$ol2 192.0.2.66/32
-+	ip route add vrf v$ol2 192.0.2.65/32 via 192.0.2.129
-+
-+	tunnel_create g2b gre 192.0.2.82 192.0.2.81 tos inherit dev v$ol2
-+	__simple_if_init g2b v$ol2 192.0.2.82/32
-+	ip route add vrf v$ol2 192.0.2.81/32 via 192.0.2.145
-+
-+	ip -6 nexthop add id 201 dev g2a
-+	ip -6 nexthop add id 202 dev g2b
-+	ip nexthop add id 203 group 201/202 type resilient buckets 512 \
-+		idle_timer 0
-+
-+	ip route add vrf v$ol2 192.0.2.0/28 nhid 203
-+	ip route add vrf v$ol2 2001:db8:1::/64 nhid 203
-+
-+	tc qdisc add dev $ul2 clsact
-+	tc filter add dev $ul2 ingress pref 111 prot 802.1Q \
-+	   flower vlan_id 111 action pass
-+	tc filter add dev $ul2 ingress pref 222 prot 802.1Q \
-+	   flower vlan_id 222 action pass
-+}
-+
-+sw2_destroy()
-+{
-+	tc qdisc del dev $ul2 clsact
-+
-+	ip route del vrf v$ol2 2001:db8:1::/64
-+	ip route del vrf v$ol2 192.0.2.0/28
-+
-+	ip nexthop del id 203
-+	ip -6 nexthop del id 202
-+	ip -6 nexthop del id 201
-+
-+	ip route del vrf v$ol2 192.0.2.81/32 via 192.0.2.145
-+	__simple_if_fini g2b 192.0.2.82/32
-+	tunnel_destroy g2b
-+
-+	ip route del vrf v$ol2 192.0.2.65/32 via 192.0.2.129
-+	__simple_if_fini g2a 192.0.2.66/32
-+	tunnel_destroy g2a
-+
-+	vlan_destroy $ul2 222
-+	vlan_destroy $ul2 111
-+	__simple_if_fini $ul2
-+	simple_if_fini $ol2 192.0.2.17/28 2001:db8:2::1/64
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 192.0.2.18/28 2001:db8:2::2/64
-+	ip route add vrf v$h2 192.0.2.0/28 via 192.0.2.17
-+	ip route add vrf v$h2 2001:db8:1::/64 via 2001:db8:2::1
-+}
-+
-+h2_destroy()
-+{
-+	ip route del vrf v$h2 2001:db8:1::/64 via 2001:db8:2::1
-+	ip route del vrf v$h2 192.0.2.0/28 via 192.0.2.17
-+	simple_if_fini $h2 192.0.2.18/28 2001:db8:2::2/64
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	ol1=${NETIFS[p2]}
-+
-+	ul1=${NETIFS[p3]}
-+	ul2=${NETIFS[p4]}
-+
-+	ol2=${NETIFS[p5]}
-+	h2=${NETIFS[p6]}
-+
-+	vrf_prepare
-+	h1_create
-+	sw1_create
-+	sw2_create
-+	h2_create
-+
-+	forwarding_enable
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	forwarding_restore
-+
-+	h2_destroy
-+	sw2_destroy
-+	sw1_destroy
-+	h1_destroy
-+	vrf_cleanup
-+}
-+
-+multipath4_test()
-+{
-+	local what=$1; shift
-+	local weight1=$1; shift
-+	local weight2=$1; shift
-+
-+	sysctl_set net.ipv4.fib_multipath_hash_policy 1
-+	ip nexthop replace id 103 group 101,$weight1/102,$weight2 \
-+		type resilient
-+
-+	local t0_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t0_222=$(tc_rule_stats_get $ul2 222 ingress)
-+
-+	ip vrf exec v$h1 \
-+	   $MZ $h1 -q -p 64 -A 192.0.2.1 -B 192.0.2.18 \
-+	       -d 1msec -t udp "sp=1024,dp=0-32768"
-+
-+	local t1_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t1_222=$(tc_rule_stats_get $ul2 222 ingress)
-+
-+	local d111=$((t1_111 - t0_111))
-+	local d222=$((t1_222 - t0_222))
-+	multipath_eval "$what" $weight1 $weight2 $d111 $d222
-+
-+	ip nexthop replace id 103 group 101/102 type resilient
-+	sysctl_restore net.ipv4.fib_multipath_hash_policy
-+}
-+
-+multipath6_test()
-+{
-+	local what=$1; shift
-+	local weight1=$1; shift
-+	local weight2=$1; shift
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_policy 0
-+	ip nexthop replace id 103 group 101,$weight1/102,$weight2 \
-+		type resilient
-+
-+	local t0_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t0_222=$(tc_rule_stats_get $ul2 222 ingress)
-+
-+	# Generate 16384 echo requests, each with a random flow label.
-+	for ((i=0; i < 16384; ++i)); do
-+		ip vrf exec v$h1 $PING6 2001:db8:2::2 -F 0 -c 1 -q &> /dev/null
++		count=$($IP nexthop bucket show id $group_id nhid $nhid |
++			grep "trap" | wc -l)
++		if ((expected != count)); then
++			return 1
++		fi
 +	done
 +
-+	local t1_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t1_222=$(tc_rule_stats_get $ul2 222 ingress)
-+
-+	local d111=$((t1_111 - t0_111))
-+	local d222=$((t1_222 - t0_222))
-+	multipath_eval "$what" $weight1 $weight2 $d111 $d222
-+
-+	ip nexthop replace id 103 group 101/102 type resilient
-+	sysctl_restore net.ipv6.fib_multipath_hash_policy
++	return 0
 +}
 +
-+multipath6_l4_test()
+ nexthop_resource_check()
+ {
+ 	local expected_occ=$1; shift
+@@ -159,6 +201,71 @@ nexthop_group_add_err_test()
+ 	nexthop_resource_set 9999
+ }
+ 
++nexthop_res_group_add_test()
 +{
-+	local what=$1; shift
-+	local weight1=$1; shift
-+	local weight2=$1; shift
++	RET=0
 +
-+	sysctl_set net.ipv6.fib_multipath_hash_policy 1
-+	ip nexthop replace id 103 group 101,$weight1/102,$weight2 \
-+		type resilient
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
 +
-+	local t0_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t0_222=$(tc_rule_stats_get $ul2 222 ingress)
++	$IP nexthop add id 10 group 1/2 type resilient buckets 4
++	nexthop_check "id 10" "id 10 group 1/2 type resilient buckets 4 idle_timer 120 unbalanced_timer 0 unbalanced_time 0 trap"
++	check_err $? "Unexpected nexthop group entry"
 +
-+	ip vrf exec v$h1 \
-+		$MZ $h1 -6 -q -p 64 -A 2001:db8:1::1 -B 2001:db8:2::2 \
-+		-d 1msec -t udp "sp=1024,dp=0-32768"
++	nexthop_bucket_nhid_count_check 10 1 2
++	check_err $? "Wrong nexthop buckets count"
++	nexthop_bucket_nhid_count_check 10 2 2
++	check_err $? "Wrong nexthop buckets count"
 +
-+	local t1_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t1_222=$(tc_rule_stats_get $ul2 222 ingress)
++	nexthop_resource_check 6
++	check_err $? "Wrong nexthop occupancy"
 +
-+	local d111=$((t1_111 - t0_111))
-+	local d222=$((t1_222 - t0_222))
-+	multipath_eval "$what" $weight1 $weight2 $d111 $d222
++	$IP nexthop del id 10
++	nexthop_resource_check 2
++	check_err $? "Wrong nexthop occupancy after delete"
 +
-+	ip nexthop replace id 103 group 101/102 type resilient
-+	sysctl_restore net.ipv6.fib_multipath_hash_policy
++	$IP nexthop add id 10 group 1,3/2,2 type resilient buckets 5
++	nexthop_check "id 10" "id 10 group 1,3/2,2 type resilient buckets 5 idle_timer 120 unbalanced_timer 0 unbalanced_time 0 trap"
++	check_err $? "Unexpected weighted nexthop group entry"
++
++	nexthop_bucket_nhid_count_check 10 1 3
++	check_err $? "Wrong nexthop buckets count"
++	nexthop_bucket_nhid_count_check 10 2 2
++	check_err $? "Wrong nexthop buckets count"
++
++	nexthop_resource_check 7
++	check_err $? "Wrong weighted nexthop occupancy"
++
++	$IP nexthop del id 10
++	nexthop_resource_check 2
++	check_err $? "Wrong nexthop occupancy after delete"
++
++	log_test "Resilient nexthop group add and delete"
++
++	$IP nexthop flush &> /dev/null
 +}
 +
-+ping_ipv4()
++nexthop_res_group_add_err_test()
 +{
-+	ping_test $h1 192.0.2.18
++	RET=0
++
++	nexthop_resource_set 2
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++
++	$IP nexthop add id 10 group 1/2 type resilient buckets 4 &> /dev/null
++	check_fail $? "Nexthop group addition succeeded when should fail"
++
++	nexthop_resource_check 2
++	check_err $? "Wrong nexthop occupancy"
++
++	log_test "Resilient nexthop group add failure"
++
++	$IP nexthop flush &> /dev/null
++	nexthop_resource_set 9999
 +}
 +
-+ping_ipv6()
+ nexthop_group_replace_test()
+ {
+ 	RET=0
+@@ -206,6 +313,411 @@ nexthop_group_replace_err_test()
+ 	nexthop_resource_set 9999
+ }
+ 
++nexthop_res_group_replace_test()
 +{
-+	ping6_test $h1 2001:db8:2::2
++	RET=0
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 3 via 192.0.2.4 dev dummy1
++	$IP nexthop add id 10 group 1/2 type resilient buckets 6
++
++	$IP nexthop replace id 10 group 1/2/3 type resilient
++	nexthop_check "id 10" "id 10 group 1/2/3 type resilient buckets 6 idle_timer 120 unbalanced_timer 0 unbalanced_time 0 trap"
++	check_err $? "Unexpected nexthop group entry"
++
++	nexthop_bucket_nhid_count_check 10 1 2
++	check_err $? "Wrong nexthop buckets count"
++	nexthop_bucket_nhid_count_check 10 2 2
++	check_err $? "Wrong nexthop buckets count"
++	nexthop_bucket_nhid_count_check 10 3 2
++	check_err $? "Wrong nexthop buckets count"
++
++	nexthop_resource_check 9
++	check_err $? "Wrong nexthop occupancy"
++
++	log_test "Resilient nexthop group replace"
++
++	$IP nexthop flush &> /dev/null
 +}
 +
-+multipath_ipv4()
++nexthop_res_group_replace_err_test()
 +{
-+	log_info "Running IPv4 multipath tests"
-+	multipath4_test "ECMP" 1 1
-+	multipath4_test "Weighted MP 2:1" 2 1
-+	multipath4_test "Weighted MP 11:45" 11 45
++	RET=0
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 3 via 192.0.2.4 dev dummy1
++	$IP nexthop add id 10 group 1/2 type resilient buckets 6
++
++	ip netns exec testns1 \
++		echo 1 > $DEBUGFS_NET_DIR/fib/fail_res_nexthop_group_replace
++	$IP nexthop replace id 10 group 1/2/3 type resilient &> /dev/null
++	check_fail $? "Nexthop group replacement succeeded when should fail"
++
++	nexthop_check "id 10" "id 10 group 1/2 type resilient buckets 6 idle_timer 120 unbalanced_timer 0 unbalanced_time 0 trap"
++	check_err $? "Unexpected nexthop group entry after failure"
++
++	nexthop_bucket_nhid_count_check 10 1 3
++	check_err $? "Wrong nexthop buckets count"
++	nexthop_bucket_nhid_count_check 10 2 3
++	check_err $? "Wrong nexthop buckets count"
++
++	nexthop_resource_check 9
++	check_err $? "Wrong nexthop occupancy after failure"
++
++	log_test "Resilient nexthop group replace failure"
++
++	$IP nexthop flush &> /dev/null
++	ip netns exec testns1 \
++		echo 0 > $DEBUGFS_NET_DIR/fib/fail_res_nexthop_group_replace
 +}
 +
-+multipath_ipv6()
++nexthop_res_mark_buckets_busy()
 +{
-+	log_info "Running IPv6 multipath tests"
-+	multipath6_test "ECMP" 1 1
-+	multipath6_test "Weighted MP 2:1" 2 1
-+	multipath6_test "Weighted MP 11:45" 11 45
++	local group_id=$1; shift
++	local nhid=$1; shift
++	local count=$1; shift
++	local index
++
++	for index in $($IP -j nexthop bucket show id $group_id nhid $nhid |
++		       jq '.[].bucket.index' | head -n ${count:--0})
++	do
++		echo $group_id $index \
++			> $DEBUGFS_NET_DIR/fib/nexthop_bucket_activity
++	done
 +}
 +
-+multipath_ipv6_l4()
++nexthop_res_num_nhid_buckets()
 +{
-+	log_info "Running IPv6 L4 hash multipath tests"
-+	multipath6_l4_test "ECMP" 1 1
-+	multipath6_l4_test "Weighted MP 2:1" 2 1
-+	multipath6_l4_test "Weighted MP 11:45" 11 45
++	local group_id=$1; shift
++	local nhid=$1; shift
++
++	$IP -j nexthop bucket show id $group_id nhid $nhid | jq length
 +}
 +
-+trap cleanup EXIT
++nexthop_res_group_idle_timer_test()
++{
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
 +
-+setup_prepare
-+setup_wait
-+tests_run
++	RET=0
 +
-+exit $EXIT_STATUS
++	$IP nexthop add id 10 group 1/2 type resilient buckets 8 idle_timer 4
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1/2,3 type resilient
++
++	nexthop_bucket_nhid_count_check 10  1 4  2 4
++	check_err $? "Group expected to be unbalanced"
++
++	sleep 6
++
++	nexthop_bucket_nhid_count_check 10  1 2  2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after idle timer"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_res_group_idle_timer_del_test()
++{
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 3 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1,50/2,50/3,1 \
++	    type resilient buckets 8 idle_timer 6
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1,50/2,150/3,1 type resilient
++
++	nexthop_bucket_nhid_count_check 10  1 4  2 4  3 0
++	check_err $? "Group expected to be unbalanced"
++
++	sleep 4
++
++	# Deletion prompts group replacement. Check that the bucket timers
++	# are kept.
++	$IP nexthop delete id 3
++
++	nexthop_bucket_nhid_count_check 10  1 4  2 4
++	check_err $? "Group expected to still be unbalanced"
++
++	sleep 4
++
++	nexthop_bucket_nhid_count_check 10  1 2  2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after idle timer (with delete)"
++
++	$IP nexthop flush &> /dev/null
++}
++
++__nexthop_res_group_increase_timer_test()
++{
++	local timer=$1; shift
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1/2 type resilient buckets 8 $timer 4
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1/2,3 type resilient
++
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_fail $? "Group expected to be unbalanced"
++
++	sleep 2
++	$IP nexthop replace id 10 group 1/2,3 type resilient $timer 8
++	sleep 4
++
++	# 6 seconds, past the original timer.
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_fail $? "Group still expected to be unbalanced"
++
++	sleep 4
++
++	# 10 seconds, past the new timer.
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after $timer increase"
++
++	$IP nexthop flush &> /dev/null
++}
++
++__nexthop_res_group_decrease_timer_test()
++{
++	local timer=$1; shift
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1/2 type resilient buckets 8 $timer 8
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1/2,3 type resilient
++
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_fail $? "Group expected to be unbalanced"
++
++	sleep 2
++	$IP nexthop replace id 10 group 1/2,3 type resilient $timer 4
++	sleep 4
++
++	# 6 seconds, past the new timer, before the old timer.
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after $timer decrease"
++
++	$IP nexthop flush &> /dev/null
++}
++
++__nexthop_res_group_increase_timer_del_test()
++{
++	local timer=$1; shift
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 3 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1,100/2,100/3,1 \
++	    type resilient buckets 8 $timer 4
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1,100/2,300/3,1 type resilient
++
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_fail $? "Group expected to be unbalanced"
++
++	sleep 2
++	$IP nexthop replace id 10 group 1/2,3 type resilient $timer 8
++	sleep 4
++
++	# 6 seconds, past the original timer.
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_fail $? "Group still expected to be unbalanced"
++
++	sleep 4
++
++	# 10 seconds, past the new timer.
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after $timer increase"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_res_group_increase_idle_timer_test()
++{
++	__nexthop_res_group_increase_timer_test idle_timer
++}
++
++nexthop_res_group_decrease_idle_timer_test()
++{
++	__nexthop_res_group_decrease_timer_test idle_timer
++}
++
++nexthop_res_group_unbalanced_timer_test()
++{
++	local i
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1/2 type resilient \
++	    buckets 8 idle_timer 6 unbalanced_timer 10
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1/2,3 type resilient
++
++	for i in 1 2; do
++		sleep 4
++		nexthop_bucket_nhid_count_check 10  1 4  2 4
++		check_err $? "$i: Group expected to be unbalanced"
++		nexthop_res_mark_buckets_busy 10 1
++	done
++
++	# 3 x sleep 4 > unbalanced timer 10
++	sleep 4
++	nexthop_bucket_nhid_count_check 10  1 2  2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after unbalanced timer"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_res_group_unbalanced_timer_del_test()
++{
++	local i
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 3 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1,50/2,50/3,1 type resilient \
++	    buckets 8 idle_timer 6 unbalanced_timer 10
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1,50/2,150/3,1 type resilient
++
++	# Check that NH delete does not reset unbalanced time.
++	sleep 4
++	$IP nexthop delete id 3
++	nexthop_bucket_nhid_count_check 10  1 4  2 4
++	check_err $? "1: Group expected to be unbalanced"
++	nexthop_res_mark_buckets_busy 10 1
++
++	sleep 4
++	nexthop_bucket_nhid_count_check 10  1 4  2 4
++	check_err $? "2: Group expected to be unbalanced"
++	nexthop_res_mark_buckets_busy 10 1
++
++	# 3 x sleep 4 > unbalanced timer 10
++	sleep 4
++	nexthop_bucket_nhid_count_check 10  1 2  2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after unbalanced timer (with delete)"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_res_group_no_unbalanced_timer_test()
++{
++	local i
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1/2 type resilient buckets 8
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1/2,3 type resilient
++
++	for i in $(seq 3); do
++		sleep 60
++		nexthop_bucket_nhid_count_check 10 2 6
++		check_fail $? "$i: Group expected to be unbalanced"
++		nexthop_res_mark_buckets_busy 10 1
++	done
++
++	log_test "Buckets never force-migrated without unbalanced timer"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_res_group_short_unbalanced_timer_test()
++{
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1/2 type resilient \
++	    buckets 8 idle_timer 120 unbalanced_timer 4
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1/2,3 type resilient
++
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_fail $? "Group expected to be unbalanced"
++
++	sleep 5
++
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_err $? "Group expected to be balanced"
++
++	log_test "Bucket migration after unbalanced < idle timer"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_res_group_increase_unbalanced_timer_test()
++{
++	__nexthop_res_group_increase_timer_test unbalanced_timer
++}
++
++nexthop_res_group_decrease_unbalanced_timer_test()
++{
++	__nexthop_res_group_decrease_timer_test unbalanced_timer
++}
++
++nexthop_res_group_force_migrate_busy_test()
++{
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++
++	RET=0
++
++	$IP nexthop add id 10 group 1/2 type resilient \
++	    buckets 8 idle_timer 120
++	nexthop_res_mark_buckets_busy 10 1
++	$IP nexthop replace id 10 group 1/2,3 type resilient
++
++	nexthop_bucket_nhid_count_check 10 2 6
++	check_fail $? "Group expected to be unbalanced"
++
++	$IP nexthop replace id 10 group 2 type resilient
++	nexthop_bucket_nhid_count_check 10 2 8
++	check_err $? "All buckets expected to have migrated"
++
++	log_test "Busy buckets force-migrated when NH removed"
++
++	$IP nexthop flush &> /dev/null
++}
++
+ nexthop_single_replace_test()
+ {
+ 	RET=0
+@@ -299,6 +811,63 @@ nexthop_single_in_group_replace_err_test()
+ 	nexthop_resource_set 9999
+ }
+ 
++nexthop_single_in_res_group_replace_test()
++{
++	RET=0
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 10 group 1/2 type resilient buckets 4
++
++	$IP nexthop replace id 1 via 192.0.2.4 dev dummy1
++	check_err $? "Failed to replace nexthop when should not"
++
++	nexthop_check "id 10" "id 10 group 1/2 type resilient buckets 4 idle_timer 120 unbalanced_timer 0 unbalanced_time 0 trap"
++	check_err $? "Unexpected nexthop group entry"
++
++	nexthop_bucket_nhid_count_check 10  1 2  2 2
++	check_err $? "Wrong nexthop buckets count"
++
++	nexthop_resource_check 6
++	check_err $? "Wrong nexthop occupancy"
++
++	log_test "Single nexthop replace while in resilient group"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_single_in_res_group_replace_err_test()
++{
++	RET=0
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 10 group 1/2 type resilient buckets 4
++
++	ip netns exec testns1 \
++		echo 1 > $DEBUGFS_NET_DIR/fib/fail_nexthop_bucket_replace
++	$IP nexthop replace id 1 via 192.0.2.4 dev dummy1 &> /dev/null
++	check_fail $? "Nexthop replacement succeeded when should fail"
++
++	nexthop_check "id 1" "id 1 via 192.0.2.2 dev dummy1 scope link trap"
++	check_err $? "Unexpected nexthop entry after failure"
++
++	nexthop_check "id 10" "id 10 group 1/2 type resilient buckets 4 idle_timer 120 unbalanced_timer 0 unbalanced_time 0 trap"
++	check_err $? "Unexpected nexthop group entry after failure"
++
++	nexthop_bucket_nhid_count_check 10  1 2  2 2
++	check_err $? "Wrong nexthop buckets count"
++
++	nexthop_resource_check 6
++	check_err $? "Wrong nexthop occupancy"
++
++	log_test "Single nexthop replace while in resilient group failure"
++
++	$IP nexthop flush &> /dev/null
++	ip netns exec testns1 \
++		echo 0 > $DEBUGFS_NET_DIR/fib/fail_nexthop_bucket_replace
++}
++
+ nexthop_single_in_group_delete_test()
+ {
+ 	RET=0
+@@ -346,6 +915,57 @@ nexthop_single_in_group_delete_err_test()
+ 	nexthop_resource_set 9999
+ }
+ 
++nexthop_single_in_res_group_delete_test()
++{
++	RET=0
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 10 group 1/2 type resilient buckets 4
++
++	$IP nexthop del id 1
++	nexthop_check "id 10" "id 10 group 2 type resilient buckets 4 idle_timer 120 unbalanced_timer 0 unbalanced_time 0 trap"
++	check_err $? "Unexpected nexthop group entry"
++
++	nexthop_bucket_nhid_count_check 10 2 4
++	check_err $? "Wrong nexthop buckets count"
++
++	nexthop_resource_check 5
++	check_err $? "Wrong nexthop occupancy"
++
++	log_test "Single nexthop delete while in resilient group"
++
++	$IP nexthop flush &> /dev/null
++}
++
++nexthop_single_in_res_group_delete_err_test()
++{
++	RET=0
++
++	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
++	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
++	$IP nexthop add id 3 via 192.0.2.4 dev dummy1
++	$IP nexthop add id 10 group 1/2/3 type resilient buckets 6
++
++	ip netns exec testns1 \
++		echo 1 > $DEBUGFS_NET_DIR/fib/fail_nexthop_bucket_replace
++	$IP nexthop del id 1
++
++	# We failed to replace the two nexthop buckets that were originally
++	# assigned to nhid 1.
++	nexthop_bucket_nhid_count_check 10  2 2  3 2
++	check_err $? "Wrong nexthop buckets count"
++
++	nexthop_resource_check 8
++	check_err $? "Wrong nexthop occupancy"
++
++	log_test "Single nexthop delete while in resilient group failure"
++
++	$IP nexthop flush &> /dev/null
++	ip netns exec testns1 \
++		echo 0 > $DEBUGFS_NET_DIR/fib/fail_nexthop_bucket_replace
++}
++
+ nexthop_replay_test()
+ {
+ 	RET=0
 -- 
 2.26.2
 
