@@ -2,225 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAAB133868C
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 08:31:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0171E33869C
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 08:33:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbhCLHas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 02:30:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbhCLHaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 02:30:15 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD92C061574;
-        Thu, 11 Mar 2021 23:30:15 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id mz6-20020a17090b3786b02900c16cb41d63so10658132pjb.2;
-        Thu, 11 Mar 2021 23:30:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=BkvWwioQy+TovUxuGJjJj/30Ns2zPuJ42mVidHoKW+4=;
-        b=FhBGKOdrSIAd8JlwNDJx6tstPAmhfMWuV3Vvn8nP0J4Rpp/TNrZi6hBQrtiVHqP1sn
-         m05RqzpH99ETgqmCiI6p/rTAs6fGccepDgNq4rq3z1iAIe8JV9ilfRrVUD4Jrkl5jRjf
-         UT0Ohi3hF+mLq2jazvClOBe8mEokX8EWcW2u5z9veTvdR+X/erkrm//MNJ/mLmhTRWO2
-         tKk560Zvc9Zeuem/ZbBuV/PoMH7K+1M3VaPDIh+F+tcQym5aXQI+z2VeGwOz+7qC+7mk
-         GCoodOfj7fBzXnzlAiyfH3o7stPa1EPYbthU68/ol2sMeNN1F+CXxfO0ZScaOlhiHecC
-         ciCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=BkvWwioQy+TovUxuGJjJj/30Ns2zPuJ42mVidHoKW+4=;
-        b=Pkhfdzy8eZZduMZWwYIEvw3nTHOKSSSC/57TJ9guU8vB/QXs4O5o6Vpk7ta4rcasgB
-         7WmTZz/0HckrdrFlKVD3bVxqGMwEAbbF4RSkJ4/BE7+uOscUL0szTEcoI5ks3J4rj2u5
-         tlkskM/1WHCzWuJrD1Eh9lyNp2FmivIAtE0fAZ3qcEZm4TMcK86eJ2OyG69nKd5hfjjx
-         y4x1R4N+DbN6E75rcMABBb7Hy0Nr9iLVkf8RykpO80kfPFvLxqcPWiTe3gSa45ESyweo
-         T6IceSNuXIgGBKXPTjugJebb7kT9txFRYibEXIyS4C3tfYF3+csGaf4ijw3xOx/tWrdJ
-         5EcQ==
-X-Gm-Message-State: AOAM532rpmgb1jKiVNDsi/6ORA5OCboTAxr8RorF6A/p5sgb18ajKq0E
-        PKZAlMVI9mxoBGwIvq7Qv+4=
-X-Google-Smtp-Source: ABdhPJwWcOWLLBfo3PlVs6ZAljqAGC+z8o42hnXpJKxIUSTF7URabYkK89jwbNG37Kvv3szuCp0OnQ==
-X-Received: by 2002:a17:90b:17d1:: with SMTP id me17mr12758971pjb.106.1615534215197;
-        Thu, 11 Mar 2021 23:30:15 -0800 (PST)
-Received: from localhost ([106.206.64.11])
-        by smtp.gmail.com with ESMTPSA id w84sm4436351pfc.142.2021.03.11.23.30.13
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 11 Mar 2021 23:30:14 -0800 (PST)
-Date:   Fri, 12 Mar 2021 13:00:05 +0530
-From:   Shubhankar Kuranagatti <shubhankarvk@gmail.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sanjanasrinidhi1810@gmail.com
-Subject: [PATCH] net: ipv4: route.c: Fix indentation of multi line comment.
-Message-ID: <20210312073005.l7s25qeui5lh5zsd@kewl-virtual-machine>
+        id S231774AbhCLHc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 02:32:57 -0500
+Received: from outbound-smtp57.blacknight.com ([46.22.136.241]:50915 "EHLO
+        outbound-smtp57.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231768AbhCLHc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 02:32:29 -0500
+Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
+        by outbound-smtp57.blacknight.com (Postfix) with ESMTPS id DA19CFA9C1
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 07:32:27 +0000 (GMT)
+Received: (qmail 20885 invoked from network); 12 Mar 2021 07:32:27 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 12 Mar 2021 07:32:27 -0000
+Date:   Fri, 12 Mar 2021 07:32:26 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210312073226.GT3697@techsingularity.net>
+References: <20210311114935.11379-1-mgorman@techsingularity.net>
+ <20210311114935.11379-3-mgorman@techsingularity.net>
+ <CAKgT0UcgiS0DpU4weOeVUN7o9dzoP=R20ytWC434sY4FxgQbtg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-User-Agent: NeoMutt/20171215
+In-Reply-To: <CAKgT0UcgiS0DpU4weOeVUN7o9dzoP=R20ytWC434sY4FxgQbtg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All comment lines inside the comment block have been aligned.
-Every line of comment starts with a * (uniformity in code).
+On Thu, Mar 11, 2021 at 08:42:16AM -0800, Alexander Duyck wrote:
+> > @@ -4919,6 +4934,9 @@ static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+> >                 struct alloc_context *ac, gfp_t *alloc_mask,
+> >                 unsigned int *alloc_flags)
+> >  {
+> > +       gfp_mask &= gfp_allowed_mask;
+> > +       *alloc_mask = gfp_mask;
+> > +
+> >         ac->highest_zoneidx = gfp_zone(gfp_mask);
+> >         ac->zonelist = node_zonelist(preferred_nid, gfp_mask);
+> >         ac->nodemask = nodemask;
+> 
+> It might be better to pull this and the change from the bottom out
+> into a seperate patch. I was reviewing this and when I hit the bottom
+> I apparently had the same question other reviewers had wondering if it
+> was intentional. By splitting it out it would be easier to review.
+> 
 
-Signed-off-by: Shubhankar Kuranagatti <shubhankarvk@gmail.com>
----
- net/ipv4/route.c | 97 ++++++++++++++++++++++++------------------------
- 1 file changed, 49 insertions(+), 48 deletions(-)
+Done. I felt it was obvious from context that the paths were sharing code
+and splitting it out felt like patch count stuffing. Still, you're the
+second person to point it out so now it's a separate patch in v4.
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 02d81d79deeb..b930f5976961 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -722,6 +722,7 @@ static void update_or_create_fnhe(struct fib_nh_common *nhc, __be32 daddr,
- 
- 		for_each_possible_cpu(i) {
- 			struct rtable __rcu **prt;
-+
- 			prt = per_cpu_ptr(nhc->nhc_pcpu_rth_output, i);
- 			rt = rcu_dereference(*prt);
- 			if (rt)
-@@ -1258,12 +1259,12 @@ static int ip_rt_bug(struct net *net, struct sock *sk, struct sk_buff *skb)
- }
- 
- /*
--   We do not cache source address of outgoing interface,
--   because it is used only by IP RR, TS and SRR options,
--   so that it out of fast path.
--
--   BTW remember: "addr" is allowed to be not aligned
--   in IP options!
-+ * We do not cache source address of outgoing interface,
-+ * because it is used only by IP RR, TS and SRR options,
-+ * so that it out of fast path.
-+ *
-+ * BTW remember: "addr" is allowed to be not aligned
-+ * in IP options!
-  */
- 
- void ip_rt_get_source(u8 *addr, struct sk_buff *skb, struct rtable *rt)
-@@ -2108,7 +2109,7 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- 		goto out;
- 
- 	/* Check for the most weird martians, which can be not detected
--	   by fib_lookup.
-+	 * by fib_lookup.
- 	 */
- 
- 	tun_info = skb_tunnel_info(skb);
-@@ -2317,15 +2318,15 @@ int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- 		       u8 tos, struct net_device *dev, struct fib_result *res)
- {
- 	/* Multicast recognition logic is moved from route cache to here.
--	   The problem was that too many Ethernet cards have broken/missing
--	   hardware multicast filters :-( As result the host on multicasting
--	   network acquires a lot of useless route cache entries, sort of
--	   SDR messages from all the world. Now we try to get rid of them.
--	   Really, provided software IP multicast filter is organized
--	   reasonably (at least, hashed), it does not result in a slowdown
--	   comparing with route cache reject entries.
--	   Note, that multicast routers are not affected, because
--	   route cache entry is created eventually.
-+	 * The problem was that too many Ethernet cards have broken/missing
-+	 * hardware multicast filters :-( As result the host on multicasting
-+	 * network acquires a lot of useless route cache entries, sort of
-+	 * SDR messages from all the world. Now we try to get rid of them.
-+	 * Really, provided software IP multicast filter is organized
-+	 * reasonably (at least, hashed), it does not result in a slowdown
-+	 * comparing with route cache reject entries.
-+	 * Note, that multicast routers are not affected, because
-+	 * route cache entry is created eventually.
- 	 */
- 	if (ipv4_is_multicast(daddr)) {
- 		struct in_device *in_dev = __in_dev_get_rcu(dev);
-@@ -2537,11 +2538,11 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
- 		rth = ERR_PTR(-ENETUNREACH);
- 
- 		/* I removed check for oif == dev_out->oif here.
--		   It was wrong for two reasons:
--		   1. ip_dev_find(net, saddr) can return wrong iface, if saddr
--		      is assigned to multiple interfaces.
--		   2. Moreover, we are allowed to send packets with saddr
--		      of another iface. --ANK
-+		 * It was wrong for two reasons:
-+		 * 1. ip_dev_find(net, saddr) can return wrong iface, if saddr
-+		 *    is assigned to multiple interfaces.
-+		 * 2. Moreover, we are allowed to send packets with saddr
-+		 *    of another iface. --ANK
- 		 */
- 
- 		if (fl4->flowi4_oif == 0 &&
-@@ -2553,18 +2554,18 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
- 				goto out;
- 
- 			/* Special hack: user can direct multicasts
--			   and limited broadcast via necessary interface
--			   without fiddling with IP_MULTICAST_IF or IP_PKTINFO.
--			   This hack is not just for fun, it allows
--			   vic,vat and friends to work.
--			   They bind socket to loopback, set ttl to zero
--			   and expect that it will work.
--			   From the viewpoint of routing cache they are broken,
--			   because we are not allowed to build multicast path
--			   with loopback source addr (look, routing cache
--			   cannot know, that ttl is zero, so that packet
--			   will not leave this host and route is valid).
--			   Luckily, this hack is good workaround.
-+			 * and limited broadcast via necessary interface
-+			 * without fiddling with IP_MULTICAST_IF or IP_PKTINFO.
-+			 * This hack is not just for fun, it allows
-+			 * vic,vat and friends to work.
-+			 * They bind socket to loopback, set ttl to zero
-+			 * and expect that it will work.
-+			 * From the viewpoint of routing cache they are broken,
-+			 * because we are not allowed to build multicast path
-+			 * with loopback source addr (look, routing cache
-+			 * cannot know, that ttl is zero, so that packet
-+			 * will not leave this host and route is valid).
-+			 * Luckily, this hack is good workaround.
- 			 */
- 
- 			fl4->flowi4_oif = dev_out->ifindex;
-@@ -2627,21 +2628,21 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
- 		    (ipv4_is_multicast(fl4->daddr) ||
- 		    !netif_index_is_l3_master(net, fl4->flowi4_oif))) {
- 			/* Apparently, routing tables are wrong. Assume,
--			   that the destination is on link.
--
--			   WHY? DW.
--			   Because we are allowed to send to iface
--			   even if it has NO routes and NO assigned
--			   addresses. When oif is specified, routing
--			   tables are looked up with only one purpose:
--			   to catch if destination is gatewayed, rather than
--			   direct. Moreover, if MSG_DONTROUTE is set,
--			   we send packet, ignoring both routing tables
--			   and ifaddr state. --ANK
--
--
--			   We could make it even if oif is unknown,
--			   likely IPv6, but we do not.
-+			 * that the destination is on link.
-+			 *
-+			 * WHY? DW.
-+			 * Because we are allowed to send to iface
-+			 * even if it has NO routes and NO assigned
-+			 * addresses. When oif is specified, routing
-+			 * tables are looked up with only one purpose:
-+			 * to catch if destination is gatewayed, rather than
-+			 * direct. Moreover, if MSG_DONTROUTE is set,
-+			 * we send packet, ignoring both routing tables
-+			 * and ifaddr state. --ANK
-+			 *
-+			 *
-+			 * We could make it even if oif is unknown,
-+			 * likely IPv6, but we do not.
- 			 */
- 
- 			if (fl4->saddr == 0)
+> > @@ -4960,6 +4978,104 @@ static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+> >         return true;
+> >  }
+> >
+> > +/*
+> > + * This is a batched version of the page allocator that attempts to
+> > + * allocate nr_pages quickly from the preferred zone and add them to list.
+> > + *
+> > + * Returns the number of pages allocated.
+> > + */
+> > +int __alloc_pages_bulk_nodemask(gfp_t gfp_mask, int preferred_nid,
+> > +                       nodemask_t *nodemask, int nr_pages,
+> > +                       struct list_head *alloc_list)
+> > +{
+> > +       struct page *page;
+> > +       unsigned long flags;
+> > +       struct zone *zone;
+> > +       struct zoneref *z;
+> > +       struct per_cpu_pages *pcp;
+> > +       struct list_head *pcp_list;
+> > +       struct alloc_context ac;
+> > +       gfp_t alloc_mask;
+> > +       unsigned int alloc_flags;
+> > +       int alloced = 0;
+> > +
+> > +       if (nr_pages == 1)
+> > +               goto failed;
+> 
+> I might change this to "<= 1" just to cover the case where somebody
+> messed something up and passed a negative value.
+> 
+
+I put in a WARN_ON_ONCE check that returns 0 allocated pages. It should
+be the case that it only happens during the development of a new user but
+better safe than sorry. It's an open question whether the max nr_pages
+should be clamped but stupidly large values will either fail the watermark
+check or wrap and hit the <= 0 check. I guess it's still possible the zone
+would hit a dangerously low level of free pages but that is no different
+to a user calling __alloc_pages_nodemask a stupidly large number of times.
+
+> > +
+> > +       /* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
+> > +       if (!prepare_alloc_pages(gfp_mask, 0, preferred_nid, nodemask, &ac, &alloc_mask, &alloc_flags))
+> > +               return 0;
+> > +       gfp_mask = alloc_mask;
+> > +
+> > +       /* Find an allowed local zone that meets the high watermark. */
+> > +       for_each_zone_zonelist_nodemask(zone, z, ac.zonelist, ac.highest_zoneidx, ac.nodemask) {
+> > +               unsigned long mark;
+> > +
+> > +               if (cpusets_enabled() && (alloc_flags & ALLOC_CPUSET) &&
+> > +                   !__cpuset_zone_allowed(zone, gfp_mask)) {
+> > +                       continue;
+> > +               }
+> > +
+> > +               if (nr_online_nodes > 1 && zone != ac.preferred_zoneref->zone &&
+> > +                   zone_to_nid(zone) != zone_to_nid(ac.preferred_zoneref->zone)) {
+> > +                       goto failed;
+> > +               }
+> > +
+> > +               mark = wmark_pages(zone, alloc_flags & ALLOC_WMARK_MASK) + nr_pages;
+> > +               if (zone_watermark_fast(zone, 0,  mark,
+> > +                               zonelist_zone_idx(ac.preferred_zoneref),
+> > +                               alloc_flags, gfp_mask)) {
+> > +                       break;
+> > +               }
+> > +       }
+> > +       if (!zone)
+> > +               return 0;
+> > +
+> > +       /* Attempt the batch allocation */
+> > +       local_irq_save(flags);
+> > +       pcp = &this_cpu_ptr(zone->pageset)->pcp;
+> > +       pcp_list = &pcp->lists[ac.migratetype];
+> > +
+> > +       while (alloced < nr_pages) {
+> > +               page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
+> > +                                                               pcp, pcp_list);
+> > +               if (!page)
+> > +                       break;
+> > +
+> > +               list_add(&page->lru, alloc_list);
+> > +               alloced++;
+> > +       }
+> > +
+> > +       if (!alloced)
+> > +               goto failed_irq;
+> 
+> Since we already covered the case above verifying the nr_pages is
+> greater than one it might make sense to move this check inside the
+> loop for the !page case. Then we only are checking this if we failed
+> an allocation.
+> 
+
+Yes, good idea, it moves a branch into a very unlikely path.
+
+> > +
+> > +       if (alloced) {
+> 
+> Isn't this redundant? In the previous lines you already checked
+> "alloced" was zero before jumping to the label so you shouldn't need a
+> second check as it isn't going to change after we already verified it
+> is non-zero.
+> 
+
+Yes, it is redundant and a left-over artifact during implementation.
+It's even more redundant when the !allocated case is checked in the
+while loop.
+
+> Also not a fan of the name "alloced". Maybe nr_alloc or something.
+> Trying to make that abbreviation past tense just doesn't read right.
+> 
+
+I used allocated and created a preparation patch that renames alloced in
+other parts of the per-cpu allocator so it is consistent.
+
+> > +               __count_zid_vm_events(PGALLOC, zone_idx(zone), alloced);
+> > +               zone_statistics(zone, zone);
+> > +       }
+> > +
+> > +       local_irq_restore(flags);
+> > +
+> > +       /* Prep page with IRQs enabled to reduce disabled times */
+> > +       list_for_each_entry(page, alloc_list, lru)
+> > +               prep_new_page(page, 0, gfp_mask, 0);
+> > +
+> > +       return alloced;
+> > +
+> > +failed_irq:
+> > +       local_irq_restore(flags);
+> > +
+> > +failed:
+> > +       page = __alloc_pages_nodemask(gfp_mask, 0, preferred_nid, nodemask);
+> > +       if (page) {
+> > +               alloced++;
+> 
+> You could be explicit here and just set alloced to 1 and make this a
+> write instead of bothering with the increment. Either that or just
+> simplify this and return 1 after the list_add, and return 0 in the
+> default case assuming you didn't allocate a page.
+> 
+
+The intent was to deal with the case that someone in the future used
+the failed path when a page had already been allocated. I cannot imagine
+why that would be done so I can explicitly used allocated = 1. I'm still
+letting it fall through to avoid two return paths in failed path.  I do
+not think it really matters but it feels redundant.
+
+Thanks Alexander!
+
 -- 
-2.17.1
-
+Mel Gorman
+SUSE Labs
