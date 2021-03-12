@@ -2,77 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C69063398D2
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 22:04:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DB523398DC
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 22:10:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbhCLVD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 16:03:57 -0500
-Received: from m42-2.mailgun.net ([69.72.42.2]:10819 "EHLO m42-2.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234723AbhCLVDm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 16:03:42 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1615583022; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=wJrgzOmpU1yLw4Bp3fBDFkdv/DSbLiF6I2QMOSBsXtI=; b=CTtFBUl0ZCW5iZWU/YRiYVP0he3W/Wci/kPb1dVWB3mx9Se8Nbl5QZqtMplSq/JT4W6Tft2L
- gsUob6UTcTvT8pCj/hC6w3MPD7/q8ns1eEexU+kvX4f7dbzFPmE3XpfxdPIWlpV569L4ABf9
- fnAmI1kZ+yVGumq2nuzyIrTX2sY=
-X-Mailgun-Sending-Ip: 69.72.42.2
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 604bd72d4db3bb68018a0ea3 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 12 Mar 2021 21:03:41
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E22E1C433CA; Fri, 12 Mar 2021 21:03:40 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C6FFFC433CA;
-        Fri, 12 Mar 2021 21:03:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C6FFFC433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jarod Wilson <jarod@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net] wireless/nl80211: fix wdev_id may be used uninitialized
-References: <20210312163651.1398207-1-jarod@redhat.com>
-Date:   Fri, 12 Mar 2021 23:03:35 +0200
-In-Reply-To: <20210312163651.1398207-1-jarod@redhat.com> (Jarod Wilson's
-        message of "Fri, 12 Mar 2021 11:36:51 -0500")
-Message-ID: <87lfasaxug.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S235064AbhCLVIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 16:08:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234931AbhCLVIk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 16:08:40 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AA1C061574;
+        Fri, 12 Mar 2021 13:08:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=qeUU8gseO1+9GvKOOhLbMMDeusl5vJ4s6E+Z3Jay+5k=; b=jUk9D/Vgorg6jE/9pkqJ71pR3+
+        CQLlU+KoRXWxd0N2u6MfZfpgeA7nODC5qb8MsoittFLBhdeTZYhceNOA2vkq4azcWTzKH8KMmoMdV
+        jIYm7xWfCrZ8q/4el4onN9UH00wTIj10T2ajgiBaxDvRzEn/4ZzGH02T3+uuKK/O2Q3ldhauL//Sp
+        bpv1veqprczJEXm8bXp64B/dJgqNreyYwKriT9OrtWSZP+8//Z+ZxXJk+0NHhxN1nlr1J92/o20N5
+        1Cyu8e+66jB7GK/q0jZt8s/dLFftHoCqSj+63WgezbRRDz2nUmospOvxEZJCR0Vq0cc3f0+F/VMY2
+        FRCXFvjw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lKp1D-00Bmz5-Om; Fri, 12 Mar 2021 21:08:27 +0000
+Date:   Fri, 12 Mar 2021 21:08:23 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210312210823.GE2577561@casper.infradead.org>
+References: <20210310104618.22750-1-mgorman@techsingularity.net>
+ <20210310104618.22750-3-mgorman@techsingularity.net>
+ <20210310154650.ad9760cd7cb9ac4acccf77ee@linux-foundation.org>
+ <20210311084200.GR3697@techsingularity.net>
+ <20210312124609.33d4d4ba@carbon>
+ <20210312145814.GA2577561@casper.infradead.org>
+ <20210312160350.GW3697@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210312160350.GW3697@techsingularity.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jarod Wilson <jarod@redhat.com> writes:
+On Fri, Mar 12, 2021 at 04:03:50PM +0000, Mel Gorman wrote:
+> On Fri, Mar 12, 2021 at 02:58:14PM +0000, Matthew Wilcox wrote:
+> > On Fri, Mar 12, 2021 at 12:46:09PM +0100, Jesper Dangaard Brouer wrote:
+> > > In my page_pool patch I'm bulk allocating 64 pages. I wanted to ask if
+> > > this is too much? (PP_ALLOC_CACHE_REFILL=64).
+> > > 
+> > > The mlx5 driver have a while loop for allocation 64 pages, which it
+> > > used in this case, that is why 64 is chosen.  If we choose a lower
+> > > bulk number, then the bulk-alloc will just be called more times.
+> > 
+> > The thing about batching is that smaller batches are often better.
+> > Let's suppose you need to allocate 100 pages for something, and the page
+> > allocator takes up 90% of your latency budget.  Batching just ten pages
+> > at a time is going to reduce the overhead to 9%.  Going to 64 pages
+> > reduces the overhead from 9% to 2% -- maybe that's important, but
+> > possibly not.
+> > 
+> 
+> I do not think that something like that can be properly accessed in
+> advance. It heavily depends on whether the caller is willing to amortise
+> the cost of the batch allocation or if the timing of the bulk request is
+> critical every single time.
+> 
+> > > The result of the API is to deliver pages as a double-linked list via
+> > > LRU (page->lru member).  If you are planning to use llist, then how to
+> > > handle this API change later?
+> > > 
+> > > Have you notice that the two users store the struct-page pointers in an
+> > > array?  We could have the caller provide the array to store struct-page
+> > > pointers, like we do with kmem_cache_alloc_bulk API.
+> > 
+> > My preference would be for a pagevec.  That does limit you to 15 pages
+> > per call [1], but I do think that might be enough.  And the overhead of
+> > manipulating a linked list isn't free.
+> > 
+> 
+> I'm opposed to a pagevec because it unnecessarily limits the caller.  The
+> sunrpc user for example knows how many pages it needs at the time the bulk
+> allocator is called but it's not the same value every time.  When tracing,
+> I found it sometimes requested 1 page (most common request actually) and
+> other times requested 200+ pages. Forcing it to call the batch allocator
+> in chunks of 15 means the caller incurs the cost of multiple allocation
+> requests which is almost as bad as calling __alloc_pages in a loop.
 
-> Build currently fails with -Werror=maybe-uninitialized set:
->
-> net/wireless/nl80211.c: In function '__cfg80211_wdev_from_attrs':
-> net/wireless/nl80211.c:124:44: error: 'wdev_id' may be used
-> uninitialized in this function [-Werror=maybe-uninitialized]
+Well, no.  It reduces the cost by a factor of 15 -- or by 93%.  200 is
+an interesting example because putting 200 pages on a list costs 200 *
+64 bytes of dirty cachelines, or 12KiB.  That's larger than some CPU L1
+caches (mine's 48KB, 12-way set associative), but I think it's safe to say
+some of those 200 cache lines are going to force others out into L2 cache.
+Compared to a smaller batch of 15 pages in a pagevec, it'll dirty two cache
+lines (admittedly the 15 struct pages are also going to get dirtied by being
+allocated and then by being set up for whatever use they're getting, but
+they should stay in L1 cache while that's happening).
 
-Really, build fails? Is -Werror enabled by default now? I hope not.
+I'm not claiming the pagevec is definitely a win, but it's very
+unclear which tradeoff is actually going to lead to better performance.
+Hopefully Jesper or Chuck can do some tests and figure out what actually
+works better with their hardware & usage patterns.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+> I think the first version should have an easy API to start with. Optimise
+> the implementation if it is a bottleneck. Only make the API harder to
+> use if the callers are really willing to always allocate and size the
+> array in advance and it's shown that it really makes a big difference
+> performance-wise.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+I'm not entirely sure that a pagevec is harder to use than a list_head.
