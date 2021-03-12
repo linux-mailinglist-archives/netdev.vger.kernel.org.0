@@ -2,60 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35DFA338ECA
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 14:29:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69151338EEE
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 14:37:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbhCLN3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 08:29:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231500AbhCLN2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 08:28:48 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBC0C061574
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 05:28:48 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id mj10so53343391ejb.5
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 05:28:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=FQ2aasB56Vn5jNmr9lzKwT2xMETRXsWikdfbjU+uD4PTtwJ6tG/lJoAC01ptdfTuz4
-         EdUPh4GiQIFwT4NAuQ1il96Tf0oKo6U6uuVAekYtjwJweEjbFeNjnXeYUcGlJHis7wyS
-         4StWZwwlFZ2r91dveoc2SbBi0GVn4fgyl8A+Drqoq5omBShv0iCjaWhaCcinVnlSaWeS
-         iNsKGMVOduzpgb27kj2qVcU37XHbNnMCyHDLQrujRwPvowUs4zTCjVgHWtAUSfDIiH8F
-         bym5T+P/mmpKOvwAxjrait4lLvMMzVyVUMEEJ+mhUvyhFxY4NeGs1FUaHsnl5fJGr9uF
-         90tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=V15jykBa+N5j9LW+oDUMatnueNmRnkOpS2oqDgDP8M8KihtXf+xefykweZ2KTU28wG
-         JPw3Xpry1dhNmcug06LfklkaTwR43F0yowPCyKbMmFcAn4/QKiSGd+JvAWpZPyb5a24n
-         08enHa9dKa/EhEve7BeK5LmopkVKu+EbzKGDWqbwUj7qRCezeBbXxd1L8IyOm0bhHwOt
-         khrV5Lo5SPx9GiPiCI5tMoRP1QkX1lLPPgs8S6ikTQ+pA7fIo3y37iuN6PF+11+HH4OK
-         nPeCYbMpX5r5e18P4lxOJfA1pwfaKdASXMUEmBUpgx6QywyWp1D95IhuKXEuTZV+VZVU
-         EkuQ==
-X-Gm-Message-State: AOAM530rpOmucvLeBayq9KNBcYeaviY/b4A51R1JSI4OD8uDmvyqUNPL
-        viP/2QIzpf/prcoezAmsAFCR1BjSXx06dRYv66A=
-X-Google-Smtp-Source: ABdhPJyT/CG0ujhQdUSLylv1d/z8uIqoWYPbkuBcpn+zAIK/hdguBhpbBfEoj60MXBbsp8Iwqn7DHKLwuBkMWaYO3UQ=
-X-Received: by 2002:a17:906:b14b:: with SMTP id bt11mr8839094ejb.162.1615555726975;
- Fri, 12 Mar 2021 05:28:46 -0800 (PST)
+        id S230136AbhCLNhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 08:37:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50178 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229567AbhCLNgj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 08:36:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E742064FD6;
+        Fri, 12 Mar 2021 13:36:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615556199;
+        bh=IgvfWN4FdKSbPuArR2z1vB9S58Cgh830mSjrvY30dD0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d8JTJKYFV4htN57lyadr7mDInf3Ile3Cs8/BNb08hzSxINfojXFlcS0wO/c1B0HRb
+         3blvXwHL3ASCIAeDyAunDeNd12LDsyKjrv0hCDuSZGqjAGhfAriM6xVAAedmbmUUfo
+         vCS1gCe2EwCdpIgH4mO5d+XnxmRHN0Chi2TvJUIWEcHrHleGhHy1fwspH7Q7hSExJJ
+         XTAZm8YvfawT3K/xTA2PGPGa3cUagnoEoP0jUUfAmRoHKkb/leKRjI9JH3spSzsGQe
+         QvOeUHE1U8cVKdHwSsvHuislYrOH+bu/egR68VB4LwErOuD+HXr/Wm+zk7Q+dhx9Q8
+         3qR97yJZRrayA==
+Date:   Fri, 12 Mar 2021 06:36:37 -0700
+From:   Keith Busch <kbusch@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210312133637.GA43947@C02WT3WMHTD6>
+References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
+ <20210311181729.GA2148230@bjorn-Precision-5520>
+ <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
+ <20210311201929.GN2356281@nvidia.com>
+ <CAKgT0Ud1tzpAWO4+5GxiUiHT2wEaLacjC0NEifZ2nfOPPLW0cg@mail.gmail.com>
+ <20210311232059.GR2356281@nvidia.com>
+ <CAKgT0Ud+gnw=W-2U22_iQ671himz8uWkr-DaBnVT9xfAsx6pUg@mail.gmail.com>
+ <20210312130017.GT2356281@nvidia.com>
 MIME-Version: 1.0
-Received: by 2002:a17:906:af79:0:0:0:0 with HTTP; Fri, 12 Mar 2021 05:28:46
- -0800 (PST)
-Reply-To: robertskevin3911@gmail.com
-From:   Kevin Roberts <lasergeocana@gmail.com>
-Date:   Fri, 12 Mar 2021 13:28:46 +0000
-Message-ID: <CAE-ohfsBvoanRzBPH2rJDxfuh2QRbSVnXKtNO711LqQpJeOQJg@mail.gmail.com>
-Subject: I sent you a mail earlier but not sure if you received it, kindly
- check your email and get back to me for I have very urgent information to
- pass to you.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210312130017.GT2356281@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Mar 12, 2021 at 09:00:17AM -0400, Jason Gunthorpe wrote:
+> On Thu, Mar 11, 2021 at 06:53:16PM -0800, Alexander Duyck wrote:
+> > On Thu, Mar 11, 2021 at 3:21 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > >
+> > > On Thu, Mar 11, 2021 at 01:49:24PM -0800, Alexander Duyck wrote:
+> > > > > We don't need to invent new locks and new complexity for something
+> > > > > that is trivially solved already.
+> > > >
+> > > > I am not wanting a new lock. What I am wanting is a way to mark the VF
+> > > > as being stale/offline while we are performing the update. With that
+> > > > we would be able to apply similar logic to any changes in the future.
+> > >
+> > > I think we should hold off doing this until someone comes up with HW
+> > > that needs it. The response time here is microseconds, it is not worth
+> > > any complexity
+> > 
+> > I disagree. Take a look at section 8.5.3 in the NVMe document that was
+> > linked to earlier:
+> > https://nvmexpress.org/wp-content/uploads/NVM-Express-1_4a-2020.03.09-Ratified.pdf
+> > 
+> > This is exactly what they are doing and I think it makes a ton of
+> > sense. Basically the VF has to be taken "offline" before you are
+> 
+> AFAIK this is internal to the NVMe command protocol, not something we
+> can expose generically to the OS. mlx5 has no protocol to "offline" an
+> already running VF, for instance.
+> 
+> The way Leon has it arranged that online/offline scheme has no
+> relevance because there is no driver or guest attached to the VF to
+> see the online/offline transition.
+> 
+> I wonder if people actually do offline a NVMe VF from a hypervisor?
+> Seems pretty weird.
 
+I agree, that would be weird. I'm pretty sure you can't modify these resources
+once you attach the nvme VF to a guest. The resource allocation needs to happen
+prior to that.
+ 
+> > Another way to think of this is that we are essentially pulling a
+> > device back after we have already allocated the VFs and we are
+> > reconfiguring it before pushing it back out for usage. Having a flag
+> > that we could set on the VF device to say it is "under
+> > construction"/modification/"not ready for use" would be quite useful I
+> > would think.
+> 
+> Well, yes, the whole SRIOV VF lifecycle is a pretty bad fit for the
+> modern world.
+> 
+> I'd rather not see a half-job on a lifecycle model by hacking in
+> random flags. It needs a proper comprehensive design.
+> 
+> Jason
