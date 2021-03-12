@@ -2,256 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F26A3389BC
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 11:12:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A963389C7
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 11:14:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbhCLKLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 05:11:55 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:37692 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233039AbhCLKLV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 05:11:21 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0URdxU9N_1615543878;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0URdxU9N_1615543878)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 12 Mar 2021 18:11:18 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, rostedt@goodmis.org, eric.dumazet@gmail.com,
-        mingo@redhat.com
-Subject: [PATCH RESEND net-next] tracing: remove holes in events
-Date:   Fri, 12 Mar 2021 18:08:33 +0800
-Message-Id: <20210312100832.19760-1-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.30.2
+        id S233158AbhCLKNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 05:13:33 -0500
+Received: from mail.katalix.com ([3.9.82.81]:54810 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232506AbhCLKNA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 05:13:00 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 059E4835E5;
+        Fri, 12 Mar 2021 10:12:59 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1615543979; bh=fxXe6I1aSG6SQ/i16YVUY5JNgwXtt14li56ntHRbnoo=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Fri,=2012=20Mar=202021=2010:12:58=20+0000|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20lyl2019@mail.ustc.edu.cn|Cc:=2
+         0paulus@samba.org,=20davem@davemloft.net,=20linux-ppp@vger.kernel.
+         org,=0D=0A=09netdev@vger.kernel.org,=20linux-kernel@vger.kernel.or
+         g|Subject:=20Re:=20[BUG]=20net/ppp:=20A=20use=20after=20free=20in=
+         20ppp_unregister_channe|Message-ID:=20<20210312101258.GA4951@katal
+         ix.com>|References:=20<6057386d.ca12.1782148389e.Coremail.lyl2019@
+         mail.ustc.edu.cn>|MIME-Version:=201.0|Content-Disposition:=20inlin
+         e|In-Reply-To:=20<6057386d.ca12.1782148389e.Coremail.lyl2019@mail.
+         ustc.edu.cn>;
+        b=sguwCApzj0ZtEa8x8DRyYXUxnDj7Yp2FujIJ2/lG/q9FIufJheBxzq9pym/SIMlsw
+         LhoczNet61yZdohGuxCyL/+zEj0gf6L0LHLQ9/4lmwJIDz3GN6xuWSrqnhhAC35Nmw
+         OnLnLBLbHi3oveJXrMU9Uyu76xXhXAUW5b2jLY6vpo/UGkFV4s1Hfl/uJWu319EPRZ
+         MmBSgRMT14qs0eeKiBwYEN4bslKaTLsT04rhGw1LVXEVs+vjd5XR+0G/3NcfGLoXjd
+         D/mGL0PoUYN+2nwWV44crYkBVDA7KS3wGQruCHLQq0wTv6wmrKgEaKUQSO3vhpsSsl
+         RlQZzQlF5x9nA==
+Date:   Fri, 12 Mar 2021 10:12:58 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     lyl2019@mail.ustc.edu.cn
+Cc:     paulus@samba.org, davem@davemloft.net, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [BUG] net/ppp: A use after free in ppp_unregister_channe
+Message-ID: <20210312101258.GA4951@katalix.com>
+References: <6057386d.ca12.1782148389e.Coremail.lyl2019@mail.ustc.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Dxnq1zWXvFF0Q93v"
+Content-Disposition: inline
+In-Reply-To: <6057386d.ca12.1782148389e.Coremail.lyl2019@mail.ustc.edu.cn>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are some holes in the event definitions, spaces are wasted. Based
-on the analysis result of pahole and event format files, 22 events have
-more than one hole. To change less and fix worst, 5 events are picked
-up and fixed in this patch according the following rules.
 
-Rules:
+--Dxnq1zWXvFF0Q93v
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-  - try not to affect reading habit and understanding of the fields;
-  - can be completely fixed (all holes are removed);
+Thanks for the report!
 
-NOTES:
+On  Thu, Mar 11, 2021 at 20:34:44 +0800, lyl2019@mail.ustc.edu.cn wrote:
+> File: drivers/net/ppp/ppp_generic.c
+>=20
+> In ppp_unregister_channel, pch could be freed in ppp_unbridge_channels()
+> but after that pch is still in use. Inside the function ppp_unbridge_chan=
+nels,
+> if "pchbb =3D=3D pch" is true and then pch will be freed.
 
-  - changing the order of event fields breaks API compatibility,
-    programs should parse and determine the real data order, instead of
-    hard-coded the order of fields;
-  - reduce holes as much as possible when adding / modifying;
+Do you have a way to reproduce a use-after-free scenario?
 
-Summary (#event_name #before -> #after):
+=46rom static analysis I'm not sure how pch would be freed in
+ppp_unbridge_channels when called via. ppp_unregister_channel.
 
- 1. net_dev_start_xmit
-    5 holes (10 bytes) -> 0
+In theory (at least!) the caller of ppp_register_net_channel holds=20
+a reference on struct channel which ppp_unregister_channel drops.
 
- 2. net_dev_rx_verbose_template
-    6 holes (17 bytes) -> 0
+Each channel in a bridged pair holds a reference on the other.
 
- 3. tcp_probe
-    3 holes (8 bytes) -> 0
+Hence on return from ppp_unbridge_channels, the channel should not have
+been freed (in this code path) because the ppp_register_net_channel
+reference has not yet been dropped.
 
- 4. qdisc_dequeue
-    2 holes (8 bytes) -> 0
+Maybe there is an issue with the reference counting or a race of some
+sort?
 
- 5. rpc_xdr_alignment
-    2 holes (8 bytes) -> 0
+> I checked the commit history and found that this problem is introduced fr=
+om
+> 4cf476ced45d7 ("ppp: add PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN ioctls").
+>=20
+> I have no idea about how to generate a suitable patch, sorry.
 
-Link: https://www.spinics.net/lists/netdev/msg726308.html
-Link: https://www.spinics.net/lists/netdev/msg726451.html
-Cc: David Miller <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
----
- include/trace/events/net.h    | 42 +++++++++++++++++------------------
- include/trace/events/qdisc.h  |  4 ++--
- include/trace/events/sunrpc.h |  4 ++--
- include/trace/events/tcp.h    |  2 +-
- 4 files changed, 26 insertions(+), 26 deletions(-)
+--Dxnq1zWXvFF0Q93v
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/include/trace/events/net.h b/include/trace/events/net.h
-index 2399073c3afc..b1db7ab88d4b 100644
---- a/include/trace/events/net.h
-+++ b/include/trace/events/net.h
-@@ -20,18 +20,18 @@ TRACE_EVENT(net_dev_start_xmit,
- 	TP_STRUCT__entry(
- 		__string(	name,			dev->name	)
- 		__field(	u16,			queue_mapping	)
-+		__field(	u16,			protocol	)
- 		__field(	const void *,		skbaddr		)
-+		__field(	u8,			ip_summed	)
- 		__field(	bool,			vlan_tagged	)
- 		__field(	u16,			vlan_proto	)
- 		__field(	u16,			vlan_tci	)
--		__field(	u16,			protocol	)
--		__field(	u8,			ip_summed	)
-+		__field(	bool,			transport_offset_valid)
-+		__field(	u8,			tx_flags	)
- 		__field(	unsigned int,		len		)
- 		__field(	unsigned int,		data_len	)
- 		__field(	int,			network_offset	)
--		__field(	bool,			transport_offset_valid)
- 		__field(	int,			transport_offset)
--		__field(	u8,			tx_flags	)
- 		__field(	u16,			gso_size	)
- 		__field(	u16,			gso_segs	)
- 		__field(	u16,			gso_type	)
-@@ -40,19 +40,19 @@ TRACE_EVENT(net_dev_start_xmit,
- 	TP_fast_assign(
- 		__assign_str(name, dev->name);
- 		__entry->queue_mapping = skb->queue_mapping;
-+		__entry->protocol = ntohs(skb->protocol);
- 		__entry->skbaddr = skb;
-+		__entry->ip_summed = skb->ip_summed;
- 		__entry->vlan_tagged = skb_vlan_tag_present(skb);
- 		__entry->vlan_proto = ntohs(skb->vlan_proto);
- 		__entry->vlan_tci = skb_vlan_tag_get(skb);
--		__entry->protocol = ntohs(skb->protocol);
--		__entry->ip_summed = skb->ip_summed;
-+		__entry->transport_offset_valid =
-+			skb_transport_header_was_set(skb);
-+		__entry->tx_flags = skb_shinfo(skb)->tx_flags;
- 		__entry->len = skb->len;
- 		__entry->data_len = skb->data_len;
- 		__entry->network_offset = skb_network_offset(skb);
--		__entry->transport_offset_valid =
--			skb_transport_header_was_set(skb);
- 		__entry->transport_offset = skb_transport_offset(skb);
--		__entry->tx_flags = skb_shinfo(skb)->tx_flags;
- 		__entry->gso_size = skb_shinfo(skb)->gso_size;
- 		__entry->gso_segs = skb_shinfo(skb)->gso_segs;
- 		__entry->gso_type = skb_shinfo(skb)->gso_type;
-@@ -170,23 +170,23 @@ DECLARE_EVENT_CLASS(net_dev_rx_verbose_template,
- 	TP_STRUCT__entry(
- 		__string(	name,			skb->dev->name	)
- 		__field(	unsigned int,		napi_id		)
--		__field(	u16,			queue_mapping	)
- 		__field(	const void *,		skbaddr		)
-+		__field(	u16,			queue_mapping	)
-+		__field(	u8,			ip_summed	)
- 		__field(	bool,			vlan_tagged	)
- 		__field(	u16,			vlan_proto	)
- 		__field(	u16,			vlan_tci	)
- 		__field(	u16,			protocol	)
--		__field(	u8,			ip_summed	)
--		__field(	u32,			hash		)
- 		__field(	bool,			l4_hash		)
-+		__field(	bool,			mac_header_valid)
-+		__field(	int,			mac_header	)
- 		__field(	unsigned int,		len		)
- 		__field(	unsigned int,		data_len	)
- 		__field(	unsigned int,		truesize	)
--		__field(	bool,			mac_header_valid)
--		__field(	int,			mac_header	)
--		__field(	unsigned char,		nr_frags	)
-+		__field(	u32,			hash		)
- 		__field(	u16,			gso_size	)
- 		__field(	u16,			gso_type	)
-+		__field(	unsigned char,		nr_frags	)
- 	),
- 
- 	TP_fast_assign(
-@@ -196,23 +196,23 @@ DECLARE_EVENT_CLASS(net_dev_rx_verbose_template,
- #else
- 		__entry->napi_id = 0;
- #endif
--		__entry->queue_mapping = skb->queue_mapping;
- 		__entry->skbaddr = skb;
-+		__entry->queue_mapping = skb->queue_mapping;
-+		__entry->ip_summed = skb->ip_summed;
- 		__entry->vlan_tagged = skb_vlan_tag_present(skb);
- 		__entry->vlan_proto = ntohs(skb->vlan_proto);
- 		__entry->vlan_tci = skb_vlan_tag_get(skb);
- 		__entry->protocol = ntohs(skb->protocol);
--		__entry->ip_summed = skb->ip_summed;
--		__entry->hash = skb->hash;
- 		__entry->l4_hash = skb->l4_hash;
-+		__entry->mac_header_valid = skb_mac_header_was_set(skb);
-+		__entry->mac_header = skb_mac_header(skb) - skb->data;
- 		__entry->len = skb->len;
- 		__entry->data_len = skb->data_len;
- 		__entry->truesize = skb->truesize;
--		__entry->mac_header_valid = skb_mac_header_was_set(skb);
--		__entry->mac_header = skb_mac_header(skb) - skb->data;
--		__entry->nr_frags = skb_shinfo(skb)->nr_frags;
-+		__entry->hash = skb->hash;
- 		__entry->gso_size = skb_shinfo(skb)->gso_size;
- 		__entry->gso_type = skb_shinfo(skb)->gso_type;
-+		__entry->nr_frags = skb_shinfo(skb)->nr_frags;
- 	),
- 
- 	TP_printk("dev=%s napi_id=%#x queue_mapping=%u skbaddr=%p vlan_tagged=%d vlan_proto=0x%04x vlan_tci=0x%04x protocol=0x%04x ip_summed=%d hash=0x%08x l4_hash=%d len=%u data_len=%u truesize=%u mac_header_valid=%d mac_header=%d nr_frags=%d gso_size=%d gso_type=%#x",
-diff --git a/include/trace/events/qdisc.h b/include/trace/events/qdisc.h
-index 330d32d84485..9e7d00256785 100644
---- a/include/trace/events/qdisc.h
-+++ b/include/trace/events/qdisc.h
-@@ -22,8 +22,8 @@ TRACE_EVENT(qdisc_dequeue,
- 		__field(	struct Qdisc *,		qdisc	)
- 		__field(const	struct netdev_queue *,	txq	)
- 		__field(	int,			packets	)
--		__field(	void *,			skbaddr	)
- 		__field(	int,			ifindex	)
-+		__field(	void *,			skbaddr	)
- 		__field(	u32,			handle	)
- 		__field(	u32,			parent	)
- 		__field(	unsigned long,		txq_state)
-@@ -34,8 +34,8 @@ TRACE_EVENT(qdisc_dequeue,
- 		__entry->qdisc		= qdisc;
- 		__entry->txq		= txq;
- 		__entry->packets	= skb ? packets : 0;
--		__entry->skbaddr	= skb;
- 		__entry->ifindex	= txq->dev ? txq->dev->ifindex : 0;
-+		__entry->skbaddr	= skb;
- 		__entry->handle		= qdisc->handle;
- 		__entry->parent		= qdisc->parent;
- 		__entry->txq_state	= txq->state;
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index 036eb1f5c133..39f4fdcf4d0f 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -715,8 +715,8 @@ TRACE_EVENT(rpc_xdr_alignment,
- 		__field(unsigned int, task_id)
- 		__field(unsigned int, client_id)
- 		__field(int, version)
--		__field(size_t, offset)
- 		__field(unsigned int, copied)
-+		__field(size_t, offset)
- 		__field(const void *, head_base)
- 		__field(size_t, head_len)
- 		__field(const void *, tail_base)
-@@ -739,8 +739,8 @@ TRACE_EVENT(rpc_xdr_alignment,
- 		__entry->version = task->tk_client->cl_vers;
- 		__assign_str(procedure, task->tk_msg.rpc_proc->p_name)
- 
--		__entry->offset = offset;
- 		__entry->copied = copied;
-+		__entry->offset = offset;
- 		__entry->head_base = xdr->buf->head[0].iov_base,
- 		__entry->head_len = xdr->buf->head[0].iov_len,
- 		__entry->page_len = xdr->buf->page_len,
-diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-index ba94857eea11..831abc267373 100644
---- a/include/trace/events/tcp.h
-+++ b/include/trace/events/tcp.h
-@@ -248,8 +248,8 @@ TRACE_EVENT(tcp_probe,
- 		__field(__u16, sport)
- 		__field(__u16, dport)
- 		__field(__u16, family)
--		__field(__u32, mark)
- 		__field(__u16, data_len)
-+		__field(__u32, mark)
- 		__field(__u32, snd_nxt)
- 		__field(__u32, snd_una)
- 		__field(__u32, snd_cwnd)
--- 
-2.19.1.6.gb485710b
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmBLPqIACgkQlIwGZQq6
+i9BImgf/VhpowGVVPkfWqgkYkfOsWZfxmDueUkeoSFD2dVhLeTNU/jnOGI400Cc0
+Yk+sEFL4fqmjZPjsjIGBlhdpndQJbW+yCKh+G/xmU9ynd9xe+0KrP0WpToJ5Dd3+
+1aCU4n1y5h8MhP6i0BuFe4KQ7K0SSIoSqubAyAF56bHp15arsHGaFB5clBQwy/Nj
+LBW4St5DNAOQTc9heT+s+rhC6LSzXJgz9URaGkwbPtFuFIYmkloFvTRwqC3YJGCQ
+OKF6B3w3uow6gxIX/K3MSRsrDiktsYRNiK1jqOM7l8Jm9qP1EaarbqdCN7W5RhBk
+GecNJWitncHg1zyx+SvpFTVJbxjxYA==
+=npR2
+-----END PGP SIGNATURE-----
+
+--Dxnq1zWXvFF0Q93v--
