@@ -2,94 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0201A33871B
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 09:12:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD58B33872C
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 09:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbhCLIL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 03:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232131AbhCLILU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 03:11:20 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6441C061574
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 00:11:19 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id c10so51562251ejx.9
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 00:11:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GSE8y8bIzwkaWbk//Q7yq5aLD9kknS5nbctb3k5BKZQ=;
-        b=i4RoYovqjn3gmv9OLHb902+P3Zv95u5vk4yHmh3+kjERn58bqd+uW4hVDRXGSgW4dp
-         tfxSBRUiSlkpWWCPYe/nNT6QzPCYedLCv6MXBlEBS31WfrhZsQUkkQ+ADrnbEB98uGFq
-         TaGkY6++ptJbn53XYZ8Pgzd2gsQowO+w7H8AjyIZvbEvKu+I0mURf3wSPwXBzVYHwLVS
-         O2H6HEoVg7ZI+dPi2rv9fDbH89e97Q2H6RPqMCe4JbjFFMFmMVjwntUY4+NTgABazju9
-         3dGMWgZRYmlc9SJIs/ATWjFITP6hit5wgFCrvxhy0tr0f9g8qvQSHvqJsy6xYGUAX31M
-         AmQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GSE8y8bIzwkaWbk//Q7yq5aLD9kknS5nbctb3k5BKZQ=;
-        b=YKSXmJds7AH2FwLn7P8t3HsN8RG1x2PhM0fh+ffEZ/DhR8YbtKD3H51Tx4Ja1Dz+H8
-         Z7ngw0pU8FU70kq0j14zFjDUAvtEYtruiAkUA8+0OjnOBj1sCEwtCuk4NMfkZk4nzdlt
-         xwpynKR2qdWp7ddQZckM3x+0J+cRJoIQtF52cEiJL45cabgb75po2HDPJveEbHlDGYhi
-         6Utl27w8T7ZbVc8fimPml8M7P3cLgconF08AMNjK1DNOcj1CD1Mr+MvqpiJkOWja0//F
-         onGE0UIPqxxMavUNk3kynKpdJ8t7G0MBlDMw3UPhVTnhgjlJx8jjicrmDCw2kDoIgjd7
-         72fw==
-X-Gm-Message-State: AOAM5339u48t6YZSIAw83pAbW9f8VCQs12tPm/3Hjhjzvtk2h4QLnQD8
-        yujWN6vJf/KSTPBYJhCgGDxbfg==
-X-Google-Smtp-Source: ABdhPJzd7yIu2Mtt/wSmkKfgikCWLHiR0Orv+ZjRzmKUsayaFRB97LPU3kCBn3bvE/gHnjKGKH+uEA==
-X-Received: by 2002:a17:907:37a:: with SMTP id rs26mr7211492ejb.336.1615536678651;
-        Fri, 12 Mar 2021 00:11:18 -0800 (PST)
-Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:76a2:a975:2529:ae9a])
-        by smtp.gmail.com with ESMTPSA id i10sm2407121ejv.106.2021.03.12.00.11.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Mar 2021 00:11:18 -0800 (PST)
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, kernel-janitors@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <YEsbGCmx4Jh3fApi@mwanda>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: Re: [PATCH net] mptcp: fix bit MPTCP_PUSH_PENDING tests
-Message-ID: <00ef3b75-bc38-a55d-ddcb-cc100dc20e79@tessares.net>
-Date:   Fri, 12 Mar 2021 09:11:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S232184AbhCLIQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 03:16:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60980 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231855AbhCLIQt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 03:16:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3809564F81;
+        Fri, 12 Mar 2021 08:16:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1615537008;
+        bh=+th6o3hFTevSMkxSLkMv2+q485aey0+OmQKuDPEyXA0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1DY3FtOCV8jMzCkv8fqUKyDfbJ7sv2ZqX60TRR0QhHIn7a5+UwMluIW6uAVkxxSkO
+         Fooycvewj78zJ1IkRSmQ2M18yfZe/PiTL9CbutBBk4jQ70dSZTLTPI5mm0usxrI90a
+         Rmfv5QoqrUeVxmhmPzPy2fKn+llvNE7hGkVAvvD4=
+Date:   Fri, 12 Mar 2021 09:16:46 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     kuba@kernel.org, davem@davemloft.net,
+        linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
+        hemantk@codeaurora.org, jhugo@codeaurora.org, rdunlap@infradead.org
+Subject: Re: [PATCH net-next v5 2/2] net: Add Qcom WWAN control driver
+Message-ID: <YEsjbnOPihKPJYpx@kroah.com>
+References: <1615495264-6816-1-git-send-email-loic.poulain@linaro.org>
+ <1615495264-6816-2-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <YEsbGCmx4Jh3fApi@mwanda>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1615495264-6816-2-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan,
+On Thu, Mar 11, 2021 at 09:41:04PM +0100, Loic Poulain wrote:
+> The MHI WWWAN control driver allows MHI QCOM-based modems to expose
+> different modem control protocols/ports to userspace, so that userspace
+> modem tools or daemon (e.g. ModemManager) can control WWAN config
+> and state (APN config, SMS, provider selection...). A QCOM-based
+> modem can expose one or several of the following protocols:
+> - AT: Well known AT commands interactive protocol (microcom, minicom...)
+> - MBIM: Mobile Broadband Interface Model (libmbim, mbimcli)
+> - QMI: QCOM MSM/Modem Interface (libqmi, qmicli)
+> - QCDM: QCOM Modem diagnostic interface (libqcdm)
+> - FIREHOSE: XML-based protocol for Modem firmware management
+>         (qmi-firmware-update)
+> 
+> The different interfaces are exposed as character devices through the
+> WWAN subsystem, in the same way as for USB modem variants.
+> 
+> Note that this patch is mostly a rework of the earlier MHI UCI
+> tentative that was a generic interface for accessing MHI bus from
+> userspace. As suggested, this new version is WWAN specific and is
+> dedicated to only expose channels used for controlling a modem, and
+> for which related opensource user support exist. Other MHI channels
+> not fitting the requirements will request either to be plugged to
+> the right Linux subsystem (when available) or to be discussed as a
+> new MHI driver (e.g AI accelerator, WiFi debug channels, etc...).
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+> ---
+>  v2: update copyright (2021)
+>  v3: Move driver to dedicated drivers/net/wwan directory
+>  v4: Rework to use wwan framework instead of self cdev management
+>  v5: Fix errors/typos in Kconfig
+> 
+>  drivers/net/wwan/Kconfig         |  14 ++
+>  drivers/net/wwan/Makefile        |   1 +
+>  drivers/net/wwan/mhi_wwan_ctrl.c | 497 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 512 insertions(+)
+>  create mode 100644 drivers/net/wwan/mhi_wwan_ctrl.c
+> 
+> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
+> index 545fe54..ce0bbfb 100644
+> --- a/drivers/net/wwan/Kconfig
+> +++ b/drivers/net/wwan/Kconfig
+> @@ -19,4 +19,18 @@ config WWAN_CORE
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called wwan.
+>  
+> +config MHI_WWAN_CTRL
+> +	tristate "MHI WWAN control driver for QCOM-based PCIe modems"
+> +	select WWAN_CORE
+> +	depends on MHI_BUS
+> +	help
+> +	  MHI WWAN CTRL allows QCOM-based PCIe modems to expose different modem
+> +	  control protocols/ports to userspace, including AT, MBIM, QMI, DIAG
+> +	  and FIREHOSE. These protocols can be accessed directly from userspace
+> +	  (e.g. AT commands) or via libraries/tools (e.g. libmbim, libqmi,
+> +	  libqcdm...).
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called mhi_wwan_ctrl
+> +
+>  endif # WWAN
+> diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
+> index ca8bb5a..e18ecda 100644
+> --- a/drivers/net/wwan/Makefile
+> +++ b/drivers/net/wwan/Makefile
+> @@ -6,3 +6,4 @@
+>  obj-$(CONFIG_WWAN_CORE) += wwan.o
+>  wwan-objs += wwan_core.o wwan_port.o
+>  
+> +obj-$(CONFIG_MHI_WWAN_CTRL) += mhi_wwan_ctrl.o
+> diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
+> new file mode 100644
+> index 0000000..abda4b0
+> --- /dev/null
+> +++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+> @@ -0,0 +1,497 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.*/
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/mhi.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/poll.h>
+> +
+> +#include "wwan_core.h"
+> +
+> +#define MHI_WWAN_CTRL_DRIVER_NAME "mhi_wwan_ctrl"
+> +#define MHI_WWAN_CTRL_MAX_MINORS 128
+> +#define MHI_WWAN_MAX_MTU 0x8000
+> +
+> +/* MHI wwan device flags */
+> +#define MHI_WWAN_DL_CAP		BIT(0)
+> +#define MHI_WWAN_UL_CAP		BIT(1)
+> +#define MHI_WWAN_CONNECTED	BIT(2)
+> +
+> +struct mhi_wwan_buf {
+> +	struct list_head node;
+> +	void *data;
+> +	size_t len;
+> +	size_t consumed;
+> +};
+> +
+> +struct mhi_wwan_dev {
+> +	unsigned int minor;
 
-On 12/03/2021 08:41, Dan Carpenter wrote:
-> The MPTCP_PUSH_PENDING define is 6 and these tests should be testing if
-> BIT(6) is set.
+You never use this, why is it here?
 
-Good catch, indeed, BIT() macro is missing!
+{sigh}
 
-It was not detected by our tests suite because in -net, that's the only 
-flag that is set.
+Who reviewed this series before sending it out?
 
-But another patch for net-next is coming and another flag can be set as 
-well. What's funny is that this other flag is "9" which works well with 
-"6" because their bits are not overlapping :)
-Anyway, better with "BIT()" macro!
-
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+greg k-h
