@@ -2,78 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD92633987A
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 21:37:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37ECC339886
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 21:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234782AbhCLUhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 15:37:17 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:54794 "EHLO vps0.lunn.ch"
+        id S234996AbhCLUk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 15:40:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37442 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234915AbhCLUhC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 15:37:02 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lKoWp-00AaIe-Fb; Fri, 12 Mar 2021 21:36:59 +0100
-Date:   Fri, 12 Mar 2021 21:36:59 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Hsu, Chiahao" <andyhsu@amazon.com>
-Cc:     netdev@vger.kernel.org, wei.liu@kernel.org, paul@xen.org,
-        davem@davemloft.net, kuba@kernel.org,
-        xen-devel@lists.xenproject.org
-Subject: Re: [net-next 1/2] xen-netback: add module parameter to disable
- ctrl-ring
-Message-ID: <YEvQ6z5WFf+F4mdc@lunn.ch>
-References: <20210311225944.24198-1-andyhsu@amazon.com>
- <YEuAKNyU6Hma39dN@lunn.ch>
- <ec5baac1-1410-86e4-a0d1-7c7f982a0810@amazon.com>
+        id S234758AbhCLUkI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 15:40:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6AA2E64F80;
+        Fri, 12 Mar 2021 20:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615581608;
+        bh=zUnBh1LJXDjvo1lRxiLrNImJ/t1xjRJUFEl0/aSLkrU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MY7zdqhntJ7wZZVnND17NSxNE7cWTqJhRRts16H2HAluTAdZLtmyVYHcSTpUw1nXE
+         VR3C2Hk6cLvi1rK1A1lmRvMejsJ4PZJNAKRcLQM0DZ6jaS+IWr3EXQ7D6L4o/gfUb/
+         dUbPEPXhMultCHS0h7cla6qdIDDdRKYiy5JRLhNBNU110d6DDR7SENa/F3vbiK8/0x
+         keF7/qJzinKjTC2kIpy1dtXVEd2o+OuwgpurTq/8Lo1M2DoAoyhBSKaqLkKx2u7mi3
+         gDYafrkD/NFtqUl3LpxuaSHwoj2D/9+HsNHrste6Yi0dZla9DVKRskxy2ff3kQezIm
+         Jiax1w7p23geQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 619C5609E7;
+        Fri, 12 Mar 2021 20:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ec5baac1-1410-86e4-a0d1-7c7f982a0810@amazon.com>
+Subject: Re: [PATCH net-next 0/3] tcp: better deal with delayed TX completions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161558160839.26333.8175306349376028801.git-patchwork-notify@kernel.org>
+Date:   Fri, 12 Mar 2021 20:40:08 +0000
+References: <20210311203506.3450792-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210311203506.3450792-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, ncardwell@google.com, ycheng@google.com,
+        ntspring@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 12, 2021 at 04:18:02PM +0100, Hsu, Chiahao wrote:
-> 
-> Andrew Lunn 於 2021/3/12 15:52 寫道:
-> > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > 
-> > 
-> > 
-> > On Thu, Mar 11, 2021 at 10:59:44PM +0000, ChiaHao Hsu wrote:
-> > > In order to support live migration of guests between kernels
-> > > that do and do not support 'feature-ctrl-ring', we add a
-> > > module parameter that allows the feature to be disabled
-> > > at run time, instead of using hardcode value.
-> > > The default value is enable.
-> > Hi ChiaHao
-> > 
-> > There is a general dislike for module parameters. What other mechanisms
-> > have you looked at? Would an ethtool private flag work?
-> > 
-> >       Andrew
-> 
-> 
-> Hi Andrew,
-> 
-> I can survey other mechanisms, however before I start doing that,
-> 
-> could you share more details about what the problem is with using module
-> parameters? thanks.
+Hello:
 
-It is not very user friendly. No two kernel modules use the same
-module parameters. Often you see the same name, but different
-meaning. There is poor documentation, you often need to read the
-kernel sources it figure out what it does, etc.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Ideally, you want a mechanism which is shared by multiple drivers and
-is well documented.
+On Thu, 11 Mar 2021 12:35:03 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Jakub and Neil reported an increase of RTO timers whenever
+> TX completions are delayed a bit more (by increasing
+> NIC TX coalescing parameters)
+> 
+> While problems have been there forever, second patch might
+> introduce some regressions so I prefer not backport
+> them to stable releases before things settle.
+> 
+> [...]
 
-Does virtio have the same problems? What about VmWare? HyperV? Could
-you make a generic solution which works for all these technologies?
-Is this just a networking problem? Or does disk, graphics etc, need
-something similar?
+Here is the summary with links:
+  - [net-next,1/3] tcp: plug skb_still_in_host_queue() to TSQ
+    https://git.kernel.org/netdev/net-next/c/f4dae54e486d
+  - [net-next,2/3] tcp: consider using standard rtx logic in tcp_rcv_fastopen_synack()
+    https://git.kernel.org/netdev/net-next/c/a7abf3cd76e1
+  - [net-next,3/3] tcp: remove obsolete check in __tcp_retransmit_skb()
+    https://git.kernel.org/netdev/net-next/c/ac3959fd0dcc
 
-    Andrew
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
