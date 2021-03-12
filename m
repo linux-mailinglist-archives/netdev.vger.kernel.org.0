@@ -2,76 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36199338336
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 02:37:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6C23338338
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 02:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbhCLBhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Mar 2021 20:37:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbhCLBgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Mar 2021 20:36:48 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232E1C061574
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 17:36:48 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id w34so13754100pga.8
-        for <netdev@vger.kernel.org>; Thu, 11 Mar 2021 17:36:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SqPkcKYR1Kw6+9xzKvZqP+ltyEgdKJeg3LcA+iir5YQ=;
-        b=mG0pbKGJYU9RVorY5KguTke3dAGHjaOAyoKsNgtKjLPGpKHWsihsJ0sG9TwEMWukBW
-         PLivjfLoBHIRLrf4Za5y8A4szfNpKF1o0cgCVogRT8dAnR4jcxDLCOv813KJgP6Zgk9m
-         SWXTOzd54OcY9Ju56HFr64EWYG8sbSxFzV9jn5UHnWCzVBD9sfmSLNZElO49o3W+WOnX
-         7QDYFHkMce8V76CbK62DVvNVQnLURODmh81yCwc9ZJCS3ENsuWcoEPz6gb+iuLinPpHH
-         +nWReLAyhhb+4myxeGMMkdgbd0Dg5JCjss5g6FxMsx+EcEL7Ik4AsE4+dFEbnpoBuknE
-         l7ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SqPkcKYR1Kw6+9xzKvZqP+ltyEgdKJeg3LcA+iir5YQ=;
-        b=HXOqRg5IvMC8oidLINcikazLNjaJTb4ZS3AmhSXl3xAflHIlLIdJeGEKXVAY7Rsscd
-         knCFG4XLrCOwI5+TbZTJTKahPJIpPsro2gVHs2WKpr1k2lZxptBS/tJ8EI+SbvRoOJLb
-         bX//HKuTmRD7SIIv9mEBUqZojiZpptce1u95LKnFyNzRz+3okO0M49kpAb6cNnhQ1YHS
-         1e9z1IQxruzsgkYoqeCq6vOk16ZLPx0jUZiqe/1X5CkFWhnxYqOnhmGhzL2zSGp2b/dy
-         NIvVDDlk/gNg3KSzJA57E+Ks8hpx23XI5B9mRbPqKw7rlPzrPmht1p9Y1PA3jTzosAC9
-         jAkw==
-X-Gm-Message-State: AOAM533B5xn4tOxXNuKkYLSybFDVON6xuKgd/1JIPuxWIWdEcZITl7Wd
-        rEY1Km1CDbaAOR0oj6q24WWu/DMWbA3kIWFHYuw=
-X-Google-Smtp-Source: ABdhPJwGyIcFpHRGQRXk6ujemW6cX/tYLNMnK/zpCKHogYK4D2tyWaSNOFKHvFhhqyRilDY/e1KpohNG1q5IiP+ZTrw=
-X-Received: by 2002:a62:8485:0:b029:1fc:d912:67d6 with SMTP id
- k127-20020a6284850000b02901fcd91267d6mr10099298pfd.80.1615513007739; Thu, 11
- Mar 2021 17:36:47 -0800 (PST)
+        id S230175AbhCLBhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Mar 2021 20:37:52 -0500
+Received: from mga14.intel.com ([192.55.52.115]:25698 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229938AbhCLBhV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Mar 2021 20:37:21 -0500
+IronPort-SDR: ETyV+qGn5b7VJ7gdlTO6dqA+G+gba9188HlPmMFJxlh3o/J7wJdRI5Q+QFdU7iA3hUsoNUOwOW
+ +lvpXjY2Bx4Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9920"; a="188131759"
+X-IronPort-AV: E=Sophos;i="5.81,241,1610438400"; 
+   d="scan'208";a="188131759"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 17:37:19 -0800
+IronPort-SDR: OsP2ibwKgbiZCIqHpXErOVIXZRVkTtMdPT12UsGVzETQmRDXrR+VJOSlZgGsslap/LW/zq0mWI
+ Kz1nn2ibHYLg==
+X-IronPort-AV: E=Sophos;i="5.81,241,1610438400"; 
+   d="scan'208";a="410833620"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.208.46]) ([10.254.208.46])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2021 17:37:16 -0800
+Subject: Re: [PATCH 1/2] vhost-vdpa: fix use-after-free of v->config_ctx
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Cc:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20210311135257.109460-1-sgarzare@redhat.com>
+ <20210311135257.109460-2-sgarzare@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <82e63dc0-7589-98f7-0ea5-dd86ce64949d@intel.com>
+Date:   Fri, 12 Mar 2021 09:37:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210311144206.2135872-1-maximmi@nvidia.com>
-In-Reply-To: <20210311144206.2135872-1-maximmi@nvidia.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 11 Mar 2021 17:36:36 -0800
-Message-ID: <CAM_iQpUs42exz_r-L=EWzbaL8J-jmxUDPy8NWu08f_FpjHCLeA@mail.gmail.com>
-Subject: Re: [PATCH net 0/2] Bugfixes for HTB
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210311135257.109460-2-sgarzare@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 6:42 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+
+
+On 3/11/2021 9:52 PM, Stefano Garzarella wrote:
+> When the 'v->config_ctx' eventfd_ctx reference is released we didn't
+> set it to NULL. So if the same character device (e.g. /dev/vhost-vdpa-0)
+> is re-opened, the 'v->config_ctx' is invalid and calling again
+> vhost_vdpa_config_put() causes use-after-free issues like the
+> following refcount_t underflow:
 >
-> The HTB offload feature introduced a few bugs in HTB. One affects the
-> non-offload mode, preventing attaching qdiscs to HTB classes, and the
-> other affects the error flow, when the netdev doesn't support the
-> offload, but it was requested. This short series fixes them.
+>      refcount_t: underflow; use-after-free.
+>      WARNING: CPU: 2 PID: 872 at lib/refcount.c:28 refcount_warn_saturate+0xae/0xf0
+>      RIP: 0010:refcount_warn_saturate+0xae/0xf0
+>      Call Trace:
+>       eventfd_ctx_put+0x5b/0x70
+>       vhost_vdpa_release+0xcd/0x150 [vhost_vdpa]
+>       __fput+0x8e/0x240
+>       ____fput+0xe/0x10
+>       task_work_run+0x66/0xa0
+>       exit_to_user_mode_prepare+0x118/0x120
+>       syscall_exit_to_user_mode+0x21/0x50
+>       ? __x64_sys_close+0x12/0x40
+>       do_syscall_64+0x45/0x50
+>       entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> Fixes: 776f395004d8 ("vhost_vdpa: Support config interrupt in vdpa")
+> Cc: lingshan.zhu@intel.com
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>   drivers/vhost/vdpa.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index ef688c8c0e0e..00796e4ecfdf 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -308,8 +308,10 @@ static long vhost_vdpa_get_vring_num(struct vhost_vdpa *v, u16 __user *argp)
+>   
+>   static void vhost_vdpa_config_put(struct vhost_vdpa *v)
+>   {
+> -	if (v->config_ctx)
+> +	if (v->config_ctx) {
+>   		eventfd_ctx_put(v->config_ctx);
+> +		v->config_ctx = NULL;
+> +	}
+>   }
+>   
+>   static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
+Thanks Stefano!
 
-Both look good to me.
-
-Acked-by: Cong Wang <cong.wang@bytedance.com>
-
-Thanks.
+Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
