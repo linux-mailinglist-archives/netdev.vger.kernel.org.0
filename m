@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22CB833930D
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84E04339311
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:23:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbhCLQWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 11:22:20 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:59365 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231789AbhCLQWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 11:22:01 -0500
-Date:   Fri, 12 Mar 2021 16:21:58 +0000
+        id S232507AbhCLQWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 11:22:22 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:22961 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232246AbhCLQWL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 11:22:11 -0500
+Date:   Fri, 12 Mar 2021 16:22:05 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615566119; bh=pYXdNgxXLm9jRXofMIKcS3j5jzWazEkuwrSWkfABQ9g=;
+        t=1615566129; bh=kBDDl8otlT8o/LM6cr4LLdHLvlyC4ODcgI6jQUcxeAo=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=KVNUVCXhng00EaJ920Tvs0q2twphNZCSQ9ASVAuEhst+KRNaP9DVlBsl5Hy5tYvRd
-         5iQbqrn2C7/5qQY9GdtYv8HEBXHZ59qPjNntmZbPU2sJZJfoDKzUIeWNEe2TmEVZmS
-         EACJ8ZLlJNr3o3VGGd1JczA0c2Gk5Tp4C5EabU6p0li5HPIbaQpOWPIxu8tLfO1eqL
-         tpSrl2ndnfZpXgQe6CDQvzptlvJsZXzAN3GekjqnWIu1RzPjnHYDhKsGcsuk/jJRdQ
-         EzEi4F3aVhhtLVuA/CXPYOLeDkjpWewV5HCFCCMr6W6Pj6UQA21gdVXKBeluKUCCV/
-         CX2ULINCyKL5Q==
+        b=TPHwMLPFx8yRTAB179mgR4wMVehNyO1TW5OYr/dIAAqdgMy2JYicEKDCcO+VFjYyJ
+         IKN4UB/I6vvxrSSOr6OlqtnK8/u+OW0HBgr7gKyN/K89KXe4axUMhWhSM+UzeSzEHU
+         MwUckvm5CtZq5Yi52sx3dAKqidGMlCcb7nGVJJ+3llgTos3O7SXTnhuAZjSrRlGeeQ
+         yJpiCrDpScE8Msn0QCnkgllWL7aDgXJjBCDkTjMaX1vwKpcJVB4OX+RWD9Lwh36tZY
+         KsOUt9bwav3507PGqtPRUdUZ7/dikwJNHeqqHbSElUICxbx7+dzXQ5HP2mPX5GwKUv
+         U7DaUwhm5Wo3Q==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -34,8 +34,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Taehee Yoo <ap420073@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next 2/4] gro: don't dereference napi->gro_hash[x] multiple times in dev_gro_receive()
-Message-ID: <20210312162127.239795-3-alobakin@pm.me>
+Subject: [PATCH net-next 3/4] gro: simplify gro_list_prepare()
+Message-ID: <20210312162127.239795-4-alobakin@pm.me>
 In-Reply-To: <20210312162127.239795-1-alobakin@pm.me>
 References: <20210312162127.239795-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -50,63 +50,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GRO bucket index doesn't change through the entire function.
-Store a pointer to the corresponding bucket on stack once and use
-it later instead of dereferencing again and again.
+gro_list_prepare() always returns &napi->gro_hash[bucket].list,
+without any variations. Moreover, it uses 'napi' argument only to
+have access to this list, and calculates the bucket index for the
+second time (firstly it happens at the beginning of
+dev_gro_receive()) to do that.
+Given that dev_gro_receive() already has a pointer to the needed
+list, just pass it as the first argument to eliminate redundant
+calculations, and make gro_list_prepare() return void.
+Also, both arguments of gro_list_prepare() can be constified since
+this function can only modify the skbs from the bucket list.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- net/core/dev.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/core/dev.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index adc42ba7ffd8..ee124aecb8a2 100644
+index ee124aecb8a2..65d9e7d9d1e8 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -5957,6 +5957,7 @@ static void gro_flush_oldest(struct napi_struct *napi=
-, struct list_head *head)
- static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk=
-_buff *skb)
+@@ -5858,15 +5858,13 @@ void napi_gro_flush(struct napi_struct *napi, bool =
+flush_old)
+ }
+ EXPORT_SYMBOL(napi_gro_flush);
+
+-static struct list_head *gro_list_prepare(struct napi_struct *napi,
+-=09=09=09=09=09  struct sk_buff *skb)
++static void gro_list_prepare(const struct list_head *head,
++=09=09=09     const struct sk_buff *skb)
+ {
+ =09unsigned int maclen =3D skb->dev->hard_header_len;
+ =09u32 hash =3D skb_get_hash_raw(skb);
+-=09struct list_head *head;
+ =09struct sk_buff *p;
+
+-=09head =3D &napi->gro_hash[hash & (GRO_HASH_BUCKETS - 1)].list;
+ =09list_for_each_entry(p, head, list) {
+ =09=09unsigned long diffs;
+
+@@ -5892,8 +5890,6 @@ static struct list_head *gro_list_prepare(struct napi=
+_struct *napi,
+ =09=09=09=09       maclen);
+ =09=09NAPI_GRO_CB(p)->same_flow =3D !diffs;
+ =09}
+-
+-=09return head;
+ }
+
+ static void skb_gro_reset_offset(struct sk_buff *skb)
+@@ -5958,10 +5954,10 @@ static enum gro_result dev_gro_receive(struct napi_=
+struct *napi, struct sk_buff
  {
  =09u32 bucket =3D skb_get_hash_raw(skb) & (GRO_HASH_BUCKETS - 1);
-+=09struct gro_list *gro_list =3D &napi->gro_hash[bucket];
+ =09struct gro_list *gro_list =3D &napi->gro_hash[bucket];
++=09struct list_head *gro_head =3D &gro_list->list;
  =09struct list_head *head =3D &offload_base;
  =09struct packet_offload *ptype;
  =09__be16 type =3D skb->protocol;
-@@ -6024,7 +6025,7 @@ static enum gro_result dev_gro_receive(struct napi_st=
+-=09struct list_head *gro_head;
+ =09struct sk_buff *pp =3D NULL;
+ =09enum gro_result ret;
+ =09int same_flow;
+@@ -5970,7 +5966,7 @@ static enum gro_result dev_gro_receive(struct napi_st=
 ruct *napi, struct sk_buff
- =09if (pp) {
- =09=09skb_list_del_init(pp);
- =09=09napi_gro_complete(napi, pp);
--=09=09napi->gro_hash[bucket].count--;
-+=09=09gro_list->count--;
- =09}
-
- =09if (same_flow)
-@@ -6033,10 +6034,10 @@ static enum gro_result dev_gro_receive(struct napi_=
-struct *napi, struct sk_buff
- =09if (NAPI_GRO_CB(skb)->flush)
+ =09if (netif_elide_gro(skb->dev))
  =09=09goto normal;
 
--=09if (unlikely(napi->gro_hash[bucket].count >=3D MAX_GRO_SKBS)) {
-+=09if (unlikely(gro_list->count >=3D MAX_GRO_SKBS)) {
- =09=09gro_flush_oldest(napi, gro_head);
- =09} else {
--=09=09napi->gro_hash[bucket].count++;
-+=09=09gro_list->count++;
- =09}
- =09NAPI_GRO_CB(skb)->count =3D 1;
- =09NAPI_GRO_CB(skb)->age =3D jiffies;
-@@ -6050,7 +6051,7 @@ static enum gro_result dev_gro_receive(struct napi_st=
-ruct *napi, struct sk_buff
- =09if (grow > 0)
- =09=09gro_pull_from_frag0(skb, grow);
- ok:
--=09if (napi->gro_hash[bucket].count) {
-+=09if (gro_list->count) {
- =09=09if (!test_bit(bucket, &napi->gro_bitmask))
- =09=09=09__set_bit(bucket, &napi->gro_bitmask);
- =09} else if (test_bit(bucket, &napi->gro_bitmask)) {
+-=09gro_head =3D gro_list_prepare(napi, skb);
++=09gro_list_prepare(gro_head, skb);
+
+ =09rcu_read_lock();
+ =09list_for_each_entry_rcu(ptype, head, list) {
 --
 2.30.2
 
