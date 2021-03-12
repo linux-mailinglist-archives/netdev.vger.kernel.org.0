@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 917743393E7
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:52:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C81B3393E9
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbhCLQvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 11:51:49 -0500
-Received: from mail-bn7nam10on2061.outbound.protection.outlook.com ([40.107.92.61]:45633
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S232675AbhCLQvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 11:51:50 -0500
+Received: from mail-dm6nam11on2058.outbound.protection.outlook.com ([40.107.223.58]:5568
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231597AbhCLQvZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 11:51:25 -0500
+        id S232005AbhCLQv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 11:51:29 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U6penWJhPzBTiZo05LIdvGSkp4+CsMFFfPUuvMVmuT/PWz0PaX2s4WLxg83i0l74KkQpAkIF0NbA2vTAxRwbOrUklZyf4KOcgqHrcPMqrdRlC06OX71CeunoA3RNvPcNCC+ExmWT7V/mYLlMbevXfmDOgoVfrsbeqcdoIT5l4fAVng414DTIhqE4Dsj+QabQWT8Tr+d5wZVaHuP5BaT4v7xwjDWE+7lLrqq6v8bu0HQxzx/Y5nKzCJ6skp0IFlcriba65VkzK5jjTTNn413GYzWYVMwWhqFjPkg6NHYcpc9hLafXUjRODGY2erZ9qQ+xR4OpnDWYhgBgXZ+/2Y5SsA==
+ b=X2tIO/bzzFSxqx3NDi5jYDGI+vuqtde7bMEBs/U+jnQ47/msi+mymMJcsysXUWaB2WQvtK34ye3wHb63TV64UokS5GocFVFWGnCVb/ON9zk6ZAit6amyrkwiI/aPVXIUIy+Blwg7L2DdHeaNpaHOEnO30rIedIJZ3McRaRhJ6x0/zuY6BrtnpZbfPZzvUeOii5NJW/UoO0z6VEljp2dcZ5EXiJZkRPTQW0ZT2NDE9m2OZLJ+9k+clLwfUeyACvjTCN/INRH3LC0+XuyyopGfl8UtBCTBNt4aqYjbTf7oDjIbSbVFh2CkNlpH9Mq37fr4+s7eWBdEpLQ8nHvjKkEQZw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1pBiwSJ2h6Aa5/9ZhM5NVHiRBNDHI2IgNZzvDn12uJI=;
- b=Ihy9MM+Zu7mS5C/FhDRMHrPVTXbIWQUPsxga9kvEwWAv0+OSzY+gkE2wHoHZXaG1f70XctdQ2Fb6yX70hn1JUZdMjnO6SCazyCr0xpADojEz3IcPtmYfuPc/qeNV8CtCwd7nI4TAvgsR9s5CPpNVRovNGBilrgEzbHfco313OINQLRhYFJ0WwFUtSO0NBhUn5m9dYdGXEOGd56zW1+0CjeYi1Q4PKGFqclrQga6rGMIthE3NEoEzvdLOXn4mDLRGCSoylv4x/k7XPZ678p+a5kPiWr2t5wLmbO3YThg3T8GVxNLSaEsLFIudqPnGxc+8cHcwYP5ngmlG+Df0ys+26g==
+ bh=UDnZ6hFzM6pep7ZHkanmh22H/OQHG5ZuluwBRu3bXHA=;
+ b=nnbjaboqwWDt3AYQlFVyuTDjF68GLHwOk80+l/P9ed46UklVXdzL3N6hO+1wQIOdsYFEIz9Q/b38eeqMLTg8bWKd90w9U4GMULJAfgS8+721mAvTdR+HJb8vZiu4gHCEqTBVRqzSxTR/nc8luz+SBwHbAAAb5E/7Cpd8Hwl1Ap2yEJhGX/g5jsC56dfb0Ls6mdctTkhBK5DSNBsWIFwb+Z0pLLEcFEoZNRMo6/OBS97CMKkxvlI0WM6hdOugkvM0qLa0Mw03sy2FKXTEaH1M/rD4Cs+Gtiuk5qz/9i0acik8ZQqY8gQz2JLur0fceAbXJeVETFYMD8nmCASdL17o0w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1pBiwSJ2h6Aa5/9ZhM5NVHiRBNDHI2IgNZzvDn12uJI=;
- b=LoFNcLLt8UlSmQVccskHc+95WJbpG6+Hv4+0rxpMr42k79QRWYI7NH6HAbmilgFh9W7Kfz7+SUPwhPa0sEElfQANrFqAPpHt8QUjE0Ikmobx3khilGRQh3PqBLuRdEWpIRfMLu4s71C0ve655reG+Jxn2/USAQi1ZOssBaOJ/NtbblDvbqGDJOyoXV6RG8y7mE6/4hUrLUp476p5LvlcWPMc9YFhXgRnolnSOTsIz3BGY8K6F3WYrN1UEz7wEGYVmBqxDYQCqDiJ6P8yJZ/CYximAmV8yAQuBDP5EsTBwjOJxKBve343lpoecjs3Xee/NK7kEF5bEpz+IGN+mexWUA==
-Received: from DM5PR04CA0035.namprd04.prod.outlook.com (2603:10b6:3:12b::21)
- by BN9PR12MB5210.namprd12.prod.outlook.com (2603:10b6:408:11b::23) with
+ bh=UDnZ6hFzM6pep7ZHkanmh22H/OQHG5ZuluwBRu3bXHA=;
+ b=gGgzjoFVzPnPBpRanjZ9lfaPGwo4j3YD5m1bx9rdKD1yXv0WE7yqG+E6gtWFpURbQZ8b6VZaoZWNn6zkk/7IKpyCeETckp+GuRw7Pevm1p1HzRAl2E+zJVLp0kVcIQkYzpn/daiEGI5wUQTOHJuEIrjRuOPxeHnp+/whP2HZsl5mQuwvCein85WwhvzyFHvNQmucyrhwdw73lIFtAISyUZIuIGGcn/cSqqdkQRFlkPbJDHOjVS5mFe7HpDMc7aOdDUr3GLsGq0QBr1jt3MI2LFMq0ys0+owE2/sfu1e87k3CeyUk+0eqcivoAJdjgVN5EW2JNPSCyust/VXYa69IMA==
+Received: from DM5PR04CA0048.namprd04.prod.outlook.com (2603:10b6:3:12b::34)
+ by CY4PR12MB1591.namprd12.prod.outlook.com (2603:10b6:910:10::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.8; Fri, 12 Mar
- 2021 16:51:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Fri, 12 Mar
+ 2021 16:51:28 +0000
 Received: from DM6NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:12b:cafe::b) by DM5PR04CA0035.outlook.office365.com
- (2603:10b6:3:12b::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Fri, 12 Mar 2021 16:51:23 +0000
+ (2603:10b6:3:12b:cafe::14) by DM5PR04CA0048.outlook.office365.com
+ (2603:10b6:3:12b::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31 via Frontend
+ Transport; Fri, 12 Mar 2021 16:51:27 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
@@ -47,19 +47,19 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.112.34) by
  DM6NAM11FT036.mail.protection.outlook.com (10.13.172.64) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Fri, 12 Mar 2021 16:51:23 +0000
+ 15.20.3933.31 via Frontend Transport; Fri, 12 Mar 2021 16:51:27 +0000
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 12 Mar
- 2021 16:51:18 +0000
+ 2021 16:51:21 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ido Schimmel <idosch@nvidia.com>, David Ahern <dsahern@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         "Petr Machata" <petrm@nvidia.com>
-Subject: [PATCH net-next 02/10] netdevsim: Create a helper for setting nexthop hardware flags
-Date:   Fri, 12 Mar 2021 17:50:18 +0100
-Message-ID: <165107c301e027fcc515f103cd8881fd1484c62e.1615563035.git.petrm@nvidia.com>
+Subject: [PATCH net-next 03/10] netdevsim: Add support for resilient nexthop groups
+Date:   Fri, 12 Mar 2021 17:50:19 +0100
+Message-ID: <a81f2da968ba36202dc1fb0de946eb2d0e8b6bab.1615563035.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1615563035.git.petrm@nvidia.com>
 References: <cover.1615563035.git.petrm@nvidia.com>
@@ -71,85 +71,171 @@ X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fa38da76-a49a-4589-ada7-08d8e57711b6
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5210:
-X-Microsoft-Antispam-PRVS: <BN9PR12MB52109EA140D5933BC6B4D779D66F9@BN9PR12MB5210.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:334;
+X-MS-Office365-Filtering-Correlation-Id: 8eaaf5d3-2d6c-4535-1bea-08d8e577146a
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1591:
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1591C6619C2DCAFE05F0BCCFD66F9@CY4PR12MB1591.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2FmswdJs5DBqTwYuUJaxS4W1RHtoZW9uQMmsYE1nVs9I2WbYTjcZvE5bW5ef+EjqsgUSHCd3uf6QG2xvpKIdnutVMtpJLs0gCVIFoY3TcEzsMzB91gLzcizqUBL8A+560PXb7IkamjCzls7U6d0QqSGD3vQLJdbfDBPts8vAgIEGE8+sodmYh0x/LfK9/I9d8ZegLoog3Z6RaO87TP1AHdU6sLNhvGXYudy5lajj6MW9P9svoeMKME8u3+9Jt1Wa/R+Rv3kNQ/yl6XcLjc40/3QtxkS1wz0KNcrwaF2/HGONhw/qIf4VfWfUw0zLg0ktvZjVjoD9DcqjtOjlLdKpzFqR/9BjnzUR5suQbnCutMBiZBCDGZalZphFgOrQxazXyPNgKwbSMsZWnHNjFDVRmJsKgek0Frb2tmeLeVDYT0SeO1coiQiFBeEdaQkUwPVTETN0r1g7h6bMYcWRkJrbJLkv6BHCj3/Wf/qf3SZxgkKt8mWoPgdSl/GIWYIYSXThdyeMr0u9allHFKvev57NVERMnQR60m1bMWlUdSXt5I30td1IjU1Jbb12m91PKCn71xgJaiHkByp4zcO4o95qMhL4aa01wD+50/iOcrm/vCytT1Q4jJyzwF360B9WpecJ6WyDbCq3ojSXpg/WIiYqRYZj/06/dOS3ofutS0uwNw6wTKyQaE1gkMwvh5ONw19X
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(136003)(39860400002)(46966006)(36840700001)(8936002)(7636003)(82740400003)(426003)(356005)(478600001)(107886003)(70586007)(34020700004)(336012)(36756003)(82310400003)(316002)(16526019)(6916009)(36906005)(70206006)(4326008)(26005)(8676002)(47076005)(186003)(2906002)(2616005)(5660300002)(83380400001)(54906003)(86362001)(36860700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: jcXp8kaMwyp9uh70Hq5I4u3jwcLq2AW7Y0NRf/PKQHUkl/9Y0x6v8lLmNdH850Qx+j7raCKXycGAS0pP682mOqZpot8beg40bCtA3pMj/Qcv7htR7YhMv1oy/+K3A1C/Q4RB37Stim+k2sKeg39OB1/RiND5Ocn90Z+mfqxwCAIqDOQ571RjYOdOHFcoaoAFJBE91VKJszhr2EGOA4Du73bzyefK/ArQORQJjR5Jf0Ip9PQ/wxwJwpajo1YvW7h9zEvvjnDsZOPMNwMcUmSbOvwWqsar6Ihxywq+dL80p01SD1H+OQ8k1pPmEKXbmcQO/bC3PIflD/cfHoFouO5ipJ06PZ7M75QxWJW/pnY0jXXM4fOGJetHx3Sr4AU1xOZnLbH2yv87ErI9l3krL8B33P5x3tKqGwTKir0FlDYGDxJdJLNRgbaSUPmj2xsiPYi4AJZQv34n1aGDGaclazs3crXzOs56sNdrJzjvF7wAIEAtYNCfU5uQdVeYfdfbWGGNQctpKimoqkRaTlewMvFW/AUqtX/yZC0nB99qMEFGZRxCqSb3xMUbQtdGqwK/lPNRXhFfap/1Cj8YM73DP25lGciKePzB5JCojqCwO5pO5Ig74J0Nht+jRvnwVwkmy2ox/DDNZwAx0bFEUAgrLvt8OiAa9ZSB/81/Bu5JZ48/o8RXKGkGAF23YKuXi961m7ff
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(346002)(376002)(136003)(46966006)(36840700001)(83380400001)(426003)(356005)(316002)(54906003)(186003)(16526019)(4326008)(2906002)(7636003)(70206006)(70586007)(336012)(26005)(8676002)(8936002)(47076005)(6916009)(34020700004)(36906005)(107886003)(86362001)(5660300002)(82310400003)(2616005)(36860700001)(478600001)(36756003)(82740400003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 16:51:23.2809
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 16:51:27.8223
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa38da76-a49a-4589-ada7-08d8e57711b6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8eaaf5d3-2d6c-4535-1bea-08d8e577146a
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT036.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5210
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1591
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Instead of calling nexthop_set_hw_flags(), call a helper. It will be
-used to also set nexthop bucket flags in a subsequent patch.
+Allow resilient nexthop groups to be programmed and account their
+occupancy according to their number of buckets. The nexthop group itself
+as well as its buckets are marked with hardware flags (i.e.,
+'RTNH_F_TRAP').
+
+Replacement of a single nexthop bucket can fail using the following
+debugfs knob:
+
+ # cat /sys/kernel/debug/netdevsim/netdevsim10/fib/fail_nexthop_bucket_replace
+ N
+ # echo 1 > /sys/kernel/debug/netdevsim/netdevsim10/fib/fail_nexthop_bucket_replace
+ # cat /sys/kernel/debug/netdevsim/netdevsim10/fib/fail_nexthop_bucket_replace
+ Y
+
+Replacement of a resilient nexthop group can fail using the following
+debugfs knob:
+
+ # cat /sys/kernel/debug/netdevsim/netdevsim10/fib/fail_res_nexthop_group_replace
+ N
+ # echo 1 > /sys/kernel/debug/netdevsim/netdevsim10/fib/fail_res_nexthop_group_replace
+ # cat /sys/kernel/debug/netdevsim/netdevsim10/fib/fail_res_nexthop_group_replace
+ Y
+
+This enables testing of various error paths.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 ---
- drivers/net/netdevsim/fib.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/netdevsim/fib.c | 55 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
 diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index ba577e20b1a1..62cbd716383c 100644
+index 62cbd716383c..e41f3b98295c 100644
 --- a/drivers/net/netdevsim/fib.c
 +++ b/drivers/net/netdevsim/fib.c
-@@ -1157,6 +1157,13 @@ static int nsim_nexthop_account(struct nsim_fib_data *data, u64 occ,
+@@ -57,6 +57,8 @@ struct nsim_fib_data {
+ 	struct mutex nh_lock; /* Protects NH HT */
+ 	struct dentry *ddir;
+ 	bool fail_route_offload;
++	bool fail_res_nexthop_group_replace;
++	bool fail_nexthop_bucket_replace;
+ };
  
+ struct nsim_fib_rt_key {
+@@ -117,6 +119,7 @@ struct nsim_nexthop {
+ 	struct rhash_head ht_node;
+ 	u64 occ;
+ 	u32 id;
++	bool is_resilient;
+ };
+ 
+ static const struct rhashtable_params nsim_nexthop_ht_params = {
+@@ -1115,6 +1118,10 @@ static struct nsim_nexthop *nsim_nexthop_create(struct nsim_fib_data *data,
+ 		for (i = 0; i < info->nh_grp->num_nh; i++)
+ 			occ += info->nh_grp->nh_entries[i].weight;
+ 		break;
++	case NH_NOTIFIER_INFO_TYPE_RES_TABLE:
++		occ = info->nh_res_table->num_nh_buckets;
++		nexthop->is_resilient = true;
++		break;
+ 	default:
+ 		NL_SET_ERR_MSG_MOD(info->extack, "Unsupported nexthop type");
+ 		kfree(nexthop);
+@@ -1161,7 +1168,15 @@ static void nsim_nexthop_hw_flags_set(struct net *net,
+ 				      const struct nsim_nexthop *nexthop,
+ 				      bool trap)
+ {
++	int i;
++
+ 	nexthop_set_hw_flags(net, nexthop->id, false, trap);
++
++	if (!nexthop->is_resilient)
++		return;
++
++	for (i = 0; i < nexthop->occ; i++)
++		nexthop_bucket_set_hw_flags(net, nexthop->id, i, false, trap);
  }
  
-+static void nsim_nexthop_hw_flags_set(struct net *net,
-+				      const struct nsim_nexthop *nexthop,
-+				      bool trap)
-+{
-+	nexthop_set_hw_flags(net, nexthop->id, false, trap);
-+}
-+
  static int nsim_nexthop_add(struct nsim_fib_data *data,
- 			    struct nsim_nexthop *nexthop,
- 			    struct netlink_ext_ack *extack)
-@@ -1175,7 +1182,7 @@ static int nsim_nexthop_add(struct nsim_fib_data *data,
- 		goto err_nexthop_dismiss;
- 	}
- 
--	nexthop_set_hw_flags(net, nexthop->id, false, true);
-+	nsim_nexthop_hw_flags_set(net, nexthop, true);
- 
- 	return 0;
- 
-@@ -1204,7 +1211,7 @@ static int nsim_nexthop_replace(struct nsim_fib_data *data,
- 		goto err_nexthop_dismiss;
- 	}
- 
--	nexthop_set_hw_flags(net, nexthop->id, false, true);
-+	nsim_nexthop_hw_flags_set(net, nexthop, true);
- 	nsim_nexthop_account(data, nexthop_old->occ, false, extack);
- 	nsim_nexthop_destroy(nexthop_old);
- 
-@@ -1286,7 +1293,7 @@ static void nsim_nexthop_free(void *ptr, void *arg)
- 	struct net *net;
- 
- 	net = devlink_net(data->devlink);
--	nexthop_set_hw_flags(net, nexthop->id, false, false);
-+	nsim_nexthop_hw_flags_set(net, nexthop, false);
- 	nsim_nexthop_account(data, nexthop->occ, false, NULL);
+@@ -1262,6 +1277,32 @@ static void nsim_nexthop_remove(struct nsim_fib_data *data,
  	nsim_nexthop_destroy(nexthop);
  }
+ 
++static int nsim_nexthop_res_table_pre_replace(struct nsim_fib_data *data,
++					      struct nh_notifier_info *info)
++{
++	if (data->fail_res_nexthop_group_replace) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Failed to replace a resilient nexthop group");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int nsim_nexthop_bucket_replace(struct nsim_fib_data *data,
++				       struct nh_notifier_info *info)
++{
++	if (data->fail_nexthop_bucket_replace) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Failed to replace nexthop bucket");
++		return -EINVAL;
++	}
++
++	nexthop_bucket_set_hw_flags(info->net, info->id,
++				    info->nh_res_bucket->bucket_index,
++				    false, true);
++
++	return 0;
++}
++
+ static int nsim_nexthop_event_nb(struct notifier_block *nb, unsigned long event,
+ 				 void *ptr)
+ {
+@@ -1278,6 +1319,12 @@ static int nsim_nexthop_event_nb(struct notifier_block *nb, unsigned long event,
+ 	case NEXTHOP_EVENT_DEL:
+ 		nsim_nexthop_remove(data, info);
+ 		break;
++	case NEXTHOP_EVENT_RES_TABLE_PRE_REPLACE:
++		err = nsim_nexthop_res_table_pre_replace(data, info);
++		break;
++	case NEXTHOP_EVENT_BUCKET_REPLACE:
++		err = nsim_nexthop_bucket_replace(data, info);
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -1387,6 +1434,14 @@ nsim_fib_debugfs_init(struct nsim_fib_data *data, struct nsim_dev *nsim_dev)
+ 	data->fail_route_offload = false;
+ 	debugfs_create_bool("fail_route_offload", 0600, data->ddir,
+ 			    &data->fail_route_offload);
++
++	data->fail_res_nexthop_group_replace = false;
++	debugfs_create_bool("fail_res_nexthop_group_replace", 0600, data->ddir,
++			    &data->fail_res_nexthop_group_replace);
++
++	data->fail_nexthop_bucket_replace = false;
++	debugfs_create_bool("fail_nexthop_bucket_replace", 0600, data->ddir,
++			    &data->fail_nexthop_bucket_replace);
+ 	return 0;
+ }
+ 
 -- 
 2.26.2
 
