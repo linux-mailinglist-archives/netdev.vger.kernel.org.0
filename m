@@ -2,100 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 569103385E6
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 07:33:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBAE93385EF
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 07:34:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231646AbhCLGck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 01:32:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42520 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231650AbhCLGcP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 01:32:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C3A8264F7E;
-        Fri, 12 Mar 2021 06:32:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615530735;
-        bh=x7ZS2xlO1VmRSQpQBaH61aAHjBGzV0tZAn3dkwlPL6s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OqZaGeJKWnJXu/p4ez/w4RCY87r5WqEi2oHol6Dit/kMCITyMoGfIs24KCRuJaShb
-         QeMTMiJJBLTnkx74hBZHXL/NDiKSq1oNDU+12I6gJgu0d15WADfGzluVjT+QaZZyBz
-         vkpVbwmNYjkiieLbtP3eDk0bc0SAaENgTiQtFgInsHN93VrptxeSMmmLO1ctEiClj9
-         vOw2gcEJwqAOnq9CK3+Q6rTMfDK+zXxLtNGLKv0xJRjOlodgpqf9dsRUYJHYN/8lkC
-         ObTh/bcCm6KKyCF38xWuv4IKMTdWQzXTfpcN8MzdlQdmJyY54euJu01ia3X1NWKVor
-         Lfdr2vtOQ9mZg==
-Date:   Fri, 12 Mar 2021 08:32:11 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
-Message-ID: <YEsK6zoNY+BXfbQ7@unreal>
-References: <CAKgT0UevrCLSQp=dNiHXWFu=10OiPb5PPgP1ZkPN1uKHfD=zBQ@mail.gmail.com>
- <20210311181729.GA2148230@bjorn-Precision-5520>
- <CAKgT0UeprjR8QCQMCV8Le+Br=bQ7j2tCE6k6gxK4zCZML5woAA@mail.gmail.com>
- <20210311201929.GN2356281@nvidia.com>
- <CAKgT0Ud1tzpAWO4+5GxiUiHT2wEaLacjC0NEifZ2nfOPPLW0cg@mail.gmail.com>
- <20210311232059.GR2356281@nvidia.com>
- <CAKgT0Ud+gnw=W-2U22_iQ671himz8uWkr-DaBnVT9xfAsx6pUg@mail.gmail.com>
+        id S231764AbhCLGeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 01:34:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51678 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231728AbhCLGdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 01:33:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615530830;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nxYXgMslZPHyhqjjAUjb+4OhgFRtuNfwG4K2get5jzc=;
+        b=H5Wqj50AZqlyKexovXP0tqYP94Ejq2Xlfr0PIVZNW+nBc1QX44aZByV1Wh4j/R8LGKmUdk
+        Nf8AUXLpuaDgK+TwDGpwcAELeiJj0uodpkqz9Es+JXYdz3fNfVdSt/eUsrm1S9qYmu8rxL
+        9reNJtMvGULX4T5UMJThKHpI6ZRakpc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-332-74yRoMHdPampxkMFKNsVrQ-1; Fri, 12 Mar 2021 01:33:46 -0500
+X-MC-Unique: 74yRoMHdPampxkMFKNsVrQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B0F6801817;
+        Fri, 12 Mar 2021 06:33:45 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-168.pek2.redhat.com [10.72.13.168])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C0CD15D6D7;
+        Fri, 12 Mar 2021 06:33:39 +0000 (UTC)
+Subject: Re: [PATCH 1/2] vhost-vdpa: fix use-after-free of v->config_ctx
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Cc:     netdev@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20210311135257.109460-1-sgarzare@redhat.com>
+ <20210311135257.109460-2-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <cfe550cf-301a-92c4-7270-6a50ea3ed19c@redhat.com>
+Date:   Fri, 12 Mar 2021 14:33:37 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Ud+gnw=W-2U22_iQ671himz8uWkr-DaBnVT9xfAsx6pUg@mail.gmail.com>
+In-Reply-To: <20210311135257.109460-2-sgarzare@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 06:53:16PM -0800, Alexander Duyck wrote:
-> On Thu, Mar 11, 2021 at 3:21 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >
-> > On Thu, Mar 11, 2021 at 01:49:24PM -0800, Alexander Duyck wrote:
-> > > > We don't need to invent new locks and new complexity for something
-> > > > that is trivially solved already.
-> > >
-> > > I am not wanting a new lock. What I am wanting is a way to mark the VF
-> > > as being stale/offline while we are performing the update. With that
-> > > we would be able to apply similar logic to any changes in the future.
-> >
-> > I think we should hold off doing this until someone comes up with HW
-> > that needs it. The response time here is microseconds, it is not worth
-> > any complexity
 
-<...>
+On 2021/3/11 9:52 下午, Stefano Garzarella wrote:
+> When the 'v->config_ctx' eventfd_ctx reference is released we didn't
+> set it to NULL. So if the same character device (e.g. /dev/vhost-vdpa-0)
+> is re-opened, the 'v->config_ctx' is invalid and calling again
+> vhost_vdpa_config_put() causes use-after-free issues like the
+> following refcount_t underflow:
+>
+>      refcount_t: underflow; use-after-free.
+>      WARNING: CPU: 2 PID: 872 at lib/refcount.c:28 refcount_warn_saturate+0xae/0xf0
+>      RIP: 0010:refcount_warn_saturate+0xae/0xf0
+>      Call Trace:
+>       eventfd_ctx_put+0x5b/0x70
+>       vhost_vdpa_release+0xcd/0x150 [vhost_vdpa]
+>       __fput+0x8e/0x240
+>       ____fput+0xe/0x10
+>       task_work_run+0x66/0xa0
+>       exit_to_user_mode_prepare+0x118/0x120
+>       syscall_exit_to_user_mode+0x21/0x50
+>       ? __x64_sys_close+0x12/0x40
+>       do_syscall_64+0x45/0x50
+>       entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> Fixes: 776f395004d8 ("vhost_vdpa: Support config interrupt in vdpa")
+> Cc: lingshan.zhu@intel.com
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 
-> Another way to think of this is that we are essentially pulling a
-> device back after we have already allocated the VFs and we are
-> reconfiguring it before pushing it back out for usage. Having a flag
-> that we could set on the VF device to say it is "under
-> construction"/modification/"not ready for use" would be quite useful I
-> would think.
 
-It is not simple flag change, but change of PCI state machine, which is
-far more complex than holding two locks or call to sysfs_create_file in
-the loop that made Bjorn nervous.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-I want to remind again that the suggestion here has nothing to do with
-the real use case of SR-IOV capable devices in the Linux.
 
-The flow is:
-1. Disable SR-IOV driver autoprobe
-2. Create as much as possible VFs
-3. Wait for request from the user to get VM
-4. Change MSI-X table according to requested in item #3
-5. Bind ready to go VF to VM
-6. Inform user about VM readiness
+> ---
+>   drivers/vhost/vdpa.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index ef688c8c0e0e..00796e4ecfdf 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -308,8 +308,10 @@ static long vhost_vdpa_get_vring_num(struct vhost_vdpa *v, u16 __user *argp)
+>   
+>   static void vhost_vdpa_config_put(struct vhost_vdpa *v)
+>   {
+> -	if (v->config_ctx)
+> +	if (v->config_ctx) {
+>   		eventfd_ctx_put(v->config_ctx);
+> +		v->config_ctx = NULL;
+> +	}
+>   }
+>   
+>   static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
 
-The destroy flow includes VM destroy and unbind.
-
-Let's focus on solutions for real problems instead of trying to solve theoretical
-cases that are not going to be tested and deployed.
-
-Thanks
