@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D213397B2
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:47:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15D693397B9
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:48:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234560AbhCLTrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 14:47:16 -0500
-Received: from mail1.protonmail.ch ([185.70.40.18]:19338 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234499AbhCLTqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:46:52 -0500
-Date:   Fri, 12 Mar 2021 19:46:48 +0000
+        id S234504AbhCLTrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 14:47:42 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:49061 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234486AbhCLTrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:47:13 -0500
+Date:   Fri, 12 Mar 2021 19:47:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615578410; bh=X3TuYcTaZPUU1Xz+TlNF44PidtjG5KU7YmET3XhmCM4=;
+        t=1615578431; bh=0WXUDRS6l3uzo7FR/B86Gske9XTm/nKNi8/gZiVufio=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=eMm2VsMlvn6slWnURKOEXNXqAP4812HwOHfFtntPxqoBrbcEPVuaUzU2gqSpKinQJ
-         taTSblo/uuAw4Wlgry6aHr8bsNEoWYzsX+ASI+HkNVjFyCSB+vhPou858Te09LOZNL
-         tNqJ11fNReVQV5P08iMJYc8xl4+c/M0DZsqcRZ0FNS3k/qPPRfRg/0V9bif2Eki76r
-         NlUMkLDkjgO9Y5dkIMPUf+KlTDsOI0yIjlXX7UciI+BRRMzIG1gJ/t10YQRWrgVa6I
-         FO2sEZC+1tnx6ZH6cTtQyhXn4lVJeo9QUg74mVth6i/T9JOhmBS5r75nHoyLPG93QK
-         qGn2saS8EYtCQ==
+        b=W0fw0vAzGEdIe1NRTwFI0Zc+jgpfNGER5XVeToKKqjERriU/eabdNJjFcYaPzIYvR
+         sgsHppSchZl7I1AchfFUvTTIHfHiQn6wcnBeP+CKBgsdVAPF/raBbAKhLA0Rd/x3uU
+         TcM7ZMb+BjPva1FjJYCBHlK9NXuEl44vhYJ1GfasZIITzCKPNlW18uvDcvV5BsWGz2
+         R6FHupHuS4DYidzdmyScY9++8sttJFJWdffJ0skHDWhN1dgUfY7saizL7brVRZF0sP
+         oUQCymviXI5/PNSi+Crt42y1nYhSAccdY+hbPhzVKl3UzxAydlQ8qF2tk0XFRAq85H
+         8/P633Zz1TQtg==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -52,8 +52,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next 4/6] linux/etherdevice.h: misc trailing whitespace cleanup
-Message-ID: <20210312194538.337504-5-alobakin@pm.me>
+Subject: [PATCH net-next 6/6] skbuff: micro-optimize {,__}skb_header_pointer()
+Message-ID: <20210312194538.337504-7-alobakin@pm.me>
 In-Reply-To: <20210312194538.337504-1-alobakin@pm.me>
 References: <20210312194538.337504-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -68,26 +68,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Caught by the text editor. Fix it separately from the actual changes.
+{,__}skb_header_pointer() helpers exist mainly for preventing
+accesses-beyond-end of the linear data.
+In the vast majorify of cases, they bail out on the first condition.
+All code going after is mostly a fallback.
+Mark the most common branch as 'likely' one to move it in-line.
+Also, skb_copy_bits() can return negative values only when the input
+arguments are invalid, e.g. offset is greater than skb->len. It can
+be safely marked as 'unlikely' branch, assuming that hotpath code
+provides sane input to not fail here.
+
+These two bump the throughput with a single Flow Dissector pass on
+every packet (e.g. with RPS or driver that uses eth_get_headlen())
+on 20 Mbps per flow/core.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/linux/etherdevice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/skbuff.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-index 2e5debc0373c..bcb2f81baafb 100644
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -11,7 +11,7 @@
-  * Authors:=09Ross Biro
-  *=09=09Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
-  *
-- *=09=09Relocated to include/linux where it belongs by Alan Cox
-+ *=09=09Relocated to include/linux where it belongs by Alan Cox
-  *=09=09=09=09=09=09=09<gw4pts@gw4pts.ampr.org>
-  */
- #ifndef _LINUX_ETHERDEVICE_H
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 7873f24c0ae5..71f4d609819e 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3680,11 +3680,10 @@ static inline void * __must_check
+ __skb_header_pointer(const struct sk_buff *skb, int offset, int len,
+ =09=09     const void *data, int hlen, void *buffer)
+ {
+-=09if (hlen - offset >=3D len)
++=09if (likely(hlen - offset >=3D len))
+ =09=09return (void *)data + offset;
+
+-=09if (!skb ||
+-=09    skb_copy_bits(skb, offset, buffer, len) < 0)
++=09if (!skb || unlikely(skb_copy_bits(skb, offset, buffer, len) < 0))
+ =09=09return NULL;
+
+ =09return buffer;
 --
 2.30.2
 
