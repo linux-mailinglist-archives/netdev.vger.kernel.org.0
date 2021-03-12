@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50988339899
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 21:46:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5400C3398A4
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 21:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235018AbhCLUqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 15:46:21 -0500
-Received: from mxout01.lancloud.ru ([45.84.86.81]:35216 "EHLO
+        id S235072AbhCLUr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 15:47:26 -0500
+Received: from mxout01.lancloud.ru ([45.84.86.81]:35262 "EHLO
         mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234969AbhCLUpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 15:45:51 -0500
+        with ESMTP id S235069AbhCLUrE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 15:47:04 -0500
 Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru F38F3209D4D0
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 45D0320D2E6A
 Received: from LanCloud
 Received: from LanCloud
 Received: from LanCloud
-Subject: [PATCH net-next 3/4] sh_eth: rename *enum*s still not matching
- register names
+Subject: [PATCH net-next 4/4] sh_eth: place RX/TX descriptor *enum*s after
+ their *struct*s
 From:   Sergey Shtylyov <s.shtylyov@omprussia.ru>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -25,8 +25,8 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     <linux-renesas-soc@vger.kernel.org>
 References: <41a26045-c70e-32d7-b13e-8a8bd0834fcc@omprussia.ru>
 Organization: Open Mobile Platform, LLC
-Message-ID: <80b5d240-c3be-fad0-a6d4-a98b3ed3b7b9@omprussia.ru>
-Date:   Fri, 12 Mar 2021 23:45:48 +0300
+Message-ID: <4ba4d265-0714-ea16-1dbe-7a500a23d5bc@omprussia.ru>
+Date:   Fri, 12 Mar 2021 23:47:02 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.0
 MIME-Version: 1.0
@@ -41,68 +41,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Finally, rename the rest of the *enum* tags still not (exactly) matching
-the abbreviated register names from the manuals...
+Place the RX/TX descriptor bit *enum*s where they belong -- after the
+corresponding RX/TX descriptor *struct*s and, while at it, switch to
+declaring one *enum* entry per line...
 
 Signed-off-by: Sergey Shtylyov <s.shtylyov@omprussia.ru>
 
 ---
- drivers/net/ethernet/renesas/sh_eth.h |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/renesas/sh_eth.h |   82 +++++++++++++++++++---------------
+ 1 file changed, 46 insertions(+), 36 deletions(-)
 
 Index: net-next/drivers/net/ethernet/renesas/sh_eth.h
 ===================================================================
 --- net-next.orig/drivers/net/ethernet/renesas/sh_eth.h
 +++ net-next/drivers/net/ethernet/renesas/sh_eth.h
-@@ -171,7 +171,7 @@ enum GECMR_BIT {
+@@ -288,27 +288,6 @@ enum EESIPR_BIT {
+ 	EESIPR_CERFIP	= 0x00000001,
  };
  
- /* EDMR */
--enum DMAC_M_BIT {
-+enum EDMR_BIT {
- 	EDMR_NBST = 0x80,
- 	EDMR_EL = 0x40, /* Litte endian */
- 	EDMR_DL1 = 0x20, EDMR_DL0 = 0x10,
-@@ -180,13 +180,13 @@ enum DMAC_M_BIT {
- };
+-/* Receive descriptor 0 bits */
+-enum RD_STS_BIT {
+-	RD_RACT = 0x80000000, RD_RDLE = 0x40000000,
+-	RD_RFP1 = 0x20000000, RD_RFP0 = 0x10000000,
+-	RD_RFE = 0x08000000, RD_RFS10 = 0x00000200,
+-	RD_RFS9 = 0x00000100, RD_RFS8 = 0x00000080,
+-	RD_RFS7 = 0x00000040, RD_RFS6 = 0x00000020,
+-	RD_RFS5 = 0x00000010, RD_RFS4 = 0x00000008,
+-	RD_RFS3 = 0x00000004, RD_RFS2 = 0x00000002,
+-	RD_RFS1 = 0x00000001,
+-};
+-#define RDF1ST	RD_RFP1
+-#define RDFEND	RD_RFP0
+-#define RD_RFP	(RD_RFP1|RD_RFP0)
+-
+-/* Receive descriptor 1 bits */
+-enum RD_LEN_BIT {
+-	RD_RFL	= 0x0000ffff,	/* receive frame  length */
+-	RD_RBL	= 0xffff0000,	/* receive buffer length */
+-};
+-
+ /* FCFTR */
+ enum FCFTR_BIT {
+ 	FCFTR_RFF2 = 0x00040000, FCFTR_RFF1 = 0x00020000,
+@@ -318,21 +297,6 @@ enum FCFTR_BIT {
+ #define DEFAULT_FIFO_F_D_RFF	(FCFTR_RFF2 | FCFTR_RFF1 | FCFTR_RFF0)
+ #define DEFAULT_FIFO_F_D_RFD	(FCFTR_RFD2 | FCFTR_RFD1 | FCFTR_RFD0)
  
- /* EDTRR */
--enum DMAC_T_BIT {
-+enum EDTRR_BIT {
- 	EDTRR_TRNS_GETHER = 0x03,
- 	EDTRR_TRNS_ETHER = 0x01,
- };
+-/* Transmit descriptor 0 bits */
+-enum TD_STS_BIT {
+-	TD_TACT = 0x80000000, TD_TDLE = 0x40000000,
+-	TD_TFP1 = 0x20000000, TD_TFP0 = 0x10000000,
+-	TD_TFE  = 0x08000000, TD_TWBI = 0x04000000,
+-};
+-#define TDF1ST	TD_TFP1
+-#define TDFEND	TD_TFP0
+-#define TD_TFP	(TD_TFP1|TD_TFP0)
+-
+-/* Transmit descriptor 1 bits */
+-enum TD_LEN_BIT {
+-	TD_TBL	= 0xffff0000,	/* transmit buffer length */
+-};
+-
+ /* RMCR */
+ enum RMCR_BIT {
+ 	RMCR_RNC = 0x00000001,
+@@ -451,6 +415,24 @@ struct sh_eth_txdesc {
+ 	u32 pad0;		/* padding data */
+ } __aligned(2) __packed;
  
- /* EDRRR */
--enum EDRRR_R_BIT {
-+enum EDRRR_BIT {
- 	EDRRR_R = 0x01,
- };
++/* Transmit descriptor 0 bits */
++enum TD_STS_BIT {
++	TD_TACT	= 0x80000000,
++	TD_TDLE	= 0x40000000,
++	TD_TFP1	= 0x20000000,
++	TD_TFP0	= 0x10000000,
++	TD_TFE	= 0x08000000,
++	TD_TWBI	= 0x04000000,
++};
++#define TDF1ST	TD_TFP1
++#define TDFEND	TD_TFP0
++#define TD_TFP	(TD_TFP1 | TD_TFP0)
++
++/* Transmit descriptor 1 bits */
++enum TD_LEN_BIT {
++	TD_TBL	= 0xffff0000,	/* transmit buffer length */
++};
++
+ /* The sh ether Rx buffer descriptors.
+  * This structure should be 20 bytes.
+  */
+@@ -461,6 +443,34 @@ struct sh_eth_rxdesc {
+ 	u32 pad0;		/* padding data */
+ } __aligned(2) __packed;
  
-@@ -339,7 +339,7 @@ enum RMCR_BIT {
- };
- 
- /* ECMR */
--enum FELIC_MODE_BIT {
-+enum ECMR_BIT {
- 	ECMR_TRCCM = 0x04000000, ECMR_RCSC = 0x00800000,
- 	ECMR_DPAD = 0x00200000, ECMR_RZPF = 0x00100000,
- 	ECMR_ZPF = 0x00080000, ECMR_PFR = 0x00040000, ECMR_RXF = 0x00020000,
-@@ -350,7 +350,7 @@ enum FELIC_MODE_BIT {
- };
- 
- /* ECSR */
--enum ECSR_STATUS_BIT {
-+enum ECSR_BIT {
- 	ECSR_BRCRX = 0x20, ECSR_PSRTO = 0x10,
- 	ECSR_LCHNG = 0x04,
- 	ECSR_MPD = 0x02, ECSR_ICD = 0x01,
-@@ -360,7 +360,7 @@ enum ECSR_STATUS_BIT {
- 				 ECSR_ICD | ECSIPR_MPDIP)
- 
- /* ECSIPR */
--enum ECSIPR_STATUS_MASK_BIT {
-+enum ECSIPR_BIT {
- 	ECSIPR_BRCRXIP = 0x20, ECSIPR_PSRTOIP = 0x10,
- 	ECSIPR_LCHNGIP = 0x04,
- 	ECSIPR_MPDIP = 0x02, ECSIPR_ICDIP = 0x01,
++/* Receive descriptor 0 bits */
++enum RD_STS_BIT {
++	RD_RACT	= 0x80000000,
++	RD_RDLE	= 0x40000000,
++	RD_RFP1	= 0x20000000,
++	RD_RFP0	= 0x10000000,
++	RD_RFE	= 0x08000000,
++	RD_RFS10 = 0x00000200,
++	RD_RFS9	= 0x00000100,
++	RD_RFS8	= 0x00000080,
++	RD_RFS7	= 0x00000040,
++	RD_RFS6	= 0x00000020,
++	RD_RFS5	= 0x00000010,
++	RD_RFS4	= 0x00000008,
++	RD_RFS3	= 0x00000004,
++	RD_RFS2	= 0x00000002,
++	RD_RFS1	= 0x00000001,
++};
++#define RDF1ST	RD_RFP1
++#define RDFEND	RD_RFP0
++#define RD_RFP	(RD_RFP1 | RD_RFP0)
++
++/* Receive descriptor 1 bits */
++enum RD_LEN_BIT {
++	RD_RFL	= 0x0000ffff,	/* receive frame  length */
++	RD_RBL	= 0xffff0000,	/* receive buffer length */
++};
++
+ /* This structure is used by each CPU dependency handling. */
+ struct sh_eth_cpu_data {
+ 	/* mandatory functions */
