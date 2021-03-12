@@ -2,87 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A0A3392EB
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:19:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0DB933930F
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 17:23:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbhCLQSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 11:18:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:56682 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229959AbhCLQSe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 11:18:34 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B392E1FB;
-        Fri, 12 Mar 2021 08:18:33 -0800 (PST)
-Received: from [10.57.52.136] (unknown [10.57.52.136])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A040A3F7D7;
-        Fri, 12 Mar 2021 08:18:30 -0800 (PST)
-Subject: Re: [PATCH 14/17] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, freedreno@lists.freedesktop.org,
-        kvm@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20210301084257.945454-1-hch@lst.de>
- <20210301084257.945454-15-hch@lst.de>
- <1658805c-ed28-b650-7385-a56fab3383e3@arm.com> <20210310091501.GC5928@lst.de>
- <20210310092533.GA6819@lst.de> <fdacf87a-be14-c92c-4084-1d1dd4fc7766@arm.com>
- <20210311082609.GA6990@lst.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <dff8eb80-8f74-972b-17e9-496c1fc0396f@arm.com>
-Date:   Fri, 12 Mar 2021 16:18:24 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S232487AbhCLQWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 11:22:21 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:16910 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231906AbhCLQWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 11:22:02 -0500
+Date:   Fri, 12 Mar 2021 16:21:49 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1615566120; bh=EPyxtkpOV0rtQrrZHCg1xpqZt46LZWrmCOQTPzRuzYA=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=EKHGhAMkK4ER+10mdzNmG6VdJIIEzgJEKBv6kMYaC6tcb0/6RjLBl1IcRC1y0OZRr
+         un88+YNB3sIM7aoVUJ1w3i3Y7VK8vMhpFfPpT7U89H7gnjxTUXiuJdGhQhpAZ00NlY
+         eD+rLcQ3KA9XPa3O443qF+ocURhPhhJAFvr19BAB1M2C6vxXN11D5n8KrRAfzH7gxZ
+         0plt2RWiKDyOGVZyJapPNOGd6V/o4UpWTp+RIw3FkXtPTS8NlDkPMrI98jAdSt1+uX
+         y1EvbNpSVI62awMGnNWOM9vOh1mTVvec9/eVaO75eHukN6AMoVooo2f3xxSjy72DXo
+         M/4SLt0KAn6Yg==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH net-next 0/4] gro: micro-optimize dev_gro_receive()
+Message-ID: <20210312162127.239795-1-alobakin@pm.me>
 MIME-Version: 1.0
-In-Reply-To: <20210311082609.GA6990@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-11 08:26, Christoph Hellwig wrote:
-> On Wed, Mar 10, 2021 at 06:39:57PM +0000, Robin Murphy wrote:
->>> Actually... Just mirroring the iommu_dma_strict value into
->>> struct iommu_domain should solve all of that with very little
->>> boilerplate code.
->>
->> Yes, my initial thought was to directly replace the attribute with a
->> common flag at iommu_domain level, but since in all cases the behaviour
->> is effectively global rather than actually per-domain, it seemed
->> reasonable to take it a step further. This passes compile-testing for
->> arm64 and x86, what do you think?
-> 
-> It seems to miss a few bits, and also generally seems to be not actually
-> apply to recent mainline or something like it due to different empty
-> lines in a few places.
+This random series addresses some of suboptimal paths used in
+the main GRO entry point.
+The main body is patches 3-4 which simplify the code and improve
+flow distribution. Two others are mostly cosmetic to make code
+more readable.
 
-Yeah, that was sketched out on top of some other development patches, 
-and in being so focused on not breaking any of the x86 behaviours I did 
-indeed overlook fully converting the SMMU drivers... oops!
+The benetifs are not so huge and mostly depend on NIC RSS hash
+function and a number of Rx flows per single NAPI instance. I got
+something like +10-15 Mbps on 4-8 flows NATing.
 
-(my thought was to do the conversion for its own sake, then clean up the 
-redundant attribute separately, but I guess it's fine either way)
+Alexander Lobakin (4):
+  gro: give 'hash' variable in dev_gro_receive() a less confusing name
+  gro: don't dereference napi->gro_hash[x] multiple times in
+    dev_gro_receive()
+  gro: simplify gro_list_prepare()
+  gro: improve flow distribution across GRO buckets in dev_gro_receive()
 
-> Let me know what you think of the version here:
-> 
-> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/iommu-cleanup
-> 
-> I'll happily switch the patch to you as the author if you're fine with
-> that as well.
+ net/core/dev.c | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
 
-I still have reservations about removing the attribute API entirely and 
-pretending that io_pgtable_cfg is anything other than a SoC-specific 
-private interface, but the reworked patch on its own looks reasonable to 
-me, thanks! (I wasn't too convinced about the iommu_cmd_line wrappers 
-either...) Just iommu_get_dma_strict() needs an export since the SMMU 
-drivers can be modular - I consciously didn't add that myself since I 
-was mistakenly thinking only iommu-dma would call it.
+--
+2.30.2
 
-Robin.
+
