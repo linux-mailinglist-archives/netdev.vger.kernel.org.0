@@ -2,89 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC0E53390BD
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 16:06:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64AA53390E1
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 16:11:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbhCLPFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 10:05:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43890 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232130AbhCLPFb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 10:05:31 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 18F7F64F78;
-        Fri, 12 Mar 2021 15:05:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615561531;
-        bh=SmBFsh200oLrNKpbhIObeffm9Jh3UMHhD/+jxp/SARk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EwwRWj9cOPgHrQdRmEhFTg0DRd89rv+QzTU6JUClKvD8x+fGy0ragzRH8YcFgtqRO
-         oM5xU7ngsbA3qghCH+s4z1UyZ8cPYG9zUXyAqhQ7F68Xldd8GR54Ewd8h1pQ8B/gth
-         QD5lIHajD5e6kIL6Yqe/53CPWU7bJMgnKqhEe+a4fqNE6j2tm29d8kiPfvZI94S4Rf
-         sHa4OIrS+19rT0+VlLRqZ60V3NQafPRV/LarcIEftSsq/3wOzpk5AEr16MUv6kigOk
-         c5lh0tEpQJCq26NAe6xIbt0fBuCvG74bngz73Yxvq8OtvZrt5rfggrWygGlXL25rfO
-         NExWcq+tsd3qA==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com,
-        mst@redhat.com, jasowang@redhat.com
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 16/16] virtio_net: take the rtnl lock when calling virtnet_set_affinity
-Date:   Fri, 12 Mar 2021 16:04:44 +0100
-Message-Id: <20210312150444.355207-17-atenart@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210312150444.355207-1-atenart@kernel.org>
-References: <20210312150444.355207-1-atenart@kernel.org>
+        id S232225AbhCLPLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 10:11:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232229AbhCLPKq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 10:10:46 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608EAC061574;
+        Fri, 12 Mar 2021 07:10:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=PGicOecPTl82O+7IKA07blzMMq5LKKLTqGu6MRSyaSY=; b=Wug9nQ81BRxnzSIOt7fbCTQild
+        cafzlxjkiw5dVoXgkCIKFukV6WYtZhr6HlbGnjnPFvrctWDCWSNbIOsXPg+0qkOKZ8a7aS1OffmxQ
+        KW2eLbB+lddTJ6aTYiKXUffO6QAI8wbFE4/1pML2749rrxd9p+DJYJ174htipjl7V4a2mDBTkq1kT
+        jC46EyvUwnS7FJQnDFpLCeEwi5jZEl29P469M/jyYD7pqhESrZUJz6URb6Bupd6mRrL0jeEtL9qB7
+        aHqsj35XEb51oD/PMP+ICUny6ZB5VqKfpbn5x3pS2vPDYSbeMnWp/YWucWNy7ESv4sqgPlq8CwDwJ
+        Um2NDW1w==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lKjQn-00Ax1J-2I; Fri, 12 Mar 2021 15:10:27 +0000
+Date:   Fri, 12 Mar 2021 15:10:25 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/5] Introduce a bulk order-0 page allocator with two
+ in-tree users
+Message-ID: <20210312151025.GB2577561@casper.infradead.org>
+References: <20210310104618.22750-1-mgorman@techsingularity.net>
+ <20210310154704.9389055d0be891a0c3549cc2@linux-foundation.org>
+ <20210311084827.GS3697@techsingularity.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210311084827.GS3697@techsingularity.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netif_set_xps_queue must be called with the rtnl lock taken, and this is
-now enforced using ASSERT_RTNL(). In virtio_net, netif_set_xps_queue is
-called by virtnet_set_affinity. As this function can be called from an
-ethtool helper, we can't take the rtnl lock directly in it. Instead we
-take the rtnl lock when calling virtnet_set_affinity when the rtnl lock
-isn't taken already.
+On Thu, Mar 11, 2021 at 08:48:27AM +0000, Mel Gorman wrote:
+> I don't have that information unfortunately. It's a chicken and egg
+> problem because without the API, there is no point creating new users.
+> For example, fault around or readahead could potentially batch pages
+> but whether it is actually noticable when page zeroing has to happen
+> is a completely different story. It's a similar story for SLUB, we know
+> lower order allocations hurt some microbenchmarks like hackbench-sockets
+> but have not quantified what happens if SLUB batch allocates pages when
+> high-order allocations fail.
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
- drivers/net/virtio_net.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+I'm planning on reducing overhead in the readahead path by allocating
+higher-order pages rather than by allocating a batch of order-0 pages.
+With the old ->readpages interface, it would have made sense to allocate a
+batch of pages, but with the new ->readahead interface, we put the pages
+into the page cache for the filesystem, so it doesn't make as much sense
+any more.
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index dde9bbcc5ff0..54d2277f6c98 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2027,7 +2027,9 @@ static int virtnet_cpu_online(unsigned int cpu, struct hlist_node *node)
- {
- 	struct virtnet_info *vi = hlist_entry_safe(node, struct virtnet_info,
- 						   node);
-+	rtnl_lock();
- 	virtnet_set_affinity(vi);
-+	rtnl_unlock();
- 	return 0;
- }
- 
-@@ -2035,7 +2037,9 @@ static int virtnet_cpu_dead(unsigned int cpu, struct hlist_node *node)
- {
- 	struct virtnet_info *vi = hlist_entry_safe(node, struct virtnet_info,
- 						   node_dead);
-+	rtnl_lock();
- 	virtnet_set_affinity(vi);
-+	rtnl_unlock();
- 	return 0;
- }
- 
-@@ -2883,7 +2887,9 @@ static int init_vqs(struct virtnet_info *vi)
- 		goto err_free;
- 
- 	get_online_cpus();
-+	rtnl_lock();
- 	virtnet_set_affinity(vi);
-+	rtnl_unlock();
- 	put_online_cpus();
- 
- 	return 0;
--- 
-2.29.2
+Right now, measuring performance in the readahead path is hard because
+we end up contending against kswapd that's trying to evict all the clean
+pages that we earlier readahead into this same file.  Could avoid that by
+having N files, each about half the size of memory, but then we restart
+the readahead algorithm for each file ...
 
+I feel like the real solution for that is to do a GFP_NOWAIT allocation,
+then try to evict earlier pages for the same file we're working on so
+that kswapd doesn't get woken up if we're just streaming a read through
+a gargantuan file.  But I should probably talk to Johannes first.
