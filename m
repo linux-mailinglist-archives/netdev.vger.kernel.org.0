@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F7F73397A9
-	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:47:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 348CD3397AF
+	for <lists+netdev@lfdr.de>; Fri, 12 Mar 2021 20:47:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234437AbhCLTqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 14:46:35 -0500
-Received: from mail2.protonmail.ch ([185.70.40.22]:13533 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234395AbhCLTq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:46:27 -0500
-Date:   Fri, 12 Mar 2021 19:46:14 +0000
+        id S234481AbhCLTrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 14:47:12 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:51545 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234470AbhCLTqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 14:46:40 -0500
+Date:   Fri, 12 Mar 2021 19:46:28 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615578386; bh=ftpGwrO8lUj/+nf3ZEMhVVW9gOAMLofs/x8sHMcxcZI=;
+        t=1615578398; bh=rmYbHL79wt4dhIbnCttbVVGP2ZT2H/KbCOCNp0UQlaM=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=YLIpjyXbRHOJR+M8H9IrEyKtNVJTJ/BxjwfScOG+Z8sNglh2C8R/wlJjmCeldzlN+
-         +DsMxE+PBwQfH9rhFHUZlcFEDXQWrT5kXTRTD5SMn3SEBdyUEIGP6oz89Ah3IvDJ7d
-         4GRiakvF9sQJSIhszF15g5vdaa3LoWqitEwLC1RePxuJ7q8d2HxixhvingNzPj8nQS
-         ShDOGRWcx7JgqHoYxunGftQqinuPE9puiSahF54zQLZz/FcmYsDETKc3MMl6rFI6bq
-         x6xggMbk5vshrAx6fmf5N/B4y/WbW+RpO27B6atmvOzYynnv76CDrk5ZkPkc68Xb49
-         yRY4pBdkR50nA==
+        b=NnATg0XMUItsW7CInI6e5paZ1QFL20P+ng7ZZFL/MNPwjsHBBW0hETFmUNezUKdjX
+         8KTwO3fS7w4pZpOGUXDTDi3G14R82yf0bXc0LNzsWViev3hjghwRW3ZMbLwRAhL540
+         78x8OJfu5bdmPFajVTxmQUXLC1yKnkNuIV7wotsfXfweJ4+JZH04YFE6IaaJFv52l+
+         mD0qm3liXPGkK3YDyS2FwEy8VQBfd3UVGJqMJbxedGb50nKLPhS8RIQgE3b+qxLJtO
+         2tMVA5oR713TE9sqZlVN/PQ0tY9+14Us5HnvPA9t4K2qU6NvUqimH5sd5sjVI0LMq+
+         Hs33ItmmEt5Eg==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -52,8 +52,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next 1/6] flow_dissector: constify bpf_flow_dissector's data pointers
-Message-ID: <20210312194538.337504-2-alobakin@pm.me>
+Subject: [PATCH net-next 2/6] skbuff: make __skb_header_pointer()'s data argument const
+Message-ID: <20210312194538.337504-3-alobakin@pm.me>
 In-Reply-To: <20210312194538.337504-1-alobakin@pm.me>
 References: <20210312194538.337504-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -68,32 +68,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF Flow dissection programs are read-only and don't touch input
-buffers.
-Mark @data and @data_end in struct bpf_flow_dissector as const in
-preparation for global input constifying.
+The function never modifies the input buffer, so @data argument
+can be marked as const.
+This implies one harmless cast-away.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/net/flow_dissector.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/skbuff.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index cc10b10dc3a1..bf00e71816ed 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -368,8 +368,8 @@ static inline void *skb_flow_dissector_target(struct fl=
-ow_dissector *flow_dissec
- struct bpf_flow_dissector {
- =09struct bpf_flow_keys=09*flow_keys;
- =09const struct sk_buff=09*skb;
--=09void=09=09=09*data;
--=09void=09=09=09*data_end;
-+=09const void=09=09*data;
-+=09const void=09=09*data_end;
- };
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0503c917d773..d93ab74063e5 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3678,11 +3678,11 @@ __wsum skb_checksum(const struct sk_buff *skb, int =
+offset, int len,
+ =09=09    __wsum csum);
 
- static inline void
+ static inline void * __must_check
+-__skb_header_pointer(const struct sk_buff *skb, int offset,
+-=09=09     int len, void *data, int hlen, void *buffer)
++__skb_header_pointer(const struct sk_buff *skb, int offset, int len,
++=09=09     const void *data, int hlen, void *buffer)
+ {
+ =09if (hlen - offset >=3D len)
+-=09=09return data + offset;
++=09=09return (void *)data + offset;
+
+ =09if (!skb ||
+ =09    skb_copy_bits(skb, offset, buffer, len) < 0)
 --
 2.30.2
 
