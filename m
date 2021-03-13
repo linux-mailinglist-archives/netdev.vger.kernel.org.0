@@ -2,136 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F07F333A167
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 22:28:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECC4B33A169
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 22:37:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234775AbhCMV1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 16:27:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234331AbhCMV1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 16:27:43 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792DAC061574
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 13:27:43 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so12437343pjh.1
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 13:27:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+H/EnRfTuQufmbXBvgGLKjo/TESfoU/w3UbxirRTiA4=;
-        b=qnUebNFOkaIaRMhkX474bguQwMHUv1WBiMUcAmZU/shjo6N+zpKYmeJUDIJnQDXfHc
-         9dwM2uzR+BVjKQLMhFoFhUSU+yJW0SyaatAOUnAP1vdGmsi2L+hPcolta0UwN4YmHnyk
-         XgRixaJkg9DiCFp5bq2oEiBdjFmqhZCVvrznqkMaHurn3TYXONtL7tImjFnRVtrrCHkV
-         ShKh903j4iApYA5RsV5YJxy8VFmsOrywUBS7QJrt0IiSZWBNZJqy1um7aTKzZjVk12PR
-         6ayj1PSC5k1qJ4v1/enMLQCH7fBXLny7IN08ea0977HRrDgnmDnM21Se7jqxGoc5RAA9
-         G3OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+H/EnRfTuQufmbXBvgGLKjo/TESfoU/w3UbxirRTiA4=;
-        b=nGd2s0bk8YD5Kgv+G4zlpj3umCLc3AXZxryWlxsWeZweqmI2OQtqUqe5435OYtc68L
-         /pVgxCQzvEOivnjRNb34UMy58fVb6UbMnvJSOiJPp0J3rJdAKdBvNR0zmNOi2V/eat7C
-         IPzao2/1L4BSsQpiqiI85bS7uz71bVmG1FQxWpMCtJUX60Xh1d1QXQTV/yvSnU135+TJ
-         V2wZk82OzoeByTmPwq0yQcatUdTget/nBW9AbOC4JDqfWgwBuy7Bk8o8F/HV04sKCzsI
-         fJvQf1Uqni0psC1CggE+VOOkl6gekEcfe7roDTIlu90pOV/512295GqHgWvdtzWRLEkD
-         pD4w==
-X-Gm-Message-State: AOAM530xl8K0sK5A+Jr+7ypY+mbElbk952bJW/knbKeyrg1HgWaXfH0Z
-        k4spAB9k1uU4KlNXq8uY3laHrRc9A33qLGHjWp7Ocw==
-X-Google-Smtp-Source: ABdhPJyADDUPTrdAV18cewno2JnELwNElxuW7/wdQYGdWOVnh62k1XLskCaVxv8rGG+2MkMdZxnEAQqkLnwWz5S1J+c=
-X-Received: by 2002:a17:902:10a:b029:e2:e8f7:2988 with SMTP id
- 10-20020a170902010ab02900e2e8f72988mr4754802plb.4.1615670862500; Sat, 13 Mar
- 2021 13:27:42 -0800 (PST)
+        id S234732AbhCMVgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 16:36:25 -0500
+Received: from p3plsmtpa11-07.prod.phx3.secureserver.net ([68.178.252.108]:37517
+        "EHLO p3plsmtpa11-07.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234284AbhCMVf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 16:35:58 -0500
+Received: from chrisHP110 ([76.103.216.188])
+        by :SMTPAUTH: with ESMTPA
+        id LBvPl7oBNLcOOLBvRlOorH; Sat, 13 Mar 2021 14:35:57 -0700
+X-CMAE-Analysis: v=2.4 cv=MPKlJOVl c=1 sm=1 tr=0 ts=604d303d
+ a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
+ a=kj9zAlcOel0A:10 a=_7zvWGKQsyqa8fvKPS0A:9 a=CjuIK1q_8ugA:10
+X-SECURESERVER-ACCT: don@thebollingers.org
+From:   "Don Bollinger" <don@thebollingers.org>
+To:     "'Andrew Lunn'" <andrew@lunn.ch>
+Cc:     "'Jakub Kicinski'" <kuba@kernel.org>, <arndb@arndb.de>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <brandon_chuang@edge-core.com>, <wally_wang@accton.com>,
+        <aken_liu@edge-core.com>, <gulv@microsoft.com>,
+        <jolevequ@microsoft.com>, <xinxliu@microsoft.com>,
+        "'netdev'" <netdev@vger.kernel.org>,
+        "'Moshe Shemesh'" <moshe@nvidia.com>, <don@thebollingers.org>
+References: <20210215193821.3345-1-don@thebollingers.org> <YDl3f8MNWdZWeOBh@lunn.ch> <000901d70cb2$b2848420$178d8c60$@thebollingers.org> <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org> <YD1ScQ+w8+1H//Y+@lunn.ch> <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org> <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <005e01d71230$ad203be0$0760b3a0$@thebollingers.org> <YEL3ksdKIW7cVRh5@lunn.ch> <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org> <YEvILa9FK8qQs5QK@lunn.ch>
+In-Reply-To: <YEvILa9FK8qQs5QK@lunn.ch>
+Subject: RE: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS EEPROMS
+Date:   Sat, 13 Mar 2021 13:35:56 -0800
+Message-ID: <01ae01d71850$db4f5a20$91ee0e60$@thebollingers.org>
 MIME-Version: 1.0
-References: <20210310040431.916483-1-andrii@kernel.org> <20210310040431.916483-8-andrii@kernel.org>
- <9f44eedf-79a3-0025-0f31-ee70f2f7d98b@isovalent.com> <CAEf4BzZKFKQQSQmNPkoSW8b3NEvRXirkqx-Hewt1cmRE9tPmHw@mail.gmail.com>
- <7c78ba67-03ff-fd84-339e-08628716abdf@isovalent.com> <CAEf4BzZGYdTVWf3dp6FvBu+ogd491CXky5v708OzQG8oyYoCOQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzZGYdTVWf3dp6FvBu+ogd491CXky5v708OzQG8oyYoCOQ@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Date:   Sat, 13 Mar 2021 21:27:31 +0000
-Message-ID: <CACdoK4Kv19M10sOSoDo5veDE0xu3C1Rd3TM-7bQ2i9a_3=_r1w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 07/10] bpftool: add `gen bpfo` command to perform
- BPF static linking
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQKX2ThEytgxSBCv+zte4L/P7xUGAgJF1IfoAfArhLgBgnHheQD1wSRRAcnMEPsCilAQ5QM6jzKkAZTVJ60CU9Q9IAIn9Rn1qF58cXA=
+Content-Language: en-us
+X-CMAE-Envelope: MS4xfNuVrFsR2c3mfZE29fbuUYrA//reGugaW2sbeDf2+mNTFrLT+iXZS2xc7Cx8HbbOttfXbCxoqre3fQSByF/D/UgAwWIqNT6hQbw0vmB/V9tzzohC9HL+
+ jCYMZhMsJKPRsPvHQQSEboGs3homPlaAzV0IM0w693r5T31bUfi0+oeFat0zm+hNBEoct/Med0GItoW9xpf8A+iD4/9WracoCFOpiLRIqbQADuk7KuqZG1bT
+ U6XbDcWgMnU0CkPZHsD28Ut99LMeCQneqdmnx3dNKOiCTrmGCZxZQ8XlQ6jQo1eH1cPRoAQzkf4M2Be6nzv1Npvemh91JIfl4x+W16vk2FVMZUHI5ePVmXrH
+ 8Lwy5xWDr78mrkYn6damcBulXxndw1wbkDbhV2MknbHx2MfCcEixZKpVekRQDxPuW4gYpvC4q9X2xKZKK/Duwn7CPIwvirVhKPRp6uUPu2k2mdkE4XKeAiEi
+ LrXTEA4RkDeZSF1Ouu7pOFsbHlreGp8GeMCIqI+kcsPhmOCOtvrNJkBMGuSQywiGFVy8TU2o1jbgPqP3ubKtlUrIRJ09hg7k0g8T/uKpuzCZRIIuHT2ZxLXa
+ Arnyt9Gn7cOGD0WXRDNRkwzE
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 13 Mar 2021 at 18:37, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> On Fri, Mar 12, 2021 at 10:07 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> > This interface is implemented in python scripts provided by the switch
+> > platform vendor.  Those scripts encode the mapping of CPLD i2c muxes
+> > to i2c buses to port numbers, specific to each switch.
 > >
-> > 2021-03-11 10:45 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > > On Thu, Mar 11, 2021 at 3:31 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> > >>
-> > >> 2021-03-09 20:04 UTC-0800 ~ Andrii Nakryiko <andrii@kernel.org>
-> > >>> Add `bpftool gen bpfo <output-file> <input_file>...` command to statically
-> > >>> link multiple BPF object files into a single output BPF object file.
-> > >>>
-> > >>> Similarly to existing '*.o' convention, bpftool is establishing a '*.bpfo'
-> > >>> convention for statically-linked BPF object files. Both .o and .bpfo suffixes
-> > >>> will be stripped out during BPF skeleton generation to infer BPF object name.
-> > >>>
-> > >>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> > >>> ---
-> > >>>  tools/bpf/bpftool/gen.c | 46 ++++++++++++++++++++++++++++++++++++++++-
-> > >>>  1 file changed, 45 insertions(+), 1 deletion(-)
-> > >>>
-> > >>> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> > >>> index 4033c46d83e7..8b1ed6c0a62f 100644
-> > >>> --- a/tools/bpf/bpftool/gen.c
-> > >>> +++ b/tools/bpf/bpftool/gen.c
+> > At the bottom of that python stack, all EEPROM access goes through
+> > open/seek/read/close access to the optoe managed file in
+> > /sys/bus/i2c/devices/{num}-0050/eeprom.
+> 
+> And this python stack is all open source? So you should be able to throw
 
-> > >>> @@ -611,6 +654,7 @@ static int do_help(int argc, char **argv)
-> > >>>
-> > >>>  static const struct cmd cmds[] = {
-> > >>>       { "skeleton",   do_skeleton },
-> > >>> +     { "bpfo",       do_bpfo },
-> > >>>       { "help",       do_help },
-> > >>>       { 0 }
-> > >>>  };
-> > >>>
-> > >>
-> > >> Please update the usage help message, man page, and bash completion,
-> > >> thanks. Especially because what "bpftool gen bpfo" does is not intuitive
-> > >> (but I don't have a better name suggestion at the moment).
-> > >
-> > > Yeah, forgot about manpage and bash completions, as usual.
-> > >
-> > > re: "gen bpfo". I don't have much better naming as well. `bpftool
-> > > link` is already taken for bpf_link-related commands. It felt like
-> > > keeping this under "gen" command makes sense. But maybe `bpftool
-> > > linker link <out> <in1> <in2> ...` would be a bit less confusing
-> > > convention?
-> >
-> > "bpftool linker" would have been nice, but having "bpftool link", I
-> > think it would be even more confusing. We can pass commands by their
-> > prefixes, so is "bpftool link" the command "link" or a prefix for
-> > "linker"? (I know it would be easy to sort out from our point of view,
-> > but for regular users I'm sure that would be confusing).
->
-> right
->
-> >
-> > I don't mind leaving it under "bpftool gen", it's probably the most
-> > relevant command we have. As for replacing the "bpfo" keyword, I've
-> > thought of "combined", "static_linked", "archive", "concat". I write
-> > them in case it's any inspiration, but I find none of them ideal :/.
->
-> How about "bpftool gen object", which can be shortened in typing to
-> just `bpftool gen obj`. It seems complementary to `gen skeleton`. You
-> first generate object (from other objects generated by compiler, which
-> might be a bit confusing at first), then you generate skeleton from
-> the object. WDYT?
+It is open in the sense that it is accessible to the world on github and the
+maintainers would presumably entertain contributions.
 
-Sounds good, better than "bpfo" I think.
+In practice, these are developed and maintained by the white box switch
+vendors.  There is one implementation for each platform on each supported
+NOS.  There is lots of commonality among them, but each is nonetheless
+unique.  Optoe has been adopted across this ecosystem as a common piece that
+has been factored out of many of the platform specific implementations.
 
-Quentin
+> away parts of the bottom end and replace it with a different KAPI, and
+> nobody will notice? In fact, this is probably how it was designed. Anybody
+
+Actually everyone who touches this code would notice, each implementation
+would have to be modified, with literally no benefit to this community.
+
+> working with out of tree code knows what gets merged later is going to be
+> different because of review comments. And KAPI code is even more likely to
+> be different. So nobody really expected optoe to get merged as is.
+
+The list of 'nobody' includes myself, my switch platform partners, my NOS
+partners and Greg KH.  I did expect to accommodate constructive review of
+the code, which I have already done (this is v2).
+
+> 
+> > You're not going to like this, but ethtool -e and ethtool -m both
+> > return ' Ethernet0 Cannot get EEPROM data: Operation not supported',
+> > for every port managed by the big switch silicon.
+> 
+> You are still missing what i said. The existing IOCTL interface needs a
+network
+> interface name. But there is no reason why you cannot extend the new
+> netlink KAPI to take an alternative identifier, sfp42. That maps directly
+to the
+> SFP device, without using an interface name. Your pile of python can
+directly
+> use the netlink API, the ethtool command does not need to make use of this
+> form of identifier, and you don't need to "screen scrape" ethtool.
+
+It is just software, your proposal is certainly technically feasible.  It
+provides no benefit to the community that is using optoe.
+
+optoe is using a perfectly good KAPI, the nvmem interface that is being
+developed and maintained by the folks who manage the EEPROM  drivers in the
+kernel.  It has been updated since the prior submittal in 2018 to use the
+nvmem interface and the regmap interface, both from the at24.c driver.  This
+community isn't using the rest of the netdev/netlink interfaces, and has
+adopted (before I wrote optoe) a perfectly reasonable approach of writing a
+simple driver to access these simple devices.  
+
+optoe does not undermine the netlink KAPI that Moshe is working on.  If your
+community is interested, it could adopt optoe, WITH your KAPI, to
+consolidate and improve module EEPROM access for mainstream netdev
+consumers.  I am eager to collaborate on the fairly simple integration.
+
+> 
+> It seems very unlikely optoe is going to get merged. The network
+maintainers
+> are against it, due to KAPI issues. I'm trying to point out a path you can
+take
+> to get code merged. But it is up to you if you decided to follow it.
+
+Thank you, I decline.  I respectfully request that optoe be accepted as a
+useful implementation of the EEPROM driver, with the same access methods as
+other EEPROM drivers, customized for the unique memory layout of SFP, QSFP
+and CMIS devices.  I remain open to improvements in the implementation, but
+my community finds no value in an implementation that removes the standard
+EEPROM access via sysfs and open/seek/read/close calls.
+
+> 
+> 	Andrew
+
+Don
+
