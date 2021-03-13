@@ -2,116 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60C91339E48
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 14:31:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83DC9339E4D
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 14:31:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233752AbhCMNax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 08:30:53 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:17620 "EHLO
-        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233529AbhCMNaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 08:30:39 -0500
-Date:   Sat, 13 Mar 2021 13:30:24 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615642236; bh=6r1N5OSEeyM3HNy+jVrlMhPyXWgVSnlITt0tT5FGaWU=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=CTgpkDnM5DFkOhsoutj5H+n+LLd0lnuqmRm9fsR3jKhJfiCVKfBcS0G5U3xihok23
-         PRk8Ygz0XEKq4fu+OZrbyVk8G8/di1dlGIdBUkYF2hbJN5SOjnkFgBGB6nOUsCuUgC
-         8Mr2IkI9xqrbSeISjIm93HXg6Oy3UVx39hWWPOdmYqwf2q1Zj1K384wYhIxRZVH4AX
-         IOsMfRCmlVjWbkmD81MSQzDOZGGd1CtbilKOpRTvpGZk4KcjLL2gG/pPA/BZQbCmDL
-         zJ+BNWXHd3qDYMPQ1Am1ybNWR0S3JXXgjy7wB5NICMMByVD6YDp75ioNHrHuI4FWy0
-         p9Uf3yMsS8JnA==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ariel Levkovich <lariel@mellanox.com>,
-        Wang Qing <wangqing@vivo.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v2 net-next 0/6] skbuff: micro-optimize flow dissection
-Message-ID: <20210313132956.647745-1-alobakin@pm.me>
-In-Reply-To: <20210313113645.5949-1-alobakin@pm.me>
-References: <20210313113645.5949-1-alobakin@pm.me>
+        id S233832AbhCMNba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 08:31:30 -0500
+Received: from outbound-smtp48.blacknight.com ([46.22.136.219]:49127 "EHLO
+        outbound-smtp48.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233779AbhCMNbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 08:31:01 -0500
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp48.blacknight.com (Postfix) with ESMTPS id 71BCE37A97B
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 13:31:00 +0000 (GMT)
+Received: (qmail 31774 invoked from network); 13 Mar 2021 13:31:00 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 13 Mar 2021 13:31:00 -0000
+Date:   Sat, 13 Mar 2021 13:30:58 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 7/7] net: page_pool: use alloc_pages_bulk in refill code
+ path
+Message-ID: <20210313133058.GZ3697@techsingularity.net>
+References: <20210312154331.32229-1-mgorman@techsingularity.net>
+ <20210312154331.32229-8-mgorman@techsingularity.net>
+ <CAKgT0UebK=mMwDV+UH8CqBRt0E0Koc7EB42kwgf0hYHDT_2OfQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UebK=mMwDV+UH8CqBRt0E0Koc7EB42kwgf0hYHDT_2OfQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
-Date: Sat, 13 Mar 2021 11:37:03 +0000
+On Fri, Mar 12, 2021 at 11:44:09AM -0800, Alexander Duyck wrote:
+> > -       /* FUTURE development:
+> > -        *
+> > -        * Current slow-path essentially falls back to single page
+> > -        * allocations, which doesn't improve performance.  This code
+> > -        * need bulk allocation support from the page allocator code.
+> > -        */
+> > -
+> > -       /* Cache was empty, do real allocation */
+> > -#ifdef CONFIG_NUMA
+> > -       page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
+> > -#else
+> > -       page = alloc_pages(gfp, pool->p.order);
+> > -#endif
+> > -       if (!page)
+> > +       if (unlikely(!__alloc_pages_bulk(gfp, pp_nid, NULL, bulk, &page_list)))
+> >                 return NULL;
+> >
+> > +       /* First page is extracted and returned to caller */
+> > +       first_page = list_first_entry(&page_list, struct page, lru);
+> > +       list_del(&first_page->lru);
+> > +
+> 
+> This seems kind of broken to me. If you pull the first page and then
+> cannot map it you end up returning NULL even if you placed a number of
+> pages in the cache.
+> 
 
-> This little number makes all of the flow dissection functions take
-> raw input data pointer as const (1-5) and shuffles the branches in
-> __skb_header_pointer() according to their hit probability.
->
-> The result is +20 Mbps per flow/core with one Flow Dissector pass
-> per packet. This affects RPS (with software hashing), drivers that
-> use eth_get_headlen() on their Rx path and so on.
->
-> Since v1 [0]:
->  - rebase on top of the latest net-next. This was super-weird, but
->    I double-checked that the series applies with no conflicts, and
->    then on Patchwork it didn't;
+I think you're right but I'm punting this to Jesper to fix. He's more
+familiar with this particular code and can verify the performance is
+still ok for high speed networks.
 
-Still failing on Patchwork. I rebased it ten thousand times, rebuilt
-the patches manually, tried previous stable Git version and the
-latest CVS snapshot, and always got the same series that successfully
-applies to next-next.
-Can you please take a look?
-
->  - no other changes.
->
-> [0] https://lore.kernel.org/netdev/20210312194538.337504-1-alobakin@pm.me
->
-> Alexander Lobakin (6):
->   flow_dissector: constify bpf_flow_dissector's data pointers
->   skbuff: make __skb_header_pointer()'s data argument const
->   flow_dissector: constify raw input @data argument
->   linux/etherdevice.h: misc trailing whitespace cleanup
->   ethernet: constify eth_get_headlen()'s @data argument
->   skbuff: micro-optimize {,__}skb_header_pointer()
->
->  include/linux/etherdevice.h  |  4 ++--
->  include/linux/skbuff.h       | 26 +++++++++++------------
->  include/net/flow_dissector.h |  6 +++---
->  net/core/flow_dissector.c    | 41 +++++++++++++++++++-----------------
->  net/ethernet/eth.c           |  2 +-
->  5 files changed, 40 insertions(+), 39 deletions(-)
->
-> --
-> 2.30.2
-
-Thanks,
-Al
-
+-- 
+Mel Gorman
+SUSE Labs
