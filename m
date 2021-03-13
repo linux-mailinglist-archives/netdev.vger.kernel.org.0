@@ -2,81 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22EE0339C74
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 07:51:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 779F4339CF2
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 09:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233155AbhCMGul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 01:50:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
+        id S232731AbhCMIhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 03:37:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230380AbhCMGuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 01:50:06 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6634C061574;
-        Fri, 12 Mar 2021 22:50:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=eFNvnL8zLJRq7lDSRdeDQTkvUtR6qc0g5L8oYiirzk8=; b=lAMHYzYvu1zYHq0gOkL6+Nzonh
-        VDMq+1XRpxbBSaCiIeDtY4SIk8GxFooJnoKYlFLSyHqafb4m5Ul0BXXU67gTLJUojhK6PWtA/AlId
-        pt6/Gzc9lB12vF3YuShUesLnBs9Q+WZkQdPX2xvj8Kv4CU78qxRnv9IX49i+lCmki830CiY2iImDa
-        SWExzYtjycVAEBW0c5sct2ORjU/oZm8u2QFOKXcKJVCd0nkQrx6MGohc8r3aMMarHkNt79nkG2okP
-        B2ijUlm58GX55YEGnp9/CI/ppcgInU1aFzbcAFrzPKgb/4eRHh31/Br58tFm5JQohBzfUTYHgIW53
-        y8duaUkw==;
-Received: from [2601:1c0:6280:3f0::9757]
-        by merlin.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lKy64-0017is-Tz; Sat, 13 Mar 2021 06:50:02 +0000
-Subject: Re: [PATCH] net: ethernet: marvell: Fixed typo in the file sky2.c
-To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, mlindner@marvell.com,
-        stephen@networkplumber.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210313054536.1182-1-unixbhaskar@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <37c013eb-1419-9bf9-07d0-f1ff6d621296@infradead.org>
-Date:   Fri, 12 Mar 2021 22:49:58 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        with ESMTP id S229968AbhCMIg4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 03:36:56 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F59C061574;
+        Sat, 13 Mar 2021 00:36:56 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id a22-20020a17090aa516b02900c1215e9b33so11865668pjq.5;
+        Sat, 13 Mar 2021 00:36:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=pw13xvwbpJthPfgMcnDcuZFFJIMbiCHbvYOTzm2l74M=;
+        b=Mcdhxjx0gjbncyzOWAP7or1V0v/BpKOXms0V5Ogh177vCNqFuIacRJzpTMAj//N2hN
+         PoWamqZccSZE+xhn+9JyjVpwENW0odIx3FACJpzr/ni5AjraiHNr6rg/NZxw6YoxMq5/
+         BZOoINfbaDdaFQPDgJPqHVmPlHPA4cC3fzZLM8ebdJhpjP5kUmViqqbkt158cSm6c4O+
+         1JB7BKaFCvtwNh4JdP0nzse9FX7Q7uo1lVeGDvk9k18CnKn0c7axprtLlf2u7bqtBI5O
+         6It3RYTZtL05Oiko+2AJjPokYAaqZHaJhb/20hkaH3hatW/hIHbrqHvKK+sbgMMdZdEo
+         ahAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=pw13xvwbpJthPfgMcnDcuZFFJIMbiCHbvYOTzm2l74M=;
+        b=Rz/01lyzqTCBSn4/z4xhGwODF41sduwz0CWZMhekTuoaWSS9mHZ4Dz0ksiXEl/Z3wU
+         PT3Ca3RkSowXteeH/pCj3qGs8Oh2MzMd8pgf24s+qPGhD7+VIfyUXwolcezwZrcuslil
+         4rwxmcW+gH/UKPWXB0nyPUA7GaM3KbAAa77Rsgi7EX6PV+MbA6uM8fs5opIocUdmD4D9
+         UUiYvQ9d/bs2ZMPF3mbjH6s49m3zxvGsxb0vpbFvdmCcKI3T1RraVn2Y9FZJQudgvTrJ
+         qCE28hLO7jKMHrLcuGlb3u4ZTCLRNlQuQD+RL5L/8iW2n33717N9TbAooilRX+PeUNVu
+         m0iA==
+X-Gm-Message-State: AOAM530WmYehtfps35JJbZud3l3XTeISQwIBa2y7hh4q/wrhr5KBHOZO
+        dUFuMF9ZjaAsdSZzalNPOw8BPOUl19UvvGOm
+X-Google-Smtp-Source: ABdhPJyTf+tcwPOFfE3UUBqLP73lDNkOb0sSM95mXOfq4+idXr4bfYPBfS0/rS3g81e4diT7TrV35A==
+X-Received: by 2002:a17:90a:86c9:: with SMTP id y9mr2554042pjv.205.1615624615579;
+        Sat, 13 Mar 2021 00:36:55 -0800 (PST)
+Received: from localhost ([115.99.139.115])
+        by smtp.gmail.com with ESMTPSA id j188sm2187933pfd.64.2021.03.13.00.36.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Mar 2021 00:36:55 -0800 (PST)
+Date:   Sat, 13 Mar 2021 14:06:49 +0530
+From:   Sanjana Srinidhi <sanjanasrinidhi1810@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bkkarthik@pesu.pes.edu
+Subject: [PATCH] drivers: net: vxlan.c: Fix declaration issue
+Message-ID: <20210313083649.2scdqxdcozfpoana@sanjana-VirtualBox>
 MIME-Version: 1.0
-In-Reply-To: <20210313054536.1182-1-unixbhaskar@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/12/21 9:45 PM, Bhaskar Chowdhury wrote:
-> 
-> s/calclation/calculation/
-> 
-> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Added a blank line after structure declaration.
+This is done to maintain code uniformity.
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Sanjana Srinidhi <sanjanasrinidhi1810@gmail.com>
+---
+ drivers/net/vxlan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-Subject: should say "Fix typo", not "Fixed typo".
-
-> ---
->  drivers/net/ethernet/marvell/sky2.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-> index ebe1406c6e64..18a3db2fd337 100644
-> --- a/drivers/net/ethernet/marvell/sky2.c
-> +++ b/drivers/net/ethernet/marvell/sky2.c
-> @@ -4135,7 +4135,7 @@ static int sky2_set_coalesce(struct net_device *dev,
->  /*
->   * Hardware is limited to min of 128 and max of 2048 for ring size
->   * and  rounded up to next power of two
-> - * to avoid division in modulus calclation
-> + * to avoid division in modulus calculation
->   */
->  static unsigned long roundup_ring_size(unsigned long pending)
->  {
-> --
-
-
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 666dd201c3d5..7665817f3cb6 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -3703,6 +3703,7 @@ static int vxlan_config_validate(struct net *src_net, struct vxlan_config *conf,
+ #if IS_ENABLED(CONFIG_IPV6)
+ 		if (use_ipv6) {
+ 			struct inet6_dev *idev = __in6_dev_get(lowerdev);
++
+ 			if (idev && idev->cnf.disable_ipv6) {
+ 				NL_SET_ERR_MSG(extack,
+ 					       "IPv6 support disabled by administrator");
 -- 
-~Randy
+2.25.1
 
