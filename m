@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC517339AC5
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 02:17:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BA48339ADD
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 02:32:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232764AbhCMBQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 20:16:32 -0500
-Received: from mga17.intel.com ([192.55.52.151]:1169 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232445AbhCMBQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 20:16:28 -0500
-IronPort-SDR: UCK0udJQxTGW3nLvZB4E7Q83BRt6KwuoOpDaEifrgI2E4fvQ33ikqVuh3dqQ79DEb4kJ9q71iq
- 7U2jcWOaTNFw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9921"; a="168828251"
-X-IronPort-AV: E=Sophos;i="5.81,245,1610438400"; 
-   d="scan'208";a="168828251"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2021 17:16:27 -0800
-IronPort-SDR: G39NVtptd1+BgyWvYKQHZPvvsdfzIRZpkVkQ/sDRq/sBZ9he89+xp1esdHhS5KsgOvA80JVbq3
- m6MDgyjVcAgA==
-X-IronPort-AV: E=Sophos;i="5.81,245,1610438400"; 
-   d="scan'208";a="411197380"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.255.228.204])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2021 17:16:27 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net, mptcp@lists.01.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 11/11] selftests: mptcp: add testcases for removing addrs
-Date:   Fri, 12 Mar 2021 17:16:21 -0800
-Message-Id: <20210313011621.211661-12-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210313011621.211661-1-mathew.j.martineau@linux.intel.com>
-References: <20210313011621.211661-1-mathew.j.martineau@linux.intel.com>
+        id S232627AbhCMBcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 20:32:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231679AbhCMBb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 20:31:26 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426A3C061574;
+        Fri, 12 Mar 2021 17:31:26 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id x19so27298338ybe.0;
+        Fri, 12 Mar 2021 17:31:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DbE3xDkQ8HktwIoRcbeaiX7gfulPHK+RCelzbpG3B1Q=;
+        b=ercgs/VoGb+1NneYMOPK67RWCyGd9m3SluCwWbruOrP1Tj+l9ZP9SXWDSnxu9GlwZF
+         E//861xmFlN9+hM4D75juWHdYqvfkDr/aInUfIVZ3/7xzk94fGrXoMwvOxU7nh2Iu3fx
+         wP8Nvv5u6b5S/wPi9N/HpvsQF5QSRhWYdI0uFhBVelkstJQnRdFOMVTy7cHxGQ5cEUAE
+         sT6kg93RUuc3c/dsda4eM2i+xOGaXW9ErpWqxHDksPGF2Q2eHpqQodA4NNkwm99JkL6i
+         9aw4KkIFfUwaXxvkyWnxdaZcYtGG4A2KA1vzK2EGVDQMaApjWXGrKs7TqgEJTeBeE/iy
+         cz1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DbE3xDkQ8HktwIoRcbeaiX7gfulPHK+RCelzbpG3B1Q=;
+        b=bNMVJK+0+57vliMqT0dlV4FhMsOTJ3HpM9H2EPNMnJSDmhWl8FP2/31kZkk561UiFe
+         IqIZmSgorFQdoZeT++eIltkB1TlpOr7lw42qOFArRXMosnZr5gwm/8HwMNEdQsTHx+Vr
+         Oas9dkNSBy1KF4I7kB3Gnj6w0FEkPruWAYRqtO3EKm/NyS0D6lEEZGOR7Qmo/w0ts5gX
+         vxhCidGme6ia9hskjYCY5V0GZ0lr1RmACv9MGSFlxZICKDz16QO7L08bp2ATjSmt6NlG
+         IMDiOj6N854J96rGa2dWi0ljtfUYR9Kp/fllv0TbSsgzw03fKzNTJkqoPferLGRWtaSW
+         dxeA==
+X-Gm-Message-State: AOAM533mos0nAvQrKV+jFcK74Fmmbsxn1x0bW4yAU/2wYdHOW2ev4t4w
+        mtOaXy+kEGxrTBrMfL0yxGhfocUTGYmicok3j2M=
+X-Google-Smtp-Source: ABdhPJyXeoVxAmgzYIpZodsgYP9/ZjqK8xFD9rRV3LVPrn4FRaPBV/Kq2OLW+gE0m57vvPFM4MOLCcghwuBjcn32Tbo=
+X-Received: by 2002:a25:cc13:: with SMTP id l19mr22707860ybf.260.1615599085306;
+ Fri, 12 Mar 2021 17:31:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210312214316.132993-1-sultan@kerneltoast.com>
+In-Reply-To: <20210312214316.132993-1-sultan@kerneltoast.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 12 Mar 2021 17:31:14 -0800
+Message-ID: <CAEf4BzYBj254AtZxjMKdJ_yoP9Exvjuyotc8XZ7AUCLFG9iHLQ@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Use the correct fd when attaching to perf events
+To:     Sultan Alsawaf <sultan@kerneltoast.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
+On Fri, Mar 12, 2021 at 1:43 PM Sultan Alsawaf <sultan@kerneltoast.com> wrote:
+>
+> From: Sultan Alsawaf <sultan@kerneltoast.com>
+>
+> We should be using the program fd here, not the perf event fd.
 
-This patch added the testcases for removing a list of addresses. Used
-the netlink to flush the addresses in the testcases.
+Why? Can you elaborate on what issue you ran into with the current code?
 
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../testing/selftests/net/mptcp/mptcp_join.sh | 23 +++++++++++++++++++
- 1 file changed, 23 insertions(+)
-
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 6782a891b3e7..191303b652a6 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -890,6 +890,29 @@ remove_tests()
- 	chk_join_nr "flush subflows and signal" 3 3 3
- 	chk_add_nr 1 1
- 	chk_rm_nr 2 2
-+
-+	# subflows flush
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns2 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags subflow id 150
-+	ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
-+	ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags subflow
-+	run_tests $ns1 $ns2 10.0.1.1 0 -8 -8 slow
-+	chk_join_nr "flush subflows" 3 3 3
-+	chk_rm_nr 3 3
-+
-+	# addresses flush
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal id 250
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.4.1 flags signal
-+	ip netns exec $ns2 ./pm_nl_ctl limits 3 3
-+	run_tests $ns1 $ns2 10.0.1.1 0 -8 -8 slow
-+	chk_join_nr "flush addresses" 3 3 3
-+	chk_add_nr 3 3
-+	chk_rm_nr 3 3 invert
- }
- 
- add_tests()
--- 
-2.30.2
-
+>
+> Fixes: 63f2f5ee856ba ("libbpf: add ability to attach/detach BPF program to perf event")
+> Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index d43cc3f29dae..3d20d57d4af5 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -9538,7 +9538,7 @@ struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog,
+>         if (!link)
+>                 return ERR_PTR(-ENOMEM);
+>         link->detach = &bpf_link__detach_perf_event;
+> -       link->fd = pfd;
+> +       link->fd = prog_fd;
+>
+>         if (ioctl(pfd, PERF_EVENT_IOC_SET_BPF, prog_fd) < 0) {
+>                 err = -errno;
+> --
+> 2.30.2
+>
