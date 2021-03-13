@@ -2,133 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC4B33A169
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 22:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B2133A184
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 22:55:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234732AbhCMVgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 16:36:25 -0500
-Received: from p3plsmtpa11-07.prod.phx3.secureserver.net ([68.178.252.108]:37517
-        "EHLO p3plsmtpa11-07.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234284AbhCMVf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 16:35:58 -0500
-Received: from chrisHP110 ([76.103.216.188])
-        by :SMTPAUTH: with ESMTPA
-        id LBvPl7oBNLcOOLBvRlOorH; Sat, 13 Mar 2021 14:35:57 -0700
-X-CMAE-Analysis: v=2.4 cv=MPKlJOVl c=1 sm=1 tr=0 ts=604d303d
- a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
- a=kj9zAlcOel0A:10 a=_7zvWGKQsyqa8fvKPS0A:9 a=CjuIK1q_8ugA:10
-X-SECURESERVER-ACCT: don@thebollingers.org
-From:   "Don Bollinger" <don@thebollingers.org>
-To:     "'Andrew Lunn'" <andrew@lunn.ch>
-Cc:     "'Jakub Kicinski'" <kuba@kernel.org>, <arndb@arndb.de>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <brandon_chuang@edge-core.com>, <wally_wang@accton.com>,
-        <aken_liu@edge-core.com>, <gulv@microsoft.com>,
-        <jolevequ@microsoft.com>, <xinxliu@microsoft.com>,
-        "'netdev'" <netdev@vger.kernel.org>,
-        "'Moshe Shemesh'" <moshe@nvidia.com>, <don@thebollingers.org>
-References: <20210215193821.3345-1-don@thebollingers.org> <YDl3f8MNWdZWeOBh@lunn.ch> <000901d70cb2$b2848420$178d8c60$@thebollingers.org> <004f01d70ed5$8bb64480$a322cd80$@thebollingers.org> <YD1ScQ+w8+1H//Y+@lunn.ch> <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org> <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <005e01d71230$ad203be0$0760b3a0$@thebollingers.org> <YEL3ksdKIW7cVRh5@lunn.ch> <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org> <YEvILa9FK8qQs5QK@lunn.ch>
-In-Reply-To: <YEvILa9FK8qQs5QK@lunn.ch>
-Subject: RE: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS EEPROMS
-Date:   Sat, 13 Mar 2021 13:35:56 -0800
-Message-ID: <01ae01d71850$db4f5a20$91ee0e60$@thebollingers.org>
+        id S234850AbhCMVyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 16:54:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234796AbhCMVyT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 16:54:19 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2C8C061574;
+        Sat, 13 Mar 2021 13:54:14 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id m9so29273624ybk.8;
+        Sat, 13 Mar 2021 13:54:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=GhwxGEkw8ytL79APFDFDPPxm81DmFU7dhHEQAY8fvks=;
+        b=J6v4X2zh9zr/+JhZYu1TO4VzEhA1YsHaSBACt0Sc0eVzhxQLmhXzcEky+Yq2okFras
+         3kezJaiqHbGQ9+JnLOOV1yylpNyEBytWs2Wlu5ba8BPh4Jgb3wYLWSDfig/efUSxPVdP
+         pY2XlJ+iSz8uErGCVXYSYIbiXjSpODZoh1ImEC8NDLxekhiFdLQEjSYKk82ufvWAfXtu
+         GRwnP11EBBdkh+SfdeES9EbW2HsMpV9QULfYwIyLNFoocT7AtCOL7m/D2egI73JDOoAg
+         h6xC+KK33ULwBTPvKfQf9fSSUN1pxESIUuI7ZrP6GciuxuNFcgcw/bu1RuX97/k17cWp
+         AqSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=GhwxGEkw8ytL79APFDFDPPxm81DmFU7dhHEQAY8fvks=;
+        b=nXuP6RwCrDwemSoG2Q63tpjdq8MguGN4w+P3rD5G7PyPOEgoy1Q4cN9t8HF3XjCH0E
+         cokkUWNT+yYmx2lfM0l+P/bUxp+BZRloACrIiL3pCtFwGVh+AC43oeXQU5xOnoMulXnu
+         Wt2c7LagOxOz46SpUlyNiJB55S5//AfvjLyosSprt16Mp0zY2hTcIXrjEPEtL6/bhSjU
+         q98lI4mdpDfBEbC76VudGkMoh1mGzregjnnV2ca5hq7Jg8cCce79kUSEQBk+CZuuRtAk
+         lEJc6WtlMPbzIUDpx6qtOb2L2GfwN0q61/BKKW0Kzbi6nhDXNqL9WWfFD2nFiQnNPHtK
+         SDRg==
+X-Gm-Message-State: AOAM532bkT0eAQEDuA9Is+WWYAH+4fLtVgBTHSStDEemuBUaWpUo2G0e
+        nXIJX6MAvsHHwwjaEfn6AgpLjQcEVamFB5Rzdjg=
+X-Google-Smtp-Source: ABdhPJz1plNkpafFFbtDcDfYgLN5d/wG6nGryBoO1b+5biUSDjCo7b2e1ZYH0okZE90OY9uUx6k/i9EhP2TNXun5m3A=
+X-Received: by 2002:a25:ca88:: with SMTP id a130mr27494740ybg.414.1615672454155;
+ Sat, 13 Mar 2021 13:54:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 15.0
-Thread-Index: AQKX2ThEytgxSBCv+zte4L/P7xUGAgJF1IfoAfArhLgBgnHheQD1wSRRAcnMEPsCilAQ5QM6jzKkAZTVJ60CU9Q9IAIn9Rn1qF58cXA=
-Content-Language: en-us
-X-CMAE-Envelope: MS4xfNuVrFsR2c3mfZE29fbuUYrA//reGugaW2sbeDf2+mNTFrLT+iXZS2xc7Cx8HbbOttfXbCxoqre3fQSByF/D/UgAwWIqNT6hQbw0vmB/V9tzzohC9HL+
- jCYMZhMsJKPRsPvHQQSEboGs3homPlaAzV0IM0w693r5T31bUfi0+oeFat0zm+hNBEoct/Med0GItoW9xpf8A+iD4/9WracoCFOpiLRIqbQADuk7KuqZG1bT
- U6XbDcWgMnU0CkPZHsD28Ut99LMeCQneqdmnx3dNKOiCTrmGCZxZQ8XlQ6jQo1eH1cPRoAQzkf4M2Be6nzv1Npvemh91JIfl4x+W16vk2FVMZUHI5ePVmXrH
- 8Lwy5xWDr78mrkYn6damcBulXxndw1wbkDbhV2MknbHx2MfCcEixZKpVekRQDxPuW4gYpvC4q9X2xKZKK/Duwn7CPIwvirVhKPRp6uUPu2k2mdkE4XKeAiEi
- LrXTEA4RkDeZSF1Ouu7pOFsbHlreGp8GeMCIqI+kcsPhmOCOtvrNJkBMGuSQywiGFVy8TU2o1jbgPqP3ubKtlUrIRJ09hg7k0g8T/uKpuzCZRIIuHT2ZxLXa
- Arnyt9Gn7cOGD0WXRDNRkwzE
+References: <87tupl30kl.fsf@igel.home> <04a7e801-9a55-c926-34ad-3a7665077a4e@microchip.com>
+ <87y2euu6lf.fsf@igel.home>
+In-Reply-To: <87y2euu6lf.fsf@igel.home>
+From:   Emil Renner Berthing <emil.renner.berthing@gmail.com>
+Date:   Sat, 13 Mar 2021 22:54:02 +0100
+Message-ID: <CANBLGcyteTgQ2BgyesrTycpVqpPeYaiUCTEEp=KmPB0TPqK_LQ@mail.gmail.com>
+Subject: Re: macb broken on HiFive Unleashed
+To:     Andreas Schwab <schwab@linux-m68k.org>
+Cc:     Claudiu.Beznea@microchip.com,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        ckeepax@opensource.cirrus.com, andrew@lunn.ch,
+        Willy Tarreau <w@1wt.eu>,
+        Nicolas Ferre <Nicolas.Ferre@microchip.com>, daniel@0x0f.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        pthombar@cadence.com, Network Development <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > This interface is implemented in python scripts provided by the switch
-> > platform vendor.  Those scripts encode the mapping of CPLD i2c muxes
-> > to i2c buses to port numbers, specific to each switch.
+Hi Andreas
+
+On Wed, 10 Mar 2021 at 20:55, Andreas Schwab <schwab@linux-m68k.org> wrote:
+> On M=C3=A4r 09 2021, Claudiu.Beznea@microchip.com wrote:
+> > I don't have a SiFive HiFive Unleashed to investigate this. Can you che=
+ck
+> > if reverting commits on macb driver b/w 5.10 and 5.11 solves your issue=
+s:
 > >
-> > At the bottom of that python stack, all EEPROM access goes through
-> > open/seek/read/close access to the optoe managed file in
-> > /sys/bus/i2c/devices/{num}-0050/eeprom.
-> 
-> And this python stack is all open source? So you should be able to throw
+> > git log --oneline v5.10..v5.11 -- drivers/net/ethernet/cadence/
+> > 1d0d561ad1d7 net: macb: Correct usage of MACB_CAPS_CLK_HW_CHG flag
+> > 1d608d2e0d51 Revert "macb: support the two tx descriptors on at91rm9200=
+"
+> > 700d566e8171 net: macb: add support for sama7g5 emac interface
+> > ec771de654e4 net: macb: add support for sama7g5 gem interface
+> > f4de93f03ed8 net: macb: unprepare clocks in case of failure
+> > 38493da4e6a8 net: macb: add function to disable all macb clocks
+> > daafa1d33cc9 net: macb: add capability to not set the clock rate
+> > edac63861db7 net: macb: add userio bits as platform configuration
+> > 9e6cad531c9d net: macb: Fix passing zero to 'PTR_ERR'
+> > 0012eeb370f8 net: macb: fix NULL dereference due to no pcs_config metho=
+d
+> > e4e143e26ce8 net: macb: add support for high speed interface
+>
+> Unfortunately, that didn't help.
 
-It is open in the sense that it is accessible to the world on github and the
-maintainers would presumably entertain contributions.
+Sorry, for being late to test this, but I just compiled and booted
+5.11.6 and ethernet works just fine for me:
+https://esmil.dk/hfu-5.11.6.txt
 
-In practice, these are developed and maintained by the white box switch
-vendors.  There is one implementation for each platform on each supported
-NOS.  There is lots of commonality among them, but each is nonetheless
-unique.  Optoe has been adopted across this ecosystem as a common piece that
-has been factored out of many of the platform specific implementations.
+As you can see I haven't updated OpenSBI or u-boot in a while, don't
+know if that makes a difference. You can fetch the config is used
+here:
+https://esmil.dk/hfu-5.11.6.config
 
-> away parts of the bottom end and replace it with a different KAPI, and
-> nobody will notice? In fact, this is probably how it was designed. Anybody
-
-Actually everyone who touches this code would notice, each implementation
-would have to be modified, with literally no benefit to this community.
-
-> working with out of tree code knows what gets merged later is going to be
-> different because of review comments. And KAPI code is even more likely to
-> be different. So nobody really expected optoe to get merged as is.
-
-The list of 'nobody' includes myself, my switch platform partners, my NOS
-partners and Greg KH.  I did expect to accommodate constructive review of
-the code, which I have already done (this is v2).
-
-> 
-> > You're not going to like this, but ethtool -e and ethtool -m both
-> > return ' Ethernet0 Cannot get EEPROM data: Operation not supported',
-> > for every port managed by the big switch silicon.
-> 
-> You are still missing what i said. The existing IOCTL interface needs a
-network
-> interface name. But there is no reason why you cannot extend the new
-> netlink KAPI to take an alternative identifier, sfp42. That maps directly
-to the
-> SFP device, without using an interface name. Your pile of python can
-directly
-> use the netlink API, the ethtool command does not need to make use of this
-> form of identifier, and you don't need to "screen scrape" ethtool.
-
-It is just software, your proposal is certainly technically feasible.  It
-provides no benefit to the community that is using optoe.
-
-optoe is using a perfectly good KAPI, the nvmem interface that is being
-developed and maintained by the folks who manage the EEPROM  drivers in the
-kernel.  It has been updated since the prior submittal in 2018 to use the
-nvmem interface and the regmap interface, both from the at24.c driver.  This
-community isn't using the rest of the netdev/netlink interfaces, and has
-adopted (before I wrote optoe) a perfectly reasonable approach of writing a
-simple driver to access these simple devices.  
-
-optoe does not undermine the netlink KAPI that Moshe is working on.  If your
-community is interested, it could adopt optoe, WITH your KAPI, to
-consolidate and improve module EEPROM access for mainstream netdev
-consumers.  I am eager to collaborate on the fairly simple integration.
-
-> 
-> It seems very unlikely optoe is going to get merged. The network
-maintainers
-> are against it, due to KAPI issues. I'm trying to point out a path you can
-take
-> to get code merged. But it is up to you if you decided to follow it.
-
-Thank you, I decline.  I respectfully request that optoe be accepted as a
-useful implementation of the EEPROM driver, with the same access methods as
-other EEPROM drivers, customized for the unique memory layout of SFP, QSFP
-and CMIS devices.  I remain open to improvements in the implementation, but
-my community finds no value in an implementation that removes the standard
-EEPROM access via sysfs and open/seek/read/close calls.
-
-> 
-> 	Andrew
-
-Don
-
+/Emil
