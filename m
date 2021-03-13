@@ -2,110 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA610339DEB
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 12:42:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 612BC339DED
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 12:42:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233927AbhCMLil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 06:38:41 -0500
-Received: from mail2.protonmail.ch ([185.70.40.22]:60278 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231497AbhCMLiU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 06:38:20 -0500
-Date:   Sat, 13 Mar 2021 11:38:10 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615635498; bh=5MpWKAjO4E1TpGup0jNHoJh4fKp9mBQ4WRLVO089bHE=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=lJosGFsIHUoNJ7eKfmhWt2Fru4UoM5jFXEAsiNn5NDRGwCJGYg4NvdQ38WsnfNHj2
-         a1r70/D7C1YtcSVIuzNOJqzHw2CcebtcZ/mVXMqrDTcRiyh4XDpd3xtIbqXr/lc2EE
-         oiaC5h0TeGNlcFzcr7UPVZJcjpRNhA3O9n/sFsTuMBwtjVuHam9CmkQ+aWmpYaYhWs
-         /DXzzRntt/lyDy0E2koNv5SroShb81BlO6uctaqRp+OQhmegZ8ky/xFIkVWotQyHby
-         lYnBuBni7bVaa8J6VQopc7g3htNmt1C3RBCMOaay4d7veR6qVPr2Pb+1jixjUFFQrS
-         R9gITd9sNnnbQ==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ariel Levkovich <lariel@mellanox.com>,
-        Wang Qing <wangqing@vivo.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 net-next 6/6] skbuff: micro-optimize {,__}skb_header_pointer()
-Message-ID: <20210313113645.5949-7-alobakin@pm.me>
-In-Reply-To: <20210313113645.5949-1-alobakin@pm.me>
-References: <20210313113645.5949-1-alobakin@pm.me>
+        id S233930AbhCMLjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 06:39:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233907AbhCMLik (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 06:38:40 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A938C061574
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 03:38:39 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id bm21so58309809ejb.4
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 03:38:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4CFnklQ0KsYvW2LXc4yaIZTzhMq4EIYrmcUbidgjT2k=;
+        b=ZZ2sSxylv9whFuV+0c7fgpEQSyBHQk+XNo2NvIazT08fvl+9yaWbBmuGQSdDkWz7iF
+         J4L2rr4Wpz1ClWuaumjm6Cg3eblFCP4SZ4g4Tkgm0mYAdV0lQEu41voBoXdo4ac2cdOE
+         HbxciEUtZNmWMyReilqR/3suusSB9ECFPz57nHYHxoCXm6qxszvU0q0SABf5AZ+QgGAN
+         r7ToEKOcLgB4GI5FAc+AUVoa0Bqys1sQmW5e2QMdAMO0YyZBiOBqMkw2fr4DGRhvDYQC
+         cYP7I7zzqnqMFYXX6+UXNc0iCdgui5aoFBUvMSL0qKB2GHo7CmegdXr54bn2yLb5sF+k
+         mVVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4CFnklQ0KsYvW2LXc4yaIZTzhMq4EIYrmcUbidgjT2k=;
+        b=hk8QFlN7FSR4yQiwnTbzyC3TgMrrviBwpBcQz7dXxDr4pp68Us0Frdjp8NzV0AGsU9
+         9ppxmQwRmp1haYcAQCmrkuMqpP2PVz124M6i/j4w7p0p9rPWCUMCVpnTtn7gtwO3XHIj
+         jVchKAdnygJ2kFjZEgCPUE/dXm3YTFFi5Us24fCbrzp8NP0q/6c5O9oJjsYCtLrnO54f
+         5dwYqnXud7DreEn3QKlOOU76qfwW3XwvbxQU2sl4hNyFxJLDm935D71wZcAC1uVKDS0b
+         Fa7vpxhW+XX0b8k9UDhnJQY6f/F8JbrZ1jp0c8ebb6HtTnk1oIo3b4bwI2OaNqBkm6an
+         ZNrQ==
+X-Gm-Message-State: AOAM533op8hFcLq+gBez0KMIqKAnoHR29zjMqokQ0gWslkBMksq7jgA7
+        5G8kBq2WqTXE4KnZ6VRVroI=
+X-Google-Smtp-Source: ABdhPJyFVx3Hr4U1ZRHuPlaCyRIPYWFndMg/vlTRJSyJpxIbyxZNSWyd0C31n3q+vmx9VLo6CZ4rAw==
+X-Received: by 2002:a17:906:c181:: with SMTP id g1mr13154917ejz.96.1615635517810;
+        Sat, 13 Mar 2021 03:38:37 -0800 (PST)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id mp36sm849433ejc.48.2021.03.13.03.38.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Mar 2021 03:38:37 -0800 (PST)
+Date:   Sat, 13 Mar 2021 13:38:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@kmk-computers.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/4] net: dsa: hellcreek: Add devlink VLAN
+ region
+Message-ID: <20210313113836.mrbeazfkkpm77eio@skbuf>
+References: <20210313093939.15179-1-kurt@kmk-computers.de>
+ <20210313093939.15179-2-kurt@kmk-computers.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210313093939.15179-2-kurt@kmk-computers.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-{,__}skb_header_pointer() helpers exist mainly for preventing
-accesses-beyond-end of the linear data.
-In the vast majorify of cases, they bail out on the first condition.
-All code going after is mostly a fallback.
-Mark the most common branch as 'likely' one to move it in-line.
-Also, skb_copy_bits() can return negative values only when the input
-arguments are invalid, e.g. offset is greater than skb->len. It can
-be safely marked as 'unlikely' branch, assuming that hotpath code
-provides sane input to not fail here.
+On Sat, Mar 13, 2021 at 10:39:36AM +0100, Kurt Kanzenbach wrote:
+> Allow to dump the VLAN table via devlink. This especially useful, because the
+> driver internally leverages VLANs for the port separation. These are not visible
+> via the bridge utility.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+> ---
 
-These two bump the throughput with a single Flow Dissector pass on
-every packet (e.g. with RPS or driver that uses eth_get_headlen())
-on 20 Mbps per flow/core.
-
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- include/linux/skbuff.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 46c61e127e9f..ecc029674ae4 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3680,11 +3680,10 @@ static inline void * __must_check
- __skb_header_pointer(const struct sk_buff *skb, int offset, int len,
- =09=09     const void *data, int hlen, void *buffer)
- {
--=09if (hlen - offset >=3D len)
-+=09if (likely(hlen - offset >=3D len))
- =09=09return (void *)data + offset;
-
--=09if (!skb ||
--=09    skb_copy_bits(skb, offset, buffer, len) < 0)
-+=09if (!skb || unlikely(skb_copy_bits(skb, offset, buffer, len) < 0))
- =09=09return NULL;
-
- =09return buffer;
---
-2.30.2
-
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
