@@ -2,103 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B2133A184
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 22:55:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4552F33A19A
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 23:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234850AbhCMVyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 16:54:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234796AbhCMVyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 16:54:19 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2C8C061574;
-        Sat, 13 Mar 2021 13:54:14 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id m9so29273624ybk.8;
-        Sat, 13 Mar 2021 13:54:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GhwxGEkw8ytL79APFDFDPPxm81DmFU7dhHEQAY8fvks=;
-        b=J6v4X2zh9zr/+JhZYu1TO4VzEhA1YsHaSBACt0Sc0eVzhxQLmhXzcEky+Yq2okFras
-         3kezJaiqHbGQ9+JnLOOV1yylpNyEBytWs2Wlu5ba8BPh4Jgb3wYLWSDfig/efUSxPVdP
-         pY2XlJ+iSz8uErGCVXYSYIbiXjSpODZoh1ImEC8NDLxekhiFdLQEjSYKk82ufvWAfXtu
-         GRwnP11EBBdkh+SfdeES9EbW2HsMpV9QULfYwIyLNFoocT7AtCOL7m/D2egI73JDOoAg
-         h6xC+KK33ULwBTPvKfQf9fSSUN1pxESIUuI7ZrP6GciuxuNFcgcw/bu1RuX97/k17cWp
-         AqSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GhwxGEkw8ytL79APFDFDPPxm81DmFU7dhHEQAY8fvks=;
-        b=nXuP6RwCrDwemSoG2Q63tpjdq8MguGN4w+P3rD5G7PyPOEgoy1Q4cN9t8HF3XjCH0E
-         cokkUWNT+yYmx2lfM0l+P/bUxp+BZRloACrIiL3pCtFwGVh+AC43oeXQU5xOnoMulXnu
-         Wt2c7LagOxOz46SpUlyNiJB55S5//AfvjLyosSprt16Mp0zY2hTcIXrjEPEtL6/bhSjU
-         q98lI4mdpDfBEbC76VudGkMoh1mGzregjnnV2ca5hq7Jg8cCce79kUSEQBk+CZuuRtAk
-         lEJc6WtlMPbzIUDpx6qtOb2L2GfwN0q61/BKKW0Kzbi6nhDXNqL9WWfFD2nFiQnNPHtK
-         SDRg==
-X-Gm-Message-State: AOAM532bkT0eAQEDuA9Is+WWYAH+4fLtVgBTHSStDEemuBUaWpUo2G0e
-        nXIJX6MAvsHHwwjaEfn6AgpLjQcEVamFB5Rzdjg=
-X-Google-Smtp-Source: ABdhPJz1plNkpafFFbtDcDfYgLN5d/wG6nGryBoO1b+5biUSDjCo7b2e1ZYH0okZE90OY9uUx6k/i9EhP2TNXun5m3A=
-X-Received: by 2002:a25:ca88:: with SMTP id a130mr27494740ybg.414.1615672454155;
- Sat, 13 Mar 2021 13:54:14 -0800 (PST)
+        id S234758AbhCMWUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 17:20:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49988 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234377AbhCMWUI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 13 Mar 2021 17:20:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id C813264ECD;
+        Sat, 13 Mar 2021 22:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615674007;
+        bh=DfVE1ejHstZHRVGiQjUltVmQGPdFMqOzjDngNqPStb0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QDK0zudY8qhWtXC90bqwIwSJh0Z97RuP/2YXVSwRnHbe1zxmASt0m+57MpY2ycmZG
+         gKs8aWC0dAgh92Y2pwmvJWwMUUMFrGpPiCAXlmcbRdrM9NOoEoJOVVKjj0V8mIeYz4
+         +wHep/2IWUbzMMUwSSlmy9j3HmnYK4Qo9nxwY90zXVasap5Ta3rnJ4crZTdv/qhper
+         nfkGicr1FElteR5krg+3Bde/lIzY0YkW876eylPCF3CYn4GqcY1jurzcVjRwgBNRa9
+         k46paRMwNrWE7fjPu6dO80zo5YrEkWAU8BAOaYNMziCKEhTW3e3N3mEH6c73O+hIBg
+         raVwUgwmwr4cA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B8A3B60A5C;
+        Sat, 13 Mar 2021 22:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <87tupl30kl.fsf@igel.home> <04a7e801-9a55-c926-34ad-3a7665077a4e@microchip.com>
- <87y2euu6lf.fsf@igel.home>
-In-Reply-To: <87y2euu6lf.fsf@igel.home>
-From:   Emil Renner Berthing <emil.renner.berthing@gmail.com>
-Date:   Sat, 13 Mar 2021 22:54:02 +0100
-Message-ID: <CANBLGcyteTgQ2BgyesrTycpVqpPeYaiUCTEEp=KmPB0TPqK_LQ@mail.gmail.com>
-Subject: Re: macb broken on HiFive Unleashed
-To:     Andreas Schwab <schwab@linux-m68k.org>
-Cc:     Claudiu.Beznea@microchip.com,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        ckeepax@opensource.cirrus.com, andrew@lunn.ch,
-        Willy Tarreau <w@1wt.eu>,
-        Nicolas Ferre <Nicolas.Ferre@microchip.com>, daniel@0x0f.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        pthombar@cadence.com, Network Development <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] net: hns3: support imp-controlled PHYs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161567400775.23306.13076986984276879100.git-patchwork-notify@kernel.org>
+Date:   Sat, 13 Mar 2021 22:20:07 +0000
+References: <1615539016-45698-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1615539016-45698-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        huangdaode@huawei.com, linuxarm@openeuler.org, linuxarm@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andreas
+Hello:
 
-On Wed, 10 Mar 2021 at 20:55, Andreas Schwab <schwab@linux-m68k.org> wrote:
-> On M=C3=A4r 09 2021, Claudiu.Beznea@microchip.com wrote:
-> > I don't have a SiFive HiFive Unleashed to investigate this. Can you che=
-ck
-> > if reverting commits on macb driver b/w 5.10 and 5.11 solves your issue=
-s:
-> >
-> > git log --oneline v5.10..v5.11 -- drivers/net/ethernet/cadence/
-> > 1d0d561ad1d7 net: macb: Correct usage of MACB_CAPS_CLK_HW_CHG flag
-> > 1d608d2e0d51 Revert "macb: support the two tx descriptors on at91rm9200=
-"
-> > 700d566e8171 net: macb: add support for sama7g5 emac interface
-> > ec771de654e4 net: macb: add support for sama7g5 gem interface
-> > f4de93f03ed8 net: macb: unprepare clocks in case of failure
-> > 38493da4e6a8 net: macb: add function to disable all macb clocks
-> > daafa1d33cc9 net: macb: add capability to not set the clock rate
-> > edac63861db7 net: macb: add userio bits as platform configuration
-> > 9e6cad531c9d net: macb: Fix passing zero to 'PTR_ERR'
-> > 0012eeb370f8 net: macb: fix NULL dereference due to no pcs_config metho=
-d
-> > e4e143e26ce8 net: macb: add support for high speed interface
->
-> Unfortunately, that didn't help.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Sorry, for being late to test this, but I just compiled and booted
-5.11.6 and ethernet works just fine for me:
-https://esmil.dk/hfu-5.11.6.txt
+On Fri, 12 Mar 2021 16:50:12 +0800 you wrote:
+> This series adds support for imp-controlled PHYs in the HNS3
+> ethernet driver.
+> 
+> Guangbin Huang (4):
+>   net: hns3: add support for imp-controlled PHYs
+>   net: hns3: add get/set pause parameters support for imp-controlled
+>     PHYs
+>   net: hns3: add ioctl support for imp-controlled PHYs
+>   net: hns3: add phy loopback support for imp-controlled PHYs
+> 
+> [...]
 
-As you can see I haven't updated OpenSBI or u-boot in a while, don't
-know if that makes a difference. You can fetch the config is used
-here:
-https://esmil.dk/hfu-5.11.6.config
+Here is the summary with links:
+  - [net-next,1/4] net: hns3: add support for imp-controlled PHYs
+    https://git.kernel.org/netdev/net-next/c/f5f2b3e4dcc0
+  - [net-next,2/4] net: hns3: add get/set pause parameters support for imp-controlled PHYs
+    https://git.kernel.org/netdev/net-next/c/57a8f46b1bd3
+  - [net-next,3/4] net: hns3: add ioctl support for imp-controlled PHYs
+    https://git.kernel.org/netdev/net-next/c/024712f51e57
+  - [net-next,4/4] net: hns3: add phy loopback support for imp-controlled PHYs
+    https://git.kernel.org/netdev/net-next/c/b47cfe1f402d
 
-/Emil
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
