@@ -2,127 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5AF2339E2E
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 14:25:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B10339E26
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 14:18:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233633AbhCMNYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 08:24:50 -0500
-Received: from mail.dr-lotz.de ([5.9.59.78]:33654 "EHLO mail.dr-lotz.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233188AbhCMNYW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 13 Mar 2021 08:24:22 -0500
-X-Greylist: delayed 348 seconds by postgrey-1.27 at vger.kernel.org; Sat, 13 Mar 2021 08:24:21 EST
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dr-lotz.de (Postfix) with ESMTP id 787315C86E;
-        Sat, 13 Mar 2021 14:18:32 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at mail.dr-lotz.de
-Received: from mail.dr-lotz.de ([127.0.0.1])
-        by localhost (mail.dr-lotz.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id nteY4s-GT1AN; Sat, 13 Mar 2021 14:14:36 +0100 (CET)
-Received: from [192.168.42.35] (ipb21b6623.dynamic.kabel-deutschland.de [178.27.102.35])
-        by mail.dr-lotz.de (Postfix) with ESMTPSA id 2E0325C86D;
-        Sat, 13 Mar 2021 14:14:36 +0100 (CET)
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20210109210056.160597-1-linus@lotz.li>
- <CAHmME9osYO9O6dikmwR+i44hB_4YqKyc2P3Sre_g9ReHkMJDpQ@mail.gmail.com>
-From:   Linus Lotz <linus@lotz.li>
-Subject: Re: [PATCH] wireguard: netlink: add multicast notification for peer
- changes
-Message-ID: <c97061f5-2d28-0323-c16a-aacacbdc734f@lotz.li>
-Date:   Sat, 13 Mar 2021 14:14:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S233554AbhCMNRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 08:17:34 -0500
+Received: from outbound-smtp16.blacknight.com ([46.22.139.233]:34583 "EHLO
+        outbound-smtp16.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233643AbhCMNRQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 08:17:16 -0500
+Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
+        by outbound-smtp16.blacknight.com (Postfix) with ESMTPS id 2721A1C5695
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 13:16:50 +0000 (GMT)
+Received: (qmail 5083 invoked from network); 13 Mar 2021 13:16:49 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 13 Mar 2021 13:16:49 -0000
+Date:   Sat, 13 Mar 2021 13:16:48 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210313131648.GY3697@techsingularity.net>
+References: <20210310104618.22750-1-mgorman@techsingularity.net>
+ <20210310104618.22750-3-mgorman@techsingularity.net>
+ <20210310154650.ad9760cd7cb9ac4acccf77ee@linux-foundation.org>
+ <20210311084200.GR3697@techsingularity.net>
+ <20210312124609.33d4d4ba@carbon>
+ <20210312145814.GA2577561@casper.infradead.org>
+ <20210312160350.GW3697@techsingularity.net>
+ <20210312210823.GE2577561@casper.infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHmME9osYO9O6dikmwR+i44hB_4YqKyc2P3Sre_g9ReHkMJDpQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20210312210823.GE2577561@casper.infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jason,> Thanks for the patch and sorry for the delay in reviewing it.
-Seeing
-> the basic scaffolding for getting netlink notifiers working with
-> WireGuard is enlightening; it looks surprisingly straightforward.
-Glad to hear that this is a welcome feature.
+On Fri, Mar 12, 2021 at 09:08:23PM +0000, Matthew Wilcox wrote:
+> > > > The result of the API is to deliver pages as a double-linked list via
+> > > > LRU (page->lru member).  If you are planning to use llist, then how to
+> > > > handle this API change later?
+> > > > 
+> > > > Have you notice that the two users store the struct-page pointers in an
+> > > > array?  We could have the caller provide the array to store struct-page
+> > > > pointers, like we do with kmem_cache_alloc_bulk API.
+> > > 
+> > > My preference would be for a pagevec.  That does limit you to 15 pages
+> > > per call [1], but I do think that might be enough.  And the overhead of
+> > > manipulating a linked list isn't free.
+> > > 
+> > 
+> > I'm opposed to a pagevec because it unnecessarily limits the caller.  The
+> > sunrpc user for example knows how many pages it needs at the time the bulk
+> > allocator is called but it's not the same value every time.  When tracing,
+> > I found it sometimes requested 1 page (most common request actually) and
+> > other times requested 200+ pages. Forcing it to call the batch allocator
+> > in chunks of 15 means the caller incurs the cost of multiple allocation
+> > requests which is almost as bad as calling __alloc_pages in a loop.
 > 
-> There are three classes of things that are interesting to receive
-> notifications for:
-> 
-> 1) Things that the admin changes locally. This is akin to the `ip
-> monitor`, in which you can see various things that other programs (or
-> the kernel) modify. This seems straightforward and uncontroversial.
-The current patch will also trigger for admin changes of the endpoint.
-This could obviously be extended to other events as well.
-> 
-> 2) Authenticated events from peers. This basically amounts to new
-> sessions being created following a successful handshake. This seems
-> mostly okay because authenticated actions already have various DoS
-> protections in place.
-> 
-> 3) Unauthenticated events. This would be things like (a) your patch --
-> a peer's endpoint changes -- or, more interestingly, (b) public keys
-> of unknown peers trying to handshake.
-I was under the impression that this is an authenticated event. The
-function 'wg_socket_set_peer_endpoint' where I hook in the notification
-is called from:
-- set_peer (changes from netlink, authenticated)
-- wg_packet_consume_data_done (which should be authenticated?)
-- wg_socket_set_peer_endpoint_from_skb
-And wg_socket_set_peer_endpoint_from_skb is in turn called from
-wg_receive_handshake_packet where it is called after validating a
-handshake initiation and after validating a handshake response. So it
-should be authenticated, right?
+> Well, no.  It reduces the cost by a factor of 15 -- or by 93%.  200 is
+> an interesting example because putting 200 pages on a list costs 200 *
+> 64 bytes of dirty cachelines, or 12KiB. 
 
-If the endpoint could be updated without authentication I would be
-concerned that an attacker could change the stored endpoint and thus do
-a DOS on a tunnel, as he could change the endpoints for both peers by
-sending them messages from an invalid endpoint.
+That's a somewhat limited view. Yes, the overall cost gets reduced by
+some factor but forcing the caller to limit the batch sizes incurs an
+unnecessary cost. The SUNRPC user is particularly relevant as it cannot
+make progress until it gets all the pages it requests -- it sleeps if
+it cannot get the pages it needs. The whole point of the bulk allocator
+is to avoid multiple round-trips through the page allocator. Forcing a
+limit in the API requiring multiple round trips is just weird.
 
+> That's larger than some CPU L1
+> caches (mine's 48KB, 12-way set associative), but I think it's safe to say
+> some of those 200 cache lines are going to force others out into L2 cache.
+> Compared to a smaller batch of 15 pages in a pagevec, it'll dirty two cache
+> lines (admittedly the 15 struct pages are also going to get dirtied by being
+> allocated and then by being set up for whatever use they're getting, but
+> they should stay in L1 cache while that's happening).
 > 
-> (b) is interesting because it allows doing database lookups in
-> userspace, adding the looked up entry, adding it to the interface, and
-> initiating a handshake in the reverse direction using the endpoint
-> information. It's partially DoS-protected due to the on-demand cookie
-> mac2 field.
-This is indeed an interesting feature. In this case we might want to
-keep the handshake information so that we can complete it if the lookup
-is successful. Since this would keep some state for unauthenticated
-peers it should probably only be used when explicitly enabled. This
-could probably also be used to debug tunnel settings.
-> 
-> (a) is also interesting for the use cases you outlined, but much more
-> perilous, as these are highspeed packets where the outer IP header is
-> totally unauthenticated. What prevents a man in the middle from doing
-> something nasty there, causing userspace to be inundated with
-> expensive calls and filling up netlink socket buffers and so forth?
-I was assuming it was authenticated, if not, there should definitely be
-some counter measures and it should only be enabled manually.
 
-> 
-> I wonder if this would be something better belonging to (2) -- getting
-> an event on an authenticated peer handshake -- and combining that with
-> the ability to disable roaming (something discussed a few times on
-> wgml). Alternatively, maybe you have a different idea in mind about
-> this?
-If wg_socket_set_peer_endpoint is the only place where the endpoint is
-modified it would be relatively simple to implement a flag that disables
-roaming. In theory it could also be possible to send a notification, but
- not change the endpoint and only let userspace update it. So an
-userspace application could decide if the roaming is allowed or not.
-> 
-> I also don't (yet) know much about the efficiency of multicast netlink
-> events and what the overhead is if nobody is listening, and questions
-> like that. So I'd be curious to hear your thoughts on the matter.
-I do not know how big the overhead is. I was assuming that a change of
-the endpoint address is relatively rare so that the impact should be
-negligible (since I assumed that changing the endpoint is authenticated.)
+The cache footprint is irrelevant if the caller *requires* the pages. If
+the caller has to zero the pages then the cache gets thrashed anyway.
+Even if non-temporal zeroing was used, the cache is likely thrashed by the
+data copies. The page allocator in general is a cache nightmare because
+of the number of cache lines it potentially dirties, particularly if it
+has to call into the buddy allocator to split/merge pages for allocations
+and frees respectively.
 
-Regards,
-Linus
+> I'm not claiming the pagevec is definitely a win, but it's very
+> unclear which tradeoff is actually going to lead to better performance.
+> Hopefully Jesper or Chuck can do some tests and figure out what actually
+> works better with their hardware & usage patterns.
+> 
+
+The NFS user is often going to need to make round trips to get the pages it
+needs. The pagevec would have to be copied into the target array meaning
+it's not much better than a list manipulation.
+
+Pagevecs are a bad interface in general simply because it puts hard
+constraints on how many pages can be bulk allocatoed. Pagevecs are
+primarily there to avoid excessive LRU lock acquisition and they are
+bad at the job. These days, the LRU lock protects such a massive amount
+of data that the pagevec is barely a band aid. Increasing its size just
+shifts the problem slightly. I see very little value in introducing a
+fundamental limitation into the bulk allocator by mandating pagevecs.
+
+Now, I can see a case where the API moves to using arrays when there is a
+user that is such a common hot path and using arrays that it is justified
+but we're not there yet. The two callers are somewhat of corner cases and
+both of them are limited by wire speed of networking. Not all users may
+require arrays -- SLUB using batched order-0 pages on a high-allocation
+failure for example would not need an array. Such an intensively hot user
+does not currently exist so it's premature to even consider it.
+
+> > I think the first version should have an easy API to start with. Optimise
+> > the implementation if it is a bottleneck. Only make the API harder to
+> > use if the callers are really willing to always allocate and size the
+> > array in advance and it's shown that it really makes a big difference
+> > performance-wise.
+> 
+> I'm not entirely sure that a pagevec is harder to use than a list_head.
+
+Leaving aside the limitations of pagevecs, arrays get messy if the caller
+does not necessarily use all the pages returned by the allocator. The
+arrays would need to be tracked and/or preserved for some time. The
+order pages are taken out of the array matters potentially. With lists,
+the remaining pages can be easily spliced on a private cache or simply
+handed back to the free API without having to track exactly how many
+pages are on the array or where they are located. With arrays, the
+elements have to be copied one at a time.
+
+I think it's easier overall for the callers to deal with a list in
+the initial implementation and only switch to arrays when there is an
+extremely hot user that benefits heavily if pages are inserted directly
+into an array.
+
+-- 
+Mel Gorman
+SUSE Labs
