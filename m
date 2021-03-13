@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7664333A091
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 20:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7996533A094
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 20:37:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234672AbhCMTgT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 13 Mar 2021 14:36:19 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14652 "EHLO
+        id S234676AbhCMTgp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 13 Mar 2021 14:36:45 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54768 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234516AbhCMTgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 14:36:11 -0500
+        by vger.kernel.org with ESMTP id S234455AbhCMTgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 14:36:12 -0500
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12DJYqYp018654
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 11:36:11 -0800
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12DJYqYr018654
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 11:36:12 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 378ucs9evc-1
+        by mx0a-00082601.pphosted.com with ESMTP id 378ucs9evc-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 11:36:11 -0800
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 11:36:12 -0800
 Received: from intmgw002.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Sat, 13 Mar 2021 11:36:10 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 617352ED20BF; Sat, 13 Mar 2021 11:36:01 -0800 (PST)
+        id AB92F2ED20BF; Sat, 13 Mar 2021 11:36:03 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH v2 bpf-next 10/11] selftests/bpf: pass all BPF .o's through BPF static linker
-Date:   Sat, 13 Mar 2021 11:35:36 -0800
-Message-ID: <20210313193537.1548766-11-andrii@kernel.org>
+Subject: [PATCH v2 bpf-next 11/11] selftests/bpf: add multi-file statically linked BPF object file test
+Date:   Sat, 13 Mar 2021 11:35:37 -0800
+Message-ID: <20210313193537.1548766-12-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210313193537.1548766-1-andrii@kernel.org>
 References: <20210313193537.1548766-1-andrii@kernel.org>
@@ -50,45 +50,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pass all individual BPF object files (progs/*.o) through `bpftool gen object`
-command to validate that BPF static linker doesn't corrupt them.
+Add Makefile infra to specify multi-file BPF object files (and derivative
+skeletons). Add first selftest validating BPF static linker can merge together
+successfully two independent BPF object files and resulting object and
+skeleton are correct and usable.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/testing/selftests/bpf/.gitignore | 1 +
- tools/testing/selftests/bpf/Makefile   | 8 +++-----
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ tools/testing/selftests/bpf/Makefile          | 12 ++++++
+ .../selftests/bpf/prog_tests/static_linked.c  | 40 +++++++++++++++++++
+ .../selftests/bpf/progs/test_static_linked1.c | 30 ++++++++++++++
+ .../selftests/bpf/progs/test_static_linked2.c | 31 ++++++++++++++
+ 4 files changed, 113 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/static_linked.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_static_linked1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_static_linked2.c
 
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index 4866f6a21901..811da0ea3ecd 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -36,4 +36,5 @@ test_cpp
- /runqslower
- /bench
- *.ko
-+*.bpfo
- xdpxceiver
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index dbca39f45382..7ed5690be237 100644
+index 7ed5690be237..ed45565c1f70 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -355,12 +355,10 @@ $(TRUNNER_BPF_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
- 	$$(call $(TRUNNER_BPF_BUILD_RULE),$$<,$$@,			\
- 					  $(TRUNNER_BPF_CFLAGS))
+@@ -303,6 +303,10 @@ endef
  
--$(TRUNNER_BPF_SKELS): $(TRUNNER_OUTPUT)/%.skel.h:			\
--		      $(TRUNNER_OUTPUT)/%.o				\
--		      $(BPFTOOL)					\
--		      | $(TRUNNER_OUTPUT)
-+$(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
+ SKEL_BLACKLIST := btf__% test_pinning_invalid.c test_sk_assign.c
+ 
++LINKED_SKELS := test_static_linked.skel.h
++
++test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
++
+ # Set up extra TRUNNER_XXX "temporary" variables in the environment (relies on
+ # $eval()) and pass control to DEFINE_TEST_RUNNER_RULES.
+ # Parameters:
+@@ -323,6 +327,7 @@ TRUNNER_BPF_OBJS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.o, $$(TRUNNER_BPF_SRCS)
+ TRUNNER_BPF_SKELS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.skel.h,	\
+ 				 $$(filter-out $(SKEL_BLACKLIST),	\
+ 					       $$(TRUNNER_BPF_SRCS)))
++TRUNNER_BPF_SKELS_LINKED := $$(addprefix $$(TRUNNER_OUTPUT)/,$(LINKED_SKELS))
+ TEST_GEN_FILES += $$(TRUNNER_BPF_OBJS)
+ 
+ # Evaluate rules now with extra TRUNNER_XXX variables above already defined
+@@ -359,6 +364,12 @@ $(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
  	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
--	$(Q)$$(BPFTOOL) gen skeleton $$< > $$@
-+	$(Q)$$(BPFTOOL) gen object $$(<:.o=.bpfo) $$<
-+	$(Q)$$(BPFTOOL) gen skeleton $$(<:.o=.bpfo) > $$@
+ 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.bpfo) $$<
+ 	$(Q)$$(BPFTOOL) gen skeleton $$(<:.o=.bpfo) > $$@
++
++$(TRUNNER_BPF_SKELS_LINKED): $(TRUNNER_BPF_OBJS) $(BPFTOOL) | $(TRUNNER_OUTPUT)
++	$$(call msg,LINK-BPF,$(TRUNNER_BINARY),$$(@:.skel.h=.bpfo))
++	$(Q)$$(BPFTOOL) gen object $$(@:.skel.h=.bpfo) $$(addprefix $(TRUNNER_OUTPUT)/,$$($$(@F)-deps))
++	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
++	$(Q)$$(BPFTOOL) gen skeleton $$(@:.skel.h=.bpfo) > $$@
  endif
  
  # ensure we set up tests.h header generation rule just once
+@@ -380,6 +391,7 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
+ 		      $(TRUNNER_EXTRA_HDRS)				\
+ 		      $(TRUNNER_BPF_OBJS)				\
+ 		      $(TRUNNER_BPF_SKELS)				\
++		      $(TRUNNER_BPF_SKELS_LINKED)			\
+ 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+ 	$$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
+ 	$(Q)cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
+diff --git a/tools/testing/selftests/bpf/prog_tests/static_linked.c b/tools/testing/selftests/bpf/prog_tests/static_linked.c
+new file mode 100644
+index 000000000000..46556976dccc
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/static_linked.c
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019 Facebook */
++
++#include <test_progs.h>
++#include "test_static_linked.skel.h"
++
++void test_static_linked(void)
++{
++	int err;
++	struct test_static_linked* skel;
++
++	skel = test_static_linked__open();
++	if (!ASSERT_OK_PTR(skel, "skel_open"))
++		return;
++
++	skel->rodata->rovar1 = 1;
++	skel->bss->static_var1 = 2;
++	skel->bss->static_var11 = 3;
++
++	skel->rodata->rovar2 = 4;
++	skel->bss->static_var2 = 5;
++	skel->bss->static_var22 = 6;
++
++	err = test_static_linked__load(skel);
++	if (!ASSERT_OK(err, "skel_load"))
++		goto cleanup;
++
++	err = test_static_linked__attach(skel);
++	if (!ASSERT_OK(err, "skel_attach"))
++		goto cleanup;
++
++	/* trigger */
++	usleep(1);
++
++	ASSERT_EQ(skel->bss->var1, 1 * 2 + 2 + 3, "var1");
++	ASSERT_EQ(skel->bss->var2, 4 * 3 + 5 + 6, "var2");
++
++cleanup:
++	test_static_linked__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_static_linked1.c b/tools/testing/selftests/bpf/progs/test_static_linked1.c
+new file mode 100644
+index 000000000000..ea1a6c4c7172
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_static_linked1.c
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Facebook */
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++
++/* 8-byte aligned .bss */
++static volatile long static_var1;
++static volatile int static_var11;
++int var1 = 0;
++/* 4-byte aligned .rodata */
++const volatile int rovar1;
++
++/* same "subprog" name in both files */
++static __noinline int subprog(int x)
++{
++	/* but different formula */
++	return x * 2;
++}
++
++SEC("raw_tp/sys_enter")
++int handler1(const void *ctx)
++{
++	var1 = subprog(rovar1) + static_var1 + static_var11;
++
++	return 0;
++}
++
++char LICENSE[] SEC("license") = "GPL";
++int VERSION SEC("version") = 1;
+diff --git a/tools/testing/selftests/bpf/progs/test_static_linked2.c b/tools/testing/selftests/bpf/progs/test_static_linked2.c
+new file mode 100644
+index 000000000000..54d8d1ab577c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_static_linked2.c
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Facebook */
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++
++/* 4-byte aligned .bss */
++static volatile int static_var2;
++static volatile int static_var22;
++int var2 = 0;
++/* 8-byte aligned .rodata */
++const volatile long rovar2;
++
++/* same "subprog" name in both files */
++static __noinline int subprog(int x)
++{
++	/* but different formula */
++	return x * 3;
++}
++
++SEC("raw_tp/sys_enter")
++int handler2(const void *ctx)
++{
++	var2 = subprog(rovar2) + static_var2 + static_var22;
++
++	return 0;
++}
++
++/* different name and/or type of the variable doesn't matter */
++char _license[] SEC("license") = "GPL";
++int _version SEC("version") = 1;
 -- 
 2.24.1
 
