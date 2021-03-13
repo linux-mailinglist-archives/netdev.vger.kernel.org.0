@@ -2,77 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 785A2339C6F
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 07:46:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22EE0339C74
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 07:51:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232179AbhCMGpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 01:45:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
+        id S233155AbhCMGul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 01:50:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230380AbhCMGpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 01:45:04 -0500
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAFAC061574
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 22:45:04 -0800 (PST)
-Received: by mail-vs1-xe43.google.com with SMTP id l27so13683128vsj.4
-        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 22:45:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=cNGljFPZRpYFKEu48myr7eYFUT4vLWZX348426Ewac8=;
-        b=rGy3loCGK8tm5Um9sMC7bsdSQoHOCmLD41PzGutMil3vr9kB7IuROkWWmc3H470kac
-         +sqW3H77Wij5Qi7F3X2XOdj2gCIzMo+PTGdQi3gkzTrWdSFIneIg0iPjpLJj85cEKxdW
-         w533rjxh70w/CxRmDIwk5mOWvs/qXpLdzphp2jvnxfE5CKVtxCDaHwMh874st+W043VU
-         bfo9qCcu8XYq9HSiV3qCRMmuODcmWItakvGCGCnXyi6KgBijG+nxu//28oyfajUcEqw/
-         liHcr5kh5sitVx+qAmXa0szdJWtyl/BGJ2kPCdkCv79JXpJnmiVfIar86VW7cnMXARHp
-         Ox+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=cNGljFPZRpYFKEu48myr7eYFUT4vLWZX348426Ewac8=;
-        b=UjoYK2Oqj4rojN0OS0/KcZQNKnYSADfyS4M88+RrwhBJJswd5sTezR4jmPiQnTni4/
-         T8CNGNg+zwSi+xagiJESQlBKGVXDFG0fImMvRiPc5l5c0+xKQjCt17Rf1CCcQs4t2Fu4
-         VnJc8KBZpiEsYEoeGdp1VkljIPLhg0pvLmPV3fpHn0vuq0IrpJjXfnCvlG31+JJiv4Oe
-         +oTKLkTMmQ2KxkhC+1vEonGpgTPGRcYFhrc7NC78JU4XPt//wyIxNvuqLxPrhjBrY4BW
-         fLLgs6XZPNkNs0+iYQc8RJzWMP4jNfpeQ+quyLC2UQQwD6h9Qqc/4clEoIEz4maFbr3a
-         9p0Q==
-X-Gm-Message-State: AOAM533obj3eBBXMMn9f6vWFRBqCLpOCbuisK7j8uhawg7y43SJwK9MO
-        S7KlLSoqAfglAAOug6j53WpFWSyXUOAhexMMgdc=
-X-Google-Smtp-Source: ABdhPJw+qvGKVmRiYO5KdXJPTM/GnrMzgRSld+BE9zZTjhr908eI7yklf0DgjE9n5RKFsJ2dxeUXMi9695Z/fvKrbVI=
-X-Received: by 2002:a67:c409:: with SMTP id c9mr809247vsk.54.1615617903344;
- Fri, 12 Mar 2021 22:45:03 -0800 (PST)
+        with ESMTP id S230380AbhCMGuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 01:50:06 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6634C061574;
+        Fri, 12 Mar 2021 22:50:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=eFNvnL8zLJRq7lDSRdeDQTkvUtR6qc0g5L8oYiirzk8=; b=lAMHYzYvu1zYHq0gOkL6+Nzonh
+        VDMq+1XRpxbBSaCiIeDtY4SIk8GxFooJnoKYlFLSyHqafb4m5Ul0BXXU67gTLJUojhK6PWtA/AlId
+        pt6/Gzc9lB12vF3YuShUesLnBs9Q+WZkQdPX2xvj8Kv4CU78qxRnv9IX49i+lCmki830CiY2iImDa
+        SWExzYtjycVAEBW0c5sct2ORjU/oZm8u2QFOKXcKJVCd0nkQrx6MGohc8r3aMMarHkNt79nkG2okP
+        B2ijUlm58GX55YEGnp9/CI/ppcgInU1aFzbcAFrzPKgb/4eRHh31/Br58tFm5JQohBzfUTYHgIW53
+        y8duaUkw==;
+Received: from [2601:1c0:6280:3f0::9757]
+        by merlin.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lKy64-0017is-Tz; Sat, 13 Mar 2021 06:50:02 +0000
+Subject: Re: [PATCH] net: ethernet: marvell: Fixed typo in the file sky2.c
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, mlindner@marvell.com,
+        stephen@networkplumber.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210313054536.1182-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <37c013eb-1419-9bf9-07d0-f1ff6d621296@infradead.org>
+Date:   Fri, 12 Mar 2021 22:49:58 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Received: by 2002:ab0:13cc:0:0:0:0:0 with HTTP; Fri, 12 Mar 2021 22:45:03
- -0800 (PST)
-Reply-To: georgemike7031@gmail.com
-From:   george mike <kotsllos2000@gmail.com>
-Date:   Sat, 13 Mar 2021 07:45:03 +0100
-Message-ID: <CAKnPpxCJ1sp7kkYnS+4mPa=d9DQeHnrE3jtnAksRFfDzZ19j4A@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210313054536.1182-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo
+On 3/12/21 9:45 PM, Bhaskar Chowdhury wrote:
+> 
+> s/calclation/calculation/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-Ich hei=C3=9Fe George Mike. Ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte=
- dir anbieten
-engster Verwandter meines Klienten. Sie erben die Gesamtsumme (8,5
-Millionen US-Dollar).
-Dollar, die mein Kunde vor seinem Tod auf der Bank gelassen hat.
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-Mein Klient ist ein Staatsangeh=C3=B6riger Ihres Landes, der mit seiner
-Frau bei einem Autounfall ums Leben gekommen ist
-und einziger Sohn. Ich habe Anspruch auf 50% des Gesamtfonds, w=C3=A4hrend
-50% davon berechtigt sind
-Sein f=C3=BCr dich.
-F=C3=BCr weitere Informationen wenden Sie sich bitte an meine private
-E-Mail-Adresse: georgemike7031@gmail.com
 
-Vielen Dank im Voraus,
-Herr George Mike,
+Subject: should say "Fix typo", not "Fixed typo".
+
+> ---
+>  drivers/net/ethernet/marvell/sky2.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+> index ebe1406c6e64..18a3db2fd337 100644
+> --- a/drivers/net/ethernet/marvell/sky2.c
+> +++ b/drivers/net/ethernet/marvell/sky2.c
+> @@ -4135,7 +4135,7 @@ static int sky2_set_coalesce(struct net_device *dev,
+>  /*
+>   * Hardware is limited to min of 128 and max of 2048 for ring size
+>   * and  rounded up to next power of two
+> - * to avoid division in modulus calclation
+> + * to avoid division in modulus calculation
+>   */
+>  static unsigned long roundup_ring_size(unsigned long pending)
+>  {
+> --
+
+
+-- 
+~Randy
+
