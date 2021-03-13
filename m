@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE99339DE7
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 12:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA610339DEB
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 12:42:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbhCMLiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 06:38:14 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:56898 "EHLO
-        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233724AbhCMLiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 06:38:01 -0500
-Date:   Sat, 13 Mar 2021 11:37:57 +0000
+        id S233927AbhCMLil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 06:38:41 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:60278 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231497AbhCMLiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 06:38:20 -0500
+Date:   Sat, 13 Mar 2021 11:38:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615635480; bh=OtoaEa4C9A8M8IjnX8ICb3j9vVq3aPxG0RyT+eIX9OU=;
+        t=1615635498; bh=5MpWKAjO4E1TpGup0jNHoJh4fKp9mBQ4WRLVO089bHE=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=RhSril2pehoQYy1KfwPLC9d5QrYMJIunA0RHJamwEfQSDlhqhhGljeG7eMBtPCNYh
-         afY60XcI2+6fh+Gm42ktHshPGWg4pqbSVTgQbpWX4NHvtcujf8bKUT/ecvmTsmcwLq
-         FkWutvXXjuYgqLnWhvGT2SE9v/dJeSucNV3aMrTHYZlSYQB9vVScByJlIRw3zSGeIc
-         XEyESqBtr/It3OpW2C/PB/ziNTGoWlnif7AMwd826H9ZQCLSGFOBt86dP2M9FUrf9M
-         0SalEn9UaJzXchaOgTGU+pTq9tP2ftf1todbPfcQnwRhkYUBvJPlFuU02IiQFDP9LI
-         NaotVoi+2IXhg==
+        b=lJosGFsIHUoNJ7eKfmhWt2Fru4UoM5jFXEAsiNn5NDRGwCJGYg4NvdQ38WsnfNHj2
+         a1r70/D7C1YtcSVIuzNOJqzHw2CcebtcZ/mVXMqrDTcRiyh4XDpd3xtIbqXr/lc2EE
+         oiaC5h0TeGNlcFzcr7UPVZJcjpRNhA3O9n/sFsTuMBwtjVuHam9CmkQ+aWmpYaYhWs
+         /DXzzRntt/lyDy0E2koNv5SroShb81BlO6uctaqRp+OQhmegZ8ky/xFIkVWotQyHby
+         lYnBuBni7bVaa8J6VQopc7g3htNmt1C3RBCMOaay4d7veR6qVPr2Pb+1jixjUFFQrS
+         R9gITd9sNnnbQ==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -52,8 +52,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 net-next 5/6] ethernet: constify eth_get_headlen()'s @data argument
-Message-ID: <20210313113645.5949-6-alobakin@pm.me>
+Subject: [PATCH v2 net-next 6/6] skbuff: micro-optimize {,__}skb_header_pointer()
+Message-ID: <20210313113645.5949-7-alobakin@pm.me>
 In-Reply-To: <20210313113645.5949-1-alobakin@pm.me>
 References: <20210313113645.5949-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -68,46 +68,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's used only for flow dissection, which now takes constant data
-pointers.
+{,__}skb_header_pointer() helpers exist mainly for preventing
+accesses-beyond-end of the linear data.
+In the vast majorify of cases, they bail out on the first condition.
+All code going after is mostly a fallback.
+Mark the most common branch as 'likely' one to move it in-line.
+Also, skb_copy_bits() can return negative values only when the input
+arguments are invalid, e.g. offset is greater than skb->len. It can
+be safely marked as 'unlikely' branch, assuming that hotpath code
+provides sane input to not fail here.
+
+These two bump the throughput with a single Flow Dissector pass on
+every packet (e.g. with RPS or driver that uses eth_get_headlen())
+on 20 Mbps per flow/core.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/linux/etherdevice.h | 2 +-
- net/ethernet/eth.c          | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/linux/skbuff.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-index bcb2f81baafb..330345b1be54 100644
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -29,7 +29,7 @@ struct device;
- int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr);
- unsigned char *arch_get_platform_mac_address(void);
- int nvmem_get_mac_address(struct device *dev, void *addrbuf);
--u32 eth_get_headlen(const struct net_device *dev, void *data, unsigned int=
- len);
-+u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 le=
-n);
- __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
- extern const struct header_ops eth_header_ops;
-
-diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-index 4106373180c6..e01cf766d2c5 100644
---- a/net/ethernet/eth.c
-+++ b/net/ethernet/eth.c
-@@ -122,7 +122,7 @@ EXPORT_SYMBOL(eth_header);
-  * Make a best effort attempt to pull the length for all of the headers fo=
-r
-  * a given frame in a linear buffer.
-  */
--u32 eth_get_headlen(const struct net_device *dev, void *data, unsigned int=
- len)
-+u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 le=
-n)
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 46c61e127e9f..ecc029674ae4 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3680,11 +3680,10 @@ static inline void * __must_check
+ __skb_header_pointer(const struct sk_buff *skb, int offset, int len,
+ =09=09     const void *data, int hlen, void *buffer)
  {
- =09const unsigned int flags =3D FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
- =09const struct ethhdr *eth =3D (const struct ethhdr *)data;
+-=09if (hlen - offset >=3D len)
++=09if (likely(hlen - offset >=3D len))
+ =09=09return (void *)data + offset;
+
+-=09if (!skb ||
+-=09    skb_copy_bits(skb, offset, buffer, len) < 0)
++=09if (!skb || unlikely(skb_copy_bits(skb, offset, buffer, len) < 0))
+ =09=09return NULL;
+
+ =09return buffer;
 --
 2.30.2
 
