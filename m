@@ -2,79 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C579339B08
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 03:10:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7BA8339B3A
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 03:23:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231392AbhCMCKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 21:10:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39392 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229968AbhCMCKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 21:10:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0897064F60;
-        Sat, 13 Mar 2021 02:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615601409;
-        bh=GwshTpfd/kgT+9AODlccLuvbWs5HFinxtRMe9BsXSo8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b121potx/NQK+WtZHt4aOEHRbYMPC54DI4er6+OL6jBphqqSmNkGyKRrSTJyzEPNC
-         tKtIdFDQrutG6byB7+w2Hm5Pp/KF0vf2cX/2gZUZXRr9i1LbQBCKEXQAuvoc04jL6Y
-         C4bgUMxQurn31gjrpQqdhEtflowkTokLz9QJRysqO0p2K7uMJDHJMq2H8bcpueBAQR
-         KgI/hz+olNDAMK6brxyt17jaA6sj94GFTJPbZe56wbwwezPURCr6eHUAPhTjoYL+Tk
-         9703kAzJKREqKef6aokYE1WBlyDEc+In8xtYgEpDoiqfOjJhaq5U8P1ebg33Rx/drX
-         77xGZYCzpMAog==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F313C60A57;
-        Sat, 13 Mar 2021 02:10:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233116AbhCMCWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 21:22:38 -0500
+Received: from mail-pf1-f169.google.com ([209.85.210.169]:39042 "EHLO
+        mail-pf1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233414AbhCMCWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 21:22:20 -0500
+Received: by mail-pf1-f169.google.com with SMTP id 18so3084179pfo.6;
+        Fri, 12 Mar 2021 18:22:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bL9MisVqCy9+mMTkkT9Ym/rs2nuRRYH0hpQS2/1i2Qc=;
+        b=YAdYbG6fff0/jGTaEsRmaJxkFUQWpdEk9BoNC2qDSFyxVxYBYbbdIAkXfpKnqHTgG7
+         Ut8yRQiLkeqEJdWIE+D9/es4MO4I94Hro2bR+Ry3uK/Y5r605ALCnLYmCYw8IUN5Z6N0
+         8FHpCRd6szDB8VMY2pq+3xnlISt9lMM7lcJBdH40X7NPMVHsjp/K5agTAS17iK62D4SG
+         qe+jJYPRFLiugO2bTY//C080wuKDyiLHEbGeZ0VOlcyApuu3shfoknndB9HJjd8Qj2z/
+         si21JfrXebVy+zfpwXzHzcuSAwK+WKZ27ar/HeD20VOqp9XWZccdVREYQKDRj3tLh1sF
+         UJ1w==
+X-Gm-Message-State: AOAM532ZC/dezKIjU3S/Gz1Dip8YfNcgXa/ySf0FAVhLBeaum4BfqyIr
+        Ol/8Q77McjLhfGHAQdtFFaBXqZLRWGJokA==
+X-Google-Smtp-Source: ABdhPJwruavXBRGzE5NvtQgB4Hv0B9VsKuEoRnRdCIedurSM1Fd25BdadH3+DAG1TuTAR7pVOSTpvg==
+X-Received: by 2002:a65:4243:: with SMTP id d3mr14766300pgq.180.1615602140435;
+        Fri, 12 Mar 2021 18:22:20 -0800 (PST)
+Received: from sultan-box.localdomain (static-198-54-131-119.cust.tzulo.com. [198.54.131.119])
+        by smtp.gmail.com with ESMTPSA id m5sm6768990pfd.96.2021.03.12.18.22.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Mar 2021 18:22:20 -0800 (PST)
+Date:   Fri, 12 Mar 2021 18:22:17 -0800
+From:   Sultan Alsawaf <sultan@kerneltoast.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] libbpf: Use the correct fd when attaching to perf events
+Message-ID: <YEwh2S3n8Ufgyovr@sultan-box.localdomain>
+References: <20210312214316.132993-1-sultan@kerneltoast.com>
+ <CAEf4BzYBj254AtZxjMKdJ_yoP9Exvjuyotc8XZ7AUCLFG9iHLQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
- 2021-03-12
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161560140899.29961.10699958887835723799.git-patchwork-notify@kernel.org>
-Date:   Sat, 13 Mar 2021 02:10:08 +0000
-References: <20210312174755.2103336-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210312174755.2103336-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYBj254AtZxjMKdJ_yoP9Exvjuyotc8XZ7AUCLFG9iHLQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 12 Mar 2021 09:47:50 -0800 you wrote:
-> This series contains updates to ice, i40e, ixgbe and igb drivers.
+On Fri, Mar 12, 2021 at 05:31:14PM -0800, Andrii Nakryiko wrote:
+> On Fri, Mar 12, 2021 at 1:43 PM Sultan Alsawaf <sultan@kerneltoast.com> wrote:
+> >
+> > From: Sultan Alsawaf <sultan@kerneltoast.com>
+> >
+> > We should be using the program fd here, not the perf event fd.
 > 
-> Magnus adjusts the return value for xsk allocation for ice. This fixes
-> reporting of napi work done and matches the behavior of other Intel NIC
-> drivers for xsk allocations.
-> 
-> Maciej moves storing of the rx_offset value to after the build_skb flag
-> is set as this flag affects the offset value for ice, i40e, and ixgbe.
-> 
-> [...]
+> Why? Can you elaborate on what issue you ran into with the current code?
 
-Here is the summary with links:
-  - [net,1/5] ice: fix napi work done reporting in xsk path
-    https://git.kernel.org/netdev/net/c/ed0907e3bdcf
-  - [net,2/5] i40e: move headroom initialization to i40e_configure_rx_ring
-    https://git.kernel.org/netdev/net/c/a86606268ec0
-  - [net,3/5] ice: move headroom initialization to ice_setup_rx_ctx
-    https://git.kernel.org/netdev/net/c/89861c485c6a
-  - [net,4/5] ixgbe: move headroom initialization to ixgbe_configure_rx_ring
-    https://git.kernel.org/netdev/net/c/76064573b121
-  - [net,5/5] igb: avoid premature Rx buffer reuse
-    https://git.kernel.org/netdev/net/c/98dfb02aa222
+bpf_link__pin() would fail with -EINVAL when using tracepoints, kprobes, or
+uprobes. The failure would happen inside the kernel, in bpf_link_get_from_fd()
+right here:
+	if (f.file->f_op != &bpf_link_fops) {
+		fdput(f);
+		return ERR_PTR(-EINVAL);
+	}
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Since bpf wasn't looking for the perf event fd, I swapped it for the program fd
+and bpf_link__pin() worked.
 
-
+Sultan
