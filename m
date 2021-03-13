@@ -2,80 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83DC9339E4D
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 14:31:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CD82339E68
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 15:03:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233832AbhCMNba (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 08:31:30 -0500
-Received: from outbound-smtp48.blacknight.com ([46.22.136.219]:49127 "EHLO
-        outbound-smtp48.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233779AbhCMNbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 08:31:01 -0500
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp48.blacknight.com (Postfix) with ESMTPS id 71BCE37A97B
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 13:31:00 +0000 (GMT)
-Received: (qmail 31774 invoked from network); 13 Mar 2021 13:31:00 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 13 Mar 2021 13:31:00 -0000
-Date:   Sat, 13 Mar 2021 13:30:58 +0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>
-Subject: Re: [PATCH 7/7] net: page_pool: use alloc_pages_bulk in refill code
- path
-Message-ID: <20210313133058.GZ3697@techsingularity.net>
-References: <20210312154331.32229-1-mgorman@techsingularity.net>
- <20210312154331.32229-8-mgorman@techsingularity.net>
- <CAKgT0UebK=mMwDV+UH8CqBRt0E0Koc7EB42kwgf0hYHDT_2OfQ@mail.gmail.com>
+        id S233770AbhCMODW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 09:03:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233478AbhCMOCx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 09:02:53 -0500
+X-Greylist: delayed 2658 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 13 Mar 2021 06:02:53 PST
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE3FC061574;
+        Sat, 13 Mar 2021 06:02:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=Content-Type:MIME-Version:Message-ID:Subject:To:From:Date:Sender:
+        Reply-To:Cc:Content-Transfer-Encoding:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=QOTdjy1PdYeDQ1fUENDrh0RtMG0coACWNQ4YsZbgl5w=; b=DeTr+9knNkPOvtIi2OlW73HS3t
+        slxWRqQmC/Qd+tyDE8Lnj4oD+NFf5isDoaYYYhiPQ8iT/IOWEUz6DODzLTEBHd1WG9KYfSqzwFT70
+        7pdoIUdBZOPtb0r/1WZqZHRog4L3uDDlSBHRkO6SaLFE0zu6nunAVePrw4XLLmC9bJGsxaEmVvJ4N
+        zAgW5ejJ2lWOVgTIKSiBHTnLvkLbkSUT3inboIq/iEhEMGyBD8Zio1md1EU+8pQugFxwTmI5hqZ8M
+        RBYRHIUBaaivkhOJptSZm3vns90mjlM/uDY69gA+jRAsvt2mhWRHSwLv8PJUZ5sB0SenvC1WcPH1S
+        zAB6oEag==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1lL49y-0004kB-SB; Sat, 13 Mar 2021 13:18:26 +0000
+Date:   Sat, 13 Mar 2021 13:18:26 +0000
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: stmmac: Set FIFO sizes for ipq806x
+Message-ID: <20210313131826.GA17553@earth.li>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKgT0UebK=mMwDV+UH8CqBRt0E0Koc7EB42kwgf0hYHDT_2OfQ@mail.gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 12, 2021 at 11:44:09AM -0800, Alexander Duyck wrote:
-> > -       /* FUTURE development:
-> > -        *
-> > -        * Current slow-path essentially falls back to single page
-> > -        * allocations, which doesn't improve performance.  This code
-> > -        * need bulk allocation support from the page allocator code.
-> > -        */
-> > -
-> > -       /* Cache was empty, do real allocation */
-> > -#ifdef CONFIG_NUMA
-> > -       page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
-> > -#else
-> > -       page = alloc_pages(gfp, pool->p.order);
-> > -#endif
-> > -       if (!page)
-> > +       if (unlikely(!__alloc_pages_bulk(gfp, pp_nid, NULL, bulk, &page_list)))
-> >                 return NULL;
-> >
-> > +       /* First page is extracted and returned to caller */
-> > +       first_page = list_first_entry(&page_list, struct page, lru);
-> > +       list_del(&first_page->lru);
-> > +
-> 
-> This seems kind of broken to me. If you pull the first page and then
-> cannot map it you end up returning NULL even if you placed a number of
-> pages in the cache.
-> 
+Commit eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+started using the TX FIFO size to verify what counts as a valid MTU
+request for the stmmac driver.  This is unset for the ipq806x variant.
+Looking at older patches for this it seems the RX + TXs buffers can be
+up to 8k, so set appropriately.
 
-I think you're right but I'm punting this to Jesper to fix. He's more
-familiar with this particular code and can verify the performance is
-still ok for high speed networks.
+(I sent this as an RFC patch in June last year, but received no replies.
+I've been running with this on my hardware (a MikroTik RB3011) since
+then with larger MTUs to support both the internal qca8k switch and
+VLANs with no problems. Without the patch it's impossible to set the
+larger MTU required to support this.)
 
+Signed-off-by: Jonathan McDowell <noodles@earth.li>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+index bf3250e0e59c..749585fe6fc9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+@@ -352,6 +352,8 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
+ 	plat_dat->bsp_priv = gmac;
+ 	plat_dat->fix_mac_speed = ipq806x_gmac_fix_mac_speed;
+ 	plat_dat->multicast_filter_bins = 0;
++	plat_dat->tx_fifo_size = 8192;
++	plat_dat->rx_fifo_size = 8192;
+ 
+ 	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (err)
 -- 
-Mel Gorman
-SUSE Labs
+2.30.1
+
