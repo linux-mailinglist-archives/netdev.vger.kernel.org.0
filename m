@@ -2,182 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C6E2339A23
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 00:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECBB6339A3E
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 01:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235882AbhCLXqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 18:46:47 -0500
-Received: from mail-dm6nam10on2109.outbound.protection.outlook.com ([40.107.93.109]:52143
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235874AbhCLXqW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 18:46:22 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EkYfcfgwgpGrgjXKNiRVpM1AL2LDC7kbCnWIiQS+wD5LnQKk94JUcSeIgfovi6WR64/3x2FvLmZ0TLNinYcTQuSBUuby0nautneBEmyZKVDWsh/EIzJSMLOcVs0R2ZibGrAMLYDvW28aJ1tK5eSVvXSoqzeSE/kFXBLodiW04mXHBbYUESl4xlioZ/1Hrn2L1RtAuA4sUSSuBRsIZQ0wowqHDo0D0aKighL96yxp0C//RTmBZBBlDnVxLxYJJOjw1j6sJMkP3zlAng/ykX03/xuowLYlrABCX2W4tvZlQ0rGCTM0bHVZl16RbvhiAevkzQ51kKv/nPYIknwkMpqIog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=phfrcTnzkIFjtqag+p+QaWAA9aUiPxFefARrXk8slNk=;
- b=iFBhA61zq/o5n+mNLxthyHnMsgFibeNjl8mX+CxGa49MeKSZBrMY2gqB7nRctYSSefJi6x/YzG+pwIi0oewDS1IFWxUiwSZkKRYVFAellE3kdMZmDR5BpPIj7cH7F2lPjTup7MYiVzOcTIt0VE3VNG6O02Z7Ougq4AqJS2Fykvw57XzE/SBhaFojvmodiLtmCA2DDrv3CYbgZEeeWt3IsO2KRnjEDGlefPd7YwLQvkfk5PnftCTk7AXZ6+Umo5MMxmbz8SSkB86Bz1WTz7hJWXBVffF93CA3jHuKKAeRHBay8mlFYcH2WybiENhTBrkOj8z4Eh+L6pEm2wJy5UdULA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=phfrcTnzkIFjtqag+p+QaWAA9aUiPxFefARrXk8slNk=;
- b=iI6BmsOriYIovx2GDag7HVF20N0n+iQGkJljtH2X70OUkLAKXuFYtwXsFwcJxY+fR2Fc9cXvbwwfCx02aFlH7ANvGtQ7lQXg19ekF5DufqijCBEGeos883L1oebX2MYLuW53H8+GTxmJ+PLG6jIimWkI6pixkwwWZZ0cDGiC04E=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=microsoft.com;
-Received: from DM6PR21MB1340.namprd21.prod.outlook.com (2603:10b6:5:175::19)
- by DM5PR21MB1767.namprd21.prod.outlook.com (2603:10b6:4:aa::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.8; Fri, 12 Mar
- 2021 23:46:08 +0000
-Received: from DM6PR21MB1340.namprd21.prod.outlook.com
- ([fe80::488b:9500:3b0c:e41a]) by DM6PR21MB1340.namprd21.prod.outlook.com
- ([fe80::488b:9500:3b0c:e41a%7]) with mapi id 15.20.3933.031; Fri, 12 Mar 2021
- 23:46:08 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org,
-        Shachar Raindel <shacharr@microsoft.com>
-Subject: [PATCH net-next] hv_netvsc: Add a comment clarifying batching logic
-Date:   Fri, 12 Mar 2021 15:45:27 -0800
-Message-Id: <1615592727-11140-1-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain
-X-Originating-IP: [13.77.154.182]
-X-ClientProxiedBy: MW4PR03CA0230.namprd03.prod.outlook.com
- (2603:10b6:303:b9::25) To DM6PR21MB1340.namprd21.prod.outlook.com
- (2603:10b6:5:175::19)
+        id S235937AbhCMADT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 19:03:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235933AbhCMACq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Mar 2021 19:02:46 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B12C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 16:02:46 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id n23so4375172otq.1
+        for <netdev@vger.kernel.org>; Fri, 12 Mar 2021 16:02:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a6wQjC/3YqPwKxD8KlLN6RSVfnEsTgcTJVAVTUM4DfM=;
+        b=ZeTVs9JLG6Qhj1A+XELDFaNnnpMSjFuPB5iX5SFt3KgqF0cFapHO9Bb4/FSDE6DK4Z
+         NrapfWfs/4U1IEIyJwt3N9czcQ+hcFNvO1lvYa8tUkgkg8eUwM09ZDumWtM+MtydZNnj
+         PGrg37Fq2xeVCXhpA0VKeVPHcwKglOui5GL0ReV4CbCKR7Z0dW6Am7J25sKlR/Dhz5XH
+         rl/iN6UGJ6KIP3XlKg+JcxK0DOcxwUhanblwWQgTuJx28D2Q5gWxS8jhdmOO6iCusLcn
+         kJVRUQF4kPhAz0qqONW+Bk0uScKjcjid6UB8G1iTzTV0BbIuTOxY9BVDH2+w6UBpudsF
+         RXQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a6wQjC/3YqPwKxD8KlLN6RSVfnEsTgcTJVAVTUM4DfM=;
+        b=F288xlTcVPBDttvYO9CVg6OPF1cAn5z5SkfK9oP3stAGxrlH36TL37OdQEtGQco/IE
+         D/+WhYptfYb3eJVf/NhylF5wjf7b+V68KpuVkaPLtLHrjeR1SbD6s3nC5btWdHL+Gt9T
+         m0SSpK/z+cOBjqDtZcLqn6ZH8KLYT5P5+vJbHML2mCYNJ/G9pN4Y//R4qgu8eVi/oLds
+         sqh7gLzJb58XF3VV6Omsj1UxJB1ImT7IhiUtDXLNe6ufkJghh4EB0u+8zEWa9IBsbr+K
+         Wx4eQFsTA3xgIUDHJ/aJYYtm0kVw2l0YNw6rNtSv3l24ZA4iOvaLCkh1G7fgqQ0WIOAI
+         A6AQ==
+X-Gm-Message-State: AOAM531hqVOWIIDWmWR0LRMTLF2NCViJxBDAlpMxFUMFsRiZUIdtG2RH
+        WZwIkgyVFcNChiOmJ9eImtBsYi3T06hDag==
+X-Google-Smtp-Source: ABdhPJzy3lH9u2U3SZQalFAUg4Mz3why6H6H2XtFjP7CoLqg83WnmCWnUZndKPCalgMRlyXUehOUQw==
+X-Received: by 2002:a05:6830:118f:: with SMTP id u15mr5128411otq.43.1615593765312;
+        Fri, 12 Mar 2021 16:02:45 -0800 (PST)
+Received: from localhost.localdomain (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id s21sm2187196oos.5.2021.03.12.16.02.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Mar 2021 16:02:44 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     netdev@vger.kernel.org
+Cc:     Daniele Palmas <dnlplm@gmail.com>, Alex Elder <elder@linaro.org>
+Subject: [PATCH] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
+Date:   Fri, 12 Mar 2021 18:02:41 -0600
+Message-Id: <20210313000241.602790-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Sender: LKML haiyangz <lkmlhyz@microsoft.com>
-X-MS-Exchange-MessageSentRepresentingType: 2
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MW4PR03CA0230.namprd03.prod.outlook.com (2603:10b6:303:b9::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend Transport; Fri, 12 Mar 2021 23:46:07 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 183f3c06-a75e-4bd7-cecd-08d8e5b10205
-X-MS-TrafficTypeDiagnostic: DM5PR21MB1767:
-X-MS-Exchange-Transport-Forked: True
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM5PR21MB17671638BA930A39C42C7367AC6F9@DM5PR21MB1767.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1N6NHzX14qVy3AbC3RXXx19S+lBMafLw0sEd6jnvxKFtm62v9KFfNtZVQiVhYJORT9lktuQXFKLrfK6jMUAHVbgl7ZIBe+ggHZO7tjlkDbzmUX1TE5kAK015+eyPb9RKX0IXevtD6ojaaS+wPqhwWQEv16qxP0BE94+/izHCYiuGUMsXVRAGtjiVAaDWhDovPKgdVDVy4TC/zPRPKXiDfW3EAEvMOlCigzqGkRm1QKXvUHvoY4ZYc91ihjS5lRlTvmW5m/q0+fkSzX043AWhX6T5XUqpZoozsw+vLoX0ra4W+RztYj4u3S9yFb5FwOm49IKBmtfvVYP0zLfT1Y8rbT69+PO2QW/UZ/3HeTUQChuEdlJooezvldCD9EiLy1WWbMj02rqwgZ/LqD028j+Ch8h8jSH5a+UqeSataOZfeYdMhBn55BXp3vTLkRMA9WCbE0d8GpyRy0HhfBz05zFJoVe1hG3XhpQlHv9rBrzgA76E5xvAX+/Mie9q7dMnEGYPHdpizUDf0HagfsN4a6YO858g8xawMCxWQWSmvpshPSfUKplfvgjtqLpn2cT1LLd9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1340.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(39860400002)(366004)(396003)(376002)(66476007)(82950400001)(2616005)(6512007)(66946007)(956004)(6486002)(6506007)(4326008)(186003)(83380400001)(82960400001)(66556008)(6666004)(2906002)(36756003)(8936002)(5660300002)(316002)(16526019)(8676002)(7846003)(26005)(478600001)(10290500003)(107886003)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?d4C3P6SivISwW+mmkjvm+Tk8ljvHKP4KlpXOIET97t8pXZmnhIaeNfd4SqtQ?=
- =?us-ascii?Q?tmsfwib6gILajaRpRhJX5+/ftCuAZnCLzkR9g20jNlreUls+Tybze7TRAcoK?=
- =?us-ascii?Q?gr/Ceoe29bReN0E6dxjFjMR8ydwBONa7iBJl3W29dXtCKMMaR3EbI52EeOcd?=
- =?us-ascii?Q?0SIvcTRyhb4RRoD5d+hjSyV8gBgL6RPqoIk0ZlxXMbLNmhje8QVytpV0BNJv?=
- =?us-ascii?Q?5QfDrSbBCOMfkW8Vp8TJyeGveHZ7LS0UogMiXQHFlDSJHko2W6czwkJgG1a/?=
- =?us-ascii?Q?fmJ3UMAp+zxzY8EBgb9N6NGoq09Ngb3a+xo3oX7ciQk1KZAFIROFCcXN+LtJ?=
- =?us-ascii?Q?p3GMKn+T+tV3qLBQZ/crr3MfqmmBA+xNYbuWTnkiSA+siILkNvNY688GoL29?=
- =?us-ascii?Q?NgprL+11eMyX72QYaWSxfDdt1EkZXuyyLX5MbccdSmVdMlX5MI1wPMf2FDKp?=
- =?us-ascii?Q?nm/esZRqbqJ2zvzTukOJB8+Uzeu8HJZQ1S0qOcJ6mIa3RrkTjaopcwUa9JQ1?=
- =?us-ascii?Q?40K0Vej15CGd2YxZOIXiRaDbQvJv99j2EbxCHmI1CCmL4/2Ol5DpBcy8wxlK?=
- =?us-ascii?Q?FubAD1xtgpLLJdshE+bXvxO8PN8lNFd2bydqQUJyEHJR0CSOgAyvUFmBPTTc?=
- =?us-ascii?Q?3XsoFAJY4e0QlEPq48njtamFQzNmwlfP+YwkJAIKulC2ScmpMtkOaV0ca+0H?=
- =?us-ascii?Q?2g7Tq5MLkY5ib0vwGvcH7pMx6nhmc+I5HEK7YK1ShhU4ltsgMDkojP2ZoED5?=
- =?us-ascii?Q?CWwXaWlnXwFLbxYCWNaEGGqVqZyN/5WA+WUjpYFFoNGq2rn3pFCzsDAq6/Zp?=
- =?us-ascii?Q?AXyzVBHGSWsJ+E11phHeCabsRCS6OBNWZX18Oj8UlZmuDH/hFrKR/++HcNfV?=
- =?us-ascii?Q?wQ5s7zshKzec6z/dlHc2PgKgnRsPX0CJSzKjqfn7/JnCkuXPdCnyrXCqQIPK?=
- =?us-ascii?Q?qxTSFgyFlIxVsE6vIFvo8Z13R3iZzzfgbvVfoOlXKe7YEIHB8Nm8jkvH6kR4?=
- =?us-ascii?Q?DA0RFzcg1AFIzu9ZlFfXaRJxnBX6Az6BMC8rqoQpGqOQiCedk8wuOG2Xu9a8?=
- =?us-ascii?Q?5lpzalU2K7w4R5oPrR9Ft9kneoggWpuJAkAw/bCT0gKapNoWzcfsOPZVq19P?=
- =?us-ascii?Q?1L3f8OiHbLArp36VMeCpQzKL5OLsa0IRWL5Egj/WT7ImxaEt6rl+NzyQW4aL?=
- =?us-ascii?Q?wDEYoDvWmdaAiEJ9uI3m6MgqQQ8sG3YfxUPmIjQvXwrZbL4vD6P509MGbBjU?=
- =?us-ascii?Q?S+DqHlqt5O8WoeoIND2PFa6OUqhjCR1SrU+smvshb/kV/VbR5xWmeZML+yxX?=
- =?us-ascii?Q?AP/rZY4DuDOPzTo/ZHMXLuNV?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 183f3c06-a75e-4bd7-cecd-08d8e5b10205
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1340.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 23:46:08.2874
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AiNfcJ1GXI0TKCLPgmL4veiXze46Jhg7LOvS3LLuyrfgl2FV/DPVOXDKYTpAEDRGSwK1ni4Vvb2UH/6bBXBdpQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR21MB1767
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shachar Raindel <shacharr@microsoft.com>
+Parse and pass IFLA_RMNET_FLAGS to the kernel, to allow changing the
+flags from the default of ingress-aggregate only.
 
-The batching logic in netvsc_send is non-trivial, due to
-a combination of the Linux API and the underlying hypervisor
-interface. Add a comment explaining why the code is written this
-way.
-
-Signed-off-by: Shachar Raindel <shacharr@microsoft.com>
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- .../ethernet/microsoft/netvsc.rst             | 14 ++++++++-----
- drivers/net/hyperv/netvsc.c                   | 20 +++++++++++++++++++
- 2 files changed, 29 insertions(+), 5 deletions(-)
+ ip/iplink_rmnet.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/Documentation/networking/device_drivers/ethernet/microsoft/netvsc.rst b/Documentation/networking/device_drivers/ethernet/microsoft/netvsc.rst
-index c3f51c672a68..fc5acd427a5d 100644
---- a/Documentation/networking/device_drivers/ethernet/microsoft/netvsc.rst
-+++ b/Documentation/networking/device_drivers/ethernet/microsoft/netvsc.rst
-@@ -87,11 +87,15 @@ Receive Buffer
-   contain one or more packets. The number of receive sections may be changed
-   via ethtool Rx ring parameters.
+diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
+index 1d16440c6900..8a488f3d0316 100644
+--- a/ip/iplink_rmnet.c
++++ b/ip/iplink_rmnet.c
+@@ -16,6 +16,10 @@ static void print_explain(FILE *f)
+ {
+ 	fprintf(f,
+ 		"Usage: ... rmnet mux_id MUXID\n"
++		"                 [ingress-deaggregation]\n"
++		"                 [ingress-commands]\n"
++		"                 [ingress-chksumv4]\n"
++		"                 [egress-chksumv4]\n"
+ 		"\n"
+ 		"MUXID := 1-254\n"
+ 	);
+@@ -29,6 +33,7 @@ static void explain(void)
+ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			   struct nlmsghdr *n)
+ {
++	struct ifla_rmnet_flags flags = { };
+ 	__u16 mux_id;
  
--  There is a similar send buffer which is used to aggregate packets for sending.
--  The send area is broken into chunks of 6144 bytes, each of section may
--  contain one or more packets. The send buffer is an optimization, the driver
--  will use slower method to handle very large packets or if the send buffer
--  area is exhausted.
-+  There is a similar send buffer which is used to aggregate packets
-+  for sending.  The send area is broken into chunks, typically of 6144
-+  bytes, each of section may contain one or more packets. Small
-+  packets are usually transmitted via copy to the send buffer. However,
-+  if the buffer is temporarily exhausted, or the packet to be transmitted is
-+  an LSO packet, the driver will provide the host with pointers to the data
-+  from the SKB. This attempts to achieve a balance between the overhead of
-+  data copy and the impact of remapping VM memory to be accessible by the
-+  host.
+ 	while (argc > 0) {
+@@ -37,6 +42,18 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			if (get_u16(&mux_id, *argv, 0))
+ 				invarg("mux_id is invalid", *argv);
+ 			addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
++		} else if (matches(*argv, "ingress-deaggregation") == 0) {
++			flags.mask = ~0;
++			flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
++		} else if (matches(*argv, "ingress-commands") == 0) {
++			flags.mask = ~0;
++			flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
++		} else if (matches(*argv, "ingress-chksumv4") == 0) {
++			flags.mask = ~0;
++			flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
++		} else if (matches(*argv, "egress-chksumv4") == 0) {
++			flags.mask = ~0;
++			flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
+ 		} else if (matches(*argv, "help") == 0) {
+ 			explain();
+ 			return -1;
+@@ -48,11 +65,28 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+ 		argc--, argv++;
+ 	}
  
- XDP support
- -----------
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index dc3f73c3b33e..dc333dceb055 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -1006,6 +1006,26 @@ static inline void move_pkt_msd(struct hv_netvsc_packet **msd_send,
++	if (flags.mask)
++		addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
++
+ 	return 0;
  }
  
- /* RCU already held by caller */
-+/* Batching/bouncing logic is designed to attempt to optimize
-+ * performance.
-+ *
-+ * For small, non-LSO packets we copy the packet to a send buffer
-+ * which is pre-registered with the Hyper-V side. This enables the
-+ * hypervisor to avoid remapping the aperture to access the packet
-+ * descriptor and data.
-+ *
-+ * If we already started using a buffer and the netdev is transmitting
-+ * a burst of packets, keep on copying into the buffer until it is
-+ * full or we are done collecting a burst. If there is an existing
-+ * buffer with space for the RNDIS descriptor but not the packet, copy
-+ * the RNDIS descriptor to the buffer, keeping the packet in place.
-+ *
-+ * If we do batching and send more than one packet using a single
-+ * NetVSC message, free the SKBs of the packets copied, except for the
-+ * last packet. This is done to streamline the handling of the case
-+ * where the last packet only had the RNDIS descriptor copied to the
-+ * send buffer, with the data pointers included in the NetVSC message.
-+ */
- int netvsc_send(struct net_device *ndev,
- 		struct hv_netvsc_packet *packet,
- 		struct rndis_message *rndis_msg,
++static void rmnet_print_flags(FILE *fp, __u32 flags)
++{
++	if (flags & RMNET_FLAGS_INGRESS_DEAGGREGATION)
++		print_string(PRINT_ANY, NULL, "%s ", "ingress-deaggregation");
++	if (flags & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
++		print_string(PRINT_ANY, NULL, "%s ", "ingress-commands");
++	if (flags & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
++		print_string(PRINT_ANY, NULL, "%s ", "ingress-chksumv4");
++	if (flags & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
++		print_string(PRINT_ANY, NULL, "%s ", "egress-cksumv4");
++}
++
+ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ {
++	struct ifla_vlan_flags *flags;
++
+ 	if (!tb)
+ 		return;
+ 
+@@ -64,6 +98,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		   "mux_id",
+ 		   "mux_id %u ",
+ 		   rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
++
++	if (tb[IFLA_RMNET_FLAGS]) {
++		if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
++			return;
++		flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
++
++		rmnet_print_flags(f, flags->flags);
++	}
+ }
+ 
+ static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
 -- 
-2.25.1
+2.28.0
 
