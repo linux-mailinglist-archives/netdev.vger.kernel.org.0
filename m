@@ -2,48 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDFB6339AEF
-	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 02:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75C9E339AFA
+	for <lists+netdev@lfdr.de>; Sat, 13 Mar 2021 03:01:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232257AbhCMBp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Mar 2021 20:45:56 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55038 "EHLO vps0.lunn.ch"
+        id S232257AbhCMCA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Mar 2021 21:00:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37676 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231392AbhCMBpf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Mar 2021 20:45:35 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lKtLM-00AdtA-AV; Sat, 13 Mar 2021 02:45:28 +0100
-Date:   Sat, 13 Mar 2021 02:45:28 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net: macb: Disable PCS auto-negotiation for
- SGMII fixed-link mode
-Message-ID: <YEwZOKNaKegMCyGv@lunn.ch>
-References: <20210311201813.3804249-1-robert.hancock@calian.com>
- <20210311201813.3804249-3-robert.hancock@calian.com>
+        id S229968AbhCMCAI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Mar 2021 21:00:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 218E864F21;
+        Sat, 13 Mar 2021 02:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615600808;
+        bh=mRv6GpTo0U08/ZOaexLh4Vow3+bwIght+t81PFlFIRw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=dejatdrckqmQH1DlfwrGqxo2SK3JWn/THEMeddVDKnLV6jvf2aYL2lD5jf0oI02pX
+         sO/RWrdVzgvKkDKRzAXtqmEQbC3+ymzHA90VC7kJP+6eJ8CsK3+iG8Z/TjEeVer4+a
+         YA+CDSRUW0FdiTpjBDpMwpwB+HRGn51U/3Eg2JIZ5J7jqd/Fxpp31WiVFh06JRak2Q
+         Tr0hb75xlXymLN/aQChwTnGGisIyZZ2l6/uQMIb+b0NLGL/9p9Wlb7Z8YzWDchHF0V
+         bn4p6/SGBGO25ausKZRjfNRyQXbYT9h0wcB6U6clD31+dnE+Isx5/fNPljwg67uWne
+         g1ZEVQ+Ikgqng==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 12FC960A2D;
+        Sat, 13 Mar 2021 02:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210311201813.3804249-3-robert.hancock@calian.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] ibmvnic: update MAINTAINERS
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161560080807.26528.9084118472724058535.git-patchwork-notify@kernel.org>
+Date:   Sat, 13 Mar 2021 02:00:08 +0000
+References: <20210312184530.14962-1-ljp@linux.ibm.com>
+In-Reply-To: <20210312184530.14962-1-ljp@linux.ibm.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, tlfalcon@linux.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 02:18:13PM -0600, Robert Hancock wrote:
-> When using a fixed-link configuration in SGMII mode, it's not really
-> sensible to have auto-negotiation enabled since the link settings are
-> fixed by definition. In other configurations, such as an SGMII
-> connection to a PHY, it should generally be enabled.
+Hello:
 
-So how do you tell the PCS it should be doing 10Mbps over the SGMII
-link? I'm assuming it is the PCS which does the bit replication, not
-the MAC?
+This patch was applied to netdev/net.git (refs/heads/master):
 
-I'm surprised you are even using SGMII with a fixed link. 1000BaseX is
-the norm, and then you don't need to worry about the speed.
+On Fri, 12 Mar 2021 12:45:30 -0600 you wrote:
+> Tom wrote most of the driver code and his experience is valuable to us.
+> Add him as a Reviewer so that patches will be Cc'ed and reviewed by him.
+> 
+> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
 
-    Andrew
+Here is the summary with links:
+  - [net] ibmvnic: update MAINTAINERS
+    https://git.kernel.org/netdev/net/c/6afa455e6153
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
