@@ -2,167 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82CCB33A433
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 11:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF63533A43F
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 11:45:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235118AbhCNKjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 06:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234924AbhCNKj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 06:39:28 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36576C061574;
-        Sun, 14 Mar 2021 03:39:28 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id p8so61435206ejb.10;
-        Sun, 14 Mar 2021 03:39:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jjsmnr5FzYMoxt2sTlQ7jPd6uzhNAuqUavfnO0MllWI=;
-        b=C3Ps+AyEjo30X/ua5dUcFTMc2/1wzyGikyEVOYts0yq88Nvc97piiqc7rkqUAMHu1S
-         LMsVPcQSuwEnaZ+2S6uzQfrUlfRUH9HFoKUcAhsOkjvWnr81VMvvYlcXSNK1Xfo3KHGa
-         e4oL0YgYI5YAkCUYVdWv4ba2Ltm06Jrf4IC0mvTNEX0mN/i2UNB/d2LgqbOk8P3P3Nw1
-         chQOawVQiix8IkLgJPffD+UMfgzBjWxb4HrLjHqCTHZmgmWsEExuEqfCy6X5TLZKfvk7
-         JPpnolbvwWljKmTvMIVDWM1aFgzs5iU4S2SCu7NuHvIZYRLyFs8zHPXLi5vqhc9asM1k
-         +o7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jjsmnr5FzYMoxt2sTlQ7jPd6uzhNAuqUavfnO0MllWI=;
-        b=AL7dl/AJhuFecJtN4GRx/tNcrKRHDdQfcnoorlhHkTT2TwEjHFuUbtKRedIRlC7xHp
-         14EToToQnlPF1aqIna3cps8pb3kEAfe7G6XBMJ6MmuTUj/AhvalHQ1jDfblQDGrdifYH
-         ItXKwcDhsY89hL1WBwl50an927G7oPOyojJrHor850Q7OM8+7Z835ZYSXZb+AUJHyur5
-         mg3JYsCwTnL9TTtNfICLP0L9CjbSQCp9lJFgchTc2s306upS4Dgh2XVOTsn5CJIp99ij
-         0KhtiHpFO5JAPMnRGszS1ymZr2mxwszT+sfciPiC3F7b5jZjQe+NtpN7CxxBGTAXQeH2
-         8ZCA==
-X-Gm-Message-State: AOAM531VG8aadt2EAsLde84OHiGLdlcm5ay0w7M+F0e/Qr85Nt4ss6aJ
-        A2fU4Jv0rXtWKiVl/ctLdQU=
-X-Google-Smtp-Source: ABdhPJxWgxN4PoB/cokJVbMonJFcjsPd6jis+Pn3rsvukjKRHYFSjOpz2IvaNc8qtfEJTj96MWWjhg==
-X-Received: by 2002:a17:906:110d:: with SMTP id h13mr18343476eja.357.1615718366915;
-        Sun, 14 Mar 2021 03:39:26 -0700 (PDT)
-Received: from ubuntu2004 ([188.24.140.160])
-        by smtp.gmail.com with ESMTPSA id cw14sm6219111edb.8.2021.03.14.03.39.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Mar 2021 03:39:25 -0700 (PDT)
-Date:   Sun, 14 Mar 2021 12:39:26 +0200
-From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] net: ethernet: actions: Add Actions Semi Owl
- Ethernet MAC driver
-Message-ID: <20210314103926.GA418860@ubuntu2004>
-References: <cover.1615423279.git.cristian.ciocaltea@gmail.com>
- <158d63db7d17d87b01f723433e0ddc1fa24377a8.1615423279.git.cristian.ciocaltea@gmail.com>
- <YEwO33TR7ENHuMaY@lunn.ch>
- <20210314011324.GA991090@BV030612LT>
- <YE2S0MW62lVF/psk@lunn.ch>
+        id S235174AbhCNKpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 06:45:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20643 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235106AbhCNKpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 06:45:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615718706;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eHpIhrioLYh4eORQxM4GKdpIFT9gzCBjG8gZQYhgxOo=;
+        b=aNugvw1uOuzc5SzreT9Z3HbOMkQ5w/7vHBG3DHC2FgZkI6COOR/jcLA4uZGwqJ9tTcnfmx
+        4dHcdsKkuxgb15ylQmDFCUNvAFxYxjVmNeyf9KIYKbdKZMwVJ+6ShiXHEH3nGeThWPMMe+
+        QkvGTqtmyG/n1MR/0kIbBFz2KbKKbeY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-503-E9yVcn_5PrqLH04e4dxJbg-1; Sun, 14 Mar 2021 06:45:02 -0400
+X-MC-Unique: E9yVcn_5PrqLH04e4dxJbg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 82E7E800C78;
+        Sun, 14 Mar 2021 10:44:59 +0000 (UTC)
+Received: from [10.36.112.254] (ovpn-112-254.ams2.redhat.com [10.36.112.254])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id ED7A9620DE;
+        Sun, 14 Mar 2021 10:44:54 +0000 (UTC)
+Subject: Re: [PATCH 15/17] iommu: remove DOMAIN_ATTR_NESTING
+To:     Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>
+Cc:     freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        linux-arm-kernel@lists.infradead.org
+References: <20210301084257.945454-1-hch@lst.de>
+ <20210301084257.945454-16-hch@lst.de>
+From:   Auger Eric <eric.auger@redhat.com>
+Message-ID: <3e8f1078-9222-0017-3fa8-4d884dbc848e@redhat.com>
+Date:   Sun, 14 Mar 2021 11:44:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YE2S0MW62lVF/psk@lunn.ch>
+In-Reply-To: <20210301084257.945454-16-hch@lst.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 14, 2021 at 05:36:32AM +0100, Andrew Lunn wrote:
-> > > > +	if (phy->interface != PHY_INTERFACE_MODE_RMII) {
-> > > > +		netdev_err(netdev, "unsupported phy mode: %s\n",
-> > > > +			   phy_modes(phy->interface));
-> > > > +		phy_disconnect(phy);
-> > > > +		netdev->phydev = NULL;
-> > > > +		return -EINVAL;
-> > > > +	}
-> > > 
-> > > It looks like the MAC only supports symmetric pause. So you should
-> > > call phy_set_sym_pause() to let the PHY know this.
-> > 
-> > I did not find any reference related to the supported pause types,
-> > is this normally dependant on the PHY interface mode?
+Hi Christoph,
+
+On 3/1/21 9:42 AM, Christoph Hellwig wrote:
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 40 ++++++---------------
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 30 ++++++++++------
+>  drivers/iommu/intel/iommu.c                 | 28 +++++----------
+>  drivers/iommu/iommu.c                       |  8 +++++
+>  drivers/vfio/vfio_iommu_type1.c             |  5 +--
+>  include/linux/iommu.h                       |  4 ++-
+>  6 files changed, 50 insertions(+), 65 deletions(-)
+
+As mentionned by Robin, there are series planning to use
+DOMAIN_ATTR_NESTING to get info about the nested caps of the iommu (ARM
+and Intel):
+
+[Patch v8 00/10] vfio: expose virtual Shared Virtual Addressing to VMs
+patches 1, 2, 3
+
+Is the plan to introduce a new domain_get_nesting_info ops then?
+
+Thanks
+
+Eric	
+
+
 > 
-> There is a MAC / PHY split there. The PHY is responsible for the
-> negotiation for what each end can do. But it is the MAC which actually
-> implements pause. The MAC needs to listen to pause frames and not send
-> out data frames when the link peer indicates pause. And the MAC needs
-> to send a pause frames when its receive buffers are full. The code you
-> have in this MAC driver seems to indicate the MAC only supports
-> symmetric pause. Hence you need to configure the PHY to only auto-neg
-> symmetric pause.
-
-Thanks for explaining this, I will implement the indicated PHY
-configuration and, additionally, also enable the SMII interface.
-
-> > > > +	ret = crypto_skcipher_encrypt(req);
-> > > > +	if (ret) {
-> > > > +		dev_err(dev, "failed to encrypt S/N: %d\n", ret);
-> > > > +		goto err_free_tfm;
-> > > > +	}
-> > > > +
-> > > > +	netdev->dev_addr[0] = 0xF4;
-> > > > +	netdev->dev_addr[1] = 0x4E;
-> > > > +	netdev->dev_addr[2] = 0xFD;
-> > > 
-> > > 0xF4 has the locally administered bit 0. So this is a true OUI. Who
-> > > does it belong to? Ah!
-> > > 
-> > > F4:4E:FD Actions Semiconductor Co.,Ltd.(Cayman Islands)
-> > > 
-> > > Which makes sense. But is there any sort of agreement this is allowed?
-> > > It is going to cause problems if they are giving out these MAC
-> > > addresses in a controlled way.
-> > 
-> > Unfortunately this is another undocumented logic taken from the vendor
-> > code. I have already disabled it from being built by default, although,
-> > personally, I prefer to have it enabled in order to get a stable MAC
-> > address instead of using a randomly generated one or manually providing
-> > it via DT.
-> > 
-> > Just for clarification, I did not have any agreement or preliminary
-> > discussion with the vendor. This is just a personal initiative to
-> > improve the Owl SoC support in the mainline kernel.
-> > 
-> > > Maybe it would be better to set bit 1 of byte 0? And then you can use
-> > > 5 bytes from enc_sn, not just 4.
-> > 
-> > I included the MAC generation feature in the driver to be fully
-> > compatible with the original implementation, but I'm open for changes
-> > if it raises concerns and compatibility is less important.
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index bf96172e8c1f71..8e6fee3ea454d3 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2466,41 +2466,21 @@ static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
+>  	to_smmu_domain(domain)->non_strict = true;
+>  }
+>  
+> -static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+> -				    enum iommu_attr attr, void *data)
+> +static int arm_smmu_domain_enable_nesting(struct iommu_domain *domain)
+>  {
+> -	int ret = 0;
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	int ret = -EPERM;
+>  
+> -	mutex_lock(&smmu_domain->init_mutex);
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
+>  
+> -	switch (domain->type) {
+> -	case IOMMU_DOMAIN_UNMANAGED:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_NESTING:
+> -			if (smmu_domain->smmu) {
+> -				ret = -EPERM;
+> -				goto out_unlock;
+> -			}
+> -
+> -			if (*(int *)data)
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> -			else
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+> -			break;
+> -		default:
+> -			ret = -ENODEV;
+> -		}
+> -		break;
+> -	case IOMMU_DOMAIN_DMA:
+> -		ret = -ENODEV;
+> -		break;
+> -	default:
+> -		ret = -EINVAL;
+> +	mutex_lock(&smmu_domain->init_mutex);
+> +	if (!smmu_domain->smmu) {
+> +		smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> +		ret = 0;
+>  	}
+> -
+> -out_unlock:
+>  	mutex_unlock(&smmu_domain->init_mutex);
+> +
+>  	return ret;
+>  }
+>  
+> @@ -2603,7 +2583,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.device_group		= arm_smmu_device_group,
+>  	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
+>  	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+> -	.domain_set_attr	= arm_smmu_domain_set_attr,
+> +	.domain_enable_nesting	= arm_smmu_domain_enable_nesting,
+>  	.of_xlate		= arm_smmu_of_xlate,
+>  	.get_resv_regions	= arm_smmu_get_resv_regions,
+>  	.put_resv_regions	= generic_iommu_put_resv_regions,
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index e7893e96f5177a..2e17d990d04481 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1497,6 +1497,24 @@ static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
+>  	to_smmu_domain(domain)->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+>  }
+>  
+> +static int arm_smmu_domain_enable_nesting(struct iommu_domain *domain)
+> +{
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	int ret = -EPERM;
+> +	
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&smmu_domain->init_mutex);
+> +	if (!smmu_domain->smmu) {
+> +		smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> +		ret = 0;
+> +	}
+> +	mutex_unlock(&smmu_domain->init_mutex);
+> +
+> +	return ret;
+> +}
+> +
+>  static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+> @@ -1508,17 +1526,6 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>  	switch(domain->type) {
+>  	case IOMMU_DOMAIN_UNMANAGED:
+>  		switch (attr) {
+> -		case DOMAIN_ATTR_NESTING:
+> -			if (smmu_domain->smmu) {
+> -				ret = -EPERM;
+> -				goto out_unlock;
+> -			}
+> -
+> -			if (*(int *)data)
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> -			else
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+> -			break;
+>  		case DOMAIN_ATTR_IO_PGTABLE_CFG: {
+>  			struct io_pgtable_domain_attr *pgtbl_cfg = data;
+>  
+> @@ -1603,6 +1610,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
+>  	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+>  	.domain_set_attr	= arm_smmu_domain_set_attr,
+> +	.domain_enable_nesting	= arm_smmu_domain_enable_nesting,
+>  	.of_xlate		= arm_smmu_of_xlate,
+>  	.get_resv_regions	= arm_smmu_get_resv_regions,
+>  	.put_resv_regions	= generic_iommu_put_resv_regions,
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index eaa80c33f4bc91..0f1374d6612a60 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5423,32 +5423,22 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
+>  }
+>  
+>  static int
+> -intel_iommu_domain_set_attr(struct iommu_domain *domain,
+> -			    enum iommu_attr attr, void *data)
+> +intel_iommu_domain_enable_nesting(struct iommu_domain *domain)
+>  {
+>  	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>  	unsigned long flags;
+> -	int ret = 0;
+> +	int ret = -ENODEV;
+>  
+>  	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+>  		return -EINVAL;
+>  
+> -	switch (attr) {
+> -	case DOMAIN_ATTR_NESTING:
+> -		spin_lock_irqsave(&device_domain_lock, flags);
+> -		if (nested_mode_support() &&
+> -		    list_empty(&dmar_domain->devices)) {
+> -			dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
+> -			dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
+> -		} else {
+> -			ret = -ENODEV;
+> -		}
+> -		spin_unlock_irqrestore(&device_domain_lock, flags);
+> -		break;
+> -	default:
+> -		ret = -EINVAL;
+> -		break;
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +	if (nested_mode_support() && list_empty(&dmar_domain->devices)) {
+> +		dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
+> +		dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
+> +		ret = 0;
+>  	}
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  
+>  	return ret;
+>  }
+> @@ -5556,7 +5546,7 @@ const struct iommu_ops intel_iommu_ops = {
+>  	.domain_alloc		= intel_iommu_domain_alloc,
+>  	.domain_free		= intel_iommu_domain_free,
+>  	.dma_use_flush_queue	= intel_iommu_dma_use_flush_queue,
+> -	.domain_set_attr	= intel_iommu_domain_set_attr,
+> +	.domain_enable_nesting	= intel_iommu_domain_enable_nesting,
+>  	.attach_dev		= intel_iommu_attach_device,
+>  	.detach_dev		= intel_iommu_detach_device,
+>  	.aux_attach_dev		= intel_iommu_aux_attach_device,
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 0f12c4d58cdc42..2e9e058501a953 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2685,6 +2685,14 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
+>  
+> +int iommu_domain_enable_nesting(struct iommu_domain *domain)
+> +{
+> +	if (!domain->ops->domain_enable_nesting)
+> +		return -EINVAL;
+> +	return domain->ops->domain_enable_nesting(domain);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_domain_enable_nesting);
+> +
+>  void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>  {
+>  	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index c8e57f22f421c5..9cea4d80dd66ed 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -2320,10 +2320,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  	}
+>  
+>  	if (iommu->nesting) {
+> -		int attr = 1;
+> -
+> -		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING,
+> -					    &attr);
+> +		ret = iommu_domain_enable_nesting(domain->domain);
+>  		if (ret)
+>  			goto out_domain;
+>  	}
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index f30de33c6ff56e..aed88aa3bd3edf 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -107,7 +107,6 @@ enum iommu_cap {
+>   */
+>  
+>  enum iommu_attr {
+> -	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+>  	DOMAIN_ATTR_IO_PGTABLE_CFG,
+>  	DOMAIN_ATTR_MAX,
+>  };
+> @@ -196,6 +195,7 @@ struct iommu_iotlb_gather {
+>   * @dma_use_flush_queue: Returns %true if a DMA flush queue is used
+>   * @dma_enable_flush_queue: Try to enable the DMA flush queue
+>   * @domain_set_attr: Change domain attributes
+> + * @domain_enable_nesting: Enable nesting
+>   * @get_resv_regions: Request list of reserved regions for a device
+>   * @put_resv_regions: Free list of reserved regions for a device
+>   * @apply_resv_region: Temporary helper call-back for iova reserved ranges
+> @@ -248,6 +248,7 @@ struct iommu_ops {
+>  	void (*dma_enable_flush_queue)(struct iommu_domain *domain);
+>  	int (*domain_set_attr)(struct iommu_domain *domain,
+>  			       enum iommu_attr attr, void *data);
+> +	int (*domain_enable_nesting)(struct iommu_domain *domain);
+>  
+>  	/* Request/Free a list of reserved regions for a device */
+>  	void (*get_resv_regions)(struct device *dev, struct list_head *list);
+> @@ -494,6 +495,7 @@ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+>  bool iommu_dma_use_flush_queue(struct iommu_domain *domain);
+>  extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+>  				 void *data);
+> +int iommu_domain_enable_nesting(struct iommu_domain *domain);
+>  
+>  extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
+>  			      unsigned long iova, int flags);
 > 
-> This is not a simple question to answer. If the vendor driver does
-> this, then the vendor can never assign MAC addresses in a controlled
-> way, unless they have a good idea how the algorithm turns serial
-> numbers into MAC addresses, and they can avoid MAC addresses for
-> serial numbers already issued.
-> 
-> But should the Linux kernel do the same? If all you want is a stable
-> MAC address, my personal preference would be to set the locally
-> administered bit, and fill the other 5 bytes from the hash
-> algorithm. You then have a stable MAC addresses, but you clearly
-> indicate it is not guaranteed to by globally unique, and you do not
-> need to worry about what the vendor is doing.
 
-I fully agree, so I'm going to set byte 0 to value 0xF6 and replace
-bytes 1 & 2 with entries from the computed hash. I will also document
-this modification and the rationale behind.
-
-> > > Otherwise, this look a new clean driver.
-> > 
-> > Well, I tried to do my best, given my limited experience as a self-taught
-> > kernel developer. Hopefully reviewing my code will not cause too many
-> > headaches! :)
-> 
-> This is actually above average for a self-taught kernel
-> developer. Well done.
-
-Thank you, Andrew!
-
-> 	   Andrew
