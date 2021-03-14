@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0643633A46D
+	by mail.lfdr.de (Postfix) with ESMTP id 8245833A46E
 	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 12:12:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235296AbhCNLMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 07:12:13 -0400
-Received: from mail-40133.protonmail.ch ([185.70.40.133]:34571 "EHLO
+        id S235359AbhCNLMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 07:12:16 -0400
+Received: from mail-40133.protonmail.ch ([185.70.40.133]:62483 "EHLO
         mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235291AbhCNLLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 07:11:44 -0400
-Date:   Sun, 14 Mar 2021 11:11:32 +0000
+        with ESMTP id S235292AbhCNLLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 07:11:49 -0400
+Date:   Sun, 14 Mar 2021 11:11:41 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615720303; bh=X3TuYcTaZPUU1Xz+TlNF44PidtjG5KU7YmET3XhmCM4=;
+        t=1615720308; bh=OtoaEa4C9A8M8IjnX8ICb3j9vVq3aPxG0RyT+eIX9OU=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=LQIkSHYL/JKjtC1hVLDGKzdivEcZL/6ARhm2BmF6IMg0R3s/R3fueTyKmQhMmx/OI
-         KLhtMmoWrWn0wyUYO2u4aC4RvB0iF2UIrpnpw0iS7HpqWViseGLJCFDUBA/yTiSxXB
-         A2RPRYRD/n6JKP6CD5cblTmg4qzie2Myax4DvEsFeipLPe+WM2IuTtVM0pSOo/AwmJ
-         GkG0Dj3CYb3dC1gmqtlj6Wpi2Pn9DyHo66EGmPizv2DAb3xZrdSRpnZsiCO/bOI0Yo
-         KppelL9b8cYHYsjA/6XuIiWc5dH2+K5Fo9ssF3HT5Uso3R9HQ8VD4tAzj353pat4Gf
-         pv0IOnFO5cNiw==
+        b=PtqoU39fzNRS64KXipSkH/EEkC2cvGVmoElaAFxa9hDw2z1wnW5DRewaBcKQq/X4x
+         ds8nrAsdpwJdnr0PvehU93XmH3+It1yXN95rGiYcMsymzpQTqXo2HWjUC1ZsTiryIv
+         xnqnYim2AFwUmEsKvOF7jteUj3ElKlxBcjOSApo6iTx+rInJTmSeV8/Oc2ImPByOiJ
+         jsnpOzRNOg37RRO0Uqup8hVWAcWgsh5jbbQWiqNS4zMVMBto8suLPe2//jy8Tuf1FG
+         TnHJyW2Pwq6oWZMCJV1Bpq/H/IjcYPEIttWrFrrUJ1vnla8SLhWpKihFRbqQhvfmep
+         89D57l8unT9/Q==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -52,8 +52,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v3 net-next 4/6] linux/etherdevice.h: misc trailing whitespace cleanup
-Message-ID: <20210314111027.7657-5-alobakin@pm.me>
+Subject: [PATCH v3 net-next 5/6] ethernet: constify eth_get_headlen()'s data argument
+Message-ID: <20210314111027.7657-6-alobakin@pm.me>
 In-Reply-To: <20210314111027.7657-1-alobakin@pm.me>
 References: <20210314111027.7657-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -68,26 +68,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Caught by the text editor. Fix it separately from the actual changes.
+It's used only for flow dissection, which now takes constant data
+pointers.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
  include/linux/etherdevice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ethernet/eth.c          | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-index 2e5debc0373c..bcb2f81baafb 100644
+index bcb2f81baafb..330345b1be54 100644
 --- a/include/linux/etherdevice.h
 +++ b/include/linux/etherdevice.h
-@@ -11,7 +11,7 @@
-  * Authors:=09Ross Biro
-  *=09=09Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
-  *
-- *=09=09Relocated to include/linux where it belongs by Alan Cox
-+ *=09=09Relocated to include/linux where it belongs by Alan Cox
-  *=09=09=09=09=09=09=09<gw4pts@gw4pts.ampr.org>
+@@ -29,7 +29,7 @@ struct device;
+ int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr);
+ unsigned char *arch_get_platform_mac_address(void);
+ int nvmem_get_mac_address(struct device *dev, void *addrbuf);
+-u32 eth_get_headlen(const struct net_device *dev, void *data, unsigned int=
+ len);
++u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 le=
+n);
+ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
+ extern const struct header_ops eth_header_ops;
+
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index 4106373180c6..e01cf766d2c5 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -122,7 +122,7 @@ EXPORT_SYMBOL(eth_header);
+  * Make a best effort attempt to pull the length for all of the headers fo=
+r
+  * a given frame in a linear buffer.
   */
- #ifndef _LINUX_ETHERDEVICE_H
+-u32 eth_get_headlen(const struct net_device *dev, void *data, unsigned int=
+ len)
++u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 le=
+n)
+ {
+ =09const unsigned int flags =3D FLOW_DISSECTOR_F_PARSE_1ST_FRAG;
+ =09const struct ethhdr *eth =3D (const struct ethhdr *)data;
 --
 2.30.2
 
