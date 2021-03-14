@@ -2,115 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A10E33A4C5
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:34:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B028533A4C9
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:43:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235154AbhCNMdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 08:33:54 -0400
-Received: from mail-mw2nam12on2048.outbound.protection.outlook.com ([40.107.244.48]:16736
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235313AbhCNMdU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Mar 2021 08:33:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QjqeEt9v7eLQO+Bp6NsMBnDRR6EoVptSwjX9lNiJYQIf5dZuU4a1TGmjG+hHLFyvhpJ5dNKSHV3cJG1MGAsnW4UWO029qQsQ7mM5uHuixEf0Dr+2cLBQ7lsh04yfyUmnlFT02kfwWx+OLFfrcm3FwgpOHrRo3DSPt8jHgpVpjPj4p1VJBLN2F0PU3/8ktzciqNzG3OL+/NmYB9zr2RmCx7XKNDcdQVEhPvhHU/bHgOb8jA63VdAk2wfrpztA9YRsdbtUTvyY1MXCBHrc18inAlNd2qawzUkshw6eKAJla/9G7tzFevQFHI96hlS6Rlx6uCQrySohW3vIPgEbs3AU6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+H47nl0XNLNnRVOALexUbJ1bdcQ0VYGDGESG3KZdZw0=;
- b=WkOLyGLgmwMSUsVXuaRbvJgmNMCO3TS95lwrygqzNNyTJ7YL2f1lYo2SGghEdneMHDM4UW04GzBMVEzrA9DwHz5S1ESXQJ+7A/8pjliNvEvxy3SNSNfJXvSAaWkuLSV0aoF78E6Dx2+UQ8JmPbKuQy5qvAqFrBBowfai29TqHKcIVYVGlLOtlfocEVXCZ+lmxABJFpCRPETX+3CEiTbCSYqmYAYjYq055O19462Ql6YuvhZE4kkE8iHm1IVqU1afkyRJFuDg8/b2pABYC9CK/bG5Kp95MZS2+rvpJ7Mn3ackaO8ei6AsUKVASTBuWZYoCIeKf9Gf4d6gmIZl/TCGug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+H47nl0XNLNnRVOALexUbJ1bdcQ0VYGDGESG3KZdZw0=;
- b=bPGQ4PqemBNUoPl9xQBf6hRqhWYX/alke7mh3KFzR3kbFEt3uM3VC9AgTmuzjXGqI7dQuFtY7MACifFLSGX1Um8pwfvPofK1HrVGIzmswHqr0dM6KilSamRXxtNZ4snCYChFUh4tZr1btbirOnSgesF2Sr4iZrVzLij1jEop/X5ofVFlKN3IpiPggwdlDdoR7oBmfoh5caKzgHeeBQv2799/etnAI3kuSRphgsjfI7q6FeHiTCDA9mfhVwy8Am6LHBPnE0R9yo+UpSVcCH0cXFy5EoNWwD/NT865xdFl0BqrN/u2tsvu0aS1Ut+yXmnXfswQ9mVfRvmDMZ2q7vlZJA==
-Received: from BN6PR12CA0040.namprd12.prod.outlook.com (2603:10b6:405:70::26)
- by BN9PR12MB5307.namprd12.prod.outlook.com (2603:10b6:408:104::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Sun, 14 Mar
- 2021 12:33:17 +0000
-Received: from BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:70:cafe::cc) by BN6PR12CA0040.outlook.office365.com
- (2603:10b6:405:70::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32 via Frontend
- Transport; Sun, 14 Mar 2021 12:33:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT061.mail.protection.outlook.com (10.13.177.144) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Sun, 14 Mar 2021 12:33:16 +0000
-Received: from [172.27.13.14] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 14 Mar
- 2021 12:33:13 +0000
-Subject: Re: [RFC net-next v2 3/3] devlink: add more failure modes
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <jiri@resnulli.us>, <saeedm@nvidia.com>,
-        <andrew.gospodarek@broadcom.com>, <jacob.e.keller@intel.com>,
-        <guglielmo.morandin@broadcom.com>, <eugenem@fb.com>,
-        Aya Levin <ayal@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
-References: <20210311032613.1533100-1-kuba@kernel.org>
- <20210311032613.1533100-3-kuba@kernel.org>
- <8d61628c-9ca7-13ac-2dcd-97ecc9378a9e@nvidia.com>
- <20210311084922.12bc884b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eran Ben Elisha <eranbe@nvidia.com>
-Message-ID: <8db7b4e5-bca2-715e-9cf0-948ca674b8a1@nvidia.com>
-Date:   Sun, 14 Mar 2021 14:33:10 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S235326AbhCNMnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:43:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46492 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235207AbhCNMnC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Mar 2021 08:43:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D4DBF64EE2;
+        Sun, 14 Mar 2021 12:43:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615725781;
+        bh=wzIOkfeFaKzCkS9MeodjtHIpSuM4OZiIgO2EonL8u9M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=vPuw5l58+ftdM/AmEf/AUkrr/nm7uM/cN90r8apxof1Zqluhpapbe4a2AihNdLRD9
+         TJ61OrpSZcwa37sxNZMCnBnRMeRnMk6o+6BX6kwNMuY8PGAYKRZ16vcHvfl4rnMGp2
+         UFSzAVtkNfMqSoTDdGidjHJt//G3v5d6XWA1rvhAGsybznvqjnnpovfZr2WRdFC45E
+         UIY+TcYoWegZm7pqBAAJyAU4EMv4irmmMDVgY2TluSQi/QJOSYddTJ1halaZqjBBS+
+         6dvDDoWRGlfV/Ayd4/oZPlXTzDtKb4ejGYiHQOPErPPCwTAHVg7Bwz4Tf167Z1Pizn
+         ytFz+1pvHrPug==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH mlx5-next v8 0/4] Dynamically assign MSI-X vectors count
+Date:   Sun, 14 Mar 2021 14:42:52 +0200
+Message-Id: <20210314124256.70253-1-leon@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <20210311084922.12bc884b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1d3f5ba4-9bb8-4ff4-e0ae-08d8e6e557fb
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5307:
-X-Microsoft-Antispam-PRVS: <BN9PR12MB5307310E89C1EB3ED9E080C6B76D9@BN9PR12MB5307.namprd12.prod.outlook.com>
-X-MS-Exchange-Transport-Forked: True
-X-MS-Oob-TLC-OOBClassifiers: OLM:639;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p+pFwdpU1d7x1YGtQup2f17I27EAX/WzA6eHYDJkjnUX9zaWcufjo8j9ou82ubYol7jFxQt3/5IgnJJMnYgCqKTJkapx8Ucav79x/aXnRq0gGy4mSIeGuXoPpp+XHDLy1SC30NjafOTNi0KQowNNyuUzAJhoo3/Xtmimqp/zfz0YWn6e0LByWlxS2FzACI9LXTtlL+7fM37Q74utO3DLjm9l6tkkXhZC+oiD9163f4jDMi2PO4fOvT5777cdy5v6kqZyMXii7iCCNlj4OYdh8fRuJKx77sWmWC0Y6HseKJHmrlSETYbWgZcwWDPlbevpdaapNGueKfS3S1RVb1tfDoHWbb3S7TZmW4fLfRNhTssoMkSq7v5HfhinF8djatmntz70T1Jb1oX1h9VNphwVyBz7ifHVkBhjTySMsyzA8bfxm0av0Z5C3PXavT9ZWi6evJQJuK0aCAK3sPdPg5Vsgbk+mpN3DUk38RjgmvGZJ4uGlt+jVmB2rh8vGUhdLVoUyaQxp7xmiSTsVy/hrXyPD+Tf/elVHSNDZqa+C7Kk25E35WplCavxFVdEeWGaCosDrGThnPMfEdw0Vb2aoC1ksZ+zhRJ5iqa8xfNI57Pq2Uc9gETI7ncAZT4gusyMvNFGfEiYBRnhvNwrMHQpJzfiisR0R+RyWzfnaTylFZ6rC3pyNi4F3gDxVELK7z3UNH4wRSBGyV5e87W560iWf+cugxRtfe1rOUzCfPfM8KCqLDw=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(136003)(346002)(396003)(46966006)(36840700001)(6916009)(36756003)(82740400003)(356005)(8676002)(8936002)(7636003)(478600001)(4326008)(36860700001)(2906002)(83380400001)(54906003)(107886003)(31696002)(86362001)(34020700004)(82310400003)(16576012)(426003)(186003)(336012)(70206006)(70586007)(5660300002)(316002)(53546011)(2616005)(31686004)(26005)(36906005)(47076005)(4744005)(16526019)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2021 12:33:16.9380
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d3f5ba4-9bb8-4ff4-e0ae-08d8e6e557fb
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5307
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+---------------------------------------------------------------------------------
+Changelog
+v8:
+ * Added "physical/virtual function" words near PF and VF acronyms.
+v7: https://lore.kernel.org/linux-pci/20210301075524.441609-1-leon@kernel.org
+ * Rebase on top v5.12-rc1
+ * More english fixes
+ * Returned to static sysfs creation model as was implemented in v0/v1.
+v6: https://lore.kernel.org/linux-pci/20210209133445.700225-1-leon@kernel.org
+ * Patch 1:
+   * English fixes
+   * Moved pci_vf_set_msix_vec_count() from msi.c to iov.c
+   * Embedded pci_vf_set_msix_vec_count() into sriov_vf_msix_count_store
+   * Deleted sriov_vf_msix_count_show
+   * Deleted vfs_overlay folder
+   * Renamed functions *_vfs_overlay_* to be *_vf_overlay_*
+   * Deleted is_supported and attribute_group because it confused people more than
+     it gave advantage.
+   * Changed vf_total_msix to be callback
+ * Patch 3:
+   * Fixed english as suggested by Bjorn
+   * Added more explanations to the commit message
+ * Patch 4:
+   * Protected enable/disable with capability check
+v5: https://lore.kernel.org/linux-pci/20210126085730.1165673-1-leon@kernel.org
+ * Patch 1:
+  * Added forgotten "inline" keyword when declaring empty functions.
+v4: https://lore.kernel.org/linux-pci/20210124131119.558563-1-leon@kernel.org
+ * Used sysfs_emit() instead of sprintf() in new sysfs entries.
+ * Changed EXPORT_SYMBOL to be EXPORT_SYMBOL_GPL for pci_iov_virtfn_devfn().
+ * Rewrote sysfs registration code to be driven by PF that wants to enable VF
+   overlay instead of creating to all SR-IOV devices.
+ * Grouped all such functionality under new "vfs_overlay" folder.
+ * Combined two PCI patches into one.
+v3: https://lore.kernel.org/linux-pci/20210117081548.1278992-1-leon@kernel.org
+ * Renamed pci_set_msix_vec_count to be pci_vf_set_msix_vec_count.
+ * Added VF msix_cap check to hide sysfs entry if device doesn't support msix.
+ * Changed "-" to be ":" in the mlx5 patch to silence CI warnings about missing
+   kdoc description.
+ * Split differently error print in mlx5 driver to avoid checkpatch warning.
+v2: https://lore.kernel.org/linux-pci/20210114103140.866141-1-leon@kernel.org
+ * Patch 1:
+  * Renamed vf_msix_vec sysfs knob to be sriov_vf_msix_count
+  * Added PF and VF device locks during set MSI-X call to protect from parallel
+    driver bind/unbind operations.
+  * Removed extra checks when reading sriov_vf_msix, because users will
+    be able to distinguish between supported/not supported by looking on
+    sriov_vf_total_msix count.
+  * Changed all occurrences of "numb" to be "count"
+  * Changed returned error from EOPNOTSUPP to be EBUSY if user tries to set
+    MSI-X count after driver already bound to the VF.
+  * Added extra comment in pci_set_msix_vec_count() to emphasize that driver
+    should not be bound.
+ * Patch 2:
+  * Changed vf_total_msix from int to be u32 and updated function signatures
+    accordingly.
+  * Improved patch title
+v1: https://lore.kernel.org/linux-pci/20210110150727.1965295-1-leon@kernel.org
+ * Improved wording and commit messages of first PCI patch
+ * Added extra PCI patch to provide total number of MSI-X vectors
+ * Prohibited read of vf_msix_vec sysfs file if driver doesn't support write
+ * Removed extra function definition in pci.h
+v0: https://lore.kernel.org/linux-pci/20210103082440.34994-1-leon@kernel.org
 
+--------------------------------------------------------------------
+Hi,
 
-On 3/11/2021 6:49 PM, Jakub Kicinski wrote:
-> On Thu, 11 Mar 2021 16:23:09 +0200 Eran Ben Elisha wrote:
->> On 3/11/2021 5:26 AM, Jakub Kicinski wrote:
->>>>> Pending vendors adding the right reporters. <<
->> Would you like Nvidia to reply with the remedy per reporter or to
->> actually prepare the patch?
-> You mean the patch adding .remedy? If you can that'd be helpful.
-> 
-> Or do you have HW error reporters to add?
-> 
+The number of MSI-X vectors is PCI property visible through lspci, that
+field is read-only and configured by the device.
 
-I meant a patch to add .remedy to existing mlx5* reporters to be part of 
-your series.
+The static assignment of an amount of MSI-X vectors doesn't allow utilize
+the newly created VF because it is not known to the device the future load
+and configuration where that VF will be used.
+
+The VFs are created on the hypervisor and forwarded to the VMs that have
+different properties (for example number of CPUs).
+
+To overcome the inefficiency in the spread of such MSI-X vectors, we
+allow the kernel to instruct the device with the needed number of such
+vectors, before VF is initialized and bounded to the driver.
+
+Before this series:
+[root@server ~]# lspci -vs 0000:08:00.2
+08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+....
+        Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
+
+Configuration script:
+1. Start fresh
+echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+modprobe -q -r mlx5_ib mlx5_core
+2. Ensure that driver doesn't run and it is safe to change MSI-X
+echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
+3. Load driver for the PF
+modprobe mlx5_core
+4. Configure one of the VFs with new number
+echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/sriov_vf_msix_count
+
+After this series:
+[root@server ~]# lspci -vs 0000:08:00.2
+08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+....
+        Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
+
+Thanks
+
+Leon Romanovsky (4):
+  PCI: Add a sysfs file to change the MSI-X table size of SR-IOV VFs
+  net/mlx5: Add dynamic MSI-X capabilities bits
+  net/mlx5: Dynamically assign MSI-X vectors count
+  net/mlx5: Implement sriov_get_vf_total_msix/count() callbacks
+
+ Documentation/ABI/testing/sysfs-bus-pci       |  29 +++++
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   6 ++
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  12 +++
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  73 +++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sriov.c   |  48 ++++++++-
+ drivers/pci/iov.c                             | 102 ++++++++++++++++--
+ drivers/pci/pci-sysfs.c                       |   3 +-
+ drivers/pci/pci.h                             |   3 +-
+ include/linux/mlx5/mlx5_ifc.h                 |  11 +-
+ include/linux/pci.h                           |   8 ++
+ 10 files changed, 284 insertions(+), 11 deletions(-)
+
+--
+2.30.2
+
