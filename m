@@ -2,590 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B118A33A4BA
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:22:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A10E33A4C5
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:34:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235423AbhCNMVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 08:21:21 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:47491 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235327AbhCNMUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:20:48 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 5E5505808B9;
-        Sun, 14 Mar 2021 08:20:47 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 14 Mar 2021 08:20:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=wm9chH95zaAxGIN8+Adz9KPmKZPFkSpRTTrp0oTKNWk=; b=NEZimnqk
-        pRWURaZXUzFucpLUhijqB21drSGfsz2Lsb0Avy211mA0BYePkn/R7Ef3C1BoY8CE
-        cRqa4vwiGYNiFrVUtgPCKo5cLDHOSE9VJ2Dagn1lZNCh396iIBDqQgu8yzKtfco7
-        jqeK9c55gUM9X0lA8lD0IJcD/2g8cLBTCjpmQuowZzeIgJ2YPYuPOT7iA+a3N8n8
-        kBIQajjUnZBGY4Bbn6nhRLAi4IFCyi6RLHyPrpHLW5DSMQUik4MhZP94xMZObCiU
-        L3VFLX9qotFcT8u7Wzdl+QSACnYcWuMonUGYA8urQkkisAl34YVFuFRXMggHRj7n
-        UvnYRreQxNtAIw==
-X-ME-Sender: <xms:n_9NYHgmwvXSndURdA522Oa57Z5NgJzBNa_CS2ydu0OvEWSlJzcvHQ>
-    <xme:n_9NYEBN0OBTAHT3f4PKBYJpOL3Rg0Yt8iMBJTDmsgkn5JqsJTk72gYOAs4LEDT7W
-    eJRdWZ791P1hL8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvjedgudefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepfeeghfehveehvefhteekueehfeeffe
-    eitddvffeltdelgfefffdvjeduleefudefnecuffhomhgrihhnpehgihhthhhusgdrtgho
-    mhenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedune
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:n_9NYHG8eIxPHBMj_Hww8fN549vo8Almpl5HMZ7ee-nzzw3Zurr7Cg>
-    <xmx:n_9NYEQuxUOaG0TgxGd29Ga8Bi6FJEzF60CtQpb1_7Dchk_rc8Ynxw>
-    <xmx:n_9NYEyPed1kGzUymKRAtlNRp5zjHwVHDHFwiQ3RmXCnjU397VEhHA>
-    <xmx:n_9NYDmjA5cKVeLd5nwEJUKl6oQfegqiW4VvgfI0vx-fE-p9rYq7Pg>
-Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id AAACC240057;
-        Sun, 14 Mar 2021 08:20:44 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        yotam.gi@gmail.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        roopa@nvidia.com, peter.phaal@inmon.com, neil.mckee@inmon.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 11/11] selftests: mlxsw: Add tc sample tests
-Date:   Sun, 14 Mar 2021 14:19:40 +0200
-Message-Id: <20210314121940.2807621-12-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210314121940.2807621-1-idosch@idosch.org>
-References: <20210314121940.2807621-1-idosch@idosch.org>
+        id S235154AbhCNMdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:33:54 -0400
+Received: from mail-mw2nam12on2048.outbound.protection.outlook.com ([40.107.244.48]:16736
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235313AbhCNMdU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Mar 2021 08:33:20 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QjqeEt9v7eLQO+Bp6NsMBnDRR6EoVptSwjX9lNiJYQIf5dZuU4a1TGmjG+hHLFyvhpJ5dNKSHV3cJG1MGAsnW4UWO029qQsQ7mM5uHuixEf0Dr+2cLBQ7lsh04yfyUmnlFT02kfwWx+OLFfrcm3FwgpOHrRo3DSPt8jHgpVpjPj4p1VJBLN2F0PU3/8ktzciqNzG3OL+/NmYB9zr2RmCx7XKNDcdQVEhPvhHU/bHgOb8jA63VdAk2wfrpztA9YRsdbtUTvyY1MXCBHrc18inAlNd2qawzUkshw6eKAJla/9G7tzFevQFHI96hlS6Rlx6uCQrySohW3vIPgEbs3AU6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+H47nl0XNLNnRVOALexUbJ1bdcQ0VYGDGESG3KZdZw0=;
+ b=WkOLyGLgmwMSUsVXuaRbvJgmNMCO3TS95lwrygqzNNyTJ7YL2f1lYo2SGghEdneMHDM4UW04GzBMVEzrA9DwHz5S1ESXQJ+7A/8pjliNvEvxy3SNSNfJXvSAaWkuLSV0aoF78E6Dx2+UQ8JmPbKuQy5qvAqFrBBowfai29TqHKcIVYVGlLOtlfocEVXCZ+lmxABJFpCRPETX+3CEiTbCSYqmYAYjYq055O19462Ql6YuvhZE4kkE8iHm1IVqU1afkyRJFuDg8/b2pABYC9CK/bG5Kp95MZS2+rvpJ7Mn3ackaO8ei6AsUKVASTBuWZYoCIeKf9Gf4d6gmIZl/TCGug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+H47nl0XNLNnRVOALexUbJ1bdcQ0VYGDGESG3KZdZw0=;
+ b=bPGQ4PqemBNUoPl9xQBf6hRqhWYX/alke7mh3KFzR3kbFEt3uM3VC9AgTmuzjXGqI7dQuFtY7MACifFLSGX1Um8pwfvPofK1HrVGIzmswHqr0dM6KilSamRXxtNZ4snCYChFUh4tZr1btbirOnSgesF2Sr4iZrVzLij1jEop/X5ofVFlKN3IpiPggwdlDdoR7oBmfoh5caKzgHeeBQv2799/etnAI3kuSRphgsjfI7q6FeHiTCDA9mfhVwy8Am6LHBPnE0R9yo+UpSVcCH0cXFy5EoNWwD/NT865xdFl0BqrN/u2tsvu0aS1Ut+yXmnXfswQ9mVfRvmDMZ2q7vlZJA==
+Received: from BN6PR12CA0040.namprd12.prod.outlook.com (2603:10b6:405:70::26)
+ by BN9PR12MB5307.namprd12.prod.outlook.com (2603:10b6:408:104::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Sun, 14 Mar
+ 2021 12:33:17 +0000
+Received: from BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:70:cafe::cc) by BN6PR12CA0040.outlook.office365.com
+ (2603:10b6:405:70::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32 via Frontend
+ Transport; Sun, 14 Mar 2021 12:33:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
+ header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT061.mail.protection.outlook.com (10.13.177.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3933.31 via Frontend Transport; Sun, 14 Mar 2021 12:33:16 +0000
+Received: from [172.27.13.14] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 14 Mar
+ 2021 12:33:13 +0000
+Subject: Re: [RFC net-next v2 3/3] devlink: add more failure modes
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <jiri@resnulli.us>, <saeedm@nvidia.com>,
+        <andrew.gospodarek@broadcom.com>, <jacob.e.keller@intel.com>,
+        <guglielmo.morandin@broadcom.com>, <eugenem@fb.com>,
+        Aya Levin <ayal@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
+References: <20210311032613.1533100-1-kuba@kernel.org>
+ <20210311032613.1533100-3-kuba@kernel.org>
+ <8d61628c-9ca7-13ac-2dcd-97ecc9378a9e@nvidia.com>
+ <20210311084922.12bc884b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eran Ben Elisha <eranbe@nvidia.com>
+Message-ID: <8db7b4e5-bca2-715e-9cf0-948ca674b8a1@nvidia.com>
+Date:   Sun, 14 Mar 2021 14:33:10 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210311084922.12bc884b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1d3f5ba4-9bb8-4ff4-e0ae-08d8e6e557fb
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5307:
+X-Microsoft-Antispam-PRVS: <BN9PR12MB5307310E89C1EB3ED9E080C6B76D9@BN9PR12MB5307.namprd12.prod.outlook.com>
+X-MS-Exchange-Transport-Forked: True
+X-MS-Oob-TLC-OOBClassifiers: OLM:639;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: p+pFwdpU1d7x1YGtQup2f17I27EAX/WzA6eHYDJkjnUX9zaWcufjo8j9ou82ubYol7jFxQt3/5IgnJJMnYgCqKTJkapx8Ucav79x/aXnRq0gGy4mSIeGuXoPpp+XHDLy1SC30NjafOTNi0KQowNNyuUzAJhoo3/Xtmimqp/zfz0YWn6e0LByWlxS2FzACI9LXTtlL+7fM37Q74utO3DLjm9l6tkkXhZC+oiD9163f4jDMi2PO4fOvT5777cdy5v6kqZyMXii7iCCNlj4OYdh8fRuJKx77sWmWC0Y6HseKJHmrlSETYbWgZcwWDPlbevpdaapNGueKfS3S1RVb1tfDoHWbb3S7TZmW4fLfRNhTssoMkSq7v5HfhinF8djatmntz70T1Jb1oX1h9VNphwVyBz7ifHVkBhjTySMsyzA8bfxm0av0Z5C3PXavT9ZWi6evJQJuK0aCAK3sPdPg5Vsgbk+mpN3DUk38RjgmvGZJ4uGlt+jVmB2rh8vGUhdLVoUyaQxp7xmiSTsVy/hrXyPD+Tf/elVHSNDZqa+C7Kk25E35WplCavxFVdEeWGaCosDrGThnPMfEdw0Vb2aoC1ksZ+zhRJ5iqa8xfNI57Pq2Uc9gETI7ncAZT4gusyMvNFGfEiYBRnhvNwrMHQpJzfiisR0R+RyWzfnaTylFZ6rC3pyNi4F3gDxVELK7z3UNH4wRSBGyV5e87W560iWf+cugxRtfe1rOUzCfPfM8KCqLDw=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(136003)(346002)(396003)(46966006)(36840700001)(6916009)(36756003)(82740400003)(356005)(8676002)(8936002)(7636003)(478600001)(4326008)(36860700001)(2906002)(83380400001)(54906003)(107886003)(31696002)(86362001)(34020700004)(82310400003)(16576012)(426003)(186003)(336012)(70206006)(70586007)(5660300002)(316002)(53546011)(2616005)(31686004)(26005)(36906005)(47076005)(4744005)(16526019)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2021 12:33:16.9380
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d3f5ba4-9bb8-4ff4-e0ae-08d8e6e557fb
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5307
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
 
-Test that packets are sampled when tc-sample is used and that reported
-metadata is correct. Two sets of hosts (with and without LAG) are used,
-since metadata extraction in mlxsw is a bit different when LAG is
-involved.
 
- # ./tc_sample.sh
- TEST: tc sample rate (forward)                                      [ OK ]
- TEST: tc sample rate (local receive)                                [ OK ]
- TEST: tc sample maximum rate                                        [ OK ]
- TEST: tc sample group conflict test                                 [ OK ]
- TEST: tc sample iif                                                 [ OK ]
- TEST: tc sample lag iif                                             [ OK ]
- TEST: tc sample oif                                                 [ OK ]
- TEST: tc sample lag oif                                             [ OK ]
- TEST: tc sample out-tc                                              [ OK ]
- TEST: tc sample out-tc-occ                                          [ OK ]
+On 3/11/2021 6:49 PM, Jakub Kicinski wrote:
+> On Thu, 11 Mar 2021 16:23:09 +0200 Eran Ben Elisha wrote:
+>> On 3/11/2021 5:26 AM, Jakub Kicinski wrote:
+>>>>> Pending vendors adding the right reporters. <<
+>> Would you like Nvidia to reply with the remedy per reporter or to
+>> actually prepare the patch?
+> You mean the patch adding .remedy? If you can that'd be helpful.
+> 
+> Or do you have HW error reporters to add?
+> 
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../selftests/drivers/net/mlxsw/tc_sample.sh  | 492 ++++++++++++++++++
- 1 file changed, 492 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
-
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
-new file mode 100755
-index 000000000000..75d00104f291
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
-@@ -0,0 +1,492 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test that packets are sampled when tc-sample is used and that reported
-+# metadata is correct. Two sets of hosts (with and without LAG) are used, since
-+# metadata extraction in mlxsw is a bit different when LAG is involved.
-+#
-+# +---------------------------------+       +---------------------------------+
-+# | H1 (vrf)                        |       | H3 (vrf)                        |
-+# |    + $h1                        |       |    + $h3_lag                    |
-+# |    | 192.0.2.1/28               |       |    | 192.0.2.17/28              |
-+# |    |                            |       |    |                            |
-+# |    |  default via 192.0.2.2     |       |    |  default via 192.0.2.18    |
-+# +----|----------------------------+       +----|----------------------------+
-+#      |                                         |
-+# +----|-----------------------------------------|----------------------------+
-+# |    | 192.0.2.2/28                            | 192.0.2.18/28              |
-+# |    + $rp1                                    + $rp3_lag                   |
-+# |                                                                           |
-+# |    + $rp2                                    + $rp4_lag                   |
-+# |    | 198.51.100.2/28                         | 198.51.100.18/28           |
-+# +----|-----------------------------------------|----------------------------+
-+#      |                                         |
-+# +----|----------------------------+       +----|----------------------------+
-+# |    |  default via 198.51.100.2  |       |    |  default via 198.51.100.18 |
-+# |    |                            |       |    |                            |
-+# |    | 198.51.100.1/28            |       |    | 198.51.100.17/28           |
-+# |    + $h2                        |       |    + $h4_lag                    |
-+# | H2 (vrf)                        |       | H4 (vrf)                        |
-+# +---------------------------------+       +---------------------------------+
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	tc_sample_rate_test
-+	tc_sample_max_rate_test
-+	tc_sample_group_conflict_test
-+	tc_sample_md_iif_test
-+	tc_sample_md_lag_iif_test
-+	tc_sample_md_oif_test
-+	tc_sample_md_lag_oif_test
-+	tc_sample_md_out_tc_test
-+	tc_sample_md_out_tc_occ_test
-+"
-+NUM_NETIFS=8
-+CAPTURE_FILE=$(mktemp)
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+
-+# Available at https://github.com/Mellanox/libpsample
-+require_command psample
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.2.1/28
-+
-+	ip -4 route add default vrf v$h1 nexthop via 192.0.2.2
-+}
-+
-+h1_destroy()
-+{
-+	ip -4 route del default vrf v$h1 nexthop via 192.0.2.2
-+
-+	simple_if_fini $h1 192.0.2.1/28
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 198.51.100.1/28
-+
-+	ip -4 route add default vrf v$h2 nexthop via 198.51.100.2
-+}
-+
-+h2_destroy()
-+{
-+	ip -4 route del default vrf v$h2 nexthop via 198.51.100.2
-+
-+	simple_if_fini $h2 198.51.100.1/28
-+}
-+
-+h3_create()
-+{
-+	ip link set dev $h3 down
-+	ip link add name ${h3}_bond type bond mode 802.3ad
-+	ip link set dev $h3 master ${h3}_bond
-+
-+	simple_if_init ${h3}_bond 192.0.2.17/28
-+
-+	ip -4 route add default vrf v${h3}_bond nexthop via 192.0.2.18
-+}
-+
-+h3_destroy()
-+{
-+	ip -4 route del default vrf v${h3}_bond nexthop via 192.0.2.18
-+
-+	simple_if_fini ${h3}_bond 192.0.2.17/28
-+
-+	ip link set dev $h3 nomaster
-+	ip link del dev ${h3}_bond
-+}
-+
-+h4_create()
-+{
-+	ip link set dev $h4 down
-+	ip link add name ${h4}_bond type bond mode 802.3ad
-+	ip link set dev $h4 master ${h4}_bond
-+
-+	simple_if_init ${h4}_bond 198.51.100.17/28
-+
-+	ip -4 route add default vrf v${h4}_bond nexthop via 198.51.100.18
-+}
-+
-+h4_destroy()
-+{
-+	ip -4 route del default vrf v${h4}_bond nexthop via 198.51.100.18
-+
-+	simple_if_fini ${h4}_bond 198.51.100.17/28
-+
-+	ip link set dev $h4 nomaster
-+	ip link del dev ${h4}_bond
-+}
-+
-+router_create()
-+{
-+	ip link set dev $rp1 up
-+	__addr_add_del $rp1 add 192.0.2.2/28
-+	tc qdisc add dev $rp1 clsact
-+
-+	ip link set dev $rp2 up
-+	__addr_add_del $rp2 add 198.51.100.2/28
-+	tc qdisc add dev $rp2 clsact
-+
-+	ip link add name ${rp3}_bond type bond mode 802.3ad
-+	ip link set dev $rp3 master ${rp3}_bond
-+	__addr_add_del ${rp3}_bond add 192.0.2.18/28
-+	tc qdisc add dev $rp3 clsact
-+	ip link set dev ${rp3}_bond up
-+
-+	ip link add name ${rp4}_bond type bond mode 802.3ad
-+	ip link set dev $rp4 master ${rp4}_bond
-+	__addr_add_del ${rp4}_bond add 198.51.100.18/28
-+	tc qdisc add dev $rp4 clsact
-+	ip link set dev ${rp4}_bond up
-+}
-+
-+router_destroy()
-+{
-+	ip link set dev ${rp4}_bond down
-+	tc qdisc del dev $rp4 clsact
-+	__addr_add_del ${rp4}_bond del 198.51.100.18/28
-+	ip link set dev $rp4 nomaster
-+	ip link del dev ${rp4}_bond
-+
-+	ip link set dev ${rp3}_bond down
-+	tc qdisc del dev $rp3 clsact
-+	__addr_add_del ${rp3}_bond del 192.0.2.18/28
-+	ip link set dev $rp3 nomaster
-+	ip link del dev ${rp3}_bond
-+
-+	tc qdisc del dev $rp2 clsact
-+	__addr_add_del $rp2 del 198.51.100.2/28
-+	ip link set dev $rp2 down
-+
-+	tc qdisc del dev $rp1 clsact
-+	__addr_add_del $rp1 del 192.0.2.2/28
-+	ip link set dev $rp1 down
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	rp1=${NETIFS[p2]}
-+	rp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+	h3=${NETIFS[p5]}
-+	rp3=${NETIFS[p6]}
-+	h4=${NETIFS[p7]}
-+	rp4=${NETIFS[p8]}
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+	h3_create
-+	h4_create
-+	router_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	rm -f $CAPTURE_FILE
-+
-+	router_destroy
-+	h4_destroy
-+	h3_destroy
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+psample_capture_start()
-+{
-+	rm -f $CAPTURE_FILE
-+
-+	psample &> $CAPTURE_FILE &
-+
-+	sleep 1
-+}
-+
-+psample_capture_stop()
-+{
-+	{ kill %% && wait %%; } 2>/dev/null
-+}
-+
-+__tc_sample_rate_test()
-+{
-+	local desc=$1; shift
-+	local dip=$1; shift
-+	local pkts pct
-+
-+	RET=0
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 32 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	psample_capture_start
-+
-+	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
-+		-B $dip -t udp dp=52768,sp=42768 -q
-+
-+	psample_capture_stop
-+
-+	pkts=$(grep -e "group 1 " $CAPTURE_FILE | wc -l)
-+	pct=$((100 * (pkts - 100) / 100))
-+	(( -25 <= pct && pct <= 25))
-+	check_err $? "Expected 100 packets, got $pkts packets, which is $pct% off. Required accuracy is +-25%"
-+
-+	log_test "tc sample rate ($desc)"
-+
-+	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+tc_sample_rate_test()
-+{
-+	__tc_sample_rate_test "forward" 198.51.100.1
-+	__tc_sample_rate_test "local receive" 192.0.2.2
-+}
-+
-+tc_sample_max_rate_test()
-+{
-+	RET=0
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate $((35 * 10 ** 8)) group 1
-+	check_err $? "Failed to configure sampling rule with max rate"
-+
-+	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate $((35 * 10 ** 8 + 1)) \
-+		group 1 &> /dev/null
-+	check_fail $? "Managed to configure sampling rate above maximum"
-+
-+	log_test "tc sample maximum rate"
-+}
-+
-+tc_sample_group_conflict_test()
-+{
-+	RET=0
-+
-+	# Test that two sampling rules cannot be configured on the same port
-+	# with different groups.
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 1024 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	tc filter add dev $rp1 ingress protocol all pref 2 handle 102 matchall \
-+		skip_sw action sample rate 1024 group 2 &> /dev/null
-+	check_fail $? "Managed to configure sampling rule with conflicting group"
-+
-+	log_test "tc sample group conflict test"
-+
-+	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+tc_sample_md_iif_test()
-+{
-+	local rp1_ifindex
-+
-+	RET=0
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 5 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	psample_capture_start
-+
-+	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
-+		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
-+
-+	psample_capture_stop
-+
-+	rp1_ifindex=$(ip -j -p link show dev $rp1 | jq '.[]["ifindex"]')
-+	grep -q -e "in-ifindex $rp1_ifindex " $CAPTURE_FILE
-+	check_err $? "Sampled packets do not have expected in-ifindex"
-+
-+	log_test "tc sample iif"
-+
-+	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+tc_sample_md_lag_iif_test()
-+{
-+	local rp3_ifindex
-+
-+	RET=0
-+
-+	tc filter add dev $rp3 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 5 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	psample_capture_start
-+
-+	ip vrf exec v${h3}_bond $MZ ${h3}_bond -c 3200 -d 1msec -p 64 \
-+		-A 192.0.2.17 -B 198.51.100.17 -t udp dp=52768,sp=42768 -q
-+
-+	psample_capture_stop
-+
-+	rp3_ifindex=$(ip -j -p link show dev $rp3 | jq '.[]["ifindex"]')
-+	grep -q -e "in-ifindex $rp3_ifindex " $CAPTURE_FILE
-+	check_err $? "Sampled packets do not have expected in-ifindex"
-+
-+	log_test "tc sample lag iif"
-+
-+	tc filter del dev $rp3 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+tc_sample_md_oif_test()
-+{
-+	local rp2_ifindex
-+
-+	RET=0
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 5 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	psample_capture_start
-+
-+	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
-+		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
-+
-+	psample_capture_stop
-+
-+	rp2_ifindex=$(ip -j -p link show dev $rp2 | jq '.[]["ifindex"]')
-+	grep -q -e "out-ifindex $rp2_ifindex " $CAPTURE_FILE
-+	check_err $? "Sampled packets do not have expected out-ifindex"
-+
-+	log_test "tc sample oif"
-+
-+	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+tc_sample_md_lag_oif_test()
-+{
-+	local rp4_ifindex
-+
-+	RET=0
-+
-+	tc filter add dev $rp3 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 5 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	psample_capture_start
-+
-+	ip vrf exec v${h3}_bond $MZ ${h3}_bond -c 3200 -d 1msec -p 64 \
-+		-A 192.0.2.17 -B 198.51.100.17 -t udp dp=52768,sp=42768 -q
-+
-+	psample_capture_stop
-+
-+	rp4_ifindex=$(ip -j -p link show dev $rp4 | jq '.[]["ifindex"]')
-+	grep -q -e "out-ifindex $rp4_ifindex " $CAPTURE_FILE
-+	check_err $? "Sampled packets do not have expected out-ifindex"
-+
-+	log_test "tc sample lag oif"
-+
-+	tc filter del dev $rp3 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+tc_sample_md_out_tc_test()
-+{
-+	RET=0
-+
-+	# Output traffic class is not supported on Spectrum-1.
-+	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 5 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	# By default, all the packets should go to the same traffic class (0).
-+
-+	psample_capture_start
-+
-+	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
-+		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
-+
-+	psample_capture_stop
-+
-+	grep -q -e "out-tc 0 " $CAPTURE_FILE
-+	check_err $? "Sampled packets do not have expected out-tc (0)"
-+
-+	# Map all priorities to highest traffic class (7) and check reported
-+	# out-tc.
-+	tc qdisc replace dev $rp2 root handle 1: \
-+		prio bands 3 priomap 0 0 0 0 0 0 0 0
-+
-+	psample_capture_start
-+
-+	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
-+		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
-+
-+	psample_capture_stop
-+
-+	grep -q -e "out-tc 7 " $CAPTURE_FILE
-+	check_err $? "Sampled packets do not have expected out-tc (7)"
-+
-+	log_test "tc sample out-tc"
-+
-+	tc qdisc del dev $rp2 root handle 1:
-+	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+tc_sample_md_out_tc_occ_test()
-+{
-+	local backlog pct occ
-+
-+	RET=0
-+
-+	# Output traffic class occupancy is not supported on Spectrum-1.
-+	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
-+
-+	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
-+		skip_sw action sample rate 1024 group 1
-+	check_err $? "Failed to configure sampling rule"
-+
-+	# Configure a shaper on egress to create congestion.
-+	tc qdisc replace dev $rp2 root handle 1: \
-+		tbf rate 1Mbit burst 256k limit 1M
-+
-+	psample_capture_start
-+
-+	ip vrf exec v$h1 $MZ $h1 -c 0 -d 1usec -p 1400 -A 192.0.2.1 \
-+		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q &
-+
-+	# Allow congestion to reach steady state.
-+	sleep 10
-+
-+	backlog=$(tc -j -p -s qdisc show dev $rp2 | jq '.[0]["backlog"]')
-+
-+	# Kill mausezahn.
-+	{ kill %% && wait %%; } 2>/dev/null
-+
-+	psample_capture_stop
-+
-+	# Record last congestion sample.
-+	occ=$(grep -e "out-tc-occ " $CAPTURE_FILE | tail -n 1 | \
-+		cut -d ' ' -f 16)
-+
-+	pct=$((100 * (occ - backlog) / backlog))
-+	(( -1 <= pct && pct <= 1))
-+	check_err $? "Recorded a congestion of $backlog bytes, but sampled congestion is $occ bytes, which is $pct% off. Required accuracy is +-5%"
-+
-+	log_test "tc sample out-tc-occ"
-+
-+	tc qdisc del dev $rp2 root handle 1:
-+	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.29.2
-
+I meant a patch to add .remedy to existing mlx5* reporters to be part of 
+your series.
