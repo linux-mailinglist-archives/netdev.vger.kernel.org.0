@@ -2,223 +2,353 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50ABE33A489
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 12:21:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D89833A4A0
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:05:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235216AbhCNLVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 07:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234904AbhCNLVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 07:21:08 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEB9C061574;
-        Sun, 14 Mar 2021 04:21:07 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id s21so7324481pjq.1;
-        Sun, 14 Mar 2021 04:21:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PPVao1AHhEvdFq9PUk1U5Ula5rKqEXhakDYfJk3USYw=;
-        b=jN5Ph6okeJzmxcfgrkWZCOiJqQ+apMPw5qBNEIb+2pJhWddRWQr4loM/yMWyAt4s8I
-         2+LTO5Qa56CzgbXjneAGe45KpjROK8mTAmWEf4lV7ZwwMP3LDq+R91ZCWnRXno3Np6mU
-         vz8Xn7mw3gqo3FvrGjOMPqZWrM/KfGXSvKLfmoAVKQYbDs9x+mq8AzKUmL+jdw1ozic0
-         EJadfT/NflcY4mEuxR/h8hngbFFc7exxEyU+HnWhzWKElupKXUzmikJ+nAk253fig/F1
-         kA+iTjxdc9Qn0QNsWBdlo9eqOyLY9w6M5PfULtdbRShciOylBpj8HMa50d0qBT/q/M8K
-         np5Q==
+        id S235231AbhCNMEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:04:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29590 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235100AbhCNMEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:04:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615723451;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aY/S/FTRhF1IIUzKRmvqUk2ewrI0/2471cM48vv/Hok=;
+        b=Ie1MHZ87ylcgERbwFJfp8jWlR8D6tn4BI0rKxB1wbzuZ26ji6E7wRMOkLprJAP7DiHG4Es
+        qe7SWEA9et/0OgB9kojdnbyawA6oPGoSIvziklflrEQcMpuuefxe4VZqT/MjzNJOI/k2At
+        1TlV+OFGgL0WuOfXrmyckeaw+5gFSvU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-30-0R6Fe-wSNXqyWCcHC2pfkQ-1; Sun, 14 Mar 2021 08:04:09 -0400
+X-MC-Unique: 0R6Fe-wSNXqyWCcHC2pfkQ-1
+Received: by mail-wr1-f69.google.com with SMTP id h30so13742783wrh.10
+        for <netdev@vger.kernel.org>; Sun, 14 Mar 2021 05:04:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PPVao1AHhEvdFq9PUk1U5Ula5rKqEXhakDYfJk3USYw=;
-        b=SqBQcPayoX7xvEGPo/ears7PoxG8NNFk+pgQPx+LokD3jTILpHqLHknh4TGy4Wlybq
-         82Z4QBcP6Z142Sna+oc0I5LnMRTzpv7ENx1aT6boflB80vigq3PT4hhN0f6/oHrhc16e
-         BR1BJUwAeuGl5XcAviSSjjQDacSJxZdOBq9Jf6r8mI67kj4TZn2xxW5fEV3b6u7V9oXJ
-         UgvFJHeqmsP+OEZkuqRa0xlc+QHaByJK45C0BP4CVAcn7COwg0z3+4sl6Lp4Zs7EWOgn
-         xTdPYWOcqTyL72O3itrRiiXMrFy4aWSfX5LDnXu8Xe4YGxjmdBiyrhrQZe4T1Xa+grc0
-         VaHA==
-X-Gm-Message-State: AOAM530hT8J1U6FE2rYWhaa9X5MQ7rtxJp/iAgD4sxnVZWXioiQQikut
-        Zufyz1LPenof3C5RybwzzSDtpnTm+3E=
-X-Google-Smtp-Source: ABdhPJxX62N7vN6YZHADEIQkobDUyl4zF+Ij1TCDd2Qoq+wSvBwNUts9N67aLcAh7BMsZOB885ClWw==
-X-Received: by 2002:a17:902:c154:b029:e5:e7cf:9627 with SMTP id 20-20020a170902c154b02900e5e7cf9627mr6533477plj.68.1615720867238;
-        Sun, 14 Mar 2021 04:21:07 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:352e:895f:60e:9463])
-        by smtp.gmail.com with ESMTPSA id x19sm10268860pfc.152.2021.03.14.04.21.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aY/S/FTRhF1IIUzKRmvqUk2ewrI0/2471cM48vv/Hok=;
+        b=b0k8bhRNrBbt4P5GOgsePNlJN2DYyMQXfkchmI1Bw/j1bDQ3m3xtot+eKilmvjn77Q
+         AuU+zPe5bbQWKxVQurcUbnPxilmxi4u2ObivVbv4BrPBJRLGesyOtdfnWcFMDdE97Mws
+         N9aai3l7DnZ34OwhkaSG4Uv57l+am4gFRHJepE6/1Y0XqKbdxD+yIARvLIu9Hypt47QL
+         9NwekZ3hpI3/8vnKR5A3NSB7VXPFZ0FX4O70kLkdVjBBOx613OQEoRIWSS/jdgDT34Wu
+         /qfQ9HeYsPe5RzkiK3f8dNQKlCplvzP39Nyzz0W5tDEKiMrXqwxeqDV+iF6Nh/R9lSaS
+         d7YA==
+X-Gm-Message-State: AOAM532jexFzY0gSqZOAVtfASBgyxs/hEW2dGAuUOrjWeNd3VdM2FjAL
+        lBpAFtIQZjgFIz7GCbr7INisY5mVI3MCBDVybhPwMzEPNtZPyk2bShvHeNi7PLvQXgiYgYXxHRJ
+        1HE/Ohr20Om4wSUXE
+X-Received: by 2002:a7b:c188:: with SMTP id y8mr21130319wmi.76.1615723448321;
+        Sun, 14 Mar 2021 05:04:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy+sEiFZJt2o9gMIAb/Hb1pr2rxURTTFkDLdtXZBjnziIur7JR21nXdVj1FKcxXjHqcZbFC7A==
+X-Received: by 2002:a7b:c188:: with SMTP id y8mr21130296wmi.76.1615723447986;
+        Sun, 14 Mar 2021 05:04:07 -0700 (PDT)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id u3sm14827315wrt.82.2021.03.14.05.04.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Mar 2021 04:21:06 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Martin Schiller <ms@dev.tdt.de>, Krzysztof Halasa <khc@pm.waw.pl>,
+        Sun, 14 Mar 2021 05:04:07 -0700 (PDT)
+Date:   Sun, 14 Mar 2021 08:04:03 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net v2] net: hdlc_x25: Prevent racing between "x25_close" and "x25_xmit"/"x25_rx"
-Date:   Sun, 14 Mar 2021 04:21:01 -0700
-Message-Id: <20210314112103.45242-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v8 net-next] virtio-net: support XDP when not more queues
+Message-ID: <20210314045946-mutt-send-email-mst@kernel.org>
+References: <1615343085-39786-1-git-send-email-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1615343085-39786-1-git-send-email-xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"x25_close" is called by "hdlc_close" in "hdlc.c", which is called by
-hardware drivers' "ndo_stop" function.
-"x25_xmit" is called by "hdlc_start_xmit" in "hdlc.c", which is hardware
-drivers' "ndo_start_xmit" function.
-"x25_rx" is called by "hdlc_rcv" in "hdlc.c", which receives HDLC frames
-from "net/core/dev.c".
+On Wed, Mar 10, 2021 at 10:24:45AM +0800, Xuan Zhuo wrote:
+> The number of queues implemented by many virtio backends is limited,
+> especially some machines have a large number of CPUs. In this case, it
+> is often impossible to allocate a separate queue for
+> XDP_TX/XDP_REDIRECT, then xdp cannot be loaded to work, even xdp does
+> not use the XDP_TX/XDP_REDIRECT.
+> 
+> This patch allows XDP_TX/XDP_REDIRECT to run by reuse the existing SQ
+> with __netif_tx_lock() hold when there are not enough queues.
+> 
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> ---
+> v8: 1. explain why use macros not inline functions. (suggested by Michael S. Tsirkin)
+>     2. empty line after variable definitions inside marcos. (suggested by Michael S. Tsirkin)
+> 
+> v7: 1. use macros to implement get/put
+>     2. remove 'flag'. (suggested by Jason Wang)
+> 
+> v6: 1. use __netif_tx_acquire()/__netif_tx_release(). (suggested by Jason Wang)
+>     2. add note for why not lock. (suggested by Jason Wang)
+>     3. Use variable 'flag' to record with or without locked.  It is not safe to
+>        use curr_queue_pairs in "virtnet_put_xdp_sq", because it may changed after
+>        "virtnet_get_xdp_sq".
+> 
+> v5: change subject from 'support XDP_TX when not more queues'
+> 
+> v4: make sparse happy
+>     suggested by Jakub Kicinski
+> 
+> v3: add warning when no more queues
+>     suggested by Jesper Dangaard Brouer
+> 
+>  drivers/net/virtio_net.c | 62 ++++++++++++++++++++++++++++++++++++++----------
+>  1 file changed, 49 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 82e520d..ae82e8e 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -195,6 +195,9 @@ struct virtnet_info {
+>  	/* # of XDP queue pairs currently used by the driver */
+>  	u16 xdp_queue_pairs;
+> 
+> +	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
+> +	bool xdp_enabled;
+> +
+>  	/* I like... big packets and I cannot lie! */
+>  	bool big_packets;
+> 
+> @@ -481,12 +484,41 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>  	return 0;
+>  }
+> 
+> -static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
+> -{
+> -	unsigned int qp;
+> -
+> -	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+> -	return &vi->sq[qp];
+> +/* when vi->curr_queue_pairs > nr_cpu_ids, the txq/sq is only used for xdp tx on
+> + * the current cpu, so it does not need to be locked.
+> + *
+> + * Here we use marco instead of inline functions because we have to deal with
+> + * three issues at the same time: 1. the choice of sq. 2. judge and execute the
+> + * lock/unlock of txq 3. make sparse happy. It is difficult for two inline
+> + * functions to perfectly solve these three problems at the same time.
 
-"x25_close" races with "x25_xmit" and "x25_rx" because their callers race.
+This comment isn't really helpful :(
 
-However, we need to ensure that the LAPB APIs called in "x25_xmit" and
-"x25_rx" are called before "lapb_unregister" is called in "x25_close".
 
-This patch adds locking to ensure when "x25_xmit" and "x25_rx" are doing
-their work, "lapb_unregister" is not yet called in "x25_close".
+I did the following and sparse does not seem to complain.
 
-Reasons for not solving the racing between "x25_close" and "x25_xmit" by
-calling "netif_tx_disable" in "x25_close":
-1. We still need to solve the racing between "x25_close" and "x25_rx";
-2. The design of the HDLC subsystem assumes the HDLC hardware drivers
-have full control over the TX queue, and the HDLC protocol drivers (like
-this driver) have no control. Controlling the queue here in the protocol
-driver may interfere with hardware drivers' control of the queue.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
-
-Change from v1:
-Added a "Fixes" tag.
-
----
- drivers/net/wan/hdlc_x25.c | 42 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 41 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
-index 4aaa6388b9ee..5a6a945f6c81 100644
---- a/drivers/net/wan/hdlc_x25.c
-+++ b/drivers/net/wan/hdlc_x25.c
-@@ -23,6 +23,8 @@
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 2ca4bd2fec94..aee11164bab9 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -486,39 +486,36 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
  
- struct x25_state {
- 	x25_hdlc_proto settings;
-+	bool up;
-+	spinlock_t up_lock; /* Protects "up" */
- };
+ /* when vi->curr_queue_pairs > nr_cpu_ids, the txq/sq is only used for xdp tx on
+  * the current cpu, so it does not need to be locked.
+- *
+- * Here we use marco instead of inline functions because we have to deal with
+- * three issues at the same time: 1. the choice of sq. 2. judge and execute the
+- * lock/unlock of txq 3. make sparse happy. It is difficult for two inline
+- * functions to perfectly solve these three problems at the same time.
+  */
+-#define virtnet_xdp_get_sq(vi) ({                                       \
+-	struct netdev_queue *txq;                                       \
+-	typeof(vi) v = (vi);                                            \
+-	unsigned int qp;                                                \
+-									\
+-	if (v->curr_queue_pairs > nr_cpu_ids) {                         \
+-		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          \
+-		qp += smp_processor_id();                               \
+-		txq = netdev_get_tx_queue(v->dev, qp);                  \
+-		__netif_tx_acquire(txq);                                \
+-	} else {                                                        \
+-		qp = smp_processor_id() % v->curr_queue_pairs;          \
+-		txq = netdev_get_tx_queue(v->dev, qp);                  \
+-		__netif_tx_lock(txq, raw_smp_processor_id());           \
+-	}                                                               \
+-	v->sq + qp;                                                     \
+-})
++static inline struct send_queue *virtnet_xdp_get_sq(struct virtnet_info * vi)
++{
++	struct netdev_queue *txq;                                       
++	typeof(vi) v = (vi);                                            
++	unsigned int qp;                                                
  
- static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
-@@ -104,6 +106,8 @@ static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
- 
- static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
- {
-+	hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct x25_state *x25st = state(hdlc);
- 	int result;
- 
- 	/* There should be a pseudo header of 1 byte added by upper layers.
-@@ -114,11 +118,19 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
- 		return NETDEV_TX_OK;
- 	}
- 
-+	spin_lock_bh(&x25st->up_lock);
-+	if (!x25st->up) {
-+		spin_unlock_bh(&x25st->up_lock);
-+		kfree_skb(skb);
-+		return NETDEV_TX_OK;
+-#define virtnet_xdp_put_sq(vi, q) {                                     \
+-	struct netdev_queue *txq;                                       \
+-	typeof(vi) v = (vi);                                            \
+-									\
+-	txq = netdev_get_tx_queue(v->dev, (q) - v->sq);                 \
+-	if (v->curr_queue_pairs > nr_cpu_ids)                           \
+-		__netif_tx_release(txq);                                \
+-	else                                                            \
+-		__netif_tx_unlock(txq);                                 \
++	if (v->curr_queue_pairs > nr_cpu_ids) {                         
++		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          
++		qp += smp_processor_id();                               
++		txq = netdev_get_tx_queue(v->dev, qp);                  
++		__netif_tx_acquire(txq);                                
++	} else {                                                        
++		qp = smp_processor_id() % v->curr_queue_pairs;          
++		txq = netdev_get_tx_queue(v->dev, qp);                  
++		__netif_tx_lock(txq, raw_smp_processor_id());           
 +	}
++	return v->sq + qp;
++}
 +
- 	switch (skb->data[0]) {
- 	case X25_IFACE_DATA:	/* Data to be transmitted */
- 		skb_pull(skb, 1);
- 		if ((result = lapb_data_request(dev, skb)) != LAPB_OK)
- 			dev_kfree_skb(skb);
-+		spin_unlock_bh(&x25st->up_lock);
- 		return NETDEV_TX_OK;
- 
- 	case X25_IFACE_CONNECT:
-@@ -147,6 +159,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
- 		break;
- 	}
- 
-+	spin_unlock_bh(&x25st->up_lock);
- 	dev_kfree_skb(skb);
- 	return NETDEV_TX_OK;
- }
-@@ -164,6 +177,7 @@ static int x25_open(struct net_device *dev)
- 		.data_transmit = x25_data_transmit,
- 	};
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct x25_state *x25st = state(hdlc);
- 	struct lapb_parms_struct params;
- 	int result;
- 
-@@ -190,6 +204,10 @@ static int x25_open(struct net_device *dev)
- 	if (result != LAPB_OK)
- 		return -EINVAL;
- 
-+	spin_lock_bh(&x25st->up_lock);
-+	x25st->up = true;
-+	spin_unlock_bh(&x25st->up_lock);
++static inline void virtnet_xdp_put_sq(struct virtnet_info * vi, struct send_queue *q)
++{
++	struct netdev_queue *txq;                                       
++	typeof(vi) v = (vi);                                            
 +
- 	return 0;
++	txq = netdev_get_tx_queue(v->dev, (q) - v->sq);                 
++	if (v->curr_queue_pairs > nr_cpu_ids)                           
++		__netif_tx_release(txq);                                
++	else                                                            
++		__netif_tx_unlock(txq);                                 
  }
  
-@@ -197,6 +215,13 @@ static int x25_open(struct net_device *dev)
- 
- static void x25_close(struct net_device *dev)
- {
-+	hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct x25_state *x25st = state(hdlc);
-+
-+	spin_lock_bh(&x25st->up_lock);
-+	x25st->up = false;
-+	spin_unlock_bh(&x25st->up_lock);
-+
- 	lapb_unregister(dev);
- }
- 
-@@ -205,15 +230,28 @@ static void x25_close(struct net_device *dev)
- static int x25_rx(struct sk_buff *skb)
- {
- 	struct net_device *dev = skb->dev;
-+	hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct x25_state *x25st = state(hdlc);
- 
- 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL) {
- 		dev->stats.rx_dropped++;
- 		return NET_RX_DROP;
- 	}
- 
--	if (lapb_data_received(dev, skb) == LAPB_OK)
-+	spin_lock_bh(&x25st->up_lock);
-+	if (!x25st->up) {
-+		spin_unlock_bh(&x25st->up_lock);
-+		kfree_skb(skb);
-+		dev->stats.rx_dropped++;
-+		return NET_RX_DROP;
-+	}
-+
-+	if (lapb_data_received(dev, skb) == LAPB_OK) {
-+		spin_unlock_bh(&x25st->up_lock);
- 		return NET_RX_SUCCESS;
-+	}
- 
-+	spin_unlock_bh(&x25st->up_lock);
- 	dev->stats.rx_errors++;
- 	dev_kfree_skb_any(skb);
- 	return NET_RX_DROP;
-@@ -298,6 +336,8 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
- 			return result;
- 
- 		memcpy(&state(hdlc)->settings, &new_settings, size);
-+		state(hdlc)->up = false;
-+		spin_lock_init(&state(hdlc)->up_lock);
- 
- 		/* There's no header_ops so hard_header_len should be 0. */
- 		dev->hard_header_len = 0;
--- 
-2.27.0
+ static int virtnet_xdp_xmit(struct net_device *dev,
+
+so what is the issue then?
+
+
+> + */
+> +#define virtnet_xdp_get_sq(vi) ({                                       \
+> +	struct netdev_queue *txq;                                       \
+> +	typeof(vi) v = (vi);                                            \
+
+It's really always struct virtnet_info *vi isn't it?
+Better use it as such so it's validated.
+
+any local variables in a macro need to have very long names
+otherwise it can shadow a local variable used in
+a macro argument. E.g. __virtnet_xdp_get_sq_v.
+
+> +	unsigned int qp;                                                \
+
+I think it's just a tx queue index ... call it appropriately?
+
+> +									\
+> +	if (v->curr_queue_pairs > nr_cpu_ids) {                         \
+> +		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          \
+> +		qp += smp_processor_id();                               \
+> +		txq = netdev_get_tx_queue(v->dev, qp);                  \
+> +		__netif_tx_acquire(txq);                                \
+> +	} else {                                                        \
+> +		qp = smp_processor_id() % v->curr_queue_pairs;          \
+> +		txq = netdev_get_tx_queue(v->dev, qp);                  \
+> +		__netif_tx_lock(txq, raw_smp_processor_id());           \
+> +	}                                                               \
+> +	v->sq + qp;                                                     \
+> +})
+> +
+> +#define virtnet_xdp_put_sq(vi, q) {                                     \
+> +	struct netdev_queue *txq;                                       \
+> +	typeof(vi) v = (vi);                                            \
+> +									\
+> +	txq = netdev_get_tx_queue(v->dev, (q) - v->sq);                 \
+> +	if (v->curr_queue_pairs > nr_cpu_ids)                           \
+> +		__netif_tx_release(txq);                                \
+> +	else                                                            \
+> +		__netif_tx_unlock(txq);                                 \
+
+
+can curr_queue_pairs change after the call to virtnet_xdp_get_sq?
+If it does the lock/unlock won't be balanced ...
+pls add a comment explaining why that can't happen ...
+or maybe better yet, just return the tx queue number from get and
+pass it to put?
+
+
+>  }
+> 
+>  static int virtnet_xdp_xmit(struct net_device *dev,
+> @@ -512,7 +544,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>  	if (!xdp_prog)
+>  		return -ENXIO;
+> 
+> -	sq = virtnet_xdp_sq(vi);
+> +	sq = virtnet_xdp_get_sq(vi);
+> 
+>  	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
+>  		ret = -EINVAL;
+> @@ -560,12 +592,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>  	sq->stats.kicks += kicks;
+>  	u64_stats_update_end(&sq->stats.syncp);
+> 
+> +	virtnet_xdp_put_sq(vi, sq);
+>  	return ret;
+>  }
+> 
+>  static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+>  {
+> -	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
+> +	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
+>  }
+> 
+>  /* We copy the packet for XDP in the following cases:
+> @@ -1458,12 +1491,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+>  		xdp_do_flush();
+> 
+>  	if (xdp_xmit & VIRTIO_XDP_TX) {
+> -		sq = virtnet_xdp_sq(vi);
+> +		sq = virtnet_xdp_get_sq(vi);
+>  		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+>  			u64_stats_update_begin(&sq->stats.syncp);
+>  			sq->stats.kicks++;
+>  			u64_stats_update_end(&sq->stats.syncp);
+>  		}
+> +		virtnet_xdp_put_sq(vi, sq);
+>  	}
+> 
+>  	return received;
+> @@ -2418,10 +2452,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+> 
+>  	/* XDP requires extra queues for XDP_TX */
+>  	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+> -		netdev_warn(dev, "request %i queues but max is %i\n",
+> +		netdev_warn(dev, "XDP request %i queues but max is %i. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.\n",
+>  			    curr_qp + xdp_qp, vi->max_queue_pairs);
+> -		return -ENOMEM;
+> +		xdp_qp = 0;
+>  	}
+> 
+>  	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+> @@ -2455,11 +2488,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>  	vi->xdp_queue_pairs = xdp_qp;
+> 
+>  	if (prog) {
+> +		vi->xdp_enabled = true;
+>  		for (i = 0; i < vi->max_queue_pairs; i++) {
+>  			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
+>  			if (i == 0 && !old_prog)
+>  				virtnet_clear_guest_offloads(vi);
+>  		}
+> +	} else {
+> +		vi->xdp_enabled = false;
+>  	}
+> 
+>  	for (i = 0; i < vi->max_queue_pairs; i++) {
+> @@ -2527,7 +2563,7 @@ static int virtnet_set_features(struct net_device *dev,
+>  	int err;
+> 
+>  	if ((dev->features ^ features) & NETIF_F_LRO) {
+> -		if (vi->xdp_queue_pairs)
+> +		if (vi->xdp_enabled)
+>  			return -EBUSY;
+> 
+>  		if (features & NETIF_F_LRO)
+> --
+> 1.8.3.1
 
