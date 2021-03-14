@@ -2,101 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D62D33A26C
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 03:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 150B933A2AB
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 05:37:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbhCNCsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 21:48:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbhCNCsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 21:48:38 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F31FC061574
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 18:48:38 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id c10so60551028ejx.9
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 18:48:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+9DnLp27InHAd5OO9vshNYPunKr8XtyB6O0rodvYcKE=;
-        b=nGdzKJ5rMUyecp+DIMrh02adSdlC1ih8+Dk3asYaRbsUD8/QjjgFzAd352MbQ9fN1i
-         s/7MkM+GfcosO4DN1zxCGxAth715pmTYgNJDoTNxOLWjUPrVfI0uQUNX0AGd6VoM4HhR
-         xPOL3mbJ0kf/3jIwE0UGxNoqsXYPLLDr5o5xXZ0ZqPC84IRAyqRfUp0AEU5setgk3EZV
-         cr1olmT8JTN9A9/EKrCK1ieLMAPjuFXSbMFXX9nAIPSY1PRAcRVf4MxJW2phAxz3rmjU
-         vbilE7PKJAjqdTyZIMJd7BrtVKIhDqEll+/ZGtFk4OP5R1ZV1UZAhmEeCVihMWNkfJMP
-         u8Qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+9DnLp27InHAd5OO9vshNYPunKr8XtyB6O0rodvYcKE=;
-        b=WNTZtkKgC3aYeFc9FZx6kNAItzn5eJSkvZ7Xe3zrVZof+gVSAft4XBFsRrSiStVvLO
-         bwwvkCIRftZCoPPCKyrigMLu+nGgyjorIeH04fJY388fLLBOsCzDacoMD+C1HGU56Chc
-         hSXKecB1NJU3Eu6GQFpDvRHW0aSoHB1VjUqveNOECFwBtkDX5mlTgZcFPoEs+UtYL7Mz
-         2AdeIeh+zTYcACmKHj8mMPkGAkEinErGTa9n5PzugnZTiaSkIOzQoRpLbgUwUsJ0Bygx
-         gOr2yGjrtbUSgHRY2BzuVF7DZHtI5disaCHZlLxplI2T1YZh0SVmWly9pnTWfttooAnF
-         /vIA==
-X-Gm-Message-State: AOAM532PPnzdd0aTJI+4QFxxrEDor41wFUkVa0tcPdFZ7h15vhsFDjco
-        7y6POS6GsrQedEApMGbyZ6N9kvt01BoGzROGXzOAX1xf
-X-Google-Smtp-Source: ABdhPJxSMRMQg1GazNONK+P590M2zuvgRGNQZc3Dk0QwCk1Bxi1T7vDVeg14P0pcJrNO9/fj4oNqbPf304cuZsWt3s4=
-X-Received: by 2002:a17:906:3444:: with SMTP id d4mr16537663ejb.410.1615690116676;
- Sat, 13 Mar 2021 18:48:36 -0800 (PST)
+        id S234438AbhCNEg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 23:36:58 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55596 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234142AbhCNEgs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 13 Mar 2021 23:36:48 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lLIUS-00AngM-UY; Sun, 14 Mar 2021 05:36:32 +0100
+Date:   Sun, 14 Mar 2021 05:36:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] net: ethernet: actions: Add Actions Semi Owl
+ Ethernet MAC driver
+Message-ID: <YE2S0MW62lVF/psk@lunn.ch>
+References: <cover.1615423279.git.cristian.ciocaltea@gmail.com>
+ <158d63db7d17d87b01f723433e0ddc1fa24377a8.1615423279.git.cristian.ciocaltea@gmail.com>
+ <YEwO33TR7ENHuMaY@lunn.ch>
+ <20210314011324.GA991090@BV030612LT>
 MIME-Version: 1.0
-References: <20210311025736.77235-1-xiangxia.m.yue@gmail.com>
- <161550780854.9767.12432124529018963233.git-patchwork-notify@kernel.org> <30bd9ce2-24b7-d643-17aa-7a687652d30d@gmail.com>
-In-Reply-To: <30bd9ce2-24b7-d643-17aa-7a687652d30d@gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Sun, 14 Mar 2021 10:44:07 +0800
-Message-ID: <CAMDZJNWFu5S-4J0pfq=YodX1rf8hL_0DwMnFPxEJkz=qOgUqcg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: sock: simplify tw proto registration
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        alexanderduyck@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210314011324.GA991090@BV030612LT>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 12, 2021 at 10:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 3/12/21 1:10 AM, patchwork-bot+netdevbpf@kernel.org wrote:
-> > Hello:
-> >
-> > This patch was applied to netdev/net.git (refs/heads/master):
-> >
-> > On Thu, 11 Mar 2021 10:57:36 +0800 you wrote:
-> >> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >>
-> >> Introduce the new function tw_prot_init (inspired by
-> >> req_prot_init) to simplify "proto_register" function.
-> >>
-> >> tw_prot_cleanup will take care of a partially initialized
-> >> timewait_sock_ops.
-> >>
-> >> [...]
-> >
-> > Here is the summary with links:
-> >   - [net-next,v2] net: sock: simplify tw proto registration
-> >     https://git.kernel.org/netdev/net/c/b80350f39370
-> >
-> > You are awesome, thank you!
-> > --
-> > Deet-doot-dot, I am a bot.
-> > https://korg.docs.kernel.org/patchwork/pwbot.html
-> >
-> >
->
-> For some reason I see the patch in net tree, not in net-next
->
-> I wonder what happened.
-my mistake, In the patch v1, I use the "net" as prefix, and v2 using "net-nextt"
+> > > +	if (phy->interface != PHY_INTERFACE_MODE_RMII) {
+> > > +		netdev_err(netdev, "unsupported phy mode: %s\n",
+> > > +			   phy_modes(phy->interface));
+> > > +		phy_disconnect(phy);
+> > > +		netdev->phydev = NULL;
+> > > +		return -EINVAL;
+> > > +	}
+> > 
+> > It looks like the MAC only supports symmetric pause. So you should
+> > call phy_set_sym_pause() to let the PHY know this.
+> 
+> I did not find any reference related to the supported pause types,
+> is this normally dependant on the PHY interface mode?
 
+There is a MAC / PHY split there. The PHY is responsible for the
+negotiation for what each end can do. But it is the MAC which actually
+implements pause. The MAC needs to listen to pause frames and not send
+out data frames when the link peer indicates pause. And the MAC needs
+to send a pause frames when its receive buffers are full. The code you
+have in this MAC driver seems to indicate the MAC only supports
+symmetric pause. Hence you need to configure the PHY to only auto-neg
+symmetric pause.
 
--- 
-Best regards, Tonghao
+> > > +	ret = crypto_skcipher_encrypt(req);
+> > > +	if (ret) {
+> > > +		dev_err(dev, "failed to encrypt S/N: %d\n", ret);
+> > > +		goto err_free_tfm;
+> > > +	}
+> > > +
+> > > +	netdev->dev_addr[0] = 0xF4;
+> > > +	netdev->dev_addr[1] = 0x4E;
+> > > +	netdev->dev_addr[2] = 0xFD;
+> > 
+> > 0xF4 has the locally administered bit 0. So this is a true OUI. Who
+> > does it belong to? Ah!
+> > 
+> > F4:4E:FD Actions Semiconductor Co.,Ltd.(Cayman Islands)
+> > 
+> > Which makes sense. But is there any sort of agreement this is allowed?
+> > It is going to cause problems if they are giving out these MAC
+> > addresses in a controlled way.
+> 
+> Unfortunately this is another undocumented logic taken from the vendor
+> code. I have already disabled it from being built by default, although,
+> personally, I prefer to have it enabled in order to get a stable MAC
+> address instead of using a randomly generated one or manually providing
+> it via DT.
+> 
+> Just for clarification, I did not have any agreement or preliminary
+> discussion with the vendor. This is just a personal initiative to
+> improve the Owl SoC support in the mainline kernel.
+> 
+> > Maybe it would be better to set bit 1 of byte 0? And then you can use
+> > 5 bytes from enc_sn, not just 4.
+> 
+> I included the MAC generation feature in the driver to be fully
+> compatible with the original implementation, but I'm open for changes
+> if it raises concerns and compatibility is less important.
+
+This is not a simple question to answer. If the vendor driver does
+this, then the vendor can never assign MAC addresses in a controlled
+way, unless they have a good idea how the algorithm turns serial
+numbers into MAC addresses, and they can avoid MAC addresses for
+serial numbers already issued.
+
+But should the Linux kernel do the same? If all you want is a stable
+MAC address, my personal preference would be to set the locally
+administered bit, and fill the other 5 bytes from the hash
+algorithm. You then have a stable MAC addresses, but you clearly
+indicate it is not guaranteed to by globally unique, and you do not
+need to worry about what the vendor is doing.
+
+> > Otherwise, this look a new clean driver.
+> 
+> Well, I tried to do my best, given my limited experience as a self-taught
+> kernel developer. Hopefully reviewing my code will not cause too many
+> headaches! :)
+
+This is actually above average for a self-taught kernel
+developer. Well done.
+
+	   Andrew
