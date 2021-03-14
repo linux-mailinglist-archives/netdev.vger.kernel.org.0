@@ -2,124 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85FAA33A4AD
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:22:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2987433A4AF
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:22:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235254AbhCNMT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 08:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbhCNMTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:19:09 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48DFC061574;
-        Sun, 14 Mar 2021 05:19:08 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id jt13so61747104ejb.0;
-        Sun, 14 Mar 2021 05:19:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=q878vqPaFdQsV7G5cUf5KWZha9MQGP4Zu9XCF3Zzrww=;
-        b=V4meSn09NfQ6e8oh3hoVuO/1LHbW0ZidqrcSYPKxk5chfl5vr2XdKL09WYaOJMlQCO
-         871OFrhQfE55i3nRlavweQIGgqT/krIPAnwBTVc060AmdvdSVm2aQ3nRPEoviZNYB54k
-         DhKRnUjqhT+2Sluhh5HwdVHl9dKEC0hHV4iwlr+lz8OCV2dDrtAC941sdPRPxkk6SkUb
-         R5D0djf5CKaTR8CrXtiCry8EOQ37771qmK6Jxl987cywWOosI191nGZR9YouRTRLvXF0
-         O6xmhETKkORFthsRW01FGpIXLTU3ZxIqtySuJetHcN4SO4xTXfIXNmOGO+K1f73o2xk4
-         jRjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=q878vqPaFdQsV7G5cUf5KWZha9MQGP4Zu9XCF3Zzrww=;
-        b=XoME/AjVbYWBRMQHjGJvfNjfkHmAVENtXPkeqvHxjWKQV0QyQKROAXLrjPsS1ma+FG
-         tS1rXOqeYZSdl32LZsnqdNcrV4bddy5Rhy6G/33UsSFfuA5BzUfnICBngiCS4iap/5mt
-         mSeA92XQIf9t4QqoiqY/vZOLU2BQde/V/+vQyo15zNSv8JRjt1BhqwiE8xAgH7/Ja3QH
-         +x6GBqfUgJf+JA0uhUzoPeyxdDidW7J3U6M3lqA3+XNxicKW9wIxEpUGQYLVWvAuBdxE
-         EPkeaRkPKpd7mygexOgwx1sQ6jE+1b35XTsdRBSpG8awFd8sGnOgjMRZp98I17LLsKDM
-         BCTA==
-X-Gm-Message-State: AOAM530DIaFfDiLvy8uDOgthBQ2kT81eW8v2oxLpH5w7W0HmDFRsvLjz
-        QNmnpZ+AMQseLTHbgf/Trgs0id0WFNZmsrE9
-X-Google-Smtp-Source: ABdhPJz6+irM/7cwaxZM44ih8oze33caTttSKlQn6Gp5ovWyL5rb3Z4CGM+nntrkGJi2rDhamD1orA==
-X-Received: by 2002:a17:906:4410:: with SMTP id x16mr18553102ejo.446.1615724347513;
-        Sun, 14 Mar 2021 05:19:07 -0700 (PDT)
-Received: from TRWS9215 ([88.245.22.54])
-        by smtp.gmail.com with ESMTPSA id s11sm6206451edt.27.2021.03.14.05.19.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Mar 2021 05:19:06 -0700 (PDT)
-Message-ID: <b1b796b48a75b3ef3d6cebac89b0be45c5bf4611.camel@gmail.com>
-Subject: Re: [BUG] net: rds: rds_send_probe memory leak
-From:   Fatih Yildirim <yildirim.fatih@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Date:   Sun, 14 Mar 2021 15:19:05 +0300
-In-Reply-To: <YE3K+zeWnJ/hVpQS@kroah.com>
-References: <a3036ea4ee2a06e4b3acd3b438025754d11f65fc.camel@gmail.com>
-         <YE3K+zeWnJ/hVpQS@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5-1.1 
+        id S235320AbhCNMUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:20:47 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:59319 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229837AbhCNMUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:20:17 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9F4C95808B9;
+        Sun, 14 Mar 2021 08:20:16 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 14 Mar 2021 08:20:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=1cCuyqLB5lZGxBrM9
+        pfyK9oN21tcQyv3WmbRD/0mHP0=; b=Ie27E9aphkJz2nYMNpCbNPoVp/qgJ62oV
+        krMrAAhEU9v3qjvo7EhqiZz2z83Hfm2dKlar+eojPSLRqukbha9WBKrD8JdFInk/
+        38516++h5/EXVMx8uUtd8q/wjwo56f94er2BUKykq3sF79mP36SEDKKNE+xf5bvz
+        rjq9FBahZBUEIguYizEV2jWh0azCgaCyCro+Hfs0po5hGl+hGTjT4+Bf8CP5eU7R
+        TYICOSDgFq9tFeWGswBK+MXPRGzfUjzCGo/VNcjg5j7v47wX3timOZF98WTA+s2C
+        052GEV7aQkJRLMw0vePGkV8fHNdj4iLcLWi4xTfQIQwHvr8Xnk3yg==
+X-ME-Sender: <xms:gP9NYPNbYNMXEVmlbqlQyk1xAafvYPqV6-rlqd8Wa4gt7IDFrFu0DA>
+    <xme:gP9NYJ-UnViJf4zqoPxi_uG2RFGXb9SrYQRAo-YmG2HvKUDlRsguv9MxkisVVm1HJ
+    DKPOArSbqNY-Ro>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvjedgudefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepgeffheduuddtvdettefgteevfeffkeffue
+    eikeeugfeijefgudefuedtffegteetnecuffhomhgrihhnpehsfhhlohifrdhorhhgpdhg
+    ihhtlhgrsgdrtghomhenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvg
+    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
+    tghhrdhorhhg
+X-ME-Proxy: <xmx:gP9NYOR5kyrhpsIak3MxzOPnou6drvrYJTFcP1Tj3Q0J56Q-n4l7aQ>
+    <xmx:gP9NYDsqYfuxeRCdEu-feB178gRSfL3dkIHzpKiI7arW63kXv_sWxg>
+    <xmx:gP9NYHfB96jXPyz0z_v75ilyChbD2ZSmA1V9_H-aPT6kbx7JRVn9-w>
+    <xmx:gP9NYGyjZOnCF4Gx1kdqmnNpx92U03Sz5irJL18onsVPe7H8t70ogQ>
+Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 58D4C24005B;
+        Sun, 14 Mar 2021 08:20:13 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        yotam.gi@gmail.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        roopa@nvidia.com, peter.phaal@inmon.com, neil.mckee@inmon.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 00/11] psample: Add additional metadata attributes
+Date:   Sun, 14 Mar 2021 14:19:29 +0200
+Message-Id: <20210314121940.2807621-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2021-03-14 at 09:36 +0100, Greg KH wrote:
-> On Sun, Mar 14, 2021 at 11:23:10AM +0300, Fatih Yildirim wrote:
-> > Hi Santosh,
-> > 
-> > I've been working on a memory leak bug reported by syzbot.
-> > https://syzkaller.appspot.com/bug?id=39b72114839a6dbd66c1d2104522698a813f9ae2
-> > 
-> > It seems that memory allocated in rds_send_probe function is not
-> > freed.
-> > 
-> > Let me share my observations.
-> > rds_message is allocated at the beginning of rds_send_probe
-> > function.
-> > Then it is added to cp_send_queue list of rds_conn_path and
-> > refcount
-> > is increased by one.
-> > Next, in rds_send_xmit function it is moved from cp_send_queue list
-> > to
-> > cp_retrans list, and again refcount is increased by one.
-> > Finally in rds_loop_xmit function refcount is increased by one.
-> > So, total refcount is 4.
-> > However, rds_message_put is called three times, in rds_send_probe,
-> > rds_send_remove_from_sock and rds_send_xmit functions. It seems
-> > that
-> > one more rds_message_put is needed.
-> > Would you please check and share your comments on this issue?
-> 
-> Do you have a proposed patch that syzbot can test to verify if this
-> is
-> correct or not?
-> 
-> thanks,
-> 
-> gre gk-h
+From: Ido Schimmel <idosch@nvidia.com>
 
-Hi Greg,
+This series extends the psample module to expose additional metadata to
+user space for packets sampled via act_sample. The new metadata (e.g.,
+transit delay) can then be consumed by applications such as hsflowd [1]
+for better network observability.
 
-Actually, using the .config and the C reproducer, syzbot reports the
-memory leak in rds_send_probe function. Also by enabling
-CONFIG_RDS_DEBUG=y, the debug messages indicates the similar as I
-mentioned above. To give an example, below is the RDS_DEBUG messages.
-Allocated address 000000008a7476e5 has initial ref_count 1. Then there
-are three rds_message_addref calls for the same address making the
-refcount 4, but only three rds_message_put calls which leave the
-address still allocated.
+netdevsim is extended with a dummy psample implementation that
+periodically reports "sampled" packets to the psample module. In
+addition to testing of the psample module, it enables the development
+and demonstration of user space applications (e.g., hsflowd) that are
+interested in the new metadata even without access to specialized
+hardware (e.g., Spectrum ASIC) that can provide it.
 
-[   60.570681] rds_message_addref(): addref rm 000000008a7476e5 ref 1
-[   60.570707] rds_message_put(): put rm 000000008a7476e5 ref 2
-[   60.570845] rds_message_addref(): addref rm 000000008a7476e5 ref 1
-[   60.570870] rds_message_addref(): addref rm 000000008a7476e5 ref 2
-[   60.570960] rds_message_put(): put rm 000000008a7476e5 ref 3
-[   60.570995] rds_message_put(): put rm 000000008a7476e5 ref 2
+mlxsw is also extended to provide the new metadata to psample.
 
-Thanks,
-Fatih
+A Wireshark dissector for psample netlink packets [2] will be submitted
+upstream after the kernel patches are accepted. In addition, a libpcap
+capture module for psample is currently in the works. Eventually, users
+should be able to run:
 
+ # tshark -i psample
+
+In order to consume sampled packets along with their metadata.
+
+Series overview:
+
+Patch #1 makes it easier to extend the metadata provided to psample
+
+Patch #2 adds the new metadata attributes to psample
+
+Patch #3 extends netdevsim to periodically report "sampled" packets to
+psample. Various debugfs knobs are added to control the reporting
+
+Patch #4 adds a selftest over netdevsim
+
+Patches #5-#10 gradually add support for the new metadata in mlxsw
+
+Patch #11 adds a selftest over mlxsw
+
+[1] https://sflow.org/draft4_sflow_transit.txt
+[2] https://gitlab.com/amitcohen1/wireshark/-/commit/3d711143024e032aef1b056dd23f0266c54fab56
+
+Ido Schimmel (11):
+  psample: Encapsulate packet metadata in a struct
+  psample: Add additional metadata attributes
+  netdevsim: Add dummy psample implementation
+  selftests: netdevsim: Test psample functionality
+  mlxsw: pci: Add more metadata fields to CQEv2
+  mlxsw: Create dedicated field for Rx metadata in skb control block
+  mlxsw: pci: Set extra metadata in skb control block
+  mlxsw: spectrum: Remove unnecessary RCU read-side critical section
+  mlxsw: spectrum: Remove mlxsw_sp_sample_receive()
+  mlxsw: spectrum: Report extra metadata to psample module
+  selftests: mlxsw: Add tc sample tests
+
+ drivers/net/Kconfig                           |   1 +
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  21 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |  55 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci_hw.h  |  71 +++
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  26 -
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   2 -
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  71 ++-
+ drivers/net/netdevsim/Makefile                |   4 +
+ drivers/net/netdevsim/dev.c                   |  17 +-
+ drivers/net/netdevsim/netdevsim.h             |  15 +
+ drivers/net/netdevsim/psample.c               | 264 ++++++++++
+ include/net/psample.h                         |  21 +-
+ include/uapi/linux/psample.h                  |   7 +
+ net/psample/psample.c                         |  45 +-
+ net/sched/act_sample.c                        |  16 +-
+ .../selftests/drivers/net/mlxsw/tc_sample.sh  | 492 ++++++++++++++++++
+ .../drivers/net/netdevsim/psample.sh          | 181 +++++++
+ 17 files changed, 1256 insertions(+), 53 deletions(-)
+ create mode 100644 drivers/net/netdevsim/psample.c
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/psample.sh
+
+-- 
+2.29.2
 
