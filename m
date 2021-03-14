@@ -2,98 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5326033A42B
+	by mail.lfdr.de (Postfix) with ESMTP id EB52133A42D
 	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 11:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229495AbhCNKbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 06:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59168 "EHLO
+        id S229539AbhCNKbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 06:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhCNKa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 06:30:58 -0400
-Received: from mail.unsolicited.net (mail.unsolicited.net [IPv6:2001:8b0:15df::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9835FC061762;
-        Sun, 14 Mar 2021 03:30:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=unsolicited.net; s=one; h=Content-Transfer-Encoding:Content-Type:
-        MIME-Version:Date:Message-ID:Subject:From:To:Sender:Reply-To:Cc:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VbLJtxGS3B4dn2fUXqIjNF/Q4gmvt7mVXeDAG9s+7Uw=; b=k7wMP3l5xboEDpi7M0QCJwv6kk
-        UJlMPrr/JBboI53czgVJEpByLaA4nCYbaO3toB3nazUDcG942Tw9DSljwCz5KuwSSxaH3IYqpxM2p
-        9iJ8DNvEWGN4nDWFsGwzK+309f9is5h2ff2HNcYuhAm46bMP0zwLmr8hLlHDjuCyvyLw/utPhd/5O
-        KN9lcgqPJU90qf4HmcwNW+0QehpzRlByPslAYmGGCRqPpdbEt/xgPH8tT+mTZRfz1NIT+ZDKX6C+9
-        zP3+hIKW1vHtFQB8c6xkPF4ys2TgSh0GorOgx0TwjEASsAkxQ6cFVOpIUnIVrQytVkQK97ySc2YSr
-        3EHwEq7w==;
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-From:   David R <david@unsolicited.net>
-Subject: Panic after upgrading to 5.11.6 stable
-Autocrypt: addr=david@unsolicited.net; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <dfd0563b-91da-87ab-0cfa-c1b99c659212@unsolicited.net>
-Date:   Sun, 14 Mar 2021 10:30:55 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S230265AbhCNKbQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 06:31:16 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A21C061574;
+        Sun, 14 Mar 2021 03:31:16 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id u18so13888125plc.12;
+        Sun, 14 Mar 2021 03:31:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sGsgx5lItdpsm8V+9ERiYzuHPqJCAN3gYhOnOr9sdcw=;
+        b=OqMC6mJdcDBX+Nq9dTpDAQ0gw5q8HqOYtNpRyYJ6OWIw7Wd5Nc/9QFCOEy4VLAQi0E
+         Nl15WAEnoz59uw9aQDwQajdOhLIMHq8MyXuwjqGm+Ubx+dHHUHIkGUrd2KlBOR1OgXtP
+         8N+bJKTjpvnthdthIziiKkjus39Ku2upwodilcQGfePlR3pyoNtmRBJkvoSqSdFhxMmh
+         f3BQ2k8Tz80EsFZRZ3xGXICefJyPrvVCE8me7AmHQjViCvFp2ZIvMlAA6UT3R1DY6NrK
+         H589QGALYBNCmcj8KitVlEuRxrRWM2TPmZxANir9QSX1NfPQEawHTCBH56x5Tmc2Ad2K
+         PT/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sGsgx5lItdpsm8V+9ERiYzuHPqJCAN3gYhOnOr9sdcw=;
+        b=A06wjhGvqJj2KmJIqJWCjJ7gK/HkJlXv3VxB86O51w2wVHig2FrJiZft0YsCEPJyNM
+         O/vEqMiocn8rxalkpl4nS/CHaWDHkB3GuNwp5p2gsupdmVxDSCatCRuteqloNiVYVWrr
+         VCG/PerY+1fMKoZQLDWPO8uDxBV5TkD3xVZ3vgFW5yMU709bjglpDpYnR6pkbUDiOqVr
+         ZUalSN9CIAotUsXNHbrBwuqAaP3vT59j2D70CZWpNWQYojSUMP+f6uPvctqqYRLelneK
+         1reP0ETYH8AuJCwxDM4WVkmF2WMQTXoVZxjXuk/gu/B/Ntxo0rLSRiMbHXuX57oAOJq9
+         QwCQ==
+X-Gm-Message-State: AOAM5300v6VWpgvdt1xlDL/goI2ABgxD2G2pyDrTat4K1yleAFc1mt0n
+        Q6fdd5SwKDuI8qMXeYBZ6JA=
+X-Google-Smtp-Source: ABdhPJwS8CEInbp8+m1mgmKalGcQYqUiX3GhFgjcxEwHqtASkF7AP63sjO754btL6xuiTG3Sei4sYQ==
+X-Received: by 2002:a17:902:d4cb:b029:e5:f608:6d5e with SMTP id o11-20020a170902d4cbb02900e5f6086d5emr6534745plg.20.1615717871399;
+        Sun, 14 Mar 2021 03:31:11 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:352e:895f:60e:9463])
+        by smtp.gmail.com with ESMTPSA id b3sm9993761pgd.48.2021.03.14.03.31.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Mar 2021 03:31:11 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     Martin Schiller <ms@dev.tdt.de>, Krzysztof Halasa <khc@pm.waw.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net] net: hdlc_x25: Prevent racing between "x25_close" and "x25_xmit"/"x25_rx"
+Date:   Sun, 14 Mar 2021 03:31:04 -0700
+Message-Id: <20210314103104.43679-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I attempted to upgrade my home server to 5.11 today. The system panics
-soon after boot with the following :-
+"x25_close" is called by "hdlc_close" in "hdlc.c", which is called by
+hardware drivers' "ndo_stop" function.
+"x25_xmit" is called by "hdlc_start_xmit" in "hdlc.c", which is hardware
+drivers' "ndo_start_xmit" function.
+"x25_rx" is called by "hdlc_rcv" in "hdlc.c", which receives HDLC frames
+from "net/core/dev.c".
 
+"x25_close" races with "x25_xmit" and "x25_rx" because their callers race.
 
+However, we need to ensure that the LAPB APIs called in "x25_xmit" and
+"x25_rx" are called before "lapb_unregister" is called in "x25_close".
 
-In iptables by the looks of the stack.
+This patch adds locking to ensure when "x25_xmit" and "x25_rx" are doing
+their work, "lapb_unregister" is not yet called in "x25_close".
 
-5.10.23 works fine.
+Reasons for not solving the racing between "x25_close" and "x25_xmit" by
+calling "netif_tx_disable" in "x25_close":
+1. We still need to solve the racing between "x25_close" and "x25_rx";
+2. The design of the HDLC subsystem assumes the HDLC hardware drivers
+have full control over the TX queue, and the HDLC protocol drivers (like
+this driver) have no control. Controlling the queue here in the protocol
+driver may interfere with hardware drivers' control of the queue.
 
-Can provide config (and boot logs from 5.10.23) if required.
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_x25.c | 42 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 41 insertions(+), 1 deletion(-)
 
-Cheers
-David
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+index 4aaa6388b9ee..5a6a945f6c81 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/net/wan/hdlc_x25.c
+@@ -23,6 +23,8 @@
+ 
+ struct x25_state {
+ 	x25_hdlc_proto settings;
++	bool up;
++	spinlock_t up_lock; /* Protects "up" */
+ };
+ 
+ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
+@@ -104,6 +106,8 @@ static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
+ 
+ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
++	hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct x25_state *x25st = state(hdlc);
+ 	int result;
+ 
+ 	/* There should be a pseudo header of 1 byte added by upper layers.
+@@ -114,11 +118,19 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		return NETDEV_TX_OK;
+ 	}
+ 
++	spin_lock_bh(&x25st->up_lock);
++	if (!x25st->up) {
++		spin_unlock_bh(&x25st->up_lock);
++		kfree_skb(skb);
++		return NETDEV_TX_OK;
++	}
++
+ 	switch (skb->data[0]) {
+ 	case X25_IFACE_DATA:	/* Data to be transmitted */
+ 		skb_pull(skb, 1);
+ 		if ((result = lapb_data_request(dev, skb)) != LAPB_OK)
+ 			dev_kfree_skb(skb);
++		spin_unlock_bh(&x25st->up_lock);
+ 		return NETDEV_TX_OK;
+ 
+ 	case X25_IFACE_CONNECT:
+@@ -147,6 +159,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		break;
+ 	}
+ 
++	spin_unlock_bh(&x25st->up_lock);
+ 	dev_kfree_skb(skb);
+ 	return NETDEV_TX_OK;
+ }
+@@ -164,6 +177,7 @@ static int x25_open(struct net_device *dev)
+ 		.data_transmit = x25_data_transmit,
+ 	};
+ 	hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct x25_state *x25st = state(hdlc);
+ 	struct lapb_parms_struct params;
+ 	int result;
+ 
+@@ -190,6 +204,10 @@ static int x25_open(struct net_device *dev)
+ 	if (result != LAPB_OK)
+ 		return -EINVAL;
+ 
++	spin_lock_bh(&x25st->up_lock);
++	x25st->up = true;
++	spin_unlock_bh(&x25st->up_lock);
++
+ 	return 0;
+ }
+ 
+@@ -197,6 +215,13 @@ static int x25_open(struct net_device *dev)
+ 
+ static void x25_close(struct net_device *dev)
+ {
++	hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct x25_state *x25st = state(hdlc);
++
++	spin_lock_bh(&x25st->up_lock);
++	x25st->up = false;
++	spin_unlock_bh(&x25st->up_lock);
++
+ 	lapb_unregister(dev);
+ }
+ 
+@@ -205,15 +230,28 @@ static void x25_close(struct net_device *dev)
+ static int x25_rx(struct sk_buff *skb)
+ {
+ 	struct net_device *dev = skb->dev;
++	hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct x25_state *x25st = state(hdlc);
+ 
+ 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL) {
+ 		dev->stats.rx_dropped++;
+ 		return NET_RX_DROP;
+ 	}
+ 
+-	if (lapb_data_received(dev, skb) == LAPB_OK)
++	spin_lock_bh(&x25st->up_lock);
++	if (!x25st->up) {
++		spin_unlock_bh(&x25st->up_lock);
++		kfree_skb(skb);
++		dev->stats.rx_dropped++;
++		return NET_RX_DROP;
++	}
++
++	if (lapb_data_received(dev, skb) == LAPB_OK) {
++		spin_unlock_bh(&x25st->up_lock);
+ 		return NET_RX_SUCCESS;
++	}
+ 
++	spin_unlock_bh(&x25st->up_lock);
+ 	dev->stats.rx_errors++;
+ 	dev_kfree_skb_any(skb);
+ 	return NET_RX_DROP;
+@@ -298,6 +336,8 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 			return result;
+ 
+ 		memcpy(&state(hdlc)->settings, &new_settings, size);
++		state(hdlc)->up = false;
++		spin_lock_init(&state(hdlc)->up_lock);
+ 
+ 		/* There's no header_ops so hard_header_len should be 0. */
+ 		dev->hard_header_len = 0;
+-- 
+2.27.0
+
