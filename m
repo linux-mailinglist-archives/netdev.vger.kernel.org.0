@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 496F133A465
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 12:12:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C44C33A469
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 12:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235282AbhCNLLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 07:11:34 -0400
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:40514 "EHLO
+        id S235324AbhCNLMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 07:12:09 -0400
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:52619 "EHLO
         mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235220AbhCNLLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 07:11:19 -0400
-Date:   Sun, 14 Mar 2021 11:11:14 +0000
+        with ESMTP id S235277AbhCNLLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 07:11:33 -0400
+Date:   Sun, 14 Mar 2021 11:11:23 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615720277; bh=KbKHs69Z30MoR2CtDmYVM6+lpepKa3puU+bMA1kdp8c=;
+        t=1615720291; bh=IxbwbJnHu5lmMBsWrCVS91QKvDGCTFdZfa9iKi412cw=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=ZdCyRk1nOKrJG9lLfRFY2DXyTZAKrUppPS7VAtbmlZW5RfaBw4OV8z3FHGoTxIyT7
-         srv3DCI7hjaJILMJ9XOXoGAaAqhHLd4QM6UBj348vDscQ1JP78agr3WvekdPUkWfF/
-         iUbfuBD11PlYbQ3dFACoHmxr1XxTKW6X9BGFSsVnh9+D21LFybgWgMT8qemg+1NvbQ
-         ksArYh3bbbYGsH7eN6PBPH8PKPSam6RrT/FOwo8eL/N/2SOrjxsOxmhqq6lDouCovP
-         aa4pXInD4BGp2UxLpkTQFvTSJHw1zgJBLJ6QyVzYOtkQ9CqIgjlMw0WpNMSrLG25Xp
-         F0LxaSBgOA4hQ==
+        b=QmDaMQLbV1xldPojQ4nHV+q4+8aXFlHyozvqKNDLxZllpATxMaVzACYF/RzX2NlOE
+         vQVBqZJidFalQ83QNwqbZxSXhOv/SPk4DuVGSYT4MlONEn/IllzjAjFDucBh+KuHrP
+         mc6Yc1a26Jv1UUqqFSl2q32j/pm0scPHCjFfA/5fPlQ8CztlPsinsSnCQ79xlztBBe
+         9Iau0rNVH+N45n4SEbDrk5Exnkpy6tksERz6j3oJRYGCSKNiAEcTaxjgV93CLCJHTS
+         8FWg7jrK+MJtGWStAeCK2k1WqI72iBZNiDWKPx3Kse8mg3tqU2WqrWmUGNTL6mMWu3
+         14a6V+e4QPpRA==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -52,8 +52,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v3 net-next 2/6] skbuff: make __skb_header_pointer()'s data argument const
-Message-ID: <20210314111027.7657-3-alobakin@pm.me>
+Subject: [PATCH v3 net-next 3/6] flow_dissector: constify raw input data argument
+Message-ID: <20210314111027.7657-4-alobakin@pm.me>
 In-Reply-To: <20210314111027.7657-1-alobakin@pm.me>
 References: <20210314111027.7657-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -68,35 +68,217 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function never modifies the input buffer, so 'data' argument
-can be marked as const.
-This implies one harmless cast-away.
+Flow Dissector code never modifies the input buffer, neither skb nor
+raw data.
+Make 'data' argument const for all of the Flow dissector's functions.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/linux/skbuff.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/skbuff.h       | 15 ++++++-------
+ include/net/flow_dissector.h |  2 +-
+ net/core/flow_dissector.c    | 41 +++++++++++++++++++-----------------
+ 3 files changed, 30 insertions(+), 28 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 483e89348f78..d6ea3dc3eddb 100644
+index d6ea3dc3eddb..46c61e127e9f 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -3678,11 +3678,11 @@ __wsum skb_checksum(const struct sk_buff *skb, int =
-offset, int len,
- =09=09    __wsum csum);
+@@ -1292,10 +1292,10 @@ __skb_set_sw_hash(struct sk_buff *skb, __u32 hash, =
+bool is_l4)
+ void __skb_get_hash(struct sk_buff *skb);
+ u32 __skb_get_hash_symmetric(const struct sk_buff *skb);
+ u32 skb_get_poff(const struct sk_buff *skb);
+-u32 __skb_get_poff(const struct sk_buff *skb, void *data,
++u32 __skb_get_poff(const struct sk_buff *skb, const void *data,
+ =09=09   const struct flow_keys_basic *keys, int hlen);
+ __be32 __skb_flow_get_ports(const struct sk_buff *skb, int thoff, u8 ip_pr=
+oto,
+-=09=09=09    void *data, int hlen_proto);
++=09=09=09    const void *data, int hlen_proto);
 
- static inline void * __must_check
--__skb_header_pointer(const struct sk_buff *skb, int offset,
--=09=09     int len, void *data, int hlen, void *buffer)
-+__skb_header_pointer(const struct sk_buff *skb, int offset, int len,
-+=09=09     const void *data, int hlen, void *buffer)
+ static inline __be32 skb_flow_get_ports(const struct sk_buff *skb,
+ =09=09=09=09=09int thoff, u8 ip_proto)
+@@ -1314,9 +1314,8 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct b=
+pf_flow_dissector *ctx,
+ bool __skb_flow_dissect(const struct net *net,
+ =09=09=09const struct sk_buff *skb,
+ =09=09=09struct flow_dissector *flow_dissector,
+-=09=09=09void *target_container,
+-=09=09=09void *data, __be16 proto, int nhoff, int hlen,
+-=09=09=09unsigned int flags);
++=09=09=09void *target_container, const void *data,
++=09=09=09__be16 proto, int nhoff, int hlen, unsigned int flags);
+
+ static inline bool skb_flow_dissect(const struct sk_buff *skb,
+ =09=09=09=09    struct flow_dissector *flow_dissector,
+@@ -1338,9 +1337,9 @@ static inline bool skb_flow_dissect_flow_keys(const s=
+truct sk_buff *skb,
+ static inline bool
+ skb_flow_dissect_flow_keys_basic(const struct net *net,
+ =09=09=09=09 const struct sk_buff *skb,
+-=09=09=09=09 struct flow_keys_basic *flow, void *data,
+-=09=09=09=09 __be16 proto, int nhoff, int hlen,
+-=09=09=09=09 unsigned int flags)
++=09=09=09=09 struct flow_keys_basic *flow,
++=09=09=09=09 const void *data, __be16 proto,
++=09=09=09=09 int nhoff, int hlen, unsigned int flags)
  {
- =09if (hlen - offset >=3D len)
--=09=09return data + offset;
-+=09=09return (void *)data + offset;
+ =09memset(flow, 0, sizeof(*flow));
+ =09return __skb_flow_dissect(net, skb, &flow_keys_basic_dissector, flow,
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index bf00e71816ed..ffd386ea0dbb 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -350,7 +350,7 @@ static inline bool flow_keys_have_l4(const struct flow_=
+keys *keys)
+ u32 flow_hash_from_keys(struct flow_keys *keys);
+ void skb_flow_get_icmp_tci(const struct sk_buff *skb,
+ =09=09=09   struct flow_dissector_key_icmp *key_icmp,
+-=09=09=09   void *data, int thoff, int hlen);
++=09=09=09   const void *data, int thoff, int hlen);
 
- =09if (!skb ||
- =09    skb_copy_bits(skb, offset, buffer, len) < 0)
+ static inline bool dissector_uses_key(const struct flow_dissector *flow_di=
+ssector,
+ =09=09=09=09      enum flow_dissector_key_id key_id)
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 2ef2224b3bff..2ed380d096ce 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -114,7 +114,7 @@ int flow_dissector_bpf_prog_attach_check(struct net *ne=
+t,
+  * is the protocol port offset returned from proto_ports_offset
+  */
+ __be32 __skb_flow_get_ports(const struct sk_buff *skb, int thoff, u8 ip_pr=
+oto,
+-=09=09=09    void *data, int hlen)
++=09=09=09    const void *data, int hlen)
+ {
+ =09int poff =3D proto_ports_offset(ip_proto);
+
+@@ -161,7 +161,7 @@ static bool icmp_has_id(u8 type)
+  */
+ void skb_flow_get_icmp_tci(const struct sk_buff *skb,
+ =09=09=09   struct flow_dissector_key_icmp *key_icmp,
+-=09=09=09   void *data, int thoff, int hlen)
++=09=09=09   const void *data, int thoff, int hlen)
+ {
+ =09struct icmphdr *ih, _ih;
+
+@@ -187,8 +187,8 @@ EXPORT_SYMBOL(skb_flow_get_icmp_tci);
+  */
+ static void __skb_flow_dissect_icmp(const struct sk_buff *skb,
+ =09=09=09=09    struct flow_dissector *flow_dissector,
+-=09=09=09=09    void *target_container,
+-=09=09=09=09    void *data, int thoff, int hlen)
++=09=09=09=09    void *target_container, const void *data,
++=09=09=09=09    int thoff, int hlen)
+ {
+ =09struct flow_dissector_key_icmp *key_icmp;
+
+@@ -409,8 +409,8 @@ EXPORT_SYMBOL(skb_flow_dissect_hash);
+ static enum flow_dissect_ret
+ __skb_flow_dissect_mpls(const struct sk_buff *skb,
+ =09=09=09struct flow_dissector *flow_dissector,
+-=09=09=09void *target_container, void *data, int nhoff, int hlen,
+-=09=09=09int lse_index, bool *entropy_label)
++=09=09=09void *target_container, const void *data, int nhoff,
++=09=09=09int hlen, int lse_index, bool *entropy_label)
+ {
+ =09struct mpls_label *hdr, _hdr;
+ =09u32 entry, label, bos;
+@@ -467,7 +467,8 @@ __skb_flow_dissect_mpls(const struct sk_buff *skb,
+ static enum flow_dissect_ret
+ __skb_flow_dissect_arp(const struct sk_buff *skb,
+ =09=09       struct flow_dissector *flow_dissector,
+-=09=09       void *target_container, void *data, int nhoff, int hlen)
++=09=09       void *target_container, const void *data,
++=09=09       int nhoff, int hlen)
+ {
+ =09struct flow_dissector_key_arp *key_arp;
+ =09struct {
+@@ -523,7 +524,7 @@ static enum flow_dissect_ret
+ __skb_flow_dissect_gre(const struct sk_buff *skb,
+ =09=09       struct flow_dissector_key_control *key_control,
+ =09=09       struct flow_dissector *flow_dissector,
+-=09=09       void *target_container, void *data,
++=09=09       void *target_container, const void *data,
+ =09=09       __be16 *p_proto, int *p_nhoff, int *p_hlen,
+ =09=09       unsigned int flags)
+ {
+@@ -663,8 +664,8 @@ __skb_flow_dissect_gre(const struct sk_buff *skb,
+ static enum flow_dissect_ret
+ __skb_flow_dissect_batadv(const struct sk_buff *skb,
+ =09=09=09  struct flow_dissector_key_control *key_control,
+-=09=09=09  void *data, __be16 *p_proto, int *p_nhoff, int hlen,
+-=09=09=09  unsigned int flags)
++=09=09=09  const void *data, __be16 *p_proto, int *p_nhoff,
++=09=09=09  int hlen, unsigned int flags)
+ {
+ =09struct {
+ =09=09struct batadv_unicast_packet batadv_unicast;
+@@ -695,7 +696,8 @@ __skb_flow_dissect_batadv(const struct sk_buff *skb,
+ static void
+ __skb_flow_dissect_tcp(const struct sk_buff *skb,
+ =09=09       struct flow_dissector *flow_dissector,
+-=09=09       void *target_container, void *data, int thoff, int hlen)
++=09=09       void *target_container, const void *data,
++=09=09       int thoff, int hlen)
+ {
+ =09struct flow_dissector_key_tcp *key_tcp;
+ =09struct tcphdr *th, _th;
+@@ -719,8 +721,8 @@ __skb_flow_dissect_tcp(const struct sk_buff *skb,
+ static void
+ __skb_flow_dissect_ports(const struct sk_buff *skb,
+ =09=09=09 struct flow_dissector *flow_dissector,
+-=09=09=09 void *target_container, void *data, int nhoff,
+-=09=09=09 u8 ip_proto, int hlen)
++=09=09=09 void *target_container, const void *data,
++=09=09=09 int nhoff, u8 ip_proto, int hlen)
+ {
+ =09enum flow_dissector_key_id dissector_ports =3D FLOW_DISSECTOR_KEY_MAX;
+ =09struct flow_dissector_key_ports *key_ports;
+@@ -744,7 +746,8 @@ __skb_flow_dissect_ports(const struct sk_buff *skb,
+ static void
+ __skb_flow_dissect_ipv4(const struct sk_buff *skb,
+ =09=09=09struct flow_dissector *flow_dissector,
+-=09=09=09void *target_container, void *data, const struct iphdr *iph)
++=09=09=09void *target_container, const void *data,
++=09=09=09const struct iphdr *iph)
+ {
+ =09struct flow_dissector_key_ip *key_ip;
+
+@@ -761,7 +764,8 @@ __skb_flow_dissect_ipv4(const struct sk_buff *skb,
+ static void
+ __skb_flow_dissect_ipv6(const struct sk_buff *skb,
+ =09=09=09struct flow_dissector *flow_dissector,
+-=09=09=09void *target_container, void *data, const struct ipv6hdr *iph)
++=09=09=09void *target_container, const void *data,
++=09=09=09const struct ipv6hdr *iph)
+ {
+ =09struct flow_dissector_key_ip *key_ip;
+
+@@ -908,9 +912,8 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf=
+_flow_dissector *ctx,
+ bool __skb_flow_dissect(const struct net *net,
+ =09=09=09const struct sk_buff *skb,
+ =09=09=09struct flow_dissector *flow_dissector,
+-=09=09=09void *target_container,
+-=09=09=09void *data, __be16 proto, int nhoff, int hlen,
+-=09=09=09unsigned int flags)
++=09=09=09void *target_container, const void *data,
++=09=09=09__be16 proto, int nhoff, int hlen, unsigned int flags)
+ {
+ =09struct flow_dissector_key_control *key_control;
+ =09struct flow_dissector_key_basic *key_basic;
+@@ -1642,7 +1645,7 @@ __u32 skb_get_hash_perturb(const struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL(skb_get_hash_perturb);
+
+-u32 __skb_get_poff(const struct sk_buff *skb, void *data,
++u32 __skb_get_poff(const struct sk_buff *skb, const void *data,
+ =09=09   const struct flow_keys_basic *keys, int hlen)
+ {
+ =09u32 poff =3D keys->control.thoff;
 --
 2.30.2
 
