@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4087433A4B9
+	by mail.lfdr.de (Postfix) with ESMTP id B118A33A4BA
 	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:22:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235412AbhCNMVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 08:21:18 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:59113 "EHLO
+        id S235423AbhCNMVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:21:21 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:47491 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235316AbhCNMUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:20:44 -0400
+        by vger.kernel.org with ESMTP id S235327AbhCNMUs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:20:48 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 823365808BB;
-        Sun, 14 Mar 2021 08:20:44 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 5E5505808B9;
+        Sun, 14 Mar 2021 08:20:47 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 14 Mar 2021 08:20:44 -0400
+  by compute3.internal (MEProxy); Sun, 14 Mar 2021 08:20:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=VQ7IRp8qPYIe2mooX2gI/F5Fsb59LCT+B42Xj9gi28I=; b=UTeVj1Tj
-        3QN3DsYiW8JASnAGjEug1exieVJSw77+jXyXHAOtrA0psQP7ihVm4ZgVy9ky9Kxv
-        kmitMc32WemcWwcsYqiojCGDSCbwLO/KxxCY5r6Hn+NKv3yj8ZYXRahl1bBGFdqB
-        SBE0eniQETbNLgP81PFTv36maTY94eE8FyLDJGGbFO2v1alTuR+PcclR+NaU2Lix
-        N5n+yYEmQRtHnXL74/UUwbPPUVPvaV3rn1mFESW4syDgNDsNZk5EZcenirYjfzIw
-        C4SBoeJayhn6fSU4Rq2wTKPdniKhFLEwq57aD1xQVKI8C2AqahZh+bvqPhOUJ1Hc
-        pd80oBnGisUmEQ==
-X-ME-Sender: <xms:nP9NYHJkjOxXjmSnCIXaqFakqAlAQIPNFC2dWW-xUJGmgBXDSLeWsw>
-    <xme:nP9NYLJME5fskG7-WJa3OaRPJ3WWP0ZnXk-WfrBW4fGVn_5-aSQ3tr02LGuBilB2h
-    f7pVg6bGps0nuM>
+        fm2; bh=wm9chH95zaAxGIN8+Adz9KPmKZPFkSpRTTrp0oTKNWk=; b=NEZimnqk
+        pRWURaZXUzFucpLUhijqB21drSGfsz2Lsb0Avy211mA0BYePkn/R7Ef3C1BoY8CE
+        cRqa4vwiGYNiFrVUtgPCKo5cLDHOSE9VJ2Dagn1lZNCh396iIBDqQgu8yzKtfco7
+        jqeK9c55gUM9X0lA8lD0IJcD/2g8cLBTCjpmQuowZzeIgJ2YPYuPOT7iA+a3N8n8
+        kBIQajjUnZBGY4Bbn6nhRLAi4IFCyi6RLHyPrpHLW5DSMQUik4MhZP94xMZObCiU
+        L3VFLX9qotFcT8u7Wzdl+QSACnYcWuMonUGYA8urQkkisAl34YVFuFRXMggHRj7n
+        UvnYRreQxNtAIw==
+X-ME-Sender: <xms:n_9NYHgmwvXSndURdA522Oa57Z5NgJzBNa_CS2ydu0OvEWSlJzcvHQ>
+    <xme:n_9NYEBN0OBTAHT3f4PKBYJpOL3Rg0Yt8iMBJTDmsgkn5JqsJTk72gYOAs4LEDT7W
+    eJRdWZ791P1hL8>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvjedgudefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepkeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:nP9NYPvrl7HCqqDJGxBsjs22xnongdjXERbUgQfuv02rfv9CZYv02Q>
-    <xmx:nP9NYAZo-pXAV7unL8KimHbYKeGPchzV9Y9UvjKM8p8yrbeerkt7jw>
-    <xmx:nP9NYOZy3yoecFYdH4m8r4TguNfxLF20UABlmm9O2iwNvjuEHk2e5Q>
-    <xmx:nP9NYEPJ1Yzy7YbTd-yrlUOdgabUZIFZ-U3E0uOY2bxoqLuvq5_dDA>
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepfeeghfehveehvefhteekueehfeeffe
+    eitddvffeltdelgfefffdvjeduleefudefnecuffhomhgrihhnpehgihhthhhusgdrtgho
+    mhenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedune
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:n_9NYHG8eIxPHBMj_Hww8fN549vo8Almpl5HMZ7ee-nzzw3Zurr7Cg>
+    <xmx:n_9NYEQuxUOaG0TgxGd29Ga8Bi6FJEzF60CtQpb1_7Dchk_rc8Ynxw>
+    <xmx:n_9NYEyPed1kGzUymKRAtlNRp5zjHwVHDHFwiQ3RmXCnjU397VEhHA>
+    <xmx:n_9NYDmjA5cKVeLd5nwEJUKl6oQfegqiW4VvgfI0vx-fE-p9rYq7Pg>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 985B224005B;
-        Sun, 14 Mar 2021 08:20:41 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id AAACC240057;
+        Sun, 14 Mar 2021 08:20:44 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         yotam.gi@gmail.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         roopa@nvidia.com, peter.phaal@inmon.com, neil.mckee@inmon.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 10/11] mlxsw: spectrum: Report extra metadata to psample module
-Date:   Sun, 14 Mar 2021 14:19:39 +0200
-Message-Id: <20210314121940.2807621-11-idosch@idosch.org>
+Subject: [PATCH net-next 11/11] selftests: mlxsw: Add tc sample tests
+Date:   Sun, 14 Mar 2021 14:19:40 +0200
+Message-Id: <20210314121940.2807621-12-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210314121940.2807621-1-idosch@idosch.org>
 References: <20210314121940.2807621-1-idosch@idosch.org>
@@ -65,89 +65,527 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Make use of the previously added metadata and report it to the psample
-module. The metadata is read from the skb's control block, which was
-initialized by the bus driver (i.e., 'mlxsw_pci') after decoding the
-packet's Completion Queue Element (CQE).
+Test that packets are sampled when tc-sample is used and that reported
+metadata is correct. Two sets of hosts (with and without LAG) are used,
+since metadata extraction in mlxsw is a bit different when LAG is
+involved.
+
+ # ./tc_sample.sh
+ TEST: tc sample rate (forward)                                      [ OK ]
+ TEST: tc sample rate (local receive)                                [ OK ]
+ TEST: tc sample maximum rate                                        [ OK ]
+ TEST: tc sample group conflict test                                 [ OK ]
+ TEST: tc sample iif                                                 [ OK ]
+ TEST: tc sample lag iif                                             [ OK ]
+ TEST: tc sample oif                                                 [ OK ]
+ TEST: tc sample lag oif                                             [ OK ]
+ TEST: tc sample out-tc                                              [ OK ]
+ TEST: tc sample out-tc-occ                                          [ OK ]
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 54 ++++++++++++++++++-
- 1 file changed, 52 insertions(+), 2 deletions(-)
+ .../selftests/drivers/net/mlxsw/tc_sample.sh  | 492 ++++++++++++++++++
+ 1 file changed, 492 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index ea01047f8f8f..056201029ce5 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -204,6 +204,55 @@ static void mlxsw_sp_rx_ptp_listener(struct sk_buff *skb, u8 local_port,
- 	mlxsw_sp_ptp_receive(mlxsw_sp, skb, local_port);
- }
- 
-+static struct mlxsw_sp_port *
-+mlxsw_sp_sample_tx_port_get(struct mlxsw_sp *mlxsw_sp,
-+			    const struct mlxsw_rx_md_info *rx_md_info)
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
+new file mode 100755
+index 000000000000..75d00104f291
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
+@@ -0,0 +1,492 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Test that packets are sampled when tc-sample is used and that reported
++# metadata is correct. Two sets of hosts (with and without LAG) are used, since
++# metadata extraction in mlxsw is a bit different when LAG is involved.
++#
++# +---------------------------------+       +---------------------------------+
++# | H1 (vrf)                        |       | H3 (vrf)                        |
++# |    + $h1                        |       |    + $h3_lag                    |
++# |    | 192.0.2.1/28               |       |    | 192.0.2.17/28              |
++# |    |                            |       |    |                            |
++# |    |  default via 192.0.2.2     |       |    |  default via 192.0.2.18    |
++# +----|----------------------------+       +----|----------------------------+
++#      |                                         |
++# +----|-----------------------------------------|----------------------------+
++# |    | 192.0.2.2/28                            | 192.0.2.18/28              |
++# |    + $rp1                                    + $rp3_lag                   |
++# |                                                                           |
++# |    + $rp2                                    + $rp4_lag                   |
++# |    | 198.51.100.2/28                         | 198.51.100.18/28           |
++# +----|-----------------------------------------|----------------------------+
++#      |                                         |
++# +----|----------------------------+       +----|----------------------------+
++# |    |  default via 198.51.100.2  |       |    |  default via 198.51.100.18 |
++# |    |                            |       |    |                            |
++# |    | 198.51.100.1/28            |       |    | 198.51.100.17/28           |
++# |    + $h2                        |       |    + $h4_lag                    |
++# | H2 (vrf)                        |       | H4 (vrf)                        |
++# +---------------------------------+       +---------------------------------+
++
++lib_dir=$(dirname $0)/../../../net/forwarding
++
++ALL_TESTS="
++	tc_sample_rate_test
++	tc_sample_max_rate_test
++	tc_sample_group_conflict_test
++	tc_sample_md_iif_test
++	tc_sample_md_lag_iif_test
++	tc_sample_md_oif_test
++	tc_sample_md_lag_oif_test
++	tc_sample_md_out_tc_test
++	tc_sample_md_out_tc_occ_test
++"
++NUM_NETIFS=8
++CAPTURE_FILE=$(mktemp)
++source $lib_dir/lib.sh
++source $lib_dir/devlink_lib.sh
++
++# Available at https://github.com/Mellanox/libpsample
++require_command psample
++
++h1_create()
 +{
-+	u8 local_port;
++	simple_if_init $h1 192.0.2.1/28
 +
-+	if (!rx_md_info->tx_port_valid)
-+		return NULL;
-+
-+	if (rx_md_info->tx_port_is_lag)
-+		local_port = mlxsw_core_lag_mapping_get(mlxsw_sp->core,
-+							rx_md_info->tx_lag_id,
-+							rx_md_info->tx_lag_port_index);
-+	else
-+		local_port = rx_md_info->tx_sys_port;
-+
-+	if (local_port >= mlxsw_core_max_ports(mlxsw_sp->core))
-+		return NULL;
-+
-+	return mlxsw_sp->ports[local_port];
++	ip -4 route add default vrf v$h1 nexthop via 192.0.2.2
 +}
 +
-+/* The latency units are determined according to MOGCR.mirror_latency_units. It
-+ * defaults to 64 nanoseconds.
-+ */
-+#define MLXSW_SP_MIRROR_LATENCY_SHIFT	6
-+
-+static void mlxsw_sp_psample_md_init(struct mlxsw_sp *mlxsw_sp,
-+				     struct psample_metadata *md,
-+				     struct sk_buff *skb, int in_ifindex,
-+				     bool truncate, u32 trunc_size)
++h1_destroy()
 +{
-+	struct mlxsw_rx_md_info *rx_md_info = &mlxsw_skb_cb(skb)->rx_md_info;
-+	struct mlxsw_sp_port *mlxsw_sp_port;
++	ip -4 route del default vrf v$h1 nexthop via 192.0.2.2
 +
-+	md->trunc_size = truncate ? trunc_size : skb->len;
-+	md->in_ifindex = in_ifindex;
-+	mlxsw_sp_port = mlxsw_sp_sample_tx_port_get(mlxsw_sp, rx_md_info);
-+	md->out_ifindex = mlxsw_sp_port && mlxsw_sp_port->dev ?
-+			  mlxsw_sp_port->dev->ifindex : 0;
-+	md->out_tc_valid = rx_md_info->tx_tc_valid;
-+	md->out_tc = rx_md_info->tx_tc;
-+	md->out_tc_occ_valid = rx_md_info->tx_congestion_valid;
-+	md->out_tc_occ = rx_md_info->tx_congestion;
-+	md->latency_valid = rx_md_info->latency_valid;
-+	md->latency = rx_md_info->latency;
-+	md->latency <<= MLXSW_SP_MIRROR_LATENCY_SHIFT;
++	simple_if_fini $h1 192.0.2.1/28
 +}
 +
- static void mlxsw_sp_rx_sample_listener(struct sk_buff *skb, u8 local_port,
- 					void *trap_ctx)
- {
-@@ -229,8 +278,9 @@ static void mlxsw_sp_rx_sample_listener(struct sk_buff *skb, u8 local_port,
- 	 * Ethernet header.
- 	 */
- 	skb_push(skb, ETH_HLEN);
--	md.trunc_size = sample->truncate ? sample->trunc_size : skb->len;
--	md.in_ifindex = mlxsw_sp_port->dev->ifindex;
-+	mlxsw_sp_psample_md_init(mlxsw_sp, &md, skb,
-+				 mlxsw_sp_port->dev->ifindex, sample->truncate,
-+				 sample->trunc_size);
- 	psample_sample_packet(sample->psample_group, skb, sample->rate, &md);
- out:
- 	consume_skb(skb);
++h2_create()
++{
++	simple_if_init $h2 198.51.100.1/28
++
++	ip -4 route add default vrf v$h2 nexthop via 198.51.100.2
++}
++
++h2_destroy()
++{
++	ip -4 route del default vrf v$h2 nexthop via 198.51.100.2
++
++	simple_if_fini $h2 198.51.100.1/28
++}
++
++h3_create()
++{
++	ip link set dev $h3 down
++	ip link add name ${h3}_bond type bond mode 802.3ad
++	ip link set dev $h3 master ${h3}_bond
++
++	simple_if_init ${h3}_bond 192.0.2.17/28
++
++	ip -4 route add default vrf v${h3}_bond nexthop via 192.0.2.18
++}
++
++h3_destroy()
++{
++	ip -4 route del default vrf v${h3}_bond nexthop via 192.0.2.18
++
++	simple_if_fini ${h3}_bond 192.0.2.17/28
++
++	ip link set dev $h3 nomaster
++	ip link del dev ${h3}_bond
++}
++
++h4_create()
++{
++	ip link set dev $h4 down
++	ip link add name ${h4}_bond type bond mode 802.3ad
++	ip link set dev $h4 master ${h4}_bond
++
++	simple_if_init ${h4}_bond 198.51.100.17/28
++
++	ip -4 route add default vrf v${h4}_bond nexthop via 198.51.100.18
++}
++
++h4_destroy()
++{
++	ip -4 route del default vrf v${h4}_bond nexthop via 198.51.100.18
++
++	simple_if_fini ${h4}_bond 198.51.100.17/28
++
++	ip link set dev $h4 nomaster
++	ip link del dev ${h4}_bond
++}
++
++router_create()
++{
++	ip link set dev $rp1 up
++	__addr_add_del $rp1 add 192.0.2.2/28
++	tc qdisc add dev $rp1 clsact
++
++	ip link set dev $rp2 up
++	__addr_add_del $rp2 add 198.51.100.2/28
++	tc qdisc add dev $rp2 clsact
++
++	ip link add name ${rp3}_bond type bond mode 802.3ad
++	ip link set dev $rp3 master ${rp3}_bond
++	__addr_add_del ${rp3}_bond add 192.0.2.18/28
++	tc qdisc add dev $rp3 clsact
++	ip link set dev ${rp3}_bond up
++
++	ip link add name ${rp4}_bond type bond mode 802.3ad
++	ip link set dev $rp4 master ${rp4}_bond
++	__addr_add_del ${rp4}_bond add 198.51.100.18/28
++	tc qdisc add dev $rp4 clsact
++	ip link set dev ${rp4}_bond up
++}
++
++router_destroy()
++{
++	ip link set dev ${rp4}_bond down
++	tc qdisc del dev $rp4 clsact
++	__addr_add_del ${rp4}_bond del 198.51.100.18/28
++	ip link set dev $rp4 nomaster
++	ip link del dev ${rp4}_bond
++
++	ip link set dev ${rp3}_bond down
++	tc qdisc del dev $rp3 clsact
++	__addr_add_del ${rp3}_bond del 192.0.2.18/28
++	ip link set dev $rp3 nomaster
++	ip link del dev ${rp3}_bond
++
++	tc qdisc del dev $rp2 clsact
++	__addr_add_del $rp2 del 198.51.100.2/28
++	ip link set dev $rp2 down
++
++	tc qdisc del dev $rp1 clsact
++	__addr_add_del $rp1 del 192.0.2.2/28
++	ip link set dev $rp1 down
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	rp1=${NETIFS[p2]}
++	rp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++	h3=${NETIFS[p5]}
++	rp3=${NETIFS[p6]}
++	h4=${NETIFS[p7]}
++	rp4=${NETIFS[p8]}
++
++	vrf_prepare
++
++	h1_create
++	h2_create
++	h3_create
++	h4_create
++	router_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	rm -f $CAPTURE_FILE
++
++	router_destroy
++	h4_destroy
++	h3_destroy
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
++}
++
++psample_capture_start()
++{
++	rm -f $CAPTURE_FILE
++
++	psample &> $CAPTURE_FILE &
++
++	sleep 1
++}
++
++psample_capture_stop()
++{
++	{ kill %% && wait %%; } 2>/dev/null
++}
++
++__tc_sample_rate_test()
++{
++	local desc=$1; shift
++	local dip=$1; shift
++	local pkts pct
++
++	RET=0
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 32 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B $dip -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	pkts=$(grep -e "group 1 " $CAPTURE_FILE | wc -l)
++	pct=$((100 * (pkts - 100) / 100))
++	(( -25 <= pct && pct <= 25))
++	check_err $? "Expected 100 packets, got $pkts packets, which is $pct% off. Required accuracy is +-25%"
++
++	log_test "tc sample rate ($desc)"
++
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++}
++
++tc_sample_rate_test()
++{
++	__tc_sample_rate_test "forward" 198.51.100.1
++	__tc_sample_rate_test "local receive" 192.0.2.2
++}
++
++tc_sample_max_rate_test()
++{
++	RET=0
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate $((35 * 10 ** 8)) group 1
++	check_err $? "Failed to configure sampling rule with max rate"
++
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate $((35 * 10 ** 8 + 1)) \
++		group 1 &> /dev/null
++	check_fail $? "Managed to configure sampling rate above maximum"
++
++	log_test "tc sample maximum rate"
++}
++
++tc_sample_group_conflict_test()
++{
++	RET=0
++
++	# Test that two sampling rules cannot be configured on the same port
++	# with different groups.
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 1024 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	tc filter add dev $rp1 ingress protocol all pref 2 handle 102 matchall \
++		skip_sw action sample rate 1024 group 2 &> /dev/null
++	check_fail $? "Managed to configure sampling rule with conflicting group"
++
++	log_test "tc sample group conflict test"
++
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++}
++
++tc_sample_md_iif_test()
++{
++	local rp1_ifindex
++
++	RET=0
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 5 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	rp1_ifindex=$(ip -j -p link show dev $rp1 | jq '.[]["ifindex"]')
++	grep -q -e "in-ifindex $rp1_ifindex " $CAPTURE_FILE
++	check_err $? "Sampled packets do not have expected in-ifindex"
++
++	log_test "tc sample iif"
++
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++}
++
++tc_sample_md_lag_iif_test()
++{
++	local rp3_ifindex
++
++	RET=0
++
++	tc filter add dev $rp3 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 5 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v${h3}_bond $MZ ${h3}_bond -c 3200 -d 1msec -p 64 \
++		-A 192.0.2.17 -B 198.51.100.17 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	rp3_ifindex=$(ip -j -p link show dev $rp3 | jq '.[]["ifindex"]')
++	grep -q -e "in-ifindex $rp3_ifindex " $CAPTURE_FILE
++	check_err $? "Sampled packets do not have expected in-ifindex"
++
++	log_test "tc sample lag iif"
++
++	tc filter del dev $rp3 ingress protocol all pref 1 handle 101 matchall
++}
++
++tc_sample_md_oif_test()
++{
++	local rp2_ifindex
++
++	RET=0
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 5 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	rp2_ifindex=$(ip -j -p link show dev $rp2 | jq '.[]["ifindex"]')
++	grep -q -e "out-ifindex $rp2_ifindex " $CAPTURE_FILE
++	check_err $? "Sampled packets do not have expected out-ifindex"
++
++	log_test "tc sample oif"
++
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++}
++
++tc_sample_md_lag_oif_test()
++{
++	local rp4_ifindex
++
++	RET=0
++
++	tc filter add dev $rp3 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 5 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v${h3}_bond $MZ ${h3}_bond -c 3200 -d 1msec -p 64 \
++		-A 192.0.2.17 -B 198.51.100.17 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	rp4_ifindex=$(ip -j -p link show dev $rp4 | jq '.[]["ifindex"]')
++	grep -q -e "out-ifindex $rp4_ifindex " $CAPTURE_FILE
++	check_err $? "Sampled packets do not have expected out-ifindex"
++
++	log_test "tc sample lag oif"
++
++	tc filter del dev $rp3 ingress protocol all pref 1 handle 101 matchall
++}
++
++tc_sample_md_out_tc_test()
++{
++	RET=0
++
++	# Output traffic class is not supported on Spectrum-1.
++	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 5 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	# By default, all the packets should go to the same traffic class (0).
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	grep -q -e "out-tc 0 " $CAPTURE_FILE
++	check_err $? "Sampled packets do not have expected out-tc (0)"
++
++	# Map all priorities to highest traffic class (7) and check reported
++	# out-tc.
++	tc qdisc replace dev $rp2 root handle 1: \
++		prio bands 3 priomap 0 0 0 0 0 0 0 0
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	grep -q -e "out-tc 7 " $CAPTURE_FILE
++	check_err $? "Sampled packets do not have expected out-tc (7)"
++
++	log_test "tc sample out-tc"
++
++	tc qdisc del dev $rp2 root handle 1:
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++}
++
++tc_sample_md_out_tc_occ_test()
++{
++	local backlog pct occ
++
++	RET=0
++
++	# Output traffic class occupancy is not supported on Spectrum-1.
++	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 1024 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	# Configure a shaper on egress to create congestion.
++	tc qdisc replace dev $rp2 root handle 1: \
++		tbf rate 1Mbit burst 256k limit 1M
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 0 -d 1usec -p 1400 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q &
++
++	# Allow congestion to reach steady state.
++	sleep 10
++
++	backlog=$(tc -j -p -s qdisc show dev $rp2 | jq '.[0]["backlog"]')
++
++	# Kill mausezahn.
++	{ kill %% && wait %%; } 2>/dev/null
++
++	psample_capture_stop
++
++	# Record last congestion sample.
++	occ=$(grep -e "out-tc-occ " $CAPTURE_FILE | tail -n 1 | \
++		cut -d ' ' -f 16)
++
++	pct=$((100 * (occ - backlog) / backlog))
++	(( -1 <= pct && pct <= 1))
++	check_err $? "Recorded a congestion of $backlog bytes, but sampled congestion is $occ bytes, which is $pct% off. Required accuracy is +-5%"
++
++	log_test "tc sample out-tc-occ"
++
++	tc qdisc del dev $rp2 root handle 1:
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.29.2
 
