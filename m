@@ -2,88 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4801433A4DD
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A1833A4E4
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:54:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235450AbhCNMr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 08:47:27 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:46873 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235207AbhCNMrL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:47:11 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id EC7015808B4;
-        Sun, 14 Mar 2021 08:47:09 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 14 Mar 2021 08:47:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=t0m7jd
-        tPqXIaqEcRWEY/GD8RkZot8D/MuiQxA9B2pYs=; b=ejydQnkGcNXaiKCSscCZ++
-        ewRtl7FTPOSZEJpo+rhevzO+TdX9/RZbSTFylQDnLNthrj/z+MSQD3MtuV7YEeTm
-        9xn6wJfFJGvKUuCXxCdUGGz+fkQSfi3vuqN0Y430SqabqN+bI43UYJXiUwtz9oqM
-        eM75e9CDGD8uQPnu+rANJ9bHWLwTw6uk+g4zlNiY8ATUZIrhYsC+FIF9PJAkHT6Z
-        Ab8ZLYbqPhM+7uonUNc/MrYllQGqyWaUTgmCA0YC/chYhuYek96CfPWeIn9z7NMw
-        CHlP2NRYFCQW+83HIwrjf64Qx0sIx4J3A90cAeZ5waz9jj6sVwYxGhWPi7VUW6Tg
-        ==
-X-ME-Sender: <xms:zQVOYImOxbRrOC62a0FhBDpqlEu44XEzzKQrCY_XmxMzZCTZ1uHtLQ>
-    <xme:zQVOYH3ibvLkOF6iRSU-5njEOIkTgT1YhGRIIJu7KUSJGFvjhvQi3dazqGw97DIBH
-    5pL4R4EGKhAEe8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvjedgudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:zQVOYGoVTwFsNTdYqTsgiXm2ZaTWguNYiNtUuEfXt-TjCi1IxkYuGQ>
-    <xmx:zQVOYEnGhIpes_-hHQ8eu7moHxYLrXFynzfAsZ948I-Y6ieFTQUbmQ>
-    <xmx:zQVOYG3HPZpL3x8zjKM-LDZa9YEu7mbf_oXk2dN1Aln_BiKMAk79lw>
-    <xmx:zQVOYPkF-t5NpoGbdjtKa5Lz4w47aUD434ksm68pKkIyI_QdSZ4uYg>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D1F03240057;
-        Sun, 14 Mar 2021 08:47:08 -0400 (EDT)
-Date:   Sun, 14 Mar 2021 14:47:06 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rui.zhang@intel.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, lukasz.luba@arm.com,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 1/5] thermal/drivers/core: Use a char pointer for the
- cooling device name
-Message-ID: <YE4FyiFgwM8cf5xe@shredder.lan>
-References: <20210314111333.16551-1-daniel.lezcano@linaro.org>
+        id S235414AbhCNMx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235205AbhCNMxK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:53:10 -0400
+Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC64C061574
+        for <netdev@vger.kernel.org>; Sun, 14 Mar 2021 05:53:09 -0700 (PDT)
+Received: from p548da928.dip0.t-ipconnect.de ([84.141.169.40] helo=kmk0.Speedport_W_724V_09011603_06_007); authenticated
+        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1lLQEw-0003lK-5P; Sun, 14 Mar 2021 13:53:02 +0100
+From:   Kurt Kanzenbach <kurt@kmk-computers.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Kurt Kanzenbach <kurt@kmk-computers.de>
+Subject: [PATCH net-next] net: dsa: hellcreek: Offload bridge port flags
+Date:   Sun, 14 Mar 2021 13:52:08 +0100
+Message-Id: <20210314125208.17378-1-kurt@kmk-computers.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210314111333.16551-1-daniel.lezcano@linaro.org>
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1615726389;ba1a95fd;
+X-HE-SMSGID: 1lLQEw-0003lK-5P
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 14, 2021 at 12:13:29PM +0100, Daniel Lezcano wrote:
-> We want to have any kind of name for the cooling devices as we do no
-> longer want to rely on auto-numbering. Let's replace the cooling
-> device's fixed array by a char pointer to be allocated dynamically
-> when registering the cooling device, so we don't limit the length of
-> the name.
-> 
-> Rework the error path at the same time as we have to rollback the
-> allocations in case of error.
-> 
-> Tested with a dummy device having the name:
->  "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
-> 
-> A village on the island of Anglesey (Wales), known to have the longest
-> name in Europe.
-> 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+The switch implements unicast and multicast filtering per port.
+Add support for it. By default filtering is disabled.
 
-Tested-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+---
+ drivers/net/dsa/hirschmann/hellcreek.c | 129 ++++++++++++++++++++-----
+ 1 file changed, 104 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index c1f873a4fbc4..6cba02307bda 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -600,6 +600,83 @@ static void hellcreek_setup_vlan_membership(struct dsa_switch *ds, int port,
+ 		hellcreek_unapply_vlan(hellcreek, upstream, vid);
+ }
+ 
++static void hellcreek_port_set_ucast_flood(struct hellcreek *hellcreek,
++					   int port, bool enable)
++{
++	struct hellcreek_port *hellcreek_port;
++	u16 val;
++
++	hellcreek_port = &hellcreek->ports[port];
++
++	dev_dbg(hellcreek->dev, "%s unicast flooding on port %d\n",
++		enable ? "Enable" : "Disable", port);
++
++	mutex_lock(&hellcreek->reg_lock);
++
++	hellcreek_select_port(hellcreek, port);
++	val = hellcreek_port->ptcfg;
++	if (enable)
++		val &= ~HR_PTCFG_UUC_FLT;
++	else
++		val |= HR_PTCFG_UUC_FLT;
++	hellcreek_write(hellcreek, val, HR_PTCFG);
++	hellcreek_port->ptcfg = val;
++
++	mutex_unlock(&hellcreek->reg_lock);
++}
++
++static void hellcreek_port_set_mcast_flood(struct hellcreek *hellcreek,
++					   int port, bool enable)
++{
++	struct hellcreek_port *hellcreek_port;
++	u16 val;
++
++	hellcreek_port = &hellcreek->ports[port];
++
++	dev_dbg(hellcreek->dev, "%s multicast flooding on port %d\n",
++		enable ? "Enable" : "Disable", port);
++
++	mutex_lock(&hellcreek->reg_lock);
++
++	hellcreek_select_port(hellcreek, port);
++	val = hellcreek_port->ptcfg;
++	if (enable)
++		val &= ~HR_PTCFG_UMC_FLT;
++	else
++		val |= HR_PTCFG_UMC_FLT;
++	hellcreek_write(hellcreek, val, HR_PTCFG);
++	hellcreek_port->ptcfg = val;
++
++	mutex_unlock(&hellcreek->reg_lock);
++}
++
++static int hellcreek_pre_bridge_flags(struct dsa_switch *ds, int port,
++				      struct switchdev_brport_flags flags,
++				      struct netlink_ext_ack *extack)
++{
++	if (flags.mask & ~(BR_FLOOD | BR_MCAST_FLOOD))
++		return -EINVAL;
++
++	return 0;
++}
++
++static int hellcreek_bridge_flags(struct dsa_switch *ds, int port,
++				  struct switchdev_brport_flags flags,
++				  struct netlink_ext_ack *extack)
++{
++	struct hellcreek *hellcreek = ds->priv;
++
++	if (flags.mask & BR_FLOOD)
++		hellcreek_port_set_ucast_flood(hellcreek, port,
++					       !!(flags.val & BR_FLOOD));
++
++	if (flags.mask & BR_MCAST_FLOOD)
++		hellcreek_port_set_mcast_flood(hellcreek, port,
++					       !!(flags.val & BR_MCAST_FLOOD));
++
++	return 0;
++}
++
+ static int hellcreek_port_bridge_join(struct dsa_switch *ds, int port,
+ 				      struct net_device *br)
+ {
+@@ -1719,31 +1796,33 @@ static int hellcreek_port_setup_tc(struct dsa_switch *ds, int port,
+ }
+ 
+ static const struct dsa_switch_ops hellcreek_ds_ops = {
+-	.get_ethtool_stats   = hellcreek_get_ethtool_stats,
+-	.get_sset_count	     = hellcreek_get_sset_count,
+-	.get_strings	     = hellcreek_get_strings,
+-	.get_tag_protocol    = hellcreek_get_tag_protocol,
+-	.get_ts_info	     = hellcreek_get_ts_info,
+-	.phylink_validate    = hellcreek_phylink_validate,
+-	.port_bridge_join    = hellcreek_port_bridge_join,
+-	.port_bridge_leave   = hellcreek_port_bridge_leave,
+-	.port_disable	     = hellcreek_port_disable,
+-	.port_enable	     = hellcreek_port_enable,
+-	.port_fdb_add	     = hellcreek_fdb_add,
+-	.port_fdb_del	     = hellcreek_fdb_del,
+-	.port_fdb_dump	     = hellcreek_fdb_dump,
+-	.port_hwtstamp_set   = hellcreek_port_hwtstamp_set,
+-	.port_hwtstamp_get   = hellcreek_port_hwtstamp_get,
+-	.port_prechangeupper = hellcreek_port_prechangeupper,
+-	.port_rxtstamp	     = hellcreek_port_rxtstamp,
+-	.port_setup_tc	     = hellcreek_port_setup_tc,
+-	.port_stp_state_set  = hellcreek_port_stp_state_set,
+-	.port_txtstamp	     = hellcreek_port_txtstamp,
+-	.port_vlan_add	     = hellcreek_vlan_add,
+-	.port_vlan_del	     = hellcreek_vlan_del,
+-	.port_vlan_filtering = hellcreek_vlan_filtering,
+-	.setup		     = hellcreek_setup,
+-	.teardown	     = hellcreek_teardown,
++	.get_ethtool_stats     = hellcreek_get_ethtool_stats,
++	.get_sset_count	       = hellcreek_get_sset_count,
++	.get_strings	       = hellcreek_get_strings,
++	.get_tag_protocol      = hellcreek_get_tag_protocol,
++	.get_ts_info	       = hellcreek_get_ts_info,
++	.phylink_validate      = hellcreek_phylink_validate,
++	.port_bridge_flags     = hellcreek_bridge_flags,
++	.port_bridge_join      = hellcreek_port_bridge_join,
++	.port_bridge_leave     = hellcreek_port_bridge_leave,
++	.port_disable	       = hellcreek_port_disable,
++	.port_enable	       = hellcreek_port_enable,
++	.port_fdb_add	       = hellcreek_fdb_add,
++	.port_fdb_del	       = hellcreek_fdb_del,
++	.port_fdb_dump	       = hellcreek_fdb_dump,
++	.port_hwtstamp_set     = hellcreek_port_hwtstamp_set,
++	.port_hwtstamp_get     = hellcreek_port_hwtstamp_get,
++	.port_pre_bridge_flags = hellcreek_pre_bridge_flags,
++	.port_prechangeupper   = hellcreek_port_prechangeupper,
++	.port_rxtstamp	       = hellcreek_port_rxtstamp,
++	.port_setup_tc	       = hellcreek_port_setup_tc,
++	.port_stp_state_set    = hellcreek_port_stp_state_set,
++	.port_txtstamp	       = hellcreek_port_txtstamp,
++	.port_vlan_add	       = hellcreek_vlan_add,
++	.port_vlan_del	       = hellcreek_vlan_del,
++	.port_vlan_filtering   = hellcreek_vlan_filtering,
++	.setup		       = hellcreek_setup,
++	.teardown	       = hellcreek_teardown,
+ };
+ 
+ static int hellcreek_probe(struct platform_device *pdev)
+-- 
+2.30.2
+
