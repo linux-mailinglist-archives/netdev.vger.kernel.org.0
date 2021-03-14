@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2859833A233
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 02:42:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6286E33A234
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 02:42:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234894AbhCNBlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 20:41:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
+        id S234913AbhCNBmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 20:42:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234820AbhCNBlX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 20:41:23 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD29C061574
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 17:41:20 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id o10so18332089pgg.4
-        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 17:41:20 -0800 (PST)
+        with ESMTP id S234820AbhCNBls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Mar 2021 20:41:48 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678D5C061574
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 17:41:48 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id z5so13664660plg.3
+        for <netdev@vger.kernel.org>; Sat, 13 Mar 2021 17:41:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BRA6bXYmV8FweMMkwxkbvOMmTEfk9WEd+nrzyfjwTYo=;
-        b=MV3Ni6LlyziBcYNihcfCyrT/WXDEKXws7Hyj4Wh17jP3fKGTrmJdU1morQqTVRTlUE
-         Z2r5keuxZ/HxVUerEdzhXwHN5gqgQUEfT7eF9jPGK9XloGyZS25bKUsorSf2Cg/UzUnu
-         WxQUwYBfSs7/7mAaJ2gPuO6z3h6yyOcnfdVYcFn0rheo6kQ8CsBhu2weCdg4MUAJRo1M
-         htvcTQWxu0dlIt0c0GVtgRwuYI1cRhKiTPTunHS/ALbQweBQS1vBD7lorB+CcVKMQitt
-         Ifm5PaLbFTwg2JbwxQ1Xk5GHgTlAZFq82IScoxFmeLxHKLuYuQ++k9fh3/eKNkKPEp3T
-         shxg==
+        bh=vqZS7AJ5hYa5VdCNSzUw4T8e7p13stksPryGQlQT6Zw=;
+        b=CWzROwIvItmHqOWy0zS4+qIcOVBmqjlSeg6aVpgzFsGjNthdU3HxWArqdJFH+hy/PO
+         GpYcpb00cUhrmSZo52cMMuqSuFm984Rdk+UwXJwddp4uVJIl4s7d8wG9jF1Y1ZGjsAb+
+         KP5Ltbl268e5GchuChrZLMpyKvqGdLBk/Gcu0AfEAcPdKLZv2RZcOPAoZnVkLQwBOlZx
+         ubz7LUJb/c2d+gepIiMB33ImIfhc1p6qDRGuI/lHO4rqmFbgcT8NrAVYfu+b6ccM6ngN
+         f98YCSTLZVowMDVsd5B2qqr8uYcTO/cNEgyt11e4DcbFLP9GYyQDKNtFcv8fqap/ZgVy
+         c8Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BRA6bXYmV8FweMMkwxkbvOMmTEfk9WEd+nrzyfjwTYo=;
-        b=HLKZ8xUiClvOyKo9p/Ic3oVIlr9AufwuHAMgB8HxeHlOCYXZ7sBmJ8i9ACHOXVDSht
-         Lp49vMsVIyMaO4RDjjSxwJdwl6toLfioUySbccn9h5bhH5cvkjfYWek/YX334v6p+XaV
-         uDuyTssRF/YfQVB2lnbSChqm6T0td2BrcvWK+SX/+eP0eloZwseJ35ZyBrKkGlVIW5lv
-         rH8aGXg7cik7Whl1PyIkKZ0aBSmkUpo5YGw73j1d9DwM+Di1eQSCE5Hr69lJk0/bnVOp
-         k6g6hjhip4IaZKV3uHeqrnGUYUJfu/C8XBlohDiL2xymV/uI7ZHCbSjGWRYm4yaAlDgY
-         ljBg==
-X-Gm-Message-State: AOAM531W6VjoehnPhelS9RmMTH2Yf7/YK9HD49IW5sLjrW9rrTI1Kk/Q
-        ndwTAr98bh/GfOaPPbzd9KANhl8ybKM=
-X-Google-Smtp-Source: ABdhPJwkZkpV+5Jor4uX27on42TBeRwqob3aZglRSTLREkaueMo0E8bHpVPDekzOfut9J2X6tdgIqg==
-X-Received: by 2002:a63:e44a:: with SMTP id i10mr17400120pgk.404.1615686079550;
-        Sat, 13 Mar 2021 17:41:19 -0800 (PST)
+        bh=vqZS7AJ5hYa5VdCNSzUw4T8e7p13stksPryGQlQT6Zw=;
+        b=bks2Vg8XZuV4fD/IECS+oMwY7BQqgT134J2AlvisLUd0BETXZyRTch7I5PAqy2TbA6
+         7o8nOTqme0tU3/9HH/pa1tVhx4gjxdrlVZniipIjKBhw8FQiH/XmeWkJBlA8q6CignOY
+         DR8D/9lpznxh5Mjk7JfkPqDgYxMbCyJ6bqEid2Dm5yt3wlciHKcGel4gTEtp09mfxPgP
+         M0XYod2hWgl8hYK+v1YtKguo18LE1RVaLjwxLx0STr5/ItxkFSS0S1MgC7C+lqsdOPhm
+         nS+fJVupwFwOZwpPbmbymGxk24uJF1kiX/F5O4w7mkLxNYUP4ztpmm0zhwxprKkimhau
+         2P/A==
+X-Gm-Message-State: AOAM533lM+6lCDany7S8PqEqTHXYMNZVjkcjVtU1j+g8Xm8bpBViZwhW
+        NvjEhOIvvbSyC7IrvnbBc8tGHYMHev8=
+X-Google-Smtp-Source: ABdhPJyHtr9YO2JHuAhLhp5sc6M1WpXoVChnMI3vALbiH2X1I9NWfThgYCbOfGVSuOYA56wzkKTi0w==
+X-Received: by 2002:a17:90a:2c4b:: with SMTP id p11mr6091236pjm.75.1615686107642;
+        Sat, 13 Mar 2021 17:41:47 -0800 (PST)
 Received: from [10.230.29.33] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id g3sm10068744pfo.120.2021.03.13.17.41.18
+        by smtp.gmail.com with ESMTPSA id j20sm6539041pjn.27.2021.03.13.17.41.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Mar 2021 17:41:19 -0800 (PST)
-Subject: Re: [PATCH net-next v2 3/4] net: dsa: hellcreek: Move common code to
- helper
+        Sat, 13 Mar 2021 17:41:47 -0800 (PST)
+Subject: Re: [PATCH net-next v2 4/4] net: dsa: hellcreek: Add devlink FDB
+ region
 To:     Kurt Kanzenbach <kurt@kmk-computers.de>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,14 +57,14 @@ To:     Kurt Kanzenbach <kurt@kmk-computers.de>,
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 References: <20210313093939.15179-1-kurt@kmk-computers.de>
- <20210313093939.15179-4-kurt@kmk-computers.de>
+ <20210313093939.15179-5-kurt@kmk-computers.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <4d1a776d-18af-9d54-1f63-a9ed409c2782@gmail.com>
-Date:   Sat, 13 Mar 2021 17:41:17 -0800
+Message-ID: <97ec9cd3-ea41-7ffd-345f-2130879d15af@gmail.com>
+Date:   Sat, 13 Mar 2021 17:41:45 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210313093939.15179-4-kurt@kmk-computers.de>
+In-Reply-To: <20210313093939.15179-5-kurt@kmk-computers.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,8 +75,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 3/13/2021 1:39 AM, Kurt Kanzenbach wrote:
-> There are two functions which need to populate fdb entries. Move that to a
-> helper function.
+> Allow to dump the FDB table via devlink. This is a useful debugging feature.
 > 
 > Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
 > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
