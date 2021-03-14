@@ -2,353 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D89833A4A0
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:05:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FAA33A4AD
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235231AbhCNMEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 08:04:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29590 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235100AbhCNMEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:04:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615723451;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aY/S/FTRhF1IIUzKRmvqUk2ewrI0/2471cM48vv/Hok=;
-        b=Ie1MHZ87ylcgERbwFJfp8jWlR8D6tn4BI0rKxB1wbzuZ26ji6E7wRMOkLprJAP7DiHG4Es
-        qe7SWEA9et/0OgB9kojdnbyawA6oPGoSIvziklflrEQcMpuuefxe4VZqT/MjzNJOI/k2At
-        1TlV+OFGgL0WuOfXrmyckeaw+5gFSvU=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-30-0R6Fe-wSNXqyWCcHC2pfkQ-1; Sun, 14 Mar 2021 08:04:09 -0400
-X-MC-Unique: 0R6Fe-wSNXqyWCcHC2pfkQ-1
-Received: by mail-wr1-f69.google.com with SMTP id h30so13742783wrh.10
-        for <netdev@vger.kernel.org>; Sun, 14 Mar 2021 05:04:09 -0700 (PDT)
+        id S235254AbhCNMT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229837AbhCNMTJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:19:09 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48DFC061574;
+        Sun, 14 Mar 2021 05:19:08 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id jt13so61747104ejb.0;
+        Sun, 14 Mar 2021 05:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=q878vqPaFdQsV7G5cUf5KWZha9MQGP4Zu9XCF3Zzrww=;
+        b=V4meSn09NfQ6e8oh3hoVuO/1LHbW0ZidqrcSYPKxk5chfl5vr2XdKL09WYaOJMlQCO
+         871OFrhQfE55i3nRlavweQIGgqT/krIPAnwBTVc060AmdvdSVm2aQ3nRPEoviZNYB54k
+         DhKRnUjqhT+2Sluhh5HwdVHl9dKEC0hHV4iwlr+lz8OCV2dDrtAC941sdPRPxkk6SkUb
+         R5D0djf5CKaTR8CrXtiCry8EOQ37771qmK6Jxl987cywWOosI191nGZR9YouRTRLvXF0
+         O6xmhETKkORFthsRW01FGpIXLTU3ZxIqtySuJetHcN4SO4xTXfIXNmOGO+K1f73o2xk4
+         jRjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aY/S/FTRhF1IIUzKRmvqUk2ewrI0/2471cM48vv/Hok=;
-        b=b0k8bhRNrBbt4P5GOgsePNlJN2DYyMQXfkchmI1Bw/j1bDQ3m3xtot+eKilmvjn77Q
-         AuU+zPe5bbQWKxVQurcUbnPxilmxi4u2ObivVbv4BrPBJRLGesyOtdfnWcFMDdE97Mws
-         N9aai3l7DnZ34OwhkaSG4Uv57l+am4gFRHJepE6/1Y0XqKbdxD+yIARvLIu9Hypt47QL
-         9NwekZ3hpI3/8vnKR5A3NSB7VXPFZ0FX4O70kLkdVjBBOx613OQEoRIWSS/jdgDT34Wu
-         /qfQ9HeYsPe5RzkiK3f8dNQKlCplvzP39Nyzz0W5tDEKiMrXqwxeqDV+iF6Nh/R9lSaS
-         d7YA==
-X-Gm-Message-State: AOAM532jexFzY0gSqZOAVtfASBgyxs/hEW2dGAuUOrjWeNd3VdM2FjAL
-        lBpAFtIQZjgFIz7GCbr7INisY5mVI3MCBDVybhPwMzEPNtZPyk2bShvHeNi7PLvQXgiYgYXxHRJ
-        1HE/Ohr20Om4wSUXE
-X-Received: by 2002:a7b:c188:: with SMTP id y8mr21130319wmi.76.1615723448321;
-        Sun, 14 Mar 2021 05:04:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy+sEiFZJt2o9gMIAb/Hb1pr2rxURTTFkDLdtXZBjnziIur7JR21nXdVj1FKcxXjHqcZbFC7A==
-X-Received: by 2002:a7b:c188:: with SMTP id y8mr21130296wmi.76.1615723447986;
-        Sun, 14 Mar 2021 05:04:07 -0700 (PDT)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id u3sm14827315wrt.82.2021.03.14.05.04.05
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=q878vqPaFdQsV7G5cUf5KWZha9MQGP4Zu9XCF3Zzrww=;
+        b=XoME/AjVbYWBRMQHjGJvfNjfkHmAVENtXPkeqvHxjWKQV0QyQKROAXLrjPsS1ma+FG
+         tS1rXOqeYZSdl32LZsnqdNcrV4bddy5Rhy6G/33UsSFfuA5BzUfnICBngiCS4iap/5mt
+         mSeA92XQIf9t4QqoiqY/vZOLU2BQde/V/+vQyo15zNSv8JRjt1BhqwiE8xAgH7/Ja3QH
+         +x6GBqfUgJf+JA0uhUzoPeyxdDidW7J3U6M3lqA3+XNxicKW9wIxEpUGQYLVWvAuBdxE
+         EPkeaRkPKpd7mygexOgwx1sQ6jE+1b35XTsdRBSpG8awFd8sGnOgjMRZp98I17LLsKDM
+         BCTA==
+X-Gm-Message-State: AOAM530DIaFfDiLvy8uDOgthBQ2kT81eW8v2oxLpH5w7W0HmDFRsvLjz
+        QNmnpZ+AMQseLTHbgf/Trgs0id0WFNZmsrE9
+X-Google-Smtp-Source: ABdhPJz6+irM/7cwaxZM44ih8oze33caTttSKlQn6Gp5ovWyL5rb3Z4CGM+nntrkGJi2rDhamD1orA==
+X-Received: by 2002:a17:906:4410:: with SMTP id x16mr18553102ejo.446.1615724347513;
+        Sun, 14 Mar 2021 05:19:07 -0700 (PDT)
+Received: from TRWS9215 ([88.245.22.54])
+        by smtp.gmail.com with ESMTPSA id s11sm6206451edt.27.2021.03.14.05.19.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Mar 2021 05:04:07 -0700 (PDT)
-Date:   Sun, 14 Mar 2021 08:04:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v8 net-next] virtio-net: support XDP when not more queues
-Message-ID: <20210314045946-mutt-send-email-mst@kernel.org>
-References: <1615343085-39786-1-git-send-email-xuanzhuo@linux.alibaba.com>
+        Sun, 14 Mar 2021 05:19:06 -0700 (PDT)
+Message-ID: <b1b796b48a75b3ef3d6cebac89b0be45c5bf4611.camel@gmail.com>
+Subject: Re: [BUG] net: rds: rds_send_probe memory leak
+From:   Fatih Yildirim <yildirim.fatih@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Date:   Sun, 14 Mar 2021 15:19:05 +0300
+In-Reply-To: <YE3K+zeWnJ/hVpQS@kroah.com>
+References: <a3036ea4ee2a06e4b3acd3b438025754d11f65fc.camel@gmail.com>
+         <YE3K+zeWnJ/hVpQS@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1615343085-39786-1-git-send-email-xuanzhuo@linux.alibaba.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 10, 2021 at 10:24:45AM +0800, Xuan Zhuo wrote:
-> The number of queues implemented by many virtio backends is limited,
-> especially some machines have a large number of CPUs. In this case, it
-> is often impossible to allocate a separate queue for
-> XDP_TX/XDP_REDIRECT, then xdp cannot be loaded to work, even xdp does
-> not use the XDP_TX/XDP_REDIRECT.
+On Sun, 2021-03-14 at 09:36 +0100, Greg KH wrote:
+> On Sun, Mar 14, 2021 at 11:23:10AM +0300, Fatih Yildirim wrote:
+> > Hi Santosh,
+> > 
+> > I've been working on a memory leak bug reported by syzbot.
+> > https://syzkaller.appspot.com/bug?id=39b72114839a6dbd66c1d2104522698a813f9ae2
+> > 
+> > It seems that memory allocated in rds_send_probe function is not
+> > freed.
+> > 
+> > Let me share my observations.
+> > rds_message is allocated at the beginning of rds_send_probe
+> > function.
+> > Then it is added to cp_send_queue list of rds_conn_path and
+> > refcount
+> > is increased by one.
+> > Next, in rds_send_xmit function it is moved from cp_send_queue list
+> > to
+> > cp_retrans list, and again refcount is increased by one.
+> > Finally in rds_loop_xmit function refcount is increased by one.
+> > So, total refcount is 4.
+> > However, rds_message_put is called three times, in rds_send_probe,
+> > rds_send_remove_from_sock and rds_send_xmit functions. It seems
+> > that
+> > one more rds_message_put is needed.
+> > Would you please check and share your comments on this issue?
 > 
-> This patch allows XDP_TX/XDP_REDIRECT to run by reuse the existing SQ
-> with __netif_tx_lock() hold when there are not enough queues.
+> Do you have a proposed patch that syzbot can test to verify if this
+> is
+> correct or not?
 > 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> Acked-by: Jason Wang <jasowang@redhat.com>
-> ---
-> v8: 1. explain why use macros not inline functions. (suggested by Michael S. Tsirkin)
->     2. empty line after variable definitions inside marcos. (suggested by Michael S. Tsirkin)
+> thanks,
 > 
-> v7: 1. use macros to implement get/put
->     2. remove 'flag'. (suggested by Jason Wang)
-> 
-> v6: 1. use __netif_tx_acquire()/__netif_tx_release(). (suggested by Jason Wang)
->     2. add note for why not lock. (suggested by Jason Wang)
->     3. Use variable 'flag' to record with or without locked.  It is not safe to
->        use curr_queue_pairs in "virtnet_put_xdp_sq", because it may changed after
->        "virtnet_get_xdp_sq".
-> 
-> v5: change subject from 'support XDP_TX when not more queues'
-> 
-> v4: make sparse happy
->     suggested by Jakub Kicinski
-> 
-> v3: add warning when no more queues
->     suggested by Jesper Dangaard Brouer
-> 
->  drivers/net/virtio_net.c | 62 ++++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 49 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 82e520d..ae82e8e 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -195,6 +195,9 @@ struct virtnet_info {
->  	/* # of XDP queue pairs currently used by the driver */
->  	u16 xdp_queue_pairs;
-> 
-> +	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
-> +	bool xdp_enabled;
-> +
->  	/* I like... big packets and I cannot lie! */
->  	bool big_packets;
-> 
-> @@ -481,12 +484,41 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
->  	return 0;
->  }
-> 
-> -static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
-> -{
-> -	unsigned int qp;
-> -
-> -	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
-> -	return &vi->sq[qp];
-> +/* when vi->curr_queue_pairs > nr_cpu_ids, the txq/sq is only used for xdp tx on
-> + * the current cpu, so it does not need to be locked.
-> + *
-> + * Here we use marco instead of inline functions because we have to deal with
-> + * three issues at the same time: 1. the choice of sq. 2. judge and execute the
-> + * lock/unlock of txq 3. make sparse happy. It is difficult for two inline
-> + * functions to perfectly solve these three problems at the same time.
+> gre gk-h
 
-This comment isn't really helpful :(
+Hi Greg,
 
+Actually, using the .config and the C reproducer, syzbot reports the
+memory leak in rds_send_probe function. Also by enabling
+CONFIG_RDS_DEBUG=y, the debug messages indicates the similar as I
+mentioned above. To give an example, below is the RDS_DEBUG messages.
+Allocated address 000000008a7476e5 has initial ref_count 1. Then there
+are three rds_message_addref calls for the same address making the
+refcount 4, but only three rds_message_put calls which leave the
+address still allocated.
 
-I did the following and sparse does not seem to complain.
+[   60.570681] rds_message_addref(): addref rm 000000008a7476e5 ref 1
+[   60.570707] rds_message_put(): put rm 000000008a7476e5 ref 2
+[   60.570845] rds_message_addref(): addref rm 000000008a7476e5 ref 1
+[   60.570870] rds_message_addref(): addref rm 000000008a7476e5 ref 2
+[   60.570960] rds_message_put(): put rm 000000008a7476e5 ref 3
+[   60.570995] rds_message_put(): put rm 000000008a7476e5 ref 2
 
+Thanks,
+Fatih
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 2ca4bd2fec94..aee11164bab9 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -486,39 +486,36 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
- 
- /* when vi->curr_queue_pairs > nr_cpu_ids, the txq/sq is only used for xdp tx on
-  * the current cpu, so it does not need to be locked.
-- *
-- * Here we use marco instead of inline functions because we have to deal with
-- * three issues at the same time: 1. the choice of sq. 2. judge and execute the
-- * lock/unlock of txq 3. make sparse happy. It is difficult for two inline
-- * functions to perfectly solve these three problems at the same time.
-  */
--#define virtnet_xdp_get_sq(vi) ({                                       \
--	struct netdev_queue *txq;                                       \
--	typeof(vi) v = (vi);                                            \
--	unsigned int qp;                                                \
--									\
--	if (v->curr_queue_pairs > nr_cpu_ids) {                         \
--		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          \
--		qp += smp_processor_id();                               \
--		txq = netdev_get_tx_queue(v->dev, qp);                  \
--		__netif_tx_acquire(txq);                                \
--	} else {                                                        \
--		qp = smp_processor_id() % v->curr_queue_pairs;          \
--		txq = netdev_get_tx_queue(v->dev, qp);                  \
--		__netif_tx_lock(txq, raw_smp_processor_id());           \
--	}                                                               \
--	v->sq + qp;                                                     \
--})
-+static inline struct send_queue *virtnet_xdp_get_sq(struct virtnet_info * vi)
-+{
-+	struct netdev_queue *txq;                                       
-+	typeof(vi) v = (vi);                                            
-+	unsigned int qp;                                                
- 
--#define virtnet_xdp_put_sq(vi, q) {                                     \
--	struct netdev_queue *txq;                                       \
--	typeof(vi) v = (vi);                                            \
--									\
--	txq = netdev_get_tx_queue(v->dev, (q) - v->sq);                 \
--	if (v->curr_queue_pairs > nr_cpu_ids)                           \
--		__netif_tx_release(txq);                                \
--	else                                                            \
--		__netif_tx_unlock(txq);                                 \
-+	if (v->curr_queue_pairs > nr_cpu_ids) {                         
-+		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          
-+		qp += smp_processor_id();                               
-+		txq = netdev_get_tx_queue(v->dev, qp);                  
-+		__netif_tx_acquire(txq);                                
-+	} else {                                                        
-+		qp = smp_processor_id() % v->curr_queue_pairs;          
-+		txq = netdev_get_tx_queue(v->dev, qp);                  
-+		__netif_tx_lock(txq, raw_smp_processor_id());           
-+	}
-+	return v->sq + qp;
-+}
-+
-+static inline void virtnet_xdp_put_sq(struct virtnet_info * vi, struct send_queue *q)
-+{
-+	struct netdev_queue *txq;                                       
-+	typeof(vi) v = (vi);                                            
-+
-+	txq = netdev_get_tx_queue(v->dev, (q) - v->sq);                 
-+	if (v->curr_queue_pairs > nr_cpu_ids)                           
-+		__netif_tx_release(txq);                                
-+	else                                                            
-+		__netif_tx_unlock(txq);                                 
- }
- 
- static int virtnet_xdp_xmit(struct net_device *dev,
-
-so what is the issue then?
-
-
-> + */
-> +#define virtnet_xdp_get_sq(vi) ({                                       \
-> +	struct netdev_queue *txq;                                       \
-> +	typeof(vi) v = (vi);                                            \
-
-It's really always struct virtnet_info *vi isn't it?
-Better use it as such so it's validated.
-
-any local variables in a macro need to have very long names
-otherwise it can shadow a local variable used in
-a macro argument. E.g. __virtnet_xdp_get_sq_v.
-
-> +	unsigned int qp;                                                \
-
-I think it's just a tx queue index ... call it appropriately?
-
-> +									\
-> +	if (v->curr_queue_pairs > nr_cpu_ids) {                         \
-> +		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          \
-> +		qp += smp_processor_id();                               \
-> +		txq = netdev_get_tx_queue(v->dev, qp);                  \
-> +		__netif_tx_acquire(txq);                                \
-> +	} else {                                                        \
-> +		qp = smp_processor_id() % v->curr_queue_pairs;          \
-> +		txq = netdev_get_tx_queue(v->dev, qp);                  \
-> +		__netif_tx_lock(txq, raw_smp_processor_id());           \
-> +	}                                                               \
-> +	v->sq + qp;                                                     \
-> +})
-> +
-> +#define virtnet_xdp_put_sq(vi, q) {                                     \
-> +	struct netdev_queue *txq;                                       \
-> +	typeof(vi) v = (vi);                                            \
-> +									\
-> +	txq = netdev_get_tx_queue(v->dev, (q) - v->sq);                 \
-> +	if (v->curr_queue_pairs > nr_cpu_ids)                           \
-> +		__netif_tx_release(txq);                                \
-> +	else                                                            \
-> +		__netif_tx_unlock(txq);                                 \
-
-
-can curr_queue_pairs change after the call to virtnet_xdp_get_sq?
-If it does the lock/unlock won't be balanced ...
-pls add a comment explaining why that can't happen ...
-or maybe better yet, just return the tx queue number from get and
-pass it to put?
-
-
->  }
-> 
->  static int virtnet_xdp_xmit(struct net_device *dev,
-> @@ -512,7 +544,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
->  	if (!xdp_prog)
->  		return -ENXIO;
-> 
-> -	sq = virtnet_xdp_sq(vi);
-> +	sq = virtnet_xdp_get_sq(vi);
-> 
->  	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
->  		ret = -EINVAL;
-> @@ -560,12 +592,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
->  	sq->stats.kicks += kicks;
->  	u64_stats_update_end(&sq->stats.syncp);
-> 
-> +	virtnet_xdp_put_sq(vi, sq);
->  	return ret;
->  }
-> 
->  static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
->  {
-> -	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
-> +	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
->  }
-> 
->  /* We copy the packet for XDP in the following cases:
-> @@ -1458,12 +1491,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
->  		xdp_do_flush();
-> 
->  	if (xdp_xmit & VIRTIO_XDP_TX) {
-> -		sq = virtnet_xdp_sq(vi);
-> +		sq = virtnet_xdp_get_sq(vi);
->  		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
->  			u64_stats_update_begin(&sq->stats.syncp);
->  			sq->stats.kicks++;
->  			u64_stats_update_end(&sq->stats.syncp);
->  		}
-> +		virtnet_xdp_put_sq(vi, sq);
->  	}
-> 
->  	return received;
-> @@ -2418,10 +2452,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
-> 
->  	/* XDP requires extra queues for XDP_TX */
->  	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
-> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
-> -		netdev_warn(dev, "request %i queues but max is %i\n",
-> +		netdev_warn(dev, "XDP request %i queues but max is %i. XDP_TX and XDP_REDIRECT will operate in a slower locked tx mode.\n",
->  			    curr_qp + xdp_qp, vi->max_queue_pairs);
-> -		return -ENOMEM;
-> +		xdp_qp = 0;
->  	}
-> 
->  	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
-> @@ -2455,11 +2488,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
->  	vi->xdp_queue_pairs = xdp_qp;
-> 
->  	if (prog) {
-> +		vi->xdp_enabled = true;
->  		for (i = 0; i < vi->max_queue_pairs; i++) {
->  			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
->  			if (i == 0 && !old_prog)
->  				virtnet_clear_guest_offloads(vi);
->  		}
-> +	} else {
-> +		vi->xdp_enabled = false;
->  	}
-> 
->  	for (i = 0; i < vi->max_queue_pairs; i++) {
-> @@ -2527,7 +2563,7 @@ static int virtnet_set_features(struct net_device *dev,
->  	int err;
-> 
->  	if ((dev->features ^ features) & NETIF_F_LRO) {
-> -		if (vi->xdp_queue_pairs)
-> +		if (vi->xdp_enabled)
->  			return -EBUSY;
-> 
->  		if (features & NETIF_F_LRO)
-> --
-> 1.8.3.1
 
