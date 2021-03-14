@@ -2,106 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E7933A4DA
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:46:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4801433A4DD
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 13:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235441AbhCNMpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Mar 2021 08:45:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46930 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235438AbhCNMoq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Mar 2021 08:44:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CB03964EE2;
-        Sun, 14 Mar 2021 12:44:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1615725886;
-        bh=S2lNUzFkQg/ukExFJRH46e5SvDEvpLzcqaKUvYvAyX8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DOdiUW3sa6eMnD4hirleRWzU5MlTsVOo1zdRQ2rAtZKzkpyIVkrTRa4g3Rsz/MB5k
-         BwcONK11OQgNw4dzvd8M3Q8Kb6U+Ew/VbDMQjXk8nMMs62NWrMs+RqVkw7JgKUnGy2
-         UOQu0hpOdPItWBMSA7MBRzwBokJ45nw5m5Za5YOY=
-Date:   Sun, 14 Mar 2021 13:44:43 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Fatih Yildirim <yildirim.fatih@gmail.com>
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] net: rds: rds_send_probe memory leak
-Message-ID: <YE4FO01xILz98/K6@kroah.com>
-References: <a3036ea4ee2a06e4b3acd3b438025754d11f65fc.camel@gmail.com>
- <YE3K+zeWnJ/hVpQS@kroah.com>
- <b1b796b48a75b3ef3d6cebac89b0be45c5bf4611.camel@gmail.com>
+        id S235450AbhCNMr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Mar 2021 08:47:27 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:46873 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235207AbhCNMrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Mar 2021 08:47:11 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id EC7015808B4;
+        Sun, 14 Mar 2021 08:47:09 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 14 Mar 2021 08:47:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=t0m7jd
+        tPqXIaqEcRWEY/GD8RkZot8D/MuiQxA9B2pYs=; b=ejydQnkGcNXaiKCSscCZ++
+        ewRtl7FTPOSZEJpo+rhevzO+TdX9/RZbSTFylQDnLNthrj/z+MSQD3MtuV7YEeTm
+        9xn6wJfFJGvKUuCXxCdUGGz+fkQSfi3vuqN0Y430SqabqN+bI43UYJXiUwtz9oqM
+        eM75e9CDGD8uQPnu+rANJ9bHWLwTw6uk+g4zlNiY8ATUZIrhYsC+FIF9PJAkHT6Z
+        Ab8ZLYbqPhM+7uonUNc/MrYllQGqyWaUTgmCA0YC/chYhuYek96CfPWeIn9z7NMw
+        CHlP2NRYFCQW+83HIwrjf64Qx0sIx4J3A90cAeZ5waz9jj6sVwYxGhWPi7VUW6Tg
+        ==
+X-ME-Sender: <xms:zQVOYImOxbRrOC62a0FhBDpqlEu44XEzzKQrCY_XmxMzZCTZ1uHtLQ>
+    <xme:zQVOYH3ibvLkOF6iRSU-5njEOIkTgT1YhGRIIJu7KUSJGFvjhvQi3dazqGw97DIBH
+    5pL4R4EGKhAEe8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvjedgudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:zQVOYGoVTwFsNTdYqTsgiXm2ZaTWguNYiNtUuEfXt-TjCi1IxkYuGQ>
+    <xmx:zQVOYEnGhIpes_-hHQ8eu7moHxYLrXFynzfAsZ948I-Y6ieFTQUbmQ>
+    <xmx:zQVOYG3HPZpL3x8zjKM-LDZa9YEu7mbf_oXk2dN1Aln_BiKMAk79lw>
+    <xmx:zQVOYPkF-t5NpoGbdjtKa5Lz4w47aUD434ksm68pKkIyI_QdSZ4uYg>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id D1F03240057;
+        Sun, 14 Mar 2021 08:47:08 -0400 (EDT)
+Date:   Sun, 14 Mar 2021 14:47:06 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     rui.zhang@intel.com, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, lukasz.luba@arm.com,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 1/5] thermal/drivers/core: Use a char pointer for the
+ cooling device name
+Message-ID: <YE4FyiFgwM8cf5xe@shredder.lan>
+References: <20210314111333.16551-1-daniel.lezcano@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b1b796b48a75b3ef3d6cebac89b0be45c5bf4611.camel@gmail.com>
+In-Reply-To: <20210314111333.16551-1-daniel.lezcano@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 14, 2021 at 03:19:05PM +0300, Fatih Yildirim wrote:
-> On Sun, 2021-03-14 at 09:36 +0100, Greg KH wrote:
-> > On Sun, Mar 14, 2021 at 11:23:10AM +0300, Fatih Yildirim wrote:
-> > > Hi Santosh,
-> > > 
-> > > I've been working on a memory leak bug reported by syzbot.
-> > > https://syzkaller.appspot.com/bug?id=39b72114839a6dbd66c1d2104522698a813f9ae2
-> > > 
-> > > It seems that memory allocated in rds_send_probe function is not
-> > > freed.
-> > > 
-> > > Let me share my observations.
-> > > rds_message is allocated at the beginning of rds_send_probe
-> > > function.
-> > > Then it is added to cp_send_queue list of rds_conn_path and
-> > > refcount
-> > > is increased by one.
-> > > Next, in rds_send_xmit function it is moved from cp_send_queue list
-> > > to
-> > > cp_retrans list, and again refcount is increased by one.
-> > > Finally in rds_loop_xmit function refcount is increased by one.
-> > > So, total refcount is 4.
-> > > However, rds_message_put is called three times, in rds_send_probe,
-> > > rds_send_remove_from_sock and rds_send_xmit functions. It seems
-> > > that
-> > > one more rds_message_put is needed.
-> > > Would you please check and share your comments on this issue?
-> > 
-> > Do you have a proposed patch that syzbot can test to verify if this
-> > is
-> > correct or not?
-> > 
-> > thanks,
-> > 
-> > gre gk-h
+On Sun, Mar 14, 2021 at 12:13:29PM +0100, Daniel Lezcano wrote:
+> We want to have any kind of name for the cooling devices as we do no
+> longer want to rely on auto-numbering. Let's replace the cooling
+> device's fixed array by a char pointer to be allocated dynamically
+> when registering the cooling device, so we don't limit the length of
+> the name.
 > 
-> Hi Greg,
+> Rework the error path at the same time as we have to rollback the
+> allocations in case of error.
 > 
-> Actually, using the .config and the C reproducer, syzbot reports the
-> memory leak in rds_send_probe function. Also by enabling
-> CONFIG_RDS_DEBUG=y, the debug messages indicates the similar as I
-> mentioned above. To give an example, below is the RDS_DEBUG messages.
-> Allocated address 000000008a7476e5 has initial ref_count 1. Then there
-> are three rds_message_addref calls for the same address making the
-> refcount 4, but only three rds_message_put calls which leave the
-> address still allocated.
+> Tested with a dummy device having the name:
+>  "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
 > 
-> [   60.570681] rds_message_addref(): addref rm 000000008a7476e5 ref 1
-> [   60.570707] rds_message_put(): put rm 000000008a7476e5 ref 2
-> [   60.570845] rds_message_addref(): addref rm 000000008a7476e5 ref 1
-> [   60.570870] rds_message_addref(): addref rm 000000008a7476e5 ref 2
-> [   60.570960] rds_message_put(): put rm 000000008a7476e5 ref 3
-> [   60.570995] rds_message_put(): put rm 000000008a7476e5 ref 2
+> A village on the island of Anglesey (Wales), known to have the longest
+> name in Europe.
 > 
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
 
-Ok, so the next step is to try your proposed change to see if it works
-or not.  What prevents you from doign that?
-
-No need to ask people if your analysis of an issue is true or not, no
-maintainer or developer usually has the time to deal with that.  We much
-rather would like to see patches of things you have tested to resolve
-issues.
-
-thanks,
-
-greg k-h
+Tested-by: Ido Schimmel <idosch@nvidia.com>
