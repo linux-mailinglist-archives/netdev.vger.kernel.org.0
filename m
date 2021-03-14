@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA65533A251
-	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 03:18:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF5633A253
+	for <lists+netdev@lfdr.de>; Sun, 14 Mar 2021 03:18:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233733AbhCNCKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Mar 2021 21:10:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52942 "EHLO mail.kernel.org"
+        id S233821AbhCNCKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Mar 2021 21:10:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52940 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232974AbhCNCKI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232431AbhCNCKI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 13 Mar 2021 21:10:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3A52864EDC;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3172164ECE;
         Sun, 14 Mar 2021 02:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1615687808;
-        bh=ViSUvwFz8dZsSC/xLMKQlypmn/cz7whpRd8DW1ygRoU=;
+        bh=0Ltd7ABkEJ0W33cjVaYlQ82uDAkSeGqOj0zFiXfcTiE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tyQeyAgGvm1EjOs2YXizdSG7f1DXxDi/4Y8d4GM/6c9bpuoJb2gURotQL+jcuhxsn
-         WIZ2Xyta3Fx3VngsXcl1WbyCrx3r78MYNsfakH4Z3+QSIc/KtPr1gRcsFkFl2kPt10
-         HWSnCKK8vgWMXEVLNnkt76Kf6sZDwWDdkqF3gWjXQj8PpdFy1yq70MRA262/tSVYHG
-         9sxtVNF1wjDLnoSNgKaK+xGASLG0M189P5uBxhzMJY4JOPa/9/2yDLgKM8ZzvjUS4B
-         mv9cLa4pURDopODBwT6U2QdwjARxEF67WYt3gbQ7nT0rArNelf3MMrwqAbOe1Gim+t
-         HHsdg2H7JcaYw==
+        b=DydDAzGhv+0c/LPxfjj0onV1wv89NX3A2uMl46wCMjOSLFE50vMQUwjkQ0uYIWZZK
+         yPEjRb/nbNguagrNptYDDkyMShMjegpedrxj0SfTOVYEvvvYvocZdVDLTvarvTACL2
+         krDBIYiaLTXnw0hsS0Qrmz75281zhaX8KovxHDf6IbWAvATWu196T4zRxHFLip/ToX
+         wx1JtsWcFMkEJ1nMmd6URJ4DF/G4HKlPPnNj5Y65c3aTV5aXBDlGUxr+an6bEpf2vE
+         GDNWvb7nYwz1DTPAy5ZUH6v6E8WgIzAqNpSjaih2F9OToCNVWfxj/1uOz/l3DBBqk/
+         YXhCB8w2KrZJQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2BAEC60A5C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 21F7760A6A;
         Sun, 14 Mar 2021 02:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] drivers: net: vxlan.c: Fix declaration issue
+Subject: Re: [PATCH net-next] net: stmmac: Set FIFO sizes for ipq806x
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161568780817.10930.7181255867706244302.git-patchwork-notify@kernel.org>
+Message-Id: <161568780813.10930.14410536335791157714.git-patchwork-notify@kernel.org>
 Date:   Sun, 14 Mar 2021 02:10:08 +0000
-References: <20210313083649.2scdqxdcozfpoana@sanjana-VirtualBox>
-In-Reply-To: <20210313083649.2scdqxdcozfpoana@sanjana-VirtualBox>
-To:     Sanjana Srinidhi <sanjanasrinidhi1810@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bkkarthik@pesu.pes.edu
+References: <20210313131826.GA17553@earth.li>
+In-Reply-To: <20210313131826.GA17553@earth.li>
+To:     Jonathan McDowell <noodles@earth.li>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,18 +49,24 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat, 13 Mar 2021 14:06:49 +0530 you wrote:
-> Added a blank line after structure declaration.
-> This is done to maintain code uniformity.
+On Sat, 13 Mar 2021 13:18:26 +0000 you wrote:
+> Commit eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+> started using the TX FIFO size to verify what counts as a valid MTU
+> request for the stmmac driver.  This is unset for the ipq806x variant.
+> Looking at older patches for this it seems the RX + TXs buffers can be
+> up to 8k, so set appropriately.
 > 
-> Signed-off-by: Sanjana Srinidhi <sanjanasrinidhi1810@gmail.com>
-> ---
->  drivers/net/vxlan.c | 1 +
->  1 file changed, 1 insertion(+)
+> (I sent this as an RFC patch in June last year, but received no replies.
+> I've been running with this on my hardware (a MikroTik RB3011) since
+> then with larger MTUs to support both the internal qca8k switch and
+> VLANs with no problems. Without the patch it's impossible to set the
+> larger MTU required to support this.)
+> 
+> [...]
 
 Here is the summary with links:
-  - drivers: net: vxlan.c: Fix declaration issue
-    https://git.kernel.org/netdev/net-next/c/6fadbdd6dd32
+  - [net-next] net: stmmac: Set FIFO sizes for ipq806x
+    https://git.kernel.org/netdev/net-next/c/e127906b68b4
 
 You are awesome, thank you!
 --
