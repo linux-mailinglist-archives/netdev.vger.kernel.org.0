@@ -2,94 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F1D33B4C8
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:42:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EED233B499
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:32:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbhCONlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 09:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40626 "EHLO
+        id S231194AbhCONbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 09:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhCONlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 09:41:14 -0400
-X-Greylist: delayed 598 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Mar 2021 06:41:14 PDT
-Received: from mxwww.masterlogin.de (mxwww.masterlogin.de [IPv6:2a03:2900:1:1::a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C62C06174A;
-        Mon, 15 Mar 2021 06:41:14 -0700 (PDT)
-Received: from mxout2.routing.net (unknown [192.168.10.82])
-        by backup.mxwww.masterlogin.de (Postfix) with ESMTPS id D2C212C50A;
-        Mon, 15 Mar 2021 13:21:18 +0000 (UTC)
-Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout2.routing.net (Postfix) with ESMTP id E408E5FAA8;
-        Mon, 15 Mar 2021 13:21:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1615814471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HcbP0eh7sT6aYdhihurrqxMVYQRkKRMHymQQjQvK67E=;
-        b=K48Yk+PvuI2+pAWPe8NlZjcZLTWVP4BMQR59RtwlLyTuHmmv/DrMTtJ3MQ4cf4HbpEVqXm
-        oKNnfKAD599uvZU/+8kW7Fb+sHnVWgpJpgApl/tl3/HtjVR9J0LNXyhImPIZYqAvD1lAGD
-        chMG0YitLQi+oVxzv7PVm4CM07aZbLc=
-Received: from localhost.localdomain (fttx-pool-217.61.149.205.bambit.de [217.61.149.205])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 3E95610038A;
-        Mon, 15 Mar 2021 13:21:10 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        with ESMTP id S229907AbhCONbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 09:31:01 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927B6C06174A;
+        Mon, 15 Mar 2021 06:31:01 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id n9so19498172pgi.7;
+        Mon, 15 Mar 2021 06:31:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C2lzz6jIzx+Vnv5jzmRecZmwAHLB3q74dtaf4ZVkRWM=;
+        b=BUUKsuxR3NSckzePNUzO6VJ4bGoFbkiU24IqVMTTOON+LYKzr7HNAL4DznkPCW0DJN
+         GqFO7jYPQkkvqS+PN2RA3tYoSP12M6di6P/h1jM8E3BqFqVSF2uQCa8P4oTSkZJzpuCY
+         GkMmUw04VA6SuTKX1CoXrx82kEZ7JbmDa/ciH5Xrx2Pzj8Y8Mr4IJhaXtocWodYcgIUi
+         xR4XqxGkz0i3IY9DZXBCMsAOmmUejJj4iIviUa0PEiXZumTaU3h3QlCDuwAOJzr4120f
+         /7AsNHnjw9qh6YIQ7XyGz/d0kPCXU19P2T+saI71/E3JLFITm6TxpZuodqRRSl4soL10
+         4HYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C2lzz6jIzx+Vnv5jzmRecZmwAHLB3q74dtaf4ZVkRWM=;
+        b=luKmikmPsLgkBCRG2rkbbcxX30BDPqCzx450ICJFiqTs9njwKrJJIfcRebozE2Ba9N
+         NOm7XsVS3ZMrVaHXJxBNbqLLhcZY67vwGMeKRnZxQXW3GX2pHcuz1+V2GLi4clsEjLxQ
+         nDNjaEyVprXMbBgHHPD058PzOY6buqh9E81OkaDGxqVVrGi7uLNg9qG4jEJJjjPLXMRD
+         NmjKcTFSyEr/NSTbSVz/j7oUCZz44iZRSu16sqyi7H7yU/NQkR6SzBjYGrYVzkLK68xs
+         ekTv28ZihrD95jvqAUdgwG7b2U5WbLps0UFZjGpuM+7qFzBNdxPlhJuj/AVnMvZnYDl4
+         wapQ==
+X-Gm-Message-State: AOAM5311sTBSTujt7e+vPe65Jlj1r5/0uZtnxMijwRWBcdf81B84r4AB
+        1Avfez2IVWrjIpgkVENHXS4=
+X-Google-Smtp-Source: ABdhPJwAwcy939e/8tT2fBbIqybgQaZV+UU2Zb/8Hg5xT5plwP2hSus0QH4YaoUX8MAtlEGwpjleAA==
+X-Received: by 2002:aa7:9202:0:b029:1f2:9439:f4b4 with SMTP id 2-20020aa792020000b02901f29439f4b4mr10159808pfo.12.1615815060986;
+        Mon, 15 Mar 2021 06:31:00 -0700 (PDT)
+Received: from localhost.localdomain ([205.220.128.205])
+        by smtp.gmail.com with ESMTPSA id q25sm13620380pff.104.2021.03.15.06.30.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 06:31:00 -0700 (PDT)
+From:   Pedro Tammela <pctammela@gmail.com>
+Cc:     Pedro Tammela <pctammela@gmail.com>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>
-Subject: [PATCH] net: wireguard: fix error with icmp{,v6}_ndo_send in 5.4
-Date:   Mon, 15 Mar 2021 14:21:03 +0100
-Message-Id: <20210315132103.129386-1-linux@fw-web.de>
+Subject: [PATCH] bpf: selftests: remove unused 'nospace_err' in tests for batched ops in array maps
+Date:   Mon, 15 Mar 2021 14:29:51 +0100
+Message-Id: <20210315132954.603108-1-pctammela@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: d4bbf83d-3042-487a-8ef8-1bd95eef3965
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+This seems to be a reminiscent from the hashmap tests.
 
-commit 2019554f9656 introduces implementation of icmp{,v6}_ndo_send in
-include/linux/icmp{,v6}.h in case of NF_NAT is enabled. Now these
-functions are defined twice in wireguard. Fix this by hiding code if
-NF_NAT is set (reverse condition as in icmp*.h)
-
-././net/wireguard/compat/compat.h:959:20: error: static declaration of 'icmp_ndo_send' follows non-static declaration
-  959 | static inline void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
-./include/net/icmp.h:47:6: note: previous declaration of 'icmp_ndo_send' was here
-   47 | void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info);
-././net/wireguard/compat/compat.h:988:20: error: static declaration of 'icmpv6_ndo_send' follows non-static declaration
-  988 | static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
-./include/linux/icmpv6.h:56:6: note: previous declaration of 'icmpv6_ndo_send' was here
-   56 | void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info);
-
-Fixes: 2019554f9656 ("icmp: introduce helper for nat'd source address in network device context")
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Signed-off-by: Pedro Tammela <pctammela@gmail.com>
 ---
- net/wireguard/compat/compat.h | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/net/wireguard/compat/compat.h b/net/wireguard/compat/compat.h
-index 42f7beecaa5c..7cdb0b253c60 100644
---- a/net/wireguard/compat/compat.h
-+++ b/net/wireguard/compat/compat.h
-@@ -956,6 +956,7 @@ static inline int skb_ensure_writable(struct sk_buff *skb, int write_len)
- #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
- #include <net/netfilter/nf_nat_core.h>
- #endif
-+#if !IS_ENABLED(CONFIG_NF_NAT)
- static inline void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
- {
- 	struct sk_buff *cloned_skb = NULL;
-@@ -1014,6 +1015,7 @@ static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u
- out:
- 	consume_skb(cloned_skb);
- }
-+#endif
- #else
- #define icmp_ndo_send icmp_send
- #define icmpv6_ndo_send icmpv6_send
+diff --git a/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
+index f0a64d8ac59a..e42ea1195d18 100644
+--- a/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
++++ b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
+@@ -55,7 +55,6 @@ void test_array_map_batch_ops(void)
+ 	int map_fd, *keys, *values, *visited;
+ 	__u32 count, total, total_success;
+ 	const __u32 max_entries = 10;
+-	bool nospace_err;
+ 	__u64 batch = 0;
+ 	int err, step;
+ 	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
+@@ -90,7 +89,6 @@ void test_array_map_batch_ops(void)
+ 		 * elements each.
+ 		 */
+ 		count = step;
+-		nospace_err = false;
+ 		while (true) {
+ 			err = bpf_map_lookup_batch(map_fd,
+ 						total ? &batch : NULL, &batch,
+@@ -107,9 +105,6 @@ void test_array_map_batch_ops(void)
+ 
+ 		}
+ 
+-		if (nospace_err == true)
+-			continue;
+-
+ 		CHECK(total != max_entries, "lookup with steps",
+ 		      "total = %u, max_entries = %u\n", total, max_entries);
+ 
 -- 
 2.25.1
 
