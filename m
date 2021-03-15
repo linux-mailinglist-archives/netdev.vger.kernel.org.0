@@ -2,105 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7570D33B204
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 13:04:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D38233B1F4
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 13:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbhCOMDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 08:03:44 -0400
-Received: from imap3.hz.codethink.co.uk ([176.9.8.87]:54494 "EHLO
-        imap3.hz.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230242AbhCOMD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 08:03:28 -0400
-X-Greylist: delayed 1969 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Mar 2021 08:03:27 EDT
-Received: from cpc79921-stkp12-2-0-cust288.10-2.cable.virginm.net ([86.16.139.33] helo=[192.168.0.18])
-        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1lLlQc-00010L-7F; Mon, 15 Mar 2021 11:30:30 +0000
-Subject: Re: [syzbot] BUG: unable to handle kernel access to user memory in
- sock_ioctl
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Cc:     andrii@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+        id S230221AbhCOMAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 08:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230259AbhCOL75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 07:59:57 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F72BC061764
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 04:59:57 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id f12so8522278wrx.8
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 04:59:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SS1gct42nXEurrNmbvLMUHBfwY4gO5XhOVCF9euUF9s=;
+        b=MUVhFOjYfQavUzABQXpLiEHlqUT3kzcdNXJk9R2s1IIzW53qoU76OIdvRjkVSRHwZG
+         MtK28UTKXFQwGa0NHFvP98HaDgWRB/6+wenmYvSqtPKLU6ffJy2CLQwDffwSCztSNUOD
+         wSVuTsNlrnhf73WyfMX0izOwHqfWsRmq8tC0o+Sb+XMIFqW9hjS+emFAP99ZWJFnUxRx
+         GJTRzAVLk76O5LSSkeq23c6tjz8TSgW8xB8cCwVh8iCTg7i1xBDp5mw0lPeWCU2kMo9p
+         mtKp/uZ0XetXYPSjXBIPJ/MXpZB5jZf/zfhV72tjHSxW0KDVboKgB/m3j0lpKL2nG296
+         EnYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SS1gct42nXEurrNmbvLMUHBfwY4gO5XhOVCF9euUF9s=;
+        b=XIQqQONd2wy3s8sdqIXquMsVWgQ+5ScxRoWXPrE4oeWN8VwShNQFuLr1QCI083/M4T
+         hPJefu2xqxKSJm9PMWvuMtgQ+fU7tbMTisL76rfGxIN+2zZrPLi08YPNLKgLm16N+eE3
+         dL3MjIWd4yhXoqIGRUJL3G9KQU9AD5Ez2F4kdmIfwyXRQNNZtXoX1UOlagEFqS4EYQOG
+         myLPHc6K7MMSgv+lB8VMBIN+9IwAXl8CD/6fJEKmj5LOeXA2YCzFdQnwTKgBn3AaaOss
+         Kh/ykdXlActuqEM7yVj3W6LIAF3Vuxzqh3UgGXOvz+q6nBzPjkc1zfLhbSrUv+8NvVMB
+         l0vQ==
+X-Gm-Message-State: AOAM531o4L8LZU/wSctzY1Hf9i2dfsGsbBL6+eSwaAamq7WapHJm0vdy
+        rlXFWlWNLoZiox0m5/uNij1Qy3SCKcyfNhpV
+X-Google-Smtp-Source: ABdhPJwLLHk3+2nVXdv1rSFL/CLcrBN5exMsKtZ/CKY/bRSQAaObXhf1VDwv6SBICLHZ+nQrVC8BYg==
+X-Received: by 2002:a5d:6a4c:: with SMTP id t12mr26298747wrw.289.1615809595542;
+        Mon, 15 Mar 2021 04:59:55 -0700 (PDT)
+Received: from [192.168.0.162] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
+        by smtp.gmail.com with ESMTPSA id f22sm12048777wmc.33.2021.03.15.04.59.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Mar 2021 04:59:55 -0700 (PDT)
+Subject: Re: [PATCH 5/5] arm64: dts: qcom: msm8916: Enable modem and WiFi
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-References: <00000000000096cdaa05bd32d46f@google.com>
- <CACT4Y+ZjdOaX_X530p+vPbG4mbtUuFsJ1v-gD24T4DnFUqcudA@mail.gmail.com>
- <CACT4Y+ZjVS+nOxtEByF5-djuhbCYLSDdZ7V04qJ0edpQR0514A@mail.gmail.com>
- <CACT4Y+YXifnCtEvLu3ps8JLCK9CBLzEuUAozfNR9v1hsGWspOg@mail.gmail.com>
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-Organization: Codethink Limited.
-Message-ID: <ed89390a-91e1-320a-fae5-27b7f3a20424@codethink.co.uk>
-Date:   Mon, 15 Mar 2021 11:30:28 +0000
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20210312003318.3273536-1-bjorn.andersson@linaro.org>
+ <20210312003318.3273536-6-bjorn.andersson@linaro.org>
+From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Message-ID: <f03b639f-f95a-a31a-6615-23cd6154182d@linaro.org>
+Date:   Mon, 15 Mar 2021 12:01:25 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <CACT4Y+YXifnCtEvLu3ps8JLCK9CBLzEuUAozfNR9v1hsGWspOg@mail.gmail.com>
+In-Reply-To: <20210312003318.3273536-6-bjorn.andersson@linaro.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/03/2021 11:03, Dmitry Vyukov wrote:
-> On Sun, Mar 14, 2021 at 11:01 AM Dmitry Vyukov <dvyukov@google.com> wrote:
->>> On Wed, Mar 10, 2021 at 7:28 PM syzbot
->>> <syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com> wrote:
->>>>
->>>> Hello,
->>>>
->>>> syzbot found the following issue on:
->>>>
->>>> HEAD commit:    0d7588ab riscv: process: Fix no prototype for arch_dup_tas..
->>>> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
->>>> console output: https://syzkaller.appspot.com/x/log.txt?x=122c343ad00000
->>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=e3c595255fb2d136
->>>> dashboard link: https://syzkaller.appspot.com/bug?extid=c23c5421600e9b454849
->>>> userspace arch: riscv64
->>>>
->>>> Unfortunately, I don't have any reproducer for this issue yet.
->>>>
->>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>>> Reported-by: syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com
->>>
->>> +riscv maintainers
->>>
->>> Another case of put_user crashing.
->>
->> There are 58 crashes in sock_ioctl already. Somehow there is a very
->> significant skew towards crashing with this "user memory without
->> uaccess routines" in schedule_tail and sock_ioctl of all places in the
->> kernel that use put_user... This looks very strange... Any ideas
->> what's special about these 2 locations?
+On 12/03/2021 00:33, Bjorn Andersson wrote:
+> Enable the modem and WiFi subsystems and specify msm8916 specific
+> firmware path for these and the WCNSS control service.
 > 
-> I could imagine if such a crash happens after a previous stack
-> overflow and now task data structures are corrupted. But f_getown does
-> not look like a function that consumes way more than other kernel
-> syscalls...
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>   arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi | 12 ++++++++++++
+>   arch/arm64/boot/dts/qcom/msm8916.dtsi     |  2 +-
+>   2 files changed, 13 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+> index 6aef0c2e4f0a..448e3561ef63 100644
+> --- a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+> @@ -305,6 +305,12 @@ &mdss {
+>   	status = "okay";
+>   };
+>   
+> +&mpss {
+> +	status = "okay";
+> +
+> +	firmware-name = "qcom/msm8916/mba.mbn", "qcom/msm8916/modem.mbn";
+> +};
+> +
+>   &pm8916_resin {
+>   	status = "okay";
+>   	linux,code = <KEY_VOLUMEDOWN>;
+> @@ -312,6 +318,8 @@ &pm8916_resin {
+>   
+>   &pronto {
+>   	status = "okay";
+> +
+> +	firmware-name = "qcom/msm8916/wcnss.mbn";
+>   };
 
-The last crash I looked at suggested somehow put_user got re-entered
-with the user protection turned back on. Either there is a path through
-one of the kernel handlers where this happens or there's something
-weird going on with qemu.
+On Debian I have to do this
 
-I'll be trying to get this run up on real hardware this week, the nvme
-with my debian install died last week so I have to go and re-install
-the machine to get development work done on it.
 
--- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+index 2a6a23cb14ca..597cdc8f51cc 100644
+--- a/drivers/remoteproc/qcom_wcnss.c
++++ b/drivers/remoteproc/qcom_wcnss.c
+@@ -33,7 +33,7 @@
+  #include "qcom_wcnss.h"
 
-https://www.codethink.co.uk/privacy.html
+  #define WCNSS_CRASH_REASON_SMEM                422
+-#define WCNSS_FIRMWARE_NAME            "wcnss.mdt"
++#define WCNSS_FIRMWARE_NAME            "qcom/msm8916/wcnss.mdt"
+
+so I guess wcnss_probe() -> rproc_alloc() wants this fix too.
+
+---
+bod
