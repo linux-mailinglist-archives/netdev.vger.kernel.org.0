@@ -2,102 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A477533B028
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 11:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B9C133B02D
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 11:44:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbhCOKmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 06:42:19 -0400
-Received: from outbound-smtp26.blacknight.com ([81.17.249.194]:44973 "EHLO
-        outbound-smtp26.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229926AbhCOKmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 06:42:07 -0400
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp26.blacknight.com (Postfix) with ESMTPS id 7AFFCCAB35
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 10:42:06 +0000 (GMT)
-Received: (qmail 9896 invoked from network); 15 Mar 2021 10:42:06 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 15 Mar 2021 10:42:06 -0000
-Date:   Mon, 15 Mar 2021 10:42:05 +0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
-Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
-Message-ID: <20210315104204.GB3697@techsingularity.net>
-References: <20210312124609.33d4d4ba@carbon>
- <20210312145814.GA2577561@casper.infradead.org>
- <20210312160350.GW3697@techsingularity.net>
- <20210312210823.GE2577561@casper.infradead.org>
- <20210313131648.GY3697@techsingularity.net>
- <20210313163949.GI2577561@casper.infradead.org>
- <7D8C62E1-77FD-4B41-90D7-253D13715A6F@oracle.com>
- <20210313193343.GJ2577561@casper.infradead.org>
- <20210314125231.GA3697@techsingularity.net>
- <325875A2-A98A-4ECF-AFDF-0B70BCCB79AD@oracle.com>
+        id S229879AbhCOKo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 06:44:27 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:37716 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229524AbhCOKoA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 06:44:00 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id B384B201CA;
+        Mon, 15 Mar 2021 11:43:59 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id LVqiXdF67BZg; Mon, 15 Mar 2021 11:43:52 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 31BB420491;
+        Mon, 15 Mar 2021 11:43:51 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 15 Mar 2021 11:43:50 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 15 Mar
+ 2021 11:43:50 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 50CBC31803BF; Mon, 15 Mar 2021 11:43:50 +0100 (CET)
+Date:   Mon, 15 Mar 2021 11:43:50 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Antony Antony <antony.antony@secunet.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Guy Shapiro <guysh@mellanox.com>, <netdev@vger.kernel.org>,
+        <antony@phenome.org>
+Subject: Re: [PATCH] xfrm: return error when esp offload is requested and not
+ supported
+Message-ID: <20210315104350.GY62598@gauss3.secunet.de>
+References: <20210310093611.GA5406@moon.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <325875A2-A98A-4ECF-AFDF-0B70BCCB79AD@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210310093611.GA5406@moon.secunet.de>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 14, 2021 at 03:22:02PM +0000, Chuck Lever III wrote:
-> >> Anyway, I'm not arguing against a bulk allocator, nor even saying this
-> >> is a bad interface.  It just maybe could be better.
-> >> 
-> > 
-> > I think it puts more responsibility on the caller to use the API correctly
-> > but I also see no value in arguing about it further because there is no
-> > supporting data either way (I don't have routine access to a sufficiently
-> > fast network to generate the data). I can add the following patch and let
-> > callers figure out which interface is preferred. If one of the interfaces
-> > is dead in a year, it can be removed.
-> > 
-> > As there are a couple of ways the arrays could be used, I'm leaving it
-> > up to Jesper and Chuck which interface they want to use. In particular,
-> > it would be preferred if the array has no valid struct pages in it but
-> > it's up to them to judge how practical that is.
+On Wed, Mar 10, 2021 at 10:36:11AM +0100, Antony Antony wrote:
+> When ESP offload is not supported by the device return an error,
+> -EINVAL, instead of silently ignoring it, creating a SA without offload,
+> and returning success.
 > 
-> I'm interested to hear from Jesper.
+> with this fix ip x s a would return
+> RTNETLINK answers: Invalid argument
 > 
-> My two cents (US):
+> Also, return an error, -EINVAL, when CONFIG_XFRM_OFFLOAD is
+> not defined and the user is trying to create an SA with the offload.
 > 
-> If svc_alloc_arg() is the /only/ consumer that wants to fill
-> a partially populated array of page pointers, then there's no
-> code-duplication benefit to changing the synopsis of
-> alloc_pages_bulk() at this point.
-> 
-> Also, if the consumers still have to pass in the number of
-> pages the array needs, rather than having the bulk allocator
-> figure it out, then there's not much additional benefit, IMO.
-> 
-> Ideally (for SUNRPC) alloc_pages_bulk() would take a pointer
-> to a sparsely-populated array and the total number of elements
-> in that array, and fill in the NULL elements. The return value
-> would be "success -- all elements are populated" or "failure --
-> some elements remain NULL".
-> 
+> Fixes: d77e38e612a0 ("xfrm: Add an IPsec hardware offloading API")
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
 
-If the array API interface was expected to handle sparse arrays, it would
-make sense to define nr_pages are the number of pages that need to be
-in the array instead of the number of pages to allocate. The preamble
-would skip the first N number of allocated pages and decrement nr_pages
-accordingly before the watermark check. The return value would then be the
-last populated array element and the caller decides if that is enough to
-proceed or if the API needs to be called again. There is a slight risk
-that with a spare array that only needed 1 page in reality would fail
-the watermark check but on low memory, allocations take more work anyway.
-That definition of nr_pages would avoid the potential buffer overrun but
-both you and Jesper would need to agree that it's an appropriate API.
+I feal a bit unease about this one. When we designed the offloading
+API, we decided to fallback to software if HW offload is not available.
+Not sure if that was a good idea, but changing this would also change
+the userspace ABI. So if we change this, we should at least not
+consider it as a fix because it would be backported to -stable
+in that case. Thoughts?
 
--- 
-Mel Gorman
-SUSE Labs
