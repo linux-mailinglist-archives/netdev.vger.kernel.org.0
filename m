@@ -2,45 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA9733C6EA
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 20:38:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9263333C6F7
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 20:40:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233699AbhCOTh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 15:37:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41266 "EHLO mail.kernel.org"
+        id S232910AbhCOTkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 15:40:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41590 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232186AbhCOThC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 15:37:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1D3B564F47;
-        Mon, 15 Mar 2021 19:37:02 +0000 (UTC)
+        id S232515AbhCOTkI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 15:40:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9958C64F52;
+        Mon, 15 Mar 2021 19:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615837022;
-        bh=7AS2ErSF9VADFihPyC5/QYX3XsV2M2u9VPECi3UVeLI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GyaOHwOkqIZ68av56VKfmKJcJ0gSj7eeg0xL+t1m/7ARc8pOUYIs2MHwI7tjQycAq
-         1Glb/SuiHCiN9OBDzeuGBgM8p1KOkbPXUXlGtGQvvD0NgIQ0sa7psLlwjlqDifoVhV
-         9M0ltJfimaGMpzbGSXY+E4q3dOZymJRg5hhSqwGQt6o/xPzQQfd4HCocZkjdpWQtEt
-         +ptnX5GhAb4ojO00X5AwXlIS4gHYjca/tpcY1N+FvRs4ERSzZukr9EVgMZpubOTRy1
-         Zkz6WBYgI/9MMt1CoDMmK96IzEnKNgpWlhlHTKFw5G4NIr5LUOR3ptxfJ/CZnt4aRC
-         4KQqAH7DNKBgQ==
-Date:   Mon, 15 Mar 2021 12:37:01 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, weiwan@google.com,
-        nbd@nbd.name, pabeni@redhat.com, edumazet@google.com,
-        hannes@stressinduktion.org, lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH net-next] net: export dev_set_threaded symbol
-Message-ID: <20210315123701.736e5803@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <9ee5ba9ca7506620b1a9695896992bfdfb000469.1615733129.git.lorenzo@kernel.org>
-References: <9ee5ba9ca7506620b1a9695896992bfdfb000469.1615733129.git.lorenzo@kernel.org>
+        s=k20201202; t=1615837208;
+        bh=j4ga2LdEMQ7R9ZIcSlcQT78N1ljOnveXwD920HoPg44=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YfvgoTKTsHh5NZB3RwWA8aGcQoBvy5bpd2IffAdcdR6/HGvzC57c1x+rl6PIhpWXY
+         C13vVx63pwXWkAsrsw4isYkt6iaTCMxJ4//o0mm6Ag5I4nsAA7EsGzUdbWqSu4reIa
+         yAsamOqsltMJ09Y2R/zv7Vjvqz9800LsaaaR7JKNxxvAg9CozgI7ZSw12SplAwCkbb
+         lydO2oEGPOiE1L72wJHJDdUrmLE1vePey3Ok1tkVJJPrQEjhQkwSgrMDhwY6a0mlD3
+         Rafi8asRdCyhltRHtTjd6kvh2EO/8ErpDejD0++GoLJKIj1+qgZs1zo4iBz+5JzBjd
+         zGOqTgdiNiYbA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8CCC7609C5;
+        Mon, 15 Mar 2021 19:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: export dev_set_threaded symbol
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161583720857.23197.15037714790020050109.git-patchwork-notify@kernel.org>
+Date:   Mon, 15 Mar 2021 19:40:08 +0000
+References: <9ee5ba9ca7506620b1a9695896992bfdfb000469.1615733129.git.lorenzo@kernel.org>
+In-Reply-To: <9ee5ba9ca7506620b1a9695896992bfdfb000469.1615733129.git.lorenzo@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        weiwan@google.com, nbd@nbd.name, pabeni@redhat.com,
+        edumazet@google.com, hannes@stressinduktion.org,
+        lorenzo.bianconi@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 14 Mar 2021 15:49:19 +0100 Lorenzo Bianconi wrote:
+Hello:
+
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Sun, 14 Mar 2021 15:49:19 +0100 you wrote:
 > For wireless devices (e.g. mt76 driver) multiple net_devices belongs to
 > the same wireless phy and the napi object is registered in a dummy
 > netdevice related to the wireless phy.
@@ -48,5 +56,16 @@ On Sun, 14 Mar 2021 15:49:19 +0100 Lorenzo Bianconi wrote:
 > threaded NAPI.
 > 
 > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> 
+> [...]
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Here is the summary with links:
+  - [net-next] net: export dev_set_threaded symbol
+    https://git.kernel.org/netdev/net-next/c/8f64860f8b56
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
