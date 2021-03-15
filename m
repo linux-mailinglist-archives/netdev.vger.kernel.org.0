@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D4433C234
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:37:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC34233C269
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:46:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233989AbhCOQg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 12:36:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38781 "EHLO
+        id S233644AbhCOQgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 12:36:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20763 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234138AbhCOQgg (ORCPT
+        by vger.kernel.org with ESMTP id S234134AbhCOQgg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 12:36:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1615826192;
@@ -17,22 +17,22 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KLOfu+3tvxBM9AOvHodnhHFlNdGDVuA5IWmra+LYM2A=;
-        b=e5UUp/8HeyIDbLxJicpmn+TOApHIhjtHDzl/s1r1rzLLtrUsCOJRD9nLZ2xYDJZhqCAV3Z
-        Bv48q+OB1Lt7jXRn5UPdIqhkVthbs7Ye7FwZUvLG1EehhJcEXROGjaVWX1ZmH6aclkHnrb
-        wAkZnXEcPeOjfMQE/s2b51bQAuUtynQ=
+        bh=TySZqS37bNSDf+nHbLxQcHvMalZAV5YycVxJe257EIo=;
+        b=MVWd75gBXTD0M55mJTGoNnD1vhMbNPnYpxJUMC/rLNDNgJAbf+gULNZJfncF/xkKKt6ySq
+        XUIMx4+24jgIwiqD++UGF7PlQZNKKVe9NhIVKuAfLGjjDAeYaP7ndNts/1EODkf5I1/AaU
+        4K/7pZy7Myt5dss3TpfVWp7aTkVKu80=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-329-ScObpkMJPE2pysMQHktPLQ-1; Mon, 15 Mar 2021 12:36:24 -0400
-X-MC-Unique: ScObpkMJPE2pysMQHktPLQ-1
+ us-mta-469-1Dj3RlHpPFGI1QjIc5EkxQ-1; Mon, 15 Mar 2021 12:36:27 -0400
+X-MC-Unique: 1Dj3RlHpPFGI1QjIc5EkxQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0FE7394DE2;
-        Mon, 15 Mar 2021 16:36:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A9213100C66A;
+        Mon, 15 Mar 2021 16:36:25 +0000 (UTC)
 Received: from steredhat.redhat.com (ovpn-114-1.ams2.redhat.com [10.36.114.1])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BB0265FC17;
-        Mon, 15 Mar 2021 16:36:20 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5E3FC5C8B3;
+        Mon, 15 Mar 2021 16:36:23 +0000 (UTC)
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     netdev@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
@@ -42,9 +42,9 @@ Cc:     netdev@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
         Jason Wang <jasowang@redhat.com>,
         Parav Pandit <parav@nvidia.com>,
         "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
-Subject: [PATCH v4 09/14] vhost/vdpa: use get_config_size callback in vhost_vdpa_config_validate()
-Date:   Mon, 15 Mar 2021 17:34:45 +0100
-Message-Id: <20210315163450.254396-10-sgarzare@redhat.com>
+Subject: [PATCH v4 10/14] vhost/vdpa: Remove the restriction that only supports virtio-net devices
+Date:   Mon, 15 Mar 2021 17:34:46 +0100
+Message-Id: <20210315163450.254396-11-sgarzare@redhat.com>
 In-Reply-To: <20210315163450.254396-1-sgarzare@redhat.com>
 References: <20210315163450.254396-1-sgarzare@redhat.com>
 MIME-Version: 1.0
@@ -54,34 +54,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let's use the new 'get_config_size()' callback available instead of
-using the 'virtio_id' to get the size of the device config space.
+From: Xie Yongji <xieyongji@bytedance.com>
 
+Since the config checks are done by the vDPA drivers, we can remove the
+virtio-net restriction and we should be able to support all kinds of
+virtio devices.
+
+<linux/virtio_net.h> is not needed anymore, but we need to include
+<linux/slab.h> to avoid compilation failures.
+
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- drivers/vhost/vdpa.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/vhost/vdpa.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index e0a27e336293..7ae4080e57d8 100644
+index 7ae4080e57d8..850ed4b62942 100644
 --- a/drivers/vhost/vdpa.c
 +++ b/drivers/vhost/vdpa.c
-@@ -188,13 +188,8 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
- static int vhost_vdpa_config_validate(struct vhost_vdpa *v,
- 				      struct vhost_vdpa_config *c)
- {
--	long size = 0;
--
--	switch (v->virtio_id) {
--	case VIRTIO_ID_NET:
--		size = sizeof(struct virtio_net_config);
--		break;
--	}
-+	struct vdpa_device *vdpa = v->vdpa;
-+	long size = vdpa->config->get_config_size(vdpa);
+@@ -16,12 +16,12 @@
+ #include <linux/cdev.h>
+ #include <linux/device.h>
+ #include <linux/mm.h>
++#include <linux/slab.h>
+ #include <linux/iommu.h>
+ #include <linux/uuid.h>
+ #include <linux/vdpa.h>
+ #include <linux/nospec.h>
+ #include <linux/vhost.h>
+-#include <linux/virtio_net.h>
  
- 	if (c->len == 0)
- 		return -EINVAL;
+ #include "vhost.h"
+ 
+@@ -1018,10 +1018,6 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+ 	int minor;
+ 	int r;
+ 
+-	/* Currently, we only accept the network devices. */
+-	if (ops->get_device_id(vdpa) != VIRTIO_ID_NET)
+-		return -ENOTSUPP;
+-
+ 	v = kzalloc(sizeof(*v), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
+ 	if (!v)
+ 		return -ENOMEM;
 -- 
 2.30.2
 
