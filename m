@@ -2,207 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250CC33C8DE
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 22:53:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5DA33C8E8
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 22:57:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234116AbhCOVwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 17:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbhCOVwC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 17:52:02 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46125C06175F
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 14:52:02 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id h18so10843554ils.2
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 14:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=v7N6p1x0BsH0iM7+7iNRHjfZcm0BfhMj037soR+6HF4=;
-        b=poW1YMS4YSxaLKEiHkfDczYRpqjgHVgtW4F8oj4a78qxH0zHERoYJ65kHX3saRWU8p
-         SpOhu/1bOxZlp+4PZxOMRBGzZ7LHESr7/QUG7FxrxE618vxSEn7G9lgXlNgJ2NsBgTKk
-         gqjmxWmyL6Plw2ZRbUKZrpEzJ0Er7SCmELP2JN1vG1siq4wGMUPgI+yS7QIhKFyZ/Arm
-         42kAJUpxzU1EbUY2mtvYAX0e8IVnKLAZTshpovvj34m7gg21m0yx3Ahn0WAHj3nvIuwx
-         us8ySMRvf33t20j7ObYagpY1Bx2qCbFq6a0rqSaVIZtl5y6J/tZjLuRaynAC5KTsy0eb
-         yj8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=v7N6p1x0BsH0iM7+7iNRHjfZcm0BfhMj037soR+6HF4=;
-        b=dW0SiybYPukuOcKDPc6cSGLa8r/ldAwPVFRWycsCOvCnWNPBnlmf2AEZhnx0OS+CAx
-         tqHxzki9FGPVUbf2w40bq+LwjbYOWvXj8MmPu1DwLJdiWO0UNafO93mgpkWzcPfIdtv6
-         Qvdnr9YbtSB0dHW2J1e0nDka5H+XC96CMuE/8TDLZTiXohkEfHYPT77EFiGqQHz1p83g
-         VmXMctc6qhKja1nKfl3AWBf6B4PcEGJJZjYSsfpsdl3MsPzeQfi6e5IwascOTlA31I+9
-         /uWoqe3WFutk7RpGabd6IwX78nejqixpKKiQms8EadMhiduamg3aiXCSn0fGo1KVYzzt
-         oI3Q==
-X-Gm-Message-State: AOAM530HwdW3bZex9AUB+GpHFiPNfmyvshP1a0ekcupp9Pdz/KYGP3cO
-        UXKHBqnyZY/NABNOM3vBHcjsrg==
-X-Google-Smtp-Source: ABdhPJyx+YoXdoYx4vHWnNanw0Rzp9ouALpv/wl8rCTdgBVFzLBgFd/HLFX6xZm/+7GWJqe5yfwxKQ==
-X-Received: by 2002:a92:c690:: with SMTP id o16mr1375597ilg.256.1615845121704;
-        Mon, 15 Mar 2021 14:52:01 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id y3sm7424625iot.15.2021.03.15.14.52.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 14:52:01 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     subashab@codeaurora.org, stranche@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     sharathv@codeaurora.org, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        David.Laight@ACULAB.COM, olteanv@gmail.com,
-        alexander.duyck@gmail.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Duyck <alexanderduyck@fb.com>
-Subject: [PATCH net-next v6 6/6] net: qualcomm: rmnet: don't use C bit-fields in rmnet checksum header
-Date:   Mon, 15 Mar 2021 16:51:51 -0500
-Message-Id: <20210315215151.3029676-7-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210315215151.3029676-1-elder@linaro.org>
-References: <20210315215151.3029676-1-elder@linaro.org>
+        id S232322AbhCOV5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 17:57:22 -0400
+Received: from ozlabs.org ([203.11.71.1]:54931 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232152AbhCOV5K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 17:57:10 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DzqyX3Klxz9sPf;
+        Tue, 16 Mar 2021 08:57:07 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1615845429;
+        bh=NoHwXOgxdwjCIOsOUn+xBqlS8d+1WIyWDoDRzsElZZo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=pY8NqhyUGMjvyoNidA5BrVXjUAAFLwyDtO0BtEeC3US8azX6RmzsLvi378wDZ/+7G
+         L/qCS3RVMJTWtNFaov4OS6wAY9grU/kTTm1iXw9BbhK9247sg+h/UPtzSllM9sr4ef
+         +Q/hjUCli6fdwj1j6CzuIyPAelfmPSr3kp0MOEOFDPMcbgMzRZ5DClXEGhsd9qSIET
+         5Sfe2gO/WNY4fEhlScfnKBwJ7oS1IN2s3OreAy86JLBdu9s+gmuhyoGDtj9w7OnHyX
+         yFncbzdTHxar8kEJikpWEYKt/3w3WaEp5Sgl4UhVVsjPjrMwTLC5bWV11njvA33l25
+         LU3n/eqavgDog==
+Date:   Tue, 16 Mar 2021 08:57:06 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Alexander Ovechkin <ovov@yandex-team.ru>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20210316085706.7df472fd@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/Sf=EHNm.5=al3VQJ3TPwgtA";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the use of C bit-fields in the rmnet_map_ul_csum_header
-structure with a single two-byte (big endian) structure member,
-and use masks to encode or get values within it.  The content of
-these fields can be accessed using simple bitwise AND and OR
-operations on the (host byte order) value of the new structure
-member.
+--Sig_/Sf=EHNm.5=al3VQJ3TPwgtA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Previously rmnet_map_ipv4_ul_csum_header() would update C bit-field
-values in host byte order, then forcibly fix their byte order using
-a combination of byte swap operations and types.
+Hi all,
 
-Instead, just compute the value that needs to go into the new
-structure member and save it with a simple byte-order conversion.
+In commit
 
-Make similar simplifications in rmnet_map_ipv6_ul_csum_header().
+  7233da86697e ("tcp: relookup sock for RST+ACK packets handled by obsolete=
+ req sock")
 
-Finally, in rmnet_map_checksum_uplink_packet() a set of assignments
-zeroes every field in the upload checksum header.  Replace that with
-a single memset() operation.
+Fixes tag
 
-Signed-off-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
----
-v5: - Assign checksum start offset a little later (with csum_info)
-v4: - Don't use u16_get_bits() to access the checksum field offset
-v3: - Use BIT(x) and don't use u16_get_bits() for single-bit flags
-v2: - Fixed to use u16_encode_bits() instead of be16_encode_bits()
+  Fixes: e0f9759f530 ("tcp: try to keep packet if SYN_RCV race is lost")
 
- .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 38 +++++++------------
- include/linux/if_rmnet.h                      | 21 +++++-----
- 2 files changed, 23 insertions(+), 36 deletions(-)
+has these problem(s):
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index c336c17e01fe4..0ac2ff828320c 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -197,20 +197,16 @@ rmnet_map_ipv4_ul_csum_header(void *iphdr,
- 			      struct rmnet_map_ul_csum_header *ul_header,
- 			      struct sk_buff *skb)
- {
--	__be16 *hdr = (__be16 *)ul_header;
- 	struct iphdr *ip4h = iphdr;
-+	u16 val;
- 
--	ul_header->csum_start_offset = htons(skb_network_header_len(skb));
--	ul_header->csum_insert_offset = skb->csum_offset;
--	ul_header->csum_enabled = 1;
-+	val = MAP_CSUM_UL_ENABLED_FLAG;
- 	if (ip4h->protocol == IPPROTO_UDP)
--		ul_header->udp_ind = 1;
--	else
--		ul_header->udp_ind = 0;
-+		val |= MAP_CSUM_UL_UDP_FLAG;
-+	val |= skb->csum_offset & MAP_CSUM_UL_OFFSET_MASK;
- 
--	/* Changing remaining fields to network order */
--	hdr++;
--	*hdr = htons((__force u16)*hdr);
-+	ul_header->csum_start_offset = htons(skb_network_header_len(skb));
-+	ul_header->csum_info = htons(val);
- 
- 	skb->ip_summed = CHECKSUM_NONE;
- 
-@@ -237,21 +233,16 @@ rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
- 			      struct rmnet_map_ul_csum_header *ul_header,
- 			      struct sk_buff *skb)
- {
--	__be16 *hdr = (__be16 *)ul_header;
- 	struct ipv6hdr *ip6h = ip6hdr;
-+	u16 val;
- 
--	ul_header->csum_start_offset = htons(skb_network_header_len(skb));
--	ul_header->csum_insert_offset = skb->csum_offset;
--	ul_header->csum_enabled = 1;
--
-+	val = MAP_CSUM_UL_ENABLED_FLAG;
- 	if (ip6h->nexthdr == IPPROTO_UDP)
--		ul_header->udp_ind = 1;
--	else
--		ul_header->udp_ind = 0;
-+		val |= MAP_CSUM_UL_UDP_FLAG;
-+	val |= skb->csum_offset & MAP_CSUM_UL_OFFSET_MASK;
- 
--	/* Changing remaining fields to network order */
--	hdr++;
--	*hdr = htons((__force u16)*hdr);
-+	ul_header->csum_start_offset = htons(skb_network_header_len(skb));
-+	ul_header->csum_info = htons(val);
- 
- 	skb->ip_summed = CHECKSUM_NONE;
- 
-@@ -419,10 +410,7 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
- 	}
- 
- sw_csum:
--	ul_header->csum_start_offset = 0;
--	ul_header->csum_insert_offset = 0;
--	ul_header->csum_enabled = 0;
--	ul_header->udp_ind = 0;
-+	memset(ul_header, 0, sizeof(*ul_header));
- 
- 	priv->stats.csum_sw++;
- }
-diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
-index 941997df9e088..4efb537f57f31 100644
---- a/include/linux/if_rmnet.h
-+++ b/include/linux/if_rmnet.h
-@@ -33,17 +33,16 @@ struct rmnet_map_dl_csum_trailer {
- 
- struct rmnet_map_ul_csum_header {
- 	__be16 csum_start_offset;
--#if defined(__LITTLE_ENDIAN_BITFIELD)
--	u16 csum_insert_offset:14;
--	u16 udp_ind:1;
--	u16 csum_enabled:1;
--#elif defined (__BIG_ENDIAN_BITFIELD)
--	u16 csum_enabled:1;
--	u16 udp_ind:1;
--	u16 csum_insert_offset:14;
--#else
--#error	"Please fix <asm/byteorder.h>"
--#endif
-+	__be16 csum_info;		/* MAP_CSUM_UL_* */
- } __aligned(1);
- 
-+/* csum_info field:
-+ *  OFFSET:	where (offset in bytes) to insert computed checksum
-+ *  UDP:	1 = UDP checksum (zero checkum means no checksum)
-+ *  ENABLED:	1 = checksum computation requested
-+ */
-+#define MAP_CSUM_UL_OFFSET_MASK		GENMASK(13, 0)
-+#define MAP_CSUM_UL_UDP_FLAG		BIT(14)
-+#define MAP_CSUM_UL_ENABLED_FLAG	BIT(15)
-+
- #endif /* !(_LINUX_IF_RMNET_H_) */
--- 
-2.27.0
+  - SHA1 should be at least 12 digits long
 
+This is not worth rebasing for, but can be avoided in the future by
+setting core.abbrev to 12 (or more) or (for git v2.11 or later) just
+making sure it is not set (or set to "auto").
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Sf=EHNm.5=al3VQJ3TPwgtA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBP2DIACgkQAVBC80lX
+0Gxe8gf+K4Kgh7RbXGOjeH2USp2hnorFzHLPbWenmg1Z0ps/eovVxlMJ+e58gdmM
+AjRgyaUQspJfhnbqWvn4tE7wM+iQ7x49znaH42t2jAwC3JKS+jVSj20L8zHzC9jT
+K5xRcofCX7N0TYWCT8/oefvedJDOHHtGA2A1igISrp1lFVuNZ+TWn0ESPq29viyv
+2AC9mv2slBIe4I4EUPwAqpLADay4XG2HatDsbKIB1HtuyelohCpbym2/DWT6TEGD
+5cuipYJfwp2BnZQu+glentR7xkG9KjPp12h3fxi7aYW8OTiqouVMTaew2jSEqIAD
+4KQHrDdXUMTUNa0A6+Mr3idAnzekSw==
+=MM0W
+-----END PGP SIGNATURE-----
+
+--Sig_/Sf=EHNm.5=al3VQJ3TPwgtA--
