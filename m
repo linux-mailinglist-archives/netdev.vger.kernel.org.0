@@ -2,237 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B69E33AE21
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 09:59:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D947A33AE25
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:02:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229688AbhCOI7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 04:59:15 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:38990 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbhCOI7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 04:59:06 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 12F8wkxbF027002, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmbs04.realtek.com.tw[172.21.6.97])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 12F8wkxbF027002
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 15 Mar 2021 16:58:46 +0800
-Received: from localhost.localdomain (172.21.132.99) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 15 Mar 2021 16:58:45 +0800
-From:   <hildawu@realtek.com>
-To:     <marcel@holtmann.org>
-CC:     <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-bluetooth@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <tientzu@chromium.org>,
-        <max.chou@realtek.com>, <alex_lu@realsil.com.cn>,
-        <kidman@realtek.com>
-Subject: [PATCH] Bluetooth: hci_h5: btrtl: Add quirk for keep power during suspend/resume for specific devices
-Date:   Mon, 15 Mar 2021 16:58:40 +0800
-Message-ID: <20210315085840.4424-1-hildawu@realtek.com>
-X-Mailer: git-send-email 2.17.1
+        id S229526AbhCOJCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 05:02:00 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:22779 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229518AbhCOJBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 05:01:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1615798903; x=1647334903;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=L1t2HqnlO7990sJbch3O4sVrvU6b4LxDMuwpwNAvqLU=;
+  b=JYlkLcVvk5n/jfgOs9YDrGHYdvP31OzRKLQWaZFfzH3o093u5c2wNw0a
+   tZDHWYqnm+yRH6gcZ84LG13DJGsTIoG7qRB1MUyrFMksq3woSFRovMQhs
+   SGcIm+SBxWYadylxsaTUjp+ZUkL5ySDRX+su8O0IA2iSvtxQA/xpWzk4U
+   s=;
+IronPort-HdrOrdr: A9a23:0YlRuq9aWpbHWouHXnduk+BqI+orLtY04lQ7vn1ZYzY9SK2lvu
+ qpm+kW0gKxtSYJVBgb6Le9EYSJXH+0z+8W3aA/JrGnNTOIhEKJK8VY4ZLm03ncHUTFh41g/I
+ NBV4Q7N9HqF1h9iq/BkW2FOvIt2sOO/qztpcq29QYJcShScK1r4wp0DQyWe3cGPDVuPpYyGJ
+ qC6scvnVPJEh4qR/+2CXUfU+/Iq8ejrv/bSCQbDB0q4hTmt1OVwYP9eiL34j4jST9Vhb8t/W
+ /Z+jaU2oyT99u/yhPaylbJ6YVXlNbL2rJ4dbWxo/lQDC7thAaubJlgXLPHnAldmpDI1GoX
+X-IronPort-AV: E=Sophos;i="5.81,249,1610409600"; 
+   d="scan'208";a="94501544"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-7d76a15f.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 15 Mar 2021 09:01:26 +0000
+Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1a-7d76a15f.us-east-1.amazon.com (Postfix) with ESMTPS id 0510AA2740;
+        Mon, 15 Mar 2021 09:01:23 +0000 (UTC)
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.48) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 15 Mar 2021 09:01:18 +0000
+References: <20210314222221.3996408-1-unixbhaskar@gmail.com>
+User-agent: mu4e 1.4.15; emacs 27.1
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
+CC:     <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
+        <saeedb@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <sameehj@amazon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <rdunlap@infradead.org>
+Subject: Re: [PATCH] ethernet: amazon: ena: A typo fix in the file ena_com.h
+In-Reply-To: <20210314222221.3996408-1-unixbhaskar@gmail.com>
+Date:   Mon, 15 Mar 2021 11:00:57 +0200
+Message-ID: <pj41zlft0wlrjq.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.21.132.99]
-X-ClientProxiedBy: RTEXMBS01.realtek.com.tw (172.21.6.94) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.160.48]
+X-ClientProxiedBy: EX13D35UWB001.ant.amazon.com (10.43.161.47) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: hildawu <hildawu@realtek.com>
 
-RTL8822C devices support BT wakeup Host. Add a quirk for these specific
-devices did not power off during suspend and resume.
-By this change, if the Host support that received BT device signal then
-it can be wakeup.
+Bhaskar Chowdhury <unixbhaskar@gmail.com> writes:
 
-Signed-off-by: hildawu <hildawu@realtek.com>
----
- drivers/bluetooth/btrtl.c   | 36 ------------------------------------
- drivers/bluetooth/btrtl.h   | 35 +++++++++++++++++++++++++++++++++++
- drivers/bluetooth/hci_h5.c  | 35 ++++++++++++++++++++++++-----------
- include/net/bluetooth/hci.h |  9 +++++++++
- 4 files changed, 68 insertions(+), 47 deletions(-)
+> Mundane typo fix.
+>
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_com.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h 
+> b/drivers/net/ethernet/amazon/ena/ena_com.h
+> index 343caf41e709..73b03ce59412 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_com.h
+> +++ b/drivers/net/ethernet/amazon/ena/ena_com.h
+> @@ -124,7 +124,7 @@ struct ena_com_io_cq {
+>
+>  	/* holds the number of cdesc of the current packet */
+>  	u16 cur_rx_pkt_cdesc_count;
+> -	/* save the firt cdesc idx of the current packet */
+> +	/* save the first cdesc idx of the current packet */
+>  	u16 cur_rx_pkt_cdesc_start_idx;
+>
+>  	u16 q_depth;
 
-diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
-index e7fe5fb22753..94d1e7885aee 100644
---- a/drivers/bluetooth/btrtl.c
-+++ b/drivers/bluetooth/btrtl.c
-@@ -38,42 +38,6 @@
- 	.hci_ver = (hciv), \
- 	.hci_bus = (bus)
- 
--enum btrtl_chip_id {
--	CHIP_ID_8723A,
--	CHIP_ID_8723B,
--	CHIP_ID_8821A,
--	CHIP_ID_8761A,
--	CHIP_ID_8822B = 8,
--	CHIP_ID_8723D,
--	CHIP_ID_8821C,
--	CHIP_ID_8822C = 13,
--	CHIP_ID_8761B,
--	CHIP_ID_8852A = 18,
--};
--
--struct id_table {
--	__u16 match_flags;
--	__u16 lmp_subver;
--	__u16 hci_rev;
--	__u8 hci_ver;
--	__u8 hci_bus;
--	bool config_needed;
--	bool has_rom_version;
--	char *fw_name;
--	char *cfg_name;
--};
--
--struct btrtl_device_info {
--	const struct id_table *ic_info;
--	u8 rom_version;
--	u8 *fw_data;
--	int fw_len;
--	u8 *cfg_data;
--	int cfg_len;
--	bool drop_fw;
--	int project_id;
--};
--
- static const struct id_table ic_id_table[] = {
- 	/* 8723A */
- 	{ IC_INFO(RTL_ROM_LMP_8723A, 0xb, 0x6, HCI_USB),
-diff --git a/drivers/bluetooth/btrtl.h b/drivers/bluetooth/btrtl.h
-index 2a582682136d..0fa38c116762 100644
---- a/drivers/bluetooth/btrtl.h
-+++ b/drivers/bluetooth/btrtl.h
-@@ -12,6 +12,41 @@
- #define rtl_dev_info(dev, fmt, ...) bt_dev_info(dev, "RTL: " fmt, ##__VA_ARGS__)
- #define rtl_dev_dbg(dev, fmt, ...) bt_dev_dbg(dev, "RTL: " fmt, ##__VA_ARGS__)
- 
-+enum btrtl_chip_id {
-+	CHIP_ID_8723A,
-+	CHIP_ID_8723B,
-+	CHIP_ID_8821A,
-+	CHIP_ID_8761A,
-+	CHIP_ID_8822B = 8,
-+	CHIP_ID_8723D,
-+	CHIP_ID_8821C,
-+	CHIP_ID_8822C = 13,
-+	CHIP_ID_8761B,
-+	CHIP_ID_8852A = 18,
-+};
-+
-+struct id_table {
-+	__u16 match_flags;
-+	__u16 lmp_subver;
-+	__u16 hci_rev;
-+	__u8 hci_ver;
-+	__u8 hci_bus;
-+	bool config_needed;
-+	bool has_rom_version;
-+	char *fw_name;
-+	char *cfg_name;
-+};
-+
-+struct btrtl_device_info {
-+	const struct id_table *ic_info;
-+	u8 rom_version;
-+	u8 *fw_data;
-+	int fw_len;
-+	u8 *cfg_data;
-+	int cfg_len;
-+	int project_id;
-+};
-+
- struct btrtl_device_info;
- 
- struct rtl_download_cmd {
-diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
-index 27e96681d583..1ca4ff89ea14 100644
---- a/drivers/bluetooth/hci_h5.c
-+++ b/drivers/bluetooth/hci_h5.c
-@@ -909,7 +909,15 @@ static int h5_btrtl_setup(struct h5 *h5)
- 	/* Enable controller to do both LE scan and BR/EDR inquiry
- 	 * simultaneously.
- 	 */
--	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &h5->hu->hdev->quirks);
-+	switch (btrtl_dev->project_id) {
-+	case CHIP_ID_8822C:
-+	case CHIP_ID_8852A:
-+		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &h5->hu->hdev->quirks);
-+		set_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks);
-+		break;
-+	default:
-+		break;
-+	}
- 
- out_free:
- 	btrtl_free(btrtl_dev);
-@@ -945,8 +953,11 @@ static void h5_btrtl_close(struct h5 *h5)
- static int h5_btrtl_suspend(struct h5 *h5)
- {
- 	serdev_device_set_flow_control(h5->hu->serdev, false);
--	gpiod_set_value_cansleep(h5->device_wake_gpio, 0);
--	gpiod_set_value_cansleep(h5->enable_gpio, 0);
-+
-+	if (!test_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks)) {
-+		gpiod_set_value_cansleep(h5->device_wake_gpio, 0);
-+		gpiod_set_value_cansleep(h5->enable_gpio, 0);
-+	}
- 	return 0;
- }
- 
-@@ -972,17 +983,19 @@ static void h5_btrtl_reprobe_worker(struct work_struct *work)
- 
- static int h5_btrtl_resume(struct h5 *h5)
- {
--	struct h5_btrtl_reprobe *reprobe;
-+	if (!test_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks)) {
-+		struct h5_btrtl_reprobe *reprobe;
- 
--	reprobe = kzalloc(sizeof(*reprobe), GFP_KERNEL);
--	if (!reprobe)
--		return -ENOMEM;
-+		reprobe = kzalloc(sizeof(*reprobe), GFP_KERNEL);
-+		if (!reprobe)
-+			return -ENOMEM;
- 
--	__module_get(THIS_MODULE);
-+		__module_get(THIS_MODULE);
- 
--	INIT_WORK(&reprobe->work, h5_btrtl_reprobe_worker);
--	reprobe->dev = get_device(&h5->hu->serdev->dev);
--	queue_work(system_long_wq, &reprobe->work);
-+		INIT_WORK(&reprobe->work, h5_btrtl_reprobe_worker);
-+		reprobe->dev = get_device(&h5->hu->serdev->dev);
-+		queue_work(system_long_wq, &reprobe->work);
-+	}
- 	return 0;
- }
- 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index ba2f439bc04d..2e88381b4a58 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -246,6 +246,15 @@ enum {
- 	 * HCI after resume.
- 	 */
- 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
-+
-+	/* When this quirk is set, the controller does not power off
-+	 * during suspend and resume. This mechanism lets BT devices wake
-+	 * the Host up if the Host and chips support.
-+	 *
-+	 * This quirk can be set before hci_register_dev is called or
-+	 * during the hdev->setup vendor callback.
-+	 */
-+	HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED,
- };
- 
- /* HCI device flags */
--- 
-2.17.1
+Acked-by: Shay Agroskin <shayagr@amazon.com>
 
+Thanks for your patch
