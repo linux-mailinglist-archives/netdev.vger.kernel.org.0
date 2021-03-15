@@ -2,121 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C5033B13F
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 12:39:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E6233B149
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 12:41:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbhCOLic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 07:38:32 -0400
-Received: from mail-bn8nam12on2047.outbound.protection.outlook.com ([40.107.237.47]:13312
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229634AbhCOLiY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 07:38:24 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Erhc/gmKzdmluNDukgzDo3KR0/g7C/77QzF1FcBVob43b+rO24+SG+FmBbYTp9opjPvcMVNXSL4eRv8nxOeyZima+beaAi6VJA/Tqor/cX6sjQcXdhH7QYm+f8kPmU7/gKw57YS3Qf0SELu3dy3icMcER9kXtuq5d88/Aoy2VNpGupdtVIoUO9flANTp9E/xCEa1jgIs/57iFCQ4ELASocia0cx1K8RjcGxys1XQZNt7kXhAq9im2HUP1nYEcbXIb0kl6cid3T7YsWsrdeSPdJa3aHEpYr9Y2s4nLWgtE/2HvzbqLi4xLoGL058Zqnmc09vbFPzgfr46Jr/wK6PbOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jRtUPYBQsZtvV7s8hnPXI9wXv+WUGdJ+8GcNDVfF4Bs=;
- b=EGFYIuYBzNdS7mBJllzEDadJVMyccEQCz9sK6LcUAyY5oj8NTT0Xye4FOwggm1DRAYI4eaLOE9v94MpsthxcBsmkdptIQneKvPMNFildWLHaRspKKJHSoeeNhQPQ7myp+rsoYmMWXpGHZxWjqYqcaZ4rENt3xn/V4moTjM+2AFR/zOpdO4+ab7+gzPCOZL8scnEV1H/zYqikUQUF38szVlzD66ZI49XfVz3msQIxvowQjcPvhHE90QN0uxNJRJUIPu4CPw/XkbRamYnUsCeKFhiKefWNygTbck5BqOkJPJXSjMtZ8E8PFt3qGTDsNuClwAmqFrsu9W5HMclU1vK2Hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jRtUPYBQsZtvV7s8hnPXI9wXv+WUGdJ+8GcNDVfF4Bs=;
- b=VoB9okiRtVdzcP36c7GpXl8NKynCVgnlq+A057ZOWFFm5SJz4PUvkyLej8SMlzLPX2HR7aRCeMUsqJcDJ8uFZZSpY0Bt+dDl7lZNVQ+FL7Xz/jvUmQg+UOy9vvAyXZ8ymXhWTyBtM+JmVSDVJXtIJ3UeGkXuMTJsONMamJ6BfaJcLa3JXNRUJglmk5XZnuXJ43hd3ZI0MQTBT15eCWhIZqquF3UU8muhTgKT4AJwRvoYBpr2dwj8Ur3iHMJ73xgWhTH8oz7aJ0ECizGUu44QyGDOnPv1gkwCPG1e6jkn0AtnXZBjpa6xRsuQuq/2lZBcG7Id3jOb8hhJvBMBWi3JsA==
-Received: from MW2PR16CA0024.namprd16.prod.outlook.com (2603:10b6:907::37) by
- BL0PR12MB2465.namprd12.prod.outlook.com (2603:10b6:207:45::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3933.32; Mon, 15 Mar 2021 11:38:21 +0000
-Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:0:cafe::d9) by MW2PR16CA0024.outlook.office365.com
- (2603:10b6:907::37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31 via Frontend
- Transport; Mon, 15 Mar 2021 11:38:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Mon, 15 Mar 2021 11:38:21 +0000
-Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 15 Mar 2021 11:38:18
- +0000
-References: <cover.1615568866.git.petrm@nvidia.com>
- <b614d787896a33481e09487deec42b482fdc8643.1615568866.git.petrm@nvidia.com>
- <5397a5b8-da46-7290-9395-5fcd46121f42@gmail.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        <stephen@networkplumber.org>, Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <me@pmachata.org>
-Subject: Re: [PATCH iproute2-next 4/6] nexthop: Add ability to specify group
- type
-In-Reply-To: <5397a5b8-da46-7290-9395-5fcd46121f42@gmail.com>
-Message-ID: <87zgz4hck9.fsf@nvidia.com>
-Date:   Mon, 15 Mar 2021 12:38:15 +0100
+        id S230020AbhCOLkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 07:40:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38751 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229579AbhCOLkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 07:40:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615808433;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PxSaxzcxzfAbRfARa8s8vrxSF0Vnz+8utthTPaHAa5g=;
+        b=ImIWsnjf4pUI5VRiOndXDP2SK4+FteVLhLWLLKi/SGTvLAd6ee+EXmW3mlX8AjA+0Naoif
+        9UEaIODsD/YuTr2inLMA55G+wCtC4PWEPFKpcNGYRSHs2tYPfQylHePgrcraZ3L0OlxUkj
+        SL1iPDelY9Xu10p6jouzXh2L+J739Tk=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-21-mScfyRJEM0aDr9A_vHXGOA-1; Mon, 15 Mar 2021 07:40:31 -0400
+X-MC-Unique: mScfyRJEM0aDr9A_vHXGOA-1
+Received: by mail-wr1-f69.google.com with SMTP id n17so14990089wrq.5
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 04:40:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PxSaxzcxzfAbRfARa8s8vrxSF0Vnz+8utthTPaHAa5g=;
+        b=cGl7slyX+rc19hHBeW3aI9aDDf8xqlILCL3DVG/x59mg3a9Rr5ctdWlQrm+EerFiSi
+         IbN2TM8hmwGPbILMfApKmfJ808gIi/f7Oxw9KsAwqpiukoxKqZ8mWUbjtw/paQqfZy6C
+         jl3cp/zCNtIrAv7jmHEDbJC4wwXmRho3Zhy9nkyVsBURULlhjSpiVJMEHquljijmaMMD
+         O6Z7Pbyj9imRVY/fV5nQAKYDctzcfR6ihn7FQbBVP0tz0Gn23RHMOmsTO+nCPRsFZdUk
+         TRqE6mfNcYh9tX0vFGcavCJEMnZJXyNC/C2Zn6E8DaPbhO2BxQJiXuZPZbF2PKVGvDjV
+         Izfw==
+X-Gm-Message-State: AOAM533A56NmFh1mHziT7wjA7sl/mwKV/XGXjhSakW/fsNuSZ8PztrSf
+        sSisDRrTrTl88nd1D5LmEGtj5PVpxckyHyNoJBAxBDWRo6Egg7Qpb1MWgEXbLtfZsBE47OaXeyR
+        VUx7td1aWy7pwDwl+
+X-Received: by 2002:a05:600c:35c1:: with SMTP id r1mr25432451wmq.60.1615808430351;
+        Mon, 15 Mar 2021 04:40:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxe9wDe+7swqQKqvY5kx7A6XwNsh8/JyRypHkYEToXuJ1PEbwx4O2LUUxUlVxnA1rSmVHkGtQ==
+X-Received: by 2002:a05:600c:35c1:: with SMTP id r1mr25432432wmq.60.1615808430099;
+        Mon, 15 Mar 2021 04:40:30 -0700 (PDT)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id l4sm17987614wrt.60.2021.03.15.04.40.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 04:40:29 -0700 (PDT)
+Date:   Mon, 15 Mar 2021 12:40:27 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v6 00/22] virtio/vsock: introduce SOCK_SEQPACKET
+ support
+Message-ID: <20210315114027.neacovpmw3nzz77z@steredhat>
+References: <20210307175722.3464068-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7c34b269-7498-4986-3ecd-08d8e7a6d630
-X-MS-TrafficTypeDiagnostic: BL0PR12MB2465:
-X-Microsoft-Antispam-PRVS: <BL0PR12MB2465ADCB30503688BD5B4257D66C9@BL0PR12MB2465.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1417;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DwBYgiXyVt8jIZCJsM76SetSKc9rIl4lSBnLd5Xw+TLjzUH7gX0PL9Mfa2MAQC/L3lnhV6q031s8KbLmgfR0J0clYjDOhTs9RaqGXbQqWwbLZGaTXQeUTrklAGKUGsnnYftmYefpfSkAYRiol1i4fyAOANCv7u5et7T8DK2VxmyEg+gnspBCf2O64JJ4eX8BI2HgkyQv2uPtbiLMCnUwVx1PTMzf1nDH7fF86jwPjpFgjskFltIL8kNlU/yli3oZInRJPVEnYyI1Spj7nGtAObPBe4hWds5XK3mukj+cuQDJ0MYcvmg7N/SsejEjJHJhZcbulUAQdZl53w0WTPiiTjMJnH7OsomCe8P3epJCzGvAdk/4vVwtxuTh+04CQvL5SlH4GRICwEDo21WNQlB/OR8fOK+1ahVJwBkAeGksHKYcSLQCzO3BFLxFF3e21Hf0W2h0rwT1T37vYX9dhk7FuJ9U9JSrfwPidJuLzQXsBJZ1fRuJVIOaymhq3bGATPMLQuEEMrLswAoBuDemtUxKA9WznWlTVkW1wBIZ/2kX+sauzkBCWXxq8bqlJUKF9XuNM344XF2uU1eJF/1A6WvTSXfUYsYcD0mDeWPe9br2IdowO5jEk1kFCTkhYaKb/yhvX+Q60t5qVQZn70vPV7GrzEBntwEekNOeQicd3P5kUo0P51ENsl90FEaxLXfWZfQu
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(136003)(376002)(396003)(39860400002)(46966006)(36840700001)(82740400003)(47076005)(82310400003)(8936002)(53546011)(36860700001)(4744005)(2616005)(86362001)(426003)(356005)(34020700004)(186003)(336012)(316002)(36906005)(26005)(6916009)(36756003)(70586007)(2906002)(4326008)(70206006)(8676002)(16526019)(6666004)(5660300002)(478600001)(7636003)(54906003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 11:38:21.5889
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c34b269-7498-4986-3ecd-08d8e7a6d630
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2465
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210307175722.3464068-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Arseny,
 
-David Ahern <dsahern@gmail.com> writes:
-
-> On 3/12/21 10:23 AM, Petr Machata wrote:
->> From: Petr Machata <me@pmachata.org>
->> 
->> From: Ido Schimmel <idosch@nvidia.com>
+On Sun, Mar 07, 2021 at 08:57:19PM +0300, Arseny Krasnov wrote:
+>	This patchset implements support of SOCK_SEQPACKET for virtio
+>transport.
+>	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+>do it, two new packet operations were added: first for start of record
+> and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
+>both operations carries metadata - to maintain boundaries and payload
+>integrity. Metadata is introduced by adding special header with two
+>fields - message id and message length:
 >
-> All of the patches have the above. If Ido is the author and you are
-> sending, AIUI you add your Signed-off-by below his.
-
-Sorry about that, that's a leftover from when I was sending the DCB
-patches. I'll resend with the correct headers.
-
->> +.sp
->> +.I TYPE
->> +is a string specifying the nexthop group type. Namely:
->> +
->> +.in +8
->> +.BI mpath
->> +- multipath nexthop group
->> +
+>	struct virtio_vsock_seq_hdr {
+>		__le32  msg_id;
+>		__le32  msg_len;
+>	} __attribute__((packed));
 >
-> Add a comment that this is the default group type and refers to the
-> legacy hash-bashed multipath group.
+>	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
+>packets(buffer of second virtio descriptor in chain) in the same way as
+>data transmitted in RW packets. Payload was chosen as buffer for this
+>header to avoid touching first virtio buffer which carries header of
+>packet, because someone could check that size of this buffer is equal
+>to size of packet header. To send record, packet with start marker is
+>sent first(it's header carries length of record and id),then all data
+>is sent as usual 'RW' packets and finally SEQ_END is sent(it carries
+>id of message, which is equal to id of SEQ_BEGIN), also after sending
+>SEQ_END id is incremented. On receiver's side,size of record is known
+>from packet with start record marker. To check that no packets were
+>dropped by transport, 'msg_id's of two sequential SEQ_BEGIN and SEQ_END
+>are checked to be equal and length of data between two markers is
+>compared to then length in SEQ_BEGIN header.
+>	Now as  packets of one socket are not reordered neither on
+>vsock nor on vhost transport layers, such markers allows to restore
+>original record on receiver's side. If user's buffer is smaller that
+>record length, when all out of size data is dropped.
+>	Maximum length of datagram is not limited as in stream socket,
+>because same credit logic is used. Difference with stream socket is
+>that user is not woken up until whole record is received or error
+>occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+>	Tests also implemented.
+>
+>	Thanks to stsp2@yandex.ru for encouragements and initial design
+>recommendations.
+>
+> Arseny Krasnov (22):
+>  af_vsock: update functions for connectible socket
+>  af_vsock: separate wait data loop
+>  af_vsock: separate receive data loop
+>  af_vsock: implement SEQPACKET receive loop
+>  af_vsock: separate wait space loop
+>  af_vsock: implement send logic for SEQPACKET
+>  af_vsock: rest of SEQPACKET support
+>  af_vsock: update comments for stream sockets
+>  virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
+>  virtio/vsock: simplify credit update function API
+>  virtio/vsock: dequeue callback for SOCK_SEQPACKET
+>  virtio/vsock: fetch length for SEQPACKET record
+>  virtio/vsock: add SEQPACKET receive logic
+>  virtio/vsock: rest of SOCK_SEQPACKET support
+>  virtio/vsock: SEQPACKET feature bit
+>  vhost/vsock: SEQPACKET feature bit support
+>  virtio/vsock: SEQPACKET feature bit support
+>  virtio/vsock: setup SEQPACKET ops for transport
+>  vhost/vsock: setup SEQPACKET ops for transport
+>  vsock/loopback: setup SEQPACKET ops for transport
+>  vsock_test: add SOCK_SEQPACKET tests
+>  virtio/vsock: update trace event for SEQPACKET
+>
+> drivers/vhost/vsock.c                        |  22 +-
+> include/linux/virtio_vsock.h                 |  22 +
+> include/net/af_vsock.h                       |  10 +
+> .../events/vsock_virtio_transport_common.h   |  48 +-
+> include/uapi/linux/virtio_vsock.h            |  19 +
+> net/vmw_vsock/af_vsock.c                     | 589 +++++++++++------
+> net/vmw_vsock/virtio_transport.c             |  18 +
+> net/vmw_vsock/virtio_transport_common.c      | 364 ++++++++--
+> net/vmw_vsock/vsock_loopback.c               |  13 +
+> tools/testing/vsock/util.c                   |  32 +-
+> tools/testing/vsock/util.h                   |   3 +
+> tools/testing/vsock/vsock_test.c             | 126 ++++
+> 12 files changed, 1013 insertions(+), 253 deletions(-)
+>
+> v5 -> v6:
+> General changelog:
+> - virtio transport specific callbacks which send SEQ_BEGIN or
+>   SEQ_END now hidden inside virtio transport. Only enqueue,
+>   dequeue and record length callbacks are provided by transport.
+>
+> - virtio feature bit for SEQPACKET socket support introduced:
+>   VIRTIO_VSOCK_F_SEQPACKET.
+>
+> - 'msg_cnt' field in 'struct virtio_vsock_seq_hdr' renamed to
+>   'msg_id' and used as id.
+>
+> Per patch changelog:
+> - 'af_vsock: separate wait data loop':
+>    1) Commit message updated.
+>    2) 'prepare_to_wait()' moved inside while loop(thanks to
+>      Jorgen Hansen).
+>    Marked 'Reviewed-by' with 1), but as 2) I removed R-b.
+>
+> - 'af_vsock: separate receive data loop': commit message
+>    updated.
+>    Marked 'Reviewed-by' with that fix.
+>
+> - 'af_vsock: implement SEQPACKET receive loop': style fixes.
+>
+> - 'af_vsock: rest of SEQPACKET support':
+>    1) 'module_put()' added when transport callback check failed.
+>    2) Now only 'seqpacket_allow()' callback called to check
+>       support of SEQPACKET by transport.
+>
+> - 'af_vsock: update comments for stream sockets': commit message
+>    updated.
+>    Marked 'Reviewed-by' with that fix.
+>
+> - 'virtio/vsock: set packet's type in send':
+>    1) Commit message updated.
+>    2) Parameter 'type' from 'virtio_transport_send_credit_update()'
+>       also removed in this patch instead of in next.
+>
+> - 'virtio/vsock: dequeue callback for SOCK_SEQPACKET': SEQPACKET
+>    related state wrapped to special struct.
+>
+> - 'virtio/vsock: update trace event for SEQPACKET': format strings
+>    now not broken by new lines.
 
-OK.
+I left a bunch of comments in the patches, I hope they are easy to fix 
+:-)
+
+Thanks for the changelogs. About 'per patch changelog', it is very 
+useful!
+Just a suggestion, I think is better to include them in each patch after 
+the '---' to simplify the review.
+
+You can use git-notes(1) or you can simply edit the format-patch and add 
+the changelog after the 3 dashes, so that they are ignored when the 
+patch is applied.
+
+Thanks,
+Stefano
+
