@@ -2,83 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70F5933C571
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 19:21:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5469533C5EA
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 19:42:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbhCOSVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 14:21:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48429 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232068AbhCOSVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 14:21:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615832464;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7dHd3VnSNg5KZMgkWTLAFsTuSg1qebri+zbtU6jQyuU=;
-        b=UPyDWkaXyWSHajQrY5/r6UzvqKruO0jBDALURt0m6moaCIsAw+uLnEM/e43R786HElcklT
-        LBgLyH9Hp45BLGW95o3leWn27I4BijqWN7jAO23wp9p91Pa1c/qsbx+qImq9rS/PSlr/Er
-        n+FG2pgGDZgd96TQKyC7vl1hjEnTfoE=
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
- [209.85.161.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-12-s6rle-_pM4OUUi7e41WVbQ-1; Mon, 15 Mar 2021 14:21:02 -0400
-X-MC-Unique: s6rle-_pM4OUUi7e41WVbQ-1
-Received: by mail-oo1-f71.google.com with SMTP id s66so11898077ooa.6
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 11:21:02 -0700 (PDT)
+        id S231837AbhCOSl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 14:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231789AbhCOSlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 14:41:09 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D548CC06174A
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 11:41:08 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id m21-20020a9d7ad50000b02901b83efc84a0so5632165otn.10
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 11:41:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ad9rcNyANrjvggbRbE9NiSsJQFN1GPJG7obt/UEjspU=;
+        b=XYElCqWK85qJC30msB2xEGZwigWRa2Avl2Q/P1sp2E840lCUR1DUGm6g6s2ZFB2iKn
+         rQxCaWlYiihbuso/okwE9LC8uPVODD6ssaxjPfPQgmJG1PwQT7f1WxaOeIg1/xsdTeoZ
+         SCeluyyQBpEmrQMDnMkZJCf/5htXZxmO3CosKOkMFvaRTx3dTr4Ar4F98rJRi3kHs2bW
+         BeI++U2qOmeRM5k/LuFcZJHhzd/IsxV2dNILM1f4A5GqUflLhcg+nay24Ldjjbms2OjA
+         kBZZGZhJw+KzjeI3rkxBAowU26xN6gI8IvYH671pK1gwk891zA6zBLrSOjlUw7OQIugt
+         FsLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7dHd3VnSNg5KZMgkWTLAFsTuSg1qebri+zbtU6jQyuU=;
-        b=iCPEd2vCsJ+5RMPkr+PEl05GsiMJyXjFKll7EQoVRecn/jw649WESr26KSgQbLCGWa
-         pkYo126yrMrQBiVtgvdzAtHyc30zdRUFtLPOZtHbQEh2A3mz/SkfwlU6YRSRqOCKeqgL
-         w3xhJbPJS5IK3uhEiVqNm6E1a5dUdDVi9xNA8Au4KyvOmDkNFOeCarxv7sRkp6RZgjiO
-         DkZJMn7IrHbLsSVU/F+YTjqDAzXPT//1HFI0tLZU/NFeoJkEXRfacFHt07ILwSz3y+tb
-         XcXkhwCGxIyOsfD3QbrbnUOVBvDvia2OLCQKjECh4CSEJ1QfCc/Ib+Rh6qmktE977L6C
-         89DA==
-X-Gm-Message-State: AOAM533leDbVXDecl2vaU2RuwFFyYvQ1VvERyT/HzwOJHc6A/S6nbqLn
-        DzK5ZLRgvtjALNynSZBF6Pd43MJs0qzNIpfGPxd9/3TH+EGLXZXyFB/+TStk1XmhsHjF4CSclNY
-        8WYSMjjU7SxBYxMsCudwSYEa6DYSNrKeo
-X-Received: by 2002:a9d:73d0:: with SMTP id m16mr362905otk.172.1615832461721;
-        Mon, 15 Mar 2021 11:21:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwVJssCDoY55USWssvJyU86yNNw2WpQFj9SiVdSP0Y2mvll4hM27bXDMQqbstEwl1PW7d/raazUUy8m/dvDXqU=
-X-Received: by 2002:a9d:73d0:: with SMTP id m16mr362889otk.172.1615832461458;
- Mon, 15 Mar 2021 11:21:01 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ad9rcNyANrjvggbRbE9NiSsJQFN1GPJG7obt/UEjspU=;
+        b=q8i3RrLSYvIgbrAfDnhNAsKxNfx2BWWeBzkokKQ7jV71oiRVZrO889aytpOqugOT2D
+         QrNBBqFmq2wtwQAowyzqMraq1y+tGbxOcH3Lmdj3Wzc00rmFRfZZAWcrYGjHaXmdC33f
+         3GcAS/xQccUbb8a16HnSnbcHzXDpLbDFCPZia2OdgO95oLHAvLdLBmWcQhbNTsSPy78B
+         ynot2sRoIY9rOG3L/sVeLMAiJbjc9EGzg5eK1i7QTowWc/EvtxEJsybx9Q+q0V3nC0Lk
+         2Zs0Fcm0JR5hO48UaI46t3Nt1LmIp5Uy5XOCAmcs1HRmuTVcyAhyejO7yQlTOqWSu1u+
+         9dWg==
+X-Gm-Message-State: AOAM531HyVSwhS5mCMJuLD61X6M9rquD06evJV4bG4JKbCguaJgocniJ
+        h5N9GVeFAl3KRfFjZfRgFdG/WyBNYsk=
+X-Google-Smtp-Source: ABdhPJxvKkKeYb/HFpChnFQajjZ2MrH0Ff2Z4jj4pi356ro8YGNcx+eIUCQ0RlrY938jgDMKcknXZA==
+X-Received: by 2002:a9d:68ce:: with SMTP id i14mr368082oto.151.1615833667007;
+        Mon, 15 Mar 2021 11:41:07 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id z8sm6674865oih.1.2021.03.15.11.41.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Mar 2021 11:41:06 -0700 (PDT)
+Subject: Re: VRF leaking doesn't work
+To:     Greesha Mikhalkin <grigoriymikhalkin@gmail.com>
+Cc:     netdev@vger.kernel.org
+References: <CADbyt64e2cmQzZTEg3VoY6py=1pAqkLDRw+mniRdr9Rua5XtgQ@mail.gmail.com>
+ <5b2595ed-bf5b-2775-405c-bb5031fd2095@gmail.com>
+ <CADbyt66Ujtn5D+asPndkgBEDBWJiMScqicGVoNBVpNyR3iQ6PQ@mail.gmail.com>
+ <CADbyt64HpzGf6A_=wrouL+vT73DBndww34gMPSH9jDOiGEysvQ@mail.gmail.com>
+ <5f673241-9cb1-eb36-be9a-a82b0174bd9c@gmail.com>
+ <CADbyt6542624xAVzWXM6KEfk=zAOmB_SHbN=nzC_oib_+eXB1Q@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <642fb4d6-4188-968f-6d43-249ca8e38d7a@gmail.com>
+Date:   Mon, 15 Mar 2021 12:41:05 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20210312163651.1398207-1-jarod@redhat.com> <87lfasaxug.fsf@tynnyri.adurom.net>
-In-Reply-To: <87lfasaxug.fsf@tynnyri.adurom.net>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Mon, 15 Mar 2021 14:20:49 -0400
-Message-ID: <CAKfmpSfJ-t6pPC+Bwu0UrWH9w9edgcM-Y+qKAXBNx0NSXw_ZEQ@mail.gmail.com>
-Subject: Re: [PATCH net] wireless/nl80211: fix wdev_id may be used uninitialized
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CADbyt6542624xAVzWXM6KEfk=zAOmB_SHbN=nzC_oib_+eXB1Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 12, 2021 at 4:04 PM Kalle Valo <kvalo@codeaurora.org> wrote:
->
-> Jarod Wilson <jarod@redhat.com> writes:
->
-> > Build currently fails with -Werror=maybe-uninitialized set:
-> >
-> > net/wireless/nl80211.c: In function '__cfg80211_wdev_from_attrs':
-> > net/wireless/nl80211.c:124:44: error: 'wdev_id' may be used
-> > uninitialized in this function [-Werror=maybe-uninitialized]
->
-> Really, build fails? Is -Werror enabled by default now? I hope not.
+On 3/15/21 11:10 AM, Greesha Mikhalkin wrote:
+>> That's the way the source address selection works -- it takes the fib
+>> lookup result and finds the best source address match for it.
+>>
+>> Try adding 'src a.b.c.d' to the leaked route. e.g.,
+>>     ip ro add 172.16.1.0/24 dev red vrf blue src 172.16.2.1
+>>
+>> where red and blue are VRFs, 172.16.2.1 is a valid source address in VRF
+>> blue and VRF red has the reverse route installed.
+> 
+> Tried to do that. Added reverse route to vrf red like that:
+>     ip ro add vrf red 172.16.2.1/32 dev blue
+> 
+> 172.16.2.1 is selected as source address when i ping. But now, when i
+> look at `tcpdump icmp` i only see requests:
+>     172.16.2.1 > 172.16.1.3: ICMP echo request, id 9, seq 10, length 64
+> 
+> And no replies and anything else. If i look into tcpdump on machine
+> that's pinged -- it doesn't receive anything.
+> 
+> So it looks like it's not using nexthops from vrf red in that case.
+> Maybe it has something to do with how address is setup. In routing
+> table it looks like:
+>     local 172.16.2.1 dev vlanblue proto kernel scope host src 172.16.2.1
+> 
 
-Don't think so. But we (Red Hat) build all our kernels with a fair
-amount of extra error-checking enabled.
+VRF is implemented via policy routing. did you re-order the FIB rules?
 
--- 
-Jarod Wilson
-jarod@redhat.com
 
+http://schd.ws/hosted_files/ossna2017/fe/vrf-tutorial-oss.pdf
