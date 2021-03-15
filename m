@@ -2,109 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E68633AEF3
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:40:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B1333AEFD
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:41:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbhCOJj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 05:39:29 -0400
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:18216 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbhCOJjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 05:39:08 -0400
-Date:   Mon, 15 Mar 2021 09:38:57 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615801146; bh=SnqNhZ8jhCbnZf+6aCb/UARYY/AXz744p1JflVY958M=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=YLTddrgfp3S/VtQaasYCODof0lpCpeNFQPdQa2SI1JBR1V7jSR+KBggIMkU2jg3Lj
-         qfKcR5F9eA28y13jfcXt2vc5usvS0isFQmvO6aCFGnhwaqfDyHLmPav5LmM/weEUWA
-         gMMKjA0lSyztoTFmhcH+cbAOac1b2X6oe4RZbS6fW5g/v9jxLd4Ay3WChxk+EgAX03
-         bCQSqG4dO3aEOas+mqgKX9mhDK8oHz8LdS+YorQwe55aekoKPhsaTvLrvapaV0EEVI
-         1+ncNzIKWnI6Z4g/G6xLmRQNxO6rljTi35eyxuA16aU2mYsOBRFx2ynNQ95QZO8iyP
-         UCcQiWjXaKnnA==
-To:     Vladimir Oltean <olteanv@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
+        id S229664AbhCOJke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 05:40:34 -0400
+Received: from foss.arm.com ([217.140.110.172]:55894 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229661AbhCOJkJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 05:40:09 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37F691FB;
+        Mon, 15 Mar 2021 02:40:09 -0700 (PDT)
+Received: from [10.57.12.51] (unknown [10.57.12.51])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E6CAE3F70D;
+        Mon, 15 Mar 2021 02:40:06 -0700 (PDT)
+Subject: Re: [PATCH v2 1/5] thermal/drivers/core: Use a char pointer for the
+ cooling device name
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ariel Levkovich <lariel@mellanox.com>,
-        Wang Qing <wangqing@vivo.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v3 net-next 4/6] linux/etherdevice.h: misc trailing whitespace cleanup
-Message-ID: <20210315093839.6510-1-alobakin@pm.me>
-In-Reply-To: <20210314210453.o2dmnud45w7rabcw@skbuf>
-References: <20210314111027.7657-1-alobakin@pm.me> <20210314111027.7657-5-alobakin@pm.me> <20210314210453.o2dmnud45w7rabcw@skbuf>
+        Zhang Rui <rui.zhang@intel.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>
+References: <20210312170316.3138-1-daniel.lezcano@linaro.org>
+ <18fdc11b-abda-25d9-582f-de2f9dfa2feb@arm.com>
+ <f51fcec0-1483-cecb-d984-591097c324ca@linaro.org>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+Message-ID: <1aada78d-06f1-4ccd-cf81-7c2e8f5fe747@arm.com>
+Date:   Mon, 15 Mar 2021 09:40:06 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+In-Reply-To: <f51fcec0-1483-cecb-d984-591097c324ca@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Sun, 14 Mar 2021 23:04:53 +0200
 
-> On Sun, Mar 14, 2021 at 11:11:32AM +0000, Alexander Lobakin wrote:
-> > Caught by the text editor. Fix it separately from the actual changes.
-> >
-> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> > ---
-> >  include/linux/etherdevice.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-> > index 2e5debc0373c..bcb2f81baafb 100644
-> > --- a/include/linux/etherdevice.h
-> > +++ b/include/linux/etherdevice.h
-> > @@ -11,7 +11,7 @@
-> >   * Authors:=09Ross Biro
-> >   *=09=09Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
-> >   *
-> > - *=09=09Relocated to include/linux where it belongs by Alan Cox
-> > + *=09=09Relocated to include/linux where it belongs by Alan Cox
-> >   *=09=09=09=09=09=09=09<gw4pts@gw4pts.ampr.org>
-> >   */
-> >  #ifndef _LINUX_ETHERDEVICE_H
-> > --
-> > 2.30.2
-> >
-> >
->
-> Your mailer did something weird here, it trimmed the trailing whitespace
-> from the "-" line. The patch doesn't apply.
 
-It's git-send-email + ProtonMail Bridge... Seems like that's the
-reason why only this series of mine was failing Patchwork
-everytime.
+On 3/12/21 9:01 PM, Daniel Lezcano wrote:
+> On 12/03/2021 19:49, Lukasz Luba wrote:
+>>
+>>
+>> On 3/12/21 5:03 PM, Daniel Lezcano wrote:
+>>> We want to have any kind of name for the cooling devices as we do no
+>>> longer want to rely on auto-numbering. Let's replace the cooling
+>>> device's fixed array by a char pointer to be allocated dynamically
+>>> when registering the cooling device, so we don't limit the length of
+>>> the name.
+>>>
+>>> Rework the error path at the same time as we have to rollback the
+>>> allocations in case of error.
+>>>
+>>> Tested with a dummy device having the name:
+>>>    "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
+>>>
+>>> A village on the island of Anglesey (Wales), known to have the longest
+>>> name in Europe.
+>>>
+>>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>>> ---
+>>>    .../ethernet/mellanox/mlxsw/core_thermal.c    |  2 +-
+>>>    drivers/thermal/thermal_core.c                | 38 +++++++++++--------
+>>>    include/linux/thermal.h                       |  2 +-
+>>>    3 files changed, 24 insertions(+), 18 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+>>> b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+>>> index bf85ce9835d7..7447c2a73cbd 100644
+>>> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+>>> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+>>> @@ -141,7 +141,7 @@ static int mlxsw_get_cooling_device_idx(struct
+>>> mlxsw_thermal *thermal,
+>>>        /* Allow mlxsw thermal zone binding to an external cooling
+>>> device */
+>>>        for (i = 0; i < ARRAY_SIZE(mlxsw_thermal_external_allowed_cdev);
+>>> i++) {
+>>>            if (strnstr(cdev->type, mlxsw_thermal_external_allowed_cdev[i],
+>>> -                sizeof(cdev->type)))
+>>> +                strlen(cdev->type)))
+>>>                return 0;
+>>>        }
+>>>    diff --git a/drivers/thermal/thermal_core.c
+>>> b/drivers/thermal/thermal_core.c
+>>> index 996c038f83a4..9ef8090eb645 100644
+>>> --- a/drivers/thermal/thermal_core.c
+>>> +++ b/drivers/thermal/thermal_core.c
+>>> @@ -960,10 +960,7 @@ __thermal_cooling_device_register(struct
+>>> device_node *np,
+>>>    {
+>>>        struct thermal_cooling_device *cdev;
+>>>        struct thermal_zone_device *pos = NULL;
+>>> -    int result;
+>>> -
+>>> -    if (type && strlen(type) >= THERMAL_NAME_LENGTH)
+>>> -        return ERR_PTR(-EINVAL);
+>>> +    int ret;
+>>>          if (!ops || !ops->get_max_state || !ops->get_cur_state ||
+>>>            !ops->set_cur_state)
+>>> @@ -973,14 +970,17 @@ __thermal_cooling_device_register(struct
+>>> device_node *np,
+>>>        if (!cdev)
+>>>            return ERR_PTR(-ENOMEM);
+>>>    -    result = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
+>>> -    if (result < 0) {
+>>> -        kfree(cdev);
+>>> -        return ERR_PTR(result);
+>>> +    ret = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
+>>> +    if (ret < 0)
+>>> +        goto out_kfree_cdev;
+>>> +    cdev->id = ret;
+>>> +
+>>> +    cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
+>>> +    if (!cdev->type) {
+>>> +        ret = -ENOMEM;
+>>
+>> Since we haven't called the device_register() yet, I would call here:
+>> kfree(cdev);
+>> and then jump
+> 
+> I'm not sure to understand, we have to remove the ida, no ?
 
-Much thanks for finding this out!
-Al
+Yes, we have to remove 'ida' and you jump to that label:
+goto out_ida_remove;
+but under that label, there is no 'put_device()'.
+We could have here, before the 'goto', a simple kfree, which
+should be safe, since we haven't called the device_register() yet.
+Something like:
 
+--------8<------------------------------
+cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
+if (!cdev->type) {
+	ret = -ENOMEM;
+	kfree(cdev);
+	goto out_ida_remove;
+}
+
+-------->8------------------------------
+
+
+> 
+>> Other than that, LGTM
+>>
+>> Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+>>
+>> Regards,
+>> Lukasz
+> 
+> 
