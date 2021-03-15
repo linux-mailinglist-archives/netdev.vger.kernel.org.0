@@ -2,182 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5305933C036
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B26633C03A
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:45:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbhCOPoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 11:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbhCOPnh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 11:43:37 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C085C06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:43:37 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id f73-20020a9d03cf0000b02901b4d889bce0so5348655otf.12
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:43:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fFrwu3LW8iT5IHYlwZ+5clLvwz97tGPL4BoaYeBPlH8=;
-        b=BHpTNvjgs+cB10lTaSp7UQMIQW3cMdQsKp0ZW83SfWaS13PSpLlOIsWy/mokQ8rX7S
-         ahlgRTpRLsiNQ4p6Pdv48vNmJSJojt1X/PuPtEJuK7zeYExlE0ppCBAz2//oFSn+vU1e
-         PYif0MAY7pJKM3YdRSbbZOSsXxlZJ1EbWagRuRt7cUAVYRrlhTJzd4T39a7mnBks5YZT
-         qd6v2/ODtPmV0j5LnvbW1CcCu4plyqa4/jst0My/eXsoGmuk7AhFK8nui+fzdXHb2uzA
-         wuexRSp6x5j27S0oaYvwXiMongxAuyBn1Ic90tRvmqLlwqNc6N5IuIDgW1myZhtclymt
-         RISA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fFrwu3LW8iT5IHYlwZ+5clLvwz97tGPL4BoaYeBPlH8=;
-        b=If/Idt4kX5neA3e7wZNS0Jt7y9O/9FmG1YliSEwIi+g4tUAE3Myf4eKNiRxcShQ1i1
-         fwsfP9hUwTkaL2Sj67SDHD1yDEP4XMYURytjuowd7NNOO7IzZfAnuwlIUjDFc1E8bVky
-         +aEtJQJhaHeYnlmVcXJkhC6FnebhGd5ZhpyrL/Fi21w4qvu7zNCduj8VGcJOmM14pSMf
-         mSzn/ywJrZou0DT89kV+VC67S4bdS5cL+JYk9AOWE5t0FDv5TY2N9h8H1dEuDZG8ELeC
-         jMnxNSgZWU64OZNaHXmnPfRstQVSu0d62bWgKuYBOgH7f9EBhnTyWoQDZB4HnKEDkPH6
-         lTYA==
-X-Gm-Message-State: AOAM530g696UZ66uGyZ/XxYq5+8dn7qDRxuyuVberfxsvvdEGu6dadqe
-        da1etDFsp7ssndeHskDZmaFWJw==
-X-Google-Smtp-Source: ABdhPJxBfNB8sW552D7m+pM0SNiwUxOnXIFkKQLLHfizvxSU0bVI/j7hkprOySfduANdWGfb7VS0vA==
-X-Received: by 2002:a9d:65cf:: with SMTP id z15mr14079676oth.310.1615823016476;
-        Mon, 15 Mar 2021 08:43:36 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id t19sm7357964otm.40.2021.03.15.08.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 08:43:36 -0700 (PDT)
-Date:   Mon, 15 Mar 2021 10:43:34 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alex Elder <elder@linaro.org>
-Subject: Re: [PATCH] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
-Message-ID: <YE+ApoVXRdIYQEdE@builder.lan>
-References: <20210313000241.602790-1-bjorn.andersson@linaro.org>
- <CAGRyCJHqkBKZDSK+P=UP2B=DFj5n7LTd+ZwBd7a9LDytNeYJWw@mail.gmail.com>
+        id S230404AbhCOPof (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 11:44:35 -0400
+Received: from mail-dm6nam11on2074.outbound.protection.outlook.com ([40.107.223.74]:51041
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229764AbhCOPo2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 11:44:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A5kERmlnTcDBN47b86bFgwTfV35/wQ7cr74EoXOzEf+TzoTDLPrzsPzZicx8Z55GzcdCzUoBuPf0NIvhSLMfp2jqD/cyuzQPKY4fS1OYC+vCcPbdSFiHPnJdXzvjl7oq7DttSQcL++QugQSkoX85Y0SMaZENWj7K+21YTcaW86lGVWKqPSnWfLyTNT2380Wg3oHe+PiClCNvdJe3CKVAL7almykMF9LqHlQw+kRcWLep4kprbzZyQnkQjSAmGpZ08bKxg8x9h8adNEuqi0YyFHwGUmxxqIoKkIB6UAc2zaDMIhScyJ2kNaZkMwoIFYRZo8mFPhdFeEfNshZ5vtzDGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yrcEKyxLLfRA2ghTLDadh5n8T6ImHMxOr/Vcv2QkIzw=;
+ b=E+El5vqyjoPSRRfj9iD+SDiRSc1DLXcx88NVcNIGhp6QksPm6DEHxL2QweAWiM8dILqG6VxVxBfFYmevqWfwQk0XYQWbv8QqLoRHwfWE0ZOQ9rIm0ctpbxDZiAYqMwKp83HejpwaWzgxC3jeh2rxLkubLOCa+v6lDglqba8B2teeW3pRw9p+OxcWHAfA+T0Ba1SJ0mVUPTOBitX9oBus/PB8WCRz1EFjp1RGz+T1/E28EQr5d1XX0aHQRT0ofv/E9K/cyosbPIibhzUdFlTR/1suoALCmafHhWqlZgcfdfuHeP0uJPRx7X/c1HBlDPmkorsKZX2yNY7pjXbfmE/CVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yrcEKyxLLfRA2ghTLDadh5n8T6ImHMxOr/Vcv2QkIzw=;
+ b=QgaS5YaL0z3cfaLgSdsowf89CNS5dhcmBunrLjX4t94hK5QadJurpLvy9R/oH6Ytt660PxmYQz4tmmap2N748Ghhf0bgBAImV133ApUCdGCZrPV6C6bbng+3oZhbKnRBCjcU9NJs8J6RhhLDNrxqyiq1DTyBOqsIWU2oAfV43NaFwEM3xGc/E/73a5xng1Ve6+weG+XMog3a8GAc33QYqaPxKaZxbMxz+j1I7gy1zeVD+cDo8IwlQ4sjOoAGKKDnqHGwgnDrlKlyMOu6ZJJm0ilzW/gOdij2yIi6AKdn4BlYsdiCHmKfKHoHR02iHUtieVMzZl4LdTDUfNNHWXHaIQ==
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
+ by DM5PR12MB1388.namprd12.prod.outlook.com (2603:10b6:3:78::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3933.32; Mon, 15 Mar 2021 15:44:26 +0000
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::5c42:cbe:fe28:3a9b]) by DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::5c42:cbe:fe28:3a9b%6]) with mapi id 15.20.3933.032; Mon, 15 Mar 2021
+ 15:44:26 +0000
+Subject: Re: [PATCH net-next] net: bridge: mcast: remove unreachable EHT code
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        kuba@kernel.org, davem@davemloft.net
+References: <20210315153835.190174-1-razor@blackwall.org>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <ad95c2f3-a3c8-cd56-1e83-e4a7d53c7f7f@nvidia.com>
+Date:   Mon, 15 Mar 2021 17:44:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
+In-Reply-To: <20210315153835.190174-1-razor@blackwall.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZRAP278CA0016.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:10::26) To DM6PR12MB4403.namprd12.prod.outlook.com
+ (2603:10b6:5:2ab::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGRyCJHqkBKZDSK+P=UP2B=DFj5n7LTd+ZwBd7a9LDytNeYJWw@mail.gmail.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.240.42] (213.179.129.39) by ZRAP278CA0016.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:10::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31 via Frontend Transport; Mon, 15 Mar 2021 15:44:24 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3f0d6b82-5ee8-4c8d-f078-08d8e7c9362a
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1388:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1388D1F095842923A230A456DF6C9@DM5PR12MB1388.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R2d43KBr+gaJR9lk8ZiDE0mCfmOrHGWUVLJnsI8mm0ZG8GyeHaNu3qpIO+AZ2M8/ytsN2glduIYK3OmJy+UMSwvdQ29UlA7d4RigqC/iyg2MVZbOECPAYUhQ7LIZ/WEs9S4VTzyTWO8FLKVBvNXMqKnG157e4y3lm5JeW0fQjBFhJwvZaDJjjZVNuzD2XH7/zodNfsqQYwzuXqlMCtvQkcFQc2WUQQtv6qmMFE3tL93w4OYfjgnNUjSpkK50ySBMs7g/gxnpMjkAFZxdnYR3XP4Ys8arSmeZcXPPSDbmA6YQWxbeVbYYuT5ZqMTJbAQlnAMA+AR97Ui+w1qCqirPDWjweQ+shD0/Snx3aSTrvZTGGqqa1BM01zxLCdR0hdRuN1k7OlBAiCuI7d9y1xX/vXJ/u8Q+CKO5RLA+vvs6D3p5xLmWhFCwQzei3jETckAXF6RVDJ51SP8iI750gRk6bed0gA8aahZxgqVPbX2J/3/T/g9Ay/fD40wfUCbq0PFfm+CepZYA69PKjEL79mKd5JNxDteZA7z4b8oqva+j98nHfhO+zFAnsdPZZFF0O7mka+0UI1xLoar4VYrKLZ0RNRxgbSk4mZZRl7H9rkeos7/nThMPcNxA/EWzY5WD0i2IibK7EYvbKvKkWDyjbaDn9w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(366004)(396003)(39860400002)(31686004)(4326008)(478600001)(26005)(86362001)(186003)(31696002)(36756003)(83380400001)(6486002)(2616005)(956004)(6666004)(2906002)(4744005)(16576012)(8676002)(66476007)(66556008)(66946007)(8936002)(316002)(16526019)(5660300002)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?UlBNMThFWEthTS9DWk16dXN4NVZYb2doT3Z0bUcvditpbzBTSkR1S0hyUDR1?=
+ =?utf-8?B?cWltUjJMemJwYkNGUmFSVFhUdzk2TElGbVNRMlZPbEJaQmdvaXJ5aFdLdU4r?=
+ =?utf-8?B?RkhVUVZnSVVvZm1xNXJvRUh3QmI4Rjg1NUpyT2s3WGZvTXg1TjV5Mi9FUWxD?=
+ =?utf-8?B?NjdxTHFHc2tCM0kzd3hrTnVxV2RiK0NhckhudTN6emwwY3Q2bmY3T1hqa1BQ?=
+ =?utf-8?B?VzlzK2hOZTRLZVpyWVRhS3lHV2FqZTFxNFp1aE1jKzNpSUI3TjlDNm8vSWlM?=
+ =?utf-8?B?SGY4MHg2M2djZjhWWFdHVlduazBYZEowbGgwUzUyMGZxaStzcnIrQU9ZbUYy?=
+ =?utf-8?B?TnUvM0trOUNWTWYraHFVUmpsV1NWNFUzVlh2SG9DTWxiZ1BWVGIrenU4TjlF?=
+ =?utf-8?B?eWlWcS9CZGtHRm1GZFhtaGd0N0grVzJXNmRmbGNYTzZZQXlXRm5QTisxQ1lT?=
+ =?utf-8?B?SDZNaU5PMHFJZ1NQZmh1akNHeWVLSTgxUDc1by8xSDJCR1IwVmZNQ2JKbE5H?=
+ =?utf-8?B?aXhNa0hCQUlPWktTanNkYW5DVUlyU2MzZUM1QzFCaVJxR2RvS0JCaGVOQTcx?=
+ =?utf-8?B?VndVeExreDZ1Vm1MUjhINDRscTFVU2xTdjdEL1NCNmFhMnNISUpCZi9lbk1m?=
+ =?utf-8?B?RG0rdG9VMDV5UjhLaWNqMmFhK2JzV0RGMm8yMGVtL0daaDl3Mm5zMFdiUVdi?=
+ =?utf-8?B?VmFpWkFCYVpwQ2NqVFFwMUtkUXA3MDlXaXdCMXlYQktEVlNkVkJ3TExCZFFF?=
+ =?utf-8?B?ZTVRR3FDYWhVa1pSdGYxR0pES1NDRWlKU0o3SXZaYlVCYWk4bmhrSEFhZ3Zs?=
+ =?utf-8?B?MUlZSWhyNVlSU1VpZTlOQ3A0Ty9QUUpBMk5keE5ld1VYKzNiQVJ5NkFvSzEx?=
+ =?utf-8?B?QjFvV3EyeTBjdHFzb1JNNEthUWlBQVN4WnRxSUpwRGVTOXdYdjVienkvM0ht?=
+ =?utf-8?B?M2MvTDVrOTFpTkR6NXBFWDNNbkRSYXZZMXRSbXY4QVpKek8xYy90OFljSW9M?=
+ =?utf-8?B?OFdIK1B0S0Y0dXpMUm9Taml4ckVxZVhFeTE5S09aYlUyTDkvYkxEVzJhalBI?=
+ =?utf-8?B?YUpmSFppV0dnS1gwY3VIaFJXbFdZK28rdGJ2VDF2OFcyWDRKd0I1eXVjRzJC?=
+ =?utf-8?B?bjZWSW9HK3hCS0s5WVJlL2w4NTVxTFVvajltamZPdlZ1andyNzlQTkczaFVN?=
+ =?utf-8?B?R1lFZ1pIbGxjenAvZTFoYmxWYUdzaFlEUE44d1lGRzZ5bWh1TGdHRHpCVUpn?=
+ =?utf-8?B?WVJERWd5WVgyZlNrZDljR1huZ05NbGZkQjJVc2tNTi9EUFR1K0piZ2NibTdP?=
+ =?utf-8?B?TEdOVEkwVzl4RDFMSTNDMlNVdDZZNlNnNFAwUEtpWHFxRGxvZFpRUHpvSkxG?=
+ =?utf-8?B?WC9mMUZ0WnN3clV2cmx4MitWTW55LzQ0UVlMS3BqYXhiQkZBdnB1RERvUEh2?=
+ =?utf-8?B?eklXcUplNXppcGxvOUZBQzY1RlBQRFdnU2tzQTJYK01aOGp4WEtDYU9FK1FF?=
+ =?utf-8?B?Q2gwc2wxOFRuS2ZtUDJhUGhMMUdEQ3QxeVVjSm9uRGt2M1k3a3RUWVR3NEhq?=
+ =?utf-8?B?RGlRSWMvM0RNbU5nZFhQUUVoQWJLQVNNNU9scU1zdUpiNmQ3NlI1dHNFMU4y?=
+ =?utf-8?B?SjJIOWRCbHJTL2h3MHFaVjNjaGFhRWlkQ2lNdHo4c0ZuQ0VqSHF1Q2IrZkRO?=
+ =?utf-8?B?RjkxOFZRb3VaRGx6TEM2clFXanN2VjRQQlV1eGtJVFI4YzhTWFkxNHp0ZVVM?=
+ =?utf-8?Q?Se+eoceafjUmSRxKYDaLHSeag4yHHVlVp52+lFw?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f0d6b82-5ee8-4c8d-f078-08d8e7c9362a
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 15:44:25.9775
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Pj/hjgJH7kaxIQNTaWwq8krhCtrDDdA7YJFlcYDSvwY7FTD/boIQRaL5Su9TFbaeOpazfZUsraUAyQocFZTmgA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1388
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 15 Mar 09:23 CDT 2021, Daniele Palmas wrote:
-
-> Hi Bjorn,
+On 15/03/2021 17:38, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
 > 
-> Il giorno sab 13 mar 2021 alle ore 01:02 Bjorn Andersson
-> <bjorn.andersson@linaro.org> ha scritto:
-> >
-> > Parse and pass IFLA_RMNET_FLAGS to the kernel, to allow changing the
-> > flags from the default of ingress-aggregate only.
-> >
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > ---
-> >  ip/iplink_rmnet.c | 42 ++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 42 insertions(+)
-> >
-> > diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
-> > index 1d16440c6900..8a488f3d0316 100644
-> > --- a/ip/iplink_rmnet.c
-> > +++ b/ip/iplink_rmnet.c
-> > @@ -16,6 +16,10 @@ static void print_explain(FILE *f)
-> >  {
-> >         fprintf(f,
-> >                 "Usage: ... rmnet mux_id MUXID\n"
-> > +               "                 [ingress-deaggregation]\n"
-> > +               "                 [ingress-commands]\n"
-> > +               "                 [ingress-chksumv4]\n"
-> > +               "                 [egress-chksumv4]\n"
-> >                 "\n"
-> >                 "MUXID := 1-254\n"
-> >         );
-> > @@ -29,6 +33,7 @@ static void explain(void)
-> >  static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
-> >                            struct nlmsghdr *n)
-> >  {
-> > +       struct ifla_rmnet_flags flags = { };
-> >         __u16 mux_id;
-> >
-> >         while (argc > 0) {
-> > @@ -37,6 +42,18 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
-> >                         if (get_u16(&mux_id, *argv, 0))
-> >                                 invarg("mux_id is invalid", *argv);
-> >                         addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
-> > +               } else if (matches(*argv, "ingress-deaggregation") == 0) {
-> > +                       flags.mask = ~0;
-> > +                       flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
-> > +               } else if (matches(*argv, "ingress-commands") == 0) {
-> > +                       flags.mask = ~0;
-> > +                       flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
-> > +               } else if (matches(*argv, "ingress-chksumv4") == 0) {
-> > +                       flags.mask = ~0;
-> > +                       flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
-> > +               } else if (matches(*argv, "egress-chksumv4") == 0) {
-> > +                       flags.mask = ~0;
-> > +                       flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
-> >                 } else if (matches(*argv, "help") == 0) {
-> >                         explain();
-> >                         return -1;
-> > @@ -48,11 +65,28 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
-> >                 argc--, argv++;
-> >         }
-> >
-> > +       if (flags.mask)
-> > +               addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
-> > +
-> >         return 0;
-> >  }
-> >
-> > +static void rmnet_print_flags(FILE *fp, __u32 flags)
-> > +{
-> > +       if (flags & RMNET_FLAGS_INGRESS_DEAGGREGATION)
-> > +               print_string(PRINT_ANY, NULL, "%s ", "ingress-deaggregation");
-> > +       if (flags & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
-> > +               print_string(PRINT_ANY, NULL, "%s ", "ingress-commands");
-> > +       if (flags & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
-> > +               print_string(PRINT_ANY, NULL, "%s ", "ingress-chksumv4");
-> > +       if (flags & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
-> > +               print_string(PRINT_ANY, NULL, "%s ", "egress-cksumv4");
-> > +}
-> > +
-> >  static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-> >  {
-> > +       struct ifla_vlan_flags *flags;
+> In the initial EHT versions there were common functions which handled
+> allow/block messages for both INCLUDE and EXCLUDE modes, but later they
+> were separated. It seems I've left some common code which cannot be
+> reached because the filter mode is checked before calling the respective
+> functions, i.e. the host filter is always in EXCLUDE mode when using
+> __eht_allow_excl() and __eht_block_excl() thus we can drop the host_excl
+> checks inside and simplify the code a bit.
 > 
-> just for my understanding, why not struct ifla_rmnet_flags (though
-> they are exactly the same)?
+> Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+> ---
+>  net/bridge/br_multicast_eht.c | 54 ++++++++++-------------------------
+>  1 file changed, 15 insertions(+), 39 deletions(-)
 > 
 
-That's a copy-paste or code complete mistake, thanks for spotting it.
+Oh well, sent the wrong patch version. I'll send the proper version as v2.
+Self-NAK and sorry for the noise
 
-Regards,
-Bjorn
 
-> Thanks,
-> Daniele
-> 
-> > +
-> >         if (!tb)
-> >                 return;
-> >
-> > @@ -64,6 +98,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-> >                    "mux_id",
-> >                    "mux_id %u ",
-> >                    rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
-> > +
-> > +       if (tb[IFLA_RMNET_FLAGS]) {
-> > +               if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
-> > +                       return;
-> > +               flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
-> > +
-> > +               rmnet_print_flags(f, flags->flags);
-> > +       }
-> >  }
-> >
-> >  static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
-> > --
-> > 2.28.0
-> >
