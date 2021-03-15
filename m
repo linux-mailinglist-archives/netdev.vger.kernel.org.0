@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44E7633C3CF
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 18:14:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A06C533C3CD
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 18:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235749AbhCORNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 13:13:45 -0400
-Received: from mail-bn7nam10on2076.outbound.protection.outlook.com ([40.107.92.76]:6006
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S235619AbhCORNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 13:13:40 -0400
+Received: from mail-mw2nam10on2053.outbound.protection.outlook.com ([40.107.94.53]:16944
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234528AbhCORNI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 13:13:08 -0400
+        id S231990AbhCORNK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 13:13:10 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MNI4C1rynJzy6obI04CoubZcvUBZE2+W6jngmUNZpfxoeKYTjIvCx1W1nh/SvAjpi+ZeqG0qXjcWgk05HXpg+aoghQ9pQcRnPTic90tDnq1F8GnA3hSPMsDAWc8OHgVYLwZzqmvQDALGv0b7zZbxDJ1jmAYfZnLIgA7Bsd+rQgtgYZhmBTZsJY4/fNulNtZ5yVvvnLuS3AIlxmAmZRhUG5aMU1q+c9BJ/kyDh00HRvTRDfu9TNxvgKxGtwDsPNCLuw2N1WQli4QajVaPM5H+Tqetir9CcqIC/KvuNix18jMFNX1nhCzFIGrEiWmrYxJnqw5iAqk9xJsayFRCJTbrfQ==
+ b=m1fFKf8nH2xMn2s52YAPIDAAnSB6FZ8tvqobGw94gKvfrVfa+XogUDJ123k2Q+14WIVrieUbIXckH5SGEyO61vGoNmkENatSQmGs+su5kyYan3lAhCgoroDoK8ny5yh/u253TXx0b32q0Elot/3kvzXKHZcs6BOYSwn3d9TfqZku78xtkIQoUFTqWPcIWSD3WWrn5RGQpA+DKOk4sM1VWk6wF19a9ePEyFGGXEwq6S+6Fgc1c+1KaCBNMkM5kIAGPXdpJXzVPANQYl/Oo43BiUr5kM8h7JqwKpg8fpGlP+1f/a3BOoc+lsA7CY5i7wUEibHm3OQfz8r9b3lQ/4s8sA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pSa4YiXXQN5oShlI4zmO7PyWn3gGuDDJ5jnPesOt90A=;
- b=C1rPqdltVPbyihzEd5oXyRMSGCOA4QdchoJ4TaPocS+Zk7DOc+Bd/wLSHmwB+cJ/kS9UHuMCYh+/5FNKEzP2aIKV7wRjlMXJQyWgwWK7aalRxNXZbBZFg2mD/oLVvlnCkSUhfNuB0fz14iml4gyM5D1Igqw0EDZhk3JYOMzEWb18FtJTMmxHQoW5xHGXK0Z8nVPQOnjtlp54GsIFHWqm9jBOt+pS8cGhZGeUyqjYzWJSdpDK27RY0kvZPZaBuip5qOLMmJKTM9yGXgaA5p0XmS77ce+eTIQ4GCmexl4zAtIaLoDZtcq7Pt9hX4klitK6os/ONMSV/fNSweaKsN+lkQ==
+ bh=vlOlf7CGvFpaGn7oGlnCRWrbU91SO1kegv/bjKV+v/Q=;
+ b=BOw6Dxh0VtLdg7imYdDIfesAsCW7AZVzlE4GVxXYM2nz/mWpondJZVYzl379okOCo6VgeyNGIK0V4x58CX7Qbu9uLyYez/nxqpxe7APG3gwYwdP8H+sGNVZBi+eRjNDLm/X2VZaymZ4KOlVkBr8Tqw9bUizUblzdD0vhYWaIbcU+8g+0nCpc2IjTccOq5iKoTP8RVQSq3k6zzUh2g+iiZWtSDrQ81sHbyFks+74Gf6VXhhEEFLjs0wZSQkUevJncTK6tc6QwrNlJ1xTKoyURluZ7vH56u5U/i6plg1ffj4kv6kgT27OKmVeqxr46khO0DHsvn0CIfAnQDNMGsGDGCg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=suse.cz smtp.mailfrom=nvidia.com;
+ 216.228.112.36) smtp.rcpttodomain=suse.cz smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pSa4YiXXQN5oShlI4zmO7PyWn3gGuDDJ5jnPesOt90A=;
- b=UfvhGFT05Of2s6pzex4C5FMx+RnOt9Apqf9+QRjprs5DhVKU8lo9SWk8EuLOxWAnjpaFz8HSI+y7o/1kxrb24AqeptGrr1l6bW5owqpcvOT94+EhGTilRqiZ/4E7musZAbLkXyRd3drrzvB+padArvCo50wi3r47lhmV/pjYdYq85xw7SErBLLwcy1sFLW5JPhvdk8f6Y/1UuRgzLjBwAYe724NSy//DxNGC2bXzwfM5bKg+Wvp8BOoI42lFjziX6nvx/0RdezoTJEl7iKC+2Gkm2a33MrvtzkHtknCRJgho7LYfp87FRc6umMqOy5MJW6ecrkln3xExlFBehTyJXQ==
-Received: from BN9PR03CA0887.namprd03.prod.outlook.com (2603:10b6:408:13c::22)
- by BY5PR12MB4934.namprd12.prod.outlook.com (2603:10b6:a03:1db::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Mon, 15 Mar
- 2021 17:13:03 +0000
-Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13c:cafe::4a) by BN9PR03CA0887.outlook.office365.com
- (2603:10b6:408:13c::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32 via Frontend
- Transport; Mon, 15 Mar 2021 17:13:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ bh=vlOlf7CGvFpaGn7oGlnCRWrbU91SO1kegv/bjKV+v/Q=;
+ b=jC0Pzl4Nu4vqmNOjaIvvI5W8CR0f0zAjYCnPaTabV+xM6XNI1zYjry91jPMPRXwNXydNk0qDewEpqYJ/d3afT6CWReTbE2J7HORVRZ6vxs++aQ37YlNOcti/NDYas2npheM+nfRQ2funiLQ2z9EnmcSnD1DpoGX74hjUi5+oLNbMSTRDX+f7qhRpCRRDgBFqJREVUrBnWbGhZkPdwqoSps8tCU5HPieHdcvhZesQb3jZkdXfDIOq7pYFqif4AeN9zCbsaGO6DwmnGuU0Nh0kBqFei6VLfY7lsC6JW0kveNlUdHPUmFL6K6+/ksfZFIFQ0rULtAjCrgZU7yxs4qabUg==
+Received: from DM5PR05CA0021.namprd05.prod.outlook.com (2603:10b6:3:d4::31) by
+ BYAPR12MB2677.namprd12.prod.outlook.com (2603:10b6:a03:69::26) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3933.32; Mon, 15 Mar 2021 17:13:04 +0000
+Received: from DM6NAM11FT055.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:d4:cafe::a0) by DM5PR05CA0021.outlook.office365.com
+ (2603:10b6:3:d4::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.11 via Frontend
+ Transport; Mon, 15 Mar 2021 17:13:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
  smtp.mailfrom=nvidia.com; suse.cz; dkim=none (message not signed)
  header.d=none;suse.cz; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT054.mail.protection.outlook.com (10.13.177.102) with Microsoft SMTP
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ DM6NAM11FT055.mail.protection.outlook.com (10.13.173.103) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3933.31 via Frontend Transport; Mon, 15 Mar 2021 17:13:01 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 15 Mar
- 2021 17:13:01 +0000
+ 15.20.3933.31 via Frontend Transport; Mon, 15 Mar 2021 17:13:04 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 15 Mar
+ 2021 17:13:03 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 15 Mar 2021 17:12:58 +0000
+ Transport; Mon, 15 Mar 2021 17:13:01 +0000
 From:   Moshe Shemesh <moshe@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -62,9 +61,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Don Bollinger <don@thebollingers.org>, <netdev@vger.kernel.org>
 CC:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [RFC PATCH V3 net-next 2/5] net/mlx5: Refactor module EEPROM query
-Date:   Mon, 15 Mar 2021 19:12:40 +0200
-Message-ID: <1615828363-464-3-git-send-email-moshe@nvidia.com>
+Subject: [RFC PATCH V3 net-next 3/5] net/mlx5: Implement get_module_eeprom_data_by_page()
+Date:   Mon, 15 Mar 2021 19:12:41 +0200
+Message-ID: <1615828363-464-4-git-send-email-moshe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1615828363-464-1-git-send-email-moshe@nvidia.com>
 References: <1615828363-464-1-git-send-email-moshe@nvidia.com>
@@ -72,177 +71,159 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0bec0bb6-deb2-4959-aa22-08d8e7d596f2
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4934:
-X-Microsoft-Antispam-PRVS: <BY5PR12MB49345C42DB18745E0168BE2AD46C9@BY5PR12MB4934.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1751;
+X-MS-Office365-Filtering-Correlation-Id: 2d385e5c-4e42-4744-e55b-08d8e7d59879
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2677:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB2677D2E31B620422757FF680D46C9@BYAPR12MB2677.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2733;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rFuYR5d7xqiGEdK1AsPSbUo8IYt5GOXXrRHg1t7k8RkSq+uj9mK4zzrYO3F2J/i+lyn+ITFfivN88kRzOxSGJ2FiQgCyV6tFAoDL5Tbes58UNJfLVGfqGA4rnQTmX5XOpz+S5wYCrsaOcyGa1Yhq/QOtFMYqe9che+N9wTCkrbiJ7ZgWmRrpNwvzuxlhvUiLbeM5GEAHSnvkF/rhauYZBnCNzJDAO5CHiByBOpIWmkfEPQoBpDwBdlpl2gLOAeqywfwCx9/mR4G2cclRrNOJMyIrYl0Z3PJ/1gfKPMMIiOTPftGQK1fF6R5CGWimpYIy6s5MyOxtOD7H+xpwTU3wbdo7Rlzz3mbTeEXrC053zOu82infQRz+nFBKrLSrCkJv2NA1jURwiv4PWfTQMzP/mmm5UNgq+NUqgGQrnmU0uCPF4fI0dbvfsvO2ilCY7m/Ycp7H+zpPplQxFTF4pT6O5zucB4WNgw3mU3hFHwGqmzDgMB/7OxaT/M8iYDCk/rjqvnvPCqmB1DH51K9ffuJECv0Kmzh0SkFkiVkEu0bjKgfYoyU4HziDmBF1PLmBQAWqGrFSIQgJvATHm2gwvuxHQE0ymx7DRWFG1dHUYZjNljyh7pQ4ziJvuRA8AinmqPDe9hB2IRu4eiYASkGMfc3QEvPu/r6swO/2zOvZZS3f7CBUEXzSCAHMJ6+dHvb1xuer
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(396003)(376002)(346002)(36840700001)(46966006)(34020700004)(110136005)(107886003)(2906002)(36906005)(316002)(54906003)(82740400003)(82310400003)(7636003)(336012)(356005)(70206006)(2616005)(7696005)(26005)(36756003)(70586007)(478600001)(86362001)(186003)(8676002)(6666004)(83380400001)(36860700001)(4326008)(47076005)(5660300002)(8936002)(426003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: u+uFDaE9jj8iXxBtnoJnL5Gys5WU7RDaq+GVDD7yzxElJgctc3yIQMxfunfm6kGX6acMQ72jpq+ivKzmYaTEAMBvdlJSWjKSB0zhdUv9b5pDASEOT0do7iBlUl4mZDHqyLzWL110sS/TFJ2XMIKKaYsQDf1Rg6IGTOLn16uWLzXSL3Jn2j48H7zbnrw9dIpyqDZK/00VQZLHLWKp+CGatWCYvj1mbmTu5gTBOP6EwRKUeElk1Cs/OSkrA+sy35gH2TFfRskDSqtUHv8Zoq7HLuQGSv9cRaHo924l0a9JzFDcirPL5iRmNX5ulOZCGz/+i96EMYH4CCDFSKuxOIuUTBm4PKsnmsB1Tpt5ESmUiN+D42ODRz6JhV1gjxlewDCymRPnTva6irm9bLE30hdRVZcAiu8auYe7LTVAHSC6jNQlvCPbynwMWQLpSBT0CDi0ZfLlPJcabi3lVC749esrAp0P2QItLaEiOQBCgvpCumMsDcW0TrjuSyYxkKhWnjTqoSfW+1esRDD9SJz1z3wTH08ch/Suty5RK3RBlAEVoLsuy2F7P9pIbVorAkd/tsoTfrOX4ZgFaoFRUaJMQVTfpfdVByFKCtm0rJy3SBEUJ2h1zfk0pdJGnE2UHw5rHSnqu6xPd1xEE7DOmEGPzgq4ZhvGp+KXNpU8dmdGUG/6VXes5OVPws4qAd4G3Qa8Qk04
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(376002)(136003)(346002)(396003)(36840700001)(46966006)(356005)(36860700001)(8936002)(6666004)(8676002)(7696005)(34020700004)(7636003)(478600001)(70206006)(82740400003)(107886003)(83380400001)(47076005)(110136005)(36756003)(86362001)(2616005)(336012)(36906005)(54906003)(316002)(426003)(5660300002)(2906002)(26005)(70586007)(4326008)(186003)(82310400003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 17:13:01.7852
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 17:13:04.4031
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bec0bb6-deb2-4959-aa22-08d8e7d596f2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d385e5c-4e42-4744-e55b-08d8e7d59879
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT055.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4934
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2677
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 
-Prepare for ethtool_ops::get_module_eeprom_data() implementation by
-extracting common part of mlx5_query_module_eeprom() into a separate
-function.
+Implement ethtool_ops::get_module_eeprom_data_by_page() to enable
+support of new SFP standards.
 
 Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/port.c    | 79 +++++++++++--------
- include/linux/mlx5/port.h                     |  9 +++
- 2 files changed, 54 insertions(+), 34 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 44 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/port.c    | 33 ++++++++++++++
+ include/linux/mlx5/port.h                     |  2 +
+ 3 files changed, 79 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index 4bb219565c58..9b9f870d67a4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -353,67 +353,78 @@ static void mlx5_sfp_eeprom_params_set(u16 *i2c_addr, int *page_num, u16 *offset
- 	*offset -= MLX5_EEPROM_PAGE_LENGTH;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index abdf721bb264..5da9edea4d07 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -1769,6 +1769,49 @@ static int mlx5e_get_module_eeprom(struct net_device *netdev,
+ 	return 0;
  }
  
--int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
--			     u16 offset, u16 size, u8 *data)
-+static int mlx5_query_mcia(struct mlx5_core_dev *dev,
-+			   struct mlx5_module_eeprom_query_params *params, u8 *data)
- {
--	int module_num, status, err, page_num = 0;
- 	u32 in[MLX5_ST_SZ_DW(mcia_reg)] = {};
- 	u32 out[MLX5_ST_SZ_DW(mcia_reg)];
--	u16 i2c_addr = 0;
--	u8 module_id;
-+	int status, err;
- 	void *ptr;
-+	u16 size;
++static int mlx5e_get_module_eeprom_data_by_page(struct net_device *netdev,
++						const struct ethtool_eeprom_data *page_data,
++						struct netlink_ext_ack *extack)
++{
++	struct mlx5e_priv *priv = netdev_priv(netdev);
++	struct mlx5_module_eeprom_query_params query;
++	struct mlx5_core_dev *mdev = priv->mdev;
++	u8 *data = page_data->data;
++	int size_read;
++	int i = 0;
 +
-+	size = min_t(int, params->size, MLX5_EEPROM_MAX_BYTES);
++	if (!page_data->length)
++		return -EINVAL;
 +
-+	MLX5_SET(mcia_reg, in, l, 0);
-+	MLX5_SET(mcia_reg, in, size, size);
-+	MLX5_SET(mcia_reg, in, module, params->module_number);
-+	MLX5_SET(mcia_reg, in, device_address, params->offset);
-+	MLX5_SET(mcia_reg, in, page_number, params->page);
-+	MLX5_SET(mcia_reg, in, i2c_device_address, params->i2c_address);
- 
--	err = mlx5_query_module_num(dev, &module_num);
-+	err = mlx5_core_access_reg(dev, in, sizeof(in), out,
-+				   sizeof(out), MLX5_REG_MCIA, 0, 0);
- 	if (err)
- 		return err;
- 
--	err = mlx5_query_module_id(dev, module_num, &module_id);
-+	status = MLX5_GET(mcia_reg, out, status);
-+	if (status) {
-+		mlx5_core_err(dev, "query_mcia_reg failed: status: 0x%x\n",
-+			      status);
-+		return -EIO;
++	memset(data, 0, page_data->length);
++
++	query.offset = page_data->offset;
++	query.i2c_address = page_data->i2c_address;
++	query.bank = page_data->bank;
++	query.page = page_data->page;
++	while (i < page_data->length) {
++		query.size = page_data->length - i;
++		size_read = mlx5_query_module_eeprom_data(mdev, &query, data + i);
++
++		/* Done reading, return how many bytes was read */
++		if (!size_read)
++			return i;
++
++		if (size_read == -EINVAL)
++			return -EINVAL;
++		if (size_read < 0) {
++			netdev_err(priv->netdev, "%s: mlx5_query_module_eeprom_data failed:0x%x\n",
++				   __func__, size_read);
++			return i;
++		}
++
++		i += size_read;
++		query.offset += size_read;
 +	}
 +
-+	ptr = MLX5_ADDR_OF(mcia_reg, out, dword_0);
-+	memcpy(data, ptr, size);
-+
-+	return size;
++	return i;
 +}
 +
-+int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
-+			     u16 offset, u16 size, u8 *data)
-+{
-+	struct mlx5_module_eeprom_query_params query = {0};
-+	u8 module_id;
-+	int err;
-+
-+	err = mlx5_query_module_num(dev, &query.module_number);
-+	if (err)
-+		return err;
-+
-+	err = mlx5_query_module_id(dev, query.module_number, &module_id);
- 	if (err)
- 		return err;
- 
- 	switch (module_id) {
- 	case MLX5_MODULE_ID_SFP:
--		mlx5_sfp_eeprom_params_set(&i2c_addr, &page_num, &offset);
-+		mlx5_sfp_eeprom_params_set(&query.i2c_address, &query.page, &query.offset);
- 		break;
- 	case MLX5_MODULE_ID_QSFP:
- 	case MLX5_MODULE_ID_QSFP_PLUS:
- 	case MLX5_MODULE_ID_QSFP28:
--		mlx5_qsfp_eeprom_params_set(&i2c_addr, &page_num, &offset);
-+		mlx5_qsfp_eeprom_params_set(&query.i2c_address, &query.page, &query.offset);
- 		break;
- 	default:
- 		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
- 		return -EINVAL;
- 	}
- 
--	if (offset + size > MLX5_EEPROM_PAGE_LENGTH)
-+	if (query.offset + size > MLX5_EEPROM_PAGE_LENGTH)
- 		/* Cross pages read, read until offset 256 in low page */
- 		size -= offset + size - MLX5_EEPROM_PAGE_LENGTH;
- 
--	size = min_t(int, size, MLX5_EEPROM_MAX_BYTES);
-+	query.size = size;
- 
--	MLX5_SET(mcia_reg, in, l, 0);
--	MLX5_SET(mcia_reg, in, module, module_num);
--	MLX5_SET(mcia_reg, in, i2c_device_address, i2c_addr);
--	MLX5_SET(mcia_reg, in, page_number, page_num);
--	MLX5_SET(mcia_reg, in, device_address, offset);
--	MLX5_SET(mcia_reg, in, size, size);
--
--	err = mlx5_core_access_reg(dev, in, sizeof(in), out,
--				   sizeof(out), MLX5_REG_MCIA, 0, 0);
--	if (err)
--		return err;
--
--	status = MLX5_GET(mcia_reg, out, status);
--	if (status) {
--		mlx5_core_err(dev, "query_mcia_reg failed: status: 0x%x\n",
--			      status);
--		return -EIO;
--	}
--
--	ptr = MLX5_ADDR_OF(mcia_reg, out, dword_0);
--	memcpy(data, ptr, size);
--
--	return size;
-+	return mlx5_query_mcia(dev, &query, data);
+ int mlx5e_ethtool_flash_device(struct mlx5e_priv *priv,
+ 			       struct ethtool_flash *flash)
+ {
+@@ -2148,6 +2191,7 @@ const struct ethtool_ops mlx5e_ethtool_ops = {
+ 	.set_wol	   = mlx5e_set_wol,
+ 	.get_module_info   = mlx5e_get_module_info,
+ 	.get_module_eeprom = mlx5e_get_module_eeprom,
++	.get_module_eeprom_data_by_page = mlx5e_get_module_eeprom_data_by_page,
+ 	.flash_device      = mlx5e_flash_device,
+ 	.get_priv_flags    = mlx5e_get_priv_flags,
+ 	.set_priv_flags    = mlx5e_set_priv_flags,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+index 9b9f870d67a4..f7a16fdfb8d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+@@ -428,6 +428,39 @@ int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
  }
  EXPORT_SYMBOL_GPL(mlx5_query_module_eeprom);
  
++int mlx5_query_module_eeprom_data(struct mlx5_core_dev *dev,
++				  struct mlx5_module_eeprom_query_params *params,
++				  u8 *data)
++{
++	u8 module_id;
++	int err;
++
++	err = mlx5_query_module_num(dev, &params->module_number);
++	if (err)
++		return err;
++
++	err = mlx5_query_module_id(dev, params->module_number, &module_id);
++	if (err)
++		return err;
++
++	if (module_id != MLX5_MODULE_ID_SFP &&
++	    module_id != MLX5_MODULE_ID_QSFP &&
++	    module_id != MLX5_MODULE_ID_QSFP28 &&
++	    module_id != MLX5_MODULE_ID_QSFP_PLUS) {
++		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
++		return -EINVAL;
++	}
++
++	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
++	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
++		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
++		return -EINVAL;
++	}
++
++	return mlx5_query_mcia(dev, params, data);
++}
++EXPORT_SYMBOL_GPL(mlx5_query_module_eeprom_data);
++
+ static int mlx5_query_port_pvlc(struct mlx5_core_dev *dev, u32 *pvlc,
+ 				int pvlc_size,  u8 local_port)
+ {
 diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-index 23edd2db4803..90b87aa82db3 100644
+index 90b87aa82db3..887cd43b41e8 100644
 --- a/include/linux/mlx5/port.h
 +++ b/include/linux/mlx5/port.h
-@@ -62,6 +62,15 @@ enum mlx5_an_status {
- #define MLX5_EEPROM_PAGE_LENGTH		256
- #define MLX5_EEPROM_HIGH_PAGE_LENGTH	128
+@@ -209,6 +209,8 @@ void mlx5_query_port_fcs(struct mlx5_core_dev *mdev, bool *supported,
+ 			 bool *enabled);
+ int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
+ 			     u16 offset, u16 size, u8 *data);
++int mlx5_query_module_eeprom_data(struct mlx5_core_dev *dev,
++				  struct mlx5_module_eeprom_query_params *params, u8 *data);
  
-+struct mlx5_module_eeprom_query_params {
-+	u16 size;
-+	u16 offset;
-+	u16 i2c_address;
-+	u32 page;
-+	u32 bank;
-+	u32 module_number;
-+};
-+
- enum mlx5e_link_mode {
- 	MLX5E_1000BASE_CX_SGMII	 = 0,
- 	MLX5E_1000BASE_KX	 = 1,
+ int mlx5_query_port_dcbx_param(struct mlx5_core_dev *mdev, u32 *out);
+ int mlx5_set_port_dcbx_param(struct mlx5_core_dev *mdev, u32 *in);
 -- 
 2.26.2
 
