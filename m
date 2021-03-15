@@ -2,215 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA03F33C932
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 23:16:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B09D33C92C
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 23:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbhCOWPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 18:15:33 -0400
-Received: from mga11.intel.com ([192.55.52.93]:14823 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231727AbhCOWPJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 18:15:09 -0400
-IronPort-SDR: an3c+4C4BCPbetwOjBwmA9F1u90msL+dND757/9Fl8l2V+b5ZJ6z8xAnSKgE0QGPCUPJqBK6NT
- M0TlVZs+4Qkg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9924"; a="185802467"
-X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="185802467"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2021 15:15:09 -0700
-IronPort-SDR: 4EIjiw5db6QKY0/0KjwBtB7uBroAbWiaMMjgVoqoV79jnzBdKNrpfyV8J2aCKDAClmpg3nHdpv
- AveR4M8ean7g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="410807105"
-Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.82])
-  by orsmga007.jf.intel.com with ESMTP; 15 Mar 2021 15:15:05 -0700
-From:   mohammad.athari.ismail@intel.com
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>, vee.khee.wong@intel.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        mohammad.athari.ismail@intel.com
-Subject: [PATCH net-next 2/2] net: stmmac: Add EST errors into ethtool statistic
-Date:   Tue, 16 Mar 2021 06:14:09 +0800
-Message-Id: <20210315221409.3867-3-mohammad.athari.ismail@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210315221409.3867-1-mohammad.athari.ismail@intel.com>
-References: <20210315221409.3867-1-mohammad.athari.ismail@intel.com>
+        id S231559AbhCOWO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 18:14:58 -0400
+Received: from mail-dm6nam12on2068.outbound.protection.outlook.com ([40.107.243.68]:56960
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229536AbhCOWOd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 18:14:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jKKJ5R78NifSoqcE7N4LtVAcSiYfJTt++8eIhzGpR+EEYNMwrC/7vJsLg0kfrnX/8zaNxbhi0J6jCfNNVdR4dwOtI94BywznXd4iz2fIkpON18PlqNcG2XI9wxnqfCqa1r7PEbn32tscGLPD/akkxtEUMKUNBu7dCHpulpi55BFBpZgNpnTJQ9Qkdf1Ksr9p1YCb+Z3rhoXmLHT3b6l+2YDpJOURbMYspAp3myEXf9jRvUKhQehza1m2WXnJfbHxXDficm1L2AR3kcqYHsXHeYkPRDxeZbyvAPkE/FvugYOJtWPUR8C4KDQ8ak4EnNYRueJQyBu1XJkKrNrfMUTGng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lmxg8sGNql4ELS07h+ZcSLFMmNauO8WIqu6c2phQAF8=;
+ b=Zz+yusMhJ5XPbnhR3GhtoqW5N5Dg6AlsGwQZwFYZGWrUr+EnvBjxgYm2/E9U/Rsz++wCPgtaygm+VLgZFCZQyr90ajHj4lRsr9EEsX4jHP5m9PFkdwe886mC3w88GT9kKJtZLR5CsgvnnJHi720Dqdc7ECAYXkv99JbTb6MfK9gE18tL49wrgu/85Wpg+LuAzeU5lRlUceEwWY54hSvvrgU4l6NzXWBnoYROymJm2xTF+KnS32XF5p2vQgbWs2RtaQJ7xP1LPv9CWdc2Hgnwqn7jJJyfNU1W0vdAUNKUQKO7qNHKizsy65ZW8Yhs5MFA72nNEp09uWz11N3RLYruWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lmxg8sGNql4ELS07h+ZcSLFMmNauO8WIqu6c2phQAF8=;
+ b=CbB93jvvxIz26bz3fcYrEBombgLJpVkjlUkwMX7j6nXc5nVcwMRfxbgD0QfIe77QHVAN8mBzNoQvXxoqnzOknwnA5yaAefyYIasXLjLKQw4d9K/XWzNCicbgfTx0GC8DFMs5TNmn2AgrjJbKY8s80g8jvTJ9ncBZr4JV9/bxCo5wmFviHpgNPi7rBrwMD4YC47ElsJWCyXZis8XJCsCKyV33Vy7x79QmPGYuIUCFx+W6pGj6pNsJe9cWxtAcWP5dIEgGicUBJapxywrE9J1tUnMYLMGKOpvpa4WhRdaddejyVXUEwbfW8NIo4N48RzqfdL9VcdQ4BvDgyXC9yxle1w==
+Received: from MWHPR15CA0046.namprd15.prod.outlook.com (2603:10b6:300:ad::32)
+ by MWHPR12MB1277.namprd12.prod.outlook.com (2603:10b6:300:f::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Mon, 15 Mar
+ 2021 22:14:30 +0000
+Received: from CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:ad:cafe::10) by MWHPR15CA0046.outlook.office365.com
+ (2603:10b6:300:ad::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31 via Frontend
+ Transport; Mon, 15 Mar 2021 22:14:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT027.mail.protection.outlook.com (10.13.174.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3933.31 via Frontend Transport; Mon, 15 Mar 2021 22:14:30 +0000
+Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 15 Mar 2021 22:14:27
+ +0000
+References: <cover.1615818031.git.petrm@nvidia.com>
+ <2e3328b34e571d00c7ff676624e6af2aebdcec62.1615818031.git.petrm@nvidia.com>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+CC:     <netdev@vger.kernel.org>, <dsahern@gmail.com>,
+        <stephen@networkplumber.org>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH iproute2-next v2 4/6] nexthop: Add ability to specify
+ group type
+In-Reply-To: <2e3328b34e571d00c7ff676624e6af2aebdcec62.1615818031.git.petrm@nvidia.com>
+Message-ID: <87o8fkgj40.fsf@nvidia.com>
+Date:   Mon, 15 Mar 2021 23:14:23 +0100
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6c33d85d-a373-40d6-0b8c-08d8e7ffb49c
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1277:
+X-Microsoft-Antispam-PRVS: <MWHPR12MB1277BC3EE224908B5039A99FD66C9@MWHPR12MB1277.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:530;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ylQTlP+hLxOvFsyHCpf3g+6PFlPvx/mDDgUBAl9yIjyZMGhw060559VgoEaSLcQT1ke2t1IqWIpH6ve5t1G0HM9xsvXiSVsoiBWwYmotfucByBevUZ0O6S8e9tSLvs+GbAiNv1u8OttUhkF5IdEULuPLjlfoPPrF9YYc0/LzYjMDVknMYBGqGeG18+sPtZEimfxypcZUAgbDTrvlva98OSkDDbmZhOdjuOzy1X+AULgvY0TDVmcScKhq1OKHbcBIs1xxikFI515oYPecVEQ9RDpHsCej0kllnuXfJ6mYCZo0sf8Gesatoj2x9bsQrSGDn7O21TUmxLbt2x8zoX1Dje6eE5YJMMud30Mf/Lv3J+gcN5+EHVWhuyIdB6Pflouwy++JZNUzyfwDJU7pw71bFJe/BLR3trg2MOEywiaDuJq+mef6g9+4BD22wGtLrOxhqNoiKOkYMt83IG3IZCCMPway50+I2yEF8FOO1yczty4hzvpd737NBar2+qxitDen4inv2Xu8lLMo1wLzxjPR4PPFeFp485t5vdh2hk5F/fn19/oCJw4yyXkpo2YPLgWdni/BmkN5Vm0LIOEkEmEAK3OFXNo6yA4VrAyr0TiltNwbSYM6qtwsZqvdFwgRcnkeEJ9JptSZt4udXiWB7dDW0ABzGIACqAE1FhBnYF446S/9PresT/Bhg2JN8dTu61dX
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(39860400002)(396003)(346002)(46966006)(36840700001)(2616005)(6666004)(26005)(426003)(36756003)(2906002)(558084003)(16526019)(82740400003)(336012)(54906003)(8676002)(4326008)(34020700004)(36860700001)(82310400003)(316002)(36906005)(8936002)(7636003)(107886003)(70206006)(5660300002)(86362001)(70586007)(47076005)(356005)(478600001)(6862004)(37006003)(186003)(6200100001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 22:14:30.3118
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c33d85d-a373-40d6-0b8c-08d8e7ffb49c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1277
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ong Boon Leong <boon.leong.ong@intel.com>
 
-Below EST errors are added into ethtool statistic:
-1) Constant Gate Control Error (CGCE):
-   The counter "mtl_est_cgce" increases everytime CGCE interrupt is
-   triggered.
+Petr Machata <petrm@nvidia.com> writes:
 
-2) Head-of-Line Blocking due to Scheduling (HLBS):
-   The counter "mtl_est_hlbs" increases everytime HLBS interrupt is
-   triggered.
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 
-3) Head-of-Line Blocking due to Frame Size (HLBF):
-   The counter "mtl_est_hlbf" increases everytime HLBF interrupt is
-   triggered.
-
-4) Base Time Register error (BTRE):
-   The counter "mtl_est_btre" increases everytime BTRE interrupt is
-   triggered but BTRL not reaches maximum value of 15.
-
-5) Base Time Register Error Loop Count (BTRL) reaches maximum value:
-   The counter "mtl_est_btrlm" increases everytime BTRE interrupt is
-   triggered and BTRL value reaches maximum value of 15.
-
-Please refer to MTL_EST_STATUS register in DesignWare Cores Ethernet
-Quality-of-Service Databook for more detail explanation.
-
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Co-developed-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/common.h        |  6 ++++++
- drivers/net/ethernet/stmicro/stmmac/dwmac5.c        | 13 ++++++++++++-
- drivers/net/ethernet/stmicro/stmmac/dwmac5.h        |  2 +-
- drivers/net/ethernet/stmicro/stmmac/hwif.h          |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c    |  6 ++++++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c   |  3 ++-
- 6 files changed, 28 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 6f271c46368d..1c0c60bdf854 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -182,6 +182,12 @@ struct stmmac_extra_stats {
- 	/* TSO */
- 	unsigned long tx_tso_frames;
- 	unsigned long tx_tso_nfrags;
-+	/* EST */
-+	unsigned long mtl_est_cgce;
-+	unsigned long mtl_est_hlbs;
-+	unsigned long mtl_est_hlbf;
-+	unsigned long mtl_est_btre;
-+	unsigned long mtl_est_btrlm;
- };
- 
- /* Safety Feature statistics exposed by ethtool */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-index b47190fc8d83..b5ff47299b29 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-@@ -608,7 +608,7 @@ int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
- }
- 
- int dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
--			  u32 txqcnt)
-+			  struct stmmac_extra_stats *x, u32 txqcnt)
- {
- 	u32 status, value, feqn, hbfq, hbfs, btrl;
- 	u32 txqcnt_mask = (1 << txqcnt) - 1;
-@@ -624,12 +624,16 @@ int dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
- 	if (status & CGCE) {
- 		/* Clear Interrupt */
- 		writel(CGCE, ioaddr + MTL_EST_STATUS);
-+
-+		x->mtl_est_cgce++;
- 	}
- 
- 	if (status & HLBS) {
- 		value = readl(ioaddr + MTL_EST_SCH_ERR);
- 		value &= txqcnt_mask;
- 
-+		x->mtl_est_hlbs++;
-+
- 		/* Clear Interrupt */
- 		writel(value, ioaddr + MTL_EST_SCH_ERR);
- 
-@@ -649,6 +653,8 @@ int dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
- 		hbfq = (value & SZ_CAP_HBFQ_MASK(txqcnt)) >> SZ_CAP_HBFQ_SHIFT;
- 		hbfs = value & SZ_CAP_HBFS_MASK;
- 
-+		x->mtl_est_hlbf++;
-+
- 		/* Clear Interrupt */
- 		writel(feqn, ioaddr + MTL_EST_FRM_SZ_ERR);
- 
-@@ -658,6 +664,11 @@ int dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
- 	}
- 
- 	if (status & BTRE) {
-+		if ((status & BTRL) == BTRL_MAX)
-+			x->mtl_est_btrlm++;
-+		else
-+			x->mtl_est_btre++;
-+
- 		btrl = (status & BTRL) >> BTRL_SHIFT;
- 
- 		if (net_ratelimit())
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-index 51d9ed24622f..dcd679597676 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-@@ -142,7 +142,7 @@ int dwmac5_flex_pps_config(void __iomem *ioaddr, int index,
- int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
- 			 unsigned int ptp_rate);
- int dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
--			  u32 txqcnt);
-+			  struct stmmac_extra_stats *x, u32 txqcnt);
- void dwmac5_fpe_configure(void __iomem *ioaddr, u32 num_txq, u32 num_rxq,
- 			  bool enable);
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 78a677a86914..e49d934ea435 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -394,7 +394,7 @@ struct stmmac_ops {
- 	int (*est_configure)(void __iomem *ioaddr, struct stmmac_est *cfg,
- 			     unsigned int ptp_rate);
- 	int (*est_irq_status)(void __iomem *ioaddr, struct net_device *dev,
--			      u32 txqcnt);
-+			      struct stmmac_extra_stats *x, u32 txqcnt);
- 	void (*fpe_configure)(void __iomem *ioaddr, u32 num_txq, u32 num_rxq,
- 			      bool enable);
- };
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index c5642985ef95..00595b7552bc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -158,6 +158,12 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
- 	/* TSO */
- 	STMMAC_STAT(tx_tso_frames),
- 	STMMAC_STAT(tx_tso_nfrags),
-+	/* EST */
-+	STMMAC_STAT(mtl_est_cgce),
-+	STMMAC_STAT(mtl_est_hlbs),
-+	STMMAC_STAT(mtl_est_hlbf),
-+	STMMAC_STAT(mtl_est_btre),
-+	STMMAC_STAT(mtl_est_btrlm),
- };
- #define STMMAC_STATS_LEN ARRAY_SIZE(stmmac_gstrings_stats)
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 24b9212c7566..502eaff0828b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4242,7 +4242,8 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
- 		return IRQ_HANDLED;
- 
- 	if (priv->dma_cap.estsel)
--		stmmac_est_irq_status(priv, priv->ioaddr, priv->dev, tx_cnt);
-+		stmmac_est_irq_status(priv, priv->ioaddr, priv->dev,
-+				      &priv->xstats, tx_cnt);
- 
- 	/* To handle GMAC own interrupts */
- 	if ((priv->plat->has_gmac) || xmac) {
--- 
-2.17.1
-
+And I managed to forget my S-o-b :-/
