@@ -2,198 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B60F33B358
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:11:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F1833B357
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:11:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229518AbhCONKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229717AbhCONKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 15 Mar 2021 09:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbhCONKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 09:10:02 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8ABC06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 06:10:02 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lLmyb-0004DA-CB; Mon, 15 Mar 2021 14:09:41 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:91fd:fdb9:356d:9a2d] (unknown [IPv6:2a03:f580:87bc:d400:91fd:fdb9:356d:9a2d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 559F75F5AAB;
-        Mon, 15 Mar 2021 13:09:36 +0000 (UTC)
-To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, olteanv@gmail.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
-        edumazet@google.com, weiwan@google.com, cong.wang@bytedance.com,
-        ap420073@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        linux-can@vger.kernel.org
-References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
- <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS for lockless
- qdisc
-Message-ID: <4b02d9bb-772f-ff40-b865-ea87bd1bea6e@pengutronix.de>
-Date:   Mon, 15 Mar 2021 14:09:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+Received: from mail-bn7nam10on2082.outbound.protection.outlook.com ([40.107.92.82]:45024
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229900AbhCONK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 09:10:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gxeznuKnUXX7cf8R8ypPAutKdRpURCwBTXm5JKlpiozQAVaSzBJk01oLjRZ7DA8Mi/lmRg/cI0rJrtuAl4Y/QwIFnGupdnRhNR66wUbpqhB4rWXEQTND8bfahe6RZF48IwzIa7NgZQdCVvWYFiJsesKEF6FB2yAT0fD0k4aaQWajqNLQZvYkoYnqh4l1rdi3WnAZmoIp79+882DA6SAKd5vfYzIXVlPV+UAtwGPZ16QvtoT7AAUL+kM72VAqdnr7EfQPpQA8Sce8V1QlOdcedtKx8djG7noUoVjWD09iOLxDgDIYPoBEtJtnuXI2954WpzFV8jJiAPL76H8d/BisFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VBlL/F+dh/0fjmqADXwQuhnlAbar7jBdJRaOL9rNi5E=;
+ b=E4r1ojdX7TNWRQwUstmu56UjGbPBHRJ0U5p+2xGxH2FtoNabx4uRaYXDPFAa/Wa7ga1HGw3kRh1a51GUDfMF6riv2BO+54MAT935SFeCjoXgFed0qfuS8qONVfGzYY9IPhGm05ad+2KbNwZS2p2CWt1lrHrrAueTAG5zQMoMEohbJtgmC+l6VAptTj9qz41Lrn66Zp2fVkD5yxLF+0tZbMUiBSritZyEpOKSu/PAeEAfb3Vab64sZrr7krmmopE91xQOo7uTmFRmGVDeCw6Ugy3d6hk/imYVrnfD+XcRLVaxm6WcpYWh9VE9Ea3DLuAXmx8NkW/ITBJ+b+1EKzSRjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VBlL/F+dh/0fjmqADXwQuhnlAbar7jBdJRaOL9rNi5E=;
+ b=GAbg5raIBnCIQnOwqtRGAUdjz8QnTwTlS9CHJG2bCZco/FAVuLku2Pd3jVrYFGfO2YlUOFVB1R2nsHRZF7HOYSVh4Su4BomNCrJCBl5sCZ1R+F2o5jxZ+oPaSieRLVJVaIcY57Zxb6hmob6WIduE6FpX8+F4IYIgXAIicu75zwyVtteeyUR4NWYSZz0wbUrE36W9qivVLeuo2+K0EHnXUnujD9RwnGczr2XCavInbE7KVp5ff81mI5RkBhipnDUeI7nGy09+yHBIr6qj0IV49D9s62IV2lCElN/rHpsjMtvsqTnFJl/dmtBw3p55y2dVerJYrjDcfPRjzCfdtgeOpg==
+Received: from BN7PR06CA0054.namprd06.prod.outlook.com (2603:10b6:408:34::31)
+ by SA0PR12MB4478.namprd12.prod.outlook.com (2603:10b6:806:9c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Mon, 15 Mar
+ 2021 13:10:26 +0000
+Received: from BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:34:cafe::a) by BN7PR06CA0054.outlook.office365.com
+ (2603:10b6:408:34::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32 via Frontend
+ Transport; Mon, 15 Mar 2021 13:10:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT044.mail.protection.outlook.com (10.13.177.219) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3933.31 via Frontend Transport; Mon, 15 Mar 2021 13:10:26 +0000
+Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 15 Mar 2021 13:10:15
+ +0000
+References: <20210222121030.2109-1-roid@nvidia.com> <875z2kl1yt.fsf@nvidia.com>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+CC:     Roi Dayan <roid@nvidia.com>, <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2-next v2] dcb: Fix compilation warning about
+ reallocarray
+In-Reply-To: <875z2kl1yt.fsf@nvidia.com>
+Date:   Mon, 15 Mar 2021 14:10:12 +0100
+Message-ID: <87v99sh8az.fsf@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="XfdkZiGWe4GpXgPyF3Eq71MC2ms5K2wwq"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e1b10816-5562-4ae4-24fe-08d8e7b3b339
+X-MS-TrafficTypeDiagnostic: SA0PR12MB4478:
+X-Microsoft-Antispam-PRVS: <SA0PR12MB44784298D39F8E5EC124CEE5D66C9@SA0PR12MB4478.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fmV/+dw7L3R/SGjujVibzR1c3vBVEOwqt48L0wenbyVTBgRuYj3+Ri4P2MrQ0CFGfvWDWB9aV+Lr20ZsUFa9X+lyPTJxsrOUWp+SOww5s2iSBW5sQIj/dlEf3f1KkSCihMLqWRFFJmW4T+7mK5oy1lSE6vo1x9UxSFdwyWEDSa4hwWGDzX9VZK8H4ezK+wD1BbgQwm3ZsyTxx87ml+VVLUUmwj+yhmNOQlKfRf2lwCfc3q9LxBFYdnAihCfmo7hQuaH4J3qXnU3wj2oQy5KrZxfdnjizv99mUdMdE0RIYRg57EUWJGMSspRbRc5TZWy/C76MsGAwfkAA2yeQdonDW9vJyv9MCcd27toDnmYky3p8Qn+U9lOMFwpri20tA8ZXOhQ0QpbwqCNW5v1tJz59UV47OT2wOCCQ+frUEQJVXEerIltXawI0Neprr0BqNyL5PWa3Lz7MyyIp0MC9I1IjQLGxu8hCtm/lPela8jzm+9WPmjjqxQ3oKn0NI7jEwLalbWKCtIBw1OY1MgBFxENRBNo6dFKoetVo+RvIJrI0SlgBUv8dPDz+WBF8diGUlhe9ujbsE1ZBAj5UdaiQSt9uP8xLnkefNpNADHmbUuGAyXSjq4HMvwg1FDh4NSIBEPW/Hce21fHmi2k9pw+9Y3atwBu/pbiENmeWtrDryfTVAM+bl/2F43WGiagmDlL5oCMr
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(396003)(346002)(39860400002)(46966006)(36840700001)(356005)(4326008)(186003)(6862004)(8936002)(26005)(36860700001)(36756003)(2616005)(16526019)(4744005)(82740400003)(6200100001)(6666004)(316002)(36906005)(70206006)(7636003)(2906002)(47076005)(82310400003)(34020700004)(8676002)(336012)(5660300002)(478600001)(426003)(86362001)(54906003)(70586007)(37006003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 13:10:26.3265
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1b10816-5562-4ae4-24fe-08d8e7b3b339
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4478
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---XfdkZiGWe4GpXgPyF3Eq71MC2ms5K2wwq
-Content-Type: multipart/mixed; boundary="nVncz7ZIHzuqTZClRZDr3c4OVwDWj5Ycp";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
- kuba@kernel.org, olteanv@gmail.com
-Cc: ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
- edumazet@google.com, weiwan@google.com, cong.wang@bytedance.com,
- ap420073@gmail.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- linuxarm@openeuler.org, linux-can@vger.kernel.org
-Message-ID: <4b02d9bb-772f-ff40-b865-ea87bd1bea6e@pengutronix.de>
-Subject: Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS for lockless
- qdisc
-References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
- <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
-In-Reply-To: <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
 
---nVncz7ZIHzuqTZClRZDr3c4OVwDWj5Ycp
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Petr Machata <petrm@nvidia.com> writes:
 
-On 3/15/21 4:10 AM, Yunsheng Lin wrote:
-> Currently pfifo_fast has both TCQ_F_CAN_BYPASS and TCQ_F_NOLOCK
-> flag set, but queue discipline by-pass does not work for lockless
-> qdisc because skb is always enqueued to qdisc even when the qdisc
-> is empty, see __dev_xmit_skb().
->=20
-> This patch calls sch_direct_xmit() to transmit the skb directly
-> to the driver for empty lockless qdisc too, which aviod enqueuing
-> and dequeuing operation. qdisc->empty is set to false whenever a
-> skb is enqueued, see pfifo_fast_enqueue(), and is set to true when
-> skb dequeuing return NULL, see pfifo_fast_dequeue(), a spinlock is
-> added to avoid the race between enqueue/dequeue and qdisc->empty
-> setting.
->=20
-> If there is requeued skb in q->gso_skb, and qdisc->empty is true,
-> do not allow bypassing requeued skb. enqueuing and dequeuing in
-> q->gso_skb is always protected by qdisc->seqlock, so is the access
-> of q->gso_skb by skb_queue_empty();
->=20
-> Also, qdisc is scheduled at the end of qdisc_run_end() when q->empty
-> is false to avoid packet stuck problem.
->=20
-> The performance for ip_forward test increases about 10% with this
-> patch.
->=20
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> Roi Dayan <roid@nvidia.com> writes:
+>
+>> --- a/dcb/dcb_app.c
+>> +++ b/dcb/dcb_app.c
+>> @@ -65,8 +65,7 @@ static void dcb_app_table_fini(struct dcb_app_table *tab)
+>>  
+>>  static int dcb_app_table_push(struct dcb_app_table *tab, struct dcb_app *app)
+>>  {
+>> -	struct dcb_app *apps = reallocarray(tab->apps, tab->n_apps + 1,
+>> -					    sizeof(*tab->apps));
+>> +	struct dcb_app *apps = realloc(tab->apps, (tab->n_apps + 1) * sizeof(*tab->apps));
+>
+> Reviewed-by: Petr Machata <petrm@nvidia.com>
 
-I gave it a short test on a single core imx. No problem here.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---nVncz7ZIHzuqTZClRZDr3c4OVwDWj5Ycp--
-
---XfdkZiGWe4GpXgPyF3Eq71MC2ms5K2wwq
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmBPXI0ACgkQqclaivrt
-76kzZAgArkElmvsUkhVVnZlZ8tzI2BkmR+z2RwCfUGdUVPAFVdBlp/UdH9aV1gEJ
-3WPLeMrXrAyOS+MSh4u1USIM3YJ7DQhBlZaxORx5uY2YUqu5Ejftbk1DjhKLc7fj
-yM0QzHx37e4soGNMYoKeX4NCIC71CE7YspUmpiav09ZkWBU0eoGOLYtfBQZ/WTYF
-MzUbrPH2bi0F3c8mCFr2AQ5KTFkc8dYWJDXSZe1jfdjFw0p7guwCoTR9JFKkNtiW
-eDul1LxGXdCUWKrkmhhQFhkbgd3BTRgT/24DVLeSmEiS+6OhoaozrArRWatDyE52
-AVDpHTHBTrQfLSSBzCs9g7a88oKNUw==
-=hwgR
------END PGP SIGNATURE-----
-
---XfdkZiGWe4GpXgPyF3Eq71MC2ms5K2wwq--
+Could this be merged, please?
