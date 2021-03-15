@@ -2,186 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C19433C851
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 22:15:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12F5833C855
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 22:16:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232344AbhCOVPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 17:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        id S232465AbhCOVQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 17:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbhCOVPL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 17:15:11 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F2AC06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 14:15:10 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id t18so11345345lfl.3
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 14:15:10 -0700 (PDT)
+        with ESMTP id S230112AbhCOVPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 17:15:45 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16755C06174A;
+        Mon, 15 Mar 2021 14:15:45 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id bf3so19012084edb.6;
+        Mon, 15 Mar 2021 14:15:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=OxZK0EpkWuwxaCH5ICgb9sgxnbVsd3E2N4MHrwUkx8s=;
-        b=dXlQ7SMyfSmLSUU+sWRXv4FZ3LEx89DlUxfp5Jq9BMN24TdhoJlQVurWPJnA609uGY
-         96MQF9nowa5GexugRSVdSWKANLEgkCsA+F9ZyeqHbSFVcr4tdVwXU0MYX/tNwUiwzJWg
-         OHSgZOStmZ8HMWnGvhgAL43HKJE4Gi17qFY/y2gRrCDCMTyPvNNSfRHSuDCx/2Pxb1G7
-         nr+AaTtsSEQQ9U+0OQhVkSx+LXkGuzel4SbY6RohHKHf5EirbLak5LeQctOm2jA7vwlG
-         W5LwSY33E8UuWL/0GCyeZxDdDRmhB9QwPOp3zKYRvHIhhs8Xo8k+K0VoGJlTpn6wnPee
-         FxlQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qwnbwanU2MY7jCvFVBwRSp3WXlaw+EiV14zRrhqaSu0=;
+        b=Lt+eVhbnXOgmfLt8THwaBgDraGpxApiQbIVUYLqclrwyuCKUwMl3PC4uUCe43Q7780
+         fOZ+p0IkmU5Rdb3qF+uru0em7rgkNck6zDK4Tuigl3wFKLElfOTARmrZiMpADAxyx5Gd
+         mKSAVjgtlOQ2N9FTAdGxknLLlbbRNkNDtlqbIi23JTermQIYCq7Jz60Xa8yL6txZRJUI
+         1zqBb9hnwlOnX+UhD7Bi5OGNF2yxC+avG/DdUOizyrbqAixk+9kOKEO/qGLSfhspDrb1
+         AZ0DZULmbOORr12r2AZ9bFq/8L6N22UeIngoLQKgtboWt+YGljxUwjvrzxQnuIdr4F37
+         5XOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=OxZK0EpkWuwxaCH5ICgb9sgxnbVsd3E2N4MHrwUkx8s=;
-        b=Wvh125NbfoIQGimFd6RDhAPdpDEsLZxN8cmLlHJky4CzFHhH/ksRA7aeC2Ni5RHwoT
-         xPXOyfaqEQPekhu2HfuKvkaIVCRGtPF8AaOKvTl8QgWboUvLKoOBzCnKuxBBH4k0Xh0j
-         ds7ECyDOiONVP+Pnnh/kztoZdqIJUAZJ40gzgIPqHLO67/jGxYiXfyCS2sqhxv+mcoof
-         t4vq5PLVItIKftix6l4pA4mBzeGhCYMlRnL5ovei5oYcYQMSSiuCypRURhz7CKc5usiB
-         /bt/sdv87UC7l6lpYVbTt65+iAFFpGkL6UrOFv0mtFg9NakSDRhYy0Idx7gq+uASUAkg
-         GUOQ==
-X-Gm-Message-State: AOAM531kkt7OrOdJXf2C8Bz1JlAYvhP46fFMzYuKVmr/uGaqkdalcOgq
-        62K+F/XGbgZmTBhY/LANebuscA==
-X-Google-Smtp-Source: ABdhPJz4o+QshmOCB9zoagYuFW5MY9OmiyLkJzXGocOJ/0w0ye/kQIlNbfEA/AsS5nZBOYUL89bvmw==
-X-Received: by 2002:ac2:5e62:: with SMTP id a2mr9722608lfr.385.1615842909237;
-        Mon, 15 Mar 2021 14:15:09 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id v11sm2975003ljp.63.2021.03.15.14.15.08
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qwnbwanU2MY7jCvFVBwRSp3WXlaw+EiV14zRrhqaSu0=;
+        b=seCWGnGL+avUp7PHyneTeVD56WUajNxKgonzu49ZIT22myO701CWUVGDZ2L+/AYYVF
+         DBssGYjyQlNnwupJ47th5thQk7bn5jspCk/FE5CxXsWDnhw5jKYuiUMBBGI3EwICV3h4
+         9DJt0Bj0cReJYxKg//vOMzxZ2H5uXAI7hief8o2KF2AikxEkjcfHCACpBrC/rCf3HBjr
+         v0stADwGHl3x4SauuQMNhaqR62XogoqWyInNs571eD+fg4F1szHQqjGDAVbYyrBsP7hO
+         8zUaafQxE1IVkt9qC6qDWJ67xyPN1zo+JHwdSfSpa4y8DjhjRUj8aPqpTXxL4qdufUwf
+         zqsg==
+X-Gm-Message-State: AOAM533TM7hnpFvTew9Zqezv1LULBK456ROEx5rBj2LGOONK2mUqWDq1
+        fDZJvxyd4YA1Tld16w+3G9w=
+X-Google-Smtp-Source: ABdhPJyxFmzPQdIpHLDHNyRn+rWF8FayJG6KOvHNVBAgNs2PIula+AmyaWzcw2zv5Ouksj3jqtc24g==
+X-Received: by 2002:a05:6402:1283:: with SMTP id w3mr31971754edv.340.1615842943862;
+        Mon, 15 Mar 2021 14:15:43 -0700 (PDT)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id j14sm8800785eds.78.2021.03.15.14.15.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 14:15:08 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: dsa: mv88e6xxx: Offload bridge broadcast flooding flag
-Date:   Mon, 15 Mar 2021 22:14:00 +0100
-Message-Id: <20210315211400.2805330-6-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210315211400.2805330-1-tobias@waldekranz.com>
-References: <20210315211400.2805330-1-tobias@waldekranz.com>
+        Mon, 15 Mar 2021 14:15:43 -0700 (PDT)
+Date:   Mon, 15 Mar 2021 23:15:41 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: support MDB and bridge flag
+ operations
+Message-ID: <20210315211541.pj5mpy2foi3wlhbe@skbuf>
+References: <20210315170940.2414854-1-dqfext@gmail.com>
+ <892918f1-bee6-7603-b8e1-3efb93104f6f@gmail.com>
+ <20210315200939.irwyiru6m62g4a7f@skbuf>
+ <84bb93da-cc3b-d2a5-dda8-a8fb973c3bae@gmail.com>
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <84bb93da-cc3b-d2a5-dda8-a8fb973c3bae@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These switches have two modes of classifying broadcast:
+On Mon, Mar 15, 2021 at 01:44:02PM -0700, Florian Fainelli wrote:
+> On 3/15/2021 1:09 PM, Vladimir Oltean wrote:
+> > On Mon, Mar 15, 2021 at 01:03:10PM -0700, Florian Fainelli wrote:
+> >>
+> >>
+> >> On 3/15/2021 10:09 AM, DENG Qingfang wrote:
+> >>> Support port MDB and bridge flag operations.
+> >>>
+> >>> As the hardware can manage multicast forwarding itself, offload_fwd_mark
+> >>> can be unconditionally set to true.
+> >>>
+> >>> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> >>> ---
+> >>> Changes since RFC:
+> >>>   Replaced BR_AUTO_MASK with BR_FLOOD | BR_LEARNING
+> >>>
+> >>>  drivers/net/dsa/mt7530.c | 124 +++++++++++++++++++++++++++++++++++++--
+> >>>  drivers/net/dsa/mt7530.h |   1 +
+> >>>  net/dsa/tag_mtk.c        |  14 +----
+> >>>  3 files changed, 122 insertions(+), 17 deletions(-)
+> >>>
+> >>> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> >>> index 2342d4528b4c..f765984330c9 100644
+> >>> --- a/drivers/net/dsa/mt7530.c
+> >>> +++ b/drivers/net/dsa/mt7530.c
+> >>> @@ -1000,8 +1000,9 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+> >>>  	mt7530_write(priv, MT7530_PVC_P(port),
+> >>>  		     PORT_SPEC_TAG);
+> >>>  
+> >>> -	/* Unknown multicast frame forwarding to the cpu port */
+> >>> -	mt7530_rmw(priv, MT7530_MFC, UNM_FFP_MASK, UNM_FFP(BIT(port)));
+> >>> +	/* Disable flooding by default */
+> >>> +	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
+> >>> +		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
+> >>
+> >> It's not clear to me why this is appropriate especially when the ports
+> >> operated in standalone mode, can you expand a bit more on this?
+> > 
+> > We are in the function called "mt753x_cpu_port_enable" here. It's ok to
+> > apply this config for the CPU port.
+> 
+> Because the user ports will flood unknown traffic and we have mediatek
+> tags enabled presumably, so all traffic is copied to the CPU port, OK.
 
-1. Broadcast is multicast.
-2. Broadcast is its own unique thing that is always flooded
-   everywhere.
+Actually this is just how Qingfang explained it:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210224081018.24719-1-dqfext@gmail.com/
 
-This driver uses the first option, making sure to load the broadcast
-address into all active databases. Because of this, we can support
-per-port broadcast flooding by (1) making sure to only set the subset
-of ports that have it enabled whenever joining a new bridge or VLAN,
-and (2) by updating all active databases whenever the setting is
-changed on a port.
-
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 68 +++++++++++++++++++++++++++++++-
- 1 file changed, 67 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 48e65f22641e..e6987c501fb7 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1950,6 +1950,18 @@ static int mv88e6xxx_broadcast_setup(struct mv88e6xxx_chip *chip, u16 vid)
- 	int err;
- 
- 	for (port = 0; port < mv88e6xxx_num_ports(chip); port++) {
-+		struct dsa_port *dp = dsa_to_port(chip->ds, port);
-+
-+		if (dsa_is_unused_port(chip->ds, port))
-+			continue;
-+
-+		if (dsa_is_user_port(chip->ds, port) && dp->bridge_dev &&
-+		    !br_port_flag_is_set(dp->slave, BR_BCAST_FLOOD))
-+			/* Skip bridged user ports where broadcast
-+			 * flooding is disabled.
-+			 */
-+			continue;
-+
- 		err = mv88e6xxx_port_add_broadcast(chip, port, vid);
- 		if (err)
- 			return err;
-@@ -1958,6 +1970,51 @@ static int mv88e6xxx_broadcast_setup(struct mv88e6xxx_chip *chip, u16 vid)
- 	return 0;
- }
- 
-+struct mv88e6xxx_port_broadcast_sync_ctx {
-+	int port;
-+	bool flood;
-+};
-+
-+static int
-+mv88e6xxx_port_broadcast_sync_vlan(struct mv88e6xxx_chip *chip,
-+				   const struct mv88e6xxx_vtu_entry *vlan,
-+				   void *_ctx)
-+{
-+	const char broadcast[6] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-+	struct mv88e6xxx_port_broadcast_sync_ctx *ctx = _ctx;
-+	u8 state;
-+
-+	if (ctx->flood)
-+		state = MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC;
-+	else
-+		state = MV88E6XXX_G1_ATU_DATA_STATE_MC_UNUSED;
-+
-+	return mv88e6xxx_port_db_load_purge(chip, ctx->port, broadcast,
-+					    vlan->vid, state);
-+}
-+
-+static int mv88e6xxx_port_broadcast_sync(struct mv88e6xxx_chip *chip, int port,
-+					 bool flood)
-+{
-+	struct mv88e6xxx_port_broadcast_sync_ctx ctx = {
-+		.port = port,
-+		.flood = flood,
-+	};
-+	struct mv88e6xxx_vtu_entry vid0 = {
-+		.vid = 0,
-+	};
-+	int err;
-+
-+	/* Update the port's private database... */
-+	err = mv88e6xxx_port_broadcast_sync_vlan(chip, &vid0, &ctx);
-+	if (err)
-+		return err;
-+
-+	/* ...and the database for all VLANs. */
-+	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_port_broadcast_sync_vlan,
-+				  &ctx);
-+}
-+
- static int mv88e6xxx_port_vlan_join(struct mv88e6xxx_chip *chip, int port,
- 				    u16 vid, u8 member, bool warn)
- {
-@@ -5431,7 +5488,8 @@ static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	const struct mv88e6xxx_ops *ops;
- 
--	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD))
-+	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
-+			   BR_BCAST_FLOOD))
- 		return -EINVAL;
- 
- 	ops = chip->info->ops;
-@@ -5480,6 +5538,14 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- 			goto out;
- 	}
- 
-+	if (flags.mask & BR_BCAST_FLOOD) {
-+		bool broadcast = !!(flags.val & BR_BCAST_FLOOD);
-+
-+		err = mv88e6xxx_port_broadcast_sync(chip, port, broadcast);
-+		if (err)
-+			goto out;
-+	}
-+
- out:
- 	mv88e6xxx_reg_unlock(chip);
- 
--- 
-2.25.1
-
+I just assume that MT7530/7531 switches don't need to enable flooding on
+user ports when the only possible traffic source is the CPU port - the
+CPU port can inject traffic into any port regardless of egress flooding
+setting. If that's not true, I don't see how traffic in standalone ports
+mode would work after this patch.
