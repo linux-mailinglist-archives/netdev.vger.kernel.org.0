@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C576733C84D
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 22:15:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A3AC33C84F
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 22:15:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbhCOVPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231737AbhCOVPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 15 Mar 2021 17:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbhCOVPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 17:15:08 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0D9C06174A
+        with ESMTP id S230330AbhCOVPJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 17:15:09 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C228EC06174A
         for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 14:15:08 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id 15so17980452ljj.0
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 14:15:07 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id m22so59092489lfg.5
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 14:15:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=13sNGlYWXsP7JyqZBCNf8smPbsLjBihO3000tHNoA2A=;
-        b=XL2GsPiO0UQ9d0Y42n827D331XXs0LYgiEykwVs7wKB0vniHPDsm2G1F2V8OD2e+/g
-         Vg2mhHgu72b3dtig5WmQDLT932aiB6d5v7tPU8NW++DWUhS81PqLH92bahFsJ37eOF2J
-         jaG/d4SX+Y0I8BipT4/TCAx9m1y+iSSNmzIamVjoLJQa/lNAdGEtxKTRuFYXJ95+8+cs
-         fVgddgbcwPHpXXz9H/fAvrCjEKZRX6ojGhaghBhCo2HnPsw/RetFygZSWBWzQz/QlpKV
-         8XKx03AHvj2bTTC+tJcWlHB3Ta9mZVFWiBCDN/21RbSBllgm8Onx8QR4gRSCxUNa8DSU
-         0psA==
+        bh=4PXGw3uTopKOX12zGc4cs1F/+LDcHOWa0xhpMMXr6uQ=;
+        b=u6H5ii0vyRCiaCNFoVq82IGksW/t/np9azuAJuC+E+++290VpvyUj79sHZfOpgqTSp
+         xhhGy979YjicQMBzTMKN+vcLUIj75YZrgXk5OcanmXwaTQVHeynAhehMFTLWAmj+1US8
+         +8UwrG1RT7063cEnCKXS0pDTJQ4TJ4IuHPZ8Y6N+jbwODcKZs/RbNjmt2F04I6ey+owp
+         AzMMt3adxan0MdqalkdW1roBPtdv4PHrYkzk04m3kJj/zps6WtbHCtRlbBrRZVi4mR3n
+         EvFxt42s5P/6ElpEskpnCWKfAYEiefgC5H92f9mYzfWSAwzulBo1pC7m/bqcTH+FYtUs
+         Yifw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=13sNGlYWXsP7JyqZBCNf8smPbsLjBihO3000tHNoA2A=;
-        b=JUtwjaSSiCnlnGAqlU2JWfOTe3I6bXB7ZEurlkfE6J5opSIuGUJCAQg5+dnvV8rMuH
-         3diD/slmSAq6reFigCeCPfz0EnqIvtrEyI7G2PADxco4J4gBLF1A0ykwZYZsKZ+xFJyl
-         MwVriaUM9LswMvjKFSFoRIcNeZyzg1uG7UA9o1AT+rVMQ8X2vk6LXzbDSz0oir76C5GF
-         BhazNJTBNHrr5rClLCZ9G/Ko/OXEtz3P4h/KPelsVf+Y1M/kjRybZHK8CJjqldEDS+pe
-         +y9ZaunvneL4h3Rd2N5qXwiyMpC1xlcVVv1Lmrv7gkOd6CNyPcApPjpmCa6wCSclEEO6
-         Mu6g==
-X-Gm-Message-State: AOAM533JIS04p/DP6hI81wbCCOWJtC71bkapv+Az391hdcnTNxC1SDOF
-        C37FUcebawRODAxX+WkxDlSFuQ==
-X-Google-Smtp-Source: ABdhPJyRI8TZTYPOof7uKzOHd8u7t5WNQix9U4MxQH/LfzQVt3NM5FSOyVCWVBZC1F7LDsu1dE4hEA==
-X-Received: by 2002:a2e:b88e:: with SMTP id r14mr559770ljp.450.1615842906529;
-        Mon, 15 Mar 2021 14:15:06 -0700 (PDT)
+        bh=4PXGw3uTopKOX12zGc4cs1F/+LDcHOWa0xhpMMXr6uQ=;
+        b=Nnii4R6Zb2OmAm6cQ5KxATyY9L6NZKO0FYr6VOjcITc+sWdAe+iamCmPkNrdMpNzqc
+         WKXQsomDhM90gbb0xnvku5CAgPBlytWflS/aPfcfPkfMq2qIGSO41IgmPtgAGPAoBHdD
+         Y9ho0WIsvl0uLm1m/caoHK9cskrUxUPFIreYDv3IfEZ4Mn4doTl3GAd1rIeThzES13yu
+         gVMW0vY08UrWa2800ONnytpI5Lrg4VnHSlIadxHiYLOnZPl4fu4aJnbWW6TPIL0O7/eT
+         X8TlLs/WOM/vQsa1LvEFApn8RdJi/8l4NnIAf2xIIsA/yUO9WK4kg8IcIT5kylHt+rae
+         ZqUg==
+X-Gm-Message-State: AOAM532N5XlXRGx2Eit+kEB+QS1ED5WP5FOOorXCXdy0ON1XdWwogzR1
+        +R8g19Ow58+AxXsFhfUiS772eQ==
+X-Google-Smtp-Source: ABdhPJwffxfpOWRQ3ZFHvfqrri3g+MF/Dxz1i9hIT4auyAxvtXZz42BZl/ybN+FxlBHaDLeoq2Q9Yw==
+X-Received: by 2002:a19:ed8:: with SMTP id 207mr8661331lfo.164.1615842907269;
+        Mon, 15 Mar 2021 14:15:07 -0700 (PDT)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id v11sm2975003ljp.63.2021.03.15.14.15.05
+        by smtp.gmail.com with ESMTPSA id v11sm2975003ljp.63.2021.03.15.14.15.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 15 Mar 2021 14:15:06 -0700 (PDT)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         olteanv@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Provide generic VTU iterator
-Date:   Mon, 15 Mar 2021 22:13:56 +0100
-Message-Id: <20210315211400.2805330-2-tobias@waldekranz.com>
+Subject: [PATCH net-next 2/5] net: dsa: mv88e6xxx: Remove some bureaucracy around querying the VTU
+Date:   Mon, 15 Mar 2021 22:13:57 +0100
+Message-Id: <20210315211400.2805330-3-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210315211400.2805330-1-tobias@waldekranz.com>
 References: <20210315211400.2805330-1-tobias@waldekranz.com>
@@ -64,158 +64,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the intricacies of correctly iterating over the VTU to a common
-implementation.
+The hardware has a somewhat quirky protocol for reading out the VTU
+entry for a particular VID. But there is no reason why we cannot
+create a better API for ourselves in the driver.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 100 ++++++++++++++++++++-----------
- 1 file changed, 64 insertions(+), 36 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 45 ++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 903d619e08ed..c70d4b7db4f5 100644
+index c70d4b7db4f5..86027e98d83d 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1481,6 +1481,37 @@ static int mv88e6xxx_vtu_getnext(struct mv88e6xxx_chip *chip,
- 	return chip->info->ops->vtu_getnext(chip, entry);
+@@ -1472,13 +1472,23 @@ static int mv88e6xxx_vtu_setup(struct mv88e6xxx_chip *chip)
+ 	return mv88e6xxx_g1_vtu_flush(chip);
  }
  
-+static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+			      int (*cb)(struct mv88e6xxx_chip *chip,
-+					const struct mv88e6xxx_vtu_entry *entry,
-+					void *priv),
-+			      void *priv)
-+{
-+	struct mv88e6xxx_vtu_entry entry = {
-+		.vid = mv88e6xxx_max_vid(chip),
-+		.valid = false,
-+	};
+-static int mv88e6xxx_vtu_getnext(struct mv88e6xxx_chip *chip,
+-				 struct mv88e6xxx_vtu_entry *entry)
++static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
++			     struct mv88e6xxx_vtu_entry *entry)
+ {
 +	int err;
 +
-+	if (!chip->info->ops->vtu_getnext)
-+		return -EOPNOTSUPP;
+ 	if (!chip->info->ops->vtu_getnext)
+ 		return -EOPNOTSUPP;
+ 
+-	return chip->info->ops->vtu_getnext(chip, entry);
++	entry->vid = vid - 1;
++	entry->valid = false;
 +
-+	do {
-+		err = chip->info->ops->vtu_getnext(chip, &entry);
-+		if (err)
-+			return err;
++	err = chip->info->ops->vtu_getnext(chip, entry);
 +
-+		if (!entry.valid)
-+			break;
++	if (entry->vid != vid)
++		entry->valid = false;
 +
-+		err = cb(chip, &entry, priv);
-+		if (err)
-+			return err;
-+	} while (entry.vid < mv88e6xxx_max_vid(chip));
-+
-+	return 0;
-+}
-+
- static int mv88e6xxx_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 				   struct mv88e6xxx_vtu_entry *entry)
- {
-@@ -1490,9 +1521,18 @@ static int mv88e6xxx_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 	return chip->info->ops->vtu_loadpurge(chip, entry);
++	return err;
  }
  
-+static int mv88e6xxx_fid_map_vlan(struct mv88e6xxx_chip *chip,
-+				  const struct mv88e6xxx_vtu_entry *entry,
-+				  void *_fid_bitmap)
-+{
-+	unsigned long *fid_bitmap = _fid_bitmap;
-+
-+	set_bit(entry->fid, fid_bitmap);
-+	return 0;
-+}
-+
- int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *fid_bitmap)
- {
--	struct mv88e6xxx_vtu_entry vlan;
- 	int i, err;
- 	u16 fid;
+ static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
+@@ -1585,19 +1595,13 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+ 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+ 		return 0;
  
-@@ -1508,21 +1548,7 @@ int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *fid_bitmap)
- 	}
- 
- 	/* Set every FID bit used by the VLAN entries */
--	vlan.vid = mv88e6xxx_max_vid(chip);
+-	vlan.vid = vid - 1;
 -	vlan.valid = false;
 -
--	do {
--		err = mv88e6xxx_vtu_getnext(chip, &vlan);
--		if (err)
--			return err;
--
--		if (!vlan.valid)
--			break;
--
--		set_bit(vlan.fid, fid_bitmap);
--	} while (vlan.vid < mv88e6xxx_max_vid(chip));
--
--	return 0;
-+	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_fid_map_vlan, fid_bitmap);
- }
- 
- static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
-@@ -2168,10 +2194,30 @@ static int mv88e6xxx_port_db_dump_fid(struct mv88e6xxx_chip *chip,
- 	return err;
- }
- 
-+struct mv88e6xxx_port_db_dump_vlan_ctx {
-+	int port;
-+	dsa_fdb_dump_cb_t *cb;
-+	void *data;
-+};
-+
-+static int mv88e6xxx_port_db_dump_vlan(struct mv88e6xxx_chip *chip,
-+				       const struct mv88e6xxx_vtu_entry *entry,
-+				       void *_data)
-+{
-+	struct mv88e6xxx_port_db_dump_vlan_ctx *ctx = _data;
-+
-+	return mv88e6xxx_port_db_dump_fid(chip, entry->fid, entry->vid,
-+					  ctx->port, ctx->cb, ctx->data);
-+}
-+
- static int mv88e6xxx_port_db_dump(struct mv88e6xxx_chip *chip, int port,
- 				  dsa_fdb_dump_cb_t *cb, void *data)
- {
--	struct mv88e6xxx_vtu_entry vlan;
-+	struct mv88e6xxx_port_db_dump_vlan_ctx ctx = {
-+		.port = port,
-+		.cb = cb,
-+		.data = data,
-+	};
- 	u16 fid;
- 	int err;
- 
-@@ -2184,25 +2230,7 @@ static int mv88e6xxx_port_db_dump(struct mv88e6xxx_chip *chip, int port,
+-	err = mv88e6xxx_vtu_getnext(chip, &vlan);
++	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
  	if (err)
  		return err;
  
--	/* Dump VLANs' Filtering Information Databases */
--	vlan.vid = mv88e6xxx_max_vid(chip);
+ 	if (!vlan.valid)
+ 		return 0;
+ 
+-	if (vlan.vid != vid)
+-		return 0;
+-
+ 	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
+ 		if (dsa_is_dsa_port(ds, i) || dsa_is_cpu_port(ds, i))
+ 			continue;
+@@ -1679,15 +1683,12 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
+ 		if (err)
+ 			return err;
+ 	} else {
+-		vlan.vid = vid - 1;
+-		vlan.valid = false;
+-
+-		err = mv88e6xxx_vtu_getnext(chip, &vlan);
++		err = mv88e6xxx_vtu_get(chip, vid, &vlan);
+ 		if (err)
+ 			return err;
+ 
+ 		/* switchdev expects -EOPNOTSUPP to honor software VLANs */
+-		if (vlan.vid != vid || !vlan.valid)
++		if (!vlan.valid)
+ 			return -EOPNOTSUPP;
+ 
+ 		fid = vlan.fid;
+@@ -1964,14 +1965,11 @@ static int mv88e6xxx_port_vlan_join(struct mv88e6xxx_chip *chip, int port,
+ 	struct mv88e6xxx_vtu_entry vlan;
+ 	int i, err;
+ 
+-	vlan.vid = vid - 1;
 -	vlan.valid = false;
 -
--	do {
--		err = mv88e6xxx_vtu_getnext(chip, &vlan);
--		if (err)
--			return err;
--
--		if (!vlan.valid)
--			break;
--
--		err = mv88e6xxx_port_db_dump_fid(chip, vlan.fid, vlan.vid, port,
--						 cb, data);
--		if (err)
--			return err;
--	} while (vlan.vid < mv88e6xxx_max_vid(chip));
--
--	return err;
-+	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_port_db_dump_vlan, &ctx);
- }
+-	err = mv88e6xxx_vtu_getnext(chip, &vlan);
++	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
+ 	if (err)
+ 		return err;
  
- static int mv88e6xxx_port_fdb_dump(struct dsa_switch *ds, int port,
+-	if (vlan.vid != vid || !vlan.valid) {
++	if (!vlan.valid) {
+ 		memset(&vlan, 0, sizeof(vlan));
+ 
+ 		err = mv88e6xxx_atu_new(chip, &vlan.fid);
+@@ -2067,17 +2065,14 @@ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
+ 	if (!vid)
+ 		return -EOPNOTSUPP;
+ 
+-	vlan.vid = vid - 1;
+-	vlan.valid = false;
+-
+-	err = mv88e6xxx_vtu_getnext(chip, &vlan);
++	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
+ 	if (err)
+ 		return err;
+ 
+ 	/* If the VLAN doesn't exist in hardware or the port isn't a member,
+ 	 * tell switchdev that this VLAN is likely handled in software.
+ 	 */
+-	if (vlan.vid != vid || !vlan.valid ||
++	if (!vlan.valid ||
+ 	    vlan.member[port] == MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_NON_MEMBER)
+ 		return -EOPNOTSUPP;
+ 
 -- 
 2.25.1
 
