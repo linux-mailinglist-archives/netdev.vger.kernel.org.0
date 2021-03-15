@@ -2,71 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C835C33C7BC
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 21:30:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D499E33C7C5
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 21:34:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbhCOUaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 16:30:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48806 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229994AbhCOUaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 16:30:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9E5EB64F37;
-        Mon, 15 Mar 2021 20:30:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615840208;
-        bh=HtZL/GvAs+Cqa/HTWWD8yuAJ2pzl6fj5lKYgz1uOhEY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eQe0kPU2BjwU90Z97KBU5yI3cXg3aRmpN1Y9efHXRXDL9Rg1+qjHT1GgLDFKLnO0q
-         wRbz08cuC7xNBC40FOtn/vHE5MHn3pbPdskumf3ehTnYq9JaaSmBrZ5lrCCKPNnAcG
-         vdYyCQYL8at4SPd4gQJl52nV3U8+DXLKPWNsvtcZFPSg2dbbQ5zjHUMR9JFLHQWsc6
-         R2rhwAnuy2u6ieKVCbwf1y3GuuNGKrlcj7C5iuL+isPQ+ks7bikza8hPaKIF0MAhBX
-         5QlVhJLJZdEGkQTOPnJ518JzL8UHal3pNTrSQkhO9h6zoWCozuw7KmZsKWPmoG5hZ/
-         Od40Ovz8gHq9g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8ABFF60A1A;
-        Mon, 15 Mar 2021 20:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231309AbhCOUeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 16:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233316AbhCOUd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 16:33:59 -0400
+Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69303C06174A
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 13:33:59 -0700 (PDT)
+Received: from p548da928.dip0.t-ipconnect.de ([84.141.169.40] helo=kmk0); authenticated
+        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1lLtuU-0005dl-MJ; Mon, 15 Mar 2021 21:33:54 +0100
+From:   Kurt Kanzenbach <kurt@kmk-computers.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Offload bridge port flags
+In-Reply-To: <20210315200813.5ibjembguad2qnk7@skbuf>
+References: <20210314125208.17378-1-kurt@kmk-computers.de>
+ <20210315200813.5ibjembguad2qnk7@skbuf>
+Date:   Mon, 15 Mar 2021 21:33:44 +0100
+Message-ID: <87lfao88d3.fsf@kmk-computers.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tipc: better validate user input in
- tipc_nl_retrieve_key()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161584020856.11795.2171913758819530741.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Mar 2021 20:30:08 +0000
-References: <20210315100658.1587352-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210315100658.1587352-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, tuong.t.lien@dektech.com.au,
-        jmaloy@redhat.com, ying.xue@windriver.com,
-        syzkaller@googlegroups.com
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
+X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1615840439;2fcda578;
+X-HE-SMSGID: 1lLtuU-0005dl-MJ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--=-=-=
+Content-Type: text/plain
 
-This patch was applied to netdev/net.git (refs/heads/master):
+On Mon Mar 15 2021, Vladimir Oltean wrote:
+> On Sun, Mar 14, 2021 at 01:52:08PM +0100, Kurt Kanzenbach wrote:
+>> +	if (enable)
+>> +		val &= ~HR_PTCFG_UUC_FLT;
+>> +	else
+>> +		val |= HR_PTCFG_UUC_FLT;
+>
+> What does 'unknown unicast filtering' mean/do, exactly?
+> The semantics of BR_FLOOD are on egress: all unicast packets with an
+> unknown destination that are received on ports from this bridging domain
+> can be flooded towards port X if that port has flooding enabled.
+> When I hear "filtering", I imagine an ingress setting, am I wrong?
 
-On Mon, 15 Mar 2021 03:06:58 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Before calling tipc_aead_key_size(ptr), we need to ensure
-> we have enough data to dereference ptr->keylen.
-> 
-> We probably also want to make sure tipc_aead_key_size()
-> wont overflow with malicious ptr->keylen values.
-> 
-> [...]
+It means that frames without matching fdb entries towards this port are
+discarded. There's also ingress filtering which works based on VLANs and
+is used already.
 
-Here is the summary with links:
-  - [net] tipc: better validate user input in tipc_nl_retrieve_key()
-    https://git.kernel.org/netdev/net/c/0217ed2848e8
+Thanks,
+Kurt
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQJKBAEBCAA0FiEEiQLjxJIQcNxwU7Bj249qgr3OILkFAmBPxKgWHGt1cnRAa21r
+LWNvbXB1dGVycy5kZQAKCRDbj2qCvc4guVVpD/wPd0jFmp2+iq6gJQ3zA86IfIlT
+sm6tneyr4GxCZqFlIUrA6G0XIYhKye6/f0ZFrCdITo5o7Wfp/VnBr/0U9YvsOxCj
+7XAyCPjRR2/FLevjBpkJ5nWP8iqHi5pbR7nn8aTQRjuPKdxLaXLA6ttgI+2E3p1j
+dgiv6Z1j0OXPfpaVRS8fuT05BuswO1l9TpWolO347/KWb/CiFnHOmRuriOAkqj0f
+cAu6F5z+oicdqbLba+VeIRcH3xDhcfZslLEn+JS0ZhA87GwlSVCGJEv698ZXTqmU
+K/tOfz/a4AFORHhrTaOymVeEKBVpz51mCL7A3V+yol7wrIf1We3y3Db0eU/0uf/e
+z/cZ/F0wHC3nTrmZoIyXGaKxtbd0vGV/UaqxuCBiun8TL0PboEPlMSK788PRQC4F
+y4/scdtq2B6NxVY9POw32GC34mqgH2Zw85A8QXqOXrsQDBn5bDD/xarZ2Yv3AlxH
+Di/iqyKbOPpdHhan5ChBqQYfXBiGU+jNItagT+8ERnZkHpYVXlD0SR43F0f0ecjS
+1RohFt1oXzJOpBnj1PuJ+At/GYOzGn5gZXN2hIabZn0tCf/f7MKta/fCt1/hGAg9
+sJM1Yg1x6I5HfxCEaWP4PBsnhxvI6pvmOfIQdpV3Q/2YXYJxzlYzPv6vLfMtu/LX
+bcVwiflKmXLUlcjtiw==
+=dvcH
+-----END PGP SIGNATURE-----
+--=-=-=--
