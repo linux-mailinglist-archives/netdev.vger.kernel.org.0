@@ -2,183 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E82833C024
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:39:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5305933C036
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:44:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231428AbhCOPjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 11:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
+        id S229923AbhCOPoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 11:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbhCOPil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 11:38:41 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E14C06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:38:41 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id ox4so51374560ejb.11
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:38:41 -0700 (PDT)
+        with ESMTP id S229675AbhCOPnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 11:43:37 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C085C06174A
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:43:37 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id f73-20020a9d03cf0000b02901b4d889bce0so5348655otf.12
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:43:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pSnoj4e/ExDdUTJVarAFVjEzOpsYS4SYmIolgEK8kPA=;
-        b=btzVLGD0JsiuQOFZ1RApGKE+BiAn7GxufYnvaHzTVZ8bxMdYffd/TF17HWmYQFyP4a
-         9W3pX5AZiJ3JEHMK1t3TxPoQixS6VQN55vSA7GGelBUToazQk2LmJi1bsRBYGTzVCKBF
-         jfn2zhqe7z3L2MxtHGQoBCXNRB9X/aQc7FzJipDCnEG/K5nUhrQU9wH/P9Xov66tVvls
-         MzqPCq0QtezbTFPdVjg5Zn7qY2mKDFVHmJe4zb1wdfegCY3DMm0zIfngI+838MFdyarl
-         jA8AbyHN5zVbFevyFm1tj0BwSUkzFvtW95184PZwa7dJb8fq/5ZSun2pLRYXw3/iLANi
-         dZKw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fFrwu3LW8iT5IHYlwZ+5clLvwz97tGPL4BoaYeBPlH8=;
+        b=BHpTNvjgs+cB10lTaSp7UQMIQW3cMdQsKp0ZW83SfWaS13PSpLlOIsWy/mokQ8rX7S
+         ahlgRTpRLsiNQ4p6Pdv48vNmJSJojt1X/PuPtEJuK7zeYExlE0ppCBAz2//oFSn+vU1e
+         PYif0MAY7pJKM3YdRSbbZOSsXxlZJ1EbWagRuRt7cUAVYRrlhTJzd4T39a7mnBks5YZT
+         qd6v2/ODtPmV0j5LnvbW1CcCu4plyqa4/jst0My/eXsoGmuk7AhFK8nui+fzdXHb2uzA
+         wuexRSp6x5j27S0oaYvwXiMongxAuyBn1Ic90tRvmqLlwqNc6N5IuIDgW1myZhtclymt
+         RISA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pSnoj4e/ExDdUTJVarAFVjEzOpsYS4SYmIolgEK8kPA=;
-        b=rEYm+0wkNEw2Db2cajRknMKFgZOoY3Go+b5xdtY/3KywS737yqaq4AX17CuLKknawq
-         p4g1eco7uIvkpeZQE16Z/yfLHrhaSs7vVmcWHB8GsV80nkem8L2j8upPL0TxQp5SUvuy
-         5aWY9kOGsI5GHKZ2OSlO+VS7Q8qUEVexMTdbNqN+sIL9ioGFnkHzDjZSGUuc4PtAxs31
-         w55Ui9JLZW4GC7We/afXkX5jwBorwnYL0BJoyH/0hXPn7KISBV2/4g7wmbQOe6NJWcrH
-         IhTpB3Qc8o4S1e1o92feOa/njOUuCB148a+OhpDAQJYkr1q1MxvA9Lm+BBBYsdyVDfT/
-         gycQ==
-X-Gm-Message-State: AOAM530V7171485rJ3Vym9DYVS8xnnwqsXVJv5cE/1UjSxmGebldbnij
-        TsGdsMPMok39mOanhVtMpKfchnPnVQNBGQn8
-X-Google-Smtp-Source: ABdhPJzr+BbCGjtjL1DScostU4Y5Bs6ZGhPEUyzHVEGeWSZECleKWXrUaYo3owBfZU1XBeA8bgFTTQ==
-X-Received: by 2002:a17:906:aed6:: with SMTP id me22mr24496935ejb.146.1615822719474;
-        Mon, 15 Mar 2021 08:38:39 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id gj26sm7500174ejb.67.2021.03.15.08.38.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fFrwu3LW8iT5IHYlwZ+5clLvwz97tGPL4BoaYeBPlH8=;
+        b=If/Idt4kX5neA3e7wZNS0Jt7y9O/9FmG1YliSEwIi+g4tUAE3Myf4eKNiRxcShQ1i1
+         fwsfP9hUwTkaL2Sj67SDHD1yDEP4XMYURytjuowd7NNOO7IzZfAnuwlIUjDFc1E8bVky
+         +aEtJQJhaHeYnlmVcXJkhC6FnebhGd5ZhpyrL/Fi21w4qvu7zNCduj8VGcJOmM14pSMf
+         mSzn/ywJrZou0DT89kV+VC67S4bdS5cL+JYk9AOWE5t0FDv5TY2N9h8H1dEuDZG8ELeC
+         jMnxNSgZWU64OZNaHXmnPfRstQVSu0d62bWgKuYBOgH7f9EBhnTyWoQDZB4HnKEDkPH6
+         lTYA==
+X-Gm-Message-State: AOAM530g696UZ66uGyZ/XxYq5+8dn7qDRxuyuVberfxsvvdEGu6dadqe
+        da1etDFsp7ssndeHskDZmaFWJw==
+X-Google-Smtp-Source: ABdhPJxBfNB8sW552D7m+pM0SNiwUxOnXIFkKQLLHfizvxSU0bVI/j7hkprOySfduANdWGfb7VS0vA==
+X-Received: by 2002:a9d:65cf:: with SMTP id z15mr14079676oth.310.1615823016476;
+        Mon, 15 Mar 2021 08:43:36 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id t19sm7357964otm.40.2021.03.15.08.43.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 08:38:39 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        kuba@kernel.org, davem@davemloft.net,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next] net: bridge: mcast: remove unreachable EHT code
-Date:   Mon, 15 Mar 2021 17:38:35 +0200
-Message-Id: <20210315153835.190174-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.29.2
+        Mon, 15 Mar 2021 08:43:36 -0700 (PDT)
+Date:   Mon, 15 Mar 2021 10:43:34 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alex Elder <elder@linaro.org>
+Subject: Re: [PATCH] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
+Message-ID: <YE+ApoVXRdIYQEdE@builder.lan>
+References: <20210313000241.602790-1-bjorn.andersson@linaro.org>
+ <CAGRyCJHqkBKZDSK+P=UP2B=DFj5n7LTd+ZwBd7a9LDytNeYJWw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGRyCJHqkBKZDSK+P=UP2B=DFj5n7LTd+ZwBd7a9LDytNeYJWw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On Mon 15 Mar 09:23 CDT 2021, Daniele Palmas wrote:
 
-In the initial EHT versions there were common functions which handled
-allow/block messages for both INCLUDE and EXCLUDE modes, but later they
-were separated. It seems I've left some common code which cannot be
-reached because the filter mode is checked before calling the respective
-functions, i.e. the host filter is always in EXCLUDE mode when using
-__eht_allow_excl() and __eht_block_excl() thus we can drop the host_excl
-checks inside and simplify the code a bit.
+> Hi Bjorn,
+> 
+> Il giorno sab 13 mar 2021 alle ore 01:02 Bjorn Andersson
+> <bjorn.andersson@linaro.org> ha scritto:
+> >
+> > Parse and pass IFLA_RMNET_FLAGS to the kernel, to allow changing the
+> > flags from the default of ingress-aggregate only.
+> >
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  ip/iplink_rmnet.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 42 insertions(+)
+> >
+> > diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
+> > index 1d16440c6900..8a488f3d0316 100644
+> > --- a/ip/iplink_rmnet.c
+> > +++ b/ip/iplink_rmnet.c
+> > @@ -16,6 +16,10 @@ static void print_explain(FILE *f)
+> >  {
+> >         fprintf(f,
+> >                 "Usage: ... rmnet mux_id MUXID\n"
+> > +               "                 [ingress-deaggregation]\n"
+> > +               "                 [ingress-commands]\n"
+> > +               "                 [ingress-chksumv4]\n"
+> > +               "                 [egress-chksumv4]\n"
+> >                 "\n"
+> >                 "MUXID := 1-254\n"
+> >         );
+> > @@ -29,6 +33,7 @@ static void explain(void)
+> >  static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+> >                            struct nlmsghdr *n)
+> >  {
+> > +       struct ifla_rmnet_flags flags = { };
+> >         __u16 mux_id;
+> >
+> >         while (argc > 0) {
+> > @@ -37,6 +42,18 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+> >                         if (get_u16(&mux_id, *argv, 0))
+> >                                 invarg("mux_id is invalid", *argv);
+> >                         addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
+> > +               } else if (matches(*argv, "ingress-deaggregation") == 0) {
+> > +                       flags.mask = ~0;
+> > +                       flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
+> > +               } else if (matches(*argv, "ingress-commands") == 0) {
+> > +                       flags.mask = ~0;
+> > +                       flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
+> > +               } else if (matches(*argv, "ingress-chksumv4") == 0) {
+> > +                       flags.mask = ~0;
+> > +                       flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
+> > +               } else if (matches(*argv, "egress-chksumv4") == 0) {
+> > +                       flags.mask = ~0;
+> > +                       flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
+> >                 } else if (matches(*argv, "help") == 0) {
+> >                         explain();
+> >                         return -1;
+> > @@ -48,11 +65,28 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+> >                 argc--, argv++;
+> >         }
+> >
+> > +       if (flags.mask)
+> > +               addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
+> > +
+> >         return 0;
+> >  }
+> >
+> > +static void rmnet_print_flags(FILE *fp, __u32 flags)
+> > +{
+> > +       if (flags & RMNET_FLAGS_INGRESS_DEAGGREGATION)
+> > +               print_string(PRINT_ANY, NULL, "%s ", "ingress-deaggregation");
+> > +       if (flags & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
+> > +               print_string(PRINT_ANY, NULL, "%s ", "ingress-commands");
+> > +       if (flags & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
+> > +               print_string(PRINT_ANY, NULL, "%s ", "ingress-chksumv4");
+> > +       if (flags & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
+> > +               print_string(PRINT_ANY, NULL, "%s ", "egress-cksumv4");
+> > +}
+> > +
+> >  static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+> >  {
+> > +       struct ifla_vlan_flags *flags;
+> 
+> just for my understanding, why not struct ifla_rmnet_flags (though
+> they are exactly the same)?
+> 
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- net/bridge/br_multicast_eht.c | 54 ++++++++++-------------------------
- 1 file changed, 15 insertions(+), 39 deletions(-)
+That's a copy-paste or code complete mistake, thanks for spotting it.
 
-diff --git a/net/bridge/br_multicast_eht.c b/net/bridge/br_multicast_eht.c
-index fea38b9a7268..7a72567377ba 100644
---- a/net/bridge/br_multicast_eht.c
-+++ b/net/bridge/br_multicast_eht.c
-@@ -522,31 +522,24 @@ static bool __eht_allow_excl(struct net_bridge_port_group *pg,
- 			     u32 nsrcs,
- 			     size_t addr_size)
- {
--	bool changed = false, host_excl = false;
- 	union net_bridge_eht_addr eht_src_addr;
- 	struct net_bridge_group_src *src_ent;
-+	bool changed = false;
- 	struct br_ip src_ip;
- 	u32 src_idx;
- 
--	host_excl = !!(br_multicast_eht_host_filter_mode(pg, h_addr) == MCAST_EXCLUDE);
- 	memset(&eht_src_addr, 0, sizeof(eht_src_addr));
- 	for (src_idx = 0; src_idx < nsrcs; src_idx++) {
- 		memcpy(&eht_src_addr, srcs + (src_idx * addr_size), addr_size);
--		if (!host_excl) {
--			br_multicast_create_eht_set_entry(pg, &eht_src_addr, h_addr,
--							  MCAST_INCLUDE,
--							  false);
--		} else {
--			if (!br_multicast_del_eht_set_entry(pg, &eht_src_addr,
--							    h_addr))
--				continue;
--			memcpy(&src_ip, srcs + (src_idx * addr_size), addr_size);
--			src_ent = br_multicast_find_group_src(pg, &src_ip);
--			if (!src_ent)
--				continue;
--			br_multicast_del_group_src(src_ent, true);
--			changed = true;
--		}
-+		if (!br_multicast_del_eht_set_entry(pg, &eht_src_addr,
-+						    h_addr))
-+			continue;
-+		memcpy(&src_ip, srcs + (src_idx * addr_size), addr_size);
-+		src_ent = br_multicast_find_group_src(pg, &src_ip);
-+		if (!src_ent)
-+			continue;
-+		br_multicast_del_group_src(src_ent, true);
-+		changed = true;
- 	}
- 
- 	return changed;
-@@ -602,42 +595,25 @@ static bool __eht_block_incl(struct net_bridge_port_group *pg,
- 	return changed;
- }
- 
--static bool __eht_block_excl(struct net_bridge_port_group *pg,
-+static void __eht_block_excl(struct net_bridge_port_group *pg,
- 			     union net_bridge_eht_addr *h_addr,
- 			     void *srcs,
- 			     u32 nsrcs,
- 			     size_t addr_size)
- {
--	bool changed = false, host_excl = false;
- 	union net_bridge_eht_addr eht_src_addr;
--	struct net_bridge_group_src *src_ent;
- 	struct br_ip src_ip;
- 	u32 src_idx;
- 
--	host_excl = !!(br_multicast_eht_host_filter_mode(pg, h_addr) == MCAST_EXCLUDE);
- 	memset(&eht_src_addr, 0, sizeof(eht_src_addr));
- 	memset(&src_ip, 0, sizeof(src_ip));
- 	src_ip.proto = pg->key.addr.proto;
- 	for (src_idx = 0; src_idx < nsrcs; src_idx++) {
- 		memcpy(&eht_src_addr, srcs + (src_idx * addr_size), addr_size);
--		if (host_excl) {
--			br_multicast_create_eht_set_entry(pg, &eht_src_addr, h_addr,
--							  MCAST_EXCLUDE,
--							  false);
--		} else {
--			if (!br_multicast_del_eht_set_entry(pg, &eht_src_addr,
--							    h_addr))
--				continue;
--			memcpy(&src_ip, srcs + (src_idx * addr_size), addr_size);
--			src_ent = br_multicast_find_group_src(pg, &src_ip);
--			if (!src_ent)
--				continue;
--			br_multicast_del_group_src(src_ent, true);
--			changed = true;
--		}
-+		br_multicast_create_eht_set_entry(pg, &eht_src_addr, h_addr,
-+						  MCAST_EXCLUDE,
-+						  false);
- 	}
--
--	return changed;
- }
- 
- static bool br_multicast_eht_block(struct net_bridge_port_group *pg,
-@@ -653,7 +629,7 @@ static bool br_multicast_eht_block(struct net_bridge_port_group *pg,
- 		changed = __eht_block_incl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	case MCAST_EXCLUDE:
--		changed = __eht_block_excl(pg, h_addr, srcs, nsrcs, addr_size);
-+		__eht_block_excl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	}
- 
--- 
-2.29.2
+Regards,
+Bjorn
 
+> Thanks,
+> Daniele
+> 
+> > +
+> >         if (!tb)
+> >                 return;
+> >
+> > @@ -64,6 +98,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+> >                    "mux_id",
+> >                    "mux_id %u ",
+> >                    rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
+> > +
+> > +       if (tb[IFLA_RMNET_FLAGS]) {
+> > +               if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
+> > +                       return;
+> > +               flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
+> > +
+> > +               rmnet_print_flags(f, flags->flags);
+> > +       }
+> >  }
+> >
+> >  static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
+> > --
+> > 2.28.0
+> >
