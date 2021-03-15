@@ -2,186 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A4A33AEA0
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:25:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F83833AED6
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbhCOJYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 05:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        id S229524AbhCOJaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 05:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhCOJYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 05:24:22 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B63C061574
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 02:24:21 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id p7so53592503eju.6
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 02:24:21 -0700 (PDT)
+        with ESMTP id S229649AbhCOJ3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 05:29:46 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9C1C061574
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 02:29:46 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id r17so64917835ejy.13
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 02:29:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UDrvpL3Clc7HH5Rd2kY9nbHs/9D7B75ztyk400CQFNU=;
-        b=t+t6m1MVq0U2ew9743tWpLI1BSdUDJNGfntFQrczl6hBy4Mwdv6esYa+N377FUHmOj
-         DDxgA/whe2RjlDHYyN/TuuIObrZNoR9MeTWMhdcgmXvLnQvXsMXxEID09v9/aNGjeU5e
-         W79ZoFKJtKCN30F4LSmUCIr0f/eWQIBG51Bw53ViuD678X4qbBxS+/KokqodgBiKSslr
-         vBk4BUxMOIDom8P/1QY5yqP1LLoeOSb5hla1ntWHANEEFJ2bToVcFCTxCFN8BpIXvvNR
-         W7u8Ogd9+iPk5jqn4omAtypPlzipscecGANAbOGpFsFt4gH+MSXxmrlC2v9CbaMTjY80
-         vj/A==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=j/7YzyvMU5JMJ2oNmYhIZNpG2NItj0fRAHUR4AE0BVg=;
+        b=CYoFb+FkE4cVoCwo23f8v+KpnuFgaFwf86M7SPHUX/fvyF8dQ231L3g3mF3oRc1mxQ
+         VqU9TB9JYFyj8vUY2qgZlG7S80j7fsfOvSycAme0+sSwm6XZG16JFE+G/hrYwJps64rY
+         xD/e34Lm254bK+UD64rfN764I93ZuT4YIlnRIOFv7mOKBbA+OH2pOAERsi7wE4WcFrxY
+         MqtyRtqCdc2vj9YiTXTzlqOSayJrCvtuNN58JTHctiU7itjDnJzxnxfI5cy0OSW75BrT
+         COhGzPudK+YQz47cCkTZBLGBageovcfSCupRR3GJgnqPblwPfYxZfFI7nKYF2ia7bmZt
+         stKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UDrvpL3Clc7HH5Rd2kY9nbHs/9D7B75ztyk400CQFNU=;
-        b=ORibsDhhDoUA8qk7rEXUR90dnO0gesEcFs680J2CgMHkhHNKOfn/qPTvrGwyqKQKw4
-         dsDAe35r60bM/aYojTvcRuHOUK/SZfQ5OHxOa91Mgv4fQHxyL5jnM3LUYbLMHR2YS8Yu
-         Hc96l3KKMnHU4Cjzv//n/8Y9nQtR5fn9j+ZuaVU9fToqq6u26n8V+HePIoq3e3QGFUaP
-         /oYK7VUWgWDJrH/MqyBwkatXazYOtxeRDdgmkQ/OoZmX54KkDaKClZovsLZNhvqlmuQf
-         0Vumw6SbCdRr2A81HHpHRGeJCLCRJsbD9eK8z+O+3+jt0024FORNZGBQlg+6YGmxkpjO
-         cIvw==
-X-Gm-Message-State: AOAM530SzZ3NcukWwGu9crJobOwGR89HI1HN9ieJLK4LTxjGA/cL2N5s
-        U+CaObkFJ2GE5tIOlV5M5pHFaSwT+EPu+HpS
-X-Google-Smtp-Source: ABdhPJx/6Q0IBjRNygpcd54E5muTxxpkMWkch05Ktvl/mCb29O8q4VJ+3Xn+29RXsTNKskXgE9NJmQ==
-X-Received: by 2002:a17:906:d9d1:: with SMTP id qk17mr22283463ejb.52.1615800260406;
-        Mon, 15 Mar 2021 02:24:20 -0700 (PDT)
-Received: from [192.168.1.8] ([194.35.119.239])
-        by smtp.gmail.com with ESMTPSA id mc2sm6754929ejb.115.2021.03.15.02.24.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Mar 2021 02:24:19 -0700 (PDT)
-Subject: Re: [PATCH v2 bpf-next 08/11] bpftool: add `gen object` command to
- perform BPF static linking
-To:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     kernel-team@fb.com
-References: <20210313193537.1548766-1-andrii@kernel.org>
- <20210313193537.1548766-9-andrii@kernel.org>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <af200ca7-5946-9df6-71ec-98042aecfa27@isovalent.com>
-Date:   Mon, 15 Mar 2021 09:24:19 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=j/7YzyvMU5JMJ2oNmYhIZNpG2NItj0fRAHUR4AE0BVg=;
+        b=eYqjyUwWx+u50QkuAAiwcJ61Bj21HDRwS9qgSz+Kdc1cIxxgOw+oEydDcEVXuiiDyP
+         4vka5at0XCEiOPXWrMZlrcfBZHyqHxujMNelnOKtmAV9fcD4dK4l6H9QQ0S0rjGMWVro
+         sZjyN90iOoNhyo2lfHE47ZyJJUgTFxFaHpyW+P4bqo5D2KRqUfM4MWt2ymxYY92dp9ja
+         /47PXBh5Z2ArgD+V/14uryfukwBb3diLTzA4IX1BX0RpPcoQDd9TQlGMkJfuf+ZotCDk
+         Mv9k8eBWfF7ZswgbtHvO7anA6fbjiCZKsY2vmbALGf3PB50c32Dx10X1IiYMGkwErFwm
+         pX4w==
+X-Gm-Message-State: AOAM532brnn9rYsNI3IP+PRC2/f7bvtqXSoGr3R4cHcwAQ6vVQSxSO0E
+        1Lvlrprc0gQ2mQTYknVSGOk=
+X-Google-Smtp-Source: ABdhPJyN9yVIgo0rU6d9QGYQTORJKPoRgX6lv2f0kcEgohjsImqlL6QPSKO0zQy+vXEP++Fo0JHXzQ==
+X-Received: by 2002:a17:906:8147:: with SMTP id z7mr21566945ejw.436.1615800585188;
+        Mon, 15 Mar 2021 02:29:45 -0700 (PDT)
+Received: from skbuf ([188.25.219.167])
+        by smtp.gmail.com with ESMTPSA id q12sm6959008ejy.91.2021.03.15.02.29.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 02:29:44 -0700 (PDT)
+Date:   Mon, 15 Mar 2021 11:29:43 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [RFC net] net: dsa: Centralize validation of VLAN configuration
+Message-ID: <20210315092943.ejqwqcbqwcverkim@skbuf>
+References: <20210309184244.1970173-1-tobias@waldekranz.com>
+ <699042d3-e124-7584-6486-02a6fb45423e@gmail.com>
+ <87h7lkow44.fsf@waldekranz.com>
+ <20210309220119.t24sdc7cqqfxhpfb@skbuf>
+ <87czw1pg60.fsf@waldekranz.com>
 MIME-Version: 1.0
-In-Reply-To: <20210313193537.1548766-9-andrii@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87czw1pg60.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-03-13 11:35 UTC-0800 ~ Andrii Nakryiko <andrii@kernel.org>
-> Add `bpftool gen object <output-file> <input_file>...` command to statically
-> link multiple BPF ELF object files into a single output BPF ELF object file.
+On Sun, Mar 14, 2021 at 10:40:55PM +0100, Tobias Waldekranz wrote:
+> On Wed, Mar 10, 2021 at 00:01, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > +test_vlan_upper_join_vlan_aware_bridge_which_contains_another_physical_port()
+> > +{
+> > +	ip link add br0 type bridge vlan_filtering 1
+> > +	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
+> > +	ip link set ${eth1} master br0
+> > +	ip link set ${eth0}.100 master br0
+> > +	check_fail $? "Expected to fail but didn't"
 > 
-> Similarly to existing '*.o' convention, bpftool is establishing a '*.bpfo'
-> convention for statically-linked BPF object files. Both .o and .bpfo suffixes
-> will be stripped out during BPF skeleton generation to infer BPF object name.
+> Should it though?
 > 
-> This patch also updates bash completions and man page. Man page gets a short
-> section on `gen object` command, but also updates the skeleton example to show
-> off workflow for BPF application with two .bpf.c files, compiled individually
-> with Clang, then resulting object files are linked together with `gen object`,
-> and then final object file is used to generate usable BPF skeleton. This
-> should help new users understand realistic workflow w.r.t. compiling
-> mutli-file BPF application.
+>    br0
+>    / \
+> .100  \
+>   |    \
+> eth0   eth1
 > 
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> ---
->  .../bpf/bpftool/Documentation/bpftool-gen.rst | 65 +++++++++++++++----
->  tools/bpf/bpftool/bash-completion/bpftool     |  2 +-
->  tools/bpf/bpftool/gen.c                       | 49 +++++++++++++-
->  3 files changed, 99 insertions(+), 17 deletions(-)
+> eth0 is in standalone mode here. So if the kernel allows it, who are we
+> to argue?
+
+Without my "call_switchdev_notifiers(SWITCHDEV_BRPORT_OFFLOADED)" patch,
+We have the same old problem with bridging with non-offloaded uppers and
+the bridge not knowing they aren't offloaded, don't we? The bridge port
+will have a wrong offloading mark.
+
+I think in principle the configuration could be supported with software
+bridging, and then the dsa_prevent_bridging_8021q_upper restriction can
+be lifted, but I imagine we need to add logic for a DSA port offloading
+and unoffloading an existing bridge port depending on its upper configuration.
+
+For example, would we support this configuration?
+
+       br0
+       /  \
+      /    \      br1
+     /  eth1.100 /  \
+    /       |   /    \
+   /        |  /      \
+  eth0     eth1      eth2
+
+eth1 would not be "standalone" except from the perspective of br0, but
+due to offloading br1, we would need to turn on address learning and
+such. So we should probably either enforce that eth1 is standalone when
+at least one non-LAG upper is bridged, or deny bridging the non-LAG
+uppers. Without a known use case for such configurations, I would rather
+deny them for the time being.
+
+> > +	ip link del br0
+> > +
+> > +	log_test "VLAN upper joins VLAN-aware bridge which contains another physical port"
+> > +}
+> > +
+> > +test_vlan_upper_join_vlan_aware_bridge_which_contains_another_physical_port_initially_unaware()
+> > +{
+> > +	ip link add br0 type bridge vlan_filtering 0
+> > +	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
+> > +	ip link set ${eth1} master br0
+> > +	ip link set ${eth0}.100 master br0
+> > +	ip link set br0 type bridge vlan_filtering 1
+> > +	check_fail $? "Expected to fail but didn't"
 > 
-> diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-> index 84cf0639696f..4cdce187c393 100644
-> --- a/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-> +++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-> @@ -14,16 +14,37 @@ SYNOPSIS
->  
->  	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] }
->  
-> -	*COMMAND* := { **skeleton** | **help** }
-> +	*COMMAND* := { **object** | **skeleton** | **help** }
->  
->  GEN COMMANDS
->  =============
->  
-> +|	**bpftool** **gen object** *OUTPUT_FILE* *INPUT_FILE* [*INPUT_FILE*...]
->  |	**bpftool** **gen skeleton** *FILE*
->  |	**bpftool** **gen help**
->  
->  DESCRIPTION
->  ===========
-> +	**bpftool gen object** *OUTPUT_FILE* *INPUT_FILE* [*INPUT_FILE*...]
-> +		  Statically link (combine) together one or more *INPUT_FILE*'s
-> +		  into a single resulting *OUTPUT_FILE*. All the files involed
+> Same thing here.
+> 
+> > +	ip link del ${eth0}.100 > /dev/null 2>&1 || :
+> > +	ip link del br0
+> > +
+> > +	log_test "VLAN upper joins VLAN-aware bridge which contains another physical port, but bridge is initially unaware"
+> > +}
+> > +
+> > +test_bridge_join_when_vlan_upper_of_another_port_is_already_in_bridge()
+> > +{
+> > +	ip link add br0 type bridge vlan_filtering 1
+> > +	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
+> > +	ip link set ${eth0}.100 master br0
+> > +	ip link set ${eth1} master br0
+> > +	check_fail $? "Expected to fail but didn't"
+> 
+> And here.
+> 
+> > +	ip link del ${eth0}.100 > /dev/null 2>&1 || :
+> > +	ip link del br0
+> > +
+> > +	log_test "Bridge join when VLAN upper of another port is already in VLAN-aware bridge"
+> > +}
+> > +
+> > +test_bridge_join_when_vlan_upper_of_another_port_is_already_in_bridge_initially_unaware()
+> > +{
+> > +	ip link add br0 type bridge vlan_filtering 0
+> > +	ip link add link ${eth0} name ${eth0}.100 type vlan id 100
+> > +	ip link set ${eth0}.100 master br0
+> > +	ip link set ${eth0} master br0
+> 
+> I think you meant for this to be eth1, correct?
 
-Typo: "involed"
-
-> +		  are BPF ELF object files.
-> +
-> +		  The rules of BPF static linking are mostly the same as for
-> +		  user-space object files, but in addition to combining data
-> +		  and instruction sections, .BTF and .BTF.ext (if present in
-> +		  any of the input files) data are combined together. .BTF
-> +		  data is deduplicated, so all the common types across
-> +		  *INPUT_FILE*'s will only be represented once in the resulting
-> +		  BTF information.
-> +
-> +		  BPF static linking allows to partition BPF source code into
-> +		  individually compiled files that are then linked into
-> +		  a single resulting BPF object file, which can be used to
-> +		  generated BPF skeleton (with **gen skeleton** command) or
-> +		  passed directly into **libbpf** (using **bpf_object__open()**
-> +		  family of APIs).
-> +
->  	**bpftool gen skeleton** *FILE*
->  		  Generate BPF skeleton C header file for a given *FILE*.
->  
-
-> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-> index fdffbc64c65c..7ca23c58f2c0 100644
-> --- a/tools/bpf/bpftool/bash-completion/bpftool
-> +++ b/tools/bpf/bpftool/bash-completion/bpftool
-> @@ -981,7 +981,7 @@ _bpftool()
->              ;;
->          gen)
->              case $command in
-> -                skeleton)
-> +                object|skeleton)
->                      _filedir
->                      ;;
->                  *)
-
-Suggesting the "object" keyword for completing "bpftool gen [tab]"
-is missing. It is just a few lines below:
-
-------
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index fdffbc64c65c..223438e86932 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -981,12 +981,12 @@ _bpftool()
-             ;;
-         gen)
-             case $command in
--                skeleton)
-+                object|skeleton)
-                     _filedir
-                     ;;
-                 *)
-                     [[ $prev == $object ]] && \
--                        COMPREPLY=( $( compgen -W 'skeleton help' -- "$cur" ) )
-+                        COMPREPLY=( $( compgen -W 'object skeleton help' -- "$cur" ) )
-                     ;;
-             esac
-             ;;
-------
-
-Looks good otherwise. Thanks for the documentation, it's great to
-have the example in the man page.
-
-Pending the two nits above are fixed:
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
-
-Quentin
+Yes, this is a copy-paste mistake.
