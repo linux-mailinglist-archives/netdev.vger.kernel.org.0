@@ -2,74 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D9733BF6E
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:11:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D9233BF7A
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:13:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbhCOPJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 11:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59602 "EHLO
+        id S231334AbhCOPLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 11:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbhCOPJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 11:09:16 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42881C06175F
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:09:16 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id y131so31930052oia.8
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 08:09:16 -0700 (PDT)
+        with ESMTP id S232168AbhCOPLo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 11:11:44 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9B2C06174A;
+        Mon, 15 Mar 2021 08:11:43 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id o14so5075333wrm.11;
+        Mon, 15 Mar 2021 08:11:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TdKUa2IM2JV81AEwjf3Spx674zXNg/YcJmhmWXyp2go=;
-        b=DDsd6WwFFP5zqPXINVqxNrgn9TE3R1P34XPiA/PTZmsE2X3NLWncS/c3UA6mozlubH
-         F5WMqKTmUWrCA6b/kRGpH5DTqK2128/ZmuRYQrhqR39ZTWPF+zeug7np89pZTpxKQEYe
-         CsZgY6TSa+BaJDYRtlJZdAFMPaY3Z5fsU4lL03Z/VrYU0Rngd/yT78KhVo/jP12x84mw
-         bhpQKCYI/RRtrR5dxUJszASOPLrMTi8Oa5KY5w1PQ0eQKM19MRkCbBmgtitAEIIC4pWi
-         Bqfg7JtlgyuUp0m10yfcqKoc6xo/fzR7jdmrxfyYWIniERaUOCARiQR7dhzKHuaOP2Xp
-         BNCQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O1N2OqCNFgom+EiBnr7giOeLHhpu49U0nM2JO0bzK6Y=;
+        b=PNVpVLv8w7xRnHc8vR8nTBZmEQD7w62/nBIY2M2TXfaQaHtfBUeqLIGCCGQhHxE3R7
+         dHSpV7Uo+5dZNatmaTmOCAhP2EPWEaYpokGQY5vDGZ5XDNl1GlRiLag0idOrMhZpNuRt
+         K2/yJ+4LluSiR/LBhee3auqHdiZO6oV+0rZkjCpcVVP4Czp/q0UC9c1Bu6C0mRpcHDrs
+         9QpfHe/XfHFqSBOZDxKqnDf2wSJqgIM0N6nEwfpyYc84CA7b2mpCCU+azoLZHe4l9JA/
+         UU7u0EggUg36o3NuB2U1cTqe4Mu4klKrCEW5CbupXUNKJoHseLJn9swx/AaSs9fl00HE
+         ujXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=TdKUa2IM2JV81AEwjf3Spx674zXNg/YcJmhmWXyp2go=;
-        b=Mo+Qp83pmQEbXxxUAA9VkZGX+qVvPNqkyQQdRJc4JqsCIK7Zu3kziF2hPJiwI2Qztw
-         fhwquDa1GzHg1FhBVo7ntKl5fW4sZODZuEp6uTHXT0pRePt0AG6Iou4VCfBAKa9xk/Gs
-         /sh+nQvAjuN+FZ+9cyIst9fKgR5HY5TVuIHThHAxO+T+B9PBsTr0Srmt9m/+UHSWDvAw
-         8AAbU0huswvaOIdBLVDn0ao99hQPYdNBQaLpY+FdDPFk+Unz/yuhQtmcHzCg9B2rbq6J
-         kE+z2InXUH+HAzdMEKTtcSyy4MCx5AZ6CUUoj28c8GsG+wtS1KPGJhD7J67MyHEetHhT
-         D4cg==
-X-Gm-Message-State: AOAM5336WsyNAKdqNnOHbL0seIYFhyh5MPEoktSfpFME2lbeFn6qObeY
-        VVj2hycT9vtee++oK5bOy7k=
-X-Google-Smtp-Source: ABdhPJw/07/8usBW1O0LKtOhtLu6fGCzaR7emLDW1FYWz/fnpGgD7UwyAz7iIl6ajHXTOKamvZYi2g==
-X-Received: by 2002:a05:6808:ab0:: with SMTP id r16mr6208867oij.34.1615820955744;
-        Mon, 15 Mar 2021 08:09:15 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.56])
-        by smtp.googlemail.com with ESMTPSA id u23sm6053299oof.17.2021.03.15.08.09.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Mar 2021 08:09:15 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2] dcb: Fix compilation warning about
- reallocarray
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20210222121030.2109-1-roid@nvidia.com>
- <875z2kl1yt.fsf@nvidia.com> <87v99sh8az.fsf@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c919ad36-e852-96c9-5ba2-f1601e18fbdd@gmail.com>
-Date:   Mon, 15 Mar 2021 09:09:13 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.1
+        bh=O1N2OqCNFgom+EiBnr7giOeLHhpu49U0nM2JO0bzK6Y=;
+        b=lSQJ195mWziMvDJJrGaSqWNEGwv+W7JxAzG770dCTDO2TJEGm7H2G40RLnHbATjd/k
+         oihvyKkgP34M3bJ+ShpltFiP6CGZgIIVNwNvsbswg9OcHxmkgJQrGtw/N5HQ7fYXpSDS
+         1fW+euYGJRn9htUDjj10ox5jkpioKJEr2gOBkBefCT10C8gO50py0DbaobzdYS0ZNeSB
+         abKvJG8tcKJJWzVOvZF7cRDlizmbocgh9Q93HWSMN3HRJA3F37cfCVDQkELD+/vL2t5i
+         pcFxn06mwDbHs9+a1+9aRMMkS0b6N90vFvutDNd9ShLFhCQt1MIIQPWQD7/VwVWic68z
+         6N+g==
+X-Gm-Message-State: AOAM531jEDH/emwLaS36jmpDsupCNqFWH5l5FvGCIzkMSZH7uo5ShNdh
+        /zI71uD9PeHh7JCPvG/p6ao=
+X-Google-Smtp-Source: ABdhPJx0d3wLt4w25ijZW9A6tFi435cnmHcws5+AVIQgxbeRWHzOWvTOwK2MFqTSMrWhDKzneBmblw==
+X-Received: by 2002:a5d:4312:: with SMTP id h18mr130179wrq.193.1615821102602;
+        Mon, 15 Mar 2021 08:11:42 -0700 (PDT)
+Received: from skynet.lan ([80.31.204.166])
+        by smtp.gmail.com with ESMTPSA id f22sm12536675wmc.33.2021.03.15.08.11.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 08:11:42 -0700 (PDT)
+From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+To:     jonas.gorski@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+Subject: [PATCH v2 net-next] net: dsa: b53: mmap: Add device tree support
+Date:   Mon, 15 Mar 2021 16:11:40 +0100
+Message-Id: <20210315151140.12636-1-noltari@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <87v99sh8az.fsf@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/21 7:10 AM, Petr Machata wrote:
-> Could this be merged, please?
+Add device tree support to b53_mmap.c while keeping platform devices support.
 
-done
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+---
+ v2: add change suggested by Florian Fainelli (less "OF-centric") and replace
+  brcm,ports property with a ports child scan.
+
+ drivers/net/dsa/b53/b53_mmap.c | 54 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+
+diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
+index c628d0980c0b..94a4e3929ebf 100644
+--- a/drivers/net/dsa/b53/b53_mmap.c
++++ b/drivers/net/dsa/b53/b53_mmap.c
+@@ -16,6 +16,7 @@
+  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  */
+ 
++#include <linux/bits.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/io.h>
+@@ -228,11 +229,64 @@ static const struct b53_io_ops b53_mmap_ops = {
+ 	.write64 = b53_mmap_write64,
+ };
+ 
++static int b53_mmap_probe_of(struct platform_device *pdev,
++			     struct b53_platform_data **ppdata)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	struct device_node *of_ports, *of_port;
++	struct b53_platform_data *pdata;
++	void __iomem *mem;
++
++	mem = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(mem))
++		return PTR_ERR(mem);
++
++	pdata = devm_kzalloc(dev, sizeof(struct b53_platform_data),
++			     GFP_KERNEL);
++	if (!pdata)
++		return -ENOMEM;
++
++	pdata->regs = mem;
++	pdata->chip_id = BCM63XX_DEVICE_ID;
++	pdata->big_endian = of_property_read_bool(np, "big-endian");
++
++	of_ports = of_get_child_by_name(np, "ports");
++	if (!of_ports) {
++		dev_err(dev, "no ports child node found\n");
++		return -EINVAL;
++	}
++
++	for_each_available_child_of_node(of_ports, of_port) {
++		u32 reg;
++
++		if (of_property_read_u32(of_port, "reg", &reg))
++			continue;
++
++		if (reg < B53_CPU_PORT)
++			pdata->enabled_ports |= BIT(reg);
++	}
++
++	*ppdata = pdata;
++
++	return 0;
++}
++
+ static int b53_mmap_probe(struct platform_device *pdev)
+ {
++	struct device_node *np = pdev->dev.of_node;
+ 	struct b53_platform_data *pdata = pdev->dev.platform_data;
+ 	struct b53_mmap_priv *priv;
+ 	struct b53_device *dev;
++	int ret;
++
++	if (!pdata && np) {
++		ret = b53_mmap_probe_of(pdev, &pdata);
++		if (ret) {
++			dev_err(&pdev->dev, "OF probe error\n");
++			return ret;
++		}
++	}
+ 
+ 	if (!pdata)
+ 		return -EINVAL;
+-- 
+2.20.1
+
