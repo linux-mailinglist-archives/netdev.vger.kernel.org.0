@@ -2,74 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B31733BD6D
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:37:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1405233BE4B
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:51:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235939AbhCOOfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 10:35:21 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:13616 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236226AbhCOOe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 10:34:56 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Dzf641P8kz17Lgh;
-        Mon, 15 Mar 2021 22:33:00 +0800 (CST)
-Received: from localhost.localdomain (10.175.102.38) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 15 Mar 2021 22:34:45 +0800
-From:   'w00385741 <weiyongjun1@huawei.com>
-To:     <weiyongjun1@huawei.com>, Vladimir Oltean <olteanv@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Baowen Zheng <baowen.zheng@corigine.com>
-CC:     <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH net-next] net: dsa: sja1105: fix error return code in sja1105_cls_flower_add()
-Date:   Mon, 15 Mar 2021 14:43:23 +0000
-Message-ID: <20210315144323.4110640-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S237463AbhCOOpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 10:45:01 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:37474 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237824AbhCOOou (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 10:44:50 -0400
+Received: from mail-ed1-f69.google.com ([209.85.208.69])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@canonical.com>)
+        id 1lLoSe-00061W-BA
+        for netdev@vger.kernel.org; Mon, 15 Mar 2021 14:44:48 +0000
+Received: by mail-ed1-f69.google.com with SMTP id f9so11737319edd.13
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 07:44:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/rOw6JMsy5TmcuNfXsdMbz1wU7+IrDSNfY1nK4kmqAI=;
+        b=rsn3vL/DUIJWezyzyQjLzSqiz1ZJzNFVHBzw7zHBmrBRDchq7+5s1Zqg6uGJJ4R2HM
+         jRTXVPrHnmu/3NCrK5CFDbSJqpMJlzWbvV7PyZ5STQSXnKydqIuDS55TJnWVOzzk2NzF
+         icBYtL8IbU0ZrKIZKn0l4YgLFEos0iRk2PffqGeN0tTRPooyHEP/Luz4iee3goTVTSX4
+         gEu1X4R+VXz4IobmtBV9Csxggo+GixJNW5jFq8rR+EXyVtIjqOyBi8ZmVJbh5I2A5fFX
+         OKpAyofj3X697H7RCAt1LQrMNwepZEg5pUETsdP7+ewCEttWNpX+jGCp3Qc47A2b84Tj
+         Ggqg==
+X-Gm-Message-State: AOAM532nnirkyVl7xQ/V8EOxF+ENso6YYf/++Wod9g+K1OLijbDcnNdI
+        oHHD9UWzWVHazITmeV+a6imsnTOdQlCufypgEGIITFpxTmpRsX0YzGCg7g8XTgBIThbPOa/gclG
+        PnVQLkH+Ydmm3teBKdlvZP/QW6Xe0bOisxw==
+X-Received: by 2002:a17:906:e16:: with SMTP id l22mr23860036eji.173.1615819487934;
+        Mon, 15 Mar 2021 07:44:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyX850jlad2N9FOS0qZRXIsOYQvuD87/PkQkWtiWY3kY5mGjEJZj64Syjg1iARAIS5QEMLnoA==
+X-Received: by 2002:a17:906:e16:: with SMTP id l22mr23860009eji.173.1615819487785;
+        Mon, 15 Mar 2021 07:44:47 -0700 (PDT)
+Received: from gmail.com (ip5f5af0a0.dynamic.kabel-deutschland.de. [95.90.240.160])
+        by smtp.gmail.com with ESMTPSA id e4sm7443229ejz.4.2021.03.15.07.44.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 07:44:47 -0700 (PDT)
+Date:   Mon, 15 Mar 2021 15:44:44 +0100
+From:   Christian Brauner <christian.brauner@canonical.com>
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mika =?utf-8?B?UGVudHRpbMOk?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v5 01/11] file: Export __receive_fd() to modules
+Message-ID: <20210315144444.bgtllddee7s55lfx@gmail.com>
+References: <20210315053721.189-1-xieyongji@bytedance.com>
+ <20210315053721.189-2-xieyongji@bytedance.com>
+ <20210315090822.GA4166677@infradead.org>
+ <CACycT3vrHOExXj6v8ULvUzdLcRkdzS5=TNK6=g4+RWEdN-nOJw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.102.38]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CACycT3vrHOExXj6v8ULvUzdLcRkdzS5=TNK6=g4+RWEdN-nOJw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+On Mon, Mar 15, 2021 at 05:46:43PM +0800, Yongji Xie wrote:
+> On Mon, Mar 15, 2021 at 5:08 PM Christoph Hellwig <hch@infradead.org> wrote:
+> >
+> > On Mon, Mar 15, 2021 at 01:37:11PM +0800, Xie Yongji wrote:
+> > > Export __receive_fd() so that some modules can use
+> > > it to pass file descriptor between processes.
+> >
+> > I really don't think any non-core code should do that, especilly not
+> > modular mere driver code.
+> 
+> Do you see any issue? Now I think we're able to do that with the help
+> of get_unused_fd_flags() and fd_install() in modules. But we may miss
+> some security stuff in this way. So I try to export __receive_fd() and
+> use it instead.
 
-The return value 'rc' maybe overwrite to 0 in the flow_action_for_each
-loop, the error code from the offload not support error handling will
-not set. This commit fix it to return -EOPNOTSUPP.
+The __receive_fd() helper was added for core-kernel code only and we
+mainly did it for the seccomp notifier (and scm rights). The "__" prefix
+was intended to convey that message.
+And I agree with Christoph that we should probably keep it that way
+since __receive_fd() allows a few operations that no driver should
+probably do.
+I can see it being kinda ok to export a variant that really only
+receives and installs an fd, i.e. if we were to export what's currently
+available as an inline helper:
 
-Fixes: 6a56e19902af ("flow_offload: reject configuration of packet-per-second policing in offload drivers")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/net/dsa/sja1105/sja1105_flower.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+static inline int receive_fd(struct file *file, unsigned int o_flags)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_flower.c b/drivers/net/dsa/sja1105/sja1105_flower.c
-index f78b767f86ee..973761132fc3 100644
---- a/drivers/net/dsa/sja1105/sja1105_flower.c
-+++ b/drivers/net/dsa/sja1105/sja1105_flower.c
-@@ -317,14 +317,13 @@ int sja1105_cls_flower_add(struct dsa_switch *ds, int port,
- 	if (rc)
- 		return rc;
- 
--	rc = -EOPNOTSUPP;
--
- 	flow_action_for_each(i, act, &rule->action) {
- 		switch (act->id) {
- 		case FLOW_ACTION_POLICE:
- 			if (act->police.rate_pkt_ps) {
- 				NL_SET_ERR_MSG_MOD(extack,
- 						   "QoS offload not support packets per second");
-+				rc = -EOPNOTSUPP;
- 				goto out;
- 			}
- 
+but definitely none of the fd replacement stuff; that shold be
+off-limits. The seccomp notifier is the only codepath that should even
+think about fd replacement since it's about managing the syscalls of
+another task. Drivers swapping out fds doesn't sound like a good idea to
+me.
 
+Christian
