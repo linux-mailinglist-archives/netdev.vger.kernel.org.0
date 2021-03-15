@@ -2,205 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6DCA33C178
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:17:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A0F933C18E
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:22:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231406AbhCOQQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 12:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbhCOQQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 12:16:19 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DFB9C06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 09:16:19 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id o11so34039130iob.1
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 09:16:19 -0700 (PDT)
+        id S231936AbhCOQV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 12:21:57 -0400
+Received: from mail-dm6nam10on2085.outbound.protection.outlook.com ([40.107.93.85]:30689
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229713AbhCOQVo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 12:21:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lDCa+FE2SlNaPQZOlJdyY5wCifHM8IKCs3WVGb1N1OqGuVMeM83Gm8/1ElstNISO8BdPp35CX/vQhZPDtb2jdZW1fHle5PmCYBk5SqeKG1u8XU7YUchQtQvuZtGguqqukTCQ10xjLgs56WcJYZvF+rTyZSEJot3hAAW0gsrtG3xkCh+cFYgRRtgPKXA5IeK8B51NPA4huAYJMdBRH6SCxa+R2XQI3hUBoapUjHFgjRDQcDSCFV6bUItDR17v/nRspRS/3okxAToDWoduSrWqByED+cW82h5Q+6UdECYS7PGpYpUSrTiFxslKzG1YAdZT6gHG/QxaylkRDANOMxHx/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=U6pKbWCmNSZ3xR//zdNy6w6dycO84GzoenS4inDxOQU=;
+ b=BlIptnu7x2DdZH73AxiOB3R9D7da9EZaq95OV/DoN+F+Gc02I/v6LuQxUSI5hTP0ZW/MvuYkUwl5XN25rOJKWHnEeZ+l+MRKxB0KXZpJlJQR53i41ZLW6Mlv/5tUMOvSjjz3CJgGon7nq44HpPxrGVCc1bxa+j3tcMc1QKPlGy1Cb/JwbK4aIVvDAwzryF2O2I6s3O9V4q2d7fT0RYyq6ocXgJYAZrKReBZFk/xL3cfK6zR8EkO/GHmuVlveNMn41gs0xyTIkBcTrLZBDYSp+Cg9Kh3bZAbGzl5YOMaalw5+9uTYYTKQwNHKEYEY8hKFifp9Y57YA/Nci+WE39h+AQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DqbsWYj9BCQV94CGF2OMbZQUFg8JicNsbpnUffAQE4M=;
-        b=Vf/BtO/aLZCU5psL3iS+R7qqmtH7+aE91Rc+95vI9QiNdRqR+LzXhJiu8WM52HoPZF
-         8VnRTQLHbEqS4dQgRTf8p37ChfM//u3Tf11/ktrC3Jdm2xX0POwXMnBX6SNZndksVwC1
-         QWGVLjOcP7oXdOyE0yhA1NWN9STKLEyfs5noX9Lf0V0bWM7VHRA2QwpslFF3jSqEoyrC
-         uqteYueclabebP6DWxP7iF8SFKw4xc2ejh5qRcDmjOEUW7p785rE+OKFKRvgk9knqzkh
-         pzauAfUPYdaYv0WP9wxIPBJMA4xNFgThE2qcrQ92mTF/As7VB0cm/a3zXh7uDyqmpjPO
-         xN1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DqbsWYj9BCQV94CGF2OMbZQUFg8JicNsbpnUffAQE4M=;
-        b=qrDG0VKpt0AQll0lsUKncQATgEbsYBJj0aejQAEFqQJzevP/1uiUWDqw2IApT3QvtZ
-         Hn4TulTaNftkIuUaYSsmZRQrRBa9d94qtGJNY+ibs/L+Vi9rOhXP+VXXlXqCd6TAxX9Q
-         nFwQL6iJqQJs3x08tzaJ2J5RhEU8jbJjafo7cJwIOXNt4DWTzNrBjdzea75Q5rs6Y8hN
-         jfC5iYYFhflN5EjLfDSVvgXgoAM1WqtD5L+8Mh9+TRfMcRuw05dVeSDP+v9QoR/sOhBA
-         pkIjey/Dv6RcbzhKhfeCKStMwkJbwD21JoJVOJjUd2JB2TSu4wcivV7IAlsa459OaU3P
-         3x+g==
-X-Gm-Message-State: AOAM533gbcUpSYIurKsHu/nFUqFTYtf0DOX/RNrq+t2kXAyT66W0wab9
-        VFzU96hrfv6F/e1yWjfirqCD4w==
-X-Google-Smtp-Source: ABdhPJwKV64AfuwAkLfrMUQrSI9vsu0Tuu6+bq3UrV+mTvWIh+Pzve04rGFO6B3rfRj/4gX9yn+qCA==
-X-Received: by 2002:a05:6638:3a8:: with SMTP id z8mr10145470jap.111.1615824978633;
-        Mon, 15 Mar 2021 09:16:18 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id k4sm4893023iol.18.2021.03.15.09.16.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Mar 2021 09:16:18 -0700 (PDT)
-Subject: Re: [PATCH v2] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        netdev@vger.kernel.org
-Cc:     Daniele Palmas <dnlplm@gmail.com>
-References: <20210315154629.652824-1-bjorn.andersson@linaro.org>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <1b6ebc71-5efd-53ea-95b5-85e17d5804d1@linaro.org>
-Date:   Mon, 15 Mar 2021 11:16:17 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=U6pKbWCmNSZ3xR//zdNy6w6dycO84GzoenS4inDxOQU=;
+ b=mqx7cnoFjywfJJBV6UMt9zaF9EaAxPoHulLhJ7MzAyWy3Dmk+dcw0KUStxfycGBwBqi0vDiB6rL0LUxkme5HCeFN6GZs6MZLYv2UghFluHF3QWWARozaHg+x21rj4z0FN6TM+X3kJ6hVgHLGzLRqylviULil845knT6qSlhq1Dg=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=silabs.com;
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+ by SA2PR11MB4988.namprd11.prod.outlook.com (2603:10b6:806:f8::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Mon, 15 Mar
+ 2021 16:21:41 +0000
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::41bc:5ce:dfa0:9701]) by SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::41bc:5ce:dfa0:9701%7]) with mapi id 15.20.3933.032; Mon, 15 Mar 2021
+ 16:21:41 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v5 03/24] wfx: add Makefile/Kconfig
+Date:   Mon, 15 Mar 2021 17:21:35 +0100
+Message-ID: <1718324.Ee3sdLpQUQ@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <YE95OCx5hWRedi+W@unreal>
+References: <20210315132501.441681-1-Jerome.Pouiller@silabs.com> <20210315132501.441681-4-Jerome.Pouiller@silabs.com> <YE95OCx5hWRedi+W@unreal>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Originating-IP: [2a01:e35:2435:66a0:544b:f17b:7ae8:fb7]
+X-ClientProxiedBy: SN4PR0501CA0026.namprd05.prod.outlook.com
+ (2603:10b6:803:40::39) To SN6PR11MB2718.namprd11.prod.outlook.com
+ (2603:10b6:805:63::18)
 MIME-Version: 1.0
-In-Reply-To: <20210315154629.652824-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.localnet (2a01:e35:2435:66a0:544b:f17b:7ae8:fb7) by SN4PR0501CA0026.namprd05.prod.outlook.com (2603:10b6:803:40::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.10 via Frontend Transport; Mon, 15 Mar 2021 16:21:39 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 451c8c1a-81b0-4c90-1211-08d8e7ce6aa2
+X-MS-TrafficTypeDiagnostic: SA2PR11MB4988:
+X-Microsoft-Antispam-PRVS: <SA2PR11MB49887E7043FC68AE05E2C8F3936C9@SA2PR11MB4988.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8yws90bhY7xZB06uSIhmcuEWtAZ63WoYzyK0MUb+0pzsj/WmyAbNcYx/YR7HhfXCOHnS1rUpCektCjJbW62+Ay5wvQlhtPvVDysJ5Ifm6NkJdFH74xPXT7lapKd0Kz+nIZYhsBfIPjobLyBr6JEoIzKt55WtaZ+vn6cua85UPycYIEhn5trspHvGo3DAtQrDpcXRP/v6Fh2+ISZ+gR9Jojs6v9TXbgM55wLl7l/5VNOZrtveYgpnXFWdZemL209OabFmVnopSoy/2ZT3Sp7RORgMFlZapf5z1WyWJIWnFexc7W/zMIpCvOfV6AZZZ8WW0bSAR7nbXovl7WdGQaNdIZKVaJCE10gKWMTy23VZntuHZvt1SNmJTHqJpcA7NjTHBoDrLLy9DZpmgGmKwSyqlKkzKP7byyueXxcEYzqndsDPPCfkmmHsO4JXSSh9HYMrfn/wIMdFU93IDq3/aKYe0ewoHF11XjMPEQ6U3R/L4zXCYeoLhEns3O9pE74eir2JRhW+HVPIQjIJ4xOr8iCNsr/Ul55qkRtj5Oe84IEW/8MsbtNdMcQPxauA4UGtZ5fVfWwiHF3nRSdFsFV5odFq8DAKjacwRuwF8IF8qdqjqa8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(396003)(39850400004)(376002)(346002)(8676002)(54906003)(6666004)(8936002)(6506007)(66556008)(86362001)(52116002)(5660300002)(4326008)(66476007)(33716001)(7416002)(66946007)(16526019)(316002)(186003)(36916002)(2906002)(6486002)(6916009)(478600001)(66574015)(9686003)(6512007)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?iso-8859-1?Q?DILDYqzm+VHU4BPrXmUBks5XwLyzWFfeixSsbRj6NmlrYIlMRACdRhIxTv?=
+ =?iso-8859-1?Q?Z82Leow0o/BG7O1NbRc6lxrxqXF7jJLeMGsH8XLiB3r4+olh7Smy/iwu+y?=
+ =?iso-8859-1?Q?CgYgIiBIWpNvHieQgSw6RKJrxpXUTLTpJeDCOe1aNMu4BXo2Uavek7qBB5?=
+ =?iso-8859-1?Q?5rXPPXyumC2tTzp+8uxEVJJ0hJFiN7D4rnBxUwxa0yzT+PXlZsPd0xWmFp?=
+ =?iso-8859-1?Q?5fDdUMIQGF2qlqsfhVngHb2Fhr/N1UJHq4do96XqLWhLvTU4x+Ckx4X8Yy?=
+ =?iso-8859-1?Q?YWUKXcXu/gIC4JlnvheYTDhIrqajA/+7W1GSGA2c+bnpk+q061peR9wJB5?=
+ =?iso-8859-1?Q?KQvmp3bcvkEoYxgbjPMaOAk+gl9j9B2VWBP8t5pptyXH/hWi/JiUyk+uoM?=
+ =?iso-8859-1?Q?1P6D4r0F6zP9YiLIrLdJk+PJutu1uj2Pr2E67MtZr7xAif3VTYMqNk9iMP?=
+ =?iso-8859-1?Q?qoWMRYHhaQcRYJ7VJuOwtgLPGwcISbP9wWs+byq4aaIy4yRqYM3kG+HZAr?=
+ =?iso-8859-1?Q?AfvopAOlqS6aL85t0ww/RJIEpjPMPl/nl91vcF/KSfVhHa01ophcx4Z4vy?=
+ =?iso-8859-1?Q?4fy0tGebNUgOuVcN/3HKTe+Pn8BkOeNOxanEOUvtpB5dGjlQnozYBL8iG+?=
+ =?iso-8859-1?Q?Y7Ixxp/ePO52Iep7jPdzmtn6XAEK4/Qp0qZf9CIKGfxsGqEoh9eha9aoBJ?=
+ =?iso-8859-1?Q?yisS49eyJQEKEmJ8K4Y+3qFRa7oORjkXSzRnvgqxnylluPiXLDqruhCkuT?=
+ =?iso-8859-1?Q?Ckk4q47RSAO0zeJ2Gk3aAuCgoK/q+yddW/MJhYos3NfKn3FcGjVV2dF/2u?=
+ =?iso-8859-1?Q?7SsGgNgYjtr85FfEQQvQr0p+iNnsYfP4GZFiGc0CDD2IC7DG5YpJS5Kenc?=
+ =?iso-8859-1?Q?697BsZ/G/StSDc/tPGNO/EJjNcyfdwxKK0ei0GnUDIUIDhtKzzHpHzhguT?=
+ =?iso-8859-1?Q?YnXiGnfL+catHna5MUSo2kiCfYo1kqsGTUq/Fa0YqkKe+vMIMisio7AqYh?=
+ =?iso-8859-1?Q?a/cK3+Ltjl72/eyqxqHgcaHN31VO+uRuz7wFhRgBlHvHsgs4npzTJICFBX?=
+ =?iso-8859-1?Q?lQKPK3x7K6b17HPDVYBL25B3Es0QGIXWQpXsy53nTtDuv5kLJL+j36uV7o?=
+ =?iso-8859-1?Q?bxrMiiVMD2SW3Da8righAZuc36OnicNJpCPseH7Sk6kV5hOHuS3R2CCYO5?=
+ =?iso-8859-1?Q?tk/AGX4QNkG1cy3phnWBJxTHHsuY9XrzwfWD6K9+NfPqfyMwKx9TMiOZ/N?=
+ =?iso-8859-1?Q?IZx4TvStiq8U2nGUi1EWLmQIobD8GjNOb4pXOUwNnM0C1knYOI6ay2h0Hy?=
+ =?iso-8859-1?Q?P+u1l9xOcDVzcyT+3EuQ8UDWmsnqRMU1D++ONfcRUxvQZHXSgQbIGpACCu?=
+ =?iso-8859-1?Q?E8tj/Z9L7eEkYW6g9u7TykghXsl8vcBxyS79rcruEkf/rKKdPBZbnOavba?=
+ =?iso-8859-1?Q?X0WuAob7VhoG/uPh?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 451c8c1a-81b0-4c90-1211-08d8e7ce6aa2
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 16:21:41.3869
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EEZxqvngO1emAD8foyJ5z3zpRwjozA2ncoA/rlu/pRthwMBXqaTST/ibg4VA7n+4KyK67v1FbnQdlwnhAiLmJw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4988
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/21 10:46 AM, Bjorn Andersson wrote:
-> Parse and pass IFLA_RMNET_FLAGS to the kernel, to allow changing the
-> flags from the default of ingress-aggregate only.
+Hi Leon,
 
-To be clear, this default is implemented in the kernel RMNet
-driver, not in "iproute2".  And it is ingress deaggregation
-(unpacking of aggregated packets from a buffer), not aggregation
-(which would be supplying a buffer of aggregated packets to the
-hardware).
+On Monday 15 March 2021 16:11:52 CET Leon Romanovsky wrote:
+> On Mon, Mar 15, 2021 at 02:24:40PM +0100, Jerome Pouiller wrote:
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  drivers/net/wireless/silabs/wfx/Kconfig  | 12 +++++++++++
+> >  drivers/net/wireless/silabs/wfx/Makefile | 26 ++++++++++++++++++++++++
+> >  2 files changed, 38 insertions(+)
+> >  create mode 100644 drivers/net/wireless/silabs/wfx/Kconfig
+> >  create mode 100644 drivers/net/wireless/silabs/wfx/Makefile
+> >
+> > diff --git a/drivers/net/wireless/silabs/wfx/Kconfig b/drivers/net/wire=
+less/silabs/wfx/Kconfig
+> > new file mode 100644
+> > index 000000000000..3be4b1e735e1
+> > --- /dev/null
+> > +++ b/drivers/net/wireless/silabs/wfx/Kconfig
+> > @@ -0,0 +1,12 @@
+> > +config WFX
+> > +     tristate "Silicon Labs wireless chips WF200 and further"
+> > +     depends on MAC80211
+> > +     depends on MMC || !MMC # do not allow WFX=3Dy if MMC=3Dm
+> > +     depends on (SPI || MMC)
+> > +     help
+> > +       This is a driver for Silicons Labs WFxxx series (WF200 and furt=
+her)
+> > +       chipsets. This chip can be found on SPI or SDIO buses.
+> > +
+> > +       Silabs does not use a reliable SDIO vendor ID. So, to avoid con=
+flicts,
+> > +       the driver won't probe the device if it is not also declared in=
+ the
+> > +       Device Tree.
+> > diff --git a/drivers/net/wireless/silabs/wfx/Makefile b/drivers/net/wir=
+eless/silabs/wfx/Makefile
+> > new file mode 100644
+> > index 000000000000..f399962c8619
+> > --- /dev/null
+> > +++ b/drivers/net/wireless/silabs/wfx/Makefile
+> > @@ -0,0 +1,26 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +
+> > +# Necessary for CREATE_TRACE_POINTS
+> > +CFLAGS_debug.o =3D -I$(src)
+>=20
+> I wonder if it is still relevant outside of the staging tree.
 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+It seems this pattern is common in the main tree. You suggest to relocate
+trace.h to include/trace/events?
 
-I have some suggestions on your help text (and flag names).
-The code looks good to me otherwise.  I trust you've
-confirmed the RMNet driver uses the flags exactly as
-you intend when they're provided this way.
+--=20
+J=E9r=F4me Pouiller
 
-					-Alex
-> ---
-> 
-> Changes since v1:
-> - s/ifla_vlan_flags/ifla_rmnet_flags/ in print_opt
-> 
->   ip/iplink_rmnet.c | 42 ++++++++++++++++++++++++++++++++++++++++++
->   1 file changed, 42 insertions(+)
-> 
-> diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
-> index 1d16440c6900..a847c838def2 100644
-> --- a/ip/iplink_rmnet.c
-> +++ b/ip/iplink_rmnet.c
-> @@ -16,6 +16,10 @@ static void print_explain(FILE *f)
->   {
->   	fprintf(f,
->   		"Usage: ... rmnet mux_id MUXID\n"
-> +		"                 [ingress-deaggregation]\n"
-> +		"                 [ingress-commands]\n"
-> +		"                 [ingress-chksumv4]\n"
-> +		"                 [egress-chksumv4]\n"
-
-Other help output (in print_explain()) put spaces after
-the '[' and before the ']'; so you'd be better to stay
-consistent with that.
-
-And I know the name is based on the C symbol, but I think
-you should follow the convention that seems to be used for
-all others, and use "csum" to mean checksum.
-
-Also it's not clear what the "v4" means.  I'm not sure I
-like this suggestion, but...  It comes from QMAP version 4,
-as opposed to QMAP version 5, so maybe use "csum-qmap4"
-in place of "csumv4?"
-
-Is there any way to disable ingress deaggregation?  Since
-it's on by default, you might want to use a "[ on | off ]"
-type option for that case (or all of them for that matter).
-Otherwise, the deaggregation parameter doesn't really help
-anything.
-
->   		"\n"
->   		"MUXID := 1-254\n"
->   	);
-> @@ -29,6 +33,7 @@ static void explain(void)
->   static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
->   			   struct nlmsghdr *n)
->   {
-> +	struct ifla_rmnet_flags flags = { };
->   	__u16 mux_id;
-
-Do you know why this is __u16?  Is it because it's exposed
-to user space?  Not a problem... just curious.
-
->   	while (argc > 0) {
-> @@ -37,6 +42,18 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
->   			if (get_u16(&mux_id, *argv, 0))
->   				invarg("mux_id is invalid", *argv);
->   			addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
-> +		} else if (matches(*argv, "ingress-deaggregation") == 0) {
-> +			flags.mask = ~0;
-> +			flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
-> +		} else if (matches(*argv, "ingress-commands") == 0) {
-> +			flags.mask = ~0;
-> +			flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
-> +		} else if (matches(*argv, "ingress-chksumv4") == 0) {
-> +			flags.mask = ~0;
-> +			flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
-> +		} else if (matches(*argv, "egress-chksumv4") == 0) {
-> +			flags.mask = ~0;
-> +			flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
->   		} else if (matches(*argv, "help") == 0) {
->   			explain();
->   			return -1;
-> @@ -48,11 +65,28 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
->   		argc--, argv++;
->   	}
->   
-> +	if (flags.mask)
-> +		addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
-> +
->   	return 0;
->   }
->   
-> +static void rmnet_print_flags(FILE *fp, __u32 flags)
-> +{
-> +	if (flags & RMNET_FLAGS_INGRESS_DEAGGREGATION)
-> +		print_string(PRINT_ANY, NULL, "%s ", "ingress-deaggregation");
-> +	if (flags & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
-> +		print_string(PRINT_ANY, NULL, "%s ", "ingress-commands");
-> +	if (flags & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
-> +		print_string(PRINT_ANY, NULL, "%s ", "ingress-chksumv4");
-> +	if (flags & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
-> +		print_string(PRINT_ANY, NULL, "%s ", "egress-cksumv4");
-> +}
-> +
->   static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->   {
-> +	struct ifla_rmnet_flags *flags;
-> +
->   	if (!tb)
->   		return;
->   
-> @@ -64,6 +98,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->   		   "mux_id",
->   		   "mux_id %u ",
->   		   rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
-> +
-> +	if (tb[IFLA_RMNET_FLAGS]) {
-> +		if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
-> +			return;
-> +		flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
-> +
-> +		rmnet_print_flags(f, flags->flags);
-> +	}
->   }
->   
->   static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
-> 
 
