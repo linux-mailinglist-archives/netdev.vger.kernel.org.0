@@ -2,126 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849C333BCB5
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:35:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EEFC33BD86
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:38:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233094AbhCOO2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 10:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239062AbhCOO1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 10:27:41 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335CAC061762;
-        Mon, 15 Mar 2021 07:27:41 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id x13so5793653wrs.9;
-        Mon, 15 Mar 2021 07:27:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SHHSRUWezr0Ic1+f9vMp5xPcEDElTAD5qEAa1pLjQAg=;
-        b=MGiRr632QDPiDLeR4leJ3CuqmG6+zFoRJizK5b0yiZdg1pEGmZz2ufa8XPocKZFO6K
-         kdUkjdvVNv8uG75S+96TTU/oZQAO93aB926oS2Ejci/HdswZCl5N/DFkom9HC8fJnB3i
-         pf8FqYzWHNMTiQcUvNOs0dA8QJ5HVR8K2716tiFCt93mP/3aivZH7OsYh/jI1uJqRw+h
-         bEUfl6ICWgubJ/IKG9lOvppUi1WIWFWcuPxfCBplUtMpSxrSqr8zEsYnYCwtdmAHjHf7
-         QkriDHBUtL52367kSgpoHVR9AgTDFqJK4jPEwX0WUjnpviCf20nb7FmCvRLTTkA14JEU
-         Xwaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SHHSRUWezr0Ic1+f9vMp5xPcEDElTAD5qEAa1pLjQAg=;
-        b=kI/H2oyNRRn22RONIP1k//RAyFmNZNMWl7Z6oC9lp6uhXZExgUcpZcgBpja35uHvRp
-         QC03pKQjA3Y4bqTInyAPiuA1CYmUHKfc+XgvKK4o43BvepzFh73Kl2Df8fHQ3Yv16rLH
-         DF1qhIsy4YeEN/lAaTx77NJWjLRHy/co5fIn7xluVsQddri9oCkybPjKxH8j+8PSljE5
-         aPD2A8spFegF9cRZ7qqxdtViWQknjSdUeQgFT7aWK29JxN2VxsbYlmaGl8GGJj9Pm9dt
-         H1qr1t3a2bORtw+tSGJti0d9X7TcINWQM6NXWSikILINvxbhfHAwlaugkMnHSKN/4D7E
-         w5Hw==
-X-Gm-Message-State: AOAM532TjkF12P746nYJZ38ttmzJGNdwJdaFW9bX1L/CgeF65By0inoo
-        woTkLPS6jbJ+RNFkegRqN8A=
-X-Google-Smtp-Source: ABdhPJzvWD6D9aDv2XV7Y2SCAsk72abeozDbFK4bvuR509ebm/PvobpQz0ytgmThsS9Q+chRhd/gYg==
-X-Received: by 2002:adf:e68e:: with SMTP id r14mr27251593wrm.273.1615818459918;
-        Mon, 15 Mar 2021 07:27:39 -0700 (PDT)
-Received: from skynet.lan ([80.31.204.166])
-        by smtp.gmail.com with ESMTPSA id 21sm12856606wme.6.2021.03.15.07.27.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 07:27:39 -0700 (PDT)
-From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-To:     jonas.gorski@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-Subject: [PATCH net-next 2/2] net: dsa: b53: support legacy tags
-Date:   Mon, 15 Mar 2021 15:27:36 +0100
-Message-Id: <20210315142736.7232-3-noltari@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210315142736.7232-1-noltari@gmail.com>
-References: <20210315142736.7232-1-noltari@gmail.com>
+        id S237291AbhCOOg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 10:36:56 -0400
+Received: from mail-dm6nam10on2049.outbound.protection.outlook.com ([40.107.93.49]:32896
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236210AbhCOOfy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 10:35:54 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YZanrQHTYPZ6gtAMNpjQTgRU/2FASmRqy7pGNEHfACDUQBXyKerKABQvmxutEylBLXbK7WW8laQqj9vmidhpS4dTyez+UEehg9oZ1gHfNN6HMTn3fg6tbHE16S1xX+XIq5ycye/p5IzLfG2Zot+1fnGkuhSa2N0YjCRzzVFvUxuecs2Srl6yqDMk+qj4cM4mAkd2rBjMci4w6fi1VBffF+btE5TZT8D9V1xK3C1ksUbiIqa0R/KmWr1jt9ufUD4CojOkctDg3DYLh7OTFx5uJuf4Z9WP9ZEF7CMv5S7HjWu5krIcfyvb74WYudEeYPCTt0pd40VXbP+dvzFM71w0mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+b1Rmpp4nMFzV6hOr1K5NGgCjk5Ky/dk6grnHlQ0Eq0=;
+ b=B79j+v0vURHQERA8puK8gFa3ckz6XvvxtzokOkuLuBbWjfzbjQ1daUUaEI7s21nUevtQWOtmqhswCcQjpZVeC4f1NNUjx3CsroodQ6+x2sV++G7UcS2ZxAWm3dIXGsHpCCtYMbmaSrFZMSeFKrifIQ2TkpgXAiTxdmfkKYHGou2Cbkc34YIdU6XvUUON1NHLc4ktXBvlRTwM3cC90WrHDygFcIWRPQocQLClqi8SHlfPhlw+Lky24/NbqhrsenYXveJWvmeZ6437ew3uvB8ClKtHcQk0J5cnotmL+e9REufRPciZERSGJ5lwLKMxqS1NJKi3cqYtws76jrI9wxiShw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=networkplumber.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+b1Rmpp4nMFzV6hOr1K5NGgCjk5Ky/dk6grnHlQ0Eq0=;
+ b=bq1yYg4qJDtnEjSa61mMIEnq6Hd027ilTWQ7n0aJ7Ic8yQ5qX9p4VCx2bFcY6jPxlBGr9vjVaH2kancyqpz+xSgn8UrSigcQJmlFt+UtmTJNqdz7UUIaQIiQj04aYNf8RT0xcVHH0RoZ603Xb8chAWhmfuab77DUrJSEBnT03MytLwyWqC9cd/qBibOFREFrrePedDeVYZHb7MLiSV1/kEhXGcsIZKFlUUuqVGbgAYTWi0B+SzfxQ9VLssyrNTUpotO4rQjyTpjHt1TYB1Pcik/jpWP6JVZIVUVqbZX/5VcIZmJvXp64xnPOeGLpcgqaw/FOxNo/6Qy5WmCGUWLayw==
+Received: from DM5PR18CA0073.namprd18.prod.outlook.com (2603:10b6:3:3::11) by
+ BN8PR12MB3091.namprd12.prod.outlook.com (2603:10b6:408:44::29) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3933.32; Mon, 15 Mar 2021 14:35:50 +0000
+Received: from DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:3:cafe::eb) by DM5PR18CA0073.outlook.office365.com
+ (2603:10b6:3:3::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32 via Frontend
+ Transport; Mon, 15 Mar 2021 14:35:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=pass action=none
+ header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT042.mail.protection.outlook.com (10.13.173.165) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3933.31 via Frontend Transport; Mon, 15 Mar 2021 14:35:50 +0000
+Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 15 Mar
+ 2021 14:35:47 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>, <dsahern@gmail.com>,
+        <stephen@networkplumber.org>
+CC:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>
+Subject: [PATCH iproute2-next v2 0/6] ip: nexthop: Support resilient groups
+Date:   Mon, 15 Mar 2021 15:34:29 +0100
+Message-ID: <cover.1615818031.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a2421784-83b9-4f20-1006-08d8e7bfa146
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3091:
+X-Microsoft-Antispam-PRVS: <BN8PR12MB3091DE55CD2F45FF896AABC2D66C9@BN8PR12MB3091.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3+wavY13sRt6q3+eD6RpbcRpeURghK/1h16cSLMMo2ylt79ne1wPQCkAteWCANHm1BCBFKyLVka2864Zpdcif8PYYjve1r4ZPXvIn4Kmf0vF/V1uW+iIakd40MzablA8INLmZsvhdUwOCnk+LnbtZb/VBosgL4grydTZAAc5AoZi/+WzmpKIY+ZKHj7JZI2QaRiTkzfLugKxfRLeMQ/OkJMXbvxNd0WnyrYwYyj67j0WbWyJK0FTIxfZTbWAZ0eW/coa08MIAHKwEG2HpqGmaPRGSNTXzJfxdCD6byZdW+j8C+eDiIXlMRHRtt+h1JsCkjHKNsc+C0eP1m0qyCpr0VTdimteezgGvca4bFGC15Qz4qzvS/ZYWEPOYX7xjn3umNVH/teeU0PIdWuh7AIAN3NrVnt3FtnfmRgIxAzVymuG/iWDKHZ0ez5dFnCyX52Am4vuFBWgN4h6z188wRIMwLY7RdahBUFXnCf6PxLnWH+vRg/5U++RNC7Y3+zPolP7909VFrDnCbzkWJe4a/o/Uy1APm0ah3JjR/wvNPKIAEQsBPo53Zq+vjmyHu0N/wh5abbJH/8FLZbfBqmBtXIxzUWNccKSBLprT7GPx2+LWn/urlId5Oq4EvqS3ftGzwhoBCxG0/xFtdR8XWzwjiru3eqzpaJ8758WMrcXzjhnxROHmuDP17ixznfKRQ2jMc8swsuY6Y0VoTUlnRLjyhxZg38maEqnbWpoUiQbzBCC2YT6HCEm7rxbmfmTQ8D16XV8+uX1K2MfdSYU51dep68Zqw==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(136003)(376002)(346002)(46966006)(36840700001)(426003)(7636003)(82740400003)(70206006)(8936002)(2616005)(36756003)(4326008)(186003)(107886003)(316002)(336012)(16526019)(70586007)(82310400003)(8676002)(2906002)(26005)(36906005)(34020700004)(54906003)(110136005)(83380400001)(86362001)(47076005)(356005)(966005)(36860700001)(478600001)(6666004)(5660300002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2021 14:35:50.2408
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2421784-83b9-4f20-1006-08d8e7bfa146
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3091
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These tags are used on BCM5325, BCM5365 and BCM63xx switches.
+Support for resilient next-hop groups was recently accepted to Linux
+kernel[1]. Resilient next-hop groups add a layer of indirection between the
+SKB hash and the next hop. Thus the hash is used to reference a hash table
+bucket, which is then used to reference a particular next hop. This allows
+the system more flexibility when assigning SKB hash space to next hops.
+Previously, each next hop had to be assigned a continuous range of SKB hash
+space. With a hash table as an intermediate layer, it is possible to
+reassign next hops with a hash table bucket granularity. In turn, this
+mends issues with traffic flow redirection resulting from next hop removal
+or adjustments in next-hop weights.
 
-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
----
- drivers/net/dsa/b53/Kconfig      | 1 +
- drivers/net/dsa/b53/b53_common.c | 9 +++++++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
+In this patch set, introduce support for resilient next-hop groups to
+iproute2.
 
-diff --git a/drivers/net/dsa/b53/Kconfig b/drivers/net/dsa/b53/Kconfig
-index f9891a81c808..90b525160b71 100644
---- a/drivers/net/dsa/b53/Kconfig
-+++ b/drivers/net/dsa/b53/Kconfig
-@@ -3,6 +3,7 @@ menuconfig B53
- 	tristate "Broadcom BCM53xx managed switch support"
- 	depends on NET_DSA
- 	select NET_DSA_TAG_BRCM
-+	select NET_DSA_TAG_BRCM_LEGACY
- 	select NET_DSA_TAG_BRCM_PREPEND
- 	help
- 	  This driver adds support for Broadcom managed switch chips. It supports
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index a162499bcafc..a583948cdf4f 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2034,6 +2034,7 @@ static bool b53_can_enable_brcm_tags(struct dsa_switch *ds, int port,
- 
- 	switch (tag_protocol) {
- 	case DSA_TAG_PROTO_BRCM:
-+	case DSA_TAG_PROTO_BRCM_LEGACY:
- 	case DSA_TAG_PROTO_BRCM_PREPEND:
- 		dev_warn(ds->dev,
- 			 "Port %d is stacked to Broadcom tag switch\n", port);
-@@ -2055,12 +2056,16 @@ enum dsa_tag_protocol b53_get_tag_protocol(struct dsa_switch *ds, int port,
- 	/* Older models (5325, 5365) support a different tag format that we do
- 	 * not support in net/dsa/tag_brcm.c yet.
- 	 */
--	if (is5325(dev) || is5365(dev) ||
--	    !b53_can_enable_brcm_tags(ds, port, mprot)) {
-+	if (!b53_can_enable_brcm_tags(ds, port, mprot)) {
- 		dev->tag_protocol = DSA_TAG_PROTO_NONE;
- 		goto out;
- 	}
- 
-+	if (is5325(dev) || is5365(dev) || is63xx(dev)) {
-+		dev->tag_protocol = DSA_TAG_PROTO_BRCM_LEGACY;
-+		goto out;
-+	}
-+
- 	/* Broadcom BCM58xx chips have a flow accelerator on Port 8
- 	 * which requires us to use the prepended Broadcom tag type
- 	 */
+- Patch #1 brings include/uapi/linux/nexthop.h and /rtnetlink.h up to date.
+
+- Patches #2 and #3 add new helpers that will be useful later.
+
+- Patch #4 extends the ip/nexthop sub-tool to accept group type as a
+  command line argument, and to dispatch based on the specified type.
+
+- Patch #5 adds the support for resilient next-hop groups.
+
+- Patch #6 adds the support for resilient next-hop group bucket interface.
+
+To illustrate the usage, consider the following commands:
+
+ # ip nexthop add id 1 via 192.0.2.2 dev dummy1
+ # ip nexthop add id 2 via 192.0.2.3 dev dummy1
+ # ip nexthop add id 10 group 1/2 type resilient \
+	buckets 8 idle_timer 60 unbalanced_timer 300
+
+The last command creates a resilient next-hop group. It will have 8
+buckets, each bucket will be considered idle when no traffic hits it for at
+least 60 seconds, and if the table remains out of balance for 300 seconds,
+it will be forcefully brought into balance.
+
+And this is how the next-hop group bucket interface looks:
+
+ # ip nexthop bucket show id 10
+ id 10 index 0 idle_time 5.59 nhid 1
+ id 10 index 1 idle_time 5.59 nhid 1
+ id 10 index 2 idle_time 8.74 nhid 2
+ id 10 index 3 idle_time 8.74 nhid 2
+ id 10 index 4 idle_time 8.74 nhid 1
+ id 10 index 5 idle_time 8.74 nhid 1
+ id 10 index 6 idle_time 8.74 nhid 1
+ id 10 index 7 idle_time 8.74 nhid 1
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=2a0186a37700b0d5b8cc40be202a62af44f02fa2
+
+v2:
+- Patch #4:
+    - Add a missing example command to commit message
+    - Mention in the man page that mpath is the default
+
+Ido Schimmel (3):
+  nexthop: Add ability to specify group type
+  nexthop: Add support for resilient nexthop groups
+  nexthop: Add support for nexthop buckets
+
+Petr Machata (3):
+  nexthop: Synchronize uAPI files
+  json_print: Add print_tv()
+  nexthop: Extract a helper to parse a NH ID
+
+ include/json_print.h           |   1 +
+ include/libnetlink.h           |   3 +
+ include/uapi/linux/nexthop.h   |  47 +++-
+ include/uapi/linux/rtnetlink.h |   7 +
+ ip/ip_common.h                 |   1 +
+ ip/ipmonitor.c                 |   6 +
+ ip/ipnexthop.c                 | 451 ++++++++++++++++++++++++++++++++-
+ lib/json_print.c               |  13 +
+ lib/libnetlink.c               |  26 ++
+ man/man8/ip-nexthop.8          | 113 ++++++++-
+ 10 files changed, 651 insertions(+), 17 deletions(-)
+
 -- 
-2.20.1
+2.26.2
 
