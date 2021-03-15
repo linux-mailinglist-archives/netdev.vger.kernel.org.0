@@ -2,82 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05B1833BA68
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:10:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F3633BB4A
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:20:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235544AbhCOOJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 10:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
+        id S231503AbhCOOO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 10:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234409AbhCOOIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 10:08:11 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C844C06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 07:08:09 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id k184so1287003ybf.1
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 07:08:09 -0700 (PDT)
+        with ESMTP id S230224AbhCOOO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 10:14:27 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2490C06174A;
+        Mon, 15 Mar 2021 07:14:26 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id b18so8768512wrn.6;
+        Mon, 15 Mar 2021 07:14:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rZa7oXn8FPO12VZ0x64x4sDQ8vnUc61eKClZmqwcy/8=;
-        b=YxjrSEubUAWmz8dp1NOmxpXDk5b8Z4P3CFmBATBSq186oB/IpfhhDmT4ad6wedN0jk
-         PgTYE3T6a1w+01B0dssXWKHkgA0VIAipeKCw31mE60yywu+mRbybnEYn44yznsUcEfun
-         DxHcgBoKYUtrZ2HIFT6aLbsXxA0RHM9u8DkX3SbiToxNfCdt00ZoY0tB0AWskphN1ZhZ
-         k15eEbEvB0rxfDApgf1Fgmz7TEtEb3Rd5kVwpOSXeOQwQvljcIRm9ZqFcZ2h8+ApCdFT
-         XsABOeii4WJ32dqGndCtpeBYNDeOZuJwyk7bcY8wyhBSM6Ot8LCuMgWURHXDMBV7zMTj
-         DjMg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xa3qsev/2jV/i3dBlay9LDIKdfg6k8HE1s8EfIPtymo=;
+        b=gJAriO1QXr3dIjgJ0hQMj6hwTvuFUT8dfClikBDsIwgJVC3Vp9ivXYzSBEspCChUUi
+         2PatHe7fF6eVU19oGpco/rmrqa5Wqj1GIHZi0wfWM5hlbROUC3+Nv2mOexEhJmNeIFYn
+         ONtvX/zcY8u+iBfFPqfDc1FATAhXCZbp6RjQjvPIVYzSOF8vy983ycMGYH4DOCdly75h
+         2IChJ5SutWdLowK6o3AWs4UNuJyD/RnC6FF/MpnQUxB9TnLb8S4N4RApoDGeDup4wcwk
+         DeglRdTWcfvnT8SFgROIVUSb8sQVL56B6Pt8XoOAqzmJkDjS3tgkLJ/A0JeePw68+ZtS
+         LCEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rZa7oXn8FPO12VZ0x64x4sDQ8vnUc61eKClZmqwcy/8=;
-        b=Oo0FvfE9dYm5TRt46O8jFFs0lyDOFp/U46+8KZKUEE1H4RPPCCw0iQEIL/qA/bkebv
-         qr+O5nT38AGdUrJgBEWTNyt4p6sS18xG9+7/OosRjKjZqaiYJ0II9Y4JQIbipSBJ1jYA
-         EflGtIgubhJJCqzJIw89DXG295TDsmG2JLwEAI6l1wfIaTCgsoRMsNVTYPeNGPSpoWcz
-         CiJUt1yU5yCkSqCKMoN7h2rvob7tEVleCa9PyhD/jIyIxuphgGep+RYjsxE1OdzIv350
-         iQqlBsft7G/oRullISjtXZckCK4N1QQjCCuL+i3VanOU6JzEUIZgX+96MSmikVR/IEqY
-         Qg2w==
-X-Gm-Message-State: AOAM5302Z15T0Z4rRvm5O4Fjx9OmhcjVnx5eXJgoxYmGI5Erm3bq7wC+
-        A0kZCqZyTINnGyreDRVvbNfpdSPfrXDROV/H7bmfMixcLq1ShA==
-X-Google-Smtp-Source: ABdhPJy+zwM77JSkOf1b7F3VOLb1cLCryV24+2qHKGuifbhpjtO1V/EVLNQ6i1WbVqCNYU/qjL4BzJYFOFom7eck+jA=
-X-Received: by 2002:a25:ccc5:: with SMTP id l188mr39929936ybf.253.1615817287556;
- Mon, 15 Mar 2021 07:08:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xa3qsev/2jV/i3dBlay9LDIKdfg6k8HE1s8EfIPtymo=;
+        b=sInOP9YB30J4AV9VCAP0rOqpZXIhKiTU2TwFuAutL67bruMcMKZYH1kDP236DcUdmO
+         vYGddiZ8HfkKGL0RKE3nQdIltUczPZod35Y43FeRYlu5rdFNhgy0w6NT19ippzrdk+91
+         nuJT1Uam7soZcCSDFM91pHvkaxX6v/YegcLy00I6AXYT5Y7rSHH+obDXq8hp/z9uZewJ
+         wMyMXI+Z0a1Do0Jzx7QTBo+h3uju9TCjPyxSr1kVf0agGFWD+4lh+lTYcFeKYJJbO6Ar
+         IMZvnjcn4PQqwixrZQDHBRzW5cL5rkEEmPm4O7TsNvU046f8gKX9UbF+InG6q5vksrPT
+         NxKA==
+X-Gm-Message-State: AOAM531Ixw2Ot3owuhECZcKTUSBMEjHyuVFci1Dzn3sdYzAMVAphF0rD
+        h066k/e5CjSXfXVv1eoaJIw=
+X-Google-Smtp-Source: ABdhPJxjB/UozMo+xsrXufA0zYe/bRabR7W3mjZejj9kZI+VtnpmH44u+sqtIneHDMNM8rqKD63vCg==
+X-Received: by 2002:a5d:5104:: with SMTP id s4mr28801836wrt.62.1615817665365;
+        Mon, 15 Mar 2021 07:14:25 -0700 (PDT)
+Received: from skynet.lan ([80.31.204.166])
+        by smtp.gmail.com with ESMTPSA id v7sm12421881wme.47.2021.03.15.07.14.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 07:14:25 -0700 (PDT)
+From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+Subject: [PATCH net-next] net: dsa: b53: spi: allow device tree probing
+Date:   Mon, 15 Mar 2021 15:14:23 +0100
+Message-Id: <20210315141423.1373-1-noltari@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210315110545.111555-1-ovov@yandex-team.ru>
-In-Reply-To: <20210315110545.111555-1-ovov@yandex-team.ru>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 15 Mar 2021 15:07:55 +0100
-Message-ID: <CANn89iKUUT0ZwMKrS6BzL_35Pjz0G5T8jd6pt6q3=f=LiDWzvw@mail.gmail.com>
-Subject: Re: [PATCH v2] tcp: relookup sock for RST+ACK packets handled by
- obsolete req sock
-To:     Alexander Ovechkin <ovov@yandex-team.ru>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, zeil@yandex-team.ru,
-        dmtrmonakhov@yandex-team.ru, olegsenin@yandex-team.ru
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 15, 2021 at 12:06 PM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
->
-> Currently tcp_check_req can be called with obsolete req socket for which big
-> socket have been already created (because of CPU race or early demux
-> assigning req socket to multiple packets in gro batch).
->
-> Commit e0f9759f530bf789e984 ("tcp: try to keep packet if SYN_RCV race
-> is lost") added retry in case when tcp_check_req is called for PSH|ACK packet.
-> But if client sends RST+ACK immediatly after connection being
-> established (it is performing healthcheck, for example) retry does not
-> occur. In that case tcp_check_req tries to close req socket,
-> leaving big socket active.
->
-> Fixes: e0f9759f530 ("tcp: try to keep packet if SYN_RCV race is lost")
-> Signed-off-by: Alexander Ovechkin <ovov@yandex-team.ru>
-> Reported-by: Oleg Senin <olegsenin@yandex-team.ru>
-> ---
+Add missing of_match_table to allow device tree probing.
 
-SGTM, thanks.
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+---
+ drivers/net/dsa/b53/b53_spi.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+diff --git a/drivers/net/dsa/b53/b53_spi.c b/drivers/net/dsa/b53/b53_spi.c
+index 7abec8dab8ba..413158275db8 100644
+--- a/drivers/net/dsa/b53/b53_spi.c
++++ b/drivers/net/dsa/b53/b53_spi.c
+@@ -324,9 +324,22 @@ static int b53_spi_remove(struct spi_device *spi)
+ 	return 0;
+ }
+ 
++static const struct of_device_id b53_spi_of_match[] = {
++	{ .compatible = "brcm,bcm5325" },
++	{ .compatible = "brcm,bcm5365" },
++	{ .compatible = "brcm,bcm5395" },
++	{ .compatible = "brcm,bcm5397" },
++	{ .compatible = "brcm,bcm5398" },
++	{ .compatible = "brcm,bcm53115" },
++	{ .compatible = "brcm,bcm53125" },
++	{ .compatible = "brcm,bcm53128" },
++	{ /* sentinel */ }
++};
++
+ static struct spi_driver b53_spi_driver = {
+ 	.driver = {
+ 		.name	= "b53-switch",
++		.of_match_table = b53_spi_of_match,
+ 	},
+ 	.probe	= b53_spi_probe,
+ 	.remove	= b53_spi_remove,
+-- 
+2.20.1
+
