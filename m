@@ -2,157 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B1333AEFD
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:41:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8EE33AF37
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:47:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbhCOJke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 05:40:34 -0400
-Received: from foss.arm.com ([217.140.110.172]:55894 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229661AbhCOJkJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 05:40:09 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37F691FB;
-        Mon, 15 Mar 2021 02:40:09 -0700 (PDT)
-Received: from [10.57.12.51] (unknown [10.57.12.51])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E6CAE3F70D;
-        Mon, 15 Mar 2021 02:40:06 -0700 (PDT)
-Subject: Re: [PATCH v2 1/5] thermal/drivers/core: Use a char pointer for the
- cooling device name
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>
-References: <20210312170316.3138-1-daniel.lezcano@linaro.org>
- <18fdc11b-abda-25d9-582f-de2f9dfa2feb@arm.com>
- <f51fcec0-1483-cecb-d984-591097c324ca@linaro.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-Message-ID: <1aada78d-06f1-4ccd-cf81-7c2e8f5fe747@arm.com>
-Date:   Mon, 15 Mar 2021 09:40:06 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S229687AbhCOJrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 05:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229884AbhCOJq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 05:46:56 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AC5C06175F
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 02:46:55 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id si25so9322977ejb.1
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 02:46:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QCH3VsMvUSEqRY0D77ObQA6OJaIvmvlJ89ZGUx/CcXM=;
+        b=KBdJN57ZQ8VQz1uCDRBPHQrOXwItBmwEOFNPq9ozYMbd8bVSP9hZj0v9/leZLxc2v+
+         bnEIog66c/xVxrJaQAQDSfaN+5ON+6/yYsZ8IdtMtK+aTlx4uX2mxihZsNBRUez/do4+
+         1KvtRI7pNUOjnhjQuA0DVTja0OSZL+D2vVMQuDfYKe+dQbply48UC3cv2rlAidtOomQs
+         k1BP33T2HNlfsNTa9+WA72vbFKmtOzfthLV8yRt2Y3aDsU1xaHrDx2k0biUGtA/628u1
+         XwtKg+gHWjT467qCsHWkew3z6+raHVfH7JAGoUlxnPeVEVkdXSpctfKubCK/DjB1C3Uf
+         K5Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QCH3VsMvUSEqRY0D77ObQA6OJaIvmvlJ89ZGUx/CcXM=;
+        b=XGxcIMvWSLlIkWndih1fLsQ97JS/eRPurbZhIxDaoY0c3n/yPCDuwIhbHP/g2CushR
+         a1vNXQK7whV6Vr03or4zReciedbF7OYtv1hpH9AGti+m3Las04s6q463v7Dly1zS++/r
+         CNtWhd/NegxAOZARqv7h4LYFJ2Q7D6hx5QOO+MQtXvx5kEjtF0QCKdUkl92ZvcoUgN47
+         ltXG6xvPNxFqdK3EFmzoi59E5bidZW7SDsa3XMuL+6AqzZJTkACjMix3nFHzrsJJm+3z
+         rkh0NHRZc/TkJ54Qx776Yg9W44CenozM4lVtbZOpRHSPJC+UwgOrSF+a7C9vgL71/yP1
+         pecA==
+X-Gm-Message-State: AOAM533iojtxyNSUkRw2Z4rSVRN0Y4zrWku5He2LlBlamDKfMt8EUWdD
+        Y3m+l31RfhKCxUxZ/BtrnIEMUdNH/xaoRhhAu1Yt
+X-Google-Smtp-Source: ABdhPJwfPpbGsW1NwziEvCm+pu9W0AYA2Ip5t3r5CSavHkGCI1g9/KIycGHrq/KBYUgnQfbZQ1cImKEpNMiBrV1NXz0=
+X-Received: by 2002:a17:906:311a:: with SMTP id 26mr22439640ejx.395.1615801614537;
+ Mon, 15 Mar 2021 02:46:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <f51fcec0-1483-cecb-d984-591097c324ca@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210315053721.189-1-xieyongji@bytedance.com> <20210315053721.189-2-xieyongji@bytedance.com>
+ <20210315090822.GA4166677@infradead.org>
+In-Reply-To: <20210315090822.GA4166677@infradead.org>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Mon, 15 Mar 2021 17:46:43 +0800
+Message-ID: <CACycT3vrHOExXj6v8ULvUzdLcRkdzS5=TNK6=g4+RWEdN-nOJw@mail.gmail.com>
+Subject: Re: Re: [PATCH v5 01/11] file: Export __receive_fd() to modules
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Mar 15, 2021 at 5:08 PM Christoph Hellwig <hch@infradead.org> wrote:
+>
+> On Mon, Mar 15, 2021 at 01:37:11PM +0800, Xie Yongji wrote:
+> > Export __receive_fd() so that some modules can use
+> > it to pass file descriptor between processes.
+>
+> I really don't think any non-core code should do that, especilly not
+> modular mere driver code.
 
+Do you see any issue? Now I think we're able to do that with the help
+of get_unused_fd_flags() and fd_install() in modules. But we may miss
+some security stuff in this way. So I try to export __receive_fd() and
+use it instead.
 
-On 3/12/21 9:01 PM, Daniel Lezcano wrote:
-> On 12/03/2021 19:49, Lukasz Luba wrote:
->>
->>
->> On 3/12/21 5:03 PM, Daniel Lezcano wrote:
->>> We want to have any kind of name for the cooling devices as we do no
->>> longer want to rely on auto-numbering. Let's replace the cooling
->>> device's fixed array by a char pointer to be allocated dynamically
->>> when registering the cooling device, so we don't limit the length of
->>> the name.
->>>
->>> Rework the error path at the same time as we have to rollback the
->>> allocations in case of error.
->>>
->>> Tested with a dummy device having the name:
->>>    "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
->>>
->>> A village on the island of Anglesey (Wales), known to have the longest
->>> name in Europe.
->>>
->>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
->>> ---
->>>    .../ethernet/mellanox/mlxsw/core_thermal.c    |  2 +-
->>>    drivers/thermal/thermal_core.c                | 38 +++++++++++--------
->>>    include/linux/thermal.h                       |  2 +-
->>>    3 files changed, 24 insertions(+), 18 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>> b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>> index bf85ce9835d7..7447c2a73cbd 100644
->>> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>> @@ -141,7 +141,7 @@ static int mlxsw_get_cooling_device_idx(struct
->>> mlxsw_thermal *thermal,
->>>        /* Allow mlxsw thermal zone binding to an external cooling
->>> device */
->>>        for (i = 0; i < ARRAY_SIZE(mlxsw_thermal_external_allowed_cdev);
->>> i++) {
->>>            if (strnstr(cdev->type, mlxsw_thermal_external_allowed_cdev[i],
->>> -                sizeof(cdev->type)))
->>> +                strlen(cdev->type)))
->>>                return 0;
->>>        }
->>>    diff --git a/drivers/thermal/thermal_core.c
->>> b/drivers/thermal/thermal_core.c
->>> index 996c038f83a4..9ef8090eb645 100644
->>> --- a/drivers/thermal/thermal_core.c
->>> +++ b/drivers/thermal/thermal_core.c
->>> @@ -960,10 +960,7 @@ __thermal_cooling_device_register(struct
->>> device_node *np,
->>>    {
->>>        struct thermal_cooling_device *cdev;
->>>        struct thermal_zone_device *pos = NULL;
->>> -    int result;
->>> -
->>> -    if (type && strlen(type) >= THERMAL_NAME_LENGTH)
->>> -        return ERR_PTR(-EINVAL);
->>> +    int ret;
->>>          if (!ops || !ops->get_max_state || !ops->get_cur_state ||
->>>            !ops->set_cur_state)
->>> @@ -973,14 +970,17 @@ __thermal_cooling_device_register(struct
->>> device_node *np,
->>>        if (!cdev)
->>>            return ERR_PTR(-ENOMEM);
->>>    -    result = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
->>> -    if (result < 0) {
->>> -        kfree(cdev);
->>> -        return ERR_PTR(result);
->>> +    ret = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
->>> +    if (ret < 0)
->>> +        goto out_kfree_cdev;
->>> +    cdev->id = ret;
->>> +
->>> +    cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
->>> +    if (!cdev->type) {
->>> +        ret = -ENOMEM;
->>
->> Since we haven't called the device_register() yet, I would call here:
->> kfree(cdev);
->> and then jump
-> 
-> I'm not sure to understand, we have to remove the ida, no ?
-
-Yes, we have to remove 'ida' and you jump to that label:
-goto out_ida_remove;
-but under that label, there is no 'put_device()'.
-We could have here, before the 'goto', a simple kfree, which
-should be safe, since we haven't called the device_register() yet.
-Something like:
-
---------8<------------------------------
-cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
-if (!cdev->type) {
-	ret = -ENOMEM;
-	kfree(cdev);
-	goto out_ida_remove;
-}
-
--------->8------------------------------
-
-
-> 
->> Other than that, LGTM
->>
->> Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
->>
->> Regards,
->> Lukasz
-> 
-> 
+Thanks,
+Yongji
