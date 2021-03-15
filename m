@@ -2,136 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2BE733C80D
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 21:56:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E421F33C817
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 22:01:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232240AbhCOUz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 16:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232350AbhCOUzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 16:55:42 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61E0C06175F
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 13:55:41 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id s17so17921569ljc.5
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 13:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=/SNE60mYRVXIP2k5tkIo6vUZ3UuFytnbu0QAv8b7r1I=;
-        b=YDH6+dQ6z0cyr/awfNDOGSZuLJCLEWCPrxEPJKIMNDy2ZAeNmRPMWKVk6cdz6jJuWO
-         G7NZDA0+KnOK9XhZZAaj5YzDmIZTY3OG5x/9CwnfnrtgomvC5kfa9/FmiHL6FqKx6K5a
-         1uZ8wYBdqUz0VLraJOeOBWCqMrE1xb+hkjoCM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=/SNE60mYRVXIP2k5tkIo6vUZ3UuFytnbu0QAv8b7r1I=;
-        b=kXByOyABxa7Alce+uRt/scjlE5W4/oDyKbkWGnjerhT+H0GfC6K49+HlBsNOF3V8hT
-         86N76XyP87hg60Qp6T4NbXBjtu6eA2XmbVN3xHDk+TQ3ZM8BnBxQzCUQxsb8ZV0DQpBY
-         1NQZMNwpfcYUIxAwwxtQeSWZ7bhgd3EcBH84ctM6qgjL/qRc+X3SuhXpFjA8rCk3LBsU
-         Ra8lZ+gBUJMtbSgHCaB72YWMKhToVPgYIX6whrV35caOa04HxcYFecRVPALnYm/qtR6h
-         WCd7qD7QxaogWKuNz1EItp6r7LbTVYYPc/l4yhCeho8clGFwgssWejsDsFvp/qT+RbWq
-         t71A==
-X-Gm-Message-State: AOAM5319jnSZxTcOvXJsVnGdAgmgFtZwJqE2kQXAmo8GIKbgrXb7jP7W
-        e3pcb5P3I2ZgrC174Bm3QAVSGA==
-X-Google-Smtp-Source: ABdhPJwCBSrzS2qfzHSrnTXn5Y9DeD4/xuXWPEZRvbgEP+BOYlgYAbx/m9oShSW0/dY8szlr8h2cMg==
-X-Received: by 2002:a2e:302:: with SMTP id 2mr546896ljd.159.1615841740199;
-        Mon, 15 Mar 2021 13:55:40 -0700 (PDT)
-Received: from cloudflare.com (83.31.58.229.ipv4.supernova.orange.pl. [83.31.58.229])
-        by smtp.gmail.com with ESMTPSA id q7sm2852305lfc.260.2021.03.15.13.55.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 13:55:39 -0700 (PDT)
-References: <20210310053222.41371-1-xiyou.wangcong@gmail.com>
- <20210310053222.41371-5-xiyou.wangcong@gmail.com>
- <87y2es37i3.fsf@cloudflare.com>
- <CAM_iQpVmtHPqzGHEUPhtVroxCeWSBvahKMrbLrEq4gNNVGq2zg@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 27.1
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [Patch bpf-next v4 04/11] skmsg: avoid lock_sock() in
- sk_psock_backlog()
-In-reply-to: <CAM_iQpVmtHPqzGHEUPhtVroxCeWSBvahKMrbLrEq4gNNVGq2zg@mail.gmail.com>
-Date:   Mon, 15 Mar 2021 21:55:38 +0100
-Message-ID: <87v99s2l2t.fsf@cloudflare.com>
+        id S233027AbhCOVBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 17:01:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52556 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232525AbhCOVBR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 17:01:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 125F464F26;
+        Mon, 15 Mar 2021 21:01:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615842077;
+        bh=GH9NH9q6YK12It0vN7WyhyXDc0rtjelfQErFT040adA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RmFnVT8EXwPUGfGikW5LBY+ppK5zbQ05+Pl1yWvBY8mZqLc5H8sCXGq4+TfMvJ8m7
+         Te49rX5tZOYaXDXzk3su6TDaIhwnsb2OWdN5ePGcCM834RZ2vqmcDDJvHyWf2YxKNq
+         ZNAf9fv+TBWtpenu8dYAtpIs2UpbfKTSWDzwzd0YAWrXMZh+PRshuIdVwdC7hIkWMH
+         y6ZOq6zFrmf/wGGSV9LltsCakvzv1MSK8sWe8yYvPZ9wnSHRh2e0x30/wYa3ycQkab
+         K4qOcetVyaxAw6JEKSp7ErbcNZjfm1kz/bfgm30YxPi1LnRJ7E+5ZvmPFLzy47Vrw7
+         BIZV8OTTzsBMA==
+Date:   Mon, 15 Mar 2021 14:01:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Adrian Pop <pop.adrian61@gmail.com>,
+        "Michal Kubecek" <mkubecek@suse.cz>,
+        Don Bollinger <don@thebollingers.org>,
+        <netdev@vger.kernel.org>,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Subject: Re: [RFC PATCH V3 net-next 1/5] ethtool: Allow network drivers to
+ dump arbitrary EEPROM data
+Message-ID: <20210315140116.0a1125c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1615828363-464-2-git-send-email-moshe@nvidia.com>
+References: <1615828363-464-1-git-send-email-moshe@nvidia.com>
+        <1615828363-464-2-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 13, 2021 at 06:32 PM CET, Cong Wang wrote:
-> On Fri, Mar 12, 2021 at 4:02 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> On Wed, Mar 10, 2021 at 06:32 AM CET, Cong Wang wrote:
->> > diff --git a/net/core/sock_map.c b/net/core/sock_map.c
->> > index dd53a7771d7e..26ba47b099f1 100644
->> > --- a/net/core/sock_map.c
->> > +++ b/net/core/sock_map.c
->> > @@ -1540,6 +1540,7 @@ void sock_map_close(struct sock *sk, long timeout)
->> >       saved_close = psock->saved_close;
->> >       sock_map_remove_links(sk, psock);
->> >       rcu_read_unlock();
->> > +     sk_psock_purge(psock);
->> >       release_sock(sk);
->> >       saved_close(sk, timeout);
->> >  }
->>
->> Nothing stops sk_psock_backlog from running after sk_psock_purge:
->>
->>
->> CPU 1                                                   CPU 2
->>
->> sk_psock_skb_redirect()
->>   sk_psock(sk_other)
->>   sock_flag(sk_other, SOCK_DEAD)
->>   sk_psock_test_state(psock_other,
->>                       SK_PSOCK_TX_ENABLED)
->>                                                         sk_psock_purge()
->>   skb_queue_tail(&psock_other->ingress_skb, skb)
->>   schedule_work(&psock_other->work)
->>
->>
->> And sock_orphan can run while we're in sendmsg/sendpage_unlocked:
->>
->>
->> CPU 1                                                   CPU 2
->>
->> sk_psock_backlog
->>   ...
->>   sendmsg_unlocked
->>     sock = sk->sk_socket
->>                                                         tcp_close
->>                                                           __tcp_close
->>                                                             sock_orphan
->>     kernel_sendmsg(sock, msg, vec, num, size)
->>
->>
->> So, after this change, without lock_sock in sk_psock_backlog, we will
->> not block tcp_close from running.
->>
->> This makes me think that the process socket can get released from under
->> us, before kernel_sendmsg/sendpage runs.
->
-> I think you are right, I thought socket is orphaned in inet_release(), clearly
-> I was wrong. But, I'd argue in the above scenario, the packet should not
-> be even queued in the first place, as SK_PSOCK_TX_ENABLED is going
-> to be cleared, so I think the right fix is probably to make clearing psock
-> state and queuing the packet under a spinlock.
+On Mon, 15 Mar 2021 19:12:39 +0200 Moshe Shemesh wrote:
+> From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+> 
+> Define get_module_eeprom_data_by_page() ethtool callback and implement
+> netlink infrastructure.
+> 
+> get_module_eeprom_data_by_page() allows network drivers to dump a part
+> of module's EEPROM specified by page and bank numbers along with offset
+> and length. It is effectively a netlink replacement for
+> get_module_info() and get_module_eeprom() pair, which is needed due to
+> emergence of complex non-linear EEPROM layouts.
+> 
+> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 
-Sounds like a good idea. The goal, I understand, is to guarantee that
-psock holds a ref count on proces socket for the duration of
-sk_psock_backlog() run.
+s/eeprom_data/eeprom/ everywhere?
 
-That would not only let us get rid of lock_sock(), with finer grained
-queue locks, but also the sock_flag(psock->sk, SOCK_DEAD) check.
+Otherwise some of your identifiers are over 30 characters long.
+
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index cde753bb2093..b3e92db3ad37 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -340,6 +340,28 @@ struct ethtool_eeprom {
+>  	__u8	data[0];
+>  };
+>  
+> +/**
+> + * struct ethtool_eeprom_data - EEPROM dump from specified page
+> + * @offset: Offset within the specified EEPROM page to begin read, in bytes.
+> + * @length: Number of bytes to read.
+> + * @page: Page number to read from.
+> + * @bank: Page bank number to read from, if applicable by EEPROM spec.
+> + * @i2c_address: I2C address of a page. Value less than 0x7f expected. Most
+> + *	EEPROMs use 0x50 or 0x51.
+> + * @data: Pointer to buffer with EEPROM data of @length size.
+> + *
+> + * This can be used to manage pages during EEPROM dump in ethtool and pass
+> + * required information to the driver.
+> + */
+> +struct ethtool_eeprom_data {
+> +	__u32	offset;
+> +	__u32	length;
+> +	__u8	page;
+> +	__u8	bank;
+> +	__u8	i2c_address;
+> +	__u8	*data;
+> +};
+> +
+
+This structure does not have to be part of uAPI, right?
+
+> +#define ETH_MODULE_EEPROM_PAGE_LEN	256
+> +#define ETH_MODULE_MAX_I2C_ADDRESS	0x7f
+
+Not sure about these defines either.
+
+> +static int eeprom_data_prepare_data(const struct ethnl_req_info *req_base,
+> +				    struct ethnl_reply_data *reply_base,
+> +				    struct genl_info *info)
+> +{
+> +	struct eeprom_data_reply_data *reply = EEPROM_DATA_REPDATA(reply_base);
+> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_base);
+> +	struct ethtool_eeprom_data page_data = {0};
+> +	struct net_device *dev = reply_base->dev;
+> +	int ret;
+> +
+> +	if (!dev->ethtool_ops->get_module_eeprom_data_by_page)
+> +		return -EOPNOTSUPP;
+> +
+> +	page_data.offset = request->offset;
+> +	page_data.length = request->length;
+> +	page_data.i2c_address = request->i2c_address;
+> +	page_data.page = request->page;
+> +	page_data.bank = request->bank;
+> +	page_data.data = kmalloc(page_data.length, GFP_KERNEL);
+> +	if (!page_data.data)
+> +		return -ENOMEM;
+
+nit: new line?
+
+> +	ret = ethnl_ops_begin(dev);
+> +	if (ret)
+> +		goto err_free;
+> +
+> +	ret = dev->ethtool_ops->get_module_eeprom_data_by_page(dev, &page_data,
+> +							       info->extack);
+> +	if (ret < 0)
+> +		goto err_ops;
+> +
+> +	reply->length = ret;
+> +	reply->data = page_data.data;
+> +
+> +	ethnl_ops_complete(dev);
+> +	return 0;
+> +
+> +err_ops:
+> +	ethnl_ops_complete(dev);
+> +err_free:
+> +	kfree(page_data.data);
+> +	return ret;
+> +}
+> +
+> +static int eeprom_data_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
+> +				     struct netlink_ext_ack *extack)
+> +{
+> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_info);
+> +	struct net_device *dev = req_info->dev;
+> +
+> +	if (!tb[ETHTOOL_A_EEPROM_DATA_OFFSET] ||
+> +	    !tb[ETHTOOL_A_EEPROM_DATA_LENGTH] ||
+> +	    !tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS])
+> +		return -EINVAL;
+> +
+> +	request->i2c_address = nla_get_u8(tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS]);
+> +	if (request->i2c_address > ETH_MODULE_MAX_I2C_ADDRESS)
+> +		return -EINVAL;
+
+Max value should be set in the netlink policy.
+
+> +	request->offset = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
+> +	request->length = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
+> +	if (tb[ETHTOOL_A_EEPROM_DATA_PAGE] &&
+> +	    dev->ethtool_ops->get_module_eeprom_data_by_page &&
+
+Why check dev->ethtool_ops->get_module_eeprom_data_by_page here?
+
+> +	    request->offset + request->length > ETH_MODULE_EEPROM_PAGE_LEN)
+> +		return -EINVAL;
+> +
+> +	if (tb[ETHTOOL_A_EEPROM_DATA_PAGE])
+> +		request->page = nla_get_u8(tb[ETHTOOL_A_EEPROM_DATA_PAGE]);
+> +	if (tb[ETHTOOL_A_EEPROM_DATA_BANK])
+> +		request->bank = nla_get_u8(tb[ETHTOOL_A_EEPROM_DATA_BANK]);
+> +
+> +	return 0;
+> +}
+> +
+> +static int eeprom_data_reply_size(const struct ethnl_req_info *req_base,
+> +				  const struct ethnl_reply_data *reply_base)
+> +{
+> +	const struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_base);
+> +
+> +	return nla_total_size(sizeof(u32)) + /* _EEPROM_DATA_LENGTH */
+> +	       nla_total_size(sizeof(u8) * request->length); /* _EEPROM_DATA */
+> +}
+
+Why report length? Is the netlink length of the DATA attribute not
+sufficient?
+
+Should we echo back offset in case driver wants to report re-aligned
+data?
+
+> +const struct nla_policy ethnl_eeprom_data_get_policy[] = {
+> +	[ETHTOOL_A_EEPROM_DATA_HEADER]		= NLA_POLICY_NESTED(ethnl_header_policy),
+> +	[ETHTOOL_A_EEPROM_DATA_OFFSET]		= { .type = NLA_U32 },
+> +	[ETHTOOL_A_EEPROM_DATA_LENGTH]		= { .type = NLA_U32 },
+> +	[ETHTOOL_A_EEPROM_DATA_PAGE]		= { .type = NLA_U8 },
+> +	[ETHTOOL_A_EEPROM_DATA_BANK]		= { .type = NLA_U8 },
+> +	[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS]	= { .type = NLA_U8 },
+> +	[ETHTOOL_A_EEPROM_DATA]			= { .type = NLA_BINARY },
+
+This is a policy for inputs, DATA should not be allowed on input, right?
