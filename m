@@ -2,102 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5469533C5EA
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 19:42:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4AF233C613
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 19:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231837AbhCOSl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 14:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
+        id S232342AbhCOSuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 14:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231789AbhCOSlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 14:41:09 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D548CC06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 11:41:08 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id m21-20020a9d7ad50000b02901b83efc84a0so5632165otn.10
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 11:41:08 -0700 (PDT)
+        with ESMTP id S231134AbhCOStd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 14:49:33 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C01BC06174A
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 11:49:33 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id a7so34494931iok.12
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 11:49:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ad9rcNyANrjvggbRbE9NiSsJQFN1GPJG7obt/UEjspU=;
-        b=XYElCqWK85qJC30msB2xEGZwigWRa2Avl2Q/P1sp2E840lCUR1DUGm6g6s2ZFB2iKn
-         rQxCaWlYiihbuso/okwE9LC8uPVODD6ssaxjPfPQgmJG1PwQT7f1WxaOeIg1/xsdTeoZ
-         SCeluyyQBpEmrQMDnMkZJCf/5htXZxmO3CosKOkMFvaRTx3dTr4Ar4F98rJRi3kHs2bW
-         BeI++U2qOmeRM5k/LuFcZJHhzd/IsxV2dNILM1f4A5GqUflLhcg+nay24Ldjjbms2OjA
-         kBZZGZhJw+KzjeI3rkxBAowU26xN6gI8IvYH671pK1gwk891zA6zBLrSOjlUw7OQIugt
-         FsLw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QTkmIya434QwLoJGaEtNgVzOY0oWG7aHELGWdpiMzDk=;
+        b=qYjZa/2NccABXnXsA18YJbRMcVLBm8J8pWtggp5s1zjYJ5Ve9lWbyhOd/TUNJcHCxV
+         emBcUk2XYj8Ora4kmpZtpn8cCwYKk8s3vgOSSywE+i/p4lnQR9KgKbc7/F7FAu4rOA8E
+         MmXqq0IMx+EyYYYMCkRsfHRlQvyD2AVdj8fmfuALfvR+y7lTvM52Md0U+2dKGOZl7Go0
+         NyGwQkqj/itv78AEUHD2ZUwG5ygQY+4O015tf5d7nm8F52tvipTqi2u7JOX60b9QyYgx
+         gIMcQDUuvejpVxdTjvbHKwiZFsZZ5P0YvHTwboTNTnEsUML48fNHbEXjA+8dIdH87dRC
+         bybg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Ad9rcNyANrjvggbRbE9NiSsJQFN1GPJG7obt/UEjspU=;
-        b=q8i3RrLSYvIgbrAfDnhNAsKxNfx2BWWeBzkokKQ7jV71oiRVZrO889aytpOqugOT2D
-         QrNBBqFmq2wtwQAowyzqMraq1y+tGbxOcH3Lmdj3Wzc00rmFRfZZAWcrYGjHaXmdC33f
-         3GcAS/xQccUbb8a16HnSnbcHzXDpLbDFCPZia2OdgO95oLHAvLdLBmWcQhbNTsSPy78B
-         ynot2sRoIY9rOG3L/sVeLMAiJbjc9EGzg5eK1i7QTowWc/EvtxEJsybx9Q+q0V3nC0Lk
-         2Zs0Fcm0JR5hO48UaI46t3Nt1LmIp5Uy5XOCAmcs1HRmuTVcyAhyejO7yQlTOqWSu1u+
-         9dWg==
-X-Gm-Message-State: AOAM531HyVSwhS5mCMJuLD61X6M9rquD06evJV4bG4JKbCguaJgocniJ
-        h5N9GVeFAl3KRfFjZfRgFdG/WyBNYsk=
-X-Google-Smtp-Source: ABdhPJxvKkKeYb/HFpChnFQajjZ2MrH0Ff2Z4jj4pi356ro8YGNcx+eIUCQ0RlrY938jgDMKcknXZA==
-X-Received: by 2002:a9d:68ce:: with SMTP id i14mr368082oto.151.1615833667007;
-        Mon, 15 Mar 2021 11:41:07 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.56])
-        by smtp.googlemail.com with ESMTPSA id z8sm6674865oih.1.2021.03.15.11.41.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Mar 2021 11:41:06 -0700 (PDT)
-Subject: Re: VRF leaking doesn't work
-To:     Greesha Mikhalkin <grigoriymikhalkin@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <CADbyt64e2cmQzZTEg3VoY6py=1pAqkLDRw+mniRdr9Rua5XtgQ@mail.gmail.com>
- <5b2595ed-bf5b-2775-405c-bb5031fd2095@gmail.com>
- <CADbyt66Ujtn5D+asPndkgBEDBWJiMScqicGVoNBVpNyR3iQ6PQ@mail.gmail.com>
- <CADbyt64HpzGf6A_=wrouL+vT73DBndww34gMPSH9jDOiGEysvQ@mail.gmail.com>
- <5f673241-9cb1-eb36-be9a-a82b0174bd9c@gmail.com>
- <CADbyt6542624xAVzWXM6KEfk=zAOmB_SHbN=nzC_oib_+eXB1Q@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <642fb4d6-4188-968f-6d43-249ca8e38d7a@gmail.com>
-Date:   Mon, 15 Mar 2021 12:41:05 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.1
+        bh=QTkmIya434QwLoJGaEtNgVzOY0oWG7aHELGWdpiMzDk=;
+        b=WkSIq3+tEfyvwlDPtZzuh7PPRDqVIgMgFs04rV2rKAQ2lsuRxV8UTGoNFGin0IIom+
+         FtplIR3yw0H7Wr4AOp8AHrcH671rfekI4fHCWM9m9Pl4469QErqZk3gCru+B93F8XlU1
+         stynpQ19RMUqCWyNbn2yIB1uoda5dfPqBm1TIs5LTDqvuJxvkoMvppTpP8ccAnMK4oSb
+         OIgZ2UDjy28Atc8/v0W7tdFcEstvOq6eFhus7HDLrB2rcvK66s4xq+xeQWnj9oe4m6O+
+         48TD3fRAYEXSK8QGfFQufxm7QF9w0gGDU2n/nLy/lKs9Ls6RwBLg/T7s87a3LVx75nH7
+         svUA==
+X-Gm-Message-State: AOAM530nggETWVSNxPgvRKsFWCXaSDRKxUoHa3CSFBikr5zm53bTO9hl
+        7Co+l4yGq1Y3fkCtnK2iDIs4Pg==
+X-Google-Smtp-Source: ABdhPJxfohasBT23s3DaArjc4+mN+tDiJTkakLsfqyW3BkqxoYlqoJ2b/q7Y3KN4ID9GeAhqv+iYBA==
+X-Received: by 2002:a02:b890:: with SMTP id p16mr10508597jam.138.1615834172741;
+        Mon, 15 Mar 2021 11:49:32 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id a5sm8212162ilk.14.2021.03.15.11.49.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 11:49:32 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     sharathv@codeaurora.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        David.Laight@ACULAB.COM, olteanv@gmail.com,
+        alexander.duyck@gmail.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v5 0/6] net: qualcomm: rmnet: stop using C bit-fields
+Date:   Mon, 15 Mar 2021 13:49:22 -0500
+Message-Id: <20210315184928.2913264-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <CADbyt6542624xAVzWXM6KEfk=zAOmB_SHbN=nzC_oib_+eXB1Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/21 11:10 AM, Greesha Mikhalkin wrote:
->> That's the way the source address selection works -- it takes the fib
->> lookup result and finds the best source address match for it.
->>
->> Try adding 'src a.b.c.d' to the leaked route. e.g.,
->>     ip ro add 172.16.1.0/24 dev red vrf blue src 172.16.2.1
->>
->> where red and blue are VRFs, 172.16.2.1 is a valid source address in VRF
->> blue and VRF red has the reverse route installed.
-> 
-> Tried to do that. Added reverse route to vrf red like that:
->     ip ro add vrf red 172.16.2.1/32 dev blue
-> 
-> 172.16.2.1 is selected as source address when i ping. But now, when i
-> look at `tcpdump icmp` i only see requests:
->     172.16.2.1 > 172.16.1.3: ICMP echo request, id 9, seq 10, length 64
-> 
-> And no replies and anything else. If i look into tcpdump on machine
-> that's pinged -- it doesn't receive anything.
-> 
-> So it looks like it's not using nexthops from vrf red in that case.
-> Maybe it has something to do with how address is setup. In routing
-> table it looks like:
->     local 172.16.2.1 dev vlanblue proto kernel scope host src 172.16.2.1
-> 
+Version 5 of this series responds to a suggestion made by Alexander
+Duyck, to determine the offset to the checksummed range of a packet
+using skb_network_header_len() on patch 2.  I have added his
+Reviewed-by tag to all (other) patches, and removed Bjorn's from
+patch 2.
 
-VRF is implemented via policy routing. did you re-order the FIB rules?
+The change required some updates to the subsequent patches, and I
+reordered some assignments in a minor way in the last patch.
 
+I don't expect any more discussion on this series (but will respond
+if there is any).  So at this point I would really appreciate it
+if KS and/or Sean would offer a review, or at least acknowledge it.
+I presume you two are able to independently test the code as well,
+so I request that, and hope you are willing to do so.
 
-http://schd.ws/hosted_files/ossna2017/fe/vrf-tutorial-oss.pdf
+Version 4 of this series is here:
+  https://lore.kernel.org/netdev/20210315133455.1576188-1-elder@linaro.org
+
+					-Alex
+
+Alex Elder (6):
+  net: qualcomm: rmnet: mark trailer field endianness
+  net: qualcomm: rmnet: simplify some byte order logic
+  net: qualcomm: rmnet: kill RMNET_MAP_GET_*() accessor macros
+  net: qualcomm: rmnet: use masks instead of C bit-fields
+  net: qualcomm: rmnet: don't use C bit-fields in rmnet checksum trailer
+  net: qualcomm: rmnet: don't use C bit-fields in rmnet checksum header
+
+ .../ethernet/qualcomm/rmnet/rmnet_handlers.c  | 10 +--
+ .../net/ethernet/qualcomm/rmnet/rmnet_map.h   | 12 ----
+ .../qualcomm/rmnet/rmnet_map_command.c        | 11 +++-
+ .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 56 ++++++----------
+ include/linux/if_rmnet.h                      | 65 +++++++++----------
+ 5 files changed, 64 insertions(+), 90 deletions(-)
+
+-- 
+2.27.0
+
