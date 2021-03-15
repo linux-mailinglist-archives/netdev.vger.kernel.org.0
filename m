@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9263333C6F7
+	by mail.lfdr.de (Postfix) with ESMTP id DDC5833C6F8
 	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 20:40:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbhCOTkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 15:40:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41590 "EHLO mail.kernel.org"
+        id S231340AbhCOTkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 15:40:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232515AbhCOTkI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232362AbhCOTkI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Mar 2021 15:40:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9958C64F52;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 884EB64F51;
         Mon, 15 Mar 2021 19:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1615837208;
-        bh=j4ga2LdEMQ7R9ZIcSlcQT78N1ljOnveXwD920HoPg44=;
+        bh=1tQMRp4DJ4sH3iJ0QaPCl00RrDdhXenpD1XZIsz4Q7U=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YfvgoTKTsHh5NZB3RwWA8aGcQoBvy5bpd2IffAdcdR6/HGvzC57c1x+rl6PIhpWXY
-         C13vVx63pwXWkAsrsw4isYkt6iaTCMxJ4//o0mm6Ag5I4nsAA7EsGzUdbWqSu4reIa
-         yAsamOqsltMJ09Y2R/zv7Vjvqz9800LsaaaR7JKNxxvAg9CozgI7ZSw12SplAwCkbb
-         lydO2oEGPOiE1L72wJHJDdUrmLE1vePey3Ok1tkVJJPrQEjhQkwSgrMDhwY6a0mlD3
-         Rafi8asRdCyhltRHtTjd6kvh2EO/8ErpDejD0++GoLJKIj1+qgZs1zo4iBz+5JzBjd
-         zGOqTgdiNiYbA==
+        b=uwoGZKeBJLnMxf/XyLRvwiTYK7I+RXlMVgP7DlUYJFKmkHzAcWMbRopdtBgGSpQfd
+         8RY/qO5kMYH1O45g3wgTEvIVuaQdF5m3YSYxTws/DGQZhOLIHIX2X7Kb2KouN13BAx
+         Uo+ASToT10v6VS7hDiAJ/1YFv2w3LyKvv8zyF4tXNQ9aGNTl05P7pG01MMZvm+7WHy
+         S8mzbJApzvUtZ9QbI7ACl0rY2enHKNIRo9bhavPiIkcgFAHH4YKWgBGHDp2Xtzo+04
+         MH0pH4tWlQoOpWnRoBiIZnfTXk06RZVkAOqRw4LvkEWisr65C+0bx5c4uVIgO57wwh
+         fdq2tscJSlX0g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8CCC7609C5;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8398660A1A;
         Mon, 15 Mar 2021 19:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: export dev_set_threaded symbol
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Offload bridge port flags
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161583720857.23197.15037714790020050109.git-patchwork-notify@kernel.org>
+Message-Id: <161583720853.23197.10913958468419979024.git-patchwork-notify@kernel.org>
 Date:   Mon, 15 Mar 2021 19:40:08 +0000
-References: <9ee5ba9ca7506620b1a9695896992bfdfb000469.1615733129.git.lorenzo@kernel.org>
-In-Reply-To: <9ee5ba9ca7506620b1a9695896992bfdfb000469.1615733129.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        weiwan@google.com, nbd@nbd.name, pabeni@redhat.com,
-        edumazet@google.com, hannes@stressinduktion.org,
-        lorenzo.bianconi@redhat.com
+References: <20210314125208.17378-1-kurt@kmk-computers.de>
+In-Reply-To: <20210314125208.17378-1-kurt@kmk-computers.de>
+To:     Kurt Kanzenbach <kurt@kmk-computers.de>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,20 +47,18 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun, 14 Mar 2021 15:49:19 +0100 you wrote:
-> For wireless devices (e.g. mt76 driver) multiple net_devices belongs to
-> the same wireless phy and the napi object is registered in a dummy
-> netdevice related to the wireless phy.
-> Export dev_set_threaded in order to be reused in device drivers enabling
-> threaded NAPI.
+On Sun, 14 Mar 2021 13:52:08 +0100 you wrote:
+> The switch implements unicast and multicast filtering per port.
+> Add support for it. By default filtering is disabled.
 > 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> 
-> [...]
+> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+> ---
+>  drivers/net/dsa/hirschmann/hellcreek.c | 129 ++++++++++++++++++++-----
+>  1 file changed, 104 insertions(+), 25 deletions(-)
 
 Here is the summary with links:
-  - [net-next] net: export dev_set_threaded symbol
-    https://git.kernel.org/netdev/net-next/c/8f64860f8b56
+  - [net-next] net: dsa: hellcreek: Offload bridge port flags
+    https://git.kernel.org/netdev/net-next/c/db7284a6ccc4
 
 You are awesome, thank you!
 --
