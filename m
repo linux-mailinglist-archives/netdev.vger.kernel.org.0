@@ -2,87 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B551933ADE7
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 09:52:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B69E33AE21
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 09:59:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229570AbhCOIv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 04:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbhCOIux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 04:50:53 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431FFC061574
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 01:50:53 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id h82so32340136ybc.13
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 01:50:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l2O57MtvjdnNHzD4neH/h5doFZculQvdjShG/AZS2Og=;
-        b=gDgsw7Tb+HXOoQEbpVhgQqfXspgXmqQAu7boGHprky98IHo5PPEuLyFlvAs+XLWYUG
-         mhPP9g52vYZAFJzLW+7WWPCHmxYWIGW1s160NRYEacH7nTzt7rDjj6BoZDhDps39dadM
-         D9rHMNEb9UYM8oTyed4XYSdDOIKVbi6I4Tatk+yue0NYH3SZDyaUNFkcrgyUkxmPLt00
-         B26JIteFm+7TPWv5LmfQ12dT59Z+FAfdlXURaLTrQJqc16/G+noKPAno75JsWSSoj7Ur
-         SH0AharqhZ2LdGwf264H4JKwTGlqs4yZX5m9O7iAr5m3qOy3av78iYFeBnUofs9cDcg0
-         tiFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l2O57MtvjdnNHzD4neH/h5doFZculQvdjShG/AZS2Og=;
-        b=iuUSA/Y0Uetp2pHEt3rkYMTXhIwXQtVSur/qPwiD5vsczxsFXhSkdwKC+6nW9OAowy
-         pg2LSWgMmTDyEgMgLeS9fXRirma9NjL5jPs8nMb+zPYY77WQMs2F6tf3m3l9yJccj4+U
-         qEhLQ0ilL9hDak0kWmxz3m5PZ5miCubhk+gBtvbw+73WI49D1Mcec3afbcxQKxtznAmy
-         2dMvbtTowEcLKVy09aFPKovI54v5Pt5nbDmAOkfipk7eYyfMURrdoU/oOZmDow9icM3D
-         T4wRVTQipyu2kyg5vCtPT1O0vDxFwn/8lHUlj0afBQ2hnzi/wwOZJh5ImQYO3iZHShj9
-         dasA==
-X-Gm-Message-State: AOAM530qgoqMhJE0losWKv3CYtLmWKWHtvGFBZPAroPiD01jIoO5tm7E
-        3XK4HfCP9Oh6DqD49yANRIjGnJ/tiYceTZnuQTPrfQ==
-X-Google-Smtp-Source: ABdhPJwoEZDriN7rqaE+uMf4T/zFAf7FdqqD5Bu80PYjKj+IWsK837X70gLJ5Q3iUigAbOq1yTV/A/jbN6yqLBx89po=
-X-Received: by 2002:a25:1d88:: with SMTP id d130mr36556088ybd.446.1615798252202;
- Mon, 15 Mar 2021 01:50:52 -0700 (PDT)
+        id S229688AbhCOI7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 04:59:15 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:38990 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229657AbhCOI7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 04:59:06 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 12F8wkxbF027002, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmbs04.realtek.com.tw[172.21.6.97])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 12F8wkxbF027002
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 15 Mar 2021 16:58:46 +0800
+Received: from localhost.localdomain (172.21.132.99) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 15 Mar 2021 16:58:45 +0800
+From:   <hildawu@realtek.com>
+To:     <marcel@holtmann.org>
+CC:     <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-bluetooth@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <tientzu@chromium.org>,
+        <max.chou@realtek.com>, <alex_lu@realsil.com.cn>,
+        <kidman@realtek.com>
+Subject: [PATCH] Bluetooth: hci_h5: btrtl: Add quirk for keep power during suspend/resume for specific devices
+Date:   Mon, 15 Mar 2021 16:58:40 +0800
+Message-ID: <20210315085840.4424-1-hildawu@realtek.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20210313202946.59729-1-alobakin@pm.me>
-In-Reply-To: <20210313202946.59729-1-alobakin@pm.me>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 15 Mar 2021 09:50:40 +0100
-Message-ID: <CANn89iKmJg641Wz7uJkcbdGd41+Vu4_eT7xtWv_V-rmyQhmyBQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 0/3] gro: micro-optimize dev_gro_receive()
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [172.21.132.99]
+X-ClientProxiedBy: RTEXMBS01.realtek.com.tw (172.21.6.94) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 13, 2021 at 9:30 PM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> This random series addresses some of suboptimal constructions used
-> in the main GRO entry point.
-> The main body is gro_list_prepare() simplification and pointer usage
-> optimization in dev_gro_receive() itself. Being mostly cosmetic, it
-> gives like +10 Mbps on my setup to both TCP and UDP (both single- and
-> multi-flow).
->
-> Since v1 [0]:
->  - drop the replacement of bucket index calculation with
->    reciprocal_scale() since it makes absolutely no sense (Eric);
->  - improve stack usage in dev_gro_receive() (Eric);
->  - reverse the order of patches to avoid changes superseding.
->
-> [0] https://lore.kernel.org/netdev/20210312162127.239795-1-alobakin@pm.me
->
+From: hildawu <hildawu@realtek.com>
 
-SGTM, thanks.
+RTL8822C devices support BT wakeup Host. Add a quirk for these specific
+devices did not power off during suspend and resume.
+By this change, if the Host support that received BT device signal then
+it can be wakeup.
 
-Reviewed-by: Eric Dumazet <edumaet@google.com>
+Signed-off-by: hildawu <hildawu@realtek.com>
+---
+ drivers/bluetooth/btrtl.c   | 36 ------------------------------------
+ drivers/bluetooth/btrtl.h   | 35 +++++++++++++++++++++++++++++++++++
+ drivers/bluetooth/hci_h5.c  | 35 ++++++++++++++++++++++++-----------
+ include/net/bluetooth/hci.h |  9 +++++++++
+ 4 files changed, 68 insertions(+), 47 deletions(-)
+
+diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+index e7fe5fb22753..94d1e7885aee 100644
+--- a/drivers/bluetooth/btrtl.c
++++ b/drivers/bluetooth/btrtl.c
+@@ -38,42 +38,6 @@
+ 	.hci_ver = (hciv), \
+ 	.hci_bus = (bus)
+ 
+-enum btrtl_chip_id {
+-	CHIP_ID_8723A,
+-	CHIP_ID_8723B,
+-	CHIP_ID_8821A,
+-	CHIP_ID_8761A,
+-	CHIP_ID_8822B = 8,
+-	CHIP_ID_8723D,
+-	CHIP_ID_8821C,
+-	CHIP_ID_8822C = 13,
+-	CHIP_ID_8761B,
+-	CHIP_ID_8852A = 18,
+-};
+-
+-struct id_table {
+-	__u16 match_flags;
+-	__u16 lmp_subver;
+-	__u16 hci_rev;
+-	__u8 hci_ver;
+-	__u8 hci_bus;
+-	bool config_needed;
+-	bool has_rom_version;
+-	char *fw_name;
+-	char *cfg_name;
+-};
+-
+-struct btrtl_device_info {
+-	const struct id_table *ic_info;
+-	u8 rom_version;
+-	u8 *fw_data;
+-	int fw_len;
+-	u8 *cfg_data;
+-	int cfg_len;
+-	bool drop_fw;
+-	int project_id;
+-};
+-
+ static const struct id_table ic_id_table[] = {
+ 	/* 8723A */
+ 	{ IC_INFO(RTL_ROM_LMP_8723A, 0xb, 0x6, HCI_USB),
+diff --git a/drivers/bluetooth/btrtl.h b/drivers/bluetooth/btrtl.h
+index 2a582682136d..0fa38c116762 100644
+--- a/drivers/bluetooth/btrtl.h
++++ b/drivers/bluetooth/btrtl.h
+@@ -12,6 +12,41 @@
+ #define rtl_dev_info(dev, fmt, ...) bt_dev_info(dev, "RTL: " fmt, ##__VA_ARGS__)
+ #define rtl_dev_dbg(dev, fmt, ...) bt_dev_dbg(dev, "RTL: " fmt, ##__VA_ARGS__)
+ 
++enum btrtl_chip_id {
++	CHIP_ID_8723A,
++	CHIP_ID_8723B,
++	CHIP_ID_8821A,
++	CHIP_ID_8761A,
++	CHIP_ID_8822B = 8,
++	CHIP_ID_8723D,
++	CHIP_ID_8821C,
++	CHIP_ID_8822C = 13,
++	CHIP_ID_8761B,
++	CHIP_ID_8852A = 18,
++};
++
++struct id_table {
++	__u16 match_flags;
++	__u16 lmp_subver;
++	__u16 hci_rev;
++	__u8 hci_ver;
++	__u8 hci_bus;
++	bool config_needed;
++	bool has_rom_version;
++	char *fw_name;
++	char *cfg_name;
++};
++
++struct btrtl_device_info {
++	const struct id_table *ic_info;
++	u8 rom_version;
++	u8 *fw_data;
++	int fw_len;
++	u8 *cfg_data;
++	int cfg_len;
++	int project_id;
++};
++
+ struct btrtl_device_info;
+ 
+ struct rtl_download_cmd {
+diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+index 27e96681d583..1ca4ff89ea14 100644
+--- a/drivers/bluetooth/hci_h5.c
++++ b/drivers/bluetooth/hci_h5.c
+@@ -909,7 +909,15 @@ static int h5_btrtl_setup(struct h5 *h5)
+ 	/* Enable controller to do both LE scan and BR/EDR inquiry
+ 	 * simultaneously.
+ 	 */
+-	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &h5->hu->hdev->quirks);
++	switch (btrtl_dev->project_id) {
++	case CHIP_ID_8822C:
++	case CHIP_ID_8852A:
++		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &h5->hu->hdev->quirks);
++		set_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks);
++		break;
++	default:
++		break;
++	}
+ 
+ out_free:
+ 	btrtl_free(btrtl_dev);
+@@ -945,8 +953,11 @@ static void h5_btrtl_close(struct h5 *h5)
+ static int h5_btrtl_suspend(struct h5 *h5)
+ {
+ 	serdev_device_set_flow_control(h5->hu->serdev, false);
+-	gpiod_set_value_cansleep(h5->device_wake_gpio, 0);
+-	gpiod_set_value_cansleep(h5->enable_gpio, 0);
++
++	if (!test_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks)) {
++		gpiod_set_value_cansleep(h5->device_wake_gpio, 0);
++		gpiod_set_value_cansleep(h5->enable_gpio, 0);
++	}
+ 	return 0;
+ }
+ 
+@@ -972,17 +983,19 @@ static void h5_btrtl_reprobe_worker(struct work_struct *work)
+ 
+ static int h5_btrtl_resume(struct h5 *h5)
+ {
+-	struct h5_btrtl_reprobe *reprobe;
++	if (!test_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks)) {
++		struct h5_btrtl_reprobe *reprobe;
+ 
+-	reprobe = kzalloc(sizeof(*reprobe), GFP_KERNEL);
+-	if (!reprobe)
+-		return -ENOMEM;
++		reprobe = kzalloc(sizeof(*reprobe), GFP_KERNEL);
++		if (!reprobe)
++			return -ENOMEM;
+ 
+-	__module_get(THIS_MODULE);
++		__module_get(THIS_MODULE);
+ 
+-	INIT_WORK(&reprobe->work, h5_btrtl_reprobe_worker);
+-	reprobe->dev = get_device(&h5->hu->serdev->dev);
+-	queue_work(system_long_wq, &reprobe->work);
++		INIT_WORK(&reprobe->work, h5_btrtl_reprobe_worker);
++		reprobe->dev = get_device(&h5->hu->serdev->dev);
++		queue_work(system_long_wq, &reprobe->work);
++	}
+ 	return 0;
+ }
+ 
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index ba2f439bc04d..2e88381b4a58 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -246,6 +246,15 @@ enum {
+ 	 * HCI after resume.
+ 	 */
+ 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
++
++	/* When this quirk is set, the controller does not power off
++	 * during suspend and resume. This mechanism lets BT devices wake
++	 * the Host up if the Host and chips support.
++	 *
++	 * This quirk can be set before hci_register_dev is called or
++	 * during the hdev->setup vendor callback.
++	 */
++	HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED,
+ };
+ 
+ /* HCI device flags */
+-- 
+2.17.1
+
