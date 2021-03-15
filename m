@@ -2,143 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B038E33B025
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 11:42:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A477533B028
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 11:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbhCOKlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 06:41:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:37511 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229675AbhCOKlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 06:41:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615804883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=eL9tEew2nB/94zgHqbxKyc5ffnMfEtirNBABqKcrRhE=;
-        b=C+eYpTJAEUPCMOzWII47qusL9YmZWREJcTX8nQ56b5BYYapPXlVk9v5q7UL3FAu5fDqlPh
-        uGjMeC0k9RnqXP05v/YbOy3IOueaIMJojsuHB3c7JtDstRb7lvZpHOKwPiCkA5tZL7uWo4
-        ipzeWzKte/VTBi+KyUi3u14VJ3aoJeA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-500-xD7qBpzJM-mIj0uloV1y8Q-1; Mon, 15 Mar 2021 06:41:22 -0400
-X-MC-Unique: xD7qBpzJM-mIj0uloV1y8Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8E758DF8A4;
-        Mon, 15 Mar 2021 10:41:20 +0000 (UTC)
-Received: from computer-6.station (unknown [10.40.194.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 28D755D736;
-        Mon, 15 Mar 2021 10:41:18 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net] mptcp: fix ADD_ADDR HMAC in case port is specified
-Date:   Mon, 15 Mar 2021 11:41:16 +0100
-Message-Id: <5e8d22caae531185d0ec7407508250d9351f029a.1615798075.git.dcaratti@redhat.com>
+        id S229955AbhCOKmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 06:42:19 -0400
+Received: from outbound-smtp26.blacknight.com ([81.17.249.194]:44973 "EHLO
+        outbound-smtp26.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229926AbhCOKmH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 06:42:07 -0400
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp26.blacknight.com (Postfix) with ESMTPS id 7AFFCCAB35
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 10:42:06 +0000 (GMT)
+Received: (qmail 9896 invoked from network); 15 Mar 2021 10:42:06 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 15 Mar 2021 10:42:06 -0000
+Date:   Mon, 15 Mar 2021 10:42:05 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210315104204.GB3697@techsingularity.net>
+References: <20210312124609.33d4d4ba@carbon>
+ <20210312145814.GA2577561@casper.infradead.org>
+ <20210312160350.GW3697@techsingularity.net>
+ <20210312210823.GE2577561@casper.infradead.org>
+ <20210313131648.GY3697@techsingularity.net>
+ <20210313163949.GI2577561@casper.infradead.org>
+ <7D8C62E1-77FD-4B41-90D7-253D13715A6F@oracle.com>
+ <20210313193343.GJ2577561@casper.infradead.org>
+ <20210314125231.GA3697@techsingularity.net>
+ <325875A2-A98A-4ECF-AFDF-0B70BCCB79AD@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <325875A2-A98A-4ECF-AFDF-0B70BCCB79AD@oracle.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, Linux computes the HMAC contained in ADD_ADDR sub-option using
-the Address Id and the IP Address, and hardcodes a destination port equal
-to zero. This is not ok for ADD_ADDR with port: ensure to account for the
-endpoint port when computing the HMAC, in compliance with RFC8684 §3.4.1.
+On Sun, Mar 14, 2021 at 03:22:02PM +0000, Chuck Lever III wrote:
+> >> Anyway, I'm not arguing against a bulk allocator, nor even saying this
+> >> is a bad interface.  It just maybe could be better.
+> >> 
+> > 
+> > I think it puts more responsibility on the caller to use the API correctly
+> > but I also see no value in arguing about it further because there is no
+> > supporting data either way (I don't have routine access to a sufficiently
+> > fast network to generate the data). I can add the following patch and let
+> > callers figure out which interface is preferred. If one of the interfaces
+> > is dead in a year, it can be removed.
+> > 
+> > As there are a couple of ways the arrays could be used, I'm leaving it
+> > up to Jesper and Chuck which interface they want to use. In particular,
+> > it would be preferred if the array has no valid struct pages in it but
+> > it's up to them to judge how practical that is.
+> 
+> I'm interested to hear from Jesper.
+> 
+> My two cents (US):
+> 
+> If svc_alloc_arg() is the /only/ consumer that wants to fill
+> a partially populated array of page pointers, then there's no
+> code-duplication benefit to changing the synopsis of
+> alloc_pages_bulk() at this point.
+> 
+> Also, if the consumers still have to pass in the number of
+> pages the array needs, rather than having the bulk allocator
+> figure it out, then there's not much additional benefit, IMO.
+> 
+> Ideally (for SUNRPC) alloc_pages_bulk() would take a pointer
+> to a sparsely-populated array and the total number of elements
+> in that array, and fill in the NULL elements. The return value
+> would be "success -- all elements are populated" or "failure --
+> some elements remain NULL".
+> 
 
-Fixes: 22fb85ffaefb ("mptcp: add port support for ADD_ADDR suboption writing")
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Acked-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/mptcp/options.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+If the array API interface was expected to handle sparse arrays, it would
+make sense to define nr_pages are the number of pages that need to be
+in the array instead of the number of pages to allocate. The preamble
+would skip the first N number of allocated pages and decrement nr_pages
+accordingly before the watermark check. The return value would then be the
+last populated array element and the caller decides if that is enough to
+proceed or if the API needs to be called again. There is a slight risk
+that with a spare array that only needed 1 page in reality would fail
+the watermark check but on low memory, allocations take more work anyway.
+That definition of nr_pages would avoid the potential buffer overrun but
+both you and Jesper would need to agree that it's an appropriate API.
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 5fabf3e9a38d..2b7eec93c9f5 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -571,15 +571,15 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
- }
- 
- static u64 add_addr_generate_hmac(u64 key1, u64 key2, u8 addr_id,
--				  struct in_addr *addr)
-+				  struct in_addr *addr, u16 port)
- {
- 	u8 hmac[SHA256_DIGEST_SIZE];
- 	u8 msg[7];
- 
- 	msg[0] = addr_id;
- 	memcpy(&msg[1], &addr->s_addr, 4);
--	msg[5] = 0;
--	msg[6] = 0;
-+	msg[5] = port >> 8;
-+	msg[6] = port & 0xFF;
- 
- 	mptcp_crypto_hmac_sha(key1, key2, msg, 7, hmac);
- 
-@@ -588,15 +588,15 @@ static u64 add_addr_generate_hmac(u64 key1, u64 key2, u8 addr_id,
- 
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
- static u64 add_addr6_generate_hmac(u64 key1, u64 key2, u8 addr_id,
--				   struct in6_addr *addr)
-+				   struct in6_addr *addr, u16 port)
- {
- 	u8 hmac[SHA256_DIGEST_SIZE];
- 	u8 msg[19];
- 
- 	msg[0] = addr_id;
- 	memcpy(&msg[1], &addr->s6_addr, 16);
--	msg[17] = 0;
--	msg[18] = 0;
-+	msg[17] = port >> 8;
-+	msg[18] = port & 0xFF;
- 
- 	mptcp_crypto_hmac_sha(key1, key2, msg, 19, hmac);
- 
-@@ -650,7 +650,8 @@ static bool mptcp_established_options_add_addr(struct sock *sk, struct sk_buff *
- 			opts->ahmac = add_addr_generate_hmac(msk->local_key,
- 							     msk->remote_key,
- 							     opts->addr_id,
--							     &opts->addr);
-+							     &opts->addr,
-+							     opts->port);
- 		}
- 	}
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
-@@ -661,7 +662,8 @@ static bool mptcp_established_options_add_addr(struct sock *sk, struct sk_buff *
- 			opts->ahmac = add_addr6_generate_hmac(msk->local_key,
- 							      msk->remote_key,
- 							      opts->addr_id,
--							      &opts->addr6);
-+							      &opts->addr6,
-+							      opts->port);
- 		}
- 	}
- #endif
-@@ -971,12 +973,14 @@ static bool add_addr_hmac_valid(struct mptcp_sock *msk,
- 	if (mp_opt->family == MPTCP_ADDR_IPVERSION_4)
- 		hmac = add_addr_generate_hmac(msk->remote_key,
- 					      msk->local_key,
--					      mp_opt->addr_id, &mp_opt->addr);
-+					      mp_opt->addr_id, &mp_opt->addr,
-+					      mp_opt->port);
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
- 	else
- 		hmac = add_addr6_generate_hmac(msk->remote_key,
- 					       msk->local_key,
--					       mp_opt->addr_id, &mp_opt->addr6);
-+					       mp_opt->addr_id, &mp_opt->addr6,
-+					       mp_opt->port);
- #endif
- 
- 	pr_debug("msk=%p, ahmac=%llu, mp_opt->ahmac=%llu\n",
 -- 
-2.29.2
-
+Mel Gorman
+SUSE Labs
