@@ -2,158 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6773A33C261
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:43:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0718E33C279
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233364AbhCOQmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 12:42:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47861 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232832AbhCOQmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 12:42:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615826554;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fGluRhk+PJrpzTtViETCiWQbIPiyTfmSvpP2ZDxvRgw=;
-        b=VWEhKfsOYLHURNavR871EhK8f7kwwtw1W8PTLX/61eNdCin2havzT+5LeClsJ53mXbj6s0
-        GqOboAjRmFJXIHeez14l6zKvIjXUYZ2NJ69Vqgp+PH9Zo4E3v9DSvj7+Z8CGPMr6zzNeVU
-        VNGYPCPgpzytJIvrNcG0WNVng7F2+b0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-243-cl6paFfuOZioICwlchD9fw-1; Mon, 15 Mar 2021 12:42:30 -0400
-X-MC-Unique: cl6paFfuOZioICwlchD9fw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A2C9EDF8A0;
-        Mon, 15 Mar 2021 16:42:28 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D91A55C3E6;
-        Mon, 15 Mar 2021 16:42:22 +0000 (UTC)
-Date:   Mon, 15 Mar 2021 17:42:21 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Chuck Lever III <chuck.lever@oracle.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        brouer@redhat.com, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH 2/5] mm/page_alloc: Add a bulk page allocator
-Message-ID: <20210315174221.1c9e0fe7@carbon>
-In-Reply-To: <20210315104204.GB3697@techsingularity.net>
-References: <20210312124609.33d4d4ba@carbon>
-        <20210312145814.GA2577561@casper.infradead.org>
-        <20210312160350.GW3697@techsingularity.net>
-        <20210312210823.GE2577561@casper.infradead.org>
-        <20210313131648.GY3697@techsingularity.net>
-        <20210313163949.GI2577561@casper.infradead.org>
-        <7D8C62E1-77FD-4B41-90D7-253D13715A6F@oracle.com>
-        <20210313193343.GJ2577561@casper.infradead.org>
-        <20210314125231.GA3697@techsingularity.net>
-        <325875A2-A98A-4ECF-AFDF-0B70BCCB79AD@oracle.com>
-        <20210315104204.GB3697@techsingularity.net>
+        id S230365AbhCOQum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 12:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229960AbhCOQuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 12:50:17 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A8BC06174A
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 09:50:17 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id u20so34063107iot.9
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 09:50:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QdkvPlUQ3WJIwDb57XNHqEbjbn2hX+UZTDnLqhq+dlQ=;
+        b=EFs8NSYIJQOkU7ePFaqgFJYZNPm4tcscR+8bQw8fhyj1+GskrsB2MN910WHckvf7Qs
+         vjAqyl+vtxeM5SIogX5iuBD/m8ZuVo+JeFq+Y/g/FKJmXUsC1R2eHzw6XK+39emWZbBG
+         oUgltYOCo5TKi6HvNKmzlBl6qMvroDKzKYl80P9n4e3YL4sNNkr83QNNw5+23H6xXk5T
+         jIXX19HrubMYiUunZB+Vs3lG1nFAy0hgfYOUFv0WOqzRSCOeyucrIdfRZmH8jTq0U86J
+         OQ4dyWPtmgVF/J2nWstdQBjxtp1i27JhyUaSKAWKtnm7sRa05ntPAZYP7cReNYHa2qBb
+         T6xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QdkvPlUQ3WJIwDb57XNHqEbjbn2hX+UZTDnLqhq+dlQ=;
+        b=UoKu/+VYpba7anFx9jnoG+xMC5ms3YUvbUUCFqPfl1RjjbdehlHv7HsTOTqG/15DtF
+         3AiQ8TMY32fa9IMTsFue0h57X/D9R5ixULqqDTm6w3SIghoIs444Uste+I0aF43GLTXZ
+         dtTnRebnVFnn7vffTWibWbYatuGNtVrJaJ11TW6bsptK2sxVJeKdUlmbSJWLnoM+/6Kh
+         x4IJCSvbpf65fu4720B3zTWa4GTwWDhQNqSfOz0bwI9CUtgDpyC7t43MeeZeKYoHGa+b
+         mVqQIbvw1Da8g9iL3oSjBbhEXTABPV2/nOQNw/Rdz1PdtEQMF3CQcyAhQ8W0k7Nv54CB
+         oUrg==
+X-Gm-Message-State: AOAM5310ydHL7XpBFkIHcrdspS5c35XbDiIOaqk4tc4VvFTE4Dv8oktN
+        yfFCBHbIzO4aClVhcsCEcApO9HDCpnPMww==
+X-Google-Smtp-Source: ABdhPJy0Ql0ByOArOEb5+TwNv4pBJKtLwgG47NlhxW7+QdwCLgHXCuLeuSdu/0FtPG8c8WLKdOGdrA==
+X-Received: by 2002:a05:6638:11c2:: with SMTP id g2mr10146678jas.64.1615827016469;
+        Mon, 15 Mar 2021 09:50:16 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id o5sm7811010ila.69.2021.03.15.09.50.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Mar 2021 09:50:16 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/3] net: ipa: QMI fixes
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210315152112.1907968-1-elder@linaro.org>
+ <20210315163807.GA29414@work>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <3e01bc57-8667-4c56-2806-2ba009887bd4@linaro.org>
+Date:   Mon, 15 Mar 2021 11:50:15 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210315163807.GA29414@work>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Mar 2021 10:42:05 +0000
-Mel Gorman <mgorman@techsingularity.net> wrote:
-
-> On Sun, Mar 14, 2021 at 03:22:02PM +0000, Chuck Lever III wrote:
-> > >> Anyway, I'm not arguing against a bulk allocator, nor even saying this
-> > >> is a bad interface.  It just maybe could be better.
-> > >>   
-> > > 
-> > > I think it puts more responsibility on the caller to use the API correctly
-> > > but I also see no value in arguing about it further because there is no
-> > > supporting data either way (I don't have routine access to a sufficiently
-> > > fast network to generate the data). I can add the following patch and let
-> > > callers figure out which interface is preferred. If one of the interfaces
-> > > is dead in a year, it can be removed.
-> > > 
-> > > As there are a couple of ways the arrays could be used, I'm leaving it
-> > > up to Jesper and Chuck which interface they want to use. In particular,
-> > > it would be preferred if the array has no valid struct pages in it but
-> > > it's up to them to judge how practical that is.  
-> > 
-> > I'm interested to hear from Jesper.
-> > 
-> > My two cents (US):
-> > 
-> > If svc_alloc_arg() is the /only/ consumer that wants to fill
-> > a partially populated array of page pointers, then there's no
-> > code-duplication benefit to changing the synopsis of
-> > alloc_pages_bulk() at this point.
-> > 
-> > Also, if the consumers still have to pass in the number of
-> > pages the array needs, rather than having the bulk allocator
-> > figure it out, then there's not much additional benefit, IMO.
-> > 
-> > Ideally (for SUNRPC) alloc_pages_bulk() would take a pointer
-> > to a sparsely-populated array and the total number of elements
-> > in that array, and fill in the NULL elements. The return value
-> > would be "success -- all elements are populated" or "failure --
-> > some elements remain NULL".
-> >   
+On 3/15/21 11:38 AM, Manivannan Sadhasivam wrote:
+> Hi Alex,
 > 
-> If the array API interface was expected to handle sparse arrays, it would
-> make sense to define nr_pages are the number of pages that need to be
-> in the array instead of the number of pages to allocate. The preamble
-> would skip the first N number of allocated pages and decrement nr_pages
-> accordingly before the watermark check. The return value would then be the
-> last populated array element and the caller decides if that is enough to
-> proceed or if the API needs to be called again. There is a slight risk
-> that with a spare array that only needed 1 page in reality would fail
-> the watermark check but on low memory, allocations take more work anyway.
-> That definition of nr_pages would avoid the potential buffer overrun but
-> both you and Jesper would need to agree that it's an appropriate API.
+> On Mon, Mar 15, 2021 at 10:21:09AM -0500, Alex Elder wrote:
+>> Mani Sadhasivam discovered some errors in the definitions of some
+>> QMI messages used for IPA.  This series addresses those errors,
+>> and extends the definition of one message type to include some
+>> newly-defined fields.
+>>
+> 
+> Thanks for the patches. I guess you need to add Fixes tag for patches 1,2 and
+> they should be backported to stable.
 
-I actually like the idea of doing it this way.  Even-though the
-page_pool fast-path (__page_pool_get_cached()) doesn't clear/mark the
-"consumed" elements with NULL.  I'm ready to change page_pool to handle
-this when calling this API, as I think it will be faster than walking
-the linked list.
+I did not do that, intentionally.  The reason is that the
+existing code only supports IPA v3.5.1 and IPAv4.2.  And
+these bugs seem to cause no problems there.
 
-Even-though my page_pool use-case doesn't have a sparse array to
-populate (like NFS/SUNRPC) then I can still use this API that Chuck is
-suggesting. Thus, I'm fine with this :-)
+There are some patches coming very soon that will add
+more formal support for IPA v4.5 (where I know you
+found these issues).  Those will not be back-ported.
 
+So these fixes don't appear to be necessary for existing
+supported platforms.
 
-(p.s. working on implementing Alexander Duyck's suggestions, but I
-don't have it ready yet, I will try to send new patch tomorrow. And I
-do realize that with this API change I have to reimplement it again,
-but as long as we make forward progress then I'll happily do it).
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+If you still believe I should have these back-ported,
+I have no objection to re-posting for that.  But I
+wanted to explain my reasoning before doing it.
 
-/* fast path */
-static struct page *__page_pool_get_cached(struct page_pool *pool)
-{
-	struct page *page;
+--> Do you still think I should have these back-ported?
 
-	/* Caller MUST guarantee safe non-concurrent access, e.g. softirq */
-	if (likely(pool->alloc.count)) {
-		/* Fast-path */
-		page = pool->alloc.cache[--pool->alloc.count];
-	} else {
-		page = page_pool_refill_alloc_cache(pool);
-	}
+Thanks.
 
-	return page;
-}
+					-Alex
+
+> 
+> Thanks,
+> Mani
+> 
+>> 					-Alex
+>>
+>> Alex Elder (3):
+>>    net: ipa: fix a duplicated tlv_type value
+>>    net: ipa: fix another QMI message definition
+>>    net: ipa: extend the INDICATION_REGISTER request
+>>
+>>   drivers/net/ipa/ipa_qmi_msg.c | 78 +++++++++++++++++++++++++++++++----
+>>   drivers/net/ipa/ipa_qmi_msg.h |  6 ++-
+>>   2 files changed, 74 insertions(+), 10 deletions(-)
+>>
+>> -- 
+>> 2.27.0
+>>
 
