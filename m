@@ -2,88 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63AE133ACCC
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 08:53:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1F7B33ACF4
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 09:03:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230202AbhCOHwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 03:52:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33823 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230330AbhCOHwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 03:52:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615794758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M3VcyCK15wuo7OnaOdUlq2bza4tGVkBBmoXXTmML6Bg=;
-        b=hnaksWImQGfRmAj4ejiiuviZ9A/5QcjPsO/kdgDZ/JbnnIAxlxLNVUB4BarHUPrrBoLO4X
-        qmvo5k37X6G9xiK6CzmIPBvCEwzYaehXskskF6r8Bz4XNGH/3y7wFuXUTcwX1LsFuibuNl
-        x36PH6X9UPTWRPy34dMpwAjdRd8T/eQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-425-QbWxkMulMV6r7TYiz1r-2A-1; Mon, 15 Mar 2021 03:52:35 -0400
-X-MC-Unique: QbWxkMulMV6r7TYiz1r-2A-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 57C5983DD26;
-        Mon, 15 Mar 2021 07:52:33 +0000 (UTC)
-Received: from [10.36.112.254] (ovpn-112-254.ams2.redhat.com [10.36.112.254])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B094410023BE;
-        Mon, 15 Mar 2021 07:52:29 +0000 (UTC)
-Subject: Re: [PATCH 15/17] iommu: remove DOMAIN_ATTR_NESTING
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, freedreno@lists.freedesktop.org,
-        kvm@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20210301084257.945454-1-hch@lst.de>
- <20210301084257.945454-16-hch@lst.de>
- <3e8f1078-9222-0017-3fa8-4d884dbc848e@redhat.com>
- <20210314155813.GA788@lst.de>
-From:   Auger Eric <eric.auger@redhat.com>
-Message-ID: <3a1194de-a053-84dd-3d6a-bff8e01ebcd3@redhat.com>
-Date:   Mon, 15 Mar 2021 08:52:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S230173AbhCOICa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 04:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52214 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229964AbhCOICH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 04:02:07 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1DCC061574;
+        Mon, 15 Mar 2021 01:02:07 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id o11so32448149iob.1;
+        Mon, 15 Mar 2021 01:02:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tqMwSsxE8mSsOZPr95VkNebuiZwi7tRKMS9S8b6s9Z4=;
+        b=XaFtGW31ERcEkEBmeuxVBQMgfDZzcM7jLzZ2lxTuy48U6hIHhrgaBBXd/9RZ5ZyLHE
+         m7uDowuJ1+i9fVsBYUvzPkSOxrHjS8pO+sIIN4YZHkErzAAMalREgcaVDKq+i8D4zWZR
+         a/yH+Z2RpMsOMih5g41EzlrbFKjZ4oXMOFXQxzLuKZHUNkGD1faHt3GCuCXKnCnvKobQ
+         Pjl5Fl0FBHw8fZsN1cW14dVc3ELjvGhBoX9Q5qM+C3+A2zqa7sPmF3F96vzsRP8Zko5o
+         OOm1cjB7i8WzzWqnWZUHtAowiURhqlsBN+oTYhrR0tKTcmKsdbUn3ezhy8mQw6x7fOzd
+         aC6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tqMwSsxE8mSsOZPr95VkNebuiZwi7tRKMS9S8b6s9Z4=;
+        b=OCuJH8XgLC3dwaPMmyjV/eSKnuVn7a0tYhre2VKxV5fUvKioZs+OwZSipHeYvfUUjF
+         PWQJKjr6ng4gTS1kX2Xnvn2eZT9slQnqi7AHWcfqMAi/fOvGV7J9IhHXUoOe/X+/dc+R
+         wfKBB1vLbnfGAaunynhTavOieffeNenNkc7chLJdJwYrsTasm6HwIPN7qIStbISzeLXh
+         iG6nAonH5Ljuwr3JZvXV/nFJARVxjMGTJ3KpQwigBJZWrWK88NzsK4ceszsXltqHXoL7
+         FprCiD6oyfZK9T95rGM3RNdulMc13SXtkmVSR3sMQLx+rnl1BzQyAzlDd97B1UBvZDV3
+         zuow==
+X-Gm-Message-State: AOAM532IOm2Az8XFfP+7n6TwpsAkJ3iYo9/wDj7t3lczaK4YRM1IcFuk
+        vJ5UMC+m9tP/rbkT3E5kl4Srb0FyEj4JYNMWmOI=
+X-Google-Smtp-Source: ABdhPJwQiYkuELW/9smSceH+H6tbTZaziR6zdehTzqcKsNFxphJsP1z9Jk3ej+O9RkGa5WpzAuPeRZ0ptaBZXwPlggY=
+X-Received: by 2002:a02:6a14:: with SMTP id l20mr8693220jac.12.1615795327125;
+ Mon, 15 Mar 2021 01:02:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210314155813.GA788@lst.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+References: <20210314201818.27380-1-yashsri421@gmail.com>
+In-Reply-To: <20210314201818.27380-1-yashsri421@gmail.com>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Mon, 15 Mar 2021 09:01:56 +0100
+Message-ID: <CAKXUXMzH-cUVeuCT6eM_0iHzgKpzvZUPO6pKNpD0yUp2td09Ug@mail.gmail.com>
+Subject: Re: [PATCH 00/10] rsi: fix comment syntax in file headers
+To:     Aditya Srivastava <yashsri421@gmail.com>
+Cc:     siva8118@gmail.com, linux-kernel-mentees@lists.linuxfoundation.org,
+        amitkarwar@gmail.com, kvalo@codeaurora.org,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christoph,
+On Sun, Mar 14, 2021 at 9:18 PM Aditya Srivastava <yashsri421@gmail.com> wrote:
+>
+> The opening comment mark '/**' is used for highlighting the beginning of
+> kernel-doc comments.
+> There are files in drivers/net/wireless/rsi which follow this syntax in
+> their file headers, i.e. start with '/**' like comments, which causes
+> unexpected warnings from kernel-doc.
+>
+> E.g., running scripts/kernel-doc -none on drivers/net/wireless/rsi/rsi_coex.h
+> causes this warning:
+> "warning: wrong kernel-doc identifier on line:
+>  * Copyright (c) 2018 Redpine Signals Inc."
+>
+> Similarly for other files too.
+>
+> Provide a simple fix by replacing the kernel-doc like comment syntax with
+> general format, i.e. "/*", to prevent kernel-doc from parsing it.
+>
 
-On 3/14/21 4:58 PM, Christoph Hellwig wrote:
-> On Sun, Mar 14, 2021 at 11:44:52AM +0100, Auger Eric wrote:
->> As mentionned by Robin, there are series planning to use
->> DOMAIN_ATTR_NESTING to get info about the nested caps of the iommu (ARM
->> and Intel):
->>
->> [Patch v8 00/10] vfio: expose virtual Shared Virtual Addressing to VMs
->> patches 1, 2, 3
->>
->> Is the plan to introduce a new domain_get_nesting_info ops then?
-> 
-> The plan as usual would be to add it the series adding that support.
-> Not sure what the merge plans are - if the series is ready to be
-> merged I could rebase on top of it, otherwise that series will need
-> to add the method.
-OK I think your series may be upstreamed first.
+Aditya, thanks for starting to clean up the repository following your
+investigation on kernel-doc warnings.
 
-Thanks
+The changes to all those files look sound.
 
-Eric
-> 
+However I think these ten patches are really just _one change_, and
+hence, all can be put into a single commit.
 
+Hints that suggest it is one change:
+
+- The commit message is pretty much the same (same motivation, same
+explanation, same design decisions)
+- The change is basically the same (same resulting change in different files)
+- All patches are sent to the same responsible people, all of the
+patches would be reviewed and accepted by the same people.
+- All ten patches can be reviewed at once.
+
+How about merging all ten patches into one patch and sending out a v2.
+
+Lukas
