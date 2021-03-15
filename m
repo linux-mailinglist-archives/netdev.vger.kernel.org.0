@@ -2,168 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5591833BC62
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:35:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11CB133BCB3
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 15:35:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234140AbhCOOYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 10:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
+        id S232947AbhCOO2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 10:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231641AbhCOOX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 10:23:58 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB8EC06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 07:23:50 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id x9so9179692qto.8
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 07:23:50 -0700 (PDT)
+        with ESMTP id S239057AbhCOO1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 10:27:40 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE324C06174A;
+        Mon, 15 Mar 2021 07:27:39 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id r15-20020a05600c35cfb029010e639ca09eso20402040wmq.1;
+        Mon, 15 Mar 2021 07:27:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kmnR7tHBWz7rPe9gnXoSj9G85HhiSKfVDWHGo2UE52g=;
-        b=KxCn0jQtIdd4LTSY/QbdVrv/hPftI3fbaZgoljpYYeTNad0ychtr7nBAoJlo4+VrLF
-         0bQF/wpRrbqoKJNbCtiICvh86fLN+2Dr1G8JrhutOd5/IeTvK+qbWvolflRlaZimTtNj
-         lbH686OCHN4HVTv2Sr8/ViKKWzP/Hqnsxl38dLvsxy6ywXSDNmcOL1p8LUpg7Lhzdog2
-         tU0GtLltO6KyQ2tAJYzxkXgWuFXGHysTYjFDCakBch9cuT+RiXfvHeHxpY3I1ZxqB2S1
-         qmTRPooXsFXQVYSy+GDGkx9CxKzXjMEXCb0Tz/62rvs2JHHwYyO9V+dP5XFKrBXOEiU+
-         oqug==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mlfp93R+LTFr5whu6mUjP7eVBTAmRAZ6RgRrG6Cpi3I=;
+        b=Rg5GWxX/pQM+gT1k2dNm+JQgf12GRSv+z5b7DPv3wv99/rztUrujNVVH26FOKdBy7f
+         PmjnhbFjSvG2tkfz4WGeNaImBbvkaKb/PyLAVsvQjLxH2m5NE7m+w84Yq2RMKUbPxtQJ
+         FxQC69JwPEYL6PzYn3WGX+bYq1fhttHf1H5k+yB2Oi9BrQFuECVsVpY1ma/CQDziAmV6
+         GOHNsAR5YiG+PRciRjDe6wNWUP+aNKdBayjKjhyaEtpdTZeWMv/laqHWbAKTA6yK8qpj
+         XwzD+/aGaRIJMDncYQ4O/QsHCd8CcZrCl9MwEt9oOBP6jxIRPuTDQV1BdEMMED7G5k3q
+         SsQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kmnR7tHBWz7rPe9gnXoSj9G85HhiSKfVDWHGo2UE52g=;
-        b=FcOYkWJJWr6w9PdoRnGrrbR8Py5vtmCc85tgzWXKaJZ/Yq/iPFyp51klAlg4Anuayp
-         7Jw+Vbc7SNf8fpDg/ZfVmgHE3sR8eUOxXRmRL+l74QaNOvdiw+luZKjfhpEwJd54tOdZ
-         YLQFUrjmT30uzMp0iJXVba8EKe0uIA5fYsItyNDOOpc4MMJ9re/GSJU+Ac5i64F86J7j
-         2UmY7DOI+A0j+kEJkoXXH0HORdTgPS0Ds8KbbcTyrnu97tZuA4NSfIdrXIz2ReJ6rLFT
-         mE5+ccdyQoFcsvloMn20e6NqqblVTcupQh1ksMG7DOlq9ZjtoYkD2QFuWku0ImHLjIsz
-         zimg==
-X-Gm-Message-State: AOAM531kHqgbYoNqCGUXADEFf884egsLY3HUNG828uvP7CyrXFamPZDi
-        3z1Zbuh1xReHATFK0ZdeG/3qTTPQmwRwrBX6LCvQ3FANmq/zyQ==
-X-Google-Smtp-Source: ABdhPJyKs/LMAEtL1LJeSB0p/rhYYfCFphJ03zW9C9lrcDiB5nsrAxht6F+FRNHsqtk6/cg854HE8UHsF2GSga4vsK4=
-X-Received: by 2002:aed:20a8:: with SMTP id 37mr22335862qtb.170.1615818229685;
- Mon, 15 Mar 2021 07:23:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mlfp93R+LTFr5whu6mUjP7eVBTAmRAZ6RgRrG6Cpi3I=;
+        b=RZIlIxp/ndP0JNXF5+m0Nnic8hG5pMB4RnZc6lacE54TEokvVb+cXjdjLjxpOplZCh
+         0FqKA4gH3bkpwditIN4e8ApeCrf6Ex9Ger9fGkQmCDJKAs7/yQg65XFFSJPInMpyo8PT
+         SDGOp2tX4lkcAPpfIkm6Xj8yzbdegsbxc5BVRup7Z99453Vw4KFu5V6LzAlm06CTfcA0
+         NEpxGHbS6AJ6r+jNlBS3fw9+HRz5w465jF523HZl0Gzm6J0eVqyF0QiBiVTrszxWVlbK
+         AgiGI5XRY7XtVwKquTGfgirjyNaQhxY3KEG+DVkSAy6ObsZRlNmi6PiG0ggYqJj6Z9of
+         oYHA==
+X-Gm-Message-State: AOAM530MG4ucuSeuckGTs20b0FcuwhZpaSxmpyVtvJMH3gD5Z/DpPAMZ
+        yn1wWWT9EljFo5ABcM9TxHg=
+X-Google-Smtp-Source: ABdhPJxBgSmTfegXMVIuQ0XvaM/6bCGnNQSySVosSqP1AWb/WN32FtXfmFXQN++1NORshwuFTT2EIw==
+X-Received: by 2002:a7b:c18e:: with SMTP id y14mr1116618wmi.1.1615818458411;
+        Mon, 15 Mar 2021 07:27:38 -0700 (PDT)
+Received: from skynet.lan ([80.31.204.166])
+        by smtp.gmail.com with ESMTPSA id 21sm12856606wme.6.2021.03.15.07.27.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 07:27:37 -0700 (PDT)
+From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+To:     jonas.gorski@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+Subject: [PATCH net-next 0/2] net: dsa: b53: support legacy tags
+Date:   Mon, 15 Mar 2021 15:27:34 +0100
+Message-Id: <20210315142736.7232-1-noltari@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210313000241.602790-1-bjorn.andersson@linaro.org>
-In-Reply-To: <20210313000241.602790-1-bjorn.andersson@linaro.org>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Mon, 15 Mar 2021 15:23:36 +0100
-Message-ID: <CAGRyCJHqkBKZDSK+P=UP2B=DFj5n7LTd+ZwBd7a9LDytNeYJWw@mail.gmail.com>
-Subject: Re: [PATCH] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alex Elder <elder@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bjorn,
+Legacy Broadcom tags are needed for older switches.
 
-Il giorno sab 13 mar 2021 alle ore 01:02 Bjorn Andersson
-<bjorn.andersson@linaro.org> ha scritto:
->
-> Parse and pass IFLA_RMNET_FLAGS to the kernel, to allow changing the
-> flags from the default of ingress-aggregate only.
->
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  ip/iplink_rmnet.c | 42 ++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 42 insertions(+)
->
-> diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
-> index 1d16440c6900..8a488f3d0316 100644
-> --- a/ip/iplink_rmnet.c
-> +++ b/ip/iplink_rmnet.c
-> @@ -16,6 +16,10 @@ static void print_explain(FILE *f)
->  {
->         fprintf(f,
->                 "Usage: ... rmnet mux_id MUXID\n"
-> +               "                 [ingress-deaggregation]\n"
-> +               "                 [ingress-commands]\n"
-> +               "                 [ingress-chksumv4]\n"
-> +               "                 [egress-chksumv4]\n"
->                 "\n"
->                 "MUXID := 1-254\n"
->         );
-> @@ -29,6 +33,7 @@ static void explain(void)
->  static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
->                            struct nlmsghdr *n)
->  {
-> +       struct ifla_rmnet_flags flags = { };
->         __u16 mux_id;
->
->         while (argc > 0) {
-> @@ -37,6 +42,18 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
->                         if (get_u16(&mux_id, *argv, 0))
->                                 invarg("mux_id is invalid", *argv);
->                         addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
-> +               } else if (matches(*argv, "ingress-deaggregation") == 0) {
-> +                       flags.mask = ~0;
-> +                       flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
-> +               } else if (matches(*argv, "ingress-commands") == 0) {
-> +                       flags.mask = ~0;
-> +                       flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
-> +               } else if (matches(*argv, "ingress-chksumv4") == 0) {
-> +                       flags.mask = ~0;
-> +                       flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
-> +               } else if (matches(*argv, "egress-chksumv4") == 0) {
-> +                       flags.mask = ~0;
-> +                       flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
->                 } else if (matches(*argv, "help") == 0) {
->                         explain();
->                         return -1;
-> @@ -48,11 +65,28 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
->                 argc--, argv++;
->         }
->
-> +       if (flags.mask)
-> +               addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
-> +
->         return 0;
->  }
->
-> +static void rmnet_print_flags(FILE *fp, __u32 flags)
-> +{
-> +       if (flags & RMNET_FLAGS_INGRESS_DEAGGREGATION)
-> +               print_string(PRINT_ANY, NULL, "%s ", "ingress-deaggregation");
-> +       if (flags & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
-> +               print_string(PRINT_ANY, NULL, "%s ", "ingress-commands");
-> +       if (flags & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
-> +               print_string(PRINT_ANY, NULL, "%s ", "ingress-chksumv4");
-> +       if (flags & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
-> +               print_string(PRINT_ANY, NULL, "%s ", "egress-cksumv4");
-> +}
-> +
->  static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->  {
-> +       struct ifla_vlan_flags *flags;
+Álvaro Fernández Rojas (2):
+  net: dsa: tag_brcm: add support for legacy tags
+  net: dsa: b53: support legacy tags
 
-just for my understanding, why not struct ifla_rmnet_flags (though
-they are exactly the same)?
+ drivers/net/dsa/b53/Kconfig      |  1 +
+ drivers/net/dsa/b53/b53_common.c |  9 ++-
+ include/net/dsa.h                |  2 +
+ net/dsa/Kconfig                  |  7 +++
+ net/dsa/tag_brcm.c               | 96 ++++++++++++++++++++++++++++++++
+ 5 files changed, 113 insertions(+), 2 deletions(-)
 
-Thanks,
-Daniele
+-- 
+2.20.1
 
-> +
->         if (!tb)
->                 return;
->
-> @@ -64,6 +98,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->                    "mux_id",
->                    "mux_id %u ",
->                    rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
-> +
-> +       if (tb[IFLA_RMNET_FLAGS]) {
-> +               if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
-> +                       return;
-> +               flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
-> +
-> +               rmnet_print_flags(f, flags->flags);
-> +       }
->  }
->
->  static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
-> --
-> 2.28.0
->
