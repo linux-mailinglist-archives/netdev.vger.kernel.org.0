@@ -2,160 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41D9233BF7A
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:13:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 094B833BF80
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 16:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231334AbhCOPLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 11:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232168AbhCOPLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 11:11:44 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9B2C06174A;
-        Mon, 15 Mar 2021 08:11:43 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id o14so5075333wrm.11;
-        Mon, 15 Mar 2021 08:11:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=O1N2OqCNFgom+EiBnr7giOeLHhpu49U0nM2JO0bzK6Y=;
-        b=PNVpVLv8w7xRnHc8vR8nTBZmEQD7w62/nBIY2M2TXfaQaHtfBUeqLIGCCGQhHxE3R7
-         dHSpV7Uo+5dZNatmaTmOCAhP2EPWEaYpokGQY5vDGZ5XDNl1GlRiLag0idOrMhZpNuRt
-         K2/yJ+4LluSiR/LBhee3auqHdiZO6oV+0rZkjCpcVVP4Czp/q0UC9c1Bu6C0mRpcHDrs
-         9QpfHe/XfHFqSBOZDxKqnDf2wSJqgIM0N6nEwfpyYc84CA7b2mpCCU+azoLZHe4l9JA/
-         UU7u0EggUg36o3NuB2U1cTqe4Mu4klKrCEW5CbupXUNKJoHseLJn9swx/AaSs9fl00HE
-         ujXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=O1N2OqCNFgom+EiBnr7giOeLHhpu49U0nM2JO0bzK6Y=;
-        b=lSQJ195mWziMvDJJrGaSqWNEGwv+W7JxAzG770dCTDO2TJEGm7H2G40RLnHbATjd/k
-         oihvyKkgP34M3bJ+ShpltFiP6CGZgIIVNwNvsbswg9OcHxmkgJQrGtw/N5HQ7fYXpSDS
-         1fW+euYGJRn9htUDjj10ox5jkpioKJEr2gOBkBefCT10C8gO50py0DbaobzdYS0ZNeSB
-         abKvJG8tcKJJWzVOvZF7cRDlizmbocgh9Q93HWSMN3HRJA3F37cfCVDQkELD+/vL2t5i
-         pcFxn06mwDbHs9+a1+9aRMMkS0b6N90vFvutDNd9ShLFhCQt1MIIQPWQD7/VwVWic68z
-         6N+g==
-X-Gm-Message-State: AOAM531jEDH/emwLaS36jmpDsupCNqFWH5l5FvGCIzkMSZH7uo5ShNdh
-        /zI71uD9PeHh7JCPvG/p6ao=
-X-Google-Smtp-Source: ABdhPJx0d3wLt4w25ijZW9A6tFi435cnmHcws5+AVIQgxbeRWHzOWvTOwK2MFqTSMrWhDKzneBmblw==
-X-Received: by 2002:a5d:4312:: with SMTP id h18mr130179wrq.193.1615821102602;
-        Mon, 15 Mar 2021 08:11:42 -0700 (PDT)
-Received: from skynet.lan ([80.31.204.166])
-        by smtp.gmail.com with ESMTPSA id f22sm12536675wmc.33.2021.03.15.08.11.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 08:11:42 -0700 (PDT)
-From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-To:     jonas.gorski@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-Subject: [PATCH v2 net-next] net: dsa: b53: mmap: Add device tree support
-Date:   Mon, 15 Mar 2021 16:11:40 +0100
-Message-Id: <20210315151140.12636-1-noltari@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S232187AbhCOPMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 11:12:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52042 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232168AbhCOPL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 11:11:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AD03B64DF0;
+        Mon, 15 Mar 2021 15:11:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615821116;
+        bh=L7mnfgF+lb3L7iB9rSiuo2URmRNaFyzItGPOorf386w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QVtsZts/cibSxdjb/Jr3vi8PXgNlYqDm55wHi7LqMy+T8agsvjuRMA+tQDeN+jlyq
+         O6r7vWYrtQ/zQRIH2ECqR7bKeAmZD7zO+ftKuY9dEoNpOVX9t1ECuUc+uNzibBSQ6q
+         NwD45oywH1vZddYlES25P956rTE6lENmxejcS1csz0UuW1iMg3XLGQb2CGCexAk0HA
+         tvdzBh/9KlhbnGlIFm2pm8aSL5BO9/GVWw8VBlrGKWRUsGnfhOJOcAWOke17+PKwRk
+         /2YwNxDmaJdhIo0qwkIwI9aygAK/B9byS2SneQHGeV1yVTyuFSK58tARWt0esHEiE/
+         eOT1ucJaKb9NQ==
+Date:   Mon, 15 Mar 2021 17:11:52 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v5 03/24] wfx: add Makefile/Kconfig
+Message-ID: <YE95OCx5hWRedi+W@unreal>
+References: <20210315132501.441681-1-Jerome.Pouiller@silabs.com>
+ <20210315132501.441681-4-Jerome.Pouiller@silabs.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210315132501.441681-4-Jerome.Pouiller@silabs.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add device tree support to b53_mmap.c while keeping platform devices support.
+On Mon, Mar 15, 2021 at 02:24:40PM +0100, Jerome Pouiller wrote:
+> From: JÈrÙme Pouiller <jerome.pouiller@silabs.com>
+>
+> Signed-off-by: JÈrÙme Pouiller <jerome.pouiller@silabs.com>
+> ---
+>  drivers/net/wireless/silabs/wfx/Kconfig  | 12 +++++++++++
+>  drivers/net/wireless/silabs/wfx/Makefile | 26 ++++++++++++++++++++++++
+>  2 files changed, 38 insertions(+)
+>  create mode 100644 drivers/net/wireless/silabs/wfx/Kconfig
+>  create mode 100644 drivers/net/wireless/silabs/wfx/Makefile
+>
+> diff --git a/drivers/net/wireless/silabs/wfx/Kconfig b/drivers/net/wireless/silabs/wfx/Kconfig
+> new file mode 100644
+> index 000000000000..3be4b1e735e1
+> --- /dev/null
+> +++ b/drivers/net/wireless/silabs/wfx/Kconfig
+> @@ -0,0 +1,12 @@
+> +config WFX
+> +	tristate "Silicon Labs wireless chips WF200 and further"
+> +	depends on MAC80211
+> +	depends on MMC || !MMC # do not allow WFX=y if MMC=m
+> +	depends on (SPI || MMC)
+> +	help
+> +	  This is a driver for Silicons Labs WFxxx series (WF200 and further)
+> +	  chipsets. This chip can be found on SPI or SDIO buses.
+> +
+> +	  Silabs does not use a reliable SDIO vendor ID. So, to avoid conflicts,
+> +	  the driver won't probe the device if it is not also declared in the
+> +	  Device Tree.
+> diff --git a/drivers/net/wireless/silabs/wfx/Makefile b/drivers/net/wireless/silabs/wfx/Makefile
+> new file mode 100644
+> index 000000000000..f399962c8619
+> --- /dev/null
+> +++ b/drivers/net/wireless/silabs/wfx/Makefile
+> @@ -0,0 +1,26 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +# Necessary for CREATE_TRACE_POINTS
+> +CFLAGS_debug.o = -I$(src)
 
-Signed-off-by: √Ålvaro Fern√°ndez Rojas <noltari@gmail.com>
----
- v2: add change suggested by Florian Fainelli (less "OF-centric") and replace
-  brcm,ports property with a ports child scan.
+I wonder if it is still relevant outside of the staging tree.
 
- drivers/net/dsa/b53/b53_mmap.c | 54 ++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
-
-diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
-index c628d0980c0b..94a4e3929ebf 100644
---- a/drivers/net/dsa/b53/b53_mmap.c
-+++ b/drivers/net/dsa/b53/b53_mmap.c
-@@ -16,6 +16,7 @@
-  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-  */
- 
-+#include <linux/bits.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/io.h>
-@@ -228,11 +229,64 @@ static const struct b53_io_ops b53_mmap_ops = {
- 	.write64 = b53_mmap_write64,
- };
- 
-+static int b53_mmap_probe_of(struct platform_device *pdev,
-+			     struct b53_platform_data **ppdata)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
-+	struct device_node *of_ports, *of_port;
-+	struct b53_platform_data *pdata;
-+	void __iomem *mem;
-+
-+	mem = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(mem))
-+		return PTR_ERR(mem);
-+
-+	pdata = devm_kzalloc(dev, sizeof(struct b53_platform_data),
-+			     GFP_KERNEL);
-+	if (!pdata)
-+		return -ENOMEM;
-+
-+	pdata->regs = mem;
-+	pdata->chip_id = BCM63XX_DEVICE_ID;
-+	pdata->big_endian = of_property_read_bool(np, "big-endian");
-+
-+	of_ports = of_get_child_by_name(np, "ports");
-+	if (!of_ports) {
-+		dev_err(dev, "no ports child node found\n");
-+		return -EINVAL;
-+	}
-+
-+	for_each_available_child_of_node(of_ports, of_port) {
-+		u32 reg;
-+
-+		if (of_property_read_u32(of_port, "reg", &reg))
-+			continue;
-+
-+		if (reg < B53_CPU_PORT)
-+			pdata->enabled_ports |= BIT(reg);
-+	}
-+
-+	*ppdata = pdata;
-+
-+	return 0;
-+}
-+
- static int b53_mmap_probe(struct platform_device *pdev)
- {
-+	struct device_node *np = pdev->dev.of_node;
- 	struct b53_platform_data *pdata = pdev->dev.platform_data;
- 	struct b53_mmap_priv *priv;
- 	struct b53_device *dev;
-+	int ret;
-+
-+	if (!pdata && np) {
-+		ret = b53_mmap_probe_of(pdev, &pdata);
-+		if (ret) {
-+			dev_err(&pdev->dev, "OF probe error\n");
-+			return ret;
-+		}
-+	}
- 
- 	if (!pdata)
- 		return -EINVAL;
--- 
-2.20.1
-
+Thanks
