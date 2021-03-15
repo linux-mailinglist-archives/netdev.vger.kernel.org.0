@@ -2,103 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E83B33ADCA
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 09:42:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7138933ADD6
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 09:46:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbhCOImJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 04:42:09 -0400
-Received: from z11.mailgun.us ([104.130.96.11]:59014 "EHLO z11.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229523AbhCOIli (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 04:41:38 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1615797698; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=9Yz2prTldpg06djW1uSjsLo9RAV7sQVLS2v0kM5ni7Y=; b=atA8sXeHxcX6RGvxpdgJVQE0UOw2nSN9ITssYVkya2hmjSy2/KqqjCMdhZvlTDrU13sBt2Yx
- D03Yp1vwAcOUS3MGkt2Px3z9Ic3SdEjT3RAPjCcEnGf6woyqoIMjts05e4AT1Ia8vQEXNohj
- jCXYPGq4zdA7KMAVZTosRS+CfPM=
-X-Mailgun-Sending-Ip: 104.130.96.11
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 604f1dc05d70193f8863aebc (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 15 Mar 2021 08:41:36
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 24727C43461; Mon, 15 Mar 2021 08:41:36 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S229517AbhCOIqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 04:46:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33909 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229652AbhCOIpj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 04:45:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615797938;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7aGBPeiSBPhKk5XLH6RNa1t7S9xQFcMLEe8c7bu9zJI=;
+        b=O+ZQ/MtUhRhyYoYEypXFW6FjvZqS7acUVh9dDX+TBYbreNrHwiG8EYScvDQMEZ7lMkMH0H
+        SUh+Xm6dvKugUmqHfCje7ikg3q5UZDOqP/c2uXjU8Xb9xywcmloz6gtN9izG/C0RvskByW
+        Mkb/u9jJtsXUnLSklfOoFbActvz4Bk4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-458-15OmnOoSOvmymmXFmeEl8Q-1; Mon, 15 Mar 2021 04:45:36 -0400
+X-MC-Unique: 15OmnOoSOvmymmXFmeEl8Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2C5D0C43463;
-        Mon, 15 Mar 2021 08:41:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2C5D0C43463
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Aditya Srivastava <yashsri421@gmail.com>, siva8118@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        amitkarwar@gmail.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 00/10] rsi: fix comment syntax in file headers
-References: <20210314201818.27380-1-yashsri421@gmail.com>
-        <CAKXUXMzH-cUVeuCT6eM_0iHzgKpzvZUPO6pKNpD0yUp2td09Ug@mail.gmail.com>
-Date:   Mon, 15 Mar 2021 10:41:30 +0200
-In-Reply-To: <CAKXUXMzH-cUVeuCT6eM_0iHzgKpzvZUPO6pKNpD0yUp2td09Ug@mail.gmail.com>
-        (Lukas Bulwahn's message of "Mon, 15 Mar 2021 09:01:56 +0100")
-Message-ID: <87a6r4u7ut.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CC6A2EC1A0;
+        Mon, 15 Mar 2021 08:45:35 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 722461F43B;
+        Mon, 15 Mar 2021 08:45:31 +0000 (UTC)
+Date:   Mon, 15 Mar 2021 09:45:30 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        brouer@redhat.com
+Subject: Re: [PATCH v3 net-next 0/2] pktgen: scripts improvements
+Message-ID: <20210315094530.6a77018f@carbon>
+In-Reply-To: <20210311103253.14676-1-irusskikh@marvell.com>
+References: <20210311103253.14676-1-irusskikh@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lukas Bulwahn <lukas.bulwahn@gmail.com> writes:
+On Thu, 11 Mar 2021 11:32:51 +0100
+Igor Russkikh <irusskikh@marvell.com> wrote:
 
-> On Sun, Mar 14, 2021 at 9:18 PM Aditya Srivastava <yashsri421@gmail.com> wrote:
->>
->> The opening comment mark '/**' is used for highlighting the beginning of
->> kernel-doc comments.
->> There are files in drivers/net/wireless/rsi which follow this syntax in
->> their file headers, i.e. start with '/**' like comments, which causes
->> unexpected warnings from kernel-doc.
->>
->> E.g., running scripts/kernel-doc -none on drivers/net/wireless/rsi/rsi_coex.h
->> causes this warning:
->> "warning: wrong kernel-doc identifier on line:
->>  * Copyright (c) 2018 Redpine Signals Inc."
->>
->> Similarly for other files too.
->>
->> Provide a simple fix by replacing the kernel-doc like comment syntax with
->> general format, i.e. "/*", to prevent kernel-doc from parsing it.
->>
->
-> Aditya, thanks for starting to clean up the repository following your
-> investigation on kernel-doc warnings.
->
-> The changes to all those files look sound.
->
-> However I think these ten patches are really just _one change_, and
-> hence, all can be put into a single commit.
+> Hello netdev community,
+> 
+> Please consider small improvements to pktgen scripts we use in our environment.
+> 
+> Adding delay parameter through command line,
+> Adding new -a (append) parameter to make flex runs
+> 
+> v3: change us to ns in docs
+> v2: Review comments from Jesper
+> 
+> CC: Jesper Dangaard Brouer <brouer@redhat.com>
 
-I agree, this is one logical change to a single driver so one patch will
-suffice. I think for cleanup changes like this one patch per driver is a
-good approach.
+Did a quick review and everything looks okay.
+The patches are already applied, but you will still get my ACK,
+even-though it will not make it to the commit log.
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+> Igor Russkikh (2):
+>   samples: pktgen: allow to specify delay parameter via new opt
+>   samples: pktgen: new append mode
+> 
+>  samples/pktgen/README.rst                     | 18 +++++++++++
+>  samples/pktgen/functions.sh                   |  7 ++++-
+>  samples/pktgen/parameters.sh                  | 15 ++++++++-
+>  .../pktgen_bench_xmit_mode_netif_receive.sh   |  3 --
+>  .../pktgen_bench_xmit_mode_queue_xmit.sh      |  3 --
+>  samples/pktgen/pktgen_sample01_simple.sh      | 25 ++++++++-------
+>  samples/pktgen/pktgen_sample02_multiqueue.sh  | 29 +++++++++--------
+>  .../pktgen_sample03_burst_single_flow.sh      | 15 ++++-----
+>  samples/pktgen/pktgen_sample04_many_flows.sh  | 17 +++++-----
+>  .../pktgen/pktgen_sample05_flow_per_thread.sh | 17 +++++-----
+>  ...sample06_numa_awared_queue_irq_affinity.sh | 31 ++++++++++---------
+>  11 files changed, 110 insertions(+), 70 deletions(-)
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
