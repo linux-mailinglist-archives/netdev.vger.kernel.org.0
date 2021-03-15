@@ -2,80 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AFB233AB32
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 06:40:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8005133AB5F
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 07:02:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbhCOFkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 01:40:18 -0400
-Received: from z11.mailgun.us ([104.130.96.11]:53055 "EHLO z11.mailgun.us"
+        id S229925AbhCOGB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 02:01:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37810 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230263AbhCOFkF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 01:40:05 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1615786805; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=FwJGjdysIo+zgRkoKbaKpsDYLmg5awOg5tV4j6Mxv6M=; b=OWwdWat4V/n1p7sa4iolOWYxvV/wIC5rK87p11MsjJCgywpsaGqod1yMdJgGoid8EfM0qK0S
- 6jDT2CjyFwRyRtPqoLlCXvIeeVCpSsy55HdCxBZ++22CTMv/XeSD6i9GecbLysV9VbCn3y8X
- zHVTJG1x6eR5p77M2jCY6RUwNTs=
-X-Mailgun-Sending-Ip: 104.130.96.11
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 604ef3265d70193f88fa2e10 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 15 Mar 2021 05:39:50
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6461EC43461; Mon, 15 Mar 2021 05:39:50 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 42DA4C433CA;
-        Mon, 15 Mar 2021 05:39:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 42DA4C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/3] iwlwifi: series with smaller improvements
-References: <22e63925-1469-2839-e4d3-c10d8658ba82@gmail.com>
-Date:   Mon, 15 Mar 2021 07:39:46 +0200
-In-Reply-To: <22e63925-1469-2839-e4d3-c10d8658ba82@gmail.com> (Heiner
-        Kallweit's message of "Sun, 14 Mar 2021 20:38:29 +0100")
-Message-ID: <87k0q9t1p9.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S229742AbhCOGB2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 02:01:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6554E64DD1;
+        Mon, 15 Mar 2021 06:01:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615788087;
+        bh=drYFlIid6rsqUkgt0Cko/3Jdwkm243e1+tZlPErUmX8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nA5GqDSOKxB0KaDZF6IQbql8tbEopmyQeyyGQniU9ZA7BaEGFv4yFCIKBNTymR4Yb
+         6KyT0G2gWIcj7ap/Hsn1GoQ1B3uMD3xRDuYgHvso/C2ZkajwnWSUcVv/djv9Ps6yox
+         PmUf9W76WRjLAe1Gv0jkyOKi2Iz0lpSQZ3QJ2WVW1ONgR4qEhalmQommguGkM9QJvq
+         tzkDdbY4XARJmRHrK50KpFAPsTM3Xs2DhI+Lb8hHjc5dIWZUJXn4pA0VQgTtuu3mO4
+         J5rHLeSywgd4t5cgIGhCJxlTqnHaD0MrgAkheTNAJo90i5zl4mqE3FlTv/tE0OAJ68
+         tvwGp0Q60a8Yg==
+Date:   Mon, 15 Mar 2021 14:01:21 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Michael Walle <michael@walle.cc>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH devicetree] arm64: dts: ls1028a: set up the real link
+ speed for ENETC port 2
+Message-ID: <20210315060121.GH11246@dragon>
+References: <20210308130834.2994658-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210308130834.2994658-1-olteanv@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Heiner Kallweit <hkallweit1@gmail.com> writes:
+On Mon, Mar 08, 2021 at 03:08:34PM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> In NXP LS1028A there is a MAC-to-MAC internal link between enetc_port2
+> and mscc_felix_port4. This link operates at 2.5Gbps and is described as
+> such for the mscc_felix_port4 node.
+> 
+> The reason for the discrepancy is a limitation in the PHY library
+> support for fixed-link nodes. Due to the fact that the PHY library
+> registers a software PHY which emulates the clause 22 register map, the
+> drivers/net/phy/fixed_phy.c driver only supports speeds up to 1Gbps.
+> 
+> The mscc_felix_port4 node is probed by DSA, which does not use the PHY
+> library directly, but phylink, and phylink has a different representation
+> for fixed-link nodes, one that does not have the limitation of not being
+> able to represent speeds > 1Gbps.
+> 
+> Since the enetc driver was converted to phylink too as of commit
+> 71b77a7a27a3 ("enetc: Migrate to PHYLINK and PCS_LYNX"), the limitation
+> has been practically lifted there too, and we can describe the real link
+> speed in the device tree now.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> Series includes smaller improvements.
->
-> Heiner Kallweit (3):
->   iwlwifi: use DECLARE_BITMAP macro
->   iwlwifi: switch "index larger than supported by driver" warning to
->     debug level
->   iwlwifi: use dma_set_mask_and_coherent
-
-iwlwifi patches go to iwlwifi-next, not net-next. But no need to resend
-just because of this.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Applied, thanks.
