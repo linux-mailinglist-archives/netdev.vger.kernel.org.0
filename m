@@ -2,107 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C7A333B4C4
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:40:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8EC33B4ED
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbhCONkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 09:40:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53792 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229613AbhCONjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 09:39:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615815579;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FBloEIKc9d+TaaEDfCG9lNf3Br/ubHPcgUeOPhTr6GA=;
-        b=WYh5YYJHw7TIENPxuvjrSsqRYyZxe5XmXCFjYV2eBOoFjC9VSGg74QfkFBB+y5ftXhU0Wg
-        YA14bRSH8BOv6C6u7PusRpbaLwzpQLSIhjamd3+j/30G8ZU+yxRfuzTU3XT2IltE229Dih
-        /68WUlHCqZjFECSz7tBEax7d3wzx04I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-574-jeXUEtpqMLCSpUTFmj-UZg-1; Mon, 15 Mar 2021 09:39:37 -0400
-X-MC-Unique: jeXUEtpqMLCSpUTFmj-UZg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7338E809AC7;
-        Mon, 15 Mar 2021 13:39:35 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7292118AAF;
-        Mon, 15 Mar 2021 13:39:29 +0000 (UTC)
-Date:   Mon, 15 Mar 2021 14:39:28 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>, brouer@redhat.com
-Subject: Re: [PATCH 7/7] net: page_pool: use alloc_pages_bulk in refill code
- path
-Message-ID: <20210315143928.5d94da8f@carbon>
-In-Reply-To: <YEvJmVrnTzKT1XAY@apalos.home>
-References: <20210312154331.32229-1-mgorman@techsingularity.net>
-        <20210312154331.32229-8-mgorman@techsingularity.net>
-        <CAKgT0UebK=mMwDV+UH8CqBRt0E0Koc7EB42kwgf0hYHDT_2OfQ@mail.gmail.com>
-        <YEvJmVrnTzKT1XAY@apalos.home>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        id S229720AbhCONv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 09:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229507AbhCONve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 09:51:34 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C05EC06174A;
+        Mon, 15 Mar 2021 06:51:34 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id u5-20020a7bcb050000b029010e9316b9d5so16545537wmj.2;
+        Mon, 15 Mar 2021 06:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=hHSONVhizqE4bkH90HJXJlS0YHRaGhrU8+brpoTidfk=;
+        b=MZyW+mTOOO9YwxOqa2ROb/bQLQDTamr5z8KNQ54R7oc09XpWpEx7dmqcphgsf6cTDS
+         4yDAuiZDkdFLRBUbh9K0bRSn7O91Yge/dS0Tid8sHmWpejYhmr38Vg4KxPRAdgP9DTXG
+         B/zcnS7eKjuX/TRjocbqe1QJ/NPOOfNGAcVkFgIsXIuMUM+bDGVCgpDyYrVayWPuLRXG
+         N5nbP2s0yhgpp6DPgYOJ7rJNtq0/qi4RM8+dCJrj211G9JdtdWgciZQJoEvPQzRcVG9P
+         B0IOQV44OPvk48baCwNwAwaXa+/y4kwBx8GXRSJUAzHDdKzpOvsNoYMMMbjSMS8QoKv5
+         zCEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=hHSONVhizqE4bkH90HJXJlS0YHRaGhrU8+brpoTidfk=;
+        b=FprAPsEQ7pX1iCe0ubvOecR0yiPAcOsSdcmSQHaVVtRABH8sB8KiejYpgC/pPRzJuF
+         IyFQURYUQpQ+o6nPM+my/74w9SvXHdtYWC2fkCBJfSSZ3KCOlWWn2NxvQ85bBUeFQuTt
+         8G7XPFtpgWU2tP9CahT/JV5D7W3DCH5W17RU8W9M5ts86bRXl8Ul/SbHh62CV6GErnqR
+         Ekfru4uvsZa/Fzjm3S6U4OmeGbiN6zRW84IYLoku78VQa2fJ93GWKIZJnKqj7pWgP6mA
+         qnCza3bZBTT/moZgqjNyl30bOQan+O0GlHaKxKVLiJH9QLJkQ/A7e9nuyXfW+k+eiTE+
+         wpRg==
+X-Gm-Message-State: AOAM533bXNZEEVruEoXaEu6GsaqQxamHyVH53KxO15aBYP+Y0yY5RoD3
+        4K/IJO53XfB0ekUBAtTNxf4=
+X-Google-Smtp-Source: ABdhPJzuxeMiYbHeNsDKhCqgk0QH2VSQXNWgugKDAdouqJ+BGvvRLUWh7/NBU90nLyPQKcEWlI3uTA==
+X-Received: by 2002:a05:600c:190c:: with SMTP id j12mr26549517wmq.133.1615816293211;
+        Mon, 15 Mar 2021 06:51:33 -0700 (PDT)
+Received: from macbook-pro-alvaro.lan ([80.31.204.166])
+        by smtp.gmail.com with ESMTPSA id i26sm13019586wmb.18.2021.03.15.06.51.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Mar 2021 06:51:32 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
+Subject: Re: [PATCH 1/2] dt-bindings: net: Add bcm6368-mdio-mux bindings
+From:   =?utf-8?Q?=C3=81lvaro_Fern=C3=A1ndez_Rojas?= <noltari@gmail.com>
+In-Reply-To: <YEaO7GT7NgL30LXN@lunn.ch>
+Date:   Mon, 15 Mar 2021 14:51:29 +0100
+Cc:     Jonas Gorski <jonas.gorski@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <BBE48879-1AC0-4C3A-8A0C-B0836E6D0B38@gmail.com>
+References: <20210308184102.3921-1-noltari@gmail.com>
+ <20210308184102.3921-2-noltari@gmail.com> <YEaO7GT7NgL30LXN@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 12 Mar 2021 22:05:45 +0200
-Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+Hi Andrew,
 
-> [...]
-> > 6. return last_page
-> >   
-> > > +       /* Remaining pages store in alloc.cache */
-> > > +       list_for_each_entry_safe(page, next, &page_list, lru) {
-> > > +               list_del(&page->lru);
-> > > +               if ((pp_flags & PP_FLAG_DMA_MAP) &&
-> > > +                   unlikely(!page_pool_dma_map(pool, page))) {
-> > > +                       put_page(page);
-> > > +                       continue;
-> > > +               }  
-> > 
-> > So if you added a last_page pointer what you could do is check for it
-> > here and assign it to the alloc cache. If last_page is not set the
-> > block would be skipped.
-> >   
-> > > +               if (likely(pool->alloc.count < PP_ALLOC_CACHE_SIZE)) {
-> > > +                       pool->alloc.cache[pool->alloc.count++] = page;
-> > > +                       pool->pages_state_hold_cnt++;
-> > > +                       trace_page_pool_state_hold(pool, page,
-> > > +                                                  pool->pages_state_hold_cnt);
-> > > +               } else {
-> > > +                       put_page(page);  
-> > 
-> > If you are just calling put_page here aren't you leaking DMA mappings?
-> > Wouldn't you need to potentially unmap the page before you call
-> > put_page on it?  
-> 
-> Oops, I completely missed that. Alexander is right here.
+> El 8 mar 2021, a las 21:54, Andrew Lunn <andrew@lunn.ch> escribi=C3=B3:
+>=20
+> On Mon, Mar 08, 2021 at 07:41:01PM +0100, =C3=81lvaro Fern=C3=A1ndez =
+Rojas wrote:
+>> +  clocks:
+>> +    maxItems: 1
+>=20
+> Hi =C3=81lvaro
+>=20
+> The driver does not make use of this clocks property. Is it really
+> needed?
 
-Well, the put_page() case can never happen as the pool->alloc.cache[]
-is known to be empty when this function is called.  I do agree that the
-code looks cumbersome and should free the DMA mapping, if it could
-happen.
+Nice catch, this was copy & pasted from other driver.
+I will remove it on v2.
 
--- 
+>=20
+> 	Andrew
+
 Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+=C3=81lvaro.=
