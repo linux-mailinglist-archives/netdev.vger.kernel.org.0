@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA9BF33B4AA
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:35:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D065433B4AD
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 14:35:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbhCONfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 09:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
+        id S229775AbhCONfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 09:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbhCONfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 09:35:02 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B602FC06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 06:35:02 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id o11so33410055iob.1
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 06:35:02 -0700 (PDT)
+        with ESMTP id S229636AbhCONfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 09:35:04 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05A6C06174A
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 06:35:03 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id w11so7578617iol.13
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 06:35:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3pf3F65RZucsIMXc3J9HNUjACeQQX3TS4fzpwXGEtjU=;
-        b=yd2ISsg+IwbCyrOjfk5XLhW/EAi2HWd64fKaH10eoZaXbuv9wG+RUtGfBj4lvoV4sV
-         dWQ5pGYOqlVMQ6OS+bn9pstrhXMiGWZlVFFVfb2PuCSTHUUtusVUfBygW3V1YJ7islt/
-         JTtZHKym0NxmkLfJ7Ruh1XB8759kcEVrvSuW2ZdXZpJsH6s1V22VrP9LlKNR/5sUQC85
-         oCsZz/Nfoq5EOnHkzkfZPWD7hfqy0e0FVaOjHgylTb7yb6JGWwac9AjrypQfFwsljKkK
-         wttn23vo+iVYxyuotjXXHEjzR5B4s7TyhuR+kJGOS2i1imX1+wTqGRKKgD7CqDbERBfy
-         p3ow==
+        bh=a5fPLpnmRYKCCGzy3IvCXfKkaVbI3lZUkXb2iTfRIc4=;
+        b=Qf4bX1koH8aDNSOhdjjfxdweABS28diydyKTn8jEP2JSfXgSZBpQPIRvTg81GOyRmc
+         jECxRjOUZkO3RuW8K6RBvT6VHaI4YSzWWcvGe/l/85MxKxH1/1m5q0JI4/05LA6rZ7xW
+         j/vGFQ8DF2ydgK1RxD6Q0vgPpqCJGN0dmywLbJ7R/MpIG5AoS49HVABA3f4UN/+y8aSX
+         +Jqa42HRI67eEYes3Wco9wmys6P3Y9MYOc5BX+vY0IX1Dj0s3d4CF/UjoZSdkiKpYh0C
+         wzOYhsad1tStUZpafRi5Nyv7nuVsooguOJSIwk2ozQW35Dsq2OsKBgBMrwKegmfkcxoY
+         tzLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3pf3F65RZucsIMXc3J9HNUjACeQQX3TS4fzpwXGEtjU=;
-        b=LNiI7UcROCfuoMnPZhsLMUAnx+lG1f5Mjpswr+zWZNRqdY51joCEtvcx5OP8duRUso
-         hkTQTVYRq8EU+Xh5h04sLuMuytss3c7UFSFZLDQEVzUoD3ShCehV/kU4aVVFojbvDitH
-         7+0k4j8eX/SR7KUONbjDyWQ5hFws2dfzwtE1MDWigCahrA2cFLY1x+a74ynsc21msbK3
-         Fp/hRXf7bMxK9XCucDRgcmPwu/53knMLiIm8SYn9nTpdjfu37PYWC8alS5z+MkWPqkS5
-         NXS8h3h32my9mfXDEnGWClGrga+xVBT2+VRDeEy85gw9U0ZFpYiIx3GkgWKaoiHI7M6+
-         myRw==
-X-Gm-Message-State: AOAM532LlBzXmD2qtpN+xMKls0cQuvfqzzLaQSwuytStjNfUdpFSOYGR
-        kUPoW7g7gRRJ99A7zNnRVBIZ4w==
-X-Google-Smtp-Source: ABdhPJx+/pgiuN7HUIEQAxcShKif3mye7slktFKqsqrxc7mMB9KvNQThW5JbGeNHrkz1yabomgdcKg==
-X-Received: by 2002:a05:6638:1390:: with SMTP id w16mr9543353jad.83.1615815302226;
-        Mon, 15 Mar 2021 06:35:02 -0700 (PDT)
+        bh=a5fPLpnmRYKCCGzy3IvCXfKkaVbI3lZUkXb2iTfRIc4=;
+        b=E9dCAqttUml0aR0AaCBCD5oZbtw2z4UIw7NcRcg7XgntIvIYInBQt4Ib467OLzBY8u
+         xuRwi1yi8SOprmMqWGmoacSVsXHHHj2MViCwvXxSZk1nQvH7vG5mDOG1x+pdLWcn0FXR
+         S0yH97Azw/IzD1o9u5P1ToCknGpNsqlujjZfaIFhknnuCnNbQQ1DakUDdElbs2cXWl+Z
+         SxeWYaAxcT9PX+J3oDHcYvzaNje8OuAiI3btTBmUk9m2zhn14a41p2fXb/6wumzG7ipW
+         VPIfQLbONr40GMjhLgpkWvgsaszbuuecG4Lnv3gEctnKucBNx+9uDIhIhJEKtyuMhqvz
+         rx/w==
+X-Gm-Message-State: AOAM532251h7ppo5eEx8bA4Wnq0+S2pNwCHOtIOrc0uC+XwXFEIt7IwN
+        ie3rtf+leC6qRmhIx48v3ZdNJg==
+X-Google-Smtp-Source: ABdhPJxXNkNDD1AVP5CktL1fbs5guEZK1hGDoUyPZ52m5fHI96UJ35Huq9fvPWBHKUHaHIURKLsg7A==
+X-Received: by 2002:a05:6638:2a3:: with SMTP id d3mr9849917jaq.42.1615815303313;
+        Mon, 15 Mar 2021 06:35:03 -0700 (PDT)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id o23sm7127672ioo.24.2021.03.15.06.35.01
+        by smtp.gmail.com with ESMTPSA id o23sm7127672ioo.24.2021.03.15.06.35.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 06:35:01 -0700 (PDT)
+        Mon, 15 Mar 2021 06:35:03 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     subashab@codeaurora.org, stranche@codeaurora.org,
         davem@davemloft.net, kuba@kernel.org
@@ -54,9 +54,9 @@ Cc:     sharathv@codeaurora.org, bjorn.andersson@linaro.org,
         evgreen@chromium.org, cpratapa@codeaurora.org,
         David.Laight@ACULAB.COM, olteanv@gmail.com, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4 3/6] net: qualcomm: rmnet: kill RMNET_MAP_GET_*() accessor macros
-Date:   Mon, 15 Mar 2021 08:34:52 -0500
-Message-Id: <20210315133455.1576188-4-elder@linaro.org>
+Subject: [PATCH net-next v4 4/6] net: qualcomm: rmnet: use masks instead of C bit-fields
+Date:   Mon, 15 Mar 2021 08:34:53 -0500
+Message-Id: <20210315133455.1576188-5-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210315133455.1576188-1-elder@linaro.org>
 References: <20210315133455.1576188-1-elder@linaro.org>
@@ -66,162 +66,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following macros, defined in "rmnet_map.h", assume a socket
-buffer is provided as an argument without any real indication this
-is the case.
-    RMNET_MAP_GET_MUX_ID()
-    RMNET_MAP_GET_CD_BIT()
-    RMNET_MAP_GET_PAD()
-    RMNET_MAP_GET_CMD_START()
-    RMNET_MAP_GET_LENGTH()
-What they hide is pretty trivial accessing of fields in a structure,
-and it's much clearer to see this if we do these accesses directly.
+The actual layout of bits defined in C bit-fields (e.g. int foo : 3)
+is implementation-defined.  Structures defined in <linux/if_rmnet.h>
+address this by specifying all bit-fields twice, to cover two
+possible layouts.
 
-So rather than using these accessor macros, assign a local
-variable of the map header pointer type to the socket buffer data
-pointer, and derereference that pointer variable.
+I think this pattern is repetitive and noisy, and I find the whole
+notion of compiler "bitfield endianness" to be non-intuitive.
 
-In "rmnet_map_data.c", use sizeof(object) rather than sizeof(type)
-in one spot.  Also, there's no need to byte swap 0; it's all zeros
-irrespective of endianness.
+Stop using C bit-fields for the command/data flag and the pad length
+fields in the rmnet_map structure, and define a single-byte flags
+field instead.  Define a mask for the single bit "command" flag,
+and another mask for the encoded pad length.  The content of both
+fields can be accessed using a simple bitwise AND operation.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c | 10 ++++++----
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h      | 12 ------------
- .../net/ethernet/qualcomm/rmnet/rmnet_map_command.c  | 11 ++++++++---
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c |  4 ++--
- 4 files changed, 16 insertions(+), 21 deletions(-)
+v4: - Don't use u8_get_bits() to access the pad length
+    - Added BUILD_BUG_ON() to ensure field width is adequate
+v3: - Use BIT(x) and don't use u8_get_bits() for the command flag
+
+ .../ethernet/qualcomm/rmnet/rmnet_handlers.c  |  4 ++--
+ .../ethernet/qualcomm/rmnet/rmnet_map_data.c  |  4 +++-
+ include/linux/if_rmnet.h                      | 23 ++++++++-----------
+ 3 files changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-index 3d00b32323084..2a6b2a609884c 100644
+index 2a6b2a609884c..0be5ac7ab2617 100644
 --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
 +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-@@ -56,20 +56,22 @@ static void
- __rmnet_map_ingress_handler(struct sk_buff *skb,
- 			    struct rmnet_port *port)
- {
-+	struct rmnet_map_header *map_header = (void *)skb->data;
- 	struct rmnet_endpoint *ep;
+@@ -61,7 +61,7 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
  	u16 len, pad;
  	u8 mux_id;
  
--	if (RMNET_MAP_GET_CD_BIT(skb)) {
-+	if (map_header->cd_bit) {
-+		/* Packet contains a MAP command (not data) */
+-	if (map_header->cd_bit) {
++	if (map_header->flags & MAP_CMD_FLAG) {
+ 		/* Packet contains a MAP command (not data) */
  		if (port->data_format & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
  			return rmnet_map_command(skb, port);
- 
- 		goto free_skb;
+@@ -70,7 +70,7 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
  	}
  
--	mux_id = RMNET_MAP_GET_MUX_ID(skb);
--	pad = RMNET_MAP_GET_PAD(skb);
--	len = RMNET_MAP_GET_LENGTH(skb) - pad;
-+	mux_id = map_header->mux_id;
-+	pad = map_header->pad_len;
-+	len = ntohs(map_header->pkt_len) - pad;
+ 	mux_id = map_header->mux_id;
+-	pad = map_header->pad_len;
++	pad = map_header->flags & MAP_PAD_LEN_MASK;
+ 	len = ntohs(map_header->pkt_len) - pad;
  
  	if (mux_id >= RMNET_MAX_LOGICAL_EP)
- 		goto free_skb;
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-index 576501db2a0bc..2aea153f42473 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-@@ -32,18 +32,6 @@ enum rmnet_map_commands {
- 	RMNET_MAP_COMMAND_ENUM_LENGTH
- };
- 
--#define RMNET_MAP_GET_MUX_ID(Y) (((struct rmnet_map_header *) \
--				 (Y)->data)->mux_id)
--#define RMNET_MAP_GET_CD_BIT(Y) (((struct rmnet_map_header *) \
--				(Y)->data)->cd_bit)
--#define RMNET_MAP_GET_PAD(Y) (((struct rmnet_map_header *) \
--				(Y)->data)->pad_len)
--#define RMNET_MAP_GET_CMD_START(Y) ((struct rmnet_map_control_command *) \
--				    ((Y)->data + \
--				      sizeof(struct rmnet_map_header)))
--#define RMNET_MAP_GET_LENGTH(Y) (ntohs(((struct rmnet_map_header *) \
--					(Y)->data)->pkt_len))
--
- #define RMNET_MAP_COMMAND_REQUEST     0
- #define RMNET_MAP_COMMAND_ACK         1
- #define RMNET_MAP_COMMAND_UNSUPPORTED 2
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
-index beaee49621287..add0f5ade2e61 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
-@@ -12,12 +12,13 @@ static u8 rmnet_map_do_flow_control(struct sk_buff *skb,
- 				    struct rmnet_port *port,
- 				    int enable)
- {
-+	struct rmnet_map_header *map_header = (void *)skb->data;
- 	struct rmnet_endpoint *ep;
- 	struct net_device *vnd;
- 	u8 mux_id;
- 	int r;
- 
--	mux_id = RMNET_MAP_GET_MUX_ID(skb);
-+	mux_id = map_header->mux_id;
- 
- 	if (mux_id >= RMNET_MAX_LOGICAL_EP) {
- 		kfree_skb(skb);
-@@ -49,6 +50,7 @@ static void rmnet_map_send_ack(struct sk_buff *skb,
- 			       unsigned char type,
- 			       struct rmnet_port *port)
- {
-+	struct rmnet_map_header *map_header = (void *)skb->data;
- 	struct rmnet_map_control_command *cmd;
- 	struct net_device *dev = skb->dev;
- 
-@@ -58,7 +60,8 @@ static void rmnet_map_send_ack(struct sk_buff *skb,
- 
- 	skb->protocol = htons(ETH_P_MAP);
- 
--	cmd = RMNET_MAP_GET_CMD_START(skb);
-+	/* Command data immediately follows the MAP header */
-+	cmd = (struct rmnet_map_control_command *)(map_header + 1);
- 	cmd->cmd_type = type & 0x03;
- 
- 	netif_tx_lock(dev);
-@@ -71,11 +74,13 @@ static void rmnet_map_send_ack(struct sk_buff *skb,
-  */
- void rmnet_map_command(struct sk_buff *skb, struct rmnet_port *port)
- {
-+	struct rmnet_map_header *map_header = (void *)skb->data;
- 	struct rmnet_map_control_command *cmd;
- 	unsigned char command_name;
- 	unsigned char rc = 0;
- 
--	cmd = RMNET_MAP_GET_CMD_START(skb);
-+	/* Command data immediately follows the MAP header */
-+	cmd = (struct rmnet_map_control_command *)(map_header + 1);
- 	command_name = cmd->command_name;
- 
- 	switch (command_name) {
 diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index bd1aa11c9ce59..fd55269c2ce3c 100644
+index fd55269c2ce3c..3c3307949db00 100644
 --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
 +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -321,7 +321,7 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
- 		return NULL;
+@@ -286,6 +286,7 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
+ 		return map_header;
+ 	}
  
- 	maph = (struct rmnet_map_header *)skb->data;
--	packet_len = ntohs(maph->pkt_len) + sizeof(struct rmnet_map_header);
-+	packet_len = ntohs(maph->pkt_len) + sizeof(*maph);
++	BUILD_BUG_ON(MAP_PAD_LEN_MASK < 3);
+ 	padding = ALIGN(map_datalen, 4) - map_datalen;
  
- 	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
- 		packet_len += sizeof(struct rmnet_map_dl_csum_trailer);
-@@ -330,7 +330,7 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
- 		return NULL;
+ 	if (padding == 0)
+@@ -299,7 +300,8 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
  
- 	/* Some hardware can send us empty frames. Catch them */
--	if (ntohs(maph->pkt_len) == 0)
-+	if (!maph->pkt_len)
- 		return NULL;
+ done:
+ 	map_header->pkt_len = htons(map_datalen + padding);
+-	map_header->pad_len = padding & 0x3F;
++	/* This is a data packet, so the CMD bit is 0 */
++	map_header->flags = padding & MAP_PAD_LEN_MASK;
  
- 	skbn = alloc_skb(packet_len + RMNET_MAP_DEAGGR_SPACING, GFP_ATOMIC);
+ 	return map_header;
+ }
+diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
+index 8c7845baf3837..a02f0a3df1d9a 100644
+--- a/include/linux/if_rmnet.h
++++ b/include/linux/if_rmnet.h
+@@ -6,21 +6,18 @@
+ #define _LINUX_IF_RMNET_H_
+ 
+ struct rmnet_map_header {
+-#if defined(__LITTLE_ENDIAN_BITFIELD)
+-	u8  pad_len:6;
+-	u8  reserved_bit:1;
+-	u8  cd_bit:1;
+-#elif defined (__BIG_ENDIAN_BITFIELD)
+-	u8  cd_bit:1;
+-	u8  reserved_bit:1;
+-	u8  pad_len:6;
+-#else
+-#error	"Please fix <asm/byteorder.h>"
+-#endif
+-	u8  mux_id;
+-	__be16 pkt_len;
++	u8 flags;			/* MAP_CMD_FLAG, MAP_PAD_LEN_MASK */
++	u8 mux_id;
++	__be16 pkt_len;			/* Length of packet, including pad */
+ }  __aligned(1);
+ 
++/* rmnet_map_header flags field:
++ *  PAD_LEN:	number of pad bytes following packet data
++ *  CMD:	1 = packet contains a MAP command; 0 = packet contains data
++ */
++#define MAP_PAD_LEN_MASK		GENMASK(5, 0)
++#define MAP_CMD_FLAG			BIT(7)
++
+ struct rmnet_map_dl_csum_trailer {
+ 	u8  reserved1;
+ #if defined(__LITTLE_ENDIAN_BITFIELD)
 -- 
 2.27.0
 
