@@ -2,123 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0718E33C279
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:51:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E03CB33C27E
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbhCOQum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 12:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbhCOQuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 12:50:17 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A8BC06174A
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 09:50:17 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id u20so34063107iot.9
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 09:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QdkvPlUQ3WJIwDb57XNHqEbjbn2hX+UZTDnLqhq+dlQ=;
-        b=EFs8NSYIJQOkU7ePFaqgFJYZNPm4tcscR+8bQw8fhyj1+GskrsB2MN910WHckvf7Qs
-         vjAqyl+vtxeM5SIogX5iuBD/m8ZuVo+JeFq+Y/g/FKJmXUsC1R2eHzw6XK+39emWZbBG
-         oUgltYOCo5TKi6HvNKmzlBl6qMvroDKzKYl80P9n4e3YL4sNNkr83QNNw5+23H6xXk5T
-         jIXX19HrubMYiUunZB+Vs3lG1nFAy0hgfYOUFv0WOqzRSCOeyucrIdfRZmH8jTq0U86J
-         OQ4dyWPtmgVF/J2nWstdQBjxtp1i27JhyUaSKAWKtnm7sRa05ntPAZYP7cReNYHa2qBb
-         T6xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QdkvPlUQ3WJIwDb57XNHqEbjbn2hX+UZTDnLqhq+dlQ=;
-        b=UoKu/+VYpba7anFx9jnoG+xMC5ms3YUvbUUCFqPfl1RjjbdehlHv7HsTOTqG/15DtF
-         3AiQ8TMY32fa9IMTsFue0h57X/D9R5ixULqqDTm6w3SIghoIs444Uste+I0aF43GLTXZ
-         dtTnRebnVFnn7vffTWibWbYatuGNtVrJaJ11TW6bsptK2sxVJeKdUlmbSJWLnoM+/6Kh
-         x4IJCSvbpf65fu4720B3zTWa4GTwWDhQNqSfOz0bwI9CUtgDpyC7t43MeeZeKYoHGa+b
-         mVqQIbvw1Da8g9iL3oSjBbhEXTABPV2/nOQNw/Rdz1PdtEQMF3CQcyAhQ8W0k7Nv54CB
-         oUrg==
-X-Gm-Message-State: AOAM5310ydHL7XpBFkIHcrdspS5c35XbDiIOaqk4tc4VvFTE4Dv8oktN
-        yfFCBHbIzO4aClVhcsCEcApO9HDCpnPMww==
-X-Google-Smtp-Source: ABdhPJy0Ql0ByOArOEb5+TwNv4pBJKtLwgG47NlhxW7+QdwCLgHXCuLeuSdu/0FtPG8c8WLKdOGdrA==
-X-Received: by 2002:a05:6638:11c2:: with SMTP id g2mr10146678jas.64.1615827016469;
-        Mon, 15 Mar 2021 09:50:16 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id o5sm7811010ila.69.2021.03.15.09.50.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Mar 2021 09:50:16 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/3] net: ipa: QMI fixes
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210315152112.1907968-1-elder@linaro.org>
- <20210315163807.GA29414@work>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <3e01bc57-8667-4c56-2806-2ba009887bd4@linaro.org>
-Date:   Mon, 15 Mar 2021 11:50:15 -0500
+        id S230403AbhCOQwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 12:52:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57085 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232488AbhCOQvp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 12:51:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615827104;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MFFcd4wD8/CMTprSPx6NQ5pGVPcuBak1/nAOtKKtWKQ=;
+        b=WuhGiCrPxSAwPNs/wwshEq0B5MzHKYk31vyK1yy8ZPFkKrCOeP6o/uMGDb2g7jJh07yzAB
+        x/xjHZvi90eaWIfEt+rgex+Rqb5QQ6ZhmdojcFNKVCw7dl/0pjzK45S0MINmFVx7VeKJcd
+        GuArS1/2ntul3blQSfWBzcAbrmWDTlc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-268-HlO-i1j-P7ub0ae-8cCVmA-1; Mon, 15 Mar 2021 12:51:41 -0400
+X-MC-Unique: HlO-i1j-P7ub0ae-8cCVmA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 98F951B2C981;
+        Mon, 15 Mar 2021 16:51:39 +0000 (UTC)
+Received: from [10.36.112.75] (ovpn-112-75.ams2.redhat.com [10.36.112.75])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 359965D745;
+        Mon, 15 Mar 2021 16:51:31 +0000 (UTC)
+Subject: Re: [PATCH v4 06/14] vringh: add vringh_kiov_length() helper
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Cc:     netdev@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        linux-kernel@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+References: <20210315163450.254396-1-sgarzare@redhat.com>
+ <20210315163450.254396-7-sgarzare@redhat.com>
+From:   Laurent Vivier <lvivier@redhat.com>
+Message-ID: <b06eb44c-d4e5-e47c-fbf5-26be469aae9e@redhat.com>
+Date:   Mon, 15 Mar 2021 17:51:30 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <20210315163807.GA29414@work>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210315163450.254396-7-sgarzare@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/21 11:38 AM, Manivannan Sadhasivam wrote:
-> Hi Alex,
+On 15/03/2021 17:34, Stefano Garzarella wrote:
+> This new helper returns the total number of bytes covered by
+> a vringh_kiov.
 > 
-> On Mon, Mar 15, 2021 at 10:21:09AM -0500, Alex Elder wrote:
->> Mani Sadhasivam discovered some errors in the definitions of some
->> QMI messages used for IPA.  This series addresses those errors,
->> and extends the definition of one message type to include some
->> newly-defined fields.
->>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  include/linux/vringh.h | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 > 
-> Thanks for the patches. I guess you need to add Fixes tag for patches 1,2 and
-> they should be backported to stable.
+> diff --git a/include/linux/vringh.h b/include/linux/vringh.h
+> index 755211ebd195..84db7b8f912f 100644
+> --- a/include/linux/vringh.h
+> +++ b/include/linux/vringh.h
+> @@ -199,6 +199,17 @@ static inline void vringh_kiov_cleanup(struct vringh_kiov *kiov)
+>  	kiov->iov = NULL;
+>  }
+>  
+> +static inline size_t vringh_kiov_length(struct vringh_kiov *kiov)
+> +{
+> +	size_t len = 0;
+> +	int i;
+> +
+> +	for (i = kiov->i; i < kiov->used; i++)
+> +		len += kiov->iov[i].iov_len;
+> +
+> +	return len;
+> +}
 
-I did not do that, intentionally.  The reason is that the
-existing code only supports IPA v3.5.1 and IPAv4.2.  And
-these bugs seem to cause no problems there.
+Do we really need an helper?
 
-There are some patches coming very soon that will add
-more formal support for IPA v4.5 (where I know you
-found these issues).  Those will not be back-ported.
+For instance, we can use:
 
-So these fixes don't appear to be necessary for existing
-supported platforms.
+len = iov_length((struct iovec *)kiov->iov, kiov->used);
 
-If you still believe I should have these back-ported,
-I have no objection to re-posting for that.  But I
-wanted to explain my reasoning before doing it.
+Or do we want to avoid the cast?
 
---> Do you still think I should have these back-ported?
-
-Thanks.
-
-					-Alex
-
-> 
-> Thanks,
-> Mani
-> 
->> 					-Alex
->>
->> Alex Elder (3):
->>    net: ipa: fix a duplicated tlv_type value
->>    net: ipa: fix another QMI message definition
->>    net: ipa: extend the INDICATION_REGISTER request
->>
->>   drivers/net/ipa/ipa_qmi_msg.c | 78 +++++++++++++++++++++++++++++++----
->>   drivers/net/ipa/ipa_qmi_msg.h |  6 ++-
->>   2 files changed, 74 insertions(+), 10 deletions(-)
->>
->> -- 
->> 2.27.0
->>
+Thanks,
+Laurent
 
