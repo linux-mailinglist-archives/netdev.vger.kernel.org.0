@@ -2,173 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1387B33AF70
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 10:59:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8182133AF97
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 11:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbhCOJ7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 05:59:04 -0400
-Received: from foss.arm.com ([217.140.110.172]:56956 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229624AbhCOJ63 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 05:58:29 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1E82F1FB;
-        Mon, 15 Mar 2021 02:58:29 -0700 (PDT)
-Received: from [10.57.12.51] (unknown [10.57.12.51])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B1A7F3F70D;
-        Mon, 15 Mar 2021 02:58:26 -0700 (PDT)
-Subject: Re: [PATCH v2 1/5] thermal/drivers/core: Use a char pointer for the
- cooling device name
-From:   Lukasz Luba <lukasz.luba@arm.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>
-References: <20210312170316.3138-1-daniel.lezcano@linaro.org>
- <18fdc11b-abda-25d9-582f-de2f9dfa2feb@arm.com>
- <f51fcec0-1483-cecb-d984-591097c324ca@linaro.org>
- <1aada78d-06f1-4ccd-cf81-7c2e8f5fe747@arm.com>
-Message-ID: <77c2ef52-960b-f4d5-9de7-f4a1a4a6e376@arm.com>
-Date:   Mon, 15 Mar 2021 09:58:24 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S229686AbhCOKHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 06:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229854AbhCOKHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 06:07:03 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479EFC061574
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 03:07:03 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id f8so1534955plg.10
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 03:07:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C+f819OiVAdd6CslasyHbo7q/2MFqyfGf3UY77JfCyY=;
+        b=r+0rqf4vu0gFaj3OTpsIzRVWW7fhNbhK9qRpKWGN9stnmsGqcd6NidyJeiDY90Ako+
+         CdiYvZO5KKe42fxXOw8K6j1YmwAlJNhBIp1zGsc21MU235PwM2qMM1aGegO/Nq2pVl14
+         gnbnX2LEyZ2TUOEqPjTXYO0Jvc7G4JdqZPnp/xz5x1O6by4l3B68/brHPgYJDNeLPnQW
+         tYEJIEwXz52/nK69nwwhRR/RsDwMBb/A96eRFmkFb8JoqYNBLJtlQwJZ6Uses/gydDXW
+         JBvj75lB1SnVzo5uzyFFPTtp9eQbS8Kc+bDg3LNWQ/h1RA7dmE+gNu/RmHTjDgkUUOM9
+         F4PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C+f819OiVAdd6CslasyHbo7q/2MFqyfGf3UY77JfCyY=;
+        b=SxoRp6R0YeL5W5YucIajzVYROTex3rD7A3IH80CxAneAAnqXfGKmwA8iOG1lrwKk2p
+         g/4GRRp2Kt20jP1dMHoVPc2iDzNpNg5l/o0flIyVXHScoUlnAIyLYP7Y/9AnNkCeQnO3
+         v/t3Tanywqgk4W/P64a9hLLUJnuJvh9Jzrrdsl6f1onLiIvVFDYGMj9Nz++BAvbKIg1J
+         J0bQMdaEv1fqce485z2Ef/1r7tAs1p6eEIrtsIg+/PLTXy8ODr79fCfRK/n0aXPhneZZ
+         g9xTxcDN1PlC77RcDBXHMxyT3QhuUz4Ch8Jj3gNhyNUKVOdLbdIUZOUFlwrT9m3IMVRc
+         93Pg==
+X-Gm-Message-State: AOAM532PX3UGVujmlVAZzxAlqaKizTJYeNG1SDo6Mi2pDfaQY4F8M6Sv
+        Ys7KH5orqPk5gQhkJINjR50=
+X-Google-Smtp-Source: ABdhPJw8NJrC6o9NLb4A2SPQdGWI87QVtCeLYBwvX7rbEVuEfQJRFtdm01q/fu3htUvmuQC97D/vjA==
+X-Received: by 2002:a17:90a:b898:: with SMTP id o24mr11649901pjr.14.1615802822884;
+        Mon, 15 Mar 2021 03:07:02 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8049:f9a8:723:1a5f])
+        by smtp.gmail.com with ESMTPSA id c24sm10983841pjv.18.2021.03.15.03.07.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 03:07:02 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Tuong Lien <tuong.t.lien@dektech.com.au>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] tipc: better validate user input in tipc_nl_retrieve_key()
+Date:   Mon, 15 Mar 2021 03:06:58 -0700
+Message-Id: <20210315100658.1587352-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
 MIME-Version: 1.0
-In-Reply-To: <1aada78d-06f1-4ccd-cf81-7c2e8f5fe747@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
+Before calling tipc_aead_key_size(ptr), we need to ensure
+we have enough data to dereference ptr->keylen.
 
-On 3/15/21 9:40 AM, Lukasz Luba wrote:
-> 
-> 
-> On 3/12/21 9:01 PM, Daniel Lezcano wrote:
->> On 12/03/2021 19:49, Lukasz Luba wrote:
->>>
->>>
->>> On 3/12/21 5:03 PM, Daniel Lezcano wrote:
->>>> We want to have any kind of name for the cooling devices as we do no
->>>> longer want to rely on auto-numbering. Let's replace the cooling
->>>> device's fixed array by a char pointer to be allocated dynamically
->>>> when registering the cooling device, so we don't limit the length of
->>>> the name.
->>>>
->>>> Rework the error path at the same time as we have to rollback the
->>>> allocations in case of error.
->>>>
->>>> Tested with a dummy device having the name:
->>>>    "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
->>>>
->>>> A village on the island of Anglesey (Wales), known to have the longest
->>>> name in Europe.
->>>>
->>>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
->>>> ---
->>>>    .../ethernet/mellanox/mlxsw/core_thermal.c    |  2 +-
->>>>    drivers/thermal/thermal_core.c                | 38 
->>>> +++++++++++--------
->>>>    include/linux/thermal.h                       |  2 +-
->>>>    3 files changed, 24 insertions(+), 18 deletions(-)
->>>>
->>>> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>>> b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>>> index bf85ce9835d7..7447c2a73cbd 100644
->>>> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>>> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
->>>> @@ -141,7 +141,7 @@ static int mlxsw_get_cooling_device_idx(struct
->>>> mlxsw_thermal *thermal,
->>>>        /* Allow mlxsw thermal zone binding to an external cooling
->>>> device */
->>>>        for (i = 0; i < ARRAY_SIZE(mlxsw_thermal_external_allowed_cdev);
->>>> i++) {
->>>>            if (strnstr(cdev->type, 
->>>> mlxsw_thermal_external_allowed_cdev[i],
->>>> -                sizeof(cdev->type)))
->>>> +                strlen(cdev->type)))
->>>>                return 0;
->>>>        }
->>>>    diff --git a/drivers/thermal/thermal_core.c
->>>> b/drivers/thermal/thermal_core.c
->>>> index 996c038f83a4..9ef8090eb645 100644
->>>> --- a/drivers/thermal/thermal_core.c
->>>> +++ b/drivers/thermal/thermal_core.c
->>>> @@ -960,10 +960,7 @@ __thermal_cooling_device_register(struct
->>>> device_node *np,
->>>>    {
->>>>        struct thermal_cooling_device *cdev;
->>>>        struct thermal_zone_device *pos = NULL;
->>>> -    int result;
->>>> -
->>>> -    if (type && strlen(type) >= THERMAL_NAME_LENGTH)
->>>> -        return ERR_PTR(-EINVAL);
->>>> +    int ret;
->>>>          if (!ops || !ops->get_max_state || !ops->get_cur_state ||
->>>>            !ops->set_cur_state)
->>>> @@ -973,14 +970,17 @@ __thermal_cooling_device_register(struct
->>>> device_node *np,
->>>>        if (!cdev)
->>>>            return ERR_PTR(-ENOMEM);
->>>>    -    result = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
->>>> -    if (result < 0) {
->>>> -        kfree(cdev);
->>>> -        return ERR_PTR(result);
->>>> +    ret = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
->>>> +    if (ret < 0)
->>>> +        goto out_kfree_cdev;
->>>> +    cdev->id = ret;
->>>> +
->>>> +    cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
->>>> +    if (!cdev->type) {
->>>> +        ret = -ENOMEM;
->>>
->>> Since we haven't called the device_register() yet, I would call here:
->>> kfree(cdev);
->>> and then jump
->>
->> I'm not sure to understand, we have to remove the ida, no ?
-> 
-> Yes, we have to remove 'ida' and you jump to that label:
-> goto out_ida_remove;
-> but under that label, there is no 'put_device()'.
-> We could have here, before the 'goto', a simple kfree, which
-> should be safe, since we haven't called the device_register() yet.
-> Something like:
-> 
-> --------8<------------------------------
-> cdev->type = kstrdup(type ? type : "", GFP_KERNEL);
-> if (!cdev->type) {
->      ret = -ENOMEM;
->      kfree(cdev);
->      goto out_ida_remove;
-> }
-> 
-> -------->8------------------------------
-> 
+We probably also want to make sure tipc_aead_key_size()
+wont overflow with malicious ptr->keylen values.
 
-I've check that label and probably not easy to modify it
-and put conditional there. So probably you would have to
-call everything here (not jumping to label):
+Syzbot reported:
 
-ida_simple_remove(&thermal_cdev_ida, cdev->id);
-kfree(cdev);
-return ERR_PTR(-_ENOMEM);
+BUG: KMSAN: uninit-value in __tipc_nl_node_set_key net/tipc/node.c:2971 [inline]
+BUG: KMSAN: uninit-value in tipc_nl_node_set_key+0x9bf/0x13b0 net/tipc/node.c:3023
+CPU: 0 PID: 21060 Comm: syz-executor.5 Not tainted 5.11.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x21c/0x280 lib/dump_stack.c:120
+ kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
+ __tipc_nl_node_set_key net/tipc/node.c:2971 [inline]
+ tipc_nl_node_set_key+0x9bf/0x13b0 net/tipc/node.c:3023
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:739 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x1319/0x1610 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x6fa/0x810 net/netlink/af_netlink.c:2494
+ genl_rcv+0x63/0x80 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x11d6/0x14a0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x1740/0x1840 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2345
+ ___sys_sendmsg net/socket.c:2399 [inline]
+ __sys_sendmsg+0x714/0x830 net/socket.c:2432
+ __compat_sys_sendmsg net/compat.c:347 [inline]
+ __do_compat_sys_sendmsg net/compat.c:354 [inline]
+ __se_compat_sys_sendmsg+0xa7/0xc0 net/compat.c:351
+ __ia32_compat_sys_sendmsg+0x4a/0x70 net/compat.c:351
+ do_syscall_32_irqs_on arch/x86/entry/common.c:79 [inline]
+ __do_fast_syscall_32+0x102/0x160 arch/x86/entry/common.c:141
+ do_fast_syscall_32+0x6a/0xc0 arch/x86/entry/common.c:166
+ do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:209
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+RIP: 0023:0xf7f60549
+Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
+RSP: 002b:00000000f555a5fc EFLAGS: 00000296 ORIG_RAX: 0000000000000172
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000200
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
+ kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
+ kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
+ slab_alloc_node mm/slub.c:2907 [inline]
+ __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1099 [inline]
+ netlink_alloc_large_skb net/netlink/af_netlink.c:1176 [inline]
+ netlink_sendmsg+0xdbc/0x1840 net/netlink/af_netlink.c:1894
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0xcfc/0x12f0 net/socket.c:2345
+ ___sys_sendmsg net/socket.c:2399 [inline]
+ __sys_sendmsg+0x714/0x830 net/socket.c:2432
+ __compat_sys_sendmsg net/compat.c:347 [inline]
+ __do_compat_sys_sendmsg net/compat.c:354 [inline]
+ __se_compat_sys_sendmsg+0xa7/0xc0 net/compat.c:351
+ __ia32_compat_sys_sendmsg+0x4a/0x70 net/compat.c:351
+ do_syscall_32_irqs_on arch/x86/entry/common.c:79 [inline]
+ __do_fast_syscall_32+0x102/0x160 arch/x86/entry/common.c:141
+ do_fast_syscall_32+0x6a/0xc0 arch/x86/entry/common.c:166
+ do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:209
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
 
-> 
->>
->>> Other than that, LGTM
->>>
->>> Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
->>>
->>> Regards,
->>> Lukasz
->>
->>
+Fixes: e1f32190cf7d ("tipc: add support for AEAD key setting via netlink")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Tuong Lien <tuong.t.lien@dektech.com.au>
+Cc: Jon Maloy <jmaloy@redhat.com>
+Cc: Ying Xue <ying.xue@windriver.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/tipc/node.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index 008670d1f43e1c2e9153a706cc18cc8e8ba62a6c..136338b85504bee716a48cd03c92eb88d016eadf 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -2895,17 +2895,22 @@ int tipc_nl_node_dump_monitor_peer(struct sk_buff *skb,
+ 
+ #ifdef CONFIG_TIPC_CRYPTO
+ static int tipc_nl_retrieve_key(struct nlattr **attrs,
+-				struct tipc_aead_key **key)
++				struct tipc_aead_key **pkey)
+ {
+ 	struct nlattr *attr = attrs[TIPC_NLA_NODE_KEY];
++	struct tipc_aead_key *key;
+ 
+ 	if (!attr)
+ 		return -ENODATA;
+ 
+-	*key = (struct tipc_aead_key *)nla_data(attr);
+-	if (nla_len(attr) < tipc_aead_key_size(*key))
++	if (nla_len(attr) < sizeof(*key))
++		return -EINVAL;
++	key = (struct tipc_aead_key *)nla_data(attr);
++	if (key->keylen > TIPC_AEAD_KEYLEN_MAX ||
++	    nla_len(attr) < tipc_aead_key_size(key))
+ 		return -EINVAL;
+ 
++	*pkey = key;
+ 	return 0;
+ }
+ 
+-- 
+2.31.0.rc2.261.g7f71774620-goog
+
