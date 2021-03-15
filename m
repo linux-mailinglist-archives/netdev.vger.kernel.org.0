@@ -2,150 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1096133C2CE
-	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 17:58:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA0B33C330
+	for <lists+netdev@lfdr.de>; Mon, 15 Mar 2021 18:03:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234572AbhCOQ6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 12:58:12 -0400
-Received: from mail.katalix.com ([3.9.82.81]:60642 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231899AbhCOQ6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Mar 2021 12:58:09 -0400
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 7F504835A3;
-        Mon, 15 Mar 2021 16:58:07 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1615827487; bh=q3c63VCwJImv0wKb5mXNKs5ImTzxuitP0dxmtu1c07Y=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Mon,=2015=20Mar=202021=2016:58:07=20+0000|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Guillaume=20Nault=20<gnault@re
-         dhat.com>|Cc:=20lyl2019@mail.ustc.edu.cn,=20paulus@samba.org,=20da
-         vem@davemloft.net,=0D=0A=09linux-ppp@vger.kernel.org,=20netdev@vge
-         r.kernel.org,=0D=0A=09linux-kernel@vger.kernel.org|Subject:=20Re:=
-         20Re:=20[BUG]=20net/ppp:=20A=20use=20after=20free=20in=20ppp_unreg
-         ister_channe|Message-ID:=20<20210315165807.GB4219@katalix.com>|Ref
-         erences:=20<6057386d.ca12.1782148389e.Coremail.lyl2019@mail.ustc.e
-         du.cn>=0D=0A=20<20210312101258.GA4951@katalix.com>=0D=0A=20<2ad7aa
-         a2.fcad.17826e87afb.Coremail.lyl2019@mail.ustc.edu.cn>=0D=0A=20<20
-         210315121824.GC4296@linux.home>|MIME-Version:=201.0|Content-Dispos
-         ition:=20inline|In-Reply-To:=20<20210315121824.GC4296@linux.home>;
-        b=2G9PPPulMVBpql/5ATeSX0/BbzaUzZeB1n7K/IYFkoNioUu+QvnZaSdQEVKjEp9LV
-         FATtocWOf1uCrMVIuC1F6mapR1cogi/Jr+M+hznAzN6wJPpCcC/PvPsQBJDLPDNbZg
-         nDG8JMwyYau+i0nez9QzGdF7ZcVo768n8LVz8NhKcoULuDtnslaVszlyAikfIjd77d
-         wFx2dXNn6oOZSR84ba88Mgna1F1/uVQAYdvpySHJubFkKb8n2B2MicGTPY21IsZLCh
-         V6XQZvMlXYtWeP/0kEJpjPRDDqSFEB3nHPP/lnBP9uf5Lrkr/N1s4sFM9UPdc1id+C
-         rcZourwJh2iow==
-Date:   Mon, 15 Mar 2021 16:58:07 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     lyl2019@mail.ustc.edu.cn, paulus@samba.org, davem@davemloft.net,
-        linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
+        id S234470AbhCORBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 13:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235230AbhCORBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 13:01:53 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A52C06174A;
+        Mon, 15 Mar 2021 10:01:52 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so14732742pjh.1;
+        Mon, 15 Mar 2021 10:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P4LvijN3bMifiTb/0lgyYh4xxnVtEvA5pDE32AW+xU0=;
+        b=uEQGdwQp2ak3InwMuxkKEOPJ0WuupFVWKkCc/lpIAOv209E9tvBFpLy4YnQpBc8Tfl
+         eEu8jYzomYxIrhde2wlrgkddZ5Wqn8QjvMMFj4XouSVp+C4G/gx3lPlOAkAJ4ygl1Kj9
+         2wSAiCviiAp9jX7AJBh/YSZzdwaMxmpdeDKpbywSdeA31LR5FnPwd1XfrktF/U8wghN9
+         QpzSvrHJBehCJG6RXWiUoTVamAw4tYtB4v82R3HsngO2iluXqpMBOC0D8ibQ5IkHmjf+
+         HxUgdQ7345vVukw5y+8U6iJU9HkIJlvIX2ILs7X9A8FuB7eMPBU+va5wol/qZzcBQYGw
+         I21Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P4LvijN3bMifiTb/0lgyYh4xxnVtEvA5pDE32AW+xU0=;
+        b=IyjXWVct+1Iz0Xv2k23Pzus/keAg3DSDAxZFVLw5JhGz7bWpPvcFY9dx0R/3RbCFvM
+         VHEMr9D55D+EcJHb2UfG2V6oSTTcFtBl7lyrre4RTVj9gTfzHCK0PQ9/7li9bw0kx4rV
+         0lSZD90lLIERsUss123JZRRSyy2dWhdHgWqj9Vv7GElqKq7EI9BJWN1VShNd2rVGhs8Y
+         dCJeq4ZeYWCJORTbNc9ia+3qzaNrlKCIDy/z5bMDwsfvY9TgTu8UQyRC8ugCIjyX7fpj
+         /pYNp9eF2bxKdAF0sFZQPaHA3UDRQ7NVM4nDuP+3gglhGRDkLuMT09ZvLfQqo3aAmhCA
+         2XVg==
+X-Gm-Message-State: AOAM531hdQ0au4AUtoyb/FE6mqfj2JqSz7YFqBN1UueVWthrS0U9SvHU
+        5Wiml2ian3EMtn8UuPHQjZQ=
+X-Google-Smtp-Source: ABdhPJyDIkdABKsaucW86vRXx7R6hQzqtSddilHZNYedmrFS7IEZ6svFxREdahgLJxdftAj8OxutwQ==
+X-Received: by 2002:a17:90a:7103:: with SMTP id h3mr49966pjk.82.1615827712517;
+        Mon, 15 Mar 2021 10:01:52 -0700 (PDT)
+Received: from localhost.localdomain ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id t6sm176083pjs.26.2021.03.15.10.01.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Mar 2021 10:01:51 -0700 (PDT)
+From:   LGA1150 <dqfext@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: Re: [BUG] net/ppp: A use after free in ppp_unregister_channe
-Message-ID: <20210315165807.GB4219@katalix.com>
-References: <6057386d.ca12.1782148389e.Coremail.lyl2019@mail.ustc.edu.cn>
- <20210312101258.GA4951@katalix.com>
- <2ad7aaa2.fcad.17826e87afb.Coremail.lyl2019@mail.ustc.edu.cn>
- <20210315121824.GC4296@linux.home>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH net-next] net: dsa: rtl8366rb: support bridge offloading
+Date:   Tue, 16 Mar 2021 01:01:44 +0800
+Message-Id: <20210315170144.2081099-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="U+BazGySraz5kW0T"
-Content-Disposition: inline
-In-Reply-To: <20210315121824.GC4296@linux.home>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: DENG Qingfang <dqfext@gmail.com>
 
---U+BazGySraz5kW0T
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Use port isolation registers to configure bridge offloading.
+Remove the VLAN init, as we have proper CPU tag and bridge offloading
+support now.
 
-On  Mon, Mar 15, 2021 at 13:18:24 +0100, Guillaume Nault wrote:
-> On Fri, Mar 12, 2021 at 10:47:53PM +0800, lyl2019@mail.ustc.edu.cn wrote:
-> >=20
-> >=20
-> >=20
-> > > -----=E5=8E=9F=E5=A7=8B=E9=82=AE=E4=BB=B6-----
-> > > =E5=8F=91=E4=BB=B6=E4=BA=BA: "Tom Parkin" <tparkin@katalix.com>
-> > > =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2021-03-12 18:12:58 (=E6=98=9F=
-=E6=9C=9F=E4=BA=94)
-> > > =E6=94=B6=E4=BB=B6=E4=BA=BA: lyl2019@mail.ustc.edu.cn
-> > > =E6=8A=84=E9=80=81: paulus@samba.org, davem@davemloft.net, linux-ppp@=
-vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-> > > =E4=B8=BB=E9=A2=98: Re: [BUG] net/ppp: A use after free in ppp_unregi=
-ster_channe
-> > >=20
-> > > Thanks for the report!
-> > >=20
-> > > On  Thu, Mar 11, 2021 at 20:34:44 +0800, lyl2019@mail.ustc.edu.cn wro=
-te:
-> > > > File: drivers/net/ppp/ppp_generic.c
-> > > >=20
-> > > > In ppp_unregister_channel, pch could be freed in ppp_unbridge_chann=
-els()
-> > > > but after that pch is still in use. Inside the function ppp_unbridg=
-e_channels,
-> > > > if "pchbb =3D=3D pch" is true and then pch will be freed.
-> > >=20
-> > > Do you have a way to reproduce a use-after-free scenario?
-> > >=20
-> > > From static analysis I'm not sure how pch would be freed in
-> > > ppp_unbridge_channels when called via. ppp_unregister_channel.
-> > >=20
-> > > In theory (at least!) the caller of ppp_register_net_channel holds=20
-> > > a reference on struct channel which ppp_unregister_channel drops.
-> > >=20
-> > > Each channel in a bridged pair holds a reference on the other.
-> > >=20
-> > > Hence on return from ppp_unbridge_channels, the channel should not ha=
-ve
-> > > been freed (in this code path) because the ppp_register_net_channel
-> > > reference has not yet been dropped.
-> > >=20
-> > > Maybe there is an issue with the reference counting or a race of some
-> > > sort?
-> > >=20
-> > > > I checked the commit history and found that this problem is introdu=
-ced from
-> > > > 4cf476ced45d7 ("ppp: add PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN io=
-ctls").
-> > > >=20
-> > > > I have no idea about how to generate a suitable patch, sorry.
-> >=20
-> > This issue was reported by a path-sensitive static analyzer developed b=
-y our Lab,
-> > thus i have not a crash or bug log.
-> >=20
-> > As the return type of ppp_unbridge_channels() is a int, can we return a=
- value to
-> > inform caller that the channel is freed?
->=20
-> I don't think this is going to improve anything, as
-> ppp_unregister_channel() couldn't take any corrective action anyway.
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+---
+Changes since RFC:
+  Fix build error
 
-I agree with you to be honest.
+ drivers/net/dsa/rtl8366rb.c | 71 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 65 insertions(+), 6 deletions(-)
 
-I think the best ppp_unregister_channel could to is to not access pch
-again.
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index a89093bc6c6a..bbcfdd84f0e9 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -300,6 +300,12 @@
+ #define RTL8366RB_INTERRUPT_STATUS_REG	0x0442
+ #define RTL8366RB_NUM_INTERRUPT		14 /* 0..13 */
+ 
++/* Port isolation registers */
++#define RTL8366RB_PORT_ISO_BASE		0x0F08
++#define RTL8366RB_PORT_ISO(pnum)	(RTL8366RB_PORT_ISO_BASE + (pnum))
++#define RTL8366RB_PORT_ISO_EN		BIT(0)
++#define RTL8366RB_PORT_ISO_PORTS_MASK	GENMASK(7, 1)
++
+ /* bits 0..5 enable force when cleared */
+ #define RTL8366RB_MAC_FORCE_CTRL_REG	0x0F11
+ 
+@@ -835,6 +841,15 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Isolate user ports */
++	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
++		ret = regmap_write(smi->map, RTL8366RB_PORT_ISO(i),
++				   RTL8366RB_PORT_ISO_EN |
++				   BIT(RTL8366RB_PORT_NUM_CPU + 1));
++		if (ret)
++			return ret;
++	}
++
+ 	/* Set up the "green ethernet" feature */
+ 	ret = rtl8366rb_jam_table(rtl8366rb_green_jam,
+ 				  ARRAY_SIZE(rtl8366rb_green_jam), smi, false);
+@@ -963,10 +978,6 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 			return ret;
+ 	}
+ 
+-	ret = rtl8366_init_vlan(smi);
+-	if (ret)
+-		return ret;
+-
+ 	ret = rtl8366rb_setup_cascaded_irq(smi);
+ 	if (ret)
+ 		dev_info(smi->dev, "no interrupt support\n");
+@@ -977,8 +988,6 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 		return -ENODEV;
+ 	}
+ 
+-	ds->configure_vlan_while_not_filtering = false;
+-
+ 	return 0;
+ }
+ 
+@@ -1127,6 +1136,54 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
+ 	rb8366rb_set_port_led(smi, port, false);
+ }
+ 
++static int
++rtl8366rb_port_bridge_join(struct dsa_switch *ds, int port,
++			   struct net_device *bridge)
++{
++	struct realtek_smi *smi = ds->priv;
++	unsigned int port_bitmap = 0;
++	int ret, i;
++
++	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
++		if (i == port)
++			continue;
++		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++			continue;
++		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
++					 0, BIT(port + 1));
++		if (ret)
++			return ret;
++
++		port_bitmap |= BIT(i);
++	}
++
++	return regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
++				  0, port_bitmap << 1);
++}
++
++static void
++rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
++			    struct net_device *bridge)
++{
++	struct realtek_smi *smi = ds->priv;
++	unsigned int port_bitmap = 0;
++	int i;
++
++	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
++		if (i == port)
++			continue;
++		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++			continue;
++		regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
++				   BIT(port + 1), 0);
++
++		port_bitmap |= BIT(i);
++	}
++
++	regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
++			   port_bitmap << 1, 0);
++}
++
+ static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ {
+ 	struct realtek_smi *smi = ds->priv;
+@@ -1510,6 +1567,8 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+ 	.get_strings = rtl8366_get_strings,
+ 	.get_ethtool_stats = rtl8366_get_ethtool_stats,
+ 	.get_sset_count = rtl8366_get_sset_count,
++	.port_bridge_join = rtl8366rb_port_bridge_join,
++	.port_bridge_leave = rtl8366rb_port_bridge_leave,
+ 	.port_vlan_filtering = rtl8366_vlan_filtering,
+ 	.port_vlan_add = rtl8366_vlan_add,
+ 	.port_vlan_del = rtl8366_vlan_del,
+-- 
+2.25.1
 
---U+BazGySraz5kW0T
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmBPkhoACgkQlIwGZQq6
-i9C9gAf+NWk49iQsQ4+pfR9zG6KjemYbHwxc/Xw1DEFIoDAeAXaSPeYjtR7aG56c
-rdLaRF4upKo+EegZhgZk7rD6P/MuHHqM2xilJ/BX+QL+ZgDxGg+JtLLGC0wFb1fC
-GoJJmA1NeIeglKbYjZhLb6wI+znka5TDK81FzKVAFwaweAgpsQ1oIpsSO5NbKSlF
-XZDsKd5t8V1NEIcqrdZpeKApvITAA8LgGk/vUTj8f+BaLnwM+4sBf9El0L4kCP8m
-SXkFizdQcmfVhhPmE0pJ1ODRWV+3nVVQBjUM7UCQjkmRcDi9KGywiaVCXihUkMv4
-sPfGVHRzYDW32aGqq2j+u0shTMXHqA==
-=Vwa0
------END PGP SIGNATURE-----
-
---U+BazGySraz5kW0T--
