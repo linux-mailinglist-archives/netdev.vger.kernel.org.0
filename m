@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7E033CAAC
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 02:15:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4025133CAAE
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 02:15:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234208AbhCPBO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 21:14:59 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24252 "EHLO
+        id S234213AbhCPBPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 21:15:00 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24278 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234205AbhCPBOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 21:14:30 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12G1AP3N016321
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 18:14:30 -0700
+        by vger.kernel.org with ESMTP id S234209AbhCPBOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 21:14:36 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12G1E3Nw027231
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 18:14:36 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=8zi1kIY50TKylIjIldVt+Yth2w8NYFrDNaaQtaBBFH0=;
- b=VUqTXHY1otH68I+aUUq/fM8ej7UvmrfeyObBL9J8T1V8SYv79ATlz1031z8yOWmjZoG+
- NTSZOAxZDHShydXRRxg5GyVZaUBeYX/l6cLAePTt+Hu/awtPQNCkvjELLhxtQwTmsxor
- fSmBvs1OMUlEEEsHSr7p2kMs2qLExT6luE4= 
+ bh=F6CUvYk8IHbxWxopaZr46T24w8OFyqZTCCuT6Yk2rQc=;
+ b=h6PhX61azdhARLt+jKxuxkuZTuRkZJIab7IEnal2W2cCHnSdfFB5mUfn6iNwAbyPceZX
+ 0g/1OJEHUDvFlLvPa3M11Ea44/qYE8YxtgWoYTWd49hTlNycLaWrNNmeqf2nZJeKbeYe
+ b9qi65LuVpgtMVg67vymVV7Yc8DFSsHWWuI= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 379e3urstp-1
+        by mx0a-00082601.pphosted.com with ESMTP id 37a6brvnea-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 18:14:30 -0700
-Received: from intmgw001.05.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 18:14:36 -0700
+Received: from intmgw002.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 15 Mar 2021 18:14:29 -0700
+ 15.1.2176.2; Mon, 15 Mar 2021 18:14:35 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 59BE32942B57; Mon, 15 Mar 2021 18:14:26 -0700 (PDT)
+        id 9B8852942B57; Mon, 15 Mar 2021 18:14:32 -0700 (PDT)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH bpf-next 08/15] libbpf: Refactor bpf_object__resolve_ksyms_btf_id
-Date:   Mon, 15 Mar 2021 18:14:26 -0700
-Message-ID: <20210316011426.4178537-1-kafai@fb.com>
+Subject: [PATCH bpf-next 09/15] libbpf: Refactor codes for finding btf id of a kernel symbol
+Date:   Mon, 15 Mar 2021 18:14:32 -0700
+Message-ID: <20210316011432.4178797-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210316011336.4173585-1-kafai@fb.com>
 References: <20210316011336.4173585-1-kafai@fb.com>
@@ -49,182 +49,125 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
  definitions=2021-03-15_15:2021-03-15,2021-03-15 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- bulkscore=0 phishscore=0 adultscore=0 suspectscore=0 impostorscore=0
- priorityscore=1501 clxscore=1015 lowpriorityscore=0 spamscore=0 mlxscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103160005
+ adultscore=0 suspectscore=0 phishscore=0 mlxscore=0 mlxlogscore=999
+ priorityscore=1501 lowpriorityscore=0 bulkscore=0 clxscore=1015
+ spamscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2103160005
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch refactors most of the logic from
-bpf_object__resolve_ksyms_btf_id() into a new function
-bpf_object__resolve_ksym_var_btf_id().
-It is to get ready for a later patch adding
-bpf_object__resolve_ksym_func_btf_id() which resolves
-a kernel function to the running kernel btf_id.
+This patch refactors code, that finds kernel btf_id by kind
+and symbol name, to a new function find_ksym_btf_id().
+
+It also adds a new helper __btf_kind_str() to return
+a string by the numeric kind value.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- tools/lib/bpf/libbpf.c | 125 ++++++++++++++++++++++-------------------
- 1 file changed, 68 insertions(+), 57 deletions(-)
+ tools/lib/bpf/libbpf.c | 44 +++++++++++++++++++++++++++++++-----------
+ 1 file changed, 33 insertions(+), 11 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2f351d3ad3e7..7d5f9b7877bc 100644
+index 7d5f9b7877bc..8355b786b3db 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -7403,75 +7403,86 @@ static int bpf_object__read_kallsyms_file(struct =
+@@ -1929,9 +1929,9 @@ resolve_func_ptr(const struct btf *btf, __u32 id, _=
+_u32 *res_id)
+ 	return btf_is_func_proto(t) ? t : NULL;
+ }
+=20
+-static const char *btf_kind_str(const struct btf_type *t)
++static const char *__btf_kind_str(__u16 kind)
+ {
+-	switch (btf_kind(t)) {
++	switch (kind) {
+ 	case BTF_KIND_UNKN: return "void";
+ 	case BTF_KIND_INT: return "int";
+ 	case BTF_KIND_PTR: return "ptr";
+@@ -1953,6 +1953,11 @@ static const char *btf_kind_str(const struct btf_t=
+ype *t)
+ 	}
+ }
+=20
++static const char *btf_kind_str(const struct btf_type *t)
++{
++	return __btf_kind_str(btf_kind(t));
++}
++
+ /*
+  * Fetch integer attribute of BTF map definition. Such attributes are
+  * represented using a pointer to an array, in which dimensionality of a=
+rray
+@@ -7403,18 +7408,17 @@ static int bpf_object__read_kallsyms_file(struct =
 bpf_object *obj)
  	return err;
  }
 =20
--static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
+-static int bpf_object__resolve_ksym_var_btf_id(struct bpf_object *obj,
+-					       struct extern_desc *ext)
++static int find_ksym_btf_id(struct bpf_object *obj, const char *ksym_nam=
+e,
++			    __u16 kind, struct btf **res_btf,
++			    int *res_btf_fd)
+ {
+-	const struct btf_type *targ_var, *targ_type;
+-	__u32 targ_type_id, local_type_id;
+-	const char *targ_var_name;
+ 	int i, id, btf_fd, err;
+ 	struct btf *btf;
+=20
+ 	btf =3D obj->btf_vmlinux;
+ 	btf_fd =3D 0;
+-	id =3D btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
++	id =3D btf__find_by_name_kind(btf, ksym_name, kind);
++
+ 	if (id =3D=3D -ENOENT) {
+ 		err =3D load_module_btfs(obj);
+ 		if (err)
+@@ -7424,17 +7428,35 @@ static int bpf_object__resolve_ksym_var_btf_id(st=
+ruct bpf_object *obj,
+ 			btf =3D obj->btf_modules[i].btf;
+ 			/* we assume module BTF FD is always >0 */
+ 			btf_fd =3D obj->btf_modules[i].fd;
+-			id =3D btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
++			id =3D btf__find_by_name_kind(btf, ksym_name, kind);
+ 			if (id !=3D -ENOENT)
+ 				break;
+ 		}
+ 	}
+ 	if (id <=3D 0) {
+-		pr_warn("extern (var ksym) '%s': failed to find BTF ID in kernel BTF(s=
+).\n",
+-			ext->name);
++		pr_warn("extern (%s ksym) '%s': failed to find BTF ID in kernel BTF(s)=
+.\n",
++			__btf_kind_str(kind), ksym_name);
+ 		return -ESRCH;
+ 	}
+=20
++	*res_btf =3D btf;
++	*res_btf_fd =3D btf_fd;
++	return id;
++}
++
 +static int bpf_object__resolve_ksym_var_btf_id(struct bpf_object *obj,
 +					       struct extern_desc *ext)
- {
--	struct extern_desc *ext;
++{
 +	const struct btf_type *targ_var, *targ_type;
 +	__u32 targ_type_id, local_type_id;
 +	const char *targ_var_name;
-+	int i, id, btf_fd, err;
- 	struct btf *btf;
--	int i, j, id, btf_fd, err;
-=20
--	for (i =3D 0; i < obj->nr_extern; i++) {
--		const struct btf_type *targ_var, *targ_type;
--		__u32 targ_type_id, local_type_id;
--		const char *targ_var_name;
--		int ret;
-+	btf =3D obj->btf_vmlinux;
-+	btf_fd =3D 0;
-+	id =3D btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
-+	if (id =3D=3D -ENOENT) {
-+		err =3D load_module_btfs(obj);
-+		if (err)
-+			return err;
-=20
--		ext =3D &obj->externs[i];
--		if (ext->type !=3D EXT_KSYM || !ext->ksym.type_id)
--			continue;
-+		for (i =3D 0; i < obj->btf_module_cnt; i++) {
-+			btf =3D obj->btf_modules[i].btf;
-+			/* we assume module BTF FD is always >0 */
-+			btf_fd =3D obj->btf_modules[i].fd;
-+			id =3D btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
-+			if (id !=3D -ENOENT)
-+				break;
-+		}
-+	}
-+	if (id <=3D 0) {
-+		pr_warn("extern (var ksym) '%s': failed to find BTF ID in kernel BTF(s=
-).\n",
-+			ext->name);
-+		return -ESRCH;
-+	}
-=20
--		btf =3D obj->btf_vmlinux;
--		btf_fd =3D 0;
--		id =3D btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
--		if (id =3D=3D -ENOENT) {
--			err =3D load_module_btfs(obj);
--			if (err)
--				return err;
-+	/* find local type_id */
-+	local_type_id =3D ext->ksym.type_id;
-=20
--			for (j =3D 0; j < obj->btf_module_cnt; j++) {
--				btf =3D obj->btf_modules[j].btf;
--				/* we assume module BTF FD is always >0 */
--				btf_fd =3D obj->btf_modules[j].fd;
--				id =3D btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
--				if (id !=3D -ENOENT)
--					break;
--			}
--		}
--		if (id <=3D 0) {
--			pr_warn("extern (ksym) '%s': failed to find BTF ID in kernel BTF(s).\=
-n",
--				ext->name);
--			return -ESRCH;
--		}
-+	/* find target type_id */
-+	targ_var =3D btf__type_by_id(btf, id);
-+	targ_var_name =3D btf__name_by_offset(btf, targ_var->name_off);
-+	targ_type =3D skip_mods_and_typedefs(btf, targ_var->type, &targ_type_id=
-);
-=20
--		/* find local type_id */
--		local_type_id =3D ext->ksym.type_id;
-+	err =3D bpf_core_types_are_compat(obj->btf, local_type_id,
-+					btf, targ_type_id);
-+	if (err <=3D 0) {
-+		const struct btf_type *local_type;
-+		const char *targ_name, *local_name;
-=20
--		/* find target type_id */
--		targ_var =3D btf__type_by_id(btf, id);
--		targ_var_name =3D btf__name_by_offset(btf, targ_var->name_off);
--		targ_type =3D skip_mods_and_typedefs(btf, targ_var->type, &targ_type_i=
-d);
-+		local_type =3D btf__type_by_id(obj->btf, local_type_id);
-+		local_name =3D btf__name_by_offset(obj->btf, local_type->name_off);
-+		targ_name =3D btf__name_by_offset(btf, targ_type->name_off);
-=20
--		ret =3D bpf_core_types_are_compat(obj->btf, local_type_id,
--						btf, targ_type_id);
--		if (ret <=3D 0) {
--			const struct btf_type *local_type;
--			const char *targ_name, *local_name;
-+		pr_warn("extern (var ksym) '%s': incompatible types, expected [%d] %s =
-%s, but kernel has [%d] %s %s\n",
-+			ext->name, local_type_id,
-+			btf_kind_str(local_type), local_name, targ_type_id,
-+			btf_kind_str(targ_type), targ_name);
-+		return -EINVAL;
-+	}
-=20
--			local_type =3D btf__type_by_id(obj->btf, local_type_id);
--			local_name =3D btf__name_by_offset(obj->btf, local_type->name_off);
--			targ_name =3D btf__name_by_offset(btf, targ_type->name_off);
-+	ext->is_set =3D true;
-+	ext->ksym.kernel_btf_obj_fd =3D btf_fd;
-+	ext->ksym.kernel_btf_id =3D id;
-+	pr_debug("extern (var ksym) '%s': resolved to [%d] %s %s\n",
-+		 ext->name, id, btf_kind_str(targ_var), targ_var_name);
-=20
--			pr_warn("extern (ksym) '%s': incompatible types, expected [%d] %s %s,=
- but kernel has [%d] %s %s\n",
--				ext->name, local_type_id,
--				btf_kind_str(local_type), local_name, targ_type_id,
--				btf_kind_str(targ_type), targ_name);
--			return -EINVAL;
--		}
-+	return 0;
-+}
++	int id, btf_fd =3D 0, err;
++	struct btf *btf =3D NULL;
 +
-+static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
-+{
-+	struct extern_desc *ext;
-+	int i, err;
++	id =3D find_ksym_btf_id(obj, ext->name, BTF_KIND_VAR, &btf, &btf_fd);
++	if (id < 0)
++		return id;
 +
-+	for (i =3D 0; i < obj->nr_extern; i++) {
-+		ext =3D &obj->externs[i];
-+		if (ext->type !=3D EXT_KSYM || !ext->ksym.type_id)
-+			continue;
-+
-+		err =3D bpf_object__resolve_ksym_var_btf_id(obj, ext);
+ 	/* find local type_id */
+ 	local_type_id =3D ext->ksym.type_id;
 =20
--		ext->is_set =3D true;
--		ext->ksym.kernel_btf_obj_fd =3D btf_fd;
--		ext->ksym.kernel_btf_id =3D id;
--		pr_debug("extern (ksym) '%s': resolved to [%d] %s %s\n",
--			 ext->name, id, btf_kind_str(targ_var), targ_var_name);
-+		if (err)
-+			return err;
- 	}
- 	return 0;
- }
 --=20
 2.30.2
 
