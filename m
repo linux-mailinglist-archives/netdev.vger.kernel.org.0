@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A85A633E263
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:53:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBCE633E266
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:53:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbhCPXvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 19:51:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45630 "EHLO mail.kernel.org"
+        id S229874AbhCPXvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 19:51:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45638 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229574AbhCPXvT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229588AbhCPXvT (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 16 Mar 2021 19:51:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F382564F18;
-        Tue, 16 Mar 2021 23:51:18 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6714664F92;
+        Tue, 16 Mar 2021 23:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1615938679;
-        bh=XrBoUXY0YbdHWzWjjyOf39u9XKkh71ZSAV37G2x7FZ0=;
+        bh=hbnQjnvu//vfmoCDwsYvX5qghwx2u4WJcf+d8fufV6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LGhaSGsn9ejjbNyulJ4/lflQVUJ5nbyVqgznPVtA2ORquQMbEezq+ZLDD+vMHjBwP
-         j6n/vdhZV0RErKaVfFniVZl8Gu7zg4iBCmWxPPhehL3wxRqiZwOPWPg5iWgdBeU2pV
-         d1NQdRCrBys/D5oT15QYnwoVhdOOd44RRIgFXvkNBBx+LnmkQEcaGZRIxee/tl0eJq
-         +bSJiUNOH/YE/Ij9zEOLkXQ+qMjmjEnxiyw3IeLTcEw8lsaEklJt/eCwpA6mHji4JY
-         QbSeP228PG2b42KIOVeAkfzbTsE9Scnuj6ePtPcrX9lmvW4ByH8Rw7bCdir09LwQoK
-         33Zx9xKmVHplQ==
+        b=Lkf4V+wzNUXc0qGu7DTHyelCwjNpvOyVtocjP51gtJNBzK9yXBcJ6cbPRQ6hOOhgt
+         bNBtu3DBDt1k5asUoIkV8nH0Ax4xIk5IIT7umMG8I76PRYafdu/bUCJoCyFrzRGHmD
+         PMkgeGOWsDMk6Q3RAo/56HdODqbV2LI+7xLJr4TNIsc1EtTVMw+f3gVFGlrcl2wwEX
+         Kf4Dq34pjeDzOr8azpb3VyFQYag9d46qtP5hYm3C2V+xeC4bhktPZybxp6j6PehKP3
+         C9kRKuL10REGMYzY661Mobk6qMvUooItTQhPq5U+2KnRO45E/B69+kBik8uumEnNi4
+         BqPXl4NtUNHvQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 07/15] net/mlx5e: Verify dev is present in some ndos
-Date:   Tue, 16 Mar 2021 16:51:04 -0700
-Message-Id: <20210316235112.72626-8-saeed@kernel.org>
+Subject: [net-next 08/15] net/mlx5e: Move devlink port register and unregister calls
+Date:   Tue, 16 Mar 2021 16:51:05 -0700
+Message-Id: <20210316235112.72626-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210316235112.72626-1-saeed@kernel.org>
 References: <20210316235112.72626-1-saeed@kernel.org>
@@ -43,108 +43,115 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Roi Dayan <roid@nvidia.com>
 
 We will re-use the native NIC port net device instance for the Uplink
-representor. While changing profiles private resources are not
-available but some ndos are not checking if the netdev is present.
-So for those ndos check the netdev is present in the driver before
-accessing the private resources.
+representor. As such we also don't want to unregister/register the
+devlink port as part of the profile.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c |  6 ++++++
- .../net/ethernet/mellanox/mlx5/core/en_main.c   | 17 +++++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |  3 +++
- 3 files changed, 26 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/en_main.c   | 17 +++++++++++------
+ .../mellanox/mlx5/core/eswitch_offloads.c       | 15 ++++++++++-----
+ 2 files changed, 21 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-index fcae3c0a4e9f..11a44d30adc7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-@@ -169,6 +169,9 @@ static int mlx5e_rep_setup_tc_cb(enum tc_setup_type type, void *type_data,
- 	unsigned long flags = MLX5_TC_FLAG(INGRESS) | MLX5_TC_FLAG(ESW_OFFLOAD);
- 	struct mlx5e_priv *priv = cb_priv;
- 
-+	if (!priv->netdev || !netif_device_present(priv->netdev))
-+		return -EOPNOTSUPP;
-+
- 	switch (type) {
- 	case TC_SETUP_CLSFLOWER:
- 		return mlx5e_rep_setup_tc_cls_flower(priv, type_data, flags);
-@@ -321,6 +324,9 @@ mlx5e_rep_indr_offload(struct net_device *netdev,
- 	struct mlx5e_priv *priv = netdev_priv(indr_priv->rpriv->netdev);
- 	int err = 0;
- 
-+	if (!netif_device_present(indr_priv->rpriv->netdev))
-+		return -EOPNOTSUPP;
-+
- 	switch (flower->command) {
- 	case FLOW_CLS_REPLACE:
- 		err = mlx5e_configure_flower(netdev, priv, flower, flags);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 39de3156877c..efe8af49b908 100644
+index efe8af49b908..3e8434dcc1df 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3769,8 +3769,16 @@ static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			  void *type_data)
- {
- 	struct mlx5e_priv *priv = netdev_priv(dev);
-+	bool tc_unbind = false;
- 	int err;
- 
-+	if (type == TC_SETUP_BLOCK &&
-+	    ((struct flow_block_offload *)type_data)->command == FLOW_BLOCK_UNBIND)
-+		tc_unbind = true;
-+
-+	if (!netif_device_present(dev) && !tc_unbind)
-+		return -ENODEV;
-+
- 	switch (type) {
- 	case TC_SETUP_BLOCK: {
- 		struct flow_block_offload *f = type_data;
-@@ -3823,6 +3831,9 @@ mlx5e_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 	struct mlx5e_priv *priv = netdev_priv(dev);
- 	struct mlx5e_pport_stats *pstats = &priv->stats.pport;
- 
-+	if (!netif_device_present(dev))
-+		return;
-+
- 	/* In switchdev mode, monitor counters doesn't monitor
- 	 * rx/tx stats of 802_3. The update stats mechanism
- 	 * should keep the 802_3 layout counters updated
-@@ -4436,6 +4447,9 @@ int mlx5e_get_vf_config(struct net_device *dev,
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	int err;
- 
-+	if (!netif_device_present(dev))
-+		return -EOPNOTSUPP;
-+
- 	err = mlx5_eswitch_get_vport_config(mdev->priv.eswitch, vf + 1, ivi);
+@@ -5306,10 +5306,6 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
  	if (err)
- 		return err;
-@@ -4458,6 +4472,9 @@ mlx5e_has_offload_stats(const struct net_device *dev, int attr_id)
+ 		mlx5_core_err(mdev, "TLS initialization failed, %d\n", err);
+ 
+-	err = mlx5e_devlink_port_register(priv);
+-	if (err)
+-		mlx5_core_err(mdev, "mlx5e_devlink_port_register failed, %d\n", err);
+-
+ 	mlx5e_health_create_reporters(priv);
+ 
+ 	return 0;
+@@ -5318,7 +5314,6 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
+ static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
  {
- 	struct mlx5e_priv *priv = netdev_priv(dev);
+ 	mlx5e_health_destroy_reporters(priv);
+-	mlx5e_devlink_port_unregister(priv);
+ 	mlx5e_tls_cleanup(priv);
+ 	mlx5e_ipsec_cleanup(priv);
+ }
+@@ -5829,10 +5824,17 @@ static int mlx5e_probe(struct auxiliary_device *adev,
  
-+	if (!netif_device_present(dev))
-+		return false;
+ 	priv->profile = profile;
+ 	priv->ppriv = NULL;
 +
- 	if (!mlx5e_is_uplink_rep(priv))
- 		return false;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 8a3b2d76cc82..b3bf7bb7b97e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -4895,6 +4895,9 @@ int mlx5e_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
- 	unsigned long flags = MLX5_TC_FLAG(INGRESS);
- 	struct mlx5e_priv *priv = cb_priv;
- 
-+	if (!priv->netdev || !netif_device_present(priv->netdev))
-+		return -EOPNOTSUPP;
++	err = mlx5e_devlink_port_register(priv);
++	if (err) {
++		mlx5_core_err(mdev, "mlx5e_devlink_port_register failed, %d\n", err);
++		goto err_destroy_netdev;
++	}
 +
- 	if (mlx5e_is_uplink_rep(priv))
- 		flags |= MLX5_TC_FLAG(ESW_OFFLOAD);
- 	else
+ 	err = profile->init(mdev, netdev);
+ 	if (err) {
+ 		mlx5_core_err(mdev, "mlx5e_nic_profile init failed, %d\n", err);
+-		goto err_destroy_netdev;
++		goto err_devlink_cleanup;
+ 	}
+ 
+ 	err = mlx5e_resume(adev);
+@@ -5856,6 +5858,8 @@ static int mlx5e_probe(struct auxiliary_device *adev,
+ 	mlx5e_suspend(adev, state);
+ err_profile_cleanup:
+ 	profile->cleanup(priv);
++err_devlink_cleanup:
++	mlx5e_devlink_port_unregister(priv);
+ err_destroy_netdev:
+ 	mlx5e_destroy_netdev(priv);
+ 	return err;
+@@ -5870,6 +5874,7 @@ static void mlx5e_remove(struct auxiliary_device *adev)
+ 	unregister_netdev(priv->netdev);
+ 	mlx5e_suspend(adev, state);
+ 	priv->profile->cleanup(priv);
++	mlx5e_devlink_port_unregister(priv);
+ 	mlx5e_destroy_netdev(priv);
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index a215ccee3e61..e1e33e991123 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2259,9 +2259,11 @@ int esw_offloads_load_rep(struct mlx5_eswitch *esw, u16 vport_num)
+ 	if (esw->mode != MLX5_ESWITCH_OFFLOADS)
+ 		return 0;
+ 
+-	err = mlx5_esw_offloads_devlink_port_register(esw, vport_num);
+-	if (err)
+-		return err;
++	if (vport_num != MLX5_VPORT_UPLINK) {
++		err = mlx5_esw_offloads_devlink_port_register(esw, vport_num);
++		if (err)
++			return err;
++	}
+ 
+ 	err = mlx5_esw_offloads_rep_load(esw, vport_num);
+ 	if (err)
+@@ -2269,7 +2271,8 @@ int esw_offloads_load_rep(struct mlx5_eswitch *esw, u16 vport_num)
+ 	return err;
+ 
+ load_err:
+-	mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
++	if (vport_num != MLX5_VPORT_UPLINK)
++		mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
+ 	return err;
+ }
+ 
+@@ -2279,7 +2282,9 @@ void esw_offloads_unload_rep(struct mlx5_eswitch *esw, u16 vport_num)
+ 		return;
+ 
+ 	mlx5_esw_offloads_rep_unload(esw, vport_num);
+-	mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
++
++	if (vport_num != MLX5_VPORT_UPLINK)
++		mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
+ }
+ 
+ #define ESW_OFFLOADS_DEVCOM_PAIR	(0)
 -- 
 2.30.2
 
