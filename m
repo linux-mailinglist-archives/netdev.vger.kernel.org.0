@@ -2,117 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CE4233D012
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:45:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9263233D027
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:54:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234371AbhCPIpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbhCPIot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:44:49 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A8EC06174A;
-        Tue, 16 Mar 2021 01:44:49 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id c17so4741383pfv.12;
-        Tue, 16 Mar 2021 01:44:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2t2nl6SVqGRT0ENhyt7CpGXaAMJS6RD4WcDr5aSLD14=;
-        b=rymkl9UtSvs5N0z9VH+KVNkNYAC03M4PjNAmD80pfp51GMd/G0XsWbnxmeOI67jtVP
-         QI3/4oy3E1nN7YeRw3wLdBb3k6YwTZfOhhOlVwNKAnMdC1+snRm7v1Nfqkt1gcWob+K1
-         SvmMWaoz5+oluHvCxDQvQlv3JcJu67nAPHmd6ecN//PfmWcQ1GYarslJjtgwjhrXFq2T
-         M0TJnqhLCxnEa59FeIyCzDKL4a2dLf+OFAW2dX6isvZCl2XEqFrCyKTg+NtegQj7N04Y
-         gsQMnMag/ZaldYJ6SSzkIoh4SOw7MnVH2X6K7yjfXNxQ0Z2GhewtRysnU4zH819+BzX8
-         FoIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2t2nl6SVqGRT0ENhyt7CpGXaAMJS6RD4WcDr5aSLD14=;
-        b=ILrzuZoijwleCr18h38X+Oefu0IEcakqCUqOAhCxVdxCY3nv/QvLiY0lhvFGysxNQi
-         HFe6kln3saBm1mX++mM7hbDOLzWa9p3T7ZLzm6emMyL4jO4/I+ujtxZlnYX6aVn4CQc9
-         OMqu6MZWvr+6pjd3YyWUq8RSkLPx+5k39dL2pZyfP8tkkB02aapPHVm/+ycXuXTN2Is9
-         8vrWdborScfOUx9uOLsu8yiZ+DEmFhR82TIKhS2CEKJizKxfQb3/TrDiENIaXOfWb8ps
-         AzVIKa9oMoZxu8kLWy/1rvSt8NOmiTgDFDgJXwoTxXZc/kWXfa3scwlG3zemshgpVnH3
-         q72w==
-X-Gm-Message-State: AOAM531YtPHks6csScqaSrTT+2ot/E/2CUm15fa1ws2zzPCV1pcU+DcB
-        rNgX38juF+40jwvl00H1iSCKaj94rjxZC8OwVIA=
-X-Google-Smtp-Source: ABdhPJyjiC2b0uRI6HdeHc5P0Mu0huyazQJ+R6qaD958AArP6XVLFBKVjFaeUb9w046oqEKgPXSe3Lyhrcij8cFZTOg=
-X-Received: by 2002:a63:534f:: with SMTP id t15mr3169313pgl.126.1615884289038;
- Tue, 16 Mar 2021 01:44:49 -0700 (PDT)
+        id S235547AbhCPIyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:54:13 -0400
+Received: from mga03.intel.com ([134.134.136.65]:39224 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235553AbhCPIxn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 04:53:43 -0400
+IronPort-SDR: brrGyZ0wcQU5MpNfuw0wXLNhD1TkzXUw9W7B/ww3B5mZnnKLnecMym8FkSf65GHuOJIRBeliQ+
+ ejmtWbJPTesw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9924"; a="189274541"
+X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
+   d="scan'208";a="189274541"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 01:53:42 -0700
+IronPort-SDR: bFPhdZuFuRIsfoX6ZTnXty9YDw1RjNQZmXexsuTu0fZHwM1wQLp4jEQnebGHn8I3Q4gcrPEShb
+ +e8hD8vwsN6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
+   d="scan'208";a="373724184"
+Received: from glass.png.intel.com ([10.158.65.59])
+  by orsmga006.jf.intel.com with ESMTP; 16 Mar 2021 01:53:40 -0700
+From:   Wong Vee Khee <vee.khee.wong@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Voon Weifeng <voon.weifeng@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: [PATCH net-next 1/1] net: phy: fix invalid phy id when probe using C22
+Date:   Tue, 16 Mar 2021 16:57:48 +0800
+Message-Id: <20210316085748.3017-1-vee.khee.wong@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210311152910.56760-1-maciej.fijalkowski@intel.com> <20210311152910.56760-14-maciej.fijalkowski@intel.com>
-In-Reply-To: <20210311152910.56760-14-maciej.fijalkowski@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 16 Mar 2021 09:44:38 +0100
-Message-ID: <CAJ8uoz0+Ofu32-QmX1mYka2f52ym=zG_OPyz3wto=pv-brOi-w@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 13/17] veth: implement ethtool's
- get_channels() callback
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 4:43 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> Libbpf's xsk part calls get_channels() API to retrieve the queue count
-> of the underlying driver so that XSKMAP is sized accordingly.
->
-> Implement that in veth so multi queue scenarios can work properly.
->
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->  drivers/net/veth.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index aa1a66ad2ce5..efca3d45f5c2 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -218,6 +218,17 @@ static void veth_get_ethtool_stats(struct net_device *dev,
->         }
->  }
->
-> +static void veth_get_channels(struct net_device *dev,
-> +                             struct ethtool_channels *channels)
-> +{
-> +       channels->tx_count = dev->real_num_tx_queues;
-> +       channels->rx_count = dev->real_num_rx_queues;
-> +       channels->max_tx = dev->real_num_tx_queues;
-> +       channels->max_rx = dev->real_num_rx_queues;
-> +       channels->combined_count = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
-> +       channels->max_combined = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
+When using Clause-22 to probe for PHY devices such as the Marvell
+88E2110, PHY ID with value 0 is read from the MII PHYID registers
+which caused the PHY framework failed to attach the Marvell PHY
+driver.
 
-Copy and paste error in the above two lines. One of the min entries
-should be dev->real_num_tx_queues. Kind of pointless otherwise ;-).
+Fixed this by adding a check of PHY ID equals to all zeroes.
 
-> +}
-> +
->  static const struct ethtool_ops veth_ethtool_ops = {
->         .get_drvinfo            = veth_get_drvinfo,
->         .get_link               = ethtool_op_get_link,
-> @@ -226,6 +237,7 @@ static const struct ethtool_ops veth_ethtool_ops = {
->         .get_ethtool_stats      = veth_get_ethtool_stats,
->         .get_link_ksettings     = veth_get_link_ksettings,
->         .get_ts_info            = ethtool_op_get_ts_info,
-> +       .get_channels           = veth_get_channels,
->  };
->
->  /* general routines */
-> --
-> 2.20.1
->
+Cc: stable@vger.kernel.org
+Reviewed-by: Voon Weifeng <voon.weifeng@intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
+---
+ drivers/net/phy/phy_device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index a009d1769b08..f1afc00fcba2 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -820,8 +820,8 @@ static int get_phy_c22_id(struct mii_bus *bus, int addr, u32 *phy_id)
+ 
+ 	*phy_id |= phy_reg;
+ 
+-	/* If the phy_id is mostly Fs, there is no device there */
+-	if ((*phy_id & 0x1fffffff) == 0x1fffffff)
++	/* If the phy_id is mostly Fs or all zeroes, there is no device there */
++	if (((*phy_id & 0x1fffffff) == 0x1fffffff) || (*phy_id == 0))
+ 		return -ENODEV;
+ 
+ 	return 0;
+-- 
+2.25.1
+
