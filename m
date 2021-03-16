@@ -2,96 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 239AA33D7DB
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:43:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8497833D7FC
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:47:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234675AbhCPPmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 11:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
+        id S237282AbhCPPq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 11:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbhCPPlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:41:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BDFC06174A;
-        Tue, 16 Mar 2021 08:41:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=EIoRbxpiYKgv+aOp/kFhMyNN/lpqbQgyORK4t9vp8yw=; b=PSkFad6MJ4yRvaAejn6DlPgFi
-        QHB8qPHNO7zU3WFPn4KgadPiAK2fsEJyV/hWwSx/EiXbW9pkBTqrm+aCsmRDoMB0eml6yk92bpFHu
-        KbApAtsFIRjU5Q9usgT0frskkriXZCBxwufCfKkR2jgZBMtfcZy4FMJYndk7wK4G654NPGbi+LtQ8
-        D0hBTE2IcdY5I/Afiqayt7wFmdJQZcfXEK76sCfBDMwV/0tXuUH/yFsDdnCtsu1ck8Usv9SKyMuJe
-        GBSoMTmanW0rnehgfST7jpueMW4HBKxFvOu1IEjbtSF2hJwuS+4JLVkiRZ07L51Y0y3mdYP8+FU54
-        22B0QwPJw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51362)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lMBp5-0001UA-AV; Tue, 16 Mar 2021 15:41:31 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lMBp3-0006MP-7p; Tue, 16 Mar 2021 15:41:29 +0000
-Date:   Tue, 16 Mar 2021 15:41:29 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "rabeeh@solid-run.com" <rabeeh@solid-run.com>
-Subject: Re: [EXT] Re: [V2 net-next] net: mvpp2: Add reserved port private
- flag configuration
-Message-ID: <20210316154129.GO1463@shell.armlinux.org.uk>
-References: <1615481007-16735-1-git-send-email-stefanc@marvell.com>
- <YEpMgK1MF6jFn2ZW@lunn.ch>
- <CO6PR18MB38733E25F6B3194D4858147BB06B9@CO6PR18MB3873.namprd18.prod.outlook.com>
+        with ESMTP id S237322AbhCPPq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:46:29 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB92C06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 08:46:29 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so1656721pjv.1
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 08:46:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y5cTsgNCgHlNBZ7EFWQzHkHpsu2o7RST9agxWXKu7To=;
+        b=mTe9tZnObCwDW6nH1b0Z5v5bkafFRxdUp/20vmIEkk8+RWUjWqPdi8EzWpfpvt16w7
+         jW1gPynWwLENxQyohZ1dW1aK7k6zC9Wjro3omMLvLgpi6vt57SyL/XLHz1YDiPa9eYVV
+         RGCtng0XzaF3MbkO/Pzb9SDZw/rIKssgggECmT7BemgfjvUFoKAkDY/Z4MdgdbcF5Ldq
+         vWGFLJt2GFn+exGtRoNqyY25S+us61XUg7JDZvxhXMNBX1XNe5mnVn40lN7ZlVwl7jnI
+         TVlGV8GQnpUqswkbHkiisX0zh+TPC9AlFDhb4lOBaiD9XLV1Sf+79cGLNzhPDw5hSu4D
+         dZpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y5cTsgNCgHlNBZ7EFWQzHkHpsu2o7RST9agxWXKu7To=;
+        b=s5IUwplkWy1h3mWGTzb3SgDhptBZg0KFW6sLJ5Oqy72vH7MG85NP3XbHdgee9+itiG
+         9LUOIUCl89v6Nyg257A7eCq62nbX0dyg7D2fzQRwyfp+hfsBraKhKzimgOtkFuINwjbZ
+         D7mHZ/X103uPwL7rlYL8kedCYROhRJA3aZACd8xc5TGEefIbyK95YZO0TBTgFrE0NXBI
+         kg+usx96hW67DQ2A0gVsBVNPoTIPIrf/HfpiG7sBOXJpzrN/FtXhXIVWZLoLqthoLYrC
+         Aa+9vQypFsFiUH2mRMZe9Bdv80WyNvVpb7JbKR0uM1gxpUsrVwC5KD2Rid1lkUgIhIsg
+         gkYQ==
+X-Gm-Message-State: AOAM530/4dIY7d+NJc0ATn9uPYd6NSged+/ARVf+sJSO00vJYD5Ui2P6
+        OfqovfOJkT2F7JuQjB/Gh60KZsh3so5Jew==
+X-Google-Smtp-Source: ABdhPJw+7r2qn0AMKsPmjSU0s/dRlhoejgwxvmNRYSo5trKCBuKZfv3ArBGZGB2FcEkP1CWLLHC9dg==
+X-Received: by 2002:a17:90a:cca:: with SMTP id 10mr267516pjt.103.1615909588297;
+        Tue, 16 Mar 2021 08:46:28 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id o13sm17537783pgv.40.2021.03.16.08.46.27
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 08:46:28 -0700 (PDT)
+Date:   Tue, 16 Mar 2021 08:46:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 212299] New: RK3288-RTL8211E ethernet driver error
+Message-ID: <20210316084619.40d673fb@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CO6PR18MB38733E25F6B3194D4858147BB06B9@CO6PR18MB3873.namprd18.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 03:28:51PM +0000, Stefan Chulski wrote:
-> No XDP doesn't require this. One of the use cases of the port reservation feature is the Marvell User Space SDK (MUSDK) which its latest code is publicly available here:
-> https://github.com/MarvellEmbeddedProcessors/musdk-marvell
-> You can find example use case for this application here:
-> http://wiki.macchiatobin.net/tiki-index.php?page=MUSDK+Introduction
 
-I really, really hope that someone has thought this through:
 
-  Packet Processor I/O Interface (PPIO)
+Begin forwarded message:
 
-   The MUSDK PPIO driver provides low-level network interface API for
-   User-Space network drivers/applications. The PPIO infrastrcuture maps
-   Marvell's Packet Processor (PPv2) configuration space and I/O descriptors
-   space directly to user-space memory. This allows user-space
-   driver/application to directly process the packet processor I/O rings from
-   user space, without any overhead of a copy operation.
+Date: Tue, 16 Mar 2021 06:39:54 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 212299] New: RK3288-RTL8211E ethernet driver error
 
-I realy, really hope that you are not exposing the I/O descriptors to
-userspace, allowing userspace to manipulate the physical addresses in
-those descriptors, and that userspace is not dealing with physical
-addresses.
 
-If userspace has access to the I/O descriptors with physical addresses,
-or userspace is dealing with physical addresses, then you can say
-good bye to any kind of security on the platform. Essentially, in such
-a scenario, the entire system memory becomes accessible to userspace,
-which includes the kernel.
+https://bugzilla.kernel.org/show_bug.cgi?id=212299
+
+            Bug ID: 212299
+           Summary: RK3288-RTL8211E ethernet driver error
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.11.6
+          Hardware: ARM
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: msubair@hotmail.com
+        Regression: No
+
+RK3288 board which has RTL8211E ethernet chip and ACT8846 PMU controller.
+The dts file has following info, and it includes rk3288.dtsi
+----------------------------------------------------------------------------
+&gmac {
+        assigned-clocks = <&cru SCLK_MAC>;
+        assigned-clock-parents = <&ext_gmac>;
+        clock_in_out = "input";
+        pinctrl-names = "default";
+        pinctrl-0 = <&rgmii_pins>, <&phy_rst>, <&phy_pmeb>, <&phy_int>;
+        phy-supply = <&vcc_lan>;
+        phy-mode = "rgmii";
+        snps,reset-active-low;
+        snps,reset-delays-us = <0 10000 100000>;
+        snps,reset-gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_LOW>;
+        tx_delay = <0x30>;
+        rx_delay = <0x10>;
+        status = "okay";
+};
+----------------------------------------------------------------------------
+The ethernet never comes up and giving below error.
+
+root@LXCNAME:~# dmesg | grep eth
+[    2.519105] rk_gmac-dwmac ff290000.ethernet: IRQ eth_lpi not found
+[    2.526163] rk_gmac-dwmac ff290000.ethernet: PTP uses main clock
+[    2.532916] rk_gmac-dwmac ff290000.ethernet: phy regulator is not available
+yet, deferred probing
+[    2.574228] usbcore: registered new interface driver cdc_ether
+[    3.358577] rk_gmac-dwmac ff290000.ethernet: IRQ eth_lpi not found
+[    3.358633] rk_gmac-dwmac ff290000.ethernet: PTP uses main clock
+[    3.358851] rk_gmac-dwmac ff290000.ethernet: clock input or output? (input).
+[    3.358857] rk_gmac-dwmac ff290000.ethernet: TX delay(0x30).
+[    3.358861] rk_gmac-dwmac ff290000.ethernet: RX delay(0x10).
+[    3.358868] rk_gmac-dwmac ff290000.ethernet: integrated PHY? (no).
+[    3.358895] rk_gmac-dwmac ff290000.ethernet: cannot get clock clk_mac_speed
+[    3.358898] rk_gmac-dwmac ff290000.ethernet: clock input from PHY
+[    3.363906] rk_gmac-dwmac ff290000.ethernet: init for RGMII
+[    3.364096] rk_gmac-dwmac ff290000.ethernet: User ID: 0x10, Synopsys ID:
+0x35
+[    3.364104] rk_gmac-dwmac ff290000.ethernet:         DWMAC1000
+[    3.364107] rk_gmac-dwmac ff290000.ethernet: DMA HW capability register
+supported
+[    3.364111] rk_gmac-dwmac ff290000.ethernet: RX Checksum Offload Engine
+supported
+[    3.364114] rk_gmac-dwmac ff290000.ethernet: COE Type 2
+[    3.364118] rk_gmac-dwmac ff290000.ethernet: TX Checksum insertion supported
+[    3.364121] rk_gmac-dwmac ff290000.ethernet: Wake-Up On Lan supported
+[    3.364157] rk_gmac-dwmac ff290000.ethernet: Normal descriptors
+[    3.364160] rk_gmac-dwmac ff290000.ethernet: Ring mode enabled
+[    3.364164] rk_gmac-dwmac ff290000.ethernet: Enable RX Mitigation via HW
+Watchdog Timer
+[    8.156632] rk_gmac-dwmac ff290000.ethernet eth0: validation of rgmii with
+support 0000000,00000000,00006280 and advertisement 0000000,00000000,00006280
+failed: -22
+[    8.157755] rk_gmac-dwmac ff290000.ethernet eth0: stmmac_open: Cannot attach
+to PHY (error: -22)
+root@LXCNAME:~# dmesg | grep sdmmac
+root@LXCNAME:~# dmesg | grep stmmac
+[    3.466622] libphy: stmmac: probed
+[    3.490765] mdio_bus stmmac-0:00: attached PHY driver [unbound]
+(mii_bus:phy_addr=stmmac-0:00, irq=POLL)
+[    3.504573] mdio_bus stmmac-0:01: attached PHY driver [unbound]
+(mii_bus:phy_addr=stmmac-0:01, irq=POLL)
+[    3.567118] mdio_bus stmmac-0:02: attached PHY driver [unbound]
+(mii_bus:phy_addr=stmmac-0:02, irq=POLL)
+[    3.577736] mdio_bus stmmac-0
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
