@@ -2,64 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF1E33DED6
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 21:33:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED41333DEDE
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 21:35:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbhCPUdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 16:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbhCPUce (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 16:32:34 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994F5C06174A;
-        Tue, 16 Mar 2021 13:32:33 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1lMGMb-00H4jl-H3; Tue, 16 Mar 2021 21:32:25 +0100
-Message-ID: <8a5845b49b6dc03b8d6f8fe9915034178be992ae.camel@sipsolutions.net>
-Subject: Re: [PATCH] net: wireless: search and hold bss in
- cfg80211_connect_done
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        briannorris@chromium.org, linux-wireless@vger.kernel.org
-Date:   Tue, 16 Mar 2021 21:32:24 +0100
-In-Reply-To: <20210316192919.1.I26d48d8a4d06ef9bd2b57f857c58ae681cc33783@changeid> (sfid-20210316_203101_193722_2D56E503)
-References: <20210316192919.1.I26d48d8a4d06ef9bd2b57f857c58ae681cc33783@changeid>
-         (sfid-20210316_203101_193722_2D56E503)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S231245AbhCPUfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 16:35:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59370 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231247AbhCPUex (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 16:34:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0BBBD64F80;
+        Tue, 16 Mar 2021 20:34:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615926893;
+        bh=okRMItYdKasGgTRYd7gy0EpX6yF0Jgr0clwpOBDEkcc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZqoeJGGV9lud2AQhRJAgyemOws0smvXmgWPVFr0SuSHJqUfxOldFhGU4fDP/sl8iE
+         sRFD/5OxGLJYeBT31PhFYIlR22qDa2BdP2egRTflCnxcHO0liyz0D4VRod+Ymj6s+1
+         GO/JgBrT2mh/qtUv7ekSL+6JM8Z+U789lqnDas+Jkzj7seNHedILQF7jYmBoI+/yXs
+         cmaq7syNqOKinqqU8Tcqpt3bWN6+1GeUT4dBsQ20w03A+y2ohy7Em+SW6kH25YLE+4
+         TZYSqoSu1xn0+d76s3pLiyxTcL//gzszrE2UlA7znsIdq5E0LODte7rg2JKEL1X0yJ
+         tIf3oX2YqZd2Q==
+Date:   Tue, 16 Mar 2021 13:34:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yejune Deng <yejune.deng@gmail.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ipv4: route.c: simplify procfs code
+Message-ID: <20210316133452.2e64eeaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210316025736.37254-1-yejune.deng@gmail.com>
+References: <20210316025736.37254-1-yejune.deng@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-03-16 at 19:29 +0000, Abhishek Kumar wrote:
-> If BSS instance is not provided in __cfg80211_connect_result then
-> a get bss is performed. This can return NULL if the BSS for the
-> given SSID is expired due to delayed scheduling of connect result event
-> in rdev->event_work. This can cause WARN_ON(!cr->bss) in
-> __cfg80211_connect_result to be triggered and cause cascading
-> failures. To mitigate this, initiate a get bss call in
-> cfg80211_connect_done itself and hold it to ensure that the BSS
-> instance does not get expired.
+On Tue, 16 Mar 2021 10:57:36 +0800 Yejune Deng wrote:
+> proc_creat_seq() that directly take a struct seq_operations,
+> and deal with network namespaces in ->open.
+> 
+> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
 
-I'm not sure I see the value in this.
+Looks equivalent to me:
 
-You're basically picking a slightly earlier point in time where cfg80211
-might know about the BSS entry still, so you're really just making the
-problem window a few microseconds or perhaps milliseconds (whatever ends
-up being the worker delay) shorter.
-
-Compared to the 30s entry lifetime, that's nothing.
-
-So what's the point? Please fix the driver instead to actually hold on
-to it and report it back.
-
-johannes
-
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
