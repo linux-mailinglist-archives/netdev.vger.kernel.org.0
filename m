@@ -2,50 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E673533DFBA
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:02:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38DE933E03D
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:17:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232365AbhCPVCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 17:02:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39018 "EHLO mail.kernel.org"
+        id S232892AbhCPVQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 17:16:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232329AbhCPVCE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 17:02:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E269464F8C;
-        Tue, 16 Mar 2021 21:02:03 +0000 (UTC)
+        id S232817AbhCPVQW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 17:16:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0FB5F64F94;
+        Tue, 16 Mar 2021 21:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615928524;
-        bh=JabW6V+JpL9pQaNpNRb0IG759fPR+7+Gv+pQSojDt34=;
+        s=k20201202; t=1615929382;
+        bh=DYmmL0+J/1MLOIAz8nsNuBrSOWeZ80Elhpmcap7Ayoo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jOk9a5TPgHzTAN5ehOWPg8HuwPQrH0q3mHqJ37unDnf1PG40sZpnvwxU0T71BAchP
-         hFOCtYBamTnnDN8DKucrMp3+1m+zX0yKiENOlLQ5rhTpz0ZAs5WQUmnNnDoWeV8dYO
-         vaz0OjRFROztRXqg5zRMktFltLTYjih7InXGuqaloONOH1JqpaZHzO3J+Y0fEXWxVb
-         dHDbX9DC8B96C+NvnXBkeKm9VMCExKXNHI3G4dFi1HIPBAGNwoncDrLuF/RkBzZtfS
-         uPoSY6JW+5yhuSk3iT7ZaWnHEBiVPWKbzOgDyBPYKu5pKU/bIrVHdz++B0lMxRqB0G
-         /BhHwJErBjG5A==
-Date:   Tue, 16 Mar 2021 14:02:03 -0700
+        b=b52/yg3Hwo8dmRsj5CBok+P4ozVQwOom/6Nun+EE60OSUmPKHP/18azlHXAW3A2d7
+         BWUF2ZFjfnU6DfZL4jH5cBbl/A+nARj6O6/7i80TJ/N11Ebdu+ndFBQfi6ndicDs1T
+         gd0QdM4Qh0rPLWsCkIhAOY83qLw2liTRdWNQq2ZFCf1x8jDDoiTi1xdQhUcpC9YYvZ
+         /CL8xkroN98Lq21Ts8UBczR6kiKL6tQCZy9OtnX/6ifii82UGS0yvTgsmyFl/79vQK
+         hyyh0wFikJmP8yQUhzymm0BtIbOn4A968GFr31Rt3DEql9Glq5fra/RMEycWwZgZFo
+         cZSkAyYc+k5fg==
+Date:   Tue, 16 Mar 2021 14:16:21 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arjun Roy <arjunroy@google.com>
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
-Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
-Message-ID: <20210316140203.0d5ddf33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAOFY-A2q4otqu=pD60tUiD0GTDZnpcm+zajFp6SRDh4VixbV2Q@mail.gmail.com>
-References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
-        <CAOFY-A1L8c626HZYSWm6ZKFO9mqBdBszv6obX4-1_LmDBQ6Z4A@mail.gmail.com>
-        <CALvZod7hgtdrN_KXD_5JdB2vzJzTc8tVz_5YFN53-xZjpHLLRw@mail.gmail.com>
-        <CAOFY-A0v2BEwRinhPXspjL_3dvyw2kDSyzQgUiJxc+P-3OLP8g@mail.gmail.com>
-        <CAOFY-A2q4otqu=pD60tUiD0GTDZnpcm+zajFp6SRDh4VixbV2Q@mail.gmail.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        Martin Willi <martin@strongswan.org>
+Subject: Re: [net 01/11] can: dev: Move device back to init netns on owning
+ netns delete
+Message-ID: <20210316141621.1d1bd26d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210316082104.4027260-2-mkl@pengutronix.de>
+References: <20210316082104.4027260-1-mkl@pengutronix.de>
+        <20210316082104.4027260-2-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,34 +42,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Mar 2021 23:28:08 -0700 Arjun Roy wrote:
-> On Mon, Mar 15, 2021 at 11:22 PM Arjun Roy <arjunroy@google.com> wrote:
-> >
-> > On Mon, Mar 15, 2021 at 9:29 PM Shakeel Butt <shakeelb@google.com> wrote:  
-> > >
-> > > On Mon, Mar 15, 2021 at 9:20 PM Arjun Roy <arjunroy@google.com> wrote:  
->  [...]  
-> > > [...]  
->  [...]  
->  [...]  
-> > >
-> > > It is due to "mm: page-writeback: simplify memcg handling in
-> > > test_clear_page_writeback()" patch in the mm tree. You would need to
-> > > reintroduce the lock_page_memcg() which returns the memcg and make
-> > > __unlock_page_memcg() non-static.  
-> >
-> > To clarify, Shakeel - the tag "tag: v5.12-rc2-mmots-2021-03-11-21-49"
-> > fails to build on a clean checkout, without this patch, due to a
-> > compilation failure in mm/shmem.c, for reference:
-> > https://pastebin.com/raw/12eSGdGD
-> > (and that's why I'm basing this patch off of net-next in this email).
-> >
-> > -Arjun  
-> 
-> Another seeming anomaly - the patch sent out passes
-> scripts/checkpatch.pl but netdev/checkpatch finds plenty of actionable
-> fixes here: https://patchwork.kernel.org/project/netdevbpf/patch/20210316041645.144249-1-arjunroy.kdev@gmail.com/
-> 
-> Is netdev using some other automated checker instead of scripts/checkpatch.pl?
+On Tue, 16 Mar 2021 09:20:54 +0100 Marc Kleine-Budde wrote:
+> + *	@netns_refund: Physical device, move to init_net on netns exit
 
---strict --max-line-length=80
+I feel like we could do better with the name, and the kdoc (not sure
+what constitutes a physical device these days)... but I have no better
+suggestion right now :)
+
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
