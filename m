@@ -2,125 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C90333E0ED
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:58:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A547433E0F5
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:59:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbhCPV5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 17:57:39 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42774 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbhCPV5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 17:57:20 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lMHgh-0001W9-La; Tue, 16 Mar 2021 22:57:15 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lMHgh-000Lt3-CZ; Tue, 16 Mar 2021 22:57:15 +0100
-Subject: Re: [PATCH] libbpf: avoid inline hint definition from
- 'linux/stddef.h'
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Pedro Tammela <pctammela@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-References: <20210314173839.457768-1-pctammela@gmail.com>
- <5083f82b-39fc-9d46-bcd0-3a6be2fc7f98@iogearbox.net>
- <CAEf4Bza3vs3P0+zua5j8kJwCDXeiA3Up+t8f58AqswceHca7cA@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3b05d3c8-1f4a-194a-098f-0eb7ab43d455@iogearbox.net>
-Date:   Tue, 16 Mar 2021 22:57:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S229958AbhCPV6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 17:58:44 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:55640 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229948AbhCPV6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 17:58:39 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 12GLw7iv026455;
+        Tue, 16 Mar 2021 16:58:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1615931887;
+        bh=g14RBVCz+oZ5nDNrh2H5hGoVgfnfSkgeyZtgxiVB1KU=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=snth7o2c0zQpX6lz2y5Qp4OPb2aRkDAJxlVWRTWOOtGuzB/br/yfkTp0Nnt3WHO5Y
+         aB5jtiKBglU+WwiSJZDCq+jcR1jm9w9PhR4aA9blYS0KTKb2nAJSvCzkMXqhG8ORTK
+         JLUBMNHY089pbHWEfsGGpIgvpnB3hpd8G9MZ0/eQ=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 12GLw7tp012156
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Mar 2021 16:58:07 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 16
+ Mar 2021 16:58:06 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Tue, 16 Mar 2021 16:58:06 -0500
+Received: from [10.250.64.197] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 12GLw5Ym083325;
+        Tue, 16 Mar 2021 16:58:05 -0500
+Subject: Re: [PATCH] dt-bindings: Drop type references on common properties
+To:     Rob Herring <robh@kernel.org>, <devicetree@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Mark Brown <broonie@kernel.org>,
+        Cheng-Yi Chiang <cychiang@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stefan Wahren <wahrenst@gmx.net>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        Alex Elder <elder@kernel.org>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        <linux-gpio@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-usb@vger.kernel.org>
+References: <20210316194858.3527845-1-robh@kernel.org>
+From:   Suman Anna <s-anna@ti.com>
+Message-ID: <91063147-88a9-4ee7-8f4a-d9d01aa4d33f@ti.com>
+Date:   Tue, 16 Mar 2021 16:58:05 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bza3vs3P0+zua5j8kJwCDXeiA3Up+t8f58AqswceHca7cA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210316194858.3527845-1-robh@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26110/Tue Mar 16 12:05:23 2021)
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/21 10:34 PM, Andrii Nakryiko wrote:
-> On Tue, Mar 16, 2021 at 2:01 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 3/14/21 6:38 PM, Pedro Tammela wrote:
->>> Linux headers might pull 'linux/stddef.h' which defines
->>> '__always_inline' as the following:
->>>
->>>      #ifndef __always_inline
->>>      #define __always_inline __inline__
->>>      #endif
->>>
->>> This becomes an issue if the program picks up the 'linux/stddef.h'
->>> definition as the macro now just hints inline to clang.
->>
->> How did the program end up including linux/stddef.h ? Would be good to
->> also have some more details on how we got here for the commit desc.
+On 3/16/21 2:48 PM, Rob Herring wrote:
+> Users of common properties shouldn't have a type definition as the
+> common schemas already have one. Drop all the unnecessary type
+> references in the tree.
 > 
-> It's an UAPI header, so why not? Is there anything special about
-> stddef.h that makes it unsuitable to be included?
-
-Hm, fair enough, looks like linux/types.h already pulls it in, so no. We
-defined our own stddef.h longer time ago, so looks like we never ran into
-this issue.
-
->>> This change now enforces the proper definition for BPF programs
->>> regardless of the include order.
->>>
->>> Signed-off-by: Pedro Tammela <pctammela@gmail.com>
->>> ---
->>>    tools/lib/bpf/bpf_helpers.h | 7 +++++--
->>>    1 file changed, 5 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
->>> index ae6c975e0b87..5fa483c0b508 100644
->>> --- a/tools/lib/bpf/bpf_helpers.h
->>> +++ b/tools/lib/bpf/bpf_helpers.h
->>> @@ -29,9 +29,12 @@
->>>     */
->>>    #define SEC(NAME) __attribute__((section(NAME), used))
->>>
->>> -#ifndef __always_inline
->>> +/*
->>> + * Avoid 'linux/stddef.h' definition of '__always_inline'.
->>> + */
->>
->> I think the comment should have more details on 'why' we undef it as in
->> few months looking at it again, the next question to dig into would be
->> what was wrong with linux/stddef.h. Providing a better rationale would
->> be nice for readers here.
+> A meta-schema update to catch these is pending.
 > 
-> So for whatever reason commit bot didn't send notification, but I've
-> already landed this yesterday. To me, with #undef + #define it's
-> pretty clear that we "force-define" __always_inline exactly how we
-> want it, but we can certainly add clarifying comment in the follow up,
-> if you think it's needed.
+> Cc: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Krzysztof Kozlowski <krzk@kernel.org>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Cc: Ohad Ben-Cohen <ohad@wizery.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Cheng-Yi Chiang <cychiang@chromium.org>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Stefan Wahren <wahrenst@gmx.net>
+> Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+> Cc: Odelu Kukatla <okukatla@codeaurora.org>
+> Cc: Alex Elder <elder@kernel.org>
+> Cc: Suman Anna <s-anna@ti.com>
+> Cc: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-can@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-remoteproc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml       | 5 +----
+>  Documentation/devicetree/bindings/arm/cpus.yaml              | 2 --
+>  .../bindings/display/allwinner,sun4i-a10-tcon.yaml           | 1 -
+>  .../devicetree/bindings/gpio/socionext,uniphier-gpio.yaml    | 3 +--
+>  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml      | 1 -
+>  .../devicetree/bindings/interconnect/qcom,rpmh.yaml          | 1 -
+>  .../bindings/memory-controllers/nvidia,tegra210-emc.yaml     | 2 +-
+>  Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml   | 1 -
+>  Documentation/devicetree/bindings/net/qcom,ipa.yaml          | 1 -
+>  Documentation/devicetree/bindings/nvmem/nvmem-consumer.yaml  | 2 --
+>  .../devicetree/bindings/remoteproc/ti,omap-remoteproc.yaml   | 2 +-
 
-Up to you, but given you applied it it's probably not worth the trouble;
-missed it earlier given I didn't see the patchbot message in the thread
-initially. :/
+For OMAP remoteproc,
+Acked-by: Suman Anna <s-anna@ti.com>
 
->>> +#undef __always_inline
->>>    #define __always_inline inline __attribute__((always_inline))
->>> -#endif
->>> +
->>>    #ifndef __noinline
->>>    #define __noinline __attribute__((noinline))
->>>    #endif
->>>
->>
-
+regards
+Suman
