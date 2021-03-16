@@ -2,130 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F404633CF3A
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:03:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B2F33CF3F
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231838AbhCPIDa convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 04:03:30 -0400
-Received: from mga09.intel.com ([134.134.136.24]:40127 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232577AbhCPIDF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 04:03:05 -0400
-IronPort-SDR: baPMBGcSlhUp+sNUWayTAZs6xnV2B4bTwrIepqye1q4pnbEPn2bYJz4Fc22REYeB2FWHRomBHb
- 5mgeJXvSv8Ew==
-X-IronPort-AV: E=McAfee;i="6000,8403,9924"; a="189310814"
-X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="189310814"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 01:03:04 -0700
-IronPort-SDR: 4Mlf+xJkj70RZ08Adl2iC52T/Xk6/ENFhy59/2Pj5tyn0kcKwhlsNQJ8+GIkjBJu+nLCvAGJVR
- VpXWdqS3Y8HQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="590576542"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by orsmga005.jf.intel.com with ESMTP; 16 Mar 2021 01:03:04 -0700
-Received: from shsmsx603.ccr.corp.intel.com (10.109.6.143) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+        id S231297AbhCPIFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:05:01 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:47982 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230292AbhCPIEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:04:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1615881884; x=1647417884;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=H6MP6/joPxwKk+XblM5kNLlGk6tegDcR2Cc1Q0u81j0=;
+  b=vR4MFhFMnknGOx0+lktl96mWB05ro9MBjGrJlmC3ZwRhPuY5kMTDpVRE
+   z8j5KJef+Cpnkb7W/msIO5YFmhzSwTlrPjvt3fx57pHxXs8eDDC/QWB37
+   fkrSVxJKKW6rDmsd3uF+40fRxEfG3KjeiKyuWd1F54baP8dL7gD/t9wm4
+   fRCgq1HZbbwlNrkttlgQBzAIY8C33nfAt1ZESlkkw9zdjAJIBjws+Jywy
+   kPKXG8UHEjH1DIRDsowaz/4EJIwRKrHvBdHjeJL7KixAy/hHrf6bOmwEV
+   2fdMBUD8e3v6mPTz6iY83UPfnHkXzL5m2PNoN4fv62oyzRZVAiwygRAvr
+   Q==;
+IronPort-SDR: ZdHo0uoE/8p6dstJsDkybQCrnxnrHzdyofJp/iRE86s2FnWiVwakuoBKZ5tgo9pzvYQCfq8US3
+ z0xGse/+eQcVsOwGGLalxvEG7X63tfNH7evrxT7TcA5v98kIAGQ35NbbU8gUlXJ6XIeC1agfJ3
+ hM9U5a7/LP2bW6vrA6ZyWYWgk5cCxtWtaf2d3T8wV05PvHW04e+9AbxtJdL9Uk8uxabV7gm6g3
+ wAoBWBao7uWtEbQw5z/lcBYkFQrbtEnW5N+SvTOpFbEHYXjFFlEmW6LOit4uiu6qfKXTRTBTSy
+ QZQ=
+X-IronPort-AV: E=Sophos;i="5.81,251,1610434800"; 
+   d="scan'208";a="47678049"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Mar 2021 01:04:41 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 16 Mar 2021 01:03:03 -0700
-Received: from shsmsx601.ccr.corp.intel.com (10.109.6.141) by
- SHSMSX603.ccr.corp.intel.com (10.109.6.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 16 Mar 2021 16:03:01 +0800
-Received: from shsmsx601.ccr.corp.intel.com ([10.109.6.141]) by
- SHSMSX601.ccr.corp.intel.com ([10.109.6.141]) with mapi id 15.01.2106.013;
- Tue, 16 Mar 2021 16:03:01 +0800
-From:   "Li, Philip" <philip.li@intel.com>
-To:     =?iso-8859-1?Q?J=E9r=F4me_Pouiller?= <jerome.pouiller@silabs.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        lkp <lkp@intel.com>
-CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>
-Subject: RE: [kbuild-all] Re: [PATCH] wfx: fix irqf_oneshot.cocci warnings
-Thread-Topic: [kbuild-all] Re: [PATCH] wfx: fix irqf_oneshot.cocci warnings
-Thread-Index: AQHXGjluGKy1l/wG8EupGMY1Pavj+qqGQOCw
-Date:   Tue, 16 Mar 2021 08:03:00 +0000
-Message-ID: <a8dba72b92a7407c9f2d531527137643@intel.com>
-References: <20210315132501.441681-25-Jerome.Pouiller@silabs.com>
- <20210315210920.GA43634@d108da9836c5> <3096745.nmkoU2l6Xm@pc-42>
-In-Reply-To: <3096745.nmkoU2l6Xm@pc-42>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.239.127.36]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+ 15.1.2176.2; Tue, 16 Mar 2021 01:04:41 -0700
+Received: from [10.205.21.32] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Tue, 16 Mar 2021 01:04:39 -0700
+Message-ID: <9e2db2f6a8de195ec0af1b879b75fa8bdb2bdc27.camel@microchip.com>
+Subject: Re: [PATCH v15 0/4] Adding the Sparx5 Serdes driver
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Date:   Tue, 16 Mar 2021 09:04:38 +0100
+In-Reply-To: <20210315102640.461e473f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210218161451.3489955-1-steen.hegelund@microchip.com>
+         <f856d877048319cd532602bc430c237f3576f516.camel@microchip.com>
+         <20210315102640.461e473f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: [kbuild-all] Re: [PATCH] wfx: fix irqf_oneshot.cocci warnings
+Hi Jacub,
+
+On Mon, 2021-03-15 at 10:26 -0700, Jakub Kicinski wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> Hello,
+> On Mon, 15 Mar 2021 16:04:24 +0100 Steen Hegelund wrote:
+> > Hi Kishon, Vinod, Andrew, Jacub, and David,
+> > 
+> > I just wanted to know if you think that the Generic PHY subsystem might
+> > not be the right place for this Ethernet SerDes PHY driver after all.
+> > 
+> > Originally I chose this subsystem for historic reasons: The
+> > Microchip/Microsemi Ocelot SerDes driver was added here when it was
+> > upstreamed.
+> > On the other hand the Ocelot Serdes can do both PCIe and Ethernet, so
+> > it might fit the signature of a generic PHY better.
 > 
-> On Monday 15 March 2021 22:09:20 CET kernel test robot wrote:
-> >
-> > From: kernel test robot <lkp@intel.com>
-> >
-> > drivers/net/wireless/silabs/wfx/bus_sdio.c:134:8-33: ERROR: Threaded IRQ with no primary handler requested without
-> IRQF_ONESHOT
-> >
-> >  Since commit 1c6c69525b40 ("genirq: Reject bogus threaded irq requests")
-> >  threaded IRQs without a primary handler need to be requested with
-> >  IRQF_ONESHOT, otherwise the request will fail.
-> >
-> >  So pass the IRQF_ONESHOT flag in this case.
-> >
-> > Generated by: scripts/coccinelle/misc/irqf_oneshot.cocci
-> >
-> > CC: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: kernel test robot <lkp@intel.com>
-> > ---
-> >
-> > url:    https://github.com/0day-ci/linux/commits/Jerome-Pouiller/wfx-get-out-from-the-staging-area/20210315-212855
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git b828324bba8f575fde487a91fec07303789dda8a
-> >
-> >  bus_sdio.c |    3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > --- a/drivers/net/wireless/silabs/wfx/bus_sdio.c
-> > +++ b/drivers/net/wireless/silabs/wfx/bus_sdio.c
-> > @@ -132,7 +132,8 @@ static int wfx_sdio_irq_subscribe(void *
-> >                 flags = IRQF_TRIGGER_HIGH;
-> >         flags |= IRQF_ONESHOT;
-> >         return devm_request_threaded_irq(&bus->func->dev, bus->of_irq, NULL,
-> > -                                        wfx_sdio_irq_handler_ext, flags,
-> > +                                        wfx_sdio_irq_handler_ext,
-> > +                                        flags | IRQF_ONESHOT,
-> >                                          "wfx", bus);
-> >  }
-> >
-> >
-> 
-> Obviously, "flags" always contains IRQF_ONESHOT. So, it is a false positive.
-Thanks for the feedback. Sorry about this false positive, this had been disabled
-for auto report now.
+> Are you saying this PHY is Ethernet only?
+
+Yes this particular PHY is Ethernet only (but the Sparx5 also has a separate PCI PHY).
 
 > 
+> > At the moment the acceptance of the Sparx5 Serdes driver is blocking us
+> > from adding the Sparx5 SwitchDev driver (to net), so it is really
+> > important for us to resolve which subsystem the Serdes driver belongs
+> > to.
+> > 
+> > I am very much looking forward to your response.
 > 
-> --
-> Jérôme Pouiller
-> 
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+> FWIW even if this is merged via gen phy subsystem we can pull it into
+> net-next as well to unblock your other work in this dev cycle. You just
+> need to send the patches as a pull request, based on merge-base between
+> the gen phy tree and net-next.
+
+
+-- 
+BR
+Steen
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+steen.hegelund@microchip.com
+
+
