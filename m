@@ -2,189 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E077433D4A5
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 14:15:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 024A833D4C3
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 14:22:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233247AbhCPNOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 09:14:41 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:41076 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbhCPNOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 09:14:33 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 12GDEIpx086609;
-        Tue, 16 Mar 2021 08:14:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1615900458;
-        bh=0a9+2pwiRj3HgBy0Tmcg4RcLEetQ3bkJHEFZgypmw8c=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=vg0q3bPku6180/hs13QuMC/0ZYA9Qr0BMmrM3c8jNdaeOfFYGP2b7x8NDLhpy4G50
-         jamBZ4+HE8Z8zfsSPmOgRxIrjAxo45QXih1cbYq73N+cGfZ4ejmORvM6DPOVe3dzU0
-         8/QOGMuEDy9w0fa0ce1UV2iEO+hhp1uVG96XuLvA=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 12GDEI9W060553
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 16 Mar 2021 08:14:18 -0500
-Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 16
- Mar 2021 08:14:18 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Tue, 16 Mar 2021 08:14:18 -0500
-Received: from [10.250.235.175] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 12GDEEH8037551;
-        Tue, 16 Mar 2021 08:14:15 -0500
-Subject: Re: [PATCH v15 2/4] phy: Add media type and speed serdes
- configuration interfaces
-To:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20210218161451.3489955-1-steen.hegelund@microchip.com>
- <20210218161451.3489955-3-steen.hegelund@microchip.com>
-From:   Kishon Vijay Abraham I <kishon@ti.com>
-Message-ID: <694b0f66-64ab-626c-96fa-e703abea88c2@ti.com>
-Date:   Tue, 16 Mar 2021 18:44:13 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S231768AbhCPNWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 09:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234824AbhCPNVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 09:21:42 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2F0C06175F
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 06:21:40 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id cx5so9455357qvb.10
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 06:21:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:subject:to:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=qUY/TfKraaa410J/01mW1vUlGGBXwjKSrYhZht8zlAA=;
+        b=yw+X+C6vkoqwlHwhxjMgBf9KG3NoGX+8Dg4C2OL3gAXF1UIEjOc3D+BvnTThWyCRU5
+         Kg4RLs+6YIVP/HHu2WDwfXAIa+2/RzsGoIwCbE4WL2XnprDB1SjDaAH9fMNxZhm/oRDM
+         1a5KzP0q8gPFiNJN/MGDH4jK04reykJ1vmqwSG1Y7Q8Pbf8/KjmOIXmHUU0wa+t5/7CH
+         rdLcdLXMp7YZR7QCBGQs6wRrvsoNqnM2d3siMFbMXwfXESqTKMy1Y+8P84G2/PfgnD6N
+         PC6A6naHiUxGH2n8QekvzUHJ1ZGGCKXbiOBHxX5axYEeCTA7bc192/TebMYD4M9I7ZbL
+         +sgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=qUY/TfKraaa410J/01mW1vUlGGBXwjKSrYhZht8zlAA=;
+        b=P/XKNONgPdiDb5qdcVDgYiPoLk4r/GKQs50zCrq0gXkRHj/KrxeocQ2gFZzeTu+lWl
+         6DwaJw2kkyCEi24P/eKeqXA+GxNGsmusgFINHW53jNwfPG/hKo7tZ+frHHw+LbgjQoE4
+         cjIuA1q5JJ7fuheDF/fnryiT6IZ4C/zDLYdS4uzIdGrNFx2j/yczmQiYScPqfuT5Tvn0
+         AdrxomQCntgp8kFPveOvtvEJ/rsxDMr0w4xrurAQnrRxASjKvwWgpFrMZeiwokMY49TA
+         jLziu9Tr6EdrRFKneLEACgKnKWpHotefLM4ZazZA/PZI26fGyeMMGil6eW+UJxkkORtv
+         3CFQ==
+X-Gm-Message-State: AOAM530uArTEqgadeqNjcX1KHrrcItsN56dHqokptVbHLWJJMAGthZ39
+        wWBFFRNDi01Iyy4jPNV6xRbW9A==
+X-Google-Smtp-Source: ABdhPJwDg0g1aytukRTywSBP5WM37yZV5X9yIDwSwdHyQkKG86wc8C7nrSMBdAYPPOfm5oy6rOOlQA==
+X-Received: by 2002:ad4:5bad:: with SMTP id 13mr15656973qvq.20.1615900900140;
+        Tue, 16 Mar 2021 06:21:40 -0700 (PDT)
+Received: from [192.168.2.61] (bras-base-kntaon1617w-grc-09-184-148-53-47.dsl.bell.ca. [184.148.53.47])
+        by smtp.googlemail.com with ESMTPSA id 18sm15626140qkr.90.2021.03.16.06.21.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Mar 2021 06:21:39 -0700 (PDT)
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: CFS for Netdev 0x15 open!
+To:     people <people@netdevconf.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>, lwn@lwn.net
+Message-ID: <9ca7fbab-16f0-2e7b-a8cb-1fa834264d9a@mojatatu.com>
+Date:   Tue, 16 Mar 2021 09:21:38 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <20210218161451.3489955-3-steen.hegelund@microchip.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We are pleased to announce the opening of Call For
+Submissions(CFS) for Netdev 0x15.
 
+For overview of topics, submissions and requirements
+please visit:
+https://netdevconf.info/0x15/submit-proposal.html
 
-On 18/02/21 9:44 pm, Steen Hegelund wrote:
-> Provide new phy configuration interfaces for media type and speed that
-> allows e.g. PHYs used for ethernet to be configured with this
-> information.
-> 
-> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+For all submitted sessions, we employ a double blind
+review process carried out by the Program Committee.
+Please refer to:
+https://www.netdevconf.info/0x15/pc_review.html
 
-Acked-By: Kishon Vijay Abraham I <kishon@ti.com>
-> ---
->  drivers/phy/phy-core.c  | 30 ++++++++++++++++++++++++++++++
->  include/linux/phy/phy.h | 26 ++++++++++++++++++++++++++
->  2 files changed, 56 insertions(+)
-> 
-> diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
-> index 71cb10826326..ccb575b13777 100644
-> --- a/drivers/phy/phy-core.c
-> +++ b/drivers/phy/phy-core.c
-> @@ -373,6 +373,36 @@ int phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode)
->  }
->  EXPORT_SYMBOL_GPL(phy_set_mode_ext);
->  
-> +int phy_set_media(struct phy *phy, enum phy_media media)
-> +{
-> +	int ret;
-> +
-> +	if (!phy || !phy->ops->set_media)
-> +		return 0;
-> +
-> +	mutex_lock(&phy->mutex);
-> +	ret = phy->ops->set_media(phy, media);
-> +	mutex_unlock(&phy->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phy_set_media);
-> +
-> +int phy_set_speed(struct phy *phy, int speed)
-> +{
-> +	int ret;
-> +
-> +	if (!phy || !phy->ops->set_speed)
-> +		return 0;
-> +
-> +	mutex_lock(&phy->mutex);
-> +	ret = phy->ops->set_speed(phy, speed);
-> +	mutex_unlock(&phy->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phy_set_speed);
-> +
->  int phy_reset(struct phy *phy)
->  {
->  	int ret;
-> diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
-> index e435bdb0bab3..0ed434d02196 100644
-> --- a/include/linux/phy/phy.h
-> +++ b/include/linux/phy/phy.h
-> @@ -44,6 +44,12 @@ enum phy_mode {
->  	PHY_MODE_DP
->  };
->  
-> +enum phy_media {
-> +	PHY_MEDIA_DEFAULT,
-> +	PHY_MEDIA_SR,
-> +	PHY_MEDIA_DAC,
-> +};
-> +
->  /**
->   * union phy_configure_opts - Opaque generic phy configuration
->   *
-> @@ -64,6 +70,8 @@ union phy_configure_opts {
->   * @power_on: powering on the phy
->   * @power_off: powering off the phy
->   * @set_mode: set the mode of the phy
-> + * @set_media: set the media type of the phy (optional)
-> + * @set_speed: set the speed of the phy (optional)
->   * @reset: resetting the phy
->   * @calibrate: calibrate the phy
->   * @release: ops to be performed while the consumer relinquishes the PHY
-> @@ -75,6 +83,8 @@ struct phy_ops {
->  	int	(*power_on)(struct phy *phy);
->  	int	(*power_off)(struct phy *phy);
->  	int	(*set_mode)(struct phy *phy, enum phy_mode mode, int submode);
-> +	int	(*set_media)(struct phy *phy, enum phy_media media);
-> +	int	(*set_speed)(struct phy *phy, int speed);
->  
->  	/**
->  	 * @configure:
-> @@ -215,6 +225,8 @@ int phy_power_off(struct phy *phy);
->  int phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode);
->  #define phy_set_mode(phy, mode) \
->  	phy_set_mode_ext(phy, mode, 0)
-> +int phy_set_media(struct phy *phy, enum phy_media media);
-> +int phy_set_speed(struct phy *phy, int speed);
->  int phy_configure(struct phy *phy, union phy_configure_opts *opts);
->  int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
->  		 union phy_configure_opts *opts);
-> @@ -344,6 +356,20 @@ static inline int phy_set_mode_ext(struct phy *phy, enum phy_mode mode,
->  #define phy_set_mode(phy, mode) \
->  	phy_set_mode_ext(phy, mode, 0)
->  
-> +static inline int phy_set_media(struct phy *phy, enum phy_media media)
-> +{
-> +	if (!phy)
-> +		return 0;
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int phy_set_speed(struct phy *phy, int speed)
-> +{
-> +	if (!phy)
-> +		return 0;
-> +	return -ENODEV;
-> +}
-> +
->  static inline enum phy_mode phy_get_mode(struct phy *phy)
->  {
->  	return PHY_MODE_INVALID;
-> 
+Important dates:
+
+June 10th, 2021 CFS closes
+June 15th, 2021 Acceptance Notifications complete
+July 15th, 2021 Slides and papers for talks are due.
+July 15th, Recordings start !!!
+
+For more frequent updates subscribe to the mailing
+list people@netdevconf.info or see us at the twitters
+as @netdev01
+
+cheers,
+jamal  (on behalf of the Netdev Society)
