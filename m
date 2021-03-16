@@ -2,39 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38DE933E03D
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:17:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2F033E068
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232892AbhCPVQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 17:16:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42824 "EHLO mail.kernel.org"
+        id S232783AbhCPVVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 17:21:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232817AbhCPVQW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 17:16:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0FB5F64F94;
-        Tue, 16 Mar 2021 21:16:22 +0000 (UTC)
+        id S232433AbhCPVVP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 17:21:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 584DB64FA6;
+        Tue, 16 Mar 2021 21:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615929382;
-        bh=DYmmL0+J/1MLOIAz8nsNuBrSOWeZ80Elhpmcap7Ayoo=;
+        s=k20201202; t=1615929674;
+        bh=su/a4cJXKkStHlw0Xv6RaaQR/ej+nELTe/a2v5ZVifY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b52/yg3Hwo8dmRsj5CBok+P4ozVQwOom/6Nun+EE60OSUmPKHP/18azlHXAW3A2d7
-         BWUF2ZFjfnU6DfZL4jH5cBbl/A+nARj6O6/7i80TJ/N11Ebdu+ndFBQfi6ndicDs1T
-         gd0QdM4Qh0rPLWsCkIhAOY83qLw2liTRdWNQq2ZFCf1x8jDDoiTi1xdQhUcpC9YYvZ
-         /CL8xkroN98Lq21Ts8UBczR6kiKL6tQCZy9OtnX/6ifii82UGS0yvTgsmyFl/79vQK
-         hyyh0wFikJmP8yQUhzymm0BtIbOn4A968GFr31Rt3DEql9Glq5fra/RMEycWwZgZFo
-         cZSkAyYc+k5fg==
-Date:   Tue, 16 Mar 2021 14:16:21 -0700
+        b=ls+CiT1rDuu0/020yQNXMyP2EEGdd9tNmW+kVHPmWtJ+PknQ6RpzBiJLaN9fGZlF5
+         SsBWH/k4HVb5+FzKdDe2t7Ts9xj6H3AD+MvDRZ9U4pgiNYHjkdIeUsRx0zTvSW4vb9
+         czxtJsbfrwJVmmgL4qHh9R4Ykn9jadnw16nflBaRsNnrkz2sXh9J5hh2VUySY8AlOp
+         oPBF7HIPB7sxJrie0K88Y2byZzXwXNrIuPvm0FIVOX/gbCh1+p6oFdGUmbnCm6q7sB
+         klqBhD8p4rMRS9uoOAiz30GzIEdjKZiD6v/cN2f6NwOS8o6HFxEwWZNHCOQj9J6rX3
+         tcpWNiprO/D5Q==
+Date:   Tue, 16 Mar 2021 14:21:13 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        Martin Willi <martin@strongswan.org>
-Subject: Re: [net 01/11] can: dev: Move device back to init netns on owning
- netns delete
-Message-ID: <20210316141621.1d1bd26d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210316082104.4027260-2-mkl@pengutronix.de>
-References: <20210316082104.4027260-1-mkl@pengutronix.de>
-        <20210316082104.4027260-2-mkl@pengutronix.de>
+To:     Voon Weifeng <weifeng.voon@intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: Re: [RESEND v1 net-next 2/5] net: stmmac: make stmmac_interrupt()
+ function more friendly to MSI
+Message-ID: <20210316142113.40fd721f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210316121823.18659-3-weifeng.voon@intel.com>
+References: <20210316121823.18659-1-weifeng.voon@intel.com>
+        <20210316121823.18659-3-weifeng.voon@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,11 +50,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Mar 2021 09:20:54 +0100 Marc Kleine-Budde wrote:
-> + *	@netns_refund: Physical device, move to init_net on netns exit
+On Tue, 16 Mar 2021 20:18:20 +0800 Voon Weifeng wrote:
+> +	if (unlikely(!dev)) {
+> +		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
+> +		return IRQ_NONE;
+> +	}
 
-I feel like we could do better with the name, and the kdoc (not sure
-what constitutes a physical device these days)... but I have no better
-suggestion right now :)
-
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Where did this check come from? Please avoid defensive programming 
+in the kernel unless you can point out how the condition can arise
+legitimately.
