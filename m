@@ -2,138 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B635633D043
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 10:02:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BBF333D058
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 10:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233023AbhCPJBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 05:01:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32844 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230166AbhCPJBL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 05:01:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 065DF65001;
-        Tue, 16 Mar 2021 09:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1615885271;
-        bh=BAFtxdkU03/IGeq7+qwRwODdw11YmUzHYubpZWdDoH4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jfMTDPnNyiFnhJo17fCmm2npDlUuyGB87P40KcHXhR8vZ9872LACEpz/a6CNFfYLG
-         TX73LAL3oMLG0FquAZomNU3niEeIAUekkmf3aiXB9rnISFpwJX2Cr0LIhnVxv6PU6h
-         VIESBQxJuEraODdLeHSR75n1DCbhz26iFePB/Cso=
-Date:   Tue, 16 Mar 2021 10:01:08 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
-Cc:     "Williams, Dan J" <dan.j.williams@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        id S232211AbhCPJLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 05:11:01 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:45172 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231979AbhCPJKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 05:10:30 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12G9ACNO162669;
+        Tue, 16 Mar 2021 09:10:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=5n3Z4Pl8NfHLesDCmcdXVOo6ZdVwctaPEOzF6XZitW8=;
+ b=sDCAsQbEvMmyTmZyFqXujPh3R3HZPKH9dqKbcFXysxFi1CejyTvgW9nLkI6X/iCaUum5
+ loS7xYVUwAhR+oNOz+UFScxr5vflPtEYtuv2Y6p9tiysjnS2TMEBIRvQFBaai7ei8a7x
+ Txc7EK/lwtSX15S92QfbHmAtEjj8fk78Yes2O7ixKl8JI118lExcv6wgewM1makBYTZ5
+ xjVvs3IxFwpSVJM/pMDV5FDHoXemULR0IfcH3RRaF+HANxOGLhJK3it8Hv5fmK+P+zAG
+ OBCiB1Ndc/catUjmcPqY2qKFQQEKkzGkqcnS6G3RlKeNVI6pAAjF3Jw5/YWidBqGDJr0 7A== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 378p1npwq7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Mar 2021 09:10:15 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12G99gB7186545;
+        Tue, 16 Mar 2021 09:10:14 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 3797a0xfyu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Mar 2021 09:10:14 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 12G9A9fc011784;
+        Tue, 16 Mar 2021 09:10:09 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 16 Mar 2021 09:10:08 +0000
+Date:   Tue, 16 Mar 2021 12:10:00 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "'w00385741" <weiyongjun1@huawei.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v10 00/20] dlb: introduce DLB device driver
-Message-ID: <YFBz1BICsjDsSJwv@kroah.com>
-References: <20210210175423.1873-1-mike.ximing.chen@intel.com>
- <YEiLI8fGoa9DoCnF@kroah.com>
- <CAPcyv4gCMjoDCc2azLEc8QC5mVhdKeLibic9gj4Lm=Xwpft9ZA@mail.gmail.com>
- <BYAPR11MB30950965A223EDE5414EAE08D96F9@BYAPR11MB3095.namprd11.prod.outlook.com>
- <CAPcyv4htddEBB9ePPSheH+rO+=VJULeHzx0gc384if7qXTUHHg@mail.gmail.com>
- <BYAPR11MB309515F449B8660043A559E5D96C9@BYAPR11MB3095.namprd11.prod.outlook.com>
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH net-next] net: dsa: sja1105: fix error return code in
+ sja1105_cls_flower_add()
+Message-ID: <20210316090959.GS2087@kadam>
+References: <20210315144323.4110640-1-weiyongjun1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BYAPR11MB309515F449B8660043A559E5D96C9@BYAPR11MB3095.namprd11.prod.outlook.com>
+In-Reply-To: <20210315144323.4110640-1-weiyongjun1@huawei.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9924 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 spamscore=0
+ mlxlogscore=999 bulkscore=0 malwarescore=0 phishscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103160064
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9924 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 adultscore=0
+ spamscore=0 clxscore=1011 phishscore=0 malwarescore=0 priorityscore=1501
+ bulkscore=0 mlxlogscore=999 lowpriorityscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103160064
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 15, 2021 at 08:18:10PM +0000, Chen, Mike Ximing wrote:
-> > From: Dan Williams <dan.j.williams@intel.com>
-> > On Fri, Mar 12, 2021 at 1:55 PM Chen, Mike Ximing <mike.ximing.chen@intel.com> wrote:
-> > >
-> > > We support up to 16/32 VF/VDEVs (depending on version) with SRIOV and
-> > > SIOV. Role of the kernel driver includes VDEV Composition (vdcm
-> > > module), functional level reset, live migration, error handling, power
-> > > management, and etc..
-> > 
-> > Need some more specificity here. What about those features requires the kernel to get involved with a
-> > DLB2 specific ABI to manage ports, queues, credits, sequence numbers, etc...?
+On Mon, Mar 15, 2021 at 02:43:23PM +0000, 'w00385741 wrote:
+> From: Wei Yongjun <weiyongjun1@huawei.com>
 > 
-> Role of the dlb kernel driver:
+> The return value 'rc' maybe overwrite to 0 in the flow_action_for_each
+> loop, the error code from the offload not support error handling will
+> not set. This commit fix it to return -EOPNOTSUPP.
 > 
-> VDEV Composition
-> For example writing 1024 to the VDEV_CREDITS[0] register will allocate 1024 credits to VDEV 0. In this way, VFs or VDEVs can be composed  as mini-versions of the full device.
-> VDEV composition will leverage vfio-mdev to create the VDEV devices while the KMD will implement the VDCM.
+> Fixes: 6a56e19902af ("flow_offload: reject configuration of packet-per-second policing in offload drivers")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+>  drivers/net/dsa/sja1105/sja1105_flower.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/sja1105/sja1105_flower.c b/drivers/net/dsa/sja1105/sja1105_flower.c
+> index f78b767f86ee..973761132fc3 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_flower.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_flower.c
+> @@ -317,14 +317,13 @@ int sja1105_cls_flower_add(struct dsa_switch *ds, int port,
+>  	if (rc)
+>  		return rc;
+>  
+> -	rc = -EOPNOTSUPP;
+> -
+>  	flow_action_for_each(i, act, &rule->action) {
+>  		switch (act->id) {
+>  		case FLOW_ACTION_POLICE:
+>  			if (act->police.rate_pkt_ps) {
+>  				NL_SET_ERR_MSG_MOD(extack,
+>  						   "QoS offload not support packets per second");
+> +				rc = -EOPNOTSUPP;
+>  				goto out;
 
-What is a vdev?
+Yep.  The goto out is a do nothing goto and "forgot the error code" is
+the traditional bug introduced by do nothing gotos.
 
-What is KMD?
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-What is VDCM?
+regards,
+dan carpenter
 
-What is VF?
-
-And how does this all work?
-
-> Dynamic Composition
-> Such composition can be dynamic – the PF/VF interface supports scenarios whereby, for example, an application may wish to boost its credit allocation – can I have 100 more credits?
-
-What applications?  What "credits"  For what resources?
-
-> Functional Level Reset
-> Much of the internal storage is RAM based and not resettable by hardware schemes. There are also internal SRAM  based control structures (BCAM) that have to be flushed. 
-> The planned way to do this is, roughly:
->   -- Kernel driver disables access from the associated ports  (to prevent any SW access, the application should be deadso this is a precaution).
-
-What is a "port" here?
-
-
->   -- Kernel masquerades as the application to drain all data from internal queues. It can poll some internal counters to verify everything is fully drained.
-
-What queues?
-
-Why would the kernel mess with userspace data?
-
->   -- Only at this point can the resources associated with the VDEV be returned to the pool of available resources for handing to another application/VDEV.
-
-What is a VDEV and how does an application be "associated with it"?
-
-> Migration
-> Requirement is fairly similar to FLR. A VDEV has to be manually drained and reconstituted on another server, Kernel driver is responsible on both sides.
-
-What is FLR?
-
-> Error Handling
-> Errors include “Credit Excursions” where a VDEV attempts to use more of the internal capacity (credits) than has been allocated. In such a case, 
-> the data is dropped and an interrupt generated. All such interrupts are directed to the PF driver, which may simply forward them to a VF (via the PF/VF comms mechanism).
-
-What data is going where?
-
-> Power Management
-> The kernel driver keeps the device in D3Hot when not in use. The driver transitions the device to D0 when the first device file is opened or a VF or VDEV is created, 
-> and keeps it in that state until there are no open device files, memory mappings, or VFs/VDEVs.
-
-That's just normal power management for any device, why is this anything
-special?
-
-> Ioctl interface
-> Kernel driver provides ioctl interface for user applications to setup and configure dlb domains, ports, queues, scheduling types, credits, 
-> sequence numbers, and links between ports and queues.  Applications also use the interface to start, stop and inquire the dlb operations.
-
-What applications use any of this?  What userspace implementation today
-interacts with this?  Where is that code located?
-
-Too many TLAs here, I have even less of an understanding of what this
-driver is supposed to be doing, and what this hardware is now than
-before.
-
-And here I thought I understood hardware devices, and if I am confused,
-I pity anyone else looking at this code...
-
-You all need to get some real documentation together to explain
-everything here in terms that anyone can understand.  Without that, this
-code is going nowhere.
-
-good luck!
-
-greg k-h
