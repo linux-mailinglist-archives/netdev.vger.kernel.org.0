@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F030B33D66D
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B715633D66F
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:05:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237745AbhCPPEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 11:04:53 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41383 "EHLO
+        id S237755AbhCPPE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 11:04:59 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:51897 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237699AbhCPPEU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:04:20 -0400
+        by vger.kernel.org with ESMTP id S237700AbhCPPEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:04:22 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 202135C00CB;
-        Tue, 16 Mar 2021 11:04:19 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id BBA585C012C;
+        Tue, 16 Mar 2021 11:04:21 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 16 Mar 2021 11:04:19 -0400
+  by compute3.internal (MEProxy); Tue, 16 Mar 2021 11:04:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=NEY6xQVNtpR0RSJX6EOckFqTasucY31doIcEVAl6K60=; b=jP/Sim+2
-        l4SKaJ14vZAWPb4OuU26OUFwsildKBz3/8X8RTbA3UjHQJqd2o/yB/eHRh/oMaVN
-        RRptG+29nQPVpLO4HDGxD8uscHrJeF3cbTLPXxh6CgaFhksIq1nIPDmmTkrppX5i
-        Z9r/kx5YfAZ/bN317ZbiO74ipa6TNGS6Nx8weS8JPdce9GSwqUatXfQA/OLDHDoV
-        yO/DViW5igIDlONLWqehDSUW4ZKdmqJBCDkBcRRr12WsTz/W8Z+QBLOjAyBGmhLH
-        Y8CJnlK/AdSO4Yz9a0fEKqpgQ9B0EvEEbrOnzCyvL6i9+gzOonc/QhEX6UQKZ7IV
-        2Y2OtIb0mZDwXg==
-X-ME-Sender: <xms:8shQYA7rtSlLEPgPqaSLeF4yIBYQARjm8JDSvZL4Mcyh2mX7VHvJIg>
-    <xme:8shQYB7FgVAp5tks9KlpcFnzcsCehvyYB-7iLhsJvkGOBnkP-6Nkcz8QCX_dqAXNS
-    DyuJ6Yg5czCIZg>
+        fm2; bh=93rwysau0Jpm/Yrv8v03kZQdKrKZGfsFaNuHvB8HB6I=; b=H5Xnw1qd
+        RHtgA3NsOpPeMSqqNRNY15sj4kWcX4ttgR30+UvklEdA18Jd8/wNm9CMLmOK38Fx
+        7EIa6jjbkPW8MJi4+TBpSa1sEvIPNMtXUqTMJtVFIOM3Xg2M0OLqp4aLsIkE2mdv
+        VSudmwERdZBSb2QnC0X/QjgifOVCMVk2XADvckg7gw1tBr9O7AEVvn+Q5GMZ+37L
+        6N0+s0StyaGPDSIswv6TiRTQhIHwk58V+MNnS4yuHPyC7YfRk2/XuP1PTNejRUIi
+        cFWobFS39XaFFVnJo3671o90m89/Dkwwkz3BpBZCxykcH7ZYEo0qYU41R6G/Li2n
+        C+AU/BBg+y9y/Q==
+X-ME-Sender: <xms:9chQYGazKmNhtMT0QpbJgkWhRwvbhy4olt6dEt7IdgOrOxAkfuk7ZA>
+    <xme:9chQYJYiWrSl7FlWJKFXNrU5yIafyDs6F5WYmKQ4sZcxUhMkB4-4o7H2U_gLEKV-1
+    qNlr1lRzen1bJo>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefvddgjeefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepgeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:88hQYPc5YpGcBkRVpuf0gU9bRiC3Zb0arByyTvuuStzAod4Auqj82Q>
-    <xmx:88hQYFIEfg0NtuQxvfHzuwd_9quuUNQYlGU2H9uN4DIL_rdXwQktjA>
-    <xmx:88hQYEJHZUoEz10uqOUKgXcpjWa2EU9lJ4biolaKx65wGnHrRVFtTg>
-    <xmx:88hQYOjkKNQbf5Sp_yM40tZEjUnop8EKNStUyfY6oABb7lVkcVOKDA>
+X-ME-Proxy: <xmx:9chQYA_WG7NHeUmb0ZlPBELpJHrZAXFdisxTYP7S3bFad5XLtEpRtg>
+    <xmx:9chQYIoK4-G79ZKvq6sCvBnr8y5vWKpAGZeD0bbVjaimoer9fUKjew>
+    <xmx:9chQYBo9n8isR1RWzQXZ6ceQ13JwtItbCbzKspTl7Plc2OkYS2O50Q>
+    <xmx:9chQYKCVzCxgaonbZ28CKoWOBJtSEBSTBk1Y3Sf3w_2AuBOpSBnoew>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C6B911080057;
-        Tue, 16 Mar 2021 11:04:16 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5C0E91080057;
+        Tue, 16 Mar 2021 11:04:19 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         roopa@nvidia.com, peter.phaal@inmon.com, neil.mckee@inmon.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 08/10] mlxsw: spectrum_acl: Offload FLOW_ACTION_SAMPLE
-Date:   Tue, 16 Mar 2021 17:03:01 +0200
-Message-Id: <20210316150303.2868588-9-idosch@idosch.org>
+Subject: [PATCH net-next 09/10] selftests: mlxsw: Add tc sample tests for new triggers
+Date:   Tue, 16 Mar 2021 17:03:02 +0200
+Message-Id: <20210316150303.2868588-10-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210316150303.2868588-1-idosch@idosch.org>
 References: <20210316150303.2868588-1-idosch@idosch.org>
@@ -64,308 +64,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Implement support for action sample when used with a flower classifier
-by implementing the required sampler_add() / sampler_del() callbacks and
-registering an Rx listener for the sampled packets.
-
-The sampler_add() callback returns an error for Spectrum-1 as the
-functionality is not supported. In Spectrum-{2,3} the callback creates a
-mirroring agent towards the CPU. The agent's identifier is used by the
-policy engine code to mirror towards the CPU with probability.
-
-The Rx listener for the sampled packet is registered with the 'policy
-engine' mirroring reason and passes trapped packets to the psample
-module after looking up their parameters (e.g., sampling group).
+Test that packets are sampled when tc-sample is used with matchall
+egress binding and flower classifier. Verify that when performing
+sampling on egress the end-to-end latency is reported as metadata.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  9 +-
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    | 25 ++++++
- .../mlxsw/spectrum_acl_flex_actions.c         | 83 +++++++++++++++++++
- .../ethernet/mellanox/mlxsw/spectrum_flower.c | 18 ++++
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 41 +++++++++
- 5 files changed, 175 insertions(+), 1 deletion(-)
+ .../selftests/drivers/net/mlxsw/tc_sample.sh  | 135 ++++++++++++++++++
+ 1 file changed, 135 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 4b4d643abceb..63cc8fa3fa62 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -239,11 +239,12 @@ struct mlxsw_sp_port_pcpu_stats {
- enum mlxsw_sp_sample_trigger_type {
- 	MLXSW_SP_SAMPLE_TRIGGER_TYPE_INGRESS,
- 	MLXSW_SP_SAMPLE_TRIGGER_TYPE_EGRESS,
-+	MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
- };
- 
- struct mlxsw_sp_sample_trigger {
- 	enum mlxsw_sp_sample_trigger_type type;
--	u8 local_port;
-+	u8 local_port; /* Reserved when trigger type is not ingress / egress. */
- };
- 
- struct mlxsw_sp_sample_params {
-@@ -946,6 +947,12 @@ int mlxsw_sp_acl_rulei_act_count(struct mlxsw_sp *mlxsw_sp,
- int mlxsw_sp_acl_rulei_act_fid_set(struct mlxsw_sp *mlxsw_sp,
- 				   struct mlxsw_sp_acl_rule_info *rulei,
- 				   u16 fid, struct netlink_ext_ack *extack);
-+int mlxsw_sp_acl_rulei_act_sample(struct mlxsw_sp *mlxsw_sp,
-+				  struct mlxsw_sp_acl_rule_info *rulei,
-+				  struct mlxsw_sp_flow_block *block,
-+				  struct psample_group *psample_group, u32 rate,
-+				  u32 trunc_size, bool truncate,
-+				  struct netlink_ext_ack *extack);
- 
- struct mlxsw_sp_acl_rule;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index 8cfa03a75374..67cedfa76f78 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -688,6 +688,31 @@ int mlxsw_sp_acl_rulei_act_fid_set(struct mlxsw_sp *mlxsw_sp,
- 	return mlxsw_afa_block_append_fid_set(rulei->act_block, fid, extack);
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
+index 75d00104f291..57b05f042787 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
+@@ -41,6 +41,10 @@ ALL_TESTS="
+ 	tc_sample_md_lag_oif_test
+ 	tc_sample_md_out_tc_test
+ 	tc_sample_md_out_tc_occ_test
++	tc_sample_md_latency_test
++	tc_sample_acl_group_conflict_test
++	tc_sample_acl_rate_test
++	tc_sample_acl_max_rate_test
+ "
+ NUM_NETIFS=8
+ CAPTURE_FILE=$(mktemp)
+@@ -482,6 +486,137 @@ tc_sample_md_out_tc_occ_test()
+ 	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
  }
  
-+int mlxsw_sp_acl_rulei_act_sample(struct mlxsw_sp *mlxsw_sp,
-+				  struct mlxsw_sp_acl_rule_info *rulei,
-+				  struct mlxsw_sp_flow_block *block,
-+				  struct psample_group *psample_group, u32 rate,
-+				  u32 trunc_size, bool truncate,
-+				  struct netlink_ext_ack *extack)
++tc_sample_md_latency_test()
 +{
-+	struct mlxsw_sp_flow_block_binding *binding;
-+	struct mlxsw_sp_port *mlxsw_sp_port;
++	RET=0
 +
-+	if (!list_is_singular(&block->binding_list)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Only a single sampling source is allowed");
-+		return -EOPNOTSUPP;
-+	}
-+	binding = list_first_entry(&block->binding_list,
-+				   struct mlxsw_sp_flow_block_binding, list);
-+	mlxsw_sp_port = binding->mlxsw_sp_port;
++	# Egress sampling not supported on Spectrum-1.
++	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
 +
-+	return mlxsw_afa_block_append_sampler(rulei->act_block,
-+					      mlxsw_sp_port->local_port,
-+					      psample_group, rate, trunc_size,
-+					      truncate, binding->ingress,
-+					      extack);
++	tc filter add dev $rp2 egress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 5 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	grep -q -e "latency " $CAPTURE_FILE
++	check_err $? "Sampled packets do not have latency attribute"
++
++	log_test "tc sample latency"
++
++	tc filter del dev $rp2 egress protocol all pref 1 handle 101 matchall
 +}
 +
- struct mlxsw_sp_acl_rule *
- mlxsw_sp_acl_rule_create(struct mlxsw_sp *mlxsw_sp,
- 			 struct mlxsw_sp_acl_ruleset *ruleset,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
-index 90372d1c28d4..c72aa38424dc 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
-@@ -192,6 +192,22 @@ static void mlxsw_sp_act_policer_del(void *priv, u16 policer_index)
- 			     policer_index);
- }
++tc_sample_acl_group_conflict_test()
++{
++	RET=0
++
++	# Test that two flower sampling rules cannot be configured on the same
++	# port with different groups.
++
++	# Policy-based sampling is not supported on Spectrum-1.
++	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
++
++	tc filter add dev $rp1 ingress protocol ip pref 1 handle 101 flower \
++		skip_sw action sample rate 1024 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	tc filter add dev $rp1 ingress protocol ip pref 2 handle 102 flower \
++		skip_sw action sample rate 1024 group 1
++	check_err $? "Failed to configure sampling rule with same group"
++
++	tc filter add dev $rp1 ingress protocol ip pref 3 handle 103 flower \
++		skip_sw action sample rate 1024 group 2 &> /dev/null
++	check_fail $? "Managed to configure sampling rule with conflicting group"
++
++	log_test "tc sample (w/ flower) group conflict test"
++
++	tc filter del dev $rp1 ingress protocol ip pref 2 handle 102 flower
++	tc filter del dev $rp1 ingress protocol ip pref 1 handle 101 flower
++}
++
++__tc_sample_acl_rate_test()
++{
++	local bind=$1; shift
++	local port=$1; shift
++	local pkts pct
++
++	RET=0
++
++	# Policy-based sampling is not supported on Spectrum-1.
++	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
++
++	tc filter add dev $port $bind protocol ip pref 1 handle 101 flower \
++		skip_sw dst_ip 198.51.100.1 action sample rate 32 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	pkts=$(grep -e "group 1 " $CAPTURE_FILE | wc -l)
++	pct=$((100 * (pkts - 100) / 100))
++	(( -25 <= pct && pct <= 25))
++	check_err $? "Expected 100 packets, got $pkts packets, which is $pct% off. Required accuracy is +-25%"
++
++	# Setup a filter that should not match any packet and make sure packets
++	# are not sampled.
++	tc filter del dev $port $bind protocol ip pref 1 handle 101 flower
++
++	tc filter add dev $port $bind protocol ip pref 1 handle 101 flower \
++		skip_sw dst_ip 198.51.100.10 action sample rate 32 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	psample_capture_start
++
++	ip vrf exec v$h1 $MZ $h1 -c 3200 -d 1msec -p 64 -A 192.0.2.1 \
++		-B 198.51.100.1 -t udp dp=52768,sp=42768 -q
++
++	psample_capture_stop
++
++	grep -q -e "group 1 " $CAPTURE_FILE
++	check_fail $? "Sampled packets when should not"
++
++	log_test "tc sample (w/ flower) rate ($bind)"
++
++	tc filter del dev $port $bind protocol ip pref 1 handle 101 flower
++}
++
++tc_sample_acl_rate_test()
++{
++	__tc_sample_acl_rate_test ingress $rp1
++	__tc_sample_acl_rate_test egress $rp2
++}
++
++tc_sample_acl_max_rate_test()
++{
++	RET=0
++
++	# Policy-based sampling is not supported on Spectrum-1.
++	[[ "$DEVLINK_VIDDID" == "15b3:cb84" ]] && return
++
++	tc filter add dev $rp1 ingress protocol ip pref 1 handle 101 flower \
++		skip_sw action sample rate $((2 ** 24 - 1)) group 1
++	check_err $? "Failed to configure sampling rule with max rate"
++
++	tc filter del dev $rp1 ingress protocol ip pref 1 handle 101 flower
++
++	tc filter add dev $rp1 ingress protocol ip pref 1 handle 101 flower \
++		skip_sw action sample rate $((2 ** 24)) \
++		group 1 &> /dev/null
++	check_fail $? "Managed to configure sampling rate above maximum"
++
++	log_test "tc sample (w/ flower) maximum rate"
++}
++
+ trap cleanup EXIT
  
-+static int mlxsw_sp1_act_sampler_add(void *priv, u8 local_port,
-+				     struct psample_group *psample_group,
-+				     u32 rate, u32 trunc_size, bool truncate,
-+				     bool ingress, int *p_span_id,
-+				     struct netlink_ext_ack *extack)
-+{
-+	NL_SET_ERR_MSG_MOD(extack, "Sampling action is not supported on Spectrum-1");
-+	return -EOPNOTSUPP;
-+}
-+
-+static void mlxsw_sp1_act_sampler_del(void *priv, u8 local_port, int span_id,
-+				      bool ingress)
-+{
-+	WARN_ON_ONCE(1);
-+}
-+
- const struct mlxsw_afa_ops mlxsw_sp1_act_afa_ops = {
- 	.kvdl_set_add		= mlxsw_sp1_act_kvdl_set_add,
- 	.kvdl_set_del		= mlxsw_sp_act_kvdl_set_del,
-@@ -204,8 +220,73 @@ const struct mlxsw_afa_ops mlxsw_sp1_act_afa_ops = {
- 	.mirror_del		= mlxsw_sp_act_mirror_del,
- 	.policer_add		= mlxsw_sp_act_policer_add,
- 	.policer_del		= mlxsw_sp_act_policer_del,
-+	.sampler_add		= mlxsw_sp1_act_sampler_add,
-+	.sampler_del		= mlxsw_sp1_act_sampler_del,
- };
- 
-+static int mlxsw_sp2_act_sampler_add(void *priv, u8 local_port,
-+				     struct psample_group *psample_group,
-+				     u32 rate, u32 trunc_size, bool truncate,
-+				     bool ingress, int *p_span_id,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_sp_span_agent_parms agent_parms = {
-+		.session_id = MLXSW_SP_SPAN_SESSION_ID_SAMPLING,
-+	};
-+	struct mlxsw_sp_sample_trigger trigger = {
-+		.type = MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
-+	};
-+	struct mlxsw_sp_sample_params params;
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct mlxsw_sp *mlxsw_sp = priv;
-+	int err;
-+
-+	params.psample_group = psample_group;
-+	params.trunc_size = trunc_size;
-+	params.rate = rate;
-+	params.truncate = truncate;
-+	err = mlxsw_sp_sample_trigger_params_set(mlxsw_sp, &trigger, &params,
-+						 extack);
-+	if (err)
-+		return err;
-+
-+	err = mlxsw_sp_span_agent_get(mlxsw_sp, p_span_id, &agent_parms);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to get SPAN agent");
-+		goto err_span_agent_get;
-+	}
-+
-+	mlxsw_sp_port = mlxsw_sp->ports[local_port];
-+	err = mlxsw_sp_span_analyzed_port_get(mlxsw_sp_port, ingress);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to get analyzed port");
-+		goto err_analyzed_port_get;
-+	}
-+
-+	return 0;
-+
-+err_analyzed_port_get:
-+	mlxsw_sp_span_agent_put(mlxsw_sp, *p_span_id);
-+err_span_agent_get:
-+	mlxsw_sp_sample_trigger_params_unset(mlxsw_sp, &trigger);
-+	return err;
-+}
-+
-+static void mlxsw_sp2_act_sampler_del(void *priv, u8 local_port, int span_id,
-+				      bool ingress)
-+{
-+	struct mlxsw_sp_sample_trigger trigger = {
-+		.type = MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
-+	};
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct mlxsw_sp *mlxsw_sp = priv;
-+
-+	mlxsw_sp_port = mlxsw_sp->ports[local_port];
-+	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, ingress);
-+	mlxsw_sp_span_agent_put(mlxsw_sp, span_id);
-+	mlxsw_sp_sample_trigger_params_unset(mlxsw_sp, &trigger);
-+}
-+
- const struct mlxsw_afa_ops mlxsw_sp2_act_afa_ops = {
- 	.kvdl_set_add		= mlxsw_sp2_act_kvdl_set_add,
- 	.kvdl_set_del		= mlxsw_sp_act_kvdl_set_del,
-@@ -218,6 +299,8 @@ const struct mlxsw_afa_ops mlxsw_sp2_act_afa_ops = {
- 	.mirror_del		= mlxsw_sp_act_mirror_del,
- 	.policer_add		= mlxsw_sp_act_policer_add,
- 	.policer_del		= mlxsw_sp_act_policer_del,
-+	.sampler_add		= mlxsw_sp2_act_sampler_add,
-+	.sampler_del		= mlxsw_sp2_act_sampler_del,
- 	.dummy_first_set	= true,
- };
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index ea637fa552f5..be3791ca6069 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -24,6 +24,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 	const struct flow_action_entry *act;
- 	int mirror_act_count = 0;
- 	int police_act_count = 0;
-+	int sample_act_count = 0;
- 	int err, i;
- 
- 	if (!flow_action_has_entries(flow_action))
-@@ -209,6 +210,23 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 				return err;
- 			break;
- 			}
-+		case FLOW_ACTION_SAMPLE: {
-+			if (sample_act_count++) {
-+				NL_SET_ERR_MSG_MOD(extack, "Multiple sample actions per rule are not supported");
-+				return -EOPNOTSUPP;
-+			}
-+
-+			err = mlxsw_sp_acl_rulei_act_sample(mlxsw_sp, rulei,
-+							    block,
-+							    act->sample.psample_group,
-+							    act->sample.rate,
-+							    act->sample.trunc_size,
-+							    act->sample.truncate,
-+							    extack);
-+			if (err)
-+				return err;
-+			break;
-+			}
- 		default:
- 			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
- 			dev_err(mlxsw_sp->bus_info->dev, "Unsupported action\n");
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 3dbf5e53e9ff..26d01adbedad 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -51,6 +51,8 @@ enum {
- enum {
- 	/* Packet was mirrored from ingress. */
- 	MLXSW_SP_MIRROR_REASON_INGRESS = 1,
-+	/* Packet was mirrored from policy engine. */
-+	MLXSW_SP_MIRROR_REASON_POLICY_ENGINE = 2,
- 	/* Packet was early dropped. */
- 	MLXSW_SP_MIRROR_REASON_INGRESS_WRED = 9,
- 	/* Packet was mirrored from egress. */
-@@ -341,6 +343,42 @@ static void mlxsw_sp_rx_sample_tx_listener(struct sk_buff *skb, u8 local_port,
- 	consume_skb(skb);
- }
- 
-+static void mlxsw_sp_rx_sample_acl_listener(struct sk_buff *skb, u8 local_port,
-+					    void *trap_ctx)
-+{
-+	struct mlxsw_sp *mlxsw_sp = devlink_trap_ctx_priv(trap_ctx);
-+	struct mlxsw_sp_sample_trigger trigger = {
-+		.type = MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
-+	};
-+	struct mlxsw_sp_sample_params *params;
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct psample_metadata md = {};
-+	int err;
-+
-+	err = __mlxsw_sp_rx_no_mark_listener(skb, local_port, trap_ctx);
-+	if (err)
-+		return;
-+
-+	mlxsw_sp_port = mlxsw_sp->ports[local_port];
-+	if (!mlxsw_sp_port)
-+		goto out;
-+
-+	params = mlxsw_sp_sample_trigger_params_lookup(mlxsw_sp, &trigger);
-+	if (!params)
-+		goto out;
-+
-+	/* The psample module expects skb->data to point to the start of the
-+	 * Ethernet header.
-+	 */
-+	skb_push(skb, ETH_HLEN);
-+	mlxsw_sp_psample_md_init(mlxsw_sp, &md, skb,
-+				 mlxsw_sp_port->dev->ifindex, params->truncate,
-+				 params->trunc_size);
-+	psample_sample_packet(params->psample_group, skb, params->rate, &md);
-+out:
-+	consume_skb(skb);
-+}
-+
- #define MLXSW_SP_TRAP_DROP(_id, _group_id)				      \
- 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				      \
- 			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id,	      \
-@@ -1898,6 +1936,9 @@ mlxsw_sp2_trap_items_arr[] = {
- 			MLXSW_RXL_MIRROR(mlxsw_sp_rx_sample_tx_listener, 1,
- 					 SP_PKT_SAMPLE,
- 					 MLXSW_SP_MIRROR_REASON_EGRESS),
-+			MLXSW_RXL_MIRROR(mlxsw_sp_rx_sample_acl_listener, 1,
-+					 SP_PKT_SAMPLE,
-+					 MLXSW_SP_MIRROR_REASON_POLICY_ENGINE),
- 		},
- 	},
- };
+ setup_prepare
 -- 
 2.29.2
 
