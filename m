@@ -2,86 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF66C33DFAD
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:01:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C9033DFB5
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232155AbhCPVAp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 17:00:45 -0400
-Received: from p3plsmtpa08-07.prod.phx3.secureserver.net ([173.201.193.108]:46732
-        "EHLO p3plsmtpa08-07.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232149AbhCPVAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 17:00:25 -0400
-Received: from chrisHP110 ([76.103.216.188])
-        by :SMTPAUTH: with ESMTPA
-        id MGnflxIstW7O2MGnglYlxn; Tue, 16 Mar 2021 14:00:24 -0700
-X-CMAE-Analysis: v=2.4 cv=dpEet3s4 c=1 sm=1 tr=0 ts=60511c68
- a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
- a=IkcTkHD0fZMA:10 a=Ikd4Dj_1AAAA:8 a=pFxyTi4Pl4_mBTJLaogA:9
- a=7Tosw6CldfATm1kQ:21 a=JYVWiYVlfnQAFU0k:21 a=QEXdDO2ut3YA:10
-X-SECURESERVER-ACCT: don@thebollingers.org
-From:   "Don Bollinger" <don@thebollingers.org>
-To:     "'Moshe Shemesh'" <moshe@nvidia.com>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Andrew Lunn'" <andrew@lunn.ch>,
-        "'Adrian Pop'" <pop.adrian61@gmail.com>,
-        "'Michal Kubecek'" <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
-        <don@thebollingers.org>
-Cc:     "'Vladyslav Tarasiuk'" <vladyslavt@nvidia.com>
-References: <1615828363-464-1-git-send-email-moshe@nvidia.com> <1615828363-464-2-git-send-email-moshe@nvidia.com> <002201d719ea$e60d9350$b228b9f0$@thebollingers.org> <0a8beb69-972b-3b00-a67e-0e97f9fda8ea@nvidia.com>
-In-Reply-To: <0a8beb69-972b-3b00-a67e-0e97f9fda8ea@nvidia.com>
-Subject: RE: [RFC PATCH V3 net-next 1/5] ethtool: Allow network drivers to dump arbitrary EEPROM data
-Date:   Tue, 16 Mar 2021 14:00:21 -0700
-Message-ID: <006b01d71aa7$619eb2d0$24dc1870$@thebollingers.org>
+        id S232225AbhCPVBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 17:01:50 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59966 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232211AbhCPVBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 17:01:45 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lMGov-000DD5-8i; Tue, 16 Mar 2021 22:01:41 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lMGou-000NvJ-VU; Tue, 16 Mar 2021 22:01:40 +0100
+Subject: Re: [PATCH] libbpf: avoid inline hint definition from
+ 'linux/stddef.h'
+To:     Pedro Tammela <pctammela@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210314173839.457768-1-pctammela@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5083f82b-39fc-9d46-bcd0-3a6be2fc7f98@iogearbox.net>
+Date:   Tue, 16 Mar 2021 22:01:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Microsoft Outlook 15.0
-Thread-Index: AQGz6jCTEjXEF5R9RRlUkJN6q0cH4gF9RYA5AeDMSfcCkMhM+qqd//ZQ
-Content-Language: en-us
-X-CMAE-Envelope: MS4xfH88+mN4+HsyVYzppgrULnb0jfZtwTAZsGpf37BY3LiuQc3VFm7jkHtHtUnal+9ydQsbIvO837N+7z2S7wAwWUXGieakwXp0qWNC1hDLy11ps/4LZjl7
- Im7UN//klt0g055oQ6tuKV7+skRGY8Jv3lDzLnZ6FbG9yvcryppY32plgSG3Np3xKUMo+5YRp72tEsRxO7/iQWVvRed63hqEyKEPS7nrCkulkkQt9Yuk7K4I
- ztKnbvFoWTGZgOqWSV1BOWlHcum8FkH+pjJAobTvTjg0LhKlAOd+Q10fUg6ql+Z47fTZW6yCoPsOjqI79o++36uVAvY8SHmg06msa2rRkr7Q3HYYl6TxaVfL
- 5YC2PDi3hUUsWyIMcVFF0fqCQEWwEpmKdlfaDukIoU8Wg013lbAsQ/obRsY+jhmSLINNmrqq
+In-Reply-To: <20210314173839.457768-1-pctammela@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26110/Tue Mar 16 12:05:23 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/2021 11:24 AM, Moshe Shemesh wrote:
-> On 3/16/2021 12:31 AM, Don Bollinger wrote:
-> > On Mon, 15 Mar 2021 10:12:39 +0700 Moshe Shemesh wrote:
-> >> From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
-> >>
-> >> Define get_module_eeprom_data_by_page() ethtool callback and
-> >> implement netlink infrastructure.
-> >>
-
-<snip>
-
-> >> +     request->offset =
-> >> nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
-> >> +     request->length =
-> >> nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
-> >> +     if (tb[ETHTOOL_A_EEPROM_DATA_PAGE] &&
-> >> +         dev->ethtool_ops->get_module_eeprom_data_by_page &&
-> >> +         request->offset + request->length >
-> >> ETH_MODULE_EEPROM_PAGE_LEN)
-> >> +             return -EINVAL;
-> > If a request exceeds the length of EEPROM (in legacy), we truncate it
-> > to EEPROM length.  I suggest if a request exceeds the length of the
-> > page (in the new KAPI), then we truncate at the end of the page.  Thus
-> > rather than 'return -EINVAL;' I suggest
-> >
-> >            request->length = ETH_MODULE_EEPROM_PAGE_LEN -
-> > request->offset;
+On 3/14/21 6:38 PM, Pedro Tammela wrote:
+> Linux headers might pull 'linux/stddef.h' which defines
+> '__always_inline' as the following:
 > 
-> I was not sure about that, isn't it better that once user specified page he has
-> to be in the page boundary and let him know the command failed ?
+>     #ifndef __always_inline
+>     #define __always_inline __inline__
+>     #endif
+> 
+> This becomes an issue if the program picks up the 'linux/stddef.h'
+> definition as the macro now just hints inline to clang.
 
-On further review, I agree with your original code.  Reading across a page boundary will require explicit tracking of offset and page to read from.  If you get a short read, you *might* have to update the page on the next read.  If you have to keep track of where the page boundary is and adjust the offset and page together, then you should be explicitly managing not to try to read across a page boundary.  Put another way, if you try to read across a page boundary you probably have a bug in your code and will appreciate an immediate error.
+How did the program end up including linux/stddef.h ? Would be good to
+also have some more details on how we got here for the commit desc.
 
-I withdraw my previous suggestion, don't change it.
+> This change now enforces the proper definition for BPF programs
+> regardless of the include order.
+> 
+> Signed-off-by: Pedro Tammela <pctammela@gmail.com>
+> ---
+>   tools/lib/bpf/bpf_helpers.h | 7 +++++--
+>   1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index ae6c975e0b87..5fa483c0b508 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -29,9 +29,12 @@
+>    */
+>   #define SEC(NAME) __attribute__((section(NAME), used))
+>   
+> -#ifndef __always_inline
+> +/*
+> + * Avoid 'linux/stddef.h' definition of '__always_inline'.
+> + */
 
-Don
+I think the comment should have more details on 'why' we undef it as in
+few months looking at it again, the next question to dig into would be
+what was wrong with linux/stddef.h. Providing a better rationale would
+be nice for readers here.
+
+> +#undef __always_inline
+>   #define __always_inline inline __attribute__((always_inline))
+> -#endif
+> +
+>   #ifndef __noinline
+>   #define __noinline __attribute__((noinline))
+>   #endif
+> 
 
