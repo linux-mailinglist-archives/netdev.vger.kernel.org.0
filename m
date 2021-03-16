@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F5433D9B1
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 17:42:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B1BD33D9BE
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 17:47:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238907AbhCPQmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 12:42:15 -0400
-Received: from mga18.intel.com ([134.134.136.126]:7038 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238801AbhCPQli (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 12:41:38 -0400
-IronPort-SDR: fym+F5IR6iLXox0tbaK+naa+7DUFDYleWnWxtMwNgbhvfBme3RsQ8kdPyb5kdUYf8LOaphxcvn
- sxKHJ0IlazKw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="176890025"
-X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="176890025"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 09:41:34 -0700
-IronPort-SDR: hD7VTLx2ImZK1M3cyknALhxZs5PMJNk0cqTjAFoD34CxOSoenqbro+V1xigEpf2yTNzBcXWe1j
- O7ghlWH8FuSw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="440138175"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Mar 2021 09:41:33 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, bjorn.topel@intel.com,
-        maciej.fijalkowski@intel.com,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Subject: [PATCH net-next 3/3] ice: optimize for XDP_REDIRECT in xsk path
-Date:   Tue, 16 Mar 2021 09:42:54 -0700
-Message-Id: <20210316164254.3744059-4-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210316164254.3744059-1-anthony.l.nguyen@intel.com>
-References: <20210316164254.3744059-1-anthony.l.nguyen@intel.com>
+        id S236589AbhCPQqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 12:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238908AbhCPQpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 12:45:36 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4C9C0613E2
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 09:44:45 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id u4so22325452edv.9
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 09:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CjvmGjGENW3EynITI1PM5rJpSWhpBFbiElJR0zq7GdQ=;
+        b=aBWY1WRQWDe+xXKy8frrjs6IoWKBiXiNp1HYJg+LHxS7+v4yl+FX47ykalEQ/TbxSs
+         UuJ0RBcnKygMKNkWQBQrpln4IljGE2H3oFTQUUZsscpJ1LhhafIZHzH3SL48nrPf5bX7
+         0KqgeBszB5YsF7Y+FJ7YzDsljwLlzsSpYL+bHOuMWjTHgrRubSm8D+JeDREqfs5lh4Q6
+         ndj26o8TtSf3AJukDemOK92uJoBT4lk1AAW4JsP+VCJPjc1D3Ff5mW/6T5MeBxvDHila
+         3PnGaBB3L4+UQhcEsg1V0K/CjqusbzYY7V7w8K4GZW4OMr+L4M8q1kVRKN0TCiR/Jf4h
+         eV3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CjvmGjGENW3EynITI1PM5rJpSWhpBFbiElJR0zq7GdQ=;
+        b=SSg321+dWS8TGR1CRWSNqweWI8smBjDF/jdL4HVV0WlZo9ZRXEL4F0XxsXEksKmkGY
+         Rcdqv1Q05nwNFne0/I3NEPeEDYqq6EzLm9S0gne2X39iO7XigyGwl6FfA3wVrdWme8sX
+         D5cJJO4rRnQbQoSxiY+1Wh2aCQvprjxXK7JA9ltBP7VAyuV2cJ3BwSKcl3SggUijkLbk
+         ZoM/x9XZzJYuR3joV+/4sDngO0ffBZqLkkh58VBC7mLe5gI3nLYjA87OmyInJv9rYD83
+         SjqRebG2W6gYgYqAZy10QHWv5QoXpurbzDPGUOfg+ITwGo7dRGCpJ4DyblR1a2ZkkIPp
+         KJ9Q==
+X-Gm-Message-State: AOAM5323p+80wlCk7FAJz6x084B+0/HjXuVqMvzedBjiXlacnjw7Hb39
+        edHSOMcvaEQPvRcMNod2qUY=
+X-Google-Smtp-Source: ABdhPJxf+AhLQjXu5v/kRuULYbKtwCp+Xcc2/Bp2XsYLEcSWzrt/hu6zmGayCjcjZYenSS9vwP1YNQ==
+X-Received: by 2002:a05:6402:3047:: with SMTP id bu7mr37149187edb.227.1615913083711;
+        Tue, 16 Mar 2021 09:44:43 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id i2sm10909791edy.72.2021.03.16.09.44.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 09:44:43 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
+Date:   Tue, 16 Mar 2021 18:44:42 +0200
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ruxandra.radulescu@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next 0/3] dpaa2-eth: use indirect call wrappers
+Message-ID: <20210316164442.zz7wzv2z4srry3vk@skbuf>
+References: <20210316144730.2150767-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210316144730.2150767-1-ciorneiioana@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+On Tue, Mar 16, 2021 at 04:47:27PM +0200, Ioana Ciornei wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> 
+> The dpaa2-eth driver uses two indirect calls in fast-path, one invoked
+> on each FD to consume the packet and one for each Tx packet to be
+> enqueued.
+> 
+> Use the indirect call wrappers infrastructure in both dpaa2-eth and
+> dpaa2-switch drivers so that we avoid any RETPOLINE overhead.
 
-Optimize ice_run_xdp_zc() for the XDP program verdict being
-XDP_REDIRECT in the xsk zero-copy path. This path is only used when
-having AF_XDP zero-copy on and in that case most packets will be
-directed to user space. This provides a little over 100k extra packets
-in throughput on my server when running l2fwd in xdpsock.
-
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_xsk.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 83f3c9574ed1..727f277e9d75 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -473,6 +473,14 @@ ice_run_xdp_zc(struct ice_ring *rx_ring, struct xdp_buff *xdp)
- 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
- 
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
-+
-+	if (likely(act == XDP_REDIRECT)) {
-+		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
-+		result = !err ? ICE_XDP_REDIR : ICE_XDP_CONSUMED;
-+		rcu_read_unlock();
-+		return result;
-+	}
-+
- 	switch (act) {
- 	case XDP_PASS:
- 		break;
-@@ -480,10 +488,6 @@ ice_run_xdp_zc(struct ice_ring *rx_ring, struct xdp_buff *xdp)
- 		xdp_ring = rx_ring->vsi->xdp_rings[rx_ring->q_index];
- 		result = ice_xmit_xdp_buff(xdp, xdp_ring);
- 		break;
--	case XDP_REDIRECT:
--		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
--		result = !err ? ICE_XDP_REDIR : ICE_XDP_CONSUMED;
--		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
- 		fallthrough;
--- 
-2.26.2
+Please disregard these patches, somehow I failed to include all the
+changes and it fails to build. Sorry.
 
