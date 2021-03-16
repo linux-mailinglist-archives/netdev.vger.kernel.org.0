@@ -2,97 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E35933DCBD
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 19:44:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5B533DCEE
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 19:53:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240080AbhCPSoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 14:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S230035AbhCPSxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 14:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234517AbhCPSnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 14:43:49 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879A4C06174A;
-        Tue, 16 Mar 2021 11:43:47 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id x29so23198869pgk.6;
-        Tue, 16 Mar 2021 11:43:47 -0700 (PDT)
+        with ESMTP id S231423AbhCPSwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 14:52:53 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E9FC06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:52:52 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so1856622pjh.1
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:52:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7UgBChjZpHGGBdJz45MNfk2R0PgaJI9RIsUqJZWEEBg=;
-        b=l2O/tdtwHTVc0iET1er/VEODA9L9wa5qHiP7wNPIX7Y1qE9OXqg9vOjetPqgmoPwiT
-         h48n5cE9y8647npjRt9zlhxaC1wkH6pqQ7oQ3U+O/x46RImVPz9Dx4a60Tnff3yV2RsW
-         234P6+nT4R7LFEC+WHpFDOwX8Px1gW7wU491sr5BW1ShWYP9VMBFhirTbVWABGvl9kGZ
-         u07bxSP5joMIH61ukdFm7fprNvDDD6R1HBdJEpwHn+9El438e5Uek+7HD4PGJYofe5Yb
-         DIjYdPZmcdfQSICLo2bUFqQBvHvTqCTAVuUN8JwusCe/YU1y+z5lGzLOfO2KQdgZH0B5
-         kyxA==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=/sj2D6EhueIonIOjXjC7WbxwzD1uKAjfAdMsy+l9mT8=;
+        b=nNCVD+3WNEGfIgnZ7REz0xovKLIC//qI2IqlP2+Jbh67o20xsk+DNNQSzZ+ZHoK5GG
+         QnyhBzx2/Whwj+gUG4euZmlpv9lU9JN6GZJjPfIQd80JbFCpR5dcuTgB1kEOoF7uWzJk
+         pJIKtGF4amqgGraLCrXr8IFXVsmvl9x3vqUSC14LmUl7hc3JYTE9HYYXrILYKTJa4Vzd
+         QTnhmlKyob7tYy2iAyF6460/5/6bhbgyV+0uIxpLq3pxWVec8SHUON19oCy3XDna+fk8
+         0vpOrx3WDaEE5jP/67L51yVRmFUwQNR3nLMgGWiB5HzW2CMXnDTau/fr9Z70ceDUT546
+         BBVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7UgBChjZpHGGBdJz45MNfk2R0PgaJI9RIsUqJZWEEBg=;
-        b=A4lmKnD4licSDBnAtFWc37gXDI/7ay1IuWSu54OhKuzvptpdzz/0Lg1Ren/l1pMwz5
-         5fPVedPXlgOXwkRUGSjV4YBJU79/rwmlG/Bc4d35KC6OifADlP35qP+aZwCXYgcbUfUt
-         nMcQPJ86TRaBBkc7XJeOpxIGeLFQ03N/JcW2nRMTbETgOYii4Izm3Rb417aXRDPA41s1
-         qR4bXhfnXUnbtwskCKeFAdOomutWX3UmBBpawofaUc6IR42H8ENx91s5Vu5H2SPFxXSc
-         XLF6A0hLxvc12UQ2pTpymdsnWomOWazcQZKAo+uWBkjVr8llR7efb9AtDGpLuU++OUD5
-         JAkA==
-X-Gm-Message-State: AOAM533mNFGjtpGik1/L9QpeDO6oJ+w+Watw/G67Lwj11TKH2pguKmAf
-        v3QD7DwN8MkTBHWf7RcZssMHUN0/cW/6OZ9cs8s=
-X-Google-Smtp-Source: ABdhPJzkjw+riPDdKPZ7e0APAki+fUeTEDADQ6YafUXUv3g/dKs/k9cOusTUQ7imNWkKGKoCH+Q4mb0do9k4fNjGYDU=
-X-Received: by 2002:a63:1266:: with SMTP id 38mr917541pgs.266.1615920227155;
- Tue, 16 Mar 2021 11:43:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <1615800610-34700-1-git-send-email-linyunsheng@huawei.com> <20210315.164151.1093629330365238718.davem@redhat.com>
-In-Reply-To: <20210315.164151.1093629330365238718.davem@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 16 Mar 2021 11:43:36 -0700
-Message-ID: <CAM_iQpWPSouO-JP4xHFqOLM8H4Rn5ucF68sa_EK5hUWSYw8feA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: sched: remove unnecessay lock protection
- for skb_bad_txq/gso_skb
-To:     David Miller <davem@redhat.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=/sj2D6EhueIonIOjXjC7WbxwzD1uKAjfAdMsy+l9mT8=;
+        b=koXTv8A80pzQHKXgXBWfk+d0wo7ylC3GJJGQD0mVcys08QVJLv2gux9030iqc6tMKZ
+         ajJu0URCxD+svAzmPRjUxcA8aND5ANIp+H8xtJYpvQiVySN12pXKVNuyi2e0YN6OMWlt
+         BypQtsKSJIeabPQ9kcVDVJEFnKG3m6Q7g8Hkw23hasgGq0GNkqtPhTmpAX9yqmskxd6f
+         7TP6tbRY3RwG6q7Vk2V8k/X5FnTiJXy+r7zkGIVd1AaO3MX23m3xb6UhpZ22I4tCQC8j
+         Q+TSB94hltXyH5fHLd/my0+BSaqtV5jrPASdXL2TRYAAJ7wG8brNIoY2eRhuPIgOsoEN
+         ahgg==
+X-Gm-Message-State: AOAM532QAoIW1sa0qRQ0ZJ1VDxSeXPN4+1hU+dAy7LpbxtSd36vKuMy1
+        EQ1aXqCCKi2pCERquir0kWB39YiiIT3m7A==
+X-Google-Smtp-Source: ABdhPJxjUaPk47RrjpxjSqXpgogkgC07UrdRUNnc7jw1Jegfhdw50bED77E+UEkbkaAYy4Z5zEjH3w==
+X-Received: by 2002:a17:902:a404:b029:e6:23d:44ac with SMTP id p4-20020a170902a404b02900e6023d44acmr771579plq.50.1615920772300;
+        Tue, 16 Mar 2021 11:52:52 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id a21sm17280457pfk.83.2021.03.16.11.52.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 11:52:51 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net] ionic: linearize tso skb with too many frags
+Date:   Tue, 16 Mar 2021 11:52:43 -0700
+Message-Id: <20210316185243.30053-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 15, 2021 at 4:42 PM David Miller <davem@redhat.com> wrote:
->
-> From: Yunsheng Lin <linyunsheng@huawei.com>
-> Date: Mon, 15 Mar 2021 17:30:10 +0800
->
-> > Currently qdisc_lock(q) is taken before enqueuing and dequeuing
-> > for lockless qdisc's skb_bad_txq/gso_skb queue, qdisc->seqlock is
-> > also taken, which can provide the same protection as qdisc_lock(q).
-> >
-> > This patch removes the unnecessay qdisc_lock(q) protection for
-> > lockless qdisc' skb_bad_txq/gso_skb queue.
-> >
-> > And dev_reset_queue() takes the qdisc->seqlock for lockless qdisc
-> > besides taking the qdisc_lock(q) when doing the qdisc reset,
-> > some_qdisc_is_busy() takes both qdisc->seqlock and qdisc_lock(q)
-> > when checking qdisc status. It is unnecessary to take both lock
-> > while the fast path only take one lock, so this patch also changes
-> > it to only take qdisc_lock(q) for locked qdisc, and only take
-> > qdisc->seqlock for lockless qdisc.
-> >
-> > Since qdisc->seqlock is taken for lockless qdisc when calling
-> > qdisc_is_running() in some_qdisc_is_busy(), use qdisc->running
-> > to decide if the lockless qdisc is running.
-> >
-> > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->
-> What about other things protected by this lock, such as statistics and qlen?
->
-> This change looks too risky to me.
+We were linearizing non-TSO skbs that had too many frags, but
+we weren't checking number of frags on TSO skbs.  This could
+lead to a bad page reference when we received a TSO skb with
+more frags than the Tx descriptor could support.
 
-They are per-cpu for pfifo_fast which sets TCQ_F_CPUSTATS too.
+Fixes: 0f3154e6bcb3 ("ionic: Add Tx and Rx handling")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  | 28 ++++++++++---------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
-Thanks.
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+index 162a1ff1e9d2..462b0d106be4 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+@@ -1079,25 +1079,27 @@ static int ionic_tx_descs_needed(struct ionic_queue *q, struct sk_buff *skb)
+ {
+ 	int sg_elems = q->lif->qtype_info[IONIC_QTYPE_TXQ].max_sg_elems;
+ 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
++	int ndescs;
+ 	int err;
+ 
+-	/* If TSO, need roundup(skb->len/mss) descs */
++	/* If TSO, need roundup(skb->len/mss) descs
++	 * If non-TSO, just need 1 desc and nr_frags sg elems
++	 */
+ 	if (skb_is_gso(skb))
+-		return (skb->len / skb_shinfo(skb)->gso_size) + 1;
++		ndescs = (skb->len / skb_shinfo(skb)->gso_size) + 1;
++	else
++		ndescs = 1;
+ 
+-	/* If non-TSO, just need 1 desc and nr_frags sg elems */
+-	if (skb_shinfo(skb)->nr_frags <= sg_elems)
+-		return 1;
++	/* If too many frags, linearize */
++	if (skb_shinfo(skb)->nr_frags > sg_elems) {
++		err = skb_linearize(skb);
++		if (err)
++			return err;
+ 
+-	/* Too many frags, so linearize */
+-	err = skb_linearize(skb);
+-	if (err)
+-		return err;
+-
+-	stats->linearize++;
++		stats->linearize++;
++	}
+ 
+-	/* Need 1 desc and zero sg elems */
+-	return 1;
++	return ndescs;
+ }
+ 
+ static int ionic_maybe_stop_tx(struct ionic_queue *q, int ndescs)
+-- 
+2.17.1
+
