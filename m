@@ -2,170 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7242333D3B6
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 13:19:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9286B33D3FC
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 13:37:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbhCPMTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 08:19:12 -0400
-Received: from mga11.intel.com ([192.55.52.93]:42290 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230173AbhCPMSq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 08:18:46 -0400
-IronPort-SDR: 1ukg8GX2FVGOz3aTLuWB1iyuDEYo8XoIx/L1cHqprISbgLD0u6wBTf/5nKM8jIlsTUq7j5OCtz
- 3+VgKTrPdXzw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9924"; a="185886828"
-X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="185886828"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 05:18:46 -0700
-IronPort-SDR: mK6FkzXmq5OwBR5qHcwFLGjciFE4BCHfYBn0tCsX5oAJv3yr+/A6MpOu5BSzuf1YF/4ekUHDyh
- bcWYmwURdNRQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="449703437"
-Received: from climb.png.intel.com ([10.221.118.165])
-  by orsmga001.jf.intel.com with ESMTP; 16 Mar 2021 05:18:43 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [RESEND v1 net-next 5/5] net: stmmac: use interrupt mode INTM=1 for multi-MSI
-Date:   Tue, 16 Mar 2021 20:18:23 +0800
-Message-Id: <20210316121823.18659-6-weifeng.voon@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210316121823.18659-1-weifeng.voon@intel.com>
-References: <20210316121823.18659-1-weifeng.voon@intel.com>
+        id S232022AbhCPMh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 08:37:28 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3486 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232010AbhCPMgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 08:36:53 -0400
+Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4F0CRb01qVzRQWX;
+        Tue, 16 Mar 2021 20:35:07 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ DGGEMM402-HUB.china.huawei.com (10.3.20.210) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Tue, 16 Mar 2021 20:36:50 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Tue, 16 Mar
+ 2021 20:36:50 +0800
+Subject: Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS for lockless
+ qdisc
+To:     Eric Dumazet <edumazet@google.com>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Wei Wang" <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>
+References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
+ <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
+ <20210315115332.1647e92b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3838b7c2-c32f-aeda-702a-5cb8f712ec0c@huawei.com>
+ <CANn89iKQOxvGkr3g37xT1qkcc55gbRGNkFGcGLQmR1PVaq8RjA@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4eb6bb79-0122-3472-d4a6-ed41475f6a96@huawei.com>
+Date:   Tue, 16 Mar 2021 20:36:50 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
+MIME-Version: 1.0
+In-Reply-To: <CANn89iKQOxvGkr3g37xT1qkcc55gbRGNkFGcGLQmR1PVaq8RjA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme713-chm.china.huawei.com (10.1.199.109) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Wong, Vee Khee" <vee.khee.wong@intel.com>
+On 2021/3/16 16:15, Eric Dumazet wrote:
+> On Tue, Mar 16, 2021 at 1:35 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> On 2021/3/16 2:53, Jakub Kicinski wrote:
+>>> On Mon, 15 Mar 2021 11:10:18 +0800 Yunsheng Lin wrote:
+>>>> @@ -606,6 +623,11 @@ static const u8 prio2band[TC_PRIO_MAX + 1] = {
+>>>>   */
+>>>>  struct pfifo_fast_priv {
+>>>>      struct skb_array q[PFIFO_FAST_BANDS];
+>>>> +
+>>>> +    /* protect against data race between enqueue/dequeue and
+>>>> +     * qdisc->empty setting
+>>>> +     */
+>>>> +    spinlock_t lock;
+>>>>  };
+>>>>
+>>>>  static inline struct skb_array *band2list(struct pfifo_fast_priv *priv,
+>>>> @@ -623,7 +645,10 @@ static int pfifo_fast_enqueue(struct sk_buff *skb, struct Qdisc *qdisc,
+>>>>      unsigned int pkt_len = qdisc_pkt_len(skb);
+>>>>      int err;
+>>>>
+>>>> -    err = skb_array_produce(q, skb);
+>>>> +    spin_lock(&priv->lock);
+>>>> +    err = __ptr_ring_produce(&q->ring, skb);
+>>>> +    WRITE_ONCE(qdisc->empty, false);
+>>>> +    spin_unlock(&priv->lock);
+>>>>
+>>>>      if (unlikely(err)) {
+>>>>              if (qdisc_is_percpu_stats(qdisc))
+>>>> @@ -642,6 +667,7 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+>>>>      struct sk_buff *skb = NULL;
+>>>>      int band;
+>>>>
+>>>> +    spin_lock(&priv->lock);
+>>>>      for (band = 0; band < PFIFO_FAST_BANDS && !skb; band++) {
+>>>>              struct skb_array *q = band2list(priv, band);
+>>>>
+>>>> @@ -655,6 +681,7 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+>>>>      } else {
+>>>>              WRITE_ONCE(qdisc->empty, true);
+>>>>      }
+>>>> +    spin_unlock(&priv->lock);
+>>>>
+>>>>      return skb;
+>>>>  }
+>>>
+>>> I thought pfifo was supposed to be "lockless" and this change
+>>> re-introduces a lock between producer and consumer, no?
+>>
+>> Yes, the lock breaks the "lockless" of the lockless qdisc for now
+>> I do not how to solve the below data race locklessly:
+>>
+>>         CPU1:                                   CPU2:
+>>       dequeue skb                                .
+>>           .                                      .
+>>           .                                 enqueue skb
+>>           .                                      .
+>>           .                      WRITE_ONCE(qdisc->empty, false);
+>>           .                                      .
+>>           .                                      .
+>> WRITE_ONCE(qdisc->empty, true);
+> 
+> 
+> Maybe it is time to fully document/explain how this can possibly work.
 
-For interrupt mode INTM=0, TX/RX transfer complete will trigger signal
-not only on sbd_perch_[tx|rx]_intr_o (Transmit/Receive Per Channel) but
-also on the sbd_intr_o (Common).
+I might be able to provide some document/explain on how the lockless
+qdisc work for I was looking through the code the past few days.
 
-As for multi-MSI implementation, setting interrupt mode INTM=1 is more
-efficient as each TX intr and RX intr (TI/RI) will be handled by TX/RX ISR
-without the need of calling the common MAC ISR.
+By "lockless", I suppose it means there is no lock between enqueuing and
+dequeuing, whoever grasps the qdisc->seqlock can dequeue the skb and send
+it out after enqueuing the skb it tries to send, other CPU which does not
+grasp the qdisc->seqlock just enqueue the skb and return, hoping other cpu
+holding the qdisc->seqlock can dequeue it's skb and send it out.
 
-Updated the TX/RX NORMAL interrupts status checking process as the
-NIS status bit is not asserted for any RI/TI events for INTM=1.
+For the locked qdisck(the one without TCQ_F_NOLOCK flags set), it holds
+the qdisc_lock() when doing the enqueuing/dequeuing and sch_direct_xmit(),
+and in sch_direct_xmit() it releases the qdisc_lock() when doing skb validation
+and calling dev_hard_start_xmit() to send skb to the driver, and hold the
+qdisc_lock() again after calling dev_hard_start_xmit(), so other cpu may
+grasps the qdisc_lock() and repeat the above process during that qdisc_lock()
+release period.
 
-Signed-off-by: Wong, Vee Khee <vee.khee.wong@intel.com>
-Co-developed-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  |  8 +++++++
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  3 +++
- .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  | 23 +++++++++----------
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  1 +
- include/linux/stmmac.h                        |  1 +
- 5 files changed, 24 insertions(+), 12 deletions(-)
+So the main difference between lockess qdisc and locked qdisc is if
+there is a lock to protect both enqueuing and dequeuing. For example, pfifo_fast
+uses ptr_ring to become lockless for enqueuing or dequeuing, but it still needs
+producer_lock to protect the concurrent enqueue, and consumer_lock to protect
+the concurrent dequeue. for Other qdisc that can not provide the lockless between
+enqueuing or dequeuing, maybe we implement the locking in the specific qdisc
+implementation, so that it still can claim to be "lockless", like the locking
+added for pfifo_fast in this patch.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index 62aa0e95beb7..3c33b9a5b291 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -161,6 +161,14 @@ static void dwmac4_dma_init(void __iomem *ioaddr,
- 		value |= DMA_SYS_BUS_EAME;
- 
- 	writel(value, ioaddr + DMA_SYS_BUS_MODE);
-+
-+	value = readl(ioaddr + DMA_BUS_MODE);
-+
-+	if (dma_cfg->multi_msi_en) {
-+		value &= ~DMA_BUS_MODE_INTM_MASK;
-+		value |= (DMA_BUS_MODE_INTM_MODE1 << DMA_BUS_MODE_INTM_SHIFT);
-+	}
-+	writel(value, ioaddr + DMA_BUS_MODE);
- }
- 
- static void _dwmac4_dump_dma_regs(void __iomem *ioaddr, u32 channel,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-index 5c0c53832adb..05481eb13ba6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-@@ -25,6 +25,9 @@
- #define DMA_TBS_CTRL			0x00001050
- 
- /* DMA Bus Mode bitmap */
-+#define DMA_BUS_MODE_INTM_MASK		GENMASK(17, 16)
-+#define DMA_BUS_MODE_INTM_SHIFT		16
-+#define DMA_BUS_MODE_INTM_MODE1		0x1
- #define DMA_BUS_MODE_SFT_RESET		BIT(0)
- 
- /* DMA SYS Bus Mode bitmap */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-index 3fa602dabf49..e63270267578 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-@@ -166,20 +166,19 @@ int dwmac4_dma_interrupt(void __iomem *ioaddr,
- 		}
- 	}
- 	/* TX/RX NORMAL interrupts */
--	if (likely(intr_status & DMA_CHAN_STATUS_NIS)) {
-+	if (likely(intr_status & DMA_CHAN_STATUS_NIS))
- 		x->normal_irq_n++;
--		if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
--			x->rx_normal_irq_n++;
--			ret |= handle_rx;
--		}
--		if (likely(intr_status & (DMA_CHAN_STATUS_TI |
--					  DMA_CHAN_STATUS_TBU))) {
--			x->tx_normal_irq_n++;
--			ret |= handle_tx;
--		}
--		if (unlikely(intr_status & DMA_CHAN_STATUS_ERI))
--			x->rx_early_irq++;
-+	if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
-+		x->rx_normal_irq_n++;
-+		ret |= handle_rx;
-+	}
-+	if (likely(intr_status & (DMA_CHAN_STATUS_TI |
-+		DMA_CHAN_STATUS_TBU))) {
-+		x->tx_normal_irq_n++;
-+		ret |= handle_tx;
- 	}
-+	if (unlikely(intr_status & DMA_CHAN_STATUS_ERI))
-+		x->rx_early_irq++;
- 
- 	writel(intr_status & intr_en, ioaddr + DMA_CHAN_STATUS(chan));
- 	return ret;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index efc35434b9af..d23722e86721 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5401,6 +5401,7 @@ int stmmac_dvr_probe(struct device *device,
- 	priv->plat = plat_dat;
- 	priv->ioaddr = res->addr;
- 	priv->dev->base_addr = (unsigned long)res->addr;
-+	priv->plat->dma_cfg->multi_msi_en = priv->plat->multi_msi_en;
- 
- 	priv->dev->irq = res->irq;
- 	priv->wol_irq = res->wol_irq;
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index cb260a04df80..e35224ce61cc 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -96,6 +96,7 @@ struct stmmac_dma_cfg {
- 	int mixed_burst;
- 	bool aal;
- 	bool eame;
-+	bool multi_msi_en;
- };
- 
- #define AXI_BLEN	7
--- 
-2.17.1
+Idealy we can claim all qdisc to be lockess qdisc as long as we make sure
+all qdisc either use lockless implementation, or use internal lock to protect
+between enqueuing and dequeuing, so that we can remove the locked dqisc and
+will have less contention between enqueuing and dequeuing.
+
+Below patch is the first try to remove the difference between lockess qdisc
+and locked qdisc, so that we can see if we can remove the locked qdisc in the
+future:
+
+https://patchwork.kernel.org/project/netdevbpf/patch/1615800610-34700-1-git-send-email-linyunsheng@huawei.com/
+
+I may be wrong about the above analysis, if there is any error, please
+point it out.
+
+> 
+> lockless qdisc used concurrently by multiple cpus, using
+> WRITE_ONCE() and READ_ONCE() ?
+> 
+> Just say no to this.
+
+what do you mean "no" here? Do you mean it is impossible to implement lockless
+qdisc correctly?  Or TCQ_F_CAN_BYPASS for lockless qdisc is a wrong direction?
+And is there any reason?
+
+> 
+>>
+>> If the above happens, the qdisc->empty is true even if the qdisc has some
+>> skb, which may cuase out of order or packet stuck problem.
+>>
+>> It seems we may need to update ptr_ring' status(empty or not) while
+>> enqueuing/dequeuing atomically in the ptr_ring implementation.
+>>
+>> Any better idea?
+> 
+> .
+> 
 
