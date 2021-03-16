@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 157A533D9AD
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 17:42:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3568A33D9B0
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 17:42:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238780AbhCPQmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 12:42:01 -0400
-Received: from mga18.intel.com ([134.134.136.126]:7038 "EHLO mga18.intel.com"
+        id S238885AbhCPQmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 12:42:09 -0400
+Received: from mga18.intel.com ([134.134.136.126]:7047 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238794AbhCPQlg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 12:41:36 -0400
-IronPort-SDR: 84m9vHVBWNqUdnHtZHfxTvCYPu9+HQC7ENaNsShs/HKIYUrObcpLgVbIRN5KVnPXFsNLUv5AKT
- 0z6oQIqkK1Hg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="176890023"
+        id S238798AbhCPQlh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 12:41:37 -0400
+IronPort-SDR: PxPMCs5qCq9RplNbw4UoE65NTgXTKi6pOPwVxpm9WiOh/QG4AZajcazgg1Ip+AyDbNfhaMgdlS
+ RkOPCkNXK/vA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="176890024"
 X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="176890023"
+   d="scan'208";a="176890024"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 09:41:33 -0700
-IronPort-SDR: pQBZm+09T69Yb1Jfki8IKLZah0EioeHMb+M0B6wkluMWG5tuUTlX/SwQ6ZtP6+8N34HLVUTaG8
- C9usjPyVRFnw==
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 09:41:34 -0700
+IronPort-SDR: AjRXu+C+jPZnVyfnKav9xeGoDpu13eEYOmisYNfPFZOVA+4DHEScQ24t490NEQSRTuJg7QKp+o
+ RjQfAZVlRfZw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="440138168"
+   d="scan'208";a="440138173"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by FMSMGA003.fm.intel.com with ESMTP; 16 Mar 2021 09:41:33 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -31,10 +31,10 @@ Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
         netdev@vger.kernel.org, sassmann@redhat.com,
         anthony.l.nguyen@intel.com, bjorn.topel@intel.com,
         maciej.fijalkowski@intel.com,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Subject: [PATCH net-next 1/3] i40e: optimize for XDP_REDIRECT in xsk path
-Date:   Tue, 16 Mar 2021 09:42:52 -0700
-Message-Id: <20210316164254.3744059-2-anthony.l.nguyen@intel.com>
+        Vishakha Jambekar <vishakha.jambekar@intel.com>
+Subject: [PATCH net-next 2/3] ixgbe: optimize for XDP_REDIRECT in xsk path
+Date:   Tue, 16 Mar 2021 09:42:53 -0700
+Message-Id: <20210316164254.3744059-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210316164254.3744059-1-anthony.l.nguyen@intel.com>
 References: <20210316164254.3744059-1-anthony.l.nguyen@intel.com>
@@ -46,30 +46,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Optimize i40e_run_xdp_zc() for the XDP program verdict being
+Optimize ixgbe_run_xdp_zc() for the XDP program verdict being
 XDP_REDIRECT in the xsk zero-copy path. This path is only used when
 having AF_XDP zero-copy on and in that case most packets will be
-directed to user space. This provides a little over 100k extra packets
-in throughput on my server when running l2fwd in xdpsock.
+directed to user space. This provides a little under 100k extra
+packets in throughput on my server when running l2fwd in xdpsock.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Tested-by: Vishakha Jambekar <vishakha.jambekar@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 11 +++++++----
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 11 +++++++----
  1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index fc32c5019b0f..edddaf034638 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -160,6 +160,13 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+index 3771857cf887..91ad5b902673 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -104,6 +104,13 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
  	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
  	act = bpf_prog_run_xdp(xdp_prog, xdp);
  
 +	if (likely(act == XDP_REDIRECT)) {
 +		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
-+		result = !err ? I40E_XDP_REDIR : I40E_XDP_CONSUMED;
++		result = !err ? IXGBE_XDP_REDIR : IXGBE_XDP_CONSUMED;
 +		rcu_read_unlock();
 +		return result;
 +	}
@@ -77,13 +77,13 @@ index fc32c5019b0f..edddaf034638 100644
  	switch (act) {
  	case XDP_PASS:
  		break;
-@@ -167,10 +174,6 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 		xdp_ring = rx_ring->vsi->xdp_rings[rx_ring->queue_index];
- 		result = i40e_xmit_xdp_tx_ring(xdp, xdp_ring);
+@@ -115,10 +122,6 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
+ 		}
+ 		result = ixgbe_xmit_xdp_ring(adapter, xdpf);
  		break;
 -	case XDP_REDIRECT:
 -		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
--		result = !err ? I40E_XDP_REDIR : I40E_XDP_CONSUMED;
+-		result = !err ? IXGBE_XDP_REDIR : IXGBE_XDP_CONSUMED;
 -		break;
  	default:
  		bpf_warn_invalid_xdp_action(act);
