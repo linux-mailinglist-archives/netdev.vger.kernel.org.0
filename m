@@ -2,74 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE93533D85A
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 077CE33D86B
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:58:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238198AbhCPPzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 11:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
+        id S233960AbhCPP5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 11:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238233AbhCPPzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:55:11 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2424C06174A;
-        Tue, 16 Mar 2021 08:55:09 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id f8so3638602plg.10;
-        Tue, 16 Mar 2021 08:55:09 -0700 (PDT)
+        with ESMTP id S238243AbhCPP4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:56:47 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DC3C061756;
+        Tue, 16 Mar 2021 08:56:46 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id h82so37274910ybc.13;
+        Tue, 16 Mar 2021 08:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CBzNMbocqQsxjfYGQ1EhaQ7uFSjRE7ceXnc5NaxO654=;
-        b=dzYeJ1wT59wMMvs2pHK2ATQt++uhGR6mEwuyp6H838gqPrjAtdIn8X+UFolhukHeA8
-         caizWrUGEZqOdTqUFiWzGujq+dB3/3hDN0NoJcoinZxQTWZ4os+Akv36qyhFVSjtsLU2
-         H74inxcj/t1xEgHW+m3dduB4p+HWhaNA/P2am3AE7Wi/6Vl7MbN7EgXl41+y5r/Yo1E5
-         FH+TxtBOEvAe4mWVrhkkYj/LR2mS8C5yn5yh9KYsBvaFN5/occy7WT36l3e/9dSmk/sx
-         PpIBuz4gsWUext5EBRiig+47KKa/slOpmtyOHKmye6pvASAljooIt/epYNza3H609FHO
-         FZDg==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=gj0mikrLZmWTiWANlej8ah5+G+uOw7wqH4StZRro6uM=;
+        b=VH12ZdGfTi9p8W2BDp9E2Cl/hd06N5/fFLrRsw5RKEaXK4SWQkkfb9k27Pt25BFmIG
+         Cj9B0cGPjrPE2sLXdDIgr6Kh6eSeW4EimEByQO6BKni9SzrAgtWcsAEvqnFEhmoicX4A
+         d1MbnRBkF7MYSeOCu/3hLE1hx2rZJ/NpuG6qJ8ZsRGybXbi4L3CkC+WsQyEBNehl5plo
+         yCU4FtVU0wr3fSWjHVX3g0rhdPVeDXMdPgVjGIr/dpSkqPo39PAxqY9QD1FXPaSRs9ZH
+         4mxZHWPphJ2vDjUcXPVllnA3RSPhNbRwkl0sI4OZ2LVnbTOhqk1+NvdT9bPGphDYXUzb
+         Gj6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CBzNMbocqQsxjfYGQ1EhaQ7uFSjRE7ceXnc5NaxO654=;
-        b=NXQQ5ztFglsqpb5P/Tp5VcE6ZQW1jewJLB69W1JKh5ByoN6Ucwij/6wKTfL0nnsVVT
-         x6Vc3vztetR42HMtFFQ3DSURKlYoeYDMr72HNTtPH3Rck3aRo1PtmItgksx8viREU8fS
-         huzETDkRbf2H8Gs3TUxdIUhe7AWfxgVl0UGppyQFnR/lIINnSRya6ErTPPuZffgl2FlA
-         Wj0nKGwyt0hCnJgPNUE82oe7FLHaVEtMjxXOozoVh7Vm0FM/dttQFIqGX3dyhEdoOHmK
-         09e0JVoHborMq3lAo1vAiaWPPuClREbUVUr9Qw0c2qe6Hpr5XM465RijVoVvj8U0FOCs
-         +7Xw==
-X-Gm-Message-State: AOAM531xq0XKkMUR3NjLRAxukAzRugewo8NgBMeyHWjRAFwX6oR5kPf+
-        5FiUao/LgV5w0MU1KlwBPtoaNm/E2vPTd7qQc7o=
-X-Google-Smtp-Source: ABdhPJwNfzehECf4Y6hcy0GFboZ85XdYW6NRzzEnRsuM7ixoqnV09A48CrHjEoP1DwcrNXLtesjL6gxh9/g4DeAZETE=
-X-Received: by 2002:a17:90a:ea91:: with SMTP id h17mr345965pjz.66.1615910109592;
- Tue, 16 Mar 2021 08:55:09 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=gj0mikrLZmWTiWANlej8ah5+G+uOw7wqH4StZRro6uM=;
+        b=WxErs9ofSJGyTNHRZ2wi+IaMPq5sOeM90tsefv0NHpP8Saj/kDxGDMPHgt+tpVzs0h
+         RaIVvL6+epmH9SDvNzZsKRHxxq8zrZfEd1yoZQO3+1STlUgvMdsS26MOW5vzkbFPUpxP
+         vDluhUspdhB59y7+w5i8Qxfl8YXKGrgnp0cIPlvTH27vojaKi1vciCK7Qi1uBYnD39n/
+         RbuXEltDJDqW8yeKp/HQO3xKs4/rGxKqyTi3J/wKuVLkEpxXb+gsuIYIwJMsJYw8KQlQ
+         zzjvPHbiBuFjQ0VxIT5935NX9JZyzcuX3WrAIsBHTP+vXiDm5M2sf7J5gLixS+ldtPpZ
+         HHjQ==
+X-Gm-Message-State: AOAM530muYGZgDhmREwGxC0chcgjLxg+PfRYW2bf4YfWTHdnZ8RjZbL+
+        /06e7lJTDiWxPbLDDsSE0mIN3ory58G9nUZ79jY=
+X-Google-Smtp-Source: ABdhPJyhDSvvhWGBvqyaYl9vR9nKh/92wVzyMLuqOOqYHEgI6MvjBAz8Ik0zwx4gkvN36heRJFT3ixNSqt7kDBxcd30=
+X-Received: by 2002:a25:6c85:: with SMTP id h127mr7359838ybc.341.1615910205513;
+ Tue, 16 Mar 2021 08:56:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210311072311.2969-1-xie.he.0141@gmail.com> <CAJht_ENT6E4pekdTJ8YKntKdH94e-1H6Tf6iBr-=Vbxj5rCs+A@mail.gmail.com>
- <111a4642c8ae3c9e0d9f271fe7c54e86@dev.tdt.de>
-In-Reply-To: <111a4642c8ae3c9e0d9f271fe7c54e86@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Tue, 16 Mar 2021 08:54:58 -0700
-Message-ID: <CAJht_EOLKSv=0A86GafDWTG1sEFNJCmFBH5QsdOtx28GzPL_pQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: lapbether: Prevent racing when checking whether
- the netif is running
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+From:   Anish Udupa <udupa.anish@gmail.com>
+Date:   Tue, 16 Mar 2021 21:26:34 +0530
+Message-ID: <CAPDGunMo-ORwDme4ckui5kxxW6-Ho1J_MjcTkxdDdKLMDrCFdg@mail.gmail.com>
+Subject: [PATCH] drivers: staging: qlge: Fixed an alignment issue.
+To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 8:17 AM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> On 2021-03-14 02:59, Xie He wrote:
-> > Hi Martin,
-> >
-> > Could you ack? Thanks!
->
-> Acked-by: Martin Schiller <ms@dev.tdt.de>
+The * of the comment was not aligned properly. Ran checkpatch and
+found the warning. Resolved it in this patch.
 
-Thank you!!
+Signed-off-by: Anish Udupa <udupa.anish@gmail.com>
+---
+ drivers/staging/qlge/qlge_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 5516be3af898..bfd7217f3953 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -3816,7 +3816,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
+  qlge_tx_ring_clean(qdev);
+
+  /* Call netif_napi_del() from common point.
+- */
++ */
+  for (i = 0; i < qdev->rss_ring_count; i++)
+  netif_napi_del(&qdev->rx_ring[i].napi);
+
+-- 
+2.17.1
