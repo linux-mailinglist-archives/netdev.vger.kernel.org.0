@@ -2,109 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8325433CDF3
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 07:28:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47DFA33CE16
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 07:49:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231770AbhCPG20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 02:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231322AbhCPG2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 02:28:20 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC385C06175F
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 23:28:19 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id c16so16484752ply.0
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 23:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4WMa4KM9fFev9zFfsGZL1hiGSj5b5g6V/60hVlEG9mE=;
-        b=kAcbsz0zpfOoY1eq9SS2Tf5iLTvNd1+VONP1B0IXfqyjIamQ/j4B1AZIk/Xej3gtPO
-         /BIJKwsMq09EtFF7rSx60NCz32pq4F0iifIm3ZnTszJ8+Cy3SC2zDrosJPDUfBgiRw8J
-         WpHLksEvtnHLRgydskPl8+p21gRkN5lpSngr9qTO7Q67KinGKssJ587CCWB7ML6nMOgG
-         WWUtoUx5a3pcObz5xEiO2hZ+De9kS5PVLrzFUU+crJuLFukr7fwGJFKRLugYMJrfpR1W
-         hsEyw9ft7EZKEfo/EfK5YzaCP8Ub44Y9wBc5bjBOgUkNshjVw2aRLRBYfanaGFjrEYd7
-         4B7A==
+        id S233456AbhCPGsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 02:48:41 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:47609 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231725AbhCPGsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 02:48:13 -0400
+Received: by mail-io1-f71.google.com with SMTP id o4so22604526ioh.14
+        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 23:48:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4WMa4KM9fFev9zFfsGZL1hiGSj5b5g6V/60hVlEG9mE=;
-        b=Pj4ZZvriBmj4FclThcukCnyWG2yuWT2tU5ytkU9CN0Usak5xM7itchNCcbR2ewOnmT
-         BSZaKz1l7+NFFrU5VO5MGdggSQdAq36SO8h9LaCpGtC5x12C4oOILuuDK3qMTNYzXomm
-         XjCaW4XYvuvs2omywOi9rHJas0xPYjlCorZCqOs03sf6YfwjRhCz0bf8QKrhe9eY16rR
-         ayjZDVq+jGQd9cfNALzUkTGXndsmyqochryZm9KtQFm9qXo/scbIvapdWAkFoYdeEfCs
-         517gDwUYVqtBuk8dJuyAHle7x8hiKvRENw5VpWVBIpRJdnPmNcWBuY6l60ID9Walg0eG
-         9mdw==
-X-Gm-Message-State: AOAM531jn6la2m7w4gEqyNHzotk3+6+gJq0B0H4LXng1SWeRStNjKnWR
-        RjZml7qXLTSjfC0lWRYbn0HxD4uCWfMYeJQbtenwgA==
-X-Google-Smtp-Source: ABdhPJyQeEVtil+ykZ9O1pMASi07bihZgTaks/id/aa2GLXNnBC00VJaT6BjOTBO+Z04YQfBs6wAhZp8/sOeI97bcWg=
-X-Received: by 2002:a17:90a:ce0d:: with SMTP id f13mr3175085pju.85.1615876099037;
- Mon, 15 Mar 2021 23:28:19 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=WuZiddlhWjyixnWUAvcAwtP4U5EdkgGf4jw6+WDTIi8=;
+        b=EBot+9nyC2jY+UUAiNHtrk81e5JsN3g3PKdr7FIB2rlIoLhP6p6eg5V6F9J807VchG
+         dj1glLH+g1XnVuUfwvf2PKwxlIj1/55DCa8BrXpMhoLuBsZLnZhKKhYwiqteIYgId9+O
+         F9uUOENHlBf7ehbuOMbUu43IUV0qjUt2Ruryi+Pnn12tjpVlI+dqMSEG3rGh6i6kh+Ar
+         S2hzUouEDdqxGECm4YODpCYQ4Q6euTZnbxkte67zUqHXlyVpg6uwb4FF1AeDlK8EXSmv
+         cR0qZye/locd4mxY4sPzQczBCzplRhzzBaccrkAXSo1foyhs2NYifVTFExMmGfKrMKfT
+         ydDw==
+X-Gm-Message-State: AOAM531uQB77X7YeHQH26Hmu4U07iKukQzQCx3DBX1hE3N9PafzAMR8r
+        k99u/ExOg4dzr83rYZYFGEZwRPDq3inOP2iPI9U3LRveWJ1D
+X-Google-Smtp-Source: ABdhPJzI9tz1Qm71YI1ggnGgklvoxmExe2I9C6nuY8wqygsLITXHRWZ60FpCwWreka25zWylzLR92yx3SYMGo4XKApbqcZcoB9fs
 MIME-Version: 1.0
-References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
- <CAOFY-A1L8c626HZYSWm6ZKFO9mqBdBszv6obX4-1_LmDBQ6Z4A@mail.gmail.com>
- <CALvZod7hgtdrN_KXD_5JdB2vzJzTc8tVz_5YFN53-xZjpHLLRw@mail.gmail.com> <CAOFY-A0v2BEwRinhPXspjL_3dvyw2kDSyzQgUiJxc+P-3OLP8g@mail.gmail.com>
-In-Reply-To: <CAOFY-A0v2BEwRinhPXspjL_3dvyw2kDSyzQgUiJxc+P-3OLP8g@mail.gmail.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Mon, 15 Mar 2021 23:28:08 -0700
-Message-ID: <CAOFY-A2q4otqu=pD60tUiD0GTDZnpcm+zajFp6SRDh4VixbV2Q@mail.gmail.com>
-Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
+X-Received: by 2002:a5e:8d01:: with SMTP id m1mr2319176ioj.72.1615877292614;
+ Mon, 15 Mar 2021 23:48:12 -0700 (PDT)
+Date:   Mon, 15 Mar 2021 23:48:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000006e7be05bda1c084@google.com>
+Subject: [syzbot] general protection fault in scatterwalk_copychunks (4)
+From:   syzbot <syzbot+66e3ea42c4b176748b9c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 15, 2021 at 11:22 PM Arjun Roy <arjunroy@google.com> wrote:
->
-> On Mon, Mar 15, 2021 at 9:29 PM Shakeel Butt <shakeelb@google.com> wrote:
-> >
-> > On Mon, Mar 15, 2021 at 9:20 PM Arjun Roy <arjunroy@google.com> wrote:
-> > >
-> > [...]
-> > > >
-> > >
-> > > Apologies for the spam - looks like I forgot to rebase the first time
-> > > I sent this out.
-> > >
-> > > Actually, on a related note, it's not 100% clear to me whether this
-> > > patch (which in its current form, applies to net-next) should instead
-> > > be based on the mm branch - but the most recent (clean) checkout of mm
-> > > fails to build for me so net-next for now.
-> > >
-> >
-> > It is due to "mm: page-writeback: simplify memcg handling in
-> > test_clear_page_writeback()" patch in the mm tree. You would need to
-> > reintroduce the lock_page_memcg() which returns the memcg and make
-> > __unlock_page_memcg() non-static.
->
-> To clarify, Shakeel - the tag "tag: v5.12-rc2-mmots-2021-03-11-21-49"
-> fails to build on a clean checkout, without this patch, due to a
-> compilation failure in mm/shmem.c, for reference:
-> https://pastebin.com/raw/12eSGdGD
-> (and that's why I'm basing this patch off of net-next in this email).
->
-> -Arjun
+Hello,
 
-Another seeming anomaly - the patch sent out passes
-scripts/checkpatch.pl but netdev/checkpatch finds plenty of actionable
-fixes here: https://patchwork.kernel.org/project/netdevbpf/patch/20210316041645.144249-1-arjunroy.kdev@gmail.com/
+syzbot found the following issue on:
 
-Is netdev using some other automated checker instead of scripts/checkpatch.pl?
+HEAD commit:    47142ed6 net: dsa: bcm_sf2: Qualify phydev->dev_flags base..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=17fb9376d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=eec733599e95cd87
+dashboard link: https://syzkaller.appspot.com/bug?extid=66e3ea42c4b176748b9c
 
--Arjun
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+66e3ea42c4b176748b9c@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 1 PID: 25 Comm: kworker/u4:1 Not tainted 5.12.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: pencrypt_parallel padata_parallel_worker
+RIP: 0010:scatterwalk_start include/crypto/scatterwalk.h:68 [inline]
+RIP: 0010:scatterwalk_pagedone include/crypto/scatterwalk.h:93 [inline]
+RIP: 0010:scatterwalk_pagedone include/crypto/scatterwalk.h:77 [inline]
+RIP: 0010:scatterwalk_copychunks+0x4db/0x6a0 crypto/scatterwalk.c:50
+Code: ff df 80 3c 02 00 0f 85 b4 01 00 00 49 8d 44 24 08 4d 89 26 48 89 c2 48 89 44 24 18 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 77 01 00 00 48 b8 00 00 00 00
+RSP: 0018:ffffc90000dff620 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83c45a33 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffff88801ba09d1b
+R10: ffffffff83c459e3 R11: 000000000000d9e6 R12: 0000000000000000
+R13: 0000000000000001 R14: ffffc90000dff880 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000540198 CR3: 0000000018d08000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ skcipher_next_slow crypto/skcipher.c:278 [inline]
+ skcipher_walk_next+0x7af/0x1680 crypto/skcipher.c:363
+ skcipher_walk_first+0xf8/0x3c0 crypto/skcipher.c:446
+ skcipher_walk_aead_common+0x7a5/0xbc0 crypto/skcipher.c:539
+ gcmaes_crypt_by_sg+0x323/0x8a0 arch/x86/crypto/aesni-intel_glue.c:658
+Modules linked in:
+---[ end trace 15593fd836276143 ]---
+RIP: 0010:scatterwalk_start include/crypto/scatterwalk.h:68 [inline]
+RIP: 0010:scatterwalk_pagedone include/crypto/scatterwalk.h:93 [inline]
+RIP: 0010:scatterwalk_pagedone include/crypto/scatterwalk.h:77 [inline]
+RIP: 0010:scatterwalk_copychunks+0x4db/0x6a0 crypto/scatterwalk.c:50
+Code: ff df 80 3c 02 00 0f 85 b4 01 00 00 49 8d 44 24 08 4d 89 26 48 89 c2 48 89 44 24 18 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 77 01 00 00 48 b8 00 00 00 00
+RSP: 0018:ffffc90000dff620 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83c45a33 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffff88801ba09d1b
+R10: ffffffff83c459e3 R11: 000000000000d9e6 R12: 0000000000000000
+R13: 0000000000000001 R14: ffffc90000dff880 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000540198 CR3: 0000000018d08000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
