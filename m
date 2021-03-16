@@ -2,71 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A07FE33CF16
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F404633CF3A
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:03:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232187AbhCPIAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:00:12 -0400
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:58570 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231848AbhCPH7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 03:59:48 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R371e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0US7E8df_1615881579;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0US7E8df_1615881579)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 16 Mar 2021 15:59:44 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     shuah@kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] selftests/bpf: fix warning comparing pointer to 0
-Date:   Tue, 16 Mar 2021 15:59:37 +0800
-Message-Id: <1615881577-3493-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S231838AbhCPIDa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 04:03:30 -0400
+Received: from mga09.intel.com ([134.134.136.24]:40127 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232577AbhCPIDF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 04:03:05 -0400
+IronPort-SDR: baPMBGcSlhUp+sNUWayTAZs6xnV2B4bTwrIepqye1q4pnbEPn2bYJz4Fc22REYeB2FWHRomBHb
+ 5mgeJXvSv8Ew==
+X-IronPort-AV: E=McAfee;i="6000,8403,9924"; a="189310814"
+X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
+   d="scan'208";a="189310814"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 01:03:04 -0700
+IronPort-SDR: 4Mlf+xJkj70RZ08Adl2iC52T/Xk6/ENFhy59/2Pj5tyn0kcKwhlsNQJ8+GIkjBJu+nLCvAGJVR
+ VpXWdqS3Y8HQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
+   d="scan'208";a="590576542"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+  by orsmga005.jf.intel.com with ESMTP; 16 Mar 2021 01:03:04 -0700
+Received: from shsmsx603.ccr.corp.intel.com (10.109.6.143) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 16 Mar 2021 01:03:03 -0700
+Received: from shsmsx601.ccr.corp.intel.com (10.109.6.141) by
+ SHSMSX603.ccr.corp.intel.com (10.109.6.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 16 Mar 2021 16:03:01 +0800
+Received: from shsmsx601.ccr.corp.intel.com ([10.109.6.141]) by
+ SHSMSX601.ccr.corp.intel.com ([10.109.6.141]) with mapi id 15.01.2106.013;
+ Tue, 16 Mar 2021 16:03:01 +0800
+From:   "Li, Philip" <philip.li@intel.com>
+To:     =?iso-8859-1?Q?J=E9r=F4me_Pouiller?= <jerome.pouiller@silabs.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        lkp <lkp@intel.com>
+CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>
+Subject: RE: [kbuild-all] Re: [PATCH] wfx: fix irqf_oneshot.cocci warnings
+Thread-Topic: [kbuild-all] Re: [PATCH] wfx: fix irqf_oneshot.cocci warnings
+Thread-Index: AQHXGjluGKy1l/wG8EupGMY1Pavj+qqGQOCw
+Date:   Tue, 16 Mar 2021 08:03:00 +0000
+Message-ID: <a8dba72b92a7407c9f2d531527137643@intel.com>
+References: <20210315132501.441681-25-Jerome.Pouiller@silabs.com>
+ <20210315210920.GA43634@d108da9836c5> <3096745.nmkoU2l6Xm@pc-42>
+In-Reply-To: <3096745.nmkoU2l6Xm@pc-42>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.239.127.36]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warning:
+> Subject: [kbuild-all] Re: [PATCH] wfx: fix irqf_oneshot.cocci warnings
+> 
+> Hello,
+> 
+> On Monday 15 March 2021 22:09:20 CET kernel test robot wrote:
+> >
+> > From: kernel test robot <lkp@intel.com>
+> >
+> > drivers/net/wireless/silabs/wfx/bus_sdio.c:134:8-33: ERROR: Threaded IRQ with no primary handler requested without
+> IRQF_ONESHOT
+> >
+> >  Since commit 1c6c69525b40 ("genirq: Reject bogus threaded irq requests")
+> >  threaded IRQs without a primary handler need to be requested with
+> >  IRQF_ONESHOT, otherwise the request will fail.
+> >
+> >  So pass the IRQF_ONESHOT flag in this case.
+> >
+> > Generated by: scripts/coccinelle/misc/irqf_oneshot.cocci
+> >
+> > CC: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: kernel test robot <lkp@intel.com>
+> > ---
+> >
+> > url:    https://github.com/0day-ci/linux/commits/Jerome-Pouiller/wfx-get-out-from-the-staging-area/20210315-212855
+> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git b828324bba8f575fde487a91fec07303789dda8a
+> >
+> >  bus_sdio.c |    3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > --- a/drivers/net/wireless/silabs/wfx/bus_sdio.c
+> > +++ b/drivers/net/wireless/silabs/wfx/bus_sdio.c
+> > @@ -132,7 +132,8 @@ static int wfx_sdio_irq_subscribe(void *
+> >                 flags = IRQF_TRIGGER_HIGH;
+> >         flags |= IRQF_ONESHOT;
+> >         return devm_request_threaded_irq(&bus->func->dev, bus->of_irq, NULL,
+> > -                                        wfx_sdio_irq_handler_ext, flags,
+> > +                                        wfx_sdio_irq_handler_ext,
+> > +                                        flags | IRQF_ONESHOT,
+> >                                          "wfx", bus);
+> >  }
+> >
+> >
+> 
+> Obviously, "flags" always contains IRQF_ONESHOT. So, it is a false positive.
+Thanks for the feedback. Sorry about this false positive, this had been disabled
+for auto report now.
 
-./tools/testing/selftests/bpf/progs/fexit_test.c:77:15-16: WARNING
-comparing pointer to 0.
-
-./tools/testing/selftests/bpf/progs/fexit_test.c:68:12-13: WARNING
-comparing pointer to 0.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- tools/testing/selftests/bpf/progs/fexit_test.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/progs/fexit_test.c b/tools/testing/selftests/bpf/progs/fexit_test.c
-index 0952aff..8f1ccb7 100644
---- a/tools/testing/selftests/bpf/progs/fexit_test.c
-+++ b/tools/testing/selftests/bpf/progs/fexit_test.c
-@@ -65,7 +65,7 @@ struct bpf_fentry_test_t {
- SEC("fexit/bpf_fentry_test7")
- int BPF_PROG(test7, struct bpf_fentry_test_t *arg)
- {
--	if (arg == 0)
-+	if (!arg)
- 		test7_result = 1;
- 	return 0;
- }
-@@ -74,7 +74,7 @@ int BPF_PROG(test7, struct bpf_fentry_test_t *arg)
- SEC("fexit/bpf_fentry_test8")
- int BPF_PROG(test8, struct bpf_fentry_test_t *arg)
- {
--	if (arg->a == 0)
-+	if (!arg->a)
- 		test8_result = 1;
- 	return 0;
- }
--- 
-1.8.3.1
-
+> 
+> 
+> --
+> Jérôme Pouiller
+> 
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
