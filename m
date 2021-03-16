@@ -2,167 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC17D33CB77
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 03:32:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CCE133CB8D
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 03:39:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232921AbhCPCb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Mar 2021 22:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234594AbhCPCbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Mar 2021 22:31:51 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D5AC061756
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 19:31:51 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id t37so10821143pga.11
-        for <netdev@vger.kernel.org>; Mon, 15 Mar 2021 19:31:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=i8GkXn5ZP5S4E5t52lY5YVK+VfG9zlsLyHRTeIs78mw=;
-        b=FQY/fuJRv6xiZWb3DbhhO3nUmcvO+TnCvEk2ZnogREU34HQjqhC2lqo+1RY+nuXnHX
-         heC3YcNGFkwBsF/42l0kKNE+8duOqIBwj1/Tkwg/86A+S8hjclIq5dzTsjnhMoBgsgBE
-         q4mZk1j1Q1t/5biMnJazI6V6s0K7urEeR9+RDiYCQBKhwi+CumdyphSaJ5nJPygeNIhR
-         SDwMu6Vf+rDip9XkmbyyECmSB9GxbNkR1vbTxGHrReDPSauFuz7sJ+FEMnNVYu55Yg5e
-         sHCwogeDB+Pc6bP0lscgMvBAN5I1EVz0BnNgVgwK8Kel6bxWaqWXpMHT8mgDn4H1F1nm
-         sLfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=i8GkXn5ZP5S4E5t52lY5YVK+VfG9zlsLyHRTeIs78mw=;
-        b=M7PYjyIPL9UcBBeRvUj1uNJwBUKrX4cqO5G6dT4XB9M2NlZQS4NBfRcahYb5on8UDZ
-         QB3iEr6d+WUg+lRKv+qUPoN9hy/PosKv36cxHJpLZP8/s8jZTHC6Zq/vGLqZicpGzwI8
-         2X3IT3icHBG01WYah/RuHljydCptPCVImILOdEmT8+HD1tpYHAgimAuig+PImpGzSX6P
-         r/+reA7NK3BEFNsiPlAoSEyukADVy1MOywep55UfPEXtFfC3nEYgpXqPDuKaxcMmFJ8T
-         9pNlyHXveASwJv4fyhWF9wOGT6nkSjXb4B10B1vsnm//v4gLnBQwjspBhQjRRlaNhxu0
-         q1SA==
-X-Gm-Message-State: AOAM530ZPxlPyzHUq8iGWbMh/Cn6JKAvT0LNqzHzehYr/wwX7QrkeDe0
-        fSz9YKjTIrbbsoc0nnuX7lSQ32by45phYg==
-X-Google-Smtp-Source: ABdhPJyAPZdm9bl+eNDJNmEF9idCICsN57816NnSO7uqdPgFmHboEhBzJRTFAlg3ObTZXwTKfnVINQ==
-X-Received: by 2002:a63:4956:: with SMTP id y22mr1849743pgk.309.1615861910612;
-        Mon, 15 Mar 2021 19:31:50 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id t18sm8687743pgg.33.2021.03.15.19.31.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Mar 2021 19:31:50 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 4/4] ionic: aggregate Tx byte counting calls
-Date:   Mon, 15 Mar 2021 19:31:36 -0700
-Message-Id: <20210316023136.22702-5-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210316023136.22702-1-snelson@pensando.io>
-References: <20210316023136.22702-1-snelson@pensando.io>
+        id S234704AbhCPCis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Mar 2021 22:38:48 -0400
+Received: from m42-2.mailgun.net ([69.72.42.2]:52620 "EHLO m42-2.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234672AbhCPCin (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Mar 2021 22:38:43 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1615862323; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=H6khojduHEhXARHECePmKhjD97cpSVaxOCAUdHL/+Do=;
+ b=v8BL1pj3VAjnQBSD8Ynqf4Pouwa6fY2SnkbYVZsaphMKQ097sRwJlJGcVURcf1gbvAfSkybB
+ YLG4fhmDM4SAt1SEgRBpoqsBS8N0u1GR0BpXT05UKzR8xvDUc1d040x7gBArPT8Z4LKxD3gA
+ Fkx5uyzLSZIxB/t81v+mPXbTUfM=
+X-Mailgun-Sending-Ip: 69.72.42.2
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 60501a221de5dd7b9941696f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 16 Mar 2021 02:38:26
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 62C4DC43464; Tue, 16 Mar 2021 02:38:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 83A78C433CA;
+        Tue, 16 Mar 2021 02:38:24 +0000 (UTC)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 15 Mar 2021 20:38:24 -0600
+From:   subashab@codeaurora.org
+To:     Alex Elder <elder@linaro.org>
+Cc:     stranche@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        sharathv@codeaurora.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        David.Laight@aculab.com, olteanv@gmail.com,
+        alexander.duyck@gmail.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 0/6] net: qualcomm: rmnet: stop using C
+ bit-fields
+In-Reply-To: <20210315215151.3029676-1-elder@linaro.org>
+References: <20210315215151.3029676-1-elder@linaro.org>
+Message-ID: <e74a1c580d56ecb6ba9643a9dc133168@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gather the Tx packet and byte counts and call
-netdev_tx_completed_queue() only once per clean cycle.
+On 2021-03-15 15:51, Alex Elder wrote:
+> Version 6 is the same as version 5, but has been rebased on updated
+> net-next/master.  With any luck, the patches I'm sending out this
+> time won't contain garbage.
+> 
+> Version 5 of this series responds to a suggestion made by Alexander
+> Duyck, to determine the offset to the checksummed range of a packet
+> using skb_network_header_len() on patch 2.  I have added his
+> Reviewed-by tag to all (other) patches, and removed Bjorn's from
+> patch 2.
+> 
+> The change required some updates to the subsequent patches, and I
+> reordered some assignments in a minor way in the last patch.
+> 
+> I don't expect any more discussion on this series (but will respond
+> if there is any).  So at this point I would really appreciate it
+> if KS and/or Sean would offer a review, or at least acknowledge it.
+> I presume you two are able to independently test the code as well,
+> so I request that, and hope you are willing to do so.
+> 
+> Version 4 of this series is here:
+>   
+> https://lore.kernel.org/netdev/20210315133455.1576188-1-elder@linaro.org
+> 
+> 					-Alex
+> 
+> 
+> Alex Elder (6):
+>   net: qualcomm: rmnet: mark trailer field endianness
+>   net: qualcomm: rmnet: simplify some byte order logic
+>   net: qualcomm: rmnet: kill RMNET_MAP_GET_*() accessor macros
+>   net: qualcomm: rmnet: use masks instead of C bit-fields
+>   net: qualcomm: rmnet: don't use C bit-fields in rmnet checksum 
+> trailer
+>   net: qualcomm: rmnet: don't use C bit-fields in rmnet checksum header
+> 
+>  .../ethernet/qualcomm/rmnet/rmnet_handlers.c  | 10 +--
+>  .../net/ethernet/qualcomm/rmnet/rmnet_map.h   | 12 ----
+>  .../qualcomm/rmnet/rmnet_map_command.c        | 11 +++-
+>  .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 56 ++++++----------
+>  include/linux/if_rmnet.h                      | 65 +++++++++----------
+>  5 files changed, 64 insertions(+), 90 deletions(-)
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_dev.h   |  1 +
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 27 ++++++++++++++++---
- 2 files changed, 25 insertions(+), 3 deletions(-)
+For the series
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index d0c969a6d43e..ca7e55455165 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -196,6 +196,7 @@ struct ionic_desc_info {
- 		struct ionic_txq_sg_desc *txq_sg_desc;
- 		struct ionic_rxq_sg_desc *rxq_sgl_desc;
- 	};
-+	unsigned int bytes;
- 	unsigned int nbufs;
- 	struct ionic_buf_info bufs[IONIC_MAX_FRAGS];
- 	ionic_desc_cb cb;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index f841ccb5adfd..03e00a6c413a 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -671,7 +671,6 @@ static void ionic_tx_clean(struct ionic_queue *q,
- 
- 	if (cb_arg) {
- 		struct sk_buff *skb = cb_arg;
--		u32 len = skb->len;
- 
- 		queue_index = skb_get_queue_mapping(skb);
- 		if (unlikely(__netif_subqueue_stopped(q->lif->netdev,
-@@ -679,9 +678,11 @@ static void ionic_tx_clean(struct ionic_queue *q,
- 			netif_wake_subqueue(q->lif->netdev, queue_index);
- 			q->wake++;
- 		}
--		dev_kfree_skb_any(skb);
-+
-+		desc_info->bytes = skb->len;
- 		stats->clean++;
--		netdev_tx_completed_queue(q_to_ndq(q), 1, len);
-+
-+		dev_consume_skb_any(skb);
- 	}
- }
- 
-@@ -690,6 +691,8 @@ static bool ionic_tx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
- 	struct ionic_txq_comp *comp = cq_info->txcq;
- 	struct ionic_queue *q = cq->bound_q;
- 	struct ionic_desc_info *desc_info;
-+	int bytes = 0;
-+	int pkts = 0;
- 	u16 index;
- 
- 	if (!color_match(comp->color, cq->done_color))
-@@ -700,13 +703,21 @@ static bool ionic_tx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
- 	 */
- 	do {
- 		desc_info = &q->info[q->tail_idx];
-+		desc_info->bytes = 0;
- 		index = q->tail_idx;
- 		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
- 		ionic_tx_clean(q, desc_info, cq_info, desc_info->cb_arg);
-+		if (desc_info->cb_arg) {
-+			pkts++;
-+			bytes += desc_info->bytes;
-+		}
- 		desc_info->cb = NULL;
- 		desc_info->cb_arg = NULL;
- 	} while (index != le16_to_cpu(comp->comp_index));
- 
-+	if (pkts && bytes)
-+		netdev_tx_completed_queue(q_to_ndq(q), pkts, bytes);
-+
- 	return true;
- }
- 
-@@ -725,15 +736,25 @@ void ionic_tx_flush(struct ionic_cq *cq)
- void ionic_tx_empty(struct ionic_queue *q)
- {
- 	struct ionic_desc_info *desc_info;
-+	int bytes = 0;
-+	int pkts = 0;
- 
- 	/* walk the not completed tx entries, if any */
- 	while (q->head_idx != q->tail_idx) {
- 		desc_info = &q->info[q->tail_idx];
-+		desc_info->bytes = 0;
- 		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
- 		ionic_tx_clean(q, desc_info, NULL, desc_info->cb_arg);
-+		if (desc_info->cb_arg) {
-+			pkts++;
-+			bytes += desc_info->bytes;
-+		}
- 		desc_info->cb = NULL;
- 		desc_info->cb_arg = NULL;
- 	}
-+
-+	if (pkts && bytes)
-+		netdev_tx_completed_queue(q_to_ndq(q), pkts, bytes);
- }
- 
- static int ionic_tx_tcp_inner_pseudo_csum(struct sk_buff *skb)
--- 
-2.17.1
-
+Reviewed-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
