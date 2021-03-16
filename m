@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3653B33CFB0
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:22:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BBC133CFB3
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:22:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234431AbhCPIVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
+        id S234491AbhCPIVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234407AbhCPIVT (ORCPT
+        with ESMTP id S234409AbhCPIVT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:21:19 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EC2C061762
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D374C061763
         for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 01:21:17 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lM4x1-00034J-Ko
+        id 1lM4x1-000353-SQ
         for netdev@vger.kernel.org; Tue, 16 Mar 2021 09:21:15 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id B1DAC5F643F
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 08:21:11 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 81CB35F6447
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 08:21:12 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 9CD695F6414;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id BD8315F6415;
         Tue, 16 Mar 2021 08:21:06 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 99a2b92c;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 1de128dd;
         Tue, 16 Mar 2021 08:21:05 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: [net 03/11] can: isotp: TX-path: ensure that CAN frame flags are initialized
-Date:   Tue, 16 Mar 2021 09:20:56 +0100
-Message-Id: <20210316082104.4027260-4-mkl@pengutronix.de>
+        kernel@pengutronix.de,
+        Stephane Grosjean <s.grosjean@peak-system.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net 04/11] can: peak_usb: add forgotten supported devices
+Date:   Tue, 16 Mar 2021 09:20:57 +0100
+Message-Id: <20210316082104.4027260-5-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210316082104.4027260-1-mkl@pengutronix.de>
 References: <20210316082104.4027260-1-mkl@pengutronix.de>
@@ -53,64 +54,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous patch ensures that the TX flags (struct
-can_isotp_ll_options::tx_flags) are 0 for classic CAN frames or a user
-configured value for CAN-FD frames.
+From: Stephane Grosjean <s.grosjean@peak-system.com>
 
-This patch sets the CAN frames flags unconditionally to the ISO-TP TX
-flags, so that they are initialized to a proper value. Otherwise when
-running "candump -x" on a classical CAN ISO-TP stream shows wrongly
-set "B" and "E" flags.
+Since the peak_usb driver also supports the CAN-USB interfaces
+"PCAN-USB X6" and "PCAN-Chip USB" from PEAK-System GmbH, this patch adds
+their names to the list of explicitly supported devices.
 
-| $ candump any,0:0,#FFFFFFFF -extA
-| [...]
-| can0  TX B E  713   [8]  2B 0A 0B 0C 0D 0E 0F 00
-| can0  TX B E  713   [8]  2C 01 02 03 04 05 06 07
-| can0  TX B E  713   [8]  2D 08 09 0A 0B 0C 0D 0E
-| can0  TX B E  713   [8]  2E 0F 00 01 02 03 04 05
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/r/20210218215434.1708249-2-mkl@pengutronix.de
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+Fixes: ea8b65b596d7 ("can: usb: Add support of PCAN-Chip USB stamp module")
+Fixes: f00b534ded60 ("can: peak: Add support for PCAN-USB X6 USB interface")
+Link: https://lore.kernel.org/r/20210309082128.23125-3-s.grosjean@peak-system.com
+Signed-off-by: Stephane Grosjean <s.grosjean@peak-system.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/isotp.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/net/can/usb/peak_usb/pcan_usb_fd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index e32d446c121e..430976485d95 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -215,8 +215,7 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
- 	if (ae)
- 		ncf->data[0] = so->opt.ext_address;
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+index f347ecc79aef..f1d018218c93 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+@@ -18,6 +18,8 @@
  
--	if (so->ll.mtu == CANFD_MTU)
--		ncf->flags = so->ll.tx_flags;
-+	ncf->flags = so->ll.tx_flags;
+ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB FD adapter");
+ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB Pro FD adapter");
++MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-Chip USB");
++MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB X6 adapter");
  
- 	can_send_ret = can_send(nskb, 1);
- 	if (can_send_ret)
-@@ -790,8 +789,7 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
- 		so->tx.sn %= 16;
- 		so->tx.bs++;
- 
--		if (so->ll.mtu == CANFD_MTU)
--			cf->flags = so->ll.tx_flags;
-+		cf->flags = so->ll.tx_flags;
- 
- 		skb->dev = dev;
- 		can_skb_set_owner(skb, sk);
-@@ -939,8 +937,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	}
- 
- 	/* send the first or only CAN frame */
--	if (so->ll.mtu == CANFD_MTU)
--		cf->flags = so->ll.tx_flags;
-+	cf->flags = so->ll.tx_flags;
- 
- 	skb->dev = dev;
- 	skb->sk = sk;
+ #define PCAN_USBPROFD_CHANNEL_COUNT	2
+ #define PCAN_USBFD_CHANNEL_COUNT	1
 -- 
 2.30.1
 
