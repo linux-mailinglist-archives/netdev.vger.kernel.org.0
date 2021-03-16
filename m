@@ -2,103 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B89C33DA37
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 18:05:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94F1D33DA41
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 18:07:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238978AbhCPRFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 13:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238972AbhCPRE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 13:04:58 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357D5C061756;
-        Tue, 16 Mar 2021 10:04:58 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id 16so9250976pfn.5;
-        Tue, 16 Mar 2021 10:04:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0lBoqDQGbVDAXmG7Obz/KwLjC/e8VHnkycjoidmWyVI=;
-        b=NIyb7nSw5CTvnOicx0DR0Pqd3PKo/YN8dx4HYS0YShQ7gOabF1wT7cdloVz38e0t0E
-         zmyX82Pz+Z1qkWjnee3uAa5CfIqnXfBLKzJMbLOsWa71O/CbEl2yXatDIVNSHus7XkVB
-         8EOky+SMXsrEvtJq2JQF2NyQRckTMCnYQ9Wd7AinBl+2mACxBM1YwZD4vxsoCIWQSMuH
-         xdi6OYgI4gzmD1eIOlgBKB43YII+LML2pZ8DbzlYUO/+KlnAsPlYZb2pDPGCqg/o3C6R
-         0epjLzKx4GklZ4hFHAntyqd3FSgXHmyptn48dSyoijCDP/28G8haRt6ntS6fMwXCgMvu
-         uCKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0lBoqDQGbVDAXmG7Obz/KwLjC/e8VHnkycjoidmWyVI=;
-        b=Mr3nGOKfJk0FtnbZJKdsoCUj/lnijP3SrU0/zRK0h7wGd6kWLsa+y7dyvkWzn7xxZH
-         krfTy6sc3U17j0w/wYIh+JwygSd23AZaFGT9rwlmDEIfQ7U7o2OX1IZrrgm6hUr+6WZC
-         QPN793Z8j0RzzAWukkwYP8VvZRbW8NOVAu9T20Mx61IBrwBrzOkUDORcsq7mNVVc64Z5
-         xOzQZ1O5PtLFt8BVDoAUHkt/4I9dQTRBK9c9m1/GcROjZL8O81IighHAuV/UImmN2fYu
-         LkHr7e9jtTr1/eWB1Qg9f5OsvEd6eJlIpFQ4CAens7eYKDvT67a5MtLyZUDUR4FcPJhp
-         rqAw==
-X-Gm-Message-State: AOAM532lmzxhT5OlbNL2wgUdrO9fzdB9i/TzbsTp09u67by53DfXGNWz
-        uIezwUqc8bo7buYlOiITprQ=
-X-Google-Smtp-Source: ABdhPJyMN0dn2p8WDL4zzof28yTpopJAfm6Ga+kz8Oc4Ill/NGZWAau9MXh1N0BYHhY5AMtKq2IMPg==
-X-Received: by 2002:a63:c04b:: with SMTP id z11mr621283pgi.60.1615914297538;
-        Tue, 16 Mar 2021 10:04:57 -0700 (PDT)
-Received: from ubuntu.localdomain ([182.156.244.6])
-        by smtp.gmail.com with ESMTPSA id t19sm16832031pgj.8.2021.03.16.10.04.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 10:04:57 -0700 (PDT)
-From:   namratajanawade <namrata.janawade@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bkkarthik@pesu.pes.edu,
-        namrata.janawade@gmail.com
-Subject: [PATCH] unix_diag: addtion of empty line
-Date:   Tue, 16 Mar 2021 10:04:47 -0700
-Message-Id: <20210316170447.3394-1-namrata.janawade@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S239071AbhCPRGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 13:06:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51506 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239087AbhCPRGT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 13:06:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4A4FB65115;
+        Tue, 16 Mar 2021 17:06:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615914377;
+        bh=L3Wwuoc+0jCDrKjluqD3/6h3roo1LSNauhjIL1FD3Do=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ojzkd6/yXh5qbU1uqmYwLzTzJWekdPdfCIJ+mfhGVm0F7aA3R+HvZ9erNBsJeL2UQ
+         aL8l5vTWmzTJUR6mWzQRGA432oA0tFYn94wGQ4uvaH6LVyorsnrThq/VEecvTxJ99h
+         y1dO4VuLua6aUoHkoEwhkmMliNuyUqYQOnUA+GruuYIxSSp5MKB0mHoETtzELYDzO3
+         x+bq9HjIcRrhnt1ud3tiibdsU9FK9mvh5jBWTm6xRCrh1G8HWfRdYUi6arauN7vNQC
+         /lwGC+I5y5/b/lPeCrnqdljrwsjdCS4NKhUavRJ9CpEdUCj3jp+18ej31HwBJBi/Gw
+         uWJogWDiMGIcA==
+Date:   Tue, 16 Mar 2021 10:06:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hariprasad Kelam <hkelam@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>
+Subject: Re: [net PATCH 4/9] octeontx2-af: Remove TOS field from MKEX TX
+Message-ID: <20210316100616.333704ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1615886833-71688-5-git-send-email-hkelam@marvell.com>
+References: <1615886833-71688-1-git-send-email-hkelam@marvell.com>
+        <1615886833-71688-5-git-send-email-hkelam@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Warning found by checkpatch.pl.
-New empty line added  before return statement to improve readability
+On Tue, 16 Mar 2021 14:57:08 +0530 Hariprasad Kelam wrote:
+> From: Subbaraya Sundeep <sbhatta@marvell.com>
+> 
+> TOS overlaps with DMAC field in mcam search key and hence installing
+> rules for TX side are failing. Hence remove TOS field from TX profile.
 
-Signed-off-by: namratajanawade <namrata.janawade@gmail.com>
----
- net/unix/diag.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/net/unix/diag.c b/net/unix/diag.c
-index 9ff64f9df1f3..feb79a43944e 100644
---- a/net/unix/diag.c
-+++ b/net/unix/diag.c
-@@ -78,11 +78,11 @@ static int sk_diag_dump_icons(struct sock *sk, struct sk_buff *nlskb)
- 			struct sock *req, *peer;
- 
- 			req = skb->sk;
--			/*
--			 * The state lock is outer for the same sk's
--			 * queue lock. With the other's queue locked it's
--			 * OK to lock the state.
--			 */
-+			 /*
-+			  * The state lock is outer for the same sk's
-+			  * queue lock. With the other's queue locked it's
-+			  * OK to lock the state.
-+			  */
- 			unix_state_lock_nested(req);
- 			peer = unix_sk(req)->peer;
- 			buf[i++] = (peer ? sock_i_ino(peer) : 0);
-@@ -116,6 +116,7 @@ static int sk_diag_show_rqlen(struct sock *sk, struct sk_buff *nlskb)
- static int sk_diag_dump_uid(struct sock *sk, struct sk_buff *nlskb)
- {
- 	uid_t uid = from_kuid_munged(sk_user_ns(nlskb->sk), sock_i_uid(sk));
-+
- 	return nla_put(nlskb, UNIX_DIAG_UID, sizeof(uid_t), &uid);
- }
- 
--- 
-2.25.1
-
+Could you clarify what "installing rules is failing" means?
+Return error or does not behave correctly?
