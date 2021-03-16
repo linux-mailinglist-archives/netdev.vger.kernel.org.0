@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0846633D2E5
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 12:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3E0F33D2E8
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 12:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234168AbhCPLYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 07:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
+        id S234250AbhCPLYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 07:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232781AbhCPLYd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 07:24:33 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA2FC06175F
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 04:24:33 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id b16so8273822eds.7
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 04:24:33 -0700 (PDT)
+        with ESMTP id S232509AbhCPLYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 07:24:34 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4310DC06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 04:24:34 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id c10so71410078ejx.9
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 04:24:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GA9KgPbXCjkkZMOpk0TLpFUUrFcKnH4dAm++pMGhu5w=;
-        b=g0yjYL3Z0UTZJBCmjrPhILlc4jjnhvXRh485ONS9xWcizzVn83RB75LImgbLAOpju8
-         qwIJIWJnAcszuJ1OJa3lnrl8MQZ0FvA++hijJP1UEseWJpVitS3RuFo5yw1RxGvKQg1j
-         PKM9b+pJ6OZkMWL0+HDIbVi8e4F/XRWCOkHO+RCWUW5nyyqbLUMl8qPU4b/zohTGi8CJ
-         diipajsiS80LyVU3rLqYWCFQOpk1a1CUiK07GU9EGIQ+x0WrSZfk3w7c7oos+uWcm6SO
-         E0JzgYWm00TO1nVaEIl05hmVB5/qJF/tuoH1ktua5sywxYsT44x2KmNJNGsJw76GiNlq
-         i9MA==
+        bh=CpCfl0bYoqF8thfkebTAWyvngGslCFJA8QRSmeXy8FY=;
+        b=GnALewWZyYlwLIpd2iHSwMNU+6PMVGXRv54kh4/zE/Gknpg26r01LAhFpsEWOUt1JT
+         tu3+79xQKR0f58eP7ZzjPvv3lOMmE6SAFI3auo3Dq6T8fx6NNP8VgqLUCgx+kK+QLdAf
+         x6Vq4b9H6A/xf9Qg10fdXZK07iopSxAu4ipf6ilHZylRukeKWrDD/NYC26OX+8oUsDxf
+         5CTAi8YXQm/fok2JRbCIKR7l57Yzz8zQd2c9HrM8+E621i9oq8aMvAYwXffhW1jdohUB
+         cBfu/RANnGhcGvQMmsI8ESCh/Xam4aRqVAwh5oEkyTGUp3rQC3iYMVvJqfhlpFfpqU14
+         XnhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GA9KgPbXCjkkZMOpk0TLpFUUrFcKnH4dAm++pMGhu5w=;
-        b=m0TTD1/l7lSAqGXpYPFp1a/vxLD+Q34NRqga1e8ogKE5LCJWOuII7P0+jd+1x55JLl
-         U8tAxqpihubX19YgGQlvLZDkxS8NynSMwJ6BkbeWS2qbB+58XbFz3934ROpp6MDAu0Az
-         9ZzElcK3Ho/EqIMXbtxZgRwTPP1zkRnVlpzCM2q36o6LFObWAwdeb8J7VEko/4v6FETK
-         Xeij45TV5YgKSMACS27QQOZz/HUq7rfRBpFE7Bz30xbGq9CtuyMyOWGgRh0+kjdgENo8
-         zXGyFjEtCbDwXN5uQK4vjeHuSd2/X+KcNEcH5gC+iFAYnWOFYzWrKKnVuXLut53HToBA
-         tyEw==
-X-Gm-Message-State: AOAM530phoCamtG8ZQblTdCmZBa6eyyQs13prlWPCShkQujPNLw98fVL
-        vLo78GFSUDLBjAmwAz7iT+GC6sEvHdc=
-X-Google-Smtp-Source: ABdhPJzncDxSEzulEBaROIldXV2k5velXNnyV7gsA+nULEvWYf72gdqnhLowPn0cI4Hz+XtvR9oxdQ==
-X-Received: by 2002:aa7:cd54:: with SMTP id v20mr35756970edw.80.1615893871931;
-        Tue, 16 Mar 2021 04:24:31 -0700 (PDT)
+        bh=CpCfl0bYoqF8thfkebTAWyvngGslCFJA8QRSmeXy8FY=;
+        b=Nb0OyyRV+v1Lo4V+c90cAMWuu6A0193c/Y/num6Yl3V72Ofg5TpiWnqLW2r29TQwB3
+         GmT516PN/i+yEmq440UkgtSKLK1+zwAeMQMqeUrn4/o8uD6myBs800HTnhe6RmtkTs8C
+         iIV5IU4MxPXfifhKVPOfsILCi9NHXjonhTWTk+To0ZrNUeOXX9NP7RcxcfcuykxWHHzL
+         DvHdoGx55tzPB9CuSPGaf8hhRFgT96I0k/ivzredGmrFV7VPIfrOjvXBc9C2CXC9Jl1Q
+         u9Stmt1JRy6oXmTA9waN4MnurceEQCKh+zpE1YM4Ph6/7SRUDKf74CMKiRfin8OIiMFd
+         DmOQ==
+X-Gm-Message-State: AOAM5327c3iFbtyaUb8Sdtl3yLVMAI6DzUftarPiD3htqg8W1c8qce4b
+        VVPS5CNd5DbsgiWrMjL+jEOErIv7CYw=
+X-Google-Smtp-Source: ABdhPJxNFQ3cocJIerukkPp+ayNMdzIbPn5ja4nrwP60B4GELCqTwNCL6vH4fgHUnapfZd3AblqDJw==
+X-Received: by 2002:a17:907:9808:: with SMTP id ji8mr29183537ejc.333.1615893872784;
+        Tue, 16 Mar 2021 04:24:32 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id y12sm9294825ejb.104.2021.03.16.04.24.31
+        by smtp.gmail.com with ESMTPSA id y12sm9294825ejb.104.2021.03.16.04.24.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 04:24:31 -0700 (PDT)
+        Tue, 16 Mar 2021 04:24:32 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -56,9 +56,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ido Schimmel <idosch@idosch.org>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 05/12] Documentation: networking: dsa: remove TODO about porting more vendor drivers
-Date:   Tue, 16 Mar 2021 13:24:12 +0200
-Message-Id: <20210316112419.1304230-6-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 06/12] Documentation: networking: dsa: document the port_bridge_flags method
+Date:   Tue, 16 Mar 2021 13:24:13 +0200
+Message-Id: <20210316112419.1304230-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210316112419.1304230-1-olteanv@gmail.com>
 References: <20210316112419.1304230-1-olteanv@gmail.com>
@@ -70,31 +70,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On one hand, the link is dead and therefore useless.
-
-On the other hand, there are always more drivers to port, but at this
-stage, DSA does not need to affirm itself as the driver model to use for
-Ethernet-connected switches (since we already have 15 tagging protocols
-supported and probably more switch families from various vendors), so
-there is nothing actionable to do.
+The documentation was already lagging behind by not mentioning the old
+version of port_bridge_flags (port_set_egress_floods). So now we are
+skipping one step and just explaining how a DSA driver should configure
+address learning and flooding settings.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- Documentation/networking/dsa/dsa.rst | 2 --
- 1 file changed, 2 deletions(-)
+ Documentation/networking/dsa/dsa.rst | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/Documentation/networking/dsa/dsa.rst b/Documentation/networking/dsa/dsa.rst
-index ced2eb6d647a..b90a852e5329 100644
+index b90a852e5329..9c287dfd3c45 100644
 --- a/Documentation/networking/dsa/dsa.rst
 +++ b/Documentation/networking/dsa/dsa.rst
-@@ -699,5 +699,3 @@ Other hanging fruits
+@@ -619,6 +619,17 @@ Bridge layer
+   computing a STP state change based on current and asked parameters and perform
+   the relevant ageing based on the intersection results
  
- - allowing more than one CPU/management interface:
-   http://comments.gmane.org/gmane.linux.network/365657
--- porting more drivers from other vendors:
--  http://comments.gmane.org/gmane.linux.network/365510
++- ``port_bridge_flags``: bridge layer function invoked when a port must
++  configure its settings for e.g. flooding of unknown traffic or source address
++  learning. The switch driver is responsible for initial setup of the
++  standalone ports with address learning disabled and egress flooding of all
++  types of traffic, then the DSA core notifies of any change to the bridge port
++  flags when the port joins and leaves a bridge. DSA does not currently manage
++  the bridge port flags for the CPU port. The assumption is that address
++  learning should be statically enabled (if supported by the hardware) on the
++  CPU port, and flooding towards the CPU port should also be enabled, due to a
++  lack of an explicit address filtering mechanism in the DSA core.
++
+ Bridge VLAN filtering
+ ---------------------
+ 
 -- 
 2.25.1
 
