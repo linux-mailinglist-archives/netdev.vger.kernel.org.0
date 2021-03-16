@@ -2,213 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A3EE33D152
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 11:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89DD433D163
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 11:08:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236237AbhCPKCg convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 06:02:36 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:49785 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235852AbhCPKCB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 06:02:01 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-190-R1DbDuoePriB3rwkJ-2bww-1; Tue, 16 Mar 2021 06:01:55 -0400
-X-MC-Unique: R1DbDuoePriB3rwkJ-2bww-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFB36107ACCD;
-        Tue, 16 Mar 2021 10:01:53 +0000 (UTC)
-Received: from p50.redhat.com (ovpn-112-37.ams2.redhat.com [10.36.112.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 14E736C32E;
-        Tue, 16 Mar 2021 10:01:51 +0000 (UTC)
-From:   Stefan Assmann <sassmann@kpanic.de>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        lihong.yang@intel.com, jesse.brandeburg@intel.com,
-        slawomirx.laba@intel.com, nicholas.d.nunley@intel.com,
-        sassmann@kpanic.de
-Subject: [PATCH] iavf: fix locking of critical sections
-Date:   Tue, 16 Mar 2021 11:01:41 +0100
-Message-Id: <20210316100141.53551-1-sassmann@kpanic.de>
+        id S234916AbhCPKH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 06:07:57 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:47837 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234292AbhCPKH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 06:07:29 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 12GA75eS4018098, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmbs04.realtek.com.tw[172.21.6.97])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 12GA75eS4018098
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 16 Mar 2021 18:07:05 +0800
+Received: from localhost.localdomain (172.21.132.99) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 16 Mar 2021 18:07:05 +0800
+From:   <hildawu@realtek.com>
+To:     <marcel@holtmann.org>
+CC:     <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-bluetooth@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <tientzu@chromium.org>,
+        <max.chou@realtek.com>, <alex_lu@realsil.com.cn>,
+        <kidman@realtek.com>
+Subject: [PATCH v2] Bluetooth: hci_h5: btrtl: Add quirk for keep power in suspend/resume
+Date:   Tue, 16 Mar 2021 18:06:57 +0800
+Message-ID: <20210316100657.16499-1-hildawu@realtek.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sassmann@kpanic.de
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kpanic.de
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain
+X-Originating-IP: [172.21.132.99]
+X-ClientProxiedBy: RTEXMBS03.realtek.com.tw (172.21.6.96) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To avoid races between iavf_init_task(), iavf_reset_task(),
-iavf_watchdog_task(), iavf_adminq_task() as well as the shutdown and
-remove functions more locking is required.
-The current protection by __IAVF_IN_CRITICAL_TASK is needed in
-additional places.
+From: hildawu <hildawu@realtek.com>
 
-- The reset task performs state transitions, therefore needs locking.
-- The adminq task acts on replies from the PF in
-  iavf_virtchnl_completion() which may alter the states.
-- The init task is not only run during probe but also if a VF gets stuck
-  to reinitialize it.
-- The shutdown function performs a state transition.
-- The remove function perorms a state transition and also free's
-  resources.
+RTL8822C devices support BT wakeup Host. Add a quirk for these specific
+devices did not power off during suspend and resume.
+By this change, if the Host support that received BT device signal then
+it can be wakeup.
 
-iavf_lock_timeout() is introduced to avoid waiting infinitely
-and cause a deadlock. Rather unlock and print a warning.
-
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+Signed-off-by: hildawu <hildawu@realtek.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 57 ++++++++++++++++++---
- 1 file changed, 50 insertions(+), 7 deletions(-)
+Changes in v2:
+- Add missing struct member
+- Modify title for fit length
+---
+---
+ drivers/bluetooth/btrtl.c   | 36 ------------------------------------
+ drivers/bluetooth/btrtl.h   | 36 ++++++++++++++++++++++++++++++++++++
+ drivers/bluetooth/hci_h5.c  | 35 ++++++++++++++++++++++++-----------
+ include/net/bluetooth/hci.h |  9 +++++++++
+ 4 files changed, 69 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index dc5b3c06d1e0..538b7aa43fa5 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -131,6 +131,30 @@ enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
+diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+index e7fe5fb22753..94d1e7885aee 100644
+--- a/drivers/bluetooth/btrtl.c
++++ b/drivers/bluetooth/btrtl.c
+@@ -38,42 +38,6 @@
+ 	.hci_ver = (hciv), \
+ 	.hci_bus = (bus)
+ 
+-enum btrtl_chip_id {
+-	CHIP_ID_8723A,
+-	CHIP_ID_8723B,
+-	CHIP_ID_8821A,
+-	CHIP_ID_8761A,
+-	CHIP_ID_8822B = 8,
+-	CHIP_ID_8723D,
+-	CHIP_ID_8821C,
+-	CHIP_ID_8822C = 13,
+-	CHIP_ID_8761B,
+-	CHIP_ID_8852A = 18,
+-};
+-
+-struct id_table {
+-	__u16 match_flags;
+-	__u16 lmp_subver;
+-	__u16 hci_rev;
+-	__u8 hci_ver;
+-	__u8 hci_bus;
+-	bool config_needed;
+-	bool has_rom_version;
+-	char *fw_name;
+-	char *cfg_name;
+-};
+-
+-struct btrtl_device_info {
+-	const struct id_table *ic_info;
+-	u8 rom_version;
+-	u8 *fw_data;
+-	int fw_len;
+-	u8 *cfg_data;
+-	int cfg_len;
+-	bool drop_fw;
+-	int project_id;
+-};
+-
+ static const struct id_table ic_id_table[] = {
+ 	/* 8723A */
+ 	{ IC_INFO(RTL_ROM_LMP_8723A, 0xb, 0x6, HCI_USB),
+diff --git a/drivers/bluetooth/btrtl.h b/drivers/bluetooth/btrtl.h
+index 2a582682136d..713768b38e21 100644
+--- a/drivers/bluetooth/btrtl.h
++++ b/drivers/bluetooth/btrtl.h
+@@ -12,6 +12,42 @@
+ #define rtl_dev_info(dev, fmt, ...) bt_dev_info(dev, "RTL: " fmt, ##__VA_ARGS__)
+ #define rtl_dev_dbg(dev, fmt, ...) bt_dev_dbg(dev, "RTL: " fmt, ##__VA_ARGS__)
+ 
++enum btrtl_chip_id {
++	CHIP_ID_8723A,
++	CHIP_ID_8723B,
++	CHIP_ID_8821A,
++	CHIP_ID_8761A,
++	CHIP_ID_8822B = 8,
++	CHIP_ID_8723D,
++	CHIP_ID_8821C,
++	CHIP_ID_8822C = 13,
++	CHIP_ID_8761B,
++	CHIP_ID_8852A = 18,
++};
++
++struct id_table {
++	__u16 match_flags;
++	__u16 lmp_subver;
++	__u16 hci_rev;
++	__u8 hci_ver;
++	__u8 hci_bus;
++	bool config_needed;
++	bool has_rom_version;
++	char *fw_name;
++	char *cfg_name;
++};
++
++struct btrtl_device_info {
++	const struct id_table *ic_info;
++	u8 rom_version;
++	u8 *fw_data;
++	int fw_len;
++	u8 *cfg_data;
++	int cfg_len;
++	bool drop_fw;
++	int project_id;
++};
++
+ struct btrtl_device_info;
+ 
+ struct rtl_download_cmd {
+diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+index 27e96681d583..1ca4ff89ea14 100644
+--- a/drivers/bluetooth/hci_h5.c
++++ b/drivers/bluetooth/hci_h5.c
+@@ -909,7 +909,15 @@ static int h5_btrtl_setup(struct h5 *h5)
+ 	/* Enable controller to do both LE scan and BR/EDR inquiry
+ 	 * simultaneously.
+ 	 */
+-	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &h5->hu->hdev->quirks);
++	switch (btrtl_dev->project_id) {
++	case CHIP_ID_8822C:
++	case CHIP_ID_8852A:
++		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &h5->hu->hdev->quirks);
++		set_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks);
++		break;
++	default:
++		break;
++	}
+ 
+ out_free:
+ 	btrtl_free(btrtl_dev);
+@@ -945,8 +953,11 @@ static void h5_btrtl_close(struct h5 *h5)
+ static int h5_btrtl_suspend(struct h5 *h5)
+ {
+ 	serdev_device_set_flow_control(h5->hu->serdev, false);
+-	gpiod_set_value_cansleep(h5->device_wake_gpio, 0);
+-	gpiod_set_value_cansleep(h5->enable_gpio, 0);
++
++	if (!test_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks)) {
++		gpiod_set_value_cansleep(h5->device_wake_gpio, 0);
++		gpiod_set_value_cansleep(h5->enable_gpio, 0);
++	}
  	return 0;
  }
  
-+/**
-+ * iavf_timeout - try to set bit but give up after timeout
-+ * @adapter: board private structure
-+ * @bit: bit to set
-+ * @msecs: timeout in msecs
-+ *
-+ * Returns 0 on success, negative on failure
-+ **/
-+static inline int iavf_lock_timeout(struct iavf_adapter *adapter,
-+				    enum iavf_critical_section_t bit,
-+				    unsigned int msecs)
-+{
-+	unsigned int wait, delay = 10;
-+
-+	for (wait = 0; wait < msecs; wait += delay) {
-+		if (!test_and_set_bit(bit, &adapter->crit_section))
-+			return 0;
-+
-+		msleep(delay);
+@@ -972,17 +983,19 @@ static void h5_btrtl_reprobe_worker(struct work_struct *work)
+ 
+ static int h5_btrtl_resume(struct h5 *h5)
+ {
+-	struct h5_btrtl_reprobe *reprobe;
++	if (!test_bit(HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED, &h5->hu->hdev->quirks)) {
++		struct h5_btrtl_reprobe *reprobe;
+ 
+-	reprobe = kzalloc(sizeof(*reprobe), GFP_KERNEL);
+-	if (!reprobe)
+-		return -ENOMEM;
++		reprobe = kzalloc(sizeof(*reprobe), GFP_KERNEL);
++		if (!reprobe)
++			return -ENOMEM;
+ 
+-	__module_get(THIS_MODULE);
++		__module_get(THIS_MODULE);
+ 
+-	INIT_WORK(&reprobe->work, h5_btrtl_reprobe_worker);
+-	reprobe->dev = get_device(&h5->hu->serdev->dev);
+-	queue_work(system_long_wq, &reprobe->work);
++		INIT_WORK(&reprobe->work, h5_btrtl_reprobe_worker);
++		reprobe->dev = get_device(&h5->hu->serdev->dev);
++		queue_work(system_long_wq, &reprobe->work);
 +	}
-+
-+	return -1;
-+}
-+
- /**
-  * iavf_schedule_reset - Set the flags and schedule a reset event
-  * @adapter: board private structure
-@@ -2069,6 +2093,10 @@ static void iavf_reset_task(struct work_struct *work)
- 	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
- 		return;
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200)) {
-+		schedule_work(&adapter->reset_task);
-+		return;
-+	}
- 	while (test_and_set_bit(__IAVF_IN_CLIENT_TASK,
- 				&adapter->crit_section))
- 		usleep_range(500, 1000);
-@@ -2275,6 +2303,8 @@ static void iavf_adminq_task(struct work_struct *work)
- 	if (!event.msg_buf)
- 		goto out;
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200))
-+		goto freedom;
- 	do {
- 		ret = iavf_clean_arq_element(hw, &event, &pending);
- 		v_op = (enum virtchnl_ops)le32_to_cpu(event.desc.cookie_high);
-@@ -2288,6 +2318,7 @@ static void iavf_adminq_task(struct work_struct *work)
- 		if (pending != 0)
- 			memset(event.msg_buf, 0, IAVF_MAX_AQ_BUF_SIZE);
- 	} while (pending);
-+	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
- 
- 	if ((adapter->flags &
- 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
-@@ -3590,6 +3621,10 @@ static void iavf_init_task(struct work_struct *work)
- 						    init_task.work);
- 	struct iavf_hw *hw = &adapter->hw;
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000)) {
-+		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
-+		return;
-+	}
- 	switch (adapter->state) {
- 	case __IAVF_STARTUP:
- 		if (iavf_startup(adapter) < 0)
-@@ -3602,14 +3637,14 @@ static void iavf_init_task(struct work_struct *work)
- 	case __IAVF_INIT_GET_RESOURCES:
- 		if (iavf_init_get_resources(adapter) < 0)
- 			goto init_failed;
--		return;
-+		goto out;
- 	default:
- 		goto init_failed;
- 	}
- 
- 	queue_delayed_work(iavf_wq, &adapter->init_task,
- 			   msecs_to_jiffies(30));
--	return;
-+	goto out;
- init_failed:
- 	if (++adapter->aq_wait_count > IAVF_AQ_MAX_ERR) {
- 		dev_err(&adapter->pdev->dev,
-@@ -3618,9 +3653,11 @@ static void iavf_init_task(struct work_struct *work)
- 		iavf_shutdown_adminq(hw);
- 		adapter->state = __IAVF_STARTUP;
- 		queue_delayed_work(iavf_wq, &adapter->init_task, HZ * 5);
--		return;
-+		goto out;
- 	}
- 	queue_delayed_work(iavf_wq, &adapter->init_task, HZ);
-+out:
-+	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ 	return 0;
  }
  
- /**
-@@ -3637,9 +3674,12 @@ static void iavf_shutdown(struct pci_dev *pdev)
- 	if (netif_running(netdev))
- 		iavf_close(netdev);
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
-+		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
- 	/* Prevent the watchdog from running. */
- 	adapter->state = __IAVF_REMOVE;
- 	adapter->aq_required = 0;
-+	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
- 
- #ifdef CONFIG_PM
- 	pci_save_state(pdev);
-@@ -3866,10 +3906,6 @@ static void iavf_remove(struct pci_dev *pdev)
- 				 err);
- 	}
- 
--	/* Shut down all the garbage mashers on the detention level */
--	adapter->state = __IAVF_REMOVE;
--	adapter->aq_required = 0;
--	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
- 	iavf_request_reset(adapter);
- 	msleep(50);
- 	/* If the FW isn't responding, kick it once, but only once. */
-@@ -3877,6 +3913,13 @@ static void iavf_remove(struct pci_dev *pdev)
- 		iavf_request_reset(adapter);
- 		msleep(50);
- 	}
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
-+		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index ea4ae551c426..1e4c2a97ab8d 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -246,6 +246,15 @@ enum {
+ 	 * HCI after resume.
+ 	 */
+ 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
 +
-+	/* Shut down all the garbage mashers on the detention level */
-+	adapter->state = __IAVF_REMOVE;
-+	adapter->aq_required = 0;
-+	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
- 	iavf_free_all_tx_resources(adapter);
- 	iavf_free_all_rx_resources(adapter);
- 	iavf_misc_irq_disable(adapter);
++	/* When this quirk is set, the controller does not power off
++	 * during suspend and resume. This mechanism lets BT devices wake
++	 * the Host up if the Host and chips support.
++	 *
++	 * This quirk can be set before hci_register_dev is called or
++	 * during the hdev->setup vendor callback.
++	 */
++	HCI_QUIRK_DEVICES_WAKEUP_SUPPORTED,
+ };
+ 
+ /* HCI device flags */
 -- 
-2.29.2
+2.17.1
 
