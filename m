@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F4433E21E
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:31:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3286E33E241
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:40:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbhCPXaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 19:30:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40656 "EHLO mail.kernel.org"
+        id S229632AbhCPXkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 19:40:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44142 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229492AbhCPXaI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 19:30:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 899BE64EEC;
-        Tue, 16 Mar 2021 23:30:08 +0000 (UTC)
+        id S229508AbhCPXkH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 19:40:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A69EB64F10;
+        Tue, 16 Mar 2021 23:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615937408;
-        bh=/Lt2pI2oCtWfhyV5A6PBHgt0N9yy9uALCBCL/g1cWII=;
+        s=k20201202; t=1615938007;
+        bh=m4tjLEBb7mA7jcO+CjgZrhAquGSXcrZlhy3kn6TGV88=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tY3BI4jv74Gb1E95bd8PIEvAiiFf5NDNNE6oxCbK0az178rf0RYLAlq7K55p370p3
-         2VAoazSeqhNufEETDb6OMVAoc3mlF+Nk2HwYdqrbZO7l2TyRKuroWq9m7SAvrp6JwA
-         SYe5fVGxuDaZxQezCAUARpD++QSyM8Bsw7JnVp6q07bs6JqzdgVX5PTS4+x0KlOzKT
-         8WAZwnPjkoUnByQPpLngPljEriyAWvUsKwnqPlPoIhuO2ejyRaCM9YwLeNs4vDsi2c
-         a1Adat9PPQM9ORJwaSYwky5H0BfahaKPUnQMriIaKvYjfg9fz1VKKDvH5ohFpzV6AZ
-         uzAzA2gPIMwqA==
+        b=KJwl1JIs7/gF2ep7NNHzrk0ig01F5ZD/cNDOk4wWRVO0AxpeFDPI3k4zkRtP5HtZ3
+         9x+rtQbR0kInJAAa/2yegIEk8HBGXqg+9hoyAsPvCMYy7wo/cqtobcCDKXB2jhWeTC
+         nDX6S2YG7zWYJpv2uzIOVJLQN0Ec+mKVG0e9VQhKv5J1JapW5+xxpoRX95ecKumiXU
+         nYEXoDhsLo6I3v5EBSCuiwLqhhKdo10xH5TeS2eIueqiA8zR/9+VzP0YZshosPwrVk
+         tpjNVN6zlH8mv+HvAbiciwgmz8pFA5yLwIzAjttzjsw+GTyEU8OSzh9yKgJk2M6koy
+         xCXE7SwGOS+Fg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 78F5B60A3D;
-        Tue, 16 Mar 2021 23:30:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9600060965;
+        Tue, 16 Mar 2021 23:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/3] net: ocelot: Extend MRP
+Subject: Re: [PATCH net-next] openvswitch: Warn over-mtu packets only if iface is
+ UP.
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161593740849.31484.11641461729304594351.git-patchwork-notify@kernel.org>
-Date:   Tue, 16 Mar 2021 23:30:08 +0000
-References: <20210316201019.3081237-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20210316201019.3081237-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <161593800760.2812.11445612675963290520.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Mar 2021 23:40:07 +0000
+References: <20210316201427.1690660-1-fbl@sysclose.org>
+In-Reply-To: <20210316201427.1690660-1-fbl@sysclose.org>
+To:     Flavio Leitner <fbl@sysclose.org>
+Cc:     netdev@vger.kernel.org, echaudro@redhat.com, pshelar@ovn.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 16 Mar 2021 21:10:16 +0100 you wrote:
-> This patch series extends the current support of MRP in Ocelot driver.
-> Currently the forwarding of the frames happened in SW because all frames
-> were trapped to CPU. With this patch the MRP frames will be forward in HW.
+On Tue, 16 Mar 2021 17:14:27 -0300 you wrote:
+> It is not unusual to have the bridge port down. Sometimes
+> it has the old MTU, which is fine since it's not being used.
 > 
-> v1 -> v2:
->  - create a patch series instead of single patch
->  - rename ocelot_mrp_find_port to ocelot_mrp_find_partner_port
->  - rename PGID_MRP to PGID_BLACKHOLE
->  - use GFP_KERNEL instead of GFP_ATOMIC
->  - fix other whitespace issues
+> However, the kernel spams the log with a warning message
+> when a packet is going to be sent over such port. Fix that
+> by warning only if the interface is UP.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/3] net: ocelot: Add PGID_BLACKHOLE
-    https://git.kernel.org/netdev/net-next/c/ebb1bb401303
-  - [net-next,v2,2/3] net: ocelot: Extend MRP
-    https://git.kernel.org/netdev/net-next/c/7c588c3e96e9
-  - [net-next,v2,3/3] net: ocelot: Remove ocelot_xfh_get_cpuq
-    https://git.kernel.org/netdev/net-next/c/2ed2c5f03911
+  - [net-next] openvswitch: Warn over-mtu packets only if iface is UP.
+    https://git.kernel.org/netdev/net-next/c/ebfbc46b35cb
 
 You are awesome, thank you!
 --
