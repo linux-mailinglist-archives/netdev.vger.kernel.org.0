@@ -2,116 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5B533DCEE
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 19:53:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1E5233DD02
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 20:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbhCPSxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 14:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231423AbhCPSwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 14:52:53 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E9FC06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:52:52 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so1856622pjh.1
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:52:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=/sj2D6EhueIonIOjXjC7WbxwzD1uKAjfAdMsy+l9mT8=;
-        b=nNCVD+3WNEGfIgnZ7REz0xovKLIC//qI2IqlP2+Jbh67o20xsk+DNNQSzZ+ZHoK5GG
-         QnyhBzx2/Whwj+gUG4euZmlpv9lU9JN6GZJjPfIQd80JbFCpR5dcuTgB1kEOoF7uWzJk
-         pJIKtGF4amqgGraLCrXr8IFXVsmvl9x3vqUSC14LmUl7hc3JYTE9HYYXrILYKTJa4Vzd
-         QTnhmlKyob7tYy2iAyF6460/5/6bhbgyV+0uIxpLq3pxWVec8SHUON19oCy3XDna+fk8
-         0vpOrx3WDaEE5jP/67L51yVRmFUwQNR3nLMgGWiB5HzW2CMXnDTau/fr9Z70ceDUT546
-         BBVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=/sj2D6EhueIonIOjXjC7WbxwzD1uKAjfAdMsy+l9mT8=;
-        b=koXTv8A80pzQHKXgXBWfk+d0wo7ylC3GJJGQD0mVcys08QVJLv2gux9030iqc6tMKZ
-         ajJu0URCxD+svAzmPRjUxcA8aND5ANIp+H8xtJYpvQiVySN12pXKVNuyi2e0YN6OMWlt
-         BypQtsKSJIeabPQ9kcVDVJEFnKG3m6Q7g8Hkw23hasgGq0GNkqtPhTmpAX9yqmskxd6f
-         7TP6tbRY3RwG6q7Vk2V8k/X5FnTiJXy+r7zkGIVd1AaO3MX23m3xb6UhpZ22I4tCQC8j
-         Q+TSB94hltXyH5fHLd/my0+BSaqtV5jrPASdXL2TRYAAJ7wG8brNIoY2eRhuPIgOsoEN
-         ahgg==
-X-Gm-Message-State: AOAM532QAoIW1sa0qRQ0ZJ1VDxSeXPN4+1hU+dAy7LpbxtSd36vKuMy1
-        EQ1aXqCCKi2pCERquir0kWB39YiiIT3m7A==
-X-Google-Smtp-Source: ABdhPJxjUaPk47RrjpxjSqXpgogkgC07UrdRUNnc7jw1Jegfhdw50bED77E+UEkbkaAYy4Z5zEjH3w==
-X-Received: by 2002:a17:902:a404:b029:e6:23d:44ac with SMTP id p4-20020a170902a404b02900e6023d44acmr771579plq.50.1615920772300;
-        Tue, 16 Mar 2021 11:52:52 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id a21sm17280457pfk.83.2021.03.16.11.52.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 11:52:51 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net] ionic: linearize tso skb with too many frags
-Date:   Tue, 16 Mar 2021 11:52:43 -0700
-Message-Id: <20210316185243.30053-1-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
+        id S240247AbhCPTAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 15:00:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50876 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240232AbhCPTAI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 15:00:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1068C65070;
+        Tue, 16 Mar 2021 19:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615921208;
+        bh=dPxXJ/zwwuDGlopOdTZYQqlIpIO7D2z4REtZztyZZr0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=oZ+UEURGVuqu7ZOM4hzKa4iEMRS62fp0Ris98ZWP/XKpoOljnUWlEXccUfplbJYsi
+         tnb/0k4l9ekT1hEr9S8pNE4BHaowoeZvRXBz0NxLCG5KngSAh695fqJCFcPB7U+0DT
+         649sOMtByX2jpnxi/qLLoxezlAaGmOqcylBlc4Loz584+IU+6LL+4lkbMI5YxszZMl
+         UH67BbtjJ9J/vbrYvawvHSmknw/UCzaRnzIa1ggB7R6CjTvoYoLcynvpKCFtuKMunD
+         pEtVxefpznVJr38zYrlBCHxFbyYl7RBn2Xhhpcs/EW5iQ6wpswnnCaV+i2iiPr1GFl
+         HyUXl5mX4I8Og==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F303860A45;
+        Tue, 16 Mar 2021 19:00:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next 0/2] net: mdio: Add BCM6368 MDIO mux bus
+ controller
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161592120798.24247.13693268552230553993.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Mar 2021 19:00:07 +0000
+References: <20210315154528.30212-1-noltari@gmail.com>
+In-Reply-To: <20210315154528.30212-1-noltari@gmail.com>
+To:     =?utf-8?q?=C3=81lvaro_Fern=C3=A1ndez_Rojas_=3Cnoltari=40gmail=2Ecom=3E?=@ci.codeaurora.org
+Cc:     jonas.gorski@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        robh+dt@kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We were linearizing non-TSO skbs that had too many frags, but
-we weren't checking number of frags on TSO skbs.  This could
-lead to a bad page reference when we received a TSO skb with
-more frags than the Tx descriptor could support.
+Hello:
 
-Fixes: 0f3154e6bcb3 ("ionic: Add Tx and Rx handling")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 28 ++++++++++---------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 162a1ff1e9d2..462b0d106be4 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -1079,25 +1079,27 @@ static int ionic_tx_descs_needed(struct ionic_queue *q, struct sk_buff *skb)
- {
- 	int sg_elems = q->lif->qtype_info[IONIC_QTYPE_TXQ].max_sg_elems;
- 	struct ionic_tx_stats *stats = q_to_tx_stats(q);
-+	int ndescs;
- 	int err;
- 
--	/* If TSO, need roundup(skb->len/mss) descs */
-+	/* If TSO, need roundup(skb->len/mss) descs
-+	 * If non-TSO, just need 1 desc and nr_frags sg elems
-+	 */
- 	if (skb_is_gso(skb))
--		return (skb->len / skb_shinfo(skb)->gso_size) + 1;
-+		ndescs = (skb->len / skb_shinfo(skb)->gso_size) + 1;
-+	else
-+		ndescs = 1;
- 
--	/* If non-TSO, just need 1 desc and nr_frags sg elems */
--	if (skb_shinfo(skb)->nr_frags <= sg_elems)
--		return 1;
-+	/* If too many frags, linearize */
-+	if (skb_shinfo(skb)->nr_frags > sg_elems) {
-+		err = skb_linearize(skb);
-+		if (err)
-+			return err;
- 
--	/* Too many frags, so linearize */
--	err = skb_linearize(skb);
--	if (err)
--		return err;
--
--	stats->linearize++;
-+		stats->linearize++;
-+	}
- 
--	/* Need 1 desc and zero sg elems */
--	return 1;
-+	return ndescs;
- }
- 
- static int ionic_maybe_stop_tx(struct ionic_queue *q, int ndescs)
--- 
-2.17.1
+On Mon, 15 Mar 2021 16:45:26 +0100 you wrote:
+> This controller is present on BCM6318, BCM6328, BCM6362, BCM6368 and BCM63268
+> SoCs.
+> 
+> v2: add changes suggested by Andrew Lunn and Jakub Kicinski.
+> 
+> Álvaro Fernández Rojas (2):
+>   dt-bindings: net: Add bcm6368-mdio-mux bindings
+>   net: mdio: Add BCM6368 MDIO mux bus controller
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net-next,1/2] dt-bindings: net: Add bcm6368-mdio-mux bindings
+    https://git.kernel.org/netdev/net-next/c/da6557edb9f3
+  - [v2,net-next,2/2] net: mdio: Add BCM6368 MDIO mux bus controller
+    https://git.kernel.org/netdev/net-next/c/e239756717b5
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
