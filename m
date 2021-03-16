@@ -2,90 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5EE33CFB8
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:22:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E46C833CFC6
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:24:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234555AbhCPIVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234430AbhCPIVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:21:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0092FC061756
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 01:21:22 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lM4x7-0003En-IO
-        for netdev@vger.kernel.org; Tue, 16 Mar 2021 09:21:21 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 04F365F6471
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 08:21:17 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 030605F643A;
-        Tue, 16 Mar 2021 08:21:10 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 89c33ec4;
-        Tue, 16 Mar 2021 08:21:06 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net 11/11] can: m_can: m_can_rx_peripheral(): fix RX being blocked by errors
-Date:   Tue, 16 Mar 2021 09:21:04 +0100
-Message-Id: <20210316082104.4027260-12-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210316082104.4027260-1-mkl@pengutronix.de>
-References: <20210316082104.4027260-1-mkl@pengutronix.de>
+        id S234523AbhCPIYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:24:16 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:33511 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234690AbhCPIYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:24:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1615883041; x=1647419041;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=qMpz63WgelY7FYysAHLUWBGwT7/Pv9Z9Q/OBQ3wkXBg=;
+  b=r5Ul2uIhj186CiRqhKvH4yc/zVEcSSs4QAqX+EPhxgmzHr+glbVOAWi7
+   S0zzacStsgz5uDAQb70VqPj208alaAaTWV1YyyKV3+I5gzSBnlB6pKhBE
+   s4Wv50ohIovgTE1EL9OWhT3ySKOT+TSEd6JY9VdmgL+D36wNvOWHS4xp0
+   E=;
+X-IronPort-AV: E=Sophos;i="5.81,251,1610409600"; 
+   d="scan'208";a="97681414"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 16 Mar 2021 08:23:53 +0000
+Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com (Postfix) with ESMTPS id CBB293221E5;
+        Tue, 16 Mar 2021 08:23:51 +0000 (UTC)
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.162.68) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 16 Mar 2021 08:23:41 +0000
+References: <20210309171014.2200020-1-shayagr@amazon.com>
+ <20210309171014.2200020-2-shayagr@amazon.com>
+ <67d3cf28-b1fd-ce51-5011-96ddd783dc71@gmail.com>
+ <YEgpL4xYSa7/r38v@lunn.ch>
+ <2d02f09799f90c2c948c9156e2d81b0e1adedc27.camel@kernel.org>
+User-agent: mu4e 1.4.15; emacs 27.1
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>
+Subject: Re: [RFC Patch v1 1/3] net: ena: implement local page cache (LPC)
+ system
+In-Reply-To: <2d02f09799f90c2c948c9156e2d81b0e1adedc27.camel@kernel.org>
+Date:   Tue, 16 Mar 2021 10:23:29 +0200
+Message-ID: <pj41zla6r3ld6m.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.162.68]
+X-ClientProxiedBy: EX13D31UWC004.ant.amazon.com (10.43.162.27) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Torin Cooper-Bennun <torin@maxiluxsystems.com>
 
-For M_CAN peripherals, m_can_rx_handler() was called with quota = 1,
-which caused any error handling to block RX from taking place until
-the next time the IRQ handler is called. This had been observed to
-cause RX to be blocked indefinitely in some cases.
+Saeed Mahameed <saeed@kernel.org> writes:
 
-This is fixed by calling m_can_rx_handler with a sensibly high quota.
+> On Wed, 2021-03-10 at 03:04 +0100, Andrew Lunn wrote:
+>> On Tue, Mar 09, 2021 at 06:57:06PM +0100, Eric Dumazet wrote:
+>> > 
+>> > 
+>> > On 3/9/21 6:10 PM, Shay Agroskin wrote:
+>> > > The page cache holds pages we allocated in the past during 
+>> > > napi
+>> > > cycle,
+>> > > and tracks their availability status using page ref count.
+>> > > 
+>> > > The cache can hold up to 2048 pages. Upon allocating a 
+>> > > page, we
+>
+> 2048 per core ? IMHO this is too much ! ideally you want twice 
+> the napi
+> budget.
+>
+> you are trying to mitigate against TCP/L4 delays/congestion but 
+> this is
+> very prone to DNS attacks, if your memory allocators are under 
+> stress,
+> you shouldn't be hogging own pages and worsen the situation.
 
-Fixes: f524f829b75a ("can: m_can: Create a m_can platform framework")
-Link: https://lore.kernel.org/r/20210303144350.4093750-1-torin@maxiluxsystems.com
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Torin Cooper-Bennun <torin@maxiluxsystems.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/m_can/m_can.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+First of all, thank you for taking a look in this patchset.
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index d783c46cac16..0c8d36bc668c 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -873,7 +873,7 @@ static int m_can_rx_peripheral(struct net_device *dev)
- {
- 	struct m_can_classdev *cdev = netdev_priv(dev);
- 
--	m_can_rx_handler(dev, 1);
-+	m_can_rx_handler(dev, M_CAN_NAPI_WEIGHT);
- 
- 	m_can_enable_all_interrupts(cdev);
- 
--- 
-2.30.1
+We are trying to mitigate a simultaneous access to a shared 
+resource, the buddy allocator.
+When using local caches, I reduce the number of accesses to this 
+shared resource by about 90%, thus
+avoiding this contention.
 
+I might not understand you correctly, but this patch doesn't try 
+to mitigate network peaks. I agree that we're hogging quite a lot 
+of system's resources, I'll run some tests with smaller cache size 
+(e.g. 2x napi badget) and see if it mitigates the problem we have
 
+>
+>> > > check
+>> > > whether the next entry in the cache contains an unused 
+>> > > page, and
+>> > > if so
+>> > > fetch it. If the next page is already used by another 
+>> > > entity or
+>> > > if it
+>> > > belongs to a different NUMA core than the napi routine, we
+>> > > allocate a
+>> > > page in the regular way (page from a different NUMA core is
+>> > > replaced by
+>> > > the newly allocated page).
+>> > > 
+>> > > This system can help us reduce the contention between 
+>> > > different
+>> > > cores
+>> > > when allocating page since every cache is unique to a 
+>> > > queue.
+>> > 
+>> > For reference, many drivers already use a similar strategy.
+>> 
+>> Hi Eric
+>> 
+>> So rather than yet another implementation, should we push for a
+>> generic implementation which any driver can use?
+>> 
+>
+> We already have it:
+> https://www.kernel.org/doc/html/latest/networking/page_pool.html
+
+Yup the original page pool implementation didn't suit our needs 
+since we never got to free the pages using its specialized 
+function for non-XDP traffic.
+
+>
+> also please checkout this fresh page pool extension, SKB buffer
+> recycling RFC, might be useful for the use cases ena are 
+> interested in
+>
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210311194256.53706-4-mcroce@linux.microsoft.com/
+
+Gone over the code and ran some tests with this patchset. On first 
+look it seems like it does allow us to mitigate the problem this 
+patchset solves. I'll run
+more tests with it and report on this thread my conclusions.
+
+Thanks a lot for pointing it out (:
+
+Shay
