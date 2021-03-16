@@ -2,170 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DAF933CFFA
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D405E33D006
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:39:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235089AbhCPIgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:36:02 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:47877 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235058AbhCPIfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:35:40 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id BEC5E5C0156;
-        Tue, 16 Mar 2021 04:35:39 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 16 Mar 2021 04:35:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=PSt7jvL1q8aLRndMEWWP+sSXM/m75mJlvq6ApFgPI
-        1M=; b=KdjygmBD9Hne5F9HtvwKvfcYKC6B8eR+G8dGe8Ke0jr19XYBiHuDxjJuV
-        M+1s+N1Ecd4nS3TdxOTTCnD9qtVcAxBFj8l/4cqZ8to0aTx58rUG8JHZPt7Jt7Gc
-        a4PoT2jo/uRwW4LIZjG1nsatNn62v657VGMOtg0LGetj0yJe1Wob/mG6fFOYeDE6
-        NguHUviavli7G9wOWQdOEJJjwtCqfwKEOQKVT8LJ5goOgnbij0fKqm1aggEBlgP1
-        PVm4Or4xB0ZnirH6LvMOBd+snOFRTdlO7LLPG0EVB9+h1alRnaQtVI6osOXDBAUW
-        PMYjJp8wlEBc/JLjm5ldLRPJM1xtA==
-X-ME-Sender: <xms:221QYH66-kcnMqeYSyTx4pukkKYzFY7UmuYfjpd-Lt5u2P3WbtDEyA>
-    <xme:221QYM63bGGPQANPRYgCcclAtyRY9VI_fNizBdIoCrljg1c2Yefy-MgOJAc6TcElT
-    7VkbV7ucdElhnU>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefuddguddvvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeefheethffhhfdvueevkeffffefjeejffefuedtfedvgfettdetkedtgfej
-    tdehudenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeekgedrvddvledrud
-    ehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhho
-    mhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:221QYOeutTXqQtNvgtnfJU1-xIqU51U_gRB74PkDRblhzkVgf1NyIA>
-    <xmx:221QYIJuVu0SC3f_Lzr4dS6B7GRCCwvgTLtdNWbdZmxfvQs9DN9EMA>
-    <xmx:221QYLKdMY3W66-5YjmN_N4bhIEUA-gYYaiAYAq2gGhZRDiFQDy5aw>
-    <xmx:221QYIGZbIh-5RfgjNuAJrl-gyldB0glsTn2IhRRtZxLCFi4G2oq5Q>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D957424005C;
-        Tue, 16 Mar 2021 04:35:38 -0400 (EDT)
-Date:   Tue, 16 Mar 2021 10:35:35 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, Xingfeng Hu <xingfeng.hu@corigine.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@netronome.com>
-Subject: Re: [PATCH v3 net-next 0/3] net/sched: act_police: add support for
- packet-per-second policing
-Message-ID: <YFBt19zVIH6Dgw8w@shredder.lan>
-References: <20210312140831.23346-1-simon.horman@netronome.com>
- <YE3GofZN1jAeOyFV@shredder.lan>
- <20210315144155.GA2053@netronome.com>
+        id S235231AbhCPIil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235238AbhCPIiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:38:16 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71499C06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 01:38:16 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1615883894;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m6XjI+1nW46nBLw7Ru2pcu2XzMQqn6lEhRibvsJPPsI=;
+        b=AOuZyokPlWLcwXa+Nu1NFhuZj6EzSN8cK+FoUtHh6PlSz6o7ORF2lqJBfAqMsj2KRoRhRo
+        w47tsNZvZs/x6Q1br9L7Is6a6Oqu1fi5RZvkXgW2N7/8L8J/gDAotD9TuWw47eXFNgVUS7
+        0ulNCaTjO8akTQIcPt8A9FvZ4VGrSMxJ7vsUhgOOGg/7AkG1GO7NtG3xgWw6kcW2Bdolsk
+        wMQ+cP23HfjYQ9FyJO9unxcuxWkIIFaXBic7yIXJhRTTbCs5WnQogUxdNMyXj4sNfIoPNR
+        +Gd+xpLFEsp7kpf43LMXtFd8My6LZVJszq1Z4ysXLT84V9J/Qh1hMecRaZn7rQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1615883894;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m6XjI+1nW46nBLw7Ru2pcu2XzMQqn6lEhRibvsJPPsI=;
+        b=ox+G2mEzZcaxuEifRXvVvnpLqtc3QGsDtuzjPQ4puqyiqm3Ocun+41QIHT/k5XCVXbUGDI
+        cedc9ckgbo/BGPAw==
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@kmk-computers.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Offload bridge port flags
+In-Reply-To: <20210315213413.k4td2urqxl2sqflg@skbuf>
+References: <20210314125208.17378-1-kurt@kmk-computers.de> <20210315200813.5ibjembguad2qnk7@skbuf> <87lfao88d3.fsf@kmk-computers.de> <20210315213413.k4td2urqxl2sqflg@skbuf>
+Date:   Tue, 16 Mar 2021 09:38:04 +0100
+Message-ID: <87r1kfmr2r.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210315144155.GA2053@netronome.com>
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for the delay. Was AFK yesterday
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 15, 2021 at 03:41:56PM +0100, Simon Horman wrote:
-> On Sun, Mar 14, 2021 at 10:17:37AM +0200, Ido Schimmel wrote:
-> > On Fri, Mar 12, 2021 at 03:08:28PM +0100, Simon Horman wrote:
-> > > This series enhances the TC policer action implementation to allow a
-> > > policer action instance to enforce a rate-limit based on
-> > > packets-per-second, configurable using a packet-per-second rate and burst
-> > > parameters.
-> > > 
-> > > In the hope of aiding review this is broken up into three patches.
-> > > 
-> > > * [PATCH 1/3] flow_offload: add support for packet-per-second policing
-> > > 
-> > >   Add support for this feature to the flow_offload API that is used to allow
-> > >   programming flows, including TC rules and their actions, into hardware.
-> > > 
-> > > * [PATCH 2/3] flow_offload: reject configuration of packet-per-second policing in offload drivers
-> > > 
-> > >   Teach all exiting users of the flow_offload API that allow offload of
-> > >   policer action instances to reject offload if packet-per-second rate
-> > >   limiting is configured: none support it at this time
-> > > 
-> > > * [PATCH 3/3] net/sched: act_police: add support for packet-per-second policing
-> > > 
-> > >   With the above ground-work in place add the new feature to the TC policer
-> > >   action itself
-> > > 
-> > > With the above in place the feature may be used.
-> > > 
-> > > As follow-ups we plan to provide:
-> > > * Corresponding updates to iproute2
-> > > * Corresponding self tests (which depend on the iproute2 changes)
-> > 
-> > I was about to ask :)
-> > 
-> > FYI, there is this selftest:
-> > tools/testing/selftests/net/forwarding/tc_police.sh
-> > 
-> > Which can be extended to also test packet rate policing
-> 
-> Thanks Ido,
-> 
-> The approach we have taken is to add tests to
-> tools/testing/selftests/tc-testing/tc-tests/actions/police.json
-> 
-> Do you think adding a test to tc_police.sh is also worthwhile? Or should be
-> done instead of updating police.json?
+On Mon Mar 15 2021, Vladimir Oltean wrote:
+> On Mon, Mar 15, 2021 at 09:33:44PM +0100, Kurt Kanzenbach wrote:
+>> On Mon Mar 15 2021, Vladimir Oltean wrote:
+>> > On Sun, Mar 14, 2021 at 01:52:08PM +0100, Kurt Kanzenbach wrote:
+>> >> +	if (enable)
+>> >> +		val &=3D ~HR_PTCFG_UUC_FLT;
+>> >> +	else
+>> >> +		val |=3D HR_PTCFG_UUC_FLT;
+>> >
+>> > What does 'unknown unicast filtering' mean/do, exactly?
+>> > The semantics of BR_FLOOD are on egress: all unicast packets with an
+>> > unknown destination that are received on ports from this bridging doma=
+in
+>> > can be flooded towards port X if that port has flooding enabled.
+>> > When I hear "filtering", I imagine an ingress setting, am I wrong?
+>>=20
+>> It means that frames without matching fdb entries towards this port are
+>> discarded.
+>
+> The phrasing is still not crystal clear, sorry.
+> You have a switch with 2 user ports, lan0 and lan1, and one CPU port.
+> lan0 and lan1 are under br0. lan0 has 'unknown unicast filtering'
+> disabled, lan1 has it enabled, and the CPU port has it disabled.
+> You receive a packet from lan0 towards an unknown unicast destination.
+> Is the packet discarded or is it sent to the CPU port?
 
-IIUC, police.json only performs configuration tests. tc_police.sh on the
-other hand, configures a topology, injects traffic and validates that
-the bandwidth after the police action is according to user
-configuration. You can test the software data path by using veth pairs
-or the hardware data path by using physical ports looped to each other.
+It's sent to the CPU port. Anyway, I'll double check it.
 
-So I think that extending both tests is worthwhile.
+Thanks,
+Kurt
 
-> 
-> Lastly, my assumption is that the tests should be posted once iproute2
-> changes they depend on have been accepted. Is this correct in your opinion?
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Personally, I prefer selftests to be posted together with the
-implementation, regardless if they depend on new iproute2 functionality.
-In the unlikely case that the kernel patches were accepted, but changes
-were requested for the command line interface, you can always patch the
-selftests later.
+-----BEGIN PGP SIGNATURE-----
 
-Jakub recently added this section:
-https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-i-post-corresponding-changes-to-user-space-components
-
-He writes "User space code exercising kernel features should be posted
-alongside kernel patches."
-
-And you can see that in the example the last patch is a selftest:
-
-```
-[PATCH net-next 0/3] net: some feature cover letter
- └─ [PATCH net-next 1/3] net: some feature prep
- └─ [PATCH net-next 2/3] net: some feature do it
- └─ [PATCH net-next 3/3] selftest: net: some feature
-
-[PATCH iproute2-next] ip: add support for some feature
-```
-
-> 
-> In any case, I'll get moving on posting the iproute2 changes.
-
-Thanks!
-
-> 
-> > > * Hardware offload support for the NFP driver
-> > > 
-> > > Key changes since v2:
-> > > * Added patches 1 and 2, which makes adding patch 3 safe for existing
-> > >   hardware offload of the policer action
-> > > * Re-worked patch 3 so that a TC policer action instance may be configured
-> > >   for packet-per-second or byte-per-second rate limiting, but not both.
-> > > * Corrected kdoc usage
-> > 
-> > Thanks!
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmBQbmwACgkQeSpbgcuY
+8KZBvg/+J8RP8O8ToBT5qWTlqZhH2KTAUOTv8JzQO8mjrIdtK4uQtrop0rvR0lxS
+8DCaUu9V4Ca7zIa5XJileO0UxA8k7hUomtRyp9taoGhhlAZaX6EBqGT9eHyMFE6z
+bnktgwGr0GwTFQIJxVoKz35U88kNHF1GazKVNQZ46uSmVKU6z8CPSCG60hQ1cwLQ
+2e954rk+siGwVnr42uHQQKswdCcl/UnSrsyUZYQ4nJYtDqfKWKULuvTuH5JZZgwT
+wmAQTv+418uYL/a6HdJBb9ohtYR94BDeIZw0/qj30+CAEpttsnn9hcZpBZYAukB2
+mk6LQWVJFvpeiGMXKh6UTCcTW/srFCWGoy+2EspIhDc9CpbN/kmsgs9ATGwPOYrr
+gOPdLTibU8sLQPDn46ChsfEXq1lyMEds0BfHWLLGsCoOxogmuX7KF8p9u6sKH81X
+cvx/4B6XWfP8LZBSfYzI16yVobyZEx/GCk8n66e+bBpM8b9Qd7fhAUI2MRltteRX
+X0uEm5dLtrIHMKTPZrVodQ3jxhL+VRe4DBp2h31Qnh8iV8MR3wUspblTP3FsAtLm
+7/L5ALVwCwdDAZotNgZSuAcOkaV0dhlwWBKFZIzFS7wU7QL987cJYbJxUglGigqj
+JXtm6Tx9aEaFF/sJy5tEpUjMgqYFt2x7g+4Z/PJdxrgDdzGicnI=
+=r8wR
+-----END PGP SIGNATURE-----
+--=-=-=--
