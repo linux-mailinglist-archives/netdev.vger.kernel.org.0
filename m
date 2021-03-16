@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59BE233E1B4
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 23:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C07433E1CE
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbhCPWuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 18:50:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60536 "EHLO mail.kernel.org"
+        id S229590AbhCPXAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 19:00:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33828 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231660AbhCPWuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 18:50:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C171C64F40;
-        Tue, 16 Mar 2021 22:50:08 +0000 (UTC)
+        id S229505AbhCPXAI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 19:00:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 24FD864F4D;
+        Tue, 16 Mar 2021 23:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615935008;
-        bh=gu+LxsBdKkP6/ZfHZ+ZHtQUH0Vnot+O4LLI/+ib5XxM=;
+        s=k20201202; t=1615935608;
+        bh=TFUXBS9QCupYRhw07OCcD4xQmzxCDE+RXBRBHC7b41c=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=j5ms09tI3M1W/GVTWAQIdi8jAPfQqUCcptRGbzyho443qIg4v/ItGAP8zk3cxxMFC
-         jO3Y5EDE5ytPiTDsaTeYZL35ZN/5zjZYYC6mwl6e61A+ULLWNpm5jDbORh1jaae5NX
-         e+Kk2B/XHImP3EJI7/Im3dMr06qedc9kPiPKjewbsi6lUuc5xbfyWhSZS9tzuSLG1y
-         Rb68gROhysJ0ZGAeOztm8BhySDiPerpPrQTrhD+JZkPfMfAVwoU803Y4GfpCTu0Jye
-         S1dlGt91s/Ky0KsbEMQd64NGqkCvPGq48oCQMeF8NuXE9FpZzBH+GZeJtk9LZ/NABy
-         L6qfhhPiBXVXw==
+        b=uTCfIv9cbP31bpSJCi/e2jqTk3sM+NNRWFxbBAB81B+4Hem0I5e5J4R/Lw30+0tvI
+         teA2ldoSE+KhCUprM43V4vSyWRZl5uQvzNLLQNp1lahlZ5WbXpYlJbWm1tHUNvcAgL
+         HLi+u1p5msJvqmWf5FlUkctytZsKzHn0yhYI6ZFNSV/O+LaLFOZCYRGoXa/sqR7Fkp
+         iCSe9qBVLZE78pdeXvIuuupfFf8grsBEDAskCwX5QC/MDirHO5PSJsXGptf08No7p+
+         2a08ZtmOS5SA1hZQzMgEFnMw3rW1kpT00ULoXAHprtkDouvsClt/OA8PH1WZsOzC3H
+         mGTt7e1Xzx9eA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AF24060997;
-        Tue, 16 Mar 2021 22:50:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1454960A3D;
+        Tue, 16 Mar 2021 23:00:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3] Fixes for nfp pre_tunnel code
+Subject: Re: [PATCH] selftests/bpf: fix warning comparing pointer to 0
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161593500871.15002.14296629686192406959.git-patchwork-notify@kernel.org>
-Date:   Tue, 16 Mar 2021 22:50:08 +0000
-References: <20210316181310.12199-1-simon.horman@netronome.com>
-In-Reply-To: <20210316181310.12199-1-simon.horman@netronome.com>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, louis.peens@corigine.com,
-        netdev@vger.kernel.org, oss-drivers@netronome.com
+Message-Id: <161593560807.19756.14716242106660092379.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Mar 2021 23:00:08 +0000
+References: <1615881577-3493-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <1615881577-3493-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-On Tue, 16 Mar 2021 19:13:07 +0100 you wrote:
-> Louis Peens says:
+On Tue, 16 Mar 2021 15:59:37 +0800 you wrote:
+> Fix the following coccicheck warning:
 > 
-> The following set of patches fixes up a few bugs in the pre_tun
-> decap code paths which has been hiding for a while.
+> ./tools/testing/selftests/bpf/progs/fexit_test.c:77:15-16: WARNING
+> comparing pointer to 0.
 > 
-> Louis Peens (3):
->   nfp: flower: fix unsupported pre_tunnel flows
->   nfp: flower: add ipv6 bit to pre_tunnel control message
->   nfp: flower: fix pre_tun mask id allocation
+> ./tools/testing/selftests/bpf/progs/fexit_test.c:68:12-13: WARNING
+> comparing pointer to 0.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/3] nfp: flower: fix unsupported pre_tunnel flows
-    https://git.kernel.org/netdev/net/c/982e5ee23d76
-  - [net,2/3] nfp: flower: add ipv6 bit to pre_tunnel control message
-    https://git.kernel.org/netdev/net/c/5c4f5e19d6a8
-  - [net,3/3] nfp: flower: fix pre_tun mask id allocation
-    https://git.kernel.org/netdev/net/c/d8ce0275e45e
+  - selftests/bpf: fix warning comparing pointer to 0
+    https://git.kernel.org/bpf/bpf-next/c/ebda107e5f22
 
 You are awesome, thank you!
 --
