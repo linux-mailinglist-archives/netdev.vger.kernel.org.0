@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C07433E1CE
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8D133E1EE
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:14:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbhCPXAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 19:00:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33828 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229505AbhCPXAI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 19:00:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 24FD864F4D;
-        Tue, 16 Mar 2021 23:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615935608;
-        bh=TFUXBS9QCupYRhw07OCcD4xQmzxCDE+RXBRBHC7b41c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uTCfIv9cbP31bpSJCi/e2jqTk3sM+NNRWFxbBAB81B+4Hem0I5e5J4R/Lw30+0tvI
-         teA2ldoSE+KhCUprM43V4vSyWRZl5uQvzNLLQNp1lahlZ5WbXpYlJbWm1tHUNvcAgL
-         HLi+u1p5msJvqmWf5FlUkctytZsKzHn0yhYI6ZFNSV/O+LaLFOZCYRGoXa/sqR7Fkp
-         iCSe9qBVLZE78pdeXvIuuupfFf8grsBEDAskCwX5QC/MDirHO5PSJsXGptf08No7p+
-         2a08ZtmOS5SA1hZQzMgEFnMw3rW1kpT00ULoXAHprtkDouvsClt/OA8PH1WZsOzC3H
-         mGTt7e1Xzx9eA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1454960A3D;
-        Tue, 16 Mar 2021 23:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229590AbhCPXOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 19:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229491AbhCPXNw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 19:13:52 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC093C06174A;
+        Tue, 16 Mar 2021 16:13:51 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id dm8so53283edb.2;
+        Tue, 16 Mar 2021 16:13:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=h5N8UTmG4BZkHgZ0YH1ThX18H8zJMwY/JOz1fXn6pws=;
+        b=mzgvGSEhdP9YNGKVnnNL4T/PSMciLfuSgzIsQpdebraeHI8fvFwCeQnn6wuOJZoEZ9
+         TmcY/4aAp5ttXtYOMPOVe6xi5Zm399duWRlrlz9pPqJJPPIeG1S+mRmkUfAKpr1jpWmC
+         t2VSiu+pFEDxmbWllndyuaEa7HeorK7IyPiImZjUTbWIu7u5BfQffJ4XlaXk9SYTn14r
+         mnl6vzwE9tHWGExWMyrFYb4H7R/KnXoalxnLUPZqoUhGseGsexr6D0JHa/fKshl8Q9/F
+         8MOrUaNt+z0GqLGm4AXXhnvpibRmbJE3vrLsN/tfSfibb59+g+9ZtDvGSFFJDkv/u64j
+         BSiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=h5N8UTmG4BZkHgZ0YH1ThX18H8zJMwY/JOz1fXn6pws=;
+        b=Gfpx8nnRA4rTSXN79WNAagnk5bnMadRe7F+qmGfzJLpqkWL4yY8Xr8ZAzRs0Gq1TkW
+         MkplI/RVZTe/mrHLN1Lr1uTUk9aveExM/rSfOm8zwJ5c7ly04tt/I+ZveOFYzhZFjcON
+         9UGjr9eaW9R8PaH1rmQw63HMFO3WN1vT2ztatkmNMian8cHhcvvEzs0T4J01jcF627+G
+         CaUgdFET/BUZNwYu7bb4ljCs8C7rhtBsXXorNpSEQFZIeUgUgWgmevZGL4Y9d6qDaSf1
+         oW9UD9FTa7xrRulhPxx4Y89dl1rOGG/MItiA5kxur23niQdlb3iqtKjiLNYYNsXUZvQX
+         wIUQ==
+X-Gm-Message-State: AOAM530uVUggqdNu8LtJye8MZcsKSfIWKVB4wDfh/UVj+tJfv0+8Uk37
+        8Adht36NNA72Up9CBTxYscA=
+X-Google-Smtp-Source: ABdhPJwTG5lrlgdEF8gA6AnOhk+qd5k6M/gFTkc9u3PyR1fo1pesNLyYo3GBIAf8LlV0RTxZHPAYaQ==
+X-Received: by 2002:a05:6402:22bb:: with SMTP id cx27mr38447509edb.148.1615936430519;
+        Tue, 16 Mar 2021 16:13:50 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id r17sm11352598edm.89.2021.03.16.16.13.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 16:13:50 -0700 (PDT)
+Date:   Wed, 17 Mar 2021 01:13:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, vladimir.oltean@nxp.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/3] net: ocelot: Add PGID_BLACKHOLE
+Message-ID: <20210316231349.px2b3ofqwjgu2nct@skbuf>
+References: <20210316201019.3081237-1-horatiu.vultur@microchip.com>
+ <20210316201019.3081237-2-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests/bpf: fix warning comparing pointer to 0
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161593560807.19756.14716242106660092379.git-patchwork-notify@kernel.org>
-Date:   Tue, 16 Mar 2021 23:00:08 +0000
-References: <1615881577-3493-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <1615881577-3493-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210316201019.3081237-2-horatiu.vultur@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Tue, 16 Mar 2021 15:59:37 +0800 you wrote:
-> Fix the following coccicheck warning:
+On Tue, Mar 16, 2021 at 09:10:17PM +0100, Horatiu Vultur wrote:
+> Add a new PGID that is used not to forward frames anywhere. It is used
+> by MRP to make sure that MRP Test frames will not reach CPU port.
 > 
-> ./tools/testing/selftests/bpf/progs/fexit_test.c:77:15-16: WARNING
-> comparing pointer to 0.
-> 
-> ./tools/testing/selftests/bpf/progs/fexit_test.c:68:12-13: WARNING
-> comparing pointer to 0.
-> 
-> [...]
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
 
-Here is the summary with links:
-  - selftests/bpf: fix warning comparing pointer to 0
-    https://git.kernel.org/bpf/bpf-next/c/ebda107e5f22
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
