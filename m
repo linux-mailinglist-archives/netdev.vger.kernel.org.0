@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E6F33E26A
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:53:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E79633E268
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:53:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbhCPXvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 19:51:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45676 "EHLO mail.kernel.org"
+        id S229897AbhCPXvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 19:51:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229622AbhCPXvW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229632AbhCPXvW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 16 Mar 2021 19:51:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9760964F9C;
-        Tue, 16 Mar 2021 23:51:21 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0EDD964F99;
+        Tue, 16 Mar 2021 23:51:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615938681;
-        bh=sLXdFxRmNcDJ85g5jYcL2k2EK2jVvesElPBD/wigtdA=;
+        s=k20201202; t=1615938682;
+        bh=28/sc9sVm4b/CaiFsC4kL3vtFWEW6kAgPqCgWrbzWfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VVaIdDwCe8T5WP5NYXE+StFBgFwrA/PSfXh3NgEPeZ6CsCg48Gswo9x1P3Ni6QUrR
-         zvuEtgH99TVrcxB/M1I/U0iCWBMjC5Gnx86djxX/8dxchQmoOWQ+F2b/wbvWqaUgBI
-         z6Ej8xsE5vEQIHCP8fQKRR+uU6lRJYs1AidigylYxLWBGbofO98zKJ+YkSU9kxF2FI
-         nAne2e2NiFGjX47E2tTLfHVUau+OkJQztsJ3NTCZShP4ZWqnCUwEXjKbQLURhZJECW
-         SrzcuB2i1JreSvxLV5pwQxGkbMuJ1/j+oySN/I+YTLGNGF5HhXwrDZfhm+Yu0PJkYp
-         kWwUr3NFP0Qmg==
+        b=XjOOmYwi0oZlQMrgWNLJfYcIhic47yQgrLwtBeJPTEIQEp3VFj7L1W40H+zFT7qnh
+         360Zz8kd9RhA9JL0vQTsx2JCjlxKVCmClbOUE0Oqgrt2au8zS0NCgnBroSACdKgCUP
+         J537wfrWsc/Vg9lXiWTxRYyBh3iDlBKaFsxCzDoiWp0a97r55ilGOzUwsPvG6gMDlt
+         yeQOKDyno+oJUKBYCZ4Rrwfv0UAF7jsNDUi61iLPTj8077TJZX02bSehVIQSmjXq+n
+         0niM+Oh8MIef9cx8jfgLXSpUBiPe0hJX8qJaDwmvqaWIZdH0WnkeSMjghBnQAvaTuE
+         Kn0qfl3LHB14w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 13/15] net/mlx5e: Do not reload ethernet ports when changing eswitch mode
-Date:   Tue, 16 Mar 2021 16:51:10 -0700
-Message-Id: <20210316235112.72626-14-saeed@kernel.org>
+        Roi Dayan <roid@nvidia.com>, Parav Pandit <parav@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 14/15] net/mlx5: E-Switch, Change mode lock from mutex to rw semaphore
+Date:   Tue, 16 Mar 2021 16:51:11 -0700
+Message-Id: <20210316235112.72626-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210316235112.72626-1-saeed@kernel.org>
 References: <20210316235112.72626-1-saeed@kernel.org>
@@ -42,372 +43,207 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-When switching modes between legacy and switchdev and back, do not
-reload ethernet interfaces. just change the profile from nic profile
-to uplink rep profile in switchdev mode.
+E-Switch mode change routine will take the write lock to prevent any
+consumer to access the E-Switch resources while E-Switch is going
+through a mode change.
+
+In the next patch
+E-Switch consumers (e.g vport representors) will take read_lock prior to
+accessing E-Switch resources to prevent E-Switch mode changing in the
+middle of the operation.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/dev.c |   3 -
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   1 +
- .../mellanox/mlx5/core/en/reporter_rx.c       |   1 +
- .../mellanox/mlx5/core/en/reporter_tx.c       |   1 +
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   6 +
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 148 ++++++++++++------
- .../ethernet/mellanox/mlx5/core/lib/mlx5.h    |   9 ++
- include/linux/mlx5/driver.h                   |   1 +
- 8 files changed, 116 insertions(+), 54 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c | 11 ++++----
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  2 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 26 +++++++++----------
+ 3 files changed, 19 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index b051417ede67..4def64d0e669 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -58,9 +58,6 @@ static bool is_eth_supported(struct mlx5_core_dev *dev)
- 	if (!IS_ENABLED(CONFIG_MLX5_CORE_EN))
- 		return false;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 9eb8e7a22dc2..ddee2aefe8b9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1720,7 +1720,7 @@ int mlx5_eswitch_enable(struct mlx5_eswitch *esw, int num_vfs)
+ 	if (!ESW_ALLOWED(esw))
+ 		return 0;
  
--	if (is_eth_rep_supported(dev))
--		return false;
--
- 	if (MLX5_CAP_GEN(dev, port_type) != MLX5_CAP_PORT_TYPE_ETH)
- 		return false;
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	if (esw->mode == MLX5_ESWITCH_NONE) {
+ 		ret = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_LEGACY, num_vfs);
+ 	} else {
+@@ -1732,7 +1732,7 @@ int mlx5_eswitch_enable(struct mlx5_eswitch *esw, int num_vfs)
+ 		if (!ret)
+ 			esw->esw_funcs.num_vfs = num_vfs;
+ 	}
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
+ 	return ret;
+ }
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 4d621d142f76..1f5bc4d91060 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1173,6 +1173,7 @@ void mlx5e_detach_netdev(struct mlx5e_priv *priv);
- void mlx5e_destroy_netdev(struct mlx5e_priv *priv);
- int mlx5e_netdev_change_profile(struct mlx5e_priv *priv,
- 				const struct mlx5e_profile *new_profile, void *new_ppriv);
-+void mlx5e_netdev_attach_nic_profile(struct mlx5e_priv *priv);
- void mlx5e_set_netdev_mtu_boundaries(struct mlx5e_priv *priv);
- void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16 mtu);
- void mlx5e_build_rq_params(struct mlx5_core_dev *mdev,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-index f0a419fc4adf..34b3b316b688 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-@@ -635,4 +635,5 @@ void mlx5e_reporter_rx_destroy(struct mlx5e_priv *priv)
+@@ -1780,10 +1780,10 @@ void mlx5_eswitch_disable(struct mlx5_eswitch *esw, bool clear_vf)
+ 	if (!ESW_ALLOWED(esw))
  		return;
  
- 	devlink_port_health_reporter_destroy(priv->rx_reporter);
-+	priv->rx_reporter = NULL;
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	mlx5_eswitch_disable_locked(esw, clear_vf);
+ 	esw->esw_funcs.num_vfs = 0;
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
  }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index db64fa2620c4..63ee3b9416de 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -593,4 +593,5 @@ void mlx5e_reporter_tx_destroy(struct mlx5e_priv *priv)
- 		return;
  
- 	devlink_port_health_reporter_destroy(priv->tx_reporter);
-+	priv->tx_reporter = NULL;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 685cf071a9de..9c08f0bd1fcc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5742,6 +5742,11 @@ int mlx5e_netdev_change_profile(struct mlx5e_priv *priv,
+ int mlx5_eswitch_init(struct mlx5_core_dev *dev)
+@@ -1840,7 +1840,7 @@ int mlx5_eswitch_init(struct mlx5_core_dev *dev)
+ 	ida_init(&esw->offloads.vport_metadata_ida);
+ 	xa_init_flags(&esw->offloads.vhca_map, XA_FLAGS_ALLOC);
+ 	mutex_init(&esw->state_lock);
+-	mutex_init(&esw->mode_lock);
++	init_rwsem(&esw->mode_lock);
+ 
+ 	mlx5_esw_for_all_vports(esw, i, vport) {
+ 		vport->vport = mlx5_eswitch_index_to_vport_num(esw, i);
+@@ -1876,7 +1876,6 @@ void mlx5_eswitch_cleanup(struct mlx5_eswitch *esw)
+ 	esw->dev->priv.eswitch = NULL;
+ 	destroy_workqueue(esw->work_queue);
+ 	esw_offloads_cleanup_reps(esw);
+-	mutex_destroy(&esw->mode_lock);
+ 	mutex_destroy(&esw->state_lock);
+ 	WARN_ON(!xa_empty(&esw->offloads.vhca_map));
+ 	xa_destroy(&esw->offloads.vhca_map);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index d0b907a9ef28..b149d1d2c150 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -271,7 +271,7 @@ struct mlx5_eswitch {
+ 	/* Protects eswitch mode change that occurs via one or more
+ 	 * user commands, i.e. sriov state change, devlink commands.
+ 	 */
+-	struct mutex mode_lock;
++	struct rw_semaphore mode_lock;
+ 
+ 	struct {
+ 		bool            enabled;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index e1e33e991123..5e2712521fec 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2925,7 +2925,7 @@ int mlx5_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 	if (esw_mode_from_devlink(mode, &mlx5_mode))
+ 		return -EINVAL;
+ 
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	cur_mlx5_mode = esw->mode;
+ 	if (cur_mlx5_mode == mlx5_mode)
+ 		goto unlock;
+@@ -2938,7 +2938,7 @@ int mlx5_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 		err = -EINVAL;
+ 
+ unlock:
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
  	return err;
  }
  
-+void mlx5e_netdev_attach_nic_profile(struct mlx5e_priv *priv)
-+{
-+	mlx5e_netdev_change_profile(priv, &mlx5e_nic_profile, NULL);
-+}
-+
- void mlx5e_destroy_netdev(struct mlx5e_priv *priv)
- {
- 	struct net_device *netdev = priv->netdev;
-@@ -5852,6 +5857,7 @@ static int mlx5e_probe(struct auxiliary_device *adev,
- 	mlx5e_devlink_port_type_eth_set(priv);
+@@ -2951,14 +2951,14 @@ int mlx5_devlink_eswitch_mode_get(struct devlink *devlink, u16 *mode)
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
  
- 	mlx5e_dcbnl_init_app(priv);
-+	mlx5_uplink_netdev_set(mdev, netdev);
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	err = eswitch_devlink_esw_mode_check(esw);
+ 	if (err)
+ 		goto unlock;
+ 
+ 	err = esw_mode_to_devlink(esw->mode, mode);
+ unlock:
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
+ 	return err;
+ }
+ 
+@@ -2974,7 +2974,7 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
+ 
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	err = eswitch_devlink_esw_mode_check(esw);
+ 	if (err)
+ 		goto out;
+@@ -3013,7 +3013,7 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
+ 	}
+ 
+ 	esw->offloads.inline_mode = mlx5_mode;
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
  	return 0;
  
- err_resume:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 9533085005c3..4cc902e0d71b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -44,6 +44,7 @@
- #include "en_tc.h"
- #include "en/rep/tc.h"
- #include "en/rep/neigh.h"
-+#include "en/devlink.h"
- #include "fs_core.h"
- #include "lib/mlx5.h"
- #define CREATE_TRACE_POINTS
-@@ -588,26 +589,15 @@ static void mlx5e_build_rep_params(struct net_device *netdev)
- }
- 
- static void mlx5e_build_rep_netdev(struct net_device *netdev,
--				   struct mlx5_core_dev *mdev,
--				   struct mlx5_eswitch_rep *rep)
-+				   struct mlx5_core_dev *mdev)
- {
- 	SET_NETDEV_DEV(netdev, mdev->device);
--	if (rep->vport == MLX5_VPORT_UPLINK) {
--		netdev->netdev_ops = &mlx5e_netdev_ops;
--		/* we want a persistent mac for the uplink rep */
--		mlx5_query_mac_address(mdev, netdev->dev_addr);
--		netdev->ethtool_ops = &mlx5e_ethtool_ops;
--		mlx5e_dcbnl_build_rep_netdev(netdev);
--	} else {
--		netdev->netdev_ops = &mlx5e_netdev_ops_rep;
--		eth_hw_addr_random(netdev);
--		netdev->ethtool_ops = &mlx5e_rep_ethtool_ops;
--	}
-+	netdev->netdev_ops = &mlx5e_netdev_ops_rep;
-+	eth_hw_addr_random(netdev);
-+	netdev->ethtool_ops = &mlx5e_rep_ethtool_ops;
- 
- 	netdev->watchdog_timeo    = 15 * HZ;
- 
--	netdev->features       |= NETIF_F_NETNS_LOCAL;
--
- #if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
- 	netdev->hw_features    |= NETIF_F_HW_TC;
- #endif
-@@ -619,12 +609,9 @@ static void mlx5e_build_rep_netdev(struct net_device *netdev,
- 	netdev->hw_features    |= NETIF_F_TSO6;
- 	netdev->hw_features    |= NETIF_F_RXCSUM;
- 
--	if (rep->vport == MLX5_VPORT_UPLINK)
--		netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
--	else
--		netdev->features |= NETIF_F_VLAN_CHALLENGED;
--
- 	netdev->features |= netdev->hw_features;
-+	netdev->features |= NETIF_F_VLAN_CHALLENGED;
-+	netdev->features |= NETIF_F_NETNS_LOCAL;
- }
- 
- static int mlx5e_init_rep(struct mlx5_core_dev *mdev,
-@@ -990,6 +977,14 @@ static void mlx5e_uplink_rep_enable(struct mlx5e_priv *priv)
- 	mlx5e_dcbnl_initialize(priv);
- 	mlx5e_dcbnl_init_app(priv);
- 	mlx5e_rep_neigh_init(rpriv);
-+
-+	netdev->wanted_features |= NETIF_F_HW_TC;
-+
-+	rtnl_lock();
-+	if (netif_running(netdev))
-+		mlx5e_open(netdev);
-+	netif_device_attach(netdev);
-+	rtnl_unlock();
- }
- 
- static void mlx5e_uplink_rep_disable(struct mlx5e_priv *priv)
-@@ -997,6 +992,12 @@ static void mlx5e_uplink_rep_disable(struct mlx5e_priv *priv)
- 	struct mlx5e_rep_priv *rpriv = priv->ppriv;
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 
-+	rtnl_lock();
-+	if (netif_running(priv->netdev))
-+		mlx5e_close(priv->netdev);
-+	netif_device_detach(priv->netdev);
-+	rtnl_unlock();
-+
- 	mlx5e_rep_neigh_cleanup(rpriv);
- 	mlx5e_dcbnl_delete_app(priv);
- 	mlx5_notifier_unregister(mdev, &priv->events_nb);
-@@ -1081,26 +1082,56 @@ static const struct mlx5e_profile mlx5e_uplink_rep_profile = {
- 
- /* e-Switch vport representors */
- static int
--mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
-+mlx5e_vport_uplink_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(mlx5_uplink_netdev_get(dev));
-+	struct mlx5e_rep_priv *rpriv = mlx5e_rep_to_rep_priv(rep);
-+	struct devlink_port *dl_port;
-+	int err;
-+
-+	rpriv->netdev = priv->netdev;
-+
-+	err = mlx5e_netdev_change_profile(priv, &mlx5e_uplink_rep_profile,
-+					  rpriv);
-+	if (err)
-+		return err;
-+
-+	dl_port = mlx5_esw_offloads_devlink_port(dev->priv.eswitch, rpriv->rep->vport);
-+	if (dl_port)
-+		devlink_port_type_eth_set(dl_port, rpriv->netdev);
-+
-+	return 0;
-+}
-+
-+static void
-+mlx5e_vport_uplink_rep_unload(struct mlx5e_rep_priv *rpriv)
-+{
-+	struct net_device *netdev = rpriv->netdev;
-+	struct devlink_port *dl_port;
-+	struct mlx5_core_dev *dev;
-+	struct mlx5e_priv *priv;
-+
-+	priv = netdev_priv(netdev);
-+	dev = priv->mdev;
-+
-+	dl_port = mlx5_esw_offloads_devlink_port(dev->priv.eswitch, rpriv->rep->vport);
-+	if (dl_port)
-+		devlink_port_type_clear(dl_port);
-+	mlx5e_netdev_attach_nic_profile(priv);
-+}
-+
-+static int
-+mlx5e_vport_vf_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- {
-+	struct mlx5e_rep_priv *rpriv = mlx5e_rep_to_rep_priv(rep);
- 	const struct mlx5e_profile *profile;
--	struct mlx5e_rep_priv *rpriv;
- 	struct devlink_port *dl_port;
- 	struct net_device *netdev;
- 	struct mlx5e_priv *priv;
- 	unsigned int txqs, rxqs;
- 	int nch, err;
- 
--	rpriv = kzalloc(sizeof(*rpriv), GFP_KERNEL);
--	if (!rpriv)
--		return -ENOMEM;
--
--	/* rpriv->rep to be looked up when profile->init() is called */
--	rpriv->rep = rep;
--
--	profile = (rep->vport == MLX5_VPORT_UPLINK) ?
--		  &mlx5e_uplink_rep_profile : &mlx5e_rep_profile;
--
-+	profile = &mlx5e_rep_profile;
- 	nch = mlx5e_get_max_num_channels(dev);
- 	txqs = nch * profile->max_tc;
- 	rxqs = nch * profile->rq_groups;
-@@ -1109,21 +1140,11 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- 		mlx5_core_warn(dev,
- 			       "Failed to create representor netdev for vport %d\n",
- 			       rep->vport);
--		kfree(rpriv);
- 		return -EINVAL;
- 	}
- 
--	mlx5e_build_rep_netdev(netdev, dev, rep);
--
-+	mlx5e_build_rep_netdev(netdev, dev);
- 	rpriv->netdev = netdev;
--	rep->rep_data[REP_ETH].priv = rpriv;
--	INIT_LIST_HEAD(&rpriv->vport_sqs_list);
--
--	if (rep->vport == MLX5_VPORT_UPLINK) {
--		err = mlx5e_create_mdev_resources(dev);
--		if (err)
--			goto err_destroy_netdev;
--	}
- 
- 	priv = netdev_priv(netdev);
- 	priv->profile = profile;
-@@ -1131,7 +1152,7 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- 	err = profile->init(dev, netdev);
- 	if (err) {
- 		netdev_warn(netdev, "rep profile init failed, %d\n", err);
--		goto err_destroy_mdev_resources;
-+		goto err_destroy_netdev;
- 	}
- 
- 	err = mlx5e_attach_netdev(netdev_priv(netdev));
-@@ -1161,13 +1182,34 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- err_cleanup_profile:
- 	priv->profile->cleanup(priv);
- 
--err_destroy_mdev_resources:
--	if (rep->vport == MLX5_VPORT_UPLINK)
--		mlx5e_destroy_mdev_resources(dev);
--
- err_destroy_netdev:
- 	mlx5e_destroy_netdev(netdev_priv(netdev));
--	kfree(rpriv);
-+	return err;
-+}
-+
-+static int
-+mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
-+{
-+	struct mlx5e_rep_priv *rpriv;
-+	int err;
-+
-+	rpriv = kzalloc(sizeof(*rpriv), GFP_KERNEL);
-+	if (!rpriv)
-+		return -ENOMEM;
-+
-+	/* rpriv->rep to be looked up when profile->init() is called */
-+	rpriv->rep = rep;
-+	rep->rep_data[REP_ETH].priv = rpriv;
-+	INIT_LIST_HEAD(&rpriv->vport_sqs_list);
-+
-+	if (rep->vport == MLX5_VPORT_UPLINK)
-+		err = mlx5e_vport_uplink_rep_load(dev, rep);
-+	else
-+		err = mlx5e_vport_vf_rep_load(dev, rep);
-+
-+	if (err)
-+		kfree(rpriv);
-+
+ revert_inline_mode:
+@@ -3023,7 +3023,7 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
+ 						 vport,
+ 						 esw->offloads.inline_mode);
+ out:
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
  	return err;
  }
  
-@@ -1181,15 +1223,19 @@ mlx5e_vport_rep_unload(struct mlx5_eswitch_rep *rep)
- 	struct devlink_port *dl_port;
- 	void *ppriv = priv->ppriv;
+@@ -3036,14 +3036,14 @@ int mlx5_devlink_eswitch_inline_mode_get(struct devlink *devlink, u8 *mode)
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
  
-+	if (rep->vport == MLX5_VPORT_UPLINK) {
-+		mlx5e_vport_uplink_rep_unload(rpriv);
-+		goto free_ppriv;
-+	}
-+
- 	dl_port = mlx5_esw_offloads_devlink_port(dev->priv.eswitch, rpriv->rep->vport);
- 	if (dl_port)
- 		devlink_port_type_clear(dl_port);
- 	unregister_netdev(netdev);
- 	mlx5e_detach_netdev(priv);
- 	priv->profile->cleanup(priv);
--	if (rep->vport == MLX5_VPORT_UPLINK)
--		mlx5e_destroy_mdev_resources(priv->mdev);
- 	mlx5e_destroy_netdev(priv);
-+free_ppriv:
- 	kfree(ppriv); /* mlx5e_rep_priv */
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	err = eswitch_devlink_esw_mode_check(esw);
+ 	if (err)
+ 		goto unlock;
+ 
+ 	err = esw_inline_mode_to_devlink(esw->offloads.inline_mode, mode);
+ unlock:
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
+ 	return err;
  }
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-index d046db7bb047..2f536c5d30b1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-@@ -95,4 +95,13 @@ static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
- 	return devlink_net(priv_to_devlink(dev));
+@@ -3059,7 +3059,7 @@ int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink,
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
+ 
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	err = eswitch_devlink_esw_mode_check(esw);
+ 	if (err)
+ 		goto unlock;
+@@ -3105,7 +3105,7 @@ int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink,
+ 	}
+ 
+ unlock:
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
+ 	return err;
  }
  
-+static inline void mlx5_uplink_netdev_set(struct mlx5_core_dev *mdev, struct net_device *netdev)
-+{
-+	mdev->mlx5e_res.uplink_netdev = netdev;
-+}
-+
-+static inline struct net_device *mlx5_uplink_netdev_get(struct mlx5_core_dev *mdev)
-+{
-+	return mdev->mlx5e_res.uplink_netdev;
-+}
- #endif
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index f1d0340e46a7..23bb01d7c9b9 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -651,6 +651,7 @@ struct mlx5e_resources {
- 		struct mlx5_sq_bfreg       bfreg;
- 	} hw_objs;
- 	struct devlink_port dl_port;
-+	struct net_device *uplink_netdev;
- };
+@@ -3120,14 +3120,14 @@ int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink,
+ 		return PTR_ERR(esw);
  
- enum mlx5_sw_icm_type {
+ 
+-	mutex_lock(&esw->mode_lock);
++	down_write(&esw->mode_lock);
+ 	err = eswitch_devlink_esw_mode_check(esw);
+ 	if (err)
+ 		goto unlock;
+ 
+ 	*encap = esw->offloads.encap;
+ unlock:
+-	mutex_unlock(&esw->mode_lock);
++	up_write(&esw->mode_lock);
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
