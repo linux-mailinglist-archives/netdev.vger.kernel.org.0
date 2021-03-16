@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A115333D3AF
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 13:19:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5883E33D3B1
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 13:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbhCPMSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 08:18:55 -0400
+        id S230385AbhCPMS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 08:18:57 -0400
 Received: from mga11.intel.com ([192.55.52.93]:42290 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230139AbhCPMSd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 08:18:33 -0400
-IronPort-SDR: TDD/B4GTf3qbXh2cvYJ8bmIUWezovao6wXL9u36AvF6/ZNlG1BCTawQLGH2h/rkJQxj+XjDczA
- maSa7WHfEzwA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9924"; a="185886803"
+        id S229780AbhCPMSg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 08:18:36 -0400
+IronPort-SDR: Plc3mn94UQQix6/XESgVwwTGtyQD4qNb9kevwCAndgqXMy1nFmGLXn9m1DN6rEcCLvC2hfbAZ+
+ creGGiwHiZ1g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9924"; a="185886806"
 X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="185886803"
+   d="scan'208";a="185886806"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 05:18:33 -0700
-IronPort-SDR: OKLHEWgHux215357Y5UMtu4dsuEDnUmz0F4tbQJsqs8FuzFn/F+TNiGMmj7OOIY1X/SaOKgQUv
- Tk8h6ydbiNWw==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 05:18:36 -0700
+IronPort-SDR: aVUEUAMqVN56QXbNGhmmfrSAi/YulYPIaRHqBg9qMrD9XTAG4hh1gjlIvprSIByHWF2B+3UeyS
+ sLAR07KzOmmQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,251,1610438400"; 
-   d="scan'208";a="449703396"
+   d="scan'208";a="449703405"
 Received: from climb.png.intel.com ([10.221.118.165])
-  by orsmga001.jf.intel.com with ESMTP; 16 Mar 2021 05:18:27 -0700
+  by orsmga001.jf.intel.com with ESMTP; 16 Mar 2021 05:18:33 -0700
 From:   Voon Weifeng <weifeng.voon@intel.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
@@ -39,9 +39,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Voon Weifeng <weifeng.voon@intel.com>,
         Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [RESEND v1 net-next 1/5] net: stmmac: introduce DMA interrupt status masking per traffic direction
-Date:   Tue, 16 Mar 2021 20:18:19 +0800
-Message-Id: <20210316121823.18659-2-weifeng.voon@intel.com>
+Subject: [RESEND v1 net-next 2/5] net: stmmac: make stmmac_interrupt() function more friendly to MSI
+Date:   Tue, 16 Mar 2021 20:18:20 +0800
+Message-Id: <20210316121823.18659-3-weifeng.voon@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210316121823.18659-1-weifeng.voon@intel.com>
 References: <20210316121823.18659-1-weifeng.voon@intel.com>
@@ -51,300 +51,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ong Boon Leong <boon.leong.ong@intel.com>
 
-In preparation to make stmmac support multi-vector MSI, we introduce the
-interrupt status masking according to RX, TX or RXTX. Default to use RXTX
-inside stmmac_dma_interrupt(), so there is no run-time logic difference
-now.
+Refactor stmmac_interrupt() by introducing stmmac_common_interrupt()
+so that we prepare the ISR operation to be friendly to MSI later.
 
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h  |  6 +++++
- .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 24 ++++++++++++++++++-
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  | 21 +++++++++++++++-
- .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  |  7 +++++-
- .../net/ethernet/stmicro/stmmac/dwmac_dma.h   | 22 ++++++++++++++++-
- .../net/ethernet/stmicro/stmmac/dwmac_lib.c   |  8 ++++++-
- .../net/ethernet/stmicro/stmmac/dwxgmac2.h    |  6 +++++
- .../ethernet/stmicro/stmmac/dwxgmac2_dma.c    |  8 ++++++-
- drivers/net/ethernet/stmicro/stmmac/hwif.h    |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  7 +++---
- 10 files changed, 101 insertions(+), 10 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 59 +++++++++++--------
+ 1 file changed, 36 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 6f271c46368d..cf8ad27824d4 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -303,6 +303,12 @@ enum dma_irq_status {
- 	handle_tx = 0x8,
- };
- 
-+enum dma_irq_dir {
-+	DMA_DIR_RX = 0x1,
-+	DMA_DIR_TX = 0x2,
-+	DMA_DIR_RXTX = 0x3,
-+};
-+
- /* EEE and LPI defines */
- #define	CORE_IRQ_TX_PATH_IN_LPI_MODE	(1 << 0)
- #define	CORE_IRQ_TX_PATH_EXIT_LPI_MODE	(1 << 1)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 6b75cf2603ff..e0bd08978fd6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -239,6 +239,22 @@ static const struct emac_variant emac_variant_h6 = {
- #define EMAC_RX_EARLY_INT       BIT(13)
- #define EMAC_RGMII_STA_INT      BIT(16)
- 
-+#define EMAC_INT_MSK_COMMON	EMAC_RGMII_STA_INT
-+#define EMAC_INT_MSK_TX		(EMAC_TX_INT | \
-+				 EMAC_TX_DMA_STOP_INT | \
-+				 EMAC_TX_BUF_UA_INT | \
-+				 EMAC_TX_TIMEOUT_INT | \
-+				 EMAC_TX_UNDERFLOW_INT | \
-+				 EMAC_TX_EARLY_INT |\
-+				 EMAC_INT_MSK_COMMON)
-+#define EMAC_INT_MSK_RX		(EMAC_RX_INT | \
-+				 EMAC_RX_BUF_UA_INT | \
-+				 EMAC_RX_DMA_STOP_INT | \
-+				 EMAC_RX_TIMEOUT_INT | \
-+				 EMAC_RX_OVERFLOW_INT | \
-+				 EMAC_RX_EARLY_INT | \
-+				 EMAC_INT_MSK_COMMON)
-+
- #define MAC_ADDR_TYPE_DST BIT(31)
- 
- /* H3 specific bits for EPHY */
-@@ -412,13 +428,19 @@ static void sun8i_dwmac_dma_stop_rx(void __iomem *ioaddr, u32 chan)
- }
- 
- static int sun8i_dwmac_dma_interrupt(void __iomem *ioaddr,
--				     struct stmmac_extra_stats *x, u32 chan)
-+				     struct stmmac_extra_stats *x, u32 chan,
-+				     u32 dir)
- {
- 	u32 v;
- 	int ret = 0;
- 
- 	v = readl(ioaddr + EMAC_INT_STA);
- 
-+	if (dir == DMA_DIR_RX)
-+		v &= EMAC_INT_MSK_RX;
-+	else if (dir == DMA_DIR_TX)
-+		v &= EMAC_INT_MSK_TX;
-+
- 	if (v & EMAC_TX_INT) {
- 		ret |= handle_tx;
- 		x->tx_normal_irq_n++;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-index 8391ca63d943..5c0c53832adb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-@@ -149,6 +149,25 @@
- #define DMA_CHAN_STATUS_TPS		BIT(1)
- #define DMA_CHAN_STATUS_TI		BIT(0)
- 
-+#define DMA_CHAN_STATUS_MSK_COMMON	(DMA_CHAN_STATUS_NIS | \
-+					 DMA_CHAN_STATUS_AIS | \
-+					 DMA_CHAN_STATUS_CDE | \
-+					 DMA_CHAN_STATUS_FBE)
-+
-+#define DMA_CHAN_STATUS_MSK_RX		(DMA_CHAN_STATUS_REB | \
-+					 DMA_CHAN_STATUS_ERI | \
-+					 DMA_CHAN_STATUS_RWT | \
-+					 DMA_CHAN_STATUS_RPS | \
-+					 DMA_CHAN_STATUS_RBU | \
-+					 DMA_CHAN_STATUS_RI | \
-+					 DMA_CHAN_STATUS_MSK_COMMON)
-+
-+#define DMA_CHAN_STATUS_MSK_TX		(DMA_CHAN_STATUS_ETI | \
-+					 DMA_CHAN_STATUS_TBU | \
-+					 DMA_CHAN_STATUS_TPS | \
-+					 DMA_CHAN_STATUS_TI | \
-+					 DMA_CHAN_STATUS_MSK_COMMON)
-+
- /* Interrupt enable bits per channel */
- #define DMA_CHAN_INTR_ENA_NIE		BIT(16)
- #define DMA_CHAN_INTR_ENA_AIE		BIT(15)
-@@ -206,7 +225,7 @@ void dwmac4_dma_stop_tx(void __iomem *ioaddr, u32 chan);
- void dwmac4_dma_start_rx(void __iomem *ioaddr, u32 chan);
- void dwmac4_dma_stop_rx(void __iomem *ioaddr, u32 chan);
- int dwmac4_dma_interrupt(void __iomem *ioaddr,
--			 struct stmmac_extra_stats *x, u32 chan);
-+			 struct stmmac_extra_stats *x, u32 chan, u32 dir);
- void dwmac4_set_rx_ring_len(void __iomem *ioaddr, u32 len, u32 chan);
- void dwmac4_set_tx_ring_len(void __iomem *ioaddr, u32 len, u32 chan);
- void dwmac4_set_rx_tail_ptr(void __iomem *ioaddr, u32 tail_ptr, u32 chan);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-index 71e50751ef2d..3fa602dabf49 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-@@ -135,12 +135,17 @@ void dwmac410_disable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx)
- }
- 
- int dwmac4_dma_interrupt(void __iomem *ioaddr,
--			 struct stmmac_extra_stats *x, u32 chan)
-+			 struct stmmac_extra_stats *x, u32 chan, u32 dir)
- {
- 	u32 intr_status = readl(ioaddr + DMA_CHAN_STATUS(chan));
- 	u32 intr_en = readl(ioaddr + DMA_CHAN_INTR_ENA(chan));
- 	int ret = 0;
- 
-+	if (dir == DMA_DIR_RX)
-+		intr_status &= DMA_CHAN_STATUS_MSK_RX;
-+	else if (dir == DMA_DIR_TX)
-+		intr_status &= DMA_CHAN_STATUS_MSK_TX;
-+
- 	/* ABNORMAL interrupts */
- 	if (unlikely(intr_status & DMA_CHAN_STATUS_AIS)) {
- 		if (unlikely(intr_status & DMA_CHAN_STATUS_RBU))
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
-index e5dbd0bc257e..1914ad698cab 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
-@@ -128,6 +128,26 @@
- #define DMA_STATUS_TI	0x00000001	/* Transmit Interrupt */
- #define DMA_CONTROL_FTF		0x00100000	/* Flush transmit FIFO */
- 
-+#define DMA_STATUS_MSK_COMMON		(DMA_STATUS_NIS | \
-+					 DMA_STATUS_AIS | \
-+					 DMA_STATUS_FBI)
-+
-+#define DMA_STATUS_MSK_RX		(DMA_STATUS_ERI | \
-+					 DMA_STATUS_RWT | \
-+					 DMA_STATUS_RPS | \
-+					 DMA_STATUS_RU | \
-+					 DMA_STATUS_RI | \
-+					 DMA_STATUS_OVF | \
-+					 DMA_STATUS_MSK_COMMON)
-+
-+#define DMA_STATUS_MSK_TX		(DMA_STATUS_ETI | \
-+					 DMA_STATUS_UNF | \
-+					 DMA_STATUS_TJT | \
-+					 DMA_STATUS_TU | \
-+					 DMA_STATUS_TPS | \
-+					 DMA_STATUS_TI | \
-+					 DMA_STATUS_MSK_COMMON)
-+
- #define NUM_DWMAC100_DMA_REGS	9
- #define NUM_DWMAC1000_DMA_REGS	23
- 
-@@ -139,7 +159,7 @@ void dwmac_dma_stop_tx(void __iomem *ioaddr, u32 chan);
- void dwmac_dma_start_rx(void __iomem *ioaddr, u32 chan);
- void dwmac_dma_stop_rx(void __iomem *ioaddr, u32 chan);
- int dwmac_dma_interrupt(void __iomem *ioaddr, struct stmmac_extra_stats *x,
--			u32 chan);
-+			u32 chan, u32 dir);
- int dwmac_dma_reset(void __iomem *ioaddr);
- 
- #endif /* __DWMAC_DMA_H__ */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
-index 57a53a600aa5..d1c31200bb91 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
-@@ -155,7 +155,7 @@ static void show_rx_process_state(unsigned int status)
- #endif
- 
- int dwmac_dma_interrupt(void __iomem *ioaddr,
--			struct stmmac_extra_stats *x, u32 chan)
-+			struct stmmac_extra_stats *x, u32 chan, u32 dir)
- {
- 	int ret = 0;
- 	/* read the status register (CSR5) */
-@@ -167,6 +167,12 @@ int dwmac_dma_interrupt(void __iomem *ioaddr,
- 	show_tx_process_state(intr_status);
- 	show_rx_process_state(intr_status);
- #endif
-+
-+	if (dir == DMA_DIR_RX)
-+		intr_status &= DMA_STATUS_MSK_RX;
-+	else if (dir == DMA_DIR_TX)
-+		intr_status &= DMA_STATUS_MSK_TX;
-+
- 	/* ABNORMAL interrupts */
- 	if (unlikely(intr_status & DMA_STATUS_AIS)) {
- 		if (unlikely(intr_status & DMA_STATUS_UNF)) {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 6c3b8a950f58..1913385df685 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -412,6 +412,12 @@
- #define XGMAC_TI			BIT(0)
- #define XGMAC_REGSIZE			((0x0000317c + (0x80 * 15)) / 4)
- 
-+#define XGMAC_DMA_STATUS_MSK_COMMON	(XGMAC_NIS | XGMAC_AIS | XGMAC_FBE)
-+#define XGMAC_DMA_STATUS_MSK_RX		(XGMAC_RBU | XGMAC_RI | \
-+					 XGMAC_DMA_STATUS_MSK_COMMON)
-+#define XGMAC_DMA_STATUS_MSK_TX		(XGMAC_TBU | XGMAC_TPS | XGMAC_TI | \
-+					 XGMAC_DMA_STATUS_MSK_COMMON)
-+
- /* Descriptors */
- #define XGMAC_TDES0_LTV			BIT(31)
- #define XGMAC_TDES0_LT			GENMASK(7, 0)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 77308c5c5d29..a0d62d3eb255 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -323,12 +323,18 @@ static void dwxgmac2_dma_stop_rx(void __iomem *ioaddr, u32 chan)
- }
- 
- static int dwxgmac2_dma_interrupt(void __iomem *ioaddr,
--				  struct stmmac_extra_stats *x, u32 chan)
-+				  struct stmmac_extra_stats *x, u32 chan,
-+				  u32 dir)
- {
- 	u32 intr_status = readl(ioaddr + XGMAC_DMA_CH_STATUS(chan));
- 	u32 intr_en = readl(ioaddr + XGMAC_DMA_CH_INT_EN(chan));
- 	int ret = 0;
- 
-+	if (dir == DMA_DIR_RX)
-+		intr_status &= XGMAC_DMA_STATUS_MSK_RX;
-+	else if (dir == DMA_DIR_TX)
-+		intr_status &= XGMAC_DMA_STATUS_MSK_TX;
-+
- 	/* ABNORMAL interrupts */
- 	if (unlikely(intr_status & XGMAC_AIS)) {
- 		if (unlikely(intr_status & XGMAC_RBU)) {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 979ac9fca23c..976b2023891c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -201,7 +201,7 @@ struct stmmac_dma_ops {
- 	void (*start_rx)(void __iomem *ioaddr, u32 chan);
- 	void (*stop_rx)(void __iomem *ioaddr, u32 chan);
- 	int (*dma_interrupt) (void __iomem *ioaddr,
--			      struct stmmac_extra_stats *x, u32 chan);
-+			      struct stmmac_extra_stats *x, u32 chan, u32 dir);
- 	/* If supported then get the optional core features */
- 	void (*get_hw_feature)(void __iomem *ioaddr,
- 			       struct dma_features *dma_cap);
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index a10704d8e3c6..53da3c855cba 100644
+index 53da3c855cba..741b100c8971 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -2301,10 +2301,10 @@ static bool stmmac_safety_feat_interrupt(struct stmmac_priv *priv)
- 	return false;
+@@ -4253,21 +4253,8 @@ static int stmmac_set_features(struct net_device *netdev,
+ 	return 0;
  }
  
--static int stmmac_napi_check(struct stmmac_priv *priv, u32 chan)
-+static int stmmac_napi_check(struct stmmac_priv *priv, u32 chan, u32 dir)
+-/**
+- *  stmmac_interrupt - main ISR
+- *  @irq: interrupt number.
+- *  @dev_id: to pass the net device pointer (must be valid).
+- *  Description: this is the main driver interrupt service routine.
+- *  It can call:
+- *  o DMA service routine (to manage incoming frame reception and transmission
+- *    status)
+- *  o Core interrupts to manage: remote wake-up, management counter, LPI
+- *    interrupts.
+- */
+-static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
++static void stmmac_common_interrupt(struct stmmac_priv *priv)
  {
- 	int status = stmmac_dma_interrupt_status(priv, priv->ioaddr,
--						 &priv->xstats, chan);
-+						 &priv->xstats, chan, dir);
- 	struct stmmac_channel *ch = &priv->channel[chan];
- 	unsigned long flags;
+-	struct net_device *dev = (struct net_device *)dev_id;
+-	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 rx_cnt = priv->plat->rx_queues_to_use;
+ 	u32 tx_cnt = priv->plat->tx_queues_to_use;
+ 	u32 queues_count;
+@@ -4280,13 +4267,6 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
+ 	if (priv->irq_wake)
+ 		pm_wakeup_event(priv->device, 0);
  
-@@ -2350,7 +2350,8 @@ static void stmmac_dma_interrupt(struct stmmac_priv *priv)
- 		channels_to_check = ARRAY_SIZE(status);
+-	/* Check if adapter is up */
+-	if (test_bit(STMMAC_DOWN, &priv->state))
+-		return IRQ_HANDLED;
+-	/* Check if a fatal error happened */
+-	if (stmmac_safety_feat_interrupt(priv))
+-		return IRQ_HANDLED;
+-
+ 	/* To handle GMAC own interrupts */
+ 	if ((priv->plat->has_gmac) || xmac) {
+ 		int status = stmmac_host_irq_status(priv, priv->hw, &priv->xstats);
+@@ -4317,11 +4297,44 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
+ 		/* PCS link status */
+ 		if (priv->hw->pcs) {
+ 			if (priv->xstats.pcs_link)
+-				netif_carrier_on(dev);
++				netif_carrier_on(priv->dev);
+ 			else
+-				netif_carrier_off(dev);
++				netif_carrier_off(priv->dev);
+ 		}
+ 	}
++}
++
++/**
++ *  stmmac_interrupt - main ISR
++ *  @irq: interrupt number.
++ *  @dev_id: to pass the net device pointer.
++ *  Description: this is the main driver interrupt service routine.
++ *  It can call:
++ *  o DMA service routine (to manage incoming frame reception and transmission
++ *    status)
++ *  o Core interrupts to manage: remote wake-up, management counter, LPI
++ *    interrupts.
++ */
++static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
++{
++	struct net_device *dev = (struct net_device *)dev_id;
++	struct stmmac_priv *priv = netdev_priv(dev);
++
++	if (unlikely(!dev)) {
++		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
++		return IRQ_NONE;
++	}
++
++	/* Check if adapter is up */
++	if (test_bit(STMMAC_DOWN, &priv->state))
++		return IRQ_HANDLED;
++
++	/* Check if a fatal error happened */
++	if (stmmac_safety_feat_interrupt(priv))
++		return IRQ_HANDLED;
++
++	/* To handle Common interrupts */
++	stmmac_common_interrupt(priv);
  
- 	for (chan = 0; chan < channels_to_check; chan++)
--		status[chan] = stmmac_napi_check(priv, chan);
-+		status[chan] = stmmac_napi_check(priv, chan,
-+						 DMA_DIR_RXTX);
- 
- 	for (chan = 0; chan < tx_channel_count; chan++) {
- 		if (unlikely(status[chan] & tx_hard_error_bump_tc)) {
+ 	/* To handle DMA interrupts */
+ 	stmmac_dma_interrupt(priv);
 -- 
 2.17.1
 
