@@ -2,68 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C4233D0F8
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 10:41:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2C6733D13B
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 10:56:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234304AbhCPJlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 05:41:06 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:13938 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233350AbhCPJkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 05:40:40 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4F07XQ4JT0zkZr9;
-        Tue, 16 Mar 2021 17:39:02 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 16 Mar 2021 17:40:30 +0800
-From:   Jay Fang <f.fangjian@huawei.com>
-To:     <elder@kernel.org>
-CC:     <netdev@vger.kernel.org>
-Subject: [PATCH] net: ipa: Remove useless error message
-Date:   Tue, 16 Mar 2021 17:41:06 +0800
-Message-ID: <1615887666-15064-1-git-send-email-f.fangjian@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        id S236432AbhCPJ4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 05:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235976AbhCPJzc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 05:55:32 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B3AC06174A;
+        Tue, 16 Mar 2021 02:55:31 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id r17so71041357ejy.13;
+        Tue, 16 Mar 2021 02:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=D8pE+gAt6ykTk6iu18Gsykjh2e+iH3BpnPTvA4JqlAY=;
+        b=XiFI45IJLFKHVOizWJznMDvgItTaoT+GMKNp70BMoRkEIlCLDvWGkTnZL3tkyyR4FM
+         ZhWdpdE5Hmk8vJfqBqgEhOle9ghmPvNAeA7n55zWcfvjMSmei1GV/x4WqAz3c2emWGkk
+         QrGZBBRcQffol+xQTy6MuOKTudSL2zukXg8A38i8xu4jmQ/ALPC+9nJ+fuGBzRTsuPlM
+         PGZyVuX7N3RXkvlXxvR7kw5DT1murOweNYyB+DmjEpYjYVSaSVEu5pRPG05fNkswD+/l
+         +7SYcx2HAiEAheJRqAKckE7v4fa2vT9jISSOpgG8YK4TTbIjkT52UcsydJLXrBljQQvw
+         KFVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D8pE+gAt6ykTk6iu18Gsykjh2e+iH3BpnPTvA4JqlAY=;
+        b=W2+G1n3DPcNz49bAO+URBbR035QP9//2yiQLo94VXi3EuE8bR+utm5ZoSVTBcY7gjG
+         Hge/2WGJSH9Be34yQVpFC2U2zdRlhZJtF/QMQtc+Csnr8yO2/EuA+/kCM1UeRXpMUIkR
+         Vi9UsTKH+9s7Ai+UHCzdVIb5PGKIAzCBjKYfp49bxolxdtO6zt2SFV9t0HGkqgGbF1kw
+         z17+9LoBfpxg273kSEjq9togEagaEXIsAMIP1okTG9TmTM7rZddJPQ5n8RJaQ3zVlLBX
+         1P7CfG+mZUXqCGjmnzMkQRJHjhAfnCr7mggO8khf3mHVHn0LQQ5tAH+z+WXzXvCm+e0m
+         Lg3w==
+X-Gm-Message-State: AOAM5315y+dQmLq8rGBemnnV2mg5TH7ueAJw/uAtDEZ4mYuWGh2vrfP0
+        YGbi4BO6cM07w1zYfsL0o+jiVaaNeWw=
+X-Google-Smtp-Source: ABdhPJwlSzu63hjHYO/dHln4WJdHEkcor0oiJEgjcMH7GmLuqXTnl+VEpGHjveeFrFCE9UX1a5Vj/w==
+X-Received: by 2002:a17:906:4d85:: with SMTP id s5mr26962757eju.43.1615888530393;
+        Tue, 16 Mar 2021 02:55:30 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id u14sm8986535ejx.60.2021.03.16.02.55.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 02:55:30 -0700 (PDT)
+Date:   Tue, 16 Mar 2021 11:55:28 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, linux-kernel@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: support MDB and bridge flag
+ operations
+Message-ID: <20210316095528.kl37helfv5jblsih@skbuf>
+References: <20210315170940.2414854-1-dqfext@gmail.com>
+ <892918f1-bee6-7603-b8e1-3efb93104f6f@gmail.com>
+ <20210315200939.irwyiru6m62g4a7f@skbuf>
+ <84bb93da-cc3b-d2a5-dda8-a8fb973c3bae@gmail.com>
+ <20210315211541.pj5mpy2foi3wlhbe@skbuf>
+ <CALW65jbZ1_A-HwzKwKfavQQUBfNZuBSdL8xTGuRrS5qDqi6j3A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALW65jbZ1_A-HwzKwKfavQQUBfNZuBSdL8xTGuRrS5qDqi6j3A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zihao Tang <tangzihao1@hisilicon.com>
+On Tue, Mar 16, 2021 at 12:36:24PM +0800, DENG Qingfang wrote:
+> On Tue, Mar 16, 2021 at 5:15 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+> >
+> > Actually this is just how Qingfang explained it:
+> > https://patchwork.kernel.org/project/netdevbpf/patch/20210224081018.24719-1-dqfext@gmail.com/
+> >
+> > I just assume that MT7530/7531 switches don't need to enable flooding on
+> > user ports when the only possible traffic source is the CPU port - the
+> > CPU port can inject traffic into any port regardless of egress flooding
+> > setting. If that's not true, I don't see how traffic in standalone ports
+> > mode would work after this patch.
+> 
+> Correct. Don't forget the earlier version of this driver (before my
+> attempt to fix roaming) disabled unknown unicast flooding (trapped to
+> CPU) in the same way.
 
-Fix the following coccicheck report:
-
-drivers/net/ipa/gsi.c:1341:2-9:
-line 1341 is redundant because platform_get_irq() already prints an error
-
-Remove dev_err() messages after platform_get_irq_byname() failures.
-
-Signed-off-by: Zihao Tang <tangzihao1@hisilicon.com>
-Signed-off-by: Jay Fang <f.fangjian@huawei.com>
----
- drivers/net/ipa/gsi.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 390d340..2119367 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -1337,10 +1337,9 @@ static int gsi_irq_init(struct gsi *gsi, struct platform_device *pdev)
- 	int ret;
- 
- 	ret = platform_get_irq_byname(pdev, "gsi");
--	if (ret <= 0) {
--		dev_err(dev, "DT error %d getting \"gsi\" IRQ property\n", ret);
-+	if (ret <= 0)
- 		return ret ? : -EINVAL;
--	}
-+
- 	irq = ret;
- 
- 	ret = request_irq(irq, gsi_isr, 0, "gsi", gsi);
--- 
-2.7.4
-
+Ok, so in practice you don't really need to touch this register if it's
+already all ones.
