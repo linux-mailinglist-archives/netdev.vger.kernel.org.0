@@ -2,96 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C27333DF8C
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 21:51:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6EBF33DFA8
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 21:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231985AbhCPUvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 16:51:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35994 "EHLO mail.kernel.org"
+        id S231136AbhCPU7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 16:59:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38552 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231435AbhCPUu6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 16:50:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 13BFE64F39;
-        Tue, 16 Mar 2021 20:50:57 +0000 (UTC)
+        id S232111AbhCPU7C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 16:59:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F1D6B64F6B;
+        Tue, 16 Mar 2021 20:59:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615927857;
-        bh=wG29cqpTFwh1U5z1wLV7rQaOMjdg76t/emDgukbgGPA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AlNQS3sIaueBa+aw2xmovMe1PfQpQm5qijVCOSGd8xp7M9iazzG1IUStwNGO5HeZC
-         Woi/Dph3BYZAmC56XBt3kJr3bwnkvQj2aDY7UFFx2ivsYFJiciyKe45BxGDwaT8ehe
-         M0RbWE1Y+H1S9cTONIecNzYWWaFu6v7xEZwQ5IfXL37A72SR2GKjPp8X/L5w1LVpxF
-         ZFE26OAbbS/bVvfHkrxmrxSLnzqy6F/HxXLzSm9He8VegAzfrTEaUHv0/VaoXBnSZ1
-         sovrSnWFj5M9cWzbaEB1C/kMkolcauJuX24Lxy1SVfPoCHZ39NRwxtVJ25aNatAnbG
-         n7tMgcmC+O2Hg==
-Date:   Tue, 16 Mar 2021 20:50:54 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Cheng-Yi Chiang <cychiang@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Odelu Kukatla <okukatla@codeaurora.org>,
-        Alex Elder <elder@kernel.org>, Suman Anna <s-anna@ti.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Drop type references on common properties
-Message-ID: <20210316205054.GE4309@sirena.org.uk>
-References: <20210316194858.3527845-1-robh@kernel.org>
+        s=k20201202; t=1615928342;
+        bh=kemmhiNXGjgM3Xez8OspoEtsDyPaLxVqLgsB1W7iaYw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SlRhSovfQZ7GhqhOSREw5bDT+EfPb3UQVIPexq2SwpdkbuWHKs0xDq0idL1zR4fN2
+         ES7yOeXaVJ5WERa3vTSRA/6j+iD0rBhWj8rXJIIqLU6r1Z5oqzUBZ8g5nRmqk3a7uZ
+         zW5lQ9RGy6OEEQAdRBJ8slKIHqnn1UJFuqebk+hsODDWzlip9fIHgXIPMgXr8VIysK
+         ZKf6CEXEwpVPp5RG1xZ3h2aWNI5RyrMVkuOb2ucY0DY/i6+pZcrk3gK7xt5+Mw3hbX
+         TMOzNO1DMgbgnU9U60kidurfftDaW/FICTv6jZEQMWNF1pqd8yd/0h94gqiJrhpwQE
+         c/qRaWgIziW7w==
+Date:   Tue, 16 Mar 2021 13:59:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org, davem@davemloft.net,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/2] net: bridge: mcast: simplify
+ allow/block EHT code
+Message-ID: <20210316135901.4e4239fc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210315171342.232809-1-razor@blackwall.org>
+References: <20210315171342.232809-1-razor@blackwall.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hwvH6HDNit2nSK4j"
-Content-Disposition: inline
-In-Reply-To: <20210316194858.3527845-1-robh@kernel.org>
-X-Cookie: Results vary by individual.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 15 Mar 2021 19:13:40 +0200 Nikolay Aleksandrov wrote:
+> There are no functional changes.
 
---hwvH6HDNit2nSK4j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+That appears to indeed be the case:
 
-On Tue, Mar 16, 2021 at 01:48:58PM -0600, Rob Herring wrote:
-> Users of common properties shouldn't have a type definition as the
-> common schemas already have one. Drop all the unnecessary type
-> references in the tree.
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
---hwvH6HDNit2nSK4j
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmBRGi0ACgkQJNaLcl1U
-h9Bd6wf8CLasn7HPb9h3JBOHpH6rnzMDSD3qxnwn0mb6TNjjFgQqLvwZXfWTvJiz
-gkxGMMc+CwnV2uwRzJZLMaI25wo8z//d9xmFX/CVHiti3FZ45EooKQJ41a+CoHl7
-l2J+X1NiGe7EoOgJDvfrHK0+1OuZXN3hnBeNrx8gjqOoBtnbQbvsVhcjnUnN+i3s
-XMZwu0IJQ4MIFscfo3TlaXHt7MeWB4xg8uS/bU+6/OfuTIQmJ14midFU/YqJ6kSl
-QXBZ0oYXIheB+dwso+WQgBRJ3p2r8ob2yZfVwQLkZps30q6VurGqNeDSdRILHbz1
-IaOFXt46ttiq2cAG29TuJxNbVa8KzA==
-=BRod
------END PGP SIGNATURE-----
-
---hwvH6HDNit2nSK4j--
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
