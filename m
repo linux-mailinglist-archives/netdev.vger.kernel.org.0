@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF84F33DC53
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 19:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49D5533DC54
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 19:14:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239947AbhCPSOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 14:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44200 "EHLO
+        id S239847AbhCPSOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 14:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236066AbhCPSN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 14:13:26 -0400
+        with ESMTP id S239916AbhCPSN1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 14:13:27 -0400
 Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D20C06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:13:26 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id lr13so73801775ejb.8
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:13:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507F6C06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:13:27 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id c10so73670458ejx.9
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 11:13:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=p1ixn6gSCSw6mN/hi7S+8kDToFvH/MimcFCtZRBoQTA=;
-        b=BiXeL0VOChA8iMcJIPJnpmXzYpOZFxZASprLm7aB8sKnPh+vN3xyAd0k6aMTlrJqW6
-         Jk757Kpk9rpMA2uzKF3IwxneoJ7RcRqDJzEwk6D0nHGSn3WZDZzCJfhfXJpJMH6auNM0
-         NUdPHnda18TM61w6m8TKqPevJIjtJjp87dXZeSwb0fJWbCACiZC5oYcMIl+p/QReQ6BI
-         bEV+Lwodb50VNQDQ/D4mBZpgOVufmqVFZKv4RE3tQQWTRyjrGuZzObIBucobtZcjUwKm
-         EEA1V33DeOBFt4BkplzHpgC19kmGS+aj0qliRUYTQVk6b1sCPyhFPVBp98g0JsYCI3G6
-         AMhw==
+        bh=tfnqgA69l95OzR61vRkmYo53EzSzWKDDyx/WHMJRznw=;
+        b=NoRVZW7KIFYdWE8s1sVCdoH6NkkGhHvcsP5sAE4TKx7E91NfTTPf0zY1LxKmQld4NJ
+         iUUGfCj1byTQdlJbLM/s+kFBg0oLO1P4IQvTo3habTyh0puc9HqAe5FviGNK2xfEGo+G
+         wv0xbetFPQEa6yi7cA9wM33xODAvwy1MTt0kLPLW4LKbde3NcfSpX/NAjoebzq0hQ11h
+         kiL0GN9FeRXQ34/zz0yZrqU3Q9OrWkKva2xBhpusB9xxori/iOHSevdOLqmy3wYwDXTR
+         64IW8k//CI568pF3iSWxKfPi5I6hh3oRoAc20KNAhDYyjqoMu0sgQmXNFmKLVeFpJ6Gt
+         GB1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=p1ixn6gSCSw6mN/hi7S+8kDToFvH/MimcFCtZRBoQTA=;
-        b=mTI1/RzI9H6RVpz4iltvlD4PlzSwG3k4okQKKfGSufBXx+vl0riLFjyWkpKBEc0nM9
-         jaghhvZc+XegMLRk29+OdxqnmitSMJAZ4X/5YhmfcGtb69t0GcTdRdVt5RTzEFeIxevA
-         WOhfKebvXVxFu6p1c3bbExxLjDQrDwVYJWjk849fe5RQbi1xVs6BGg91xVpUKhEf2wyC
-         lfT/1jLGTd020QggMMRcEB0o/sFbiMJCQAf0vHPdECYE9hZMMRqyxwDKlLz8UkCP3+vk
-         PvnSwuWzU4OmyPiisY6Mb+9IJDCrUWwv4HkVSSOAexb755j45pVIDS+xvlpjhS+nhDpx
-         KKCw==
-X-Gm-Message-State: AOAM532QD+3T8yVZaMqCqtoY5GdJw+eq5ysg9gvNz2rJZI2jQ+xCvTzG
-        r8y2n5Q8Kx0iIU9QyqPhQBsmEw==
-X-Google-Smtp-Source: ABdhPJyp2oxVymyiL58SwlQA/L8DUIFmBN+28qZSq+b9MDlmTnYa7H99JXhXuMntR8EJy31xR266oQ==
-X-Received: by 2002:a17:906:f6ce:: with SMTP id jo14mr31539950ejb.476.1615918404886;
-        Tue, 16 Mar 2021 11:13:24 -0700 (PDT)
+        bh=tfnqgA69l95OzR61vRkmYo53EzSzWKDDyx/WHMJRznw=;
+        b=dvzrWWfCs3tV3uQ2tCskEnFEFDnczNjdle1weNNHmZOeEKHjPJjnqePs6DCPjXlfy0
+         NlwUCmqt7t9EkcmoyqwJnEM1EfRlKCiiZjoDjbcEsijNIa4JHl1Gzv2CwnYZSgc4L6sK
+         q8N9pkSROOqwnTbuK3NNe7SBbW4R0kn/doG8E9gdq7eRgkDheAh9MgebsAuukcnx6tiV
+         tX9UlaPBcWKAp/8SRiHWXeM9iO5oE8v/3SyQTekvjNYT/8kXsiKuQiHtDvmoH2fjRHUX
+         6PyigOOv2geCwXDvI1+LuuBt7YZwfXTsXQsLCVmMj8eND0OiEGpCFlf1GRY/kRrZtTKZ
+         mQew==
+X-Gm-Message-State: AOAM53158nNVkJl5L7S9e4mWCjl0UxqUrDlX83pgPfYKQEmhrcYJ5Bk9
+        RL5jsmKyBZHJw4opHVeLMorlEA==
+X-Google-Smtp-Source: ABdhPJwpBa1ffNqwiW75ZAi2ZguFivAQg5XpUcy8jPT/9K1Qv0v+ztxYx8AYLTf3yYGyske3++CCnw==
+X-Received: by 2002:a17:906:eda3:: with SMTP id sa3mr31233962ejb.147.1615918406013;
+        Tue, 16 Mar 2021 11:13:26 -0700 (PDT)
 Received: from madeliefje.horms.nl ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id e26sm11537778edj.29.2021.03.16.11.13.23
+        by smtp.gmail.com with ESMTPSA id e26sm11537778edj.29.2021.03.16.11.13.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 11:13:24 -0700 (PDT)
+        Tue, 16 Mar 2021 11:13:25 -0700 (PDT)
 From:   Simon Horman <simon.horman@netronome.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         Louis Peens <louis.peens@corigine.com>, netdev@vger.kernel.org,
         oss-drivers@netronome.com,
         Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net 2/3] nfp: flower: add ipv6 bit to pre_tunnel control message
-Date:   Tue, 16 Mar 2021 19:13:09 +0100
-Message-Id: <20210316181310.12199-3-simon.horman@netronome.com>
+Subject: [PATCH net 3/3] nfp: flower: fix pre_tun mask id allocation
+Date:   Tue, 16 Mar 2021 19:13:10 +0100
+Message-Id: <20210316181310.12199-4-simon.horman@netronome.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210316181310.12199-1-simon.horman@netronome.com>
 References: <20210316181310.12199-1-simon.horman@netronome.com>
@@ -67,56 +67,77 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Louis Peens <louis.peens@corigine.com>
 
-Differentiate between ipv4 and ipv6 flows when configuring the pre_tunnel
-table to prevent them trampling each other in the table.
+pre_tun_rule flows does not follow the usual add-flow path, instead
+they are used to update the pre_tun table on the firmware. This means
+that if the mask-id gets allocated here the firmware will never see the
+"NFP_FL_META_FLAG_MANAGE_MASK" flag for the specific mask id, which
+triggers the allocation on the firmware side. This leads to the firmware
+mask being corrupted and causing all sorts of strange behaviour.
 
-Fixes: 783461604f7e ("nfp: flower: update flow merge code to support IPv6 tunnels")
+Fixes: f12725d98cbe ("nfp: flower: offload pre-tunnel rules")
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@netronome.com>
 ---
- .../ethernet/netronome/nfp/flower/tunnel_conf.c   | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ .../ethernet/netronome/nfp/flower/metadata.c  | 24 +++++++++++++------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-index 7248d248f604..d19c02e99114 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -16,8 +16,9 @@
- #define NFP_FL_MAX_ROUTES               32
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+index 5defd31d481c..aa06fcb38f8b 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+@@ -327,8 +327,14 @@ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 		goto err_free_ctx_entry;
+ 	}
  
- #define NFP_TUN_PRE_TUN_RULE_LIMIT	32
--#define NFP_TUN_PRE_TUN_RULE_DEL	0x1
--#define NFP_TUN_PRE_TUN_IDX_BIT		0x8
-+#define NFP_TUN_PRE_TUN_RULE_DEL	BIT(0)
-+#define NFP_TUN_PRE_TUN_IDX_BIT		BIT(3)
-+#define NFP_TUN_PRE_TUN_IPV6_BIT	BIT(7)
- 
- /**
-  * struct nfp_tun_pre_run_rule - rule matched before decap
-@@ -1268,6 +1269,7 @@ int nfp_flower_xmit_pre_tun_flow(struct nfp_app *app,
- {
- 	struct nfp_flower_priv *app_priv = app->priv;
- 	struct nfp_tun_offloaded_mac *mac_entry;
-+	struct nfp_flower_meta_tci *key_meta;
- 	struct nfp_tun_pre_tun_rule payload;
- 	struct net_device *internal_dev;
- 	int err;
-@@ -1290,6 +1292,15 @@ int nfp_flower_xmit_pre_tun_flow(struct nfp_app *app,
- 	if (!mac_entry)
- 		return -ENOENT;
- 
-+	/* Set/clear IPV6 bit. cpu_to_be16() swap will lead to MSB being
-+	 * set/clear for port_idx.
++	/* Do net allocate a mask-id for pre_tun_rules. These flows are used to
++	 * configure the pre_tun table and are never actually send to the
++	 * firmware as an add-flow message. This causes the mask-id allocation
++	 * on the firmware to get out of sync if allocated here.
 +	 */
-+	key_meta = (struct nfp_flower_meta_tci *)flow->unmasked_data;
-+	if (key_meta->nfp_flow_key_layer & NFP_FLOWER_LAYER_IPV6)
-+		mac_entry->index |= NFP_TUN_PRE_TUN_IPV6_BIT;
-+	else
-+		mac_entry->index &= ~NFP_TUN_PRE_TUN_IPV6_BIT;
-+
- 	payload.port_idx = cpu_to_be16(mac_entry->index);
+ 	new_mask_id = 0;
+-	if (!nfp_check_mask_add(app, nfp_flow->mask_data,
++	if (!nfp_flow->pre_tun_rule.dev &&
++	    !nfp_check_mask_add(app, nfp_flow->mask_data,
+ 				nfp_flow->meta.mask_len,
+ 				&nfp_flow->meta.flags, &new_mask_id)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot allocate a new mask id");
+@@ -359,7 +365,8 @@ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 			goto err_remove_mask;
+ 		}
  
- 	/* Copy mac id and vlan to flow - dev may not exist at delete time. */
+-		if (!nfp_check_mask_remove(app, nfp_flow->mask_data,
++		if (!nfp_flow->pre_tun_rule.dev &&
++		    !nfp_check_mask_remove(app, nfp_flow->mask_data,
+ 					   nfp_flow->meta.mask_len,
+ 					   NULL, &new_mask_id)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "invalid entry: cannot release mask id");
+@@ -374,8 +381,10 @@ int nfp_compile_flow_metadata(struct nfp_app *app,
+ 	return 0;
+ 
+ err_remove_mask:
+-	nfp_check_mask_remove(app, nfp_flow->mask_data, nfp_flow->meta.mask_len,
+-			      NULL, &new_mask_id);
++	if (!nfp_flow->pre_tun_rule.dev)
++		nfp_check_mask_remove(app, nfp_flow->mask_data,
++				      nfp_flow->meta.mask_len,
++				      NULL, &new_mask_id);
+ err_remove_rhash:
+ 	WARN_ON_ONCE(rhashtable_remove_fast(&priv->stats_ctx_table,
+ 					    &ctx_entry->ht_node,
+@@ -406,9 +415,10 @@ int nfp_modify_flow_metadata(struct nfp_app *app,
+ 
+ 	__nfp_modify_flow_metadata(priv, nfp_flow);
+ 
+-	nfp_check_mask_remove(app, nfp_flow->mask_data,
+-			      nfp_flow->meta.mask_len, &nfp_flow->meta.flags,
+-			      &new_mask_id);
++	if (!nfp_flow->pre_tun_rule.dev)
++		nfp_check_mask_remove(app, nfp_flow->mask_data,
++				      nfp_flow->meta.mask_len, &nfp_flow->meta.flags,
++				      &new_mask_id);
+ 
+ 	/* Update flow payload with mask ids. */
+ 	nfp_flow->unmasked_data[NFP_FL_MASK_ID_LOCATION] = new_mask_id;
 -- 
 2.20.1
 
