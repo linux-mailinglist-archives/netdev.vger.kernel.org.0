@@ -2,157 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B2DE33CFF0
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:34:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DAF933CFFA
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234971AbhCPIeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:34:22 -0400
-Received: from m97179.mail.qiye.163.com ([220.181.97.179]:15435 "EHLO
-        m97179.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234965AbhCPId6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:33:58 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m97179.mail.qiye.163.com (Hmail) with ESMTPA id E5FBCE01836;
-        Tue, 16 Mar 2021 16:33:54 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     kuba@kernel.org, mleitner@redhat.com
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, davem@davemloft.net
-Subject: [PATCH net] net/sched: act_api: fix miss set post_ct for ovs after do conntrack in act_ct
-Date:   Tue, 16 Mar 2021 16:33:54 +0800
-Message-Id: <1615883634-11064-1-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZSUsZHx1NQxpNGR1OVkpNSk5DQ0hNSE9CTE1VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PAg6MBw5Sj09AyMsKTMiFCsL
-        GggKFC1VSlVKTUpOQ0NITUhOSk5CVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQU5LSEw3Bg++
-X-HM-Tid: 0a783a2b891c20bdkuqye5fbce01836
+        id S235089AbhCPIgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:36:02 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:47877 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235058AbhCPIfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:35:40 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id BEC5E5C0156;
+        Tue, 16 Mar 2021 04:35:39 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 16 Mar 2021 04:35:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=PSt7jvL1q8aLRndMEWWP+sSXM/m75mJlvq6ApFgPI
+        1M=; b=KdjygmBD9Hne5F9HtvwKvfcYKC6B8eR+G8dGe8Ke0jr19XYBiHuDxjJuV
+        M+1s+N1Ecd4nS3TdxOTTCnD9qtVcAxBFj8l/4cqZ8to0aTx58rUG8JHZPt7Jt7Gc
+        a4PoT2jo/uRwW4LIZjG1nsatNn62v657VGMOtg0LGetj0yJe1Wob/mG6fFOYeDE6
+        NguHUviavli7G9wOWQdOEJJjwtCqfwKEOQKVT8LJ5goOgnbij0fKqm1aggEBlgP1
+        PVm4Or4xB0ZnirH6LvMOBd+snOFRTdlO7LLPG0EVB9+h1alRnaQtVI6osOXDBAUW
+        PMYjJp8wlEBc/JLjm5ldLRPJM1xtA==
+X-ME-Sender: <xms:221QYH66-kcnMqeYSyTx4pukkKYzFY7UmuYfjpd-Lt5u2P3WbtDEyA>
+    <xme:221QYM63bGGPQANPRYgCcclAtyRY9VI_fNizBdIoCrljg1c2Yefy-MgOJAc6TcElT
+    7VkbV7ucdElhnU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefuddguddvvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeefheethffhhfdvueevkeffffefjeejffefuedtfedvgfettdetkedtgfej
+    tdehudenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeekgedrvddvledrud
+    ehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhho
+    mhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:221QYOeutTXqQtNvgtnfJU1-xIqU51U_gRB74PkDRblhzkVgf1NyIA>
+    <xmx:221QYIJuVu0SC3f_Lzr4dS6B7GRCCwvgTLtdNWbdZmxfvQs9DN9EMA>
+    <xmx:221QYLKdMY3W66-5YjmN_N4bhIEUA-gYYaiAYAq2gGhZRDiFQDy5aw>
+    <xmx:221QYIGZbIh-5RfgjNuAJrl-gyldB0glsTn2IhRRtZxLCFi4G2oq5Q>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id D957424005C;
+        Tue, 16 Mar 2021 04:35:38 -0400 (EDT)
+Date:   Tue, 16 Mar 2021 10:35:35 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, Xingfeng Hu <xingfeng.hu@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@netronome.com>
+Subject: Re: [PATCH v3 net-next 0/3] net/sched: act_police: add support for
+ packet-per-second policing
+Message-ID: <YFBt19zVIH6Dgw8w@shredder.lan>
+References: <20210312140831.23346-1-simon.horman@netronome.com>
+ <YE3GofZN1jAeOyFV@shredder.lan>
+ <20210315144155.GA2053@netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210315144155.GA2053@netronome.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+Sorry for the delay. Was AFK yesterday
 
-When openvswitch conntrack offload with act_ct action. The first rule
-do conntrack in the act_ct in tc subsystem. And miss the next rule in
-the tc and fallback to the ovs datapath but miss set post_ct flag
-which will lead the ct_state_key with -trk flag.
+On Mon, Mar 15, 2021 at 03:41:56PM +0100, Simon Horman wrote:
+> On Sun, Mar 14, 2021 at 10:17:37AM +0200, Ido Schimmel wrote:
+> > On Fri, Mar 12, 2021 at 03:08:28PM +0100, Simon Horman wrote:
+> > > This series enhances the TC policer action implementation to allow a
+> > > policer action instance to enforce a rate-limit based on
+> > > packets-per-second, configurable using a packet-per-second rate and burst
+> > > parameters.
+> > > 
+> > > In the hope of aiding review this is broken up into three patches.
+> > > 
+> > > * [PATCH 1/3] flow_offload: add support for packet-per-second policing
+> > > 
+> > >   Add support for this feature to the flow_offload API that is used to allow
+> > >   programming flows, including TC rules and their actions, into hardware.
+> > > 
+> > > * [PATCH 2/3] flow_offload: reject configuration of packet-per-second policing in offload drivers
+> > > 
+> > >   Teach all exiting users of the flow_offload API that allow offload of
+> > >   policer action instances to reject offload if packet-per-second rate
+> > >   limiting is configured: none support it at this time
+> > > 
+> > > * [PATCH 3/3] net/sched: act_police: add support for packet-per-second policing
+> > > 
+> > >   With the above ground-work in place add the new feature to the TC policer
+> > >   action itself
+> > > 
+> > > With the above in place the feature may be used.
+> > > 
+> > > As follow-ups we plan to provide:
+> > > * Corresponding updates to iproute2
+> > > * Corresponding self tests (which depend on the iproute2 changes)
+> > 
+> > I was about to ask :)
+> > 
+> > FYI, there is this selftest:
+> > tools/testing/selftests/net/forwarding/tc_police.sh
+> > 
+> > Which can be extended to also test packet rate policing
+> 
+> Thanks Ido,
+> 
+> The approach we have taken is to add tests to
+> tools/testing/selftests/tc-testing/tc-tests/actions/police.json
+> 
+> Do you think adding a test to tc_police.sh is also worthwhile? Or should be
+> done instead of updating police.json?
 
-Fixes: 7baf2429a1a9 ("net/sched: cls_flower add CT_FLAGS_INVALID flag support")
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- include/linux/skbuff.h      | 1 +
- net/openvswitch/conntrack.c | 8 +++++---
- net/openvswitch/conntrack.h | 6 ++++--
- net/openvswitch/flow.c      | 4 +++-
- net/sched/cls_api.c         | 1 +
- 5 files changed, 14 insertions(+), 6 deletions(-)
+IIUC, police.json only performs configuration tests. tc_police.sh on the
+other hand, configures a topology, injects traffic and validates that
+the bandwidth after the police action is according to user
+configuration. You can test the software data path by using veth pairs
+or the hardware data path by using physical ports looped to each other.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 6d0a33d..f2c9ee7 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -285,6 +285,7 @@ struct nf_bridge_info {
- struct tc_skb_ext {
- 	__u32 chain;
- 	__u16 mru;
-+	bool post_ct;
- };
- #endif
- 
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 5eddfe7..71cec03 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -271,9 +271,11 @@ static void ovs_ct_update_key(const struct sk_buff *skb,
- /* This is called to initialize CT key fields possibly coming in from the local
-  * stack.
-  */
--void ovs_ct_fill_key(const struct sk_buff *skb, struct sw_flow_key *key)
-+void ovs_ct_fill_key(const struct sk_buff *skb,
-+		     struct sw_flow_key *key,
-+		     bool post_ct)
- {
--	ovs_ct_update_key(skb, NULL, key, false, false);
-+	ovs_ct_update_key(skb, NULL, key, post_ct, false);
- }
- 
- int ovs_ct_put_key(const struct sw_flow_key *swkey,
-@@ -1332,7 +1334,7 @@ int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key)
- 	if (skb_nfct(skb)) {
- 		nf_conntrack_put(skb_nfct(skb));
- 		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
--		ovs_ct_fill_key(skb, key);
-+		ovs_ct_fill_key(skb, key, false);
- 	}
- 
- 	return 0;
-diff --git a/net/openvswitch/conntrack.h b/net/openvswitch/conntrack.h
-index 59dc327..317e525 100644
---- a/net/openvswitch/conntrack.h
-+++ b/net/openvswitch/conntrack.h
-@@ -25,7 +25,8 @@ int ovs_ct_execute(struct net *, struct sk_buff *, struct sw_flow_key *,
- 		   const struct ovs_conntrack_info *);
- int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key);
- 
--void ovs_ct_fill_key(const struct sk_buff *skb, struct sw_flow_key *key);
-+void ovs_ct_fill_key(const struct sk_buff *skb, struct sw_flow_key *key,
-+		     bool post_ct);
- int ovs_ct_put_key(const struct sw_flow_key *swkey,
- 		   const struct sw_flow_key *output, struct sk_buff *skb);
- void ovs_ct_free_action(const struct nlattr *a);
-@@ -74,7 +75,8 @@ static inline int ovs_ct_clear(struct sk_buff *skb,
- }
- 
- static inline void ovs_ct_fill_key(const struct sk_buff *skb,
--				   struct sw_flow_key *key)
-+				   struct sw_flow_key *key,
-+				   bool post_ct)
- {
- 	key->ct_state = 0;
- 	key->ct_zone = 0;
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index c7f34d6..e586424 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -857,6 +857,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
- 	struct tc_skb_ext *tc_ext;
- #endif
-+	bool post_ct = false;
- 	int res, err;
- 
- 	/* Extract metadata from packet. */
-@@ -895,6 +896,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- 		tc_ext = skb_ext_find(skb, TC_SKB_EXT);
- 		key->recirc_id = tc_ext ? tc_ext->chain : 0;
- 		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
-+		post_ct = tc_ext ? tc_ext->post_ct : false;
- 	} else {
- 		key->recirc_id = 0;
- 	}
-@@ -904,7 +906,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- 
- 	err = key_extract(skb, key);
- 	if (!err)
--		ovs_ct_fill_key(skb, key);   /* Must be after key_extract(). */
-+		ovs_ct_fill_key(skb, key, post_ct);   /* Must be after key_extract(). */
- 	return err;
- }
- 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index e37556cc..13341e7 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1629,6 +1629,7 @@ int tcf_classify_ingress(struct sk_buff *skb,
- 			return TC_ACT_SHOT;
- 		ext->chain = last_executed_chain;
- 		ext->mru = qdisc_skb_cb(skb)->mru;
-+		ext->post_ct = qdisc_skb_cb(skb)->post_ct;
- 	}
- 
- 	return ret;
--- 
-1.8.3.1
+So I think that extending both tests is worthwhile.
 
+> 
+> Lastly, my assumption is that the tests should be posted once iproute2
+> changes they depend on have been accepted. Is this correct in your opinion?
+
+Personally, I prefer selftests to be posted together with the
+implementation, regardless if they depend on new iproute2 functionality.
+In the unlikely case that the kernel patches were accepted, but changes
+were requested for the command line interface, you can always patch the
+selftests later.
+
+Jakub recently added this section:
+https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-i-post-corresponding-changes-to-user-space-components
+
+He writes "User space code exercising kernel features should be posted
+alongside kernel patches."
+
+And you can see that in the example the last patch is a selftest:
+
+```
+[PATCH net-next 0/3] net: some feature cover letter
+ └─ [PATCH net-next 1/3] net: some feature prep
+ └─ [PATCH net-next 2/3] net: some feature do it
+ └─ [PATCH net-next 3/3] selftest: net: some feature
+
+[PATCH iproute2-next] ip: add support for some feature
+```
+
+> 
+> In any case, I'll get moving on posting the iproute2 changes.
+
+Thanks!
+
+> 
+> > > * Hardware offload support for the NFP driver
+> > > 
+> > > Key changes since v2:
+> > > * Added patches 1 and 2, which makes adding patch 3 safe for existing
+> > >   hardware offload of the policer action
+> > > * Re-worked patch 3 so that a TC policer action instance may be configured
+> > >   for packet-per-second or byte-per-second rate limiting, but not both.
+> > > * Corrected kdoc usage
+> > 
+> > Thanks!
