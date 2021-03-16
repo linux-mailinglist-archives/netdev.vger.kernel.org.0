@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBCE633E266
+	by mail.lfdr.de (Postfix) with ESMTP id 7041833E265
 	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 00:53:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbhCPXvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229865AbhCPXvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 16 Mar 2021 19:51:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45638 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:45650 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229588AbhCPXvT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 19:51:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6714664F92;
+        id S229601AbhCPXvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 19:51:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CF10764F9B;
         Tue, 16 Mar 2021 23:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615938679;
-        bh=hbnQjnvu//vfmoCDwsYvX5qghwx2u4WJcf+d8fufV6g=;
+        s=k20201202; t=1615938680;
+        bh=1JfTmMvW7iDfVkk79WTY5mLEnMsL2uled0U6gByny8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lkf4V+wzNUXc0qGu7DTHyelCwjNpvOyVtocjP51gtJNBzK9yXBcJ6cbPRQ6hOOhgt
-         bNBtu3DBDt1k5asUoIkV8nH0Ax4xIk5IIT7umMG8I76PRYafdu/bUCJoCyFrzRGHmD
-         PMkgeGOWsDMk6Q3RAo/56HdODqbV2LI+7xLJr4TNIsc1EtTVMw+f3gVFGlrcl2wwEX
-         Kf4Dq34pjeDzOr8azpb3VyFQYag9d46qtP5hYm3C2V+xeC4bhktPZybxp6j6PehKP3
-         C9kRKuL10REGMYzY661Mobk6qMvUooItTQhPq5U+2KnRO45E/B69+kBik8uumEnNi4
-         BqPXl4NtUNHvQ==
+        b=lTcEAg+iIp8TR905sMyV8WHmnCMLh6DXLmg7l4lOBDCMQAh4LXyqq92DIo3qqLJJ8
+         y8hxgwBEs6jC2k/0O3QZZDO8kmZvMcA/+JdrWa4SznyDnXmQtEZdW+EkE3Tvyv1vRu
+         4UOVjtM1RDVOzD9uQyIaFzB/Cn0kF/gvFOaDJkNbnfOlCbwjR6Yqe5bpWIZEMEQDtS
+         qD2DMILhGHKeC8rk/ENxi24pmVjkpJe/GgFzYL+DCVMMPTMrSkdtALfcgKARBgFvFk
+         pYvrT5hJHIKFZVBLaTUUAQMTwx3EkbeRv48vJdhOSWFyIVmtn7fgY4zf8/pJDiB86J
+         4Q8O+N3IHQkuw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 08/15] net/mlx5e: Move devlink port register and unregister calls
-Date:   Tue, 16 Mar 2021 16:51:05 -0700
-Message-Id: <20210316235112.72626-9-saeed@kernel.org>
+Subject: [net-next 09/15] net/mlx5e: Register nic devlink port with switch id
+Date:   Tue, 16 Mar 2021 16:51:06 -0700
+Message-Id: <20210316235112.72626-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210316235112.72626-1-saeed@kernel.org>
 References: <20210316235112.72626-1-saeed@kernel.org>
@@ -43,115 +43,85 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Roi Dayan <roid@nvidia.com>
 
 We will re-use the native NIC port net device instance for the Uplink
-representor. As such we also don't want to unregister/register the
-devlink port as part of the profile.
+representor. Since the netdev will be kept registered while we engage
+switchdev mode also the devlink will be kept registered.
+Register the nic devlink port with switch id so it will be available
+when changing profiles.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_main.c   | 17 +++++++++++------
- .../mellanox/mlx5/core/eswitch_offloads.c       | 15 ++++++++++-----
- 2 files changed, 21 insertions(+), 11 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/devlink.c  | 23 ++++++++++++++++++-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  7 ++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index efe8af49b908..3e8434dcc1df 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5306,10 +5306,6 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- 	if (err)
- 		mlx5_core_err(mdev, "TLS initialization failed, %d\n", err);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c
+index a69c62d72d16..054bc2fc0520 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/devlink.c
+@@ -2,22 +2,43 @@
+ /* Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved. */
  
--	err = mlx5e_devlink_port_register(priv);
--	if (err)
--		mlx5_core_err(mdev, "mlx5e_devlink_port_register failed, %d\n", err);
--
- 	mlx5e_health_create_reporters(priv);
+ #include "en/devlink.h"
++#include "eswitch.h"
++
++static void
++mlx5e_devlink_get_port_parent_id(struct mlx5_core_dev *dev, struct netdev_phys_item_id *ppid)
++{
++	u64 parent_id;
++
++	parent_id = mlx5_query_nic_system_image_guid(dev);
++	ppid->id_len = sizeof(parent_id);
++	memcpy(ppid->id, &parent_id, sizeof(parent_id));
++}
  
- 	return 0;
-@@ -5318,7 +5314,6 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
+ int mlx5e_devlink_port_register(struct mlx5e_priv *priv)
  {
- 	mlx5e_health_destroy_reporters(priv);
--	mlx5e_devlink_port_unregister(priv);
- 	mlx5e_tls_cleanup(priv);
- 	mlx5e_ipsec_cleanup(priv);
- }
-@@ -5829,10 +5824,17 @@ static int mlx5e_probe(struct auxiliary_device *adev,
+ 	struct devlink *devlink = priv_to_devlink(priv->mdev);
+ 	struct devlink_port_attrs attrs = {};
++	struct netdev_phys_item_id ppid = {};
++	unsigned int dl_port_index;
  
- 	priv->profile = profile;
- 	priv->ppriv = NULL;
-+
-+	err = mlx5e_devlink_port_register(priv);
-+	if (err) {
-+		mlx5_core_err(mdev, "mlx5e_devlink_port_register failed, %d\n", err);
-+		goto err_destroy_netdev;
-+	}
-+
- 	err = profile->init(mdev, netdev);
- 	if (err) {
- 		mlx5_core_err(mdev, "mlx5e_nic_profile init failed, %d\n", err);
--		goto err_destroy_netdev;
-+		goto err_devlink_cleanup;
+ 	if (mlx5_core_is_pf(priv->mdev)) {
+ 		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+ 		attrs.phys.port_number = PCI_FUNC(priv->mdev->pdev->devfn);
++		if (MLX5_ESWITCH_MANAGER(priv->mdev)) {
++			mlx5e_devlink_get_port_parent_id(priv->mdev, &ppid);
++			memcpy(attrs.switch_id.id, ppid.id, ppid.id_len);
++			attrs.switch_id.id_len = ppid.id_len;
++		}
++		dl_port_index = mlx5_esw_vport_to_devlink_port_index(priv->mdev,
++								     MLX5_VPORT_UPLINK);
+ 	} else {
+ 		attrs.flavour = DEVLINK_PORT_FLAVOUR_VIRTUAL;
++		dl_port_index = mlx5_esw_vport_to_devlink_port_index(priv->mdev, 0);
  	}
  
- 	err = mlx5e_resume(adev);
-@@ -5856,6 +5858,8 @@ static int mlx5e_probe(struct auxiliary_device *adev,
- 	mlx5e_suspend(adev, state);
- err_profile_cleanup:
- 	profile->cleanup(priv);
-+err_devlink_cleanup:
-+	mlx5e_devlink_port_unregister(priv);
- err_destroy_netdev:
- 	mlx5e_destroy_netdev(priv);
- 	return err;
-@@ -5870,6 +5874,7 @@ static void mlx5e_remove(struct auxiliary_device *adev)
- 	unregister_netdev(priv->netdev);
- 	mlx5e_suspend(adev, state);
- 	priv->profile->cleanup(priv);
-+	mlx5e_devlink_port_unregister(priv);
- 	mlx5e_destroy_netdev(priv);
+ 	devlink_port_attrs_set(&priv->dl_port, &attrs);
+ 
+-	return devlink_port_register(devlink, &priv->dl_port, 1);
++	return devlink_port_register(devlink, &priv->dl_port, dl_port_index);
  }
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index a215ccee3e61..e1e33e991123 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2259,9 +2259,11 @@ int esw_offloads_load_rep(struct mlx5_eswitch *esw, u16 vport_num)
- 	if (esw->mode != MLX5_ESWITCH_OFFLOADS)
- 		return 0;
- 
--	err = mlx5_esw_offloads_devlink_port_register(esw, vport_num);
--	if (err)
--		return err;
-+	if (vport_num != MLX5_VPORT_UPLINK) {
-+		err = mlx5_esw_offloads_devlink_port_register(esw, vport_num);
-+		if (err)
-+			return err;
-+	}
- 
- 	err = mlx5_esw_offloads_rep_load(esw, vport_num);
- 	if (err)
-@@ -2269,7 +2271,8 @@ int esw_offloads_load_rep(struct mlx5_eswitch *esw, u16 vport_num)
- 	return err;
- 
- load_err:
--	mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
-+	if (vport_num != MLX5_VPORT_UPLINK)
-+		mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
- 	return err;
+ void mlx5e_devlink_port_type_eth_set(struct mlx5e_priv *priv)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index fdf5c8c05c1b..d0b907a9ef28 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -781,6 +781,13 @@ esw_add_restore_rule(struct mlx5_eswitch *esw, u32 tag)
+ {
+ 	return ERR_PTR(-EOPNOTSUPP);
  }
- 
-@@ -2279,7 +2282,9 @@ void esw_offloads_unload_rep(struct mlx5_eswitch *esw, u16 vport_num)
- 		return;
- 
- 	mlx5_esw_offloads_rep_unload(esw, vport_num);
--	mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
 +
-+	if (vport_num != MLX5_VPORT_UPLINK)
-+		mlx5_esw_offloads_devlink_port_unregister(esw, vport_num);
- }
++static inline unsigned int
++mlx5_esw_vport_to_devlink_port_index(const struct mlx5_core_dev *dev,
++				     u16 vport_num)
++{
++	return vport_num;
++}
+ #endif /* CONFIG_MLX5_ESWITCH */
  
- #define ESW_OFFLOADS_DEVCOM_PAIR	(0)
+ #endif /* __MLX5_ESWITCH_H__ */
 -- 
 2.30.2
 
