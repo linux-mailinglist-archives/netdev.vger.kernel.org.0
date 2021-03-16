@@ -2,87 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B89DE33D13F
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 10:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A3EE33D152
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 11:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236451AbhCPJ4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 05:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236439AbhCPJ4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 05:56:07 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E372DC06174A;
-        Tue, 16 Mar 2021 02:56:06 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id si25so15360245ejb.1;
-        Tue, 16 Mar 2021 02:56:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QYNfh3jaX3N1CtGg7NED72HcSFgmcITNomBhZBJqE/Y=;
-        b=uGMvRB1D0xw70y+CqywgeVFN8O2H8SGeov523gtjUoa3d4JflrPmx1ryXrBFlUdjpF
-         hacp04N79LXlDGf/LQEJQKlgRado5Q5fS8vPFPDhPT8Ug6WXSqpAOyTVaaVc3bIOk0cX
-         ldw1XneeXXuYuimA5flZYweCUnMr6Z36zoHhlsKNvNR4QMUngnYJnU1oqx6/kxLL3vSW
-         64cS96xu3+n9VfJB74iIYUjthP83UwHCV6OE6MiAtUSCH91mdEdkT4jFl+QFOlfizyMk
-         nk3a7yFivK9qkNFyZlCaN9Hj6kXDEsRgvMH7VbLgwClPp6fhx/HL2O1avjXcAuhjYbCV
-         xlgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QYNfh3jaX3N1CtGg7NED72HcSFgmcITNomBhZBJqE/Y=;
-        b=TDsZghrfsU8+wVz4oxG5awLixu0uVEeNf1NqFH/s9w68x0CRfxRXpE92h3nU8LeE8m
-         u2nt0fkCIqAtRVCdz5OOvV906bffqhqu/Gt2WgXWfV/YF1Cw4XHgFAgXG7P6OQ50wpn4
-         mCJDUQsV0DAciXgoCszwBxR4wYqQZa7W93Fz3/rtsgz7poBNp3gybLemciRVknAuKfr5
-         FWElAjPxDjwPWTtcCtPUXN7EItLusgckApBMdMeskwocq0CzfNdtrJdxfBOvHdH8o1/F
-         B68e3Ali7ComC0yvrZW19bMBa08aEIU5klTe7eIAkD1BhXekpbNcSdkbPKfq1u+ADePY
-         2GTQ==
-X-Gm-Message-State: AOAM533itW/BFZC7sJH7t6BOB96iwapeepQqqrMdaI1PbqDPA4NC67Pt
-        fvpj3k6XIWHFrrRrqcDuZNk=
-X-Google-Smtp-Source: ABdhPJzw1VKhJ6YtiLJyj67J0yZSTlZtQfHt+vO+1cr3OxFeMOB954HHMAFSoDcehWnH6I6ZeWT1iw==
-X-Received: by 2002:a17:906:5e50:: with SMTP id b16mr29207175eju.272.1615888565730;
-        Tue, 16 Mar 2021 02:56:05 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id a26sm10649008edm.15.2021.03.16.02.56.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 02:56:05 -0700 (PDT)
-Date:   Tue, 16 Mar 2021 11:56:04 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-Subject: Re: [PATCH net-next] net: dsa: mt7530: support MDB and bridge flag
- operations
-Message-ID: <20210316095604.dvg32ia5pfdtpenw@skbuf>
-References: <20210315170940.2414854-1-dqfext@gmail.com>
+        id S236237AbhCPKCg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 06:02:36 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:49785 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235852AbhCPKCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 06:02:01 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-190-R1DbDuoePriB3rwkJ-2bww-1; Tue, 16 Mar 2021 06:01:55 -0400
+X-MC-Unique: R1DbDuoePriB3rwkJ-2bww-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFB36107ACCD;
+        Tue, 16 Mar 2021 10:01:53 +0000 (UTC)
+Received: from p50.redhat.com (ovpn-112-37.ams2.redhat.com [10.36.112.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 14E736C32E;
+        Tue, 16 Mar 2021 10:01:51 +0000 (UTC)
+From:   Stefan Assmann <sassmann@kpanic.de>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        lihong.yang@intel.com, jesse.brandeburg@intel.com,
+        slawomirx.laba@intel.com, nicholas.d.nunley@intel.com,
+        sassmann@kpanic.de
+Subject: [PATCH] iavf: fix locking of critical sections
+Date:   Tue, 16 Mar 2021 11:01:41 +0100
+Message-Id: <20210316100141.53551-1-sassmann@kpanic.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210315170940.2414854-1-dqfext@gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sassmann@kpanic.de
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kpanic.de
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 01:09:40AM +0800, DENG Qingfang wrote:
-> Support port MDB and bridge flag operations.
-> 
-> As the hardware can manage multicast forwarding itself, offload_fwd_mark
-> can be unconditionally set to true.
-> 
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> ---
+To avoid races between iavf_init_task(), iavf_reset_task(),
+iavf_watchdog_task(), iavf_adminq_task() as well as the shutdown and
+remove functions more locking is required.
+The current protection by __IAVF_IN_CRITICAL_TASK is needed in
+additional places.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+- The reset task performs state transitions, therefore needs locking.
+- The adminq task acts on replies from the PF in
+  iavf_virtchnl_completion() which may alter the states.
+- The init task is not only run during probe but also if a VF gets stuck
+  to reinitialize it.
+- The shutdown function performs a state transition.
+- The remove function perorms a state transition and also free's
+  resources.
+
+iavf_lock_timeout() is introduced to avoid waiting infinitely
+and cause a deadlock. Rather unlock and print a warning.
+
+Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 57 ++++++++++++++++++---
+ 1 file changed, 50 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index dc5b3c06d1e0..538b7aa43fa5 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -131,6 +131,30 @@ enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
+ 	return 0;
+ }
+ 
++/**
++ * iavf_timeout - try to set bit but give up after timeout
++ * @adapter: board private structure
++ * @bit: bit to set
++ * @msecs: timeout in msecs
++ *
++ * Returns 0 on success, negative on failure
++ **/
++static inline int iavf_lock_timeout(struct iavf_adapter *adapter,
++				    enum iavf_critical_section_t bit,
++				    unsigned int msecs)
++{
++	unsigned int wait, delay = 10;
++
++	for (wait = 0; wait < msecs; wait += delay) {
++		if (!test_and_set_bit(bit, &adapter->crit_section))
++			return 0;
++
++		msleep(delay);
++	}
++
++	return -1;
++}
++
+ /**
+  * iavf_schedule_reset - Set the flags and schedule a reset event
+  * @adapter: board private structure
+@@ -2069,6 +2093,10 @@ static void iavf_reset_task(struct work_struct *work)
+ 	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
+ 		return;
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200)) {
++		schedule_work(&adapter->reset_task);
++		return;
++	}
+ 	while (test_and_set_bit(__IAVF_IN_CLIENT_TASK,
+ 				&adapter->crit_section))
+ 		usleep_range(500, 1000);
+@@ -2275,6 +2303,8 @@ static void iavf_adminq_task(struct work_struct *work)
+ 	if (!event.msg_buf)
+ 		goto out;
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200))
++		goto freedom;
+ 	do {
+ 		ret = iavf_clean_arq_element(hw, &event, &pending);
+ 		v_op = (enum virtchnl_ops)le32_to_cpu(event.desc.cookie_high);
+@@ -2288,6 +2318,7 @@ static void iavf_adminq_task(struct work_struct *work)
+ 		if (pending != 0)
+ 			memset(event.msg_buf, 0, IAVF_MAX_AQ_BUF_SIZE);
+ 	} while (pending);
++	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ 
+ 	if ((adapter->flags &
+ 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
+@@ -3590,6 +3621,10 @@ static void iavf_init_task(struct work_struct *work)
+ 						    init_task.work);
+ 	struct iavf_hw *hw = &adapter->hw;
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000)) {
++		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
++		return;
++	}
+ 	switch (adapter->state) {
+ 	case __IAVF_STARTUP:
+ 		if (iavf_startup(adapter) < 0)
+@@ -3602,14 +3637,14 @@ static void iavf_init_task(struct work_struct *work)
+ 	case __IAVF_INIT_GET_RESOURCES:
+ 		if (iavf_init_get_resources(adapter) < 0)
+ 			goto init_failed;
+-		return;
++		goto out;
+ 	default:
+ 		goto init_failed;
+ 	}
+ 
+ 	queue_delayed_work(iavf_wq, &adapter->init_task,
+ 			   msecs_to_jiffies(30));
+-	return;
++	goto out;
+ init_failed:
+ 	if (++adapter->aq_wait_count > IAVF_AQ_MAX_ERR) {
+ 		dev_err(&adapter->pdev->dev,
+@@ -3618,9 +3653,11 @@ static void iavf_init_task(struct work_struct *work)
+ 		iavf_shutdown_adminq(hw);
+ 		adapter->state = __IAVF_STARTUP;
+ 		queue_delayed_work(iavf_wq, &adapter->init_task, HZ * 5);
+-		return;
++		goto out;
+ 	}
+ 	queue_delayed_work(iavf_wq, &adapter->init_task, HZ);
++out:
++	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ }
+ 
+ /**
+@@ -3637,9 +3674,12 @@ static void iavf_shutdown(struct pci_dev *pdev)
+ 	if (netif_running(netdev))
+ 		iavf_close(netdev);
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
++		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
+ 	/* Prevent the watchdog from running. */
+ 	adapter->state = __IAVF_REMOVE;
+ 	adapter->aq_required = 0;
++	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ 
+ #ifdef CONFIG_PM
+ 	pci_save_state(pdev);
+@@ -3866,10 +3906,6 @@ static void iavf_remove(struct pci_dev *pdev)
+ 				 err);
+ 	}
+ 
+-	/* Shut down all the garbage mashers on the detention level */
+-	adapter->state = __IAVF_REMOVE;
+-	adapter->aq_required = 0;
+-	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
+ 	iavf_request_reset(adapter);
+ 	msleep(50);
+ 	/* If the FW isn't responding, kick it once, but only once. */
+@@ -3877,6 +3913,13 @@ static void iavf_remove(struct pci_dev *pdev)
+ 		iavf_request_reset(adapter);
+ 		msleep(50);
+ 	}
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
++		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
++
++	/* Shut down all the garbage mashers on the detention level */
++	adapter->state = __IAVF_REMOVE;
++	adapter->aq_required = 0;
++	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
+ 	iavf_free_all_tx_resources(adapter);
+ 	iavf_free_all_rx_resources(adapter);
+ 	iavf_misc_irq_disable(adapter);
+-- 
+2.29.2
+
