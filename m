@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3E433D66E
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F030B33D66D
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237750AbhCPPE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 11:04:56 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:54497 "EHLO
+        id S237745AbhCPPEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 11:04:53 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41383 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237684AbhCPPER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:04:17 -0400
+        by vger.kernel.org with ESMTP id S237699AbhCPPEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:04:20 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 858A15C0134;
-        Tue, 16 Mar 2021 11:04:16 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 202135C00CB;
+        Tue, 16 Mar 2021 11:04:19 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 16 Mar 2021 11:04:16 -0400
+  by compute3.internal (MEProxy); Tue, 16 Mar 2021 11:04:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=S2FhAmYE9wYsJ4+nEUxnkEo+U7MxMnZXs2MInxEqs+k=; b=tzbFRMiX
-        DruXnMguMpcwCLW4nAIjNtT5RtegzsvGlgb8qPnILg8O+ka0dyJNsbvItYw45Pj3
-        IJziJQrVmntlNaEp63b6rxJ/UIMnIuUtKFHhWI1ibMV5Q9SS+dLrhYBHprSI6BTM
-        vXW/1HIqnF+5lYoUlk43Qg2IZXznAHO8xfds3Td9S+NJFjd5xqClzEQJ/jVjlbZm
-        /9Tyfj+1WL1+VyXPeeyxm+3TlHIjmNIJXDrDGwi4rcTUbSJaeIb0HAOekS+7G0xH
-        2HVdG6p0k3auos44ohzQSINh476u5mJOZPxiQKnRNwYYfxGGXq8Qxeh4DJbRqi+Z
-        8bFhuI+qwDIx+w==
-X-ME-Sender: <xms:8MhQYBFfxaQG8TNH9gm5gBLnnlQsHsL1Va5bai6U_WUcDmEfnkURew>
-    <xme:8MhQYGXcFCVQYu7yhG26qe3kNkHfuV0Mh2PCZxLvvQfV6ajxfZc8FJtyPvCALIOv9
-    FVoiYaTOmTTbD8>
+        fm2; bh=NEY6xQVNtpR0RSJX6EOckFqTasucY31doIcEVAl6K60=; b=jP/Sim+2
+        l4SKaJ14vZAWPb4OuU26OUFwsildKBz3/8X8RTbA3UjHQJqd2o/yB/eHRh/oMaVN
+        RRptG+29nQPVpLO4HDGxD8uscHrJeF3cbTLPXxh6CgaFhksIq1nIPDmmTkrppX5i
+        Z9r/kx5YfAZ/bN317ZbiO74ipa6TNGS6Nx8weS8JPdce9GSwqUatXfQA/OLDHDoV
+        yO/DViW5igIDlONLWqehDSUW4ZKdmqJBCDkBcRRr12WsTz/W8Z+QBLOjAyBGmhLH
+        Y8CJnlK/AdSO4Yz9a0fEKqpgQ9B0EvEEbrOnzCyvL6i9+gzOonc/QhEX6UQKZ7IV
+        2Y2OtIb0mZDwXg==
+X-ME-Sender: <xms:8shQYA7rtSlLEPgPqaSLeF4yIBYQARjm8JDSvZL4Mcyh2mX7VHvJIg>
+    <xme:8shQYB7FgVAp5tks9KlpcFnzcsCehvyYB-7iLhsJvkGOBnkP-6Nkcz8QCX_dqAXNS
+    DyuJ6Yg5czCIZg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefvddgjeefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefvddgjeefucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
     necuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:8MhQYDLtYELlCksVl1FmNHSuezFk5vD3VKYP4rEwXRne98NxNxM_tA>
-    <xmx:8MhQYHFWW6NnN_kmze0RQOSyLnMGcmKlwT0ITOXsUJ_pBI8cHhrVug>
-    <xmx:8MhQYHUY_YcCTB81joJqndHC0x6T1qVRpoeqyfN0Xiuoi0Zm9DFy-g>
-    <xmx:8MhQYNfMBhUai87UambQLcxySvlbeyaCPIFpP8n_azqENDPEWHQoRw>
+X-ME-Proxy: <xmx:88hQYPc5YpGcBkRVpuf0gU9bRiC3Zb0arByyTvuuStzAod4Auqj82Q>
+    <xmx:88hQYFIEfg0NtuQxvfHzuwd_9quuUNQYlGU2H9uN4DIL_rdXwQktjA>
+    <xmx:88hQYEJHZUoEz10uqOUKgXcpjWa2EU9lJ4biolaKx65wGnHrRVFtTg>
+    <xmx:88hQYOjkKNQbf5Sp_yM40tZEjUnop8EKNStUyfY6oABb7lVkcVOKDA>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 584DF1080057;
-        Tue, 16 Mar 2021 11:04:14 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id C6B911080057;
+        Tue, 16 Mar 2021 11:04:16 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         roopa@nvidia.com, peter.phaal@inmon.com, neil.mckee@inmon.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 07/10] mlxsw: core_acl_flex_actions: Add mirror sampler action
-Date:   Tue, 16 Mar 2021 17:03:00 +0200
-Message-Id: <20210316150303.2868588-8-idosch@idosch.org>
+Subject: [PATCH net-next 08/10] mlxsw: spectrum_acl: Offload FLOW_ACTION_SAMPLE
+Date:   Tue, 16 Mar 2021 17:03:01 +0200
+Message-Id: <20210316150303.2868588-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210316150303.2868588-1-idosch@idosch.org>
 References: <20210316150303.2868588-1-idosch@idosch.org>
@@ -64,187 +64,308 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Add core functionality required to support mirror sampler action in the
-policy engine. The switch driver (e.g., 'mlxsw_spectrum') is required to
-implement the sampler_add() / sampler_del() callbacks that perform the
-necessary configuration before the sampler action can be installed. The
-next patch will implement it for Spectrum-{2,3}, while Spectrum-1 will
-return an error, given it is not supported.
+Implement support for action sample when used with a flower classifier
+by implementing the required sampler_add() / sampler_del() callbacks and
+registering an Rx listener for the sampled packets.
+
+The sampler_add() callback returns an error for Spectrum-1 as the
+functionality is not supported. In Spectrum-{2,3} the callback creates a
+mirroring agent towards the CPU. The agent's identifier is used by the
+policy engine code to mirror towards the CPU with probability.
+
+The Rx listener for the sampled packet is registered with the 'policy
+engine' mirroring reason and passes trapped packets to the psample
+module after looking up their parameters (e.g., sampling group).
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../mellanox/mlxsw/core_acl_flex_actions.c    | 131 ++++++++++++++++++
- .../mellanox/mlxsw/core_acl_flex_actions.h    |  11 ++
- 2 files changed, 142 insertions(+)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  9 +-
+ .../ethernet/mellanox/mlxsw/spectrum_acl.c    | 25 ++++++
+ .../mlxsw/spectrum_acl_flex_actions.c         | 83 +++++++++++++++++++
+ .../ethernet/mellanox/mlxsw/spectrum_flower.c | 18 ++++
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 41 +++++++++
+ 5 files changed, 175 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-index 4d699fe98cb6..78d9c0196f2b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-@@ -2007,3 +2007,134 @@ int mlxsw_afa_block_append_l4port(struct mlxsw_afa_block *block, bool is_dport,
- 	return 0;
- }
- EXPORT_SYMBOL(mlxsw_afa_block_append_l4port);
-+
-+/* Mirror Sampler Action
-+ * ---------------------
-+ * The SAMPLER_ACTION is used to mirror packets with a probability (sampling).
-+ */
-+
-+#define MLXSW_AFA_SAMPLER_CODE 0x13
-+#define MLXSW_AFA_SAMPLER_SIZE 1
-+
-+/* afa_sampler_mirror_agent
-+ * Mirror (SPAN) agent.
-+ */
-+MLXSW_ITEM32(afa, sampler, mirror_agent, 0x04, 0, 3);
-+
-+#define MLXSW_AFA_SAMPLER_RATE_MAX (BIT(24) - 1)
-+
-+/* afa_sampler_mirror_probability_rate
-+ * Mirroring probability.
-+ * Valid values are 1 to 2^24 - 1
-+ */
-+MLXSW_ITEM32(afa, sampler, mirror_probability_rate, 0x08, 0, 24);
-+
-+static void mlxsw_afa_sampler_pack(char *payload, u8 mirror_agent, u32 rate)
-+{
-+	mlxsw_afa_sampler_mirror_agent_set(payload, mirror_agent);
-+	mlxsw_afa_sampler_mirror_probability_rate_set(payload, rate);
-+}
-+
-+struct mlxsw_afa_sampler {
-+	struct mlxsw_afa_resource resource;
-+	int span_id;
-+	u8 local_port;
-+	bool ingress;
-+};
-+
-+static void mlxsw_afa_sampler_destroy(struct mlxsw_afa_block *block,
-+				      struct mlxsw_afa_sampler *sampler)
-+{
-+	mlxsw_afa_resource_del(&sampler->resource);
-+	block->afa->ops->sampler_del(block->afa->ops_priv, sampler->local_port,
-+				     sampler->span_id, sampler->ingress);
-+	kfree(sampler);
-+}
-+
-+static void mlxsw_afa_sampler_destructor(struct mlxsw_afa_block *block,
-+					 struct mlxsw_afa_resource *resource)
-+{
-+	struct mlxsw_afa_sampler *sampler;
-+
-+	sampler = container_of(resource, struct mlxsw_afa_sampler, resource);
-+	mlxsw_afa_sampler_destroy(block, sampler);
-+}
-+
-+static struct mlxsw_afa_sampler *
-+mlxsw_afa_sampler_create(struct mlxsw_afa_block *block, u8 local_port,
-+			 struct psample_group *psample_group, u32 rate,
-+			 u32 trunc_size, bool truncate, bool ingress,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_afa_sampler *sampler;
-+	int err;
-+
-+	sampler = kzalloc(sizeof(*sampler), GFP_KERNEL);
-+	if (!sampler)
-+		return ERR_PTR(-ENOMEM);
-+
-+	err = block->afa->ops->sampler_add(block->afa->ops_priv, local_port,
-+					   psample_group, rate, trunc_size,
-+					   truncate, ingress, &sampler->span_id,
-+					   extack);
-+	if (err)
-+		goto err_sampler_add;
-+
-+	sampler->ingress = ingress;
-+	sampler->local_port = local_port;
-+	sampler->resource.destructor = mlxsw_afa_sampler_destructor;
-+	mlxsw_afa_resource_add(block, &sampler->resource);
-+	return sampler;
-+
-+err_sampler_add:
-+	kfree(sampler);
-+	return ERR_PTR(err);
-+}
-+
-+static int
-+mlxsw_afa_block_append_allocated_sampler(struct mlxsw_afa_block *block,
-+					 u8 mirror_agent, u32 rate)
-+{
-+	char *act = mlxsw_afa_block_append_action(block, MLXSW_AFA_SAMPLER_CODE,
-+						  MLXSW_AFA_SAMPLER_SIZE);
-+
-+	if (IS_ERR(act))
-+		return PTR_ERR(act);
-+	mlxsw_afa_sampler_pack(act, mirror_agent, rate);
-+	return 0;
-+}
-+
-+int mlxsw_afa_block_append_sampler(struct mlxsw_afa_block *block, u8 local_port,
-+				   struct psample_group *psample_group,
-+				   u32 rate, u32 trunc_size, bool truncate,
-+				   bool ingress,
-+				   struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_afa_sampler *sampler;
-+	int err;
-+
-+	if (rate > MLXSW_AFA_SAMPLER_RATE_MAX) {
-+		NL_SET_ERR_MSG_MOD(extack, "Sampling rate is too high");
-+		return -EINVAL;
-+	}
-+
-+	sampler = mlxsw_afa_sampler_create(block, local_port, psample_group,
-+					   rate, trunc_size, truncate, ingress,
-+					   extack);
-+	if (IS_ERR(sampler))
-+		return PTR_ERR(sampler);
-+
-+	err = mlxsw_afa_block_append_allocated_sampler(block, sampler->span_id,
-+						       rate);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Cannot append sampler action");
-+		goto err_append_allocated_sampler;
-+	}
-+
-+	return 0;
-+
-+err_append_allocated_sampler:
-+	mlxsw_afa_sampler_destroy(block, sampler);
-+	return err;
-+}
-+EXPORT_SYMBOL(mlxsw_afa_block_append_sampler);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.h b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.h
-index b652497b1002..b65bf98eb5ab 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.h
-@@ -30,6 +30,12 @@ struct mlxsw_afa_ops {
- 			   u16 *p_policer_index,
- 			   struct netlink_ext_ack *extack);
- 	void (*policer_del)(void *priv, u16 policer_index);
-+	int (*sampler_add)(void *priv, u8 local_port,
-+			   struct psample_group *psample_group, u32 rate,
-+			   u32 trunc_size, bool truncate, bool ingress,
-+			   int *p_span_id, struct netlink_ext_ack *extack);
-+	void (*sampler_del)(void *priv, u8 local_port, int span_id,
-+			    bool ingress);
- 	bool dummy_first_set;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index 4b4d643abceb..63cc8fa3fa62 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -239,11 +239,12 @@ struct mlxsw_sp_port_pcpu_stats {
+ enum mlxsw_sp_sample_trigger_type {
+ 	MLXSW_SP_SAMPLE_TRIGGER_TYPE_INGRESS,
+ 	MLXSW_SP_SAMPLE_TRIGGER_TYPE_EGRESS,
++	MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
  };
  
-@@ -92,5 +98,10 @@ int mlxsw_afa_block_append_police(struct mlxsw_afa_block *block,
- 				  u32 fa_index, u64 rate_bytes_ps, u32 burst,
- 				  u16 *p_policer_index,
- 				  struct netlink_ext_ack *extack);
-+int mlxsw_afa_block_append_sampler(struct mlxsw_afa_block *block, u8 local_port,
-+				   struct psample_group *psample_group,
-+				   u32 rate, u32 trunc_size, bool truncate,
-+				   bool ingress,
-+				   struct netlink_ext_ack *extack);
+ struct mlxsw_sp_sample_trigger {
+ 	enum mlxsw_sp_sample_trigger_type type;
+-	u8 local_port;
++	u8 local_port; /* Reserved when trigger type is not ingress / egress. */
+ };
  
- #endif
+ struct mlxsw_sp_sample_params {
+@@ -946,6 +947,12 @@ int mlxsw_sp_acl_rulei_act_count(struct mlxsw_sp *mlxsw_sp,
+ int mlxsw_sp_acl_rulei_act_fid_set(struct mlxsw_sp *mlxsw_sp,
+ 				   struct mlxsw_sp_acl_rule_info *rulei,
+ 				   u16 fid, struct netlink_ext_ack *extack);
++int mlxsw_sp_acl_rulei_act_sample(struct mlxsw_sp *mlxsw_sp,
++				  struct mlxsw_sp_acl_rule_info *rulei,
++				  struct mlxsw_sp_flow_block *block,
++				  struct psample_group *psample_group, u32 rate,
++				  u32 trunc_size, bool truncate,
++				  struct netlink_ext_ack *extack);
+ 
+ struct mlxsw_sp_acl_rule;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+index 8cfa03a75374..67cedfa76f78 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+@@ -688,6 +688,31 @@ int mlxsw_sp_acl_rulei_act_fid_set(struct mlxsw_sp *mlxsw_sp,
+ 	return mlxsw_afa_block_append_fid_set(rulei->act_block, fid, extack);
+ }
+ 
++int mlxsw_sp_acl_rulei_act_sample(struct mlxsw_sp *mlxsw_sp,
++				  struct mlxsw_sp_acl_rule_info *rulei,
++				  struct mlxsw_sp_flow_block *block,
++				  struct psample_group *psample_group, u32 rate,
++				  u32 trunc_size, bool truncate,
++				  struct netlink_ext_ack *extack)
++{
++	struct mlxsw_sp_flow_block_binding *binding;
++	struct mlxsw_sp_port *mlxsw_sp_port;
++
++	if (!list_is_singular(&block->binding_list)) {
++		NL_SET_ERR_MSG_MOD(extack, "Only a single sampling source is allowed");
++		return -EOPNOTSUPP;
++	}
++	binding = list_first_entry(&block->binding_list,
++				   struct mlxsw_sp_flow_block_binding, list);
++	mlxsw_sp_port = binding->mlxsw_sp_port;
++
++	return mlxsw_afa_block_append_sampler(rulei->act_block,
++					      mlxsw_sp_port->local_port,
++					      psample_group, rate, trunc_size,
++					      truncate, binding->ingress,
++					      extack);
++}
++
+ struct mlxsw_sp_acl_rule *
+ mlxsw_sp_acl_rule_create(struct mlxsw_sp *mlxsw_sp,
+ 			 struct mlxsw_sp_acl_ruleset *ruleset,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
+index 90372d1c28d4..c72aa38424dc 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
+@@ -192,6 +192,22 @@ static void mlxsw_sp_act_policer_del(void *priv, u16 policer_index)
+ 			     policer_index);
+ }
+ 
++static int mlxsw_sp1_act_sampler_add(void *priv, u8 local_port,
++				     struct psample_group *psample_group,
++				     u32 rate, u32 trunc_size, bool truncate,
++				     bool ingress, int *p_span_id,
++				     struct netlink_ext_ack *extack)
++{
++	NL_SET_ERR_MSG_MOD(extack, "Sampling action is not supported on Spectrum-1");
++	return -EOPNOTSUPP;
++}
++
++static void mlxsw_sp1_act_sampler_del(void *priv, u8 local_port, int span_id,
++				      bool ingress)
++{
++	WARN_ON_ONCE(1);
++}
++
+ const struct mlxsw_afa_ops mlxsw_sp1_act_afa_ops = {
+ 	.kvdl_set_add		= mlxsw_sp1_act_kvdl_set_add,
+ 	.kvdl_set_del		= mlxsw_sp_act_kvdl_set_del,
+@@ -204,8 +220,73 @@ const struct mlxsw_afa_ops mlxsw_sp1_act_afa_ops = {
+ 	.mirror_del		= mlxsw_sp_act_mirror_del,
+ 	.policer_add		= mlxsw_sp_act_policer_add,
+ 	.policer_del		= mlxsw_sp_act_policer_del,
++	.sampler_add		= mlxsw_sp1_act_sampler_add,
++	.sampler_del		= mlxsw_sp1_act_sampler_del,
+ };
+ 
++static int mlxsw_sp2_act_sampler_add(void *priv, u8 local_port,
++				     struct psample_group *psample_group,
++				     u32 rate, u32 trunc_size, bool truncate,
++				     bool ingress, int *p_span_id,
++				     struct netlink_ext_ack *extack)
++{
++	struct mlxsw_sp_span_agent_parms agent_parms = {
++		.session_id = MLXSW_SP_SPAN_SESSION_ID_SAMPLING,
++	};
++	struct mlxsw_sp_sample_trigger trigger = {
++		.type = MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
++	};
++	struct mlxsw_sp_sample_params params;
++	struct mlxsw_sp_port *mlxsw_sp_port;
++	struct mlxsw_sp *mlxsw_sp = priv;
++	int err;
++
++	params.psample_group = psample_group;
++	params.trunc_size = trunc_size;
++	params.rate = rate;
++	params.truncate = truncate;
++	err = mlxsw_sp_sample_trigger_params_set(mlxsw_sp, &trigger, &params,
++						 extack);
++	if (err)
++		return err;
++
++	err = mlxsw_sp_span_agent_get(mlxsw_sp, p_span_id, &agent_parms);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Failed to get SPAN agent");
++		goto err_span_agent_get;
++	}
++
++	mlxsw_sp_port = mlxsw_sp->ports[local_port];
++	err = mlxsw_sp_span_analyzed_port_get(mlxsw_sp_port, ingress);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Failed to get analyzed port");
++		goto err_analyzed_port_get;
++	}
++
++	return 0;
++
++err_analyzed_port_get:
++	mlxsw_sp_span_agent_put(mlxsw_sp, *p_span_id);
++err_span_agent_get:
++	mlxsw_sp_sample_trigger_params_unset(mlxsw_sp, &trigger);
++	return err;
++}
++
++static void mlxsw_sp2_act_sampler_del(void *priv, u8 local_port, int span_id,
++				      bool ingress)
++{
++	struct mlxsw_sp_sample_trigger trigger = {
++		.type = MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
++	};
++	struct mlxsw_sp_port *mlxsw_sp_port;
++	struct mlxsw_sp *mlxsw_sp = priv;
++
++	mlxsw_sp_port = mlxsw_sp->ports[local_port];
++	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, ingress);
++	mlxsw_sp_span_agent_put(mlxsw_sp, span_id);
++	mlxsw_sp_sample_trigger_params_unset(mlxsw_sp, &trigger);
++}
++
+ const struct mlxsw_afa_ops mlxsw_sp2_act_afa_ops = {
+ 	.kvdl_set_add		= mlxsw_sp2_act_kvdl_set_add,
+ 	.kvdl_set_del		= mlxsw_sp_act_kvdl_set_del,
+@@ -218,6 +299,8 @@ const struct mlxsw_afa_ops mlxsw_sp2_act_afa_ops = {
+ 	.mirror_del		= mlxsw_sp_act_mirror_del,
+ 	.policer_add		= mlxsw_sp_act_policer_add,
+ 	.policer_del		= mlxsw_sp_act_policer_del,
++	.sampler_add		= mlxsw_sp2_act_sampler_add,
++	.sampler_del		= mlxsw_sp2_act_sampler_del,
+ 	.dummy_first_set	= true,
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+index ea637fa552f5..be3791ca6069 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+@@ -24,6 +24,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
+ 	const struct flow_action_entry *act;
+ 	int mirror_act_count = 0;
+ 	int police_act_count = 0;
++	int sample_act_count = 0;
+ 	int err, i;
+ 
+ 	if (!flow_action_has_entries(flow_action))
+@@ -209,6 +210,23 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
+ 				return err;
+ 			break;
+ 			}
++		case FLOW_ACTION_SAMPLE: {
++			if (sample_act_count++) {
++				NL_SET_ERR_MSG_MOD(extack, "Multiple sample actions per rule are not supported");
++				return -EOPNOTSUPP;
++			}
++
++			err = mlxsw_sp_acl_rulei_act_sample(mlxsw_sp, rulei,
++							    block,
++							    act->sample.psample_group,
++							    act->sample.rate,
++							    act->sample.trunc_size,
++							    act->sample.truncate,
++							    extack);
++			if (err)
++				return err;
++			break;
++			}
+ 		default:
+ 			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
+ 			dev_err(mlxsw_sp->bus_info->dev, "Unsupported action\n");
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 3dbf5e53e9ff..26d01adbedad 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -51,6 +51,8 @@ enum {
+ enum {
+ 	/* Packet was mirrored from ingress. */
+ 	MLXSW_SP_MIRROR_REASON_INGRESS = 1,
++	/* Packet was mirrored from policy engine. */
++	MLXSW_SP_MIRROR_REASON_POLICY_ENGINE = 2,
+ 	/* Packet was early dropped. */
+ 	MLXSW_SP_MIRROR_REASON_INGRESS_WRED = 9,
+ 	/* Packet was mirrored from egress. */
+@@ -341,6 +343,42 @@ static void mlxsw_sp_rx_sample_tx_listener(struct sk_buff *skb, u8 local_port,
+ 	consume_skb(skb);
+ }
+ 
++static void mlxsw_sp_rx_sample_acl_listener(struct sk_buff *skb, u8 local_port,
++					    void *trap_ctx)
++{
++	struct mlxsw_sp *mlxsw_sp = devlink_trap_ctx_priv(trap_ctx);
++	struct mlxsw_sp_sample_trigger trigger = {
++		.type = MLXSW_SP_SAMPLE_TRIGGER_TYPE_POLICY_ENGINE,
++	};
++	struct mlxsw_sp_sample_params *params;
++	struct mlxsw_sp_port *mlxsw_sp_port;
++	struct psample_metadata md = {};
++	int err;
++
++	err = __mlxsw_sp_rx_no_mark_listener(skb, local_port, trap_ctx);
++	if (err)
++		return;
++
++	mlxsw_sp_port = mlxsw_sp->ports[local_port];
++	if (!mlxsw_sp_port)
++		goto out;
++
++	params = mlxsw_sp_sample_trigger_params_lookup(mlxsw_sp, &trigger);
++	if (!params)
++		goto out;
++
++	/* The psample module expects skb->data to point to the start of the
++	 * Ethernet header.
++	 */
++	skb_push(skb, ETH_HLEN);
++	mlxsw_sp_psample_md_init(mlxsw_sp, &md, skb,
++				 mlxsw_sp_port->dev->ifindex, params->truncate,
++				 params->trunc_size);
++	psample_sample_packet(params->psample_group, skb, params->rate, &md);
++out:
++	consume_skb(skb);
++}
++
+ #define MLXSW_SP_TRAP_DROP(_id, _group_id)				      \
+ 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				      \
+ 			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id,	      \
+@@ -1898,6 +1936,9 @@ mlxsw_sp2_trap_items_arr[] = {
+ 			MLXSW_RXL_MIRROR(mlxsw_sp_rx_sample_tx_listener, 1,
+ 					 SP_PKT_SAMPLE,
+ 					 MLXSW_SP_MIRROR_REASON_EGRESS),
++			MLXSW_RXL_MIRROR(mlxsw_sp_rx_sample_acl_listener, 1,
++					 SP_PKT_SAMPLE,
++					 MLXSW_SP_MIRROR_REASON_POLICY_ENGINE),
+ 		},
+ 	},
+ };
 -- 
 2.29.2
 
