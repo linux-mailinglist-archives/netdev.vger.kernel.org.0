@@ -2,127 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C107633D007
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:40:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0300333D00E
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:43:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235238AbhCPIjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:39:43 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:47991 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235240AbhCPIjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:39:32 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id EF5F75C00EA;
-        Tue, 16 Mar 2021 04:39:31 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 16 Mar 2021 04:39:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=ybb4+l
-        kT5Aoatj2tUP8ztn4bXpxGuYu/3EmhvjOV8/U=; b=E3/M8ZU0ahsAfy1/JzW3nZ
-        n3d0ho68Q4M7oRlzTjEQysZwBIr6aUKfxd3JjLpyv08Tarxf0y9dBP/SStni+jNT
-        ksS90VaiDw5wpeY9r9XjcA2CoiPtSyf21QrOiAlXV6S2c6dp2Qgj9xO18Csnlitd
-        WzBSBUIgzoz/SEUCXTZwn4NENQwzGVX5wun5L8Q+mcXq/XV3fQdzODARkyUzJsLK
-        Q+rRncANOJYjgqMtkWso4r//pfEEgAMF//Ww40luR/rsp3sorCIj4OLKpWUim/Nf
-        mE+tJrJduM/8l8jd35Fo1UQD9WPmhAd6zh7uJcAQsGSRvJvH6uRi/ZmfSIsKGQwA
-        ==
-X-ME-Sender: <xms:w25QYCAG6AmDfXp_mEm_lBHVE3E1hHPMZ2pLlawP785nLrx5mRkD_w>
-    <xme:w25QYMh3wVpR0tmh14mFc3YOagAEIOc6VkiQMH9j4fC_MnigqJPPucnr62oSjJrwU
-    Nv26WJiN92HtrI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefuddguddvfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhephefhtdfhudeuhefgkeekhfehuddtvdevfeetheetkeelvefggeetveeuleeh
-    keeunecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkphepkeegrddvvdelrdduhe
-    efrdeggeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhm
-    pehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:w25QYFkIvkldvSvGX0VycZwBpeFi2QJ77Jf7ifCNYJYi3bN9L5UbWA>
-    <xmx:w25QYAzwWEaR9StmYnNoslVsVeDSKvOjrD9zryLnuRZDCKSR94a6OA>
-    <xmx:w25QYHTB3MrtNcI4kcH4ABSGZFmS2bS5sFAvhAoyWWFXTdT5kFcsPA>
-    <xmx:w25QYKPbAdT_vay96BVgfcFTI-w_FLOcdAN4yqnUsWWCj89cXgQLPw>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 07B001080063;
-        Tue, 16 Mar 2021 04:39:30 -0400 (EDT)
-Date:   Tue, 16 Mar 2021 10:39:27 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Tim Rice <trice@posteo.net>, petrm@nvidia.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [BUG] Iproute2 batch-mode fails to bring up veth
-Message-ID: <YFBuv83HJLG0zMbw@shredder.lan>
-References: <YE+z4GCI5opvNO2D@sleipnir.acausal.realm>
+        id S234369AbhCPImz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231481AbhCPIml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:42:41 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DBECC06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 01:42:40 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ci14so70575592ejc.7
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 01:42:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=D81ZG1imTGMYNDCoHnjjo5myhiJwEX2QL5C0JYniZS8=;
+        b=bIBE1LJOZP0HvlRWorsws07f9PlPH8qE7RNhCjGeF1JJWaIbK298XfimbxPtsj53oy
+         8NEFUDAhDYo/buwlubxiIvlvkbt0MzgfyYwUeE7oM2qa9vvO6nP7utUCLPCfU6SrVupW
+         PcvSON/q5BKJ/FawQbg6/d6Ayh0XNs1n0NJpeAyl5vNl6GgG4PScVlUXoREIwa0QEJJ1
+         2TuNthQajc6E3vMBlB46FMyMpCswR583czHeprLcSVUpKQamL/8vIJCNX/B9LA2Nr2If
+         NmWMFMgW+m8QmlVY94qWP0v7v+rnpybmEpUxsBDsBaDrPi1hBpRCNWAjZ/kPTSU6XzVv
+         +WbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D81ZG1imTGMYNDCoHnjjo5myhiJwEX2QL5C0JYniZS8=;
+        b=ngU+KmGst1cZMO8tauxbcFTgifqYQofXIzh+bMD/4JLSFPa/1UoKTvVTB9exnnVjB6
+         mYWuxzoM5pG/zdf3kE1Zo7lYksY6/Ut9s986c/zBDGPwQc7tKDT4RZ8gpfLQRKxP5hF6
+         xu4Gqu4w/Olf+OnzGAQ3fE5/dDvR+qPEKGBR9/bo5DtHgSVHjU16K8SJ/oU31VPd0NUl
+         Y8M2lqzXzZXW6VrGhjrzHDcUar6LBpg8J4SkaxqOBePmP4az342tAYXMz021yDPbiytF
+         x8jz3F+SY9hPnIFHqfmXaWgcXeCPlUBKVGnXsvibn4rXtgr6x3VpecuRxtb2+mxJ6vDC
+         q0ng==
+X-Gm-Message-State: AOAM531AhhoSIQPNdeaIDpJXEDT4WQcl9deBDH8rdAogLrLQrL3+MwfV
+        Gy/atTOLlGMeMb6A5ZT4f4k=
+X-Google-Smtp-Source: ABdhPJxb2KW2pqu2zN+3+FPl7r/jGfC3DZQxZFTwfiSFK0/tEEIEiwCXqpk8bYW2XgnfLWrp4U5T7A==
+X-Received: by 2002:a17:906:5d05:: with SMTP id g5mr27915075ejt.489.1615884158963;
+        Tue, 16 Mar 2021 01:42:38 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id f9sm527646edq.43.2021.03.16.01.42.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 01:42:38 -0700 (PDT)
+Date:   Tue, 16 Mar 2021 10:42:37 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Provide generic VTU
+ iterator
+Message-ID: <20210316084237.l6q4p3peonowshds@skbuf>
+References: <20210315211400.2805330-1-tobias@waldekranz.com>
+ <20210315211400.2805330-2-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YE+z4GCI5opvNO2D@sleipnir.acausal.realm>
+In-Reply-To: <20210315211400.2805330-2-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ Petr
+On Mon, Mar 15, 2021 at 10:13:56PM +0100, Tobias Waldekranz wrote:
+> @@ -2184,25 +2230,7 @@ static int mv88e6xxx_port_db_dump(struct mv88e6xxx_chip *chip, int port,
+>  	if (err)
+>  		return err;
+>  
+> -	/* Dump VLANs' Filtering Information Databases */
+> -	vlan.vid = mv88e6xxx_max_vid(chip);
+> -	vlan.valid = false;
+> -
+> -	do {
+> -		err = mv88e6xxx_vtu_getnext(chip, &vlan);
+> -		if (err)
+> -			return err;
+> -
+> -		if (!vlan.valid)
+> -			break;
+> -
+> -		err = mv88e6xxx_port_db_dump_fid(chip, vlan.fid, vlan.vid, port,
+> -						 cb, data);
+> -		if (err)
+> -			return err;
+> -	} while (vlan.vid < mv88e6xxx_max_vid(chip));
+> -
+> -	return err;
+> +	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_port_db_dump_vlan, &ctx);
+>  }
 
-On Tue, Mar 16, 2021 at 06:22:08AM +1100, Tim Rice wrote:
-> Hey all,
-> 
-> Sorry if this isn't the right place to report Iproute2 bugs. It was implied by README.devel as well as a couple of entries I saw in bugzilla.
-> 
-> I use iproute2 batch mode to construct network namespaces. Example script:
-> 
->   $ cat ~/bin/netns-test.sh
->   #! /bin/bash
-> 
->   gw=192.168.5.1
->   ip=192.168.5.2
->   ns=netns-test
->   veth0=${ns}-0
->   veth1=${ns}-1
-> 
->   /usr/local/sbin/ip -b - << EOF
->   link add $veth0 type veth peer name $veth1
->   addr add $gw peer $ip dev $veth0
->   link set dev $veth0 up
->   netns add $ns
->   link set $veth1 netns $ns
->   netns exec $ns ip link set dev lo up
->   netns exec $ns ip link set dev $veth1 up
->   netns exec $ns ip addr add $ip/24 dev $veth1
->   netns exec $ns ip addr add $ip peer $gw dev $veth1
->   netns exec $ns ip route add default via $gw dev $veth1
->   netns exec $ns ip route add 192.168.0.0/24 via $gw dev $veth1
->   EOF
-> 
-> 
-> I noticed when version 5.11.0 dropped that this stops working. Batch mode fails to bring up the inner veth.
-> 
-> Expected usage (as produced by v5.10.0):
-> 
->   $ sudo ./bin/netns-test.sh
->   $ sudo ip netns exec netns-test ip route
->   default via 192.168.5.1 dev netns-test-1
->   192.168.0.0/24 via 192.168.5.1 dev netns-test-1
->   192.168.5.0/24 dev netns-test-1 proto kernel scope link src 192.168.5.2
->   192.168.5.1 dev netns-test-1 proto kernel scope link src 192.168.5.2
-> 
-> Actual behaviour:
-> 
->   $ sudo ./bin/netns-test.sh
->   $ sudo ip netns exec netns-test ip route  # Notice the empty output
->   $ sudo ip netns exec netns-test ip link
->   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->       link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
->   39: netns-test-1@if40: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->       link/ether 1a:96:4e:4f:84:31 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-> 
-> System info:
-> 
-> * Distro: Void Linux
-> * Kernel version: 5.10.23
-> * CPU: AMD Ryzen 7 1800X and Ryzen 5 2600. (Reproduced on both.)
-> 
-> Git bisect pinpoints this commit: https://github.com/shemminger/iproute2/commit/1d9a81b8c9f30f9f4abeb875998262f61bf10577
-> 
-> That commit was focused on refactoring batch mode. This is consistent with my experience that only batch mode is affected. Everything works as expected when running the commands manually.
-> 
-> ~ Tim
+Can the mv88e6xxx_port_db_dump_fid(VLAN 0) located above this call be
+covered by the same mv88e6xxx_vtu_walk?
