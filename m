@@ -2,134 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A705533CFD5
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:27:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B2DE33CFF0
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:34:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234823AbhCPI12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:27:28 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:43254 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234789AbhCPI1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:27:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1615883238; x=1647419238;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=zjpungGTH797E0EsM/cIKxnB5P6nalPRskz9OyB9ezw=;
-  b=uVqRAcqhu2IkAszkrIE8o217vOfSRi2XPGUrZfKGiErFuCYTyfdyTJ5s
-   Czj8y4/DaHcl8/HqMO2W3PomWAA11JEZeWOGanYuN6xABwC9tUo6wkriD
-   aq4ee4leUXgcaxOpGkpy8qlyDqOn8NMfiwLr7Z8/SFWd9i8763nk88hjb
-   g=;
-X-IronPort-AV: E=Sophos;i="5.81,251,1610409600"; 
-   d="scan'208";a="94855560"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-c7131dcf.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 16 Mar 2021 08:27:11 +0000
-Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-c7131dcf.us-west-2.amazon.com (Postfix) with ESMTPS id 3664EA063A;
-        Tue, 16 Mar 2021 08:27:08 +0000 (UTC)
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.162.213) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 16 Mar 2021 08:27:00 +0000
-References: <20210309171014.2200020-1-shayagr@amazon.com>
- <20210309171014.2200020-2-shayagr@amazon.com>
- <67d3cf28-b1fd-ce51-5011-96ddd783dc71@gmail.com>
-User-agent: mu4e 1.4.15; emacs 27.1
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>
-Subject: Re: [RFC Patch v1 1/3] net: ena: implement local page cache (LPC)
- system
-In-Reply-To: <67d3cf28-b1fd-ce51-5011-96ddd783dc71@gmail.com>
-Date:   Tue, 16 Mar 2021 10:26:47 +0200
-Message-ID: <pj41zl7dm7ld14.fsf@u570694869fb251.ant.amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.162.213]
-X-ClientProxiedBy: EX13D19UWA001.ant.amazon.com (10.43.160.169) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+        id S234971AbhCPIeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:34:22 -0400
+Received: from m97179.mail.qiye.163.com ([220.181.97.179]:15435 "EHLO
+        m97179.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234965AbhCPId6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:33:58 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m97179.mail.qiye.163.com (Hmail) with ESMTPA id E5FBCE01836;
+        Tue, 16 Mar 2021 16:33:54 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     kuba@kernel.org, mleitner@redhat.com
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, davem@davemloft.net
+Subject: [PATCH net] net/sched: act_api: fix miss set post_ct for ovs after do conntrack in act_ct
+Date:   Tue, 16 Mar 2021 16:33:54 +0800
+Message-Id: <1615883634-11064-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZSUsZHx1NQxpNGR1OVkpNSk5DQ0hNSE9CTE1VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hKTFVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PAg6MBw5Sj09AyMsKTMiFCsL
+        GggKFC1VSlVKTUpOQ0NITUhOSk5CVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQU5LSEw3Bg++
+X-HM-Tid: 0a783a2b891c20bdkuqye5fbce01836
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: wenxu <wenxu@ucloud.cn>
 
-Eric Dumazet <eric.dumazet@gmail.com> writes:
+When openvswitch conntrack offload with act_ct action. The first rule
+do conntrack in the act_ct in tc subsystem. And miss the next rule in
+the tc and fallback to the ovs datapath but miss set post_ct flag
+which will lead the ct_state_key with -trk flag.
 
-> On 3/9/21 6:10 PM, Shay Agroskin wrote:
->> The page cache holds pages we allocated in the past during napi 
->> cycle,
->> and tracks their availability status using page ref count.
->> 
->> The cache can hold up to 2048 pages. Upon allocating a page, we 
->> check
->> whether the next entry in the cache contains an unused page, 
->> and if so
->> fetch it. If the next page is already used by another entity or 
->> if it
->> belongs to a different NUMA core than the napi routine, we 
->> allocate a
->> page in the regular way (page from a different NUMA core is 
->> replaced by
->> the newly allocated page).
->> 
->> This system can help us reduce the contention between different 
->> cores
->> when allocating page since every cache is unique to a queue.
->
-> For reference, many drivers already use a similar strategy.
->
->> +
->> +/* Fetch the cached page (mark the page as used and pass it to 
->> the caller).
->> + * If the page belongs to a different NUMA than the current 
->> one, free the cache
->> + * page and allocate another one instead.
->> + */
->> +static struct page *ena_fetch_cache_page(struct ena_ring 
->> *rx_ring,
->> +					 struct ena_page 
->> *ena_page,
->> +					 dma_addr_t *dma,
->> +					 int current_nid)
->> +{
->> +	/* Remove pages belonging to different node than 
->> current_nid from cache */
->> +	if (unlikely(page_to_nid(ena_page->page) != current_nid)) 
->> {
->> + 
->> ena_increase_stat(&rx_ring->rx_stats.lpc_wrong_numa, 1, 
->> &rx_ring->syncp);
->> +		ena_replace_cache_page(rx_ring, ena_page);
->> +	}
->> +
->> 
->
-> And they use dev_page_is_reusable() instead of copy/pasting this 
-> logic.
->
-> As a bonus, they properly deal with pfmemalloc
+Fixes: 7baf2429a1a9 ("net/sched: cls_flower add CT_FLAGS_INVALID flag support")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+ include/linux/skbuff.h      | 1 +
+ net/openvswitch/conntrack.c | 8 +++++---
+ net/openvswitch/conntrack.h | 6 ++++--
+ net/openvswitch/flow.c      | 4 +++-
+ net/sched/cls_api.c         | 1 +
+ 5 files changed, 14 insertions(+), 6 deletions(-)
 
-Thanks for reviewing it, and sorry for the time it took me to 
-reply, I wanted to test some of the suggestions given me here 
-before replying.
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 6d0a33d..f2c9ee7 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -285,6 +285,7 @@ struct nf_bridge_info {
+ struct tc_skb_ext {
+ 	__u32 chain;
+ 	__u16 mru;
++	bool post_ct;
+ };
+ #endif
+ 
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index 5eddfe7..71cec03 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -271,9 +271,11 @@ static void ovs_ct_update_key(const struct sk_buff *skb,
+ /* This is called to initialize CT key fields possibly coming in from the local
+  * stack.
+  */
+-void ovs_ct_fill_key(const struct sk_buff *skb, struct sw_flow_key *key)
++void ovs_ct_fill_key(const struct sk_buff *skb,
++		     struct sw_flow_key *key,
++		     bool post_ct)
+ {
+-	ovs_ct_update_key(skb, NULL, key, false, false);
++	ovs_ct_update_key(skb, NULL, key, post_ct, false);
+ }
+ 
+ int ovs_ct_put_key(const struct sw_flow_key *swkey,
+@@ -1332,7 +1334,7 @@ int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key)
+ 	if (skb_nfct(skb)) {
+ 		nf_conntrack_put(skb_nfct(skb));
+ 		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+-		ovs_ct_fill_key(skb, key);
++		ovs_ct_fill_key(skb, key, false);
+ 	}
+ 
+ 	return 0;
+diff --git a/net/openvswitch/conntrack.h b/net/openvswitch/conntrack.h
+index 59dc327..317e525 100644
+--- a/net/openvswitch/conntrack.h
++++ b/net/openvswitch/conntrack.h
+@@ -25,7 +25,8 @@ int ovs_ct_execute(struct net *, struct sk_buff *, struct sw_flow_key *,
+ 		   const struct ovs_conntrack_info *);
+ int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key);
+ 
+-void ovs_ct_fill_key(const struct sk_buff *skb, struct sw_flow_key *key);
++void ovs_ct_fill_key(const struct sk_buff *skb, struct sw_flow_key *key,
++		     bool post_ct);
+ int ovs_ct_put_key(const struct sw_flow_key *swkey,
+ 		   const struct sw_flow_key *output, struct sk_buff *skb);
+ void ovs_ct_free_action(const struct nlattr *a);
+@@ -74,7 +75,8 @@ static inline int ovs_ct_clear(struct sk_buff *skb,
+ }
+ 
+ static inline void ovs_ct_fill_key(const struct sk_buff *skb,
+-				   struct sw_flow_key *key)
++				   struct sw_flow_key *key,
++				   bool post_ct)
+ {
+ 	key->ct_state = 0;
+ 	key->ct_zone = 0;
+diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+index c7f34d6..e586424 100644
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -857,6 +857,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	struct tc_skb_ext *tc_ext;
+ #endif
++	bool post_ct = false;
+ 	int res, err;
+ 
+ 	/* Extract metadata from packet. */
+@@ -895,6 +896,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 		tc_ext = skb_ext_find(skb, TC_SKB_EXT);
+ 		key->recirc_id = tc_ext ? tc_ext->chain : 0;
+ 		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
++		post_ct = tc_ext ? tc_ext->post_ct : false;
+ 	} else {
+ 		key->recirc_id = 0;
+ 	}
+@@ -904,7 +906,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 
+ 	err = key_extract(skb, key);
+ 	if (!err)
+-		ovs_ct_fill_key(skb, key);   /* Must be after key_extract(). */
++		ovs_ct_fill_key(skb, key, post_ct);   /* Must be after key_extract(). */
+ 	return err;
+ }
+ 
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index e37556cc..13341e7 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1629,6 +1629,7 @@ int tcf_classify_ingress(struct sk_buff *skb,
+ 			return TC_ACT_SHOT;
+ 		ext->chain = last_executed_chain;
+ 		ext->mru = qdisc_skb_cb(skb)->mru;
++		ext->post_ct = qdisc_skb_cb(skb)->post_ct;
+ 	}
+ 
+ 	return ret;
+-- 
+1.8.3.1
 
-Providing that this patchset would still be necessary for our 
-driver after testing the patchset Saeed suggested, I will switch 
-to using dev_page_is_reusable() instead of this expression.
-
-Shay
