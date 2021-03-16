@@ -2,36 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED41333DEDE
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 21:35:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56ACB33DEE1
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 21:36:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbhCPUfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 16:35:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59370 "EHLO mail.kernel.org"
+        id S231340AbhCPUfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 16:35:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231247AbhCPUex (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 16:34:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0BBBD64F80;
-        Tue, 16 Mar 2021 20:34:53 +0000 (UTC)
+        id S231321AbhCPUfQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 16:35:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 292AF64F7B;
+        Tue, 16 Mar 2021 20:35:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615926893;
-        bh=okRMItYdKasGgTRYd7gy0EpX6yF0Jgr0clwpOBDEkcc=;
+        s=k20201202; t=1615926915;
+        bh=rYPnOeemjC/NbCo/IqAWv9T9AP+wO0yQJEru9136Wj8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZqoeJGGV9lud2AQhRJAgyemOws0smvXmgWPVFr0SuSHJqUfxOldFhGU4fDP/sl8iE
-         sRFD/5OxGLJYeBT31PhFYIlR22qDa2BdP2egRTflCnxcHO0liyz0D4VRod+Ymj6s+1
-         GO/JgBrT2mh/qtUv7ekSL+6JM8Z+U789lqnDas+Jkzj7seNHedILQF7jYmBoI+/yXs
-         cmaq7syNqOKinqqU8Tcqpt3bWN6+1GeUT4dBsQ20w03A+y2ohy7Em+SW6kH25YLE+4
-         TZYSqoSu1xn0+d76s3pLiyxTcL//gzszrE2UlA7znsIdq5E0LODte7rg2JKEL1X0yJ
-         tIf3oX2YqZd2Q==
-Date:   Tue, 16 Mar 2021 13:34:52 -0700
+        b=bHRYaE+TEK7p1EpiXviuwzmyutN+TBgorbv3Sa1cGxDepwZzhVLSuxFexFzhffFL/
+         KIM+jdzetf3bohWSgKlEPxFuK3dbAr+Il+WI/yBrf1oL64OiG3WhWC278Eiz/C2rTD
+         CYnWkknLDppv948R0OJLfK7TGgYg+3mgj4ElO/q4gIihG26VL0FzlJMpQ/CPWP7+QE
+         KyF7rtob6ryh88DGEBMBchh4c9ku5Td7LBSvaapb/IRNtj6/hzA7Iam2QzX0/tl7xL
+         gwwI2hlmpXHA1vS5NWPBfacFSMb5JkSNQOp62tU458jmCZqnVdknBqZvMRFytFOO1f
+         8TwnxtfxVQY9Q==
+Date:   Tue, 16 Mar 2021 13:35:14 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yejune Deng <yejune.deng@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ipv4: route.c: simplify procfs code
-Message-ID: <20210316133452.2e64eeaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210316025736.37254-1-yejune.deng@gmail.com>
-References: <20210316025736.37254-1-yejune.deng@gmail.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, sassmann@redhat.com,
+        kai.heng.feng@canonical.com, rjw@rjwysocki.net,
+        len.brown@intel.com, todd.e.brandt@intel.com,
+        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
+        yu.c.chen@intel.com
+Subject: Re: [PATCH net-next v2 0/2][pull request] 1GbE Intel Wired LAN
+ Driver Updates 2021-03-15
+Message-ID: <20210316133514.10b4fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210316031659.3695692-1-anthony.l.nguyen@intel.com>
+References: <20210316031659.3695692-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,12 +43,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Mar 2021 10:57:36 +0800 Yejune Deng wrote:
-> proc_creat_seq() that directly take a struct seq_operations,
-> and deal with network namespaces in ->open.
+On Mon, 15 Mar 2021 20:16:57 -0700 Tony Nguyen wrote:
+> The NIC is put in runtime suspend status when there is no cable connected.
+> As a result, it is safe to keep non-wakeup NIC in runtime suspended during
+> s2ram because the system does not rely on the NIC plug event nor WoL to
+> wake up the system. Besides that, unlike the s2idle, s2ram does not need to
+> manipulate S0ix settings during suspend.
 > 
-> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+> v2: remove __maybe_unused from e1000e_pm_prepare()
 
-Looks equivalent to me:
+Thanks!
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
