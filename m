@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9B233D63B
+	by mail.lfdr.de (Postfix) with ESMTP id C831533D63D
 	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 15:56:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237630AbhCPO4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 10:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56964 "EHLO
+        id S237639AbhCPO4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 10:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbhCPOzd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 10:55:33 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D728EC061756
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 07:55:32 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id bf3so21843819edb.6
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 07:55:32 -0700 (PDT)
+        with ESMTP id S231277AbhCPOze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 10:55:34 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0F1C061762
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 07:55:33 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id dm8so21889842edb.2
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 07:55:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5cY1vttggKJxfAN1gIvxnaprcsfV9QcSRjH3K9V2X4U=;
-        b=q8f+L0OoaYxQp/tInGT2IySMb9wsEN5dBE9JYwmTMsM0jov756vFi9PyoNuxqzSQDJ
-         0eoLt4vc+85sYtnh1fUFsInGCDaMuPRCHL1CKg/5/tUSYmYek4Sv3XWPO0TPw4kLanYt
-         UEHkdC+4jxuFoLCaOTUDq6ZlefCqe3WZoWhU6ZCwiGuT192WGGCet95NVvSLIYsOow7A
-         rbOIGlYCzybwNw7Jnxe3bzFR4FOhYryuJaZ7VEjHyAdL1SMtzH9qq0szDO4Y2HUmzRQr
-         Gw4pSlQdzY/FypsNX8XtR0HxinaaN5eDYUZPe7oAX3UmAGnXAVobr3j9k5mGRbVEEKsU
-         XzFg==
+        bh=GOcsnumBGmuLOKygYRRBDZmidHGd/6joY3FP+GTAY7I=;
+        b=G+FgMMaR39LMpPD6BBXvYgNrwdUWvpnL6fCy4W5c74w+CPehqS2IfJ0Qg6tUtQWqpl
+         NRr+TUnJqSGjeUWT5/TPkDM+IOFkDd6rK0Hxp4HIc/WVVwgx6bmmXUjNW7a/HTF1Ms+e
+         8Ew5G0Zu/xAOtz3bPOKVI/vW9JvbM/0ElmpJ4jEt0fhzsNH31XkTbVPpwviQUtrvFRN7
+         EYrgyEsQ+nYRm8E7Y2NxODgeibhHnuM24xclJCHC+/7mZnFwAJcGvxlirKhLbvI1oIn5
+         UiseQhAI2o9jaYhuGFAJTGYfPfv4TX6mTBLOgpHW88BiCX2sm3uYeMJx35xtx9+TD5pV
+         VRcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5cY1vttggKJxfAN1gIvxnaprcsfV9QcSRjH3K9V2X4U=;
-        b=Gn+YKAfKurSko2oms5kEeCT2Xouh9amSzYvyDVD2+KZvdhncJ7xK+Po22oFVtOstVl
-         aSOO6frw5Hm1rt4mmJol0h4HxBZujsoJVPqYmKR3Wl92itR0zo3x38wNFDVzBOALVeAA
-         T0ckvHs3QnbcJ4TCiRtzNrbRTXca/92chx+lOfb1brLTr20BlHHBkiIfQUCH44DROczF
-         QU2hwCIy3NuYt8I+4W10BPHtsJ1Khj0SKf9rT5miVeOYX/iOlKB1WXHGZS2z2lkvt18e
-         DInegUV67PkZKQmbAhkeuk7yztp53nx5O7//p4lL4e6qyPhQScuMcpfZGyse03yo3F+0
-         8SFA==
-X-Gm-Message-State: AOAM530W89Mgh7Ll0u00XcOHQxm2wwpxPOvUa+iZAaeFtqd48lXU08L3
-        1jWi0Koo8l9nwWELxFROejGwYWlVhiI=
-X-Google-Smtp-Source: ABdhPJyoJn27BeFC/cHs4v9BJuDh6QIJlfXUhohByU1dOkYwG+NGFglJqxxdvC/5qySnEAMuTQp8jA==
-X-Received: by 2002:aa7:c403:: with SMTP id j3mr36565981edq.137.1615906531538;
-        Tue, 16 Mar 2021 07:55:31 -0700 (PDT)
+        bh=GOcsnumBGmuLOKygYRRBDZmidHGd/6joY3FP+GTAY7I=;
+        b=Z2vNCjQfhxfHAOs66W3K0aT7mfg98PlIs0Lm8IXfyWp1DrAQsrdanr0RmOkiadyu7N
+         8gTDtfN53e6tVOYfqCaILDAt0ZytW2fSBcN4u0TcxGRBuOHBsXtbnl/X3qFnbRZII+Mf
+         q0uq5h1RCS0gn1PdyZDRZegOdRscBkD2qbql0UGtT9Kd246seJlhxNcLJiqM0+Uw8Ka8
+         ++yirhJoDg8kUpRJL2J668OUmcKEImopSTZSza1ZeoO9XLbLER8c8k1tj11tOneE4NNB
+         HjqIVmxWnxavgTQTJY+fLIe1mbtzFpD9Mj7OgLGLI+lsEtHwxdFCFZuNQY6kYN0GQj8L
+         3iCQ==
+X-Gm-Message-State: AOAM531Mom2ZkLiLHZrwvw8qmry/lQvbCAz2GUcWXBBIXAGjA6HsnA2l
+        Wloy7GXYIgoeQINLg6WKKKk=
+X-Google-Smtp-Source: ABdhPJxEtst1VRXWGmdgWWYXg6Zcnwr1v6JczxBlmzhdbl8P3YlQU1kIg0Ukz2yrxVtQI8zcSFXW+g==
+X-Received: by 2002:a50:e882:: with SMTP id f2mr36669136edn.184.1615906532427;
+        Tue, 16 Mar 2021 07:55:32 -0700 (PDT)
 Received: from yoga-910.localhost (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id w18sm9681402ejn.23.2021.03.16.07.55.30
+        by smtp.gmail.com with ESMTPSA id w18sm9681402ejn.23.2021.03.16.07.55.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 07:55:31 -0700 (PDT)
+        Tue, 16 Mar 2021 07:55:32 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ruxandra.radulescu@nxp.com, yangbo.lu@nxp.com,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 1/5] dpaa2-switch: remove unused ABI functions
-Date:   Tue, 16 Mar 2021 16:55:08 +0200
-Message-Id: <20210316145512.2152374-2-ciorneiioana@gmail.com>
+Subject: [PATCH net-next 2/5] dpaa2-switch: fix kdoc warnings
+Date:   Tue, 16 Mar 2021 16:55:09 +0200
+Message-Id: <20210316145512.2152374-3-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210316145512.2152374-1-ciorneiioana@gmail.com>
 References: <20210316145512.2152374-1-ciorneiioana@gmail.com>
@@ -65,146 +65,164 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Cleanup the dpaa2-switch driver a bit by removing any unused MC firmware
-ABI definitions.
+Running kernel-doc over the dpaa2-switch driver generates a bunch of
+warnings. Fix them up by removing code comments for macros which are
+self-explanatory and adding a bit more context for the
+dpsw_if_get_port_mac_addr() function and the fields of the
+dpsw_vlan_if_cfg structure.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- .../net/ethernet/freescale/dpaa2/dpsw-cmd.h   |  7 --
- drivers/net/ethernet/freescale/dpaa2/dpsw.c   | 70 +------------------
- drivers/net/ethernet/freescale/dpaa2/dpsw.h   |  6 --
- 3 files changed, 1 insertion(+), 82 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpsw.c |  2 +-
+ drivers/net/ethernet/freescale/dpaa2/dpsw.h | 57 +++++----------------
+ 2 files changed, 15 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpsw-cmd.h b/drivers/net/ethernet/freescale/dpaa2/dpsw-cmd.h
-index eb620e832412..2371fd5c40e3 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpsw-cmd.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpsw-cmd.h
-@@ -75,8 +75,6 @@
- #define DPSW_CMDID_FDB_DUMP                 DPSW_CMD_ID(0x08A)
- 
- #define DPSW_CMDID_IF_GET_PORT_MAC_ADDR     DPSW_CMD_ID(0x0A7)
--#define DPSW_CMDID_IF_GET_PRIMARY_MAC_ADDR  DPSW_CMD_ID(0x0A8)
--#define DPSW_CMDID_IF_SET_PRIMARY_MAC_ADDR  DPSW_CMD_ID(0x0A9)
- 
- #define DPSW_CMDID_CTRL_IF_GET_ATTR         DPSW_CMD_ID(0x0A0)
- #define DPSW_CMDID_CTRL_IF_SET_POOLS        DPSW_CMD_ID(0x0A1)
-@@ -443,11 +441,6 @@ struct dpsw_rsp_if_get_mac_addr {
- 	u8 mac_addr[6];
- };
- 
--struct dpsw_cmd_if_set_mac_addr {
--	__le16 if_id;
--	u8 mac_addr[6];
--};
--
- struct dpsw_cmd_set_egress_flood {
- 	__le16 fdb_id;
- 	u8 flood_type;
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpsw.c b/drivers/net/ethernet/freescale/dpaa2/dpsw.c
-index 5189f156100e..f94874381b69 100644
+index f94874381b69..ad7a4c03b130 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpsw.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpsw.c
-@@ -397,7 +397,7 @@ int dpsw_if_set_link_cfg(struct fsl_mc_io *mc_io,
-  * @if_id:	Interface id
-  * @state:	Link state	1 - linkup, 0 - link down or disconnected
-  *
-- * @Return	'0' on Success; Error code otherwise.
-+ * Return:	'0' on Success; Error code otherwise.
-  */
- int dpsw_if_get_link_state(struct fsl_mc_io *mc_io,
- 			   u32 cmd_flags,
-@@ -1356,74 +1356,6 @@ int dpsw_if_get_port_mac_addr(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
- 	return 0;
+@@ -1319,7 +1319,7 @@ int dpsw_get_api_version(struct fsl_mc_io *mc_io,
  }
  
--/**
-- * dpsw_if_get_primary_mac_addr()
-- * @mc_io:	Pointer to MC portal's I/O object
-- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-- * @token:	Token of DPSW object
-- * @if_id:	Interface Identifier
-- * @mac_addr:	MAC address of the physical port, if any, otherwise 0
-- *
-- * Return:	Completion status. '0' on Success; Error code otherwise.
-- */
--int dpsw_if_get_primary_mac_addr(struct fsl_mc_io *mc_io, u32 cmd_flags,
--				 u16 token, u16 if_id, u8 mac_addr[6])
--{
--	struct dpsw_rsp_if_get_mac_addr *rsp_params;
--	struct fsl_mc_command cmd = { 0 };
--	struct dpsw_cmd_if *cmd_params;
--	int err, i;
--
--	/* prepare command */
--	cmd.header = mc_encode_cmd_header(DPSW_CMDID_IF_SET_PRIMARY_MAC_ADDR,
--					  cmd_flags,
--					  token);
--	cmd_params = (struct dpsw_cmd_if *)cmd.params;
--	cmd_params->if_id = cpu_to_le16(if_id);
--
--	/* send command to mc*/
--	err = mc_send_command(mc_io, &cmd);
--	if (err)
--		return err;
--
--	/* retrieve response parameters */
--	rsp_params = (struct dpsw_rsp_if_get_mac_addr *)cmd.params;
--	for (i = 0; i < 6; i++)
--		mac_addr[5 - i] = rsp_params->mac_addr[i];
--
--	return 0;
--}
--
--/**
-- * dpsw_if_set_primary_mac_addr()
-- * @mc_io:	Pointer to MC portal's I/O object
-- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
-- * @token:	Token of DPSW object
-- * @if_id:	Interface Identifier
-- * @mac_addr:	MAC address of the physical port, if any, otherwise 0
-- *
-- * Return:	Completion status. '0' on Success; Error code otherwise.
-- */
--int dpsw_if_set_primary_mac_addr(struct fsl_mc_io *mc_io, u32 cmd_flags,
--				 u16 token, u16 if_id, u8 mac_addr[6])
--{
--	struct dpsw_cmd_if_set_mac_addr *cmd_params;
--	struct fsl_mc_command cmd = { 0 };
--	int i;
--
--	/* prepare command */
--	cmd.header = mc_encode_cmd_header(DPSW_CMDID_IF_SET_PRIMARY_MAC_ADDR,
--					  cmd_flags,
--					  token);
--	cmd_params = (struct dpsw_cmd_if_set_mac_addr *)cmd.params;
--	cmd_params->if_id = cpu_to_le16(if_id);
--	for (i = 0; i < 6; i++)
--		cmd_params->mac_addr[i] = mac_addr[5 - i];
--
--	/* send command to mc*/
--	return mc_send_command(mc_io, &cmd);
--}
--
  /**
-  * dpsw_ctrl_if_enable() - Enable control interface
+- * dpsw_if_get_port_mac_addr()
++ * dpsw_if_get_port_mac_addr() - Retrieve MAC address associated to the physical port
   * @mc_io:	Pointer to MC portal's I/O object
+  * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+  * @token:	Token of DPSW object
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpsw.h b/drivers/net/ethernet/freescale/dpaa2/dpsw.h
-index 9e04350f3277..e5e9c35604a7 100644
+index e5e9c35604a7..6807b15f5807 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpsw.h
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpsw.h
-@@ -707,12 +707,6 @@ int dpsw_get_api_version(struct fsl_mc_io *mc_io,
- int dpsw_if_get_port_mac_addr(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
- 			      u16 if_id, u8 mac_addr[6]);
+@@ -14,17 +14,10 @@
  
--int dpsw_if_get_primary_mac_addr(struct fsl_mc_io *mc_io, u32 cmd_flags,
--				 u16 token, u16 if_id, u8 mac_addr[6]);
--
--int dpsw_if_set_primary_mac_addr(struct fsl_mc_io *mc_io, u32 cmd_flags,
--				 u16 token, u16 if_id, u8 mac_addr[6]);
--
+ struct fsl_mc_io;
+ 
+-/**
+- * DPSW general definitions
+- */
++/* DPSW general definitions */
+ 
+-/**
+- * Maximum number of traffic class priorities
+- */
+ #define DPSW_MAX_PRIORITIES	8
+-/**
+- * Maximum number of interfaces
+- */
++
+ #define DPSW_MAX_IF		64
+ 
+ int dpsw_open(struct fsl_mc_io *mc_io,
+@@ -36,30 +29,20 @@ int dpsw_close(struct fsl_mc_io *mc_io,
+ 	       u32 cmd_flags,
+ 	       u16 token);
+ 
+-/**
+- * DPSW options
+- */
++/* DPSW options */
+ 
  /**
-  * struct dpsw_fdb_cfg  - FDB Configuration
-  * @num_fdb_entries: Number of FDB entries
+- * Disable flooding
++ * DPSW_OPT_FLOODING_DIS - Flooding was disabled at device create
+  */
+ #define DPSW_OPT_FLOODING_DIS		0x0000000000000001ULL
+ /**
+- * Disable Multicast
++ * DPSW_OPT_MULTICAST_DIS - Multicast was disabled at device create
+  */
+ #define DPSW_OPT_MULTICAST_DIS		0x0000000000000004ULL
+ /**
+- * Support control interface
++ * DPSW_OPT_CTRL_IF_DIS - Control interface support is disabled
+  */
+ #define DPSW_OPT_CTRL_IF_DIS		0x0000000000000010ULL
+-/**
+- * Disable flooding metering
+- */
+-#define DPSW_OPT_FLOODING_METERING_DIS  0x0000000000000020ULL
+-/**
+- * Enable metering
+- */
+-#define DPSW_OPT_METERING_EN            0x0000000000000040ULL
+ 
+ /**
+  * enum dpsw_component_type - component type of a bridge
+@@ -116,15 +99,13 @@ int dpsw_reset(struct fsl_mc_io *mc_io,
+ 	       u32 cmd_flags,
+ 	       u16 token);
+ 
+-/**
+- * DPSW IRQ Index and Events
+- */
++/* DPSW IRQ Index and Events */
+ 
+ #define DPSW_IRQ_INDEX_IF		0x0000
+ #define DPSW_IRQ_INDEX_L2SW		0x0001
+ 
+ /**
+- * IRQ event - Indicates that the link state changed
++ * DPSW_IRQ_EVENT_LINK_CHANGED - Indicates that the link state changed
+  */
+ #define DPSW_IRQ_EVENT_LINK_CHANGED	0x0001
+ 
+@@ -229,9 +210,6 @@ enum dpsw_queue_type {
+ 	DPSW_QUEUE_RX_ERR,
+ };
+ 
+-/**
+- * Maximum number of DPBP
+- */
+ #define DPSW_MAX_DPBP     8
+ 
+ /**
+@@ -293,21 +271,9 @@ enum dpsw_action {
+ 	DPSW_ACTION_REDIRECT = 1
+ };
+ 
+-/**
+- * Enable auto-negotiation
+- */
+ #define DPSW_LINK_OPT_AUTONEG		0x0000000000000001ULL
+-/**
+- * Enable half-duplex mode
+- */
+ #define DPSW_LINK_OPT_HALF_DUPLEX	0x0000000000000002ULL
+-/**
+- * Enable pause frames
+- */
+ #define DPSW_LINK_OPT_PAUSE		0x0000000000000004ULL
+-/**
+- * Enable a-symmetric pause frames
+- */
+ #define DPSW_LINK_OPT_ASYM_PAUSE	0x0000000000000008ULL
+ 
+ /**
+@@ -376,10 +342,11 @@ int dpsw_if_get_tci(struct fsl_mc_io *mc_io,
+ 
+ /**
+  * enum dpsw_stp_state - Spanning Tree Protocol (STP) states
+- * @DPSW_STP_STATE_BLOCKING: Blocking state
++ * @DPSW_STP_STATE_DISABLED: Disabled state
+  * @DPSW_STP_STATE_LISTENING: Listening state
+  * @DPSW_STP_STATE_LEARNING: Learning state
+  * @DPSW_STP_STATE_FORWARDING: Forwarding state
++ * @DPSW_STP_STATE_BLOCKING: Blocking state
+  *
+  */
+ enum dpsw_stp_state {
+@@ -524,6 +491,10 @@ int dpsw_vlan_add(struct fsl_mc_io *mc_io,
+  *		list for this VLAN
+  * @if_id: The set of interfaces that are
+  *		assigned to the egress list for this VLAN
++ * @options: Options map for this command (DPSW_VLAN_ADD_IF_OPT_FDB_ID)
++ * @fdb_id: FDB id to be used by this VLAN on these specific interfaces
++ *		(taken into account only if the DPSW_VLAN_ADD_IF_OPT_FDB_ID is
++ *		specified in the options field)
+  */
+ struct dpsw_vlan_if_cfg {
+ 	u16 num_ifs;
 -- 
 2.30.0
 
