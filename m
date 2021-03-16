@@ -2,414 +2,699 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E5233E0CC
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F083333E0D0
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 22:50:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbhCPVtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 17:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
+        id S229756AbhCPVuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 17:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbhCPVtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 17:49:22 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFE3C06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 14:49:10 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id e19so74728053ejt.3
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 14:49:10 -0700 (PDT)
+        with ESMTP id S229608AbhCPVuF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 17:50:05 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2EAC06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 14:50:04 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id m22so64721259lfg.5
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 14:50:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hMo5+z5OmgPsgsxFsK9dfeAQHlVyNfYQOoRmlvvvHuc=;
-        b=E5oaID1gjlPbdYPWtRNbq/JvN+Lk6wSaNctrhQCtPebFYHOE3jC2JXyyH7RMQC0EQl
-         0aoDFBNdZhAH9d+Wf0p3XtZAczNj2i5m2/0bXbYO8V+wHM5jWZonQM991BFITj7Cam+T
-         SnP5Z8KIDHIX1OFbrwKwF3kW7i3qaqxKxRhXdAvUIBrgD9jO0j1dd4HcsjHHxoNhNUPP
-         TVlhX02gAunTEPzwdmMcjGaLd7FN4EKXQVWborL8HZKlSz0Eb9M0WKtJh0Jl3LGDcizX
-         O5Li9OPVwACkihQfr4BZg1hzegxnkDQx2GLB+E/kBA/0yJ6Ubwf8UwcpLWRt5cHsOfpC
-         EBDQ==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=mzhOrx54IVYTSUzNS+s9g1e6DoWaCfAAgXnjWGKQbFs=;
+        b=FKnCzj5mEYTcxgan933p6A6eldexfacQlWASbWamTrb5spDIIXZi0pKsb5R9/jByQL
+         ROmDspw+ez61U59FFXJ/7vvxo+i9NNmdmJdieTeCFzE8OnI+0GX27l3W64Jf2AY1s9Jm
+         ZaQxg79TrMVa2fV19A66ZfmS2MTqtN1xwDqjFTEy0tmZkEh3Vz6jPvvNsbPq0WPnmuRq
+         ydOLCPCL9uSycs6evC7qKBGB+KiGiY298YMmZupiEpJFztcR9Bx7aegmKUFbDOxfCkN4
+         manB8te8AMRXYoEJn7Ki/cg5zDbB7rKqakQAEXq3ZOommYRrIhcX2Bt6pngdxGpPqqez
+         H/3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hMo5+z5OmgPsgsxFsK9dfeAQHlVyNfYQOoRmlvvvHuc=;
-        b=ZDU4GWuTi7mYgNvucE+DMoHm9s8zDrjhe+9u3PIlO5IdR5CDOxzgVNibJVQfGGkudU
-         YEs0sCLnollSXPLMVCQYKAOVMDwCbrPO8WYdPgl6wF8YbhpibQo+Gn/4aBz+1+VKIe0A
-         zK93KX+GECwYr4oXYa5tOpoe72LE7b0+h9H+cHC0S+gEFl/KNIh055Roln6vEHnUI27Z
-         x1RacZIcr2P4HFJ/SNQyx+P8u6GetLjQNRYHEHM5zCPlVbdDhcI9eWHnveNYFy1+UnKn
-         Z0KAAXZ52pblFJN+9u45GzX7sO1SQQ+Eena/Lhv+/tMxGhqd50DroMkUJBNW9Y6RCjkR
-         BFTg==
-X-Gm-Message-State: AOAM533rDR9Iks2kMChl78DoOaF/MJs0KE1TPtALidgyi+K/D21f/d/R
-        8lVwYfGmTVKlo1cAZfl2Azg=
-X-Google-Smtp-Source: ABdhPJyXvboxdTgG9UyswiXY0vN0yZPyaXGsEvoNTnwdHAuei5ynI1iWcDg1sJnukx1BxI5YXLxbOA==
-X-Received: by 2002:a17:906:33d9:: with SMTP id w25mr33276070eja.413.1615931349398;
-        Tue, 16 Mar 2021 14:49:09 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id bx24sm10506850ejc.88.2021.03.16.14.49.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=mzhOrx54IVYTSUzNS+s9g1e6DoWaCfAAgXnjWGKQbFs=;
+        b=Jcd8TyXORvy6cit+5Z8mkLxH3qRiX7mfbejMS0KvI7WAs2myQF0zwiGCCrNXyJMcFC
+         ASWY9g5MTj8HyhwxTLz38UfYXShIPLLtZPDki2pIiDm/JNk+SyfaQmu/sua4XAs4+IJu
+         1UFecXlCvFHEjkp2+Ulj9GVaSuX2X24NG0JsKF8VG2pBtB/90FwI2aAIWaf7osWNMNzU
+         6jkDYzQHpeAVXC181PoI/iQ1ZEGO7n4whfFsWNFgtk6dsnj7jN4hA0KI8QvFn+cYilSC
+         yNAojdfwZVxkitWn62VqQ0jcUgWBHH/3grGroQtiAzFQyJb6FsRzv54sCdegQCMS+BeQ
+         alvg==
+X-Gm-Message-State: AOAM530/SwBNcYUc6SWda2Xvk12kC3Km9QzkVgePXErTXCFaQpK2DaOY
+        OW/vzoDcWBDwEtB7WV327iro7g==
+X-Google-Smtp-Source: ABdhPJwSu7HxtVWk3cmlP7/YZJIjfv3gJg0BUxoXnbE0ZeOKvYbUJFSvS+2jhunfccPpcwYmc48YIw==
+X-Received: by 2002:a05:6512:34c9:: with SMTP id w9mr436117lfr.267.1615931402037;
+        Tue, 16 Mar 2021 14:50:02 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id 203sm3262769ljf.41.2021.03.16.14.50.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 14:49:07 -0700 (PDT)
-Date:   Tue, 16 Mar 2021 23:49:06 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: Centralize validation of VLAN configuration
-Message-ID: <20210316214906.pt7io5qcje6g2snn@skbuf>
-References: <20210315195413.2679929-1-tobias@waldekranz.com>
- <20210315234956.2yt4ypwzqaesw72b@skbuf>
- <878s6nozcz.fsf@waldekranz.com>
+        Tue, 16 Mar 2021 14:50:01 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v2 net] net: dsa: Centralize validation of VLAN configuration
+Date:   Tue, 16 Mar 2021 22:49:52 +0100
+Message-Id: <20210316214952.3444946-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878s6nozcz.fsf@waldekranz.com>
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 05:08:28PM +0100, Tobias Waldekranz wrote:
-> On Tue, Mar 16, 2021 at 01:49, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, Mar 15, 2021 at 08:54:13PM +0100, Tobias Waldekranz wrote:
-> >> There are four kinds of events that have an inpact on VLAN
-> >
-> > impact
-> >
-> >> configuration of DSA ports:
-> >> 
-> >> - Adding VLAN uppers
-> >>   (ip link add dev swp0.1 link swp0 type vlan id 1)
-> > (..)
-> 
-> Parse error; I need more context :)
+There are four kinds of events that have an impact on VLAN
+configuration of DSA ports:
 
-For what? I didn't say anything.
+- Adding VLAN uppers
+  (ip link add dev swp0.1 link swp0 type vlan id 1)
 
-> >> +static bool dsa_8021q_uppers_are_coherent(struct dsa_switch_tree *dst,
-> >> +					  struct net_device *br,
-> >> +					  bool seen_vlan_upper,
-> >
-> > have_8021q_uppers_in_bridge maybe?
-> 
-> I like that the current name hints of a relation with
-> seen_offloaded. Your suggestion seems awfully long for an argument name.
+- Bridging VLAN uppers
+  (ip link set dev swp0.1 master br0)
 
-seen_offloaded would have become have_offloaded_bridge_ports_as_uppers,
-I thought that was obvious. But if you don't like it I can't force
-you...
+- Adding bridge VLANs
+  (bridge vlan add dev swp0 vid 1)
 
-> >
-> >> +					  unsigned long *upper_vids,
-> >> +					  struct netlink_ext_ack *extack)
-> >> +{
-> >> +	struct net_device *lower, *upper;
-> >> +	struct list_head *liter, *uiter;
-> >
-> > It doesn't hurt to name them lower_iter, upper_iter?
-> >
-> >> +	struct dsa_slave_priv *priv;
-> >> +	bool seen_offloaded = false;
-> >> +	u16 vid;
-> >> +
-> >> +	netdev_for_each_lower_dev(br, lower, liter) {
-> >> +		priv = dsa_slave_dev_lower_find(lower);
-> >> +		if (!priv || priv->dp->ds->dst != dst)
-> >> +			/* Ignore ports that are not related to us in
-> >> +			 * any way.
-> >> +			 */
-> >> +			continue;
-> >
-> > So "priv" is the lower of a bridge port...
-> >
-> >> +
-> >> +		if (is_vlan_dev(lower)) {
-> >> +			seen_vlan_upper = true;
-> >> +			continue;
-> >> +		}
-> >
-> > But in the code path below, that bridge port is not a VLAN... So it must
-> > be a LAG or a HSR ring....
-> >
-> >> +		if (dsa_port_offloads_bridge(priv->dp, br) &&
-> >> +		    dsa_port_offloads_bridge_port(priv->dp, lower))
-> >> +			seen_offloaded = true;
-> >> +		else
-> >> +			/* Non-offloaded uppers can to whatever they
-> >
-> > s/can to/can do/
-> >
-> >> +			 * want.
-> >> +			 */
-> >> +			continue;
-> >
-> > Which is offloaded..
-> >
-> >> +		netdev_for_each_upper_dev_rcu(lower, upper, uiter) {
-> >> +			if (!is_vlan_dev(upper))
-> >> +				continue;
-> >
-> > So this iterates through VLAN uppers of offloaded LAGs and HSR rings?
-> > Does it also iterate through 8021q uppers of "priv" somehow?
-> 
-> As you discovered below, dsa_slave_dev_lower_find now also matches the
-> starting device as well as any device below it. So we iterate through
-> all uppers of any bridge port that this tree is offloading.
-> 
-> >> +			vid = vlan_dev_vlan_id(upper);
-> >> +			if (!test_bit(vid, upper_vids)) {
-> >> +				set_bit(vid, upper_vids);
-> >> +				continue;
-> >> +			}
-> >> +
-> >> +			NL_SET_ERR_MSG_MOD(extack,
-> >> +					   "Multiple VLAN interfaces cannot use the same VID");
-> >> +			return false;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	if (seen_offloaded && seen_vlan_upper) {
-> >> +		NL_SET_ERR_MSG_MOD(extack,
-> >> +				   "VLAN interfaces cannot share bridge with offloaded port");
-> >> +		return false;
-> >> +	}
-> >> +
-> >> +	return true;
-> >> +}
-> >> +
-> >> +static bool dsa_bridge_vlans_are_coherent(struct net_device *br,
-> >> +					  u16 new_vid, unsigned long *upper_vids,
-> >
-> > const unsigned long *upper_vids
-> >
-> >> +					  struct netlink_ext_ack *extack)
-> >> +{
-> >> +	u16 vid;
-> >> +
-> >> +	if (new_vid && test_bit(new_vid, upper_vids))
-> >> +		goto err;
-> >> +
-> >> +	for_each_set_bit(vid, upper_vids, VLAN_N_VID) {
-> >> +		struct bridge_vlan_info br_info;
-> >> +
-> >> +		if (br_vlan_get_info(br, vid, &br_info))
-> >
-> > You should only error out if VLAN filtering is enabled/turning on in the
-> > bridge, no?
-> 
-> We only validate upper and bridge VLAN coherency for filtering
-> bridges. Otherwise we return early from dsa_bridge_is_coherent.
+- Changes to a bridge's VLAN filtering setting
+  (ip link set dev br0 type bridge vlan_filtering 1)
 
-Ok.
+For all of these events, we want to ensure that some invariants are
+upheld for offloaded ports belonging to our tree:
 
-> >> +			/* Error means that the VID does not exist,
-> >> +			 * which is what we want to ensure.
-> >> +			 */
-> >> +			continue;
-> >> +
-> >> +		goto err;
-> >> +	}
-> >> +
-> >> +	return true;
-> >> +
-> >> +err:
-> >> +	NL_SET_ERR_MSG_MOD(extack, "No bridge VID may be used on a related VLAN interface");
-> >> +	return false;
-> >> +}
-> >> +
-> >> +/**
-> >> + * dsa_bridge_is_coherent - Verify that DSA tree accepts a bridge config.
-> >> + * @dst: Tree to verify against.
-> >> + * @br: Bridge netdev to verify.
-> >> + * @mod: Description of the modification to introduce.
-> >> + * @extack: Netlink extended ack for error reporting.
-> >> + *
-> >> + * Verify that the VLAN config of @br, its offloaded ports belonging
-> >> + * to @dst and their VLAN uppers, can be correctly offloaded after
-> >> + * introducing the change described by @mod. If this is not the case,
-> >> + * an error is reported via @extack.
-> >> + *
-> >> + * Return: true if the config can be offloaded, false otherwise.
-> >> + */
-> >> +bool dsa_bridge_is_coherent(struct dsa_switch_tree *dst, struct net_device *br,
-> >> +			    struct dsa_bridge_mod *mod,
-> >> +			    struct netlink_ext_ack *extack)
-> >> +{
-> >> +	unsigned long *upper_vids = NULL;
-> >
-> > initialization with NULL is pointless.
-> >
-> >> +	bool filter;
-> >> +
-> >> +	if (mod->filter)
-> >> +		filter = *mod->filter;
-> >> +	else
-> >> +		filter = br && br_vlan_enabled(br);
-> >> +
-> >> +	if (!dsa_bridge_filtering_is_coherent(dst, filter, extack))
-> >> +		goto err;
-> >> +
-> >> +	if (!filter)
-> >> +		return true;
-> >> +
-> >> +	upper_vids = bitmap_zalloc(VLAN_N_VID, GFP_KERNEL);
-> >> +	if (!upper_vids) {
-> >> +		WARN_ON_ONCE(1);
-> >
-> > if (WARN_ON_ONCE(!upper_vids))
-> >
-> >> +		goto err;
-> >> +	}
-> >> +
-> >> +	if (mod->upper_vid)
-> >> +		set_bit(mod->upper_vid, upper_vids);
-> >> +
-> >> +	if (!dsa_8021q_uppers_are_coherent(dst, br, mod->bridge_upper,
-> >> +					   upper_vids, extack))
-> >> +		goto err_free;
-> >> +
-> >> +	if (!dsa_bridge_vlans_are_coherent(br, mod->br_vid, upper_vids, extack))
-> >> +		goto err_free;
-> >> +
-> >> +	kfree(upper_vids);
-> >> +	return true;
-> >> +
-> >> +err_free:
-> >> +	kfree(upper_vids);
-> >> +err:
-> >> +	return false;
-> >> +}
-> >> +
-> >>  /**
-> >>   * dsa_tree_notify - Execute code for all switches in a DSA switch tree.
-> >>   * @dst: collection of struct dsa_switch devices to notify.
-> >> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-> >> index 9d4b0e9b1aa1..8d8d307df437 100644
-> >> --- a/net/dsa/dsa_priv.h
-> >> +++ b/net/dsa/dsa_priv.h
-> >> @@ -361,6 +369,27 @@ int dsa_switch_register_notifier(struct dsa_switch *ds);
-> >>  void dsa_switch_unregister_notifier(struct dsa_switch *ds);
-> >>  
-> >>  /* dsa2.c */
-> >> +
-> >> +/**
-> >> + * struct dsa_bridge_mod - Modification of bridge related config
-> >> + * @filter: If non-NULL, the new state of VLAN filtering.
-> >> + * @br_vid: If non-zero, this VID will be added to the bridge.
-> >> + * @upper_vid: If non-zero, a VLAN upper using this VID will be added to
-> >> + *             a bridge port.
-> >> + * @bridge_upper: If non-NULL, a VLAN upper will be added to the bridge.
-> >
-> > I would name this "add_8021q_upper_to_bridge". Longer name, but clearer.
-> 
-> It is not like it is a global variable or anything, there is plenty of
-> context here I think. You know that you are describing a bridge related
-> VLAN modification.
+- For hardware where VLAN filtering is a global setting, either all
+  bridges must use VLAN filtering, or no bridge can.
 
-Ok.
+- For all filtering bridges, no VID may be configured on more than one
+  VLAN upper. An example of a violation of this would be:
 
-> >> + *
-> >> + * Describes a bridge related modification that is about to be applied.
-> >> + */
-> >> +struct dsa_bridge_mod {
-> >> +	bool *filter;
-> >> +	u16   br_vid;
-> >> +	u16   upper_vid;
-> >> +	bool  bridge_upper;
-> >> +};
-> >
-> > Frankly this is a bit ugly, but I have no better idea, and the structure
-> > is good enough for describing a state transition. Fully describing the
-> > state is a lot more difficult, due to the need to list all bridges which
-> > may span a DSA switch tree.
-> 
-> I am not sure what to make of this. Its job _is_ to describe a state
-> transition. Why would we want to describe the state? The kernel already
-> has the state, which is what dsa_bridge_is_coherent uses to figure out
-> if the change can be applied or not.
-> 
-> Is it sexy? No, I guess not. This type of code seldom is. The
-> alternative would be to cram the info into the argument list, but that
-> makes the wrappers harder to read and it makes it harder to extend when
-> we want to validate another invariant.
+  .100  br0  .100
+     \  / \  /
+     swp0 swp1
 
-What I was thinking out loud about was whether it would be possible for
-the validation to work as follows:
+  $ ip link add dev br0 type bridge vlan_filtering 1
+  $ ip link add dev swp0.100 link swp0 type vlan id 100
+  $ ip link set dev swp0 master br0
+  $ ip link add dev swp1.100 link swp0 type vlan id 100
+  $ ip link set dev swp1 master br0
 
-- call a function that extracts the current DSA configuration
-- modify that state description according to what you're doing,
-  transforming it into a candidate configuration
-- call a function that validates the candidate configuration
-- error out if the validation fails
+- For all filtering bridges, no upper VLAN may share a bridge with
+  another offloaded port. An example of a violation of this would be:
 
-Your solution needs to extract some of the current DSA configuration
-anyway, for the constellation of uppers, but then, the validation
-function takes the state transition as an explicit argument, and
-constructing the state is done as we go along.
+       br0
+      /  |
+     /   |
+  .100   |
+    |    |
+   swp0 swp1
 
-Again, I said I don't have a better idea than your proposal.
+  $ ip link add dev br0 type bridge vlan_filtering 1
+  $ ip link add dev swp0.100 link swp0 type vlan id 100
+  $ ip link set dev swp0.100 master br0
+  $ ip link set dev swp1 master br0
 
-> >> +bool dsa_bridge_is_coherent(struct dsa_switch_tree *dst, struct net_device *br,
-> >> +			    struct dsa_bridge_mod *mod,
-> >> +			    struct netlink_ext_ack *extack);
-> >>  void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
-> >>  void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag);
-> >>  int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
-> > (...)
-> 
-> ?
+- For all filtering bridges, no VID that exists in the bridge may be
+  used by a VLAN upper. An example of a violation of this would be:
 
-Don't worry, I just trimmed a chunk of the patch.
+      br0
+     (100)
+       |
+  .100 |
+     \ |
+     swp0
 
-> >> -static struct dsa_slave_priv *dsa_slave_dev_lower_find(struct net_device *dev)
-> >> +struct dsa_slave_priv *dsa_slave_dev_lower_find(struct net_device *dev)
-> >>  {
-> >>  	struct netdev_nested_priv priv = {
-> >>  		.data = NULL,
-> >>  	};
-> >>  
-> >> +	if (dsa_slave_dev_check(dev))
-> >> +		return netdev_priv(dev);
-> >> +
-> >>  	netdev_walk_all_lower_dev_rcu(dev, dsa_lower_dev_walk, &priv);
-> >>  
-> >>  	return (struct dsa_slave_priv *)priv.data;
-> >
-> > Ah, so that's what you did there. I don't like it. If the function is
-> > called "lower_find" and you come back with "dev" itself, I think that
-> > would qualify as "unexpected". Could you create a new function called
-> > dsa_slave_find_in_lowers_or_self, or something like that, which calls
-> > dsa_slave_dev_lower_find with the extra identity check?
-> 
-> My assumption was the opposite. Looking through the kernel, there seem
-> to be three other logical equivalents:
-> 
-> drivers/net/ethernet/marvell/prestera/prestera_main.c
-> 495:struct prestera_port *prestera_port_dev_lower_find(struct net_device *dev)
-> 
-> drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-> 3406:struct mlxsw_sp_port *mlxsw_sp_port_dev_lower_find(struct net_device *dev)
-> 
-> drivers/net/ethernet/rocker/rocker_main.c
-> 3090:struct rocker_port *rocker_port_dev_lower_find(struct net_device *dev,
-> 
-> All three will check the starting device before walking any lowers.
+  $ ip link add dev br0 type bridge vlan_filtering 1
+  $ ip link add dev swp0.100 link swp0 type vlan id 100
+  $ ip link set dev swp0 master br0
+  $ bridge vlan add dev swp0 vid 100
 
-Ok.
+Move the validation of these invariants to a central function, and use
+it from all sites where these events are handled. This way, we ensure
+that all invariants are always checked, avoiding certain configs being
+allowed or disallowed depending on the order in which commands are
+given.
 
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
 
-Actually, I think there is a bigger issue.
-Sadly, I only put 2 and 2 together now, and I believe we are still not
-dealing correctly with 8021q uppers of bridge ports with vlan_filtering 0.
-The network stack's expectation is described here:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210221213355.1241450-12-olteanv@gmail.com/
-Basically the problem is in the way DSA drives the configuration of the
-hardware port. When VLAN filtering is disabled, VLAN awareness is disabled,
-too, and we make no effort to classify packets according to the VLAN ID,
-and take a different forwarding decision in hardware based on that. So
-the traffic corresponding to the 8021q upper gets forwarded, flooded to
-ports it shouldn't go to.
-At the very least, we should deny:
-- joining a bridge with vlan_filtering 0 while there is any 8021q upper
-- toggling vlan_filtering off while there is any 8021q upper
-- adding an 8021q upper while the port is under a vlan_filtering=0 bridge
-And for net-next, we should look at lifting that restriction, perhaps by
-reacting to the above events by unoffloading the bridge port dynamically
-(it's going to be so complicated that my head hurts already).
+v2 primarily fixes an issue where VLAN uppers added on top of a bridge
+would be interpreted by DSA as if it was added to a port. Make sure
+that only VLAN uppers on ports we offload are considered.
+
+There are a few open issues that may result in a v3, but I wanted to
+get this out so that people can test it properly.
+
+v1 -> v2:
+  - Do not react to VLAN uppers unless they are on a port we offload.
+  - Fix uninitialized variable (kernel test robot)
+  - Spelling, some variable naming (Vladimir)
+
+ net/dsa/dsa2.c     | 179 +++++++++++++++++++++++++++++++++++++++++++++
+ net/dsa/dsa_priv.h |  29 ++++++++
+ net/dsa/port.c     | 100 ++++++++++---------------
+ net/dsa/slave.c    | 106 +++++++++------------------
+ 4 files changed, 279 insertions(+), 135 deletions(-)
+
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 4d4956ed303b..e7ae840d58f6 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -21,6 +21,185 @@
+ static DEFINE_MUTEX(dsa2_mutex);
+ LIST_HEAD(dsa_tree_list);
+ 
++static bool dsa_bridge_filtering_is_coherent(struct dsa_switch_tree *dst, bool filter,
++					     struct netlink_ext_ack *extack)
++{
++	bool is_global = false;
++	struct dsa_port *dp;
++
++	list_for_each_entry(dp, &dst->ports, list) {
++		if (dp->ds->vlan_filtering_is_global) {
++			is_global = true;
++			break;
++		}
++	}
++
++	if (!is_global)
++		return true;
++
++	/* For cases where enabling/disabling VLAN awareness is global
++	 * to the switch, we need to handle the case where multiple
++	 * bridges span different ports of the same switch device and
++	 * one of them has a different setting than what is being
++	 * requested.
++	 */
++	list_for_each_entry(dp, &dst->ports, list) {
++		if (!dp->bridge_dev)
++			continue;
++
++		if (br_vlan_enabled(dp->bridge_dev) != filter) {
++			NL_SET_ERR_MSG_MOD(extack,
++					   "VLAN filtering is not consistent across all bridges");
++			return false;
++		}
++	}
++
++	return true;
++}
++
++static bool dsa_8021q_uppers_are_coherent(struct dsa_switch_tree *dst,
++					  struct net_device *br,
++					  bool seen_vlan_upper,
++					  unsigned long *upper_vids,
++					  struct netlink_ext_ack *extack)
++{
++	struct list_head *lower_iter, *upper_iter;
++	struct net_device *lower, *upper;
++	struct dsa_slave_priv *priv;
++	bool seen_offloaded = false;
++	u16 vid;
++
++	netdev_for_each_lower_dev(br, lower, lower_iter) {
++		priv = dsa_slave_dev_lower_find(lower);
++		if (!priv || priv->dp->ds->dst != dst)
++			/* Ignore ports that are not related to us in
++			 * any way.
++			 */
++			continue;
++
++		if (is_vlan_dev(lower)) {
++			seen_vlan_upper = true;
++			continue;
++		}
++
++		if (dsa_port_offloads_bridge(priv->dp, br) &&
++		    dsa_port_offloads_bridge_port(priv->dp, lower))
++			seen_offloaded = true;
++		else
++			/* Non-offloaded uppers can do whatever they
++			 * want.
++			 */
++			continue;
++
++		netdev_for_each_upper_dev_rcu(lower, upper, upper_iter) {
++			if (!is_vlan_dev(upper))
++				continue;
++
++			vid = vlan_dev_vlan_id(upper);
++			if (!test_bit(vid, upper_vids)) {
++				set_bit(vid, upper_vids);
++				continue;
++			}
++
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Multiple VLAN interfaces cannot use the same VID");
++			return false;
++		}
++	}
++
++	if (seen_offloaded && seen_vlan_upper) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "VLAN interfaces cannot share bridge with offloaded port");
++		return false;
++	}
++
++	return true;
++}
++
++static bool dsa_bridge_vlans_are_coherent(struct net_device *br,
++					  u16 new_vid,
++					  const unsigned long *upper_vids,
++					  struct netlink_ext_ack *extack)
++{
++	u16 vid;
++
++	if (new_vid && test_bit(new_vid, upper_vids))
++		goto err;
++
++	for_each_set_bit(vid, upper_vids, VLAN_N_VID) {
++		struct bridge_vlan_info br_info;
++
++		if (br_vlan_get_info(br, vid, &br_info))
++			/* Error means that the VID does not exist,
++			 * which is what we want to ensure.
++			 */
++			continue;
++
++		goto err;
++	}
++
++	return true;
++
++err:
++	NL_SET_ERR_MSG_MOD(extack, "No bridge VID may be used on a related VLAN interface");
++	return false;
++}
++
++/**
++ * dsa_bridge_is_coherent - Verify that DSA tree accepts a bridge config.
++ * @dst: Tree to verify against.
++ * @br: Bridge netdev to verify.
++ * @mod: Description of the modification to introduce.
++ * @extack: Netlink extended ack for error reporting.
++ *
++ * Verify that the VLAN config of @br, its offloaded ports belonging
++ * to @dst and their VLAN uppers, can be correctly offloaded after
++ * introducing the change described by @mod. If this is not the case,
++ * an error is reported via @extack.
++ *
++ * Return: true if the config can be offloaded, false otherwise.
++ */
++bool dsa_bridge_is_coherent(struct dsa_switch_tree *dst, struct net_device *br,
++			    struct dsa_bridge_mod *mod,
++			    struct netlink_ext_ack *extack)
++{
++	unsigned long *upper_vids;
++	bool filter;
++
++	if (mod->filter)
++		filter = *mod->filter;
++	else
++		filter = br && br_vlan_enabled(br);
++
++	if (!dsa_bridge_filtering_is_coherent(dst, filter, extack))
++		goto err;
++
++	if (!filter)
++		return true;
++
++	upper_vids = bitmap_zalloc(VLAN_N_VID, GFP_KERNEL);
++	if (WARN_ON_ONCE(!upper_vids))
++		goto err;
++
++	if (mod->upper_vid)
++		set_bit(mod->upper_vid, upper_vids);
++
++	if (!dsa_8021q_uppers_are_coherent(dst, br, mod->bridge_upper,
++					   upper_vids, extack))
++		goto err_free;
++
++	if (!dsa_bridge_vlans_are_coherent(br, mod->br_vid, upper_vids, extack))
++		goto err_free;
++
++	kfree(upper_vids);
++	return true;
++
++err_free:
++	kfree(upper_vids);
++err:
++	return false;
++}
++
+ /**
+  * dsa_tree_notify - Execute code for all switches in a DSA switch tree.
+  * @dst: collection of struct dsa_switch devices to notify.
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 9d4b0e9b1aa1..f8d43b7518d0 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -188,6 +188,13 @@ int dsa_port_lag_change(struct dsa_port *dp,
+ int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
+ 		      struct netdev_lag_upper_info *uinfo);
+ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev);
++bool dsa_port_can_stack_vlan_upper(struct dsa_port *dp, u16 vid,
++				   struct netlink_ext_ack *extack);
++bool dsa_port_can_bridge_vlan_upper(struct dsa_port *dp,
++				    struct net_device *upper_br,
++				    struct netlink_ext_ack *extack);
++bool dsa_port_can_add_bridge_vlan(struct dsa_port *dp, u16 vid,
++				  struct netlink_ext_ack *extack);
+ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+ 			    struct netlink_ext_ack *extack);
+ bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+@@ -271,6 +278,7 @@ static inline bool dsa_tree_offloads_bridge_port(struct dsa_switch_tree *dst,
+ }
+ 
+ /* slave.c */
++struct dsa_slave_priv *dsa_slave_dev_lower_find(struct net_device *dev);
+ extern const struct dsa_device_ops notag_netdev_ops;
+ void dsa_slave_mii_bus_init(struct dsa_switch *ds);
+ int dsa_slave_create(struct dsa_port *dp);
+@@ -361,6 +369,27 @@ int dsa_switch_register_notifier(struct dsa_switch *ds);
+ void dsa_switch_unregister_notifier(struct dsa_switch *ds);
+ 
+ /* dsa2.c */
++
++/**
++ * struct dsa_bridge_mod - Modification of bridge related config
++ * @filter: If non-NULL, the new state of VLAN filtering.
++ * @br_vid: If non-zero, this VID will be added to the bridge.
++ * @upper_vid: If non-zero, a VLAN upper using this VID will be added to
++ *             a bridge port.
++ * @bridge_upper: If true, a VLAN upper will be added to the bridge.
++ *
++ * Describes a bridge related modification that is about to be applied.
++ */
++struct dsa_bridge_mod {
++	bool *filter;
++	u16   br_vid;
++	u16   upper_vid;
++	bool  bridge_upper;
++};
++
++bool dsa_bridge_is_coherent(struct dsa_switch_tree *dst, struct net_device *br,
++			    struct dsa_bridge_mod *mod,
++			    struct netlink_ext_ack *extack);
+ void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
+ void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag);
+ int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index c9c6d7ab3f47..76c79d2d80a2 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -292,72 +292,48 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag)
+ 	dsa_lag_unmap(dp->ds->dst, lag);
+ }
+ 
+-/* Must be called under rcu_read_lock() */
+-static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
+-					      bool vlan_filtering,
+-					      struct netlink_ext_ack *extack)
++bool dsa_port_can_stack_vlan_upper(struct dsa_port *dp, u16 vid,
++				   struct netlink_ext_ack *extack)
+ {
+-	struct dsa_switch *ds = dp->ds;
+-	int err, i;
++	struct dsa_bridge_mod mod = {
++		.upper_vid = vid,
++	};
+ 
+-	/* VLAN awareness was off, so the question is "can we turn it on".
+-	 * We may have had 8021q uppers, those need to go. Make sure we don't
+-	 * enter an inconsistent state: deny changing the VLAN awareness state
+-	 * as long as we have 8021q uppers.
+-	 */
+-	if (vlan_filtering && dsa_is_user_port(ds, dp->index)) {
+-		struct net_device *upper_dev, *slave = dp->slave;
+-		struct net_device *br = dp->bridge_dev;
+-		struct list_head *iter;
+-
+-		netdev_for_each_upper_dev_rcu(slave, upper_dev, iter) {
+-			struct bridge_vlan_info br_info;
+-			u16 vid;
+-
+-			if (!is_vlan_dev(upper_dev))
+-				continue;
+-
+-			vid = vlan_dev_vlan_id(upper_dev);
+-
+-			/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
+-			 * device, respectively the VID is not found, returning
+-			 * 0 means success, which is a failure for us here.
+-			 */
+-			err = br_vlan_get_info(br, vid, &br_info);
+-			if (err == 0) {
+-				NL_SET_ERR_MSG_MOD(extack,
+-						   "Must first remove VLAN uppers having VIDs also present in bridge");
+-				return false;
+-			}
+-		}
+-	}
++	return dsa_bridge_is_coherent(dp->ds->dst, dp->bridge_dev, &mod,
++				      extack);
++}
+ 
+-	if (!ds->vlan_filtering_is_global)
+-		return true;
++bool dsa_port_can_bridge_vlan_upper(struct dsa_port *dp,
++				    struct net_device *upper_br,
++				    struct netlink_ext_ack *extack)
++{
++	struct dsa_bridge_mod mod = {
++		.bridge_upper = true,
++	};
+ 
+-	/* For cases where enabling/disabling VLAN awareness is global to the
+-	 * switch, we need to handle the case where multiple bridges span
+-	 * different ports of the same switch device and one of them has a
+-	 * different setting than what is being requested.
+-	 */
+-	for (i = 0; i < ds->num_ports; i++) {
+-		struct net_device *other_bridge;
+-
+-		other_bridge = dsa_to_port(ds, i)->bridge_dev;
+-		if (!other_bridge)
+-			continue;
+-		/* If it's the same bridge, it also has same
+-		 * vlan_filtering setting => no need to check
+-		 */
+-		if (other_bridge == dp->bridge_dev)
+-			continue;
+-		if (br_vlan_enabled(other_bridge) != vlan_filtering) {
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "VLAN filtering is a global setting");
+-			return false;
+-		}
+-	}
+-	return true;
++	return dsa_bridge_is_coherent(dp->ds->dst, upper_br, &mod, extack);
++}
++
++bool dsa_port_can_add_bridge_vlan(struct dsa_port *dp, u16 vid,
++				  struct netlink_ext_ack *extack)
++{
++	struct dsa_bridge_mod mod = {
++		.br_vid = vid,
++	};
++
++	return dsa_bridge_is_coherent(dp->ds->dst, dp->bridge_dev, &mod,
++				      extack);
++}
++
++static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp, bool filter,
++					      struct netlink_ext_ack *extack)
++{
++	struct dsa_bridge_mod mod = {
++		.filter = &filter,
++	};
++
++	return dsa_bridge_is_coherent(dp->ds->dst, dp->bridge_dev, &mod,
++				      extack);
+ }
+ 
+ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 992fcab4b552..fb6fda9f15f6 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -325,28 +325,6 @@ static int dsa_slave_port_attr_set(struct net_device *dev,
+ 	return ret;
+ }
+ 
+-/* Must be called under rcu_read_lock() */
+-static int
+-dsa_slave_vlan_check_for_8021q_uppers(struct net_device *slave,
+-				      const struct switchdev_obj_port_vlan *vlan)
+-{
+-	struct net_device *upper_dev;
+-	struct list_head *iter;
+-
+-	netdev_for_each_upper_dev_rcu(slave, upper_dev, iter) {
+-		u16 vid;
+-
+-		if (!is_vlan_dev(upper_dev))
+-			continue;
+-
+-		vid = vlan_dev_vlan_id(upper_dev);
+-		if (vid == vlan->vid)
+-			return -EBUSY;
+-	}
+-
+-	return 0;
+-}
+-
+ static int dsa_slave_vlan_add(struct net_device *dev,
+ 			      const struct switchdev_obj *obj,
+ 			      struct netlink_ext_ack *extack)
+@@ -363,19 +341,8 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+ 
+ 	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 
+-	/* Deny adding a bridge VLAN when there is already an 802.1Q upper with
+-	 * the same VID.
+-	 */
+-	if (br_vlan_enabled(dp->bridge_dev)) {
+-		rcu_read_lock();
+-		err = dsa_slave_vlan_check_for_8021q_uppers(dev, &vlan);
+-		rcu_read_unlock();
+-		if (err) {
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "Port already has a VLAN upper with this VID");
+-			return err;
+-		}
+-	}
++	if (!dsa_port_can_add_bridge_vlan(dp, vlan.vid, extack))
++		return -EBUSY;
+ 
+ 	err = dsa_port_vlan_add(dp, &vlan, extack);
+ 	if (err)
+@@ -2050,30 +2017,22 @@ static int
+ dsa_prevent_bridging_8021q_upper(struct net_device *dev,
+ 				 struct netdev_notifier_changeupper_info *info)
+ {
+-	struct netlink_ext_ack *ext_ack;
+-	struct net_device *slave;
+-	struct dsa_port *dp;
+-
+-	ext_ack = netdev_notifier_info_to_extack(&info->info);
++	struct netlink_ext_ack *extack;
++	struct dsa_slave_priv *p;
++	struct net_device *real;
+ 
+-	if (!is_vlan_dev(dev))
+-		return NOTIFY_DONE;
++	extack = netdev_notifier_info_to_extack(&info->info);
+ 
+-	slave = vlan_dev_real_dev(dev);
+-	if (!dsa_slave_dev_check(slave))
++	real = vlan_dev_real_dev(dev);
++	p = dsa_slave_dev_lower_find(real);
++	if (!p || !dsa_port_offloads_bridge_port(p->dp, real))
+ 		return NOTIFY_DONE;
+ 
+-	dp = dsa_slave_to_port(slave);
+-	if (!dp->bridge_dev)
++	if (!netif_is_bridge_master(info->upper_dev) || !info->linking)
+ 		return NOTIFY_DONE;
+ 
+-	/* Deny enslaving a VLAN device into a VLAN-aware bridge */
+-	if (br_vlan_enabled(dp->bridge_dev) &&
+-	    netif_is_bridge_master(info->upper_dev) && info->linking) {
+-		NL_SET_ERR_MSG_MOD(ext_ack,
+-				   "Cannot enslave VLAN device into VLAN aware bridge");
++	if (!dsa_port_can_bridge_vlan_upper(p->dp, info->upper_dev, extack))
+ 		return notifier_from_errno(-EINVAL);
+-	}
+ 
+ 	return NOTIFY_DONE;
+ }
+@@ -2082,29 +2041,22 @@ static int
+ dsa_slave_check_8021q_upper(struct net_device *dev,
+ 			    struct netdev_notifier_changeupper_info *info)
+ {
+-	struct dsa_port *dp = dsa_slave_to_port(dev);
+-	struct net_device *br = dp->bridge_dev;
+-	struct bridge_vlan_info br_info;
+ 	struct netlink_ext_ack *extack;
+-	int err = NOTIFY_DONE;
++	struct dsa_slave_priv *p;
++	struct net_device *real;
+ 	u16 vid;
+ 
+-	if (!br || !br_vlan_enabled(br))
++	extack = netdev_notifier_info_to_extack(&info->info);
++
++	real = vlan_dev_real_dev(info->upper_dev);
++	p = dsa_slave_dev_lower_find(real);
++	if (!p || !dsa_port_offloads_bridge_port(p->dp, real))
+ 		return NOTIFY_DONE;
+ 
+-	extack = netdev_notifier_info_to_extack(&info->info);
+ 	vid = vlan_dev_vlan_id(info->upper_dev);
+ 
+-	/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
+-	 * device, respectively the VID is not found, returning
+-	 * 0 means success, which is a failure for us here.
+-	 */
+-	err = br_vlan_get_info(br, vid, &br_info);
+-	if (err == 0) {
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "This VLAN is already configured by the bridge");
++	if (!dsa_port_can_stack_vlan_upper(p->dp, vid, extack))
+ 		return notifier_from_errno(-EBUSY);
+-	}
+ 
+ 	return NOTIFY_DONE;
+ }
+@@ -2119,10 +2071,18 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 		struct netdev_notifier_changeupper_info *info = ptr;
+ 		struct dsa_switch *ds;
+ 		struct dsa_port *dp;
+-		int err;
++		int err = 0;
++
++		if (is_vlan_dev(dev))
++			err = dsa_prevent_bridging_8021q_upper(dev, ptr);
++		else if (is_vlan_dev(info->upper_dev))
++			err = dsa_slave_check_8021q_upper(dev, ptr);
++
++		if (err)
++			return err;
+ 
+ 		if (!dsa_slave_dev_check(dev))
+-			return dsa_prevent_bridging_8021q_upper(dev, ptr);
++			return NOTIFY_DONE;
+ 
+ 		dp = dsa_slave_to_port(dev);
+ 		ds = dp->ds;
+@@ -2132,9 +2092,6 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 			if (err)
+ 				return notifier_from_errno(err);
+ 		}
+-
+-		if (is_vlan_dev(info->upper_dev))
+-			return dsa_slave_check_8021q_upper(dev, ptr);
+ 		break;
+ 	}
+ 	case NETDEV_CHANGEUPPER:
+@@ -2260,12 +2217,15 @@ static int dsa_lower_dev_walk(struct net_device *lower_dev,
+ 	return 0;
+ }
+ 
+-static struct dsa_slave_priv *dsa_slave_dev_lower_find(struct net_device *dev)
++struct dsa_slave_priv *dsa_slave_dev_lower_find(struct net_device *dev)
+ {
+ 	struct netdev_nested_priv priv = {
+ 		.data = NULL,
+ 	};
+ 
++	if (dsa_slave_dev_check(dev))
++		return netdev_priv(dev);
++
+ 	netdev_walk_all_lower_dev_rcu(dev, dsa_lower_dev_walk, &priv);
+ 
+ 	return (struct dsa_slave_priv *)priv.data;
+-- 
+2.25.1
+
