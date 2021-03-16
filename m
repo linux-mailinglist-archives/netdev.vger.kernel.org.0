@@ -2,40 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB08F33D23A
+	by mail.lfdr.de (Postfix) with ESMTP id 7EB0833D239
 	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 11:57:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236919AbhCPK5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 06:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232565AbhCPK4h (ORCPT
+        id S236908AbhCPK5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 06:57:12 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:41406 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232496AbhCPK4h (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 06:56:37 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4926CC06174A;
-        Tue, 16 Mar 2021 03:56:37 -0700 (PDT)
 From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1615892194;
+        s=2020; t=1615892196;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=58x31dgR3ei2wUVCbrduJffIzcrW5zLw96q/fq4bJoU=;
-        b=mCL/d4Tewv/S9NfDGEdeKv+KaVbN3/EvFwwoQaLQfwULfUSygFxsK8+Ju3LLjSjeGYS9vP
-        tirhSST7OKEnTdE8XXhBBe9nk5vpGAK2zia6OJ+coTWq5SiIXEvtwMlFCecI1pIZY6ktfV
-        5I834OvTf1++rNDsKT9HeUDaR2nPx8wo4j34Y0QIp+a5BMDOn9xcFeMKovXX2AMO79ngzi
-        feARFsZ8uOGG7U2VnWJ3XTpcdz5VA4vxWBcdFICauyOjlmykLW8430Ug7MlZu+o/CDYKZs
-        CDSxD9Irk1tAEIVdgupYPjB6UhKuYd0VWVQLIcjSnR8+05F+pqTbYZmjJcCXQQ==
+        bh=IZFIyq8QjO9IzJy8ERce9DkaIJm6FXVDllpVcmz2698=;
+        b=3cQb/UKFQzVceWYunxv/539OJlsv9KqR6v+S9WfYStOHwe5VwidNZBY/LjHG7JF1KBCCPn
+        h+5Gb5HMmuli33sCRIvoOJmCAxqVWpLNOiVnxnqWPStg1BV0NFr+GTY266tLxC1ch2DqTK
+        t27TXaaY40i8TID7lSjiY10+dR5vtDJqqKkWqeN0jyj2IB7NT4GRBbWQxJyQAX0ifOQXmx
+        lb4ihbq9JU8KprnBpRcSgY6VIW3n4SqGuwmlix6+NaMvhrMOS/rJeg/SC6rllR+xetfAWP
+        Yd6cc2vcXoWrBe5L8RnOVclqENY6iEQ22AwD2lmlzKH0KQYg0vEzneVeHl/3UA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1615892194;
+        s=2020e; t=1615892196;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=58x31dgR3ei2wUVCbrduJffIzcrW5zLw96q/fq4bJoU=;
-        b=PTPBcPfyY+ZMFyEZ8fZ5zKS1ChlY4VODmVrt8rA72HeqO5+a2OYwNwOeWgf/TDDNZxmzks
-        xKDKPzx5FdSkreBw==
+        bh=IZFIyq8QjO9IzJy8ERce9DkaIJm6FXVDllpVcmz2698=;
+        b=jup7JqZFX9R26g4yCTjfDwWRyJXYL84hHA9HOsxdZr2MBMNmV13fwc1HB7bTSzhY8srzdr
+        ngwNEk0ge7oknUCQ==
 To:     Steffen Klassert <steffen.klassert@secunet.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
@@ -44,9 +41,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Thomas Gleixner <tglx@linutronix.de>,
         "Sebastian A. Siewior" <sebastian.siewior@linutronix.de>,
         "Ahmed S. Darwish" <a.darwish@linutronix.de>
-Subject: [PATCH v1 1/2] net: xfrm: Localize sequence counter per network namespace
-Date:   Tue, 16 Mar 2021 11:56:29 +0100
-Message-Id: <20210316105630.1020270-2-a.darwish@linutronix.de>
+Subject: [PATCH v1 2/2] net: xfrm: Use sequence counter with associated spinlock
+Date:   Tue, 16 Mar 2021 11:56:30 +0100
+Message-Id: <20210316105630.1020270-3-a.darwish@linutronix.de>
 In-Reply-To: <20210316105630.1020270-1-a.darwish@linutronix.de>
 References: <20210316105630.1020270-1-a.darwish@linutronix.de>
 MIME-Version: 1.0
@@ -56,92 +53,49 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 A sequence counter write section must be serialized or its internal
-state can get corrupted. The "xfrm_state_hash_generation" seqcount is
-global, but its write serialization lock (net->xfrm.xfrm_state_lock) is
-instantiated per network namespace. The write protection is thus
-insufficient.
+state can get corrupted. A plain seqcount_t does not contain the
+information of which lock must be held to guaranteee write side
+serialization.
 
-To provide full protection, localize the sequence counter per network
-namespace instead. This should be safe as both the seqcount read and
-write sections access data exclusively within the network namespace. It
-also lays the foundation for transforming "xfrm_state_hash_generation"
-data type from seqcount_t to seqcount_LOCKNAME_t in further commits.
+For xfrm_state_hash_generation, use seqcount_spinlock_t instead of plain
+seqcount_t.  This allows to associate the spinlock used for write
+serialization with the sequence counter. It thus enables lockdep to
+verify that the write serialization lock is indeed held before entering
+the sequence counter write section.
 
-Fixes: b65e3d7be06f ("xfrm: state: add sequence count to detect hash resizes")
+If lockdep is disabled, this lock association is compiled out and has
+neither storage size nor runtime overhead.
+
 Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
 ---
- include/net/netns/xfrm.h |  4 +++-
- net/xfrm/xfrm_state.c    | 10 +++++-----
- 2 files changed, 8 insertions(+), 6 deletions(-)
+ include/net/netns/xfrm.h | 2 +-
+ net/xfrm/xfrm_state.c    | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index 59f45b1e9dac..b59d73d529ba 100644
+index b59d73d529ba..e816b6a3ef2b 100644
 --- a/include/net/netns/xfrm.h
 +++ b/include/net/netns/xfrm.h
-@@ -72,7 +72,9 @@ struct netns_xfrm {
- #if IS_ENABLED(CONFIG_IPV6)
+@@ -73,7 +73,7 @@ struct netns_xfrm {
  	struct dst_ops		xfrm6_dst_ops;
  #endif
--	spinlock_t xfrm_state_lock;
-+	spinlock_t		xfrm_state_lock;
-+	seqcount_t		xfrm_state_hash_generation;
-+
+ 	spinlock_t		xfrm_state_lock;
+-	seqcount_t		xfrm_state_hash_generation;
++	seqcount_spinlock_t	xfrm_state_hash_generation;
+ 
  	spinlock_t xfrm_policy_lock;
  	struct mutex xfrm_cfg_mutex;
- };
 diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index d01ca1a18418..ffd315cff984 100644
+index ffd315cff984..4496f7efa220 100644
 --- a/net/xfrm/xfrm_state.c
 +++ b/net/xfrm/xfrm_state.c
-@@ -44,7 +44,6 @@ static void xfrm_state_gc_task(struct work_struct *work);
-  */
- 
- static unsigned int xfrm_state_hashmax __read_mostly = 1 * 1024 * 1024;
--static __read_mostly seqcount_t xfrm_state_hash_generation = SEQCNT_ZERO(xfrm_state_hash_generation);
- static struct kmem_cache *xfrm_state_cache __ro_after_init;
- 
- static DECLARE_WORK(xfrm_state_gc_work, xfrm_state_gc_task);
-@@ -140,7 +139,7 @@ static void xfrm_hash_resize(struct work_struct *work)
- 	}
- 
- 	spin_lock_bh(&net->xfrm.xfrm_state_lock);
--	write_seqcount_begin(&xfrm_state_hash_generation);
-+	write_seqcount_begin(&net->xfrm.xfrm_state_hash_generation);
- 
- 	nhashmask = (nsize / sizeof(struct hlist_head)) - 1U;
- 	odst = xfrm_state_deref_prot(net->xfrm.state_bydst, net);
-@@ -156,7 +155,7 @@ static void xfrm_hash_resize(struct work_struct *work)
- 	rcu_assign_pointer(net->xfrm.state_byspi, nspi);
- 	net->xfrm.state_hmask = nhashmask;
- 
--	write_seqcount_end(&xfrm_state_hash_generation);
-+	write_seqcount_end(&net->xfrm.xfrm_state_hash_generation);
- 	spin_unlock_bh(&net->xfrm.xfrm_state_lock);
- 
- 	osize = (ohashmask + 1) * sizeof(struct hlist_head);
-@@ -1063,7 +1062,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
- 
- 	to_put = NULL;
- 
--	sequence = read_seqcount_begin(&xfrm_state_hash_generation);
-+	sequence = read_seqcount_begin(&net->xfrm.xfrm_state_hash_generation);
- 
- 	rcu_read_lock();
- 	h = xfrm_dst_hash(net, daddr, saddr, tmpl->reqid, encap_family);
-@@ -1176,7 +1175,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
- 	if (to_put)
- 		xfrm_state_put(to_put);
- 
--	if (read_seqcount_retry(&xfrm_state_hash_generation, sequence)) {
-+	if (read_seqcount_retry(&net->xfrm.xfrm_state_hash_generation, sequence)) {
- 		*err = -EAGAIN;
- 		if (x) {
- 			xfrm_state_put(x);
-@@ -2666,6 +2665,7 @@ int __net_init xfrm_state_init(struct net *net)
+@@ -2665,7 +2665,8 @@ int __net_init xfrm_state_init(struct net *net)
  	net->xfrm.state_num = 0;
  	INIT_WORK(&net->xfrm.state_hash_work, xfrm_hash_resize);
  	spin_lock_init(&net->xfrm.xfrm_state_lock);
-+	seqcount_init(&net->xfrm.xfrm_state_hash_generation);
+-	seqcount_init(&net->xfrm.xfrm_state_hash_generation);
++	seqcount_spinlock_init(&net->xfrm.xfrm_state_hash_generation,
++			       &net->xfrm.xfrm_state_lock);
  	return 0;
  
  out_byspi:
