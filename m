@@ -2,59 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D75B333E14D
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 23:22:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE4833E16C
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 23:31:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbhCPWVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 18:21:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56522 "EHLO mail.kernel.org"
+        id S231304AbhCPWai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 18:30:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58162 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231151AbhCPWVU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 18:21:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 20D7A64EFC;
-        Tue, 16 Mar 2021 22:21:20 +0000 (UTC)
+        id S231261AbhCPWaK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 18:30:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 669B764F2A;
+        Tue, 16 Mar 2021 22:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615933280;
-        bh=9xv/j+oRsnhEOipTk+kZ388TZib6yHtOp2QFDfeaNw0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qCK5NocAU0xthtfqJAfK6bGPKb5YDCSarF84KnqO9zwFpEskSQQgTbNqHOZGRbz/q
-         boS6vOwCq81c06gjJmNYE7UD1abBm3alg+yI6wHn2bAsFRZb0j3akyoI71F1fjfbDJ
-         kcFzPScovDM4A1/rCscA6kzqqJg3BQr+eY5EW08gG2HXW2dKplcrs7oP6XLLW2Osc6
-         xu8QTHg2EuIUlxFMWxctG5sMDHOLLXbIC28sMBqxeUfNa5fXqaEcr6hvKFuqHOAWqx
-         +8/S+O5xIsYr9CHtrt0OSIBmY+IrTvqeWYaqeWnJlOLp/NJX8/GNucnKqtO9mmRahy
-         zPeu4x5NVd5TA==
-Date:   Tue, 16 Mar 2021 15:21:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
-        roopa@nvidia.com, peter.phaal@inmon.com, neil.mckee@inmon.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 00/10] mlxsw: Add support for egress and
- policy-based sampling
-Message-ID: <20210316152119.051d7d46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210316150303.2868588-1-idosch@idosch.org>
-References: <20210316150303.2868588-1-idosch@idosch.org>
+        s=k20201202; t=1615933809;
+        bh=W/k5FcLCYKPZx1Zb3DpzNEThLvAVizrjCCR70WGgNsA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=I9U+UiRnKwg++uteQZcoxjd1IH/Q2LQYOrO2lxDGjp2k+gzPGdQdSFVVK3Q4oU4bS
+         7WQsULWUBdokrLyTDJuPpOjG3CadKPTN9pBCkir8aZEbVX9xmzm4xcMWBT032QLcEE
+         /t0hKz/wliKIBqpe+qrEQ9be2kAmuetLnUeA+d0T34X1qtbVmAR/DiCGyuF/YCcUM0
+         INUpC38w1VZWWoFAP9JWlqHuvb7okMEHKkirRrJRhgprkGwRVeHK7Q6QilnxL1d7D5
+         UBWkxoWZG7Fxo1RD1JaCjKJ/esLHAtQh4AhksLUMp2cJBmHRQl/C8T64/BhMMS20E/
+         7wXdB7j32p10w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 563D060A45;
+        Tue, 16 Mar 2021 22:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: ipa: Remove useless error message
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161593380934.7400.11172171509698068863.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Mar 2021 22:30:09 +0000
+References: <1615887666-15064-1-git-send-email-f.fangjian@huawei.com>
+In-Reply-To: <1615887666-15064-1-git-send-email-f.fangjian@huawei.com>
+To:     Jay Fang <f.fangjian@huawei.com>
+Cc:     elder@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Mar 2021 17:02:53 +0200 Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> So far mlxsw only supported ingress sampling using matchall classifier.
-> This series adds support for egress sampling and policy-based sampling
-> using flower classifier on Spectrum-2 and newer ASICs. As such, it is
-> now possible to issue these commands:
-> 
->  # tc filter add dev swp1 egress pref 1 proto all matchall action sample rate 100 group 1
-> 
->  # tc filter add dev swp2 ingress pref 1 proto ip flower dst_ip 198.51.100.1 action sample rate 100 group 2
-> 
-> When performing egress sampling (using either matchall or flower) the
-> ASIC is able to report the end-to-end latency which is passed to the
-> psample module.
+Hello:
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Tue, 16 Mar 2021 17:41:06 +0800 you wrote:
+> From: Zihao Tang <tangzihao1@hisilicon.com>
+> 
+> Fix the following coccicheck report:
+> 
+> drivers/net/ipa/gsi.c:1341:2-9:
+> line 1341 is redundant because platform_get_irq() already prints an error
+> 
+> [...]
+
+Here is the summary with links:
+  - net: ipa: Remove useless error message
+    https://git.kernel.org/netdev/net-next/c/91306d1d131e
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
