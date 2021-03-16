@@ -2,96 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0300333D00E
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:43:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE4233D012
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 09:45:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234369AbhCPImz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 04:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        id S234371AbhCPIpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 04:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231481AbhCPIml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:42:41 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DBECC06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 01:42:40 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id ci14so70575592ejc.7
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 01:42:40 -0700 (PDT)
+        with ESMTP id S230252AbhCPIot (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 04:44:49 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A8EC06174A;
+        Tue, 16 Mar 2021 01:44:49 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id c17so4741383pfv.12;
+        Tue, 16 Mar 2021 01:44:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D81ZG1imTGMYNDCoHnjjo5myhiJwEX2QL5C0JYniZS8=;
-        b=bIBE1LJOZP0HvlRWorsws07f9PlPH8qE7RNhCjGeF1JJWaIbK298XfimbxPtsj53oy
-         8NEFUDAhDYo/buwlubxiIvlvkbt0MzgfyYwUeE7oM2qa9vvO6nP7utUCLPCfU6SrVupW
-         PcvSON/q5BKJ/FawQbg6/d6Ayh0XNs1n0NJpeAyl5vNl6GgG4PScVlUXoREIwa0QEJJ1
-         2TuNthQajc6E3vMBlB46FMyMpCswR583czHeprLcSVUpKQamL/8vIJCNX/B9LA2Nr2If
-         NmWMFMgW+m8QmlVY94qWP0v7v+rnpybmEpUxsBDsBaDrPi1hBpRCNWAjZ/kPTSU6XzVv
-         +WbA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2t2nl6SVqGRT0ENhyt7CpGXaAMJS6RD4WcDr5aSLD14=;
+        b=rymkl9UtSvs5N0z9VH+KVNkNYAC03M4PjNAmD80pfp51GMd/G0XsWbnxmeOI67jtVP
+         QI3/4oy3E1nN7YeRw3wLdBb3k6YwTZfOhhOlVwNKAnMdC1+snRm7v1Nfqkt1gcWob+K1
+         SvmMWaoz5+oluHvCxDQvQlv3JcJu67nAPHmd6ecN//PfmWcQ1GYarslJjtgwjhrXFq2T
+         M0TJnqhLCxnEa59FeIyCzDKL4a2dLf+OFAW2dX6isvZCl2XEqFrCyKTg+NtegQj7N04Y
+         gsQMnMag/ZaldYJ6SSzkIoh4SOw7MnVH2X6K7yjfXNxQ0Z2GhewtRysnU4zH819+BzX8
+         FoIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D81ZG1imTGMYNDCoHnjjo5myhiJwEX2QL5C0JYniZS8=;
-        b=ngU+KmGst1cZMO8tauxbcFTgifqYQofXIzh+bMD/4JLSFPa/1UoKTvVTB9exnnVjB6
-         mYWuxzoM5pG/zdf3kE1Zo7lYksY6/Ut9s986c/zBDGPwQc7tKDT4RZ8gpfLQRKxP5hF6
-         xu4Gqu4w/Olf+OnzGAQ3fE5/dDvR+qPEKGBR9/bo5DtHgSVHjU16K8SJ/oU31VPd0NUl
-         Y8M2lqzXzZXW6VrGhjrzHDcUar6LBpg8J4SkaxqOBePmP4az342tAYXMz021yDPbiytF
-         x8jz3F+SY9hPnIFHqfmXaWgcXeCPlUBKVGnXsvibn4rXtgr6x3VpecuRxtb2+mxJ6vDC
-         q0ng==
-X-Gm-Message-State: AOAM531AhhoSIQPNdeaIDpJXEDT4WQcl9deBDH8rdAogLrLQrL3+MwfV
-        Gy/atTOLlGMeMb6A5ZT4f4k=
-X-Google-Smtp-Source: ABdhPJxb2KW2pqu2zN+3+FPl7r/jGfC3DZQxZFTwfiSFK0/tEEIEiwCXqpk8bYW2XgnfLWrp4U5T7A==
-X-Received: by 2002:a17:906:5d05:: with SMTP id g5mr27915075ejt.489.1615884158963;
-        Tue, 16 Mar 2021 01:42:38 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id f9sm527646edq.43.2021.03.16.01.42.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 01:42:38 -0700 (PDT)
-Date:   Tue, 16 Mar 2021 10:42:37 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Provide generic VTU
- iterator
-Message-ID: <20210316084237.l6q4p3peonowshds@skbuf>
-References: <20210315211400.2805330-1-tobias@waldekranz.com>
- <20210315211400.2805330-2-tobias@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2t2nl6SVqGRT0ENhyt7CpGXaAMJS6RD4WcDr5aSLD14=;
+        b=ILrzuZoijwleCr18h38X+Oefu0IEcakqCUqOAhCxVdxCY3nv/QvLiY0lhvFGysxNQi
+         HFe6kln3saBm1mX++mM7hbDOLzWa9p3T7ZLzm6emMyL4jO4/I+ujtxZlnYX6aVn4CQc9
+         OMqu6MZWvr+6pjd3YyWUq8RSkLPx+5k39dL2pZyfP8tkkB02aapPHVm/+ycXuXTN2Is9
+         8vrWdborScfOUx9uOLsu8yiZ+DEmFhR82TIKhS2CEKJizKxfQb3/TrDiENIaXOfWb8ps
+         AzVIKa9oMoZxu8kLWy/1rvSt8NOmiTgDFDgJXwoTxXZc/kWXfa3scwlG3zemshgpVnH3
+         q72w==
+X-Gm-Message-State: AOAM531YtPHks6csScqaSrTT+2ot/E/2CUm15fa1ws2zzPCV1pcU+DcB
+        rNgX38juF+40jwvl00H1iSCKaj94rjxZC8OwVIA=
+X-Google-Smtp-Source: ABdhPJyjiC2b0uRI6HdeHc5P0Mu0huyazQJ+R6qaD958AArP6XVLFBKVjFaeUb9w046oqEKgPXSe3Lyhrcij8cFZTOg=
+X-Received: by 2002:a63:534f:: with SMTP id t15mr3169313pgl.126.1615884289038;
+ Tue, 16 Mar 2021 01:44:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210315211400.2805330-2-tobias@waldekranz.com>
+References: <20210311152910.56760-1-maciej.fijalkowski@intel.com> <20210311152910.56760-14-maciej.fijalkowski@intel.com>
+In-Reply-To: <20210311152910.56760-14-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 16 Mar 2021 09:44:38 +0100
+Message-ID: <CAJ8uoz0+Ofu32-QmX1mYka2f52ym=zG_OPyz3wto=pv-brOi-w@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 13/17] veth: implement ethtool's
+ get_channels() callback
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Ciara Loftus <ciara.loftus@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 15, 2021 at 10:13:56PM +0100, Tobias Waldekranz wrote:
-> @@ -2184,25 +2230,7 @@ static int mv88e6xxx_port_db_dump(struct mv88e6xxx_chip *chip, int port,
->  	if (err)
->  		return err;
->  
-> -	/* Dump VLANs' Filtering Information Databases */
-> -	vlan.vid = mv88e6xxx_max_vid(chip);
-> -	vlan.valid = false;
-> -
-> -	do {
-> -		err = mv88e6xxx_vtu_getnext(chip, &vlan);
-> -		if (err)
-> -			return err;
-> -
-> -		if (!vlan.valid)
-> -			break;
-> -
-> -		err = mv88e6xxx_port_db_dump_fid(chip, vlan.fid, vlan.vid, port,
-> -						 cb, data);
-> -		if (err)
-> -			return err;
-> -	} while (vlan.vid < mv88e6xxx_max_vid(chip));
-> -
-> -	return err;
-> +	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_port_db_dump_vlan, &ctx);
+On Thu, Mar 11, 2021 at 4:43 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> Libbpf's xsk part calls get_channels() API to retrieve the queue count
+> of the underlying driver so that XSKMAP is sized accordingly.
+>
+> Implement that in veth so multi queue scenarios can work properly.
+>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  drivers/net/veth.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index aa1a66ad2ce5..efca3d45f5c2 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -218,6 +218,17 @@ static void veth_get_ethtool_stats(struct net_device *dev,
+>         }
 >  }
+>
+> +static void veth_get_channels(struct net_device *dev,
+> +                             struct ethtool_channels *channels)
+> +{
+> +       channels->tx_count = dev->real_num_tx_queues;
+> +       channels->rx_count = dev->real_num_rx_queues;
+> +       channels->max_tx = dev->real_num_tx_queues;
+> +       channels->max_rx = dev->real_num_rx_queues;
+> +       channels->combined_count = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
+> +       channels->max_combined = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
 
-Can the mv88e6xxx_port_db_dump_fid(VLAN 0) located above this call be
-covered by the same mv88e6xxx_vtu_walk?
+Copy and paste error in the above two lines. One of the min entries
+should be dev->real_num_tx_queues. Kind of pointless otherwise ;-).
+
+> +}
+> +
+>  static const struct ethtool_ops veth_ethtool_ops = {
+>         .get_drvinfo            = veth_get_drvinfo,
+>         .get_link               = ethtool_op_get_link,
+> @@ -226,6 +237,7 @@ static const struct ethtool_ops veth_ethtool_ops = {
+>         .get_ethtool_stats      = veth_get_ethtool_stats,
+>         .get_link_ksettings     = veth_get_link_ksettings,
+>         .get_ts_info            = ethtool_op_get_ts_info,
+> +       .get_channels           = veth_get_channels,
+>  };
+>
+>  /* general routines */
+> --
+> 2.20.1
+>
