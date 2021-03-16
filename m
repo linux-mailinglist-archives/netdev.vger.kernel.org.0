@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD0433DC9D
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 19:34:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 245CC33DCA4
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 19:35:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240026AbhCPSd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 14:33:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28069 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236992AbhCPSdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 14:33:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615919626;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ITpbXu7gO5vrUfWU7u8BFeFZf8esp0f5SO3c0eSUhOs=;
-        b=VTgAp2d6EL5/dXHI74teFDbhLMI/95QZXbOFtUoRCbG4IrZyJckSX6vSUETLZgxRkoqVJ2
-        zikZeRGxcsWT/CP3/4v9OEHg9/UBegGNIyYvhJskcvr06zy0ZHPkiOj16Gq4E6XZD9Dzct
-        GdbDcC9SlzOQvlVUcscGCfpwkb+6SVk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-268-S0dIh7aOMMuLZ4e775D_Pg-1; Tue, 16 Mar 2021 14:33:43 -0400
-X-MC-Unique: S0dIh7aOMMuLZ4e775D_Pg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1D5C9107ACCA;
-        Tue, 16 Mar 2021 18:33:42 +0000 (UTC)
-Received: from horizon.localdomain (ovpn-120-13.rdu2.redhat.com [10.10.120.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8E7AC60875;
-        Tue, 16 Mar 2021 18:33:41 +0000 (UTC)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id DFA0EC0081; Tue, 16 Mar 2021 15:33:38 -0300 (-03)
-Date:   Tue, 16 Mar 2021 15:33:38 -0300
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-To:     wenxu@ucloud.cn
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, jhs@mojatatu.com,
-        davem@davemloft.net
-Subject: Re: [PATCH net] net/sched: act_api: fix miss set post_ct for ovs
- after do conntrack in act_ct
-Message-ID: <YFD6AqYbpVvaEifG@horizon.localdomain>
-References: <1615883634-11064-1-git-send-email-wenxu@ucloud.cn>
+        id S240044AbhCPSfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 14:35:11 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:10970 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240034AbhCPSee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 14:34:34 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12GIGx6C026702;
+        Tue, 16 Mar 2021 11:34:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=h+h9oei2djDSyPKRVeWJU5FY3F6YQP28SNKH9X2lmuA=;
+ b=AsZo8KpH4YjXQSR3CTuZd+PEcpeDmw9z28oDRq312kUh2cmgpBY4rq0Gk3Qsft6/cjdJ
+ dYmMLignCULeK6MgzWJYdrkAFbiaBeqy/ig4llTScNSJQG4zTcMm8+zFKxuzuh3VKgQ8
+ SCdGMfmGfpZuUQS+T5VCmZK702+Vvoo9VOr2tgsrD+WG7edTQ7JzTHPWBAtGWlPbFvqM
+ WIYAu8MJIT9ThhYxrQxbhOCUou9sneoPefEWL4uszeY/XxbF2PcOspdKRugo79mB4zTn
+ qzW3LTm2wmQdGrDgxE7c7Cd2Wj1caqiynUk2/EiEXGAEdu9bUhC+NrEEOo1/sMkFh1ju ag== 
+Received: from dc6wp-exch01.marvell.com ([4.21.29.232])
+        by mx0b-0016f401.pphosted.com with ESMTP id 378wsqsg81-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 16 Mar 2021 11:34:30 -0700
+Received: from DC6WP-EXCH01.marvell.com (10.76.176.21) by
+ DC6WP-EXCH01.marvell.com (10.76.176.21) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 16 Mar 2021 14:34:28 -0400
+Received: from maili.marvell.com (10.76.176.51) by DC6WP-EXCH01.marvell.com
+ (10.76.176.21) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 16 Mar 2021 14:34:28 -0400
+Received: from dc5-eodlnx05.marvell.com (dc5-eodlnx05.marvell.com [10.69.113.147])
+        by maili.marvell.com (Postfix) with ESMTP id F326A3F703F;
+        Tue, 16 Mar 2021 11:34:27 -0700 (PDT)
+From:   Bhaskar Upadhaya <bupadhaya@marvell.com>
+To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <aelior@marvell.com>,
+        <irusskikh@marvell.com>
+CC:     <davem@davemloft.net>, <bupadhaya@marvell.com>
+Subject: [PATCH net 0/2] qede: fix ethernet self adapter and skb failure issue
+Date:   Tue, 16 Mar 2021 11:34:08 -0700
+Message-ID: <1615919650-4262-1-git-send-email-bupadhaya@marvell.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1615883634-11064-1-git-send-email-wenxu@ucloud.cn>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-16_06:2021-03-16,2021-03-16 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 04:33:54PM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> When openvswitch conntrack offload with act_ct action. The first rule
-> do conntrack in the act_ct in tc subsystem. And miss the next rule in
-> the tc and fallback to the ovs datapath but miss set post_ct flag
-> which will lead the ct_state_key with -trk flag.
-> 
-> Fixes: 7baf2429a1a9 ("net/sched: cls_flower add CT_FLAGS_INVALID flag support")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+Patch 1: Fix ethernet self adapter test issue by preventing start_xmit
+	 function to be called.start_xmit function should not be called
+	 during the execution of self adapter test, netif_tx_disable()
+	 ensures this.
+Patch 2: Fix to return proper error code when sdk buffer allocation fails.
 
-Thanks for the quick fix.
+Bhaskar Upadhaya (2):
+  qede: fix to disable start_xmit functionality during self adapter test
+  qede: fix memory allocation failures under heavy load
 
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   |  4 +++-
+ drivers/net/ethernet/qlogic/qede/qede_fp.c    | 19 +++++++++++++------
+ 2 files changed, 16 insertions(+), 7 deletions(-)
+
+-- 
+2.17.1
 
