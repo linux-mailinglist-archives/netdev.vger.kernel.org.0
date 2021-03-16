@@ -2,88 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D6B33D1AB
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 11:19:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 834DD33D1AE
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 11:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236630AbhCPKTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 06:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234139AbhCPKTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 06:19:04 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D612C06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 03:19:04 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id w18so20814292edc.0
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 03:19:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+BTm7OFQw/Kpub4WceuFX57j7TgIW6bHHhkdzvJCW2g=;
-        b=C8z5FXjWyrnawU6MGSQI9W8Kvhmm+7JkbR166xgQtwaSB0OYo5cQ/ae3eRtGkg0OIy
-         4lZFnse/c+g4b+1WhEn72cBlcZTVMfuGIwffZR/MeLNXWzRuD0J8nmRlBOzePf/btymb
-         tZ34dMCNx+hN3SamHa8Zg0fkLHFbQ94mcdJziIqc+2tgNnY/p0dn3t0iHSmLLRiTHrMB
-         +fO9LwGgBzsCg6lWjwiWQ5ogoiYLEybCl8OPTgBlqgVv+EQ5MfrrkI2zWn/O1uj6tPTi
-         YL5A94BnmTmWvNxLatyJhCTLR3ZS+EejvMiBV+eKI5rofA9+KnykDKvtTLK4Jk402iXQ
-         drNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+BTm7OFQw/Kpub4WceuFX57j7TgIW6bHHhkdzvJCW2g=;
-        b=TIrbU3LYdDRf4fOhmha/RoV6wAbkXQEO6qamkAKIIeYDOEu9g9JlJM7zCK3MRjNB0o
-         nRDdDSy1IYEsvXCoeDpIpVYsL1ryzrX0Kym7Nhg1BUa5w0HOo+6DqEo1t1dYidZRwM0Q
-         j10nJu4O4qS7YAoWT02K6lnS3/fk/tzfYj3zExV/31MZbvM87XHeyTWUOxsJvnVAH/To
-         2+l/J2dR1H3u4W2MjEzZECEcailQGAuDr55DqdLkTWlyytWfL8UIeTb2rOXwNA0BbqEj
-         e7IZQjuMyl9ngCtQyaGzcQXX0LV1K0mn5BUfO/q5QiPqUU9nyFJHiXazzzcz66XgFoH8
-         VDMg==
-X-Gm-Message-State: AOAM532R1iWGIjm68lbXxyx3JJBhlftBdrsnW2P+mlEJUznELoUNx5gp
-        Pd5ZPQExHYxagLlq/FUp1t0=
-X-Google-Smtp-Source: ABdhPJx1LAHR4RH0QrudkuMNdMaOMnCn1r4qTSduAIQ67Dn6He9Sm3wGcKiGPX2Z3zakMeMq4Mqx+A==
-X-Received: by 2002:a50:ee10:: with SMTP id g16mr34610861eds.215.1615889942404;
-        Tue, 16 Mar 2021 03:19:02 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id i10sm9212558ejv.106.2021.03.16.03.19.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 03:19:02 -0700 (PDT)
-Date:   Tue, 16 Mar 2021 12:19:01 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Po Liu <po.liu@nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next] net: add a helper to avoid issues with HW TX
- timestamping and SO_TXTIME
-Message-ID: <20210316101901.gkcdczquxrtwpydh@skbuf>
-References: <DBBPR04MB781851A0F0CD632E2E1AE1A292909@DBBPR04MB7818.eurprd04.prod.outlook.com>
+        id S236525AbhCPKV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 06:21:27 -0400
+Received: from mail-mw2nam12on2079.outbound.protection.outlook.com ([40.107.244.79]:41185
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234139AbhCPKVE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 06:21:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LVE9y3rTrxNM3eoKk73/+pkLIAzEemcpKO1S2q5/6WXOnL5661I4k/uxM3vQOkJj5cSxxS0elPyR0RqEN1avV9S8urU4dvT9YqT3ZOlNjO7Q2QeGN09B8+eSGwz8ZXPzqsU3G64CQ/n0HkkXBbCvKEVm+kUIv0cG89mWpz952x7uRp80k6QyM8pSIXrvFJedetL/jZJc+9EC5CU+hN/SH0Dt5Uvd1t2eXdTsLWc9ixzDHTuyD6VMb6aYL+bkSIQfgrQKMEgeLDqwP9tpipiX6ChbIkF50ReytHNZ5sBTHJw56ICv7NBJHkeBdA81DFb8B+QqG6x8B7VH/kewR7UEww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qRfQLoLJS4K4VB1RCx7TPpAJpPkjcI6nzqR85JuXufI=;
+ b=nUqG2QX8WMlNBn41yHad6fvLiNVesnPPmaAppiLWMsrZQMOvUQdbInl9ce4CXDo6F8p6joAQkdK2E6PeC3iJGgHdIsxAYxafIKuc4V02dqPQsJ6yoZGgfZ/Cczl6LH7/ockaTFGkNNOQ+vgpioMtm4Kl0wH0+8fcxNg3j65TwQvfeN8n1zVB+9OKt9EsUL96SlPwuDsS7Tj8+7V3itJlSoZ41+j40v3Tfcq83zdF2eKRINLGJVQcgffhuj3+Uaw5tGLyTal9RP/bCa8gc07j2aBDqo+uZ0uLHN5yRUdradn7I+6IXRxIYAEQ/pIgDFnqFJ3ZR+YVsjt9JLZ9tC2mkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=networkplumber.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qRfQLoLJS4K4VB1RCx7TPpAJpPkjcI6nzqR85JuXufI=;
+ b=D01OWZck5Jh7zrXIc0vzWK/asUrZiZTyICWa9+Wgi5oIGaF/yrDuA+jxrdlWx1BI7r1H5tyH8qq2ulDev6AyR6+vLelk7tAlL2uGeZuwjQS55oDba6SG946rKvGuLhEgXwEz6HMdqa+vi/JWXNd6GxIHZmnZdfHHl/ab0L61ecfW7mB1QiJubqOamd3cBrmR4GOcs3mjBMLtJtjFl8JKc3oqJjQ26OHl/wPxhiJURSM4UclwNzVUoOcBJXw/JndBUX94D3CErp94lCtREzbleOpUh3Pqh4RvsnEDNZ0mNaVmRuyYA70dVBDhBQUl5Ux/uddrPT+Pv76Vn3NRAwoqvQ==
+Received: from BN6PR21CA0013.namprd21.prod.outlook.com (2603:10b6:404:8e::23)
+ by BYAPR12MB3512.namprd12.prod.outlook.com (2603:10b6:a03:134::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Tue, 16 Mar
+ 2021 10:20:59 +0000
+Received: from BN8NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:8e:cafe::c1) by BN6PR21CA0013.outlook.office365.com
+ (2603:10b6:404:8e::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.2 via Frontend
+ Transport; Tue, 16 Mar 2021 10:20:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=pass action=none
+ header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT019.mail.protection.outlook.com (10.13.176.158) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3933.31 via Frontend Transport; Tue, 16 Mar 2021 10:20:59 +0000
+Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 16 Mar
+ 2021 10:20:53 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>, <dsahern@gmail.com>,
+        <stephen@networkplumber.org>
+CC:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>
+Subject: [PATCH iproute2-next v3 0/6] ip: nexthop: Support resilient groups
+Date:   Tue, 16 Mar 2021 11:20:10 +0100
+Message-ID: <cover.1615889875.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DBBPR04MB781851A0F0CD632E2E1AE1A292909@DBBPR04MB7818.eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1c29b941-01ac-4550-73b7-08d8e865317a
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3512:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB35126E943059D1D6B7F8C201D66B9@BYAPR12MB3512.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8u6A7weOvl98X25UvCdfBRqt4we6Lh+ewrv6PNz5XwkFE8lROXHB5UE2D7m8VXnqsxpA9mFWvcV3LgCMvSeU9xWDSdtsVyNniRrGfqZTr/1acNwfTzzSSE8kMCtgwB1BsRAbFpsmtuFLyScleYSNvwziyN8pQ6spLtw9JqrBBNHZHyXlB92W3BFLm/dseOMpN36J1A0fqRhDiNz3SFswGyN0z/3NFefT0CZKfeHEQvCUlPxJp3xErObletQ2pr2g+No+gp1FoPrVcmHpdZzrxXWn3CY47BKrQUUIO9ziah+Li2H3a8p+3dDJKor1Yd5wrYOMTXsz7cCMiTJiNnme0R75ZZjxXYHyLd27Q1b6x9HUIqHZG7OM/p4MuGY0AA9+kDiiB+WgB92Jd2YfQvcBqsTo5iLALQTL1KTyNXqLSE+MljaZ/v4MMGEGY933m02Gd9tWwe3QDqPc51oekn9PGH6uVzIraU9FQc3kVvH0pBFP4aEeD+ExtXcC/aGwNeUGctxNPR8Z+72iMf1CKNaPZzSyD+KOS8E5DOxsNxdk9JjY1HbnTRI5LDs2c0I9DlAZJjX8AcJU99Hx8o4he6U8MJ0IJzQmnSBP8b+kfJutsV8K3rQCNMz07Lzk8FO6VONquyEeWg6sJZhURDQZOGwodY3nB+PujG8O5ah/JAhMbHuSnnSrKmSrNfoSL1p6DMEVdKZo37pgMHTpJn3fe7TZeB+hii+rpvcawLoVI2dwsLgY/XVmrL2WXk3QP3rqDK8hnVJId/HtBuH6NST2N2Ct8g==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(136003)(346002)(376002)(39860400002)(46966006)(36840700001)(356005)(5660300002)(2616005)(966005)(110136005)(8676002)(426003)(86362001)(2906002)(70206006)(36906005)(186003)(54906003)(316002)(16526019)(83380400001)(26005)(70586007)(478600001)(107886003)(4326008)(36860700001)(36756003)(336012)(6666004)(47076005)(7636003)(8936002)(34020700004)(82740400003)(82310400003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2021 10:20:59.0685
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c29b941-01ac-4550-73b7-08d8e865317a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3512
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Po,
+Support for resilient next-hop groups was recently accepted to Linux
+kernel[1]. Resilient next-hop groups add a layer of indirection between the
+SKB hash and the next hop. Thus the hash is used to reference a hash table
+bucket, which is then used to reference a particular next hop. This allows
+the system more flexibility when assigning SKB hash space to next hops.
+Previously, each next hop had to be assigned a continuous range of SKB hash
+space. With a hash table as an intermediate layer, it is possible to
+reassign next hops with a hash table bucket granularity. In turn, this
+mends issues with traffic flow redirection resulting from next hop removal
+or adjustments in next-hop weights.
 
-On Thu, Mar 11, 2021 at 02:30:12AM +0000, Po Liu wrote:
-> Hi
->
-> Can it just move
->
->  skb->tstamp = ktime_set(0, 0);
->
-> into
->
-> skb_tstamp_tx(skb, &shhwtstamps);
->
-> if it always need to clear for HW tstamp setting.
+In this patch set, introduce support for resilient next-hop groups to
+iproute2.
 
-I don't know if that works under all circumstances. Also, to keep the
-driver interface consistent, we would also need to plug that into
-skb_complete_tx_timestamp, for the case when the driver is working with
-a clone directly.
-It just seemed simpler to me to modify the few drivers which use SO_TXTIME.
+- Patch #1 brings include/uapi/linux/nexthop.h and /rtnetlink.h up to date.
+
+- Patches #2 and #3 add new helpers that will be useful later.
+
+- Patch #4 extends the ip/nexthop sub-tool to accept group type as a
+  command line argument, and to dispatch based on the specified type.
+
+- Patch #5 adds the support for resilient next-hop groups.
+
+- Patch #6 adds the support for resilient next-hop group bucket interface.
+
+To illustrate the usage, consider the following commands:
+
+ # ip nexthop add id 1 via 192.0.2.2 dev dummy1
+ # ip nexthop add id 2 via 192.0.2.3 dev dummy1
+ # ip nexthop add id 10 group 1/2 type resilient \
+	buckets 8 idle_timer 60 unbalanced_timer 300
+
+The last command creates a resilient next-hop group. It will have 8
+buckets, each bucket will be considered idle when no traffic hits it for at
+least 60 seconds, and if the table remains out of balance for 300 seconds,
+it will be forcefully brought into balance.
+
+And this is how the next-hop group bucket interface looks:
+
+ # ip nexthop bucket show id 10
+ id 10 index 0 idle_time 5.59 nhid 1
+ id 10 index 1 idle_time 5.59 nhid 1
+ id 10 index 2 idle_time 8.74 nhid 2
+ id 10 index 3 idle_time 8.74 nhid 2
+ id 10 index 4 idle_time 8.74 nhid 1
+ id 10 index 5 idle_time 8.74 nhid 1
+ id 10 index 6 idle_time 8.74 nhid 1
+ id 10 index 7 idle_time 8.74 nhid 1
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=2a0186a37700b0d5b8cc40be202a62af44f02fa2
+
+v3:
+- Add missing S-o-b's.
+
+v2:
+- Patch #4:
+    - Add a missing example command to commit message
+    - Mention in the man page that mpath is the default
+
+Ido Schimmel (3):
+  nexthop: Add ability to specify group type
+  nexthop: Add support for resilient nexthop groups
+  nexthop: Add support for nexthop buckets
+
+Petr Machata (3):
+  nexthop: Synchronize uAPI files
+  json_print: Add print_tv()
+  nexthop: Extract a helper to parse a NH ID
+
+ include/json_print.h           |   1 +
+ include/libnetlink.h           |   3 +
+ include/uapi/linux/nexthop.h   |  47 +++-
+ include/uapi/linux/rtnetlink.h |   7 +
+ ip/ip_common.h                 |   1 +
+ ip/ipmonitor.c                 |   6 +
+ ip/ipnexthop.c                 | 451 ++++++++++++++++++++++++++++++++-
+ lib/json_print.c               |  13 +
+ lib/libnetlink.c               |  26 ++
+ man/man8/ip-nexthop.8          | 113 ++++++++-
+ 10 files changed, 651 insertions(+), 17 deletions(-)
+
+-- 
+2.26.2
+
