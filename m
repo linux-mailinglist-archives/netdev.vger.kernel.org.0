@@ -2,64 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CD033E18A
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 23:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70AA233E18C
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 23:41:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231470AbhCPWkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 18:40:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58960 "EHLO mail.kernel.org"
+        id S231484AbhCPWke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 18:40:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231373AbhCPWkI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 18:40:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B16FE64F2A;
-        Tue, 16 Mar 2021 22:40:07 +0000 (UTC)
+        id S231420AbhCPWkL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 18:40:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id DD8EE64F51;
+        Tue, 16 Mar 2021 22:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615934407;
-        bh=QSzk3G322LUh5p89T8EueVOrcDmdR+ub1eogbrm6IrQ=;
+        s=k20201202; t=1615934410;
+        bh=Jbkn2Vc242Wc1nH9miziEmPR74EttDi9bPeSKdGt4P8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YJBfrn1gAmf1+OWPKcvbGImmTsF/LlxcWDAEkUm1MFUxOKh6R+TBPdqemaCSmOJ7h
-         F1XvhRWcaDzIotsvzW6pmWoEXDyDFLOjrAt2Ew97ZPNNsar/QxY2M2UC4qRQ1ddG1j
-         xwVPZMi0qAT4aBuXa9vyfhX/CD5KVX8KrgZm7+8QTdrpLJmsIn8m+7pMld/QQJmm43
-         KQXXskoZSYVD1CMV+DA8UrMHaBETJ4mF5u+OlEjBr0BEIzq5O/tKR00L+wnANh0OzY
-         1DMyvt+jgnoCJJOYGp+93v51d3Ow5Z9iw/cQBDmnEiKimkQO+inLA+LZrXpzAeNl6O
-         gFTJ7ZuUkJOHw==
+        b=RGbMKgINt1ikFzXE0a/hrE8S+B+EPkocygMLlXixs5CwH8rZJNb51AQE/YE5b+hdv
+         1FdSAI+9PxVIWYjyNvnTgcxzSOgV3hOqrh+Yh5lRFIXg/egPkSg3oKxCG5yV5EJuY8
+         Jg5HEaNF3yg091d+bxHE52RMmuMkMMQUMKR2vmvC+NynrrcLH6+TZEFDOLW6qhxtet
+         AJ4u/J2tZu5XBHvICfah6Q2ig6EGpb88bKvRlaK6TpbUpWIlyhLdjGHAUsKkWE+lm1
+         omzjvXMPBaAdyxsW8FBsJsmKpHd7CYyswz2EqLhuwjTTOHHqTP44/9TYlFRYh+2s68
+         T0zh7/g4Izt/w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9EBDF60A45;
-        Tue, 16 Mar 2021 22:40:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D49B660A45;
+        Tue, 16 Mar 2021 22:40:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/sched: act_api: fix miss set post_ct for ovs after do
- conntrack in act_ct
+Subject: Re: [PATCH net-next 0/5] dpaa2-switch: small cleanup
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161593440764.11342.9275568671553426380.git-patchwork-notify@kernel.org>
-Date:   Tue, 16 Mar 2021 22:40:07 +0000
-References: <1615883634-11064-1-git-send-email-wenxu@ucloud.cn>
-In-Reply-To: <1615883634-11064-1-git-send-email-wenxu@ucloud.cn>
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     kuba@kernel.org, mleitner@redhat.com, netdev@vger.kernel.org,
-        jhs@mojatatu.com, davem@davemloft.net
+Message-Id: <161593441086.11342.7562548452540199294.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Mar 2021 22:40:10 +0000
+References: <20210316145512.2152374-1-ciorneiioana@gmail.com>
+In-Reply-To: <20210316145512.2152374-1-ciorneiioana@gmail.com>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        ruxandra.radulescu@nxp.com, yangbo.lu@nxp.com,
+        ioana.ciornei@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 16 Mar 2021 16:33:54 +0800 you wrote:
-> From: wenxu <wenxu@ucloud.cn>
+On Tue, 16 Mar 2021 16:55:07 +0200 you wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
 > 
-> When openvswitch conntrack offload with act_ct action. The first rule
-> do conntrack in the act_ct in tc subsystem. And miss the next rule in
-> the tc and fallback to the ovs datapath but miss set post_ct flag
-> which will lead the ct_state_key with -trk flag.
+> This patch set addresses various low-hanging issues in both dpaa2-switch
+> and dpaa2-eth drivers.
+> Unused ABI functions are removed from dpaa2-switch, all the kernel-doc
+> warnings are fixed up in both drivers and the coding style for the
+> remaining ABIs is fixed-up a bit.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net/sched: act_api: fix miss set post_ct for ovs after do conntrack in act_ct
-    https://git.kernel.org/netdev/net/c/d29334c15d33
+  - [net-next,1/5] dpaa2-switch: remove unused ABI functions
+    https://git.kernel.org/netdev/net-next/c/cba0445633bc
+  - [net-next,2/5] dpaa2-switch: fix kdoc warnings
+    https://git.kernel.org/netdev/net-next/c/05b363608b5b
+  - [net-next,3/5] dpaa2-switch: reduce the size of the if_id bitmap to 64 bits
+    https://git.kernel.org/netdev/net-next/c/2b7e3f7d1b7e
+  - [net-next,4/5] dpaa2-switch: fit the function declaration on the same line
+    https://git.kernel.org/netdev/net-next/c/5ac2d254382c
+  - [net-next,5/5] dpaa2-eth: fixup kdoc warnings
+    https://git.kernel.org/netdev/net-next/c/4fe72de61ec8
 
 You are awesome, thank you!
 --
