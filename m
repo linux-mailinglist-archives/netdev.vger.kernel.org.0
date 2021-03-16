@@ -2,135 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAD3E33D736
-	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:19:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A8733D741
+	for <lists+netdev@lfdr.de>; Tue, 16 Mar 2021 16:23:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236702AbhCPPSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 11:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236482AbhCPPSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:18:21 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED17DC06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 08:18:20 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id l11so5697283otq.7
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 08:18:20 -0700 (PDT)
+        id S234374AbhCPPXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 11:23:04 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:16028 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237746AbhCPPWe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 11:22:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=GXDMff0vDxFl6i/sK1rnnheubiN9R7OFtDT29Domi+Q=;
-        b=SYTvPczz5krDfTE09UJC0IvIhEKs+MNXkxYrM38YZMozj84rFYQwFVlzHQ81XYBduv
-         L5CZ70dQxsNhpC27qVM+Oz1IvnST+deQckkXLaV75yALdh1ibXvXFGqH9O3fshPY981m
-         1utnf8JF98hOdJ6WBZ8HAF135OlJgZAF7o2m6Xy8kCYz0BQfX4HgI+iqkt5zdF4RV+jk
-         AgUO4r7Qe3mgZoW8GxIm2aaYIMNL6bMMrN+Z/qewMQmkEM4oWT4/5CrA1IyWGF1EHu8o
-         HJejBkNyVlEw2Vm/64T6vFmi8BUOuzfqpGKpVJdQ+eEmoCuE5AgG4pjuWsO1gzeeA9h1
-         YxpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GXDMff0vDxFl6i/sK1rnnheubiN9R7OFtDT29Domi+Q=;
-        b=MN8HsT3hGwGSoL8C/nvkRRc5UHvyz3l4zox4F7waqFLdGOrC40J9Ut9KVLnKDMFLrV
-         L6xZHRcby3hNid7SNqslggqgD2tz9swT0CENPed5gyZj9ldkpWjNFyRmfUZHJmkkmsyU
-         UJt9xdp3s+WZvDwfR7jCIXLU94dx+3pCyQd+jCSUh9JUJj58J8iwPTMp5IZCuw5Riwuq
-         Y0YbMwAZN4H8cpGdphlvjC7GQWqBbEnDBCGq/nKH1pYYlQwNIfMXOBRDKJtDaOZaiW+e
-         iKJYkjPdAFTQwQl1MPjZHXte1FdCAxKxE/OogCtyNQygJhdFF3vBGuMgPGdU70mDeHZ1
-         NSpg==
-X-Gm-Message-State: AOAM530DD5NjG31Fl7c3Fyr5/693lWvOAOusNdR031XYCC0mC0I7SURB
-        GU6aJRlkhLiDbokmxruSzNinBcsjvNI=
-X-Google-Smtp-Source: ABdhPJyQmpyip8zLhFn4AA8e5+c8JbY66l/nieUklTzawRT2djwsMTpGAgogUuOdKy1Yxkm4YBtOKA==
-X-Received: by 2002:a9d:5c0c:: with SMTP id o12mr3815669otk.367.1615907900288;
-        Tue, 16 Mar 2021 08:18:20 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.56])
-        by smtp.googlemail.com with ESMTPSA id r22sm8115884otg.4.2021.03.16.08.18.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Mar 2021 08:18:19 -0700 (PDT)
-Subject: Re: [BUG] Iproute2 batch-mode fails to bring up veth
-To:     Tim Rice <trice@posteo.net>, netdev@vger.kernel.org,
-        Petr Machata <petrm@nvidia.com>
-References: <YE+z4GCI5opvNO2D@sleipnir.acausal.realm>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <be8904d6-4313-250d-1557-10c759a36ff3@gmail.com>
-Date:   Tue, 16 Mar 2021 09:18:18 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1615908155; x=1647444155;
+  h=to:cc:references:from:message-id:date:mime-version:
+   in-reply-to:content-transfer-encoding:subject;
+  bh=q5kbSbegqpzzJVt427pixcj7nixefER90+FzIpRlpB8=;
+  b=WQkuVq8ouM/Unya6UcskLx+9ggTRFMeULTPvUxUKz4K9kFjfmJ1plrZ2
+   w7zFhTUoIoQPJ/nXp7iE35ICosV1ogFtiQUgnvj89hYXkEXU6k27RmJsF
+   jjSyED8Yl4U2aX7K6JzdfWcq27CMMPJItdn/Pf3lP4YF9aaFoCrWbgy+l
+   c=;
+X-IronPort-AV: E=Sophos;i="5.81,251,1610409600"; 
+   d="scan'208";a="94984210"
+Subject: Re: [net-next 1/2] xen-netback: add module parameter to disable ctrl-ring
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 16 Mar 2021 15:22:25 +0000
+Received: from EX13D12EUA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com (Postfix) with ESMTPS id 0861EA7AF9;
+        Tue, 16 Mar 2021 15:22:23 +0000 (UTC)
+Received: from 147dda3ee008.ant.amazon.com (10.43.165.192) by
+ EX13D12EUA002.ant.amazon.com (10.43.165.103) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 16 Mar 2021 15:22:22 +0000
+To:     Leon Romanovsky <leon@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <wei.liu@kernel.org>, <paul@xen.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <xen-devel@lists.xenproject.org>
+References: <20210311225944.24198-1-andyhsu@amazon.com>
+ <YEuAKNyU6Hma39dN@lunn.ch> <ec5baac1-1410-86e4-a0d1-7c7f982a0810@amazon.com>
+ <YEvQ6z5WFf+F4mdc@lunn.ch> <YE3foiFJ4sfiFex2@unreal>
+From:   "Hsu, Chiahao" <andyhsu@amazon.com>
+Message-ID: <64f5c7a8-cc09-3a7f-b33b-a64d373aed60@amazon.com>
+Date:   Tue, 16 Mar 2021 16:22:21 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <YE+z4GCI5opvNO2D@sleipnir.acausal.realm>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <YE3foiFJ4sfiFex2@unreal>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.43.165.192]
+X-ClientProxiedBy: EX13D01EUA004.ant.amazon.com (10.43.165.123) To
+ EX13D12EUA002.ant.amazon.com (10.43.165.103)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/21 1:22 PM, Tim Rice wrote:
-> Hey all,
-> 
-> Sorry if this isn't the right place to report Iproute2 bugs. It was
-> implied by README.devel as well as a couple of entries I saw in bugzilla.
-> 
-> I use iproute2 batch mode to construct network namespaces. Example script:
-> 
->   $ cat ~/bin/netns-test.sh
->   #! /bin/bash
-> 
->   gw=192.168.5.1
->   ip=192.168.5.2
->   ns=netns-test
->   veth0=${ns}-0
->   veth1=${ns}-1
-> 
->   /usr/local/sbin/ip -b - << EOF
->   link add $veth0 type veth peer name $veth1
->   addr add $gw peer $ip dev $veth0
->   link set dev $veth0 up
->   netns add $ns
->   link set $veth1 netns $ns
->   netns exec $ns ip link set dev lo up
->   netns exec $ns ip link set dev $veth1 up
->   netns exec $ns ip addr add $ip/24 dev $veth1
->   netns exec $ns ip addr add $ip peer $gw dev $veth1
->   netns exec $ns ip route add default via $gw dev $veth1
->   netns exec $ns ip route add 192.168.0.0/24 via $gw dev $veth1
->   EOF
-> 
-> 
-> I noticed when version 5.11.0 dropped that this stops working. Batch
-> mode fails to bring up the inner veth.
-> 
-> Expected usage (as produced by v5.10.0):
-> 
->   $ sudo ./bin/netns-test.sh
->   $ sudo ip netns exec netns-test ip route
->   default via 192.168.5.1 dev netns-test-1
->   192.168.0.0/24 via 192.168.5.1 dev netns-test-1
->   192.168.5.0/24 dev netns-test-1 proto kernel scope link src 192.168.5.2
->   192.168.5.1 dev netns-test-1 proto kernel scope link src 192.168.5.2
-> 
-> Actual behaviour:
-> 
->   $ sudo ./bin/netns-test.sh
->   $ sudo ip netns exec netns-test ip route  # Notice the empty output
->   $ sudo ip netns exec netns-test ip link
->   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
-> mode DEFAULT group default qlen 1000
->       link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
->   39: netns-test-1@if40: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state
-> DOWN mode DEFAULT group default qlen 1000
->       link/ether 1a:96:4e:4f:84:31 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-> 
-> System info:
-> 
-> * Distro: Void Linux
-> * Kernel version: 5.10.23
-> * CPU: AMD Ryzen 7 1800X and Ryzen 5 2600. (Reproduced on both.)
-> 
-> Git bisect pinpoints this commit:
-> https://github.com/shemminger/iproute2/commit/1d9a81b8c9f30f9f4abeb875998262f61bf10577
-> 
 
-Petr, can you take a look at this regression?
+
+Leon Romanovsky 於 2021/3/14 11:04 寫道:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+>
+>
+>
+> On Fri, Mar 12, 2021 at 09:36:59PM +0100, Andrew Lunn wrote:
+>> On Fri, Mar 12, 2021 at 04:18:02PM +0100, Hsu, Chiahao wrote:
+>>> Andrew Lunn 於 2021/3/12 15:52 寫道:
+>>>> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+>>>>
+>>>>
+>>>>
+>>>> On Thu, Mar 11, 2021 at 10:59:44PM +0000, ChiaHao Hsu wrote:
+>>>>> In order to support live migration of guests between kernels
+>>>>> that do and do not support 'feature-ctrl-ring', we add a
+>>>>> module parameter that allows the feature to be disabled
+>>>>> at run time, instead of using hardcode value.
+>>>>> The default value is enable.
+>>>> Hi ChiaHao
+>>>>
+>>>> There is a general dislike for module parameters. What other mechanisms
+>>>> have you looked at? Would an ethtool private flag work?
+>>>>
+>>>>        Andrew
+>>>
+>>> Hi Andrew,
+>>>
+>>> I can survey other mechanisms, however before I start doing that,
+>>>
+>>> could you share more details about what the problem is with using module
+>>> parameters? thanks.
+>> It is not very user friendly. No two kernel modules use the same
+>> module parameters. Often you see the same name, but different
+>> meaning. There is poor documentation, you often need to read the
+>> kernel sources it figure out what it does, etc.
+> +1, It is also global parameter to whole system/devices that use this
+> module, which is rarely what users want.
+>
+> Thanks
+
+Hi,
+I think I would say the current implementation(modparams) isappropriate
+after reviewing it again.
+
+We are talking about 'feature leveling', a way to support live 
+migrationof guest
+between kernels that do and do not support the features. So we want to 
+refrain
+fromadding the features if guest would be migrated to the kernel which does
+not support the feature. Everythingshould be done (in probe function) before
+frontend connects, and this is why ethtool is not appropriate for this.
+
+Thanks
+
 
