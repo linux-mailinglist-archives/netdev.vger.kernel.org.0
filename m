@@ -2,103 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B5733E763
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:04:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15CFA33E775
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbhCQDDx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 23:03:53 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58312 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229877AbhCQDD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 23:03:28 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12H2wYp4002577
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:03:28 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 379ee5qrhn-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:03:28 -0700
-Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 16 Mar 2021 20:03:27 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 59B112ED23D6; Tue, 16 Mar 2021 20:03:25 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 4/4] bpftool: treat compilation warnings as errors
-Date:   Tue, 16 Mar 2021 20:03:12 -0700
-Message-ID: <20210317030312.802233-5-andrii@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210317030312.802233-1-andrii@kernel.org>
-References: <20210317030312.802233-1-andrii@kernel.org>
+        id S229675AbhCQDIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 23:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229506AbhCQDIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 23:08:22 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B09BC06174A;
+        Tue, 16 Mar 2021 20:08:22 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id y133so585670ybe.12;
+        Tue, 16 Mar 2021 20:08:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PEPZ394cidbqYDnUkwG46rTPDl5CRtpu54quZQwlhPs=;
+        b=RaZnqoqWvd4ZxPnwWjAhl12hMgFb++XrL4xNpWWZ52ALQOFJFuoYUm6TcmWKrzUxAe
+         iWvHLCNt3c2N9AcUMwRJNDd6+A7LYNvrATuDYUSu86X7uux2Tbxuw9SJtmzavrUkdoGQ
+         ACP87VuXxMjdjhZbFO82Zc490ZPVcK0OgS1lWbhNAumdLx3qFVhjp58Ul9RFUVKlg7y3
+         5DxrmBADq4a8bdCzJQ61Sr8PXDqLqRsD0uYslld5fcblBln1zRV2XUACFjJb5Kvk3PoT
+         99zjqDzrBuoLmYFP5vrtWKTfN5JLd0Upg3IcnRP1GloMfwm+O1JxLuKcP9ECyyf9hVBF
+         Rr6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PEPZ394cidbqYDnUkwG46rTPDl5CRtpu54quZQwlhPs=;
+        b=W3viH+L8FMLu3XufrxmbRtGgFqlKqWiJRkmXwQbk12rOKO3rMIn/ceqlIaS+ynD/RW
+         oBKxaiIi5F9jMf+MAz+EkUfgmp9vDuVGdOfTp7NrEkZxzsXQmqOnRfM4sUPUrX7dgZyS
+         ftZ0ygkz5wm/TTXk6jG9Be/M2rbo5hX/+TbDmKQiTTlEhqjpqeYbCJhmevu2HsmwCIuX
+         PKcOqAOfMVEyQUCy3BmNJlQxBD9WctT2GXPKIASkFJtxwRT/bnfXWK+a9PJ4p56aZlct
+         FszEKtE6w98duqP5km7saK7ptrv9eIhIzBXIccvydPOBNFrcIzBVti7oewIVl2O7u4PY
+         nBkg==
+X-Gm-Message-State: AOAM533jw+qJLPnxZ34YZFCFzy+UI/isHacYllJKNJ3E8dn+sD7IuFFb
+        9P9XjcEBRfZ+tMByTP6QaVCV+eOrkqA7efhsUyA=
+X-Google-Smtp-Source: ABdhPJzdyKV1honoteIZ9WhfG98djNycTbFpVEZmUzALN3axIR+qzZqd2UFoWkL0n6EnX5I4/PswcpLQRnwVQHeE//I=
+X-Received: by 2002:a25:40d8:: with SMTP id n207mr2215999yba.459.1615950501307;
+ Tue, 16 Mar 2021 20:08:21 -0700 (PDT)
 MIME-Version: 1.0
+References: <20210317030312.802233-1-andrii@kernel.org> <20210317030312.802233-2-andrii@kernel.org>
+In-Reply-To: <20210317030312.802233-2-andrii@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 16 Mar 2021 20:08:10 -0700
+Message-ID: <CAEf4BzYLMNX0PKtM5OPNUK8+Hbd42V6xtbPLxyfOeVgYVX6Riw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/4] bpftool: generate NULL definition in vmlinux.h
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-16_09:2021-03-16,2021-03-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- impostorscore=0 mlxlogscore=999 mlxscore=0 phishscore=0 lowpriorityscore=0
- suspectscore=0 bulkscore=0 priorityscore=1501 malwarescore=0 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103170023
-X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make bpftool compilation stricter and treat all compilation warnigs as errors.
+On Tue, Mar 16, 2021 at 8:03 PM Andrii Nakryiko <andrii@kernel.org> wrote:
+>
+> Given that vmlinux.h is not compatible with headers like stdint.h, NULL poses
+> an annoying problem: it is defined as #define, so is not captured in BTF, so
+> is not emitted into vmlinux.h. This leads to users either sticking to explicit
+> 0, or defining their own NULL (as progs/skb_pkt_end.c does).
+>
+> It's pretty trivial for bpftool to generate NULL definition, though, so let's
+> just do that. This might cause compilation warning for existing BPF
+> applications:
+>
+> progs/skb_pkt_end.c:7:9: warning: 'NULL' macro redefined [-Wmacro-redefined]
+>   progs/skb_pkt_end.c:7:9: error: 'NULL' macro redefined [-Werror,-Wmacro-redefined]
 
-Depending on libbfd version on the system, jit_disasm.c might trigger the
-following compilation warning-turned-error:
+oops, this shouldn't have been copy/pasted. This is how the line above
+looks like if -Werror is specified in Makefile.
 
-jit_disasm.c: In function ‘disasm_print_insn’:
-jit_disasm.c:121:29: error: assignment discards ‘const’ qualifier from pointer
-target type [-Werror=discarded-qualifiers]
-   info.disassembler_options = disassembler_options;
-                                ^
-
-This was fixed in libbfd, but older versions of the library are still widely
-used. So disable -Wdiscarded-qualifiers for that particular line of code.
-
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/bpf/bpftool/Makefile     | 3 ++-
- tools/bpf/bpftool/jit_disasm.c | 3 +++
- 2 files changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index b3073ae84018..59de954faaf5 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -56,7 +56,8 @@ prefix ?= /usr/local
- bash_compdir ?= /usr/share/bash-completion/completions
- 
- CFLAGS += -O2
--CFLAGS += -W -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
-+CFLAGS += -W -Wall -Wextra -Werror
-+CFLAGS += -Wno-unused-parameter -Wno-missing-field-initializers
- CFLAGS += $(filter-out -Wswitch-enum -Wnested-externs,$(EXTRA_WARNINGS))
- CFLAGS += -DPACKAGE='"bpftool"' -D__EXPORTED_HEADERS__ \
- 	-I$(if $(OUTPUT),$(OUTPUT),.) \
-diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
-index e7e7eee9f172..48bc7f7a542f 100644
---- a/tools/bpf/bpftool/jit_disasm.c
-+++ b/tools/bpf/bpftool/jit_disasm.c
-@@ -118,7 +118,10 @@ void disasm_print_insn(unsigned char *image, ssize_t len, int opcodes,
- 	info.arch = bfd_get_arch(bfdf);
- 	info.mach = bfd_get_mach(bfdf);
- 	if (disassembler_options)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
- 		info.disassembler_options = disassembler_options;
-+#pragma GCC diagnostic push
- 	info.buffer = image;
- 	info.buffer_length = len;
- 
--- 
-2.30.2
-
+>   #define NULL 0
+>           ^
+>   /tmp/linux/tools/testing/selftests/bpf/tools/include/vmlinux.h:4:9: note: previous definition is here
+>   #define NULL ((void *)0)
+>           ^
+>
+> It is trivial to fix, though, so long-term benefits outweight temporary
+> inconveniences.
+>
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>  tools/bpf/bpftool/btf.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+> index 62953bbf68b4..ff6a76632873 100644
+> --- a/tools/bpf/bpftool/btf.c
+> +++ b/tools/bpf/bpftool/btf.c
+> @@ -405,6 +405,8 @@ static int dump_btf_c(const struct btf *btf,
+>         printf("#ifndef __VMLINUX_H__\n");
+>         printf("#define __VMLINUX_H__\n");
+>         printf("\n");
+> +       printf("#define NULL ((void *)0)\n");
+> +       printf("\n");
+>         printf("#ifndef BPF_NO_PRESERVE_ACCESS_INDEX\n");
+>         printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
+>         printf("#endif\n\n");
+> --
+> 2.30.2
+>
