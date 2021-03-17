@@ -2,77 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D43F433E9CD
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 07:36:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D2133E9DC
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 07:38:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbhCQGeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 02:34:15 -0400
-Received: from m12-11.163.com ([220.181.12.11]:55874 "EHLO m12-11.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230020AbhCQGeG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 02:34:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=8Y3HR
-        MDBaV95f2J1fKzScv+yjUogarkNBO6uLyNIbM0=; b=ExQmo9CIqHMlqsCjg9ZyI
-        RxPadlPtSLmHClojmPjZABzAj8/XxRodsjaNqrIcETqXCeUDxkkwD1WhsfyhsArv
-        3vFcrH+FlRqgCpMiEhE9JbVEpGB7UkRtuUgnrggh7tfNyDob4thEmBEkyJDXW5I7
-        bPk60DP+2yO5y2k+kw45Hs=
-Received: from COOL-20201210PM.ccdomain.com (unknown [218.94.48.178])
-        by smtp7 (Coremail) with SMTP id C8CowADHz0fGolFgBC7NSg--.5880S2;
-        Wed, 17 Mar 2021 14:33:45 +0800 (CST)
-From:   zuoqilin1@163.com
-To:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@codeaurora.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zuoqilin <zuoqilin@yulong.com>
-Subject: [PATCH] mwifiex: Remove unneeded variable: "ret"
-Date:   Wed, 17 Mar 2021 14:33:53 +0800
-Message-Id: <20210317063353.1055-1-zuoqilin1@163.com>
-X-Mailer: git-send-email 2.28.0.windows.1
+        id S230283AbhCQGh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 02:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230171AbhCQGhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 02:37:24 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CE3C06174A;
+        Tue, 16 Mar 2021 23:37:24 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id o9so39862440iow.6;
+        Tue, 16 Mar 2021 23:37:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DbC+gs/ML7S9YV18aQwCjeRAbouX268bLy5YLU6qrlk=;
+        b=YulLsjRVTBH4mMqaltNtXKYYbRdqV8vfeBBVKWh6kOsiKAqeOtqCTfNpWOqTR/zI9K
+         gZa8AsVQJzF/lh5mHP9cGhaa4dGMid2V/0b0sGxjnFmxnIQwh/11iG2P4h2nN3hbF5vX
+         1X/N7SwchxDFWK1b8ApBsalRebfsxYzudRFZvTr/hoYjOEyIBgHpxtH1Ud1UNPg8fSuC
+         ZV5VMUk0f9B9VSTCm5ODOl8IMCbjZVEp5uD1aaMtj5uf2tHiq7JCu5cAkwuSSv+MXZFO
+         GGczxZPjkPwP4Ng1hTnUxdrWXQnwa9xkX6KyvEhIQqSFBpEhkWgZj5p87vpbpGMpeHzD
+         sPzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DbC+gs/ML7S9YV18aQwCjeRAbouX268bLy5YLU6qrlk=;
+        b=tDJnzMWtWV7arbk1jlQkHwOiLosm5Qxf+cjnTFgoBD+a67Ht8dP/mkDBsqhzsQe//D
+         FLyDloLT/g2Jh+w7lTwrfgtbktUdX0AscxYInkCzZjNF6sC4reXDkcsQkP+g7D3Dk85o
+         HCia4PCNNwJtpIQ80Ozt13Mzpl0ZXYIRYnQDTZ5dl9hc3xUUHzrjHkPE/Q8yU6ylppEj
+         LyBSDAFPL2njaHk6qaW2YQH/K6RqDbsFSk8ZC2m0lfEY0XQuw+vOWbkkiiGBi/966i1v
+         1WY7qbEkczWOho23W2jWb0So16KBohSVocc4W8wGq33tpKnqx20Acp7eo3oYGaWwQWjw
+         smiA==
+X-Gm-Message-State: AOAM530mcX2i1fWd1iq+4bceEZeTlyZfgTAspz+7Yvz7r1Ty0MV0iU8I
+        4x6NehTUFpVdwiCKxnNhW4IbW3FiwxkDGUsUFxk=
+X-Google-Smtp-Source: ABdhPJxzQh1bVQDLXIpJrB9qnI3x5RzecElEOMCAuB0OT8NviU0FYdcLBko0nK83IVxcLYNrdxPcK4jFgMrzRuZwsB4=
+X-Received: by 2002:a02:94cb:: with SMTP id x69mr1803285jah.8.1615963043465;
+ Tue, 16 Mar 2021 23:37:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8CowADHz0fGolFgBC7NSg--.5880S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKw1rGF43KryDKrWDWFy5twb_yoWDXwb_K3
-        4I9w4fKrZrJ3s7Kr4UCFsrX3sakr4rXFn7ua12qFWfGaykta98C3WkCrs7JrZakwsIqr9r
-        uwn8GFyxJa18WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU05l1DUUUUU==
-X-Originating-IP: [218.94.48.178]
-X-CM-SenderInfo: 52xr1xpolqiqqrwthudrp/xtbBRQ1YiVPAKjBU8QACs3
+References: <1615886833-71688-1-git-send-email-hkelam@marvell.com>
+ <1615886833-71688-5-git-send-email-hkelam@marvell.com> <20210316100616.333704ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210316100616.333704ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Wed, 17 Mar 2021 12:07:12 +0530
+Message-ID: <CALHRZuq272aJR8Jh5rS7y-b28t6eHhthPB_6aUoZExv0dCsorQ@mail.gmail.com>
+Subject: Re: [net PATCH 4/9] octeontx2-af: Remove TOS field from MKEX TX
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Hariprasad Kelam <hkelam@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        lcherian@marvell.com, Geetha sowjanya <gakula@marvell.com>,
+        jerinj@marvell.com, Subbaraya Sundeep <sbhatta@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: zuoqilin <zuoqilin@yulong.com>
+Hi Jakub,
 
-Remove unneeded variable: "ret"
+On Tue, Mar 16, 2021 at 10:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 16 Mar 2021 14:57:08 +0530 Hariprasad Kelam wrote:
+> > From: Subbaraya Sundeep <sbhatta@marvell.com>
+> >
+> > TOS overlaps with DMAC field in mcam search key and hence installing
+> > rules for TX side are failing. Hence remove TOS field from TX profile.
+>
+> Could you clarify what "installing rules is failing" means?
+> Return error or does not behave correctly?
 
-Signed-off-by: zuoqilin <zuoqilin@yulong.com>
----
- drivers/net/wireless/marvell/mwifiex/scan.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Returns error. The MKEX profile can be in a way where higher layer packet fields
+can overwrite lower layer packet fields in output MCAM Key. The commit
+42006910 ("octeontx2-af: cleanup KPU config data") introduced TX TOS field and
+it overwrites DMAC. AF driver return error when TX rule is installed
+with DMAC as
+match criteria since DMAC gets overwritten and cannot be supported. Layers from
+lower to higher in our case:
+LA - Ethernet
+LB - VLAN
+LC - IP
+LD - TCP/UDP
+and so on.
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/scan.c b/drivers/net/wireless/marvell/mwifiex/scan.c
-index c2a685f..0b877f3 100644
---- a/drivers/net/wireless/marvell/mwifiex/scan.c
-+++ b/drivers/net/wireless/marvell/mwifiex/scan.c
-@@ -1211,7 +1211,6 @@ enum cipher_suite {
- int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 				    struct mwifiex_bssdescriptor *bss_entry)
- {
--	int ret = 0;
- 	u8 element_id;
- 	struct ieee_types_fh_param_set *fh_param_set;
- 	struct ieee_types_ds_param_set *ds_param_set;
-@@ -1464,7 +1463,7 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 		bytes_left -= total_ie_len;
- 
- 	}	/* while (bytes_left > 2) */
--	return ret;
-+	return 0;
- }
- 
- /*
--- 
-1.9.1
+We make sure there are no overlaps between layers but TOS got added by mistake.
+We will elaborate the commit description and send the next version.
 
+Thanks,
+Sundeep
