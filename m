@@ -2,120 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1145533EE6B
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 11:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8202C33EE6D
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 11:40:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbhCQKjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230099AbhCQKjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 17 Mar 2021 06:39:41 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:38457 "EHLO
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:53677 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229876AbhCQKjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 06:39:15 -0400
+        by vger.kernel.org with ESMTP id S229944AbhCQKjR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 06:39:17 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3C42B5C0148;
-        Wed, 17 Mar 2021 06:39:15 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 3A4505C0150;
+        Wed, 17 Mar 2021 06:39:17 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 17 Mar 2021 06:39:15 -0400
+  by compute3.internal (MEProxy); Wed, 17 Mar 2021 06:39:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=HNENXLOJfKIaj5ej9
-        IqyqI7ykGX5S2u9RMWVEMeIeDg=; b=RXVs6kEchFe5Ni2FetrmaIt5XAS6fad3M
-        hBj7MS5ykNP1bFJH/RvS+dl/WR4C6WlOFrHW3nYGxP5D3FtWw3J8PNokXGrJKjTA
-        SdDKcNgXB8e/SQCvSgMFux/RfP7dE1UoyxbEl2eKcGez1KbK31VlBSh4mL3YyTt7
-        bC41Afsw846QHX3po2ZFF6WuRGG14CxlWDVm2zqgn7dyL00ZgnVGJJEoGsqNPC0Q
-        uXsi94cyPIr0eHo+RAjWlhW1/WO4dvex57YQgkiQrBjxT19hvP0F9cndZf7HaroN
-        vO/V5y4/vTCxLBToGVzWuWqpKQwfcLn91khZfYozcyAiGWnToW15w==
-X-ME-Sender: <xms:UtxRYC30XET0I35f2WOpYHn-6uoNQgC3JOCU1-Klnie1FsRnPSlCEw>
-    <xme:UtxRYFGBZgZuIMAVopOW-f-Umr1CLz-di7alt8zFZXHcM0RB6FuQtzRzTeVF3QHHt
-    RBaCBBUzmwbaSQ>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=J2wKOlLuSXLSlw6J/ZfbbWr9AZq2jNaX+9rf7DJScCE=; b=hVCqA4GE
+        +90e+Hio9ftbOeTh44Dn0h5XvbonMTCyhAg6eoPfNax01wF/WqKvVmRXqCERV+KC
+        3KfAONFdwR0vQdW4TDcb4OIYHvrOp6B8rARJ0WmfelCIrFEmZhq2ngfs3ka3vBmc
+        FNiJ5rHcG8Ioo9frHAqIqdB6JqtGyl0ghHt/71jfbWmedNKXrzQGvq4KkrsTUy9v
+        UZ7e+f7aPkPvMMeY6mGfe6JPWu4j8Hmh70DgjmYHa7vyH8wz4DcGKKj5tmfPZcDI
+        p2ervC6RGNDE7yWI6jKEEUWkoZIBWuNYFWgrU9w2sVEO+yxcn9vHYwooHxSz1QhD
+        dXhEsqEneIJ8XA==
+X-ME-Sender: <xms:VdxRYMsr-quSJUA61bxrtMhiOCYDmiSmTlFiF7FZVhgBm73Yek4x5g>
+    <xme:VdxRYJcj962NK9Yhn05QuuEu0RCz8B2fjKPHZAEwdknMUA6AMCkFrzYcN7Xqz2fYc
+    wxvJX8_erKYg44>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefgedgudelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:UtxRYK4t4D18VDomy92jFY_4NragN2qzcxglZWag83FIHiePUCsWyw>
-    <xmx:UtxRYD0zyQbCdc8omTLl5zJnFlsQY9X37tKjyh212IScRngOJeeZFA>
-    <xmx:UtxRYFFjMwZkzNXjl-tyOkugQsdNUCEE8m1fBW-iJImiAWUwbhGODw>
-    <xmx:U9xRYJiNGON8Vi83hDFNfd2A9ofN1-SyVYHEWYpqwbKexpjo5K4zgw>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:VdxRYHwpyNQB7ztYqqEBlQKy3mS6YAEjh4CtYNPi--8BhWr1dSsP-g>
+    <xmx:VdxRYPN9snkP52Xn_e_ZQu60ET44mwhAjcXKCCp8ngc8wMKXtjzwRw>
+    <xmx:VdxRYM-2b0DHm-wnC4lIskXn8B55BBloBTvlkMvJ6a_MuFA8-_ZNSw>
+    <xmx:VdxRYAYgJ2c26nqGgNkwNMAsjwjZG2lDj73eFfNh0mYV7J9pXGUpUw>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D2D711080057;
-        Wed, 17 Mar 2021 06:39:12 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 350FC1080066;
+        Wed, 17 Mar 2021 06:39:15 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         amcohen@nvidia.com, petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 0/7] mlxsw: Allow 802.1d and .1ad VxLAN bridges to coexist on Spectrum>=2
-Date:   Wed, 17 Mar 2021 12:35:22 +0200
-Message-Id: <20210317103529.2903172-1-idosch@idosch.org>
+Subject: [PATCH net-next 1/7] mlxsw: reg: Add egr_et_set field to SPVID
+Date:   Wed, 17 Mar 2021 12:35:23 +0200
+Message-Id: <20210317103529.2903172-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210317103529.2903172-1-idosch@idosch.org>
+References: <20210317103529.2903172-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-This patchset allows user space to simultaneously configure both 802.1d
-and 802.1ad VxLAN bridges on Spectrum-2 and later ASICs. 802.1ad VxLAN
-bridges are still forbidden on Spectrum-1.
+SPVID.egr_et_set=1 means that when VLAN is pushed at ingress (for untagged
+packets or for QinQ push mode) then the EtherType is decided at the egress
+port.
 
-The reason for the current limitation is that up until now the EtherType
-that was pushed to decapsulated VxLAN packets was a property of the
-tunnel port, of which there is only one. This meant that a 802.1ad VxLAN
-bridge could not be configured if the tunnel port was already configured
-to push a 802.1q tag.
+The next patches will use this field for VxLAN devices (tunnel port) in
+order to allow using dual VxLAN bridges (802.1d and 802.1ad at the same
+time).
 
-This patchset improves the situation by making two changes. First,
-decapsulated packets are marked as having their EtherType decided by the
-egress port. Second, local ports member in the bridge (e.g., swp1) are
-configured to set the correct egress EtherType.
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Patchset overview:
-
-Patch #1 adds a register required for the first change
-
-Patches #2-#3 add the register required for the second change and a
-corresponding API
-
-Patch #4 prepares the driver for the split in behavior between
-Spectrum-1 and later ASICs
-
-Patch #5 performs the two above mentioned changes to allow the driver to
-support simultaneous 802.1ad and 802.1d VxLAN bridges on Spectrum-2 and
-later ASICs
-
-Patch #6 adds a selftest
-
-Patch #7 removes a selftest that verified the limitation that was lifted
-by this patchset
-
-Amit Cohen (7):
-  mlxsw: reg: Add egr_et_set field to SPVID
-  mlxsw: reg: Add Switch Port Egress VLAN EtherType Register
-  mlxsw: spectrum: Add mlxsw_sp_port_egress_ethtype_set()
-  mlxsw: Add struct mlxsw_sp_switchdev_ops per ASIC
-  mlxsw: Allow 802.1d and .1ad VxLAN bridges to coexist on Spectrum>=2
-  selftests: forwarding: Add test for dual VxLAN bridge
-  selftests: mlxsw: spectrum-2: Remove q_in_vni_veto test
-
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |  45 +++
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  19 +
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |   8 +
- .../ethernet/mellanox/mlxsw/spectrum_nve.h    |   1 -
- .../mellanox/mlxsw/spectrum_nve_vxlan.c       |  15 +-
- .../mellanox/mlxsw/spectrum_switchdev.c       |  74 +++-
- .../net/mlxsw/spectrum-2/q_in_vni_veto.sh     |  77 ----
- .../net/forwarding/dual_vxlan_bridge.sh       | 366 ++++++++++++++++++
- 8 files changed, 513 insertions(+), 92 deletions(-)
- delete mode 100755 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/q_in_vni_veto.sh
- create mode 100755 tools/testing/selftests/net/forwarding/dual_vxlan_bridge.sh
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index 44f836246e33..626f5e5c8a93 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -842,6 +842,14 @@ MLXSW_ITEM32(reg, spvid, local_port, 0x00, 16, 8);
+  */
+ MLXSW_ITEM32(reg, spvid, sub_port, 0x00, 8, 8);
+ 
++/* reg_spvid_egr_et_set
++ * When VLAN is pushed at ingress (for untagged packets or for
++ * QinQ push mode) then the EtherType is decided at the egress port.
++ * Reserved when Spectrum-1.
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, spvid, egr_et_set, 0x04, 24, 1);
++
+ /* reg_spvid_et_vlan
+  * EtherType used for when VLAN is pushed at ingress (for untagged
+  * packets or for QinQ push mode).
+@@ -849,6 +857,7 @@ MLXSW_ITEM32(reg, spvid, sub_port, 0x00, 8, 8);
+  * 1: ether_type1
+  * 2: ether_type2 - Reserved when Spectrum-1, supported by Spectrum-2
+  * Ethertype IDs are configured by SVER.
++ * Reserved when egr_et_set = 1.
+  * Access: RW
+  */
+ MLXSW_ITEM32(reg, spvid, et_vlan, 0x04, 16, 2);
 -- 
 2.29.2
 
