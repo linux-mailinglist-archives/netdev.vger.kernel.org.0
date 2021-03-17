@@ -2,93 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC3E33F25D
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 15:15:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E5933F262
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 15:16:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231686AbhCQOOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 10:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
+        id S231726AbhCQOPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 10:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231278AbhCQOON (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 10:14:13 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9638AC06174A;
-        Wed, 17 Mar 2021 07:14:12 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ox4so2826044ejb.11;
-        Wed, 17 Mar 2021 07:14:12 -0700 (PDT)
+        with ESMTP id S231648AbhCQOPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 10:15:32 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0ECC06174A;
+        Wed, 17 Mar 2021 07:15:32 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id u4so3362051ljo.6;
+        Wed, 17 Mar 2021 07:15:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CUwDi4a79Hhe5kmDZ9gxq2DQopexhr9dA5acVFYVd9Q=;
-        b=VggIyPWusAvbRMcgUzPjf+9KSrkCeQWSvj7+fXB1AmWFm+lIkbuGQIYTXevdj3pcxn
-         mG/AatyjJUlPT34rmSz7nckdWKJRmxPUEBLMcI4xIlocOix1uh/JtpcYrZIcpAj2Cn//
-         +OvQ7RJn+Nr4X0YSvaWC+QH3wy8PziXh/lloj5bafLiw9vE2ZBki30A/min/ygXZa4Y7
-         7ovNLu6e8s7E8Luorn7zE7cJAlq2eMwmoqeeqetEuxGsGLbZ5K8ZE1AHoK13CeuIje2q
-         UR15x46Q0wbnjHO2KDg2qnAdIGbzEvYFTLUCbtfoYD7UM1vQufw/dcPe4FsyHbcmLLQs
-         kFjg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gpCEjkMZEUC+j/o8wrSlaggSpGIA33fcqJm29MZK2L0=;
+        b=QBGrnHjac18WK28E2rOZL5cV5Ia6MYPSykeLh81qaIbzp6GCFf2u2WCOEcKoJVpVR4
+         hC6bqNvNQWltHeuEI6drnzoxmQ0t2Rdsgz4cxx5BBfWLQXdET9AYG0+HlMJnx/jEfUq6
+         cHY6mKar0AUFhHu1Ke/OQYHW6OdnfxDW5p+WxJXKfMrDjBL4CB93//NPIC/npT6Nj9ot
+         XXYIz5k0lFKfFBy9AYjQZg93lhmHEp+IvL4eo4JGibHZC9WRW2vyA3JdpWKk8Fn7/xuM
+         FAQlSssyKhJKIcsfFnfPIQK7V0WnEfK85va7RAD5nxOw9emv48TsmVUBkqrOkycTudxV
+         y8MQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CUwDi4a79Hhe5kmDZ9gxq2DQopexhr9dA5acVFYVd9Q=;
-        b=covJ2vArVEE3+OLknZunS8TZGPPYCDLbgoewRg9bLD8EJA74G4SibFANkSz+jAQRUH
-         v9rXZuLt/6QE6D9h5hajjeUh34XvYiu134Xfm0miI35P6EpoyZP0yQ0RqE9We1FVMDLA
-         Z+ngOMmKlP+KPPVAVALX+Wckvk7+SEv9Ln4VytuA5THb18ySshjN0euzYtOt6VOczzRO
-         XMySgkEanZMfH4R4RLnCcQI1SIOramG+/LxBccDkxDcG+DG8zFTn/x1nHHA/kJDbE+mc
-         PEyZm5Jcc20cmDtOpe1zS5Am4kRL1bDppDtFfFWxItb4tyPyzgni3Wemv+t4d51NQWw3
-         yTGA==
-X-Gm-Message-State: AOAM530KK4l7DbaJu3Te3VvdqnI+8m19aaNN9eCNkN7tWY4J7ktG9S+B
-        B/2+TW8nbKpDbvVLQagOSRM=
-X-Google-Smtp-Source: ABdhPJwFk+sGdQiqAoNwxt4Xx8R1bZrWGJez3qiNg7mJsFb4kpWgzHZPXo+IaJmGUAZu0azZBBpZUA==
-X-Received: by 2002:a17:907:110c:: with SMTP id qu12mr35884377ejb.442.1615990451047;
-        Wed, 17 Mar 2021 07:14:11 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id g25sm12685740edp.95.2021.03.17.07.14.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 07:14:10 -0700 (PDT)
-Date:   Wed, 17 Mar 2021 16:14:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org, gregkh@linuxfoundation.org,
-        sashal@kernel.org
-Subject: Re: [PATCH stable 0/6] net: dsa: b53: Correct learning for
- standalone ports
-Message-ID: <20210317141409.wphejdjznrfyebmq@skbuf>
-References: <20210317003549.3964522-1-f.fainelli@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gpCEjkMZEUC+j/o8wrSlaggSpGIA33fcqJm29MZK2L0=;
+        b=duhRE/KLVu/VTkdMW3n9QAj64EaUqurRTNfKbJct7FxhDxrtv0rAaTADgsvOlT1Ybp
+         3IEgkvkV/DK4EG9UEkajfobl0RYOMbLD1CjkQGZZ7YJi/97UgOzze81KSB6S5kb0iFgi
+         4YrTRoSCoOeI5d2zJGLClzzqgthh3e8xEcU/MwgPvAAUftcTJpcu6QQlMaYA4uVte6Vc
+         FaT+NzOACWsHZFocNdI3DTrZ/c6THDUFIey05buugvQbIIELgOb9s2lKy3vb2S5LG8k6
+         tx9Sz1SGozc+UrI6VcUhcaCAvjzfTrrqI/fiGzSkTlH3qx5byPHYyrnxNRGONdACQYKX
+         pBbQ==
+X-Gm-Message-State: AOAM533+QbfLKzDJuXLvNx1bsEhgoDsZl4xGIEbZ2bnpUnmNUlmUn0mZ
+        vuSEtnuPhCAwBgnJEM457aeVIYbUdRvSr7lPs8TSS2tsv1o=
+X-Google-Smtp-Source: ABdhPJyvTDdf8GNCcx3d2xJN323xPcFjXiTwpn5Es0DOdIuxeEJYBoUc/UZu7TXySMEzzj3iVyx1nOUMJQQWfAZRDCY=
+X-Received: by 2002:a05:651c:1214:: with SMTP id i20mr2552046lja.423.1615990531034;
+ Wed, 17 Mar 2021 07:15:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210317003549.3964522-1-f.fainelli@gmail.com>
+References: <20210310015135.293794-1-dong.menglong@zte.com.cn>
+ <20210316224820.GA225411@roeck-us.net> <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
+ <20210317013758.GA134033@roeck-us.net> <CADxym3bu0Ds6dD6OhyvdzbWDW-KqXsqGGxt3HKj-dsedFn9GXg@mail.gmail.com>
+ <CAHp75Vfo=rtK0=nRTZNwL3peUXGt5PTo4d_epCgLChSD0CKRVw@mail.gmail.com> <CADxym3bHyaiy=kOhmxYdoMTZ_QaG9-JWqC1j6ucOBOeobVBoPg@mail.gmail.com>
+In-Reply-To: <CADxym3bHyaiy=kOhmxYdoMTZ_QaG9-JWqC1j6ucOBOeobVBoPg@mail.gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 17 Mar 2021 22:15:19 +0800
+Message-ID: <CADxym3YKnwFce1D9w4xz83E8cRot1BMeTES8azJc1U3EJEeh7A@mail.gmail.com>
+Subject: Re: [PATCH v4 RESEND net-next] net: socket: use BIT() for MSG_*
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 05:35:43PM -0700, Florian Fainelli wrote:
-> Hi Greg, Sasha, Jaakub and David,
-> 
-> This patch series contains backports for a change that recently made it
-> upstream as f9b3827ee66cfcf297d0acd6ecf33653a5f297ef ("net: dsa: b53:
-> Support setting learning on port") however that commit depends on
-> infrastructure that landed in v5.12-rc1.
-> 
-> The way this was fixed in the netdev group's net tree is slightly
-> different from how it should be backported to stable trees which is why
-> you will find a patch for each branch in the thread started by this
-> cover letter. The commit used as a Fixes: base dates back from when the
-> driver was first introduced into the tree since this should have been
-> fixed from day one ideally.
-> 
-> Let me know if this does not apply for some reason. The changes from 4.9
-> through 4.19 are nearly identical and then from 5.4 through 5.11 are
-> about the same.
-> 
-> Thank you very much!
+On Wed, Mar 17, 2021 at 9:53 PM Menglong Dong <menglong8.dong@gmail.com> wrote:
+>
+...
+>
+> Seems that the inconsistent usages of 'msg_flags' is a lot, for example the
+> 'recvmsg()' in 'struct proto' and 'recvmsg()' in 'struct proto_ops':
+>
+> int (*recvmsg)(struct sock *sk, struct msghdr *msg,
+>         size_t len, int noblock, int flags,
+>         int *addr_len);
+>
+> This function prototype is used in many places, It's not easy to fix them.
+> This patch is already reverted, and I think maybe
+> I can resend it after I fix these 'int' flags.
+>
 
-Florian, same comment I just sent to Tobias applies to you as well:
-could you please call b53_br_fast_age when disabling address learning?
+I doubt it now...there are hundreds of functions that are defined as
+'proto_ops->recvmsg()'.
+enn...will this kind of patch be acceptable? Is it the time to give up?
+
+With Best Regards,
+Menglong Dong
