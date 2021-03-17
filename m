@@ -2,179 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE23A33E69C
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 03:07:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4ADA33E6B4
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 03:23:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbhCQCHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 22:07:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55797 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230028AbhCQCG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 22:06:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615946819;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gwAJYxhxoK65xZ3Ji6P66o29S56yrmzQDDZiWdiSebU=;
-        b=MI3fDSV4oL695jXEsGPMnjx/kCKUIELGAU1KYPq9lCUPHbk5Ni13Hy/1VmRsQnso51rS3b
-        +nV7P48cEOVn9DjVnh0o2DZdyCmCTyY6x1e66d4GNfKasdYBWzxURho4AM7qy322Dp7aoV
-        mDev4uIESwYd1dHKNWIvIh84+GQtI9A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-79-xf4y6D-wML628ikC8lEDpg-1; Tue, 16 Mar 2021 22:06:57 -0400
-X-MC-Unique: xf4y6D-wML628ikC8lEDpg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7444881431D;
-        Wed, 17 Mar 2021 02:06:55 +0000 (UTC)
-Received: from fenrir.redhat.com (ovpn-118-76.rdu2.redhat.com [10.10.118.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 739335C1A1;
-        Wed, 17 Mar 2021 02:06:51 +0000 (UTC)
-From:   jmaloy@redhat.com
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
-        xinl@redhat.com, ying.xue@windriver.com,
-        parthasarathy.bhuvaragan@gmail.com
-Subject: [net-next 16/16] tipc: remove some unnecessary warnings
-Date:   Tue, 16 Mar 2021 22:06:23 -0400
-Message-Id: <20210317020623.1258298-17-jmaloy@redhat.com>
-In-Reply-To: <20210317020623.1258298-1-jmaloy@redhat.com>
-References: <20210317020623.1258298-1-jmaloy@redhat.com>
+        id S229905AbhCQCWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 22:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229517AbhCQCWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 22:22:45 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8CCC06174A;
+        Tue, 16 Mar 2021 19:22:45 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id v192so32718095oia.5;
+        Tue, 16 Mar 2021 19:22:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mTmUCaOfbd5iJ7LaoWiivZKH0AsG4jw/h9U+kEn6lS0=;
+        b=Hy7q0SUbLulXy+0Btv2fwXj75v3soadwbMIXAdarvgDA6e6SaUvUKMrKxse7wxTT4u
+         qLfYyI1+GSZlKDd3EtaUkZ6aIsobFB+FTuaiJwCSrLZoVwY4i0P54cUDpo6Q483VoH6v
+         TKuPAzgOwoHauAoIs+3lM9u8sKmtfimMuIkf3NGirLET/7wtTUkyd3Ss0+tLXjD8EvpK
+         Z2LShQyHjfWHVJO+tgJ7JthEHp2G74ssil/TV6CuNFEj8xh6i/tHUWLHMqnvVR/AUktL
+         WQt3ytQ3j5HjOeR67YHJw4e3iqmxypa1p/l2zbNCxRig9S0uqN/9On5TE0nWuzsNQJrq
+         sQKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mTmUCaOfbd5iJ7LaoWiivZKH0AsG4jw/h9U+kEn6lS0=;
+        b=NBZE5kKSkJdhDCxjnpvKaR0gRnTnsAddJTA2RoD4XyaQLeaGc6jZ5jJAUjiYdf+P0M
+         8VGGUU2tBX6+vimmaiXR/8aEvA7VFNmIP5SV9NlyRl+Is+Re50A8zFwmPD6lR/W+D6gl
+         /I6MxXFj31FjZXeYyK2eyxTCR5uDLHzzVDG8kwmBOuGfGDqTEcEAC8WVf90qZ+j7GM4H
+         QOEKbPj1Fc4f4dEc096cpSrxbcw09ZjOjZ3C8k82JCW/29LHuh80vvEVYmOn18POW8oQ
+         8XxpEEurG4WGpi4Vqoi1GG33Bhm+XfNscqgbMzmRKgj7/xwxPJ/U5bfpC7DMnxUZgjay
+         fmKw==
+X-Gm-Message-State: AOAM531XwaStnVL/x8hbxbtgvwSbdUs5INmMi+HBd5aqZEl20ev8Uzqd
+        0592WlZudZIvYJtHLANnZnHAqt4Hy37pfw==
+X-Google-Smtp-Source: ABdhPJzI4NCmFrqeeQPTytvBtR9jzk7ZB1Ju11eMVX0d+EDrSkUMbPS44ySe+q4mPHECl5RK6w6BJg==
+X-Received: by 2002:aca:ac8d:: with SMTP id v135mr1201381oie.2.1615947764108;
+        Tue, 16 Mar 2021 19:22:44 -0700 (PDT)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:517b:5634:5d8e:ff09])
+        by smtp.gmail.com with ESMTPSA id i3sm8037858oov.2.2021.03.16.19.22.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 19:22:43 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next v5 00/11] sockmap: introduce BPF_SK_SKB_VERDICT and support UDP
+Date:   Tue, 16 Mar 2021 19:22:08 -0700
+Message-Id: <20210317022219.24934-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+From: Cong Wang <cong.wang@bytedance.com>
 
-We move some warning printouts to more strategic locations to avoid
-duplicates and yield more detailed information about the reported
-problem.
+We have thousands of services connected to a daemon on every host
+via AF_UNIX dgram sockets, after they are moved into VM, we have to
+add a proxy to forward these communications from VM to host, because
+rewriting thousands of them is not practical. This proxy uses an
+AF_UNIX socket connected to services and a UDP socket to connect to
+the host. It is inefficient because data is copied between kernel
+space and user space twice, and we can not use splice() which only
+supports TCP. Therefore, we want to use sockmap to do the splicing
+without going to user-space at all (after the initial setup).
 
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Acked-by: Hoang Le <hoang.h.le@dektech.com.au>
-Acked-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Acked-by: Xin Long <lucien.xin@gmail.com>
+Currently sockmap only fully supports TCP, UDP is partially supported
+as it is only allowed to add into sockmap. This patchset, as the second
+part of the original large patchset, extends sockmap with:
+1) cross-protocol support with BPF_SK_SKB_VERDICT; 2) full UDP support.
+
+On the high level, ->read_sock() is required for each protocol to support
+sockmap redirection, and in order to do sock proto update, a new ops
+->psock_update_sk_prot() is introduced, which is also required. And the
+BPF ->recvmsg() is also needed to replace the original ->recvmsg() to
+retrieve skmsg. To make life easier, we have to get rid of lock_sock()
+in sk_psock_handle_skb(), otherwise we would have to implement
+->sendmsg_locked() on top of ->sendmsg(), which is ugly.
+
+Please see each patch for more details.
+
+To see the big picture, the original patchset is available here:
+https://github.com/congwang/linux/tree/sockmap
+this patchset is also available:
+https://github.com/congwang/linux/tree/sockmap2
+
 ---
- net/tipc/name_distr.c |  7 -------
- net/tipc/name_table.c | 30 ++++++++++++++++--------------
- 2 files changed, 16 insertions(+), 21 deletions(-)
+v5: use INDIRECT_CALL_2() for function pointers
+    use ingress_lock to close a race condition found by Jacub
+    rename two helper functions
 
-diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-index 9e2fab3569b5..bda902caa814 100644
---- a/net/tipc/name_distr.c
-+++ b/net/tipc/name_distr.c
-@@ -253,13 +253,6 @@ static void tipc_publ_purge(struct net *net, struct publication *p, u32 addr)
- 	if (_p)
- 		tipc_node_unsubscribe(net, &_p->binding_node, addr);
- 	spin_unlock_bh(&tn->nametbl_lock);
--
--	if (_p != p) {
--		pr_err("Unable to remove publication from failed node\n"
--		       " (type=%u, lower=%u, node=%u, port=%u, key=%u)\n",
--		       p->sr.type, p->sr.lower, p->sk.node, p->sk.ref, p->key);
--	}
--
- 	if (_p)
- 		kfree_rcu(_p, rcu);
- }
-diff --git a/net/tipc/name_table.c b/net/tipc/name_table.c
-index 98b8874ad2f7..6db9f9e7c0ac 100644
---- a/net/tipc/name_table.c
-+++ b/net/tipc/name_table.c
-@@ -337,6 +337,7 @@ static bool tipc_service_insert_publ(struct net *net,
- 	u32 node = p->sk.node;
- 	bool first = false;
- 	bool res = false;
-+	u32 key = p->key;
- 
- 	spin_lock_bh(&sc->lock);
- 	sr = tipc_service_create_range(sc, p);
-@@ -347,8 +348,12 @@ static bool tipc_service_insert_publ(struct net *net,
- 
- 	/* Return if the publication already exists */
- 	list_for_each_entry(_p, &sr->all_publ, all_publ) {
--		if (_p->key == p->key && (!_p->sk.node || _p->sk.node == node))
-+		if (_p->key == key && (!_p->sk.node || _p->sk.node == node)) {
-+			pr_debug("Failed to bind duplicate %u,%u,%u/%u:%u/%u\n",
-+				 p->sr.type, p->sr.lower, p->sr.upper,
-+				 node, p->sk.ref, key);
- 			goto exit;
-+		}
- 	}
- 
- 	if (in_own_node(net, p->sk.node))
-@@ -475,17 +480,11 @@ struct publication *tipc_nametbl_insert_publ(struct net *net,
- {
- 	struct tipc_service *sc;
- 	struct publication *p;
--	u32 type = ua->sr.type;
- 
- 	p = tipc_publ_create(ua, sk, key);
- 	if (!p)
- 		return NULL;
- 
--	if (ua->sr.lower > ua->sr.upper) {
--		pr_debug("Failed to bind illegal {%u,%u,%u} from node %u\n",
--			 type, ua->sr.lower, ua->sr.upper, sk->node);
--		return NULL;
--	}
- 	sc = tipc_service_find(net, ua);
- 	if (!sc)
- 		sc = tipc_service_create(net, ua);
-@@ -508,15 +507,15 @@ struct publication *tipc_nametbl_remove_publ(struct net *net,
- 
- 	sc = tipc_service_find(net, ua);
- 	if (!sc)
--		return NULL;
-+		goto exit;
- 
- 	spin_lock_bh(&sc->lock);
- 	sr = tipc_service_find_range(sc, ua);
- 	if (!sr)
--		goto exit;
-+		goto unlock;
- 	p = tipc_service_remove_publ(sr, sk, key);
- 	if (!p)
--		goto exit;
-+		goto unlock;
- 
- 	/* Notify any waiting subscriptions */
- 	last = list_empty(&sr->all_publ);
-@@ -535,8 +534,14 @@ struct publication *tipc_nametbl_remove_publ(struct net *net,
- 		hlist_del_init_rcu(&sc->service_list);
- 		kfree_rcu(sc, rcu);
- 	}
--exit:
-+unlock:
- 	spin_unlock_bh(&sc->lock);
-+exit:
-+	if (!p) {
-+		pr_err("Failed to remove unknown binding: %u,%u,%u/%u:%u/%u\n",
-+		       ua->sr.type, ua->sr.lower, ua->sr.upper,
-+		       sk->node, sk->ref, key);
-+	}
- 	return p;
- }
- 
-@@ -805,9 +810,6 @@ void tipc_nametbl_withdraw(struct net *net, struct tipc_uaddr *ua,
- 		skb = tipc_named_withdraw(net, p);
- 		list_del_init(&p->binding_sock);
- 		kfree_rcu(p, rcu);
--	} else {
--		pr_err("Failed to remove local publication {%u,%u,%u}/%u\n",
--		       ua->sr.type, ua->sr.lower, ua->sr.upper, key);
- 	}
- 	rc_dests = nt->rc_dests;
- 	spin_unlock_bh(&tn->nametbl_lock);
+v4: get rid of lock_sock() in sk_psock_handle_skb()
+    get rid of udp_sendmsg_locked()
+    remove an empty line
+    update cover letter
+
+v3: export tcp/udp_update_proto()
+    rename sk->sk_prot->psock_update_sk_prot()
+    improve changelogs
+
+v2: separate from the original large patchset
+    rebase to the latest bpf-next
+    split UDP test case
+    move inet_csk_has_ulp() check to tcp_bpf.c
+    clean up udp_read_sock()
+
+Cong Wang (11):
+  skmsg: lock ingress_skb when purging
+  skmsg: introduce a spinlock to protect ingress_msg
+  skmsg: introduce skb_send_sock() for sock_map
+  skmsg: avoid lock_sock() in sk_psock_backlog()
+  sock_map: introduce BPF_SK_SKB_VERDICT
+  sock: introduce sk->sk_prot->psock_update_sk_prot()
+  udp: implement ->read_sock() for sockmap
+  skmsg: extract __tcp_bpf_recvmsg() and tcp_bpf_wait_data()
+  udp: implement udp_bpf_recvmsg() for sockmap
+  sock_map: update sock type checks for UDP
+  selftests/bpf: add a test case for udp sockmap
+
+ include/linux/skbuff.h                        |   1 +
+ include/linux/skmsg.h                         |  71 ++++++--
+ include/net/sock.h                            |   3 +
+ include/net/tcp.h                             |   3 +-
+ include/net/udp.h                             |   3 +
+ include/uapi/linux/bpf.h                      |   1 +
+ kernel/bpf/syscall.c                          |   1 +
+ net/core/skbuff.c                             |  55 +++++-
+ net/core/skmsg.c                              | 160 +++++++++++++++---
+ net/core/sock_map.c                           |  53 +++---
+ net/ipv4/af_inet.c                            |   1 +
+ net/ipv4/tcp_bpf.c                            | 130 +++-----------
+ net/ipv4/tcp_ipv4.c                           |   3 +
+ net/ipv4/udp.c                                |  38 +++++
+ net/ipv4/udp_bpf.c                            |  79 ++++++++-
+ net/ipv6/af_inet6.c                           |   1 +
+ net/ipv6/tcp_ipv6.c                           |   3 +
+ net/ipv6/udp.c                                |   3 +
+ net/tls/tls_sw.c                              |   4 +-
+ tools/bpf/bpftool/common.c                    |   1 +
+ tools/bpf/bpftool/prog.c                      |   1 +
+ tools/include/uapi/linux/bpf.h                |   1 +
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 140 +++++++++++++++
+ .../selftests/bpf/progs/test_sockmap_listen.c |  22 +++
+ 24 files changed, 600 insertions(+), 178 deletions(-)
+
 -- 
-2.29.2
+2.25.1
 
