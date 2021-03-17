@@ -2,322 +2,468 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870F433FAD8
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 23:13:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 908BF33FAEE
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 23:20:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbhCQWNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 18:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
+        id S229863AbhCQWUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 18:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbhCQWM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 18:12:59 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB6EC061760
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 15:12:58 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id g185so95331qkf.6
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 15:12:58 -0700 (PDT)
+        with ESMTP id S230378AbhCQWUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 18:20:02 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C47C06174A
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 15:20:02 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id g10so266308plt.8
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 15:20:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eBT0XGfN4nY7W6Afo8Mm//o9/72Xlxw+M/0UK70aLsI=;
-        b=ooo9gXV45Hjp7/yQVDH2gGDZOCSA/Z5ae83E8SvUgQ9EJD6hrUT29Pvs6dqorzaGew
-         gQQaH8JCii78m9uAczwvqGZK+b+4TcoUmDGudyBTK/gHqZ0Z8iPO3tt6UhyyCqPxz6M0
-         m6JyWZtnBUjh+sVnI4RNM0MjW36QqCyYsd92xq9Wtp34mSKKVqggxLeOsTGAKtV/BOY1
-         PrcG2MyNuJ8cMf8ZtPeuajp3kXcsdBOZvCdX6YmtiWw7kYaVd6FXBMO5cSrGE1it8lAm
-         zJEPumOuQUVSME1UY+GdehqEnOCuS3gt9UaVvZjIIBD/wEFaSKqdnd4RGS54IsyDkrsE
-         kvDQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f8nV3dfn3gn7txRrrVIGhV1z9Em6So+ivaeuXnSK5nc=;
+        b=GmbpB0ltELzNzdF6DvdDdzNxUWFqsJQEX7fPTk/gUIvidN2a7AXzjujoRz66JsDga/
+         rOotFoOWTNkVYJx9YANFZNujziHX3jYUTJIc6NTNiETCEKemQi8wbi1XvO+rv8LcyaLK
+         YV/isNMWMithI+0BGLWq6x+W8cZN4xvKmkCZX63ufzmvku0XJlUuGgtvG+bX0ZCZdB0a
+         9QuABxU95YUMHIr4UgFnenohJBEqZlED6//9jmqwG7IzsP1tGW4TphqROyRuv64Pnz1c
+         Sm9g12qW6d/cAOfAWzD/zR7AJy6c58suiQ3oSz7iT3PUXMtIcCmJMFEkUnWZXT4LxTfi
+         oUSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eBT0XGfN4nY7W6Afo8Mm//o9/72Xlxw+M/0UK70aLsI=;
-        b=uXMRxjOLl3nNYI6u0u/RNQIDqwmyxD13tH+Q541hlScSi7/7yT6Y5zWxNpHMF45DJq
-         6snSmBzYUT5uh9zEtSkICc9WfI38x+1TZYPxiEPiU2zEg01glnnNLATLRG2qb2RS1PDU
-         dus5yWB1O2weRvgOyMt/7632vgViBILRLWYJg0GvH+Dt7lK0XHcxWVayij4L0zBHhdWt
-         i7FpJ2/pvph/BfMp+ZenbJQzlBj3kFae5qsTVUkWkKeFQRzYkM57s9/fc7dY+YhMSJ2o
-         7DjRusWeOJJW8sMoon8LWwiLw2tLQJ1D0B4cTXCzCr6PWbCAujm0Bm4fy4W8NQhrr8wY
-         LuYw==
-X-Gm-Message-State: AOAM53159PPs+W5PRqXh1KwXOjUv7gowtZwzhqTqicD+SsLiYsDeE/NW
-        nCPTdtSTdwVRt8f4WH3lEU1dkQ==
-X-Google-Smtp-Source: ABdhPJxHZ14hH2TJ2pSev9vIolGbLptzi4A559brT3GMwqgdafcX0jd9iM/n6AtTBe/X11gjXo3pSw==
-X-Received: by 2002:a37:46c5:: with SMTP id t188mr1497181qka.47.1616019177593;
-        Wed, 17 Mar 2021 15:12:57 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:e46c])
-        by smtp.gmail.com with ESMTPSA id d84sm273493qke.53.2021.03.17.15.12.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 15:12:56 -0700 (PDT)
-Date:   Wed, 17 Mar 2021 18:12:55 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Arjun Roy <arjunroy@google.com>
-Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
-Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
-Message-ID: <YFJ+5+NBOBiUbGWS@cmpxchg.org>
-References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
- <YFCH8vzFGmfFRCvV@cmpxchg.org>
- <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f8nV3dfn3gn7txRrrVIGhV1z9Em6So+ivaeuXnSK5nc=;
+        b=LERUeLvUiirQISe67XYzxeb/2ih5NrzKbRZATZEzMp90w6laymmjGauPHE55vWv4xd
+         90d8CTXsgCdbdS+TChQyVYc1uaqn8FFSa7Tv95v7bfzmsnIAf6YEzxelP+kZkzLteKGm
+         Ar8kDqJevcD30DZdG6QOqVDHuuVMmP4/1zNvd7MfL1b8cER49rNRCEJwyM0ADh8D60y0
+         hwOsbMu6HatBYyNZ7R2TImByJTnERMo9GbVB9nmTxTCOp+z0TdyjPK5IY50n3PRiKD6S
+         Cr9V31EeB+CCPIiEacpl/54+CE81CDM/i5k9cEAw9IhGB7+VNoBhTXXiOn06fmY6nUXd
+         8wPA==
+X-Gm-Message-State: AOAM532z6MxTSQUgjhpJlI8q1M7cN++0PUAdi7lZrscMgcCN0om9PU0k
+        AVVIfefTGl7fPnSDZ5KLS4U=
+X-Google-Smtp-Source: ABdhPJzxDSVAsS5IPeCfqqtzCg8CqyjF+TDiiVo340cBrQ7YCh7qdyfZJwOg9U0wIHmxPnbWKLvdHA==
+X-Received: by 2002:a17:90b:410d:: with SMTP id io13mr937996pjb.112.1616019601799;
+        Wed, 17 Mar 2021 15:20:01 -0700 (PDT)
+Received: from localhost.localdomain ([2600:8801:131b:1000:fd22:fc07:36e2:f250])
+        by smtp.googlemail.com with ESMTPSA id k15sm91659pgt.23.2021.03.17.15.20.00
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 17 Mar 2021 15:20:01 -0700 (PDT)
+From:   ishaangandhi <ishaangandhi@gmail.com>
+To:     davem@davemloft.net
+Cc:     ishaangandhi@gmail.com, netdev@vger.kernel.org, willemb@google.com,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH v3] icmp: support rfc5837
+Date:   Wed, 17 Mar 2021 15:19:59 -0700
+Message-Id: <20210317221959.4410-1-ishaangandhi@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 11:05:11PM -0700, Arjun Roy wrote:
-> On Tue, Mar 16, 2021 at 3:27 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> >
-> > Hello,
-> >
-> > On Mon, Mar 15, 2021 at 09:16:45PM -0700, Arjun Roy wrote:
-> > > From: Arjun Roy <arjunroy@google.com>
-> > >
-> > > TCP zerocopy receive is used by high performance network applications
-> > > to further scale. For RX zerocopy, the memory containing the network
-> > > data filled by the network driver is directly mapped into the address
-> > > space of high performance applications. To keep the TLB cost low,
-> > > these applications unmap the network memory in big batches. So, this
-> > > memory can remain mapped for long time. This can cause a memory
-> > > isolation issue as this memory becomes unaccounted after getting
-> > > mapped into the application address space. This patch adds the memcg
-> > > accounting for such memory.
-> > >
-> > > Accounting the network memory comes with its own unique challenges.
-> > > The high performance NIC drivers use page pooling to reuse the pages
-> > > to eliminate/reduce expensive setup steps like IOMMU. These drivers
-> > > keep an extra reference on the pages and thus we can not depend on the
-> > > page reference for the uncharging. The page in the pool may keep a
-> > > memcg pinned for arbitrary long time or may get used by other memcg.
-> >
-> > The page pool knows when a page is unmapped again and becomes
-> > available for recycling, right? Essentially the 'free' phase of that
-> > private allocator. That's where the uncharge should be done.
-> >
-> 
-> In general, no it does not.  The page pool, how it operates and whether it
-> exists in the first place, is an optimization that a given NIC driver can choose
-> to make - and so there's no generic plumbing that ties page unmap events to
-> something that a page pool could subscribe to that I am aware of. All it can do
-> is check, at a given point, whether it can reuse a page or not, typically by
-> checking the current page refcount.
-> 
-> A couple of examples for drivers with such a mechanism - mlx5:
-> (https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c#L248)
+From: ishaan <ishaangandhi@gmail.com>
 
-	if (page_ref_count(cache->page_cache[cache->head].page) != 1)
+This patch identifies the interface a packet arrived on when sending
+ICMP time exceeded, destination unreachable, and parameter problem
+messages, in accordance with RFC 5837.
 
-So IIUC it co-opts the page count used by the page allocator, offset
-by the base ref of the pool. That means it doesn't control the put
-path and won't be aware of when pages are used and unused.
+It was tested by pinging a machine with a ttl of 1, and observing the
+response in Wireshark.
 
-How does it free those pages back to the system eventually? Does it
-just do a series of put_page() on pages in the pool when something
-determines it is too big?
+Changes since v1:
+- Add sysctls, feature is disabled by default
+- Device name is always less than 63, so don't check this
+- MTU is always included in net_device, so don't check its presence
+- Support IPv6 as first class citizen
+- Increment lengths via sizeof operator as opposed to int literals
+- Initialize more local variables with defaults
 
-However it does it, it found some way to live without a
-destructor. But now we need one.
+Changes since v2:
+- Remove check for device name
+- Get first entry instead of last in IPv6 addr list
+- Use ALIGN macro for alignment
+- Remove verification function only gets called with
+  ip_version 4 or 6.
+Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+- Use /* */ style comments instead of // style
+Reported-by: Stephen Hemminger <stephen@networkplumber.org>
+- Use proc_dointvec_minmax to constrain sysctl values
+- Release dev with dev_put once finished
+- Simplify logic for padding the end of the original datagram
+- Fix off by one error in where the length of the original datagram
+  is written into the IP header (6th and 5th bytes for ICMPv4 and v6
+  respectively are accessed at icmph[5] and icmph[4] respectively,
+  not icmph[6] and icmph[5].)
 
-> Or intel fm10k:
-> (https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/intel/fm10k/fm10k_main.c#L207)
-> 
-> Note that typically map count is not checked (maybe because page-flipping
-> receive zerocopy did not exist as a consideration when the driver was written).
-> 
-> So given that the page pool is essentially checking on demand for whether a page
-> is usable or not - since there is no specific plumbing invoked when a page is
-> usable again (i.e. unmapped, in this case) - we opted to hook into when the
-> mapcount is decremented inside unmap() path.
+Signed-off-by: Ishaan Gandhi <ishaangandhi@gmail.com>
 
-The problem is that the page isn't reusable just because it's
-unmapped. The user may have vmspliced those pages into a pipe and be
-pinning them long after the unmap.
+---
+ Documentation/networking/ip-sysctl.rst |   9 ++
+ include/linux/icmp.h                   |   3 +
+ include/net/netns/ipv4.h               |   1 +
+ include/net/netns/ipv6.h               |   1 +
+ include/uapi/linux/icmp.h              |  26 ++++
+ net/ipv4/icmp.c                        | 157 +++++++++++++++++++++++++
+ net/ipv4/sysctl_net_ipv4.c             |   9 ++
+ net/ipv6/af_inet6.c                    |   1 +
+ net/ipv6/icmp.c                        |  17 +++
+ 9 files changed, 224 insertions(+)
 
-I don't know whether that happens in real life, but it's a legitimate
-thing to do. At the very least it would be an avenue for abuse.
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 837d51f9e1fa..55d38539a72a 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1204,6 +1204,15 @@ icmp_errors_use_inbound_ifaddr - BOOLEAN
+ 
+ 	Default: 0
+ 
++icmp_errors_identify_if - BOOLEAN
++
++	If 1, then the kernel will append an extension object identifying
++	the interface on which the packet which caused the error. The
++	object will contain the ifIndex, interface name, interface IP
++	address, and/or MTU, in accordance with RFC5837.
++
++	Default: 0
++
+ igmp_max_memberships - INTEGER
+ 	Change the maximum number of multicast groups we can subscribe to.
+ 	Default: 20
+diff --git a/include/linux/icmp.h b/include/linux/icmp.h
+index 8fc38a34cb20..db1a17dbc338 100644
+--- a/include/linux/icmp.h
++++ b/include/linux/icmp.h
+@@ -39,4 +39,7 @@ static inline bool icmp_is_err(int type)
+ void ip_icmp_error_rfc4884(const struct sk_buff *skb,
+ 			   struct sock_ee_data_rfc4884 *out);
+ 
++void icmp_identify_arrival_interface(struct sk_buff *skb, struct net *net, int room,
++				     char *icmph, int ip_version);
++
+ #endif	/* _LINUX_ICMP_H */
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 9e36738c1fe1..fd68a47f1130 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -90,6 +90,7 @@ struct netns_ipv4 {
+ 	int sysctl_icmp_ratelimit;
+ 	int sysctl_icmp_ratemask;
+ 	int sysctl_icmp_errors_use_inbound_ifaddr;
++	int sysctl_icmp_errors_identify_if;
+ 
+ 	struct local_ports ip_local_ports;
+ 
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index 5ec054473d81..9608e0a82401 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -36,6 +36,7 @@ struct netns_sysctl_ipv6 {
+ 	int icmpv6_echo_ignore_all;
+ 	int icmpv6_echo_ignore_multicast;
+ 	int icmpv6_echo_ignore_anycast;
++	int icmpv6_errors_identify_if;
+ 	DECLARE_BITMAP(icmpv6_ratemask, ICMPV6_MSG_MAX + 1);
+ 	unsigned long *icmpv6_ratemask_ptr;
+ 	int anycast_src_echo_reply;
+diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+index fb169a50895e..f43ecd3c3677 100644
+--- a/include/uapi/linux/icmp.h
++++ b/include/uapi/linux/icmp.h
+@@ -118,4 +118,30 @@ struct icmp_extobj_hdr {
+ 	__u8		class_type;
+ };
+ 
++/* RFC 5837 Bitmasks */
++#define ICMP_5837_MTU_CTYPE		(1 << 0)
++#define ICMP_5837_NAME_CTYPE		(1 << 1)
++#define ICMP_5837_IP_ADDR_CTYPE		(1 << 2)
++#define ICMP_5837_IF_INDEX_CTYPE	(1 << 3)
++
++#define ICMP_5837_ARRIVAL_ROLE_CTYPE	(0 << 6)
++#define ICMP_5837_SUB_IP_ROLE_CTYPE	(1 << 6)
++#define ICMP_5837_FORWARD_ROLE_CTYPE	(2 << 6)
++#define ICMP_5837_NEXT_HOP_ROLE_CTYPE	(3 << 6)
++
++#define ICMP_5837_MIN_ORIG_LEN 128
++
++/* RFC 5837 Interface IP Address sub-object */
++struct interface_ipv4_addr_sub_obj {
++	__be16 afi;
++	__be16 reserved;
++	__be32 addr;
++};
++
++struct interface_ipv6_addr_sub_obj {
++	__be16 afi;
++	__be16 reserved;
++	__be32 addr[4];
++};
++
+ #endif /* _UAPI_LINUX_ICMP_H */
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 793aebf07c2a..c203758471c7 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -87,6 +87,7 @@
+ #include <linux/timer.h>
+ #include <linux/init.h>
+ #include <linux/uaccess.h>
++#include <net/addrconf.h>
+ #include <net/checksum.h>
+ #include <net/xfrm.h>
+ #include <net/inet_common.h>
+@@ -555,6 +556,156 @@ static struct rtable *icmp_route_lookup(struct net *net,
+ 	return ERR_PTR(err);
+ }
+ 
++/*  Appends interface identification object to ICMP packet to identify
++ *  the interface on which the original datagram arrived, per RFC 5837.
++ *
++ *  Should only be called on the following messages
++ *  - ICMPv4 Time Exceeded
++ *  - ICMPv4 Destination Unreachable
++ *  - ICMPv4 Parameter Problem
++ *  - ICMPv6 Time Exceeded
++ *  - ICMPv6 Destination Unreachable
++ */
++
++void icmp_identify_arrival_interface(struct sk_buff *skb, struct net *net, int room,
++				     char *icmph, int ip_version)
++{
++	unsigned int ext_len, orig_len, word_aligned_orig_len, offset, extra_space_needed,
++		     if_index, mtu = 0, name_len = 0, name_subobj_len = 0;
++	struct interface_ipv4_addr_sub_obj ip4_addr_subobj = {.addr = 0};
++	struct interface_ipv6_addr_sub_obj ip6_addr_subobj;
++	struct icmp_extobj_hdr *iio_hdr;
++	struct inet6_ifaddr ip6_ifaddr;
++	struct inet6_dev *dev6 = NULL;
++	struct icmp_ext_hdr *ext_hdr;
++	char *name = NULL, ctype;
++	struct net_device *dev;
++	void *subobj_offset;
++
++	skb_linearize(skb);
++	if_index = inet_iif(skb);
++	orig_len = skb->len - skb_network_offset(skb);
++
++	/* IPv4 messages MUST be 32-bit aligned, IPv6 64-bit aligned.
++	 * Both must be padded to 128 bytes. */
++	if (ip_version == 4) {
++		word_aligned_orig_len = max_t(unsigned int, ALIGN(orig_len, 4), 128);
++		icmph[5] = word_aligned_orig_len / 4;
++	} else {
++		word_aligned_orig_len = max_t(unsigned int, ALIGN(orig_len, 8), 128);
++		icmph[4] = word_aligned_orig_len / 8;
++	}
++
++	ctype = ICMP_5837_ARRIVAL_ROLE_CTYPE;
++	ext_len = sizeof(struct icmp_ext_hdr) + sizeof(struct icmp_extobj_hdr);
++
++	/* Always add if_index to the IIO */
++	ext_len += sizeof(__be32);
++	ctype |= ICMP_5837_IF_INDEX_CTYPE;
++
++	dev = dev_get_by_index(net, if_index);
++	/* Try to append IP address, name, and MTU */
++	if (dev) {
++		if (ip_version == 4) {
++			ip4_addr_subobj.addr = inet_select_addr(dev, 0, RT_SCOPE_UNIVERSE);
++			if (ip4_addr_subobj.addr) {
++				ip4_addr_subobj.afi = htons(1);
++				ip4_addr_subobj.reserved = 0;
++				ctype |= ICMP_5837_IP_ADDR_CTYPE;
++				ext_len += sizeof(ip4_addr_subobj);
++			}
++		}
++		if (ip_version == 6) {
++			dev6 = in6_dev_get(dev);
++			if (dev6) {
++				ip6_ifaddr = *list_first_entry(&dev6->addr_list,
++							      struct inet6_ifaddr, if_list);
++				memcpy(ip6_addr_subobj.addr, ip6_ifaddr.addr.s6_addr32,
++				       sizeof(ip6_addr_subobj.addr));
++				ip6_addr_subobj.afi = htons(2);
++				ip6_addr_subobj.reserved = 0;
++				ctype |= ICMP_5837_IP_ADDR_CTYPE;
++				ext_len += sizeof(ip6_addr_subobj);
++			}
++		}
++
++		name = dev->name;
++		name_len = strlen(name);
++		/* Subobj has 1 extra byte for the length field, and is 32 bit-aligned */
++		name_subobj_len = ALIGN(name_len + 1, 4);
++		ctype |= ICMP_5837_NAME_CTYPE;
++		ext_len += name_subobj_len;
++
++		mtu = dev->mtu;
++		ctype |= ICMP_5837_MTU_CTYPE;
++		ext_len += sizeof(__be32);
++
++		dev_put(dev);
++	}
++
++	if (word_aligned_orig_len + ext_len > room) {
++		offset = room - ext_len;
++		extra_space_needed = room - orig_len;
++	} else {
++		/* There is enough room to just add to the end of the packet.
++		 * We need (word_aligned_orig_len - orig_len bytes) for padding
++		 * and ext_len bytes for the extension. */
++		offset = word_aligned_orig_len;
++		extra_space_needed = ext_len + (word_aligned_orig_len - orig_len);
++	}
++
++	if (skb_tailroom(skb) < extra_space_needed) {
++		if (pskb_expand_head(skb, 0, extra_space_needed - skb_tailroom(skb), GFP_ATOMIC))
++			return;
++	}
++	skb_put(skb, extra_space_needed);
++
++	/* Zero-pad from the end of the original message to the beginning of the header */
++	memset(skb_network_header(skb) + orig_len, 0, word_aligned_orig_len - orig_len);
++
++	ext_hdr = (struct icmp_ext_hdr *)(skb_network_header(skb) + offset);
++	iio_hdr = (struct icmp_extobj_hdr *)(ext_hdr + 1);
++	subobj_offset = (void *)(iio_hdr + 1);
++
++	ext_hdr->reserved1 = 0;
++	ext_hdr->reserved2 = 0;
++	ext_hdr->version = 2;
++	ext_hdr->checksum = 0;
++
++	iio_hdr->length = htons(ext_len - sizeof(struct icmp_ext_hdr));
++	iio_hdr->class_num = 2;
++	iio_hdr->class_type = ctype;
++
++	*(__be32 *)subobj_offset = htonl(if_index);
++	subobj_offset += sizeof(__be32);
++
++	if (ip4_addr_subobj.addr) {
++		*(struct interface_ipv4_addr_sub_obj *)subobj_offset = ip4_addr_subobj;
++		subobj_offset += sizeof(ip4_addr_subobj);
++	}
++
++	if (dev6) {
++		*(struct interface_ipv6_addr_sub_obj *)subobj_offset = ip6_addr_subobj;
++		subobj_offset += sizeof(ip6_addr_subobj);
++	}
++
++	if (name) {
++		*(__u8 *)subobj_offset = name_subobj_len;
++		subobj_offset += sizeof(__u8);
++		memcpy(subobj_offset, name, name_len);
++		memset(subobj_offset + name_len, 0, name_subobj_len - (name_len + sizeof(__u8)));
++		subobj_offset += name_subobj_len - sizeof(__u8);
++	}
++
++	if (mtu) {
++		*(__be32 *)subobj_offset = htonl(mtu);
++		subobj_offset += sizeof(__be32);
++	}
++
++	ext_hdr->checksum =
++		csum_fold(skb_checksum(skb, skb_network_offset(skb) + offset, ext_len, 0));
++}
++
+ /*
+  *	Send an ICMP message in response to a situation
+  *
+@@ -731,6 +882,11 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+ 		room = 576;
+ 	room -= sizeof(struct iphdr) + icmp_param.replyopts.opt.opt.optlen;
+ 	room -= sizeof(struct icmphdr);
++	if (net->ipv4.sysctl_icmp_errors_identify_if && (type == ICMP_DEST_UNREACH ||
++	    type == ICMP_TIME_EXCEEDED || type == ICMP_PARAMETERPROB)) {
++		icmp_identify_arrival_interface(skb_in, net, room,
++						(char *)&icmp_param.data.icmph, 4);
++	}
+ 
+ 	icmp_param.data_len = skb_in->len - icmp_param.offset;
+ 	if (icmp_param.data_len > room)
+@@ -1349,6 +1505,7 @@ static int __net_init icmp_sk_init(struct net *net)
+ 	net->ipv4.sysctl_icmp_ratelimit = 1 * HZ;
+ 	net->ipv4.sysctl_icmp_ratemask = 0x1818;
+ 	net->ipv4.sysctl_icmp_errors_use_inbound_ifaddr = 0;
++	net->ipv4.sysctl_icmp_errors_identify_if = 0;
+ 
+ 	return 0;
+ 
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 5653e3b011bf..c54881136497 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -628,6 +628,15 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec
+ 	},
++	{
++		.procname	= "icmp_errors_identify_if",
++		.data		= &init_net.ipv4.sysctl_icmp_errors_identify_if,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
+ 	{
+ 		.procname	= "icmp_ratelimit",
+ 		.data		= &init_net.ipv4.sysctl_icmp_ratelimit,
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index b304b882e031..3901c2a99be4 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -939,6 +939,7 @@ static int __net_init inet6_net_init(struct net *net)
+ 	net->ipv6.sysctl.icmpv6_echo_ignore_all = 0;
+ 	net->ipv6.sysctl.icmpv6_echo_ignore_multicast = 0;
+ 	net->ipv6.sysctl.icmpv6_echo_ignore_anycast = 0;
++	net->ipv6.sysctl.icmpv6_errors_identify_if = 0;
+ 
+ 	/* By default, rate limit error messages.
+ 	 * Except for pmtu discovery, it would break it.
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index 9df8737ae0d3..ad4c986b806b 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -595,6 +595,13 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 	msg.offset = skb_network_offset(skb);
+ 	msg.type = type;
+ 
++	if (net->ipv6.sysctl.icmpv6_errors_identify_if &&
++	    (type == ICMPV6_DEST_UNREACH || type == ICMPV6_TIME_EXCEED)) {
++		icmp_identify_arrival_interface(skb, net,
++			IPV6_MIN_MTU - sizeof(struct ipv6hdr) - sizeof(struct icmp6hdr),
++			(char *)&tmp_hdr, 6);
++	}
++
+ 	len = skb->len - msg.offset;
+ 	len = min_t(unsigned int, len, IPV6_MIN_MTU - sizeof(struct ipv6hdr) - sizeof(struct icmp6hdr));
+ 	if (len < 0) {
+@@ -1184,6 +1191,15 @@ static struct ctl_table ipv6_icmp_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler = proc_do_large_bitmap,
+ 	},
++	{
++		.procname	= "errors_identify_if",
++		.data		= &init_net.ipv6.sysctl.icmpv6_errors_identify_if,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler = proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
+ 	{ },
+ };
+ 
+@@ -1201,6 +1217,7 @@ struct ctl_table * __net_init ipv6_icmp_sysctl_init(struct net *net)
+ 		table[2].data = &net->ipv6.sysctl.icmpv6_echo_ignore_multicast;
+ 		table[3].data = &net->ipv6.sysctl.icmpv6_echo_ignore_anycast;
+ 		table[4].data = &net->ipv6.sysctl.icmpv6_ratemask_ptr;
++		table[5].data = &net->ipv6.sysctl.icmpv6_errors_identify_if;
+ 	}
+ 	return table;
+ }
+-- 
+2.25.1
 
-> > For one, it's more aligned with the usual memcg charge lifetime rules.
-> >
-> > But also it doesn't add what is essentially a private driver callback
-> > to the generic file unmapping path.
-> >
-> 
-> I understand the concern, and share it - the specific thing we'd like to avoid
-> is to have driver specific code in the unmap path, and not in the least because
-> any given driver could do its own thing.
-> 
-> Rather, we consider this mechanism that we added as generic to zerocopy network
-> data reception - that it does the right thing, no matter what the driver is
-> doing. This would be transparent to the driver, in other words - all the driver
-> has to do is to continue doing what it was before, using page->refcnt == 1 to
-> decide whether it can use a page or if it is not already in use.
-> 
-> 
-> Consider this instead as a broadly applicable networking feature adding a
-> callback to the unmap path, instead of a particular driver. And while it is just
-> TCP at present, it fundamentally isn't limited to TCP.
-> 
-> I do have a request for clarification, if you could specify the usual memcg
-> charge lifetime rules that you are referring to here? Just to make sure we're on
-> the same page.
-
-Usually, the charge lifetime is tied to the allocation lifetime. It
-ends when the object is fed back to whatever pool it came out of, its
-data is considered invalid, and its memory is available to new allocs.
-
-This isn't the case here, and as per above you may uncharge the page
-long before the user actually relinquishes it.
-
-> > 1. The NR_FILE_MAPPED accounting. It is longstanding Linux behavior
-> >    that driver pages mapped into userspace are accounted as file
-> >    pages, because userspace is actually doing mmap() against a driver
-> >    file/fd (as opposed to an anon mmap). That is how they show up in
-> >    vmstat, in meminfo, and in the per process stats. There is no
-> >    reason to make memcg deviate from this. If we don't like it, it
-> >    should be taken on by changing vm_insert_page() - not trick rmap
-> >    into thinking these arent memcg pages and then fixing it up with
-> >    additional special-cased accounting callbacks.
-> >
-> >    v1 did this right, it charged the pages the way we handle all other
-> >    userspace pages: before rmap, and then let the generic VM code do
-> >    the accounting for us with the cgroup-aware vmstat infrastructure.
-> 
-> To clarify, are you referring to the v1 approach for this patch from a
-> few weeks ago?
-
-Yes.
-
-> (i.e. charging for the page before vm_insert_page()). This patch changes when
-> the charging happens, and, as you note, makes it a forced charge since we've
-> already inserted the mappings into the user's address space - but it isn't
-> otherwise fundamentally different from v1 in what it does. And unmap is the
-> same.
-
-Right. The places where it IS different are the problem ;)
-
-Working around native VM accounting; adding custom accounting that is
-inconsistent with the rest of the system; force-charging a quantity of
-memory that the container may not be entitled to.
-
-Please revert back to precharging like in v1.
-
-> The period of double counting in v1 of this patch was from around the time we do
-> vm_insert_page() (note that the pages were accounted just prior to being
-> inserted) till the struct sk_buff's were disposed of - for an skb
-> that's up to 45 pages.
-
-That's seems fine.
-
-Can there be instances where the buffers are pinned by something else
-for indefinite lengths of time?
-
-> But note that is for one socket, and there can be quite a lot of open
-> sockets and
-> depending on what happens in terms of scheduling the period of time we're
-> double counting can be a bit high.
-
-You mean thread/CPU scheduling?
-
-If it comes down to that, I'm not convinced this is a practical
-concern at this point.
-
-I think we can assume that the number of sockets and the number of
-concurrent threads going through the receive path at any given time
-will scale with the size of the cgroup. And even a thousand threads
-reading from a thousand sockets at exactly the same time would double
-charge a maximum of 175M for a brief period of time. Since few people
-have 1,000 CPUs the possible overlap is further reduced.
-
-This isn't going to be a problem in the real world.
-
-> >    The way I see it, any conflict here is caused by the pages being
-> >    counted in the SOCK counter already, but not actually *tracked* on
-> >    a per page basis. If it's worth addressing, we should look into
-> >    fixing the root cause over there first if possible, before trying
-> >    to work around it here.
-> >
-> 
-> When you say tracked on a per-page basis, I assume you mean using the usual
-> mechanism where a page has a non-null memcg set, with unaccounting occuring when
-> the refcount goes to 0.
-
-Right.
-
-> Networking currently will account/unaccount bytes just based on a
-> page count (and the memcg set in struct sock) rather than setting it in the page
-> itself - because the recycling of pages means the next time around it could be
-> charged to another memcg. And the refcount never goes to 1 due to the pooling
-> (in the absence of eviction for busy pages during packet reception). When
-> sitting in the driver page pool, non-null memcg does not work since we do not
-> know which socket (thus which memcg) the page would be destined for since we do
-> not know whose packet arrives next.
-> 
-> The page pooling does make this all this a bit awkward, and the approach
-> in this patch seems to me the cleanest solution.
-
-I don't think it's clean, but as per above it also isn't complete.
-
-What's necessary is to give the network page pool a hookup to the
-page's put path so it knows when pages go unused.
-
-This would actually be great not just for this patch, but also for
-accounting the amount of memory consumed by the network stack in
-general, at the system level. This can be a sizable chunk these days,
-especially with some of the higher end nics. Users currently have no
-idea where their memory is going. And it seems it couldn't even answer
-this question right now without scanning the entire pool. It'd be
-great if it could track used and cached pages and report to vmstat.
-
-It would also be good if it could integrate with the page reclaim path
-and return any unused pages when the system is struggling with memory
-pressure. I don't see how it could easily/predictably do that without
-a good handle on what is and isn't used.
-
-These are all upsides even before your patch. Let's stop working
-around this quirk in the page pool, we've clearly run into the limit
-of this implementation.
-
-
-Here is an idea of how it could work:
-
-struct page already has
-
-                struct {        /* page_pool used by netstack */
-                        /**
-                         * @dma_addr: might require a 64-bit value even on
-                         * 32-bit architectures.
-                         */
-                        dma_addr_t dma_addr;
-                };
-
-and as you can see from its union neighbors, there is quite a bit more
-room to store private data necessary for the page pool.
-
-When a page's refcount hits zero and it's a networking page, we can
-feed it back to the page pool instead of the page allocator.
-
-From a first look, we should be able to use the PG_owner_priv_1 page
-flag for network pages (see how this flag is overloaded, we can add a
-PG_network alias). With this, we can identify the page in __put_page()
-and __release_page(). These functions are already aware of different
-types of pages and do their respective cleanup handling. We can
-similarly make network a first-class citizen and hand pages back to
-the network allocator from in there.
-
-Now the network KNOWS which of its pages are in use and which
-aren't. You can use that to uncharge pages without the DoS vector, and
-it'd go a great length toward introspecting and managing this memory -
-and not sit in a black hole as far as users and the MM are concerned.
-
-Thanks,
-Johannes
