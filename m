@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F5A833F04A
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 13:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 069DD33F054
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 13:28:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbhCQM0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 08:26:03 -0400
-Received: from mail-eopbgr700071.outbound.protection.outlook.com ([40.107.70.71]:9760
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        id S229730AbhCQM1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 08:27:39 -0400
+Received: from mail-dm6nam11on2066.outbound.protection.outlook.com ([40.107.223.66]:5216
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229766AbhCQMZf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 08:25:35 -0400
+        id S229707AbhCQM1h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 08:27:37 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YHGSN3bGRhVlITWIsyiSKU3q+Mk+xNg9svIRz5W50uuVX4B3EmeOMImLQfMTpiLGttHjBy5Cc5ZfocSyS0O83ve09/A1aks8f6tRCZkwfR2+mXstosMDKglHQunqP8OcqFAWhadZo+h6armCozKHXzSHhg86kpbEQWVQ9KJ8qrwHyWnZBWhjJ4dWAkHY5XEVBpS1rsZMaihtEUkF2mfNnWPOrClmJRXJ1RnMnfslxwEkV94GHTbfDD3MFiDthao/3haSi6gb+eGuFW3KZR9gOYNxaP1+jOvEdK2WXPW0TkihE7OAD13/MCSRWsUaDEsUrcrYsqQI8IW+YE9LB5qz9g==
+ b=cc5LpPyzEBkBZfubjWGGjzF6m6rUOPJ8G05IIB4tiRuNFyPEyzr6fiUlb6h3cAZN7PBmRncJQzxMXnEB1QaCGjNZlhycw1SKH3Z6u4G6INq+aCMWZFrFdIzjYowEbcRxS9r6dVrb5E0cmhFjaa5bmEXHRGcUtDLhPeubMeRNbmnLvXqHL6VVRcredJQWPa/X8TlQXDYXEvRpDl2Jd9qsuDxCpwLmBcyu1prXV1CWDo5Ftxzmhm9MmWw+IcaGcEnx6KjNCGDtYuQXmbtZgLPjf7sDr7G5jcPL5SoG8dvopX3ZpqIr8k0KkKj9D0sYju4VAq6UeYgMTmzNGqNJK64GMQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iwa3doEH5gWeGfpQ82+tohXmRN2Csb/Ug/N0ynzaU5Y=;
- b=MUJIuaCVkJRPC8BbDa44TAFUbBuw/G1Er1PcmHNzgHAi2cp4XdpHq1qbSH/mYySNMjdbWXkiw+bw1DQL4W6skdgo5TDHyFAo4J3inXTLLkz7QoVes5xZ+Qu8Gg+WaBjzSbuNmU3Vw78grJ5aFmT20aKqT22nDCGGgLqAbqCjJ1gEaM/lRdzQxIFqY3zD0IO/bsvEeb4uyLTKdFSiETPNVZxvFRxk1FaVYhjWz4xx0h3FBj81y5nM9CVaZOiTe/vdlV4vyGfWN4bjhwy5yVt+nAtIMeax1RiFpMW5pT7YUzkN5198c6R1Kee1WQKbk2tFxYLafQeItsxFPKubhDhteQ==
+ bh=o0jGspLqgg/40FFEdUp7QgvAtH8st8AykayhuMpIWbU=;
+ b=iY2mo9/hDDuHHhPtR98Gk163/2XXxQz7wsVt27I6mkjrDL9UdgYp2InI1F5uSso6sbOAJ8loorICWtF7HOvTJfbTLFroo4ejETSw+k8r/PT4Bcs2Aek4ugNiqp41TM6gqCxdy+Huj0GV6Cm9f4BdWu01KQBVu6wzWIjFmcZO0/hsWH+BjpdwbTYmhCGlcv0oBqBDqRTgzy34ckfFD8Gdygv4JF80FL3IME5OCWMjkGUad+KxzJcYv5SDUxgtHoLfgimaWT8CTYElLgy0e3xfCRY7ZI0HxT24xGJ0XQ7LtfDAwLuc1akRa7FdePD8sE/ZLSljIa/SLFNVq8dzvl4izA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=networkplumber.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iwa3doEH5gWeGfpQ82+tohXmRN2Csb/Ug/N0ynzaU5Y=;
- b=Rj5pQVZz5goWr5XOgxRBtW/lXn0Zo447fxAWvs29Oyy6ztlyMRCK34TZKZi0i4EvHyaaQWHSP1HydNMqq91jgdosxIP78sPlsaD3ezWIaWRd1Hq+4IUw9oCeHMwRJdhemiSlBRcjuR6FWf9K1ijK6W1NltCew1YhvTMC9TregCkSWK2nfFRCocr+gllkH+Fw7V1Ic/auNykAeVz+wemXhwdtY8h8XJQxoAhqeycYNAo526mdixLRDKzR95+aOAZ0SmNqCmw4h7Kn254MPXDbFVrmj1evhHo3ZDOz2kBDpId4sHXJ++8T+VWfZEvsnkldfYfScWtg0+kb6/AFkzEBjQ==
-Received: from MWHPR19CA0054.namprd19.prod.outlook.com (2603:10b6:300:94::16)
- by CH2PR12MB3655.namprd12.prod.outlook.com (2603:10b6:610:25::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Wed, 17 Mar
- 2021 12:25:33 +0000
+ bh=o0jGspLqgg/40FFEdUp7QgvAtH8st8AykayhuMpIWbU=;
+ b=mJZbFBrdtDoluoh4Mnuqyrk7A8KzXP5kulBUqMa3Wc1bn+VSCgqiEM02qOLCWpxEbKN37UN6LWI+Q4Yie2200FzoGl1f5cCNVzIsHVvBelSeELk2dNhNq3imkzeq2uuKV77K38DD4tmESek5rym/SF1BfOr6srNf4CVkkvJ7pvKj4ulvMOivpU7vQl0u5/gSMxf9KfOTTYOdR3bTyNL+2o+yTkIOfc3n65/oq+33DvJC8T/ljzra1LfFJBWBhkdEUATLtYFFS8E3Jt++s0RpjpFb2m+lqkuIvP68TUxxhtIo9NyNI5OFMl1u7ROXLQiqM4ClYucf62Ky0ASaelUmjg==
+Received: from MWHPR2201CA0059.namprd22.prod.outlook.com
+ (2603:10b6:301:16::33) by DM6PR12MB2747.namprd12.prod.outlook.com
+ (2603:10b6:5:4a::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.30; Wed, 17 Mar
+ 2021 12:27:35 +0000
 Received: from CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:94:cafe::5e) by MWHPR19CA0054.outlook.office365.com
- (2603:10b6:300:94::16) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:301:16:cafe::70) by MWHPR2201CA0059.outlook.office365.com
+ (2603:10b6:301:16::33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend
- Transport; Wed, 17 Mar 2021 12:25:32 +0000
+ Transport; Wed, 17 Mar 2021 12:27:35 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
  header.d=none;networkplumber.org; dmarc=pass action=none
@@ -48,71 +48,58 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.112.34) by
  CO1NAM11FT037.mail.protection.outlook.com (10.13.174.91) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3955.18 via Frontend Transport; Wed, 17 Mar 2021 12:25:32 +0000
-Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Mar
- 2021 12:25:29 +0000
+ 15.20.3955.18 via Frontend Transport; Wed, 17 Mar 2021 12:27:35 +0000
+Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Mar 2021 12:27:32
+ +0000
+References: <cover.1615889875.git.petrm@nvidia.com>
+ <ef15d0e8dc8b58f93537116dd2a43f7d188a8fb6.1615889875.git.petrm@nvidia.com>
+ <20210316095921.175fac07@hermes.local>
+User-agent: mu4e 1.4.10; emacs 27.1
 From:   Petr Machata <petrm@nvidia.com>
-To:     <netdev@vger.kernel.org>, <dsahern@gmail.com>,
-        <stephen@networkplumber.org>
-CC:     Petr Machata <petrm@nvidia.com>, Tim Rice <trice@posteo.net>
-Subject: [PATCH iproute2] ip: Fix batch processing
-Date:   Wed, 17 Mar 2021 13:24:14 +0100
-Message-ID: <3963278ba3956499a8f1506a112a10547946d75f.1615983771.git.petrm@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
+        <dsahern@gmail.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH iproute2-next v3 2/6] json_print: Add print_tv()
+In-Reply-To: <20210316095921.175fac07@hermes.local>
+Date:   Wed, 17 Mar 2021 13:27:28 +0100
+Message-ID: <87blbige33.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a1603fcf-176b-4648-7020-08d8e93fc26d
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3655:
-X-Microsoft-Antispam-PRVS: <CH2PR12MB365586239B929E66C6473789D66A9@CH2PR12MB3655.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Office365-Filtering-Correlation-Id: 66452bf8-e785-476d-0753-08d8e9400b8c
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2747:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB2747966FE14B75902589D456D66A9@DM6PR12MB2747.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EzYF2mFoJvGfTlwj22/uc9XqD27Ekm95Ee/3o7bpidEXVPGdEijy+N9avsY4XTBsdupJQUGYKB/M4RgwTp7zqhfqIIpCf5vHQl7ihOKv99RehfAsBjax/kzAOsdlEDfW4leamdiP1DyoxGgb9w0adqvrK9peDAAlyIfoDL6r6mYj5CWvCdpAlXtwhL53KC4hnHe9Gb0+v44QaSOVE+0Bn0hXUnBQ50VeXtIxb5VM2/fndHp5GeUkhxSf7OYvPmxkaTEBgvVH8yUTHKHRA6B4aJxNnQe2JfWc3T6/lQqe9MNrRnXDsfuE4QRHrJYE3HnFr98I1yk3FUSO9SjzewkD/9BH+kptapdpsZZ4hs5mytjZlSxmerD+XQWbtswr5Zw+fzoa5g9vVKuLn4kCC/q06ynLG17Q4413ga9rVlLv1Oq3CYCRJQyaAgeJoBamAapCJHqlgSfY5T8ltLp7Bctw5w9rKyb9fEF+82aEdz7FWtg/2udJRBQe3iP4rxvm+Zah29auwJpnOWXDXHqtuh4hJrq/xl84eGOqyYP/fssNAR7A02LfdbPK3HB1b6HFYfbN7CcuiuZ/oPwQUtjg5TiqJAK0Fl5sJ2ANkQReCvsM89g7z4he0PAna81QF+Qgz1chh7VfMqjOAHk72dWRLVh5DwIlP7UwDV4DB8HNrOSMCUjl6ef07mfMappoqwfe/3dp
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(346002)(376002)(46966006)(36840700001)(356005)(336012)(36906005)(26005)(36756003)(2616005)(7636003)(83380400001)(2906002)(316002)(86362001)(70586007)(70206006)(34020700004)(82310400003)(110136005)(478600001)(5660300002)(4744005)(16526019)(426003)(47076005)(6666004)(8676002)(54906003)(82740400003)(4326008)(8936002)(36860700001)(186003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: oxfYA6BgCLjs4KUPMlantLf/Vb99ksZodx5G57m/Ahku8yL9iquGj7XuYbsf6jpej7gzoWGzGFfFUufU9cwZB/EzEAXzt9sCnsckpKmkUC9ftLv3fIfajjBKCD+NGGlDgoMi4RyTeAOS14dvDNjX5Se4l+lf2ysUBWNsoWBg0CAlHN7wuiBLVbPzRaF27WBbn38HwpoWkvrqhcaGBDdCHkDKi7e0/i7q8wzM11dLU69IDuYY9ZasVxOh2S37/HfwP609R/fXG+Bf13DGyHoRt38O3k8AYp3CQOQuXAQYCw44wKh3RNkw8aaJ83n+Q7TLC6g6V5+Xo2l5Dh4hXfi+MjyBl/7EL1VpIqeISpcyb3Tk1oDnvkGKe6tq9XXeDQh6LH8zQAtA9UngSxFVc5mNKGNvTBCy1SUQKjj+jz17YWXnOXL3VE0qcrruPPfZG9eivETNdfJnqnv7KC9wbnlcBnEq94INQHL4ICOGuRyWdqFZSlAwH5QTZiBJrp9KAxfl3YqhPDBh8WsDQXvnEYfE8C7ypl28Ivc5qkA4bac9d4yzbiQh3WNuKXp6n/6UZxjhuD8RIUYEPY6RK2nPuGvk2ZWJOM019TtvOj/IQKDKvFB0weC8GtWWPu9tnk4Wj29wwOu7fb8QjcD/fHnBa0hw2t4XDRHnRdHP6rn1QzZNq34z1vusz6OvZg2I5batkTal
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(346002)(136003)(46966006)(36840700001)(36906005)(36756003)(107886003)(4326008)(47076005)(34020700004)(5660300002)(356005)(2906002)(82740400003)(86362001)(336012)(36860700001)(316002)(70586007)(6666004)(8936002)(426003)(82310400003)(186003)(6916009)(478600001)(16526019)(26005)(7636003)(70206006)(8676002)(558084003)(54906003)(2616005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2021 12:25:32.6439
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2021 12:27:35.2081
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1603fcf-176b-4648-7020-08d8e93fc26d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66452bf8-e785-476d-0753-08d8e9400b8c
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3655
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2747
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the comment cited below, batch mode neglects to set the global
-variable batch_mode to a non-zero value. Netns and VRF commands use this
-variable, and break in batch mode. Fix by setting the value again.
 
-Fixes: 1d9a81b8c9f3 ("Unify batch processing across tools")
-Reported-by: Tim Rice <trice@posteo.net>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
----
- ip/ip.c | 1 +
- 1 file changed, 1 insertion(+)
+Stephen Hemminger <stephen@networkplumber.org> writes:
 
-diff --git a/ip/ip.c b/ip/ip.c
-index 40d2998ae60b..2d7d0d327734 100644
---- a/ip/ip.c
-+++ b/ip/ip.c
-@@ -155,6 +155,7 @@ static int batch(const char *name)
- 		return EXIT_FAILURE;
- 	}
- 
-+	batch_mode = 1;
- 	ret = do_batch(name, force, ip_batch_cmd, &orig_family);
- 
- 	rtnl_close(&rth);
--- 
-2.26.2
+>> +_PRINT_FUNC(tv, struct timeval *)
+>
+> This 
+>
+> Make it const please?
 
+OK
