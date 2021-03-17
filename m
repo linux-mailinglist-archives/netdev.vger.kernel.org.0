@@ -2,114 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E74433F42B
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 16:47:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F4433F4A1
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 16:53:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbhCQOuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 10:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59794 "EHLO
+        id S232085AbhCQPwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 11:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbhCQOuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 10:50:24 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AF8C06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 07:50:24 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id u75so40744220ybi.10
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 07:50:24 -0700 (PDT)
+        with ESMTP id S232601AbhCQPwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 11:52:01 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B911AC061760;
+        Wed, 17 Mar 2021 07:54:20 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id g15so1281897pfq.3;
+        Wed, 17 Mar 2021 07:54:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R1xLRRGeuVbUwEJTO18nt3rhlBDcVceINxnZrIEXeRs=;
-        b=iv8skcCUUbUmsCUJ+spY4UDhJp3CJqKCnyhgD19TMlLTLUSuxe2ps25NyBqEude3TZ
-         BeLmT6GGBmt5FjIVn4B+5+G5oyU8i6o9CSLxfb5SPFYd7h5F5m6PawdeHlz938pfH7ev
-         qt5p6+vfjsoMkEaVjEBWf7p8Zqga1vxPg8FMkgWxHhwwB2y3wVhqCfJdxhZukpsJv7gV
-         AVnPTP5IK943fZGLrDnTJWehzXKpSi7HUyiMLTrVU8eC4uO0hB2FuTaAVol2yezd7A0Y
-         UHw+DATPMGWPSB2hwybIQvgtfd0Abaw9zKToaPk5M+n/66JOVbiYSBfZxovseYkwLWr9
-         FAVQ==
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VX8xHL+87BW1KLwBi9gunx33qho2YZRZxASXIV7grFw=;
+        b=O9LTjZNCsR9gSSAS+S8FvfugaFJ75IngmN7wDk/aTR6vvVj+58f7H+crABZO9DV+d2
+         v7rUGLBY0T42bTYQvj+u1nUuKW15KVOzOAaeyembU52SXZMktL1TDX+ShLFSUgdy7ebD
+         Buebn2I0ry8Et/OCCHpxEj6stBlHCeTVGI8iVq+le09+iCFBrB3PDH86FYmnmxtVmAYV
+         rqQGHsFH5epsVYZ/jIOOdb4ws+0holHCI0SsdAx2HpyFGBSHP1weEUflFlNYmvuAgAGZ
+         t7JvgoerfGrf4kuQhySJwtRtxzaQinU70aNmPckqAnsGu301M1K36ZJU8Q8dOOXWrtm1
+         UdAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R1xLRRGeuVbUwEJTO18nt3rhlBDcVceINxnZrIEXeRs=;
-        b=i5W7p0sq0tHhi8j1St/I+HlfWFNQqdttbWtTE2XnMB/cOmDRNyhunWcRd9t/a5KEZf
-         8Om+R6k5gRmENmYeusmWJSgHgJdxrP6WTiigoc+w18uPPgTmtsT1nySVsS4PE0jidyY5
-         0MoHQ0Eu1SOHwaJNyP/+uQDHnkfLoL7QwP+d8c3zE2BycBK08TMfZszjz8RIkdpgwZws
-         7LS5EnI8sw+1f97/qfSQYaLYSne03a7g98pMBGvW49QfrahDlWJaBkV0oLKJD71AOo7K
-         kfT6iE3WXNnQVksMeU9962dLufWJFG/fMR3H56cvGyQJ7Y58acaE6Yzh2FlBUXlwRODY
-         iAEg==
-X-Gm-Message-State: AOAM5317Z1nJZ43YW3tDxb0Ijaz1BX0y9VSSLrrU35f0v5s8/gQNeP7F
-        U7CFRpsMuPB7ErfLLv153ZfD48Yy3d/ZRfB+1nF8kqtBphrJdg==
-X-Google-Smtp-Source: ABdhPJyzaN4GhmMr6Q/ty6K2vMtU4Sg45xYptaOkB/aujpohyla7oR3icCuw/ODgxgIqTKY+0fhdwhnhePojNgnzn+k=
-X-Received: by 2002:a25:850b:: with SMTP id w11mr3601934ybk.518.1615992623275;
- Wed, 17 Mar 2021 07:50:23 -0700 (PDT)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=VX8xHL+87BW1KLwBi9gunx33qho2YZRZxASXIV7grFw=;
+        b=kjJze3HqKgJ1jDoSXs2rB1aiuxtqtM9kYjjE1jGsLayGAw+HPwJmXp26oIIf9OlUbF
+         tb9Yix0kfQ3cFdJVWcwIxjl+y6aoEYC1VyEsTxf054jvNTuzaON9a+E7YzMgib76Fbkh
+         9RWnlkoslEzLOAhy8ttDdJADgKj1jVHqVONws1CLvRDBwJCTGW5nt4oAhX/EdDEPZmNG
+         V/WnOTaPRfjFM0evj8N0QOLkRmPtwchl4Yz8Hn5HBNnD6H4o6Ug92V2Hh1k5BUTpkhmK
+         pgekBXM0TJbd4sOzPemUNgb51yUinN8Tyod6AaGxLqXpFqx5Mtv1qYtT7BKWLLUQJ8Ny
+         VlMg==
+X-Gm-Message-State: AOAM531K2t4gKtCfBMP1gF6ONFywzXKHf5AGMa6Fh19IGn80EP8VHeFw
+        cGURw1LQ2m4YMZKs4/hWYnQ=
+X-Google-Smtp-Source: ABdhPJwbAGPp4ws0MaZtGJkBqm1DZmMs5QuR3yhHECr1wnRYWABNXQoGOhIDe/BozfrUnBjzWKgEbg==
+X-Received: by 2002:a65:6a48:: with SMTP id o8mr2937671pgu.424.1615992860178;
+        Wed, 17 Mar 2021 07:54:20 -0700 (PDT)
+Received: from balhae.roam.corp.google.com ([101.235.31.111])
+        by smtp.gmail.com with ESMTPSA id a19sm19926273pfn.181.2021.03.17.07.54.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Mar 2021 07:54:19 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH] libbpf: Fix error path in bpf_object__elf_init()
+Date:   Wed, 17 Mar 2021 23:54:14 +0900
+Message-Id: <20210317145414.884817-1-namhyung@kernel.org>
+X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
 MIME-Version: 1.0
-References: <20191126222013.1904785-1-bigeasy@linutronix.de>
- <20191126222013.1904785-3-bigeasy@linutronix.de> <CANn89iJtCwB=RdYnAYXU-uZvv=gHJgYD=dcfhohuLi_Qjfv6Ag@mail.gmail.com>
- <20191127093521.6achiubslhv7u46c@linutronix.de> <CANn89iL=q2wwjdSj1=veBE0hDATm_K=akKhz3Dyddnk28DRJhg@mail.gmail.com>
- <CANn89i+Aje5j2iJDoq9FCU966kxC-gaD=ObxwVL49VC9L85_vA@mail.gmail.com>
- <20191127173719.q3hrdthuvkt2h2ul@linutronix.de> <20200416135938.jiglv4ctjayg5qmg@linutronix.de>
- <871rcdzx8w.fsf@nanos.tec.linutronix.de>
-In-Reply-To: <871rcdzx8w.fsf@nanos.tec.linutronix.de>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 17 Mar 2021 15:50:11 +0100
-Message-ID: <CANn89iKg5E1EDwHs1d1ppBbAxix+C8bbti4W-avuG1Yqe26aBQ@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] net: gro: Let the timeout timer expire in softirq
- context with `threadirqs'
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 3:10 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> On Thu, Apr 16 2020 at 15:59, Sebastian Andrzej Siewior wrote:
-> > any comments from the timer department?
->
-> Yes.
->
-> > On 2019-11-27 18:37:19 [+0100], To Eric Dumazet wrote:
-> >> On 2019-11-27 09:11:40 [-0800], Eric Dumazet wrote:
-> >> > Resent in non HTML mode :/
-> >> don't worry, mutt handles both :)
-> >>
-> >> > Long story short, why hrtimer are not by default using threaded mode
-> >> > in threadirqs mode ?
-> >>
-> >> Because it is only documented to thread only interrupts. Not sure if we
-> >> want change this.
-> >> In RT we expire most of the hrtimers in softirq context for other
-> >> reasons. A subset of them still expire in hardirq context.
-> >>
-> >> > Idea of having some (but not all of them) hard irq handlers' now being
-> >> > run from BH mode,
-> >> > is rather scary.
-> >>
-> >> As I explained in my previous email: All IRQ-handlers fire in
-> >> threaded-mode if enabled. Only the hrtimer is not affected by this
-> >> change.
-> >>
-> >> > Also, hrtimers got the SOFT thing only in 4.16, while the GRO patch
-> >> > went in linux-3.19
-> >> >
-> >> > What would be the plan for stable trees ?
-> >> No idea yet. We could let __napi_schedule_irqoff() behave like
-> >> __napi_schedule().
->
-> It's not really a timer departement problem. It's an interrupt problem.
->
-> With force threaded interrupts we don't call the handler with interrupts
-> disabled. What sounded a good idea long ago, is actually bad.
->
-> See https://lore.kernel.org/r/87eegdzzez.fsf@nanos.tec.linutronix.de
->
-> Any leftover issues on a RT kernel are a different story, but for !RT
-> this is the proper fix.
->
-> I'll spin up a proper patch and tag it for stable...
+When it failed to get section names, it should call
+bpf_object__elf_finish() like others.
 
-Your patch looks much better indeed, thanks !
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/lib/bpf/libbpf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 2f351d3ad3e7..8d610259f4be 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1194,7 +1194,8 @@ static int bpf_object__elf_init(struct bpf_object *obj)
+ 	if (!elf_rawdata(elf_getscn(obj->efile.elf, obj->efile.shstrndx), NULL)) {
+ 		pr_warn("elf: failed to get section names strings from %s: %s\n",
+ 			obj->path, elf_errmsg(-1));
+-		return -LIBBPF_ERRNO__FORMAT;
++		err = -LIBBPF_ERRNO__FORMAT;
++		goto errout;
+ 	}
+ 
+ 	/* Old LLVM set e_machine to EM_NONE */
+-- 
+2.31.0.rc2.261.g7f71774620-goog
+
