@@ -2,163 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F0B533EE73
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 11:40:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2939E33EEC4
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 11:50:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230202AbhCQKjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 06:39:45 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:53335 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230038AbhCQKja (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 06:39:30 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 308195C0143;
-        Wed, 17 Mar 2021 06:39:30 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 17 Mar 2021 06:39:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=QR8KtlOrtM6P5NctYTB2IrFKuH77HekdUzWwBFznR/A=; b=oQIR3MdN
-        zf5T0Z/946py4XTTuEIu2uKRYEVk4n3nRqYDdvhLo/ISfhCEdCfXuSHBQit+NOtA
-        zbGbJVgpqunjBIKux/RdwjFKdROFP+oP1ebsboi+TVUBYI9DPuZShHe3/pnmImEf
-        M9kxXfx/ZhkEeiQNUphm+VzFMAmkkKT6LttMdWKXCPTJg5gtK1OgzqBxAX8wbYtg
-        xVSbRE6vStxjJ0BfWJO3qs5VMaDMHpPTXMNe01TV0jDV1tvZcCh2Dfmhu/Nzimp1
-        z60fbF1Y6YpB0R6u1vAsDHYlNE/Hx43ULXuvb/bUZSIiQ9UrSvWEO+Uq6Bl8VlzX
-        6b1ruvQU2A7ILg==
-X-ME-Sender: <xms:YtxRYEAhGgcIKt8OjTz-SWdzrrdBUGQGf4qhboqvGVx-hXxpVq3vwg>
-    <xme:YtxRYGjE9e7fFKeIu-t-jrLC3QDx74z4x9XpkgowJdMPiJSmbSanYhnJ30vPPcdSQ
-    4zqG9xUI0E4-Oc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefgedgudelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepgeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:YtxRYHloWsRtO-LGP4jYFBnB8ru35hLXnOZp6_Cz0TV3hTcsYp9GLw>
-    <xmx:YtxRYKydylZURTxKadFyOeuRqdugyFZMF8B8AKLW5WPET-1uzCzDrw>
-    <xmx:YtxRYJRuwbznCWdQzV3xNagGodJuKrj-XFtR5MrOUYanqjujlvHF8A>
-    <xmx:YtxRYHO-qjS9hNgrYlINgjI0vTG-C9JOLdKHGTrODCSJDZnE3m49qA>
-Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1D48C1080057;
-        Wed, 17 Mar 2021 06:39:27 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        amcohen@nvidia.com, petrm@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 7/7] selftests: mlxsw: spectrum-2: Remove q_in_vni_veto test
-Date:   Wed, 17 Mar 2021 12:35:29 +0200
-Message-Id: <20210317103529.2903172-8-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210317103529.2903172-1-idosch@idosch.org>
-References: <20210317103529.2903172-1-idosch@idosch.org>
+        id S230492AbhCQKuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 06:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230389AbhCQKuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 06:50:22 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA06EC06174A;
+        Wed, 17 Mar 2021 03:50:14 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id gb6so901982pjb.0;
+        Wed, 17 Mar 2021 03:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ql0XfQdaA6JFx0GO4CBbHqqpEsH/UmgUozlPO3OUoJU=;
+        b=jL4W4B2PkQqNt97Y5GRGgsJ8AcescD8GHejesmsdeohePt3nyfdRPwmxYFwErT3CJP
+         zAcKdlSvw0LslANUOnY/z1lY+XTmORNxCUwDTc0f64l5Y8BBj7VgAdkk6SWpLocXCxRc
+         OXiNHJ+XN+oyqExkdwhKdvA7tvpUylNmfqvmaeMWFT11zbaX+qo7rx/YmISmf86g7pKC
+         AMWk+EpqEuXukspVQ3IebJUmiy2hVEzF8wf0sqpBjhDH1fye3qBch0xcBX9BiGaZc1UX
+         xowCrEYtMaer7bqbB6zHq5keYTSVY9ZWg13j/u3XGyDP7kR0tS797MbNWNx/C1YixpHf
+         4aUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ql0XfQdaA6JFx0GO4CBbHqqpEsH/UmgUozlPO3OUoJU=;
+        b=mTqFQJbFA79MyD2V2J5HG0OL+o4oMMhfs19oxG9vuOVE02D0RhHttZjVjtYgwjT/PH
+         o1ErM8kHP5b5N0ymc9/vrNrLPZMN/WBzHjwkyoPsqMs8XgqLsa8dhIy5uygs3mVASzQW
+         1Lr/Gxa4+PUA+lpjL/Jhd6sPHFnFNT/Vsto2cfw52f3tsUQEGJ8vmXspYBob0wPursQA
+         6OuETAa4zNrrVCJLgp5CsQmsfu8l7lDxWdJpHLVK2J4PiKDUFxDl+poJdaMXaDO2b2eI
+         7xZ4bELCu2syVpmK0S6oeGzN9W9LBdiEp16fTwbf+o6w2aOBeqdqEF3VMlLle579vEEi
+         r9nw==
+X-Gm-Message-State: AOAM5339EdMrKzlT0LStxpGlCI/Cx0wNBVRiV0QM+tKbBjping2UgjMC
+        sG28FiBSSYYeaxElfoPPKLY4E71B5rsI/Q==
+X-Google-Smtp-Source: ABdhPJy5y031Uo4vhFvB5mvc9mqbZr7TIgDBStB2bi0HrigMG1t9R2Gy7oX71otR4Ts90RNGF+MCxQ==
+X-Received: by 2002:a17:90b:798:: with SMTP id l24mr3794372pjz.63.1615978214235;
+        Wed, 17 Mar 2021 03:50:14 -0700 (PDT)
+Received: from localhost ([112.79.241.63])
+        by smtp.gmail.com with ESMTPSA id e8sm19237919pgb.35.2021.03.17.03.50.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Mar 2021 03:50:13 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     ast@vger.kernel.org
+Cc:     toke@redhat.com, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] libbpf: use SOCK_CLOEXEC when opening the netlink socket
+Date:   Wed, 17 Mar 2021 16:15:14 +0530
+Message-Id: <20210317104512.4705-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+Otherwise, there exists a small window between the opening and closing
+of the socket fd where it may leak into processes launched by some other
+thread.
 
-q_in_vni_veto.sh is not needed anymore because VxLAN with an 802.1ad
-bridge and VxLAN with an 802.1d bridge can coexist.
-
-Remove the test.
-
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- .../net/mlxsw/spectrum-2/q_in_vni_veto.sh     | 77 -------------------
- 1 file changed, 77 deletions(-)
- delete mode 100755 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/q_in_vni_veto.sh
+ tools/lib/bpf/netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/q_in_vni_veto.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/q_in_vni_veto.sh
-deleted file mode 100755
-index 0231205a7147..000000000000
---- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/q_in_vni_veto.sh
-+++ /dev/null
-@@ -1,77 +0,0 @@
--#!/bin/bash
--# SPDX-License-Identifier: GPL-2.0
--
--lib_dir=$(dirname $0)/../../../../net/forwarding
--
--VXPORT=4789
--
--ALL_TESTS="
--	create_dot1d_and_dot1ad_vxlans
--"
--NUM_NETIFS=2
--source $lib_dir/lib.sh
--
--setup_prepare()
--{
--	swp1=${NETIFS[p1]}
--	swp2=${NETIFS[p2]}
--
--	ip link set dev $swp1 up
--	ip link set dev $swp2 up
--}
--
--cleanup()
--{
--	pre_cleanup
--
--	ip link set dev $swp2 down
--	ip link set dev $swp1 down
--}
--
--create_dot1d_and_dot1ad_vxlans()
--{
--	RET=0
--
--	ip link add dev br0 type bridge vlan_filtering 1 vlan_protocol 802.1ad \
--		vlan_default_pvid 0 mcast_snooping 0
--	ip link set dev br0 up
--
--	ip link add name vx100 type vxlan id 1000 local 192.0.2.17 dstport \
--		"$VXPORT" nolearning noudpcsum tos inherit ttl 100
--	ip link set dev vx100 up
--
--	ip link set dev $swp1 master br0
--	ip link set dev vx100 master br0
--	bridge vlan add vid 100 dev vx100 pvid untagged
--
--	ip link add dev br1 type bridge vlan_filtering 0 mcast_snooping 0
--	ip link set dev br1 up
--
--	ip link add name vx200 type vxlan id 2000 local 192.0.2.17 dstport \
--		"$VXPORT" nolearning noudpcsum tos inherit ttl 100
--	ip link set dev vx200 up
--
--	ip link set dev $swp2 master br1
--	ip link set dev vx200 master br1 2>/dev/null
--	check_fail $? "802.1d and 802.1ad VxLANs at the same time not rejected"
--
--	ip link set dev vx200 master br1 2>&1 >/dev/null \
--		| grep -q mlxsw_spectrum
--	check_err $? "802.1d and 802.1ad VxLANs at the same time rejected without extack"
--
--	log_test "create 802.1d and 802.1ad VxLANs"
--
--	ip link del dev vx200
--	ip link del dev br1
--	ip link del dev vx100
--	ip link del dev br0
--}
--
--trap cleanup EXIT
--
--setup_prepare
--setup_wait
--
--tests_run
--
--exit $EXIT_STATUS
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index 4dd73de00..d2cb28e9e 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -40,7 +40,7 @@ static int libbpf_netlink_open(__u32 *nl_pid)
+ 	memset(&sa, 0, sizeof(sa));
+ 	sa.nl_family = AF_NETLINK;
+ 
+-	sock = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
++	sock = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC, NETLINK_ROUTE);
+ 	if (sock < 0)
+ 		return -errno;
+ 
 -- 
-2.29.2
+2.30.2
 
