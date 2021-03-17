@@ -2,81 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11CE433F802
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05F4D33F829
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:33:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbhCQSQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 14:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232137AbhCQSQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 14:16:06 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41AAC06174A;
-        Wed, 17 Mar 2021 11:16:05 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id z7so343385lfd.5;
-        Wed, 17 Mar 2021 11:16:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RnRKNpQgUsNpaNv3dsr453+uGBMHftMBsGXsYkGT7rE=;
-        b=KMYWWZ9xdJ794AYGtt+jrqZ1WOEUPreEYwTDM5S5UPYRNJm2B4yjNYGkJpcGSEboIU
-         JQmRCmMenOQR9fI9TlQMImVZygZvas7RQqs+YYCEF5dsSLtwpu2ggtCjP0d2URBYjErg
-         T0dpwe06zeqUs0s0myEAn6zbPUeIKY9fnfiGcmFroffJNCQAegbzvMvh8gOq0A9v7a/m
-         rAGKOeTZJjmQnARguRLjOJu8pdPAu+QFiXoPzqD8EjuToZgevfwxHCarRSjdlq8V04OU
-         4V0aRpy+GI1VtvX7wdRECj1Ym7SpFQaTyWaPoJEfp7zTdJgK6fVnDKKDUdr0s62xAjKK
-         iBeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RnRKNpQgUsNpaNv3dsr453+uGBMHftMBsGXsYkGT7rE=;
-        b=b17996BC9YKIhHFVLhZenwrPxYWWzF1aiMCwsA8Fh1SooAPHyYyPtRYnTQDLPJzqCz
-         T29KV+McQg45hhH7VfabNJQQbJM0t2TUaxcebvWZcqbyZ2ZthPQx+QlryzkDygygWjwh
-         2G4JA0IFnUb7xitTWPPpFycTaqEVsfNWdBq96IYHLBfTbWjEkmiI7xR2ovadXComXHTR
-         EOEJWCRW2Gt5HoIWGiE/rBYXzmSHE0/ZA7y/E51VRSbW2JprulM+Q62lq2sjt98bDcwh
-         g8fdkmjorXtMIXrh7To0jmYyokNKQWndZV5uNx+EkhM0Q/cZWbMCfaZhTGvqc6yiFygg
-         dGag==
-X-Gm-Message-State: AOAM532c0xlP9vfdzHHVvDV3nr6ZfjmylPU5wLotH0muCpY0IKkxAzZt
-        59YoPxqDNqjjzp8NRMHZvaumzsnnvH0uwNQtBBY=
-X-Google-Smtp-Source: ABdhPJwjxBiUafEVHyuGWn52BbQJ0CqM03RZxe6x+nPFht8IsWTxeJtB50Hqe7SlhdXwLRQr60FBUsOLgpi2U/OtPIQ=
-X-Received: by 2002:ac2:5b5a:: with SMTP id i26mr2986484lfp.182.1616004964394;
- Wed, 17 Mar 2021 11:16:04 -0700 (PDT)
+        id S232909AbhCQScs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 14:32:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56684 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231152AbhCQScQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 14:32:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 127A764F5E;
+        Wed, 17 Mar 2021 18:32:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616005936;
+        bh=5HCaUIAS4At51sMGbk1p/gfrBxEz6C4ZacDUltVwV/g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AeJa8d8PNhSmi0jiXvcMe0dGGq3mwwt6PqM0Xm7P+s7vzpQjbuMtLS5XKNb0HNfZO
+         okfJxAWlzCNLrPyBG1uwu2WNaod0CEGyW9fRnOvdCap0ljGmfBVNyaP3peiKpg/1yJ
+         CaH2PJAFk7clsNG7Iaok2Bl4jVbaeMJRp2SWtNNqmTtQPvvS6GMLURbxrxeIDkYcv0
+         PLrNYK+GF95R2UHDGErmr/+J5MUSnWNQd6oIcnD5LBnSP5OLpDv7eB1Mt/g8Raa8Yn
+         e1jUxL2cjAJB/4mPQCFdN/Z8TrGAqdgZR+iuwpskRMdSr8YLcqX4AMkC2YMAGpmI+y
+         +XnVfuOOL03pQ==
+Date:   Wed, 17 Mar 2021 11:32:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>
+Subject: Re: [PATCH net-next 5/9] net: hns3: refactor flow director
+ configuration
+Message-ID: <20210317113215.10437c2a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <cbedbd4d-f293-3733-f86e-65f434a09e82@huawei.com>
+References: <1615811031-55209-1-git-send-email-tanhuazhong@huawei.com>
+        <1615811031-55209-6-git-send-email-tanhuazhong@huawei.com>
+        <20210315130027.669b8afa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <cbedbd4d-f293-3733-f86e-65f434a09e82@huawei.com>
 MIME-Version: 1.0
-References: <20210317031257.846314-1-andrii@kernel.org> <20210317031257.846314-2-andrii@kernel.org>
- <CAEf4BzYYkJqdvamkgoCqGF23Av44n322FMz+-HWO9YxXBNLqVw@mail.gmail.com>
-In-Reply-To: <CAEf4BzYYkJqdvamkgoCqGF23Av44n322FMz+-HWO9YxXBNLqVw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 17 Mar 2021 11:15:53 -0700
-Message-ID: <CAADnVQJ2+m4DVGpBQ_0a+vGDSodRqfpFhWzw1umEf_ytyY7kVw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpftool: generate NULL definition in vmlinux.h
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 10:38 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
-> > diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-> > index 62953bbf68b4..ff6a76632873 100644
-> > --- a/tools/bpf/bpftool/btf.c
-> > +++ b/tools/bpf/bpftool/btf.c
-> > @@ -405,6 +405,8 @@ static int dump_btf_c(const struct btf *btf,
-> >         printf("#ifndef __VMLINUX_H__\n");
-> >         printf("#define __VMLINUX_H__\n");
-> >         printf("\n");
-> > +       printf("#define NULL ((void *)0)\n");
->
->
-> On second thought, this could also be done in bpf_helpers.h, which is
-> pretty much always included in BPF programs. I think that's a bit more
-> maintainable and less magical to users, so I'll go with that in v3.
+On Wed, 17 Mar 2021 09:47:45 +0800 Huazhong Tan wrote:
+> On 2021/3/16 4:00, Jakub Kicinski wrote:
+> > On Mon, 15 Mar 2021 20:23:47 +0800 Huazhong Tan wrote:  
+> >> From: Jian Shen <shenjian15@huawei.com>
+> >>
+> >> Currently, there are 3 flow director work modes in HNS3 driver,
+> >> include EP(ethtool), tc flower and aRFS. The flow director rules
+> >> are configured synchronously and need holding spin lock. With this
+> >> limitation, all the commands with firmware are also needed to use
+> >> spin lock.
+> >>
+> >> To eliminate the limitation, configure flow director rules
+> >> asynchronously. The rules are still kept in the fd_rule_list
+> >> with below states.
+> >> TO_ADD: the rule is waiting to add to hardware
+> >> TO_DEL: the rule is waiting to remove from hardware
+> >> ADDING: the rule is adding to hardware
+> >> ACTIVE: the rule is already added in hardware
+> >>
+> >> When receive a new request to add or delete flow director rule,
+> >> check whether the rule location is existent, update the rule
+> >> content and state, and request to schedule the service task to
+> >> finish the configuration.
+> >>
+> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> >> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>  
+> > How is the application supposed to know if the ethtool rule was already
+> > installed or installation is still pending?  
+> 
+> 
+> Yes, it's unable for the application to know whether pending or installed.
+> 
+> The primitive motivation is to move out the aRFS rule configuration from
+> IO path. To keep consistent, so does the ethtool way. We thought
+> of it before, considered that the time window between the two state is
+> very small.
+> 
+> How about keep aRFS asynchronously, and the ethtool synchronously?
 
-yep. good idea.
+That'd be fine by me.
