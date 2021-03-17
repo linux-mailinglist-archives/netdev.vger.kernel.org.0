@@ -2,122 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E74433FA1D
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 21:48:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF6633FA29
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 21:56:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233427AbhCQUre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 16:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233410AbhCQUrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 16:47:23 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EEEC06174A;
-        Wed, 17 Mar 2021 13:47:22 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id 133so333396ybd.5;
-        Wed, 17 Mar 2021 13:47:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=it8U0w3MjTXYKTU/soyaEuoZ9Qji+7MJUL+YSn8iD9E=;
-        b=gFqEFwiekclCs0S4mOFoBjZ6R8H98SEnVijubosGjv3cGL61fRXwhGWU/aHWV/2NPu
-         1jfYD6do9YnUGO51F2hukxdF0rfHwLS2+ughnVo2qBp6GVrNL2zCJobQ5vVg0tlOI5Hx
-         4FyxdcUMvYQw4uiNs6kpQVi0XSa6LKEO5Mhh7kMPV9FPEibnuVGO+vvp9CaPd7rPsmll
-         jsrHvq7LlajZ71adzcPUiiEsQMgUZgns8QZvgEvud8Sok780QlF1KNwDuaf7DrWZOxAv
-         ER05UgOgCM+tqruFnNQhT3988ZMVh07oCW/Sbwr3Acn0B/KcuUuosalwoOaKxhh1H1Yb
-         v1kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=it8U0w3MjTXYKTU/soyaEuoZ9Qji+7MJUL+YSn8iD9E=;
-        b=kD3sGQh72691NqSxW+l8NpwfwvX3OysgZXw+QsJOf0LYqQvh1NxkP9LsHd0oSXwhjB
-         TUrlwhdV+fpSYyEVplFr4dfjTI4hu3GZtza7pHOVtbnVEZu5MilDu4VsFWp7P0CrJZtp
-         AUP8Cjumxwp53JnOH4FnnMMMBbl7uOYR9B6wh9bzjOpOrokDnvj3ph3iA5FN+f5Pigrk
-         mnoFNE8FB5m2d0/6dwMkKl1PGxesRcGGrCcb4oN67FlOe9M2KlUXiZ5rWY8u2V5TO3Mn
-         +NVa0q25ug3tx9jaobmWLzcbxKpFmPnDyo/Ckkztcqi1ZMhBxMxWSL94LXQDnCXLfEoe
-         QUiQ==
-X-Gm-Message-State: AOAM532GfExct+417klT55os7ZgOzMHABB1sdkjCqHWCdVOcTAR6AOOd
-        CU5Jvsz52A74xFIQOQBv10KAUTN2ZvY5mzeze/4=
-X-Google-Smtp-Source: ABdhPJzPB2EbyMLIungWARpJAZq47cQKM1cfsI1y9RNwEZZ5l95yKrxMLePJmUiA6CdUXl/IcW4B2cxuqSqEutlkq9g=
-X-Received: by 2002:a25:4982:: with SMTP id w124mr864240yba.27.1616014042151;
- Wed, 17 Mar 2021 13:47:22 -0700 (PDT)
+        id S233285AbhCQU4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 16:56:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46490 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233443AbhCQUzr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 16:55:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3309264E90;
+        Wed, 17 Mar 2021 20:55:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616014546;
+        bh=8YHIy2QJi0Zbnx676evVVkiFT4TAs3P+dNjW2VdjjY4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=j/NREaNObGhuCT7gWW8ChdtLt63hXPXIvf2zC/G9cSWGW/JgIAzi6lYKt3hLJfpEG
+         hQrw8seR3wePUKUt4+1rOVdW16PMnPzALHoEdTR0wV6zfFQvfDKumpDO8c4Q1gT8KP
+         6DSMJ85gp6wDzmLWGXcm2sy+r9aUJGVVThh7kFgQQnbB5l1P0gcuKUCBrXjIKbdEog
+         5vMjmUIBGo0SCzLXQZxz4jz+Y8qG+6mM5025rEsV4fu/XPfclMUxNVSRy4AaNBFkOC
+         r11ZVNpLFMdV/HiLv0C4cnR0+K6BzyOMQDhd5xrtNIO7EdlV0ghztnfmHld4wGsBL9
+         TpXUHdUm686Vw==
+Date:   Wed, 17 Mar 2021 13:55:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/1] net: stmmac: add per-queue TX & RX
+ coalesce ethtool support
+Message-ID: <20210317135544.3da32504@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210317010123.6304-2-boon.leong.ong@intel.com>
+References: <20210317010123.6304-1-boon.leong.ong@intel.com>
+        <20210317010123.6304-2-boon.leong.ong@intel.com>
 MIME-Version: 1.0
-References: <20210313193537.1548766-1-andrii@kernel.org> <20210313193537.1548766-11-andrii@kernel.org>
- <20210317053437.r5zsoksdqrxtt22r@ast-mbp>
-In-Reply-To: <20210317053437.r5zsoksdqrxtt22r@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 17 Mar 2021 13:47:11 -0700
-Message-ID: <CAEf4BzZ2TxWqVG=VqFw18--dvC=M5ONRUAde2EB_0yBaYkHb2Q@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 10/11] selftests/bpf: pass all BPF .o's
- through BPF static linker
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 10:34 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sat, Mar 13, 2021 at 11:35:36AM -0800, Andrii Nakryiko wrote:
-> >
-> > -$(TRUNNER_BPF_SKELS): $(TRUNNER_OUTPUT)/%.skel.h:                    \
-> > -                   $(TRUNNER_OUTPUT)/%.o                             \
-> > -                   $(BPFTOOL)                                        \
-> > -                   | $(TRUNNER_OUTPUT)
-> > +$(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
-> >       $$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
-> > -     $(Q)$$(BPFTOOL) gen skeleton $$< > $$@
-> > +     $(Q)$$(BPFTOOL) gen object $$(<:.o=.bpfo) $$<
-> > +     $(Q)$$(BPFTOOL) gen skeleton $$(<:.o=.bpfo) > $$@
->
-> Do we really need this .bpfo extension?
+On Wed, 17 Mar 2021 09:01:23 +0800 Ong Boon Leong wrote:
+> Extending the driver to support per-queue RX and TX coalesce settings in
+> order to support below commands:
+> 
+> To show per-queue coalesce setting:-
+>  $ ethtool --per-queue <DEVNAME> queue_mask <MASK> --show-coalesce
+> 
+> To set per-queue coalesce setting:-
+>  $ ethtool --per-queue <DEVNAME> queue_mask <MASK> --coalesce \
+>      [rx-usecs N] [rx-frames M] [tx-usecs P] [tx-frames Q]
+> 
+> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 
-I thought it would be a better way to avoid user's confusion with .o's
-as produced by compiler and .bpfo as a "final" linked BPF object,
-produced by static linker. Technically, there is no requirement, of
-course. If you think it will be less confusing to stick to .o, that's
-fine.
+Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-> bpftool in the previous patch doesn't really care about the extension.
+> +	if (queue < tx_cnt) {
+> +		ec->tx_coalesce_usecs = priv->tx_coal_timer[queue];
+> +		ec->tx_max_coalesced_frames = priv->tx_coal_frames[queue];
+> +	} else {
+> +		ec->tx_coalesce_usecs = 0;
+> +		ec->tx_max_coalesced_frames = 0;
 
-the only thing that cares is the logic to derive object name when
-generating skeleton (we strip .o and/or .bpfo). No loader should ever
-care about extension, it could be my_obj.whocares and it should be
-fine.
-
-> It's still a valid object file with the same ELF format.
-
-Yes, with some extra niceties like fixed up BTF, stripped out DWARF,
-etc. Maybe in the future there will be more "normalization" done as
-compared to what Clang produces.
-
-> I think if we keep the same .o extension for linked .o-s it will be easier.
-> Otherwise all loaders would need to support both .o and .bpfo,
-> but the later is no different than the former in terms of contents of the file
-> and ways to parse it.
-
-So no loaders should care right now. But as I said, I can drop .bpfo as well.
-
->
-> For testing of the linker this linked .o can be a temp file or better yet a unix pipe ?
-> bpftool gen object - one.o second.o|bpftool gen skeleton -
-
-So I tried to briefly add support for that to `gen skeleton` and `gen
-object` by using /proc/self/fd/{0,1} and that works for `gen object`,
-but only if stdout is redirected to a real file. When piping output to
-another process, libelf fails to write to such a special file for some
-reason. `gen skeleton` is also failing to read from a piped stdin
-because of use of mmap(). So there would need to be more work done to
-support piping like that.
-
-But in any case I'd like to have those intermediate object file
-results lying on disk for further inspection, if anything isn't right,
-so I'll use temp file regardless.
+nit: I think the struct is initialized to 0 so there is no need to set
+it explicitly.
