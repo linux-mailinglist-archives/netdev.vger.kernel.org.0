@@ -2,118 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B0BA33F8A7
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 20:01:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 480B533F8FA
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 20:17:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbhCQTA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 15:00:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42460 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232907AbhCQTAL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 15:00:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 32B9E64F57;
-        Wed, 17 Mar 2021 19:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616007611;
-        bh=9EhX63ORelXK63RiVqvtbbW1ZglAn2dEYYsY5yAdFNI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dFbs7ZbPLlcy7EL4UlAgrBmpRtE3zHAKjgQbkLD4ezaagVOYk5Q9XZyJFoJRgjeQz
-         vNyUgHkngC805XcJxf7/rg8KXk4tZdSWUudGntqJWTfCSg+X+tghALQdf5xBv0pbl5
-         2hQuIVFM2yc0DO7YQLnWhEf8pcaTfnDbbn7r+wXm7AgPBbZO/TaFLNYuD2FNP9aTgg
-         BF8Bepx206XgTEKxvP4rLSOvJs2njw4sgV0sQf3Nx9gedKLF5oSWW0owbPefCS1Fwn
-         FuEoCg3yx22uEhqbBZ8WylQ2nlpKcJjn8cjWqRT0c/6zYR7muHrJpcfBGZlw1GCsXO
-         pBNZ+5uUKPQHA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2CCDA60997;
-        Wed, 17 Mar 2021 19:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233119AbhCQTQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 15:16:51 -0400
+Received: from gateway30.websitewelcome.com ([50.116.127.1]:27328 "EHLO
+        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232963AbhCQTQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 15:16:48 -0400
+X-Greylist: delayed 1500 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Mar 2021 15:16:48 EDT
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id DA21FB052
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 13:27:42 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id MatSlI9XpPkftMatSlycnL; Wed, 17 Mar 2021 13:27:42 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=NXenw5qbQa2c5Dq+QDdWLszQhEmsUBkGoD/XPih167M=; b=YIGIhpWEJvVG8HRqbV2FOavf5e
+        z4XBvqewoGs38Yw1uijefU+jblaYEZX3jAsFQGT70bOJfTE55N8rMY1KGNtoC4UwwqI+EnB4TCV4U
+        UIiSLwTOTHY1agewzQwVeiC0NM9z4jIsPJChEtGa+OM/3J4eygBrKUR1TMNvPxikKRGzdWQ3gN9sU
+        BoitfNGKnGod/pgFvNHXCEhPvixihJ0j5tyraoC1EGh4tpAmMLcJ1nkPfkmq79Ws3QmiwnlpYExjo
+        EyV9EIzTWJwbnW+58OgCHyiCx1HL1Wcory2uOypQ8OpIaym8Ef8APQ48pAhqtcd1/edrr7Ar78qcE
+        aHVklH2g==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:58230 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lMatS-001uWQ-Eq; Wed, 17 Mar 2021 13:27:42 -0500
+Subject: Re: [Intel-wired-lan] [PATCH][next] ixgbe: Fix out-of-bounds warning
+ in ixgbe_host_interface_command()
+To:     Jann Horn <jannh@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, linux-hardening@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20210317064148.GA55123@embeddedor>
+ <CAG48ez2RDqKwx=umOHjo_1mYyNQgzvcP=KOw1HgSo4Prs_VQDw@mail.gmail.com>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <3bd8d009-2ad2-c24d-5c34-5970c52502de@embeddedor.com>
+Date:   Wed, 17 Mar 2021 12:27:28 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
+In-Reply-To: <CAG48ez2RDqKwx=umOHjo_1mYyNQgzvcP=KOw1HgSo4Prs_VQDw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 00/16] tipc: cleanups and simplifications
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161600761117.6499.6305586975378624608.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Mar 2021 19:00:11 +0000
-References: <20210317020623.1258298-1-jmaloy@redhat.com>
-In-Reply-To: <20210317020623.1258298-1-jmaloy@redhat.com>
-To:     Jon Maloy <jmaloy@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, maloy@donjonn.com, xinl@redhat.com,
-        ying.xue@windriver.com, parthasarathy.bhuvaragan@gmail.com
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lMatS-001uWQ-Eq
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:58230
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 3
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Jann,
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Please, see my comments below...
 
-On Tue, 16 Mar 2021 22:06:07 -0400 you wrote:
-> From: Jon Maloy <jmaloy@redhat.com>
+On 3/17/21 12:11, Jann Horn wrote:
+> On Wed, Mar 17, 2021 at 8:43 AM Gustavo A. R. Silva
+> <gustavoars@kernel.org> wrote:
+>> Fix the following out-of-bounds warning by replacing the one-element
+>> array in an anonymous union with a pointer:
+>>
+>>   CC [M]  drivers/net/ethernet/intel/ixgbe/ixgbe_common.o
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c: In function ‘ixgbe_host_interface_command’:
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3729:13: warning: array subscript 1 is above array bounds of ‘u32[1]’ {aka ‘unsigned int[1]’} [-Warray-bounds]
+>>  3729 |   bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+>>       |   ~~~~~~~~~~^~~~
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3682:7: note: while referencing ‘u32arr’
+>>  3682 |   u32 u32arr[1];
+>>       |       ^~~~~~
+>>
+>> This helps with the ongoing efforts to globally enable -Warray-bounds.
+>>
+>> Notice that, the usual approach to fix these sorts of issues is to
+>> replace the one-element array with a flexible-array member. However,
+>> flexible arrays should not be used in unions. That, together with the
+>> fact that the array notation is not being affected in any ways, is why
+>> the pointer approach was chosen in this case.
+>>
+>> Link: https://github.com/KSPP/linux/issues/109
+>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>> ---
+>>  drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+>> index 62ddb452f862..bff3dc1af702 100644
+>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+>> @@ -3679,7 +3679,7 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+>>         u32 hdr_size = sizeof(struct ixgbe_hic_hdr);
+>>         union {
+>>                 struct ixgbe_hic_hdr hdr;
+>> -               u32 u32arr[1];
+>> +               u32 *u32arr;
+>>         } *bp = buffer;
+>>         u16 buf_len, dword_len;
+>>         s32 status;
 > 
-> We do a number of cleanups and simplifications, especially regarding
-> call signatures in the binding table. This makes the code easier to
-> understand and serves as preparation for upcoming functional additions.
-> 
-> Jon Maloy (16):
->   tipc: re-organize members of struct publication
->   tipc: move creation of publication item one level up in call chain
->   tipc: introduce new unified address type for internal use
->   tipc: simplify signature of tipc_namtbl_publish()
->   tipc: simplify call signatures for publication creation
->   tipc: simplify signature of tipc_nametbl_withdraw() functions
->   tipc: rename binding table lookup functions
->   tipc: refactor tipc_sendmsg() and tipc_lookup_anycast()
->   tipc: simplify signature of tipc_namtbl_lookup_mcast_sockets()
->   tipc: simplify signature of tipc_nametbl_lookup_mcast_nodes()
->   tipc: simplify signature of tipc_nametbl_lookup_group()
->   tipc: simplify signature of tipc_service_find_range()
->   tipc: simplify signature of tipc_find_service()
->   tipc: simplify api between binding table and topology server
->   tipc: add host-endian copy of user subscription to struct
->     tipc_subscription
->   tipc: remove some unnecessary warnings
-> 
-> [...]
+> This looks bogus. An array is inline, a pointer points elsewhere -
+> they're not interchangeable.
 
-Here is the summary with links:
-  - [net-next,01/16] tipc: re-organize members of struct publication
-    https://git.kernel.org/netdev/net-next/c/998d3907f419
-  - [net-next,02/16] tipc: move creation of publication item one level up in call chain
-    https://git.kernel.org/netdev/net-next/c/b26b5aa9cebe
-  - [net-next,03/16] tipc: introduce new unified address type for internal use
-    https://git.kernel.org/netdev/net-next/c/7823f04f34b8
-  - [net-next,04/16] tipc: simplify signature of tipc_namtbl_publish()
-    https://git.kernel.org/netdev/net-next/c/50a3499ab853
-  - [net-next,05/16] tipc: simplify call signatures for publication creation
-    https://git.kernel.org/netdev/net-next/c/a45ffa68573e
-  - [net-next,06/16] tipc: simplify signature of tipc_nametbl_withdraw() functions
-    https://git.kernel.org/netdev/net-next/c/2c98da079063
-  - [net-next,07/16] tipc: rename binding table lookup functions
-    https://git.kernel.org/netdev/net-next/c/66db239c4894
-  - [net-next,08/16] tipc: refactor tipc_sendmsg() and tipc_lookup_anycast()
-    https://git.kernel.org/netdev/net-next/c/908148bc5046
-  - [net-next,09/16] tipc: simplify signature of tipc_namtbl_lookup_mcast_sockets()
-    https://git.kernel.org/netdev/net-next/c/45ceea2d403b
-  - [net-next,10/16] tipc: simplify signature of tipc_nametbl_lookup_mcast_nodes()
-    https://git.kernel.org/netdev/net-next/c/833f867089e5
-  - [net-next,11/16] tipc: simplify signature of tipc_nametbl_lookup_group()
-    https://git.kernel.org/netdev/net-next/c/006ed14ef82b
-  - [net-next,12/16] tipc: simplify signature of tipc_service_find_range()
-    https://git.kernel.org/netdev/net-next/c/13c9d23f6ac3
-  - [net-next,13/16] tipc: simplify signature of tipc_find_service()
-    https://git.kernel.org/netdev/net-next/c/6e44867b01e6
-  - [net-next,14/16] tipc: simplify api between binding table and topology server
-    https://git.kernel.org/netdev/net-next/c/09f78b851ea3
-  - [net-next,15/16] tipc: add host-endian copy of user subscription to struct tipc_subscription
-    https://git.kernel.org/netdev/net-next/c/429189acac53
-  - [net-next,16/16] tipc: remove some unnecessary warnings
-    https://git.kernel.org/netdev/net-next/c/5c8349503d00
+Yep; but in this case these are the only places in the code where _u32arr_ is
+being used:
 
-You are awesome, thank you!
+3707         /* first pull in the header so we know the buffer length */
+3708         for (bi = 0; bi < dword_len; bi++) {
+3709                 bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+3710                 le32_to_cpus(&bp->u32arr[bi]);
+3711         }
+
+3727         /* Pull in the rest of the buffer (bi is where we left off) */
+3728         for (; bi <= dword_len; bi++) {
+3729                 bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+3730                 le32_to_cpus(&bp->u32arr[bi]);
+3731         }
+
+I think it is safe to turn _u32arra_ into a pointer and continue using the array notation
+in this particular case.
+
+I also mention this in the changelog text:
+
+"Notice that, the usual approach to fix these sorts of issues is to
+replace the one-element array with a flexible-array member. However,
+flexible arrays should not be used in unions. That, together with the
+fact that the array notation is not being affected in any ways, is why
+the pointer approach was chosen in this case."
+
+Do you see any particular problem with this in the current code?
+
+Another solution for this would be as follows:
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+index 62ddb452f862..3ad95281d790 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+@@ -3677,10 +3677,11 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+                                 bool return_data)
+ {
+        u32 hdr_size = sizeof(struct ixgbe_hic_hdr);
+-       union {
+-               struct ixgbe_hic_hdr hdr;
+-               u32 u32arr[1];
+-       } *bp = buffer;
++       struct ixgbe_hic_hdr *bp_hdr = buffer;
++       struct {
++               size_t len;
++               u32 u32arr[];
++       } *bp;
+        u16 buf_len, dword_len;
+        s32 status;
+        u32 bi;
+@@ -3704,6 +3705,9 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+        /* Calculate length in DWORDs */
+        dword_len = hdr_size >> 2;
+
++       bp = kmalloc(struct_size(bp, u32arr, dword_len), GFP_KERNEL);
++       bp->len = dword_len;
++       memcpy(bp->u32arr, buffer, flex_array_size(bp, u32arr, bp->len));
+        /* first pull in the header so we know the buffer length */
+        for (bi = 0; bi < dword_len; bi++) {
+                bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+@@ -3711,7 +3715,7 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+        }
+
+        /* If there is any thing in data position pull it in */
+-       buf_len = bp->hdr.buf_len;
++       buf_len = bp_hdr->buf_len;
+        if (!buf_len)
+                goto rel_out;
+
+@@ -3724,6 +3728,9 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+        /* Calculate length in DWORDs, add 3 for odd lengths */
+        dword_len = (buf_len + 3) >> 2;
+
++       bp = krealloc(bp, struct_size(bp, u32arr, dword_len), GFP_KERNEL);
++       bp->len = dword_len;
++       memcpy(&bp->u32arr[bi], ((u32 *)buffer + bi), flex_array_size(bp, u32arr, bp->len-bi));
+        /* Pull in the rest of the buffer (bi is where we left off) */
+        for (; bi <= dword_len; bi++) {
+		^^^^^^
+I just noticed it seems there is a bug right there. I think it should be bi < dword_len, instead
+
+                bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+
+
+What do you guys think?
+
+Thanks!
 --
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Gustavo
 
 
