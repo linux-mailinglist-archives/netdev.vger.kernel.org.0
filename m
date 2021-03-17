@@ -2,98 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41CC633F2B1
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 15:33:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7DA33F2B8
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 15:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbhCQOdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 10:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55856 "EHLO
+        id S230397AbhCQOfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 10:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231458AbhCQOc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 10:32:58 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C266C06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 07:32:58 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id y6so2557279eds.1
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 07:32:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=VULqenmn7b6ivm5aBb1HPTvJLbDLc3V/xV5o8NuumQk=;
-        b=j/uLvhwQjj4R13gkxa832B8PXE/4jSCj+Si42lI+k9uUMMtkK8tlBNp5LujaOMiuwe
-         J/fnNVPqIfvuQn7/UTzyOYdpt4GaWl8xkEtqsaZ02kfPq780H69YeaqP7kuYj/JTxE3u
-         PMz42cu0yCnKNQeR/z5MFLNc7yyzCEGZL1TR27YEuh0jg4lq1Xzje2TiJG94RwKp7Y+n
-         eNSFithnla7kQaa5j8JO7IlBBDPV5hKY+L7BYX7IGANsu5k8miziRwaCk61L5Ao//r3I
-         KOjePNT3jVT11zrsatoRbf0BzdZNyifIeg4YkOXEt/StITKYd+VxJ/FdhHc5hIavUhTZ
-         VsZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=VULqenmn7b6ivm5aBb1HPTvJLbDLc3V/xV5o8NuumQk=;
-        b=Wj3RiZuz8K0mc4GYdsIb+EPoy/OwJSkmQCJwW7DDeBxX55f0jtF1ZM5TTOODZdTlcU
-         04zVDzA9NwPwuiYXzZI4Zo3L/+87647G3duJFeQl+h6/8KyMs1vaTm6bpfJt6cLVQzQ9
-         Fi4x/Jkux/6ocBp2j++6qjjqpao1lPLR9MnS/BlC//2QuVxz/uuxxlgvEzi6i814iUqz
-         78FePXgYmWfCTqgKuzkaA1EnfrYXzpi3p7MGLRt8No2jRaSRq5UUyr/1wktmSSmZV0NQ
-         ahi2OPYNQz9Dr+0dfNI1s8MxV3HkErWivl+XRD2ecZm42W3ttKaG+Xowlbtdi93M5O4/
-         HhaA==
-X-Gm-Message-State: AOAM533YijR8DOego9WYC3zXS8wJvL7NMqJxiY2p1UbC25wdkezJgmaw
-        5qioMwBcMk65IBwoBmgMrK8=
-X-Google-Smtp-Source: ABdhPJz+vi4ufOKUjIaWakE6kAPdzvBuy7YCKR+gpudMQuVpxGOwEZm5mbu8rgyWLRR121Y3JZQkgA==
-X-Received: by 2002:aa7:ca04:: with SMTP id y4mr42075750eds.339.1615991576620;
-        Wed, 17 Mar 2021 07:32:56 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id cw14sm13236325edb.8.2021.03.17.07.32.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 07:32:56 -0700 (PDT)
-Date:   Wed, 17 Mar 2021 16:32:55 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
+        with ESMTP id S231871AbhCQOfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 10:35:04 -0400
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50F8C06174A
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 07:35:03 -0700 (PDT)
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTPSA id F30F714056C;
+        Wed, 17 Mar 2021 15:35:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1615991701; bh=aSfCZVq6Yvr1iFLWg8vlyU7IowZorbySoFryzrXlSsI=;
+        h=Date:From:To;
+        b=e08bZCqllKSW6u14uFSe0jiGOoBfsmlWOm2/A+BxHw/3bTAoZAXTC/6WjB47jo6Os
+         wOqWyX7Y4l07tmZeJu5ayD+SdsvHGq4RKqsMLoDUcnRE1pcQo5gjhjp9zmv91KzYw9
+         tqu0vXkTz6rB7DSWEr2z/vOwatqqu0OUiuYTv4tI=
+Date:   Wed, 17 Mar 2021 15:34:33 +0100
+From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, pavana.sharma@digi.com,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         andrew@lunn.ch, ashkan.boldaji@digi.com, davem@davemloft.net,
         kuba@kernel.org, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         lkp@intel.com
-Subject: Re: [PATCH net-next v17 4/4] net: dsa: mv88e6xxx: implement
- .port_set_policy for Amethyst
-Message-ID: <20210317143255.7vvan6kaclx7w4ys@skbuf>
+Subject: Re: [PATCH net-next v17 2/4] net: dsa: mv88e6xxx: wrap
+ .set_egress_port method
+Message-ID: <20210317153433.5b761964@dellmb.labs.office.nic.cz>
+In-Reply-To: <20210317142235.jgkv2q3743wb47wt@skbuf>
 References: <20210317134643.24463-1-kabel@kernel.org>
- <20210317134643.24463-5-kabel@kernel.org>
+        <20210317134643.24463-3-kabel@kernel.org>
+        <20210317142235.jgkv2q3743wb47wt@skbuf>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210317134643.24463-5-kabel@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 02:46:43PM +0100, Marek Behún wrote:
-> The 16-bit Port Policy CTL register from older chips is on 6393x changed
-> to Port Policy MGMT CTL, which can access more data, but indirectly and
-> via 8-bit registers.
-> 
-> The original 16-bit value is divided into first two 8-bit register in
-> the Port Policy MGMT CTL.
-> 
-> We can therefore use the previous code to compute the mask and shift,
-> and then
-> - if 0 <= shift < 8, we access register 0 in Port Policy MGMT CTL
-> - if 8 <= shift < 16, we access register 1 in Port Policy MGMT CTL
-> 
-> There are in fact other possible policy settings for Amethyst which
-> could be added here, but this can be done in the future.
+On Wed, 17 Mar 2021 16:22:35 +0200
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
-..and not using ethtool --config-nfc perhaps, but with tc clsact, flower
-filters and actions.
+> On Wed, Mar 17, 2021 at 02:46:41PM +0100, Marek Beh=FAn wrote:
+> > There are two implementations of the .set_egress_port method, and
+> > both of them, if successful, set chip->*gress_dest_port variable.
+> >=20
+> > To avoid code repetition, wrap this method into
+> > mv88e6xxx_set_egress_port.
+> >=20
+> > Signed-off-by: Marek Beh=FAn <kabel@kernel.org>
+> > Reviewed-by: Pavana Sharma <pavana.sharma@digi.com>
+> > --- =20
+>=20
+> Separately from this series, do you think you can rename the
+> "egress_port" into "monitor_port" across the driver? Seeing an
+> EGRESS_DIR_INGRESS is pretty strange.
 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> Reviewed-by: Pavana Sharma <pavana.sharma@digi.com>
-> ---
+You mean even renaming methods .set_egress_port to .set_monitor_port,
+and type
+  enum mv88e6xxx_egress_direction
+to
+  enum mv88e6xxx_monitor_direction?
 
-I don't have any documentation for 6393x, but the change looks simple
-enough.
-
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
