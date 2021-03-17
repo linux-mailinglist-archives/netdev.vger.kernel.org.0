@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A4E733E3E6
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:58:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAEB333E3CA
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:58:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231816AbhCQA5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 20:57:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34872 "EHLO mail.kernel.org"
+        id S231744AbhCQA5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 20:57:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231434AbhCQA5E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 20:57:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2344864FB4;
-        Wed, 17 Mar 2021 00:57:03 +0000 (UTC)
+        id S229874AbhCQA5H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 20:57:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C07D464F9E;
+        Wed, 17 Mar 2021 00:57:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615942623;
-        bh=nWky4vFhQDdYKpN9K8dl5nP1GlaeP8D4IR9UQnpH4kk=;
+        s=k20201202; t=1615942626;
+        bh=Qf6WRzLXOfkPVr6+tyAWYIuSf30ymOOqJmelHgbPUp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gOAsSURciJCxiFER1/S4svNmt7yeXjfaEKxESfaRzKRE7+nZD4fCKAfMneLEj5Irt
-         edVAFt4Ezfa18NTBTsbgevs1kHaAfxqvJFv+sqx9MiSLFTsAGoNG+J/Gnk6gNz+4wT
-         X0xJ4cb+C0FogMG5vWTS8FyuGKcqHO47oHa7VIhVU45i2A8EzI7MOutLV8P5DTu/gT
-         8uUBogUmlLesSeYnt1eb6ENDedJ9PZ6f1zahjtJuhxWjRCBvNfM8cYfK8o0OILz7OK
-         DEF42/zOn471LWuQFVq65oXEBy24zuKP2JLlNuM58gw/tPEZw/YJ8YBgA3iL4eO6a5
-         2ZSDv4kbOjICA==
+        b=nZE+Lv36PxSsqNYFxoL0wuNhxBGB4hUe5xz/nL6DxlJE4+WMSe9v9aiL6oQ8wr6lf
+         mKrDTq61F7CuLh2l2r93BbB22zGG2RVkj/2fdggCY9+KivdJ2ZURdzDvpUyF0SlVH/
+         ACvVx7uu1x3JJK3PmLxwc8XfoUwZfKD42OUtvmm1VD0oWf4ePFNXecNd99QxtAvAK3
+         QhOBuh7/9Ba8d1w40HZaT1v5y5i7rA/u9WkQ5hjiln7udqv6iuQKA2Wd5TKgtbkdL9
+         bPg+REA4F78JrPMyIgTOtx/En4u19+ApQ6QOn7ff9qi3yt2R4GvAvZxMyhXhMi73gT
+         yp5SgA0O7WjSg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hayes Wang <hayeswang@realtek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/54] Revert "r8152: adjust the settings about MAC clock speed down for RTL8153"
-Date:   Tue, 16 Mar 2021 20:56:06 -0400
-Message-Id: <20210317005654.724862-7-sashal@kernel.org>
+Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Tony Brelinski <tonyx.brelinski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 09/54] ixgbe: Fix memleak in ixgbe_configure_clsu32
+Date:   Tue, 16 Mar 2021 20:56:08 -0400
+Message-Id: <20210317005654.724862-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210317005654.724862-1-sashal@kernel.org>
 References: <20210317005654.724862-1-sashal@kernel.org>
@@ -43,109 +45,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hayes Wang <hayeswang@realtek.com>
+From: Dinghao Liu <dinghao.liu@zju.edu.cn>
 
-[ Upstream commit 4b5dc1a94d4f92b5845e98bd9ae344b26d933aad ]
+[ Upstream commit 7a766381634da19fc837619b0a34590498d9d29a ]
 
-This reverts commit 134f98bcf1b898fb9d6f2b91bc85dd2e5478b4b8.
+When ixgbe_fdir_write_perfect_filter_82599() fails,
+input allocated by kzalloc() has not been freed,
+which leads to memleak.
 
-The r8153_mac_clk_spd() is used for RTL8153A only, because the register
-table of RTL8153B is different from RTL8153A. However, this function would
-be called when RTL8153B calls r8153_first_init() and r8153_enter_oob().
-That causes RTL8153B becomes unstable when suspending and resuming. The
-worst case may let the device stop working.
-
-Besides, revert this commit to disable MAC clock speed down for RTL8153A.
-It would avoid the known issue when enabling U1. The data of the first
-control transfer may be wrong when exiting U1.
-
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/r8152.c | 35 ++++++-----------------------------
- 1 file changed, 6 insertions(+), 29 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 88f177aca342..d2862071b697 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -3033,29 +3033,6 @@ static void __rtl_set_wol(struct r8152 *tp, u32 wolopts)
- 		device_set_wakeup_enable(&tp->udev->dev, false);
- }
- 
--static void r8153_mac_clk_spd(struct r8152 *tp, bool enable)
--{
--	/* MAC clock speed down */
--	if (enable) {
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL,
--			       ALDPS_SPDWN_RATIO);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL2,
--			       EEE_SPDWN_RATIO);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL3,
--			       PKT_AVAIL_SPDWN_EN | SUSPEND_SPDWN_EN |
--			       U1U2_SPDWN_EN | L1_SPDWN_EN);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL4,
--			       PWRSAVE_SPDWN_EN | RXDV_SPDWN_EN | TX10MIDLE_EN |
--			       TP100_SPDWN_EN | TP500_SPDWN_EN | EEE_SPDWN_EN |
--			       TP1000_SPDWN_EN);
--	} else {
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL, 0);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL2, 0);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL3, 0);
--		ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL4, 0);
--	}
--}
--
- static void r8153_u1u2en(struct r8152 *tp, bool enable)
- {
- 	u8 u1u2[8];
-@@ -3355,11 +3332,9 @@ static void rtl8153_runtime_enable(struct r8152 *tp, bool enable)
- 	if (enable) {
- 		r8153_u1u2en(tp, false);
- 		r8153_u2p3en(tp, false);
--		r8153_mac_clk_spd(tp, true);
- 		rtl_runtime_suspend_enable(tp, true);
- 	} else {
- 		rtl_runtime_suspend_enable(tp, false);
--		r8153_mac_clk_spd(tp, false);
- 
- 		switch (tp->version) {
- 		case RTL_VER_03:
-@@ -4695,7 +4670,6 @@ static void r8153_first_init(struct r8152 *tp)
- {
- 	u32 ocp_data;
- 
--	r8153_mac_clk_spd(tp, false);
- 	rxdy_gated_en(tp, true);
- 	r8153_teredo_off(tp);
- 
-@@ -4746,8 +4720,6 @@ static void r8153_enter_oob(struct r8152 *tp)
- {
- 	u32 ocp_data;
- 
--	r8153_mac_clk_spd(tp, true);
--
- 	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL);
- 	ocp_data &= ~NOW_IS_OOB;
- 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL, ocp_data);
-@@ -5473,10 +5445,15 @@ static void r8153_init(struct r8152 *tp)
- 
- 	ocp_write_word(tp, MCU_TYPE_USB, USB_CONNECT_TIMER, 0x0001);
- 
-+	/* MAC clock speed down */
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL, 0);
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL2, 0);
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL3, 0);
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_MAC_PWR_CTRL4, 0);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index f3f449f53920..278fc866fad4 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -9582,8 +9582,10 @@ static int ixgbe_configure_clsu32(struct ixgbe_adapter *adapter,
+ 	ixgbe_atr_compute_perfect_hash_82599(&input->filter, mask);
+ 	err = ixgbe_fdir_write_perfect_filter_82599(hw, &input->filter,
+ 						    input->sw_idx, queue);
+-	if (!err)
+-		ixgbe_update_ethtool_fdir_entry(adapter, input, input->sw_idx);
++	if (err)
++		goto err_out_w_lock;
 +
- 	r8153_power_cut_en(tp, false);
- 	rtl_runtime_suspend_enable(tp, false);
- 	r8153_u1u2en(tp, true);
--	r8153_mac_clk_spd(tp, false);
- 	usb_enable_lpm(tp->udev);
++	ixgbe_update_ethtool_fdir_entry(adapter, input, input->sw_idx);
+ 	spin_unlock(&adapter->fdir_perfect_lock);
  
- 	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_CONFIG6);
+ 	if ((uhtid != 0x800) && (adapter->jump_tables[uhtid]))
 -- 
 2.30.1
 
