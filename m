@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BDA133EB64
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 09:26:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFAE133EB73
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 09:27:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbhCQIZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 04:25:56 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:40992 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbhCQIZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 04:25:30 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12H8F5Uw194508;
-        Wed, 17 Mar 2021 08:25:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=pdZMzujUdwXM28Kiro9cV8IrchmYRMYL5a9SIEWpHbw=;
- b=sLVD2K/gAHk9idGSOetbGbCyWhrezihmP6dGOOEg2sDUND6TN8apTqR+lmPofzpoVemk
- +cwTEHHL7jrQUYF0NlWB38UpxfWIGDdp06y52OS+gT6/bRtWXjD4+b1KYlu+JeWzp5bM
- f17jJjLb7T6PeUxcUkOR70N5mlrgE7e5AoODM5WCCISzR0sI2QdMefh/G/M1TUEoJHNP
- HPVugdObIUHyWTb4uboce8qUpGie4ckPb8NgLp2YuE4hlPGWoatVjvX4sc0ucMvPCmh3
- LsibpDMrI96APOKYq3fkBmm8ePtmFjpGng2N3C1eJua0Vx5OByLVqn3BQV4c0gPL+d4r tw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 378nbmb67f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Mar 2021 08:25:26 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12H8AjRv057215;
-        Wed, 17 Mar 2021 08:25:25 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 3796yuhp34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Mar 2021 08:25:25 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 12H8PNxu031044;
-        Wed, 17 Mar 2021 08:25:24 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 17 Mar 2021 01:25:22 -0700
-Date:   Wed, 17 Mar 2021 11:25:14 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Anish Udupa <udupa.anish@gmail.com>
-Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: staging: qlge: Fixed an alignment issue.
-Message-ID: <20210317082514.GY2087@kadam>
-References: <CAPDGunMo-ORwDme4ckui5kxxW6-Ho1J_MjcTkxdDdKLMDrCFdg@mail.gmail.com>
+        id S229789AbhCQI1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 04:27:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57481 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229787AbhCQI0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 04:26:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615969591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EwapMQi0nkg7eVnbf33AM5coVysoOM+HGdcBLVsx95o=;
+        b=f/QzM11EGVFDOr1Tc43DKvtcbTyLiMlvmeqvzew7008PcXWVR/UYeHiFysFo6yfqmh8Po5
+        X8G35CihJ32ATZQFav1VDOoBq+kzzJ4XAunclTIog8PuuGbF4PNAK9GkBP1vGTmx57DLM9
+        4mQjlScJEBqzdPge2h1pWlujCOh9TMY=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-22-d6Yn-tjyP9u9fu-MRzy4Mw-1; Wed, 17 Mar 2021 04:26:29 -0400
+X-MC-Unique: d6Yn-tjyP9u9fu-MRzy4Mw-1
+Received: by mail-ed1-f69.google.com with SMTP id v27so18935733edx.1
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 01:26:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EwapMQi0nkg7eVnbf33AM5coVysoOM+HGdcBLVsx95o=;
+        b=M5tHpDiV/QfcVq+i2J1uzFCsYh0AWnc3BoRHjeTDHmmdNuXnPQIF76MrTsAz0AylgB
+         +bF/z3h0F2p8hJaEy30LV9f2y9ObJwMNsRo579Dzv6yH2KMnEGLtPJitkGdPb/U8P2Uu
+         RqsKcPpuA5jbFDBG00XJN1KIb1L4I77MzkBLTDo5mNeW111Ib2D5y+O1+1YoAGuUhcG1
+         uDpr7u81DuIe3gsKINshbUn87UQOstW36MaqdmH9afeMwFbZ5VXXeRplYYDkSNCBsdtA
+         lLeFlDh2rJ7oCVlrQfAFG/q1Apo5KoaLIu5udWiugGF+fkysrWWcXBvhOUf0xsq41a39
+         4XKA==
+X-Gm-Message-State: AOAM5316l60kvyD7vwvWoXHz9jiUT/DkQRzs2xFO8SmY3FtMkIIg7qx+
+        07LMFRIJWyeHhE5jEJpjDVzJd30I/h42KKMouh5LIg4H4hYq0f7rv9a6F9KIU8upi1MpajlhhIF
+        Wm4AdXa70alUAdeOJ
+X-Received: by 2002:a05:6402:34c8:: with SMTP id w8mr42273343edc.235.1615969588490;
+        Wed, 17 Mar 2021 01:26:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzs2IfIabALxEDPdD531JeAvmlPd3oXH08kwxGnDTWawZHEErYQNxcoHlVJ8xZAWJMW4AVeug==
+X-Received: by 2002:a05:6402:34c8:: with SMTP id w8mr42273327edc.235.1615969588341;
+        Wed, 17 Mar 2021 01:26:28 -0700 (PDT)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id r19sm11964199edp.52.2021.03.17.01.26.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Mar 2021 01:26:27 -0700 (PDT)
+Date:   Wed, 17 Mar 2021 09:26:25 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Laurent Vivier <lvivier@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH] vhost: Fix vhost_vq_reset()
+Message-ID: <20210317082625.euxknnggg4gv7i5m@steredhat>
+References: <20210312140913.788592-1-lvivier@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAPDGunMo-ORwDme4ckui5kxxW6-Ho1J_MjcTkxdDdKLMDrCFdg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9925 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 malwarescore=0 spamscore=0
- bulkscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2103170063
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9925 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 impostorscore=0
- malwarescore=0 adultscore=0 mlxscore=0 clxscore=1011 mlxlogscore=999
- lowpriorityscore=0 phishscore=0 priorityscore=1501 spamscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2103170063
+In-Reply-To: <20210312140913.788592-1-lvivier@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 09:26:34PM +0530, Anish Udupa wrote:
-> The * of the comment was not aligned properly. Ran checkpatch and
-> found the warning. Resolved it in this patch.
-> 
-> Signed-off-by: Anish Udupa <udupa.anish@gmail.com>
-> ---
->  drivers/staging/qlge/qlge_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> index 5516be3af898..bfd7217f3953 100644
-> --- a/drivers/staging/qlge/qlge_main.c
-> +++ b/drivers/staging/qlge/qlge_main.c
-> @@ -3816,7 +3816,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
->   qlge_tx_ring_clean(qdev);
-> 
->   /* Call netif_napi_del() from common point.
-> - */
-> + */
+On Fri, Mar 12, 2021 at 03:09:13PM +0100, Laurent Vivier wrote:
+>vhost_reset_is_le() is vhost_init_is_le(), and in the case of
+>cross-endian legacy, vhost_init_is_le() depends on vq->user_be.
+>
+>vq->user_be is set by vhost_disable_cross_endian().
+>
+>But in vhost_vq_reset(), we have:
+>
+>    vhost_reset_is_le(vq);
+>    vhost_disable_cross_endian(vq);
+>
+>And so user_be is used before being set.
+>
+>To fix that, reverse the lines order as there is no other dependency
+>between them.
+>
+>Signed-off-by: Laurent Vivier <lvivier@redhat.com>
+>---
+> drivers/vhost/vhost.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This has already been fixed upstream.  You should be working against
-linux-next or staging-next.
-
-https://lore.kernel.org/driverdev-devel/20210216101945.187474-1-ducheng2@gmail.com/
-
-regards,
-dan carpenter
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
