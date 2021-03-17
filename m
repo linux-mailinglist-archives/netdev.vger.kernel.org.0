@@ -2,164 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 139A233FB91
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 23:59:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 987CC33FB95
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 00:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbhCQW7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 18:59:11 -0400
-Received: from mga05.intel.com ([192.55.52.43]:42894 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229506AbhCQW6z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 18:58:55 -0400
-IronPort-SDR: ychNmywUka1Y5A02/xqjkRN/8Fm+GOmuxexuvaxkoKTVIyr+KRhIqVvRoJMugCslzDZSpvOkEV
- StZcfYkNIe7g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9926"; a="274613028"
-X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; 
-   d="scan'208";a="274613028"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 15:58:55 -0700
-IronPort-SDR: X2Hxi+OTD1O6/6DBJW1btMNX2QwG1PaAw14WTqgQ5Jm2agGOmNAyhec79YR3aDbmkVBYbcahNP
- uK+8MnWhlLUA==
-X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; 
-   d="scan'208";a="389012698"
-Received: from jpclancy-mobl.amr.corp.intel.com ([10.251.18.252])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 15:58:54 -0700
-Date:   Wed, 17 Mar 2021 15:58:54 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        jamorris@linux.microsoft.com, paul@paul-moore.com,
-        rdias@singlestore.com, dccp@vger.kernel.org, mptcp@lists.01.org
-Subject: Re: [PATCH net] ipv6: weaken the v4mapped source check
-In-Reply-To: <20210317165515.1914146-1-kuba@kernel.org>
-Message-ID: <b5f2f124-cdd1-ce9a-49e-878ad45d385@linux.intel.com>
-References: <20210317165515.1914146-1-kuba@kernel.org>
+        id S229745AbhCQXAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 19:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229570AbhCQXAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 19:00:37 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529C9C06174A;
+        Wed, 17 Mar 2021 16:00:37 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id ay2so307867plb.3;
+        Wed, 17 Mar 2021 16:00:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ABRHOOheaMINYIMrHGEwVWjZcN70G4FjLeqvPEUMGCo=;
+        b=ffiEau6NV/APxGPPbIypZ8AyHY05odvzkIX+S8c7+sIJHzcFVnfmLkO1+xc/F8PKEx
+         BASbzkVcJw+nmDY6giJBnnVwzLuC+KZTeORbeHK1t/GTXDiwgK2IXVgLDAcI4rDFS5se
+         YY7U9XvJXU7u5u3Q17G0Ebm4chKzyoJ0KYpEtKuaqpf68NW2tZxlsmeiAeSesDtga3AD
+         HKK90MIEABiWmSdvaE0oiD3RyMKzrvNOmjp308HLEFDiWU2qjCopKjcQmkDAZIizQx7P
+         FmBCOFQrx3/oDqG+tlijvgALo03fsuNb0Vp8oTjjIQ3h97bzoLlvZ/nVOAlILwA5jGEb
+         ByNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ABRHOOheaMINYIMrHGEwVWjZcN70G4FjLeqvPEUMGCo=;
+        b=rAWQctPbhTeEPVxW3KMtNTGNny35xibZguBt5GWaRODYGqYvagFn57nUVrunil7X9R
+         tD+B/P4ApmPuwcfUGw406rAAWWiQcaTZccOVJc/tbzkrtSV5QOTXhB89hjOvQnVhvfkA
+         flXtUUxABdYpCsGeWm9dBzyYXkxJ9ROoNxthCpH49FvmabDvXwKn8cgdoPYLxnADmh+g
+         WzhYMIplc/gfcN9L2ZzYXi83GtB23PmKf1zYdVPXDZtY9dASWEtPDeR9RLQ5WGyzdkNx
+         IZUWH7N2FOX6UEOpI2VwQ5DeMRtsfjbsIKzulLbiHyICcUh7FGSslfpwlY/DoL1xI1XD
+         9t1Q==
+X-Gm-Message-State: AOAM530t470SeR4xuM2eVbSTQeHN+50z7AMyEuuTOfAdFtjJjRvL12Gb
+        7LA8asnw4m3mTQKxdJCpJLxaGNPcwWY=
+X-Google-Smtp-Source: ABdhPJznGZKGKEa5XqIMudc0oQ5typGg7oQuUL7ROTYtHmTvFLPbGtSqf1LACM9X861H8p42Fd8sFA==
+X-Received: by 2002:a17:90a:55ca:: with SMTP id o10mr1044291pjm.173.1616022036281;
+        Wed, 17 Mar 2021 16:00:36 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q14sm143334pff.94.2021.03.17.16.00.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Mar 2021 16:00:35 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/4] net: ipa: introduce dma_addr_high32()
+To:     Alex Elder <elder@ieee.org>, Alex Elder <elder@linaro.org>,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210317222946.118125-1-elder@linaro.org>
+ <20210317222946.118125-3-elder@linaro.org>
+ <36b9977b-32b1-eb4a-0056-4f742e3fe4d6@gmail.com>
+ <60106d7b-ad70-01fa-9f90-fe384cc428f8@ieee.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <f0215cf7-3a62-421c-28bf-17aa4e197b9b@gmail.com>
+Date:   Wed, 17 Mar 2021 16:00:33 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+In-Reply-To: <60106d7b-ad70-01fa-9f90-fe384cc428f8@ieee.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On Wed, 17 Mar 2021, Jakub Kicinski wrote:
 
-> This reverts commit 6af1799aaf3f1bc8defedddfa00df3192445bbf3.
->
-> Commit 6af1799aaf3f ("ipv6: drop incoming packets having a v4mapped
-> source address") introduced an input check against v4mapped addresses.
-> Use of such addresses on the wire is indeed questionable and not
-> allowed on public Internet. As the commit pointed out
->
->  https://tools.ietf.org/html/draft-itojun-v6ops-v4mapped-harmful-02
->
-> lists potential issues.
->
-> Unfortunately there are applications which use v4mapped addresses,
-> and breaking them is a clear regression. For example v4mapped
-> addresses (or any semi-valid addresses, really) may be used
-> for uni-direction event streams or packet export.
->
-> Since the issue which sparked the addition of the check was with
-> TCP and request_socks in particular push the check down to TCPv6
-> and DCCP. This restores the ability to receive UDPv6 packets with
-> v4mapped address as the source.
->
-> Keep using the IPSTATS_MIB_INHDRERRORS statistic to minimize the
-> user-visible changes.
->
-> Fixes: 6af1799aaf3f ("ipv6: drop incoming packets having a v4mapped source address")
-> Reported-by: Sunyi Shao <sunyishao@fb.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> net/dccp/ipv6.c      |  5 +++++
-> net/ipv6/ip6_input.c | 10 ----------
-> net/ipv6/tcp_ipv6.c  |  5 +++++
-> net/mptcp/subflow.c  |  5 +++++
-> 4 files changed, 15 insertions(+), 10 deletions(-)
+On 3/17/2021 3:49 PM, Alex Elder wrote:
+> On 3/17/21 5:47 PM, Florian Fainelli wrote:
+>>> +/* Encapsulate extracting high-order 32 bits of DMA address */
+>>> +static u32 dma_addr_high32(dma_addr_t addr)
+>>> +{
+>>> +#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+>>> +    return (u32)(addr >> 32);
+>> You can probably use upper_32bits() here...
+> 
+> Where is that defined?  I'd be glad to use it.    -Alex
 
-Jakub -
-
-Thanks for keeping the MPTCP code in sync. The IPv6 and v4mapped MPTCP 
-selftests still pass. For the MPTCP content:
-
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-
-
->
-> diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> index 1f73603913f5..2be5c69824f9 100644
-> --- a/net/dccp/ipv6.c
-> +++ b/net/dccp/ipv6.c
-> @@ -319,6 +319,11 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
-> 	if (!ipv6_unicast_destination(skb))
-> 		return 0;	/* discard, don't send a reset here */
->
-> +	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
-> +		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
-> +		return 0;
-> +	}
-> +
-> 	if (dccp_bad_service_code(sk, service)) {
-> 		dcb->dccpd_reset_code = DCCP_RESET_CODE_BAD_SERVICE_CODE;
-> 		goto drop;
-> diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> index e9d2a4a409aa..80256717868e 100644
-> --- a/net/ipv6/ip6_input.c
-> +++ b/net/ipv6/ip6_input.c
-> @@ -245,16 +245,6 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
-> 	if (ipv6_addr_is_multicast(&hdr->saddr))
-> 		goto err;
->
-> -	/* While RFC4291 is not explicit about v4mapped addresses
-> -	 * in IPv6 headers, it seems clear linux dual-stack
-> -	 * model can not deal properly with these.
-> -	 * Security models could be fooled by ::ffff:127.0.0.1 for example.
-> -	 *
-> -	 * https://tools.ietf.org/html/draft-itojun-v6ops-v4mapped-harmful-02
-> -	 */
-> -	if (ipv6_addr_v4mapped(&hdr->saddr))
-> -		goto err;
-> -
-> 	skb->transport_header = skb->network_header + sizeof(*hdr);
-> 	IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
->
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index bd44ded7e50c..d0f007741e8e 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -1175,6 +1175,11 @@ static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
-> 	if (!ipv6_unicast_destination(skb))
-> 		goto drop;
->
-> +	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
-> +		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
-> +		return 0;
-> +	}
-> +
-> 	return tcp_conn_request(&tcp6_request_sock_ops,
-> 				&tcp_request_sock_ipv6_ops, sk, skb);
->
-> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-> index 3d47d670e665..d17d39ccdf34 100644
-> --- a/net/mptcp/subflow.c
-> +++ b/net/mptcp/subflow.c
-> @@ -477,6 +477,11 @@ static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
-> 	if (!ipv6_unicast_destination(skb))
-> 		goto drop;
->
-> +	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
-> +		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
-> +		return 0;
-> +	}
-> +
-> 	return tcp_conn_request(&mptcp_subflow_request_sock_ops,
-> 				&subflow_request_sock_ipv6_ops, sk, skb);
->
-> -- 
-> 2.30.2
-
---
-Mat Martineau
-Intel
+include/linux/kernel.h, and it is upper_32_bits() and lower_32_bits()
+sorry about the missing space.
+-- 
+Florian
