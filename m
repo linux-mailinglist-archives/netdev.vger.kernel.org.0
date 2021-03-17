@@ -2,189 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 887FA33FA51
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 22:12:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5400633FA3B
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 22:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbhCQVL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 17:11:29 -0400
-Received: from gateway24.websitewelcome.com ([192.185.51.56]:26531 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230032AbhCQVLX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 17:11:23 -0400
-X-Greylist: delayed 1245 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Mar 2021 17:11:23 EDT
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id D1B916934
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 15:50:37 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id Md7llCojD1cHeMd7llnPSF; Wed, 17 Mar 2021 15:50:37 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DnIZtQW0bcbbdaS/T+teivlKQ5XVsr7Zh+LxMgxl77A=; b=PWVvR0sU3N0KIRxK9Uzfz04Xsx
-        x5ifWNrxZ5YeNj5aKhcigVBl1Af3heKDijEko6iutE3pt2q+TMGFpi4UFna7mkCbThJeU+XTRUplv
-        GTvLmLiYT/K6OZ8/zwGQuy2KK+gk4HwjUah7q6aUay3sA0BkB0e6cXx1UhYCueWls+PcAgf65E62R
-        lQKt1ZOVST5kOiEwNYGN05wrqrYnq9kFPOTvSNQ5DS83Ymw6UQcw+q28c0iMmLyF74C1fSvsHumeY
-        94U2ZGoJwNL6lXxqx7XS09tdYwbW6wL8nsAhQQrmV0eOU8YlDsTKjO6wfjBU2KTDz+CZkobnfRhZG
-        G471hFwQ==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:33348 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1lMd7l-003qlO-9q; Wed, 17 Mar 2021 15:50:37 -0500
-Subject: Re: [Intel-wired-lan] [PATCH][next] ixgbe: Fix out-of-bounds warning
- in ixgbe_host_interface_command()
-To:     Jann Horn <jannh@google.com>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, linux-hardening@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20210317064148.GA55123@embeddedor>
- <CAG48ez2RDqKwx=umOHjo_1mYyNQgzvcP=KOw1HgSo4Prs_VQDw@mail.gmail.com>
- <3bd8d009-2ad2-c24d-5c34-5970c52502de@embeddedor.com>
- <CAG48ez2jr_8MbY_sNXfwvs7WsF-5f9j=U4-66dTcgXd2msr39A@mail.gmail.com>
- <03c013b8-4ddb-8e9f-af86-3c43cd746dbb@embeddedor.com>
- <CAG48ez1heVw2WRUMrGskUyJV0wH4YfgbF=raFKWXXM7oY1zKDA@mail.gmail.com>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <944f3971-544f-49b4-1351-2eb3ee20588b@embeddedor.com>
-Date:   Wed, 17 Mar 2021 14:50:27 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S233456AbhCQVAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 17:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233285AbhCQVAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 17:00:48 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF36C06175F;
+        Wed, 17 Mar 2021 14:00:46 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id f16so4958958ljm.1;
+        Wed, 17 Mar 2021 14:00:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S+hbvjY8Ofr8R5U1G+M1hOF5PvSdWEJuwFSEr/rTTtg=;
+        b=kVZ4jhZQ17XJNR0AY3bfdewdeyD7S1ZhncJIhhbz544hLSpgW5DJrhezZgdDbICu8p
+         0TsoI2V8bGHIzEZ3xE8evXQHcuPTCe2lLqtkVfGgfEkq+6LetwPFugh2n7EloeSJDGc9
+         V7ehlRiCGHtq4e43SWs4H4CoPkAXoCSt2d6au24I+jovN5/JgIYrGZ5cETlUYHUhsCFF
+         mxeYIF1uTY9AHxeR1Fh+Am0zJfZ+Y35btS3Tv0hpFp78kuef1jX9STNzizyRNRzWQUwo
+         ozXl1WC3MjfwQ9Lzyo70AiTx9G8tbzlKkIUxG4/ubPlfnn6kFalmAg7dIZ4fCMZ7at+4
+         mazw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S+hbvjY8Ofr8R5U1G+M1hOF5PvSdWEJuwFSEr/rTTtg=;
+        b=EkRKj3sCRHJKrLFqG4TKQ4q0lUZhMIrWjsf20zyTvFJXcxvlAAfYFBJ9JkgKdWYs7I
+         HNHX+HMT6mNhTlSamPbUVdcB3Clk97jTuf/8Ib/7fDxMNQmTVBLxAB2De19+U4Qmuzo9
+         m6+IVyQlcmIyqoi9F4PnLkEXIQNfdyzWNKJafiJEFN6w52uLRNzL8VJojIL2NsfsJH3i
+         dxD+z54oO4vZJ7PG7G6yrmswRtARB+0dtYYFMmIu0g2HbtngTC44xkHLquVKcjL5cTVt
+         IkQ4LCHf3slvK6IoyO1lKx8Js4a+pJRnvbicBI5tPwWh9QjMay7P/ZMlppx65tvVwAwX
+         +5rA==
+X-Gm-Message-State: AOAM532u+jib/D+KqYMCQhjSU+H5nBQq6c9tJ2UdgVud+ptmMVUAU6R0
+        xA49reoB12ZwG3jfU2lerXMPDJb01hNDfmBNxVvH4qJ4BCg=
+X-Google-Smtp-Source: ABdhPJz3T9IfaMkkukEt32EClX3ggy1HoKqa9TTuZ1t274mZ7lNuGSHvQM3uaj+1kC0NhMZotWGlQH7w4Fq9xe4nSVc=
+X-Received: by 2002:a2e:b817:: with SMTP id u23mr3352262ljo.44.1616014844802;
+ Wed, 17 Mar 2021 14:00:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAG48ez1heVw2WRUMrGskUyJV0wH4YfgbF=raFKWXXM7oY1zKDA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1lMd7l-003qlO-9q
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:33348
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 11
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <20210313193537.1548766-1-andrii@kernel.org> <20210313193537.1548766-11-andrii@kernel.org>
+ <20210317053437.r5zsoksdqrxtt22r@ast-mbp> <CAEf4BzZ2TxWqVG=VqFw18--dvC=M5ONRUAde2EB_0yBaYkHb2Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ2TxWqVG=VqFw18--dvC=M5ONRUAde2EB_0yBaYkHb2Q@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 17 Mar 2021 14:00:33 -0700
+Message-ID: <CAADnVQ+1w8rqGNax6PysTh5SwpdKr8dd3TmCEvwDZ2+=ouTRkA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 10/11] selftests/bpf: pass all BPF .o's
+ through BPF static linker
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 17, 2021 at 1:47 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Mar 16, 2021 at 10:34 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Sat, Mar 13, 2021 at 11:35:36AM -0800, Andrii Nakryiko wrote:
+> > >
+> > > -$(TRUNNER_BPF_SKELS): $(TRUNNER_OUTPUT)/%.skel.h:                    \
+> > > -                   $(TRUNNER_OUTPUT)/%.o                             \
+> > > -                   $(BPFTOOL)                                        \
+> > > -                   | $(TRUNNER_OUTPUT)
+> > > +$(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
+> > >       $$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
+> > > -     $(Q)$$(BPFTOOL) gen skeleton $$< > $$@
+> > > +     $(Q)$$(BPFTOOL) gen object $$(<:.o=.bpfo) $$<
+> > > +     $(Q)$$(BPFTOOL) gen skeleton $$(<:.o=.bpfo) > $$@
+> >
+> > Do we really need this .bpfo extension?
+>
+> I thought it would be a better way to avoid user's confusion with .o's
+> as produced by compiler and .bpfo as a "final" linked BPF object,
+> produced by static linker. Technically, there is no requirement, of
+> course. If you think it will be less confusing to stick to .o, that's
+> fine.
+>
+> > bpftool in the previous patch doesn't really care about the extension.
+>
+> the only thing that cares is the logic to derive object name when
+> generating skeleton (we strip .o and/or .bpfo). No loader should ever
+> care about extension, it could be my_obj.whocares and it should be
+> fine.
+>
+> > It's still a valid object file with the same ELF format.
+>
+> Yes, with some extra niceties like fixed up BTF, stripped out DWARF,
+> etc. Maybe in the future there will be more "normalization" done as
+> compared to what Clang produces.
+>
+> > I think if we keep the same .o extension for linked .o-s it will be easier.
+> > Otherwise all loaders would need to support both .o and .bpfo,
+> > but the later is no different than the former in terms of contents of the file
+> > and ways to parse it.
+>
+> So no loaders should care right now. But as I said, I can drop .bpfo as well.
+>
+> >
+> > For testing of the linker this linked .o can be a temp file or better yet a unix pipe ?
+> > bpftool gen object - one.o second.o|bpftool gen skeleton -
+>
+> So I tried to briefly add support for that to `gen skeleton` and `gen
+> object` by using /proc/self/fd/{0,1} and that works for `gen object`,
+> but only if stdout is redirected to a real file. When piping output to
+> another process, libelf fails to write to such a special file for some
+> reason. `gen skeleton` is also failing to read from a piped stdin
+> because of use of mmap(). So there would need to be more work done to
+> support piping like that.
+>
+> But in any case I'd like to have those intermediate object file
+> results lying on disk for further inspection, if anything isn't right,
+> so I'll use temp file regardless.
 
-
-On 3/17/21 15:10, Jann Horn wrote:
-> On Wed, Mar 17, 2021 at 9:04 PM Gustavo A. R. Silva
-> <gustavo@embeddedor.com> wrote:
->> On 3/17/21 13:57, Jann Horn wrote:
->>>>>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
->>>>>> index 62ddb452f862..bff3dc1af702 100644
->>>>>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
->>>>>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
->>>>>> @@ -3679,7 +3679,7 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
->>>>>>         u32 hdr_size = sizeof(struct ixgbe_hic_hdr);
->>>>>>         union {
->>>>>>                 struct ixgbe_hic_hdr hdr;
->>>>>> -               u32 u32arr[1];
->>>>>> +               u32 *u32arr;
->>>>>>         } *bp = buffer;
->>>>>>         u16 buf_len, dword_len;
->>>>>>         s32 status;
->>>>>
->>>>> This looks bogus. An array is inline, a pointer points elsewhere -
->>>>> they're not interchangeable.
->>>>
->>>> Yep; but in this case these are the only places in the code where _u32arr_ is
->>>> being used:
->>>>
->>>> 3707         /* first pull in the header so we know the buffer length */
->>>> 3708         for (bi = 0; bi < dword_len; bi++) {
->>>> 3709                 bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
->>>> 3710                 le32_to_cpus(&bp->u32arr[bi]);
->>>> 3711         }
->>>
->>> So now line 3709 means: Read a pointer from bp->u32arr (the value
->>> being read from there is not actually a valid pointer), and write to
->>> that pointer at offset `bi`. I don't see how that line could execute
->>> without crashing.
->>
->> Yeah; you're right. I see my confusion now. Apparently, there is no escape
->> from allocating heap memory to fix this issue, as I was proposing in my
->> last email.
-> 
-> Why? Can't you do something like this?
-
-Yep; it seems you're right. I was thinking in terms of a flexible array. Also,
-I think I needed more coffee in my system this morning and I need to stop
-working after midnight. :)
-
-I'll send a proper patch for this, shortly. I'll add your Proposed-by
-and Co-developed-by tags to the changelog text.
-
-Thanks a lot for the feedback. I really appreciate it. :)
---
-Gustavo
-
-
-> 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-> b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-> index 62ddb452f862..768fa124105b 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-> @@ -3677,10 +3677,8 @@ s32 ixgbe_host_interface_command(struct
-> ixgbe_hw *hw, void *buffer,
->                                  bool return_data)
->  {
->         u32 hdr_size = sizeof(struct ixgbe_hic_hdr);
-> -       union {
-> -               struct ixgbe_hic_hdr hdr;
-> -               u32 u32arr[1];
-> -       } *bp = buffer;
-> +       u32 *bp = buffer;
-> +       struct ixgbe_hic_hdr hdr;
->         u16 buf_len, dword_len;
->         s32 status;
->         u32 bi;
-> @@ -3706,12 +3704,13 @@ s32 ixgbe_host_interface_command(struct
-> ixgbe_hw *hw, void *buffer,
-> 
->         /* first pull in the header so we know the buffer length */
->         for (bi = 0; bi < dword_len; bi++) {
-> -               bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
-> -               le32_to_cpus(&bp->u32arr[bi]);
-> +               bp[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
-> +               le32_to_cpus(&bp[bi]);
->         }
-> 
->         /* If there is any thing in data position pull it in */
-> -       buf_len = bp->hdr.buf_len;
-> +       memcpy(&hdr, bp, sizeof(hdr));
-> +       buf_len = hdr.buf_len;
->         if (!buf_len)
->                 goto rel_out;
-> 
-> @@ -3726,8 +3725,8 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw
-> *hw, void *buffer,
-> 
->         /* Pull in the rest of the buffer (bi is where we left off) */
->         for (; bi <= dword_len; bi++) {
-> -               bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
-> -               le32_to_cpus(&bp->u32arr[bi]);
-> +               bp[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
-> +               le32_to_cpus(&bp[bi]);
->         }
-> 
->  rel_out:
-> 
+May keep those temp .o files with .linked.o suffix?
+Also have you considered doing:
+clang -target bpf prog.c -o prog.o
+bpftool gen obj obj1.o prog.o
+bpftool gen obj obj2.o obj1.o
+diff obj1.o obj2.o
+They should be the same, right?
