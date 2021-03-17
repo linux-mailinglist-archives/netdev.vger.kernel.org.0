@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0574833E4BA
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:02:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA0A33E4BE
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:02:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232527AbhCQBA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 21:00:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36320 "EHLO mail.kernel.org"
+        id S230084AbhCQBAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 21:00:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35314 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231669AbhCQA6l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 20:58:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3581C64FBC;
-        Wed, 17 Mar 2021 00:58:28 +0000 (UTC)
+        id S232253AbhCQA7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 20:59:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1FD8064EBD;
+        Wed, 17 Mar 2021 00:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615942708;
-        bh=7mXFKvFqvyTzCk7rBNaInrdfLiqXooAXqpCd82XOxtc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sqb74BbLvlalhXEhzZStA+stg2l69dAx+45bLdE3cwGy7Y7q3FnNW7B733XUGIiuf
-         hT1p6woCbkWL7dbHtHTOqGHG8hRt7G4kARaxO8MVkv31kZpBqamqtp73ISkVN5cekA
-         LcmtLJvwNwJmAjhLZqqZdoVBfEq0ykmvoi3ylO0t2e+MxtY5Kdb5O6V0yWL/Q7rvup
-         iGUCRhCMzMzqQxmXgwcFFQiVDi9ohOqAqWFLKoupD9r1UaPmOXtCyJJJX8MnlvpTRk
-         WAHfVNcy0jP2KYopiaU1vjzmO+6wiFO36tg9zOlmpE3UXUexYKDQ+LWEWztI5Tmo/1
-         uKWUYcNjY7G4g==
+        s=k20201202; t=1615942731;
+        bh=c9LXkJ6kOi1YpjJGxl22iGGYYV292aYoxS9jPYrZVks=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VKB+HT1X56cmWopkpFtt43IeAkoGsW3wVntsgLIaxUehNuQITlNGL0QOUofiZ9bcc
+         pstEF1dcMdJvj3h9nETNOXaNMKC9shZSVuayz9trkXQ7+X6CfVO1/w6ejni+QTAdWN
+         FNrihHmYW1fA+muFnLGivBCVWjmLsSUaTX1O6K3hCLAHkVxORg9xvl/+NBW/6qp+kF
+         vmFRsWIEPH8zFlUi88HAvAqN0wlWNOFqo9llQOYNnKvb7pMQSgpb9LhUBkmChvWBpi
+         PTJ3Mzlm7ld3zcg1oKdoq56TZWAjAnlkK5nk3RXf+MMownV4zZ2PJMNmB0R2HG2ZCj
+         F7FJcfzaW+/Rw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tong Zhang <ztong0001@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 21/37] atm: idt77252: fix null-ptr-dereference
-Date:   Tue, 16 Mar 2021 20:57:46 -0400
-Message-Id: <20210317005802.725825-21-sashal@kernel.org>
+Cc:     Heiko Thiery <heiko.thiery@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/23] net: fec: ptp: avoid register access when ipg clock is disabled
+Date:   Tue, 16 Mar 2021 20:58:27 -0400
+Message-Id: <20210317005850.726479-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210317005802.725825-1-sashal@kernel.org>
-References: <20210317005802.725825-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,46 +41,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+From: Heiko Thiery <heiko.thiery@gmail.com>
 
-[ Upstream commit 4416e98594dc04590ebc498fc4e530009535c511 ]
+[ Upstream commit 6a4d7234ae9a3bb31181f348ade9bbdb55aeb5c5 ]
 
-this one is similar to the phy_data allocation fix in uPD98402, the
-driver allocate the idt77105_priv and store to dev_data but later
-dereference using dev->dev_data, which will cause null-ptr-dereference.
+When accessing the timecounter register on an i.MX8MQ the kernel hangs.
+This is only the case when the interface is down. This can be reproduced
+by reading with 'phc_ctrl eth0 get'.
 
-fix this issue by changing dev_data to phy_data so that PRIV(dev) can
-work correctly.
+Like described in the change in 91c0d987a9788dcc5fe26baafd73bf9242b68900
+the igp clock is disabled when the interface is down and leads to a
+system hang.
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+So we check if the ptp clock status before reading the timecounter
+register.
+
+Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Link: https://lore.kernel.org/r/20210225211514.9115-1-heiko.thiery@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/idt77105.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/freescale/fec_ptp.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/atm/idt77105.c b/drivers/atm/idt77105.c
-index 63871859e6e8..52c2878b755d 100644
---- a/drivers/atm/idt77105.c
-+++ b/drivers/atm/idt77105.c
-@@ -262,7 +262,7 @@ static int idt77105_start(struct atm_dev *dev)
- {
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index 7e892b1cbd3d..09a762eb4f09 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -382,9 +382,16 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 	u64 ns;
  	unsigned long flags;
  
--	if (!(dev->dev_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
-+	if (!(dev->phy_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
- 		return -ENOMEM;
- 	PRIV(dev)->dev = dev;
- 	spin_lock_irqsave(&idt77105_priv_lock, flags);
-@@ -337,7 +337,7 @@ static int idt77105_stop(struct atm_dev *dev)
-                 else
-                     idt77105_all = walk->next;
- 	        dev->phy = NULL;
--                dev->dev_data = NULL;
-+                dev->phy_data = NULL;
-                 kfree(walk);
-                 break;
-             }
++	mutex_lock(&adapter->ptp_clk_mutex);
++	/* Check the ptp clock */
++	if (!adapter->ptp_clk_on) {
++		mutex_unlock(&adapter->ptp_clk_mutex);
++		return -EINVAL;
++	}
+ 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
+ 	ns = timecounter_read(&adapter->tc);
+ 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
++	mutex_unlock(&adapter->ptp_clk_mutex);
+ 
+ 	*ts = ns_to_timespec64(ns);
+ 
 -- 
 2.30.1
 
