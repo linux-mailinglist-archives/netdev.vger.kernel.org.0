@@ -2,99 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 986AE33F168
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 14:46:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C0933F16C
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 14:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbhCQNqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 09:46:22 -0400
-Received: from mail.zx2c4.com ([104.131.123.232]:33626 "EHLO mail.zx2c4.com"
+        id S231403AbhCQNrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 09:47:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41904 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230525AbhCQNpw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 09:45:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1615988747;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=icCM8Brb8CxRsIpo4ZpowHznQi3f2D+TRUb3EkCgpQs=;
-        b=jlobSmtuwbDKLfSYm/RXYsxlWXKl+cOCHkuh00s49RDJn48Gw6bZW6dP05O+dpDreNKhYS
-        4WuNAmSfzMsaDH2hsDUUqetD3/7PyCqP3hORjntTk2nbqCthetB7MfnlyV3bjesleAaZx1
-        JUYT2h61MUiILiNoCNZucGVq2Ha0eEI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3c796d71 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 17 Mar 2021 13:45:47 +0000 (UTC)
-Received: by mail-yb1-f176.google.com with SMTP id y133so2096814ybe.12;
-        Wed, 17 Mar 2021 06:45:47 -0700 (PDT)
-X-Gm-Message-State: AOAM533AAxtFE+D16tnUlIWoaJRgoGpnP7IwfPg7OCa/6NaIciVMk7j+
-        0kJmugicIFoGUCSpcXAoluGdm7MuXNP23Nnrsgo=
-X-Google-Smtp-Source: ABdhPJwnrrF8whYK/Ba4FN2UHQKlzh/IOodKUW1edfr5uX0ICQK7qEPoDsenYic4sbIHwuuSUdYtLx86aOl5E5wg2Es=
-X-Received: by 2002:a25:4d02:: with SMTP id a2mr3833184ybb.49.1615988745966;
- Wed, 17 Mar 2021 06:45:45 -0700 (PDT)
+        id S231396AbhCQNrP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 09:47:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 07F0264F50;
+        Wed, 17 Mar 2021 13:47:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615988835;
+        bh=0nTLSksxR22MUmSMzM+q8/uD5iVTh97BeoTWj6M+Y0A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BOh7zTkcxY/sYWjShPAzQILgJzPh/dkC7MPZhMDK3XXUs1QxsTcvyXI2enKqHfyLc
+         SYykwmRET0Faeme9PUftNZE1nH8dwRzdf0lGjl/Cix4bYDJSuR6Kynk2R9XgWuVTEc
+         aHIYmQRM6e74pHJB7432L0Qs47Fvd/F7X1C3eIoL/l4mHrHQXdIrNdasGH0HUjGCBU
+         81l/NF9G14tReZKVKYYhIYrpYZphUzX9jdR3VRLQZ02Pp7Mu9PNZrVXn/9dyRkvafs
+         aznG6tCu09fxW8G1Mvict65pfs4UwdD/ES/GqVQFgVm3C/LDOF+kdnC3vUoDN62iud
+         fUzNJBW20d3AQ==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org, pavana.sharma@digi.com,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        olteanv@gmail.com, andrew@lunn.ch, ashkan.boldaji@digi.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, lkp@intel.com,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net-next v17 0/4] Add support for mv88e6393x family of Marvell
+Date:   Wed, 17 Mar 2021 14:46:39 +0100
+Message-Id: <20210317134643.24463-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Received: by 2002:a05:7110:5424:b029:39:213a:1a2e with HTTP; Wed, 17 Mar 2021
- 06:45:45 -0700 (PDT)
-In-Reply-To: <87eegddhsj.fsf@toke.dk>
-References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
- <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
- <20210315115332.1647e92b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAM_iQpXvVZxBRHF6PBDOYSOSCj08nPyfcY0adKuuTg=cqffV+w@mail.gmail.com> <87eegddhsj.fsf@toke.dk>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 17 Mar 2021 07:45:45 -0600
-X-Gmail-Original-Message-ID: <CAHmME9qDU7VRmBV+v0tzLiUpMJykjswSDwqc9P43ZwG1UD7mzw@mail.gmail.com>
-Message-ID: <CAHmME9qDU7VRmBV+v0tzLiUpMJykjswSDwqc9P43ZwG1UD7mzw@mail.gmail.com>
-Subject: Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS for lockless qdisc
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "Cong Wang ." <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/17/21, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-> Cong Wang <xiyou.wangcong@gmail.com> writes:
->
->> On Mon, Mar 15, 2021 at 2:07 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>>
->>> I thought pfifo was supposed to be "lockless" and this change
->>> re-introduces a lock between producer and consumer, no?
->>
->> It has never been truly lockless, it uses two spinlocks in the ring
->> buffer
->> implementation, and it introduced a q->seqlock recently, with this patch
->> now we have priv->lock, 4 locks in total. So our "lockless" qdisc ends
->> up having more locks than others. ;) I don't think we are going to a
->> right direction...
->
-> Just a thought, have you guys considered adopting the lockless MSPC ring
-> buffer recently introduced into Wireguard in commit:
->
-> 8b5553ace83c ("wireguard: queueing: get rid of per-peer ring buffers")
->
-> Jason indicated he was willing to work on generalising it into a
-> reusable library if there was a use case for it. I haven't quite though
-> through the details of whether this would be such a use case, but
-> figured I'd at least mention it :)
+Hello,
 
-That offer definitely still stands. Generalization sounds like a lot of fun=
-.
+after 2 months I finally had time to send v17 of Amethyst patches.
 
-Keep in mind though that it's an eventually consistent queue, not an
-immediately consistent one, so that might not match all use cases. It
-works with wg because we always trigger the reader thread anew when it
-finishes, but that doesn't apply to everyone's queueing setup.
+This series is tested on Marvell CN9130-CRB.
+
+Changes since v16:
+- dropped patches adding 5gbase-r, since they are already merged
+- rebased onto net-next/master
+- driver API renamed set_egress_flood() method into 2 methods for
+  ucast/mcast floods, so this is fixed
+
+Changes from v15:
+- put 10000baseKR_Full back into phylink_validate method for Amethyst,
+  it seems I misunderstood the meaning behind things and removed it
+  from v15
+- removed erratum 3.7, since the procedure is done anyway in
+  mv88e6390_serdes_pcs_config
+- renumbered errata 3.6 and 3.8 to 4.6 and 4.8, according to newer
+  version of the errata document
+- refactored errata code a little and removed duplicate macro
+  definitions (for example MV88E6390_SGMII_CONTROL is already called
+  MV88E6390_SGMII_BMCR)
+
+Changes from v14:
+- added my Signed-off-by tags to Pavana's patches, since I am sending
+  them (as suggested by Andrew)
+- added documentation to second patch adding 5gbase-r mode (as requested
+  by Russell)
+- added Reviewed-by tags
+- applied Vladimir's suggestions:
+  - reduced indentation level in mv88e6xxx_set_egress_port and
+    mv88e6393x_serdes_port_config
+  - removed 10000baseKR_Full from mv88e6393x_phylink_validate
+  - removed PHY_INTERFACE_MODE_10GKR from mv88e6xxx_port_set_cmode
+
+Changes from v13:
+- added patch that wraps .set_egress_port into mv88e6xxx_set_egress_port,
+  so that we do not have to set chip->*gress_dest_port members in every
+  implementation of this method
+- for the patch that adds Amethyst support:
+  - added more information into commit message
+  - added these methods for mv88e6393x_ops:
+      .port_sync_link
+      .port_setup_message_port
+      .port_max_speed_mode (new implementation needed)
+      .atu_get_hash
+      .atu_set_hash
+      .serdes_pcs_config
+      .serdes_pcs_an_restart
+      .serdes_pcs_link_up
+  - this device can set upstream port per port, so implement
+      .port_set_upstream_port
+    instead of
+      .set_cpu_port
+  - removed USXGMII cmode (not yet supported, working on it)
+  - added debug messages into mv88e6393x_port_set_speed_duplex
+  - added Amethyst errata 4.5 (EEE should be disabled on SERDES ports)
+  - fixed 5gbase-r serdes configuration and interrupt handling
+  - refactored mv88e6393x_serdes_setup_errata
+  - refactored mv88e6393x_port_policy_write
+- added patch implementing .port_set_policy for Amethyst
+
+Marek
+
+Marek Behún (2):
+  net: dsa: mv88e6xxx: wrap .set_egress_port method
+  net: dsa: mv88e6xxx: implement .port_set_policy for Amethyst
+
+Pavana Sharma (2):
+  net: dsa: mv88e6xxx: change serdes lane parameter type from u8 type to
+    int
+  net: dsa: mv88e6xxx: add support for mv88e6393x family
+
+ drivers/net/dsa/mv88e6xxx/chip.c    | 233 +++++++++++++---
+ drivers/net/dsa/mv88e6xxx/chip.h    |  20 +-
+ drivers/net/dsa/mv88e6xxx/global1.c |  19 +-
+ drivers/net/dsa/mv88e6xxx/global1.h |   2 +
+ drivers/net/dsa/mv88e6xxx/global2.h |   8 +
+ drivers/net/dsa/mv88e6xxx/port.c    | 397 +++++++++++++++++++++++++---
+ drivers/net/dsa/mv88e6xxx/port.h    |  48 ++++
+ drivers/net/dsa/mv88e6xxx/serdes.c  | 338 ++++++++++++++++++++---
+ drivers/net/dsa/mv88e6xxx/serdes.h  |  98 ++++---
+ 9 files changed, 1002 insertions(+), 161 deletions(-)
+
+-- 
+2.26.2
+
