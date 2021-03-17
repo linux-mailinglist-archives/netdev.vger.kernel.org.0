@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A707B33E4A6
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:02:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AEB033E4AD
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:02:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232319AbhCQBAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 21:00:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36084 "EHLO mail.kernel.org"
+        id S231639AbhCQBAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 21:00:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35314 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230124AbhCQA62 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 20:58:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 83B6065033;
-        Wed, 17 Mar 2021 00:58:16 +0000 (UTC)
+        id S231726AbhCQA6k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 20:58:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 757AC64F9B;
+        Wed, 17 Mar 2021 00:58:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615942697;
-        bh=xjkLFI71+IdKQBK9NXQJF5gVWv+Ph6M/uqIXc5QuuCQ=;
+        s=k20201202; t=1615942704;
+        bh=tWzXLqLFeCg+r8O7j+Mj92xWOjji27OrUSvrXL2dalE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hF2hLb3PeTbn0/uXFkq3xweciTYQSR0iuriXdSzTMBchVr9cT2CKKp2yRI80k+zcg
-         SomXfIVGjrualKhxUdiGaBCC4aA2cdV+zG2FBORotA6rtUpjjRbl+P+M1mM4Po1paB
-         fLaX//hDX5ZOoR40pytOut86kTFGxB+JhwF8FXFhGExTxpblocZxgL0OvyP8oLhEzh
-         ZidpGdUwTco02U8qdBtjFO860U96VvUj3dlF7+/C4eENu2ZbLLx3NCoNe36qdOsmzb
-         DPrnyquTHtqRKBSwGEOXsOP5VdojNpwzaPup/GepXqP94tfh8RtnDWG86loGFDxyqE
-         91vh1BSU0t4Yg==
+        b=qCNU/LdPp9VlQh3IX2gaGbNHVsOT8QyDAglsSLsiO+PX6ZzyvjH2y9IMGaKDbCT4w
+         dB8zJE36SNDSi1Syom+avagvpoD5KNAciF6fH3PrtgwZC484vq5LqJvV84JF8xLdH0
+         tti6YXoj/FMEefAcQIwrXrnRwbeBp6xUyTBNamvQ5hUCxDtaCeGOaYfzu9B7K6RCp3
+         DZMAz/q2Bq62xTHsXJ65rjJZDw+CVmzTpEuINnMfrGIZ5NowrjAoWT9LJxukqKSaOk
+         68AVUiVXmT4JghZoEAb1564xK2TZ7C/uUwGdxpP0wz6d1dmX3aoXeAqgxVKSxq2p1R
+         +yM63iGcSCi6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Braun <michael-dev@fami-braun.de>,
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 11/37] gianfar: fix jumbo packets+napi+rx overrun crash
-Date:   Tue, 16 Mar 2021 20:57:36 -0400
-Message-Id: <20210317005802.725825-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 17/37] net: hisilicon: hns: fix error return code of hns_nic_clear_all_rx_fetch()
+Date:   Tue, 16 Mar 2021 20:57:42 -0400
+Message-Id: <20210317005802.725825-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210317005802.725825-1-sashal@kernel.org>
 References: <20210317005802.725825-1-sashal@kernel.org>
@@ -42,98 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Braun <michael-dev@fami-braun.de>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit d8861bab48b6c1fc3cdbcab8ff9d1eaea43afe7f ]
+[ Upstream commit 143c253f42bad20357e7e4432087aca747c43384 ]
 
-When using jumbo packets and overrunning rx queue with napi enabled,
-the following sequence is observed in gfar_add_rx_frag:
+When hns_assemble_skb() returns NULL to skb, no error return code of
+hns_nic_clear_all_rx_fetch() is assigned.
+To fix this bug, ret is assigned with -ENOMEM in this case.
 
-   | lstatus                              |       | skb                   |
-t  | lstatus,  size, flags                | first | len, data_len, *ptr   |
----+--------------------------------------+-------+-----------------------+
-13 | 18002348, 9032, INTERRUPT LAST       | 0     | 9600, 8000,  f554c12e |
-12 | 10000640, 1600, INTERRUPT            | 0     | 8000, 6400,  f554c12e |
-11 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  f554c12e |
-10 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  f554c12e |
-09 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  f554c12e |
-08 | 14000640, 1600, INTERRUPT FIRST      | 0     | 1600, 0,     f554c12e |
-07 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     f554c12e |
-06 | 1c000080, 128,  INTERRUPT LAST FIRST | 1     | 0,    0,     abf3bd6e |
-05 | 18002348, 9032, INTERRUPT LAST       | 0     | 8000, 6400,  c5a57780 |
-04 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  c5a57780 |
-03 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  c5a57780 |
-02 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  c5a57780 |
-01 | 10000640, 1600, INTERRUPT            | 0     | 1600, 0,     c5a57780 |
-00 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     c5a57780 |
-
-So at t=7 a new packets is started but not finished, probably due to rx
-overrun - but rx overrun is not indicated in the flags. Instead a new
-packets starts at t=8. This results in skb->len to exceed size for the LAST
-fragment at t=13 and thus a negative fragment size added to the skb.
-
-This then crashes:
-
-kernel BUG at include/linux/skbuff.h:2277!
-Oops: Exception in kernel mode, sig: 5 [#1]
-...
-NIP [c04689f4] skb_pull+0x2c/0x48
-LR [c03f62ac] gfar_clean_rx_ring+0x2e4/0x844
-Call Trace:
-[ec4bfd38] [c06a84c4] _raw_spin_unlock_irqrestore+0x60/0x7c (unreliable)
-[ec4bfda8] [c03f6a44] gfar_poll_rx_sq+0x48/0xe4
-[ec4bfdc8] [c048d504] __napi_poll+0x54/0x26c
-[ec4bfdf8] [c048d908] net_rx_action+0x138/0x2c0
-[ec4bfe68] [c06a8f34] __do_softirq+0x3a4/0x4fc
-[ec4bfed8] [c0040150] run_ksoftirqd+0x58/0x70
-[ec4bfee8] [c0066ecc] smpboot_thread_fn+0x184/0x1cc
-[ec4bff08] [c0062718] kthread+0x140/0x144
-[ec4bff38] [c0012350] ret_from_kernel_thread+0x14/0x1c
-
-This patch fixes this by checking for computed LAST fragment size, so a
-negative sized fragment is never added.
-In order to prevent the newer rx frame from getting corrupted, the FIRST
-flag is checked to discard the incomplete older frame.
-
-Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/gianfar.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 5cb58ab1eec9..a8959a092344 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -2388,6 +2388,10 @@ static bool gfar_add_rx_frag(struct gfar_rx_buff *rxb, u32 lstatus,
- 		if (lstatus & BD_LFLAG(RXBD_LAST))
- 			size -= skb->len;
- 
-+		WARN(size < 0, "gianfar: rx fragment size underflow");
-+		if (size < 0)
-+			return false;
-+
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
- 				rxb->page_offset + RXBUF_ALIGNMENT,
- 				size, GFAR_RXB_TRUESIZE);
-@@ -2550,6 +2554,17 @@ static int gfar_clean_rx_ring(struct gfar_priv_rx_q *rx_queue,
- 		if (lstatus & BD_LFLAG(RXBD_EMPTY))
- 			break;
- 
-+		/* lost RXBD_LAST descriptor due to overrun */
-+		if (skb &&
-+		    (lstatus & BD_LFLAG(RXBD_FIRST))) {
-+			/* discard faulty buffer */
-+			dev_kfree_skb(skb);
-+			skb = NULL;
-+			rx_queue->stats.rx_dropped++;
-+
-+			/* can continue normally */
-+		}
-+
- 		/* order rx buffer descriptor reads */
- 		rmb();
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index 6d5d53cfc7ab..7516f6823090 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -1677,8 +1677,10 @@ static int hns_nic_clear_all_rx_fetch(struct net_device *ndev)
+ 			for (j = 0; j < fetch_num; j++) {
+ 				/* alloc one skb and init */
+ 				skb = hns_assemble_skb(ndev);
+-				if (!skb)
++				if (!skb) {
++					ret = -ENOMEM;
+ 					goto out;
++				}
+ 				rd = &tx_ring_data(priv, skb->queue_mapping);
+ 				hns_nic_net_xmit_hw(ndev, skb, rd);
  
 -- 
 2.30.1
