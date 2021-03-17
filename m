@@ -2,160 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C642933ED47
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:45:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9476D33ED52
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:46:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbhCQJoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 05:44:39 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:38661 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229707AbhCQJoa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:44:30 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 42DB95804A4;
-        Wed, 17 Mar 2021 05:44:28 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Wed, 17 Mar 2021 05:44:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=0BP8cAWztylqalmk4/OoD2Cy3lw
-        qhFZyUP90THNtZ1g=; b=cAeuP0qbO4eJljrqIMiebUowfsB/GxgB0fgTHUeF5Yo
-        +dFTnomigRMKK9PRko4dMH1zdWY+F8CZlLyyxbotj7dX6MhNo0ZdCfBIYlKvh+/Q
-        d3gw0kvUlYz+vN963+21XhyNQAmvwJjVEJA+avi6mYRcwb/KVLdURvi1B7dODlEU
-        qwo0pQOkSpU56PPi4NYkSD3fDTg0e80FKnqzVVH4HrLSduY507MOGgRp94x8tow8
-        C9HfLeh5qs5U1GUDOdKhbybH8VweO9ZHI/Nfv3WQtBMysN51MQalqCy7G6KdFGe4
-        mf58Y/uLDUegOKYAI0UMYq6LPHm6VBPkmbHqO3+RurQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=0BP8cA
-        Wztylqalmk4/OoD2Cy3lwqhFZyUP90THNtZ1g=; b=srtYkEJcS4huqv80LlbbSG
-        Fi8pxOzOhws71OZtEdfvdz4enBpQRhE0iI6Werq9aNVPnUT1M8U+utcOXh5XVeKQ
-        FokaGwGP35MMAOOqtri0m/vNjHo7TKirpcMZ/5W9e2L9Q2AF3sm0/WG+GT0NJggk
-        x83KKGNn2DhU8Bd9sU4Sgt1j3dm5XQtFyacw9sqD5kjEFms6c7sxEkUtKUvv63MW
-        qCQbrdMZ3s7LT10cwkeBrK/9NP5d5HvxG2zKV+2c3gCChb+8ufEt4coS7G9P7gdm
-        afb8Huog5c6refVYER6q+O7lbAN3g/n8yJC7Tc4bejsE73cF9Z1jUXn4fpW2Lq4Q
-        ==
-X-ME-Sender: <xms:ec9RYK39Y_a4zSfTwUaRQx1LJtTowhZfqZ55tBkolaY3hmRBQTPI7Q>
-    <xme:ec9RYNGM7ueV86Apfa1zFhVwr_eYaKeWpNprnytd5VORSYUGMtqFf5JVwUDGqEq2i
-    aqHVVd170LHaeJKjA4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefgedgtdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
-    gedunecukfhppeeltddrkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:ec9RYC4TIhkXMH2jEndCl15t4aT4tnjEM-i5V5FzoBn8t6HtdaEwrw>
-    <xmx:ec9RYL3qCCj83UuidkPt_WjshQ4_zjIBrTcOs3V7XXAW0QPplWZljQ>
-    <xmx:ec9RYNGEMZcMZqGZqtAf8jav8BKADI6fd14OggVtOw4i_pnVvBSC-w>
-    <xmx:fM9RYDRuhS2ysirc2Y7YeQnTiJcpzjxydTqzDoyqpnbGWb-Av1ZQ0w>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 21F05108005C;
-        Wed, 17 Mar 2021 05:44:25 -0400 (EDT)
-Date:   Wed, 17 Mar 2021 10:44:22 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mark Brown <broonie@kernel.org>,
-        Cheng-Yi Chiang <cychiang@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Odelu Kukatla <okukatla@codeaurora.org>,
-        Alex Elder <elder@kernel.org>, Suman Anna <s-anna@ti.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Drop type references on common properties
-Message-ID: <20210317094422.tlzbuvfanfwxenps@gilmour>
-References: <20210316194858.3527845-1-robh@kernel.org>
+        id S229805AbhCQJqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 05:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229730AbhCQJqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:46:10 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9121C06174A
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:46:09 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id s13so1264756lfb.2
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:46:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=sFcRKYB/8XQJ0XQMB0CqKFzemot4DGSzRMugJlpgm4Q=;
+        b=P3cf1YcxUZ0XmrMaR67ZdarmpBjmeZmvC/sljjFFEZYw4/MsHp2RHv6oxzvkT+eobY
+         e066PHuEOZSQS3X01djLq8eO2G0fo33byke9byc6k91wiyug32undkAoEIngGEo9glVv
+         /cVh48PGwtz5o/k4JCLBmXotHdYJoamTfiG7FXwBBUmI81eNNufiP8CUv3mkaq5z2xsy
+         ImdjdgH2fMXDucO+vBy+j0kQf6ytrJoKcPGfCo2mQdpBzg9esHjmIvb6QTzXbGulpjHA
+         3M7JYHjlsbbM+eY0S43EtqXFG+eMt4hASHzSc3xqLQHy8fBtH8Cx73AoGqmlJXu78HNG
+         F5yQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=sFcRKYB/8XQJ0XQMB0CqKFzemot4DGSzRMugJlpgm4Q=;
+        b=jjIgeNPPDKqoFalnlvt54khpTR3P5jIUwZcxmFPSPP/zsJD1G75oDKzJwqmK0GLLvG
+         akL1vlAC9PHnqiGQARQJTgQrvEOxjhssD9XpBLUHWsRvsUCbKyi3xcCwV5iiPbHBudDZ
+         Ss81yiwB1TQo4jaD4lQb0xE0lDYJPSg1cpPs+IT5zzBmw4OTcna9p7hmpOfOmV8l817f
+         wBD+TRPrhw1LKK69tyY3M58pHK4TDljMiVeTjvcbl3kmr15wQrc8EmABltiEm2TEUvFo
+         9cUYP1LlMvt4F0hXzy9kp4hQpAIgcxFcRWR6eb+DE/+fIj4EYf4ODb/mpjxr1kIwRn3K
+         eDMw==
+X-Gm-Message-State: AOAM532RJwuV1/eiNxeTqOMRGehHtD1EUHa89F3X630yh9QZfzXZusQB
+        zbhJtSafnGCmg4O3TmCpZ17JwtjoBcLVnhf1
+X-Google-Smtp-Source: ABdhPJyV7f80nNVLbm1NbDNyCCDNHMUmSAFK3e8yt+kiRqFWv99OlQIc8WMvovbem/vHB7ewEBzJYg==
+X-Received: by 2002:ac2:5603:: with SMTP id v3mr1960984lfd.67.1615974368115;
+        Wed, 17 Mar 2021 02:46:08 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id d8sm3330840lfg.96.2021.03.17.02.46.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Mar 2021 02:46:07 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/5] net: dsa: mv88e6xxx: Remove some bureaucracy around querying the VTU
+In-Reply-To: <20210316091755.uxzjhcjy4ka3ieix@skbuf>
+References: <20210315211400.2805330-1-tobias@waldekranz.com> <20210315211400.2805330-3-tobias@waldekranz.com> <20210316091755.uxzjhcjy4ka3ieix@skbuf>
+Date:   Wed, 17 Mar 2021 10:46:07 +0100
+Message-ID: <87v99qnme8.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="lj6yx5qimtjaxe7l"
-Content-Disposition: inline
-In-Reply-To: <20210316194858.3527845-1-robh@kernel.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 16, 2021 at 11:17, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Mon, Mar 15, 2021 at 10:13:57PM +0100, Tobias Waldekranz wrote:
+>> +static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
+>> +			     struct mv88e6xxx_vtu_entry *entry)
+>>  {
+>> +	int err;
+>> +
+>>  	if (!chip->info->ops->vtu_getnext)
+>>  		return -EOPNOTSUPP;
+>>  
+>> -	return chip->info->ops->vtu_getnext(chip, entry);
+>> +	entry->vid = vid - 1;
+>
+> Should the vtu_get API not work with vid 0 as well? Shouldn't we
+> initialize entry->vid to mv88e6xxx_max_vid(chip) in that case?
 
---lj6yx5qimtjaxe7l
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Good catch. We never load VID 0 to the VTU today, but this function
+should be ready for it, if that ever changes. Fixing in v2.
 
-On Tue, Mar 16, 2021 at 01:48:58PM -0600, Rob Herring wrote:
-> Users of common properties shouldn't have a type definition as the
-> common schemas already have one. Drop all the unnecessary type
-> references in the tree.
->=20
-> A meta-schema update to catch these is pending.
->=20
-> Cc: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Krzysztof Kozlowski <krzk@kernel.org>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Cheng-Yi Chiang <cychiang@chromium.org>
-> Cc: Benson Leung <bleung@chromium.org>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Stefan Wahren <wahrenst@gmx.net>
-> Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> Cc: Odelu Kukatla <okukatla@codeaurora.org>
-> Cc: Alex Elder <elder@kernel.org>
-> Cc: Suman Anna <s-anna@ti.com>
-> Cc: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: linux-can@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-remoteproc@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-usb@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-
-Acked-by: Maxime Ripard <maxime@cerno.tech>
-
-Thanks!
-Maxiem
-
---lj6yx5qimtjaxe7l
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYFHPdgAKCRDj7w1vZxhR
-xQMxAQCrXmT5FCI3eJYBXW/EUFlqbCTwnoDOAEjWcGLbj2XTCgEAxkEyHVxsELxK
-YT52x5rpTHartnwQ86HMToeCxMjKlAc=
-=93nZ
------END PGP SIGNATURE-----
-
---lj6yx5qimtjaxe7l--
+>> +	entry->valid = false;
+>> +
+>> +	err = chip->info->ops->vtu_getnext(chip, entry);
+>> +
+>> +	if (entry->vid != vid)
+>> +		entry->valid = false;
+>> +
+>> +	return err;
+>>  }
