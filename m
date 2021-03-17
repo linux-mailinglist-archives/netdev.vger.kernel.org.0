@@ -2,100 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B40E33F874
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:51:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C86533F887
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:55:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233024AbhCQSu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 14:50:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35934 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233028AbhCQSuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 14:50:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8B30564F51;
-        Wed, 17 Mar 2021 18:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616007009;
-        bh=16bY4Q9L91OTPdgdNxgxLVnLRs6fDvle7jzwH1pV4Tk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KUiPkmTO49BfebMM4e2Q4/RPZBF/y+p7v0HPEVf9OizLrHrow208m941u3hzr8OkM
-         yWWvL1nJyytqNMfTUonN2V4hbdiJmLtGwiEeJQfeuC7ew3ddydyJe7IgL6KUJHTgni
-         oT2xijLszEeuDiD0WAg8bMfKdijPZ7fItSGU/2SYxb8wg2FHQK8H0ZHpe8NjRQEv+l
-         vMw/EZdPYyIekCsHyXwy7J1a8qryKGwNdyAO0wTva6ol8Pv2p3Gf/graBXLZmikIoQ
-         MfUhKHdr5Jh7aiFeYhdGVTmmZpjIvwt5XBIXXGS9ggfpuMzftOoX08cRbe8O3ALX+K
-         TYUEQcaz2+zFg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7397B60A60;
-        Wed, 17 Mar 2021 18:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233027AbhCQSyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 14:54:50 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:39339 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232979AbhCQSyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 14:54:18 -0400
+Received: from 1.general.cascardo.us.vpn ([10.172.70.58] helo=localhost.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <cascardo@canonical.com>)
+        id 1lMbJA-0007zv-0s; Wed, 17 Mar 2021 18:54:16 +0000
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 1/2] neighbour: allow referenced neighbours to be removed
+Date:   Wed, 17 Mar 2021 15:53:19 -0300
+Message-Id: <20210317185320.1561608-1-cascardo@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH v2 00/10] ethtool: Factor out common code related to
- writing ethtool strings
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161600700946.1265.8041343414246655720.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Mar 2021 18:50:09 +0000
-References: <161594093708.5644.11391417312031401152.stgit@localhost.localdomain>
-In-Reply-To: <161594093708.5644.11391417312031401152.stgit@localhost.localdomain>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, simon.horman@netronome.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        intel-wired-lan@lists.osuosl.org, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, drivers@pensando.io,
-        snelson@pensando.io, netanel@amazon.com, akiyano@amazon.com,
-        gtzalik@amazon.com, saeedb@amazon.com,
-        GR-Linux-NIC-Dev@marvell.com, skalluru@marvell.com,
-        rmody@marvell.com, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, mst@redhat.com,
-        jasowang@redhat.com, pv-drivers@vmware.com, doshir@vmware.com,
-        alexanderduyck@fb.com, Kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+During forced garbage collection, neighbours with more than a reference are
+not removed. It's possible to DoS the neighbour table by using ARP spoofing
+in such a way that there is always a timer pending for all neighbours,
+preventing any of them from being removed. That will cause any new
+neighbour creation to fail.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Use the same code as used by neigh_flush_dev, which deletes the timer and
+cleans the queue when there are still references left.
 
-On Tue, 16 Mar 2021 17:30:26 -0700 you wrote:
-> This patch set is meant to be a cleanup and refactoring of common code bits
-> from several drivers. Specificlly a number of drivers engage in a pattern
-> where they will use some variant on an sprintf or memcpy to write a string
-> into the ethtool string array and then they will increment their pointer by
-> ETH_GSTRING_LEN.
-> 
-> Instead of having each driver implement this independently I am refactoring
-> the code so that we have one central function, ethtool_sprintf that does
-> all this and takes a double pointer to access the data, a formatted string
-> to print, and the variable arguments that are associated with the string.
-> 
-> [...]
+With the same ARP spoofing technique, it was still possible to reach a valid
+destination when this fix was applied, with no more table overflows.
 
-Here is the summary with links:
-  - [net-next,v2,01/10] ethtool: Add common function for filling out strings
-    https://git.kernel.org/netdev/net-next/c/7888fe53b706
-  - [net-next,v2,02/10] intel: Update drivers to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/c8d4725e985d
-  - [net-next,v2,03/10] nfp: Replace nfp_pr_et with ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/6a143a7cf947
-  - [net-next,v2,04/10] hisilicon: Update drivers to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/83cd23974a73
-  - [net-next,v2,05/10] ena: Update driver to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/efbbe4fb5976
-  - [net-next,v2,06/10] netvsc: Update driver to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/3ae0ed376d1c
-  - [net-next,v2,07/10] virtio_net: Update driver to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/d7a9a01b4e21
-  - [net-next,v2,08/10] vmxnet3: Update driver to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/3b78b3067f38
-  - [net-next,v2,09/10] bna: Update driver to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/b82e8118c540
-  - [net-next,v2,10/10] ionic: Update driver to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/acebe5b6107c
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+---
+ net/core/neighbour.c | 117 +++++++++++++++++++------------------------
+ 1 file changed, 51 insertions(+), 66 deletions(-)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index e2982b3970b8..bbc89c7ffdfd 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -173,25 +173,48 @@ static bool neigh_update_ext_learned(struct neighbour *neigh, u32 flags,
+ 	return rc;
+ }
+ 
++static int neigh_del_timer(struct neighbour *n)
++{
++	if ((n->nud_state & NUD_IN_TIMER) &&
++	    del_timer(&n->timer)) {
++		neigh_release(n);
++		return 1;
++	}
++	return 0;
++}
++
+ static bool neigh_del(struct neighbour *n, struct neighbour __rcu **np,
+ 		      struct neigh_table *tbl)
+ {
+-	bool retval = false;
+-
++	rcu_assign_pointer(*np,
++		   rcu_dereference_protected(n->next,
++				lockdep_is_held(&tbl->lock)));
+ 	write_lock(&n->lock);
+-	if (refcount_read(&n->refcnt) == 1) {
+-		struct neighbour *neigh;
+-
+-		neigh = rcu_dereference_protected(n->next,
+-						  lockdep_is_held(&tbl->lock));
+-		rcu_assign_pointer(*np, neigh);
+-		neigh_mark_dead(n);
+-		retval = true;
++	neigh_del_timer(n);
++	neigh_mark_dead(n);
++	if (refcount_read(&n->refcnt) != 1) {
++		/* The most unpleasant situation.
++		   We must destroy neighbour entry,
++		   but someone still uses it.
++
++		   The destroy will be delayed until
++		   the last user releases us, but
++		   we must kill timers etc. and move
++		   it to safe state.
++		 */
++		__skb_queue_purge(&n->arp_queue);
++		n->arp_queue_len_bytes = 0;
++		n->output = neigh_blackhole;
++		if (n->nud_state & NUD_VALID)
++			n->nud_state = NUD_NOARP;
++		else
++			n->nud_state = NUD_NONE;
++		neigh_dbg(2, "neigh %p is stray\n", n);
+ 	}
+ 	write_unlock(&n->lock);
+-	if (retval)
+-		neigh_cleanup_and_release(n);
+-	return retval;
++	neigh_cleanup_and_release(n);
++
++	return true;
+ }
+ 
+ bool neigh_remove_one(struct neighbour *ndel, struct neigh_table *tbl)
+@@ -229,22 +252,20 @@ static int neigh_forced_gc(struct neigh_table *tbl)
+ 	write_lock_bh(&tbl->lock);
+ 
+ 	list_for_each_entry_safe(n, tmp, &tbl->gc_list, gc_list) {
+-		if (refcount_read(&n->refcnt) == 1) {
+-			bool remove = false;
+-
+-			write_lock(&n->lock);
+-			if ((n->nud_state == NUD_FAILED) ||
+-			    (tbl->is_multicast &&
+-			     tbl->is_multicast(n->primary_key)) ||
+-			    time_after(tref, n->updated))
+-				remove = true;
+-			write_unlock(&n->lock);
+-
+-			if (remove && neigh_remove_one(n, tbl))
+-				shrunk++;
+-			if (shrunk >= max_clean)
+-				break;
+-		}
++		bool remove = false;
++
++		write_lock(&n->lock);
++		if ((n->nud_state == NUD_FAILED) ||
++		    (tbl->is_multicast &&
++		     tbl->is_multicast(n->primary_key)) ||
++		    time_after(tref, n->updated))
++			remove = true;
++		write_unlock(&n->lock);
++
++		if (remove && neigh_remove_one(n, tbl))
++			shrunk++;
++		if (shrunk >= max_clean)
++			break;
+ 	}
+ 
+ 	tbl->last_flush = jiffies;
+@@ -264,16 +285,6 @@ static void neigh_add_timer(struct neighbour *n, unsigned long when)
+ 	}
+ }
+ 
+-static int neigh_del_timer(struct neighbour *n)
+-{
+-	if ((n->nud_state & NUD_IN_TIMER) &&
+-	    del_timer(&n->timer)) {
+-		neigh_release(n);
+-		return 1;
+-	}
+-	return 0;
+-}
+-
+ static void pneigh_queue_purge(struct sk_buff_head *list)
+ {
+ 	struct sk_buff *skb;
+@@ -307,33 +318,7 @@ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+ 				np = &n->next;
+ 				continue;
+ 			}
+-			rcu_assign_pointer(*np,
+-				   rcu_dereference_protected(n->next,
+-						lockdep_is_held(&tbl->lock)));
+-			write_lock(&n->lock);
+-			neigh_del_timer(n);
+-			neigh_mark_dead(n);
+-			if (refcount_read(&n->refcnt) != 1) {
+-				/* The most unpleasant situation.
+-				   We must destroy neighbour entry,
+-				   but someone still uses it.
+-
+-				   The destroy will be delayed until
+-				   the last user releases us, but
+-				   we must kill timers etc. and move
+-				   it to safe state.
+-				 */
+-				__skb_queue_purge(&n->arp_queue);
+-				n->arp_queue_len_bytes = 0;
+-				n->output = neigh_blackhole;
+-				if (n->nud_state & NUD_VALID)
+-					n->nud_state = NUD_NOARP;
+-				else
+-					n->nud_state = NUD_NONE;
+-				neigh_dbg(2, "neigh %p is stray\n", n);
+-			}
+-			write_unlock(&n->lock);
+-			neigh_cleanup_and_release(n);
++			neigh_del(n, np, tbl);
+ 		}
+ 	}
+ }
+-- 
+2.27.0
 
