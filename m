@@ -2,94 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3713233E303
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5894433E318
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:56:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbhCQAue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 20:50:34 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3040 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbhCQAuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 20:50:21 -0400
-Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4F0WhP0dtgzWGD4;
-        Wed, 17 Mar 2021 08:47:17 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Wed, 17 Mar 2021 08:50:18 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Wed, 17 Mar
- 2021 08:50:18 +0800
-Subject: Re: [PATCH net-next] net: sched: remove unnecessay lock protection
- for skb_bad_txq/gso_skb
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@redhat.com>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>
-References: <1615800610-34700-1-git-send-email-linyunsheng@huawei.com>
- <20210315.164151.1093629330365238718.davem@redhat.com>
- <CAM_iQpWPSouO-JP4xHFqOLM8H4Rn5ucF68sa_EK5hUWSYw8feA@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <a8874cd1-b7c4-5307-db46-8906c0949e12@huawei.com>
-Date:   Wed, 17 Mar 2021 08:50:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S229730AbhCQAz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 20:55:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60708 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229756AbhCQAzi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 20:55:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4308764F8C;
+        Wed, 17 Mar 2021 00:55:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615942538;
+        bh=ogm/cRjZMwqqmZU1ZzdX0tSSKIkx2756zP3cr0KdFQo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EuUbbAwe7YpXyoeHfP9zIdXQLLJ8og2djlKhhc18kLNNNdA1Kh03Y3GRkdY25j0Eq
+         fTp8KnwPKD0INuvJpVIG+yvvK8SOFzRyL5yEOOAd1OfZnPdizB6XaCsbH7V+xo5CFE
+         5d3/S5HAznpqjl9BxTucU735FrM1MTzsLOZ2Ujy+g0lNqQvW3habrRaeH1kFH5cScJ
+         VlqGU8icXuLyoIA8DmwqV99Va3va6g9/NEezl3RjhyvAB427jXPbcVRbRokXHOGT3S
+         K+8XDXKg+j9WPqrS01a38mFmUtINj2HPEoLK4wJjCqLu+ag2orpO1TdZHGWXs8Qt6l
+         +c73yMk0S9FGg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Felix Fietkau <nbd@nbd.name>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.11 01/61] mt76: fix tx skb error handling in mt76_dma_tx_queue_skb
+Date:   Tue, 16 Mar 2021 20:54:35 -0400
+Message-Id: <20210317005536.724046-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpWPSouO-JP4xHFqOLM8H4Rn5ucF68sa_EK5hUWSYw8feA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/3/17 2:43, Cong Wang wrote:
-> On Mon, Mar 15, 2021 at 4:42 PM David Miller <davem@redhat.com> wrote:
->>
->> From: Yunsheng Lin <linyunsheng@huawei.com>
->> Date: Mon, 15 Mar 2021 17:30:10 +0800
->>
->>> Currently qdisc_lock(q) is taken before enqueuing and dequeuing
->>> for lockless qdisc's skb_bad_txq/gso_skb queue, qdisc->seqlock is
->>> also taken, which can provide the same protection as qdisc_lock(q).
->>>
->>> This patch removes the unnecessay qdisc_lock(q) protection for
->>> lockless qdisc' skb_bad_txq/gso_skb queue.
->>>
->>> And dev_reset_queue() takes the qdisc->seqlock for lockless qdisc
->>> besides taking the qdisc_lock(q) when doing the qdisc reset,
->>> some_qdisc_is_busy() takes both qdisc->seqlock and qdisc_lock(q)
->>> when checking qdisc status. It is unnecessary to take both lock
->>> while the fast path only take one lock, so this patch also changes
->>> it to only take qdisc_lock(q) for locked qdisc, and only take
->>> qdisc->seqlock for lockless qdisc.
->>>
->>> Since qdisc->seqlock is taken for lockless qdisc when calling
->>> qdisc_is_running() in some_qdisc_is_busy(), use qdisc->running
->>> to decide if the lockless qdisc is running.
->>>
->>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>
->> What about other things protected by this lock, such as statistics and qlen?
->>
->> This change looks too risky to me.
-> 
-> They are per-cpu for pfifo_fast which sets TCQ_F_CPUSTATS too.
+From: Felix Fietkau <nbd@nbd.name>
 
-Did you mean qdisc_lock(q) are protecting per-cpu stats for
-pfifo_fast too?
+[ Upstream commit ae064fc0e32a4d28389086d9f4b260a0c157cfee ]
 
-> 
-> Thanks.
-> 
-> .
-> 
+When running out of room in the tx queue after calling drv->tx_prepare_skb,
+the buffer list will already have been modified on MT7615 and newer drivers.
+This can leak a DMA mapping and will show up as swiotlb allocation failures
+on x86.
+
+Fix this by moving the queue length check further up. This is less accurate,
+since it can overestimate the needed room in the queue on MT7615 and newer,
+but the difference is small enough to not matter in practice.
+
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210216135119.23809-1-nbd@nbd.name
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/mediatek/mt76/dma.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
+index e81dfaf99bcb..372f27687f2d 100644
+--- a/drivers/net/wireless/mediatek/mt76/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/dma.c
+@@ -345,7 +345,6 @@ mt76_dma_tx_queue_skb(struct mt76_dev *dev, struct mt76_queue *q,
+ 	};
+ 	struct ieee80211_hw *hw;
+ 	int len, n = 0, ret = -ENOMEM;
+-	struct mt76_queue_entry e;
+ 	struct mt76_txwi_cache *t;
+ 	struct sk_buff *iter;
+ 	dma_addr_t addr;
+@@ -387,6 +386,11 @@ mt76_dma_tx_queue_skb(struct mt76_dev *dev, struct mt76_queue *q,
+ 	}
+ 	tx_info.nbuf = n;
+ 
++	if (q->queued + (tx_info.nbuf + 1) / 2 >= q->ndesc - 1) {
++		ret = -ENOMEM;
++		goto unmap;
++	}
++
+ 	dma_sync_single_for_cpu(dev->dev, t->dma_addr, dev->drv->txwi_size,
+ 				DMA_TO_DEVICE);
+ 	ret = dev->drv->tx_prepare_skb(dev, txwi, q->qid, wcid, sta, &tx_info);
+@@ -395,11 +399,6 @@ mt76_dma_tx_queue_skb(struct mt76_dev *dev, struct mt76_queue *q,
+ 	if (ret < 0)
+ 		goto unmap;
+ 
+-	if (q->queued + (tx_info.nbuf + 1) / 2 >= q->ndesc - 1) {
+-		ret = -ENOMEM;
+-		goto unmap;
+-	}
+-
+ 	return mt76_dma_add_buf(dev, q, tx_info.buf, tx_info.nbuf,
+ 				tx_info.info, tx_info.skb, t);
+ 
+@@ -415,9 +414,7 @@ mt76_dma_tx_queue_skb(struct mt76_dev *dev, struct mt76_queue *q,
+ 		dev->test.tx_done--;
+ #endif
+ 
+-	e.skb = tx_info.skb;
+-	e.txwi = t;
+-	dev->drv->tx_complete_skb(dev, &e);
++	dev_kfree_skb(tx_info.skb);
+ 	mt76_put_txwi(dev, t);
+ 	return ret;
+ }
+-- 
+2.30.1
 
