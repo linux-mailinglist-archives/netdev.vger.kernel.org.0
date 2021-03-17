@@ -2,89 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0487B33E5C4
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6AF233E629
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:30:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbhCQBO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 21:14:59 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:5093 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhCQBOm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 21:14:42 -0400
-Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4F0XFv57DFzYKq0;
-        Wed, 17 Mar 2021 09:12:51 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Wed, 17 Mar 2021 09:14:35 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Wed, 17 Mar
- 2021 09:14:35 +0800
-Subject: Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS for lockless
- qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        id S230429AbhCQB3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 21:29:24 -0400
+Received: from mga03.intel.com ([134.134.136.65]:17059 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231217AbhCQB2y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 21:28:54 -0400
+IronPort-SDR: 06p45kS12+W6hLX4b5PK/KSZoGbE9NQXw/AKIXVpDe7LZBejUSJNs7WPeEcNaAM2sIMve3cUmf
+ ImqADkKl6ifw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="189413698"
+X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
+   d="scan'208";a="189413698"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 18:28:53 -0700
+IronPort-SDR: XFkO0W416w+dXTE9Buk9yXsw/G0I5PpohdJeptwReNVAW0ombMWJwvJuXSdUGlSsQfxWL5CkVS
+ zUgC2P4s4lYw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
+   d="scan'208";a="605493928"
+Received: from glass.png.intel.com ([10.158.65.59])
+  by fmsmga005.fm.intel.com with ESMTP; 16 Mar 2021 18:28:48 -0700
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Wei Wang" <weiwan@google.com>,
-        "Cong Wang ." <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        <linux-can@vger.kernel.org>
-References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
- <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
- <20210315115332.1647e92b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAM_iQpXvVZxBRHF6PBDOYSOSCj08nPyfcY0adKuuTg=cqffV+w@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <c91af612-24d3-798e-3df3-8bab35e01a38@huawei.com>
-Date:   Wed, 17 Mar 2021 09:14:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: [PATCH net-next 0/1] stmmac: add PCH and PSE PTP clock setting
+Date:   Wed, 17 Mar 2021 09:32:46 +0800
+Message-Id: <20210317013247.25131-1-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpXvVZxBRHF6PBDOYSOSCj08nPyfcY0adKuuTg=cqffV+w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/3/17 6:48, Cong Wang wrote:
-> On Mon, Mar 15, 2021 at 2:07 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> I thought pfifo was supposed to be "lockless" and this change
->> re-introduces a lock between producer and consumer, no?
-> 
-> It has never been truly lockless, it uses two spinlocks in the ring buffer
-> implementation, and it introduced a q->seqlock recently, with this patch
-> now we have priv->lock, 4 locks in total. So our "lockless" qdisc ends
-> up having more locks than others. ;) I don't think we are going to a
-> right direction...
+Hi,
 
-Yes, we have 4 locks in total, but lockless qdisc only use two locks
-in this patch, which are priv->lock and q->seqlock.
+Intel mGBE controllers that are integrated into EHL, TGL SoC have
+different clock source selection. This patch adds the required setting for
+running linuxptp time-sync.
 
-The qdisc at least uses two locks, which is qdisc_lock(q) and q->busylock,
-which seems to have bigger contention when concurrent accessing to the
-same qdisc.
+The patch has been tested on both PSE (/dev/ptp0) and PCH TSN(/dev/ptp2)
+and the results for the time sync looks correct.
 
-If we want to reduce the total number of lock, we can use qdisc_lock(q)
-for lockless qdisc and remove q->seqlock:)
+############################ PSE TSN ####################################
+> cat gPTP.conf
+[global]
+gmCapable               1
+priority1               248
+priority2               248
+logAnnounceInterval     0
+logSyncInterval         -3
+syncReceiptTimeout      3
+neighborPropDelayThresh 800
+min_neighbor_prop_delay -20000000
+assume_two_step         1
+path_trace_enabled      1
+follow_up_info          1
+transportSpecific       0x1
+ptp_dst_mac             01:80:C2:00:00:0E
+network_transport       L2
+delay_mechanism         P2P
+ingressLatency          231
+egressLatency           147
+tx_timestamp_timeout    50
+> /usr/local/sbin/ptp4l -v
+3.1
 
-> 
-> Thanks.
-> 
-> .
-> 
+#################################
+# Start ptp4l eth0 [verbose mode]
+#################################
+
+> /usr/local/sbin/ptp4l -P2Hi eth0 -f gPTP.conf --step_threshold=1 -m
+ptp4l[8380.510]: selected /dev/ptp0 as PTP clock
+ptp4l[8380.535]: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
+ptp4l[8380.535]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
+ptp4l[8381.655]: port 1: link down
+ptp4l[8381.655]: port 1: LISTENING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
+ptp4l[8381.676]: selected local clock f6cd9d.fffe.e6dc36 as best master
+ptp4l[8381.676]: port 1: assuming the grand master role
+ptp4l[8383.705]: port 1: link up
+ptp4l[8383.727]: port 1: FAULTY to LISTENING on INIT_COMPLETE
+ptp4l[8387.099]: port 1: LISTENING to MASTER on ANNOUNCE_RECEIPT_TIMEOUT_EXPIRES
+ptp4l[8387.099]: selected local clock f6cd9d.fffe.e6dc36 as best master
+ptp4l[8387.099]: port 1: assuming the grand master role
+ptp4l[8388.357]: port 1: new foreign master d63d87.fffe.60a9eb-1
+ptp4l[8390.357]: selected best master clock d63d87.fffe.60a9eb
+ptp4l[8390.357]: port 1: MASTER to UNCALIBRATED on RS_SLAVE
+ptp4l[8390.981]: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l[8391.607]: rms 24333463708388 max 48666927416912 freq  -1919 +/- 725 delay   101 +/-   0
+ptp4l[8392.607]: rms    2 max    6 freq  -2194 +/-   3 delay   101 +/-   0
+ptp4l[8393.607]: rms    5 max   10 freq  -2192 +/-   7 delay   101 +/-   0
+ptp4l[8394.607]: rms    4 max    5 freq  -2195 +/-   5 delay   100 +/-   0
+ptp4l[8395.607]: rms    4 max    9 freq  -2198 +/-   4 delay   100 +/-   0
+ptp4l[8396.607]: rms    5 max    9 freq  -2201 +/-   6 delay   100 +/-   0
+ptp4l[8397.607]: rms    6 max    8 freq  -2196 +/-   8 delay   101 +/-   0
+ptp4l[8398.607]: rms    5 max    9 freq  -2195 +/-   7 delay   102 +/-   0
+ptp4l[8399.607]: rms    7 max   13 freq  -2199 +/-   9 delay   102 +/-   0
+ptp4l[8400.608]: rms    6 max   14 freq  -2198 +/-   8 delay   101 +/-   0
+ptp4l[8401.608]: rms    8 max   10 freq  -2195 +/-  10 delay   101 +/-   0
+#########################################################################
+
+
+############################ PCH TSN ####################################
+> cat gPTP.conf
+[global]
+gmCapable               1
+priority1               248
+priority2               248
+logAnnounceInterval     0
+logSyncInterval         -3
+syncReceiptTimeout      3
+neighborPropDelayThresh 800
+min_neighbor_prop_delay -20000000
+assume_two_step         1
+path_trace_enabled      1
+follow_up_info          1
+transportSpecific       0x1
+ptp_dst_mac             01:80:C2:00:00:0E
+network_transport       L2
+delay_mechanism         P2P
+ingressLatency          503
+egressLatency           275
+tx_timestamp_timeout    50
+> /usr/local/sbin/ptp4l -v
+3.1
+
+#################################
+# Start ptp4l eth2 [verbose mode]
+#################################
+
+> /usr/local/sbin/ptp4l -P2Hi eth2 -f gPTP.conf          --step_threshold=1 -m
+ptp4l[8526.902]: selected /dev/ptp2 as PTP clock
+ptp4l[8526.957]: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
+ptp4l[8526.957]: port 0: INITIALIZING to LISTENING on INIT_COMPLETE
+ptp4l[8526.957]: port 1: link down
+ptp4l[8526.957]: port 1: LISTENING to FAULTY on FAULT_DETECTED (FT_UNSPECIFIED)
+ptp4l[8526.978]: selected local clock 7ab054.fffe.8aaa86 as best master
+ptp4l[8526.979]: port 1: assuming the grand master role
+ptp4l[8528.026]: port 1: link up
+ptp4l[8528.058]: port 1: FAULTY to LISTENING on INIT_COMPLETE
+ptp4l[8531.070]: port 1: LISTENING to MASTER on ANNOUNCE_RECEIPT_TIMEOUT_EXPIRES
+ptp4l[8531.070]: selected local clock 7ab054.fffe.8aaa86 as best master
+ptp4l[8531.070]: port 1: assuming the grand master role
+ptp4l[8532.878]: port 1: new foreign master 5ee86b.fffe.dd4586-1
+ptp4l[8534.878]: selected best master clock 5ee86b.fffe.dd4586
+ptp4l[8534.878]: port 1: MASTER to UNCALIBRATED on RS_SLAVE
+ptp4l[8535.387]: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l[8536.012]: rms 24333477164408 max 48666954328964 freq  -1980 +/- 749 delay   224 +/-   0
+ptp4l[8537.012]: rms   48 max   61 freq  -2195 +/-  13 delay   221 +/-   0
+ptp4l[8538.012]: rms   29 max   43 freq  -2182 +/-   6 delay   221 +/-   0
+ptp4l[8539.012]: rms   13 max   27 freq  -2192 +/-  14 delay   221 +/-   0
+ptp4l[8540.012]: rms    8 max   13 freq  -2205 +/-  10 delay   221 +/-   0
+ptp4l[8541.013]: rms   12 max   20 freq  -2217 +/-  13 delay   224 +/-   0
+ptp4l[8542.013]: rms    7 max   17 freq  -2214 +/-  10 delay   221 +/-   0
+ptp4l[8543.013]: rms    7 max   11 freq  -2208 +/-  10 delay   221 +/-   0
+ptp4l[8544.013]: rms    8 max   16 freq  -2214 +/-  10 delay   220 +/-   0
+#########################################################################
+
+Thanks
+Boon Leong
+
+Wong, Vee Khee (1):
+  stmmac: intel: Add PSE and PCH PTP clock source selection
+
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 46 +++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  7 +++
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |  3 ++
+ include/linux/stmmac.h                        |  1 +
+ 4 files changed, 57 insertions(+)
+
+-- 
+2.25.1
 
