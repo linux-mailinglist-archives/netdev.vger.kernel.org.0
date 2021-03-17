@@ -2,82 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93E5A33F7FE
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:16:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11CE433F802
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:17:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233087AbhCQSQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 14:16:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33262 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233090AbhCQSPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 14:15:32 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lMahT-00BVJR-Ql; Wed, 17 Mar 2021 19:15:19 +0100
-Date:   Wed, 17 Mar 2021 19:15:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Don Bollinger <don@thebollingers.org>
-Cc:     'Jakub Kicinski' <kuba@kernel.org>, arndb@arndb.de,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        brandon_chuang@edge-core.com, wally_wang@accton.com,
-        aken_liu@edge-core.com, gulv@microsoft.com, jolevequ@microsoft.com,
-        xinxliu@microsoft.com, 'netdev' <netdev@vger.kernel.org>,
-        'Moshe Shemesh' <moshe@nvidia.com>
-Subject: Re: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS
- EEPROMS
-Message-ID: <YFJHN+raumcJ5/7M@lunn.ch>
-References: <YD1ScQ+w8+1H//Y+@lunn.ch>
- <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
- <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <005e01d71230$ad203be0$0760b3a0$@thebollingers.org>
- <YEL3ksdKIW7cVRh5@lunn.ch>
- <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org>
- <YEvILa9FK8qQs5QK@lunn.ch>
- <01ae01d71850$db4f5a20$91ee0e60$@thebollingers.org>
- <20210315103950.65fedf2c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <001201d719c6$6ac826c0$40587440$@thebollingers.org>
+        id S231991AbhCQSQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 14:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232137AbhCQSQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 14:16:06 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41AAC06174A;
+        Wed, 17 Mar 2021 11:16:05 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id z7so343385lfd.5;
+        Wed, 17 Mar 2021 11:16:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RnRKNpQgUsNpaNv3dsr453+uGBMHftMBsGXsYkGT7rE=;
+        b=KMYWWZ9xdJ794AYGtt+jrqZ1WOEUPreEYwTDM5S5UPYRNJm2B4yjNYGkJpcGSEboIU
+         JQmRCmMenOQR9fI9TlQMImVZygZvas7RQqs+YYCEF5dsSLtwpu2ggtCjP0d2URBYjErg
+         T0dpwe06zeqUs0s0myEAn6zbPUeIKY9fnfiGcmFroffJNCQAegbzvMvh8gOq0A9v7a/m
+         rAGKOeTZJjmQnARguRLjOJu8pdPAu+QFiXoPzqD8EjuToZgevfwxHCarRSjdlq8V04OU
+         4V0aRpy+GI1VtvX7wdRECj1Ym7SpFQaTyWaPoJEfp7zTdJgK6fVnDKKDUdr0s62xAjKK
+         iBeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RnRKNpQgUsNpaNv3dsr453+uGBMHftMBsGXsYkGT7rE=;
+        b=b17996BC9YKIhHFVLhZenwrPxYWWzF1aiMCwsA8Fh1SooAPHyYyPtRYnTQDLPJzqCz
+         T29KV+McQg45hhH7VfabNJQQbJM0t2TUaxcebvWZcqbyZ2ZthPQx+QlryzkDygygWjwh
+         2G4JA0IFnUb7xitTWPPpFycTaqEVsfNWdBq96IYHLBfTbWjEkmiI7xR2ovadXComXHTR
+         EOEJWCRW2Gt5HoIWGiE/rBYXzmSHE0/ZA7y/E51VRSbW2JprulM+Q62lq2sjt98bDcwh
+         g8fdkmjorXtMIXrh7To0jmYyokNKQWndZV5uNx+EkhM0Q/cZWbMCfaZhTGvqc6yiFygg
+         dGag==
+X-Gm-Message-State: AOAM532c0xlP9vfdzHHVvDV3nr6ZfjmylPU5wLotH0muCpY0IKkxAzZt
+        59YoPxqDNqjjzp8NRMHZvaumzsnnvH0uwNQtBBY=
+X-Google-Smtp-Source: ABdhPJwjxBiUafEVHyuGWn52BbQJ0CqM03RZxe6x+nPFht8IsWTxeJtB50Hqe7SlhdXwLRQr60FBUsOLgpi2U/OtPIQ=
+X-Received: by 2002:ac2:5b5a:: with SMTP id i26mr2986484lfp.182.1616004964394;
+ Wed, 17 Mar 2021 11:16:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <001201d719c6$6ac826c0$40587440$@thebollingers.org>
+References: <20210317031257.846314-1-andrii@kernel.org> <20210317031257.846314-2-andrii@kernel.org>
+ <CAEf4BzYYkJqdvamkgoCqGF23Av44n322FMz+-HWO9YxXBNLqVw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYYkJqdvamkgoCqGF23Av44n322FMz+-HWO9YxXBNLqVw@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 17 Mar 2021 11:15:53 -0700
+Message-ID: <CAADnVQJ2+m4DVGpBQ_0a+vGDSodRqfpFhWzw1umEf_ytyY7kVw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpftool: generate NULL definition in vmlinux.h
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I have offered, in every response, to collaborate with the simple
-> integration to use optoe as the default upstream driver to access the module
-> EEPROMs.  optoe would be superior to the existing default routines in sfp.c
+On Wed, Mar 17, 2021 at 10:38 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+> > diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+> > index 62953bbf68b4..ff6a76632873 100644
+> > --- a/tools/bpf/bpftool/btf.c
+> > +++ b/tools/bpf/bpftool/btf.c
+> > @@ -405,6 +405,8 @@ static int dump_btf_c(const struct btf *btf,
+> >         printf("#ifndef __VMLINUX_H__\n");
+> >         printf("#define __VMLINUX_H__\n");
+> >         printf("\n");
+> > +       printf("#define NULL ((void *)0)\n");
+>
+>
+> On second thought, this could also be done in bpf_helpers.h, which is
+> pretty much always included in BPF programs. I think that's a bit more
+> maintainable and less magical to users, so I'll go with that in v3.
 
-Actually, i'm not sure they would be. Since the KAPI issues are pretty
-much a NACK on their own, i didn't bother raising other issues. Both
-Russell King and I has issues with quirks and hotplug.
-
-Our experience is that a number of SFPs are broken, they don't follow
-the standard. Some you cannot perform more than 16 bytes reads without
-them locking up. Others will perform a 16 byte read, but only give you
-one useful byte of data. So you have to read enough of the EEPROM a
-byte at a time to get the vendor and product strings in order to
-determine what quirks need to be applied. optoe has nothing like
-this. Either you don't care and only support well behaved SFPs, or you
-have the quirk handling in user space, in the various vendor code
-blobs, repeated again and again. To make optoe generically usable, you
-are going to have to push the quirk handling into optoe. The
-brokenness should be hidden from userspace.
-
-And then you repeat all the quirk handling sfp.c has. That does not
-scale, we don't want the same quirks in two different places. However,
-because SFPs are hot pluggable, you need to re-evaluate the quirks
-whenever there is a hot-plug event. optoe has no idea if there has
-been a hotplug event, since it does not have access to the GPIOs. Your
-user space vendor code might know, it has access to the GPIOs. So
-maybe you could add an IOCTL call or something, to let optoe know the
-module has changed and it needs to update its quirks. Or for every
-user space read, you actually re-read the vendor IDs and refresh the
-quirks before performing the read the user actually wants. That all
-seems ugly and is missing from the current patch.
-
-I fully agree with Jakub NACK.
-
-  Andrew
-
-
+yep. good idea.
