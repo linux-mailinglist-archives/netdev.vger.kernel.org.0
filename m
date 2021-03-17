@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC9D933ED38
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:41:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0031F33ED3D
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:42:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbhCQJkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 05:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
+        id S229585AbhCQJlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 05:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbhCQJkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:40:20 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2626C06174A;
-        Wed, 17 Mar 2021 02:40:19 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id b184so717130pfa.11;
-        Wed, 17 Mar 2021 02:40:19 -0700 (PDT)
+        with ESMTP id S229540AbhCQJlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:41:47 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11855C06174A
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:41:47 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id z25so2323338lja.3
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:41:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yr2V3nYTRckIb/1WVjsM9TQ9fvGwbKIRAjE1AIaksiE=;
-        b=RAK3a1d4wvuJm9kSfwEoOhEBNe/fRi3jjLS8XfJDb02OFqhNG/bT7WRg86XrM2bDZd
-         ZDSWB/YBq0vxTTUOoYa2/DLJIDT+OEGmQ0CE+T0b/oxDPVVKdakgem1vkjuNfO1VW46/
-         3dUwuWoFrWW8dSUD/blctYZjbT80/W79IPj06TqaoLTp6rlQBx4Wk8wLD28+inagV03+
-         NDI2F4QEMeA9b0pRX86U6ElvORg9W4RvZXeC+mYct8J/9wo/qAJVqRuxIR/JDLS+zLnm
-         /uv93r/VW7V8y+deEaSeU7qVzw+3k4/2ttuqRGBN97vAingVacd/l0ONaLHBLmonQPtu
-         WbgA==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=l5YmVFHIXVLGMRRUQh16y42bh72LqTU0gOJ2Nw2akbA=;
+        b=I1J28xnsrR09698UkzntFxznD+gwwtKNBtDGcy/BNpA2ZY5/6p0cmk8pBPXTw/SI/i
+         Ek+STfug9wWGIFBOV33xWPn2yzXSOEg/Gf0x+ZUzxDDAV+eGGmnJAWuHAJjc1/eN/yB1
+         wlVOKXzRs3xrmsJTi6o/Y5kqEpOJgwulWbQc/wjg4RDPWJc2YJUbtdRfLkW7IxGoM/u1
+         S7VPQ7Bj3bs0LS34tUt6Uo62BTfOcPbB1op/m2I1Ejucc3YPaRvybfwa3s6y5o59l/Tm
+         eqPt5MKw7GYY95Es8+y+qkYoV3xjqmBuhnt/wnCsuuegcgMaeNH5U/D4Kcg6XI8zvGvr
+         +jew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yr2V3nYTRckIb/1WVjsM9TQ9fvGwbKIRAjE1AIaksiE=;
-        b=jn/iu53F9NCWtRiyvPTdRj0RHw9b6DgqLxmZr31f8QKD2LrjKCRXIa+sC/6L7kgpD2
-         KjOQKutatU1Y+hVn1Ep+atPqZuNw3wbfA6DBqiteEuPEleDoF6TaVpbEHUGj9bZDuFgX
-         KEH3rElw0wjs4hWzIBpJL/q3IfWuLnTImhUrCuiKk18EdYwL6IhzFxpaVQo8k1FYxRL7
-         84j4GmXtJfaN7gadvVfTatARa4syPZm7kvr5wQaxW7LadkRuhc+g/0MHT5JfWxm01q+q
-         IlIlw/Xh3TFtz7WgtQJlPmPgcmDe0Wc50znfPNaITg3IB+UqaUtBBFHG0igu2K8kjbvP
-         88Ew==
-X-Gm-Message-State: AOAM5323YNMkmswsfUnTY3XK1fZmQOP5IZWobpAWHsIvx+ffn+DFzGOs
-        6AyN0SGN20XagFxbeU/cWEclKXayFgPWdkMfrA4=
-X-Google-Smtp-Source: ABdhPJxFXCtkOyMJIMoat3D9dT0ybxhuke07iM/5D6AvflAp+WzVaKMvoo51NO9x7izuegwKelTJ8Ol7NZO9CZRO7mM=
-X-Received: by 2002:a63:ce15:: with SMTP id y21mr1956324pgf.4.1615974019297;
- Wed, 17 Mar 2021 02:40:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=l5YmVFHIXVLGMRRUQh16y42bh72LqTU0gOJ2Nw2akbA=;
+        b=I5DbExxKlJdUSrDf6iKu4FVJD7A1UeWY2gc5NqygH3MqtFmkoUf2v36gPCZjE+I5yP
+         4whKfMeACfXc35KDc985U50JjcQ553oZuQCQfntlsr18MgapPuxDgSrB8+IzI6r0dOMz
+         fA/W/kT24EZzl+OQobWbTHxLZOyzNJAGU1kBehq30GoaXtbejYJjGujGJMe4iYFLu6j/
+         8Hcf7s5O/DTfCQ8TwU+ynwGU6BTLXWjVZfSh1zYScZF5QuBsVEI27DF9BQXbqoWMg8/D
+         Wxeu5arPVErzKtgr+INxP1CXZ6ac+jemvE0IQRYO9kVgxa7U9X+FLhgYlYJgcwZ4R7Iq
+         wD2A==
+X-Gm-Message-State: AOAM5321GMfNBNoKYrvZjL4LHHpGobOVq8TTk5r/XRNiftP2PdvwEd2g
+        oWEj0iwVs2tZxja/ykwQOYov0Rb3supCQi5U
+X-Google-Smtp-Source: ABdhPJwK2I9Oo2nzG+pWNadJTRrB/rahdLNL03Td8q7CIemW32m5thOyz4dJrfX8d74GRIY1aHSpLg==
+X-Received: by 2002:a2e:9198:: with SMTP id f24mr1818926ljg.32.1615974105189;
+        Wed, 17 Mar 2021 02:41:45 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id m7sm3274711lfg.285.2021.03.17.02.41.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Mar 2021 02:41:44 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Provide generic VTU iterator
+In-Reply-To: <20210316084237.l6q4p3peonowshds@skbuf>
+References: <20210315211400.2805330-1-tobias@waldekranz.com> <20210315211400.2805330-2-tobias@waldekranz.com> <20210316084237.l6q4p3peonowshds@skbuf>
+Date:   Wed, 17 Mar 2021 10:41:44 +0100
+Message-ID: <87y2emnmlj.fsf@waldekranz.com>
 MIME-Version: 1.0
-References: <20210310015135.293794-1-dong.menglong@zte.com.cn>
- <20210316224820.GA225411@roeck-us.net> <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
- <20210317013758.GA134033@roeck-us.net> <CADxym3bu0Ds6dD6OhyvdzbWDW-KqXsqGGxt3HKj-dsedFn9GXg@mail.gmail.com>
- <CAHp75Vfo=rtK0=nRTZNwL3peUXGt5PTo4d_epCgLChSD0CKRVw@mail.gmail.com>
-In-Reply-To: <CAHp75Vfo=rtK0=nRTZNwL3peUXGt5PTo4d_epCgLChSD0CKRVw@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 17 Mar 2021 11:40:03 +0200
-Message-ID: <CAHp75VcS0tEeDmDZA+mXs4mZRt-o39MHkxrgarB-O=6DTRjF1Q@mail.gmail.com>
-Subject: Re: [PATCH v4 RESEND net-next] net: socket: use BIT() for MSG_*
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 11:36 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Wed, Mar 17, 2021 at 10:21 AM Menglong Dong <menglong8.dong@gmail.com> wrote:
+On Tue, Mar 16, 2021 at 10:42, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Mon, Mar 15, 2021 at 10:13:56PM +0100, Tobias Waldekranz wrote:
+>> @@ -2184,25 +2230,7 @@ static int mv88e6xxx_port_db_dump(struct mv88e6xxx_chip *chip, int port,
+>>  	if (err)
+>>  		return err;
+>>  
+>> -	/* Dump VLANs' Filtering Information Databases */
+>> -	vlan.vid = mv88e6xxx_max_vid(chip);
+>> -	vlan.valid = false;
+>> -
+>> -	do {
+>> -		err = mv88e6xxx_vtu_getnext(chip, &vlan);
+>> -		if (err)
+>> -			return err;
+>> -
+>> -		if (!vlan.valid)
+>> -			break;
+>> -
+>> -		err = mv88e6xxx_port_db_dump_fid(chip, vlan.fid, vlan.vid, port,
+>> -						 cb, data);
+>> -		if (err)
+>> -			return err;
+>> -	} while (vlan.vid < mv88e6xxx_max_vid(chip));
+>> -
+>> -	return err;
+>> +	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_port_db_dump_vlan, &ctx);
+>>  }
+>
+> Can the mv88e6xxx_port_db_dump_fid(VLAN 0) located above this call be
+> covered by the same mv88e6xxx_vtu_walk?
 
-...
-
-> It maybe fixed by swapping positions of the arguments, i.e. ~(FOO |
-> BAR) & flags.
-
-...and type casting will be needed anyway here...
-
-I was thinking about this case
-
-drivers/i2c/busses/i2c-designware-common.c:420:
-dev->sda_hold_time & ~(u32)DW_IC_SDA_HOLD_RX_MASK
-,
-
-but sda_hold_time there is unsigned.
-
--- 
-With Best Regards,
-Andy Shevchenko
+The port's default default FID does not belong to any VLAN, so it is
+never loaded in the VTU. That is why it handled separately. So, no :)
