@@ -2,158 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABBF433ECE6
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:24:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 085E733ED1D
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbhCQJXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 05:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        id S229632AbhCQJgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 05:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbhCQJX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:23:28 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41BAC06174A;
-        Wed, 17 Mar 2021 02:23:19 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id 61so1022510wrm.12;
-        Wed, 17 Mar 2021 02:23:19 -0700 (PDT)
+        with ESMTP id S229506AbhCQJgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:36:19 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204FEC06174A;
+        Wed, 17 Mar 2021 02:36:19 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id u18so481656plc.12;
+        Wed, 17 Mar 2021 02:36:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vsnRXrdfNNV8r6+zoFy3IPxAWVXVzygUhvBzm3feAYQ=;
-        b=FkYPLnLJz9Hw+zcXvNhdMZzcoX185NSwE7qWJKn7y+2P+W1srRRsTnfj0eMltHjWLl
-         ZVRgzwzll+g3T/KUVHMSmgkay6kkl0kuTmX8LzYdn9HmytkiFPeCtjWMj41F6EH0FhxU
-         zF6VHJdfQ7HkcpuSStbjCaQZRVtLPB7tjzSc6RU4fUF6nRNidbpvlNqGZi4SrnYWBgL1
-         XXGbcMaFSsbgRpjXtCQZia+VoezZzS6pKIKRSB1rShncAyfV26hSzcbvc2SCxhYxvux3
-         W0CCGjHLGdrGQcYZuJEm0VGiCF+9SjayTVW+wni/IGWUnFZBXU/Y1/UDg2wrghHnWpe2
-         6S7g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1/UwIMPoiNTEqVW0NAKbZeVG8BLAecJh/rLT+yCxwwI=;
+        b=UMka2ac9aQY4VVpveKW1x+nSPk6NcsEi5BJzvbH7+H44Z3SXFiehVbQ7b1YGwlfOiS
+         2U/I/6nxgvUW4soT2SXb898IFTfd79zmKeCDHfRO/GiyO/dFCGZ19LiKkIeJny8lOe8L
+         gmvWvd9qmFQ2VjWJb+fFZ0o92nFFcDHHkhU2ksX9SxLqfmuSi0WRLJa7XJo7loyMwgDI
+         GXWmM9X5xinTGeZBO2rSJwQF14e8CI/tymix7biwY5je41SWfFt7zM0imdClCl/wvnc8
+         RyLOEFVjsdKGNNHC+cHk9uRXR4JXVB+yfCwQcjekLOKGkk8X/Y1jyjh/b4IoRHcY5vvt
+         SiPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vsnRXrdfNNV8r6+zoFy3IPxAWVXVzygUhvBzm3feAYQ=;
-        b=XDEXDHMmyLfvGF4uYmtW4slctjRSVDwbBQKL8nxivURvsLHaBuveFvX+Tc7Dipkigs
-         4UIVCrHBW87YIzWyz4/QqhB7n4V5Ur3S/IrYHYWO/AucEIguctyfqO1iyzMlMPWXL1pV
-         9GYpRux+3jXhwV7xoUewKVdSH4bxvPoDCL5FrgNRpSczagUQp+KEQcXxOAk0n6iaaUrH
-         NgXpDkcZjK/VhgAAz1l8BcbhbumkWk11347IRKmp89IVtV5C0kkRCuDh6HawX4mo/oNY
-         8AUNJLlOoVIN+iohaSnCjkvmHcYT5nz+EIe/t4sW+8BmFt8m3+l4gta6KAcyPkB8aMi8
-         AJBw==
-X-Gm-Message-State: AOAM530XGvo3D9//6DAvKQAHQk/EJOC9ZntlIBkwPrvcCz1+djkIpziQ
-        iwbr6y5yV+BVo7UXlsJsc5w=
-X-Google-Smtp-Source: ABdhPJwk59Mj9lXDDZH5B2Te2QsGXs3dDelPaoKkCfD/f+JSryKckcsZF34ZaRpMIyObQ11LYPAO+A==
-X-Received: by 2002:adf:d0c9:: with SMTP id z9mr3426268wrh.396.1615972998696;
-        Wed, 17 Mar 2021 02:23:18 -0700 (PDT)
-Received: from skynet.lan ([80.31.204.166])
-        by smtp.gmail.com with ESMTPSA id k4sm32764582wrd.9.2021.03.17.02.23.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 02:23:18 -0700 (PDT)
-From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-To:     jonas.gorski@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-Subject: [PATCH v3 net-next] net: dsa: b53: mmap: Add device tree support
-Date:   Wed, 17 Mar 2021 10:23:17 +0100
-Message-Id: <20210317092317.3922-1-noltari@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1/UwIMPoiNTEqVW0NAKbZeVG8BLAecJh/rLT+yCxwwI=;
+        b=ST2JoPOO1VPeKSGjPaUy/YZxmqIi03UNK3tud6rwcvBrfiNzD20EsroolK5HaiJdul
+         Y34bFf3I6RRTpU2tklPCnLDsFPViKFP7IpTxmW1kPy14bUCaUrHbo86ZrpCcKAg/Iugv
+         DzOaYDRJ9J1zCOhASCXDZvTQ9MBzRFCAQ7gHHAufLQLUMgckB36dG64lIuTLjNW+ZduP
+         ccac26HL+J6IOn6bYx0ziv+vkfAMJ5yaLoL26IYRaBom9zrAbIUvKE6+TZY/ZwVfqlRr
+         9RGEXilOU426TQTnGCa1+qLPowH97GMtGM31lrXAONBfcUxQCxMgHVHfzl+1vGYMLiJO
+         o0Og==
+X-Gm-Message-State: AOAM532bWjr55p3XHtegJDxOGQdlWuQ4HRbToDSqCWCDgE86tQxdUXaZ
+        AoNFwHi5uVBOYhPtkXPHAGxtmzQeTO5f1KdGexM=
+X-Google-Smtp-Source: ABdhPJy8lTvDxNpJseFrB/g8WC6xXJd25OBlaebo7gfMhZfooldUWzMtKuIO2o1MfQx8jrw1mLZL5BG7Vg+9vTMQr3Y=
+X-Received: by 2002:a17:90a:e454:: with SMTP id jp20mr3851271pjb.129.1615973778514;
+ Wed, 17 Mar 2021 02:36:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210310015135.293794-1-dong.menglong@zte.com.cn>
+ <20210316224820.GA225411@roeck-us.net> <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
+ <20210317013758.GA134033@roeck-us.net> <CADxym3bu0Ds6dD6OhyvdzbWDW-KqXsqGGxt3HKj-dsedFn9GXg@mail.gmail.com>
+In-Reply-To: <CADxym3bu0Ds6dD6OhyvdzbWDW-KqXsqGGxt3HKj-dsedFn9GXg@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 17 Mar 2021 11:36:02 +0200
+Message-ID: <CAHp75Vfo=rtK0=nRTZNwL3peUXGt5PTo4d_epCgLChSD0CKRVw@mail.gmail.com>
+Subject: Re: [PATCH v4 RESEND net-next] net: socket: use BIT() for MSG_*
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add device tree support to b53_mmap.c while keeping platform devices support.
+On Wed, Mar 17, 2021 at 10:21 AM Menglong Dong <menglong8.dong@gmail.com> wrote:
+> On Wed, Mar 17, 2021 at 9:38 AM Guenter Roeck <linux@roeck-us.net> wrote:
+> > On Wed, Mar 17, 2021 at 01:02:51AM +0200, Andy Shevchenko wrote:
+> > > On Wednesday, March 17, 2021, Guenter Roeck <linux@roeck-us.net> wrote:
+> > >
+> ...
+> >
+> > The problem is in net/packet/af_packet.c:packet_recvmsg(). This function,
+> > as well as all other rcvmsg functions, is declared as
+> >
+> > static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+> >                           int flags)
+> >
+> > MSG_CMSG_COMPAT (0x80000000) is set in flags, meaning its value is negative.
+> > This is then evaluated in
+> >
+> >        if (flags & ~(MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC|MSG_CMSG_COMPAT|MSG_ERRQUEUE))
+> >                 goto out;
+> >
+> > If any of those flags is declared as BIT() and thus long, flags is
+> > sign-extended to long. Since it is negative, its upper 32 bits will be set,
+> > the if statement evaluates as true, and the function bails out.
+> >
+> > This is relatively easy to fix here with, for example,
+> >
+> >         if ((unsigned int)flags & ~(MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC|MSG_CMSG_COMPAT|MSG_ERRQUEUE))
+> >                 goto out;
+> >
+> > but that is just a hack, and it doesn't solve the real problem:
+> > Each function in struct proto_ops which passes flags passes it as int
+> > (see include/linux/net.h:struct proto_ops). Each such function, if
+> > called with MSG_CMSG_COMPAT set, will fail a match against
+> > ~(MSG_anything) if MSG_anything is declared as BIT() or long.
+> >
+> > As it turns out, I was kind of lucky to catch the problem: So far I have
+> > seen it only on mips64 kernels with N32 userspace.
+> >
+> > Guenter
+>
+>  Wow, now the usages of 'msg_flag' really puzzle me. Seems that
+> it is used as 'unsigned int' somewhere, but 'int' somewhere
+> else.
+>
+> As I found, It is used as 'int' in 'netlink_recvmsg()',
+> 'io_sr_msg->msg_flags', 'atalk_sendmsg()',
+> 'dn_recvmsg()',  'proto_ops->recvmsg()', etc.
+>
+> So what should I do? Revert this patch? Or fix the usages of 'flags'?
+> Or change the type of MSG_* to 'unsigned int'? I prefer the last
+> one(the usages of 'flags' can be fixed too, maybe later).
 
-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
----
- drivers/net/dsa/b53/b53_mmap.c | 55 ++++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+The problematic code is negation of the flags when it's done in
+operations like &.
+It maybe fixed by swapping positions of the arguments, i.e. ~(FOO |
+BAR) & flags.
 
-diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
-index c628d0980c0b..82680e083cc2 100644
---- a/drivers/net/dsa/b53/b53_mmap.c
-+++ b/drivers/net/dsa/b53/b53_mmap.c
-@@ -16,6 +16,7 @@
-  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-  */
- 
-+#include <linux/bits.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/io.h>
-@@ -228,11 +229,65 @@ static const struct b53_io_ops b53_mmap_ops = {
- 	.write64 = b53_mmap_write64,
- };
- 
-+static int b53_mmap_probe_of(struct platform_device *pdev,
-+			     struct b53_platform_data **ppdata)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct device_node *of_ports, *of_port;
-+	struct device *dev = &pdev->dev;
-+	struct b53_platform_data *pdata;
-+	void __iomem *mem;
-+
-+	mem = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(mem))
-+		return PTR_ERR(mem);
-+
-+	pdata = devm_kzalloc(dev, sizeof(struct b53_platform_data),
-+			     GFP_KERNEL);
-+	if (!pdata)
-+		return -ENOMEM;
-+
-+	pdata->regs = mem;
-+	pdata->chip_id = BCM63XX_DEVICE_ID;
-+	pdata->big_endian = of_property_read_bool(np, "big-endian");
-+
-+	of_ports = of_get_child_by_name(np, "ports");
-+	if (!of_ports) {
-+		dev_err(dev, "no ports child node found\n");
-+		return -EINVAL;
-+	}
-+
-+	for_each_available_child_of_node(of_ports, of_port) {
-+		u32 reg;
-+
-+		if (of_property_read_u32(of_port, "reg", &reg))
-+			continue;
-+
-+		if (reg < B53_CPU_PORT)
-+			pdata->enabled_ports |= BIT(reg);
-+	}
-+
-+	of_node_put(of_ports);
-+	*ppdata = pdata;
-+
-+	return 0;
-+}
-+
- static int b53_mmap_probe(struct platform_device *pdev)
- {
-+	struct device_node *np = pdev->dev.of_node;
- 	struct b53_platform_data *pdata = pdev->dev.platform_data;
- 	struct b53_mmap_priv *priv;
- 	struct b53_device *dev;
-+	int ret;
-+
-+	if (!pdata && np) {
-+		ret = b53_mmap_probe_of(pdev, &pdata);
-+		if (ret) {
-+			dev_err(&pdev->dev, "OF probe error\n");
-+			return ret;
-+		}
-+	}
- 
- 	if (!pdata)
- 		return -EINVAL;
+All this is a beast called "integer promotions" in the C standard.
+
+The best is to try to get flags to be unsigned. By how invasive it may be?
+
 -- 
-2.20.1
-
+With Best Regards,
+Andy Shevchenko
