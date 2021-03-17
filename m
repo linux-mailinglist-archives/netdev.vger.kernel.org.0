@@ -2,96 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37AA233EC1A
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:02:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08E8933EC58
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:12:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229646AbhCQJBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 05:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
+        id S229845AbhCQJMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 05:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbhCQJBT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:01:19 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A64C06174A;
-        Wed, 17 Mar 2021 02:01:19 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id x10so38115474qkm.8;
-        Wed, 17 Mar 2021 02:01:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OOGalcDRWwdkAJXAlYfO7jnsNJIQo9l/xYUGpYBQdO4=;
-        b=GRfvE3UKtmfM7Crem5G2ZbN0Kl6XApuimBKwVqNXcaChLjetVEav/7YuuovCBZJkjR
-         GIsNrytiGg9jZU9ANfpqq2UKbNQi+aGI6wjjMekldVsWUwpSTraxtxFLqsEwHIOJP9xy
-         5bDS5EtT3KM1I5VBlo/WVZo2hn4fynC3Zb+iJZNljGHMdOnpjVZ51sXprPvSqa0SRZl5
-         khlvPs4DBVvMKxCtgSQIAdctS/4qEGA1dCgRXmDtxgJpFs2sB4Am0jlhHVElK1LThjhz
-         I3/zy2R5GXww72vAqBukJHmdbP8vUzpTxfPyVbIA4c2g1NNQNyxfGRD16TWjWynbyHtH
-         +SYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OOGalcDRWwdkAJXAlYfO7jnsNJIQo9l/xYUGpYBQdO4=;
-        b=Artl6IdcZtui5IkOALM7qCbZ/aSi7uNLmXP7tFuf4JJURx75nJCMIxYOCFxLqTvMqq
-         Rbhu3Fjdo4TJ/XUuK68POV7WcL6bOhMnufJvqst1wGTPczRIcprMgb7rnZbIOtmOcPQk
-         VsCRbl0Fe5vh8tJoNhKqUOq+BEDlojROZMNF5W92aWr78+aa257WH+wwAsrXIUx4qOpk
-         OuqqtW3mCcXy1iFo5Mb/JA64X+JymQi5KpUChpWDCUZLJKOvSx/ubr6I7r2HIK41WJOi
-         1Q0rUaB3Oi3ANZGf/IvjFY/tJQQIiXAxFPa9mMFqTg5EnMEyu9biyANVm78GHcoq5XlL
-         QFvw==
-X-Gm-Message-State: AOAM531emR3KcyNknEknqk0yD7iWYyy42vFGgo5wc4xtrEePUZFnjWYe
-        xhPuUOyU0y7a7jS8Yn3NA/I=
-X-Google-Smtp-Source: ABdhPJzW/jbru4vvcnwvb6kLLw2KTUVMy2V0GQcN9LTEWJpJJWe3emkAApbrVZcAD5V136dRWvGZvQ==
-X-Received: by 2002:a37:a38e:: with SMTP id m136mr3627415qke.250.1615971678602;
-        Wed, 17 Mar 2021 02:01:18 -0700 (PDT)
-Received: from localhost.localdomain ([37.19.198.48])
-        by smtp.gmail.com with ESMTPSA id e190sm17004163qkd.122.2021.03.17.02.01.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 02:01:18 -0700 (PDT)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     mostrows@earthlink.net, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: [PATCH] net: ppp: Mundane typo fixes in the file pppoe.c
-Date:   Wed, 17 Mar 2021 14:30:59 +0530
-Message-Id: <20210317090059.4145144-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S230092AbhCQJMJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:12:09 -0400
+X-Greylist: delayed 462 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Mar 2021 02:12:08 PDT
+Received: from ellomb.netlib.re (unknown [IPv6:2001:912:1480:10::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282F2C06174A;
+        Wed, 17 Mar 2021 02:12:08 -0700 (PDT)
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by ellomb.netlib.re (Postfix) with ESMTPA id 97BAC5339E9E;
+        Wed, 17 Mar 2021 09:04:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mildred.fr; s=dkim;
+        t=1615971860;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UDa0V4BMdmF12UM5cFG8Qs2U8MRsw1yqXPlMZldWCMM=;
+        b=IU/76do0dZc4zirdLHgU4diZj16mFsfS700C4UhA+Q0zvyu4DL4GKkJvtLKckomeJWLWdl
+        x+7Up6PH0HjjSOgM1wth3WmcbGzeHSEf/GU21qGq4gU8XjRGW4wQqdZtD3QnvCt98B4Ust
+        bXXSqhCZMwy18oHnOv1WyDosTSYMc1A=
+To:     bpf <bpf@vger.kernel.org>
+From:   =?UTF-8?Q?Shanti_Lombard_n=c3=a9e_Bouchez-Mongard=c3=a9?= 
+        <shanti@mildred.fr>
+Subject: Design for sk_lookup helper function in context of sk_lookup hook
+Cc:     netdev@vger.kernel.org, alexei.starovoitov@gmail.com, kafai@fb.com
+Message-ID: <0eba7cd7-aa87-26a0-9431-686365d515f2@mildred.fr>
+Date:   Wed, 17 Mar 2021 10:04:18 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=mildred.fr;
+        s=dkim; t=1615971860;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UDa0V4BMdmF12UM5cFG8Qs2U8MRsw1yqXPlMZldWCMM=;
+        b=K221AylZvjQd+yyDvBOhJr+h3H8sziYb7IOfKgdHYCrZZOpCOT84cHvck8j7xO7RLP/19I
+        xYmeCs80FSElT7HXwePIi35wN/ZS9BaBZSjqVZVGQUYVl7/wbUk832msOWZpd32tkpo/HO
+        6qoRshq67SaqdGobYt/g/SZtmtzLztg=
+ARC-Seal: i=1; s=dkim; d=mildred.fr; t=1615971860; a=rsa-sha256; cv=none;
+        b=ebxdQgE4EVouwWLSs8M0MI9sAGL+z9pgX1TZXRlkC9x5fHOihkm/A8/uzpLRYbmE3bzIIt
+        vz2IoXy/EcGtTB/2mZf1CmVhBJ4cb1Z7vHWSgcvUU17H4oIFLh+VCQXsL/1+07KVIxvY83
+        IYci4wdnxv3IDbr1PtT7uOrGd0OUY+I=
+ARC-Authentication-Results: i=1;
+        ellomb.netlib.re;
+        auth=pass smtp.auth=mildred@mildred.fr smtp.mailfrom=shanti@mildred.fr
+Authentication-Results: ellomb.netlib.re;
+        auth=pass smtp.auth=mildred@mildred.fr smtp.mailfrom=shanti@mildred.fr
+X-Spamd-Bar: /
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello everyone,
 
-s/procesing/processing/
-s/comparations/comparisons/
+Background discussion: 
+https://lore.kernel.org/bpf/CAADnVQJnX-+9u--px_VnhrMTPB=O9Y0LH9T7RJbqzfLchbUFvg@mail.gmail.com/
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- drivers/net/ppp/pppoe.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In a previous e-mail I was explaining that sk_lookup BPF programs had no 
+way to lookup existing sockets in kernel space. The sockets have to be 
+provided by userspace, and the userspace has to find a way to get them 
+and update them, which in some circumstances can be difficult. I'm 
+working on a patch to make socket lookup available to BPF programs in 
+the context of the sk_lookup hook.
 
-diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
-index d7f50b835050..9dc7f4b93d51 100644
---- a/drivers/net/ppp/pppoe.c
-+++ b/drivers/net/ppp/pppoe.c
-@@ -25,7 +25,7 @@
-  *		in pppoe_release.
-  * 051000 :	Initialization cleanup.
-  * 111100 :	Fix recvmsg.
-- * 050101 :	Fix PADT procesing.
-+ * 050101 :	Fix PADT processing.
-  * 140501 :	Use pppoe_rcv_core to handle all backlog. (Alexey)
-  * 170701 :	Do not lock_sock with rwlock held. (DaveM)
-  *		Ignore discovery frames if user has socket
-@@ -96,7 +96,7 @@ struct pppoe_net {
- 	 * we could use _single_ hash table for all
- 	 * nets by injecting net id into the hash but
- 	 * it would increase hash chains and add
--	 * a few additional math comparations messy
-+	 * a few additional math comparisons messy
- 	 * as well, moreover in case of SMP less locking
- 	 * controversy here
- 	 */
---
-2.30.2
+There is also two helper function bpf_sk_lokup_tcp and bpf_sk_lookup_udp 
+which exists but are not available in the context of sk_lookup hooks. 
+Making them available in this context is not very difficult (just 
+configure it in net/core/filter.c) but those helpers will call back BPF 
+code as part of the socket lookup potentially causing an infinite loop. 
+We need to find a way to perform socket lookup but disable the BPF hook 
+while doing so.
+
+Around all this, I have a few design questions :
+
+Q1: How do we prevent socket lookup from triggering BPF sk_lookup 
+causing a loop?
+
+- Solution A: We add a flag to the existing inet_lookup exported 
+function (and similarly for inet6, udp4 and udp6). The 
+INET_LOOKUP_SKIP_BPF_SK_LOOKUP flag, when set, would prevent BPF 
+sk_lookup from happening. It also requires modifying every location 
+making use of those functions.
+
+- Solution B: We export a new symbol in inet_hashtables, a wrapper 
+around static function inet_lhash2_lookup for inet4 and similar 
+functions for inet6 and udp4/6. Looking up specific IP/port and if not 
+found looking up for INADDR_ANY could be done in the helper function in 
+net/core/filters.c or in the BPF program.
+
+Q2: Should we reuse the bpf_sk_lokup_tcp and bpf_sk_lookup_udp helper 
+functions or create new ones?
+
+For solution A above, the helper functions can be reused almose 
+identically, just adding a flag or boolean argument to tell if we are in 
+a sk_lookup program or not. In solution B is preferred, them perhaps it 
+would make sense to expose the new raw lookup function created, and the 
+BPF program would be responsible for falling back to INADDR_ANY if the 
+specific socket is not found. It adds more power to the BPF program in 
+this case but requires to create a new helper function.
+
+I was going with Solution A abd identical function names, but as I am 
+touching the code it seems that maybe solution B with a new helper 
+function could be better. I'm open to ideas.
+
+Thank you.
+
+PS: please include me in replies if you are responding only to the 
+netdev mailing list as I'm not part of it. I'm subscribed to bpf.
 
