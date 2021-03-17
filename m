@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF1933E768
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:04:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 977D533E765
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:04:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbhCQDD4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 23:03:56 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38058 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229590AbhCQDDe (ORCPT
+        id S229964AbhCQDDz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 23:03:55 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43452 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229887AbhCQDDe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 23:03:34 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 12H2urfB019797
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:03:33 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 37armw5jjf-2
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12H3047S031201
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:03:34 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 379ebu7qpc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:03:33 -0700
-Received: from intmgw002.06.ash9.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:03:34 -0700
+Received: from intmgw002.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 16 Mar 2021 20:03:32 -0700
+ 15.1.2176.2; Tue, 16 Mar 2021 20:03:33 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 0EEB32ED23D6; Tue, 16 Mar 2021 20:03:21 -0700 (PDT)
+        id 382A92ED23D6; Tue, 16 Mar 2021 20:03:23 -0700 (PDT)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 2/4] selftests/bpf: drop custom NULL #define in skb_pkt_end selftest
-Date:   Tue, 16 Mar 2021 20:03:10 -0700
-Message-ID: <20210317030312.802233-3-andrii@kernel.org>
+Subject: [PATCH bpf-next 3/4] selftests/bpf: treat compilation warnings as errors
+Date:   Tue, 16 Mar 2021 20:03:11 -0700
+Message-ID: <20210317030312.802233-4-andrii@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210317030312.802233-1-andrii@kernel.org>
 References: <20210317030312.802233-1-andrii@kernel.org>
@@ -40,36 +40,48 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
  definitions=2021-03-16_09:2021-03-16,2021-03-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
- bulkscore=0 malwarescore=0 suspectscore=0 clxscore=1015 mlxlogscore=857
- phishscore=0 lowpriorityscore=0 mlxscore=0 impostorscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ lowpriorityscore=0 malwarescore=0 bulkscore=0 impostorscore=0 mlxscore=0
+ clxscore=1015 priorityscore=1501 mlxlogscore=702 suspectscore=0
+ phishscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2103170023
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that bpftool generates NULL definition as part of vmlinux.h, drop custom
-NULL definition in skb_pkt_end.c.
+Make selftests/bpf compilation more strict by treating warnings as errors. We
+are generally pretty good at keeping compilation clean, but it's easy to miss
+minor warnings. So let's not trust people and just employ stricter compiler
+enforcement.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/skb_pkt_end.c | 1 -
- 1 file changed, 1 deletion(-)
+ tools/testing/selftests/bpf/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/skb_pkt_end.c b/tools/testing/selftests/bpf/progs/skb_pkt_end.c
-index cf6823f42e80..7f2eaa2f89f8 100644
---- a/tools/testing/selftests/bpf/progs/skb_pkt_end.c
-+++ b/tools/testing/selftests/bpf/progs/skb_pkt_end.c
-@@ -4,7 +4,6 @@
- #include <bpf/bpf_core_read.h>
- #include <bpf/bpf_helpers.h>
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index d0db2b673c6f..7e18f3e66e61 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -21,7 +21,7 @@ endif
  
--#define NULL 0
- #define INLINE __always_inline
+ BPF_GCC		?= $(shell command -v bpf-gcc;)
+ SAN_CFLAGS	?=
+-CFLAGS += -g -Og -rdynamic -Wall $(GENFLAGS) $(SAN_CFLAGS)		\
++CFLAGS += -g -Og -rdynamic -Wall -Werror $(GENFLAGS) $(SAN_CFLAGS)	\
+ 	  -I$(CURDIR) -I$(INCLUDE_DIR) -I$(GENDIR) -I$(LIBDIR)		\
+ 	  -I$(TOOLSINCDIR) -I$(APIDIR) -I$(OUTPUT)			\
+ 	  -Dbpf_prog_load=bpf_prog_test_load				\
+@@ -270,7 +270,7 @@ IS_LITTLE_ENDIAN = $(shell $(CC) -dM -E - </dev/null | \
+ MENDIAN=$(if $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
  
- #define skb_shorter(skb, len) ((void *)(long)(skb)->data + (len) > (void *)(long)skb->data_end)
+ CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
+-BPF_CFLAGS = -g -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN) 			\
++BPF_CFLAGS = -g -Werror -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN) 		\
+ 	     -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR)			\
+ 	     -I$(abspath $(OUTPUT)/../usr/include)
+ 
 -- 
 2.30.2
 
