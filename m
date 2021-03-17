@@ -2,81 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC29333EBE3
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 09:56:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF68133EC17
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:01:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbhCQI4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 04:56:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45550 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229578AbhCQIzq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 04:55:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 019BB64F26;
-        Wed, 17 Mar 2021 08:55:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615971346;
-        bh=VvjNBZC+L597ZRdG9lvP6qiBN+pBZLsbkM79U1R6WIE=;
-        h=In-Reply-To:References:To:From:Subject:Cc:Date:From;
-        b=eJYepiB7jzJzq0nJEiKna7pvgtEaY/JtiDPu+wpeDfrbY6PoA7krvNZLPvO5XLfRT
-         XG/spJD198vxAVhu/mG4OzzX3jtnzKEq44RIS72MrCsHrWS4ELCw0QjKLgBYSu7Vtd
-         tv/H2JDH7KWi2poqXY357DZo8GkNlSObMI6u1k18Geyuc/qDOoUEiVUfgitqwRcVNC
-         mREGv2TK+YDrC0//dOLcRyGoMephQFhghiIsAzGc9fmgNH2EeWrKXDqjkJ0IfQxhv1
-         buvkPk2D2mE70VFWpK4Hc0SDGc6tQtch9zTiW105ly4l1pQJqs5w0lnsZbOzHnh4Z/
-         ZgcfZn2piGLJQ==
-Content-Type: text/plain; charset="utf-8"
+        id S229717AbhCQJA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 05:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229741AbhCQJAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:00:14 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124D5C061763
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:00:03 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id 61so951891wrm.12
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:00:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NVFDyKO2ygUhA+HtmUiSLptg/TxB303zHN8TrRH0yhE=;
+        b=or4XyHJGYy7z/dShZG1PvqNQ3+mrCRPDpPdx3PI6+1HwU8DEjPF4JQ3oy1zyni9pND
+         +3mwGjlcdWHO6loLexzfwiDwlYaMrZ+Mat11LPLoJzLks0dNZDeVznd3o9Bkh22yAdxx
+         aMAShraWmd/P7VcYr5ttJ5A1V0dgI7FmJsZjcsPD91Y2lyaioIkw3downPUsGLClM5aE
+         bJk5cIPKAKbr3oI/YbZMh43PxIIf55zSoYn7FR3tkQ1vit7fyCDDmv1xHjvuoIGVV3Ok
+         ZI5iNHKZQCuIiM7FKPo1g+jlfDUQ3SzWXk5/fUba8z2cTLeASOVi8vFa11WHyj2w8TI/
+         lV1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NVFDyKO2ygUhA+HtmUiSLptg/TxB303zHN8TrRH0yhE=;
+        b=o0ta3jU+mLZKHzkvLdvcGYkJ+0Hye+0PPJ6S3h5h/TGgR592i2gnNLJ5e7THk/hyH5
+         C/EwMd3dr8EgDWYVp5oLn+xgdqsYJzqvELqHxDhgCSWNtyz91TCOMiyv9K9Wxd0ZdqN6
+         Bz10EPQ51QALWQKvYI0DhKwl/GkBefas+vSk9GtZiGeKkyYCzVuVARG3djkEnPvQn5CC
+         +2f/LtbS0yTJaLVEiak7IA54k8eNSa7omXLwhn4+ou4JsWUduehO0Eg8hDynt8wqDtjv
+         5nO+kyhw5rPbbriZmEDgUrGM2vsS82e/aeIovyrXMocUJCwRFbspBjtEpJDrOiTFZzOW
+         uYDw==
+X-Gm-Message-State: AOAM532j2NFQF6X1LlNB1EAP6Suz3X8HJIFF3MniVNfQ9S24lZH/VGqA
+        wfVxxuigW8z+MhCRHcjyC/Eerg==
+X-Google-Smtp-Source: ABdhPJyFsp2Dg+7R5QEB0wMODNdEp2hrkl7dZYkRMuhX4iedkaQnZgEMAu9IeLIWguFwdF0mzGxzDQ==
+X-Received: by 2002:a5d:4f0e:: with SMTP id c14mr3221240wru.78.1615971601574;
+        Wed, 17 Mar 2021 02:00:01 -0700 (PDT)
+Received: from [192.168.86.34] (cpc86377-aztw32-2-0-cust226.18-1.cable.virginm.net. [92.233.226.227])
+        by smtp.googlemail.com with ESMTPSA id l4sm24505097wrt.60.2021.03.17.01.59.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 17 Mar 2021 02:00:00 -0700 (PDT)
+Subject: Re: [PATCH] dt-bindings: Drop type references on common properties
+To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Mark Brown <broonie@kernel.org>,
+        Cheng-Yi Chiang <cychiang@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stefan Wahren <wahrenst@gmx.net>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        Alex Elder <elder@kernel.org>, Suman Anna <s-anna@ti.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org
+References: <20210316194858.3527845-1-robh@kernel.org>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Message-ID: <265c3486-2c85-5c63-e1b5-9b88eaddbb14@linaro.org>
+Date:   Wed, 17 Mar 2021 08:59:59 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <c6a4224370e57d31b1f28e27e7a7d4e1ab237ec2.camel@kernel.org>
-References: <20210312150444.355207-1-atenart@kernel.org> <20210312150444.355207-16-atenart@kernel.org> <c6a4224370e57d31b1f28e27e7a7d4e1ab237ec2.camel@kernel.org>
-To:     Maxim Mykytianskyi <maximmi@nvidia.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>, alexander.duyck@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-From:   Antoine Tenart <atenart@kernel.org>
-Subject: Re: [PATCH net-next v3 15/16] net/mlx5e: take the rtnl lock when calling netif_set_xps_queue
-Cc:     netdev@vger.kernel.org
-Message-ID: <161597134352.3996.436408610278743110@kwain.local>
-Date:   Wed, 17 Mar 2021 09:55:43 +0100
+In-Reply-To: <20210316194858.3527845-1-robh@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Saeed Mahameed (2021-03-12 21:54:18)
-> On Fri, 2021-03-12 at 16:04 +0100, Antoine Tenart wrote:
-> > netif_set_xps_queue must be called with the rtnl lock taken, and this
-> > is
-> > now enforced using ASSERT_RTNL(). mlx5e_attach_netdev was taking the
-> > lock conditionally, fix this by taking the rtnl lock all the time.
->=20
-> There is a reason why it is conditional:
-> we had a bug in the past of double locking here:
->=20
-> [ 4255.283960] echo/644 is trying to acquire lock:
->=20
->  [ 4255.285092] ffffffff85101f90 (rtnl_mutex){+..}, at:
-> mlx5e_attach_netdev0xd4/0=C3=973d0 [mlx5_core]
->=20
->  [ 4255.287264]=20
->=20
->  [ 4255.287264] but task is already holding lock:
->=20
->  [ 4255.288971] ffffffff85101f90 (rtnl_mutex){+..}, at:
-> ipoib_vlan_add0=C3=977c/0=C3=972d0 [ib_ipoib]
->=20
-> ipoib_vlan_add is called under rtnl and will eventually call=20
-> mlx5e_attach_netdev, we don't have much control over this in mlx5
-> driver since the rdma stack provides a per-prepared netdev to attach to
-> our hw. maybe it is time we had a nested rtnl lock ..=20
 
-Not sure we want to add a nested rtnl lock because of xps. I'd like to
-see other options first. Could be having a locking mechanism for xps not
-relying on rtnl; if that's possible.
 
-As for this series, patches 6, 15 (this one) and 16 are not linked to
-and do not rely on the other patches. They're improvement or fixes for
-already existing behaviours. The series already gained enough new
-patches since v1 and I don't want to maintain it out-of-tree for too
-long, so I'll resend it without patches 6, 15 and 16; and then we'll be
-able to focus on the xps locking relationship with rtnl.
+On 16/03/2021 19:48, Rob Herring wrote:
+> Users of common properties shouldn't have a type definition as the
+> common schemas already have one. Drop all the unnecessary type
+> references in the tree.
+> 
+> A meta-schema update to catch these is pending.
+> 
+> Cc: Nicolas Saenz Julienne<nsaenzjulienne@suse.de>
+> Cc: Maxime Ripard<mripard@kernel.org>
+> Cc: Linus Walleij<linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski<bgolaszewski@baylibre.com>
+> Cc: Bjorn Andersson<bjorn.andersson@linaro.org>
+> Cc: Krzysztof Kozlowski<krzk@kernel.org>
+> Cc: Marc Kleine-Budde<mkl@pengutronix.de>
+> Cc: "David S. Miller"<davem@davemloft.net>
+> Cc: Jakub Kicinski<kuba@kernel.org>
+> Cc: Srinivas Kandagatla<srinivas.kandagatla@linaro.org>
+> Cc: Ohad Ben-Cohen<ohad@wizery.com>
+> Cc: Mark Brown<broonie@kernel.org>
+> Cc: Cheng-Yi Chiang<cychiang@chromium.org>
+> Cc: Benson Leung<bleung@chromium.org>
+> Cc: Zhang Rui<rui.zhang@intel.com>
+> Cc: Daniel Lezcano<daniel.lezcano@linaro.org>
+> Cc: Greg Kroah-Hartman<gregkh@linuxfoundation.org>
+> Cc: Stefan Wahren<wahrenst@gmx.net>
+> Cc: Masahiro Yamada<yamada.masahiro@socionext.com>
+> Cc: Odelu Kukatla<okukatla@codeaurora.org>
+> Cc: Alex Elder<elder@kernel.org>
+> Cc: Suman Anna<s-anna@ti.com>
+> Cc: Kuninori Morimoto<kuninori.morimoto.gx@renesas.com>
+> Cc: Dmitry Baryshkov<dmitry.baryshkov@linaro.org>
+> Cc:linux-gpio@vger.kernel.org
+> Cc:linux-pm@vger.kernel.org
+> Cc:linux-can@vger.kernel.org
+> Cc:netdev@vger.kernel.org
+> Cc:linux-remoteproc@vger.kernel.org
+> Cc:alsa-devel@alsa-project.org
+> Cc:linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring<robh@kernel.org>
+> ---
+>   .../bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml       | 5 +----
+>   Documentation/devicetree/bindings/arm/cpus.yaml              | 2 --
+>   .../bindings/display/allwinner,sun4i-a10-tcon.yaml           | 1 -
+>   .../devicetree/bindings/gpio/socionext,uniphier-gpio.yaml    | 3 +--
+>   .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml      | 1 -
+>   .../devicetree/bindings/interconnect/qcom,rpmh.yaml          | 1 -
+>   .../bindings/memory-controllers/nvidia,tegra210-emc.yaml     | 2 +-
+>   Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml   | 1 -
+>   Documentation/devicetree/bindings/net/qcom,ipa.yaml          | 1 -
+>   Documentation/devicetree/bindings/nvmem/nvmem-consumer.yaml  | 2 --
 
-Antoine
+For nvmem parts,
+
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+
+--srini
