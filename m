@@ -2,80 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC60733FAA3
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 22:51:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA2DD33FAE2
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 23:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbhCQVub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 17:50:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43128 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230343AbhCQVuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 17:50:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 970B164F30;
-        Wed, 17 Mar 2021 21:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616017809;
-        bh=KeB9yrscBANRcHaKxVZ2tQmQgP9cEKw099xg0qrw9sc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XoorWbkvstdplA34coGkDTkOV+8N0MpWtgC5FRNwnGdFZ5X5UjK7ugtFK7QHjZN+t
-         HP3iensWpYnyJ5SmGcsAqvDeiA8w48Xn2T1VjV/81F1pL3uJMLyTWUHpUmWGrvt+PE
-         KU64YqDuH/pGXMJqtWt2ibpbH1XfJanfOBM0GhogwlfJQhhp7c9IAFpJ5RL6U6Yovd
-         jtR32V/GIwHVgkjILW7jRPFWXvMFKXmPhjTsEy9hlaLZqz+Wu1pdRviKaUKnzVeKkq
-         M5oYGXxwyTTeQ0S8QNorPL8TytgvJL2XzZcPZjnO4IbHPFb79DWPNmLiTgTVxXugN+
-         57fLSRrTVVqlA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 891DC60A45;
-        Wed, 17 Mar 2021 21:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229866AbhCQWSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 18:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230180AbhCQWSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 18:18:37 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3909C06174A;
+        Wed, 17 Mar 2021 15:18:36 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id h82so477186ybc.13;
+        Wed, 17 Mar 2021 15:18:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VGJUHdigdozISfP0Ka6FvwuOT2FQe2qS4H2lJU3h+oo=;
+        b=rynR7XRyiiCi3rCx3tMvVZJpcdVNPXUWn/++pAm4zdmLD0B4CLm7weL081DFRUxQpT
+         ocFiV97ZCcX2Tmr2NDKrMGTOosJWdYzl9ipztw8KcFTSOu8FO4Hlye6SQlsi5sxqNHgk
+         9svR8jnAzXlW1tzUTiBCXwnZB747e1w2WonNpYiS4X5miQw7tyUh0kI0ZacBlYKBshDS
+         Sz/jDbjh2wNXv1XZv9tvVZGIs8WYXcDqzbqmfl6TbeaDiLWYXDFePO6YaDkCjoNvuyxA
+         dens0Y/dxFmi+mTNDVn8k5NvZFvoGcwiWmBPitIQFGIGH6vOS9ye07BM9ZpkXzVTDNxQ
+         UY/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VGJUHdigdozISfP0Ka6FvwuOT2FQe2qS4H2lJU3h+oo=;
+        b=UPoCgpGMCpMIgKdR+GXorlz6PzmYobHptyKdSJKkZvhC0VptkTNngJY/QKLzkzhAGI
+         FU2imDvnrlQ8b9F2WPltDoFIAWaBI6NrjRelhc/6ANEY8+JiBIfL66grZ4KRx2ZiPz8i
+         OFiYGHyzZXwmZ85QMrNlCnMdOQdQDEw2kqZxcLdS7ADPX2mCqEJz6DPdU4tr7hMt0SkC
+         fK2deLLmbhAdid0n7VbIctUMUiwVrN6+U389U+cJdbEDgnGEtqlZuz4QUKKMqxzaZ7IY
+         0XXb45SitcYy5bGQlHGmHE8JzSCPotILS3Da2efGXqHFWFuTE5/Kd+Rz/AeZEXzS+bBl
+         k9+w==
+X-Gm-Message-State: AOAM5301acG75yVTkQ1jWVKJacUwLPhg0EYmsFjUgmOvTkboSwZPxg47
+        Ev0iBi0ncmdeUkLv6m4Yz+RVzuR/XBT7W7MEL9N5rCpwLPc=
+X-Google-Smtp-Source: ABdhPJy7hDq/YkItLIucVVEi96SezMQp1d7RicHqagh1aw/DUuNkytuazB/Al32B9Ag60tP8IwruWUMQZrQbTUMhcAE=
+X-Received: by 2002:a25:cc13:: with SMTP id l19mr7635863ybf.260.1616019018047;
+ Wed, 17 Mar 2021 15:10:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v17 0/4] Add support for mv88e6393x family of Marvell
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161601780955.9052.1653629798204328180.git-patchwork-notify@kernel.org>
-Date:   Wed, 17 Mar 2021 21:50:09 +0000
-References: <20210317134643.24463-1-kabel@kernel.org>
-In-Reply-To: <20210317134643.24463-1-kabel@kernel.org>
-To:     =?utf-8?q?Marek_Beh=C3=BAn_=3Ckabel=40kernel=2Eorg=3E?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
-        linux@armlinux.org.uk, olteanv@gmail.com, andrew@lunn.ch,
-        ashkan.boldaji@digi.com, davem@davemloft.net, kuba@kernel.org,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, lkp@intel.com
+References: <20210313193537.1548766-1-andrii@kernel.org> <20210313193537.1548766-8-andrii@kernel.org>
+ <20210317052540.3f6epwcm6o5zwsdi@ast-mbp>
+In-Reply-To: <20210317052540.3f6epwcm6o5zwsdi@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 17 Mar 2021 15:10:06 -0700
+Message-ID: <CAEf4BzbLtWcgex0+zEfy=6n2783N3nWCX2RkE3Nh1peUHaFXkw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 07/11] libbpf: add BPF static linker BTF and
+ BTF.ext support
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Mar 16, 2021 at 10:25 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sat, Mar 13, 2021 at 11:35:33AM -0800, Andrii Nakryiko wrote:
+> > +             for (j = 0; j < n; j++, src_var++) {
+> > +                     void *sec_vars = dst_sec->sec_vars;
+> > +
+> > +                     sec_vars = libbpf_reallocarray(sec_vars,
+> > +                                                    dst_sec->sec_var_cnt + 1,
+> > +                                                    sizeof(*dst_sec->sec_vars));
+> > +                     if (!sec_vars)
+> > +                             return -ENOMEM;
+> > +
+> > +                     dst_sec->sec_vars = sec_vars;
+> > +                     dst_sec->sec_var_cnt++;
+> > +
+> > +                     dst_var = &dst_sec->sec_vars[dst_sec->sec_var_cnt - 1];
+> > +                     dst_var->type = obj->btf_type_map[src_var->type];
+> > +                     dst_var->size = src_var->size;
+> > +                     dst_var->offset = src_sec->dst_off + src_var->offset;
+> > +             }
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static void *add_btf_ext_rec(struct btf_ext_sec_data *ext_data, const void *src_rec)
+> > +{
+> > +     size_t new_sz = (ext_data->rec_cnt + 1) * ext_data->rec_sz;
+> > +     void *tmp;
+> > +
+> > +     tmp = realloc(ext_data->recs, new_sz);
+> > +     if (!tmp)
+> > +             return NULL;
+> > +
+> > +     ext_data->recs = tmp;
+> > +     ext_data->rec_cnt++;
+> > +
+> > +     tmp += new_sz - ext_data->rec_sz;
+> > +     memcpy(tmp, src_rec, ext_data->rec_sz);
+>
+> while reading this and previous patch the cnt vs sz difference was
+> constantly throwing me off. Not a big deal, of course.
+> Did you consider using _cnt everywhere and use finalize method
+> to convert everything to size?
+> Like in this function libbpf_reallocarray() instead of realloc() would
+> probably be easier to read and more consistent, since btf_ext_sec_data
+> is measuring things in _cnt.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+will switch this and add_sym() to reallocarray, given both are dealing
+with real fixed-size records (not just bytes)
 
-On Wed, 17 Mar 2021 14:46:39 +0100 you wrote:
-> Hello,
-> 
-> after 2 months I finally had time to send v17 of Amethyst patches.
-> 
-> This series is tested on Marvell CN9130-CRB.
-> 
-> Changes since v16:
-> - dropped patches adding 5gbase-r, since they are already merged
-> - rebased onto net-next/master
-> - driver API renamed set_egress_flood() method into 2 methods for
->   ucast/mcast floods, so this is fixed
-> 
-> [...]
+> In the previous patch the section is in _sz which I guess is necessary
+> because sections can contain differently sized objects?
 
-Here is the summary with links:
-  - [net-next,v17,1/4] net: dsa: mv88e6xxx: change serdes lane parameter type from u8 type to int
-    https://git.kernel.org/netdev/net-next/c/193c5b2698e3
-  - [net-next,v17,2/4] net: dsa: mv88e6xxx: wrap .set_egress_port method
-    https://git.kernel.org/netdev/net-next/c/2fda45f019fd
-  - [net-next,v17,3/4] net: dsa: mv88e6xxx: add support for mv88e6393x family
-    https://git.kernel.org/netdev/net-next/c/de776d0d316f
-  - [net-next,v17,4/4] net: dsa: mv88e6xxx: implement .port_set_policy for Amethyst
-    https://git.kernel.org/netdev/net-next/c/6584b26020fc
+yes, it could be records of different sizes (e.g., relocations,
+symbols), or just unstructured data (e.g., .data, string table, etc).
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>
+> btw, strset abstraction is really nice. It made the patches much easier
+> to read.
 
-
+Thanks. Yeah, it simplified existing BTF/btf_dedup logic quite a bit
+as well, it was a good suggestion!
