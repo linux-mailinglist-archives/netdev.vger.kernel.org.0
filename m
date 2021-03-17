@@ -2,98 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0C1333F852
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A00933F856
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:47:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233027AbhCQSqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 14:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232979AbhCQSpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 14:45:50 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07352C06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 11:45:50 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id u10so477367lff.1
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 11:45:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=c1Vo+PFUeE9aRuUhu23/K3obSvmo0kuOl6bgQ+yRO3o=;
-        b=SnreKLt+o4KUAB9hZr1ouxCqW/G/JdJq5hpyGgN6b8z5oQyeybcwL7r7784GzI1fqe
-         sAuMamQKzsMK1TzVvAy1D0FoclGSmasTHjJwjPBbaZb9H2YzU4Zrn5LsWYkUIngZnn+C
-         QNa6snfpvnnuoXYq1sQmS0gQuco8lZxcPi1YvTHLgMNCvgxSYBFpoWkTAP9nywCtS7iW
-         mAOSu9AdJDacDlnTsglzsQA2gpDzZvj9ZkPJZMyKrvQxonzq5agxq4S3NLB6nAurloxA
-         W+bhiKH4M4Xl1hIN+KB+MXHY+fwy+rbMMq0ub1Wb2m4h1nUI7Qq0CthVL/dx+u4w1kvu
-         4XTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=c1Vo+PFUeE9aRuUhu23/K3obSvmo0kuOl6bgQ+yRO3o=;
-        b=MAHmVoSxaYiHOs9EUl7vVEJuqgRpegvCqX8Iel2xyZxh6GqmPHJhx7EtWLsK7ByWkQ
-         ip04zxnL8MgiVIAUCM3gRjqHqTX4u5XQDcO3Ns852sao1B2f8XhYtVYsZ2VSjUN4J6fh
-         TAaHm2IUrDJUDegBGAVVdp3GzQZLjTRHI15OIlB35CfCvCzSZo6cIQlTh6F8oMSRTOTe
-         f25eObMsQVqEu1cJzPQcNeub+54dohvTO8/neDbbzXMINjRu6mKmsBhyay2uUyaXCCuu
-         yx6BAohzqC2yS4FNsAX8mmzduas7iBzBDaVaiQQ1E9x6IsnngUxATBfPU5jYJ/O5IR6/
-         PQ3w==
-X-Gm-Message-State: AOAM532tnR548vRMWd2wRQ9MwHTx3tLXMhc9RaaEdlcwrE6q9FvDTN4E
-        YI7buKfMQbESt0xk3SlZV+YgCqr13L1hC4lt
-X-Google-Smtp-Source: ABdhPJwwi3K7a6WxKrtQNjX7RZUV69M8/Aw5po8WjHpNJ7MFo02COfVbE9f3YQmz3sSmfy9HT0DzyA==
-X-Received: by 2002:a05:6512:ad4:: with SMTP id n20mr3203927lfu.507.1616006748214;
-        Wed, 17 Mar 2021 11:45:48 -0700 (PDT)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id r23sm3500582lfm.73.2021.03.17.11.45.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 11:45:47 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 4/5] net: dsa: mv88e6xxx: Offload bridge learning flag
-In-Reply-To: <20210317141224.ssll7nt64lqym3wg@skbuf>
-References: <20210315211400.2805330-1-tobias@waldekranz.com> <20210315211400.2805330-5-tobias@waldekranz.com> <20210317141224.ssll7nt64lqym3wg@skbuf>
-Date:   Wed, 17 Mar 2021 19:45:46 +0100
-Message-ID: <87k0q5obz9.fsf@waldekranz.com>
+        id S233060AbhCQSrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 14:47:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34248 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233095AbhCQSrD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 14:47:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0AF6964F04;
+        Wed, 17 Mar 2021 18:47:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616006822;
+        bh=kTKKadJol3g+5hcymRsUO5tuOsB1qq0XcTxzdfmjjnM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KWMBQkKHrc/rTYQZIT4lSGcEgUE/TihaneLbTvLOi1lzOGNkchUDaQK7GwaYCCUYd
+         j1WAm1m3YW+sW2VS3fGv8kNw7p4NSp8YEptlICMnnAsBNW1C82Oon2Ee7G4AdpF5i7
+         5eSV5VrAr1opg/EkSYFefQlI5NMfARS4FFisIG9bDM3Iu8cZkhqQBfBQyhY6XkNQDI
+         G8PX5RWU8YZVWAKtdLpV69I1uzROra/a+BpRk5gQdcFY2H0A5qSpedtkhPzCt/bjhJ
+         Erw+f9qtU5TacLvX5uPt08Qmc1mpLgAeVxDVe4Lbl/+Fo3rRDSM7RKZqwYETxdaafS
+         t9qzkD2dy5zJw==
+Date:   Wed, 17 Mar 2021 11:47:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     sundeep subbaraya <sundeep.lkml@gmail.com>
+Cc:     Hariprasad Kelam <hkelam@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        lcherian@marvell.com, Geetha sowjanya <gakula@marvell.com>,
+        jerinj@marvell.com, Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: Re: [net PATCH 4/9] octeontx2-af: Remove TOS field from MKEX TX
+Message-ID: <20210317114701.4c0a1263@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CALHRZuq272aJR8Jh5rS7y-b28t6eHhthPB_6aUoZExv0dCsorQ@mail.gmail.com>
+References: <1615886833-71688-1-git-send-email-hkelam@marvell.com>
+        <1615886833-71688-5-git-send-email-hkelam@marvell.com>
+        <20210316100616.333704ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CALHRZuq272aJR8Jh5rS7y-b28t6eHhthPB_6aUoZExv0dCsorQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 16:12, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Mon, Mar 15, 2021 at 10:13:59PM +0100, Tobias Waldekranz wrote:
->> +	if (flags.mask & BR_LEARNING) {
->> +		u16 pav = (flags.val & BR_LEARNING) ? (1 << port) : 0;
->> +
->> +		err = mv88e6xxx_port_set_assoc_vector(chip, port, pav);
->> +		if (err)
->> +			goto out;
->> +	}
->> +
->
-> If flags.val & BR_LEARNING is off, could you please call
-> mv88e6xxx_port_fast_age too? This ensures that existing ATU entries that
-> were automatically learned are purged.
+On Wed, 17 Mar 2021 12:07:12 +0530 sundeep subbaraya wrote:
+> On Tue, Mar 16, 2021 at 10:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Tue, 16 Mar 2021 14:57:08 +0530 Hariprasad Kelam wrote:  
+> > > From: Subbaraya Sundeep <sbhatta@marvell.com>
+> > >
+> > > TOS overlaps with DMAC field in mcam search key and hence installing
+> > > rules for TX side are failing. Hence remove TOS field from TX profile.  
+> >
+> > Could you clarify what "installing rules is failing" means?
+> > Return error or does not behave correctly?  
+> 
+> Returns error. The MKEX profile can be in a way where higher layer packet fields
+> can overwrite lower layer packet fields in output MCAM Key. The commit
+> 42006910 ("octeontx2-af: cleanup KPU config data") introduced TX TOS field and
+> it overwrites DMAC. AF driver return error when TX rule is installed
+> with DMAC as
+> match criteria since DMAC gets overwritten and cannot be supported. Layers from
+> lower to higher in our case:
+> LA - Ethernet
+> LB - VLAN
+> LC - IP
+> LD - TCP/UDP
+> and so on.
+> 
+> We make sure there are no overlaps between layers but TOS got added by mistake.
+> We will elaborate the commit description and send the next version.
 
-This opened up another can of worms.
-
-It turns out that the hardware is incapable of fast aging a LAG. I can
-see two workarounds. Both are awful in their own special ways:
-
-1. Iterate over all entries of all FIDs in the ATU, removing all
-   matching dynamic entries. This will accomplish the same thing, but it
-   is a very expensive operation, and having that in the control path of
-   STP does not feel quite right.
-
-2. Flushing all dynamic entries in the entire ATU. Fast, but obviously
-   results in a period of lots of flooded packets.
-
-Any opinion on which approach you think would hurt less? Or, even
-better, if there is a third way that I have missed.
-
-For this series I am leaning towards making mv88e6xxx_port_fast_age a
-no-op for LAG ports. We could then come back to this problem when we add
-other LAG-related FDB operations like static FDB entries. Acceptable?
+Thank you! The longer explanation makes the error clear.
