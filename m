@@ -2,251 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E2033E2CC
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:33:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB6EB33E2DB
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:37:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbhCQAcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 20:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
+        id S229877AbhCQAgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 20:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbhCQAb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 20:31:59 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CF7C06175F
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 17:31:59 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id x9so230923qto.8
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 17:31:59 -0700 (PDT)
+        with ESMTP id S229889AbhCQAgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 20:36:04 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7D0C06174A;
+        Tue, 16 Mar 2021 17:35:53 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 16so17331033pgo.13;
+        Tue, 16 Mar 2021 17:35:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=ajh1+QbItc7CsqYtQsH4LdTlMDdkFsd6TJkeoaijHjM=;
-        b=hzUSawBeHFdOg8Jqs1gwe17qiBs2ZQ/ZgbclHFNQK5cYqDDsRTe1gq5Pi+qbPauEQg
-         rOuWfUg2dO2Dt8PoPuSwbxXzJf56o4ODaPkhNNLN6OVaTRI2qKt3eQ1he/A5Ja+Fvp9g
-         9qGQT1b8uLbURGk/5PregpBYq7SKLIeEaLsEHB3R466aXy3pENHtYVj2I+CnlMz2+E53
-         3s+5LiO1I3l1O4r2lDhAkzPsCMoYAnw8YdE+Ekiapu6g8WZnMc3YERk3nO4pv8UaUwrK
-         UHVSEOvzigldjKfSixuMQYfT7zx4G0sahLbbn2GUKBDkr8FadOWg4loZRKoRjcOYomMG
-         hntQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QDip3SzBtHzcBDdUiV2HefgqfnF/uiPbWhDoegjjzjs=;
+        b=U1oRg+lgWozXtxGxSLYAWo57Jao8dAAw0GvDtmeY2FQfTfBXGh75mTW5glhD4lDVOG
+         9PPhB6dihOrHiiPfAxDVdZovmc+fXV0fgg7OFE/T+QRdjmYRITvKbyQJ36r+n8+qSr4E
+         A6nQ6feR3P4DDe2OQx67UZ+hSFztxSOBku1hx2naxIrUS/7kl+iB5aQT43T5DDWsKrt5
+         OTa925SETzr1OWJvHwva4uLwBZLJ7TSICeTuSBzbwlcvKNRz1TsJMbql3KpPALROsIuA
+         jp6uOy689J275NMDt/C2Ip5ItluzWSSqrdJ7JPPANRmfUEO4VfQcpy/MMYEeTSW2voYw
+         6cBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=ajh1+QbItc7CsqYtQsH4LdTlMDdkFsd6TJkeoaijHjM=;
-        b=GaErNwYS9gUuf1QUJOhDKHIG4XlaS7xZENwU8AOIQ106HO28Pdplg7ds9g8PL+Cuv8
-         ikuzjMHH3iWGabD8xA7DwD5YjoejgRTWwL+K9ooV2o0XvW0i6c1s4QEXqoMuteejxSDk
-         FLxsgw2qvl694IVbB08Cwv1fpl44EAeQHhCe7/j9AaW5ey1dLBePqbNBF3s2tc9LL+Yu
-         0nUhpzqqbq//11gLJw8rYSyQjywxXKG8umO0GGf+w4+cHA5K8qy2bUYWE2VfQUeLwHF2
-         Zd3e84+jL+620Cq9QgRZRR9LAbaDfWLHnxxZhREc6r7qByoDcODuKfthDYaxTCfxgOoc
-         JIVw==
-X-Gm-Message-State: AOAM531PlLoj2G0sDW4KzlQZ5ITMwUtcQTzjg0nmlmxZvKGJlD+dfcyV
-        NesnH3G87l52KfUZAQRVT9c=
-X-Google-Smtp-Source: ABdhPJyycGqDdUPO/ARlPxw9Wcwk3LOLSzKnF0FRL0rMlZiSg7ev6OrpbAC2vu6oioWdu4Q/Qrk5Pg==
-X-Received: by 2002:ac8:6b8a:: with SMTP id z10mr1421483qts.243.1615941118727;
-        Tue, 16 Mar 2021 17:31:58 -0700 (PDT)
-Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id y19sm16392794qky.111.2021.03.16.17.31.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QDip3SzBtHzcBDdUiV2HefgqfnF/uiPbWhDoegjjzjs=;
+        b=MngxIp8FPAv/VoPfzNrAyFiBT3n+4wF9AX2a38DJ81PcEAC/2luC/vU1Rnpep+oFGY
+         57WlkP08a7lIHLaxFeWqCob47rQuOg1S4dduy973WQ5PID/6hIDYRzZpXb7pCTf13WQe
+         mlA7aBgTPeE42TsHVa3TWfviq0lq7+bFtxouNzsn1OqowVdb9RkdWz4BLT8sZ4NFIVG+
+         hHQENiHkVlnpwr64G7LRIQQh6sfa4fvp6OUxMHwflw+Jsr8ko/GKe2UrbuczzeRAhsmi
+         tZd3nU7aURJkFLELCAs1d4yCRRzchSjzh3Wnt7mvFwrOyWeKaTD8z68NXZiLPGtx/4hu
+         hdwg==
+X-Gm-Message-State: AOAM530Lg7ipK2pDvVwqMv5cAebHgYC0O804IOn1pp/1Hfh4YZqhqVYG
+        jk5tYwZL9oDhTPt65kdueN8ltL9PppY=
+X-Google-Smtp-Source: ABdhPJxHDVLlyo+nnwRrrS/KdYlyUzATX7Pd+M+m0InfH7zfC9TNwryqK0lLHTVpoZJfsXCUM3z4kA==
+X-Received: by 2002:a65:6a4b:: with SMTP id o11mr347888pgu.138.1615941352479;
+        Tue, 16 Mar 2021 17:35:52 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id k63sm18796512pfd.48.2021.03.16.17.35.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 17:31:58 -0700 (PDT)
-Subject: [net-next PATCH v2 10/10] ionic: Update driver to use ethtool_sprintf
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        simon.horman@netronome.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        drivers@pensando.io, snelson@pensando.io, netanel@amazon.com,
-        akiyano@amazon.com, gtzalik@amazon.com, saeedb@amazon.com,
-        GR-Linux-NIC-Dev@marvell.com, skalluru@marvell.com,
-        rmody@marvell.com, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, mst@redhat.com,
-        jasowang@redhat.com, pv-drivers@vmware.com, doshir@vmware.com,
-        alexanderduyck@fb.com, Kernel-team@fb.com
-Date:   Tue, 16 Mar 2021 17:31:55 -0700
-Message-ID: <161594111532.5644.3540447704803147733.stgit@localhost.localdomain>
-In-Reply-To: <161594093708.5644.11391417312031401152.stgit@localhost.localdomain>
-References: <161594093708.5644.11391417312031401152.stgit@localhost.localdomain>
-User-Agent: StGit/0.23
+        Tue, 16 Mar 2021 17:35:51 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list), stable@vger.kernel.org,
+        gregkh@linuxfoundation.org, sashal@kernel.org
+Subject: [PATCH stable 0/6] net: dsa: b53: Correct learning for standalone ports
+Date:   Tue, 16 Mar 2021 17:35:43 -0700
+Message-Id: <20210317003549.3964522-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexanderduyck@fb.com>
+Hi Greg, Sasha, Jaakub and David,
 
-Update the ionic driver to make use of ethtool_sprintf. In addition add
-separate functions for Tx/Rx stats strings in order to reduce the total
-amount of indenting needed in the driver code.
+This patch series contains backports for a change that recently made it
+upstream as f9b3827ee66cfcf297d0acd6ecf33653a5f297ef ("net: dsa: b53:
+Support setting learning on port") however that commit depends on
+infrastructure that landed in v5.12-rc1.
 
-Acked-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
----
- drivers/net/ethernet/pensando/ionic/ionic_stats.c |  145 +++++++++------------
- 1 file changed, 60 insertions(+), 85 deletions(-)
+The way this was fixed in the netdev group's net tree is slightly
+different from how it should be backported to stable trees which is why
+you will find a patch for each branch in the thread started by this
+cover letter. The commit used as a Fixes: base dates back from when the
+driver was first introduced into the tree since this should have been
+fixed from day one ideally.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.c b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-index 6ae75b771a15..308b4ac6c57b 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-@@ -246,98 +246,73 @@ static u64 ionic_sw_stats_get_count(struct ionic_lif *lif)
- 	return total;
- }
- 
-+static void ionic_sw_stats_get_tx_strings(struct ionic_lif *lif, u8 **buf,
-+					  int q_num)
-+{
-+	int i;
-+
-+	for (i = 0; i < IONIC_NUM_TX_STATS; i++)
-+		ethtool_sprintf(buf, "tx_%d_%s", q_num,
-+				ionic_tx_stats_desc[i].name);
-+
-+	if (!test_bit(IONIC_LIF_F_UP, lif->state) ||
-+	    !test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state))
-+		return;
-+
-+	for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++)
-+		ethtool_sprintf(buf, "txq_%d_%s", q_num,
-+				ionic_txq_stats_desc[i].name);
-+	for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++)
-+		ethtool_sprintf(buf, "txq_%d_cq_%s", q_num,
-+				ionic_dbg_cq_stats_desc[i].name);
-+	for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++)
-+		ethtool_sprintf(buf, "txq_%d_intr_%s", q_num,
-+				ionic_dbg_intr_stats_desc[i].name);
-+	for (i = 0; i < IONIC_MAX_NUM_SG_CNTR; i++)
-+		ethtool_sprintf(buf, "txq_%d_sg_cntr_%d", q_num, i);
-+}
-+
-+static void ionic_sw_stats_get_rx_strings(struct ionic_lif *lif, u8 **buf,
-+					  int q_num)
-+{
-+	int i;
-+
-+	for (i = 0; i < IONIC_NUM_RX_STATS; i++)
-+		ethtool_sprintf(buf, "rx_%d_%s", q_num,
-+				ionic_rx_stats_desc[i].name);
-+
-+	if (!test_bit(IONIC_LIF_F_UP, lif->state) ||
-+	    !test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state))
-+		return;
-+
-+	for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++)
-+		ethtool_sprintf(buf, "rxq_%d_cq_%s", q_num,
-+				ionic_dbg_cq_stats_desc[i].name);
-+	for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++)
-+		ethtool_sprintf(buf, "rxq_%d_intr_%s", q_num,
-+				ionic_dbg_intr_stats_desc[i].name);
-+	for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++)
-+		ethtool_sprintf(buf, "rxq_%d_napi_%s", q_num,
-+				ionic_dbg_napi_stats_desc[i].name);
-+	for (i = 0; i < IONIC_MAX_NUM_NAPI_CNTR; i++)
-+		ethtool_sprintf(buf, "rxq_%d_napi_work_done_%d", q_num, i);
-+}
-+
- static void ionic_sw_stats_get_strings(struct ionic_lif *lif, u8 **buf)
- {
- 	int i, q_num;
- 
--	for (i = 0; i < IONIC_NUM_LIF_STATS; i++) {
--		snprintf(*buf, ETH_GSTRING_LEN, ionic_lif_stats_desc[i].name);
--		*buf += ETH_GSTRING_LEN;
--	}
-+	for (i = 0; i < IONIC_NUM_LIF_STATS; i++)
-+		ethtool_sprintf(buf, ionic_lif_stats_desc[i].name);
- 
--	for (i = 0; i < IONIC_NUM_PORT_STATS; i++) {
--		snprintf(*buf, ETH_GSTRING_LEN,
--			 ionic_port_stats_desc[i].name);
--		*buf += ETH_GSTRING_LEN;
--	}
-+	for (i = 0; i < IONIC_NUM_PORT_STATS; i++)
-+		ethtool_sprintf(buf, ionic_port_stats_desc[i].name);
- 
--	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
--		for (i = 0; i < IONIC_NUM_TX_STATS; i++) {
--			snprintf(*buf, ETH_GSTRING_LEN, "tx_%d_%s",
--				 q_num, ionic_tx_stats_desc[i].name);
--			*buf += ETH_GSTRING_LEN;
--		}
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++)
-+		ionic_sw_stats_get_tx_strings(lif, buf, q_num);
- 
--		if (test_bit(IONIC_LIF_F_UP, lif->state) &&
--		    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
--			for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "txq_%d_%s",
--					 q_num,
--					 ionic_txq_stats_desc[i].name);
--				*buf += ETH_GSTRING_LEN;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "txq_%d_cq_%s",
--					 q_num,
--					 ionic_dbg_cq_stats_desc[i].name);
--				*buf += ETH_GSTRING_LEN;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "txq_%d_intr_%s",
--					 q_num,
--					 ionic_dbg_intr_stats_desc[i].name);
--				*buf += ETH_GSTRING_LEN;
--			}
--			for (i = 0; i < IONIC_MAX_NUM_SG_CNTR; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "txq_%d_sg_cntr_%d",
--					 q_num, i);
--				*buf += ETH_GSTRING_LEN;
--			}
--		}
--	}
--	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
--		for (i = 0; i < IONIC_NUM_RX_STATS; i++) {
--			snprintf(*buf, ETH_GSTRING_LEN,
--				 "rx_%d_%s",
--				 q_num, ionic_rx_stats_desc[i].name);
--			*buf += ETH_GSTRING_LEN;
--		}
--
--		if (test_bit(IONIC_LIF_F_UP, lif->state) &&
--		    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
--			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "rxq_%d_cq_%s",
--					 q_num,
--					 ionic_dbg_cq_stats_desc[i].name);
--				*buf += ETH_GSTRING_LEN;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "rxq_%d_intr_%s",
--					 q_num,
--					 ionic_dbg_intr_stats_desc[i].name);
--				*buf += ETH_GSTRING_LEN;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "rxq_%d_napi_%s",
--					 q_num,
--					 ionic_dbg_napi_stats_desc[i].name);
--				*buf += ETH_GSTRING_LEN;
--			}
--			for (i = 0; i < IONIC_MAX_NUM_NAPI_CNTR; i++) {
--				snprintf(*buf, ETH_GSTRING_LEN,
--					 "rxq_%d_napi_work_done_%d",
--					 q_num, i);
--				*buf += ETH_GSTRING_LEN;
--			}
--		}
--	}
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++)
-+		ionic_sw_stats_get_rx_strings(lif, buf, q_num);
- }
- 
- static void ionic_sw_stats_get_values(struct ionic_lif *lif, u64 **buf)
+Let me know if this does not apply for some reason. The changes from 4.9
+through 4.19 are nearly identical and then from 5.4 through 5.11 are
+about the same.
 
+Thank you very much!
+-- 
+2.25.1
 
