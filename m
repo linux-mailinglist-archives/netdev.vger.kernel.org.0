@@ -2,93 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F4433F4A1
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 16:53:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0855633F4D9
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 17:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbhCQPwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 11:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44670 "EHLO
+        id S232181AbhCQQAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 12:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232601AbhCQPwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 11:52:01 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B911AC061760;
-        Wed, 17 Mar 2021 07:54:20 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id g15so1281897pfq.3;
-        Wed, 17 Mar 2021 07:54:20 -0700 (PDT)
+        with ESMTP id S231998AbhCQP7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 11:59:38 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6D1C06174A
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 08:59:38 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id 20so3725109lfj.13
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 08:59:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VX8xHL+87BW1KLwBi9gunx33qho2YZRZxASXIV7grFw=;
-        b=O9LTjZNCsR9gSSAS+S8FvfugaFJ75IngmN7wDk/aTR6vvVj+58f7H+crABZO9DV+d2
-         v7rUGLBY0T42bTYQvj+u1nUuKW15KVOzOAaeyembU52SXZMktL1TDX+ShLFSUgdy7ebD
-         Buebn2I0ry8Et/OCCHpxEj6stBlHCeTVGI8iVq+le09+iCFBrB3PDH86FYmnmxtVmAYV
-         rqQGHsFH5epsVYZ/jIOOdb4ws+0holHCI0SsdAx2HpyFGBSHP1weEUflFlNYmvuAgAGZ
-         t7JvgoerfGrf4kuQhySJwtRtxzaQinU70aNmPckqAnsGu301M1K36ZJU8Q8dOOXWrtm1
-         UdAA==
+        h=message-id:mime-version:content-transfer-encoding
+         :content-description:subject:to:from:date:reply-to;
+        bh=OnRp/ow5kZJwc6RVbQ3nFiL5u7wyYDiEAcrp2x7wZ/E=;
+        b=gRqtL3xOnrS8MvFxw44l0C/9/d1w5uoCOoZ7xXr2nuJJ7ejHN3BgVX/dsWgukb1O+D
+         56MdgSljny4qzUC1t9q4kOLQctt7f+00N0qiC+gqX5M35+evfnf416B07GfO8kT1jlzr
+         0FdnPWMMg/QzW8Pmn4FfgGhXXDX/X31KVnSkOEo3opmYPysqvnEgU8/lJZ4Jbta6o8rC
+         2Y1ToArwVdTXj+ZpqSbaX+G1ERibQoa6Q3lh4+A8FJS9x7T6th633+El+gIizthfdCXk
+         yW4e5TSpVzoDWGDDK0XZecGE5rPBr+i/0o/HO8LVIdSBLHkXaUeApXdJZ0fpVsoxdy3n
+         YXVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=VX8xHL+87BW1KLwBi9gunx33qho2YZRZxASXIV7grFw=;
-        b=kjJze3HqKgJ1jDoSXs2rB1aiuxtqtM9kYjjE1jGsLayGAw+HPwJmXp26oIIf9OlUbF
-         tb9Yix0kfQ3cFdJVWcwIxjl+y6aoEYC1VyEsTxf054jvNTuzaON9a+E7YzMgib76Fbkh
-         9RWnlkoslEzLOAhy8ttDdJADgKj1jVHqVONws1CLvRDBwJCTGW5nt4oAhX/EdDEPZmNG
-         V/WnOTaPRfjFM0evj8N0QOLkRmPtwchl4Yz8Hn5HBNnD6H4o6Ug92V2Hh1k5BUTpkhmK
-         pgekBXM0TJbd4sOzPemUNgb51yUinN8Tyod6AaGxLqXpFqx5Mtv1qYtT7BKWLLUQJ8Ny
-         VlMg==
-X-Gm-Message-State: AOAM531K2t4gKtCfBMP1gF6ONFywzXKHf5AGMa6Fh19IGn80EP8VHeFw
-        cGURw1LQ2m4YMZKs4/hWYnQ=
-X-Google-Smtp-Source: ABdhPJwbAGPp4ws0MaZtGJkBqm1DZmMs5QuR3yhHECr1wnRYWABNXQoGOhIDe/BozfrUnBjzWKgEbg==
-X-Received: by 2002:a65:6a48:: with SMTP id o8mr2937671pgu.424.1615992860178;
-        Wed, 17 Mar 2021 07:54:20 -0700 (PDT)
-Received: from balhae.roam.corp.google.com ([101.235.31.111])
-        by smtp.gmail.com with ESMTPSA id a19sm19926273pfn.181.2021.03.17.07.54.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 07:54:19 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH] libbpf: Fix error path in bpf_object__elf_init()
-Date:   Wed, 17 Mar 2021 23:54:14 +0900
-Message-Id: <20210317145414.884817-1-namhyung@kernel.org>
-X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
+        h=x-gm-message-state:message-id:mime-version
+         :content-transfer-encoding:content-description:subject:to:from:date
+         :reply-to;
+        bh=OnRp/ow5kZJwc6RVbQ3nFiL5u7wyYDiEAcrp2x7wZ/E=;
+        b=AKEzrKugYxWHe8CEO9CD+484fTB0QHTVs00CuZ4q69Wc6o8NmmFUITwUrQu/+YD25n
+         xc/0gXPjPprC43UNPxjPBKsLL/U4KbLAq2wbi7gCKbz9imCzLdUeUn6MVtaFpju9sPyK
+         F5W9O82mv0zknzCULZVcQoBzgLFzsN5l7QMvdA+UYeO8nTZBM4Ufq8Z5m30dMpXQFXu/
+         vHdoktt3su9wL2wGE6nVgtYUkn/11o2wth7FOazF7uaMPMD0wA+Q3Y5xedMrByYpDykg
+         wCYTjjvFXKuDnJnh6SVlJX0Z5pDCcXnnWshk9faLslLuoArRCPwcxE4YzER++wDv9y/v
+         vu/w==
+X-Gm-Message-State: AOAM5307aaT9VugTr9hQCWZR0LNRdkZzyEy8mV38OjlBAb2+lE+bVCkr
+        dyJMjj8LfneuLOUEcPyt5wtrHBdz9Aw=
+X-Google-Smtp-Source: ABdhPJzhnNQAmoRy15PEeX34G/ggiCOqVhsWbEaJ9fMZtjLGxV5fZh0zbBEZPo6njnhIggdoRCVdzA==
+X-Received: by 2002:a17:906:40c7:: with SMTP id a7mr36005696ejk.109.1615993494376;
+        Wed, 17 Mar 2021 08:04:54 -0700 (PDT)
+Received: from [10.10.20.76] ([196.170.37.108])
+        by smtp.gmail.com with ESMTPSA id m14sm13186074edr.13.2021.03.17.08.04.50
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Wed, 17 Mar 2021 08:04:53 -0700 (PDT)
+Message-ID: <60521a95.1c69fb81.bd5e6.3513@mx.google.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: muy bien.
+To:     Recipients <ericters522@gmail.com>
+From:   "Mr George Adams" <ericters522@gmail.com>
+Date:   Wed, 17 Mar 2021 15:04:45 +0000
+Reply-To: a.rewso50@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When it failed to get section names, it should call
-bpf_object__elf_finish() like others.
-
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- tools/lib/bpf/libbpf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2f351d3ad3e7..8d610259f4be 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1194,7 +1194,8 @@ static int bpf_object__elf_init(struct bpf_object *obj)
- 	if (!elf_rawdata(elf_getscn(obj->efile.elf, obj->efile.shstrndx), NULL)) {
- 		pr_warn("elf: failed to get section names strings from %s: %s\n",
- 			obj->path, elf_errmsg(-1));
--		return -LIBBPF_ERRNO__FORMAT;
-+		err = -LIBBPF_ERRNO__FORMAT;
-+		goto errout;
- 	}
- 
- 	/* Old LLVM set e_machine to EM_NONE */
--- 
-2.31.0.rc2.261.g7f71774620-goog
-
+Please can I talk to you?
