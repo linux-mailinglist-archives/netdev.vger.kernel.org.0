@@ -2,153 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FA2C33EF76
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 12:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D329633EFB1
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 12:34:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbhCQLZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 07:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        id S231367AbhCQLeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 07:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231370AbhCQLYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 07:24:47 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68AFBC06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 04:24:36 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id mm21so1948017ejb.12
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 04:24:36 -0700 (PDT)
+        with ESMTP id S231324AbhCQLdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 07:33:50 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB36C06174A
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 04:33:50 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id u5-20020a7bcb050000b029010e9316b9d5so1092748wmj.2
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 04:33:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hSS/Mtz25dGTR8AwQy8yx0UIedr/KwWAeWamTDyBego=;
-        b=pEydWW//JEWwUFyC3NIb/hTGNrfBwnBU2ofaM9mGJRU9qS2UHuTatEIllREXEeDg8B
-         ha+JlZu84KEey1JiACbGlK1BDpXuqVxlrDHw128xkPfoaA+dur8+1k5RWZT9u/rRhhq9
-         lN74fVEDjaNdnsny5woJ5KHFb81fcKkm06OjERvKyXcI6omQVK0Y62Or8xDtpSVZiAV7
-         Ory/9YYS7cvX5jzyFukGZ031KkrCNCNzYtwdS4QsBxIrAY4TDWsfqK5zSlRq+iOQUYES
-         PnoZEFmdGMkUdM/2Q4+6QGgYUizY8T0Sk5BRyJ5CeqmqjsE3Oq78B5YVSqDitjDxfah/
-         A3oQ==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Kwk6v/o/d4IQ7dKE46qFH2dUVwEGuil3pNDfhSDIfcs=;
+        b=ERR3lH06T2HxtiV8dYoqNyKq3V+2Xw+W7gepGhYeie4Ue/XTez3ByeVf7p6ejDuZm3
+         w8oOxXtbggHtz1/IYbHTN/p/dWHA0f5YOEbEH2F58V4GOggezm9RQDdvDEHAG6NPqQj6
+         9ni7v8sXWALZ38WHyOSOm0l4+x15lbJ6dV4kIZpMAG5XlE18ZVx/ERoRPnY8RnndIOg+
+         Sb9RhTtEfhIG78GYNqwGA+1QlgCywhb6jX//VYjZAfd7aP1DGJlu3SVcfhlnPjjsSx2G
+         C4gLW0M5TWXF4GL+zfM1KcTm7q6aEbPS6l3bnjM1+aoquHBOpSpkQPmhD7z6Cxr9NzIX
+         4DWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hSS/Mtz25dGTR8AwQy8yx0UIedr/KwWAeWamTDyBego=;
-        b=SN6TUYKP18OdzKKDGeK05J6KCsDZ3840Wp7SMp/mRf7+mjdWlL7YiNHnfNAg+U01QK
-         Y/xyYQk+Q1YXuOpH+1ZD/BPhaAejcXBpBFpz4bhMrkx/WSx6XwaMjUg1TiO8AAM6PxVk
-         9/TGr7C4gdfaaqmltjViA8rUDcV/qZyTqwRMa9UVwQFxS/DJ4dt8LNFfCn1lEda8RUO9
-         LJLg0wwN+Yz7dJIXwVmLuX7kJp/sGCz6ZRT4DhtPe9x3W/rGigJ7BJMGAn1BBTkvqXqK
-         /nuNsQqfcmf8XKgR4Ib/9EcQP9CaDNmZOmvvkzyNOeWyTP2LyfooywdvbtnVK83et0yH
-         hWNQ==
-X-Gm-Message-State: AOAM532O4RuOyDrr2WYQT1RFNCgkZnSGxU5BzkB4fZV2x6w8+gkIaDvY
-        ddOuw5H8e9mvvk42+GmIZB0=
-X-Google-Smtp-Source: ABdhPJzqaiWIef1wg6CXIH96UbMtjDmyq5fhzjqgqlauAtwWqtYzMoRENNamgVTJ15yzzFRSnlveMQ==
-X-Received: by 2002:a17:906:3b99:: with SMTP id u25mr34582607ejf.277.1615980275156;
-        Wed, 17 Mar 2021 04:24:35 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id s11sm12268876edt.27.2021.03.17.04.24.34
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Kwk6v/o/d4IQ7dKE46qFH2dUVwEGuil3pNDfhSDIfcs=;
+        b=F1ej1bTzbaSlf+mlrfFaBycx97wnYwvivjhuXkRhzAKYfIXO5BCv9aXJzTOr8YOf64
+         Ozb9OHAj150pbXmzKUjhwinoFG9bPZxKkZdishpJ1cM/9kav2H3RkfWvPiZv+FEIAwrd
+         HW1Iaba1LlWN3PajIYuD5SA3F7DAHAyS+MHqYEisu7lBCVX8z5V3hNlnjHhkoNW+IubO
+         Dcpac/f0QhnlVsI5jqYbMGiMbUBhquFo2bOg606imXFXSlj7CgwPqZLKgYzLsgJLS8dc
+         rElTkvqAzp/Ompzf8K38kfZTvE35TafnxwQJM8rlFnPI0ncoRObFS8hNM3IMuWQ4sj0w
+         Oy8w==
+X-Gm-Message-State: AOAM532grxaetTEyaCFZOGzCO5vg5iTra660rB8yMV8o7w90OMuIe+pE
+        DVH9YrOS0XvUcYlTgomACu8=
+X-Google-Smtp-Source: ABdhPJy+AxsLgrZYxbMRWY5u8wFRthZU3GZteTxJb6/aGeqZjgFIbze6BWlcubbJ59QqbqXMchToXg==
+X-Received: by 2002:a1c:21c3:: with SMTP id h186mr3171254wmh.32.1615980829048;
+        Wed, 17 Mar 2021 04:33:49 -0700 (PDT)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id c26sm26551756wrb.87.2021.03.17.04.33.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 04:24:34 -0700 (PDT)
-Date:   Wed, 17 Mar 2021 13:24:33 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 5/5] net: dsa: mv88e6xxx: Offload bridge
- broadcast flooding flag
-Message-ID: <20210317112433.byk6gmkrlojz3jlk@skbuf>
-References: <20210315211400.2805330-1-tobias@waldekranz.com>
- <20210315211400.2805330-6-tobias@waldekranz.com>
- <20210316093948.zbhouadshgedktcb@skbuf>
- <87pmzynib9.fsf@waldekranz.com>
+        Wed, 17 Mar 2021 04:33:48 -0700 (PDT)
+Date:   Wed, 17 Mar 2021 12:33:46 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Belisko Marek <marek.belisko@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Subject: Re: set mtu size broken for dwmac-sun8i
+Message-ID: <YFHpGmgOV/O+6lTZ@Red>
+References: <CAAfyv37z0ny=JGsRrVwkzoOd3RNb_j-rQii65a0e2+KMt-YM3A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <87pmzynib9.fsf@waldekranz.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAAfyv37z0ny=JGsRrVwkzoOd3RNb_j-rQii65a0e2+KMt-YM3A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 12:14:18PM +0100, Tobias Waldekranz wrote:
-> Good point. I see two ways forward:
+Le Wed, Mar 17, 2021 at 10:19:26AM +0100, Belisko Marek a écrit :
+> Hi,
 > 
-> - My first idea was to cache a vector per switch that would act as the
->   template when creating a new entry. This avoids having the driver
->   layer knowing about stacked netdevs etc. But I think that Andrew is
->   generally opposed to caching?
+> I'm hunting an issue when setting mtu failed for dwmac-sun8i driver.
+> Basically adding more debug shows that in stmmac_change_mtu
+> tx_fifo_size is 0 and in this case EINVAL is reported. Isaw there was
+> fix for similar driver dwmac-sunxi driver by:
+> 806fd188ce2a4f8b587e83e73c478e6484fbfa55
 > 
-> - Add a new helper at the dsa layer that takes a dp and returns the
->   netdev that is attached to the bridge, if any:
+> IIRC dwmac-sun8i should get tx and rx fifo size from dma but seems
+> it's not the case. I'm using 5.4 kernel LTS release. Any ideas?
 > 
->   struct net_device *dsa_port_to_bridge_port(struct dsa_port *dp)
+> Thanks and BR,
 > 
-> Any preference or other ideas?
-
-I vote for dsa_port_to_bridge_port. We'll need it anyway for my software
-bridging series with sandwiched net devices.
-
-> > Speaking of, shouldn't mv88e6xxx_port_vlan_join also be called from
-> > mv88e6xxx_port_bridge_join somehow, or are we waiting for the bridge
-> > facility to replay VLANs added to the LAG when we emit the offload
-> > notification for it?
+> marek
 > 
-> I do not think so. VLANs are always added via the .port_vlan_add
-> callback, no?
 
-I got things mixed up in my head while thinking about it.
-Yes, of course, the bridge pvid is added via .port_vlan_add as soon as
-the port joins the bridge.
-What I meant to say is that this sequence of events:
+Hello
 
-ip link add br0 type bridge
-ip link add bond0 type bonding
-ip link set bond0 master br0
-ip link set lan0 master bond0
+Could you provide exact command line you tried to change mtu ?
+Along with all MTU values you tried.
 
-will cause lan0 to miss all sorts of information about the bridge port
-switchdev objects, including the pvid. My patch series for
-SWITCHDEV_BRPORT_OFFLOADED catches this case and asks for a replay.
-
-> Potentially the bridge is of the non-filtering variety, so it could be
-> that no VLANs are ever added.
-
-That will not happen unless you set ds->configure_vlan_while_not_filtering = false,
-which mv88e6xxx no longer does, so we're in the clear.
-
-> Or do you mean (the most confusingly named feature Marvell LinkStreet
-> devices) port-based VLANs? Those are setup on a bridge join via
-> mv88e6xxx_port_vlan_map and mv88e6xxx_pvt_map.
-
-Nope, I wasn't thinking about PVTs.
-
-> >> +			/* Skip bridged user ports where broadcast
-> >> +			 * flooding is disabled.
-> >> +			 */
-> >> +			continue;
-> >> +
-> >>  		err = mv88e6xxx_port_add_broadcast(chip, port, vid);
-> >>  		if (err)
-> >>  			return err;
-> >> @@ -1958,6 +1970,51 @@ static int mv88e6xxx_broadcast_setup(struct mv88e6xxx_chip *chip, u16 vid)
-> >>  	return 0;
-> >>  }
-> >>  
-> >> +struct mv88e6xxx_port_broadcast_sync_ctx {
-> >> +	int port;
-> >> +	bool flood;
-> >> +};
-> >> +
-> >> +static int
-> >> +mv88e6xxx_port_broadcast_sync_vlan(struct mv88e6xxx_chip *chip,
-> >> +				   const struct mv88e6xxx_vtu_entry *vlan,
-> >> +				   void *_ctx)
-> >> +{
-> >> +	const char broadcast[6] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-> >
-> > MAC addresses are usually defined as unsigned char[ETH_ALEN]. You can
-> > also use eth_broadcast_addr(broadcast) for initialization.
-> 
-> I was going for uniformity with mv88e6xxx_port_add_broadcast. But I will
-> add a clean-up commit that fixes the existing code first, and then adds
-> this definition in the proper way.
-
-Thanks.
+Thanks
+Regards
