@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CEF833E4A5
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:02:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0574833E4BA
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbhCQBAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 21:00:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36348 "EHLO mail.kernel.org"
+        id S232527AbhCQBA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 21:00:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36320 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231690AbhCQA6k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 20:58:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 02D3064FE6;
-        Wed, 17 Mar 2021 00:58:26 +0000 (UTC)
+        id S231669AbhCQA6l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 20:58:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3581C64FBC;
+        Wed, 17 Mar 2021 00:58:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615942707;
-        bh=Fki+6t2i693xmHEl2L3+HBbS1O+MLL5WTpNnEgLEha8=;
+        s=k20201202; t=1615942708;
+        bh=7mXFKvFqvyTzCk7rBNaInrdfLiqXooAXqpCd82XOxtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dD9TNMjC3uTD/S6uSAgeWpkF6XkAIIMhufnttZL2Uw9VE/f9jLMwA3XIZvMMkITwY
-         fd2iKkcbJUZwVI4e01Aw3dd/ImUBjhw3Jeyu4XKnTLgCWgx0te2cLJhRiT7PJTjMqm
-         V9mD50FO6pDC678A8MlCIATPo5Zx2YOFe/hhM59p0zZxc3sS9Q7RieT3X4MBPXPQ8H
-         aSoXuOf7jjm7Hpf3N9ABPqExTFgyR/hR+btdFSQeClmH5EOdvN/gJilV4iZl+HiEtL
-         m8T93O411dQhipCvOQ/LsTRX1rGzkqZS2gap6kFnukclfOlzctuhVbhKYC5bV5JNIw
-         HHl/Gvcfa4O8Q==
+        b=Sqb74BbLvlalhXEhzZStA+stg2l69dAx+45bLdE3cwGy7Y7q3FnNW7B733XUGIiuf
+         hT1p6woCbkWL7dbHtHTOqGHG8hRt7G4kARaxO8MVkv31kZpBqamqtp73ISkVN5cekA
+         LcmtLJvwNwJmAjhLZqqZdoVBfEq0ykmvoi3ylO0t2e+MxtY5Kdb5O6V0yWL/Q7rvup
+         iGUCRhCMzMzqQxmXgwcFFQiVDi9ohOqAqWFLKoupD9r1UaPmOXtCyJJJX8MnlvpTRk
+         WAHfVNcy0jP2KYopiaU1vjzmO+6wiFO36tg9zOlmpE3UXUexYKDQ+LWEWztI5Tmo/1
+         uKWUYcNjY7G4g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Tong Zhang <ztong0001@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
         linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 20/37] atm: uPD98402: fix incorrect allocation
-Date:   Tue, 16 Mar 2021 20:57:45 -0400
-Message-Id: <20210317005802.725825-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 21/37] atm: idt77252: fix null-ptr-dereference
+Date:   Tue, 16 Mar 2021 20:57:46 -0400
+Message-Id: <20210317005802.725825-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210317005802.725825-1-sashal@kernel.org>
 References: <20210317005802.725825-1-sashal@kernel.org>
@@ -45,35 +45,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tong Zhang <ztong0001@gmail.com>
 
-[ Upstream commit 3153724fc084d8ef640c611f269ddfb576d1dcb1 ]
+[ Upstream commit 4416e98594dc04590ebc498fc4e530009535c511 ]
 
-dev->dev_data is set in zatm.c, calling zatm_start() will overwrite this
-dev->dev_data in uPD98402_start() and a subsequent PRIV(dev)->lock
-(i.e dev->phy_data->lock) will result in a null-ptr-dereference.
+this one is similar to the phy_data allocation fix in uPD98402, the
+driver allocate the idt77105_priv and store to dev_data but later
+dereference using dev->dev_data, which will cause null-ptr-dereference.
 
-I believe this is a typo and what it actually want to do is to allocate
-phy_data instead of dev_data.
+fix this issue by changing dev_data to phy_data so that PRIV(dev) can
+work correctly.
 
 Signed-off-by: Tong Zhang <ztong0001@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/uPD98402.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/atm/idt77105.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/atm/uPD98402.c b/drivers/atm/uPD98402.c
-index 7850758b5bb8..239852d85558 100644
---- a/drivers/atm/uPD98402.c
-+++ b/drivers/atm/uPD98402.c
-@@ -211,7 +211,7 @@ static void uPD98402_int(struct atm_dev *dev)
- static int uPD98402_start(struct atm_dev *dev)
+diff --git a/drivers/atm/idt77105.c b/drivers/atm/idt77105.c
+index 63871859e6e8..52c2878b755d 100644
+--- a/drivers/atm/idt77105.c
++++ b/drivers/atm/idt77105.c
+@@ -262,7 +262,7 @@ static int idt77105_start(struct atm_dev *dev)
  {
- 	DPRINTK("phy_start\n");
--	if (!(dev->dev_data = kmalloc(sizeof(struct uPD98402_priv),GFP_KERNEL)))
-+	if (!(dev->phy_data = kmalloc(sizeof(struct uPD98402_priv),GFP_KERNEL)))
+ 	unsigned long flags;
+ 
+-	if (!(dev->dev_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
++	if (!(dev->phy_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
  		return -ENOMEM;
- 	spin_lock_init(&PRIV(dev)->lock);
- 	memset(&PRIV(dev)->sonet_stats,0,sizeof(struct k_sonet_stats));
+ 	PRIV(dev)->dev = dev;
+ 	spin_lock_irqsave(&idt77105_priv_lock, flags);
+@@ -337,7 +337,7 @@ static int idt77105_stop(struct atm_dev *dev)
+                 else
+                     idt77105_all = walk->next;
+ 	        dev->phy = NULL;
+-                dev->dev_data = NULL;
++                dev->phy_data = NULL;
+                 kfree(walk);
+                 break;
+             }
 -- 
 2.30.1
 
