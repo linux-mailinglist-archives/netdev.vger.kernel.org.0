@@ -2,89 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 739C233EACC
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 08:50:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0701233EAD1
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 08:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbhCQHuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 03:50:07 -0400
-Received: from mout.kundenserver.de ([217.72.192.75]:35395 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbhCQHtv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 03:49:51 -0400
-Received: from [192.168.0.11] ([217.83.109.231]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M1YlB-1lOv6n1icl-0035ux; Wed, 17 Mar 2021 08:49:38 +0100
-Subject: Re: [PATCH] iavf: fix locking of critical sections
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, lihong.yang@intel.com,
-        slawomirx.laba@intel.com, nicholas.d.nunley@intel.com
-References: <20210316100141.53551-1-sassmann@kpanic.de>
- <20210316101443.56b87cf6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <44b3f5f0-93f8-29e2-ab21-5fd7cc14c755@kpanic.de>
- <20210316132905.5d0f90dd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210316150210.00007249@intel.com>
-From:   Stefan Assmann <sassmann@kpanic.de>
-Message-ID: <3a4078fe-0be5-745c-91a3-ed83d4dc372f@kpanic.de>
-Date:   Wed, 17 Mar 2021 08:49:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S230112AbhCQHwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 03:52:12 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:50401 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229707AbhCQHwB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 03:52:01 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F0j6S0Ztfz9sRR;
+        Wed, 17 Mar 2021 18:52:00 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1615967520;
+        bh=ZQrrFuBbFBqvyBQTJ69O7wWdyuKPYmiezeG9xGKpJhA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=A+dd0GjO5gMsglTBgggZez+45DxMLnjorcUyM+wAsMZh+KvZrDfMxF0HbM8BXSxC1
+         +QsMZm1VchbeHcCKb6LuttS62U9txcJlm3NianAWK5/smxmn8Y4Zvg53WqMSXvaKWQ
+         PLbatiY4JS5lKGKDkVJKalpD7EizQtub7fNbML1qpkPkDs9X9+ys89tl2NHbL3X6Ed
+         Ok3xsfVF4eXqx1onAkmIv9C5LkG1Avln6YsgrnNJMi6wZuux9qt6j68GfoAmAXHalJ
+         QE+9il0T4OQEHZHuz5GseH8xi5MXCfjz3SCSirMIWjl6qYho7J5l/vP5w7S5uTNE0r
+         DGcKjPHzGdBog==
+Date:   Wed, 17 Mar 2021 18:51:59 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the net-next tree
+Message-ID: <20210317185159.3d5640b0@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20210316150210.00007249@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:gRd4vCW3FwvCWtRZFM1mFvUNSuQeqs3yqR7d2psXmAkpdodvbmp
- jELxRJ/kFiCjKERsqJ0RCXDkJCuvE5WU3i0im9Ebsj3eCYjkb1SCsZwQJTkdU3Wjg2kzyqz
- zjQvmxJbRXysZOgEnhMNEZh/qplaeg/ujblsMEOHioFqYVQhpFchHX8XH7Dj6TkUy1mWvNR
- IAI8ddYa7sR1pdXe5aaZQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:CuStMjcPZck=:VFZgZwZ3C7elvlmZTfyymL
- /bvRy6YjpC1IcqYM+HqN2IXL1aMzmORfir4dpHH1fCvMZ+gTZjcAf4Fi8Oun1dEtcLKOFHzZn
- YY2KoGi3WOxAFG2wDGfrPTgzHlugtq1Hc+mLGNXZq3MWEDjoBbnNiiYlX9I6ZpiqK9H5gzKVV
- ecJv6FlD4YLwWelqzQOq95rSkpNBQO5FJCIE44DgBRcRCVqYzcMhrKcBBqY+bV+0irjm/uCDe
- 1hDMk5IHCCD167UMkd7oPhJ1UJn5/wLuxrcqA3RQxVYJfSnUns8xwFR9o9KPtxifgYnsp1IpG
- TecC3P8oyDuOfUoV0bMW1i6GpXH9DZxlDap6FM/QhlFAdUCYRwGHL8MygaPwXLXgsluD2gO+Q
- yWnntCZL5H8CE8PhIwMozviBiFmdTVmGdmAHcb7cJH2AdqXz0S4L/N8zQnIfzidf1oaUZToaH
- 2qKtkVDheA==
+Content-Type: multipart/signed; boundary="Sig_/B.Y7MI/u5uIPBan=Fv0FCED";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.03.21 23:02, Jesse Brandeburg wrote:
-> Jakub Kicinski wrote:
->>>> I personally think that the overuse of flags in Intel drivers brings
->>>> nothing but trouble. At which point does it make sense to just add a
->>>> lock / semaphore here rather than open code all this with no clear
->>>> semantics? No code seems to just test the __IAVF_IN_CRITICAL_TASK flag,
->>>> all the uses look like poor man's locking at a quick grep. What am I
->>>> missing?
->>>
->>> I agree with you that the locking could be done with other locking
->>> mechanisms just as good. I didn't invent the current method so I'll let
->>> Intel comment on that part, but I'd like to point out that what I'm
->>> making use of is fixing what is currently in the driver.
->>
->> Right, I should have made it clear that I don't blame you for the
->> current state of things. Would you mind sending a patch on top of 
->> this one to do a conversion to a semaphore? 
+--Sig_/B.Y7MI/u5uIPBan=Fv0FCED
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Sure, I'm happy to help working on the conversion once the current issue
-is resolved.
+Hi all,
 
->> Intel folks any opinions?
-> 
-> I know Slawomir has been working closely with Stefan on figuring out
-> the right ways to fix this code.  Hopefully he can speak for himself,
-> but I know he's on Europe time.
-> 
-> As for conversion to mutexes I'm a big fan, and as long as we don't
-> have too many collisions with the RTNL lock I think it's a reasonable
-> improvement to do, and if Stefan doesn't want to work on it, we can
-> look into whether Slawomir or his team can.
+After merging the net-next tree, today's linux-next build (htmldocs)
+produced this warning:
 
-I'd appreciate to be involved.
-Thanks!
+Documentation/networking/dsa/dsa.rst:468: WARNING: Unexpected indentation.
+Documentation/networking/dsa/dsa.rst:477: WARNING: Block quote ends without=
+ a blank line; unexpected unindent.
 
-  Stefan
+Introduced by commit
+
+  8411abbcad8e ("Documentation: networking: dsa: mention integration with d=
+evlink")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/B.Y7MI/u5uIPBan=Fv0FCED
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBRtR8ACgkQAVBC80lX
+0GzSjAf+JGvY6Xe4f5jHsQewWOjKArv2wit6C8yuTHfghXK7belOgys24Ip5BsyU
+2S2MCXE20XTs8kX2HFfvoIlFkf6KyX16I2Nsvl6pUKoBv7xGpT1At495PeEFaF+A
+1RloXEf33WkHCKCaVlfFZoSet85wP7rmG44z2SLpFd9YXcFpjWfBG2m3ZpR7iSCo
+gOtjIFa5vj9GP83gwyNb1/WyaN/G1ttIbpzm/sncDE/HKqIArmZfSVUmjYXieoKz
+NRbZzDl5GSXPyoTVTfbJvRzIr5pPBAmix9iHVbrm8lgQgD7KGqOnYOM/O+bNO6nr
+3VKRRZAF6fs2eHITvN67j2UsSNWx2w==
+=O+wE
+-----END PGP SIGNATURE-----
+
+--Sig_/B.Y7MI/u5uIPBan=Fv0FCED--
