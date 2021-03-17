@@ -2,108 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA76833EB44
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 09:19:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8E433EB3D
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 09:17:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbhCQISx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 04:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbhCQISl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 04:18:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD60C06175F
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 01:18:41 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lMRNy-00086C-7B; Wed, 17 Mar 2021 09:18:34 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:31e3:6e40:b1cd:40a8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 244F65F736C;
-        Wed, 17 Mar 2021 08:18:32 +0000 (UTC)
-Date:   Wed, 17 Mar 2021 09:18:31 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     netdev@vger.kernel.org, Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-can@vger.kernel.org, kernel@pengutronix.de, kuba@kernel.org,
-        davem@davemloft.net
-Subject: Re: [BUG] Re: [net 3/6] can: flexcan: invoke flexcan_chip_freeze()
- to enter freeze mode
-Message-ID: <20210317081831.osalrszbje4oofoh@pengutronix.de>
-References: <20210301112100.197939-1-mkl@pengutronix.de>
- <20210301112100.197939-4-mkl@pengutronix.de>
- <65137c60-4fbe-6772-6d48-ac360930f62b@pengutronix.de>
+        id S229734AbhCQIRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 04:17:18 -0400
+Received: from mga06.intel.com ([134.134.136.31]:34626 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229725AbhCQIRD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 04:17:03 -0400
+IronPort-SDR: vS5HK3EkLj6IPBhT7afGLqcfEnwNtNCtPYwCpi2oODnqe02rlDIKif6EwJ+xkAgwZIMTWW2pxE
+ qK7xDXX52Lag==
+X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="250777314"
+X-IronPort-AV: E=Sophos;i="5.81,255,1610438400"; 
+   d="scan'208";a="250777314"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 01:17:02 -0700
+IronPort-SDR: e1PsqvAwC9dddgoN84+g4oj0/qAanFPE8+SBfYapaXmFVXe6hG+MSTOERmDRmdDH4HgW/qocrp
+ JgAcDh9gH0Cw==
+X-IronPort-AV: E=Sophos;i="5.81,255,1610438400"; 
+   d="scan'208";a="412552370"
+Received: from chenyu-desktop.sh.intel.com (HELO chenyu-desktop) ([10.239.158.173])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 01:17:00 -0700
+Date:   Wed, 17 Mar 2021 16:21:05 +0800
+From:   Chen Yu <yu.c.chen@intel.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the net-next tree
+Message-ID: <20210317082105.GA163071@chenyu-desktop>
+References: <20210317185605.3f9c70cc@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="of2tyaqxqtda5bhf"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <65137c60-4fbe-6772-6d48-ac360930f62b@pengutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20210317185605.3f9c70cc@canb.auug.org.au>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Stephen,
+On Wed, Mar 17, 2021 at 06:56:05PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the net-next tree, today's linux-next build (sparc64
+> defconfig) produced this warning:
+> 
+> drivers/net/ethernet/intel/e1000e/netdev.c:6926:12: warning: 'e1000e_pm_prepare' defined but not used [-Wunused-function]
+>  static int e1000e_pm_prepare(struct device *dev)
+>             ^~~~~~~~~~~~~~~~~
+> 
+> Introduced by commit
+> 
+>   ccf8b940e5fd ("e1000e: Leverage direct_complete to speed up s2ram")
+> 
+> CONFIG_PM_SLEEP is not set for this build.
+>
+Thanks for reporting. I think we need to add the '__maybe_unused' attribute as in case
+CONFIG_PM_SLEEP is not set. Tony, it seems that the original v1 patch should eliminate
+this warning, could you please help double check and apply that version?
 
---of2tyaqxqtda5bhf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+thanks,
+Chenyu
+ 
+> -- 
+> Cheers,
+> Stephen Rothwell
 
-On 16.03.2021 17:00:25, Ahmad Fatoum wrote:
-> > --- a/drivers/net/can/flexcan.c
-> > +++ b/drivers/net/can/flexcan.c
-> > @@ -1480,10 +1480,13 @@ static int flexcan_chip_start(struct net_device=
- *dev)
-> > =20
-> >  	flexcan_set_bittiming(dev);
-> > =20
-> > +	/* set freeze, halt */
-> > +	err =3D flexcan_chip_freeze(priv);
-> > +	if (err)
-> > +		goto out_chip_disable;
->=20
-> With v5.12-rc3, both my FlexCAN controllers on an i.MX6Q now divide by ze=
-ro
-> on probe because priv->can.bittiming.bitrate =3D=3D 0 inside of flexcan_c=
-hip_freeze.
->=20
-> Reverting this patch fixes it.
 
-A fix for this in on its way to net/master:
-
-https://lore.kernel.org/linux-can/20210316082104.4027260-6-mkl@pengutronix.=
-de/
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---of2tyaqxqtda5bhf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmBRu1QACgkQqclaivrt
-76nzJQgAlqMdzIBp25Sj4mIOKbe6LSUNo3yG/72y7Syx+amxcN4pSvok6ROfVA1k
-fXaqw873lEPWa4jYHKNtGG7ClCEx3ZBxN+XoJ6fDH98IeUnYK0Mhl/0/yLaiLo59
-FzWS9Tx2HuT+G6R4Lc58oeQtoWTQXutCJRqdmQmBG3IpTkgCXr8HQH+OttTl+kq7
-PWTqF87dGqasNWDJjzOCDxltSPqSaQVx4UtjkP3rgJCY8dZPIIM+Fo3UUOtB6LoR
-wcoEQ4pW1dzWBhKv/uWhY/XIB+MWTfnj7VPbSEQMxZHFon6mxZqh70ds8owXHbIW
-ZjOyozFQWFviyQCyXHm1klFk6tHQBA==
-=SR11
------END PGP SIGNATURE-----
-
---of2tyaqxqtda5bhf--
