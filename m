@@ -2,105 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5945233F613
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 17:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ED5933F618
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 17:55:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232664AbhCQQxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 12:53:02 -0400
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:32619 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232558AbhCQQwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 12:52:35 -0400
-Date:   Wed, 17 Mar 2021 16:52:32 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1615999953; bh=oM4XbW1q5zcLndEfkaigVcrh9QJicN69T4/u/Yrv6U8=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=iteX186mLmhS6elYvml44AmeEWYOGvi5Jt8tM+3z7X2+504fS+dlDW4xiCA7pzve7
-         Bcn8gJ/jImG0946q5irYxwYXsSR7r3fbV0Oi/r1KC/hsOpqKXxMJiH9NZZHjBe1y4s
-         n7ALz8cN/JOftpv3ZA4kwm6N2C0gtxwqor1UC6tlrs/cV6oH4ltkClE0TgTFfW3JSA
-         inBauo0r8vPB010z8K1rMhl9JTwg8riSkFHpg7zoD+EqTFOafEGNImufGdqEdNq8Qq
-         OMCw1NM3dRhDJq1ZeYYlsO/8QJ3BNbPwo8Y3EjID6uLABrh7/B0fdb9Oywfa7C+gtQ
-         EBJiaSTzP+MoA==
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH 0/7 v4] Introduce a bulk order-0 page allocator with two in-tree users
-Message-ID: <20210317165220.808975-1-alobakin@pm.me>
-In-Reply-To: <20210317173844.6b10f879@carbon>
-References: <20210312154331.32229-1-mgorman@techsingularity.net> <20210317163055.800210-1-alobakin@pm.me> <20210317173844.6b10f879@carbon>
+        id S232468AbhCQQzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 12:55:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232158AbhCQQzR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 12:55:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B78C64F26;
+        Wed, 17 Mar 2021 16:55:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616000116;
+        bh=MZwMz/N5wLTMam2Z9MoicKwqSevZ4QamU+GLUrSbUsI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fVZdLsUKf2zass/1NQroJblCSW4bhZkWMuwPgf5gmHg7IgYuNdB9C+O8s+GN43FPE
+         N4mW1u318lTi/VFP4cXzhJwf24VCdb4UvCnC/K08YiC5hnlbMRvFStk7Si96oySQ6H
+         ClM2Pfqv9NOmipR5A2zXQ069nNruIabO6pMYcfhx4FvxwrWrf+qiUXDuaGIiPT4V2t
+         zq2RpK+KhPlN1fBeIc9Ag8QGP6TUz+8ZDG2txClCZ9FpQOu9NPJHFvtrIGtPJU1x4k
+         n3UOmcVYPZqzpDoXkmyV1XBGVCn+dMfEo5IPzxHz0fUn3XKjM4OBfPYFb9sfSrrTrw
+         G5KTiFwKRndDQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, edumazet@google.com,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        jamorris@linux.microsoft.com, paul@paul-moore.com,
+        rdias@singlestore.com, dccp@vger.kernel.org, mptcp@lists.01.org,
+        kuba@kernel.org
+Subject: [PATCH net] ipv6: weaken the v4mapped source check
+Date:   Wed, 17 Mar 2021 09:55:15 -0700
+Message-Id: <20210317165515.1914146-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Date: Wed, 17 Mar 2021 17:38:44 +0100
+This reverts commit 6af1799aaf3f1bc8defedddfa00df3192445bbf3.
 
-> On Wed, 17 Mar 2021 16:31:07 +0000
-> Alexander Lobakin <alobakin@pm.me> wrote:
->
-> > From: Mel Gorman <mgorman@techsingularity.net>
-> > Date: Fri, 12 Mar 2021 15:43:24 +0000
-> >
-> > Hi there,
-> >
-> > > This series is based on top of Matthew Wilcox's series "Rationalise
-> > > __alloc_pages wrapper" and does not apply to 5.12-rc2. If you want to
-> > > test and are not using Andrew's tree as a baseline, I suggest using t=
-he
-> > > following git tree
-> > >
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-r=
-ebase-v4r2
-> >
-> > I gave this series a go on my setup, it showed a bump of 10 Mbps on
-> > UDP forwarding, but dropped TCP forwarding by almost 50 Mbps.
-> >
-> > (4 core 1.2GHz MIPS32 R2, page size of 16 Kb, Page Pool order-0
-> > allocations with MTU of 1508 bytes, linear frames via build_skb(),
-> > GRO + TSO/USO)
->
-> What NIC driver is this?
+Commit 6af1799aaf3f ("ipv6: drop incoming packets having a v4mapped
+source address") introduced an input check against v4mapped addresses.
+Use of such addresses on the wire is indeed questionable and not
+allowed on public Internet. As the commit pointed out
 
-Ah, forgot to mention. It's a WIP driver, not yet mainlined.
-The NIC itself is basically on-SoC 1G chip.
+  https://tools.ietf.org/html/draft-itojun-v6ops-v4mapped-harmful-02
 
-> > I didn't have time to drill into the code, so for now can't provide
-> > any additional details. You can request anything you need though and
-> > I'll try to find a window to collect it.
-> >
-> > > Note to Chuck and Jesper -- as this is a cross-subsystem series, you =
-may
-> > > want to send the sunrpc and page_pool pre-requisites (patches 4 and 6=
-)
-> > > directly to the subsystem maintainers. While sunrpc is low-risk, I'm
-> > > vaguely aware that there are other prototype series on netdev that af=
-fect
-> > > page_pool. The conflict should be obvious in linux-next.
->
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
+lists potential issues.
 
-Al
+Unfortunately there are applications which use v4mapped addresses,
+and breaking them is a clear regression. For example v4mapped
+addresses (or any semi-valid addresses, really) may be used
+for uni-direction event streams or packet export.
+
+Since the issue which sparked the addition of the check was with
+TCP and request_socks in particular push the check down to TCPv6
+and DCCP. This restores the ability to receive UDPv6 packets with
+v4mapped address as the source.
+
+Keep using the IPSTATS_MIB_INHDRERRORS statistic to minimize the
+user-visible changes.
+
+Fixes: 6af1799aaf3f ("ipv6: drop incoming packets having a v4mapped source address")
+Reported-by: Sunyi Shao <sunyishao@fb.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/dccp/ipv6.c      |  5 +++++
+ net/ipv6/ip6_input.c | 10 ----------
+ net/ipv6/tcp_ipv6.c  |  5 +++++
+ net/mptcp/subflow.c  |  5 +++++
+ 4 files changed, 15 insertions(+), 10 deletions(-)
+
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index 1f73603913f5..2be5c69824f9 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -319,6 +319,11 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	if (!ipv6_unicast_destination(skb))
+ 		return 0;	/* discard, don't send a reset here */
+ 
++	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
++		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
++		return 0;
++	}
++
+ 	if (dccp_bad_service_code(sk, service)) {
+ 		dcb->dccpd_reset_code = DCCP_RESET_CODE_BAD_SERVICE_CODE;
+ 		goto drop;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index e9d2a4a409aa..80256717868e 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -245,16 +245,6 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	if (ipv6_addr_is_multicast(&hdr->saddr))
+ 		goto err;
+ 
+-	/* While RFC4291 is not explicit about v4mapped addresses
+-	 * in IPv6 headers, it seems clear linux dual-stack
+-	 * model can not deal properly with these.
+-	 * Security models could be fooled by ::ffff:127.0.0.1 for example.
+-	 *
+-	 * https://tools.ietf.org/html/draft-itojun-v6ops-v4mapped-harmful-02
+-	 */
+-	if (ipv6_addr_v4mapped(&hdr->saddr))
+-		goto err;
+-
+ 	skb->transport_header = skb->network_header + sizeof(*hdr);
+ 	IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
+ 
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index bd44ded7e50c..d0f007741e8e 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1175,6 +1175,11 @@ static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	if (!ipv6_unicast_destination(skb))
+ 		goto drop;
+ 
++	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
++		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
++		return 0;
++	}
++
+ 	return tcp_conn_request(&tcp6_request_sock_ops,
+ 				&tcp_request_sock_ipv6_ops, sk, skb);
+ 
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 3d47d670e665..d17d39ccdf34 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -477,6 +477,11 @@ static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	if (!ipv6_unicast_destination(skb))
+ 		goto drop;
+ 
++	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
++		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
++		return 0;
++	}
++
+ 	return tcp_conn_request(&mptcp_subflow_request_sock_ops,
+ 				&subflow_request_sock_ipv6_ops, sk, skb);
+ 
+-- 
+2.30.2
 
