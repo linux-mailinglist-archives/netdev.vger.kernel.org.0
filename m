@@ -2,101 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C42233F5B9
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 17:40:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C3233F5BF
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 17:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232546AbhCQQja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 12:39:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30824 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232109AbhCQQi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 12:38:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615999138;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7BFXuz+V1IZqHA0Ul5BuH98TEHuJmu/wAVpUaxScltU=;
-        b=X/Qg6VXvhTSD8ffac5Wryen1G6lA07h7rheDEifOBRBEMw93kSNIo//14ZWVZ5xz5AHHi8
-        stvxz+34pY9CgA1DLmK3RWoAbatraokpzHFOh8QPXUjEiKk8v7Ewlk9IS+fjcjmTlZl3Zh
-        Uwo1zXSookzOYnQbnX/tI8LcQCwjZr4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-380-b_c398UsOq2LX9gP5uCXUQ-1; Wed, 17 Mar 2021 12:38:54 -0400
-X-MC-Unique: b_c398UsOq2LX9gP5uCXUQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 49D94190A7A2;
-        Wed, 17 Mar 2021 16:38:52 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D160B19C45;
-        Wed, 17 Mar 2021 16:38:45 +0000 (UTC)
-Date:   Wed, 17 Mar 2021 17:38:44 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Alexander Lobakin <alobakin@pm.me>,
-        Mel Gorman <mgorman@techsingularity.net>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>, brouer@redhat.com
-Subject: Re: [PATCH 0/7 v4] Introduce a bulk order-0 page allocator with two
- in-tree users
-Message-ID: <20210317173844.6b10f879@carbon>
-In-Reply-To: <20210317163055.800210-1-alobakin@pm.me>
-References: <20210312154331.32229-1-mgorman@techsingularity.net>
-        <20210317163055.800210-1-alobakin@pm.me>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S232632AbhCQQkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 12:40:06 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58440 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232008AbhCQQjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 12:39:31 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 695684FC83BE2;
+        Wed, 17 Mar 2021 09:39:30 -0700 (PDT)
+Date:   Wed, 17 Mar 2021 09:39:26 -0700 (PDT)
+Message-Id: <20210317.093926.47944613217780721.davem@davemloft.net>
+To:     menglong8.dong@gmail.com
+Cc:     linux@roeck-us.net, andy.shevchenko@gmail.com, kuba@kernel.org,
+        axboe@kernel.dk, viro@zeniv.linux.org.uk,
+        herbert@gondor.apana.org.au, dong.menglong@zte.com.cn,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v4 RESEND net-next] net: socket: use BIT() for MSG_*
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CADxym3bu0Ds6dD6OhyvdzbWDW-KqXsqGGxt3HKj-dsedFn9GXg@mail.gmail.com>
+References: <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
+        <20210317013758.GA134033@roeck-us.net>
+        <CADxym3bu0Ds6dD6OhyvdzbWDW-KqXsqGGxt3HKj-dsedFn9GXg@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 17 Mar 2021 09:39:30 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Mar 2021 16:31:07 +0000
-Alexander Lobakin <alobakin@pm.me> wrote:
+From: Menglong Dong <menglong8.dong@gmail.com>
+Date: Wed, 17 Mar 2021 16:21:14 +0800
 
-> From: Mel Gorman <mgorman@techsingularity.net>
-> Date: Fri, 12 Mar 2021 15:43:24 +0000
+> Hello,
 > 
-> Hi there,
-> 
-> > This series is based on top of Matthew Wilcox's series "Rationalise
-> > __alloc_pages wrapper" and does not apply to 5.12-rc2. If you want to
-> > test and are not using Andrew's tree as a baseline, I suggest using the
-> > following git tree
-> >
-> > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v4r2  
-> 
-> I gave this series a go on my setup, it showed a bump of 10 Mbps on
-> UDP forwarding, but dropped TCP forwarding by almost 50 Mbps.
-> 
-> (4 core 1.2GHz MIPS32 R2, page size of 16 Kb, Page Pool order-0
-> allocations with MTU of 1508 bytes, linear frames via build_skb(),
-> GRO + TSO/USO)
+> On Wed, Mar 17, 2021 at 9:38 AM Guenter Roeck <linux@roeck-us.net> wrote:
+>>
+>> On Wed, Mar 17, 2021 at 01:02:51AM +0200, Andy Shevchenko wrote:
+>> > On Wednesday, March 17, 2021, Guenter Roeck <linux@roeck-us.net> wrote:
+>> >
+> ...
+>>
+>> The problem is in net/packet/af_packet.c:packet_recvmsg(). This function,
+>> as well as all other rcvmsg functions, is declared as
+>>
+>> static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>>                           int flags)
+>>
+>> MSG_CMSG_COMPAT (0x80000000) is set in flags, meaning its value is negative.
+>> This is then evaluated in
+>>
+>>        if (flags & ~(MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC|MSG_CMSG_COMPAT|MSG_ERRQUEUE))
+>>                 goto out;
+> So what should I do? Revert this patch? Or fix the usages of 'flags'?
 
-What NIC driver is this?
-
-> I didn't have time to drill into the code, so for now can't provide
-> any additional details. You can request anything you need though and
-> I'll try to find a window to collect it.
-> 
-> > Note to Chuck and Jesper -- as this is a cross-subsystem series, you may
-> > want to send the sunrpc and page_pool pre-requisites (patches 4 and 6)
-> > directly to the subsystem maintainers. While sunrpc is low-risk, I'm
-> > vaguely aware that there are other prototype series on netdev that affect
-> > page_pool. The conflict should be obvious in linux-next.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+I already reverted this patch from net-next to fix the regression.
