@@ -2,108 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15CFA33E775
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EFF433E778
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbhCQDIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 23:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhCQDIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 23:08:22 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B09BC06174A;
-        Tue, 16 Mar 2021 20:08:22 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y133so585670ybe.12;
-        Tue, 16 Mar 2021 20:08:22 -0700 (PDT)
+        id S229747AbhCQDJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 23:09:45 -0400
+Received: from mail-eopbgr770089.outbound.protection.outlook.com ([40.107.77.89]:46946
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229792AbhCQDJb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 23:09:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FTBHBnBWe/WZTo/qQRz2UkmQTq+NeFgRoVpl3q0uMsxTdEYTuFGJ0YZVdrNgNLBafP8qsKXsvWRhFCqxw3xhSdIEnn4oIdTdjNena4IpoZE7djFAUXZrBKcqBcmVBtC32Bkb54u6tAuAZJosOceaCbxt4yffY9x9dy4PTVEV5bvOpmTIltaeF5A4Hoq/duoS4TJ1bGSEgLjJpcVJKtm7xHoIT2ka4UJIUKBny2Umr40pzcAczufSdfaHEDkErC/BgTT3170DZT/QO+XNfleqvjjUz5gWDgz7+1R/NS1/uuTW7dAZzx+90Pyvs3GVLBAKY1X8ce+ShedhtZBujLzZXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r+XG4sX4rMjmw+ZhU1JOTMJpcjpBCb0UGn8a+FiTYmg=;
+ b=Ih3gyk4bugtQBw3iyBkgeg59hUnknCQuuZ4c4SLXOXrwnrw+sWONJmfijbPw0o0jjkuhJQYuDr8ITUWkoCLAEqDn94z2c8zm/B5TkWS1eWTBq9br0AER80wG+g+sQEG4NjOSvpKCj1Ec+LrbdMCmWzIPE4PZ6efVRdYbDtuMgmpulFfu7iqfL87fpgfl5Sa/sNGE0TQfUnVwjvkDIsyaDxvgghBraYHdVQxdgqnzMlnhY/fSM0qUEmOvs3TjkvNAqgoDY72g+WjQGHdN75iGjRVniK5W4yA/izD5wVXFmFxUp47XFKkVR2sOsYX1Gkee5soCrjU4Kh+moJeToFs+JQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PEPZ394cidbqYDnUkwG46rTPDl5CRtpu54quZQwlhPs=;
-        b=RaZnqoqWvd4ZxPnwWjAhl12hMgFb++XrL4xNpWWZ52ALQOFJFuoYUm6TcmWKrzUxAe
-         iWvHLCNt3c2N9AcUMwRJNDd6+A7LYNvrATuDYUSu86X7uux2Tbxuw9SJtmzavrUkdoGQ
-         ACP87VuXxMjdjhZbFO82Zc490ZPVcK0OgS1lWbhNAumdLx3qFVhjp58Ul9RFUVKlg7y3
-         5DxrmBADq4a8bdCzJQ61Sr8PXDqLqRsD0uYslld5fcblBln1zRV2XUACFjJb5Kvk3PoT
-         99zjqDzrBuoLmYFP5vrtWKTfN5JLd0Upg3IcnRP1GloMfwm+O1JxLuKcP9ECyyf9hVBF
-         Rr6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PEPZ394cidbqYDnUkwG46rTPDl5CRtpu54quZQwlhPs=;
-        b=W3viH+L8FMLu3XufrxmbRtGgFqlKqWiJRkmXwQbk12rOKO3rMIn/ceqlIaS+ynD/RW
-         oBKxaiIi5F9jMf+MAz+EkUfgmp9vDuVGdOfTp7NrEkZxzsXQmqOnRfM4sUPUrX7dgZyS
-         ftZ0ygkz5wm/TTXk6jG9Be/M2rbo5hX/+TbDmKQiTTlEhqjpqeYbCJhmevu2HsmwCIuX
-         PKcOqAOfMVEyQUCy3BmNJlQxBD9WctT2GXPKIASkFJtxwRT/bnfXWK+a9PJ4p56aZlct
-         FszEKtE6w98duqP5km7saK7ptrv9eIhIzBXIccvydPOBNFrcIzBVti7oewIVl2O7u4PY
-         nBkg==
-X-Gm-Message-State: AOAM533jw+qJLPnxZ34YZFCFzy+UI/isHacYllJKNJ3E8dn+sD7IuFFb
-        9P9XjcEBRfZ+tMByTP6QaVCV+eOrkqA7efhsUyA=
-X-Google-Smtp-Source: ABdhPJzdyKV1honoteIZ9WhfG98djNycTbFpVEZmUzALN3axIR+qzZqd2UFoWkL0n6EnX5I4/PswcpLQRnwVQHeE//I=
-X-Received: by 2002:a25:40d8:: with SMTP id n207mr2215999yba.459.1615950501307;
- Tue, 16 Mar 2021 20:08:21 -0700 (PDT)
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r+XG4sX4rMjmw+ZhU1JOTMJpcjpBCb0UGn8a+FiTYmg=;
+ b=XnA6K43YA0qfHpXG+5to2BBdoGLiEMNDAUZ0ynuetCPgo99T60X6eSGvBkpF4uuKCJXq+vHcdCqP67alytjebcC+1dzBI1YB+XmVvUY3ShOVPxB+6T/10u+2gZIwzpOYo35onRkBFK08/xBWaftEiETAJX8tHIEtmRN+rzIu8jM=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=windriver.com;
+Received: from DM6PR11MB4202.namprd11.prod.outlook.com (2603:10b6:5:1df::16)
+ by DM6PR11MB4739.namprd11.prod.outlook.com (2603:10b6:5:2a0::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Wed, 17 Mar
+ 2021 03:09:28 +0000
+Received: from DM6PR11MB4202.namprd11.prod.outlook.com
+ ([fe80::f19f:b31:c427:730e]) by DM6PR11MB4202.namprd11.prod.outlook.com
+ ([fe80::f19f:b31:c427:730e%4]) with mapi id 15.20.3933.032; Wed, 17 Mar 2021
+ 03:09:28 +0000
+From:   qiang.zhang@windriver.com
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] bpf: Fix memory leak in copy_process()
+Date:   Wed, 17 Mar 2021 11:09:15 +0800
+Message-Id: <20210317030915.2865-1-qiang.zhang@windriver.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [60.247.85.82]
+X-ClientProxiedBy: HK0PR03CA0110.apcprd03.prod.outlook.com
+ (2603:1096:203:b0::26) To DM6PR11MB4202.namprd11.prod.outlook.com
+ (2603:10b6:5:1df::16)
 MIME-Version: 1.0
-References: <20210317030312.802233-1-andrii@kernel.org> <20210317030312.802233-2-andrii@kernel.org>
-In-Reply-To: <20210317030312.802233-2-andrii@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 16 Mar 2021 20:08:10 -0700
-Message-ID: <CAEf4BzYLMNX0PKtM5OPNUK8+Hbd42V6xtbPLxyfOeVgYVX6Riw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] bpftool: generate NULL definition in vmlinux.h
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pek-qzhang2-d1.wrs.com (60.247.85.82) by HK0PR03CA0110.apcprd03.prod.outlook.com (2603:1096:203:b0::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Wed, 17 Mar 2021 03:09:24 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 27570c4f-0d61-4d69-2bb4-08d8e8f21380
+X-MS-TrafficTypeDiagnostic: DM6PR11MB4739:
+X-Microsoft-Antispam-PRVS: <DM6PR11MB4739F5C019B0FA722B0E9B3EFF6A9@DM6PR11MB4739.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8Vc/MftELNTPWlQoiBgW47Ctq7XUID3IxuuyqTTzmFeLQsM89VNZT/xonswAQXPubFjE7CmUf9ERfd7MwS8Pj0bp9z991/kYDl/R2rKL+TGPj1sabna7xIxHOfSao8AFT5XYYheiFujZmUJ4EGii/8VB9TyqMyyhLWnI53pzJx49XWpl2EEdR4WwGqDja+kWD+B52+/uz6i6kCoY24iM5rN0mtU+pnqXXD6UbtwEix4zI+5vtuatdj6DqApLtJjwGro26GLQ736fePgyYRpUyzZ/mFMlwFfxJDRzU3+jwCf57dFO8igjEsKMUkItxt1pygQbs3yUeaAmGppwTuMyDVHW8wVyVrF3jgs6jAjHHl1fRXDbr/NjSzz5i8QrycwY1DZgwUBNvtn9ux17Z2p6hXy5bHqoFTfS1OCRIFR8V6utZjl3ewu8hGqfZDXntzXh/e4oqNiUy71w6y4M8bmxq6G3js1b7eMUVReUUJ3r4owfN/TCft0o4zttwLW0yTd2cEiWGANeqZRHFXnraKHnt36lo99Go0LCv18nQG0Q1vyfoHlBTcGxsAH9A5zZ8jWS
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4202.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(346002)(396003)(366004)(136003)(376002)(16526019)(2906002)(66556008)(83380400001)(6666004)(6506007)(8676002)(6486002)(26005)(316002)(186003)(1076003)(86362001)(9686003)(66946007)(66476007)(8936002)(52116002)(36756003)(5660300002)(6512007)(7416002)(478600001)(2616005)(4326008)(956004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?EFfz3xej4BGUebUxu56qTUOWgKyR/ZL/kB4cz6fAvrbMT3dr80YvCMV+j8eu?=
+ =?us-ascii?Q?DHuNCGlrMGLg3U3uBdaYXEgfIeauJKXestgFCjQs+eLc2hdvU5EQ9RfoRBjG?=
+ =?us-ascii?Q?RHs8nfhVLKLwBKIQf4gVABcfSHyWWSCB+L/hHiNRIf4zdJGU1hRJ8OUITyWB?=
+ =?us-ascii?Q?PtR21n54AsDSCMNyU/R9UjR2Rmmy6tAY590n+Ivvaq9V3nKtXsRODvGEXiUE?=
+ =?us-ascii?Q?NYqJNvGKZUw8BS7tQX7EQQWBfmhSOQ74Q2sSe/WT1acMEQh0H6hU3K8zg2zC?=
+ =?us-ascii?Q?Q4NbX3oxZLvYMbTB6crkS/DVPSQ5aQzmHEXksTyw3b326bJfoi5/eatbnx5n?=
+ =?us-ascii?Q?B86GQqK0avFLi2r+vqMTBpforvzDJrKJ5DnSKkJX/5rz7ZLE6FWpEppmBo1B?=
+ =?us-ascii?Q?wnd1rKT4gbFp2anR9nVaeoH3iSL7Kacl68U4yTQ+RBlggoKCHwq2gHOVPO0L?=
+ =?us-ascii?Q?hT5DjZ93Arp3w+kAQbOuyFaOEcPEt0kuY/HxLKo2Ff6TnjRb+b05PoVp1lh9?=
+ =?us-ascii?Q?cKlQQVZqDmZ67kLaiqlGIe3lC0rqrjMlnHPmgvbMeRRDCGJw1xMiv7Ohpze4?=
+ =?us-ascii?Q?uzcCJGYV3OGvkuzwh0HRKtIjElBg8oEgK+yA0yvkRaMtu+BDjiXkC2U/l9cp?=
+ =?us-ascii?Q?aw0IJYXh0I4QZW90v32mMenqyL5newb3uMts7AKl9LxY4M57SsWywgkyjAfB?=
+ =?us-ascii?Q?1M0axlKGVE2gSdZyzcS2gQRUvBBTPXdO42/2LErIii4aLPjd+dp+R1kePtdT?=
+ =?us-ascii?Q?sradBroR/HWQS0PNSIVPgP6LBpYPXIGe5PFsDNdrXYsvGp8bb14ivI5Z5xnt?=
+ =?us-ascii?Q?XUGnjvRCkzCNEhdN4dUnRDOCmupfyU6BrGGmcGUI4skgCnWcHUDtJv1S+vsx?=
+ =?us-ascii?Q?t6VPrm6QH6JmE0tcZOGbyXZ3lWP5TAlIpd3upWoRNfgN2XGTWKJG3LlgYGrI?=
+ =?us-ascii?Q?2SgpF2orFEtgpjCQpbkZowt33/awF9eo2mNPz1bLOrwzr+IrtsiphczQE8d4?=
+ =?us-ascii?Q?NnEj+ci4AM4VOKiqNMmo/1k/Wd5Yhb/mTrJgg6bNn+gjtRFTYiyB9pq02LPI?=
+ =?us-ascii?Q?LGlU8Z3rTJnkaCnTmyTtB/guwDqzBsMjAE+uVN8PGSlAhHZLnM8bBArxcBYp?=
+ =?us-ascii?Q?AWHD7ESliTiBb5mkaK7sjA+FJylTYOKSbz40W8xHBwrmiYHbHlTscm+QJaTN?=
+ =?us-ascii?Q?mHc4K8jSIr8H3y5rmPq7hunUs+5Au0rxp4m2hN/mlB6tsb6zwJqmEGuMhze2?=
+ =?us-ascii?Q?XFxgcFHl+braskEVcskyZD18CzH58s/chPAlggDDOF3F/DTZP4tzkHzSEDiV?=
+ =?us-ascii?Q?oBXjy1Y+Qti6tdOFnleWmaIL?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27570c4f-0d61-4d69-2bb4-08d8e8f21380
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4202.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2021 03:09:28.2490
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5A7tBmarlMmFnbexW8D1H5SMUuL6jhGogHuHhMMEq3MIGR28oTat9u+JHNFTWpOcsQJyI2NPJ9NOvSoJPyb2KX+Ve9EQYtkbbtY8gKuq+T4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4739
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 8:03 PM Andrii Nakryiko <andrii@kernel.org> wrote:
->
-> Given that vmlinux.h is not compatible with headers like stdint.h, NULL poses
-> an annoying problem: it is defined as #define, so is not captured in BTF, so
-> is not emitted into vmlinux.h. This leads to users either sticking to explicit
-> 0, or defining their own NULL (as progs/skb_pkt_end.c does).
->
-> It's pretty trivial for bpftool to generate NULL definition, though, so let's
-> just do that. This might cause compilation warning for existing BPF
-> applications:
->
-> progs/skb_pkt_end.c:7:9: warning: 'NULL' macro redefined [-Wmacro-redefined]
->   progs/skb_pkt_end.c:7:9: error: 'NULL' macro redefined [-Werror,-Wmacro-redefined]
+From: Zqiang <qiang.zhang@windriver.com>
 
-oops, this shouldn't have been copy/pasted. This is how the line above
-looks like if -Werror is specified in Makefile.
+The syzbot report a memleak follow:
+BUG: memory leak
+unreferenced object 0xffff888101b41d00 (size 120):
+  comm "kworker/u4:0", pid 8, jiffies 4294944270 (age 12.780s)
+  backtrace:
+    [<ffffffff8125dc56>] alloc_pid+0x66/0x560
+    [<ffffffff81226405>] copy_process+0x1465/0x25e0
+    [<ffffffff81227943>] kernel_clone+0xf3/0x670
+    [<ffffffff812281a1>] kernel_thread+0x61/0x80
+    [<ffffffff81253464>] call_usermodehelper_exec_work
+    [<ffffffff81253464>] call_usermodehelper_exec_work+0xc4/0x120
+    [<ffffffff812591c9>] process_one_work+0x2c9/0x600
+    [<ffffffff81259ab9>] worker_thread+0x59/0x5d0
+    [<ffffffff812611c8>] kthread+0x178/0x1b0
+    [<ffffffff8100227f>] ret_from_fork+0x1f/0x30
 
->   #define NULL 0
->           ^
->   /tmp/linux/tools/testing/selftests/bpf/tools/include/vmlinux.h:4:9: note: previous definition is here
->   #define NULL ((void *)0)
->           ^
->
-> It is trivial to fix, though, so long-term benefits outweight temporary
-> inconveniences.
->
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> ---
->  tools/bpf/bpftool/btf.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-> index 62953bbf68b4..ff6a76632873 100644
-> --- a/tools/bpf/bpftool/btf.c
-> +++ b/tools/bpf/bpftool/btf.c
-> @@ -405,6 +405,8 @@ static int dump_btf_c(const struct btf *btf,
->         printf("#ifndef __VMLINUX_H__\n");
->         printf("#define __VMLINUX_H__\n");
->         printf("\n");
-> +       printf("#define NULL ((void *)0)\n");
-> +       printf("\n");
->         printf("#ifndef BPF_NO_PRESERVE_ACCESS_INDEX\n");
->         printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
->         printf("#endif\n\n");
-> --
-> 2.30.2
->
+unreferenced object 0xffff888110ef5c00 (size 232):
+  comm "kworker/u4:0", pid 8414, jiffies 4294944270 (age 12.780s)
+  backtrace:
+    [<ffffffff8154a0cf>] kmem_cache_zalloc
+    [<ffffffff8154a0cf>] __alloc_file+0x1f/0xf0
+    [<ffffffff8154a809>] alloc_empty_file+0x69/0x120
+    [<ffffffff8154a8f3>] alloc_file+0x33/0x1b0
+    [<ffffffff8154ab22>] alloc_file_pseudo+0xb2/0x140
+    [<ffffffff81559218>] create_pipe_files+0x138/0x2e0
+    [<ffffffff8126c793>] umd_setup+0x33/0x220
+    [<ffffffff81253574>] call_usermodehelper_exec_async+0xb4/0x1b0
+    [<ffffffff8100227f>] ret_from_fork+0x1f/0x30
+
+after the UMD process exits, the pipe_to_umh/pipe_from_umh and tgid
+need to be release.
+
+Fixes: d71fa5c9763c ("bpf: Add kernel module with user mode driver that populates bpffs.")
+Reported-by: syzbot+44908bb56d2bfe56b28e@syzkaller.appspotmail.com
+Signed-off-by: Zqiang <qiang.zhang@windriver.com>
+---
+ v1->v2:
+ Judge whether the pointer variable tgid is valid.
+ v2->v3:
+ Add common umd_cleanup_helper() and exported as
+ symbol which the driver here can use.
+
+ include/linux/usermode_driver.h       |  1 +
+ kernel/bpf/preload/bpf_preload_kern.c | 15 +++++++++++----
+ kernel/usermode_driver.c              | 18 ++++++++++++++----
+ 3 files changed, 26 insertions(+), 8 deletions(-)
+
+diff --git a/include/linux/usermode_driver.h b/include/linux/usermode_driver.h
+index 073a9e0ec07d..ad970416260d 100644
+--- a/include/linux/usermode_driver.h
++++ b/include/linux/usermode_driver.h
+@@ -14,5 +14,6 @@ struct umd_info {
+ int umd_load_blob(struct umd_info *info, const void *data, size_t len);
+ int umd_unload_blob(struct umd_info *info);
+ int fork_usermode_driver(struct umd_info *info);
++void umd_cleanup_helper(struct umd_info *info);
+ 
+ #endif /* __LINUX_USERMODE_DRIVER_H__ */
+diff --git a/kernel/bpf/preload/bpf_preload_kern.c b/kernel/bpf/preload/bpf_preload_kern.c
+index 79c5772465f1..356c4ca4f530 100644
+--- a/kernel/bpf/preload/bpf_preload_kern.c
++++ b/kernel/bpf/preload/bpf_preload_kern.c
+@@ -61,8 +61,10 @@ static int finish(void)
+ 	if (n != sizeof(magic))
+ 		return -EPIPE;
+ 	tgid = umd_ops.info.tgid;
+-	wait_event(tgid->wait_pidfd, thread_group_exited(tgid));
+-	umd_ops.info.tgid = NULL;
++	if (tgid) {
++		wait_event(tgid->wait_pidfd, thread_group_exited(tgid));
++		umd_cleanup_helper(&umd_ops.info);
++	}
+ 	return 0;
+ }
+ 
+@@ -80,10 +82,15 @@ static int __init load_umd(void)
+ 
+ static void __exit fini_umd(void)
+ {
++	struct pid *tgid;
+ 	bpf_preload_ops = NULL;
+ 	/* kill UMD in case it's still there due to earlier error */
+-	kill_pid(umd_ops.info.tgid, SIGKILL, 1);
+-	umd_ops.info.tgid = NULL;
++	tgid = umd_ops.info.tgid;
++	if (tgid) {
++		kill_pid(tgid, SIGKILL, 1);
++		wait_event(tgid->wait_pidfd, thread_group_exited(tgid));
++		umd_cleanup_helper(&umd_ops.info);
++	}
+ 	umd_unload_blob(&umd_ops.info);
+ }
+ late_initcall(load_umd);
+diff --git a/kernel/usermode_driver.c b/kernel/usermode_driver.c
+index 0b35212ffc3d..6372deae27a0 100644
+--- a/kernel/usermode_driver.c
++++ b/kernel/usermode_driver.c
+@@ -140,13 +140,23 @@ static void umd_cleanup(struct subprocess_info *info)
+ 
+ 	/* cleanup if umh_setup() was successful but exec failed */
+ 	if (info->retval) {
+-		fput(umd_info->pipe_to_umh);
+-		fput(umd_info->pipe_from_umh);
+-		put_pid(umd_info->tgid);
+-		umd_info->tgid = NULL;
++		umd_cleanup_helper(umd_info);
+ 	}
+ }
+ 
++/**
++ * umd_cleanup_helper - release the resources which allocated in umd_setup
++ * @info: information about usermode driver
++ */
++void umd_cleanup_helper(struct umd_info *info)
++{
++	fput(info->pipe_to_umh);
++	fput(info->pipe_from_umh);
++	put_pid(info->tgid);
++	info->tgid = NULL;
++}
++EXPORT_SYMBOL_GPL(umd_cleanup_helper);
++
+ /**
+  * fork_usermode_driver - fork a usermode driver
+  * @info: information about usermode driver (shouldn't be NULL)
+-- 
+2.17.1
+
