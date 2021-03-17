@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C5833F896
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:59:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A28E33F8A3
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 20:00:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbhCQS7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 14:59:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41472 "EHLO mail.kernel.org"
+        id S232979AbhCQTAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 15:00:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232388AbhCQS6x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 14:58:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F3B9864DDF;
-        Wed, 17 Mar 2021 18:58:50 +0000 (UTC)
+        id S232875AbhCQTAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 15:00:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9E71464F57;
+        Wed, 17 Mar 2021 19:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616007531;
-        bh=2X7hZf7Mbj3I22kgp5FFUCDj9EdssAgFUaQuqjj5aaU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WoegWE2R/sejIAtKJvR1N7u7JJcx26LLNGMidIEUO6KfXl2luhCihSJLIGSC4dlME
-         iXcfYsOsjoEY312/mG1zIpu9QXbe7qmAw/K18rxxzTqE7eIRNRy3vpDzlQlun6fHyW
-         gMGMtd6Akq6rLlZT72OunzQscGXpSshgi/werx3kxlDD7yW4eJDaIztYDSvy4Gvwlg
-         aav1BixfDRg8YCNeN+WVPhGm6XSPsA+3TXWlezJd0jTyeQUhStrBmr6XOnBkMR1PZe
-         z9fnC5MFXDoRwW/ynTJKoDB412t2ni3JQ04lfY+Bnq+A3lYRhiUNpEv7jHuYO8o3YX
-         U+TpTmxS9PdkA==
-Date:   Wed, 17 Mar 2021 11:58:49 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wei Wang <weiwan@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Martin Zaharinov <micron10@gmail.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>
-Subject: Re: [PATCH net v4] net: fix race between napi kthread mode and busy
- poll
-Message-ID: <20210317115849.36d915ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210316223647.4080796-1-weiwan@google.com>
-References: <20210316223647.4080796-1-weiwan@google.com>
+        s=k20201202; t=1616007608;
+        bh=6+7f23ZhslJFmsAdx9Rx5vXOPB9zuyWpTXp5X6eZUMA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DT1GNVY+L/gf069dRZ5kTck8MyOTO+dF8KbfcONySqiTrvrwSbBXr+4wQOlkHRCXt
+         q/bXD38OLj3Ii8puPTHt5suy0iyO4gEJ9GhLUWqElR9wyT3KHJlOsbToYO0flIMABL
+         qGt5rT39w9MK0N+wzrDRFJ0uqZnw5b1bafGjixTWWiLTC9S1qW2e8DGWfBZiRsTxh+
+         tUe0Di6knanismjtpJuo8GHRLKGgGlwoQy0sgcsnnjLTBQ15o97JZP+1j2dsxjYJwM
+         OG3C41Xm3MNBpzX7u3WTm76hRo3GQzGrKzVW5KU2Onh4QhGqcqC1XG3JMnDXI3o2hJ
+         +U23EXM4Mcmag==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 943F760A60;
+        Wed, 17 Mar 2021 19:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net/sched: cls_flower: fix only mask bit check in the
+ validate_ct_state
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161600760860.6499.10040446965116978579.git-patchwork-notify@kernel.org>
+Date:   Wed, 17 Mar 2021 19:00:08 +0000
+References: <1615953763-23824-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <1615953763-23824-1-git-send-email-wenxu@ucloud.cn>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     kuba@kernel.org, mleitner@redhat.com, netdev@vger.kernel.org,
+        jhs@mojatatu.com, davem@davemloft.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Mar 2021 15:36:47 -0700 Wei Wang wrote:
-> Currently, napi_thread_wait() checks for NAPI_STATE_SCHED bit to
-> determine if the kthread owns this napi and could call napi->poll() on
-> it. However, if socket busy poll is enabled, it is possible that the
-> busy poll thread grabs this SCHED bit (after the previous napi->poll()
-> invokes napi_complete_done() and clears SCHED bit) and tries to poll
-> on the same napi. napi_disable() could grab the SCHED bit as well.
-> This patch tries to fix this race by adding a new bit
-> NAPI_STATE_SCHED_THREADED in napi->state. This bit gets set in
-> ____napi_schedule() if the threaded mode is enabled, and gets cleared
-> in napi_complete_done(), and we only poll the napi in kthread if this
-> bit is set. This helps distinguish the ownership of the napi between
-> kthread and other scenarios and fixes the race issue.
-> 
-> Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop support")
-> Reported-by: Martin Zaharinov <micron10@gmail.com>
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Wei Wang <weiwan@google.com>
-> Cc: Alexander Duyck <alexanderduyck@fb.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Hello:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Wed, 17 Mar 2021 12:02:43 +0800 you wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> The ct_state validate should not only check the mask bit and also
+> check mask_bit & key_bit..
+> For the +new+est case example, The 'new' and 'est' bits should be
+> set in both state_mask and state flags. Or the -new-est case also
+> will be reject by kernel.
+> When Openvswitch with two flows
+> ct_state=+trk+new,action=commit,forward
+> ct_state=+trk+est,action=forward
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] net/sched: cls_flower: fix only mask bit check in the validate_ct_state
+    https://git.kernel.org/netdev/net/c/afa536d8405a
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
