@@ -2,114 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0BBA33F7BD
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:02:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD5833F7FC
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232921AbhCQSBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 14:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232918AbhCQSBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 14:01:33 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB82EC06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 11:01:33 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id p21so54021pgl.12
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 11:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9eqiSdHy5NbSMi9ZAr+T/GiF1bv5P0EkOixzvdcsTGg=;
-        b=GIC/TJSVZSeAgec4D/58uqw78AYhtRQ5a6yPlg8r5PP5JkryqOr6S0TbrSJjX5yQkt
-         BRUdETs0GTDOwdHoA+ZqVB20LADBfJ476gyYylHdzuUSXL3cbnt/n2j2nJY17nW5rNGp
-         dpQ+e1HPg7Y2cfKDAG6DNfwgHaygmC1ZZZsx0QpBRBImZQ5FWfzNRK7TaXkBzWPF9ZxX
-         Te/BYCKK29Dy6oxTmBRnKN6C0/MKZ7q4BFh1nNvyqCRxbyCuM3KQXxb3ROdrzMT/1ufS
-         nEtkcUXaQZ9SgBHFBf82c1ucmplHfv1OU2XOPkfGKaEqZpdj0rNE78DIKaNwrPuBkHtv
-         eRRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9eqiSdHy5NbSMi9ZAr+T/GiF1bv5P0EkOixzvdcsTGg=;
-        b=NnnJ3705DDsOG4gbMUZC6j61SV1W3mz8JvD7bPnbTGI6gAcerqXTovw8ZrIQqM5g7N
-         J00Fao9SNhXvthzC4hjDFDT7i5c0jlyPhzoJrtapx77ae/qodCijOQYZR10OUO4NSedb
-         izUIo20LAOhg+X6HEU78qr0CiuCIrZ7f9c6RKB5eYdcsAALpMsvIepeMNwocowmZ6NKu
-         7x6ILGoML+EWCcf59S58OZvfE4JezXTFIa7jk064T7nSDXwzQWRRxA9IMLmQ6i7Y09+O
-         xxhHNSWE9JxjxYH+WBSU0mESKvSWip4ce7yOvMXcbhhsxZtalefKI89yNJREvYAnDl5s
-         012A==
-X-Gm-Message-State: AOAM532kvuJnb3gXUxsue7LZFXo9EjpA+TbxlWjXgezxlZFDLf1xXUcd
-        xY/plIbnEp9j0NIjTTPGxEuBn9ltQG7D/w==
-X-Google-Smtp-Source: ABdhPJzHx5DOQZV765gmEenx6y3Hv2eoe4LIKA8YDw/L6GcH03zfHRcVIluHPMe6lZKXRBZQM+6JAA==
-X-Received: by 2002:aa7:8d05:0:b029:1ec:b460:f21d with SMTP id j5-20020aa78d050000b02901ecb460f21dmr300877pfe.29.1616004092766;
-        Wed, 17 Mar 2021 11:01:32 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id e1sm3578823pjt.10.2021.03.17.11.01.31
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 11:01:32 -0700 (PDT)
-Date:   Wed, 17 Mar 2021 11:01:24 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 212317] New: /proc/net/dev: reversed counter for network
- namespaces?
-Message-ID: <20210317110124.71b7240b@hermes.local>
+        id S233074AbhCQSP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 14:15:29 -0400
+Received: from mout.kundenserver.de ([217.72.192.73]:43453 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233076AbhCQSPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 14:15:05 -0400
+Received: from [192.168.0.11] ([217.83.109.231]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MCbMz-1lV99K2yDT-009jhv; Wed, 17 Mar 2021 19:14:53 +0100
+Subject: Re: [PATCH] iavf: fix locking of critical sections
+To:     "Laba, SlawomirX" <slawomirx.laba@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Yang, Lihong" <lihong.yang@intel.com>,
+        "Nunley, Nicholas D" <nicholas.d.nunley@intel.com>
+References: <20210316100141.53551-1-sassmann@kpanic.de>
+ <20210316101443.56b87cf6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <44b3f5f0-93f8-29e2-ab21-5fd7cc14c755@kpanic.de>
+ <20210316132905.5d0f90dd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210316150210.00007249@intel.com>
+ <3a4078fe-0be5-745c-91a3-ed83d4dc372f@kpanic.de>
+ <DM6PR11MB3113AB6CE1D93EF28B3A7345876A9@DM6PR11MB3113.namprd11.prod.outlook.com>
+From:   Stefan Assmann <sassmann@kpanic.de>
+Message-ID: <e28db42e-a55a-6f7f-7622-add296b1035e@kpanic.de>
+Date:   Wed, 17 Mar 2021 19:14:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <DM6PR11MB3113AB6CE1D93EF28B3A7345876A9@DM6PR11MB3113.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
 Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:BeUyXZ+JH/HvtDs+SOAVSvqT2sl26epQy2X5/469VJ4s4/oKsFN
+ cZuin5NrpI9yEnJPHtqQ2JDF2RU4LOgR+WWk4RKVsPseUmfLfBhhwzZzjqJtYT21GJt9pPI
+ NQa9TfET/a961y9APY5YrpP+nJAdeGp6mW1lt4BTFntLncKLp07cjanz1BvGkqVeeLXnEYn
+ zzR0LheJlEr5KCNe0c3sg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:iuFNz7tkKmQ=:bnmqJfP+deQbG9rtCMDby+
+ 1WAUBU/KAFreUpijqgPgkFOtXcuZYO7MyfYqx373xOrqKsILYuBAefjQUssG5nAevUxQJufu2
+ yx9hU3/EDlE8QSDhUquVM+ApVb3XeZqKSrIo08f8JSNf+HXPoymxkhGdqma0djP+AHbJJcsBF
+ nxMbR9zoDm38iZ1Zfd1P/g2aQViucLEbyIqf4dqtU0lHHh2/6sSLOr8fUml/xzn/vu8RKBOT8
+ i5xjPTNEmN9+sPjDU/ljgFojqlgMhSqxJBp/i3S9LX1KCUIwahY1eFLI6EPX693kly5cj5DSb
+ tY80dGCm8ZoBOB1pxquIcXiqTHNmVPe5IWf5iyMwLCKO71a0vL2++bBpCsLx/Uanilw7SRKEf
+ xKNa0YUprZcyhY8A548bG0DZEIiAOqVuREp1wdoDNdh8Yihpc8lZnDUO/c0GUu2LdbbA77FD1
+ HbXX99hBMg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 17.03.21 18:27, Laba, SlawomirX wrote:
+> We were discussing introducing mutexes in those critical spots for a long time now (in my team).
+> Stefan, if you find time, you are most welcome to offer your solution with mutexes.
 
+Hi Slawek,
 
-Begin forwarded message:
+I'll work on that conversion once the current patch went through Intel
+testing and is merged. Smaller patches, smaller steps are usually
+better, so let's make one change at a time.
 
-Date: Wed, 17 Mar 2021 14:14:36 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 212317] New: /proc/net/dev: reversed counter for network namespaces?
+Thanks!
 
+  Stefan
 
-https://bugzilla.kernel.org/show_bug.cgi?id=212317
+> Slawek
+> 
+> 
+> -----Original Message-----
+> From: Stefan Assmann <sassmann@kpanic.de> 
+> Sent: Wednesday, March 17, 2021 8:50 AM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Jakub Kicinski <kuba@kernel.org>
+> Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Nguyen, Anthony L <anthony.l.nguyen@intel.com>; Yang, Lihong <lihong.yang@intel.com>; Laba, SlawomirX <slawomirx.laba@intel.com>; Nunley, Nicholas D <nicholas.d.nunley@intel.com>
+> Subject: Re: [PATCH] iavf: fix locking of critical sections
+> 
+> On 16.03.21 23:02, Jesse Brandeburg wrote:
+>> Jakub Kicinski wrote:
+>>>>> I personally think that the overuse of flags in Intel drivers 
+>>>>> brings nothing but trouble. At which point does it make sense to 
+>>>>> just add a lock / semaphore here rather than open code all this 
+>>>>> with no clear semantics? No code seems to just test the 
+>>>>> __IAVF_IN_CRITICAL_TASK flag, all the uses look like poor man's 
+>>>>> locking at a quick grep. What am I missing?
+>>>>
+>>>> I agree with you that the locking could be done with other locking 
+>>>> mechanisms just as good. I didn't invent the current method so I'll 
+>>>> let Intel comment on that part, but I'd like to point out that what 
+>>>> I'm making use of is fixing what is currently in the driver.
+>>>
+>>> Right, I should have made it clear that I don't blame you for the 
+>>> current state of things. Would you mind sending a patch on top of 
+>>> this one to do a conversion to a semaphore?
+> 
+> Sure, I'm happy to help working on the conversion once the current issue is resolved.
+> 
+>>> Intel folks any opinions?
+>>
+>> I know Slawomir has been working closely with Stefan on figuring out 
+>> the right ways to fix this code.  Hopefully he can speak for himself, 
+>> but I know he's on Europe time.
+>>
+>> As for conversion to mutexes I'm a big fan, and as long as we don't 
+>> have too many collisions with the RTNL lock I think it's a reasonable 
+>> improvement to do, and if Stefan doesn't want to work on it, we can 
+>> look into whether Slawomir or his team can.
+> 
+> I'd appreciate to be involved.
+> Thanks!
+> 
+>   Stefan
+> 
 
-            Bug ID: 212317
-           Summary: /proc/net/dev: reversed counter for network
-                    namespaces?
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.10.23
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: steffen@sdaoden.eu
-        Regression: No
-
-Hello.
-Yesterday i extended my tmux status line to include all "network devices", and
-now i am looking at a line
-
-  RF:W~B~ wlp1s0~158/16 wg0~6/2 browse~8/124
-
-which are /proc/net/dev devices (less in-namespace stuff) with non-0 byte
-counts.
-wlp1s0 is the sole connection to the internet, and browse is a network
-namespace that boxes graphical browser usage, and can only access the internet,
-no local services (but DNS).
-
-As you can see it states it has send 124 MiB and receives 8 MiB, which i deem
-wrong, especially since the entire up/downstream bytes of wlp1s0 state
-something different.  Could it be the counts are reversed?
-
-Thank you!!
-
--- 
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are the assignee for the bug.
