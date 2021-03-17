@@ -2,67 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6CB33F77E
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 18:50:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03EFA33F78C
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 18:53:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbhCQRt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 13:49:57 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33222 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232483AbhCQRtk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 13:49:40 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lMaIR-00BV78-QU; Wed, 17 Mar 2021 18:49:27 +0100
-Date:   Wed, 17 Mar 2021 18:49:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?=C1lvaro_Fern=E1ndez?= Rojas <noltari@gmail.com>
-Cc:     Jonas Gorski <jonas.gorski@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: mdio: Add BCM6368 MDIO mux bus controller
-Message-ID: <YFJBJ1IHpkXXaGvc@lunn.ch>
-References: <20210308184102.3921-1-noltari@gmail.com>
- <20210308184102.3921-3-noltari@gmail.com>
- <YEaQdXwrmVekXp4G@lunn.ch>
- <D39D163A-C6B3-4B66-B650-8FF0A06EF7A2@gmail.com>
+        id S232818AbhCQRwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 13:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232840AbhCQRw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 13:52:29 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25986C06174A;
+        Wed, 17 Mar 2021 10:52:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=nE45k8FixLnSufakV+tBQGAF9aOc9NiNiG7mBSO7nh4=; b=lfPgb9Z31TuQRauM8ZNsdVcckv
+        Xl5YXjzSFB/Olw8k2lkfOmyXSGCy9iP0ZQ46sJtFlU3TBg3EiDaD+6Q1qNeynYR5+2ZB993On+lj/
+        q8fmoIVUpT1dvRt4Xjz8C0Y/xKrzcz7EpP+UteqVVt5zRZSEnpcihIt6mL/zrkgT5ylFKKZ+jDbRn
+        1/yB14CqxtmHdqs8KfMcC3RyDN7wtdsh2fvsIVA3qwhyX56BPupBnCCDd0D21/YdVwIpEgxlUuMQs
+        XMboLCg3uPHa5rkX6+oPODFGqKfdAjuiRQj+UV+bSMsGw6vK4NaaGi5nmjzcjCAPyMoP0rhqhtwZr
+        xztB3uhg==;
+Received: from [2601:1c0:6280:3f0::9757]
+        by merlin.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lMaLJ-001feL-W4; Wed, 17 Mar 2021 17:52:26 +0000
+Subject: Re: [PATCH] net: ethernet: intel: Fix a typo in the file
+ ixgbe_dcb_nl.c
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210317100001.2172893-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <7ee2ccf4-5b1f-eb3c-9d8f-d3381a347bc3@infradead.org>
+Date:   Wed, 17 Mar 2021 10:52:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
+In-Reply-To: <20210317100001.2172893-1-unixbhaskar@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <D39D163A-C6B3-4B66-B650-8FF0A06EF7A2@gmail.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> BCM6368 (and newer) SoCs have an integrated ethernet switch controller with dedicated internal phys, but it also supports connecting to external phys not integrated in the internal switch.
-> Ports 0-3 are internal, ports 4-7 are external and can be connected to external switches or phys and port 8 is the CPU.
-> This MDIO bus device is integrated in the BCM63xx switch registers, which corresponds to the same registers present in drivers/net/dsa/b53/b53_regs.h.
-> As you can see in the source code, registers are the same for the internal and external bus. The only difference is that if MDIOC_EXT_MASK (bit 16) is set, the MDIO bus accessed will be the external, and on the contrary, if bit 16 isn’t set, the MDIO bus accessed will be the internal one.
+On 3/17/21 3:00 AM, Bhaskar Chowdhury wrote:
 > 
-> I don’t know if this answers your question, but I think that adding it as mdiomux is the way to go.
+> s/Reprogam/Reprogram/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-Hi Álvaro
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-The Marvell mv88e6390 family of switches has a very similar setup. An
-internal and an external MDIO bus, one bit difference in a
-register. When i wrote the code for that, i decided it was not a mux
-as such, but two MDIO busses. So i register two MDIO busses, and rely
-on a higher level switch register mutex to prevent parallel operations
-on the two busses.
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c
+> index c00332d2e02a..72e6ebffea33 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c
+> @@ -361,7 +361,7 @@ static u8 ixgbe_dcbnl_set_all(struct net_device *netdev)
+>  	}
+> 
+>  #ifdef IXGBE_FCOE
+> -	/* Reprogam FCoE hardware offloads when the traffic class
+> +	/* Reprogram FCoE hardware offloads when the traffic class
+>  	 * FCoE is using changes. This happens if the APP info
+>  	 * changes or the up2tc mapping is updated.
+>  	 */
+> --
 
-The reason i decided it was not a mux, is that all the other mux
-drivers are separate drivers which rely on another MDIO bus
-driver. The mux driver gets a handle to the underlying MDIO bus
-driver, and and builds on it. Here you have it all combined in one, so
-it does not follow the pattern.
 
-So if you want to use a max, please break this up into an MDIO driver,
-and a mux driver. Or have one driver which registers two mdio busses,
-no mux.
+-- 
+~Randy
 
-   Andrew
