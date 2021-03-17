@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAEB333E3CA
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:58:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D75EF33E3DB
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231744AbhCQA5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 20:57:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34916 "EHLO mail.kernel.org"
+        id S231393AbhCQA5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 20:57:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35238 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229874AbhCQA5H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 20:57:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C07D464F9E;
-        Wed, 17 Mar 2021 00:57:05 +0000 (UTC)
+        id S231157AbhCQA5M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 20:57:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B04E064FC0;
+        Wed, 17 Mar 2021 00:57:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615942626;
-        bh=Qf6WRzLXOfkPVr6+tyAWYIuSf30ymOOqJmelHgbPUp0=;
+        s=k20201202; t=1615942630;
+        bh=wzE1/pH3sttOMtpx9P/3mP60bD/P+dRiprD1JqRIWPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nZE+Lv36PxSsqNYFxoL0wuNhxBGB4hUe5xz/nL6DxlJE4+WMSe9v9aiL6oQ8wr6lf
-         mKrDTq61F7CuLh2l2r93BbB22zGG2RVkj/2fdggCY9+KivdJ2ZURdzDvpUyF0SlVH/
-         ACvVx7uu1x3JJK3PmLxwc8XfoUwZfKD42OUtvmm1VD0oWf4ePFNXecNd99QxtAvAK3
-         QhOBuh7/9Ba8d1w40HZaT1v5y5i7rA/u9WkQ5hjiln7udqv6iuQKA2Wd5TKgtbkdL9
-         bPg+REA4F78JrPMyIgTOtx/En4u19+ApQ6QOn7ff9qi3yt2R4GvAvZxMyhXhMi73gT
-         yp5SgA0O7WjSg==
+        b=RbekOeMI1G+pXOA83eBOpiG4qGWljOZFG6EEMb66go0mZuY1dA+y7TkKoHx7HKH/l
+         zbK9W+3xPy8Pn/5BIqdNj8FJsaDLbj4DSSttIuVp1cGgCVIeRR8tncJ+KbXRk7Nhdq
+         KQ7jx0CL2hSzmABxTaaIt9igYcMP16SpNL6qTqrDu9WpvlyiWwiL4Oa53St3DfgO2V
+         4FwYWV2q9LKp35C+zDpWPtxoG3nZCv8X4R6Nl3zVgSE+w//y1AlBsLeGtFi6ctimwD
+         OtW6rNY5ahuHr/kj4sMvZa2221R25mPTmCE2wPxX5wwETwmbhVJHQC+cb2PsKBNMDB
+         eMcq6HpcvvfDQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Tony Brelinski <tonyx.brelinski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/54] ixgbe: Fix memleak in ixgbe_configure_clsu32
-Date:   Tue, 16 Mar 2021 20:56:08 -0400
-Message-Id: <20210317005654.724862-9-sashal@kernel.org>
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 12/54] net: tehuti: fix error return code in bdx_probe()
+Date:   Tue, 16 Mar 2021 20:56:11 -0400
+Message-Id: <20210317005654.724862-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210317005654.724862-1-sashal@kernel.org>
 References: <20210317005654.724862-1-sashal@kernel.org>
@@ -45,40 +43,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dinghao Liu <dinghao.liu@zju.edu.cn>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 7a766381634da19fc837619b0a34590498d9d29a ]
+[ Upstream commit 38c26ff3048af50eee3fcd591921357ee5bfd9ee ]
 
-When ixgbe_fdir_write_perfect_filter_82599() fails,
-input allocated by kzalloc() has not been freed,
-which leads to memleak.
+When bdx_read_mac() fails, no error return code of bdx_probe()
+is assigned.
+To fix this bug, err is assigned with -EFAULT as error return code.
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/tehuti/tehuti.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index f3f449f53920..278fc866fad4 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -9582,8 +9582,10 @@ static int ixgbe_configure_clsu32(struct ixgbe_adapter *adapter,
- 	ixgbe_atr_compute_perfect_hash_82599(&input->filter, mask);
- 	err = ixgbe_fdir_write_perfect_filter_82599(hw, &input->filter,
- 						    input->sw_idx, queue);
--	if (!err)
--		ixgbe_update_ethtool_fdir_entry(adapter, input, input->sw_idx);
-+	if (err)
-+		goto err_out_w_lock;
-+
-+	ixgbe_update_ethtool_fdir_entry(adapter, input, input->sw_idx);
- 	spin_unlock(&adapter->fdir_perfect_lock);
- 
- 	if ((uhtid != 0x800) && (adapter->jump_tables[uhtid]))
+diff --git a/drivers/net/ethernet/tehuti/tehuti.c b/drivers/net/ethernet/tehuti/tehuti.c
+index b8f4f419173f..d054c6e83b1c 100644
+--- a/drivers/net/ethernet/tehuti/tehuti.c
++++ b/drivers/net/ethernet/tehuti/tehuti.c
+@@ -2044,6 +2044,7 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		/*bdx_hw_reset(priv); */
+ 		if (bdx_read_mac(priv)) {
+ 			pr_err("load MAC address failed\n");
++			err = -EFAULT;
+ 			goto err_out_iomap;
+ 		}
+ 		SET_NETDEV_DEV(ndev, &pdev->dev);
 -- 
 2.30.1
 
