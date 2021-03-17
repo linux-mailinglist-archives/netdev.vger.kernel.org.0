@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B822433E2D8
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:37:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC9833E2DD
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:37:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbhCQAge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 20:36:34 -0400
+        id S230050AbhCQAgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 20:36:35 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbhCQAf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 20:35:59 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EA8C061762;
-        Tue, 16 Mar 2021 17:35:59 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id c17so6400018pfv.12;
-        Tue, 16 Mar 2021 17:35:59 -0700 (PDT)
+        with ESMTP id S229879AbhCQAgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 20:36:01 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3483DC061762;
+        Tue, 16 Mar 2021 17:36:01 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id c17so6400046pfv.12;
+        Tue, 16 Mar 2021 17:36:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
         bh=+QAzmdz2J3myHOyB8tlALQV+gjhvFNmvosUKr/OQ9fw=;
-        b=gW2OGB6PbKlM7xt6W4OIp4mG6QIYwUlZLzQE1kraE6HVRP8/l1gK9OCL6GdJwu2jSI
-         eT/h5kLd3Gs7AXl1fdRIa7RUWQ0v+6iV4rrtv9kt8kzYGtG5jBO6NMGuzj1MxaE1yFj+
-         YD3Z2wAkgdRwYLLsBxVslFKenymCoAAiPEsAKkdPvfv58ahimnSfP5jAquvOohNHGVNQ
-         3RY5yrU7dF4ZgYVJJpEL15svPenn0tpAXD1+N4VKF3BUg4uW1UAs0fY1pCNadAS2ZwoM
-         fB2KpO7xT9smCyg62JVQibDFie8tD4ppq9SGjFBWhtggjY2FOyRyaazfuISNKJ3QsIwA
-         ygaw==
+        b=k0U8bNya3Q8ZPOCSg2peKRr4EHRWXOVdljUniyhMn8DwVQVP++a+9IPugiWqAC5Nrq
+         GdFyHWuBKE/BLBLdh66LPdZwij3+T0WRTFPDxD5zKDaxxW1G58DyyxTJ1q9f7Wa//tD0
+         H9f3qeBPMMw+E5vgyMr4yVAcBI1WokFNNOidD5fNQM1xhO54sGP/bC7pw6K2KnoP2b0c
+         YB6G5W+LduvGd2OdRNEDwjJ5cF0chm6W+zugLmj0QsmWz9cbFlRb38G7KZt9tlILtilP
+         0hXQdl0XtlIr4lratrQz2izJp0bQyWYMS4vmQebyymnUyjy1HXdHFB2dfHO8OZWFDcg2
+         Yzbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
         bh=+QAzmdz2J3myHOyB8tlALQV+gjhvFNmvosUKr/OQ9fw=;
-        b=OzLK2mw6esGe4q7Hp2ansC9PC/QTZoQtFQQdgKeahayAlyGe1a8BhWF2m2eHVnAL8h
-         LaavkWFFl0Wd143g1RMZjFAk5c85qLLoBA20VFF6rKWDa992ccGbGZzZWIn9ZqPCwH/u
-         A0lVkS5VL3CTr5nbEOWP5RHYLynGhA++fYYzocJU5p0CKt69TtQadJKZMONXEiwPHOV7
-         q/C1u+VxQ/MB75IqbjSM0wKjFluo2iQSiDJ3siOZRtLD7xpKIR8gLiC1TQoOQtxu8CEN
-         vQcYjpwFZZ+T0TlFwmtNBkYu+WeqitJ1CSOBF6zx0ePLJb4ujp1fjp8M+D1vL27y6uxf
-         PV1A==
-X-Gm-Message-State: AOAM531iP/kPiGwKOgJEWx/r8+Jiz4Lb6G5uztpD2T9ldMWDeFopGhZt
-        p7n5GnmsKeCrbXtT6ydXMrKYly/OlHE=
-X-Google-Smtp-Source: ABdhPJzL6E3KKO10jvhVD05f8r6U6PdabinnP4QTKZDMjUUvlQXOfD5Sz2MjMkrq6K9JHsphRm5OFA==
-X-Received: by 2002:a63:4709:: with SMTP id u9mr334008pga.250.1615941358997;
-        Tue, 16 Mar 2021 17:35:58 -0700 (PDT)
+        b=k6IeAjf643SE2BnMmmAKcYWqSs0dj3jEFGYk/CFb9bjL4ngouRnRoSNLNhPWKSWhb8
+         WIEv7/SC7lsM2WBamtqYSikEdL8HeYFSBPBCLefQBUVqa88qYyIH8fm1NM5Z1ejI0PQg
+         qGPhWkVUbWrulx+RHT04UyVx/GjsAAqrx6OWxbZHv/y53pa+HdFwuMF/5uyj2apU3A+D
+         R1G7BjwlI/ElCfBDqZa/PM2fy38vis61yaU5fs90+kM8gUlGp2nwz4tM8zyR8Rhyto9C
+         LbSa6X/Vgeiq32eczkcZVAZCfXtdb/t5Kccby9tpQK3/11l2gyt7o73SiNarJpqsgXhR
+         yT3Q==
+X-Gm-Message-State: AOAM5333wDfkpAJIZGlfdhWpxnbsI+PxK0Kns6/kYbB7NpqU4GufSiOR
+        /V7/QZHC/8pa/jH6wREDCw6aU3/pB0o=
+X-Google-Smtp-Source: ABdhPJz2aanHtNw0pamoXapFjVhVflcb7TbqRHDBJwvIJA6kh3t27UUMudkriyJ5bJMrbgcnfJRV0A==
+X-Received: by 2002:a63:d17:: with SMTP id c23mr323358pgl.251.1615941360322;
+        Tue, 16 Mar 2021 17:36:00 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k63sm18796512pfd.48.2021.03.16.17.35.57
+        by smtp.gmail.com with ESMTPSA id k63sm18796512pfd.48.2021.03.16.17.35.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 17:35:58 -0700 (PDT)
+        Tue, 16 Mar 2021 17:35:59 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -57,9 +57,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-kernel@vger.kernel.org (open list), stable@vger.kernel.org,
         gregkh@linuxfoundation.org, sashal@kernel.org
-Subject: [PATCH stable 5.10] net: dsa: b53: Correct learning for standalone ports
-Date:   Tue, 16 Mar 2021 17:35:48 -0700
-Message-Id: <20210317003549.3964522-6-f.fainelli@gmail.com>
+Subject: [PATCH stable 5.11] net: dsa: b53: Correct learning for standalone ports
+Date:   Tue, 16 Mar 2021 17:35:49 -0700
+Message-Id: <20210317003549.3964522-7-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210317003549.3964522-1-f.fainelli@gmail.com>
 References: <20210317003549.3964522-1-f.fainelli@gmail.com>
