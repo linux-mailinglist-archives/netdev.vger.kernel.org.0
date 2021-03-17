@@ -2,137 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BF4C33E849
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 05:05:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D5233E86D
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 05:27:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhCQEFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 00:05:16 -0400
-Received: from mga17.intel.com ([192.55.52.151]:60176 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229958AbhCQEE7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 00:04:59 -0400
-IronPort-SDR: 91MAP2ZiCVT6u0r1wo5rI39G6hfgBeUipb2Hj7R7PRbMO0ZO7YC5j0vGpxVXW7vHhZ07rQm6TP
- OoTGaO/lLrfg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="169298828"
-X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="169298828"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 21:04:58 -0700
-IronPort-SDR: JR5srjP4tj6jWm31Pkt3ES5OUH9IOul5aCJypO7tlEQwKSN+D+iuiw2soM3TdOS0ckFpS56XDZ
- dargmXMdPgdg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="412486779"
-Received: from glass.png.intel.com ([10.158.65.59])
-  by orsmga008.jf.intel.com with ESMTP; 16 Mar 2021 21:04:55 -0700
-From:   Wong Vee Khee <vee.khee.wong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH net-next 1/1] net: stmmac: add timestamp correction to rid CDC sync error
-Date:   Wed, 17 Mar 2021 12:09:04 +0800
-Message-Id: <20210317040904.816-1-vee.khee.wong@intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S229792AbhCQE1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 00:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36336 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229469AbhCQE0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 00:26:41 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEA8C06174A;
+        Tue, 16 Mar 2021 21:26:29 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id t4so37708831qkp.1;
+        Tue, 16 Mar 2021 21:26:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UAePd2rnygsdnsyXuv6mA0DvkDM4G5iCOPbKYR8KnfA=;
+        b=TUENOgqwp0RcG7cUSv/IoSnbdYmot2EaAPg8f133Gpcjlck9N48TosyQKBN4jhRm6F
+         FshHd++qREzvrRmv2nyqKOP0z6qSK9dJao9Co3hHA9DYPR0Tc8qV08p2hpMyWhH34lgh
+         diOOYdPMeaa+IOI6MmPRb5xoVbIrsiotmBjcw79hzmN2nBiRSP1U+zhdQQovQG9HRfjz
+         g9YMNC3lvtmXNfWAWOwXtbnCrz30WLOQgnlyIMk3Noikxy7IyN+Um0yVXCntmjDktcmE
+         M5FSGvYrXDltyrIFHbg/+Iv7dAlir/YjAg+RdDhCIrCoseamL0F1ReNgtR4xcMG9jDWe
+         Ec7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UAePd2rnygsdnsyXuv6mA0DvkDM4G5iCOPbKYR8KnfA=;
+        b=sbOlSVVLWtX9UIxJYqvTcbeHXH51FCMx/8kxCN6z77nGJs7pAwQw8Iulx5YUAcRlLf
+         CVMOtmPD5NWKtNjv1KS0sVePpcjOeKqdgyDKzmhuj9+o6fV3ZZaVCk3qQJfQwdB1J9Z2
+         f8ey/uEIoOA/5G4NfwRJjmdgOWhDONHptddFer5uoyY8Vuv4Cx62wOZeRkicYxaJJp6w
+         Jdtut+X1mqjGAQzMwtk/82JTW4GShwtZxVzXabzCwrstYD1eoz4DGPigsAFGUeHwJGWg
+         LwLbUgb2rSPz8vPTWMgjf08arg4nlgJZm1PKwTAa1lmHg4Qyo8PTjB1T/yCfMzlLBjtN
+         l8ng==
+X-Gm-Message-State: AOAM530wFMlSOvP0eR75ouO26UOYDtnBrJNGnbJimsmDjDpXYaUoFjo5
+        v76jhT60VKEEiUskC2sPXZA=
+X-Google-Smtp-Source: ABdhPJwcs4m28tAdz0LxicKJZAh82Tqd/a+q2SchpdWvR3KPdyhrgC57f8DlPKPtG7BXqcv/HtLLbQ==
+X-Received: by 2002:a37:a58f:: with SMTP id o137mr2634342qke.482.1615955189003;
+        Tue, 16 Mar 2021 21:26:29 -0700 (PDT)
+Received: from localhost.localdomain ([37.19.198.5])
+        by smtp.gmail.com with ESMTPSA id f136sm17025857qke.24.2021.03.16.21.26.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Mar 2021 21:26:28 -0700 (PDT)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     luciano.coelho@intel.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, gil.adam@intel.com,
+        unixbhaskar@gmail.com, johannes.berg@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     rdunlap@infradead.org
+Subject: [PATCH] wireless: intel: iwlwifi: fw: api: Absolute rudimentary typo fixes in the file power.h
+Date:   Wed, 17 Mar 2021 09:55:40 +0530
+Message-Id: <20210317042540.4097078-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
 
-According to Synopsis DesignWare EQoS Databook, the Clock Domain Cross
-synchronization error is introduced tue to the clock(GMII Tx/Rx clock)
-being different at the capture as compared to the PTP
-clock(clk_ptp_ref_i) that is used to generate the time.
+s/folowing/following/
+s/Celsuis/Celsius/
+s/temerature/temperature/  ...twice
 
-The CDC synchronization error is almost equal to 2 times the clock
-period of the PTP clock(clk_ptp_ref_i).
 
-On a Intel Tigerlake platform (with Marvell 88E2110 external PHY):
-
-Before applying this patch (with CDC synchronization error):
-ptp4l[64.044]: rms    8 max   13 freq +30877 +/-  11 delay   216 +/-   0
-ptp4l[65.047]: rms   13 max   20 freq +30869 +/-  17 delay   213 +/-   0
-ptp4l[66.050]: rms   12 max   20 freq +30857 +/-  11 delay   213 +/-   0
-ptp4l[67.052]: rms   11 max   22 freq +30849 +/-  10 delay   215 +/-   0
-ptp4l[68.055]: rms   10 max   16 freq +30853 +/-  13 delay   215 +/-   0
-ptp4l[69.057]: rms    7 max   13 freq +30848 +/-   9 delay   216 +/-   0
-ptp4l[70.060]: rms    8 max   13 freq +30846 +/-  10 delay   216 +/-   0
-ptp4l[71.063]: rms    9 max   15 freq +30836 +/-   8 delay   218 +/-   0
-
-After applying this patch (CDC syncrhonization error is taken care of):
-ptp4l[61.516]: rms  773 max  824 freq +31526 +/- 158 delay   200 +/-   0
-ptp4l[62.519]: rms  427 max  596 freq +31668 +/-  39 delay   198 +/-   0
-ptp4l[63.522]: rms  113 max  206 freq +31482 +/-  57 delay   198 +/-   0
-ptp4l[64.525]: rms   40 max   56 freq +31316 +/-  29 delay   200 +/-   0
-ptp4l[65.528]: rms   47 max   56 freq +31255 +/-  17 delay   200 +/-   0
-ptp4l[66.531]: rms   26 max   36 freq +31246 +/-   9 delay   200 +/-   0
-ptp4l[67.534]: rms   12 max   18 freq +31254 +/-  12 delay   202 +/-   0
-ptp4l[68.537]: rms    7 max   12 freq +31263 +/-  10 delay   202 +/-   0
-
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c    | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/fw/api/power.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index a10704d8e3c6..ddf54b8ad75d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -466,6 +466,7 @@ static void stmmac_get_tx_hwtstamp(struct stmmac_priv *priv,
- {
- 	struct skb_shared_hwtstamps shhwtstamp;
- 	bool found = false;
-+	s64 adjust = 0;
- 	u64 ns = 0;
- 
- 	if (!priv->hwts_tx_en)
-@@ -484,6 +485,13 @@ static void stmmac_get_tx_hwtstamp(struct stmmac_priv *priv,
- 	}
- 
- 	if (found) {
-+		/* Correct the clk domain crossing(CDC) error */
-+		if (priv->plat->has_gmac4 && priv->plat->clk_ptp_rate) {
-+			adjust += -(2 * (NSEC_PER_SEC /
-+					 priv->plat->clk_ptp_rate));
-+			ns += adjust;
-+		}
-+
- 		memset(&shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
- 		shhwtstamp.hwtstamp = ns_to_ktime(ns);
- 
-@@ -507,6 +515,7 @@ static void stmmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc *p,
- {
- 	struct skb_shared_hwtstamps *shhwtstamp = NULL;
- 	struct dma_desc *desc = p;
-+	u64 adjust = 0;
- 	u64 ns = 0;
- 
- 	if (!priv->hwts_rx_en)
-@@ -518,6 +527,13 @@ static void stmmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc *p,
- 	/* Check if timestamp is available */
- 	if (stmmac_get_rx_timestamp_status(priv, p, np, priv->adv_ts)) {
- 		stmmac_get_timestamp(priv, desc, priv->adv_ts, &ns);
-+
-+		/* Correct the clk domain crossing(CDC) error */
-+		if (priv->plat->has_gmac4 && priv->plat->clk_ptp_rate) {
-+			adjust += 2 * (NSEC_PER_SEC / priv->plat->clk_ptp_rate);
-+			ns -= adjust;
-+		}
-+
- 		netdev_dbg(priv->dev, "get valid RX hw timestamp %llu\n", ns);
- 		shhwtstamp = skb_hwtstamps(skb);
- 		memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
--- 
-2.25.1
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/power.h b/drivers/net/wireless/intel/iwlwifi/fw/api/power.h
+index 798417182d54..f7c7852127d3 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/api/power.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/api/power.h
+@@ -54,7 +54,7 @@ struct iwl_ltr_config_cmd_v1 {
+  * @flags: See &enum iwl_ltr_config_flags
+  * @static_long: static LTR Long register value.
+  * @static_short: static LTR Short register value.
+- * @ltr_cfg_values: LTR parameters table values (in usec) in folowing order:
++ * @ltr_cfg_values: LTR parameters table values (in usec) in following order:
+  *	TX, RX, Short Idle, Long Idle. Used only if %LTR_CFG_FLAG_UPDATE_VALUES
+  *	is set.
+  * @ltr_short_idle_timeout: LTR Short Idle timeout (in usec). Used only if
+@@ -493,7 +493,7 @@ union iwl_ppag_table_cmd {
+  *      Roaming Energy Delta Threshold, otherwise use normal Energy Delta
+  *      Threshold. Typical energy threshold is -72dBm.
+  * @bf_temp_threshold: This threshold determines the type of temperature
+- *	filtering (Slow or Fast) that is selected (Units are in Celsuis):
++ *	filtering (Slow or Fast) that is selected (Units are in Celsius):
+  *	If the current temperature is above this threshold - Fast filter
+  *	will be used, If the current temperature is below this threshold -
+  *	Slow filter will be used.
+@@ -501,12 +501,12 @@ union iwl_ppag_table_cmd {
+  *      calculated for this and the last passed beacon is greater than this
+  *      threshold. Zero value means that the temperature change is ignored for
+  *      beacon filtering; beacons will not be  forced to be sent to driver
+- *      regardless of whether its temerature has been changed.
++ *      regardless of whether its temperature has been changed.
+  * @bf_temp_slow_filter: Send Beacon to driver if delta in temperature values
+  *      calculated for this and the last passed beacon is greater than this
+  *      threshold. Zero value means that the temperature change is ignored for
+  *      beacon filtering; beacons will not be forced to be sent to driver
+- *      regardless of whether its temerature has been changed.
++ *      regardless of whether its temperature has been changed.
+  * @bf_enable_beacon_filter: 1, beacon filtering is enabled; 0, disabled.
+  * @bf_debug_flag: beacon filtering debug configuration
+  * @bf_escape_timer: Send beacons to to driver if no beacons were passed
+--
+2.30.2
 
