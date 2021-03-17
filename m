@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60D1A33E2BA
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:32:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFBC333E2CB
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 01:33:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbhCQAbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 20:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42664 "EHLO
+        id S229841AbhCQAcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 20:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbhCQAbd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 20:31:33 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75159C06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 17:31:33 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id l132so37263734qke.7
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 17:31:33 -0700 (PDT)
+        with ESMTP id S229896AbhCQAbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 20:31:42 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7FBC06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 17:31:42 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id h7so244369qtx.3
+        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 17:31:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=pMHuuoPdVt7eusZdxl42EjH4STYGN/5gPWejCROpebg=;
-        b=Hrc+hGjAz6aOUlVQQuwvdyPy/ZzCtegJZvy6WNRD+wnlKf77jCyqqgND/NSEhh5AlH
-         +GvRx+32atGDYR5WSaIWC5aS1e0qYFEohtrYc/YULFmO9JzaC9M3B5GVYEoKk3WPeW0z
-         XVaShYNuiz0GDAqlH89mVapzPiDJnceT6OsUmYTosWrFZrNv/5MoeNL8bHSJhIIJQFlh
-         EqWVp3TOPu3pT2PYQtHOCWM/HPd9YuYtKE3ZdipwRrEYZ+ZJhDYI0GC7S/2uu3QSvFTh
-         mP62etzpy/8UoGSzLyRFyB/3w6gbxnLEH2TrtgQ1tTsK4rrdL2Qh7YdjXw0rWrK1atbK
-         EXfA==
+        bh=KyKOMMokP6jDQFUvlq0MosyUyH2Iv3Nr4lzzu8bCs5Y=;
+        b=fEAQLmYeP3xS4Zgxq96Cv7EBn7DGMaxwY/XlHc0FzDFB4+Si8eIlLEMO5oj8A1mJLp
+         Y3CrdW20oceVYTpV7cHblnbSICvqL9koNRvDH6XCW6BxX9tInqfsQzwK27g54ehQiOz/
+         QGnpgcLz7c4FFU/zXCcTooPd4AbzdV2zhvUebGNBZQhP6uGTxzZX2hk3XCa9N95iSOvq
+         Jz1SWehnqrZbAbUT6gQFTsPdNGGhskMqRYDx9gNTqajeC2tbGLlwIl+fN2rzwaSu2HNH
+         s6ftFwAIW9m/9Q7fnup8VIB4dFafMhzKhpmXVrcKfvOZ4S/nBq9ASSeLqnuP1ZtZn3MB
+         sKIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=pMHuuoPdVt7eusZdxl42EjH4STYGN/5gPWejCROpebg=;
-        b=NtmHHXtI/WVWcMGyqGS978VxKPKWYvvJ8v2sB7RN6Ry5MLlz5Dtr4o7Zpmdr9gvL/V
-         nvVjUxYjZmUlJL+JlANbfigMgYIX3hYsZ13Xx1UCyrLJDVidcdIuusjbGMrTzZ/+nXAE
-         E/kKbxPpH8l7YAl5m1s0Yc2VpLzciy932KkNdxYxdoM4MStwN07v5fIVSunwCkefdk2a
-         c74sFwMF9dkq9Mr6WTg3rzc3NyK4z2ooLrFEcR2H8y28QCAR4WNjC8MgjRsTQ9K+bArZ
-         KLsPQNzuQBNGhOZWvw68VrkfIzlPXoO22l2H/t7Km2EzXBtzjnha4T8X+fS96TjRjk/K
-         cKaw==
-X-Gm-Message-State: AOAM533N33x56pBalWttQ3p4kd/V3VtBh1vJvMyjfzODZCrZ9Yj5JGLo
-        mgDIt1+sdqrpONLpGBuvuJI=
-X-Google-Smtp-Source: ABdhPJw+/5BrF05tXPPyi1gQMX/ztIF6kLrY9sOqKnozyf8Wu82yWstyraPG/nAN+MhEelTCTuTuVw==
-X-Received: by 2002:a37:8206:: with SMTP id e6mr1898164qkd.169.1615941092656;
-        Tue, 16 Mar 2021 17:31:32 -0700 (PDT)
+        bh=KyKOMMokP6jDQFUvlq0MosyUyH2Iv3Nr4lzzu8bCs5Y=;
+        b=l0Bfgfv2Y/StbVhysNY3RRJqgyQZCeH++SYXOOBrJKZWnJMpvhJd9FdPWfA+cEDwFQ
+         qwUocMKSEGoXFMUEwRS6WcjOggsH8Sf03KGt+LCY8PpubNKVQ7xsTJINEO15vfJU/EwU
+         ruQI2whuyt0x46OeTEhiKVk853qzpeUgdeaWo7QMPmjIV4mX94RX/9uj50VvGigiYVzY
+         ZB5M6wql8Ju32gEBWF9LwE+6y7bqSFdfB8sht9bgzSI6oJpo7HMty2yEZN3gQ0ct7ms0
+         GdaqejXffrouElsSof3MWtRaLCTVjQasZElivBh9u7KQ83XQBAlIY1hE9xsHrGn31ftT
+         Y7DQ==
+X-Gm-Message-State: AOAM533zuDs2kTQY+ef6jZ77XQPo4T15p62C3fKxACwl5otdYUAy+pYd
+        o0WCLynx1VovcNnUve7Doms=
+X-Google-Smtp-Source: ABdhPJyKCy0kx4bpO+dw7fxrC6LSnpUJ05P3TZR5KeIjnHGFzplfQvG0X6jaPuMAuv0jVRY6nhD0xw==
+X-Received: by 2002:aed:3104:: with SMTP id 4mr1442269qtg.341.1615941101264;
+        Tue, 16 Mar 2021 17:31:41 -0700 (PDT)
 Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id l6sm16860274qke.34.2021.03.16.17.31.29
+        by smtp.gmail.com with ESMTPSA id r3sm16220658qkm.129.2021.03.16.17.31.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Mar 2021 17:31:32 -0700 (PDT)
-Subject: [net-next PATCH v2 07/10] virtio_net: Update driver to use
+        Tue, 16 Mar 2021 17:31:40 -0700 (PDT)
+Subject: [net-next PATCH v2 08/10] vmxnet3: Update driver to use
  ethtool_sprintf
 From:   Alexander Duyck <alexander.duyck@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
@@ -62,8 +62,8 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         sthemmin@microsoft.com, wei.liu@kernel.org, mst@redhat.com,
         jasowang@redhat.com, pv-drivers@vmware.com, doshir@vmware.com,
         alexanderduyck@fb.com, Kernel-team@fb.com
-Date:   Tue, 16 Mar 2021 17:31:29 -0700
-Message-ID: <161594108914.5644.2813119476748144220.stgit@localhost.localdomain>
+Date:   Tue, 16 Mar 2021 17:31:37 -0700
+Message-ID: <161594109782.5644.3951439442214973165.stgit@localhost.localdomain>
 In-Reply-To: <161594093708.5644.11391417312031401152.stgit@localhost.localdomain>
 References: <161594093708.5644.11391417312031401152.stgit@localhost.localdomain>
 User-Agent: StGit/0.23
@@ -76,55 +76,89 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Duyck <alexanderduyck@fb.com>
 
-Update the code to replace instances of snprintf and a pointer update with
-just calling ethtool_sprintf.
+So this patch actually does 3 things.
 
-Also replace the char pointer with a u8 pointer to avoid having to recast
-the pointer type.
+First it removes a stray white space at the start of the variable
+declaration in vmxnet3_get_strings.
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Second it flips the logic for the string test so that we exit immediately
+if we are not looking for the stats strings. Doing this we can avoid
+unnecessary indentation and line wrapping.
+
+Then finally it updates the code to use ethtool_sprintf rather than a
+memcpy and pointer increment to write the ethtool strings.
+
 Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
 ---
- drivers/net/virtio_net.c |   18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |   53 ++++++++++++---------------------
+ 1 file changed, 19 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index e97288dd6e5a..77ba8e2fc11c 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2138,25 +2138,21 @@ static int virtnet_set_channels(struct net_device *dev,
- static void virtnet_get_strings(struct net_device *dev, u32 stringset, u8 *data)
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 7ec8652f2c26..c0bd9cbc43b1 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -218,43 +218,28 @@ vmxnet3_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
+ static void
+ vmxnet3_get_strings(struct net_device *netdev, u32 stringset, u8 *buf)
  {
- 	struct virtnet_info *vi = netdev_priv(dev);
--	char *p = (char *)data;
- 	unsigned int i, j;
-+	u8 *p = data;
- 
- 	switch (stringset) {
- 	case ETH_SS_STATS:
- 		for (i = 0; i < vi->curr_queue_pairs; i++) {
--			for (j = 0; j < VIRTNET_RQ_STATS_LEN; j++) {
--				snprintf(p, ETH_GSTRING_LEN, "rx_queue_%u_%s",
--					 i, virtnet_rq_stats_desc[j].desc);
--				p += ETH_GSTRING_LEN;
+-	 struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+-	if (stringset == ETH_SS_STATS) {
+-		int i, j;
+-		for (j = 0; j < adapter->num_tx_queues; j++) {
+-			for (i = 0; i < ARRAY_SIZE(vmxnet3_tq_dev_stats); i++) {
+-				memcpy(buf, vmxnet3_tq_dev_stats[i].desc,
+-				       ETH_GSTRING_LEN);
+-				buf += ETH_GSTRING_LEN;
 -			}
-+			for (j = 0; j < VIRTNET_RQ_STATS_LEN; j++)
-+				ethtool_sprintf(&p, "rx_queue_%u_%s", i,
-+						virtnet_rq_stats_desc[j].desc);
- 		}
- 
- 		for (i = 0; i < vi->curr_queue_pairs; i++) {
--			for (j = 0; j < VIRTNET_SQ_STATS_LEN; j++) {
--				snprintf(p, ETH_GSTRING_LEN, "tx_queue_%u_%s",
--					 i, virtnet_sq_stats_desc[j].desc);
--				p += ETH_GSTRING_LEN;
+-			for (i = 0; i < ARRAY_SIZE(vmxnet3_tq_driver_stats);
+-			     i++) {
+-				memcpy(buf, vmxnet3_tq_driver_stats[i].desc,
+-				       ETH_GSTRING_LEN);
+-				buf += ETH_GSTRING_LEN;
 -			}
-+			for (j = 0; j < VIRTNET_SQ_STATS_LEN; j++)
-+				ethtool_sprintf(&p, "tx_queue_%u_%s", i,
-+						virtnet_sq_stats_desc[j].desc);
- 		}
- 		break;
+-		}
++	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
++	int i, j;
+ 
+-		for (j = 0; j < adapter->num_rx_queues; j++) {
+-			for (i = 0; i < ARRAY_SIZE(vmxnet3_rq_dev_stats); i++) {
+-				memcpy(buf, vmxnet3_rq_dev_stats[i].desc,
+-				       ETH_GSTRING_LEN);
+-				buf += ETH_GSTRING_LEN;
+-			}
+-			for (i = 0; i < ARRAY_SIZE(vmxnet3_rq_driver_stats);
+-			     i++) {
+-				memcpy(buf, vmxnet3_rq_driver_stats[i].desc,
+-				       ETH_GSTRING_LEN);
+-				buf += ETH_GSTRING_LEN;
+-			}
+-		}
++	if (stringset != ETH_SS_STATS)
++		return;
+ 
+-		for (i = 0; i < ARRAY_SIZE(vmxnet3_global_stats); i++) {
+-			memcpy(buf, vmxnet3_global_stats[i].desc,
+-				ETH_GSTRING_LEN);
+-			buf += ETH_GSTRING_LEN;
+-		}
++	for (j = 0; j < adapter->num_tx_queues; j++) {
++		for (i = 0; i < ARRAY_SIZE(vmxnet3_tq_dev_stats); i++)
++			ethtool_sprintf(&buf, vmxnet3_tq_dev_stats[i].desc);
++		for (i = 0; i < ARRAY_SIZE(vmxnet3_tq_driver_stats); i++)
++			ethtool_sprintf(&buf, vmxnet3_tq_driver_stats[i].desc);
++	}
++
++	for (j = 0; j < adapter->num_rx_queues; j++) {
++		for (i = 0; i < ARRAY_SIZE(vmxnet3_rq_dev_stats); i++)
++			ethtool_sprintf(&buf, vmxnet3_rq_dev_stats[i].desc);
++		for (i = 0; i < ARRAY_SIZE(vmxnet3_rq_driver_stats); i++)
++			ethtool_sprintf(&buf, vmxnet3_rq_driver_stats[i].desc);
  	}
++
++	for (i = 0; i < ARRAY_SIZE(vmxnet3_global_stats); i++)
++		ethtool_sprintf(&buf, vmxnet3_global_stats[i].desc);
+ }
+ 
+ netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
 
 
