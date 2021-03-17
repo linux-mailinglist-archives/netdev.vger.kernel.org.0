@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 912B133EFB3
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 12:38:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F2C333EFC9
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 12:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231152AbhCQLiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 07:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46320 "EHLO
+        id S231348AbhCQLtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 07:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbhCQLiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 07:38:00 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D855C06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 04:38:00 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id u3so40161462ybk.6
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 04:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6IYAqtf/GuQy4I9i5Gkv7icNrqTsQ1XwKALFq9KoyrI=;
-        b=m0BPuaH4mAottICM6KZG7M+GwUz7LDgGdBjnWGgvRCWM7eLRdre10Gmhrw4F5sRhFJ
-         5nGpHj5/tT8hSaNN6HAVg57UeKc1GSB6Tl9CkcvFEEMBZjdpJvTR4u6JJ7wFIE2sbH5+
-         Wx7QkcL4OODk1TWkZmv8NxoZSWiSh+sQHTU4FctGeCOlLAGug6JNdDhFUwDmQfj6ToyV
-         Im+haxghaFTItOayX/m6RX2J/sFn5fKxtqwpqJ0e34JHIEB2iXnrPj3LaBCvy2iCdNYV
-         nQkqoQOI0N5PnwjBk4dJJdwR7kv8KTWut0HocgyUk0eKauxiutZnhnJOVJn8760uzgOq
-         ImTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6IYAqtf/GuQy4I9i5Gkv7icNrqTsQ1XwKALFq9KoyrI=;
-        b=I1XGccgqATndyBkCC3VaCSb5EIdV6UtlbQqIfYQhhKKGpY6zijttJZ5NiEbqQQtRfH
-         lBKiIJhz2OvWgbNVDdAvxF4asT0mC4h2vHCPHYugpDVVcEhKHGjppIQdZ81XYtbYqLNO
-         oDEvK21DYFAYyUJewsoO53D3n0Wp0A3U56pEE9urkXwuz3GzL4SM+QB562teY/ZJwuvf
-         TXRNmyJxIZg2bld3o92/8e//rhGdc+prbYsM8OJe03IWh5MMvi5Eh40Xi2K0VIannJOB
-         LWp2dlWfpkWqL/3h6AHdUrszzHjOfdBQytEJLdB1gFZoLL60/XCHzwGhPtu4cBm9ZZsv
-         vM5w==
-X-Gm-Message-State: AOAM5325sgTj6nybpRT/c5rXiT3IqeF+0Cre2QtlO9MuLIdazlqSawNT
-        7wsCmAdvD+CelrwAkN7+vdFWhbUOislHlW/cG1c=
-X-Google-Smtp-Source: ABdhPJyo877zcZTeLhGCs0cB93l1aLa8rdtWziCsetJrx0KB5fwrMPsIgmzj3N4sqo0me5oT57AlqEUpXrJgjdUUHRk=
-X-Received: by 2002:a25:d642:: with SMTP id n63mr3631263ybg.390.1615981079527;
- Wed, 17 Mar 2021 04:37:59 -0700 (PDT)
+        with ESMTP id S231452AbhCQLtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 07:49:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEE4C06175F
+        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 04:49:46 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lMUgG-0006KX-Po; Wed, 17 Mar 2021 12:49:40 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:31e3:6e40:b1cd:40a8])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id BFDF65F7A7C;
+        Wed, 17 Mar 2021 11:49:38 +0000 (UTC)
+Date:   Wed, 17 Mar 2021 12:49:38 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     netdev@vger.kernel.org, Joakim Zhang <qiangqing.zhang@nxp.com>,
+        linux-can@vger.kernel.org, kernel@pengutronix.de, kuba@kernel.org,
+        davem@davemloft.net
+Subject: Re: [BUG] Re: [net 3/6] can: flexcan: invoke flexcan_chip_freeze()
+ to enter freeze mode
+Message-ID: <20210317114938.lcqudto75wc6nkzq@pengutronix.de>
+References: <20210301112100.197939-1-mkl@pengutronix.de>
+ <20210301112100.197939-4-mkl@pengutronix.de>
+ <65137c60-4fbe-6772-6d48-ac360930f62b@pengutronix.de>
+ <20210317081831.osalrszbje4oofoh@pengutronix.de>
 MIME-Version: 1.0
-References: <CAAfyv37z0ny=JGsRrVwkzoOd3RNb_j-rQii65a0e2+KMt-YM3A@mail.gmail.com>
- <YFHpGmgOV/O+6lTZ@Red>
-In-Reply-To: <YFHpGmgOV/O+6lTZ@Red>
-From:   Belisko Marek <marek.belisko@gmail.com>
-Date:   Wed, 17 Mar 2021 12:37:48 +0100
-Message-ID: <CAAfyv37JbPtV3uUzc0ZUHNMCh+_y1XOH-auGWYJSzy4id07VCw@mail.gmail.com>
-Subject: Re: set mtu size broken for dwmac-sun8i
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ph7ivpa2lrsmgzwc"
+Content-Disposition: inline
+In-Reply-To: <20210317081831.osalrszbje4oofoh@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 12:33 PM Corentin Labbe
-<clabbe.montjoie@gmail.com> wrote:
->
-> Le Wed, Mar 17, 2021 at 10:19:26AM +0100, Belisko Marek a =C3=A9crit :
-> > Hi,
-> >
-> > I'm hunting an issue when setting mtu failed for dwmac-sun8i driver.
-> > Basically adding more debug shows that in stmmac_change_mtu
-> > tx_fifo_size is 0 and in this case EINVAL is reported. Isaw there was
-> > fix for similar driver dwmac-sunxi driver by:
-> > 806fd188ce2a4f8b587e83e73c478e6484fbfa55
-> >
-> > IIRC dwmac-sun8i should get tx and rx fifo size from dma but seems
-> > it's not the case. I'm using 5.4 kernel LTS release. Any ideas?
-> >
-> > Thanks and BR,
-> >
-> > marek
-> >
->
-> Hello
->
-> Could you provide exact command line you tried to change mtu ?
-> Along with all MTU values you tried.
-I tried with ifconfig eth0 down && ifconfig eth0 mtu 1400 return:
-ifconfig: SIOCSIFMTU: Invalid argument
 
-btw board is orange-pi-pc-plus
->
-> Thanks
-> Regards
+--ph7ivpa2lrsmgzwc
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-BR,
+On 17.03.2021 09:18:31, Marc Kleine-Budde wrote:
+> A fix for this in on its way to net/master:
+>=20
+> https://lore.kernel.org/linux-can/20210316082104.4027260-6-mkl@pengutroni=
+x.de/
 
-marek
+It's already in net/master.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--ph7ivpa2lrsmgzwc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmBR7M8ACgkQqclaivrt
+76kXswf+NgFkyfI/JDlRfKLVHVrtWLvjgm2+hreZIvoo9zfbtmptXe5VqcKyCT3t
+hwdndozckQi05oBtIGJ7t+QxFO1C0yiNXi6pBZ/RGuS9gVy0FVCzvR259r6vbhR8
+nog+Cjh4csFs1zRwQ1wAAQKSCC+DwRSxDOoevoBLYA71L8UYvphnSjYonEpSJEnS
+hVFxNbWwTKeZlJLqhPh19BSvh1Ai0zvWKqoZrkXwPP6NuwTVoH4NU6WOP29jRQJ6
+SXVoN5g9ajfryZmYeu/naQMMLx+Uw7md5MZZeF3gJyQy+Zsf7TaCLkl8E9lhrD5b
+1QOPpMYOWD/KL6Y9M3Nn45YgUKdddw==
+=eWaE
+-----END PGP SIGNATURE-----
+
+--ph7ivpa2lrsmgzwc--
