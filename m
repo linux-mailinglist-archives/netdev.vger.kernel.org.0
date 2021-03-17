@@ -2,216 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C368333E627
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:30:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4134B33E647
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbhCQB3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 21:29:23 -0400
-Received: from mga03.intel.com ([134.134.136.65]:17068 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231243AbhCQB25 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 21:28:57 -0400
-IronPort-SDR: lw6sdQoFQKGBxziYOU+CFvYnCLTecWcNd3sg7QXJnuBICiXk8g1u5DZY4i8SgdM2gS561Cgp57
- 499mjeSKACJw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="189413705"
-X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="189413705"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2021 18:28:57 -0700
-IronPort-SDR: 10heXnmyaXTKIcQmg8yRrk6bk6kmEg2xGAoG15nqwBWuBVKhNZ8E57Tb8mLUAryd/Xi4NyRYkI
- 7LS5Qd27UpAw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,254,1610438400"; 
-   d="scan'208";a="605493944"
-Received: from glass.png.intel.com ([10.158.65.59])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Mar 2021 18:28:53 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH net-next 1/1] stmmac: intel: Add PSE and PCH PTP clock source selection
-Date:   Wed, 17 Mar 2021 09:32:47 +0800
-Message-Id: <20210317013247.25131-2-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210317013247.25131-1-boon.leong.ong@intel.com>
-References: <20210317013247.25131-1-boon.leong.ong@intel.com>
+        id S229814AbhCQBib (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 21:38:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229829AbhCQBiN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 21:38:13 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7AAC06174A;
+        Tue, 16 Mar 2021 18:38:01 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id v24-20020a9d69d80000b02901b9aec33371so310611oto.2;
+        Tue, 16 Mar 2021 18:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=ygJ0qGMlZLdyRRUICYstxcV17G5DTyYvHgZcVYxiHc4=;
+        b=hlays0fm13sewi1zSN6YvfIDRfmL4+7hMs+9qNwSJb8YpxnkR87NPck3T4vH8gd4ep
+         RjY5OW0eAkP0mcv8GMS4bstWli8jih9VQoAjimteQGQX9sdSigrMglwwKMPETBLZnBpq
+         5nO15OA7JwHNGYoSKh4gQNdv0sOD64ZvEDjprwrVwezsSvQ8OPiO50m+IGCu9ZZmhraX
+         256H72HGA/MbW5z2xRKRFA/JRMsJl56U+S9V76LdU7DlGt0bYZ6LBjk8ctDKDMiRXjRp
+         s4aVKXFgmgu4wq3SGcRllaazz7B7ljp6yz5u5EUQsNRKsp06eFN9c8ensYEiwiYSNRfV
+         17jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=ygJ0qGMlZLdyRRUICYstxcV17G5DTyYvHgZcVYxiHc4=;
+        b=LrolSoyxWs8Q4CzSUFz1EgzXbaH4gstq4cH7Cs3yeCyZpFDW7TEF9xG43g/CDZelB0
+         MGkoPXkHAz2d47a9Iu/8VONkicn+OvGmHMIpL52WnQ758d0ddCNZKi2/OsIwGSpiVECr
+         2BllBeoY4LUlJuPNCAU4fy7D/OiS1GmblWYrpQBpQvP++8XmaxEorXSGYSuIkPI0DsrN
+         bvmzgZCvroa6NIeWXzaApUpUNg9fa0wA0qYh78LQLv4klhp7zz1lUftoGSLFFzyxNZr+
+         4O6YVvgsKqP6kSD+FRlVq0xTlaL7g4koHOiU88BfdD/kigcXDTQBGNSFvA94i7qJcr46
+         QoNw==
+X-Gm-Message-State: AOAM533hhXzHe5HXLdS39Ya+3F5+V6PUi2OxAERT8YS6E6HKrkxhjhsc
+        p/pkq5/gbKb0N0x2bBHJQWo=
+X-Google-Smtp-Source: ABdhPJy6vqZE3keXM2WxPxzCZ3xB+weik4lNstb18TIjnfbUssen5oangjtnu+p5Is9/wg9XmLX1qQ==
+X-Received: by 2002:a9d:1ca1:: with SMTP id l33mr1315358ota.368.1615945081112;
+        Tue, 16 Mar 2021 18:38:01 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id m8sm8105519otl.50.2021.03.16.18.37.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 16 Mar 2021 18:38:00 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 16 Mar 2021 18:37:58 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "menglong8.dong@gmail.com" <menglong8.dong@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v4 RESEND net-next] net: socket: use BIT() for MSG_*
+Message-ID: <20210317013758.GA134033@roeck-us.net>
+References: <20210310015135.293794-1-dong.menglong@zte.com.cn>
+ <20210316224820.GA225411@roeck-us.net>
+ <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Wong, Vee Khee" <vee.khee.wong@intel.com>
+On Wed, Mar 17, 2021 at 01:02:51AM +0200, Andy Shevchenko wrote:
+> On Wednesday, March 17, 2021, Guenter Roeck <linux@roeck-us.net> wrote:
+> 
+> > Hi,
+> >
+> > On Tue, Mar 09, 2021 at 05:51:35PM -0800, menglong8.dong@gmail.com wrote:
+> > > From: Menglong Dong <dong.menglong@zte.com.cn>
+> > >
+> > > The bit mask for MSG_* seems a little confused here. Replace it
+> > > with BIT() to make it clear to understand.
+> > >
+> > > Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+> >
+> > I must admit that I am a bit puzzled,
+> 
+> 
+> I have checked the values and don’t see a problem. So, the only difference
+> is the type int vs. unsigned long. I think this simply reveals an issue
+> somewhere in the code.
+> 
+The problem is in net/packet/af_packet.c:packet_recvmsg(). This function,
+as well as all other rcvmsg functions, is declared as
 
-Intel mGbE variant implemented in EHL and TGL can be set to select
-different clock frequency based on GPO bits in MAC_GPIO_STATUS register.
+static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+                          int flags)
 
-We introduce a new "void (*ptp_clk_freq_config)(void *priv)" in platform
-data so that if a platform is required to configure the frequency of clock
-source, in this case Intel mGBE does, the platform-specific configuration
-of the PTP clock setting is done when stmmac_ptp_register() is called.
+MSG_CMSG_COMPAT (0x80000000) is set in flags, meaning its value is negative.
+This is then evaluated in
 
-Signed-off-by: Wong, Vee Khee <vee.khee.wong@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Co-developed-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 46 +++++++++++++++++++
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  7 +++
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |  3 ++
- include/linux/stmmac.h                        |  1 +
- 4 files changed, 57 insertions(+)
+       if (flags & ~(MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC|MSG_CMSG_COMPAT|MSG_ERRQUEUE))
+                goto out;
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index c49646773871..763b549e3c2d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -12,8 +12,18 @@
- #define INTEL_MGBE_ADHOC_ADDR	0x15
- #define INTEL_MGBE_XPCS_ADDR	0x16
- 
-+/* Selection for PTP Clock Freq belongs to PSE & PCH GbE */
-+#define PSE_PTP_CLK_FREQ_MASK		(GMAC_GPO0 | GMAC_GPO3)
-+#define PSE_PTP_CLK_FREQ_19_2MHZ	(GMAC_GPO0)
-+#define PSE_PTP_CLK_FREQ_200MHZ		(GMAC_GPO0 | GMAC_GPO3)
-+#define PSE_PTP_CLK_FREQ_256MHZ		(0)
-+#define PCH_PTP_CLK_FREQ_MASK		(GMAC_GPO0)
-+#define PCH_PTP_CLK_FREQ_19_2MHZ	(GMAC_GPO0)
-+#define PCH_PTP_CLK_FREQ_200MHZ		(0)
-+
- struct intel_priv_data {
- 	int mdio_adhoc_addr;	/* mdio address for serdes & etc */
-+	bool is_pse;
- };
- 
- /* This struct is used to associate PCI Function of MAC controller on a board,
-@@ -204,6 +214,32 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	}
- }
- 
-+/* Program PTP Clock Frequency for different variant of
-+ * Intel mGBE that has slightly different GPO mapping
-+ */
-+static void intel_mgbe_ptp_clk_freq_config(void *npriv)
-+{
-+	struct stmmac_priv *priv = (struct stmmac_priv *)npriv;
-+	struct intel_priv_data *intel_priv;
-+	u32 gpio_value;
-+
-+	intel_priv = (struct intel_priv_data *)priv->plat->bsp_priv;
-+
-+	gpio_value = readl(priv->ioaddr + GMAC_GPIO_STATUS);
-+
-+	if (intel_priv->is_pse) {
-+		/* For PSE GbE, use 200MHz */
-+		gpio_value &= ~PSE_PTP_CLK_FREQ_MASK;
-+		gpio_value |= PSE_PTP_CLK_FREQ_200MHZ;
-+	} else {
-+		/* For PCH GbE, use 200MHz */
-+		gpio_value &= ~PCH_PTP_CLK_FREQ_MASK;
-+		gpio_value |= PCH_PTP_CLK_FREQ_200MHZ;
-+	}
-+
-+	writel(gpio_value, priv->ioaddr + GMAC_GPIO_STATUS);
-+}
-+
- static void common_default_data(struct plat_stmmacenet_data *plat)
- {
- 	plat->clk_csr = 2;	/* clk_csr_i = 20-35MHz & MDC = clk_csr_i/16 */
-@@ -322,6 +358,8 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 		return ret;
- 	}
- 
-+	plat->ptp_clk_freq_config = intel_mgbe_ptp_clk_freq_config;
-+
- 	/* Set default value for multicast hash bins */
- 	plat->multicast_filter_bins = HASH_TABLE_SIZE;
- 
-@@ -391,8 +429,12 @@ static struct stmmac_pci_info ehl_rgmii1g_info = {
- static int ehl_pse0_common_data(struct pci_dev *pdev,
- 				struct plat_stmmacenet_data *plat)
- {
-+	struct intel_priv_data *intel_priv = plat->bsp_priv;
-+
-+	intel_priv->is_pse = true;
- 	plat->bus_id = 2;
- 	plat->addr64 = 32;
-+
- 	return ehl_common_data(pdev, plat);
- }
- 
-@@ -423,8 +465,12 @@ static struct stmmac_pci_info ehl_pse0_sgmii1g_info = {
- static int ehl_pse1_common_data(struct pci_dev *pdev,
- 				struct plat_stmmacenet_data *plat)
- {
-+	struct intel_priv_data *intel_priv = plat->bsp_priv;
-+
-+	intel_priv->is_pse = true;
- 	plat->bus_id = 3;
- 	plat->addr64 = 32;
-+
- 	return ehl_common_data(pdev, plat);
- }
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 82df91c130f7..ef8502d2b6e6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -42,6 +42,7 @@
- #define GMAC_HW_FEATURE3		0x00000128
- #define GMAC_MDIO_ADDR			0x00000200
- #define GMAC_MDIO_DATA			0x00000204
-+#define GMAC_GPIO_STATUS		0x0000020C
- #define GMAC_ARP_ADDR			0x00000210
- #define GMAC_ADDR_HIGH(reg)		(0x300 + reg * 8)
- #define GMAC_ADDR_LOW(reg)		(0x304 + reg * 8)
-@@ -278,6 +279,12 @@ enum power_event {
- #define GMAC_HW_FEAT_DVLAN		BIT(5)
- #define GMAC_HW_FEAT_NRVF		GENMASK(2, 0)
- 
-+/* GMAC GPIO Status reg */
-+#define GMAC_GPO0			BIT(16)
-+#define GMAC_GPO1			BIT(17)
-+#define GMAC_GPO2			BIT(18)
-+#define GMAC_GPO3			BIT(19)
-+
- /* MAC HW ADDR regs */
- #define GMAC_HI_DCS			GENMASK(18, 16)
- #define GMAC_HI_DCS_SHIFT		16
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index 0989e2bb6ee3..8b10fd10446f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-@@ -192,6 +192,9 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
- {
- 	int i;
- 
-+	if (priv->plat->ptp_clk_freq_config)
-+		priv->plat->ptp_clk_freq_config(priv);
-+
- 	for (i = 0; i < priv->dma_cap.pps_out_num; i++) {
- 		if (i >= STMMAC_PPS_MAX)
- 			break;
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 51004ebd0540..10abc80b601e 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -181,6 +181,7 @@ struct plat_stmmacenet_data {
- 	void (*fix_mac_speed)(void *priv, unsigned int speed);
- 	int (*serdes_powerup)(struct net_device *ndev, void *priv);
- 	void (*serdes_powerdown)(struct net_device *ndev, void *priv);
-+	void (*ptp_clk_freq_config)(void *priv);
- 	int (*init)(struct platform_device *pdev, void *priv);
- 	void (*exit)(struct platform_device *pdev, void *priv);
- 	struct mac_device_info *(*setup)(void *priv);
--- 
-2.25.1
+If any of those flags is declared as BIT() and thus long, flags is
+sign-extended to long. Since it is negative, its upper 32 bits will be set,
+the if statement evaluates as true, and the function bails out.
 
+This is relatively easy to fix here with, for example,
+
+        if ((unsigned int)flags & ~(MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC|MSG_CMSG_COMPAT|MSG_ERRQUEUE))
+                goto out;
+
+but that is just a hack, and it doesn't solve the real problem:
+Each function in struct proto_ops which passes flags passes it as int
+(see include/linux/net.h:struct proto_ops). Each such function, if
+called with MSG_CMSG_COMPAT set, will fail a match against
+~(MSG_anything) if MSG_anything is declared as BIT() or long.
+
+As it turns out, I was kind of lucky to catch the problem: So far I have
+seen it only on mips64 kernels with N32 userspace.
+
+Guenter
