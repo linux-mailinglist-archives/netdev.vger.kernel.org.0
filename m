@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6A6333EE72
+	by mail.lfdr.de (Postfix) with ESMTP id 546B733EE71
 	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 11:40:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbhCQKjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 06:39:44 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:51353 "EHLO
+        id S230193AbhCQKjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 06:39:45 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:60737 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230048AbhCQKj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 06:39:26 -0400
+        by vger.kernel.org with ESMTP id S229979AbhCQKj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 06:39:28 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C2E865C014E;
-        Wed, 17 Mar 2021 06:39:25 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id CEEB05C0145;
+        Wed, 17 Mar 2021 06:39:27 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 17 Mar 2021 06:39:25 -0400
+  by compute3.internal (MEProxy); Wed, 17 Mar 2021 06:39:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=6lEocncU3MOnUJEuVq0pKfdAH7H3rYp4RpAjFyvyBDc=; b=eFrtYzwN
-        XGz1gEkzA/g+gixLVkJ1pSdqISOudPVutj6egynm4euoGYUfa5P8hJxQdqPh6ecO
-        +LQ0BdclRiYA2zQzzSAPBHAgbFuLhQBo7g8VTkJ5ocJ5Xu+huiBGYcka3lv3mu7c
-        1um24mt4f7eZoz/3X33jNtzr58gEfGSa5ir5iz3dy7jfzR3uxlOYG4XIDhwzvG4D
-        1R7Vb+kxz5JyTVyu1xrkn7KAy6AAd286FKNYfOoMZTXIDlJp0wDhsx184CWOko6k
-        pgGn1GZz5pKMYbanFhIpFxU076genFvrfd5+lEAUjImvHps68f2U/R6tZbgwscf1
-        a/3s9Jc/5e1vsQ==
-X-ME-Sender: <xms:XdxRYH2zTIVYm9RT_8lL_1LZMDGR5SMSVB06CHDWKMw4tjARn763cw>
-    <xme:XdxRYGHWHNAd5XBFUzEYRfhjlvUoq5PXphTkk_bFekdDhYQvbfmK3qHOyCCaJdQKh
-    OYLbG6EhQlT1_I>
+        fm2; bh=2P4cvPGkpOoyhHAIwWm1ZO93w9zgfWj3xfV4JQP/XDU=; b=nurrrUGn
+        93/I5pIxMN+uXwCt+fUjd6Q8oJD2ceAwazJmZmJiBuVyQodphwq2NFa7yrQOXPJO
+        lvMHDhQWQR7pVGnsyXXkrt4UeMxdXgQCUQfoRt4kNXXvYz8mtAtqz618MIxQG6IQ
+        Uvh31JfyxJRozWQiQtDH2W2MdNfKcPl47rHHBDgbMNifmktdBhD5KsQ+48uC4+yY
+        1ZKrujqERl2qWmTRhJqSH/RQ9tw1/X8PGxhad7x1h4vLVbuqj6G99C5Q9SpOYC96
+        WMu2AJPRHzFJ964QtUdoc0fsnB2SvObunQM+mifIJj2PEl274vC0jcSYKCbLzjlf
+        uN10/DtCG8SCjQ==
+X-ME-Sender: <xms:X9xRYDpnSRScFPgjnD3xTbfXeYQnVFMqanZNBu1-xmSQfV4CjBJKbA>
+    <xme:X9xRYNorbVMGWX-WXYmN3VnGlcn10MbuPd3t2A-NzZmbTbBDrsU91CX-lm4YDn1hS
+    y9IGCDaCec3Bak>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefgedgudelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepgeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:XdxRYH7FrjvfdNa9BcubzxDcb5HUm96Sbtw-R0zlZ5KNMx-QAp63AQ>
-    <xmx:XdxRYM225Ac5HWXbWm6b7f_E76JIzhKWPKFwTNQ25DUV-m6l019LQg>
-    <xmx:XdxRYKHH3V9oRmk0ApQsYIjqLDme06mz2_1nGzbws-XSm8Q_PhbErw>
-    <xmx:XdxRYGicfAi3HW_JMTmiRTV1z3HrV17Na5Z_13A5eFqSTYVQRPKLPg>
+X-ME-Proxy: <xmx:X9xRYAPgOQsdiEj9vA3s6706dkTAeKzIx0wam5g-nGN4FyeK_iz5Vg>
+    <xmx:X9xRYG5_jihFYt0s9JTnBghq1Iq25E6eoQgYjW3NtTmLqFemxfbOqA>
+    <xmx:X9xRYC7a1GTOo19HEh1ohIEH3mbh5fWQ4Axmck-VvnwlBfqDlHqffw>
+    <xmx:X9xRYN2_wKzRK2szuu9y20PpbGf9DhVNIcJMy5Eowh1c1OJZXJfzxQ>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C16C7108005C;
-        Wed, 17 Mar 2021 06:39:23 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 02CA21080057;
+        Wed, 17 Mar 2021 06:39:25 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         amcohen@nvidia.com, petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/7] mlxsw: Allow 802.1d and .1ad VxLAN bridges to coexist on Spectrum>=2
-Date:   Wed, 17 Mar 2021 12:35:27 +0200
-Message-Id: <20210317103529.2903172-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/7] selftests: forwarding: Add test for dual VxLAN bridge
+Date:   Wed, 17 Mar 2021 12:35:28 +0200
+Message-Id: <20210317103529.2903172-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210317103529.2903172-1-idosch@idosch.org>
 References: <20210317103529.2903172-1-idosch@idosch.org>
@@ -64,188 +64,388 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-Currently only one EtherType can be configured for pushing in tunnels
-because EtherType is configured using SPVID.et_vlan for tunnel port.
-
-This behavior is forbidden by comparing mlxsw_sp_nve_config struct for
-each new tunnel, the struct contains 'ethertype' field which means that
-only one EtherType is legal at any given time. Remove 'ethertype' field to
-allow creating VxLAN devices with different bridges.
-
-To allow using several types of VxLAN bridges at the same time, the
-EtherType should be determined at the egress port. This behavior is
-achieved by setting SPVID to decide which EtherType to push at egress and
-for each local_port which is member in 802.1ad bridge, set SPEVET.et_vlan
-to ether_type1 (i.e., 0x88A8).
-
-Use switchdev_ops->init() to set different mlxsw_sp_bridge_ops for
-different ASICs in order to be able to split the behavior when port joins /
-leaves an 802.1ad bridge in different ASICs.
+Configure VxLAN with an 802.1ad bridge and VxLAN with an 802.1d bridge
+at the same time in same switch, verify that traffic passed as expected.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_nve.h    |  1 -
- .../mellanox/mlxsw/spectrum_nve_vxlan.c       | 15 ++----
- .../mellanox/mlxsw/spectrum_switchdev.c       | 52 ++++++++++++++++++-
- 3 files changed, 53 insertions(+), 15 deletions(-)
+ .../net/forwarding/dual_vxlan_bridge.sh       | 366 ++++++++++++++++++
+ 1 file changed, 366 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/dual_vxlan_bridge.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.h
-index 2796d3659979..d8104fc6c900 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.h
-@@ -18,7 +18,6 @@ struct mlxsw_sp_nve_config {
- 	u32 ul_tb_id;
- 	enum mlxsw_sp_l3proto ul_proto;
- 	union mlxsw_sp_l3addr ul_sip;
--	u16 ethertype;
- };
- 
- struct mlxsw_sp_nve {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve_vxlan.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve_vxlan.c
-index 3e2bb22e9ca6..b84bb4b65098 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve_vxlan.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve_vxlan.c
-@@ -113,7 +113,6 @@ static void mlxsw_sp_nve_vxlan_config(const struct mlxsw_sp_nve *nve,
- 	config->ul_proto = MLXSW_SP_L3_PROTO_IPV4;
- 	config->ul_sip.addr4 = cfg->saddr.sin.sin_addr.s_addr;
- 	config->udp_dport = cfg->dst_port;
--	config->ethertype = params->ethertype;
- }
- 
- static int __mlxsw_sp_nve_parsing_set(struct mlxsw_sp *mlxsw_sp,
-@@ -318,20 +317,14 @@ static bool mlxsw_sp2_nve_vxlan_learning_set(struct mlxsw_sp *mlxsw_sp,
- }
- 
- static int
--mlxsw_sp2_nve_decap_ethertype_set(struct mlxsw_sp *mlxsw_sp, u16 ethertype)
-+mlxsw_sp2_nve_decap_ethertype_set(struct mlxsw_sp *mlxsw_sp)
- {
- 	char spvid_pl[MLXSW_REG_SPVID_LEN] = {};
--	u8 sver_type;
--	int err;
- 
- 	mlxsw_reg_spvid_tport_set(spvid_pl, true);
- 	mlxsw_reg_spvid_local_port_set(spvid_pl,
- 				       MLXSW_REG_TUNNEL_PORT_NVE);
--	err = mlxsw_sp_ethtype_to_sver_type(ethertype, &sver_type);
--	if (err)
--		return err;
--
--	mlxsw_reg_spvid_et_vlan_set(spvid_pl, sver_type);
-+	mlxsw_reg_spvid_egr_et_set_set(spvid_pl, true);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(spvid), spvid_pl);
- }
- 
-@@ -367,7 +360,7 @@ mlxsw_sp2_nve_vxlan_config_set(struct mlxsw_sp *mlxsw_sp,
- 	if (err)
- 		goto err_spvtr_write;
- 
--	err = mlxsw_sp2_nve_decap_ethertype_set(mlxsw_sp, config->ethertype);
-+	err = mlxsw_sp2_nve_decap_ethertype_set(mlxsw_sp);
- 	if (err)
- 		goto err_decap_ethertype_set;
- 
-@@ -392,8 +385,6 @@ static void mlxsw_sp2_nve_vxlan_config_clear(struct mlxsw_sp *mlxsw_sp)
- 	char spvtr_pl[MLXSW_REG_SPVTR_LEN];
- 	char tngcr_pl[MLXSW_REG_TNGCR_LEN];
- 
--	/* Set default EtherType */
--	mlxsw_sp2_nve_decap_ethertype_set(mlxsw_sp, ETH_P_8021Q);
- 	mlxsw_reg_spvtr_pack(spvtr_pl, true, MLXSW_REG_TUNNEL_PORT_NVE,
- 			     MLXSW_REG_SPVTR_IPVID_MODE_IEEE_COMPLIANT_PVID);
- 	mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(spvtr), spvtr_pl);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 51fdbdc8ac66..c1f05c17557d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -2300,7 +2300,7 @@ mlxsw_sp_bridge_8021ad_vxlan_join(struct mlxsw_sp_bridge_device *bridge_device,
- 						     vid, ETH_P_8021AD, extack);
- }
- 
--static const struct mlxsw_sp_bridge_ops mlxsw_sp_bridge_8021ad_ops = {
-+static const struct mlxsw_sp_bridge_ops mlxsw_sp1_bridge_8021ad_ops = {
- 	.port_join	= mlxsw_sp_bridge_8021ad_port_join,
- 	.port_leave	= mlxsw_sp_bridge_8021ad_port_leave,
- 	.vxlan_join	= mlxsw_sp_bridge_8021ad_vxlan_join,
-@@ -2309,6 +2309,53 @@ static const struct mlxsw_sp_bridge_ops mlxsw_sp_bridge_8021ad_ops = {
- 	.fid_vid	= mlxsw_sp_bridge_8021q_fid_vid,
- };
- 
-+static int
-+mlxsw_sp2_bridge_8021ad_port_join(struct mlxsw_sp_bridge_device *bridge_device,
-+				  struct mlxsw_sp_bridge_port *bridge_port,
-+				  struct mlxsw_sp_port *mlxsw_sp_port,
-+				  struct netlink_ext_ack *extack)
+diff --git a/tools/testing/selftests/net/forwarding/dual_vxlan_bridge.sh b/tools/testing/selftests/net/forwarding/dual_vxlan_bridge.sh
+new file mode 100755
+index 000000000000..5148d97a5df8
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/dual_vxlan_bridge.sh
+@@ -0,0 +1,366 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++# +--------------------+                               +----------------------+
++# | H1 (vrf)           |                               |             H2 (vrf) |
++# |    + h1.10         |                               |  + h2.20             |
++# |    | 192.0.2.1/28  |                               |  | 192.0.2.2/28      |
++# |    |               |                               |  |                   |
++# |    + $h1           |                               |  + $h2               |
++# |    |               |                               |  |                   |
++# +----|---------------+                               +--|-------------------+
++#      |                                                  |
++# +----|--------------------------------------------------|--------------------+
++# | SW |                                                  |                    |
++# | +--|-------------------------------+ +----------------|------------------+ |
++# | |  + $swp1         BR1 (802.1ad)   | | BR2 (802.1d)   + $swp2            | |
++# | |    vid 100 pvid untagged         | |                |                  | |
++# | |                                  | |                + $swp2.20         | |
++# | |                                  | |                                   | |
++# | |  + vx100 (vxlan)                 | |  + vx200 (vxlan)                  | |
++# | |    local 192.0.2.17              | |    local 192.0.2.17               | |
++# | |    remote 192.0.2.34             | |    remote 192.0.2.50              | |
++# | |    id 1000 dstport $VXPORT       | |    id 2000 dstport $VXPORT        | |
++# | |    vid 100 pvid untagged         | |                                   | |
++# | +--------------------------------- + +-----------------------------------+ |
++# |                                                                            |
++# |  192.0.2.32/28 via 192.0.2.18                                              |
++# |  192.0.2.48/28 via 192.0.2.18                                              |
++# |                                                                            |
++# |    + $rp1                                                                  |
++# |    | 192.0.2.17/28                                                         |
++# +----|-----------------------------------------------------------------------+
++#      |
++# +----|--------------------------------------------------------+
++# |    |                                             VRP2 (vrf) |
++# |    + $rp2                                                   |
++# |      192.0.2.18/28                                          |
++# |                                                             |   (maybe) HW
++# =============================================================================
++# |                                                             |  (likely) SW
++# |    + v1 (veth)                             + v3 (veth)      |
++# |    | 192.0.2.33/28                         | 192.0.2.49/28  |
++# +----|---------------------------------------|----------------+
++#      |                                       |
++# +----|------------------------------+   +----|------------------------------+
++# |    + v2 (veth)        NS1 (netns) |   |    + v4 (veth)        NS2 (netns) |
++# |      192.0.2.34/28                |   |      192.0.2.50/28                |
++# |                                   |   |                                   |
++# |   192.0.2.16/28 via 192.0.2.33    |   |   192.0.2.16/28 via 192.0.2.49    |
++# |   192.0.2.50/32 via 192.0.2.33    |   |   192.0.2.34/32 via 192.0.2.49    |
++# |                                   |   |                                   |
++# | +-------------------------------+ |   | +-------------------------------+ |
++# | |                 BR3 (802.1ad) | |   | |                  BR3 (802.1d) | |
++# | |  + vx100 (vxlan)              | |   | |  + vx200 (vxlan)              | |
++# | |    local 192.0.2.34           | |   | |    local 192.0.2.50           | |
++# | |    remote 192.0.2.17          | |   | |    remote 192.0.2.17          | |
++# | |    remote 192.0.2.50          | |   | |    remote 192.0.2.34          | |
++# | |    id 1000 dstport $VXPORT    | |   | |    id 2000 dstport $VXPORT    | |
++# | |    vid 100 pvid untagged      | |   | |                               | |
++# | |                               | |   | |  + w1.20                      | |
++# | |                               | |   | |  |                            | |
++# | |  + w1 (veth)                  | |   | |  + w1 (veth)                  | |
++# | |  | vid 100 pvid untagged      | |   | |  |                            | |
++# | +--|----------------------------+ |   | +--|----------------------------+ |
++# |    |                              |   |    |                              |
++# | +--|----------------------------+ |   | +--|----------------------------+ |
++# | |  |                  VW2 (vrf) | |   | |  |                  VW2 (vrf) | |
++# | |  + w2 (veth)                  | |   | |  + w2 (veth)                  | |
++# | |  |                            | |   | |  |                            | |
++# | |  |                            | |   | |  |                            | |
++# | |  + w2.10                      | |   | |  + w2.20                      | |
++# | |    192.0.2.3/28               | |   | |    192.0.2.4/28               | |
++# | +-------------------------------+ |   | +-------------------------------+ |
++# +-----------------------------------+   +-----------------------------------+
++
++: ${VXPORT:=4789}
++export VXPORT
++
++: ${ALL_TESTS:="
++	ping_ipv4
++    "}
++
++NUM_NETIFS=6
++source lib.sh
++
++h1_create()
 +{
-+	int err;
-+
-+	/* The EtherType of decapsulated packets is determined at the egress
-+	 * port to allow 802.1d and 802.1ad bridges with VXLAN devices to
-+	 * co-exist.
-+	 */
-+	err = mlxsw_sp_port_egress_ethtype_set(mlxsw_sp_port, ETH_P_8021AD);
-+	if (err)
-+		return err;
-+
-+	err = mlxsw_sp_bridge_8021ad_port_join(bridge_device, bridge_port,
-+					       mlxsw_sp_port, extack);
-+	if (err)
-+		goto err_bridge_8021ad_port_join;
-+
-+	return 0;
-+
-+err_bridge_8021ad_port_join:
-+	mlxsw_sp_port_egress_ethtype_set(mlxsw_sp_port, ETH_P_8021Q);
-+	return err;
++	simple_if_init $h1
++	tc qdisc add dev $h1 clsact
++	vlan_create $h1 10 v$h1 192.0.2.1/28
 +}
 +
-+static void
-+mlxsw_sp2_bridge_8021ad_port_leave(struct mlxsw_sp_bridge_device *bridge_device,
-+				   struct mlxsw_sp_bridge_port *bridge_port,
-+				   struct mlxsw_sp_port *mlxsw_sp_port)
++h1_destroy()
 +{
-+	mlxsw_sp_bridge_8021ad_port_leave(bridge_device, bridge_port,
-+					  mlxsw_sp_port);
-+	mlxsw_sp_port_egress_ethtype_set(mlxsw_sp_port, ETH_P_8021Q);
++	vlan_destroy $h1 10
++	tc qdisc del dev $h1 clsact
++	simple_if_fini $h1
 +}
 +
-+static const struct mlxsw_sp_bridge_ops mlxsw_sp2_bridge_8021ad_ops = {
-+	.port_join	= mlxsw_sp2_bridge_8021ad_port_join,
-+	.port_leave	= mlxsw_sp2_bridge_8021ad_port_leave,
-+	.vxlan_join	= mlxsw_sp_bridge_8021ad_vxlan_join,
-+	.fid_get	= mlxsw_sp_bridge_8021q_fid_get,
-+	.fid_lookup	= mlxsw_sp_bridge_8021q_fid_lookup,
-+	.fid_vid	= mlxsw_sp_bridge_8021q_fid_vid,
-+};
++h2_create()
++{
++	simple_if_init $h2
++	tc qdisc add dev $h2 clsact
++	vlan_create $h2 20 v$h2 192.0.2.2/28
++}
 +
- int mlxsw_sp_port_bridge_join(struct mlxsw_sp_port *mlxsw_sp_port,
- 			      struct net_device *brport_dev,
- 			      struct net_device *br_dev,
-@@ -3541,6 +3588,7 @@ static void mlxsw_sp_fdb_fini(struct mlxsw_sp *mlxsw_sp)
- 
- static void mlxsw_sp1_switchdev_init(struct mlxsw_sp *mlxsw_sp)
- {
-+	mlxsw_sp->bridge->bridge_8021ad_ops = &mlxsw_sp1_bridge_8021ad_ops;
- }
- 
- const struct mlxsw_sp_switchdev_ops mlxsw_sp1_switchdev_ops = {
-@@ -3549,6 +3597,7 @@ const struct mlxsw_sp_switchdev_ops mlxsw_sp1_switchdev_ops = {
- 
- static void mlxsw_sp2_switchdev_init(struct mlxsw_sp *mlxsw_sp)
- {
-+	mlxsw_sp->bridge->bridge_8021ad_ops = &mlxsw_sp2_bridge_8021ad_ops;
- }
- 
- const struct mlxsw_sp_switchdev_ops mlxsw_sp2_switchdev_ops = {
-@@ -3569,7 +3618,6 @@ int mlxsw_sp_switchdev_init(struct mlxsw_sp *mlxsw_sp)
- 
- 	bridge->bridge_8021q_ops = &mlxsw_sp_bridge_8021q_ops;
- 	bridge->bridge_8021d_ops = &mlxsw_sp_bridge_8021d_ops;
--	bridge->bridge_8021ad_ops = &mlxsw_sp_bridge_8021ad_ops;
- 
- 	mlxsw_sp->switchdev_ops->init(mlxsw_sp);
- 
++h2_destroy()
++{
++	vlan_destroy $h2 20
++	tc qdisc del dev $h2 clsact
++	simple_if_fini $h2
++}
++
++rp1_set_addr()
++{
++	ip address add dev $rp1 192.0.2.17/28
++
++	ip route add 192.0.2.32/28 nexthop via 192.0.2.18
++	ip route add 192.0.2.48/28 nexthop via 192.0.2.18
++}
++
++rp1_unset_addr()
++{
++	ip route del 192.0.2.48/28 nexthop via 192.0.2.18
++	ip route del 192.0.2.32/28 nexthop via 192.0.2.18
++
++	ip address del dev $rp1 192.0.2.17/28
++}
++
++switch_create()
++{
++	#### BR1 ####
++	ip link add name br1 type bridge vlan_filtering 1 \
++		vlan_protocol 802.1ad vlan_default_pvid 0 mcast_snooping 0
++	# Make sure the bridge uses the MAC address of the local port and not
++	# that of the VxLAN's device.
++	ip link set dev br1 address $(mac_get $swp1)
++	ip link set dev br1 up
++
++	#### BR2 ####
++	ip link add name br2 type bridge vlan_filtering 0 mcast_snooping 0
++	# Make sure the bridge uses the MAC address of the local port and not
++	# that of the VxLAN's device.
++	ip link set dev br2 address $(mac_get $swp2)
++	ip link set dev br2 up
++
++	ip link set dev $rp1 up
++	rp1_set_addr
++
++	#### VX100 ####
++	ip link add name vx100 type vxlan id 1000 local 192.0.2.17 \
++		dstport "$VXPORT" nolearning noudpcsum tos inherit ttl 100
++	ip link set dev vx100 up
++
++	ip link set dev vx100 master br1
++	bridge vlan add vid 100 dev vx100 pvid untagged
++
++	ip link set dev $swp1 master br1
++	ip link set dev $swp1 up
++	bridge vlan add vid 100 dev $swp1 pvid untagged
++
++	#### VX200 ####
++	ip link add name vx200 type vxlan id 2000 local 192.0.2.17 \
++		dstport "$VXPORT" nolearning noudpcsum tos inherit ttl 100
++	ip link set dev vx200 up
++
++	ip link set dev vx200 master br2
++
++	ip link set dev $swp2 up
++	ip link add name $swp2.20 link $swp2 type vlan id 20
++	ip link set dev $swp2.20 master br2
++	ip link set dev $swp2.20 up
++
++	bridge fdb append dev vx100 00:00:00:00:00:00 dst 192.0.2.34 self
++	bridge fdb append dev vx200 00:00:00:00:00:00 dst 192.0.2.50 self
++}
++
++switch_destroy()
++{
++	bridge fdb del dev vx200 00:00:00:00:00:00 dst 192.0.2.50 self
++	bridge fdb del dev vx100 00:00:00:00:00:00 dst 192.0.2.34 self
++
++	ip link set dev vx200 nomaster
++	ip link set dev vx200 down
++	ip link del dev vx200
++
++	ip link del dev $swp2.20
++	ip link set dev $swp2 down
++	ip link set dev $swp2 nomaster
++
++	bridge vlan del vid 100 dev $swp1
++	ip link set dev $swp1 down
++	ip link set dev $swp1 nomaster
++
++	ip link set dev vx100 nomaster
++	ip link set dev vx100 down
++	ip link del dev vx100
++
++	rp1_unset_addr
++	ip link set dev $rp1 down
++
++	ip link set dev br2 down
++	ip link del dev br2
++
++	ip link set dev br1 down
++	ip link del dev br1
++}
++
++vrp2_create()
++{
++	simple_if_init $rp2 192.0.2.18/28
++	__simple_if_init v1 v$rp2 192.0.2.33/28
++	__simple_if_init v3 v$rp2 192.0.2.49/28
++	tc qdisc add dev v1 clsact
++}
++
++vrp2_destroy()
++{
++	tc qdisc del dev v1 clsact
++	__simple_if_fini v3 192.0.2.49/28
++	__simple_if_fini v1 192.0.2.33/28
++	simple_if_fini $rp2 192.0.2.18/28
++}
++
++ns_init_common()
++{
++	local in_if=$1; shift
++	local in_addr=$1; shift
++	local other_in_addr=$1; shift
++	local vxlan_name=$1; shift
++	local vxlan_id=$1; shift
++	local vlan_id=$1; shift
++	local host_addr=$1; shift
++	local nh_addr=$1; shift
++
++	ip link set dev $in_if up
++	ip address add dev $in_if $in_addr/28
++	tc qdisc add dev $in_if clsact
++
++	ip link add name br3 type bridge vlan_filtering 0
++	ip link set dev br3 up
++
++	ip link add name w1 type veth peer name w2
++
++	ip link set dev w1 master br3
++	ip link set dev w1 up
++
++	ip link add name $vxlan_name type vxlan id $vxlan_id local $in_addr \
++		dstport "$VXPORT"
++	ip link set dev $vxlan_name up
++	bridge fdb append dev $vxlan_name 00:00:00:00:00:00 dst 192.0.2.17 self
++	bridge fdb append dev $vxlan_name 00:00:00:00:00:00 dst $other_in_addr self
++
++	ip link set dev $vxlan_name master br3
++	tc qdisc add dev $vxlan_name clsact
++
++	simple_if_init w2
++	vlan_create w2 $vlan_id vw2 $host_addr/28
++
++	ip route add 192.0.2.16/28 nexthop via $nh_addr
++	ip route add $other_in_addr/32 nexthop via $nh_addr
++}
++export -f ns_init_common
++
++ns1_create()
++{
++	ip netns add ns1
++	ip link set dev v2 netns ns1
++	in_ns ns1 \
++	      ns_init_common v2 192.0.2.34 192.0.2.50 vx100 1000 10 192.0.2.3 \
++	      192.0.2.33
++
++	in_ns ns1 bridge vlan add vid 100 dev vx100 pvid untagged
++}
++
++ns1_destroy()
++{
++	ip netns exec ns1 ip link set dev v2 netns 1
++	ip netns del ns1
++}
++
++ns2_create()
++{
++	ip netns add ns2
++	ip link set dev v4 netns ns2
++	in_ns ns2 \
++	      ns_init_common v4 192.0.2.50 192.0.2.34 vx200 2000 20 192.0.2.4 \
++	      192.0.2.49
++
++	in_ns ns2 ip link add name w1.20 link w1 type vlan id 20
++	in_ns ns2 ip link set dev w1.20 master br3
++	in_ns ns2 ip link set dev w1.20 up
++}
++
++ns2_destroy()
++{
++	ip netns exec ns2 ip link set dev v4 netns 1
++	ip netns del ns2
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	swp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++
++	rp1=${NETIFS[p5]}
++	rp2=${NETIFS[p6]}
++
++	vrf_prepare
++	forwarding_enable
++
++	h1_create
++	h2_create
++	switch_create
++
++	ip link add name v1 type veth peer name v2
++	ip link add name v3 type veth peer name v4
++	vrp2_create
++	ns1_create
++	ns2_create
++
++	r1_mac=$(in_ns ns1 mac_get w2)
++	r2_mac=$(in_ns ns2 mac_get w2)
++	h2_mac=$(mac_get $h2)
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	ns2_destroy
++	ns1_destroy
++	vrp2_destroy
++	ip link del dev v3
++	ip link del dev v1
++
++	switch_destroy
++	h2_destroy
++	h1_destroy
++
++	forwarding_restore
++	vrf_cleanup
++}
++
++ping_ipv4()
++{
++	ping_test $h1 192.0.2.3 ": local->remote 1 through VxLAN with an 802.1ad bridge"
++	ping_test $h2 192.0.2.4 ": local->remote 2 through VxLAN with an 802.1d bridge"
++}
++
++test_all()
++{
++	echo "Running tests with UDP port $VXPORT"
++	tests_run
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++test_all
++
++exit $EXIT_STATUS
 -- 
 2.29.2
 
