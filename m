@@ -2,119 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD5833F7FC
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:16:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E5A33F7FE
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 19:16:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233074AbhCQSP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 14:15:29 -0400
-Received: from mout.kundenserver.de ([217.72.192.73]:43453 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233076AbhCQSPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 14:15:05 -0400
-Received: from [192.168.0.11] ([217.83.109.231]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MCbMz-1lV99K2yDT-009jhv; Wed, 17 Mar 2021 19:14:53 +0100
-Subject: Re: [PATCH] iavf: fix locking of critical sections
-To:     "Laba, SlawomirX" <slawomirx.laba@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Yang, Lihong" <lihong.yang@intel.com>,
-        "Nunley, Nicholas D" <nicholas.d.nunley@intel.com>
-References: <20210316100141.53551-1-sassmann@kpanic.de>
- <20210316101443.56b87cf6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <44b3f5f0-93f8-29e2-ab21-5fd7cc14c755@kpanic.de>
- <20210316132905.5d0f90dd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210316150210.00007249@intel.com>
- <3a4078fe-0be5-745c-91a3-ed83d4dc372f@kpanic.de>
- <DM6PR11MB3113AB6CE1D93EF28B3A7345876A9@DM6PR11MB3113.namprd11.prod.outlook.com>
-From:   Stefan Assmann <sassmann@kpanic.de>
-Message-ID: <e28db42e-a55a-6f7f-7622-add296b1035e@kpanic.de>
-Date:   Wed, 17 Mar 2021 19:14:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S233087AbhCQSQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 14:16:01 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33262 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233090AbhCQSPc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 14:15:32 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lMahT-00BVJR-Ql; Wed, 17 Mar 2021 19:15:19 +0100
+Date:   Wed, 17 Mar 2021 19:15:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Don Bollinger <don@thebollingers.org>
+Cc:     'Jakub Kicinski' <kuba@kernel.org>, arndb@arndb.de,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        brandon_chuang@edge-core.com, wally_wang@accton.com,
+        aken_liu@edge-core.com, gulv@microsoft.com, jolevequ@microsoft.com,
+        xinxliu@microsoft.com, 'netdev' <netdev@vger.kernel.org>,
+        'Moshe Shemesh' <moshe@nvidia.com>
+Subject: Re: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS
+ EEPROMS
+Message-ID: <YFJHN+raumcJ5/7M@lunn.ch>
+References: <YD1ScQ+w8+1H//Y+@lunn.ch>
+ <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org>
+ <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <005e01d71230$ad203be0$0760b3a0$@thebollingers.org>
+ <YEL3ksdKIW7cVRh5@lunn.ch>
+ <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org>
+ <YEvILa9FK8qQs5QK@lunn.ch>
+ <01ae01d71850$db4f5a20$91ee0e60$@thebollingers.org>
+ <20210315103950.65fedf2c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <001201d719c6$6ac826c0$40587440$@thebollingers.org>
 MIME-Version: 1.0
-In-Reply-To: <DM6PR11MB3113AB6CE1D93EF28B3A7345876A9@DM6PR11MB3113.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:BeUyXZ+JH/HvtDs+SOAVSvqT2sl26epQy2X5/469VJ4s4/oKsFN
- cZuin5NrpI9yEnJPHtqQ2JDF2RU4LOgR+WWk4RKVsPseUmfLfBhhwzZzjqJtYT21GJt9pPI
- NQa9TfET/a961y9APY5YrpP+nJAdeGp6mW1lt4BTFntLncKLp07cjanz1BvGkqVeeLXnEYn
- zzR0LheJlEr5KCNe0c3sg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:iuFNz7tkKmQ=:bnmqJfP+deQbG9rtCMDby+
- 1WAUBU/KAFreUpijqgPgkFOtXcuZYO7MyfYqx373xOrqKsILYuBAefjQUssG5nAevUxQJufu2
- yx9hU3/EDlE8QSDhUquVM+ApVb3XeZqKSrIo08f8JSNf+HXPoymxkhGdqma0djP+AHbJJcsBF
- nxMbR9zoDm38iZ1Zfd1P/g2aQViucLEbyIqf4dqtU0lHHh2/6sSLOr8fUml/xzn/vu8RKBOT8
- i5xjPTNEmN9+sPjDU/ljgFojqlgMhSqxJBp/i3S9LX1KCUIwahY1eFLI6EPX693kly5cj5DSb
- tY80dGCm8ZoBOB1pxquIcXiqTHNmVPe5IWf5iyMwLCKO71a0vL2++bBpCsLx/Uanilw7SRKEf
- xKNa0YUprZcyhY8A548bG0DZEIiAOqVuREp1wdoDNdh8Yihpc8lZnDUO/c0GUu2LdbbA77FD1
- HbXX99hBMg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <001201d719c6$6ac826c0$40587440$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.03.21 18:27, Laba, SlawomirX wrote:
-> We were discussing introducing mutexes in those critical spots for a long time now (in my team).
-> Stefan, if you find time, you are most welcome to offer your solution with mutexes.
+> I have offered, in every response, to collaborate with the simple
+> integration to use optoe as the default upstream driver to access the module
+> EEPROMs.  optoe would be superior to the existing default routines in sfp.c
 
-Hi Slawek,
+Actually, i'm not sure they would be. Since the KAPI issues are pretty
+much a NACK on their own, i didn't bother raising other issues. Both
+Russell King and I has issues with quirks and hotplug.
 
-I'll work on that conversion once the current patch went through Intel
-testing and is merged. Smaller patches, smaller steps are usually
-better, so let's make one change at a time.
+Our experience is that a number of SFPs are broken, they don't follow
+the standard. Some you cannot perform more than 16 bytes reads without
+them locking up. Others will perform a 16 byte read, but only give you
+one useful byte of data. So you have to read enough of the EEPROM a
+byte at a time to get the vendor and product strings in order to
+determine what quirks need to be applied. optoe has nothing like
+this. Either you don't care and only support well behaved SFPs, or you
+have the quirk handling in user space, in the various vendor code
+blobs, repeated again and again. To make optoe generically usable, you
+are going to have to push the quirk handling into optoe. The
+brokenness should be hidden from userspace.
 
-Thanks!
+And then you repeat all the quirk handling sfp.c has. That does not
+scale, we don't want the same quirks in two different places. However,
+because SFPs are hot pluggable, you need to re-evaluate the quirks
+whenever there is a hot-plug event. optoe has no idea if there has
+been a hotplug event, since it does not have access to the GPIOs. Your
+user space vendor code might know, it has access to the GPIOs. So
+maybe you could add an IOCTL call or something, to let optoe know the
+module has changed and it needs to update its quirks. Or for every
+user space read, you actually re-read the vendor IDs and refresh the
+quirks before performing the read the user actually wants. That all
+seems ugly and is missing from the current patch.
 
-  Stefan
+I fully agree with Jakub NACK.
 
-> Slawek
-> 
-> 
-> -----Original Message-----
-> From: Stefan Assmann <sassmann@kpanic.de> 
-> Sent: Wednesday, March 17, 2021 8:50 AM
-> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Jakub Kicinski <kuba@kernel.org>
-> Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Nguyen, Anthony L <anthony.l.nguyen@intel.com>; Yang, Lihong <lihong.yang@intel.com>; Laba, SlawomirX <slawomirx.laba@intel.com>; Nunley, Nicholas D <nicholas.d.nunley@intel.com>
-> Subject: Re: [PATCH] iavf: fix locking of critical sections
-> 
-> On 16.03.21 23:02, Jesse Brandeburg wrote:
->> Jakub Kicinski wrote:
->>>>> I personally think that the overuse of flags in Intel drivers 
->>>>> brings nothing but trouble. At which point does it make sense to 
->>>>> just add a lock / semaphore here rather than open code all this 
->>>>> with no clear semantics? No code seems to just test the 
->>>>> __IAVF_IN_CRITICAL_TASK flag, all the uses look like poor man's 
->>>>> locking at a quick grep. What am I missing?
->>>>
->>>> I agree with you that the locking could be done with other locking 
->>>> mechanisms just as good. I didn't invent the current method so I'll 
->>>> let Intel comment on that part, but I'd like to point out that what 
->>>> I'm making use of is fixing what is currently in the driver.
->>>
->>> Right, I should have made it clear that I don't blame you for the 
->>> current state of things. Would you mind sending a patch on top of 
->>> this one to do a conversion to a semaphore?
-> 
-> Sure, I'm happy to help working on the conversion once the current issue is resolved.
-> 
->>> Intel folks any opinions?
->>
->> I know Slawomir has been working closely with Stefan on figuring out 
->> the right ways to fix this code.  Hopefully he can speak for himself, 
->> but I know he's on Europe time.
->>
->> As for conversion to mutexes I'm a big fan, and as long as we don't 
->> have too many collisions with the RTNL lock I think it's a reasonable 
->> improvement to do, and if Stefan doesn't want to work on it, we can 
->> look into whether Slawomir or his team can.
-> 
-> I'd appreciate to be involved.
-> Thanks!
-> 
->   Stefan
-> 
+  Andrew
+
 
