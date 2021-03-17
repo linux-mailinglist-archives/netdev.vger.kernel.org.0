@@ -2,103 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D603B33E782
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:14:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 284E633E7BB
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 04:39:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbhCQDNi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Mar 2021 23:13:38 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28092 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229591AbhCQDNN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 23:13:13 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12H35icK003267
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:13:12 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 379dx7qs89-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 16 Mar 2021 20:13:12 -0700
-Received: from intmgw002.25.frc3.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 16 Mar 2021 20:13:12 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id D83042ED23D6; Tue, 16 Mar 2021 20:13:07 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH v2 bpf-next 4/4] bpftool: treat compilation warnings as errors
-Date:   Tue, 16 Mar 2021 20:12:57 -0700
-Message-ID: <20210317031257.846314-5-andrii@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210317031257.846314-1-andrii@kernel.org>
-References: <20210317031257.846314-1-andrii@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-16_09:2021-03-16,2021-03-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
- suspectscore=0 adultscore=0 mlxlogscore=999 clxscore=1015 impostorscore=0
- malwarescore=0 bulkscore=0 phishscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103170024
-X-FB-Internal: deliver
+        id S229862AbhCQDjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 23:39:01 -0400
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:50210 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229772AbhCQDiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Mar 2021 23:38:51 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0USDZp7x_1615952319;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0USDZp7x_1615952319)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 17 Mar 2021 11:38:45 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     dhowells@redhat.com
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] rxrpc: rxkad: replace if (cond) BUG() with BUG_ON()
+Date:   Wed, 17 Mar 2021 11:38:38 +0800
+Message-Id: <1615952318-4861-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make bpftool compilation stricter and treat all compilation warnings as errors.
+Fix the following coccicheck warnings:
 
-Depending on libbfd version on the system, jit_disasm.c might trigger the
-following compilation warning-turned-error:
+./net/rxrpc/rxkad.c:1140:2-5: WARNING: Use BUG_ON instead of if
+condition followed by BUG.
 
-jit_disasm.c: In function ‘disasm_print_insn’:
-jit_disasm.c:121:29: error: assignment discards ‘const’ qualifier from pointer
-target type [-Werror=discarded-qualifiers]
-   info.disassembler_options = disassembler_options;
-                                ^
-
-This was fixed in libbfd, but older versions of the library are still widely
-used. So disable -Wdiscarded-qualifiers for that particular line of code.
-
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- tools/bpf/bpftool/Makefile     | 3 ++-
- tools/bpf/bpftool/jit_disasm.c | 3 +++
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ net/rxrpc/rxkad.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index b3073ae84018..59de954faaf5 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -56,7 +56,8 @@ prefix ?= /usr/local
- bash_compdir ?= /usr/share/bash-completion/completions
+diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
+index e2e9e9b..bfa3d9a 100644
+--- a/net/rxrpc/rxkad.c
++++ b/net/rxrpc/rxkad.c
+@@ -1135,9 +1135,8 @@ static void rxkad_decrypt_response(struct rxrpc_connection *conn,
+ 	       ntohl(session_key->n[0]), ntohl(session_key->n[1]));
  
- CFLAGS += -O2
--CFLAGS += -W -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
-+CFLAGS += -W -Wall -Wextra -Werror
-+CFLAGS += -Wno-unused-parameter -Wno-missing-field-initializers
- CFLAGS += $(filter-out -Wswitch-enum -Wnested-externs,$(EXTRA_WARNINGS))
- CFLAGS += -DPACKAGE='"bpftool"' -D__EXPORTED_HEADERS__ \
- 	-I$(if $(OUTPUT),$(OUTPUT),.) \
-diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
-index e7e7eee9f172..20083fbed5c2 100644
---- a/tools/bpf/bpftool/jit_disasm.c
-+++ b/tools/bpf/bpftool/jit_disasm.c
-@@ -118,7 +118,10 @@ void disasm_print_insn(unsigned char *image, ssize_t len, int opcodes,
- 	info.arch = bfd_get_arch(bfdf);
- 	info.mach = bfd_get_mach(bfdf);
- 	if (disassembler_options)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
- 		info.disassembler_options = disassembler_options;
-+#pragma GCC diagnostic pop
- 	info.buffer = image;
- 	info.buffer_length = len;
+ 	mutex_lock(&rxkad_ci_mutex);
+-	if (crypto_sync_skcipher_setkey(rxkad_ci, session_key->x,
+-					sizeof(*session_key)) < 0)
+-		BUG();
++	BUG_ON(crypto_sync_skcipher_setkey(rxkad_ci, session_key->x,
++					sizeof(*session_key)) < 0);
+ 
+ 	memcpy(&iv, session_key, sizeof(iv));
  
 -- 
-2.30.2
+1.8.3.1
 
