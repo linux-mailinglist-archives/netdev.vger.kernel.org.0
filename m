@@ -2,92 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9476D33ED52
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:46:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E41F933ED7C
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 10:55:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbhCQJqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 05:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbhCQJqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 05:46:10 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9121C06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:46:09 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id s13so1264756lfb.2
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 02:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=sFcRKYB/8XQJ0XQMB0CqKFzemot4DGSzRMugJlpgm4Q=;
-        b=P3cf1YcxUZ0XmrMaR67ZdarmpBjmeZmvC/sljjFFEZYw4/MsHp2RHv6oxzvkT+eobY
-         e066PHuEOZSQS3X01djLq8eO2G0fo33byke9byc6k91wiyug32undkAoEIngGEo9glVv
-         /cVh48PGwtz5o/k4JCLBmXotHdYJoamTfiG7FXwBBUmI81eNNufiP8CUv3mkaq5z2xsy
-         ImdjdgH2fMXDucO+vBy+j0kQf6ytrJoKcPGfCo2mQdpBzg9esHjmIvb6QTzXbGulpjHA
-         3M7JYHjlsbbM+eY0S43EtqXFG+eMt4hASHzSc3xqLQHy8fBtH8Cx73AoGqmlJXu78HNG
-         F5yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=sFcRKYB/8XQJ0XQMB0CqKFzemot4DGSzRMugJlpgm4Q=;
-        b=jjIgeNPPDKqoFalnlvt54khpTR3P5jIUwZcxmFPSPP/zsJD1G75oDKzJwqmK0GLLvG
-         akL1vlAC9PHnqiGQARQJTgQrvEOxjhssD9XpBLUHWsRvsUCbKyi3xcCwV5iiPbHBudDZ
-         Ss81yiwB1TQo4jaD4lQb0xE0lDYJPSg1cpPs+IT5zzBmw4OTcna9p7hmpOfOmV8l817f
-         wBD+TRPrhw1LKK69tyY3M58pHK4TDljMiVeTjvcbl3kmr15wQrc8EmABltiEm2TEUvFo
-         9cUYP1LlMvt4F0hXzy9kp4hQpAIgcxFcRWR6eb+DE/+fIj4EYf4ODb/mpjxr1kIwRn3K
-         eDMw==
-X-Gm-Message-State: AOAM532RJwuV1/eiNxeTqOMRGehHtD1EUHa89F3X630yh9QZfzXZusQB
-        zbhJtSafnGCmg4O3TmCpZ17JwtjoBcLVnhf1
-X-Google-Smtp-Source: ABdhPJyV7f80nNVLbm1NbDNyCCDNHMUmSAFK3e8yt+kiRqFWv99OlQIc8WMvovbem/vHB7ewEBzJYg==
-X-Received: by 2002:ac2:5603:: with SMTP id v3mr1960984lfd.67.1615974368115;
-        Wed, 17 Mar 2021 02:46:08 -0700 (PDT)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id d8sm3330840lfg.96.2021.03.17.02.46.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 02:46:07 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/5] net: dsa: mv88e6xxx: Remove some bureaucracy around querying the VTU
-In-Reply-To: <20210316091755.uxzjhcjy4ka3ieix@skbuf>
-References: <20210315211400.2805330-1-tobias@waldekranz.com> <20210315211400.2805330-3-tobias@waldekranz.com> <20210316091755.uxzjhcjy4ka3ieix@skbuf>
-Date:   Wed, 17 Mar 2021 10:46:07 +0100
-Message-ID: <87v99qnme8.fsf@waldekranz.com>
+        id S229585AbhCQJyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 05:54:53 -0400
+Received: from mga04.intel.com ([192.55.52.120]:59767 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229586AbhCQJyl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 05:54:41 -0400
+IronPort-SDR: deuPt+obzUFVz3XhYm6O11mneqHvhUTNPFzQu2ANkvDNVr9KKGrATXS+/hOLD5uxwRR54uIU4L
+ jG74pNZ7gcQA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9925"; a="187058661"
+X-IronPort-AV: E=Sophos;i="5.81,255,1610438400"; 
+   d="scan'208";a="187058661"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 02:54:41 -0700
+IronPort-SDR: 5UD5xcdaGjl4HxotJBd33KN+iGROrob9MWZhprZA1dFfqmWZPfKEP6yr/4wClSzymoKktofD17
+ xfDTy1y84wiw==
+X-IronPort-AV: E=Sophos;i="5.81,255,1610438400"; 
+   d="scan'208";a="405873165"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 02:54:39 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
+        leonro@nvidia.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V5 0/7] vDPA/ifcvf: enables Intel C5000X-PL virtio-net
+Date:   Wed, 17 Mar 2021 17:49:26 +0800
+Message-Id: <20210317094933.16417-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 11:17, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Mon, Mar 15, 2021 at 10:13:57PM +0100, Tobias Waldekranz wrote:
->> +static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
->> +			     struct mv88e6xxx_vtu_entry *entry)
->>  {
->> +	int err;
->> +
->>  	if (!chip->info->ops->vtu_getnext)
->>  		return -EOPNOTSUPP;
->>  
->> -	return chip->info->ops->vtu_getnext(chip, entry);
->> +	entry->vid = vid - 1;
->
-> Should the vtu_get API not work with vid 0 as well? Shouldn't we
-> initialize entry->vid to mv88e6xxx_max_vid(chip) in that case?
+This series enabled Intel FGPA SmartNIC C5000X-PL virtio-net for vDPA.
 
-Good catch. We never load VID 0 to the VTU today, but this function
-should be ready for it, if that ever changes. Fixing in v2.
+vDPA requires VIRTIO_F_ACCESS_PLATFORM as a must,
+this series verify this feature bit when set features.
 
->> +	entry->valid = false;
->> +
->> +	err = chip->info->ops->vtu_getnext(chip, entry);
->> +
->> +	if (entry->vid != vid)
->> +		entry->valid = false;
->> +
->> +	return err;
->>  }
+Changes from V4:
+deduce VIRTIO device ID from pdev device id or subsystem
+device id(Jason)
+
+Changes from V3:
+checks features to set in verify_min_features(Jason)
+deduce VIRTIO device ID from pdev ids in get_device_id(Jason)
+
+Changes from V2:
+verify VIRTIO_F_ACCESS_PLATFORM when set features(Jason)
+
+Changes from V1:
+remove version number string(Leon)
+add new device ids and remove original device ids
+in separate patches(Jason)
+
+Zhu Lingshan (7):
+  vDPA/ifcvf: get_vendor_id returns a device specific vendor id
+  vDPA/ifcvf: enable Intel C5000X-PL virtio-net for vDPA
+  vDPA/ifcvf: rename original IFCVF dev ids to N3000 ids
+  vDPA/ifcvf: remove the version number string
+  vDPA/ifcvf: fetch device feature bits when probe
+  vDPA/ifcvf: verify mandatory feature bits for vDPA
+  vDPA/ifcvf: deduce VIRTIO device ID from pdev ids
+
+ drivers/vdpa/ifcvf/ifcvf_base.c | 24 +++++++++++++++++--
+ drivers/vdpa/ifcvf/ifcvf_base.h | 17 ++++++++++----
+ drivers/vdpa/ifcvf/ifcvf_main.c | 41 ++++++++++++++++++++++++++-------
+ 3 files changed, 68 insertions(+), 14 deletions(-)
+
+-- 
+2.27.0
+
