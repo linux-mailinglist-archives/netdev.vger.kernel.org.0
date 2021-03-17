@@ -2,83 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0701233EAD1
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 08:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D6933EAE8
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 08:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbhCQHwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 03:52:12 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:50401 "EHLO ozlabs.org"
+        id S230480AbhCQH4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 03:56:32 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:39051 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229707AbhCQHwB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 03:52:01 -0400
+        id S230506AbhCQH4I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 03:56:08 -0400
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F0j6S0Ztfz9sRR;
-        Wed, 17 Mar 2021 18:52:00 +1100 (AEDT)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F0jCB26KZz9sWm;
+        Wed, 17 Mar 2021 18:56:06 +1100 (AEDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1615967520;
-        bh=ZQrrFuBbFBqvyBQTJ69O7wWdyuKPYmiezeG9xGKpJhA=;
+        s=201702; t=1615967766;
+        bh=PmIeaa/WNTkX5nlR7ItkwBd6zESnAME1BiN4vooce7g=;
         h=Date:From:To:Cc:Subject:From;
-        b=A+dd0GjO5gMsglTBgggZez+45DxMLnjorcUyM+wAsMZh+KvZrDfMxF0HbM8BXSxC1
-         +QsMZm1VchbeHcCKb6LuttS62U9txcJlm3NianAWK5/smxmn8Y4Zvg53WqMSXvaKWQ
-         PLbatiY4JS5lKGKDkVJKalpD7EizQtub7fNbML1qpkPkDs9X9+ys89tl2NHbL3X6Ed
-         Ok3xsfVF4eXqx1onAkmIv9C5LkG1Avln6YsgrnNJMi6wZuux9qt6j68GfoAmAXHalJ
-         QE+9il0T4OQEHZHuz5GseH8xi5MXCfjz3SCSirMIWjl6qYho7J5l/vP5w7S5uTNE0r
-         DGcKjPHzGdBog==
-Date:   Wed, 17 Mar 2021 18:51:59 +1100
+        b=c3nSradtsTjQlzjhUwmPX5Wcrjn77XQSQwdaFm5IKK8UGJ/9MIJ2NwU/x0WLkffEg
+         FRxJKjWV7DKn8TCM6ajaZPZypG22pkCwwg2XeE387XrKiddyHCQfwIrh92Kx5XlKw6
+         BkQPXEFy6rsJEstmOfbv2zWeq4yg9alxYpb73vtZcpIq9DXYPs4XiBteZKj74UG9mu
+         CkZ9LnmDyhu9EYwuD3QNq1DNmnaA1P0F4YaUUjEhokcNhmPSCi2sPgIoSA0PmVeeJ6
+         /QpaaidglmhGYeL5IasQnOq7Yc5zetUk/0uhCmVb89mIn+Yi5jOT6MYsNpF5upFjlG
+         csBNIvTi5kZfg==
+Date:   Wed, 17 Mar 2021 18:56:05 +1100
 From:   Stephen Rothwell <sfr@canb.auug.org.au>
 To:     David Miller <davem@davemloft.net>,
         Networking <netdev@vger.kernel.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+Cc:     Chen Yu <yu.c.chen@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Linux Next Mailing List <linux-next@vger.kernel.org>
 Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20210317185159.3d5640b0@canb.auug.org.au>
+Message-ID: <20210317185605.3f9c70cc@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/B.Y7MI/u5uIPBan=Fv0FCED";
+Content-Type: multipart/signed; boundary="Sig_/hy02d1WUuMg=_M+_Mhruz6x";
  protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/B.Y7MI/u5uIPBan=Fv0FCED
+--Sig_/hy02d1WUuMg=_M+_Mhruz6x
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
 Hi all,
 
-After merging the net-next tree, today's linux-next build (htmldocs)
-produced this warning:
+After merging the net-next tree, today's linux-next build (sparc64
+defconfig) produced this warning:
 
-Documentation/networking/dsa/dsa.rst:468: WARNING: Unexpected indentation.
-Documentation/networking/dsa/dsa.rst:477: WARNING: Block quote ends without=
- a blank line; unexpected unindent.
+drivers/net/ethernet/intel/e1000e/netdev.c:6926:12: warning: 'e1000e_pm_pre=
+pare' defined but not used [-Wunused-function]
+ static int e1000e_pm_prepare(struct device *dev)
+            ^~~~~~~~~~~~~~~~~
 
 Introduced by commit
 
-  8411abbcad8e ("Documentation: networking: dsa: mention integration with d=
-evlink")
+  ccf8b940e5fd ("e1000e: Leverage direct_complete to speed up s2ram")
+
+CONFIG_PM_SLEEP is not set for this build.
 
 --=20
 Cheers,
 Stephen Rothwell
 
---Sig_/B.Y7MI/u5uIPBan=Fv0FCED
+--Sig_/hy02d1WUuMg=_M+_Mhruz6x
 Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBRtR8ACgkQAVBC80lX
-0GzSjAf+JGvY6Xe4f5jHsQewWOjKArv2wit6C8yuTHfghXK7belOgys24Ip5BsyU
-2S2MCXE20XTs8kX2HFfvoIlFkf6KyX16I2Nsvl6pUKoBv7xGpT1At495PeEFaF+A
-1RloXEf33WkHCKCaVlfFZoSet85wP7rmG44z2SLpFd9YXcFpjWfBG2m3ZpR7iSCo
-gOtjIFa5vj9GP83gwyNb1/WyaN/G1ttIbpzm/sncDE/HKqIArmZfSVUmjYXieoKz
-NRbZzDl5GSXPyoTVTfbJvRzIr5pPBAmix9iHVbrm8lgQgD7KGqOnYOM/O+bNO6nr
-3VKRRZAF6fs2eHITvN67j2UsSNWx2w==
-=O+wE
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBRthUACgkQAVBC80lX
+0Gx5Zwf8DlACa0xqip6DHHefI3ggZtk+CEmd2PwORaoHgBaGJZ/DlK6QmXs6w0tz
+wJIoNsrlMyhaqZlygozW3v0v1vZt7J8YkAiZFv4BaHGwigs7ohGS+H9EqBqUNwRu
+HfkFnpw0vD/3vHFOdOcIWZZ4Y/dbEH99iO7XdQLTf17n5+i3YdIhGdY18dyPBdwi
+Kx5k6etFozJZNEbZvBLp5wvW8qmJdTqABx/uQzXv+XqKcxpWcU3P4g/fqI6SE1Xm
+L9cMzcDlIKYnX9kmO1I9aFkuXKQqdR/wXe6o+WBEAh1Q3/9+LhBsTcAWysL2G3EM
+CjXvHKTJT+RIiOpk+XnfBU6FFGsWIQ==
+=b72g
 -----END PGP SIGNATURE-----
 
---Sig_/B.Y7MI/u5uIPBan=Fv0FCED--
+--Sig_/hy02d1WUuMg=_M+_Mhruz6x--
