@@ -2,275 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37B2E33F172
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 14:48:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1810333F1DC
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 14:54:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231448AbhCQNsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 09:48:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42032 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231391AbhCQNr1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 09:47:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9AE0B64F0F;
-        Wed, 17 Mar 2021 13:47:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615988846;
-        bh=dzO4IrH3cLVkwltMaHzdb5GufUGrLNVKycxCfj2m7oA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QStXPJVz9ptR7U5+ZHMeRCtaiJtmtSWgrf6DMt3LF9I2FC5l42EhbpVQagqEiVszn
-         85Xc7Xfb4SR58T/dOc2ShJHFhPPqBtOLFvmP5hZCLeooIM5CmxQea0kpLHQ92HOkFH
-         VHDmtzg/if+Pgm2ObE8msfUW6PEhTOvtUV0nnuf+7ToR5mUnUMpm/QYbKT+KSeaVzr
-         7SkpWOeq5meB7DzJDRMAV7Kgi+upcDbDmBzeoUThwm2maZK6ifUH5b+UOusbBvqoYD
-         ZChpuuk9DzoLTqDNFZVcr1qsz0YiL4lar8zDIOkN68Zyv6zEN02GBj2TIiCI60L1dS
-         DFfgfEbTZlGJA==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, pavana.sharma@digi.com,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        olteanv@gmail.com, andrew@lunn.ch, ashkan.boldaji@digi.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, lkp@intel.com,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v17 4/4] net: dsa: mv88e6xxx: implement .port_set_policy for Amethyst
-Date:   Wed, 17 Mar 2021 14:46:43 +0100
-Message-Id: <20210317134643.24463-5-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210317134643.24463-1-kabel@kernel.org>
-References: <20210317134643.24463-1-kabel@kernel.org>
+        id S231528AbhCQNxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 09:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231512AbhCQNxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 09:53:36 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC428C06174A;
+        Wed, 17 Mar 2021 06:53:35 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id 20so3053244lfj.13;
+        Wed, 17 Mar 2021 06:53:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aq/73TPDwz11pwoOS9ndvgWShmQVCgtX2IbCysGWuy8=;
+        b=kKzAla3XFykBIfQ/U+UVyQLoTHNF+1yEutb87wa1p9feTM21RhBCeK67YDV/LKT23g
+         1N46UiGHyitru2CrH5cYI4S3OaHtJw1BnkJhNWDYQrkFWmtXsLNBUYnagc+e+wP2L7ax
+         7pEdbAEuATEJqPz/qHSUjPSFNsQtmRMamEkPeDQ0+DJswLkxpyax4n0xkS2JuG4Rg8ef
+         ejn1QXd4Rj8EQduzyRunS7uWpCG4dgld+OdSadWci4CDk8mkaqmaEfAAVHqmYamDKXI0
+         y2OteH7hSyi14AFbxCS3qO80D/kJMdrS6O/FMEUfQN2NE2zIPOo81q3GrL2miPw4eS7m
+         zYbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aq/73TPDwz11pwoOS9ndvgWShmQVCgtX2IbCysGWuy8=;
+        b=IEe9Iz4+tkAviY9qrqhGOx/mdQ3tGzw9C8os3qKzsab9a+jsnYDx1exBbpThBZyFcr
+         tK0uI29HpmHpgKAJtOtJdL7pr5i2LhF2/4HX9xGJcieCxoH+0EjIp208sIyb8SO2yq/S
+         YE0ILbzp6E4JyZFDTBs6PALBpmCU+Q3kmY2qcgrhmh9/PACdcAkG0l3k2L2XmrVt+5K4
+         amicdci55NpsD7dsY/MMqP3WDRfN05TzW3bk0Uox2Utrk8iu2vVqxekA0tBLvcbWfgYn
+         OsALybLuvZJAJSbt3WQRCkLiJ05W6r9cDjksqn55daUHhgorm6TUaBy0DPcPmhqVuVDv
+         ugTA==
+X-Gm-Message-State: AOAM532XyRNYYmGQN238tJwkivKfM5OR2usDa0HQUosafANHdselz43c
+        V0fAVcK5gC+26MDRzyIxoJD1vmJlemdJfOyRmyiuXxSB8SM=
+X-Google-Smtp-Source: ABdhPJxcO47AXoUjjwUtemm8UYA54YK8YqdEt2PSOdGghyUci4dUNbRxBtB70emIuxvORqoZ4WDk7p2oZerpC4HiyZ8=
+X-Received: by 2002:a19:6d07:: with SMTP id i7mr2434139lfc.568.1615989214339;
+ Wed, 17 Mar 2021 06:53:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210310015135.293794-1-dong.menglong@zte.com.cn>
+ <20210316224820.GA225411@roeck-us.net> <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
+ <20210317013758.GA134033@roeck-us.net> <CADxym3bu0Ds6dD6OhyvdzbWDW-KqXsqGGxt3HKj-dsedFn9GXg@mail.gmail.com>
+ <CAHp75Vfo=rtK0=nRTZNwL3peUXGt5PTo4d_epCgLChSD0CKRVw@mail.gmail.com>
+In-Reply-To: <CAHp75Vfo=rtK0=nRTZNwL3peUXGt5PTo4d_epCgLChSD0CKRVw@mail.gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 17 Mar 2021 21:53:23 +0800
+Message-ID: <CADxym3bHyaiy=kOhmxYdoMTZ_QaG9-JWqC1j6ucOBOeobVBoPg@mail.gmail.com>
+Subject: Re: [PATCH v4 RESEND net-next] net: socket: use BIT() for MSG_*
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 16-bit Port Policy CTL register from older chips is on 6393x changed
-to Port Policy MGMT CTL, which can access more data, but indirectly and
-via 8-bit registers.
+On Wed, Mar 17, 2021 at 5:36 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+...
+>
+> The problematic code is negation of the flags when it's done in
+> operations like &.
+> It maybe fixed by swapping positions of the arguments, i.e. ~(FOO |
+> BAR) & flags.
+>
+> All this is a beast called "integer promotions" in the C standard.
+>
+> The best is to try to get flags to be unsigned. By how invasive it may be?
 
-The original 16-bit value is divided into first two 8-bit register in
-the Port Policy MGMT CTL.
+Seems that the inconsistent usages of 'msg_flags' is a lot, for example the
+'recvmsg()' in 'struct proto' and 'recvmsg()' in 'struct proto_ops':
 
-We can therefore use the previous code to compute the mask and shift,
-and then
-- if 0 <= shift < 8, we access register 0 in Port Policy MGMT CTL
-- if 8 <= shift < 16, we access register 1 in Port Policy MGMT CTL
+int (*recvmsg)(struct sock *sk, struct msghdr *msg,
+        size_t len, int noblock, int flags,
+        int *addr_len);
 
-There are in fact other possible policy settings for Amethyst which
-could be added here, but this can be done in the future.
+This function prototype is used in many places, It's not easy to fix them.
+This patch is already reverted, and I think maybe
+I can resend it after I fix these 'int' flags.
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Pavana Sharma <pavana.sharma@digi.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c |   1 +
- drivers/net/dsa/mv88e6xxx/port.c | 122 ++++++++++++++++++++++++-------
- drivers/net/dsa/mv88e6xxx/port.h |   3 +
- 3 files changed, 99 insertions(+), 27 deletions(-)
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 0ffeb73a4058..f0a9423af85d 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -4627,6 +4627,7 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
- 	.port_set_speed_duplex = mv88e6393x_port_set_speed_duplex,
- 	.port_max_speed_mode = mv88e6393x_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
-+	.port_set_policy = mv88e6393x_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
- 	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 154541d807df..6a9c45c2127a 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -1325,6 +1325,27 @@ int mv88e6xxx_port_disable_pri_override(struct mv88e6xxx_chip *chip, int port)
- 
- /* Offset 0x0E: Policy & MGMT Control Register for FAMILY 6191X 6193X 6393X */
- 
-+static int mv88e6393x_port_policy_read(struct mv88e6xxx_chip *chip, int port,
-+				       u16 pointer, u8 *data)
-+{
-+	u16 reg;
-+	int err;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6393X_PORT_POLICY_MGMT_CTL,
-+				   pointer);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6393X_PORT_POLICY_MGMT_CTL,
-+				  &reg);
-+	if (err)
-+		return err;
-+
-+	*data = reg;
-+
-+	return 0;
-+}
-+
- static int mv88e6393x_port_policy_write(struct mv88e6xxx_chip *chip, int port,
- 					u16 pointer, u8 data)
- {
-@@ -1526,46 +1547,43 @@ int mv88e6390_port_tag_remap(struct mv88e6xxx_chip *chip, int port)
- 
- /* Offset 0x0E: Policy Control Register */
- 
--int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
--			      enum mv88e6xxx_policy_mapping mapping,
--			      enum mv88e6xxx_policy_action action)
-+static int
-+mv88e6xxx_port_policy_mapping_get_pos(enum mv88e6xxx_policy_mapping mapping,
-+				      enum mv88e6xxx_policy_action action,
-+				      u16 *mask, u16 *val, int *shift)
- {
--	u16 reg, mask, val;
--	int shift;
--	int err;
--
- 	switch (mapping) {
- 	case MV88E6XXX_POLICY_MAPPING_DA:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_DA_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_DA_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_DA_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_DA_MASK;
- 		break;
- 	case MV88E6XXX_POLICY_MAPPING_SA:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_SA_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_SA_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_SA_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_SA_MASK;
- 		break;
- 	case MV88E6XXX_POLICY_MAPPING_VTU:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_VTU_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_VTU_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_VTU_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_VTU_MASK;
- 		break;
- 	case MV88E6XXX_POLICY_MAPPING_ETYPE:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_ETYPE_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_ETYPE_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_ETYPE_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_ETYPE_MASK;
- 		break;
- 	case MV88E6XXX_POLICY_MAPPING_PPPOE:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_PPPOE_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_PPPOE_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_PPPOE_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_PPPOE_MASK;
- 		break;
- 	case MV88E6XXX_POLICY_MAPPING_VBAS:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_VBAS_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_VBAS_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_VBAS_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_VBAS_MASK;
- 		break;
- 	case MV88E6XXX_POLICY_MAPPING_OPT82:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_OPT82_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_OPT82_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_OPT82_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_OPT82_MASK;
- 		break;
- 	case MV88E6XXX_POLICY_MAPPING_UDP:
--		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_UDP_MASK);
--		mask = MV88E6XXX_PORT_POLICY_CTL_UDP_MASK;
-+		*shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_UDP_MASK);
-+		*mask = MV88E6XXX_PORT_POLICY_CTL_UDP_MASK;
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
-@@ -1573,21 +1591,37 @@ int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
- 
- 	switch (action) {
- 	case MV88E6XXX_POLICY_ACTION_NORMAL:
--		val = MV88E6XXX_PORT_POLICY_CTL_NORMAL;
-+		*val = MV88E6XXX_PORT_POLICY_CTL_NORMAL;
- 		break;
- 	case MV88E6XXX_POLICY_ACTION_MIRROR:
--		val = MV88E6XXX_PORT_POLICY_CTL_MIRROR;
-+		*val = MV88E6XXX_PORT_POLICY_CTL_MIRROR;
- 		break;
- 	case MV88E6XXX_POLICY_ACTION_TRAP:
--		val = MV88E6XXX_PORT_POLICY_CTL_TRAP;
-+		*val = MV88E6XXX_PORT_POLICY_CTL_TRAP;
- 		break;
- 	case MV88E6XXX_POLICY_ACTION_DISCARD:
--		val = MV88E6XXX_PORT_POLICY_CTL_DISCARD;
-+		*val = MV88E6XXX_PORT_POLICY_CTL_DISCARD;
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
- 
-+	return 0;
-+}
-+
-+int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
-+			      enum mv88e6xxx_policy_mapping mapping,
-+			      enum mv88e6xxx_policy_action action)
-+{
-+	u16 reg, mask, val;
-+	int shift;
-+	int err;
-+
-+	err = mv88e6xxx_port_policy_mapping_get_pos(mapping, action, &mask,
-+						    &val, &shift);
-+	if (err)
-+		return err;
-+
- 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_POLICY_CTL, &reg);
- 	if (err)
- 		return err;
-@@ -1597,3 +1631,37 @@ int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
- 
- 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_POLICY_CTL, reg);
- }
-+
-+int mv88e6393x_port_set_policy(struct mv88e6xxx_chip *chip, int port,
-+			       enum mv88e6xxx_policy_mapping mapping,
-+			       enum mv88e6xxx_policy_action action)
-+{
-+	u16 mask, val;
-+	int shift;
-+	int err;
-+	u16 ptr;
-+	u8 reg;
-+
-+	err = mv88e6xxx_port_policy_mapping_get_pos(mapping, action, &mask,
-+						    &val, &shift);
-+	if (err)
-+		return err;
-+
-+	/* The 16-bit Port Policy CTL register from older chips is on 6393x
-+	 * changed to Port Policy MGMT CTL, which can access more data, but
-+	 * indirectly. The original 16-bit value is divided into two 8-bit
-+	 * registers.
-+	 */
-+	ptr = shift / 8;
-+	shift %= 8;
-+	mask >>= ptr * 8;
-+
-+	err = mv88e6393x_port_policy_read(chip, port, ptr, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~mask;
-+	reg |= (val << shift) & mask;
-+
-+	return mv88e6393x_port_policy_write(chip, port, ptr, reg);
-+}
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 948ba577a159..921d54969dad 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -386,6 +386,9 @@ int mv88e6352_port_set_mcast_flood(struct mv88e6xxx_chip *chip, int port,
- int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
- 			      enum mv88e6xxx_policy_mapping mapping,
- 			      enum mv88e6xxx_policy_action action);
-+int mv88e6393x_port_set_policy(struct mv88e6xxx_chip *chip, int port,
-+			       enum mv88e6xxx_policy_mapping mapping,
-+			       enum mv88e6xxx_policy_action action);
- int mv88e6351_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
- 				  u16 etype);
- int mv88e6393x_set_egress_port(struct mv88e6xxx_chip *chip,
--- 
-2.26.2
-
+Thanks!
+Menglong Dong
