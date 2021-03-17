@@ -2,154 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 560B233EBC1
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 09:43:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 312DF33EBCB
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 09:46:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbhCQInO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 04:43:14 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:55276 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229732AbhCQIms (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 04:42:48 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 81E3F205B4;
-        Wed, 17 Mar 2021 09:42:47 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id GBEHnAwBPjIx; Wed, 17 Mar 2021 09:42:46 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id D1597204A4;
-        Wed, 17 Mar 2021 09:42:46 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 17 Mar 2021 09:42:46 +0100
-Received: from moon.secunet.de (172.18.26.121) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 17 Mar
- 2021 09:42:46 +0100
-Date:   Wed, 17 Mar 2021 09:42:43 +0100
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-CC:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Antony Antony <antony.antony@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        id S229554AbhCQIpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 04:45:54 -0400
+Received: from mail-vi1eur05on2056.outbound.protection.outlook.com ([40.107.21.56]:14176
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229508AbhCQIpw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 04:45:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eUchZsUX69TLoHA0tuNrKwm2yPtYLer5+1j8wxmF26S0T+6H+Q8mOlTJHkmuUSa5+gODpvOjcifunjMV2ahsHF8LUR98se2ZNusU66+zlOmAFwlJ7GkOLvMoTGlTphhAMMgFQtkx6LF3hwmxXTb2nfMHftWYBiUtlRPs6kFl9q4DSDR2CqjpXSbBo2O5C8bOGme9sFoP5Cw/1h0KlSrZtBbhB7rEX0nD1FLVLEhMJ2aCFuWQRIVZTvDw+RvAQQFBpBnROKXzCqwj2Nm3qb/9pfYECxb4JN073VS7onHMZGtvt6q7eEnRSYQW6ePCDo8vr0lm+GS0UPSXHee/L4y/NQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eLvukkUxnZefbzho6SbIBs3oOzjyo1+hCeJyL3sWfWI=;
+ b=fLBHJQLeByuCwQfioLl+EHjvjiOxIGXqAsfmXZ6WixWW/OzBcFhuIxP5HLyQHCr9wh/WHskj7dbKDGdiAzAmqtIG/X8S0NplgK/oZCWQMACYGiDZi0T4D2PUMNJgNmjph4XQYeRkvEdEZROuM03cJBkri0B8tnMRdt3i+QTA2btaRMk/M3i89cH/LfEtLCOJKbNCwDGtx1PGJfI2dwCDtarWATx5W1cEOvmn5U/dAlBOZeFtMddQohWPLewGn2C0LPLG8fPZpHxByjOUQQ4AnUUO/RxSe0sHChMwnFXX8Xpa2MwUOhv87tVDN3nhGLxYAOEwHtcDkFWHU1eVTzSrFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eLvukkUxnZefbzho6SbIBs3oOzjyo1+hCeJyL3sWfWI=;
+ b=DvyFAfLxTzxSs6Y9vG9CmCgHinLPjgvFiRL9qEWovqZofixBFh8YB5V5Eltgna8nnD976ZfMiD0AH2FrHV1QELNrc3sVp54GMzeIVAdYYTwEarnwfk6cCiJj4cnDl50S3Lq16QUr1YRYtRuFaBjqTJ6v6BBgPCdRI9SBx6eq6zc=
+Authentication-Results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB6963.eurprd04.prod.outlook.com (2603:10a6:208:18b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Wed, 17 Mar
+ 2021 08:45:47 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1cd:7101:5570:cd79]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::1cd:7101:5570:cd79%7]) with mapi id 15.20.3955.018; Wed, 17 Mar 2021
+ 08:45:47 +0000
+Date:   Wed, 17 Mar 2021 14:15:20 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux.cj@gmail.com, netdev@vger.kernel.org,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Yossi Kuperman" <yossiku@mellanox.com>,
-        Guy Shapiro <guysh@mellanox.com>, <netdev@vger.kernel.org>,
-        <antony@phenome.org>
-Subject: Re: [PATCH] xfrm: return error when esp offload is requested and not
- supported
-Message-ID: <20210317084243.GB1282@moon.secunet.de>
-Reply-To: <antony.antony@secunet.com>
-References: <20210310093611.GA5406@moon.secunet.de>
- <20210315104350.GY62598@gauss3.secunet.de>
- <YE99dz85HaajKX4w@hog>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [net-next PATCH v7 04/16] of: mdio: Refactor of_phy_find_device()
+Message-ID: <20210317084433.GA21433@lsv03152.swis.in-blr01.nxp.com>
+References: <20210311062011.8054-1-calvin.johnson@oss.nxp.com>
+ <20210311062011.8054-5-calvin.johnson@oss.nxp.com>
+ <20210316191719.d7nxgywwhczo7tyg@holly.lan>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YE99dz85HaajKX4w@hog>
-Organization: secunet
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <20210316191719.d7nxgywwhczo7tyg@holly.lan>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [14.142.151.118]
+X-ClientProxiedBy: HKAPR04CA0018.apcprd04.prod.outlook.com
+ (2603:1096:203:d0::28) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by HKAPR04CA0018.apcprd04.prod.outlook.com (2603:1096:203:d0::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Wed, 17 Mar 2021 08:45:36 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 22374e8b-9ee5-4b02-bab3-08d8e9210ea6
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6963:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6963F88272332B4989BE8730D26A9@AM0PR04MB6963.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jTiCFy26MX5C5wnIgkhj4GD/BY4NtVZeUob0CXPbgS3T3swPAM+J+DlGnyltisEJJqJw19Xj53AA2BhBMpypdB+vECqqXyx9BhYjDgHWZpYi3QzYVs5KFS+2Q0rHvaBxauI1vzXjo4W+2xPbwRj2PSoAEFZMx+zSwVOx9vmNqT3CoZ2nEuanYBvAGoU6cKC84Gi2l/cD70bDHXJVqt8nMXLkaQqTcNVdmuGyUk1NupXZ4+CX+/RObkVPro2MKpa8SZQ5TdgxxAVwU1aSeoFIKxPPimC6XssYIfLfCexSEpvsKDBwHgxVmw3wFa7z3P3HRqAggahnDTupDr9zKko+AJ2QN3grBpAI4DowFc07JBJBOTVjXjevGVBIlLDFhu7DbaGo2X+ffchQhADXugc8Vil3A1fMv/Zw7AlzJsLXnj03i8+RRdOxwvDaaOTsIwy+Kk8IBHaZ08176hH6mtlhAhq1y2GuCqHH9X0P1H2NDeGnmykMa85sl8aC8BreaJG0F8yusbjMZfG4YrousJHCHlMErypf4xIWW2Jo7n30BhwoOx6qJSuMHt1ERxWPydWlX/i7MN7IEXjs5/gM3cxFLya4Fmiy+VgpBH+/kmrounL6UJMKqWuuA3hSc+f/HYi8vRRcvrirFTVkpNBJjpsUcQNCHtKHAndgLl9cRbzvWQXRg07RvchSplpFxOrRx5iC
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(66476007)(498600001)(66556008)(2906002)(6506007)(186003)(6666004)(33656002)(16526019)(1006002)(7416002)(6916009)(9686003)(1076003)(966005)(52116002)(5660300002)(55236004)(4326008)(86362001)(26005)(8676002)(55016002)(8936002)(66946007)(54906003)(44832011)(7696005)(956004)(110426009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?+Z6bTfvR8aqw2SrBFXZHWN/OB3APRnZEEz7G3rUjHLQBLNmDXoUqv2lBbDIM?=
+ =?us-ascii?Q?uECLWEuzRkQAG87s9uqEmLuOHbSLGPweSy40EfRGPW2r7FVwxzH1WJ1ekN2i?=
+ =?us-ascii?Q?D8CVzsmVzArh8zMhSEI7Dn5reVht+REjy6fSx2ba9SB3XekoLk8LSUZucvYJ?=
+ =?us-ascii?Q?Ut7UCd5r9bAu7Na2g0KISNDxOXHQpCM5oPraqosgH2XaJooDzcU1Fpdn81eX?=
+ =?us-ascii?Q?ouUYNzqKOo+BDEvh7NcYvDANOZS/BKCyhB7JyCaacZ2TyAa+xn0HIkS1fF2T?=
+ =?us-ascii?Q?/QHWdsxC9FCmCgqV6GY1X4gVFkpN/xFGISIwJO0UR1ImMVftIKdvuQJ7Hrgk?=
+ =?us-ascii?Q?5Xq0iLrhRTlQ39ztY7xqPLn3IZ1kKh8vEE3DFyO+KRBKDcN7NO5EuW/cJm8f?=
+ =?us-ascii?Q?SxZoa2xgRBdslPK2kAghkjoa1U9/oJyQWeQ+C4RSYLCR+MxyNXMvrQBGp4WK?=
+ =?us-ascii?Q?MlLG0VcIV9XeM1dz+6Z0OC4efQo1CgDfUaOOaSFdmM0BVaKPSp3a//HTOqJh?=
+ =?us-ascii?Q?pXSfB8TDL50N9XBNX8M6G/kiaIE1KwgPE2l1Ymxo6ZBoypwKW68eExKimwHQ?=
+ =?us-ascii?Q?2Jol7fOydtSY+hfEiCl8wNaJxM9IBEJUorXtQ5g5r1drMhGqi0WLx2mwq9IE?=
+ =?us-ascii?Q?FI6LRWNl7af6VMcimK6AwHGCIivHZARVA+UwlftOk99OcsdJbYMc0BD7n4/D?=
+ =?us-ascii?Q?s/CAehCDuXLZiK/U2ZUp7AqUXKLj4ck8IfjhfzawuRgc5jShqCunn5q8oeV3?=
+ =?us-ascii?Q?zz4yg5CGxxroyH+Muw21K7Rw1BchyzAk5DA0DO1biCqOSe7gAMgrcm+b6+gC?=
+ =?us-ascii?Q?0JUcbxho/UdJdlZXwttrfMCoHx8DDzELmNYG5lB8lqcB68jUVTerAzYXEsFP?=
+ =?us-ascii?Q?8w9jZRtEeszevvqhV+DIBpsfEALBwjPASZfG6G0f7r8RyfoA08RlxNJrFD7K?=
+ =?us-ascii?Q?36CAceTF/Fs/MyvzPH8ftYBqBvNGC3068LVBI09Q/ZlOryM3cm+Dx7DxJ0fB?=
+ =?us-ascii?Q?oTgfkTNg8z7QhZbawnUUloXztsdE1K/VPtEOu8A8Y0vQkx1YcV7lkovT107Y?=
+ =?us-ascii?Q?LdVgYU0uYRMll9TcIe0uk4dc0/mdxX6IZySg1FVUoTq6zwIm9LLDu21XSxCU?=
+ =?us-ascii?Q?VQq4V3sQUmlslUYNn4Tmqma5MoIwDjk3ibc76QtiEA0bPvS5KMfXQKCAVGoS?=
+ =?us-ascii?Q?p66Rgo3NS7B+eu5NjazQXcRlCQ2tO9upHLt3FMpvbWdicxgJAzgK1Tkyqa4/?=
+ =?us-ascii?Q?yqate4iEFE0u5C9fKdTB6+s9xATD8rb1NiuinciRyITSTOlPekJiyNwMFY4J?=
+ =?us-ascii?Q?+BExNYt/S6E+MNVZGaJNrY8z?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22374e8b-9ee5-4b02-bab3-08d8e9210ea6
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2021 08:45:47.5847
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5TLwj+nKQilMqa1235DQPLWEqJP+7fMZCAh/56O6TC9G4cdMR3dAFC/tLfIO71PXbNGDckcMjRCfLnrmNBrIuQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6963
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Daniel,
 
-On Mon, Mar 15, 2021 at 16:29:59 +0100, Sabrina Dubroca wrote:
-> 2021-03-15, 11:43:50 +0100, Steffen Klassert wrote:
-> > On Wed, Mar 10, 2021 at 10:36:11AM +0100, Antony Antony wrote:
-> > > When ESP offload is not supported by the device return an error,
-> > > -EINVAL, instead of silently ignoring it, creating a SA without offload,
-> > > and returning success.
-> > > 
-> > > with this fix ip x s a would return
-> > > RTNETLINK answers: Invalid argument
-> > > 
-> > > Also, return an error, -EINVAL, when CONFIG_XFRM_OFFLOAD is
-> > > not defined and the user is trying to create an SA with the offload.
-> > > 
-> > > Fixes: d77e38e612a0 ("xfrm: Add an IPsec hardware offloading API")
-> > > Signed-off-by: Antony Antony <antony.antony@secunet.com>
+On Tue, Mar 16, 2021 at 07:17:19PM +0000, Daniel Thompson wrote:
+> On Thu, Mar 11, 2021 at 11:49:59AM +0530, Calvin Johnson wrote:
+> > Refactor of_phy_find_device() to use fwnode_phy_find_device().
 > > 
-> > I feal a bit unease about this one. When we designed the offloading
-> > API, we decided to fallback to software if HW offload is not available.
-
-Right! Now, I recollect the silent fallback feature, which was mentioned
-when the offload was introduced. However, while using I found it
-confusing. And I thought it was an unintended side effect and came up
-with a fix. Looking closer at the proposed patch and commit 4a132095dd6 I
-wonder what would be a consistent behavior.
-
-
-> Right, but it's a little bit inconsistent. If HW offload is not
-> available, we get silent fallback. This is great for compatibility
-> (old kernels will completely ignore the XFRMA_OFFLOAD_DEV attribute,
-> new kernels try to emulate this), and because routes can change and
-> suddenly the packets that should have been going through some device
-> go through another, which may have different capabilities.
+> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 > 
-> On the other hand, if HW offload is available but doesn't support the
-> exact features we're trying to enable (UDP encap, wrong algorithm, etc
-> (*)), then we can fail in a visible way.
-
-Yes.
-
-> (*) I know there's an "if (err != -EOPNOTSUPP)" on the result of
-> ->xdo_dev_state_add(), but for example mlx5 seems to return EINVAL
-> instead of EOPNOTSUPP.
-
-That is interesting. I think !CONFIG_XFRM_OFFLOAD should be
-EOPNOTSUPP?
-
+> This patch series is provoking depmod dependency cycles for me and
+> it bisected down to this patch (although I think later patches in
+> the series add further cycles).
 > 
-> > Not sure if that was a good idea, but changing this would also change
-> > the userspace ABI. So if we change this, we should at least not
-> > consider it as a fix because it would be backported to -stable
-
-agreed. It could be a new feature?
-
-> > in that case. Thoughts?
+> The problems emerge when running modules_install either directly or
+> indirectly via packaging rules such as bindeb-pkg.
 > 
-> Agree, but I don't think we could even change this at all.
+> ~~~
+> make -j16 INSTALL_MOD_PATH=$PWD/modules modules_install
+> ...
+>   INSTALL sound/usb/misc/snd-ua101.ko
+>   INSTALL sound/usb/snd-usb-audio.ko
+>   INSTALL sound/usb/snd-usbmidi-lib.ko
+>   INSTALL sound/xen/snd_xen_front.ko
+>   DEPMOD  5.12.0-rc3-00009-g1fda33bf463d
+> depmod: ERROR: Cycle detected: fwnode_mdio -> of_mdio -> fwnode_mdio
+> depmod: ERROR: Found 2 modules in dependency cycles!
+> ~~~
 > 
-> At best we could introduce a flag to force offloading, and fail if we
-> can't offload. But then what should we do if the traffic for that
-> state is rerouted through a different interface, or if offloading is
-> temporarily disabled with ethtool? Also, should a kernel with
-> !CONFIG_XFRM_OFFLOAD ignore that flag or not?
+> Kconfig can be found here:
+> https://gist.github.com/daniel-thompson/6a7d224f3d3950ffa3f63f979b636474
 > 
-> Antony, what prompted you to write this patch? Do you have a use case
-> for requiring offloading instead of falling back to software?
+> This Kconfig file is for a highly modular kernel derived from the Debian
+> 5.10 arm64 kernel config. I was not able to reproduce using the defconfig
+> kernel for arm64.
+> 
+Thanks for catching this. I'm able to reproduce the issue and will fix it.
 
-I was using strongSWAN. Due to NIC changes and route changes the SA,
-with offload, failed to create.
-Actually, strongSWAN didn't even try to create a SA. It reported an error when it checked offload support on the device, after IKE negotiation just before installing the SA.
+By the way, is there any integration tool/mechanism out there to which I can
+submit the patch series and build for various possible configs like these?
 
-[KNL] 192.168.1.1 is on interface eth2
-[KNL] HW offload is not supported by device
-
-To debug I tried "ip x s a eth2" and a the SA got created, which confused me. After a closer showed offload was silently ignored.
-
-Next I tried to create an offload to loopback device.
-"ip x s a ... offload dev lo dir in" and there was an SA without offload, Device lo will never have offload:)
-This led me to look at the kernel code. There I found the offload request can be silently ignored. So I created a fix.
-
-One important point to note: IKE daemons check for offload support, using ETHTOOL_GFEATURES or ETH_SS_FEATURES, before requesting kernel to add a SA with offload. I see strongSWAN and libreswan trying to detect it before requesting offload. This why I got the error.
-
-I had a closeer look and I noticed that deciding when to fail and when to fallback is complex. e.g no NAT support with offload is failure, -EINVAL and not a fallback.
-
-I think the current kernel, when it has code to support a feature, should fail explictly when the feature requested can't be enabled. While, an older kernel which is not aware of the feature may silently ignore an unsupported feature. Atleast that is how I feel now!
-
-
-thanks for the feedback.
-
--antony
+Thanks
+Calvin
