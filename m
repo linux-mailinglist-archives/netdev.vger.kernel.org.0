@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 095FA33E551
-	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:03:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1141D33E554
+	for <lists+netdev@lfdr.de>; Wed, 17 Mar 2021 02:03:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbhCQBCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Mar 2021 21:02:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41666 "EHLO mail.kernel.org"
+        id S232208AbhCQBC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Mar 2021 21:02:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41714 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231362AbhCQA75 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Mar 2021 20:59:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C18D764F8F;
-        Wed, 17 Mar 2021 00:59:56 +0000 (UTC)
+        id S231510AbhCQBAB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Mar 2021 21:00:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F042D64FA5;
+        Wed, 17 Mar 2021 00:59:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615942797;
-        bh=ORTxPdGNjAuGYhuJCMBUbSzDCD4yWRlwdRYFYikR3ZY=;
+        s=k20201202; t=1615942800;
+        bh=z6fjfAWkHbVDLjL2M6xlYkNM70LTzfCTKgvyHQgM7V0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z7nvCYC0wD2D8K3ZDhVdEHL281A7B+UhlBM17IsQLyoYZPci18iUS9d9mCqkzHgMI
-         9jDF4bSWeaK75UV7nvT940BclH5rgGl4DPzCtfaJYU+xe/Lby+Lemv4u8X7hrGo64L
-         p0uU6X9AOVuZC3DMBw+kFaqwdLpCHR3JIEcboYSDRwg+V5bQbwfpQibSlE+kKUSTc1
-         QBTZsxU0R/X0VFsZPCaABdQ9F8js4lp3dyspBjwOB8zxYARJkFAiGPdKPjqhwXjNIF
-         WWdTFD8J98uqjF9o9R3vFkWozkS9Sam4sRdVDvLeTwQsnUcZyKXuyVwKIzzcdI2mwB
-         Q8AKVWInek5LA==
+        b=ffyHpi3YSY2dDKAbhuHJd4UBJHuKJ37aJlgRNmhhdYYT+8sfCkI+QlNMIBdT8Ka28
+         z3OQ/0Natr1WjQQL7lIjH6681o7qjrk4IMZgfsHahc61qJDj3PQEBTEZJ4SBhaTrF+
+         YUqjH6yrecO6p0guCdn+kbNK1HaF9PxEO4dOVrNaasuhnZU646guIHW8pJA3HGEfya
+         +VI3piv7ShR/qW+nK7OFwEnyo0Lh7xNSWmSaQI4QfYbDFaJv+4vkN/RsGrsVCYgHws
+         0x3PMdNbhrQhs/ymXhjvJ/C6knncOXZUxwinF46C8R7q8HMAi4MCuOHEY6CS1HabLq
+         bf/z7qvNK8fcg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Denis Efremov <efremov@linux.com>,
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 07/16] sun/niu: fix wrong RXMAC_BC_FRM_CNT_COUNT count
-Date:   Tue, 16 Mar 2021 20:59:38 -0400
-Message-Id: <20210317005948.727250-7-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.9 10/16] net: wan: fix error return code of uhdlc_init()
+Date:   Tue, 16 Mar 2021 20:59:41 -0400
+Message-Id: <20210317005948.727250-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210317005948.727250-1-sashal@kernel.org>
 References: <20210317005948.727250-1-sashal@kernel.org>
@@ -42,33 +44,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Denis Efremov <efremov@linux.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 155b23e6e53475ca3b8c2a946299b4d4dd6a5a1e ]
+[ Upstream commit 62765d39553cfd1ad340124fe1e280450e8c89e2 ]
 
-RXMAC_BC_FRM_CNT_COUNT added to mp->rx_bcasts twice in a row
-in niu_xmac_interrupt(). Remove the second addition.
+When priv->rx_skbuff or priv->tx_skbuff is NULL, no error return code of
+uhdlc_init() is assigned.
+To fix this bug, ret is assigned with -ENOMEM in these cases.
 
-Signed-off-by: Denis Efremov <efremov@linux.com>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sun/niu.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wan/fsl_ucc_hdlc.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
-index fe5b0ac8c631..5bf47279f9c1 100644
---- a/drivers/net/ethernet/sun/niu.c
-+++ b/drivers/net/ethernet/sun/niu.c
-@@ -3948,8 +3948,6 @@ static void niu_xmac_interrupt(struct niu *np)
- 		mp->rx_mcasts += RXMAC_MC_FRM_CNT_COUNT;
- 	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
- 		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
--	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
--		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
- 	if (val & XRXMAC_STATUS_RXHIST1_CNT_EXP)
- 		mp->rx_hist_cnt1 += RXMAC_HIST_CNT1_COUNT;
- 	if (val & XRXMAC_STATUS_RXHIST2_CNT_EXP)
+diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
+index 87bf05a81db5..fc7d28edee07 100644
+--- a/drivers/net/wan/fsl_ucc_hdlc.c
++++ b/drivers/net/wan/fsl_ucc_hdlc.c
+@@ -169,13 +169,17 @@ static int uhdlc_init(struct ucc_hdlc_private *priv)
+ 
+ 	priv->rx_skbuff = kzalloc(priv->rx_ring_size * sizeof(*priv->rx_skbuff),
+ 				  GFP_KERNEL);
+-	if (!priv->rx_skbuff)
++	if (!priv->rx_skbuff) {
++		ret = -ENOMEM;
+ 		goto free_ucc_pram;
++	}
+ 
+ 	priv->tx_skbuff = kzalloc(priv->tx_ring_size * sizeof(*priv->tx_skbuff),
+ 				  GFP_KERNEL);
+-	if (!priv->tx_skbuff)
++	if (!priv->tx_skbuff) {
++		ret = -ENOMEM;
+ 		goto free_rx_skbuff;
++	}
+ 
+ 	priv->skb_curtx = 0;
+ 	priv->skb_dirtytx = 0;
 -- 
 2.30.1
 
