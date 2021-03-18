@@ -2,73 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7617134110C
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8B49341111
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:32:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbhCRXaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 19:30:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34292 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231938AbhCRXaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 19:30:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4383664F3B;
-        Thu, 18 Mar 2021 23:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616110209;
-        bh=MbnUdDqu/BvfLKkrOyaq+Ui14UNXdEuaXNsxbFc74UM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aXdKSbXFA02bEX/S7GIhWzIaNijobykZT4dogyLfBhAvp/LLz3HKtMcUHvXFbfcIU
-         QJMVHigYBGTcWpbShJ8Zr4iyG5+RUG2luqBFNfhCy25NC6doOpqV8FX6iWOsb1N+fV
-         oIESOy161bpSYI6o7i24jWoLNNHi1w+us2aNJCUsZ0/L/J+tDobkZhoOyIaCenj/+7
-         Xf7wPEnhPppmqEHfwLeQLn+YN8k2b6M4ttzLUl+9RUSWqBuz4gnb+9N6SJvTojXMbh
-         78PD3UPL1PfY9Bck2mDBhW3XvI9VevToZDSDo1kuB7EaDnmqm58LpfJ+G9b2NfEvIu
-         CsUphzRU/026Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 34E38600DF;
-        Thu, 18 Mar 2021 23:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232575AbhCRXcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 19:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232273AbhCRXcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:32:03 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48DBC06174A;
+        Thu, 18 Mar 2021 16:32:03 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id m7so5450356qtq.11;
+        Thu, 18 Mar 2021 16:32:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qNNmgS5jO9ghaN1h12J0G5/UTr/xxIWCcWjW1ZZJjYA=;
+        b=eU9BpRzUo4uuZ5aCMwqNW2HYolvLwcNEPTnFnD09YEoO5KC0oJYniROwtVjWY7qA1w
+         KIw4WSCLEsCgNuHuUSmjLSYb97d/NI73y6Eh0IfGQD9bfR1/v1dFkUxGGGVpZ+SnC4EH
+         nMbcujanCe6GWbPTbZwFDi0qZRr6CsW1c7ll2aCydBIAwBpd3pgtdSioZ+yRALzfEqYz
+         ktyv1/LN8i6nSHSa3B92u1uQ5Dpsz436nd3URzfEG/9qg90pylwMefJ4JESOBZlKHvaE
+         yRIoFyBbYrXFmerA+8lSoZO1lbr/zTrL1HDsZEOsz2QBoXQwR+nWAgOd32nIZ6Kr+LM1
+         C/lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qNNmgS5jO9ghaN1h12J0G5/UTr/xxIWCcWjW1ZZJjYA=;
+        b=hFzFPCcUJaqrv57qYmG5RY7LzXTfky18qK7w8jTeMObnQLK3o9NQyJLGSPCVAp2cd1
+         9455Q70L6gZNRGoG34m3RAegMOo8dhd3xaJl5vlq7NOunQ1uwhqlIYNSzMXl8HQ+pTvG
+         6tLudehRNoqdh8KGcpoiIJdZxehMMZjN8sULmlv47fVXD/e5wR4zOTNj1OUpu/uQF4Ib
+         xnRi5mMYOXp3UfpNUdkscBOnWDL0OHqYusRtwCUNuPD4aI2nSHXyDCSJC/mYciier1A8
+         3Q0UM6HLL/THbNK9VxVHdWpm++GLab7/kxmKKX9hxlz3+MbcbMAloQRbEK8UhFKwQBeQ
+         AXaw==
+X-Gm-Message-State: AOAM533NGgduF6uoPQrPI3oTQPklG1yuNGO/PHNLn4LyG/PYFs0XVGAs
+        EPdZa4PodKdcurvdvTCc06R40P0gAFXMMrJk
+X-Google-Smtp-Source: ABdhPJzP+CdSsZd0n5w4v4ZYyzgVdaAjb8/9yWUsrKXkKJMKv7R2G9/qTpRqxF9fmlM49qEpGGoQiQ==
+X-Received: by 2002:ac8:5510:: with SMTP id j16mr5986398qtq.339.1616110322904;
+        Thu, 18 Mar 2021 16:32:02 -0700 (PDT)
+Received: from localhost.localdomain ([37.19.198.63])
+        by smtp.gmail.com with ESMTPSA id t188sm3024152qke.91.2021.03.18.16.31.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 16:32:02 -0700 (PDT)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        unixbhaskar@gmail.com, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     rdunlap@infradead.org
+Subject: [PATCH] selftests: net: forwarding: Fix a typo
+Date:   Fri, 19 Mar 2021 04:59:45 +0530
+Message-Id: <20210318232945.17834-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] s390/qeth: updates 2021-03-18
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161611020921.24048.622039848889756120.git-patchwork-notify@kernel.org>
-Date:   Thu, 18 Mar 2021 23:30:09 +0000
-References: <20210318185456.2153426-1-jwi@linux.ibm.com>
-In-Reply-To: <20210318185456.2153426-1-jwi@linux.ibm.com>
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, hca@linux.ibm.com, kgraul@linux.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+s/verfied/verified/
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+---
+ tools/testing/selftests/net/forwarding/fib_offload_lib.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Thu, 18 Mar 2021 19:54:53 +0100 you wrote:
-> Hi Dave & Jakub,
-> 
-> please apply the following patch series for qeth to netdev's net-next
-> tree.
-> 
-> This brings two small optimizations (replace a hard-coded GFP_ATOMIC,
-> pass through the NAPI budget to enable napi_consume_skb()), and removes
-> some redundant VLAN filter code.
-> 
-> [...]
+diff --git a/tools/testing/selftests/net/forwarding/fib_offload_lib.sh b/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
+index 66496659bea7..e134a5f529c9 100644
+--- a/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
++++ b/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
+@@ -224,7 +224,7 @@ fib_ipv4_plen_test()
+ 	ip -n $ns link set dev dummy1 up
 
-Here is the summary with links:
-  - [net-next,1/3] s390/qeth: allocate initial TX Buffer structs with GFP_KERNEL
-    https://git.kernel.org/netdev/net-next/c/e47ded97f972
-  - [net-next,2/3] s390/qeth: enable napi_consume_skb() for pending TX buffers
-    https://git.kernel.org/netdev/net-next/c/ad4bbd7285ad
-  - [net-next,3/3] s390/qeth: remove RX VLAN filter stubs in L3 driver
-    https://git.kernel.org/netdev/net-next/c/d96a8c693d0a
-
-You are awesome, thank you!
+ 	# Add two routes with the same key and different prefix length and
+-	# make sure both are in hardware. It can be verfied that both are
++	# make sure both are in hardware. It can be verified that both are
+ 	# sharing the same leaf by checking the /proc/net/fib_trie
+ 	ip -n $ns route add 192.0.2.0/24 dev dummy1
+ 	ip -n $ns route add 192.0.2.0/25 dev dummy1
 --
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.26.2
 
