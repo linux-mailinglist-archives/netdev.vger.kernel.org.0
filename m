@@ -2,97 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3349F340799
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9CE234079D
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbhCROQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:16:36 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:60466 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231430AbhCROQL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:11 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IEEgf9027109;
-        Thu, 18 Mar 2021 07:16:07 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=BZnmteev1OD32fPEp9pSDG9p4+7EMfj7P+ATJvNpqAY=;
- b=idEOQdH+2Fq67j6tvptexW9dxFkAw2NUJdhPgQZs6htHMCN5KXZc3k3d1XTE/3HKTwuF
- scMLBeSr2gIBv4AXbTf2hDGjRaSUpmsL8CdV4/nyhkgcVCxCUuBjw1VbQebtIopV8U/h
- QRo7KhOi5cvNFXHaQMeVVMMqoT5wIno6dwlikV4tRQTWLlr41cQ5Bi3IGHBJobuO83e+
- bVpkifzHjRYdMuD625rB9M7PU7soSe7b5vRFJBaYs7/S+fMTdHnQ6HoqAck2KD9RKA3a
- Nhrn0ABL0X05PZZNPtHvvJN5hUt9rflNtDNAdiGx+Y9bCyXoHitwJ8RQPOLm6LCSp1rM oA== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 37b5vdpkc0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 18 Mar 2021 07:16:07 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
- 2021 07:16:05 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 18 Mar 2021 07:16:05 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id BD94E3F7041;
-        Thu, 18 Mar 2021 07:16:01 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>
-Subject: [net PATCH v2 3/8] octeontx2-af: Remove TOS field from MKEX TX
-Date:   Thu, 18 Mar 2021 19:45:44 +0530
-Message-ID: <20210318141549.2622-4-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210318141549.2622-1-hkelam@marvell.com>
-References: <20210318141549.2622-1-hkelam@marvell.com>
+        id S231622AbhCROQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231499AbhCROQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:15 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE7FC061760
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:15 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id u10so4841207lff.1
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=ckpj5klz1A+5QoVk88jbrj3B/Q1ITN5QI5ibc65F/3Q=;
+        b=Dr2ohKVrzk/q4TdAE5HHzBFKNrPaIyEK9VCEW1aW5/N2CXxsFIic2yb7nWDFQJoCIM
+         mu8cfk0t9vIcP+IIWtI1mK9Y02feNZ3y9qbjHMlv+Bx1qD3NYxyqCjB9jDcZ0+8pgqZJ
+         rFCLi4x80EhQEISNdTnnZluchS/SRFg8puNtwUqtXJ0P9yIUDI1pyFQdQjyvShxonPHK
+         PFudz/WumV7w0v0cuNH5UiKbxHjLx2DAS6DhgF2d5/kFWisB3sjZgLHH0+WVAwYRM1MU
+         5wGqrPLjoMnc32lIjmRQMxWjsfvIadENFtyEN1i5SkY5APEUAigSvGqRlXE12etKCQmz
+         Mrdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=ckpj5klz1A+5QoVk88jbrj3B/Q1ITN5QI5ibc65F/3Q=;
+        b=qXGzrfkWvHK4N3wAHqC5pJbofJBoC/Q/RPyqXd+/Y5GPohJMSEi/QO+hOCXb8wu15d
+         zsX43nlhM5YQ7OPgjckm43Fw3xkS+J5XV5ZMsiNIkgvKZysZ06nlEixSc5BM107+bOyz
+         a718MbxGcnlIZmDhotCOEIhyBuL9yFiC68k4kVIwcClnLYnIubWyvo4Uc7C8APJsI6GX
+         rqJayiHbFqvyqIx6qwNQ32eIw4fL7fjtTl8uBcqqCY9Lh5l7e31yV4BWQXMDFmaHegfa
+         RfkD9wInYMGHIo6XI8MiLLs67Ef8d1D3AQi63iugjbHUZJgqsq+foSIFAuCzbPfHlxYs
+         dmiA==
+X-Gm-Message-State: AOAM530Obq1MZYZ9f4ou6lGZtnHGdWHaAKrCwr8eYBXqa/EgpXV5htuz
+        GCBmmfXnvM0UYr+mh5B2MHdvLg==
+X-Google-Smtp-Source: ABdhPJxVIhPgP7fXlLTXJDpGu1OhIIRG3jE/Cut7RF2iPSHPBy17GC9PMVnK0o4YnV/5Y5K+7S+rHw==
+X-Received: by 2002:a19:4850:: with SMTP id v77mr5706486lfa.6.1616076973734;
+        Thu, 18 Mar 2021 07:16:13 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id w26sm237382lfr.186.2021.03.18.07.16.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 07:16:13 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH v2 net-next 2/8] net: dsa: mv88e6xxx: Avoid useless attempts to fast-age LAGs
+Date:   Thu, 18 Mar 2021 15:15:44 +0100
+Message-Id: <20210318141550.646383-3-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210318141550.646383-1-tobias@waldekranz.com>
+References: <20210318141550.646383-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-18_07:2021-03-17,2021-03-18 signatures=0
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+When a port is a part of a LAG, the ATU will create dynamic entries
+belonging to the LAG ID when learning is enabled. So trying to
+fast-age those out using the constituent port will have no
+effect. Unfortunately the hardware does not support move operations on
+LAGs so there is no obvious way to transform the request to target the
+LAG instead.
 
-The MKEX profile describes what packet fields need to be extracted from
-the input packet and how to place those packet fields in the output key
-for MCAM matching.  The MKEX profile can be in a way where higher layer
-packet fields can overwrite lower layer packet fields in output MCAM
-Key.
-Hence MKEX profile is always ensured that there are no overlaps between
-any of the layers. But the commit 42006910b5ea
-("octeontx2-af: cleanup KPU config data") introduced TX TOS field which
-overlaps with DMAC in MCAM key.
-This led to AF driver returning error when TX rule is installed with
-DMAC as match criteria since DMAC gets overwritten and cannot be
-supported. This patch fixes the issue by removing TOS field from MKEX TX
-profile.
+Instead we document this known limitation and at least avoid wasting
+any time on it.
 
-Fixes: 42006910b5ea ("octeontx2-af: cleanup KPU config data")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-index b192692b4fc..5c372d2c24a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-@@ -13499,8 +13499,6 @@ static struct npc_mcam_kex npc_mkex_default = {
- 			[NPC_LT_LC_IP] = {
- 				/* SIP+DIP: 8 bytes, KW2[63:0] */
- 				KEX_LD_CFG(0x07, 0xc, 0x1, 0x0, 0x10),
--				/* TOS: 1 byte, KW1[63:56] */
--				KEX_LD_CFG(0x0, 0x1, 0x1, 0x0, 0xf),
- 			},
- 			/* Layer C: IPv6 */
- 			[NPC_LT_LC_IP6] = {
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index f0a9423af85d..ed38b4431d74 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1479,6 +1479,13 @@ static void mv88e6xxx_port_fast_age(struct dsa_switch *ds, int port)
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+ 
++	if (dsa_to_port(ds, port)->lag_dev)
++		/* Hardware is incapable of fast-aging a LAG through a
++		 * regular ATU move operation. Until we have something
++		 * more fancy in place this is a no-op.
++		 */
++		return;
++
+ 	mv88e6xxx_reg_lock(chip);
+ 	err = mv88e6xxx_g1_atu_remove(chip, 0, port, false);
+ 	mv88e6xxx_reg_unlock(chip);
 -- 
-2.17.1
+2.25.1
 
