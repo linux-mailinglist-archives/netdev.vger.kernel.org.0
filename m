@@ -2,89 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5363F3408ED
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:30:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D515E3408FA
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:35:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231708AbhCRPaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 11:30:25 -0400
-Received: from mga12.intel.com ([192.55.52.136]:35359 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231273AbhCRPaT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 11:30:19 -0400
-IronPort-SDR: kd3TYgwsQy4GC3KaMrRWmgiQb3DGlWoGszDkQfq+KDL5RkWfHeEVP+KY0GXr91ewOMsp3m/uYw
- nAG2PwTuOE3w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9927"; a="168996128"
-X-IronPort-AV: E=Sophos;i="5.81,259,1610438400"; 
-   d="scan'208";a="168996128"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2021 08:30:19 -0700
-IronPort-SDR: riDi3OtB/WbLxQ0MFrtDLRGdBceEwcgs8My3KYGuq/hVx4Dhx+641rzDyN3H63p78g7FWdTYYI
- B+27HzexLISQ==
-X-IronPort-AV: E=Sophos;i="5.81,259,1610438400"; 
-   d="scan'208";a="450518213"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2021 08:30:15 -0700
-Received: by lahna (sSMTP sendmail emulation); Thu, 18 Mar 2021 17:30:12 +0200
-Date:   Thu, 18 Mar 2021 17:30:12 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     linux-usb@vger.kernel.org
-Cc:     Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Isaac Hazan <isaac.hazan@intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH 00/18] thunderbolt: Align with USB4 inter-domain and DROM
- specs
-Message-ID: <20210318153012.GI2542@lahna.fi.intel.com>
-References: <20210304123125.43630-1-mika.westerberg@linux.intel.com>
+        id S231715AbhCRPfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 11:35:19 -0400
+Received: from imap3.hz.codethink.co.uk ([176.9.8.87]:54624 "EHLO
+        imap3.hz.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231785AbhCRPfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 11:35:04 -0400
+Received: from cpc79921-stkp12-2-0-cust288.10-2.cable.virginm.net ([86.16.139.33] helo=[192.168.0.18])
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1lMufp-0001x6-6R; Thu, 18 Mar 2021 15:34:57 +0000
+Subject: Re: [syzbot] BUG: unable to handle kernel access to user memory in
+ sock_ioctl
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>, andrii@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
+References: <00000000000096cdaa05bd32d46f@google.com>
+ <CACT4Y+ZjdOaX_X530p+vPbG4mbtUuFsJ1v-gD24T4DnFUqcudA@mail.gmail.com>
+ <CACT4Y+ZjVS+nOxtEByF5-djuhbCYLSDdZ7V04qJ0edpQR0514A@mail.gmail.com>
+ <CACT4Y+YXifnCtEvLu3ps8JLCK9CBLzEuUAozfNR9v1hsGWspOg@mail.gmail.com>
+ <ed89390a-91e1-320a-fae5-27b7f3a20424@codethink.co.uk>
+ <CACT4Y+a1pQ96UWEB3pAnbxPZ+6jW2tqSzkTMqJ+XSbZsKLHgAw@mail.gmail.com>
+ <bf2e19a3-3e3a-0eb1-ae37-4cc3b1a7af42@codethink.co.uk>
+ <CACT4Y+ZVaxQAnpy_bMGwviZMskD-fy1KgY7pbrjcCRXr24eu2Q@mail.gmail.com>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+Message-ID: <8372d8e5-af6e-c851-a0ac-733e269102ce@codethink.co.uk>
+Date:   Thu, 18 Mar 2021 15:34:55 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210304123125.43630-1-mika.westerberg@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CACT4Y+ZVaxQAnpy_bMGwviZMskD-fy1KgY7pbrjcCRXr24eu2Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 04, 2021 at 03:31:07PM +0300, Mika Westerberg wrote:
-> Hi all,
+On 18/03/2021 15:18, Dmitry Vyukov wrote:
+> On Mon, Mar 15, 2021 at 3:41 PM Ben Dooks <ben.dooks@codethink.co.uk> wrote:
+>>
+>> On 15/03/2021 11:52, Dmitry Vyukov wrote:
+>>> On Mon, Mar 15, 2021 at 12:30 PM Ben Dooks <ben.dooks@codethink.co.uk> wrote:
+>>>>
+>>>> On 14/03/2021 11:03, Dmitry Vyukov wrote:
+>>>>> On Sun, Mar 14, 2021 at 11:01 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+>>>>>>> On Wed, Mar 10, 2021 at 7:28 PM syzbot
+>>>>>>> <syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com> wrote:
+>>>>>>>>
+>>>>>>>> Hello,
+>>>>>>>>
+>>>>>>>> syzbot found the following issue on:
+>>>>>>>>
+>>>>>>>> HEAD commit:    0d7588ab riscv: process: Fix no prototype for arch_dup_tas..
+>>>>>>>> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+>>>>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=122c343ad00000
+>>>>>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=e3c595255fb2d136
+>>>>>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=c23c5421600e9b454849
+>>>>>>>> userspace arch: riscv64
+>>>>>>>>
+>>>>>>>> Unfortunately, I don't have any reproducer for this issue yet.
+>>>>>>>>
+>>>>>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>>>>>>> Reported-by: syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com
+>>>>>>>
+>>>>>>> +riscv maintainers
+>>>>>>>
+>>>>>>> Another case of put_user crashing.
+>>>>>>
+>>>>>> There are 58 crashes in sock_ioctl already. Somehow there is a very
+>>>>>> significant skew towards crashing with this "user memory without
+>>>>>> uaccess routines" in schedule_tail and sock_ioctl of all places in the
+>>>>>> kernel that use put_user... This looks very strange... Any ideas
+>>>>>> what's special about these 2 locations?
+>>>>>
+>>>>> I could imagine if such a crash happens after a previous stack
+>>>>> overflow and now task data structures are corrupted. But f_getown does
+>>>>> not look like a function that consumes way more than other kernel
+>>>>> syscalls...
+>>>>
+>>>> The last crash I looked at suggested somehow put_user got re-entered
+>>>> with the user protection turned back on. Either there is a path through
+>>>> one of the kernel handlers where this happens or there's something
+>>>> weird going on with qemu.
+>>>
+>>> Is there any kind of tracking/reporting that would help to localize
+>>> it? I could re-reproduce with that code.
+>>
+>> I'm not sure. I will have a go at debugging on qemu today just to make
+>> sure I can reproduce here before I have to go into the office and fix
+>> my Icicle board for real hardware tests.
+>>
+>> I think my first plan post reproduction is to stuff some trace points
+>> into the fault handlers to see if we can get a idea of faults being
+>> processed, etc.
+>>
+>> Maybe also add a check in the fault handler to see if the fault was
+>> in a fixable region and post an error if that happens / maybe retry
+>> the instruction with the relevant SR_SUM flag set.
+>>
+>> Hopefully tomorrow I can get a run on real hardware to confirm.
+>> Would have been better if the Unmatched board I ordered last year
+>> would turn up.
 > 
-> The latest USB4 spec [1] also includes inter-domain (peer-to-peer, XDomain)
-> and DROM (per-device ROM) specs. There are sligth differences between what
-> the driver is doing now and what the spec say so this series tries to align
-> the driver(s) with that. We also improve the "service" stack so that it is
-> possible to run multiple DMA tunnels over a single XDomain connection, and
-> update the two existing service drivers accordingly.
+> In retrospect it's obvious what's common between these 2 locations:
+> they both call a function inside of put_user.
 > 
-> We also decrease the control channel timeout when software based connection
-> manager is used.
-> 
-> The USB4 DROM spec adds a new product descriptor that includes the device
-> and IDs instead of the generic entries in the Thunderbotl 1-3 DROMs. This
-> series updates the driver to parse this descriptor too.
-> 
-> [1] https://www.usb.org/document-library/usb4tm-specification
-> 
-> Mika Westerberg (18):
->   thunderbolt: Disable retry logic for intra-domain control packets
->   thunderbolt: Do not pass timeout for tb_cfg_reset()
->   thunderbolt: Decrease control channel timeout for software connection manager
->   Documentation / thunderbolt: Drop speed/lanes entries for XDomain
->   thunderbolt: Add more logging to XDomain connections
->   thunderbolt: Do not re-establish XDomain DMA paths automatically
->   thunderbolt: Use pseudo-random number as initial property block generation
->   thunderbolt: Align XDomain protocol timeouts with the spec
->   thunderbolt: Add tb_property_copy_dir()
->   thunderbolt: Add support for maxhopid XDomain property
->   thunderbolt: Use dedicated flow control for DMA tunnels
->   thunderbolt: Drop unused tb_port_set_initial_credits()
->   thunderbolt: Allow multiple DMA tunnels over a single XDomain connection
->   net: thunderbolt: Align the driver to the USB4 networking spec
->   thunderbolt: Add KUnit tests for XDomain properties
->   thunderbolt: Add KUnit tests for DMA tunnels
->   thunderbolt: Check quirks in tb_switch_add()
->   thunderbolt: Add support for USB4 DROM
+> #syz dup:
+> BUG: unable to handle kernel access to user memory in schedule_tail
 
-All applied to thunderbolt.git/next.
+I think so. I've posted a patch that you can test, which should force
+the flags to be saved over switch_to(). I think the sanitisers are just
+making it easier to see.
+
+There is a seperate issue of passing complicated things to put_user()
+as for security, the function may be executed with the user-space
+protections turned off. I plan to raise this on the kernel list later
+once I've done some more testing.
+
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
+
+https://www.codethink.co.uk/privacy.html
