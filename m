@@ -2,88 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 248FD33FCCF
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 02:50:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF1533FCD7
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 02:51:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230433AbhCRBtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 21:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbhCRBs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 21:48:28 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141C0C06174A;
-        Wed, 17 Mar 2021 18:48:28 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id ce10so1390378ejb.6;
-        Wed, 17 Mar 2021 18:48:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t3RAT6WWF12iLuNKN5O9izN5JXYqyFOKmhP4w/1gIvs=;
-        b=KAf5vCHxZ+LGWnvAF0wNSlJSJS8M05UAhK2M4K7gbWquHsJ8Q5m/RoBDKwYeTjuOgw
-         zYZFAUYM7OLhlMNlLKR4LPUoH13QTLqwU8qaLRQxyw5xN+Hk9vOr/u6Pxbcg/3FWy13J
-         m6/WimxWPc4CuLF8QCUAH4qgsJ8glzAuj9UkSaalqmqzCzSL1IFK91vI8XpjUUn9QOQl
-         4ceTlXja6TCpdpPT6bfeU18Ks4LiYlhf4KOkfQdGJHmzJVCz2UXVs6hGm+bLKri8rmxn
-         2z7GegXcIVwc+sdil+49ge+6mo62ai+42Wx/sUVkM0P+IEf2zYZ0a7cvhvP+zeONYJV/
-         CUYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t3RAT6WWF12iLuNKN5O9izN5JXYqyFOKmhP4w/1gIvs=;
-        b=L3HVTc+SWpGd4fW1DpboKiBO68uziySI7m8r6dBrLm7Im2YMBbDF4cJakBXCfz2vxq
-         387N+rYOaJqsaCwVXnMmP0i2kkGigAKO/ZqCdH5RaZujkKVfz6JZhc35FAFe+5qtzyrr
-         qNxgYP12xN4xigIJxdqk8SpUq8eMLwZnl6MwbnHAVQ2PR/h64ulxoRDJC7CIB99QilSf
-         83zANsgztl7O+GEhhbVjqkn+pHqfWnV4+KwzVs7Fqrg4RHQxu2ATHx7ixntwbfxH3+M0
-         t5uyz3o82H+0FShLD6z9lxh3Tp2HgT+kt3U2ovkWUCJ+esWAPuqhmhbb4xu6/Rp+TGvD
-         5Aqg==
-X-Gm-Message-State: AOAM530Z/sPMue4V959vTTcIIQiujAfDjVhWkM32U2q4q31r45P9op9Q
-        gNcpzzyOPYZ38thOV+1NBoeTFnGRY2oU3FLxaQ0=
-X-Google-Smtp-Source: ABdhPJzVg6tWqJuhA3G7pRj27RasPQpe0z/NFJ9MvcD9uD4dzpp/dEka8azvqQLCdMOV8IFvzuyEZDKWqL5sEydAVUI=
-X-Received: by 2002:a17:907:162b:: with SMTP id hb43mr39426369ejc.41.1616032106913;
- Wed, 17 Mar 2021 18:48:26 -0700 (PDT)
+        id S230516AbhCRBvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 21:51:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33722 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230498AbhCRBup (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 21:50:45 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lMho9-00BZSm-C3; Thu, 18 Mar 2021 02:50:41 +0100
+Date:   Thu, 18 Mar 2021 02:50:41 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 5/5] net: dsa: mv88e6xxx: Offload bridge
+ broadcast flooding flag
+Message-ID: <YFKx8faByAd2cUiH@lunn.ch>
+References: <20210315211400.2805330-1-tobias@waldekranz.com>
+ <20210315211400.2805330-6-tobias@waldekranz.com>
+ <20210316093948.zbhouadshgedktcb@skbuf>
+ <87pmzynib9.fsf@waldekranz.com>
 MIME-Version: 1.0
-References: <20210310015135.293794-1-dong.menglong@zte.com.cn>
- <20210316224820.GA225411@roeck-us.net> <CAHp75VdE3fkCjb53vBso5uJX9aEFtAOAdh5NVOSbK0YR64+jOg@mail.gmail.com>
- <20210317013758.GA134033@roeck-us.net> <a4dbb6f5b86649e2a46878eb00853f44@AcuMS.aculab.com>
-In-Reply-To: <a4dbb6f5b86649e2a46878eb00853f44@AcuMS.aculab.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Thu, 18 Mar 2021 09:48:14 +0800
-Message-ID: <CADxym3bwqs9e2WKX8uOTzyYKnyTgmW4FT+N2m5hydfBJV3fqXQ@mail.gmail.com>
-Subject: Re: [PATCH v4 RESEND net-next] net: socket: use BIT() for MSG_*
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87pmzynib9.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 17, 2021 at 11:12 PM David Laight <David.Laight@aculab.com> wrote:
->
-...
->
-> Isn't MSG_CMSG_COMPAT an internal value?
-> Could it be changed to 1u << 30 instead of 1u << 31 ?
-> Then it wouldn't matter if the high bit of flags got replicated.
->
+On Wed, Mar 17, 2021 at 12:14:18PM +0100, Tobias Waldekranz wrote:
+> On Tue, Mar 16, 2021 at 11:39, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > On Mon, Mar 15, 2021 at 10:14:00PM +0100, Tobias Waldekranz wrote:
+> >> These switches have two modes of classifying broadcast:
+> >> 
+> >> 1. Broadcast is multicast.
+> >> 2. Broadcast is its own unique thing that is always flooded
+> >>    everywhere.
+> >> 
+> >> This driver uses the first option, making sure to load the broadcast
+> >> address into all active databases. Because of this, we can support
+> >> per-port broadcast flooding by (1) making sure to only set the subset
+> >> of ports that have it enabled whenever joining a new bridge or VLAN,
+> >> and (2) by updating all active databases whenever the setting is
+> >> changed on a port.
+> >> 
+> >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> >> ---
+> >>  drivers/net/dsa/mv88e6xxx/chip.c | 68 +++++++++++++++++++++++++++++++-
+> >>  1 file changed, 67 insertions(+), 1 deletion(-)
+> >> 
+> >> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> >> index 48e65f22641e..e6987c501fb7 100644
+> >> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> >> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> >> @@ -1950,6 +1950,18 @@ static int mv88e6xxx_broadcast_setup(struct mv88e6xxx_chip *chip, u16 vid)
+> >>  	int err;
+> >>  
+> >>  	for (port = 0; port < mv88e6xxx_num_ports(chip); port++) {
+> >> +		struct dsa_port *dp = dsa_to_port(chip->ds, port);
+> >> +
+> >> +		if (dsa_is_unused_port(chip->ds, port))
+> >> +			continue;
+> >> +
+> >> +		if (dsa_is_user_port(chip->ds, port) && dp->bridge_dev &&
+> >> +		    !br_port_flag_is_set(dp->slave, BR_BCAST_FLOOD))
+> >
+> > What if dp->slave is not the bridge port, but a LAG? br_port_flag_is_set
+> > will return false.
+> 
+> Good point. I see two ways forward:
+> 
+> - My first idea was to cache a vector per switch that would act as the
+>   template when creating a new entry. This avoids having the driver
+>   layer knowing about stacked netdevs etc. But I think that Andrew is
+>   generally opposed to caching?
 
-Yeah, MSG_CMSG_COMPAT is an internal value, and maybe
-it's why it is defined as 1<< 31, to make it look different.
+Hi Tobias
 
-I think it's a good idea to change it to other value which is
-not used, such as 1u<<21.
+What i'm mostly against is dynamic memory allocation. If you can
+allocate the space for this vector during probe, i have no problems
+with that.
 
-I will test it and resend this patch later, thanks~
-
-With Regards,
-Menglong Dong
+     Andrew
