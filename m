@@ -2,221 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6CD3407A0
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 216EA3407A5
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231653AbhCROQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231527AbhCROQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:16 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53C3C06174A
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:15 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id b83so4842628lfd.11
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=btW31yi6BItpxQ7m00h0+TZYQwweUqbbSqt+hYCmyIE=;
-        b=eJRQa6Cnu+zBrcLRxjykJugz3MYi/6mD39OlykAs2KSrEIvfKkVAKXrNTXj05mmPkl
-         I/qxgSjUt8p3cMR901ilDvsJMsX2/j7x3T7Ae5pYOh81sJTj7hv4pacyWp5UndxwPiJV
-         RGiKX8dIq3WmNX6QHtEpNjOGcf9y0awWO5sEslJ6Cd2ekSIt0a3z2zE/csxBc7bvIKHn
-         iGOb34KPOm7wTXvz/ivyrncgI6mKzlqJtiee0MqbWE39C/sqsX1jz9HG6zOuMXcKtI6I
-         gj6g44xZGyXjv5JjBccAz0P5oX5YeGfBskphH5tkLfP8dk7XgAhl1z8jCI8JVcPAHH8h
-         +AXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=btW31yi6BItpxQ7m00h0+TZYQwweUqbbSqt+hYCmyIE=;
-        b=jPGrY5+4BnBHXyYmCoukgVoQ/JgKb+JMIRR4RXSgoEqeG6YWpDgmkQrVdWXya6XhDx
-         3Rt6BYJ4dWOO0dEkXqUydI4fKRIy2zymgXujdNmdEPIZUtka+Pu87Ax8SfYiTh7in6Bf
-         J0j+6aDviT4fdqaH/iP9Mds71DENZt+Ah+E0oUf+VEaNHCfXju9DjGB+JU50/NEDVRGv
-         JVrJnmuv45bjP4EwtbSiEF/kRSoBFeOSvXo9IM5E5aqMO6YHeQgbXwTidsooIF/eP0iT
-         h4XHWrg8jtrinn3p7gdmpP3zgc21sJ1R7rgmogLyDkgLdHyadSWVUSyXBR0qMd0EDBkR
-         jxZw==
-X-Gm-Message-State: AOAM53180tE8I7HOJm68dcT6FFXg7VWS6LyC0mZyzvUOAuiMKNBmDDbT
-        wv/0MOmrbhkXGG4dPIPgMzniOw==
-X-Google-Smtp-Source: ABdhPJw0EsVcE1XGq3cEWR7QqezY2Y6bwwxPQohDakRqu+74tDK56i3aVgW+Ho6zAKIkmDu8Km2y1Q==
-X-Received: by 2002:ac2:5052:: with SMTP id a18mr5324091lfm.55.1616076974359;
-        Thu, 18 Mar 2021 07:16:14 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id w26sm237382lfr.186.2021.03.18.07.16.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 07:16:14 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH v2 net-next 3/8] net: dsa: mv88e6xxx: Provide generic VTU iterator
-Date:   Thu, 18 Mar 2021 15:15:45 +0100
-Message-Id: <20210318141550.646383-4-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210318141550.646383-1-tobias@waldekranz.com>
-References: <20210318141550.646383-1-tobias@waldekranz.com>
+        id S231685AbhCROQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:16:44 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:33240 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231553AbhCROQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:17 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IEEX2O027702;
+        Thu, 18 Mar 2021 07:16:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=K05IV0kSuRw7P0MJtxO9KntzMNK9aI9S5uDbGoNj2Hk=;
+ b=TItg7rpTNl9SVo3MLjCC77JfplZxEIivqSoA1MSdFcFVj8OQD6Jzryr5Ip2OTaXZlrUS
+ eXIyRUMQxknBxvAYaN6L5ch6C8/Cc840U0/N/Aeot4fXSUyfsdifilzX+QUq6q92kZc1
+ gk9Rqy6dOUQXNau53iPjksX8APbHm5DLyrwsLF40CEo6Uhos44j828sxlUfJQxI5wQCP
+ mp3EQhtkmfMqH+eWKBnb468omEUgVqD6+XdM38wLqMn1b+P+tI8eQO2QKRbnEGPiTTkX
+ V4M35rvNh879vNo5amaAyZ0gpiYtGWqThAt+Adeui9PpSnYj+NKEN2IglI+KHf+AWzVq 5w== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 37c5bf0q6h-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 18 Mar 2021 07:16:12 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
+ 2021 07:16:09 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 18 Mar 2021 07:16:09 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id A05EA3F7043;
+        Thu, 18 Mar 2021 07:16:05 -0700 (PDT)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>,
+        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
+        <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
+        <hkelam@marvell.com>
+Subject: [net PATCH v2 4/8] octeontx2-af: Return correct CGX RX fifo size
+Date:   Thu, 18 Mar 2021 19:45:45 +0530
+Message-ID: <20210318141549.2622-5-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210318141549.2622-1-hkelam@marvell.com>
+References: <20210318141549.2622-1-hkelam@marvell.com>
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-18_07:2021-03-17,2021-03-18 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the intricacies of correctly iterating over the VTU to a common
-implementation.
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+CGX receive buffer size is a constant value and
+cannot be read from CGX0 block always since
+CGX0 may not enabled everytime. Hence return CGX
+receive buffer size from first enabled CGX block
+instead of CGX0.
+
+Fixes: 6e54e1c5399a ("octeontx2-af: cn10K: MTU configuration")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 100 ++++++++++++++++++++-----------
- 1 file changed, 64 insertions(+), 36 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/rvu.h    |  1 +
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c    | 18 ++++++++++++++++--
+ .../marvell/octeontx2/af/rvu_debugfs.c         |  9 +++++----
+ 3 files changed, 22 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index ed38b4431d74..0a4e467179c9 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1511,6 +1511,37 @@ static int mv88e6xxx_vtu_getnext(struct mv88e6xxx_chip *chip,
- 	return chip->info->ops->vtu_getnext(chip, entry);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index fa6e46e36ae..76f399229dd 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -678,6 +678,7 @@ void npc_read_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ 			 u8 *intf, u8 *ena);
+ bool is_mac_feature_supported(struct rvu *rvu, int pf, int feature);
+ u32  rvu_cgx_get_fifolen(struct rvu *rvu);
++void *rvu_first_cgx_pdata(struct rvu *rvu);
+ 
+ /* CPT APIs */
+ int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index e668e482383..6e2bf4fcd29 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -89,6 +89,21 @@ void *rvu_cgx_pdata(u8 cgx_id, struct rvu *rvu)
+ 	return rvu->cgx_idmap[cgx_id];
  }
  
-+static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+			      int (*cb)(struct mv88e6xxx_chip *chip,
-+					const struct mv88e6xxx_vtu_entry *entry,
-+					void *priv),
-+			      void *priv)
++/* Return first enabled CGX instance if none are enabled then return NULL */
++void *rvu_first_cgx_pdata(struct rvu *rvu)
 +{
-+	struct mv88e6xxx_vtu_entry entry = {
-+		.vid = mv88e6xxx_max_vid(chip),
-+		.valid = false,
-+	};
-+	int err;
++	int first_enabled_cgx = 0;
++	void *cgxd = NULL;
 +
-+	if (!chip->info->ops->vtu_getnext)
-+		return -EOPNOTSUPP;
-+
-+	do {
-+		err = chip->info->ops->vtu_getnext(chip, &entry);
-+		if (err)
-+			return err;
-+
-+		if (!entry.valid)
++	for (; first_enabled_cgx < rvu->cgx_cnt_max; first_enabled_cgx++) {
++		cgxd = rvu_cgx_pdata(first_enabled_cgx, rvu);
++		if (cgxd)
 +			break;
++	}
 +
-+		err = cb(chip, &entry, priv);
-+		if (err)
-+			return err;
-+	} while (entry.vid < mv88e6xxx_max_vid(chip));
-+
-+	return 0;
++	return cgxd;
 +}
 +
- static int mv88e6xxx_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 				   struct mv88e6xxx_vtu_entry *entry)
+ /* Based on P2X connectivity find mapped NIX block for a PF */
+ static void rvu_map_cgx_nix_block(struct rvu *rvu, int pf,
+ 				  int cgx_id, int lmac_id)
+@@ -711,10 +726,9 @@ int rvu_mbox_handler_cgx_features_get(struct rvu *rvu,
+ u32 rvu_cgx_get_fifolen(struct rvu *rvu)
  {
-@@ -1520,9 +1551,18 @@ static int mv88e6xxx_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 	return chip->info->ops->vtu_loadpurge(chip, entry);
- }
+ 	struct mac_ops *mac_ops;
+-	int rvu_def_cgx_id = 0;
+ 	u32 fifo_len;
  
-+static int mv88e6xxx_fid_map_vlan(struct mv88e6xxx_chip *chip,
-+				  const struct mv88e6xxx_vtu_entry *entry,
-+				  void *_fid_bitmap)
-+{
-+	unsigned long *fid_bitmap = _fid_bitmap;
-+
-+	set_bit(entry->fid, fid_bitmap);
-+	return 0;
-+}
-+
- int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *fid_bitmap)
+-	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
++	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
+ 	fifo_len = mac_ops ? mac_ops->fifo_len : 0;
+ 
+ 	return fifo_len;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index dc946953af0..b4c53b19f53 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -331,7 +331,6 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
+ 	struct rvu *rvu = filp->private;
+ 	struct pci_dev *pdev = NULL;
+ 	struct mac_ops *mac_ops;
+-	int rvu_def_cgx_id = 0;
+ 	char cgx[10], lmac[10];
+ 	struct rvu_pfvf *pfvf;
+ 	int pf, domain, blkid;
+@@ -339,7 +338,10 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
+ 	u16 pcifunc;
+ 
+ 	domain = 2;
+-	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
++	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
++	/* There can be no CGX devices at all */
++	if (!mac_ops)
++		return 0;
+ 	seq_printf(filp, "PCI dev\t\tRVU PF Func\tNIX block\t%s\tLMAC\n",
+ 		   mac_ops->name);
+ 	for (pf = 0; pf < rvu->hw->total_pfs; pf++) {
+@@ -1830,7 +1832,6 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
  {
--	struct mv88e6xxx_vtu_entry vlan;
- 	int i, err;
- 	u16 fid;
+ 	struct mac_ops *mac_ops;
+ 	unsigned long lmac_bmap;
+-	int rvu_def_cgx_id = 0;
+ 	int i, lmac_id;
+ 	char dname[20];
+ 	void *cgx;
+@@ -1838,7 +1839,7 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
+ 	if (!cgx_get_cgxcnt_max())
+ 		return;
  
-@@ -1538,21 +1578,7 @@ int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *fid_bitmap)
- 	}
+-	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
++	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
+ 	if (!mac_ops)
+ 		return;
  
- 	/* Set every FID bit used by the VLAN entries */
--	vlan.vid = mv88e6xxx_max_vid(chip);
--	vlan.valid = false;
--
--	do {
--		err = mv88e6xxx_vtu_getnext(chip, &vlan);
--		if (err)
--			return err;
--
--		if (!vlan.valid)
--			break;
--
--		set_bit(vlan.fid, fid_bitmap);
--	} while (vlan.vid < mv88e6xxx_max_vid(chip));
--
--	return 0;
-+	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_fid_map_vlan, fid_bitmap);
- }
- 
- static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
-@@ -2198,10 +2224,30 @@ static int mv88e6xxx_port_db_dump_fid(struct mv88e6xxx_chip *chip,
- 	return err;
- }
- 
-+struct mv88e6xxx_port_db_dump_vlan_ctx {
-+	int port;
-+	dsa_fdb_dump_cb_t *cb;
-+	void *data;
-+};
-+
-+static int mv88e6xxx_port_db_dump_vlan(struct mv88e6xxx_chip *chip,
-+				       const struct mv88e6xxx_vtu_entry *entry,
-+				       void *_data)
-+{
-+	struct mv88e6xxx_port_db_dump_vlan_ctx *ctx = _data;
-+
-+	return mv88e6xxx_port_db_dump_fid(chip, entry->fid, entry->vid,
-+					  ctx->port, ctx->cb, ctx->data);
-+}
-+
- static int mv88e6xxx_port_db_dump(struct mv88e6xxx_chip *chip, int port,
- 				  dsa_fdb_dump_cb_t *cb, void *data)
- {
--	struct mv88e6xxx_vtu_entry vlan;
-+	struct mv88e6xxx_port_db_dump_vlan_ctx ctx = {
-+		.port = port,
-+		.cb = cb,
-+		.data = data,
-+	};
- 	u16 fid;
- 	int err;
- 
-@@ -2214,25 +2260,7 @@ static int mv88e6xxx_port_db_dump(struct mv88e6xxx_chip *chip, int port,
- 	if (err)
- 		return err;
- 
--	/* Dump VLANs' Filtering Information Databases */
--	vlan.vid = mv88e6xxx_max_vid(chip);
--	vlan.valid = false;
--
--	do {
--		err = mv88e6xxx_vtu_getnext(chip, &vlan);
--		if (err)
--			return err;
--
--		if (!vlan.valid)
--			break;
--
--		err = mv88e6xxx_port_db_dump_fid(chip, vlan.fid, vlan.vid, port,
--						 cb, data);
--		if (err)
--			return err;
--	} while (vlan.vid < mv88e6xxx_max_vid(chip));
--
--	return err;
-+	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_port_db_dump_vlan, &ctx);
- }
- 
- static int mv88e6xxx_port_fdb_dump(struct dsa_switch *ds, int port,
 -- 
-2.25.1
+2.17.1
 
