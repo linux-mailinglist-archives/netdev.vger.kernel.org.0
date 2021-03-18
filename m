@@ -2,106 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AC6034088D
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:16:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4B634089A
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:17:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbhCRPQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 11:16:20 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34432 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229960AbhCRPQN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 11:16:13 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 651C9AD86;
-        Thu, 18 Mar 2021 15:16:12 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id E39E060753; Thu, 18 Mar 2021 16:16:11 +0100 (CET)
-Date:   Thu, 18 Mar 2021 16:16:11 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Moshe Shemesh <moshe@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Adrian Pop <pop.adrian61@gmail.com>,
-        Don Bollinger <don@thebollingers.org>, netdev@vger.kernel.org,
-        Vladyslav Tarasiuk <vladyslavt@nvidia.com>
-Subject: Re: [RFC PATCH V3 net-next 1/5] ethtool: Allow network drivers to
- dump arbitrary EEPROM data
-Message-ID: <20210318151611.hlfafz6hpbozof5v@lion.mk-sys.cz>
-References: <1615828363-464-1-git-send-email-moshe@nvidia.com>
- <1615828363-464-2-git-send-email-moshe@nvidia.com>
- <YFNPhvelhxg4+5Cl@lunn.ch>
+        id S231795AbhCRPR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 11:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231790AbhCRPRQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 11:17:16 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A009CC06174A;
+        Thu, 18 Mar 2021 08:17:15 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id b7so4555506ejv.1;
+        Thu, 18 Mar 2021 08:17:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6I4fK3KIh7nvVeDlxIvnlzTbH7aTWaFZ8rA7KEHulZM=;
+        b=Hm/hDDK3WOdEnJMWhOW9dFY7wxB13DGJ31r5esJ259MdDXGuOZt793vesPgJj4JYkl
+         YaOuXj7qes7nYKz6miLhz9xEEJ0US4y7gYiPSKp9Nv2lm3qRzmee3XpZFhOAndl7A5fF
+         EtOMyIZaA/K+hC1K8QRPfcazt2qrkNNw64uJD2QAg8sz04J7tyHuxWqyjfFXAp728iay
+         egMQig/Hy1iq8vR9zJ7qNuYCMjrfGFHcbhitCjswfw6d5IKX3nc8eqc+y7Xd4ESMljiK
+         6idzOxUxirdUB6DyFeNxE/EvQQwuYFFAwqio4pO95dbCotGG1yHF+yHZI44IC6UNsW/m
+         1hzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6I4fK3KIh7nvVeDlxIvnlzTbH7aTWaFZ8rA7KEHulZM=;
+        b=Wy2cC2oQoyvSx798SqQiACgpcfVSBZM/2z0o4rvO7BUrccirtc12JbGQzJe0JTW+W0
+         XZ/BISyAzC35BiP0dEQ3zS7mg13kgCDAmIeNy0PKTN/mKeyiEbHtVObm8F6hKWPp3xAn
+         xYqFKgDRnUsmNq6z5L8+MZWSoVHBy2ZdrQUbEBtRnCdjUIsthZJWMbZdqx0S9QSfqe6u
+         yg9XMTgV87UmWrR2+t62Cau4lkhxyLTA6JSWvs4JS4+ILFwUkIEDawR9RzXvA2maEnpg
+         Ytpgey0cVIi+YY5ozPJbMdDP6ivkG1sC84Zs6oM5NJCfml3Cu8bRQyT9Fbsg6A6Vd7o6
+         8PJg==
+X-Gm-Message-State: AOAM530/LS0j2uwx9TiggsP1aHZ8OfM3/7JzXwFu4ZLhn6h2o1EP20uv
+        b7tZ9wYx68yc9mhvhyjUR3I=
+X-Google-Smtp-Source: ABdhPJwgYWfjUVbf8fYnHv4Mh5jl1s7+5Gv4cxu44SiZ73UwrDTFNCj76OSuMY/6xE9A/j/xL272qA==
+X-Received: by 2002:a17:906:c051:: with SMTP id bm17mr40738915ejb.21.1616080634298;
+        Thu, 18 Mar 2021 08:17:14 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id l18sm2095560ejk.86.2021.03.18.08.17.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 08:17:13 -0700 (PDT)
+Date:   Thu, 18 Mar 2021 17:17:12 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: phy: at803x: remove at803x_aneg_done()
+Message-ID: <20210318151712.7hmdaufxylyl33em@skbuf>
+References: <20210318142356.30702-1-michael@walle.cc>
+ <411c3508-978e-4562-f1e9-33ca7e98a752@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YFNPhvelhxg4+5Cl@lunn.ch>
+In-Reply-To: <411c3508-978e-4562-f1e9-33ca7e98a752@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 18, 2021 at 02:03:02PM +0100, Andrew Lunn wrote:
-> On Mon, Mar 15, 2021 at 07:12:39PM +0200, Moshe Shemesh wrote:
-> >  
-> > +EEPROM_DATA
-> > +===========
-> > +
-> > +Fetch module EEPROM data dump.
-> > +
-> > +Request contents:
-> > +
-> > +  =====================================  ======  ==========================
-> > +  ``ETHTOOL_A_EEPROM_DATA_HEADER``       nested  request header
-> > +  ``ETHTOOL_A_EEPROM_DATA_OFFSET``       u32     offset within a page
-> > +  ``ETHTOOL_A_EEPROM_DATA_LENGTH``       u32     amount of bytes to read
+On Thu, Mar 18, 2021 at 03:54:00PM +0100, Heiner Kallweit wrote:
+> On 18.03.2021 15:23, Michael Walle wrote:
+> > at803x_aneg_done() is pretty much dead code since the patch series
+> > "net: phy: improve and simplify phylib state machine" [1]. Remove it.
+> > 
 > 
-> I wonder if offset and length should be u8. At most, we should only be
-> returning a 1/2 page, so 128 bytes. We don't need a u32.
+> Well, it's not dead, it's resting .. There are few places where
+> phy_aneg_done() is used. So you would need to explain:
+> - why these users can't be used with this PHY driver
+> - or why the aneg_done callback isn't needed here and the
+>   genphy_aneg_done() fallback is sufficient
 
-There is no actual gain using NLA_U8 due to padding. Out of the
-interfaces used here, kernel-userspace API is the least flexible so
-I would generally prefer NLA_U32, except for bools or enumerated values
-where it's absolutely obvious the number of possible values cannot grow
-too much. In this case, I can't really say it's impossible we could have
-devices with bigger pages in something like 20 years.
+The piece of code that Michael is removing keeps the aneg reporting as
+"not done" even when the copper-side link was reported as up, but the
+in-band autoneg has not finished.
 
-> >  Request translation
-> >  ===================
-> >  
-> > @@ -1357,8 +1387,8 @@ are netlink only.
-> >    ``ETHTOOL_GET_DUMP_FLAG``           n/a
-> >    ``ETHTOOL_GET_DUMP_DATA``           n/a
-> >    ``ETHTOOL_GET_TS_INFO``             ``ETHTOOL_MSG_TSINFO_GET``
-> > -  ``ETHTOOL_GMODULEINFO``             n/a
-> > -  ``ETHTOOL_GMODULEEEPROM``           n/a
-> > +  ``ETHTOOL_GMODULEINFO``             ``ETHTOOL_MSG_MODULE_EEPROM_GET``
-> > +  ``ETHTOOL_GMODULEEEPROM``           ``ETHTOOL_MSG_MODULE_EEPROM_GET``
-> >    ``ETHTOOL_GEEE``                    ``ETHTOOL_MSG_EEE_GET``
-> >    ``ETHTOOL_SEEE``                    ``ETHTOOL_MSG_EEE_SET``
-> >    ``ETHTOOL_GRSSH``                   n/a
-> 
-> We should check with Michal about this. It is not a direct replacement
-> of the old IOCTL API, it is new API. He may want it documented
-> differently.
+That was the _intended_ behavior when that code was introduced, and you
+have said about it:
+https://www.spinics.net/lists/stable/msg389193.html
 
-This table is meant to give a hint in the sense "for what you used
-ioctl command in left column, use now netlink request in the right".
-So IMHO it's appropriate. Perhaps it would deserve a comment explaining
-this.
+| That's not nice from the PHY:
+| It signals "link up", and if the system asks the PHY for link details,
+| then it sheepishly says "well, link is *almost* up".
 
-> > +	request->offset = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
-> > +	request->length = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
-> > +	if (tb[ETHTOOL_A_EEPROM_DATA_PAGE] &&
-> > +	    dev->ethtool_ops->get_module_eeprom_data_by_page &&
-> > +	    request->offset + request->length > ETH_MODULE_EEPROM_PAGE_LEN)
-> > +		return -EINVAL;
-> 
-> You need to watch out for overflows here. 0xfffffff0 + 0x20 is less
-> than ETH_MODULE_EEPROM_PAGE_LEN when it wraps around, but will cause
-> bad things to happen.
+If the specification of phy_aneg_done behavior does not include in-band
+autoneg (and it doesn't), then this piece of code does not belong here.
 
-BtW, the ioctl code also suffers from this problem and we recently had
-a report from customer (IIRC the effect was ethtool trying to allocate
-~4GB of memory), upstream fix should follow soon.
-
-Michal
+The fact that we can no longer trigger this code from phylib is yet
+another reason why it fails at its intended (and wrong) purpose and
+should be removed.
