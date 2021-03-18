@@ -2,194 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D8333FFF6
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 07:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8691B340011
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 08:11:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229886AbhCRGyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 02:54:46 -0400
-Received: from mga09.intel.com ([134.134.136.24]:63516 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229512AbhCRGyd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 02:54:33 -0400
-IronPort-SDR: fcEeFtii8eFbjfI1eMrmyDHkCBzAvKwDjH/dVTIzF9c9fsgyCeNKflyepABRLsM28sMJe58jrE
- gVGXuU8ICFwA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9926"; a="189707428"
-X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; 
-   d="scan'208";a="189707428"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 23:54:32 -0700
-IronPort-SDR: 5Jbm6ONFtjMCbM9PZ0EbFKJF/F1HC5mIIWNl7ljmnZyG2x8KdHHWZnCDgPfUHVpaNncdS+QTnA
- herS28IIW/zw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; 
-   d="scan'208";a="450367631"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga001.jf.intel.com with ESMTP; 17 Mar 2021 23:54:32 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 17 Mar 2021 23:54:32 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 17 Mar 2021 23:54:31 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
- via Frontend Transport; Wed, 17 Mar 2021 23:54:31 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (104.47.38.50) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2106.2; Wed, 17 Mar 2021 23:54:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nA3jT4o02LnEfEkbp/RMAzgN4MvpawV/ekYqTCSU9nxmMtg6MZTbNoWCGArm//IWFpdBeRtv2a9Cmi6AKqKAB5mnAopMmTLex4YVxtlOubpE31EopAnvpDaNLbGVbsBrxKD9lkoO9ReyAN+6vYopZjd3jAUbyisLukp1fVKdbvOcEAmKjANxZU0J9EljRZ3oN+04SERsjufRVGowbSP4rGbDmQpm1nWNcaOOKq/BL80m9rfPvQ2QD+bSdI9zcacGiybkNud7q/DIpXaLzRkra+IExsnRmZnbeaSBLi/yikLWpr3De28sKTILo258O9hUe0/REU2yKMMlfFzmd2j2IA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ErP0bzRdfuqg36Q3x7HQjn85ktqDzvLvGSAsOmpCwTA=;
- b=YHztpx4tQTuOZIF6y1RgekASXv9t3QPO13CDbiscZYqSmUl9L/+UAZXhsDFiCrC29JGETQhs1XEfghEDgfii03pRvXjSZsxu03eQNFE+XqolZRt8Zx2OiHkplofiLuD3M2iHNmwegTcFXDmwH8TfuKBej4N0CKFb1dMmwbyJfSNrVsqIxoYF7pxssLShXTuZx4k+D5xUZ0gVzf3AoulVAgFAC7QVXGvSFBBC1kkCPX1x5f0oK18UWRD9zXWTBvPbRhsG6VYjSXsMbhPLFTyjK/fg7LaenZi3Brw9wOZ5jFcPZ8wtJ86J3RxK+3n1TQ1tj5k7BLeefk39zbbvFBj0bQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ErP0bzRdfuqg36Q3x7HQjn85ktqDzvLvGSAsOmpCwTA=;
- b=JCH+0bgZivpNquPaiQLuIAFwjWMoBzx0K7QNHX404VTci5mrWIrMvb/xB6/GZHHD8aTObOrnppmj2G/23YMlnIJtH5k0t24SD8AXIRAM1gOmUOvZ2kmYUz7EWO049WH/ZqNxGSgvgP8VSyIRHimgvKupeLYYKRpqEpCgt6td+nU=
-Received: from BYAPR11MB2870.namprd11.prod.outlook.com (2603:10b6:a02:cb::12)
- by BYAPR11MB2774.namprd11.prod.outlook.com (2603:10b6:a02:c1::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Thu, 18 Mar
- 2021 06:54:29 +0000
-Received: from BYAPR11MB2870.namprd11.prod.outlook.com
- ([fe80::4156:a987:2665:c608]) by BYAPR11MB2870.namprd11.prod.outlook.com
- ([fe80::4156:a987:2665:c608%5]) with mapi id 15.20.3955.018; Thu, 18 Mar 2021
- 06:54:29 +0000
-From:   "Wong, Vee Khee" <vee.khee.wong@intel.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Voon Weifeng <voon.weifeng@intel.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>
-Subject: RE: [PATCH net-next 1/1] net: phy: fix invalid phy id when probe
- using C22
-Thread-Topic: [PATCH net-next 1/1] net: phy: fix invalid phy id when probe
- using C22
-Thread-Index: AQHXGkHiOKV14+tCY06c/oLWfqPUP6qH1r+AgAF6f+A=
-Date:   Thu, 18 Mar 2021 06:54:29 +0000
-Message-ID: <BYAPR11MB2870F3213AA7690871FB179FAB699@BYAPR11MB2870.namprd11.prod.outlook.com>
-References: <20210316085748.3017-1-vee.khee.wong@intel.com>
- <eba4f81c-adc0-61d1-8cb9-4c0c5995bc49@gmail.com>
-In-Reply-To: <eba4f81c-adc0-61d1-8cb9-4c0c5995bc49@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [210.195.17.79]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 81366802-f7f3-4591-18df-08d8e9daad60
-x-ms-traffictypediagnostic: BYAPR11MB2774:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR11MB2774929CF2929687306868B5AB699@BYAPR11MB2774.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EuTPjPRFE1n3/P/MyU9OxxzNTuOnleUQdLPeq+VSeWOlLUAYXoLMsiTmTltDG8BIN+zKRkrbZNpp+axArOyQzfWFNk1O8CDkxE41ZBzxtUu2YboP2UHq+lB3Chu0KaWXdgcgwfll+VZKRmSWaworE1kbw5wATkDx6ZE2lOjU9wgymklE13W/JugClZMuJRzm8Qq8JRMDVRXC+kZJQNMPIdAtqf3Ubt7XynSKg3ftIk7dVS12jSO/IHNBLpkO1F2Ex0c5oKkMqKNAc/5hPuiHNZ/C1AAK+rgcqVw0mhsUfq13mwZc5nrEluhY8rr7SaMn5PvBQVqz3MiHLLKWbyemi2uar2lk6AJaUQY/migzCl6Q0jUBGmoCkZD5df1wX4L6SnTwR9h68dsoDoL2IyZu9QCU5C8Tue+b5F+r4vpDy3CZ5SfT6Ztczm826bwHufpJpDntVsBJ+bQzeXjqARP6jHvA9sWT5+F2uBA+Mwinsx/IcObmBn1BeB8wmTA0NWvSUg6tggnu1OUWl6nHgcG+zbAHgs+7N9D48b8dYnf/Wbw8DV/p+wywuVS78HcgJvlVQ3TWuGBc/orESwHd90Dbp+mWL89e3Uoaza5MCfKMnz0ymnzJSdbgnFMYs9K6bs+i
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB2870.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(366004)(376002)(346002)(136003)(9686003)(66446008)(2906002)(66476007)(55016002)(66556008)(8936002)(66946007)(54906003)(52536014)(478600001)(8676002)(76116006)(64756008)(316002)(4326008)(33656002)(26005)(53546011)(6506007)(110136005)(5660300002)(86362001)(83380400001)(107886003)(186003)(55236004)(7696005)(38100700001)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?Z2R3ZE9MWnhIMnpmbjlPbGJGQnp4VVVXSGE4d2k5a0dxL1lidjRGZ1NZbkFY?=
- =?utf-8?B?ZnNOampVYkxDTTNWbi9tV09SRlM5K1QvTHhLdjlYd3h6eW9QTWg3SnRKQ210?=
- =?utf-8?B?T3B1b3Z6UW83TVlQdEpzSFlCdThsQWRQVHgvQkxIOG5lMm43ZFFLa2J0TlJJ?=
- =?utf-8?B?YnZ3eTI4bnVrdzYvelB2R1F3SzJYMUtZbDF5WGtQZTM2dUhzTENUVnFEWWg5?=
- =?utf-8?B?RjBHY2ZDbUwzZkRZL1AzV1kza2hsTzNMUkpnVlMzNGpKRUNJbmRQQVV6T2Qy?=
- =?utf-8?B?N2JnS1NRUzdxS2ZmaXFsTTVkd0wxcmVOdXhkSnpnSHlxMVZtcG5PdDdHQU5Q?=
- =?utf-8?B?bXFUaDl5ZnByb3VsZmVSd0R2SkFUcnJoT2ZHQUxVSDdRSzRSc2F4aFp0eTR3?=
- =?utf-8?B?WUI4cElHZ2xzeS9FV3NhblljaVdZejdSMjRGVXNOMWZzL3Y5THBnTjlNTjQ2?=
- =?utf-8?B?V2tnYlVVazg2c3dJbndvU2FNQmVIQ3FENlRUOUJwZVd0dDRMeVpmNXFSbzE5?=
- =?utf-8?B?U2luOWNqWm5Bak14T1pORjljZE1QQWVyYlpPNFdXMTM0ekJnUzJRclJqa3VO?=
- =?utf-8?B?YjBNdVRMRXNoSklYbUZGVmhveDNKZXdxSjF2Y0M2TUkxWVhoakIvek96M3J3?=
- =?utf-8?B?Wlc4Y01QdXMrMnJwVFV3dFNiaCtvdlVLQS9DVC8wMGpvWE42b2Mxd3pzOFBN?=
- =?utf-8?B?bktMeVBCY2JvZnJrSmdkd1UxSld6T0pBazcyS2NUdFBJOE03ck53dG8xZDhk?=
- =?utf-8?B?UVNibXNmVE5TRS9oTTMxYTRVMjdsOEVBcDl5TENQeHpDMDNaMXdrQzh5c1dp?=
- =?utf-8?B?bDJmMFlQSGwzbnd2UjhnbklBTzdjazNYdVNFRXJOWFNZTkRLNllhNjgxcVFY?=
- =?utf-8?B?eWl6d1dub0hkODM5RU9BZlgyZ1lybFRBY0RiczFZMjN6MXFjUE9idlZ5aWtq?=
- =?utf-8?B?dkl3Z2RneEI4ck9oUTh1Z2hpQkY0VEF2NWpSS1BuMDZ4TGxwTHE0QjU3cFA5?=
- =?utf-8?B?KzUxbTgxRU5Sck0xK0VKSDZpd2l2RXkxdHc1eGdsaFNSZ2kyNnFrQ3MyKzdl?=
- =?utf-8?B?SnRXelIwNGZQREs4RjFobVVxQlhybElVVlQxb0NrU3F5T1E5K0JPMzIwZ01X?=
- =?utf-8?B?Vk04WUc5OFRIQklDbTQzNGFNclNiRjhTY3F3cVB2d0IwMHpleW9GZkQ1bVlQ?=
- =?utf-8?B?d08xSXd2cDE0aFR6NGd0UzhyVGtyRDlHMVpPMmltbzJXMmpWVGV0cFIvb240?=
- =?utf-8?B?ak9HRmRWOHFsT2pMZVJ3cncyMndkL1I1bHo1V3B1ckMreTgzTlhCcjZsNWk4?=
- =?utf-8?B?bXRtNGRsNVY1WnpxcHNMeWN3aHJLeEVVaXgwU3NmYVdlOTVodEpDK2tmUml6?=
- =?utf-8?B?VU41bkhSUkVPNWlSZVY0NVVDM05sM0dtVzdNTUcwU3RhY1I2aUVnV1B0aXR1?=
- =?utf-8?B?SVJkRW41a3E1Wk5lTkd3eXQ5WGU5MktZdnVod1VYSU80VUVIQldab1VWaG51?=
- =?utf-8?B?RktuYzRWMkNOYTFrNWU0VHN6b3RRSXlETUlhZUJJOUU4aUl4cENmZVo3V1VR?=
- =?utf-8?B?Q25meFVGQk9OY3kxQWpGS2VMeVhReEp2ellZYmRjY2YzZDdrR0Y0TjJkVFA5?=
- =?utf-8?B?RUlYTkRKT3loSGU4cTdrSkYvb3M4YVFZcjFQQWxpUWxERlIwWWxIZ24ycGJn?=
- =?utf-8?B?YTBWOHF5TTRQeU9hNTFSWkhYY1RqSGFZUU9JRFNrVmxiNDVuRmg4OUxYMUZp?=
- =?utf-8?Q?ummIebJQr90MMGbbeCHXwGlP+1IVE92uG5CVnpV?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S229643AbhCRHKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 03:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229621AbhCRHKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 03:10:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98523C06174A
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 00:10:36 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1lMmnf-0005EN-GI; Thu, 18 Mar 2021 08:10:31 +0100
+Subject: Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS for lockless
+ qdisc
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, olteanv@gmail.com
+Cc:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
+        edumazet@google.com, weiwan@google.com, cong.wang@bytedance.com,
+        ap420073@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        mkl@pengutronix.de, linux-can@vger.kernel.org
+References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
+ <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Message-ID: <70d9f281-3b39-a760-1c2b-3598251f5770@pengutronix.de>
+Date:   Thu, 18 Mar 2021 08:10:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB2870.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81366802-f7f3-4591-18df-08d8e9daad60
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Mar 2021 06:54:29.2964
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QdxKwzWhy08ziCoQTsJmdhgd3zZ8UODG2WABc55PcZ+JsB7cG0DpPy03MFI/9VJe3YFcETvbiZXJMCcn2n+xVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2774
-X-OriginatorOrg: intel.com
+In-Reply-To: <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBIZWluZXIgS2FsbHdlaXQgPGhr
-YWxsd2VpdDFAZ21haWwuY29tPg0KPiBTZW50OiBXZWRuZXNkYXksIE1hcmNoIDE3LCAyMDIxIDQ6
-MTUgUE0NCj4gVG86IFdvbmcsIFZlZSBLaGVlIDx2ZWUua2hlZS53b25nQGludGVsLmNvbT47IEFu
-ZHJldyBMdW5uDQo+IDxhbmRyZXdAbHVubi5jaD47IFJ1c3NlbGwgS2luZyA8bGludXhAYXJtbGlu
-dXgub3JnLnVrPjsgRGF2aWQgUyAuIE1pbGxlcg0KPiA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEph
-a3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+DQo+IENjOiBuZXRkZXZAdmdlci5rZXJuZWwu
-b3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOw0KPiBzdGFibGVAdmdlci5rZXJuZWwu
-b3JnOyBWb29uIFdlaWZlbmcgPHZvb24ud2VpZmVuZ0BpbnRlbC5jb20+OyBPbmcsDQo+IEJvb24g
-TGVvbmcgPGJvb24ubGVvbmcub25nQGludGVsLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCBu
-ZXQtbmV4dCAxLzFdIG5ldDogcGh5OiBmaXggaW52YWxpZCBwaHkgaWQgd2hlbiBwcm9iZQ0KPiB1
-c2luZyBDMjINCj4gDQo+IE9uIDE2LjAzLjIwMjEgMDk6NTcsIFdvbmcgVmVlIEtoZWUgd3JvdGU6
-DQo+ID4gV2hlbiB1c2luZyBDbGF1c2UtMjIgdG8gcHJvYmUgZm9yIFBIWSBkZXZpY2VzIHN1Y2gg
-YXMgdGhlIE1hcnZlbGwNCj4gPiA4OEUyMTEwLCBQSFkgSUQgd2l0aCB2YWx1ZSAwIGlzIHJlYWQg
-ZnJvbSB0aGUgTUlJIFBIWUlEIHJlZ2lzdGVycw0KPiA+IHdoaWNoIGNhdXNlZCB0aGUgUEhZIGZy
-YW1ld29yayBmYWlsZWQgdG8gYXR0YWNoIHRoZSBNYXJ2ZWxsIFBIWQ0KPiA+IGRyaXZlci4NCj4g
-Pg0KPiANCj4gVGhlIGlzc3VlIG9jY3VycyB3aXRoIGEgTUFDIGRyaXZlciB0aGF0IHNldHMgTURJ
-TyBidXMgY2FwYWJpbGl0eQ0KPiBmbGFnIE1ESU9CVVNfQzIyX0M0NSwgbGlrZSBzdG1tYWM/IE9y
-IHdoYXQgaXMgdGhlIGFmZmVjdGVkIE1BQw0KPiBkcml2ZXI/DQo+IA0KDQpZZXMsIHlvdSBhcmUg
-cmlnaHQuIFRoaXMgaXNzdWUgaXMgc2VlbiB3aGVuIE1hcnZlbGxFMjExMCBpcyB1c2VkIHdpdGgN
-CnRoZSBTVE1NQUMuDQoNCj4gQW5kIGlmIHlvdSBzdGF0ZSBpdCdzIGEgZml4LCBhIEZpeGVzIHRh
-ZyB3b3VsZCBiZSBuZWVkZWQuDQo+IA0KDQpOb3RlZC4gV2lsbCBzZW5kIGEgdjIgYW5kIG1hcmtl
-ZCBmb3IgbmV0Lg0KDQo+ID4gRml4ZWQgdGhpcyBieSBhZGRpbmcgYSBjaGVjayBvZiBQSFkgSUQg
-ZXF1YWxzIHRvIGFsbCB6ZXJvZXMuDQo+ID4NCj4gPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9y
-Zw0KPiA+IFJldmlld2VkLWJ5OiBWb29uIFdlaWZlbmcgPHZvb24ud2VpZmVuZ0BpbnRlbC5jb20+
-DQo+ID4gU2lnbmVkLW9mZi1ieTogV29uZyBWZWUgS2hlZSA8dmVlLmtoZWUud29uZ0BpbnRlbC5j
-b20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L3BoeS9waHlfZGV2aWNlLmMgfCA0ICsrLS0N
-Cj4gPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4g
-Pg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9waHkvcGh5X2RldmljZS5jIGIvZHJpdmVy
-cy9uZXQvcGh5L3BoeV9kZXZpY2UuYw0KPiA+IGluZGV4IGEwMDlkMTc2OWIwOC4uZjFhZmMwMGZj
-YmEyIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L3BoeS9waHlfZGV2aWNlLmMNCj4gPiAr
-KysgYi9kcml2ZXJzL25ldC9waHkvcGh5X2RldmljZS5jDQo+ID4gQEAgLTgyMCw4ICs4MjAsOCBA
-QCBzdGF0aWMgaW50IGdldF9waHlfYzIyX2lkKHN0cnVjdCBtaWlfYnVzICpidXMsIGludA0KPiBh
-ZGRyLCB1MzIgKnBoeV9pZCkNCj4gPg0KPiA+ICAJKnBoeV9pZCB8PSBwaHlfcmVnOw0KPiA+DQo+
-ID4gLQkvKiBJZiB0aGUgcGh5X2lkIGlzIG1vc3RseSBGcywgdGhlcmUgaXMgbm8gZGV2aWNlIHRo
-ZXJlICovDQo+ID4gLQlpZiAoKCpwaHlfaWQgJiAweDFmZmZmZmZmKSA9PSAweDFmZmZmZmZmKQ0K
-PiA+ICsJLyogSWYgdGhlIHBoeV9pZCBpcyBtb3N0bHkgRnMgb3IgYWxsIHplcm9lcywgdGhlcmUg
-aXMgbm8gZGV2aWNlIHRoZXJlICovDQo+ID4gKwlpZiAoKCgqcGh5X2lkICYgMHgxZmZmZmZmZikg
-PT0gMHgxZmZmZmZmZikgfHwgKCpwaHlfaWQgPT0gMCkpDQo+ID4gIAkJcmV0dXJuIC1FTk9ERVY7
-DQo+ID4NCj4gPiAgCXJldHVybiAwOw0KPiA+DQoNCg==
+On 15.03.21 04:10, Yunsheng Lin wrote:
+> Currently pfifo_fast has both TCQ_F_CAN_BYPASS and TCQ_F_NOLOCK
+> flag set, but queue discipline by-pass does not work for lockless
+> qdisc because skb is always enqueued to qdisc even when the qdisc
+> is empty, see __dev_xmit_skb().
+> 
+> This patch calls sch_direct_xmit() to transmit the skb directly
+> to the driver for empty lockless qdisc too, which aviod enqueuing
+> and dequeuing operation. qdisc->empty is set to false whenever a
+> skb is enqueued, see pfifo_fast_enqueue(), and is set to true when
+> skb dequeuing return NULL, see pfifo_fast_dequeue(), a spinlock is
+> added to avoid the race between enqueue/dequeue and qdisc->empty
+> setting.
+> 
+> If there is requeued skb in q->gso_skb, and qdisc->empty is true,
+> do not allow bypassing requeued skb. enqueuing and dequeuing in
+> q->gso_skb is always protected by qdisc->seqlock, so is the access
+> of q->gso_skb by skb_queue_empty();
+> 
+> Also, qdisc is scheduled at the end of qdisc_run_end() when q->empty
+> is false to avoid packet stuck problem.
+> 
+> The performance for ip_forward test increases about 10% with this
+> patch.
+> 
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+> RFC V2: fix requeued skb out of order and data race problem.
+
+cansequence didn't find any frame reordering with 2 FlexCAN's communicating
+with each other on a dual core i.MX6. Feel free to add:
+
+Tested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+
+> ---
+>  include/net/pkt_sched.h   |  2 ++
+>  include/net/sch_generic.h |  7 +++++--
+>  net/core/dev.c            | 14 ++++++++++++++
+>  net/sched/sch_generic.c   | 31 ++++++++++++++++++++++++++++++-
+>  4 files changed, 51 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index f5c1bee..c760f6a 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -122,6 +122,8 @@ void qdisc_warn_nonwc(const char *txt, struct Qdisc *qdisc);
+>  bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
+>  		     struct net_device *dev, struct netdev_queue *txq,
+>  		     spinlock_t *root_lock, bool validate);
+> +bool sch_may_need_requeuing(struct sk_buff *skb, struct Qdisc *q,
+> +			    struct net_device *dev);
+>  
+>  void __qdisc_run(struct Qdisc *q);
+>  
+> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> index 2d6eb60..6591356 100644
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -161,7 +161,6 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+>  	if (qdisc->flags & TCQ_F_NOLOCK) {
+>  		if (!spin_trylock(&qdisc->seqlock))
+>  			return false;
+> -		WRITE_ONCE(qdisc->empty, false);
+>  	} else if (qdisc_is_running(qdisc)) {
+>  		return false;
+>  	}
+> @@ -176,8 +175,12 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+>  static inline void qdisc_run_end(struct Qdisc *qdisc)
+>  {
+>  	write_seqcount_end(&qdisc->running);
+> -	if (qdisc->flags & TCQ_F_NOLOCK)
+> +	if (qdisc->flags & TCQ_F_NOLOCK) {
+>  		spin_unlock(&qdisc->seqlock);
+> +
+> +		if (unlikely(!READ_ONCE(qdisc->empty)))
+> +			__netif_schedule(qdisc);
+> +	}
+>  }
+>  
+>  static inline bool qdisc_may_bulk(const struct Qdisc *qdisc)
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 2bfdd52..8f4afb6 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3791,6 +3791,20 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+>  	qdisc_calculate_pkt_len(skb, q);
+>  
+>  	if (q->flags & TCQ_F_NOLOCK) {
+> +		if (q->flags & TCQ_F_CAN_BYPASS && READ_ONCE(q->empty) &&
+> +		    qdisc_run_begin(q)) {
+> +			qdisc_bstats_cpu_update(q, skb);
+> +
+> +			if (sch_may_need_requeuing(skb, q, dev))
+> +				__qdisc_run(q);
+> +			else if (sch_direct_xmit(skb, q, dev, txq, NULL, true) &&
+> +				 !READ_ONCE(q->empty))
+> +				__qdisc_run(q);
+> +
+> +			qdisc_run_end(q);
+> +			return NET_XMIT_SUCCESS;
+> +		}
+> +
+>  		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
+>  		qdisc_run(q);
+>  
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 49eae93..0df1462 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -273,6 +273,23 @@ static struct sk_buff *dequeue_skb(struct Qdisc *q, bool *validate,
+>  	return skb;
+>  }
+>  
+> +bool sch_may_need_requeuing(struct sk_buff *skb, struct Qdisc *q,
+> +			    struct net_device *dev)
+> +{
+> +	bool again = false;
+> +
+> +	if (likely(skb_queue_empty(&q->gso_skb)))
+> +		return false;
+> +
+> +	/* need validating before requeuing */
+> +	skb = validate_xmit_skb_list(skb, dev, &again);
+> +	if (unlikely(!skb))
+> +		return true;
+> +
+> +	dev_requeue_skb(skb, q);
+> +	return true;
+> +}
+> +
+>  /*
+>   * Transmit possibly several skbs, and handle the return status as
+>   * required. Owning running seqcount bit guarantees that
+> @@ -606,6 +623,11 @@ static const u8 prio2band[TC_PRIO_MAX + 1] = {
+>   */
+>  struct pfifo_fast_priv {
+>  	struct skb_array q[PFIFO_FAST_BANDS];
+> +
+> +	/* protect against data race between enqueue/dequeue and
+> +	 * qdisc->empty setting
+> +	 */
+> +	spinlock_t lock;
+>  };
+>  
+>  static inline struct skb_array *band2list(struct pfifo_fast_priv *priv,
+> @@ -623,7 +645,10 @@ static int pfifo_fast_enqueue(struct sk_buff *skb, struct Qdisc *qdisc,
+>  	unsigned int pkt_len = qdisc_pkt_len(skb);
+>  	int err;
+>  
+> -	err = skb_array_produce(q, skb);
+> +	spin_lock(&priv->lock);
+> +	err = __ptr_ring_produce(&q->ring, skb);
+> +	WRITE_ONCE(qdisc->empty, false);
+> +	spin_unlock(&priv->lock);
+>  
+>  	if (unlikely(err)) {
+>  		if (qdisc_is_percpu_stats(qdisc))
+> @@ -642,6 +667,7 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+>  	struct sk_buff *skb = NULL;
+>  	int band;
+>  
+> +	spin_lock(&priv->lock);
+>  	for (band = 0; band < PFIFO_FAST_BANDS && !skb; band++) {
+>  		struct skb_array *q = band2list(priv, band);
+>  
+> @@ -655,6 +681,7 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+>  	} else {
+>  		WRITE_ONCE(qdisc->empty, true);
+>  	}
+> +	spin_unlock(&priv->lock);
+>  
+>  	return skb;
+>  }
+> @@ -739,6 +766,8 @@ static int pfifo_fast_init(struct Qdisc *qdisc, struct nlattr *opt,
+>  
+>  	/* Can by-pass the queue discipline */
+>  	qdisc->flags |= TCQ_F_CAN_BYPASS;
+> +
+> +	spin_lock_init(&priv->lock);
+>  	return 0;
+>  }
+>  
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
