@@ -2,123 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 581AD33FC2E
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 01:23:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E65D33FC47
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 01:38:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbhCRAW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 20:22:59 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:50197 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230104AbhCRAWi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 20:22:38 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F175L1t6Dz9sW5;
-        Thu, 18 Mar 2021 11:22:29 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1616026950;
-        bh=fUNm5nsTmJbb/LA9qfxZfL2ehsv3SnIPO3IcMpOAQeU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=h3MTzyx5Z6OKNK+j/VGeAhL20bhlpOubHaHhdkzcIjFKQZeFYbmreYDcio2+LVfWp
-         z0P2TgTT9sGss8qwkoUYbBix4Q/H6yvbA0tOvkBZo+6Nw+Q4mPwiMbtS4r6a1jSx0v
-         F9sBVJHy122nvO+ZCLXc1OtNo3t4n27CWk3yoQhzoYt4CqUtlh9UhDCEYAsEcBSfgt
-         LL6JJR97PmMxo9iSxt8NcPFSD8nbLXmmL0Zdulndj0LHR5lMLfQw13KbZHre+7z51g
-         rh3q+xt/P6NoGICqQpxpmhdbEWr5YzHoDs2ha0tTYdRQ9S60n4NljD5TVgHf9vfSjF
-         4qtOD/QV7snYg==
-Date:   Thu, 18 Mar 2021 11:22:26 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Shannon Nelson <snelson@pensando.io>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210318112226.331beab9@canb.auug.org.au>
+        id S229720AbhCRAhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 20:37:18 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55264 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229702AbhCRAgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 20:36:38 -0400
+Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lMgeR-0001Cj-KS; Thu, 18 Mar 2021 01:36:35 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-03-18
+Date:   Thu, 18 Mar 2021 01:36:35 +0100
+Message-Id: <20210318003635.18127-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/XJm9SaulWTFxoLmTZi2g.lB";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26111/Wed Mar 17 12:08:39 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/XJm9SaulWTFxoLmTZi2g.lB
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi David, hi Jakub,
 
-Hi all,
+The following pull-request contains BPF updates for your *net* tree.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+We've added 10 non-merge commits during the last 4 day(s) which contain
+a total of 14 files changed, 336 insertions(+), 94 deletions(-).
 
-  drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+The main changes are:
 
-between commit:
+1) Fix fexit/fmod_ret trampoline for sleepable programs, and also fix a ftrace
+   splat in modify_ftrace_direct() on address change, from Alexei Starovoitov.
 
-  d2c21422323b ("ionic: linearize tso skb with too many frags")
+2) Fix two oob speculation possibilities that allows unprivileged to leak mem
+   via side-channel, from Piotr Krysiuk and Daniel Borkmann.
 
-from the net tree and commit:
+3) Fix libbpf's netlink handling wrt SOCK_CLOEXEC, from Kumar Kartikeya Dwivedi.
 
-  f37bc3462e80 ("ionic: optimize fastpath struct usage")
+4) Fix libbpf's error handling on failure in getting section names, from Namhyung Kim.
 
-from the net-next tree.
+5) Fix tunnel collect_md BPF selftest wrt Geneve option handling, from Hangbin Liu.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+Please consider pulling these changes from:
 
---=20
-Cheers,
-Stephen Rothwell
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
 
-diff --cc drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 4087311f7082,03e00a6c413a..000000000000
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@@ -1077,19 -1082,16 +1082,18 @@@ static int ionic_tx(struct ionic_queue=20
- =20
-  static int ionic_tx_descs_needed(struct ionic_queue *q, struct sk_buff *s=
-kb)
-  {
-- 	int sg_elems =3D q->lif->qtype_info[IONIC_QTYPE_TXQ].max_sg_elems;
-  	struct ionic_tx_stats *stats =3D q_to_tx_stats(q);
- +	int ndescs;
-  	int err;
- =20
- -	/* If TSO, need roundup(skb->len/mss) descs */
- +	/* Each desc is mss long max, so a descriptor for each gso_seg */
-  	if (skb_is_gso(skb))
- -		return (skb->len / skb_shinfo(skb)->gso_size) + 1;
- +		ndescs =3D skb_shinfo(skb)->gso_segs;
- +	else
- +		ndescs =3D 1;
- =20
-- 	if (skb_shinfo(skb)->nr_frags <=3D sg_elems)
- -	/* If non-TSO, just need 1 desc and nr_frags sg elems */
-+ 	if (skb_shinfo(skb)->nr_frags <=3D q->max_sg_elems)
- -		return 1;
- +		return ndescs;
- =20
-  	/* Too many frags, so linearize */
-  	err =3D skb_linearize(skb);
+Thanks a lot!
 
---Sig_/XJm9SaulWTFxoLmTZi2g.lB
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
 
------BEGIN PGP SIGNATURE-----
+Alexei Starovoitov, Andrii Nakryiko, Paul E. McKenney, Steven Rostedt 
+(VMware), Toke Høiland-Jørgensen, William Tu
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBSnUIACgkQAVBC80lX
-0GzusQf/cp8auZp9Tm5VS6+lEbYfLLX2UR4s+rvgCTni1HZ3oSTkbdLe9BS5ASGh
-7wWkSveIKkt5OLm7vVA1w8EcROaAXgf2nI+RUhOag1X7FWAhwSuDiMyx9eB6eaEh
-DzpH/uB+0Affx7gNhbj8q0zDI1vL3UhItCwStOdJETfEQT/iHX1iNLDKVOSlqpnu
-0RajT2Hed+o9ZLprxhq41FLXyN/lXICNkTs9FK1UnPrKt6u683J4sTiYTYM4+9Ty
-eGi2EAIFNECx8bTA+ieEiMwF1oyqmhbTv1tbmzE/9GisUysiFA926EugiF1jRZaH
-NOxVq3o728pYJ1SVDB8fl9kYyIbuCQ==
-=SfxJ
------END PGP SIGNATURE-----
+----------------------------------------------------------------
 
---Sig_/XJm9SaulWTFxoLmTZi2g.lB--
+The following changes since commit a25f822285420486f5da434efc8d940d42a83bce:
+
+  flow_dissector: fix byteorder of dissected ICMP ID (2021-03-14 14:30:20 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 58bfd95b554f1a23d01228672f86bb489bdbf4ba:
+
+  libbpf: Use SOCK_CLOEXEC when opening the netlink socket (2021-03-18 00:50:21 +0100)
+
+----------------------------------------------------------------
+Alexei Starovoitov (2):
+      ftrace: Fix modify_ftrace_direct.
+      bpf: Fix fexit trampoline.
+
+Hangbin Liu (1):
+      selftests/bpf: Set gopt opt_class to 0 if get tunnel opt failed
+
+Kumar Kartikeya Dwivedi (1):
+      libbpf: Use SOCK_CLOEXEC when opening the netlink socket
+
+Namhyung Kim (1):
+      libbpf: Fix error path in bpf_object__elf_init()
+
+Piotr Krysiuk (5):
+      bpf: Prohibit alu ops for pointer types not defining ptr_limit
+      bpf: Fix off-by-one for area size in creating mask to left
+      bpf: Simplify alu_limit masking for pointer arithmetic
+      bpf: Add sanity check for upper ptr_limit
+      bpf, selftests: Fix up some test_verifier cases for unprivileged
+
+ arch/x86/net/bpf_jit_comp.c                        |  26 ++-
+ include/linux/bpf.h                                |  24 ++-
+ kernel/bpf/bpf_struct_ops.c                        |   2 +-
+ kernel/bpf/core.c                                  |   4 +-
+ kernel/bpf/trampoline.c                            | 218 ++++++++++++++++-----
+ kernel/bpf/verifier.c                              |  33 ++--
+ kernel/trace/ftrace.c                              |  43 +++-
+ tools/lib/bpf/libbpf.c                             |   3 +-
+ tools/lib/bpf/netlink.c                            |   2 +-
+ .../testing/selftests/bpf/progs/test_tunnel_kern.c |   6 +-
+ .../selftests/bpf/verifier/bounds_deduction.c      |  27 ++-
+ tools/testing/selftests/bpf/verifier/map_ptr.c     |   4 +
+ tools/testing/selftests/bpf/verifier/unpriv.c      |  15 +-
+ .../selftests/bpf/verifier/value_ptr_arith.c       |  23 ++-
+ 14 files changed, 336 insertions(+), 94 deletions(-)
