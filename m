@@ -2,100 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF49D340E60
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 20:36:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E436340E6F
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 20:41:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233034AbhCRTfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 15:35:51 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:3700 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232973AbhCRTfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 15:35:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1616096122; x=1647632122;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=hcAX1VIJNIQGdBt4c4fzQbY2cP7BNQHp0GpCszwR51o=;
-  b=ag3G88vPY3Y5K7VYAAvFbRP2jHuMeGy0zkhlbfwBSIpEt3manpJjalQ2
-   UZIapNZv3pm7meWlMHNBm0+SjZOupXBPlxtf0LiFtmkS7y+Se54Li8gip
-   IbZIteUchhloKBTRB7EROyklzVbC3i/yarC0wtzTXUT2EB0E8Yo4KE6tp
-   cL+XRz/DJzxCf3IYs+mtr/fpTjMbypuRuiTg6oSUDhWkNn32PNE67n8nO
-   1MwyoQhxIz/h41EMzvxeiizzqiwNiwej3NII3DPkOodRCGHmJnmTWfgFy
-   +rHqZDIc7OTAufngydHTj+ml2NKQY+zn8pSRJb+NBwUk4mliG6TVWjB9u
-   Q==;
-IronPort-SDR: IzIT7yhQHQYGT9W8wtUL0eKsAAa3908GD+MVGxcCAKe/oXhXpX9KjhvTNdwWbnRheBCq4qySYo
- KVPQQljZd4/wXaYSDhEvihRzdklZiKWph1pQlAM3mparGa+AYY/e7c0WhKMHXPs19DYH78Z9Eh
- M7lS+RaF2+cQSV68RLt4pXNnq5P+uzt7IpuS1avXuNe6YQYcCvNpxjMqHDK71rKyci+p/odG3x
- 6bbmrCh1aQnVFAOU2nRbTj2PlXNKynwJDKE2jOmunTkVxzYcFsu1qYk9WQjMwrQovGNUdHjGlu
- pBI=
-X-IronPort-AV: E=Sophos;i="5.81,259,1610434800"; 
-   d="scan'208";a="119553925"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2021 12:35:21 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+        id S232901AbhCRTlT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Mar 2021 15:41:19 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:6272 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232904AbhCRTkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 15:40:49 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IJYS7S025637
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 12:40:48 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 37bs1epbqg-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 12:40:48 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 18 Mar 2021 12:35:21 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Thu, 18 Mar 2021 12:35:19 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <vladimir.oltean@nxp.com>, <claudiu.manoil@nxp.com>,
-        <alexandre.belloni@bootlin.com>
-CC:     <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH net-next] net: ocelot: Fix deletetion of MRP entries from MAC table
-Date:   Thu, 18 Mar 2021 20:29:38 +0100
-Message-ID: <20210318192938.504549-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.30.1
+ 15.1.2176.2; Thu, 18 Mar 2021 12:40:44 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id CF97A2ED2588; Thu, 18 Mar 2021 12:40:41 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH v4 bpf-next 00/12] BPF static linking
+Date:   Thu, 18 Mar 2021 12:40:24 -0700
+Message-ID: <20210318194036.3521577-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
 Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-18_12:2021-03-17,2021-03-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ phishscore=0 bulkscore=0 spamscore=0 clxscore=1015 lowpriorityscore=0
+ priorityscore=1501 mlxscore=0 adultscore=0 mlxlogscore=999 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2103180139
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a MRP ring was deleted or disabled, the driver was iterating over
-the ports to detect if any other MPR rings exists and in case it didn't
-exist it would delete the MAC table entry. But the problem was that it
-used the last iterated port to delete the MAC table entry and this could
-be a NULL port.
+This patch set adds new libbpf APIs and their bpftool integration that allows
+to perform static linking of BPF object files. Currently no extern resolution
+across object files is performed. This is going to be the focus of the follow
+up patches. But, given amount of code and logic necessary to perform just
+basic functionality of linking together mostly independent BPF object files,
+it was decided to land basic BPF linker code and logic first and extend it
+afterwards.
 
-The fix consists of using the port on which the function was called.
+The motivation for BPF static linking is to provide the functionality that is
+naturally assumed for user-space development process: ability to structure
+application's code without artificial restrictions of having all the code and
+data (variables and maps) inside a single source code file.
 
-Fixes: 7c588c3e96e9733a ("net: ocelot: Extend MRP")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/mscc/ocelot_mrp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This enables better engineering practices of splitting code into
+well-encapsulated parts. It provides ability to hide internal state from other
+parts of the code base through static variables and maps. It is also a first
+steps towards having generic reusable BPF libraries.
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_mrp.c b/drivers/net/ethernet/mscc/ocelot_mrp.c
-index 439129a65b71..c3cbcaf64bb2 100644
---- a/drivers/net/ethernet/mscc/ocelot_mrp.c
-+++ b/drivers/net/ethernet/mscc/ocelot_mrp.c
-@@ -177,7 +177,7 @@ int ocelot_mrp_del(struct ocelot *ocelot, int port,
- 			goto out;
- 	}
- 
--	ocelot_mrp_del_mac(ocelot, ocelot_port);
-+	ocelot_mrp_del_mac(ocelot, ocelot->ports[port]);
- out:
- 	return 0;
- }
-@@ -251,7 +251,7 @@ int ocelot_mrp_del_ring_role(struct ocelot *ocelot, int port,
- 			goto out;
- 	}
- 
--	ocelot_mrp_del_mac(ocelot, ocelot_port);
-+	ocelot_mrp_del_mac(ocelot, ocelot->ports[port]);
- out:
- 	return 0;
- }
+Please see individual patches (mostly #6 and #7) for more details. Patch #10
+passes all test_progs' individual BPF .o files through BPF static linker,
+which is supposed to be a no-op operation, so is essentially validating that
+BPF static linker doesn't produce corrupted ELF object files. Patch #11 adds
+Makefile infra to be able to specify multi-file BPF object files and adds the
+first multi-file test to validate correctness.
+
+v3->v4:
+  - fix Makefile copy/paste error of diff'ing invalid object files (Alexei);
+  - fix uninitialized obj_name variable that could lead to bogus object names
+    being used during skeleton generation (kernel-patches CI);
+v2->v3:
+  - added F(F(F(X))) = F(F(X)) test for all linked BPF object files (Alexei);
+  - used reallocarray() more consistently in few places (Alexei);
+  - improved bash completions for `gen object` (Quentin);
+  - dropped .bpfo extension, but had to add optional `name OBJECT_FILE`
+    parameter (path #8) to `gen skeleton` command to specify desired object
+    name during skeleton generation;
+  - fixed bug of merging DATASECS of special "license" and "version" sections.
+    Linker currently strictly validates that all versions and licenses matches
+    exactly and keeps only ELF symbols and BTF DATASEC from the very first
+    object file with license/version. For all other object files, we ignore
+    ELF symbols, but weren't ignoring DATASECs, which caused further problems
+    of not being able to find a corresponding ELF symbol, if variable name
+    differs between two files (which we test deliberately in multi-file
+    linking selftest). The fix is to ignore BTF DATASECS;
+v1->v2:
+  - extracted `struct strset` to manage unique set of strings both for BTF and
+    ELF SYMTAB (patch #4, refactors btf and btf_dedup logic as well) (Alexei);
+  - fixed bugs in bpftool gen command; renamed it to `gen object`, added BASH
+    completions and extended/updated man page (Quentin).
+
+
+Andrii Nakryiko (12):
+  libbpf: expose btf_type_by_id() internally
+  libbpf: generalize BTF and BTF.ext type ID and strings iteration
+  libbpf: rename internal memory-management helpers
+  libbpf: extract internal set-of-strings datastructure APIs
+  libbpf: add generic BTF type shallow copy API
+  libbpf: add BPF static linker APIs
+  libbpf: add BPF static linker BTF and BTF.ext support
+  bpftool: add ability to specify custom skeleton object name
+  bpftool: add `gen object` command to perform BPF static linking
+  selftests/bpf: re-generate vmlinux.h and BPF skeletons if bpftool
+    changed
+  selftests/bpf: pass all BPF .o's through BPF static linker
+  selftests/bpf: add multi-file statically linked BPF object file test
+
+ .../bpf/bpftool/Documentation/bpftool-gen.rst |   78 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   17 +-
+ tools/bpf/bpftool/gen.c                       |   72 +-
+ tools/lib/bpf/Build                           |    2 +-
+ tools/lib/bpf/btf.c                           |  714 +++---
+ tools/lib/bpf/btf.h                           |    2 +
+ tools/lib/bpf/btf_dump.c                      |    8 +-
+ tools/lib/bpf/libbpf.c                        |   15 +-
+ tools/lib/bpf/libbpf.h                        |   13 +
+ tools/lib/bpf/libbpf.map                      |    5 +
+ tools/lib/bpf/libbpf_internal.h               |   38 +-
+ tools/lib/bpf/linker.c                        | 1941 +++++++++++++++++
+ tools/lib/bpf/strset.c                        |  176 ++
+ tools/lib/bpf/strset.h                        |   21 +
+ tools/testing/selftests/bpf/Makefile          |   27 +-
+ .../selftests/bpf/prog_tests/static_linked.c  |   40 +
+ .../selftests/bpf/progs/test_static_linked1.c |   30 +
+ .../selftests/bpf/progs/test_static_linked2.c |   31 +
+ 18 files changed, 2806 insertions(+), 424 deletions(-)
+ create mode 100644 tools/lib/bpf/linker.c
+ create mode 100644 tools/lib/bpf/strset.c
+ create mode 100644 tools/lib/bpf/strset.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/static_linked.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_static_linked1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_static_linked2.c
+
 -- 
-2.30.1
+2.30.2
 
