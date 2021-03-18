@@ -2,57 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51290340929
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:48:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A7F34092E
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231693AbhCRPr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 11:47:57 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57776 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230367AbhCRPru (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 11:47:50 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lMusB-00090F-Vr; Thu, 18 Mar 2021 16:47:44 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lMusB-000V3X-Fc; Thu, 18 Mar 2021 16:47:43 +0100
-Subject: Re: [PATCH v3 bpf-next] bpf: devmap: move drop error path to devmap
- for XDP_REDIRECT
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, brouer@redhat.com, toke@redhat.com,
-        freysteinn.alfredsson@kau.se, lorenzo.bianconi@redhat.com,
-        john.fastabend@gmail.com, jasowang@redhat.com, mst@redhat.com,
-        thomas.petazzoni@bootlin.com, mw@semihalf.com,
-        linux@armlinux.org.uk, ilias.apalodimas@linaro.org,
-        netanel@amazon.com, akiyano@amazon.com, michael.chan@broadcom.com,
+        id S231749AbhCRPuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 11:50:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54316 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231162AbhCRPuI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Mar 2021 11:50:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4E65264EF2;
+        Thu, 18 Mar 2021 15:50:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616082608;
+        bh=qfX5zLiax3LIzYkYRMHRgL7ivrPxRNxoVv0+OTDd2j0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rYFpPbYGPQN+p0WZO1B8G/OIhtC0Vswv8ViXi4kGFHWE3FQnkmIB6as7EE77FoU1f
+         0QbZmSC0rCLV92Ki9GR3AXUgDOV5t7S+M6OjPcEpAyVjWJsY1q74ynCpMWjufk6j9v
+         ZWN6oItveFGXDsITKkOeuR8VfY/xtLfTBInmB4gM5ELg+Djp+95SFqwzJsxa00Rtai
+         e0bc0NarkCR6HZp6MMqXrbD51ROno1toGgXhzc12REms3X2MEK5BOSFuzOS1Ig2rRE
+         zw41nP0JmB7kWEoaF8HbtRSdnpmcm6BbtEWW87cPbcEXokM8cKJ4pdELNjl+EcREcb
+         0I8By03WNVV8A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 39099600E8;
+        Thu, 18 Mar 2021 15:50:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 bpf-next] bpf: devmap: move drop error path to devmap for
+ XDP_REDIRECT
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161608260822.2327.1831559957123186442.git-patchwork-notify@kernel.org>
+Date:   Thu, 18 Mar 2021 15:50:08 +0000
+References: <ed670de24f951cfd77590decf0229a0ad7fd12f6.1615201152.git.lorenzo@kernel.org>
+In-Reply-To: <ed670de24f951cfd77590decf0229a0ad7fd12f6.1615201152.git.lorenzo@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        brouer@redhat.com, toke@redhat.com, freysteinn.alfredsson@kau.se,
+        lorenzo.bianconi@redhat.com, john.fastabend@gmail.com,
+        jasowang@redhat.com, mst@redhat.com, thomas.petazzoni@bootlin.com,
+        mw@semihalf.com, linux@armlinux.org.uk,
+        ilias.apalodimas@linaro.org, netanel@amazon.com,
+        akiyano@amazon.com, michael.chan@broadcom.com,
         madalin.bucur@nxp.com, ioana.ciornei@nxp.com,
         jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
         saeedm@nvidia.com, grygorii.strashko@ti.com,
         ecree.xilinx@gmail.com, maciej.fijalkowski@intel.com
-References: <ed670de24f951cfd77590decf0229a0ad7fd12f6.1615201152.git.lorenzo@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <38ae780a-f54a-cba2-1648-07926e646ed0@iogearbox.net>
-Date:   Thu, 18 Mar 2021 16:47:42 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <ed670de24f951cfd77590decf0229a0ad7fd12f6.1615201152.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26112/Thu Mar 18 12:08:11 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/8/21 12:06 PM, Lorenzo Bianconi wrote:
+Hello:
+
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Mon,  8 Mar 2021 12:06:58 +0100 you wrote:
 > We want to change the current ndo_xdp_xmit drop semantics because
 > it will allow us to implement better queue overflow handling.
 > This is working towards the larger goal of a XDP TX queue-hook.
@@ -82,9 +87,15 @@ On 3/8/21 12:06 PM, Lorenzo Bianconi wrote:
 > - tun
 > - sfc
 > 
-> Acked-by: Edward Cree <ecree.xilinx@gmail.com>
-> Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> [...]
 
-Applied, thanks!
+Here is the summary with links:
+  - [v3,bpf-next] bpf: devmap: move drop error path to devmap for XDP_REDIRECT
+    https://git.kernel.org/bpf/bpf-next/c/fdc13979f91e
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
