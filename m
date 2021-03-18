@@ -2,155 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A70C8340305
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 11:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78D583403A0
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 11:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbhCRKR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 06:17:56 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:33001 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbhCRKRu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 06:17:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1616062308; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=kwcYCTFYvBcXj5tH8IQ75LJz4gWAzkJxUwqGZ7M6Z3e0iVmeuv4lNwDl3eV0pzS4MD
-    8lYXrZLxXXf6Va5uC69pR4haEgNRlJ3CZKK4m4WtiZno88LzE4xnmP76SkURVx6udLU9
-    LXpUDWGGuW4IFm0girOLLeZ1Gj/XKDbBjUXqGxidOEoSrZ7Pp0Sosk+n9HJCpeIdEN7N
-    oxuRYHrmFiHSidWSBHT9upZpU0zdEQXDOkdYQZoNYrapm6MLuIORsEuQLXafLyXmBrvK
-    +EEdSAYAXdHq9Kd8BWBLT8Vjkpx55P7K2wkaDQXdlOsN2LG0hx52ROwcoucSfYuB5nB+
-    710A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1616062308;
-    s=strato-dkim-0002; d=strato.com;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=+4w0vi7G/vmvpMV+8OYWuvA+rqzn6qG4BCKZ9rtRS1Y=;
-    b=bTOs+P3EVkbCdkaOGVRny8EXxg6RbTOJkAHTfkHgPlWw2gZZQJESaiPaqp+PPW9HpK
-    J7kJVivXYe+ZTx5d0mDlTMMQkcV+m1NqdPgoY5AWzCmb2APyFlcP6JF1X8Rj3AFLDAwq
-    PCpd5V+4L4U3niUTw88YGx/lYohVN3wMYOKe8Y0BrHtnJqXaozGo5aplYlDhLeXTV3vz
-    oBkY+qgYY6DKRibe5QykkEvVMZerxZln6FsGgM6/fCrUfpnYJ1QOcDIVs980XoRnDddv
-    uPhwm7/RPM8B5tte9tBchMTnd1ACLSzvKJwsEw/Cx1Qv6vdcxIpd1ra3sYr+mV9o+1By
-    GBuA==
-ARC-Authentication-Results: i=1; strato.com;
-    dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1616062308;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=+4w0vi7G/vmvpMV+8OYWuvA+rqzn6qG4BCKZ9rtRS1Y=;
-    b=YGZzskUI3GwrDrRsLW3hk803TChqp7iciKOjtw5/+UIonlfEmC41CausPzdS5tjAj5
-    9aEUuI8lPHypBljbBHJOtK471rlIyuc4zP6HwqwjsXOnUWVLg2kR0nh4pxLnReIkiNrh
-    5fXYZpPTGIgKQLwAWReiM8FCVZu7ga6MO5SHcAnUfCLFRZesU3G2Lr0zwaeUJgNSI94a
-    Uu0/9VkMqQnShgjvR8rfjFrOS+BgoxI8grRBsijNd+kaznaNLVUWUoYURNUXNDIayLut
-    /wkrtnSqIRRKbQZqfhq7ekLbxFJZiTndc5UHPKJjMlRCe9qoKUCXKzFC09aPuih2JLPh
-    TygA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTGVxiOMpjpw=="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.10.137]
-    by smtp.strato.de (RZmta 47.21.0 DYNA|AUTH)
-    with ESMTPSA id R01debx2IABl1qi
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 18 Mar 2021 11:11:47 +0100 (CET)
-Subject: Re: [net 03/11] can: isotp: TX-path: ensure that CAN frame flags are
- initialized
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-References: <20210316082104.4027260-1-mkl@pengutronix.de>
- <20210316082104.4027260-4-mkl@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <bd9fc82e-d67b-34c8-fb74-8977b8825078@hartkopp.net>
-Date:   Thu, 18 Mar 2021 11:11:42 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S230205AbhCRKlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 06:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230254AbhCRKk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 06:40:56 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA972C06175F
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 03:40:45 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id t9so4939895wrn.11
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 03:40:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qCYiJkeZCY1l1SsCcTK0HNnk7v48LS6Za9V5wjwv5dY=;
+        b=r4VVygKbT2vZHjUCjcrGtSyTQZBbmgOWydhHOkizgxJOp+lVAY8nBIGrVgsIWwlJIl
+         ru+6ybaMvIeLcJfT0O5EGsOlKPK77oIlbl4QQYEUaS1KRO2A3HfQgt7XqISGewXlfreL
+         QR7Wj35qfPf/G04wEIrOo7xtJlvUlE1l1wJffflwLIw5cmcHGXC21jRTa6v2VK9kmp/j
+         uTh613RAdUT5hGGmlPGl2PNrsiJtkep8RuwdkZpfHPMciXqqFMBbuVHnLccYzZPH4TsE
+         z6fqb2vnfTchZz7K4oyFTHV8YlZelZS8rK28QpIkKUhCztoFpfvvNVpW/dRCIR5PNtUb
+         2TcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qCYiJkeZCY1l1SsCcTK0HNnk7v48LS6Za9V5wjwv5dY=;
+        b=SclCgQIyVMbD4wbbMRXWneqXP5VL5OZSgSIiNeuLevdFL2pdw32JLCKNE1xRxSOLkS
+         DCSwVjZg9BmSVy+clqyQarkaJDni/cZcFFokuGd69x6LrZCoosvr/O7u4QcMtNFgzJCZ
+         Km8s6hKUmVVDTT/EkxVgbLWu6e7+8OASraVn7V93lryo5QeiChUVzB0QQWhYWnkIDBoa
+         2jHvpg2NxW+O2tNUcUSkgIQXZ9l6srbnGypUc13KQnto9GEfKYD/jsbwAaWgnQlfl55A
+         1T5b2GYxYs9LL4pfXYMQj6HbpJ5ZcWfFKj2AGLOUnmm1yzopx+74YTEXR8igcfKsL5mR
+         A1ew==
+X-Gm-Message-State: AOAM530LlX8nMqnswgdEMXLWjzn/kUkVynhHrqQmeiQk33qRKaKa9bG9
+        4hKlD3CmeLC+OdRil92/rwe1OQ==
+X-Google-Smtp-Source: ABdhPJwiyeOQSgB7d0Zh4PqZBrRW1L3J8yQ1rpmoDN74JORGtwBg1/+jZleEMAq/ZeX6kahGfjkjMw==
+X-Received: by 2002:adf:efc7:: with SMTP id i7mr8994793wrp.182.1616064044413;
+        Thu, 18 Mar 2021 03:40:44 -0700 (PDT)
+Received: from dell.default ([91.110.221.194])
+        by smtp.gmail.com with ESMTPSA id z1sm2426033wru.95.2021.03.18.03.40.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 03:40:44 -0700 (PDT)
+From:   Lee Jones <lee.jones@linaro.org>
+To:     lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Anton Vorontsov <anton@enomsg.org>, benh@kernel.crashing.org,
+        Colin Cross <ccross@android.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Josh Cartwright <joshc@codeaurora.org>,
+        Kees Cook <keescook@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        netdev@vger.kernel.org,
+        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH v2 00/10] Rid W=1 warnings from OF
+Date:   Thu, 18 Mar 2021 10:40:26 +0000
+Message-Id: <20210318104036.3175910-1-lee.jones@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20210316082104.4027260-4-mkl@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc,
+This set is part of a larger effort attempting to clean-up W=1
+kernel builds, which are currently overwhelmingly riddled with
+niggly little warnings.
 
-I obviously missed these patches - but they are fine. Thanks!
+v2:
+ - Provided some descriptions to exported functions
 
-After checking your patch I was going after this missing initialization 
-and detected that the outgoing CAN frame skbs from isotp.c were not 
-properly zero initialized - so I sent a patch for it some minutes ago:
+Lee Jones (10):
+  of: device: Fix function name in header and provide missing
+    descriptions
+  of: dynamic: Fix incorrect parameter name and provide missing
+    descriptions
+  of: platform: Demote kernel-doc abuse
+  of: base: Fix some formatting issues and provide missing descriptions
+  of: property: Provide missing member description and remove excess
+    param
+  of: address: Provide descriptions for 'of_address_to_resource's params
+  of: fdt: Demote kernel-doc abuses and fix function naming
+  of: of_net: Provide function name and param description
+  of: overlay: Fix function name disparity
+  of: of_reserved_mem: Demote kernel-doc abuses
 
-https://lore.kernel.org/linux-can/20210318100233.1693-1-socketcan@hartkopp.net/T/#u
+ drivers/of/address.c         |  3 +++
+ drivers/of/base.c            | 16 +++++++++++-----
+ drivers/of/device.c          |  7 ++++++-
+ drivers/of/dynamic.c         |  4 +++-
+ drivers/of/fdt.c             | 23 ++++++++++++-----------
+ drivers/of/of_net.c          |  3 +++
+ drivers/of/of_reserved_mem.c |  6 +++---
+ drivers/of/overlay.c         |  2 +-
+ drivers/of/platform.c        |  2 +-
+ drivers/of/property.c        |  2 +-
+ 10 files changed, 44 insertions(+), 24 deletions(-)
 
-In fact I had
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Anton Vorontsov <anton@enomsg.org>
+Cc: benh@kernel.crashing.org
+Cc: Colin Cross <ccross@android.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: devicetree@vger.kernel.org
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Josh Cartwright <joshc@codeaurora.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: netdev@vger.kernel.org
+Cc: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Tony Luck <tony.luck@intel.com>
+-- 
+2.27.0
 
- > CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
- > CONFIG_INIT_ON_FREE_DEFAULT_ON=y
-
-in my local kernel config therefore I was not able to see it on my own :-/
-
-Best,
-Oliver
-
-On 16.03.21 09:20, Marc Kleine-Budde wrote:
-> The previous patch ensures that the TX flags (struct
-> can_isotp_ll_options::tx_flags) are 0 for classic CAN frames or a user
-> configured value for CAN-FD frames.
-> 
-> This patch sets the CAN frames flags unconditionally to the ISO-TP TX
-> flags, so that they are initialized to a proper value. Otherwise when
-> running "candump -x" on a classical CAN ISO-TP stream shows wrongly
-> set "B" and "E" flags.
-> 
-> | $ candump any,0:0,#FFFFFFFF -extA
-> | [...]
-> | can0  TX B E  713   [8]  2B 0A 0B 0C 0D 0E 0F 00
-> | can0  TX B E  713   [8]  2C 01 02 03 04 05 06 07
-> | can0  TX B E  713   [8]  2D 08 09 0A 0B 0C 0D 0E
-> | can0  TX B E  713   [8]  2E 0F 00 01 02 03 04 05
-> 
-> Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-> Link: https://lore.kernel.org/r/20210218215434.1708249-2-mkl@pengutronix.de
-> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> ---
->   net/can/isotp.c | 9 +++------
->   1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/can/isotp.c b/net/can/isotp.c
-> index e32d446c121e..430976485d95 100644
-> --- a/net/can/isotp.c
-> +++ b/net/can/isotp.c
-> @@ -215,8 +215,7 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
->   	if (ae)
->   		ncf->data[0] = so->opt.ext_address;
->   
-> -	if (so->ll.mtu == CANFD_MTU)
-> -		ncf->flags = so->ll.tx_flags;
-> +	ncf->flags = so->ll.tx_flags;
->   
->   	can_send_ret = can_send(nskb, 1);
->   	if (can_send_ret)
-> @@ -790,8 +789,7 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
->   		so->tx.sn %= 16;
->   		so->tx.bs++;
->   
-> -		if (so->ll.mtu == CANFD_MTU)
-> -			cf->flags = so->ll.tx_flags;
-> +		cf->flags = so->ll.tx_flags;
->   
->   		skb->dev = dev;
->   		can_skb_set_owner(skb, sk);
-> @@ -939,8 +937,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
->   	}
->   
->   	/* send the first or only CAN frame */
-> -	if (so->ll.mtu == CANFD_MTU)
-> -		cf->flags = so->ll.tx_flags;
-> +	cf->flags = so->ll.tx_flags;
->   
->   	skb->dev = dev;
->   	skb->sk = sk;
-> 
