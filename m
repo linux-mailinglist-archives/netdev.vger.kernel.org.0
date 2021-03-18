@@ -2,169 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 216EA3407A5
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B56B73407A2
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbhCROQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:16:44 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:33240 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231553AbhCROQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:17 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IEEX2O027702;
-        Thu, 18 Mar 2021 07:16:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=K05IV0kSuRw7P0MJtxO9KntzMNK9aI9S5uDbGoNj2Hk=;
- b=TItg7rpTNl9SVo3MLjCC77JfplZxEIivqSoA1MSdFcFVj8OQD6Jzryr5Ip2OTaXZlrUS
- eXIyRUMQxknBxvAYaN6L5ch6C8/Cc840U0/N/Aeot4fXSUyfsdifilzX+QUq6q92kZc1
- gk9Rqy6dOUQXNau53iPjksX8APbHm5DLyrwsLF40CEo6Uhos44j828sxlUfJQxI5wQCP
- mp3EQhtkmfMqH+eWKBnb468omEUgVqD6+XdM38wLqMn1b+P+tI8eQO2QKRbnEGPiTTkX
- V4M35rvNh879vNo5amaAyZ0gpiYtGWqThAt+Adeui9PpSnYj+NKEN2IglI+KHf+AWzVq 5w== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 37c5bf0q6h-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 18 Mar 2021 07:16:12 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
- 2021 07:16:09 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 18 Mar 2021 07:16:09 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id A05EA3F7043;
-        Thu, 18 Mar 2021 07:16:05 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>
-Subject: [net PATCH v2 4/8] octeontx2-af: Return correct CGX RX fifo size
-Date:   Thu, 18 Mar 2021 19:45:45 +0530
-Message-ID: <20210318141549.2622-5-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210318141549.2622-1-hkelam@marvell.com>
-References: <20210318141549.2622-1-hkelam@marvell.com>
+        id S231664AbhCROQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231546AbhCROQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:16 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D528C06174A
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:16 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id 16so7654237ljc.11
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=bYs1Xthv5i1LFr+tljtLjYlXNiB00exl9DF7BJEJ/so=;
+        b=l7hXwlqBw0IekkinPV1IrL8kMOUi52q46CYR4dB8RIn+b3xrYBDJYBYvNidv1oQYnS
+         hOV/ymD5lKSp1Q4GN8a3ZiKljJv+Bj7Zp/tmpFIRzm8+2VAs3o23Fyb4n/LVt4ZzXHUA
+         o43bHgV2DgmPleyfa+RBtjndGqCORrQcTYIe4l3txDpgwKtqItFVkq7wNG+BBBPaaO39
+         u7PHuCSEhwL4TncJsyKFbdZ0c+FdXZePqJiAQnngk5SNNNdje8qjGghDWLQG38veW81+
+         tcs8VtFLz6quexUgeSvkFcaaIl2uvHevAWBcAEW4sYaDI30wVhox5mWxrm1ijNHOxBIg
+         0tPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=bYs1Xthv5i1LFr+tljtLjYlXNiB00exl9DF7BJEJ/so=;
+        b=Dp5LNum13bIbfLPgwMk4QPEy1pe+bx77i6wYA37QlTYvqqfb6uwoQrP05MYOMWLCoy
+         jVVeCSmnzWKLI+DKd3dF8XJTwX5OnzK/RZsBE6oA0Np0fvPb/l6IaYdADxppxI5Rzc4d
+         kLwwqohti2f/sPOrwfJGL2QW/kx/vAYywFslVyFcPbx+6VtMPURmLbkiPHz0pjk1Kt0k
+         yLZ6c5LCfOhZ4ItU8IFHNe9uJi4Q12d9eCSt8ni5B/YPiRbV91vKjkJQM68rsDpUvDqR
+         8GyrgFJ/eScYyNVneFkWmYTrVoeu7yVNkhREwL6fea+u8jwq24BJf7VnznCry89vS+qn
+         klSQ==
+X-Gm-Message-State: AOAM533vhG0YsqXeHf6d5VV1sroJM7MNlAM6Q5LQrFysmUOnhQKdEJz5
+        wZhSPaPvt34d9rJbRkFKDMdzxQ==
+X-Google-Smtp-Source: ABdhPJzOccmt6RggYkbg94ODgFdyd+G0/CMsH92/o2CoBvA9qM+fmpZ2QW1Lzq1+4I3sBDyPH2hKfA==
+X-Received: by 2002:a2e:b537:: with SMTP id z23mr5343739ljm.350.1616076975037;
+        Thu, 18 Mar 2021 07:16:15 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id w26sm237382lfr.186.2021.03.18.07.16.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 07:16:14 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH v2 net-next 4/8] net: dsa: mv88e6xxx: Remove some bureaucracy around querying the VTU
+Date:   Thu, 18 Mar 2021 15:15:46 +0100
+Message-Id: <20210318141550.646383-5-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210318141550.646383-1-tobias@waldekranz.com>
+References: <20210318141550.646383-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-18_07:2021-03-17,2021-03-18 signatures=0
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+The hardware has a somewhat quirky protocol for reading out the VTU
+entry for a particular VID. But there is no reason why we cannot
+create a better API for ourselves in the driver.
 
-CGX receive buffer size is a constant value and
-cannot be read from CGX0 block always since
-CGX0 may not enabled everytime. Hence return CGX
-receive buffer size from first enabled CGX block
-instead of CGX0.
-
-Fixes: 6e54e1c5399a ("octeontx2-af: cn10K: MTU configuration")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/rvu.h    |  1 +
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c    | 18 ++++++++++++++++--
- .../marvell/octeontx2/af/rvu_debugfs.c         |  9 +++++----
- 3 files changed, 22 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 45 ++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index fa6e46e36ae..76f399229dd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -678,6 +678,7 @@ void npc_read_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
- 			 u8 *intf, u8 *ena);
- bool is_mac_feature_supported(struct rvu *rvu, int pf, int feature);
- u32  rvu_cgx_get_fifolen(struct rvu *rvu);
-+void *rvu_first_cgx_pdata(struct rvu *rvu);
- 
- /* CPT APIs */
- int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index e668e482383..6e2bf4fcd29 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -89,6 +89,21 @@ void *rvu_cgx_pdata(u8 cgx_id, struct rvu *rvu)
- 	return rvu->cgx_idmap[cgx_id];
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 0a4e467179c9..c18c55e1617e 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1502,13 +1502,23 @@ static int mv88e6xxx_vtu_setup(struct mv88e6xxx_chip *chip)
+ 	return mv88e6xxx_g1_vtu_flush(chip);
  }
  
-+/* Return first enabled CGX instance if none are enabled then return NULL */
-+void *rvu_first_cgx_pdata(struct rvu *rvu)
-+{
-+	int first_enabled_cgx = 0;
-+	void *cgxd = NULL;
-+
-+	for (; first_enabled_cgx < rvu->cgx_cnt_max; first_enabled_cgx++) {
-+		cgxd = rvu_cgx_pdata(first_enabled_cgx, rvu);
-+		if (cgxd)
-+			break;
-+	}
-+
-+	return cgxd;
-+}
-+
- /* Based on P2X connectivity find mapped NIX block for a PF */
- static void rvu_map_cgx_nix_block(struct rvu *rvu, int pf,
- 				  int cgx_id, int lmac_id)
-@@ -711,10 +726,9 @@ int rvu_mbox_handler_cgx_features_get(struct rvu *rvu,
- u32 rvu_cgx_get_fifolen(struct rvu *rvu)
+-static int mv88e6xxx_vtu_getnext(struct mv88e6xxx_chip *chip,
+-				 struct mv88e6xxx_vtu_entry *entry)
++static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
++			     struct mv88e6xxx_vtu_entry *entry)
  {
- 	struct mac_ops *mac_ops;
--	int rvu_def_cgx_id = 0;
- 	u32 fifo_len;
++	int err;
++
+ 	if (!chip->info->ops->vtu_getnext)
+ 		return -EOPNOTSUPP;
  
--	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
-+	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
- 	fifo_len = mac_ops ? mac_ops->fifo_len : 0;
+-	return chip->info->ops->vtu_getnext(chip, entry);
++	entry->vid = vid ? vid - 1 : mv88e6xxx_max_vid(chip);
++	entry->valid = false;
++
++	err = chip->info->ops->vtu_getnext(chip, entry);
++
++	if (entry->vid != vid)
++		entry->valid = false;
++
++	return err;
+ }
  
- 	return fifo_len;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index dc946953af0..b4c53b19f53 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -331,7 +331,6 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
- 	struct rvu *rvu = filp->private;
- 	struct pci_dev *pdev = NULL;
- 	struct mac_ops *mac_ops;
--	int rvu_def_cgx_id = 0;
- 	char cgx[10], lmac[10];
- 	struct rvu_pfvf *pfvf;
- 	int pf, domain, blkid;
-@@ -339,7 +338,10 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
- 	u16 pcifunc;
+ static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
+@@ -1615,19 +1625,13 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+ 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+ 		return 0;
  
- 	domain = 2;
--	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
-+	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
-+	/* There can be no CGX devices at all */
-+	if (!mac_ops)
-+		return 0;
- 	seq_printf(filp, "PCI dev\t\tRVU PF Func\tNIX block\t%s\tLMAC\n",
- 		   mac_ops->name);
- 	for (pf = 0; pf < rvu->hw->total_pfs; pf++) {
-@@ -1830,7 +1832,6 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
- {
- 	struct mac_ops *mac_ops;
- 	unsigned long lmac_bmap;
--	int rvu_def_cgx_id = 0;
- 	int i, lmac_id;
- 	char dname[20];
- 	void *cgx;
-@@ -1838,7 +1839,7 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
- 	if (!cgx_get_cgxcnt_max())
- 		return;
+-	vlan.vid = vid - 1;
+-	vlan.valid = false;
+-
+-	err = mv88e6xxx_vtu_getnext(chip, &vlan);
++	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
+ 	if (err)
+ 		return err;
  
--	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
-+	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
- 	if (!mac_ops)
- 		return;
+ 	if (!vlan.valid)
+ 		return 0;
+ 
+-	if (vlan.vid != vid)
+-		return 0;
+-
+ 	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
+ 		if (dsa_is_dsa_port(ds, i) || dsa_is_cpu_port(ds, i))
+ 			continue;
+@@ -1709,15 +1713,12 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
+ 		if (err)
+ 			return err;
+ 	} else {
+-		vlan.vid = vid - 1;
+-		vlan.valid = false;
+-
+-		err = mv88e6xxx_vtu_getnext(chip, &vlan);
++		err = mv88e6xxx_vtu_get(chip, vid, &vlan);
+ 		if (err)
+ 			return err;
+ 
+ 		/* switchdev expects -EOPNOTSUPP to honor software VLANs */
+-		if (vlan.vid != vid || !vlan.valid)
++		if (!vlan.valid)
+ 			return -EOPNOTSUPP;
+ 
+ 		fid = vlan.fid;
+@@ -1994,14 +1995,11 @@ static int mv88e6xxx_port_vlan_join(struct mv88e6xxx_chip *chip, int port,
+ 	struct mv88e6xxx_vtu_entry vlan;
+ 	int i, err;
+ 
+-	vlan.vid = vid - 1;
+-	vlan.valid = false;
+-
+-	err = mv88e6xxx_vtu_getnext(chip, &vlan);
++	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
+ 	if (err)
+ 		return err;
+ 
+-	if (vlan.vid != vid || !vlan.valid) {
++	if (!vlan.valid) {
+ 		memset(&vlan, 0, sizeof(vlan));
+ 
+ 		err = mv88e6xxx_atu_new(chip, &vlan.fid);
+@@ -2097,17 +2095,14 @@ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
+ 	if (!vid)
+ 		return -EOPNOTSUPP;
+ 
+-	vlan.vid = vid - 1;
+-	vlan.valid = false;
+-
+-	err = mv88e6xxx_vtu_getnext(chip, &vlan);
++	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
+ 	if (err)
+ 		return err;
+ 
+ 	/* If the VLAN doesn't exist in hardware or the port isn't a member,
+ 	 * tell switchdev that this VLAN is likely handled in software.
+ 	 */
+-	if (vlan.vid != vid || !vlan.valid ||
++	if (!vlan.valid ||
+ 	    vlan.member[port] == MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_NON_MEMBER)
+ 		return -EOPNOTSUPP;
  
 -- 
-2.17.1
+2.25.1
 
