@@ -2,188 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC75340795
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D7B334079C
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231566AbhCROQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:16:34 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55056 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231422AbhCROQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:08 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IEF9f3027309;
-        Thu, 18 Mar 2021 07:16:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=SZ+UGxkXbFpkA2KcPzRUnYIYyf9aSNpAYvUcq6OsUJ8=;
- b=S/knhGN9d66jNyF6yOt4n4M7dKkgT1j90qMtJLlU8WN6OBLzcquoY2FEll9mVpH/XMmj
- i1QY1reOatFzzM0d4DRQ5TggeL/N0R3mKIDRzn9oEmOF1AX+eUh9LxFVv69ATVnHYVp6
- 2iOE5WG1BCEzPpmvkPSrP91e7r4buVv5WlQgyw2kML0A5wQUL4HJ8NdA6ufrb7f51KrR
- 7+0yVMOD+9qFDAztFhBlirBYz4/ZY3dN2h3EcIV89j5wfCUeelmRQujzaQQikKQ5RHox
- lNYbvyIdyrZwouwQDX0Cdt5+neGeWsvrkPgWxElnvJsYyTQCzoaz67clqpMoZznf5/Rw yw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 37b5vdpkat-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 18 Mar 2021 07:16:02 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
- 2021 07:16:01 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 18 Mar 2021 07:16:01 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id DF5663F7040;
-        Thu, 18 Mar 2021 07:15:57 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>
-Subject: [net PATCH v2 2/8] octeontx2-af: Formatting debugfs entry rsrc_alloc.
-Date:   Thu, 18 Mar 2021 19:45:43 +0530
-Message-ID: <20210318141549.2622-3-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210318141549.2622-1-hkelam@marvell.com>
-References: <20210318141549.2622-1-hkelam@marvell.com>
+        id S231633AbhCROQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231467AbhCROQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:15 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AEBC06175F
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:14 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id 15so7758980ljj.0
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=kY/zRgZtVSmQ9x3rkAtUL3LZBddp1dUIHUnDZROHtsQ=;
+        b=kgTthgNFqIuhbkq60fhMSYUKq/BD1H8bTEmDYLeQa9w+apMg1WR+am+y18VzDejyyr
+         IHWkd4E6UjtNG9rytGVGhuBT4ceqDKEpAOsvs2xkYS7Pb4rVEkOE/7DjnF3cEAkVsm4U
+         UuYMhGozN+vHOES+f5hAel0lzpDqDa9vjBIa8t3pVRVfDC3FCKJiz7xXUsidwvsXb7Oc
+         C5qX7Le8a8fu9JdHy8VlvwAUXmo/80piDVsr9uRwhpdb/9YyOZLaaOM/b3K8p21B+w/U
+         7jlkryuZbZ7SXAuBu5xT29JXMDrWiq+q8RjEp+VnZsGlCQ/nbyf5RYOunoAI5sGa2Np6
+         9VJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=kY/zRgZtVSmQ9x3rkAtUL3LZBddp1dUIHUnDZROHtsQ=;
+        b=YPSCZlyMGmvS2iCuJ/SPGDsDmOl8ime4um3SvWT0Gk0fxHUvQZmxKqwEV2L99SRvjr
+         0G60Rb10B4Bq9xAh0phWwjw0bG+K0UrSIItyI32X6OmKggMsRG5OuWQqBrOn7Wsqq/Cn
+         nth5gMkExzgz6/8ITf3mIk6NidLbYXAaqyUnOn64s+hAbC+zMMVi6PWWi1yGgy1Re0jj
+         qawE+YHeSeSkdr+jRDfCLKII+t8Yf13ojqccb3fSoY7lLQb//XSLbp5Wg77i3kaOTX7p
+         atuJY9RiZBwrCNTtuFWvfOVQZxWuxiB0nrJycfhfIs40s6KqPxOnYN+SG1O27XtIwxit
+         CmNw==
+X-Gm-Message-State: AOAM530YnZXhY4Ic1q8OGA54xyytzmlKLdIsQamHDJZvnvI/tYUmHrwu
+        5uv4Kz2k4pF2klM1ckWnFl3b7g==
+X-Google-Smtp-Source: ABdhPJy7sFJ8KWns8Xr966PWuqkpT+eNDqezumXhe/yVVOf5kxa/nEjbxcIG3Z8Gwq5AFxVYaqmaJQ==
+X-Received: by 2002:a2e:9d14:: with SMTP id t20mr5577231lji.391.1616076973024;
+        Thu, 18 Mar 2021 07:16:13 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id w26sm237382lfr.186.2021.03.18.07.16.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 07:16:12 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH v2 net-next 1/8] net: dsa: Add helper to resolve bridge port from DSA port
+Date:   Thu, 18 Mar 2021 15:15:43 +0100
+Message-Id: <20210318141550.646383-2-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210318141550.646383-1-tobias@waldekranz.com>
+References: <20210318141550.646383-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-18_07:2021-03-17,2021-03-18 signatures=0
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rakesh Babu <rsaladi2@marvell.com>
+In order for a driver to be able to query a bridge for information
+about itself, e.g. reading out port flags, it has to use a netdev that
+is known to the bridge. In the simple case, that is just the netdev
+representing the port, e.g. swp0 or swp1 in this example:
 
-With the existing rsrc_alloc's format, there is misalignment for the
-pcifunc entries whose VF's index is a double digit. This patch fixes
-this.
+   br0
+   / \
+swp0 swp1
 
-    pcifunc     NPA         NIX0        NIX1        SSO GROUP   SSOWS
-    TIM         CPT0        CPT1        REE0        REE1
-    PF0:VF0     8           5
-    PF0:VF1     9                       3
-    PF0:VF10    18          10
-    PF0:VF11    19                      8
-    PF0:VF12    20          11
-    PF0:VF13    21                      9
-    PF0:VF14    22          12
-    PF0:VF15    23                      10
-    PF1         0           0
+But in the case of an offloaded lag, this will be the bond or team
+interface, e.g. bond0 in this example:
 
-Fixes: 23205e6d06d4 ("octeontx2-af: Dump current resource provisioning status")
-Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+     br0
+     /
+  bond0
+   / \
+swp0 swp1
+
+Add a helper that hides some of this complexity from the
+drivers. Then, redefine dsa_port_offloads_bridge_port using the helper
+to avoid double accounting of the set of possible offloaded uppers.
+
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- .../marvell/octeontx2/af/rvu_debugfs.c        | 46 ++++++++++++-------
- 1 file changed, 29 insertions(+), 17 deletions(-)
+ include/net/dsa.h  | 14 ++++++++++++++
+ net/dsa/dsa_priv.h | 14 +-------------
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index aa2ca8780b9..dc946953af0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -234,12 +234,14 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
- 					  char __user *buffer,
- 					  size_t count, loff_t *ppos)
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index dac303edd33d..5c4340ecfeb2 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -493,6 +493,20 @@ static inline bool dsa_port_is_vlan_filtering(const struct dsa_port *dp)
+ 		return dp->vlan_filtering;
+ }
+ 
++static inline
++struct net_device *dsa_port_to_bridge_port(const struct dsa_port *dp)
++{
++	if (!dsa_is_user_port(dp->ds, dp->index))
++		return NULL;
++
++	if (dp->lag_dev)
++		return dp->lag_dev;
++	else if (dp->hsr_dev)
++		return dp->hsr_dev;
++
++	return dp->slave;
++}
++
+ typedef int dsa_fdb_dump_cb_t(const unsigned char *addr, u16 vid,
+ 			      bool is_static, void *data);
+ struct dsa_switch_ops {
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 9d4b0e9b1aa1..4c43c5406834 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -233,19 +233,7 @@ extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
+ static inline bool dsa_port_offloads_bridge_port(struct dsa_port *dp,
+ 						 struct net_device *dev)
  {
--	int index, off = 0, flag = 0, go_back = 0, off_prev;
-+	int index, off = 0, flag = 0, go_back = 0, len = 0;
- 	struct rvu *rvu = filp->private_data;
- 	int lf, pf, vf, pcifunc;
- 	struct rvu_block block;
- 	int bytes_not_copied;
-+	int lf_str_size = 12;
- 	int buf_size = 2048;
-+	char *lfs;
- 	char *buf;
+-	/* Switchdev offloading can be configured on: */
+-
+-	if (dev == dp->slave)
+-		/* DSA ports directly connected to a bridge, and event
+-		 * was emitted for the ports themselves.
+-		 */
+-		return true;
+-
+-	if (dp->lag_dev == dev)
+-		/* DSA ports connected to a bridge via a LAG */
+-		return true;
+-
+-	return false;
++	return dsa_port_to_bridge_port(dp) == dev;
+ }
  
- 	/* don't allow partial reads */
-@@ -249,12 +251,18 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
- 	buf = kzalloc(buf_size, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOSPC;
--	off +=	scnprintf(&buf[off], buf_size - 1 - off, "\npcifunc\t\t");
-+
-+	lfs = kzalloc(lf_str_size, GFP_KERNEL);
-+	if (!lfs)
-+		return -ENOMEM;
-+	off +=	scnprintf(&buf[off], buf_size - 1 - off, "%-*s", lf_str_size,
-+			  "pcifunc");
- 	for (index = 0; index < BLK_COUNT; index++)
--		if (strlen(rvu->hw->block[index].name))
--			off +=	scnprintf(&buf[off], buf_size - 1 - off,
--					  "%*s\t", (index - 1) * 2,
--					  rvu->hw->block[index].name);
-+		if (strlen(rvu->hw->block[index].name)) {
-+			off += scnprintf(&buf[off], buf_size - 1 - off,
-+					 "%-*s", lf_str_size,
-+					 rvu->hw->block[index].name);
-+		}
- 	off += scnprintf(&buf[off], buf_size - 1 - off, "\n");
- 	for (pf = 0; pf < rvu->hw->total_pfs; pf++) {
- 		for (vf = 0; vf <= rvu->hw->total_vfs; vf++) {
-@@ -263,14 +271,15 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
- 				continue;
- 
- 			if (vf) {
-+				sprintf(lfs, "PF%d:VF%d", pf, vf - 1);
- 				go_back = scnprintf(&buf[off],
- 						    buf_size - 1 - off,
--						    "PF%d:VF%d\t\t", pf,
--						    vf - 1);
-+						    "%-*s", lf_str_size, lfs);
- 			} else {
-+				sprintf(lfs, "PF%d", pf);
- 				go_back = scnprintf(&buf[off],
- 						    buf_size - 1 - off,
--						    "PF%d\t\t", pf);
-+						    "%-*s", lf_str_size, lfs);
- 			}
- 
- 			off += go_back;
-@@ -278,20 +287,22 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
- 				block = rvu->hw->block[index];
- 				if (!strlen(block.name))
- 					continue;
--				off_prev = off;
-+				len = 0;
-+				lfs[len] = '\0';
- 				for (lf = 0; lf < block.lf.max; lf++) {
- 					if (block.fn_map[lf] != pcifunc)
- 						continue;
- 					flag = 1;
--					off += scnprintf(&buf[off], buf_size - 1
--							- off, "%3d,", lf);
-+					len += sprintf(&lfs[len], "%d,", lf);
- 				}
--				if (flag && off_prev != off)
--					off--;
--				else
--					go_back++;
-+
-+				if (flag)
-+					len--;
-+				lfs[len] = '\0';
- 				off += scnprintf(&buf[off], buf_size - 1 - off,
--						"\t");
-+						 "%-*s", lf_str_size, lfs);
-+				if (!strlen(lfs))
-+					go_back += lf_str_size;
- 			}
- 			if (!flag)
- 				off -= go_back;
-@@ -303,6 +314,7 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
- 	}
- 
- 	bytes_not_copied = copy_to_user(buffer, buf, off);
-+	kfree(lfs);
- 	kfree(buf);
- 
- 	if (bytes_not_copied)
+ static inline bool dsa_port_offloads_bridge(struct dsa_port *dp,
 -- 
-2.17.1
+2.25.1
 
