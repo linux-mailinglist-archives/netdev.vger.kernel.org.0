@@ -2,88 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C5D340126
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 09:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57042340135
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 09:51:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhCRIpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 04:45:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53590 "EHLO mail.kernel.org"
+        id S229698AbhCRIvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 04:51:07 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40434 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229704AbhCRIpK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 04:45:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A0AA864EF9;
-        Thu, 18 Mar 2021 08:45:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616057110;
-        bh=IifrKZQiEWghQTpvbwlZtaVxkHJIO+RuZrr2c7oPbzM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LPW7Tg1yOM+DTIm5e9XHZlTHwTXHCMM+o4Ke72VPKG0rIh7gK7UrBGoRf0XHwdkhU
-         R0klymOrpWvrC85yYbV4bdGx84/SVjEXaVZSwkn6MLCUcqXmioOq9+SbL5NZDDfTu1
-         Qk+CspzR8Q0N86HH1s5ChFAk7K8HyD7pI++snCAnu9FJKe7GcMRb5MrtMHEzNzmGpx
-         FqNaplblmw1R3kM/ide+pjX0/k0bggm6DFiGgLIKs4uYio+tYPiiifO1vmDINbSs/K
-         X5FfKiqT9qUfzwPNfWBr8MfaBN8IjxkxNLBFHibX2DYt8uLR168Fi6oKcgX0COM5/z
-         xME7mE26SGxUQ==
-Date:   Thu, 18 Mar 2021 10:45:06 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jarvis Jiang <jarvis.w.jiang@gmail.com>
-Cc:     davem@davemloft.net, rppt@linux.ibm.com, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, cchen50@lenovo.com, mpearson@lenovo.com
-Subject: Re: [PATCH] Add MHI bus support and driver for T99W175 5G modem
-Message-ID: <YFMTEr5yGU0owYoM@unreal>
-References: <20210316124237.3469-1-jarvis.w.jiang@gmail.com>
+        id S229558AbhCRIu5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Mar 2021 04:50:57 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 22201AC17;
+        Thu, 18 Mar 2021 08:50:56 +0000 (UTC)
+From:   Mian Yousaf Kaukab <ykaukab@suse.de>
+To:     jaswinder.singh@linaro.org, ilias.apalodimas@linaro.org,
+        davem@davemloft.net, kuba@kernel.org, masahisa.kojima@linaro.org,
+        osaki.yoshitoyo@socionext.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mian Yousaf Kaukab <ykaukab@suse.de>, stable@vger.kernel.org
+Subject: [PATCH net] netsec: restore phy power state after controller reset
+Date:   Thu, 18 Mar 2021 09:50:26 +0100
+Message-Id: <20210318085026.30475-1-ykaukab@suse.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210316124237.3469-1-jarvis.w.jiang@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 05:42:37AM -0700, Jarvis Jiang wrote:
-> T99W175 using MBIM or RmNet over PCIe interface with
-> MHI protocol support.
-> Ported from IPQ8072 platform, including MHI, MBIM, RmNet
->
-> Supporting below PCI devices:
->
->   PCI_DEVICE(0x17cb, 0x0300)
->   PCI_DEVICE(0x17cb, 0x0301)
->   PCI_DEVICE(0x17cb, 0x0302)
->   PCI_DEVICE(0x17cb, 0x0303)
->   PCI_DEVICE(0x17cb, 0x0304)
->   PCI_DEVICE(0x17cb, 0x0305)
->   PCI_DEVICE(0x17cb, 0x0306)
->   PCI_DEVICE(0x105b, 0xe0ab)
->   PCI_DEVICE(0x105b, 0xe0b0)
->   PCI_DEVICE(0x105b, 0xe0b1)
->   PCI_DEVICE(0x105b, 0xe0b3)
->   PCI_DEVICE(0x1269, 0x00b3)
->   PCI_DEVICE(0x03f0, 0x0a6c)
->
-> Signed-off-by: Jarvis Jiang <jarvis.w.jiang@gmail.com>
+Since commit 8e850f25b581 ("net: socionext: Stop PHY before resetting
+netsec") netsec_netdev_init() power downs phy before resetting the
+controller. However, the state is not restored once the reset is
+complete. As a result it is not possible to bring up network on a
+platform with Broadcom BCM5482 phy.
 
-<...>
+Fix the issue by restoring phy power state after controller reset is
+complete.
 
-> +FOXCONN 5G MODEM DRIVER
-> +M:	Jarvis Jiang <jarvis.w.jiang@gmail.com>
-> +S:	Orphan
-> +F:	drivers/bus/mhi/
-> +F:	drivers/net/ethernet/qualcomm/rmnet/
-> +F:	include/linux/ipc_logging.h
-> +F:	include/linux/mhi.h
-> +F:	include/linux/mod_devicetable.h
-> +F:	include/linux/msm-bus.h
-> +F:	include/linux/msm_pcie.h
+Fixes: 8e850f25b581 ("net: socionext: Stop PHY before resetting netsec")
+Cc: stable@vger.kernel.org
+Signed-off-by: Mian Yousaf Kaukab <ykaukab@suse.de>
+---
+ drivers/net/ethernet/socionext/netsec.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-<...>
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index 3c53051bdacf..200785e703c8 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -1715,14 +1715,17 @@ static int netsec_netdev_init(struct net_device *ndev)
+ 		goto err1;
+ 
+ 	/* set phy power down */
+-	data = netsec_phy_read(priv->mii_bus, priv->phy_addr, MII_BMCR) |
+-		BMCR_PDOWN;
+-	netsec_phy_write(priv->mii_bus, priv->phy_addr, MII_BMCR, data);
++	data = netsec_phy_read(priv->mii_bus, priv->phy_addr, MII_BMCR);
++	netsec_phy_write(priv->mii_bus, priv->phy_addr, MII_BMCR,
++			 data | BMCR_PDOWN);
+ 
+ 	ret = netsec_reset_hardware(priv, true);
+ 	if (ret)
+ 		goto err2;
+ 
++	/* Restore phy power state */
++	netsec_phy_write(priv->mii_bus, priv->phy_addr, MII_BMCR, data);
++
+ 	spin_lock_init(&priv->desc_ring[NETSEC_RING_TX].lock);
+ 	spin_lock_init(&priv->desc_ring[NETSEC_RING_RX].lock);
+ 
+-- 
+2.26.2
 
-> +F:	include/linux/netdevice.h
-> +F:	include/uapi/linux/if_link.h
-> +F:	include/uapi/linux/msm_rmnet.h
-> +F:	mm/memblock.c
-> +F:	net/core/dev.c
-
-That's quite a statement.
-
-Thanks
