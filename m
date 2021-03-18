@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8D4340797
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5411734079E
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbhCROQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:16:35 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:40338 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231429AbhCROQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:09 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IEEopY027789;
-        Thu, 18 Mar 2021 07:15:55 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=wPUNDCLGskU7nQIK/sddSZ6z442UETQh33ZYC0h8KJA=;
- b=jEhVrO5WeAMHLobe+DAUuQjjcItrxPEd6nJSY8cnsjdTdG+3flE9AW4xJfCvYYTMGjgs
- IIRCU+4QEuKqz8u0LCt8fBwyX5cw4ihH1kLjIL9ofA+ifs5Zq4RSCHwXx2GgmvFAiIXR
- m2bA3eFk1m2rjzElPtH0ugw7Zt2V95gOPs8Qt7UgSrBsrSQVnQ+bM79mw5eQV3/kh2/S
- 544tQ9cfBOoM+7F9XsQq7sWZoXtxmSlXasUP7R29614l4KmPjak9unABzPSpHOLsTxlk
- /sQ4pl/N6KEBlnxqWv7kce8yvUygfTcQSLysl94cARWisrpdQcKPngudOMZAfTfe2D55 PA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 37c5bf0q3k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 18 Mar 2021 07:15:55 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
- 2021 07:15:53 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 18 Mar 2021 07:15:53 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 2DB323F703F;
-        Thu, 18 Mar 2021 07:15:49 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>
-Subject: [net PATCH v2 0/8] octeontx2: miscellaneous fixes
-Date:   Thu, 18 Mar 2021 19:45:41 +0530
-Message-ID: <20210318141549.2622-1-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        id S230286AbhCROQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231483AbhCROQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:15 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E385CC06174A
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:13 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id f16so7726978ljm.1
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=RuTogrU6VF/X/a66cNlGy6htEJLtmDYL3EdJknFmnhQ=;
+        b=YZ8skwvgWOBDYiWh94Yn+XwyaA3xF2PBNpNo8b1HrzLCtdlmP8yXpZqItzUrBqr1gy
+         CtimTFkVueQn8so92YuYcGyH49M7XtTDIpiz9iYFoKu1MG43HF1zWXWpCtDKp6gFBrNB
+         Hq4eIYWsdW6LvDkwMQaVPyF4A2g/iMFIurEEGpYpVHHHLJJwEGoctpTL3iICvAYYh+Ah
+         d/e7ePFE3XSRNm9qyFaXjTUYkXghUk2sP8+xwd+JNZ5oQdt0g8TKfKipvLjBpRH55n87
+         slmrmK759fgANJE8jjm2zOmhn9VaIy0AWQP4rjBRYk/1r3FwG1YNF+qG/+Z2+Sdhzh+x
+         g1Dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=RuTogrU6VF/X/a66cNlGy6htEJLtmDYL3EdJknFmnhQ=;
+        b=dhUi51459olqyS16Yehs8VE5o7kO2af+vML/Qq9VjyvLNfZRWv6EUptoGLQ71rwggC
+         /umGT/iC4n3KjtFp6rZcBNzLiX1l3ejJK9AfG8s08XpQFwn0l3hEM0C6f6AR4kPNAfvp
+         wetlqnIj+JUxCKK9bUcO48+ddabGMG9QZXJWaa740DWvp7PCUU7491WWht3qbVm3h4jT
+         vohiAzrLe15O638Yn4OB/AjhHy6roOF5COaygHoRhquRms76m2C3gG/93DL1HZJhvbtA
+         E5S95FUPyB+vT55zjpRPLuUZpox3g/2RzArDUTjMdS7tPV+DC++P9f4orIYlJ8weDYIs
+         Ga3g==
+X-Gm-Message-State: AOAM530hZ27RJ2QLktGze3j8veTXvWgBKh5ZTb7kaT+i1rcwhnXamlT8
+        oEunehxyhaHDPxLwwBAB9NgPfg==
+X-Google-Smtp-Source: ABdhPJyZfS2U3Hz1mT9wbq+SzYZWbo7mxMCYUn3a3akTEi/V7a9VIotXoivZWiBt+ufQa+3CcxOe/Q==
+X-Received: by 2002:a2e:9bd0:: with SMTP id w16mr5371660ljj.465.1616076972466;
+        Thu, 18 Mar 2021 07:16:12 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id w26sm237382lfr.186.2021.03.18.07.16.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 07:16:12 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH v2 net-next 0/8] net: dsa: mv88e6xxx: Offload bridge port flags
+Date:   Thu, 18 Mar 2021 15:15:42 +0100
+Message-Id: <20210318141550.646383-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-18_07:2021-03-17,2021-03-18 signatures=0
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series of patches fixes various issues related to NPC MCAM entry
-management, debugfs, devlink, CGX LMAC mapping, RSS config etc
+Add support for offloading learning and broadcast flooding flags. With
+this in place, mv88e6xx supports offloading of all bridge port flags
+that are currently supported by the bridge.
 
-Change-log:
-v2:
-Fixed below review comments
-	- corrected Fixed tag syntax with 12 digits SHA1
-          and providing space between SHA1 and subject line
-	- remove code improvement patch
-	- make commit description more clear
+Broadcast flooding is somewhat awkward to control as there is no
+per-port bit for this like there is for unknown unicast and unknown
+multicast. Instead we have to update the ATU entry for the broadcast
+address for all currently used FIDs.
 
-Geetha sowjanya (2):
-  octeontx2-af: Fix irq free in rvu teardown
-  octeontx2-pf: Clear RSS enable flag on interace down
+v1 -> v2:
+  - Ensure that mv88e6xxx_vtu_get handles VID 0 (Vladimir)
+  - Fixed off-by-one in mv88e6xxx_port_set_assoc_vector (Vladimir)
+  - Fast age all entries on port when disabling learning (Vladimir)
+  - Correctly detect bridge flags on LAG ports (Vladimir)
 
-Hariprasad Kelam (1):
-  octeontx2-af: fix infinite loop in unmapping NPC counter
+Tobias Waldekranz (8):
+  net: dsa: Add helper to resolve bridge port from DSA port
+  net: dsa: mv88e6xxx: Avoid useless attempts to fast-age LAGs
+  net: dsa: mv88e6xxx: Provide generic VTU iterator
+  net: dsa: mv88e6xxx: Remove some bureaucracy around querying the VTU
+  net: dsa: mv88e6xxx: Use standard helper for broadcast address
+  net: dsa: mv88e6xxx: Flood all traffic classes on standalone ports
+  net: dsa: mv88e6xxx: Offload bridge learning flag
+  net: dsa: mv88e6xxx: Offload bridge broadcast flooding flag
 
-Rakesh Babu (1):
-  octeontx2-af: Formatting debugfs entry rsrc_alloc.
+ drivers/net/dsa/mv88e6xxx/chip.c | 272 ++++++++++++++++++++++---------
+ drivers/net/dsa/mv88e6xxx/port.c |  21 +++
+ drivers/net/dsa/mv88e6xxx/port.h |   2 +
+ include/net/dsa.h                |  14 ++
+ net/dsa/dsa_priv.h               |  14 +-
+ 5 files changed, 234 insertions(+), 89 deletions(-)
 
-Subbaraya Sundeep (4):
-  octeontx2-pf: Do not modify number of rules
-  octeontx2-af: Remove TOS field from MKEX TX
-  octeontx2-af: Return correct CGX RX fifo size
-  octeontx2-af: Fix uninitialized variable warning
+-- 
+2.25.1
 
- .../marvell/octeontx2/af/npc_profile.h        |  2 -
- .../net/ethernet/marvell/octeontx2/af/rvu.c   |  6 +-
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  1 +
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 18 +++++-
- .../marvell/octeontx2/af/rvu_debugfs.c        | 55 ++++++++++++-------
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  2 +-
- .../ethernet/marvell/octeontx2/af/rvu_npc.c   |  2 +-
- .../marvell/octeontx2/nic/otx2_flows.c        |  4 +-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  5 ++
- 9 files changed, 65 insertions(+), 30 deletions(-)
-
---
-2.17.1
