@@ -2,133 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93098340811
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44670340826
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:51:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231470AbhCROob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
+        id S229745AbhCROvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230269AbhCROoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:44:24 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C16C06174A
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:44:24 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id u5so4358673ejn.8
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:44:24 -0700 (PDT)
+        with ESMTP id S231429AbhCROuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:50:55 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90493C061760
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:50:55 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id n8so1316951oie.10
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:50:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=eKrCCFZgJJfBC8h7miSHzHGHAvCXjx1HSD845OoM00M=;
-        b=JeYC+SxeY4UmpJ2PRRm/KLHzgeEA+ZE+rkqNsWzr6nQmSY1wXnv2vqfdF9+WMtJ5Dn
-         rzOMdGly2GCPqhrSkOpRLlLIQX4zDMkFqnIFZT4TDGqV3AfR7CbaoxMDoLM0tpX5hl3I
-         g1zzSCvZaWs7k0GzPN4k8+pvxWkhWHpVVOojTxFSfhI5qOLmx7gu+AmLD+dUZ/hHQByn
-         sZVuJNGaunYsApkwFybLsOMpxL53/5CUm02MtW7VtwFv8y8wdqgPSBAMgeKjdyxisQ8c
-         akC9IRwm1Ksp7LUKa6y15WF9reF4QnHuCtsK6YVKf6AI2lChrXGVTaRGIx0tTLG4UjwP
-         aVrA==
+        bh=og89K6jV3HFX8PE96KX/c5Zy0nyRjtFamlhCSJhcZac=;
+        b=BbZoR5bKJdUlBsWePVP9pZFO52LSwx83bqvlA+iFEHEJbXRLCIjazsIWJ7Viy6/Dqg
+         ms11HMn9qzvtUSKYV7kiYroJ8GoudjnuRaAotpDXCJkiH2454Zsrw0r8xOeT1eDT6YxS
+         q+3+MBnu38qnO454OYLGBpBP8Gq2YHx7vcVu1igvYYB7TkhTKWyAqpE95EEQZcA7yNgB
+         R/S0blHSK+wctWLHT5XamyOYHV+RON+tPa7QPNHdEwmYkO7LDY4BJHU3BGXMaxeArqVY
+         EZJyG7pBZFDAX8JWQxpbOFMez+cg1l1eLriE/6/arkjyVorRKAMnxrrUHlTsEIB5mVvO
+         PCAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=eKrCCFZgJJfBC8h7miSHzHGHAvCXjx1HSD845OoM00M=;
-        b=jpP23YVU7HAq083HLdqeU9heo5ayQLX/0zthydcHYv5VxPr7NWVM/aH+J/AurerxsQ
-         1eEhJNkHN7yaPKcqVfaaTo8V4KFrQ7fXpaCQp4Q+BvtTXcVwQxE1Mx+e9037ZpGDOO5w
-         +U7DjzTtP2AxWleXuBTyl5R/I9iRUh46gmOJED+OlavT6BnUWDKjQ5eK+X3Kf8u0gPlX
-         BQyoQu5dOVXksmG21Nu1/CAuv/00BOv2mE2VH1SF8L+i4kFZs9OzPGrF7GgLJxhf+mpT
-         f9gTN5glnfabnfEGvUkb5Occz49zQT3nHp5/iOLSOaCmDn4JgwXmnOmghZzrH2wH7Uwo
-         PVDw==
-X-Gm-Message-State: AOAM5318knkDqQp2huGJA8jyT9gATd7wEods5Sh260aE7oV4zQgHrKEr
-        7uxZjbyarN8BbxsVo0b7Xso=
-X-Google-Smtp-Source: ABdhPJxe5NjlMq36GaIVOHwT47KAddft98qcpEzHUosiSpt1rq8KJBWHXaBwoOBcZwYAp9b86knrbw==
-X-Received: by 2002:a17:906:384e:: with SMTP id w14mr40779678ejc.285.1616078663074;
-        Thu, 18 Mar 2021 07:44:23 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id t6sm2270678edq.48.2021.03.18.07.44.22
+        bh=og89K6jV3HFX8PE96KX/c5Zy0nyRjtFamlhCSJhcZac=;
+        b=LROUJonmgA4Rk2tE0w2XQF9YEiOLNIUlShn3SVAb2G7ViQCFYKjLiT2xSt2qZ6AMpv
+         x6umKjLB/06eBydkM9Oh4K4jIQ++AcRZ8HLh0VPqSAmynKsArILufcTJ8Wy5sR/bJQuw
+         aiTQoxLdQRRn/HIi+j5V2GPKOjuhNobszlgGNRPNmNat3F7dm25llyY6AyOjgTEl2VMO
+         v2vTaqMVc8/hnTYRHhBgtGzvXLiu80rBfalv0pa8fr/PW0AcW3grvkhoXvhVvI9BJbfl
+         SUCEvwdvDTyWgQY+EADXl8hhBVteAYV+ZTiY0jF1gi/cZxFd8saktvhTgxvnzCloD8eu
+         ccWw==
+X-Gm-Message-State: AOAM531wV1ElhSJEJjZfTnQvIKRpbC6ENx+Om7Ke+C0i/mZp0Cn/V0CM
+        C5e2rt6etohcs0yOlOGhcRF1Cw==
+X-Google-Smtp-Source: ABdhPJw88D0okVHzO8aCSbNOnCSK+c61zfhIoBhm9ubX4GrgcqtKVy0DZAl00IvFZIUH6e7eT8sHOA==
+X-Received: by 2002:a05:6808:987:: with SMTP id a7mr3198012oic.162.1616079054839;
+        Thu, 18 Mar 2021 07:50:54 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id r13sm594897oot.41.2021.03.18.07.50.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 07:44:22 -0700 (PDT)
-Date:   Thu, 18 Mar 2021 16:44:21 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/8] net: dsa: Add helper to resolve bridge
- port from DSA port
-Message-ID: <20210318144421.ecnqtrlhfn6zntkx@skbuf>
-References: <20210318141550.646383-1-tobias@waldekranz.com>
- <20210318141550.646383-2-tobias@waldekranz.com>
+        Thu, 18 Mar 2021 07:50:54 -0700 (PDT)
+Date:   Thu, 18 Mar 2021 09:50:52 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 5/5] arm64: dts: qcom: msm8916: Enable modem and WiFi
+Message-ID: <YFNozCCa4fdR5kSb@builder.lan>
+References: <20210312003318.3273536-1-bjorn.andersson@linaro.org>
+ <20210312003318.3273536-6-bjorn.andersson@linaro.org>
+ <f03b639f-f95a-a31a-6615-23cd6154182d@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210318141550.646383-2-tobias@waldekranz.com>
+In-Reply-To: <f03b639f-f95a-a31a-6615-23cd6154182d@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 18, 2021 at 03:15:43PM +0100, Tobias Waldekranz wrote:
-> In order for a driver to be able to query a bridge for information
-> about itself, e.g. reading out port flags, it has to use a netdev that
-> is known to the bridge. In the simple case, that is just the netdev
-> representing the port, e.g. swp0 or swp1 in this example:
-> 
->    br0
->    / \
-> swp0 swp1
-> 
-> But in the case of an offloaded lag, this will be the bond or team
-> interface, e.g. bond0 in this example:
-> 
->      br0
->      /
->   bond0
->    / \
-> swp0 swp1
-> 
-> Add a helper that hides some of this complexity from the
-> drivers. Then, redefine dsa_port_offloads_bridge_port using the helper
-> to avoid double accounting of the set of possible offloaded uppers.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
->  include/net/dsa.h  | 14 ++++++++++++++
->  net/dsa/dsa_priv.h | 14 +-------------
->  2 files changed, 15 insertions(+), 13 deletions(-)
-> 
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index dac303edd33d..5c4340ecfeb2 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -493,6 +493,20 @@ static inline bool dsa_port_is_vlan_filtering(const struct dsa_port *dp)
->  		return dp->vlan_filtering;
->  }
->  
-> +static inline
-> +struct net_device *dsa_port_to_bridge_port(const struct dsa_port *dp)
-> +{
-> +	if (!dsa_is_user_port(dp->ds, dp->index))
-> +		return NULL;
-> +
+On Mon 15 Mar 07:01 CDT 2021, Bryan O'Donoghue wrote:
 
-According to my comment from 8/8, you could have replaced this here with
+> On 12/03/2021 00:33, Bjorn Andersson wrote:
+> > Enable the modem and WiFi subsystems and specify msm8916 specific
+> > firmware path for these and the WCNSS control service.
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >   arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi | 12 ++++++++++++
+> >   arch/arm64/boot/dts/qcom/msm8916.dtsi     |  2 +-
+> >   2 files changed, 13 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+> > index 6aef0c2e4f0a..448e3561ef63 100644
+> > --- a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
+> > @@ -305,6 +305,12 @@ &mdss {
+> >   	status = "okay";
+> >   };
+> > +&mpss {
+> > +	status = "okay";
+> > +
+> > +	firmware-name = "qcom/msm8916/mba.mbn", "qcom/msm8916/modem.mbn";
+> > +};
+> > +
+> >   &pm8916_resin {
+> >   	status = "okay";
+> >   	linux,code = <KEY_VOLUMEDOWN>;
+> > @@ -312,6 +318,8 @@ &pm8916_resin {
+> >   &pronto {
+> >   	status = "okay";
+> > +
+> > +	firmware-name = "qcom/msm8916/wcnss.mbn";
+> >   };
+> 
+> On Debian I have to do this
+> 
+> 
+> index 2a6a23cb14ca..597cdc8f51cc 100644
+> --- a/drivers/remoteproc/qcom_wcnss.c
+> +++ b/drivers/remoteproc/qcom_wcnss.c
+> @@ -33,7 +33,7 @@
+>  #include "qcom_wcnss.h"
+> 
+>  #define WCNSS_CRASH_REASON_SMEM                422
+> -#define WCNSS_FIRMWARE_NAME            "wcnss.mdt"
+> +#define WCNSS_FIRMWARE_NAME            "qcom/msm8916/wcnss.mdt"
+> 
+> so I guess wcnss_probe() -> rproc_alloc() wants this fix too.
+> 
 
-	if (!dp->bridge_dev)
-		return NULL;
+Can you confirm that you're saying that you want below patch, which I
+just merged?
 
-I think it's more intuitive to not return a bridge port if there isn't
-any bridge to speak of. Whether you prefer to do that or not is up to
-you, here's my review tag anyway.
+https://lore.kernel.org/linux-remoteproc/20210312002441.3273183-1-bjorn.andersson@linaro.org/
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+(Which makes it possible to specify firmware name per platform/board)
 
-> +	if (dp->lag_dev)
-> +		return dp->lag_dev;
-> +	else if (dp->hsr_dev)
-> +		return dp->hsr_dev;
-> +
-> +	return dp->slave;
-> +}
-> +
->  typedef int dsa_fdb_dump_cb_t(const unsigned char *addr, u16 vid,
->  			      bool is_static, void *data);
->  struct dsa_switch_ops {
+Regards,
+Bjorn
