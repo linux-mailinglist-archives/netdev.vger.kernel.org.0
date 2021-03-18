@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F519340090
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 09:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1322B340092
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 09:03:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbhCRICb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229752AbhCRICb (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 18 Mar 2021 04:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55688 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbhCRIB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 04:01:57 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FB4C06174A
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 01:01:57 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id 75so3089843lfa.2
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 01:01:57 -0700 (PDT)
+        with ESMTP id S229704AbhCRICB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 04:02:01 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC71EC06174A
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 01:02:00 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id 16so6342756ljc.11
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 01:02:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5ftvg1446N8FMgxYGi171PMe6mdbxrq7Bt/9DXl/ndE=;
-        b=LULvgsyhKFJoStcgY3MGoLrZmzt1k4hyGiRZCh/P15M9sKf26+adCCNCpYxMDbp2Dp
-         P3uZNelepyNbwrpcBBCnE3RSpLEQprMH102R37NKJn7Vaj/ys6wuR9n8ZfhHfOqIX3LQ
-         LHJOscFDaZV6rjDFb2sdqN5sqm4rPs2cWUFgLu/BkFpipc7PFiSgWoh368L0A5yX0wUs
-         iLQgpTImIfmo6K+Etsl8EBg44sdiw4s8WxsgczrBDPuXOYl+RDYAFGIm6i6N3xWEx/9h
-         YxdwMeFu9lQwTblPTMlbvrperiu3fnUvgwgDqyXATgeAXJKBa+s9q1RH5aenFs9AnWLf
-         p5ow==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cIe1Uvj7oaFehOcIYPhM15B/Z4PlB2/52IGYbN2NUD0=;
+        b=LvSadRdFKf+eCHT5juLIX+dXVKNgS+ASE6A8RUPsBhdBniNMMaiQ5yh9CFEjw21Fy7
+         3XCq6Yvc64seQKnVE541XZ58ISoFo2t1Wr95iGi86KJRnK+w98QKBEyKhTZ/AJh2PEK2
+         yATrnsb6ZZm6m8fei6XWl9lndNH8Yhyf2Up0ttZ/MnYD04QoSRmjURoJospmfdDPY2BI
+         hhViHqaKn/sorflGc+pqdhqIhaJXZMx/ET7ZbnBwgdN81iFHb9r7/gsMkyRvMrgnlMv0
+         7ZyD60nRVRTUsp3vp4X0JM5dmPb8nOjGD0pOmYccBxZUh71prQVsBPGKgC654d/sHuTq
+         zQ5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5ftvg1446N8FMgxYGi171PMe6mdbxrq7Bt/9DXl/ndE=;
-        b=gXN0d/nlOipSwDlVCQKfA9RzhAquSBJKNxlMI280UN5krNwHAVwV4yG9FMpxIn8u3S
-         z8I4yb49SJ11NlavN/QXlEU7VIPyY9VGmjNFYdbCHRFOjX6jb2nzRRZb0Igl7p7tXnQJ
-         yYM2luo0swIV+E9s4nd553ThKa0IIwfhqGPeqrTHpmyQYlETGATqzLhkTm6c+zKLxoDU
-         yCSoadkm6eUJY7LYzYZwnCdKZ+YX3Sr3Fxz9/MGlYnpPhyr28rBofzOkclOccEPNJmjK
-         Xle1YUlR5KECSy6C2D3k5bGwB6lHvYMNKDOfS15o2TlzJOTAQz3t86o47NfCrStO0NdB
-         NxEA==
-X-Gm-Message-State: AOAM5321FuRrm9+OHZG/wy5uBtpx5RKwX69lhT+RyhY4JOxVvUp9YbAC
-        zIowJTT5GLmv2uOGlBcwx/k=
-X-Google-Smtp-Source: ABdhPJzu85eT1QxBxcICRRG7gm0Lzxztg44nxBDnMDfHtpU7e/glYwm9aMZzBXbwrkRJGIl803Ipzg==
-X-Received: by 2002:a19:7403:: with SMTP id v3mr4559759lfe.379.1616054515645;
-        Thu, 18 Mar 2021 01:01:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cIe1Uvj7oaFehOcIYPhM15B/Z4PlB2/52IGYbN2NUD0=;
+        b=IMJFuNAhEqdzb3bfxjEESlg68++Ad+x9Gnik+CSi3qkjlvlfBvz5DCIAYS7mz8WG1z
+         zBl6HdnCZ2wkzVHqW7ov2bFAZHnC6D8Gjj3Xh4TI5gQrM1TKzKQC0abgpzsz+jIiAiDE
+         ZiCH+hQLMXPQ3AWeQEnQMj9lm5MAlC9hNyItfynjsudxDriWF/+RK1sYrt/C830FiTeC
+         eU/6F19jCaAcDOjWNwyuIDBsfg+QcK7L9VwHZLhrTz3ZbGfvAcpYz9uY49Uj1bBM626G
+         KlsbSM7WEMhNhpLs4bGI3u269Kl0+tpwGm049M6xYjwcvsMAG/ejYW8oF4ITbB6yHrAs
+         dJzg==
+X-Gm-Message-State: AOAM533xgyBpJHHMHKFY+BLMPeTwItM0K/awlkwSO+7S3/uf8Ucul0/O
+        5ruIJEpcufvzAPpULo7l0MU=
+X-Google-Smtp-Source: ABdhPJzywrgQ2pSHmOsaMcxTJ9XoZ9Bek3umSwzj/n0gT5qrOrHq1+0XjvoVSjRxNG/xNT2uhrU0dA==
+X-Received: by 2002:a2e:b5a5:: with SMTP id f5mr4684559ljn.336.1616054519402;
+        Thu, 18 Mar 2021 01:01:59 -0700 (PDT)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id m19sm142717ljb.10.2021.03.18.01.01.54
+        by smtp.gmail.com with ESMTPSA id m19sm142717ljb.10.2021.03.18.01.01.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 01:01:55 -0700 (PDT)
+        Thu, 18 Mar 2021 01:01:59 -0700 (PDT)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,10 +56,12 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         bcm-kernel-feedback-list@broadcom.com,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH net-next V2 1/2] net: dsa: bcm_sf2: add function finding RGMII register
-Date:   Thu, 18 Mar 2021 09:01:42 +0100
-Message-Id: <20210318080143.32449-1-zajec5@gmail.com>
+Subject: [PATCH net-next V2 2/2] net: dsa: bcm_sf2: fix BCM4908 RGMII reg(s)
+Date:   Thu, 18 Mar 2021 09:01:43 +0100
+Message-Id: <20210318080143.32449-2-zajec5@gmail.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210318080143.32449-1-zajec5@gmail.com>
+References: <20210318080143.32449-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -69,161 +71,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-Simple macro like REG_RGMII_CNTRL_P() is insufficient as:
-1. It doesn't validate port argument
-2. It doesn't support chipsets with non-lineral RGMII regs layout
+BCM4908 has only 1 RGMII reg for controlling port 7.
 
-Missing port validation could result in getting register offset from out
-of array. Random memory -> random offset -> random reads/writes. It
-affected e.g. BCM4908 for REG_RGMII_CNTRL_P(7).
-
-Fixes: a78e86ed586d ("net: dsa: bcm_sf2: Prepare for different register layouts")
+Fixes: 73b7a6047971 ("net: dsa: bcm_sf2: support BCM4908's integrated switch")
 Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/net/dsa/bcm_sf2.c      | 49 +++++++++++++++++++++++++++++-----
- drivers/net/dsa/bcm_sf2_regs.h |  2 --
- 2 files changed, 42 insertions(+), 9 deletions(-)
+ drivers/net/dsa/bcm_sf2.c      | 11 +++++++----
+ drivers/net/dsa/bcm_sf2_regs.h |  1 +
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 3708cd8d7be8..4261a06ad050 100644
+index 4261a06ad050..9150038b60cb 100644
 --- a/drivers/net/dsa/bcm_sf2.c
 +++ b/drivers/net/dsa/bcm_sf2.c
-@@ -32,6 +32,31 @@
- #include "b53/b53_priv.h"
- #include "b53/b53_regs.h"
- 
-+static u16 bcm_sf2_reg_rgmii_cntrl(struct bcm_sf2_priv *priv, int port)
-+{
-+	switch (priv->type) {
-+	case BCM4908_DEVICE_ID:
-+		/* TODO */
-+		break;
-+	default:
+@@ -36,7 +36,12 @@ static u16 bcm_sf2_reg_rgmii_cntrl(struct bcm_sf2_priv *priv, int port)
+ {
+ 	switch (priv->type) {
+ 	case BCM4908_DEVICE_ID:
+-		/* TODO */
 +		switch (port) {
-+		case 0:
-+			return REG_RGMII_0_CNTRL;
-+		case 1:
-+			return REG_RGMII_1_CNTRL;
-+		case 2:
-+			return REG_RGMII_2_CNTRL;
++		case 7:
++			return REG_RGMII_11_CNTRL;
 +		default:
 +			break;
 +		}
-+	}
-+
-+	WARN_ONCE(1, "Unsupported port %d\n", port);
-+
-+	/* RO fallback reg */
-+	return REG_SWITCH_STATUS;
-+}
-+
- /* Return the number of active ports, not counting the IMP (CPU) port */
- static unsigned int bcm_sf2_num_active_ports(struct dsa_switch *ds)
- {
-@@ -693,6 +718,7 @@ static void bcm_sf2_sw_mac_config(struct dsa_switch *ds, int port,
- {
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	u32 id_mode_dis = 0, port_mode;
-+	u32 reg_rgmii_ctrl;
- 	u32 reg;
- 
- 	if (port == core_readl(priv, CORE_IMP0_PRT_ID))
-@@ -716,10 +742,12 @@ static void bcm_sf2_sw_mac_config(struct dsa_switch *ds, int port,
- 		return;
- 	}
- 
-+	reg_rgmii_ctrl = bcm_sf2_reg_rgmii_cntrl(priv, port);
-+
- 	/* Clear id_mode_dis bit, and the existing port mode, let
- 	 * RGMII_MODE_EN bet set by mac_link_{up,down}
- 	 */
--	reg = reg_readl(priv, REG_RGMII_CNTRL_P(port));
-+	reg = reg_readl(priv, reg_rgmii_ctrl);
- 	reg &= ~ID_MODE_DIS;
- 	reg &= ~(PORT_MODE_MASK << PORT_MODE_SHIFT);
- 
-@@ -727,13 +755,14 @@ static void bcm_sf2_sw_mac_config(struct dsa_switch *ds, int port,
- 	if (id_mode_dis)
- 		reg |= ID_MODE_DIS;
- 
--	reg_writel(priv, reg, REG_RGMII_CNTRL_P(port));
-+	reg_writel(priv, reg, reg_rgmii_ctrl);
- }
- 
- static void bcm_sf2_sw_mac_link_set(struct dsa_switch *ds, int port,
- 				    phy_interface_t interface, bool link)
- {
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
-+	u32 reg_rgmii_ctrl;
- 	u32 reg;
- 
- 	if (!phy_interface_mode_is_rgmii(interface) &&
-@@ -741,13 +770,15 @@ static void bcm_sf2_sw_mac_link_set(struct dsa_switch *ds, int port,
- 	    interface != PHY_INTERFACE_MODE_REVMII)
- 		return;
- 
-+	reg_rgmii_ctrl = bcm_sf2_reg_rgmii_cntrl(priv, port);
-+
- 	/* If the link is down, just disable the interface to conserve power */
--	reg = reg_readl(priv, REG_RGMII_CNTRL_P(port));
-+	reg = reg_readl(priv, reg_rgmii_ctrl);
- 	if (link)
- 		reg |= RGMII_MODE_EN;
- 	else
- 		reg &= ~RGMII_MODE_EN;
--	reg_writel(priv, reg, REG_RGMII_CNTRL_P(port));
-+	reg_writel(priv, reg, reg_rgmii_ctrl);
- }
- 
- static void bcm_sf2_sw_mac_link_down(struct dsa_switch *ds, int port,
-@@ -781,11 +812,15 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- {
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	struct ethtool_eee *p = &priv->dev->ports[port].eee;
--	u32 reg, offset;
- 
- 	bcm_sf2_sw_mac_link_set(ds, port, interface, true);
- 
- 	if (port != core_readl(priv, CORE_IMP0_PRT_ID)) {
-+		u32 reg_rgmii_ctrl;
-+		u32 reg, offset;
-+
-+		reg_rgmii_ctrl = bcm_sf2_reg_rgmii_cntrl(priv, port);
-+
- 		if (priv->type == BCM4908_DEVICE_ID ||
- 		    priv->type == BCM7445_DEVICE_ID)
- 			offset = CORE_STS_OVERRIDE_GMIIP_PORT(port);
-@@ -796,7 +831,7 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- 		    interface == PHY_INTERFACE_MODE_RGMII_TXID ||
- 		    interface == PHY_INTERFACE_MODE_MII ||
- 		    interface == PHY_INTERFACE_MODE_REVMII) {
--			reg = reg_readl(priv, REG_RGMII_CNTRL_P(port));
-+			reg = reg_readl(priv, reg_rgmii_ctrl);
- 			reg &= ~(RX_PAUSE_EN | TX_PAUSE_EN);
- 
- 			if (tx_pause)
-@@ -804,7 +839,7 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- 			if (rx_pause)
- 				reg |= RX_PAUSE_EN;
- 
--			reg_writel(priv, reg, REG_RGMII_CNTRL_P(port));
-+			reg_writel(priv, reg, reg_rgmii_ctrl);
- 		}
- 
- 		reg = SW_OVERRIDE | LINK_STS;
+ 		break;
+ 	default:
+ 		switch (port) {
+@@ -1228,9 +1233,7 @@ static const u16 bcm_sf2_4908_reg_offsets[] = {
+ 	[REG_PHY_REVISION]	= 0x14,
+ 	[REG_SPHY_CNTRL]	= 0x24,
+ 	[REG_CROSSBAR]		= 0xc8,
+-	[REG_RGMII_0_CNTRL]	= 0xe0,
+-	[REG_RGMII_1_CNTRL]	= 0xec,
+-	[REG_RGMII_2_CNTRL]	= 0xf8,
++	[REG_RGMII_11_CNTRL]	= 0x014c,
+ 	[REG_LED_0_CNTRL]	= 0x40,
+ 	[REG_LED_1_CNTRL]	= 0x4c,
+ 	[REG_LED_2_CNTRL]	= 0x58,
 diff --git a/drivers/net/dsa/bcm_sf2_regs.h b/drivers/net/dsa/bcm_sf2_regs.h
-index e297b09411f3..3d5515fe43cb 100644
+index 3d5515fe43cb..7bffc80f241f 100644
 --- a/drivers/net/dsa/bcm_sf2_regs.h
 +++ b/drivers/net/dsa/bcm_sf2_regs.h
-@@ -55,8 +55,6 @@ enum bcm_sf2_reg_offs {
- #define CROSSBAR_BCM4908_EXT_GPHY4	1
- #define CROSSBAR_BCM4908_EXT_RGMII	2
- 
--#define REG_RGMII_CNTRL_P(x)		(REG_RGMII_0_CNTRL + (x))
--
- /* Relative to REG_RGMII_CNTRL */
- #define  RGMII_MODE_EN			(1 << 0)
- #define  ID_MODE_DIS			(1 << 1)
+@@ -21,6 +21,7 @@ enum bcm_sf2_reg_offs {
+ 	REG_RGMII_0_CNTRL,
+ 	REG_RGMII_1_CNTRL,
+ 	REG_RGMII_2_CNTRL,
++	REG_RGMII_11_CNTRL,
+ 	REG_LED_0_CNTRL,
+ 	REG_LED_1_CNTRL,
+ 	REG_LED_2_CNTRL,
 -- 
 2.26.2
 
