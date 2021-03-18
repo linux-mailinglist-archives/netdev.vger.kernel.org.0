@@ -2,96 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDD1C340A06
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 17:22:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C089340A18
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 17:24:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232110AbhCRQV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 12:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232134AbhCRQVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 12:21:42 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CADBC06174A;
-        Thu, 18 Mar 2021 09:21:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=LyWJyF9AcLRccJGAGBJ5odsKCObIjdkDuXB2zFkgClI=; b=aQ2VYcqIz0z6Ld0Iyl9983DBw
-        2C52uB0onu8TV5PPxwSqWA4JpLR422RS0wRTjhHVUMLQYGESB1902Q29jjQL9g97OC+wrkl/sxD7T
-        uDZhx5T9d/rUzlp8DmnBoURAVPSgsRpkFMIeldm9XZSbOvSUx2Erum549IWFT0ia2hk4lWn2gtSzQ
-        1ncG2YJyD8wfKdRjcYm9MnRJMg2FfL2loIEQ+zW2R22k7JMIplJAb8z2suxjA+jGB1ed0d5+3XMg5
-        GmzZsCsQmr0xZ/sMouwGjp8emXb/6DYPWmBJtorOpa/+vuKcTSzpBZi3IX6TgrzknwdwTLkvmcouS
-        tzffBdZIA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51442)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id S232149AbhCRQXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 12:23:34 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49652 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232172AbhCRQXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 12:23:18 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lMvQT-000Cni-EI; Thu, 18 Mar 2021 17:23:09 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lMvOl-0003Xa-1E; Thu, 18 Mar 2021 16:21:23 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lMvOi-0008BC-KT; Thu, 18 Mar 2021 16:21:20 +0000
-Date:   Thu, 18 Mar 2021 16:21:20 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: [PATCH net V2 1/1] net: phy: fix invalid phy id when probe using
- C22
-Message-ID: <20210318162120.GR1463@shell.armlinux.org.uk>
-References: <20210318090937.26465-1-vee.khee.wong@intel.com>
- <b63c5068-1203-fcb6-560d-1d2419bb39b0@gmail.com>
- <c921bf7f-e4d1-eefa-c5ae-024d5e8a4845@gmail.com>
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lMvQT-0006Yq-4f; Thu, 18 Mar 2021 17:23:09 +0100
+Subject: Re: [PATCH] selftests/bpf: fix warning comparing pointer to 0
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, shuah@kernel.org
+Cc:     ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1616032552-39866-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <4983305a-3119-bb4b-bb51-520ed5bd28ac@iogearbox.net>
+Date:   Thu, 18 Mar 2021 17:23:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c921bf7f-e4d1-eefa-c5ae-024d5e8a4845@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <1616032552-39866-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26112/Thu Mar 18 12:08:11 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 18, 2021 at 09:02:22AM -0700, Florian Fainelli wrote:
-> On 3/18/2021 6:25 AM, Heiner Kallweit wrote:
-> > On 18.03.2021 10:09, Wong Vee Khee wrote:
-> >> When using Clause-22 to probe for PHY devices such as the Marvell
-> >> 88E2110, PHY ID with value 0 is read from the MII PHYID registers
-> >> which caused the PHY framework failed to attach the Marvell PHY
-> >> driver.
-> >>
-> >> Fixed this by adding a check of PHY ID equals to all zeroes.
-> >>
-> > 
-> > I was wondering whether we have, and may break, use cases where a PHY,
-> > for whatever reason, reports PHY ID 0, but works with the genphy
-> > driver. And indeed in swphy_read_reg() we return PHY ID 0, therefore
-> > the patch may break the fixed phy.
-> > Having said that I think your patch is ok, but we need a change of
-> > the PHY ID reported by swphy_read_reg() first.
-> > At a first glance changing the PHY ID to 0x00000001 in swphy_read_reg()
-> > should be sufficient. This value shouldn't collide with any real world
-> > PHY ID.
+On 3/18/21 2:55 AM, Jiapeng Chong wrote:
+> Fix the following coccicheck warning:
 > 
-> It most likely would not, but it could be considered an ABI breakage,
-> unless we filter out what we report to user-space via SIOGCMIIREG and
-> /sys/class/mdio_bus/*/*/phy_id
+> ./tools/testing/selftests/bpf/progs/fentry_test.c:76:15-16: WARNING
+> comparing pointer to 0.
 > 
-> Ideally we would have assigned an unique PHY OUI to the fixed PHY but
-> that would have required registering Linux as a vendor, and the process
-> is not entirely clear to me about how to go about doing that.
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>   tools/testing/selftests/bpf/progs/fentry_test.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c b/tools/testing/selftests/bpf/progs/fentry_test.c
+> index 5f645fd..d4247d6 100644
+> --- a/tools/testing/selftests/bpf/progs/fentry_test.c
+> +++ b/tools/testing/selftests/bpf/progs/fentry_test.c
+> @@ -64,7 +64,7 @@ struct bpf_fentry_test_t {
+>   SEC("fentry/bpf_fentry_test7")
+>   int BPF_PROG(test7, struct bpf_fentry_test_t *arg)
+>   {
+> -	if (arg == 0)
+> +	if (!arg)
+>   		test7_result = 1;
+>   	return 0;
+>   }
+> @@ -73,7 +73,7 @@ int BPF_PROG(test7, struct bpf_fentry_test_t *arg)
+>   SEC("fentry/bpf_fentry_test8")
+>   int BPF_PROG(test8, struct bpf_fentry_test_t *arg)
+>   {
+> -	if (arg->a == 0)
+> +	if (!arg->a)
+>   		test8_result = 1;
+>   	return 0;
+>   }
+> 
 
-Doesn't that also involve yearly fees?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+This doesn't apply. Please rebase against bpf-next tree, and also make sure to
+squash any other such patches into a single one.
