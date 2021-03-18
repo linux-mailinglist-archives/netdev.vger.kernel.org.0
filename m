@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 139C43410C9
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51B6E3410D0
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:19:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233318AbhCRXS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 19:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57056 "EHLO
+        id S233357AbhCRXTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 19:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbhCRXSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:18:50 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919D1C06174A;
-        Thu, 18 Mar 2021 16:18:50 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id j3so8660778edp.11;
-        Thu, 18 Mar 2021 16:18:50 -0700 (PDT)
+        with ESMTP id S230483AbhCRXSw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:18:52 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B24C06174A;
+        Thu, 18 Mar 2021 16:18:51 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id b16so8699796eds.7;
+        Thu, 18 Mar 2021 16:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dTCfAq5P0MgC071JugduihaECH7SS6WNQnlDroPoC7w=;
-        b=l5pP4QZwFjoB65FDA7HBSvunKidRXPr9pFi4DGUmVPT1kO739zxn7cw2XZMpeVm9AQ
-         2PFxVJzPMW0VC6Dr3pDu2a76EAzSiD+kFDqaK9bkcmS31kdG8qH46PnTlNf4LYpbBWYa
-         543ujLkjp67TbmPtg+qpMbuxeIts0/BJYPOud4nmvQ848ukve5OHtzCtPzYtShMdY0ky
-         vCT+p3JQ1vDE4+mIyUcB+5TpcY/Judc+fpJULMi5JONkR0WKBNcSKhLqEA/e2d/eXzVJ
-         Hj+mXylupCbcqZugRty1aotAQ2/A7x447Jaip8km2dYWKrVeRcG6VFLGASgGeJqZNxj7
-         Y4mg==
+        bh=zlfAvXNWE3S7CXSOBmWtvk2P2IUMmzDXPio79UgCm6k=;
+        b=k6zUNDmDdn3I8P+IfOO6WpFjxdRcg9w0ahG57RtMRI2bCbT+Dfmj2RoHvYHmDyKyGz
+         UAoepk3+P5MxBsoQrmk8mvXNo95cs1MGTrUeUxQuRfMJIpvMod/18fxvx6MTc2Ad3oXT
+         YlAS7812SNiIgJWjPsQ/rhKMBfD2NQ0ND955zM23raNIJcYutRb68GL1SyxwxvQ1ayUg
+         +lhf/KEvINnTFokZgaaHyK/qyc16Dd9m82gR2AzWds7ZAoC8gWHRfQv5cjJStlqb5q5b
+         /1zwpMFHxt/iAJjSkBm7QnAc9ecPqdT5h1DerFMXdEbvnCzayo3ZdQ+BJW5XSpk0URDf
+         bVZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dTCfAq5P0MgC071JugduihaECH7SS6WNQnlDroPoC7w=;
-        b=sXUNP+WAAg6SCmjj9TaxUMEs/Eg4zRIJnZXnzkrSEGMLOynrPPGGfjPtv9590YdlkQ
-         0qZ+y1KekdBpZzuCAcgrihHllQBK2Q5gFjFSTjq6VjcNi/8/ukUubZL0Y8Pm9WOsGmQ/
-         xjkWI8n0Y6IF43A3fzjISq/bWQZ6v8zcbUao00cNyZIdy2VkOglhuh5xiseNNk1Tz8UJ
-         kOY3zUNNViSekXfmvxyGNNnGwSkTMDmp6Nw1RvCn6/zUsz4pCdyr+802Zx8/g0y0kcu5
-         7x0jfivwgAmwpKg8hX7eoEeVLatW4J3gISHSGGkvXQgfpn8FYmbAPJdxyImAiDDksruh
-         44jg==
-X-Gm-Message-State: AOAM533iJkGRLF4D/2LqvV0vUqzv7hGN5YasvrgPINz8scbl3MnNR8HB
-        4KxNbsxSJopMrZziYha5Wcc=
-X-Google-Smtp-Source: ABdhPJwVCOp8tLravildRabpv2Gjjos7zn8TOjhBBPjB3Nn/q0KGxlPJdz7AvesTdyoDJk7U+FfQsQ==
-X-Received: by 2002:a50:fe08:: with SMTP id f8mr6397077edt.217.1616109529320;
-        Thu, 18 Mar 2021 16:18:49 -0700 (PDT)
+        bh=zlfAvXNWE3S7CXSOBmWtvk2P2IUMmzDXPio79UgCm6k=;
+        b=WpWZWfheG9J1cn9ryLroMLVmfNctpvNxdH6LG5pm56t4Vh6lrK9ceywAO2ellVu9kD
+         gJ57leXfZk1hCwtFXe84HM2fiYc1JI4w4GHjFRNg4vyByU3N94OPGCr8LxYPOsriWCgW
+         nJnnt3/zNyOGzx3rBcoR8kKjyPLVsSV4HmV3aDI1LnXjBoGba2g03vj5/9fdEhAkhgfe
+         ONy6r57cCLc5J7g3sErJkhuN+4uO5zDst7i3JcA5Z6SBGPVz9CpYUbuFb9XHCc1qdpRt
+         7umoTR3CyK4ZfKkd4YmHHusfZvZvVdgqXGOWen7MuyB7N3u7Cl7r6xBD/N4N/ADbCZFE
+         Y/Ag==
+X-Gm-Message-State: AOAM530vA6j3v9X2TKox1BU0JE/hDQBaWsP0dXo9WRGwC0VuYGjiWxCY
+        Xww6r6+m5HGGKzKjJeb+uLk=
+X-Google-Smtp-Source: ABdhPJzwEKH7YXmMxBVXRY+8vgrTT4x7bB17yM3RVWRZ20cVG/sgku1Ne5gzlK1b7VSgeIFbZ786Cg==
+X-Received: by 2002:a50:d753:: with SMTP id i19mr6475521edj.43.1616109530821;
+        Thu, 18 Mar 2021 16:18:50 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.18.47
+        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.18.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 16:18:49 -0700 (PDT)
+        Thu, 18 Mar 2021 16:18:50 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -67,9 +67,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH v2 net-next 04/16] net: dsa: sync up with bridge port's STP state when joining
-Date:   Fri, 19 Mar 2021 01:18:17 +0200
-Message-Id: <20210318231829.3892920-5-olteanv@gmail.com>
+Subject: [RFC PATCH v2 net-next 05/16] net: dsa: sync up VLAN filtering state when joining the bridge
+Date:   Fri, 19 Mar 2021 01:18:18 +0200
+Message-Id: <20210318231829.3892920-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210318231829.3892920-1-olteanv@gmail.com>
 References: <20210318231829.3892920-1-olteanv@gmail.com>
@@ -81,114 +81,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-It may happen that we have the following topology:
-
-ip link add br0 type bridge stp_state 1
-ip link add bond0 type bond
-ip link set bond0 master br0
-ip link set swp0 master bond0
-ip link set swp1 master bond0
-
-STP decides that it should put bond0 into the BLOCKING state, and
-that's that. The ports that are actively listening for the switchdev
-port attributes emitted for the bond0 bridge port (because they are
-offloading it) and have the honor of seeing that switchdev port
-attribute can react to it, so we can program swp0 and swp1 into the
-BLOCKING state.
-
-But if then we do:
-
-ip link set swp2 master bond0
-
-then as far as the bridge is concerned, nothing has changed: it still
-has one bridge port. But this new bridge port will not see any STP state
-change notification and will remain FORWARDING, which is how the
-standalone code leaves it in.
-
-Add a function to the bridge which retrieves the current STP state, such
-that drivers can synchronize to it when they may have missed switchdev
-events.
+This is the same situation as for other switchdev port attributes: if we
+join an already-created bridge port, such as a bond master interface,
+then we can miss the initial switchdev notification emitted by the
+bridge for this port.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/if_bridge.h |  6 ++++++
- net/bridge/br_stp.c       | 14 ++++++++++++++
- net/dsa/port.c            |  7 +++++++
- 3 files changed, 27 insertions(+)
+ net/dsa/port.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index b979005ea39c..920d3a02cc68 100644
---- a/include/linux/if_bridge.h
-+++ b/include/linux/if_bridge.h
-@@ -136,6 +136,7 @@ struct net_device *br_fdb_find_port(const struct net_device *br_dev,
- 				    __u16 vid);
- void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
- bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
-+u8 br_port_get_stp_state(const struct net_device *dev);
- #else
- static inline struct net_device *
- br_fdb_find_port(const struct net_device *br_dev,
-@@ -154,6 +155,11 @@ br_port_flag_is_set(const struct net_device *dev, unsigned long flag)
- {
- 	return false;
- }
-+
-+static inline u8 br_port_get_stp_state(const struct net_device *dev)
-+{
-+	return BR_STATE_DISABLED;
-+}
- #endif
- 
- #endif
-diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
-index 21c6781906aa..86b5e05d3f21 100644
---- a/net/bridge/br_stp.c
-+++ b/net/bridge/br_stp.c
-@@ -64,6 +64,20 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
- 	}
- }
- 
-+u8 br_port_get_stp_state(const struct net_device *dev)
-+{
-+	struct net_bridge_port *p;
-+
-+	ASSERT_RTNL();
-+
-+	p = br_port_get_rtnl(dev);
-+	if (!p)
-+		return BR_STATE_DISABLED;
-+
-+	return p->state;
-+}
-+EXPORT_SYMBOL_GPL(br_port_get_stp_state);
-+
- /* called under bridge lock */
- struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no)
- {
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 346c50467810..785374744462 100644
+index 785374744462..ac1afe182c3b 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -171,12 +171,19 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
- static int dsa_port_switchdev_sync(struct dsa_port *dp,
+@@ -172,6 +172,7 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
  				   struct netlink_ext_ack *extack)
  {
-+	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
-+	u8 stp_state;
+ 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
++	struct net_device *br = dp->bridge_dev;
+ 	u8 stp_state;
  	int err;
  
- 	err = dsa_port_inherit_brport_flags(dp, extack);
- 	if (err)
+@@ -184,6 +185,10 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+ 	if (err && err != -EOPNOTSUPP)
  		return err;
  
-+	stp_state = br_port_get_stp_state(brport_dev);
-+	err = dsa_port_set_state(dp, stp_state);
++	err = dsa_port_vlan_filtering(dp, br, extack);
 +	if (err && err != -EOPNOTSUPP)
 +		return err;
 +
  	return 0;
  }
  
+@@ -205,6 +210,8 @@ static void dsa_port_switchdev_unsync(struct dsa_port *dp)
+ 	 * so allow it to be in BR_STATE_FORWARDING to be kept functional
+ 	 */
+ 	dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
++
++	/* VLAN filtering is handled by dsa_switch_bridge_leave */
+ }
+ 
+ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
 -- 
 2.25.1
 
