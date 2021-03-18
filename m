@@ -2,61 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B46340F64
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 21:54:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64AA6340F91
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 22:11:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232134AbhCRUx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 16:53:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35486 "EHLO vps0.lunn.ch"
+        id S232466AbhCRVKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 17:10:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230368AbhCRUxT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 16:53:19 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lMzdq-00BkAw-SU; Thu, 18 Mar 2021 21:53:14 +0100
-Date:   Thu, 18 Mar 2021 21:53:14 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "rabeeh@solid-run.com" <rabeeh@solid-run.com>
-Subject: Re: [EXT] Re: [V2 net-next] net: mvpp2: Add reserved port private
- flag configuration
-Message-ID: <YFO9ug0gZp8viEHn@lunn.ch>
-References: <1615481007-16735-1-git-send-email-stefanc@marvell.com>
- <YEpMgK1MF6jFn2ZW@lunn.ch>
- <CO6PR18MB38733E25F6B3194D4858147BB06B9@CO6PR18MB3873.namprd18.prod.outlook.com>
+        id S230368AbhCRVK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Mar 2021 17:10:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 977DD64F11;
+        Thu, 18 Mar 2021 21:10:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616101827;
+        bh=+wntOZ6iutlvRX1VMrIYEl/MgvWD0gweBc2N8aIbHsc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MCZEoGKk7IrHRu/qlLTHBG+HSteg1j+BrvMfopDNk/WHdLxyJqr4ngqhGNUhhC9C9
+         ggAxmEirM7fLSXaZ5xIoHCIGkP8i5pgM0r0Pesd6glpAugpn7jzwwLSijudr7y8sut
+         1hYJnkTGuLuwReB3BpPSPTwtSev58KD+oaqRKNZ9mTOsQg0u+0A77ftff32fTCESJJ
+         PBKZt1vW+n+5j2LkBuNIe8C66KlOzacS6lkMlxWazNP/M5nESAW7GKg29D+hx3r/AA
+         9XzOu786EPD/fJXR2QaNEulzk0TYEAiJbeZ84UGOMhEQeuxYjd09+8kukN0THw/Djd
+         r0DsIaX6FJ/eQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8739660951;
+        Thu, 18 Mar 2021 21:10:27 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO6PR18MB38733E25F6B3194D4858147BB06B9@CO6PR18MB3873.namprd18.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] Add tc hardware offloads
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161610182755.7876.15039328288164755025.git-patchwork-notify@kernel.org>
+Date:   Thu, 18 Mar 2021 21:10:27 +0000
+References: <20210318100215.15795-1-naveenm@marvell.com>
+In-Reply-To: <20210318100215.15795-1-naveenm@marvell.com>
+To:     Naveen Mamindlapalli <naveenm@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        sgoutham@marvell.com, sbhatta@marvell.com, hkelam@marvell.com,
+        jerinj@marvell.com, lcherian@marvell.com, gakula@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 2. CM3 code has very small footprint requirement, we cannot
-> implement the complete Serdes and PHY infrastructure that kernel
-> provides as part of CM3 application. Therefore I would like to
-> continue relying on kernel configuration for that.
+Hello:
 
-How can that work? How does Linux know when CM3 has up'ed the
-interface? How does CM3 know the status of the link? How does CM3 set
-its flow control depending on what auto-neg determines, etc?
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-> 3. In some cases we need to dynamically switch the port "user"
-> between CM3 and kernel. So I would like to preserve this
-> functionality.
+On Thu, 18 Mar 2021 15:32:11 +0530 you wrote:
+> This patch series adds support for tc hardware offloads.
+> 
+> Patch #1 adds support for offloading flows that matches IP tos and IP
+>          protocol which will be used by tc hw offload support. Also
+>          added ethtool n-tuple filter to code to offload the flows
+>          matching the above fields.
+> Patch #2 adds tc flower hardware offload support on ingress traffic.
+> Patch #3 adds TC flower offload stats.
+> Patch #4 adds tc TC_MATCHALL egress ratelimiting offload.
+> 
+> [...]
 
-And how do you synchronize between Linux and CM3 so you know how is
-using it and who cannot use it?
+Here is the summary with links:
+  - [net-next,1/4] octeontx2-pf: Add ip tos and ip proto icmp/icmpv6 flow offload support
+    https://git.kernel.org/netdev/net-next/c/2b9cef667902
+  - [net-next,2/4] octeontx2-pf: Add tc flower hardware offload on ingress traffic
+    https://git.kernel.org/netdev/net-next/c/1d4d9e42c240
+  - [net-next,3/4] octeontx2-pf: add tc flower stats handler for hw offloads
+    https://git.kernel.org/netdev/net-next/c/d8ce30e0cf76
+  - [net-next,4/4] octeontx2-pf: TC_MATCHALL egress ratelimiting offload
+    https://git.kernel.org/netdev/net-next/c/e638a83f167e
 
-      Andrew
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
