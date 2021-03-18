@@ -2,100 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A7F34092E
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2516C340956
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 16:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbhCRPuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 11:50:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54316 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231162AbhCRPuI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 11:50:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4E65264EF2;
-        Thu, 18 Mar 2021 15:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616082608;
-        bh=qfX5zLiax3LIzYkYRMHRgL7ivrPxRNxoVv0+OTDd2j0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rYFpPbYGPQN+p0WZO1B8G/OIhtC0Vswv8ViXi4kGFHWE3FQnkmIB6as7EE77FoU1f
-         0QbZmSC0rCLV92Ki9GR3AXUgDOV5t7S+M6OjPcEpAyVjWJsY1q74ynCpMWjufk6j9v
-         ZWN6oItveFGXDsITKkOeuR8VfY/xtLfTBInmB4gM5ELg+Djp+95SFqwzJsxa00Rtai
-         e0bc0NarkCR6HZp6MMqXrbD51ROno1toGgXhzc12REms3X2MEK5BOSFuzOS1Ig2rRE
-         zw41nP0JmB7kWEoaF8HbtRSdnpmcm6BbtEWW87cPbcEXokM8cKJ4pdELNjl+EcREcb
-         0I8By03WNVV8A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 39099600E8;
-        Thu, 18 Mar 2021 15:50:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232033AbhCRPy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 11:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44690 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232030AbhCRPyU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 11:54:20 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D2FC06175F
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 08:54:20 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id g185so2455505qkf.6
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 08:54:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J+EfAqBWMuldZhFLKTK7DYwRmCCO76h3wFXCCWaZSMc=;
+        b=JAuMzMkBbITRNY13aACDLIk/k+iuZNwnY+TuVS/VkWrpwiwiZnjIqAqXg+sgD6k0rD
+         2683zQhrba+zznwFVhN9TrfJ2tXM27aBcej6YTISwW5enO4MpUM/7/vUSZLCc/eilbKY
+         de8krjIAoXdrlFD7hjXponAFXD9uzSZQ848crh8XQfUyaA7GE/p44upKGkaYGQID7gjQ
+         TGu3nqOZmibsYwtW4nkpKaMz1xaGTssKbFmUcf+q/G9q1Acnpjk726Z+krAWQQ7qI1tE
+         /FFn9w3c8gJi84/60Z/hO18B5j9iNY799t13VZZHHC7ydIZvKIyuqgIX3IRpPo6ahMIi
+         Auyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J+EfAqBWMuldZhFLKTK7DYwRmCCO76h3wFXCCWaZSMc=;
+        b=ADpqHJs+PTswLjy8KFZVa7wBu4fNVoV6HU2zJmudWP8au2caLlNLkiNfWGbSwCayx8
+         kQIu8wap6PGvy7LySkL1T7KKu8zvQNboia8t7vzvEzJqeDvBjUDyvmNGWUq8iOjKChE1
+         vDylq7X63UDX9HHTe2fgtIMgOO8xojJGdS4tG0X3Kcwy7uh9zMgnERl1fr2rxKsqreab
+         5HbEoLFji2aAR1oV+DgQY8TOJOHazo8hzYsiUznDWWi0jEshNcXZ6+niPay2cQQ6Gf+9
+         Zn0mnCjAynU5EJH3JfczXeR+eS5YzYNQxtUyyCvDUktKETDjeMpNffXgwUfQwR0sxEea
+         +5BQ==
+X-Gm-Message-State: AOAM533atyQzbGgC9VZN0BdsfVvwMte7D2he8xW/fQC8vc0LrmpUwA7C
+        3/SjT8voE150WGJ83+70mpysJmN+6Ztc/Bx+k8JLbw==
+X-Google-Smtp-Source: ABdhPJxFh76WWb8+3I2ntXhBqRjTSAc+1WcZgiaZ7ifnOH2xeqOLOi44Fqrc0Z0eZNzc0q7qHi5UZ42ezkHaQtthL9A=
+X-Received: by 2002:a05:620a:410f:: with SMTP id j15mr5028891qko.424.1616082859168;
+ Thu, 18 Mar 2021 08:54:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 bpf-next] bpf: devmap: move drop error path to devmap for
- XDP_REDIRECT
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161608260822.2327.1831559957123186442.git-patchwork-notify@kernel.org>
-Date:   Thu, 18 Mar 2021 15:50:08 +0000
-References: <ed670de24f951cfd77590decf0229a0ad7fd12f6.1615201152.git.lorenzo@kernel.org>
-In-Reply-To: <ed670de24f951cfd77590decf0229a0ad7fd12f6.1615201152.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        brouer@redhat.com, toke@redhat.com, freysteinn.alfredsson@kau.se,
-        lorenzo.bianconi@redhat.com, john.fastabend@gmail.com,
-        jasowang@redhat.com, mst@redhat.com, thomas.petazzoni@bootlin.com,
-        mw@semihalf.com, linux@armlinux.org.uk,
-        ilias.apalodimas@linaro.org, netanel@amazon.com,
-        akiyano@amazon.com, michael.chan@broadcom.com,
-        madalin.bucur@nxp.com, ioana.ciornei@nxp.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        saeedm@nvidia.com, grygorii.strashko@ti.com,
-        ecree.xilinx@gmail.com, maciej.fijalkowski@intel.com
+References: <00000000000096cdaa05bd32d46f@google.com> <CACT4Y+ZjdOaX_X530p+vPbG4mbtUuFsJ1v-gD24T4DnFUqcudA@mail.gmail.com>
+ <CACT4Y+ZjVS+nOxtEByF5-djuhbCYLSDdZ7V04qJ0edpQR0514A@mail.gmail.com>
+ <CACT4Y+YXifnCtEvLu3ps8JLCK9CBLzEuUAozfNR9v1hsGWspOg@mail.gmail.com>
+ <ed89390a-91e1-320a-fae5-27b7f3a20424@codethink.co.uk> <CACT4Y+a1pQ96UWEB3pAnbxPZ+6jW2tqSzkTMqJ+XSbZsKLHgAw@mail.gmail.com>
+ <bf2e19a3-3e3a-0eb1-ae37-4cc3b1a7af42@codethink.co.uk> <CACT4Y+ZVaxQAnpy_bMGwviZMskD-fy1KgY7pbrjcCRXr24eu2Q@mail.gmail.com>
+ <8372d8e5-af6e-c851-a0ac-733e269102ce@codethink.co.uk>
+In-Reply-To: <8372d8e5-af6e-c851-a0ac-733e269102ce@codethink.co.uk>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 18 Mar 2021 16:54:07 +0100
+Message-ID: <CACT4Y+aDY38_to=UN9YtAr2aBrSaEqs0jfd9R--Qxdw8=jEt3w@mail.gmail.com>
+Subject: Re: [syzbot] BUG: unable to handle kernel access to user memory in sock_ioctl
+To:     Ben Dooks <ben.dooks@codethink.co.uk>
+Cc:     syzbot <syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>, andrii@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Mar 18, 2021 at 4:35 PM Ben Dooks <ben.dooks@codethink.co.uk> wrote:
+>
+> On 18/03/2021 15:18, Dmitry Vyukov wrote:
+> > On Mon, Mar 15, 2021 at 3:41 PM Ben Dooks <ben.dooks@codethink.co.uk> wrote:
+> >>
+> >> On 15/03/2021 11:52, Dmitry Vyukov wrote:
+> >>> On Mon, Mar 15, 2021 at 12:30 PM Ben Dooks <ben.dooks@codethink.co.uk> wrote:
+> >>>>
+> >>>> On 14/03/2021 11:03, Dmitry Vyukov wrote:
+> >>>>> On Sun, Mar 14, 2021 at 11:01 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+> >>>>>>> On Wed, Mar 10, 2021 at 7:28 PM syzbot
+> >>>>>>> <syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com> wrote:
+> >>>>>>>>
+> >>>>>>>> Hello,
+> >>>>>>>>
+> >>>>>>>> syzbot found the following issue on:
+> >>>>>>>>
+> >>>>>>>> HEAD commit:    0d7588ab riscv: process: Fix no prototype for arch_dup_tas..
+> >>>>>>>> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+> >>>>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=122c343ad00000
+> >>>>>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=e3c595255fb2d136
+> >>>>>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=c23c5421600e9b454849
+> >>>>>>>> userspace arch: riscv64
+> >>>>>>>>
+> >>>>>>>> Unfortunately, I don't have any reproducer for this issue yet.
+> >>>>>>>>
+> >>>>>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> >>>>>>>> Reported-by: syzbot+c23c5421600e9b454849@syzkaller.appspotmail.com
+> >>>>>>>
+> >>>>>>> +riscv maintainers
+> >>>>>>>
+> >>>>>>> Another case of put_user crashing.
+> >>>>>>
+> >>>>>> There are 58 crashes in sock_ioctl already. Somehow there is a very
+> >>>>>> significant skew towards crashing with this "user memory without
+> >>>>>> uaccess routines" in schedule_tail and sock_ioctl of all places in the
+> >>>>>> kernel that use put_user... This looks very strange... Any ideas
+> >>>>>> what's special about these 2 locations?
+> >>>>>
+> >>>>> I could imagine if such a crash happens after a previous stack
+> >>>>> overflow and now task data structures are corrupted. But f_getown does
+> >>>>> not look like a function that consumes way more than other kernel
+> >>>>> syscalls...
+> >>>>
+> >>>> The last crash I looked at suggested somehow put_user got re-entered
+> >>>> with the user protection turned back on. Either there is a path through
+> >>>> one of the kernel handlers where this happens or there's something
+> >>>> weird going on with qemu.
+> >>>
+> >>> Is there any kind of tracking/reporting that would help to localize
+> >>> it? I could re-reproduce with that code.
+> >>
+> >> I'm not sure. I will have a go at debugging on qemu today just to make
+> >> sure I can reproduce here before I have to go into the office and fix
+> >> my Icicle board for real hardware tests.
+> >>
+> >> I think my first plan post reproduction is to stuff some trace points
+> >> into the fault handlers to see if we can get a idea of faults being
+> >> processed, etc.
+> >>
+> >> Maybe also add a check in the fault handler to see if the fault was
+> >> in a fixable region and post an error if that happens / maybe retry
+> >> the instruction with the relevant SR_SUM flag set.
+> >>
+> >> Hopefully tomorrow I can get a run on real hardware to confirm.
+> >> Would have been better if the Unmatched board I ordered last year
+> >> would turn up.
+> >
+> > In retrospect it's obvious what's common between these 2 locations:
+> > they both call a function inside of put_user.
+> >
+> > #syz dup:
+> > BUG: unable to handle kernel access to user memory in schedule_tail
+>
+> I think so. I've posted a patch that you can test, which should force
+> the flags to be saved over switch_to(). I think the sanitisers are just
+> making it easier to see.
+>
+> There is a seperate issue of passing complicated things to put_user()
+> as for security, the function may be executed with the user-space
+> protections turned off. I plan to raise this on the kernel list later
+> once I've done some more testing.
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Mon,  8 Mar 2021 12:06:58 +0100 you wrote:
-> We want to change the current ndo_xdp_xmit drop semantics because
-> it will allow us to implement better queue overflow handling.
-> This is working towards the larger goal of a XDP TX queue-hook.
-> Move XDP_REDIRECT error path handling from each XDP ethernet driver to
-> devmap code. According to the new APIs, the driver running the
-> ndo_xdp_xmit pointer, will break tx loop whenever the hw reports a tx
-> error and it will just return to devmap caller the number of successfully
-> transmitted frames. It will be devmap responsability to free dropped
-> frames.
-> Move each XDP ndo_xdp_xmit capable driver to the new APIs:
-> - veth
-> - virtio-net
-> - mvneta
-> - mvpp2
-> - socionext
-> - amazon ena
-> - bnxt
-> - freescale (dpaa2, dpaa)
-> - xen-frontend
-> - qede
-> - ice
-> - igb
-> - ixgbe
-> - i40e
-> - mlx5
-> - ti (cpsw, cpsw-new)
-> - tun
-> - sfc
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3,bpf-next] bpf: devmap: move drop error path to devmap for XDP_REDIRECT
-    https://git.kernel.org/bpf/bpf-next/c/fdc13979f91e
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks for quick debugging and the fix. This is the top crasher on the
+syzbot instance, so this will unblock real testing.
+I think I will trust your testing. syzbot instance is now on
+riscv/fixes branch, so it will pick it up as soon as it's in that tree
+(hopefully soon) and will do as exhaustive testing as possible :)
