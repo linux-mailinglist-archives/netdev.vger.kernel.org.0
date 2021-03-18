@@ -2,120 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C2933FC26
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 01:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 581AD33FC2E
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 01:23:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbhCRARV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 20:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbhCRARA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 20:17:00 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD18FC06174A
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 17:17:00 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id 11so2255549pfn.9
-        for <netdev@vger.kernel.org>; Wed, 17 Mar 2021 17:17:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cfqCUcdG/h4taUkU/CcjFUse1dOAbxd7xHxgmRnIBsw=;
-        b=jp2Hq7X3ugtmtCvR633qnjYFepK6XxbayTISmmGxA79aCnRpK4m6oJYYDqNMcaZCbU
-         2/ZZrG7Rnf8NJSYXAUwCybbnpSzxbBSbkipj0jXhAOFZVx6pLaZDo56pqtECTf3ZTdb4
-         PMxd7OS80BlEhqLCUUIo1A7CZ/MTindON7eSaee0VNRYx4Ju+5Kmq+jEWsCru9tm9Mzf
-         k6u29r/zMp0jDmyGy3ed23A5zhgyHVxOqATEA2n9auFcDytA9DEcULJaenaAPbgjT3Kh
-         otnxSlpwQ6PupxHchuQ2OFC/UdcC4jrgFEdG3IqzXurQCOSOntKRg7r8zRzILyAi5uQC
-         dNFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cfqCUcdG/h4taUkU/CcjFUse1dOAbxd7xHxgmRnIBsw=;
-        b=pmRWlNdUmFdKNCK9bTvjPdwYh6aRPWcgboztBkP2j87nvlb3lRWGaPt0gmGe0eW3hb
-         1xW1gm/qwy2G1ZhlYvAMaOxarqG1mBYoH4X9pqleFIVmYDOh49qBlp0T27ucDGY90hUH
-         sHvRcE3V2OCwrCDTZ9MlPN/hv4j+h3XojS39DeqiPPgAG+QK7D24Z+P5ZfTTQvLn8fcL
-         445bX/C86E2tO28oc3csJPrTa7xhD7LtopfWbp9200LSuc+XQEhBzIBR4rcOevEzGtH5
-         9flF440FKEgUPjPv0NcTn9rlGGQVkpPfaCMM3zoq0x1+VWK6qZduSlcE5bP6YJi1Egjt
-         j0xw==
-X-Gm-Message-State: AOAM531gxW6/igQ90CRyeg3yVhj+PhOb5oBjZ4VJcFyqpnRJgzuHn2dU
-        B62MMP4yLWBEb9Q9R/0XEO2BCrnanu+Iiw==
-X-Google-Smtp-Source: ABdhPJw7yfmQVeood+dlOtwAc1aBM7BnYxHpnnBEv/FQOvWtVFXNjq/9JOlhotQ5QgSIawiOxj2xVg==
-X-Received: by 2002:a65:5bca:: with SMTP id o10mr4815162pgr.248.1616026614510;
-        Wed, 17 Mar 2021 17:16:54 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id y22sm213713pfn.32.2021.03.17.17.16.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 17:16:53 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2] ip: cleanup help message
-Date:   Wed, 17 Mar 2021 17:15:31 -0700
-Message-Id: <20210318001530.125352-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.30.2
+        id S230050AbhCRAW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 20:22:59 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:50197 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230104AbhCRAWi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Mar 2021 20:22:38 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F175L1t6Dz9sW5;
+        Thu, 18 Mar 2021 11:22:29 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1616026950;
+        bh=fUNm5nsTmJbb/LA9qfxZfL2ehsv3SnIPO3IcMpOAQeU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=h3MTzyx5Z6OKNK+j/VGeAhL20bhlpOubHaHhdkzcIjFKQZeFYbmreYDcio2+LVfWp
+         z0P2TgTT9sGss8qwkoUYbBix4Q/H6yvbA0tOvkBZo+6Nw+Q4mPwiMbtS4r6a1jSx0v
+         F9sBVJHy122nvO+ZCLXc1OtNo3t4n27CWk3yoQhzoYt4CqUtlh9UhDCEYAsEcBSfgt
+         LL6JJR97PmMxo9iSxt8NcPFSD8nbLXmmL0Zdulndj0LHR5lMLfQw13KbZHre+7z51g
+         rh3q+xt/P6NoGICqQpxpmhdbEWr5YzHoDs2ha0tTYdRQ9S60n4NljD5TVgHf9vfSjF
+         4qtOD/QV7snYg==
+Date:   Thu, 18 Mar 2021 11:22:26 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Shannon Nelson <snelson@pensando.io>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210318112226.331beab9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/XJm9SaulWTFxoLmTZi2g.lB";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wrap help message text at 80 characters, and put list of things
-in alpha order.
+--Sig_/XJm9SaulWTFxoLmTZi2g.lB
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
-Other places may need this as well.
+Hi all,
 
-PS: I made a version that auto-generated the text but it was too verbose
-especially since many options in iproute2 are dynamically bound.
+Today's linux-next merge of the net-next tree got a conflict in:
 
- ip/ip.c     |  9 +++++----
- ip/iplink.c | 11 +++++------
- 2 files changed, 10 insertions(+), 10 deletions(-)
+  drivers/net/ethernet/pensando/ionic/ionic_txrx.c
 
-diff --git a/ip/ip.c b/ip/ip.c
-index 40d2998ae60b..6781443014d7 100644
---- a/ip/ip.c
-+++ b/ip/ip.c
-@@ -64,10 +64,11 @@ static void usage(void)
- 	fprintf(stderr,
- 		"Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }\n"
- 		"       ip [ -force ] -batch filename\n"
--		"where  OBJECT := { link | address | addrlabel | route | rule | neigh | ntable |\n"
--		"                   tunnel | tuntap | maddress | mroute | mrule | monitor | xfrm |\n"
--		"                   netns | l2tp | fou | macsec | tcp_metrics | token | netconf | ila |\n"
--		"                   vrf | sr | nexthop | mptcp }\n"
-+		"where  OBJECT := { address | addrlabel | fou | help | ila | l2tp | link |\n"
-+		"                   macsec | maddress | monitor | mptcp | mroute | mrule |\n"
-+		"                   neighbor | neighbour | netconf | netns | nexthop | ntable |\n"
-+		"                   ntbl | route | rule | sr | tap | tcp_metrics | tcpmetrics |\n"
-+		"                   token | tunl | tunnel | tuntap | vrf | xfrm }\n"
- 		"       OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |\n"
- 		"                    -h[uman-readable] | -iec | -j[son] | -p[retty] |\n"
- 		"                    -f[amily] { inet | inet6 | mpls | bridge | link } |\n"
-diff --git a/ip/iplink.c b/ip/iplink.c
-index 27c9be442a7a..10eab97ebea2 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -118,12 +118,11 @@ void iplink_usage(void)
- 			"\n"
- 			"	ip link help [ TYPE ]\n"
- 			"\n"
--			"TYPE := { vlan | veth | vcan | vxcan | dummy | ifb | macvlan | macvtap |\n"
--			"	   bridge | bond | team | ipoib | ip6tnl | ipip | sit | vxlan |\n"
--			"	   gre | gretap | erspan | ip6gre | ip6gretap | ip6erspan |\n"
--			"	   vti | nlmon | team_slave | bond_slave | bridge_slave |\n"
--			"	   ipvlan | ipvtap | geneve | bareudp | vrf | macsec | netdevsim | rmnet |\n"
--			"	   xfrm }\n");
-+			"TYPE := { bareudp | bond | bond_slave | bridge |bridge_slave | dummy | erspan |\n"
-+			"          geneve | gre | gretap | ifb | ip6erspan | ip6gre | ip6gretap | ip6tnl |\n"
-+			"          ipip | ipoib | ipvlan | ipvtap | macsec | macvlan | macvtap |\n"
-+			"          netdevsim| nlmon | rmnet |sit| team| | team_slave | vcan | veth |\n"
-+			"          vlan | vrf | vti | vxcan | vxlan | xfrm }\n");
- 	}
- 	exit(-1);
- }
--- 
-2.30.2
+between commit:
 
+  d2c21422323b ("ionic: linearize tso skb with too many frags")
+
+from the net tree and commit:
+
+  f37bc3462e80 ("ionic: optimize fastpath struct usage")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+index 4087311f7082,03e00a6c413a..000000000000
+--- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+@@@ -1077,19 -1082,16 +1082,18 @@@ static int ionic_tx(struct ionic_queue=20
+ =20
+  static int ionic_tx_descs_needed(struct ionic_queue *q, struct sk_buff *s=
+kb)
+  {
+- 	int sg_elems =3D q->lif->qtype_info[IONIC_QTYPE_TXQ].max_sg_elems;
+  	struct ionic_tx_stats *stats =3D q_to_tx_stats(q);
+ +	int ndescs;
+  	int err;
+ =20
+ -	/* If TSO, need roundup(skb->len/mss) descs */
+ +	/* Each desc is mss long max, so a descriptor for each gso_seg */
+  	if (skb_is_gso(skb))
+ -		return (skb->len / skb_shinfo(skb)->gso_size) + 1;
+ +		ndescs =3D skb_shinfo(skb)->gso_segs;
+ +	else
+ +		ndescs =3D 1;
+ =20
+- 	if (skb_shinfo(skb)->nr_frags <=3D sg_elems)
+ -	/* If non-TSO, just need 1 desc and nr_frags sg elems */
++ 	if (skb_shinfo(skb)->nr_frags <=3D q->max_sg_elems)
+ -		return 1;
+ +		return ndescs;
+ =20
+  	/* Too many frags, so linearize */
+  	err =3D skb_linearize(skb);
+
+--Sig_/XJm9SaulWTFxoLmTZi2g.lB
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBSnUIACgkQAVBC80lX
+0GzusQf/cp8auZp9Tm5VS6+lEbYfLLX2UR4s+rvgCTni1HZ3oSTkbdLe9BS5ASGh
+7wWkSveIKkt5OLm7vVA1w8EcROaAXgf2nI+RUhOag1X7FWAhwSuDiMyx9eB6eaEh
+DzpH/uB+0Affx7gNhbj8q0zDI1vL3UhItCwStOdJETfEQT/iHX1iNLDKVOSlqpnu
+0RajT2Hed+o9ZLprxhq41FLXyN/lXICNkTs9FK1UnPrKt6u683J4sTiYTYM4+9Ty
+eGi2EAIFNECx8bTA+ieEiMwF1oyqmhbTv1tbmzE/9GisUysiFA926EugiF1jRZaH
+NOxVq3o728pYJ1SVDB8fl9kYyIbuCQ==
+=SfxJ
+-----END PGP SIGNATURE-----
+
+--Sig_/XJm9SaulWTFxoLmTZi2g.lB--
