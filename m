@@ -2,98 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5411734079E
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BA3B340796
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbhCROQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231483AbhCROQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:15 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E385CC06174A
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:13 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id f16so7726978ljm.1
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=RuTogrU6VF/X/a66cNlGy6htEJLtmDYL3EdJknFmnhQ=;
-        b=YZ8skwvgWOBDYiWh94Yn+XwyaA3xF2PBNpNo8b1HrzLCtdlmP8yXpZqItzUrBqr1gy
-         CtimTFkVueQn8so92YuYcGyH49M7XtTDIpiz9iYFoKu1MG43HF1zWXWpCtDKp6gFBrNB
-         Hq4eIYWsdW6LvDkwMQaVPyF4A2g/iMFIurEEGpYpVHHHLJJwEGoctpTL3iICvAYYh+Ah
-         d/e7ePFE3XSRNm9qyFaXjTUYkXghUk2sP8+xwd+JNZ5oQdt0g8TKfKipvLjBpRH55n87
-         slmrmK759fgANJE8jjm2zOmhn9VaIy0AWQP4rjBRYk/1r3FwG1YNF+qG/+Z2+Sdhzh+x
-         g1Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=RuTogrU6VF/X/a66cNlGy6htEJLtmDYL3EdJknFmnhQ=;
-        b=dhUi51459olqyS16Yehs8VE5o7kO2af+vML/Qq9VjyvLNfZRWv6EUptoGLQ71rwggC
-         /umGT/iC4n3KjtFp6rZcBNzLiX1l3ejJK9AfG8s08XpQFwn0l3hEM0C6f6AR4kPNAfvp
-         wetlqnIj+JUxCKK9bUcO48+ddabGMG9QZXJWaa740DWvp7PCUU7491WWht3qbVm3h4jT
-         vohiAzrLe15O638Yn4OB/AjhHy6roOF5COaygHoRhquRms76m2C3gG/93DL1HZJhvbtA
-         E5S95FUPyB+vT55zjpRPLuUZpox3g/2RzArDUTjMdS7tPV+DC++P9f4orIYlJ8weDYIs
-         Ga3g==
-X-Gm-Message-State: AOAM530hZ27RJ2QLktGze3j8veTXvWgBKh5ZTb7kaT+i1rcwhnXamlT8
-        oEunehxyhaHDPxLwwBAB9NgPfg==
-X-Google-Smtp-Source: ABdhPJyZfS2U3Hz1mT9wbq+SzYZWbo7mxMCYUn3a3akTEi/V7a9VIotXoivZWiBt+ufQa+3CcxOe/Q==
-X-Received: by 2002:a2e:9bd0:: with SMTP id w16mr5371660ljj.465.1616076972466;
-        Thu, 18 Mar 2021 07:16:12 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id w26sm237382lfr.186.2021.03.18.07.16.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 07:16:12 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH v2 net-next 0/8] net: dsa: mv88e6xxx: Offload bridge port flags
-Date:   Thu, 18 Mar 2021 15:15:42 +0100
-Message-Id: <20210318141550.646383-1-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
+        id S231331AbhCROQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:16:34 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:22398 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231408AbhCROQI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:08 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IEEfTA027103;
+        Thu, 18 Mar 2021 07:15:58 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=LuHHGQ13NcInR3ji9pCbn7m1TIkGyooLS/NXFKC1UKo=;
+ b=TGAGGcYoZv+v6Oas6LEdCEFbkRBhwAzUIIOqR9i/nRV1N8TnrxCiV2fsbtaf6BKbPMIK
+ WJQLiuNPBIg8HbMDT4PIQGU2IhD/N5qQsnohWO2FcaHQQUn1fXUMXC3yf68UwerybT9r
+ oLQNyvSkXjR06FhH2w4PkNE/YJwdaDWiN8wHVzMr2XYeK91S/a/dpmSMxmHvyXqDtUee
+ c9VAFJxdcgFqe/Sy1m9LcJ68TLmyQHGprr2I9JatRgi1bUnO0NbdWFYQ/quDpB0rnnTy
+ XfiCIyeephDEcNfTRxWlAc+pvKPQAtJLTamCwC3TiQ02lgQlWuNdEqa0+F/kppptVuFK HA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 37b5vdpkaf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 18 Mar 2021 07:15:58 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
+ 2021 07:15:57 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 18 Mar 2021 07:15:57 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 0CD463F7041;
+        Thu, 18 Mar 2021 07:15:53 -0700 (PDT)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>,
+        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
+        <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
+        <hkelam@marvell.com>
+Subject: [net PATCH v2 1/8] octeontx2-pf: Do not modify number of rules
+Date:   Thu, 18 Mar 2021 19:45:42 +0530
+Message-ID: <20210318141549.2622-2-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210318141549.2622-1-hkelam@marvell.com>
+References: <20210318141549.2622-1-hkelam@marvell.com>
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-18_07:2021-03-17,2021-03-18 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for offloading learning and broadcast flooding flags. With
-this in place, mv88e6xx supports offloading of all bridge port flags
-that are currently supported by the bridge.
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-Broadcast flooding is somewhat awkward to control as there is no
-per-port bit for this like there is for unknown unicast and unknown
-multicast. Instead we have to update the ATU entry for the broadcast
-address for all currently used FIDs.
+In the ETHTOOL_GRXCLSRLALL ioctl ethtool uses
+below structure to read number of rules from the driver.
 
-v1 -> v2:
-  - Ensure that mv88e6xxx_vtu_get handles VID 0 (Vladimir)
-  - Fixed off-by-one in mv88e6xxx_port_set_assoc_vector (Vladimir)
-  - Fast age all entries on port when disabling learning (Vladimir)
-  - Correctly detect bridge flags on LAG ports (Vladimir)
+    struct ethtool_rxnfc {
+            __u32                           cmd;
+            __u32                           flow_type;
+            __u64                           data;
+            struct ethtool_rx_flow_spec     fs;
+            union {
+                    __u32                   rule_cnt;
+                    __u32                   rss_context;
+            };
+            __u32                           rule_locs[0];
+    };
 
-Tobias Waldekranz (8):
-  net: dsa: Add helper to resolve bridge port from DSA port
-  net: dsa: mv88e6xxx: Avoid useless attempts to fast-age LAGs
-  net: dsa: mv88e6xxx: Provide generic VTU iterator
-  net: dsa: mv88e6xxx: Remove some bureaucracy around querying the VTU
-  net: dsa: mv88e6xxx: Use standard helper for broadcast address
-  net: dsa: mv88e6xxx: Flood all traffic classes on standalone ports
-  net: dsa: mv88e6xxx: Offload bridge learning flag
-  net: dsa: mv88e6xxx: Offload bridge broadcast flooding flag
+Driver must not modify rule_cnt member. But currently driver
+modifies it by modifying rss_context. Hence fix it by using a
+local variable.
 
- drivers/net/dsa/mv88e6xxx/chip.c | 272 ++++++++++++++++++++++---------
- drivers/net/dsa/mv88e6xxx/port.c |  21 +++
- drivers/net/dsa/mv88e6xxx/port.h |   2 +
- include/net/dsa.h                |  14 ++
- net/dsa/dsa_priv.h               |  14 +-
- 5 files changed, 234 insertions(+), 89 deletions(-)
+Fixes: 81a4362016e7 ("octeontx2-pf: Add RSS multi group support")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index 0dbbf38e059..dc177842097 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -257,17 +257,19 @@ int otx2_get_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc,
+ int otx2_get_all_flows(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc,
+ 		       u32 *rule_locs)
+ {
++	u32 rule_cnt = nfc->rule_cnt;
+ 	u32 location = 0;
+ 	int idx = 0;
+ 	int err = 0;
+ 
+ 	nfc->data = pfvf->flow_cfg->ntuple_max_flows;
+-	while ((!err || err == -ENOENT) && idx < nfc->rule_cnt) {
++	while ((!err || err == -ENOENT) && idx < rule_cnt) {
+ 		err = otx2_get_flow(pfvf, nfc, location);
+ 		if (!err)
+ 			rule_locs[idx++] = location;
+ 		location++;
+ 	}
++	nfc->rule_cnt = rule_cnt;
+ 
+ 	return err;
+ }
 -- 
-2.25.1
+2.17.1
 
