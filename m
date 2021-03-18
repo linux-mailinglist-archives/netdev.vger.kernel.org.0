@@ -2,88 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A85F33FF2C
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 07:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7871733FF77
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 07:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbhCRGDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 02:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
+        id S229558AbhCRGXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 02:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbhCRGCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 02:02:39 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3589C06174A;
-        Wed, 17 Mar 2021 23:02:39 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id m7so3247997qtq.11;
-        Wed, 17 Mar 2021 23:02:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=56XoAJgGy6sdIbPpn/yZfdT8dNjDuptUpp5Nwc44OIk=;
-        b=tfIMQGiJj/2lRNKlDdgnVozttuv+wmNCDDnmgW8npAgM4C+OLGj2UxGJTSS8hJe79h
-         /0CXOPSUH/inmmL2y/71i6K2HocK2VvOAnd83pYoBPEUCrVIWgDj/jaGiFrr/rfgKyD+
-         PRX6r/JUpyfO6/YJw2MlYDTSzlbSYmVhkSxF/4+xPix8K67mNsa3N7DOIy7kn5mA9yHG
-         mTSCU072le31YPjAKgfXYhQxfSoUBXS8fBvFJJk+wR2uHfINPoNeAgWCPZiIQoTsqNsE
-         4XDUEpcdt9+4hVzAMlgv/TWa/6WidSQlDlHf6v35qItRJ6ECWR0vmgymsy2dFuEcvPOn
-         eEkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=56XoAJgGy6sdIbPpn/yZfdT8dNjDuptUpp5Nwc44OIk=;
-        b=E4AVtAI0pLp4sV2XQSBJd5rBnjhMGJyY0yxzcU8c/+OWQoe19nv9UKCFMXHTyxRqf2
-         7oQiyKIwQvgkW76b6pfmD4p+YBcZPfyhO1D0t1dplft22DKSRMClgnSUSkmNmk0wEc16
-         dU+Mps6DxdhiqHcNvbT71BMMW1I8XgsFh60NneZm9v89XndBsxh/KrCzbeFbiOhEnWlZ
-         MS9U+xPDJ8tdG5/azPsFvjZlrg7CsyBGSTxx2JOL2Q0IqsUEliSd8GvjMpSCNg4K65aI
-         FtS8CJ8K0FS+LCwJumoLirdaNG+PkUKcDcdqFk+sxoO2kmZqBveuoMokQvvwO2modMLZ
-         NOVg==
-X-Gm-Message-State: AOAM531AjpxmscRgwM2yVTpR5EjJ4jiHrXxbh3TbvAT4XD/02fVlyPSJ
-        zuSENUqGJrPD+wimdEMEFOs=
-X-Google-Smtp-Source: ABdhPJxNi01FJ4qYBic2mBZZysg0y+fBo18qw/XXU2Yi0qqNZaZgW0F8C66iMjbjLod98eEYDwSNnA==
-X-Received: by 2002:aed:2fa3:: with SMTP id m32mr2319207qtd.359.1616047358966;
-        Wed, 17 Mar 2021 23:02:38 -0700 (PDT)
-Received: from localhost.localdomain ([37.19.198.26])
-        by smtp.gmail.com with ESMTPSA id z4sm1066079qkb.94.2021.03.17.23.02.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Mar 2021 23:02:38 -0700 (PDT)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, yuehaibing@huawei.com,
-        unixbhaskar@gmail.com, gustavoars@kernel.org,
-        christophe.jaillet@wanadoo.fr, vaibhavgupta40@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org
-Subject: [PATCH] ethernet: sun: Fix a typo
-Date:   Thu, 18 Mar 2021 11:32:23 +0530
-Message-Id: <20210318060223.6670-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S229584AbhCRGXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 02:23:00 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F06C06174A;
+        Wed, 17 Mar 2021 23:22:59 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F1H5F3S88z9sR4;
+        Thu, 18 Mar 2021 17:22:56 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1616048577;
+        bh=GG/gxLOCiT6GBN9+4s1YLrIyUbK9LIJFmPvSY+3N8aY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=YR38YE73aTlYa26Xv115wh9K/CChXaDnA9I7tpkXzNugb8L1Yc662LaNNbXf4Dz3F
+         sAvVuV6Dw7R55uM5fuGzabxzW+gSbsDDBSVJOcAGHeDQ3K4dxttqIz1WtP7q1plkIU
+         XJe/YvPOvWqLzFNQBWI0CpPlF/6ZnFejFSdCzHet+1IhgPrvU19qqwb9iAIP9m4e0S
+         rDvOGRKy83QVp1bRvb/kfDNq388pSZdPecmuK2BOQV0ydu55YCXjLO7pQJiQMunxBC
+         yAj/eM4ldjeikdWdQmBcmrPysCA7qQMsp06Ux9cExmK8fN6yDGfl3HWodaVDpMKk7H
+         F3pA9TMMZxXfQ==
+Date:   Thu, 18 Mar 2021 17:22:55 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Jon Maloy <jmaloy@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warnings after merge of the net-next tree
+Message-ID: <20210318172255.63185609@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/e7YX4A/o=JbM39nUL18RTku";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/e7YX4A/o=JbM39nUL18RTku
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-s/serisouly/seriously/
+Hi all,
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- drivers/net/ethernet/sun/sungem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+After merging the net-next tree, today's linux-next build (htmldocs)
+produced these warnings:
 
-diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
-index 58f142ee78a3..b4ef6f095975 100644
---- a/drivers/net/ethernet/sun/sungem.c
-+++ b/drivers/net/ethernet/sun/sungem.c
-@@ -1675,7 +1675,7 @@ static void gem_init_phy(struct gem *gp)
- 		int i;
+Documentation/networking/tipc:66: /home/sfr/next/next/net/tipc/name_table.c=
+:558: WARNING: Unexpected indentation.
+Documentation/networking/tipc:66: /home/sfr/next/next/net/tipc/name_table.c=
+:559: WARNING: Block quote ends without a blank line; unexpected unindent.
 
- 		/* Those delay sucks, the HW seem to love them though, I'll
--		 * serisouly consider breaking some locks here to be able
-+		 * seriously consider breaking some locks here to be able
- 		 * to schedule instead
- 		 */
- 		for (i = 0; i < 3; i++) {
---
-2.20.1
+Introduced by commit
 
+  908148bc5046 ("tipc: refactor tipc_sendmsg() and tipc_lookup_anycast()")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/e7YX4A/o=JbM39nUL18RTku
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBS8b8ACgkQAVBC80lX
+0GxSjAf/fH0wQPhqumnz2rHyn/MdtcS1UDPrLRM2D+t1buzxopZR6zKxeAViNr/C
+v6QlNMeuI5tRiP3ZItz2LCkTrZIzFL1v2gs1FE1kjrSuEX8lSEkJ8BnJMMiivkwG
+KDqMAVMpdyeiPCzmF7IWNheVTaL/LD25Q35q/5LN35RZLa8Bt5CgQqbKM8iJpBIK
+Jy1EwNBdxJmJInwTVba9jfjssxL+/yAXa/jtom95hW0TE6vNzzK71w19aXlkBHCn
+Nj8ym3pjSu5d7cvE7S+vhNvpp1g5eT1gYyaoNVL+YY+umEIUnrodi5BGhIpaLpLE
+x5dRNpqfBT0h+RzOu5Mc5OI+HYugqw==
+=FFL4
+-----END PGP SIGNATURE-----
+
+--Sig_/e7YX4A/o=JbM39nUL18RTku--
