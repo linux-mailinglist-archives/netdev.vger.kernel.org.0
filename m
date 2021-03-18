@@ -2,96 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 180BF340EC9
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 21:05:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 614BC340EDD
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 21:11:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232934AbhCRUEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 16:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
+        id S232943AbhCRULN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 16:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232873AbhCRUEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 16:04:33 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815B7C061760
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 13:04:32 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id f8so2745834qtv.22
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 13:04:32 -0700 (PDT)
+        with ESMTP id S231552AbhCRUK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 16:10:58 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C4AC06174A;
+        Thu, 18 Mar 2021 13:10:57 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id x13so6851695wrs.9;
+        Thu, 18 Mar 2021 13:10:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Sy0ok4NDvEEWcKa8gZVauE+I24CZBWOlbwpSDaAczD4=;
-        b=OYvbaHL4Cw/2tEMKIpXymUrOdPxlDLE16i0tNA1k6PToqW2gxs01/TDyDN3xUy08IP
-         v0KqdzfxqSFwp+GFzYMiEoYQDVYtGNUeOvyucbUEsZUgzypqBTyUxk7p84IQoaWHHu7O
-         1SLxkNx03DABkLuTtoKDnvVMI94og1t00o+/DQ8QpPfcKq3kY2lXVfF3IKSM1Bu7hZ29
-         eLjJneJj+eKVLvf9uE+j+jEGEti8bhfZ1QSVaSA+OeenV3XoL9CSGVkt/HNDnhoTzXcW
-         ir0fo6+jjZ7Eyl1F5KaL7En9r523E3mw7LKatSL1ctsWuFKU6qYclSWa23US36YEww4x
-         rL5w==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ps9LfNNCNYk4EPJwOAX29BFfryqjopm8suHQ9BWWqbc=;
+        b=g8B+mRBmeY0Qo7Uqcp6rylyVws8d5WiipqfZ1jpiDKRqv8/nERUC5fi87sJvJao4BT
+         yvY1j3C6TqqKl933x2lqWqCTWUarFsmHuYB010CePPnm3WEYarLNF2wgIFJ0UqINGyty
+         9Y5Yi9RXHB05sZcYXIytpvMb8p5Glcq/3Ciq51Ch/MriyjNSGQVjmY7D5vdyX/y2Y456
+         oo1SOi+yju2hYBFAHDyWkiH5FZclirjAm2f8qgoOXiNdJt6w/kdehCe+xRsbUix3/C7P
+         juE/NKXKww2nVmATl4B/4xk9yQuQ9FnoNJDKHi4dWdlVw3/TNG0dLmc81iho072wcRs5
+         iZCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Sy0ok4NDvEEWcKa8gZVauE+I24CZBWOlbwpSDaAczD4=;
-        b=Lxz2ziZA27lUwmzhi08dhGO1Y/Cdy6UDahNMD39O2PcILmYsMNAFAYsaZsNdBNT282
-         XdMAfXnmGKAZGrMPQx8iVrtFo/ygIwFlm0BU84LZAZNZqmv03yxOSSuVxZxFc3Deamdb
-         kZb6c2GluAKm5u3Q6gTgCE8SBhMFKRZL78ZIDOvQtl7iCHLwgkt35nDe1RIXkYkZNIUn
-         CGP10hcfBIZjCZnIm6NXK65ON8ZnwiDz9GMnTQ1rcHkW88Z8vVZy4K7l1tOg67cE9WBl
-         l3w+UXTUUaMHGsQEmGvqfAxbBiiEXwPMHEnh1YcCmoqo2NCb6T3aF+Cq6qN75yDBGuKw
-         VFhQ==
-X-Gm-Message-State: AOAM530NXHSkz9zQSXCWABmJKdOQ2B2ZupZn2Y4w3i6uO2HS+Jd6hzDQ
-        jfTrWeEJ5M9Ij0Bg/otCTzz8gE9wj6km4Epl
-X-Google-Smtp-Source: ABdhPJyQ78BMLMSkt/5hyJHt/m7uMl6vx5Xf4POCD7cNtWcNhm+B+Nmifj71WzlahW0x8X0CpISeWd9uPTkm4V6u
-X-Received: from schuffelen.mtv.corp.google.com ([2620:15c:211:200:49b9:40b4:cada:e298])
- (user=schuffelen job=sendgmr) by 2002:a05:6214:13b3:: with SMTP id
- h19mr6166044qvz.31.1616097871522; Thu, 18 Mar 2021 13:04:31 -0700 (PDT)
-Date:   Thu, 18 Mar 2021 13:04:19 -0700
-Message-Id: <20210318200419.1421034-1-schuffelen@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
-Subject: [PATCH v2] virt_wifi: Return micros for BSS TSF values
-From:   "A. Cody Schuffelen" <schuffelen@google.com>
-To:     Johannes Berg <johannes.berg@intel.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "A. Cody Schuffelen" <schuffelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ps9LfNNCNYk4EPJwOAX29BFfryqjopm8suHQ9BWWqbc=;
+        b=sGt4+GTZvKIiD5YXaW8TKvrgPgIxcqRpgRPW1SSftrRkZyF3EqFpzxyvy/7N8BLjPc
+         1HY6Betbt32PisEP9nn3NeX3EjUPfmxREFcRt2gtDSqejGY8K2KyQkggaWiEHgTJCCob
+         8CqYqkOjM04raQ6x9ZU8m/vpci5Xcxy/RvXmXirdXFAH6A+7PmQPqFO/d9w78MY2wGzt
+         J8YisIxxY2L/9sH6UUFZHB5yjd02bFFaSh/tvJHOyJkax5aiT2oj+Bolvi9KmZ/g8CYX
+         PMRThWLKX5/Gv3qxNRSiO9AwhCe94EL0bTZE5NxPUDs1opEe/4Fd2cjKl2tvr2FXvC7j
+         cQJQ==
+X-Gm-Message-State: AOAM531E9WN8RqPB1FPINQh/WVmsx6PFqAjraZZqAQJ6hbCQKgQ3BmVE
+        rt8h2o+6Np/a1GVjFi1kT+o=
+X-Google-Smtp-Source: ABdhPJytOYgRDnuAvvwEVLrt7yIsbidop3xJHop4swh7tXZl+QYLrUx2ALcgS/SXT6AVFL1QetZ7xg==
+X-Received: by 2002:adf:e5cf:: with SMTP id a15mr970769wrn.226.1616098256344;
+        Thu, 18 Mar 2021 13:10:56 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f1f:bb00:8d2c:8cc:6c7f:1a84? (p200300ea8f1fbb008d2c08cc6c7f1a84.dip0.t-ipconnect.de. [2003:ea:8f1f:bb00:8d2c:8cc:6c7f:1a84])
+        by smtp.googlemail.com with ESMTPSA id i26sm3670923wmb.18.2021.03.18.13.10.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Mar 2021 13:10:56 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next] net: phy: at803x: remove at803x_aneg_done()
+To:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20210318194431.14811-1-michael@walle.cc>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <d4dd656a-fd30-51d2-f9bb-55ff4b4dce9b@gmail.com>
+Date:   Thu, 18 Mar 2021 21:10:50 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <20210318194431.14811-1-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cfg80211_inform_bss expects to receive a TSF value, but is given the
-time since boot in nanoseconds. TSF values are expected to be at
-microsecond scale rather than nanosecond scale.
+On 18.03.2021 20:44, Michael Walle wrote:
+> Here is what Vladimir says about it:
+> 
+>   at803x_aneg_done() keeps the aneg reporting as "not done" even when
+>   the copper-side link was reported as up, but the in-band autoneg has
+>   not finished.
+> 
+>   That was the _intended_ behavior when that code was introduced, and
+>   Heiner have said about it [1]:
+> 
+>   | That's not nice from the PHY:
+>   | It signals "link up", and if the system asks the PHY for link details,
+>   | then it sheepishly says "well, link is *almost* up".
+> 
+>   If the specification of phy_aneg_done behavior does not include
+>   in-band autoneg (and it doesn't), then this piece of code does not
+>   belong here.
+> 
+>   The fact that we can no longer trigger this code from phylib is yet
+>   another reason why it fails at its intended (and wrong) purpose and
+>   should be removed.
+> 
+> Removing the SGMII link check, would just keep the call to
+> genphy_aneg_done(), which is also the fallback. Thus we can just remove
+> at803x_aneg_done() altogether.
+> 
+> [1] https://lore.kernel.org/netdev/fdf0074a-2572-5914-6f3e-77202cbf96de@gmail.com/
+> 
+> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
 
-Signed-off-by: A. Cody Schuffelen <schuffelen@google.com>
----
- drivers/net/wireless/virt_wifi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
-index c878097f0dda..1df959532c7d 100644
---- a/drivers/net/wireless/virt_wifi.c
-+++ b/drivers/net/wireless/virt_wifi.c
-@@ -12,6 +12,7 @@
- #include <net/cfg80211.h>
- #include <net/rtnetlink.h>
- #include <linux/etherdevice.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- 
- static struct wiphy *common_wiphy;
-@@ -168,11 +169,11 @@ static void virt_wifi_scan_result(struct work_struct *work)
- 			     scan_result.work);
- 	struct wiphy *wiphy = priv_to_wiphy(priv);
- 	struct cfg80211_scan_info scan_info = { .aborted = false };
-+	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
- 
- 	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
- 					   CFG80211_BSS_FTYPE_PRESP,
--					   fake_router_bssid,
--					   ktime_get_boottime_ns(),
-+					   fake_router_bssid, tsf,
- 					   WLAN_CAPABILITY_ESS, 0,
- 					   (void *)&ssid, sizeof(ssid),
- 					   DBM_TO_MBM(-50), GFP_KERNEL);
--- 
-2.31.0.rc2.261.g7f71774620-goog
-
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
