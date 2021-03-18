@@ -2,75 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C065F341024
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 23:01:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73E93341042
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 23:17:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230177AbhCRWAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 18:00:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52070 "EHLO mail.kernel.org"
+        id S232018AbhCRWQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 18:16:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35668 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231671AbhCRWAI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 18:00:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4B78B64F6C;
-        Thu, 18 Mar 2021 22:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616104808;
-        bh=rL5ST9Hj7XLE+lK0HBuR/l1w2Y2XDMoHGLj3jLXzyFk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SgM3e0OAYEohRvODRXe/Fdi/Wb0rth+sBkAruoNJqv9wYvsaf+yp3Mt3knDZ9vfuB
-         mnkByv4unhzALbc4ykIHqyz51ZKtbkRk323xS5TCBO5c/A6BTASu3FMUMpQTu9Fari
-         TKquufs+SLkzahh/BNCseUqv6Ty7PLQLIPwMjNPbuIxvNt8IX/Xh9SibbZntsO6gM1
-         NXw7TyJ7G1CL0lNjD0PYqnwAji5DbL3fm7ftHKqqTAEe7L2tBgCHqFsfRbXdnQFhql
-         wlQu1CiNN/6AXV2FhUinZUSUFq8NN7TUNmV0uPQVR3CJiUEKPQFAcGvrgHOal1ZgQX
-         w18ygcBK26YcQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37959600E8;
-        Thu, 18 Mar 2021 22:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231671AbhCRWQX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Mar 2021 18:16:23 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lN0wC-00Bl9u-KK; Thu, 18 Mar 2021 23:16:16 +0100
+Date:   Thu, 18 Mar 2021 23:16:16 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Adrian Pop <pop.adrian61@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Don Bollinger <don@thebollingers.org>, netdev@vger.kernel.org,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Subject: Re: [RFC PATCH V3 net-next 1/5] ethtool: Allow network drivers to
+ dump arbitrary EEPROM data
+Message-ID: <YFPRMEa/CfZKsMyA@lunn.ch>
+References: <1615828363-464-1-git-send-email-moshe@nvidia.com>
+ <1615828363-464-2-git-send-email-moshe@nvidia.com>
+ <YFNPhvelhxg4+5Cl@lunn.ch>
+ <3d8b9b2b-25e2-3812-2daf-09f1c5088eb0@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next V2 1/2] net: dsa: bcm_sf2: add function finding RGMII
- register
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161610480822.28103.17350861771579510660.git-patchwork-notify@kernel.org>
-Date:   Thu, 18 Mar 2021 22:00:08 +0000
-References: <20210318080143.32449-1-zajec5@gmail.com>
-In-Reply-To: <20210318080143.32449-1-zajec5@gmail.com>
-To:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tpIDx6YWplYzVAZ21haWwuY29tPg==?=@ci.codeaurora.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        rafal@milecki.pl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3d8b9b2b-25e2-3812-2daf-09f1c5088eb0@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 18 Mar 2021 09:01:42 +0100 you wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
+> > > +Request contents:
+> > > +
+> > > +  =====================================  ======  ==========================
+> > > +  ``ETHTOOL_A_EEPROM_DATA_HEADER``       nested  request header
+> > > +  ``ETHTOOL_A_EEPROM_DATA_OFFSET``       u32     offset within a page
+> > > +  ``ETHTOOL_A_EEPROM_DATA_LENGTH``       u32     amount of bytes to read
+> > I wonder if offset and length should be u8. At most, we should only be
+> > returning a 1/2 page, so 128 bytes. We don't need a u32.
 > 
-> Simple macro like REG_RGMII_CNTRL_P() is insufficient as:
-> 1. It doesn't validate port argument
-> 2. It doesn't support chipsets with non-lineral RGMII regs layout
 > 
-> Missing port validation could result in getting register offset from out
-> of array. Random memory -> random offset -> random reads/writes. It
-> affected e.g. BCM4908 for REG_RGMII_CNTRL_P(7).
-> 
-> [...]
+> That's right when page is given, but user may have commands that
+> used to work on the ioctl KAPI with offset higher than one page.
 
-Here is the summary with links:
-  - [net-next,V2,1/2] net: dsa: bcm_sf2: add function finding RGMII register
-    https://git.kernel.org/netdev/net-next/c/55cfeb396965
-  - [net-next,V2,2/2] net: dsa: bcm_sf2: fix BCM4908 RGMII reg(s)
-    https://git.kernel.org/netdev/net-next/c/6859d9154934
+CMIS section 5.4.1 says:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+  The slave maintains an internal current byte address counter
+  containing the byte address accessed during the latest read or write
+  operation incremented by one with roll-over as follows: The current
+  byte address counter rolls-over after a read or write operation at
+  the last byte address of the current 128-byte memory page (127 or
+  255) to the first byte address (0 or 128) of the same 128-byte
+  memory page.
 
+This wrapping is somewhat unexpected. If the user access is for a read
+starting at 120 and a length of 20, they get bytes 120-127 followed by
+0-11. The user is more likely to be expecting 120-139.
 
+We have two ways to address this:
+
+1) We limit reads to a maximum of a 1/2 page, and the start and end
+point needs to be within that 1/2 page.
+
+2) We detect that the read is going to go across a 1/2 page boarder,
+and perform two reads to the MAC driver, and glue the data back
+together again in the ethtool core.
+
+What i don't want is to leave the individual drivers to solve this,
+because i expect some of them will get it wrong.
+
+	Andrew
