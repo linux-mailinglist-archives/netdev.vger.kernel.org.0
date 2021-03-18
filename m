@@ -2,174 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A144340473
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 12:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C3C63404D0
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 12:40:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231187AbhCRLQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 07:16:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54580 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230423AbhCRLQV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 07:16:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0525464F2A;
-        Thu, 18 Mar 2021 11:16:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616066180;
-        bh=y5bVr3CLwxOKnnAgyk3ugA2uZLuzjazq0sr2+KOJOCM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1VjPb4pXitAiJJocyV++w4wgg/KTkpf8u5NizGPnNfp2Jw7uq9mIr5UM+wLQljue
-         uGz395ibr34HkL84XcT7pa+3lykNZrq/dtasblhTf625vUq3oGJOqp4lEID32U5vwQ
-         ZdZ1i2VJkWX/ZGt4j6KNTDM5M6CHFMAtwLOj07BVkYiyi+zb8mFBVRWhpSKvqlfXdk
-         IGNYznXw5qBeHGR7ArChWGqHWfIGY33PUBpjnb18qcv6nu0wtp8xJ00KCqoSdeW7fg
-         nwwKqNwXo/DojNDK1EdSDfcMB4jlZ9SstpkMgNNu61CdWL+Op5xgcepJjTI/L6X/rS
-         PlqPlhegsNOIg==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Maor Gottlieb <maorg@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@mellanox.com>
-Subject: [PATCH rdma-next 7/7] RDMA/mlx5: Expose UAPI to query DM
-Date:   Thu, 18 Mar 2021 13:15:48 +0200
-Message-Id: <20210318111548.674749-8-leon@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210318111548.674749-1-leon@kernel.org>
-References: <20210318111548.674749-1-leon@kernel.org>
+        id S230356AbhCRLjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 07:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229943AbhCRLjs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 07:39:48 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EC2C06174A;
+        Thu, 18 Mar 2021 04:39:48 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id v3so1245210pgq.2;
+        Thu, 18 Mar 2021 04:39:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S0Ej3lKCPVzBM8qM04CRJBvn+9chI3S3W7mTusbdHCA=;
+        b=kqfQ+6DNf3bayt+ixltd4Y8KDyeu6CVHcWpj7bpL0ZbEjzLMSNup0l7v7j9n6x5iu5
+         7IoDS5Xcg9VFds5QjDlV5yK7yeVovM3d8ki+1OIbHf/ej/GKxxBT8yLG/Chki9v60zw2
+         ahkwa5GOTqxvzPKmi8rkR4TCfolCZuKrMeTDatSgZqbzZjE1vZsoy0po6MtVmq4vc1FR
+         H+5/VIQ7zRxAF7UGQ+63W4rNpfaEZ8+Z4m/vHDwHugVlEbHJhR38fZur2kJnjSxxQTo4
+         yzGnPPChTWMGIzIizcm6WV9Tkfg41CUTbM0f1B8QbRYg+MEZPcm59ggN9aQyg4pOxYLN
+         /dIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S0Ej3lKCPVzBM8qM04CRJBvn+9chI3S3W7mTusbdHCA=;
+        b=T8ol+Whc07NKx2PyD+oqe9KWHkVfLyQzkBmoEreYxju3RxpJNs5GPOlX8sHcgGkm5Q
+         DWvxq+OaJbVsgXyjgD6TxYKDhyBUBUW9KCa0zTbb/ggpTykjfEz3P36JngXZVbf0O49K
+         YkntpmnSFYyyR5kiXeXvqKT0qYJqrrK1sH0WfxPw6Aaa36Dc7hEkn8J07jmQsd8M5LG/
+         W4bG4d5pYL8/SBW7axbMUnWpCVEe5ZRuMdMkgsg0Aga3kpxI8ZGIbcWeWByc2wjDcqyd
+         5cOCzn5AKXKkKyUIbqN0xRbhwU2CJZrrPwWA+q4qdixizo7IO+IKMc9Jyd5pAbewHuMm
+         UlzQ==
+X-Gm-Message-State: AOAM531XQgvh2LG+ZhZC2U9M2/KA09ExBlQDWQ8DJ9JGrGd/wsOjGeLg
+        q5tPG+No2UC5r5RGhFofdA5kVDhHWTU=
+X-Google-Smtp-Source: ABdhPJxp6OKR+TNoFQTfxvVLQ0KzBZpdpPz042/J3USeyYYzDqiVoM6TNWBFrHgz8dSrxS9DB3tnyg==
+X-Received: by 2002:a63:2213:: with SMTP id i19mr6584102pgi.242.1616067587983;
+        Thu, 18 Mar 2021 04:39:47 -0700 (PDT)
+Received: from localhost.localdomain ([178.236.46.205])
+        by smtp.gmail.com with ESMTPSA id kk6sm2194996pjb.51.2021.03.18.04.39.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Mar 2021 04:39:47 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: xiong.zhenwu@zte.com.cn
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, m-karicheri2@ti.com,
+        andriy.shevchenko@linux.intel.com, xiong.zhenwu@zte.com.cn,
+        miaoqinglang@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] /net/hsr: fix misspellings using codespell tool
+Date:   Thu, 18 Mar 2021 04:39:41 -0700
+Message-Id: <20210318113941.473650-1-xiong.zhenwu@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Xiong Zhenwu <xiong.zhenwu@zte.com.cn>
 
-Expose UAPI to query MEMIC DM, this will let user space application
-that didn't allocate the DM but has access to by owning the matching
-command FD to retrieve its information.
+A typo is found out by codespell tool in 111th line of hsr_debugfs.c:
 
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+$ codespell ./net/hsr/
+
+net/hsr/hsr_debugfs.c:111: Debufs  ==> Debugfs
+
+Fix typos found by codespell.
+
+Signed-off-by: Xiong Zhenwu <xiong.zhenwu@zte.com.cn>
 ---
- drivers/infiniband/hw/mlx5/dm.c          | 45 +++++++++++++++++++++++-
- drivers/infiniband/hw/mlx5/mlx5_ib.h     |  1 +
- include/uapi/rdma/mlx5_user_ioctl_cmds.h |  8 +++++
- 3 files changed, 53 insertions(+), 1 deletion(-)
+ net/hsr/hsr_debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/dm.c b/drivers/infiniband/hw/mlx5/dm.c
-index ee4ee197a626..41c158216f17 100644
---- a/drivers/infiniband/hw/mlx5/dm.c
-+++ b/drivers/infiniband/hw/mlx5/dm.c
-@@ -307,6 +307,7 @@ static int handle_alloc_dm_memic(struct ib_ucontext *ctx, struct mlx5_ib_dm *dm,
- 	xa_init(&dm->memic.ops);
- 	mutex_init(&dm->memic.ops_xa_lock);
- 	dm->size = roundup(attr->length, MLX5_MEMIC_BASE_SIZE);
-+	dm->memic.req_length = attr->length;
-
- 	err = mlx5_cmd_alloc_memic(dm_db, &dm->dev_addr,
- 				   dm->size, attr->alignment);
-@@ -486,6 +487,36 @@ int mlx5_ib_dealloc_dm(struct ib_dm *ibdm, struct uverbs_attr_bundle *attrs)
- 	return 0;
- }
-
-+static int UVERBS_HANDLER(MLX5_IB_METHOD_DM_QUERY)(
-+	struct uverbs_attr_bundle *attrs)
-+{
-+	struct ib_dm *ibdm =
-+		uverbs_attr_get_obj(attrs, MLX5_IB_ATTR_QUERY_DM_REQ_HANDLE);
-+	struct mlx5_ib_dm *dm = to_mdm(ibdm);
-+	u64 start_offset;
-+	u16 page_idx;
-+	int err;
-+
-+	if (dm->type != MLX5_IB_UAPI_DM_TYPE_MEMIC)
-+		return -EOPNOTSUPP;
-+
-+	page_idx = dm->memic.mentry.rdma_entry.start_pgoff & 0xFFFF;
-+	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_QUERY_DM_RESP_PAGE_INDEX,
-+			     &page_idx, sizeof(page_idx));
-+	if (err)
-+		return err;
-+
-+	start_offset = dm->dev_addr & ~PAGE_MASK;
-+	err =  uverbs_copy_to(attrs, MLX5_IB_ATTR_QUERY_DM_RESP_START_OFFSET,
-+			      &start_offset, sizeof(start_offset));
-+	if (err)
-+		return err;
-+
-+	return uverbs_copy_to(attrs, MLX5_IB_ATTR_QUERY_DM_RESP_LENGTH,
-+			      &dm->memic.req_length,
-+			      sizeof(dm->memic.req_length));
-+}
-+
- void mlx5_ib_dm_mmap_free(struct mlx5_ib_dev *dev,
- 			  struct mlx5_user_mmap_entry *mentry)
- {
-@@ -511,6 +542,17 @@ void mlx5_ib_dm_mmap_free(struct mlx5_ib_dev *dev,
- 	}
- }
-
-+DECLARE_UVERBS_NAMED_METHOD(
-+	MLX5_IB_METHOD_DM_QUERY,
-+	UVERBS_ATTR_IDR(MLX5_IB_ATTR_QUERY_DM_REQ_HANDLE, UVERBS_OBJECT_DM,
-+			UVERBS_ACCESS_READ, UA_MANDATORY),
-+	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_QUERY_DM_RESP_START_OFFSET,
-+			    UVERBS_ATTR_TYPE(u64), UA_MANDATORY),
-+	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_QUERY_DM_RESP_PAGE_INDEX,
-+			    UVERBS_ATTR_TYPE(u16), UA_MANDATORY),
-+	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_QUERY_DM_RESP_LENGTH,
-+			    UVERBS_ATTR_TYPE(u64), UA_MANDATORY));
-+
- ADD_UVERBS_ATTRIBUTES_SIMPLE(
- 	mlx5_ib_dm, UVERBS_OBJECT_DM, UVERBS_METHOD_DM_ALLOC,
- 	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_ALLOC_DM_RESP_START_OFFSET,
-@@ -537,7 +579,8 @@ DECLARE_UVERBS_NAMED_METHOD(
- 			    UA_OPTIONAL));
-
- DECLARE_UVERBS_GLOBAL_METHODS(UVERBS_OBJECT_DM,
--			      &UVERBS_METHOD(MLX5_IB_METHOD_DM_MAP_OP_ADDR));
-+			      &UVERBS_METHOD(MLX5_IB_METHOD_DM_MAP_OP_ADDR),
-+			      &UVERBS_METHOD(MLX5_IB_METHOD_DM_QUERY));
-
- const struct uapi_definition mlx5_ib_dm_defs[] = {
- 	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_DM, &mlx5_ib_dm),
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index b714131f87b7..78099d95e8e9 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -637,6 +637,7 @@ struct mlx5_ib_dm {
- 				struct xarray		ops;
- 				struct mutex		ops_xa_lock;
- 				struct kref		ref;
-+				size_t			req_length;
- 		} memic;
- 		struct {
- 			u32	obj_id;
-diff --git a/include/uapi/rdma/mlx5_user_ioctl_cmds.h b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-index c6fbc5211717..3798cbcb9021 100644
---- a/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-+++ b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-@@ -43,6 +43,7 @@ enum mlx5_ib_create_flow_action_attrs {
-
- enum mlx5_ib_dm_methods {
- 	MLX5_IB_METHOD_DM_MAP_OP_ADDR  = (1U << UVERBS_ID_NS_SHIFT),
-+	MLX5_IB_METHOD_DM_QUERY,
- };
-
- enum mlx5_ib_dm_map_op_addr_attrs {
-@@ -52,6 +53,13 @@ enum mlx5_ib_dm_map_op_addr_attrs {
- 	MLX5_IB_ATTR_DM_MAP_OP_ADDR_RESP_PAGE_INDEX,
- };
-
-+enum mlx5_ib_query_dm_attrs {
-+	MLX5_IB_ATTR_QUERY_DM_REQ_HANDLE = (1U << UVERBS_ID_NS_SHIFT),
-+	MLX5_IB_ATTR_QUERY_DM_RESP_START_OFFSET,
-+	MLX5_IB_ATTR_QUERY_DM_RESP_PAGE_INDEX,
-+	MLX5_IB_ATTR_QUERY_DM_RESP_LENGTH,
-+};
-+
- enum mlx5_ib_alloc_dm_attrs {
- 	MLX5_IB_ATTR_ALLOC_DM_RESP_START_OFFSET = (1U << UVERBS_ID_NS_SHIFT),
- 	MLX5_IB_ATTR_ALLOC_DM_RESP_PAGE_INDEX,
---
-2.30.2
+diff --git a/net/hsr/hsr_debugfs.c b/net/hsr/hsr_debugfs.c
+index 4cfd9e829c7b..99f3af1a9d4d 100644
+--- a/net/hsr/hsr_debugfs.c
++++ b/net/hsr/hsr_debugfs.c
+@@ -108,7 +108,7 @@ void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
+ /* hsr_debugfs_term - Tear down debugfs intrastructure
+  *
+  * Description:
+- * When Debufs is configured this routine removes debugfs file system
++ * When Debugfs is configured this routine removes debugfs file system
+  * elements that are specific to hsr
+  */
+ void
+-- 
+2.25.1
 
