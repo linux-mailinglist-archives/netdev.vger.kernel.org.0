@@ -2,184 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56B73407A2
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9C33407A8
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 15:17:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbhCROQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 10:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231546AbhCROQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:16 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D528C06174A
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:16 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id 16so7654237ljc.11
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 07:16:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=bYs1Xthv5i1LFr+tljtLjYlXNiB00exl9DF7BJEJ/so=;
-        b=l7hXwlqBw0IekkinPV1IrL8kMOUi52q46CYR4dB8RIn+b3xrYBDJYBYvNidv1oQYnS
-         hOV/ymD5lKSp1Q4GN8a3ZiKljJv+Bj7Zp/tmpFIRzm8+2VAs3o23Fyb4n/LVt4ZzXHUA
-         o43bHgV2DgmPleyfa+RBtjndGqCORrQcTYIe4l3txDpgwKtqItFVkq7wNG+BBBPaaO39
-         u7PHuCSEhwL4TncJsyKFbdZ0c+FdXZePqJiAQnngk5SNNNdje8qjGghDWLQG38veW81+
-         tcs8VtFLz6quexUgeSvkFcaaIl2uvHevAWBcAEW4sYaDI30wVhox5mWxrm1ijNHOxBIg
-         0tPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=bYs1Xthv5i1LFr+tljtLjYlXNiB00exl9DF7BJEJ/so=;
-        b=Dp5LNum13bIbfLPgwMk4QPEy1pe+bx77i6wYA37QlTYvqqfb6uwoQrP05MYOMWLCoy
-         jVVeCSmnzWKLI+DKd3dF8XJTwX5OnzK/RZsBE6oA0Np0fvPb/l6IaYdADxppxI5Rzc4d
-         kLwwqohti2f/sPOrwfJGL2QW/kx/vAYywFslVyFcPbx+6VtMPURmLbkiPHz0pjk1Kt0k
-         yLZ6c5LCfOhZ4ItU8IFHNe9uJi4Q12d9eCSt8ni5B/YPiRbV91vKjkJQM68rsDpUvDqR
-         8GyrgFJ/eScYyNVneFkWmYTrVoeu7yVNkhREwL6fea+u8jwq24BJf7VnznCry89vS+qn
-         klSQ==
-X-Gm-Message-State: AOAM533vhG0YsqXeHf6d5VV1sroJM7MNlAM6Q5LQrFysmUOnhQKdEJz5
-        wZhSPaPvt34d9rJbRkFKDMdzxQ==
-X-Google-Smtp-Source: ABdhPJzOccmt6RggYkbg94ODgFdyd+G0/CMsH92/o2CoBvA9qM+fmpZ2QW1Lzq1+4I3sBDyPH2hKfA==
-X-Received: by 2002:a2e:b537:: with SMTP id z23mr5343739ljm.350.1616076975037;
-        Thu, 18 Mar 2021 07:16:15 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id w26sm237382lfr.186.2021.03.18.07.16.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 07:16:14 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH v2 net-next 4/8] net: dsa: mv88e6xxx: Remove some bureaucracy around querying the VTU
-Date:   Thu, 18 Mar 2021 15:15:46 +0100
-Message-Id: <20210318141550.646383-5-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210318141550.646383-1-tobias@waldekranz.com>
-References: <20210318141550.646383-1-tobias@waldekranz.com>
+        id S231696AbhCROQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 10:16:45 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:42844 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231557AbhCROQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 10:16:18 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IEF2mE027217;
+        Thu, 18 Mar 2021 07:16:14 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=sTJ3IMOmXARTvoeOGPslic0XzPbePSuKWqgHl1327WQ=;
+ b=VbxURsykYiqA5lBqeeqm8aBwXEFQoCmq5XND3E5p8BfjjhYjtVjbc0iWco+kWXosPuWL
+ GswYsFvPv1/9hDS2wFSYTIRfNiNwv7o9L7wsFIWyLSLxl3O2I95C7BXXNKNPK8kndIut
+ a1k2uZ5NG9WYxvwy6k0Ye9rBiZycBpE7fLFH6TSA0XzWMyGbGeiilPAYhubBAVfwqjKg
+ 6BQjG9Xm0nBkV8UN9AZ+GbUlz4NWHemG3PMmkaj2TWuRRgM9GZT6luV80NTyLjKejR7L
+ 8g/KYCgGd5tvYvDB+duUI8ui9tFFwil5xEQOs4BfMwBnOidYVlgYo9N2+D3yGxim6LfW 3Q== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 37b5vdpkdh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 18 Mar 2021 07:16:14 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
+ 2021 07:16:13 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 18 Mar 2021 07:16:13 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 80DE23F703F;
+        Thu, 18 Mar 2021 07:16:09 -0700 (PDT)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>,
+        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
+        <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
+        <hkelam@marvell.com>
+Subject: [net PATCH v2 5/8] octeontx2-af: Fix irq free in rvu teardown
+Date:   Thu, 18 Mar 2021 19:45:46 +0530
+Message-ID: <20210318141549.2622-6-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210318141549.2622-1-hkelam@marvell.com>
+References: <20210318141549.2622-1-hkelam@marvell.com>
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-18_07:2021-03-17,2021-03-18 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hardware has a somewhat quirky protocol for reading out the VTU
-entry for a particular VID. But there is no reason why we cannot
-create a better API for ourselves in the driver.
+From: Geetha sowjanya <gakula@marvell.com>
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Current devlink code try to free already freed irqs as the
+irq_allocate flag is not cleared after free leading to kernel
+crash while removing rvu driver. The patch fixes the irq free
+sequence and clears the irq_allocate flag on free.
+
+Fixes: 7304ac4567bc ("octeontx2-af: Add mailbox IRQ and msg handlers")
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 45 ++++++++++++++------------------
- 1 file changed, 20 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 0a4e467179c9..c18c55e1617e 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1502,13 +1502,23 @@ static int mv88e6xxx_vtu_setup(struct mv88e6xxx_chip *chip)
- 	return mv88e6xxx_g1_vtu_flush(chip);
- }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index d9a1a71c7cc..ab24a5e8ee8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -2462,8 +2462,10 @@ static void rvu_unregister_interrupts(struct rvu *rvu)
+ 		    INTR_MASK(rvu->hw->total_pfs) & ~1ULL);
  
--static int mv88e6xxx_vtu_getnext(struct mv88e6xxx_chip *chip,
--				 struct mv88e6xxx_vtu_entry *entry)
-+static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
-+			     struct mv88e6xxx_vtu_entry *entry)
- {
-+	int err;
-+
- 	if (!chip->info->ops->vtu_getnext)
- 		return -EOPNOTSUPP;
+ 	for (irq = 0; irq < rvu->num_vec; irq++) {
+-		if (rvu->irq_allocated[irq])
++		if (rvu->irq_allocated[irq]) {
+ 			free_irq(pci_irq_vector(rvu->pdev, irq), rvu);
++			rvu->irq_allocated[irq] = false;
++		}
+ 	}
  
--	return chip->info->ops->vtu_getnext(chip, entry);
-+	entry->vid = vid ? vid - 1 : mv88e6xxx_max_vid(chip);
-+	entry->valid = false;
-+
-+	err = chip->info->ops->vtu_getnext(chip, entry);
-+
-+	if (entry->vid != vid)
-+		entry->valid = false;
-+
-+	return err;
- }
+ 	pci_free_irq_vectors(rvu->pdev);
+@@ -2975,8 +2977,8 @@ static void rvu_remove(struct pci_dev *pdev)
+ 	struct rvu *rvu = pci_get_drvdata(pdev);
  
- static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-@@ -1615,19 +1625,13 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
- 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
- 		return 0;
- 
--	vlan.vid = vid - 1;
--	vlan.valid = false;
--
--	err = mv88e6xxx_vtu_getnext(chip, &vlan);
-+	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
- 	if (err)
- 		return err;
- 
- 	if (!vlan.valid)
- 		return 0;
- 
--	if (vlan.vid != vid)
--		return 0;
--
- 	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
- 		if (dsa_is_dsa_port(ds, i) || dsa_is_cpu_port(ds, i))
- 			continue;
-@@ -1709,15 +1713,12 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
- 		if (err)
- 			return err;
- 	} else {
--		vlan.vid = vid - 1;
--		vlan.valid = false;
--
--		err = mv88e6xxx_vtu_getnext(chip, &vlan);
-+		err = mv88e6xxx_vtu_get(chip, vid, &vlan);
- 		if (err)
- 			return err;
- 
- 		/* switchdev expects -EOPNOTSUPP to honor software VLANs */
--		if (vlan.vid != vid || !vlan.valid)
-+		if (!vlan.valid)
- 			return -EOPNOTSUPP;
- 
- 		fid = vlan.fid;
-@@ -1994,14 +1995,11 @@ static int mv88e6xxx_port_vlan_join(struct mv88e6xxx_chip *chip, int port,
- 	struct mv88e6xxx_vtu_entry vlan;
- 	int i, err;
- 
--	vlan.vid = vid - 1;
--	vlan.valid = false;
--
--	err = mv88e6xxx_vtu_getnext(chip, &vlan);
-+	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
- 	if (err)
- 		return err;
- 
--	if (vlan.vid != vid || !vlan.valid) {
-+	if (!vlan.valid) {
- 		memset(&vlan, 0, sizeof(vlan));
- 
- 		err = mv88e6xxx_atu_new(chip, &vlan.fid);
-@@ -2097,17 +2095,14 @@ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
- 	if (!vid)
- 		return -EOPNOTSUPP;
- 
--	vlan.vid = vid - 1;
--	vlan.valid = false;
--
--	err = mv88e6xxx_vtu_getnext(chip, &vlan);
-+	err = mv88e6xxx_vtu_get(chip, vid, &vlan);
- 	if (err)
- 		return err;
- 
- 	/* If the VLAN doesn't exist in hardware or the port isn't a member,
- 	 * tell switchdev that this VLAN is likely handled in software.
- 	 */
--	if (vlan.vid != vid || !vlan.valid ||
-+	if (!vlan.valid ||
- 	    vlan.member[port] == MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_NON_MEMBER)
- 		return -EOPNOTSUPP;
- 
+ 	rvu_dbg_exit(rvu);
+-	rvu_unregister_interrupts(rvu);
+ 	rvu_unregister_dl(rvu);
++	rvu_unregister_interrupts(rvu);
+ 	rvu_flr_wq_destroy(rvu);
+ 	rvu_cgx_exit(rvu);
+ 	rvu_fwdata_exit(rvu);
 -- 
-2.25.1
+2.17.1
 
