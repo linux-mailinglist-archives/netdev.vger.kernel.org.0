@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 137C1340D61
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 19:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 391AE340D69
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 19:43:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232698AbhCRSmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 14:42:43 -0400
-Received: from mail-40133.protonmail.ch ([185.70.40.133]:31689 "EHLO
-        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232622AbhCRSmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 14:42:35 -0400
-Date:   Thu, 18 Mar 2021 18:42:30 +0000
+        id S232769AbhCRSnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 14:43:14 -0400
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:23574 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232710AbhCRSmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 14:42:45 -0400
+Date:   Thu, 18 Mar 2021 18:42:34 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1616092953; bh=CZPzXPr6kxKmjKYiFth7lEmlditzWiKAt31a6bYz0BI=;
+        t=1616092962; bh=X+A01bVgCW9C0LcweX802pafQYX/MaNpf8hWlmvRiLI=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=FIaVLXSW92dxr8oytIZCizii/i9XUVemC0T7TIRFjAl8uwZpExxjQ7C3+J5qZMr4W
-         wwTyCbbGbZndoyKBBvrGYBmryILMnlvz6RobHBpFBkBBdlQ1i1TT2nqw1WeCuAmYTB
-         yDraprzPaWRcHKCv4BKVytT64iZCjXFeB0+XMqZ0rcFlVbUjB57tUVJR5QOtqCAwLe
-         8aayIKPCRWVZuQYFOvvVtuYaiA2kx+5bjFKjKFbrFMj9tR4Om6jX8PT0e8zpnuE4tC
-         5gpLrw10tKVeR7UODv2P8EOCVlvB5NLFkaXNCHs5srn/NlZ1MGgsv1ROlw4lXYt79u
-         EP2wMyhm3hm4Q==
+        b=ihdVBEmjgnxfyRPkNRf6p8/oxzuoUGhnrp6NznWS9bSE5WC/C6TJe4eq3wNehnTwo
+         XSxncp9rTywDwaLZ1VkljA4hoViA1ArxFmrMPpObCe9IXTCR8pJ6iXi5qtE3ukYhGJ
+         c9vnxFBFBMryQwg3N4vEJvCrXTojaMWwR5YX8YYC5U56dZFTcp7bP8/g50FB41MAWE
+         Oaam0BjnCsS/z9LFNcGyfN2TSSVDHn1RKB3nxpXu/Rx6rjR/kwhZsVLlTvIVVH7127
+         /kAoc0UH3ivKn2fmFvTK7TpJugrpOKwtL16iEbx62f50ZKAJ1imdN8d8dCaXmfJXaE
+         j1OdCDOS/OFtQ==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -32,8 +32,8 @@ Cc:     Alexander Lobakin <alobakin@pm.me>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next 2/4] gro: add combined call_gro_receive() + INDIRECT_CALL_INET() helper
-Message-ID: <20210318184157.700604-3-alobakin@pm.me>
+Subject: [PATCH net-next 3/4] vlan/8021q: avoid retpoline overhead on GRO
+Message-ID: <20210318184157.700604-4-alobakin@pm.me>
 In-Reply-To: <20210318184157.700604-1-alobakin@pm.me>
 References: <20210318184157.700604-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -48,38 +48,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-call_gro_receive() is used to limit GRO recursion, but it works only
-with callback pointers.
-There's a combined version of call_gro_receive() + INDIRECT_CALL_2()
-in <net/inet_common.h>, but it doesn't check for IPv6 modularity.
-Add a similar new helper to cover both of these. It can and will be
-used to avoid retpoline overhead when IP header lies behind another
-offloaded proto.
+The two most popular headers going after VLAN are IPv4 and IPv6.
+Retpoline overhead for them is addressed only in dev_gro_receive(),
+when they lie right after the outermost Ethernet header.
+Use the indirect call wrappers in VLAN GRO receive code to reduce
+the penalty on receiving tagged frames (when hardware stripping is
+off or not available).
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/net/gro.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/8021q/vlan_core.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/gro.h b/include/net/gro.h
-index 27c38b36df16..01edaf3fdda0 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -14,4 +14,12 @@ INDIRECT_CALLABLE_DECLARE(int ipv6_gro_complete(struct s=
-k_buff *, int));
- INDIRECT_CALLABLE_DECLARE(struct sk_buff *inet_gro_receive(struct list_hea=
-d *,
- =09=09=09=09=09=09=09   struct sk_buff *));
- INDIRECT_CALLABLE_DECLARE(int inet_gro_complete(struct sk_buff *, int));
+diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
+index 78ec2e1b14d1..59bc13b5f14f 100644
+--- a/net/8021q/vlan_core.c
++++ b/net/8021q/vlan_core.c
+@@ -4,6 +4,7 @@
+ #include <linux/if_vlan.h>
+ #include <linux/netpoll.h>
+ #include <linux/export.h>
++#include <net/gro.h>
+ #include "vlan.h"
+
+ bool vlan_do_receive(struct sk_buff **skbp)
+@@ -495,7 +496,10 @@ static struct sk_buff *vlan_gro_receive(struct list_he=
+ad *head,
+
+ =09skb_gro_pull(skb, sizeof(*vhdr));
+ =09skb_gro_postpull_rcsum(skb, vhdr, sizeof(*vhdr));
+-=09pp =3D call_gro_receive(ptype->callbacks.gro_receive, head, skb);
 +
-+#define indirect_call_gro_receive_inet(cb, f2, f1, head, skb)=09\
-+({=09=09=09=09=09=09=09=09\
-+=09unlikely(gro_recursion_inc_test(skb)) ?=09=09=09\
-+=09=09NAPI_GRO_CB(skb)->flush |=3D 1, NULL :=09=09\
-+=09=09INDIRECT_CALL_INET(cb, f2, f1, head, skb);=09\
-+})
-+
- #endif /* _NET_IPV6_GRO_H */
++=09pp =3D indirect_call_gro_receive_inet(ptype->callbacks.gro_receive,
++=09=09=09=09=09    ipv6_gro_receive, inet_gro_receive,
++=09=09=09=09=09    head, skb);
+
+ out_unlock:
+ =09rcu_read_unlock();
+@@ -515,7 +519,9 @@ static int vlan_gro_complete(struct sk_buff *skb, int n=
+hoff)
+ =09rcu_read_lock();
+ =09ptype =3D gro_find_complete_by_type(type);
+ =09if (ptype)
+-=09=09err =3D ptype->callbacks.gro_complete(skb, nhoff + sizeof(*vhdr));
++=09=09err =3D INDIRECT_CALL_INET(ptype->callbacks.gro_complete,
++=09=09=09=09=09 ipv6_gro_complete, inet_gro_complete,
++=09=09=09=09=09 skb, nhoff + sizeof(*vhdr));
+
+ =09rcu_read_unlock();
+ =09return err;
 --
 2.31.0
 
