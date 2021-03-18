@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0763410E1
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B53A3410E3
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:20:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233435AbhCRXTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 19:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
+        id S233448AbhCRXTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 19:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbhCRXS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:18:58 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC0DC06174A;
-        Thu, 18 Mar 2021 16:18:58 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id va9so6626149ejb.12;
-        Thu, 18 Mar 2021 16:18:58 -0700 (PDT)
+        with ESMTP id S230480AbhCRXTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:19:00 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99013C06174A;
+        Thu, 18 Mar 2021 16:18:59 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id w18so8738925edc.0;
+        Thu, 18 Mar 2021 16:18:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3cv8HW1vCsnZzHcEWlXkMyo1ztrv6wfRq7ECbXtyOT8=;
-        b=XFRJ/XIkUsxCLDjGZvVqEfUHnZol5mL9AsBUMGii/9jUSn5wDX3RZ+gJuEDi15VakE
-         KnSG83z4ocF6lBegUEUyxc5zxzGm6iEy4GADo4U5uBSrYSBzFZX9IrtoUfxWFChcsQAd
-         dVUxggHMsI9WV4STYUtXe9VUX7Bqrma9AmIyNtYq0SjBuw5ySFwqQMLqOhkB0cjWOJDC
-         UAwX8VRqy3JBsyy8q483GNrVN9ESKlLuYHYiZTxc2vomEALgQc8NCFzzRe0dF5WPiZYk
-         AEDmQ9Hw5DAPWq5tYxiwBbc5aHoPUpmYnsiDri/ZEaN70LeviP59LwTGPeuigymbGbmU
-         HvvA==
+        bh=7JhQ2kQzidiQfTakouPVoSEYKgYJywL0dJdeDO35/Oo=;
+        b=MxmrwRYXQ525YkLNK7v0HqyLjD4n7IIA1J7ocvk6uP80tzkk19KvL71GMMermYsxlN
+         xrRDlEkMwAUBjCB/6HIJVARUe/A/582Kf+6BEPeB/0ww94+iKh+K6FGYtPeOI0FB7JoJ
+         4T6ijcNbuBCL1zfSeybgGDmZPxW36z7clGnJ0M7JHysWHGdAiNp2lGpwtGqPZWR/ijLE
+         XjNxUD9ZipjDVEYXsdFf4V6RDGr7lq1hpLkCCFN1jui3aKUiT2sxGqMorhOSdVOHxHQ2
+         sgB25HvY5HWI0YcWABFOAJBJ1Wn0F6x0vTmgthCI25WOhAdWIk1+l1TH0W1lBNT9hjPx
+         G5rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3cv8HW1vCsnZzHcEWlXkMyo1ztrv6wfRq7ECbXtyOT8=;
-        b=fIvLFDrTjO+EMKLXTMXTgxgeSVL4qk82l5HlMSMgRwy/ywMwzsr3QZrdlL9NKdLWot
-         AgoZJw/aJpHL54H2e3QKfF4QKOQK5tXL01++u0cLWSgYKeua4fu5nUVPNxrqGHHl0Upd
-         xW/ENPYFDrYgKvy3Dk0DtOhasEh22Ylhmhm1ElGKOSuu/TCiRIlRApba8Ra31+6TI64h
-         gUh0xkaqRbD4/l1IbJj9+N38NqD8gwxAP1EyW16yPGJiJW9z+b3e7fJmG+8byQIQBMhm
-         a/p5sbTlvrmCy5dJQ5qpLzgpUhW8ZzQeQ0oHE4qRzOlhBOwB7tEszVxq1BVC6D5tt9Tj
-         Ws8Q==
-X-Gm-Message-State: AOAM533qVw57twuVykOkBQVxU8/4Ncs5OtWUOWqRjUajo1sXAUj/V2Jl
-        2sFDlKgZGowbw0g8aTmcMMI=
-X-Google-Smtp-Source: ABdhPJyYC98WCHbmQjKT/I5q9ZUAtYhhA1xnIHFU9frGSif2lvlYBr8tNnv+/errku0hiJ6duH8Z3A==
-X-Received: by 2002:a17:906:3648:: with SMTP id r8mr1161010ejb.58.1616109536885;
-        Thu, 18 Mar 2021 16:18:56 -0700 (PDT)
+        bh=7JhQ2kQzidiQfTakouPVoSEYKgYJywL0dJdeDO35/Oo=;
+        b=KV9Al3FbtCoKBVAiTIfWV2B66xGj3Y+L6CLamIZl2F4CTqGjvF08elovtIsJkF/uQd
+         FCYbWMzjVJS5fHuX0aM8kqmoxUVwMcuuRIhCzYGEE7E5riHXukZtO7Ld5IWPvVaUc1eW
+         QBftIzv7NxlMcGtmzCrDccM05lQPAkcM96O5OXnkE4CMizQjQ+s23DYN0xbzAoYwLD8H
+         ip6ZVsUyajLXTy+y+KOV8QdjT/GlmI6IVhgYzgbE21qhESH+91bQxUtOW4QsPAc1ljid
+         zKI2IjIK4akBjAqo4W4L+Zug9z1ZjH4oXWnRyD5tQgfprFbYMXgYMhYdu/FSaGrDLbMb
+         qFog==
+X-Gm-Message-State: AOAM530DI32v2TsHAP9CqX6qY699qm+WrEXkhd8nrtp8DZSzg6FkxLvF
+        LRYJOkX7jNAP5q6iJG1lyrw=
+X-Google-Smtp-Source: ABdhPJyQXAh0mO9Sv4qRIZn0DODzbA5wbdUbHyu4xa0cB0sYM288Vc4H7afM+RdnEJQCytGqm5vcJQ==
+X-Received: by 2002:a50:cf48:: with SMTP id d8mr6755511edk.54.1616109538360;
+        Thu, 18 Mar 2021 16:18:58 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.18.55
+        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.18.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 16:18:56 -0700 (PDT)
+        Thu, 18 Mar 2021 16:18:58 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -67,9 +67,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH v2 net-next 09/16] net: dsa: replay port and local fdb entries when joining the bridge
-Date:   Fri, 19 Mar 2021 01:18:22 +0200
-Message-Id: <20210318231829.3892920-10-olteanv@gmail.com>
+Subject: [RFC PATCH v2 net-next 10/16] net: dsa: replay VLANs installed on port when joining the bridge
+Date:   Fri, 19 Mar 2021 01:18:23 +0200
+Message-Id: <20210318231829.3892920-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210318231829.3892920-1-olteanv@gmail.com>
 References: <20210318231829.3892920-1-olteanv@gmail.com>
@@ -81,185 +81,151 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-When a DSA port joins a LAG that already had an FDB entry pointing to it:
+Currently this simple setup:
 
+ip link add br0 type bridge vlan_filtering 1
+ip link add bond0 type bond
 ip link set bond0 master br0
-bridge fdb add dev bond0 00:01:02:03:04:05 master static
 ip link set swp0 master bond0
 
-the DSA port will have no idea that this FDB entry is there, because it
-missed the switchdev event emitted at its creation.
+will not work because the bridge has created the PVID in br_add_if ->
+nbp_vlan_init, and it has notified switchdev of the existence of VLAN 1,
+but that was too early, since swp0 was not yet a lower of bond0, so it
+had no reason to act upon that notification.
 
-Ido Schimmel pointed this out during a discussion about challenges with
-switchdev offloading of stacked interfaces between the physical port and
-the bridge, and recommended to just catch that condition and deny the
-CHANGEUPPER event:
-https://lore.kernel.org/netdev/20210210105949.GB287766@shredder.lan/
-
-But in fact, we might need to deal with the hard thing anyway, which is
-to replay all FDB addresses relevant to this port, because it isn't just
-static FDB entries, but also local addresses (ones that are not
-forwarded but terminated by the bridge). There, we can't just say 'oh
-yeah, there was an upper already so I'm not joining that'.
-
-So, similar to the logic for replaying MDB entries, add a function that
-must be called by individual switchdev drivers and replays local FDB
-entries as well as ones pointing towards a bridge port. This time, we
-use the atomic switchdev notifier block, since that's what FDB entries
-expect for some reason.
-
-Reported-by: Ido Schimmel <idosch@idosch.org>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/if_bridge.h |  9 +++++++
- include/net/switchdev.h   |  1 +
- net/bridge/br_fdb.c       | 52 +++++++++++++++++++++++++++++++++++++++
- net/dsa/dsa_priv.h        |  1 +
- net/dsa/port.c            |  4 +++
- net/dsa/slave.c           |  2 +-
- 6 files changed, 68 insertions(+), 1 deletion(-)
+ include/linux/if_bridge.h | 10 ++++++
+ net/bridge/br_vlan.c      | 71 +++++++++++++++++++++++++++++++++++++++
+ net/dsa/port.c            |  6 ++++
+ 3 files changed, 87 insertions(+)
 
 diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index 4c25dafb013d..89596134e88f 100644
+index 89596134e88f..ea176c508c0d 100644
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -147,6 +147,8 @@ void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
- bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
- u8 br_port_get_stp_state(const struct net_device *dev);
- clock_t br_get_ageing_time(struct net_device *br_dev);
-+int br_fdb_replay(struct net_device *br_dev, struct net_device *dev,
-+		  struct notifier_block *nb);
+@@ -111,6 +111,8 @@ int br_vlan_get_pvid_rcu(const struct net_device *dev, u16 *p_pvid);
+ int br_vlan_get_proto(const struct net_device *dev, u16 *p_proto);
+ int br_vlan_get_info(const struct net_device *dev, u16 vid,
+ 		     struct bridge_vlan_info *p_vinfo);
++int br_vlan_replay(struct net_device *br_dev, struct net_device *dev,
++		   struct notifier_block *nb, struct netlink_ext_ack *extack);
  #else
- static inline struct net_device *
- br_fdb_find_port(const struct net_device *br_dev,
-@@ -175,6 +177,13 @@ static inline clock_t br_get_ageing_time(struct net_device *br_dev)
+ static inline bool br_vlan_enabled(const struct net_device *dev)
  {
- 	return 0;
+@@ -137,6 +139,14 @@ static inline int br_vlan_get_info(const struct net_device *dev, u16 vid,
+ {
+ 	return -EINVAL;
  }
 +
-+static inline int br_fdb_replay(struct net_device *br_dev,
-+				struct net_device *dev,
-+				struct notifier_block *nb)
++static inline int br_vlan_replay(struct net_device *br_dev,
++				 struct net_device *dev,
++				 struct notifier_block *nb,
++				 struct netlink_ext_ack *extack)
 +{
 +	return -EINVAL;
 +}
  #endif
  
- #endif
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index b7fc7d0f54e2..7688ec572757 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -205,6 +205,7 @@ struct switchdev_notifier_info {
- 
- struct switchdev_notifier_fdb_info {
- 	struct switchdev_notifier_info info; /* must be first */
-+	struct list_head list;
- 	const unsigned char *addr;
- 	u16 vid;
- 	u8 added_by_user:1,
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index b7490237f3fc..49125cc196ac 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -726,6 +726,58 @@ static inline size_t fdb_nlmsg_size(void)
- 		+ nla_total_size(sizeof(u8)); /* NFEA_ACTIVITY_NOTIFY */
+ #if IS_ENABLED(CONFIG_BRIDGE)
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 8829f621b8ec..45a4eac1b217 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -1751,6 +1751,77 @@ void br_vlan_notify(const struct net_bridge *br,
+ 	kfree_skb(skb);
  }
  
-+static int br_fdb_replay_one(struct notifier_block *nb,
-+			     struct net_bridge_fdb_entry *fdb,
-+			     struct net_device *dev)
++static int br_vlan_replay_one(struct notifier_block *nb,
++			      struct net_device *dev,
++			      struct switchdev_obj_port_vlan *vlan,
++			      struct netlink_ext_ack *extack)
 +{
-+	struct switchdev_notifier_fdb_info item;
++	struct switchdev_notifier_port_obj_info obj_info = {
++		.info = {
++			.dev = dev,
++			.extack = extack,
++		},
++		.obj = &vlan->obj,
++	};
 +	int err;
 +
-+	item.addr = fdb->key.addr.addr;
-+	item.vid = fdb->key.vlan_id;
-+	item.added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
-+	item.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
-+	item.info.dev = dev;
-+
-+	err = nb->notifier_call(nb, SWITCHDEV_FDB_ADD_TO_DEVICE, &item);
++	err = nb->notifier_call(nb, SWITCHDEV_PORT_OBJ_ADD, &obj_info);
 +	return notifier_to_errno(err);
 +}
 +
-+int br_fdb_replay(struct net_device *br_dev, struct net_device *dev,
-+		  struct notifier_block *nb)
++int br_vlan_replay(struct net_device *br_dev, struct net_device *dev,
++		   struct notifier_block *nb, struct netlink_ext_ack *extack)
 +{
-+	struct net_bridge_fdb_entry *fdb;
++	struct net_bridge_vlan_group *vg;
++	struct net_bridge_vlan *v;
++	struct net_bridge_port *p;
 +	struct net_bridge *br;
 +	int err = 0;
++	u16 pvid;
++
++	ASSERT_RTNL();
 +
 +	if (!netif_is_bridge_master(br_dev))
 +		return -EINVAL;
 +
-+	if (!netif_is_bridge_port(dev))
++	if (!netif_is_bridge_master(dev) && !netif_is_bridge_port(dev))
 +		return -EINVAL;
 +
-+	br = netdev_priv(br_dev);
-+
-+	rcu_read_lock();
-+
-+	hlist_for_each_entry_rcu(fdb, &br->fdb_list, fdb_node) {
-+		struct net_device *dst_dev;
-+
-+		dst_dev = fdb->dst ? fdb->dst->dev : br->dev;
-+		if (dst_dev != br_dev && dst_dev != dev)
-+			continue;
-+
-+		err = br_fdb_replay_one(nb, fdb, dst_dev);
-+		if (err)
-+			break;
++	if (netif_is_bridge_master(dev)) {
++		br = netdev_priv(dev);
++		vg = br_vlan_group(br);
++		p = NULL;
++	} else {
++		p = br_port_get_rtnl(dev);
++		if (WARN_ON(!p))
++			return -EINVAL;
++		vg = nbp_vlan_group(p);
++		br = p->br;
 +	}
 +
-+	rcu_read_unlock();
++	if (!vg)
++		return 0;
++
++	pvid = br_get_pvid(vg);
++
++	list_for_each_entry(v, &vg->vlan_list, vlist) {
++		struct switchdev_obj_port_vlan vlan = {
++			.obj.orig_dev = dev,
++			.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
++			.flags = br_vlan_flags(v, pvid),
++			.vid = v->vid,
++		};
++
++		if (!br_vlan_should_use(v))
++			continue;
++
++		br_vlan_replay_one(nb, dev, &vlan, extack);
++		if (err)
++			return err;
++	}
 +
 +	return err;
 +}
-+EXPORT_SYMBOL(br_fdb_replay);
-+
- static void fdb_notify(struct net_bridge *br,
- 		       const struct net_bridge_fdb_entry *fdb, int type,
- 		       bool swdev_notify)
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index b14c43cb88bb..92282de54230 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -262,6 +262,7 @@ static inline bool dsa_tree_offloads_bridge_port(struct dsa_switch_tree *dst,
- 
- /* slave.c */
- extern const struct dsa_device_ops notag_netdev_ops;
-+extern struct notifier_block dsa_slave_switchdev_notifier;
- extern struct notifier_block dsa_slave_switchdev_blocking_notifier;
- 
- void dsa_slave_mii_bus_init(struct dsa_switch *ds);
+ /* check if v_curr can enter a range ending in range_end */
+ bool br_vlan_can_enter_range(const struct net_bridge_vlan *v_curr,
+ 			     const struct net_bridge_vlan *range_end)
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 6670612f96c6..9850051071f2 100644
+index 9850051071f2..6c3c357ac409 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -205,6 +205,10 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+@@ -209,6 +209,12 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
  	if (err && err != -EOPNOTSUPP)
  		return err;
  
-+	err = br_fdb_replay(br, brport_dev, &dsa_slave_switchdev_notifier);
++	err = br_vlan_replay(br, brport_dev,
++			     &dsa_slave_switchdev_blocking_notifier,
++			     extack);
 +	if (err && err != -EOPNOTSUPP)
 +		return err;
 +
  	return 0;
  }
- 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index b974d8f84a2e..c51e52418a62 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2392,7 +2392,7 @@ static struct notifier_block dsa_slave_nb __read_mostly = {
- 	.notifier_call  = dsa_slave_netdevice_event,
- };
- 
--static struct notifier_block dsa_slave_switchdev_notifier = {
-+struct notifier_block dsa_slave_switchdev_notifier = {
- 	.notifier_call = dsa_slave_switchdev_event,
- };
  
 -- 
 2.25.1
