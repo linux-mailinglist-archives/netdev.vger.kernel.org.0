@@ -2,387 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BFB43402A6
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 11:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A70C8340305
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 11:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhCRKCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 06:02:48 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:36216 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229897AbhCRKCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 06:02:42 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12IA0YT4020129;
-        Thu, 18 Mar 2021 03:02:40 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=hwvRrTchYh4uDbRCwBaGOHyUxF8e7WGf/7mt5F33Rik=;
- b=igu5o4ppd/09nRLcMvJRf1OGnwdRR/+RzLAKBsPng0loKab4f28qT0NPUz5NMFUwXeO6
- Svti8F0+140pdfJiQZ/qfOsZ/R+EhRnXexTJowVcfVG9J9aumV5A04lPmRIti/u6TsGU
- xELP/9b51fGJKI2fhFLuIqHFUXqqj3V9k8UiWjveTiG4GDCBBg1QgioBcpofAhHA27jS
- 9i760rug8cye/0YyWZr5GP89UxEGPtihHCI6QlBBmWHsiFwz+dYbuRREGVQra4iCD1yI
- s0Gkrzf+UEx1+jZCO5iEYAKZmdzsbc8Mn6w2tSfwBQm5qizEf7LpygL9ccM4QFvwq4Vm hA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 378wsqyxwk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 18 Mar 2021 03:02:40 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Mar
- 2021 03:02:38 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 18 Mar 2021 03:02:38 -0700
-Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id B70293F7040;
-        Thu, 18 Mar 2021 03:02:34 -0700 (PDT)
-From:   Naveen Mamindlapalli <naveenm@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <sgoutham@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>, <jerinj@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, "Naveen Mamindlapalli" <naveenm@marvell.com>
-Subject: [PATCH net-next 4/4] octeontx2-pf: TC_MATCHALL egress ratelimiting offload
-Date:   Thu, 18 Mar 2021 15:32:15 +0530
-Message-ID: <20210318100215.15795-5-naveenm@marvell.com>
-X-Mailer: git-send-email 2.16.5
-In-Reply-To: <20210318100215.15795-1-naveenm@marvell.com>
-References: <20210318100215.15795-1-naveenm@marvell.com>
+        id S229785AbhCRKR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 06:17:56 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:33001 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229564AbhCRKRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 06:17:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1616062308; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=kwcYCTFYvBcXj5tH8IQ75LJz4gWAzkJxUwqGZ7M6Z3e0iVmeuv4lNwDl3eV0pzS4MD
+    8lYXrZLxXXf6Va5uC69pR4haEgNRlJ3CZKK4m4WtiZno88LzE4xnmP76SkURVx6udLU9
+    LXpUDWGGuW4IFm0girOLLeZ1Gj/XKDbBjUXqGxidOEoSrZ7Pp0Sosk+n9HJCpeIdEN7N
+    oxuRYHrmFiHSidWSBHT9upZpU0zdEQXDOkdYQZoNYrapm6MLuIORsEuQLXafLyXmBrvK
+    +EEdSAYAXdHq9Kd8BWBLT8Vjkpx55P7K2wkaDQXdlOsN2LG0hx52ROwcoucSfYuB5nB+
+    710A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1616062308;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=+4w0vi7G/vmvpMV+8OYWuvA+rqzn6qG4BCKZ9rtRS1Y=;
+    b=bTOs+P3EVkbCdkaOGVRny8EXxg6RbTOJkAHTfkHgPlWw2gZZQJESaiPaqp+PPW9HpK
+    J7kJVivXYe+ZTx5d0mDlTMMQkcV+m1NqdPgoY5AWzCmb2APyFlcP6JF1X8Rj3AFLDAwq
+    PCpd5V+4L4U3niUTw88YGx/lYohVN3wMYOKe8Y0BrHtnJqXaozGo5aplYlDhLeXTV3vz
+    oBkY+qgYY6DKRibe5QykkEvVMZerxZln6FsGgM6/fCrUfpnYJ1QOcDIVs980XoRnDddv
+    uPhwm7/RPM8B5tte9tBchMTnd1ACLSzvKJwsEw/Cx1Qv6vdcxIpd1ra3sYr+mV9o+1By
+    GBuA==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1616062308;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=+4w0vi7G/vmvpMV+8OYWuvA+rqzn6qG4BCKZ9rtRS1Y=;
+    b=YGZzskUI3GwrDrRsLW3hk803TChqp7iciKOjtw5/+UIonlfEmC41CausPzdS5tjAj5
+    9aEUuI8lPHypBljbBHJOtK471rlIyuc4zP6HwqwjsXOnUWVLg2kR0nh4pxLnReIkiNrh
+    5fXYZpPTGIgKQLwAWReiM8FCVZu7ga6MO5SHcAnUfCLFRZesU3G2Lr0zwaeUJgNSI94a
+    Uu0/9VkMqQnShgjvR8rfjFrOS+BgoxI8grRBsijNd+kaznaNLVUWUoYURNUXNDIayLut
+    /wkrtnSqIRRKbQZqfhq7ekLbxFJZiTndc5UHPKJjMlRCe9qoKUCXKzFC09aPuih2JLPh
+    TygA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTGVxiOMpjpw=="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.10.137]
+    by smtp.strato.de (RZmta 47.21.0 DYNA|AUTH)
+    with ESMTPSA id R01debx2IABl1qi
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 18 Mar 2021 11:11:47 +0100 (CET)
+Subject: Re: [net 03/11] can: isotp: TX-path: ensure that CAN frame flags are
+ initialized
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+References: <20210316082104.4027260-1-mkl@pengutronix.de>
+ <20210316082104.4027260-4-mkl@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <bd9fc82e-d67b-34c8-fb74-8977b8825078@hartkopp.net>
+Date:   Thu, 18 Mar 2021 11:11:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-18_04:2021-03-17,2021-03-18 signatures=0
+In-Reply-To: <20210316082104.4027260-4-mkl@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
+Hello Marc,
 
-Add TC_MATCHALL egress ratelimiting offload support with POLICE
-action for entire traffic going out of the interface.
+I obviously missed these patches - but they are fine. Thanks!
 
-Eg: To ratelimit egress traffic to 100Mbps
+After checking your patch I was going after this missing initialization 
+and detected that the outgoing CAN frame skbs from isotp.c were not 
+properly zero initialized - so I sent a patch for it some minutes ago:
 
-$ ethtool -K eth0 hw-tc-offload on
-$ tc qdisc add dev eth0 clsact
-$ tc filter add dev eth0 egress matchall skip_sw \
-                action police rate 100Mbit burst 16Kbit
+https://lore.kernel.org/linux-can/20210318100233.1693-1-socketcan@hartkopp.net/T/#u
 
-HW supports a max burst size of ~128KB.
-Only one ratelimiting filter can be installed at a time.
+In fact I had
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   1 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |   1 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_tc.c   | 238 ++++++++++++++++++++-
- 3 files changed, 236 insertions(+), 4 deletions(-)
+ > CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
+ > CONFIG_INIT_ON_FREE_DEFAULT_ON=y
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 992aa93178e1..45730d0d92f2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -318,6 +318,7 @@ struct otx2_nic {
- #define OTX2_FLAG_RX_PAUSE_ENABLED		BIT_ULL(9)
- #define OTX2_FLAG_TX_PAUSE_ENABLED		BIT_ULL(10)
- #define OTX2_FLAG_TC_FLOWER_SUPPORT		BIT_ULL(11)
-+#define OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED	BIT_ULL(12)
- 	u64			flags;
- 
- 	struct otx2_qset	qset;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-index 21b811c6ee0f..f4fd72ee9a25 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-@@ -152,6 +152,7 @@
- #define NIX_AF_TL3X_SCHEDULE(a)		(0x1000 | (a) << 16)
- #define NIX_AF_TL4X_PARENT(a)		(0x1288 | (a) << 16)
- #define NIX_AF_TL4X_SCHEDULE(a)		(0x1200 | (a) << 16)
-+#define NIX_AF_TL4X_PIR(a)		(0x1230 | (a) << 16)
- #define NIX_AF_MDQX_SCHEDULE(a)		(0x1400 | (a) << 16)
- #define NIX_AF_MDQX_PARENT(a)		(0x1480 | (a) << 16)
- #define NIX_AF_TL3_TL2X_LINKX_CFG(a, b)	(0x1700 | (a) << 16 | (b) << 3)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-index 43ef6303ed84..2f75cfc5a23a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
-@@ -7,6 +7,7 @@
- #include <linux/etherdevice.h>
- #include <linux/inetdevice.h>
- #include <linux/rhashtable.h>
-+#include <linux/bitfield.h>
- #include <net/flow_dissector.h>
- #include <net/pkt_cls.h>
- #include <net/tc_act/tc_gact.h>
-@@ -16,6 +17,21 @@
- 
- #include "otx2_common.h"
- 
-+/* Egress rate limiting definitions */
-+#define MAX_BURST_EXPONENT		0x0FULL
-+#define MAX_BURST_MANTISSA		0xFFULL
-+#define MAX_BURST_SIZE			130816ULL
-+#define MAX_RATE_DIVIDER_EXPONENT	12ULL
-+#define MAX_RATE_EXPONENT		0x0FULL
-+#define MAX_RATE_MANTISSA		0xFFULL
-+
-+/* Bitfields in NIX_TLX_PIR register */
-+#define TLX_RATE_MANTISSA		GENMASK_ULL(8, 1)
-+#define TLX_RATE_EXPONENT		GENMASK_ULL(12, 9)
-+#define TLX_RATE_DIVIDER_EXPONENT	GENMASK_ULL(16, 13)
-+#define TLX_BURST_MANTISSA		GENMASK_ULL(36, 29)
-+#define TLX_BURST_EXPONENT		GENMASK_ULL(40, 37)
-+
- struct otx2_tc_flow_stats {
- 	u64 bytes;
- 	u64 pkts;
-@@ -32,6 +48,178 @@ struct otx2_tc_flow {
- 	spinlock_t			lock; /* lock for stats */
- };
- 
-+static void otx2_get_egress_burst_cfg(u32 burst, u32 *burst_exp,
-+				      u32 *burst_mantissa)
-+{
-+	unsigned int tmp;
-+
-+	/* Burst is calculated as
-+	 * ((256 + BURST_MANTISSA) << (1 + BURST_EXPONENT)) / 256
-+	 * Max supported burst size is 130,816 bytes.
-+	 */
-+	burst = min_t(u32, burst, MAX_BURST_SIZE);
-+	if (burst) {
-+		*burst_exp = ilog2(burst) ? ilog2(burst) - 1 : 0;
-+		tmp = burst - rounddown_pow_of_two(burst);
-+		if (burst < MAX_BURST_MANTISSA)
-+			*burst_mantissa = tmp * 2;
-+		else
-+			*burst_mantissa = tmp / (1ULL << (*burst_exp - 7));
-+	} else {
-+		*burst_exp = MAX_BURST_EXPONENT;
-+		*burst_mantissa = MAX_BURST_MANTISSA;
-+	}
-+}
-+
-+static void otx2_get_egress_rate_cfg(u32 maxrate, u32 *exp,
-+				     u32 *mantissa, u32 *div_exp)
-+{
-+	unsigned int tmp;
-+
-+	/* Rate calculation by hardware
-+	 *
-+	 * PIR_ADD = ((256 + mantissa) << exp) / 256
-+	 * rate = (2 * PIR_ADD) / ( 1 << div_exp)
-+	 * The resultant rate is in Mbps.
-+	 */
-+
-+	/* 2Mbps to 100Gbps can be expressed with div_exp = 0.
-+	 * Setting this to '0' will ease the calculation of
-+	 * exponent and mantissa.
-+	 */
-+	*div_exp = 0;
-+
-+	if (maxrate) {
-+		*exp = ilog2(maxrate) ? ilog2(maxrate) - 1 : 0;
-+		tmp = maxrate - rounddown_pow_of_two(maxrate);
-+		if (maxrate < MAX_RATE_MANTISSA)
-+			*mantissa = tmp * 2;
-+		else
-+			*mantissa = tmp / (1ULL << (*exp - 7));
-+	} else {
-+		/* Instead of disabling rate limiting, set all values to max */
-+		*exp = MAX_RATE_EXPONENT;
-+		*mantissa = MAX_RATE_MANTISSA;
-+	}
-+}
-+
-+static int otx2_set_matchall_egress_rate(struct otx2_nic *nic, u32 burst, u32 maxrate)
-+{
-+	struct otx2_hw *hw = &nic->hw;
-+	struct nix_txschq_config *req;
-+	u32 burst_exp, burst_mantissa;
-+	u32 exp, mantissa, div_exp;
-+	int txschq, err;
-+
-+	/* All SQs share the same TL4, so pick the first scheduler */
-+	txschq = hw->txschq_list[NIX_TXSCH_LVL_TL4][0];
-+
-+	/* Get exponent and mantissa values from the desired rate */
-+	otx2_get_egress_burst_cfg(burst, &burst_exp, &burst_mantissa);
-+	otx2_get_egress_rate_cfg(maxrate, &exp, &mantissa, &div_exp);
-+
-+	mutex_lock(&nic->mbox.lock);
-+	req = otx2_mbox_alloc_msg_nix_txschq_cfg(&nic->mbox);
-+	if (!req) {
-+		mutex_unlock(&nic->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	req->lvl = NIX_TXSCH_LVL_TL4;
-+	req->num_regs = 1;
-+	req->reg[0] = NIX_AF_TL4X_PIR(txschq);
-+	req->regval[0] = FIELD_PREP(TLX_BURST_EXPONENT, burst_exp) |
-+			 FIELD_PREP(TLX_BURST_MANTISSA, burst_mantissa) |
-+			 FIELD_PREP(TLX_RATE_DIVIDER_EXPONENT, div_exp) |
-+			 FIELD_PREP(TLX_RATE_EXPONENT, exp) |
-+			 FIELD_PREP(TLX_RATE_MANTISSA, mantissa) | BIT_ULL(0);
-+
-+	err = otx2_sync_mbox_msg(&nic->mbox);
-+	mutex_unlock(&nic->mbox.lock);
-+	return err;
-+}
-+
-+static int otx2_tc_validate_flow(struct otx2_nic *nic,
-+				 struct flow_action *actions,
-+				 struct netlink_ext_ack *extack)
-+{
-+	if (nic->flags & OTX2_FLAG_INTF_DOWN) {
-+		NL_SET_ERR_MSG_MOD(extack, "Interface not initialized");
-+		return -EINVAL;
-+	}
-+
-+	if (!flow_action_has_entries(actions)) {
-+		NL_SET_ERR_MSG_MOD(extack, "MATCHALL offload called with no action");
-+		return -EINVAL;
-+	}
-+
-+	if (!flow_offload_has_one_action(actions)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Egress MATCHALL offload supports only 1 policing action");
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static int otx2_tc_egress_matchall_install(struct otx2_nic *nic,
-+					   struct tc_cls_matchall_offload *cls)
-+{
-+	struct netlink_ext_ack *extack = cls->common.extack;
-+	struct flow_action *actions = &cls->rule->action;
-+	struct flow_action_entry *entry;
-+	u32 rate;
-+	int err;
-+
-+	err = otx2_tc_validate_flow(nic, actions, extack);
-+	if (err)
-+		return err;
-+
-+	if (nic->flags & OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Only one Egress MATCHALL ratelimitter can be offloaded");
-+		return -ENOMEM;
-+	}
-+
-+	entry = &cls->rule->action.entries[0];
-+	switch (entry->id) {
-+	case FLOW_ACTION_POLICE:
-+		if (entry->police.rate_pkt_ps) {
-+			NL_SET_ERR_MSG_MOD(extack, "QoS offload not support packets per second");
-+			return -EOPNOTSUPP;
-+		}
-+		/* Convert bytes per second to Mbps */
-+		rate = entry->police.rate_bytes_ps * 8;
-+		rate = max_t(u32, rate / 1000000, 1);
-+		err = otx2_set_matchall_egress_rate(nic, entry->police.burst, rate);
-+		if (err)
-+			return err;
-+		nic->flags |= OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED;
-+		break;
-+	default:
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Only police action is supported with Egress MATCHALL offload");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static int otx2_tc_egress_matchall_delete(struct otx2_nic *nic,
-+					  struct tc_cls_matchall_offload *cls)
-+{
-+	struct netlink_ext_ack *extack = cls->common.extack;
-+	int err;
-+
-+	if (nic->flags & OTX2_FLAG_INTF_DOWN) {
-+		NL_SET_ERR_MSG_MOD(extack, "Interface not initialized");
-+		return -EINVAL;
-+	}
-+
-+	err = otx2_set_matchall_egress_rate(nic, 0, 0);
-+	nic->flags &= ~OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED;
-+	return err;
-+}
-+
- static int otx2_tc_parse_actions(struct otx2_nic *nic,
- 				 struct flow_action *flow_action,
- 				 struct npc_install_flow_req *req)
-@@ -504,22 +692,64 @@ static int otx2_setup_tc_block_ingress_cb(enum tc_setup_type type,
- 	return -EOPNOTSUPP;
- }
- 
-+static int otx2_setup_tc_egress_matchall(struct otx2_nic *nic,
-+					 struct tc_cls_matchall_offload *cls_matchall)
-+{
-+	switch (cls_matchall->command) {
-+	case TC_CLSMATCHALL_REPLACE:
-+		return otx2_tc_egress_matchall_install(nic, cls_matchall);
-+	case TC_CLSMATCHALL_DESTROY:
-+		return otx2_tc_egress_matchall_delete(nic, cls_matchall);
-+	case TC_CLSMATCHALL_STATS:
-+	default:
-+		break;
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static int otx2_setup_tc_block_egress_cb(enum tc_setup_type type,
-+					 void *type_data, void *cb_priv)
-+{
-+	struct otx2_nic *nic = cb_priv;
-+
-+	if (!tc_cls_can_offload_and_chain0(nic->netdev, type_data))
-+		return -EOPNOTSUPP;
-+
-+	switch (type) {
-+	case TC_SETUP_CLSMATCHALL:
-+		return otx2_setup_tc_egress_matchall(nic, type_data);
-+	default:
-+		break;
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
- static LIST_HEAD(otx2_block_cb_list);
- 
- static int otx2_setup_tc_block(struct net_device *netdev,
- 			       struct flow_block_offload *f)
- {
- 	struct otx2_nic *nic = netdev_priv(netdev);
-+	flow_setup_cb_t *cb;
-+	bool ingress;
- 
- 	if (f->block_shared)
- 		return -EOPNOTSUPP;
- 
--	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
-+	if (f->binder_type == FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS) {
-+		cb = otx2_setup_tc_block_ingress_cb;
-+		ingress = true;
-+	} else if (f->binder_type == FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS) {
-+		cb = otx2_setup_tc_block_egress_cb;
-+		ingress = false;
-+	} else {
- 		return -EOPNOTSUPP;
-+	}
- 
--	return flow_block_cb_setup_simple(f, &otx2_block_cb_list,
--					  otx2_setup_tc_block_ingress_cb,
--					  nic, nic, true);
-+	return flow_block_cb_setup_simple(f, &otx2_block_cb_list, cb,
-+					  nic, nic, ingress);
- }
- 
- int otx2_setup_tc(struct net_device *netdev, enum tc_setup_type type,
--- 
-2.16.5
+in my local kernel config therefore I was not able to see it on my own :-/
 
+Best,
+Oliver
+
+On 16.03.21 09:20, Marc Kleine-Budde wrote:
+> The previous patch ensures that the TX flags (struct
+> can_isotp_ll_options::tx_flags) are 0 for classic CAN frames or a user
+> configured value for CAN-FD frames.
+> 
+> This patch sets the CAN frames flags unconditionally to the ISO-TP TX
+> flags, so that they are initialized to a proper value. Otherwise when
+> running "candump -x" on a classical CAN ISO-TP stream shows wrongly
+> set "B" and "E" flags.
+> 
+> | $ candump any,0:0,#FFFFFFFF -extA
+> | [...]
+> | can0  TX B E  713   [8]  2B 0A 0B 0C 0D 0E 0F 00
+> | can0  TX B E  713   [8]  2C 01 02 03 04 05 06 07
+> | can0  TX B E  713   [8]  2D 08 09 0A 0B 0C 0D 0E
+> | can0  TX B E  713   [8]  2E 0F 00 01 02 03 04 05
+> 
+> Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+> Link: https://lore.kernel.org/r/20210218215434.1708249-2-mkl@pengutronix.de
+> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> ---
+>   net/can/isotp.c | 9 +++------
+>   1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/can/isotp.c b/net/can/isotp.c
+> index e32d446c121e..430976485d95 100644
+> --- a/net/can/isotp.c
+> +++ b/net/can/isotp.c
+> @@ -215,8 +215,7 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
+>   	if (ae)
+>   		ncf->data[0] = so->opt.ext_address;
+>   
+> -	if (so->ll.mtu == CANFD_MTU)
+> -		ncf->flags = so->ll.tx_flags;
+> +	ncf->flags = so->ll.tx_flags;
+>   
+>   	can_send_ret = can_send(nskb, 1);
+>   	if (can_send_ret)
+> @@ -790,8 +789,7 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+>   		so->tx.sn %= 16;
+>   		so->tx.bs++;
+>   
+> -		if (so->ll.mtu == CANFD_MTU)
+> -			cf->flags = so->ll.tx_flags;
+> +		cf->flags = so->ll.tx_flags;
+>   
+>   		skb->dev = dev;
+>   		can_skb_set_owner(skb, sk);
+> @@ -939,8 +937,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+>   	}
+>   
+>   	/* send the first or only CAN frame */
+> -	if (so->ll.mtu == CANFD_MTU)
+> -		cf->flags = so->ll.tx_flags;
+> +	cf->flags = so->ll.tx_flags;
+>   
+>   	skb->dev = dev;
+>   	skb->sk = sk;
+> 
