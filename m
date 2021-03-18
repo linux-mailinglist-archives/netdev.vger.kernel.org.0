@@ -2,94 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF177340ED4
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 21:06:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 180BF340EC9
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 21:05:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232985AbhCRUGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 16:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
+        id S232934AbhCRUEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 16:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232955AbhCRUGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 16:06:01 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C08BC06174A;
-        Thu, 18 Mar 2021 13:06:01 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id x2so543214qkd.9;
-        Thu, 18 Mar 2021 13:06:01 -0700 (PDT)
+        with ESMTP id S232873AbhCRUEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 16:04:33 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815B7C061760
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 13:04:32 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id f8so2745834qtv.22
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 13:04:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2y9HfcFyxnlJ0vOuI5rVwOm7yRLf7/xC+C5q7QuSfos=;
-        b=mzVdO+rrrHrcUKhDbRkJ/4B7WZN1mdcso/wZW3i2zHR83kqi96bHtamqtEc3EIzNOp
-         t0dcgUZMoXfQYxSSU0NeJLe6EfUJK7DzQEmfITQg23MthIbvYRkH0oLA7lcFJOXZC+sG
-         OprHBiO9rRUpM3QqJLhR6A5byfYughhPGiyFrpffBCvdIghtmGAZ9m9AApiiJP02/aIZ
-         2yjMHl72jFwIGRIKxs59/ZV90YFEooZQurLfM6LqUkpy3HMZThPjxQ4amsIn20UePP/A
-         30Yg+Ov+JOz7y3A3KDwfB16Ca2L2BNh4zstMknyqBwnHsLMQe2MhFHi4MNmW8lu0V56+
-         J5zA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Sy0ok4NDvEEWcKa8gZVauE+I24CZBWOlbwpSDaAczD4=;
+        b=OYvbaHL4Cw/2tEMKIpXymUrOdPxlDLE16i0tNA1k6PToqW2gxs01/TDyDN3xUy08IP
+         v0KqdzfxqSFwp+GFzYMiEoYQDVYtGNUeOvyucbUEsZUgzypqBTyUxk7p84IQoaWHHu7O
+         1SLxkNx03DABkLuTtoKDnvVMI94og1t00o+/DQ8QpPfcKq3kY2lXVfF3IKSM1Bu7hZ29
+         eLjJneJj+eKVLvf9uE+j+jEGEti8bhfZ1QSVaSA+OeenV3XoL9CSGVkt/HNDnhoTzXcW
+         ir0fo6+jjZ7Eyl1F5KaL7En9r523E3mw7LKatSL1ctsWuFKU6qYclSWa23US36YEww4x
+         rL5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2y9HfcFyxnlJ0vOuI5rVwOm7yRLf7/xC+C5q7QuSfos=;
-        b=ns8+NOA4W9LFsERtWzDLk1IXu3CtaaQ3GXwG9Tj5fdQs9lpVr317nPu1G8ZZUN0dJF
-         uzA1vjBVXpsr5g6ddN+hfQ3mMQbIuJIdqoKJADF1xTMBHHkhrqQ1e/FYz9FGeSSc2g5Q
-         VKT7zQCiRirGpc+RMXpDOvyXepxiE7SWjjnJF0pfzcK8zlwBT3Gc6a/z9xzcbwtmx6pb
-         R5stO1gndL/i/SdXUM9qZ0EpJeROk7sW9+qc+arBKXE1Td4DSGkUh+4MsmpM+HrRbjYq
-         6XWFnIcHg77BzHX/jofy+ZtmuuUlV2IRdJOMVBoGeCYNuwBc5FWQ4yR1N7A8fiBvkqJt
-         KSmA==
-X-Gm-Message-State: AOAM531BBcnujHq4ClQ9wlQSTfnSkNbdc95KgrVB6gdsXSgpOGpJKKD3
-        q6YzwMUIGtztM8kPYehhgV1HMGDnUzQffiAS
-X-Google-Smtp-Source: ABdhPJw34Hv1PplPWN9eXkxYJqdI8d8GkJpAU5xQLyJvFFFOGkG7RUxokgvSkcEWHnHA4gVUv/7xmw==
-X-Received: by 2002:a37:94b:: with SMTP id 72mr6169307qkj.94.1616097960661;
-        Thu, 18 Mar 2021 13:06:00 -0700 (PDT)
-Received: from localhost.localdomain ([37.19.198.63])
-        by smtp.gmail.com with ESMTPSA id 131sm2727068qkl.74.2021.03.18.13.05.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 13:06:00 -0700 (PDT)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, unixbhaskar@gmail.com,
-        christophe.jaillet@wanadoo.fr, vaibhavgupta40@gmail.com,
-        gustavoars@kernel.org, yuehaibing@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org
-Subject: [PATCH V2] Fix a typo
-Date:   Fri, 19 Mar 2021 01:33:42 +0530
-Message-Id: <20210318200342.17084-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Sy0ok4NDvEEWcKa8gZVauE+I24CZBWOlbwpSDaAczD4=;
+        b=Lxz2ziZA27lUwmzhi08dhGO1Y/Cdy6UDahNMD39O2PcILmYsMNAFAYsaZsNdBNT282
+         XdMAfXnmGKAZGrMPQx8iVrtFo/ygIwFlm0BU84LZAZNZqmv03yxOSSuVxZxFc3Deamdb
+         kZb6c2GluAKm5u3Q6gTgCE8SBhMFKRZL78ZIDOvQtl7iCHLwgkt35nDe1RIXkYkZNIUn
+         CGP10hcfBIZjCZnIm6NXK65ON8ZnwiDz9GMnTQ1rcHkW88Z8vVZy4K7l1tOg67cE9WBl
+         l3w+UXTUUaMHGsQEmGvqfAxbBiiEXwPMHEnh1YcCmoqo2NCb6T3aF+Cq6qN75yDBGuKw
+         VFhQ==
+X-Gm-Message-State: AOAM530NXHSkz9zQSXCWABmJKdOQ2B2ZupZn2Y4w3i6uO2HS+Jd6hzDQ
+        jfTrWeEJ5M9Ij0Bg/otCTzz8gE9wj6km4Epl
+X-Google-Smtp-Source: ABdhPJyQ78BMLMSkt/5hyJHt/m7uMl6vx5Xf4POCD7cNtWcNhm+B+Nmifj71WzlahW0x8X0CpISeWd9uPTkm4V6u
+X-Received: from schuffelen.mtv.corp.google.com ([2620:15c:211:200:49b9:40b4:cada:e298])
+ (user=schuffelen job=sendgmr) by 2002:a05:6214:13b3:: with SMTP id
+ h19mr6166044qvz.31.1616097871522; Thu, 18 Mar 2021 13:04:31 -0700 (PDT)
+Date:   Thu, 18 Mar 2021 13:04:19 -0700
+Message-Id: <20210318200419.1421034-1-schuffelen@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
+Subject: [PATCH v2] virt_wifi: Return micros for BSS TSF values
+From:   "A. Cody Schuffelen" <schuffelen@google.com>
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "A. Cody Schuffelen" <schuffelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-s/serisouly/seriously/
+cfg80211_inform_bss expects to receive a TSF value, but is given the
+time since boot in nanoseconds. TSF values are expected to be at
+microsecond scale rather than nanosecond scale.
 
-...and the sentence construction.
-
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Signed-off-by: A. Cody Schuffelen <schuffelen@google.com>
 ---
- Changes from V1:
-  Mentioned changes incorporated...sentence construction.
+ drivers/net/wireless/virt_wifi.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- drivers/net/ethernet/sun/sungem.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
-index 58f142ee78a3..9790656cf970 100644
---- a/drivers/net/ethernet/sun/sungem.c
-+++ b/drivers/net/ethernet/sun/sungem.c
-@@ -1674,8 +1674,8 @@ static void gem_init_phy(struct gem *gp)
- 	if (gp->pdev->vendor == PCI_VENDOR_ID_APPLE) {
- 		int i;
-
--		/* Those delay sucks, the HW seem to love them though, I'll
--		 * serisouly consider breaking some locks here to be able
-+		/* Those delays sucks, the HW seems to love them though, I'll
-+		 * seriously consider breaking some locks here to be able
- 		 * to schedule instead
- 		 */
- 		for (i = 0; i < 3; i++) {
---
-2.26.2
+diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
+index c878097f0dda..1df959532c7d 100644
+--- a/drivers/net/wireless/virt_wifi.c
++++ b/drivers/net/wireless/virt_wifi.c
+@@ -12,6 +12,7 @@
+ #include <net/cfg80211.h>
+ #include <net/rtnetlink.h>
+ #include <linux/etherdevice.h>
++#include <linux/math64.h>
+ #include <linux/module.h>
+ 
+ static struct wiphy *common_wiphy;
+@@ -168,11 +169,11 @@ static void virt_wifi_scan_result(struct work_struct *work)
+ 			     scan_result.work);
+ 	struct wiphy *wiphy = priv_to_wiphy(priv);
+ 	struct cfg80211_scan_info scan_info = { .aborted = false };
++	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
+ 
+ 	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
+ 					   CFG80211_BSS_FTYPE_PRESP,
+-					   fake_router_bssid,
+-					   ktime_get_boottime_ns(),
++					   fake_router_bssid, tsf,
+ 					   WLAN_CAPABILITY_ESS, 0,
+ 					   (void *)&ssid, sizeof(ssid),
+ 					   DBM_TO_MBM(-50), GFP_KERNEL);
+-- 
+2.31.0.rc2.261.g7f71774620-goog
 
