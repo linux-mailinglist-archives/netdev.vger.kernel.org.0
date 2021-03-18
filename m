@@ -2,215 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5949F33FC6D
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 01:52:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76FFA33FC87
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 02:03:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbhCRAvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Mar 2021 20:51:37 -0400
-Received: from mga12.intel.com ([192.55.52.136]:30788 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229720AbhCRAvG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Mar 2021 20:51:06 -0400
-IronPort-SDR: ZOIk9cQD7d6aZWhBMk/+bvqJzbh4Qjqlu6sxhsp8O3G+iyht6atqeyBdbSp3bxNz9ubbmezYGO
- 5nLCVaJZoYMA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9926"; a="168852740"
-X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; 
-   d="scan'208";a="168852740"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2021 17:51:05 -0700
-IronPort-SDR: Ek0/0iaD+ZZtdCkY6StW4zFslb0ZgIVgyV7CBPb9jrVnYT5Dnru+m4fdcuYJ3qxXXTZbWdtIgi
- JQjf0GZPd+DA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; 
-   d="scan'208";a="602458619"
-Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.82])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Mar 2021 17:51:02 -0700
-From:   mohammad.athari.ismail@intel.com
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>, vee.khee.wong@intel.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        mohammad.athari.ismail@intel.com
-Subject: [PATCH net-next 2/2] net: stmmac: Add EST errors into ethtool statistic
-Date:   Thu, 18 Mar 2021 08:50:53 +0800
-Message-Id: <20210318005053.31400-3-mohammad.athari.ismail@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210318005053.31400-1-mohammad.athari.ismail@intel.com>
-References: <20210318005053.31400-1-mohammad.athari.ismail@intel.com>
+        id S230434AbhCRBDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Mar 2021 21:03:10 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5094 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229866AbhCRBC5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Mar 2021 21:02:57 -0400
+Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4F17xy2GjqzYLKC;
+        Thu, 18 Mar 2021 09:01:10 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Thu, 18 Mar 2021 09:02:54 +0800
+Received: from [127.0.0.1] (10.69.26.252) by dggpemm500006.china.huawei.com
+ (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Thu, 18 Mar
+ 2021 09:02:55 +0800
+Subject: Re: [PATCH net-next 8/9] net: hns3: add support for queue bonding
+ mode of flow director
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>
+References: <1615811031-55209-1-git-send-email-tanhuazhong@huawei.com>
+ <1615811031-55209-9-git-send-email-tanhuazhong@huawei.com>
+ <20210315130448.2582a0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+Message-ID: <b7b23988-ecba-1ce4-6226-291938c92c08@huawei.com>
+Date:   Thu, 18 Mar 2021 09:02:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
+MIME-Version: 1.0
+In-Reply-To: <20210315130448.2582a0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.69.26.252]
+X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ong Boon Leong <boon.leong.ong@intel.com>
 
-Below EST errors are added into ethtool statistic:
-1) Constant Gate Control Error (CGCE):
-   The counter "mtl_est_cgce" increases everytime CGCE interrupt is
-   triggered.
+On 2021/3/16 4:04, Jakub Kicinski wrote:
+> On Mon, 15 Mar 2021 20:23:50 +0800 Huazhong Tan wrote:
+>> From: Jian Shen <shenjian15@huawei.com>
+>>
+>> For device version V3, it supports queue bonding, which can
+>> identify the tuple information of TCP stream, and create flow
+>> director rules automatically, in order to keep the tx and rx
+>> packets are in the same queue pair. The driver set FD_ADD
+>> field of TX BD for TCP SYN packet, and set FD_DEL filed for
+>> TCP FIN or RST packet. The hardware create or remove a fd rule
+>> according to the TX BD, and it also support to age-out a rule
+>> if not hit for a long time.
+>>
+>> The queue bonding mode is default to be disabled, and can be
+>> enabled/disabled with ethtool priv-flags command.
+> This seems like fairly well defined behavior, IMHO we should have a full
+> device feature for it, rather than a private flag.
 
-2) Head-of-Line Blocking due to Scheduling (HLBS):
-   The counter "mtl_est_hlbs" increases everytime HLBS interrupt is
-   triggered.
 
-3) Head-of-Line Blocking due to Frame Size (HLBF):
-   The counter "mtl_est_hlbf" increases everytime HLBF interrupt is
-   triggered.
+Should we add a NETIF_F_NTUPLE_HW feature for it?
 
-4) Base Time Register error (BTRE):
-   The counter "mtl_est_btre" increases everytime BTRE interrupt is
-   triggered but BTRL not reaches maximum value of 15.
 
-5) Base Time Register Error Loop Count (BTRL) reaches maximum value:
-   The counter "mtl_est_btrlm" increases everytime BTRE interrupt is
-   triggered and BTRL value reaches maximum value of 15.
+> Does the device need to be able to parse the frame fully for this
+> mechanism to work? Will it work even if the TCP segment is encapsulated
+> in a custom tunnel?
 
-Please refer to MTL_EST_STATUS register in DesignWare Cores Ethernet
-Quality-of-Service Databook for more detail explanation.
 
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Co-developed-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/common.h        |  6 ++++++
- drivers/net/ethernet/stmicro/stmmac/dwmac5.c        | 13 ++++++++++++-
- drivers/net/ethernet/stmicro/stmmac/dwmac5.h        |  2 +-
- drivers/net/ethernet/stmicro/stmmac/hwif.h          |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c    |  6 ++++++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c   |  3 ++-
- 6 files changed, 28 insertions(+), 4 deletions(-)
+no, custom tunnel is not supported.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 6f271c46368d..1c0c60bdf854 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -182,6 +182,12 @@ struct stmmac_extra_stats {
- 	/* TSO */
- 	unsigned long tx_tso_frames;
- 	unsigned long tx_tso_nfrags;
-+	/* EST */
-+	unsigned long mtl_est_cgce;
-+	unsigned long mtl_est_hlbs;
-+	unsigned long mtl_est_hlbf;
-+	unsigned long mtl_est_btre;
-+	unsigned long mtl_est_btrlm;
- };
- 
- /* Safety Feature statistics exposed by ethtool */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-index 809015f59ee2..0ae85f8adf67 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
-@@ -608,7 +608,7 @@ int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
- }
- 
- void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
--			  u32 txqcnt)
-+			  struct stmmac_extra_stats *x, u32 txqcnt)
- {
- 	u32 status, value, feqn, hbfq, hbfs, btrl;
- 	u32 txqcnt_mask = (1 << txqcnt) - 1;
-@@ -624,12 +624,16 @@ void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
- 	if (status & CGCE) {
- 		/* Clear Interrupt */
- 		writel(CGCE, ioaddr + MTL_EST_STATUS);
-+
-+		x->mtl_est_cgce++;
- 	}
- 
- 	if (status & HLBS) {
- 		value = readl(ioaddr + MTL_EST_SCH_ERR);
- 		value &= txqcnt_mask;
- 
-+		x->mtl_est_hlbs++;
-+
- 		/* Clear Interrupt */
- 		writel(value, ioaddr + MTL_EST_SCH_ERR);
- 
-@@ -649,6 +653,8 @@ void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
- 		hbfq = (value & SZ_CAP_HBFQ_MASK(txqcnt)) >> SZ_CAP_HBFQ_SHIFT;
- 		hbfs = value & SZ_CAP_HBFS_MASK;
- 
-+		x->mtl_est_hlbf++;
-+
- 		/* Clear Interrupt */
- 		writel(feqn, ioaddr + MTL_EST_FRM_SZ_ERR);
- 
-@@ -658,6 +664,11 @@ void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
- 	}
- 
- 	if (status & BTRE) {
-+		if ((status & BTRL) == BTRL_MAX)
-+			x->mtl_est_btrlm++;
-+		else
-+			x->mtl_est_btre++;
-+
- 		btrl = (status & BTRL) >> BTRL_SHIFT;
- 
- 		if (net_ratelimit())
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-index 7174f5e1501b..709bbfc9ae61 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-@@ -142,7 +142,7 @@ int dwmac5_flex_pps_config(void __iomem *ioaddr, int index,
- int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
- 			 unsigned int ptp_rate);
- void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
--			   u32 txqcnt);
-+			   struct stmmac_extra_stats *x, u32 txqcnt);
- void dwmac5_fpe_configure(void __iomem *ioaddr, u32 num_txq, u32 num_rxq,
- 			  bool enable);
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 2a53c9ca4f84..7ebe76c02474 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -394,7 +394,7 @@ struct stmmac_ops {
- 	int (*est_configure)(void __iomem *ioaddr, struct stmmac_est *cfg,
- 			     unsigned int ptp_rate);
- 	void (*est_irq_status)(void __iomem *ioaddr, struct net_device *dev,
--			       u32 txqcnt);
-+			       struct stmmac_extra_stats *x, u32 txqcnt);
- 	void (*fpe_configure)(void __iomem *ioaddr, u32 num_txq, u32 num_rxq,
- 			      bool enable);
- };
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index c5642985ef95..00595b7552bc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -158,6 +158,12 @@ static const struct stmmac_stats stmmac_gstrings_stats[] = {
- 	/* TSO */
- 	STMMAC_STAT(tx_tso_frames),
- 	STMMAC_STAT(tx_tso_nfrags),
-+	/* EST */
-+	STMMAC_STAT(mtl_est_cgce),
-+	STMMAC_STAT(mtl_est_hlbs),
-+	STMMAC_STAT(mtl_est_hlbf),
-+	STMMAC_STAT(mtl_est_btre),
-+	STMMAC_STAT(mtl_est_btrlm),
- };
- #define STMMAC_STATS_LEN ARRAY_SIZE(stmmac_gstrings_stats)
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d92b799e3ec4..6e238318e2ec 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4287,7 +4287,8 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
- 		return IRQ_HANDLED;
- 
- 	if (priv->dma_cap.estsel)
--		stmmac_est_irq_status(priv, priv->ioaddr, priv->dev, tx_cnt);
-+		stmmac_est_irq_status(priv, priv->ioaddr, priv->dev,
-+				      &priv->xstats, tx_cnt);
- 
- 	/* To handle GMAC own interrupts */
- 	if ((priv->plat->has_gmac) || xmac) {
--- 
-2.17.1
+
 
