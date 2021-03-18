@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0705D3410E8
+	by mail.lfdr.de (Postfix) with ESMTP id 9FF613410EA
 	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233499AbhCRXTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 19:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        id S233509AbhCRXTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 19:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233338AbhCRXTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:19:04 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1765DC06174A;
-        Thu, 18 Mar 2021 16:19:04 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id z1so8707854edb.8;
-        Thu, 18 Mar 2021 16:19:04 -0700 (PDT)
+        with ESMTP id S233339AbhCRXTF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:19:05 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872B5C06174A;
+        Thu, 18 Mar 2021 16:19:05 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id bx7so8665408edb.12;
+        Thu, 18 Mar 2021 16:19:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fiP8Ev3P/Ymw7RmYL2pXPlFAcYxpIScS2FOMNIuYNLw=;
-        b=UT7jBr6nhb2RH7Y3a+JwV4r66wR+aCLP/4cRc8r0dGVrdnT354mzOEp2JD7C+PVcKY
-         vYkiBUwyjGHu9YEl0Qd64IDr6N/W06jiIxC81HrOt8F7Y7bN3vFAEEi2Uybn/9ciZg4c
-         7GkJSsbohTF05kUGFzVrNeagrDO/vb9WnBug5UdSIf9afJIbvRitW51xuJrLCFa4+W5g
-         vLDiHTMKbf88Vdgnvom2vWinMlVGt6dNFBYYz+H5GigANEGAdc4ogGm2bz0lQCvrS4LF
-         8Q9xQdlIF0U4JZybSo+Btc5V1en6+B3WMwwXGwgWMC2zwtoitlAumQ+2Bkg7THOho9Nf
-         AbLw==
+        bh=6KnaRKz3FZky+YTs1fylHOv0wAd/1b2dy0PqKV1GgiQ=;
+        b=uOvX+fEYDMQnS3cr87rrAy2BG5DFwX8cFlgz7HceQZu9kA4DOmibmfyzY/XKKJIZ8G
+         aNpY1Q+pi3IHzZLafTz2bKOHsLF2vi59Jdgazk3WWVe53bKR+pDJYgxr0P5Xmsdzir8D
+         ha/u7VJhAPHiqoDpuG/jOjXTOOslAwSv9VPqBujg4dosyl5wNoViTtG5THrYh1lbxaYi
+         foCLCzBAirohefjK4giEH6tEzdgYkdMUsG4dnx7oRmMUw8SQyfL/ZX/EEuqZmsAyJEeT
+         lh/2YbCqWVZ0PZRVCAYobKE9gp1kcnXIzWeggWq2OX+SZXYERZHvUjhfhB+lHhRgwz3K
+         okCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fiP8Ev3P/Ymw7RmYL2pXPlFAcYxpIScS2FOMNIuYNLw=;
-        b=K6cr2PgfUjlNCl1Q63nlMUqEP9ZZN/T8+p14sd5Do9xJVCHR/p0pBSYw+xlpV07MUA
-         bnWsUkh5PQFY+ArvnqRm/IfiOb+C4MiCa9HPeOEyZkcSBjWRlQ7X/PqivtZIH4s8nHYy
-         6ffvkOjY805YCeRsxADJpBuwfweMRuWmTTxQ9XOHFnS3U13vqKMfaGcRP1LxkOsLQmD6
-         XU1yq27U3OOtvK17EPNcpkFTEVfhumbk6BHWU8lPMPm5SLn+otItSrCFA9DHL04obRaf
-         Jx9ePt4J+pGuSyTif7XKY8hFJ1WU2qAkOIqLyog0FFsg8hcSO4Tl965s+OZ8VxYXgaxa
-         Q1XQ==
-X-Gm-Message-State: AOAM532oQgMFi99xieexU0qiWeHeWAOKEbKubT4Y5FquV+v/qv8N+Pe6
-        nZiTt6YGfRs3dahNdf3fQqQ=
-X-Google-Smtp-Source: ABdhPJyQBURSy6aVN2fxNJ3KFbHfPpx1BELErRD3ZH69BYQzPyDeY3BhoMbdMxNX1cJQ2/M4HcWOnA==
-X-Received: by 2002:a05:6402:31a7:: with SMTP id dj7mr6533770edb.33.1616109542832;
-        Thu, 18 Mar 2021 16:19:02 -0700 (PDT)
+        bh=6KnaRKz3FZky+YTs1fylHOv0wAd/1b2dy0PqKV1GgiQ=;
+        b=YfD4+A50n1xt8whR242dgNGxKOr5HRS/lamIQO4OJJK0t7AaLu1uVTXI3aHq02/4dS
+         2c3eTe0RTQfyBgsKAYFOGe9TFlHsTcmtmK3LeyFN2NUZal8D5zU69s4//piGHdY/cM2C
+         PAK7pj9su7UQQDr+RNPXkzryS8WjDmyT+JYGT6XJz3CtetkYsQJmWjI6pHczZrcVnEF8
+         JHkhmonLWdkBMdlvQ31TATNBCRi2TaRqhJ5yb3WcztW+umkBnsUOO05kXY/ojETzwtyK
+         twgEh1pm3kPHcXxr1SbUBUh+a5Nn+MJ/tq0DCyr8k68VK/DpzOg30MLDreelJUbFtWHU
+         fmPg==
+X-Gm-Message-State: AOAM531hK8JrpW187w3TVdNrKeZ4xLx5BSO6QbRGQ1Mp8kt4zvZu0dQa
+        KpNVs3GiZv7wVo6/g14cJu8=
+X-Google-Smtp-Source: ABdhPJyOXzI4vllzQcOKzmhIAhLmSEBvt9kCZ7fdLUGy4NcIv3FU+kwDaxZlgyCLmr1F9paQzSKW5g==
+X-Received: by 2002:aa7:cf16:: with SMTP id a22mr6346550edy.288.1616109544299;
+        Thu, 18 Mar 2021 16:19:04 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.19.01
+        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.19.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 16:19:02 -0700 (PDT)
+        Thu, 18 Mar 2021 16:19:04 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -67,9 +67,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH v2 net-next 13/16] net: ocelot: replay switchdev events when joining bridge
-Date:   Fri, 19 Mar 2021 01:18:26 +0200
-Message-Id: <20210318231829.3892920-14-olteanv@gmail.com>
+Subject: [RFC PATCH v2 net-next 14/16] net: dsa: don't set skb->offload_fwd_mark when not offloading the bridge
+Date:   Fri, 19 Mar 2021 01:18:27 +0200
+Message-Id: <20210318231829.3892920-15-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210318231829.3892920-1-olteanv@gmail.com>
 References: <20210318231829.3892920-1-olteanv@gmail.com>
@@ -81,289 +81,271 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The premise of this change is that the switchdev port attributes and
-objects offloaded by ocelot might have been missed when we are joining
-an already existing bridge port, such as a bonding interface.
+DSA has gained the recent ability to deal gracefully with upper
+interfaces it cannot offload, such as the bridge, bonding or team
+drivers. When such uppers exist, the ports are still in standalone mode
+as far as the hardware is concerned.
 
-The patch pulls these switchdev attributes and objects from the bridge,
-on behalf of the 'bridge port' net device which might be either the
-ocelot switch interface, or the bonding upper interface.
+But when we deliver packets to the software bridge in order for that to
+do the forwarding, there is an unpleasant surprise in that the bridge
+will refuse to forward them. This is because we unconditionally set
+skb->offload_fwd_mark = true, meaning that the bridge thinks the frames
+were already forwarded in hardware by us.
 
-The ocelot_net.c belongs strictly to the switchdev ocelot driver, while
-ocelot.c is part of a library shared with the DSA felix driver.
-The ocelot_port_bridge_leave function (part of the common library) used
-to call ocelot_port_vlan_filtering(false), something which is not
-necessary for DSA, since the framework deals with that already there.
-So we move this function to ocelot_switchdev_unsync, which is specific
-to the switchdev driver.
+Since dp->bridge_dev is populated only when there is hardware offload
+for it, but not in the software fallback case, let's introduce a new
+helper that can be called from the tagger data path which sets the
+skb->offload_fwd_mark accordingly to zero when there is no hardware
+offload for bridging. This lets the bridge forward packets back to other
+interfaces of our switch, if needed.
 
-The code movement described above makes ocelot_port_bridge_leave no
-longer return an error code, so we change its type from int to void.
+Without this change, sending a packet to the CPU for an unoffloaded
+interface triggers this WARN_ON:
+
+void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
+			      struct sk_buff *skb)
+{
+	if (skb->offload_fwd_mark && !WARN_ON_ONCE(!p->offload_fwd_mark))
+		BR_INPUT_SKB_CB(skb)->offload_fwd_mark = p->offload_fwd_mark;
+}
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/net/dsa/ocelot/felix.c         |   4 +-
- drivers/net/ethernet/mscc/ocelot.c     |  18 ++--
- drivers/net/ethernet/mscc/ocelot_net.c | 117 +++++++++++++++++++++----
- include/soc/mscc/ocelot.h              |   6 +-
- 4 files changed, 111 insertions(+), 34 deletions(-)
+ net/dsa/dsa_priv.h         | 14 ++++++++++++++
+ net/dsa/tag_brcm.c         |  2 +-
+ net/dsa/tag_dsa.c          | 15 +++++++++++----
+ net/dsa/tag_hellcreek.c    |  2 +-
+ net/dsa/tag_ksz.c          |  2 +-
+ net/dsa/tag_lan9303.c      |  3 ++-
+ net/dsa/tag_mtk.c          |  2 +-
+ net/dsa/tag_ocelot.c       |  2 +-
+ net/dsa/tag_ocelot_8021q.c |  2 +-
+ net/dsa/tag_rtl4_a.c       |  2 +-
+ net/dsa/tag_sja1105.c      |  4 ++--
+ net/dsa/tag_xrs700x.c      |  2 +-
+ 12 files changed, 37 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 628afb47b579..6b5442be0230 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -719,7 +719,9 @@ static int felix_bridge_join(struct dsa_switch *ds, int port,
- {
- 	struct ocelot *ocelot = ds->priv;
- 
--	return ocelot_port_bridge_join(ocelot, port, br);
-+	ocelot_port_bridge_join(ocelot, port, br);
-+
-+	return 0;
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 92282de54230..b61bef79ce84 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -349,6 +349,20 @@ static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
+ 	return skb;
  }
  
- static void felix_bridge_leave(struct dsa_switch *ds, int port,
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index ce57929ba3d1..1a36b416fd9b 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1514,34 +1514,28 @@ int ocelot_port_mdb_del(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_port_mdb_del);
- 
--int ocelot_port_bridge_join(struct ocelot *ocelot, int port,
--			    struct net_device *bridge)
-+void ocelot_port_bridge_join(struct ocelot *ocelot, int port,
-+			     struct net_device *bridge)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 
- 	ocelot_port->bridge = bridge;
- 
--	return 0;
-+	ocelot_apply_bridge_fwd_mask(ocelot);
- }
- EXPORT_SYMBOL(ocelot_port_bridge_join);
- 
--int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
--			     struct net_device *bridge)
-+void ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
-+			      struct net_device *bridge)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	struct ocelot_vlan pvid = {0}, native_vlan = {0};
--	int ret;
- 
- 	ocelot_port->bridge = NULL;
- 
--	ret = ocelot_port_vlan_filtering(ocelot, port, false);
--	if (ret)
--		return ret;
--
- 	ocelot_port_set_pvid(ocelot, port, pvid);
- 	ocelot_port_set_native_vlan(ocelot, port, native_vlan);
--
--	return 0;
-+	ocelot_apply_bridge_fwd_mask(ocelot);
- }
- EXPORT_SYMBOL(ocelot_port_bridge_leave);
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index d1376f7b34fd..d38ffc7cf5f0 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -1117,47 +1117,126 @@ static int ocelot_port_obj_del(struct net_device *dev,
- 	return ret;
- }
- 
-+static void ocelot_inherit_brport_flags(struct ocelot *ocelot, int port,
-+					struct net_device *brport_dev)
++/* If the ingress port offloads the bridge, we mark the frame as autonomously
++ * forwarded by hardware, so the software bridge doesn't forward in twice, back
++ * to us, because we already did. However, if we're in fallback mode and we do
++ * software bridging, we are not offloading it, therefore the dp->bridge_dev
++ * pointer is not populated, and flooding needs to be done by software (we are
++ * effectively operating in standalone ports mode).
++ */
++static inline void dsa_default_offload_fwd_mark(struct sk_buff *skb)
 +{
-+	struct switchdev_brport_flags flags = {0};
-+	int flag;
++	struct dsa_port *dp = dsa_slave_to_port(skb->dev);
 +
-+	flags.mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
-+
-+	for_each_set_bit(flag, &flags.mask, 32)
-+		if (br_port_flag_is_set(brport_dev, BIT(flag)))
-+			flags.val |= BIT(flag);
-+
-+	ocelot_port_bridge_flags(ocelot, port, flags);
++	skb->offload_fwd_mark = !!(dp->bridge_dev);
 +}
 +
-+static void ocelot_clear_brport_flags(struct ocelot *ocelot, int port)
-+{
-+	struct switchdev_brport_flags flags;
-+
-+	flags.mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
-+	flags.val = flags.mask & ~BR_LEARNING;
-+
-+	ocelot_port_bridge_flags(ocelot, port, flags);
-+}
-+
-+static int ocelot_switchdev_sync(struct ocelot *ocelot, int port,
-+				 struct net_device *brport_dev,
-+				 struct net_device *bridge_dev,
-+				 struct netlink_ext_ack *extack)
-+{
-+	clock_t ageing_time;
-+	u8 stp_state;
-+	int err;
-+
-+	ocelot_inherit_brport_flags(ocelot, port, brport_dev);
-+
-+	stp_state = br_port_get_stp_state(brport_dev);
-+	ocelot_bridge_stp_state_set(ocelot, port, stp_state);
-+
-+	err = ocelot_port_vlan_filtering(ocelot, port,
-+					 br_vlan_enabled(bridge_dev));
-+	if (err)
-+		return err;
-+
-+	ageing_time = br_get_ageing_time(bridge_dev);
-+	ocelot_port_attr_ageing_set(ocelot, port, ageing_time);
-+
-+	err = br_mdb_replay(bridge_dev, brport_dev,
-+			    &ocelot_switchdev_blocking_nb, extack);
-+	if (err)
-+		return err;
-+
-+	err = br_fdb_replay(bridge_dev, brport_dev, &ocelot_switchdev_nb);
-+	if (err)
-+		return err;
-+
-+	err = br_vlan_replay(bridge_dev, brport_dev,
-+			     &ocelot_switchdev_blocking_nb, extack);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
-+static int ocelot_switchdev_unsync(struct ocelot *ocelot, int port)
-+{
-+	int err;
-+
-+	err = ocelot_port_vlan_filtering(ocelot, port, false);
-+	if (err)
-+		return err;
-+
-+	ocelot_clear_brport_flags(ocelot, port);
-+
-+	ocelot_bridge_stp_state_set(ocelot, port, BR_STATE_FORWARDING);
-+
-+	return 0;
-+}
-+
- static int ocelot_netdevice_bridge_join(struct net_device *dev,
-+					struct net_device *brport_dev,
- 					struct net_device *bridge,
- 					struct netlink_ext_ack *extack)
+ /* switch.c */
+ int dsa_switch_register_notifier(struct dsa_switch *ds);
+ void dsa_switch_unregister_notifier(struct dsa_switch *ds);
+diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+index e2577a7dcbca..a8880b3bb106 100644
+--- a/net/dsa/tag_brcm.c
++++ b/net/dsa/tag_brcm.c
+@@ -150,7 +150,7 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+ 	/* Remove Broadcom tag and update checksum */
+ 	skb_pull_rcsum(skb, BRCM_TAG_LEN);
+ 
+-	skb->offload_fwd_mark = 1;
++	dsa_default_offload_fwd_mark(skb);
+ 
+ 	return skb;
+ }
+diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+index 7e7b7decdf39..09ab9c25e686 100644
+--- a/net/dsa/tag_dsa.c
++++ b/net/dsa/tag_dsa.c
+@@ -162,8 +162,8 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
+ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 				  u8 extra)
  {
- 	struct ocelot_port_private *priv = netdev_priv(dev);
- 	struct ocelot_port *ocelot_port = &priv->port;
- 	struct ocelot *ocelot = ocelot_port->ocelot;
--	struct switchdev_brport_flags flags;
- 	int port = priv->chip_port;
- 	int err;
- 
--	flags.mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
--	flags.val = flags.mask;
-+	ocelot_port_bridge_join(ocelot, port, bridge);
- 
--	err = ocelot_port_bridge_join(ocelot, port, bridge);
-+	err = ocelot_switchdev_sync(ocelot, port, brport_dev, bridge, extack);
- 	if (err)
--		return err;
++	bool trap = false, trunk = false;
+ 	int source_device, source_port;
+-	bool trunk = false;
+ 	enum dsa_code code;
+ 	enum dsa_cmd cmd;
+ 	u8 *dsa_header;
+@@ -174,8 +174,6 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 	cmd = dsa_header[0] >> 6;
+ 	switch (cmd) {
+ 	case DSA_CMD_FORWARD:
+-		skb->offload_fwd_mark = 1;
 -
--	ocelot_port_bridge_flags(ocelot, port, flags);
-+		goto err_switchdev_sync;
+ 		trunk = !!(dsa_header[1] & 7);
+ 		break;
  
- 	return 0;
+@@ -194,7 +192,6 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 			 * device (like a bridge) that forwarding has
+ 			 * already been done by hardware.
+ 			 */
+-			skb->offload_fwd_mark = 1;
+ 			break;
+ 		case DSA_CODE_MGMT_TRAP:
+ 		case DSA_CODE_IGMP_MLD_TRAP:
+@@ -202,6 +199,7 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 			/* Traps have, by definition, not been
+ 			 * forwarded by hardware, so don't mark them.
+ 			 */
++			trap = true;
+ 			break;
+ 		default:
+ 			/* Reserved code, this could be anything. Drop
+@@ -235,6 +233,15 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 	if (!skb->dev)
+ 		return NULL;
+ 
++	/* When using LAG offload, skb->dev is not a DSA slave interface,
++	 * so we cannot call dsa_default_offload_fwd_mark and we need to
++	 * special-case it.
++	 */
++	if (trunk)
++		skb->offload_fwd_mark = true;
++	else if (!trap)
++		dsa_default_offload_fwd_mark(skb);
 +
-+err_switchdev_sync:
-+	ocelot_port_bridge_leave(ocelot, port, bridge);
-+	return err;
+ 	/* If the 'tagged' bit is set; convert the DSA tag to a 802.1Q
+ 	 * tag, and delete the ethertype (extra) if applicable. If the
+ 	 * 'tagged' bit is cleared; delete the DSA tag, and ethertype
+diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+index a09805c8e1ab..c1ee6eefafe4 100644
+--- a/net/dsa/tag_hellcreek.c
++++ b/net/dsa/tag_hellcreek.c
+@@ -44,7 +44,7 @@ static struct sk_buff *hellcreek_rcv(struct sk_buff *skb,
+ 
+ 	pskb_trim_rcsum(skb, skb->len - HELLCREEK_TAG_LEN);
+ 
+-	skb->offload_fwd_mark = true;
++	dsa_default_offload_fwd_mark(skb);
+ 
+ 	return skb;
  }
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 4820dbcedfa2..8eee63a5b93b 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -24,7 +24,7 @@ static struct sk_buff *ksz_common_rcv(struct sk_buff *skb,
  
- static int ocelot_netdevice_bridge_leave(struct net_device *dev,
-+					 struct net_device *brport_dev,
- 					 struct net_device *bridge)
- {
- 	struct ocelot_port_private *priv = netdev_priv(dev);
- 	struct ocelot_port *ocelot_port = &priv->port;
- 	struct ocelot *ocelot = ocelot_port->ocelot;
--	struct switchdev_brport_flags flags;
- 	int port = priv->chip_port;
- 	int err;
+ 	pskb_trim_rcsum(skb, skb->len - len);
  
--	flags.mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
--	flags.val = flags.mask & ~BR_LEARNING;
+-	skb->offload_fwd_mark = true;
++	dsa_default_offload_fwd_mark(skb);
+ 
+ 	return skb;
+ }
+diff --git a/net/dsa/tag_lan9303.c b/net/dsa/tag_lan9303.c
+index aa1318dccaf0..3a5494d2f7b1 100644
+--- a/net/dsa/tag_lan9303.c
++++ b/net/dsa/tag_lan9303.c
+@@ -115,7 +115,8 @@ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	skb_pull_rcsum(skb, 2 + 2);
+ 	memmove(skb->data - ETH_HLEN, skb->data - (ETH_HLEN + LAN9303_TAG_LEN),
+ 		2 * ETH_ALEN);
+-	skb->offload_fwd_mark = !(lan9303_tag1 & LAN9303_TAG_RX_TRAPPED_TO_CPU);
++	if (!(lan9303_tag1 & LAN9303_TAG_RX_TRAPPED_TO_CPU))
++		dsa_default_offload_fwd_mark(skb);
+ 
+ 	return skb;
+ }
+diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+index f9b2966d1936..92ab21d2ceca 100644
+--- a/net/dsa/tag_mtk.c
++++ b/net/dsa/tag_mtk.c
+@@ -92,7 +92,7 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	if (!skb->dev)
+ 		return NULL;
+ 
+-	skb->offload_fwd_mark = 1;
++	dsa_default_offload_fwd_mark(skb);
+ 
+ 	return skb;
+ }
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index f9df9cac81c5..1deba3f1bb82 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -123,7 +123,7 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
+ 		 */
+ 		return NULL;
+ 
+-	skb->offload_fwd_mark = 1;
++	dsa_default_offload_fwd_mark(skb);
+ 	skb->priority = qos_class;
+ 
+ 	/* Ocelot switches copy frames unmodified to the CPU. However, it is
+diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
+index 5f3e8e124a82..447e1eeb357c 100644
+--- a/net/dsa/tag_ocelot_8021q.c
++++ b/net/dsa/tag_ocelot_8021q.c
+@@ -81,7 +81,7 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
+ 	if (!skb->dev)
+ 		return NULL;
+ 
+-	skb->offload_fwd_mark = 1;
++	dsa_default_offload_fwd_mark(skb);
+ 	skb->priority = qos_class;
+ 
+ 	return skb;
+diff --git a/net/dsa/tag_rtl4_a.c b/net/dsa/tag_rtl4_a.c
+index e9176475bac8..1864e3a74df8 100644
+--- a/net/dsa/tag_rtl4_a.c
++++ b/net/dsa/tag_rtl4_a.c
+@@ -114,7 +114,7 @@ static struct sk_buff *rtl4a_tag_rcv(struct sk_buff *skb,
+ 		skb->data - ETH_HLEN - RTL4_A_HDR_LEN,
+ 		2 * ETH_ALEN);
+ 
+-	skb->offload_fwd_mark = 1;
++	dsa_default_offload_fwd_mark(skb);
+ 
+ 	return skb;
+ }
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 50496013cdb7..45cdf64f0e88 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -295,8 +295,6 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 	is_link_local = sja1105_is_link_local(skb);
+ 	is_meta = sja1105_is_meta_frame(skb);
+ 
+-	skb->offload_fwd_mark = 1;
 -
--	err = ocelot_port_bridge_leave(ocelot, port, bridge);
-+	err = ocelot_switchdev_unsync(ocelot, port);
-+	if (err)
-+		return err;
- 
--	ocelot_port_bridge_flags(ocelot, port, flags);
-+	ocelot_port_bridge_leave(ocelot, port, bridge);
- 
--	return err;
-+	return 0;
- }
- 
- static int ocelot_netdevice_lag_join(struct net_device *dev,
-@@ -1182,7 +1261,7 @@ static int ocelot_netdevice_lag_join(struct net_device *dev,
- 	if (!bridge_dev || !netif_is_bridge_master(bridge_dev))
- 		return 0;
- 
--	err = ocelot_netdevice_bridge_join(dev, bridge_dev, extack);
-+	err = ocelot_netdevice_bridge_join(dev, bond, bridge_dev, extack);
- 	if (err)
- 		goto err_bridge_join;
- 
-@@ -1208,7 +1287,7 @@ static int ocelot_netdevice_lag_leave(struct net_device *dev,
- 	if (!bridge_dev || !netif_is_bridge_master(bridge_dev))
- 		return 0;
- 
--	return ocelot_netdevice_bridge_leave(dev, bridge_dev);
-+	return ocelot_netdevice_bridge_leave(dev, bond, bridge_dev);
- }
- 
- static int ocelot_netdevice_changeupper(struct net_device *dev,
-@@ -1221,10 +1300,12 @@ static int ocelot_netdevice_changeupper(struct net_device *dev,
- 
- 	if (netif_is_bridge_master(info->upper_dev)) {
- 		if (info->linking)
--			err = ocelot_netdevice_bridge_join(dev, info->upper_dev,
-+			err = ocelot_netdevice_bridge_join(dev, dev,
-+							   info->upper_dev,
- 							   extack);
- 		else
--			err = ocelot_netdevice_bridge_leave(dev, info->upper_dev);
-+			err = ocelot_netdevice_bridge_leave(dev, dev,
-+							    info->upper_dev);
+ 	if (is_tagged) {
+ 		/* Normal traffic path. */
+ 		skb_push_rcsum(skb, ETH_HLEN);
+@@ -339,6 +337,8 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 		return NULL;
  	}
- 	if (netif_is_lag_master(info->upper_dev)) {
- 		if (info->linking)
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index ce7e5c1bd90d..68cdc7ceaf4d 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -803,10 +803,10 @@ int ocelot_port_pre_bridge_flags(struct ocelot *ocelot, int port,
- 				 struct switchdev_brport_flags val);
- void ocelot_port_bridge_flags(struct ocelot *ocelot, int port,
- 			      struct switchdev_brport_flags val);
--int ocelot_port_bridge_join(struct ocelot *ocelot, int port,
--			    struct net_device *bridge);
--int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
-+void ocelot_port_bridge_join(struct ocelot *ocelot, int port,
- 			     struct net_device *bridge);
-+void ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
-+			      struct net_device *bridge);
- int ocelot_fdb_dump(struct ocelot *ocelot, int port,
- 		    dsa_fdb_dump_cb_t *cb, void *data);
- int ocelot_fdb_add(struct ocelot *ocelot, int port,
+ 
++	dsa_default_offload_fwd_mark(skb);
++
+ 	if (subvlan)
+ 		sja1105_decode_subvlan(skb, subvlan);
+ 
+diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
+index 858cdf9d2913..1208549f45c1 100644
+--- a/net/dsa/tag_xrs700x.c
++++ b/net/dsa/tag_xrs700x.c
+@@ -46,7 +46,7 @@ static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
+ 		return NULL;
+ 
+ 	/* Frame is forwarded by hardware, don't forward in software. */
+-	skb->offload_fwd_mark = 1;
++	dsa_default_offload_fwd_mark(skb);
+ 
+ 	return skb;
+ }
 -- 
 2.25.1
 
