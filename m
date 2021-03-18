@@ -2,127 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D583403A0
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 11:41:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA94340399
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 11:41:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbhCRKlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 06:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
+        id S230106AbhCRKlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 06:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230254AbhCRKk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 06:40:56 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA972C06175F
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 03:40:45 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id t9so4939895wrn.11
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 03:40:45 -0700 (PDT)
+        with ESMTP id S230246AbhCRKkx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 06:40:53 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A303EC061763
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 03:40:52 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id y124-20020a1c32820000b029010c93864955so5094927wmy.5
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 03:40:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qCYiJkeZCY1l1SsCcTK0HNnk7v48LS6Za9V5wjwv5dY=;
-        b=r4VVygKbT2vZHjUCjcrGtSyTQZBbmgOWydhHOkizgxJOp+lVAY8nBIGrVgsIWwlJIl
-         ru+6ybaMvIeLcJfT0O5EGsOlKPK77oIlbl4QQYEUaS1KRO2A3HfQgt7XqISGewXlfreL
-         QR7Wj35qfPf/G04wEIrOo7xtJlvUlE1l1wJffflwLIw5cmcHGXC21jRTa6v2VK9kmp/j
-         uTh613RAdUT5hGGmlPGl2PNrsiJtkep8RuwdkZpfHPMciXqqFMBbuVHnLccYzZPH4TsE
-         z6fqb2vnfTchZz7K4oyFTHV8YlZelZS8rK28QpIkKUhCztoFpfvvNVpW/dRCIR5PNtUb
-         2TcQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YeqXEpROOp+iMp8r4X/XCNvaZ1Q9W0JDqwahteeA6AI=;
+        b=MzKuC6YnZurZf0L4f2hzTY8fKELqD9l8PjwaxpCOd9JxaDHWDQE/qpt74TPeOPX2Zn
+         Xk//2XeHA0jI2tcWPiftkGf/8iIiPCQCkcmy5JUEbThY6pFjrUkd0nLGTdeO0pH0aSNF
+         znJ6A7t8Z84suozRc6yHxZDiDMqnQNTG4kFlsaustDOuSqoNQ26psemHCBK4oqY8lhEL
+         D6eU6CwBtD8pLRPlV2P15XgfgM5qVNHyLs67wDnvRwkyEQSA8WgnFFmdtwwD1qYaSnUJ
+         rKP5KPZVkjN/S415+Bp8p+KNQb/txxip2PgRXmjni5DCv8oGfqZFV95yuUAGCBPqbZPS
+         /z7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qCYiJkeZCY1l1SsCcTK0HNnk7v48LS6Za9V5wjwv5dY=;
-        b=SclCgQIyVMbD4wbbMRXWneqXP5VL5OZSgSIiNeuLevdFL2pdw32JLCKNE1xRxSOLkS
-         DCSwVjZg9BmSVy+clqyQarkaJDni/cZcFFokuGd69x6LrZCoosvr/O7u4QcMtNFgzJCZ
-         Km8s6hKUmVVDTT/EkxVgbLWu6e7+8OASraVn7V93lryo5QeiChUVzB0QQWhYWnkIDBoa
-         2jHvpg2NxW+O2tNUcUSkgIQXZ9l6srbnGypUc13KQnto9GEfKYD/jsbwAaWgnQlfl55A
-         1T5b2GYxYs9LL4pfXYMQj6HbpJ5ZcWfFKj2AGLOUnmm1yzopx+74YTEXR8igcfKsL5mR
-         A1ew==
-X-Gm-Message-State: AOAM530LlX8nMqnswgdEMXLWjzn/kUkVynhHrqQmeiQk33qRKaKa9bG9
-        4hKlD3CmeLC+OdRil92/rwe1OQ==
-X-Google-Smtp-Source: ABdhPJwiyeOQSgB7d0Zh4PqZBrRW1L3J8yQ1rpmoDN74JORGtwBg1/+jZleEMAq/ZeX6kahGfjkjMw==
-X-Received: by 2002:adf:efc7:: with SMTP id i7mr8994793wrp.182.1616064044413;
-        Thu, 18 Mar 2021 03:40:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YeqXEpROOp+iMp8r4X/XCNvaZ1Q9W0JDqwahteeA6AI=;
+        b=rIwjKKUHGu+pkUx+5IE4AzxouDYsK/DyhJLsC1+2AKncfeGyby0y1jOq8y5pBGF+zs
+         2yZ737u/sVkoVkepj7hN0U+TgizT65AT2U7cIV1kWgGlt+9b3UYDkJ6jmGe9AUkdDY9J
+         rwvfRNfrWyha+iS2xOdo+gXO8Eor9vFH3KagxD1djlR4XQuSaQEcOhdcZCSPFWG+Mku1
+         hOLHtIVo4AT49/jZmaRDCqK+W3hBSdFPgFlUK1bv9Aq1pZRgqtIqZC1Zmx7XW2V2sOrS
+         o3APITaC6sr+q/dWUXvHdmt5rFwrbjg2jZTJDshGAgm9Vofw3o08oJQIgO2fxUITWrVB
+         uD6A==
+X-Gm-Message-State: AOAM533DySs65KAhQ0NgobN0Nko4VtSqZlO4xLhPBRweEKD5zdBvjNp2
+        DSssuxKOXESxR4SjpRJoVoiFBg==
+X-Google-Smtp-Source: ABdhPJzW1MNHQw5/b2G8K0upazSv+a5i+rQsabgUnXUoFC/kZAwv2SHREiGWb7z58KsAoeqZV2TygA==
+X-Received: by 2002:a1c:bac2:: with SMTP id k185mr3044552wmf.148.1616064051464;
+        Thu, 18 Mar 2021 03:40:51 -0700 (PDT)
 Received: from dell.default ([91.110.221.194])
-        by smtp.gmail.com with ESMTPSA id z1sm2426033wru.95.2021.03.18.03.40.43
+        by smtp.gmail.com with ESMTPSA id z1sm2426033wru.95.2021.03.18.03.40.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 03:40:44 -0700 (PDT)
+        Thu, 18 Mar 2021 03:40:51 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     lee.jones@linaro.org
 Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Anton Vorontsov <anton@enomsg.org>, benh@kernel.crashing.org,
-        Colin Cross <ccross@android.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Josh Cartwright <joshc@codeaurora.org>,
-        Kees Cook <keescook@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        netdev@vger.kernel.org,
-        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Tony Luck <tony.luck@intel.com>
-Subject: [PATCH v2 00/10] Rid W=1 warnings from OF
-Date:   Thu, 18 Mar 2021 10:40:26 +0000
-Message-Id: <20210318104036.3175910-1-lee.jones@linaro.org>
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH 08/10] of: of_net: Provide function name and param description
+Date:   Thu, 18 Mar 2021 10:40:34 +0000
+Message-Id: <20210318104036.3175910-9-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210318104036.3175910-1-lee.jones@linaro.org>
+References: <20210318104036.3175910-1-lee.jones@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set is part of a larger effort attempting to clean-up W=1
-kernel builds, which are currently overwhelmingly riddled with
-niggly little warnings.
+Fixes the following W=1 kernel build warning(s):
 
-v2:
- - Provided some descriptions to exported functions
-
-Lee Jones (10):
-  of: device: Fix function name in header and provide missing
-    descriptions
-  of: dynamic: Fix incorrect parameter name and provide missing
-    descriptions
-  of: platform: Demote kernel-doc abuse
-  of: base: Fix some formatting issues and provide missing descriptions
-  of: property: Provide missing member description and remove excess
-    param
-  of: address: Provide descriptions for 'of_address_to_resource's params
-  of: fdt: Demote kernel-doc abuses and fix function naming
-  of: of_net: Provide function name and param description
-  of: overlay: Fix function name disparity
-  of: of_reserved_mem: Demote kernel-doc abuses
-
- drivers/of/address.c         |  3 +++
- drivers/of/base.c            | 16 +++++++++++-----
- drivers/of/device.c          |  7 ++++++-
- drivers/of/dynamic.c         |  4 +++-
- drivers/of/fdt.c             | 23 ++++++++++++-----------
- drivers/of/of_net.c          |  3 +++
- drivers/of/of_reserved_mem.c |  6 +++---
- drivers/of/overlay.c         |  2 +-
- drivers/of/platform.c        |  2 +-
- drivers/of/property.c        |  2 +-
- 10 files changed, 44 insertions(+), 24 deletions(-)
+ drivers/of/of_net.c:104: warning: Function parameter or member 'np' not described in 'of_get_mac_address'
+ drivers/of/of_net.c:104: warning: expecting prototype for mac(). Prototype was for of_get_mac_address() instead
 
 Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Anton Vorontsov <anton@enomsg.org>
-Cc: benh@kernel.crashing.org
-Cc: Colin Cross <ccross@android.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: devicetree@vger.kernel.org
-Cc: Frank Rowand <frowand.list@gmail.com>
 Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Josh Cartwright <joshc@codeaurora.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: netdev@vger.kernel.org
-Cc: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
-Cc: Rob Herring <robh+dt@kernel.org>
 Cc: Russell King <linux@armlinux.org.uk>
-Cc: Tony Luck <tony.luck@intel.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/of/of_net.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
+index 6e411821583e4..bc0a27de69d4c 100644
+--- a/drivers/of/of_net.c
++++ b/drivers/of/of_net.c
+@@ -79,6 +79,9 @@ static const void *of_get_mac_addr_nvmem(struct device_node *np)
+ }
+ 
+ /**
++ * of_get_mac_address()
++ * @np:		Caller's Device Node
++ *
+  * Search the device tree for the best MAC address to use.  'mac-address' is
+  * checked first, because that is supposed to contain to "most recent" MAC
+  * address. If that isn't set, then 'local-mac-address' is checked next,
 -- 
 2.27.0
 
