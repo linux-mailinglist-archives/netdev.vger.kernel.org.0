@@ -2,67 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E08340FF8
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 22:40:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51879340FFC
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 22:42:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbhCRVkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 17:40:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49092 "EHLO mail.kernel.org"
+        id S233240AbhCRVmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 17:42:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35604 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231371AbhCRVkI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 17:40:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id EA9B664F3B;
-        Thu, 18 Mar 2021 21:40:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616103608;
-        bh=m0zAM4hUYTKSk5fWq28xqrahxA1pDK50rl728x2+qNw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ibQqE7dpbLy69XRrWkHA43MRtRu3jh2gBoSB/ePSlt7ByypyWm+LMHw16bbO+Ord9
-         bfgmP664wsMOs2THkMrZyVJnR8azMBSS3BMQ9hoGT7j8QaaaAEC03lMT2c29YPG18p
-         JoR2pAeJKZSGl+M6XSMdtOgp0+hcq2bEM3zhETdNEWvVjBKSmmAswPqFEN51bY5304
-         zc3UC5tG1gBlcD2r9tHgoNoZJvUiiKI1m67koEbMK4B9ODML5TZeY6w1+Cefm46MRB
-         86fo+u0gVTg2dLf8TujLwyDgG1MX6PFbydPJJ+p6b/g9lP89iYE/GXnzoyRUQI0ayV
-         oQv/ixuMB4mwA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DB8606097B;
-        Thu, 18 Mar 2021 21:40:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230177AbhCRVkj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Mar 2021 17:40:39 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lN0Nf-00BkhB-20; Thu, 18 Mar 2021 22:40:35 +0100
+Date:   Thu, 18 Mar 2021 22:40:35 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Bohac <jbohac@suse.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH] net: check all name nodes in  __dev_alloc_name
+Message-ID: <YFPI0ws/GrEa24SN@lunn.ch>
+References: <20210318034253.w4w2p3kvi4m6vqp5@dwarf.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net-next] net: dsa: b53: mmap: Add device tree support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161610360789.19574.15150183094848218576.git-patchwork-notify@kernel.org>
-Date:   Thu, 18 Mar 2021 21:40:07 +0000
-References: <20210317092317.3922-1-noltari@gmail.com>
-In-Reply-To: <20210317092317.3922-1-noltari@gmail.com>
-To:     =?utf-8?q?=C3=81lvaro_Fern=C3=A1ndez_Rojas_=3Cnoltari=40gmail=2Ecom=3E?=@ci.codeaurora.org
-Cc:     jonas.gorski@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210318034253.w4w2p3kvi4m6vqp5@dwarf.suse.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 17 Mar 2021 10:23:17 +0100 you wrote:
-> Add device tree support to b53_mmap.c while keeping platform devices support.
+On Thu, Mar 18, 2021 at 04:42:53AM +0100, Jiri Bohac wrote:
+> __dev_alloc_name(), when supplied with a name containing '%d',
+> will search for the first available device number to generate a
+> unique device name.
 > 
-> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
-> ---
->  drivers/net/dsa/b53/b53_mmap.c | 55 ++++++++++++++++++++++++++++++++++
->  1 file changed, 55 insertions(+)
+> Since commit ff92741270bf8b6e78aa885f166b68c7a67ab13a ("net:
+> introduce name_node struct to be used in hashlist") network
+> devices may have alternate names.  __dev_alloc_name() does take
 
-Here is the summary with links:
-  - [v3,net-next] net: dsa: b53: mmap: Add device tree support
-    https://git.kernel.org/netdev/net-next/c/a5538a777b73
+Should this be "does not take"
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> these alternate names into account, possibly generating a name
+> that is already taken and failing with -ENFILE as a result.
 
-
+  Andrew
