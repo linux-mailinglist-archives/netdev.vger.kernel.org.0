@@ -2,70 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D183340984
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 17:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 000C5340985
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 17:03:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbhCRQCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 12:02:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56880 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231648AbhCRQBf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 12:01:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6047364E37;
-        Thu, 18 Mar 2021 16:01:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616083292;
-        bh=8ZlNeGVIC5iDIYpch4tok8Iud0RoY50Apo5qJ3GO4FA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EWoXqqN2y8LjEXl/uKzGgC5baeknNblv0OkEGxd/iWoEXKwSxQaxZYvA+NjGCo8B5
-         az/COz72aWunC3ek8oGCbCI6pmhHdFC19WpLMKb4N13F28VT922Z5pWqn7IsJeLCXe
-         ZrhpoPIslpIcahgnpWn4BSq4+vT7t52jysS+79a05Ee8E+yAnYCgNgpbbcVN/xf66A
-         rQuA+vR494BDWTYuRQRHxo97hmFj+t0CLGYJ87gF7hpvqSazUS2IUOlJjN1hOr9C+d
-         angl5UOYZ6mZP2sSmQ+OrmgXkQFhC/+KIwrRevdyA8FS7QQY5NImmJjVM7N8iQT1gr
-         VgOO58Mw6qnlQ==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1lMv5q-0008Hf-Hj; Thu, 18 Mar 2021 17:01:50 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S231810AbhCRQCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 12:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231648AbhCRQC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 12:02:26 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D26BC06174A;
+        Thu, 18 Mar 2021 09:02:26 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id e14so1524861plj.2;
+        Thu, 18 Mar 2021 09:02:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aWQn+KxpM+FCprE+s/1ErFCFT6wlwgu1cIOzSYiq34Y=;
+        b=u31DHUD3YRWEsDn0Z43UW1cYn93K/PmjgIvTE+lTPMdMdInO78dLV4meStrFBpNBia
+         +yj+J/NkeZ6BmEBf7KyiOYfsR4kLouQ8FrARjm4Pxghft+FZVrSlThO/r7Ek5FCuZ0hF
+         PTaUI04FhSoidQHK9/8LjkcSvwXgFXWhQxXBXDAexK+YN86zybl/Gim9fmUE2HXO3QO9
+         SzTBew4P5CJGmp5U2i5wkiIF7QvBrg20blmqWrxoLkWtP+ODGpU8cLH2EgHO288EGwnV
+         iYuRGkiuzp7iey0gBxNPReZljW6FPOa7RxrAYt9mSefrl5d7tijdFzfJiIlt219GPF1H
+         eutg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aWQn+KxpM+FCprE+s/1ErFCFT6wlwgu1cIOzSYiq34Y=;
+        b=EETZrv5mvmqVn5dqAZjVnVIQpNAJC1DGT1MBFrKwAUVbd+fCn6MdjnCcHe7Jd84Kw2
+         my5BaWLDh5cnGosr0PQjvawjS32LhTnqNtu5UDsGQmzUBpKxUCvp7oVEQsnaaiBzZwH1
+         LMNINZaQ/Ey2pnu2gkGGyco9JgQO4DUv0qtb8QiJALPjFINdIeMFU6E+Cs/CnfItW4ff
+         QxUZy6kv05nE3bP10hjjWW6pec1/CVmzprhnA7vluEEqFoLfDARMjT2VUNk0nc3tkCsf
+         VzVgMIDlf+T++qfb/QXFKu8ULkprsbt7aSAxTSGhwOZYm1FI+Aje7mdIZxEjsLaOQFi4
+         /PYg==
+X-Gm-Message-State: AOAM531nXIjxwoQ90o8UNtGycX55ozrXfbVhiN1aUcxO9Odsi2+2oRxs
+        XPbNUOaB1zxOsh8nKuZdgGQ=
+X-Google-Smtp-Source: ABdhPJzOhpm96kinKcHy2Al29bhenoV3I92pQSHFNQj14p43DCFITgaT96zvor4crLga9TgoyXl6YQ==
+X-Received: by 2002:a17:90b:a0d:: with SMTP id gg13mr4978358pjb.29.1616083345573;
+        Thu, 18 Mar 2021 09:02:25 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q10sm2533948pgs.44.2021.03.18.09.02.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Mar 2021 09:02:25 -0700 (PDT)
+Subject: Re: [PATCH net V2 1/1] net: phy: fix invalid phy id when probe using
+ C22
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH net-next] net: cdc_ncm: drop redundant driver-data assignment
-Date:   Thu, 18 Mar 2021 17:01:42 +0100
-Message-Id: <20210318160142.31801-1-johan@kernel.org>
-X-Mailer: git-send-email 2.26.2
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+References: <20210318090937.26465-1-vee.khee.wong@intel.com>
+ <b63c5068-1203-fcb6-560d-1d2419bb39b0@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c921bf7f-e4d1-eefa-c5ae-024d5e8a4845@gmail.com>
+Date:   Thu, 18 Mar 2021 09:02:22 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <b63c5068-1203-fcb6-560d-1d2419bb39b0@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver data for the data interface has already been set by
-usb_driver_claim_interface() so drop the subsequent redundant
-assignment.
 
-Note that this also avoids setting the driver data three times in case
-of a combined interface.
 
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/net/usb/cdc_ncm.c | 1 -
- 1 file changed, 1 deletion(-)
+On 3/18/2021 6:25 AM, Heiner Kallweit wrote:
+> On 18.03.2021 10:09, Wong Vee Khee wrote:
+>> When using Clause-22 to probe for PHY devices such as the Marvell
+>> 88E2110, PHY ID with value 0 is read from the MII PHYID registers
+>> which caused the PHY framework failed to attach the Marvell PHY
+>> driver.
+>>
+>> Fixed this by adding a check of PHY ID equals to all zeroes.
+>>
+> 
+> I was wondering whether we have, and may break, use cases where a PHY,
+> for whatever reason, reports PHY ID 0, but works with the genphy
+> driver. And indeed in swphy_read_reg() we return PHY ID 0, therefore
+> the patch may break the fixed phy.
+> Having said that I think your patch is ok, but we need a change of
+> the PHY ID reported by swphy_read_reg() first.
+> At a first glance changing the PHY ID to 0x00000001 in swphy_read_reg()
+> should be sufficient. This value shouldn't collide with any real world
+> PHY ID.
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 8acf30115428..8ae565a801b5 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -920,7 +920,6 @@ int cdc_ncm_bind_common(struct usbnet *dev, struct usb_interface *intf, u8 data_
- 		goto error2;
- 	}
- 
--	usb_set_intfdata(ctx->data, dev);
- 	usb_set_intfdata(ctx->control, dev);
- 
- 	if (ctx->ether_desc) {
--- 
-2.26.2
+It most likely would not, but it could be considered an ABI breakage,
+unless we filter out what we report to user-space via SIOGCMIIREG and
+/sys/class/mdio_bus/*/*/phy_id
 
+Ideally we would have assigned an unique PHY OUI to the fixed PHY but
+that would have required registering Linux as a vendor, and the process
+is not entirely clear to me about how to go about doing that.
+--
+Florian
