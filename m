@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B53A3410E3
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14FEA3410E5
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 00:20:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233448AbhCRXTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 19:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
+        id S233465AbhCRXTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 19:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbhCRXTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:19:00 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99013C06174A;
-        Thu, 18 Mar 2021 16:18:59 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id w18so8738925edc.0;
-        Thu, 18 Mar 2021 16:18:59 -0700 (PDT)
+        with ESMTP id S233336AbhCRXTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 19:19:01 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E87C06174A;
+        Thu, 18 Mar 2021 16:19:01 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id o19so8704806edc.3;
+        Thu, 18 Mar 2021 16:19:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7JhQ2kQzidiQfTakouPVoSEYKgYJywL0dJdeDO35/Oo=;
-        b=MxmrwRYXQ525YkLNK7v0HqyLjD4n7IIA1J7ocvk6uP80tzkk19KvL71GMMermYsxlN
-         xrRDlEkMwAUBjCB/6HIJVARUe/A/582Kf+6BEPeB/0ww94+iKh+K6FGYtPeOI0FB7JoJ
-         4T6ijcNbuBCL1zfSeybgGDmZPxW36z7clGnJ0M7JHysWHGdAiNp2lGpwtGqPZWR/ijLE
-         XjNxUD9ZipjDVEYXsdFf4V6RDGr7lq1hpLkCCFN1jui3aKUiT2sxGqMorhOSdVOHxHQ2
-         sgB25HvY5HWI0YcWABFOAJBJ1Wn0F6x0vTmgthCI25WOhAdWIk1+l1TH0W1lBNT9hjPx
-         G5rw==
+        bh=0n6RVIMy61f+SBbaXZIOPzctcUf7WXfwiPthV/9bGvI=;
+        b=s6G6P983viOiYLkEW6GHi+lQJ2UfYmmIdFJi73bZKHA+QUlDCRIrucrOEqwWKxNFPb
+         6HEy2N7diJXhG9yg2sLqf/g+58Nu7zfLtjMAYARGgW50AE2nHFTEF15TtIJMNILPiqrT
+         Z5Z4f1BvD3hJ5CihJvYSJ9rczTbt7Z6b4QSWXRjG74SFVbBqtasjDFmA30MljRLhhk3H
+         9qE/ZgiXu6D67LmF7g3JTvT2skttfoHUD2Fo148CF9iKhoUrgBShTZP3AewXe6UQN/Sy
+         fmXVwQtOlgY51yGwE0cxCkNsqVQPwNdAAdgoads8w27d5OWJcGMVU7/mwzZbHqzNCLD1
+         CbYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7JhQ2kQzidiQfTakouPVoSEYKgYJywL0dJdeDO35/Oo=;
-        b=KV9Al3FbtCoKBVAiTIfWV2B66xGj3Y+L6CLamIZl2F4CTqGjvF08elovtIsJkF/uQd
-         FCYbWMzjVJS5fHuX0aM8kqmoxUVwMcuuRIhCzYGEE7E5riHXukZtO7Ld5IWPvVaUc1eW
-         QBftIzv7NxlMcGtmzCrDccM05lQPAkcM96O5OXnkE4CMizQjQ+s23DYN0xbzAoYwLD8H
-         ip6ZVsUyajLXTy+y+KOV8QdjT/GlmI6IVhgYzgbE21qhESH+91bQxUtOW4QsPAc1ljid
-         zKI2IjIK4akBjAqo4W4L+Zug9z1ZjH4oXWnRyD5tQgfprFbYMXgYMhYdu/FSaGrDLbMb
-         qFog==
-X-Gm-Message-State: AOAM530DI32v2TsHAP9CqX6qY699qm+WrEXkhd8nrtp8DZSzg6FkxLvF
-        LRYJOkX7jNAP5q6iJG1lyrw=
-X-Google-Smtp-Source: ABdhPJyQXAh0mO9Sv4qRIZn0DODzbA5wbdUbHyu4xa0cB0sYM288Vc4H7afM+RdnEJQCytGqm5vcJQ==
-X-Received: by 2002:a50:cf48:: with SMTP id d8mr6755511edk.54.1616109538360;
-        Thu, 18 Mar 2021 16:18:58 -0700 (PDT)
+        bh=0n6RVIMy61f+SBbaXZIOPzctcUf7WXfwiPthV/9bGvI=;
+        b=ARJITbbp1gQo1c9pUQ6elZI5SzJuDkzClstwv5JEC8/L97xORXE2F5rJj5RSk66bf7
+         7J+Z404q37XhxXwrAff4Jote5IpZ2WUX5Gd/BT0wXprx2e/8CeQ8anwkZmi/uQTu+vG5
+         F4/4xMvx/QqZsIqrLdjxIJHEeThq5EnPzbd+a1R6qDG7f+yIOzxg9pOSOK0wkwSQroxE
+         sDGRh26Afjv1S82jkNBZWhsJrurz0eqCvPkWy3jyt2jmAj+tTlGmQpmYCKLFGI6ZaupX
+         lhm39HXN6J5WKFNh9SMJNVBr7tOFBHb/dO9+wcIqDJJLtMVXIC0Tm0EcFqs7KevO9uLA
+         XaAA==
+X-Gm-Message-State: AOAM533EB+bt0N8YYtrh1ggc1dGsR2GQH3AVC4SYsfovyXmHbYg8mloe
+        LgyQ5/eIrvMQjZZuIjjTDH0=
+X-Google-Smtp-Source: ABdhPJwGRWqqSwXrnEcca0FrNI2AJX+eLrWMb+zkndJwNb3/SZpWbWXCUnIqcrN9hamDPyDjWwMSCw==
+X-Received: by 2002:aa7:d287:: with SMTP id w7mr6423487edq.23.1616109539908;
+        Thu, 18 Mar 2021 16:18:59 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.18.56
+        by smtp.gmail.com with ESMTPSA id bx24sm2801131ejc.88.2021.03.18.16.18.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 16:18:58 -0700 (PDT)
+        Thu, 18 Mar 2021 16:18:59 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -67,9 +67,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH v2 net-next 10/16] net: dsa: replay VLANs installed on port when joining the bridge
-Date:   Fri, 19 Mar 2021 01:18:23 +0200
-Message-Id: <20210318231829.3892920-11-olteanv@gmail.com>
+Subject: [RFC PATCH v2 net-next 11/16] net: ocelot: support multiple bridges
+Date:   Fri, 19 Mar 2021 01:18:24 +0200
+Message-Id: <20210318231829.3892920-12-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210318231829.3892920-1-olteanv@gmail.com>
 References: <20210318231829.3892920-1-olteanv@gmail.com>
@@ -81,152 +81,184 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Currently this simple setup:
+The ocelot switches are a bit odd in that they do not have an STP state
+to put the ports into. Instead, the forwarding configuration is delayed
+from the typical port_bridge_join into stp_state_set, when the port enters
+the BR_STATE_FORWARDING state.
 
-ip link add br0 type bridge vlan_filtering 1
-ip link add bond0 type bond
-ip link set bond0 master br0
-ip link set swp0 master bond0
+I can only guess that the implementation of this quirk is the reason that
+led to the simplification of the driver such that only one bridge could
+be offloaded at a time.
 
-will not work because the bridge has created the PVID in br_add_if ->
-nbp_vlan_init, and it has notified switchdev of the existence of VLAN 1,
-but that was too early, since swp0 was not yet a lower of bond0, so it
-had no reason to act upon that notification.
+We can simplify the data structures somewhat, and introduce a per-port
+bridge device pointer and STP state, similar to how the LAG offload
+works now (there we have a per-port bonding device pointer and TX
+enabled state). This allows offloading multiple bridges with relative
+ease, while still keeping in place the quirk to delay the programming of
+the PGIDs.
+
+We actually need this change now because we need to remove the bogus
+restriction from ocelot_bridge_stp_state_set that ocelot->bridge_mask
+needs to contain BIT(port), otherwise that function is a no-op.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/if_bridge.h | 10 ++++++
- net/bridge/br_vlan.c      | 71 +++++++++++++++++++++++++++++++++++++++
- net/dsa/port.c            |  6 ++++
- 3 files changed, 87 insertions(+)
+ drivers/net/ethernet/mscc/ocelot.c | 72 +++++++++++++++---------------
+ include/soc/mscc/ocelot.h          |  7 ++-
+ 2 files changed, 39 insertions(+), 40 deletions(-)
 
-diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index 89596134e88f..ea176c508c0d 100644
---- a/include/linux/if_bridge.h
-+++ b/include/linux/if_bridge.h
-@@ -111,6 +111,8 @@ int br_vlan_get_pvid_rcu(const struct net_device *dev, u16 *p_pvid);
- int br_vlan_get_proto(const struct net_device *dev, u16 *p_proto);
- int br_vlan_get_info(const struct net_device *dev, u16 vid,
- 		     struct bridge_vlan_info *p_vinfo);
-+int br_vlan_replay(struct net_device *br_dev, struct net_device *dev,
-+		   struct notifier_block *nb, struct netlink_ext_ack *extack);
- #else
- static inline bool br_vlan_enabled(const struct net_device *dev)
- {
-@@ -137,6 +139,14 @@ static inline int br_vlan_get_info(const struct net_device *dev, u16 vid,
- {
- 	return -EINVAL;
- }
-+
-+static inline int br_vlan_replay(struct net_device *br_dev,
-+				 struct net_device *dev,
-+				 struct notifier_block *nb,
-+				 struct netlink_ext_ack *extack)
-+{
-+	return -EINVAL;
-+}
- #endif
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 9f0c9bdd9f5d..ce57929ba3d1 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -766,7 +766,7 @@ int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp, struct sk_buff **nskb)
+ 	/* Everything we see on an interface that is in the HW bridge
+ 	 * has already been forwarded.
+ 	 */
+-	if (ocelot->bridge_mask & BIT(src_port))
++	if (ocelot->ports[src_port]->bridge)
+ 		skb->offload_fwd_mark = 1;
  
- #if IS_ENABLED(CONFIG_BRIDGE)
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 8829f621b8ec..45a4eac1b217 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -1751,6 +1751,77 @@ void br_vlan_notify(const struct net_bridge *br,
- 	kfree_skb(skb);
+ 	skb->protocol = eth_type_trans(skb, dev);
+@@ -1183,6 +1183,26 @@ static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond,
+ 	return mask;
  }
  
-+static int br_vlan_replay_one(struct notifier_block *nb,
-+			      struct net_device *dev,
-+			      struct switchdev_obj_port_vlan *vlan,
-+			      struct netlink_ext_ack *extack)
++static u32 ocelot_get_bridge_fwd_mask(struct ocelot *ocelot,
++				      struct net_device *bridge)
 +{
-+	struct switchdev_notifier_port_obj_info obj_info = {
-+		.info = {
-+			.dev = dev,
-+			.extack = extack,
-+		},
-+		.obj = &vlan->obj,
-+	};
-+	int err;
++	u32 mask = 0;
++	int port;
 +
-+	err = nb->notifier_call(nb, SWITCHDEV_PORT_OBJ_ADD, &obj_info);
-+	return notifier_to_errno(err);
-+}
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		struct ocelot_port *ocelot_port = ocelot->ports[port];
 +
-+int br_vlan_replay(struct net_device *br_dev, struct net_device *dev,
-+		   struct notifier_block *nb, struct netlink_ext_ack *extack)
-+{
-+	struct net_bridge_vlan_group *vg;
-+	struct net_bridge_vlan *v;
-+	struct net_bridge_port *p;
-+	struct net_bridge *br;
-+	int err = 0;
-+	u16 pvid;
-+
-+	ASSERT_RTNL();
-+
-+	if (!netif_is_bridge_master(br_dev))
-+		return -EINVAL;
-+
-+	if (!netif_is_bridge_master(dev) && !netif_is_bridge_port(dev))
-+		return -EINVAL;
-+
-+	if (netif_is_bridge_master(dev)) {
-+		br = netdev_priv(dev);
-+		vg = br_vlan_group(br);
-+		p = NULL;
-+	} else {
-+		p = br_port_get_rtnl(dev);
-+		if (WARN_ON(!p))
-+			return -EINVAL;
-+		vg = nbp_vlan_group(p);
-+		br = p->br;
-+	}
-+
-+	if (!vg)
-+		return 0;
-+
-+	pvid = br_get_pvid(vg);
-+
-+	list_for_each_entry(v, &vg->vlan_list, vlist) {
-+		struct switchdev_obj_port_vlan vlan = {
-+			.obj.orig_dev = dev,
-+			.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
-+			.flags = br_vlan_flags(v, pvid),
-+			.vid = v->vid,
-+		};
-+
-+		if (!br_vlan_should_use(v))
++		if (!ocelot_port)
 +			continue;
 +
-+		br_vlan_replay_one(nb, dev, &vlan, extack);
-+		if (err)
-+			return err;
++		if (ocelot_port->stp_state == BR_STATE_FORWARDING &&
++		    ocelot_port->bridge == bridge)
++			mask |= BIT(port);
 +	}
 +
-+	return err;
++	return mask;
 +}
- /* check if v_curr can enter a range ending in range_end */
- bool br_vlan_can_enter_range(const struct net_bridge_vlan *v_curr,
- 			     const struct net_bridge_vlan *range_end)
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 9850051071f2..6c3c357ac409 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -209,6 +209,12 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
- 	if (err && err != -EOPNOTSUPP)
- 		return err;
- 
-+	err = br_vlan_replay(br, brport_dev,
-+			     &dsa_slave_switchdev_blocking_notifier,
-+			     extack);
-+	if (err && err != -EOPNOTSUPP)
-+		return err;
 +
+ static u32 ocelot_get_dsa_8021q_cpu_mask(struct ocelot *ocelot)
+ {
+ 	u32 mask = 0;
+@@ -1232,10 +1252,12 @@ void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
+ 			 */
+ 			mask = GENMASK(ocelot->num_phys_ports - 1, 0);
+ 			mask &= ~cpu_fwd_mask;
+-		} else if (ocelot->bridge_fwd_mask & BIT(port)) {
++		} else if (ocelot_port->bridge) {
++			struct net_device *bridge = ocelot_port->bridge;
+ 			struct net_device *bond = ocelot_port->bond;
+ 
+-			mask = ocelot->bridge_fwd_mask & ~BIT(port);
++			mask = ocelot_get_bridge_fwd_mask(ocelot, bridge);
++			mask &= ~BIT(port);
+ 			if (bond) {
+ 				mask &= ~ocelot_get_bond_mask(ocelot, bond,
+ 							      false);
+@@ -1256,29 +1278,16 @@ EXPORT_SYMBOL(ocelot_apply_bridge_fwd_mask);
+ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+-	u32 port_cfg;
+-
+-	if (!(BIT(port) & ocelot->bridge_mask))
+-		return;
++	u32 learn_ena = 0;
+ 
+-	port_cfg = ocelot_read_gix(ocelot, ANA_PORT_PORT_CFG, port);
++	ocelot_port->stp_state = state;
+ 
+-	switch (state) {
+-	case BR_STATE_FORWARDING:
+-		ocelot->bridge_fwd_mask |= BIT(port);
+-		fallthrough;
+-	case BR_STATE_LEARNING:
+-		if (ocelot_port->learn_ena)
+-			port_cfg |= ANA_PORT_PORT_CFG_LEARN_ENA;
+-		break;
+-
+-	default:
+-		port_cfg &= ~ANA_PORT_PORT_CFG_LEARN_ENA;
+-		ocelot->bridge_fwd_mask &= ~BIT(port);
+-		break;
+-	}
++	if ((state == BR_STATE_LEARNING || state == BR_STATE_FORWARDING) &&
++	    ocelot_port->learn_ena)
++		learn_ena = ANA_PORT_PORT_CFG_LEARN_ENA;
+ 
+-	ocelot_write_gix(ocelot, port_cfg, ANA_PORT_PORT_CFG, port);
++	ocelot_rmw_gix(ocelot, learn_ena, ANA_PORT_PORT_CFG_LEARN_ENA,
++		       ANA_PORT_PORT_CFG, port);
+ 
+ 	ocelot_apply_bridge_fwd_mask(ocelot);
+ }
+@@ -1508,16 +1517,9 @@ EXPORT_SYMBOL(ocelot_port_mdb_del);
+ int ocelot_port_bridge_join(struct ocelot *ocelot, int port,
+ 			    struct net_device *bridge)
+ {
+-	if (!ocelot->bridge_mask) {
+-		ocelot->hw_bridge_dev = bridge;
+-	} else {
+-		if (ocelot->hw_bridge_dev != bridge)
+-			/* This is adding the port to a second bridge, this is
+-			 * unsupported */
+-			return -ENODEV;
+-	}
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 
+-	ocelot->bridge_mask |= BIT(port);
++	ocelot_port->bridge = bridge;
+ 
  	return 0;
  }
+@@ -1526,13 +1528,11 @@ EXPORT_SYMBOL(ocelot_port_bridge_join);
+ int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
+ 			     struct net_device *bridge)
+ {
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	struct ocelot_vlan pvid = {0}, native_vlan = {0};
+ 	int ret;
  
+-	ocelot->bridge_mask &= ~BIT(port);
+-
+-	if (!ocelot->bridge_mask)
+-		ocelot->hw_bridge_dev = NULL;
++	ocelot_port->bridge = NULL;
+ 
+ 	ret = ocelot_port_vlan_filtering(ocelot, port, false);
+ 	if (ret)
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 0a0751bf97dd..ce7e5c1bd90d 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -615,6 +615,9 @@ struct ocelot_port {
+ 	bool				lag_tx_active;
+ 
+ 	u16				mrp_ring_id;
++
++	struct net_device		*bridge;
++	u8				stp_state;
+ };
+ 
+ struct ocelot {
+@@ -634,10 +637,6 @@ struct ocelot {
+ 	int				num_frame_refs;
+ 	int				num_mact_rows;
+ 
+-	struct net_device		*hw_bridge_dev;
+-	u16				bridge_mask;
+-	u16				bridge_fwd_mask;
+-
+ 	struct ocelot_port		**ports;
+ 
+ 	u8				base_mac[ETH_ALEN];
 -- 
 2.25.1
 
