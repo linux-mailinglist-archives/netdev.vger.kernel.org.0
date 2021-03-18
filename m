@@ -2,92 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E0F3405A9
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 13:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAE773405DF
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 13:45:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231232AbhCRMjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 08:39:32 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:45134 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230398AbhCRMjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 08:39:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1616071158; x=1647607158;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=UaO4DrW2FryTq+JeBvRegRfUsbSOYDlJb8uSOeoNGf0=;
-  b=axBm4QaTbC04c+lbPTgQzHElKdWkL/fPR08hSuDBK+FTzhJtjr9w4cHS
-   qrl5hojpgEYK1FHw/j9J7VItYXytmHTw/10PGZmxZnU0T9S7g91weO67T
-   KoXhMDEgzIYveaJakJ3b5QfWtXeV2PvDJ3qBuAMGJrVes8wkz5QSotAUr
-   wmVETqyQRVueXq2yOVJv9/IYU42sg7hvR6qAN/9GZxThY7XmwG2cMq7Bb
-   CR38mCP1qOP2k9L1QczwIfuwJ7fTeREBpUFzXDKPG3rtGpqutknAT/jsA
-   eCKHZoBor5m1QDrn8FHmGZvpHEgcyayZ2GNSbwnzAkfoxsg8xrn53P7+S
-   g==;
-IronPort-SDR: EMrxOwvwPve9wMjg53tGk78BqJV9d6doMVFZCNGaQFDnepXIWTBFOpe0Q06dql8EmoJFmSG1Qi
- oVB7qUZMgtrEApQk//axgBHRwswSXzB/fjd5kFO7wmNq75OodcF+y5/F9mbUn9Uo2LPMpTC+xG
- 3qA9EhMNtXJyh4sskGcZdTydgn1cm6Mds/02YYOhoM7cGW1OkltN3ss6XNL9K9qHmVhafM9Q1X
- qSSGXetAud0EQn6Z7fyaAAV+/PQr1Q2HcQgZlFuE1VPSElDH38XEQoD5ax9xYbkT2dYgsVxsFi
- 2SA=
-X-IronPort-AV: E=Sophos;i="5.81,258,1610434800"; 
-   d="scan'208";a="48023962"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2021 05:39:17 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 18 Mar 2021 05:39:15 -0700
-Received: from soft-dev2.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Thu, 18 Mar 2021 05:39:12 -0700
-From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S231367AbhCRMo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 08:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231345AbhCRMow (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 08:44:52 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4C8C06174A;
+        Thu, 18 Mar 2021 05:44:52 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id l1so1247720plg.12;
+        Thu, 18 Mar 2021 05:44:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=r9rE0tJpznlr6Ns/VvU6BMZweoj02KtdTWNNDOyyeFE=;
+        b=G552MO7zcD7RYfTHJ4kCT7C874hod2hJkzRBsqtBJtRTU9px+61TW9VyaoADGYNtHZ
+         pTja+//z52v7Ek7xavQtHZ9sysyFA+ED73lFSadoEJncd3ApOhPldvH+Gk3lQplQ94xi
+         aeMfjPAHyzX61z1PmOGRN+5G71qMu5Yb3FOlAwP2W/ixGDLbtHuIIfWVW/u81FZ7WJN0
+         v/J3x5IrZGVsw+OCRb7OF0mX5l3ajZwIWQUNQPaXnA1897TU/klaxTfCpktTOorqiHFY
+         VZDkB/HNvTSvWjgm2Nw+gsw91s93ZQgBYMN77ZHH/PNHaO1pve+E0JgCNPblvpPBNp6M
+         Yk+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=r9rE0tJpznlr6Ns/VvU6BMZweoj02KtdTWNNDOyyeFE=;
+        b=fUWCs636gUec41SumMgQZ2ZVAOnt4rP0WHAyACfEprTZZi1/yUPNE4563RrXeGU0P9
+         GLlQV6WWBLfZ645V9ha+wPeAh4B0N+GTV1fOwDlO9WefKqnl7Ta9TuonB5x37D2hMYfb
+         f3quBePmTV3WqJyDlEsszZzLUNOEJv+eNcaACB8hNJRqsyCUFF9ry+ZPrnWx7dZ6ec5m
+         Xc5Aa+x+cl2BAGvU0WEdkrlo4WOR9wONgdZLQ0EqAAew5xuZ0o5rn13FZHL+/kZBK2lV
+         ++jhRQ2bo+tvGpZitgGE1m+fFyVaikOti0+BAwAx1wYTaB4vpOddEqcxIGUsT+2lkrL4
+         qpHQ==
+X-Gm-Message-State: AOAM5329Usb+4nft1hu8PvwjOEzbvvDkG+esHor5/Bq7a3x5pKZOfP6L
+        /ciDN6kpjZUuQL169SQhvGT1zMqenh3ryiK6HdU=
+X-Google-Smtp-Source: ABdhPJya+MwPUimZnTCuEi8Fb+6qYbFJpRxFCYiMhyPih+jRE1gLYp2PIvEqb8nl5AjfwDw72YJHd5TXk8M5r79+AT0=
+X-Received: by 2002:a17:90a:5d10:: with SMTP id s16mr4259176pji.126.1616071492251;
+ Thu, 18 Mar 2021 05:44:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210224115146.9131-1-aford173@gmail.com> <20210224115146.9131-5-aford173@gmail.com>
+ <CAMuHMdW3SO7LemssHrGKkV0TUVNuT4oq1EfmJ-Js79=QBvNhqQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdW3SO7LemssHrGKkV0TUVNuT4oq1EfmJ-Js79=QBvNhqQ@mail.gmail.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Thu, 18 Mar 2021 07:44:41 -0500
+Message-ID: <CAHCN7xLtDyfB5h5rWTLpiUgWY==2KmxYCOQkVSeU8DV8KB-NKg@mail.gmail.com>
+Subject: Re: [PATCH V3 5/5] arm64: dts: renesas: beacon kits: Setup AVB refclk
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Michael Walle <michael@walle.cc>
-CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Subject: [PATCH net-next v1 3/3] net: phy: mscc: coma mode disabled for VSC8584
-Date:   Thu, 18 Mar 2021 13:38:51 +0100
-Message-ID: <20210318123851.10324-4-bjarni.jonasson@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210318123851.10324-1-bjarni.jonasson@microchip.com>
-References: <20210318123851.10324-1-bjarni.jonasson@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch releases coma mode for VSC8584 as done for VSC8514 in
-commit ca0d7fd0a58d ("net: phy: mscc: coma mode disabled for VSC8514")
+On Thu, Mar 4, 2021 at 2:04 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> On Wed, Feb 24, 2021 at 12:52 PM Adam Ford <aford173@gmail.com> wrote:
+> > The AVB refererence clock assumes an external clock that runs
+>
+> reference
+>
+> > automatically.  Because the Versaclock is wired to provide the
+> > AVB refclock, the device tree needs to reference it in order for the
+> > driver to start the clock.
+> >
+> > Signed-off-by: Adam Ford <aford173@gmail.com>
+>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> i.e. will queue in renesas-devel (with the typo fixed) once the DT
+> bindings have been accepted.
+>
 
-Fixes: a5afc1678044a ("net: phy: mscc: add support for VSC8584 PHYY.")
-Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
----
- drivers/net/phy/mscc/mscc_main.c | 1 +
- 1 file changed, 1 insertion(+)
+Who do I need to ping to get the DT bindings accepted?  They have an
+acked-by from Rob.
 
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 254d882490f7..6badb594b4e2 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -1737,6 +1737,7 @@ static int vsc8584_config_init(struct phy_device *phydev)
- 			ret = vsc8584_config_host_serdes(phydev);
- 			if (ret)
- 				goto err;
-+			vsc85xx_coma_mode_release(phydev);
- 			break;
- 		default:
- 			ret = -EINVAL;
--- 
-2.17.1
+adam
 
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
