@@ -2,76 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBAC1340465
-	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 12:16:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8456A340462
+	for <lists+netdev@lfdr.de>; Thu, 18 Mar 2021 12:16:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbhCRLQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 07:16:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54382 "EHLO mail.kernel.org"
+        id S230526AbhCRLQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 07:16:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54448 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230160AbhCRLPy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 07:15:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1D5A564F04;
-        Thu, 18 Mar 2021 11:15:52 +0000 (UTC)
+        id S230378AbhCRLQF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Mar 2021 07:16:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ACB6164F2A;
+        Thu, 18 Mar 2021 11:16:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616066153;
-        bh=SpdXvt/IHN+ouT5vGlIbzinGudPspv45K2jqget9/1Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EwjU7DsFLrM3Pixr3E+YF3BlGVbl01cI7J9YUvl95YRMWFK6DNEPAzSU0TPQRnFCt
-         uLEBQB1j0IqQ4nHNcEtyhX2oSM5Z7gh6Lk7UTs94S/jJSuieaGHmlNtcLoVTByDz9m
-         IjFxtwRGKU1wE0QvY03suYo7/Rjv+rUrxVtErK7HfMscXNa9NwRtMv+qAiQlCghdkL
-         Kdrj4/Hj7SaSU+97OfF6ygAwq7pum19GSFtf/9wZpX50bWM/cv89qRpNOEE8BX2dQs
-         uhUB4oiI/7+T4tFttWn9wcK+TLvar6EBwN1tPhe08YT22uX/EK8Ez1YGeWQk4wI6EC
-         n0GZ7bNvqowvA==
+        s=k20201202; t=1616066165;
+        bh=S8hZOUFcGCuQUCdKDUyOuiZcrCRczJtzyfMojtfu5pE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H18XoSmcXxTQs5/kvdz874n3iT4eJpqV5meEde5hsv41KDQ7mZKeBbe3BNGma6DmH
+         O/2W94bSM4txcG56nOZe8za7wJTOq8rRpFU0bDJRgRySFXqGQYaoOk253cusIG6WvT
+         yOP7I4phr6GTkCl1CuYmrZAJ9erUTKNZZgDG+OTnMRxog9eilJ48JjIyUfO3hj0hBW
+         mWqu5xWgs8tpKVu+jXym7HokUKZL7AkZ+N/MPpewoto1xk1rwYZ2sKUKbR2N4SmmK2
+         A+QpyyFkVBpZoJ8H3OT7m5TFK2/ys1J5axeceERqg3Puw4731o2T6Rv0c74sVVLBLC
+         UOwWuAYnJA/1A==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
-        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
+Cc:     Maor Gottlieb <maorg@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Yishai Hadas <yishaih@mellanox.com>
-Subject: [PATCH rdma-next 0/7] Add MEMIC operations support
-Date:   Thu, 18 Mar 2021 13:15:41 +0200
-Message-Id: <20210318111548.674749-1-leon@kernel.org>
+Subject: [PATCH mlx5-next 1/7] net/mlx5: Add MEMIC operations related bits
+Date:   Thu, 18 Mar 2021 13:15:42 +0200
+Message-Id: <20210318111548.674749-2-leon@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210318111548.674749-1-leon@kernel.org>
+References: <20210318111548.674749-1-leon@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Maor Gottlieb <maorg@nvidia.com>
 
-Hi,
+Add the MEMIC operations bits and structures to the mlx5_ifc file.
 
-This series from Maor extends MEMIC to support atomic operations from
-the host in addition to already supported regular read/write.
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 42 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 41 insertions(+), 1 deletion(-)
 
-Thanks
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index c0ce1c2e1e57..dd69cf1320ce 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -133,6 +133,7 @@ enum {
+ 	MLX5_CMD_OP_PAGE_FAULT_RESUME             = 0x204,
+ 	MLX5_CMD_OP_ALLOC_MEMIC                   = 0x205,
+ 	MLX5_CMD_OP_DEALLOC_MEMIC                 = 0x206,
++	MLX5_CMD_OP_MODIFY_MEMIC                  = 0x207,
+ 	MLX5_CMD_OP_CREATE_EQ                     = 0x301,
+ 	MLX5_CMD_OP_DESTROY_EQ                    = 0x302,
+ 	MLX5_CMD_OP_QUERY_EQ                      = 0x303,
+@@ -1015,7 +1016,11 @@ struct mlx5_ifc_device_mem_cap_bits {
 
-Maor Gottlieb (7):
-  net/mlx5: Add MEMIC operations related bits
-  RDMA/uverbs: Make UVERBS_OBJECT_METHODS to consider line number
-  RDMA/mlx5: Avoid use after free in allocate MEMIC bad flow
-  RDMA/mlx5: Move all DM logic to separate file
-  RDMA/mlx5: Add support to MODIFY_MEMIC command
-  RDMA/mlx5: Add support in MEMIC operations
-  RDMA/mlx5: Expose UAPI to query DM
+ 	u8         header_modify_sw_icm_start_address[0x40];
 
- drivers/infiniband/hw/mlx5/Makefile      |   1 +
- drivers/infiniband/hw/mlx5/cmd.c         | 101 ----
- drivers/infiniband/hw/mlx5/cmd.h         |   3 -
- drivers/infiniband/hw/mlx5/dm.c          | 595 +++++++++++++++++++++++
- drivers/infiniband/hw/mlx5/dm.h          |  18 +
- drivers/infiniband/hw/mlx5/main.c        | 243 +--------
- drivers/infiniband/hw/mlx5/mlx5_ib.h     |  20 +-
- include/linux/mlx5/mlx5_ifc.h            |  42 +-
- include/rdma/uverbs_named_ioctl.h        |   3 +-
- include/uapi/rdma/mlx5_user_ioctl_cmds.h |  19 +
- 10 files changed, 699 insertions(+), 346 deletions(-)
- create mode 100644 drivers/infiniband/hw/mlx5/dm.c
- create mode 100644 drivers/infiniband/hw/mlx5/dm.h
+-	u8         reserved_at_180[0x680];
++	u8         reserved_at_180[0x80];
++
++	u8         memic_operations[0x20];
++
++	u8         reserved_at_220[0x5e0];
+ };
 
+ struct mlx5_ifc_device_event_cap_bits {
+@@ -10408,6 +10413,41 @@ struct mlx5_ifc_destroy_vport_lag_in_bits {
+ 	u8         reserved_at_40[0x40];
+ };
+
++enum {
++	MLX5_MODIFY_MEMIC_OP_MOD_ALLOC,
++	MLX5_MODIFY_MEMIC_OP_MOD_DEALLOC,
++};
++
++struct mlx5_ifc_modify_memic_in_bits {
++	u8         opcode[0x10];
++	u8         uid[0x10];
++
++	u8         reserved_at_20[0x10];
++	u8         op_mod[0x10];
++
++	u8         reserved_at_40[0x20];
++
++	u8         reserved_at_60[0x18];
++	u8         memic_operation_type[0x8];
++
++	u8         memic_start_addr[0x40];
++
++	u8         reserved_at_c0[0x140];
++};
++
++struct mlx5_ifc_modify_memic_out_bits {
++	u8         status[0x8];
++	u8         reserved_at_8[0x18];
++
++	u8         syndrome[0x20];
++
++	u8         reserved_at_40[0x40];
++
++	u8         memic_operation_addr[0x40];
++
++	u8         reserved_at_c0[0x140];
++};
++
+ struct mlx5_ifc_alloc_memic_in_bits {
+ 	u8         opcode[0x10];
+ 	u8         reserved_at_10[0x10];
 --
 2.30.2
 
