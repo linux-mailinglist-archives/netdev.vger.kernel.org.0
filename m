@@ -2,78 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E543A341B35
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 12:14:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 626EF341B4C
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 12:21:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbhCSLNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 07:13:37 -0400
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:63997 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbhCSLNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 07:13:32 -0400
-Date:   Fri, 19 Mar 2021 11:13:25 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1616152408; bh=f0jBdzh822UNIDPJ7CXVNsDu6Zz6BcE8iLULPD9/gMQ=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=osxblJeHb5/ssJypOEeqeaBbYiR6woII61Klt3hS3YT5MKEhXsA6U5aqnIIxB+Xp7
-         62TmMpSF22mGrd68bHEF/32bGdVMysNt4DmEtCOGVcpr6QTosYEjbk8vTuL+AyLaiP
-         4RD1ywfQftgM74A5g67f+YBen8z/i7m6fQP+IgiCzWeir6VxKJxW/LjZhfA9gL42OS
-         3ZdsMIxHH2snXUMoCY22O8fxxVQJF+VRSQXTbb9gSyGb0dvRUwqIGGOuosWcabA1Y/
-         /7rzNWT9321jFf4EwqojOk9bB98XZloPa1ikGbCBPfgMUK5r7ghKYd4XN45nqGLN+n
-         rCmBq23gZ4tAw==
-To:     Paolo Abeni <pabeni@redhat.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 2/4] gro: add combined call_gro_receive() + INDIRECT_CALL_INET() helper
-Message-ID: <20210319111315.3069-1-alobakin@pm.me>
-In-Reply-To: <1ebd301832ff86cc414dd17eee0b3dfc91ff3c08.camel@redhat.com>
-References: <20210318184157.700604-1-alobakin@pm.me> <20210318184157.700604-3-alobakin@pm.me> <1ebd301832ff86cc414dd17eee0b3dfc91ff3c08.camel@redhat.com>
+        id S229936AbhCSLUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 07:20:38 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:45689 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229919AbhCSLUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 07:20:19 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 4A1BA221E6;
+        Fri, 19 Mar 2021 12:20:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1616152817;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0znsRcMt40TMej64H4IGJ1CDLfFMnqG3HzV6wk+Zhro=;
+        b=Du6flcIYDxAOlLAQjfVoBr2OcI6lrm+DdOHdxRR/BzR+xu+hZ8XwktkqmdIEUWoJKPpZCE
+        f5F8USqaMF8efOb3eceQYlRZVhglndIz6K7CncazrL3L8eI/bJGGWfwdTb86BsUrrBsVHE
+        B5wzo0GJTddExOTZu9t3v8Rkqt1euOI=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 19 Mar 2021 12:20:15 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next] net: enetc: teardown CBDR during PF/VF unbind
+In-Reply-To: <20210319100806.801581-1-olteanv@gmail.com>
+References: <20210319100806.801581-1-olteanv@gmail.com>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <f64aeb3ed16df43363bbbbe5f8003785@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
-Date: Fri, 19 Mar 2021 11:53:42 +0100
+Am 2021-03-19 11:08, schrieb Vladimir Oltean:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Michael reports that after the blamed patch, unbinding a VF would cause
+> these transactions to remain pending, and trigger some warnings with 
+> the
+> DMA API debug:
+> 
+> $ echo 1 > /sys/bus/pci/devices/0000\:00\:00.0/sriov_numvfs
+> pci 0000:00:01.0: [1957:ef00] type 00 class 0x020001
+> fsl_enetc_vf 0000:00:01.0: Adding to iommu group 19
+> fsl_enetc_vf 0000:00:01.0: enabling device (0000 -> 0002)
+> fsl_enetc_vf 0000:00:01.0 eno0vf0: renamed from eth0
+> 
+> $ echo 0 > /sys/bus/pci/devices/0000\:00\:00.0/sriov_numvfs
+> DMA-API: pci 0000:00:01.0: device driver has pending DMA allocations
+> while released from device [count=1]
+> One of leaked entries details: [size=2048 bytes] [mapped with
+> DMA_BIDIRECTIONAL] [mapped as coherent]
+> WARNING: CPU: 0 PID: 2547 at kernel/dma/debug.c:853
+> dma_debug_device_change+0x174/0x1c8
+> (...)
+> Call trace:
+>  dma_debug_device_change+0x174/0x1c8
+>  blocking_notifier_call_chain+0x74/0xa8
+>  device_release_driver_internal+0x18c/0x1f0
+>  device_release_driver+0x20/0x30
+>  pci_stop_bus_device+0x8c/0xe8
+>  pci_stop_and_remove_bus_device+0x20/0x38
+>  pci_iov_remove_virtfn+0xb8/0x128
+>  sriov_disable+0x3c/0x110
+>  pci_disable_sriov+0x24/0x30
+>  enetc_sriov_configure+0x4c/0x108
+>  sriov_numvfs_store+0x11c/0x198
+> (...)
+> DMA-API: Mapped at:
+>  dma_entry_alloc+0xa4/0x130
+>  debug_dma_alloc_coherent+0xbc/0x138
+>  dma_alloc_attrs+0xa4/0x108
+>  enetc_setup_cbdr+0x4c/0x1d0
+>  enetc_vf_probe+0x11c/0x250
+> pci 0000:00:01.0: Removing from iommu group 19
+> 
+> This happens because stupid me moved enetc_teardown_cbdr outside of
+> enetc_free_si_resources, but did not bother to keep calling
+> enetc_teardown_cbdr from all the places where enetc_free_si_resources
+> was called. In particular, now it is no longer called from the main
+> unbind function, just from the probe error path.
+> 
+> Fixes: 4b47c0b81ffd ("net: enetc: don't initialize unused ports from a
+> separate code path")
+> Reported-by: Michael Walle <michael@walle.cc>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> Hello,
+Tested-by: Michael Walle <michael@walle.cc>
 
-Hi!
+Thanks!
 
-> On Thu, 2021-03-18 at 18:42 +0000, Alexander Lobakin wrote:
-> > call_gro_receive() is used to limit GRO recursion, but it works only
-> > with callback pointers.
-> > There's a combined version of call_gro_receive() + INDIRECT_CALL_2()
-> > in <net/inet_common.h>, but it doesn't check for IPv6 modularity.
->
-> AFAICS, ip6_offload is builtin even when IPv6 is a module, so the above
-> should not be needed.
-
-Aww, you are right. I overlooked that since dev_gro_receive() still
-use INDIRECT_CALL_INET(), though all GRO callbacks were made
-built-in.
-
-Seems like more code can be optimized, thanks!
-
-> Cheers,
->
-> Paolo
-
-Al
-
+-michael
