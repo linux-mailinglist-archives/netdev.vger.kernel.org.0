@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11709341367
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 04:15:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2F9534136A
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 04:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbhCSDOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 23:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51200 "EHLO
+        id S233467AbhCSDPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 23:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231599AbhCSDOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 23:14:12 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739EAC06174A;
-        Thu, 18 Mar 2021 20:14:12 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id u3so4775471ybk.6;
-        Thu, 18 Mar 2021 20:14:12 -0700 (PDT)
+        with ESMTP id S231599AbhCSDPO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 23:15:14 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A9EC06174A;
+        Thu, 18 Mar 2021 20:15:13 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id u75so4757380ybi.10;
+        Thu, 18 Mar 2021 20:15:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=elw9sMcXdAUZNIfVaedkZcIkuQIRdhJqvkBpf/+pDA4=;
-        b=pYdJ1JPHu3NaSDVmlY26DtWqvl0T5dpyP7xvFKG9t8TaidWVgV4EYeIsrB0mmu1nOH
-         5kZlYlk7plK9WMQxUdLtWOUWCb7yS08IFl6QaSwF4jEK7sR3Tr3NL8pKITUh0EPZEIYZ
-         PxM+D/2pjdj8JWAsjI02KZ86ijxhHjw020l7u/qvLqJCJC6NgKGQDW4BzFvqSjpfhMLf
-         h6pM3sKp/YwpQj85cpIEurDOU5FoQu9UYfTclcu2JWrMmbrQi4xfflY2A3rfmZftaVbe
-         MuqvTC/01IaDUJxnOIaZ4ccie1vkznNbRuIEsuQgLe5vuCOMG5RcVe13lS0TZ0P5S1j2
-         R8Qw==
+        bh=N6465kkMWUrOizyq2xRDiHKkV90SGSeSs8m69P8Gkng=;
+        b=U8slcFLSEU+621i/cOsEAKFu0FfO6Nz4qgECWrFWmGHXK8MkEt08cM96FeNqNfI2wl
+         ALv/atVEvQtRla6hNkMZJIqaDiIUC0TF6BjG+aaACluqpZ6/xXhrxbwaZNLe1VW/ywO5
+         X09HqlLB9f/uka2FDR6CNshXHqoJC/yRadfbPrYSnM0hrzBlVktOBpWXstoa+42nRsaz
+         kmcuOiNFkYtmAdwZ7xyywPyCYPEMPfEoHuRQ2C7S6lECTohMaR5I+5WPULxHkmEY/xdI
+         k9N/2KHFKgd9VdUSi7e8FbX3a8BhNxd+a+UIfPxpdZ9JqmyjdlzaW7C+yhFZs8z0xQ4R
+         L7EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=elw9sMcXdAUZNIfVaedkZcIkuQIRdhJqvkBpf/+pDA4=;
-        b=sdd2DsATPlmoMYd3xWpg9CZMFJAcKjuctkYeKGkt64oTOTK5x5Rgyb+L+gzetlfrPL
-         dsYFxai3lQChvPCZ+3hXa1mB7b0SvYDqTH2Rju9X91o4O9SvQqhdEJIn0PO7J0ax18rk
-         6mk81P9pizmEMHi0MsjQAxb7orIy3kr6lafI4Dw1eG0YZOXC6ZjyHs7So/jZLRmkeSdD
-         5n9QBq8CkQzbXREbJaEmyNamVai3kjMm7mWEGAhKchQRx4naKjvg/y/v6nB89mCUapCN
-         J/AbaYG+Q8w+oOycwCCbtdqgq2UYaEHQHgAadEF3o/BffZnXlD2hcDyIb8BoxXt0wEUB
-         z/kA==
-X-Gm-Message-State: AOAM533+e6LRXdj4pVdb3QSaqcFptU60gWvYinfFfU7B4VWi8kZEZy7B
-        70akSFauCZi+OOGUK5PZE+rdEM9QzzxPbU4ZZCv/vtMwYIOi8g==
-X-Google-Smtp-Source: ABdhPJyERLOB4RpEeR5wYktPfbmXC58MsFSGONjhPPI6BhSmwUYzYcUkzO0RKgPxfbwdGHolNRTzY19bAwTd0FNS7p4=
-X-Received: by 2002:a25:74cb:: with SMTP id p194mr3610534ybc.347.1616123651759;
- Thu, 18 Mar 2021 20:14:11 -0700 (PDT)
+        bh=N6465kkMWUrOizyq2xRDiHKkV90SGSeSs8m69P8Gkng=;
+        b=JWcPZbD4S9qjUCSVp3al+RwRbpNrhP3zecSAVIdAVDXUdnXsEAOdQGkOnCtENJUcv7
+         4+0Vgvil54aNCE6YqJWjL2A9D4BcZzK7IQNa47oXstOgG1gL4jHTfl4k80rvG9rH1OxD
+         4j3dH3uUtMEM5+0fWC1JA2xzHx/ODxXcAB/z75RSYBhjjm5HgryzPkVpIYgppxg2uIvm
+         pD1tdMsDO1N4ixKH0+vVWfLT4QNE85SDNS9vrdGRFxiGUmLGSfFy/vYm7+sA0f+/MYJG
+         LaDsv+e/DDfcmtLNEUPWmwJMce51lBHYaO6SW53cqPx5g0kfGRWyjjuGIVlncKCpewbV
+         GY/A==
+X-Gm-Message-State: AOAM530xUCv9MHMrNR98wIyXnEzUc6ZDnqTZ09raKQFTv8NI5f1PUyQB
+        UQw4o5fQ1vL9DmEJ+igxGgQyvTea5W+PypvjmOc=
+X-Google-Smtp-Source: ABdhPJyEw7TrV/K4ii580juSwgqMHqiZBpXMjaQZA0HKt1GheDoutxeJUzTgIJU6uTkeRpj7IzlJ9k+/G39RtSZ1NUU=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr3416274ybo.230.1616123713249;
+ Thu, 18 Mar 2021 20:15:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210316011336.4173585-1-kafai@fb.com> <20210316011432.4178797-1-kafai@fb.com>
-In-Reply-To: <20210316011432.4178797-1-kafai@fb.com>
+References: <20210316011336.4173585-1-kafai@fb.com> <20210316011438.4179031-1-kafai@fb.com>
+In-Reply-To: <20210316011438.4179031-1-kafai@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Mar 2021 20:14:00 -0700
-Message-ID: <CAEf4Bzb7=WG24jqh_Gt_L1gd7jgoDzOOvb9rOzt4CB1e=dkToA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 09/15] libbpf: Refactor codes for finding btf id
- of a kernel symbol
+Date:   Thu, 18 Mar 2021 20:15:02 -0700
+Message-ID: <CAEf4BzaB4sKTPZ42wbtAWaTrcuRN7UpM9tSm5m7d+d7OONgnqg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 10/15] libbpf: Rename RELO_EXTERN to RELO_EXTERN_VAR
 To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -63,18 +62,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, Mar 16, 2021 at 12:02 AM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> This patch refactors code, that finds kernel btf_id by kind
-> and symbol name, to a new function find_ksym_btf_id().
->
-> It also adds a new helper __btf_kind_str() to return
-> a string by the numeric kind value.
+> This patch renames RELO_EXTERN to RELO_EXTERN_VAR.
+> It is to avoid the confusion with a later patch adding
+> RELO_EXTERN_FUNC.
 >
 > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 > ---
->  tools/lib/bpf/libbpf.c | 44 +++++++++++++++++++++++++++++++-----------
->  1 file changed, 33 insertions(+), 11 deletions(-)
->
-
-LGTM.
 
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
+
+>  tools/lib/bpf/libbpf.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 8355b786b3db..8f924aece736 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -189,7 +189,7 @@ enum reloc_type {
+>         RELO_LD64,
+>         RELO_CALL,
+>         RELO_DATA,
+> -       RELO_EXTERN,
+> +       RELO_EXTERN_VAR,
+>         RELO_SUBPROG_ADDR,
+>  };
+>
+> @@ -3463,7 +3463,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+>                 }
+>                 pr_debug("prog '%s': found extern #%d '%s' (sym %d) for insn #%u\n",
+>                          prog->name, i, ext->name, ext->sym_idx, insn_idx);
+> -               reloc_desc->type = RELO_EXTERN;
+> +               reloc_desc->type = RELO_EXTERN_VAR;
+>                 reloc_desc->insn_idx = insn_idx;
+>                 reloc_desc->sym_off = i; /* sym_off stores extern index */
+>                 return 0;
+> @@ -6226,7 +6226,7 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
+>                         insn[0].imm = obj->maps[relo->map_idx].fd;
+>                         relo->processed = true;
+>                         break;
+> -               case RELO_EXTERN:
+> +               case RELO_EXTERN_VAR:
+>                         ext = &obj->externs[relo->sym_off];
+>                         if (ext->type == EXT_KCFG) {
+>                                 insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
+> --
+> 2.30.2
+>
