@@ -2,97 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 721C2341EA4
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 14:45:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51D61341F79
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 15:33:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbhCSNop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 09:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbhCSNob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 09:44:31 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91ECAC06175F
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 06:44:31 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id u5-20020a7bcb050000b029010e9316b9d5so5272704wmj.2
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 06:44:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=SrPXMdsT8fh/wUuXWu6/XdTRaAoBqvPSi7osz8TT9SU=;
-        b=U6R1VBR7eogovqe6fbsKMg5rSPuVNlwRpsQj7zgx5iIkAphJM281y9IMs1+1oloRuU
-         IXjNVsdVkcYMH5Uun5Tb6+DKDB2ll9TYNJLw/eHctGukmi5uDfwSVInQd3PgXwYe4Bm8
-         lhnpZqaKhEL1Oti1UB3WgXu/ALz2kAcvM8mUENcaeWbbcBX64Q+X8kLVaT73LZ/d0KAy
-         TJ/kIbZvOxysalhkY703OtBRqgLboDTt0gbUQL9KfTUfz570+kqI3M4j5NthsgESxZ1D
-         nnCryXE7M0zSct8hpFrH6ZkSdaH9rsDGG63WNBQoHDokk9QPG85SqWvPb96BMXZ1zYat
-         2Vxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=SrPXMdsT8fh/wUuXWu6/XdTRaAoBqvPSi7osz8TT9SU=;
-        b=Znuz7NT4yaQ6kCdh/ks1xgytePSc944bMYj4IQ3bXR4s9AQDaQrFjpFXp7JVzbXdlC
-         MgzUye6ru/qWKF2wpoMHkR5E3ZCO7aL0NwUbZdWrmRH20Qsb3VZ0lmW1u2/WB+ADdsiz
-         RWPX5DJ0MIVshUCx5zBD8SqyJ2SPfKnZr1T0ewc9fTf/TD3h1bxJf5e+tml7Q2VK9H80
-         BB2safNIkZHg/6hW2HcWU6XGPbP9We7uWzNOSFCPl4W+CGSPbqCUEfBtNyc2/59ItXtf
-         fW2ZT05GSowjE6qjRp6tIdHHckd8awGZ6CLA035tgCyewH8DxoIyXncinhru4BKU8ygm
-         CgOA==
-X-Gm-Message-State: AOAM533uctPZY0DJhq497Tc8LnpwX/MXFd7CF4KauxY/+k+dZXDsrPwM
-        w9woHcMEAFJXhg1s1juj38ReGQ==
-X-Google-Smtp-Source: ABdhPJw0eghg2ZDKjaor7MbxmSXtlraqPUEAPJEv3PG9iEAsL4DxgNxTwpwnFkISye/A6z/DYyY8FQ==
-X-Received: by 2002:a05:600c:4f14:: with SMTP id l20mr3772915wmq.71.1616161470266;
-        Fri, 19 Mar 2021 06:44:30 -0700 (PDT)
-Received: from localhost.localdomain ([163.172.76.58])
-        by smtp.googlemail.com with ESMTPSA id h8sm7829080wrt.94.2021.03.19.06.44.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 06:44:29 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     alexandre.torgue@st.com, davem@davemloft.net,
-        jernej.skrabec@siol.net, joabreu@synopsys.com,
-        marek.belisko@gmail.com, mripard@kernel.org,
-        peppe.cavallaro@st.com, wens@csie.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] net: stmmac: dwmac-sun8i: Provide TX and RX fifo sizes
-Date:   Fri, 19 Mar 2021 13:44:22 +0000
-Message-Id: <20210319134422.9351-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.17.1
+        id S230187AbhCSOcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 10:32:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35622 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230145AbhCSOcV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 10:32:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E6F864F18;
+        Fri, 19 Mar 2021 14:32:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616164341;
+        bh=zME9b7vor8T7wmc5Hzy3iV1AFZLNERar9u4bF522I40=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CwpOFYlDMOWvwA0PqqRLa14MxC36dPIbHTfFMpq6qNYReSiwguR049y3pvQY/rtq2
+         8YmnAIn8emjFxM0lkKeEsMTE/a1bvJJ/C1iqPEoyIh9Ux9t5mxnrMQ4x5tyHUBeyLc
+         FL8HQu++MAipyYUmkRzC6ghNyusH8eHDU0naQ96YBFxjmt6kfGCESRgO/3Phy3vNsP
+         n+PAPXdLSdCAfdDvi48Ry3PLU2zIEWxrrZEQY2/QWHY4Oq1xfY9EJ1VR57Fx3zjpU5
+         zoOc1srhDA+/7mxx+i13M9kLWFTY7kXBgpZ9pyD7YqbnYunVCn9IYKGm7tjI2QBIma
+         xMWWYPXV6IH/w==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net-next] net: dsa: mv88e6xxx: cosmetic fix
+Date:   Fri, 19 Mar 2021 15:31:49 +0100
+Message-Id: <20210319143149.823-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MTU cannot be changed on dwmac-sun8i. (ip link set eth0 mtu xxx returning EINVAL)
-This is due to tx_fifo_size being 0, since this value is used to compute valid
-MTU range.
-Like dwmac-sunxi (with commit 806fd188ce2a ("net: stmmac: dwmac-sunxi: Provide TX and RX fifo sizes"))
-dwmac-sun8i need to have tx and rx fifo sizes set.
-I have used values from datasheets.
-After this patch, setting a non-default MTU (like 1000) value works and network is still useable.
+We know that the `lane == MV88E6393X_PORT0_LANE`, so we can pass `lane`
+to mv88e6390_serdes_read() instead of MV88E6393X_PORT0_LANE.
 
-Tested-on: sun8i-h3-orangepi-pc
-Tested-on: sun8i-r40-bananapi-m2-ultra
-Tested-on: sun50i-a64-bananapi-m64
-Tested-on: sun50i-h5-nanopi-neo-plus2
-Tested-on: sun50i-h6-pine-h64
-Fixes: 9f93ac8d408 ("net-next: stmmac: Add dwmac-sun8i")
-Reported-by: Belisko Marek <marek.belisko@gmail.com>
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+All other occurances in this function are using the `lane` variable.
+
+It seems I forgot to change it at this one place after refactoring.
+
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Fixes: de776d0d316f7 ("net: dsa: mv88e6xxx: add support for ...")
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/dsa/mv88e6xxx/serdes.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 6b75cf2603ff..e62efd166ec8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -1214,6 +1214,8 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
- 	plat_dat->init = sun8i_dwmac_init;
- 	plat_dat->exit = sun8i_dwmac_exit;
- 	plat_dat->setup = sun8i_dwmac_setup;
-+	plat_dat->tx_fifo_size = 4096;
-+	plat_dat->rx_fifo_size = 16384;
- 
- 	ret = sun8i_dwmac_set_syscon(&pdev->dev, plat_dat);
- 	if (ret)
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 470856bcd2f3..f96c6ece4d75 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -1285,8 +1285,7 @@ static int mv88e6393x_serdes_port_errata(struct mv88e6xxx_chip *chip, int lane)
+ 	 * powered up (the bit is cleared), so power it down.
+ 	 */
+ 	if (lane == MV88E6393X_PORT0_LANE) {
+-		err = mv88e6390_serdes_read(chip, MV88E6393X_PORT0_LANE,
+-					    MDIO_MMD_PHYXS,
++		err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+ 					    MV88E6393X_SERDES_POC, &reg);
+ 		if (err)
+ 			return err;
 -- 
 2.26.2
 
