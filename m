@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32152342786
+	by mail.lfdr.de (Postfix) with ESMTP id CC680342788
 	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:17:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230264AbhCSVQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 17:16:33 -0400
+        id S230310AbhCSVQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 17:16:34 -0400
 Received: from mga18.intel.com ([134.134.136.126]:20600 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229974AbhCSVP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229942AbhCSVP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Mar 2021 17:15:58 -0400
-IronPort-SDR: JyXKjJCqttnEnbEG7I8Ha3GJIeZaNFKVM37RGIO//Z8klZwFadaH5rtDRGue0N6wTy1RCzxdA8
- UP8VYkpqYvWg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9928"; a="177554724"
+IronPort-SDR: Vqu0a7OCa8i0LCNuRp/+EbG8I1t8MyRWhsyU8pTYvf83Qkc30896zoh0kIPVm6vBw84ErZBTLZ
+ b6gTv/v57Mvg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9928"; a="177554725"
 X-IronPort-AV: E=Sophos;i="5.81,262,1610438400"; 
-   d="scan'208";a="177554724"
+   d="scan'208";a="177554725"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2021 14:15:57 -0700
-IronPort-SDR: 9jR19DwfZcicSenZrn4e4K8KqDCc9pogtk5UIg3fmKgzSJ507XCOihaOv9QR4LlU0GmcbVjbEr
- lYCLEQWhV7TA==
+IronPort-SDR: OolmT+97s+Z95jKWXrRwvOwO+8eqXSAgUf/Tb6VHsP9CGWXRApo0Fxic4Va7DyEZUgKf2JfYFF
+ gqsRbXH0bUiA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,262,1610438400"; 
-   d="scan'208";a="451005067"
+   d="scan'208";a="451005070"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga001.jf.intel.com with ESMTP; 19 Mar 2021 14:15:57 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com
-Subject: [PATCH net-next 0/5][pull request] 1GbE Intel Wired LAN Driver Updates 2021-03-19
-Date:   Fri, 19 Mar 2021 14:17:18 -0700
-Message-Id: <20210319211723.1488244-1-anthony.l.nguyen@intel.com>
+Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
+        vitaly.lifshits@intel.com,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: [PATCH net-next 1/5] igc: Remove unused MII_CR_RESET
+Date:   Fri, 19 Mar 2021 14:17:19 -0700
+Message-Id: <20210319211723.1488244-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210319211723.1488244-1-anthony.l.nguyen@intel.com>
+References: <20210319211723.1488244-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to igc and e1000e drivers.
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-Sasha removes unused defines in igc driver.
+MII_CR_RESET mask not in use in i225 device and can be removed
 
-Jiapeng Zhong changes bool assignments from 0/1 to false/true for igc.
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_defines.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-Wei Yongjun marks e1000e_pm_prepare() as __maybe_unused to resolve a
-defined but not used warning under certain configurations.
-
-The following are changes since commit c2ed62b9975e3e47a8b12f5fc4ed7958104b427b:
-  Merge branch 'net-xps-improve-the-xps-maps-handling'
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
-
-Jiapeng Zhong (1):
-  igc: Assign boolean values to a bool variable
-
-Sasha Neftin (3):
-  igc: Remove unused MII_CR_RESET
-  igc: Remove unused MII_CR_SPEED
-  igc: Remove unused MII_CR_LOOPBACK
-
-Wei Yongjun (1):
-  e1000e: Mark e1000e_pm_prepare() as __maybe_unused
-
- drivers/net/ethernet/intel/e1000e/netdev.c   |  2 +-
- drivers/net/ethernet/intel/igc/igc_defines.h |  5 -----
- drivers/net/ethernet/intel/igc/igc_main.c    | 16 ++++++++--------
- 3 files changed, 9 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
+index b909f00a79e6..ca460bf1af2f 100644
+--- a/drivers/net/ethernet/intel/igc/igc_defines.h
++++ b/drivers/net/ethernet/intel/igc/igc_defines.h
+@@ -442,7 +442,6 @@
+ #define MII_CR_POWER_DOWN	0x0800  /* Power down */
+ #define MII_CR_AUTO_NEG_EN	0x1000  /* Auto Neg Enable */
+ #define MII_CR_LOOPBACK		0x4000  /* 0 = normal, 1 = loopback */
+-#define MII_CR_RESET		0x8000  /* 0 = normal, 1 = PHY reset */
+ #define MII_CR_SPEED_1000	0x0040
+ #define MII_CR_SPEED_100	0x2000
+ #define MII_CR_SPEED_10		0x0000
 -- 
 2.26.2
 
