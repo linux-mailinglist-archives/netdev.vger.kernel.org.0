@@ -2,182 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24649342162
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 16:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A5734216C
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 17:01:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbhCSP5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 11:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
+        id S230274AbhCSQBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 12:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230464AbhCSP5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 11:57:13 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B5AC061761
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 08:57:13 -0700 (PDT)
-Received: from [2a0a:edc0:0:c01:1d::a2] (helo=drehscheibe.grey.stw.pengutronix.de)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mtr@pengutronix.de>)
-        id 1lNHUt-0007z3-LF; Fri, 19 Mar 2021 16:57:11 +0100
-Received: from [2a0a:edc0:0:1101:1d::39] (helo=dude03.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mtr@pengutronix.de>)
-        id 1lNHUs-00011G-Dr; Fri, 19 Mar 2021 16:57:10 +0100
-Received: from mtr by dude03.red.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mtr@pengutronix.de>)
-        id 1lNHUs-00BilV-Co; Fri, 19 Mar 2021 16:57:10 +0100
-From:   Michael Tretter <m.tretter@pengutronix.de>
-To:     netdev@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     m.tretter@pengutronix.de, kernel@pengutronix.de,
-        robh+dt@kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        dmurphy@ti.com
-Subject: [PATCH 2/2] net: phy: dp83867: add support for changing LED modes
-Date:   Fri, 19 Mar 2021 16:57:10 +0100
-Message-Id: <20210319155710.2793637-3-m.tretter@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210319155710.2793637-1-m.tretter@pengutronix.de>
-References: <20210319155710.2793637-1-m.tretter@pengutronix.de>
+        with ESMTP id S229880AbhCSQBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 12:01:12 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2017CC06174A
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:01:12 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id x16so6617573iob.1
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:01:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Y3s18FhryfxEWVXaNvd6oql/kHGXKeDhfxDm+RozLBw=;
+        b=EIZuKECoeqJa24PxNYdPGQj7RGiKQiRW+0rCbkIQvliDueZf2ob2e6bcllciz66Tll
+         sm217SivzO3XpkuMMXLJNpN9UU7b6kXgXZHxxvyA4/kUEajbQUwZJRVQQ/RZLE2oELdr
+         4gGkJvSuFDjmkE9Vgshyg8rWnU5nbSKtZRyAI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Y3s18FhryfxEWVXaNvd6oql/kHGXKeDhfxDm+RozLBw=;
+        b=Hpu5DiQp/YBf3H8mbP4uDedu4r7pDhwedhR+Ru7tJl9DlckjPAkLGQnp0MCl1WpYPY
+         oi+zBv1BoHDDn5j5PDqzXc5PJFE5VCCuVswq26BGOW/QNVGGV0W5vbyPi5vparN+P8wJ
+         aGB67DD2TDWtcQZG29dRXw78qMXWkUzRIU4dIvXByvrpCeBIZIrXGkzn3yzATMBT6XKc
+         dIRe+ihzIm4roeLOa0TfSw8s72ACQLKCa8pLydyA6XOio1HP9/TA7t3VHVuTaUR4+Jrp
+         XexVomPsJCyPylghcMG59N1fsKOwXp9aZWfIEff7rwyK5D0uS/wrQnLhrkDLfciWfgDI
+         lcUA==
+X-Gm-Message-State: AOAM532VB1LOuaUlUJw42RXnFQHqO0LGnR+VRqsMN4rtSGP0fLs7zc9d
+        OHWLW4n7ZuQZ1AhO8pYpn6uVgM12AZ8vsQ==
+X-Google-Smtp-Source: ABdhPJxghl3QKA1uGtzNwCt34Y1pZSlqKbMSMFCP5FRMyxRO6SQAs0Da7CujXYIEkuwVBWOyamWMHA==
+X-Received: by 2002:a05:6638:329e:: with SMTP id f30mr1957449jav.121.1616169671615;
+        Fri, 19 Mar 2021 09:01:11 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id q8sm1231478ilv.55.2021.03.19.09.01.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Mar 2021 09:01:10 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/4] net: ipa: introduce ipa_assert()
+To:     Leon Romanovsky <leon@kernel.org>, Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210319042923.1584593-1-elder@linaro.org>
+ <20210319042923.1584593-4-elder@linaro.org> <YFQurZjWYaolHGvR@unreal>
+ <edb7ab60-f0e2-8fc4-ca73-9614bb547ab5@linaro.org> <YFTD/TZ2tFX/X3dD@unreal>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <5b5d3f17-e647-ca1c-1ec0-fdc2396fa168@ieee.org>
+Date:   Fri, 19 Mar 2021 11:01:10 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mtr@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <YFTD/TZ2tFX/X3dD@unreal>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Haemmerle <thomas.haemmerle@wolfvision.net>
+On 3/19/21 10:32 AM, Leon Romanovsky wrote:
+>>>> +/* Verify the expression yields true, and fail at build time if possible */
+>>>> +#define ipa_assert(dev, expr) \
+>>>> +	do { \
+>>>> +		if (__builtin_constant_p(expr)) \
+>>>> +			compiletime_assert(expr, __ipa_failure_msg(expr)); \
+>>>> +		else \
+>>>> +			__ipa_assert_runtime(dev, expr); \
+>>>> +	} while (0)
+>>>> +
+>>>> +/* Report an error if the given expression evaluates to false at runtime */
+>>>> +#define ipa_assert_always(dev, expr) \
+>>>> +	do { \
+>>>> +		if (unlikely(!(expr))) { \
+>>>> +			struct device *__dev = (dev); \
+>>>> +			\
+>>>> +			if (__dev) \
+>>>> +				dev_err(__dev, __ipa_failure_msg(expr)); \
+>>>> +			else  \
+>>>> +				pr_err(__ipa_failure_msg(expr)); \
+>>>> +		} \
+>>>> +	} while (0)
+>>> It will be much better for everyone if you don't obfuscate existing
+>>> kernel primitives and don't hide constant vs. dynamic expressions.
+>> I don't agree with this characterization.
+>>
+>> Yes, there is some complexity in this one source file, where
+>> ipa_assert() is defined.  But as a result, callers are simple
+>> one-line statements (similar to WARN_ON()).
+> It is not complexity but being explicit vs. implicit. The coding
+> style that has explicit flows will be always better than implicit
+> one. By adding your custom assert, you are hiding the flows and
+> makes unclear what can be evaluated at compilation and what can't.
+Assertions like this are a tool.  They aid readability
+by communicating conditions that can be assumed to hold
+at the time code is executed.  They are *not* part of
+the normal code function.  They are optional, and code
+*must* operate correctly even if all assertions are
+removed.
 
-The DP83867 supports four configurable LEDs. Several functions can be
-multiplexed to these LEDs. The multiplexing can be configured in the
-LEDCR1 register.
+Whether a condition that is asserted can be determined
+at compile time or build time is irrelevant.  But as
+an optimization, if it can be checked at compile time,
+I want to do that, so we can catch the problem as early
+as possible.
 
-Add support for changing the multiplexing of the LEDs via device tree.
+I understand your point about separating compile-time
+versus runtime code.  I mean, it's a piece of really
+understanding what's going on when your code is
+executing.  But what I'm trying to do here is more
+like a "functional comment," i.e., a comment about
+the state of things that can be optionally verified.
+I find them to be concise and useful:
+	assert(count <= MAX_COUNT);
+versus
+	/* Caller must ensure count is in range */
 
-Signed-off-by: Thomas Haemmerle <thomas.haemmerle@wolfvision.net>
-Signed-off-by: Michael Tretter <m.tretter@pengutronix.de>
----
- drivers/net/phy/dp83867.c | 57 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 57 insertions(+)
+We might just disagree on this, and that's OK.  I'm
+interested to hear whether others think.
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 9bd9a5c0b1db..dfcac95941f3 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -25,6 +25,7 @@
- #define MII_DP83867_MICR	0x12
- #define MII_DP83867_ISR		0x13
- #define DP83867_CFG2		0x14
-+#define DP83867_LEDCR1		0x18
- #define DP83867_CFG3		0x1e
- #define DP83867_CTRL		0x1f
- 
-@@ -138,6 +139,12 @@
- #define DP83867_DOWNSHIFT_4_COUNT	4
- #define DP83867_DOWNSHIFT_8_COUNT	8
- 
-+/* LEDCR1 bits */
-+#define DP83867_LEDCR1_LED_0_SEL	GENMASK(3, 0)
-+#define DP83867_LEDCR1_LED_1_SEL	GENMASK(7, 4)
-+#define DP83867_LEDCR1_LED_2_SEL	GENMASK(11, 8)
-+#define DP83867_LEDCR1_LED_GPIO_SEL	GENMASK(15, 12)
-+
- /* CFG3 bits */
- #define DP83867_CFG3_INT_OE			BIT(7)
- #define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
-@@ -154,6 +161,14 @@ enum {
- 	DP83867_PORT_MIRROING_DIS,
- };
- 
-+enum {
-+	DP83867_LED_0,
-+	DP83867_LED_1,
-+	DP83867_LED_2,
-+	DP83867_LED_GPIO,
-+	DP83867_LED_MAX,
-+};
-+
- struct dp83867_private {
- 	u32 rx_id_delay;
- 	u32 tx_id_delay;
-@@ -165,6 +180,7 @@ struct dp83867_private {
- 	bool set_clk_output;
- 	u32 clk_output_sel;
- 	bool sgmii_ref_clk_en;
-+	u32 led_mode[DP83867_LED_MAX];
- };
- 
- static int dp83867_ack_interrupt(struct phy_device *phydev)
-@@ -521,6 +537,27 @@ static int dp83867_verify_rgmii_cfg(struct phy_device *phydev)
- }
- 
- #if IS_ENABLED(CONFIG_OF_MDIO)
-+static int dp83867_of_led_mode_read(struct device_node *of_node,
-+				    const char *led_name, u32 *mode)
-+{
-+	u32 tmp;
-+	int index;
-+	int err;
-+
-+	index = of_property_match_string(of_node, "ti,dp83867-led-mode-names",
-+					 led_name);
-+	err = of_property_read_u32_index(of_node, "ti,dp83867-led-modes",
-+					 index, tmp);
-+	if (err)
-+		return err;
-+	if (tmp == 0xc || tmp >= 0xf)
-+		return -EINVAL;
-+
-+	*mode = tmp;
-+
-+	return 0;
-+}
-+
- static int dp83867_of_init(struct phy_device *phydev)
- {
- 	struct dp83867_private *dp83867 = phydev->priv;
-@@ -614,6 +651,15 @@ static int dp83867_of_init(struct phy_device *phydev)
- 		return -EINVAL;
- 	}
- 
-+	dp83867_of_led_mode_read(of_node, "led-0",
-+				 &dp83867->led_mode[DP83867_LED_0]);
-+	dp83867_of_led_mode_read(of_node, "led-1",
-+				 &dp83867->led_mode[DP83867_LED_1]);
-+	dp83867_of_led_mode_read(of_node, "led-2",
-+				 &dp83867->led_mode[DP83867_LED_2]);
-+	dp83867_of_led_mode_read(of_node, "led-gpio",
-+				 &dp83867->led_mode[DP83867_LED_GPIO]);
-+
- 	return 0;
- }
- #else
-@@ -632,6 +678,11 @@ static int dp83867_probe(struct phy_device *phydev)
- 	if (!dp83867)
- 		return -ENOMEM;
- 
-+	dp83867->led_mode[DP83867_LED_0] = DP83867_LED_LINK_EST;
-+	dp83867->led_mode[DP83867_LED_1] = DP83867_LED_1000_BT_LINK;
-+	dp83867->led_mode[DP83867_LED_2] = DP83867_LED_RX_TX_ACT;
-+	dp83867->led_mode[DP83867_LED_GPIO] = DP83867_LED_100_BT_LINK;
-+
- 	phydev->priv = dp83867;
- 
- 	return dp83867_of_init(phydev);
-@@ -792,6 +843,12 @@ static int dp83867_config_init(struct phy_device *phydev)
- 		phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL, val);
- 	}
- 
-+	val = FIELD_PREP(DP83867_LEDCR1_LED_0_SEL, dp83867->led_mode[DP83867_LED_0]) |
-+	      FIELD_PREP(DP83867_LEDCR1_LED_1_SEL, dp83867->led_mode[DP83867_LED_1]) |
-+	      FIELD_PREP(DP83867_LEDCR1_LED_2_SEL, dp83867->led_mode[DP83867_LED_2]) |
-+	      FIELD_PREP(DP83867_LEDCR1_LED_GPIO_SEL, dp83867->led_mode[DP83867_LED_GPIO]);
-+	phy_write(phydev, DP83867_LEDCR1, val);
-+
- 	val = phy_read(phydev, DP83867_CFG3);
- 	/* Enable Interrupt output INT_OE in CFG3 register */
- 	if (phy_interrupt_is_valid(phydev))
--- 
-2.29.2
-
+					-Alex
