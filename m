@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C115B3427B0
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:26:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99A7B3427B2
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230497AbhCSVZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 17:25:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30148 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230343AbhCSVZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 17:25:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616189135;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xlMXIzOr8B3xAAPOEAkY5g/fup/JgIzMYSjDQhEndBQ=;
-        b=RfBVWRyczrexLqA1tFcP+pJXKBfN9+RL5KoR2YznwkCZXlCGr+3C6SG6bMlMxTnMAsiSKU
-        urxJ3+YJkV4HQ1ak14wzb1lrvwe7lYRosRJONqAyl38WqHivXRlVCLyNgR05floO2CJbgH
-        KPMfsq+PRS0qD8/YYwYZySs5UISMxVM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-479-dVnOBXKIPsyyHwVq8gZ2mg-1; Fri, 19 Mar 2021 17:25:31 -0400
-X-MC-Unique: dVnOBXKIPsyyHwVq8gZ2mg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4790881744F;
-        Fri, 19 Mar 2021 21:25:29 +0000 (UTC)
-Received: from krava (unknown [10.40.195.94])
-        by smtp.corp.redhat.com (Postfix) with SMTP id B6B4260C04;
-        Fri, 19 Mar 2021 21:25:27 +0000 (UTC)
-Date:   Fri, 19 Mar 2021 22:25:26 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 2/3] libbpf: skip BTF fixup if object file has
- no BTF
-Message-ID: <YFUWxkbBjgSgwE3t@krava>
-References: <20210319205909.1748642-1-andrii@kernel.org>
- <20210319205909.1748642-3-andrii@kernel.org>
+        id S231134AbhCSV0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 17:26:21 -0400
+Received: from www62.your-server.de ([213.133.104.62]:35392 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230411AbhCSV0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 17:26:10 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lNMd9-000A6q-VX; Fri, 19 Mar 2021 22:26:03 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lNMd9-0006P1-O9; Fri, 19 Mar 2021 22:26:03 +0100
+Subject: Re: [PATCH v3] bpf: Fix memory leak in copy_process()
+To:     qiang.zhang@windriver.com, ast@kernel.org, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210317030915.2865-1-qiang.zhang@windriver.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <cdc30378-63b0-45ee-eebf-bc892d234b2c@iogearbox.net>
+Date:   Fri, 19 Mar 2021 22:26:03 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210319205909.1748642-3-andrii@kernel.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+In-Reply-To: <20210317030915.2865-1-qiang.zhang@windriver.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26113/Fri Mar 19 12:14:45 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 01:59:08PM -0700, Andrii Nakryiko wrote:
-> Skip BTF fixup step when input object file is missing BTF altogether.
+On 3/17/21 4:09 AM, qiang.zhang@windriver.com wrote:
+> From: Zqiang <qiang.zhang@windriver.com>
 > 
-> Reported-by: Jiri Olsa <jolsa@redhat.com>
-> Fixes: 8fd27bf69b86 ("libbpf: Add BPF static linker BTF and BTF.ext support")
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-
-Tested-by: Jiri Olsa <jolsa@redhat.com>
-
-thanks for the quick fix,
-jirka
-
-> ---
->  tools/lib/bpf/linker.c | 3 +++
->  1 file changed, 3 insertions(+)
+> The syzbot report a memleak follow:
+> BUG: memory leak
+> unreferenced object 0xffff888101b41d00 (size 120):
+>    comm "kworker/u4:0", pid 8, jiffies 4294944270 (age 12.780s)
+>    backtrace:
+>      [<ffffffff8125dc56>] alloc_pid+0x66/0x560
+>      [<ffffffff81226405>] copy_process+0x1465/0x25e0
+>      [<ffffffff81227943>] kernel_clone+0xf3/0x670
+>      [<ffffffff812281a1>] kernel_thread+0x61/0x80
+>      [<ffffffff81253464>] call_usermodehelper_exec_work
+>      [<ffffffff81253464>] call_usermodehelper_exec_work+0xc4/0x120
+>      [<ffffffff812591c9>] process_one_work+0x2c9/0x600
+>      [<ffffffff81259ab9>] worker_thread+0x59/0x5d0
+>      [<ffffffff812611c8>] kthread+0x178/0x1b0
+>      [<ffffffff8100227f>] ret_from_fork+0x1f/0x30
 > 
-> diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
-> index b4fff912dce2..5e0aa2f2c0ca 100644
-> --- a/tools/lib/bpf/linker.c
-> +++ b/tools/lib/bpf/linker.c
-> @@ -1313,6 +1313,9 @@ static int linker_fixup_btf(struct src_obj *obj)
->  	struct src_sec *sec;
->  	int i, j, n, m;
->  
-> +	if (!obj->btf)
-> +		return 0;
-> +
->  	n = btf__get_nr_types(obj->btf);
->  	for (i = 1; i <= n; i++) {
->  		struct btf_var_secinfo *vi;
-> -- 
-> 2.30.2
+> unreferenced object 0xffff888110ef5c00 (size 232):
+>    comm "kworker/u4:0", pid 8414, jiffies 4294944270 (age 12.780s)
+>    backtrace:
+>      [<ffffffff8154a0cf>] kmem_cache_zalloc
+>      [<ffffffff8154a0cf>] __alloc_file+0x1f/0xf0
+>      [<ffffffff8154a809>] alloc_empty_file+0x69/0x120
+>      [<ffffffff8154a8f3>] alloc_file+0x33/0x1b0
+>      [<ffffffff8154ab22>] alloc_file_pseudo+0xb2/0x140
+>      [<ffffffff81559218>] create_pipe_files+0x138/0x2e0
+>      [<ffffffff8126c793>] umd_setup+0x33/0x220
+>      [<ffffffff81253574>] call_usermodehelper_exec_async+0xb4/0x1b0
+>      [<ffffffff8100227f>] ret_from_fork+0x1f/0x30
 > 
+> after the UMD process exits, the pipe_to_umh/pipe_from_umh and tgid
+> need to be release.
+> 
+> Fixes: d71fa5c9763c ("bpf: Add kernel module with user mode driver that populates bpffs.")
+> Reported-by: syzbot+44908bb56d2bfe56b28e@syzkaller.appspotmail.com
+> Signed-off-by: Zqiang <qiang.zhang@windriver.com>
 
+Applied to bpf, thanks (also did minor style fixups to fix kernel style)!
