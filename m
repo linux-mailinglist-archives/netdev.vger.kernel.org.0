@@ -2,86 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F98341461
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 05:49:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2FB341468
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 05:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233645AbhCSEtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 00:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231599AbhCSEsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 00:48:40 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F045C06174A;
-        Thu, 18 Mar 2021 21:48:40 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id cx5so4414289qvb.10;
-        Thu, 18 Mar 2021 21:48:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uWTbNHoJ2SWjyCkOqghCnERP3wInwC93RX0JLjnyB3k=;
-        b=dyEqCt7ofHAuAsvWaC9GmS/Tz13XCHw7soVOYZKcUsPQZ4IWKpxS2UzEpCHyyWX0VU
-         d5SjcPzMEkXPW8vNya+JYtXNBH1tEhITZafhFZFsHDlqGZ/XR4CHzXqB+S/E/ppYwc/M
-         U47M1n6jCQ3ZXI/RgFVbxWFIGXzZKoBUYuT1uNU1pUfbgYo93L6p9LNaGhEGQkmuRimq
-         t/8bx7vuVlaj1JLN5G/dMYhgP3cg57Gn61NkQIbeL7DZvptEz57h+MaBd+oG9o7P2xta
-         xyXmHeMkU7GG+YLRo40avlwlmgGLgFANCnv5WBVHQk3yOEYxfiSyP6b2BeaV/a7y1jht
-         8myw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uWTbNHoJ2SWjyCkOqghCnERP3wInwC93RX0JLjnyB3k=;
-        b=UBl6ffzD2tCtI+pZQSRDUFKIg0r0YoEq3uLIfcFhhdtRStoFSnc94c4QKFY2CgAA0I
-         m5VRdHslS4HOpxpsSXbTC7aH84FnqXmGDaaOCwp423jN6UI78uplLMkgNKWkWyn3Ns+O
-         GukjeE27jazFO3j7+4XV1nJ43MzfP7f3BsAHQDIrwWMatNDBwvmiNtXSLpvlUSuonBzF
-         NeWm3XtAskWKKulGF7O6GxpIAql03Uci7vnPUN27BiOdTeQB2NVbh/NuEh2EZkvVQgKP
-         oOwO0E+bbAjnpW6e/oWuP6h9jFFctkolaWLmlijM4PY1TEaxX9Ks9opo4jOgXR1xmS1r
-         BWzg==
-X-Gm-Message-State: AOAM532xj1n8RnL2VBGrBw/PwJX1K+b43pQNF2MnDXU/BybEhmomOSKb
-        Ye8MGtSLqJuZocus9Y/BXHA=
-X-Google-Smtp-Source: ABdhPJzBeYYamAvgWDrqvEeXXE97+IoFF94b/GN77JgnCqbWSj7MxGYYNIQcC+RtQxqhq4843R+XqQ==
-X-Received: by 2002:a0c:f702:: with SMTP id w2mr7908272qvn.0.1616129319648;
-        Thu, 18 Mar 2021 21:48:39 -0700 (PDT)
-Received: from localhost.localdomain ([37.19.198.87])
-        by smtp.gmail.com with ESMTPSA id l186sm3492018qke.92.2021.03.18.21.48.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 21:48:38 -0700 (PDT)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: [PATCH] sch_red: Fix a typo
-Date:   Fri, 19 Mar 2021 10:16:23 +0530
-Message-Id: <20210319044623.20396-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S233712AbhCSEzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 00:55:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42912 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233680AbhCSEzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 00:55:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 621BD64F53;
+        Fri, 19 Mar 2021 04:55:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616129713;
+        bh=3KJhudPkw2fjFs3MGsB08Y0IMXhu7LIKfsovqH3NJoE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jN1LtZ3rGSdpUlrwhppvQ9n/HVsLWGiyOYSSqNiq6N0rbCdqXc3Qo/Nx9nC9foox0
+         uur6fhd5j5uMm/muICxjbD28CqnD1BqRms2lP/l/6FyVI5pidVkBRhHGrJfp0/unLJ
+         ydwTPCmUyF1W8K1jjByY8dV8+on5csiolTujAsKeoRL+j5KPIenqqJ8rISGSIZGTaz
+         x7IWlGGgR1WL2d0L8iuKYMZxCfm/rpzpOy/c7rdqXA72+jOakcaLxtCs0UwTsoi3Q/
+         6soqsAfcxGLZK0YRnMlL/p5g8QdeFhcQ/t6HxTaX/4/rSq+ZdBvopWyn2XHez5je7Q
+         in+ipbJqz/C3A==
+Date:   Fri, 19 Mar 2021 06:55:09 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/4] net: ipa: introduce ipa_assert()
+Message-ID: <YFQurZjWYaolHGvR@unreal>
+References: <20210319042923.1584593-1-elder@linaro.org>
+ <20210319042923.1584593-4-elder@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210319042923.1584593-4-elder@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 18, 2021 at 11:29:22PM -0500, Alex Elder wrote:
+> Create a new macro ipa_assert() to verify that a condition is true.
+> This produces a build-time error if the condition can be evaluated
+> at build time; otherwise __ipa_assert_runtime() is called (described
+> below).
+> 
+> Another macro, ipa_assert_always() verifies that an expression
+> yields true at runtime, and if it does not, reports an error
+> message.
+> 
+> When IPA validation is enabled, __ipa_assert_runtime() becomes a
+> call to ipa_assert_always(), resulting in runtime verification of
+> the asserted condition.  Otherwise __ipa_assert_runtime() has no
+> effect, so such ipa_assert() calls are effectively ignored.
+> 
+> IPA assertion errors will be reported using the IPA device if
+> possible.
+> 
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ipa/ipa_assert.h | 50 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 50 insertions(+)
+>  create mode 100644 drivers/net/ipa/ipa_assert.h
+> 
+> diff --git a/drivers/net/ipa/ipa_assert.h b/drivers/net/ipa/ipa_assert.h
+> new file mode 100644
+> index 0000000000000..7e5b9d487f69d
+> --- /dev/null
+> +++ b/drivers/net/ipa/ipa_assert.h
+> @@ -0,0 +1,50 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2021 Linaro Ltd.
+> + */
+> +#ifndef _IPA_ASSERT_H_
+> +#define _IPA_ASSERT_H_
+> +
+> +#include <linux/compiler.h>
+> +#include <linux/printk.h>
+> +#include <linux/device.h>
+> +
+> +/* Verify the expression yields true, and fail at build time if possible */
+> +#define ipa_assert(dev, expr) \
+> +	do { \
+> +		if (__builtin_constant_p(expr)) \
+> +			compiletime_assert(expr, __ipa_failure_msg(expr)); \
+> +		else \
+> +			__ipa_assert_runtime(dev, expr); \
+> +	} while (0)
+> +
+> +/* Report an error if the given expression evaluates to false at runtime */
+> +#define ipa_assert_always(dev, expr) \
+> +	do { \
+> +		if (unlikely(!(expr))) { \
+> +			struct device *__dev = (dev); \
+> +			\
+> +			if (__dev) \
+> +				dev_err(__dev, __ipa_failure_msg(expr)); \
+> +			else  \
+> +				pr_err(__ipa_failure_msg(expr)); \
+> +		} \
+> +	} while (0)
 
-s/recalcultion/recalculation/
+It will be much better for everyone if you don't obfuscate existing
+kernel primitives and don't hide constant vs. dynamic expressions.
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- include/net/red.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+So any random kernel developer will be able to change the code without
+investing too much time to understand this custom logic.
 
-diff --git a/include/net/red.h b/include/net/red.h
-index 932f0d79d60c..6b418b69dc48 100644
---- a/include/net/red.h
-+++ b/include/net/red.h
-@@ -287,7 +287,7 @@ static inline unsigned long red_calc_qavg_from_idle_time(const struct red_parms
- 	int  shift;
+And constant expressions are checked with BUILD_BUG_ON().
 
- 	/*
--	 * The problem: ideally, average length queue recalcultion should
-+	 * The problem: ideally, average length queue recalculation should
- 	 * be done over constant clock intervals. This is too expensive, so
- 	 * that the calculation is driven by outgoing packets.
- 	 * When the queue is idle we have to model this clock by hand.
---
-2.26.2
+If you still feel need to provide assertion like this, it should be done
+in general code.
 
+Thanks
+
+> +
+> +/* Constant message used when an assertion fails */
+> +#define __ipa_failure_msg(expr)	"IPA assertion failed: " #expr "\n"
+> +
+> +#ifdef IPA_VALIDATION
+> +
+> +/* Only do runtime checks for "normal" assertions if validating the code */
+> +#define __ipa_assert_runtime(dev, expr)	ipa_assert_always(dev, expr)
+> +
+> +#else /* !IPA_VALIDATION */
+> +
+> +/* "Normal" assertions aren't checked when validation is disabled */
+> +#define __ipa_assert_runtime(dev, expr)	\
+> +	do { (void)(dev); (void)(expr); } while (0)
+> +
+> +#endif /* !IPA_VALIDATION */
+> +
+> +#endif /* _IPA_ASSERT_H_ */
+> -- 
+> 2.27.0
+> 
