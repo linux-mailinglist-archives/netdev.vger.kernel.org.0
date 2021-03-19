@@ -2,221 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1183417F2
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 10:07:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC6E34182E
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 10:26:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbhCSJHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 05:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbhCSJGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 05:06:46 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D03CC06174A;
-        Fri, 19 Mar 2021 02:06:46 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id bx7so9844333edb.12;
-        Fri, 19 Mar 2021 02:06:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aKP03QicqA5/vlB0vrHGDQQvd6eM3wNhFMg2UexZ+IM=;
-        b=mkyfEYqdFf3BFXEDBraMynJCTaRuN+te/N31i/d1Oq+OWGLS8xMdzWhtFhudBLBXUK
-         CKBImpt54IUick5uh5bSTa+TruNkJcu3/e+jZYcGtZFcAzq4dAr5KfanFrcvWJRquydq
-         eAEX8qPrCd39lXL7BraO0DgI1dI4Xj+CA+sDo28LDRHahg//4U0DP7tbAgcoeRn7iSZG
-         LhQi+9rRZPO+zegoRFBcQtQJMkblGqVYK3LX3Yh2gvQdRbUvOBL5ARW8fTBdes3jbM9p
-         0NhbBD5OYY1aMmmaruig0I4SpCFdhs0dSaWFRbWMk2z4iD1OWCSlX8CkuUY4K49olAcI
-         jy8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aKP03QicqA5/vlB0vrHGDQQvd6eM3wNhFMg2UexZ+IM=;
-        b=WXbPV3jpz5YMO18Ht1ni4xhEqRzVkEJPYYwzsC7yLSkPmIUgjzjwDF/B5m2s7hK77r
-         uzK1SSP0Pn2IV3kvkrCdkSkPp8BKU8UYIqpaQ4nuZLkYzj4EIQWHOmKx8VMyB0kVvVeA
-         BMy62FlBonx6PA50UVOvABP/S53L+UAo4YRE54QuRdgu47RtH5BkaOotoKDzui09W64R
-         VGIr3v9qY5PkHaEB9iV+n2dy40+Jk6h4iXySLj7hv1OjtbXJa7ny8xAuxc+LARDMMmmp
-         jK+aHpp+/75pUKCOuZnzrtaSFXIeFwGeg+BLBWF+q1iDOSOMxuQP+oA4vCFebGAW+ju1
-         MCzQ==
-X-Gm-Message-State: AOAM5307dzRybSawrMdHBpRllxJrHZXHQOeiDY9A/AcmF88wZiKMNlB+
-        w4VhhGYwfiFDj5g2gioO4HM=
-X-Google-Smtp-Source: ABdhPJzcB8MzAsCV7GydfK8hEv9OYGuaghn1a18MapW1SybIoiQEcMko7PgCOvp2ZJZJnpkGq66Wug==
-X-Received: by 2002:aa7:c346:: with SMTP id j6mr8294433edr.386.1616144804948;
-        Fri, 19 Mar 2021 02:06:44 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id p3sm3310517ejd.7.2021.03.19.02.06.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 02:06:44 -0700 (PDT)
-Date:   Fri, 19 Mar 2021 11:06:42 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH v2 net-next 14/16] net: dsa: don't set
- skb->offload_fwd_mark when not offloading the bridge
-Message-ID: <20210319090642.bzmtlzc5im6xtbkh@skbuf>
-References: <20210318231829.3892920-1-olteanv@gmail.com>
- <20210318231829.3892920-15-olteanv@gmail.com>
- <20210319084025.GA2152639@haswell-ubuntu20>
+        id S229725AbhCSJ0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 05:26:06 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3492 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229469AbhCSJZy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 05:25:54 -0400
+Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4F1z3j2LlvzRRYx;
+        Fri, 19 Mar 2021 17:24:01 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Fri, 19 Mar 2021 17:25:46 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Fri, 19 Mar
+ 2021 17:25:47 +0800
+Subject: Re: [Linuxarm] [PATCH net] net: sched: fix packet stuck problem for
+ lockless qdisc
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
+        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        "Ahmad Fatoum" <a.fatoum@pengutronix.de>
+References: <1616050402-37023-1-git-send-email-linyunsheng@huawei.com>
+Message-ID: <e5c2d82c-0158-3997-80b6-4aab56c61367@huawei.com>
+Date:   Fri, 19 Mar 2021 17:25:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210319084025.GA2152639@haswell-ubuntu20>
+In-Reply-To: <1616050402-37023-1-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme719-chm.china.huawei.com (10.1.199.115) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 04:52:31PM +0800, DENG Qingfang wrote:
-> On Fri, Mar 19, 2021 at 01:18:27AM +0200, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > DSA has gained the recent ability to deal gracefully with upper
-> > interfaces it cannot offload, such as the bridge, bonding or team
-> > drivers. When such uppers exist, the ports are still in standalone mode
-> > as far as the hardware is concerned.
-> > 
-> > But when we deliver packets to the software bridge in order for that to
-> > do the forwarding, there is an unpleasant surprise in that the bridge
-> > will refuse to forward them. This is because we unconditionally set
-> > skb->offload_fwd_mark = true, meaning that the bridge thinks the frames
-> > were already forwarded in hardware by us.
-> > 
-> > Since dp->bridge_dev is populated only when there is hardware offload
-> > for it, but not in the software fallback case, let's introduce a new
-> > helper that can be called from the tagger data path which sets the
-> > skb->offload_fwd_mark accordingly to zero when there is no hardware
-> > offload for bridging. This lets the bridge forward packets back to other
-> > interfaces of our switch, if needed.
-> > 
-> > Without this change, sending a packet to the CPU for an unoffloaded
-> > interface triggers this WARN_ON:
-> > 
-> > void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
-> > 			      struct sk_buff *skb)
-> > {
-> > 	if (skb->offload_fwd_mark && !WARN_ON_ONCE(!p->offload_fwd_mark))
-> > 		BR_INPUT_SKB_CB(skb)->offload_fwd_mark = p->offload_fwd_mark;
-> > }
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
-> > ---
-> >  net/dsa/dsa_priv.h         | 14 ++++++++++++++
-> >  net/dsa/tag_brcm.c         |  2 +-
-> >  net/dsa/tag_dsa.c          | 15 +++++++++++----
-> >  net/dsa/tag_hellcreek.c    |  2 +-
-> >  net/dsa/tag_ksz.c          |  2 +-
-> >  net/dsa/tag_lan9303.c      |  3 ++-
-> >  net/dsa/tag_mtk.c          |  2 +-
-> >  net/dsa/tag_ocelot.c       |  2 +-
-> >  net/dsa/tag_ocelot_8021q.c |  2 +-
-> >  net/dsa/tag_rtl4_a.c       |  2 +-
-> >  net/dsa/tag_sja1105.c      |  4 ++--
-> >  net/dsa/tag_xrs700x.c      |  2 +-
-> >  12 files changed, 37 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-> > index 92282de54230..b61bef79ce84 100644
-> > --- a/net/dsa/dsa_priv.h
-> > +++ b/net/dsa/dsa_priv.h
-> > @@ -349,6 +349,20 @@ static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
-> >  	return skb;
-> >  }
-> >  
-> > +/* If the ingress port offloads the bridge, we mark the frame as autonomously
-> > + * forwarded by hardware, so the software bridge doesn't forward in twice, back
-> > + * to us, because we already did. However, if we're in fallback mode and we do
-> > + * software bridging, we are not offloading it, therefore the dp->bridge_dev
-> > + * pointer is not populated, and flooding needs to be done by software (we are
-> > + * effectively operating in standalone ports mode).
-> > + */
-> > +static inline void dsa_default_offload_fwd_mark(struct sk_buff *skb)
-> > +{
-> > +	struct dsa_port *dp = dsa_slave_to_port(skb->dev);
-> > +
-> > +	skb->offload_fwd_mark = !!(dp->bridge_dev);
-> > +}
+On 2021/3/18 14:53, Yunsheng Lin wrote:
+> Lockless qdisc has below concurrent problem:
+>         cpu0                  cpu1
+>           .                     .
+>      q->enqueue                 .
+>           .                     .
+>    qdisc_run_begin()            .
+>           .                     .
+>      dequeue_skb()              .
+>           .                     .
+>    sch_direct_xmit()            .
+>           .                     .
+>           .                q->enqueue
+>           .             qdisc_run_begin()
+>           .            return and do nothing
+>           .                     .
+> qdisc_run_end()                 .
 > 
-> So offload_fwd_mark is set iff the ingress port offloads the bridge.
-> Consider this set up on a switch which does NOT support LAG offload:
+> cpu1 enqueue a skb without calling __qdisc_run() because cpu0
+> has not released the lock yet and spin_trylock() return false
+> for cpu1 in qdisc_run_begin(), and cpu0 do not see the skb
+> enqueued by cpu1 when calling dequeue_skb() because cpu1 may
+> enqueue the skb after cpu0 calling dequeue_skb() and before
+> cpu0 calling qdisc_run_end().
 > 
->         +----- br0 -----+
->         |               |
->       bond0             |
->         |               |         (Linux interfaces)
->     +---+---+       +---+---+
->     |       |       |       |
-> +-------+-------+-------+-------+
-> | sw0p0 | sw0p1 | sw0p2 | sw0p3 |
-> +-------+-------+-------+-------+
->     |       |       |       |
->     +---A---+       B       C     (LAN clients)
+> Lockless qdisc has another concurrent problem when tx_action
+> is involved:
 > 
+> cpu0(serving tx_action)     cpu1             cpu2
+>           .                   .                .
+>           .              q->enqueue            .
+>           .            qdisc_run_begin()       .
+>           .              dequeue_skb()         .
+>           .                   .            q->enqueue
+>           .                   .                .
+>           .             sch_direct_xmit()      .
+>           .                   .         qdisc_run_begin()
+>           .                   .       return and do nothing
+>           .                   .                .
+> clear __QDISC_STATE_SCHED     .                .
+>     qdisc_run_begin()         .                .
+> return and do nothing         .                .
+>           .                   .                .
+>           .          qdisc_run_begin()         .
 > 
-> sw0p0 and sw0p1 should be in standalone mode (offload_fwd_mark = 0),
-> while sw0p2 and sw0p3 are offloaded (offload_fwd_mark = 1).
+> This patch fixes the above data race by:
+> 1. Set a flag after spin_trylock() return false.
+> 2. Retry a spin_trylock() in case other CPU may not see the
+>    new flag after it releases the lock.
+> 3. reschedule if the flag is set after the lock is released
+>    at the end of qdisc_run_end().
 > 
-> When a frame is sent into sw0p2 or sw0p3, can it be forwarded to sw0p0 or
-> sw0p1?
+> For tx_action case, the flags is also set when cpu1 is at the
+> end if qdisc_run_begin(), so tx_action will be rescheduled
+> again to dequeue the skb enqueued by cpu2.
+> 
+> Also clear the flag before dequeuing in order to reduce the
+> overhead of the above process, and aviod doing the heavy
+> test_and_clear_bit() at the end of qdisc_run_end().
+> 
+> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+> For those who has not been following the qdsic scheduling
+> discussion, there is packet stuck problem for lockless qdisc,
+> see [1], and I has done some cleanup and added some enhanced
+> features too, see [2] [3].
+> While I was doing the optimization for lockless qdisc, it
+> accurred to me that these optimization is useless if there is
+> still basic bug in lockless qdisc, even the bug is not easily
+> reproducible. So look through [1] again, I found that the data
+> race for tx action mentioned by Michael, and thought deep about
+> it and came up with this patch trying to fix it.
+> 
+> So I am really appreciated some who still has the reproducer
+> can try this patch and report back.
 
-bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
-				  const struct sk_buff *skb)
-{
-	return !skb->offload_fwd_mark ||
-	       BR_INPUT_SKB_CB(skb)->offload_fwd_mark != p->offload_fwd_mark;
-}
+I had done some performance test to see if there is value to
+fix the packet stuck problem and support lockless qdisc bypass,
+here is some result using pktgen in 'queue_xmit' mode on a dummy
+device as Paolo Abeni had done in [1], and using pfifo_fast qdisc:
 
-where p->offload_fwd_mark is the mark of the egress port, and
-BR_INPUT_SKB_CB(skb) is the mark of the ingress port, assigned here:
+threads	 vanilla    locked-qdisc    vanilla+this_patch
+   1     2.6Mpps      2.9Mpps            2.5Mpps
+   2     3.9Mpps      4.8Mpps            3.6Mpps
+   4     5.6Mpps      3.0Mpps            4.7Mpps
+   8     2.7Mpps      1.6Mpps            2.8Mpps
+   16    2.2Mpps      1.3Mpps            2.3Mpps
 
-void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
-			      struct sk_buff *skb)
-{
-	if (skb->offload_fwd_mark && !WARN_ON_ONCE(!p->offload_fwd_mark))
-		BR_INPUT_SKB_CB(skb)->offload_fwd_mark = p->offload_fwd_mark;
-}
+locked-qdisc: test by removing the "TCQ_F_NOLOCK | TCQ_F_CPUSTATS".
 
-Basically, sw0p0 and sw0p1 have a switchdev mark of 0, and sw0p2 and
-sw0p3 have a non-zero switchdev mark, so nbp_switchdev_allowed_egress
-returns true in both directions, regardless of the value of
-skb->offload_fwd_mark.
+And add the lockless qdisc bypatch and other optimization upon
+this patch:
 
-> Setting offload_fwd_mark to 0 could also cause potential packet loss on
-> switches that perform learning on the CPU port:
+threads   patch_set_1   patch_set_2     patch_set_3
+   1       2.5Mpps        3.0Mpps         3.0Mpps
+   2       3.6Mpps        4.1Mpps         5.3Mpps
+   4       4.7Mpps        4.6Mpps         5.1Mpps
+   8       2.8Mpps        2.6Mpps         2.7Mpps
+   16      2.3Mpps        2.2Mpps         2.2Mpps
+
+patch_set_1: vanilla + this_patch
+patch_set_2: vanilla + this_patch + lockless_qdisc_bypass_patch
+patch_set_3: vanilla + this_patch + lockless_qdisc_bypass_patch +
+             remove_seq_operation_for_lockless_qdisc_optimization +
+             check_rc_before_calling_qdisc_run()_optimization +
+             spin_trylock()_retry_optimization.
+
+So all the fix and optimization added together, the lockless qdisc
+has better performance than vanilla except for the 4 threads case,
+which has about 9% performance degradation than vanilla one, but still
+better than the locked-qdisc.
+
+
 > 
-> When client C is talking to client A, frames from C will:
-> 1. Enter sw0p3, where the switch will learn C is reachable via sw0p3.
-> 2. Be sent to the CPU port and bounced back, where the switch will learn C is
->    reachable via the CPU port, overwriting the previous learned FDB entry.
-> 3. Be sent out of either sw0p0 or sw0p1, and reach its destination - A.
+> 1. https://lore.kernel.org/netdev/d102074f-7489-e35a-98cf-e2cad7efd8a2@netrounds.com/t/#ma7013a79b8c4d8e7c49015c724e481e6d5325b32
+> 2. https://patchwork.kernel.org/project/netdevbpf/patch/1615777818-13969-1-git-send-email-linyunsheng@huawei.com/
+> 3. https://patchwork.kernel.org/project/netdevbpf/patch/1615800610-34700-1-git-send-email-linyunsheng@huawei.com/
 > 
-> During step 2, if client B sends a frame to C, the frame will be forwarded to
-> the CPU, which will think it is already forwarded by the switch, and refuse to
-> forward it back, resulting in packet loss.
-> 
-> Many switch TX tags (mtk, qca, rtl) have a bit to disable source address
-> learning on a per-frame basis. We should utilise that.
 
-This is a good point actually, which I thought about, but did not give a
-lot of importance to for the moment. Either we go full steam ahead with
-assisted learning on the CPU port for everybody, and we selectively
-learn the addresses relevant to the bridging funciton only, or we do
-what you say, but then it will be a little bit more complicated IMO, and
-have hardware dependencies, which isn't as nice.
