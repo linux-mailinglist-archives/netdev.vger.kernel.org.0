@@ -2,119 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D4A342547
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 19:51:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA1434258D
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 19:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbhCSSuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 14:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbhCSSum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 14:50:42 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4493BC06174A
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 11:50:42 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id f8so865648pgi.9
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 11:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6pOFYk2WAqSs2z2QkgB8UJEp0rKmYY0L3UJjWNMKXVk=;
-        b=AHE1PpzjY0JAMQ2tO6W9VFeq/t2DucfvDVMPZ6m3/HKEJRVNMnzuO0cfFO7VDj4KWe
-         yspxPGJWkhy00fcjrqQ52uKOxGM/N9NokdenSqIvnaOn7/zOFq0LXKosy8/6WqdC5pyU
-         4IKqSbBNdmecH/wLzlNbYmaF7LjfPKyDMXL7mlajEYdtkcYRUc6hpFibQnbDFu7t8Slu
-         cNseHzxKT7nU2+sgtD5FkSJhC53muok1MdqID/4uB5GNLhVNqWNfC3+g8m8jtACLrrrr
-         OE+MbEWNvzonRq+n8uQFUtgv+dc0ipWwnd/FO123j07VUrKTsVc11gBByzWN0dEEH6th
-         Rmrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6pOFYk2WAqSs2z2QkgB8UJEp0rKmYY0L3UJjWNMKXVk=;
-        b=Ni3cuOgPHeoH0qkdT7Lav4SSAI6uKWZ0sIsLjCHw9xS2V9bASJsL3cNQsyC4S5J3bu
-         0p9Honp5n0lQEyz65UCJt0c8S+WOuK08ZL9t544Y4opIqZ3ItM4zYKnMeK12RDiroM7m
-         9L08rRgE+ERGyfo+idHuzASv46TBNF3YcLhW32yW+QYfRrItgoYqp2TtVVkQlphOIv7/
-         Q9y0INxkB9q94RmM/TrFfxdgFVLwOb6+MkDoXuR6K7FMd4spUSl69LK/8ghjZ24dVY10
-         xq4hk+GDSfxcMlqTNfgJQIKTZGv9VbuBpP8WO0NrmMIKmssQESOGZfu8LDeR54ZTbjq7
-         XhrQ==
-X-Gm-Message-State: AOAM530aFnPonZyLKHLdhY0GBaIhnYAxz+JJHLju6H8kLyOK1wgdGVEs
-        sJdJd93g3208Jlzyed0aJfjoWCpGcp+diQ==
-X-Google-Smtp-Source: ABdhPJypbn1Or5A5X9hNIM8W/Ck2VbH8g55ea7ZiqxfMBRb5ConHVqOXICSgkXhRtEjlsa3XEMQDTw==
-X-Received: by 2002:a65:6a4b:: with SMTP id o11mr12700384pgu.138.1616179838828;
-        Fri, 19 Mar 2021 11:50:38 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id q5sm5929246pfk.219.2021.03.19.11.50.38
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 11:50:38 -0700 (PDT)
-Date:   Fri, 19 Mar 2021 11:50:35 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 212353] New: Requesting IP_RECVTTL via setsockopt returns
- IP_TTL via recvmsg()'s cmsghdr
-Message-ID: <20210319115035.11272a9c@hermes.local>
+        id S231146AbhCSS6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 14:58:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29042 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230521AbhCSS6S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 14:58:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616180297;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pDVcUSuxN+AGx4nzch+V6p1eawpIf3wS5PvMlDH1DPI=;
+        b=XXggucJPAT1NDPdgFflNzzzvjykcHuaO9PIQhOtc0EaEo6y8Iz0cjw9C07Fi693fHvTspf
+        75AyJa4wnUTSeED4qvb0DUfjD/li5Gt65Ifhkr1xI9gdhsMEncWQgtW+EEya6hGDAP6iYE
+        AQraD4P6ntw7BSbk3XE9ceQoojg8+es=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-225-36S8nsVTMcqeiOWzlWQ6zw-1; Fri, 19 Mar 2021 14:58:15 -0400
+X-MC-Unique: 36S8nsVTMcqeiOWzlWQ6zw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DCBE29CC00;
+        Fri, 19 Mar 2021 18:58:13 +0000 (UTC)
+Received: from krava (unknown [10.40.195.94])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 2BD2110016FD;
+        Fri, 19 Mar 2021 18:58:12 +0000 (UTC)
+Date:   Fri, 19 Mar 2021 19:58:11 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v4 bpf-next 07/12] libbpf: add BPF static linker BTF and
+ BTF.ext support
+Message-ID: <YFT0Q+mVbTEI1rem@krava>
+References: <20210318194036.3521577-1-andrii@kernel.org>
+ <20210318194036.3521577-8-andrii@kernel.org>
+ <YFTQExmhNhMcmNOb@krava>
+ <CAEf4BzYKassG0AP372Q=Qsd+qqy7=YGe2XTXR4zG0c5oQ7Nkeg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYKassG0AP372Q=Qsd+qqy7=YGe2XTXR4zG0c5oQ7Nkeg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Mar 19, 2021 at 11:39:01AM -0700, Andrii Nakryiko wrote:
+> On Fri, Mar 19, 2021 at 9:23 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Thu, Mar 18, 2021 at 12:40:31PM -0700, Andrii Nakryiko wrote:
+> >
+> > SNIP
+> >
+> > > +
+> > > +     return NULL;
+> > > +}
+> > > +
+> > > +static int linker_fixup_btf(struct src_obj *obj)
+> > > +{
+> > > +     const char *sec_name;
+> > > +     struct src_sec *sec;
+> > > +     int i, j, n, m;
+> > > +
+> > > +     n = btf__get_nr_types(obj->btf);
+> >
+> > hi,
+> > I'm getting bpftool crash when building tests,
+> >
+> > looks like above obj->btf can be NULL:
+> 
+> I lost if (!obj->btf) return 0; somewhere along the rebases. I'll send
+> a fix shortly. But how did you end up with selftests BPF objects built
+> without BTF?
 
+no idea.. I haven't even updated llvm for almost 3 days now ;-)
 
-Begin forwarded message:
+jirka
 
-Date: Fri, 19 Mar 2021 07:04:12 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 212353] New: Requesting IP_RECVTTL via setsockopt returns IP_TTL via recvmsg()'s cmsghdr
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=212353
-
-            Bug ID: 212353
-           Summary: Requesting IP_RECVTTL via setsockopt returns IP_TTL
-                    via recvmsg()'s cmsghdr
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 4.12.14-122.63-default (SLES12 SP5)
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: Ulrich.Windl@rz.uni-regensburg.de
-        Regression: No
-
-Trying to get IP_RECVTTL, I noticed that recvmsg() returns IP_TTL, not
-IP_RECVTTL in struct cmsghdr.
-Example xode being used was similar to
-https://stackoverflow.com/a/49308499/6607497 that checks for IP_RECVTTL in
-struct cmsghdr:
-
-...
-int yes = 1;
-setsockopt(soc, IPPROTO_IP, IP_RECVTTL, &yes, sizeof(yes));
-...
-int ttl = -1;
-struct cmsghdr * cmsg = CMSG_FIRSTHDR(&hdr); 
-for (; cmsg; cmsg = CMSG_NXTHDR(&hdr, cmsg)) {
-    if (cmsg->cmsg_level == IPPROTO_IP
-        && cmsg->cmsg_type == IP_RECVTTL
-    ) {
-        uint8_t * ttlPtr = (uint8_t *)CMSG_DATA(cmsg);
-        ttl = *ttlPtr;
-        break;
-    }
-}
-// ttl is now either the real ttl or -1 if something went wrong
-
--- 
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are the assignee for the bug.
