@@ -2,131 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D39734229E
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 17:58:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 594F13422D2
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 18:06:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbhCSQ6X convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 19 Mar 2021 12:58:23 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:56764 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230228AbhCSQ6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 12:58:14 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-151-Bo27dnbtPMesSTCFQqaQ7Q-1; Fri, 19 Mar 2021 12:58:09 -0400
-X-MC-Unique: Bo27dnbtPMesSTCFQqaQ7Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2E0F8101371B;
-        Fri, 19 Mar 2021 16:58:08 +0000 (UTC)
-Received: from hog.localdomain (unknown [10.40.192.89])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E17215D9C6;
-        Fri, 19 Mar 2021 16:58:06 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH iproute2-next] ip: xfrm: add support for tfcpad
-Date:   Fri, 19 Mar 2021 17:57:17 +0100
-Message-Id: <1a3dcd1916cc4399c88315e19ab3c2d8948d28c1.1616170525.git.sd@queasysnail.net>
+        id S230145AbhCSRFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 13:05:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229987AbhCSRF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 13:05:29 -0400
+Received: from ellomb.netlib.re (unknown [IPv6:2001:912:1480:10::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155A9C06174A;
+        Fri, 19 Mar 2021 10:05:29 -0700 (PDT)
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by ellomb.netlib.re (Postfix) with ESMTPA id A8183538EC02;
+        Fri, 19 Mar 2021 17:05:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mildred.fr; s=dkim;
+        t=1616173522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wPO41eAFWQvK10icXPYiGfaOquv/ADh3PO0meiNNJHY=;
+        b=U6IfQoy+aPtlTvr7kTZ9DyAwnizOr72YErxDDfHxtAguKanwc+UAASuqfWhLpsIAQiU7TR
+        yeXal7lGWcco645fnYf38HTznGoFbbqFs2tUBkCLFRjuYNq+O14DisZ/nlQkQvdS/RLiTQ
+        OeVR7d8BY4MyvKdIw0j5/HiU4fSsvP4=
+Subject: Re: Design for sk_lookup helper function in context of sk_lookup hook
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev@vger.kernel.org,
+        alexei.starovoitov@gmail.com
+References: <0eba7cd7-aa87-26a0-9431-686365d515f2@mildred.fr>
+ <20210319165546.6dbiki7es7uhdayw@kafai-mbp.dhcp.thefacebook.com>
+From:   =?UTF-8?Q?Shanti_Lombard_n=c3=a9e_Bouchez-Mongard=c3=a9?= 
+        <mildred@mildred.fr>
+Message-ID: <a707be4e-9101-78dd-4ed0-5556c5fa143e@mildred.fr>
+Date:   Fri, 19 Mar 2021 18:05:20 +0100
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sd@queasysnail.net
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+In-Reply-To: <20210319165546.6dbiki7es7uhdayw@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: fr
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=mildred.fr;
+        s=dkim; t=1616173522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wPO41eAFWQvK10icXPYiGfaOquv/ADh3PO0meiNNJHY=;
+        b=BKahAgPWACUo3At7qgzPuR1kaNAvkuEpc3nOhCMIVRCq0xy0kOhgTVjHK9DSZhv48Di4ng
+        3P9SHVOA4cfsz4x28N0qlCatHw9CVhVIvWnpt1y4bBUActR+DD+KAmX6fbDBYUm+qe2og/
+        hFCE8gaCWnR+KyVHizzlZc7sNmIZ1Sk=
+ARC-Seal: i=1; s=dkim; d=mildred.fr; t=1616173522; a=rsa-sha256; cv=none;
+        b=aDU8abmheIaa+xCfAC54qc7R4Ijx3sabYwjobVzXrB5au7yKuapr9cfF4DlnSv0smLIyaa
+        nWOYm+ZxsT5jUzgMKfLfX6epM06HZmj3ldh0uJDK5TrFW0GcPR/LeW0fVggihA5w0wffei
+        5s4aVRuCFBP768Im/MQITzWHzog7hzs=
+ARC-Authentication-Results: i=1;
+        ellomb.netlib.re;
+        auth=pass smtp.auth=mildred@mildred.fr smtp.mailfrom=mildred@mildred.fr
+Authentication-Results: ellomb.netlib.re;
+        auth=pass smtp.auth=mildred@mildred.fr smtp.mailfrom=mildred@mildred.fr
+X-Spamd-Bar: /
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for setting and displaying the Traffic Flow
-Confidentiality attribute for an XFRM state, which allows padding ESP
-packets to a specified length.
+Le 19/03/2021 à 17:55, Martin KaFai Lau a écrit :
+> On Wed, Mar 17, 2021 at 10:04:18AM +0100, Shanti Lombard née Bouchez-Mongardé wrote:
+>> Q1: How do we prevent socket lookup from triggering BPF sk_lookup causing a
+>> loop?
+> The bpf_sk_lookup_(tcp|udp) will be called from the BPF_PROG_TYPE_SK_LOOKUP program?
 
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- ip/ipxfrm.c        |  8 ++++++++
- ip/xfrm_state.c    | 10 +++++++++-
- man/man8/ip-xfrm.8 |  2 ++
- 3 files changed, 19 insertions(+), 1 deletion(-)
+Yes, the idea is to allow the BPF program to redirect incoming 
+connections for 0.0.0.0:1234 to a specific IP address such as 
+127.0.12.34:1234 or any other combinaison with a binding not done based 
+on a predefined socket file descriptor but based on a listening IP 
+address for a socket.
 
-diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
-index e4a72bd06778..9902fdd3f58e 100644
---- a/ip/ipxfrm.c
-+++ b/ip/ipxfrm.c
-@@ -907,6 +907,14 @@ void xfrm_xfrma_print(struct rtattr *tb[], __u16 family,
- 		fprintf(fp, "if_id %#x", if_id);
- 		fprintf(fp, "%s", _SL_);
- 	}
-+	if (tb[XFRMA_TFCPAD]) {
-+		__u32 tfcpad = rta_getattr_u32(tb[XFRMA_TFCPAD]);
-+
-+		if (prefix)
-+			fputs(prefix, fp);
-+		fprintf(fp, "tfcpad %u", tfcpad);
-+		fprintf(fp, "%s", _SL_);
-+	}
- }
- 
- static int xfrm_selector_iszero(struct xfrm_selector *s)
-diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
-index a4f452fa4f48..6fee7efd18c7 100644
---- a/ip/xfrm_state.c
-+++ b/ip/xfrm_state.c
-@@ -63,7 +63,7 @@ static void usage(void)
- 		"        [ coa ADDR[/PLEN] ] [ ctx CTX ] [ extra-flag EXTRA-FLAG-LIST ]\n"
- 		"        [ offload [dev DEV] dir DIR ]\n"
- 		"        [ output-mark OUTPUT-MARK [ mask MASK ] ]\n"
--		"        [ if_id IF_ID ]\n"
-+		"        [ if_id IF_ID ] [ tfcpad LENGTH ]\n"
- 		"Usage: ip xfrm state allocspi ID [ mode MODE ] [ mark MARK [ mask MASK ] ]\n"
- 		"        [ reqid REQID ] [ seq SEQ ] [ min SPI max SPI ]\n"
- 		"Usage: ip xfrm state { delete | get } ID [ mark MARK [ mask MASK ] ]\n"
-@@ -331,6 +331,7 @@ static int xfrm_state_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	struct xfrm_mark output_mark = {0, 0};
- 	bool is_if_id_set = false;
- 	__u32 if_id = 0;
-+	__u32 tfcpad = 0;
- 
- 	while (argc > 0) {
- 		if (strcmp(*argv, "mode") == 0) {
-@@ -465,6 +466,10 @@ static int xfrm_state_modify(int cmd, unsigned int flags, int argc, char **argv)
- 			if (get_u32(&if_id, *argv, 0))
- 				invarg("value after \"if_id\" is invalid", *argv);
- 			is_if_id_set = true;
-+		} else if (strcmp(*argv, "tfcpad") == 0) {
-+			NEXT_ARG();
-+			if (get_u32(&tfcpad, *argv, 0))
-+				invarg("value after \"tfcpad\" is invalid", *argv);
- 		} else {
- 			/* try to assume ALGO */
- 			int type = xfrm_algotype_getbyname(*argv);
-@@ -650,6 +655,9 @@ static int xfrm_state_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	if (is_if_id_set)
- 		addattr32(&req.n, sizeof(req.buf), XFRMA_IF_ID, if_id);
- 
-+	if (tfcpad)
-+		addattr32(&req.n, sizeof(req.buf), XFRMA_TFCPAD, tfcpad);
-+
- 	if (xfrm_xfrmproto_is_ipsec(req.xsinfo.id.proto)) {
- 		switch (req.xsinfo.mode) {
- 		case XFRM_MODE_TRANSPORT:
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index 2669b386ebca..003f6c3d1c28 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -65,6 +65,8 @@ ip-xfrm \- transform configuration
- .IR MASK " ] ]"
- .RB "[ " if_id
- .IR IF-ID " ]"
-+.RB "[ " tfcpad
-+.IR LENGTH " ]"
- 
- .ti -8
- .B "ip xfrm state allocspi"
--- 
-2.31.0
+See linked discussion in the original message
+
+>> - Solution A: We add a flag to the existing inet_lookup exported function
+>> (and similarly for inet6, udp4 and udp6). The INET_LOOKUP_SKIP_BPF_SK_LOOKUP
+>> flag, when set, would prevent BPF sk_lookup from happening. It also requires
+>> modifying every location making use of those functions.
+>>
+>> - Solution B: We export a new symbol in inet_hashtables, a wrapper around
+>> static function inet_lhash2_lookup for inet4 and similar functions for inet6
+>> and udp4/6. Looking up specific IP/port and if not found looking up for
+>> INADDR_ANY could be done in the helper function in net/core/filters.c or in
+>> the BPF program.
+>>
+>> Q2: Should we reuse the bpf_sk_lokup_tcp and bpf_sk_lookup_udp helper
+>> functions or create new ones?
+> If the args passing to the bpf_sk_lookup_(tcp|udp) is the same,
+> it makes sense to reuse the same BPF_FUNC_sk_lookup_*.
+> The actual helper implementation could be different though.
+> Look at bpf_xdp_sk_lookup_tcp_proto and bpf_sk_lookup_tcp_proto.
+
+I was thinking that perhaps a different helper method which would take 
+IPPROTO_TCP or IPPROTO_UDP parameter would be better suited. it would 
+avoid BPF code such as :
+
+     switch(ctx->protocol){
+         case IPPROTO_TCP:
+             sk = bpf_sk_lookup_tcp(ctx, &tuple, tuple_size, -1, 0);
+             break;
+         case IPPROTO_UDP:
+             sk = bpf_sk_lookup_udp(ctx, &tuple, tuple_size, -1, 0);
+             break;
+         default:
+             return SK_PASS;
+     }
+
+But then there is the limit of 5 arguments, isn't it, so perhaps the 
+_tcp/_udp functions are not such a bad idea after all.
+
+I saw already that the same helper functions could be given different 
+implementations. And if there is no way to have more than 5 arguments 
+then this is probably better to reuse the same helper function name and 
+signature.
+
+Thank you
+
 
