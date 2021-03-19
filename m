@@ -2,142 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FCCE341FC5
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 15:40:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB92342044
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 15:55:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbhCSOkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 10:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
+        id S230423AbhCSOzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 10:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230154AbhCSOj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 10:39:56 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F03C061762
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 07:39:56 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id e18so9370206wrt.6
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 07:39:56 -0700 (PDT)
+        with ESMTP id S230398AbhCSOyl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 10:54:41 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7AAC06175F
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 07:54:41 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id hq27so10188321ejc.9
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 07:54:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZoqWXP/V3WLtx6b82eSZ18zEGdu+ELeHI92zYjQlVlw=;
-        b=hpoQFBQ/jhs/9wnYQgMd66znVviny9jd/FIw3gd79H2mp5bd77fm50waCtVzeDG7WQ
-         vUxVVWOXLJ0dmww0TAaDOo03QIQKMQs5CuTN0iVrXwrjTStdHJicBwojTt4xbljFIs9M
-         CFeyOy11oom0pOfMHcDGeNpCmgyzgEjYzuoUi/gtHlsb9sYLwG7KbgAQC8luqnnx6oG4
-         kBosQ3NpH2s2BUoVuCiG/FAz/ihpmBfha6bqeZer0RYZoa4pGbylA5LoHtRlz1kw+Yfw
-         XDTd8XhPNtnrIFMeojGFlZxW3AdzTijR3brK4M0gTTJruxSb7Jam0hAb4nuE+W/OWaip
-         /gqw==
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=5LxGSvdfhBgXA9/vt7weVi24/gBgmdo0yCkTsbvOMGc=;
+        b=AvJykrTH2Q44dpunvZa1TDAqcTF5a0NtpEThBnr1wBPHPuTspGC5HDdIqCCEJ+fokA
+         Xi55RMx6aUe4J1++O2Rnaoalh6UakUG6JzXhyBD1i7Qm4zDuTJIU/jqriGuCpDzUQXkB
+         LYT3HKtI7z9i8QQ7GCwA6S1NjrqE/uQjrhYIk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZoqWXP/V3WLtx6b82eSZ18zEGdu+ELeHI92zYjQlVlw=;
-        b=so7As8OL/pW9A9fIqZox4a+OxkHdX08uDe30/IlquMjEWancGlSagMvM5yskxMrGco
-         4qiLf3P0QvMfH6ZKh8DRnEhMLBGAXMB12On3LVngYgHnxw7ideP0oSMbIXKiiGzp0xaE
-         dIbdGrGJBff7knTT7nKP8fC+6R1Ux3s6mnijHJ4071/4kLjj8n0KsVn9fsIaCadBi9Gq
-         AcXivOANiojnNj/x32wAJFu2tR7Vub4dVdytKgk7wYstXdNXA+I7vY262u3Iw9DdpIN6
-         HgRyoyryiIhcwPeVya3i06VW3LE20OFr3BvyjfOJVttrMsc8ble2iM8Vi0GnA0+Ui1bM
-         t4VA==
-X-Gm-Message-State: AOAM5332bJ5QZotNX183o17Oas6QiNsfwxVpFlR9HEHXXrCDrxJfsT7j
-        PIaxJwHeyuL2aKoedL9mC7AtiDbBo2eeC3s2
-X-Google-Smtp-Source: ABdhPJxHGCGcyu/t3eP25M8WuesResjre6x95sD6wnidHPAvYNpJEoTYYoJAqDtcI8DAOV2z4OtbOg==
-X-Received: by 2002:adf:b609:: with SMTP id f9mr4705658wre.223.1616164794956;
-        Fri, 19 Mar 2021 07:39:54 -0700 (PDT)
-Received: from [192.168.0.162] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id n6sm7700611wmd.27.2021.03.19.07.39.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Mar 2021 07:39:54 -0700 (PDT)
-Subject: Re: [PATCH 5/5] arm64: dts: qcom: msm8916: Enable modem and WiFi
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-References: <20210312003318.3273536-1-bjorn.andersson@linaro.org>
- <20210312003318.3273536-6-bjorn.andersson@linaro.org>
- <f03b639f-f95a-a31a-6615-23cd6154182d@linaro.org>
- <YFNozCCa4fdR5kSb@builder.lan>
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Message-ID: <2da2ee91-f3f9-bab7-1d38-e01300fcdbc5@linaro.org>
-Date:   Fri, 19 Mar 2021 14:41:25 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=5LxGSvdfhBgXA9/vt7weVi24/gBgmdo0yCkTsbvOMGc=;
+        b=AOXlDAURPkFy2SYi/9FWWUUuk/7VsOboorPucUoVBcA2eEmDxeTJ/xywgkKdpexuzh
+         KmkuPxwbRsJoJ+8LXK1eluqbzVhJ5LfX+PaAV00E6FQVmiuFnAfnF5Efb02V51NOTZlH
+         WycgHoWcDa2TCyNQAPaF+e9v4R8Md3jPDRX3T9CF311WF/Tr3MSr7dRbQ0PFjtE7NhzX
+         nKiHpO0X9oT8SrRECP9hhOBdGvTVP2gZVcqGb/ATvRGQEQIfhgFZAPezmz+QOXukU3pU
+         tgvcUMl88W/3g3v00VxvQVy63wU1FIck//Nh8vdPzCHqV3DWrlgXleq/eOFy+0hgQ+y+
+         iYEg==
+X-Gm-Message-State: AOAM533//nFSX2dMAtcM1SOuBcoRAF8zpFYdiAzwpQHHcpqkN2LW8v+m
+        2ncXL+Zfvl2fxByeXQw/BQFUow==
+X-Google-Smtp-Source: ABdhPJwOUSsvj1QWMXnRmoiI1EgyWCffsISxRsq0qGqvSx5cdsMAN/7ljirdZjieocGKqWVCBMZGZQ==
+X-Received: by 2002:a17:906:71d3:: with SMTP id i19mr4867632ejk.347.1616165679905;
+        Fri, 19 Mar 2021 07:54:39 -0700 (PDT)
+Received: from localhost ([2a01:4b00:8432:8a00:fa59:71ff:fe7e:8d21])
+        by smtp.gmail.com with ESMTPSA id r17sm4127977edt.70.2021.03.19.07.54.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Mar 2021 07:54:39 -0700 (PDT)
+Date:   Fri, 19 Mar 2021 14:54:39 +0000
+From:   Chris Down <chris@chrisdown.name>
+To:     linux-nfs@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "J. Bruce Fields" <bfields@redhat.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH] SUNRPC: Output oversized frag reclen as ASCII if printable
+Message-ID: <YFS7L4FIQBDtIY9d@chrisdown.name>
 MIME-Version: 1.0
-In-Reply-To: <YFNozCCa4fdR5kSb@builder.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/2.0.5 (da5e3282) (2021-01-21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/03/2021 14:50, Bjorn Andersson wrote:
-> On Mon 15 Mar 07:01 CDT 2021, Bryan O'Donoghue wrote:
-> 
->> On 12/03/2021 00:33, Bjorn Andersson wrote:
->>> Enable the modem and WiFi subsystems and specify msm8916 specific
->>> firmware path for these and the WCNSS control service.
->>>
->>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->>> ---
->>>    arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi | 12 ++++++++++++
->>>    arch/arm64/boot/dts/qcom/msm8916.dtsi     |  2 +-
->>>    2 files changed, 13 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
->>> index 6aef0c2e4f0a..448e3561ef63 100644
->>> --- a/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
->>> +++ b/arch/arm64/boot/dts/qcom/apq8016-sbc.dtsi
->>> @@ -305,6 +305,12 @@ &mdss {
->>>    	status = "okay";
->>>    };
->>> +&mpss {
->>> +	status = "okay";
->>> +
->>> +	firmware-name = "qcom/msm8916/mba.mbn", "qcom/msm8916/modem.mbn";
->>> +};
->>> +
->>>    &pm8916_resin {
->>>    	status = "okay";
->>>    	linux,code = <KEY_VOLUMEDOWN>;
->>> @@ -312,6 +318,8 @@ &pm8916_resin {
->>>    &pronto {
->>>    	status = "okay";
->>> +
->>> +	firmware-name = "qcom/msm8916/wcnss.mbn";
->>>    };
->>
->> On Debian I have to do this
->>
->>
->> index 2a6a23cb14ca..597cdc8f51cc 100644
->> --- a/drivers/remoteproc/qcom_wcnss.c
->> +++ b/drivers/remoteproc/qcom_wcnss.c
->> @@ -33,7 +33,7 @@
->>   #include "qcom_wcnss.h"
->>
->>   #define WCNSS_CRASH_REASON_SMEM                422
->> -#define WCNSS_FIRMWARE_NAME            "wcnss.mdt"
->> +#define WCNSS_FIRMWARE_NAME            "qcom/msm8916/wcnss.mdt"
->>
->> so I guess wcnss_probe() -> rproc_alloc() wants this fix too.
->>
-> 
-> Can you confirm that you're saying that you want below patch, which I
-> just merged?
-> 
-> https://lore.kernel.org/linux-remoteproc/20210312002441.3273183-1-bjorn.andersson@linaro.org/
-> 
-> (Which makes it possible to specify firmware name per platform/board)
-> 
-> Regards,
-> Bjorn
-> 
+The reclen is taken directly from the first four bytes of the message
+with the highest bit stripped, which makes it ripe for protocol mixups.
+For example, if someone tries to send a HTTP GET request to us, we'll
+interpret it as a 1195725856-sized fragment (ie. (u32)'GET '), and print
+a ratelimited KERN_NOTICE with that number verbatim.
 
-yep
+This can be confusing for downstream users, who don't know what messages
+like "fragment too large: 1195725856" actually mean, or that they
+indicate some misconfigured infrastructure elsewhere.
 
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+To allow users to more easily understand and debug these cases, add the
+number interpreted as ASCII if all characters are printable:
+
+    RPC: fragment too large: 1195725856 (ASCII "GET ")
+
+If demand grows elsewhere, a new printk format that takes a number and
+outputs it in various formats is also a possible solution. For now, it
+seems reasonable to put this here since this particular code path is the
+one that has repeatedly come up in production.
+
+Signed-off-by: Chris Down <chris@chrisdown.name>
+Cc: Chuck Lever <chuck.lever@oracle.com>
+Cc: J. Bruce Fields <bfields@redhat.com>
+Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
+Cc: David S. Miller <davem@davemloft.net>
+---
+ net/sunrpc/svcsock.c | 39 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 37 insertions(+), 2 deletions(-)
+
+diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+index 2e2f007dfc9f..046b1d104340 100644
+--- a/net/sunrpc/svcsock.c
++++ b/net/sunrpc/svcsock.c
+@@ -46,6 +46,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/highmem.h>
+ #include <asm/ioctls.h>
++#include <linux/ctype.h>
+ 
+ #include <linux/sunrpc/types.h>
+ #include <linux/sunrpc/clnt.h>
+@@ -863,6 +864,34 @@ static void svc_tcp_clear_pages(struct svc_sock *svsk)
+ 	svsk->sk_datalen = 0;
+ }
+ 
++/* The reclen is taken directly from the first four bytes of the message with
++ * the highest bit stripped, which makes it ripe for protocol mixups. For
++ * example, if someone tries to send a HTTP GET request to us, we'll interpret
++ * it as a 1195725856-sized fragment (ie. (u32)'GET '), and print a ratelimited
++ * KERN_NOTICE with that number verbatim.
++ *
++ * To allow users to more easily understand and debug these cases, this
++ * function decodes the purported length as ASCII, and returns it if all
++ * characters were printable. Otherwise, we return NULL.
++ *
++ * WARNING: Since we reuse the u32 directly, the return value is not null
++ * terminated, and must be printed using %.*s with
++ * sizeof(svc_sock_reclen(svsk)).
++ */
++static char *svc_sock_reclen_ascii(struct svc_sock *svsk)
++{
++	u32 len_be = cpu_to_be32(svc_sock_reclen(svsk));
++	char *len_be_ascii = (char *)&len_be;
++	size_t i;
++
++	for (i = 0; i < sizeof(len_be); i++) {
++		if (!isprint(len_be_ascii[i]))
++			return NULL;
++	}
++
++	return len_be_ascii;
++}
++
+ /*
+  * Receive fragment record header into sk_marker.
+  */
+@@ -870,6 +899,7 @@ static ssize_t svc_tcp_read_marker(struct svc_sock *svsk,
+ 				   struct svc_rqst *rqstp)
+ {
+ 	ssize_t want, len;
++	char *reclen_ascii;
+ 
+ 	/* If we haven't gotten the record length yet,
+ 	 * get the next four bytes.
+@@ -898,9 +928,14 @@ static ssize_t svc_tcp_read_marker(struct svc_sock *svsk,
+ 	return svc_sock_reclen(svsk);
+ 
+ err_too_large:
+-	net_notice_ratelimited("svc: %s %s RPC fragment too large: %d\n",
++	reclen_ascii = svc_sock_reclen_ascii(svsk);
++	net_notice_ratelimited("svc: %s %s RPC fragment too large: %d%s%.*s%s\n",
+ 			       __func__, svsk->sk_xprt.xpt_server->sv_name,
+-			       svc_sock_reclen(svsk));
++			       svc_sock_reclen(svsk),
++			       reclen_ascii ? " (ASCII \"" : "",
++			       (int)sizeof(u32),
++			       reclen_ascii ?: "",
++			       reclen_ascii ? "\")" : "");
+ 	set_bit(XPT_CLOSE, &svsk->sk_xprt.xpt_flags);
+ err_short:
+ 	return -EAGAIN;
+-- 
+2.30.2
+
