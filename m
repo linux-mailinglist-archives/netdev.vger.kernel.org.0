@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79ED0342751
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:00:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D29E534274F
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230527AbhCSVAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 17:00:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35296 "EHLO mail.kernel.org"
+        id S230507AbhCSVA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 17:00:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35308 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230461AbhCSVAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230467AbhCSVAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Mar 2021 17:00:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0F2AE6197D;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2084B6197E;
         Fri, 19 Mar 2021 21:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616187609;
-        bh=HLMjRKxTK5+1hR2hihf9PrdNNcm1ykRwtfVZLx1iLIc=;
+        bh=KE6nic7+eMNfOn1jVk+xhyEA7WjJ2Dnzgo7mwKtEYsM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bEqpPXa0Z9wtxOr5w1XO3BesMtuCwg4caguX6QgAmPpuiprg1NP4lSqjMRyphrsxH
-         Jdy9cLDkknT5iB19QUlxwNwWftgFgCJCUqTem1v9PfbFla0lw4lYHAnpjvsBBC86dQ
-         c6S18fej71NHb47s3UkmopL6viBsMJg3NDFQ7N6oT9BWECeiBEzkNqPMB7WubG+GMP
-         flVYku0JL+WtQwHLX+rPnkGyqhgQDZ4Yy9dUF4ASeVu3bKXPB7fiRi8VGqDqDRf9j7
-         7JtCQFVvXERBjvDW5BozSkQGy7FdHHvfTxKv0Q2qbZBrKV6zrZYr9aycfracnlPjeE
-         4+B/iG6WQ1t9Q==
+        b=CNGF8DU70bgizHq1EBQfs3Luzi2ceggsN/4wi9sOHRJnt9eSZ/56eRmdF0oQKMF1c
+         MTzz3BhFi+gBFLwgX1xDJdV5MsYoI5daO6qF+Iol9YB+e5HQN+O9B43ezsIuuB0hk3
+         UicnbNRvyM51I62tVJIJbwmDSR0FmTdRQ/INiDYnyeQ6saP4IZq6k0Os9taGDLghTO
+         wgm/wvsm9L2UxVQPfvT6NhZjx4I8yrJoLuPlY4oH9hTlPLl7fvw8NE1bYqZlsm5WYt
+         HI8B5QJmARwL1f3xVcDIhZR+gxOtaKccSh5bVH3L2W9Y6r0bG1Uu1h1C7FAzW0WCVc
+         X3RpASa8oBTlA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F29B1626EB;
-        Fri, 19 Mar 2021 21:00:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1266B626EC;
+        Fri, 19 Mar 2021 21:00:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates
- 2021-03-19
+Subject: Re: [PATCH net] selftests: forwarding: vxlan_bridge_1d: Fix vxlan ecn
+ decapsulate value
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161618760898.12397.2789199746014133414.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Mar 2021 21:00:08 +0000
-References: <20210319161957.784610-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210319161957.784610-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+Message-Id: <161618760907.12397.15248883787731266190.git-patchwork-notify@kernel.org>
+Date:   Fri, 19 Mar 2021 21:00:09 +0000
+References: <20210319143314.2731608-1-liuhangbin@gmail.com>
+In-Reply-To: <20210319143314.2731608-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@mellanox.com,
+        idosch@mellanox.com, gnault@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 19 Mar 2021 09:19:54 -0700 you wrote:
-> This series contains updates to e1000e and igb drivers.
+On Fri, 19 Mar 2021 22:33:14 +0800 you wrote:
+> The ECN bit defines ECT(1) = 1, ECT(0) = 2. So inner 0x02 + outer 0x01
+> should be inner ECT(0) + outer ECT(1). Based on the description of
+> __INET_ECN_decapsulate, the final decapsulate value should be
+> ECT(1). So fix the test expect value to 0x01.
 > 
-> Tom Seewald fixes duplicate guard issues by including the driver name in
-> the guard for e1000e and igb.
-> 
-> Jesse adds checks that timestamping is on and valid to avoid possible
-> issues with a misinterpreted time stamp for igb.
+> Before the fix:
+> TEST: VXLAN: ECN decap: 01/02->0x02                                 [FAIL]
+>         Expected to capture 10 packets, got 0.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/3] e1000e: Fix duplicate include guard
-    https://git.kernel.org/netdev/net/c/896ea5dab25e
-  - [net,2/3] igb: Fix duplicate include guard
-    https://git.kernel.org/netdev/net/c/a75519a84855
-  - [net,3/3] igb: check timestamp validity
-    https://git.kernel.org/netdev/net/c/f0a03a026857
+  - [net] selftests: forwarding: vxlan_bridge_1d: Fix vxlan ecn decapsulate value
+    https://git.kernel.org/netdev/net/c/5aa3c334a449
 
 You are awesome, thank you!
 --
