@@ -2,68 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B2B341337
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 03:51:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D269934133C
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 03:54:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229736AbhCSCuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 22:50:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57772 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233125AbhCSCuI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Mar 2021 22:50:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4EC7C64F1F;
-        Fri, 19 Mar 2021 02:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616122208;
-        bh=+TGPK/VmCC+u9/ldAmSR5h5cZU6a1MdO3opaZL9LO9I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cT3LGbUv0KPy87LgPS42JkkixQfccwaqwvHw/lL4tcOJxmT3Qkk8BSuxfFFOrfl0V
-         U4FugkhzwZlc6kx0uqFPrWBAiOsRLY/TuBcQ24IdPTa08UTxbF4+7tPuoSzGO+qPq/
-         k8FNBqotgFoNKi501wmUmJwS73CQWz6+IZi0/y94mBYZ7sNV0EYKT1WqmutF3cej0t
-         Od+VbPH5j+/hQxiD0z3CLqiPaJYobqHjFSch04GedxelwUsR85IhBmY1ULs/halHRv
-         71fc/AruKeEZ/sG8wYGf5sHmo1HxpOUi330K8h2g4MF5H6S8GqJfhhgKOuoYrU57KD
-         uGyTG6ZvW9+Ww==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3DB86600E8;
-        Fri, 19 Mar 2021 02:50:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233206AbhCSCx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 22:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231297AbhCSCxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 22:53:47 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10403C06174A;
+        Thu, 18 Mar 2021 19:53:47 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id c131so4730242ybf.7;
+        Thu, 18 Mar 2021 19:53:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sOnC4Ddk3iPilsDjgEGlh3GrkI/ytLhXl41wJKRSlhM=;
+        b=kKb8gtICy33NBgsopdIcC421ERTAy5UI8WI54u0hIijoCctVvQro5fr06AK4LgRYaP
+         /FIEYQeabqYE4UU98N46xeoi33hHfxncURD8ZDMhkocOlV+SOGp3gkJ+QVNhu3Iqnxzw
+         /JVHcIA7ccom8+Kd5pa9mzg4TyC2cpAggbPMTPR5KI8C1DP0N2o6F8F/wPXp2LuUOoVu
+         qXRlAbeVcz9dnWOZ+79ZzF89nVCYK9VQD8xO5lpHtrzAsNqteoMzLZwq8ePkSHZEkRpv
+         nTrx6or4n/A7DciaIdEFqvwFn+0xLbrUNjojf/QlDxNLB5bxVgvJkfaYtZ9f++Zp8T+M
+         emAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sOnC4Ddk3iPilsDjgEGlh3GrkI/ytLhXl41wJKRSlhM=;
+        b=dKJGzojFFa1wv9x+6eH9irZNFtOVhNl8zyrhK2ttGIfwKmg1G3LM3EogW8QpRXGblm
+         XBc9kh1cOkBAFNHZ4v9SCEF3M3Uz5zxsSxuYO0qQ3SoVRFDrZMxeGkoEr/u9osPlZBmg
+         mHzaCAmOvlPnggYxBZjwG6vyCSdzWn5n2rxvCY/jkNsfEQrMA/p2GssEFXba+S/8veLv
+         qDlV3rqgela4NjCRR/HEdQtecUBeCv1KOvASHrTAeyBYEWfI3GAHIMEVHm6KztxKSzyC
+         8Dho8ROxSE2I5EaSnZ64XVtxxjY5cyS8y3GZbQJQt/MT9OwWg+xG4nLioeubc94CyWSD
+         RsvQ==
+X-Gm-Message-State: AOAM533C8rXoK0J2JaRm2JppVvE81CYdMdly1rxZao1U3TowNeu84CgL
+        LH17mpaK9h8lYbZI+efmlnvgo7awVThHUhaoGyI=
+X-Google-Smtp-Source: ABdhPJwJk3+lUr1K23Ar7aKvLmkJoeBFvEgrfzYLHL3j60bwbeXjefeAKqmRc+H+M3rFuF5yUUMsoPpwsgPJVZUfBko=
+X-Received: by 2002:a25:7d07:: with SMTP id y7mr3307260ybc.425.1616122426069;
+ Thu, 18 Mar 2021 19:53:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: cdc-phonet: fix data-interface release on probe
- failure
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161612220824.2508.14534357548933207125.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Mar 2021 02:50:08 +0000
-References: <20210318155749.22597-1-johan@kernel.org>
-In-Reply-To: <20210318155749.22597-1-johan@kernel.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210316011336.4173585-1-kafai@fb.com> <20210316011426.4178537-1-kafai@fb.com>
+In-Reply-To: <20210316011426.4178537-1-kafai@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 18 Mar 2021 19:53:35 -0700
+Message-ID: <CAEf4BzbYDKf6ahjV1HfH-ZoaWeLQb7me83AnjhF9rZ=uOzhnSQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 08/15] libbpf: Refactor bpf_object__resolve_ksyms_btf_id
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Mar 16, 2021 at 12:02 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This patch refactors most of the logic from
+> bpf_object__resolve_ksyms_btf_id() into a new function
+> bpf_object__resolve_ksym_var_btf_id().
+> It is to get ready for a later patch adding
+> bpf_object__resolve_ksym_func_btf_id() which resolves
+> a kernel function to the running kernel btf_id.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-On Thu, 18 Mar 2021 16:57:49 +0100 you wrote:
-> Set the disconnected flag before releasing the data interface in case
-> netdev registration fails to avoid having the disconnect callback try to
-> deregister the never registered netdev (and trigger a WARN_ON()).
-> 
-> Fixes: 87cf65601e17 ("USB host CDC Phonet network interface driver")
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> 
-> [...]
+>  tools/lib/bpf/libbpf.c | 125 ++++++++++++++++++++++-------------------
+>  1 file changed, 68 insertions(+), 57 deletions(-)
+>
 
-Here is the summary with links:
-  - [net] net: cdc-phonet: fix data-interface release on probe failure
-    https://git.kernel.org/netdev/net/c/c79a707072fe
+[...]
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> +static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
+> +{
+> +       struct extern_desc *ext;
+> +       int i, err;
+> +
+> +       for (i = 0; i < obj->nr_extern; i++) {
+> +               ext = &obj->externs[i];
+> +               if (ext->type != EXT_KSYM || !ext->ksym.type_id)
+> +                       continue;
+> +
+> +               err = bpf_object__resolve_ksym_var_btf_id(obj, ext);
+>
+
+we usually put error checking right on the next line without empty
+lines, please remove this distracting empty line
 
 
+> -               ext->is_set = true;
+> -               ext->ksym.kernel_btf_obj_fd = btf_fd;
+> -               ext->ksym.kernel_btf_id = id;
+> -               pr_debug("extern (ksym) '%s': resolved to [%d] %s %s\n",
+> -                        ext->name, id, btf_kind_str(targ_var), targ_var_name);
+> +               if (err)
+> +                       return err;
+>         }
+>         return 0;
+>  }
+> --
+> 2.30.2
+>
