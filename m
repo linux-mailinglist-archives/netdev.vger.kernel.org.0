@@ -2,178 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AEB2341A16
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 11:32:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFA30341A21
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 11:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbhCSKcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 06:32:12 -0400
-Received: from mx.i2x.nl ([5.2.79.48]:54082 "EHLO mx.i2x.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229870AbhCSKbu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Mar 2021 06:31:50 -0400
-X-Greylist: delayed 350 seconds by postgrey-1.27 at vger.kernel.org; Fri, 19 Mar 2021 06:31:50 EDT
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd00::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mx.i2x.nl (Postfix) with ESMTPS id 24E975FB12;
-        Fri, 19 Mar 2021 11:25:56 +0100 (CET)
-Authentication-Results: mx.i2x.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="D239ADue";
-        dkim-atps=neutral
-Received: from www (unknown [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id D3ED5B17AE5;
-        Fri, 19 Mar 2021 11:25:55 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D3ED5B17AE5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1616149555;
-        bh=ANu+7V/Eez3ob22Ix7TLB1GB0Pyn7ZUcUF5mBZmRflI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=D239ADueBEbxTpKgW1tWeevvifzhBeWXZ5vjOLSY8JL5A0XJ1wCmT3k2GUXoVF53a
-         x/kw+7T8XYClp3mFpP+XlaidYpYe8DDTxyh4qcunpyuH4OmMWq4Mevj7NrjB5X1ONF
-         PKYymWJtuoleV7AQwDUxid1li/+OqEnnZgdzkiphRJlEwWS9LoKtEf2RaXCjGbX6ec
-         B+oeuoisuWZY9SnmDn4KaOeEZMoofRttBj3AenQnApJ/4I/JKR6t60Atka/jajh8Sx
-         UYHYspNbDT+LkTRHdne2mrf8RR6ME7nrSXCinCm/9yneoqA4TAGy/Aaik2VG3+/wD6
-         7lgVOaVhYqRtQ==
-Received: from 2a02-a453-deab-1-caf8-57c0-c865-5881.fixed6.kpn.net
- (2a02-a453-deab-1-caf8-57c0-c865-5881.fixed6.kpn.net
- [2a02:a453:deab:1:caf8:57c0:c865:5881]) by www.vdorst.com (Horde Framework)
- with HTTPS; Fri, 19 Mar 2021 10:25:55 +0000
-Date:   Fri, 19 Mar 2021 10:25:55 +0000
-Message-ID: <20210319102555.Horde.jeA-oYm4tfkVqKj-gnqxRoo@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        sander@svanheule.net, tsbogend@alpha.franken.de, john@phrozen.org,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [PATCH net,v2] net: dsa: mt7530: setup core clock even in
- TRGMII mode
-References: <20210311012108.7190-1-ilya.lipnitskiy@gmail.com>
- <20210312080703.63281-1-ilya.lipnitskiy@gmail.com>
-In-Reply-To: <20210312080703.63281-1-ilya.lipnitskiy@gmail.com>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S229900AbhCSKds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 06:33:48 -0400
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:42981 "EHLO
+        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229921AbhCSKdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 06:33:33 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 75DBC134B;
+        Fri, 19 Mar 2021 06:33:32 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Fri, 19 Mar 2021 06:33:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=JfFHTg/BWux+nPcjdimtHrbbKaV
+        mylHLXlbA6N7S8P8=; b=VHj1JYaCqDNHVHkWuEK9IwjqIjv9yka5RZuZRZ/6pUa
+        Gp8743B+CgbXkf21B4MXExpqDcJptCI5Cl2HdW18qpi1XSUjWv2lZQ/pmHPYZyJF
+        8Q4VHZpV6P+tax4aKZw/xi6aHBc1BmNV44c+MMWqiKI1dIuO9RMTv8JCFg+lj6Rz
+        7kkS7UxuV+zdiYUF+Rf3z3B46r8FE98NIlJfM2yhHvAS1PmMOgtEaRESSqx3tz8j
+        XNUT6Ek4wsaW9dAizgl5fRXVuqs/IuuhbbufCElsbiyoeP4UTjLYZ9pxmA4Yt5IC
+        Blp0KxjI1Zy7IqVN/FaENlhHdqrKqHd8f48RfvPm8oQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=JfFHTg
+        /BWux+nPcjdimtHrbbKaVmylHLXlbA6N7S8P8=; b=wKRwnN89CoUNKlW0PVjxlz
+        kRJPHL45VgI9yRTMJ9ITXf0MrsN/qs8ZbLI5Up7zPCzUyy5rZtwocLDILpXDud08
+        zisxxpxxhKNEhEoejVZESxGAOqlUTc74uDn0/W7EpgfHxp/xHLvS74vQik4LW6Xa
+        o+lNrhLaVPOADzN9fAnqAifMAyG3TBkYqa/yoyPM0teayE+bjQ2ch7s2COzmtcS8
+        0sTRfieqVrBw+Dg4DMMAP1RyWJiOkjeY4hmhPsAoXOyGrLYz8cY1yud2X3m3mAc+
+        ZTtYPHv5+Mxhg65eFQNMELNd54gxlK5OdgFBpczeOwFuaY6YfKDQNIlryvlY9+hQ
+        ==
+X-ME-Sender: <xms:-31UYCjqPRWhINRFce3NjfMTZdQxyjz9EKC4M3VuwG44mul4Pr4gdw>
+    <xme:-31UYDC_koBDw6oLHxNr46cGuyeVlLffwpvLj95VJfm6onfVPgh6CfHbQJcI_Hy-u
+    HtuJtXbm4XFgA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudefkedgudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeef
+    rdekiedrjeegrdeigeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:-31UYKHf4G1_UvxpZV4pn_iLY92myysWFIrQnSsjEqgtcjXstZ9Buw>
+    <xmx:-31UYLRJ-dyqvv_fV7cnPUVE-DiDAu3QF10PtxZf2exbF66JW1dX-g>
+    <xmx:-31UYPzdj1RkCprLjVCCzxngsZU7SYAYI0QuplKoAdrYgc1wiYd7Sg>
+    <xmx:_H1UYK8uopcMSRI32zmPJpeMjbdub9otMi4ApkuzxhIRB5xpLR1xvg>
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8F53D24005A;
+        Fri, 19 Mar 2021 06:33:31 -0400 (EDT)
+Date:   Fri, 19 Mar 2021 11:33:30 +0100
+From:   Greg KH <greg@kroah.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     stable@vger.kernel.org, netdev@vger.kernel.org,
+        Ilario Gelmetti <iochesonome@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH stable 5.4.y, 4.19.y] net: dsa: tag_mtk: fix 802.1ad VLAN
+ egress
+Message-ID: <YFR9+hKJTn09MHUm@kroah.com>
+References: <20210318052935.1434546-1-dqfext@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210318052935.1434546-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>:
-
-> A recent change to MIPS ralink reset logic made it so mt7530 actually
-> resets the switch on platforms such as mt7621 (where bit 2 is the reset
-> line for the switch). That exposed an issue where the switch would not
-> function properly in TRGMII mode after a reset.
->
-> Reconfigure core clock in TRGMII mode to fix the issue.
->
-> Tested on Ubiquiti ER-X (MT7621) with TRGMII mode enabled.
->
-> Fixes: 3f9ef7785a9c ("MIPS: ralink: manage low reset lines")
-> Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+On Thu, Mar 18, 2021 at 01:29:35PM +0800, DENG Qingfang wrote:
+> [ Upstream commit 9200f515c41f4cbaeffd8fdd1d8b6373a18b1b67 ]
+> 
+> A different TPID bit is used for 802.1ad VLAN frames.
+> 
+> Reported-by: Ilario Gelmetti <iochesonome@gmail.com>
+> Fixes: f0af34317f4b ("net: dsa: mediatek: combine MediaTek tag with VLAN tag")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
 > ---
->  drivers/net/dsa/mt7530.c | 52 +++++++++++++++++++---------------------
->  1 file changed, 25 insertions(+), 27 deletions(-)
->
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index f06f5fa2f898..9871d7cff93a 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -436,34 +436,32 @@ mt7530_pad_clk_setup(struct dsa_switch *ds,  
-> phy_interface_t interface)
->  			     TD_DM_DRVP(8) | TD_DM_DRVN(8));
->
->  	/* Setup core clock for MT7530 */
-> -	if (!trgint) {
-> -		/* Disable MT7530 core clock */
-> -		core_clear(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
-> -
-> -		/* Disable PLL, since phy_device has not yet been created
-> -		 * provided for phy_[read,write]_mmd_indirect is called, we
-> -		 * provide our own core_write_mmd_indirect to complete this
-> -		 * function.
-> -		 */
-> -		core_write_mmd_indirect(priv,
-> -					CORE_GSWPLL_GRP1,
-> -					MDIO_MMD_VEND2,
-> -					0);
-> -
-> -		/* Set core clock into 500Mhz */
-> -		core_write(priv, CORE_GSWPLL_GRP2,
-> -			   RG_GSWPLL_POSDIV_500M(1) |
-> -			   RG_GSWPLL_FBKDIV_500M(25));
-> +	/* Disable MT7530 core clock */
-> +	core_clear(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
->
-> -		/* Enable PLL */
-> -		core_write(priv, CORE_GSWPLL_GRP1,
-> -			   RG_GSWPLL_EN_PRE |
-> -			   RG_GSWPLL_POSDIV_200M(2) |
-> -			   RG_GSWPLL_FBKDIV_200M(32));
-> -
-> -		/* Enable MT7530 core clock */
-> -		core_set(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
-> -	}
-> +	/* Disable PLL, since phy_device has not yet been created
-> +	 * provided for phy_[read,write]_mmd_indirect is called, we
-> +	 * provide our own core_write_mmd_indirect to complete this
-> +	 * function.
-> +	 */
-> +	core_write_mmd_indirect(priv,
-> +				CORE_GSWPLL_GRP1,
-> +				MDIO_MMD_VEND2,
-> +				0);
-> +
-> +	/* Set core clock into 500Mhz */
-> +	core_write(priv, CORE_GSWPLL_GRP2,
-> +		   RG_GSWPLL_POSDIV_500M(1) |
-> +		   RG_GSWPLL_FBKDIV_500M(25));
-> +
-> +	/* Enable PLL */
-> +	core_write(priv, CORE_GSWPLL_GRP1,
-> +		   RG_GSWPLL_EN_PRE |
-> +		   RG_GSWPLL_POSDIV_200M(2) |
-> +		   RG_GSWPLL_FBKDIV_200M(32));
-> +
-> +	/* Enable MT7530 core clock */
-> +	core_set(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
->
->  	/* Setup the MT7530 TRGMII Tx Clock */
->  	core_set(priv, CORE_TRGMII_GSW_CLK_CG, REG_GSWCK_EN);
-> --
-> 2.30.2
+>  net/dsa/tag_mtk.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
 
-Hi Ilya,
+Thanks for the backport, now queued up.
 
-Thanks for fixing this issue.
-
-I remember that Frank also had an issue with TRGMII on his MT7623 ARM board.
-I never found why it did not work but this may be also fix his issue  
-on the MT7623 devices.
-
-Added Frank to CC.
-
-Tested on Ubiquiti ER-X-SFP (MT7621) with and without TRGMII mode enabled.
-
-Tested-by: René van Dorst <opensource@vdorst.com>
-
-Greats,
-
-René
-
+greg k-h
