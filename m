@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFEB03425DB
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 20:10:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 054733425D4
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 20:10:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231187AbhCSTKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 15:10:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41864 "EHLO mail.kernel.org"
+        id S230468AbhCSTKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 15:10:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41874 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230379AbhCSTKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230409AbhCSTKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 19 Mar 2021 15:10:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 52A2561948;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 62B0761980;
         Fri, 19 Mar 2021 19:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616181009;
-        bh=hECaZji+YHVFMSqbJyz60H3YD+HxKLOo7jPajo0LUXU=;
+        bh=saxAoGIxGL4L6xLyFuwF3U+uMjJC9MvM2RF3gQ940U0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=k2NAzl9mD7ttvBYyyE9zNtQyorIj7rIf5vYsPHu00M/tsUUtrES34wLiX0UBZVREO
-         SzQcFr2LI88DSDkSDvl5q3PNaIRPFhrPtjY2pwfvXapkgNf7GqSUmOpamw6Ho7/hDs
-         ggIErIHECvSBSJMART7pPfjHgw1pZf+u0IfO9ioE2BuzdiG2uRh/pMndill5Nfq4GL
-         MJszV8TeiBIA40xT1aDQlCHO4viKiGMxs+0bMIl8p0mo9FcwgbOqbq7gX107hOPbxQ
-         QLaVrtFMBDmKbHPbTHSDAX20Lef9WQi7e+k1I+xXeG8Bw4WXufXpCceGwpO/2jnLwv
-         rPdTUiu67Muhw==
+        b=QE3CqL/Hoq/q465SHsdQB08P4gZyGLKLrzPCX2G70sfdKo5JAl9cfm5nX8928qw44
+         Vkn4yeGiuWg6Xr2aojhCCcgZ4tvaAu/CYdGEyJisE6F7cl3KikWjLGMpt7wJozgv2N
+         0vp2OcEnGqVQEwowuXzeyk2HDs7K8Iga+SNekaLLu5DRYwcH3hRCzGVRp/PClqIOoV
+         JeoF7eVHmX0x49wgaycIZoEDjDr/HcfuWuItWhxE1S+WTBVaxzEz8nit4xEIhu1/gg
+         mfPx2+bJDDsINOqNIAWz0ncarMrdgcciY/5XkbK/ft84MsTkQabZbBExpQxP38mzLy
+         0ljreneloc+tw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 434EA626ED;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 56B27626EE;
         Fri, 19 Mar 2021 19:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] atl1c: use napi_alloc_skb
+Subject: Re: [PATCH net-next 0/1] taprio: Handle short intervals and large packets
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161618100927.534.8273083622922077302.git-patchwork-notify@kernel.org>
+Message-Id: <161618100935.534.1624173428310028848.git-patchwork-notify@kernel.org>
 Date:   Fri, 19 Mar 2021 19:10:09 +0000
-References: <20210319041322.1001-1-liew.s.piaw@gmail.com>
-In-Reply-To: <20210319041322.1001-1-liew.s.piaw@gmail.com>
-To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Cc:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210318073455.17281-1-kurt@linutronix.de>
+In-Reply-To: <20210318073455.17281-1-kurt@linutronix.de>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     vinicius.gomes@intel.com, olteanv@gmail.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        kuba@kernel.org, bigeasy@linutronix.de, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,19 +47,21 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 19 Mar 2021 12:13:22 +0800 you wrote:
-> Using napi_alloc_skb in NAPI context avoids enable/disable IRQs, which
-> increases iperf3 result by a few Mbps. Since napi_alloc_skb() uses
-> NET_IP_ALIGN, convert other alloc methods to the same padding. Tested
-> on Intel Core2 and AMD K10 platforms.
+On Thu, 18 Mar 2021 08:34:54 +0100 you wrote:
+> Hi,
 > 
-> Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+> there is a problem with the software implementation of TAPRIO and TCP
+> communication. When using short intervals e.g. below one millisecond, large
+> packets won't be transmitted. That's because the software implementation takes
+> the packet length and calculates the transmission time. If the transmission time
+> is larger than the configured interval, no packet will be transmitted. Fix that
+> by segmenting the skb for the software implementation.
 > 
 > [...]
 
 Here is the summary with links:
-  - atl1c: use napi_alloc_skb
-    https://git.kernel.org/netdev/net-next/c/a9d6df642dc8
+  - [net-next,1/1] taprio: Handle short intervals and large packets
+    https://git.kernel.org/netdev/net-next/c/497cc00224cf
 
 You are awesome, thank you!
 --
