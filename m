@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F16134260E
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 20:20:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAE74342634
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 20:31:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230456AbhCSTUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 15:20:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44574 "EHLO mail.kernel.org"
+        id S230343AbhCSTac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 15:30:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230317AbhCSTUI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Mar 2021 15:20:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 99AE76197D;
-        Fri, 19 Mar 2021 19:20:08 +0000 (UTC)
+        id S229956AbhCSTaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 15:30:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1821761962;
+        Fri, 19 Mar 2021 19:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616181608;
-        bh=PNkTSEghEcOf9NjNWigmEqIl/yfal6hUAgzyXb6NDYk=;
+        s=k20201202; t=1616182209;
+        bh=ua/jo6CrOObOcJJoxNVoUi0aC/WCBwUK3uFVl95EiJ4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=t0Fe1ZSBKdkGt1WvCOCA79P9YHwZt9pcJNBdYNs83v8TP6hFV1IPoAomk7oIhTaMK
-         jBtO12Wm6iT7yRx9iw6/ClgvfSDRse8PgvLVzI1GfzWlchSvh4R1ux/5YwPubR7FCA
-         Eu7nl2yntcXHlCFLIVSjcNqwfuFxrAo4A33gLb2z8bidcog/9LZAceCJYbzoXO1q5r
-         Z778df/uxdMpTMVJQwvCaljMnsUH2XoMnc3tT5cdlErw/Ek3n45j3Z4xpYOkvm9tn0
-         4oqJIkgOj0qo26hHtK3llcxs6+dR5vZov3Rd2s4eDaqBmlsQ4dmlA3uuRJUSb3Ksvm
-         HdC3k/LQxpvTQ==
+        b=a+BQALRBi7PBgl50nDKRqF2dRF7FMbToONcnX8jNVnCfvtS7vmX1SmZfvlsFCgZu1
+         o8ixkeMAVYsZ85pkFSvGMAd5eu0R7QkISKybcdQsFsNHg71OaF+pxO/dV82LIfHEFz
+         6mzyqt4XotguNhrwIaOfgD60rcye7ZbP88TliSY6kHIfj26pV1nOZBkd/hYUtpiwgL
+         ESP2xtCNc4Yf/3xxK0iTXdpABbSXLnq+8RKq16b3o2aDZ37fIUOQVDGndNUtWtUyBm
+         Yv/o7G0kEwGWSUoyZJjX5NiCws5t4s/1r2VlnKJsNfr8ydP1COK8nvl75p55SOMd6x
+         8C1we0/IGyMyw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8B17A626EC;
-        Fri, 19 Mar 2021 19:20:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 049DA60A0B;
+        Fri, 19 Mar 2021 19:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: enetc: teardown CBDR during PF/VF unbind
+Subject: Re: [PATCH net-next v2 0/3] Fixes applied to VCS8584 family
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161618160856.4810.10350179822019482861.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Mar 2021 19:20:08 +0000
-References: <20210319100806.801581-1-olteanv@gmail.com>
-In-Reply-To: <20210319100806.801581-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        michael@walle.cc, vladimir.oltean@nxp.com
+Message-Id: <161618220901.9737.17080854366848880553.git-patchwork-notify@kernel.org>
+Date:   Fri, 19 Mar 2021 19:30:09 +0000
+References: <20210319132905.9846-1-bjarni.jonasson@microchip.com>
+In-Reply-To: <20210319132905.9846-1-bjarni.jonasson@microchip.com>
+To:     Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, atenart@kernel.org,
+        f.fainelli@gmail.com, vladimir.oltean@nxp.com,
+        ioana.ciornei@nxp.com, michael@walle.cc, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 19 Mar 2021 12:08:06 +0200 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Fri, 19 Mar 2021 14:29:02 +0100 you wrote:
+> Three different fixes applied to VSC8584 family:
+> 1. LCPLL reset
+> 2. Serdes calibration
+> 3. Coma mode disabled
 > 
-> Michael reports that after the blamed patch, unbinding a VF would cause
-> these transactions to remain pending, and trigger some warnings with the
-> DMA API debug:
-> 
-> $ echo 1 > /sys/bus/pci/devices/0000\:00\:00.0/sriov_numvfs
-> pci 0000:00:01.0: [1957:ef00] type 00 class 0x020001
-> fsl_enetc_vf 0000:00:01.0: Adding to iommu group 19
-> fsl_enetc_vf 0000:00:01.0: enabling device (0000 -> 0002)
-> fsl_enetc_vf 0000:00:01.0 eno0vf0: renamed from eth0
+> The same fixes has already been applied to VSC8514
+> and most of the functionality can be reused for the VSC8584.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: enetc: teardown CBDR during PF/VF unbind
-    https://git.kernel.org/netdev/net-next/c/c54f042dcc1b
+  - [net-next,v2,1/3] net: phy: mscc: Applying LCPLL reset to VSC8584
+    https://git.kernel.org/netdev/net-next/c/df4771783d64
+  - [net-next,v2,2/3] net: phy: mscc: improved serdes calibration applied to VSC8584
+    https://git.kernel.org/netdev/net-next/c/23d12335752f
+  - [net-next,v2,3/3] net: phy: mscc: coma mode disabled for VSC8584
+    https://git.kernel.org/netdev/net-next/c/36d021d1049f
 
 You are awesome, thank you!
 --
