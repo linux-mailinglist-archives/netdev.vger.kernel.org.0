@@ -2,96 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DB533411E6
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 02:07:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D783411F3
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 02:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbhCSBGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 21:06:32 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:52576 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231422AbhCSBGO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 21:06:14 -0400
+        id S233159AbhCSBGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 21:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231614AbhCSBGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 21:06:20 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [IPv6:2001:4b98:dc0:41:216:3eff:fe8c:2bda])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC3CFC06175F;
+        Thu, 18 Mar 2021 18:06:20 -0700 (PDT)
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 77B9862C13;
-        Fri, 19 Mar 2021 02:06:09 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 14FC762C18;
+        Fri, 19 Mar 2021 02:06:13 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 0/9] Netfilter fixes for net
-Date:   Fri, 19 Mar 2021 02:05:59 +0100
-Message-Id: <20210319010608.9758-1-pablo@netfilter.org>
+Subject: [PATCH net 1/9] Revert "netfilter: x_tables: Update remaining dereference to RCU"
+Date:   Fri, 19 Mar 2021 02:06:00 +0100
+Message-Id: <20210319010608.9758-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210319010608.9758-1-pablo@netfilter.org>
+References: <20210319010608.9758-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
 
-1) Several patches to testore use of memory barriers instead of RCU to
-   ensure consistent access to ruleset, from Mark Tomlinson.
+This reverts commit 443d6e86f821a165fae3fc3fc13086d27ac140b1.
 
-2) Fix dump of expectation via ctnetlink, from Florian Westphal.
+This (and the following) patch basically re-implemented the RCU
+mechanisms of patch 784544739a25. That patch was replaced because of the
+performance problems that it created when replacing tables. Now, we have
+the same issue: the call to synchronize_rcu() makes replacing tables
+slower by as much as an order of magnitude.
 
-3) GRE helper works for IPv6, from Ludovic Senecaux.
+Revert these patches and fix the issue in a different way.
 
-4) Set error on unsupported flowtable flags.
+Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/ipv4/netfilter/arp_tables.c | 2 +-
+ net/ipv4/netfilter/ip_tables.c  | 2 +-
+ net/ipv6/netfilter/ip6_tables.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-5) Use delayed instead of deferrable workqueue in the flowtable,
-   from Yinjun Zhang.
+diff --git a/net/ipv4/netfilter/arp_tables.c b/net/ipv4/netfilter/arp_tables.c
+index c576a63d09db..563b62b76a5f 100644
+--- a/net/ipv4/netfilter/arp_tables.c
++++ b/net/ipv4/netfilter/arp_tables.c
+@@ -1379,7 +1379,7 @@ static int compat_get_entries(struct net *net,
+ 	xt_compat_lock(NFPROTO_ARP);
+ 	t = xt_find_table_lock(net, NFPROTO_ARP, get.name);
+ 	if (!IS_ERR(t)) {
+-		const struct xt_table_info *private = xt_table_get_private_protected(t);
++		const struct xt_table_info *private = t->private;
+ 		struct xt_table_info info;
+ 
+ 		ret = compat_table_info(private, &info);
+diff --git a/net/ipv4/netfilter/ip_tables.c b/net/ipv4/netfilter/ip_tables.c
+index e8f6f9d86237..6e2851f8d3a3 100644
+--- a/net/ipv4/netfilter/ip_tables.c
++++ b/net/ipv4/netfilter/ip_tables.c
+@@ -1589,7 +1589,7 @@ compat_get_entries(struct net *net, struct compat_ipt_get_entries __user *uptr,
+ 	xt_compat_lock(AF_INET);
+ 	t = xt_find_table_lock(net, AF_INET, get.name);
+ 	if (!IS_ERR(t)) {
+-		const struct xt_table_info *private = xt_table_get_private_protected(t);
++		const struct xt_table_info *private = t->private;
+ 		struct xt_table_info info;
+ 		ret = compat_table_info(private, &info);
+ 		if (!ret && get.size == info.size)
+diff --git a/net/ipv6/netfilter/ip6_tables.c b/net/ipv6/netfilter/ip6_tables.c
+index 0d453fa9e327..c4f532f4d311 100644
+--- a/net/ipv6/netfilter/ip6_tables.c
++++ b/net/ipv6/netfilter/ip6_tables.c
+@@ -1598,7 +1598,7 @@ compat_get_entries(struct net *net, struct compat_ip6t_get_entries __user *uptr,
+ 	xt_compat_lock(AF_INET6);
+ 	t = xt_find_table_lock(net, AF_INET6, get.name);
+ 	if (!IS_ERR(t)) {
+-		const struct xt_table_info *private = xt_table_get_private_protected(t);
++		const struct xt_table_info *private = t->private;
+ 		struct xt_table_info info;
+ 		ret = compat_table_info(private, &info);
+ 		if (!ret && get.size == info.size)
+-- 
+2.20.1
 
-6) Fix spurious EEXIST in case of add-after-delete flowtable in
-   the same batch.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
-
-Thanks!
-
-----------------------------------------------------------------
-
-The following changes since commit a25f822285420486f5da434efc8d940d42a83bce:
-
-  flow_dissector: fix byteorder of dissected ICMP ID (2021-03-14 14:30:20 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
-
-for you to fetch changes up to 86fe2c19eec4728fd9a42ba18f3b47f0d5f9fd7c:
-
-  netfilter: nftables: skip hook overlap logic if flowtable is stale (2021-03-18 01:08:54 +0100)
-
-----------------------------------------------------------------
-Florian Westphal (1):
-      netfilter: ctnetlink: fix dump of the expect mask attribute
-
-Ludovic Senecaux (1):
-      netfilter: conntrack: Fix gre tunneling over ipv6
-
-Mark Tomlinson (3):
-      Revert "netfilter: x_tables: Update remaining dereference to RCU"
-      Revert "netfilter: x_tables: Switch synchronization to RCU"
-      netfilter: x_tables: Use correct memory barriers.
-
-Pablo Neira Ayuso (3):
-      netfilter: nftables: report EOPNOTSUPP on unsupported flowtable flags
-      netfilter: nftables: allow to update flowtable flags
-      netfilter: nftables: skip hook overlap logic if flowtable is stale
-
-Yinjun Zhang (1):
-      netfilter: flowtable: Make sure GC works periodically in idle system
-
- include/linux/netfilter/x_tables.h     |  7 ++---
- include/net/netfilter/nf_tables.h      |  3 +++
- net/ipv4/netfilter/arp_tables.c        | 16 +++++------
- net/ipv4/netfilter/ip_tables.c         | 16 +++++------
- net/ipv6/netfilter/ip6_tables.c        | 16 +++++------
- net/netfilter/nf_conntrack_netlink.c   |  1 +
- net/netfilter/nf_conntrack_proto_gre.c |  3 ---
- net/netfilter/nf_flow_table_core.c     |  2 +-
- net/netfilter/nf_tables_api.c          | 22 ++++++++++++++-
- net/netfilter/x_tables.c               | 49 +++++++++++++++++++++++-----------
- 10 files changed, 86 insertions(+), 49 deletions(-)
