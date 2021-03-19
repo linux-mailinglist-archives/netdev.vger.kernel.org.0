@@ -2,106 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B1E34217B
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 17:12:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C51F034217D
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 17:12:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230177AbhCSQLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 12:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbhCSQLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 12:11:13 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2B3C06174A
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id f8so568281pgi.9
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=WLipTIgsxq07Cj5tFotwTGWIVP97RFZLRby1vgsrO0I=;
-        b=KVpLd0KqWczndGzDXuHbaF3YmUqchoYziMcwZCtr/4kUNDBx57iBzIFGlJBq4Rcr2H
-         Wccm6YPUM131TL76NAA02XNufeLrITK4BgURwmSj7ikp6R5LExLT5R0XHWpXEM1BeyJ+
-         R4UMFb6Yos5PglPv2bnSxhciuz2sG1WoAxtyApLd9eXBJO9gMJ35rEJi11FKEYRGfhdf
-         kfdiQ0FRTesART61N5ps0PrzThQ1YgijuuE+4zh32ER7HjGnBiI7FjVSgagQ9tlU4fPg
-         9aIrsK3092f/AZm9ED+mk0vjS5b0SHR6rvFjl375yUorVlhPESNvpAlYEgUJlKcTbUgh
-         DTmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=WLipTIgsxq07Cj5tFotwTGWIVP97RFZLRby1vgsrO0I=;
-        b=QoxuibDjEgeL+PC/B8rHBhvnPoQOPL0A7dkAFobeyPnUbN3EEuGoR4Mzmu559TvSxS
-         ipRwyU0YdNsLwAT95nqrM064JUcErGh3xhZmtfnsmFnNwohaLh3ceVil9JrcAWqxyPdi
-         2hu1J208+ZPZNMrJ/kx878r9/wHFUF5lyYtEIcGNSU1DXQ4Wpi6NgGdOJsqFF5lX6xjT
-         ThW9kAnuKnCUv+Sck+aD4kdT/cKyOuOqwPT83r0kVzfGpTeGKULyiwJ3Y4C+7lCCKndH
-         gdJIl+eO9qynbtFCDtp0SM6EVfJ539xtUWNQBPARDJQ+oxkONR16j7TEsl/BVlECl6X3
-         P7Iw==
-X-Gm-Message-State: AOAM530+Vu04ZnoBA3C2R2F5DXDLyS2vzF+KUoXuYOLvbn3h5xHV/NqC
-        e63pNyJwqYXnKuMBKcrQd7BzESn/uoEcaEYM
-X-Google-Smtp-Source: ABdhPJx9qs6HCwzP9RqAhnIAkkClzDRetJ3uHksisgvWpazzPw7YEMvLbxF1023SzfsNHkPDub7y8A==
-X-Received: by 2002:aa7:824e:0:b029:20a:3a1:eeda with SMTP id e14-20020aa7824e0000b029020a03a1eedamr9758802pfn.71.1616170273391;
-        Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
-Received: from ?IPv6:2600:8801:130a:ce00:d905:609a:780b:479? ([2600:8801:130a:ce00:d905:609a:780b:479])
-        by smtp.gmail.com with ESMTPSA id j22sm5220633pjz.3.2021.03.19.09.11.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.40.0.2.32\))
-Subject: Re: [PATCH v3] icmp: support rfc5837
-From:   Ishaan Gandhi <ishaangandhi@gmail.com>
-In-Reply-To: <f65cb281-c6d5-d1c9-a90d-3281cdb75620@gmail.com>
-Date:   Fri, 19 Mar 2021 09:11:06 -0700
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        willemb@google.com,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <5E97397E-7028-46E8-BC0D-44A3E30C41A4@gmail.com>
-References: <20210317221959.4410-1-ishaangandhi@gmail.com>
- <f65cb281-c6d5-d1c9-a90d-3281cdb75620@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-X-Mailer: Apple Mail (2.3654.40.0.2.32)
+        id S230363AbhCSQMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 12:12:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34622 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229987AbhCSQLl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 12:11:41 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id DF226AC75;
+        Fri, 19 Mar 2021 16:11:39 +0000 (UTC)
+Subject: Re: [PATCH 1/7] mm/page_alloc: Move gfp_allowed_mask enforcement to
+ prepare_alloc_pages
+To:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+References: <20210312154331.32229-1-mgorman@techsingularity.net>
+ <20210312154331.32229-2-mgorman@techsingularity.net>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Message-ID: <2b5b3bea-c247-0564-f2d4-1dad28f176ed@suse.cz>
+Date:   Fri, 19 Mar 2021 17:11:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
+MIME-Version: 1.0
+In-Reply-To: <20210312154331.32229-2-mgorman@techsingularity.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you. Would it be better to do instead:
+On 3/12/21 4:43 PM, Mel Gorman wrote:
+> __alloc_pages updates GFP flags to enforce what flags are allowed
+> during a global context such as booting or suspend. This patch moves the
+> enforcement from __alloc_pages to prepare_alloc_pages so the code can be
+> shared between the single page allocator and a new bulk page allocator.
+> 
+> When moving, it is obvious that __alloc_pages() and __alloc_pages
+> use different names for the same variable. This is an unnecessary
+> complication so rename gfp_mask to gfp in prepare_alloc_pages() so the
+> name is consistent.
+> 
+> No functional change.
 
-+	if_index =3D skb->skb_iif;
+Hm, I have some doubts.
 
-or
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> ---
+>  mm/page_alloc.c | 25 +++++++++++++------------
+>  1 file changed, 13 insertions(+), 12 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 00b67c47ad87..f0c1d74ead6f 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -4914,15 +4914,18 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
+>  	return page;
+>  }
+>  
+> -static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+> +static inline bool prepare_alloc_pages(gfp_t gfp, unsigned int order,
+>  		int preferred_nid, nodemask_t *nodemask,
+>  		struct alloc_context *ac, gfp_t *alloc_gfp,
+>  		unsigned int *alloc_flags)
+>  {
+> -	ac->highest_zoneidx = gfp_zone(gfp_mask);
+> -	ac->zonelist = node_zonelist(preferred_nid, gfp_mask);
+> +	gfp &= gfp_allowed_mask;
+> +	*alloc_gfp = gfp;
+> +
 
-+	if_index =3D ip_version =3D=3D 4 ? inet_iif(skb) : skb->skb_iif;
+...
 
-> On Mar 19, 2021, at 7:55 AM, David Ahern <dsahern@gmail.com> wrote:
->=20
-> On 3/17/21 4:19 PM, ishaangandhi wrote:
->> +void icmp_identify_arrival_interface(struct sk_buff *skb, struct net =
-*net, int room,
->> +				     char *icmph, int ip_version)
->> +{
->> +	unsigned int ext_len, orig_len, word_aligned_orig_len, offset, =
-extra_space_needed,
->> +		     if_index, mtu =3D 0, name_len =3D 0, =
-name_subobj_len =3D 0;
->> +	struct interface_ipv4_addr_sub_obj ip4_addr_subobj =3D {.addr =3D =
-0};
->> +	struct interface_ipv6_addr_sub_obj ip6_addr_subobj;
->> +	struct icmp_extobj_hdr *iio_hdr;
->> +	struct inet6_ifaddr ip6_ifaddr;
->> +	struct inet6_dev *dev6 =3D NULL;
->> +	struct icmp_ext_hdr *ext_hdr;
->> +	char *name =3D NULL, ctype;
->> +	struct net_device *dev;
->> +	void *subobj_offset;
->> +
->> +	skb_linearize(skb);
->> +	if_index =3D inet_iif(skb);
->=20
-> inet_iif is an IPv4 helper; it should not be used for v6 skb's.
->=20
+> @@ -4980,8 +4983,6 @@ struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
+>  		return NULL;
+>  	}
+>  
+> -	gfp &= gfp_allowed_mask;
+> -	alloc_gfp = gfp;
+>  	if (!prepare_alloc_pages(gfp, order, preferred_nid, nodemask, &ac,
+>  			&alloc_gfp, &alloc_flags))
+>  		return NULL;
+
+As a result, "gfp" doesn't have the restrictions by gfp_allowed_mask applied,
+only alloc_gfp does. But in case we go to slowpath, before
+going there we throw away the current alloc_gfp:
+
+    alloc_gfp = current_gfp_context(gfp);
+    ...
+    page = __alloc_pages_slowpath(alloc_gfp, ...);
+
+So we lost the gfp_allowed_mask restrictions here?
 
