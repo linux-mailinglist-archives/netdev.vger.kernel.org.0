@@ -2,94 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04103425BB
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 20:06:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EFA03425A9
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 20:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbhCSTGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 15:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230218AbhCSTFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 15:05:47 -0400
-X-Greylist: delayed 3463 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 19 Mar 2021 12:05:46 PDT
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB38C06174A
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 12:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:Content-Type:MIME-Version:
-        References:Message-ID:In-Reply-To:Subject:cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=qVZuZEyZBAS/ZgAMPEp7JyONmLh5M9RY5PXbkJLE8m0=; b=XLXLK8zZRT9V/6koOVD1foe6jE
-        uuj+c6QAkeX8KkWg+jAASxyGFpAMOKaNb+2Qol5C3U1HonK5LYEns4EPApR+4TBPb7i2CYTbIySi6
-        quBjuwU5uhBVzZSiuhRL0siaVa5JmCqz2pilOlrPBff/WU9E5qFbicBBBKIJRq3FP6s9O9rjioAdI
-        xaP8/7JZpzk8vgFiIKS3yQEtaQ/1ddMZvXlfamG11MvUFAYePhClBbhSqhFE7ApPVzxwYpaDez/YY
-        rMAqlAw6al5k9eA2BqxW/9yo7L1LWAWW6et39kh6572k9YxIfm7+hUjDYBla3phDr9q5aRb2kJvR/
-        nM4RbcnQ==;
-Received: from rdunlap (helo=localhost)
-        by bombadil.infradead.org with local-esmtp (Exim 4.94 #2 (Red Hat Linux))
-        id 1lNJXU-001RdU-Hv; Fri, 19 Mar 2021 18:08:01 +0000
-Date:   Fri, 19 Mar 2021 11:08:00 -0700 (PDT)
-From:   Randy Dunlap <rdunlap@bombadil.infradead.org>
-To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
-cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sch_red: Fix a typo
-In-Reply-To: <20210319044623.20396-1-unixbhaskar@gmail.com>
-Message-ID: <ff38bd-991b-1e41-7b28-bfdeda3b4aba@bombadil.infradead.org>
-References: <20210319044623.20396-1-unixbhaskar@gmail.com>
+        id S230473AbhCSTD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 15:03:56 -0400
+Received: from mail.zx2c4.com ([104.131.123.232]:56506 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230285AbhCSTD0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 15:03:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1616180598;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IN+ydESw6o8X7Wr71+3xLjavHCnYCjO5YtnEjXc2xqc=;
+        b=ANsFEebuT8UujDMuec9I0+F4pS5K8XVJzeccGIydKKQh8IDTI8NowQpzfMvTMfDpYaaWMG
+        JOeUL2LE4xtQk7fxfcBmggIA+Y650zht+YZzj8+afJeJ8WHs06lbSqV28OyLOwaHqgDlN+
+        Te0EniVtdpkMaeqhCxqckzmW8mOSyV0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d9c0995b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 19 Mar 2021 19:03:18 +0000 (UTC)
+Received: by mail-yb1-f171.google.com with SMTP id c131so7339479ybf.7;
+        Fri, 19 Mar 2021 12:03:18 -0700 (PDT)
+X-Gm-Message-State: AOAM531u4ELDgeTKUfOEhYajbput+cxCXYnnTIkO8zZQdOcYh3ZMv8tV
+        LU2iIcWLCeOoJzP00+QyAm6aPurpLN0DipdKdlI=
+X-Google-Smtp-Source: ABdhPJyVtqiB1Ie45L3iLGrKcIwbe2e4TLDHlPmROylBQSw3Eog83JKjNPeCDeaQa5hvIoxSGuhCfJ9QgpnWl5tITiE=
+X-Received: by 2002:a25:38c5:: with SMTP id f188mr8383964yba.178.1616180597073;
+ Fri, 19 Mar 2021 12:03:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Sender: Randy Dunlap <rdunlap@infradead.org>
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20210319_110800_615482_E7D0A2CA 
-X-CRM114-Status: GOOD (  12.98  )
-X-Spam-Score: -0.0 (/)
-X-Spam-Report: Spam detection software, running on the system "bombadil.infradead.org",
- has NOT identified this incoming email as spam.  The original
- message has been attached to this so you can view it or label
- similar future email.  If you have any questions, see
- the administrator of that system for details.
- Content preview:  On Fri, 19 Mar 2021, Bhaskar Chowdhury wrote: > > s/recalcultion/recalculation/
-    > > Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com> Acked-by: Randy
-    Dunlap <rdunlap@infradead.org> 
- Content analysis details:   (-0.0 points, 5.0 required)
-  pts rule name              description
- ---- ---------------------- --------------------------------------------------
- -0.0 NO_RELAYS              Informational: message was not relayed via SMTP
+References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
+ <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
+ <20210315115332.1647e92b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAM_iQpXvVZxBRHF6PBDOYSOSCj08nPyfcY0adKuuTg=cqffV+w@mail.gmail.com>
+ <87eegddhsj.fsf@toke.dk> <CAHmME9qDU7VRmBV+v0tzLiUpMJykjswSDwqc9P43ZwG1UD7mzw@mail.gmail.com>
+ <3bae7b26-9d7f-15b8-d466-ff5c26d08b35@huawei.com>
+In-Reply-To: <3bae7b26-9d7f-15b8-d466-ff5c26d08b35@huawei.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 19 Mar 2021 13:03:06 -0600
+X-Gmail-Original-Message-ID: <CAHmME9qS-_H7Z5Gjw7SbZS0fO84vzpx4ZNHu0Ay=2krZpJQy3A@mail.gmail.com>
+Message-ID: <CAHmME9qS-_H7Z5Gjw7SbZS0fO84vzpx4ZNHu0Ay=2krZpJQy3A@mail.gmail.com>
+Subject: Re: [Linuxarm] Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS
+ for lockless qdisc
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "Cong Wang ." <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org, Thomas Gschwantner <tharre3@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On Fri, 19 Mar 2021, Bhaskar Chowdhury wrote:
-
+On Thu, Mar 18, 2021 at 1:33 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> > That offer definitely still stands. Generalization sounds like a lot of fun.
+> >
+> > Keep in mind though that it's an eventually consistent queue, not an
+> > immediately consistent one, so that might not match all use cases. It
+> > works with wg because we always trigger the reader thread anew when it
+> > finishes, but that doesn't apply to everyone's queueing setup.
 >
-> s/recalcultion/recalculation/
+> Thanks for mentioning this.
 >
-> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> "multi-producer, single-consumer" seems to match the lockless qdisc's
+> paradigm too, for now concurrent enqueuing/dequeuing to the pfifo_fast's
+> queues() is not allowed, it is protected by producer_lock or consumer_lock.
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-
-> ---
-> include/net/red.h | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/include/net/red.h b/include/net/red.h
-> index 932f0d79d60c..6b418b69dc48 100644
-> --- a/include/net/red.h
-> +++ b/include/net/red.h
-> @@ -287,7 +287,7 @@ static inline unsigned long red_calc_qavg_from_idle_time(const struct red_parms
-> 	int  shift;
->
-> 	/*
-> -	 * The problem: ideally, average length queue recalcultion should
-> +	 * The problem: ideally, average length queue recalculation should
-> 	 * be done over constant clock intervals. This is too expensive, so
-> 	 * that the calculation is driven by outgoing packets.
-> 	 * When the queue is idle we have to model this clock by hand.
-> --
-> 2.26.2
->
->
+The other thing is that if you've got memory for a ring buffer rather
+than a list queue, we worked on an MPMC ring structure for WireGuard a
+few years ago that we didn't wind up using in the end, but it lives
+here:
+https://git.zx2c4.com/wireguard-monolithic-historical/tree/src/mpmc_ptr_ring.h?h=tg/mpmc-benchmark
