@@ -2,83 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ACCC3428AE
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 23:26:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32F353428B5
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 23:30:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbhCSWZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 18:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
+        id S230297AbhCSWaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 18:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbhCSWZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 18:25:35 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC035C061760;
-        Fri, 19 Mar 2021 15:25:35 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id i3so6373118oik.7;
-        Fri, 19 Mar 2021 15:25:35 -0700 (PDT)
+        with ESMTP id S230226AbhCSWaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 18:30:09 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159E3C061760;
+        Fri, 19 Mar 2021 15:30:09 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id l14so7291521ybe.2;
+        Fri, 19 Mar 2021 15:30:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LgipKyceb0j7HbNt9olK50Ew2nFId355eSf3DWbsDmQ=;
-        b=E6/aX0SLolulg/q7LAu0QP1FMSFpvbaBMRIf9T6qOFCEjH+UH9fnjyxj+R9H4ehxd7
-         fnGauzMNsDJ/02/zhevr1MYpgEI733eE6mLgZtqY2Ql/DbPadCcIF0j07YdmeV3P/rZV
-         zTTO4G3AOdSIoXKUfRtV/HElHpo+zojTxAm/xLPctwjTSxqvRJxcjdXwaI38Areqw/cu
-         wm7kTumtERUY6SDOZ0w4EjpxTeSMvxz3soDokNKGAqyv5GW9zGSgktKklujvR2qVtoh3
-         EQR8c5lfU0zVnomy6KrhKUjthIDdi7FE5Y3bNivXflPAWQVT46zouimmBkTbRYsNtwzG
-         Iusg==
+         :cc;
+        bh=mpEj/SJix1SGN/SicFa/cydF2U4SLXAJlcq8rZdgk58=;
+        b=T7whLr8MaK3S4lmngxaqtx9iXNaGqdL+qkJfQmc/gOvnsPoRh5dnDs0iOSc5qW2ocK
+         4hc6g2bFna/lrYbq6XOMDX19ZFXX2JftmtJgs3mGm+PWWbY6nLbLWrYNzdKhvcHNOkCe
+         Uu4jwNMgvA6DCQd1xX8CBHJ50xdMJeYZf1lMcOVekNGfAst26LRPoqv1V9yewjqyWhU8
+         +fEraOvevf96F/VbYVipt2ytcgNIZyn++u9YBEYllxCdRsA3p3ml34QEmrV5VdfwZF/a
+         L1WcXem8VOZTPFDG1MUNajYzzeC6X3tEWJnUQGmpSFHCP+NUGXIc+0ksvscXWzR/mtKW
+         0IrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LgipKyceb0j7HbNt9olK50Ew2nFId355eSf3DWbsDmQ=;
-        b=h+fUHBk3oMlvFgD6+kDI8CmsrotS99Cgl1v16yOmGwm7KypDLxkL8htrqnwehO4Vxz
-         dZ3LPJQOeABJrIitoSfIcVeTGI5S2IE3CjIgPRBfyZsrpJqWJE/WaXIflGd1W4ZBkTLE
-         YcIjIdbKlSzX2hA2l0V+C9QQmGtQCekmJLibopsxikDmO3zNnZEahv+BXtEei+3Tg45O
-         fq9pfBmF/e8XXaUp51LEMTuR5IF81xEhjOeKAKIUsN103PUBRc0gjvBA9EkEpy1FgSW4
-         aO+Gvu+29MqlRgQ+ni3Ki5sdbkXY41cHaxTmzK8eTadeTlSlspbOdJJ/BiXIGY8RplLu
-         mt4w==
-X-Gm-Message-State: AOAM531OL65xf1385QTnB0AVLYRMN9PkAuCCQQ/S1F+RR2VlI2lJPpZL
-        EG/8VPex/fzabN3S98sAB3JlbNeInGOuLEWzbs8=
-X-Google-Smtp-Source: ABdhPJx0vrAXgauF/H5vmgAfB1ALItNG5X+bPhGv5vZ7jCmD3Gv2pIN4yWiGQReurrOVrA8yNX8JUV3Y+jlC0y53t48=
-X-Received: by 2002:aca:a9d8:: with SMTP id s207mr2570191oie.18.1616192735280;
- Fri, 19 Mar 2021 15:25:35 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=mpEj/SJix1SGN/SicFa/cydF2U4SLXAJlcq8rZdgk58=;
+        b=TKYEyJMfiZcaObKkZMHaJIGNu7RsPKs/47AmvAT1xyqpAyUJ0Hh0NcR0mLznl5RjaR
+         ahrEpGr+ZkaLQ/DAlAlT9KueqrcQb+szi4Yj+bIUJL+Hxs81tTXwVVYfOixjrcTk02kD
+         NUklMlWEyJnREJydsuOjm3lxmzw6kOVvCcKG7QoAZ4V9Hbl9z1c0wdJ5Fh4e7tgr4hFy
+         z1/etLD/2TR4yHXP2Qv9p6wf8FmabqEuiI7q6/te9J1zhNra3FcaGm3oDIBkKDfzdOcy
+         BpwT5WqtEm69fW7Az2JtQdT01S6WzaH13emGiOYb8N72cttiz6nKfOqhauqIL7NEedNP
+         MrLQ==
+X-Gm-Message-State: AOAM530mXafWktfN+DxBt1H+ubQcQ3CDEHXjabqFPvNUB1VuUGMowS7W
+        EtJtekwU8Rvu/7XSkbd41Oi5XoEoJinFXVUCM20=
+X-Google-Smtp-Source: ABdhPJwS3u01eLdNhcxk6vrQjW5pKrHRTxlpyiUMULzyXRertZLAzR5aZ19ioZV6efDytviZj1gkaHiE9HYPCRz8Rcw=
+X-Received: by 2002:a25:37c1:: with SMTP id e184mr9550190yba.260.1616193007971;
+ Fri, 19 Mar 2021 15:30:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <87tupl30kl.fsf@igel.home> <04a7e801-9a55-c926-34ad-3a7665077a4e@microchip.com>
- <87o8fhoieu.fsf@igel.home> <CALecT5gY1GK774TXyM+zA3J9Q8O90UKMs3bvRk13yg9_+cFO3Q@mail.gmail.com>
- <87h7l77cgn.fsf@igel.home>
-In-Reply-To: <87h7l77cgn.fsf@igel.home>
-From:   Yixun Lan <yixun.lan@gmail.com>
-Date:   Sat, 20 Mar 2021 06:25:24 +0800
-Message-ID: <CALecT5jFGr+QtEWgD3M5JCH0d7O6N7PokaNbQaisyxgEU6fx=Q@mail.gmail.com>
-Subject: Re: macb broken on HiFive Unleashed
-To:     Andreas Schwab <schwab@linux-m68k.org>
-Cc:     Claudiu.Beznea@microchip.com,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        ckeepax@opensource.cirrus.com, andrew@lunn.ch, w@1wt.eu,
-        Nicolas.Ferre@microchip.com, Daniel Palmer <daniel@0x0f.com>,
-        alexandre.belloni@bootlin.com, pthombar@cadence.com,
-        netdev@vger.kernel.org,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+References: <20210316011336.4173585-1-kafai@fb.com> <20210316011348.4175708-1-kafai@fb.com>
+ <CAEf4Bzb57BrVOHRzikejK1ubWrZ_cd2FCS6BW6_E-2KuzJGrPg@mail.gmail.com>
+ <20210318233907.r5pxtpe477jumjq6@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZx+1bN0VazE5t5_z8X+GXFZUmiLbpxZ-WfM_mLba0OYg@mail.gmail.com>
+ <20210319052943.lt3mfmjd4iozvf6i@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbFOQ-45Oo_rdPfHnpSjCDcdDhspGNyRK2_zJjP49VhJw@mail.gmail.com> <20210319221950.5cd3ub3gpjcztzmt@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210319221950.5cd3ub3gpjcztzmt@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 19 Mar 2021 15:29:57 -0700
+Message-ID: <CAEf4Bza6Fiv+AFJc9-L=S6Duvm7wyyjvqoDGEED3TDTmwiZvVQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 02/15] bpf: btf: Support parsing extern func
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-HI Andreas, Zong:
+On Fri, Mar 19, 2021 at 3:19 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Fri, Mar 19, 2021 at 02:27:13PM -0700, Andrii Nakryiko wrote:
+> > On Thu, Mar 18, 2021 at 10:29 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > On Thu, Mar 18, 2021 at 09:13:56PM -0700, Andrii Nakryiko wrote:
+> > > > On Thu, Mar 18, 2021 at 4:39 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > >
+> > > > > On Thu, Mar 18, 2021 at 03:53:38PM -0700, Andrii Nakryiko wrote:
+> > > > > > On Tue, Mar 16, 2021 at 12:01 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > > > >
+> > > > > > > This patch makes BTF verifier to accept extern func. It is used for
+> > > > > > > allowing bpf program to call a limited set of kernel functions
+> > > > > > > in a later patch.
+> > > > > > >
+> > > > > > > When writing bpf prog, the extern kernel function needs
+> > > > > > > to be declared under a ELF section (".ksyms") which is
+> > > > > > > the same as the current extern kernel variables and that should
+> > > > > > > keep its usage consistent without requiring to remember another
+> > > > > > > section name.
+> > > > > > >
+> > > > > > > For example, in a bpf_prog.c:
+> > > > > > >
+> > > > > > > extern int foo(struct sock *) __attribute__((section(".ksyms")))
+> > > > > > >
+> > > > > > > [24] FUNC_PROTO '(anon)' ret_type_id=15 vlen=1
+> > > > > > >         '(anon)' type_id=18
+> > > > > > > [25] FUNC 'foo' type_id=24 linkage=extern
+> > > > > > > [ ... ]
+> > > > > > > [33] DATASEC '.ksyms' size=0 vlen=1
+> > > > > > >         type_id=25 offset=0 size=0
+> > > > > > >
+> > > > > > > LLVM will put the "func" type into the BTF datasec ".ksyms".
+> > > > > > > The current "btf_datasec_check_meta()" assumes everything under
+> > > > > > > it is a "var" and ensures it has non-zero size ("!vsi->size" test).
+> > > > > > > The non-zero size check is not true for "func".  This patch postpones the
+> > > > > > > "!vsi-size" test from "btf_datasec_check_meta()" to
+> > > > > > > "btf_datasec_resolve()" which has all types collected to decide
+> > > > > > > if a vsi is a "var" or a "func" and then enforce the "vsi->size"
+> > > > > > > differently.
+> > > > > > >
+> > > > > > > If the datasec only has "func", its "t->size" could be zero.
+> > > > > > > Thus, the current "!t->size" test is no longer valid.  The
+> > > > > > > invalid "t->size" will still be caught by the later
+> > > > > > > "last_vsi_end_off > t->size" check.   This patch also takes this
+> > > > > > > chance to consolidate other "t->size" tests ("vsi->offset >= t->size"
+> > > > > > > "vsi->size > t->size", and "t->size < sum") into the existing
+> > > > > > > "last_vsi_end_off > t->size" test.
+> > > > > > >
+> > > > > > > The LLVM will also put those extern kernel function as an extern
+> > > > > > > linkage func in the BTF:
+> > > > > > >
+> > > > > > > [24] FUNC_PROTO '(anon)' ret_type_id=15 vlen=1
+> > > > > > >         '(anon)' type_id=18
+> > > > > > > [25] FUNC 'foo' type_id=24 linkage=extern
+> > > > > > >
+> > > > > > > This patch allows BTF_FUNC_EXTERN in btf_func_check_meta().
+> > > > > > > Also extern kernel function declaration does not
+> > > > > > > necessary have arg name. Another change in btf_func_check() is
+> > > > > > > to allow extern function having no arg name.
+> > > > > > >
+> > > > > > > The btf selftest is adjusted accordingly.  New tests are also added.
+> > > > > > >
+> > > > > > > The required LLVM patch: https://reviews.llvm.org/D93563
+> > > > > > >
+> > > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > > > ---
+> > > > > >
+> > > > > > High-level question about EXTERN functions in DATASEC. Does kernel
+> > > > > > need to see them under DATASEC? What if libbpf just removed all EXTERN
+> > > > > > funcs from under DATASEC and leave them as "free-floating" EXTERN
+> > > > > > FUNCs in BTF.
+> > > > > >
+> > > > > > We need to tag EXTERNs with DATASECs mainly for libbpf to know whether
+> > > > > > it's .kconfig or .ksym or other type of externs. Does kernel need to
+> > > > > > care?
+> > > > > Although the kernel does not need to know, since the a legit llvm generates it,
+> > > > > I go with a proper support in the kernel (e.g. bpftool btf dump can better
+> > > > > reflect what was there).
+> > > >
+> > > > LLVM also generates extern VAR with BTF_VAR_EXTERN, yet libbpf is
+> > > > replacing it with fake INTs.
+> > > Yep. I noticed the loop in collect_extern() in libbpf.
+> > > It replaces the var->type with INT.
+> > >
+> > > > We could do just that here as well.
+> > > What to replace in the FUNC case?
+> >
+> > if we do that, I'd just replace them with same INTs. Or we can just
+> > remove the entire DATASEC. Now it is easier to do with BTF write APIs.
+> > Back then it was a major pain. I'd probably get rid of DATASEC
+> > altogether instead of that INT replacement, if I had BTF write APIs.
+> Do you mean vsi->type = INT?
 
-On Fri, Mar 19, 2021 at 4:51 PM Andreas Schwab <schwab@linux-m68k.org> wrot=
-e:
->
-> On M=C3=A4r 19 2021, Yixun Lan wrote:
->
-> > what's the exact root cause? and any solution?
->
-> Try reverting the five commits starting with
-> 732374a0b440d9a79c8412f318a25cd37ba6f4e2.
->
-I confirm reverting those five patches make the ethernet work again
-tested with kernel version 5.11.7
+yes, that's what existing logic does for EXTERN var
 
-Yixun Lan
+>
+> >
+> > >
+> > > Regardless, supporting it properly in the kernel is a better way to go
+> > > instead of asking the userspace to move around it.  It is not very
+> > > complicated to support it in the kernel also.
+> > >
+> > > What is the concern of having the kernel to support it?
+> >
+> > Just more complicated BTF validation logic, which means that there are
+> > higher chances of permitting invalid BTF. And then the question is
+> > what can the kernel do with those EXTERNs in BTF? Probably nothing.
+> > And that .ksyms section is special, and purely libbpf convention.
+> > Ideally kernel should not allow EXTERN funcs in any other DATASEC. Are
+> > you willing to hard-code ".ksyms" name in kernel for libbpf's sake?
+> > Probably not. The general rule, so far, was that kernel shouldn't see
+> > any unresolved EXTERN at all. Now it's neither here nor there. EXTERN
+> > funcs are ok, EXTERN vars are not.
+> Exactly, it is libbpf convention.  The kernel does not need to enforce it.
+> The kernel only needs to be able to support the debug info generated by
+> llvm and being able to display/dump it later.
+>
+> There are many other things in the BTF that the kernel does not need to
+
+Curious, what are those many other things?
+
+> know.  It is there for debug purpose which the BTF is used for.  Yes,
+> the func call can be discovered by instruction dump.  It is also nice to
+> see everything in one ksyms datasec also during btf dump.
+>
+> If there is a need to strip everything that the kernel does not need
+> from the BTF, it can all be stripped in another "--strip-debug" like
+> option.
+
+Where does this "--strip-debug" option go? Clang, pahole, or bpftool?
+Or am I misunderstanding what you are proposing?
+
+>
+> To support EXTERN var, the kernel part should be fine.  I am only not
+> sure why it has to change the vs->size and vs->offset in libbpf?
+
+vs->size and vs->offset are adjusted to match int type. Otherwise
+kernel BTF validation will complain about DATASEC size mismatch.
+
+>
+>
+> >
+> > >
+> > > > If anyone would want to know all the kernel functions that some BPF
+> > > > program is using, they could do it from the instruction dump, with
+> > > > proper addresses and kernel function names nicely displayed there.
+> > > > That's way more useful, IMO.
