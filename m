@@ -2,97 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB6B341D5A
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 13:50:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C36341D8D
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 13:58:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230142AbhCSMuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 08:50:19 -0400
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:22745 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbhCSMt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 08:49:59 -0400
-Date:   Fri, 19 Mar 2021 12:49:48 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1616158197; bh=c8MK4wemP9LsmYATwXJkPDvV2Nqmt21hm9TQxyvidIQ=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=T7ygbLdJIU0GyN/vltBR2CSoEBqJ3+ptrs2jShxPnh8ZrGNOkfyLcq8pxH5OQZDNR
-         nrIiZbFEhqnWqwJ/Fcj2/rGGOsmHHpK/hB7njmGTWP1XhMaflcyBTxb83+d5nFzIYe
-         FMF7OHufJXFXK9EP+pjw3GEQIXOdjrEfUY1sBhOaT0VE80XLgPakc1kIIuejo3qlBa
-         wPdTl8XuaklSm6Ra+8Q5NZGa9AzsX6r0vqTuTmIv7XKMCONBr9V8rZaKA9b4/Agx4V
-         DDb0DoFNA/U16Ph+yVyBvY5lvMJij64Wp3mAd1P72gK9agGBpCYTouBfZmb81oauM2
-         nWpSPPtXbE+2w==
-To:     Paolo Abeni <pabeni@redhat.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S229805AbhCSM5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 08:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229908AbhCSM5X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 08:57:23 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543ADC0613D7
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 05:57:23 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id t5-20020a1c77050000b029010e62cea9deso5214421wmi.0
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 05:57:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XpPGUE6BByswa3Ep4l8WzlVumVFkgxbvdRbN1GhWJbU=;
+        b=eQ2OMBnwvXNj4Zdcbf4Hf8XhhOBTeJwVU8tZfivPCrGq/tqqyHwo+0+7sVu6f/FsOF
+         2OxuJiRcYb+ik93a+6pEZWp7tjd8+5ZGYphQIC53Le4n8JIjcX44lFddF1HSGvwZed2B
+         Kdty/Fkttsnba/u2wxbAW5PS5T45tIkJ0NOMrBS5T1OqETZjK5ywTXFrxyTHOnG0UEDs
+         YwqAQK/gQEYhzSjBYukkAxpoaF+2mwqUDnY9us+Z2wK1PX5EK6/psOtGTwp+gwxvvLao
+         0b4J3h/UircWR7ovcTz20HRQhi0PF74RiV9kaVNlVJ+dVdgg+O5M2++cy91mMuVOguqX
+         kI7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XpPGUE6BByswa3Ep4l8WzlVumVFkgxbvdRbN1GhWJbU=;
+        b=WBumIVKf+FUCnDZAKpI70JTtfitXh8aA3Q9Qzay7viEMzpBNk8Sh0Zg7wWYfj8peBE
+         j+KNDY5xJvLqnbZWYQXd8VzC8p8JL1xqo7lyTKMMSY3xHaUs1YirMVpzLbwu/LmDdBbh
+         pDJCCz0KSer4U5acwfCmk93YyL0UuCnft+oKYiUhDZz1joof+OkkkgAht48/VbYXh2Re
+         hW7U+0Bs0mrjurXGV8YPdypatXTmBZ/5usX7Y0fVYcZzXv9dg0a8VABhZ0bLHUMRCTDR
+         KGs0VCgt2UtrGrtsdXoyUlW5FZKHA38ck4OMdOiuRqW3JMQqSr79QwDu7wKLRMaKfxfn
+         lxMg==
+X-Gm-Message-State: AOAM531Apf6eLeJQkJPRr5COQwBeFMRWoKrsfu5qGQMhEVq43Xdmu9dr
+        p/DD1B9V5YZ216P/26LrfFKLDEVJQQzErg==
+X-Google-Smtp-Source: ABdhPJwFVAyOf6DKJnWgPfK9dHaCFpWzGKth3FaOBlGYV9sO/L5kI4EXuCeCC1XVjuYkH/4Z1drgHQ==
+X-Received: by 2002:a1c:448a:: with SMTP id r132mr3621997wma.157.1616158641830;
+        Fri, 19 Mar 2021 05:57:21 -0700 (PDT)
+Received: from google.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
+        by smtp.gmail.com with ESMTPSA id s84sm6605286wme.11.2021.03.19.05.57.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Mar 2021 05:57:21 -0700 (PDT)
+Date:   Fri, 19 Mar 2021 12:57:16 +0000
+From:   David Brazdil <dbrazdil@google.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     selinux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 2/4] gro: add combined call_gro_receive() + INDIRECT_CALL_INET() helper
-Message-ID: <20210319124940.111546-1-alobakin@pm.me>
-In-Reply-To: <5c1fce37033e98e483728ea9879c3cf4ae83aa28.camel@redhat.com>
-References: <20210318184157.700604-1-alobakin@pm.me> <20210318184157.700604-3-alobakin@pm.me> <1ebd301832ff86cc414dd17eee0b3dfc91ff3c08.camel@redhat.com> <20210319111315.3069-1-alobakin@pm.me> <20210319114300.108808-1-alobakin@pm.me> <5c1fce37033e98e483728ea9879c3cf4ae83aa28.camel@redhat.com>
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jeff Vander Stoep <jeffv@google.com>,
+        Alistair Delva <adelva@google.com>
+Subject: Re: [PATCH] selinux: vsock: Set SID for socket returned by accept()
+Message-ID: <YFSfrIZAz6zHENT7@google.com>
+References: <20210317154448.1034471-1-dbrazdil@google.com>
+ <CAHC9VhT_+i9V9N7NAdCCUgO5xBZpffvVPeh=jK8weZr3WzZ4Bw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhT_+i9V9N7NAdCCUgO5xBZpffvVPeh=jK8weZr3WzZ4Bw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
-Date: Fri, 19 Mar 2021 13:35:41 +0100
+Hi Paul,
 
-> On Fri, 2021-03-19 at 11:43 +0000, Alexander Lobakin wrote:
-> > I'm not sure if you did it on purpose in commit aaa5d90b395a7
-> > ("net: use indirect call wrappers at GRO network layer").
-> > Was that intentional
->
-> I must admit that 2y+ later my own intentions are not so clear to me
-> too;)
+I'll post a v2 shortly but will address your comments here.
 
-Heh, know that feel (=3D
+> >  include/linux/lsm_hooks.h     |  7 +++++++
+> >  include/linux/security.h      |  5 +++++
+> >  net/vmw_vsock/af_vsock.c      |  1 +
+> >  security/security.c           |  5 +++++
+> >  security/selinux/hooks.c      | 10 ++++++++++
+> >  6 files changed, 29 insertions(+)
+> 
+> Additional comments below, but I think it would be a good idea for you
+> to test your patches on a more traditional Linux distribution as well
+> as Android.
+> 
 
-> > for the sake of more optimized path for the
-> > kernels with moduled IPv6,
->
-> Uhm... no I guess that was more an underlook on my side.
->
-> > or I can replace INDIRECT_CALL_INET()
-> > with INDIRECT_CALL_2() here too?
->
-> If that build with IPV6=3Dnmy, I would say yes.
+No problem, I was going to add a test case into selinux-testsuite
+anyway. Done now (link in v2) and tested on Fedora 33 with v5.12-rc3.
 
-I think you used INDIRECT_CALL_INET() to protect from CONFIG_INET=3Dn.
-But this also hurts with retpoline when CONFIG_IPV6=3Dm. Not so common
-case, but still.
+> > diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+> > index 5546710d8ac1..a9bf3b90cb2f 100644
+> > --- a/net/vmw_vsock/af_vsock.c
+> > +++ b/net/vmw_vsock/af_vsock.c
+> > @@ -755,6 +755,7 @@ static struct sock *__vsock_create(struct net *net,
+> >                 vsk->buffer_size = psk->buffer_size;
+> >                 vsk->buffer_min_size = psk->buffer_min_size;
+> >                 vsk->buffer_max_size = psk->buffer_max_size;
+> > +               security_vsock_sk_clone(parent, sk);
+> 
+> Did you try calling the existing security_sk_clone() hook here?  I
+> would be curious to hear why it doesn't work in this case.
+> 
+> Feel free to educate me on AF_VSOCK, it's entirely possible I'm
+> misunderstanding something here :)
+> 
 
-Plain INDIRECT_CALL_2() won't build without CONFIG_INET, so we either
-introduce a new one (e.g. _INET_2() similarly to _INET_1()), or leave
-it as it is for now (Dave's already picked this series to net-next).
+No, you're completely right. security_sk_clone does what's needed here.
+Adding a new hook was me trying to mimic other socket families going via
+selinux_conn_sid. Happy to reuse the existing hook - makes this a nice
+oneliner. :)
 
-> > I want to keep GRO callbacks that
-> > make use of indirect call wrappers unified.
->
-> L4 will still need some special handling as ipv6 udp gro callbacks are
-> not builtin with CONFIG_IPV6=3Dm :(
+Please note that I'm marking v2 with 'Fixes' for backporting. This does
+feel to me like a bug, an integration that was never considered. Please
+shout if you disagree.
 
-Yep, I remember. I meant {inet,ipv6}_gro_{complete,receive}()
-callers, but didn't mention that for some reason.
-
-> Cheers,
->
-> Paolo
-
-Thanks,
-Al
-
+-David
