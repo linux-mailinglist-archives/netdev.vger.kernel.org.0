@@ -2,184 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 105E03411A0
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 01:49:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5089C3411E1
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 02:04:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbhCSAt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Mar 2021 20:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
+        id S230145AbhCSBEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Mar 2021 21:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233291AbhCSAs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 20:48:57 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62763C06174A
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 17:48:57 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id l1so2144738plg.12
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 17:48:57 -0700 (PDT)
+        with ESMTP id S229994AbhCSBEB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Mar 2021 21:04:01 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A358C06174A;
+        Thu, 18 Mar 2021 18:04:01 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id h82so4472996ybc.13;
+        Thu, 18 Mar 2021 18:04:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VcL2PRC649t7/2/e96ZBhHWaTie3wVSR1kURoD0b1Fg=;
-        b=eWN8Acv2AHpW4fKApNqZyl3idPds9cemFoUN/0YyQyXITEFGFps3WZYeMyh8hAfPTb
-         /VTIYih4wC60XvCPLRKFhGgXEyCyiglaZAj6+oqNLH8xDCLUlLNdXipH4qZ0ZtYLNs0B
-         EUgp+O5igx9mvYD6uRirgVfW/1GDICUE1kzxPWpKDb2OfDPTvsYZkk3m8U27hPt3B1Jf
-         lAbO/NmqogN7DHHIfNhNmSeux00oZ09CiTyp4B5OLvnNhWgpfYvVtN2eZc584cHDav7y
-         bN+p+cGLn7gFnweXMmjAC4tCHNZmfRChdYck5yDXMBc5SCc1L6cawsqk2Xxbne/rARmF
-         Acog==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZGOncK1f2mtt4j4HI6UYzil414+B32QC7q3uvm91mbo=;
+        b=bEpJKfs9tuBh9lkKR+edb6GTo7wc5sCOSB2iDDb8i4Wh/evwumdvAMOB2TQARLagM1
+         PCgJgH2bPwg3XpVKKc/iWHggUyd5UdYKNxYOnbYLn9UAJV1B3YRDKRY51C+MAlXIbflW
+         /Q5g5MmUKJAQBsc5CUWK9ov1CXOKARcxbSJ3+e5fCq4mGf+rA1pd+J1STDIuYX9OjrJf
+         TXEJuuj3MGMigwGwpRcCBnT3hsrdyR3/VP9wmZBQUD34Xfx7ypLXx/v0ZUp0HnZ1OceM
+         gyoDuZ4+XgNCBS2BwFku4BEL1kk841rVtMWZ11zCg7N449ayKLUjNgXZVioXXBzlCVCT
+         RkAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=VcL2PRC649t7/2/e96ZBhHWaTie3wVSR1kURoD0b1Fg=;
-        b=flo9g9NhNU38VRqeaqBo3iHUliCzbGo4HqskZDWnPyFYQKoyVDlCilAUHJbF19L7u1
-         uPWHg+e+Wou83ZAP5NIJWuRGOEOXhJ4ECshxXyxmUJcwL8DoH/9QPgza3rQGj7/q8K55
-         AA/QIlGy3j51IJk3m3bvjyYl+vQMia0+bdDtAyo2Z9LO1wuO1Odqj4b6miXKIhSxl8Jk
-         zQurcB9pPwnt9mbNhVxYBN2+2HPBifK1VVWqt7KEqbYR0HATCJoj0swwd/fV+Vk0OzvI
-         RUOFGGDh/T2ibw7i1lIAMIDJVUS7AT1ShYA1Jr/2Z+QZ/TLEgJcu/xsNrqHBG+ZW2Ebw
-         8/gg==
-X-Gm-Message-State: AOAM533ZpYVl8gtiTt08pn/GCFEQlextHpYCnOkCK1kb7QeAHbN8R5/M
-        EC33REkKn+QxGi41gEOgJCobhWmQCCqj5A==
-X-Google-Smtp-Source: ABdhPJz76PBdetiB1hTzeC9KaBb4ulVJXpNplBdElbYjwqGNYZc1moMLVTtpFMx4RKCKmvP4nSluDQ==
-X-Received: by 2002:a17:902:b7c9:b029:e6:3d74:5dc5 with SMTP id v9-20020a170902b7c9b02900e63d745dc5mr12102692plz.16.1616114936277;
-        Thu, 18 Mar 2021 17:48:56 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id i7sm3592949pfq.184.2021.03.18.17.48.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 17:48:55 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 7/7] ionic: protect adminq from early destroy
-Date:   Thu, 18 Mar 2021 17:48:10 -0700
-Message-Id: <20210319004810.4825-8-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210319004810.4825-1-snelson@pensando.io>
-References: <20210319004810.4825-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZGOncK1f2mtt4j4HI6UYzil414+B32QC7q3uvm91mbo=;
+        b=tfNHxMq4F0H8I7U4uZxC5DqTTE+EHKmGigKCmDqhLkdoB1a+YH2mYwZbJcLQGsPNO+
+         5Rn2rrxAEtPh8E1csj4a/UYv68rLRdPcibBebN+0AqKIoNTOCdl2v99dFpUPPo4OKM7d
+         B6yiCREJSflgPuGxibTbjizVWc3NmZflr0KQnSXexV4KUbNPZ5c/YFAZfofgRf6c9QEU
+         9d2I5+UU9hSIPSuJR1mgRuJnRanzf8UfhTvRVmhPYP3T42o8TGHFqTdRI+ACsct8EQvi
+         uNJExaWCHAf0ipvzyisenoZGtC53eJgtqqzfp5ctITFsBPfzcFndYJ4RoBZ2Dl3R+8mq
+         mkRQ==
+X-Gm-Message-State: AOAM531LzYcn8KDVqZFwGAq1aaMuPTZqOcTMT9xnUAbvOkuGHT1LbeL7
+        mDYCTAVywJss0etAPZwk57OAJiwPLvvL9SXZojw=
+X-Google-Smtp-Source: ABdhPJwINHrat3UHSHnwVnfbB0hX1ojCZenuLmbRWY0o3XNZHDBGASR6KYqgHHlfOgXS0bMbTi9g1dEolTXBb3FY9J4=
+X-Received: by 2002:a25:40d8:: with SMTP id n207mr2933401yba.459.1616115840390;
+ Thu, 18 Mar 2021 18:04:00 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210316011336.4173585-1-kafai@fb.com> <20210316011401.4176793-1-kafai@fb.com>
+In-Reply-To: <20210316011401.4176793-1-kafai@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 18 Mar 2021 18:03:49 -0700
+Message-ID: <CAEf4Bzb-AmXvV+v-ByGH7iUUG7iLdFxWeY1CJGB7xKHxuABWUg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 04/15] bpf: Support bpf program calling kernel function
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't destroy the adminq while there is an outstanding request.
+On Tue, Mar 16, 2021 at 12:01 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This patch adds support to BPF verifier to allow bpf program calling
+> kernel function directly.
+>
+> The use case included in this set is to allow bpf-tcp-cc to directly
+> call some tcp-cc helper functions (e.g. "tcp_cong_avoid_ai()").  Those
+> functions have already been used by some kernel tcp-cc implementations.
+>
+> This set will also allow the bpf-tcp-cc program to directly call the
+> kernel tcp-cc implementation,  For example, a bpf_dctcp may only want to
+> implement its own dctcp_cwnd_event() and reuse other dctcp_*() directly
+> from the kernel tcp_dctcp.c instead of reimplementing (or
+> copy-and-pasting) them.
+>
+> The tcp-cc kernel functions mentioned above will be white listed
+> for the struct_ops bpf-tcp-cc programs to use in a later patch.
+> The white listed functions are not bounded to a fixed ABI contract.
+> Those functions have already been used by the existing kernel tcp-cc.
+> If any of them has changed, both in-tree and out-of-tree kernel tcp-cc
+> implementations have to be changed.  The same goes for the struct_ops
+> bpf-tcp-cc programs which have to be adjusted accordingly.
+>
+> This patch is to make the required changes in the bpf verifier.
+>
+> First change is in btf.c, it adds a case in "do_btf_check_func_arg_match()".
+> When the passed in "btf->kernel_btf == true", it means matching the
+> verifier regs' states with a kernel function.  This will handle the
+> PTR_TO_BTF_ID reg.  It also maps PTR_TO_SOCK_COMMON, PTR_TO_SOCKET,
+> and PTR_TO_TCP_SOCK to its kernel's btf_id.
+>
+> In the later libbpf patch, the insn calling a kernel function will
+> look like:
+>
+> insn->code == (BPF_JMP | BPF_CALL)
+> insn->src_reg == BPF_PSEUDO_KFUNC_CALL /* <- new in this patch */
+> insn->imm == func_btf_id /* btf_id of the running kernel */
+>
+> [ For the future calling function-in-kernel-module support, an array
+>   of module btf_fds can be passed at the load time and insn->off
+>   can be used to index into this array. ]
+>
+> At the early stage of verifier, the verifier will collect all kernel
+> function calls into "struct bpf_kern_func_descriptor".  Those
+> descriptors are stored in "prog->aux->kfunc_tab" and will
+> be available to the JIT.  Since this "add" operation is similar
+> to the current "add_subprog()" and looking for the same insn->code,
+> they are done together in the new "add_subprog_and_kern_func()".
+>
+> In the "do_check()" stage, the new "check_kern_func_call()" is added
+> to verify the kernel function call instruction:
+> 1. Ensure the kernel function can be used by a particular BPF_PROG_TYPE.
+>    A new bpf_verifier_ops "check_kern_func_call" is added to do that.
+>    The bpf-tcp-cc struct_ops program will implement this function in
+>    a later patch.
+> 2. Call "btf_check_kern_func_args_match()" to ensure the regs can be
+>    used as the args of a kernel function.
+> 3. Mark the regs' type, subreg_def, and zext_dst.
+>
+> At the later do_misc_fixups() stage, the new fixup_kern_func_call()
+> will replace the insn->imm with the function address (relative
+> to __bpf_call_base).  If needed, the jit can find the btf_func_model
+> by calling the new bpf_jit_find_kern_func_model(prog, insn->imm).
+> With the imm set to the function address, "bpftool prog dump xlated"
+> will be able to display the kernel function calls the same way as
+> it displays other bpf helper calls.
+>
+> gpl_compatible program is required to call kernel function.
+>
+> This feature currently requires JIT.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 14 ++++++++++--
- .../net/ethernet/pensando/ionic/ionic_main.c  | 22 ++++++++++++++-----
- 2 files changed, 28 insertions(+), 8 deletions(-)
+After the initial pass it all makes sense so far. I am a bit concerned
+about s32 and kernel function offset, though. See below.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 9b3afedbc083..889d234e2ffa 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -393,6 +393,8 @@ static void ionic_qcq_free(struct ionic_lif *lif, struct ionic_qcq *qcq)
- static void ionic_qcqs_free(struct ionic_lif *lif)
- {
- 	struct device *dev = lif->ionic->dev;
-+	struct ionic_qcq *adminqcq;
-+	unsigned long irqflags;
- 
- 	if (lif->notifyqcq) {
- 		ionic_qcq_free(lif, lif->notifyqcq);
-@@ -401,9 +403,14 @@ static void ionic_qcqs_free(struct ionic_lif *lif)
- 	}
- 
- 	if (lif->adminqcq) {
--		ionic_qcq_free(lif, lif->adminqcq);
--		devm_kfree(dev, lif->adminqcq);
-+		spin_lock_irqsave(&lif->adminq_lock, irqflags);
-+		adminqcq = READ_ONCE(lif->adminqcq);
- 		lif->adminqcq = NULL;
-+		spin_unlock_irqrestore(&lif->adminq_lock, irqflags);
-+		if (adminqcq) {
-+			ionic_qcq_free(lif, adminqcq);
-+			devm_kfree(dev, adminqcq);
-+		}
- 	}
- 
- 	if (lif->rxqcqs) {
-@@ -886,6 +893,7 @@ static int ionic_adminq_napi(struct napi_struct *napi, int budget)
- 	struct ionic_intr_info *intr = napi_to_cq(napi)->bound_intr;
- 	struct ionic_lif *lif = napi_to_cq(napi)->lif;
- 	struct ionic_dev *idev = &lif->ionic->idev;
-+	unsigned long irqflags;
- 	unsigned int flags = 0;
- 	int n_work = 0;
- 	int a_work = 0;
-@@ -895,9 +903,11 @@ static int ionic_adminq_napi(struct napi_struct *napi, int budget)
- 		n_work = ionic_cq_service(&lif->notifyqcq->cq, budget,
- 					  ionic_notifyq_service, NULL, NULL);
- 
-+	spin_lock_irqsave(&lif->adminq_lock, irqflags);
- 	if (lif->adminqcq && lif->adminqcq->flags & IONIC_QCQ_F_INITED)
- 		a_work = ionic_cq_service(&lif->adminqcq->cq, budget,
- 					  ionic_adminq_service, NULL, NULL);
-+	spin_unlock_irqrestore(&lif->adminq_lock, irqflags);
- 
- 	work_done = max(n_work, a_work);
- 	if (work_done < budget && napi_complete_done(napi, work_done)) {
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 14ece909a451..c4b2906a2ae6 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -187,10 +187,17 @@ static const char *ionic_opcode_to_str(enum ionic_cmd_opcode opcode)
- 
- static void ionic_adminq_flush(struct ionic_lif *lif)
- {
--	struct ionic_queue *q = &lif->adminqcq->q;
- 	struct ionic_desc_info *desc_info;
-+	unsigned long irqflags;
-+	struct ionic_queue *q;
-+
-+	spin_lock_irqsave(&lif->adminq_lock, irqflags);
-+	if (!lif->adminqcq) {
-+		spin_unlock_irqrestore(&lif->adminq_lock, irqflags);
-+		return;
-+	}
- 
--	spin_lock(&lif->adminq_lock);
-+	q = &lif->adminqcq->q;
- 
- 	while (q->tail_idx != q->head_idx) {
- 		desc_info = &q->info[q->tail_idx];
-@@ -199,7 +206,7 @@ static void ionic_adminq_flush(struct ionic_lif *lif)
- 		desc_info->cb_arg = NULL;
- 		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
- 	}
--	spin_unlock(&lif->adminq_lock);
-+	spin_unlock_irqrestore(&lif->adminq_lock, irqflags);
- }
- 
- static int ionic_adminq_check_err(struct ionic_lif *lif,
-@@ -252,15 +259,18 @@ static void ionic_adminq_cb(struct ionic_queue *q,
- static int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
- {
- 	struct ionic_desc_info *desc_info;
-+	unsigned long irqflags;
- 	struct ionic_queue *q;
- 	int err = 0;
- 
--	if (!lif->adminqcq)
-+	spin_lock_irqsave(&lif->adminq_lock, irqflags);
-+	if (!lif->adminqcq) {
-+		spin_unlock_irqrestore(&lif->adminq_lock, irqflags);
- 		return -EIO;
-+	}
- 
- 	q = &lif->adminqcq->q;
- 
--	spin_lock(&lif->adminq_lock);
- 	if (!ionic_q_has_space(q, 1)) {
- 		err = -ENOSPC;
- 		goto err_out;
-@@ -280,7 +290,7 @@ static int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
- 	ionic_q_post(q, true, ionic_adminq_cb, ctx);
- 
- err_out:
--	spin_unlock(&lif->adminq_lock);
-+	spin_unlock_irqrestore(&lif->adminq_lock, irqflags);
- 
- 	return err;
- }
--- 
-2.17.1
+Also "kern_func" and "descriptor" are quite mouthful, it seems to me
+that using kfunc consistently wouldn't hurt readability at all. You
+also already use desc in place of "descriptor" for variables, so I'd
+do that in type names as well.
 
+>  arch/x86/net/bpf_jit_comp.c       |   5 +
+>  include/linux/bpf.h               |  24 ++
+>  include/linux/btf.h               |   1 +
+>  include/linux/filter.h            |   1 +
+>  include/uapi/linux/bpf.h          |   4 +
+>  kernel/bpf/btf.c                  |  65 +++++-
+>  kernel/bpf/core.c                 |  18 +-
+>  kernel/bpf/disasm.c               |  32 +--
+>  kernel/bpf/disasm.h               |   3 +-
+>  kernel/bpf/syscall.c              |   1 +
+>  kernel/bpf/verifier.c             | 376 ++++++++++++++++++++++++++++--
+>  tools/bpf/bpftool/xlated_dumper.c |   3 +-
+>  tools/include/uapi/linux/bpf.h    |   4 +
+>  13 files changed, 488 insertions(+), 49 deletions(-)
+>
+
+[...]
+
+> +
+> +       func_name = btf_name_by_offset(btf_vmlinux, func->name_off);
+> +       addr = kallsyms_lookup_name(func_name);
+> +       if (!addr) {
+> +               verbose(env, "cannot find address for kernel function %s\n",
+> +                       func_name);
+> +               return -EINVAL;
+> +       }
+> +
+> +       desc = &tab->descs[tab->nr_descs++];
+> +       desc->func_id = func_id;
+> +       desc->imm = BPF_CAST_CALL(addr) - __bpf_call_base;
+
+Is this difference guaranteed to always fit within s32?
+
+> +       sort(tab->descs, tab->nr_descs, sizeof(tab->descs[0]),
+> +            kern_func_desc_cmp_by_id, NULL);
+> +
+> +       return btf_distill_func_proto(&env->log, btf_vmlinux,
+> +                                     func_proto, func_name,
+> +                                     &desc->func_model);
+> +}
+> +
+> +static int kern_func_desc_cmp_by_imm(const void *a, const void *b)
+> +{
+> +       const struct bpf_kern_func_descriptor *d0 = a;
+> +       const struct bpf_kern_func_descriptor *d1 = b;
+> +
+> +       return d0->imm - d1->imm;
+
+this is not safe, assuming any possible s32 values, no?
+
+> +}
+> +
+> +static void sort_kern_func_descs_by_imm(struct bpf_prog *prog)
+> +{
+> +       struct bpf_kern_func_desc_tab *tab;
+> +
+> +       tab = prog->aux->kfunc_tab;
+> +       if (!tab)
+> +               return;
+> +
+> +       sort(tab->descs, tab->nr_descs, sizeof(tab->descs[0]),
+> +            kern_func_desc_cmp_by_imm, NULL);
+> +}
+> +
+
+[...]
