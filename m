@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97495342811
+	by mail.lfdr.de (Postfix) with ESMTP id 25D2C342810
 	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:49:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbhCSVss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 17:48:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45568 "EHLO mail.kernel.org"
+        id S231152AbhCSVst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 17:48:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230411AbhCSVsX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Mar 2021 17:48:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 01D9761956;
-        Fri, 19 Mar 2021 21:48:19 +0000 (UTC)
+        id S229942AbhCSVs0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 17:48:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 62D3861986;
+        Fri, 19 Mar 2021 21:48:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616190503;
-        bh=JjWi6a6aiqTEcsxJvOguqklYwQGDmE+Ojlby57SaRRc=;
+        s=k20201202; t=1616190506;
+        bh=tDqB0Ey7DwyVDYXMPU2eRxTOZD4Z/gsFYf6a8/8/tlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnqJLTX3wamDodYqP8Mqj3fvf8jiERDuEhGJtuzlpTjoaoKycp1ec7Ot4JFw3Tqx/
-         gi0QGzPNy11I4ng0Ma5jsdSUG3HUxWe20F53lIrSuZ1EYo0J9h5BvwmIUJLT26h01g
-         j2FW0KKZsYJSD+5W1CjCQOatbRN39CTxUp3FUAOVLWV8s+SkOevghilsxhQYFY28pd
-         0+SHfI5QBs43aT3v2eEbPbGW42DABQZ9ONZEvqalXUpIC0qnUk4f0tum07f7pgrU3k
-         ywS1g2tOn8Ef6Y3ATHypROaZDDJi/1kW0S6lVnFdeA/j83UtEMCa72MNIr9P31PN/l
-         dgFmhlvtw0pYA==
+        b=ISUoFvsiX8lmD5IRJ/KxkRnnf9uaLL/P/NwOLYnwblMfS/Eeae1nMmIcmq5kn9RmQ
+         s2kb7KuBZuitm1UY4VJWUQ1PVOEIJv2hT+gSw0014rX18+sIJirI/GrW22Dn89Dcu2
+         tV2nDMZcdZbJeisDiLWMboi7xBT0ZmbIasM/8IbDjEULKRZoRy2kamp7lUMcxg9u+Z
+         QeXnEPOpBwDJS4doseIUlaWKpZzXT0PRLOI4nnAfszdCBN4aZA9PxFDYtynDUQ9rkJ
+         RqaoZnJ6MeDFIHponhXIbEmY+ODk99b2f62VdvDxyzoy2SIRXuhmCSCi+YtGoymtdg
+         c/gQk+lR0yPyw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         echaudro@redhat.com, jasowang@redhat.com,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, sameehj@amazon.com
-Subject: [PATCH v7 bpf-next 06/14] net: mvneta: enable jumbo frames for XDP
-Date:   Fri, 19 Mar 2021 22:47:20 +0100
-Message-Id: <a20846cdba4f62f7f9bb6149c2d75b06d30d69b6.1616179034.git.lorenzo@kernel.org>
+Subject: [PATCH v7 bpf-next 07/14] net: xdp: add multi-buff support to xdp_build_skb_from_fram
+Date:   Fri, 19 Mar 2021 22:47:21 +0100
+Message-Id: <bf0817ddcd984073c59721031b994c0b8bc1c952.1616179034.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1616179034.git.lorenzo@kernel.org>
 References: <cover.1616179034.git.lorenzo@kernel.org>
@@ -43,42 +43,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable the capability to receive jumbo frames even if the interface is
-running in XDP mode
+Introduce xdp multi-buff support to
+__xdp_build_skb_from_frame/xdp_build_skb_from_fram utility
+routines.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ net/core/xdp.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 226d76e7ccc8..d725abced380 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3768,11 +3768,6 @@ static int mvneta_change_mtu(struct net_device *dev, int mtu)
- 		mtu = ALIGN(MVNETA_RX_PKT_SIZE(mtu), 8);
- 	}
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 430f516259d9..7388bc6d680b 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -603,9 +603,21 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					   struct sk_buff *skb,
+ 					   struct net_device *dev)
+ {
++	skb_frag_t frag_list[MAX_SKB_FRAGS];
+ 	unsigned int headroom, frame_size;
++	int i, num_frags = 0;
+ 	void *hard_start;
  
--	if (pp->xdp_prog && mtu > MVNETA_MAX_RX_BUF_SIZE) {
--		netdev_info(dev, "Illegal MTU value %d for XDP mode\n", mtu);
--		return -EINVAL;
--	}
--
- 	dev->mtu = mtu;
++	/* XDP multi-buff frame */
++	if (unlikely(xdpf->mb)) {
++		struct xdp_shared_info *xdp_sinfo;
++
++		xdp_sinfo = xdp_get_shared_info_from_frame(xdpf);
++		num_frags = xdp_sinfo->nr_frags;
++		memcpy(frag_list, xdp_sinfo->frags,
++		       sizeof(skb_frag_t) * num_frags);
++	}
++
+ 	/* Part of headroom was reserved to xdpf */
+ 	headroom = sizeof(*xdpf) + xdpf->headroom;
  
- 	if (!netif_running(dev)) {
-@@ -4475,11 +4470,6 @@ static int mvneta_xdp_setup(struct net_device *dev, struct bpf_prog *prog,
- 	struct mvneta_port *pp = netdev_priv(dev);
- 	struct bpf_prog *old_prog;
+@@ -624,6 +636,20 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 	if (xdpf->metasize)
+ 		skb_metadata_set(skb, xdpf->metasize);
  
--	if (prog && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
--		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
--		return -EOPNOTSUPP;
--	}
--
- 	if (pp->bm_priv) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Hardware Buffer Management not supported on XDP");
++	/* Single-buff XDP frame */
++	if (likely(!num_frags))
++		goto out;
++
++	for (i = 0; i < num_frags; i++) {
++		struct page *page = xdp_get_frag_page(&frag_list[i]);
++
++		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++				page, xdp_get_frag_offset(&frag_list[i]),
++				xdp_get_frag_size(&frag_list[i]),
++				xdpf->frame_sz);
++	}
++
++out:
+ 	/* Essential SKB info: protocol and skb->dev */
+ 	skb->protocol = eth_type_trans(skb, dev);
+ 
 -- 
 2.30.2
 
