@@ -2,129 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39A5734216C
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 17:01:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B1E34217B
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 17:12:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230274AbhCSQBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 12:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
+        id S230177AbhCSQLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 12:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbhCSQBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 12:01:12 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2017CC06174A
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:01:12 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id x16so6617573iob.1
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:01:12 -0700 (PDT)
+        with ESMTP id S229987AbhCSQLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 12:11:13 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2B3C06174A
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id f8so568281pgi.9
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Y3s18FhryfxEWVXaNvd6oql/kHGXKeDhfxDm+RozLBw=;
-        b=EIZuKECoeqJa24PxNYdPGQj7RGiKQiRW+0rCbkIQvliDueZf2ob2e6bcllciz66Tll
-         sm217SivzO3XpkuMMXLJNpN9UU7b6kXgXZHxxvyA4/kUEajbQUwZJRVQQ/RZLE2oELdr
-         4gGkJvSuFDjmkE9Vgshyg8rWnU5nbSKtZRyAI=
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=WLipTIgsxq07Cj5tFotwTGWIVP97RFZLRby1vgsrO0I=;
+        b=KVpLd0KqWczndGzDXuHbaF3YmUqchoYziMcwZCtr/4kUNDBx57iBzIFGlJBq4Rcr2H
+         Wccm6YPUM131TL76NAA02XNufeLrITK4BgURwmSj7ikp6R5LExLT5R0XHWpXEM1BeyJ+
+         R4UMFb6Yos5PglPv2bnSxhciuz2sG1WoAxtyApLd9eXBJO9gMJ35rEJi11FKEYRGfhdf
+         kfdiQ0FRTesART61N5ps0PrzThQ1YgijuuE+4zh32ER7HjGnBiI7FjVSgagQ9tlU4fPg
+         9aIrsK3092f/AZm9ED+mk0vjS5b0SHR6rvFjl375yUorVlhPESNvpAlYEgUJlKcTbUgh
+         DTmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Y3s18FhryfxEWVXaNvd6oql/kHGXKeDhfxDm+RozLBw=;
-        b=Hpu5DiQp/YBf3H8mbP4uDedu4r7pDhwedhR+Ru7tJl9DlckjPAkLGQnp0MCl1WpYPY
-         oi+zBv1BoHDDn5j5PDqzXc5PJFE5VCCuVswq26BGOW/QNVGGV0W5vbyPi5vparN+P8wJ
-         aGB67DD2TDWtcQZG29dRXw78qMXWkUzRIU4dIvXByvrpCeBIZIrXGkzn3yzATMBT6XKc
-         dIRe+ihzIm4roeLOa0TfSw8s72ACQLKCa8pLydyA6XOio1HP9/TA7t3VHVuTaUR4+Jrp
-         XexVomPsJCyPylghcMG59N1fsKOwXp9aZWfIEff7rwyK5D0uS/wrQnLhrkDLfciWfgDI
-         lcUA==
-X-Gm-Message-State: AOAM532VB1LOuaUlUJw42RXnFQHqO0LGnR+VRqsMN4rtSGP0fLs7zc9d
-        OHWLW4n7ZuQZ1AhO8pYpn6uVgM12AZ8vsQ==
-X-Google-Smtp-Source: ABdhPJxghl3QKA1uGtzNwCt34Y1pZSlqKbMSMFCP5FRMyxRO6SQAs0Da7CujXYIEkuwVBWOyamWMHA==
-X-Received: by 2002:a05:6638:329e:: with SMTP id f30mr1957449jav.121.1616169671615;
-        Fri, 19 Mar 2021 09:01:11 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id q8sm1231478ilv.55.2021.03.19.09.01.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Mar 2021 09:01:10 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/4] net: ipa: introduce ipa_assert()
-To:     Leon Romanovsky <leon@kernel.org>, Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210319042923.1584593-1-elder@linaro.org>
- <20210319042923.1584593-4-elder@linaro.org> <YFQurZjWYaolHGvR@unreal>
- <edb7ab60-f0e2-8fc4-ca73-9614bb547ab5@linaro.org> <YFTD/TZ2tFX/X3dD@unreal>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <5b5d3f17-e647-ca1c-1ec0-fdc2396fa168@ieee.org>
-Date:   Fri, 19 Mar 2021 11:01:10 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-MIME-Version: 1.0
-In-Reply-To: <YFTD/TZ2tFX/X3dD@unreal>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=WLipTIgsxq07Cj5tFotwTGWIVP97RFZLRby1vgsrO0I=;
+        b=QoxuibDjEgeL+PC/B8rHBhvnPoQOPL0A7dkAFobeyPnUbN3EEuGoR4Mzmu559TvSxS
+         ipRwyU0YdNsLwAT95nqrM064JUcErGh3xhZmtfnsmFnNwohaLh3ceVil9JrcAWqxyPdi
+         2hu1J208+ZPZNMrJ/kx878r9/wHFUF5lyYtEIcGNSU1DXQ4Wpi6NgGdOJsqFF5lX6xjT
+         ThW9kAnuKnCUv+Sck+aD4kdT/cKyOuOqwPT83r0kVzfGpTeGKULyiwJ3Y4C+7lCCKndH
+         gdJIl+eO9qynbtFCDtp0SM6EVfJ539xtUWNQBPARDJQ+oxkONR16j7TEsl/BVlECl6X3
+         P7Iw==
+X-Gm-Message-State: AOAM530+Vu04ZnoBA3C2R2F5DXDLyS2vzF+KUoXuYOLvbn3h5xHV/NqC
+        e63pNyJwqYXnKuMBKcrQd7BzESn/uoEcaEYM
+X-Google-Smtp-Source: ABdhPJx9qs6HCwzP9RqAhnIAkkClzDRetJ3uHksisgvWpazzPw7YEMvLbxF1023SzfsNHkPDub7y8A==
+X-Received: by 2002:aa7:824e:0:b029:20a:3a1:eeda with SMTP id e14-20020aa7824e0000b029020a03a1eedamr9758802pfn.71.1616170273391;
+        Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
+Received: from ?IPv6:2600:8801:130a:ce00:d905:609a:780b:479? ([2600:8801:130a:ce00:d905:609a:780b:479])
+        by smtp.gmail.com with ESMTPSA id j22sm5220633pjz.3.2021.03.19.09.11.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 19 Mar 2021 09:11:13 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.40.0.2.32\))
+Subject: Re: [PATCH v3] icmp: support rfc5837
+From:   Ishaan Gandhi <ishaangandhi@gmail.com>
+In-Reply-To: <f65cb281-c6d5-d1c9-a90d-3281cdb75620@gmail.com>
+Date:   Fri, 19 Mar 2021 09:11:06 -0700
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        willemb@google.com,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <5E97397E-7028-46E8-BC0D-44A3E30C41A4@gmail.com>
+References: <20210317221959.4410-1-ishaangandhi@gmail.com>
+ <f65cb281-c6d5-d1c9-a90d-3281cdb75620@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+X-Mailer: Apple Mail (2.3654.40.0.2.32)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/19/21 10:32 AM, Leon Romanovsky wrote:
->>>> +/* Verify the expression yields true, and fail at build time if possible */
->>>> +#define ipa_assert(dev, expr) \
->>>> +	do { \
->>>> +		if (__builtin_constant_p(expr)) \
->>>> +			compiletime_assert(expr, __ipa_failure_msg(expr)); \
->>>> +		else \
->>>> +			__ipa_assert_runtime(dev, expr); \
->>>> +	} while (0)
->>>> +
->>>> +/* Report an error if the given expression evaluates to false at runtime */
->>>> +#define ipa_assert_always(dev, expr) \
->>>> +	do { \
->>>> +		if (unlikely(!(expr))) { \
->>>> +			struct device *__dev = (dev); \
->>>> +			\
->>>> +			if (__dev) \
->>>> +				dev_err(__dev, __ipa_failure_msg(expr)); \
->>>> +			else  \
->>>> +				pr_err(__ipa_failure_msg(expr)); \
->>>> +		} \
->>>> +	} while (0)
->>> It will be much better for everyone if you don't obfuscate existing
->>> kernel primitives and don't hide constant vs. dynamic expressions.
->> I don't agree with this characterization.
->>
->> Yes, there is some complexity in this one source file, where
->> ipa_assert() is defined.  But as a result, callers are simple
->> one-line statements (similar to WARN_ON()).
-> It is not complexity but being explicit vs. implicit. The coding
-> style that has explicit flows will be always better than implicit
-> one. By adding your custom assert, you are hiding the flows and
-> makes unclear what can be evaluated at compilation and what can't.
-Assertions like this are a tool.  They aid readability
-by communicating conditions that can be assumed to hold
-at the time code is executed.  They are *not* part of
-the normal code function.  They are optional, and code
-*must* operate correctly even if all assertions are
-removed.
+Thank you. Would it be better to do instead:
 
-Whether a condition that is asserted can be determined
-at compile time or build time is irrelevant.  But as
-an optimization, if it can be checked at compile time,
-I want to do that, so we can catch the problem as early
-as possible.
++	if_index =3D skb->skb_iif;
 
-I understand your point about separating compile-time
-versus runtime code.  I mean, it's a piece of really
-understanding what's going on when your code is
-executing.  But what I'm trying to do here is more
-like a "functional comment," i.e., a comment about
-the state of things that can be optionally verified.
-I find them to be concise and useful:
-	assert(count <= MAX_COUNT);
-versus
-	/* Caller must ensure count is in range */
+or
 
-We might just disagree on this, and that's OK.  I'm
-interested to hear whether others think.
++	if_index =3D ip_version =3D=3D 4 ? inet_iif(skb) : skb->skb_iif;
 
-					-Alex
+> On Mar 19, 2021, at 7:55 AM, David Ahern <dsahern@gmail.com> wrote:
+>=20
+> On 3/17/21 4:19 PM, ishaangandhi wrote:
+>> +void icmp_identify_arrival_interface(struct sk_buff *skb, struct net =
+*net, int room,
+>> +				     char *icmph, int ip_version)
+>> +{
+>> +	unsigned int ext_len, orig_len, word_aligned_orig_len, offset, =
+extra_space_needed,
+>> +		     if_index, mtu =3D 0, name_len =3D 0, =
+name_subobj_len =3D 0;
+>> +	struct interface_ipv4_addr_sub_obj ip4_addr_subobj =3D {.addr =3D =
+0};
+>> +	struct interface_ipv6_addr_sub_obj ip6_addr_subobj;
+>> +	struct icmp_extobj_hdr *iio_hdr;
+>> +	struct inet6_ifaddr ip6_ifaddr;
+>> +	struct inet6_dev *dev6 =3D NULL;
+>> +	struct icmp_ext_hdr *ext_hdr;
+>> +	char *name =3D NULL, ctype;
+>> +	struct net_device *dev;
+>> +	void *subobj_offset;
+>> +
+>> +	skb_linearize(skb);
+>> +	if_index =3D inet_iif(skb);
+>=20
+> inet_iif is an IPv4 helper; it should not be used for v6 skb's.
+>=20
+
