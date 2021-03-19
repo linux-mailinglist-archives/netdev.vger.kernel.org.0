@@ -2,64 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D76FC342792
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C115B3427B0
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:26:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbhCSVTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 17:19:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37982 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230409AbhCSVTq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Mar 2021 17:19:46 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lNMX2-00Bww7-EE; Fri, 19 Mar 2021 22:19:44 +0100
-Date:   Fri, 19 Mar 2021 22:19:44 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Tretter <m.tretter@pengutronix.de>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, robh+dt@kernel.org, hkallweit1@gmail.com,
-        dmurphy@ti.com
-Subject: Re: [PATCH 0/2] net: phy: dp83867: Configure LED modes via device
- tree
-Message-ID: <YFUVcLCzONhPmeh8@lunn.ch>
-References: <20210319155710.2793637-1-m.tretter@pengutronix.de>
+        id S230497AbhCSVZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 17:25:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30148 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230343AbhCSVZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 17:25:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616189135;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xlMXIzOr8B3xAAPOEAkY5g/fup/JgIzMYSjDQhEndBQ=;
+        b=RfBVWRyczrexLqA1tFcP+pJXKBfN9+RL5KoR2YznwkCZXlCGr+3C6SG6bMlMxTnMAsiSKU
+        urxJ3+YJkV4HQ1ak14wzb1lrvwe7lYRosRJONqAyl38WqHivXRlVCLyNgR05floO2CJbgH
+        KPMfsq+PRS0qD8/YYwYZySs5UISMxVM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-479-dVnOBXKIPsyyHwVq8gZ2mg-1; Fri, 19 Mar 2021 17:25:31 -0400
+X-MC-Unique: dVnOBXKIPsyyHwVq8gZ2mg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4790881744F;
+        Fri, 19 Mar 2021 21:25:29 +0000 (UTC)
+Received: from krava (unknown [10.40.195.94])
+        by smtp.corp.redhat.com (Postfix) with SMTP id B6B4260C04;
+        Fri, 19 Mar 2021 21:25:27 +0000 (UTC)
+Date:   Fri, 19 Mar 2021 22:25:26 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 2/3] libbpf: skip BTF fixup if object file has
+ no BTF
+Message-ID: <YFUWxkbBjgSgwE3t@krava>
+References: <20210319205909.1748642-1-andrii@kernel.org>
+ <20210319205909.1748642-3-andrii@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210319155710.2793637-1-m.tretter@pengutronix.de>
+In-Reply-To: <20210319205909.1748642-3-andrii@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 04:57:08PM +0100, Michael Tretter wrote:
-> Hello,
+On Fri, Mar 19, 2021 at 01:59:08PM -0700, Andrii Nakryiko wrote:
+> Skip BTF fixup step when input object file is missing BTF altogether.
 > 
-> The dp83867 has 4 LED pins, which can be multiplexed with different functions
-> of the phy.
-> 
-> This series adds a device tree binding to describe the multiplexing of the
-> functions to the LEDs and implements the binding for the dp83867 phy.
-> 
-> I found existing bindings for configuring the LED modes for other phys:
-> 
-> In Documentation/devicetree/bindings/net/micrel.txt, the binding is not
-> flexible enough for the use case in the dp83867, because there is a value for
-> each LED configuration, which would be a lot of values for the dp83867.
-> 
-> In Documentation/devicetree/bindings/net/mscc-phy-vsc8532.txt, there is a
-> separate property for each LED, which would work, but I found rather
-> unintuitive compared to how clock bindings etc. work.
-> 
-> The new binding defines two properties: one for the led names and another
-> property for the modes of the LEDs with defined values in the same order.
-> Currently, the binding is specific to the dp83867, but I guess that the
-> binding could be made more generic and used for other phys, too.
+> Reported-by: Jiri Olsa <jolsa@redhat.com>
+> Fixes: 8fd27bf69b86 ("libbpf: Add BPF static linker BTF and BTF.ext support")
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 
-There is some work going on to manage PHY LEDs just like other LEDs in
-Linux, using /sys/class/leds.
+Tested-by: Jiri Olsa <jolsa@redhat.com>
 
-Please try to help out with that work, rather than adding yet another
-DT binding.
+thanks for the quick fix,
+jirka
 
-   Andrew
+> ---
+>  tools/lib/bpf/linker.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
+> index b4fff912dce2..5e0aa2f2c0ca 100644
+> --- a/tools/lib/bpf/linker.c
+> +++ b/tools/lib/bpf/linker.c
+> @@ -1313,6 +1313,9 @@ static int linker_fixup_btf(struct src_obj *obj)
+>  	struct src_sec *sec;
+>  	int i, j, n, m;
+>  
+> +	if (!obj->btf)
+> +		return 0;
+> +
+>  	n = btf__get_nr_types(obj->btf);
+>  	for (i = 1; i <= n; i++) {
+>  		struct btf_var_secinfo *vi;
+> -- 
+> 2.30.2
+> 
+
