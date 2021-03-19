@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6361342752
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:00:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32152342786
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 22:17:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbhCSVAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 17:00:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35302 "EHLO mail.kernel.org"
+        id S230264AbhCSVQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 17:16:33 -0400
+Received: from mga18.intel.com ([134.134.136.126]:20600 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230453AbhCSVAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Mar 2021 17:00:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 160C56196E;
-        Fri, 19 Mar 2021 21:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616187609;
-        bh=plvMQbtQNGCxO10lqp8q08imJA8nh32wQTnFtQLWYeM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BikuHaR81qb7nBuJjuwTJzkTj5VjX8oMd1A/567RTj9+UMQhyq10xpkvcA1vwSKZP
-         K2UcTOiwB9oBPYFC6FEsPo4tQNDlMhIEwB0vhj6nu6Iej2qN14bxBsIRXDaw0D2KDS
-         yd6yav5OJMZbN84c+DZ3uCl6TpPdS0V6RIwMi74fyqpoRPZIqbL5BgoEdEJGYx/7Tk
-         v584mAPPhbDEs5S3L4BmzubcIhtXqN0TO6BzNVvhl7F8ECHDENy+obdc3f60F4iIIw
-         UGsdnHIIZX6dSSe+QE1Wq1QswGQk3p3cEjLe83A4CJI8YgoYdh0jFtXI1dQMEn6wpj
-         IyLEgJSE5sudg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 07C4E626ED;
-        Fri, 19 Mar 2021 21:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229974AbhCSVP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 17:15:58 -0400
+IronPort-SDR: JyXKjJCqttnEnbEG7I8Ha3GJIeZaNFKVM37RGIO//Z8klZwFadaH5rtDRGue0N6wTy1RCzxdA8
+ UP8VYkpqYvWg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9928"; a="177554724"
+X-IronPort-AV: E=Sophos;i="5.81,262,1610438400"; 
+   d="scan'208";a="177554724"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2021 14:15:57 -0700
+IronPort-SDR: 9jR19DwfZcicSenZrn4e4K8KqDCc9pogtk5UIg3fmKgzSJ507XCOihaOv9QR4LlU0GmcbVjbEr
+ lYCLEQWhV7TA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,262,1610438400"; 
+   d="scan'208";a="451005067"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga001.jf.intel.com with ESMTP; 19 Mar 2021 14:15:57 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com
+Subject: [PATCH net-next 0/5][pull request] 1GbE Intel Wired LAN Driver Updates 2021-03-19
+Date:   Fri, 19 Mar 2021 14:17:18 -0700
+Message-Id: <20210319211723.1488244-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] mptcp: Change mailing list address
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161618760902.12397.8037848408394783798.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Mar 2021 21:00:09 +0000
-References: <20210319183302.137063-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20210319183302.137063-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mptcp@lists.01.org, mptcp@lists.linux.dev,
-        matthieu.baerts@tessares.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This series contains updates to igc and e1000e drivers.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Sasha removes unused defines in igc driver.
 
-On Fri, 19 Mar 2021 11:33:02 -0700 you wrote:
-> The mailing list for MPTCP maintenance has moved to the
-> kernel.org-supported mptcp@lists.linux.dev address.
-> 
-> Complete, combined archives for both lists are now hosted at
-> https://lore.kernel.org/mptcp
-> 
-> Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> 
-> [...]
+Jiapeng Zhong changes bool assignments from 0/1 to false/true for igc.
 
-Here is the summary with links:
-  - [net] mptcp: Change mailing list address
-    https://git.kernel.org/netdev/net/c/ef2ef02cd9c2
+Wei Yongjun marks e1000e_pm_prepare() as __maybe_unused to resolve a
+defined but not used warning under certain configurations.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The following are changes since commit c2ed62b9975e3e47a8b12f5fc4ed7958104b427b:
+  Merge branch 'net-xps-improve-the-xps-maps-handling'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
 
+Jiapeng Zhong (1):
+  igc: Assign boolean values to a bool variable
+
+Sasha Neftin (3):
+  igc: Remove unused MII_CR_RESET
+  igc: Remove unused MII_CR_SPEED
+  igc: Remove unused MII_CR_LOOPBACK
+
+Wei Yongjun (1):
+  e1000e: Mark e1000e_pm_prepare() as __maybe_unused
+
+ drivers/net/ethernet/intel/e1000e/netdev.c   |  2 +-
+ drivers/net/ethernet/intel/igc/igc_defines.h |  5 -----
+ drivers/net/ethernet/intel/igc/igc_main.c    | 16 ++++++++--------
+ 3 files changed, 9 insertions(+), 14 deletions(-)
+
+-- 
+2.26.2
 
