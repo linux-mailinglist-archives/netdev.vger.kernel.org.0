@@ -2,125 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B246341432
+	by mail.lfdr.de (Postfix) with ESMTP id A3AE6341434
 	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 05:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233749AbhCSE3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 00:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        id S233773AbhCSE3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 00:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233733AbhCSE31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 00:29:27 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCF4C06175F
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 21:29:27 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id 19so6934284ilj.2
-        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 21:29:27 -0700 (PDT)
+        with ESMTP id S233734AbhCSE32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 00:29:28 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD72C06174A
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 21:29:28 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id v17so4737316iot.6
+        for <netdev@vger.kernel.org>; Thu, 18 Mar 2021 21:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KyKoa9bY/CBR39lN4qu6Iu2yiDNEigJRAyZ9cNvhCGw=;
-        b=ockvKcT0cLCr7uhRFAJTSWyeXB02yRaH1D/rwIk2FPba5pHy0DfXCKMGJKLZUT2Ix2
-         EPxIpt+bCsyreBzlBkagWUqedcEcGD54XLGwOF9w5Zj/7VKHsSW4WKR71ZbuEbiFNgfB
-         L/B+tZZ01xbJxcNqheN7aQdi2yJW2jLrUxFuFeFl3mHWRImE0pvL/RcUPOgjFB8NBNlL
-         N5H5p8GiFpWkYDVuPs6wnJtV3/ceYHEl2BEhYu80FWz/1bUaCXP0uNQrSc+Ulyms1YDT
-         4kRQZKp6De48Kg594sTLATKg7EL4BhScYUdNIPAvr7jVBTzkMKjOg6jN2B2xQeG3njNR
-         k53g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Y0jgz//zVEbNql9HK61bKjTuk8XcYuXVt9tdgPActZw=;
+        b=BOWuRozLgqzrcjQClsoI5cN9tLYe2V9Zs90rup1kKI4tRLIN8S2j4AVpgIWlpCK/p8
+         tPTTyQGQMshP+KNH5lEbUvETtHeqaTS5ptHrfxY4FuAXSHLA2tIUj/9MxNdmv+VQkFeI
+         qqULh1NeITSaTzb2dtUa66bbSaTv+EdIivhV6KlNlmEvgvVSnppGW70jCxuspiV/jnkf
+         nM6v0GKM1xNE0qc9UFHgKiF3C9zxEl+kw9KbAEhHlcSVe7MK484LmztO6XXPGTenPS+c
+         Klkt4VNqCaV4VzVwWg+D3fXIpqGpKRQGnUryVIb5m1JmaReL1Q6S37ogP4e+O0Z2E59d
+         Duow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KyKoa9bY/CBR39lN4qu6Iu2yiDNEigJRAyZ9cNvhCGw=;
-        b=Qn3TezpYjmbhWnE8OZ1/HXcsAJqc/KaDRtq51z8Do4nEQ0tboYGqAlPp4UpuwMD7Gk
-         aLIRLYzGf6EUDVWmdLtei1R+agAenCV4Q25VQ8qpiCBSyVUyX1KqRqSVJsSjyO2sB6sr
-         1ySgpzgLYUYewOONezlVWkz4Bv+/ys2kRf5U0hvcjD6mUokWK9af4HfltDgu7wk5Nluz
-         OETRZAancy+sRIZxRxs2pJu1wP9JrtGbgjq2dRDgj22Lmqm4Fwz67OlRbGeRIYuiFlBA
-         IoQAt5suVx9aeC6q4stB2wFXi3S9CMaDkQX8nj4Q1gR/4baMcisXNssXwBtCMuzqgy6c
-         YJ5Q==
-X-Gm-Message-State: AOAM532QxNYGYGFWt3u6Sif9OC7F8Z2YK0naTm4gKa3AqrXm1kmeMUmY
-        kXICvq2dS2X8LLL0Gsufc1hlDw==
-X-Google-Smtp-Source: ABdhPJzkmj688MiPObFa4V8EfKl6XkAf24T6z1pjd1llocWaO6spDSyLV1d6P4+wSY8BA0HBDj5fqQ==
-X-Received: by 2002:a05:6e02:1384:: with SMTP id d4mr1356304ilo.307.1616128167185;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Y0jgz//zVEbNql9HK61bKjTuk8XcYuXVt9tdgPActZw=;
+        b=hljBqbwrkk1mVf5NsUGeehpztfDy6yfOCda4mOLDMjCEFhEq1n15LWoh70aoP8DhOa
+         JpzryHBS4yOgOs08OFH6BbHllMWJW9cesz2pl+hWaRiNoCcYIRKmhnJEi02QzVAd42Nz
+         8c4NA+T35OuwdZn3rwshuVSOZNOocUDf5rEnYzosxhAoRi3tQzh6Z3I39lcMzctLPbOn
+         QXOj1LggRFVTtNTH/XFqWbH8n6UbotFFj5Zv5KUEEM2+p/SnSUYynYll/vrw0atMKemF
+         u3zi+FxDX8v13TtpIIyLGVqUcnSt7qXPsnHYoZTRmphe477mNnOZ1eJxYFISG3Be9uH2
+         0Jgg==
+X-Gm-Message-State: AOAM530DFcQ3xlhOwVato9+gTFVSNvamdwtKPJP9f1RFsNJe0hV8TI2r
+        nKNYOz2WtitNN4DwYCkJ7Ns41Q==
+X-Google-Smtp-Source: ABdhPJz8D0WGg+5ZfW92LAh5T8KXHx1EVU8sInlUIMJsc7UO0riHqGFUAfP6K/DBRAT8jSX3qUNA7g==
+X-Received: by 2002:a5d:9610:: with SMTP id w16mr1433166iol.167.1616128167997;
         Thu, 18 Mar 2021 21:29:27 -0700 (PDT)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id k3sm1985940ioj.35.2021.03.18.21.29.26
+        by smtp.gmail.com with ESMTPSA id k3sm1985940ioj.35.2021.03.18.21.29.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Mar 2021 21:29:26 -0700 (PDT)
+        Thu, 18 Mar 2021 21:29:27 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
         cpratapa@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/4] net: ipa: fix validation
-Date:   Thu, 18 Mar 2021 23:29:19 -0500
-Message-Id: <20210319042923.1584593-1-elder@linaro.org>
+Subject: [PATCH net-next 1/4] net: ipa: fix init header command validation
+Date:   Thu, 18 Mar 2021 23:29:20 -0500
+Message-Id: <20210319042923.1584593-2-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210319042923.1584593-1-elder@linaro.org>
+References: <20210319042923.1584593-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is sanity checking code in the IPA driver that's meant to be
-enabled only during development.  This allows the driver to make
-certain assumptions, but not have to verify those assumptions are
-true at (operational) runtime.  This code is built conditional on
-IPA_VALIDATION, set (if desired) inside the IPA makefile.
+We use ipa_cmd_header_valid() to ensure certain values we will
+program into hardware are within range, well in advance of when we
+actually program them.  This way we avoid having to check for errors
+when we actually program the hardware.
 
-Unfortunately, this validation code has some errors.  First, there
-are some mismatched arguments supplied to some dev_err() calls in
-ipa_cmd_table_valid() and ipa_cmd_header_valid(), and these are
-exposed if validation is enabled.  Second, the tag that enables
-this conditional code isn't used consistently (it's IPA_VALIDATE
-in some spots and IPA_VALIDATION in others).
+Unfortunately the dev_err() call for a bad offset value does not
+supply the arguments to match the format specifiers properly.
+Fix this.
 
-This series fixes those two problems with the conditional validation
-code.
+There was also supposed to be a check to ensure the size to be
+programmed fits in the field that holds it.  Add this missing check.
 
-In addition, this series introduces some new assertion macros.  I
-have been meaning to add this for a long time.  There are comments
-indicating places where assertions could be checked throughout the
-code.
+Rearrange the way we ensure the header table fits in overall IPA
+memory range.
 
-The macros are designed so that any asserted condition will be
-checked at compile time if possible.  Otherwise, the condition
-will be checked at runtime *only* if IPA_VALIDATION is enabled,
-and ignored otherwise.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_cmd.c | 49 +++++++++++++++++++++++++--------------
+ 1 file changed, 32 insertions(+), 17 deletions(-)
 
-NOTE:  The third patch produces two bogus (but understandable)
-warnings from checkpatch.pl.  It does not recognize that the "expr"
-argument passed to those macros aren't actually evaluated more than
-once.  In both cases, all but one reference is consumed by the
-preprocessor or compiler.
-
-A final patch converts a handful of commented assertions into
-"real" ones.  Some existing validation code can done more simply
-with assertions, so over time such cases will be converted.  For
-now though, this series adds this assertion capability.
-
-					-Alex
-
-Alex Elder (4):
-  net: ipa: fix init header command validation
-  net: ipa: fix IPA validation
-  net: ipa: introduce ipa_assert()
-  net: ipa: activate some commented assertions
-
- drivers/net/ipa/Makefile       |  2 +-
- drivers/net/ipa/gsi_trans.c    |  8 ++---
- drivers/net/ipa/ipa_assert.h   | 50 ++++++++++++++++++++++++++++++++
- drivers/net/ipa/ipa_cmd.c      | 53 ++++++++++++++++++++++------------
- drivers/net/ipa/ipa_cmd.h      |  6 ++--
- drivers/net/ipa/ipa_endpoint.c |  6 ++--
- drivers/net/ipa/ipa_main.c     |  6 ++--
- drivers/net/ipa/ipa_mem.c      |  6 ++--
- drivers/net/ipa/ipa_reg.h      |  7 +++--
- drivers/net/ipa/ipa_table.c    | 11 ++++---
- drivers/net/ipa/ipa_table.h    |  6 ++--
- 11 files changed, 115 insertions(+), 46 deletions(-)
- create mode 100644 drivers/net/ipa/ipa_assert.h
-
+diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+index 35e35852c25c5..b40f031a905a7 100644
+--- a/drivers/net/ipa/ipa_cmd.c
++++ b/drivers/net/ipa/ipa_cmd.c
+@@ -175,21 +175,23 @@ bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem,
+ 			    : field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
+ 	if (mem->offset > offset_max ||
+ 	    ipa->mem_offset > offset_max - mem->offset) {
+-		dev_err(dev, "IPv%c %s%s table region offset too large "
+-			      "(0x%04x + 0x%04x > 0x%04x)\n",
+-			      ipv6 ? '6' : '4', hashed ? "hashed " : "",
+-			      route ? "route" : "filter",
+-			      ipa->mem_offset, mem->offset, offset_max);
++		dev_err(dev, "IPv%c %s%s table region offset too large\n",
++			ipv6 ? '6' : '4', hashed ? "hashed " : "",
++			route ? "route" : "filter");
++		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
++			ipa->mem_offset, mem->offset, offset_max);
++
+ 		return false;
+ 	}
+ 
+ 	if (mem->offset > ipa->mem_size ||
+ 	    mem->size > ipa->mem_size - mem->offset) {
+-		dev_err(dev, "IPv%c %s%s table region out of range "
+-			      "(0x%04x + 0x%04x > 0x%04x)\n",
+-			      ipv6 ? '6' : '4', hashed ? "hashed " : "",
+-			      route ? "route" : "filter",
+-			      mem->offset, mem->size, ipa->mem_size);
++		dev_err(dev, "IPv%c %s%s table region out of range\n",
++			ipv6 ? '6' : '4', hashed ? "hashed " : "",
++			route ? "route" : "filter");
++		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
++			mem->offset, mem->size, ipa->mem_size);
++
+ 		return false;
+ 	}
+ 
+@@ -205,22 +207,35 @@ static bool ipa_cmd_header_valid(struct ipa *ipa)
+ 	u32 size_max;
+ 	u32 size;
+ 
++	/* In ipa_cmd_hdr_init_local_add() we record the offset and size
++	 * of the header table memory area.  Make sure the offset and size
++	 * fit in the fields that need to hold them, and that the entire
++	 * range is within the overall IPA memory range.
++	 */
+ 	offset_max = field_max(HDR_INIT_LOCAL_FLAGS_HDR_ADDR_FMASK);
+ 	if (mem->offset > offset_max ||
+ 	    ipa->mem_offset > offset_max - mem->offset) {
+-		dev_err(dev, "header table region offset too large "
+-			      "(0x%04x + 0x%04x > 0x%04x)\n",
+-			      ipa->mem_offset + mem->offset, offset_max);
++		dev_err(dev, "header table region offset too large\n");
++		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
++			ipa->mem_offset, mem->offset, offset_max);
++
+ 		return false;
+ 	}
+ 
+ 	size_max = field_max(HDR_INIT_LOCAL_FLAGS_TABLE_SIZE_FMASK);
+ 	size = ipa->mem[IPA_MEM_MODEM_HEADER].size;
+ 	size += ipa->mem[IPA_MEM_AP_HEADER].size;
+-	if (mem->offset > ipa->mem_size || size > ipa->mem_size - mem->offset) {
+-		dev_err(dev, "header table region out of range "
+-			      "(0x%04x + 0x%04x > 0x%04x)\n",
+-			      mem->offset, size, ipa->mem_size);
++	if (size > size_max) {
++		dev_err(dev, "header table region too large\n");
++		dev_err(dev, "    (0x%04x > 0x%04x)\n", size, size_max);
++
++		return false;
++	}
++	if (size > ipa->mem_size || mem->offset > ipa->mem_size - size) {
++		dev_err(dev, "header table region out of range\n");
++		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
++			mem->offset, size, ipa->mem_size);
++
+ 		return false;
+ 	}
+ 
 -- 
 2.27.0
 
