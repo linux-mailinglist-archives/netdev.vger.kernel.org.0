@@ -2,188 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F0063420E9
-	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 16:25:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 247953420FC
+	for <lists+netdev@lfdr.de>; Fri, 19 Mar 2021 16:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbhCSPZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 11:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230218AbhCSPYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 11:24:30 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A4BC06174A
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 08:24:29 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id v26so6481239iox.11
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 08:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AkAIkwKnHKlHjriaSzDP0d59Qoo4Ts3Lr/GHkUvhrrE=;
-        b=GM0LzDP98p/0+cCI2Hy4w6dKNVA0yX++upe3JaTimCZF2EBhxNO7pRoRpuz+dvjxIw
-         rcIO6L6ihpCA/ArOmTIQZP9edaAf1pKFvY1uXRjwRxtGsUnVC9LTH/tZ30a7xnl7sKe3
-         jmFxIojYi/KdxFUxRe9chnldEEwLTNVnycyVh0xLCf4d4lwq5Sk3eYjoBijzTDP7CmOA
-         ZsDKU3hL8SWAbJzWCdAMKQXa9aHr2cEWKrWBunS8aKILxrVSThsJOdJEifAfvO8PlgZf
-         vzpibmcfQ7PklzuiEGs4GrSAIHmx81dxrwLr9a16x5n+ckNw4iljVdUwuodxmjwNi5+9
-         I3ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AkAIkwKnHKlHjriaSzDP0d59Qoo4Ts3Lr/GHkUvhrrE=;
-        b=Gef2/HJ3fdhjHjqONpaiwa+arG1XJh5wrvnlwxehlcmbHsEuyd0phl8M4NYqW4BkJu
-         ehosBB0/6gO/pcxE3TFUEj7BFWszj+I0ohLKAodEpWFW7yN0FAXYxoxsZUz7cjuSTOVY
-         oa4Wh6w9ejTMRbpm42E8aNi8xFLELOVE72OTLxFl/uhYDiU4zHzlXcPEOHdlaJW5MaL6
-         7HyEEOu1ODLx6qbLBzOcNcIkq0BX+kmLCiWjK9/YQs7Bp9ZCSsp2kEjAvgt4YDMV0v6H
-         JjtEdRGhJxjGgB9ToL8aejhUFpSQyoaMsJRP3mOu0CYehjs8zUxifu5rUbMVnflLyLAI
-         yICQ==
-X-Gm-Message-State: AOAM533+RitDwl8F/Rmn9/KcUJr0wuogjm6E2s7AtBXMNL3RxMdx50NG
-        C8M4waLY7vGAr7JUWB0gKcWjvg==
-X-Google-Smtp-Source: ABdhPJzL0MqwiO2Bx/yuXfWytZzMkOa7KzbIv6YLsJhxO8/G1B2RLhYkUmI3padcw+pMwIixijdq3g==
-X-Received: by 2002:a05:6602:2f0c:: with SMTP id q12mr3131098iow.82.1616167469400;
-        Fri, 19 Mar 2021 08:24:29 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id b5sm2686887ioq.7.2021.03.19.08.24.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 08:24:29 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: ipa: define QSB limits in configuration data
-Date:   Fri, 19 Mar 2021 10:24:22 -0500
-Message-Id: <20210319152422.1803714-6-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210319152422.1803714-1-elder@linaro.org>
-References: <20210319152422.1803714-1-elder@linaro.org>
+        id S230370AbhCSPc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 11:32:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52208 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229736AbhCSPcS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 11:32:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1613A61937;
+        Fri, 19 Mar 2021 15:32:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616167937;
+        bh=Bjqasofa2YhV0Yx6/30uM0KbT7hlCu9DzBODXj+rzj0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EbIGUlK5jH663nkarqCmAI/l9izm//4/ZMn/hxMsAKjIMyJMWwGESCMjWmtuxMfDw
+         MKuAlYPr48w4WQJX7Vmzv+77QyI67MCtFUcMeAVdfvhPT8h2eDaU+B49vMb4xcLZuJ
+         Vzx4vK6Rb63GYpIwJ0R2dttyCSrNkQsgknzub73MP+y/KJpbc/JB7E1eLePWg5Ngqh
+         lSZ8SToNbAdeuet/Vjj1nWgWLWpYwctDGJam25+REqT5DuDcCbRye1pNi+zl66GboF
+         63QMTGAxhyVcxkOZnBAG7Jc3Hx1H/I1ze9YjSMTL6yqfTPaGY4Eboj9jMEF0iPfzyl
+         nYOoPbynrfZ+g==
+Date:   Fri, 19 Mar 2021 17:32:13 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/4] net: ipa: introduce ipa_assert()
+Message-ID: <YFTD/TZ2tFX/X3dD@unreal>
+References: <20210319042923.1584593-1-elder@linaro.org>
+ <20210319042923.1584593-4-elder@linaro.org>
+ <YFQurZjWYaolHGvR@unreal>
+ <edb7ab60-f0e2-8fc4-ca73-9614bb547ab5@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <edb7ab60-f0e2-8fc4-ca73-9614bb547ab5@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define the maximum number of reads and writes to configure for the
-QSB masters used for IPA in configuration data.
+On Fri, Mar 19, 2021 at 07:38:26AM -0500, Alex Elder wrote:
+> On 3/18/21 11:55 PM, Leon Romanovsky wrote:
+> > On Thu, Mar 18, 2021 at 11:29:22PM -0500, Alex Elder wrote:
+> > > Create a new macro ipa_assert() to verify that a condition is true.
+> > > This produces a build-time error if the condition can be evaluated
+> > > at build time; otherwise __ipa_assert_runtime() is called (described
+> > > below).
+> > > 
+> > > Another macro, ipa_assert_always() verifies that an expression
+> > > yields true at runtime, and if it does not, reports an error
+> > > message.
+> > > 
+> > > When IPA validation is enabled, __ipa_assert_runtime() becomes a
+> > > call to ipa_assert_always(), resulting in runtime verification of
+> > > the asserted condition.  Otherwise __ipa_assert_runtime() has no
+> > > effect, so such ipa_assert() calls are effectively ignored.
+> > > 
+> > > IPA assertion errors will be reported using the IPA device if
+> > > possible.
+> > > 
+> > > Signed-off-by: Alex Elder <elder@linaro.org>
+> > > ---
+> > >   drivers/net/ipa/ipa_assert.h | 50 ++++++++++++++++++++++++++++++++++++
+> > >   1 file changed, 50 insertions(+)
+> > >   create mode 100644 drivers/net/ipa/ipa_assert.h
+> > > 
+> > > diff --git a/drivers/net/ipa/ipa_assert.h b/drivers/net/ipa/ipa_assert.h
+> > > new file mode 100644
+> > > index 0000000000000..7e5b9d487f69d
+> > > --- /dev/null
+> > > +++ b/drivers/net/ipa/ipa_assert.h
+> > > @@ -0,0 +1,50 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > +/*
+> > > + * Copyright (C) 2021 Linaro Ltd.
+> > > + */
+> > > +#ifndef _IPA_ASSERT_H_
+> > > +#define _IPA_ASSERT_H_
+> > > +
+> > > +#include <linux/compiler.h>
+> > > +#include <linux/printk.h>
+> > > +#include <linux/device.h>
+> > > +
+> > > +/* Verify the expression yields true, and fail at build time if possible */
+> > > +#define ipa_assert(dev, expr) \
+> > > +	do { \
+> > > +		if (__builtin_constant_p(expr)) \
+> > > +			compiletime_assert(expr, __ipa_failure_msg(expr)); \
+> > > +		else \
+> > > +			__ipa_assert_runtime(dev, expr); \
+> > > +	} while (0)
+> > > +
+> > > +/* Report an error if the given expression evaluates to false at runtime */
+> > > +#define ipa_assert_always(dev, expr) \
+> > > +	do { \
+> > > +		if (unlikely(!(expr))) { \
+> > > +			struct device *__dev = (dev); \
+> > > +			\
+> > > +			if (__dev) \
+> > > +				dev_err(__dev, __ipa_failure_msg(expr)); \
+> > > +			else  \
+> > > +				pr_err(__ipa_failure_msg(expr)); \
+> > > +		} \
+> > > +	} while (0)
+> > 
+> > It will be much better for everyone if you don't obfuscate existing
+> > kernel primitives and don't hide constant vs. dynamic expressions.
+> 
+> I don't agree with this characterization.
+> 
+> Yes, there is some complexity in this one source file, where
+> ipa_assert() is defined.  But as a result, callers are simple
+> one-line statements (similar to WARN_ON()).
 
-We don't use these values yet; the next commit takes care of that.
+It is not complexity but being explicit vs. implicit. The coding
+style that has explicit flows will be always better than implicit
+one. By adding your custom assert, you are hiding the flows and
+makes unclear what can be evaluated at compilation and what can't.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_data-sc7180.c | 10 ++++++++++
- drivers/net/ipa/ipa_data-sdm845.c | 14 ++++++++++++++
- drivers/net/ipa/ipa_data.h        | 24 ++++++++++++++++++++++--
- 3 files changed, 46 insertions(+), 2 deletions(-)
+> 
+> Existing kernel primitives don't achieve these objectives:
+> - Don't check things at run time under normal conditions
+> - Do check things when validation is enabled
+> - If you can check it at compile time, check it regardless
+> If there is something that helps me do that, suggest it because
+> I will be glad to use it.
 
-diff --git a/drivers/net/ipa/ipa_data-sc7180.c b/drivers/net/ipa/ipa_data-sc7180.c
-index f65abc19ae9d7..216f790b22b66 100644
---- a/drivers/net/ipa/ipa_data-sc7180.c
-+++ b/drivers/net/ipa/ipa_data-sc7180.c
-@@ -9,6 +9,14 @@
- #include "ipa_endpoint.h"
- #include "ipa_mem.h"
- 
-+/* QSB configuration for the SC7180 SoC. */
-+static const struct ipa_qsb_data ipa_qsb_data[] = {
-+	[IPA_QSB_MASTER_DDR] = {
-+		.max_writes	= 8,
-+		.max_reads	= 12,
-+	},
-+};
-+
- /* Endpoint configuration for the SC7180 SoC. */
- static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 	[IPA_ENDPOINT_AP_COMMAND_TX] = {
-@@ -328,6 +336,8 @@ static const struct ipa_clock_data ipa_clock_data = {
- /* Configuration data for the SC7180 SoC. */
- const struct ipa_data ipa_data_sc7180 = {
- 	.version	= IPA_VERSION_4_2,
-+	.qsb_count	= ARRAY_SIZE(ipa_qsb_data),
-+	.qsb_data	= ipa_qsb_data,
- 	.endpoint_count	= ARRAY_SIZE(ipa_gsi_endpoint_data),
- 	.endpoint_data	= ipa_gsi_endpoint_data,
- 	.resource_data	= &ipa_resource_data,
-diff --git a/drivers/net/ipa/ipa_data-sdm845.c b/drivers/net/ipa/ipa_data-sdm845.c
-index 8cae9325eb08e..d9659fd22322a 100644
---- a/drivers/net/ipa/ipa_data-sdm845.c
-+++ b/drivers/net/ipa/ipa_data-sdm845.c
-@@ -11,6 +11,18 @@
- #include "ipa_endpoint.h"
- #include "ipa_mem.h"
- 
-+/* QSB configuration for the SDM845 SoC. */
-+static const struct ipa_qsb_data ipa_qsb_data[] = {
-+	[IPA_QSB_MASTER_DDR] = {
-+		.max_writes	= 8,
-+		.max_reads	= 8,
-+	},
-+	[IPA_QSB_MASTER_PCIE] = {
-+		.max_writes	= 4,
-+		.max_reads	= 12,
-+	},
-+};
-+
- /* Endpoint configuration for the SDM845 SoC. */
- static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 	[IPA_ENDPOINT_AP_COMMAND_TX] = {
-@@ -353,6 +365,8 @@ static const struct ipa_clock_data ipa_clock_data = {
- /* Configuration data for the SDM845 SoC. */
- const struct ipa_data ipa_data_sdm845 = {
- 	.version	= IPA_VERSION_3_5_1,
-+	.qsb_count	= ARRAY_SIZE(ipa_qsb_data),
-+	.qsb_data	= ipa_qsb_data,
- 	.endpoint_count	= ARRAY_SIZE(ipa_gsi_endpoint_data),
- 	.endpoint_data	= ipa_gsi_endpoint_data,
- 	.resource_data	= &ipa_resource_data,
-diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
-index b476fc373f7fe..d50cd5ae7714f 100644
---- a/drivers/net/ipa/ipa_data.h
-+++ b/drivers/net/ipa/ipa_data.h
-@@ -49,6 +49,22 @@
- #define IPA_RESOURCE_GROUP_SRC_MAX	5
- #define IPA_RESOURCE_GROUP_DST_MAX	5
- 
-+/** enum ipa_qsb_master_id - array index for IPA QSB configuration data */
-+enum ipa_qsb_master_id {
-+	IPA_QSB_MASTER_DDR,
-+	IPA_QSB_MASTER_PCIE,
-+};
-+
-+/**
-+ * struct ipa_qsb_data - Qualcomm System Bus configuration data
-+ * @max_writes:	Maximum outstanding write requests for this master
-+ * @max_reads:	Maximum outstanding read requests for this master
-+ */
-+struct ipa_qsb_data {
-+	u8 max_writes;
-+	u8 max_reads;
-+};
-+
- /**
-  * struct gsi_channel_data - GSI channel configuration data
-  * @tre_count:		number of TREs in the channel ring
-@@ -285,14 +301,18 @@ struct ipa_clock_data {
- /**
-  * struct ipa_data - combined IPA/GSI configuration data
-  * @version:		IPA hardware version
-- * @endpoint_count:	number of entries in endpoint_data array
-+ * @qsb_count:		number of entries in the qsb_data array
-+ * @qsb_data:		Qualcomm System Bus configuration data
-+ * @endpoint_count:	number of entries in the endpoint_data array
-  * @endpoint_data:	IPA endpoint/GSI channel data
-  * @resource_data:	IPA resource configuration data
-- * @mem_count:		number of entries in mem_data array
-+ * @mem_count:		number of entries in the mem_data array
-  * @mem_data:		IPA-local shared memory region data
-  */
- struct ipa_data {
- 	enum ipa_version version;
-+	u32 qsb_count;		/* # entries in qsb_data[] */
-+	const struct ipa_qsb_data *qsb_data;
- 	u32 endpoint_count;	/* # entries in endpoint_data[] */
- 	const struct ipa_gsi_endpoint_data *endpoint_data;
- 	const struct ipa_resource_data *resource_data;
--- 
-2.27.0
+Separate checks to two flows and it will be natural to achieve what you
+want.
 
+> 
+> > So any random kernel developer will be able to change the code without
+> > investing too much time to understand this custom logic.
+> 
+> There should be almost no need to change the definition of
+> ipa_assert().  Even so, this custom logic is not all that
+> complicated in my view; it's broken into a few macros that
+> are each pretty simple.  It was actuallyl a little simpler
+> before I added some things to satisfy checkpatch.pl.
+
+Every obfuscation is simple, but together it is nightmare for the person
+who does some random kernel job and needs to change such obfuscated code.
+
+> 
+> > And constant expressions are checked with BUILD_BUG_ON().
+> 
+> BUILD_BUG_ON() is great.  But it doesn't work for
+> non-constant expressions.
+
+Of course, be explicit and use BUILD_BUG_ON() for constants and write
+the code that don't need such constructions.
+
+Thanks
