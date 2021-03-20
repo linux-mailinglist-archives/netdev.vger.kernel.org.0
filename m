@@ -2,125 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51F27342DC9
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 16:33:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AECA2342DDB
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 16:39:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbhCTPdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 11:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
+        id S230045AbhCTPjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 11:39:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbhCTPdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 11:33:09 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33854C061574;
-        Sat, 20 Mar 2021 08:33:09 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id b184so7979049pfa.11;
-        Sat, 20 Mar 2021 08:33:09 -0700 (PDT)
+        with ESMTP id S229875AbhCTPi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 11:38:59 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46B7C061574;
+        Sat, 20 Mar 2021 08:38:58 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id t20so4359102plr.13;
+        Sat, 20 Mar 2021 08:38:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=u5bQM0dET0XHH+DjsfWvAVqI7tepR0lEwHfAG7aRgCQ=;
-        b=FwXPsADvHcm/f2ssMaTbRWh9czKbUN0UE5Grn4m/d25oaFVgPWRxwpTkEgB+IBnvB0
-         LMSBzCEyDQGTqzztOXBqH7DW+Zdd7bYrBaD4tlE3h4la0x5r6j9sBbqXg6iuq1hDYlNA
-         S5MxblNVZ2N51NJqJt2qXe1hQPDPxd+ilYHN2vA3TfZZqgiY1Mykr3F7yhzP5zSZu79o
-         Q039Jcfyp4siN9j3brRRAq6pH9ikI9YN3GsQrjK2natZVUQPBb7JtYYpr+BOCnX3UBVP
-         0OHeetn5qk9K75pYLcpCcROHYZw2kWhvzZC7dRpvrUt8DmwTkANfBDEqiNX8ZhvK+jyM
-         /hTA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wg8yrfY8Orb7Nenc8qwtk7TJ4R+4DE1IsgvTRhOqrm8=;
+        b=XYeGaqBnaFD7qRAzunKxuOwg5kjn4UOLRo2w/2c4VeMno73zLRRywj8QX3a6U41BVX
+         j06u/JhxY0pFXPT/bM+YFd0181O+R/a0TyIZ2Yq7FXkRJujL0d8lIvUMNsg60HjzxcmP
+         sjWPSYhgJX5cVIDLyRPAiyXdKWwEfbvIBjqkCig8iIYlv/M1aZvGMjUnE4S0gT4qhtFj
+         7QNVK2lWlMXrmbgOUY5RMsLay8DxrGwDUNkfN0YrUcFPmXaVJHmOgsVdByOKnpq2j+Po
+         vnOInaeRfebIaC3QlQrGdBK1Km1lrUJTrBCR7AHyLyFphGo2/qrbHCwQQW6lFydHUD6o
+         3WWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=u5bQM0dET0XHH+DjsfWvAVqI7tepR0lEwHfAG7aRgCQ=;
-        b=QAc8B2uLEuE+L7W6PymnIIjX2qzf73FJDmV2N3SlXP8/kHaAWp0+XJVy8prsqNQs17
-         1phTLt3I+jtLXzfKv/LMNPtNUO0I3HWe7sFSKASiAZUiQdp4n6xq++Aaee/teH2vsniU
-         Y/dsuHrUzxys3wH75DIsXF7MXAWfWjNO7+iR5i1xQl7VdxtFli+tlFnRyV0WszbeNtI3
-         9/gJBc7MvVVZ4fS9WEfRFBTHRNLI9BswsNwLrd84iSAYvwtePvjjrQK217Jb/EpcRNJ3
-         RYlbTemtGLLIGV6o6QJOWJsRKGCB2PLPL72QITMs9uKEXyqpThHNlAJgB3gPRcaJ8a0Y
-         8JDw==
-X-Gm-Message-State: AOAM532ImsXYxlpVfvAPeL0ttTsi10wcPzaiSqwBvKAXOAlST/aPB0qa
-        t92wdRistqDOFtYY5OP2EhPrEOkBMso=
-X-Google-Smtp-Source: ABdhPJxL2Tq6q09AYe9WwiuuG4YjxyOh+yPl9d3mRSUHfy0fa4eqqillzmtO9dmoQHcCgokrKKGwtw==
-X-Received: by 2002:a62:683:0:b029:1ec:c88c:8ea2 with SMTP id 125-20020a6206830000b02901ecc88c8ea2mr13739211pfg.27.1616254388746;
-        Sat, 20 Mar 2021 08:33:08 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id z25sm8555547pfn.37.2021.03.20.08.33.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Mar 2021 08:33:08 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: pull-request: bpf 2021-03-20
-Date:   Sat, 20 Mar 2021 08:33:06 -0700
-Message-Id: <20210320153306.49142-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wg8yrfY8Orb7Nenc8qwtk7TJ4R+4DE1IsgvTRhOqrm8=;
+        b=p5omX5e8q9PCqgZz+5QN5569A85ENy/3NTQTAh8kZkfQw/a1AbijW/O6YThDyquCJK
+         iVUwhzERa0ME9N6RiXsQ2bm+6lcZ3VZ/vThpHG4QtpyuDZpIqcEqLJdzsEfPmwERjIOL
+         JvNzD5oI3Wh+Vb3JRUfqVN59tKv6HW4xTrCqsEtBPIOhUevzkUzr7B0qGN4oIvroGymu
+         GvZKcXoeN7XmyO36rM3w3anfh97pXBXRU2N/9lGf+ntrBspH2A8Yvv9jkP8eX6Cm1jW5
+         d7oHZrjiI0EIQBix0baXAmMQQS18itCrCYblsr8xEb+GdZUQZoCMi7Gt9GvVUghtpyl7
+         OK1A==
+X-Gm-Message-State: AOAM533zvLcq9ayYyIWE2BkZv6FOnguM8eJ0e0mjizRBbpNX5pAkuoF3
+        OP52m+HKofZPAdEhBEgzAyhrnG0p/Oc=
+X-Google-Smtp-Source: ABdhPJwm/nIFE28+5hzSB/R3dAw4Z1AQUFIg1YMohE0dxy2AgFvLTHeyYzhjLAwC3BK36sC04gVdjg==
+X-Received: by 2002:a17:90a:7a8b:: with SMTP id q11mr4148393pjf.215.1616254738448;
+        Sat, 20 Mar 2021 08:38:58 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:48:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id c129sm7400330pfb.141.2021.03.20.08.38.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Mar 2021 08:38:57 -0700 (PDT)
+Date:   Sat, 20 Mar 2021 08:38:55 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Dipen Patel <dipenp@nvidia.com>,
+        Kent Gibson <warthog618@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: GTE - The hardware timestamping engine
+Message-ID: <20210320153855.GA29456@hoboy.vegasvil.org>
+References: <4c46726d-fa35-1a95-4295-bca37c8b6fe3@nvidia.com>
+ <CACRpkdbmqww6UQ8CFYo=+bCtVYBJwjMxVixc4vS6D3B+dUHScw@mail.gmail.com>
+ <CAK8P3a30CdRKGe++MyBVDLW=p9E1oS+C7d7W4jLE01TAA4k+GA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a30CdRKGe++MyBVDLW=p9E1oS+C7d7W4jLE01TAA4k+GA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+On Sat, Mar 20, 2021 at 01:44:20PM +0100, Arnd Bergmann wrote:
+> Adding Richard Cochran as well, for drivers/ptp/, he may be able to
+> identify whether this should be integrated into that framework in some
+> form.
 
-The following pull-request contains BPF updates for your *net* tree.
+I'm not familiar with the GTE, but it sounds like it is a (free
+running?) clock with time stamping inputs.  If so, then it could
+expose a PHC.  That gets you functionality:
 
-We've added 5 non-merge commits during the last 3 day(s) which contain
-a total of 8 files changed, 155 insertions(+), 12 deletions(-).
+- clock_gettime() and friends
+- comparison ioctl between GTE clock and CLOCK_REALTIME
+- time stamping channels with programmable input selection
 
-The main changes are:
+The mentioned applications (robotics and autonomous vehicle, so near
+and dear to my heart) surely already use the PHC API for dealing with
+network and system time sources, and so exposing the GTE as a PHC
+means that user space programs will have a consistent API.
 
-1) Use correct nops in fexit trampoline, from Stanislav.
+[ The only drawback I can see is the naming of the C language
+  identifiers in include/uapi/linux/ptp_clock.h.  If that bothers
+  people, then these can be changed to something more generic while
+  keeping compatibility aliases. ]
 
-2) Fix BTF dump, from Jean-Philippe.
-
-3) Fix umd memory leak, from Zqiang.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-
-
-----------------------------------------------------------------
-
-The following changes since commit e65eaded4cc4de6bf153def9dde6b25392d9a236:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-03-17 18:36:34 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to b9082970478009b778aa9b22d5561eef35b53b63:
-
-  bpf: Use NOP_ATOMIC5 instead of emit_nops(&prog, 5) for BPF_TRAMP_F_CALL_ORIG (2021-03-19 19:25:39 -0700)
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      selftest/bpf: Add a test to check trampoline freeing logic.
-
-Andrii Nakryiko (1):
-      Merge branch 'libbpf: Fix BTF dump of pointer-to-array-of-struct'
-
-Jean-Philippe Brucker (2):
-      libbpf: Fix BTF dump of pointer-to-array-of-struct
-      selftests/bpf: Add selftest for pointer-to-array-of-struct BTF dump
-
-Stanislav Fomichev (1):
-      bpf: Use NOP_ATOMIC5 instead of emit_nops(&prog, 5) for BPF_TRAMP_F_CALL_ORIG
-
-Zqiang (1):
-      bpf: Fix umd memory leak in copy_process()
-
- arch/x86/net/bpf_jit_comp.c                        |  3 +-
- include/linux/usermode_driver.h                    |  1 +
- kernel/bpf/preload/bpf_preload_kern.c              | 19 +++--
- kernel/usermode_driver.c                           | 21 ++++--
- tools/lib/bpf/btf_dump.c                           |  2 +-
- .../testing/selftests/bpf/prog_tests/fexit_sleep.c | 82 ++++++++++++++++++++++
- .../bpf/progs/btf_dump_test_case_syntax.c          |  8 +++
- tools/testing/selftests/bpf/progs/fexit_sleep.c    | 31 ++++++++
- 8 files changed, 155 insertions(+), 12 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/fexit_sleep.c
- create mode 100644 tools/testing/selftests/bpf/progs/fexit_sleep.c
+Thanks,
+Richard
